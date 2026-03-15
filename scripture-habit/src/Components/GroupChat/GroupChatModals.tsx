@@ -764,7 +764,7 @@ const GroupChatModals: FC<GroupChatModalsProps> = ({
             {selectedMember && (
                 <UserProfileModal
                     user={selectedMember}
-                    onClose={() => handleUserProfileClick(null)}
+                    onClose={() => setSelectedMember(null)}
                 />
             )}
 

@@ -53,7 +53,7 @@ interface ScriptureOption {
 }
 
 const NewNote: FC<NewNoteProps> = ({ isOpen, onClose, userData, noteToEdit, onDelete, userGroups = [], isGroupContext = false, currentGroupId = null, initialData = null }) => {
-    const { t, language } = useLanguage();
+    const { t, tArray, language } = useLanguage();
     const API_BASE = Capacitor.isNativePlatform() ? 'https://scripturehabit.app' : '';
 
     const [chapter, setChapter] = useState('');
@@ -74,14 +74,14 @@ const NewNote: FC<NewNoteProps> = ({ isOpen, onClose, userData, noteToEdit, onDe
 
     // Randomized placeholders
     const currentChapterPlaceholder = useMemo(() => {
-        const raw = t('newNote.chapterPlaceholder');
-        return Array.isArray(raw) ? raw[Math.floor(Math.random() * raw.length)] : raw;
-    }, [t]);
+        const arr = tArray('newNote.chapterPlaceholder');
+        return arr.length > 0 ? arr[Math.floor(Math.random() * arr.length)] : t('newNote.chapterPlaceholder');
+    }, [tArray, t]);
 
     const currentCommentPlaceholder = useMemo(() => {
-        const raw = t('newNote.commentPlaceholder');
-        return Array.isArray(raw) ? raw[Math.floor(Math.random() * raw.length)] : raw;
-    }, [t]);
+        const arr = tArray('newNote.commentPlaceholder');
+        return arr.length > 0 ? arr[Math.floor(Math.random() * arr.length)] : t('newNote.commentPlaceholder');
+    }, [tArray, t]);
 
     const [loading, setLoading] = useState(false);
     const [aiLoading, setAiLoading] = useState(false);

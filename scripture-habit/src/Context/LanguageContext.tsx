@@ -10,6 +10,7 @@ interface LanguageContextType {
     language: Language;
     setLanguage: (newLanguage: Language) => void;
     t: (key: string, replacements?: Record<string, string | number>) => string;
+    tArray: (key: string) => string[];
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
@@ -86,11 +87,11 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
         navigate(newPath + window.location.search);
     }, [navigate]);
 
-    const t = React.useCallback((key: string, replacements: Record<string, string | number> = {}) => {
+    const t = React.useCallback((key: string, replacements: Record<string, string | number> = {}): string => {
         const keys = key.split('.');
         let value = (translations as any)[language];
         for (const k of keys) {
-            if (value && value[k]) {
+            if (value && value[k] !== undefined) {
                 value = value[k];
             } else {
                 return key; // Return key if translation not found
@@ -109,11 +110,26 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
         return typeof value === 'string' ? value : key;
     }, [language]);
 
+    // Separate function for array-type translations (e.g. randomized placeholders)
+    const tArray = React.useCallback((key: string): string[] => {
+        const keys = key.split('.');
+        let value = (translations as any)[language];
+        for (const k of keys) {
+            if (value && value[k] !== undefined) {
+                value = value[k];
+            } else {
+                return [];
+            }
+        }
+        return Array.isArray(value) ? value : [String(value)];
+    }, [language]);
+
     const contextValue = React.useMemo(() => ({
         language,
         setLanguage,
-        t
-    }), [language, setLanguage, t]);
+        t,
+        tArray
+    }), [language, setLanguage, t, tArray]);
 
     return (
         <LanguageContext.Provider value={contextValue}>
