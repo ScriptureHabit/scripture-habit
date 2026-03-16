@@ -1,7 +1,7 @@
 import './GroupForm.css';
 import React, { useState } from "react";
 import { auth, db } from '../../firebase';
-import { collection, addDoc, doc, updateDoc, arrayUnion, Timestamp } from 'firebase/firestore';
+import { collection, addDoc, doc, updateDoc, arrayUnion, Timestamp, setDoc } from 'firebase/firestore';
 import { useNavigate, Link } from 'react-router-dom';
 import Input from '../Input/Input';
 import Button from '../Button/Button';
@@ -46,6 +46,8 @@ export default function GroupForm() {
         noteCount: 0,
         ownerUserId: user.uid,
         members: [user.uid],
+        memberJoinedAt: { [user.uid]: now },
+        memberLastActive: { [user.uid]: now },
       };
 
 
@@ -57,6 +59,13 @@ export default function GroupForm() {
       await updateDoc(userRef, {
         groupIds: arrayUnion(newGroupId),
         groupId: newGroupId, // Set as active
+      });
+
+      // Initialize group state
+      const groupStateRef = doc(db, 'users', user.uid, 'groupStates', newGroupId);
+      await setDoc(groupStateRef, {
+        readMessageCount: 0,
+        lastReadAt: now
       });
 
       toast.success(`🎉 ${t('groupForm.successCreated')}`);

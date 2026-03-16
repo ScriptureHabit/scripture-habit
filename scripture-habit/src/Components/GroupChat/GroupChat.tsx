@@ -581,6 +581,17 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], isA
     today.setHours(0, 0, 0, 0);
     const todayTime = today.getTime();
 
+    // Exclude members who joined today from the calculation
+    const memberJoinedAt = groupData.memberJoinedAt || {};
+    const eligibleMemberIds = groupData.members.filter(uid => {
+      const joinedTs = memberJoinedAt[uid];
+      if (!joinedTs) return true; // No record = existing member
+      let joinedTime = 0;
+      if (joinedTs?.toDate) joinedTime = joinedTs.toDate().getTime();
+      else if (joinedTs?.seconds) joinedTime = joinedTs.seconds * 1000;
+      return joinedTime < todayTime;
+    });
+
     const uniquePosters = new Set<string>();
 
     // SOURCE 1: dailyActivity
@@ -608,9 +619,9 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], isA
       }
     });
 
-    const postedUids = Array.from(uniquePosters);
-
-    const notPostedUids = groupData.members.filter(uid => !postedUids.includes(uid));
+    // Only count eligible members (not new today)
+    const postedUids = Array.from(uniquePosters).filter(uid => eligibleMemberIds.includes(uid));
+    const notPostedUids = eligibleMemberIds.filter(uid => !postedUids.includes(uid));
 
     setMembersLoading(true);
     try {
@@ -1542,6 +1553,19 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], isA
     today.setHours(0, 0, 0, 0);
     const todayTime = today.getTime();
 
+    // Exclude members who joined today (they haven't had a chance to post yet)
+    const memberJoinedAt = groupData.memberJoinedAt || {};
+    const eligibleMembers = groupData.members.filter(uid => {
+      const joinedTs = memberJoinedAt[uid];
+      if (!joinedTs) return true; // No join record = existing member, always eligible
+      let joinedTime = 0;
+      if (joinedTs?.toDate) joinedTime = joinedTs.toDate().getTime();
+      else if (joinedTs?.seconds) joinedTime = joinedTs.seconds * 1000;
+      return joinedTime < todayTime; // Exclude if joined today
+    });
+
+    if (eligibleMembers.length === 0) return 0;
+
     const uniquePosters = new Set<string>();
 
     // SOURCE 1: dailyActivity (Current day metadata)
@@ -1573,8 +1597,9 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], isA
       }
     });
 
-    const uniquePostersCount = uniquePosters.size;
-    const score = Math.round((uniquePostersCount / groupData.members.length) * 100);
+    // Only count posters who are eligible members (not new today)
+    const eligiblePostersCount = [...uniquePosters].filter(uid => eligibleMembers.includes(uid)).length;
+    const score = Math.round((eligiblePostersCount / eligibleMembers.length) * 100);
     return Math.min(100, Math.max(0, score));
   }, [messages, groupData, groupId, userData?.timeZone]);
 

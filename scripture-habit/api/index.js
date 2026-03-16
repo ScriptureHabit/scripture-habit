@@ -482,7 +482,7 @@ app.post('/api/join-group', async (req, res) => {
             const groupIds = userData.groupIds || (userData.groupId ? [userData.groupId] : []);
 
             if (groupIds.includes(targetGroupId)) throw new Error('User already in this group.');
-            if (groupIds.length >= 7) throw new Error('You can only join up to 12 groups.');
+            if (groupIds.length >= 4) throw new Error('You can only join up to 4 groups.');
 
             const groupData = groupDoc.data();
             if (groupData.members && groupData.members.includes(uid)) throw new Error('User already in this group.');
@@ -491,8 +491,18 @@ app.post('/api/join-group', async (req, res) => {
             t.update(groupRef, {
                 members: admin.firestore.FieldValue.arrayUnion(uid),
                 membersCount: admin.firestore.FieldValue.increment(1),
-                [`memberLastActive.${uid}`]: admin.firestore.FieldValue.serverTimestamp()
+                messageCount: admin.firestore.FieldValue.increment(1), // Increment for system message
+                [`memberLastActive.${uid}`]: admin.firestore.FieldValue.serverTimestamp(),
+                [`memberJoinedAt.${uid}`]: admin.firestore.FieldValue.serverTimestamp()
             });
+
+            // Initialize group state for the new member so they start with 0 unread
+            const groupStateRef = userRef.collection('groupStates').doc(targetGroupId);
+            const currentMessageCount = (groupData.messageCount || 0) + 1;
+            t.set(groupStateRef, {
+                readMessageCount: currentMessageCount,
+                lastReadAt: admin.firestore.FieldValue.serverTimestamp()
+            }, { merge: true });
 
             // Update user's groupIds and set groupId to the new one
             t.update(userRef, {
@@ -570,7 +580,10 @@ app.post('/api/leave-group', async (req, res) => {
             if (groupDoc.exists) {
                 t.update(groupRef, {
                     members: admin.firestore.FieldValue.arrayRemove(uid),
-                    membersCount: admin.firestore.FieldValue.increment(-1)
+                    membersCount: admin.firestore.FieldValue.increment(-1),
+                    [`memberLastActive.${uid}`]: admin.firestore.FieldValue.delete(),
+                    [`memberKickThresholds.${uid}`]: admin.firestore.FieldValue.delete(),
+                    [`memberJoinedAt.${uid}`]: admin.firestore.FieldValue.delete()
                 });
             }
 
@@ -603,6 +616,10 @@ app.post('/api/leave-group', async (req, res) => {
                     messageData: {
                         nickname: userData.nickname || 'A user'
                     }
+                });
+                // Increment messageCount for the sysem message
+                t.update(groupRef, {
+                    messageCount: admin.firestore.FieldValue.increment(1)
                 });
             }
         });

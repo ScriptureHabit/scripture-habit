@@ -185,6 +185,19 @@ const Sidebar: React.FC<SidebarProps> = ({ selected, setSelected, userGroups = [
     today.setHours(0, 0, 0, 0);
     const todayTime = today.getTime();
 
+    // Exclude members who joined today
+    const memberJoinedAt = group.memberJoinedAt || {};
+    const eligibleMembers = group.members.filter(uid => {
+      const joinedTs = memberJoinedAt[uid];
+      if (!joinedTs) return true;
+      let joinedTime = 0;
+      if (joinedTs?.toDate) joinedTime = joinedTs.toDate().getTime();
+      else if (joinedTs?.seconds) joinedTime = joinedTs.seconds * 1000;
+      return joinedTime < todayTime;
+    });
+
+    if (eligibleMembers.length === 0) return 0;
+
     const uniquePosters = new Set<string>();
 
     // SOURCE 1: dailyActivity
@@ -202,7 +215,8 @@ const Sidebar: React.FC<SidebarProps> = ({ selected, setSelected, userGroups = [
       });
     }
 
-    return Math.round((uniquePosters.size / group.members.length) * 100);
+    const eligiblePostersCount = [...uniquePosters].filter(uid => eligibleMembers.includes(uid)).length;
+    return Math.round((eligiblePostersCount / eligibleMembers.length) * 100);
   };
 
   return (
@@ -239,7 +253,7 @@ const Sidebar: React.FC<SidebarProps> = ({ selected, setSelected, userGroups = [
           {/* Desktop Groups Section */}
           <div className="groups-section desktop-groups">
             <div className="menu-header">
-              {t('sidebar.myGroups')} <span style={{ fontSize: '1.2em' }}>({userGroups.length}/12)</span>
+              {t('sidebar.myGroups')} <span style={{ fontSize: '1.2em' }}>({userGroups.length}/4)</span>
             </div>
             <div className="sidebar-group-list-container">
               {userGroups.map((group) => (
@@ -255,7 +269,7 @@ const Sidebar: React.FC<SidebarProps> = ({ selected, setSelected, userGroups = [
               ))}
             </div>
 
-            {userGroups.length < 12 && (
+            {userGroups.length < 4 && (
               <div className="menuItem create-group-item" onClick={() => navigate(`/${language}/group-options`)}>
                 <UilPlusCircle />
                 <span>{t('sidebar.joinCreateGroup')}</span>
@@ -285,7 +299,7 @@ const Sidebar: React.FC<SidebarProps> = ({ selected, setSelected, userGroups = [
       {showGroupModal && (
         <div className="group-modal-overlay" onClick={() => setShowGroupModal(false)}>
           <div className="group-modal-content" onClick={(e) => e.stopPropagation()}>
-            <h3>{t('sidebar.selectGroup')} <span style={{ fontSize: '1.2em' }}>({userGroups.length}/12)</span></h3>
+            <h3>{t('sidebar.selectGroup')} <span style={{ fontSize: '1.2em' }}>({userGroups.length}/4)</span></h3>
             <div className="modal-group-list">
               {userGroups.map((group) => (
                 <SidebarGroupItem
@@ -300,7 +314,7 @@ const Sidebar: React.FC<SidebarProps> = ({ selected, setSelected, userGroups = [
                 />
               ))}
             </div>
-            {userGroups.length < 12 && (
+            {userGroups.length < 4 && (
               <div className="modal-create-group" onClick={() => { navigate(`/${language}/group-options`); setShowGroupModal(false); }}>
                 <UilPlusCircle />
                 <span>{t('sidebar.joinCreateGroup')}</span>

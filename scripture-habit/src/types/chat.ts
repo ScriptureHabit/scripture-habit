@@ -55,6 +55,7 @@ export interface Group {
   };
   memberLastActive?: Record<string, Timestamp | any>;
   memberLastReadAt?: Record<string, Timestamp | any>;
+  memberJoinedAt?: Record<string, Timestamp | any>;
   [key: string]: any;
 }
 

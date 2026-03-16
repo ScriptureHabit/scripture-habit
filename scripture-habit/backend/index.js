@@ -1827,15 +1827,18 @@ app.get('/check-inactive-users', async (req, res) => {
 
         removeUidList.forEach(uid => {
           groupUpdates[`memberLastActive.${uid}`] = admin.firestore.FieldValue.delete();
+          groupUpdates[`memberKickThresholds.${uid}`] = admin.firestore.FieldValue.delete();
+          groupUpdates[`memberJoinedAt.${uid}`] = admin.firestore.FieldValue.delete();
         });
 
+        groupUpdates['messageCount'] = admin.firestore.FieldValue.increment(1);
         groupChanged = true;
         removedCount += removeUidList.length;
 
         // Add System Message
         const messageRef = groupsRef.doc(groupId).collection('messages').doc();
         batch.set(messageRef, {
-          text: `👋 **${removeUidList.length} member(s)** were removed due to inactivity.`,
+          text: `👋 **${removeUidList.length} member(s)** were removed due to inactivity (3+ days).`,
           createdAt: admin.firestore.FieldValue.serverTimestamp(),
           senderId: 'system',
           isSystemMessage: true,
