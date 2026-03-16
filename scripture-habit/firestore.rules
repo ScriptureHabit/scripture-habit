@@ -31,7 +31,8 @@ service cloud.firestore {
 
       // Rules for the 'notes' subcollection
       match /notes/{noteId} {
-        allow read, write: if request.auth != null && request.auth.uid == userId;
+        allow read, write: if request.auth != null && request.auth.uid == userId &&
+                           (request.resource == null || request.resource.data.comment.size() <= 10000);
       }
 
       // Rules for the 'groupStates' subcollection
@@ -59,12 +60,16 @@ service cloud.firestore {
 
       // A user can create a group, but they must set themselves as the owner.
       allow create: if isAuthenticated() &&
-                    request.auth.uid == request.resource.data.ownerUserId;
+                    request.auth.uid == request.resource.data.ownerUserId &&
+                    request.resource.data.name.size() <= 100 &&
+                    request.resource.data.description.size() <= 1000;
       
       // 更新権限 (Update rules)
       allow update: if isAuthenticated() && (
         // A. Owner can change anything
-        resource.data.get('ownerUserId', '') == request.auth.uid ||
+        (resource.data.get('ownerUserId', '') == request.auth.uid &&
+         (request.resource.data.name == null || request.resource.data.name.size() <= 100) &&
+         (request.resource.data.description == null || request.resource.data.description.size() <= 1000)) ||
         // B. Members can only update their read access, stats, or leave
         (
           request.auth.uid in resource.data.get('members', []) &&
@@ -73,7 +78,8 @@ service cloud.firestore {
             'memberLastActive', 'memberLastReadAt', 'messageCount', 
             'lastMessageAt', 'lastNoteAt', 'lastMessageByNickname', 
             'lastMessageByUid', 'lastNoteByNickname', 'lastNoteByUid',
-            'noteCount', 'notes', 'lastUnityAnnouncementDate'
+            'noteCount', 'notes', 'lastUnityAnnouncementDate',
+            'dailyActivity', 'memberJoinedAt', 'memberKickThresholds', 'translations'
           ])
         )
       );
@@ -96,9 +102,10 @@ service cloud.firestore {
                       request.auth.uid in get(/databases/$(database)/documents/groups/$(groupId)).data.get('members', []) ||
                       get(/databases/$(database)/documents/groups/$(groupId)).data.get('ownerUserId', '') == request.auth.uid
                     ) &&
+                    request.resource.data.text.size() <= 1000 &&
                     (
-                      request.resource.data.senderId == request.auth.uid || 
-                      (request.resource.data.senderId == 'system' && request.resource.data.isSystemMessage == true)
+                      request.resource.data.senderId == request.auth.uid
+                      // System messages are blocked here because they should come from Admin SDK/API only
                     );
                     
         // Only the sender (or owner) can update/delete messages, 
@@ -113,7 +120,8 @@ service cloud.firestore {
                         (
                           (resource.data.senderId == request.auth.uid || get(/databases/$(database)/documents/groups/$(groupId)).data.get('ownerUserId', '') == request.auth.uid) &&
                           // Prevent changing senderId
-                          request.resource.data.senderId == resource.data.senderId
+                          request.resource.data.senderId == resource.data.senderId &&
+                          request.resource.data.text.size() <= 1000
                         ) ||
                         // Case 2: Any member updating ONLY reactions
                         (

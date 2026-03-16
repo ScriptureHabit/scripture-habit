@@ -159,7 +159,7 @@ const postNoteSchema = z.object({
 
 const postMessageSchema = z.object({
     groupId: z.string().min(1),
-    text: z.string().min(1).max(5000),
+    text: z.string().min(1).max(1000),
     replyTo: z.object({
         id: z.string(),
         senderNickname: z.string(),
