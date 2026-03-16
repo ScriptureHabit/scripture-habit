@@ -253,16 +253,16 @@ const CHEER_NOTIFICATION_TEMPLATES = {
 };
 
 async function getUserFcmTokens(uid) {
-  const tokens = [];
-  const userDoc = await db.collection('users').doc(uid).get();
-  if (userDoc.exists && userDoc.data().fcmTokens) {
-    tokens.push(...userDoc.data().fcmTokens);
-  }
-  const privateDoc = await db.collection('users').doc(uid).collection('private').doc('tokens').get();
-  if (privateDoc.exists && privateDoc.data().fcmTokens) {
-    tokens.push(...privateDoc.data().fcmTokens);
-  }
-  return [...new Set(tokens)];
+    const tokens = [];
+    const userDoc = await db.collection('users').doc(uid).get();
+    if (userDoc.exists && userDoc.data().fcmTokens) {
+        tokens.push(...userDoc.data().fcmTokens);
+    }
+    const privateDoc = await db.collection('users').doc(uid).collection('private').doc('tokens').get();
+    if (privateDoc.exists && privateDoc.data().fcmTokens) {
+        tokens.push(...privateDoc.data().fcmTokens);
+    }
+    return [...new Set(tokens)];
 }
 
 async function sendPushNotification(tokens, payload) {
@@ -337,7 +337,7 @@ async function notifyGroupMembers(groupId, senderUid, payload, memberIdsOverride
         const memberRefs = membersToNotifyIds.map(uid => db.collection('users').doc(uid));
         const privateRefs = membersToNotifyIds.map(uid => db.collection('users').doc(uid).collection('private').doc('tokens'));
         const allDocs = await db.getAll(...memberRefs, ...privateRefs);
-        
+
         const memberDocs = allDocs.slice(0, memberRefs.length);
         const privateDocs = allDocs.slice(memberRefs.length);
 
@@ -347,7 +347,7 @@ async function notifyGroupMembers(groupId, senderUid, payload, memberIdsOverride
 
         memberDocs.forEach((uDoc, idx) => {
             const uid = membersToNotifyIds[idx];
-            
+
             // Check public doc
             if (uDoc.exists) {
                 const userData = uDoc.data();
@@ -359,7 +359,7 @@ async function notifyGroupMembers(groupId, senderUid, payload, memberIdsOverride
                     });
                 }
             }
-            
+
             // Check private doc
             const pDoc = privateDocs[idx];
             if (pDoc.exists) {
@@ -389,10 +389,10 @@ async function notifyGroupMembers(groupId, senderUid, payload, memberIdsOverride
                     const uid = tokenToUserMap.get(t);
                     const source = tokenSourceMap.get(t);
                     if (uid) {
-                        const targetRef = source === 'private' 
-                          ? db.collection('users').doc(uid).collection('private').doc('tokens')
-                          : db.collection('users').doc(uid);
-                          
+                        const targetRef = source === 'private'
+                            ? db.collection('users').doc(uid).collection('private').doc('tokens')
+                            : db.collection('users').doc(uid);
+
                         batch.update(targetRef, {
                             fcmTokens: admin.firestore.FieldValue.arrayRemove(t)
                         });
@@ -909,14 +909,15 @@ app.get('/api/groups', async (req, res) => {
             createdAt: g.createdAt,
             lastMessageAt: g.lastMessageAt,
             messageCount: g.messageCount || 0,
-            noteCount: g.noteCount || 0
+            noteCount: g.noteCount || 0,
+            translations: g.translations || {}
         }));
 
         res.status(200).json(safeActiveGroups);
     } catch (error) {
         console.error('CRITICAL ERROR fetching public groups:', error);
-        res.status(500).json({ 
-            error: 'Error fetching groups.', 
+        res.status(500).json({
+            error: 'Error fetching groups.',
             details: error.message,
             stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
         });
@@ -1227,7 +1228,7 @@ app.post('/api/post-note', async (req, res) => {
 
             // Send notifications per group
             await Promise.all(
-                Array.from(groupsToNotifyMap.entries()).map(([gid, membersList]) => 
+                Array.from(groupsToNotifyMap.entries()).map(([gid, membersList]) =>
                     notifyGroupMembers(gid, uid, {
                         title,
                         body,
@@ -1902,7 +1903,7 @@ app.post('/api/generate-weekly-recap', async (req, res) => {
         if (!groupDoc.exists) {
             return res.status(404).json({ error: 'Group not found.' });
         }
-        
+
         const groupData = groupDoc.data();
         const members = groupData.members || [];
         if (!members.includes(uid) && groupData.ownerUserId !== uid) {
@@ -2873,7 +2874,7 @@ app.post('/api/translate', async (req, res) => {
 
         const targetLangName = languageNames[targetLanguage] || targetLanguage;
         const prompt = `Task: Translate the following text into ${targetLangName}.
-Context: This is for a church-related scripture study app called "Scripture Habit". Use appropriate religious/scriptural terminology if applicable. (e.g., "Come, Follow Me" should be "わたしに従ってきなさい" in Japanese).
+Context: This is for a church-related scripture study app called "Scripture Habit". Use appropriate religious/scriptural terminology if applicable. (e.g., "Come, Follow Me" should be "私に従ってきなさい" in Japanese).
 Output only the translated text. No explanations.
 
 Text:
@@ -2934,101 +2935,101 @@ app.post('/api/delete-account', async (req, res) => {
     const authHeader = req.headers.authorization;
     let idToken;
     if (authHeader && authHeader.startsWith('Bearer ')) {
-      idToken = authHeader.split('Bearer ')[1];
+        idToken = authHeader.split('Bearer ')[1];
     } else {
-      return res.status(401).send('Unauthorized');
+        return res.status(401).send('Unauthorized');
     }
-  
+
     try {
-      const decodedToken = await admin.auth().verifyIdToken(idToken);
-      const uid = decodedToken.uid;
-      const db = admin.firestore();
-  
-      console.log(`Starting account deletion for UID: ${uid}`);
-  
-      // --- STEP 1: Get User Data for Cleanup ---
-      const userRef = db.collection('users').doc(uid);
-      const userDoc = await userRef.get();
-      
-      if (userDoc.exists) {
-        const userData = userDoc.data();
-        const groupIds = userData.groupIds || (userData.groupId ? [userData.groupId] : []);
-  
-        // --- STEP 2: Exit Groups ---
-        for (const gid of groupIds) {
-          try {
-            const groupRef = db.collection('groups').doc(gid);
-            await db.runTransaction(async (transaction) => {
-              const gSnap = await transaction.get(groupRef);
-              if (!gSnap.exists) return;
-  
-              const gData = gSnap.data();
-              const members = gData.members || [];
-              const updatedMembers = members.filter(mUid => mUid !== uid);
-  
-              if (gData.ownerUserId === uid) {
-                if (updatedMembers.length > 0) {
-                  // Transfer ownership
-                  transaction.update(groupRef, {
-                    ownerUserId: updatedMembers[0],
-                    members: updatedMembers,
-                    membersCount: admin.firestore.FieldValue.increment(-1),
-                    [`memberKickThresholds.${uid}`]: admin.firestore.FieldValue.delete()
-                  });
-                } else {
-                  // Delete group if no one left
-                  transaction.delete(groupRef);
+        const decodedToken = await admin.auth().verifyIdToken(idToken);
+        const uid = decodedToken.uid;
+        const db = admin.firestore();
+
+        console.log(`Starting account deletion for UID: ${uid}`);
+
+        // --- STEP 1: Get User Data for Cleanup ---
+        const userRef = db.collection('users').doc(uid);
+        const userDoc = await userRef.get();
+
+        if (userDoc.exists) {
+            const userData = userDoc.data();
+            const groupIds = userData.groupIds || (userData.groupId ? [userData.groupId] : []);
+
+            // --- STEP 2: Exit Groups ---
+            for (const gid of groupIds) {
+                try {
+                    const groupRef = db.collection('groups').doc(gid);
+                    await db.runTransaction(async (transaction) => {
+                        const gSnap = await transaction.get(groupRef);
+                        if (!gSnap.exists) return;
+
+                        const gData = gSnap.data();
+                        const members = gData.members || [];
+                        const updatedMembers = members.filter(mUid => mUid !== uid);
+
+                        if (gData.ownerUserId === uid) {
+                            if (updatedMembers.length > 0) {
+                                // Transfer ownership
+                                transaction.update(groupRef, {
+                                    ownerUserId: updatedMembers[0],
+                                    members: updatedMembers,
+                                    membersCount: admin.firestore.FieldValue.increment(-1),
+                                    [`memberKickThresholds.${uid}`]: admin.firestore.FieldValue.delete()
+                                });
+                            } else {
+                                // Delete group if no one left
+                                transaction.delete(groupRef);
+                            }
+                        } else {
+                            // Just leave
+                            transaction.update(groupRef, {
+                                members: updatedMembers,
+                                membersCount: admin.firestore.FieldValue.increment(-1),
+                                [`memberKickThresholds.${uid}`]: admin.firestore.FieldValue.delete()
+                            });
+                        }
+                    });
+                } catch (groupError) {
+                    console.error(`Group cleanup failed for ${gid}:`, groupError.message);
                 }
-              } else {
-                // Just leave
-                transaction.update(groupRef, {
-                  members: updatedMembers,
-                  membersCount: admin.firestore.FieldValue.increment(-1),
-                  [`memberKickThresholds.${uid}`]: admin.firestore.FieldValue.delete()
-                });
-              }
-            });
-          } catch (groupError) {
-            console.error(`Group cleanup failed for ${gid}:`, groupError.message);
-          }
-        }
-  
-        // --- STEP 3: Delete Subcollections (Notes, etc.) ---
-        const subcollections = ['notes', 'groupStates', 'letters'];
-        for (const sub of subcollections) {
-          let snapshot = await userRef.collection(sub).get();
-          while (!snapshot.empty) {
-            const batch = db.batch();
-            // Process in chunks of 500 (Firestore limit)
-            const docsToDelete = snapshot.docs.slice(0, 500);
-            docsToDelete.forEach(doc => batch.delete(doc.ref));
-            await batch.commit();
-            
-            if (snapshot.docs.length <= 500) break;
-            snapshot = await userRef.collection(sub).get();
-          }
+            }
+
+            // --- STEP 3: Delete Subcollections (Notes, etc.) ---
+            const subcollections = ['notes', 'groupStates', 'letters'];
+            for (const sub of subcollections) {
+                let snapshot = await userRef.collection(sub).get();
+                while (!snapshot.empty) {
+                    const batch = db.batch();
+                    // Process in chunks of 500 (Firestore limit)
+                    const docsToDelete = snapshot.docs.slice(0, 500);
+                    docsToDelete.forEach(doc => batch.delete(doc.ref));
+                    await batch.commit();
+
+                    if (snapshot.docs.length <= 500) break;
+                    snapshot = await userRef.collection(sub).get();
+                }
+            }
+
+            // --- STEP 3.5: Delete Private Collection (FCM Tokens) ---
+            try {
+                await userRef.collection('private').doc('tokens').delete();
+            } catch (err) { }
+
+            // --- STEP 4: Delete User Profile ---
+            await userRef.delete();
         }
 
-        // --- STEP 3.5: Delete Private Collection (FCM Tokens) ---
-        try {
-            await userRef.collection('private').doc('tokens').delete();
-        } catch (err) {}
-  
-        // --- STEP 4: Delete User Profile ---
-        await userRef.delete();
-      }
-  
-      // --- STEP 5: Delete from Firebase Auth ---
-      await admin.auth().deleteUser(uid);
-      
-      console.log(`Successfully deleted account and data for UID: ${uid}`);
-      res.status(200).json({ message: 'Account and all data deleted successfully.' });
-  
+        // --- STEP 5: Delete from Firebase Auth ---
+        await admin.auth().deleteUser(uid);
+
+        console.log(`Successfully deleted account and data for UID: ${uid}`);
+        res.status(200).json({ message: 'Account and all data deleted successfully.' });
+
     } catch (error) {
-      console.error('Error in /api/delete-account:', error);
-      res.status(500).json({ error: 'Failed to delete account.', details: error.message });
+        console.error('Error in /api/delete-account:', error);
+        res.status(500).json({ error: 'Failed to delete account.', details: error.message });
     }
-  });
+});
 
 
 // Export the app for Vercel
