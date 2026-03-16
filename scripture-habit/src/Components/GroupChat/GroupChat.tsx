@@ -1988,7 +1988,7 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], isA
 
       {showInactivityPolicyBanner && (
         <div className="inactivity-policy-banner">
-          <span>{t('groupChat.inactivityPolicyBanner')}</span>
+          <span>{t('groupChat.inactivityPolicyBanner').replace('3', String(userData?.kickThreshold || 3))}</span>
           <button className="inactivity-policy-dismiss" onClick={handleDismissInactivityBanner}>
             <UilTimes size="16" />
           </button>
