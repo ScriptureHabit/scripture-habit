@@ -86,10 +86,10 @@ const WelcomeStoryModal: FC<WelcomeStoryModalProps> = ({ isOpen, onClose, userDa
         <div className="story-page" key="p3-rule">
             <h2 className="story-title">{t('welcomeStory.page3RuleTitle')}</h2>
             <div className="story-highlight-box" style={{ background: 'rgba(255, 100, 100, 0.1)', borderLeft: '4px solid #ff6b6b' }}>
-                <p className="story-text" dangerouslySetInnerHTML={{ __html: t('welcomeStory.page3RuleContent1') }} />
+                <p className="story-text" dangerouslySetInnerHTML={{ __html: t('welcomeStory.page3RuleContent1', { days: userData?.kickThreshold || 3 }) }} />
             </div>
             <p className="story-text" style={{ marginTop: '1rem', fontSize: '0.95rem' }}>
-                {t('welcomeStory.page3RuleContent2')}
+                {t('welcomeStory.page3RuleContent2', { days: userData?.kickThreshold || 3 })}
             </p>
 
         </div>,

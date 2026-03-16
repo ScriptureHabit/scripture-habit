@@ -1838,7 +1838,7 @@ app.get('/check-inactive-users', async (req, res) => {
         // Add System Message
         const messageRef = groupsRef.doc(groupId).collection('messages').doc();
         batch.set(messageRef, {
-          text: `👋 **${removeUidList.length} member(s)** were removed due to inactivity (3+ days).`,
+          text: `👋 **${removeUidList.length} member(s)** were removed due to inactivity.`,
           createdAt: admin.firestore.FieldValue.serverTimestamp(),
           senderId: 'system',
           isSystemMessage: true,

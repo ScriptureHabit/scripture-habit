@@ -153,10 +153,13 @@ const MessageItem: FC<MessageItemProps> = ({
                 }
 
                 // Inactivity Removal Pattern
-                const inactivityPattern = /👋 \*\*(\d+) member\(s\)\*\* were removed due to inactivity \(3\+ days\)\./;
+                const inactivityPattern = /👋 \*\*(\d+) member\(s\)\*\* were removed due to inactivity(?:\s*\((\d+)\+ days\))?\./;
                 const inactivityMatch = text.match(inactivityPattern);
                 if (inactivityMatch) {
-                  return t('groupChat.inactivityRemoval', { count: inactivityMatch[1] });
+                  return t('groupChat.inactivityRemoval', { 
+                    count: inactivityMatch[1], 
+                    days: inactivityMatch[2] || userData?.kickThreshold || 3 
+                  });
                 }
 
                 // No match found, return original text

@@ -318,7 +318,7 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], isA
     // Add other placeholders to the pool
     // In Japanese, these will be "diluted" by the many humorous options, appearing less frequently
     const inactivityThreshold = userData?.kickThreshold || 3;
-    candidates.push(t('groupChat.placeholderInactivity').replace('3', inactivityThreshold));
+    candidates.push(t('groupChat.placeholderInactivity', { days: inactivityThreshold }));
     candidates.push(t('groupChat.placeholderShare'));
     candidates.push(t('groupChat.placeholderEncourage'));
 
@@ -2013,7 +2013,7 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], isA
 
       {showInactivityPolicyBanner && (
         <div className="inactivity-policy-banner">
-          <span>{t('groupChat.inactivityPolicyBanner').replace('3', String(userData?.kickThreshold || 3))}</span>
+          <span>{t('groupChat.inactivityPolicyBanner', { days: userData?.kickThreshold || 3 })}</span>
           <button className="inactivity-policy-dismiss" onClick={handleDismissInactivityBanner}>
             <UilTimes size="16" />
           </button>

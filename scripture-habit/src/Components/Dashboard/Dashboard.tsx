@@ -164,8 +164,8 @@ const Dashboard: FC = () => {
               const data = docSnap.data() as any;
               setUserData({ uid: currentUser.uid, ...data });
 
-              // Show welcome story if not seen yet
-              if (data.hasSeenWelcomeStory === undefined) {
+              // Show welcome story ONLY AFTER habit pace is set
+              if (data.hasSeenWelcomeStory === undefined && data.hasSetKickThreshold === true) {
                 setTimeout(() => setShowWelcomeStory(true), 500);
               }
               setLoading(false);
@@ -203,16 +203,16 @@ const Dashboard: FC = () => {
 
   // Habit Pace Modal Trigger
   useEffect(() => {
-    // 招待コードの処理中やウェルカムストーリー表示中はモーダルを出さない
+    // 招待コードの処理中などはモーダルを出さない
     const inviteCode = safeStorage.get('pendingInviteCode');
     
-    // WelcomeStoryが表示されていない、かつ招待リンク処理中でない場合にのみチェック
+    // Pace modal has higher priority than welcome story for new users
     if (!loading && userData && userData.uid && 
         userData.hasSetKickThreshold !== true && 
-        !showWelcomeStory && !inviteCode && !isJoiningInvite) {
+        !inviteCode && !isJoiningInvite) {
       setShowAutoKickModal(true);
     }
-  }, [userData, loading, showWelcomeStory, isJoiningInvite]);
+  }, [userData, loading, isJoiningInvite]);
 
   // Handle global modal marker for App components (InstallPrompt, CookieConsent)
   useEffect(() => {
