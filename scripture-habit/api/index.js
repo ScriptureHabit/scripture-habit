@@ -830,17 +830,21 @@ app.get('/api/groups', async (req, res) => {
         const db = admin.firestore();
         const groupsRef = db.collection('groups');
 
-        // Fetch up to 100 public groups to avoid quota issues and performance degradation
-        // Sorting by lastMessageAt to get currently active groups first
         const snapshot = await groupsRef
             .where('isPublic', '==', true)
-            .orderBy('lastMessageAt', 'desc')
             .limit(100)
             .get();
 
         const groups = [];
         snapshot.forEach(doc => {
             groups.push({ id: doc.id, ...doc.data() });
+        });
+
+        // Sort by lastMessageAt descending in memory to avoid requiring a composite index
+        groups.sort((a, b) => {
+            const dateA = a.lastMessageAt?.toDate ? a.lastMessageAt.toDate() : (a.lastMessageAt ? new Date(a.lastMessageAt) : new Date(0));
+            const dateB = b.lastMessageAt?.toDate ? b.lastMessageAt.toDate() : (b.lastMessageAt ? new Date(b.lastMessageAt) : new Date(0));
+            return dateB - dateA;
         });
 
         const now = new Date();
@@ -910,8 +914,12 @@ app.get('/api/groups', async (req, res) => {
 
         res.status(200).json(safeActiveGroups);
     } catch (error) {
-        console.error('Error fetching groups:', error);
-        res.status(500).send('Error fetching groups.');
+        console.error('CRITICAL ERROR fetching public groups:', error);
+        res.status(500).json({ 
+            error: 'Error fetching groups.', 
+            details: error.message,
+            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        });
     }
 });
 
@@ -2542,7 +2550,6 @@ app.all('/api/check-inactive-users', async (req, res) => {
         let batchOpCount = 0;
 
         const now = new Date();
-        const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
 
         for (const docSnapshot of snapshot.docs) {
             const groupData = docSnapshot.data();
@@ -2564,6 +2571,8 @@ app.all('/api/check-inactive-users', async (req, res) => {
             const inactiveMembers = [];
             const membersToInitialize = [];
 
+            const memberKickThresholds = groupData.memberKickThresholds || {};
+
             for (const memberId of members) {
                 // Skip owner for now (checked separately)
                 if (memberId === ownerUserId) {
@@ -2571,6 +2580,8 @@ app.all('/api/check-inactive-users', async (req, res) => {
                 }
 
                 const lastActiveTimestamp = memberLastActive[memberId];
+                const individualThresholdDays = memberKickThresholds[memberId] || 3;
+                const individualThresholdMs = individualThresholdDays * 24 * 60 * 60 * 1000;
 
                 if (!lastActiveTimestamp) {
                     // Initialize tracking if missing (giving them a fresh start)
@@ -2590,9 +2601,9 @@ app.all('/api/check-inactive-users', async (req, res) => {
                     const diff = now - lastActiveDate;
                     const daysDiff = Math.floor(diff / (24 * 60 * 60 * 1000));
 
-                    console.log(`  Member ${memberId}: last active ${daysDiff} days ago (${lastActiveDate.toISOString()})`);
+                    console.log(`  Member ${memberId}: last active ${daysDiff} days ago (Threshold: ${individualThresholdDays} days)`);
 
-                    if (diff > THREE_DAYS_MS) {
+                    if (diff > individualThresholdMs) {
                         console.log(`    ⚠️ Member ${memberId} is inactive (${daysDiff} days), marking for removal`);
                         inactiveMembers.push(memberId);
                     } else {
@@ -2686,7 +2697,7 @@ app.all('/api/check-inactive-users', async (req, res) => {
                 // Add System Message
                 const messageRef = groupsRef.doc(groupId).collection('messages').doc();
                 batch.set(messageRef, {
-                    text: `👋 **${removeUidList.length} member(s)** were removed due to inactivity (3+ days).`,
+                    text: `👋 **${removeUidList.length} member(s)** were removed due to inactivity.`,
                     createdAt: admin.firestore.FieldValue.serverTimestamp(),
                     senderId: 'system',
                     isSystemMessage: true,
@@ -2767,7 +2778,6 @@ app.get('/api/test-inactive-check/:groupId', async (req, res) => {
         const ownerUserId = groupData.ownerUserId;
 
         const now = new Date();
-        const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
 
         const report = {
             groupId,
@@ -2778,10 +2788,15 @@ app.get('/api/test-inactive-check/:groupId', async (req, res) => {
             members: []
         };
 
+        const memberKickThresholds = groupData.memberKickThresholds || {};
+
         for (const memberId of members) {
+            const individualThresholdDays = memberKickThresholds[memberId] || 3;
+            const individualThresholdMs = individualThresholdDays * 24 * 60 * 60 * 1000;
             const memberInfo = {
                 memberId,
-                isOwner: memberId === ownerUserId
+                isOwner: memberId === ownerUserId,
+                threshold: individualThresholdDays
             };
 
             if (memberId === ownerUserId) {
@@ -2802,8 +2817,8 @@ app.get('/api/test-inactive-check/:groupId', async (req, res) => {
 
                     memberInfo.lastActive = lastActiveDate.toISOString();
                     memberInfo.daysSinceActive = daysDiff;
-                    memberInfo.status = daysDiff > 3 ? '⚠️ Inactive' : '✅ Active';
-                    memberInfo.action = daysDiff > 3 ? 'would remove' : 'keep';
+                    memberInfo.status = diff > individualThresholdMs ? '⚠️ Inactive' : '✅ Active';
+                    memberInfo.action = diff > individualThresholdMs ? 'would remove' : 'keep';
                 }
             }
 
@@ -2848,7 +2863,7 @@ app.post('/api/translate', async (req, res) => {
             'en': 'English',
             'es': 'Spanish',
             'pt': 'Portuguese',
-            'ko': 'Intermediate',
+            'ko': 'Korean',
             'zho': 'Chinese (Traditional)',
             'vi': 'Vietnamese',
             'th': 'Thai',
@@ -2857,7 +2872,8 @@ app.post('/api/translate', async (req, res) => {
         };
 
         const targetLangName = languageNames[targetLanguage] || targetLanguage;
-        const prompt = `Task: Translate the following text into ${targetLangName}. 
+        const prompt = `Task: Translate the following text into ${targetLangName}.
+Context: This is for a church-related scripture study app called "Scripture Habit". Use appropriate religious/scriptural terminology if applicable. (e.g., "Come, Follow Me" should be "わたしに従ってきなさい" in Japanese).
 Output only the translated text. No explanations.
 
 Text:

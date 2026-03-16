@@ -29,36 +29,31 @@ export default function JoinGroup() {
   const navigate = useNavigate();
 
   const handleTranslateGroup = useCallback(async (groupId: string, name: string, description?: string, translations?: any) => {
-    if (translatingIds.has(groupId)) return;
-
-    // 1. Check for manual translation in Firestore
+    // 1. Check for manual translation in Firestore (Prioritize this)
     const manualTrans = translations?.[language];
     if (manualTrans?.name || manualTrans?.description) {
-      if (manualTrans.name) setTranslatedNames(prev => ({ ...prev, [groupId]: manualTrans.name }));
-      if (manualTrans.description) setTranslatedDescs(prev => ({ ...prev, [groupId]: manualTrans.description }));
+      if (manualTrans.name) {
+        setTranslatedNames(prev => prev[groupId] === manualTrans.name ? prev : { ...prev, [groupId]: manualTrans.name });
+      }
+      if (manualTrans.description) {
+        setTranslatedDescs(prev => prev[groupId] === manualTrans.description ? prev : { ...prev, [groupId]: manualTrans.description });
+      }
       return;
     }
 
-    // Toggle if already translated
-    if (translatedNames[groupId] || translatedDescs[groupId]) {
-      setTranslatedNames(prev => {
-        const next = { ...prev };
-        delete next[groupId];
-        return next;
-      });
-      setTranslatedDescs(prev => {
-        const next = { ...prev };
-        delete next[groupId];
-        return next;
-      });
-      return;
-    }
-
+    // 2. Performance: Avoid duplicate network calls
+    let alreadyTranslating = false;
     setTranslatingIds(prev => {
+      if (prev.has(groupId)) {
+        alreadyTranslating = true;
+        return prev;
+      }
       const next = new Set(prev);
       next.add(groupId);
       return next;
     });
+
+    if (alreadyTranslating) return;
 
     try {
       const idToken = await (user?.getIdToken() || Promise.resolve(null));
@@ -95,7 +90,7 @@ export default function JoinGroup() {
         return next;
       });
     }
-  }, [language, t, user, translatingIds, translatedDescs, translatedNames, API_BASE]);
+  }, [language, t, user, API_BASE]);
 
   useEffect(() => {
     let userDocUnsubscribe = () => { };
