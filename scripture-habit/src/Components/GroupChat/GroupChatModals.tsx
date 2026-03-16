@@ -105,6 +105,7 @@ interface GroupChatModalsProps {
     handleShareWhatsApp: () => void;
     handleShareMessenger: () => void;
     handleShareInstagram: () => void;
+    handleRegenerateInviteCode: () => Promise<void>;
 }
 
 const GroupChatModals: FC<GroupChatModalsProps> = ({
@@ -201,7 +202,8 @@ const GroupChatModals: FC<GroupChatModalsProps> = ({
     handleShareLine,
     handleShareWhatsApp,
     handleShareMessenger,
-    handleShareInstagram
+    handleShareInstagram,
+    handleRegenerateInviteCode
 }) => {
     return (
         <>
@@ -788,6 +790,31 @@ const GroupChatModals: FC<GroupChatModalsProps> = ({
                                     <span>{t('groupChat.inviteLink')}</span>
                                 </div>
                             </div>
+                            
+                            {groupData?.inviteCodeExpiresAt && (
+                                <p className="invite-expiry-text" style={{ fontSize: '0.8rem', color: 'var(--gray)', marginTop: '0.8rem', textAlign: 'center', opacity: 0.8 }}>
+                                    {t('groupChat.inviteExpiresAt') || 'Expires at'}: {(() => {
+                                        const date = groupData.inviteCodeExpiresAt.toDate ? groupData.inviteCodeExpiresAt.toDate() : new Date(groupData.inviteCodeExpiresAt);
+                                        return date.toLocaleString(language === 'ja' ? 'ja-JP' : 'en-US', {
+                                            month: 'short',
+                                            day: 'numeric',
+                                            hour: '2-digit',
+                                            minute: '2-digit'
+                                        });
+                                    })()}
+                                </p>
+                            )}
+
+                            {userData?.uid === groupData?.ownerUserId && (
+                                <button className="regenerate-invite-btn" onClick={handleRegenerateInviteCode} style={{
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+                                    margin: '1.2rem auto 0', background: 'rgba(255, 255, 255, 0.1)', border: '1px solid var(--pink)',
+                                    color: 'var(--pink)', padding: '8px 16px', borderRadius: '20px', cursor: 'pointer', fontSize: '0.85rem',
+                                    fontWeight: '500', transition: 'all 0.2s'
+                                }}>
+                                    <span>🔄</span> {t('groupChat.regenerateInviteCode') || 'Regenerate'}
+                                </button>
+                            )}
                             <div className="share-buttons-grid">
                                 <button className="share-btn line" onClick={handleShareLine}>
                                     <UilCommentAlt size="20" />

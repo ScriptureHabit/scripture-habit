@@ -6,6 +6,8 @@ import dotenv from 'dotenv';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 import { z } from 'zod';
+import { rateLimit } from 'express-rate-limit';
+
 
 dotenv.config();
 
@@ -39,6 +41,23 @@ app.use(cors({
 }));
 
 app.use(express.json({ limit: '50kb' }));
+
+// Rate Limiting
+const globalLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    limit: 300, // Limit each IP to 300 requests per 15 minutes
+    standardHeaders: 'draft-7',
+    legacyHeaders: false,
+});
+app.use(globalLimiter);
+
+const inviteLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000, // 1 hour
+    limit: 30, // Limit each IP to 30 invite checks per hour
+    message: { error: 'Too many invite attempts, please try again later.' },
+    standardHeaders: 'draft-7',
+    legacyHeaders: false,
+});
 
 // Request Logger
 app.use((req, res, next) => {
@@ -424,7 +443,7 @@ app.post('/api/verify-login', async (req, res) => {
 });
 
 
-app.post('/api/join-group', async (req, res) => {
+app.post('/api/join-group', inviteLimiter, async (req, res) => {
     // Validate Body first
     const validation = joinGroupSchema.safeParse(req.body);
     if (!validation.success) {
@@ -466,25 +485,46 @@ app.post('/api/join-group', async (req, res) => {
                 if (inviteSnapshot.empty) {
                     throw new Error('Invalid invite code.');
                 }
+                const groupData = inviteSnapshot.docs[0].data();
+                if (groupData.inviteCodeExpiresAt) {
+                    const expiresAt = groupData.inviteCodeExpiresAt.toDate();
+                    if (new Date() > expiresAt) {
+                        throw new Error('Invite code has expired.');
+                    }
+                }
                 targetGroupId = inviteSnapshot.docs[0].id;
             }
 
             if (!targetGroupId) throw new Error('Group ID or Invite Code is required.');
 
             const groupRef = db.collection('groups').doc(targetGroupId);
-
             const userDoc = await t.get(userRef);
             const groupDoc = await t.get(groupRef);
 
             if (!groupDoc.exists) throw new Error('Group not found.');
+            const groupData = groupDoc.data();
+
+            // --- Security Check: Public vs Private ---
+            if (!groupData.isPublic) {
+                // For private groups, a valid invite code is REQUIRED
+                if (!validation.data.inviteCode || validation.data.inviteCode !== groupData.inviteCode) {
+                    throw new Error('Valid invite code is required for private groups.');
+                }
+                // Check expiry
+                if (groupData.inviteCodeExpiresAt) {
+                    const expiresAt = groupData.inviteCodeExpiresAt.toDate();
+                    if (new Date() > expiresAt) {
+                        throw new Error('Invite code has expired.');
+                    }
+                }
+            }
 
             const userData = userDoc.data();
             const groupIds = userData.groupIds || (userData.groupId ? [userData.groupId] : []);
 
             if (groupIds.includes(targetGroupId)) throw new Error('User already in this group.');
-            if (groupIds.length >= 4) throw new Error('You can only join up to 4 groups.');
+            if (groupIds.length >= 12) throw new Error('You can only join up to 12 groups.');
 
-            const groupData = groupDoc.data();
             if (groupData.members && groupData.members.includes(uid)) throw new Error('User already in this group.');
             if (groupData.membersCount >= groupData.maxMembers) throw new Error('Group is full.');
 
@@ -854,8 +894,21 @@ app.get('/api/groups', async (req, res) => {
         // Sort by membersCount ascending (handle missing count as 0)
         activeGroups.sort((a, b) => (a.membersCount || 0) - (b.membersCount || 0));
 
-        // Return top 20
-        res.status(200).json(activeGroups.slice(0, 20));
+        // Return top 20 with only necessary fields to prevent leaking inviteCode
+        const safeActiveGroups = activeGroups.slice(0, 20).map(g => ({
+            id: g.id,
+            name: g.name,
+            description: g.description,
+            isPublic: g.isPublic,
+            membersCount: g.membersCount || 0,
+            members: g.members || [],
+            createdAt: g.createdAt,
+            lastMessageAt: g.lastMessageAt,
+            messageCount: g.messageCount || 0,
+            noteCount: g.noteCount || 0
+        }));
+
+        res.status(200).json(safeActiveGroups);
     } catch (error) {
         console.error('Error fetching groups:', error);
         res.status(500).send('Error fetching groups.');
@@ -863,7 +916,8 @@ app.get('/api/groups', async (req, res) => {
 });
 
 // GET group preview info for invite link
-app.get(['/api/group-preview/:inviteCode', '/api/group-preview/:inviteCode/'], async (req, res) => {
+app.get(['/api/group-preview/:inviteCode', '/api/group-preview/:inviteCode/'], inviteLimiter, async (req, res) => {
+
     const { inviteCode } = req.params;
     if (!inviteCode) return res.status(400).send('Invite code is required');
 
@@ -877,6 +931,14 @@ app.get(['/api/group-preview/:inviteCode', '/api/group-preview/:inviteCode/'], a
         }
 
         const groupData = snapshot.docs[0].data();
+
+        // Check for expiration
+        if (groupData.inviteCodeExpiresAt) {
+            const expiresAt = groupData.inviteCodeExpiresAt.toDate();
+            if (new Date() > expiresAt) {
+                return res.status(410).send('Invite code has expired');
+            }
+        }
 
         // Only return safe public info
         res.status(200).json({

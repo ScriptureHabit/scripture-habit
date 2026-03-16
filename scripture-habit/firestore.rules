@@ -62,14 +62,31 @@ service cloud.firestore {
       allow create: if isAuthenticated() &&
                     request.auth.uid == request.resource.data.ownerUserId &&
                     request.resource.data.name.size() <= 100 &&
-                    request.resource.data.description.size() <= 1000;
+                    request.resource.data.description.size() <= 1000 &&
+                    // Validate invite code if provided
+                    (!('inviteCode' in request.resource.data) || 
+                     (request.resource.data.inviteCode is string && 
+                      request.resource.data.inviteCode.size() >= 8 && 
+                      request.resource.data.inviteCode.size() <= 20)) &&
+                    // Validate expiry if provided
+                    (!('inviteCodeExpiresAt' in request.resource.data) || 
+                     (request.resource.data.inviteCodeExpiresAt is timestamp));
       
       // 更新権限 (Update rules)
       allow update: if isAuthenticated() && (
-        // A. Owner can change anything
+        // A. Owner can change anything (with validation)
         (resource.data.get('ownerUserId', '') == request.auth.uid &&
          (request.resource.data.name == null || request.resource.data.name.size() <= 100) &&
-         (request.resource.data.description == null || request.resource.data.description.size() <= 1000)) ||
+         (request.resource.data.description == null || request.resource.data.description.size() <= 1000) &&
+         // Validate invite code updates
+         (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['inviteCode']) || 
+          (request.resource.data.inviteCode is string && 
+           request.resource.data.inviteCode.size() >= 8 && 
+           request.resource.data.inviteCode.size() <= 20)) &&
+         // Validate expiry updates
+         (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['inviteCodeExpiresAt']) || 
+          (request.resource.data.inviteCodeExpiresAt is timestamp))
+        ) ||
         // B. Members can only update their read access, stats, or leave
         (
           request.auth.uid in resource.data.get('members', []) &&

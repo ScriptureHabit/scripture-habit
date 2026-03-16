@@ -336,6 +336,11 @@ export const translations: Record<string, any> = {
             habitPaceProfileTitle: "My Habit Pace",
             habitPaceProfileDesc: "Post once every {days} days to stay active in groups.",
             confirm: "Confirm",
+            inviteExpiresAt: "Expires at",
+            regenerateInviteCode: "Regenerate Invite Code",
+            inviteCodeRegenerated: "Invite code has been regenerated!",
+            errorRegenerateInviteCode: "Failed to regenerate invite code.",
+            errorOnlyOwnerInviteLink: "Only the group owner can update the invite link.",
         },
         newNote: {
             editTitle: "Edit Note",
@@ -1062,6 +1067,11 @@ export const translations: Record<string, any> = {
             habitPaceProfileTitle: "習慣化の目標ペース",
             habitPaceProfileDesc: "各グループで{days}日おきに1回以上投稿して継続しましょう。",
             confirm: "確定する",
+            inviteExpiresAt: "有効期限",
+            regenerateInviteCode: "招待コードを再生成",
+            inviteCodeRegenerated: "招待コードを再生成しました！",
+            errorRegenerateInviteCode: "招待コードの再生成に失敗しました。",
+            errorOnlyOwnerInviteLink: "グループ作成者のみが招待リンクを更新できます。",
         },
         myNotes: {
             description: "ノートコレクション",

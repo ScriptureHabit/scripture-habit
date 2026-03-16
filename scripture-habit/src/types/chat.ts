@@ -42,6 +42,7 @@ export interface Group {
   ownerUserId?: string;
   ownerId?: string; // Legacy field
   inviteCode?: string;
+  inviteCodeExpiresAt?: Timestamp | any;
   isPublic?: boolean;
   messageCount?: number;
   noteCount?: number;

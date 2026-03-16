@@ -3,7 +3,7 @@ import { safeStorage } from '../../Utils/storage';
 import { Capacitor } from '@capacitor/core';
 import { db, auth } from '../../firebase';
 import { UilSignOutAlt, UilCopy, UilTrashAlt, UilTimes, UilArrowLeft, UilPlusCircle, UilUsersAlt, UilPen, UilCommentAlt } from '@iconscout/react-unicons';
-import { collection, query, orderBy, serverTimestamp, doc, updateDoc, deleteDoc, arrayRemove, arrayUnion, getDoc, getDocs, limit, startAfter, increment, runTransaction, where, setDoc } from 'firebase/firestore';
+import { collection, query, orderBy, serverTimestamp, doc, updateDoc, deleteDoc, arrayRemove, arrayUnion, getDoc, getDocs, limit, startAfter, increment, runTransaction, where, setDoc, Timestamp } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import NewNote from '../NewNote/NewNote';
@@ -14,6 +14,7 @@ import confetti from 'canvas-confetti';
 import MessageItem from './MessageItem';
 import MessageInput from './MessageInput';
 import GroupChatModals from './GroupChatModals';
+import { generateInviteCode } from '../../Utils/inviteUtils';
 import { useGroupMessages } from './useGroupMessages';
 import GroupMenuItem from './GroupMenuItem';
 import { UserData } from '../../types/user';
@@ -1404,6 +1405,31 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], isA
     }
   };
 
+  const handleRegenerateInviteCode = async () => {
+    if (!userData || !groupId) return;
+    if (groupData?.ownerUserId !== userData.uid) {
+      toast.error(t('groupChat.errorOnlyOwnerInviteLink') || "Only the group owner can regenerate the invite code.");
+      return;
+    }
+
+    try {
+      const newCode = generateInviteCode(10);
+      const now = Timestamp.now();
+      const expiresAt = new Timestamp(now.seconds + 24 * 60 * 60, now.nanoseconds);
+
+      const groupRef = doc(db, 'groups', groupId);
+      await updateDoc(groupRef, {
+        inviteCode: newCode,
+        inviteCodeExpiresAt: expiresAt
+      });
+
+      toast.success(t('groupChat.inviteCodeRegenerated') || "Invite code has been regenerated!");
+    } catch (error) {
+      console.error("Error regenerating invite code:", error);
+      toast.error(t('groupChat.errorRegenerateInviteCode') || "Failed to regenerate invite code.");
+    }
+  };
+
   const togglePublicStatus = async () => {
     if (!groupData || !groupId) return;
     try {
@@ -2269,6 +2295,7 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], isA
         handleShareWhatsApp={handleShareWhatsApp}
         handleShareMessenger={handleShareMessenger}
         handleShareInstagram={handleShareInstagram}
+        handleRegenerateInviteCode={handleRegenerateInviteCode}
       />
 
       <MessageInput

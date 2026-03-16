@@ -9,6 +9,7 @@ import Toggle from '../Input/Toggle';
 import { toast } from "react-toastify";
 import { useLanguage } from '../../Context/LanguageContext';
 import Mascot from '../Mascot/Mascot';
+import { generateInviteCode } from '../../Utils/inviteUtils';
 
 export default function GroupForm() {
   const { t, language } = useLanguage();
@@ -30,8 +31,9 @@ export default function GroupForm() {
 
     try {
       const now = Timestamp.now();
+      const expiresAt = new Timestamp(now.seconds + 24 * 60 * 60, now.nanoseconds);
 
-      const inviteCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+      const inviteCode = generateInviteCode(10);
 
       const newGroupData = {
         name: groupName,
@@ -39,6 +41,7 @@ export default function GroupForm() {
         createdAt: now,
         groupStreak: 0,
         inviteCode: inviteCode,
+        inviteCodeExpiresAt: expiresAt,
         isPublic: isPublic,
         maxMembers: 100000,
         membersCount: 1,

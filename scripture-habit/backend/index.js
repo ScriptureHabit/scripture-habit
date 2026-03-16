@@ -6,6 +6,8 @@ const cors = require('cors');
 const axios = require('axios'); // Add axios
 const cheerio = require('cheerio');
 const crypto = require('crypto');
+const { rateLimit } = require('express-rate-limit');
+
 
 // Load .env from project root (one level up from backend/ directory)
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
@@ -21,6 +23,24 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+
+// Rate Limiting
+const globalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  limit: 300, 
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+});
+app.use(globalLimiter);
+
+const inviteLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  limit: 30,
+  message: { error: 'Too many invite attempts, please try again later.' },
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+});
+
 
 // Initialize Firebase Admin SDK
 // Try to get credentials from environment variables first (Vercel)
@@ -235,7 +255,8 @@ const languageNames = {
 };
 
 // Handle User Reports and send to Discord Webhook
-app.post('/report', async (req, res) => {
+app.post('/report', inviteLimiter, async (req, res) => {
+
   const authHeader = req.headers.authorization;
   let idToken;
   if (authHeader && authHeader.startsWith('Bearer ')) {
@@ -459,7 +480,8 @@ app.post('/verify-login', async (req, res) => {
 });
 
 
-app.post('/join-group', async (req, res) => {
+app.post('/join-group', inviteLimiter, async (req, res) => {
+
   const authHeader = req.headers.authorization;
   let idToken;
   if (authHeader && authHeader.startsWith('Bearer ')) {
@@ -511,21 +533,24 @@ app.post('/join-group', async (req, res) => {
 
       const groupData = groupDoc.data();
 
-      // Check if user is already a member of the group
-      if (groupData.members && groupData.members.includes(uid)) {
-        if (!groupIds.includes(targetGroupId)) {
-          // Inconsistency detected: User is in group members but group is not in user's list.
-          // Repair: Add to user's list
-          t.update(userRef, {
-            groupIds: admin.firestore.FieldValue.arrayUnion(targetGroupId)
-          });
-          return; // Exit transaction successfully, skipping other updates
-        } else {
-          throw new Error('User already in this group.');
+      // --- Security Check: Public vs Private ---
+      if (!groupData.isPublic) {
+        // For private groups, a valid invite code is REQUIRED
+        if (!inviteCode || inviteCode !== groupData.inviteCode) {
+          throw new Error('Valid invite code is required for private groups.');
+        }
+        // Check expiry (if implemented field exists)
+        if (groupData.inviteCodeExpiresAt) {
+          const expiresAt = groupData.inviteCodeExpiresAt.toDate();
+          if (new Date() > expiresAt) {
+            throw new Error('Invite code has expired.');
+          }
         }
       }
 
       if (groupData.membersCount >= groupData.maxMembers) throw new Error('Group is full.');
+      if (groupData.members && groupData.members.includes(uid)) throw new Error('User already in this group.');
+
 
       t.update(groupRef, {
         members: admin.firestore.FieldValue.arrayUnion(uid),
@@ -728,11 +753,21 @@ app.get('/groups', async (req, res) => {
       groups.push({ id: doc.id, ...doc.data() });
     });
 
-    // Sort by membersCount ascending (handle missing count as 0)
-    groups.sort((a, b) => (a.membersCount || 0) - (b.membersCount || 0));
+    // Return top 20 with only necessary fields to prevent leaking inviteCode
+    const safeGroups = groups.slice(0, 20).map(g => ({
+      id: g.id,
+      name: g.name,
+      description: g.description,
+      isPublic: g.isPublic,
+      membersCount: g.membersCount || 0,
+      members: g.members || [],
+      createdAt: g.createdAt,
+      lastMessageAt: g.lastMessageAt,
+      messageCount: g.messageCount || 0,
+      noteCount: g.noteCount || 0
+    }));
 
-    // Return top 20
-    res.status(200).json(groups.slice(0, 20));
+    res.status(200).json(safeGroups);
   } catch (error) {
     console.error('Error fetching groups:', error);
     res.status(500).send('Error fetching groups.');
