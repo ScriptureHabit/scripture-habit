@@ -28,8 +28,16 @@ export default function JoinGroup() {
   const [translatingIds, setTranslatingIds] = useState<Set<string>>(new Set());
   const navigate = useNavigate();
 
-  const handleTranslateGroup = useCallback(async (groupId: string, name: string, description?: string) => {
+  const handleTranslateGroup = useCallback(async (groupId: string, name: string, description?: string, translations?: any) => {
     if (translatingIds.has(groupId)) return;
+
+    // 1. Check for manual translation in Firestore
+    const manualTrans = translations?.[language];
+    if (manualTrans?.name || manualTrans?.description) {
+      if (manualTrans.name) setTranslatedNames(prev => ({ ...prev, [groupId]: manualTrans.name }));
+      if (manualTrans.description) setTranslatedDescs(prev => ({ ...prev, [groupId]: manualTrans.description }));
+      return;
+    }
 
     // Toggle if already translated
     if (translatedNames[groupId] || translatedDescs[groupId]) {
@@ -225,7 +233,7 @@ export default function JoinGroup() {
 
   useEffect(() => {
     if (selectedGroup && !translatedNames[selectedGroup.id] && !translatingIds.has(selectedGroup.id)) {
-      handleTranslateGroup(selectedGroup.id, selectedGroup.name || "", selectedGroup.description);
+      handleTranslateGroup(selectedGroup.id, selectedGroup.name || "", selectedGroup.description, selectedGroup.translations);
     }
   }, [selectedGroup, language, handleTranslateGroup, translatedNames, translatingIds]);
 

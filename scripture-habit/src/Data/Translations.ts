@@ -65,7 +65,17 @@ export const translations: Record<string, any> = {
             thai: "Thai (Thai)",
             korean: "Korean (Korean)",
             tagalog: "Tagalog (Tagalog)",
-            swahili: "Swahili (Swahili)"
+            swahili: "Swahili (Swahili)",
+            en: "English",
+            ja: "Japanese",
+            pt: "Portuguese",
+            zho: "Chinese",
+            es: "Spanish",
+            vi: "Vietnamese",
+            th: "Thai",
+            ko: "Korean",
+            tl: "Tagalog",
+            sw: "Swahili"
         },
         profile: {
             installApp: {
@@ -840,7 +850,17 @@ export const translations: Record<string, any> = {
             thai: "タイ語 (Thai)",
             korean: "韓国語 (Korean)",
             tagalog: "タガログ語 (Tagalog)",
-            swahili: "スワヒリ語 (Swahili)"
+            swahili: "スワヒリ語 (Swahili)",
+            en: "英語",
+            ja: "日本語",
+            pt: "ポルトガル語",
+            zho: "中国語",
+            es: "スペイン語",
+            vi: "ベトナム語",
+            th: "タイ語",
+            ko: "韓国語",
+            tl: "タガログ語",
+            sw: "スワヒリ語"
         },
         profile: {
             installApp: {

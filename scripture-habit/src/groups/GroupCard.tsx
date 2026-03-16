@@ -27,7 +27,15 @@ export default function GroupCard({ group, currentUser, onJoin, onOpen }: Props)
     const autoTranslate = async () => {
       if (!group.name || !language) return;
 
-      // Basic check: if name is short and likely already in target language (very rough)
+      // 1. Check for manual translation inFirestore
+      const g = group as any;
+      const manualName = g.translations?.[language]?.name;
+      if (manualName) {
+        setTranslatedName(manualName);
+        return;
+      }
+
+      // 2. Check basic check: if name is short and likely already in target language (very rough)
       // For now, reliance on cache is better
       const cacheKey = `trans_name_${group.id}_${language}`;
       const cached = sessionStorage.getItem(cacheKey);
@@ -69,7 +77,7 @@ export default function GroupCard({ group, currentUser, onJoin, onOpen }: Props)
     };
 
     autoTranslate();
-  }, [group.id, group.name, language]);
+  }, [group.id, group.name, language, (group as any).translations]);
 
   const isMember = !!(group.members && currentUser && group.members.includes(currentUser.uid));
 
