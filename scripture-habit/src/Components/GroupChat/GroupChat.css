@@ -398,6 +398,12 @@
     transition: all 0.2s ease;
 }
 
+.auto-kick-setup-modal .profile-input::placeholder {
+    color: #a0aec0 !important;
+    opacity: 1; /* Ensure opacity is consistent across browsers */
+}
+
+
 .auto-kick-setup-modal .profile-input:focus {
     border-color: var(--pink) !important;
     background: white !important;

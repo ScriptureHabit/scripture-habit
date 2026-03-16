@@ -42,6 +42,12 @@
     /* Ensure padding doesn't overflow width */
 }
 
+.profile-input::placeholder {
+    color: #a0aec0;
+    opacity: 1;
+}
+
+
 /* Override or remove .nickname-form if not used, but keeping it clean */
 
 .save-btn {
