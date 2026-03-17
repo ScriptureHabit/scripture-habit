@@ -261,11 +261,12 @@ const Dashboard: FC = () => {
         toast.success(t('groupChat.autoKickSuccess'));
         setShowAutoKickModal(false);
       } else {
-        toast.error("Failed to update pace.");
+        const errorData = await response.json();
+        toast.error(`Failed to update pace: ${errorData.error || response.statusText}`);
       }
     } catch (error: any) {
       console.error('Error updating threshold:', error);
-      toast.error("An error occurred.");
+      toast.error(`An error occurred: ${error.message}`);
     }
   };
 

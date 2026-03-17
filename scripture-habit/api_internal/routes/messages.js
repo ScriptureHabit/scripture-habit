@@ -39,7 +39,16 @@ router.post('/post-note', authenticate, requireEmailVerified, verifyAppCheck, as
             const userData = userDoc.data();
             const userGroupIds = userData.groupIds || (userData.groupId ? [userData.groupId] : []);
 
-            // 1. Calculate Streak
+            // 1. Identify target groups (Move READs up)
+            let groupsToPostTo = [];
+            if (shareOption === 'all') groupsToPostTo = userGroupIds;
+            else if (shareOption === 'specific') groupsToPostTo = selectedShareGroups || [];
+            else if (shareOption === 'current' && userData.groupId) groupsToPostTo = [userData.groupId];
+
+            const groupRefs = groupsToPostTo.map(gid => db.collection('groups').doc(gid));
+            const groupDocs = groupRefs.length > 0 ? await transaction.getAll(...groupRefs) : [];
+
+            // 2. Calculate Streak
             let newStreak = userData.streak || 0;
             let streakUpdated = false;
             const timeZone = userData.timeZone || 'UTC';
@@ -59,15 +68,6 @@ router.post('/post-note', authenticate, requireEmailVerified, verifyAppCheck, as
                     totalNotes: admin.firestore.FieldValue.increment(1)
                 });
             }
-
-            // 2. Identify target groups
-            let groupsToPostTo = [];
-            if (shareOption === 'all') groupsToPostTo = userGroupIds;
-            else if (shareOption === 'specific') groupsToPostTo = selectedShareGroups || [];
-            else if (shareOption === 'current' && userData.groupId) groupsToPostTo = [userData.groupId];
-
-            const groupRefs = groupsToPostTo.map(gid => db.collection('groups').doc(gid));
-            const groupDocs = groupRefs.length > 0 ? await transaction.getAll(...groupRefs) : [];
 
             const userToGroupMap = new Map();
             const validatedGroupsToPostTo = [];
@@ -207,7 +207,7 @@ router.post('/post-note', authenticate, requireEmailVerified, verifyAppCheck, as
         res.status(200).json({ message: 'Note posted successfully.', ...result });
     } catch (error) {
         console.error('Error posting note:', error);
-        res.status(500).send(error.message);
+        res.status(500).json({ error: error.message || 'Internal Server Error' });
     }
 });
 
@@ -268,7 +268,8 @@ router.post('/post-message', authenticate, verifyAppCheck, async (req, res) => {
 
         res.json({ messageId: result.messageId });
     } catch (error) {
-        res.status(500).send('Request failed.');
+        console.error('Error posting message:', error);
+        res.status(500).json({ error: 'Request failed.' });
     }
 });
 

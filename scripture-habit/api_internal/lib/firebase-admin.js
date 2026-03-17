@@ -42,4 +42,5 @@ export const db = admin.firestore();
 export const messaging = admin.messaging();
 export const auth = admin.auth();
 export const appCheck = admin.appCheck();
+export { admin };
 export default admin;

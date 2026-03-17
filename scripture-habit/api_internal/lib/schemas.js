@@ -52,6 +52,7 @@ export const translateSchema = z.object({
 export const postNoteSchema = z.object({
     chapter: z.string().min(1).max(500),
     scripture: z.string().min(1).max(100),
+    messageText: z.string().min(1).max(20000), // Added this
     title: z.string().max(200).optional().nullable(),
     speaker: z.string().max(100).optional().nullable(),
     comment: z.string().max(10000).refine(noHtmlTags, { message: "HTML tags are not allowed" }),

@@ -35,16 +35,16 @@ export const aiLimiter = rateLimit({
     },
 });
 
-// --- Firebase App Check Middleware ---
-
 export const verifyAppCheck = async (req, res, next) => {
     // In development environment, skip if configured
     if (process.env.NODE_ENV !== 'production' && process.env.SKIP_APP_CHECK === 'true') {
+        console.log('[AppCheck] Skipping verification (dev mode)');
         return next();
     }
 
     const token = req.header('X-Firebase-AppCheck');
     if (!token) {
+        console.warn('[AppCheck] Security context missing');
         return res.status(401).json({ error: 'Unauthorized: Security context missing' });
     }
 
@@ -52,7 +52,7 @@ export const verifyAppCheck = async (req, res, next) => {
         await appCheck.verifyToken(token);
         next();
     } catch (err) {
-        console.warn('App Check verification failed:', err.message);
+        console.warn('[AppCheck] Verification failed:', err.message);
         return res.status(401).json({ error: 'Unauthorized: Security check failed' });
     }
 };
@@ -62,6 +62,7 @@ export const verifyAppCheck = async (req, res, next) => {
 export const authenticate = async (req, res, next) => {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        console.warn('[Auth] Authentication required - Missing Bearer token');
         return res.status(401).json({ error: 'Unauthorized: Authentication required' });
     }
 
@@ -71,7 +72,7 @@ export const authenticate = async (req, res, next) => {
         req.user = decodedToken;
         next();
     } catch (err) {
-        console.warn('Auth verification failed:', err.message);
+        console.warn('[Auth] Verification failed:', err.message);
         return res.status(401).json({ error: 'Unauthorized: Invalid or expired token' });
     }
 };

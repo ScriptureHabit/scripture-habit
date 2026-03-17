@@ -584,6 +584,7 @@ const NewNote: FC<NewNoteProps> = ({ isOpen, onClose, userData, noteToEdit, onDe
                 const response = await axios.post(`${API_BASE}/api/post-note`, {
                     chapter,
                     scripture,
+                    messageText,
                     title: gcMeta?.title || null,
                     speaker: gcMeta?.speaker || null,
                     comment,

@@ -170,7 +170,10 @@ router.post('/update-kick-threshold', authenticate, verifyAppCheck, async (req, 
 
         const userRef = db.collection('users').doc(uid);
         const userDoc = await userRef.get();
-        if (!userDoc.exists) return res.status(404).send('User not found');
+        if (!userDoc.exists) {
+            console.error(`UserDoc not found for UID: ${uid}`);
+            return res.status(404).json({ error: 'User not found' });
+        }
 
         const userData = userDoc.data();
         const groupIds = userData.groupIds || (userData.groupId ? [userData.groupId] : []);
@@ -193,7 +196,7 @@ router.post('/update-kick-threshold', authenticate, verifyAppCheck, async (req, 
         res.json({ success: true });
     } catch (error) {
         console.error('Update threshold failed:', error);
-        res.status(500).send(error.message);
+        res.status(500).json({ error: error.message || 'Internal Server Error' });
     }
 });
 

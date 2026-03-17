@@ -514,11 +514,12 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
                                     if (response.ok) {
                                         toast.success(t('groupChat.autoKickSuccess'));
                                     } else {
-                                        toast.error("Failed to update pace");
+                                        const errorData = await response.json();
+                                        toast.error(`Failed to update: ${errorData.error || response.statusText}`);
                                     }
-                                } catch (error) {
+                                } catch (error: any) {
                                     console.error("Error updating pace:", error);
-                                    toast.error("Error updating pace");
+                                    toast.error(`Error updating pace: ${error.message}`);
                                 }
                             }}
                             style={{ padding: '10px 5px', minWidth: 0 }}
