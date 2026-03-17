@@ -670,7 +670,6 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], isA
         body: JSON.stringify({
           targetUid: cheerTarget.id,
           groupId: groupId,
-          senderNickname: userData?.nickname || 'Someone',
           language: language
         })
       });

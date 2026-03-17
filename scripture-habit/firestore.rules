@@ -17,12 +17,24 @@ service cloud.firestore {
       allow create: if request.auth != null && request.auth.uid == userId;
 
       // A user can read a specific user document (needed for group members list).
-      // Sensitive data like fcmTokens is now stored in the 'private' subcollection.
-      allow get: if request.auth != null;
+      // SECURITY: Only allow reading if it's your own profile, or if you are in a group together.
+      allow get: if request.auth != null && (
+        request.auth.uid == userId ||
+        exists(/databases/$(database)/documents/groups/$(resource.data.groupId)) && 
+        request.auth.uid in get(/databases/$(database)/documents/groups/$(resource.data.groupId)).data.get('members', [])
+      );
       allow list: if false;
 
-      // A user can update or delete their own document.
-      allow update, delete: if request.auth != null && request.auth.uid == userId;
+      // A user can update their own document, but only specific fields to prevent mass-assignment.
+      allow update: if request.auth != null && request.auth.uid == userId &&
+                    request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+                      'nickname', 'stake', 'ward', 'bio', 'photoURL', 'language', 'timeZone', 'lastInteractionAt', 'kickThreshold', 'hasSetKickThreshold'
+                    ]) &&
+                    (request.resource.data.nickname == null || (request.resource.data.nickname.size() <= 100 && request.resource.data.nickname.matches('^[^<>]*$'))) &&
+                    (request.resource.data.bio == null || request.resource.data.bio.size() <= 1000);
+
+      // A user can delete their own document.
+      allow delete: if request.auth != null && request.auth.uid == userId;
 
       // Rules for private user data (e.g. fcmTokens)
       match /private/{docId} {
@@ -73,9 +85,12 @@ service cloud.firestore {
                      (request.resource.data.inviteCodeExpiresAt is timestamp));
       
       // 更新権限 (Update rules)
-      allow update: if isAuthenticated() && (
-        // A. Owner can change anything (with validation)
+      allow update: if isAuthenticated() && 
+                    (!('membersCount' in request.resource.data) || request.resource.data.membersCount >= 0) && (
+        // A. Owner can change basic info but NOT the ownerUserId directly (protect against lock-out/spoofing)
+        // and NOT the global stats which should be handled by API transactions.
         (resource.data.get('ownerUserId', '') == request.auth.uid &&
+         request.resource.data.get('ownerUserId', '') == resource.data.ownerUserId &&
          (request.resource.data.name == null || request.resource.data.name.size() <= 100) &&
          (request.resource.data.description == null || request.resource.data.description.size() <= 1000) &&
          // Validate invite code updates
@@ -87,17 +102,18 @@ service cloud.firestore {
          (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['inviteCodeExpiresAt']) || 
           (request.resource.data.inviteCodeExpiresAt is timestamp))
         ) ||
-        // B. Members can only update their read access, stats, or leave
+        // B. Members can ONLY update their OWN activity/read timestamps
         (
           request.auth.uid in resource.data.get('members', []) &&
-          // Updating stats / member activity (whitelisted fields only)
-          request.resource.data.diff(resource.data).affectedKeys().hasOnly([
-            'memberLastActive', 'memberLastReadAt', 'messageCount', 
-            'lastMessageAt', 'lastNoteAt', 'lastMessageByNickname', 
-            'lastMessageByUid', 'lastNoteByNickname', 'lastNoteByUid',
-            'noteCount', 'notes', 'lastUnityAnnouncementDate',
-            'dailyActivity', 'memberJoinedAt', 'memberKickThresholds', 'translations'
-          ])
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['memberLastActive', 'memberLastReadAt']) &&
+          (
+            !request.resource.data.diff(resource.data).affectedKeys().contains('memberLastActive') ||
+            request.resource.data.memberLastActive.diff(resource.data.get('memberLastActive', {})).affectedKeys().hasOnly([request.auth.uid])
+          ) &&
+          (
+            !request.resource.data.diff(resource.data).affectedKeys().contains('memberLastReadAt') ||
+            request.resource.data.memberLastReadAt.diff(resource.data.get('memberLastReadAt', {})).affectedKeys().hasOnly([request.auth.uid])
+          )
         )
       );
       
@@ -120,10 +136,9 @@ service cloud.firestore {
                       get(/databases/$(database)/documents/groups/$(groupId)).data.get('ownerUserId', '') == request.auth.uid
                     ) &&
                     request.resource.data.text.size() <= 1000 &&
-                    (
-                      request.resource.data.senderId == request.auth.uid
-                      // System messages are blocked here because they should come from Admin SDK/API only
-                    );
+                    request.resource.data.senderId == request.auth.uid &&
+                    // SECURITY: Ensure client cannot spoof system messages
+                    (!('isSystemMessage' in request.resource.data) || request.resource.data.isSystemMessage == false);
                     
         // Only the sender (or owner) can update/delete messages, 
         // EXCEPT for reactions which any member can update.
@@ -132,12 +147,16 @@ service cloud.firestore {
                         request.auth.uid in get(/databases/$(database)/documents/groups/$(groupId)).data.get('members', []) ||
                         get(/databases/$(database)/documents/groups/$(groupId)).data.get('ownerUserId', '') == request.auth.uid
                       ) &&
+                      // SECURITY: System messages can NEVER be updated by users
+                      resource.data.get('isSystemMessage', false) == false &&
                       (
-                        // Case 1: Sender or Owner updating the message content/metadata
+                        // Case 1: Sender or Owner updating the message content
                         (
                           (resource.data.senderId == request.auth.uid || get(/databases/$(database)/documents/groups/$(groupId)).data.get('ownerUserId', '') == request.auth.uid) &&
-                          // Prevent changing senderId
+                          // Prevent changing senderId, isSystemMessage, or messageType
                           request.resource.data.senderId == resource.data.senderId &&
+                          request.resource.data.get('isSystemMessage', false) == false &&
+                          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['text', 'reactions', 'updatedAt']) &&
                           request.resource.data.text.size() <= 1000
                         ) ||
                         // Case 2: Any member updating ONLY reactions

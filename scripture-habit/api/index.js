@@ -27,18 +27,40 @@ app.get(['/api/health', '/api/health/'], (req, res) => {
 // --- 2. Middleware & Configuration ---
 app.set('trust proxy', 1);
 
+// 許可するドメインのリスト（ホワイトリスト）
+const ALLOWED_ORIGINS = [
+    'https://scripturehabit.app',            // 本番ドメイン
+    'https://scripture-habit.vercel.app',    // Vercelの本番URL
+    'capacitor://localhost',                 // モバイルアプリ用
+];
+
 app.use(cors({
     origin: (origin, callback) => {
-        if (!origin ||
-            origin.includes('scripturehabit.app') ||
-            origin.includes('vercel.app') ||
-            origin.includes('localhost') ||
-            origin.includes('capacitor://localhost')) {
+        // 1. オリジンがない場合（モバイルアプリの直接リクエストやサーバー間通信など）は許可
+        if (!origin) return callback(null, true);
+
+        // 2. ホワイトリストに完全一致するかチェック
+        if (ALLOWED_ORIGINS.includes(origin)) {
             return callback(null, true);
         }
+
+        // 3. 開発用の localhost と 127.0.0.1 は、ポート番号が違っても許可するように設定
+        if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) {
+            return callback(null, true);
+        }
+
+        // 4. (オプション) Vercelのプレビュー環境（ブランチごとの確認用ページ）も許可したい場合
+        // ドメインが「https://scripture-habit-」で始まり「.vercel.app」で終わるものだけを厳密に許可
+        if (origin.startsWith('https://scripture-habit-') && origin.endsWith('.vercel.app')) {
+            return callback(null, true);
+        }
+
+        // 上記以外はすべて拒否
+        console.error(`Blocked by CORS: ${origin}`);
         callback(new Error('CORS not allowed'), false);
     }
 }));
+
 
 app.use(express.json({ limit: '50kb' }));
 
@@ -58,6 +80,20 @@ const inviteLimiter = rateLimit({
     standardHeaders: 'draft-7',
     legacyHeaders: false,
 });
+
+const aiLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000, // 1 hour
+    limit: 20, // Strict limit for AI features to prevent cost abuse
+    message: { error: 'AI limit reached. Please try again in an hour.' },
+    standardHeaders: 'draft-7',
+    legacyHeaders: false,
+});
+
+// Helper to escape simple markdown to prevent injection in system messages
+function escapeMarkdown(text) {
+    if (!text) return '';
+    return text.replace(/([\\`\*_{}\[\]\(\)#\+-\.!\|])/g, '\\$1');
+}
 
 // Request Logger
 app.use((req, res, next) => {
@@ -163,12 +199,14 @@ const translateSchema = z.object({
     targetLanguage: z.enum(supportedLanguages)
 });
 
+const noHtmlTags = (val) => !/<[^>]*>/g.test(val || "");
+
 const postNoteSchema = z.object({
     chapter: z.string().min(1).max(500),
     scripture: z.string().min(1).max(100),
     title: z.string().max(200).optional().nullable(),
     speaker: z.string().max(100).optional().nullable(),
-    comment: z.string().max(10000),
+    comment: z.string().max(10000).refine(noHtmlTags, { message: "HTML tags are not allowed" }),
     shareOption: z.enum(['all', 'current', 'specific', 'none']),
     selectedShareGroups: z.array(z.string()).optional().nullable(),
     isGroupContext: z.boolean().optional().nullable(),
@@ -178,7 +216,7 @@ const postNoteSchema = z.object({
 
 const postMessageSchema = z.object({
     groupId: z.string().min(1),
-    text: z.string().min(1).max(1000),
+    text: z.string().min(1).max(1000).refine(noHtmlTags, { message: "HTML tags are not allowed" }),
     replyTo: z.object({
         id: z.string(),
         senderNickname: z.string(),
@@ -190,8 +228,11 @@ const postMessageSchema = z.object({
 const sendCheerSchema = z.object({
     targetUid: z.string().min(1),
     groupId: z.string().min(1),
-    senderNickname: z.string().min(1),
     language: z.enum(supportedLanguages).optional()
+});
+
+const updateKickThresholdSchema = z.object({
+    threshold: z.number().int().min(1).max(30)
 });
 
 const CHEER_NOTIFICATION_TEMPLATES = {
@@ -424,9 +465,10 @@ app.post('/api/verify-login', async (req, res) => {
     try {
         const decodedToken = await admin.auth().verifyIdToken(token);
 
-        // Enforce Email Verification
+        // SECURITY: Unify "invalid token" and "unverified email" responses to prevent existence oracles
         if (!decodedToken.email_verified) {
-            return res.status(403).send('Email not verified. Please check your email inbox.');
+            console.warn(`Login failed for ${decodedToken.email}: email not verified.`);
+            return res.status(401).send('Authentication failed.');
         }
 
         const uid = decodedToken.uid;
@@ -434,11 +476,10 @@ app.post('/api/verify-login', async (req, res) => {
 
         console.log('Verified user:', { uid, email });
 
-
         res.status(200).send({ message: 'Login verified successfully.', user: { uid, email } });
     } catch (error) {
-        console.error('Error verifying ID token:', error); // Log full error internally
-        res.status(401).send('Unauthorized: Invalid or expired token.'); // Generic message
+        console.error('Error verifying ID token:', error.message);
+        res.status(401).send('Authentication failed.');
     }
 });
 
@@ -558,8 +599,9 @@ app.post('/api/join-group', inviteLimiter, async (req, res) => {
 
             // Add system message
             const messagesRef = groupRef.collection('messages').doc();
+            const safeNickname = escapeMarkdown(userData.nickname || 'A user');
             t.set(messagesRef, {
-                text: `👋 **${userData.nickname || 'A user'}** joined the group!`,
+                text: `👋 **${safeNickname}** joined the group!`,
                 createdAt: admin.firestore.FieldValue.serverTimestamp(),
                 senderId: 'system',
                 isSystemMessage: true,
@@ -572,8 +614,9 @@ app.post('/api/join-group', inviteLimiter, async (req, res) => {
 
         res.status(200).send({ message: 'Successfully joined group.' });
     } catch (error) {
-        console.error('Error joining group:', error);
-        res.status(500).send(error.message || 'Internal Server Error');
+        // Internal log for debugging, but generic message for the user
+        console.error(`Group join failed for user ${uid || 'unknown'}: ${error.message}`);
+        res.status(400).send('Unable to join group. Please check your invite code or group ID.');
     }
 });
 
@@ -618,56 +661,48 @@ app.post('/api/leave-group', async (req, res) => {
             const groupDoc = await t.get(groupRef);
 
             if (groupDoc.exists) {
-                t.update(groupRef, {
-                    members: admin.firestore.FieldValue.arrayRemove(uid),
-                    membersCount: admin.firestore.FieldValue.increment(-1),
-                    [`memberLastActive.${uid}`]: admin.firestore.FieldValue.delete(),
-                    [`memberKickThresholds.${uid}`]: admin.firestore.FieldValue.delete(),
-                    [`memberJoinedAt.${uid}`]: admin.firestore.FieldValue.delete()
-                });
+                const groupData = groupDoc.data();
+                if (groupData.members && groupData.members.includes(uid)) {
+                    t.update(groupRef, {
+                        members: admin.firestore.FieldValue.arrayRemove(uid),
+                        membersCount: admin.firestore.FieldValue.increment(-1),
+                        [`memberLastActive.${uid}`]: admin.firestore.FieldValue.delete(),
+                        [`memberKickThresholds.${uid}`]: admin.firestore.FieldValue.delete(),
+                        [`memberJoinedAt.${uid}`]: admin.firestore.FieldValue.delete()
+                    });
+
+                    // Add system message
+                    const messagesRef = groupRef.collection('messages').doc();
+                    const safeNickname = escapeMarkdown(userData.nickname || 'A user');
+                    t.set(messagesRef, {
+                        text: `🚪 **${safeNickname}** left the group.`,
+                        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+                        senderId: 'system',
+                        isSystemMessage: true,
+                        messageType: 'userLeft',
+                        messageData: {
+                            nickname: userData.nickname || 'A user'
+                        }
+                    });
+                    // Increment messageCount for the system message
+                    t.update(groupRef, {
+                        messageCount: admin.firestore.FieldValue.increment(1)
+                    });
+                } else {
+                    // SECURITY: Log internally that user was not a member, but don't error or disclose existence
+                    console.log(`User ${uid} requested to leave group ${targetGroupId} but was not a member.`);
+                }
+            } else {
+                // SECURITY: Log internally that group doesn't exist, but don't error or disclose existence
+                console.log(`User ${uid} requested to leave non-existent group ${targetGroupId}.`);
             }
 
-            // Update user data
-            // Remove from groupIds
-            // If the left group was the 'groupId' (primary), we should probably pick another one or set to null.
-
-            const currentGroupIds = userData.groupIds || (userData.groupId ? [userData.groupId] : []);
-            const newGroupIds = currentGroupIds.filter(id => id !== targetGroupId);
-
-            let newPrimaryGroupId = userData.groupId;
-            if (userData.groupId === targetGroupId) {
-                newPrimaryGroupId = newGroupIds.length > 0 ? newGroupIds[0] : null;
-            }
-
-            t.update(userRef, {
-                groupIds: admin.firestore.FieldValue.arrayRemove(targetGroupId),
-                groupId: newPrimaryGroupId
-            });
-
-            // Add system message
-            if (groupDoc.exists) {
-                const messagesRef = groupRef.collection('messages').doc();
-                t.set(messagesRef, {
-                    text: `🚪 **${userData.nickname || 'A user'}** left the group.`,
-                    createdAt: admin.firestore.FieldValue.serverTimestamp(),
-                    senderId: 'system',
-                    isSystemMessage: true,
-                    messageType: 'userLeft',
-                    messageData: {
-                        nickname: userData.nickname || 'A user'
-                    }
-                });
-                // Increment messageCount for the sysem message
-                t.update(groupRef, {
-                    messageCount: admin.firestore.FieldValue.increment(1)
-                });
-            }
         });
 
-        res.status(200).send({ message: 'Successfully left group.' });
+        res.status(200).send({ message: 'Request processed.' });
     } catch (error) {
-        console.error('Error leaving group:', error);
-        res.status(500).send(error.message || 'Internal Server Error');
+        console.error(`Error in leave-group for ${uid}:`, error);
+        res.status(400).send('Unable to process request.');
     }
 });
 
@@ -680,8 +715,11 @@ app.post('/api/update-kick-threshold', async (req, res) => {
         return res.status(401).send('Unauthorized');
     }
 
-    const { threshold } = req.body;
-    if (threshold === undefined) return res.status(400).send('Missing threshold');
+    const validation = updateKickThresholdSchema.safeParse(req.body);
+    if (!validation.success) {
+        return res.status(400).json({ error: 'Invalid input', details: validation.error.format() });
+    }
+    const { threshold } = validation.data;
 
     try {
         const decodedToken = await admin.auth().verifyIdToken(idToken);
@@ -691,7 +729,10 @@ app.post('/api/update-kick-threshold', async (req, res) => {
         // 1. Update user document
         const userRef = db.collection('users').doc(uid);
         const userDoc = await userRef.get();
-        if (!userDoc.exists) return res.status(404).send('User not found');
+        if (!userDoc.exists) {
+            console.error(`Kick threshold update failed: User document ${uid} not found.`);
+            return res.status(404).send('Update failed.');
+        }
 
         const userData = userDoc.data();
         const groupIds = userData.groupIds || (userData.groupId ? [userData.groupId] : []);
@@ -812,14 +853,16 @@ app.post('/api/delete-group', async (req, res) => {
         res.status(200).send({ message: 'Group deleted successfully.' });
 
     } catch (error) {
-        if (error.code === 'GROUP_NOT_FOUND') {
-            return res.status(404).send('Group not found.');
+        // SECURITY: Unified error response to prevent group existence oracles
+        const isKnownError = error.code === 'GROUP_NOT_FOUND' || error.message.includes('Permission denied');
+        
+        console.error(`Group delete failed for user ${uid}: ${error.message}${error.code ? ` (${error.code})` : ''}`);
+        
+        if (isKnownError) {
+            return res.status(404).send('Group not found or you do not have permission to delete it.');
         }
-        if (error.message.includes('Permission denied')) {
-            return res.status(403).send(error.message);
-        }
-        console.error('Error deleting group:', error);
-        res.status(500).send(error.message || 'Internal Server Error');
+        
+        res.status(500).send('An internal error occurred while deleting the group.');
     }
 });
 
@@ -905,7 +948,6 @@ app.get('/api/groups', async (req, res) => {
             description: g.description,
             isPublic: g.isPublic,
             membersCount: g.membersCount || 0,
-            members: g.members || [],
             createdAt: g.createdAt,
             lastMessageAt: g.lastMessageAt,
             messageCount: g.messageCount || 0,
@@ -924,8 +966,12 @@ app.get('/api/groups', async (req, res) => {
     }
 });
 
-// GET group preview info for invite link
+// GET group preview info for invite link - Authenticated to prevent scraping
 app.get(['/api/group-preview/:inviteCode', '/api/group-preview/:inviteCode/'], inviteLimiter, async (req, res) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).send('Unauthorized: Login required to preview group.');
+    }
 
     const { inviteCode } = req.params;
     if (!inviteCode) return res.status(400).send('Invite code is required');
@@ -935,18 +981,20 @@ app.get(['/api/group-preview/:inviteCode', '/api/group-preview/:inviteCode/'], i
         // Case-sensitive check to be safe, though most are uppercase
         const snapshot = await db.collection('groups').where('inviteCode', '==', inviteCode).limit(1).get();
 
-        if (snapshot.empty) {
-            return res.status(404).send('Group not found');
-        }
-
         const groupData = snapshot.docs[0].data();
 
-        // Check for expiration
+        // SECURITY: Check expiration and existence, but return a unified error if either fails
+        let isInvalid = false;
         if (groupData.inviteCodeExpiresAt) {
             const expiresAt = groupData.inviteCodeExpiresAt.toDate();
             if (new Date() > expiresAt) {
-                return res.status(410).send('Invite code has expired');
+                isInvalid = true;
             }
+        }
+
+        if (isInvalid) {
+            console.log(`Invite code ${inviteCode} is expired.`);
+            return res.status(404).send('Invalid or expired invite code.');
         }
 
         // Only return safe public info
@@ -959,7 +1007,7 @@ app.get(['/api/group-preview/:inviteCode', '/api/group-preview/:inviteCode/'], i
         });
     } catch (error) {
         console.error('Error fetching group preview:', error);
-        res.status(500).send('Error fetching group preview.');
+        res.status(500).send('An error occurred while fetching the group preview.');
     }
 });
 
@@ -1071,18 +1119,36 @@ app.post('/api/post-note', async (req, res) => {
             // 4. NOW START WRITES
             transaction.update(userRef, userUpdate);
 
-            // Create member to group mapping for notifications (deduplication)
+            // 4. Validate membership and create member to group mapping for notifications (deduplication)
             const userToGroupMap = new Map();
+            const validatedGroupsToPostTo = [];
+
             groupDocs.forEach(groupDoc => {
                 if (!groupDoc.exists) return;
                 const gid = groupDoc.id;
-                const members = groupDoc.data().members || [];
+                const gData = groupDoc.data();
+                const members = gData.members || [];
+
+                // MANDATORY: Only post to groups where the user is a member
+                if (!members.includes(uid)) {
+                    console.warn(`User ${uid} attempted to post to group ${gid} without being a member.`);
+                    return; // Skip this group instead of throwing to allow partial success for valid groups
+                }
+
+                validatedGroupsToPostTo.push(gid);
+
                 members.forEach(memberUid => {
                     if (memberUid !== uid && !userToGroupMap.has(memberUid)) {
                         userToGroupMap.set(memberUid, gid);
                     }
                 });
             });
+
+            // Update groupsToPostTo to only include those we actually validated
+            groupsToPostTo = validatedGroupsToPostTo;
+            if (groupsToPostTo.length === 0 && (shareOption === 'all' || shareOption === 'specific' || shareOption === 'current')) {
+                throw new Error('You must be a member of at least one target group to post.');
+            }
 
             // 3. Create Personal Note
             const personalNoteRef = userRef.collection('notes').doc();
@@ -1153,8 +1219,9 @@ app.post('/api/post-note', async (req, res) => {
 
             // 5. Streak Announcements
             if (streakUpdated && newStreak > 0) {
+                const safeNickname = escapeMarkdown(userData.nickname);
                 const announceMsg = (STREAK_ANNOUNCEMENT_TEMPLATES[language] || STREAK_ANNOUNCEMENT_TEMPLATES.en)
-                    .replace('{nickname}', userData.nickname)
+                    .replace('{nickname}', safeNickname)
                     .replace('{streak}', newStreak);
                 const announceTime = admin.firestore.Timestamp.fromMillis(noteTimestamp.toMillis() + 2000);
 
@@ -1279,8 +1346,15 @@ app.post('/api/post-message', async (req, res) => {
             if (!userDoc.exists) throw new Error('User not found.');
             if (!groupDoc.exists) throw new Error('Group not found.');
 
-            const userData = userDoc.data();
             const groupData = groupDoc.data();
+            const members = groupData.members || [];
+
+            // SECURITY: Verify membership
+            if (!members.includes(uid)) {
+                throw new Error('Permission denied: You are not a member of this group.');
+            }
+
+            const userData = userDoc.data();
 
             const messageRef = groupRef.collection('messages').doc();
             const messageData = {
@@ -1336,8 +1410,9 @@ app.post('/api/post-message', async (req, res) => {
 
         res.status(200).json({ message: 'Message sent successfully.', messageId: result.messageId });
     } catch (error) {
-        console.error('Error posting message:', error);
-        res.status(500).send(error.message || 'Error sending message.');
+        // SECURITY: Unified error to hide group existence/membership oracles
+        console.error(`Error posting message from ${uid} to group ${groupId}:`, error.message);
+        res.status(404).send('Request failed.');
     }
 });
 
@@ -1347,7 +1422,7 @@ app.post('/api/send-cheer', async (req, res) => {
         return res.status(400).json({ error: 'Invalid input', details: validation.error.format() });
     }
 
-    const { targetUid, groupId, senderNickname, language } = validation.data;
+    const { targetUid, groupId, language } = validation.data;
 
     const authHeader = req.headers.authorization;
     let idToken;
@@ -1366,7 +1441,9 @@ app.post('/api/send-cheer', async (req, res) => {
         }
 
         const senderDoc = await db.collection('users').doc(senderUid).get();
+        if (!senderDoc.exists) return res.status(404).json({ error: 'Sender user not found.' });
         const senderData = senderDoc.data() || {};
+        const senderNickname = senderData.nickname || 'Member';
 
         let timeZone = 'UTC';
         try {
@@ -1382,17 +1459,54 @@ app.post('/api/send-cheer', async (req, res) => {
         const cheerDocId = `cheer_${senderUid}_${targetUid}_${today}`;
         const cheerRef = db.collection('cheers').doc(cheerDocId);
 
-        const existingCheer = await cheerRef.get();
-        if (existingCheer.exists) {
+        // Use a transaction to prevent race conditions (multiple notifications for same day)
+        const result = await db.runTransaction(async (transaction) => {
+            const groupRef = db.collection('groups').doc(groupId);
+            const groupDoc = await transaction.get(groupRef);
+            if (!groupDoc.exists) {
+                throw new Error('Group not found.');
+            }
+
+            const groupData = groupDoc.data();
+            const groupMembers = groupData.members || [];
+
+            // SECURITY: Verify BOTH sender and target are in the same group
+            if (!groupMembers.includes(senderUid)) {
+                throw new Error('Forbidden: You are not a member of this group.');
+            }
+            if (!groupMembers.includes(targetUid)) {
+                throw new Error('Target user is not a member of this group.');
+            }
+
+            const existingCheer = await transaction.get(cheerRef);
+            if (existingCheer.exists) {
+                return { alreadySent: true };
+            }
+
+            const targetUserDoc = await transaction.get(db.collection('users').doc(targetUid));
+            if (!targetUserDoc.exists) {
+                throw new Error('Target user not found.');
+            }
+
+            const targetData = targetUserDoc.data();
+            
+            // Save inside transaction
+            transaction.set(cheerRef, {
+                senderUid,
+                targetUid,
+                groupId,
+                timestamp: admin.firestore.FieldValue.serverTimestamp(),
+                date: today
+            });
+
+            return { targetData };
+        });
+
+        if (result.alreadySent) {
             return res.status(429).json({ error: 'alreadySent' });
         }
 
-        const targetUserDoc = await db.collection('users').doc(targetUid).get();
-        if (!targetUserDoc.exists) {
-            return res.status(404).json({ error: 'Target user not found.' });
-        }
-
-        const targetData = targetUserDoc.data();
+        const { targetData } = result;
         const tokens = await getUserFcmTokens(targetUid);
 
         // Random message templates
@@ -1430,22 +1544,32 @@ app.post('/api/send-cheer', async (req, res) => {
             await sendPushNotification(tokens, payload);
         }
 
-        await cheerRef.set({
-            senderUid,
-            targetUid,
-            groupId,
-            timestamp: admin.firestore.FieldValue.serverTimestamp(),
-            date: today
-        });
-
         res.json({ success: true });
     } catch (error) {
-        console.error('Error in send-cheer:', error);
+        // SECURITY: Unified response to prevent membership/user/group oracles
+        const oraclePossibleErrors = [
+            'Target user not found.',
+            'Group not found.',
+            'Forbidden: You are not a member of this group.',
+            'Target user is not a member of this group.'
+        ];
+        
+        console.error(`Cheer failed from ${senderUid}: ${error.message}`);
+        
+        if (oraclePossibleErrors.some(msg => error.message.startsWith(msg) || error.message === msg)) {
+            return res.status(404).json({ error: 'Request could not be completed at this time.' });
+        }
+        
         res.status(500).json({ error: 'Internal server error' });
     }
 });
 
 app.get('/api/fetch-gc-metadata', async (req, res) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
+
     const { url, lang } = req.query;
 
     if (!url) return res.status(400).send({ error: 'URL is required' });
@@ -1460,7 +1584,8 @@ app.get('/api/fetch-gc-metadata', async (req, res) => {
 
         // SSRF Protection: Validate Hostname
         if (targetUrl.hostname !== 'www.churchofjesuschrist.org' && targetUrl.hostname !== 'churchofjesuschrist.org') {
-            return res.status(400).json({ error: 'Invalid URL domain. Must be churchofjesuschrist.org' });
+            console.warn(`Blocked metadata fetch for invalid domain: ${targetUrl.hostname}`);
+            return res.status(400).json({ error: 'Invalid request' });
         }
         if (targetUrl.protocol !== 'https:') {
             return res.status(400).json({ error: 'Invalid protocol. Must be https.' });
@@ -1476,7 +1601,9 @@ app.get('/api/fetch-gc-metadata', async (req, res) => {
                 headers: {
                     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
                 },
-                timeout: 10000
+                timeout: 10000,
+                maxRedirects: 0, // SSRF Protection: Prevent following malicious redirects
+                maxContentLength: 512 * 1024 // Limit response size to 512KB to prevent memory exhaustion
             });
         } catch (axiosError) {
             // Fallback: If requested language fails, try without lang param
@@ -1552,6 +1679,11 @@ app.get('/api/fetch-gc-metadata', async (req, res) => {
 });
 
 app.get(['/api/url-preview', '/api/url-preview/'], async (req, res) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
+
     const { url, lang } = req.query;
     console.log(`[Preview Request] URL: ${url}, Lang: ${lang}`);
 
@@ -1571,19 +1703,23 @@ app.get(['/api/url-preview', '/api/url-preview/'], async (req, res) => {
     try {
         const parsedUrl = new URL(url);
 
-        // Basic SSRF protection
+        // Strong SSRF protection: IPv4 & IPv6 & Metadata services
         const hostname = parsedUrl.hostname.toLowerCase();
         if (
             hostname === 'localhost' ||
+            hostname === '::1' ||
             hostname.startsWith('127.') ||
             hostname.startsWith('169.254.') ||
             hostname.startsWith('10.') ||
             hostname.match(/^172\.(1[6-9]|2[0-9]|3[0-1])\./) ||
             hostname.startsWith('192.168.') ||
+            hostname.startsWith('fe80:') ||
+            hostname.startsWith('fc00:') ||
+            hostname.startsWith('fd00:') ||
             hostname.endsWith('.internal') ||
             hostname.endsWith('.local')
         ) {
-            return res.status(400).json({ error: 'URL is not allowed for security reasons.' });
+            return res.status(400).json({ error: 'URL is not allowed.' });
         }
 
         previewData.title = parsedUrl.hostname;
@@ -1603,9 +1739,10 @@ app.get(['/api/url-preview', '/api/url-preview/'], async (req, res) => {
                     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
                     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
                 },
-                timeout: 4000, // Very short to avoid Vercel Function Timeout
-                maxContentLength: 512 * 1024, // 512KB is enough for metadata
-                validateStatus: () => true // Don't throw on 404/500
+                timeout: 4000,
+                maxContentLength: 512 * 1024,
+                maxRedirects: 0, // Prevent redirect-based SSRF
+                validateStatus: () => true
             });
             console.log(`[Preview] Fetch complete. Status: ${response?.status}`);
         } catch (fetchErr) {
@@ -1654,21 +1791,19 @@ app.get(['/api/url-preview', '/api/url-preview/'], async (req, res) => {
                 previewData.image = img;
             }
 
-            previewData.siteName = $('meta[property="og:site_name"]').attr('content') ||
-                (isChurchUrl ? 'Church of Jesus Christ' : parsedUrl.hostname);
+            previewData.siteName = $('meta[property="og:site_name"]').attr('content') || parsedUrl.hostname;
         }
 
-        console.log(`[Preview] Success returning for: ${url}`);
-        return res.json(previewData);
+        res.json(previewData);
 
     } catch (error) {
-        console.error(`[Preview] CRITICAL ERROR for ${url}:`, error.message);
-        return res.json(previewData);
+        console.error('Error in URL preview:', error);
+        res.status(500).json({ error: 'Failed to generate preview', details: error.message });
     }
 });
 
-// AI Ponder Questions Endpoint - Apply AI Rate Limit
-app.post('/api/generate-ponder-questions', async (req, res) => {
+// AI Ponder Questions Endpoint
+app.post('/api/generate-ponder-questions', aiLimiter, async (req, res) => {
     const validation = ponderQuestionsSchema.safeParse(req.body);
     if (!validation.success) {
         return res.status(400).json({ error: 'Invalid input', details: validation.error.format() });
@@ -1683,7 +1818,8 @@ app.post('/api/generate-ponder-questions', async (req, res) => {
     try {
         await admin.auth().verifyIdToken(idToken);
     } catch (err) {
-        return res.status(401).json({ error: 'Unauthorized: Invalid token.' });
+        console.warn(`Ponder questions auth check failed: ${err.message}`);
+        return res.status(401).json({ error: 'Authentication failed.' });
     }
 
     if (!process.env.GEMINI_API_KEY) {
@@ -1691,54 +1827,109 @@ app.post('/api/generate-ponder-questions', async (req, res) => {
     }
 
     try {
-        const langCode = language || 'en';
         const prompts = {
             'ja': `あなたはScripture Centralの創設者であり、著名な法学者、聖典学者のJohn W. Welch教授です。
-ユーザーが「${scripture} ${chapter}」を読み、その学びを学習グループに共有しようとしています。
-「${scripture} ${chapter}」に含まれる原則、教えをもとに、ユーザーが「${scripture} ${chapter}」に対しての知見を深められるような質問を一つだけ用意してください。
+ユーザーが以下の聖典箇所を読み、その学びをグループに共有しようとしています。
+原則、教えをもとに、ユーザーが知見を深められるような質問を一つだけ用意してください。
 箇条書きの記号（*や-など）は使わず、質問文のみをプレーンテキストで出力してください。
-ただし、聖文を読むのが苦手な求道者や新会員にもわかりやすい質問を書いてください。`,
+求道者や新会員にもわかりやすい言葉を使ってください。
+
+聖典箇所:
+"""
+${scripture} ${chapter}
+"""`,
+            'en': `You are Professor John W. Welch, founder of Scripture Central and a renowned legal and biblical scholar.
+The user is reading the following scripture and is preparing to share their learning.
+Based on the principles and teachings, please provide one question that helps the user deepen their insight.
+Do NOT use bullet points or symbols (*, -). Output ONLY the question text as plain text.
+Use easy to understand language for investigators or new members.
+
+Scripture:
+"""
+${scripture} ${chapter}
+"""`,
             'es': `Eres el Profesor John W. Welch, fundador de Scripture Central y un renombrado erudito legal y bíblico.
-El usuario está leyendo "${scripture} ${chapter}" y se prepara para compartir lo aprendido con su grupo de estudio.
-Basándote en los principios y enseñanzas que se encuentran en "${scripture} ${chapter}", por favor proporciona una pregunta que ayude al usuario a profundizar su conocimiento sobre "${scripture} ${chapter}".
+El usuario está leyendo la siguiente escritura y se prepara para compartir lo aprendido.
+Basándote en los principios y enseñanzas, por favor proporciona una pregunta que ayude al usuario a profundizar su conocimiento.
 NO utilices puntos ni símbolos (*, -). Muestra ÚNICAMENTE el texto de la pregunta como texto sin formato.
-Sin embargo, redacta preguntas que sean fáciles de entender incluso para investigadores o nuevos miembros que no se sientan cómodos leyendo las escrituras.`,
+Usa un lenguaje fácil de entender para investigadores o nuevos miembros.
+
+Escritura:
+"""
+${scripture} ${chapter}
+"""`,
             'pt': `Você é o Professor John W. Welch, fundador do Scripture Central e um renomado estudioso jurídico e bíblico.
-O usuário está lendo "${scripture} ${chapter}" e está se preparando para compartilhar seu aprendizado com seu grupo de estudo.
-Com base nos princípios e ensinamentos encontrados em "${scripture} ${chapter}", por favor, forneça uma pergunta que ajude o usuário a aprofundar sua percepção sobre "${scripture} ${chapter}".
+O usuário está lendo a seguinte escritura e está se preparando para compartilhar seu aprendizado.
+Forneça uma pergunta que ajude o usuário a aprofundar sua percepção.
 NÃO use marcadores ou símbolos (*, -). Forneça APENAS o texto da pergunta como texto simples.
-Entretanto, escreva perguntas que sejam fáceis de entender, mesmo para pesquisadores ou novos membros que não se sintam confortáveis em ler as escrituras.`,
+Use uma linguagem fácil de entender para pesquisadores ou novos membros.
+
+Escritura:
+"""
+${scripture} ${chapter}
+"""`,
             'vi': `Bạn là Giáo sư John W. Welch, người sáng lập Scripture Central, một học giả pháp lý và Kinh Thánh nổi tiếng.
-Người dùng đang đọc "${scripture} ${chapter}" và đang chuẩn bị chia sẻ những gì họ học được với nhóm học tập của mình.
-Dựa trên các nguyên tắc và lời dạy trong "${scripture} ${chapter}", vui lòng cung cấp một câu hỏi giúp người dùng tìm hiểu sâu hơn về "${scripture} ${chapter}".
+Người dùng đang đọc đoạn thánh thư sau và đang chuẩn bị chia sẻ những gì họ học được.
+Vui lòng cung cấp một câu hỏi giúp người dùng tìm hiểu sâu hơn.
 KHÔNG sử dụng dấu đầu dòng hoặc ký hiệu (*, -). CHỈ xuất văn bản câu hỏi dưới dạng văn bản thuần túy.
-Tuy nhiên, hãy viết những câu hỏi dễ hiểu ngay cả đối với những người tìm hiểu hoặc những thành viên mới không giỏi đọc thánh thư.`,
+Sử dụng ngôn ngữ dễ hiểu đối với những người tìm hiểu hoặc những thành viên mới.
+
+Thánh thư:
+"""
+${scripture} ${chapter}
+"""`,
             'th': `คุณคือศาสตราจารย์ John W. Welch ผู้ก่อตั้ง Scripture Central และเป็นนักวิชาการด้านกฎหมายและพระคัมภีร์ที่มีชื่อเสียง
-ผู้ใช้กำลังอ่าน "${scripture} ${chapter}" และกำลังเตรียมที่จะแบ่งปันสิ่งที่ได้เรียนรู้กับกลุ่มการศึกษาของตน
-ตามหลักธรรมและคำสอนที่พบใน "${scripture} ${chapter}" โปรดเตรียมคำถามหนึ่งข้อที่ช่วยให้ผู้ใช้เพิ่มพ่นความเข้าใจที่ลึกซึ้งใน "${scripture} ${chapter}"
+ผู้ใช้กำลังอ่านพระคัมภีร์ต่อไปนี้และกำลังเตรียมที่จะแบ่งปันสิ่งที่ได้เรียนรู้
+โปรดเตรียมคำถามหนึ่งข้อที่ช่วยให้ผู้ใช้เพิ่มพูนความเข้าใจที่ลึกซึ้ง
 ห้ามใช้เครื่องหมายหัวข้อหรือสัญลักษณ์ (*, -) ให้แสดงเฉพาะข้อความคำถามเป็นรูปแบบข้อความธรรมดาเท่านั้น
-อย่างไรก็ตาม โปรดเขียนคำถามที่เข้าใจง่ายแม้แต่สำหรับผู้สนใจหรือสมาชิกใหม่ที่ไม่ถนัดในการอ่านพระคัมภีร์`,
+ใช้ภาษาที่เข้าใจง่ายแม้แต่สำหรับผู้สนใจหรือสมาชิกใหม่
+
+พระคัมภีร์:
+"""
+${scripture} ${chapter}
+"""`,
             'ko': `당신은 Scripture Central의 창립자이자 저명한 법학자 및 성서 학자인 존 W. 웰치(John W. Welch) 교수입니다.
-사용자가 "${scripture} Korea: ${chapter}"를 읽고 있으며, 그 배운 내용을 학습 그룹과 공유하려고 합니다.
-"${scripture} ${chapter}"에 담긴 원리와 가르침을 바탕으로, 사용자가 "${scripture} ${chapter}"에 대한 견해를 넓힐 수 있는 질문을 하나만 준비해 주세요.
-글머리 기호나 기호(*, - 등)는 사용하지 말고 질문 문구만 평문으로 출력해 주세요.
-다만, 경전을 읽는 것이 익숙하지 않은 구도자나 신회원들도 이해하기 쉬운 질문을 작성해 주세요.`,
+사용자가 다음 성구 내용을 읽고 있으며, 그 배운 내용을 그룹과 공유하려고 합니다.
+원리와 가르침을 바탕으로, 사용자가 견해를 넓힐 수 있는 질문을 하나만 준비해 주세요.
+글머리 기호나 기호(*, - 등)는 사용하지 말고 질문 문구만 평문으로 출력해 주세요。
+구도자나 신회원들도 이해하기 쉬운 언어를 사용해 주세요。
+
+성구:
+"""
+${scripture} ${chapter}
+"""`,
             'zho': `您是 Scripture Central 的創始人，著名的法學家及聖經學者約翰·威爾奇（John W. Welch）教授。
-使用者正在閱讀「${scripture} ${chapter}」，並準備與他們的學習小組分享所學內容。
-根據「${scripture} ${chapter}」中的原則和教導，請提供一個問題，幫助使用者深化對「${scripture} ${chapter}」的見解。
+使用者正在閱讀以下聖典內容，並準備與小組分享所學內容。
+請提供一個問題，幫助使用者深化對於這些原則和教導的見解。
 不要使用項目符號或符號（*、-等）。僅以純文字形式輸出問題文本。
-但是，請撰寫對於不擅長閱讀聖經的求道者或新成員也易於理解的問題。`,
+請為求道者或新成員撰寫易於理解的問題。
+
+聖典內容:
+"""
+${scripture} ${chapter}
+"""`,
             'tl': `Ikaw ay si Professor John W. Welch, ang tagapagtatag ng Scripture Central at isang tanyag na legal at biblical scholar.
-Ang user ay nagbabasa ng "${scripture} ${chapter}" at naghahanda na ibahagi ang kanilang natutunan sa kanilang study group.
-Batay sa mga prinsipyo at turo na matatagpuan sa "${scripture} ${chapter}", mangyaring magbigay ng isang tanong na makakatulong sa user na palalimin ang kanilang insight sa "${scripture} ${chapter}".
+Ang user ay nagbabasa ng sumunod na banal na kasulatan at naghahanda na ibahagi ang kanilang natutunan.
+Mangyaring magbigay ng isang tanong na makakatulong sa user na palalimin ang kanilang insight.
 HUWAG gumamit ng mga bullet point o simbolo (*, -). I-output LAMANG ang teksto ng tanong bilang plain text.
-Gayunpaman, mangyaring sumulat ng mga tanong na madaling maunawaan kahit para sa mga investigator o bagong miyembro na hindi sanay magbasa ng mga banal na kasulatan.`,
+Gumamit ng madaling maunawaang salita para sa mga investigator o bagong miyembro.
+
+Banal na Kasulatan:
+"""
+${scripture} ${chapter}
+"""`,
             'sw': `Wewe ni Profesa John W. Welch, mwanzilishi wa Scripture Central na msomi mashuhuri wa sheria na Biblia.
-Mtumiaji anasoma "${scripture} ${chapter}" na anajiandaa kushiriki kile alichojifunza na kikundi chake cha masomo.
-Kulingana na kanuni na mafundisho yanayopatikana katika "${scripture} ${chapter}", tafadhali toa swali moja ambalo linamsaidia mtumiaji kukuza uelewa wake kuhusu "${scripture} ${chapter}".
+Mtumiaji anasoma maandiko yafuatayo na anajiandaa kushiriki kile alichojifunza.
+Tafadhali toa swali moja ambalo linamsaidia mtumiaji kukuza uelewa wake.
 USITUMIE alama za vitone au alama (*, -). Toa maandishi ya swali PEKEE kama maandishi ya kawaida.
-Hata hivyo, tafadhali andika maswali ambayo ni rahisi kueleweka hata kwa watafiti au waumini wapya ambao hawajazoea kusoma maandiko.`
+Tumia lugha rahisi kueleweka kwa watafiti au waumini wapya.
+
+Maandiko:
+"""
+${scripture} ${chapter}
+"""`
         };
+        const langCode = language || 'en';
 
         let prompt = prompts[langCode] || `You are Professor John W. Welch, founder of Scripture Central and a renowned legal and biblical scholar.
 The user is reading "${scripture} ${chapter}" and is preparing to share their learning with their study group.
@@ -1777,7 +1968,7 @@ However, please write questions that are easy to understand even for investigato
 });
 
 // AI Translation Endpoint
-app.post('/api/translate', async (req, res) => {
+app.post('/api/translate', aiLimiter, async (req, res) => {
     const validation = translateSchema.safeParse(req.body);
     if (!validation.success) {
         return res.status(400).json({ error: 'Invalid input', details: validation.error.format() });
@@ -1792,7 +1983,8 @@ app.post('/api/translate', async (req, res) => {
     try {
         await admin.auth().verifyIdToken(idToken);
     } catch (err) {
-        return res.status(401).json({ error: 'Unauthorized: Invalid token.' });
+        console.warn(`Translate auth check failed: ${err.message}`);
+        return res.status(401).json({ error: 'Authentication failed.' });
     }
 
     if (!process.env.GEMINI_API_KEY) {
@@ -1814,7 +2006,9 @@ app.post('/api/translate', async (req, res) => {
 Output only the translated text. No explanations.
 
 Text:
-${text}`;
+"""
+${text}
+"""`;
 
         const apiKey = (process.env.GEMINI_API_KEY || '').trim();
         const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
@@ -1870,7 +2064,7 @@ ${text}`;
 });
 
 // AI Weekly Recap Endpoint
-app.post('/api/generate-weekly-recap', async (req, res) => {
+app.post('/api/generate-weekly-recap', aiLimiter, async (req, res) => {
     const validation = weeklyRecapSchema.safeParse(req.body);
     if (!validation.success) {
         return res.status(400).json({ error: 'Invalid input', details: validation.error.format() });
@@ -1887,7 +2081,8 @@ app.post('/api/generate-weekly-recap', async (req, res) => {
         const decodedToken = await admin.auth().verifyIdToken(idToken);
         uid = decodedToken.uid;
     } catch (err) {
-        return res.status(401).json({ error: 'Unauthorized: Invalid token.' });
+        console.warn(`Weekly recap auth check failed: ${err.message}`);
+        return res.status(401).json({ error: 'Authentication failed.' });
     }
 
     // GroupId check handled by Zod
@@ -1897,17 +2092,18 @@ app.post('/api/generate-weekly-recap', async (req, res) => {
     }
 
     try {
-        const db = admin.firestore();
         const groupRef = db.collection('groups').doc(groupId);
         const groupDoc = await groupRef.get();
         if (!groupDoc.exists) {
-            return res.status(404).json({ error: 'Group not found.' });
+            console.log(`Weekly recap failed: Group ${groupId} not found.`);
+            return res.status(404).json({ error: 'Group not found or access denied.' });
         }
 
         const groupData = groupDoc.data();
         const members = groupData.members || [];
         if (!members.includes(uid) && groupData.ownerUserId !== uid) {
-            return res.status(403).json({ error: 'Forbidden: You are not a member of this group.' });
+            console.log(`Weekly recap failed: User ${uid} is not a member of group ${groupId}.`);
+            return res.status(404).json({ error: 'Group not found or access denied.' });
         }
 
         const messagesRef = groupRef.collection('messages');
@@ -1953,7 +2149,9 @@ app.post('/api/generate-weekly-recap', async (req, res) => {
 です・ます常体で、親しみやすく記述してください。
 
 ノート内容:
-${notesText}`,
+"""
+${notesText}
+"""`,
             'es': `Eres el profesor John W. Welch, fundador de Scripture Central y un renombrado erudito legal y bíblico, actuando como locutor de un grupo de estudio de las Escrituras de La Iglesia de Jesucristo de los Santos de los Últimos Días.
 A continuación se presentan las notas de estudio (anónimas) compartidas por los miembros del grupo durante la última semana.
 Analícelas y cree un informe breve y alentador sobre las "tendencias de aprendizaje" o los "temas que se están profundizando" en el grupo.
@@ -1964,7 +2162,9 @@ No mencione nombres individuales ni detalles privados. Enfóquese en tendencias 
 Mantenga un tono amigable y edificante.
 
 Contenido de las notas:
-${notesText}`,
+"""
+${notesText}
+"""`,
             'pt': `Você é o Professor John W. Welch, fundador do Scripture Central e um renomado estudioso jurídico e bíblico, atuando como locutor de um grupo de estudo das escrituras de A Igreja de Jesus Cristo dos Santos dos Últimos Dias.
 Abaixo estão as notas de estudo (anônimas) compartilhadas pelos membros do grupo na última semana.
 Analise-as e crie um relatório curto e encorajador sobre as "tendências de aprendizado" ou "temas que estão se aprofundando" no grupo.
@@ -1975,7 +2175,9 @@ Não mencione nomes individuais ou detalhes privados. Foque em tendências posit
 Mantenha um tom amigável e inspirador.
 
 Conteúdo das notas:
-${notesText}`,
+"""
+${notesText}
+"""`,
             'vi': `Bạn là Giáo sư John W. Welch, người sáng lập Scripture Central, một học giả pháp lý và Kinh Thánh nổi tiếng, đồng thời là người thông báo cho nhóm học tập thánh thư của Giáo hội Các Thánh hữu Ngày sau của Chúa Giê-su Ky Tô.
 Dưới đây là các ghi chú học tập (ẩn danh) được các thành viên trong nhóm chia sẻ trong tuần qua.
 Hãy phân tích chúng và tạo một báo cáo ngắn gọn, khích lệ về "xu hướng học tập" hoặc "các chủ đề đang được tìm hiểu sâu" của nhóm.
@@ -1986,7 +2188,9 @@ Không đề cập đến tên cá nhân cụ thể hoặc chi tiết riêng tư
 Hãy giữ giọng điệu thân thiện và nâng cao tinh thần.
 
 Nội dung ghi chú:
-${notesText}`,
+"""
+${notesText}
+"""`,
             'th': `คุณคือศาสตราจารย์ John W. Welch ผู้ก่อตั้ง Scripture Central และเป็นนักวิชาการด้านกฎหมายและพระคัมภีร์ที่มีชื่อเสียง โดยทำหน้าที่เป็นผู้ประกาศสำหรับกลุ่มการศึกษาพระคัมภีร์ของศาสนจักรของพระเยซูคริสต์แห่งวิสุทธิชนยุคสุดท้าย
 ด้านล่างนี้คือบันทึกการศึกษา (แบบไม่ระบุตัวตน) ที่สมาชิกในกลุ่มแบ่งปันในช่วงสัปดาห์ที่ผ่านมา
 โปรดวิเคราะห์บันทึกเหล่านี้และสร้างรายงานสั้นๆ ที่ให้กำลังใจเกี่ยวกับ "แนวโน้มการเรียนรู้" หรือ "หัวข้อที่กำลังได้รับความสนใจ" ของกลุ่ม
@@ -1997,7 +2201,9 @@ ${notesText}`,
 โปรดรักษาโทนที่เปี่ยมด้วยมิตรภาพและช่วยยกระดับจิตวิญญาณ
 
 เนื้อหาของบันทึก:
-${notesText}`,
+"""
+${notesText}
+"""`,
             'ko': `당신은 Scripture Central의 창립자이자 저명한 법학자 및 성서 학자인 존 W. 웰치(John W. Welch) 교수이며, 예수 그리스도 후기 성도 교회의 성전 학습 그룹 아나운서입니다.
 다음은 지난 한 주 동안 그룹 멤버들이 공유한 (익명) 학습 노트 내용입니다.
 이것들을 분석하여 그룹 전체의 '학습 트렌드'나 '깊어지고 있는 테마'에 대해 짧고 격려가 되는 보고서를 작성해 주세요.
@@ -2008,7 +2214,9 @@ ${notesText}`,
 친근하고 영감을 주는 톤으로 작성해 주세요.
 
 노트 내용:
-${notesText}`,
+"""
+${notesText}
+"""`,
             'zho': `您是 Scripture Central 的創始人，著名的法學家及聖經學者約翰·威爾奇（John W. Welch）教授，同時也是耶穌基督後期聖徒教會聖典學習小組的宣佈員。
 以下是小組成員在過去一週分享的（匿名）學習筆記內容。
 請分析這些內容，並就小組整體的「學習趨勢」或「正在深化的主題」撰寫一份簡短且具鼓勵性的報告。
@@ -2019,7 +2227,9 @@ ${notesText}`,
 請保持親切且令人振奮的語氣。
 
 筆記內容：
-${notesText}`,
+"""
+${notesText}
+"""`,
             'tl': `Ikaw ay si Professor John W. Welch, ang tagapagtatag ng Scripture Central at isang tanyag na legal at biblical scholar, na nagsisilbing announcer para sa isang scripture study group ng Ang Simbahan ni Jesucristo ng mga Banal sa mga Huling Araw.
 Nasa ibaba ang mga (anonymized) study notes na ibhagagi ng mga miyembro ng grupo sa nakaraang linggo.
 Suriin ang mga ito at gumawa ng maikli at nakaka-enkanyong ulat tungkol sa "learning trends" o "deepening themes" ng grupo.
@@ -2030,7 +2240,9 @@ Huwag banggitin ang mga partikular na pangalan ng indibidwal o pribadong detalye
 Panatilihing palakaibigan at nakakapagpasigla ang tono.
 
 Nilalaman ng mga Notes:
-${notesText}`,
+"""
+${notesText}
+"""`,
             'sw': `Wewe ni Profesa John W. Welch, mwanzilishi wa Scripture Central na msomi mashuhuri wa sheria na Biblia, anayefanya kazi kama mtangazaji wa kikundi cha mafunzo ya maandiko cha Kanisa la Yesu Kristo la Watakatifu wa Siku za Mwisho.
 Hapa chini kuna maelezo (yasiyotajwa majina) ya mafunzo yaliyoshirikiwa na washiriki wa kikundi katika wiki iliyopita.
 Yachambue na utengeneze ripoti fupi na ya kutia moyo kuhusu "mielekeo ya mafunzo" au "mada zinazozidi kuongezeka" za kikundi.
@@ -2041,7 +2253,9 @@ Usitaje majina ya watu binafsi au maelezo ya siri. Zingatia mielekeo mizuri ya j
 Dumisha sauti ya kirafiki na ya kutia moyo.
 
 Maudhui ya Maelezo:
-${notesText}`
+"""
+${notesText}
+"""`
         };
 
         let prompt = prompts[langCode] || `You are Professor John W. Welch, founder of Scripture Central and a renowned legal and biblical scholar, serving as an announcer for a scripture study group of The Church of Jesus Christ of Latter-day Saints.
@@ -2054,7 +2268,9 @@ Do not mention specific individual names or private details. Focus on positive o
 Keep it friendly and uplifting.
 
 Notes Content:
-${notesText}`;
+"""
+${notesText}
+"""`;
 
         const apiKey = (process.env.GEMINI_API_KEY || '').trim();
         const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
@@ -2107,7 +2323,7 @@ ${notesText}`;
 });
 
 // AI Personal Weekly Recap Endpoint
-app.post('/api/generate-personal-weekly-recap', async (req, res) => {
+app.post('/api/generate-personal-weekly-recap', aiLimiter, async (req, res) => {
     const validation = personalRecapSchema.safeParse(req.body);
     if (!validation.success) {
         return res.status(400).json({ error: 'Invalid input', details: validation.error.format() });
@@ -2124,11 +2340,13 @@ app.post('/api/generate-personal-weekly-recap', async (req, res) => {
         const decodedToken = await admin.auth().verifyIdToken(idToken);
         verifiedUid = decodedToken.uid;
     } catch (err) {
-        return res.status(401).json({ error: 'Unauthorized: Invalid token.' });
+        console.warn(`Personal recap auth check failed: ${err.message}`);
+        return res.status(401).json({ error: 'Authentication failed.' });
     }
 
     if (uid !== verifiedUid) {
-        return res.status(403).json({ error: 'Forbidden: Cannot access another user\'s private data.' });
+        console.warn(`Personal recap failed: User ${verifiedUid} attempted to access data for ${uid}.`);
+        return res.status(404).json({ error: 'Data not found or access denied.' });
     }
 
     // Uid check handled by Zod
@@ -2186,7 +2404,9 @@ app.post('/api/generate-personal-weekly-recap', async (req, res) => {
 6. 文末はScripture Habitよりで終わらせるようにしてください。
 
 ユーザーのノート:
-${notesText}`,
+"""
+${notesText}
+"""`,
             'es': `Eres el Profesor John W. Welch, fundador de Scripture Central y un renombrado erudito legal y bíblico, y actúas como un amigo cercano o mentor que apoya el estudio de las Escrituras del usuario.
 A continuación se presentan las notas de estudio que el usuario registró durante la última semana.
 Basándose en ellas, escriba una "Carta de Reflexión Semanal" al usuario.
@@ -2199,7 +2419,9 @@ Requisitos:
 6. Termine la carta con "Scripture Habit".
 
 Notas del usuario:
-${notesText}`,
+"""
+${notesText}
+"""`,
             'pt': `Você é o Professor John W. Welch, fundador do Scripture Central e um renomado estudioso jurídico e bíblico, e atua como um amigo próximo ou mentor que apoia o estudo das escrituras do usuário.
 Abaixo estão as notas de estudo que o usuário registrou na última semana.
 Com base nelas, escreva uma "Carta de Reflexão Semanal" para o usuário.
@@ -2212,7 +2434,9 @@ Requisitos:
 6. Termine a carta com "Scripture Habit".
 
 Notas do usuário:
-${notesText}`,
+"""
+${notesText}
+"""`,
             'vi': `Bạn là Giáo sư John W. Welch, người sáng lập Scripture Central, một học giả pháp lý và Kinh Thánh nổi tiếng, đồng thời là một người bạn thân thiết hoặc người cố vấn hỗ trợ việc học thánh thư của người dùng.
 Dưới đây là các ghi chú học tập mà người dùng đã ghi lại trong tuần qua.
 Dựa trên những ghi chú này, vui lòng viết một "Thư suy ngẫm hàng tuần" cho người dùng.
@@ -2225,7 +2449,9 @@ Yêu cầu:
 6. Kết thúc lá thư bằng "Scripture Habit".
 
 Ghi chú của người dùng:
-${notesText}`,
+"""
+${notesText}
+"""`,
             'th': `คุณคือศาสตราจารย์ John W. Welch ผู้ก่อตั้ง Scripture Central และเป็นนักวิชาการด้านกฎหมายและพระคัมภีร์ที่มีชื่อเสียง โดยทำหน้าที่เป็นเพื่อนสนิทหรือที่ปรึกษาที่สนับสนุนการศึกษาพระคัมภีร์ของผู้ใช้
 ด้านล่างนี้คือบันทึกการศึกษาที่ผู้ใช้บันทึกไว้ในช่วงสัปดาห์ที่ผ่านมา
 จากบันทึกเหล่านี้ โปรดเขียน "จดหมายไตร่ตรองประจำสัปดาห์" ถึงผู้ใช้
@@ -2238,7 +2464,9 @@ ${notesText}`,
 6. จบจดหมายด้วย "Scripture Habit"
 
 บันทึกของผู้ใช้:
-${notesText}`,
+"""
+${notesText}
+"""`,
             'ko': `당신은 Scripture Central의 창립자이자 저명한 법학자 및 성서 학자인 존 W. 웰치(John W. Welch) 교수이며, 사용자의 성경 공부를 지원하는 친한 친구 또는 멘토입니다.
 다음은 사용자가 지난 한 주 동안 기록한 학습 노트입니다.
 이를 바탕으로 사용자에게 '이번 주의 되돌아보기 편지'를 써 주세요.
@@ -2251,7 +2479,9 @@ ${notesText}`,
 6. 편지 끝에 "Scripture Habit"라고 적어주세요.
 
 사용자의 노트:
-${notesText}`,
+"""
+${notesText}
+"""`,
             'zho': `您是 Scripture Central 的創始人，著名的法學家及聖經學者約翰·威爾奇（John W. Welch）教授，同時也是支持使用者進行聖典學習的親密朋友或導師。
 以下是使用者在過去一週記錄的學習筆記。
 根據這些筆記，請給使用者寫一封「本週回顧信」。
@@ -2264,7 +2494,9 @@ ${notesText}`,
 6. 在信末註明「Scripture Habit」。
 
 使用者的筆記：
-${notesText}`,
+"""
+${notesText}
+"""`,
             'tl': `Ikaw ay si Professor John W. Welch, ang tagapagtatag ng Scripture Central at isang tanyag na legal at biblical scholar, at nagsisilbi bilang isang malapit na kaibigan o mentor na sumusuporta sa pag-aaral ng banal na kasulatan ng user.
 Nasa ibaba ang mga study notes na itinala ng user sa nakaraang linggo.
 Batay sa mga ito, mangyaring sumulat ng isang "Weekly Reflection Letter" sa user.
@@ -2277,7 +2509,9 @@ Mga Kinakailangan:
 6. Tapusin ang liham gamit ang "Scripture Habit".
 
 Mga Tala ng User:
-${notesText}`,
+"""
+${notesText}
+"""`,
             'sw': `Wewe ni Profesa John W. Welch, mwanzilishi wa Scripture Central na msomi mashuhuri wa sheria na Biblia, na unafanya kazi kama rafiki wa karibu au mshauri anayeunga mkono mafunzo ya maandiko ya mtumiaji.
 Hapa chini kuna maelezo ya mafunzo ambayo mtumiaji amerekodi katika wiki iliyopita.
 Kulingana na hayo, tafadhali mwandikie mtumiaji "Barua ya Tafakari ya Wiki".
@@ -2290,7 +2524,9 @@ Mahitaji:
 6. Malizia barua kwa "Scripture Habit".
 
 Maelezo ya Mtumiaji:
-${notesText}`
+"""
+${notesText}
+"""`
         };
 
         let prompt = prompts[langCode] || `You are Professor John W. Welch, founder of Scripture Central and a renowned legal and biblical scholar, serving as a close friend or mentor supporting the user's scripture study.
@@ -2304,7 +2540,9 @@ Requirements:
 5. End the letter with "Scripture Habit".
 
 User's Notes:
-${notesText}`;
+"""
+${notesText}
+"""`;
 
         const apiKey = (process.env.GEMINI_API_KEY || '').trim();
         const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
@@ -2407,11 +2645,12 @@ try {
 
 // FORCE PURGE: Remove users who were just initialized but have no history (Ghost buster)
 app.get('/api/purge-initialized-users', async (req, res) => {
-    // Optional: Protect with secret
+    // MANDATORY SECURITY: Require CRON_SECRET to exist and match
     const authHeader = req.headers.authorization;
     const cronSecret = process.env.CRON_SECRET;
-    if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
-        // Security check
+    if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
+        console.warn('Unauthorized attempt to purge users');
+        return res.status(401).send('Unauthorized');
     }
 
     console.log('Starting ghost purge...');
@@ -2525,13 +2764,13 @@ app.get('/api/purge-initialized-users', async (req, res) => {
     }
 });
 app.all('/api/check-inactive-users', async (req, res) => {
-    // Use a simple CRON_SECRET if available for security
+    // MANDATORY SECURITY: Require CRON_SECRET to exist and match
     const authHeader = req.headers.authorization;
     const cronSecret = process.env.CRON_SECRET;
 
-    if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+    if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
         console.warn('Unauthorized access attempt to /api/check-inactive-users');
-        if (cronSecret) return res.status(401).send('Unauthorized');
+        return res.status(401).send('Unauthorized');
     }
 
     console.log('Starting inactivity check...');
@@ -2758,8 +2997,16 @@ app.all('/api/check-inactive-users', async (req, res) => {
     }
 });
 
-// Manual Test Endpoint for Debugging Inactivity (specific group)
+// Manual Test Endpoint for Debugging Inactivity (specific group) - Secured by CRON_SECRET
 app.get('/api/test-inactive-check/:groupId', async (req, res) => {
+    const authHeader = req.headers.authorization;
+    const cronSecret = process.env.CRON_SECRET;
+    
+    // Fail-closed security check
+    if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
+        return res.status(401).send('Unauthorized');
+    }
+
     const { groupId } = req.params;
 
     console.log(`\n🔍 Manual inactivity check for group: ${groupId}`);
@@ -2770,7 +3017,8 @@ app.get('/api/test-inactive-check/:groupId', async (req, res) => {
         const groupDoc = await groupRef.get();
 
         if (!groupDoc.exists) {
-            return res.status(404).json({ error: 'Group not found' });
+            console.warn(`Manual inactivity check failed: Group ${groupId} not found.`);
+            return res.status(404).json({ error: 'Not Found' });
         }
 
         const groupData = groupDoc.data();
@@ -2834,101 +3082,7 @@ app.get('/api/test-inactive-check/:groupId', async (req, res) => {
     }
 });
 
-app.post('/api/translate', async (req, res) => {
-    const validation = translateSchema.safeParse(req.body);
-    if (!validation.success) {
-        return res.status(400).json({ error: 'Invalid input', details: validation.error.format() });
-    }
-    const { text, targetLanguage } = validation.data;
 
-    if (!process.env.GEMINI_API_KEY) {
-        return res.status(500).json({ error: 'Gemini API Key is not configured.' });
-    }
-
-    try {
-        const db = admin.firestore();
-        // Generate a cache key
-        const cacheKey = crypto.createHash('md5').update(`${text}_${targetLanguage}`).digest('hex');
-        const cacheRef = db.collection('translation_cache').doc(cacheKey);
-
-        // 1. Check Cache
-        const cacheDoc = await cacheRef.get();
-        if (cacheDoc.exists) {
-            const cachedData = cacheDoc.data();
-            console.log('Serving translation from cache');
-            return res.json({ translatedText: cachedData.translatedText });
-        }
-
-        const languageNames = {
-            'ja': 'Japanese',
-            'en': 'English',
-            'es': 'Spanish',
-            'pt': 'Portuguese',
-            'ko': 'Korean',
-            'zho': 'Chinese (Traditional)',
-            'vi': 'Vietnamese',
-            'th': 'Thai',
-            'tl': 'Tagalog',
-            'sw': 'Swahili'
-        };
-
-        const targetLangName = languageNames[targetLanguage] || targetLanguage;
-        const prompt = `Task: Translate the following text into ${targetLangName}.
-Context: This is for a church-related scripture study app called "Scripture Habit". Use appropriate religious/scriptural terminology if applicable. (e.g., "Come, Follow Me" should be "私に従ってきなさい" in Japanese).
-Output only the translated text. No explanations.
-
-Text:
-${text}`;
-
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`;
-
-        const response = await axios.post(apiUrl, {
-            contents: [{
-                parts: [{
-                    text: prompt
-                }]
-            }],
-            safetySettings: [
-                { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
-                { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
-                { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
-                { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
-            ]
-        });
-
-        const candidate = response.data?.candidates?.[0];
-        const rawText = candidate?.content?.parts?.[0]?.text || '';
-
-        let resultText = rawText
-            .replace(/<translation>|<\/translation>/gi, '')
-            .replace(/^.*?translation.*?:/i, '')
-            .replace(/^.*?translated text.*?:/i, '')
-            .replace(/---[\s\S]*$/g, '')
-            .replace(/\*\*Notes:[\s\S]*$/gi, '')
-            .replace(/\*\*Notes on[\s\S]*$/gi, '')
-            .replace(/^["'「](.*)["'」]$/g, '$1')
-            .trim();
-
-        if (!resultText) {
-            console.error('Gemini Safety/Error:', JSON.stringify(response.data, null, 2));
-            throw new Error(`AI blocked the response. Reason: ${candidate?.finishReason || 'Unknown'}`);
-        }
-
-
-        // 2. Save to Cache (asynchronously, don't block response)
-        cacheRef.set({
-            originalText: text,
-            translatedText: resultText,
-            targetLanguage: targetLanguage,
-            createdAt: admin.firestore.FieldValue.serverTimestamp()
-        }).catch(err => console.error('Error saving to translation cache:', err));
-
-        res.json({ translatedText: resultText });
-    } catch (error) {
-        console.error('Error in AI translation:', error.message);
-        res.status(500).json({ error: 'Failed to translate' });
-    }
-});
 
 // Delete entire user account - cleaner than doing it only on client
 app.post('/api/delete-account', async (req, res) => {
@@ -3026,8 +3180,9 @@ app.post('/api/delete-account', async (req, res) => {
         res.status(200).json({ message: 'Account and all data deleted successfully.' });
 
     } catch (error) {
-        console.error('Error in /api/delete-account:', error);
-        res.status(500).json({ error: 'Failed to delete account.', details: error.message });
+        // SECURITY: Do not leak deletion failure details
+        console.error(`Critical error in /api/delete-account for UID ${uid}:`, error.message);
+        res.status(500).json({ error: 'Failed to delete account. Please contact support if this persists.' });
     }
 });
 
