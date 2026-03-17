@@ -42,6 +42,7 @@ interface ContextMenu {
   y: number;
   messageId: string | null;
   message?: Message | null;
+  showBelow?: boolean;
 }
 
 const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], onInputFocusChange, onBack, onGroupSelect, isExternalModalOpen = false }) => {
@@ -101,7 +102,7 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], onI
   const [showMembersModal, setShowMembersModal] = useState(false);
   const [membersLoading, setMembersLoading] = useState(false);
   const [deleteConfirmationName, setDeleteConfirmationName] = useState('');
-  const [contextMenu, setContextMenu] = useState<ContextMenu>({ show: false, x: 0, y: 0, messageId: null });
+  const [contextMenu, setContextMenu] = useState<ContextMenu>({ show: false, x: 0, y: 0, messageId: null, showBelow: false });
   const [editingMessage, setEditingMessage] = useState<Message | null>(null);
   const [editText, setEditText] = useState('');
   const [showDeleteMessageModal, setShowDeleteMessageModal] = useState(false);
@@ -296,17 +297,28 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], onI
   const handleMessageClick = (message: Message, e: React.MouseEvent) => {
     if (message.senderId === 'system') return;
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    
+    // Decide if showing above or below message bubble
+    // Menu height is approx 220px-250px
+    const showBelow = rect.top < 250;
+
+    // Horizontal clamping to prevent off-screen menu
+    const menuWidth = 160;
+    let x = rect.left + rect.width / 2;
+    x = Math.max(menuWidth / 2 + 10, Math.min(window.innerWidth - menuWidth / 2 - 10, x));
+
     setContextMenu({
       show: true,
-      x: rect.left + rect.width / 2,
-      y: rect.top,
+      x,
+      y: showBelow ? rect.bottom : rect.top,
       messageId: message.id,
-      message
+      message,
+      showBelow
     });
   };
 
   const closeContextMenu = () => {
-    setContextMenu({ show: false, x: 0, y: 0, messageId: null, message: null });
+    setContextMenu({ show: false, x: 0, y: 0, messageId: null, message: null, showBelow: false });
   };
 
   const handleReportClick = (message: Message) => {
@@ -619,7 +631,14 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], onI
       {contextMenu.show && contextMenu.message && (
         <>
           <div className="modal-overlay" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1000, background: 'transparent' }} onClick={closeContextMenu} />
-          <div className="message-context-menu" style={{ position: 'fixed', top: contextMenu.y, left: contextMenu.x, transform: 'translate(-50%, -100%)', zIndex: 1001, marginTop: '-10px' }}>
+          <div className="message-context-menu" style={{ 
+            position: 'fixed', 
+            top: contextMenu.y, 
+            left: contextMenu.x, 
+            transform: contextMenu.showBelow ? 'translate(-50%, 0)' : 'translate(-50%, -100%)', 
+            zIndex: 1001, 
+            marginTop: contextMenu.showBelow ? '10px' : '-10px' 
+          }}>
             <button onClick={() => { handleReply(contextMenu.message!); closeContextMenu(); }}><div style={{ width: '22px' }}><UilCommentAlt size="18" /></div><span>{t('groupChat.reply')}</span></button>
             {contextMenu.message.senderId !== userData?.uid && (
               <button onClick={() => { handleToggleReaction(contextMenu.message!); closeContextMenu(); }}><div style={{ width: '22px', fontSize: '18px' }}>👍</div><span>{contextMenu.message?.reactions?.find(r => r.userId === userData?.uid) ? t('groupChat.unlike') : t('groupChat.like')}</span></button>
