@@ -1376,12 +1376,14 @@ input:checked+.slider:before {
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
     z-index: 1000;
     overflow: hidden;
-    min-width: 140px;
+    min-width: 160px;
     animation: scaleIn 0.15s ease;
 }
 
 .message-context-menu button {
-    display: block;
+    display: flex;
+    align-items: center;
+    gap: 12px;
     width: 100%;
     padding: 14px 20px;
     border: none;
@@ -1404,6 +1406,13 @@ input:checked+.slider:before {
 
 .message-context-menu button.delete-option:hover {
     background: #fff5f5;
+}
+
+.message-context-menu button div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
 }
 
 /* Edit Message Modal */
