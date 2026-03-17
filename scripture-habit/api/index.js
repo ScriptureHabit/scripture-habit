@@ -3,18 +3,18 @@ import crypto from 'crypto';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { rateLimit } from 'express-rate-limit';
-import admin, { appCheck } from './lib/firebase-admin.js';
+import admin, { appCheck } from '../api_internal/lib/firebase-admin.js';
 
 // Import Route Handlers
-import authRoutes from './routes/auth.js';
-import groupRoutes from './routes/groups.js';
-import messageRoutes from './routes/messages.js';
-import aiRoutes from './routes/ai.js';
-import previewRoutes from './routes/preview.js';
-import cronRoutes from './routes/cron.js';
+import authRoutes from '../api_internal/routes/auth.js';
+import groupRoutes from '../api_internal/routes/groups.js';
+import messageRoutes from '../api_internal/routes/messages.js';
+import aiRoutes from '../api_internal/routes/ai.js';
+import previewRoutes from '../api_internal/routes/preview.js';
+import cronRoutes from '../api_internal/routes/cron.js';
 
 // Middleware
-import { globalLimiter } from './lib/middleware.js';
+import { globalLimiter } from '../api_internal/lib/middleware.js';
 
 dotenv.config();
 const app = express();

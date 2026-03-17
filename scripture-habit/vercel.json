@@ -92,10 +92,6 @@
     ],
     "rewrites": [
         {
-            "source": "/api/url-preview",
-            "destination": "/api/url-preview.js"
-        },
-        {
             "source": "/api/(.*)",
             "destination": "/api/index.js"
         },
