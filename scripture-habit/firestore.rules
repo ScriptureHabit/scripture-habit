@@ -50,7 +50,12 @@ service cloud.firestore {
 
       // Rules for private user data (e.g. fcmTokens)
       match /private/{docId} {
-        allow read, write: if request.auth != null && request.auth.uid == userId;
+        allow read: if request.auth != null && request.auth.uid == userId;
+        // Only allow updating 'tokens' document with 'fcmTokens' field to prevent arbitrary data storage
+        allow write: if request.auth != null && request.auth.uid == userId &&
+                      docId == 'tokens' &&
+                      request.resource.data.keys().hasAll(['fcmTokens']) &&
+                      request.resource.data.keys().size() == 1;
       }
 
       // Rules for the 'notes' subcollection
@@ -173,7 +178,14 @@ service cloud.firestore {
                           (!('reactions' in request.resource.data) || (
                             request.resource.data.reactions is map &&
                             request.resource.data.reactions.size() <= 10 &&
-                            request.resource.data.reactions.values().all(uids => uids is list && uids.size() <= 50)
+                            request.resource.data.reactions.values().all(uids => uids is list && uids.size() <= 50) &&
+                            // SECURE REACTIONS: Even owner/sender cannot modify others' reactions
+                            request.resource.data.reactions.keys().all(emoji => 
+                              let oldList = resource.data.get(['reactions', emoji], []);
+                              let newList = request.resource.data.reactions[emoji];
+                              newList.hasAll(oldList.removeAll([request.auth.uid])) && 
+                              oldList.hasAll(newList.removeAll([request.auth.uid]))
+                            )
                           ))
                         ) ||
                         // Case 2: Any member updating ONLY reactions
@@ -181,7 +193,14 @@ service cloud.firestore {
                           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reactions']) &&
                           request.resource.data.reactions is map &&
                           request.resource.data.reactions.size() <= 10 &&
-                          request.resource.data.reactions.values().all(uids => uids is list && uids.size() <= 50)
+                          request.resource.data.reactions.values().all(uids => uids is list && uids.size() <= 50) &&
+                          // SECURE REACTIONS: Ensure member can only add/remove their OWN uid from the list
+                          request.resource.data.reactions.keys().all(emoji => 
+                            let oldList = resource.data.get(['reactions', emoji], []);
+                            let newList = request.resource.data.reactions[emoji];
+                            newList.hasAll(oldList.removeAll([request.auth.uid])) && 
+                            oldList.hasAll(newList.removeAll([request.auth.uid]))
+                          )
                         )
                       );
                       

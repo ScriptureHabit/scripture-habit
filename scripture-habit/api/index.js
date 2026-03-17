@@ -79,7 +79,7 @@ app.use(globalLimiter);
 
 const inviteLimiter = rateLimit({
     windowMs: 60 * 60 * 1000, // 1 hour
-    limit: 30, // Limit each IP to 30 invite checks per hour
+    limit: 15, // Limit each IP to 15 invite checks per hour to prevent brute-force
     message: { error: 'Too many invite attempts, please try again later.' },
     standardHeaders: 'draft-7',
     legacyHeaders: false,
