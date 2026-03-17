@@ -61,7 +61,7 @@ const MessageItem: FC<MessageItemProps> = ({
                 if (msg.messageType === 'streakAnnouncement' && msg.messageData) {
                   return t('groupChat.streakAnnouncement', {
                     nickname: msg.messageData.nickname,
-                    streak: msg.messageData.streak
+                    streak: msg.messageData.streakCount || msg.messageData.streak
                   });
                 }
 

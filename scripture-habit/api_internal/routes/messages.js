@@ -49,7 +49,8 @@ router.post('/post-note', authenticate, requireEmailVerified, verifyAppCheck, as
             const groupDocs = groupRefs.length > 0 ? await transaction.getAll(...groupRefs) : [];
 
             // 2. Calculate Streak
-            let newStreak = userData.streak || 0;
+            let newStreak = userData.streakCount || userData.streak || 0;
+            let currentHighest = userData.highestStreak || newStreak;
             let streakUpdated = false;
             const timeZone = userData.timeZone || 'UTC';
             const today = new Date().toLocaleDateString('en-CA', { timeZone });
@@ -62,11 +63,24 @@ router.post('/post-note', authenticate, requireEmailVerified, verifyAppCheck, as
                     newStreak = 1;
                 }
                 streakUpdated = true;
-                transaction.update(userRef, {
-                    streak: newStreak,
+
+                const userUpdate = {
+                    streakCount: newStreak,
                     lastPostDate: today,
                     totalNotes: admin.firestore.FieldValue.increment(1)
-                });
+                };
+
+                // Cleanup legacy field if present
+                if (userData.streak !== undefined) {
+                    userUpdate.streak = admin.firestore.FieldValue.delete();
+                }
+
+                // Update highest streak if exceeded
+                if (newStreak > currentHighest) {
+                    userUpdate.highestStreak = newStreak;
+                }
+
+                transaction.update(userRef, userUpdate);
             }
 
             const userToGroupMap = new Map();
@@ -165,7 +179,7 @@ router.post('/post-note', authenticate, requireEmailVerified, verifyAppCheck, as
                         createdAt: admin.firestore.Timestamp.fromMillis(noteTimestamp.toMillis() + 2000),
                         isSystemMessage: true,
                         messageType: 'streakAnnouncement',
-                        messageData: { nickname: userData.nickname, userId: uid, streak: newStreak }
+                        messageData: { nickname: userData.nickname, userId: uid, streakCount: newStreak }
                     });
                 });
             }
