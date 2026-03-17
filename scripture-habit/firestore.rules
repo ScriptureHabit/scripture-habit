@@ -11,10 +11,15 @@ service cloud.firestore {
       );
     }
 
+    // Helper to verify App Check
+    function isAppCheckVerified() {
+      return request.app != null;
+    }
+
     // Rules for the 'users' collection
     match /users/{userId} {
       // A user can create their own document upon signup (before email verification)
-      allow create: if request.auth != null && request.auth.uid == userId;
+      allow create: if request.auth != null && request.auth.uid == userId && isAppCheckVerified();
 
       // A user can read a specific user document (needed for group members list).
       // SECURITY: Only allow reading if it's your own profile, or if you are in a group together.
@@ -27,14 +32,21 @@ service cloud.firestore {
 
       // A user can update their own document, but only specific fields to prevent mass-assignment.
       allow update: if request.auth != null && request.auth.uid == userId &&
+                    isAppCheckVerified() &&
                     request.resource.data.diff(resource.data).affectedKeys().hasOnly([
                       'nickname', 'stake', 'ward', 'bio', 'photoURL', 'language', 'timeZone', 'lastInteractionAt', 'kickThreshold', 'hasSetKickThreshold'
                     ]) &&
-                    (request.resource.data.nickname == null || (request.resource.data.nickname.size() <= 100 && request.resource.data.nickname.matches('^[^<>]*$'))) &&
-                    (request.resource.data.bio == null || request.resource.data.bio.size() <= 1000);
+                    (request.resource.data.nickname == null || 
+                      (request.resource.data.nickname is string && 
+                       request.resource.data.nickname.size() <= 100 && 
+                       request.resource.data.nickname.matches('^[^<>]*$'))) &&
+                    (request.resource.data.bio == null || 
+                      (request.resource.data.bio is string && 
+                       request.resource.data.bio.size() <= 1000 && 
+                       request.resource.data.bio.matches('^[^<>]*$')));
 
       // A user can delete their own document.
-      allow delete: if request.auth != null && request.auth.uid == userId;
+      allow delete: if request.auth != null && request.auth.uid == userId && isAppCheckVerified();
 
       // Rules for private user data (e.g. fcmTokens)
       match /private/{docId} {
@@ -71,7 +83,7 @@ service cloud.firestore {
       allow list: if request.auth != null && resource.data.isPublic == true;
 
       // A user can create a group, but they must set themselves as the owner.
-      allow create: if isAuthenticated() &&
+      allow create: if isAuthenticated() && isAppCheckVerified() &&
                     request.auth.uid == request.resource.data.ownerUserId &&
                     request.resource.data.name.size() <= 100 &&
                     request.resource.data.description.size() <= 1000 &&
@@ -130,7 +142,7 @@ service cloud.firestore {
                     );
                     
         // Members and owner can create messages
-        allow create: if isAuthenticated() &&
+        allow create: if isAuthenticated() && isAppCheckVerified() &&
                     (
                       request.auth.uid in get(/databases/$(database)/documents/groups/$(groupId)).data.get('members', []) ||
                       get(/databases/$(database)/documents/groups/$(groupId)).data.get('ownerUserId', '') == request.auth.uid

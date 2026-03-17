@@ -44,9 +44,14 @@ app.use(cors({
             return callback(null, true);
         }
 
-        // 3. 開発用の localhost と 127.0.0.1 は、ポート番号が違っても許可するように設定
+        // 3. 開発用の localhost と 127.0.0.1 は、開発環境(Node.js環境変数がproduction以外)の場合のみ許可
         if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) {
-            return callback(null, true);
+            if (process.env.NODE_ENV !== 'production') {
+                return callback(null, true);
+            } else {
+                console.warn(`Blocked localhost origin in production: ${origin}`);
+                return callback(new Error('CORS not allowed in production for localhost'), false);
+            }
         }
 
         // 4. (オプション) Vercelのプレビュー環境（ブランチごとの確認用ページ）も許可したい場合
@@ -136,6 +141,29 @@ try {
 } catch (fbError) {
     console.error('FIREBASE CRITICAL ERROR DURING INIT:', fbError.message);
 }
+
+// --- 4. Firebase App Check Middleware ---
+const verifyAppCheck = async (req, res, next) => {
+    // 開発環境で App Check をスキップしたい場合は環境変数で制御可能に
+    if (process.env.NODE_ENV !== 'production' && process.env.SKIP_APP_CHECK === 'true') {
+        return next();
+    }
+
+    const appCheckToken = req.header('X-Firebase-AppCheck');
+
+    if (!appCheckToken) {
+        console.warn(`Missing App Check token for ${req.path}`);
+        return res.status(401).json({ error: 'Unauthorized: App Check token missing' });
+    }
+
+    try {
+        await admin.appCheck().verifyToken(appCheckToken);
+        next();
+    } catch (err) {
+        console.error(`App Check verification failed: ${err.message}`);
+        return res.status(401).json({ error: 'Unauthorized: App Check failed' });
+    }
+};
 
 // --- Zod Schemas ---
 const supportedLanguages = ['en', 'ja', 'es', 'pt', 'zh', 'zho', 'vi', 'th', 'ko', 'tl', 'sw'];
@@ -484,7 +512,7 @@ app.post('/api/verify-login', async (req, res) => {
 });
 
 
-app.post('/api/join-group', inviteLimiter, async (req, res) => {
+app.post('/api/join-group', verifyAppCheck, inviteLimiter, async (req, res) => {
     // Validate Body first
     const validation = joinGroupSchema.safeParse(req.body);
     if (!validation.success) {
@@ -621,7 +649,7 @@ app.post('/api/join-group', inviteLimiter, async (req, res) => {
 });
 
 
-app.post('/api/leave-group', async (req, res) => {
+app.post('/api/leave-group', verifyAppCheck, async (req, res) => {
     const validation = leaveGroupSchema.safeParse(req.body);
     if (!validation.success) {
         return res.status(400).json({ error: 'Invalid input', details: validation.error.format() });
@@ -706,7 +734,7 @@ app.post('/api/leave-group', async (req, res) => {
     }
 });
 
-app.post('/api/update-kick-threshold', async (req, res) => {
+app.post('/api/update-kick-threshold', verifyAppCheck, async (req, res) => {
     const authHeader = req.headers.authorization;
     let idToken;
     if (authHeader && authHeader.startsWith('Bearer ')) {
@@ -761,7 +789,7 @@ app.post('/api/update-kick-threshold', async (req, res) => {
     }
 });
 
-app.post('/api/delete-group', async (req, res) => {
+app.post('/api/delete-group', verifyAppCheck, async (req, res) => {
     const validation = deleteGroupSchema.safeParse(req.body);
     if (!validation.success) {
         return res.status(400).json({ error: 'Invalid input', details: validation.error.format() });
@@ -1012,7 +1040,7 @@ app.get(['/api/group-preview/:inviteCode', '/api/group-preview/:inviteCode/'], i
 });
 
 // Scraping Endpoint for General Conference Metadata
-app.post('/api/post-note', async (req, res) => {
+app.post('/api/post-note', verifyAppCheck, async (req, res) => {
     const validation = postNoteSchema.safeParse(req.body);
     if (!validation.success) {
         return res.status(400).json({ error: 'Invalid input', details: validation.error.format() });
@@ -1317,7 +1345,7 @@ app.post('/api/post-note', async (req, res) => {
     }
 });
 
-app.post('/api/post-message', async (req, res) => {
+app.post('/api/post-message', verifyAppCheck, async (req, res) => {
     const validation = postMessageSchema.safeParse(req.body);
     if (!validation.success) {
         return res.status(400).json({ error: 'Invalid input', details: validation.error.format() });
@@ -1416,7 +1444,7 @@ app.post('/api/post-message', async (req, res) => {
     }
 });
 
-app.post('/api/send-cheer', async (req, res) => {
+app.post('/api/send-cheer', verifyAppCheck, async (req, res) => {
     const validation = sendCheerSchema.safeParse(req.body);
     if (!validation.success) {
         return res.status(400).json({ error: 'Invalid input', details: validation.error.format() });
