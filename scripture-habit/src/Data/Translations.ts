@@ -351,7 +351,12 @@ export const translations: Record<string, any> = {
             inviteCodeRegenerated: "Invite code has been regenerated!",
             errorRegenerateInviteCode: "Failed to regenerate invite code.",
             errorOnlyOwnerInviteLink: "Only the group owner can update the invite link.",
-            loadPreviousMessages: "Load previous messages"
+            loadPreviousMessages: "Load previous messages",
+            lastRecap: "Last Recap",
+            daysAgo: "{count} days ago",
+            viewMembers: "View Members",
+            makePublic: "Make Public",
+            makePrivate: "Make Private"
         },
         newNote: {
             editTitle: "Edit Note",
@@ -1093,7 +1098,12 @@ export const translations: Record<string, any> = {
             inviteCodeRegenerated: "招待コードを再生成しました！",
             errorRegenerateInviteCode: "招待コードの再生成に失敗しました。",
             errorOnlyOwnerInviteLink: "グループ作成者のみが招待リンクを更新できます。",
-            loadPreviousMessages: "前のメッセージを読み込む"
+            loadPreviousMessages: "前のメッセージを読み込む",
+            lastRecap: "前回の要約",
+            daysAgo: "{count}日前",
+            viewMembers: "メンバーを表示",
+            makePublic: "パブリックにする",
+            makePrivate: "プライベートにする"
         },
         myNotes: {
             description: "ノートコレクション",
