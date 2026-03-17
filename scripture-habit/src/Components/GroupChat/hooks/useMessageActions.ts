@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { doc, updateDoc, deleteDoc, arrayRemove, arrayUnion, serverTimestamp, collection, addDoc, increment } from 'firebase/firestore';
 import { db, auth } from '../../../firebase';
 import { toast } from 'react-toastify';
-import { Message, Reaction } from '../../../types/chat';
+import { Message } from '../../../types/chat';
 
 export const useMessageActions = (
   groupId: string,
@@ -87,20 +87,18 @@ export const useMessageActions = (
     if (!userData) return;
     try {
       const messageRef = doc(db, 'groups', groupId, 'messages', message.id);
-      const existingReaction = message.reactions?.find(r => r.userId === userData.uid);
+      const emoji = '👍';
+      const reactions = message.reactions || {};
+      const uids = reactions[emoji] || [];
+      const hasReacted = uids.includes(userData.uid);
 
-      if (existingReaction) {
+      if (hasReacted) {
         await updateDoc(messageRef, {
-          reactions: arrayRemove(existingReaction)
+          [`reactions.${emoji}`]: arrayRemove(userData.uid)
         });
       } else {
-        const newReaction: Reaction = {
-          userId: userData.uid,
-          nickname: userData.nickname || 'User',
-          emoji: '👍'
-        };
         await updateDoc(messageRef, {
-          reactions: arrayUnion(newReaction)
+          [`reactions.${emoji}`]: arrayUnion(userData.uid)
         });
       }
     } catch (error) {

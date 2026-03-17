@@ -403,7 +403,7 @@ const GroupChatModals: FC<GroupChatModalsProps> = ({
                                     key={idx}
                                     className="reaction-user"
                                     onClick={() => {
-                                        handleUserProfileClick(reaction.odU);
+                                        handleUserProfileClick(reaction.userId);
                                         setShowReactionsModal(false);
                                     }}
                                     style={{ cursor: 'pointer' }}

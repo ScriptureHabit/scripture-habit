@@ -21,7 +21,7 @@ interface MessageItemProps {
   groupData: Group | null;
   translatedTexts: Record<string, string>;
   language: string;
-  handleShowReactions: (reactions: any[]) => void;
+  handleShowReactions: (reactions: Record<string, string[]>) => void;
   membersMap: MembersMap;
 }
 
@@ -239,9 +239,9 @@ const MessageItem: FC<MessageItemProps> = ({
                   <button
                     className="hover-action-btn"
                     onClick={(e) => { e.stopPropagation(); handleToggleReaction(msg); }}
-                    title={msg.reactions?.find(r => r.userId === userData?.uid) ? t('groupChat.unlike') : t('groupChat.like')}
+                    title={msg.reactions?.['👍']?.includes(userData?.uid || '') ? t('groupChat.unlike') : t('groupChat.like')}
                   >
-                    {msg.reactions?.find(r => r.userId === userData?.uid) ? '👍' : '👍'}
+                    {msg.reactions?.['👍']?.includes(userData?.uid || '') ? '👍' : '👍'}
                   </button>
                   <button
                     className="hover-action-btn"
@@ -403,7 +403,7 @@ const MessageItem: FC<MessageItemProps> = ({
               )}
             </div>
             {/* Reactions display */}
-            {msg.reactions && msg.reactions.length > 0 && (
+            {msg.reactions && Object.values(msg.reactions).some(uids => uids.length > 0) && (
               <div
                 className={`message-reactions ${msg.senderId === userData?.uid ? 'sent' : 'received'}`}
                 onClick={(e) => {
@@ -412,7 +412,9 @@ const MessageItem: FC<MessageItemProps> = ({
                 }}
               >
                 <span className="reaction-emoji">👍</span>
-                <span className="reaction-count">{msg.reactions.length}</span>
+                <span className="reaction-count">
+                  {Object.values(msg.reactions).reduce((acc, uids) => acc + (uids?.length || 0), 0)}
+                </span>
               </div>
             )}
           </div>

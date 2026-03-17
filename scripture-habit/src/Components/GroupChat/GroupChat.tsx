@@ -326,8 +326,19 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], onI
     setShowReportModal(true);
   };
 
-  const handleShowReactions = (reactions: any[]) => {
-    setReactionsToShow(reactions);
+  const handleShowReactions = (reactions: Record<string, string[]>) => {
+    const reactionsList: any[] = [];
+    Object.entries(reactions).forEach(([emoji, uids]) => {
+      if (!Array.isArray(uids)) return;
+      uids.forEach(uid => {
+        reactionsList.push({
+          userId: uid,
+          emoji,
+          nickname: membersMap[uid]?.nickname || 'Unknown'
+        });
+      });
+    });
+    setReactionsToShow(reactionsList);
     setShowReactionsModal(true);
   };
 
@@ -641,7 +652,7 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], onI
           }}>
             <button onClick={() => { handleReply(contextMenu.message!); closeContextMenu(); }}><div style={{ width: '22px' }}><UilCommentAlt size="18" /></div><span>{t('groupChat.reply')}</span></button>
             {contextMenu.message.senderId !== userData?.uid && (
-              <button onClick={() => { handleToggleReaction(contextMenu.message!); closeContextMenu(); }}><div style={{ width: '22px', fontSize: '18px' }}>👍</div><span>{contextMenu.message?.reactions?.find(r => r.userId === userData?.uid) ? t('groupChat.unlike') : t('groupChat.like')}</span></button>
+              <button onClick={() => { handleToggleReaction(contextMenu.message!); closeContextMenu(); }}><div style={{ width: '22px', fontSize: '18px' }}>👍</div><span>{contextMenu.message?.reactions?.['👍']?.includes(userData?.uid || '') ? t('groupChat.unlike') : t('groupChat.like')}</span></button>
             )}
             {contextMenu.message.senderId === userData?.uid && (
               <button onClick={() => { handleEditMessage(contextMenu.message!); closeContextMenu(); }}><div style={{ width: '22px' }}><UilPen size="18" /></div><span>{t('groupChat.editMessage')}</span></button>

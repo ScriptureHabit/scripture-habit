@@ -52,7 +52,7 @@ export interface Message {
     isNote: boolean;
   } | string | null;
   
-  reactions?: Reaction[];
+  reactions?: Record<string, string[]>;
   translations?: Record<string, string>;
   [key: string]: any;
 }
