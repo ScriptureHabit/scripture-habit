@@ -18,9 +18,8 @@ app.get(['/api/test', '/api/test/'], (req, res) => res.status(200).send('API is 
 app.get(['/api/health', '/api/health/'], (req, res) => {
     res.json({
         status: 'ok',
-        time: new Date().toISOString(),
-        node: process.version,
-        env: process.env.NODE_ENV
+        time: new Date().toISOString()
+        // Node version and environment revealed omitted for security
     });
 });
 
@@ -55,8 +54,8 @@ app.use(cors({
         }
 
         // 4. (オプション) Vercelのプレビュー環境（ブランチごとの確認用ページ）も許可したい場合
-        // ドメインが「https://scripture-habit-」で始まり「.vercel.app」で終わるものだけを厳密に許可
-        if (origin.startsWith('https://scripture-habit-') && origin.endsWith('.vercel.app')) {
+        // ドメインが、既知のプレビューURLパターンに一致するものだけを許可
+        if (/^https:\/\/scripture-habit-[\w-]+\.vercel\.app$/.test(origin)) {
             return callback(null, true);
         }
 
@@ -92,6 +91,16 @@ const aiLimiter = rateLimit({
     message: { error: 'AI limit reached. Please try again in an hour.' },
     standardHeaders: 'draft-7',
     legacyHeaders: false,
+    // Add keyGenerator to try and use UID if authorization header exists
+    keyGenerator: (req) => {
+        const auth = req.headers.authorization;
+        if (auth && auth.startsWith('Bearer ')) {
+            // Note: We don't verify the token here to avoid double-processing, 
+            // but we use a hash of the token to identify the user for limiting.
+            return crypto.createHash('md5').update(auth).digest('hex');
+        }
+        return req.ip; // Fallback to IP
+    },
 });
 
 // Helper to escape simple markdown to prevent injection in system messages

@@ -169,11 +169,19 @@ service cloud.firestore {
                           request.resource.data.senderId == resource.data.senderId &&
                           request.resource.data.get('isSystemMessage', false) == false &&
                           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['text', 'reactions', 'updatedAt']) &&
-                          request.resource.data.text.size() <= 1000
+                          request.resource.data.text.size() <= 1000 &&
+                          (!('reactions' in request.resource.data) || (
+                            request.resource.data.reactions is map &&
+                            request.resource.data.reactions.size() <= 10 &&
+                            request.resource.data.reactions.values().all(uids => uids is list && uids.size() <= 50)
+                          ))
                         ) ||
                         // Case 2: Any member updating ONLY reactions
                         (
-                          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reactions'])
+                          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reactions']) &&
+                          request.resource.data.reactions is map &&
+                          request.resource.data.reactions.size() <= 10 &&
+                          request.resource.data.reactions.values().all(uids => uids is list && uids.size() <= 50)
                         )
                       );
                       
