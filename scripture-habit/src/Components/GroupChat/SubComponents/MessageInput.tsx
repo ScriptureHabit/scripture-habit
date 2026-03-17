@@ -1,4 +1,4 @@
-import { FC, RefObject, KeyboardEvent, FormEvent } from 'react';
+import { FC, RefObject, KeyboardEvent, FormEvent, useEffect } from 'react';
 import { UilPlus, UilTimes } from '@iconscout/react-unicons';
 import { Message } from '../../../types/chat';
 
@@ -37,6 +37,15 @@ const MessageInput: FC<MessageInputProps> = ({
     handleDismissTooltip,
     setIsNewNoteOpen
 }) => {
+    useEffect(() => {
+        const textarea = textareaRef.current;
+        if (textarea) {
+            textarea.style.height = 'auto';
+            const newHeight = Math.min(textarea.scrollHeight, 150);
+            textarea.style.height = `${newHeight}px`;
+        }
+    }, [newMessage, textareaRef]);
+
     return (
         <form
             onSubmit={handleSendMessage}

@@ -325,7 +325,11 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], onI
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.nativeEvent.isComposing) return;
+
+    const isMobile = window.innerWidth <= 768 || Capacitor.isNativePlatform();
+
+    if (e.key === 'Enter' && !e.shiftKey && !isMobile) {
       e.preventDefault();
       handleSendMessage(newMessage, replyTo).then(success => {
         if (success) {
