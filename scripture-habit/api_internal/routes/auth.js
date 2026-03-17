@@ -1,6 +1,6 @@
 import express from 'express';
 import { admin, db } from '../lib/firebase-admin.js';
-import { verifyAppCheck } from '../lib/middleware.js';
+import { verifyAppCheck, authenticate } from '../lib/middleware.js';
 import { verifyLoginSchema } from '../lib/schemas.js';
 
 const router = express.Router();
@@ -15,25 +15,25 @@ router.post('/verify-login', verifyAppCheck, async (req, res) => {
     const { token } = validation.data;
 
     try {
+        // use token from body for verification
         const decodedToken = await admin.auth().verifyIdToken(token);
         const uid = decodedToken.uid;
-        const email = decodedToken.email;
-
-        // Check if email is verified
+        
+        // Check if email is verified - use latest snapshot from Auth server for login check
         const userRecord = await admin.auth().getUser(uid);
         if (!userRecord.emailVerified) {
-            console.warn(`Login failed for ${email}: email not verified.`);
+            console.warn(`Login failed for ${decodedToken.email}: email not verified.`);
             return res.status(403).json({ 
                 error: 'Email not verified.', 
                 code: 'auth/email-not-verified' 
             });
         }
 
-        console.log('Verified user:', { uid, email });
+        console.log('Verified user:', { uid, email: decodedToken.email });
         res.status(200).json({ 
             message: 'Login verified.', 
             uid, 
-            email 
+            email: decodedToken.email 
         });
     } catch (error) {
         console.error('Error verifying login:', error.message);
@@ -42,19 +42,9 @@ router.post('/verify-login', verifyAppCheck, async (req, res) => {
 });
 
 // Delete account
-router.post('/delete-account', verifyAppCheck, async (req, res) => {
-    const authHeader = req.headers.authorization;
-    let idToken;
-    if (authHeader && authHeader.startsWith('Bearer ')) {
-        idToken = authHeader.split('Bearer ')[1];
-    } else {
-        return res.status(401).send('Unauthorized');
-    }
-
-    let uid;
+router.post('/delete-account', authenticate, verifyAppCheck, async (req, res) => {
+    const uid = req.user.uid;
     try {
-        const decodedToken = await admin.auth().verifyIdToken(idToken);
-        uid = decodedToken.uid;
 
         console.log(`Starting account deletion for UID: ${uid}`);
 

@@ -13,10 +13,31 @@ interface useGCMetadataResult {
     error: Error | null;
 }
 
-// Cache in memory as well to avoid reading localStorage constantly for the same session
+// Map app language codes to Church API language parameters
+const LANGUAGE_MAP: Record<string, string> = {
+  'en': 'eng',
+  'ja': 'jpn',
+  'pt': 'por',
+  'es': 'spa',
+  'zho': 'zho',
+  'vi': 'vie',
+  'th': 'tha',
+  'ko': 'kor',
+  'tl': 'tgl',
+  'sw': 'swa'
+};
+
+// Internal memory cache to avoid unnecessary I/O
 const memoryCache: Record<string, GCMetadata> = {};
 
-export const useGCMetadata = (urlOrSlug: string | null | undefined, language: Language | string): useGCMetadataResult => {
+/**
+ * Hook to fetch and cache metadata (title, speaker) for General Conference talks.
+ * Prioritizes memory cache, then localStorage, then API fetch.
+ */
+export const useGCMetadata = (
+  urlOrSlug: string | null | undefined, 
+  language: Language | string
+): useGCMetadataResult => {
     const [data, setData] = useState<GCMetadata | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<Error | null>(null);
@@ -24,93 +45,72 @@ export const useGCMetadata = (urlOrSlug: string | null | undefined, language: La
     useEffect(() => {
         if (!urlOrSlug || !language) return;
 
-        // Determine if it is a fetchable GC item
-        const isUrlStr = urlOrSlug.startsWith('http');
-        const isChurchUrl = urlOrSlug.includes('churchofjesuschrist.org') || urlOrSlug.includes('general-conference');
-
-        if (!isUrlStr) {
+        // Skip non-church URLs/slugs
+        if (!urlOrSlug.startsWith('http') && !urlOrSlug.startsWith('/')) {
             return;
         }
 
-        // Construct a unique cache key
         const cacheKey = `gc_meta_${language}_${urlOrSlug}`;
 
-        // 1. Check Memory Cache
+        // 1. Memory Cache
         if (memoryCache[cacheKey]) {
             setData(memoryCache[cacheKey]);
             return;
         }
 
-        // 2. Check LocalStorage
-        const localCached = safeStorage.get(cacheKey);
-        if (localCached) {
-            try {
-                const parsed = JSON.parse(localCached) as GCMetadata;
-                memoryCache[cacheKey] = parsed;
-                setData(parsed);
-                return;
-            } catch (e) {
-                console.error("Error parsing cached GC metadata", e);
-            }
+        // 2. LocalStorage (using refactored safeStorage that handles JSON)
+        const cached = safeStorage.get<GCMetadata>(cacheKey);
+        if (cached) {
+            memoryCache[cacheKey] = cached;
+            setData(cached);
+            return;
         }
 
-        // 3. Fetch from API
+        // 3. API Fetch
+        let active = true;
         const fetchMetadata = async () => {
             setLoading(true);
+            setError(null);
+
             try {
-                // Determine the URL to fetch
-                let fetchUrl = urlOrSlug;
-
-                if (!fetchUrl.startsWith('http')) {
-                    fetchUrl = `https://www.churchofjesuschrist.org${fetchUrl.startsWith('/') ? '' : '/'}${fetchUrl}`;
+                let targetUrl = urlOrSlug;
+                if (!targetUrl.startsWith('http')) {
+                    targetUrl = `https://www.churchofjesuschrist.org${targetUrl.startsWith('/') ? '' : '/'}${targetUrl}`;
                 }
 
+                const isChurchUrl = targetUrl.includes('churchofjesuschrist.org') || targetUrl.includes('general-conference');
                 const API_BASE = window.location.hostname === 'localhost' ? '' : 'https://scripturehabit.app';
+                const apiLang = LANGUAGE_MAP[language] || 'eng';
                 
-                const langMap: Record<string, string> = {
-                    'en': 'eng',
-                    'ja': 'jpn',
-                    'pt': 'por',
-                    'es': 'spa',
-                    'zho': 'zho',
-                    'vi': 'vie',
-                    'th': 'tha',
-                    'ko': 'kor',
-                    'tl': 'tgl',
-                    'sw': 'swa'
-                };
-
-                const apiLang = langMap[language] || 'eng';
-
                 const endpoint = isChurchUrl ? '/api/fetch-gc-metadata' : '/api/url-preview';
-                const finalApiUrl = `${API_BASE}${endpoint}?url=${encodeURIComponent(fetchUrl)}&lang=${apiLang}`;
+                const finalUrl = `${API_BASE}${endpoint}?url=${encodeURIComponent(targetUrl)}&lang=${apiLang}`;
 
-                const response = await fetch(finalApiUrl);
-                if (!response.ok) {
-                    throw new Error('Failed to fetch metadata');
-                }
+                const response = await fetch(finalUrl);
+                if (!response.ok) throw new Error(`HTTP ${response.status}: Failed to fetch metadata`);
 
                 const result = await response.json();
+                
+                if (active) {
+                    const meta: GCMetadata = {
+                        title: result.title || '',
+                        speaker: result.speaker || ''
+                    };
 
-                // Update Cache
-                const meta: GCMetadata = {
-                    title: result.title || '',
-                    speaker: result.speaker || ''
-                };
-
-                safeStorage.set(cacheKey, JSON.stringify(meta));
-                memoryCache[cacheKey] = meta;
-
-                setData(meta);
+                    // Update Caches
+                    safeStorage.set(cacheKey, meta);
+                    memoryCache[cacheKey] = meta;
+                    setData(meta);
+                }
             } catch (err: any) {
-                console.error("Error fetching metadata:", err);
-                setError(err instanceof Error ? err : new Error(String(err)));
+                console.error("useGCMetadata error:", err);
+                if (active) setError(err instanceof Error ? err : new Error(String(err)));
             } finally {
-                setLoading(false);
+                if (active) setLoading(false);
             }
         };
 
         fetchMetadata();
+        return () => { active = false; };
 
     }, [urlOrSlug, language]);
 

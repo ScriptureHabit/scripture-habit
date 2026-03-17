@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
-import { db } from '../../firebase';
+import { db } from '../../../firebase';
 import { collection, query, orderBy, onSnapshot, doc, getDoc, getDocs, limit, startAfter, startAt, DocumentSnapshot } from 'firebase/firestore';
-import { safeStorage } from '../../Utils/storage';
+import { safeStorage } from '../../../Utils/storage';
 import confetti from 'canvas-confetti';
 import * as Sentry from "@sentry/react";
-import { Message, GroupData, MembersMap, UserProfile } from '../../types/chat';
+import { Message, GroupData, MembersMap, UserProfileBrief } from '../../../types/chat';
 
 export const useGroupMessages = (groupId: string | null, userData: any, t: (key: string) => string) => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -74,7 +74,7 @@ export const useGroupMessages = (groupId: string | null, userData: any, t: (key:
         const memberSnapshots = await Promise.all(uidsToFetch.map(uid => getDoc(doc(db, 'users', uid))));
         memberSnapshots.forEach(snap => {
           if (snap.exists()) {
-            newMap[snap.id] = snap.data() as UserProfile;
+            newMap[snap.id] = snap.data() as UserProfileBrief;
           }
         });
         setMembersMap(newMap);

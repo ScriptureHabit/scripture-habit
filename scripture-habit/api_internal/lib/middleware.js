@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import { rateLimit } from 'express-rate-limit';
-import { appCheck } from './firebase-admin.js';
+import { appCheck, auth } from './firebase-admin.js';
 
 // --- Rate Limiters ---
 
@@ -55,4 +55,43 @@ export const verifyAppCheck = async (req, res, next) => {
         console.warn('App Check verification failed:', err.message);
         return res.status(401).json({ error: 'Unauthorized: Security check failed' });
     }
+};
+
+// --- Authentication Middleware ---
+
+export const authenticate = async (req, res, next) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({ error: 'Unauthorized: Authentication required' });
+    }
+
+    const token = authHeader.split('Bearer ')[1];
+    try {
+        const decodedToken = await auth.verifyIdToken(token);
+        req.user = decodedToken;
+        next();
+    } catch (err) {
+        console.warn('Auth verification failed:', err.message);
+        return res.status(401).json({ error: 'Unauthorized: Invalid or expired token' });
+    }
+};
+
+/**
+ * Enforces email verification for password-based accounts.
+ * Should be used AFTER authenticate middleware.
+ */
+export const requireEmailVerified = (req, res, next) => {
+    if (!req.user) {
+        return res.status(401).json({ error: 'Unauthorized: Not authenticated' });
+    }
+
+    // Force check email_verified for password login
+    if (req.user.firebase.sign_in_provider === 'password' && !req.user.email_verified) {
+        return res.status(403).json({ 
+            error: 'Email not verified. Please verify your email.', 
+            code: 'auth/email-not-verified' 
+        });
+    }
+
+    next();
 };

@@ -1,31 +1,40 @@
 import admin from 'firebase-admin';
 import dotenv from 'dotenv';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 dotenv.config();
 
 if (!admin.apps.length) {
-    const privateKey = process.env.FIREBASE_PRIVATE_KEY
-        ? process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n')
-        : undefined;
+    let serviceAccount;
 
-    const serviceAccount = {
-        type: "service_account",
-        project_id: process.env.FIREBASE_PROJECT_ID,
-        private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID,
-        private_key: privateKey,
-        client_email: process.env.FIREBASE_CLIENT_EMAIL,
-        client_id: process.env.FIREBASE_CLIENT_ID,
-        auth_uri: "https://accounts.google.com/o/oauth2/auth",
-        token_uri: "https://oauth2.googleapis.com/token",
-        auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
-        client_x509_cert_url: process.env.FIREBASE_CLIENT_CERT_URL
-    };
+    if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+        serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+    } else if (process.env.FIREBASE_PROJECT_ID && process.env.FIREBASE_PRIVATE_KEY) {
+        serviceAccount = {
+            project_id: process.env.FIREBASE_PROJECT_ID,
+            private_key: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+            client_email: process.env.FIREBASE_CLIENT_EMAIL,
+        };
+    } else {
+        // Fallback for local development using a JSON file
+        const jsonPath = path.join(__dirname, '../../backend/serviceAccountKey.json');
+        if (fs.existsSync(jsonPath)) {
+            serviceAccount = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+        }
+    }
 
-    if (serviceAccount.project_id && serviceAccount.private_key) {
+    if (serviceAccount) {
         admin.initializeApp({
             credential: admin.credential.cert(serviceAccount)
         });
-        console.log('Firebase Admin initialized locally via module');
+        console.log('Firebase Admin initialized successfully');
+    } else {
+        console.warn('Firebase Admin NOT initialized: Missing credentials');
     }
 }
 

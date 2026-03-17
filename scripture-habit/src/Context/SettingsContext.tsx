@@ -1,8 +1,17 @@
 /* eslint-disable react-refresh/only-export-components */
-import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
+import React, { createContext, useState, useContext, useEffect, ReactNode, useCallback, useMemo } from 'react';
 import { safeStorage } from '../Utils/storage';
 
 export type FontSize = 'small' | 'medium' | 'large' | 'extraLarge';
+
+export const FONT_SIZE_MAP: Record<FontSize, string> = {
+    'small': '14px',
+    'medium': '16px',
+    'large': '18px',
+    'extraLarge': '20px'
+};
+
+const DEFAULT_FONT_SIZE: FontSize = 'medium';
 
 interface SettingsContextType {
     fontSize: FontSize;
@@ -11,33 +20,37 @@ interface SettingsContextType {
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
 
+// --- Helpers ---
+
+const detectInitialFontSize = (): FontSize => {
+    const saved = safeStorage.get('fontSize') as FontSize;
+    if (saved && Object.keys(FONT_SIZE_MAP).includes(saved)) {
+        return saved;
+    }
+    return DEFAULT_FONT_SIZE;
+};
+
 interface SettingsProviderProps {
     children: ReactNode;
 }
 
 export const SettingsProvider: React.FC<SettingsProviderProps> = ({ children }) => {
-    const [fontSize, setFontSizeState] = useState<FontSize>(() => {
-        const saved = safeStorage.get('fontSize') as FontSize;
-        return saved || 'medium';
-    });
+    const [fontSize, setFontSizeInternal] = useState<FontSize>(detectInitialFontSize);
 
+    // Apply font size change to the document root and persist
     useEffect(() => {
         safeStorage.set('fontSize', fontSize);
-        // Apply font size to document root
-        const fontSizeMap: Record<FontSize, string> = {
-            'small': '14px',
-            'medium': '16px',
-            'large': '18px',
-            'extraLarge': '20px'
-        };
-        document.documentElement.style.fontSize = fontSizeMap[fontSize] || '16px';
+        
+        const sizeValue = FONT_SIZE_MAP[fontSize] || FONT_SIZE_MAP[DEFAULT_FONT_SIZE];
+        document.documentElement.style.fontSize = sizeValue;
     }, [fontSize]);
 
-    const setFontSize = React.useCallback((size: FontSize) => {
-        setFontSizeState(size);
-    }, []);
+    const setFontSize = useCallback((size: FontSize) => {
+        if (size === fontSize) return;
+        setFontSizeInternal(size);
+    }, [fontSize]);
 
-    const contextValue = React.useMemo(() => ({
+    const contextValue = useMemo(() => ({
         fontSize,
         setFontSize
     }), [fontSize, setFontSize]);
@@ -51,7 +64,7 @@ export const SettingsProvider: React.FC<SettingsProviderProps> = ({ children }) 
 
 export const useSettings = () => {
     const context = useContext(SettingsContext);
-    if (context === undefined) {
+    if (!context) {
         throw new Error('useSettings must be used within a SettingsProvider');
     }
     return context;

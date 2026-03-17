@@ -60,6 +60,7 @@
             "src": "/og-image.png",
             "sizes": "1024x1024",
             "type": "image/png",
+            "form_factor": "narrow",
             "label": "Scripture Habit Mobile"
         }
     ],

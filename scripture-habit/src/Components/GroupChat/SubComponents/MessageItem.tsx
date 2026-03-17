@@ -1,12 +1,13 @@
 import { FC, MouseEvent } from 'react';
 import ReactMarkdown from 'react-markdown';
-import NoteDisplay from '../NoteDisplay/NoteDisplay';
-import { getGospelLibraryUrl } from '../../Utils/gospelLibraryMapper';
-import { Message, Group, UserProfile, MembersMap } from '../../types/chat';
+import NoteDisplay from '../../NoteDisplay/NoteDisplay';
+import { getGospelLibraryUrl } from '../../../Utils/gospelLibraryMapper';
+import { Message, Group, UserProfileBrief, MembersMap } from '../../../types/chat';
+import { UserData } from '../../../types/user';
 
 interface MessageItemProps {
   msg: Message;
-  userData: UserProfile | null;
+  userData: UserData | UserProfileBrief | null;
   t: (key: string, replacements?: any) => string;
   handleMessageClick: (msg: Message, e: MouseEvent) => void;
   handleEditMessage: (msg: Message) => void;
@@ -238,9 +239,9 @@ const MessageItem: FC<MessageItemProps> = ({
                   <button
                     className="hover-action-btn"
                     onClick={(e) => { e.stopPropagation(); handleToggleReaction(msg); }}
-                    title={msg.reactions?.find(r => r.odU === userData?.uid) ? t('groupChat.unlike') : t('groupChat.like')}
+                    title={msg.reactions?.find(r => r.userId === userData?.uid) ? t('groupChat.unlike') : t('groupChat.like')}
                   >
-                    {msg.reactions?.find(r => r.odU === userData?.uid) ? '👍' : '👍'}
+                    {msg.reactions?.find(r => r.userId === userData?.uid) ? '👍' : '👍'}
                   </button>
                   <button
                     className="hover-action-btn"

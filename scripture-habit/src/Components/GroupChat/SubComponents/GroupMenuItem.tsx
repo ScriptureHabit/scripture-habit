@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, FC } from 'react';
 import { doc, updateDoc } from 'firebase/firestore';
-import { db, auth } from '../../firebase';
-import { Group } from '../../types/chat';
+import { db, auth } from '../../../firebase';
+import { Group } from '../../../types/chat';
 
 interface GroupMenuItemProps {
     group: Group;

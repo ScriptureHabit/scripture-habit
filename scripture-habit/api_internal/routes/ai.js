@@ -1,6 +1,6 @@
 import express from 'express';
 import { admin, db } from '../lib/firebase-admin.js';
-import { aiLimiter, verifyAppCheck } from '../lib/middleware.js';
+import { aiLimiter, verifyAppCheck, authenticate } from '../lib/middleware.js';
 import { ponderQuestionsSchema, translateSchema, weeklyRecapSchema, personalRecapSchema, languageNames } from '../lib/schemas.js';
 import axios from 'axios';
 import crypto from 'crypto';
@@ -8,17 +8,12 @@ import crypto from 'crypto';
 const router = express.Router();
 
 // AI Ponder Questions
-router.post('/generate-ponder-questions', aiLimiter, verifyAppCheck, async (req, res) => {
+router.post('/generate-ponder-questions', authenticate, aiLimiter, verifyAppCheck, async (req, res) => {
     const validation = ponderQuestionsSchema.safeParse(req.body);
     if (!validation.success) return res.status(400).json({ error: 'Invalid input', details: validation.error.format() });
     const { scripture, chapter, language } = validation.data;
 
-    const authHeader = req.headers.authorization;
-    if (!authHeader) return res.status(401).json({ error: 'Unauthorized' });
-    const idToken = authHeader.split('Bearer ')[1];
-
     try {
-        await admin.auth().verifyIdToken(idToken);
         if (!process.env.GEMINI_API_KEY) throw new Error('Gemini API Key missing');
 
         const prompts = {
@@ -40,13 +35,10 @@ router.post('/generate-ponder-questions', aiLimiter, verifyAppCheck, async (req,
 });
 
 // AI Translation
-router.post('/translate', aiLimiter, verifyAppCheck, async (req, res) => {
+router.post('/translate', authenticate, aiLimiter, verifyAppCheck, async (req, res) => {
     const validation = translateSchema.safeParse(req.body);
     if (!validation.success) return res.status(400).json({ error: 'Invalid input' });
     const { text, targetLanguage } = validation.data;
-
-    const authHeader = req.headers.authorization;
-    if (!authHeader) return res.status(401).json({ error: 'Unauthorized' });
 
     try {
         const cacheKey = crypto.createHash('md5').update(`${text}_${targetLanguage}`).digest('hex');
@@ -72,18 +64,14 @@ router.post('/translate', aiLimiter, verifyAppCheck, async (req, res) => {
 });
 
 // AI Weekly Recap
-router.post('/generate-weekly-recap', aiLimiter, verifyAppCheck, async (req, res) => {
+router.post('/generate-weekly-recap', authenticate, aiLimiter, verifyAppCheck, async (req, res) => {
     const validation = weeklyRecapSchema.safeParse(req.body);
     if (!validation.success) return res.status(400).json({ error: 'Invalid input' });
     const { groupId, language } = validation.data;
 
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) return res.status(401).json({ error: 'Unauthorized' });
-    const idToken = authHeader.split('Bearer ')[1];
+    const uid = req.user.uid;
 
     try {
-        const decoded = await admin.auth().verifyIdToken(idToken);
-        const uid = decoded.uid;
 
         const groupRef = db.collection('groups').doc(groupId);
         const gSnap = await groupRef.get();
@@ -120,19 +108,36 @@ router.post('/generate-weekly-recap', aiLimiter, verifyAppCheck, async (req, res
     }
 });
 
+// AI Discussion Starter
+router.post('/generate-discussion-topic', authenticate, aiLimiter, verifyAppCheck, async (req, res) => {
+    const { language } = req.body;
+    try {
+        if (!process.env.GEMINI_API_KEY) throw new Error('Gemini API Key missing');
+
+        const prompts = {
+            'ja': `あなたは末日聖徒イエス・キリスト教会の聖典学習グループのファシリテーターです。グループのメンバーが互いの経験や証を分かち合いたくなるような、話し合いのきっかけとなる質問を1つだけ提案してください。箇条書きの記号は使わず、質問文のみをプレーンテキストで出力してください。`,
+            'en': `You are a facilitator for a scripture study group. Suggest 1 discussion starter question that encourages members to share their experiences and testimonies. Output ONLY the question text. No bullet points.`,
+        };
+        const prompt = prompts[language] || prompts['en'];
+
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`;
+        const response = await axios.post(apiUrl, { contents: [{ parts: [{ text: prompt }] }] });
+
+        const generatedText = response.data?.candidates?.[0]?.content?.parts?.[0]?.text;
+        res.json({ topic: (generatedText || '').trim() });
+    } catch (err) {
+        res.status(500).json({ error: 'AI discussion topic failed' });
+    }
+});
+
 // AI Personal Weekly Recap
-router.post('/generate-personal-weekly-recap', aiLimiter, verifyAppCheck, async (req, res) => {
+router.post('/generate-personal-weekly-recap', authenticate, aiLimiter, verifyAppCheck, async (req, res) => {
     const validation = personalRecapSchema.safeParse(req.body);
     if (!validation.success) return res.status(400).json({ error: 'Invalid input' });
     const { uid, language } = validation.data;
 
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) return res.status(401).json({ error: 'Unauthorized' });
-    const idToken = authHeader.split('Bearer ')[1];
-
     try {
-        const decoded = await admin.auth().verifyIdToken(idToken);
-        if (decoded.uid !== uid) return res.status(403).send('Forbidden');
+        if (req.user.uid !== uid) return res.status(403).send('Forbidden');
 
         const sevenDaysAgo = new Date();
         sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);

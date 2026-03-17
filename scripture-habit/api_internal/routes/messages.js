@@ -1,6 +1,6 @@
 import express from 'express';
 import { admin, db } from '../lib/firebase-admin.js';
-import { verifyAppCheck } from '../lib/middleware.js';
+import { verifyAppCheck, authenticate, requireEmailVerified } from '../lib/middleware.js';
 import { postNoteSchema, postMessageSchema, sendCheerSchema } from '../lib/schemas.js';
 import { notifyGroupMembers, sendPushNotification, getUserFcmTokens, STREAK_ANNOUNCEMENT_TEMPLATES, CHEER_NOTIFICATION_TEMPLATES } from '../lib/notifications.js';
 
@@ -10,12 +10,13 @@ const router = express.Router();
 const escapeMarkdown = (text) => text.replace(/([_*\[\]()~`>#+\-=|{}.!])/g, '\\$1');
 
 // Post Note
-router.post('/post-note', verifyAppCheck, async (req, res) => {
+router.post('/post-note', authenticate, requireEmailVerified, verifyAppCheck, async (req, res) => {
     const validation = postNoteSchema.safeParse(req.body);
     if (!validation.success) {
         return res.status(400).json({ error: 'Invalid input', details: validation.error.format() });
     }
-
+    
+    const uid = req.user.uid;
     const {
         messageText,
         scripture,
@@ -28,13 +29,7 @@ router.post('/post-note', verifyAppCheck, async (req, res) => {
         language
     } = validation.data;
 
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) return res.status(401).send('Unauthorized');
-    const idToken = authHeader.split('Bearer ')[1];
-
     try {
-        const decodedToken = await admin.auth().verifyIdToken(idToken);
-        const uid = decodedToken.uid;
 
         const result = await db.runTransaction(async (transaction) => {
             const userRef = db.collection('users').doc(uid);
@@ -217,18 +212,14 @@ router.post('/post-note', verifyAppCheck, async (req, res) => {
 });
 
 // Post Message
-router.post('/post-message', verifyAppCheck, async (req, res) => {
+router.post('/post-message', authenticate, verifyAppCheck, async (req, res) => {
     const validation = postMessageSchema.safeParse(req.body);
     if (!validation.success) return res.status(400).json({ error: 'Invalid input' });
 
     const { groupId, text, replyTo } = validation.data;
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) return res.status(401).send('Unauthorized');
-    const idToken = authHeader.split('Bearer ')[1];
+    const uid = req.user.uid;
 
     try {
-        const decodedToken = await admin.auth().verifyIdToken(idToken);
-        const uid = decodedToken.uid;
 
         const result = await db.runTransaction(async (transaction) => {
             const userRef = db.collection('users').doc(uid);
@@ -282,18 +273,14 @@ router.post('/post-message', verifyAppCheck, async (req, res) => {
 });
 
 // Send Cheer
-router.post('/send-cheer', verifyAppCheck, async (req, res) => {
+router.post('/send-cheer', authenticate, verifyAppCheck, async (req, res) => {
     const validation = sendCheerSchema.safeParse(req.body);
     if (!validation.success) return res.status(400).json({ error: 'Invalid input' });
 
     const { targetUid, groupId, language } = validation.data;
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) return res.status(401).send('Unauthorized');
+    const senderUid = req.user.uid;
 
     try {
-        const idToken = authHeader.split('Bearer ')[1];
-        const decodedToken = await admin.auth().verifyIdToken(idToken);
-        const senderUid = decodedToken.uid;
 
         if (senderUid === targetUid) return res.status(400).json({ error: 'Self cheer' });
 

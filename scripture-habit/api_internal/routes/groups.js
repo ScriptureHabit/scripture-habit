@@ -1,28 +1,21 @@
 import express from 'express';
 import { admin, db } from '../lib/firebase-admin.js';
-import { verifyAppCheck } from '../lib/middleware.js';
+import { verifyAppCheck, authenticate, requireEmailVerified } from '../lib/middleware.js';
 import { joinGroupSchema, updateKickThresholdSchema, leaveGroupSchema, deleteGroupSchema } from '../lib/schemas.js';
 
 const router = express.Router();
 
 // Join Group
-router.post('/join-group', verifyAppCheck, async (req, res) => {
+router.post('/join-group', authenticate, requireEmailVerified, verifyAppCheck, async (req, res) => {
     const validation = joinGroupSchema.safeParse(req.body);
     if (!validation.success) {
         return res.status(400).json({ error: 'Invalid input', details: validation.error.format() });
     }
 
     const { inviteCode } = validation.data;
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return res.status(401).json({ error: 'Unauthorized: No token provided.' });
-    }
-
-    const idToken = authHeader.split('Bearer ')[1];
+    const uid = req.user.uid;
 
     try {
-        const decodedToken = await admin.auth().verifyIdToken(idToken);
-        const uid = decodedToken.uid;
 
         const result = await db.runTransaction(async (transaction) => {
             const groupQuery = db.collection('groups').where('inviteCode', '==', inviteCode).limit(1);
@@ -90,20 +83,13 @@ router.post('/join-group', verifyAppCheck, async (req, res) => {
 });
 
 // Leave Group
-router.post('/leave-group', verifyAppCheck, async (req, res) => {
+router.post('/leave-group', authenticate, verifyAppCheck, async (req, res) => {
     const validation = leaveGroupSchema.safeParse(req.body);
     if (!validation.success) return res.status(400).json({ error: 'Invalid input' });
     
     const { groupId } = validation.data;
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return res.status(401).send('Unauthorized');
-    }
-
-    const idToken = authHeader.split('Bearer ')[1];
+    const uid = req.user.uid;
     try {
-        const decodedToken = await admin.auth().verifyIdToken(idToken);
-        const uid = decodedToken.uid;
 
         await db.runTransaction(async (transaction) => {
             const groupRef = db.collection('groups').doc(groupId);
@@ -171,20 +157,16 @@ router.post('/leave-group', verifyAppCheck, async (req, res) => {
 });
 
 // Update Kick Threshold
-router.post('/update-kick-threshold', verifyAppCheck, async (req, res) => {
+router.post('/update-kick-threshold', authenticate, verifyAppCheck, async (req, res) => {
     const validation = updateKickThresholdSchema.safeParse(req.body);
     if (!validation.success) {
         return res.status(400).json({ error: 'Invalid input', details: validation.error.format() });
     }
 
     const { threshold } = validation.data;
-    const authHeader = req.headers.authorization;
-    if (!authHeader) return res.status(401).send('Unauthorized');
+    const uid = req.user.uid;
 
     try {
-        const idToken = authHeader.split('Bearer ')[1];
-        const decodedToken = await admin.auth().verifyIdToken(idToken);
-        const uid = decodedToken.uid;
 
         const userRef = db.collection('users').doc(uid);
         const userDoc = await userRef.get();
@@ -216,18 +198,14 @@ router.post('/update-kick-threshold', verifyAppCheck, async (req, res) => {
 });
 
 // Delete Group
-router.post('/delete-group', verifyAppCheck, async (req, res) => {
+router.post('/delete-group', authenticate, verifyAppCheck, async (req, res) => {
     const validation = deleteGroupSchema.safeParse(req.body);
     if (!validation.success) return res.status(400).json({ error: 'Invalid input' });
     
     const { groupId } = validation.data;
-    const authHeader = req.headers.authorization;
-    if (!authHeader) return res.status(401).send('Unauthorized');
+    const uid = req.user.uid;
 
     try {
-        const idToken = authHeader.split('Bearer ')[1];
-        const decodedToken = await admin.auth().verifyIdToken(idToken);
-        const uid = decodedToken.uid;
 
         const groupRef = db.collection('groups').doc(groupId);
         const groupDoc = await groupRef.get();

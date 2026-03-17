@@ -6,69 +6,70 @@ import {
 } from "@iconscout/react-unicons";
 import React from 'react';
 
+// --- Sidebar Data ---
+
+export type SidebarKey = 'dashboard' | 'myNotes' | 'profile' | 'myGroup';
+
 export interface SidebarItem {
+    id: SidebarKey;
     icon: React.ElementType;
     heading: string;
 }
 
 export const SidebarData: SidebarItem[] = [
     {
+        id: 'dashboard',
         icon: UilEstate,
         heading: "Dashboard",
     },
     {
+        id: 'myNotes',
         icon: UilClipboardAlt,
         heading: "My Notes",
     },
     {
+        id: 'profile',
         icon: UilUser,
         heading: "Profile",
     },
     {
+        id: 'myGroup',
         icon: UilUsersAlt,
         heading: "My Group",
     },
-]
+];
+
+// --- Scripture Options ---
+
+export type ScriptureValue = 
+    | "Old Testament" 
+    | "New Testament" 
+    | "Book of Mormon" 
+    | "Doctrine and Covenants" 
+    | "Pearl of Great Price" 
+    | "Ordinances and Proclamations" 
+    | "General Conference" 
+    | "BYU Speeches" 
+    | "Other";
 
 export interface ScriptureOption {
-    value: string;
+    value: ScriptureValue;
     label: string;
 }
 
-export const ScripturesOptions: ScriptureOption[] = [
-    {
-        value: "Old Testament",
-        label: "Old Testament"
-    },
-    {
-        value: "New Testament",
-        label: "New Testament"
-    },
-    {
-        value: "Book of Mormon",
-        label: "Book of Mormon"
-    }, {
-        value: "Doctrine and Covenants",
-        label: "Doctrine and Covenants"
-    },
-    {
-        value: "Pearl of Great Price",
-        label: "Pearl of Great Price"
-    },
-    {
-        value: "Ordinances and Proclamations",
-        label: "Ordinances and Proclamations"
-    },
-    {
-        value: "General Conference",
-        label: "General Conference"
-    },
-    {
-        value: "BYU Speeches",
-        label: "BYU Speeches"
-    },
-    {
-        value: "Other",
-        label: "Other"
-    },
-]
+const SCRIPTURE_VALUES: ScriptureValue[] = [
+    "Old Testament",
+    "New Testament",
+    "Book of Mormon",
+    "Doctrine and Covenants",
+    "Pearl of Great Price",
+    "Ordinances and Proclamations",
+    "General Conference",
+    "BYU Speeches",
+    "Other"
+];
+
+export const ScripturesOptions: ScriptureOption[] = SCRIPTURE_VALUES.map(value => ({
+    value,
+    label: value
+}));

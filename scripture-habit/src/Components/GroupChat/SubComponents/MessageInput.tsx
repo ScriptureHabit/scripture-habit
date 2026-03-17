@@ -1,6 +1,6 @@
 import { FC, RefObject, KeyboardEvent, FormEvent } from 'react';
 import { UilPlus, UilTimes } from '@iconscout/react-unicons';
-import { Message } from '../../types/chat';
+import { Message } from '../../../types/chat';
 
 interface MessageInputProps {
     handleSendMessage: (e: FormEvent) => void;

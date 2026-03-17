@@ -82,3 +82,13 @@ export const sendCheerSchema = z.object({
 export const updateKickThresholdSchema = z.object({
     threshold: z.number().int().min(1).max(30)
 });
+
+export const reportSchema = z.object({
+    messageId: z.string().min(1),
+    groupId: z.string().optional().nullable(),
+    reporterNickname: z.string().optional().nullable(),
+    reportedUserId: z.string().min(1),
+    reportedUserNickname: z.string().optional().nullable(),
+    messageText: z.string().optional().nullable(),
+    reason: z.string().min(1).max(1000)
+});

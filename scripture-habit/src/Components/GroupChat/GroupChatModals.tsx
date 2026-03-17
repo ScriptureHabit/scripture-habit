@@ -7,12 +7,13 @@ import {
     UilExclamationTriangle, UilCommentAlt,
     UilWhatsapp, UilFacebookMessenger, UilInstagram
 } from '@iconscout/react-unicons';
-import { Group, Message, UserProfile } from '../../types/chat';
+import { Group, Message, UserProfileBrief } from '../../types/chat';
+import { UserData } from '../../types/user';
 
 interface GroupChatModalsProps {
     t: (key: string, replacements?: any) => string;
     language: string | null;
-    userData: UserProfile | null;
+    userData: UserData | null;
     groupData: Group | null;
 
     // Leave Group Modal
@@ -65,9 +66,9 @@ interface GroupChatModalsProps {
     // Members
     showMembersModal: boolean;
     setShowMembersModal: (show: boolean) => void;
-    membersList: UserProfile[];
+    membersList: UserProfileBrief[];
     membersLoading: boolean;
-    setSelectedMember: (member: UserProfile | null) => void;
+    setSelectedMember: (member: UserProfileBrief | null) => void;
 
     // Unity
     showUnityModal: boolean;
@@ -78,11 +79,11 @@ interface GroupChatModalsProps {
         notPosted: { id: string; nickname: string }[];
     };
     cheeredTodayUids: Set<string>;
-    handleCheerClick: (member: UserProfile) => void;
+    handleCheerClick: (member: UserProfileBrief) => void;
 
     // Cheer Confirm
-    cheerTarget: UserProfile | null;
-    setCheerTarget: (target: UserProfile | null) => void;
+    cheerTarget: UserProfileBrief | null;
+    setCheerTarget: (target: UserProfileBrief | null) => void;
     isSendingCheer: boolean;
     handleSendCheer: () => Promise<void>;
 
@@ -94,7 +95,7 @@ interface GroupChatModalsProps {
     confirmReport: () => Promise<void>;
 
     // User Profile
-    selectedMember: UserProfile | null;
+    selectedMember: UserProfileBrief | null;
     handleUserProfileClick: (userId: string | null) => Promise<void>;
 
     // Invite Links

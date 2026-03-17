@@ -1,6 +1,6 @@
 import express from 'express';
 import { isSafeUrl } from '../lib/ssrf.js';
-import { verifyAppCheck } from '../lib/middleware.js';
+import { verifyAppCheck, authenticate } from '../lib/middleware.js';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 
@@ -9,9 +9,7 @@ const router = express.Router();
 const USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36';
 
 // Fetch GC Metadata
-router.get('/fetch-gc-metadata', verifyAppCheck, async (req, res) => {
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) return res.status(401).json({ error: 'Unauthorized' });
+router.get('/fetch-gc-metadata', authenticate, verifyAppCheck, async (req, res) => {
 
     const { url, lang } = req.query;
     if (!url) return res.status(400).send({ error: 'URL is required' });
@@ -67,9 +65,7 @@ router.get('/fetch-gc-metadata', verifyAppCheck, async (req, res) => {
 });
 
 // URL Preview
-router.get('/url-preview', verifyAppCheck, async (req, res) => {
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) return res.status(401).json({ error: 'Unauthorized' });
+router.get('/url-preview', authenticate, verifyAppCheck, async (req, res) => {
 
     const { url, lang } = req.query;
     if (!url || typeof url !== 'string') return res.status(400).json({ error: 'URL required' });

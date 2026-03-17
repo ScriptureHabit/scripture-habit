@@ -1,39 +1,107 @@
-import { useEffect, useState } from 'react';
-import { getFirestore, collection, onSnapshot, query, orderBy } from 'firebase/firestore';
+import { useEffect, useState, useMemo } from 'react';
+import { getFirestore, collection, onSnapshot, query, orderBy, limit } from 'firebase/firestore';
 import { app } from '../firebase';
 import GroupCard from './GroupCard';
+import { useLanguage } from '../Context/LanguageContext';
+import './GroupList.css';
 
-type Props = {
+// --- Types ---
+
+interface GroupData {
+  id: string;
+  name: string;
+  description?: string;
+  members?: string[];
+  lastMessageAt?: any;
+  messageCount?: number;
+  createdAt?: any;
+  [key: string]: any;
+}
+
+interface GroupListProps {
   currentUser: { uid: string } | null;
-};
+}
 
-export default function GroupList({ currentUser }: Props) {
-  const [groups, setGroups] = useState<Array<{ id: string; name: string; description?: string; members?: string[]; lastMessageAt?: unknown; messageCount?: number;[key: string]: unknown }>>([]);
-  const db = getFirestore(app);
+// --- Component ---
+
+export default function GroupList({ currentUser }: GroupListProps) {
+  const { t } = useLanguage();
+  const [groups, setGroups] = useState<GroupData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const db = useMemo(() => getFirestore(app), []);
 
   useEffect(() => {
-    const q = query(collection(db, 'groups'), orderBy('createdAt', 'desc'));
+    setLoading(true);
+    
+    // Query for last 50 created groups
+    const q = query(
+      collection(db, 'groups'), 
+      orderBy('createdAt', 'desc'),
+      limit(50)
+    );
+
     const unsub = onSnapshot(
       q,
       (snap) => {
-        const items: Array<{ id: string; name: string; description?: string; members?: string[]; lastMessageAt?: unknown; messageCount?: number;[key: string]: unknown }> = [];
-        snap.forEach((d) => items.push({ id: d.id, ...(d.data() as { name: string; description?: string; members?: string[]; lastMessageAt?: unknown; messageCount?: number;[key: string]: unknown }) }));
+        const items: GroupData[] = snap.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        } as GroupData));
+        
         setGroups(items);
+        setLoading(false);
+        setError(null);
       },
       (err) => {
-        console.error('Failed loading groups', err);
+        console.error('Failed loading groups:', err);
+        setError('Failed to load groups. Please try again.');
+        setLoading(false);
       }
     );
+
     return () => unsub();
   }, [db]);
 
+  if (loading) {
+    return (
+      <div className="loading-state">
+        <p>{t('loading') || 'Loading groups...'}</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="error-container">
+        <p className="error-message">{error}</p>
+      </div>
+    );
+  }
+
   return (
-    <div>
-      <h3>Groups</h3>
-      {groups.length === 0 && <p>No groups yet — create one.</p>}
-      {groups.map((g) => (
-        <GroupCard key={g.id} group={g} currentUser={currentUser} />
-      ))}
+    <div className="group-list-container">
+      <div className="group-list-header">
+        <h3>{t('groupList?.title') || 'Public Groups'}</h3>
+        <span className="count-badge">{groups.length}</span>
+      </div>
+
+      {groups.length === 0 ? (
+        <div className="empty-state">
+          <p>{t('groupList?.empty') || 'No groups found. Be the first to create one!'}</p>
+        </div>
+      ) : (
+        <div className="groups-grid">
+          {groups.map((group) => (
+            <GroupCard 
+              key={group.id} 
+              group={group} 
+              currentUser={currentUser} 
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
