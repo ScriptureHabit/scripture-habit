@@ -36,9 +36,8 @@ export const aiLimiter = rateLimit({
 });
 
 export const verifyAppCheck = async (req, res, next) => {
-    // In development environment, skip if configured
-    if (process.env.NODE_ENV !== 'production' && process.env.SKIP_APP_CHECK === 'true') {
-        console.log('[AppCheck] Skipping verification (dev mode)');
+    if (process.env.SKIP_APP_CHECK === 'true') {
+        console.log('[AppCheck] Skipping verification');
         return next();
     }
 
