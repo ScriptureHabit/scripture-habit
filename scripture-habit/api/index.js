@@ -1,9 +1,6 @@
 import express from 'express';
-import crypto from 'crypto';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { rateLimit } from 'express-rate-limit';
-import admin, { appCheck } from '../api_internal/lib/firebase-admin.js';
 
 // Import Route Handlers
 import authRoutes from '../api_internal/routes/auth.js';
