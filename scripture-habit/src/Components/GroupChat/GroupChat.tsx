@@ -29,6 +29,7 @@ interface GroupChatProps {
   groupId: string;
   userData: UserData;
   userGroups?: Group[];
+  isActive?: boolean;
   onInputFocusChange?: (focused: boolean) => void;
   onBack?: () => void;
   onGroupSelect?: (groupId: string) => void;

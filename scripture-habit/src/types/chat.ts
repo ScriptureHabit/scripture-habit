@@ -57,6 +57,22 @@ export interface Message {
   [key: string]: any;
 }
 
+// UserProfile interface
+export interface UserProfile {
+  uid?: string;
+  id?: string;
+  nickname?: string;
+  photoURL?: string;
+  email?: string;
+  stake?: string;
+  ward?: string;
+  bio?: string;
+  daysStudiedCount?: number;
+  streakCount?: number;
+  totalNotes?: number;
+  [key: string]: any;
+}
+
 export interface Group {
   id: string;
   name: string;
@@ -82,9 +98,10 @@ export interface Group {
   lastMessageByUid?: string;
   lastRecapGeneratedAt?: FirebaseTimestamp;
   lastUnityAnnouncementDate?: string;
+  createdAt?: FirebaseTimestamp;
   
   // Localization
-  translations?: Record<string, { name?: string; description?: string }>;
+  translations?: Record<string, { name: string; description?: string }>;
   
   // User-specific (often added by client-side mappers)
   unreadCount?: number;
