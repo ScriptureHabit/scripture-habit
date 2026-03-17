@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useMemo, FC, Fragment, KeyboardEvent } fro
 import { safeStorage } from '../../Utils/storage';
 import { Capacitor } from '@capacitor/core';
 import { db, auth } from '../../firebase';
-import { UilTrashAlt, UilTimes, UilArrowLeft, UilPen, UilCommentAlt, UilCopy } from '@iconscout/react-unicons';
+import { UilTrashAlt, UilTimes, UilArrowLeft, UilPen, UilCommentAlt, UilCopy, UilUsersAlt, UilAnalysis } from '@iconscout/react-unicons';
 import { collection, query, serverTimestamp, doc, updateDoc, getDoc, getDocs, where, addDoc, Timestamp } from 'firebase/firestore';
 import { toast } from 'react-toastify';
 import NewNote from '../NewNote/NewNote';
@@ -84,7 +84,7 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], onI
   } = useScrollManager(groupId, userData, messages, userReadCount, loading, initialScrollDone, setInitialScrollDone, latestMessageRef, prevMessageCountRef);
 
   const { 
-    isRecapLoading, isRecapAvailable, daysSinceLastRecap, handleGenerateWeeklyRecap 
+    isRecapLoading, isRecapAvailable, handleGenerateWeeklyRecap 
   } = useRecapManager(groupId, groupData, API_BASE, language || 'en', t);
 
   const { 
@@ -479,69 +479,105 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], onI
           <div className="mobile-menu" onClick={(e) => e.stopPropagation()}>
             <div className="mobile-menu-header">
               <h3>{translatedGroupName || groupData.name}</h3>
-              <button className="close-menu-btn" onClick={() => setShowMobileMenu(false)}><UilTimes size="24" /></button>
+              <button className="close-menu-btn" onClick={() => setShowMobileMenu(false)}>
+                <UilTimes size="24" />
+              </button>
             </div>
             <div className="mobile-menu-content">
-              {daysSinceLastRecap !== null && (
-                <div className="mobile-menu-section">
-                  <div className="recap-info" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', fontSize: '0.9rem', color: 'var(--gray)' }}>
-                    <span className="recap-label">{t('groupChat.lastRecap')}</span>
-                    <span className="recap-value">{t('groupChat.daysAgo', { count: daysSinceLastRecap })}</span>
-                  </div>
-                  {isOwner && (
-                    <button
-                      className={`generate-recap-btn-mobile ${(!isRecapAvailable || isRecapLoading) ? 'disabled' : ''}`}
-                      onClick={() => { if (isRecapAvailable && !isRecapLoading) { handleGenerateWeeklyRecap(); setShowMobileMenu(false); } }}
-                      disabled={!isRecapAvailable || isRecapLoading}
-                      style={{ width: '100%', padding: '10px', borderRadius: '8px', border: 'none', background: 'var(--pink)', color: 'white', fontWeight: 'bold', cursor: isRecapAvailable ? 'pointer' : 'not-allowed', opacity: isRecapAvailable ? 1 : 0.6, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
-                    >
-                      {isRecapLoading ? <div className="spinner-mini"></div> : <span>📊 {t('groupChat.generateWeeklyRecap')}</span>}
-                    </button>
-                  )}
+              {/* Invite Code Section */}
+              <div className="mobile-menu-item-card invite-section-card" onClick={handleCopyInviteLink}>
+                <div className="menu-item-icon-circle pink-bg">
+                  <UilCopy size="22" />
                 </div>
-              )}
-              <div className="mobile-menu-section" style={{ display: 'flex', flexDirection: 'column', gap: '8px', borderTop: '1px solid #eee', paddingTop: '15px', marginTop: '15px' }}>
-                <button className="menu-action-btn" onClick={handleShowMembers} style={{ background: 'none', border: 'none', padding: '10px', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '1rem', color: '#333', textAlign: 'left', cursor: 'pointer' }}>
-                  <UilCommentAlt size="20" />
-                  <span>{t('groupChat.viewMembers')}</span>
-                </button>
-                <button className="menu-action-btn" onClick={() => { setShowInviteModal(true); setShowMobileMenu(false); }} style={{ background: 'none', border: 'none', padding: '10px', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '1rem', color: '#333', textAlign: 'left', cursor: 'pointer' }}>
-                  <UilCopy size="20" />
-                  <span>{t('groupChat.inviteLink')}</span>
-                </button>
-                {isOwner && (
-                  <button className="menu-action-btn" onClick={() => { togglePublicStatus(); setShowMobileMenu(false); }} style={{ background: 'none', border: 'none', padding: '10px', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '1rem', color: '#333', textAlign: 'left', cursor: 'pointer' }}>
-                    <span>{groupData.isPublic ? '🔒 ' + t('groupChat.makePrivate') : '🌍 ' + t('groupChat.makePublic')}</span>
-                  </button>
-                )}
+                <div className="menu-item-text-content">
+                  <span className="menu-item-label-top">{t('groupChat.inviteCode')}</span>
+                  <span className="invite-code-text">{groupData.inviteCode}</span>
+                </div>
               </div>
-              {userGroups.length > 1 && (
-                <div className="mobile-menu-section groups-section" style={{ borderTop: '1px solid #eee', paddingTop: '15px', marginTop: '15px' }}>
-                  <h4 style={{ margin: '0 0 10px 10px', color: 'var(--gray)', fontSize: '0.8rem', textTransform: 'uppercase' }}>{t('groupChat.myGroups')}</h4>
-                  <div className="mobile-groups-list" style={{ display: 'flex', flexDirection: 'column', gap: '4px', maxHeight: '200px', overflowY: 'auto' }}>
-                    {userGroups.map(g => (
-                      <GroupMenuItem
-                        key={g.id}
-                        group={g}
-                        currentGroupId={groupId}
-                        language={language || 'en'}
-                        onSelect={() => { if (onGroupSelect) onGroupSelect(g.id); setShowMobileMenu(false); }}
-                        timeZone={userData?.timeZone}
-                      />
-                    ))}
+
+              {/* Private Toggle */}
+              {isOwner && (
+                <div className="mobile-menu-item-row toggle-row" onClick={(e) => { e.stopPropagation(); togglePublicStatus(); }}>
+                  <span className="menu-item-label">{t('groupChat.private')}</span>
+                  <div className={`custom-toggle ${!groupData.isPublic ? 'active' : ''}`}>
+                    <div className="toggle-handle"></div>
                   </div>
                 </div>
               )}
-              <div className="mobile-menu-section danger-zone" style={{ borderTop: '1px solid #eee', paddingTop: '15px', marginTop: '15px' }}>
-                <button className="menu-action-btn leave-btn" onClick={() => { setShowLeaveModal(true); setShowMobileMenu(false); }} style={{ background: 'none', border: 'none', padding: '10px', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '1rem', color: '#e53e3e', textAlign: 'left', cursor: 'pointer', width: '100%' }}>
-                  <span>🚪 {t('groupChat.leaveGroup')}</span>
-                </button>
-                {isOwner && (
-                  <button className="menu-action-btn delete-btn" onClick={() => { setShowDeleteModal(true); setShowMobileMenu(false); }} style={{ background: 'none', border: 'none', padding: '10px', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '1rem', color: '#e53e3e', textAlign: 'left', cursor: 'pointer', width: '100%' }}>
-                    <span>🗑️ {t('groupChat.deleteGroup')}</span>
-                  </button>
-                )}
+
+              <div className="mobile-menu-divider-thin" />
+
+              {/* Action Items */}
+              {isOwner && (
+                <div className="mobile-menu-item-action" onClick={() => {
+                  setNewGroupName(groupData?.name || '');
+                  setNewGroupDescription(groupData?.description || '');
+                  setNewTranslatedName(translatedGroupName || groupData?.translations?.[language || 'en']?.name || '');
+                  setNewTranslatedDesc(translatedGroupDesc || groupData?.translations?.[language || 'en']?.description || '');
+                  setShowEditNameModal(true);
+                  setShowMobileMenu(false);
+                }}>
+                  <div className="menu-item-icon-circle pink-bg">
+                    <UilPen size="20" />
+                  </div>
+                  <span className="menu-item-label">{t('groupChat.editGroupInfo')}</span>
+                </div>
+              )}
+
+              <div className="mobile-menu-item-action" onClick={handleShowMembers}>
+                <div className="menu-item-icon-circle pink-bg">
+                  <UilUsersAlt size="20" />
+                </div>
+                <span className="menu-item-label">{t('groupChat.members')}</span>
               </div>
+
+              <div className="mobile-menu-item-action" onClick={() => { if (isRecapAvailable && !isRecapLoading) { handleGenerateWeeklyRecap(); setShowMobileMenu(false); } }}>
+                <div className="menu-item-icon-circle pink-bg">
+                  <UilAnalysis size="20" />
+                </div>
+                <span className="menu-item-label">{t('groupChat.generateWeeklyRecap')}</span>
+              </div>
+
+              <div className="mobile-menu-divider-thin" />
+
+              {/* Danger Actions */}
+              {isOwner ? (
+                <div className="mobile-menu-item-action danger" onClick={() => { setShowDeleteModal(true); setShowMobileMenu(false); }}>
+                  <div className="menu-item-icon-circle danger-bg">
+                    <UilTrashAlt size="20" />
+                  </div>
+                  <span className="menu-item-label">{t('groupChat.deleteGroup')}</span>
+                </div>
+              ) : (
+                <div className="mobile-menu-item-action danger" onClick={() => { setShowLeaveModal(true); setShowMobileMenu(false); }}>
+                  <div className="menu-item-icon-circle danger-bg">
+                    <UilTrashAlt size="20" />
+                  </div>
+                  <span className="menu-item-label">{t('groupChat.leaveGroup')}</span>
+                </div>
+              )}
+
+              {/* My Groups Section */}
+              {userGroups.length > 0 && (
+                <>
+                  <div className="mobile-menu-divider-thick" />
+                  <div className="mobile-menu-groups-section">
+                    <h4 className="section-title">{t('groupChat.myGroups')}</h4>
+                    <div className="mobile-groups-list">
+                      {userGroups.map(g => (
+                        <GroupMenuItem
+                          key={g.id}
+                          group={g}
+                          currentGroupId={groupId}
+                          language={language || 'en'}
+                          onSelect={() => { if (onGroupSelect) onGroupSelect(g.id); setShowMobileMenu(false); }}
+                          timeZone={userData?.timeZone}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>

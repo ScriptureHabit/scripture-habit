@@ -118,9 +118,17 @@ router.all('/check-inactive-users', verifyCronSecret, async (req, res) => {
 
             const finalMembersToRemove = inactiveMembers.filter(uid => uid !== ownerUserId);
             if (finalMembersToRemove.length > 0) {
+                const remainingMembers = members.filter(m => !finalMembersToRemove.includes(m));
+                const updatedPreviews = (groupData.memberPreviews || []).filter(p => !finalMembersToRemove.includes(p.uid));
+                
                 groupUpdates['members'] = admin.firestore.FieldValue.arrayRemove(...finalMembersToRemove);
                 groupUpdates['membersCount'] = admin.firestore.FieldValue.increment(-finalMembersToRemove.length);
-                finalMembersToRemove.forEach(uid => { groupUpdates[`memberLastActive.${uid}`] = admin.firestore.FieldValue.delete(); });
+                groupUpdates['memberPreviews'] = updatedPreviews;
+                
+                finalMembersToRemove.forEach(uid => { 
+                    groupUpdates[`memberLastActive.${uid}`] = admin.firestore.FieldValue.delete(); 
+                    groupUpdates[`memberLastReadAt.${uid}`] = admin.firestore.FieldValue.delete();
+                });
                 groupChanged = true;
                 removedCount += finalMembersToRemove.length;
 
@@ -204,11 +212,20 @@ router.get('/purge-initialized-users', verifyCronSecret, async (req, res) => {
 
             if (ghostsToRemove.length > 0) {
                 totalRemoved += ghostsToRemove.length;
+                const updatedPreviews = (groupData.memberPreviews || []).filter(p => !ghostsToRemove.includes(p.uid));
+                
                 batch.update(groupsRef.doc(groupId), {
                     members: admin.firestore.FieldValue.arrayRemove(...ghostsToRemove),
-                    membersCount: admin.firestore.FieldValue.increment(-ghostsToRemove.length)
+                    membersCount: admin.firestore.FieldValue.increment(-ghostsToRemove.length),
+                    memberPreviews: updatedPreviews
                 });
-                ghostsToRemove.forEach(uid => { batch.update(groupsRef.doc(groupId), { [`memberLastActive.${uid}`]: admin.firestore.FieldValue.delete() }); });
+                
+                ghostsToRemove.forEach(uid => { 
+                    batch.update(groupsRef.doc(groupId), { 
+                        [`memberLastActive.${uid}`]: admin.firestore.FieldValue.delete(),
+                        [`memberLastReadAt.${uid}`]: admin.firestore.FieldValue.delete()
+                    }); 
+                });
                 
                 const msgRef = messagesRef.doc();
                 batch.set(msgRef, {

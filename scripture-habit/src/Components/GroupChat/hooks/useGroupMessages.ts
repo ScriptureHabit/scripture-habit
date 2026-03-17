@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { db } from '../../../firebase';
-import { collection, query, orderBy, onSnapshot, doc, getDoc, getDocs, limit, startAfter, startAt, DocumentSnapshot } from 'firebase/firestore';
+import { collection, query, orderBy, onSnapshot, doc, getDoc, getDocs, limit, startAfter, startAt, DocumentSnapshot, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { safeStorage } from '../../../Utils/storage';
 import confetti from 'canvas-confetti';
 import * as Sentry from "@sentry/react";
@@ -41,25 +41,71 @@ export const useGroupMessages = (groupId: string | null, userData: any, t: (key:
     let unsubscribeGroup = () => { };
     let unsubscribeNewMessages = () => { };
 
+    const updateReadStatus = async (totalCount: number) => {
+      if (!userData?.uid || !groupId || totalCount <= 0) return;
+      try {
+        const userGroupStateRef = doc(db, 'users', userData.uid, 'groupStates', groupId);
+        const groupRef = doc(db, 'groups', groupId);
+
+        await Promise.all([
+          setDoc(userGroupStateRef, {
+            readMessageCount: totalCount,
+            lastReadAt: serverTimestamp()
+          }, { merge: true }),
+          updateDoc(groupRef, {
+            [`memberLastReadAt.${userData.uid}`]: serverTimestamp(),
+            [`memberLastActive.${userData.uid}`]: serverTimestamp()
+          })
+        ]);
+        setUserReadCount(totalCount);
+      } catch (err) {
+        console.error("Failed to update read status:", err);
+      }
+    };
+
     const groupRef = doc(db, 'groups', groupId);
     unsubscribeGroup = onSnapshot(groupRef, (docSnap) => {
       if (docSnap.exists()) {
-        // Include groupId with the data so we can validate it later
-        setGroupData({ ...docSnap.data(), _groupId: groupId } as GroupData);
+        const data = docSnap.data();
+        setGroupData({ ...data, _groupId: groupId } as GroupData);
+        
+        // Update read status if there are unread messages and we're looking at the chat
+        const totalMsgs = data.messageCount || 0;
+        if (totalMsgs > 0 && userReadCount !== null && totalMsgs > userReadCount) {
+          updateReadStatus(totalMsgs);
+        }
       }
     }, (err) => {
-      if (err.code === 'permission-denied') {
-        return;
-      }
+      /* ... existing error handling ... */
+      if (err.code === 'permission-denied') return;
       console.error("Error listening to group:", err);
       const isQuota = err.code === 'resource-exhausted' || err.message.toLowerCase().includes('quota exceeded');
-      if (isQuota) {
-        setError(t('systemErrors.quotaExceededMessage'));
-      } else {
-        Sentry.captureException(err);
-        setError(err.message);
-      }
+      if (isQuota) setError(t('systemErrors.quotaExceededMessage'));
+      else { Sentry.captureException(err); setError(err.message); }
     });
+
+    // Initial read status sync
+    const fetchInitialState = async () => {
+      try {
+        const stateRef = doc(db, 'users', userData.uid, 'groupStates', groupId);
+        const stateSnap = await getDoc(stateRef);
+        const initialReadCount = stateSnap.exists() ? (stateSnap.data().readMessageCount || 0) : 0;
+        setUserReadCount(initialReadCount);
+
+        const gSnap = await getDoc(groupRef);
+        if (gSnap.exists()) {
+          const gData = gSnap.data();
+          const totalMsgs = gData.messageCount || 0;
+          if (totalMsgs > initialReadCount) {
+            updateReadStatus(totalMsgs);
+          }
+        }
+      } catch (e) {
+        console.error("Error fetching initial read status:", e);
+        setUserReadCount(0);
+      }
+    };
+    if (userData?.uid) fetchInitialState();
 
     // Fetch members detail whenever group context changes
     const fetchMembersDetails = async (membersArray: string[]) => {
@@ -83,8 +129,7 @@ export const useGroupMessages = (groupId: string | null, userData: any, t: (key:
       }
     };
 
-    const groupRefForInit = doc(db, 'groups', groupId);
-    getDoc(groupRefForInit).then(snap => {
+    getDoc(groupRef).then(snap => {
       if (snap.exists()) {
         const data = snap.data();
         if (data.members) fetchMembersDetails(data.members);

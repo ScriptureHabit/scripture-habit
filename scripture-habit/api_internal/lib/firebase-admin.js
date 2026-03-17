@@ -1,13 +1,11 @@
+import './load-env.js';
 import admin from 'firebase-admin';
-import dotenv from 'dotenv';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-dotenv.config();
 
 if (!admin.apps.length) {
     let serviceAccount;
@@ -38,9 +36,16 @@ if (!admin.apps.length) {
     }
 }
 
-export const db = admin.firestore();
+const db = admin.firestore();
+try {
+    // This can only be called once, so we wrap it just in case
+    db.settings({ ignoreUndefinedProperties: true });
+} catch (e) {
+    // If settings were already applied, ignore the error
+}
+
 export const messaging = admin.messaging();
 export const auth = admin.auth();
 export const appCheck = admin.appCheck();
-export { admin };
+export { admin, db };
 export default admin;

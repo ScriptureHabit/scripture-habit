@@ -1,7 +1,7 @@
+import '../api_internal/lib/load-env.js';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
-import dotenv from 'dotenv';
 
 // Import Route Handlers
 import authRoutes from '../api_internal/routes/auth.js';
@@ -16,7 +16,6 @@ import adminRoutes from '../api_internal/routes/admin.js';
 // Middleware
 import { globalLimiter } from '../api_internal/lib/middleware.js';
 
-dotenv.config();
 const app = express();
 
 // --- Middleware & Configuration ---

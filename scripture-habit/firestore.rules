@@ -122,15 +122,7 @@ service cloud.firestore {
         // B. Members can ONLY update their OWN activity/read timestamps
         (
           request.auth.uid in resource.data.get('members', []) &&
-          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['memberLastActive', 'memberLastReadAt']) &&
-          (
-            !request.resource.data.diff(resource.data).affectedKeys().contains('memberLastActive') ||
-            request.resource.data.memberLastActive.diff(resource.data.get('memberLastActive', {})).affectedKeys().hasOnly([request.auth.uid])
-          ) &&
-          (
-            !request.resource.data.diff(resource.data).affectedKeys().contains('memberLastReadAt') ||
-            request.resource.data.memberLastReadAt.diff(resource.data.get('memberLastReadAt', {})).affectedKeys().hasOnly([request.auth.uid])
-          )
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['memberLastActive', 'memberLastReadAt'])
         )
       );
       

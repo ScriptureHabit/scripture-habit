@@ -12,7 +12,10 @@ interface Group {
   name: string;
   description?: string;
   members?: string[];
+  membersCount?: number;
+  noteCount?: number;
   lastMessageAt?: any;
+  lastNoteAt?: any;
   messageCount?: number;
   createdAt?: any;
   translations?: Record<string, { name: string }>;
@@ -46,7 +49,14 @@ const getStatus = (group: Group, t: any): ActivityStatus => {
   const now = new Date();
   const ONE_HOUR = 3600000;
   
-  const lastActive = parseFirebaseDate(group.lastMessageAt);
+  const lastActiveMsg = parseFirebaseDate(group.lastMessageAt);
+  const lastActiveNote = parseFirebaseDate(group.lastNoteAt);
+  
+  // Use the most recent activity
+  const lastActive = (lastActiveMsg && lastActiveNote) 
+    ? (lastActiveMsg > lastActiveNote ? lastActiveMsg : lastActiveNote)
+    : (lastActiveMsg || lastActiveNote);
+
   if (lastActive) {
     const diffHours = (now.getTime() - lastActive.getTime()) / ONE_HOUR;
     if (diffHours <= 24) {
@@ -200,7 +210,7 @@ export default function GroupCard({ group, currentUser, onJoin, onOpen }: Props)
           {activity.label}
         </div>
         <div className="member-badge">
-          {group.members?.length ?? 0} {t('groupCard.members')}
+          {group.membersCount ?? group.members?.length ?? 0} {t('groupCard.members')}
         </div>
       </div>
 

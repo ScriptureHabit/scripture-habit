@@ -12,30 +12,44 @@ router.post('/join-group', authenticate, requireEmailVerified, verifyAppCheck, a
         return res.status(400).json({ error: 'Invalid input', details: validation.error.format() });
     }
 
-    const { inviteCode } = validation.data;
+    const { inviteCode, groupId } = validation.data;
     const uid = req.user.uid;
 
     try {
-
         const result = await db.runTransaction(async (transaction) => {
-            const groupQuery = db.collection('groups').where('inviteCode', '==', inviteCode).limit(1);
-            const groupQuerySnap = await transaction.get(groupQuery);
+            let groupDoc;
+            if (groupId) {
+                const groupRef = db.collection('groups').doc(groupId);
+                groupDoc = await transaction.get(groupRef);
+                if (!groupDoc.exists) throw new Error('Group not found.');
+            } else if (inviteCode) {
+                const groupQuery = db.collection('groups').where('inviteCode', '==', inviteCode).limit(1);
+                const groupQuerySnap = await transaction.get(groupQuery);
+                if (groupQuerySnap.empty) throw new Error('Invalid invite code.');
+                groupDoc = groupQuerySnap.docs[0];
+            } else {
+                throw new Error('Group ID or Invite Code is required.');
+            }
 
-            if (groupQuerySnap.empty) throw new Error('Invalid invite code.');
-
-            const groupDoc = groupQuerySnap.docs[0];
             const gid = groupDoc.id;
             const gData = groupDoc.data();
 
-            if (gData.isPrivate && gData.inviteCode !== inviteCode) {
-                 throw new Error('Invalid or expired invite code.');
-            }
-
-            // Check if invite code is expired (24h)
-            if (gData.inviteCodeExpiresAt) {
-                const expiresAt = gData.inviteCodeExpiresAt.toDate();
-                if (expiresAt < new Date()) {
-                    throw new Error('This invite link has expired. Please ask the group owner for a new one.');
+            // If it's a private group and joining via invite code, verify it
+            // (Public groups can be joined via groupId directly)
+            if (gData.isPrivate === true || gData.isPublic === false) {
+                if (inviteCode) {
+                    if (gData.inviteCode !== inviteCode) {
+                        throw new Error('Invalid or expired invite code.');
+                    }
+                    if (gData.inviteCodeExpiresAt) {
+                        const expiresAt = gData.inviteCodeExpiresAt.toDate();
+                        if (expiresAt < new Date()) {
+                            throw new Error('This invite link has expired. Please ask the group owner for a new one.');
+                        }
+                    }
+                } else if (!gData.isPublic) {
+                    // It's private but no invite code provided
+                    throw new Error('This is a private group. You need an invite code to join.');
                 }
             }
 
@@ -49,9 +63,15 @@ router.post('/join-group', authenticate, requireEmailVerified, verifyAppCheck, a
             const userData = userDoc.data();
 
             // Update Group
+            const newMemberPreview = { uid, nickname: userData.nickname || 'Member' };
+            const existingPreviews = gData.memberPreviews || [];
+            // Keep unique previews, max 15
+            const updatedPreviews = [newMemberPreview, ...existingPreviews.filter(p => p.uid !== uid)].slice(0, 15);
+
             transaction.update(groupDoc.ref, {
                 members: admin.firestore.FieldValue.arrayUnion(uid),
                 membersCount: admin.firestore.FieldValue.increment(1),
+                memberPreviews: updatedPreviews,
                 [`memberLastActive.${uid}`]: admin.firestore.FieldValue.serverTimestamp(),
                 [`memberKickThresholds.${uid}`]: userData.kickThreshold || 3
             });
@@ -107,13 +127,17 @@ router.post('/leave-group', authenticate, verifyAppCheck, async (req, res) => {
 
             // Update Group
             const updatedMembers = members.filter(m => m !== uid);
+            const updatedPreviews = (gData.memberPreviews || []).filter(p => p.uid !== uid);
+
             if (gData.ownerUserId === uid) {
                 if (updatedMembers.length > 0) {
                     transaction.update(groupRef, {
                         ownerUserId: updatedMembers[0],
                         members: updatedMembers,
                         membersCount: admin.firestore.FieldValue.increment(-1),
+                        memberPreviews: updatedPreviews,
                         [`memberLastActive.${uid}`]: admin.firestore.FieldValue.delete(),
+                        [`memberLastReadAt.${uid}`]: admin.firestore.FieldValue.delete(),
                         [`memberKickThresholds.${uid}`]: admin.firestore.FieldValue.delete()
                     });
                 } else {
@@ -123,7 +147,9 @@ router.post('/leave-group', authenticate, verifyAppCheck, async (req, res) => {
                 transaction.update(groupRef, {
                     members: updatedMembers,
                     membersCount: admin.firestore.FieldValue.increment(-1),
+                    memberPreviews: updatedPreviews,
                     [`memberLastActive.${uid}`]: admin.firestore.FieldValue.delete(),
+                    [`memberLastReadAt.${uid}`]: admin.firestore.FieldValue.delete(),
                     [`memberKickThresholds.${uid}`]: admin.firestore.FieldValue.delete()
                 });
             }
@@ -248,30 +274,41 @@ router.post('/delete-group', authenticate, verifyAppCheck, async (req, res) => {
 router.get('/groups', async (req, res) => {
     try {
         // Query for public, non-ghost groups
+        // Using both isPublic and isPrivate for compatibility
+        // Fetching more to sort in memory and avoid composite index requirements
         const snapshot = await db.collection('groups')
-            .where('isPrivate', '==', false)
-            .where('membersCount', '>', 0)
-            .orderBy('membersCount', 'desc')
-            .limit(50)
+            .where('isPublic', '==', true)
+            .limit(200)
             .get();
 
-        const groups = snapshot.docs.map(doc => {
+        let groups = snapshot.docs.map(doc => {
             const data = doc.data();
             return {
                 id: doc.id,
                 name: data.name,
                 description: data.description,
                 membersCount: data.membersCount || 0,
+                noteCount: data.noteCount || 0,
+                memberPreviews: data.memberPreviews || [],
                 lastNoteByNickname: data.lastNoteByNickname || '',
                 lastNoteAt: data.lastNoteAt || null,
-                isPrivate: false
+                lastMessageAt: data.lastMessageAt || null,
+                isPublic: true,
+                createdAt: data.createdAt,
+                translations: data.translations
             };
         });
+
+        // Filter and Sort in memory
+        groups = groups
+            .filter(g => g.membersCount > 0)
+            .sort((a, b) => (b.membersCount || 0) - (a.membersCount || 0))
+            .slice(0, 50);
 
         res.json(groups);
     } catch (error) {
         console.error('Error fetching groups:', error);
-        res.status(500).send('Search failed');
+        res.status(500).json({ error: 'Search failed', details: error.message });
     }
 });
 

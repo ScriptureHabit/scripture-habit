@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { doc, updateDoc, deleteDoc, arrayRemove, serverTimestamp, collection, addDoc } from 'firebase/firestore';
-import { db } from '../../../firebase';
+import { doc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { db, auth } from '../../../firebase';
+import { Capacitor } from '@capacitor/core';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { GroupData } from '../../../types/chat';
@@ -18,30 +19,29 @@ export const useGroupActions = (
 
   const handleLeaveGroup = async () => {
     if (!userData || isLeaving) return;
+    
     setIsLeaving(true);
     try {
-      const groupRef = doc(db, 'groups', groupId);
-      const userRef = doc(db, 'users', userData.uid);
+      const idToken = await auth?.currentUser?.getIdToken();
+      if (!idToken) throw new Error("No idToken");
 
-      await updateDoc(groupRef, {
-        members: arrayRemove(userData.uid)
+      const API_BASE = Capacitor.isNativePlatform() ? 'https://scripturehabit.app' : '';
+      const response = await fetch(`${API_BASE}/api/leave-group`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${idToken}`
+        },
+        body: JSON.stringify({ groupId })
       });
 
-      await updateDoc(userRef, {
-        groupId: ""
-      });
-
-      // System message
-      await addDoc(collection(groupRef, 'messages'), {
-        senderId: 'system',
-        text: `${userData.nickname} has left the group.`,
-        messageType: 'userLeft',
-        createdAt: serverTimestamp(),
-        isSystemMessage: true
-      });
+      if (!response.ok) {
+        const errText = await response.text();
+        throw new Error(errText || 'Failed to leave group');
+      }
 
       toast.success(t('groupChat.leaveSuccess') || "You have left the group.");
-      navigate(`/${language}/dashboard`);
+      window.location.href = `/${language}/dashboard`;
     } catch (error) {
       console.error("Error leaving group:", error);
       toast.error(t('groupChat.errorLeave') || "Failed to leave group.");

@@ -99,6 +99,7 @@ export interface Group {
   lastRecapGeneratedAt?: FirebaseTimestamp;
   lastUnityAnnouncementDate?: string;
   createdAt?: FirebaseTimestamp;
+  memberPreviews?: { uid: string; nickname: string }[];
   
   // Localization
   translations?: Record<string, { name: string; description?: string }>;

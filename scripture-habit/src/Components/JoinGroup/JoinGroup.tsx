@@ -1,7 +1,7 @@
 import './JoinGroup.css';
 import { useState, useEffect, useCallback } from "react";
 import { auth, db } from '../../firebase';
-import { doc, getDoc, onSnapshot, collection, query, where, getDocs } from 'firebase/firestore';
+import { doc, onSnapshot, collection, query, where, getDocs, limit } from 'firebase/firestore';
 import { useNavigate, Link } from 'react-router-dom';
 import { onAuthStateChanged, User } from "firebase/auth";
 import '../GroupForm/GroupForm.css';
@@ -120,18 +120,21 @@ export default function JoinGroup() {
       }
 
       try {
+        // Fallback to client-side query if backend fails
+        // Simple query with 'isPublic' filter to match security rules
         const q = query(
-          collection(db, 'groups'),
-          where('isPublic', '==', true)
+          collection(db, 'groups'), 
+          where('isPublic', '==', true),
+          limit(100)
         );
         const querySnapshot = await getDocs(q);
         const groups: Group[] = [];
         querySnapshot.forEach((doc) => {
           groups.push({ id: doc.id, ...doc.data() } as Group);
         });
-        setPublicGroups(groups);
+        setPublicGroups(groups.sort((a,b) => (b.membersCount || 0) - (a.membersCount || 0)).slice(0, 50));
       } catch (e) {
-        console.error('Error fetching public groups (composite query fallback):', e);
+        console.error('Error fetching public groups (client fallback):', e);
         setPublicGroups([]);
       }
     };
@@ -192,36 +195,20 @@ export default function JoinGroup() {
     }
   };
 
-  const [memberNames, setMemberNames] = useState<UserData[]>([]);
+  const [memberNames, setMemberNames] = useState<{uid: string, nickname: string}[]>([]);
   const [loadingMembers, setLoadingMembers] = useState(false);
   const [groupNoteCount, setGroupNoteCount] = useState(0);
 
   const handleJoinClick = async (groupId: string, groupData: Group) => {
     setSelectedGroup({ ...groupData, id: groupId });
     setShowConfirmModal(true);
-    setMemberNames([]); // Reset
-    setLoadingMembers(true);
     setGroupNoteCount(groupData.noteCount || 0);
 
-    if (groupData.members && groupData.members.length > 0) {
-      try {
-        // Fetch up to 10 members for preview to avoid excessive reads/latency, or just fetch all since groups are small
-        const memberIds = groupData.members.slice(0, 20);
-        const names = await Promise.all(memberIds.map(async (uid) => {
-          try {
-            const uSnap = await getDoc(doc(db, 'users', uid));
-            if (uSnap.exists()) {
-              return { uid, ...uSnap.data() } as UserData;
-            }
-          } catch {
-            console.warn("Failed to fetch user", uid);
-          }
-          return null;
-        }));
-        setMemberNames(names.filter((n): n is UserData => n !== null));
-      } catch (e) {
-        console.error("Error fetching member names:", e);
-      }
+    // Use memberPreviews already in the group data to avoid security-blocked user fetches
+    if (groupData.memberPreviews && groupData.memberPreviews.length > 0) {
+      setMemberNames(groupData.memberPreviews);
+    } else {
+      setMemberNames([]);
     }
     setLoadingMembers(false);
   };
@@ -361,14 +348,13 @@ export default function JoinGroup() {
                     memberNames.map((userObj, idx) => (
                       <span
                         key={idx}
-                        onClick={() => setSelectedMemberForProfile(userObj)}
                         style={{
                           backgroundColor: '#EDF2F7',
                           color: '#4A5568',
                           padding: '0.25rem 0.5rem',
                           borderRadius: '9999px',
                           fontSize: '0.8rem',
-                          cursor: 'pointer',
+                          cursor: 'default',
                         }}
                       >
                         {userObj.nickname || 'Unknown'}

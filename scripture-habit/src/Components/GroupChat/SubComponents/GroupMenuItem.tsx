@@ -134,17 +134,7 @@ const GroupMenuItem: FC<GroupMenuItemProps> = ({ group, currentGroupId, language
                 {displayName} {group.members && <span style={{ fontSize: '0.85em', color: isActive ? 'var(--pink)' : 'var(--gray)', opacity: 0.8, fontWeight: 'normal', marginLeft: '4px' }}>({group.members.length})</span>}
             </span>
             {unreadCount > 0 && (
-                <span style={{
-                    background: 'var(--pink)',
-                    color: 'white',
-                    borderRadius: '50%',
-                    padding: '0.2rem 0.5rem',
-                    fontSize: '0.75rem',
-                    fontWeight: 'bold',
-                    marginLeft: 'auto',
-                    minWidth: '20px',
-                    textAlign: 'center'
-                }}>
+                <span className="unread-badge-mini" style={{ marginLeft: 'auto' }}>
                     {unreadCount > 99 ? '99+' : unreadCount}
                 </span>
             )}
