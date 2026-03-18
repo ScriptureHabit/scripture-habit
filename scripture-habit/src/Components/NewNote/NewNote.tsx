@@ -199,7 +199,7 @@ const NewNote: FC<NewNoteProps> = ({ isOpen, onClose, userData, noteToEdit, onDe
 
         if (chapter && scripture && scriptureVolumes.includes(scripture)) {
             // Check if there are NO digits in the chapter field
-            if (!/\d/.test(chapter)) {
+            if (!/[\d０-９]/.test(chapter)) {
                 setError(t('newNote.errorChapterRequired'));
             } else if (error === t('newNote.errorChapterRequired')) {
                 // Clear ONLY this specific error if they add a digit
@@ -392,7 +392,7 @@ const NewNote: FC<NewNoteProps> = ({ isOpen, onClose, userData, noteToEdit, onDe
             "Pearl of Great Price"
         ];
 
-        if (scriptureVolumes.includes(scripture) && !/\d/.test(chapter)) {
+        if (scriptureVolumes.includes(scripture) && !/[\d０-９]/.test(chapter)) {
             setError(t('newNote.errorChapterRequired'));
             return;
         }

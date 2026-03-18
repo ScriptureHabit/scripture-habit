@@ -129,9 +129,12 @@ export const getGospelLibraryUrl = (volume: string | null | undefined, chapterIn
     // Parse chapterInput to separate Book and Chapter
     let cleanChapterInput = chapterInput;
 
-    // Normalize Full-width characters to Half-width (Numbers, Colon, Comma)
+    // Normalize Full-width characters to Half-width (Numbers, Colon, Comma, Space, Hyphen)
     cleanChapterInput = cleanChapterInput.replace(/[０-９]/g, s => String.fromCharCode(s.charCodeAt(0) - 0xFEE0));
-    cleanChapterInput = cleanChapterInput.replace(/：/g, ':').replace(/，/g, ',').replace(/、/g, ',');
+    cleanChapterInput = cleanChapterInput.replace(/：/g, ':')
+                                         .replace(/[，、]/g, ',')
+                                         .replace(/　/g, ' ')
+                                         .replace(/[－—―]/g, '-');
 
     // Handle "章" (Chapter) separator
     // If "章" is followed by a digit (verse), treat it as a colon separator (e.g. "18章11" -> "18:11")

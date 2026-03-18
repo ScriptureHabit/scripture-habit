@@ -329,10 +329,10 @@ const MessageItem: FC<MessageItemProps> = ({
 
 
                           // 1. Better search for URL specifically (most important for GC/BYU/Other)
-                          const urlMatch = msg.text.match(/(?:\*\*|)(?:Url|リンク)(?:\*\*|)(?::|：)\s*(.*?)(?:\n|$)/i);
+                          const urlMatch = msg.text.match(/(?:\*\*|)(?:Url|リンク)(?:\*\*|)(?::|：)[\s　]*(.*?)(?:\n|$)/i);
                           // 2. Generic label search (for scriptures)
-                          const labelMatch = msg.text.match(/(?:\*\*|)(?:Chapter|Talk|お話|Speech|スピーチ|Title|タイトル|章)(?:\*\*|)(?::|：)\s*(.*?)(?:\n|$)/i);
-                          const scriptureMatch = msg.text.match(/(?:\*\*|)(?:Scripture|Category|カテゴリ)(?:\*\*|)(?::|：)\s*(.*?)(?:\n|$)/i);
+                          const labelMatch = msg.text.match(/(?:\*\*|)(?:Chapter|Talk|お話|Speech|スピーチ|Title|タイトル|章)(?:\*\*|)(?::|：)[\s　]*(.*?)(?:\n|$)/i);
+                          const scriptureMatch = msg.text.match(/(?:\*\*|)(?:Scripture|Category|カテゴリ)(?:\*\*|)(?::|：)[\s　]*(.*?)(?:\n|$)/i);
 
                           // Aggressively strip asterisks and trim
                           const scripture = (msg.scripture || (scriptureMatch ? scriptureMatch[1].trim() : null))?.replace(/\*/g, '').trim();
