@@ -81,7 +81,7 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], onI
   } = useMessageActions(groupId, userData, language || 'en', t, API_BASE);
 
   const { 
-    containerRef, handleScroll, scrollToBottom 
+    containerRef, handleScroll, previousScrollHeightRef, previousScrollTopRef, scrollToBottom 
   } = useScrollManager(groupId, userData, messages, userReadCount, loading, initialScrollDone, setInitialScrollDone, latestMessageRef, prevMessageCountRef);
 
   const { 
@@ -385,6 +385,13 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], onI
   const loadMoreOlderMessages = async () => {
     if (isLoadingOlder || !hasMoreOlder || messages.length === 0) return;
     setIsLoadingOlder(true);
+
+    // Capture current scroll state to maintain position after loading
+    if (containerRef.current) {
+      previousScrollHeightRef.current = containerRef.current.scrollHeight;
+      previousScrollTopRef.current = containerRef.current.scrollTop;
+    }
+
     try {
       const oldestMsg = messages[0];
       if (!oldestMsg.createdAt) return;

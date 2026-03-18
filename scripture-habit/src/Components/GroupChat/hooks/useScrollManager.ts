@@ -16,6 +16,7 @@ export const useScrollManager = (
   const containerRef = useRef<HTMLDivElement>(null);
   const scrollDebounceRef = useRef<any>(null);
   const previousScrollHeightRef = useRef(0);
+  const previousScrollTopRef = useRef(0);
 
   const scrollToBottom = () => {
     if (containerRef.current) {
@@ -62,17 +63,27 @@ export const useScrollManager = (
   useEffect(() => {
     if (!initialScrollDone || messages.length === 0) return;
     const lastMsg = messages[messages.length - 1];
-    if (messages.length > prevMessageCountRef.current && lastMsg.id !== latestMessageRef.current?.id) {
-      scrollToBottom();
+    
+    // When messages are added (either new at bottom or old at top)
+    if (messages.length > prevMessageCountRef.current) {
+      // Check if the newest message is new (not just old ones added at top)
+      if (lastMsg.id !== latestMessageRef.current?.id) {
+        scrollToBottom();
+      }
     }
+    
     prevMessageCountRef.current = messages.length;
     latestMessageRef.current = lastMsg;
   }, [messages, initialScrollDone]);
 
   useLayoutEffect(() => {
     if (previousScrollHeightRef.current > 0 && containerRef.current) {
-      const diff = containerRef.current.scrollHeight - previousScrollHeightRef.current;
-      if (diff > 0) containerRef.current.scrollTop = diff;
+      const newScrollHeight = containerRef.current.scrollHeight;
+      const heightDiff = newScrollHeight - previousScrollHeightRef.current;
+      if (heightDiff > 0) {
+        // Adjust scroll to maintain the same looking position
+        containerRef.current.scrollTop = previousScrollTopRef.current + heightDiff;
+      }
       previousScrollHeightRef.current = 0;
     }
   }, [messages]);
@@ -99,5 +110,5 @@ export const useScrollManager = (
     }, 200);
   };
 
-  return { containerRef, handleScroll, previousScrollHeightRef, scrollToBottom };
+  return { containerRef, handleScroll, previousScrollHeightRef, previousScrollTopRef, scrollToBottom };
 };
