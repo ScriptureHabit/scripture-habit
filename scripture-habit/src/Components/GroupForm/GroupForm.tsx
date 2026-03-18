@@ -51,6 +51,7 @@ export default function GroupForm() {
         members: [user.uid],
         memberJoinedAt: { [user.uid]: now },
         memberLastActive: { [user.uid]: now },
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Tokyo',
       };
 
 

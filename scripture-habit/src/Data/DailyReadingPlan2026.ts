@@ -130,7 +130,7 @@ export const DailyReadingPlan2026: ReadingPlanItem[] = [
 export const getTodayReadingPlan = (): ReadingPlanItem | undefined => {
     const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Tokyo';
     const now = new Date();
-    const localDate = now.toLocaleDateString('en-CA', { timeZone });
+    const localDate = now.toLocaleDateString('sv-SE', { timeZone });
 
     return DailyReadingPlan2026.find(p => p.date === localDate);
 };

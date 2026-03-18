@@ -60,7 +60,8 @@ export const postNoteSchema = z.object({
     selectedShareGroups: z.array(z.string()).optional().nullable(),
     isGroupContext: z.boolean().optional().nullable(),
     currentGroupId: z.string().optional().nullable(),
-    language: z.enum(supportedLanguages).optional().nullable()
+    language: z.enum(supportedLanguages).optional().nullable(),
+    timeZone: z.string().optional().nullable()
 });
 
 export const postMessageSchema = z.object({

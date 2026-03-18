@@ -87,7 +87,8 @@ const GroupMenuItem: FC<GroupMenuItemProps> = ({ group, currentGroupId, language
     const getEmoji = (g: Group) => {
         if (!g || !g.members || g.members.length === 0) return '🌑';
 
-        const todayStr = new Date().toLocaleDateString('en-CA', { timeZone });
+        const effectiveTimeZone = g.timeZone || timeZone || 'UTC';
+        const todayStr = new Date().toLocaleDateString('sv-SE', { timeZone: effectiveTimeZone });
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         const todayTime = today.getTime();

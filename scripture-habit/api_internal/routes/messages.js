@@ -26,7 +26,8 @@ router.post('/post-note', authenticate, requireEmailVerified, verifyAppCheck, as
         speaker,
         shareOption,
         selectedShareGroups,
-        language
+        language,
+        timeZone: clientTimeZone
     } = validation.data;
 
     try {
@@ -49,39 +50,76 @@ router.post('/post-note', authenticate, requireEmailVerified, verifyAppCheck, as
             const groupDocs = groupRefs.length > 0 ? await transaction.getAll(...groupRefs) : [];
 
             // 2. Calculate Streak
+            const now = new Date();
+            const timeZone = userData.timeZone || 'UTC';
+            const today = now.toLocaleDateString('sv-SE', { timeZone });
+            const yesterdayDate = new Date(now);
+            yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+            const yesterday = yesterdayDate.toLocaleDateString('sv-SE', { timeZone });
+
             let newStreak = userData.streakCount || userData.streak || 0;
             let currentHighest = userData.highestStreak || newStreak;
             let streakUpdated = false;
-            const timeZone = userData.timeZone || 'UTC';
-            const today = new Date().toLocaleDateString('en-CA', { timeZone });
-            const yesterday = new Date(new Date().getTime() - 86400000).toLocaleDateString('en-CA', { timeZone });
 
-            if (userData.lastPostDate !== today) {
-                if (userData.lastPostDate === yesterday) {
-                    newStreak += 1;
-                } else {
-                    newStreak = 1;
-                }
-                streakUpdated = true;
+            // Accurate time calculation (UTC)
+            const lastPostAt = userData.lastPostAt ? (userData.lastPostAt.toDate ? userData.lastPostAt.toDate() : new Date(userData.lastPostAt)) : new Date(0);
+            const hoursSinceLastPost = (now.getTime() - lastPostAt.getTime()) / (1000 * 60 * 60);
 
-                const userUpdate = {
-                    streakCount: newStreak,
-                    lastPostDate: today,
-                    totalNotes: admin.firestore.FieldValue.increment(1)
-                };
+            const userUpdate = {
+                totalNotes: admin.firestore.FieldValue.increment(1),
+                lastPostAt: admin.firestore.Timestamp.fromDate(now) // Store exact time for future checks
+            };
 
-                // Cleanup legacy field if present
-                if (userData.streak !== undefined) {
-                    userUpdate.streak = admin.firestore.FieldValue.delete();
-                }
-
-                // Update highest streak if exceeded
-                if (newStreak > currentHighest) {
-                    userUpdate.highestStreak = newStreak;
-                }
-
-                transaction.update(userRef, userUpdate);
+            // Cleanup legacy field if present
+            if (userData.streak !== undefined) {
+                userUpdate.streak = admin.firestore.FieldValue.delete();
             }
+
+            // Streak Logic: 
+            // 1. If it's a different day in user's home timezone
+            // 2. AND it's not a future date (which could happen if traveling west)
+            if (userData.lastPostDate !== today) {
+                if (userData.lastPostDate > today) {
+                    // Future guard: if user posted while in a later time zone,
+                    // we don't increment, but we definitely don't reset.
+                    // Just skip updating streak-specific fields.
+                } else if (!userData.lastPostDate || userData.lastPostDate === "") {
+                    // First time/Migration fallback
+                    newStreak = (newStreak > 0) ? newStreak + 1 : 1;
+                    streakUpdated = true;
+                } else {
+                    const isConsecutiveDay = userData.lastPostDate === yesterday;
+                    const isTraveling = clientTimeZone && clientTimeZone !== timeZone;
+                    const withinGracePeriod = isTraveling && hoursSinceLastPost < 45; // 45h only if traveling
+
+                    if (isConsecutiveDay || withinGracePeriod) {
+                        // It's either the next calendar day, OR within travel grace period.
+                        // Removed 12h restriction for traveling to support fast timezone jumps (e.g. crossing dateline east).
+                        newStreak += 1;
+                    } else {
+                        // Gap is too large or not consecutive
+                        newStreak = 1;
+                    }
+                    streakUpdated = true;
+                }
+
+                if (streakUpdated) {
+                    userUpdate.streakCount = newStreak;
+                    userUpdate.lastPostDate = today;
+
+                    if (newStreak > currentHighest) {
+                        userUpdate.highestStreak = newStreak;
+                    }
+
+                    // Proactively save timezone if it's missing or different from what they just sent
+                    // (Self-healing for existing users or if they permanently moved)
+                    if (clientTimeZone && (!userData.timeZone || userData.timeZone === 'UTC')) {
+                        userUpdate.timeZone = clientTimeZone;
+                    }
+                }
+            }
+
+            transaction.update(userRef, userUpdate);
 
             const userToGroupMap = new Map();
             const validatedGroupsToPostTo = [];
@@ -125,7 +163,10 @@ router.post('/post-note', authenticate, requireEmailVerified, verifyAppCheck, as
                     chapter: chapter || ""
                 });
 
-                const todayLabel = new Date().toLocaleDateString('en-CA', { timeZone });
+                // Group Activity Date: Use the group's specific timezone if available,
+                // otherwise fallback to the poster's timezone or UTC.
+                const groupTimeZone = gData.timeZone || timeZone || 'UTC';
+                const groupToday = now.toLocaleDateString('sv-SE', { timeZone: groupTimeZone });
                 const updatePayload = {
                     messageCount: admin.firestore.FieldValue.increment(1),
                     noteCount: admin.firestore.FieldValue.increment(1),
@@ -138,8 +179,8 @@ router.post('/post-note', authenticate, requireEmailVerified, verifyAppCheck, as
                     [`memberLastActive.${uid}`]: admin.firestore.FieldValue.serverTimestamp()
                 };
 
-                if (gData.dailyActivity?.date !== todayLabel) {
-                    updatePayload.dailyActivity = { date: todayLabel, activeMembers: [uid] };
+                if (gData.dailyActivity?.date !== groupToday) {
+                    updatePayload.dailyActivity = { date: groupToday, activeMembers: [uid] };
                 } else {
                     updatePayload['dailyActivity.activeMembers'] = admin.firestore.FieldValue.arrayUnion(uid);
                 }

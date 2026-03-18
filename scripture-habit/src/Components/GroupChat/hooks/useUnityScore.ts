@@ -15,8 +15,8 @@ export const useUnityScore = (
   const unityPercentage = useMemo(() => {
     if (!groupData?.members || groupData.members.length === 0 || groupData?._groupId !== groupId) return 0;
 
-    const timeZone = userData?.timeZone || 'UTC';
-    const todayStr = new Date().toLocaleDateString('en-CA', { timeZone });
+    const effectiveTimeZone = groupData?.timeZone || userData?.timeZone || 'UTC';
+    const todayStr = new Date().toLocaleDateString('sv-SE', { timeZone: effectiveTimeZone });
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -66,8 +66,8 @@ export const useUnityScore = (
   useEffect(() => {
     if (!userData?.uid || !groupId || unityPercentage !== 100) return;
 
-    const timeZone = userData?.timeZone || 'UTC';
-    const todayStr = new Date().toLocaleDateString('en-CA', { timeZone });
+    const effectiveTimeZone = groupData?.timeZone || userData?.timeZone || 'UTC';
+    const todayStr = new Date().toLocaleDateString('sv-SE', { timeZone: effectiveTimeZone });
     const storageKey = `unity_firework_${groupId}_${userData.uid}`;
     const lastSeen = safeStorage.get(storageKey);
 

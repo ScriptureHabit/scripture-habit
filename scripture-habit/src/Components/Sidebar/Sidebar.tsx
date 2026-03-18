@@ -179,8 +179,8 @@ const Sidebar: React.FC<SidebarProps> = ({ selected, setSelected, userGroups = [
   const getUnityPercentage = (group: Group): number => {
     if (!group || !group.members || group.members.length === 0) return 0;
 
-    const timeZone = userData?.timeZone || 'UTC';
-    const todayStr = new Date().toLocaleDateString('en-CA', { timeZone });
+    const effectiveTimeZone = group.timeZone || userData?.timeZone || 'UTC';
+    const todayStr = new Date().toLocaleDateString('sv-SE', { timeZone: effectiveTimeZone });
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const todayTime = today.getTime();

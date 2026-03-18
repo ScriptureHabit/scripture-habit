@@ -25,17 +25,24 @@ const Mascot: React.FC<MascotProps> = ({ userData, onClick, customMessage = null
     }
 
     const now = new Date();
-    const todayStr = now.toLocaleDateString('en-CA', { timeZone });
+    const todayStr = now.toLocaleDateString('sv-SE', { timeZone });
 
+    // In this app, lastPostDate is stored as a string "YYYY-MM-DD"
+    // However, we handle both cases just in case
+    if (typeof userData.lastPostDate === 'string') {
+      return userData.lastPostDate === todayStr;
+    }
+
+    // Fallback for Timestamp objects (e.g. legacy or other types)
     let lastPostDate: Date;
-    if (userData.lastPostDate && typeof userData.lastPostDate.toDate === 'function') {
-      lastPostDate = userData.lastPostDate.toDate();
+    if (userData.lastPostDate && (userData.lastPostDate as any).toDate) {
+      lastPostDate = (userData.lastPostDate as any).toDate();
     } else {
       lastPostDate = new Date(userData.lastPostDate);
     }
 
     if (isNaN(lastPostDate.getTime())) return false;
-    const lastPostDateStr = lastPostDate.toLocaleDateString('en-CA', { timeZone });
+    const lastPostDateStr = lastPostDate.toLocaleDateString('sv-SE', { timeZone });
 
     return todayStr === lastPostDateStr;
   }, [userData]);

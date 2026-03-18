@@ -64,7 +64,7 @@ const NoteCard: FC<NoteCardProps> = ({
         >
             <div className="note-header">
                 <span className="note-date">
-                    {note.createdAt?.toDate().toLocaleDateString(language === 'en' ? 'en-CA' : language) || 'Unknown Date'}
+                    {note.createdAt?.toDate().toLocaleDateString(language === 'en' ? 'sv-SE' : language) || 'Unknown Date'}
                 </span>
             </div>
             <div className="note-content-preview">

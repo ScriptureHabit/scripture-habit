@@ -7,7 +7,7 @@ export const getTodayReadingPlan = (): ReadingPlanItem | undefined => {
     const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Tokyo';
     const now = new Date();
     // Format to YYYY-MM-DD in local time
-    const localDate = now.toLocaleDateString('en-CA', { timeZone });
+    const localDate = now.toLocaleDateString('sv-SE', { timeZone });
 
     // Switch to 2026 plan starting from Dec 29, 2025
     if (localDate >= "2025-12-29") {

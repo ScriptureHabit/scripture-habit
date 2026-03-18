@@ -134,7 +134,7 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], onI
       if (!userData?.uid) return;
       try {
         const timeZone = userData.timeZone || 'UTC';
-        const todayStr = new Date().toLocaleDateString('en-CA', { timeZone });
+        const todayStr = new Date().toLocaleDateString('sv-SE', { timeZone });
         const q = query(
           collection(db, 'cheers'),
           where('senderUid', '==', userData.uid),

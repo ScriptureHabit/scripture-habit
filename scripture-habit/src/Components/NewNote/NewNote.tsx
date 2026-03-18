@@ -592,7 +592,8 @@ const NewNote: FC<NewNoteProps> = ({ isOpen, onClose, userData, noteToEdit, onDe
                     selectedShareGroups,
                     isGroupContext,
                     currentGroupId,
-                    language
+                    language,
+                    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Tokyo'
                 }, {
                     headers: {
                         Authorization: `Bearer ${idToken}`

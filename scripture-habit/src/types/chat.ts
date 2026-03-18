@@ -115,6 +115,7 @@ export interface Group {
   memberLastActive?: Record<string, FirebaseTimestamp>;
   memberLastReadAt?: Record<string, FirebaseTimestamp>;
   memberJoinedAt?: Record<string, FirebaseTimestamp>;
+  timeZone?: string;
   [key: string]: any;
 }
 

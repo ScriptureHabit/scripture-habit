@@ -18,8 +18,8 @@ export const useUnityDetails = (
     setShowUnityModal(true);
     setDetailsLoading(true);
 
-    const timeZone = userData?.timeZone || 'UTC';
-    const todayStr = new Date().toLocaleDateString('en-CA', { timeZone });
+    const effectiveTimeZone = groupData?.timeZone || userData?.timeZone || 'UTC';
+    const todayStr = new Date().toLocaleDateString('sv-SE', { timeZone: effectiveTimeZone });
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const todayTime = today.getTime();

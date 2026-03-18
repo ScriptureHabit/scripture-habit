@@ -28,7 +28,7 @@ export const getTodayReadingPlan = (): ReadingPlanItem | undefined => {
     const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Tokyo';
     const now = new Date();
     // Format to YYYY-MM-DD in local time
-    const localDate = now.toLocaleDateString('en-CA', { timeZone });
+    const localDate = now.toLocaleDateString('sv-SE', { timeZone });
 
     // Find plan by matching date string
     return DailyReadingPlan2025.find(p => p.date === localDate);
