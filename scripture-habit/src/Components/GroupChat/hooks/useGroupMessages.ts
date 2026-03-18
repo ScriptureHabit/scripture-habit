@@ -187,14 +187,14 @@ export const useGroupMessages = (groupId: string | null, userData: any, t: (key:
         // Setup Real-time listener for NEW messages
         // Listen for messages created AFTER the last message in our initial list
         if (initialMsgs.length > 0) {
-          const lastMsg = initialMsgs[initialMsgs.length - 1];
-          latestMessageRef.current = lastMsg;
+          const firstMsg = initialMsgs[0];
+          latestMessageRef.current = initialMsgs[initialMsgs.length - 1];
 
-          if (lastMsg.createdAt) {
+          if (firstMsg.createdAt) {
             const newMsgsQuery = query(
               messagesRef,
               orderBy('createdAt', 'asc'),
-              startAfter(lastMsg.createdAt)
+              startAt(firstMsg.createdAt)
             );
 
             unsubscribeNewMessages = onSnapshot(newMsgsQuery, (snapshot) => {

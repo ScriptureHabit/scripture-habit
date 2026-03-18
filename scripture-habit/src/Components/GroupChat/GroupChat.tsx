@@ -46,7 +46,7 @@ interface ContextMenu {
 }
 
 const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], onInputFocusChange, onBack, onGroupSelect, isExternalModalOpen = false }) => {
-  const { language, t } = useLanguage();
+  const { language, t, tArray } = useLanguage();
   const API_BASE = Capacitor.isNativePlatform() ? 'https://scripturehabit.app' : '';
 
   // Primary Data Hooks
@@ -373,7 +373,7 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], onI
   const isAnyModalOpen = showLeaveModal || showDeleteModal || showDeleteMessageModal || editingMessage || showReactionsModal || isNewNoteOpen || noteToEdit || showEditNameModal || showMembersModal || showUnityModal || showInviteModal || showReportModal || cheerTarget || isExternalModalOpen;
 
   const inputPlaceholder = useMemo(() => {
-    const typeMessageRaw = t('groupChat.typeMessage');
+    const typeMessageRaw = tArray('groupChat.typeMessage');
     let candidates = Array.isArray(typeMessageRaw) ? [...typeMessageRaw] : [typeMessageRaw];
     const inactivityThreshold = userData?.kickThreshold || 3;
     candidates.push(t('groupChat.placeholderInactivity', { days: inactivityThreshold }));
