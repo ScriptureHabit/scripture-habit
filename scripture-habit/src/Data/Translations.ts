@@ -358,7 +358,11 @@ export const translations: Record<string, any> = {
             daysAgo: "{count} days ago",
             viewMembers: "View Members",
             makePublic: "Make Public",
-            makePrivate: "Make Private"
+            makePrivate: "Make Private",
+            markedPublic: "Group is now Public",
+            markedPrivate: "Group is now Private",
+            reportError: "Failed to send report. Please try again.",
+            linkCopiedForInstagram: "Invite link copied! Now you can paste it into your Instagram profile or story."
         },
         newNote: {
             editTitle: "Edit Note",
@@ -453,6 +457,10 @@ export const translations: Record<string, any> = {
             createGroupTitle: "Create a Group",
             createGroupDesc: "Start your own group and invite friends.",
             backToDashboard: "Back to Dashboard"
+        },
+        groupListDetail: {
+            title: "Public Groups",
+            empty: "No groups found. Be the first to create one!"
         },
         joinGroup: {
             publicGroupsTitle: "Explore Public Groups",
@@ -572,7 +580,8 @@ export const translations: Record<string, any> = {
             comment: "Comment",
             newStudyNote: "New Study Note",
             talk: "Talk",
-            speech: "Speech"
+            speech: "Speech",
+            fetchingInfo: "Loading info..."
         },
         signOut: {
             title: "Sign Out",
@@ -602,6 +611,7 @@ export const translations: Record<string, any> = {
             nextButton: "Next",
             skipButton: "Skip"
         },
+        welcomeGuideButton: "Got it!",
         mascot: {
             streakCelebration: "Amazing! {streak} day streak!",
             doneToday: "Great job today!\nSee you tomorrow!",
@@ -1107,7 +1117,11 @@ export const translations: Record<string, any> = {
             daysAgo: "{count}日前",
             viewMembers: "メンバーを表示",
             makePublic: "パブリックにする",
-            makePrivate: "プライベートにする"
+            makePrivate: "プライベートにする",
+            markedPublic: "グループをパブリックに変更しました",
+            markedPrivate: "グループをプライベートに変更しました",
+            reportError: "通報の送信に失敗しました。もう一度お試しください。",
+            linkCopiedForInstagram: "招待リンクをコピーしました！インスタグラムのプロフィールやストーリーに貼り付けてください。"
         },
         myNotes: {
             description: "ノートコレクション",
@@ -1253,6 +1267,10 @@ export const translations: Record<string, any> = {
             createGroupDesc: "自分のグループを立ち上げて友達を招待しましょう。",
             backToDashboard: "ダッシュボードに戻る"
         },
+        groupListDetail: {
+            title: "パブリックグループを探す",
+            empty: "グループが見つかりませんでした。最初のグループを作成しましょう！"
+        },
         joinGroup: {
             publicGroupsTitle: "パブリックグループを探す",
             publicGroupsDesc: "あなたの学習目標に合ったコミュニティを見つけましょう。",
@@ -1371,7 +1389,8 @@ export const translations: Record<string, any> = {
             comment: "コメント",
             newStudyNote: "新しい学習ノート",
             talk: "お話",
-            speech: "スピーチ"
+            speech: "スピーチ",
+            fetchingInfo: "情報を取得中..."
         },
         signOut: {
             title: "サインアウト",
@@ -1401,6 +1420,7 @@ export const translations: Record<string, any> = {
             nextButton: "次へ",
             skipButton: "スキップ"
         },
+        welcomeGuideButton: "了解しました！",
         mascot: {
             streakCelebration: "すごい！{streak}日連続達成！",
             doneToday: "お疲れ様でした！\nまた明日もお会いしましょう！",
@@ -2893,6 +2913,10 @@ export const translations: Record<string, any> = {
             createGroupDesc: "建立您自己的群組並邀請朋友。",
             backToDashboard: "返回儀表板"
         },
+        groupListDetail: {
+            title: "探索公開群組",
+            empty: "找不到群組。成為第一個建立群組的人吧！"
+        },
         joinGroup: {
             publicGroupsTitle: "探索公開群組",
             publicGroupsDesc: "尋找符合您研讀目標的社群。",
@@ -3011,7 +3035,8 @@ export const translations: Record<string, any> = {
             comment: "心得",
             newStudyNote: "新研讀筆記",
             talk: "演講",
-            speech: "演講"
+            speech: "演講",
+            fetchingInfo: "正在載入資訊..."
         },
         signOut: {
             title: "登出",
@@ -3041,6 +3066,7 @@ export const translations: Record<string, any> = {
             nextButton: "下一步",
             skipButton: "跳過"
         },
+        welcomeGuideButton: "了解！",
         mascot: {
             streakCelebration: "太棒了！連續 {streak} 天達成！",
             doneToday: "今天辛苦了！\n明天見！",
@@ -3660,6 +3686,10 @@ export const translations: Record<string, any> = {
             createGroupDesc: "Inicia tu propio grupo e invita a amigos.",
             backToDashboard: "Volver al Tablero"
         },
+        groupListDetail: {
+            title: "Explorar Grupos Públicos",
+            empty: "No se encontraron grupos. ¡Sé el primero en crear uno!"
+        },
         joinGroup: {
             publicGroupsTitle: "Explorar Grupos Públicos",
             publicGroupsDesc: "Encuentra una comunidad que coincida con tus objetivos.",
@@ -3778,7 +3808,8 @@ export const translations: Record<string, any> = {
             comment: "Comentario",
             newStudyNote: "Nueva Nota de Estudio",
             talk: "Discurso",
-            speech: "Discurso"
+            speech: "Discurso",
+            fetchingInfo: "Cargando info..."
         },
         signOut: {
             title: "Cerrar Sesión",
@@ -3808,6 +3839,7 @@ export const translations: Record<string, any> = {
             nextButton: "Siguiente",
             skipButton: "Omitir"
         },
+        welcomeGuideButton: "¡Entendido!",
         mascot: {
             streakCelebration: "¡Increíble! ¡Racha de {streak} días!",
             doneToday: "¡Buen trabajo hoy!\n¡Nos vemos mañana!",

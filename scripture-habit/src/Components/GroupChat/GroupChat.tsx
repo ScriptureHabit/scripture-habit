@@ -174,7 +174,7 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], onI
     const inviteLink = `${window.location.origin}/join/${groupData?.inviteCode}`;
     try {
       await navigator.clipboard.writeText(inviteLink);
-      toast.success(t('groupChat.linkCopied'));
+      toast.success(t('groupChat.inviteLinkCopied'));
     } catch (err) {
       toast.error("Failed to copy link");
     }
@@ -192,7 +192,7 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], onI
         inviteCode: newCode,
         inviteCodeExpiresAt: Timestamp.fromDate(expiresAt)
       });
-      toast.success(t('groupChat.inviteRegenerated'));
+      toast.success(t('groupChat.inviteCodeRegenerated'));
     } catch (err) {
       toast.error("Failed to regenerate code");
     }

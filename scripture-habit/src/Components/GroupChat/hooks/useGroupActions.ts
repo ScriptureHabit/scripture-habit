@@ -11,7 +11,7 @@ export const useGroupActions = (
   userData: any,
   groupData: GroupData | null,
   language: string,
-  t: (key: string) => string
+  t: (key: string, replacements?: any) => string
 ) => {
   const navigate = useNavigate();
   const [isLeaving, setIsLeaving] = useState(false);
@@ -40,11 +40,11 @@ export const useGroupActions = (
         throw new Error(errText || 'Failed to leave group');
       }
 
-      toast.success(t('groupChat.leaveSuccess') || "You have left the group.");
+      toast.success(t('groupChat.leftGroupSuccess') || "You have left the group.");
       window.location.href = `/${language}/dashboard`;
     } catch (error) {
       console.error("Error leaving group:", error);
-      toast.error(t('groupChat.errorLeave') || "Failed to leave group.");
+      toast.error(t('groupChat.errorLeaveGroup') || "Failed to leave group.");
     } finally {
       setIsLeaving(false);
     }
@@ -55,11 +55,11 @@ export const useGroupActions = (
     setIsDeleting(true);
     try {
       await deleteDoc(doc(db, 'groups', groupId));
-      toast.success(t('groupChat.deleteSuccess') || "Group deleted successfully.");
+      toast.success(t('groupChat.groupDeletedSuccess') || "Group deleted successfully.");
       navigate(`/${language}/dashboard`);
     } catch (error) {
       console.error("Error deleting group:", error);
-      toast.error(t('groupChat.errorDelete') || "Failed to delete group.");
+      toast.error(t('groupChat.errorDeleteGroup') || "Failed to delete group.");
     } finally {
       setIsDeleting(false);
     }
@@ -75,7 +75,7 @@ export const useGroupActions = (
       toast.success(groupData.isPublic ? t('groupChat.markedPrivate') : t('groupChat.markedPublic'));
     } catch (error) {
       console.error("Error toggling public status:", error);
-      toast.error(t('groupChat.errorToggleStatus'));
+      toast.error(t('groupChat.errorUpdateGroupStatus'));
     }
   };
 
@@ -98,23 +98,23 @@ export const useGroupActions = (
       }
 
       await updateDoc(groupRef, payload);
-      toast.success(t('groupChat.updateSuccess') || "Group info updated!");
+      toast.success(t('groupChat.groupNameChanged') || "Group info updated!");
       return true;
     } catch (error) {
       console.error("Error updating group name:", error);
-      toast.error(t('groupChat.errorUpdate') || "Failed to update group info.");
+      toast.error(t('groupChat.errorChangeGroupName') || "Failed to update group info.");
       return false;
     }
   };
 
   const handleShareLine = () => {
-    const inviteLink = `${window.location.origin}/join/${groupData?.inviteCode}`;
-    window.open(`https://line.me/R/msg/text/?${encodeURIComponent(t('groupChat.shareMessage') + ' ' + inviteLink)}`, '_blank');
+    const inviteLink = `${window.location.origin}/${language}/join/${groupData?.inviteCode}`;
+    window.open(`https://line.me/R/msg/text/?${encodeURIComponent(t('groupChat.inviteMessage', { groupName: groupData?.name || '', inviteLink }))}`, '_blank');
   };
 
   const handleShareWhatsApp = () => {
-    const inviteLink = `${window.location.origin}/join/${groupData?.inviteCode}`;
-    window.open(`https://wa.me/?text=${encodeURIComponent(t('groupChat.shareMessage') + ' ' + inviteLink)}`, '_blank');
+    const inviteLink = `${window.location.origin}/${language}/join/${groupData?.inviteCode}`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(t('groupChat.inviteMessage', { groupName: groupData?.name || '', inviteLink }))}`, '_blank');
   };
 
   const handleShareMessenger = () => {
