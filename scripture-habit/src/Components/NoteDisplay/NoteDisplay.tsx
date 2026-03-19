@@ -2,7 +2,6 @@ import { useMemo, FC } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { useLanguage } from '../../Context/LanguageContext';
 import { useGCMetadata } from '../../hooks/useGCMetadata';
-import { translateChapterField } from '../../Utils/bookNameTranslations';
 import { NOTE_HEADER_REGEX, removeNoteHeader } from '../../Utils/noteUtils';
 import LinkPreview from '../LinkPreview/LinkPreview';
 
@@ -71,44 +70,47 @@ const GCNoteRenderer: FC<GCNoteRendererProps> = ({ scriptureValue, comment, url,
     const isBYU = scripLower.includes('byu');
 
     const constructedMd = useMemo(() => {
-        const headerLabel = t('noteLabels.newStudyNote');
-        const headerLine = `📖 **${headerLabel}**`;
+        const tWithFall = (k: string, lang: string) => {
+            const v = t(k);
+            const isEng = /Category|Chapter|Comment|Scripture|Talk|Speech|Title/.test(v);
+            if (lang !== 'en' && (v === k || isEng)) {
+                const defaults: Record<string, Record<string, string>> = {
+                    ja: { 'noteLabels.scripture': 'カテゴリ', 'noteLabels.chapter': '章', 'noteLabels.comment': 'コメント', 'noteLabels.newStudyNote': '新しい学習ノート', 'noteLabels.talk': 'お話', 'noteLabels.title': 'タイトル', 'noteLabels.speech': 'スピーチ' },
+                    es: { 'noteLabels.scripture': 'Escritura', 'noteLabels.chapter': 'Capítulo', 'noteLabels.comment': 'Comentario', 'noteLabels.newStudyNote': 'Nueva Nota', 'noteLabels.talk': 'Discurso', 'noteLabels.title': 'Título', 'noteLabels.speech': 'Discurso' },
+                    pt: { 'noteLabels.scripture': 'Escritura', 'noteLabels.chapter': 'Capítulo', 'noteLabels.comment': 'Comentário', 'noteLabels.newStudyNote': 'Nova Nota', 'noteLabels.talk': 'Discurso', 'noteLabels.title': 'Título', 'noteLabels.speech': 'Discurso' },
+                    ko: { 'noteLabels.scripture': '성구', 'noteLabels.chapter': '장', 'noteLabels.comment': '코멘트', 'noteLabels.newStudyNote': '새 노트' },
+                    zho: { 'noteLabels.scripture': '經文', 'noteLabels.chapter': '章節', 'noteLabels.comment': '評論', 'noteLabels.newStudyNote': '新筆記' },
+                    tl: { 'noteLabels.scripture': 'Banal na Kasulatan', 'noteLabels.chapter': 'Kabanata', 'noteLabels.comment': 'Komento', 'noteLabels.newStudyNote': 'Bagong Tala' },
+                    vi: { 'noteLabels.scripture': 'Thánh thư', 'noteLabels.chapter': 'Chương', 'noteLabels.comment': 'Nhận xét', 'noteLabels.newStudyNote': 'Ghi chú mới' },
+                    sw: { 'noteLabels.scripture': 'Andiko', 'noteLabels.chapter': 'Sura', 'noteLabels.comment': 'Maoni', 'noteLabels.newStudyNote': 'Dokezo Jipya' },
+                    th: { 'noteLabels.scripture': 'พระคัมภีร์', 'noteLabels.chapter': 'บท', 'noteLabels.comment': 'ความคิดเห็น', 'noteLabels.newStudyNote': 'โน้ตใหม่' }
+                };
+                return defaults[lang]?.[k] || v;
+            }
+            return v;
+        };
 
-        const scriptureLabel = t('noteLabels.scripture');
+        const headerLine = `📖 **${tWithFall('noteLabels.newStudyNote', language)}**`;
+        const scriptureLabel = tWithFall('noteLabels.scripture', language);
         const scriptName = translateScriptureName(scriptureValue, t);
 
-        let fieldLabel = t('noteLabels.talk');
-        if (isOther) fieldLabel = t('noteLabels.title');
-        else if (isBYU) fieldLabel = t('noteLabels.speech');
+        let fieldLabel = tWithFall('noteLabels.talk', language);
+        if (isOther) fieldLabel = tWithFall('noteLabels.title', language);
+        else if (isBYU) fieldLabel = tWithFall('noteLabels.speech', language);
 
         let fieldValue = url;
         if (loading) {
-            fieldValue = `_${t('noteLabels.fetchingInfo') || 'Loading info...'}_`;
+            fieldValue = `_${tWithFall('noteLabels.fetchingInfo', language)}_`;
         } else if (data && data.title) {
             fieldValue = (data.speaker && !isOther) ? `${data.title} (${data.speaker})` : data.title;
         }
 
-        const commentLabel = t('noteLabels.comment');
-        // Clean comment: remove lines that are just '**' and strip leading/trailing '**'
-        const cleanComment = (comment || '')
-            .split('\n')
-            .filter(line => line.trim() !== '**')
-            .join('\n')
-            .replace(/^\s*\*\*\s*/, '')
-            .replace(/\s*\*\*\s*$/, '')
-            .trim();
+        const commentLabel = tWithFall('noteLabels.comment', language);
+        const cleanComment = (comment || '').split('\n').filter(l => l.trim() !== '**').join('\n').replace(/^\s*\*\*\s*/, '').replace(/\s*\*\*\s*$/, '').trim();
         const commentWithLinks = cleanComment.replace(/(https?:\/\/[^\s]+)/g, '[$1]($1)');
 
-        // Use double newlines to ensure line breaks in all Markdown renderers
-        const lines = [
-            headerLine,
-            `**${scriptureLabel}:** ${scriptName}`,
-            `**${fieldLabel}:** ${fieldValue}`
-        ];
-
-        return lines.join('\n') + `\n**${commentLabel}:**\n${commentWithLinks}`;
-
-    }, [data, loading, scriptureValue, comment, t, url, isOther, isBYU]);
+        return [headerLine, `**${scriptureLabel}:** ${scriptName}`, `**${fieldLabel}:** ${fieldValue}`].join('\n') + `\n**${commentLabel}:**\n${commentWithLinks}`;
+    }, [data, loading, scriptureValue, comment, t, url, isOther, isBYU, language]);
 
     return (
         <div style={{ textAlign: 'left' }}>
@@ -136,13 +138,13 @@ interface NoteDisplayProps {
 }
 
 const NoteDisplay: FC<NoteDisplayProps> = ({ text, isSent, linkColor, translatedText }) => {
-    const { language, t } = useLanguage();
+    const { language, t, translateChapterField } = useLanguage();
 
     // 1. Structure Check
     const headerMatch = text.match(NOTE_HEADER_REGEX);
-    const hasCategoryLabel = text.includes('カテゴリ:') || text.includes('カテゴリ：') || text.includes('Scripture:') || text.includes('Category:');
+    const hasStructuredLabel = /^(?:\*\*|)\s*(Category|Scripture|カテゴリ|聖句|Escritura|성구|經文|Kinh Thánh|Thánh thư|Kasulatan|Banal na Kasulatan|Andiko|พระคัมภีร์|章|Chapter|Capítulo|장|章節|Chương|Kabanata|Sura|บท|Title|Talk|Speech|Título|Discurso|제목|標題|Tiêu đề|Pamagat|Mensahe|リンク|Url)\s*(?:\*\*|)\s*[:：]/mi.test(text);
 
-    if (!headerMatch && !hasCategoryLabel) {
+    if (!headerMatch && !hasStructuredLabel) {
         const simpleUrls = extractUrls(text);
         const processedText = (text || '').replace(/(\]\()?https?:\/\/[^\s]+/g, (match, p1) => {
             if (p1) return match;
@@ -175,8 +177,27 @@ const NoteDisplay: FC<NoteDisplayProps> = ({ text, isSent, linkColor, translated
     const initialLines = contentBody.split('\n');
     const lines: string[] = [];
 
-    // Further split lines if they contain multiple labels on the same line
-    const labelMarkers = ['カテゴリ:', 'カテゴリ：', '章:', '章：', 'Title:', 'Title：', 'Url:', 'Url：', 'Comment:', 'Comment：', 'コメント:', 'コメント：'];
+    // Expanded label markers for all supported languages to ensure cross-language parsing
+    const labelMarkers = [
+        // English
+        'Category:', 'Chapter:', 'Scripture:', 'Title:', 'Talk:', 'Speech:', 'Comment:', 'Url:',
+        // Japanese
+        'カテゴリ:', 'カテゴリ：', '章:', '章：', '聖句:', '聖句：', 'タイトル:', 'タイトル：', 'お話:', 'お話：', 'スピーチ:', 'スピーチ：', 'コメント:', 'コメント：', 'Url：',
+        // Spanish / Portuguese
+        'Escritura:', 'Capítulo:', 'Título:', 'Comentario:', 'Comentário:', 'Discurso:',
+        // Korean
+        '성구:', '장:', '제목:', '코멘트:',
+        // Chinese
+        '經文:', '章節:', '標題:', '評論:',
+        // Vietnamese
+        'Kinh Thánh:', 'Thánh thư:', 'Chương:', 'Tiêu đề:', 'Bình luận:',
+        // Tagalog
+        'Kasulatan:', 'Banal na Kasulatan:', 'Kabanata:', 'Pamagat:', 'Mensahe:', 'Komento:',
+        // Swahili
+        'Andiko:', 'Sura:', 'Maoni:',
+        // Thai
+        'พระคัมภีร์:', 'บท:', 'ความคิดเห็น:',
+    ];
 
     initialLines.forEach(line => {
         const currentLine = line;
@@ -218,12 +239,16 @@ const NoteDisplay: FC<NoteDisplayProps> = ({ text, isSent, linkColor, translated
             const labelRaw = trimmed.substring(0, dividerIndex).replace(/\*/g, '').trim().toLowerCase();
             const value = trimmed.substring(dividerIndex + 1).replace(/\*\*/g, '').trim();
 
-            if (labelRaw.includes('scripture') || labelRaw.includes('カテゴリ')) {
+            if (labelRaw.includes('scripture') || labelRaw.includes('カテゴリ') || labelRaw.includes('escritura') || labelRaw.includes('성구') || labelRaw.includes('經文') || labelRaw.includes('kinh thánh') || labelRaw.includes('thánh thư') || labelRaw.includes('kasulatan') || labelRaw.includes('banal na kasulatan') || labelRaw.includes('andiko') || labelRaw.includes('พระคัมภีร์')) {
                 scriptureValue = value;
             } else if (
                 labelRaw.includes('chapter') || labelRaw.includes('url') || labelRaw.includes('title') ||
-                labelRaw.includes('章') || labelRaw.includes('リンク') || labelRaw.includes('speech') ||
-                labelRaw.includes('talk') || labelRaw.includes('スピーチ') || labelRaw.includes('お話')
+                labelRaw.includes('章') || labelRaw.includes('링크') || labelRaw.includes('speech') ||
+                labelRaw.includes('talk') || labelRaw.includes('capítulo') || labelRaw.includes('título') ||
+                labelRaw.includes('discurso') || labelRaw.includes('제목') || labelRaw.includes('標題') ||
+                labelRaw.includes('tiêu đề') || labelRaw.includes('pamagat') || labelRaw.includes('kabanata') ||
+                labelRaw.includes('chương') || labelRaw.includes('章節') || labelRaw.includes('sura') ||
+                labelRaw.includes('บท') || labelRaw.includes('mensahe')
             ) {
                 // If chapterValue is already a URL, don't overwrite it with a Talk/Speech title
                 const valIsUrl = isGCUrl(value);
@@ -231,7 +256,7 @@ const NoteDisplay: FC<NoteDisplayProps> = ({ text, isSent, linkColor, translated
                 if (!chapterValue || valIsUrl || !currentIsUrl) {
                     chapterValue = value;
                 }
-            } else if (labelRaw.includes('comment') || labelRaw.includes('コメント')) {
+            } else if (labelRaw.includes('comment') || labelRaw.includes('コメント') || labelRaw.includes('comentario') || labelRaw.includes('comentário') || labelRaw.includes('코멘트') || labelRaw.includes('評論') || labelRaw.includes('bình luận') || labelRaw.includes('komento') || labelRaw.includes('maoni') || labelRaw.includes('ความคิดเห็น')) {
                 if (value) commentLines.push(value);
             } else {
                 commentLines.push(trimmed);
@@ -270,21 +295,35 @@ const NoteDisplay: FC<NoteDisplayProps> = ({ text, isSent, linkColor, translated
         );
     }
 
-    const headerLabel = t('noteLabels.newStudyNote');
+    const tWithFall = (k: string, lang: string) => {
+        const val = t(k);
+        const isEng = /Category|Chapter|Comment|Scripture|Talk|Speech|Title/.test(val);
+        if (lang !== 'en' && (val === k || isEng)) {
+            const defaults: Record<string, Record<string, string>> = {
+                ja: { 'noteLabels.scripture': 'カテゴリ', 'noteLabels.chapter': '章', 'noteLabels.comment': 'コメント', 'noteLabels.newStudyNote': '新しい学習ノート' },
+                es: { 'noteLabels.scripture': 'Escritura', 'noteLabels.chapter': 'Capítulo', 'noteLabels.comment': 'Comentario', 'noteLabels.newStudyNote': 'Nueva Nota' },
+                pt: { 'noteLabels.scripture': 'Escritura', 'noteLabels.chapter': 'Capítulo', 'noteLabels.comment': 'Comentário', 'noteLabels.newStudyNote': 'Nova Nota' },
+                ko: { 'noteLabels.scripture': '성구', 'noteLabels.chapter': '장', 'noteLabels.comment': '코มน트', 'noteLabels.newStudyNote': '새 노트' },
+                zho: { 'noteLabels.scripture': '經文', 'noteLabels.chapter': '章節', 'noteLabels.comment': '評論', 'noteLabels.newStudyNote': '新筆記' },
+                tl: { 'noteLabels.scripture': 'Banal na Kasulatan', 'noteLabels.chapter': 'Kabanata', 'noteLabels.comment': 'Komento', 'noteLabels.newStudyNote': 'Bagong Tala' },
+                vi: { 'noteLabels.scripture': 'Thánh thư', 'noteLabels.chapter': 'Chương', 'noteLabels.comment': 'Nhận xét', 'noteLabels.newStudyNote': 'Ghi chú mới' },
+                sw: { 'noteLabels.scripture': 'Andiko', 'noteLabels.chapter': 'Sura', 'noteLabels.comment': 'Maoni', 'noteLabels.newStudyNote': 'Dokezo Jipya' },
+                th: { 'noteLabels.scripture': 'พระคัมภีร์', 'noteLabels.chapter': 'บท', 'noteLabels.comment': 'ความคิดเห็น', 'noteLabels.newStudyNote': 'โน้ตใหม่' }
+            };
+            return defaults[lang]?.[k] || val;
+        }
+        return val;
+    };
+
+    const headerLabel = tWithFall('noteLabels.newStudyNote', language);
     const scriptureNameTrans = translateScriptureName(scriptureValue, t);
-    let chapLabel = t('noteLabels.chapter');
-    if (isOther) chapLabel = t('noteLabels.title');
-    else if (isBYU) chapLabel = t('noteLabels.speech');
-    else if (isGC) chapLabel = t('noteLabels.talk');
 
-    // Use double newlines for consistent spacing
-    const topLines = [
+    const finalMd = [
         `📖 **${headerLabel}**`,
-        `**${t('noteLabels.scripture')}:** ${scriptureNameTrans}`,
-        (translateChapterField(chapterValue, language) || chapterValue) ? `**${chapLabel}:** ${translateChapterField(chapterValue, language) || chapterValue}` : null
-    ].filter(Boolean);
-
-    const finalMd = topLines.join('\n') + `\n\n**${t('noteLabels.comment')}:**\n${comment.replace(/(https?:\/\/[^\s]+)/g, '[$1]($1)')}`;
+        `**${tWithFall('noteLabels.scripture', language)}:** ${scriptureNameTrans}`,
+        (translateChapterField(chapterValue) || chapterValue) ? `**${tWithFall('noteLabels.chapter', language)}:** ${translateChapterField(chapterValue) || chapterValue}` : null,
+        `\n**${tWithFall('noteLabels.comment', language)}:**\n${comment.replace(/(https?:\/\/[^\s]+)/g, '[$1]($1)')}`
+    ].filter(Boolean).join('\n');
 
     return (
         <div style={{ textAlign: 'left' }}>

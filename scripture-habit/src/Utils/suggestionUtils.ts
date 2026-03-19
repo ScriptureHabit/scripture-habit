@@ -41,9 +41,9 @@ export const getBookSuggestions = (
     volume: string | null | undefined,
     input: string | null | undefined,
     language: string,
-    bookNameTranslations: Record<string, Record<string, string>>
+    currentLanguageBooks: Record<string, string>
 ): BookSuggestion[] => {
-    if (!volume || !input || !bookNameTranslations || !bookNameTranslations[language]) return [];
+    if (!volume || !input || !currentLanguageBooks) return [];
 
     const volumeList = volumeBooks[volume];
     if (!volumeList) return [];
@@ -62,7 +62,7 @@ export const getBookSuggestions = (
     if (!normalizedInput) return [];
 
     const translatedList = volumeList.map(englishName => {
-        const translatedName = bookNameTranslations[language][englishName] || englishName;
+        const translatedName = currentLanguageBooks[englishName] || englishName;
         return {
             english: englishName,
             translated: translatedName,

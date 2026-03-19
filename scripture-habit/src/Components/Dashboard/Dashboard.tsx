@@ -16,7 +16,6 @@ import NewNote from '../NewNote/NewNote';
 import MyNotes from '../MyNotes/MyNotes';
 import Profile from '../Profile/Profile';
 import { getGospelLibraryUrl } from '../../Utils/gospelLibraryMapper';
-import { translateChapterField } from '../../Utils/bookNameTranslations';
 import { useLanguage } from '../../Context/LanguageContext';
 import { getTodayReadingPlan } from '../../Data/DailyReadingPlan';
 import WelcomeStoryModal from '../WelcomeStoryModal/WelcomeStoryModal';
@@ -92,7 +91,7 @@ const Dashboard: FC = () => {
   const [kickConfirmInput, setKickConfirmInput] = useState<string>('');
   const [autoKickError, setAutoKickError] = useState<string>('');
   
-  const { t, language } = useLanguage();
+  const { t, language, translateChapterField, isLoaded } = useLanguage();
 
   const todayPlan = getTodayReadingPlan();
 
@@ -607,7 +606,7 @@ const Dashboard: FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, userData, showWelcomeStory, t]);
 
-  if (loading) {
+  if (loading || !isLoaded) {
     return (
       <div className='App Dashboard'>
         <div className='AppGlass Grid'>
@@ -926,7 +925,7 @@ const Dashboard: FC = () => {
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', alignItems: 'center' }}>
                         {todayPlan.scripts.map((script, idx) => {
                           const url = getReadingPlanUrl(script);
-                          const displayScript = translateChapterField(script, language);
+                          const displayScript = translateChapterField(script);
 
                           return (
                             <a

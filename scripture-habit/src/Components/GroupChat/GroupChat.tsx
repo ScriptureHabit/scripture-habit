@@ -46,7 +46,7 @@ interface ContextMenu {
 }
 
 const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], onInputFocusChange, onBack, onGroupSelect, isExternalModalOpen = false }) => {
-  const { language, t, tArray } = useLanguage();
+  const { language, t, tArray, isLoaded } = useLanguage();
   const API_BASE = Capacitor.isNativePlatform() ? 'https://scripturehabit.app' : '';
 
   // Primary Data Hooks
@@ -412,6 +412,16 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], onI
   };
 
   if (!groupId) return null;
+
+  if (loading || !isLoaded) {
+    return (
+      <div className="GroupChat">
+        <div className="loading-spinner">
+          <div className="spinner"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="GroupChat" >

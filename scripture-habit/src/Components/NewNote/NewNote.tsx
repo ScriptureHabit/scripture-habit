@@ -17,14 +17,12 @@ import Input from '../Input/Input';
 import './NewNote.css';
 import { useLanguage } from '../../Context/LanguageContext';
 import { removeNoteHeader } from '../../Utils/noteUtils';
-import { translateChapterField } from '../../Utils/bookNameTranslations';
 import { getGospelLibraryUrl, getCategoryFromScripture } from '../../Utils/gospelLibraryMapper';
 import { getTodayReadingPlan } from '../../Data/DailyReadingPlan';
 import { localizeLdsUrl } from '../../Utils/urlLocalizer';
 import { useGCMetadata } from '../../hooks/useGCMetadata';
 import confetti from 'canvas-confetti';
 import { getBookSuggestions } from '../../Utils/suggestionUtils';
-import { bookNameTranslations } from '../../Utils/bookNameTranslations';
 import { Note } from '../../types/note';
 import { UserData } from '../../types/user';
 import { Group } from '../../types/chat';
@@ -53,7 +51,7 @@ interface ScriptureOption {
 }
 
 const NewNote: FC<NewNoteProps> = ({ isOpen, onClose, userData, noteToEdit, onDelete, userGroups = [], isGroupContext = false, currentGroupId = null, initialData = null }) => {
-    const { t, tArray, language } = useLanguage();
+    const { t, tArray, language, translateChapterField, bookTranslations, isLoaded } = useLanguage();
     const API_BASE = Capacitor.isNativePlatform() ? 'https://scripturehabit.app' : '';
 
     const [chapter, setChapter] = useState('');
@@ -116,10 +114,10 @@ const NewNote: FC<NewNoteProps> = ({ isOpen, onClose, userData, noteToEdit, onDe
         if (isOpen && noteToEdit) {
             const text = removeNoteHeader(noteToEdit.text || '');
 
-            const chapterMatch = text.match(/\*\*(?:Chapter|Title|Speech):\*\* (.*?)(?:\n|$)/);
+            const chapterMatch = text.match(/\*\*(?:Chapter|Title|Speech|Url|章|タイトル|スピーチ|リンク|お話):\*\* (.*?)(?:\n|$)/i);
             const chap = chapterMatch ? chapterMatch[1].trim() : '';
 
-            const scriptureMatch = text.match(/\*\*Scripture:\*\* (.*?)(?:\n|$)/);
+            const scriptureMatch = text.match(/\*\*(?:Scripture|Category|カテゴリ):\*\* (.*?)(?:\n|$)/i);
             const script = scriptureMatch ? scriptureMatch[1].trim() : '';
 
             let comm = text;
@@ -236,6 +234,16 @@ const NewNote: FC<NewNoteProps> = ({ isOpen, onClose, userData, noteToEdit, onDe
 
     if (!isOpen) return null;
 
+    if (!isLoaded) {
+        return (
+            <div className={`new-note-overlay ${isOpen ? 'open' : ''}`}>
+                <div className="new-note-modal" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <div className="loading-spinner"></div>
+                </div>
+            </div>
+        );
+    }
+
     const handleGenerateQuestions = async () => {
         if (!scripture || !chapter) {
             toast.warning(t('newNote.errorMissingFields'));
@@ -329,7 +337,7 @@ const NewNote: FC<NewNoteProps> = ({ isOpen, onClose, userData, noteToEdit, onDe
                 finalChapter = localizeLdsUrl(finalChapter, language);
             } else {
                 // Otherwise translate as a normal chapter (e.g. Proverbs 3:5-6 -> 箴言 3:5-6)
-                finalChapter = translateChapterField(finalChapter, language);
+                finalChapter = translateChapterField(finalChapter);
             }
 
             setChapter(finalChapter);
@@ -338,7 +346,7 @@ const NewNote: FC<NewNoteProps> = ({ isOpen, onClose, userData, noteToEdit, onDe
 
     const fillScriptureData = (script: string) => {
         const category = getCategoryFromScripture(script);
-        let chapterVal = translateChapterField(script, language);
+        let chapterVal = translateChapterField(script);
 
         // Special handling for Doctrine and Covenants: often just show section number
         if (category === "Doctrine and Covenants") {
@@ -408,19 +416,26 @@ const NewNote: FC<NewNoteProps> = ({ isOpen, onClose, userData, noteToEdit, onDe
             const isGC = sLower.includes("general") || sLower.includes("総大会");
             const isBYU = sLower.includes("byu");
 
+            const headerLabel = t('noteLabels.newStudyNote');
+            const scriptureLabel = t('noteLabels.scripture');
+            const urlLabel = t('noteLabels.url') || 'Url';
+            const talkLabel = t('noteLabels.talk') || 'Talk';
+            const speechLabel = t('noteLabels.speech') || 'Speech';
+            const chapterLabel = t('noteLabels.chapter');
+
             if (isOther) {
                 // chapter holds the raw URL. ALWAYS save it as a visible line.
-                messageText = `📖 **New Study Note**\n\n**Scripture:** ${scripture}\n\n**Url:** ${chapter}\n\n${comment}`;
+                messageText = `📖 **${headerLabel}**\n\n**${scriptureLabel}:** ${scripture}\n\n**${urlLabel}:** ${chapter}\n\n${comment}`;
             } else if (isGC) {
                 const talkVal = gcMeta?.title || chapter || "";
                 // If chapter is a URL or shortcode, we should save it separately to ensure NoteDisplay can find it
                 const isUrl = chapter && (chapter.toLowerCase().startsWith('http') || /^\d{4}\/\d{2}\/.+/.test(chapter));
-                messageText = `📖 **New Study Note**\n\n**Scripture:** ${scripture}\n\n**Talk:** ${talkVal}\n${isUrl ? `**Url:** ${chapter}\n` : ''}\n${comment}`;
+                messageText = `📖 **${headerLabel}**\n\n**${scriptureLabel}:** ${scripture}\n\n**${talkLabel}:** ${talkVal}\n${isUrl ? `**${urlLabel}:** ${chapter}\n` : ''}\n${comment}`;
             } else if (isBYU) {
                 // For BYU, chapter is the URL
-                messageText = `📖 **New Study Note**\n\n**Scripture:** ${scripture}\n\n**Speech:** ${gcMeta?.title || "Speech"}\n**Url:** ${chapter}\n\n${comment}`;
+                messageText = `📖 **${headerLabel}**\n\n**${scriptureLabel}:** ${scripture}\n\n**${speechLabel}:** ${gcMeta?.title || "Speech"}\n**${urlLabel}:** ${chapter}\n\n${comment}`;
             } else {
-                messageText = `📖 **New Study Note**\n\n**Scripture:** ${scripture}\n\n**Chapter:** ${chapter}\n\n${comment}`;
+                messageText = `📖 **${headerLabel}**\n\n**${scriptureLabel}:** ${scripture}\n\n**${chapterLabel}:** ${chapter}\n\n${comment}`;
             }
 
             const batch = writeBatch(db);
@@ -916,7 +931,7 @@ const NewNote: FC<NewNoteProps> = ({ isOpen, onClose, userData, noteToEdit, onDe
                                 onMouseOver={(e) => e.currentTarget.style.borderColor = '#b794f4'}
                                 onMouseOut={(e) => e.currentTarget.style.borderColor = '#e2e8f0'}
                             >
-                                📖 {translateChapterField(script, language)}
+                                📖 {translateChapterField(script)}
                             </button>
                         ))}
                     </div>
@@ -1058,7 +1073,7 @@ const NewNote: FC<NewNoteProps> = ({ isOpen, onClose, userData, noteToEdit, onDe
                                 setChapter(val);
 
                                 if (val.length > 0 && scripture && scripture !== 'Other' && scripture !== 'General Conference' && scripture !== 'BYU Speeches') {
-                                    const matched = getBookSuggestions(scripture, val, language, bookNameTranslations);
+                                    const matched = getBookSuggestions(scripture, val, language, bookTranslations);
                                     setSuggestions(matched);
                                     setShowSuggestions(matched.length > 0);
                                 } else {

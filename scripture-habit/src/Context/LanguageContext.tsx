@@ -1,8 +1,12 @@
-/* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useState, useContext, useEffect, ReactNode, useCallback, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { translations } from '../Data/Translations.js';
 import { safeStorage } from '../Utils/storage';
+import { loadTranslations, loadBookTranslations } from '../locales/i18n';
+import { identifyBookKey } from '../Utils/bookRefMapper';
+
+// Static en for initial load/fallback
+import enTranslations from '../locales/en';
+import enBooks from '../locales/books/en';
 
 export type Language = 'en' | 'ja' | 'pt' | 'zho' | 'es' | 'vi' | 'th' | 'ko' | 'tl' | 'sw';
 
@@ -14,6 +18,10 @@ interface LanguageContextType {
     setLanguage: (newLanguage: Language) => void;
     t: (key: string, replacements?: Record<string, string | number>) => string;
     tArray: (key: string) => string[];
+    isLoaded: boolean;
+    translateBookName: (bookName: string | null | undefined) => string;
+    translateChapterField: (chapterText: string | null | undefined) => string;
+    bookTranslations: Record<string, string>;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
@@ -52,6 +60,9 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
     const location = useLocation();
     
     const [language, setLanguageInternal] = useState<Language>(detectInitialLanguage);
+    const [translations, setTranslations] = useState<any>(enTranslations);
+    const [bookTranslations, setBookTranslations] = useState<any>(enBooks);
+    const [isLoaded, setIsLoaded] = useState(false);
 
     // Sync state with URL changes (e.g., back button)
     useEffect(() => {
@@ -60,6 +71,99 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
             setLanguageInternal(pathLang);
         }
     }, [location.pathname, language]);
+
+    useEffect(() => {
+        const load = async () => {
+            setIsLoaded(false);
+            try {
+                if (language === 'en') {
+                    setTranslations(enTranslations);
+                    setBookTranslations(enBooks);
+                    setIsLoaded(true);
+                } else {
+                    // Load BOTH together to ensure they stay in sync
+                    const [trans, books] = await Promise.all([
+                        loadTranslations(language),
+                        loadBookTranslations(language)
+                    ]);
+                    
+                    // Use functional updates to prevent stale state issues
+                    setTranslations(trans);
+                    setBookTranslations(books);
+                    setIsLoaded(true);
+                }
+            } catch (error) {
+                console.error('Failed to load translations for:', language, error);
+                setTranslations(enTranslations);
+                setBookTranslations(enBooks);
+                setIsLoaded(true);
+            }
+        };
+        load();
+    }, [language]);
+
+    const translateBookName = useCallback((bookName: string | null | undefined): string => {
+        if (!bookName) return '';
+        
+        const langBooks = bookTranslations || enBooks;
+        
+        // Try current language
+        if (langBooks[bookName]) {
+            return langBooks[bookName];
+        }
+
+        // Try global identity map
+        const englishKey = identifyBookKey(bookName);
+        if ((langBooks as any)[englishKey]) return (langBooks as any)[englishKey];
+
+        // Try English fallback
+        if (language !== 'en') {
+            if ((enBooks as any)[englishKey]) return (enBooks as any)[englishKey];
+            if ((enBooks as any)[bookName]) {
+                return (enBooks as any)[bookName];
+            }
+            const lowerKey = englishKey.toLowerCase();
+            for (const [englishName, translatedName] of Object.entries(enBooks)) {
+                if (englishName.toLowerCase() === lowerKey) {
+                    return translatedName as string;
+                }
+            }
+        }
+
+        return bookName;
+    }, [bookTranslations, language]);
+
+    const translateChapterField = useCallback((chapterText: string | null | undefined): string => {
+        if (!chapterText) return '';
+
+        // Special handling for GC/BYU Speeches
+        if (chapterText.includes('general-conference') || /^\d{4}\/\d{2}/.test(chapterText)) {
+            const urlMatch = chapterText.match(/general-conference\/(\d{4})\/(\d{2})\/([^?#]+)/);
+            if (urlMatch) return `${urlMatch[1]}/${urlMatch[2]}/${urlMatch[3]}`;
+
+            const urlTocMatch = chapterText.match(/general-conference\/(\d{4})\/(\d{2})(?:[?#]|$)/);
+            if (urlTocMatch) return `${urlTocMatch[1]}/${urlTocMatch[2]}`;
+        }
+
+        if (chapterText.includes('speeches.byu.edu')) {
+            const byuMatch = chapterText.match(/speeches\.byu\.edu\/talks\/([^/]+)\/([^/]+)/);
+            if (byuMatch) {
+                const speaker = byuMatch[1].split('-').map(w => w.length === 1 ? w.toUpperCase() + '.' : w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+                const title = byuMatch[2].split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+                return `${title} (${speaker})`;
+            }
+        }
+
+        const match = chapterText.match(/^((?:\d\s*)?[\p{L}\s—-]+)(?:\s+|(?=\d))(\d+(?::[\d\s,-]+)?)$/u);
+        if (match) {
+            const bookName = match[1].trim().replace(/—/g, '-');
+            const chapterVerse = match[2];
+            const translatedBook = translateBookName(bookName);
+            return `${translatedBook} ${chapterVerse}`;
+        }
+
+        return translateBookName(chapterText);
+    }, [translateBookName]);
 
     const setLanguage = useCallback((newLanguage: Language) => {
         if (!SUPPORTED_LANGUAGES.includes(newLanguage) || newLanguage === language) return;
@@ -89,26 +193,35 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
 
     const getValueFromPath = useCallback((key: string): any => {
         const keys = key.split('.');
-        let current: any = (translations as any)[language];
+        let current: any = translations;
         
         for (const k of keys) {
             if (current && current[k] !== undefined) {
                 current = current[k];
             } else {
+                if (language !== 'en') {
+                    let enCurrent: any = enTranslations;
+                    for (const ek of keys) {
+                        if (enCurrent && enCurrent[ek] !== undefined) {
+                            enCurrent = enCurrent[ek];
+                        } else {
+                            return null;
+                        }
+                    }
+                    return enCurrent;
+                }
                 return null;
             }
         }
         return current;
-    }, [language]);
+    }, [language, translations]);
 
     const t = useCallback((key: string, replacements: Record<string, string | number> = {}): string => {
         const value = getValueFromPath(key);
-        
         if (typeof value !== 'string') return key;
 
         let result = value;
         Object.entries(replacements).forEach(([k, v]) => {
-            // Global replacement
             result = result.split(`{${k}}`).join(String(v));
         });
         
@@ -125,8 +238,12 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
         language,
         setLanguage,
         t,
-        tArray
-    }), [language, setLanguage, t, tArray]);
+        tArray,
+        isLoaded,
+        translateBookName,
+        translateChapterField,
+        bookTranslations
+    }), [language, setLanguage, t, tArray, isLoaded, translateBookName, translateChapterField, bookTranslations]);
 
     return (
         <LanguageContext.Provider value={contextValue}>
@@ -142,3 +259,4 @@ export const useLanguage = () => {
     }
     return context;
 };
+
