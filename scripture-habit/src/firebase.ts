@@ -64,7 +64,7 @@ if (process.env.NODE_ENV === 'development') {
 };
 
 const appCheck = initializeAppCheck(app, {
-  provider: new ReCaptchaEnterpriseProvider('6LdqyJAsAAAAAFSQGfex0wfI9DRLjMkKM9wupLAA'),
+  provider: new ReCaptchaEnterpriseProvider(import.meta.env.VITE_APPCHECK_SITE_KEY),
   isTokenAutoRefreshEnabled: true
 });
 
