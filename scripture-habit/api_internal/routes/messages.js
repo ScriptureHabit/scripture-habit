@@ -83,38 +83,43 @@ router.post('/post-note', authenticate, requireEmailVerified, verifyAppCheck, as
                     // Future guard: if user posted while in a later time zone,
                     // we don't increment, but we definitely don't reset.
                     // Just skip updating streak-specific fields.
-                } else if (!userData.lastPostDate || userData.lastPostDate === "") {
-                    // First time/Migration fallback
-                    newStreak = (newStreak > 0) ? newStreak + 1 : 1;
-                    streakUpdated = true;
                 } else {
-                    const isConsecutiveDay = userData.lastPostDate === yesterday;
-                    const isTraveling = clientTimeZone && clientTimeZone !== timeZone;
-                    const withinGracePeriod = isTraveling && hoursSinceLastPost < 45; // 45h only if traveling
+                    // It's a new unique study day
+                    userUpdate.daysStudiedCount = admin.firestore.FieldValue.increment(1);
 
-                    if (isConsecutiveDay || withinGracePeriod) {
-                        // It's either the next calendar day, OR within travel grace period.
-                        // Removed 12h restriction for traveling to support fast timezone jumps (e.g. crossing dateline east).
-                        newStreak += 1;
+                    if (!userData.lastPostDate || userData.lastPostDate === "") {
+                        // First time/Migration fallback
+                        newStreak = (newStreak > 0) ? newStreak + 1 : 1;
+                        streakUpdated = true;
                     } else {
-                        // Gap is too large or not consecutive
-                        newStreak = 1;
+                        const isConsecutiveDay = userData.lastPostDate === yesterday;
+                        const isTraveling = clientTimeZone && clientTimeZone !== timeZone;
+                        const withinGracePeriod = isTraveling && hoursSinceLastPost < 45; // 45h only if traveling
+
+                        if (isConsecutiveDay || withinGracePeriod) {
+                            // It's either the next calendar day, OR within travel grace period.
+                            // Removed 12h restriction for traveling to support fast timezone jumps (e.g. crossing dateline east).
+                            newStreak += 1;
+                        } else {
+                            // Gap is too large or not consecutive
+                            newStreak = 1;
+                        }
+                        streakUpdated = true;
                     }
-                    streakUpdated = true;
-                }
 
-                if (streakUpdated) {
-                    userUpdate.streakCount = newStreak;
-                    userUpdate.lastPostDate = today;
+                    if (streakUpdated) {
+                        userUpdate.streakCount = newStreak;
+                        userUpdate.lastPostDate = today;
 
-                    if (newStreak > currentHighest) {
-                        userUpdate.highestStreak = newStreak;
-                    }
+                        if (newStreak > currentHighest) {
+                            userUpdate.highestStreak = newStreak;
+                        }
 
-                    // Proactively save timezone if it's missing or different from what they just sent
-                    // (Self-healing for existing users or if they permanently moved)
-                    if (clientTimeZone && (!userData.timeZone || userData.timeZone === 'UTC')) {
-                        userUpdate.timeZone = clientTimeZone;
+                        // Proactively save timezone if it's missing or different from what they just sent
+                        // (Self-healing for existing users or if they permanently moved)
+                        if (clientTimeZone && (!userData.timeZone || userData.timeZone === 'UTC')) {
+                            userUpdate.timeZone = clientTimeZone;
+                        }
                     }
                 }
             }

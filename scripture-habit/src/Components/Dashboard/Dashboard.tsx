@@ -402,7 +402,7 @@ const Dashboard: FC = () => {
 
           {selectedView === 1 && <MyNotes userData={userData} isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} userGroups={userGroups} />}
           {selectedView === 2 && activeGroupId && <GroupChat groupId={activeGroupId} userData={userData} userGroups={userGroups} onInputFocusChange={setIsInputFocused} isExternalModalOpen={isModalOpen} onBack={() => setSelectedView(0)} onGroupSelect={(gid) => setActiveGroupId(gid)} />}
-          {selectedView === 3 && <Profile userData={userData} stats={{ streak: userData?.streakCount || 0, totalNotes: userData?.totalNotes || 0, daysStudied: userData?.daysStudied || 0 }} />}
+          {selectedView === 3 && <Profile userData={userData} stats={{ streak: userData?.streakCount || 0, totalNotes: userData?.totalNotes || 0, daysStudied: userData?.daysStudiedCount || 0 }} />}
           {selectedView === 4 && <Donate userData={userData} />}
         </div>
       </div>
