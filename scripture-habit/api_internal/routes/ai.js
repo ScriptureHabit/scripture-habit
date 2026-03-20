@@ -111,7 +111,7 @@ router.post('/generate-weekly-recap', authenticate, aiLimiter, verifyAppCheck, a
     try {
         const groupRef = db.collection('groups').doc(groupId);
         const gSnap = await groupRef.get();
-        if (!gSnap.exists || !(gSnap.data().members || []).includes(uid)) return res.status(404).send('Access denied');
+        if (!gSnap.exists || gSnap.data().ownerUserId !== uid) return res.status(403).send('Access denied: Owner only');
 
         const sevenDaysAgo = new Date();
         sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
@@ -138,6 +138,10 @@ router.post('/generate-weekly-recap', authenticate, aiLimiter, verifyAppCheck, a
             senderId: 'system',
             isSystemMessage: true,
             messageType: 'weeklyRecap'
+        });
+
+        await groupRef.update({
+            lastRecapGeneratedAt: admin.firestore.FieldValue.serverTimestamp()
         });
 
         res.json({ success: true, recap: generatedText });

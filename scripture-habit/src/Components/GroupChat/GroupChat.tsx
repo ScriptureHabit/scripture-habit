@@ -575,12 +575,14 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], onI
                 <span className="menu-item-label">{t('groupChat.members')}</span>
               </div>
 
-              <div className="mobile-menu-item-action" onClick={() => { if (isRecapAvailable && !isRecapLoading) { handleGenerateWeeklyRecap(); setShowMobileMenu(false); } }}>
-                <div className="menu-item-icon-circle pink-bg">
-                  <UilAnalysis size="20" />
+              {isOwner && (
+                <div className="mobile-menu-item-action" onClick={() => { if (isRecapAvailable && !isRecapLoading) { handleGenerateWeeklyRecap(); setShowMobileMenu(false); } }}>
+                  <div className="menu-item-icon-circle pink-bg">
+                    <UilAnalysis size="20" />
+                  </div>
+                  <span className="menu-item-label">{t('groupChat.generateWeeklyRecap')}</span>
                 </div>
-                <span className="menu-item-label">{t('groupChat.generateWeeklyRecap')}</span>
-              </div>
+              )}
 
               <div className="mobile-menu-divider-thin" />
 
