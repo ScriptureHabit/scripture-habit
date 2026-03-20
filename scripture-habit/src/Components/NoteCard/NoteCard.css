@@ -40,6 +40,7 @@
     color: #333;
     display: -webkit-box;
     -webkit-line-clamp: 15;
+    line-clamp: 15;
     /* Default for non-dashboard, or just high enough */
     -webkit-box-orient: vertical;
     overflow: hidden;
@@ -47,6 +48,7 @@
 
 .dashboard-note-card .note-content-preview {
     -webkit-line-clamp: 5;
+    line-clamp: 5;
     max-height: 8.5em;
     /* Fallback/Safety */
 }
@@ -64,6 +66,7 @@
 
 .my-notes-card .note-content-preview {
     -webkit-line-clamp: 10 !important;
+    line-clamp: 10 !important;
     /* Reduced max lines to limit height */
     font-size: 0.9rem !important;
     /* Slightly smaller text for compact feel */
@@ -75,7 +78,7 @@
 
 .gospel-link {
     font-size: 0.9rem;
-    color: var(--purple) !important;
+    color: inherit !important;
     text-decoration: none;
     font-weight: 600;
     margin-top: auto;
