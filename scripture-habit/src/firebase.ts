@@ -4,6 +4,7 @@ import { getAuth, Auth } from "firebase/auth";
 import { getMessaging, Messaging, isSupported } from "firebase/messaging";
 import { getStorage, FirebaseStorage } from "firebase/storage";
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, Firestore } from "firebase/firestore";
+import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "firebase/app-check";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -57,5 +58,15 @@ const db: Firestore = initializeFirestore(app, {
 
 const storage: FirebaseStorage = getStorage(app);
 
-export { app, analytics, auth, db, messaging, storage };
+if (process.env.NODE_ENV === 'development') {
+  // @ts-ignore
+  self.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+};
+
+const appCheck = initializeAppCheck(app, {
+  provider: new ReCaptchaEnterpriseProvider('6LdqyJAsAAAAAFSQGfex0wfI9DRLjMkKM9wupLAA'),
+  isTokenAutoRefreshEnabled: true
+});
+
+export { app, analytics, auth, db, messaging, storage, appCheck };
 
