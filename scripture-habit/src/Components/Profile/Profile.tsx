@@ -309,7 +309,7 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
     };
 
     return (
-        <div className="Profile DashboardContent">
+        <div className="Profile">
             <div className="dashboard-header">
                 <h1>{t('profile.title')}</h1>
                 <p className="welcome-text">{t('profile.description')}</p>

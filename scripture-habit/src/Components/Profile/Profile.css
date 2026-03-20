@@ -1,5 +1,8 @@
 .Profile {
     color: var(--text-color);
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    width: 100%;
 }
 
 .profile-section {
