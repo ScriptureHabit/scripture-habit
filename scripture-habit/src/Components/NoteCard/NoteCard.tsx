@@ -69,7 +69,7 @@ const NoteCard: FC<NoteCardProps> = ({
             </div>
             <div className="note-content-preview">
                 {/* Force isSent={true} for card display to ensure links are styled correctly for light backgrounds (or as configured in NoteDisplay) */}
-                <NoteDisplay text={note.text || ''} isSent={false} linkColor="#1E88E5" />
+                <NoteDisplay text={note.text || ''} isSent={false} linkColor="#1E88E5" scripture={note.scripture} chapter={note.chapter} />
             </div>
             {getLinkContent()}
         </div>

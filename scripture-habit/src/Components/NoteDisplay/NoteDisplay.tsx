@@ -135,9 +135,11 @@ interface NoteDisplayProps {
     isSent: boolean;
     linkColor?: string;
     translatedText?: string;
+    scripture?: string;
+    chapter?: string;
 }
 
-const NoteDisplay: FC<NoteDisplayProps> = ({ text, isSent, linkColor, translatedText }) => {
+const NoteDisplay: FC<NoteDisplayProps> = ({ text, isSent, linkColor, translatedText, scripture, chapter }) => {
     const { language, t, translateChapterField } = useLanguage();
 
     // 1. Structure Check
@@ -225,8 +227,8 @@ const NoteDisplay: FC<NoteDisplayProps> = ({ text, isSent, linkColor, translated
         }
     });
 
-    let scriptureValue = '';
-    let chapterValue = '';
+    let scriptureValue = scripture || '';
+    let chapterValue = chapter || '';
     const commentLines: string[] = [];
 
     lines.forEach(line => {

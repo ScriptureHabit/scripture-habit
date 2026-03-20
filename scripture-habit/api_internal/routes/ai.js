@@ -7,37 +7,71 @@ import crypto from 'crypto';
 
 const router = express.Router();
 
-// AI Ponder Questions
+/**
+ * --- AI Helper ---
+ * Unified Gemini API call logic.
+ */
+const callGemini = async (prompt) => {
+    if (!process.env.GEMINI_API_KEY) throw new Error('Gemini API Key missing');
+    
+    // Using the user-requested gemini-2.5-flash model
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`;
+    
+    const response = await axios.post(apiUrl, { 
+        contents: [{ parts: [{ text: prompt }] }] 
+    });
+
+    const generatedText = response.data?.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!generatedText) throw new Error('AI failed to generate a response');
+    
+    return generatedText.trim();
+};
+
+const handleAiError = (res, err, contextMessage) => {
+    console.error(`[AI Error] ${contextMessage}:`, err.response?.data || err.message);
+    res.status(500).json({ 
+        error: `AI ${contextMessage} failed`, 
+        details: err.response?.data?.error?.message || err.message 
+    });
+};
+
+// --- Routes ---
+
+/**
+ * AI Ponder Questions
+ */
 router.post('/generate-ponder-questions', authenticate, aiLimiter, verifyAppCheck, async (req, res) => {
     const validation = ponderQuestionsSchema.safeParse(req.body);
     if (!validation.success) return res.status(400).json({ error: 'Invalid input', details: validation.error.format() });
+    
     const { scripture, chapter, language } = validation.data;
+    const baseLang = language?.split('-')[0] || 'en';
+    const targetLangName = languageNames[baseLang] || 'English';
 
     try {
-        if (!process.env.GEMINI_API_KEY) throw new Error('Gemini API Key missing');
+        const prompt = `You are a warm, encouraging scripture study facilitator who loves to help people apply the gospel to their daily lives.
+            Based on the scripture: ${scripture} ${chapter}, provide ONE simple, clear, and easy-to-understand question.
+            
+            【STRICT RULES】:
+            1. You MUST respond ONLY in ${targetLangName}.
+            2. The question should be easy for everyone (including children and new students) to think about. NO academic or difficult theological terms.
+            3. Focus on "Personal Application" (How does this part apply to your life today?).
+            4. Output ONLY the question text as plain text. No bullet points or markers.`;
 
-        const prompts = {
-            'ja': `あなたはScripture Centralの創設者であり、著名な法学者、聖典学者のJohn W. Welch教授です。原則、教えをもとに、ユーザーが知見を深めるための質問を一つだけ用意してください。箇条書きや記号は使わず、質問文のみをプレーンテキストで出力してください。聖典箇所: ${scripture} ${chapter}`,
-            'en': `You are Professor John W. Welch, founder of Scripture Central and a renowned legal and biblical scholar. Provide one question based on ${scripture} ${chapter} that helps the user deepen their insight. Output ONLY the question text as plain text. No bullet points.`,
-        };
-        const prompt = prompts[language] || prompts['en'];
-
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`;
-        const response = await axios.post(apiUrl, { contents: [{ parts: [{ text: prompt }] }] });
-
-        const generatedText = response.data?.candidates?.[0]?.content?.parts?.[0]?.text;
-        if (!generatedText) throw new Error('AI failed');
-
-        res.json({ questions: generatedText.trim() });
+        const result = await callGemini(prompt);
+        res.json({ success: true, questions: result });
     } catch (err) {
-        res.status(500).json({ error: 'AI failed', details: err.message });
+        handleAiError(res, err, 'ponder questions');
     }
 });
 
-// AI Translation
+/**
+ * AI Translation
+ */
 router.post('/translate', authenticate, aiLimiter, verifyAppCheck, async (req, res) => {
     const validation = translateSchema.safeParse(req.body);
     if (!validation.success) return res.status(400).json({ error: 'Invalid input' });
+    
     const { text, targetLanguage } = validation.data;
 
     try {
@@ -48,31 +82,33 @@ router.post('/translate', authenticate, aiLimiter, verifyAppCheck, async (req, r
 
         const targetLangName = languageNames[targetLanguage] || targetLanguage;
         const prompt = `Task: Translate the following text into ${targetLangName}. Output only the translated text. No explanations.\n\nText:\n"""\n${text}\n"""`;
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`;
-        const response = await axios.post(apiUrl, { contents: [{ parts: [{ text: prompt }] }] });
+        
+        const resultText = await callGemini(prompt);
+        // Clean result in case of markdown or quotes
+        const cleanedText = resultText.replace(/<translation>|<\/translation>/gi, '').replace(/^.*?translation.*?:/i, '').replace(/^["'](.*)["']$/g, '$1').trim();
 
-        const rawText = response.data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
-        let resultText = rawText.replace(/<translation>|<\/translation>/gi, '').replace(/^.*?translation.*?:/i, '').replace(/^["'](.*)["']$/g, '$1').trim();
+        if (!cleanedText) throw new Error('AI blocked response');
 
-        if (!resultText) throw new Error('AI blocked response');
-
-        cacheRef.set({ originalText: text, translatedText: resultText, targetLanguage, createdAt: admin.firestore.FieldValue.serverTimestamp() });
-        res.json({ translatedText: resultText });
+        cacheRef.set({ originalText: text, translatedText: cleanedText, targetLanguage, createdAt: admin.firestore.FieldValue.serverTimestamp() });
+        res.json({ success: true, translatedText: cleanedText });
     } catch (err) {
-        res.status(500).json({ error: 'Translation failed' });
+        handleAiError(res, err, 'translation');
     }
 });
 
-// AI Weekly Recap
+/**
+ * AI Weekly Recap
+ */
 router.post('/generate-weekly-recap', authenticate, aiLimiter, verifyAppCheck, async (req, res) => {
     const validation = weeklyRecapSchema.safeParse(req.body);
     if (!validation.success) return res.status(400).json({ error: 'Invalid input' });
-    const { groupId, language } = validation.data;
 
+    const { groupId, language } = validation.data;
+    const baseLang = language?.split('-')[0] || 'en';
+    const targetLangName = languageNames[baseLang] || 'English';
     const uid = req.user.uid;
 
     try {
-
         const groupRef = db.collection('groups').doc(groupId);
         const gSnap = await groupRef.get();
         if (!gSnap.exists || !(gSnap.data().members || []).includes(uid)) return res.status(404).send('Access denied');
@@ -87,54 +123,62 @@ router.post('/generate-weekly-recap', authenticate, aiLimiter, verifyAppCheck, a
         snapshot.forEach(d => { if (d.data().isNote || d.data().isEntry) notes.push(d.data().text); });
         if (notes.length === 0) return res.json({ message: 'No notes found for this week.' });
 
-        const prompt = `Summarize these anonymous scripture study notes into an encouraging weekly reflection for a group: ${notes.join('\n\n')}`;
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`;
-        const response = await axios.post(apiUrl, { contents: [{ parts: [{ text: prompt }] }] });
-
-        const generatedText = response.data?.candidates?.[0]?.content?.parts?.[0]?.text;
-        if (!generatedText) throw new Error('AI recap failed');
+        const prompt = `Task: Summarize these anonymous scripture study notes into an encouraging weekly reflection for a group.
+            Notes: ${notes.join('\n\n')}
+            
+            【STRICT RULES】:
+            1. You MUST respond ONLY in ${targetLangName}.
+            2. Keep the tone encouraging, warm, and spiritually uplifting.`;
+            
+        const generatedText = await callGemini(prompt);
 
         await groupRef.collection('messages').add({
-            text: generatedText.trim(),
+            text: generatedText,
             createdAt: admin.firestore.FieldValue.serverTimestamp(),
             senderId: 'system',
             isSystemMessage: true,
             messageType: 'weeklyRecap'
         });
 
-        res.json({ recap: generatedText.trim() });
+        res.json({ success: true, recap: generatedText });
     } catch (err) {
-        res.status(500).json({ error: 'Recap failed' });
+        handleAiError(res, err, 'weekly recap');
     }
 });
 
-// AI Discussion Starter
+/**
+ * AI Discussion Starter
+ */
 router.post('/generate-discussion-topic', authenticate, aiLimiter, verifyAppCheck, async (req, res) => {
     const { language } = req.body;
+    const baseLang = language?.split('-')[0] || 'en';
+    const targetLangName = languageNames[baseLang] || 'English';
+
     try {
-        if (!process.env.GEMINI_API_KEY) throw new Error('Gemini API Key missing');
+        const prompt = `You are a facilitator for a scripture study group. 
+            Suggest 1 discussion starter question that encourages members to share their experiences and testimonies. 
+            
+            【STRICT RULES】:
+            1. You MUST respond ONLY in ${targetLangName}.
+            2. Output ONLY the question text. No bullet points.`;
 
-        const prompts = {
-            'ja': `あなたは末日聖徒イエス・キリスト教会の聖典学習グループのファシリテーターです。グループのメンバーが互いの経験や証を分かち合いたくなるような、話し合いのきっかけとなる質問を1つだけ提案してください。箇条書きの記号は使わず、質問文のみをプレーンテキストで出力してください。`,
-            'en': `You are a facilitator for a scripture study group. Suggest 1 discussion starter question that encourages members to share their experiences and testimonies. Output ONLY the question text. No bullet points.`,
-        };
-        const prompt = prompts[language] || prompts['en'];
-
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`;
-        const response = await axios.post(apiUrl, { contents: [{ parts: [{ text: prompt }] }] });
-
-        const generatedText = response.data?.candidates?.[0]?.content?.parts?.[0]?.text;
-        res.json({ topic: (generatedText || '').trim() });
+        const generatedText = await callGemini(prompt);
+        res.json({ success: true, topic: generatedText });
     } catch (err) {
-        res.status(500).json({ error: 'AI discussion topic failed' });
+        handleAiError(res, err, 'discussion topic');
     }
 });
 
-// AI Personal Weekly Recap
+/**
+ * AI Personal Weekly Recap
+ */
 router.post('/generate-personal-weekly-recap', authenticate, aiLimiter, verifyAppCheck, async (req, res) => {
     const validation = personalRecapSchema.safeParse(req.body);
     if (!validation.success) return res.status(400).json({ error: 'Invalid input' });
+
     const { uid, language } = validation.data;
+    const baseLang = language?.split('-')[0] || 'en';
+    const targetLangName = languageNames[baseLang] || 'English';
 
     try {
         if (req.user.uid !== uid) return res.status(403).send('Forbidden');
@@ -149,14 +193,18 @@ router.post('/generate-personal-weekly-recap', authenticate, aiLimiter, verifyAp
         snapshot.forEach(d => { if (d.data().text || d.data().comment) notes.push(d.data().comment || d.data().text); });
         if (notes.length === 0) return res.json({ message: 'No personal notes found for this week.' });
 
-        const prompt = `Write a warm personal letter (starting with "Dear Friend") summarizing these study notes and encouraging the user: ${notes.join('\n\n')}`;
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`;
-        const response = await axios.post(apiUrl, { contents: [{ parts: [{ text: prompt }] }] });
+        const prompt = `Task: Write a warm personal letter summarizing these study notes and encouraging the user. 
+            Start with "Dear Friend" (or the equivalent in the output language).
+            Notes: ${notes.join('\n\n')}
+            
+            【STRICT RULES】:
+            1. You MUST respond ONLY in ${targetLangName}.`;
 
-        const generatedText = response.data?.candidates?.[0]?.content?.parts?.[0]?.text;
-        res.json({ recap: generatedText.trim() });
+        const generatedText = await callGemini(prompt);
+
+        res.json({ success: true, recap: generatedText });
     } catch (err) {
-        res.status(500).json({ error: 'Personal recap failed' });
+        handleAiError(res, err, 'personal recap');
     }
 });
 

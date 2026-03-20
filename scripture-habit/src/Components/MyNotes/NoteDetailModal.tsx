@@ -105,7 +105,7 @@ const NoteDetailModal: FC<NoteDetailModalProps> = ({ isOpen, onClose, note, user
                     </div>
 
                     <div className="note-body">
-                        <NoteDisplay text={note.text || ''} isSent={false} linkColor="#1E88E5" />
+                        <NoteDisplay text={note.text || ''} isSent={false} linkColor="#1E88E5" scripture={note.scripture} chapter={note.chapter} />
                         {/* Show Scripture Reference/Link if acceptable, maybe modify NoteDisplay or add here */}
                         <div className="note-scripture-ref">
                             {note.scripture !== 'Other' && (

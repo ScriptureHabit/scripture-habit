@@ -194,46 +194,6 @@
   accent-color: var(--pink);
 }
 
-.modal-actions {
-  margin-top: 20px;
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-}
-
-.modal-actions .cancel-btn {
-  padding: 10px 20px;
-  border-radius: 8px;
-  border: none;
-  background: #ddd;
-  cursor: pointer;
-}
-
-.modal-actions .submit-btn {
-  padding: 10px 20px;
-  border-radius: 8px;
-  border: none;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  cursor: pointer;
-  font-weight: 600;
-  box-shadow: 0 4px 15px rgba(118, 75, 162, 0.2);
-  transition: all 0.3s ease;
-}
-
-.modal-actions .submit-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(118, 75, 162, 0.3);
-  filter: brightness(1.1);
-}
-
-.modal-actions .submit-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-}
-
 /* Gospel Library Link Styles */
 .gospel-link-container {
   margin-top: 0.2rem;
@@ -294,6 +254,34 @@
   }
 }
 
+.gl-link-preview {
+  display: flex;
+  justify-content: center;
+  margin: 1rem 0;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.gl-preview-link {
+  color: #667eea;
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  transition: all 0.2s;
+}
+
+.gl-preview-link:hover {
+  text-decoration: underline;
+  color: #764ba2;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 .suggestion-item {
   padding: 0.8rem 1rem;
   cursor: pointer;
@@ -321,3 +309,136 @@
   color: #a0aec0;
   font-style: italic;
 }
+
+
+.action-buttons-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.action-btn-wrapper {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.modern-action-btn {
+  background: linear-gradient(135deg, rgb(102, 126, 234) 0%, rgb(118, 75, 162) 100%);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 0.3rem 0.8rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-weight: bold;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 5px;
+  transition: all 0.2s ease;
+}
+
+.modern-action-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  filter: brightness(1.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.modern-action-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.modal-actions {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.modal-actions .cancel-btn {
+  padding: 0.6rem 1.2rem;
+  border-radius: 12px;
+  border: none;
+  background: #f1f3f5;
+  color: #495057;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+  font-size: 0.9rem;
+}
+
+.modal-actions .submit-btn {
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #fff;
+  cursor: pointer;
+  font-weight: 600;
+  box-shadow: 0 4px 15px rgba(118, 75, 162, .2);
+  transition: all .3s ease;
+  font-size: 0.9rem;
+}
+
+.modal-actions .submit-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(118, 75, 162, 0.3);
+  filter: brightness(1.05);
+}
+
+.modal-actions .submit-btn:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+
+
+.ai-question-box {
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  border: 1px solid #DBE4FF;
+  position: relative;
+  background: #F0F7FF;
+  animation: fadeInDown 0.3s ease-out;
+}
+
+.ai-question-box p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #4A5568;
+  white-space: pre-wrap;
+  line-height: 1.5;
+}
+
+.ai-question-box .close-btn {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #A0AFC0;
+  font-size: 1.2rem;
+  padding: 0 5px;
+  transition: color 0.2s;
+}
+
+.ai-question-box .close-btn:hover {
+  color: #718096;
+}
+
+@media screen and (max-width: 480px) {
+  .ModalContent {
+    padding: 1.5rem;
+    width: 95%;
+  }
+}
+
+

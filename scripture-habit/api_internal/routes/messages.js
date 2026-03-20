@@ -259,7 +259,7 @@ router.post('/post-note', authenticate, requireEmailVerified, verifyAppCheck, as
             ));
         } catch (err) { console.error('Note notification error:', err); }
 
-        res.status(200).json({ message: 'Note posted successfully.', ...result });
+        res.status(200).json({ success: true, message: 'Note posted successfully.', ...result });
     } catch (error) {
         console.error('Error posting note:', error);
         res.status(500).json({ error: error.message || 'Internal Server Error' });
@@ -321,7 +321,7 @@ router.post('/post-message', authenticate, verifyAppCheck, async (req, res) => {
             }, result.members);
         } catch (err) { console.error('Chat notification error:', err); }
 
-        res.json({ messageId: result.messageId });
+        res.json({ success: true, messageId: result.messageId });
     } catch (error) {
         console.error('Error posting message:', error);
         res.status(500).json({ error: 'Request failed.' });

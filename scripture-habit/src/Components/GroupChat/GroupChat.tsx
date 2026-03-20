@@ -72,7 +72,7 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], onI
   const unityPercentage = useUnityScore(groupId, userData, groupData, messages);
   
   const { 
-    isLeaving, handleLeaveGroup, handleDeleteGroup, togglePublicStatus, handleUpdateGroupName, handleShareLine, handleShareWhatsApp, handleShareMessenger, handleShareInstagram
+    isLeaving, handleLeaveGroup, handleDeleteGroup, togglePublicStatus, handleUpdateGroupName
   } = useGroupActions(groupId, userData, groupData, language || 'en', t);
 
   const { 
@@ -698,7 +698,7 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], onI
         cheerTarget={cheerTarget} setCheerTarget={setCheerTarget} isSendingCheer={isSendingCheer} handleSendCheer={async () => { await handleSendCheer(); }}
         showReportModal={showReportModal} setShowReportModal={setShowReportModal} reportReason={reportReason} setReportReason={setReportReason} confirmReport={async () => { await confirmReport(); }}
         selectedMember={selectedMember} handleUserProfileClick={handleUserProfileClick}
-        showInviteModal={showInviteModal} setShowInviteModal={setShowInviteModal} handleCopyInviteLink={handleCopyInviteLink} handleShareLine={handleShareLine} handleShareWhatsApp={handleShareWhatsApp} handleShareMessenger={handleShareMessenger} handleShareInstagram={handleShareInstagram} handleRegenerateInviteCode={handleRegenerateInviteCode}
+        showInviteModal={showInviteModal} setShowInviteModal={setShowInviteModal} handleCopyInviteLink={handleCopyInviteLink} handleRegenerateInviteCode={handleRegenerateInviteCode}
       />
 
       <MessageInput

@@ -15,7 +15,7 @@ import { useLanguage } from '../../Context/LanguageContext';
 import NoteDetailModal from './NoteDetailModal';
 import Mascot from '../Mascot/Mascot';
 import { NoteGridSkeleton } from '../Skeleton/Skeleton';
-import Footer from '../Footer/Footer';
+
 import { UserData } from '../../types/user';
 import { Group } from '../../types/chat';
 import { Note } from '../../types/note';
@@ -41,7 +41,6 @@ const MyNotes: FC<MyNotesProps> = ({ userData, isModalOpen, setIsModalOpen, user
   const NOTES_PER_PAGE = 7;
 
   const [recapLoading, setRecapLoading] = useState(false);
-  const [newNoteInitialData, setNewNoteInitialData] = useState<any>(null);
 
   // Pagination State for Server-Side
   const [lastDocsStack, setLastDocsStack] = useState<DocumentSnapshot[]>([]); // Stack of document snapshots for cursors
@@ -154,7 +153,6 @@ const MyNotes: FC<MyNotesProps> = ({ userData, isModalOpen, setIsModalOpen, user
 
   const handleNoteClick = (note: Note) => {
     setSelectedNote(note);
-    setNewNoteInitialData(null);
     setIsDetailModalOpen(true);
   };
 
@@ -613,14 +611,11 @@ const MyNotes: FC<MyNotesProps> = ({ userData, isModalOpen, setIsModalOpen, user
           setIsEditModalOpen(false);
           setIsModalOpen(false); // Also close the passed in modal state for new notes
           setSelectedNote(null);
-          setNewNoteInitialData(null);
         }}
         userData={userData}
         noteToEdit={selectedNote || undefined}
-        initialData={newNoteInitialData}
-        onDelete={() => setIsDeleteModalOpen(true)}
       />
-      <Footer />
+
     </div >
   );
 };

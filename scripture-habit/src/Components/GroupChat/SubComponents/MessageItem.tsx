@@ -323,6 +323,8 @@ const MessageItem: FC<MessageItemProps> = ({
                           text={msg.text}
                           isSent={msg.senderId === userData?.uid}
                           translatedText={translatedTexts[msg.id]}
+                          scripture={msg.scripture}
+                          chapter={msg.chapter}
                         />
                         <div style={{ marginTop: '0.2rem' }}></div>
                         {(() => {
@@ -391,6 +393,8 @@ const MessageItem: FC<MessageItemProps> = ({
                         text={msg.text}
                         isSent={msg.senderId === userData?.uid}
                         translatedText={translatedTexts[msg.id]}
+                        scripture={msg.scripture}
+                        chapter={msg.chapter}
                       />
                     )
                   )}

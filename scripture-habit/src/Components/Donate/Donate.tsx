@@ -2,7 +2,7 @@ import React from 'react';
 import './Donate.css';
 import { useLanguage } from '../../Context/LanguageContext';
 import Mascot from '../Mascot/Mascot';
-import Footer from '../Footer/Footer';
+
 import { UserData } from '../../types/user';
 
 interface DonateProps {
@@ -39,7 +39,7 @@ const Donate: React.FC<DonateProps> = ({ userData }) => {
                     </div>
                 </div>
             </div>
-            <Footer />
+
         </div>
     );
 };

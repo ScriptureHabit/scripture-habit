@@ -10,7 +10,7 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { Capacitor } from '@capacitor/core';
 import Button from '../Button/Button';
 import { toast } from 'react-toastify';
-import Footer from '../Footer/Footer';
+
 import { requestNotificationPermission, disableNotifications } from '../../Utils/notificationHelper';
 import { UserData } from '../../types/user';
 
@@ -751,7 +751,7 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
                     </div>
                 </div>
             )}
-            <Footer />
+
         </div >
     );
 };
