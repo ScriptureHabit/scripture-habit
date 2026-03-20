@@ -142,7 +142,7 @@ const NoteDisplay: FC<NoteDisplayProps> = ({ text, isSent, linkColor, translated
 
     // 1. Structure Check
     const headerMatch = text.match(NOTE_HEADER_REGEX);
-    const hasStructuredLabel = /^(?:\*\*|)\s*(Category|Scripture|カテゴリ|聖句|Escritura|성구|經文|Kinh Thánh|Thánh thư|Kasulatan|Banal na Kasulatan|Andiko|พระคัมภีร์|章|Chapter|Capítulo|장|章節|Chương|Kabanata|Sura|บท|Title|Talk|Speech|Título|Discurso|제목|標題|Tiêu đề|Pamagat|Mensahe|リンク|Url)\s*(?:\*\*|)\s*[:：]/mi.test(text);
+    const hasStructuredLabel = /^(?:\*\*|)\s*(Category|Categoría|Categoria|Categoriza|카테고리|類別|分類|Jamii|Kundi|หมวดหมู่|Scripture|カテゴリ|聖句|Escritura|성구|經文|Kinh Thánh|Thánh thư|Kasulatan|Banal na Kasulatan|Andiko|พระคัมภีร์|章|Chapter|Capítulo|장|章節|Chương|Kabanata|Sura|บท|Title|Talk|Speech|Título|Discurso|제목|標題|Tiêu đề|Pamagat|Mensahe|リンク|Url)\s*(?:\*\*|)\s*[:：]/mi.test(text);
 
     if (!headerMatch && !hasStructuredLabel) {
         const simpleUrls = extractUrls(text);
@@ -184,19 +184,19 @@ const NoteDisplay: FC<NoteDisplayProps> = ({ text, isSent, linkColor, translated
         // Japanese
         'カテゴリ:', 'カテゴリ：', '章:', '章：', '聖句:', '聖句：', 'タイトル:', 'タイトル：', 'お話:', 'お話：', 'スピーチ:', 'スピーチ：', 'コメント:', 'コメント：', 'Url：',
         // Spanish / Portuguese
-        'Escritura:', 'Capítulo:', 'Título:', 'Comentario:', 'Comentário:', 'Discurso:',
+        'Categoría:', 'Categoria:', 'Escritura:', 'Capítulo:', 'Título:', 'Comentario:', 'Comentário:', 'Discurso:',
         // Korean
-        '성구:', '장:', '제목:', '코멘트:',
+        '카테고리:', '성구:', '장:', '제목:', '코멘트:',
         // Chinese
-        '經文:', '章節:', '標題:', '評論:',
+        '類別:', '分類:', '經文:', '章節:', '標題:', '評論:',
         // Vietnamese
         'Kinh Thánh:', 'Thánh thư:', 'Chương:', 'Tiêu đề:', 'Bình luận:',
         // Tagalog
         'Kasulatan:', 'Banal na Kasulatan:', 'Kabanata:', 'Pamagat:', 'Mensahe:', 'Komento:',
         // Swahili
-        'Andiko:', 'Sura:', 'Maoni:',
+        'Andiko:', 'Sura:', 'Jamii:', 'Kundi:', 'Maoni:',
         // Thai
-        'พระคัมภีร์:', 'บท:', 'ความคิดเห็น:',
+        'พระคัมภีร์:', 'บท:', 'หมวดหมู่:', 'ความคิดเห็น:',
     ];
 
     initialLines.forEach(line => {
@@ -239,7 +239,7 @@ const NoteDisplay: FC<NoteDisplayProps> = ({ text, isSent, linkColor, translated
             const labelRaw = trimmed.substring(0, dividerIndex).replace(/\*/g, '').trim().toLowerCase();
             const value = trimmed.substring(dividerIndex + 1).replace(/\*\*/g, '').trim();
 
-            if (labelRaw.includes('scripture') || labelRaw.includes('カテゴリ') || labelRaw.includes('escritura') || labelRaw.includes('성구') || labelRaw.includes('經文') || labelRaw.includes('kinh thánh') || labelRaw.includes('thánh thư') || labelRaw.includes('kasulatan') || labelRaw.includes('banal na kasulatan') || labelRaw.includes('andiko') || labelRaw.includes('พระคัมภีร์')) {
+            if (labelRaw.includes('category') || labelRaw.includes('scripture') || labelRaw.includes('カテゴリ') || labelRaw.includes('categoría') || labelRaw.includes('categoria') || labelRaw.includes('jamii') || labelRaw.includes('kundi') || labelRaw.includes('หมวดหมู่') || labelRaw.includes('escritura') || labelRaw.includes('성구') || labelRaw.includes('카테고리') || labelRaw.includes('經文') || labelRaw.includes('類別') || labelRaw.includes('kinh thánh') || labelRaw.includes('thánh thư') || labelRaw.includes('kasulatan') || labelRaw.includes('banal na kasulatan') || labelRaw.includes('andiko') || labelRaw.includes('พระคัมภีร์')) {
                 scriptureValue = value;
             } else if (
                 labelRaw.includes('chapter') || labelRaw.includes('url') || labelRaw.includes('title') ||
