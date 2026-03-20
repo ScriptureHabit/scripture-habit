@@ -211,14 +211,15 @@ const Dashboard: FC = () => {
           hideMobile={isInputFocused || isJoiningInvite}
           userData={userData}
         />
-        {selectedView === 0 && (
-          <div className="DashboardContent">
-            {isJoiningInvite && (
-              <div className="joining-overlay">
-                <div className="loading-spinner"></div>
-                <h3>{t('joinGroup.joiningFromInvite')}</h3>
-              </div>
-            )}
+        <div className={`DashboardContent ${selectedView === 2 ? 'group-chat-view' : ''}`}>
+          {selectedView === 0 && (
+            <div className="dashboard-view-content">
+              {isJoiningInvite && (
+                <div className="joining-overlay">
+                  <div className="loading-spinner"></div>
+                  <h3>{t('joinGroup.joiningFromInvite')}</h3>
+                </div>
+              )}
             <div className="dashboard-inner-wrapper">
               <div className="dashboard-header" style={{ paddingTop: '20px' }}>
               <div>
@@ -394,15 +395,16 @@ const Dashboard: FC = () => {
                   <UilPlus /> {t('dashboard.newNote')}
                 </button>
               </div>
+              </div>
             </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {selectedView === 1 && <MyNotes userData={userData} isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} userGroups={userGroups} />}
-        {selectedView === 2 && activeGroupId && <GroupChat groupId={activeGroupId} userData={userData} userGroups={userGroups} onInputFocusChange={setIsInputFocused} isExternalModalOpen={isModalOpen} onBack={() => setSelectedView(0)} onGroupSelect={(gid) => setActiveGroupId(gid)} />}
-        {selectedView === 3 && <Profile userData={userData} stats={{ streak: userData?.streakCount || 0, totalNotes: userData?.totalNotes || 0, daysStudied: userData?.daysStudied || 0 }} />}
-        {selectedView === 4 && <Donate userData={userData} />}
+          {selectedView === 1 && <MyNotes userData={userData} isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} userGroups={userGroups} />}
+          {selectedView === 2 && activeGroupId && <GroupChat groupId={activeGroupId} userData={userData} userGroups={userGroups} onInputFocusChange={setIsInputFocused} isExternalModalOpen={isModalOpen} onBack={() => setSelectedView(0)} onGroupSelect={(gid) => setActiveGroupId(gid)} />}
+          {selectedView === 3 && <Profile userData={userData} stats={{ streak: userData?.streakCount || 0, totalNotes: userData?.totalNotes || 0, daysStudied: userData?.daysStudied || 0 }} />}
+          {selectedView === 4 && <Donate userData={userData} />}
+        </div>
       </div>
 
       <NewNote isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} userData={userData} userGroups={userGroups} />
@@ -455,7 +457,7 @@ const Dashboard: FC = () => {
         </div>
       )}
 
-      <Footer />
+      {selectedView !== 2 && <Footer />}
     </>
   );
 };

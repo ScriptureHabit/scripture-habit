@@ -90,7 +90,6 @@ const GCNoteRenderer: FC<GCNoteRendererProps> = ({ scriptureValue, comment, url,
             return v;
         };
 
-        const headerLine = `📖 **${tWithFall('noteLabels.newStudyNote', language)}**`;
         const scriptureLabel = tWithFall('noteLabels.scripture', language);
         const scriptName = translateScriptureName(scriptureValue, t);
 
@@ -109,7 +108,7 @@ const GCNoteRenderer: FC<GCNoteRendererProps> = ({ scriptureValue, comment, url,
         const cleanComment = (comment || '').split('\n').filter(l => l.trim() !== '**').join('\n').replace(/^\s*\*\*\s*/, '').replace(/\s*\*\*\s*$/, '').trim();
         const commentWithLinks = cleanComment.replace(/(https?:\/\/[^\s]+)/g, '[$1]($1)');
 
-        return [headerLine, `**${scriptureLabel}:** ${scriptName}`, `**${fieldLabel}:** ${fieldValue}`].join('\n') + `\n**${commentLabel}:**\n${commentWithLinks}`;
+        return [`**${scriptureLabel}:** ${scriptName}`, `**${fieldLabel}:** ${fieldValue}`].join('\n') + `\n**${commentLabel}:**\n${commentWithLinks}`;
     }, [data, loading, scriptureValue, comment, t, url, isOther, isBYU, language]);
 
     return (
@@ -235,6 +234,14 @@ const NoteDisplay: FC<NoteDisplayProps> = ({ text, isSent, linkColor, translated
         const trimmed = line.trim();
         if (!trimmed) return;
 
+        // Skip "New Study Note" headers from older versions or data
+        if (trimmed.includes('New Study Note') || trimmed.includes('新しい学習ノート') || trimmed.includes('📖')) {
+            // Only skip if it's likely a header (no colon and contains known header text)
+            if (!trimmed.includes(':') && !trimmed.includes('：')) {
+                return;
+            }
+        }
+
         const dividerIndex = trimmed.indexOf(':') !== -1 ? trimmed.indexOf(':') : trimmed.indexOf('：');
 
         if (dividerIndex !== -1 && dividerIndex < 60) {
@@ -317,11 +324,9 @@ const NoteDisplay: FC<NoteDisplayProps> = ({ text, isSent, linkColor, translated
         return val;
     };
 
-    const headerLabel = tWithFall('noteLabels.newStudyNote', language);
     const scriptureNameTrans = translateScriptureName(scriptureValue, t);
 
     const finalMd = [
-        `📖 **${headerLabel}**`,
         `**${tWithFall('noteLabels.scripture', language)}:** ${scriptureNameTrans}`,
         (translateChapterField(chapterValue) || chapterValue) ? `**${tWithFall('noteLabels.chapter', language)}:** ${translateChapterField(chapterValue) || chapterValue}` : null,
         `\n**${tWithFall('noteLabels.comment', language)}:**\n${comment.replace(/(https?:\/\/[^\s]+)/g, '[$1]($1)')}`

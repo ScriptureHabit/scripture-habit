@@ -1,14 +1,21 @@
 .GroupChat {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    max-height: 100%;
-    min-height: 0;
-    width: 100%;
-    background: rgba(255, 255, 255, 0.4);
-    border-radius: 2rem;
-    overflow: hidden;
-    position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-height: 100%;
+  min-height: 0;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 2rem;
+  overflow: hidden;
+  position: relative;
+}
+
+@media screen and (max-width: 768px) {
+  .GroupChat {
+    border-radius: 0;
+    background: transparent;
+  }
 }
 
 /* Align chat container with sidebar on desktop to match padding and avoid corner clipping */
@@ -732,14 +739,25 @@
 }
 
 .send-message-form {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    padding: 1rem 2rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.5);
-    border-radius: 2rem;
-    position: sticky;
-    bottom: 0;
-    z-index: 12;
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(10px);
+  padding: 1rem 2rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 2rem;
+  position: sticky;
+  bottom: 0;
+  z-index: 12;
+  margin-top: auto;
+}
+
+@media screen and (max-width: 768px) {
+  .send-message-form {
+    padding: 0.6rem 0.8rem;
+    border-radius: 1.5rem 1.5rem 0 0;
+    margin: 0;
+    background: white;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
+  }
 }
 
 .load-more-container {

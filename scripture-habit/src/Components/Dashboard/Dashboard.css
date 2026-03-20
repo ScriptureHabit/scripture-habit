@@ -47,13 +47,20 @@
 }
 
 .DashboardContent {
-  padding: 2rem;
+  padding: 1.25rem;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
   overflow-x: hidden;
   height: 100%;
   box-sizing: border-box;
+}
+
+.DashboardContent.group-chat-view {
+  padding: 0 !important;
+  margin: 0 !important;
+  background: transparent !important;
+  overflow: hidden !important;
 }
 
 @media screen and (min-width: 769px) {
@@ -411,6 +418,13 @@
     justify-content: flex-start !important;
     height: auto;
     overflow: visible;
+  }
+
+  .DashboardContent.group-chat-view {
+    padding: 0 !important;
+    height: 100% !important;
+    min-height: 100vh !important;
+    overflow: hidden !important;
   }
 
   .dashboard-header h1, .dashboard-header h2 {
