@@ -98,13 +98,13 @@ export const getGospelLibraryUrl = (volume: string | null | undefined, chapterIn
     const match = cleanChapterInput.match(/(.*?)\s*(\d+)(?::([\d\s,-]+))?\s*$/);
     if (!match) return null;
 
-    const bookName = match[1].trim().toLowerCase().replace(/[.]/g, '');
+    const bookName = match[1].trim().toLowerCase().replace(/[.]/g, '').replace(/^第(?=\d)/, '');
     const chapterNum = match[2];
     const verses = match[3];
 
     const bookMappings: Record<string, string> = {
-        "1 nephi": "1-ne", "1 néfi": "1-ne", "1 nefi": "1-ne", "1ニーファイ": "1-ne", "第一ニーファイ": "1-ne", "ニーファイ第一の書": "1-ne", "ニーファイ第一書": "1-ne", "尼腓一書": "1-ne", "1 นีไฟ": "1-ne", "니파이전서": "1-ne",
-        "2 nephi": "2-ne", "2 néfi": "2-ne", "2 nefi": "2-ne", "2ニーファイ": "2-ne", "第二ニーファイ": "2-ne", "ニーファイ第二の書": "2-ne", "ニーファイ第二書": "2-ne", "尼腓二書": "2-ne", "2 นีไฟ": "2-ne", "니파이후서": "2-ne",
+        "1 nephi": "1-ne", "1 néfi": "1-ne", "1 nefi": "1-ne", "1ニーファイ": "1-ne", "第1ニーファイ": "1-ne", "第１ニーファイ": "1-ne", "第一ニーファイ": "1-ne", "ニーファイ第一の書": "1-ne", "ニーファイ第一書": "1-ne", "尼腓一書": "1-ne", "1 นีไฟ": "1-ne", "니파이전서": "1-ne",
+        "2 nephi": "2-ne", "2 néfi": "2-ne", "2 nefi": "2-ne", "2ニーファイ": "2-ne", "第2ニーファイ": "2-ne", "第２ニーファイ": "2-ne", "第二ニーファイ": "2-ne", "ニーファイ第二の書": "2-ne", "ニーファイ第二書": "2-ne", "尼腓二書": "2-ne", "2 นีไฟ": "2-ne", "니파이후서": "2-ne",
         "jacob": "jacob", "jacó": "jacob", "gia cốp": "jacob", "ヤコブ書": "jacob", "雅各書": "jacob", "ยาคอบ": "jacob", "야곱서": "jacob",
         "enos": "enos", "enós": "enos", "ê nốt": "enos", "エノス書": "enos", "以挪士書": "enos", "อีนัส": "enos", "이노스서": "enos",
         "jarom": "jarom", "gia rôm": "jarom", "ジェロム書": "jarom", "雅龍書": "jarom", "จารอม": "jarom", "예이롬서": "jarom",
@@ -113,8 +113,8 @@ export const getGospelLibraryUrl = (volume: string | null | undefined, chapterIn
         "mosiah": "mosiah", "mosías": "mosiah", "mosias": "mosiah", "モーサヤ書": "mosiah", "摩賽亞書": "mosiah", "โมไซยาห์": "mosiah", "모사이야서": "mosiah",
         "alma": "alma", "an ma": "alma", "アルマ書": "alma", "阿爾瑪書": "alma", "แอลมา": "alma", "앨마서": "alma",
         "helaman": "hel", "hel": "hel", "helamã": "hel", "helamán": "hel", "hê la man": "hel", "ヒラマン書": "hel", "希拉曼書": "hel", "ฮีลามัน": "hel", "힐라맨서": "hel",
-        "3 nephi": "3-ne", "3 néfi": "3-ne", "3 nefi": "3-ne", "第3ニーファイ": "3-ne", "第三ニーファイ": "3-ne", "ニーファイ第三の書": "3-ne", "ニーファイ第三書": "3-ne", "尼腓三書": "3-ne", "3 นีไฟ": "3-ne", "제3니파이": "3-ne",
-        "4 nephi": "4-ne", "4 néfi": "4-ne", "4 nefi": "4-ne", "第4ニーファイ": "4-ne", "第四ニーファイ": "4-ne", "ニーファイ第四の書": "4-ne", "ニーファイ第四書": "4-ne", "尼腓四書": "4-ne", "4 นีไฟ": "4-ne", "제4니파이": "4-ne",
+        "3 nephi": "3-ne", "3 néfi": "3-ne", "3 nefi": "3-ne", "3ニーファイ": "3-ne", "第3ニーファイ": "3-ne", "第三ニーファイ": "3-ne", "ニーファイ第三の書": "3-ne", "ニーファイ第三書": "3-ne", "尼腓三書": "3-ne", "3 นีไฟ": "3-ne", "제3니파이": "3-ne",
+        "4 nephi": "4-ne", "4 néfi": "4-ne", "4 nefi": "4-ne", "4ニーファイ": "4-ne", "第4ニーファイ": "4-ne", "第四ニーファイ": "4-ne", "ニーファイ第四の書": "4-ne", "ニーファイ第四書": "4-ne", "尼腓四書": "4-ne", "4 นีไฟ": "4-ne", "제4니파이": "4-ne",
         "mormon": "morm", "mórmon": "morm", "mormón": "morm", "モルモン書": "morm", "摩爾門書": "morm", "มอรมอน": "morm", "몰몬경": "morm",
         "ether": "eth", "éter": "eth", "エテル書": "eth", "以帖書": "eth", "อีเธอร์": "eth", "이더서": "eth",
         "moroni": "moro", "morôni": "moro", "モロナイ書": "moro", "摩羅乃書": "moro", "โมโรไน": "moro", "모로나이서": "moro",

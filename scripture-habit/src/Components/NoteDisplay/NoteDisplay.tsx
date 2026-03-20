@@ -3,6 +3,7 @@ import ReactMarkdown from 'react-markdown';
 import { useLanguage } from '../../Context/LanguageContext';
 import { useGCMetadata } from '../../hooks/useGCMetadata';
 import { NOTE_HEADER_REGEX, removeNoteHeader } from '../../Utils/noteUtils';
+import { getGospelLibraryUrl } from '../../Utils/gospelLibraryMapper';
 import LinkPreview from '../LinkPreview/LinkPreview';
 
 /**
@@ -114,7 +115,7 @@ const GCNoteRenderer: FC<GCNoteRendererProps> = ({ scriptureValue, comment, url,
     return (
         <div style={{ textAlign: 'left' }}>
             <ReactMarkdown components={{
-                a: ({node, ...p}) => <a {...p} target="_blank" rel="noopener noreferrer" style={{ color: linkColor || (isSent ? 'white' : 'var(--purple)'), textDecoration: 'underline' }} onClick={(e) => e.stopPropagation()} />,
+                a: ({node, ...p}) => <a {...p} target="_blank" rel="noopener noreferrer" style={{ color: linkColor || (isSent ? 'white' : 'var(--purple)'), textDecoration: 'none' }} onClick={(e) => e.stopPropagation()} />,
                 p: ({node, ...p}) => <p {...p} style={{ margin: '0.6rem 0', lineHeight: '1.5' }} />
             }}>
                 {constructedMd}
@@ -154,7 +155,7 @@ const NoteDisplay: FC<NoteDisplayProps> = ({ text, isSent, linkColor, translated
         return (
             <div style={{ textAlign: 'left' }}>
                 <ReactMarkdown components={{
-                    a: ({node, ...p}) => <a {...p} target="_blank" rel="noopener noreferrer" style={{ color: linkColor || (isSent ? 'white' : 'var(--purple)'), textDecoration: 'underline' }} onClick={e => e.stopPropagation()} />,
+                    a: ({node, ...p}) => <a {...p} target="_blank" rel="noopener noreferrer" style={{ color: linkColor || (isSent ? 'white' : 'var(--purple)'), textDecoration: 'none' }} onClick={e => e.stopPropagation()} />,
                     p: ({node, ...p}) => <p {...p} style={{ margin: '0.2rem 0', whiteSpace: 'pre-wrap' }} />
                 }}>
                     {processedText}
@@ -326,16 +327,22 @@ const NoteDisplay: FC<NoteDisplayProps> = ({ text, isSent, linkColor, translated
 
     const scriptureNameTrans = translateScriptureName(scriptureValue, t);
 
+    const displayChapter = translateChapterField(chapterValue) || chapterValue;
+    const libraryUrl = getGospelLibraryUrl(scriptureValue, chapterValue, language);
+    const chapterLine = libraryUrl
+        ? `**${tWithFall('noteLabels.chapter', language)}:** [${displayChapter}](${libraryUrl})`
+        : (displayChapter ? `**${tWithFall('noteLabels.chapter', language)}:** ${displayChapter}` : null);
+
     const finalMd = [
         `**${tWithFall('noteLabels.scripture', language)}:** ${scriptureNameTrans}`,
-        (translateChapterField(chapterValue) || chapterValue) ? `**${tWithFall('noteLabels.chapter', language)}:** ${translateChapterField(chapterValue) || chapterValue}` : null,
+        chapterLine,
         `\n**${tWithFall('noteLabels.comment', language)}:**\n${comment.replace(/(https?:\/\/[^\s]+)/g, '[$1]($1)')}`
     ].filter(Boolean).join('\n');
 
     return (
         <div style={{ textAlign: 'left' }}>
             <ReactMarkdown components={{
-                a: ({node, ...p}) => <a {...p} target="_blank" rel="noopener noreferrer" style={{ color: linkColor || (isSent ? 'white' : 'var(--purple)'), textDecoration: 'underline' }} onClick={e => e.stopPropagation()} />,
+                a: ({node, ...p}) => <a {...p} target="_blank" rel="noopener noreferrer" style={{ color: linkColor || (isSent ? 'white' : 'var(--purple)'), textDecoration: 'none' }} onClick={e => e.stopPropagation()} />,
                 p: ({node, ...p}) => <p {...p} style={{ margin: '0.4rem 0', whiteSpace: 'pre-wrap' }} />
             }}>
                 {finalMd}
