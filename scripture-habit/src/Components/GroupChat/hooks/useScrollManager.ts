@@ -40,23 +40,50 @@ export const useScrollManager = (
     if (messages.length === 0) return;
 
     if (!initialScrollDone) {
-      let scrolled = false;
-      const lastMsgId = safeStorage.get(`last_viewed_msg_${groupId}_${userData?.uid}`);
-      if (lastMsgId) {
-        const el = containerRef.current?.querySelector(`#message-${lastMsgId}`) as HTMLElement;
-        if (el) {
-          containerRef.current!.scrollTop = el.offsetTop - 20;
-          scrolled = true;
+      const performInitialScroll = () => {
+        let scrolled = false;
+        const lastMsgId = safeStorage.get(`last_viewed_msg_${groupId}_${userData?.uid}`);
+
+        const container = containerRef.current;
+        if (!container) return;
+
+        if (lastMsgId) {
+          const el = container.querySelector(`#message-${lastMsgId}`) as HTMLElement;
+          if (el) {
+            container.scrollTop = el.offsetTop - 20;
+            
+            // Double check if scroll applied. If not, retry in next frame.
+            if (container.scrollTop === 0 && el.offsetTop > 100) {
+                requestAnimationFrame(() => {
+                    container.scrollTop = el.offsetTop - 20;
+                });
+            }
+            scrolled = true;
+          }
         }
-      }
 
-      if (!scrolled && userReadCount < messages.length) {
-        scrolled = scrollToFirstUnread(userReadCount);
-      }
+        if (!scrolled && userReadCount < messages.length) {
+          scrolled = scrollToFirstUnread(userReadCount);
+        }
 
-      if (!scrolled) scrollToBottom();
-      setInitialScrollDone(true);
-      prevMessageCountRef.current = messages.length;
+        if (!scrolled) {
+          scrollToBottom();
+        }
+
+        // Delay unlocking to ensure initial scroll position sticks and isn't overwritten
+        // by browser-fired transient '0' scroll events during mounting/initialization
+        setTimeout(() => {
+            setInitialScrollDone(true);
+            prevMessageCountRef.current = messages.length;
+        }, 500);
+      };
+
+      // Initial immediate attempt
+      performInitialScroll();
+
+      // Slightly delayed second attempt to handle mobile layout timing shifts
+      const timer = setTimeout(performInitialScroll, 150);
+      return () => clearTimeout(timer);
     }
   }, [messages, userReadCount, loading, initialScrollDone, groupId, userData?.uid]);
 

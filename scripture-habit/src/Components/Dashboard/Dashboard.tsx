@@ -201,7 +201,7 @@ const Dashboard: FC = () => {
 
   return (
     <>
-      <div className='AppGlass Grid'>
+      <div className={`AppGlass Grid ${selectedView === 2 ? 'view-fixed' : ''}`}>
         <Sidebar
           selected={selectedView}
           setSelected={setSelectedView}

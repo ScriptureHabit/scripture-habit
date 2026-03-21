@@ -640,7 +640,7 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], onI
         {loading && <div className="loading-spinner"><div className="spinner"></div></div>}
         {!loading && hasMoreOlder && (
           <div className="load-more-container">
-            {isLoadingOlder ? <div className="spinner"></div> : <button className="load-more-btn" onClick={loadMoreOlderMessages} disabled={isLoadingOlder}>{t('groupChat.loadPreviousMessages')}</button>}
+            {isLoadingOlder ? <div className="spinner"></div> : <button className="load-more-btn" onClick={loadMoreOlderMessages} disabled={isLoadingOlder} tabIndex={-1}>{t('groupChat.loadPreviousMessages')}</button>}
           </div>
         )}
         {messages.map((msg, index) => {
