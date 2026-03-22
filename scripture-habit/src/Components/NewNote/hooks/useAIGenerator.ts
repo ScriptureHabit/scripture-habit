@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { Capacitor } from '@capacitor/core';
-import { auth } from '../../../firebase';
+import { auth, appCheck } from '../../../firebase';
+import { getToken } from 'firebase/app-check';
 import { toast } from 'react-toastify';
 
 export const useAIGenerator = (language: string | null) => {
@@ -15,15 +16,17 @@ export const useAIGenerator = (language: string | null) => {
             const user = auth?.currentUser;
             if (!user) throw new Error("No user logged in");
             const idToken = await user.getIdToken(true);
+            const acTokenResponse = await getToken(appCheck, false).catch(() => null);
             const API_BASE = Capacitor.isNativePlatform() ? 'https://scripturehabit.app' : '';
-
+            
             const response = await axios.post(`${API_BASE}/api/generate-ponder-questions`, {
                 scripture,
                 chapter,
                 language: language || 'en'
             }, {
                 headers: {
-                    'Authorization': `Bearer ${idToken}`
+                    'Authorization': `Bearer ${idToken}`,
+                    'X-Firebase-AppCheck': acTokenResponse?.token || ''
                 }
             });
 

@@ -54,7 +54,7 @@ const NewNote: FC<NewNoteProps> = ({
     const [suggestions, setSuggestions] = useState<any[]>([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
 
-    const { gcMeta, gcLoading } = useGCMetaFetcher(chapter, scripture);
+    const { gcMeta, gcLoading } = useGCMetaFetcher(chapter, scripture, language);
     const { aiQuestion, setAiQuestion, aiLoading, handleGenerateQuestions } = useAIGenerator(language);
     const { loading, handleSubmit } = useNoteSubmission(userData, language, t);
     

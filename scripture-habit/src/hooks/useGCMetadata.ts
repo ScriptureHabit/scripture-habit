@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { safeStorage } from '../Utils/storage';
 import type { Language } from '../Context/LanguageContext';
+import { auth, appCheck } from '../firebase';
+import { getToken } from 'firebase/app-check';
 
 export interface GCMetadata {
     title: string;
@@ -82,11 +84,53 @@ export const useGCMetadata = (
                 const API_BASE = window.location.hostname === 'localhost' ? '' : 'https://scripturehabit.app';
                 const apiLang = LANGUAGE_MAP[language] || 'eng';
                 
-                const endpoint = isChurchUrl ? '/api/fetch-gc-metadata' : '/api/url-preview';
-                const finalUrl = `${API_BASE}${endpoint}?url=${encodeURIComponent(targetUrl)}&lang=${apiLang}`;
+                const endpoint = isChurchUrl ? '/api/fetch-gc-metadata/' : '/api/url-preview/';
+                
+                // Ensure no double slashes or unintentional trailing slash before query
+                const baseUrl = API_BASE.endsWith('/') ? API_BASE.slice(0, -1) : API_BASE;
+                const path = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+                const finalUrl = `${baseUrl}${path}?url=${encodeURIComponent(targetUrl)}&lang=${apiLang}`;
 
-                const response = await fetch(finalUrl);
-                if (!response.ok) throw new Error(`HTTP ${response.status}: Failed to fetch metadata`);
+                // --- Security Headers (Auth & AppCheck) ---
+                const headers: Record<string, string> = {
+                    'Accept': 'application/json'
+                };
+
+                // 1. Add Firebase Auth Token
+                if (auth?.currentUser) {
+                    try {
+                        const idToken = await auth.currentUser.getIdToken();
+                        headers['Authorization'] = `Bearer ${idToken}`;
+                    } catch (e) {
+                        console.warn("[useGCMetadata] Auth token acquisition failed:", e);
+                    }
+                }
+
+                // 2. Add Firebase App Check Token
+                if (appCheck) {
+                    try {
+                        const acToken = await getToken(appCheck, false);
+                        if (acToken?.token) {
+                            headers['X-Firebase-AppCheck'] = acToken.token;
+                        }
+                    } catch (e) {
+                        console.warn("[useGCMetadata] AppCheck token acquisition failed:", e);
+                    }
+                }
+
+                // Debug log (only in dev/localhost)
+                if (window.location.hostname === 'localhost') {
+                    console.log(`[useGCMetadata] Requesting: ${finalUrl}`, {
+                        hasAuth: !!headers['Authorization'],
+                        hasAppCheck: !!headers['X-Firebase-AppCheck']
+                    });
+                }
+
+                const response = await fetch(finalUrl, { headers });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: Failed to fetch metadata`);
+                }
 
                 const result = await response.json();
                 
@@ -112,7 +156,8 @@ export const useGCMetadata = (
         fetchMetadata();
         return () => { active = false; };
 
-    }, [urlOrSlug, language]);
+    }, [urlOrSlug, language, auth?.currentUser?.uid]);
+
 
     return { data, loading, error };
 };
