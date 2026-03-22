@@ -53,8 +53,7 @@ export const useGroupMessages = (groupId: string | null, userData: any, t: (key:
             lastReadAt: serverTimestamp()
           }, { merge: true }),
           updateDoc(groupRef, {
-            [`memberLastReadAt.${userData.uid}`]: serverTimestamp(),
-            [`memberLastActive.${userData.uid}`]: serverTimestamp()
+            [`memberLastReadAt.${userData.uid}`]: serverTimestamp()
           })
         ]);
         setUserReadCount(totalCount);

@@ -23,16 +23,7 @@ export const useUnityDetails = (
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const todayTime = today.getTime();
-
-    const memberJoinedAt = groupData.memberJoinedAt || {};
-    const eligibleMemberIds = groupData.members.filter(uid => {
-      const joinedTs = memberJoinedAt[uid];
-      if (!joinedTs) return true;
-      let joinedTime = 0;
-      if (joinedTs?.toDate) joinedTime = joinedTs.toDate().getTime();
-      else if (joinedTs?.seconds) joinedTime = joinedTs.seconds * 1000;
-      return joinedTime < todayTime;
-    });
+    const eligibleMemberIds = groupData.members;
 
     const uniquePosters = new Set<string>();
     if (groupData.dailyActivity?.activeMembers && (groupData.dailyActivity.date === todayStr || groupData.dailyActivity.date === new Date().toDateString())) {

@@ -22,15 +22,7 @@ export const useUnityScore = (
     today.setHours(0, 0, 0, 0);
     const todayTime = today.getTime();
 
-    const memberJoinedAt = groupData.memberJoinedAt || {};
-    const eligibleMembers = groupData.members.filter(uid => {
-      const joinedTs = memberJoinedAt[uid];
-      if (!joinedTs) return true;
-      let joinedTime = 0;
-      if (joinedTs?.toDate) joinedTime = joinedTs.toDate().getTime();
-      else if (joinedTs?.seconds) joinedTime = joinedTs.seconds * 1000;
-      return joinedTime < todayTime;
-    });
+    const eligibleMembers = groupData.members;
 
     if (eligibleMembers.length === 0) return 0;
 
