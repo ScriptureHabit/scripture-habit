@@ -69,7 +69,7 @@
 /* Responsive design */
 @media screen and (max-width: 768px) {
     .app-footer {
-        padding: 1rem 1.5rem;
+        padding: 1rem 1.5rem 85px 1.5rem;
     }
 
     .footer-links {
