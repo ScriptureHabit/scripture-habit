@@ -136,6 +136,9 @@ export const useGroupMessages = (groupId: string | null, userData: any, t: (key:
     });
 
     const initMessages = async () => {
+      let isCancelled = false;
+      const cancelSub = () => { isCancelled = true; };
+
       try {
         const messagesRef = collection(db, 'groups', groupId, 'messages');
         const lastViewedMsgId = userData?.uid ? safeStorage.get(`last_viewed_msg_${groupId}_${userData.uid}`) : null;
@@ -143,14 +146,8 @@ export const useGroupMessages = (groupId: string | null, userData: any, t: (key:
         let initialMsgs: Message[] = [];
         let anchorSnapshot: DocumentSnapshot | null = null;
 
-        // Strategy: 
-        // 1. Try to fetch the 'last viewed' message to establish an anchor.
-        // 2. If it exists, fetch surrounding messages (e.g. 5 before, 15 after).
-        // 3. If not, fetch the latest 20 messages.
-
         if (lastViewedMsgId) {
           try {
-            // We need to get the actual document snapshot to use as a cursor
             const anchorRef = doc(db, 'groups', groupId, 'messages', lastViewedMsgId);
             anchorSnapshot = await getDoc(anchorRef);
           } catch (e) {
@@ -158,33 +155,30 @@ export const useGroupMessages = (groupId: string | null, userData: any, t: (key:
           }
         }
 
+        if (isCancelled) return;
+
         if (anchorSnapshot && anchorSnapshot.exists()) {
-          // Restoring position from anchor
-          // Newer context (including anchor) - "startAt" includes the anchor
           const nextQuery = query(messagesRef, orderBy('createdAt', 'asc'), startAt(anchorSnapshot), limit(15));
           const nextSnaps = await getDocs(nextQuery);
           const nextMsgs = nextSnaps.docs.map(d => ({ id: d.id, ...d.data() } as Message));
 
-          // Older context - "startAfter" excludes anchor (going backwards, so older than anchor)
-          // We use 'desc' to get the immediately preceding messages
           const prevQuery = query(messagesRef, orderBy('createdAt', 'desc'), startAfter(anchorSnapshot), limit(5));
           const prevSnaps = await getDocs(prevQuery);
           const prevMsgs = prevSnaps.docs.map(d => ({ id: d.id, ...d.data() } as Message)).reverse();
 
           initialMsgs = [...prevMsgs, ...nextMsgs];
         } else {
-          // Fallback: Latest 20
-          // We query descending to get the newest, then reverse to display chronologically
           const latestQuery = query(messagesRef, orderBy('createdAt', 'desc'), limit(20));
           const latestSnaps = await getDocs(latestQuery);
           initialMsgs = latestSnaps.docs.map(d => ({ id: d.id, ...d.data() } as Message)).reverse();
         }
 
+        if (isCancelled) return;
+
         setMessages(initialMsgs);
         setLoading(false);
 
         // Setup Real-time listener for NEW messages
-        // Listen for messages created AFTER the last message in our initial list
         if (initialMsgs.length > 0) {
           const firstMsg = initialMsgs[0];
           latestMessageRef.current = initialMsgs[initialMsgs.length - 1];
@@ -197,22 +191,16 @@ export const useGroupMessages = (groupId: string | null, userData: any, t: (key:
             );
 
             unsubscribeNewMessages = onSnapshot(newMsgsQuery, (snapshot) => {
+              if (isCancelled) return;
               const newIncoming: Message[] = [];
               snapshot.docChanges().forEach((change) => {
                 if (change.type === "added") {
                   const data = change.doc.data();
-
-                  // Trigger confetti for streaks! (only if truly new - within last 30 seconds)
                   const messageTime = data.createdAt?.toMillis ? data.createdAt.toMillis() : (data.createdAt?.seconds ? data.createdAt.seconds * 1000 : 0);
                   const isTrulyNew = messageTime && (Date.now() - messageTime) < 30000;
 
                   if (data.messageType === 'streakAnnouncement' && data.messageData?.userId !== userData?.uid && isTrulyNew) {
-                    confetti({
-                      particleCount: 150,
-                      spread: 70,
-                      origin: { y: 0.6 },
-                      zIndex: 10000
-                    });
+                    confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, zIndex: 10000 });
                   }
 
                   newIncoming.push({ id: change.doc.id, ...data } as Message);
@@ -232,35 +220,25 @@ export const useGroupMessages = (groupId: string | null, userData: any, t: (key:
                 });
               }
             }, (err) => {
-              if (err.code === 'permission-denied') {
-                return;
-              }
+              if (err.code === 'permission-denied' || isCancelled) return;
               console.error("Error listening to new messages:", err);
               if (err.code === 'resource-exhausted' || err.message.toLowerCase().includes('quota exceeded')) {
                 setError(t('systemErrors.quotaExceededMessage'));
               }
-              // else we don't necessarily want to break the whole chat UI for a sub-listener error unless it's critical
             });
           }
         } else {
-          // If no messages at all, simply listen for any new messages
           const allNewQuery = query(messagesRef, orderBy('createdAt', 'asc'));
           unsubscribeNewMessages = onSnapshot(allNewQuery, (snapshot) => {
+            if (isCancelled) return;
             snapshot.docChanges().forEach((change) => {
               if (change.type === "added") {
                 const data = change.doc.data();
-
-                // Trigger confetti for streaks (only if truly new - within last 30 seconds)
                 const messageTime = data.createdAt?.toMillis ? data.createdAt.toMillis() : (data.createdAt?.seconds ? data.createdAt.seconds * 1000 : 0);
                 const isTrulyNew = messageTime && (Date.now() - messageTime) < 30000;
 
                 if (data.messageType === 'streakAnnouncement' && data.messageData?.userId !== userData?.uid && isTrulyNew) {
-                  confetti({
-                    particleCount: 150,
-                    spread: 70,
-                    origin: { y: 0.6 },
-                    zIndex: 10000
-                  });
+                  confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, zIndex: 10000 });
                 }
 
                 setMessages(prev => {
@@ -277,9 +255,9 @@ export const useGroupMessages = (groupId: string | null, userData: any, t: (key:
             });
             setLoading(false);
           }, (err) => {
-            if (err.code === 'permission-denied') {
-              return;
-            }
+            if (isCancelled) return;
+            setLoading(false); // CRITICAL: Stop loading even on error
+            if (err.code === 'permission-denied') return;
             console.error("Error listening to all messages:", err);
             if (err.code === 'resource-exhausted' || err.message.toLowerCase().includes('quota exceeded')) {
               setError(t('systemErrors.quotaExceededMessage'));
@@ -288,21 +266,23 @@ export const useGroupMessages = (groupId: string | null, userData: any, t: (key:
         }
 
       } catch (err: any) {
+        setLoading(false); // CRITICAL: Stop loading even on error
         if (err.code !== 'permission-denied') {
           console.error("Error fetching messages:", err);
           setError("Failed to load messages.");
         }
-        setLoading(false);
       }
+
+      return cancelSub;
     };
 
-    initMessages();
-
-    // --- Added Logs when opening Group Chat ---
-
+    const cleanupPromise = initMessages();
 
     return () => {
-
+      cleanupPromise.then(cancelSub => {
+        if (typeof cancelSub === 'function') cancelSub();
+      }).catch(err => console.error("Error during initMessages cleanup:", err));
+      
       unsubscribeGroup();
       unsubscribeNewMessages();
     };

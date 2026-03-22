@@ -338,12 +338,15 @@ const App: React.FC = () => {
     }
   }, []);
 
-  const [systemStatus, setSystemStatus] = useEffectSpecialState<SystemStatus>(() => {
+  const [systemStatus, setSystemStatus] = useState<SystemStatus>({ loading: true, error: null });
+
+  useEffect(() => {
+    if (!db) return;
     // Probe Firestore for status/quota
     const statusRef = doc(db, 'system', 'status');
     const unsubscribe = onSnapshot(statusRef, (docSnap) => {
       if (docSnap.exists()) {
-        setSystemStatus({ ...docSnap.data(), loading: false, error: null });
+        setSystemStatus({ ...docSnap.data(), loading: false, error: null } as SystemStatus);
       } else {
         setSystemStatus({ loading: false, error: null });
       }
@@ -359,16 +362,7 @@ const App: React.FC = () => {
       setSystemStatus({ loading: false, error: isQuota ? 'quota' : err.message });
     });
     return unsubscribe;
-  });
-
-  // Helper because we need actual state here
-  function useEffectSpecialState<T>(effect: () => any): [T, React.Dispatch<React.SetStateAction<T>>] {
-    const [state, setState] = useState<T>({ loading: true, error: null } as any);
-    useEffect(() => {
-      return effect();
-    }, [effect]);
-    return [state, setState];
-  }
+  }, []);
 
   const location = useLocation();
 
