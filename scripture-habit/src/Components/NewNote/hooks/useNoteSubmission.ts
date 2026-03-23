@@ -4,6 +4,7 @@ import { Capacitor } from '@capacitor/core';
 import { auth, db } from '../../../firebase';
 import { doc, writeBatch, serverTimestamp } from 'firebase/firestore';
 import { toast } from 'react-toastify';
+import confetti from 'canvas-confetti';
 import { UserData } from '../../../types/user';
 
 export const useNoteSubmission = (
@@ -116,6 +117,13 @@ export const useNoteSubmission = (
                 });
 
                 if (response.data && response.data.success) {
+                    confetti({
+                        particleCount: 150,
+                        spread: 70,
+                        origin: { y: 0.6 },
+                        zIndex: 10000
+                    });
+
                     toast.success(t('newNote.successPost'));
                     onSuccess();
                 } else {
