@@ -4,13 +4,13 @@ import type { Language } from '../Context/LanguageContext';
 import { auth, appCheck } from '../firebase';
 import { getToken } from 'firebase/app-check';
 
-export interface GCMetadata {
+export interface UrlMetadata {
     title: string;
     speaker: string;
 }
 
-interface useGCMetadataResult {
-    data: GCMetadata | null;
+interface UseUrlMetadataResult {
+    data: UrlMetadata | null;
     loading: boolean;
     error: Error | null;
 }
@@ -30,29 +30,32 @@ const LANGUAGE_MAP: Record<string, string> = {
 };
 
 // Internal memory cache to avoid unnecessary I/O
-const memoryCache: Record<string, GCMetadata> = {};
+const memoryCache: Record<string, UrlMetadata> = {};
 
 /**
- * Hook to fetch and cache metadata (title, speaker) for General Conference talks.
+ * Hook to fetch and cache metadata (title, speaker) for URLs.
  * Prioritizes memory cache, then localStorage, then API fetch.
  */
-export const useGCMetadata = (
+export const useUrlMetadata = (
   urlOrSlug: string | null | undefined, 
   language: Language | string
-): useGCMetadataResult => {
-    const [data, setData] = useState<GCMetadata | null>(null);
+): UseUrlMetadataResult => {
+    const [data, setData] = useState<UrlMetadata | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<Error | null>(null);
 
     useEffect(() => {
         if (!urlOrSlug || !language) return;
 
-        // Skip non-church URLs/slugs
-        if (!urlOrSlug.startsWith('http') && !urlOrSlug.startsWith('/')) {
+        // Support full URLs, internal paths, and Church shortcodes (e.g., 2024/04/...)
+        const isUrl = urlOrSlug.startsWith('http') || urlOrSlug.startsWith('/');
+        const isShortcode = /^\d{4}\/\d{2}/.test(urlOrSlug);
+
+        if (!isUrl && !isShortcode) {
             return;
         }
 
-        const cacheKey = `gc_meta_${language}_${urlOrSlug}`;
+        const cacheKey = `url_meta_${language}_${urlOrSlug}`;
 
         // 1. Memory Cache
         if (memoryCache[cacheKey]) {
@@ -61,7 +64,7 @@ export const useGCMetadata = (
         }
 
         // 2. LocalStorage (using refactored safeStorage that handles JSON)
-        const cached = safeStorage.get<GCMetadata>(cacheKey);
+        const cached = safeStorage.get<UrlMetadata>(cacheKey);
         if (cached) {
             memoryCache[cacheKey] = cached;
             setData(cached);
@@ -84,7 +87,7 @@ export const useGCMetadata = (
                 const API_BASE = window.location.hostname === 'localhost' ? '' : 'https://scripturehabit.app';
                 const apiLang = LANGUAGE_MAP[language] || 'eng';
                 
-                const endpoint = isChurchUrl ? '/api/fetch-gc-metadata/' : '/api/url-preview/';
+                const endpoint = isChurchUrl ? '/api/fetch-church-metadata' : '/api/url-preview';
                 
                 // Ensure no double slashes or unintentional trailing slash before query
                 const baseUrl = API_BASE.endsWith('/') ? API_BASE.slice(0, -1) : API_BASE;
@@ -102,7 +105,7 @@ export const useGCMetadata = (
                         const idToken = await auth.currentUser.getIdToken();
                         headers['Authorization'] = `Bearer ${idToken}`;
                     } catch (e) {
-                        console.warn("[useGCMetadata] Auth token acquisition failed:", e);
+                        console.warn("[useUrlMetadata] Auth token acquisition failed:", e);
                     }
                 }
 
@@ -114,13 +117,13 @@ export const useGCMetadata = (
                             headers['X-Firebase-AppCheck'] = acToken.token;
                         }
                     } catch (e) {
-                        console.warn("[useGCMetadata] AppCheck token acquisition failed:", e);
+                        console.warn("[useUrlMetadata] AppCheck token acquisition failed:", e);
                     }
                 }
 
                 // Debug log (only in dev/localhost)
                 if (window.location.hostname === 'localhost') {
-                    console.log(`[useGCMetadata] Requesting: ${finalUrl}`, {
+                    console.log(`[useUrlMetadata] Requesting: ${finalUrl}`, {
                         hasAuth: !!headers['Authorization'],
                         hasAppCheck: !!headers['X-Firebase-AppCheck']
                     });
@@ -135,7 +138,7 @@ export const useGCMetadata = (
                 const result = await response.json();
                 
                 if (active) {
-                    const meta: GCMetadata = {
+                    const meta: UrlMetadata = {
                         title: result.title || '',
                         speaker: result.speaker || ''
                     };
@@ -146,7 +149,7 @@ export const useGCMetadata = (
                     setData(meta);
                 }
             } catch (err: any) {
-                console.error("useGCMetadata error:", err);
+                console.error("useUrlMetadata error:", err);
                 if (active) setError(err instanceof Error ? err : new Error(String(err)));
             } finally {
                 if (active) setLoading(false);

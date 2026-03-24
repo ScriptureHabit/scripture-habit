@@ -4,17 +4,19 @@ import { auth, appCheck } from '../../../firebase';
 import { getToken } from 'firebase/app-check';
 
 /**
- * Hook to fetch metadata for General Conference talks during note creation.
+ * Hook to fetch metadata for Church URLs (GC, Liahona, etc.) during note creation.
  */
-export const useGCMetaFetcher = (chapter: string, scripture: string, language: string = 'en') => {
-    const [gcMeta, setGcMeta] = useState<{ title: string; speaker?: string } | null>(null);
-    const [gcLoading, setGcLoading] = useState(false);
+export const useUrlMetaFetcher = (chapter: string, scripture: string, language: string = 'en') => {
+    const [urlMeta, setUrlMeta] = useState<{ title: string; speaker?: string } | null>(null);
+    const [urlLoading, setUrlLoading] = useState(false);
 
     useEffect(() => {
-        const fetchGcMeta = async () => {
-            const isUrl = typeof chapter === 'string' && chapter.startsWith('http');
-            if (isUrl && (scripture === 'General Conference' || scripture === 'BYU Speeches' || scripture === 'Other')) {
-                setGcLoading(true);
+        const fetchUrlMeta = async () => {
+            const isUrl = typeof chapter === 'string' && (chapter.startsWith('http') || chapter.startsWith('/'));
+            const isShortcode = typeof chapter === 'string' && /^\d{4}\/\d{2}/.test(chapter);
+            
+            if ((isUrl || isShortcode) && (scripture === 'General Conference' || scripture === 'BYU Speeches' || scripture === 'Other')) {
+                setUrlLoading(true);
                 try {
                     const API_BASE = Capacitor.isNativePlatform() ? 'https://scripturehabit.app' : '';
                     
@@ -22,7 +24,12 @@ export const useGCMetaFetcher = (chapter: string, scripture: string, language: s
                     const LAN_MAP: Record<string, string> = { 'ja': 'jpn', 'en': 'eng', 'pt': 'por', 'es': 'spa', 'zho': 'zho', 'ko': 'kor', 'vi': 'vie', 'th': 'tha', 'tl': 'tgl', 'sw': 'swa' };
                     const apiLang = LAN_MAP[language] || 'eng';
 
-                    const url = `${API_BASE}/api/fetch-gc-metadata/?url=${encodeURIComponent(chapter)}&lang=${apiLang}`;
+                    let targetUrl = chapter;
+                    if (!targetUrl.startsWith('http')) {
+                        targetUrl = `https://www.churchofjesuschrist.org${targetUrl.startsWith('/') ? '' : '/'}${targetUrl}`;
+                    }
+
+                    const url = `${API_BASE}/api/fetch-church-metadata?url=${encodeURIComponent(targetUrl)}&lang=${apiLang}`;
 
                     const headers: Record<string, string> = { 'Accept': 'application/json' };
                     
@@ -30,14 +37,14 @@ export const useGCMetaFetcher = (chapter: string, scripture: string, language: s
                         try {
                             const idToken = await auth.currentUser.getIdToken();
                             headers['Authorization'] = `Bearer ${idToken}`;
-                        } catch (e) { console.warn("[useGCMetaFetcher] Auth token failed", e); }
+                        } catch (e) { console.warn("[useUrlMetaFetcher] Auth token failed", e); }
                     }
 
                     if (appCheck) {
                         try {
                             const acToken = await getToken(appCheck, false);
                             if (acToken?.token) headers['X-Firebase-AppCheck'] = acToken.token;
-                        } catch (e) { console.warn("[useGCMetaFetcher] AppCheck token failed", e); }
+                        } catch (e) { console.warn("[useUrlMetaFetcher] AppCheck token failed", e); }
                     }
 
                     const response = await fetch(url, { headers });
@@ -45,26 +52,26 @@ export const useGCMetaFetcher = (chapter: string, scripture: string, language: s
 
                     const data = await response.json();
                     if (data && data.title) {
-                        setGcMeta({
+                        setUrlMeta({
                             title: data.title,
                             speaker: data.speaker
                         });
                     }
                 } catch (error) {
-                    console.error("Error fetching GC meta:", error);
-                    setGcMeta(null);
+                    console.error("Error fetching Church content meta:", error);
+                    setUrlMeta(null);
                 } finally {
-                    setGcLoading(false);
+                    setUrlLoading(false);
                 }
             } else {
-                setGcMeta(null);
+                setUrlMeta(null);
             }
         };
 
-        const timer = setTimeout(fetchGcMeta, 500);
+        const timer = setTimeout(fetchUrlMeta, 500);
         return () => clearTimeout(timer);
     }, [chapter, scripture, language, auth?.currentUser?.uid]);
 
-    return { gcMeta, gcLoading };
+    return { urlMeta, urlLoading };
 };
 

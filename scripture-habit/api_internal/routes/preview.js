@@ -8,8 +8,8 @@ const router = express.Router();
 
 const USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36';
 
-// Fetch GC Metadata
-router.get('/fetch-gc-metadata', authenticate, verifyAppCheck, async (req, res) => {
+// Fetch Church (GC, Liahona, etc.) Metadata
+router.get('/fetch-church-metadata', authenticate, verifyAppCheck, async (req, res) => {
 
     const { url, lang } = req.query;
     if (!url) return res.status(400).send({ error: 'URL is required' });
@@ -59,7 +59,7 @@ router.get('/fetch-gc-metadata', authenticate, verifyAppCheck, async (req, res) 
 
         res.json({ title: title || '', speaker: speaker || '' });
     } catch (error) {
-        console.error('Error in fetch-gc-metadata:', error.message);
+        console.error('Error in fetch-church-metadata:', error.message);
         res.json({ title: '', speaker: '' });
     }
 });

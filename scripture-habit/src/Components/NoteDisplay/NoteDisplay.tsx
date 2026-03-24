@@ -1,7 +1,7 @@
 import { useMemo, FC } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { useLanguage } from '../../Context/LanguageContext';
-import { useGCMetadata } from '../../hooks/useGCMetadata';
+import { useUrlMetadata } from '../../hooks/useUrlMetadata';
 import { NOTE_HEADER_REGEX, removeNoteHeader } from '../../Utils/noteUtils';
 import LinkPreview from '../LinkPreview/LinkPreview';
 
@@ -60,10 +60,11 @@ interface GCNoteRendererProps {
     isSent: boolean;
     linkColor?: string;
     translatedText?: string;
+    translateChapterField: (url: string) => string;
 }
 
-const GCNoteRenderer: FC<GCNoteRendererProps> = ({ scriptureValue, comment, url, language, t, isSent, linkColor, translatedText }) => {
-    const { data, loading } = useGCMetadata(url, language);
+const GCNoteRenderer: FC<GCNoteRendererProps> = ({ scriptureValue, comment, url, language, t, isSent, linkColor, translatedText, translateChapterField }) => {
+    const { data, loading } = useUrlMetadata(url, language);
 
     const scripLower = (scriptureValue || '').toLowerCase();
     const isOther = scripLower.includes('other') || scripLower.includes('その他') || scriptureValue === '';
@@ -97,25 +98,25 @@ const GCNoteRenderer: FC<GCNoteRendererProps> = ({ scriptureValue, comment, url,
         if (isOther) fieldLabel = tWithFall('noteLabels.title', language);
         else if (isBYU) fieldLabel = tWithFall('noteLabels.speech', language);
 
-        let fieldValue = url;
+        let fieldValue = translateChapterField(url);
         if (loading) {
             fieldValue = `_${tWithFall('noteLabels.fetchingInfo', language)}_`;
         } else if (data && data.title) {
-            fieldValue = (data.speaker && !isOther) ? `${data.title} (${data.speaker})` : data.title;
+            fieldValue = (data.speaker && !isOther) ? `${data.title} - ${data.speaker}` : data.title;
         }
 
         const commentLabel = tWithFall('noteLabels.comment', language);
         const cleanComment = (comment || '').split('\n').filter(l => l.trim() !== '**').join('\n').replace(/^\s*\*\*\s*/, '').replace(/\s*\*\*\s*$/, '').trim();
         const commentWithLinks = cleanComment.replace(/(https?:\/\/[^\s]+)/g, '[$1]($1)');
 
-        return [`**${scriptureLabel}:** ${scriptName}`, `**${fieldLabel}:** ${fieldValue}`].join('\n') + `\n**${commentLabel}:**\n${commentWithLinks}`;
+        return [`**${scriptureLabel}:** ${scriptName}`, `**${fieldLabel}:** ${fieldValue}`].join('\n\n') + `\n\n**${commentLabel}:**\n${commentWithLinks}`;
     }, [data, loading, scriptureValue, comment, t, url, isOther, isBYU, language]);
 
     return (
         <div style={{ textAlign: 'left' }}>
             <ReactMarkdown components={{
                 a: ({ node, ...p }) => <a {...p} target="_blank" rel="noopener noreferrer" style={{ color: linkColor || (isSent ? 'white' : 'var(--purple)'), textDecoration: 'none' }} onClick={(e) => e.stopPropagation()} />,
-                p: ({ node, ...p }) => <p {...p} style={{ margin: '0.6rem 0', lineHeight: '1.5' }} />
+                p: ({ node, ...p }) => <p {...p} style={{ margin: '0.6rem 0', lineHeight: '1.5', whiteSpace: 'pre-wrap' }} />
             }}>
                 {constructedMd}
             </ReactMarkdown>
@@ -300,6 +301,7 @@ const NoteDisplay: FC<NoteDisplayProps> = ({ text, isSent, linkColor, translated
                 comment={comment}
                 url={primaryUrl}
                 language={language} t={t} isSent={isSent} linkColor={linkColor} translatedText={translatedText}
+                translateChapterField={translateChapterField}
             />
         );
     }
@@ -339,7 +341,7 @@ const NoteDisplay: FC<NoteDisplayProps> = ({ text, isSent, linkColor, translated
         <div style={{ textAlign: 'left' }}>
             <ReactMarkdown components={{
                 a: ({ node, ...p }) => <a {...p} target="_blank" rel="noopener noreferrer" style={{ color: linkColor || (isSent ? 'white' : 'var(--purple)'), textDecoration: 'none' }} onClick={e => e.stopPropagation()} />,
-                p: ({ node, ...p }) => <p {...p} style={{ margin: '0.4rem 0', whiteSpace: 'pre-wrap' }} />
+                p: ({ node, ...p }) => <p {...p} style={{ margin: '0.4rem 0', whiteSpace: 'pre-wrap', lineHeight: '1.5' }} />
             }}>
                 {finalMd}
             </ReactMarkdown>

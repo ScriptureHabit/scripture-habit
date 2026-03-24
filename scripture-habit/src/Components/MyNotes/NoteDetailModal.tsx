@@ -106,15 +106,6 @@ const NoteDetailModal: FC<NoteDetailModalProps> = ({ isOpen, onClose, note, user
 
                     <div className="note-body">
                         <NoteDisplay text={note.text || ''} isSent={false} linkColor="inherit" scripture={note.scripture} chapter={note.chapter} />
-                        {/* Show Scripture Reference/Link if acceptable, maybe modify NoteDisplay or add here */}
-                        <div className="note-scripture-ref">
-                            {note.scripture !== 'Other' && (
-                                <span className="scripture-tag">{t(`scriptures.${getScriptureKey(note.scripture || '')}`) || note.scripture} {note.chapter}</span>
-                            )}
-                            {note.scripture === 'Other' && note.chapter && (
-                                <span className="scripture-tag">{note.chapter}</span>
-                            )}
-                        </div>
                     </div>
 
                     <div className="shared-activity-section">
@@ -144,19 +135,6 @@ const NoteDetailModal: FC<NoteDetailModalProps> = ({ isOpen, onClose, note, user
     );
 };
 
-const getScriptureKey = (scriptureName: string) => {
-    const map: Record<string, string> = {
-        'Old Testament': 'oldTestament',
-        'New Testament': 'newTestament',
-        'Book of Mormon': 'bookOfMormon',
-        'Doctrine and Covenants': 'doctrineAndCovenants',
-        'Pearl of Great Price': 'pearlOfGreatPrice',
-        'General Conference': 'generalConference',
-        'BYU Speeches': 'byuSpeeches',
-        'Other': 'other'
-    };
-    return map[scriptureName] || 'other';
-};
 
 interface SharedGroupSectionProps {
     groupId: string;

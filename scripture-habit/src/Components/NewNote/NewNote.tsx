@@ -6,7 +6,7 @@ import Input from '../Input/Input';
 import './NewNote.css';
 
 // Hooks
-import { useGCMetaFetcher } from './hooks/useGCMetaFetcher';
+import { useUrlMetaFetcher } from './hooks/useUrlMetaFetcher';
 import { useAIGenerator } from './hooks/useAIGenerator';
 import { useNoteSubmission } from './hooks/useNoteSubmission';
 
@@ -24,6 +24,7 @@ import { PeaceScriptures } from '../../Data/PeaceScriptures';
 import { localizeLdsUrl } from '../../Utils/urlLocalizer';
 import { getBookSuggestions } from '../../Utils/suggestionUtils';
 import { getGospelLibraryUrl, getCategoryFromScripture } from '../../Utils/gospelLibraryMapper';
+import { removeNoteHeader } from '../../Utils/noteUtils';
 import { UserData } from '../../types/user';
 
 interface NewNoteProps {
@@ -54,7 +55,7 @@ const NewNote: FC<NewNoteProps> = ({
     const [suggestions, setSuggestions] = useState<any[]>([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
 
-    const { gcMeta, gcLoading } = useGCMetaFetcher(chapter, scripture, language);
+    const { urlMeta, urlLoading } = useUrlMetaFetcher(chapter, scripture, language);
     const { aiQuestion, setAiQuestion, aiLoading, handleGenerateQuestions } = useAIGenerator(language);
     const { loading, handleSubmit } = useNoteSubmission(userData, language, t);
 
@@ -74,7 +75,7 @@ const NewNote: FC<NewNoteProps> = ({
         if (noteToEdit) {
             setScripture(noteToEdit.scripture || '');
             setChapter(noteToEdit.chapter || '');
-            setComment(noteToEdit.text || noteToEdit.comment || '');
+            setComment(noteToEdit.comment || (noteToEdit.text ? removeNoteHeader(noteToEdit.text) : ''));
         } else {
             setScripture('');
             setChapter('');
@@ -87,6 +88,14 @@ const NewNote: FC<NewNoteProps> = ({
 
     const availableReadingPlanScripts = getTodayReadingPlan()?.scripts || [];
     const isUrl = typeof chapter === 'string' && chapter.startsWith('http');
+
+    const getPlaceholder = () => {
+        if (isUrl) return t('newNote.urlPlaceholder');
+        if (scripture === "General Conference") return t('newNote.urlPlaceholder');
+        if (scripture === "BYU Speeches") return t('newNote.byuUrlPlaceholder');
+        if (scripture === "Other") return t('newNote.otherUrlPlaceholder');
+        return chapterPlaceholder;
+    };
 
     const handleSurpriseMe = () => {
         setShowRandomMenu(true);
@@ -180,7 +189,7 @@ const NewNote: FC<NewNoteProps> = ({
                     t={t}
                     onClose={onClose}
                     setShowCloseConfirm={setShowCloseConfirm}
-                    handleSubmit={() => handleSubmit(noteToEdit, scripture, chapter, comment, shareOption, selectedShareGroups, currentGroupId, gcMeta, onClose)}
+                    handleSubmit={() => handleSubmit(noteToEdit, scripture, chapter, comment, shareOption, selectedShareGroups, currentGroupId, urlMeta, onClose)}
                 />
             )}
             <div className="ModalOverlay" onClick={handleClose}>
@@ -235,7 +244,7 @@ const NewNote: FC<NewNoteProps> = ({
                             }}
                             onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
                             required
-                            placeholder={isUrl ? t('newNote.urlPlaceholder') : chapterPlaceholder}
+                            placeholder={getPlaceholder()}
                         />
                         {showSuggestions && suggestions.length > 0 && (
                             <div className="suggestions-list">
@@ -278,12 +287,16 @@ const NewNote: FC<NewNoteProps> = ({
                         </div>
                     )}
 
-                    {isUrl && (gcLoading || gcMeta) && (
-                        <div className="gc-meta-box">
-                            {gcLoading ? <span>Fetching title...</span> : gcMeta && (
+                    {isUrl && (urlLoading || urlMeta) && (
+                        <div className="url-meta-box">
+                            {urlLoading ? <span>Fetching title...</span> : urlMeta && (
                                 <div>
-                                    <strong>{gcMeta.title}</strong>
-                                    {gcMeta.speaker && <div className="speaker">{gcMeta.speaker}</div>}
+                                    <strong>{urlMeta.title}</strong>
+                                    {urlMeta.speaker && (
+                                        <div style={{ fontSize: '0.85em', opacity: 0.8 }}>
+                                            {urlMeta.speaker}
+                                        </div>
+                                    )}
                                 </div>
                             )}
                         </div>
@@ -342,7 +355,7 @@ const NewNote: FC<NewNoteProps> = ({
                     <div className="modal-actions">
                         <button onClick={handleClose} className="cancel-btn">{t('newNote.cancel')}</button>
                         <button
-                            onClick={() => handleSubmit(noteToEdit, scripture, chapter, comment, shareOption, selectedShareGroups, currentGroupId, gcMeta, onClose)}
+                            onClick={() => handleSubmit(noteToEdit, scripture, chapter, comment, shareOption, selectedShareGroups, currentGroupId, urlMeta, onClose)}
                             disabled={loading || !scripture || !chapter || !comment}
                             className="submit-btn"
                         >

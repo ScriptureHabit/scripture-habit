@@ -22,7 +22,7 @@ export const useNoteSubmission = (
         shareOption: string,
         selectedShareGroups: string[],
         currentGroupId: string | null,
-        gcMeta: { title: string; speaker?: string } | null,
+        urlMeta: { title: string; speaker?: string } | null,
         onSuccess: () => void
     ) => {
         if (loading || !scripture || !chapter || !comment) return;
@@ -72,8 +72,8 @@ export const useNoteSubmission = (
                         scripture,
                         chapter,
                         comment,
-                        title: gcMeta?.title || null,
-                        speaker: gcMeta?.speaker || null
+                        title: urlMeta?.title || null,
+                        speaker: urlMeta?.speaker || null
                     });
 
                     // SYNC TO GROUPS
@@ -109,8 +109,8 @@ export const useNoteSubmission = (
                     selectedShareGroups,
                     currentGroupId,
                     language: language || 'en',
-                    title: gcMeta?.title || null,
-                    speaker: gcMeta?.speaker || null,
+                    title: urlMeta?.title || null,
+                    speaker: urlMeta?.speaker || null,
                     timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
                 }, {
                     headers: { 'Authorization': `Bearer ${idToken}` }

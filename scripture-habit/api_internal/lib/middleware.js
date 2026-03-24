@@ -28,10 +28,11 @@ export const aiLimiter = rateLimit({
     keyGenerator: (req) => {
         const authHeader = req.headers.authorization;
         if (authHeader && authHeader.startsWith('Bearer ')) {
-            // Use SHA256 hash of the token as the key to prevent token leakage in memory/logs
             return crypto.createHash('sha256').update(authHeader).digest('hex');
         }
-        return req.ip; // Fallback to IP if no token
+        // Use a safe ID that combines IP and other info, hash it to avoid IPv6 warnings
+        const ip = req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
+        return crypto.createHash('sha256').update(ip).digest('hex');
     },
 });
 

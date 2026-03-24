@@ -4,7 +4,7 @@ import { getAuth, Auth } from "firebase/auth";
 import { getMessaging, Messaging, isSupported } from "firebase/messaging";
 import { getStorage, FirebaseStorage } from "firebase/storage";
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, Firestore } from "firebase/firestore";
-import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "firebase/app-check";
+import { initializeAppCheck, ReCaptchaEnterpriseProvider, CustomProvider } from "firebase/app-check";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -58,14 +58,22 @@ const db: Firestore = initializeFirestore(app, {
 
 const storage: FirebaseStorage = getStorage(app);
 
-if (process.env.NODE_ENV === 'development') {
-  // @ts-ignore
-  self.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
-};
+if (import.meta.env.DEV) {
+    (self as any).FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+}
 
 const appCheck = initializeAppCheck(app, {
-  provider: new ReCaptchaEnterpriseProvider(import.meta.env.VITE_APPCHECK_SITE_KEY),
-  isTokenAutoRefreshEnabled: true
+    provider: import.meta.env.DEV ? new CustomProvider({
+        getToken: () => {
+            // This is a minimal implementation for local dev.
+            // Firebase script handles the debug tokens when they are provided in globals.
+            return Promise.resolve({
+                token: 'debug-token-placeholder',
+                expireTimeMillis: Date.now() + 3600000
+            });
+        }
+    }) : new ReCaptchaEnterpriseProvider(import.meta.env.VITE_APPCHECK_SITE_KEY),
+    isTokenAutoRefreshEnabled: true
 });
 
 export { app, analytics, auth, db, messaging, storage, appCheck };
