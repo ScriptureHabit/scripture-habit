@@ -3,7 +3,6 @@ import ReactMarkdown from 'react-markdown';
 import { useLanguage } from '../../Context/LanguageContext';
 import { useGCMetadata } from '../../hooks/useGCMetadata';
 import { NOTE_HEADER_REGEX, removeNoteHeader } from '../../Utils/noteUtils';
-import { getGospelLibraryUrl } from '../../Utils/gospelLibraryMapper';
 import LinkPreview from '../LinkPreview/LinkPreview';
 
 /**
@@ -115,15 +114,15 @@ const GCNoteRenderer: FC<GCNoteRendererProps> = ({ scriptureValue, comment, url,
     return (
         <div style={{ textAlign: 'left' }}>
             <ReactMarkdown components={{
-                a: ({node, ...p}) => <a {...p} target="_blank" rel="noopener noreferrer" style={{ color: linkColor || (isSent ? 'white' : 'var(--purple)'), textDecoration: 'none' }} onClick={(e) => e.stopPropagation()} />,
-                p: ({node, ...p}) => <p {...p} style={{ margin: '0.6rem 0', lineHeight: '1.5' }} />
+                a: ({ node, ...p }) => <a {...p} target="_blank" rel="noopener noreferrer" style={{ color: linkColor || (isSent ? 'white' : 'var(--purple)'), textDecoration: 'none' }} onClick={(e) => e.stopPropagation()} />,
+                p: ({ node, ...p }) => <p {...p} style={{ margin: '0.6rem 0', lineHeight: '1.5' }} />
             }}>
                 {constructedMd}
             </ReactMarkdown>
             {translatedText && (
                 <div style={{ marginTop: '0.8rem', borderTop: '1px dashed #ccc', paddingTop: '0.6rem' }}>
                     <div style={{ fontSize: '0.75rem', opacity: 0.8, fontWeight: 'bold' }}>✨ AI {t('groupChat.translated')}</div>
-                    <ReactMarkdown components={{ p: ({node, ...p}) => <p {...p} style={{ margin: '0.3rem 0' }} /> }}>{translatedText}</ReactMarkdown>
+                    <ReactMarkdown components={{ p: ({ node, ...p }) => <p {...p} style={{ margin: '0.3rem 0' }} /> }}>{translatedText}</ReactMarkdown>
                 </div>
             )}
         </div>
@@ -155,15 +154,15 @@ const NoteDisplay: FC<NoteDisplayProps> = ({ text, isSent, linkColor, translated
         return (
             <div style={{ textAlign: 'left' }}>
                 <ReactMarkdown components={{
-                    a: ({node, ...p}) => <a {...p} target="_blank" rel="noopener noreferrer" style={{ color: linkColor || (isSent ? 'white' : 'var(--purple)'), textDecoration: 'none' }} onClick={e => e.stopPropagation()} />,
-                    p: ({node, ...p}) => <p {...p} style={{ margin: '0.2rem 0', whiteSpace: 'pre-wrap' }} />
+                    a: ({ node, ...p }) => <a {...p} target="_blank" rel="noopener noreferrer" style={{ color: linkColor || (isSent ? 'white' : 'var(--purple)'), textDecoration: 'none' }} onClick={e => e.stopPropagation()} />,
+                    p: ({ node, ...p }) => <p {...p} style={{ margin: '0.2rem 0', whiteSpace: 'pre-wrap' }} />
                 }}>
                     {processedText}
                 </ReactMarkdown>
                 {translatedText && (
                     <div style={{ marginTop: '0.4rem', borderTop: '1px dashed #ccc', paddingTop: '0.4rem' }}>
                         <div style={{ fontSize: '0.75rem', opacity: 0.8, fontWeight: 'bold' }}>✨ AI {t('groupChat.translated')}</div>
-                        <ReactMarkdown components={{ p: ({node, ...p}) => <p {...p} style={{ margin: '0.2rem 0', whiteSpace: 'pre-wrap' }} /> }}>{translatedText}</ReactMarkdown>
+                        <ReactMarkdown components={{ p: ({ node, ...p }) => <p {...p} style={{ margin: '0.2rem 0', whiteSpace: 'pre-wrap' }} /> }}>{translatedText}</ReactMarkdown>
                     </div>
                 )}
                 {simpleUrls.length > 0 && (
@@ -328,10 +327,7 @@ const NoteDisplay: FC<NoteDisplayProps> = ({ text, isSent, linkColor, translated
     const scriptureNameTrans = translateScriptureName(scriptureValue, t);
 
     const displayChapter = translateChapterField(chapterValue) || chapterValue;
-    const libraryUrl = getGospelLibraryUrl(scriptureValue, chapterValue, language);
-    const chapterLine = libraryUrl
-        ? `**${tWithFall('noteLabels.chapter', language)}:** [${displayChapter}](${libraryUrl})`
-        : (displayChapter ? `**${tWithFall('noteLabels.chapter', language)}:** ${displayChapter}` : null);
+    const chapterLine = displayChapter ? `**${tWithFall('noteLabels.chapter', language)}:** ${displayChapter}` : null;
 
     const finalMd = [
         `**${tWithFall('noteLabels.scripture', language)}:** ${scriptureNameTrans}`,
@@ -342,15 +338,15 @@ const NoteDisplay: FC<NoteDisplayProps> = ({ text, isSent, linkColor, translated
     return (
         <div style={{ textAlign: 'left' }}>
             <ReactMarkdown components={{
-                a: ({node, ...p}) => <a {...p} target="_blank" rel="noopener noreferrer" style={{ color: linkColor || (isSent ? 'white' : 'var(--purple)'), textDecoration: 'none' }} onClick={e => e.stopPropagation()} />,
-                p: ({node, ...p}) => <p {...p} style={{ margin: '0.4rem 0', whiteSpace: 'pre-wrap' }} />
+                a: ({ node, ...p }) => <a {...p} target="_blank" rel="noopener noreferrer" style={{ color: linkColor || (isSent ? 'white' : 'var(--purple)'), textDecoration: 'none' }} onClick={e => e.stopPropagation()} />,
+                p: ({ node, ...p }) => <p {...p} style={{ margin: '0.4rem 0', whiteSpace: 'pre-wrap' }} />
             }}>
                 {finalMd}
             </ReactMarkdown>
             {translatedText && (
                 <div style={{ marginTop: '0.6rem', borderTop: '1px dashed #ccc', paddingTop: '0.4rem' }}>
                     <div style={{ fontSize: '0.75rem', opacity: 0.8, fontWeight: 'bold' }}>✨ AI {t('groupChat.translated')}</div>
-                    <ReactMarkdown components={{ p: ({node, ...p}) => <p {...p} style={{ margin: '0.2rem 0', whiteSpace: 'pre-wrap' }} /> }}>{translatedText}</ReactMarkdown>
+                    <ReactMarkdown components={{ p: ({ node, ...p }) => <p {...p} style={{ margin: '0.2rem 0', whiteSpace: 'pre-wrap' }} /> }}>{translatedText}</ReactMarkdown>
                 </div>
             )}
         </div>

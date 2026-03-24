@@ -58,7 +58,7 @@ interface LanguageProviderProps {
 export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) => {
     const navigate = useNavigate();
     const location = useLocation();
-    
+
     const [language, setLanguageInternal] = useState<Language>(detectInitialLanguage);
     const [translations, setTranslations] = useState<any>(enTranslations);
     const [bookTranslations, setBookTranslations] = useState<any>(enBooks);
@@ -86,7 +86,7 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
                         loadTranslations(language),
                         loadBookTranslations(language)
                     ]);
-                    
+
                     // Use functional updates to prevent stale state issues
                     setTranslations(trans);
                     setBookTranslations(books);
@@ -104,9 +104,9 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
 
     const translateBookName = useCallback((bookName: string | null | undefined): string => {
         if (!bookName) return '';
-        
+
         const langBooks = bookTranslations || enBooks;
-        
+
         // Try current language
         if (langBooks[bookName]) {
             return langBooks[bookName];
@@ -136,13 +136,26 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
     const translateChapterField = useCallback((chapterText: string | null | undefined): string => {
         if (!chapterText) return '';
 
+        // Check if it's a URL or path
+        const isUrl = chapterText.startsWith('http') || chapterText.startsWith('/');
+
         // Special handling for GC/BYU Speeches
         if (chapterText.includes('general-conference') || /^\d{4}\/\d{2}/.test(chapterText)) {
             const urlMatch = chapterText.match(/general-conference\/(\d{4})\/(\d{2})\/([^?#]+)/);
-            if (urlMatch) return `${urlMatch[1]}/${urlMatch[2]}/${urlMatch[3]}`;
+            if (urlMatch) return `${urlMatch[1]}/${urlMatch[2]}/${urlMatch[3].split('?')[0]}`;
 
             const urlTocMatch = chapterText.match(/general-conference\/(\d{4})\/(\d{2})(?:[?#]|$)/);
             if (urlTocMatch) return `${urlTocMatch[1]}/${urlTocMatch[2]}`;
+        }
+
+        // Special handling for Church Manuals / Study material
+        if (chapterText.includes('/study/')) {
+            const studyMatch = chapterText.match(/\/study\/([^/]+)\/([^/]+)(?:\/([^/]+))?/);
+            if (studyMatch) {
+                const book = studyMatch[2].split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+                const section = studyMatch[3] ? studyMatch[3].split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : '';
+                return section ? `${book}: ${section}` : book;
+            }
         }
 
         if (chapterText.includes('speeches.byu.edu')) {
@@ -151,6 +164,27 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
                 const speaker = byuMatch[1].split('-').map(w => w.length === 1 ? w.toUpperCase() + '.' : w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
                 const title = byuMatch[2].split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
                 return `${title} (${speaker})`;
+            }
+        }
+
+        // Prettier fallback for any internal paths if they didn't match above
+        if (chapterText.startsWith('/') && !chapterText.includes('.')) {
+            return chapterText.split('/').filter(Boolean).map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' > ');
+        }
+
+        // For external URLs, just show the domain or a shortened version if it's too long
+        if (isUrl && chapterText.length > 30) {
+            try {
+                const url = new URL(chapterText.startsWith('http') ? chapterText : `https://example.com${chapterText}`);
+                if (url.hostname === 'example.com') return chapterText; // was just a path
+                const pathParts = url.pathname.split('/').filter(Boolean);
+                if (pathParts.length > 0) {
+                    const lastPart = pathParts[pathParts.length - 1];
+                    return lastPart.split(/[-_]/).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+                }
+                return url.hostname;
+            } catch {
+                return chapterText.substring(0, 30) + '...';
             }
         }
 
@@ -183,7 +217,7 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
 
         const newPath = pathParts.join('/') || '/';
         const finalPath = newPath.endsWith('/') ? newPath : `${newPath}/`;
-        
+
         navigate({
             pathname: finalPath,
             search: location.search,
@@ -194,7 +228,7 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
     const getValueFromPath = useCallback((key: string): any => {
         const keys = key.split('.');
         let current: any = translations;
-        
+
         for (const k of keys) {
             if (current && current[k] !== undefined) {
                 current = current[k];
@@ -224,7 +258,7 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
         Object.entries(replacements).forEach(([k, v]) => {
             result = result.split(`{${k}}`).join(String(v));
         });
-        
+
         return result;
     }, [getValueFromPath]);
 

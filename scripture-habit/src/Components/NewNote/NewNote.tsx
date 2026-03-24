@@ -36,9 +36,9 @@ interface NewNoteProps {
     noteToEdit?: any;
 }
 
-const NewNote: FC<NewNoteProps> = ({ 
-    isOpen, onClose, userData, isGroupContext = false, 
-    userGroups = [], currentGroupId = null, noteToEdit = null 
+const NewNote: FC<NewNoteProps> = ({
+    isOpen, onClose, userData, isGroupContext = false,
+    userGroups = [], currentGroupId = null, noteToEdit = null
 }) => {
     const { t, language, tArray, translateChapterField, bookTranslations } = useLanguage();
     const [scripture, setScripture] = useState<string>('');
@@ -49,7 +49,7 @@ const NewNote: FC<NewNoteProps> = ({
     const [showRandomMenu, setShowRandomMenu] = useState(false);
     const [showScriptureSelectionModal, setShowScriptureSelectionModal] = useState(false);
     const [showCloseConfirm, setShowCloseConfirm] = useState(false);
-    
+
     // Auto-suggestions logic
     const [suggestions, setSuggestions] = useState<any[]>([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
@@ -57,7 +57,7 @@ const NewNote: FC<NewNoteProps> = ({
     const { gcMeta, gcLoading } = useGCMetaFetcher(chapter, scripture, language);
     const { aiQuestion, setAiQuestion, aiLoading, handleGenerateQuestions } = useAIGenerator(language);
     const { loading, handleSubmit } = useNoteSubmission(userData, language, t);
-    
+
     const commentPlaceholder = useMemo(() => {
         const placeholders = tArray('newNote.commentPlaceholder');
         return placeholders[Math.floor(Math.random() * placeholders.length)] || '';
@@ -101,7 +101,7 @@ const NewNote: FC<NewNoteProps> = ({
     };
 
     const handleGroupSelection = (groupId: string) => {
-        setSelectedShareGroups(prev => 
+        setSelectedShareGroups(prev =>
             prev.includes(groupId) ? prev.filter(id => id !== groupId) : [...prev, groupId]
         );
     };
@@ -132,8 +132,8 @@ const NewNote: FC<NewNoteProps> = ({
 
     if (showRandomMenu) {
         return (
-            <RandomScriptureMenu 
-                t={t} 
+            <RandomScriptureMenu
+                t={t}
                 setShowRandomMenu={setShowRandomMenu}
                 availableReadingPlanScripts={availableReadingPlanScripts}
                 handlePickRandomReadingPlan={() => {
@@ -158,8 +158,8 @@ const NewNote: FC<NewNoteProps> = ({
 
     if (showScriptureSelectionModal) {
         return (
-            <ScriptureSelectionModal 
-                t={t} 
+            <ScriptureSelectionModal
+                t={t}
                 onClose={() => setShowScriptureSelectionModal(false)}
                 availableReadingPlanScripts={availableReadingPlanScripts}
                 fillScriptureData={(script) => {
@@ -176,11 +176,11 @@ const NewNote: FC<NewNoteProps> = ({
     return (
         <>
             {showCloseConfirm && (
-                <CloseConfirmModal 
-                    t={t} 
-                    onClose={onClose} 
-                    setShowCloseConfirm={setShowCloseConfirm} 
-                    handleSubmit={() => handleSubmit(noteToEdit, scripture, chapter, comment, shareOption, selectedShareGroups, currentGroupId, gcMeta, onClose)} 
+                <CloseConfirmModal
+                    t={t}
+                    onClose={onClose}
+                    setShowCloseConfirm={setShowCloseConfirm}
+                    handleSubmit={() => handleSubmit(noteToEdit, scripture, chapter, comment, shareOption, selectedShareGroups, currentGroupId, gcMeta, onClose)}
                 />
             )}
             <div className="ModalOverlay" onClick={handleClose}>
@@ -311,11 +311,11 @@ const NewNote: FC<NewNoteProps> = ({
                             <div className="radio-group">
                                 {['all', 'specific', 'none'].map(opt => (
                                     <label key={opt} className={`radio-option ${(opt === 'all' || opt === 'specific') && userGroups.length === 0 ? 'disabled' : ''}`}>
-                                        <input 
-                                            type="radio" value={opt} 
-                                            checked={shareOption === opt} 
+                                        <input
+                                            type="radio" value={opt}
+                                            checked={shareOption === opt}
                                             onChange={(e) => setShareOption(e.target.value)}
-                                            disabled={(opt === 'all' || opt === 'specific') && userGroups.length === 0} 
+                                            disabled={(opt === 'all' || opt === 'specific') && userGroups.length === 0}
                                         />
                                         <span>{t(`newNote.share${opt.charAt(0).toUpperCase() + opt.slice(1)}`)}</span>
                                     </label>
@@ -326,10 +326,10 @@ const NewNote: FC<NewNoteProps> = ({
                                 <div className="group-selection-list">
                                     {userGroups.map(group => (
                                         <label key={group.id} className="group-checkbox-item">
-                                            <input 
-                                                type="checkbox" 
-                                                checked={selectedShareGroups.includes(group.id)} 
-                                                onChange={() => handleGroupSelection(group.id)} 
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedShareGroups.includes(group.id)}
+                                                onChange={() => handleGroupSelection(group.id)}
                                             />
                                             <span>{group.name || t('newNote.unnamedGroup')}</span>
                                         </label>
@@ -341,7 +341,7 @@ const NewNote: FC<NewNoteProps> = ({
 
                     <div className="modal-actions">
                         <button onClick={handleClose} className="cancel-btn">{t('newNote.cancel')}</button>
-                        <button 
+                        <button
                             onClick={() => handleSubmit(noteToEdit, scripture, chapter, comment, shareOption, selectedShareGroups, currentGroupId, gcMeta, onClose)}
                             disabled={loading || !scripture || !chapter || !comment}
                             className="submit-btn"
