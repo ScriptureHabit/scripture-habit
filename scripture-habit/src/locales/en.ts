@@ -50,7 +50,8 @@ export default {
                 description: "Get notified when group members share notes or when you have study reminders.",
                 enable: "Enable Notifications",
                 later: "Maybe Later"
-            }
+            },
+            inactivityWarning: "⚠️ {name}: No activity confirmed. You will be automatically removed in {hours} hour(s) if you do not post a note!"
         },
         languages: {
             title: "Languages",

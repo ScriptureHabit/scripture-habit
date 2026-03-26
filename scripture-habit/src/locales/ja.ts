@@ -50,7 +50,8 @@ export default {
                 description: "グループメンバーの投稿や学習のリマインダーを受け取ることができます。",
                 enable: "通知をオンにする",
                 later: "また今度"
-            }
+            },
+            inactivityWarning: "⚠️ 【警告】{name} で学習が確認できません。あと {hours} 時間以内にノートを投稿しないと自動退出になります！"
         },
         languages: {
             title: "言語設定",

@@ -1,0 +1,80 @@
+.message.system-message {
+    align-self: center;
+    align-items: center;
+    max-width: 90%;
+    margin: 1rem 0;
+}
+
+.message.system-message p {
+    background: rgba(255, 255, 255, 0.6);
+    color: var(--gray);
+    font-size: 0.85rem;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    text-align: center;
+}
+
+.message.system-message.streak-announcement p {
+    background: rgba(255, 255, 255, 0.85);
+    color: var(--gray);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    padding: 0.6rem 1.2rem;
+    animation: pulseCelebration 2s infinite ease-in-out;
+}
+
+.message.system-message.unity-announcement p {
+    background: linear-gradient(135deg, #fff9e6 0%, #fffdf5 100%);
+    color: #B8860B;
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    font-weight: 700;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+    padding: 0.8rem 1.5rem;
+    animation: celestialRadiance 3s infinite alternate ease-in-out;
+}
+
+.unity-announcement-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.mascot-avatar-celestial {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.5));
+}
+
+@keyframes celestialRadiance {
+    0% {
+        box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+        transform: scale(1);
+    }
+
+    100% {
+        box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
+        transform: scale(1.03);
+    }
+}
+
+@keyframes pulseCelebration {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    50% {
+        transform: scale(1.02);
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+    }
+
+    100% {
+        transform: scale(1);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+}

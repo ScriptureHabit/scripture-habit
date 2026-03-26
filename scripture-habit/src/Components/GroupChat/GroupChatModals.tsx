@@ -15,6 +15,7 @@ import UnityModal from './Modals/UnityModal';
 import CheerConfirmModal from './Modals/CheerConfirmModal';
 import ReportModal from './Modals/ReportModal';
 import InviteModal from './Modals/InviteModal';
+import './GroupChatModals.css';
 
 interface GroupChatModalsProps {
     t: (key: string, replacements?: any) => string;

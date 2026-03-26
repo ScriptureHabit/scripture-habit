@@ -2,6 +2,8 @@ import { FC, RefObject, KeyboardEvent, FormEvent, useEffect } from 'react';
 import { UilPlus, UilTimes } from '@iconscout/react-unicons';
 import { Message } from '../../../types/chat';
 
+import './MessageInput.css';
+
 interface MessageInputProps {
     handleSendMessage: (e: FormEvent) => void;
     isAnyModalOpen: boolean;

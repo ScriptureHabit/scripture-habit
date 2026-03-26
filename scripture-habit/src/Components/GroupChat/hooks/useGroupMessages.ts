@@ -290,6 +290,37 @@ export const useGroupMessages = (groupId: string | null, userData: any, t: (key:
   }, [groupId]);
 
 
+  const [isLoadingOlder, setIsLoadingOlder] = useState(false);
+
+  const loadMoreOlderMessages = async (containerRef: React.RefObject<HTMLDivElement | null>, previousScrollHeightRef: React.MutableRefObject<number>, previousScrollTopRef: React.MutableRefObject<number>) => {
+    if (!groupId || isLoadingOlder || !hasMoreOlder || messages.length === 0) return;
+    setIsLoadingOlder(true);
+
+    // Capture current scroll state to maintain position after loading
+    if (containerRef.current) {
+      previousScrollHeightRef.current = containerRef.current.scrollHeight;
+      previousScrollTopRef.current = containerRef.current.scrollTop;
+    }
+
+    try {
+      const oldestMsg = messages[0];
+      if (!oldestMsg.createdAt) return;
+      const { orderBy, startAfter, limit } = await import('firebase/firestore');
+      const q = query(collection(db, 'groups', groupId, 'messages'), orderBy('createdAt', 'desc'), startAfter(oldestMsg.createdAt), limit(20));
+      const snaps = await getDocs(q);
+      if (snaps.empty) {
+        setHasMoreOlder(false);
+      } else {
+        const newOlderMsgs = snaps.docs.map(d => ({ id: d.id, ...d.data() } as Message)).reverse();
+        setMessages(prev => [...newOlderMsgs, ...prev]);
+      }
+    } catch (e) {
+      console.error("Error loading older messages", e);
+    } finally {
+      setIsLoadingOlder(false);
+    }
+  };
+
   return {
     messages, setMessages,
     groupData, setGroupData,
@@ -298,6 +329,7 @@ export const useGroupMessages = (groupId: string | null, userData: any, t: (key:
     userReadCount, setUserReadCount,
     initialScrollDone, setInitialScrollDone,
     hasMoreOlder, setHasMoreOlder,
+    isLoadingOlder, loadMoreOlderMessages,
     membersMap, setMembersMap,
     currentGroupIdRef,
     prevMessageCountRef,

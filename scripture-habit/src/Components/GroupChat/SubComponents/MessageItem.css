@@ -1,0 +1,305 @@
+.message-wrapper {
+    position: relative;
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 0.5rem;
+    box-sizing: border-box;
+}
+
+.message-wrapper.sent {
+    justify-content: flex-end;
+}
+
+.message-wrapper.received {
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.message-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #FF919D 0%, #fc6777 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 1rem;
+    flex-shrink: 0;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.profile-avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.message {
+    display: flex;
+    flex-direction: column;
+    max-width: 75%;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    position: relative;
+    animation: fadeIn 0.3s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.message.sent {
+    margin-left: auto;
+    align-items: flex-end;
+}
+
+.message.received {
+    margin-right: auto;
+    align-items: flex-start;
+}
+
+.sender-name {
+    font-size: 0.7rem;
+    color: var(--gray);
+    margin-bottom: 0.1rem;
+    margin-left: 0.2rem;
+    font-weight: 600;
+    transition: color 0.1s ease;
+}
+
+.sender-name:hover {
+    color: var(--pink);
+    text-decoration: underline;
+}
+
+.message.sent .sender-name {
+    display: none;
+}
+
+.message-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.1rem 0.6rem;
+    border-radius: 1.2rem;
+    font-size: 0.95rem;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    width: fit-content;
+    max-width: 100%;
+    box-sizing: border-box;
+    position: relative;
+    white-space: pre-wrap;
+}
+
+.message.sent .message-content {
+    align-items: flex-end;
+    background: linear-gradient(135deg, #FF919D 0%, #fc6777 100%);
+    color: white;
+    border-top-right-radius: 0.2rem;
+    text-align: left;
+}
+
+.message.received .message-content {
+    align-items: flex-start;
+    text-align: left;
+    background: white;
+    color: var(--black);
+    border-top-left-radius: 0.2rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+}
+
+.message-time {
+    font-size: 0.7rem;
+    color: var(--gray);
+}
+
+.read-status {
+    font-size: 0.65rem;
+    color: var(--gray);
+}
+
+.message-hover-actions {
+    display: none;
+    align-items: center;
+    gap: 2px;
+    padding: 4px 6px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    position: absolute;
+    top: -12px;
+    z-index: 10;
+}
+
+.message.sent .message-hover-actions {
+    left: 0;
+}
+
+.message.received .message-hover-actions {
+    right: 0;
+}
+
+.message:hover .message-hover-actions {
+    display: flex;
+}
+
+.hover-action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border: none;
+    background: transparent;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: background 0.2s, transform 0.1s;
+}
+
+.hover-action-btn:hover {
+    background: #f0f0f0;
+    transform: scale(1.1);
+}
+
+.hover-action-btn.delete:hover {
+    background: #ffe0e0;
+}
+
+.edited-indicator {
+    font-size: 0.65rem;
+    color: #999;
+    font-style: italic;
+    font-weight: 400;
+}
+
+.message.sent .edited-indicator {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.message-reactions {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 12px;
+    background: white;
+    color: var(--gray);
+    font-size: 0.8rem;
+    margin-top: -8px;
+    margin-bottom: 4px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    z-index: 2;
+    width: fit-content;
+}
+
+.message.sent .message-reactions {
+    margin-right: 0.5rem;
+    background: white;
+}
+
+.message.received .message-reactions {
+    margin-left: 0.5rem;
+}
+
+.reply-context-label {
+    font-size: 0.75rem;
+    padding: 2px 8px;
+    background: white;
+    border-radius: 8px;
+    margin-bottom: 2px;
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border-left: 3px solid var(--pink);
+    color: var(--gray);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.message.sent .reply-context-label {
+    align-self: flex-start;
+    text-align: left;
+}
+
+.gospel-link {
+    padding: 0.6rem 1rem;
+    border-radius: 1rem;
+    margin-top: 0.4rem;
+    text-decoration: none;
+    color: var(--pink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.2s;
+    width: 100%;
+    box-sizing: border-box;
+    background: transparent;
+    border: none;
+    color: var(--purple);
+    text-decoration: underline;
+}
+
+.message.sent .gospel-link {
+    background: transparent;
+    border: none;
+    color: white;
+    text-decoration: underline;
+}
+
+.gospel-link:hover {
+    background: rgba(0, 0, 0, 0.02);
+    transform: translateY(-1px);
+}
+
+.message-image {
+    max-width: 100%;
+    border-radius: 1rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Status styles */
+.message-bubble-row {
+    width: 100%;
+}
+
+.message-status-column {
+    min-width: 35px;
+}
+
+/* Mobile adjustments */
+@media screen and (max-width: 768px) {
+    .message-hover-actions {
+        display: none !important;
+    }
+    
+    .message {
+        max-width: 85%;
+    }
+    
+    .message.received {
+        max-width: calc(85% - 44px);
+    }
+}

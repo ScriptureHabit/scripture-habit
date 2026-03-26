@@ -1,4 +1,4 @@
-﻿export default {
+export default {
         seo: {
             title: "Scripture Habit | 每日 LDS 經文研讀與社群工具",
             description: "與朋友一起建立每日研讀經文的習慣。為研究聖經、摩爾門經和「來跟從我」的 LDS 成員優化。將福音學習轉化為愉快日常習慣的最佳工具。"
@@ -123,6 +123,7 @@
             sentAMessage: "{nickname} 發送了一則訊息！✨",
             joinGroupStudy: "想和大家一起學習聖經嗎？",
             joinCreateGroup: "加入/創建群組",
+            inactivityWarning: "⚠️ {name}：未確認學習活動。若不發佈筆記，將在 {hours} 小時內自動退出！",
             notificationPrompt: {
                 title: "保持聯繫！",
                 description: "當群組成員分享筆記或有研讀提醒時接收通知。",

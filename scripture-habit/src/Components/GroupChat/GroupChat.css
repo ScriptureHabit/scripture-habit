@@ -656,86 +656,6 @@
     margin-bottom: 0.2rem;
 }
 
-.message.system-message {
-    align-self: center;
-    align-items: center;
-    max-width: 90%;
-    margin: 1rem 0;
-}
-
-.message.system-message p {
-    background: rgba(255, 255, 255, 0.6);
-    color: var(--gray);
-    font-size: 0.85rem;
-    font-weight: 500;
-    padding: 0.5rem 1rem;
-    border-radius: 2rem;
-    border: 1px solid rgba(0, 0, 0, 0.05);
-    text-align: center;
-}
-
-.message.system-message.streak-announcement p {
-    background: rgba(255, 255, 255, 0.85);
-    color: var(--gray);
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    font-weight: 600;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    padding: 0.6rem 1.2rem;
-    animation: pulseCelebration 2s infinite ease-in-out;
-}
-
-.message.system-message.unity-announcement p {
-    background: linear-gradient(135deg, #fff9e6 0%, #fffdf5 100%);
-    color: #B8860B;
-    border: 1px solid rgba(255, 215, 0, 0.3);
-    font-weight: 700;
-    box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
-    padding: 0.8rem 1.5rem;
-    animation: celestialRadiance 3s infinite alternate ease-in-out;
-}
-
-.unity-announcement-body {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-}
-
-.mascot-avatar-celestial {
-    width: 60px;
-    height: 60px;
-    object-fit: contain;
-    filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.5));
-}
-
-@keyframes celestialRadiance {
-    0% {
-        box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
-        transform: scale(1);
-    }
-
-    100% {
-        box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
-        transform: scale(1.03);
-    }
-}
-
-@keyframes pulseCelebration {
-    0% {
-        transform: scale(1);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    }
-
-    50% {
-        transform: scale(1.02);
-        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
-    }
-
-    100% {
-        transform: scale(1);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    }
-}
 
 .message-image {
     max-width: 100%;
@@ -749,17 +669,6 @@
     transform: scale(1.02);
 }
 
-.send-message-form {
-  background: rgba(255, 255, 255, 0.98);
-  backdrop-filter: blur(10px);
-  padding: 1rem 2rem;
-  border-top: 1px solid rgba(0, 0, 0, 0.05);
-  border-radius: 2rem;
-  position: sticky;
-  bottom: 0;
-  z-index: 12;
-  margin-top: auto;
-}
 
 @media screen and (max-width: 768px) {
   .send-message-form {
@@ -849,92 +758,6 @@
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-.input-wrapper {
-    display: flex;
-    align-items: flex-end;
-    gap: 1rem;
-    background: white;
-    padding: 0.5rem;
-    border-radius: 1.5rem;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
-    border: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-.image-upload-btn {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    color: var(--gray);
-    transition: all 0.2s;
-    margin-left: 0.5rem;
-}
-
-.image-upload-btn:hover {
-    background: #f0f0f0;
-    color: var(--pink);
-}
-
-.add-entry-btn {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    color: var(--gray);
-    transition: all 0.2s;
-}
-
-.add-entry-btn:hover {
-    background: #f0f0f0;
-    color: var(--pink);
-}
-
-.input-wrapper textarea {
-    flex: 1;
-    border: none;
-    background: transparent;
-    padding: 0.5rem;
-    font-size: 1rem;
-    outline: none;
-    color: var(--black);
-    resize: none;
-    font-family: inherit;
-    min-height: 24px;
-    max-height: 150px;
-    overflow-y: auto;
-    line-height: 1.2;
-}
-
-.input-wrapper textarea::placeholder {
-    color: #ccc;
-}
-
-.input-wrapper button[type="submit"] {
-    padding: 0.6rem 1.5rem;
-    border-radius: 2rem;
-    border: none;
-    background: var(--pink);
-    color: white;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-    box-shadow: 0 4px 10px rgba(255, 145, 157, 0.4);
-}
-
-.input-wrapper button[type="submit"]:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(255, 145, 157, 0.5);
-}
-
-.input-wrapper button[type="submit"]:active {
-    transform: scale(0.95);
-}
 
 @media screen and (max-width: 768px) {
     .GroupChat {

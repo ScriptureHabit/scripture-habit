@@ -1,4 +1,4 @@
-﻿export default {
+export default {
         seo: {
             title: "Scripture Habit | Herramienta de Comunidad y Estudio de las Escrituras SUD",
             description: "Crea un hábito diario de estudio de las escrituras con amigos. Optimizado para miembros SUD que estudian la Biblia, el Libro de Mormón y Ven, sígueme. La mejor herramienta para convertir el estudio del Evangelio en una rutina diaria alegre."
@@ -128,7 +128,8 @@
                 description: "Recibe notificaciones cuando los miembros del grupo compartan notas o tengas recordatorios de estudio.",
                 enable: "Activar Notificaciones",
                 later: "Más Tarde"
-            }
+            },
+            inactivityWarning: "⚠️ {name}: No se ha confirmado aprendizaje. ¡Serás eliminado automáticamente en {hours} horas si no publicas una nota!"
         },
         languages: {
             title: "Idiomas",

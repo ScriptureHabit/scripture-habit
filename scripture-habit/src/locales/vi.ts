@@ -1,4 +1,4 @@
-﻿export default {
+export default {
         seo: {
             title: "Scripture Habit | Công cụ Cộng đồng & Nghiên cứu Thánh thư LDS",
             description: "Xây dựng thói quen học thánh thư hàng ngày cùng bạn bè. Được tối ưu hóa cho các thành viên LDS nghiên cứu Kinh Thánh, Sách Mặc Môn và Hãy Đi Theo Ta. Công cụ tốt nhất để biến việc học Phúc âm thành thói quen vui vẻ hàng ngày."
@@ -137,6 +137,7 @@
             sentAMessage: "{nickname} đã gửi một tin nhắn! ✨",
             joinGroupStudy: "Bạn có muốn học thánh thư cùng mọi người không?",
             joinCreateGroup: "Tham gia/Tạo một nhóm",
+            inactivityWarning: "⚠️ {name}: Không tìm thấy hoạt động học tập. Bạn sẽ tự động bị xóa sau {hours} giờ nữa nếu không đăng ghi chép!",
             notificationPrompt: {
                 title: "Luôn Kết Nối!",
                 description: "Nhận thông báo khi các thành viên trong nhóm chia sẻ ghi chú hoặc lời nhắc học tập.",

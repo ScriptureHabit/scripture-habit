@@ -1,4 +1,4 @@
-﻿export default {
+export default {
         seo: {
             title: "Scripture Habit | Mafunzo ya Maandiko ya LDS ya Kila Siku na Zana ya Jumuiya",
             description: "Jenga tabia ya kila siku ya kujifunza maandiko na marafiki. Imeboreshwa kwa washiriki wa LDS wanaojifunza Biblia, Kitabu cha Mormoni, na Njoo, Unifuate. Zana bora ya kugeuza mafunzo ya Injili kuwa utaratibu wa kufurahisha wa kila siku."
@@ -137,6 +137,7 @@
             sentAMessage: "{nickname} ametuma ujumbe! ✨",
             joinGroupStudy: "Je, ungependa kujifunza maandiko na kila mtu?",
             joinCreateGroup: "Jiunge/Unda Kikundi",
+            inactivityWarning: "⚠️ {name}: Hakuna shughuli iliyothibitishwa. Utaondolewa kiotomatiki baada ya saa {hours} ikiwa hutatuma dokezo!",
             notificationPrompt: {
                 title: "Endelea Kuunganishwa!",
                 description: "Pata arifa wakati washiriki wa kikundi wanaposhiriki maelezo au unapokuwa na vikumbusho vya funzo.",

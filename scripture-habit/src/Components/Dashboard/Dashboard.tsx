@@ -238,10 +238,7 @@ const Dashboard: FC = () => {
             {warnings.length > 0 && (
               <div className="warning-banner">
                 {warnings.map((warn, i) => (
-                  <div key={i}>⚠️ {language === 'ja'
-                    ? `【警告】${warn.name}での活動が${Math.max(1, warn.days)}日以上ありません。今日投稿しないと退出になります！`
-                    : `Warning: You have been inactive in ${warn.name} for over ${Math.max(1, warn.days)} days.`}
-                  </div>
+                  <div key={i}>{t('dashboard.inactivityWarning', { name: warn.name, hours: warn.hoursRemaining })}</div>
                 ))}
               </div>
             )}

@@ -1,10 +1,9 @@
-import { useState, useEffect, useRef, useMemo, FC, Fragment, KeyboardEvent } from 'react';
+import { useState, useMemo, FC, Fragment, KeyboardEvent } from 'react';
 import { safeStorage } from '../../Utils/storage';
 import { Capacitor } from '@capacitor/core';
-import { db, auth } from '../../firebase';
+import { db } from '../../firebase';
 import { UilTrashAlt, UilTimes, UilArrowLeft, UilPen, UilCommentAlt, UilCopy, UilUsersAlt, UilAnalysis } from '@iconscout/react-unicons';
-import { collection, query, serverTimestamp, doc, updateDoc, getDoc, getDocs, where, addDoc, Timestamp } from 'firebase/firestore';
-import { toast } from 'react-toastify';
+import { doc, getDoc } from 'firebase/firestore';
 import NewNote from '../NewNote/NewNote';
 import './GroupChat.css';
 import { useLanguage } from '../../Context/LanguageContext';
@@ -13,7 +12,7 @@ import MessageInput from './SubComponents/MessageInput';
 import GroupMenuItem from './SubComponents/GroupMenuItem';
 import GroupChatModals from './GroupChatModals';
 import { UserData } from '../../types/user';
-import { Group, Message, UserProfileBrief } from '../../types/chat';
+import { Group, UserProfileBrief } from '../../types/chat';
 
 // Hooks
 import { useGroupMessages } from './hooks/useGroupMessages';
@@ -24,6 +23,11 @@ import { useGroupChatUI } from './hooks/useGroupChatUI';
 import { useScrollManager } from './hooks/useScrollManager';
 import { useRecapManager } from './hooks/useRecapManager';
 import { useUnityDetails } from './hooks/useUnityDetails';
+import { useCheerSystem } from './hooks/useCheerSystem';
+import { useReportSystem } from './hooks/useReportSystem';
+import { useInviteManager } from './hooks/useInviteManager';
+import { useUserProfile } from './hooks/useUserProfile';
+import { useMessageInteraction } from './hooks/useMessageInteraction';
 
 interface GroupChatProps {
   groupId: string;
@@ -36,27 +40,19 @@ interface GroupChatProps {
   isExternalModalOpen?: boolean;
 }
 
-interface ContextMenu {
-  show: boolean;
-  x: number;
-  y: number;
-  messageId: string | null;
-  message?: Message | null;
-  showBelow?: boolean;
-}
-
 const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], onInputFocusChange, onBack, onGroupSelect, isExternalModalOpen = false }) => {
   const { language, t, tArray, isLoaded } = useLanguage();
   const API_BASE = Capacitor.isNativePlatform() ? 'https://scripturehabit.app' : '';
 
   // Primary Data Hooks
   const {
-    messages, setMessages,
+    messages,
     groupData,
     loading,
     userReadCount,
     initialScrollDone, setInitialScrollDone,
-    hasMoreOlder, setHasMoreOlder,
+    hasMoreOlder,
+    isLoadingOlder, loadMoreOlderMessages,
     membersMap,
     latestMessageRef,
     prevMessageCountRef
@@ -93,20 +89,47 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], onI
     membersList, setMembersList, handleShowUnityModal 
   } = useUnityDetails(groupData, messages, userData);
 
-  // Internal UI State
+  // Interaction and Modal Hooks
+  const {
+    replyTo, setReplyTo,
+    contextMenu, setContextMenu,
+    editingMessage, setEditingMessage,
+    editText, setEditText,
+    showDeleteMessageModal, setShowDeleteMessageModal,
+    messageToDelete, setMessageToDelete,
+    textareaRef,
+    handleReply,
+    handleMessageClick,
+    closeContextMenu,
+    handleEditMessage,
+    handleCancelEdit,
+    handleDeleteMessageClick
+  } = useMessageInteraction();
+
+  const {
+    cheerTarget, setCheerTarget, isSendingCheer, cheeredTodayUids, handleSendCheer, handleCheerClick
+  } = useCheerSystem(groupId, userData, API_BASE, t);
+
+  const {
+    showReportModal, setShowReportModal, reportReason, setReportReason, confirmReport, handleReportClick
+  } = useReportSystem(groupId, userData, t);
+
+  const {
+    showInviteModal, setShowInviteModal, handleCopyInviteLink, handleRegenerateInviteCode
+  } = useInviteManager(groupId, groupData, t);
+
+  const {
+    selectedMember, setSelectedMember, handleUserProfileClick
+  } = useUserProfile(membersMap, membersList);
+
+  // Internal UI State (remaining)
   const [newMessage, setNewMessage] = useState('');
-  const [replyTo, setReplyTo] = useState<Message | null>(null);
   const [isNewNoteOpen, setIsNewNoteOpen] = useState(false);
   const [showLeaveModal, setShowLeaveModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showMembersModal, setShowMembersModal] = useState(false);
   const [membersLoading, setMembersLoading] = useState(false);
   const [deleteConfirmationName, setDeleteConfirmationName] = useState('');
-  const [contextMenu, setContextMenu] = useState<ContextMenu>({ show: false, x: 0, y: 0, messageId: null, showBelow: false });
-  const [editingMessage, setEditingMessage] = useState<Message | null>(null);
-  const [editText, setEditText] = useState('');
-  const [showDeleteMessageModal, setShowDeleteMessageModal] = useState(false);
-  const [messageToDelete, setMessageToDelete] = useState<Message | null>(null);
   const [noteToEdit, setNoteToEdit] = useState<any>(null);
   const [showReactionsModal, setShowReactionsModal] = useState(false);
   const [reactionsToShow, setReactionsToShow] = useState<any[]>([]);
@@ -116,159 +139,6 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], onI
   const [newGroupDescription, setNewGroupDescription] = useState('');
   const [newTranslatedName, setNewTranslatedName] = useState('');
   const [newTranslatedDesc, setNewTranslatedDesc] = useState('');
-  const [selectedMember, setSelectedMember] = useState<UserProfileBrief | null>(null);
-  const [showReportModal, setShowReportModal] = useState(false);
-  const [reportedMessage, setReportedMessage] = useState<Message | null>(null);
-  const [reportReason, setReportReason] = useState('inappropriate');
-  const [cheerTarget, setCheerTarget] = useState<UserProfileBrief | null>(null);
-  const [isSendingCheer, setIsSendingCheer] = useState(false);
-  const [cheeredTodayUids, setCheeredTodayUids] = useState<Set<string>>(new Set());
-
-  const [isLoadingOlder, setIsLoadingOlder] = useState(false);
-  const [showInviteModal, setShowInviteModal] = useState(false);
-
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-
-  useEffect(() => {
-    const fetchCheers = async () => {
-      if (!userData?.uid) return;
-      try {
-        const timeZone = userData.timeZone || 'UTC';
-        const todayStr = new Date().toLocaleDateString('sv-SE', { timeZone });
-        const q = query(
-          collection(db, 'cheers'),
-          where('senderUid', '==', userData.uid),
-          where('date', '==', todayStr)
-        );
-        const snapshot = await getDocs(q);
-        const uids = new Set<string>();
-        snapshot.forEach(doc => {
-          uids.add(doc.data().targetUid);
-        });
-        setCheeredTodayUids(uids);
-      } catch (err) {
-        console.error("Error fetching cheers:", err);
-      }
-    };
-    fetchCheers();
-  }, [userData?.uid, userData?.timeZone]);
-
-  const handleCancelEdit = () => {
-    setEditingMessage(null);
-    setEditText('');
-  };
-
-  const handleEditMessage = (message: Message) => {
-    setEditingMessage(message);
-    setEditText(message.text || '');
-    setContextMenu({ ...contextMenu, show: false, messageId: null, message: null });
-  };
-
-  const handleDeleteMessageClick = (message: Message) => {
-    setMessageToDelete(message);
-    setShowDeleteMessageModal(true);
-    setContextMenu({ ...contextMenu, show: false, messageId: null, message: null });
-  };
-
-  const handleCopyInviteLink = async () => {
-    const inviteLink = `${window.location.origin}/join/${groupData?.inviteCode}`;
-    try {
-      await navigator.clipboard.writeText(inviteLink);
-      toast.success(t('groupChat.inviteLinkCopied'));
-    } catch (err) {
-      toast.error("Failed to copy link");
-    }
-  };
-
-  const handleRegenerateInviteCode = async () => {
-    if (!groupId) return;
-    try {
-      const { generateInviteCode } = await import('../../Utils/inviteUtils');
-      const newCode = generateInviteCode();
-      const expiresAt = new Date();
-      expiresAt.setDate(expiresAt.getDate() + 7);
-      
-      await updateDoc(doc(db, 'groups', groupId), {
-        inviteCode: newCode,
-        inviteCodeExpiresAt: Timestamp.fromDate(expiresAt)
-      });
-      toast.success(t('groupChat.inviteCodeRegenerated'));
-    } catch (err) {
-      toast.error("Failed to regenerate code");
-    }
-  };
-
-  const confirmReport = async () => {
-    if (!reportedMessage || !userData) return;
-    try {
-      await addDoc(collection(db, 'reports'), {
-        messageId: reportedMessage.id,
-        groupId,
-        reporterUid: userData.uid,
-        reason: reportReason,
-        createdAt: serverTimestamp(),
-        text: reportedMessage.text,
-        senderId: reportedMessage.senderId
-      });
-      toast.success(t('groupChat.reportSuccess'));
-      setShowReportModal(false);
-      setReportedMessage(null);
-    } catch (error) {
-      console.error("Error reporting message:", error);
-      toast.error(t('groupChat.reportError'));
-    }
-  };
-
-  const handleSendCheer = async () => {
-    if (!cheerTarget || isSendingCheer) return;
-    setIsSendingCheer(true);
-    try {
-      const idToken = await auth?.currentUser?.getIdToken();
-      const response = await fetch(`${API_BASE}/api/send-cheer`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${idToken}`
-        },
-        body: JSON.stringify({
-          targetUid: cheerTarget.id,
-          groupId,
-          senderNickname: userData.nickname
-        })
-      });
-
-      if (response.ok) {
-        toast.success(t('groupChat.cheerSent')?.replace('{nickname}', cheerTarget.nickname || ''));
-        setCheeredTodayUids(prev => new Set(prev).add(cheerTarget.id));
-        setCheerTarget(null);
-        setShowUnityModal(false);
-      } else {
-        toast.error("Failed to send cheer");
-      }
-    } catch (err) {
-      console.error("Error sending cheer:", err);
-    } finally {
-      setIsSendingCheer(false);
-    }
-  };
-
-  const handleUserProfileClick = async (userId: string | null) => {
-    if (!userId || userId === 'system') return;
-    const member = membersMap[userId] || membersList.find(m => m.id === userId);
-    if (member) {
-      setSelectedMember(member);
-    } else {
-      try {
-        const snap = await getDoc(doc(db, 'users', userId));
-        if (snap.exists()) {
-          const profile = { id: snap.id, ...snap.data() } as UserProfileBrief;
-          setSelectedMember(profile);
-        }
-      } catch (e) {
-        console.error("Failed to fetch user profile", e);
-      }
-    }
-  };
 
   const handleShowMembers = async () => {
     if (!groupData?.members) return;
@@ -287,38 +157,6 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], onI
     } finally {
       setMembersLoading(false);
     }
-  };
-
-  const handleReply = (message: Message) => {
-    setReplyTo(message);
-    if (textareaRef.current) textareaRef.current.focus();
-  };
-
-  const handleMessageClick = (message: Message, e: React.MouseEvent) => {
-    if (message.senderId === 'system') return;
-    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-    
-    // Horizontal centering with clamping
-    const menuWidth = 160;
-    let x = rect.left + rect.width / 2;
-    x = Math.max(menuWidth / 2 + 10, Math.min(window.innerWidth - menuWidth / 2 - 10, x));
-
-    setContextMenu({
-      show: true,
-      x,
-      y: rect.top + rect.height / 2,
-      messageId: message.id,
-      message
-    });
-  };
-
-  const closeContextMenu = () => {
-    setContextMenu({ show: false, x: 0, y: 0, messageId: null, message: null, showBelow: false });
-  };
-
-  const handleReportClick = (message: Message) => {
-    setReportedMessage(message);
-    setShowReportModal(true);
   };
 
   const handleShowReactions = (reactions: Record<string, string[]>) => {
@@ -344,9 +182,7 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], onI
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.nativeEvent.isComposing) return;
-
     const isMobile = window.innerWidth <= 768 || Capacitor.isNativePlatform();
-
     if (e.key === 'Enter' && !e.shiftKey && !isMobile) {
       e.preventDefault();
       handleSendMessage(newMessage, replyTo).then(success => {
@@ -357,11 +193,6 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], onI
         }
       });
     }
-  };
-
-  const handleCheerClick = (member: UserProfileBrief) => {
-    if (member.id === userData?.uid) return;
-    setCheerTarget(member);
   };
 
   const isOwner = groupData?.ownerUserId === userData?.uid;
@@ -376,35 +207,6 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], onI
     candidates.push(t('groupChat.placeholderEncourage'));
     return candidates[Math.floor(Math.random() * candidates.length)];
   }, [t, userData?.kickThreshold]);
-
-  const loadMoreOlderMessages = async () => {
-    if (isLoadingOlder || !hasMoreOlder || messages.length === 0) return;
-    setIsLoadingOlder(true);
-
-    // Capture current scroll state to maintain position after loading
-    if (containerRef.current) {
-      previousScrollHeightRef.current = containerRef.current.scrollHeight;
-      previousScrollTopRef.current = containerRef.current.scrollTop;
-    }
-
-    try {
-      const oldestMsg = messages[0];
-      if (!oldestMsg.createdAt) return;
-      const { orderBy, startAfter, limit } = await import('firebase/firestore');
-      const q = query(collection(db, 'groups', groupId, 'messages'), orderBy('createdAt', 'desc'), startAfter(oldestMsg.createdAt), limit(20));
-      const snaps = await getDocs(q);
-      if (snaps.empty) {
-        setHasMoreOlder(false);
-      } else {
-        const newOlderMsgs = snaps.docs.map(d => ({ id: d.id, ...d.data() } as Message)).reverse();
-        setMessages(prev => [...newOlderMsgs, ...prev]);
-      }
-    } catch (e) {
-      console.error("Error loading older messages", e);
-    } finally {
-      setIsLoadingOlder(false);
-    }
-  };
 
   if (!groupId) return null;
 
@@ -635,7 +437,7 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], onI
         {loading && <div className="loading-spinner"><div className="spinner"></div></div>}
         {!loading && hasMoreOlder && (
           <div className="load-more-container">
-            {isLoadingOlder ? <div className="spinner"></div> : <button className="load-more-btn" onClick={loadMoreOlderMessages} disabled={isLoadingOlder} tabIndex={-1}>{t('groupChat.loadPreviousMessages')}</button>}
+            {isLoadingOlder ? <div className="spinner"></div> : <button className="load-more-btn" onClick={() => loadMoreOlderMessages(containerRef, previousScrollHeightRef, previousScrollTopRef)} disabled={isLoadingOlder} tabIndex={-1}>{t('groupChat.loadPreviousMessages')}</button>}
           </div>
         )}
         {messages.map((msg, index) => {

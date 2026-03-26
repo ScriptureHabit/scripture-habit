@@ -1,4 +1,4 @@
-﻿export default {
+export default {
         seo: {
             title: "Scripture Habit | 일일 LDS 경전 공부 및 커뮤니티 도구",
             description: "친구들과 함께 매일 경전 공부 습관을 만들어 보세요. 성경, 몰몬경, '와서 나를 따르라'를 공부하는 LDS 회원들을 위해 최적화되었습니다. 복음 공부를 즐거운 일과로 만들어주는 최고의 도구입니다."
@@ -133,6 +133,7 @@
             readStudyMaterial: "학습 자료 읽기",
             todaysComeFollowMe: "오늘의 '와서 나를 따르라'",
             noReadingPlan: "오늘의 계획이 없습니다.",
+            inactivityWarning: "⚠️ {name}: 학습이 확인되지 않았습니다. 노트를 게시하지 않으면 {hours}시간 후에 자동으로 퇴장 처리됩니다!",
             postedANote: "{nickname}님이 노트를 게시했습니다! ✨",
             sentAMessage: "{nickname}님이 메시지를 보냈습니다! ✨",
             joinGroupStudy: "모두와 함께 경전 공부를 하시겠습니까?",

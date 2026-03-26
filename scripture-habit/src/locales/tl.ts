@@ -1,4 +1,4 @@
-﻿export default {
+export default {
         seo: {
             title: "Scripture Habit | Daily LDS Scripture Study at Tool sa Komunidad",
             description: "Bumuo ng pang-araw-araw na gawi sa pag-aaral ng banal na kasulatan kasama ang mga kaibigan. Na-optimize para sa mga miyembro ng LDS na nag-aaral ng Biblia, Aklat ni Mormon, at Pumarito Ka, Sumunod Ka sa Akin. Ang pinakamahusay na tool upang gawing masayang daily routine ang pag-aaral ng Ebanghelyo."
@@ -123,6 +123,7 @@
             sentAMessage: "Nagpadala si {nickname} ng isang mensahe! ✨",
             joinGroupStudy: "Gusto mo bang mag-aral ng mga banal na kasulatan kasama ang lahat?",
             joinCreateGroup: "Sumali/Gumawa ng Grupo",
+            inactivityWarning: "⚠️ {name}: Walang nakitang aktibidad. Awtomatiko kang aalisin sa loob ng {hours} (na) oras kung hindi ka mag-post ng tala!",
             notificationPrompt: {
                 title: "Manatiling Connected!",
                 description: "Makatanggap ng notification kapag nag-share ng notes ang members o kapag may study reminders ka.",

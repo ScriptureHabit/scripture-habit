@@ -4,7 +4,7 @@ import { Group } from '../../../types/chat';
 
 interface WarningInfo {
   name: string;
-  days: number;
+  hoursRemaining: number;
 }
 
 export const useDashboardWarnings = (userData: UserData | null, userGroups: Group[]) => {
@@ -23,11 +23,16 @@ export const useDashboardWarnings = (userData: UserData | null, userGroups: Grou
             if (lastActiveTimestamp) {
                 const lastActiveDate = (lastActiveTimestamp as any).toDate ? (lastActiveTimestamp as any).toDate() : new Date((lastActiveTimestamp as any).seconds * 1000);
                 const diffMs = now.getTime() - lastActiveDate.getTime();
-                const diffDays = diffMs / (1000 * 60 * 60 * 24);
-
+                
                 const threshold = (group.memberKickThresholds && group.memberKickThresholds[userData.uid]) || userData.kickThreshold || 3;
-                if (diffDays >= threshold - 1) {
-                    newWarnings.push({ name: group.name || 'Group', days: Math.floor(diffDays) });
+                const thresholdMs = threshold * 24 * 60 * 60 * 1000;
+                
+                const remainingMs = thresholdMs - diffMs;
+                const hoursRemaining = Math.ceil(remainingMs / (1000 * 60 * 60));
+
+                // Warn if less than 24 hours remain (or if already overdue but still in group)
+                if (hoursRemaining <= 24) {
+                    newWarnings.push({ name: group.name || 'Group', hoursRemaining: Math.max(0, hoursRemaining) });
                 }
             }
         });
