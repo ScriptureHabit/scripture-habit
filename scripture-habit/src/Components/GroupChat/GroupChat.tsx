@@ -298,11 +298,7 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], onI
     if (message.senderId === 'system') return;
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
     
-    // Decide if showing above or below message bubble
-    // Menu height is approx 220px-250px
-    const showBelow = rect.top < 250;
-
-    // Horizontal clamping to prevent off-screen menu
+    // Horizontal centering with clamping
     const menuWidth = 160;
     let x = rect.left + rect.width / 2;
     x = Math.max(menuWidth / 2 + 10, Math.min(window.innerWidth - menuWidth / 2 - 10, x));
@@ -310,10 +306,9 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], onI
     setContextMenu({
       show: true,
       x,
-      y: showBelow ? rect.bottom : rect.top,
+      y: rect.top + rect.height / 2,
       messageId: message.id,
-      message,
-      showBelow
+      message
     });
   };
 
@@ -660,14 +655,24 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], onI
 
       {contextMenu.show && contextMenu.message && (
         <>
-          <div className="modal-overlay" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1000, background: 'transparent' }} onClick={closeContextMenu} />
+          <div className="modal-overlay" style={{ 
+            position: 'fixed', 
+            top: 0, 
+            left: 0, 
+            right: 0, 
+            bottom: 0, 
+            zIndex: 1000, 
+            background: 'rgba(0, 0, 0, 0.4)',
+            backdropFilter: 'blur(3px)',
+            WebkitBackdropFilter: 'blur(3px)',
+            animation: 'fadeIn 0.2s ease'
+          }} onClick={closeContextMenu} />
           <div className="message-context-menu" style={{ 
             position: 'fixed', 
             top: contextMenu.y, 
             left: contextMenu.x, 
-            transform: contextMenu.showBelow ? 'translate(-50%, 0)' : 'translate(-50%, -100%)', 
-            zIndex: 1001, 
-            marginTop: contextMenu.showBelow ? '10px' : '-10px' 
+            transform: 'translate(-50%, -50%)', 
+            zIndex: 1001,
           }}>
             <button onClick={() => { handleReply(contextMenu.message!); closeContextMenu(); }}><div style={{ width: '22px' }}><UilCommentAlt size="18" /></div><span>{t('groupChat.reply')}</span></button>
             {contextMenu.message.senderId !== userData?.uid && (
