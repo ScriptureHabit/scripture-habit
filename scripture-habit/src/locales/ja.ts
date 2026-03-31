@@ -657,6 +657,12 @@ export default {
             underMaintenanceTitle: "システムメンテナンス中",
             underMaintenanceMessage: "ただいま、より良いサービス提供のためのメンテナンスを行っております。終了まで今しばらくお待ちください。ご不便をおかけして申し訳ありません。"
         },
+        errors: {
+            prefix: "エラー",
+            networkError: "通信に失敗しました。インターネット接続を確認するか、広告ブロック機能をオフにしてもう一度お試しください。",
+            authError: "認証エラーが発生しました。もう一度ログインし直してください。",
+            unexpectedError: "予期しないエラーが発生しました。"
+        },
         installPrompt: {
             title: "アプリをインストール",
             description: "デバイスのホーム画面に追加して、より快適に利用しましょう。",

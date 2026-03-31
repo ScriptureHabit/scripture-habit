@@ -651,6 +651,12 @@ export default {
             underMaintenanceTitle: "System Maintenance",
             underMaintenanceMessage: "The application is currently undergoing maintenance to provide a better experience. We'll be back online shortly. Thank you for your patience."
         },
+        errors: {
+            prefix: "Error",
+            networkError: "Network request failed. Please check your internet connection or disable ad-blockers and try again.",
+            authError: "Authentication error occurred. Please try logging in again.",
+            unexpectedError: "An unexpected error occurred."
+        },
         installPrompt: {
             title: "Install App",
             description: "Install this app on your device for a better experience.",

@@ -132,8 +132,16 @@ export const useNoteSubmission = (
             }
         } catch (error: any) {
             console.error("Error submitting note:", error);
-            const errorMessage = error.response?.data?.error || error.message || "An unexpected error occurred";
-            toast.error(`Error: ${errorMessage}`);
+            let errorMessage = error.response?.data?.error || error.message || t('errors.unexpectedError');
+            
+            // Firebase Auth error code check
+            if (errorMessage.includes('auth/network-request-failed')) {
+                errorMessage = t('errors.networkError');
+            } else if (errorMessage.includes('auth/')) {
+                errorMessage = t('errors.authError');
+            }
+
+            toast.error(`${t('errors.prefix')}: ${errorMessage}`);
         } finally {
             setLoading(false);
         }
