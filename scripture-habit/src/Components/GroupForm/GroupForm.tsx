@@ -1,7 +1,7 @@
 import './GroupForm.css';
 import React, { useState } from "react";
 import { auth, db } from '../../firebase';
-import { collection, addDoc, doc, updateDoc, arrayUnion, Timestamp, setDoc } from 'firebase/firestore';
+import { collection, addDoc, doc, updateDoc, arrayUnion, Timestamp, setDoc, getDoc } from 'firebase/firestore';
 import { useNavigate, Link } from 'react-router-dom';
 import Input from '../Input/Input';
 import Button from '../Button/Button';
@@ -30,6 +30,11 @@ export default function GroupForm() {
     }
 
     try {
+      const creatorRef = doc(db, 'users', user.uid);
+      const userSnap = await getDoc(creatorRef);
+      const userData = userSnap.exists() ? userSnap.data() : null;
+      const userNick = (userData && userData.nickname) ? userData.nickname : (user.displayName || 'Owner');
+
       const now = Timestamp.now();
       const expiresAt = new Timestamp(now.seconds + 24 * 60 * 60, now.nanoseconds);
 
@@ -45,6 +50,7 @@ export default function GroupForm() {
         isPublic: isPublic,
         maxMembers: 100000,
         membersCount: 1,
+        memberPreviews: [{ uid: user.uid, nickname: userNick }],
         messageCount: 0,
         noteCount: 0,
         ownerUserId: user.uid,

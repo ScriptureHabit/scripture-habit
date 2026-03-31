@@ -51,6 +51,7 @@ export default function GroupCreate({ currentUser, onCreated }: GroupCreateProps
         ownerUserId: currentUser.uid,
         members: [currentUser.uid],
         membersCount: 1,
+        memberPreviews: [{ uid: currentUser.uid, nickname: currentUser.displayName || 'Owner' }],
         createdAt: serverTimestamp(),
         lastMessageAt: serverTimestamp(),
         lastMessageByNickname: currentUser.displayName || 'Owner',
