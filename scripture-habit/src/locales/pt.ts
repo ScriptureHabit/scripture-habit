@@ -480,6 +480,7 @@ export default {
             ],
             shareLabel: "Compartilhar com:",
             shareAll: "Todos os meus grupos",
+            shareToGroup: "Compartilhar com o grupo",
             shareCurrent: "Este Grupo",
             shareSpecific: "Grupos específicos",
             shareNone: "Não compartilhar (Privado)",

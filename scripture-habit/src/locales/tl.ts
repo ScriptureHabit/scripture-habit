@@ -495,6 +495,7 @@ export default {
             ],
             shareLabel: "Ibahagi sa:",
             shareAll: "Lahat ng aking grupo",
+            shareToGroup: "Ibahagi sa grupo",
             shareCurrent: "Ang Grupong Ito",
             shareSpecific: "Mga partikular na grupo",
             shareNone: "Huwag ibahagi (Pribado)",

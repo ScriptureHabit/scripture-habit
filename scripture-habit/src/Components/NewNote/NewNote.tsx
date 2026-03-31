@@ -322,7 +322,7 @@ const NewNote: FC<NewNoteProps> = ({
                         <div className="sharing-options">
                             <label className="sharing-label">{t('newNote.shareLabel')}</label>
                             <div className="radio-group">
-                                {['all', 'specific', 'none'].map(opt => (
+                                {(userGroups.length === 1 ? ['all', 'none'] : ['all', 'specific', 'none']).map(opt => (
                                     <label key={opt} className={`radio-option ${(opt === 'all' || opt === 'specific') && userGroups.length === 0 ? 'disabled' : ''}`}>
                                         <input
                                             type="radio" value={opt}
@@ -330,7 +330,12 @@ const NewNote: FC<NewNoteProps> = ({
                                             onChange={(e) => setShareOption(e.target.value)}
                                             disabled={(opt === 'all' || opt === 'specific') && userGroups.length === 0}
                                         />
-                                        <span>{t(`newNote.share${opt.charAt(0).toUpperCase() + opt.slice(1)}`)}</span>
+                                        <span>
+                                            {userGroups.length === 1 && opt === 'all'
+                                                ? t('newNote.shareToGroup')
+                                                : t(`newNote.share${opt.charAt(0).toUpperCase() + opt.slice(1)}`)
+                                            }
+                                        </span>
                                     </label>
                                 ))}
                             </div>

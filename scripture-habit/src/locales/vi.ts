@@ -483,6 +483,7 @@ export default {
             ],
             shareLabel: "Chia sẻ với:",
             shareAll: "Tất cả các nhóm của tôi",
+            shareToGroup: "Chia sẻ với nhóm",
             shareCurrent: "Nhóm này",
             shareSpecific: "Các nhóm cụ thể",
             shareNone: "Không chia sẻ (Riêng tư)",

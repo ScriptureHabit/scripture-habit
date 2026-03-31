@@ -410,6 +410,7 @@ export default {
             ],
             shareLabel: "共有範囲:",
             shareAll: "すべてのグループ",
+            shareToGroup: "グループに共有する",
             shareCurrent: "このグループ",
             shareSpecific: "特定のグループ",
             shareNone: "共有しない (プライベート)",

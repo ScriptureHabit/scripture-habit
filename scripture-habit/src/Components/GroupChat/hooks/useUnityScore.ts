@@ -22,10 +22,6 @@ export const useUnityScore = (
     today.setHours(0, 0, 0, 0);
     const todayTime = today.getTime();
 
-    const eligibleMembers = groupData.members;
-
-    if (eligibleMembers.length === 0) return 0;
-
     const uniquePosters = new Set<string>();
 
     if (groupData.dailyActivity?.activeMembers && (groupData.dailyActivity.date === todayStr || groupData.dailyActivity.date === new Date().toDateString())) {
@@ -49,6 +45,20 @@ export const useUnityScore = (
         uniquePosters.add(msg.senderId!);
       }
     });
+
+    // Exclude members who joined today UNLESS they have already posted
+    const memberJoinedAt = groupData.memberJoinedAt || {};
+    const eligibleMembers = groupData.members.filter(uid => {
+      if (uniquePosters.has(uid)) return true; // Posted today -> count
+      const joinedTs = memberJoinedAt[uid];
+      if (!joinedTs) return true;
+      let joinedTime = 0;
+      if (joinedTs?.toDate) joinedTime = joinedTs.toDate().getTime();
+      else if (joinedTs?.seconds) joinedTime = joinedTs.seconds * 1000;
+      return joinedTime < todayTime;
+    });
+
+    if (eligibleMembers.length === 0) return 0;
 
     const eligiblePostersCount = [...uniquePosters].filter(uid => eligibleMembers.includes(uid)).length;
     const score = Math.round((eligiblePostersCount / eligibleMembers.length) * 100);

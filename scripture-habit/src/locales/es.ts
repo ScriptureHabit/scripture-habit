@@ -452,6 +452,7 @@ export default {
             commentPlaceholder: "ej: Es difícil... ¿Qué significa esto? ¿Alguien entiende esta escritura?",
             shareLabel: "Compartir con:",
             shareAll: "Todos mis grupos",
+            shareToGroup: "Compartir con el grupo",
             shareCurrent: "Este Grupo",
             shareSpecific: "Grupos específicos",
             shareNone: "No compartir (Pribado)",

@@ -451,6 +451,7 @@ export default {
             ],
             shareLabel: "分享對象：",
             shareAll: "我所有的群組",
+            shareToGroup: "分享給群組",
             shareCurrent: "此群組",
             shareSpecific: "特定群組",
             shareNone: "不分享 (私人)",

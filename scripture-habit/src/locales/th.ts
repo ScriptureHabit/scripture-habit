@@ -512,6 +512,7 @@ export default {
             ],
             shareLabel: "แบ่งปันกับ:",
             shareAll: "กลุ่มทั้งหมดของฉัน",
+            shareToGroup: "แบ่งปันกับกลุ่ม",
             shareCurrent: "กลุ่มนี้",
             shareSpecific: "กลุ่มที่ระบุ",
             shareNone: "ไม่แบ่งปัน (ส่วนตัว)",

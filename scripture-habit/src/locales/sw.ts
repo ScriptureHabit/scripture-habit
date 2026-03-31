@@ -509,6 +509,7 @@ export default {
             ],
             shareLabel: "Shiriki na:",
             shareAll: "Vikundi vyangu vyote",
+            shareToGroup: "Shiriki na kikundi",
             shareCurrent: "Kikundi Hiki",
             shareSpecific: "Vikundi maalum",
             shareNone: "Usishiriki (Binafsi)",

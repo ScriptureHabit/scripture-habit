@@ -544,8 +544,23 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], onI
         t={t} language={language} userData={userData} groupData={groupData}
         showLeaveModal={showLeaveModal} setShowLeaveModal={setShowLeaveModal} isLeaving={isLeaving} handleLeaveGroup={handleLeaveGroup}
         showDeleteModal={showDeleteModal} setShowDeleteModal={setShowDeleteModal} deleteConfirmationName={deleteConfirmationName} setDeleteConfirmationName={setDeleteConfirmationName} isDeleting={isDeleting} handleDeleteGroup={handleDeleteGroup}
-        showEditNameModal={showEditNameModal} setShowEditNameModal={setShowEditNameModal} newGroupName={newGroupName} setNewGroupName={setNewGroupName} newGroupDescription={newGroupDescription} setNewGroupDescription={setNewGroupDescription} newTranslatedName={newTranslatedName} setNewTranslatedName={setNewTranslatedName} newTranslatedDesc={newTranslatedDesc} setNewTranslatedDesc={setNewTranslatedDesc} handleUpdateGroupName={async () => { await handleUpdateGroupName(newGroupName, newGroupDescription, newTranslatedName, newTranslatedDesc); }} translatedGroupName={translatedGroupName} translatedGroupDesc={translatedGroupDesc}
-        showDeleteMessageModal={showDeleteMessageModal} setShowDeleteMessageModal={setShowDeleteMessageModal} messageToDelete={messageToDelete} setMessageToDelete={setMessageToDelete} handleConfirmDeleteMessage={async () => { if (messageToDelete) await handleConfirmDeleteMessage(messageToDelete.id); }}
+        showEditNameModal={showEditNameModal} setShowEditNameModal={setShowEditNameModal} newGroupName={newGroupName} setNewGroupName={setNewGroupName} newGroupDescription={newGroupDescription} setNewGroupDescription={setNewGroupDescription} newTranslatedName={newTranslatedName} setNewTranslatedName={setNewTranslatedName} newTranslatedDesc={newTranslatedDesc} setNewTranslatedDesc={setNewTranslatedDesc} handleUpdateGroupName={async () => { 
+          const success = await handleUpdateGroupName(newGroupName, newGroupDescription, newTranslatedName, newTranslatedDesc);
+          if (success) {
+            setShowEditNameModal(false);
+            setNewGroupName('');
+            setNewGroupDescription('');
+            setNewTranslatedName('');
+            setNewTranslatedDesc('');
+          }
+        }} translatedGroupName={translatedGroupName} translatedGroupDesc={translatedGroupDesc}
+        showDeleteMessageModal={showDeleteMessageModal} setShowDeleteMessageModal={setShowDeleteMessageModal} messageToDelete={messageToDelete} setMessageToDelete={setMessageToDelete} handleConfirmDeleteMessage={async () => { 
+          if (messageToDelete) {
+            await handleConfirmDeleteMessage(messageToDelete.id);
+            setShowDeleteMessageModal(false);
+            setMessageToDelete(null);
+          }
+        }}
         editingMessage={editingMessage} editText={editText} setEditText={setEditText} handleCancelEdit={handleCancelEdit} handleSaveEdit={async () => { if (editingMessage) await handleSaveEdit(editingMessage.id, editText).then(() => setEditingMessage(null)); }}
         showReactionsModal={showReactionsModal} setShowReactionsModal={setShowReactionsModal} reactionsToShow={reactionsToShow}
         showMembersModal={showMembersModal} setShowMembersModal={setShowMembersModal} membersList={membersList} membersLoading={membersLoading} setSelectedMember={setSelectedMember}

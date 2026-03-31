@@ -404,6 +404,7 @@ export default {
             ],
             shareLabel: "Share with:",
             shareAll: "All my groups",
+            shareToGroup: "Share with Group",
             shareCurrent: "This Group",
             shareSpecific: "Specific groups",
             shareNone: "Do not share (Private)",

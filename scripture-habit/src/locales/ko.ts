@@ -509,6 +509,7 @@ export default {
             ],
             shareLabel: "공유 대상:",
             shareAll: "내 모든 그룹",
+            shareToGroup: "그룹에 공유하기",
             shareCurrent: "이 그룹",
             shareSpecific: "특정 그룹",
             shareNone: "공유 안 함 (비공개)",

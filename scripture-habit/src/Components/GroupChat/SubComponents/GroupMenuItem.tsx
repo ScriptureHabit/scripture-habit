@@ -110,7 +110,22 @@ const GroupMenuItem: FC<GroupMenuItemProps> = ({ group, currentGroupId, language
             });
         }
 
-        const percentage = Math.round((uniquePosters.size / g.members.length) * 100);
+        // Exclude members who joined today UNLESS they have already posted
+        const memberJoinedAt = g.memberJoinedAt || {};
+        const eligibleMembers = g.members.filter(uid => {
+            if (uniquePosters.has(uid)) return true; // Posted today -> count
+            const joinedTs = memberJoinedAt[uid];
+            if (!joinedTs) return true;
+            let joinedTime = 0;
+            if (joinedTs?.toDate) joinedTime = joinedTs.toDate().getTime();
+            else if (joinedTs?.seconds) joinedTime = joinedTs.seconds * 1000;
+            return joinedTime < todayTime;
+        });
+
+        if (eligibleMembers.length === 0) return '🌑';
+
+        const eligiblePostersCount = [...uniquePosters].filter(uid => eligibleMembers.includes(uid)).length;
+        const percentage = Math.round((eligiblePostersCount / eligibleMembers.length) * 100);
 
         if (percentage === 100) return '☀️';
         if (percentage >= 66) return '🌕';

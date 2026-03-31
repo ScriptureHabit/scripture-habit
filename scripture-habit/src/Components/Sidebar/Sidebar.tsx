@@ -185,19 +185,6 @@ const Sidebar: React.FC<SidebarProps> = ({ selected, setSelected, userGroups = [
     today.setHours(0, 0, 0, 0);
     const todayTime = today.getTime();
 
-    // Exclude members who joined today
-    const memberJoinedAt = group.memberJoinedAt || {};
-    const eligibleMembers = group.members.filter(uid => {
-      const joinedTs = memberJoinedAt[uid];
-      if (!joinedTs) return true;
-      let joinedTime = 0;
-      if (joinedTs?.toDate) joinedTime = joinedTs.toDate().getTime();
-      else if (joinedTs?.seconds) joinedTime = joinedTs.seconds * 1000;
-      return joinedTime < todayTime;
-    });
-
-    if (eligibleMembers.length === 0) return 0;
-
     const uniquePosters = new Set<string>();
 
     // SOURCE 1: dailyActivity
@@ -214,6 +201,21 @@ const Sidebar: React.FC<SidebarProps> = ({ selected, setSelected, userGroups = [
         if (activeTime >= todayTime) uniquePosters.add(uid);
       });
     }
+
+    // Exclude members who joined today UNLESS they have already posted
+    const memberJoinedAt = group.memberJoinedAt || {};
+    const eligibleMembers = group.members.filter(uid => {
+      if (uniquePosters.has(uid)) return true; // If they posted, they are eligible regardless of join date
+
+      const joinedTs = memberJoinedAt[uid];
+      if (!joinedTs) return true;
+      let joinedTime = 0;
+      if (joinedTs?.toDate) joinedTime = joinedTs.toDate().getTime();
+      else if (joinedTs?.seconds) joinedTime = joinedTs.seconds * 1000;
+      return joinedTime < todayTime;
+    });
+
+    if (eligibleMembers.length === 0) return 0;
 
     const eligiblePostersCount = [...uniquePosters].filter(uid => eligibleMembers.includes(uid)).length;
     return Math.round((eligiblePostersCount / eligibleMembers.length) * 100);
