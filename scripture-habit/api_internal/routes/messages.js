@@ -46,19 +46,37 @@ router.post('/post-note', authenticate, requireEmailVerified, verifyAppCheck, as
             else if (shareOption === 'specific') groupsToPostTo = selectedShareGroups || [];
             else if (shareOption === 'current' && userData.groupId) groupsToPostTo = [userData.groupId];
 
+            // Safety: ensure group IDs are valid strings
+            groupsToPostTo = (groupsToPostTo || []).filter(gid => typeof gid === 'string' && gid.length > 0);
+
             const groupRefs = groupsToPostTo.map(gid => db.collection('groups').doc(gid));
             const groupDocs = groupRefs.length > 0 ? await transaction.getAll(...groupRefs) : [];
 
             // 2. Calculate Streak
             const now = new Date();
-            const timeZone = userData.timeZone || 'UTC';
-            const today = now.toLocaleDateString('sv-SE', { timeZone });
-            const yesterdayDate = new Date(now);
-            yesterdayDate.setDate(yesterdayDate.getDate() - 1);
-            const yesterday = yesterdayDate.toLocaleDateString('sv-SE', { timeZone });
+            let timeZone = userData.timeZone || 'UTC';
+            let today, yesterday;
 
-            let newStreak = userData.streakCount || userData.streak || 0;
-            let currentHighest = userData.highestStreak || newStreak;
+            try {
+                today = now.toLocaleDateString('sv-SE', { timeZone });
+                const yesterdayDate = new Date(now);
+                yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+                yesterday = yesterdayDate.toLocaleDateString('sv-SE', { timeZone });
+            } catch (tzError) {
+                console.warn(`Invalid timezone [${timeZone}] for user ${uid}, falling back to UTC`);
+                timeZone = 'UTC';
+                today = now.toLocaleDateString('sv-SE', { timeZone });
+                const yesterdayDate = new Date(now);
+                yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+                yesterday = yesterdayDate.toLocaleDateString('sv-SE', { timeZone });
+            }
+
+            let newStreak = Number(userData.streakCount || userData.streak || 0);
+            if (isNaN(newStreak)) newStreak = 0; // Fix corrupted data
+
+            let currentHighest = Number(userData.highestStreak || newStreak);
+            if (isNaN(currentHighest)) currentHighest = newStreak;
+
             let streakUpdated = false;
 
             // Accurate time calculation (UTC)
@@ -157,10 +175,12 @@ router.post('/post-note', authenticate, requireEmailVerified, verifyAppCheck, as
                 const msgRef = db.collection('groups').doc(gid).collection('messages').doc();
                 sharedMessageIds[gid] = msgRef.id;
 
+                const userNickname = userData.nickname || 'Member';
+
                 transaction.set(msgRef, {
                     text: messageText,
                     senderId: uid,
-                    senderNickname: userData.nickname,
+                    senderNickname: userNickname,
                     createdAt: noteTimestamp,
                     isNote: true,
                     originalNoteId: noteRef.id,
@@ -170,16 +190,22 @@ router.post('/post-note', authenticate, requireEmailVerified, verifyAppCheck, as
 
                 // Group Activity Date: Use the group's specific timezone if available,
                 // otherwise fallback to the poster's timezone or UTC.
-                const groupTimeZone = gData.timeZone || timeZone || 'UTC';
-                const groupToday = now.toLocaleDateString('sv-SE', { timeZone: groupTimeZone });
+                let groupToday;
+                const groupTimeZone = gData.timeZone || timeZone;
+                try {
+                    groupToday = now.toLocaleDateString('sv-SE', { timeZone: groupTimeZone });
+                } catch (e) {
+                    groupToday = now.toLocaleDateString('sv-SE', { timeZone: 'UTC' });
+                }
+
                 const updatePayload = {
                     messageCount: admin.firestore.FieldValue.increment(1),
                     noteCount: admin.firestore.FieldValue.increment(1),
                     lastMessageAt: noteTimestamp,
                     lastNoteAt: noteTimestamp,
-                    lastNoteByNickname: userData.nickname,
+                    lastNoteByNickname: userNickname,
                     lastNoteByUid: uid,
-                    lastMessageByNickname: userData.nickname,
+                    lastMessageByNickname: userNickname,
                     lastMessageByUid: uid,
                     [`memberLastActive.${uid}`]: admin.firestore.FieldValue.serverTimestamp()
                 };

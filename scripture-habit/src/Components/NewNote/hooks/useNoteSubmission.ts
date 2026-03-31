@@ -96,7 +96,7 @@ export const useNoteSubmission = (
                 // CREATE NEW NOTE (API Call)
                 const user = auth?.currentUser;
                 if (!user) throw new Error("No user logged in");
-                const idToken = await user.getIdToken(true);
+                const idToken = await user.getIdToken();
 
                 const messageText = `**${scripture} ${chapter}**\n\n${comment}`;
 
@@ -132,7 +132,8 @@ export const useNoteSubmission = (
             }
         } catch (error: any) {
             console.error("Error submitting note:", error);
-            toast.error(`Error: ${error.message}`);
+            const errorMessage = error.response?.data?.error || error.message || "An unexpected error occurred";
+            toast.error(`Error: ${errorMessage}`);
         } finally {
             setLoading(false);
         }
