@@ -652,8 +652,7 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
 
 
             {/* Sign Out Confirmation Modal */}
-            {
-                showSignOutModal && (
+            {showSignOutModal && (
                     <div className="group-modal-overlay" onClick={() => setShowSignOutModal(false)}>
                         <div className="group-modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '300px', textAlign: 'center' }}>
                             <h3>{t('signOut.title')}</h3>
@@ -682,8 +681,7 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
                             </div>
                         </div>
                     </div>
-                )
-            }
+            )}
 
             {/* Account Deletion Verification */}
             <div className="profile-section" style={{ marginTop: '40px', borderTop: '1px solid #eee', paddingTop: '20px', display: 'flex', justifyContent: 'center' }}>

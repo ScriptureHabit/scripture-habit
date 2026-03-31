@@ -284,8 +284,6 @@ const MyNotes: FC<MyNotesProps> = ({ userData, isModalOpen, setIsModalOpen, user
     }
   };
 
-
-
   const filteredNotes = notes.filter(note => {
     const matchesSearch = (note.text || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
       (note.chapter || '').toLowerCase().includes(searchTerm.toLowerCase());

@@ -65,7 +65,6 @@ interface GCNoteRendererProps {
 
 const GCNoteRenderer: FC<GCNoteRendererProps> = ({ scriptureValue, comment, url, language, t, isSent, linkColor, translatedText, translateChapterField }) => {
     const { data, loading } = useUrlMetadata(url, language);
-
     const scripLower = (scriptureValue || '').toLowerCase();
     const isOther = scripLower.includes('other') || scripLower.includes('その他') || scriptureValue === '';
     const isBYU = scripLower.includes('byu');
@@ -327,10 +326,8 @@ const NoteDisplay: FC<NoteDisplayProps> = ({ text, isSent, linkColor, translated
     };
 
     const scriptureNameTrans = translateScriptureName(scriptureValue, t);
-
     const displayChapter = translateChapterField(chapterValue) || chapterValue;
     const chapterLine = displayChapter ? `**${tWithFall('noteLabels.chapter', language)}:** ${displayChapter}` : null;
-
     const finalMd = [
         `**${tWithFall('noteLabels.scripture', language)}:** ${scriptureNameTrans}`,
         chapterLine,
