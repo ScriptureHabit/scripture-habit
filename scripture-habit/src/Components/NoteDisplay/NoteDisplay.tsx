@@ -109,14 +109,14 @@ const GCNoteRenderer: FC<GCNoteRendererProps> = ({ scriptureValue, comment, url,
         const cleanComment = (comment || '').split('\n').filter(l => l.trim() !== '**').join('\n').replace(/^\s*\*\*\s*/, '').replace(/\s*\*\*\s*$/, '').trim();
         const commentWithLinks = cleanComment.replace(/(https?:\/\/[^\s]+)/g, '[$1]($1)');
 
-        return [`**${scriptureLabel}:** ${scriptName}`, `**${fieldLabel}:** ${fieldValue}`].join('\n\n') + `\n\n**${commentLabel}:**\n${commentWithLinks}`;
+        return [`**${scriptureLabel}:** ${scriptName}`, `**${fieldLabel}:** ${fieldValue}`].join('\n') + `\n\n**${commentLabel}:**\n${commentWithLinks}`;
     }, [data, loading, scriptureValue, comment, t, url, isOther, isBYU, language]);
 
     return (
         <div style={{ textAlign: 'left' }}>
             <ReactMarkdown components={{
                 a: ({ node, ...p }) => <a {...p} target="_blank" rel="noopener noreferrer" style={{ color: linkColor || (isSent ? 'white' : 'var(--purple)'), textDecoration: 'none' }} onClick={(e) => e.stopPropagation()} />,
-                p: ({ node, ...p }) => <p {...p} style={{ margin: '0.6rem 0', lineHeight: '1.5', whiteSpace: 'pre-wrap' }} />
+                p: ({ node, ...p }) => <p {...p} style={{ margin: '0.4rem 0', lineHeight: '1.5', whiteSpace: 'pre-wrap' }} />
             }}>
                 {constructedMd}
             </ReactMarkdown>

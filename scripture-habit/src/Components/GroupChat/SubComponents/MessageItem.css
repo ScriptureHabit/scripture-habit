@@ -233,7 +233,6 @@
     border-radius: 1rem;
     margin-top: 0.4rem;
     text-decoration: none;
-    color: var(--pink);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -246,14 +245,12 @@
     background: transparent;
     border: none;
     color: var(--purple);
-    text-decoration: underline;
 }
 
 .message.sent .gospel-link {
     background: transparent;
     border: none;
     color: white;
-    text-decoration: underline;
 }
 
 .gospel-link:hover {
