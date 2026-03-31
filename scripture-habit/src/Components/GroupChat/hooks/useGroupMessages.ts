@@ -11,6 +11,7 @@ export const useGroupMessages = (groupId: string | null, userData: any, t: (key:
   const [groupData, setGroupData] = useState<GroupData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [groupNotFound, setGroupNotFound] = useState(false);
   const [userReadCount, setUserReadCount] = useState<number | null>(null);
   const [initialScrollDone, setInitialScrollDone] = useState(false);
   const [hasMoreOlder, setHasMoreOlder] = useState(true);
@@ -73,6 +74,10 @@ export const useGroupMessages = (groupId: string | null, userData: any, t: (key:
         if (totalMsgs > 0 && userReadCount !== null && totalMsgs > userReadCount) {
           updateReadStatus(totalMsgs);
         }
+      } else {
+        // Group has been deleted or user lost access
+        setGroupNotFound(true);
+        setLoading(false);
       }
     }, (err) => {
       /* ... existing error handling ... */
@@ -99,8 +104,10 @@ export const useGroupMessages = (groupId: string | null, userData: any, t: (key:
             updateReadStatus(totalMsgs);
           }
         }
-      } catch (e) {
-        console.error("Error fetching initial read status:", e);
+      } catch (e: any) {
+        if (e.code !== 'permission-denied') {
+          console.error("Error fetching initial read status:", e);
+        }
         setUserReadCount(0);
       }
     };
@@ -326,6 +333,7 @@ export const useGroupMessages = (groupId: string | null, userData: any, t: (key:
     groupData, setGroupData,
     loading, setLoading,
     error, setError,
+    groupNotFound,
     userReadCount, setUserReadCount,
     initialScrollDone, setInitialScrollDone,
     hasMoreOlder, setHasMoreOlder,

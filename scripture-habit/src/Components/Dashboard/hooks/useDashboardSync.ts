@@ -11,44 +11,49 @@ export const useDashboardSync = () => {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth!, async (currentUser) => {
+        let unsubUser: (() => void) | null = null;
+
+        const unsubscribeAuth = onAuthStateChanged(auth!, (currentUser) => {
             setUser(currentUser);
+            
+            // Clean up previous user listener if it exists
+            if (unsubUser) {
+                unsubUser();
+                unsubUser = null;
+            }
+
             if (currentUser) {
-                try {
-                    const userDocRef = doc(db, 'users', currentUser.uid);
-                    const unsubUser = onSnapshot(userDocRef, (docSnap) => {
-                        if (docSnap.exists()) {
-                            const data = docSnap.data() as any;
-                            setUserData({ uid: currentUser.uid, ...data });
-                            setLoading(false);
-                            setError(null);
-                        } else {
-                            console.log("User profile document no longer exists.");
-                            setLoading(false);
-                        }
-                    }, (err: any) => {
-                        if (err.code === 'permission-denied') {
-                            console.log("Silenced permission error during possible logout/deletion.");
-                            setLoading(false);
-                            return;
-                        }
-                        console.error("Error fetching user data:", err);
-                        setError(err.message);
+                const userDocRef = doc(db, 'users', currentUser.uid);
+                unsubUser = onSnapshot(userDocRef, (docSnap) => {
+                    if (docSnap.exists()) {
+                        const data = docSnap.data() as any;
+                        setUserData({ uid: currentUser.uid, ...data });
                         setLoading(false);
-                    });
-                    return () => unsubUser();
-                } catch (err: any) {
-                    console.error("Error setting up user listener:", err);
+                        setError(null);
+                    } else {
+                        console.log("User profile document no longer exists.");
+                        setLoading(false);
+                    }
+                }, (err: any) => {
+                    if (err.code === 'permission-denied') {
+                        console.log("Silenced permission error during possible logout/deletion.");
+                        setLoading(false);
+                        return;
+                    }
+                    console.error("Error fetching user data:", err);
                     setError(err.message);
                     setLoading(false);
-                }
+                });
             } else {
                 setUserData(null);
                 setLoading(false);
             }
         });
 
-        return () => unsubscribe();
+        return () => {
+            unsubscribeAuth();
+            if (unsubUser) unsubUser();
+        };
     }, []);
 
     // Level Migration / Fix Logic

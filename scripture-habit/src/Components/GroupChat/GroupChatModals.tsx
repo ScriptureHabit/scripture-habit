@@ -34,6 +34,7 @@ interface GroupChatModalsProps {
     setShowDeleteModal: (show: boolean) => void;
     deleteConfirmationName: string;
     setDeleteConfirmationName: (name: string) => void;
+    isDeleting: boolean;
     handleDeleteGroup: () => Promise<void>;
 
     // Edit Group Name
@@ -130,6 +131,7 @@ const GroupChatModals: FC<GroupChatModalsProps> = (props) => {
                 setShowDeleteModal={props.setShowDeleteModal}
                 deleteConfirmationName={props.deleteConfirmationName}
                 setDeleteConfirmationName={props.setDeleteConfirmationName}
+                isDeleting={props.isDeleting}
                 handleDeleteGroup={props.handleDeleteGroup}
             />
 

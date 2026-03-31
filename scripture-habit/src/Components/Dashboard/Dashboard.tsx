@@ -51,6 +51,7 @@ const Dashboard: FC = () => {
   const initialState = getInitialState();
   const [selectedView, setSelectedView] = useState<number>(initialState.selectedView);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(initialState.isModalOpen);
+  const [initialShowInviteModal] = useState<boolean>(!!location.state?.showInviteModal);
 
   const [showWelcomeStory, setShowWelcomeStory] = useState<boolean>(false);
   const [isInputFocused, setIsInputFocused] = useState<boolean>(false);
@@ -197,7 +198,9 @@ const Dashboard: FC = () => {
 
   if (!userData) return null;
 
-  const hasGroups = (userData.groupIds && userData.groupIds.length > 0) || userData.groupId;
+  // Use actually loaded groups (from Firestore snapshots) rather than stale userData.groupIds
+  // This correctly handles the case where a group was deleted
+  const hasGroups = userGroups.length > 0;
 
   return (
     <>
@@ -398,7 +401,7 @@ const Dashboard: FC = () => {
           )}
 
           {selectedView === 1 && <MyNotes userData={userData} isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} userGroups={userGroups} />}
-          {selectedView === 2 && activeGroupId && <GroupChat groupId={activeGroupId} userData={userData} userGroups={userGroups} onInputFocusChange={setIsInputFocused} isExternalModalOpen={isModalOpen} onBack={() => setSelectedView(0)} onGroupSelect={(gid) => setActiveGroupId(gid)} />}
+          {selectedView === 2 && activeGroupId && <GroupChat groupId={activeGroupId} userData={userData} userGroups={userGroups} onInputFocusChange={setIsInputFocused} isExternalModalOpen={isModalOpen} onBack={() => setSelectedView(0)} onGroupSelect={(gid) => setActiveGroupId(gid)} initialShowInviteModal={initialShowInviteModal} />}
           {selectedView === 3 && <Profile userData={userData} stats={{ streak: userData?.streakCount || 0, totalNotes: userData?.totalNotes || 0, daysStudied: userData?.daysStudiedCount || 0 }} />}
           {selectedView === 4 && <Donate userData={userData} />}
         </div>

@@ -41,9 +41,17 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
                                 .filter(Boolean);
                             return newGroups as Group[];
                         });
+                    } else {
+                        // Group was deleted - exclude from rawUserGroups
+                        delete groupsData[gid];
+                        setRawUserGroups(prev => prev.filter(g => g.id !== gid));
                     }
                 }, (err: any) => {
-                    if (err.code !== 'permission-denied') {
+                    if (err.code === 'permission-denied') {
+                        // Group deleted or access revoked - exclude from rawUserGroups
+                        delete groupsData[gid];
+                        setRawUserGroups(prev => prev.filter(g => g.id !== gid));
+                    } else {
                         console.log(`Error fetching group ${gid}:`, err);
                     }
                 });

@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 import { db, auth } from './firebase';
-import { doc, onSnapshot } from 'firebase/firestore';
+import { doc, getDoc } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
 
 import SignupForm from './Components/SignupForm/SignupForm';
@@ -136,26 +136,31 @@ const App: React.FC = () => {
 
   useEffect(() => {
     if (!db) return;
-    // Probe Firestore for status/quota
-    const statusRef = doc(db, 'system', 'status');
-    const unsubscribe = onSnapshot(statusRef, (docSnap) => {
-      if (docSnap.exists()) {
-        setSystemStatus({ ...docSnap.data(), loading: false, error: null } as SystemStatus);
-      } else {
-        setSystemStatus({ loading: false, error: null });
-      }
-    }, (err) => {
-      console.error("System probe failed:", err);
-      const isQuota = err.code === 'resource-exhausted' || err.message.toLowerCase().includes('quota exceeded');
 
-      // Log legitimate errors to Sentry, but ignore expected quota issues
-      if (!isQuota) {
-        Sentry.captureException(err);
-      }
+    const fetchSystemStatus = async () => {
+      try {
+        const statusRef = doc(db, 'system', 'status');
+        const docSnap = await getDoc(statusRef);
+        
+        if (docSnap.exists()) {
+          setSystemStatus({ ...docSnap.data(), loading: false, error: null } as SystemStatus);
+        } else {
+          setSystemStatus({ loading: false, error: null });
+        }
+      } catch (err: any) {
+        // Suppress permission-denied errors to prevent full app crashes
+        const isQuota = err.code === 'resource-exhausted' || err.message?.toLowerCase().includes('quota exceeded');
+        
+        if (err.code !== 'permission-denied' && !isQuota) {
+          console.error("System probe failed:", err);
+          Sentry.captureException(err);
+        }
 
-      setSystemStatus({ loading: false, error: isQuota ? 'quota' : err.message });
-    });
-    return unsubscribe;
+        setSystemStatus({ loading: false, error: isQuota ? 'quota' : err.message });
+      }
+    };
+
+    fetchSystemStatus();
   }, []);
 
   const location = useLocation();

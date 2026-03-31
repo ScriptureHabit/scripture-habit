@@ -1,4 +1,4 @@
-import { useState, useMemo, FC, Fragment, KeyboardEvent } from 'react';
+import { useState, useMemo, useEffect, FC, Fragment, KeyboardEvent } from 'react';
 import { safeStorage } from '../../Utils/storage';
 import { Capacitor } from '@capacitor/core';
 import { db } from '../../firebase';
@@ -38,9 +38,10 @@ interface GroupChatProps {
   onBack?: () => void;
   onGroupSelect?: (groupId: string) => void;
   isExternalModalOpen?: boolean;
+  initialShowInviteModal?: boolean;
 }
 
-const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], onInputFocusChange, onBack, onGroupSelect, isExternalModalOpen = false }) => {
+const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], onInputFocusChange, onBack, onGroupSelect, isExternalModalOpen = false, initialShowInviteModal = false }) => {
   const { language, t, tArray, isLoaded } = useLanguage();
   const API_BASE = Capacitor.isNativePlatform() ? 'https://scripturehabit.app' : '';
 
@@ -49,6 +50,7 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], onI
     messages,
     groupData,
     loading,
+    groupNotFound,
     userReadCount,
     initialScrollDone, setInitialScrollDone,
     hasMoreOlder,
@@ -57,6 +59,14 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], onI
     latestMessageRef,
     prevMessageCountRef
   } = useGroupMessages(groupId, userData, t);
+
+  // If the group was deleted, go back to home view
+  useEffect(() => {
+    if (groupNotFound && onBack) {
+      onBack();
+    }
+  }, [groupNotFound, onBack]);
+
 
   // Feature Hooks
   const { 
@@ -68,7 +78,7 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], onI
   const unityPercentage = useUnityScore(groupId, userData, groupData, messages);
   
   const { 
-    isLeaving, handleLeaveGroup, handleDeleteGroup, togglePublicStatus, handleUpdateGroupName
+    isLeaving, isDeleting, handleLeaveGroup, handleDeleteGroup, togglePublicStatus, handleUpdateGroupName
   } = useGroupActions(groupId, userData, groupData, language || 'en', t);
 
   const { 
@@ -117,6 +127,14 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], onI
   const {
     showInviteModal, setShowInviteModal, handleCopyInviteLink, handleRegenerateInviteCode
   } = useInviteManager(groupId, groupData, t);
+
+  // Auto-open invite modal on first load (e.g., right after group creation)
+  useEffect(() => {
+    if (initialShowInviteModal && groupData && !loading) {
+      setShowInviteModal(true);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [groupData, loading]);
 
   const {
     selectedMember, setSelectedMember, handleUserProfileClick
@@ -305,8 +323,36 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], onI
                   {isRecapLoading && <div className="spinner-mini"></div>}
                 </div>
               )}
+              {isOwner ? (
+                <div
+                  className="invite-code-display members-btn-desktop"
+                  onClick={() => setShowDeleteModal(true)}
+                  title={t('groupChat.deleteGroup')}
+                  style={{ color: 'var(--danger, #e53e3e)', display: 'flex', alignItems: 'center', gap: '4px' }}
+                >
+                  <UilTrashAlt size="16" />
+                </div>
+              ) : (
+                <div
+                  className="invite-code-display members-btn-desktop"
+                  onClick={() => setShowLeaveModal(true)}
+                  title={t('groupChat.leaveGroup')}
+                  style={{ color: 'var(--danger, #e53e3e)', display: 'flex', alignItems: 'center', gap: '4px' }}
+                >
+                  <UilTrashAlt size="16" />
+                </div>
+              )}
             </div>
             <div className="hamburger-container mobile-only">
+              {groupData?.members?.length === 1 && (
+                <button 
+                  className="invite-present-btn" 
+                  onClick={() => setShowInviteModal(true)}
+                  title={t('groupChat.inviteFriends')}
+                >
+                  <span style={{ fontSize: '1.5rem' }}>🎁</span>
+                </button>
+              )}
               <button className="hamburger-btn" onClick={() => setShowMobileMenu(!showMobileMenu)} aria-label="Menu">
                 <span className={`hamburger-icon ${showMobileMenu ? 'open' : ''}`}><span></span><span></span><span></span></span>
               </button>
@@ -435,7 +481,7 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], onI
 
       <div className="messages-container" ref={containerRef} onScroll={handleScroll} onClick={() => { if (editingMessage) handleCancelEdit(); if (replyTo) setReplyTo(null); if (contextMenu.show) setContextMenu({ show: false, x: 0, y: 0, messageId: null }); }}>
         {loading && <div className="loading-spinner"><div className="spinner"></div></div>}
-        {!loading && hasMoreOlder && (
+        {!loading && hasMoreOlder && messages.length > 0 && (
           <div className="load-more-container">
             {isLoadingOlder ? <div className="spinner"></div> : <button className="load-more-btn" onClick={() => loadMoreOlderMessages(containerRef, previousScrollHeightRef, previousScrollTopRef)} disabled={isLoadingOlder} tabIndex={-1}>{t('groupChat.loadPreviousMessages')}</button>}
           </div>
@@ -497,7 +543,7 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], onI
       <GroupChatModals
         t={t} language={language} userData={userData} groupData={groupData}
         showLeaveModal={showLeaveModal} setShowLeaveModal={setShowLeaveModal} isLeaving={isLeaving} handleLeaveGroup={handleLeaveGroup}
-        showDeleteModal={showDeleteModal} setShowDeleteModal={setShowDeleteModal} deleteConfirmationName={deleteConfirmationName} setDeleteConfirmationName={setDeleteConfirmationName} handleDeleteGroup={handleDeleteGroup}
+        showDeleteModal={showDeleteModal} setShowDeleteModal={setShowDeleteModal} deleteConfirmationName={deleteConfirmationName} setDeleteConfirmationName={setDeleteConfirmationName} isDeleting={isDeleting} handleDeleteGroup={handleDeleteGroup}
         showEditNameModal={showEditNameModal} setShowEditNameModal={setShowEditNameModal} newGroupName={newGroupName} setNewGroupName={setNewGroupName} newGroupDescription={newGroupDescription} setNewGroupDescription={setNewGroupDescription} newTranslatedName={newTranslatedName} setNewTranslatedName={setNewTranslatedName} newTranslatedDesc={newTranslatedDesc} setNewTranslatedDesc={setNewTranslatedDesc} handleUpdateGroupName={async () => { await handleUpdateGroupName(newGroupName, newGroupDescription, newTranslatedName, newTranslatedDesc); }} translatedGroupName={translatedGroupName} translatedGroupDesc={translatedGroupDesc}
         showDeleteMessageModal={showDeleteMessageModal} setShowDeleteMessageModal={setShowDeleteMessageModal} messageToDelete={messageToDelete} setMessageToDelete={setMessageToDelete} handleConfirmDeleteMessage={async () => { if (messageToDelete) await handleConfirmDeleteMessage(messageToDelete.id); }}
         editingMessage={editingMessage} editText={editText} setEditText={setEditText} handleCancelEdit={handleCancelEdit} handleSaveEdit={async () => { if (editingMessage) await handleSaveEdit(editingMessage.id, editText).then(() => setEditingMessage(null)); }}

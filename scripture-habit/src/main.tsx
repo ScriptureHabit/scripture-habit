@@ -19,10 +19,27 @@ window.addEventListener('beforeinstallprompt', (e) => {
 });
 
 // SILENCE NON-CRITICAL ERRORS: 
-// Especially 'AbortError' which often happens in Firebase Analytics/SW on mobile
+// Especially 'AbortError' which often happens in Firebase Analytics/SW on mobile,
+// and Firebase 'permission-denied' errors that can escape try/catch during state transitions
+// (e.g. after group deletion, auth state change, etc.)
 window.addEventListener('unhandledrejection', (event) => {
-  if (event.reason && (event.reason.name === 'AbortError' || event.reason.message?.includes('user aborted'))) {
-    event.preventDefault(); // This stops it from showing as a red Uncaught error
+  const reason = event.reason;
+  if (!reason) return;
+
+  // Silence AbortErrors (mobile/SW related)
+  if (reason.name === 'AbortError' || reason.message?.includes('user aborted')) {
+    event.preventDefault();
+    return;
+  }
+
+  // Silence Firebase permission-denied errors that escape try/catch via internal async queue
+  if (
+    reason.code === 'permission-denied' ||
+    reason.message?.includes('Missing or insufficient permissions') ||
+    reason.message?.includes('permission-denied')
+  ) {
+    event.preventDefault();
+    return;
   }
 });
 

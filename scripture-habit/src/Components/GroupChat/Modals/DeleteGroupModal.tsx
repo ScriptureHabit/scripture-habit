@@ -9,6 +9,7 @@ interface DeleteGroupModalProps {
     setShowDeleteModal: (show: boolean) => void;
     deleteConfirmationName: string;
     setDeleteConfirmationName: (name: string) => void;
+    isDeleting: boolean;
     handleDeleteGroup: () => Promise<void>;
 }
 
@@ -19,6 +20,7 @@ const DeleteGroupModal: FC<DeleteGroupModalProps> = ({
     setShowDeleteModal,
     deleteConfirmationName,
     setDeleteConfirmationName,
+    isDeleting,
     handleDeleteGroup,
 }) => {
     if (!showDeleteModal) return null;
@@ -43,15 +45,15 @@ const DeleteGroupModal: FC<DeleteGroupModalProps> = ({
                     placeholder={t('groupChat.enterGroupNamePlaceholder')}
                 />
                 <div className="leave-modal-actions">
-                    <button className="modal-btn cancel" onClick={() => { setShowDeleteModal(false); setDeleteConfirmationName(''); }}>
+                    <button className="modal-btn cancel" onClick={() => { setShowDeleteModal(false); setDeleteConfirmationName(''); }} disabled={isDeleting}>
                         {t('groupChat.cancel')}
                     </button>
-                    <button
+                     <button
                         className="modal-btn leave"
                         onClick={handleDeleteGroup}
-                        disabled={deleteConfirmationName !== groupData?.name}
+                        disabled={deleteConfirmationName !== groupData?.name || isDeleting}
                     >
-                        {t('groupChat.confirmDelete')}
+                        {isDeleting ? '...' : t('groupChat.confirmDelete')}
                     </button>
                 </div>
             </div>

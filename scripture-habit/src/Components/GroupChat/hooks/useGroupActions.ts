@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { doc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { db, auth } from '../../../firebase';
 import { Capacitor } from '@capacitor/core';
-import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { GroupData } from '../../../types/chat';
 
@@ -13,7 +12,6 @@ export const useGroupActions = (
   language: string,
   t: (key: string, replacements?: any) => string
 ) => {
-  const navigate = useNavigate();
   const [isLeaving, setIsLeaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -55,8 +53,23 @@ export const useGroupActions = (
     setIsDeleting(true);
     try {
       await deleteDoc(doc(db, 'groups', groupId));
+      
+      if (userData?.uid) {
+        const userRef = doc(db, 'users', userData.uid);
+        const currentUserGroupIds = userData.groupIds || [];
+        const updatedGroupIds = currentUserGroupIds.filter((id: string) => id !== groupId);
+        
+        // Clear groupId if it matches the deleted group OR if no groups remain at all
+        const shouldClearLegacyGroupId = userData.groupId === groupId || updatedGroupIds.length === 0;
+        
+        await updateDoc(userRef, {
+          groupIds: updatedGroupIds,
+          ...(shouldClearLegacyGroupId ? { groupId: null } : {})
+        });
+      }
+
       toast.success(t('groupChat.groupDeletedSuccess') || "Group deleted successfully.");
-      navigate(`/${language}/dashboard`);
+      window.location.href = `/${language}/dashboard`;
     } catch (error) {
       console.error("Error deleting group:", error);
       toast.error(t('groupChat.errorDeleteGroup') || "Failed to delete group.");
