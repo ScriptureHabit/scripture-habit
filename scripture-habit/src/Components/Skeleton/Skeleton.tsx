@@ -9,13 +9,13 @@ interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {
     style?: React.CSSProperties;
 }
 
-export const Skeleton: React.FC<SkeletonProps> = ({ 
-    width, 
-    height, 
-    variant = 'rectangle', 
+export const Skeleton: React.FC<SkeletonProps> = ({
+    width,
+    height,
+    variant = 'rectangle',
     className = '',
     style,
-    ...props 
+    ...props
 }) => {
     const combinedStyle: React.CSSProperties = {
         width: width,
