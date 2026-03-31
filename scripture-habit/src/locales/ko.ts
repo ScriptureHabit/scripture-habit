@@ -405,8 +405,8 @@ export default {
             lastRecap: "마지막 요약",
             daysAgo: "{count}일 전",
             viewMembers: "멤버 보기",
-            makePublic: "공개로 설정",
-            makePrivate: "비공개로 설정"
+            makePrivate: "공개로 설정",
+            newMessages: "여기부터 읽지 않은 메시지입니다"
         },
         myNotes: {
             description: "노트 컬렉션",

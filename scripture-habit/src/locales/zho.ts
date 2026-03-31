@@ -366,7 +366,8 @@ export default {
             daysAgo: "{count} 天前",
             viewMembers: "查看成員",
             makePublic: "設為公開",
-            makePrivate: "設為私人"
+            makePrivate: "設為私人",
+            newMessages: "新訊息"
         },
         myNotes: {
             description: "筆記收藏",

@@ -318,7 +318,8 @@ export default {
             markedPublic: "グループをパブリックに変更しました",
             markedPrivate: "グループをプライベートに変更しました",
             reportError: "通報の送信に失敗しました。もう一度お試しください。",
-            linkCopiedForInstagram: "招待リンクをコピーしました！インスタグラムのプロフィールやストーリーに貼り付けてください。"
+            linkCopiedForInstagram: "招待リンクをコピーしました！インスタグラムのプロフィールやストーリーに貼り付けてください。",
+            newMessages: "ここから新着メッセージ"
         },
         myNotes: {
             description: "ノートコレクション",

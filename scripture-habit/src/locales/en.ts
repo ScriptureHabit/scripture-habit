@@ -362,7 +362,8 @@ export default {
             markedPublic: "Group is now Public",
             markedPrivate: "Group is now Private",
             reportError: "Failed to send report. Please try again.",
-            linkCopiedForInstagram: "Invite link copied! Now you can paste it into your Instagram profile or story."
+            linkCopiedForInstagram: "Invite link copied! Now you can paste it into your Instagram profile or story.",
+            newMessages: "New Messages"
         },
         newNote: {
             editTitle: "Edit Note",

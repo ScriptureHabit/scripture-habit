@@ -392,7 +392,8 @@ export default {
             daysAgo: "hace {count} días",
             viewMembers: "Ver miembros",
             makePublic: "Hacer público",
-            makePrivate: "Hacer privado"
+            makePrivate: "Hacer privado",
+            newMessages: "Nuevos mensajes"
         },
         myNotes: {
             description: "Colección de Notas",

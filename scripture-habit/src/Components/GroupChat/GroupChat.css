@@ -1008,6 +1008,33 @@ input:checked+.slider:before {
     border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
+.unread-divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 1.5rem 0 1rem;
+    width: 100%;
+}
+
+.unread-divider::before,
+.unread-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(255, 145, 157, 0.4), transparent);
+}
+
+.unread-divider span {
+    background: #fff5f6;
+    color: var(--pink);
+    padding: 0.3rem 1rem;
+    border-radius: 1rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border: 1px solid rgba(255, 145, 157, 0.2);
+    margin: 0 0.5rem;
+}
+
 /* Reply Feature Styles */
 .reply-preview {
     background: rgba(255, 255, 255, 0.9);
