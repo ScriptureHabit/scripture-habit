@@ -131,10 +131,12 @@ self.addEventListener('fetch', (event) => {
                 }
                 return networkResponse;
             });
-        }).catch(() => {
+        }).catch((error) => {
             if (event.request.destination === 'image') {
                 return caches.match('/logo.svg');
             }
+            // Return error so browser can handle it normally, instead of returning undefined
+            throw error;
         })
     );
 });

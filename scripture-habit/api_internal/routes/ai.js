@@ -14,8 +14,8 @@ const router = express.Router();
 const callGemini = async (prompt) => {
     if (!process.env.GEMINI_API_KEY) throw new Error('Gemini API Key missing');
     
-    // Using the user-requested gemini-2.5-flash model
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`;
+    // Using the user-requested Gemini 3.1 Flash-Lite model
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent?key=${process.env.GEMINI_API_KEY}`;
     
     const response = await axios.post(apiUrl, { 
         contents: [{ parts: [{ text: prompt }] }] 
