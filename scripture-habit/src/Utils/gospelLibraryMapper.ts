@@ -9,7 +9,7 @@ const detectVolume = (volume: string | null | undefined, chapterInput: string | 
         volumeUrlPart = "nt";
     } else if (lowerVolume === "book of mormon" || volume === "モルモン書" || volume === "O Livro de Mórmon" || volume === "摩爾門經" || volume === "El Libro de Mormón" || volume === "Sách Mặc Môn" || volume === "พระคัมภีร์มอรมอน" || volume === "몰몬경" || volume === "Aklat ni Mormon" || volume === "Kitabu cha Mormoni" || lowerVolume === "bofm") {
         volumeUrlPart = "bofm";
-    } else if (lowerVolume.includes("doctrine and") || volume === "教義と聖約" || volume === "Doutrina e Convênios" || volume === "教義和聖約" || volume === "Doctrina y Convenios" || volume === "Giáo Lý và Giao Ước" || volume === "หลักคำสอน和พันธสัญญา" || volume === "교리와 성약" || volume === "Doktrina at mga Tipan" || volume === "Mafundisho na Maagano" || lowerVolume === "dc-testament" || lowerVolume === "dc") {
+    } else if (lowerVolume.includes("doctrine and") || volume === "教義と聖約" || volume === "Doutrina e Convênios" || volume === "教義和聖約" || volume === "Doctrina y Convenios" || volume === "Giáo Lý và Giao Ước" || volume === "หลักคำสอนและพันธสัญญา" || volume === "교리와 성약" || volume === "Doktrina at mga Tipan" || volume === "Mafundisho na Maagano" || lowerVolume === "dc-testament" || lowerVolume === "dc") {
         volumeUrlPart = "dc-testament";
     } else if (lowerVolume === "pearl of great price" || volume === "高価な真珠" || volume === "Pérola de Grande Valor" || volume === "無價珍珠" || volume === "La Perla de Gran Precio" || volume === "Trân Châu Vô Giá" || volume === "ไข่มุกอันล้ำค่า" || volume === "값진 진주" || volume === "Mahalagang Perlas" || volume === "Lulu ya Thamani Kuu" || lowerVolume === "pgp") {
         volumeUrlPart = "pgp";
@@ -189,7 +189,8 @@ export const getGospelLibraryUrl = (volume: string | null | undefined, chapterIn
         "joseph smith-matthew": "js-m", "joseph smith matthew": "js-m", "joseph smith—mateus": "js-m", "josé smith—mateo": "js-m", "giô sép smith—ma thi ơ": "js-m", "ジョセフ・スミス—マタイ": "js-m", "約瑟·斯密——馬太": "js-m", "โจเซฟ สมิธ—มัทธิว": "js-m", "조셉 スミス—마태": "js-m",
         "joseph smith-history": "js-h", "joseph smith history": "js-h", "joseph smith—história": "js-h", "josé smith—historia": "js-h", "giô sép smith—lịch sử": "js-h", "ジョセフ・スミス—歴史": "js-h", "約瑟·斯密——歷史": "js-h", "โจเซฟ สมิธ—ประวัติ": "js-h", "조셉 スミス—역사": "js-h",
         "articles of faith": "a-of-f", "regras de fé": "a-of-f", "artículos de fe": "a-of-f", "những tín điều": "a-of-f", "信仰箇条": "a-of-f", "信條": "a-of-f", "หลักแห่งความเชื่อ": "a-of-f", "신앙개조": "a-of-f",
-        "od": "od", "公式の宣言": "od"
+        "doctrine and covenants": "dc", "教義と聖約": "dc", "doutrina e convênios": "dc", "教義和聖約": "dc", "doctrina y convenios": "dc", "giáo lý và giao ước": "dc", "หลักคำสอนและพันธสัญญา": "dc", "교리와 성약": "dc", "doktrina at mga tipan": "dc", "mafundisho na maagano": "dc", "d&c": "dc", "dc": "dc",
+        "od": "od", "公式の宣言": "od", "official declarations": "od"
     };
 
     const bookUrlPart = bookMappings[bookName];
