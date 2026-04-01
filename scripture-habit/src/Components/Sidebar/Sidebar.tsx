@@ -192,15 +192,7 @@ const Sidebar: React.FC<SidebarProps> = ({ selected, setSelected, userGroups = [
       group.dailyActivity.activeMembers.forEach(uid => uniquePosters.add(uid));
     }
 
-    // SOURCE 2: memberLastActive (Most reliable for notes)
-    if (group.memberLastActive) {
-      Object.entries(group.memberLastActive).forEach(([uid, ts]) => {
-        let activeTime = 0;
-        if (ts?.toDate) activeTime = ts.toDate().getTime();
-        else if (ts?.seconds) activeTime = ts.seconds * 1000;
-        if (activeTime >= todayTime) uniquePosters.add(uid);
-      });
-    }
+
 
     // Exclude members who joined today UNLESS they have already posted
     const memberJoinedAt = group.memberJoinedAt || {};

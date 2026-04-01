@@ -28,14 +28,6 @@ export const useUnityScore = (
       groupData.dailyActivity.activeMembers.forEach(uid => uniquePosters.add(uid));
     }
 
-    if (groupData.memberLastActive) {
-      Object.entries(groupData.memberLastActive).forEach(([uid, ts]: [string, any]) => {
-        let activeTime = 0;
-        if (ts?.toDate) activeTime = ts.toDate().getTime();
-        else if (ts?.seconds) activeTime = ts.seconds * 1000;
-        if (activeTime >= todayTime) uniquePosters.add(uid);
-      });
-    }
 
     messages.forEach(msg => {
       let msgTime = 0;

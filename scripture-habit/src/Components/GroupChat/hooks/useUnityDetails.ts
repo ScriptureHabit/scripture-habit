@@ -29,14 +29,7 @@ export const useUnityDetails = (
     if (groupData.dailyActivity?.activeMembers && (groupData.dailyActivity.date === todayStr || groupData.dailyActivity.date === new Date().toDateString())) {
       groupData.dailyActivity.activeMembers.forEach(uid => uniquePosters.add(uid));
     }
-    if (groupData.memberLastActive) {
-      Object.entries(groupData.memberLastActive).forEach(([uid, ts]: [string, any]) => {
-        let activeTime = 0;
-        if (ts?.toDate) activeTime = ts.toDate().getTime();
-        else if (ts?.seconds) activeTime = ts.seconds * 1000;
-        if (activeTime >= todayTime) uniquePosters.add(uid);
-      });
-    }
+
     messages.forEach(msg => {
       let msgTime = 0;
       if (msg.createdAt?.toDate) msgTime = msg.createdAt.toDate().getTime();
