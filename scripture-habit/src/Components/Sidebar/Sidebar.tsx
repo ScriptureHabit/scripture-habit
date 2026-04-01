@@ -110,16 +110,16 @@ const SidebarGroupItem: React.FC<SidebarGroupItemProps> = ({ group, language, is
         className={`modal-group-item ${isActive ? 'active-group' : ''}`}
         onClick={onClick}
       >
-        <span style={{ fontSize: '1.2rem', marginRight: '2px' }}>{getGroupStatusEmoji(group)}</span>
-        <span style={{ fontSize: '0.75rem', marginRight: '4px', color: getUnityPercentage(group) === 100 ? '#B8860B' : 'var(--gray)', fontWeight: getUnityPercentage(group) === 100 ? 'bold' : 'normal' }}>
+        <span className="status-emoji-sidebar">{getGroupStatusEmoji(group)}</span>
+        <span className={`unity-percentage-sidebar ${getUnityPercentage(group) === 100 ? 'celestial' : ''}`}>
           {getUnityPercentage(group)}%
         </span>
         <span>
           {displayName}
-          {group.members && <span style={{ fontSize: '0.85em', color: 'var(--gray)', fontWeight: 'normal', marginLeft: '4px' }}>({group.members.length})</span>}
+          {group.members && <span className="sidebar-members-count">({group.members.length})</span>}
         </span>
         {(group.unreadCount ?? 0) > 0 && (
-          <span className="unread-badge" style={{ marginLeft: 'auto' }}>{(group.unreadCount ?? 0) > 99 ? '99+' : group.unreadCount}</span>
+          <span className="unread-badge">{(group.unreadCount ?? 0) > 99 ? '99+' : group.unreadCount}</span>
         )}
       </div>
     );
@@ -130,8 +130,8 @@ const SidebarGroupItem: React.FC<SidebarGroupItemProps> = ({ group, language, is
       className={`menuItem ${isActive ? 'active' : ''}`}
       onClick={onClick}
     >
-      <span style={{ fontSize: '1.2rem', marginRight: '2px' }}>{getGroupStatusEmoji(group)}</span>
-      <span style={{ fontSize: '0.75rem', marginRight: '4px', color: getUnityPercentage(group) === 100 ? '#B8860B' : 'var(--gray)', fontWeight: getUnityPercentage(group) === 100 ? 'bold' : 'normal' }}>
+      <span className="status-emoji-sidebar">{getGroupStatusEmoji(group)}</span>
+      <span className={`unity-percentage-sidebar ${getUnityPercentage(group) === 100 ? 'celestial' : ''}`}>
         {getUnityPercentage(group)}%
       </span>
       <span className="group-name-sidebar">{displayName}</span>
@@ -247,7 +247,7 @@ const Sidebar: React.FC<SidebarProps> = ({ selected, setSelected, userGroups = [
           {/* Desktop Groups Section */}
           <div className="groups-section desktop-groups">
             <div className="menu-header">
-              {t('sidebar.myGroups')} <span style={{ fontSize: '1.2em' }}>({userGroups.length}/4)</span>
+              {t('sidebar.myGroups')} <span>({userGroups.length}/4)</span>
             </div>
             <div className="sidebar-group-list-container">
               {userGroups.map((group) => (
@@ -293,7 +293,7 @@ const Sidebar: React.FC<SidebarProps> = ({ selected, setSelected, userGroups = [
       {showGroupModal && (
         <div className="group-modal-overlay" onClick={() => setShowGroupModal(false)}>
           <div className="group-modal-content" onClick={(e) => e.stopPropagation()}>
-            <h3>{t('sidebar.selectGroup')} <span style={{ fontSize: '1.2em' }}>({userGroups.length}/4)</span></h3>
+            <h3>{t('sidebar.selectGroup')} <span>({userGroups.length}/4)</span></h3>
             <div className="modal-group-list">
               {userGroups.map((group) => (
                 <SidebarGroupItem

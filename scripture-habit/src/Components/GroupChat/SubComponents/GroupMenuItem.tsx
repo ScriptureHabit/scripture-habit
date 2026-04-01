@@ -133,16 +133,15 @@ const GroupMenuItem: FC<GroupMenuItemProps> = ({ group, currentGroupId, language
         <div
             className={`mobile-menu-item ${isActive ? 'active' : ''}`}
             onClick={onSelect}
-            style={isActive ? { background: 'rgba(255, 145, 157, 0.1)', color: 'var(--pink)' } : {}}
         >
-            <div className="menu-item-icon" style={isActive ? { color: 'var(--pink)' } : {}}>
-                <span style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>{getEmoji(group)}</span>
+            <div className="menu-item-icon">
+                <span className="menu-item-emoji">{getEmoji(group)}</span>
             </div>
-            <span className="menu-item-label" style={isActive ? { fontWeight: 'bold' } : {}}>
-                {displayName} {group.members && <span style={{ fontSize: '0.85em', color: isActive ? 'var(--pink)' : 'var(--gray)', opacity: 0.8, fontWeight: 'normal', marginLeft: '4px' }}>({group.members.length})</span>}
+            <span className="menu-item-label">
+                {displayName} {group.members && <span className="sidebar-members-count">({group.members.length})</span>}
             </span>
             {unreadCount > 0 && (
-                <span className="unread-badge-mini" style={{ marginLeft: 'auto' }}>
+                <span className="unread-badge-mini">
                     {unreadCount > 99 ? '99+' : unreadCount}
                 </span>
             )}

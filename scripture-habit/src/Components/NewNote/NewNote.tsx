@@ -293,7 +293,7 @@ const NewNote: FC<NewNoteProps> = ({
                                 <div>
                                     <strong>{urlMeta.title}</strong>
                                     {urlMeta.speaker && (
-                                        <div style={{ fontSize: '0.85em', opacity: 0.8 }}>
+                                        <div className="url-meta-speaker">
                                             {urlMeta.speaker}
                                         </div>
                                     )}

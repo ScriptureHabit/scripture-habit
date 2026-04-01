@@ -217,6 +217,30 @@
     line-height: 1;
 }
 
+.status-emoji-sidebar {
+    font-size: 1.2rem;
+    margin-right: 2px;
+}
+
+.unity-percentage-sidebar {
+    font-size: 0.75rem;
+    margin-right: 4px;
+    color: var(--gray);
+    font-weight: normal;
+}
+
+.unity-percentage-sidebar.celestial {
+    color: #B8860B;
+    font-weight: bold;
+}
+
+.sidebar-members-count {
+    font-size: 0.85em;
+    color: var(--gray);
+    font-weight: normal;
+    margin-left: 4px;
+}
+
 .create-group-item {
     color: var(--gray);
     font-weight: 500;
@@ -237,6 +261,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    -webkit-backdrop-filter: blur(5px);
     backdrop-filter: blur(5px);
 }
 
@@ -253,10 +278,12 @@
     color: var(--black);
 }
 
-.group-modal-content h3 {
-    margin-bottom: 0.5rem;
-    color: var(--black);
-    text-align: center;
+.group-modal-content h3 span {
+    font-size: 1.2em;
+}
+
+.menu-header span {
+    font-size: 1.2em;
 }
 
 .modal-group-list {
@@ -321,9 +348,16 @@
         /* Font-size relative height */
         overflow-y: auto;
         padding-right: 5px;
-        scrollbar-width: thin;
-        scrollbar-color: rgba(0, 0, 0, 0.1) transparent;
     }
+
+    @supports (scrollbar-width: thin) {
+        .sidebar-group-list-container {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(0, 0, 0, 0.1) transparent;
+        }
+    }
+
+
 
     .sidebar-group-list-container::-webkit-scrollbar {
         width: 4px;

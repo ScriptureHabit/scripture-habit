@@ -22,10 +22,10 @@ const DeleteMessageModal: FC<DeleteMessageModalProps> = ({
 
     return (
         <div className="leave-modal-overlay">
-            <div className="leave-modal-content" style={{ maxWidth: '360px' }}>
+            <div className="leave-modal-content small-modal-content">
                 <h3>{t('groupChat.deleteMessageConfirm')}</h3>
                 {(messageToDelete?.isNote || messageToDelete?.isEntry) && messageToDelete?.originalNoteId && (
-                    <p style={{ color: '#ff9800', fontSize: '0.9rem', margin: '0.5rem 0' }}>
+                    <p className="modal-warning-text">
                         ⚠️ {t('groupChat.deleteMessageWarning')}
                     </p>
                 )}

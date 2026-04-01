@@ -31,6 +31,7 @@
 .chat-header {
     padding: 0.75rem 2rem;
     background: rgba(255, 255, 255, 0.9);
+    -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(12px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.6);
     /* Match container corners */
@@ -52,6 +53,9 @@
     font-size: 1.25rem;
     color: black;
     font-weight: 700;
+    display: flex;
+    align-items: center;
+    min-width: 0;
 }
 
 .header-left {
@@ -75,6 +79,7 @@
     font-size: 0.9em;
     color: black;
     font-weight: bold;
+    flex-shrink: 0;
 }
 
 .back-button {
@@ -219,6 +224,85 @@
     transform: scale(1.05);
 }
 
+.edit-group-name-btn {
+    background: none;
+    border: none;
+    color: var(--gray);
+    cursor: pointer;
+    margin-left: 8px;
+    display: flex;
+    align-items: center;
+    padding: 4px;
+    border-radius: 50%;
+    transition: background 0.2s;
+    flex-shrink: 0;
+}
+
+.edit-group-name-btn:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.danger-action-btn {
+    color: var(--danger, #e53e3e) !important;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.recap-btn-desktop {
+    margin-right: 8px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.recap-btn-desktop.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.emoji-icon-large {
+    font-size: 1.1rem;
+}
+
+.gift-emoji {
+    font-size: 1.5rem;
+}
+
+.context-menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.4);
+    -webkit-backdrop-filter: blur(3px);
+    backdrop-filter: blur(3px);
+    animation: fadeIn 0.2s ease;
+}
+
+.context-menu-icon-wrapper {
+    width: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.context-menu-icon-wrapper.large {
+    font-size: 18px;
+}
+
+.modal-warning-text {
+    color: #ff9800;
+    font-size: 0.9rem;
+    margin: 0.5rem 0;
+}
+
+.small-modal-content {
+    max-width: 360px !important;
+}
+
 
 .leave-modal-overlay {
     position: fixed;
@@ -227,6 +311,7 @@
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.5);
+    -webkit-backdrop-filter: blur(5px);
     backdrop-filter: blur(5px);
     display: flex;
     justify-content: center;
@@ -725,6 +810,7 @@
 
 .load-more-btn {
     background: rgba(255, 255, 255, 0.8);
+    -webkit-backdrop-filter: blur(5px);
     backdrop-filter: blur(5px);
     border: 1px solid rgba(0, 0, 0, 0.05);
     color: var(--pink);
@@ -814,6 +900,7 @@
         height: auto;
         z-index: 100;
         background: linear-gradient(135deg, #FF919D 0%, #fc6777 100%) !important;
+        -webkit-backdrop-filter: blur(10px);
         backdrop-filter: blur(10px);
         border-bottom: none;
         box-shadow: 0 4px 20px rgba(255, 145, 157, 0.4);
@@ -881,6 +968,7 @@
         padding: 0.75rem 1rem;
         box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
         background-color: #f0f2f5;
+        -webkit-backdrop-filter: none;
         backdrop-filter: none;
         z-index: 1001;
         /* Ensure it covers the sidebar (z-index 999) */
@@ -1286,15 +1374,17 @@ input:checked+.slider:before {
 
 /* Message Context Menu (Edit/Delete) */
 .message-context-menu {
+    position: fixed;
     background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
     border-radius: 12px;
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
-    z-index: 1000;
+    z-index: 1001;
     overflow: hidden;
     min-width: 160px;
     animation: menuScaleIn 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transform: translate(-50%, -50%) !important;
 }
 
 .message-context-menu button {
@@ -1897,12 +1987,38 @@ input:checked+.slider:before {
 }
 
 .mobile-menu-item.active {
-    background: #fff5f6 !important;
+    background: rgba(255, 145, 157, 0.1) !important;
+    color: var(--pink) !important;
+}
+
+.mobile-menu-item.active .menu-item-icon {
+    color: var(--pink);
 }
 
 .mobile-menu-item.active .menu-item-label {
     color: var(--pink);
     font-weight: 700;
+}
+
+.menu-item-emoji {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+.sidebar-members-count {
+    font-size: 0.85em;
+    color: var(--gray);
+    opacity: 0.8;
+    font-weight: normal;
+    margin-left: 4px;
+}
+
+.mobile-menu-item.active .sidebar-members-count {
+    color: var(--pink);
 }
 
 .mobile-menu-item .menu-item-label {
@@ -1924,6 +2040,35 @@ input:checked+.slider:before {
     font-weight: 800;
     min-width: 14px;
     text-align: center;
+    margin-left: auto;
+}
+
+.group-status-emoji {
+    font-size: 1.2rem;
+    margin-right: 2px;
+}
+
+.group-members-count {
+    font-size: 0.85em;
+    color: var(--gray);
+    font-weight: normal;
+    margin-left: 4px;
+}
+
+.mobile-menu-item.active .group-members-count {
+    color: var(--pink);
+}
+
+.sidebar-percentage {
+    font-size: 0.75rem;
+    margin-right: 4px;
+    color: var(--gray);
+    font-weight: normal;
+}
+
+.sidebar-percentage.celestial {
+    color: #B8860B;
+    font-weight: bold;
 }
 
 /* Add Note Tooltip Styles */
@@ -1950,6 +2095,7 @@ input:checked+.slider:before {
     z-index: 1000;
     animation: tooltipBounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), magneticBreathing 4s ease-in-out infinite;
     cursor: pointer;
+    -webkit-user-select: none;
     user-select: none;
 }
 

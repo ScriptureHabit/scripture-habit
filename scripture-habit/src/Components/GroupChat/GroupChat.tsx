@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, FC, Fragment, KeyboardEvent } from 'react';
+import { useState, useMemo, useEffect, FC, Fragment, KeyboardEvent, useRef } from 'react';
 import { safeStorage } from '../../Utils/storage';
 import { Capacitor } from '@capacitor/core';
 import { db } from '../../firebase';
@@ -115,6 +115,15 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], onI
     handleCancelEdit,
     handleDeleteMessageClick
   } = useMessageInteraction();
+
+  const contextMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (contextMenuRef.current && contextMenu.show) {
+      contextMenuRef.current.style.top = `${contextMenu.y}px`;
+      contextMenuRef.current.style.left = `${contextMenu.x}px`;
+    }
+  }, [contextMenu.show, contextMenu.x, contextMenu.y]);
 
   const {
     cheerTarget, setCheerTarget, isSendingCheer, cheeredTodayUids, handleSendCheer, handleCheerClick
@@ -259,7 +268,7 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], onI
               <UilArrowLeft size="24" />
             </div>
           )}
-          <h2 style={{ display: 'flex', alignItems: 'center', minWidth: 0 }}>
+          <h2>
             <span className="group-name-text" title={groupData ? groupData.name : t('groupChat.groupName')}>
               {groupData ? (translatedGroupName || groupData.name) : t('groupChat.groupName')}
             </span>
@@ -273,13 +282,13 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], onI
                   setNewTranslatedDesc(translatedGroupDesc || groupData?.translations?.[language || 'en']?.description || '');
                   setShowEditNameModal(true);
                 }}
-                style={{ background: 'none', border: 'none', color: 'var(--gray)', cursor: 'pointer', marginLeft: '8px', display: 'flex', alignItems: 'center', padding: '4px', borderRadius: '50%', transition: 'background 0.2s', flexShrink: 0 }}
                 title={t('groupChat.changeGroupName')}
+                aria-label={t('groupChat.changeGroupName')}
               >
                 <UilPen size="18" />
               </button>
             )}
-            {groupData?.members && <span className="member-count-badge" style={{ flexShrink: 0 }}>({groupData.members.length})</span>}
+            {groupData?.members && <span className="member-count-badge">({groupData.members.length})</span>}
             {groupData && (
               <div className="unity-score-container">
                 <span className={`unity-score-badge ${unityPercentage === 100 ? 'celestial' : ''}`} onClick={handleShowUnityModal} title="Unity Score: members who posted notes today">
@@ -297,7 +306,7 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], onI
                 <div className="group-status-toggle">
                   <span className="status-label">{groupData.isPublic ? t('groupChat.public') : t('groupChat.private')}</span>
                   <label className="switch">
-                    <input type="checkbox" checked={groupData.isPublic || false} onChange={togglePublicStatus} />
+                    <input type="checkbox" checked={groupData.isPublic || false} onChange={togglePublicStatus} aria-label={t('groupChat.public')} />
                     <span className="slider round"></span>
                   </label>
                 </div>
@@ -314,30 +323,27 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], onI
               </div>
               {isOwner && (
                 <div
-                  className={`invite-code-display members-btn-desktop ${(!isRecapAvailable || isRecapLoading) ? 'disabled' : ''}`}
+                  className={`invite-code-display members-btn-desktop recap-btn-desktop ${(!isRecapAvailable || isRecapLoading) ? 'disabled' : ''}`}
                   onClick={() => isRecapAvailable && !isRecapLoading && handleGenerateWeeklyRecap()}
                   title={!isRecapAvailable ? t('groupChat.recapRateLimit') : t('groupChat.generateWeeklyRecap')}
-                  style={{ marginRight: '8px', opacity: (!isRecapAvailable || isRecapLoading) ? 0.5 : 1, cursor: (!isRecapAvailable || isRecapLoading) ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
                 >
-                  <span style={{ fontSize: '1.1rem' }}>📊</span>
+                  <span className="emoji-icon-large">📊</span>
                   {isRecapLoading && <div className="spinner-mini"></div>}
                 </div>
               )}
               {isOwner ? (
                 <div
-                  className="invite-code-display members-btn-desktop"
+                  className="invite-code-display members-btn-desktop danger-action-btn"
                   onClick={() => setShowDeleteModal(true)}
                   title={t('groupChat.deleteGroup')}
-                  style={{ color: 'var(--danger, #e53e3e)', display: 'flex', alignItems: 'center', gap: '4px' }}
                 >
                   <UilTrashAlt size="16" />
                 </div>
               ) : (
                 <div
-                  className="invite-code-display members-btn-desktop"
+                  className="invite-code-display members-btn-desktop danger-action-btn"
                   onClick={() => setShowLeaveModal(true)}
                   title={t('groupChat.leaveGroup')}
-                  style={{ color: 'var(--danger, #e53e3e)', display: 'flex', alignItems: 'center', gap: '4px' }}
                 >
                   <UilTrashAlt size="16" />
                 </div>
@@ -350,7 +356,7 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], onI
                   onClick={() => setShowInviteModal(true)}
                   title={t('groupChat.inviteFriends')}
                 >
-                  <span style={{ fontSize: '1.5rem' }}>🎁</span>
+                  <span className="gift-emoji">🎁</span>
                 </button>
               )}
               <button className="hamburger-btn" onClick={() => setShowMobileMenu(!showMobileMenu)} aria-label="Menu">
@@ -366,7 +372,7 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], onI
           <div className="mobile-menu" onClick={(e) => e.stopPropagation()}>
             <div className="mobile-menu-header">
               <h3>{translatedGroupName || groupData.name}</h3>
-              <button className="close-menu-btn" onClick={() => setShowMobileMenu(false)}>
+              <button className="close-menu-btn" onClick={() => setShowMobileMenu(false)} aria-label={t('common.close')}>
                 <UilTimes size="24" />
               </button>
             </div>
@@ -475,7 +481,7 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], onI
       {showInactivityPolicyBanner && (
         <div className="inactivity-policy-banner">
           <span>{t('groupChat.inactivityPolicyBanner', { days: userData?.kickThreshold || 3 })}</span>
-          <button className="inactivity-policy-dismiss" onClick={handleDismissInactivityBanner}><UilTimes size="16" /></button>
+          <button className="inactivity-policy-dismiss" onClick={handleDismissInactivityBanner} aria-label={t('common.dismiss')}><UilTimes size="16" /></button>
         </div>
       )}
 
@@ -503,38 +509,21 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], onI
 
       {contextMenu.show && contextMenu.message && (
         <>
-          <div className="modal-overlay" style={{ 
-            position: 'fixed', 
-            top: 0, 
-            left: 0, 
-            right: 0, 
-            bottom: 0, 
-            zIndex: 1000, 
-            background: 'rgba(0, 0, 0, 0.4)',
-            backdropFilter: 'blur(3px)',
-            WebkitBackdropFilter: 'blur(3px)',
-            animation: 'fadeIn 0.2s ease'
-          }} onClick={closeContextMenu} />
-          <div className="message-context-menu" style={{ 
-            position: 'fixed', 
-            top: contextMenu.y, 
-            left: contextMenu.x, 
-            transform: 'translate(-50%, -50%)', 
-            zIndex: 1001,
-          }}>
-            <button onClick={() => { handleReply(contextMenu.message!); closeContextMenu(); }}><div style={{ width: '22px' }}><UilCommentAlt size="18" /></div><span>{t('groupChat.reply')}</span></button>
+          <div className="context-menu-overlay" onClick={closeContextMenu} />
+          <div className="message-context-menu" ref={contextMenuRef}>
+            <button onClick={() => { handleReply(contextMenu.message!); closeContextMenu(); }}><div className="context-menu-icon-wrapper"><UilCommentAlt size="18" /></div><span>{t('groupChat.reply')}</span></button>
             {contextMenu.message.senderId !== userData?.uid && (
-              <button onClick={() => { handleToggleReaction(contextMenu.message!); closeContextMenu(); }}><div style={{ width: '22px', fontSize: '18px' }}>👍</div><span>{contextMenu.message?.reactions?.['👍']?.includes(userData?.uid || '') ? t('groupChat.unlike') : t('groupChat.like')}</span></button>
+              <button onClick={() => { handleToggleReaction(contextMenu.message!); closeContextMenu(); }}><div className="context-menu-icon-wrapper large">👍</div><span>{contextMenu.message?.reactions?.['👍']?.includes(userData?.uid || '') ? t('groupChat.unlike') : t('groupChat.like')}</span></button>
             )}
             {contextMenu.message.senderId === userData?.uid && (
-              <button onClick={() => { handleEditMessage(contextMenu.message!); closeContextMenu(); }}><div style={{ width: '22px' }}><UilPen size="18" /></div><span>{t('groupChat.editMessage')}</span></button>
+              <button onClick={() => { handleEditMessage(contextMenu.message!); closeContextMenu(); }}><div className="context-menu-icon-wrapper"><UilPen size="18" /></div><span>{t('groupChat.editMessage')}</span></button>
             )}
             {contextMenu.message.senderId === userData?.uid && (
-              <button className="delete-option" onClick={() => { handleDeleteMessageClick(contextMenu.message!); closeContextMenu(); }}><div style={{ width: '22px' }}><UilTrashAlt size="18" /></div><span>{t('groupChat.deleteMessage')}</span></button>
+              <button className="delete-option" onClick={() => { handleDeleteMessageClick(contextMenu.message!); closeContextMenu(); }}><div className="context-menu-icon-wrapper"><UilTrashAlt size="18" /></div><span>{t('groupChat.deleteMessage')}</span></button>
             )}
-            <button onClick={() => { handleTranslateMessage(contextMenu.message!); closeContextMenu(); }}><div style={{ width: '22px', fontSize: '18px' }}>{translatingIds.has(contextMenu.message!.id) ? '⏳' : '✨'}</div><span>{t('groupChat.translate')}</span></button>
+            <button onClick={() => { handleTranslateMessage(contextMenu.message!); closeContextMenu(); }}><div className="context-menu-icon-wrapper large">{translatingIds.has(contextMenu.message!.id) ? '⏳' : '✨'}</div><span>{t('groupChat.translate')}</span></button>
             {contextMenu.message.senderId !== userData?.uid && (
-              <button onClick={() => { handleReportClick(contextMenu.message!); closeContextMenu(); }}><div style={{ width: '22px', fontSize: '18px' }}>🚩</div><span>{t('groupChat.report')}</span></button>
+              <button onClick={() => { handleReportClick(contextMenu.message!); closeContextMenu(); }}><div className="context-menu-icon-wrapper large">🚩</div><span>{t('groupChat.report')}</span></button>
             )}
           </div>
         </>
