@@ -5,6 +5,7 @@ import { db } from '../../../firebase';
 import apiClient from '../../../Utils/apiClient';
 import { toast } from 'react-toastify';
 import { Message } from '../../../types/chat';
+import { ChatAction } from './useGroupMessages';
 
 interface SenderData {
   uid: string;
@@ -16,7 +17,8 @@ export const useMessageActions = (
   groupId: string,
   userData: SenderData | null,
   language: string,
-  t: (key: string) => string
+  t: (key: string) => string,
+  dispatch?: React.Dispatch<ChatAction>
 ) => {
   const [translatingIds, setTranslatingIdsState] = useState<Set<string>>(new Set());
   const [translatedTexts, setTranslatedTexts] = useState<Record<string, string>>({});
@@ -103,9 +105,27 @@ export const useMessageActions = (
     try {
       const messageRef = doc(db, 'groups', groupId, 'messages', message.id);
       const emoji = '👍';
-      const reactions = message.reactions || {};
-      const uids = reactions[emoji] || [];
+      const currentReactions = message.reactions || {};
+      const uids = currentReactions[emoji] || [];
       const hasReacted = uids.includes(userData.uid);
+
+      // Optimistic update
+      if (dispatch) {
+        const newUids = hasReacted 
+          ? uids.filter(uid => uid !== userData.uid)
+          : [...uids, userData.uid];
+        
+        dispatch({
+          type: 'UPDATE_MESSAGE',
+          messageId: message.id,
+          data: {
+            reactions: {
+              ...currentReactions,
+              [emoji]: newUids
+            }
+          }
+        });
+      }
 
       if (hasReacted) {
         await updateDoc(messageRef, {

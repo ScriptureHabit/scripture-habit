@@ -61,7 +61,8 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], onI
     isLoadingOlder, loadMoreOlderMessages,
     membersMap,
     latestMessageRef,
-    prevMessageCountRef
+    prevMessageCountRef,
+    dispatch
   } = useGroupMessages(groupId, userData, t);
 
   // If the group was deleted, go back to home view
@@ -91,7 +92,7 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], onI
   const { 
     translatingIds, translatedTexts, handleSendMessage, handleSaveEdit, 
     handleConfirmDeleteMessage, handleToggleReaction, handleTranslateMessage, handleLazyTranslate
-  } = useMessageActions(groupId, userData, language || 'en', t);
+  } = useMessageActions(groupId, userData, language || 'en', t, dispatch);
 
   const { 
     containerRef, handleScroll, previousScrollHeightRef, previousScrollTopRef, scrollToBottom 

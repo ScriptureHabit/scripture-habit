@@ -1,15 +1,14 @@
 import { useReducer, useEffect, useRef, useCallback } from 'react';
-import { Capacitor } from '@capacitor/core';
-import { db, auth, appCheck } from '../../../firebase';
-import { FirebaseError } from 'firebase/app';
 import { collection, query, orderBy, onSnapshot, doc, getDoc, getDocs, limit, startAfter, startAt, DocumentSnapshot } from 'firebase/firestore';
-import { getToken } from 'firebase/app-check';
 import { safeStorage } from '../../../Utils/storage';
+import apiClient from '../../../Utils/apiClient';
 import confetti from 'canvas-confetti';
 import * as Sentry from "@sentry/react";
 import { Message, GroupData, MembersMap, UserProfileBrief } from '../../../types/chat';
-import { groupConverter, messageConverter, userConverter } from '../../../Utils/firestoreConverters';
+import { db } from '../../../firebase';
+import { FirebaseError } from 'firebase/app';
 import { UserData } from '../../../types/user';
+import { groupConverter, messageConverter, userConverter } from '../../../Utils/firestoreConverters';
 import { parseTimestampToMillis } from '../../../Utils/timeUtils';
 
 // 1. Define Discriminated Union for State
@@ -28,7 +27,7 @@ interface ChatState {
 }
 
 // 2. Define Actions
-type ChatAction =
+export type ChatAction =
   | { type: 'RESET'; groupId: string }
   | { type: 'SET_INITIAL_STATE'; messages: Message[]; groupData: GroupData; readCount: number }
   | { type: 'UPDATE_GROUP'; groupData: GroupData }
@@ -41,7 +40,7 @@ type ChatAction =
   | { type: 'SET_READ_COUNT'; count: number }
   | { type: 'SET_SCROLL_DONE' }
   | { type: 'UPDATE_MEMBERS'; newMembers: MembersMap }
-  | { type: 'UPDATE_MESSAGE'; messageId: string; data: Message }
+  | { type: 'UPDATE_MESSAGE'; messageId: string; data: Partial<Message> }
   | { type: 'REMOVE_MESSAGE'; messageId: string };
 
 // 3. Define Reducer
@@ -96,7 +95,7 @@ const chatReducer = (state: ChatState, action: ChatAction): ChatState => {
     case 'UPDATE_MEMBERS':
       return { ...state, membersMap: { ...state.membersMap, ...action.newMembers } };
     case 'UPDATE_MESSAGE':
-      return { ...state, messages: state.messages.map(m => m.id === action.messageId ? action.data : m) };
+      return { ...state, messages: state.messages.map(m => m.id === action.messageId ? { ...m, ...action.data } : m) };
     case 'REMOVE_MESSAGE':
       return { ...state, messages: state.messages.filter(m => m.id !== action.messageId) };
     default:
@@ -134,39 +133,26 @@ export const useGroupMessages = (groupId: string | null, userData: UserData | nu
   const updateReadStatus = useCallback(async (gid: string, totalCount: number) => {
     if (!userData?.uid || !gid || totalCount <= 0) return;
     try {
-      const user = auth?.currentUser;
-      if (!user) return;
-
-      const idToken = await user.getIdToken();
-      let appCheckToken = '';
-      try {
-        const appCheckTokenResponse = await getToken(appCheck, false);
-        appCheckToken = appCheckTokenResponse.token;
-      } catch (e) {
-        console.warn('[useGroupMessages] AppCheck token failed:', e);
-      }
-
-      const API_BASE = Capacitor.isNativePlatform() ? 'https://scripturehabit.app' : '';
-      const response = await fetch(`${API_BASE}/api/update-read-status`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${idToken}`,
-          ...(appCheckToken ? { 'X-Firebase-AppCheck': appCheckToken } : {})
-        },
-        body: JSON.stringify({ groupId: gid, readMessageCount: totalCount })
+      await apiClient.post('/api/update-read-status', { 
+        groupId: gid, 
+        readMessageCount: totalCount 
       });
-
-      if (!response.ok) {
-        const text = await response.text();
-        throw new Error(text || 'Failed to update read status');
-      }
 
       dispatch({ type: 'SET_READ_COUNT', count: totalCount });
     } catch (err) {
       console.error("Failed to update read status:", err);
     }
   }, [userData?.uid]);
+
+  // Robust Read Synchronization Effect
+  useEffect(() => {
+    if (!groupId || !state.groupData || state.userReadCount === null) return;
+    
+    const totalMsgs = state.groupData.messageCount || 0;
+    if (totalMsgs > state.userReadCount) {
+      updateReadStatus(groupId, totalMsgs);
+    }
+  }, [groupId, state.groupData?.messageCount, state.userReadCount, updateReadStatus]);
 
   useEffect(() => {
     if (!groupId) return;
@@ -185,12 +171,6 @@ export const useGroupMessages = (groupId: string | null, userData: UserData | nu
       if (docSnap.exists()) {
         const data = docSnap.data();
         dispatch({ type: 'UPDATE_GROUP', groupData: { ...data, _groupId: groupId } as GroupData });
-        
-        // Handle unread messages auto-read
-        const totalMsgs = data.messageCount || 0;
-        if (totalMsgs > 0 && userReadCountRef.current !== null && totalMsgs > userReadCountRef.current) {
-          updateReadStatus(groupId, totalMsgs);
-        }
       } else {
         dispatch({ type: 'SET_NOT_FOUND' });
       }
@@ -213,10 +193,6 @@ export const useGroupMessages = (groupId: string | null, userData: UserData | nu
           let currentGroupData = null;
           if (gSnap.exists()) {
             currentGroupData = gSnap.data();
-            const totalMsgs = currentGroupData.messageCount || 0;
-            if (totalMsgs > initialReadCount) {
-              updateReadStatus(groupId, totalMsgs);
-            }
             if (currentGroupData.members) {
               // Quick fetch members
               const missingUids = currentGroupData.members.filter(uid => !membersMapRef.current[uid]);
@@ -252,16 +228,16 @@ export const useGroupMessages = (groupId: string | null, userData: UserData | nu
             ]);
             initialMsgs = [...prevSnaps.docs.map(d => d.data()).reverse(), ...nextSnaps.docs.map(d => d.data())];
             if (nextSnaps.docs.length > 0) {
-              lastDocInInitialBatch = nextSnaps.docs[nextSnaps.docs.length - 1];
+              lastDocInInitialBatch = nextSnaps.docs[0]; // The oldest of this batch (since we ordered asc)
             } else {
               lastDocInInitialBatch = anchorSnapshot;
             }
           } else {
-            const latestSnaps = await getDocs(query(messagesRef, orderBy('createdAt', 'desc'), limit(30)));
+            const latestSnaps = await getDocs(query(messagesRef, orderBy('createdAt', 'desc'), limit(50)));
             initialMsgs = latestSnaps.docs.map(d => d.data()).reverse();
             if (latestSnaps.docs.length > 0) {
-              // Note: latestSnaps are in DESC order (newest first), so doc[0] is the newest
-              lastDocInInitialBatch = latestSnaps.docs[0];
+              // latestSnaps is DESC (newest at [0]), so the last one is the oldest
+              lastDocInInitialBatch = latestSnaps.docs[latestSnaps.docs.length - 1];
             }
           }
 
@@ -272,7 +248,7 @@ export const useGroupMessages = (groupId: string | null, userData: UserData | nu
           const startListener = (anchor: DocumentSnapshot<Message> | null) => {
             let q = query(messagesRef, orderBy('createdAt', 'asc'));
             if (anchor) {
-              q = query(messagesRef, orderBy('createdAt', 'asc'), startAfter(anchor));
+              q = query(messagesRef, orderBy('createdAt', 'asc'), startAt(anchor));
             }
 
             const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -361,6 +337,7 @@ export const useGroupMessages = (groupId: string | null, userData: UserData | nu
     setMembersMap: (members: MembersMap) => dispatch({ type: 'UPDATE_MEMBERS', newMembers: members }),
     currentGroupIdRef,
     prevMessageCountRef,
-    latestMessageRef
+    latestMessageRef,
+    dispatch
   };
 };
