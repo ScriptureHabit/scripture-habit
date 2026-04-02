@@ -1,8 +1,6 @@
 import { FC } from 'react';
 import UserProfileModal from '../UserProfileModal/UserProfileModal';
-import { ReactionItem } from '../../store/useModalStore';
-import { Group, Message, UserProfileBrief } from '../../types/chat';
-import { UserData } from '../../types/user';
+import { useChatData, useChatActions, useChatInteraction, useChatUI } from './ChatContext';
 
 // Sub-modal components
 import LeaveGroupModal from './Modals/LeaveGroupModal';
@@ -18,226 +16,165 @@ import ReportModal from './Modals/ReportModal';
 import InviteModal from './Modals/InviteModal';
 import './GroupChatModals.css';
 
-interface GroupChatModalsProps {
-    t: (key: string, replacements?: Record<string, string | number>) => string;
-    language: string | null;
-    userData: UserData | null;
-    groupData: Group | null;
+const GroupChatModals: FC = () => {
+    const { userData, groupData, unityPercentage, language, membersList } = useChatData();
+    const { 
+        t, handleLeaveGroup, handleDeleteGroup, handleUpdateGroupName, handleConfirmDeleteMessage,
+        handleSaveEdit, handleCancelEdit, handleUserProfileClick, handleSendCheer, handleCheerClick,
+        confirmReport, handleCopyInviteLink, handleRegenerateInviteCode,
+        isLeaving, isDeleting, deleteConfirmationName, setDeleteConfirmationName,
+        newGroupName, setNewGroupName, newGroupDescription, setNewGroupDescription,
+        newTranslatedName, setNewTranslatedName, newTranslatedDesc, setNewTranslatedDesc,
+        translatedGroupName, translatedGroupDesc, reactionsToShow, 
+        setSelectedMember,
+        reportReason, setReportReason, isSendingCheer, cheeredTodayUids,
+        cheerTarget, setCheerTarget, selectedMember, setActiveModal,
+        setShowDeleteMessageModal, setShowUnityModal, setShowInviteModal, setShowReportModal
+    } = useChatActions();
+    
+    const { editingMessage, editText, setEditText, messageToDelete, setMessageToDelete } = useChatInteraction();
+    const { 
+        activeModal, showDeleteMessageModal, showUnityModal, 
+        showReportModal, showInviteModal, unityModalData
+    } = useChatUI();
 
-    // Leave Group Modal
-    showLeaveModal: boolean;
-    setShowLeaveModal: (show: boolean) => void;
-    isLeaving: boolean;
-    handleLeaveGroup: () => Promise<void>;
-
-    // Delete Group
-    showDeleteModal: boolean;
-    setShowDeleteModal: (show: boolean) => void;
-    deleteConfirmationName: string;
-    setDeleteConfirmationName: (name: string) => void;
-    isDeleting: boolean;
-    handleDeleteGroup: () => Promise<void>;
-
-    // Edit Group Name
-    showEditNameModal: boolean;
-    setShowEditNameModal: (show: boolean) => void;
-    newGroupName: string;
-    setNewGroupName: (name: string) => void;
-    newGroupDescription: string;
-    setNewGroupDescription: (desc: string) => void;
-    newTranslatedName: string;
-    setNewTranslatedName: (name: string) => void;
-    newTranslatedDesc: string;
-    setNewTranslatedDesc: (desc: string) => void;
-    handleUpdateGroupName: () => Promise<void>;
-    translatedGroupName: string | null;
-    translatedGroupDesc: string | null;
-
-    // Delete Message
-    showDeleteMessageModal: boolean;
-    setShowDeleteMessageModal: (show: boolean) => void;
-    messageToDelete: Message | null;
-    setMessageToDelete: (msg: Message | null) => void;
-    handleConfirmDeleteMessage: () => Promise<void>;
-
-    // Edit Message
-    editingMessage: Message | null;
-    editText: string;
-    setEditText: (text: string) => void;
-    handleCancelEdit: () => void;
-    handleSaveEdit: () => Promise<void>;
-
-    // Reactions
-    showReactionsModal: boolean;
-    setShowReactionsModal: (show: boolean) => void;
-    reactionsToShow: ReactionItem[];
-
-    // Members
-    showMembersModal: boolean;
-    setShowMembersModal: (show: boolean) => void;
-    membersList: UserProfileBrief[];
-    membersLoading: boolean;
-    setSelectedMember: (member: UserProfileBrief | null) => void;
-
-    // Unity
-    showUnityModal: boolean;
-    setShowUnityModal: (show: boolean) => void;
-    unityPercentage: number;
-    unityModalData: {
-        posted: { id: string; nickname: string }[];
-        notPosted: { id: string; nickname: string }[];
-    };
-    cheeredTodayUids: Set<string>;
-    handleCheerClick: (member: UserProfileBrief) => void;
-
-    // Cheer Confirm
-    cheerTarget: UserProfileBrief | null;
-    setCheerTarget: (target: UserProfileBrief | null) => void;
-    isSendingCheer: boolean;
-    handleSendCheer: () => Promise<void>;
-
-    // Report User/Message
-    showReportModal: boolean;
-    setShowReportModal: (show: boolean) => void;
-    reportReason: string;
-    setReportReason: (reason: string) => void;
-    confirmReport: () => Promise<void>;
-
-    // User Profile
-    selectedMember: UserProfileBrief | null;
-    handleUserProfileClick: (userId: string | null) => Promise<void>;
-
-    // Invite Links
-    showInviteModal: boolean;
-    setShowInviteModal: (show: boolean) => void;
-    handleCopyInviteLink: () => void;
-    handleRegenerateInviteCode: () => Promise<void>;
-}
-
-const GroupChatModals: FC<GroupChatModalsProps> = (props) => {
     return (
         <>
             <LeaveGroupModal
-                t={props.t}
-                showLeaveModal={props.showLeaveModal}
-                setShowLeaveModal={props.setShowLeaveModal}
-                isLeaving={props.isLeaving}
-                handleLeaveGroup={props.handleLeaveGroup}
+                t={t}
+                showLeaveModal={activeModal === 'leave'}
+                setShowLeaveModal={(show) => setActiveModal(show ? 'leave' : null)}
+                isLeaving={isLeaving}
+                handleLeaveGroup={handleLeaveGroup}
             />
 
             <DeleteGroupModal
-                t={props.t}
-                groupData={props.groupData}
-                showDeleteModal={props.showDeleteModal}
-                setShowDeleteModal={props.setShowDeleteModal}
-                deleteConfirmationName={props.deleteConfirmationName}
-                setDeleteConfirmationName={props.setDeleteConfirmationName}
-                isDeleting={props.isDeleting}
-                handleDeleteGroup={props.handleDeleteGroup}
+                t={t}
+                groupData={groupData}
+                showDeleteModal={activeModal === 'delete'}
+                setShowDeleteModal={(show) => setActiveModal(show ? 'delete' : null)}
+                deleteConfirmationName={deleteConfirmationName}
+                setDeleteConfirmationName={setDeleteConfirmationName}
+                isDeleting={isDeleting}
+                handleDeleteGroup={async () => {
+                   await handleDeleteGroup(deleteConfirmationName);
+                }}
             />
 
             <EditGroupNameModal
-                t={props.t}
-                language={props.language}
-                groupData={props.groupData}
-                showEditNameModal={props.showEditNameModal}
-                setShowEditNameModal={props.setShowEditNameModal}
-                newGroupName={props.newGroupName}
-                setNewGroupName={props.setNewGroupName}
-                newGroupDescription={props.newGroupDescription}
-                setNewGroupDescription={props.setNewGroupDescription}
-                newTranslatedName={props.newTranslatedName}
-                setNewTranslatedName={props.setNewTranslatedName}
-                newTranslatedDesc={props.newTranslatedDesc}
-                setNewTranslatedDesc={props.setNewTranslatedDesc}
-                handleUpdateGroupName={props.handleUpdateGroupName}
-                translatedGroupName={props.translatedGroupName}
-                translatedGroupDesc={props.translatedGroupDesc}
+                t={t}
+                language={language}
+                groupData={groupData}
+                showEditNameModal={activeModal === 'editName'}
+                setShowEditNameModal={(show) => setActiveModal(show ? 'editName' : null)}
+                newGroupName={newGroupName}
+                setNewGroupName={setNewGroupName}
+                newGroupDescription={newGroupDescription}
+                setNewGroupDescription={setNewGroupDescription}
+                newTranslatedName={newTranslatedName}
+                setNewTranslatedName={setNewTranslatedName}
+                newTranslatedDesc={newTranslatedDesc}
+                setNewTranslatedDesc={setNewTranslatedDesc}
+                handleUpdateGroupName={async () => {
+                    const success = await handleUpdateGroupName(newGroupName, newGroupDescription, newTranslatedName, newTranslatedDesc);
+                    if (success) setActiveModal(null);
+                }}
+                translatedGroupName={translatedGroupName}
+                translatedGroupDesc={translatedGroupDesc}
             />
 
             <DeleteMessageModal
-                t={props.t}
-                showDeleteMessageModal={props.showDeleteMessageModal}
-                setShowDeleteMessageModal={props.setShowDeleteMessageModal}
-                messageToDelete={props.messageToDelete}
-                setMessageToDelete={props.setMessageToDelete}
-                handleConfirmDeleteMessage={props.handleConfirmDeleteMessage}
+                t={t}
+                showDeleteMessageModal={showDeleteMessageModal}
+                setShowDeleteMessageModal={setShowDeleteMessageModal}
+                messageToDelete={messageToDelete}
+                setMessageToDelete={setMessageToDelete}
+                handleConfirmDeleteMessage={async () => {
+                    if (messageToDelete) {
+                        await handleConfirmDeleteMessage(messageToDelete.id);
+                        setShowDeleteMessageModal(false);
+                    }
+                }}
             />
 
             <EditMessageModal
-                t={props.t}
-                editingMessage={props.editingMessage}
-                editText={props.editText}
-                setEditText={props.setEditText}
-                handleCancelEdit={props.handleCancelEdit}
-                handleSaveEdit={props.handleSaveEdit}
+                t={t}
+                editingMessage={editingMessage}
+                editText={editText}
+                setEditText={setEditText}
+                handleCancelEdit={handleCancelEdit}
+                handleSaveEdit={async () => {
+                    if (editingMessage) {
+                        await handleSaveEdit(editingMessage.id, editText);
+                    }
+                }}
             />
 
             <ReactionsModal
-                t={props.t}
-                showReactionsModal={props.showReactionsModal}
-                setShowReactionsModal={props.setShowReactionsModal}
-                reactionsToShow={props.reactionsToShow}
-                handleUserProfileClick={props.handleUserProfileClick}
+                t={t}
+                showReactionsModal={activeModal === 'reactions'}
+                setShowReactionsModal={(show) => setActiveModal(show ? 'reactions' : null)}
+                reactionsToShow={reactionsToShow}
+                handleUserProfileClick={handleUserProfileClick}
             />
 
             <MembersModal
-                t={props.t}
-                userData={props.userData}
-                groupData={props.groupData}
-                showMembersModal={props.showMembersModal}
-                setShowMembersModal={props.setShowMembersModal}
-                membersList={props.membersList}
-                membersLoading={props.membersLoading}
-                setSelectedMember={props.setSelectedMember}
+                t={t}
+                userData={userData}
+                groupData={groupData}
+                showMembersModal={activeModal === 'members'}
+                setShowMembersModal={(show) => setActiveModal(show ? 'members' : null)}
+                membersList={membersList}
+                membersLoading={false}
+                setSelectedMember={setSelectedMember}
             />
 
             <UnityModal
-                t={props.t}
-                userData={props.userData}
-                showUnityModal={props.showUnityModal}
-                setShowUnityModal={props.setShowUnityModal}
-                unityPercentage={props.unityPercentage}
-                unityModalData={props.unityModalData}
-                cheeredTodayUids={props.cheeredTodayUids}
-                handleCheerClick={props.handleCheerClick}
-                handleUserProfileClick={props.handleUserProfileClick}
-                membersLoading={props.membersLoading}
+                t={t}
+                userData={userData}
+                showUnityModal={showUnityModal}
+                setShowUnityModal={setShowUnityModal}
+                unityPercentage={unityPercentage}
+                unityModalData={unityModalData} 
+                cheeredTodayUids={cheeredTodayUids}
+                handleCheerClick={handleCheerClick}
+                handleUserProfileClick={handleUserProfileClick}
+                membersLoading={false}
             />
 
             <CheerConfirmModal
-                t={props.t}
-                cheerTarget={props.cheerTarget}
-                setCheerTarget={props.setCheerTarget}
-                isSendingCheer={props.isSendingCheer}
-                handleSendCheer={props.handleSendCheer}
+                t={t}
+                cheerTarget={cheerTarget}
+                setCheerTarget={setCheerTarget} 
+                isSendingCheer={isSendingCheer}
+                handleSendCheer={async () => { await handleSendCheer(); }}
             />
 
             <ReportModal
-                t={props.t}
-                showReportModal={props.showReportModal}
-                setShowReportModal={props.setShowReportModal}
-                reportReason={props.reportReason}
-                setReportReason={props.setReportReason}
-                confirmReport={props.confirmReport}
+                t={t}
+                showReportModal={showReportModal}
+                setShowReportModal={setShowReportModal}
+                reportReason={reportReason}
+                setReportReason={setReportReason}
+                confirmReport={async () => { await confirmReport(); }}
             />
 
-            {props.selectedMember && (
+            {selectedMember && (
                 <UserProfileModal
-                    user={props.selectedMember}
-                    onClose={() => props.setSelectedMember(null)}
+                    user={selectedMember}
+                    onClose={() => setSelectedMember(null)}
                 />
             )}
 
             <InviteModal
-                t={props.t}
-                language={props.language}
-                userData={props.userData}
-                groupData={props.groupData}
-                showInviteModal={props.showInviteModal}
-                setShowInviteModal={props.setShowInviteModal}
-                handleCopyInviteLink={props.handleCopyInviteLink}
-                handleRegenerateInviteCode={props.handleRegenerateInviteCode}
+                t={t}
+                language={language}
+                userData={userData}
+                groupData={groupData}
+                showInviteModal={showInviteModal}
+                setShowInviteModal={setShowInviteModal}
+                handleCopyInviteLink={handleCopyInviteLink}
+                handleRegenerateInviteCode={handleRegenerateInviteCode}
             />
         </>
     );

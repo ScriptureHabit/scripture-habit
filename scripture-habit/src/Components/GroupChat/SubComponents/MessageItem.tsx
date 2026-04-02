@@ -26,6 +26,7 @@ interface MessageItemProps {
   language: string;
   handleShowReactions: (reactions: Record<string, string[]>) => void;
   membersMap: MembersMap;
+  isRecapAvailable: boolean;
 }
 
 const MessageItem: FC<MessageItemProps> = memo(({

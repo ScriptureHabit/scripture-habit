@@ -1,69 +1,24 @@
 import { FC } from 'react';
 import { UilArrowLeft, UilPen, UilCopy, UilCommentAlt, UilTrashAlt, UilTimes, UilUsersAlt, UilAnalysis } from '@iconscout/react-unicons';
 import GroupMenuItem from './GroupMenuItem';
+import { useChatData, useChatActions, useChatUI } from '../ChatContext';
 import { Group } from '../../../types/chat';
-import { UserData } from '../../../types/user';
-import { ActiveModal } from '../../../store/useModalStore';
 
-interface ChatHeaderProps {
-  onBack?: () => void;
-  groupData: Group | null;
-  translatedGroupName: string;
-  translatedGroupDesc: string;
-  language: string;
-  t: (key: string, options?: Record<string, string | number>) => string;
-  isOwner: boolean;
-  setNewGroupName: (name: string) => void;
-  setNewGroupDescription: (desc: string) => void;
-  setNewTranslatedName: (name: string) => void;
-  setNewTranslatedDesc: (desc: string) => void;
-  setActiveModal: (modal: ActiveModal) => void;
-  unityPercentage: number;
-  handleShowUnityModal: () => void;
-  togglePublicStatus: () => void;
-  setShowInviteModal: (show: boolean) => void;
-  handleShowMembers: () => void;
-  isRecapAvailable: boolean;
-  isRecapLoading: boolean;
-  handleGenerateWeeklyRecap: () => void;
-  showMobileMenu: boolean;
-  setShowMobileMenu: (show: boolean) => void;
-  handleCopyInviteLink: () => void;
-  userGroups: Group[];
-  groupId: string;
-  onGroupSelect?: (groupId: string) => void;
-  userData: UserData;
-}
+const ChatHeader: FC = () => {
+  const { 
+      groupData, unityPercentage, isOwner, language, groupId, userData, userGroups 
+  } = useChatData();
+  const { 
+      t, onBack, onGroupSelect, togglePublicStatus, handleShowMembers, handleShowUnityModal,
+      handleGenerateWeeklyRecap, handleCopyInviteLink,
+      setShowInviteModal, setActiveModal, setNewGroupName, setNewGroupDescription,
+      setNewTranslatedName, setNewTranslatedDesc, translatedGroupName, translatedGroupDesc,
+      setShowMobileMenu
+  } = useChatActions();
+  const { 
+      isRecapAvailable, isRecapLoading, showMobileMenu 
+  } = useChatUI();
 
-const ChatHeader: FC<ChatHeaderProps> = ({
-  onBack,
-  groupData,
-  translatedGroupName,
-  translatedGroupDesc,
-  language,
-  t,
-  isOwner,
-  setNewGroupName,
-  setNewGroupDescription,
-  setNewTranslatedName,
-  setNewTranslatedDesc,
-  setActiveModal,
-  unityPercentage,
-  handleShowUnityModal,
-  togglePublicStatus,
-  setShowInviteModal,
-  handleShowMembers,
-  isRecapAvailable,
-  isRecapLoading,
-  handleGenerateWeeklyRecap,
-  showMobileMenu,
-  setShowMobileMenu,
-  handleCopyInviteLink,
-  userGroups,
-  groupId,
-  onGroupSelect,
-  userData
-}) => {
   return (
     <>
       <div className="chat-header">
@@ -258,13 +213,13 @@ const ChatHeader: FC<ChatHeaderProps> = ({
               )}
 
               {/* My Groups Section */}
-              {userGroups.length > 0 && (
+              {userGroups && userGroups.length > 0 && (
                 <>
                   <div className="mobile-menu-divider-thick" />
                   <div className="mobile-menu-groups-section">
                     <h4 className="section-title">{t('groupChat.myGroups')}</h4>
                     <div className="mobile-groups-list">
-                      {userGroups.map(g => (
+                      {userGroups.map((g: Group) => (
                         <GroupMenuItem
                           key={g.id}
                           group={g}

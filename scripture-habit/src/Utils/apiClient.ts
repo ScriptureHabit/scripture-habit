@@ -29,6 +29,16 @@ const apiClient = axios.create({
 apiClient.interceptors.request.use(
     async (config) => {
         try {
+            // Fix for Vercel trailingSlash: true
+            // If we are on native and it's a POST/PUT/DELETE request, ensure it ends with a slash
+            // to avoid 308 redirects that get turned into GET requests (causing 405)
+            if (Capacitor.isNativePlatform() && config.url && !config.url.endsWith('/')) {
+                // Only for our internal API routes
+                if (config.url.startsWith('/api/') || config.url.startsWith('api/')) {
+                    config.url += '/';
+                }
+            }
+
             // 1. Inject Firebase ID Token
             const user = auth?.currentUser;
             if (user) {

@@ -24,6 +24,7 @@ interface GroupChatMessageListProps {
   handleShowReactions: (reactions: Record<string, string[]>) => void;
   membersMap: MembersMap;
   userReadCount: number | null;
+  isRecapAvailable: boolean;
 }
 
 const GroupChatMessageList: FC<GroupChatMessageListProps> = ({
@@ -45,7 +46,8 @@ const GroupChatMessageList: FC<GroupChatMessageListProps> = ({
   translatedTexts,
   handleShowReactions,
   membersMap,
-  userReadCount
+  userReadCount,
+  isRecapAvailable
 }) => {
   return (
     <>
@@ -81,6 +83,7 @@ const GroupChatMessageList: FC<GroupChatMessageListProps> = ({
               language={language}
               handleShowReactions={handleShowReactions}
               membersMap={membersMap}
+              isRecapAvailable={isRecapAvailable}
             />
             {userReadCount !== null && index === Math.max(0, userReadCount - 1) && index < messages.length - 1 && msg.senderId !== 'system' && (
               <div className="unread-divider"><span>{t('groupChat.newMessages')}</span></div>
