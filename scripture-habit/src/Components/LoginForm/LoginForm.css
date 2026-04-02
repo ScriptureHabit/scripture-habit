@@ -139,8 +139,8 @@
     margin: 0 auto;
     padding: 2rem 1rem;
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
-    backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -199,4 +199,28 @@
   background-color: #2f363d;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(36, 41, 46, 0.3);
+}
+
+.error-container {
+  background-color: rgba(255, 112, 129, 0.1);
+  padding: 10px;
+  border-radius: 8px;
+  margin-top: 10px;
+  border: 1px solid rgba(255, 112, 129, 0.2);
+}
+
+.error-message {
+  color: #ff4d4f;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.resend-verification-btn {
+  background: none;
+  border: none;
+  color: #4a6cf7;
+  text-decoration: underline;
+  cursor: pointer;
+  margin-top: 5px;
+  font-size: 0.9rem;
 }

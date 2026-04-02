@@ -80,7 +80,7 @@ export default function GroupForm() {
       toast.success(`🎉 ${t('groupForm.successCreated')}`);
       navigate(`/${language}/dashboard`, { state: { initialGroupId: newGroupId, initialView: 2, showInviteModal: true } });
 
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error("Error creating group or updating user:", e);
       setError(t('groupForm.errorCreateFailed'));
     }
@@ -101,14 +101,14 @@ export default function GroupForm() {
             type="text"
             placeholder={t('groupForm.groupNamePlaceholder')}
             value={groupName}
-            onChange={(e: any) => setGroupName(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setGroupName(e.target.value)}
             required
           />
           <Input
             label={t('groupForm.descriptionLabel')}
             as="textarea"
             value={description}
-            onChange={(e: any) => setDescription(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setDescription(e.target.value)}
           />
 
           {/* Max members input removed for unlimited members */}

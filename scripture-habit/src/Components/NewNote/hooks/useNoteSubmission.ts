@@ -1,11 +1,25 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { Capacitor } from '@capacitor/core';
-import { auth, db } from '../../../firebase';
+import apiClient from '../../../Utils/apiClient';
+import { db } from '../../../firebase';
 import { doc, writeBatch, serverTimestamp } from 'firebase/firestore';
 import { toast } from 'react-toastify';
 import confetti from 'canvas-confetti';
 import { UserData } from '../../../types/user';
+import { buildNoteSearchTokens } from '../../../Utils/searchTokenUtils';
+
+import { Message } from '../../../types/chat';
+import { Note } from '../../../types/note';
+
+type NoteToEdit = (Note | Message) & { 
+    isMessage?: boolean; 
+    isNote?: boolean; 
+    isEntry?: boolean; 
+    sharedWithGroups?: string[]; 
+    groupId?: string; 
+    originalNoteId?: string;
+    sharedMessageIds?: Record<string, string>;
+};
 
 export const useNoteSubmission = (
     userData: UserData,
@@ -15,7 +29,7 @@ export const useNoteSubmission = (
     const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (
-        noteToEdit: any,
+        noteToEdit: NoteToEdit | null,
         scripture: string,
         chapter: string,
         comment: string,
@@ -40,8 +54,6 @@ export const useNoteSubmission = (
 
         setLoading(true);
 
-        const API_BASE = Capacitor.isNativePlatform() ? 'https://scripturehabit.app' : '';
-
         try {
             if (noteToEdit) {
                 // UPDATE LOGIC (Batched updates)
@@ -51,7 +63,7 @@ export const useNoteSubmission = (
                 if (noteToEdit.isMessage || noteToEdit.isNote || noteToEdit.isEntry) {
                     // Editing an existing message in a group
                     const targetGroupId = noteToEdit.groupId || currentGroupId || userData.groupId;
-                    if (!targetGroupId) throw new Error("No group specified");
+                    if (!targetGroupId || !noteToEdit.id) throw new Error("No group or message ID specified");
 
                     const messageRef = doc(db, 'groups', targetGroupId, 'messages', noteToEdit.id);
                     batch.update(messageRef, {
@@ -63,14 +75,15 @@ export const useNoteSubmission = (
                     });
 
                     // Sync to personal note if linked
-                    if (noteToEdit.originalNoteId) {
+                    if (noteToEdit.originalNoteId && userData.uid) {
                         try {
                             const noteRef = doc(db, 'users', userData.uid, 'notes', noteToEdit.originalNoteId);
                             batch.update(noteRef, {
                                 text: messageText,
                                 scripture,
                                 chapter,
-                                comment
+                                comment,
+                                searchTokens: buildNoteSearchTokens({ scripture, chapter, comment, title: urlMeta?.title, speaker: urlMeta?.speaker })
                             });
                         } catch (err) {
                             console.log("Could not sync back to personal note:", err);
@@ -78,6 +91,7 @@ export const useNoteSubmission = (
                     }
                 } else {
                     // Editing a personal note
+                    if (!userData.uid || !noteToEdit.id) throw new Error("No user ID or note ID found");
                     const noteRef = doc(db, 'users', userData.uid, 'notes', noteToEdit.id);
                     batch.update(noteRef, {
                         text: messageText,
@@ -85,34 +99,19 @@ export const useNoteSubmission = (
                         chapter,
                         comment,
                         title: urlMeta?.title || null,
-                        speaker: urlMeta?.speaker || null
+                        speaker: urlMeta?.speaker || null,
+                        searchTokens: buildNoteSearchTokens({ scripture, chapter, comment, title: urlMeta?.title, speaker: urlMeta?.speaker })
                     });
-
-                    // SYNC TO GROUPS
-                    const sharedMessageIds: Record<string, string> = { ...(noteToEdit.sharedMessageIds || {}) };
-                    const groupsToCheck = noteToEdit.sharedWithGroups || [];
-                    
-                    for (const gid of groupsToCheck) {
-                        const messageId = sharedMessageIds[gid];
-                        if (messageId) {
-                            const msgRef = doc(db, 'groups', gid, 'messages', messageId);
-                            batch.update(msgRef, { text: messageText });
-                        }
-                    }
                 }
-                
+
+
                 await batch.commit();
                 toast.success(t('newNote.successUpdate'));
                 onSuccess();
             } else {
-                // CREATE NEW NOTE (API Call)
-                const user = auth?.currentUser;
-                if (!user) throw new Error("No user logged in");
-                const idToken = await user.getIdToken();
-
                 const messageText = `**${scripture} ${chapter}**\n\n${comment}`;
 
-                const response = await axios.post(`${API_BASE}/api/post-note`, {
+                const response = await apiClient.post('/api/post-note', {
                     chapter,
                     comment,
                     scripture,
@@ -124,8 +123,6 @@ export const useNoteSubmission = (
                     title: urlMeta?.title || null,
                     speaker: urlMeta?.speaker || null,
                     timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
-                }, {
-                    headers: { 'Authorization': `Bearer ${idToken}` }
                 });
 
                 if (response.data && response.data.success) {
@@ -142,9 +139,16 @@ export const useNoteSubmission = (
                     throw new Error(response.data.error || "Post failed");
                 }
             }
-        } catch (error: any) {
-            console.error("Error submitting note:", error);
-            let errorMessage = error.response?.data?.error || error.message || t('errors.unexpectedError');
+
+        } catch (err: unknown) {
+            console.error("Error submitting note:", err);
+            let errorMessage = t('errors.unexpectedError');
+            
+            if (axios.isAxiosError(err)) {
+                errorMessage = err.response?.data?.error || err.message;
+            } else if (err instanceof Error) {
+                errorMessage = err.message;
+            }
             
             // Firebase Auth error code check
             if (errorMessage.includes('auth/network-request-failed')) {
@@ -161,3 +165,4 @@ export const useNoteSubmission = (
 
     return { loading, handleSubmit };
 };
+

@@ -1,11 +1,37 @@
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import { admin, db } from '../lib/firebase-admin.js';
+
+interface MemberPreview {
+    uid: string;
+    nickname: string;
+}
+
+interface CronReport {
+    groupId: string;
+    groupName?: string;
+    totalMembers: number;
+    ownerUserId?: string;
+    checkTime: string;
+    members: CronMemberInfo[];
+}
+
+interface CronMemberInfo {
+    memberId: string;
+    isOwner: boolean;
+    threshold: number;
+    status: string;
+    action: string;
+    lastActive?: string;
+    daysSinceActive?: number;
+}
 
 const router = express.Router();
 
-// Middleware to check CRON_SECRET
-const verifyCronSecret = (req, res, next) => {
-    const authHeader = req.headers.authorization;
+/**
+ * Middleware to check CRON_SECRET
+ */
+const verifyCronSecret = (req: Request, res: Response, next: NextFunction) => {
+    const authHeader = req.header('Authorization');
     const cronSecret = process.env.CRON_SECRET;
 
     if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
@@ -15,8 +41,10 @@ const verifyCronSecret = (req, res, next) => {
     next();
 };
 
-// Check Inactive Users
-router.all('/check-inactive-users', verifyCronSecret, async (req, res) => {
+/**
+ * Check Inactive Users
+ */
+router.all('/check-inactive-users', verifyCronSecret, async (_req: Request, res: Response) => {
     console.log('Starting inactivity check...');
     try {
         const groupsRef = db.collection('groups');
@@ -36,19 +64,19 @@ router.all('/check-inactive-users', verifyCronSecret, async (req, res) => {
         for (const docSnapshot of snapshot.docs) {
             const groupData = docSnapshot.data();
             const groupId = docSnapshot.id;
-            const members = groupData.members || [];
+            const members: string[] = groupData.members || [];
             const memberLastActive = groupData.memberLastActive || {};
-            let ownerUserId = groupData.ownerUserId;
+            let ownerUserId: string = groupData.ownerUserId;
 
             if (members.length === 0) continue;
 
             let groupChanged = false;
-            let groupUpdates = {};
+            const groupUpdates: Record<string, string | number | string[] | admin.firestore.FieldValue | MemberPreview[]> = {};
             let isGroupDeleted = false;
 
-            const activeMembers = [];
-            const inactiveMembers = [];
-            const membersToInitialize = [];
+            const activeMembers: string[] = [];
+            const inactiveMembers: string[] = [];
+            const membersToInitialize: string[] = [];
 
             const memberKickThresholds = groupData.memberKickThresholds || {};
 
@@ -61,8 +89,8 @@ router.all('/check-inactive-users', verifyCronSecret, async (req, res) => {
                     membersToInitialize.push(memberId);
                     activeMembers.push(memberId);
                 } else {
-                    let lastActiveDate = lastActiveTimestamp.toDate ? lastActiveTimestamp.toDate() : new Date(lastActiveTimestamp.seconds * 1000 || lastActiveTimestamp);
-                    const diff = now - lastActiveDate;
+                    const lastActiveDate = lastActiveTimestamp.toDate ? lastActiveTimestamp.toDate() : new Date(lastActiveTimestamp.seconds * 1000 || lastActiveTimestamp);
+                    const diff = now.getTime() - lastActiveDate.getTime();
 
                     if (diff > individualThresholdMs) {
                         inactiveMembers.push(memberId);
@@ -118,8 +146,8 @@ router.all('/check-inactive-users', verifyCronSecret, async (req, res) => {
 
             const finalMembersToRemove = inactiveMembers.filter(uid => uid !== ownerUserId);
             if (finalMembersToRemove.length > 0) {
-                const remainingMembers = members.filter(m => !finalMembersToRemove.includes(m));
-                const updatedPreviews = (groupData.memberPreviews || []).filter(p => !finalMembersToRemove.includes(p.uid));
+                // Using remainingMembers for future logic if needed, but for now just filter previews
+                const updatedPreviews = (groupData.memberPreviews || []).filter((p: MemberPreview) => !finalMembersToRemove.includes(p.uid));
                 
                 groupUpdates['members'] = admin.firestore.FieldValue.arrayRemove(...finalMembersToRemove);
                 groupUpdates['membersCount'] = admin.firestore.FieldValue.increment(-finalMembersToRemove.length);
@@ -165,14 +193,17 @@ router.all('/check-inactive-users', verifyCronSecret, async (req, res) => {
             message: 'Inactivity check complete.',
             stats: { processedGroups: processedCount, removedUsers: removedCount, initializedTracking: initializedCount, transferredOwnerships: transferCount, deletedGroups: deletedGroupCount }
         });
-    } catch (error) {
+    } catch (err: unknown) {
+        const error = err as Error;
         console.error('Error in inactivity check:', error);
         res.status(500).send('Error checking inactivity: ' + error.message);
     }
 });
 
-// Purge Initialized Users (Ghost buster)
-router.get('/purge-initialized-users', verifyCronSecret, async (req, res) => {
+/**
+ * Purge Initialized Users (Ghost buster)
+ */
+router.get('/purge-initialized-users', verifyCronSecret, async (_req: Request, res: Response) => {
     console.log('Starting ghost purge...');
     try {
         const groupsRef = db.collection('groups');
@@ -186,17 +217,20 @@ router.get('/purge-initialized-users', verifyCronSecret, async (req, res) => {
         for (const groupDoc of snapshot.docs) {
             const groupId = groupDoc.id;
             const groupData = groupDoc.data();
-            const members = groupData.members || [];
+            const members: string[] = groupData.members || [];
             const memberLastActive = groupData.memberLastActive || {};
 
             if (members.length === 0) continue;
 
             const messagesRef = groupsRef.doc(groupId).collection('messages');
             const msgsSnap = await messagesRef.orderBy('createdAt', 'desc').limit(200).get();
-            const activeUserIds = new Set();
-            msgsSnap.forEach(m => { if (m.data().senderId) activeUserIds.add(m.data().senderId); });
+            const activeUserIds = new Set<string>();
+            msgsSnap.forEach(m => { 
+                const data = m.data();
+                if (data.senderId) activeUserIds.add(data.senderId); 
+            });
 
-            const ghostsToRemove = [];
+            const ghostsToRemove: string[] = [];
             for (const uid of members) {
                 if (activeUserIds.has(uid)) continue;
                 if (uid === groupData.ownerUserId) continue;
@@ -204,7 +238,7 @@ router.get('/purge-initialized-users', verifyCronSecret, async (req, res) => {
                 const lastActive = memberLastActive[uid];
                 if (lastActive) {
                     const lastActiveDate = lastActive.toDate();
-                    if ((now - lastActiveDate) < TWO_HOURS_MS) {
+                    if ((now.getTime() - lastActiveDate.getTime()) < TWO_HOURS_MS) {
                         ghostsToRemove.push(uid);
                     }
                 }
@@ -212,7 +246,7 @@ router.get('/purge-initialized-users', verifyCronSecret, async (req, res) => {
 
             if (ghostsToRemove.length > 0) {
                 totalRemoved += ghostsToRemove.length;
-                const updatedPreviews = (groupData.memberPreviews || []).filter(p => !ghostsToRemove.includes(p.uid));
+                const updatedPreviews = (groupData.memberPreviews || []).filter((p: MemberPreview) => !ghostsToRemove.includes(p.uid));
                 
                 batch.update(groupsRef.doc(groupId), {
                     members: admin.firestore.FieldValue.arrayRemove(...ghostsToRemove),
@@ -249,32 +283,38 @@ router.get('/purge-initialized-users', verifyCronSecret, async (req, res) => {
         }
         if (batchOpCount > 0) await batch.commit();
         res.json({ message: `Purge complete. Removed ${totalRemoved} ghost users.` });
-    } catch (error) {
+    } catch (err: unknown) {
+        const error = err as Error;
         console.error('Error purging:', error);
         res.status(500).json({ error: error.message });
     }
 });
 
-// Manual Test Endpoint
-router.get('/test-inactive-check/:groupId', verifyCronSecret, async (req, res) => {
-    const { groupId } = req.params;
+/**
+ * Manual Test Endpoint
+ */
+router.get('/test-inactive-check/:groupId', verifyCronSecret, async (req: Request, res: Response) => {
+    const groupId = req.params.groupId as string;
     try {
         const groupRef = db.collection('groups').doc(groupId);
         const groupDoc = await groupRef.get();
         if (!groupDoc.exists) return res.status(404).json({ error: 'Not Found' });
 
         const groupData = groupDoc.data();
-        const members = groupData.members || [];
+        if (!groupData) return res.status(404).json({ error: 'Data Not Found' });
+        
+        const members: string[] = groupData.members || [];
         const memberLastActive = groupData.memberLastActive || {};
         const ownerUserId = groupData.ownerUserId;
         const now = new Date();
-        const report = { groupId, groupName: groupData.name, totalMembers: members.length, ownerUserId, checkTime: now.toISOString(), members: [] };
+        const groupName = groupData.name || '';
+        const report: CronReport = { groupId: groupId as string, groupName, totalMembers: members.length, ownerUserId, checkTime: now.toISOString(), members: [] };
         const memberKickThresholds = groupData.memberKickThresholds || {};
 
         for (const memberId of members) {
             const threshold = memberKickThresholds[memberId] || 3;
             const thresholdMs = threshold * 24 * 60 * 60 * 1000;
-            const info = { memberId, isOwner: memberId === ownerUserId, threshold };
+            const info: CronMemberInfo = { memberId, isOwner: memberId === ownerUserId, threshold, status: '', action: '' };
 
             if (memberId === ownerUserId) {
                 info.status = 'Owner (skipped)';
@@ -286,7 +326,7 @@ router.get('/test-inactive-check/:groupId', verifyCronSecret, async (req, res) =
                     info.action = 'would initialize';
                 } else {
                     const lastDate = lastTs.toDate();
-                    const diff = now - lastDate;
+                    const diff = now.getTime() - lastDate.getTime();
                     info.lastActive = lastDate.toISOString();
                     info.daysSinceActive = Math.floor(diff / (24 * 60 * 60 * 1000));
                     info.status = diff > thresholdMs ? '⚠️ Inactive' : '✅ Active';
@@ -296,7 +336,8 @@ router.get('/test-inactive-check/:groupId', verifyCronSecret, async (req, res) =
             report.members.push(info);
         }
         res.json(report);
-    } catch (error) {
+    } catch (err: unknown) {
+        const error = err as Error;
         res.status(500).json({ error: error.message });
     }
 });

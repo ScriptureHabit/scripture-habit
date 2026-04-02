@@ -1,10 +1,15 @@
 import { FC } from 'react';
 
+interface Reaction {
+    userId: string;
+    nickname: string;
+}
+
 interface ReactionsModalProps {
     t: (key: string) => string;
     showReactionsModal: boolean;
     setShowReactionsModal: (show: boolean) => void;
-    reactionsToShow: any[];
+    reactionsToShow: Reaction[];
     handleUserProfileClick: (userId: string | null) => Promise<void>;
 }
 
@@ -19,7 +24,7 @@ const ReactionsModal: FC<ReactionsModalProps> = ({
 
     return (
         <div className="leave-modal-overlay" onClick={() => setShowReactionsModal(false)}>
-            <div className="leave-modal-content reactions-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '300px' }}>
+            <div className="leave-modal-content reactions-modal" onClick={(e) => e.stopPropagation()}>
                 <h3>👍 Reactions</h3>
                 <div className="reactions-list">
                     {reactionsToShow.map((reaction, idx) => (
@@ -30,7 +35,6 @@ const ReactionsModal: FC<ReactionsModalProps> = ({
                                 handleUserProfileClick(reaction.userId);
                                 setShowReactionsModal(false);
                             }}
-                            style={{ cursor: 'pointer' }}
                         >
                             <span className="reaction-user-emoji">👍</span>
                             <span className="reaction-user-name">{reaction.nickname}</span>

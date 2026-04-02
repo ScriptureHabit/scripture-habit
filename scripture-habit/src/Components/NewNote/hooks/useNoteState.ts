@@ -10,7 +10,7 @@ export interface NoteState {
     tags: string[];
 }
 
-export const useNoteState = (initialNoteData: any, currentGroupId: string | null) => {
+export const useNoteState = (initialNoteData: Partial<NoteState> | null, currentGroupId: string | null) => {
     const [note, setNote] = useState<string>('');
     const [title, setTitle] = useState<string>('');
     const [studyTime, setStudyTime] = useState<string>('15');

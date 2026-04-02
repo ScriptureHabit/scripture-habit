@@ -1,0 +1,113 @@
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* PWA Update Toast */
+.pwa-update-toast-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 10px;
+}
+
+.pwa-update-message {
+  font-size: 0.9rem;
+}
+
+.pwa-update-button {
+  padding: 6px 12px;
+  background: #4a90e2;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+/* Loading Screen */
+.auth-loading-screen {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #FF919D 0%, #FFD1FF 100%);
+  color: white;
+  font-family: 'Outfit', sans-serif;
+}
+
+.loading-spinner-container {
+  width: 60px;
+  height: 60px;
+  border: 6px solid rgba(255, 255, 255, 0.3);
+  border-top: 6px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+.auth-loading-text {
+  font-size: 1.2rem;
+  font-weight: 600;
+  animation: fadeIn 0.5s ease-in;
+}
+
+/* Error Fallback */
+.error-fallback-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+  background: linear-gradient(135deg, #f6f8fb 0%, #e9edf5 100%);
+}
+
+.error-fallback-emoji {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.error-fallback-title {
+  color: #2d3748;
+  margin-bottom: 1rem;
+}
+
+.error-fallback-p {
+  color: #4a5568;
+  margin-bottom: 2rem;
+  max-width: 500px;
+}
+
+.error-fallback-button {
+  padding: 0.8rem 2rem;
+  background: linear-gradient(135deg, #FF919D 0%, #4a90e2 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(107, 70, 193, 0.2);
+}
+
+.error-fallback-pre {
+  margin-top: 2rem;
+  text-align: left;
+  font-size: 0.8rem;
+  background: #fff;
+  padding: 1rem;
+  border-radius: 8px;
+  max-width: 90%;
+  overflow: auto;
+  border: 1px solid #e2e8f0;
+}

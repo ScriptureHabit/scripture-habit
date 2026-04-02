@@ -92,7 +92,7 @@ export const getGospelLibraryUrl = (volume: string | null | undefined, chapterIn
 
     let cleanChapterInput = chapterInput;
     cleanChapterInput = cleanChapterInput.replace(/[０-９]/g, s => String.fromCharCode(s.charCodeAt(0) - 0xFEE0));
-    cleanChapterInput = cleanChapterInput.replace(/：/g, ':').replace(/[，、]/g, ',').replace(/　/g, ' ').replace(/[－—―]/g, '-');
+    cleanChapterInput = cleanChapterInput.replace(/：/g, ':').replace(/[，、]/g, ',').replace(/\u3000/g, ' ').replace(/[－—―]/g, '-');
     cleanChapterInput = cleanChapterInput.replace(/章\s*(?=\d)/g, ':').replace(/章/g, '').replace(/節/g, '');
 
     const match = cleanChapterInput.match(/(.*?)\s*(\d+)(?::([\d\s,-]+))?\s*$/);

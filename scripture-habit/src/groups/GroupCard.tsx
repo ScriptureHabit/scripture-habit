@@ -1,30 +1,15 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { getFirestore, doc, updateDoc, arrayUnion } from 'firebase/firestore';
-import { app, auth } from '../firebase';
+import { auth, appCheck } from '../firebase';
+import { getToken } from 'firebase/app-check';
+import { Group, FirebaseTimestamp } from '../types/chat';
 import './GroupCard.css';
 import { useLanguage } from '../Context/LanguageContext';
 import { toast } from 'react-toastify';
 
-// --- Types ---
-
-interface Group {
-  id: string;
-  name: string;
-  description?: string;
-  members?: string[];
-  membersCount?: number;
-  noteCount?: number;
-  lastMessageAt?: any;
-  lastNoteAt?: any;
-  messageCount?: number;
-  createdAt?: any;
-  translations?: Record<string, { name: string }>;
-}
 
 interface ActivityStatus {
   label: string;
-  color: string;
-  bg: string;
+  type: 'active' | 'relaxed' | 'new';
 }
 
 interface Props {
@@ -36,23 +21,24 @@ interface Props {
 
 // --- Helpers ---
 
-const parseFirebaseDate = (date: any): Date | null => {
+const parseFirebaseDate = (date: FirebaseTimestamp | undefined | null): Date | null => {
   if (!date) return null;
-  if (date.toDate) return date.toDate();
-  if (date.seconds) return new Date(date.seconds * 1000);
-  if (date._seconds) return new Date(date._seconds * 1000);
-  const d = new Date(date);
+  const dAny = date as unknown as { toDate?: () => Date, seconds?: number, _seconds?: number };
+  if (typeof dAny.toDate === 'function') return dAny.toDate();
+  if (typeof dAny.seconds === 'number') return new Date(dAny.seconds * 1000);
+  if (typeof dAny._seconds === 'number') return new Date(dAny._seconds * 1000);
+  const d = new Date(date as string | number | Date);
   return isNaN(d.getTime()) ? null : d;
 };
 
-const getStatus = (group: Group, t: any): ActivityStatus => {
+const getStatus = (group: Group, t: (key: string) => string): ActivityStatus => {
+
   const now = new Date();
   const ONE_HOUR = 3600000;
   
   const lastActiveMsg = parseFirebaseDate(group.lastMessageAt);
   const lastActiveNote = parseFirebaseDate(group.lastNoteAt);
   
-  // Use the most recent activity
   const lastActive = (lastActiveMsg && lastActiveNote) 
     ? (lastActiveMsg > lastActiveNote ? lastActiveMsg : lastActiveNote)
     : (lastActiveMsg || lastActiveNote);
@@ -60,24 +46,23 @@ const getStatus = (group: Group, t: any): ActivityStatus => {
   if (lastActive) {
     const diffHours = (now.getTime() - lastActive.getTime()) / ONE_HOUR;
     if (diffHours <= 24) {
-      return { label: t('groupCard.statusActive'), color: '#ff5722', bg: '#fbe9e7' };
+      return { label: t('groupCard.statusActive'), type: 'active' };
     }
-    return { label: t('groupCard.statusRelaxed'), color: '#795548', bg: '#efebe9' };
   }
 
   const created = parseFirebaseDate(group.createdAt);
   if (created) {
     const createdHours = (now.getTime() - created.getTime()) / ONE_HOUR;
     if (createdHours <= 48) {
-      return { label: t('groupCard.statusNew'), color: '#4caf50', bg: '#e8f5e9' };
+      return { label: t('groupCard.statusNew'), type: 'new' };
     }
   }
 
   if (!lastActive && !created) {
-     return { label: t('groupCard.statusNew'), color: '#4caf50', bg: '#e8f5e9' };
+     return { label: t('groupCard.statusNew'), type: 'new' };
   }
 
-  return { label: t('groupCard.statusRelaxed'), color: '#795548', bg: '#efebe9' };
+  return { label: t('groupCard.statusRelaxed'), type: 'relaxed' };
 };
 
 // --- Component ---
@@ -88,7 +73,6 @@ export default function GroupCard({ group, currentUser, onJoin, onOpen }: Props)
   const [translatedName, setTranslatedName] = useState('');
   const [translating, setTranslating] = useState(false);
 
-  const db = useMemo(() => getFirestore(app), []);
   const isMember = useMemo(() => 
     !!(group.members && currentUser && group.members.includes(currentUser.uid)),
     [group.members, currentUser]
@@ -117,14 +101,26 @@ export default function GroupCard({ group, currentUser, onJoin, onOpen }: Props)
 
       setTranslating(true);
       try {
-        const idToken = await auth?.currentUser?.getIdToken();
+        const currentUser = auth?.currentUser;
+
+        if (!currentUser) {
+          if (active) setTranslating(false);
+          return;
+        }
+
+        const [idToken, appCheckTokenResponse] = await Promise.all([
+          currentUser.getIdToken(),
+          getToken(appCheck, false)
+        ]);
+
         const API_BASE = import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' ? '' : 'https://scripturehabit.app');
 
         const res = await fetch(`${API_BASE}/api/translate`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            ...(idToken ? { Authorization: `Bearer ${idToken}` } : {}),
+            'Authorization': `Bearer ${idToken}`,
+            'x-firebase-appcheck': appCheckTokenResponse.token,
           },
           body: JSON.stringify({
             text: group.name,
@@ -171,42 +167,44 @@ export default function GroupCard({ group, currentUser, onJoin, onOpen }: Props)
       const backend = import.meta.env.VITE_BACKEND_URL || '/api';
       const idToken = await auth?.currentUser?.getIdToken();
       
-      if (idToken) {
-        const res = await fetch(`${backend}/join-group`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${idToken}`,
-          },
-          body: JSON.stringify({ groupId: group.id }),
-        });
-        
-        if (!res.ok) {
-           const err = await res.json().catch(() => ({}));
-           throw new Error(err?.error || 'Server join failed');
-        }
-      } else {
-        const groupRef = doc(db, 'groups', group.id);
-        await updateDoc(groupRef, { members: arrayUnion(currentUser.uid) });
+      if (!idToken) {
+        throw new Error('Unable to retrieve authentication token');
       }
-    } catch (err: any) {
+
+      let appCheckToken = '';
+      try {
+        const appCheckTokenResponse = await getToken(appCheck, false);
+        appCheckToken = appCheckTokenResponse.token;
+      } catch (e) {
+        console.warn('[GroupCard] AppCheck token failed:', e);
+      }
+
+      const res = await fetch(`${backend}/join-group`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${idToken}`,
+          ...(appCheckToken ? { 'X-Firebase-AppCheck': appCheckToken } : {})
+        },
+        body: JSON.stringify({ groupId: group.id }),
+      });
+      
+      if (!res.ok) {
+         const err = await res.json().catch(() => ({}));
+         throw new Error(err?.error || 'Server join failed');
+      }
+    } catch (err: unknown) {
       console.error('Join failed:', err);
       toast.error(t('groupCard.unableToJoin'));
     } finally {
       setJoining(false);
     }
-  }, [isMember, currentUser, group, onJoin, onOpen, t, db]);
+  }, [isMember, currentUser, group, onJoin, onOpen, t]);
 
   return (
     <div className="group-card" role="group" aria-label={`Group ${group.name}`}>
       <div className="group-card-meta">
-        <div
-          className="activity-badge"
-          style={{
-            backgroundColor: activity.bg,
-            color: activity.color
-          }}
-        >
+        <div className={`activity-badge ${activity.type}`}>
           {activity.label}
         </div>
         <div className="member-badge">

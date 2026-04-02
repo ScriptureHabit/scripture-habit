@@ -171,3 +171,11 @@
   display: inline-flex;
   align-items: center;
 }
+.activity-badge {
+  background-color: var(--badge-bg, #f1f5f9);
+  color: var(--badge-color, #475569);
+}
+
+.activity-badge.active { background-color: #fbe9e7; color: #ff5722; }
+.activity-badge.relaxed { background-color: #efebe9; color: #795548; }
+.activity-badge.new { background-color: #e8f5e9; color: #4caf50; }

@@ -3,6 +3,7 @@ import { safeStorage } from '../../../Utils/storage';
 import { requestNotificationPermission } from '../../../Utils/notificationHelper';
 import { UserData } from '../../../types/user';
 import { Group } from '../../../types/chat';
+import { parseTimestampToMillis } from '../../../Utils/timeUtils';
 
 interface NotificationInfo {
   type: 'note' | 'message';
@@ -30,7 +31,7 @@ export const useDashboardNotifications = (
     useEffect(() => {
         if (selectedView === 0 && !loading && userData && !showWelcomeStory && !showAutoKickModal && !isJoiningInvite) {
             const timer = setTimeout(() => {
-                const isPermissionDefault = (window as any).Notification && (window as any).Notification.permission === 'default';
+                const isPermissionDefault = 'Notification' in window && window.Notification.permission === 'default';
                 const lastPrompt = safeStorage.get('lastNotifPrompt');
                 const now = Date.now();
                 const oneWeek = 7 * 24 * 60 * 60 * 1000;
@@ -67,8 +68,8 @@ export const useDashboardNotifications = (
         let mostRecent: NotificationInfo | null = null;
 
         userGroups.forEach(group => {
-            const noteTime = group.lastNoteAt ? (group.lastNoteAt.toMillis ? group.lastNoteAt.toMillis() : (group.lastNoteAt.seconds * 1000)) : 0;
-            const messageTime = group.lastMessageAt ? (group.lastMessageAt.toMillis ? group.lastMessageAt.toMillis() : (group.lastMessageAt.seconds * 1000)) : 0;
+            const noteTime = parseTimestampToMillis(group.lastNoteAt);
+            const messageTime = parseTimestampToMillis(group.lastMessageAt);
 
             let currentType: 'note' | 'message' | '' = '';
             let currentTime = 0;

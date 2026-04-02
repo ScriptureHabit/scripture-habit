@@ -35,10 +35,11 @@ const Mascot: React.FC<MascotProps> = ({ userData, onClick, customMessage = null
 
     // Fallback for Timestamp objects (e.g. legacy or other types)
     let lastPostDate: Date;
-    if (userData.lastPostDate && (userData.lastPostDate as any).toDate) {
-      lastPostDate = (userData.lastPostDate as any).toDate();
+    const lpd = userData.lastPostDate;
+    if (lpd && typeof lpd === 'object' && 'toDate' in lpd && typeof lpd.toDate === 'function') {
+      lastPostDate = (lpd as { toDate: () => Date }).toDate();
     } else {
-      lastPostDate = new Date(userData.lastPostDate);
+      lastPostDate = new Date(lpd as string | number);
     }
 
     if (isNaN(lastPostDate.getTime())) return false;

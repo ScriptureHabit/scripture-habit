@@ -2,9 +2,13 @@ import { useRef, useLayoutEffect, useEffect } from 'react';
 import { safeStorage } from '../../../Utils/storage';
 import { Message } from '../../../types/chat';
 
+interface ScrollUserData {
+  uid: string;
+}
+
 export const useScrollManager = (
   groupId: string,
-  userData: any,
+  userData: ScrollUserData | null,
   messages: Message[],
   userReadCount: number | null,
   loading: boolean,
@@ -14,7 +18,7 @@ export const useScrollManager = (
   prevMessageCountRef: React.MutableRefObject<number>
 ) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const scrollDebounceRef = useRef<any>(null);
+  const scrollDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const previousScrollHeightRef = useRef(0);
   const previousScrollTopRef = useRef(0);
 

@@ -1,344 +1,364 @@
-import { useState, useEffect, useRef } from 'react';
-import { db } from '../../../firebase';
-import { collection, query, orderBy, onSnapshot, doc, getDoc, getDocs, limit, startAfter, startAt, DocumentSnapshot, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import { useReducer, useEffect, useRef, useCallback } from 'react';
+import { Capacitor } from '@capacitor/core';
+import { db, auth, appCheck } from '../../../firebase';
+import { FirebaseError } from 'firebase/app';
+import { collection, query, orderBy, onSnapshot, doc, getDoc, getDocs, limit, startAfter, startAt, DocumentSnapshot } from 'firebase/firestore';
+import { getToken } from 'firebase/app-check';
 import { safeStorage } from '../../../Utils/storage';
 import confetti from 'canvas-confetti';
 import * as Sentry from "@sentry/react";
 import { Message, GroupData, MembersMap, UserProfileBrief } from '../../../types/chat';
+import { groupConverter, messageConverter, userConverter } from '../../../Utils/firestoreConverters';
+import { UserData } from '../../../types/user';
+import { parseTimestampToMillis } from '../../../Utils/timeUtils';
 
-export const useGroupMessages = (groupId: string | null, userData: any, t: (key: string) => string) => {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [groupData, setGroupData] = useState<GroupData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [groupNotFound, setGroupNotFound] = useState(false);
-  const [userReadCount, setUserReadCount] = useState<number | null>(null);
-  const [initialScrollDone, setInitialScrollDone] = useState(false);
-  const [hasMoreOlder, setHasMoreOlder] = useState(true);
-  const [membersMap, setMembersMap] = useState<MembersMap>({});
+// 1. Define Discriminated Union for State
+export type ChatStatus = 'loading' | 'active' | 'error' | 'notFound';
 
+interface ChatState {
+  status: ChatStatus;
+  messages: Message[];
+  groupData: GroupData | null;
+  error: string | null;
+  userReadCount: number | null;
+  initialScrollDone: boolean;
+  hasMoreOlder: boolean;
+  isLoadingOlder: boolean;
+  membersMap: MembersMap;
+}
+
+// 2. Define Actions
+type ChatAction =
+  | { type: 'RESET'; groupId: string }
+  | { type: 'SET_INITIAL_STATE'; messages: Message[]; groupData: GroupData; readCount: number }
+  | { type: 'UPDATE_GROUP'; groupData: GroupData }
+  | { type: 'SET_NOT_FOUND' }
+  | { type: 'SET_ERROR'; message: string }
+  | { type: 'SET_MESSAGES'; messages: Message[] }
+  | { type: 'ADD_NEW_MESSAGES'; newMessages: Message[] }
+  | { type: 'SET_LOADING_OLDER'; isLoading: boolean }
+  | { type: 'ADD_OLDER_MESSAGES'; olderMessages: Message[]; hasMore: boolean }
+  | { type: 'SET_READ_COUNT'; count: number }
+  | { type: 'SET_SCROLL_DONE' }
+  | { type: 'UPDATE_MEMBERS'; newMembers: MembersMap }
+  | { type: 'UPDATE_MESSAGE'; messageId: string; data: Message }
+  | { type: 'REMOVE_MESSAGE'; messageId: string };
+
+// 3. Define Reducer
+const chatReducer = (state: ChatState, action: ChatAction): ChatState => {
+  switch (action.type) {
+    case 'RESET':
+      return {
+        status: 'loading',
+        messages: [],
+        groupData: null,
+        error: null,
+        userReadCount: null,
+        initialScrollDone: false,
+        hasMoreOlder: true,
+        isLoadingOlder: false,
+        membersMap: {}
+      };
+    case 'SET_INITIAL_STATE':
+      return {
+        ...state,
+        status: 'active',
+        messages: action.messages,
+        groupData: action.groupData,
+        userReadCount: action.readCount
+      };
+    case 'UPDATE_GROUP':
+      return { ...state, groupData: action.groupData };
+    case 'SET_NOT_FOUND':
+      return { ...state, status: 'notFound' };
+    case 'SET_ERROR':
+      return { ...state, status: 'error', error: action.message };
+    case 'SET_MESSAGES':
+      return { ...state, messages: action.messages, status: 'active' };
+    case 'ADD_NEW_MESSAGES': {
+      const cleanIncoming = action.newMessages.filter(n => !state.messages.some(p => p.id === n.id));
+      if (cleanIncoming.length === 0) return state;
+      return { ...state, messages: [...state.messages, ...cleanIncoming] };
+    }
+    case 'SET_LOADING_OLDER':
+      return { ...state, isLoadingOlder: action.isLoading };
+    case 'ADD_OLDER_MESSAGES':
+      return {
+        ...state,
+        messages: [...action.olderMessages, ...state.messages],
+        hasMoreOlder: action.hasMore,
+        isLoadingOlder: false
+      };
+    case 'SET_READ_COUNT':
+      return { ...state, userReadCount: action.count };
+    case 'SET_SCROLL_DONE':
+      return { ...state, initialScrollDone: true };
+    case 'UPDATE_MEMBERS':
+      return { ...state, membersMap: { ...state.membersMap, ...action.newMembers } };
+    case 'UPDATE_MESSAGE':
+      return { ...state, messages: state.messages.map(m => m.id === action.messageId ? action.data : m) };
+    case 'REMOVE_MESSAGE':
+      return { ...state, messages: state.messages.filter(m => m.id !== action.messageId) };
+    default:
+      return state;
+  }
+};
+
+const initialState: ChatState = {
+  status: 'loading',
+  messages: [],
+  groupData: null,
+  error: null,
+  userReadCount: null,
+  initialScrollDone: false,
+  hasMoreOlder: true,
+  isLoadingOlder: false,
+  membersMap: {}
+};
+
+export const useGroupMessages = (groupId: string | null, userData: UserData | null, t: (key: string) => string) => {
+  const [state, dispatch] = useReducer(chatReducer, initialState);
+  
   const currentGroupIdRef = useRef<string | null>(groupId);
-
   const prevMessageCountRef = useRef(0);
   const latestMessageRef = useRef<Message | null>(null);
+  const userReadCountRef = useRef<number | null>(null);
+  const membersMapRef = useRef<MembersMap>({});
 
+  useEffect(() => {
+    userReadCountRef.current = state.userReadCount;
+    membersMapRef.current = state.membersMap;
+  }, [state.userReadCount, state.membersMap]);
+
+  // Helper for read status
+  const updateReadStatus = useCallback(async (gid: string, totalCount: number) => {
+    if (!userData?.uid || !gid || totalCount <= 0) return;
+    try {
+      const user = auth?.currentUser;
+      if (!user) return;
+
+      const idToken = await user.getIdToken();
+      let appCheckToken = '';
+      try {
+        const appCheckTokenResponse = await getToken(appCheck, false);
+        appCheckToken = appCheckTokenResponse.token;
+      } catch (e) {
+        console.warn('[useGroupMessages] AppCheck token failed:', e);
+      }
+
+      const API_BASE = Capacitor.isNativePlatform() ? 'https://scripturehabit.app' : '';
+      const response = await fetch(`${API_BASE}/api/update-read-status`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${idToken}`,
+          ...(appCheckToken ? { 'X-Firebase-AppCheck': appCheckToken } : {})
+        },
+        body: JSON.stringify({ groupId: gid, readMessageCount: totalCount })
+      });
+
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(text || 'Failed to update read status');
+      }
+
+      dispatch({ type: 'SET_READ_COUNT', count: totalCount });
+    } catch (err) {
+      console.error("Failed to update read status:", err);
+    }
+  }, [userData?.uid]);
 
   useEffect(() => {
     if (!groupId) return;
-
-    // Update ref FIRST - this is the source of truth for current group
     currentGroupIdRef.current = groupId;
+    dispatch({ type: 'RESET', groupId });
 
-    // Reset all states when group changes
-    setLoading(true);
-    setMessages([]);
-    setGroupData(null);
-    setInitialScrollDone(false);
-    setUserReadCount(null);
-    setHasMoreOlder(true);
-    prevMessageCountRef.current = 0;
-    latestMessageRef.current = null;
-
+    let isCancelled = false;
     let unsubscribeGroup = () => { };
     let unsubscribeNewMessages = () => { };
 
-    const updateReadStatus = async (totalCount: number) => {
-      if (!userData?.uid || !groupId || totalCount <= 0) return;
-      try {
-        const userGroupStateRef = doc(db, 'users', userData.uid, 'groupStates', groupId);
-        const groupRef = doc(db, 'groups', groupId);
+    const groupRef = doc(db, 'groups', groupId).withConverter(groupConverter);
 
-        await Promise.all([
-          setDoc(userGroupStateRef, {
-            readMessageCount: totalCount,
-            lastReadAt: serverTimestamp()
-          }, { merge: true }),
-          updateDoc(groupRef, {
-            [`memberLastReadAt.${userData.uid}`]: serverTimestamp()
-          })
-        ]);
-        setUserReadCount(totalCount);
-      } catch (err) {
-        console.error("Failed to update read status:", err);
-      }
-    };
-
-    const groupRef = doc(db, 'groups', groupId);
+    // 1. Group Data Sync
     unsubscribeGroup = onSnapshot(groupRef, (docSnap) => {
+      if (isCancelled) return;
       if (docSnap.exists()) {
         const data = docSnap.data();
-        setGroupData({ ...data, _groupId: groupId } as GroupData);
+        dispatch({ type: 'UPDATE_GROUP', groupData: { ...data, _groupId: groupId } as GroupData });
         
-        // Update read status if there are unread messages and we're looking at the chat
+        // Handle unread messages auto-read
         const totalMsgs = data.messageCount || 0;
-        if (totalMsgs > 0 && userReadCount !== null && totalMsgs > userReadCount) {
-          updateReadStatus(totalMsgs);
+        if (totalMsgs > 0 && userReadCountRef.current !== null && totalMsgs > userReadCountRef.current) {
+          updateReadStatus(groupId, totalMsgs);
         }
       } else {
-        // Group has been deleted or user lost access
-        setGroupNotFound(true);
-        setLoading(false);
+        dispatch({ type: 'SET_NOT_FOUND' });
       }
     }, (err) => {
-      /* ... existing error handling ... */
       if (err.code === 'permission-denied') return;
-      console.error("Error listening to group:", err);
       const isQuota = err.code === 'resource-exhausted' || err.message.toLowerCase().includes('quota exceeded');
-      if (isQuota) setError(t('systemErrors.quotaExceededMessage'));
-      else { Sentry.captureException(err); setError(err.message); }
+      dispatch({ type: 'SET_ERROR', message: isQuota ? t('systemErrors.quotaExceededMessage') : err.message });
+      if (!isQuota) Sentry.captureException(err);
     });
 
-    // Initial read status sync
-    const fetchInitialState = async () => {
+    // 2. Initial State & Sync Fetch
+    const initChain = async () => {
       try {
-        const stateRef = doc(db, 'users', userData.uid, 'groupStates', groupId);
-        const stateSnap = await getDoc(stateRef);
-        const initialReadCount = stateSnap.exists() ? (stateSnap.data().readMessageCount || 0) : 0;
-        setUserReadCount(initialReadCount);
+        if (userData?.uid) {
+          const stateRef = doc(db, 'users', userData.uid, 'groupStates', groupId);
+          const stateSnap = await getDoc(stateRef);
+          const initialReadCount = stateSnap.exists() ? (stateSnap.data().readMessageCount || 0) : 0;
 
-        const gSnap = await getDoc(groupRef);
-        if (gSnap.exists()) {
-          const gData = gSnap.data();
-          const totalMsgs = gData.messageCount || 0;
-          if (totalMsgs > initialReadCount) {
-            updateReadStatus(totalMsgs);
+          const gSnap = await getDoc(groupRef);
+          let currentGroupData = null;
+          if (gSnap.exists()) {
+            currentGroupData = gSnap.data();
+            const totalMsgs = currentGroupData.messageCount || 0;
+            if (totalMsgs > initialReadCount) {
+              updateReadStatus(groupId, totalMsgs);
+            }
+            if (currentGroupData.members) {
+              // Quick fetch members
+              const missingUids = currentGroupData.members.filter(uid => !membersMapRef.current[uid]);
+              if (missingUids.length > 0) {
+                const snapshots = await Promise.all(missingUids.map(uid => getDoc(doc(db, 'users', uid).withConverter(userConverter))));
+                const newMembers: MembersMap = {};
+                snapshots.forEach(s => {
+                  if (s.exists()) newMembers[s.id] = { id: s.id, ...s.data() } as UserProfileBrief;
+                });
+                dispatch({ type: 'UPDATE_MEMBERS', newMembers });
+              }
+            }
           }
-        }
-      } catch (e: any) {
-        if (e.code !== 'permission-denied') {
-          console.error("Error fetching initial read status:", e);
-        }
-        setUserReadCount(0);
-      }
-    };
-    if (userData?.uid) fetchInitialState();
 
-    // Fetch members detail whenever group context changes
-    const fetchMembersDetails = async (membersArray: string[]) => {
-      if (!membersArray || membersArray.length === 0) return;
+          // 3. Init Messages
+          const messagesRef = collection(db, 'groups', groupId, 'messages').withConverter(messageConverter);
+          const lastViewedMsgId = safeStorage.get(`last_viewed_msg_${groupId}_${userData.uid}`);
 
-      const newMap = { ...membersMap };
-      const uidsToFetch = membersArray.filter(uid => !newMap[uid]);
-
-      if (uidsToFetch.length === 0) return;
-
-      try {
-        const memberSnapshots = await Promise.all(uidsToFetch.map(uid => getDoc(doc(db, 'users', uid))));
-        memberSnapshots.forEach(snap => {
-          if (snap.exists()) {
-            newMap[snap.id] = snap.data() as UserProfileBrief;
+          let initialMsgs: Message[] = [];
+          let lastDocInInitialBatch: DocumentSnapshot<Message> | null = null;
+          let anchorSnapshot: DocumentSnapshot<Message> | null = null;
+          
+          if (lastViewedMsgId) {
+            anchorSnapshot = await getDoc(doc(db, 'groups', groupId, 'messages', lastViewedMsgId).withConverter(messageConverter));
           }
-        });
-        setMembersMap(newMap);
-      } catch (err) {
-        console.error("Error fetching members details:", err);
-      }
-    };
 
-    getDoc(groupRef).then(snap => {
-      if (snap.exists()) {
-        const data = snap.data();
-        if (data.members) fetchMembersDetails(data.members);
-      }
-    });
+          if (isCancelled) return;
 
-    const initMessages = async () => {
-      let isCancelled = false;
-      const cancelSub = () => { isCancelled = true; };
-
-      try {
-        const messagesRef = collection(db, 'groups', groupId, 'messages');
-        const lastViewedMsgId = userData?.uid ? safeStorage.get(`last_viewed_msg_${groupId}_${userData.uid}`) : null;
-
-        let initialMsgs: Message[] = [];
-        let anchorSnapshot: DocumentSnapshot | null = null;
-
-        if (lastViewedMsgId) {
-          try {
-            const anchorRef = doc(db, 'groups', groupId, 'messages', lastViewedMsgId);
-            anchorSnapshot = await getDoc(anchorRef);
-          } catch (e) {
-            console.log("Could not fetch anchor", e);
+          if (anchorSnapshot?.exists()) {
+            const [nextSnaps, prevSnaps] = await Promise.all([
+              getDocs(query(messagesRef, orderBy('createdAt', 'asc'), startAt(anchorSnapshot), limit(25))),
+              getDocs(query(messagesRef, orderBy('createdAt', 'desc'), startAfter(anchorSnapshot), limit(5)))
+            ]);
+            initialMsgs = [...prevSnaps.docs.map(d => d.data()).reverse(), ...nextSnaps.docs.map(d => d.data())];
+            if (nextSnaps.docs.length > 0) {
+              lastDocInInitialBatch = nextSnaps.docs[nextSnaps.docs.length - 1];
+            } else {
+              lastDocInInitialBatch = anchorSnapshot;
+            }
+          } else {
+            const latestSnaps = await getDocs(query(messagesRef, orderBy('createdAt', 'desc'), limit(30)));
+            initialMsgs = latestSnaps.docs.map(d => d.data()).reverse();
+            if (latestSnaps.docs.length > 0) {
+              // Note: latestSnaps are in DESC order (newest first), so doc[0] is the newest
+              lastDocInInitialBatch = latestSnaps.docs[0];
+            }
           }
-        }
 
-        if (isCancelled) return;
+          if (isCancelled) return;
+          dispatch({ type: 'SET_INITIAL_STATE', messages: initialMsgs, groupData: { ...currentGroupData, _groupId: groupId } as GroupData, readCount: initialReadCount });
 
-        if (anchorSnapshot && anchorSnapshot.exists()) {
-          const nextQuery = query(messagesRef, orderBy('createdAt', 'asc'), startAt(anchorSnapshot), limit(15));
-          const nextSnaps = await getDocs(nextQuery);
-          const nextMsgs = nextSnaps.docs.map(d => ({ id: d.id, ...d.data() } as Message));
+          // 4. Real-time Message Listener
+          const startListener = (anchor: DocumentSnapshot<Message> | null) => {
+            let q = query(messagesRef, orderBy('createdAt', 'asc'));
+            if (anchor) {
+              q = query(messagesRef, orderBy('createdAt', 'asc'), startAfter(anchor));
+            }
 
-          const prevQuery = query(messagesRef, orderBy('createdAt', 'desc'), startAfter(anchorSnapshot), limit(5));
-          const prevSnaps = await getDocs(prevQuery);
-          const prevMsgs = prevSnaps.docs.map(d => ({ id: d.id, ...d.data() } as Message)).reverse();
-
-          initialMsgs = [...prevMsgs, ...nextMsgs];
-        } else {
-          const latestQuery = query(messagesRef, orderBy('createdAt', 'desc'), limit(20));
-          const latestSnaps = await getDocs(latestQuery);
-          initialMsgs = latestSnaps.docs.map(d => ({ id: d.id, ...d.data() } as Message)).reverse();
-        }
-
-        if (isCancelled) return;
-
-        setMessages(initialMsgs);
-        setLoading(false);
-
-        // Setup Real-time listener for NEW messages
-        if (initialMsgs.length > 0) {
-          const firstMsg = initialMsgs[0];
-          latestMessageRef.current = initialMsgs[initialMsgs.length - 1];
-
-          if (firstMsg.createdAt) {
-            const newMsgsQuery = query(
-              messagesRef,
-              orderBy('createdAt', 'asc'),
-              startAt(firstMsg.createdAt)
-            );
-
-            unsubscribeNewMessages = onSnapshot(newMsgsQuery, (snapshot) => {
+            const unsubscribe = onSnapshot(q, (snapshot) => {
               if (isCancelled) return;
               const newIncoming: Message[] = [];
               snapshot.docChanges().forEach((change) => {
+                const data = change.doc.data();
                 if (change.type === "added") {
-                  const data = change.doc.data();
-                  const messageTime = data.createdAt?.toMillis ? data.createdAt.toMillis() : (data.createdAt?.seconds ? data.createdAt.seconds * 1000 : 0);
-                  const isTrulyNew = messageTime && (Date.now() - messageTime) < 30000;
-
-                  if (data.messageType === 'streakAnnouncement' && data.messageData?.userId !== userData?.uid && isTrulyNew) {
+                  const messageTime = parseTimestampToMillis(data.createdAt);
+                  const isRecent = messageTime && (Date.now() - messageTime) < 30000;
+                  if (data.messageType === 'streakAnnouncement' && data.messageData?.userId !== userData?.uid && isRecent) {
                     confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, zIndex: 10000 });
                   }
-
-                  newIncoming.push({ id: change.doc.id, ...data } as Message);
-                }
-                if (change.type === "modified") {
-                  setMessages(prev => prev.map(m => m.id === change.doc.id ? { id: change.doc.id, ...change.doc.data() } as Message : m));
-                }
-                if (change.type === "removed") {
-                  setMessages(prev => prev.filter(m => m.id !== change.doc.id));
+                  newIncoming.push(data);
+                } else if (change.type === "modified") {
+                  dispatch({ type: 'UPDATE_MESSAGE', messageId: change.doc.id, data });
+                } else if (change.type === "removed") {
+                  dispatch({ type: 'REMOVE_MESSAGE', messageId: change.doc.id });
                 }
               });
-
-              if (newIncoming.length > 0) {
-                setMessages(prev => {
-                  const cleanIncoming = newIncoming.filter(n => !prev.some(p => p.id === n.id));
-                  return [...prev, ...cleanIncoming];
-                });
-              }
+              if (newIncoming.length > 0) dispatch({ type: 'ADD_NEW_MESSAGES', newMessages: newIncoming });
             }, (err) => {
-              if (err.code === 'permission-denied' || isCancelled) return;
-              console.error("Error listening to new messages:", err);
-              if (err.code === 'resource-exhausted' || err.message.toLowerCase().includes('quota exceeded')) {
-                setError(t('systemErrors.quotaExceededMessage'));
-              }
+              if (isCancelled || err.code === 'permission-denied') return;
+              console.error("[useGroupMessages] Listener error:", err);
             });
-          }
-        } else {
-          const allNewQuery = query(messagesRef, orderBy('createdAt', 'asc'));
-          unsubscribeNewMessages = onSnapshot(allNewQuery, (snapshot) => {
-            if (isCancelled) return;
-            snapshot.docChanges().forEach((change) => {
-              if (change.type === "added") {
-                const data = change.doc.data();
-                const messageTime = data.createdAt?.toMillis ? data.createdAt.toMillis() : (data.createdAt?.seconds ? data.createdAt.seconds * 1000 : 0);
-                const isTrulyNew = messageTime && (Date.now() - messageTime) < 30000;
+            return unsubscribe;
 
-                if (data.messageType === 'streakAnnouncement' && data.messageData?.userId !== userData?.uid && isTrulyNew) {
-                  confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, zIndex: 10000 });
-                }
+          };
 
-                setMessages(prev => {
-                  if (prev.some(m => m.id === change.doc.id)) return prev;
-                  return [...prev, { id: change.doc.id, ...data } as Message];
-                });
-              }
-              if (change.type === "modified") {
-                setMessages(prev => prev.map(m => m.id === change.doc.id ? { id: change.doc.id, ...change.doc.data() } as Message : m));
-              }
-              if (change.type === "removed") {
-                setMessages(prev => prev.filter(m => m.id !== change.doc.id));
-              }
-            });
-            setLoading(false);
-          }, (err) => {
-            if (isCancelled) return;
-            setLoading(false); // CRITICAL: Stop loading even on error
-            if (err.code === 'permission-denied') return;
-            console.error("Error listening to all messages:", err);
-            if (err.code === 'resource-exhausted' || err.message.toLowerCase().includes('quota exceeded')) {
-              setError(t('systemErrors.quotaExceededMessage'));
-            }
-          });
+          unsubscribeNewMessages = startListener(lastDocInInitialBatch);
         }
 
-      } catch (err: any) {
-        setLoading(false); // CRITICAL: Stop loading even on error
-        if (err.code !== 'permission-denied') {
-          console.error("Error fetching messages:", err);
-          setError("Failed to load messages.");
+      } catch (err: unknown) {
+        if (err instanceof FirebaseError && err.code !== 'permission-denied' && !isCancelled) {
+          console.error("Error in initChain:", err);
+          dispatch({ type: 'SET_ERROR', message: "Failed to load chat." });
+        } else if (err instanceof Error && !isCancelled) {
+          console.error("Non-Firebase error in initChain:", err);
         }
       }
-
-      return cancelSub;
     };
 
-    const cleanupPromise = initMessages();
+    initChain();
 
     return () => {
-      cleanupPromise.then(cancelSub => {
-        if (typeof cancelSub === 'function') cancelSub();
-      }).catch(err => console.error("Error during initMessages cleanup:", err));
-      
+      isCancelled = true;
       unsubscribeGroup();
       unsubscribeNewMessages();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [groupId]);
-
-
-  const [isLoadingOlder, setIsLoadingOlder] = useState(false);
+  }, [groupId, userData?.uid, updateReadStatus, t]);
 
   const loadMoreOlderMessages = async (containerRef: React.RefObject<HTMLDivElement | null>, previousScrollHeightRef: React.MutableRefObject<number>, previousScrollTopRef: React.MutableRefObject<number>) => {
-    if (!groupId || isLoadingOlder || !hasMoreOlder || messages.length === 0) return;
-    setIsLoadingOlder(true);
+    if (!groupId || state.isLoadingOlder || !state.hasMoreOlder || state.messages.length === 0) return;
+    dispatch({ type: 'SET_LOADING_OLDER', isLoading: true });
 
-    // Capture current scroll state to maintain position after loading
     if (containerRef.current) {
       previousScrollHeightRef.current = containerRef.current.scrollHeight;
       previousScrollTopRef.current = containerRef.current.scrollTop;
     }
 
     try {
-      const oldestMsg = messages[0];
+      const oldestMsg = state.messages[0];
       if (!oldestMsg.createdAt) return;
-      const { orderBy, startAfter, limit } = await import('firebase/firestore');
-      const q = query(collection(db, 'groups', groupId, 'messages'), orderBy('createdAt', 'desc'), startAfter(oldestMsg.createdAt), limit(20));
+      const q = query(collection(db, 'groups', groupId, 'messages').withConverter(messageConverter), orderBy('createdAt', 'desc'), startAfter(oldestMsg.createdAt), limit(20));
       const snaps = await getDocs(q);
       if (snaps.empty) {
-        setHasMoreOlder(false);
+        dispatch({ type: 'ADD_OLDER_MESSAGES', olderMessages: [], hasMore: false });
       } else {
-        const newOlderMsgs = snaps.docs.map(d => ({ id: d.id, ...d.data() } as Message)).reverse();
-        setMessages(prev => [...newOlderMsgs, ...prev]);
+        const newOlderMsgs = snaps.docs.map(d => d.data()).reverse();
+        dispatch({ type: 'ADD_OLDER_MESSAGES', olderMessages: newOlderMsgs, hasMore: true });
       }
     } catch (e) {
       console.error("Error loading older messages", e);
-    } finally {
-      setIsLoadingOlder(false);
+      dispatch({ type: 'SET_LOADING_OLDER', isLoading: false });
     }
   };
 
   return {
-    messages, setMessages,
-    groupData, setGroupData,
-    loading, setLoading,
-    error, setError,
-    groupNotFound,
-    userReadCount, setUserReadCount,
-    initialScrollDone, setInitialScrollDone,
-    hasMoreOlder, setHasMoreOlder,
-    isLoadingOlder, loadMoreOlderMessages,
-    membersMap, setMembersMap,
+    ...state,
+    loading: state.status === 'loading',
+    groupNotFound: state.status === 'notFound',
+    setMessages: (msgs: Message[]) => dispatch({ type: 'SET_MESSAGES', messages: msgs }),
+    setGroupData: (data: GroupData) => dispatch({ type: 'UPDATE_GROUP', groupData: data }),
+    setInitialScrollDone: () => dispatch({ type: 'SET_SCROLL_DONE' }),
+    loadMoreOlderMessages,
+    setMembersMap: (members: MembersMap) => dispatch({ type: 'UPDATE_MEMBERS', newMembers: members }),
     currentGroupIdRef,
     prevMessageCountRef,
     latestMessageRef

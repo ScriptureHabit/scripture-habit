@@ -3,7 +3,7 @@ import './LoginForm.css';
 import Button from '../Button/Button';
 import Input from '../Input/Input';
 import { auth, db } from '../../firebase';
-import { signInWithEmailAndPassword, GoogleAuthProvider, GithubAuthProvider, signInWithPopup, sendEmailVerification, signInWithCredential, signOut, User, AuthProvider } from 'firebase/auth';
+import { signInWithEmailAndPassword, GoogleAuthProvider, GithubAuthProvider, signInWithPopup, sendEmailVerification, signInWithCredential, signOut, User, AuthProvider, AuthError, UserCredential } from 'firebase/auth';
 import { Capacitor } from '@capacitor/core';
 import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
 import { doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
@@ -26,7 +26,7 @@ const LoginForm: FC = () => {
 
   const handleSocialLogin = async (provider: AuthProvider) => {
     try {
-      let result: any;
+      let result: UserCredential;
       // Check if this is a Google login request
       if (provider instanceof GoogleAuthProvider) {
         try {
@@ -54,7 +54,7 @@ const LoginForm: FC = () => {
         result = await signInWithPopup(auth!, provider);
       }
 
-      const user = result.user as User;
+      const user = result.user;
 
       // Check if user doc exists
       const userDocRef = doc(db, 'users', user.uid);
@@ -68,8 +68,9 @@ const LoginForm: FC = () => {
         navigate(`/${language}/dashboard`);
       }
 
-    } catch (error: any) {
-      console.error("Error signing in with provider:", error);
+    } catch (err: unknown) {
+      console.error("Error signing in with provider:", err);
+      const error = err as AuthError;
       if (error.code === 'auth/account-exists-with-different-credential') {
         setError(t('signup.errorAccountExistsWithDifferentCredential'));
       } else if (error.code === 'auth/invalid-credential' ||
@@ -131,13 +132,14 @@ const LoginForm: FC = () => {
       }
 
       navigate(`/${language}/dashboard`);
-    } catch (error: any) {
-      console.error("Error signing in with email/password:", error);
+    } catch (err: unknown) {
+      console.error("Error signing in with email/password:", err);
+      const error = err as AuthError;
       if (error.code === 'auth/invalid-credential' ||
         error.code === 'auth/user-not-found' ||
         error.code === 'auth/wrong-password') {
         setError(t('login.errorInvalidCredential'));
-      } else if (error.code === 'resource-exhausted' || error.message.toLowerCase().includes('quota exceeded')) {
+      } else if (error.code === 'resource-exhausted' || error.message?.toLowerCase().includes('quota exceeded')) {
         setError(t('systemErrors.quotaExceededMessage'));
       } else {
         setError(error.message);
@@ -150,8 +152,9 @@ const LoginForm: FC = () => {
       try {
         await sendEmailVerification(unverifiedUser);
         toast.info(t('login.verificationResent'));
-      } catch (error: any) {
-        console.error("Error resending verification email:", error);
+      } catch (err: unknown) {
+        console.error("Error resending verification email:", err);
+        const error = err as Error;
         setError("Error: " + error.message);
       }
     }
@@ -167,7 +170,7 @@ const LoginForm: FC = () => {
               label={t('signup.nicknameLabel')}
               type="text"
               value={nickname}
-              onChange={(e: any) => setNickname(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setNickname(e.target.value)}
               required
             />
             <Button type="submit">
@@ -221,7 +224,7 @@ const LoginForm: FC = () => {
             label={t('login.emailLabel')}
             type="email"
             value={email}
-            onChange={(e: any) => setEmail(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setEmail(e.target.value)}
             required
           />
 
@@ -229,7 +232,7 @@ const LoginForm: FC = () => {
             label={t('login.passwordLabel')}
             type='password'
             value={password}
-            onChange={(e: any) => setPassword(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setPassword(e.target.value)}
             required
           />
 
@@ -246,21 +249,13 @@ const LoginForm: FC = () => {
 
         {/* Error message */}
         {error && (
-          <div className='error-container' style={{ marginTop: '10px' }}>
+          <div className='error-container'>
             <p className='error-message'>{error}</p>
             {unverifiedUser && (
               <button
                 type="button"
                 onClick={handleResendVerification}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  color: '#4a90e2',
-                  textDecoration: 'underline',
-                  cursor: 'pointer',
-                  marginTop: '5px',
-                  fontSize: '0.9rem'
-                }}
+                className="resend-verification-btn"
               >
                 {t('login.resendVerification')}
               </button>

@@ -1,7 +1,7 @@
-import express from 'express';
-import { admin, db } from '../lib/firebase-admin.js';
-import { authenticate, verifyAppCheck, inviteLimiter } from '../lib/middleware.js';
-import { reportSchema } from '../lib/schemas.js';
+import express, { Response } from 'express';
+import { admin, db } from '../lib/firebase-admin.ts';
+import { authenticate, verifyAppCheck, inviteLimiter, AuthenticatedRequest } from '../lib/middleware.ts';
+import { reportSchema } from '../lib/schemas.ts';
 
 const router = express.Router();
 
@@ -9,7 +9,7 @@ const router = express.Router();
  * Handle User Reports
  * Submits a report to Firestore and optionally alerts via Discord Webhook
  */
-router.post('/report', authenticate, inviteLimiter, verifyAppCheck, async (req, res) => {
+router.post('/report', authenticate, inviteLimiter, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
     const validation = reportSchema.safeParse(req.body);
     if (!validation.success) {
         return res.status(400).json({ error: 'Invalid input', details: validation.error.format() });
@@ -25,7 +25,7 @@ router.post('/report', authenticate, inviteLimiter, verifyAppCheck, async (req, 
         reason
     } = validation.data;
     
-    const uid = req.user.uid;
+    const uid = req.user!.uid;
 
     try {
         // 1. Save report to Firestore
@@ -71,8 +71,9 @@ router.post('/report', authenticate, inviteLimiter, verifyAppCheck, async (req, 
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(discordPayload)
                 });
-            } catch (webhookError) {
-                console.error("Failed to send Discord webhook:", webhookError.message);
+            } catch (webhookError: unknown) {
+                const error = webhookError as Error;
+                console.error("Failed to send Discord webhook:", error.message);
                 // We don't fail the request if webhook fails, report is already saved
             }
         }

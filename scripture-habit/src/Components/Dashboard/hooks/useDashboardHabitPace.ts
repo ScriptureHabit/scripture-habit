@@ -6,10 +6,10 @@ import { toast } from 'react-toastify';
 import { UserData } from '../../../types/user';
 
 export const useDashboardHabitPace = (
-    userData: UserData | null, 
-    loading: boolean, 
+    userData: UserData | null,
+    loading: boolean,
     isJoiningInvite: boolean,
-    t: (key: string, replacements?: any) => string
+    t: (key: string, replacements?: Record<string, string | number>) => string
 ) => {
     const [showAutoKickModal, setShowAutoKickModal] = useState<boolean>(false);
     const [autoKickStep, setAutoKickStep] = useState<number>(0);
@@ -64,9 +64,10 @@ export const useDashboardHabitPace = (
                 const errorData = await response.json();
                 toast.error(`Failed to update pace: ${errorData.error || response.statusText}`);
             }
-        } catch (error: any) {
+        } catch (err: unknown) {
+            const error = err as Error;
             console.error('Error updating threshold:', error);
-            toast.error(`An error occurred: ${error.message}`);
+            toast.error(`An error occurred: ${error.message || String(error)}`);
         }
     };
 

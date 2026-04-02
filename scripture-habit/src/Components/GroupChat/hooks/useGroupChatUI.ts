@@ -72,6 +72,7 @@ export const useGroupChatUI = (
               'Authorization': `Bearer ${idToken}`,
               'X-Firebase-AppCheck': appCheckToken // Add AppCheck header
             },
+
             body: JSON.stringify({ 
               text, 
               targetLanguage: language,

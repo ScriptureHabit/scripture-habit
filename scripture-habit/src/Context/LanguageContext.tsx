@@ -6,9 +6,16 @@ import { identifyBookKey } from '../Utils/bookRefMapper';
 
 // Static en for initial load/fallback
 import enTranslations from '../locales/en';
-import enBooks from '../locales/books/en';
+import enBooksRaw from '../locales/books/en';
+
+const enBooks = enBooksRaw as Record<string, string>;
 
 export type Language = 'en' | 'ja' | 'pt' | 'zho' | 'es' | 'vi' | 'th' | 'ko' | 'tl' | 'sw';
+
+export type TranslationValue = string | string[] | NestedTranslations;
+export interface NestedTranslations {
+    [key: string]: TranslationValue;
+}
 
 export const SUPPORTED_LANGUAGES: Language[] = ['en', 'ja', 'pt', 'zho', 'es', 'vi', 'th', 'ko', 'tl', 'sw'];
 const DEFAULT_LANGUAGE: Language = 'en';
@@ -60,8 +67,8 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
     const location = useLocation();
 
     const [language, setLanguageInternal] = useState<Language>(detectInitialLanguage);
-    const [translations, setTranslations] = useState<any>(enTranslations);
-    const [bookTranslations, setBookTranslations] = useState<any>(enBooks);
+    const [translations, setTranslations] = useState<NestedTranslations>(enTranslations as NestedTranslations);
+    const [bookTranslations, setBookTranslations] = useState<Record<string, string>>(enBooks);
     const [isLoaded, setIsLoaded] = useState(false);
 
     // Sync state with URL changes (e.g., back button)
@@ -88,8 +95,8 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
                     ]);
 
                     // Use functional updates to prevent stale state issues
-                    setTranslations(trans);
-                    setBookTranslations(books);
+                    setTranslations(trans as NestedTranslations);
+                    setBookTranslations(books as Record<string, string>);
                     setIsLoaded(true);
                 }
             } catch (error) {
@@ -105,27 +112,27 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
     const translateBookName = useCallback((bookName: string | null | undefined): string => {
         if (!bookName) return '';
 
-        const langBooks = bookTranslations || enBooks;
+        const books = (bookTranslations || enBooks) as Record<string, string>;
 
         // Try current language
-        if (langBooks[bookName]) {
-            return langBooks[bookName];
+        if (books[bookName]) {
+            return books[bookName];
         }
 
         // Try global identity map
         const englishKey = identifyBookKey(bookName);
-        if ((langBooks as any)[englishKey]) return (langBooks as any)[englishKey];
+        if (books[englishKey]) return books[englishKey];
 
         // Try English fallback
         if (language !== 'en') {
-            if ((enBooks as any)[englishKey]) return (enBooks as any)[englishKey];
-            if ((enBooks as any)[bookName]) {
-                return (enBooks as any)[bookName];
+            if (enBooks[englishKey]) return enBooks[englishKey];
+            if (enBooks[bookName]) {
+                return enBooks[bookName];
             }
             const lowerKey = englishKey.toLowerCase();
             for (const [englishName, translatedName] of Object.entries(enBooks)) {
                 if (englishName.toLowerCase() === lowerKey) {
-                    return translatedName as string;
+                    return translatedName;
                 }
             }
         }
@@ -189,7 +196,7 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
         }
 
         // 0. Normalize full-width digits, colons, and the '〜' dash (which is rarely in book names)
-        let normalized = chapterText.replace(/[０-９：〜]/g, (s) => {
+        const normalized = chapterText.replace(/[０-９：〜]/g, (s) => {
             if (s === '：') return ':';
             if (s === '〜') return '-';
             return String.fromCharCode(s.charCodeAt(0) - 0xFEE0);
@@ -235,18 +242,18 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
         }, { replace: true });
     }, [language, location, navigate]);
 
-    const getValueFromPath = useCallback((key: string): any => {
+    const getValueFromPath = useCallback((key: string): TranslationValue | null => {
         const keys = key.split('.');
-        let current: any = translations;
+        let current: TranslationValue | undefined = translations;
 
         for (const k of keys) {
-            if (current && current[k] !== undefined) {
+            if (current && typeof current === 'object' && !Array.isArray(current) && current[k] !== undefined) {
                 current = current[k];
             } else {
                 if (language !== 'en') {
-                    let enCurrent: any = enTranslations;
+                    let enCurrent: TranslationValue | undefined = enTranslations as NestedTranslations;
                     for (const ek of keys) {
-                        if (enCurrent && enCurrent[ek] !== undefined) {
+                        if (enCurrent && typeof enCurrent === 'object' && !Array.isArray(enCurrent) && enCurrent[ek] !== undefined) {
                             enCurrent = enCurrent[ek];
                         } else {
                             return null;
@@ -257,7 +264,7 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
                 return null;
             }
         }
-        return current;
+        return current ?? null;
     }, [language, translations]);
 
     const t = useCallback((key: string, replacements: Record<string, string | number> = {}): string => {

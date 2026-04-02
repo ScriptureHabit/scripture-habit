@@ -1,14 +1,15 @@
 import { z } from 'zod';
 
-export const supportedLanguages = ['en', 'ja', 'es', 'pt', 'zh', 'zho', 'vi', 'th', 'ko', 'tl', 'sw'];
+export const supportedLanguages = ['en', 'ja', 'es', 'pt', 'zh', 'zho', 'vi', 'th', 'ko', 'tl', 'sw'] as const;
+export type SupportedLanguage = (typeof supportedLanguages)[number];
 
-export const languageNames = {
+export const languageNames: Record<string, string> = {
     'ja': 'Japanese', 'en': 'English', 'es': 'Spanish', 'pt': 'Portuguese',
     'ko': 'Korean', 'zho': 'Chinese (Traditional)', 'vi': 'Vietnamese',
     'th': 'Thai', 'tl': 'Tagalog', 'sw': 'Swahili'
 };
 
-const noHtmlTags = (val) => !/<[^>]*>/g.test(val || "");
+const noHtmlTags = (val: string | null | undefined) => !/<[^>]*>/g.test(val || "");
 
 export const verifyLoginSchema = z.object({ token: z.string().min(1) });
 
@@ -26,6 +27,47 @@ export const leaveGroupSchema = z.object({
 export const deleteGroupSchema = z.object({
     token: z.string().min(1).optional(),
     groupId: z.string().min(1)
+});
+
+export const deleteNoteSchema = z.object({
+    token: z.string().min(1).optional(),
+    noteId: z.string().min(1)
+});
+
+export const deleteMessageSchema = z.object({
+    token: z.string().min(1).optional(),
+    groupId: z.string().min(1),
+    messageId: z.string().min(1)
+});
+
+export const updateReadStatusSchema = z.object({
+    token: z.string().min(1).optional(),
+    groupId: z.string().min(1),
+    readMessageCount: z.number().int().min(0)
+});
+
+export const announceUnitySchema = z.object({
+    token: z.string().min(1).optional(),
+    groupId: z.string().min(1)
+});
+
+export const regenerateInviteCodeSchema = z.object({
+    token: z.string().min(1).optional(),
+    groupId: z.string().min(1),
+    expiryDays: z.number().int().min(1).max(30).optional()
+});
+
+export const updateGroupSchema = z.object({
+    token: z.string().min(1).optional(),
+    groupId: z.string().min(1),
+    name: z.string().max(100).optional(),
+    description: z.string().max(1000).optional(),
+    isPublic: z.boolean().optional(),
+    isPrivate: z.boolean().optional(),
+    translations: z.record(z.string(), z.object({
+        name: z.string().max(100).optional(),
+        description: z.string().max(1000).optional()
+    })).optional()
 });
 
 export const ponderQuestionsSchema = z.object({

@@ -1,6 +1,6 @@
-import express from 'express';
-import { isSafeUrl } from '../lib/ssrf.js';
-import { verifyAppCheck, authenticate } from '../lib/middleware.js';
+import express, { Response } from 'express';
+import { isSafeUrl } from '../lib/ssrf.ts';
+import { verifyAppCheck, authenticate, AuthenticatedRequest } from '../lib/middleware.ts';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 
@@ -9,9 +9,9 @@ const router = express.Router();
 const USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36';
 
 // Fetch Church (GC, Liahona, etc.) Metadata
-router.get('/fetch-church-metadata', authenticate, verifyAppCheck, async (req, res) => {
+router.get('/fetch-church-metadata', authenticate, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
 
-    const { url, lang } = req.query;
+    const { url, lang } = req.query as { url?: string, lang?: string };
     if (!url) return res.status(400).send({ error: 'URL is required' });
 
     try {
@@ -58,23 +58,31 @@ router.get('/fetch-church-metadata', authenticate, verifyAppCheck, async (req, r
         if (speaker) speaker = speaker.replace(/^(By|Par|De|Por)\s+/i, '').trim();
 
         res.json({ title: title || '', speaker: speaker || '' });
-    } catch (error) {
-        console.error('Error in fetch-church-metadata:', error.message);
+    } catch (error: unknown) {
+        const err = error as Error;
+        console.error('Error in fetch-church-metadata:', err.message);
         res.json({ title: '', speaker: '' });
     }
 });
 
 // URL Preview
-router.get('/url-preview', authenticate, verifyAppCheck, async (req, res) => {
+router.get('/url-preview', authenticate, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
 
-    const { url, lang } = req.query;
+    const { url } = req.query as { url?: string };
     if (!url || typeof url !== 'string') return res.status(400).json({ error: 'URL required' });
 
     if (!isSafeUrl(url)) return res.status(400).json({ error: 'Invalid URL' });
 
     try {
         const parsedUrl = new URL(url);
-        const previewData = { 
+        const previewData: {
+            url: string;
+            title: string;
+            siteName: string;
+            favicon: string;
+            description: string | null;
+            image: string | null;
+        } = { 
             url, 
             title: parsedUrl.hostname, 
             siteName: parsedUrl.hostname, 
@@ -127,17 +135,19 @@ router.get('/url-preview', authenticate, verifyAppCheck, async (req, res) => {
             // 4. Image
             let img = $('meta[property="og:image"]').attr('content') || $('meta[name="twitter:image"]').attr('content');
             if (img && !img.startsWith('http')) {
-                try { img = new URL(img, url).href; } catch (e) { }
+                try { img = new URL(img! as string, url).href; } catch (e) { }
             }
             previewData.image = img || null;
             previewData.siteName = $('meta[property="og:site_name"]').attr('content') || parsedUrl.hostname;
         }
 
         res.json(previewData);
-    } catch (error) {
-        console.error('Error in url-preview:', error.message);
+    } catch (error: unknown) {
+        const err = error as Error;
+        console.error('Error in url-preview:', err.message);
         res.status(500).json({ error: 'Failed' });
     }
+
 });
 
 export default router;

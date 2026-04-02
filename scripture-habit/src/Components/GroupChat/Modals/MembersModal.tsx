@@ -2,6 +2,7 @@ import { FC } from 'react';
 import { UilTimes } from '@iconscout/react-unicons';
 import { Group, UserProfileBrief } from '../../../types/chat';
 import { UserData } from '../../../types/user';
+import { parseTimestampToDate } from '../../../Utils/timeUtils';
 
 interface MembersModalProps {
     t: (key: string) => string;
@@ -69,10 +70,7 @@ const MembersModal: FC<MembersModalProps> = ({
                                             const lastActive = (groupData?.memberLastActive && member.id && groupData.memberLastActive[member.id]) || member.lastPostDate;
                                             if (!lastActive) return t('groupChat.noActivity') || "No recent activity";
 
-                                            let dateObj;
-                                            if (lastActive.toDate) dateObj = lastActive.toDate();
-                                            else if (lastActive.seconds) dateObj = new Date(lastActive.seconds * 1000);
-                                            else dateObj = new Date(lastActive);
+                                            const dateObj = parseTimestampToDate(lastActive);
 
                                             const now = new Date();
                                             const diffDays = Math.floor((now.getTime() - dateObj.getTime()) / (1000 * 60 * 60 * 24));

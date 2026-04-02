@@ -1,6 +1,7 @@
 import { db, messaging, admin } from './firebase-admin.js';
+import { SupportedLanguage } from './schemas.ts';
 
-export const STREAK_ANNOUNCEMENT_TEMPLATES = {
+export const STREAK_ANNOUNCEMENT_TEMPLATES: Record<SupportedLanguage, string> = {
     en: "🎉🎉🎉 **{nickname} reached a {streak} day streak!!** 🎉🎉🎉",
     ja: "🎉🎉🎉 **{nickname}さんが{streak}日連続達成しました！！** 🎉🎉🎉",
     es: "🎉🎉🎉 **¡{nickname} alcanzó una racha de {streak} días!** 🎉🎉🎉",
@@ -14,7 +15,7 @@ export const STREAK_ANNOUNCEMENT_TEMPLATES = {
     sw: "🎉🎉🎉 **{nickname} amefikisha mfululizo wa siku {streak}!!** 🎉🎉🎉"
 };
 
-export const CHEER_NOTIFICATION_TEMPLATES = {
+export const CHEER_NOTIFICATION_TEMPLATES: Record<string, string[]> = {
     en: [
         "{nickname} is waiting for your post! ✨",
         "{nickname} is looking forward to your study note! 📖",
@@ -25,26 +26,33 @@ export const CHEER_NOTIFICATION_TEMPLATES = {
         "{nickname}さんがあなたの学習ノートを心待ちにしています！📖",
         "全員投稿まであと少し！{nickname}さんからエールが届きました！💪"
     ],
-    // ... 他の言語も同様にここに配置
 };
 
-export async function getUserFcmTokens(uid) {
-    const tokens = [];
+export async function getUserFcmTokens(uid: string): Promise<string[]> {
+    const tokens: string[] = [];
     const userDoc = await db.collection('users').doc(uid).get();
-    if (userDoc.exists && userDoc.data().fcmTokens) {
-        tokens.push(...userDoc.data().fcmTokens);
+    const userData = userDoc.data();
+    if (userDoc.exists && userData && userData.fcmTokens) {
+        tokens.push(...(userData.fcmTokens as string[]));
     }
     const privateDoc = await db.collection('users').doc(uid).collection('private').doc('tokens').get();
-    if (privateDoc.exists && privateDoc.data().fcmTokens) {
-        tokens.push(...privateDoc.data().fcmTokens);
+    const privateData = privateDoc.data();
+    if (privateDoc.exists && privateData && privateData.fcmTokens) {
+        tokens.push(...(privateData.fcmTokens as string[]));
     }
     return [...new Set(tokens)];
 }
 
-export async function sendPushNotification(tokens, payload) {
-    if (!tokens || tokens.length === 0) return { successCount: 0, failureCount: 0, failedTokens: [] };
+interface PushPayload {
+    title: string;
+    body: string;
+    data?: Record<string, string>;
+}
+
+export async function sendPushNotification(tokens: string[], payload: PushPayload) {
+    if (!tokens || tokens.length === 0) return { successCount: 0, failureCount: 0, failedTokens: [] as string[] };
     const uniqueTokens = [...new Set(tokens)];
-    const failedTokens = [];
+    const failedTokens: string[] = [];
     let totalSuccess = 0;
     let totalFailure = 0;
 
@@ -86,42 +94,47 @@ export async function sendPushNotification(tokens, payload) {
     return { successCount: totalSuccess, failureCount: totalFailure, failedTokens };
 }
 
-export async function notifyGroupMembers(groupId, senderUid, payload, memberIdsOverride = null) {
+export async function notifyGroupMembers(groupId: string, senderUid: string, payload: PushPayload, memberIdsOverride: string[] | null = null) {
     try {
-        let membersToNotifyIds;
+        let membersToNotifyIds: string[];
         if (memberIdsOverride) {
             membersToNotifyIds = memberIdsOverride.filter(uid => uid !== senderUid);
         } else {
             const groupDoc = await db.collection('groups').doc(groupId).get();
-            if (!groupDoc.exists) return;
-            membersToNotifyIds = (groupDoc.data().members || []).filter(uid => uid !== senderUid);
+            const groupData = groupDoc.data();
+            if (!groupDoc.exists || !groupData) return;
+            membersToNotifyIds = ((groupData.members as string[]) || []).filter(uid => uid !== senderUid);
         }
 
         if (membersToNotifyIds.length === 0) return;
 
         const memberRefs = membersToNotifyIds.map(uid => db.collection('users').doc(uid));
         const privateRefs = membersToNotifyIds.map(uid => db.collection('users').doc(uid).collection('private').doc('tokens'));
+        
+        // getAll expects references
         const allDocs = await db.getAll(...memberRefs, ...privateRefs);
 
         const memberDocs = allDocs.slice(0, memberRefs.length);
         const privateDocs = allDocs.slice(memberRefs.length);
 
-        const tokens = [];
-        const tokenToUserMap = new Map();
-        const tokenSourceMap = new Map();
+        const tokens: string[] = [];
+        const tokenToUserMap = new Map<string, string>();
+        const tokenSourceMap = new Map<string, 'public' | 'private'>();
 
         memberDocs.forEach((uDoc, idx) => {
             const uid = membersToNotifyIds[idx];
-            if (uDoc.exists) {
-                (uDoc.data().fcmTokens || []).forEach(t => {
+            const userData = uDoc.data();
+            if (uDoc.exists && userData) {
+                ((userData.fcmTokens as string[]) || []).forEach(t => {
                     tokens.push(t);
                     tokenToUserMap.set(t, uid);
                     tokenSourceMap.set(t, 'public');
                 });
             }
             const pDoc = privateDocs[idx];
-            if (pDoc.exists) {
-                (pDoc.data().fcmTokens || []).forEach(t => {
+            const privateData = pDoc.data();
+            if (pDoc.exists && privateData) {
+                ((privateData.fcmTokens as string[]) || []).forEach(t => {
                     if (!tokenToUserMap.has(t)) {
                         tokens.push(t);
                         tokenToUserMap.set(t, uid);

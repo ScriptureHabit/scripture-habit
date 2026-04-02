@@ -33,9 +33,14 @@ export const useAIGenerator = (language: string | null) => {
             if (response.data && response.data.questions) {
                 setAiQuestion(response.data.questions);
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Error generating AI questions:", error);
-            const errorMsg = error.response?.data?.details || error.message;
+            let errorMsg = 'Unknown error';
+            if (axios.isAxiosError(error)) {
+                errorMsg = error.response?.data?.details || error.message;
+            } else if (error instanceof Error) {
+                errorMsg = error.message;
+            }
             toast.error(`Failed to generate AI questions: ${errorMsg}`);
         } finally {
             setAiLoading(false);

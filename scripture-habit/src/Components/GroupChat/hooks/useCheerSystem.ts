@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { getToken } from 'firebase/app-check'; // Added AppCheck getToken
-import { db, auth, appCheck } from '../../../firebase'; // Added appCheck
+import { db } from '../../../firebase';
+import apiClient from '../../../Utils/apiClient';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { toast } from 'react-toastify';
 import { UserData } from '../../../types/user';
@@ -9,7 +9,6 @@ import { UserProfileBrief } from '../../../types/chat';
 export const useCheerSystem = (
   groupId: string,
   userData: UserData,
-  API_BASE: string,
   t: (key: string) => string
 ) => {
   const [cheerTarget, setCheerTarget] = useState<UserProfileBrief | null>(null);
@@ -44,37 +43,27 @@ export const useCheerSystem = (
     if (!cheerTarget || isSendingCheer) return;
     setIsSendingCheer(true);
     try {
-      const idToken = await auth?.currentUser?.getIdToken();
-      const appCheckTokenResponse = await getToken(appCheck, false); // Get AppCheck token
-      const appCheckToken = appCheckTokenResponse.token;
-
-      const response = await fetch(`${API_BASE}/api/send-cheer`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${idToken}`,
-          'X-Firebase-AppCheck': appCheckToken // Add AppCheck header
-        },
-        body: JSON.stringify({
-          targetUid: cheerTarget.id,
-          groupId,
-          senderNickname: userData.nickname
-        })
+      await apiClient.post('/api/send-cheer', {
+        targetUid: cheerTarget.id,
+        groupId,
+        senderNickname: userData.nickname
       });
 
-      if (response.ok) {
-        toast.success(t('groupChat.cheerSent')?.replace('{nickname}', cheerTarget.nickname || ''));
-        setCheeredTodayUids((prev: Set<string>) => new Set(prev).add(cheerTarget.id));
-        setCheerTarget(null);
-        return true;
-      } else {
-        toast.error("Failed to send cheer");
-        return false;
-      }
-    } catch (err) {
-      console.error("Error sending cheer:", err);
+      toast.success(t('groupChat.cheerSent')?.replace('{nickname}', cheerTarget.nickname || ''));
+      setCheeredTodayUids((prev: Set<string>) => {
+        const next = new Set(prev);
+        next.add(cheerTarget.id);
+        return next;
+      });
+      setCheerTarget(null);
+      return true;
+    } catch (err: unknown) {
+      const error = err as Error;
+      console.error("Error sending cheer:", error.message);
+      toast.error("Failed to send cheer");
       return false;
     } finally {
+
       setIsSendingCheer(false);
     }
   };

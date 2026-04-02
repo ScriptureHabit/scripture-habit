@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { UserData } from '../../../types/user';
 import { Group } from '../../../types/chat';
+import { parseTimestampToDate } from '../../../Utils/timeUtils';
 
 interface WarningInfo {
   name: string;
@@ -21,7 +22,7 @@ export const useDashboardWarnings = (userData: UserData | null, userGroups: Grou
             const lastActiveTimestamp = memberLastActive[userData.uid];
 
             if (lastActiveTimestamp) {
-                const lastActiveDate = (lastActiveTimestamp as any).toDate ? (lastActiveTimestamp as any).toDate() : new Date((lastActiveTimestamp as any).seconds * 1000);
+                const lastActiveDate = parseTimestampToDate(lastActiveTimestamp);
                 const diffMs = now.getTime() - lastActiveDate.getTime();
                 
                 const threshold = (group.memberKickThresholds && group.memberKickThresholds[userData.uid]) || userData.kickThreshold || 3;

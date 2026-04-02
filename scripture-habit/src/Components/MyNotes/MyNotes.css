@@ -220,6 +220,7 @@
     transition: all 0.2s ease;
     color: var(--black);
     white-space: nowrap;
+    -webkit-user-select: none;
     user-select: none;
 }
 
@@ -442,6 +443,39 @@
     background: #f0f0f0;
 }
 
+.my-notes-header {
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.my-notes-header h1 {
+    font-size: 2.2rem;
+    margin: 0;
+    background: none;
+    -webkit-text-fill-color: initial;
+    color: var(--black);
+    text-align: center;
+}
+
+.no-results-container {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: #999;
+  padding: 2rem;
+}
+
+.delete-modal-overlay-custom {
+  z-index: 1100 !important;
+}
+
+.delete-note-warning-text {
+  color: #ff9800;
+  font-size: 0.9rem;
+  margin: 0.5rem 0;
+}
+
 .page-indicator {
     font-size: 0.95rem;
     font-weight: 600;
@@ -464,5 +498,10 @@
     .page-indicator {
         min-width: 90px;
         font-size: 0.85rem;
+    }
+}
+@media screen and (max-width: 480px) {
+    .my-notes-header h1 {
+        font-size: 1.8rem !important;
     }
 }

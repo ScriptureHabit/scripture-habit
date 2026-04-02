@@ -26,19 +26,32 @@ import { getBookSuggestions } from '../../Utils/suggestionUtils';
 import { getGospelLibraryUrl, getCategoryFromScripture } from '../../Utils/gospelLibraryMapper';
 import { removeNoteHeader } from '../../Utils/noteUtils';
 import { UserData } from '../../types/user';
+import { Group, Message } from '../../types/chat';
+
+interface Suggestion {
+    translated: string;
+    english: string;
+}
+
+interface RandomScripture {
+    scripture: string;
+    chapter: string;
+}
+
+import { Note } from '../../types/note';
 
 interface NewNoteProps {
     isOpen: boolean;
     onClose: () => void;
     userData: UserData;
-    isGroupContext?: boolean;
-    userGroups?: any[];
+    userGroups?: Group[];
     currentGroupId?: string | null;
-    noteToEdit?: any;
+    noteToEdit?: Message | Note | null;
 }
 
+
 const NewNote: FC<NewNoteProps> = ({
-    isOpen, onClose, userData, isGroupContext = false,
+    isOpen, onClose, userData,
     userGroups = [], currentGroupId = null, noteToEdit = null
 }) => {
     const { t, language, tArray, translateChapterField, bookTranslations } = useLanguage();
@@ -52,10 +65,10 @@ const NewNote: FC<NewNoteProps> = ({
     const [showCloseConfirm, setShowCloseConfirm] = useState(false);
 
     // Auto-suggestions logic
-    const [suggestions, setSuggestions] = useState<any[]>([]);
+    const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
 
-    const { urlMeta, urlLoading } = useUrlMetaFetcher(chapter, scripture, language);
+    const { urlMeta, urlLoading } = useUrlMetaFetcher(chapter, scripture, language || 'en');
     const { aiQuestion, setAiQuestion, aiLoading, handleGenerateQuestions } = useAIGenerator(language);
     const { loading, handleSubmit } = useNoteSubmission(userData, language, t);
 
@@ -82,7 +95,7 @@ const NewNote: FC<NewNoteProps> = ({
             setComment('');
             setShareOption('all');
         }
-    }, [noteToEdit, isOpen, isGroupContext, currentGroupId]);
+    }, [noteToEdit, isOpen]);
 
     if (!isOpen) return null;
 
@@ -115,11 +128,11 @@ const NewNote: FC<NewNoteProps> = ({
         );
     };
 
-    const pickAndFillRandom = (randomScripture: any) => {
+    const pickAndFillRandom = (randomScripture: RandomScripture) => {
         setScripture(randomScripture.scripture);
         let finalChapter = randomScripture.chapter;
         if (finalChapter.startsWith('http')) {
-            finalChapter = localizeLdsUrl(finalChapter, language);
+            finalChapter = localizeLdsUrl(finalChapter, language) || finalChapter;
         } else {
             finalChapter = translateChapterField(finalChapter);
         }
@@ -149,7 +162,7 @@ const NewNote: FC<NewNoteProps> = ({
                     if (availableReadingPlanScripts.length === 1) {
                         const script = availableReadingPlanScripts[0];
                         const detectedCategory = getCategoryFromScripture(script);
-                        pickAndFillRandom({ scripture: detectedCategory !== 'Other' ? detectedCategory : 'Book of Mormon', chapter: script });
+                        pickAndFillRandom({ scripture: detectedCategory !== 'Other' ? detectedCategory : 'Book of Mormon', chapter: script || '' });
                         setShowRandomMenu(false);
                     } else {
                         setShowScriptureSelectionModal(true);

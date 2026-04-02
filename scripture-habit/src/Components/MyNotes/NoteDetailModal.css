@@ -10,6 +10,10 @@
     /* Header fixed, body scrolls */
 }
 
+.detail-modal-overlay {
+    z-index: 1050;
+}
+
 .note-detail-content {
     display: flex;
     flex-direction: column;
@@ -127,6 +131,20 @@
     font-size: 0.95rem;
     color: #333;
     font-weight: 600;
+}
+
+.shared-group-item .status-label {
+    font-size: 0.8rem;
+    color: #999;
+    margin: 0;
+}
+
+.shared-group-item.disabled {
+    opacity: 0.6;
+}
+
+.shared-group-item.disabled .status-label {
+    font-style: italic;
 }
 
 .activity-stats {

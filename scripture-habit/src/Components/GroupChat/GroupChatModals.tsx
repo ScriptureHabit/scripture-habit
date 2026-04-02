@@ -1,5 +1,6 @@
 import { FC } from 'react';
 import UserProfileModal from '../UserProfileModal/UserProfileModal';
+import { ReactionItem } from '../../store/useModalStore';
 import { Group, Message, UserProfileBrief } from '../../types/chat';
 import { UserData } from '../../types/user';
 
@@ -18,7 +19,7 @@ import InviteModal from './Modals/InviteModal';
 import './GroupChatModals.css';
 
 interface GroupChatModalsProps {
-    t: (key: string, replacements?: any) => string;
+    t: (key: string, replacements?: Record<string, string | number>) => string;
     language: string | null;
     userData: UserData | null;
     groupData: Group | null;
@@ -69,7 +70,7 @@ interface GroupChatModalsProps {
     // Reactions
     showReactionsModal: boolean;
     setShowReactionsModal: (show: boolean) => void;
-    reactionsToShow: any[];
+    reactionsToShow: ReactionItem[];
 
     // Members
     showMembersModal: boolean;

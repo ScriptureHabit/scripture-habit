@@ -7,15 +7,15 @@ interface GospelLinkProps {
   chapter?: string;
   language: string;
   isSent: boolean;
-  t: (key: string, replacements?: any) => string;
+  t: (key: string, replacements?: Record<string, string | number>) => string;
 }
 
 const GospelLink: FC<GospelLinkProps> = ({ text, scripture, chapter, language, isSent, t }) => {
   // 1. Better search for URL specifically (most important for GC/BYU/Other)
-  const urlMatch = text.match(/(?:\*\*|)(?:Url|リンク)(?:\*\*|)(?::|：)[\s　]*(.*?)(?:\n|$)/i);
+  const urlMatch = text.match(/(?:\*\*|)(?:Url|リンク)(?:\*\*|)(?::|：)[\s\u3000]*(.*?)(?:\n|$)/i);
   // 2. Generic label search (for scriptures)
-  const labelMatch = text.match(/(?:\*\*|)(?:Chapter|Talk|お話|Speech|スピーチ|Title|タイトル|章)(?:\*\*|)(?::|：)[\s　]*(.*?)(?:\n|$)/i);
-  const scriptureMatch = text.match(/(?:\*\*|)(?:Scripture|Category|カテゴリ)(?:\*\*|)(?::|：)[\s　]*(.*?)(?:\n|$)/i);
+  const labelMatch = text.match(/(?:\*\*|)(?:Chapter|Talk|お話|Speech|スピーチ|Title|タイトル|章)(?:\*\*|)(?::|：)[\s\u3000]*(.*?)(?:\n|$)/i);
+  const scriptureMatch = text.match(/(?:\*\*|)(?:Scripture|Category|カテゴリ)(?:\*\*|)(?::|：)[\s\u3000]*(.*?)(?:\n|$)/i);
 
   // Aggressively strip asterisks and trim
   const finalScripture = (scripture || (scriptureMatch ? scriptureMatch[1].trim() : null))?.replace(/\*/g, '').trim();

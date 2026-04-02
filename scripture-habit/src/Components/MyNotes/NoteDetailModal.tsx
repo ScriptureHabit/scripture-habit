@@ -6,8 +6,9 @@ import NoteDisplay from '../NoteDisplay/NoteDisplay';
 import { useLanguage } from '../../Context/LanguageContext';
 import './NoteDetailModal.css';
 import { Note } from '../../types/note';
-import { Group } from '../../types/chat';
+import { Group, Message, FirebaseTimestamp } from '../../types/chat';
 import { UserData } from '../../types/user';
+import { parseTimestampToDate } from '../../Utils/timeUtils';
 
 interface NoteDetailModalProps {
     isOpen: boolean;
@@ -55,9 +56,10 @@ const NoteDetailModal: FC<NoteDetailModalProps> = ({ isOpen, onClose, note, user
                 if (userGroups) {
                     const group = userGroups.find(g => g.id === groupId);
                     if (group) {
-                        groupName = group.name;
+                        groupName = group.name || '';
                         isMember = true;
                     }
+
                 }
 
                 // If not found in userGroups, we assume user is NOT a member and cannot fetch details.
@@ -83,16 +85,18 @@ const NoteDetailModal: FC<NoteDetailModalProps> = ({ isOpen, onClose, note, user
     };
 
     return (
-        <div className="ModalOverlay" onClick={onClose} style={{ zIndex: 1050 }}>
+        <div className="ModalOverlay detail-modal-overlay" onClick={onClose}>
             <div className="ModalContent NoteDetailModal" onClick={(e) => e.stopPropagation()}>
-                <button className="close-btn" onClick={onClose}>
+                <button className="close-btn" onClick={onClose} title={t('common.close') || 'Close'}>
                     <UilTimes size="24" />
                 </button>
 
                 <div className="note-detail-content">
                     <div className="detail-header">
                         <span className="note-date">
-                            {note.createdAt?.toDate().toLocaleDateString(language === 'en' ? 'sv-SE' : language) || 'Unknown Date'}
+                            {note.createdAt 
+                                ? parseTimestampToDate(note.createdAt as FirebaseTimestamp).toLocaleDateString(language === 'en' ? 'sv-SE' : language) 
+                                : 'Unknown Date'}
                         </span>
                         <div className="detail-actions">
                             <button className="action-btn edit" onClick={handleEdit}>
@@ -146,8 +150,8 @@ interface SharedGroupSectionProps {
 }
 
 const SharedGroupSection: FC<SharedGroupSectionProps> = ({ groupId, messageId, groupName, t, isMember, language }) => {
-    const [reactions, setReactions] = useState<any[]>([]);
-    const [replies, setReplies] = useState<any[]>([]);
+    const [reactions, setReactions] = useState<Record<string, string[]>>({});
+    const [replies, setReplies] = useState<Message[]>([]);
     const [error, setError] = useState<boolean | null>(null);
 
     useEffect(() => {
@@ -161,12 +165,13 @@ const SharedGroupSection: FC<SharedGroupSectionProps> = ({ groupId, messageId, g
         const unsubMsg = onSnapshot(messageRef, (docSnap) => {
             if (docSnap.exists()) {
                 const data = docSnap.data();
-                setReactions(data.reactions || []);
+                setReactions(data.reactions || {});
             }
-        }, (err: any) => {
-            console.warn("Could not fetch message details (likely permission):", err);
+        }, (err: unknown) => {
+            const error = err as Error & { code?: string }; 
+            console.warn("Could not fetch message details (likely permission):", error);
             // If permission denied, likely user is not in group anymore
-            if (err.code === 'permission-denied') {
+            if (error.code === 'permission-denied') {
                 setError(true);
             }
         });
@@ -176,9 +181,9 @@ const SharedGroupSection: FC<SharedGroupSectionProps> = ({ groupId, messageId, g
         const q = query(messagesRef, where('replyTo.id', '==', messageId));
 
         const unsubReplies = onSnapshot(q, (snapshot) => {
-            const fetchedReplies: any[] = [];
+            const fetchedReplies: Message[] = [];
             snapshot.forEach(docSnap => {
-                fetchedReplies.push({ id: docSnap.id, ...docSnap.data() });
+                fetchedReplies.push({ id: docSnap.id, ...docSnap.data() } as Message);
             });
             // Client-side sort
             fetchedReplies.sort((a, b) => {
@@ -188,9 +193,10 @@ const SharedGroupSection: FC<SharedGroupSectionProps> = ({ groupId, messageId, g
             });
 
             setReplies(fetchedReplies);
-        }, (error: any) => {
-            console.log("Error fetching replies:", error);
-            if (error.code === 'permission-denied') {
+        }, (error: unknown) => {
+            const err = error as Error & { code?: string };
+            console.log("Error fetching replies:", err);
+            if (err.code === 'permission-denied') {
                 setError(true);
             }
         });
@@ -203,9 +209,9 @@ const SharedGroupSection: FC<SharedGroupSectionProps> = ({ groupId, messageId, g
 
     if (!isMember) {
         return (
-            <div className="shared-group-item disabled" style={{ opacity: 0.6 }}>
+            <div className="shared-group-item disabled">
                 <h5 className="group-name-header">{groupName}</h5>
-                <p style={{ fontSize: '0.8rem', color: '#999', margin: 0, fontStyle: 'italic' }}>
+                <p className="status-label">
                     {t('groupCard.signInFirst') ? (language === 'ja' ? 'グループに参加していません' : 'You are not a member of this group') : 'Not a member'}
                 </p>
             </div>
@@ -216,7 +222,7 @@ const SharedGroupSection: FC<SharedGroupSectionProps> = ({ groupId, messageId, g
         return (
             <div className="shared-group-item error">
                 <h5 className="group-name-header">{groupName}</h5>
-                <p style={{ fontSize: '0.8rem', color: '#999', margin: 0 }}>
+                <p className="status-label">
                     {t('groupCard.unableToJoin') || "Unavailable (Permission Denied)"}
                 </p>
             </div>
@@ -230,8 +236,8 @@ const SharedGroupSection: FC<SharedGroupSectionProps> = ({ groupId, messageId, g
             <div className="activity-stats">
                 <div className="reaction-count">
                     <UilThumbsUp size="16" className="icon" />
-                    <span>{reactions.length}</span>
-                    {reactions.length > 0 && (
+                    <span>{Object.values(reactions).flat().length}</span>
+                    {Object.values(reactions).flat().length > 0 && (
                         <div className="reaction-avatars">
                             {/* Simple text for now, or sliced list */}
                             {/* reactions.map(...) */}

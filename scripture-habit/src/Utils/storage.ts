@@ -25,7 +25,7 @@ export const safeStorage = {
   /**
    * Sets an item in localStorage. Objects are automatically stringified.
    */
-  set: (key: string, value: any): boolean => {
+  set: (key: string, value: unknown): boolean => {
     try {
       const valueToStore = typeof value === 'string' ? value : JSON.stringify(value);
       window.localStorage.setItem(key, valueToStore);

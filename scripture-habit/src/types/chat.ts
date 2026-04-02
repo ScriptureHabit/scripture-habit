@@ -1,10 +1,11 @@
 import { Timestamp } from 'firebase/firestore';
+import { MessageDocument, GroupDocument as SharedGroupDocument, UserDocument as SharedUserDocument } from '../../types/firestore';
 
 /**
  * Common Firebase Timestamp type to handle both Firestore Timestamp
  * and plain JS objects from APIs or persistence.
  */
-export type FirebaseTimestamp = Timestamp | { seconds: number; nanoseconds: number } | any;
+export type FirebaseTimestamp = Timestamp | { seconds: number; nanoseconds: number } | string | Date | number;
 
 export interface Reaction {
   userId: string; // Internal standard
@@ -22,101 +23,74 @@ export type MessageType =
   | 'unityAnnouncement' 
   | 'weeklyRecap';
 
-export interface Message {
-  id: string;
-  text?: string;
-  senderId?: string;
+/**
+ * Frontend Message interface
+ * Extends the shared MessageDocument schema with client-side flags and specific types.
+ */
+export interface Message extends Omit<MessageDocument, 'id' | 'createdAt' | 'editedAt' | 'replyTo'> {
+  id: string; // Required in frontend
+  createdAt?: FirebaseTimestamp;
+  editedAt?: FirebaseTimestamp;
+  messageType?: MessageType;
   senderNickname?: string;
   senderPhotoURL?: string | null;
-  createdAt?: FirebaseTimestamp;
-  messageType?: MessageType;
   
-  // Flags
-  isNote?: boolean;
-  isEntry?: boolean;
-  isSystemMessage?: boolean;
+  // Client-side Flags
   isOptimistic?: boolean;
-  isEdited?: boolean;
   
-  // Content Reference
-  scripture?: string;
-  chapter?: string;
-  originalNoteId?: string;
-  
-  // Metadata
-  editedAt?: FirebaseTimestamp;
+  // Specific ReplyTo type for frontend
   replyTo?: {
     id: string;
     senderNickname: string;
     text: string;
     isNote: boolean;
   } | string | null;
-  
-  reactions?: Record<string, string[]>;
-  translations?: Record<string, string>;
-  [key: string]: any;
+  messageData?: Record<string, string | number>;
+
 }
 
-// UserProfile interface
-export interface UserProfile {
-  uid?: string;
-  id?: string;
-  nickname?: string;
-  photoURL?: string;
+
+/**
+ * Frontend UserProfile interface
+ * Extends/Maps from SharedUserDocument
+ */
+export interface UserProfile extends SharedUserDocument {
+  id?: string; // Often used as alias for uid
   email?: string;
-  stake?: string;
-  ward?: string;
-  bio?: string;
   daysStudiedCount?: number;
-  streakCount?: number;
   totalNotes?: number;
-  [key: string]: any;
 }
 
-export interface Group {
-  id: string;
-  name: string;
-  description?: string;
-  members?: string[];
-  ownerUserId?: string;
+/**
+ * Frontend Group interface
+ * Extends SharedGroupDocument with client-side specific fields (like unreadCount).
+ */
+export interface Group extends Omit<SharedGroupDocument, 'id' | 'inviteCodeExpiresAt' | 'lastNoteAt' | 'lastMessageAt' | 'lastRecapGeneratedAt' | 'createdAt' | 'memberJoinedAt' | 'memberLastActive' | 'memberLastReadAt'> {
+  id: string; // Required in frontend
   ownerId?: string; // Legacy field for compatibility
   
-  // Settings & Status
-  inviteCode?: string;
+  // Timestamps mapped to FirebaseTimestamp
   inviteCodeExpiresAt?: FirebaseTimestamp;
-  isPublic?: boolean;
-  isPrivate?: boolean;
+  lastMessageAt?: FirebaseTimestamp;
+  lastNoteAt?: FirebaseTimestamp;
+  lastNoteAtByNickname?: string;
+  lastRecapGeneratedAt?: FirebaseTimestamp;
+  createdAt?: FirebaseTimestamp;
   
-  // Stats
+  memberJoinedAt?: Record<string, FirebaseTimestamp>;
+  memberLastActive?: Record<string, FirebaseTimestamp>;
+  memberLastReadAt?: Record<string, FirebaseTimestamp>;
+
+  // Client-side UI state
+  unreadCount?: number;
   messageCount?: number;
   noteCount?: number;
-  membersCount?: number;
-  
-  // Activity Mapping
-  lastMessageAt?: FirebaseTimestamp;
-  lastMessageByNickname?: string;
   lastMessageByUid?: string;
-  lastRecapGeneratedAt?: FirebaseTimestamp;
-  lastUnityAnnouncementDate?: string;
-  createdAt?: FirebaseTimestamp;
-  memberPreviews?: { uid: string; nickname: string }[];
-  
-  // Localization
-  translations?: Record<string, { name: string; description?: string }>;
-  
-  // User-specific (often added by client-side mappers)
-  unreadCount?: number;
-  
-  // Detailed tracking
+  lastNoteByUid?: string;
   dailyActivity?: {
     date: string;
     activeMembers: string[];
   };
-  memberLastActive?: Record<string, FirebaseTimestamp>;
-  memberLastReadAt?: Record<string, FirebaseTimestamp>;
-  memberJoinedAt?: Record<string, FirebaseTimestamp>;
-  timeZone?: string;
-  [key: string]: any;
 }
 
 export interface GroupData extends Group {
@@ -128,7 +102,7 @@ export interface UserProfileBrief {
   nickname?: string;
   photoURL?: string;
   profilePicUrl?: string; // Potential legacy field
-  [key: string]: any;
+  lastPostDate?: FirebaseTimestamp;
 }
 
 export interface MembersMap {

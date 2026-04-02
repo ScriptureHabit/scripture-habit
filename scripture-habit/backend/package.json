@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "tsx index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -18,8 +18,9 @@
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
     "express-rate-limit": "^8.3.1",
-    "firebase-admin": "^13.6.0",
+    "firebase-admin": "^10.3.0",
     "helmet": "^8.1.0",
+    "tsx": "^4.15.0",
     "zod": "^4.2.1"
   }
 }

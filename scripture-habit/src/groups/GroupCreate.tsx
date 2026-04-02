@@ -70,7 +70,7 @@ export default function GroupCreate({ currentUser, onCreated }: GroupCreateProps
       
       // 3. Callback
       onCreated?.(docRef.id);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Failed to create group:', err);
       toast.error(t('groupForm.errorCreateFailed') || 'Failed to create group');
     } finally {

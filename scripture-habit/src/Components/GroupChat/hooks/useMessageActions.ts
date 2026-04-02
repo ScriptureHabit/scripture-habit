@@ -1,22 +1,30 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { doc, updateDoc, deleteDoc, arrayRemove, arrayUnion, serverTimestamp, collection, addDoc, increment } from 'firebase/firestore';
-import { db, auth, appCheck } from '../../../firebase';
-import { getToken } from "firebase/app-check";
+import axios from 'axios';
+import { doc, updateDoc, arrayRemove, arrayUnion, serverTimestamp } from 'firebase/firestore';
+import { db } from '../../../firebase';
+import apiClient from '../../../Utils/apiClient';
 import { toast } from 'react-toastify';
 import { Message } from '../../../types/chat';
 
+interface SenderData {
+  uid: string;
+  nickname?: string;
+  photoURL?: string | null;
+}
+
 export const useMessageActions = (
   groupId: string,
-  userData: any,
+  userData: SenderData | null,
   language: string,
-  t: (key: string) => string,
-  API_BASE: string
+  t: (key: string) => string
 ) => {
-  const [translatingIds, setTranslatingIds] = useState<Set<string>>(new Set());
+  const [translatingIds, setTranslatingIdsState] = useState<Set<string>>(new Set());
   const [translatedTexts, setTranslatedTexts] = useState<Record<string, string>>({});
   
+  const translatingIdsRef = useRef<Set<string>>(new Set());
   const batchQueueRef = useRef<Message[]>([]);
-  const batchTimerRef = useRef<any>(null);
+  const batchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const prevGroupIdRef = useRef<string>(groupId);
 
   // Helper to skip translation for messages already in the target language
   const isLikelyAlreadyInLanguage = (text: string, targetLang: string) => {
@@ -26,49 +34,36 @@ export const useMessageActions = (
     return false;
   };
 
-  // Cleanup timer on unmount
+  // Cleanup timer on unmount and clear cache on groupId change
   useEffect(() => {
+    if (prevGroupIdRef.current !== groupId) {
+      setTranslatedTexts({});
+      translatingIdsRef.current.clear();
+      setTranslatingIdsState(new Set());
+      prevGroupIdRef.current = groupId;
+    }
     return () => {
       if (batchTimerRef.current) clearTimeout(batchTimerRef.current);
     };
-  }, []);
+  }, [groupId]);
 
   const handleSendMessage = async (text: string, replyTo: Message | null) => {
-    if (!text.trim() || !userData) return false;
+    if (!text.trim() || !userData || !userData.uid) return false;
     try {
-      const messagesRef = collection(db, 'groups', groupId, 'messages');
-      const groupRef = doc(db, 'groups', groupId);
-
-      const messagePayload: any = {
+      await apiClient.post('/api/post-message', {
+        groupId,
         text: text.trim(),
-        senderId: userData.uid,
-        senderNickname: userData.nickname || 'Unknown',
-        senderPhotoURL: userData.photoURL || null,
-        createdAt: serverTimestamp(),
-        messageType: 'text'
-      };
-
-      if (replyTo) {
-        messagePayload.replyTo = {
-          id: replyTo.id,
-          senderNickname: replyTo.senderNickname || 'User',
-          text: replyTo.text || '',
-          isNote: !!replyTo.isNote
-        };
-      }
-
-      await addDoc(messagesRef, messagePayload);
-      await updateDoc(groupRef, {
-        messageCount: increment(1),
-        lastMessageAt: serverTimestamp(),
-        lastMessageByNickname: userData.nickname || 'User',
-        lastMessageByUid: userData.uid
+        replyTo
       });
 
       return true;
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error sending message:", error);
-      toast.error(t('groupChat.errorSendMessage'));
+      let errorMessage = t('groupChat.errorSendMessage');
+      if (axios.isAxiosError(error)) {
+        errorMessage = error.response?.data?.error || errorMessage;
+      }
+      toast.error(errorMessage);
       return false;
     }
   };
@@ -90,20 +85,21 @@ export const useMessageActions = (
 
   const handleConfirmDeleteMessage = async (messageId: string) => {
     try {
-      await deleteDoc(doc(db, 'groups', groupId, 'messages', messageId));
-      await updateDoc(doc(db, 'groups', groupId), {
-        messageCount: increment(-1)
-      });
+      await apiClient.post('/api/delete-message', { groupId, messageId });
       return true;
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error deleting message:", error);
-      toast.error(t('groupChat.errorDeleteMessage'));
+      let errorMessage = t('groupChat.errorDeleteMessage');
+      if (axios.isAxiosError(error)) {
+        errorMessage = error.response?.data?.error || errorMessage;
+      }
+      toast.error(errorMessage);
       return false;
     }
   };
 
   const handleToggleReaction = useCallback(async (message: Message) => {
-    if (!userData) return;
+    if (!userData || !userData.uid) return;
     try {
       const messageRef = doc(db, 'groups', groupId, 'messages', message.id);
       const emoji = '👍';
@@ -132,112 +128,74 @@ export const useMessageActions = (
 
     // Filter out duplicates and ones already in flight
     const toProcess = queue.filter((m, index, self) => 
-      self.findIndex(t => t.id === m.id) === index && !translatingIds.has(m.id)
+      self.findIndex(t => t.id === m.id) === index && !translatingIdsRef.current.has(m.id)
     );
     if (toProcess.length === 0) return;
 
     const ids = toProcess.map(m => m.id);
-    setTranslatingIds(prev => {
-      const next = new Set(prev);
-      ids.forEach(id => next.add(id));
-      return next;
-    });
+    ids.forEach(id => translatingIdsRef.current.add(id));
+    setTranslatingIdsState(new Set(translatingIdsRef.current));
 
     try {
-      const idToken = await auth?.currentUser?.getIdToken();
-      const appCheckTokenResponse = await getToken(appCheck, false);
-      const appCheckToken = appCheckTokenResponse.token;
-
-      const response = await fetch(`${API_BASE}/api/translate-batch`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${idToken}`,
-          'X-Firebase-AppCheck': appCheckToken
-        },
-        body: JSON.stringify({
-          messages: toProcess.map(m => ({ id: m.id, text: m.text })),
-          targetLanguage: language,
-          groupId: groupId
-        })
+      const response = await apiClient.post('/api/translate-batch', {
+        messages: toProcess.map(m => ({ id: m.id, text: m.text })),
+        targetLanguage: language,
+        groupId: groupId
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        if (data.translations) {
-          setTranslatedTexts(prev => ({ ...prev, ...data.translations }));
-        }
+      if (response.data?.translations) {
+        setTranslatedTexts((prev: Record<string, string>) => ({ ...prev, ...response.data.translations }));
       }
     } catch (e) {
       console.error("Batch translation error:", e);
     } finally {
-      setTranslatingIds(prev => {
-        const next = new Set(prev);
-        ids.forEach(id => next.delete(id));
-        return next;
-      });
+      ids.forEach(id => translatingIdsRef.current.delete(id));
+      setTranslatingIdsState(new Set(translatingIdsRef.current));
     }
-  }, [translatingIds, language, groupId, API_BASE]);
+  }, [language, groupId]);
 
   const handleLazyTranslate = useCallback((message: Message) => {
     if (!message.text || 
         message.translations?.[language] || 
         translatedTexts[message.id] || 
-        translatingIds.has(message.id) ||
+        translatingIdsRef.current.has(message.id) ||
         isLikelyAlreadyInLanguage(message.text, language) // Skip if already in this language
     ) return;
     
     batchQueueRef.current.push(message);
     if (batchTimerRef.current) clearTimeout(batchTimerRef.current);
     batchTimerRef.current = setTimeout(processBatch, 400); // 400ms buffer
-  }, [language, translatedTexts, translatingIds, processBatch]);
+  }, [language, translatedTexts, processBatch]);
 
   const handleTranslateMessage = useCallback(async (message: Message, force = false) => {
-    if (!message.text || (translatingIds.has(message.id) && !force)) return;
+    if (!message.text || (translatingIdsRef.current.has(message.id) && !force)) return;
 
-    setTranslatingIds(prev => new Set(prev).add(message.id));
+    translatingIdsRef.current.add(message.id);
+    setTranslatingIdsState(new Set(translatingIdsRef.current));
     try {
-      const idToken = await auth?.currentUser?.getIdToken();
-      const appCheckTokenResponse = await getToken(appCheck, false);
-      const appCheckToken = appCheckTokenResponse.token;
-
-      const response = await fetch(`${API_BASE}/api/translate`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${idToken}`,
-          'X-Firebase-AppCheck': appCheckToken
-        },
-        body: JSON.stringify({
-          text: message.text,
-          targetLanguage: language,
-          messageId: message.id,
-          groupId: groupId,
-          force // Added force flag
-        })
+      const response = await apiClient.post('/api/translate', {
+        text: message.text,
+        targetLanguage: language,
+        messageId: message.id,
+        groupId: groupId,
+        force // Added force flag
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        if (data.translatedText) {
-          setTranslatedTexts(prev => ({ ...prev, [message.id]: data.translatedText }));
-        }
-      } else {
-        toast.error("Translation failed");
+      if (response.data?.translatedText) {
+        setTranslatedTexts(prev => ({ ...prev, [message.id]: response.data.translatedText }));
       }
     } catch (e) {
       console.error("Translation error:", e);
+      toast.error("Translation failed");
     } finally {
-      setTranslatingIds(prev => {
-        const next = new Set(prev);
-        next.delete(message.id);
-        return next;
-      });
+      translatingIdsRef.current.delete(message.id);
+      setTranslatingIdsState(new Set(translatingIdsRef.current));
     }
-  }, [translatingIds, language, groupId, API_BASE]);
+  }, [language, groupId]);
+
 
   return {
-    translatingIds,
+    translatingIds: translatingIds,
     translatedTexts,
     handleSendMessage,
     handleSaveEdit,

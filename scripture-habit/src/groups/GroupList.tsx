@@ -4,19 +4,15 @@ import { app } from '../firebase';
 import GroupCard from './GroupCard';
 import { useLanguage } from '../Context/LanguageContext';
 import './GroupList.css';
+import { Group } from '../types/chat';
 
 // --- Types ---
 
-interface GroupData {
+interface GroupData extends Omit<Group, 'id'> {
   id: string;
-  name: string;
-  description?: string;
-  members?: string[];
-  lastMessageAt?: any;
-  messageCount?: number;
-  createdAt?: any;
-  [key: string]: any;
 }
+
+
 
 interface GroupListProps {
   currentUser: { uid: string } | null;

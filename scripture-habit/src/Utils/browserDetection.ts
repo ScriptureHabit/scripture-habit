@@ -6,8 +6,9 @@ export const detectInAppBrowser = (): InAppBrowserType | null => {
     const debugBrowser = urlParams.get('debugBrowser');
     if (debugBrowser) return debugBrowser;
 
-    const ua = navigator.userAgent || navigator.vendor || (window as any).opera;
+    const ua = navigator.userAgent || navigator.vendor || (window as unknown as { opera?: string }).opera || '';
     if (/Line\//i.test(ua)) return 'line';
+
     if (/Instagram/i.test(ua)) return 'instagram';
 
     // Distinguish between Facebook and Messenger
@@ -37,13 +38,19 @@ export const handleInAppBrowserRedirect = (): boolean => {
     return false;
 };
 
-export const getLineExternalUrl = (): string => {
-    const url = new URL(window.location.href);
+export const getLineExternalUrl = (currentUrl: string): string => {
+    const url = new URL(currentUrl);
     url.searchParams.set('openExternalBrowser', '1');
     return url.toString();
 };
 
-export const getAndroidIntentUrl = (): string => {
-    const url = window.location.href.replace(/^https?:\/\//, '');
+export const getAndroidIntentUrl = (currentUrl: string): string => {
+    const url = currentUrl.replace(/^https?:\/\//, '');
     return `intent://${url}#Intent;scheme=https;action=android.intent.action.VIEW;end`;
+};
+
+export const openExternalUrl = (url: string) => {
+    if (typeof window !== 'undefined') {
+        window.location.assign(url);
+    }
 };

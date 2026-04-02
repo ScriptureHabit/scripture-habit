@@ -2,11 +2,13 @@ import { useState } from 'react';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../../../firebase';
 import { GroupData, Message, UserProfileBrief } from '../../../types/chat';
+import { UserData } from '../../../types/user';
+import { parseTimestampToMillis } from '../../../Utils/timeUtils';
 
 export const useUnityDetails = (
   groupData: GroupData | null,
   messages: Message[],
-  userData: any
+  userData: UserData | null
 ) => {
   const [showUnityModal, setShowUnityModal] = useState(false);
   const [unityModalData, setUnityModalData] = useState<{ posted: { id: string; nickname: string }[]; notPosted: { id: string; nickname: string }[] }>({ posted: [], notPosted: [] });
@@ -31,9 +33,7 @@ export const useUnityDetails = (
     }
 
     messages.forEach(msg => {
-      let msgTime = 0;
-      if (msg.createdAt?.toDate) msgTime = msg.createdAt.toDate().getTime();
-      else if (msg.createdAt?.seconds) msgTime = msg.createdAt.seconds * 1000;
+      const msgTime = parseTimestampToMillis(msg.createdAt);
       if (msgTime >= todayTime && msg.senderId !== 'system' && !msg.isSystemMessage && msg.isNote) {
         uniquePosters.add(msg.senderId!);
       }

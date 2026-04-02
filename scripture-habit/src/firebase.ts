@@ -39,13 +39,13 @@ if (typeof window !== 'undefined') {
       if (supported) {
         try {
           messaging = getMessaging(app);
-        } catch (e: any) {
-          console.log("getMessaging failed:", e.message);
+        } catch (e: unknown) {
+          console.log("getMessaging failed:", e instanceof Error ? e.message : e);
         }
       }
     })
-    .catch((err: any) => {
-      console.log("Firebase Messaging check failed:", err.message);
+    .catch((err: unknown) => {
+      console.log("Firebase Messaging check failed:", err instanceof Error ? err.message : err);
     });
 }
 
@@ -59,7 +59,7 @@ const db: Firestore = initializeFirestore(app, {
 const storage: FirebaseStorage = getStorage(app);
 
 if (import.meta.env.DEV) {
-    (self as any).FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+    (self as unknown as { FIREBASE_APPCHECK_DEBUG_TOKEN: boolean }).FIREBASE_APPCHECK_DEBUG_TOKEN = true;
 }
 
 const appCheck = initializeAppCheck(app, {

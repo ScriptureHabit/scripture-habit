@@ -6,8 +6,8 @@
     width: 90%;
     max-width: 400px;
     background: rgba(255, 255, 255, 0.98);
-    backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.5);
     border-radius: 24px;
     padding: 1.5rem;
@@ -99,6 +99,20 @@
     border-right: 10px solid transparent;
     border-top: 10px solid rgba(255, 255, 255, 0.95);
     filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.05));
+}
+
+.ios-blue {
+    color: #007AFF;
+}
+
+.step-icon-gray {
+    color: #4a5568;
+}
+
+.install-description {
+    color: #4a5568;
+    font-size: 0.9rem;
+    margin-bottom: 1.2rem;
 }
 
 .install-android {

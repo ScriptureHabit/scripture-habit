@@ -1,7 +1,7 @@
 import { useState, useEffect, FC } from 'react';
 import { UilMultiply, UilShare, UilPlusSquare, UilApps } from '@iconscout/react-unicons';
 import { useLocation } from 'react-router-dom';
-import { useLanguage, SUPPORTED_LANGUAGES } from '../../Context/LanguageContext';
+import { useLanguage, SUPPORTED_LANGUAGES, Language } from '../../Context/LanguageContext';
 import './InstallPrompt.css';
 
 // Extend Navigator for iOS standalone check
@@ -63,7 +63,7 @@ const InstallPrompt: FC = () => {
         // Determine the base path regardless of language prefix
         let base = path;
         const firstPart = pathParts[0];
-        if (SUPPORTED_LANGUAGES.includes(firstPart as any)) {
+        if (SUPPORTED_LANGUAGES.includes(firstPart as Language)) {
             base = '/' + pathParts.slice(1).join('/');
         }
 
@@ -145,7 +145,7 @@ const InstallPrompt: FC = () => {
         <div className="install-prompt-overlay">
             <div className="install-header">
                 <h3>{t('installPrompt.title')}</h3>
-                <button className="close-btn" onClick={handleClose}>
+                <button className="close-btn" onClick={handleClose} aria-label={t('common.close')}>
                     <UilMultiply size="20" />
                 </button>
             </div>
@@ -153,13 +153,13 @@ const InstallPrompt: FC = () => {
             {platform === 'ios' ? (
                 <div className="install-steps">
                     <div className="step">
-                        <UilShare size="24" className="step-icon" style={{ color: '#007AFF' }} />
+                        <UilShare size="24" className="step-icon ios-blue" />
                         <span className="step-text">
                             {t('installPrompt.instruction1')}
                         </span>
                     </div>
                     <div className="step">
-                        <UilPlusSquare size="24" className="step-icon" style={{ color: '#4a5568' }} />
+                        <UilPlusSquare size="24" className="step-icon step-icon-gray" />
                         <span className="step-text">
                             {t('installPrompt.instruction2')}
                         </span>
@@ -169,7 +169,7 @@ const InstallPrompt: FC = () => {
                 </div>
             ) : (
                 <div className="install-android">
-                    <p style={{ color: '#4a5568', fontSize: '0.9rem', marginBottom: '1.2rem' }}>
+                    <p className="install-description">
                         {t('installPrompt.description')}
                     </p>
                     <button className="pwa-install-button" onClick={handleInstallClick}>

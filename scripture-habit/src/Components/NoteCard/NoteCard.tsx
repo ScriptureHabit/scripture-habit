@@ -2,6 +2,7 @@ import { FC, MouseEvent } from 'react';
 import NoteDisplay from '../NoteDisplay/NoteDisplay';
 import { getGospelLibraryUrl } from '../../Utils/gospelLibraryMapper';
 import { useLanguage } from '../../Context/LanguageContext';
+import { parseTimestampToDate } from '../../Utils/timeUtils';
 import './NoteCard.css';
 import { Note } from '../../types/note';
 
@@ -64,7 +65,7 @@ const NoteCard: FC<NoteCardProps> = ({
         >
             <div className="note-header">
                 <span className="note-date">
-                    {note.createdAt?.toDate().toLocaleDateString(language === 'en' ? 'sv-SE' : language) || 'Unknown Date'}
+                    {note.createdAt ? parseTimestampToDate(note.createdAt).toLocaleDateString(language === 'en' ? 'sv-SE' : language) : 'Unknown Date'}
                 </span>
             </div>
             <div className="note-content-preview">

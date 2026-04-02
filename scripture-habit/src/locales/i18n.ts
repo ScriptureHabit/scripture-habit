@@ -1,6 +1,6 @@
 import { Language } from '../Context/LanguageContext';
 
-const loaders: Record<Language, () => Promise<any>> = {
+const loaders: Record<Language, () => Promise<{ default: Record<string, unknown> }>> = {
   en: () => import('./en'),
   ja: () => import('./ja'),
   pt: () => import('./pt'),
@@ -13,7 +13,7 @@ const loaders: Record<Language, () => Promise<any>> = {
   sw: () => import('./sw'),
 };
 
-const bookLoaders: Record<Language, () => Promise<any>> = {
+const bookLoaders: Record<Language, () => Promise<{ default: Record<string, unknown> }>> = {
   en: () => import('./books/en'),
   ja: () => import('./books/ja'),
   pt: () => import('./books/pt'),

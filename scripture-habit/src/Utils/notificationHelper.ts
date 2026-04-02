@@ -7,8 +7,9 @@ import { toast } from 'react-toastify';
 const VAPID_KEY = "BM2Y3WcLC7cH5CHND3nzDh2eoNvsIxc7X2aRTaQj0TXENvee9klPqLrJvb8x2DfQ-yMgMHlXMhkal0tt6czIaKM";
 
 const isInAppBrowser = (): boolean => {
-    const ua = window.navigator.userAgent || window.navigator.vendor || (window as any).opera;
+    const ua = window.navigator.userAgent || window.navigator.vendor || (window as unknown as { opera?: string }).opera || '';
     return (ua.indexOf('FBAN') > -1) || (ua.indexOf('FBAV') > -1) || // Facebook
+
         (ua.indexOf('Instagram') > -1) || // Instagram
         (ua.indexOf('Line') > -1) || // LINE
         (ua.indexOf('Twitter') > -1) || // Twitter
@@ -96,7 +97,7 @@ export const requestNotificationPermission = async (
                            await updateDoc(userRef, {
                                fcmTokens: arrayRemove(token)
                            });
-                        } catch (e) {
+                        } catch (e: unknown) {
                            // Ignore if field doesn't exist
                         }
                     }
@@ -106,14 +107,16 @@ export const requestNotificationPermission = async (
                     console.log('No FCM token received.');
                     throw new Error('No registration token available');
                 }
-            } catch (innerError: any) {
+            } catch (innerError: unknown) {
                 console.error('Detailed error during SW/Token process:', innerError);
+
+                const err = innerError as Error & { name?: string, code?: string };
 
                 // Specific messaging for known errors
                 let userFriendlyMsg = translate('notificationSetup.generalError', 'An error occurred while setting up notifications.');
-                if (innerError.name === 'NotAllowedError') {
+                if (err.name === 'NotAllowedError') {
                     userFriendlyMsg = translate('notificationSetup.swRegistrationDenied', 'Service worker registration was denied by browser settings. Please disable Incognito/Private mode or check your settings.');
-                } else if (innerError.code === 'messaging/permission-blocked') {
+                } else if (err.code === 'messaging/permission-blocked') {
                     userFriendlyMsg = translate('notificationSetup.permissionBlocked', 'Notification permission is blocked. Please allow it in your browser settings.');
                 }
 
@@ -124,9 +127,11 @@ export const requestNotificationPermission = async (
             console.warn('Notification permission denied by user.');
             toast.info(translate('notificationSetup.permissionDenied', 'Notifications are blocked. Please enable them in your browser settings (icon to the left of the URL).'));
         }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('An error occurred during notification setup flow:', error);
-        if (error.name === 'NotAllowedError') {
+        const err = error as Error & { name?: string };
+
+        if (err.name === 'NotAllowedError') {
             toast.error(translate('notificationSetup.notAllowedError', 'Notification settings are restricted in your browser (possibly due to Incognito mode or settings).'));
         } else {
             toast.error(translate('notificationSetup.setupFailed', 'Notification setup failed. Please try again later.'));
@@ -175,7 +180,7 @@ export const disableNotifications = async (userId: string | null | undefined): P
             await deleteToken(messaging);
         }
         return true;
-    } catch (error) {
+    } catch (error: unknown) {
         console.error('Error disabling notifications:', error);
         return false;
     }

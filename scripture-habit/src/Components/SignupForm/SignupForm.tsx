@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Button from '../Button/Button';
 import { auth, db } from '../../firebase';
-import { createUserWithEmailAndPassword, GoogleAuthProvider, GithubAuthProvider, signInWithPopup, sendEmailVerification, signOut, signInWithCredential, AuthProvider, User } from 'firebase/auth';
+import { createUserWithEmailAndPassword, GoogleAuthProvider, GithubAuthProvider, signInWithPopup, sendEmailVerification, signOut, signInWithCredential, AuthProvider, User, AuthError, UserCredential } from 'firebase/auth';
 import { Capacitor } from '@capacitor/core';
 import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
 import { doc, setDoc, getDoc, Timestamp } from 'firebase/firestore';
@@ -24,7 +24,7 @@ export default function SignupForm() {
 
   const handleSocialSignup = async (provider: AuthProvider) => {
     try {
-      let result: any;
+      let result: UserCredential;
       // Check if this is a Google login request
       if (provider instanceof GoogleAuthProvider) {
         try {
@@ -67,8 +67,9 @@ export default function SignupForm() {
         navigate(`/${language}/dashboard`);
       }
 
-    } catch (error: any) {
-      console.error("Error signing in with provider:", error);
+    } catch (err: unknown) {
+      console.error("Error signing in with provider:", err);
+      const error = err as AuthError;
       if (error.code === 'auth/account-exists-with-different-credential') {
         setError(t('signup.errorAccountExistsWithDifferentCredential'));
       } else if (error.code === 'auth/invalid-credential') {
@@ -153,11 +154,12 @@ export default function SignupForm() {
       toast.info(t('signup.verificationSent'));
       navigate(`/${language}/login`);
 
-    } catch (authError: any) {
+    } catch (err: unknown) {
+      const authError = err as AuthError;
       console.error("Error creating user in Authentication:", authError);
       if (authError.code === 'auth/email-already-in-use') {
         setError(t('signup.errorEmailInUse'));
-      } else if (authError.code === 'resource-exhausted' || authError.message.toLowerCase().includes('quota exceeded')) {
+      } else if (authError.code === 'resource-exhausted' || authError.message?.toLowerCase().includes('quota exceeded')) {
         setError(t('systemErrors.quotaExceededMessage'));
       } else {
         setError(authError.message);
@@ -175,14 +177,18 @@ export default function SignupForm() {
               label={t('signup.nicknameLabel')}
               type="text"
               value={nickname}
-              onChange={(e: any) => setNickname(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setNickname(e.target.value)}
               required
             />
             <Button type="submit">
               {t('signup.finishSignup')}
             </Button>
           </form>
-          {error && <p style={{ color: 'red', marginTop: 10 }}>{error}</p>}
+          {error && (
+            <div className='error-container'>
+              <p className='error-message'>{error}</p>
+            </div>
+          )}
         </div>
         <Footer />
       </div>
@@ -224,20 +230,20 @@ export default function SignupForm() {
             label={t('signup.nicknameLabel')}
             type="text"
             value={nickname}
-            onChange={(e: any) => setNickname(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setNickname(e.target.value)}
             required
           />
           <Input
             label={t('signup.emailLabel')}
             type="email"
             value={email}
-            onChange={(e: any) => setEmail(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setEmail(e.target.value)}
             required />
           <Input
             label={t('signup.passwordLabel')}
             type="password"
             value={password}
-            onChange={(e: any) => setPassword(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setPassword(e.target.value)}
             required
           />
           <p className="form-note">{t('signup.spamWarning')}</p>
@@ -246,7 +252,7 @@ export default function SignupForm() {
           </Button>
         </form>
         {error && (
-          <div className='error-container' style={{ marginTop: '10px' }}>
+          <div className='error-container'>
             <p className='error-message'>{error}</p>
           </div>
         )}

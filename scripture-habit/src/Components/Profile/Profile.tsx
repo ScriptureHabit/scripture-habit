@@ -25,6 +25,15 @@ interface ProfileProps {
     stats: ProfileStats;
 }
 
+interface BeforeInstallPromptEvent extends Event {
+    readonly platforms: string[];
+    readonly userChoice: Promise<{
+        outcome: 'accepted' | 'dismissed';
+        platform: string;
+    }>;
+    prompt(): Promise<void>;
+}
+
 const Profile: FC<ProfileProps> = ({ userData, stats }) => {
     const { language, setLanguage, t } = useLanguage();
     const { fontSize, setFontSize } = useSettings();
@@ -48,7 +57,7 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
 
     // PWA Install properties
     const [platform, setPlatform] = useState<'ios' | 'android' | null>(null);
-    const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+    const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
     const [isStandalone, setIsStandalone] = useState(false);
 
     useEffect(() => {
@@ -58,28 +67,29 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
             (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
         const isAndroid = /Android/i.test(ua);
 
-        const standaloneCheck = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone;
-        setIsStandalone(standaloneCheck);
+        const standaloneCheck = window.matchMedia('(display-mode: standalone)').matches || ('standalone' in window.navigator);
+        setIsStandalone(!!standaloneCheck);
 
         if (!standaloneCheck) {
             if (isIOS) setPlatform('ios');
             else if (isAndroid) setPlatform('android');
         }
 
-        const handleBeforeInstallPrompt = (e: any) => {
+        const handleBeforeInstallPrompt = (e: Event) => {
             e.preventDefault();
-            setDeferredPrompt(e);
+            setDeferredPrompt(e as BeforeInstallPromptEvent);
             setPlatform('android');
         };
 
+
         window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
-        if ((window as any).deferredPWAPrompt) {
-            setDeferredPrompt((window as any).deferredPWAPrompt);
+        if ('deferredPWAPrompt' in window) {
+            setDeferredPrompt((window as { deferredPWAPrompt?: BeforeInstallPromptEvent }).deferredPWAPrompt || null);
         }
 
         return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-    }, []);
+    }, [deferredPrompt]);
 
     const handleInstallClick = async () => {
         if (!deferredPrompt) return;
@@ -108,7 +118,7 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
             try {
                 await requestNotificationPermission(userData.uid, (key, defaultText) => t(key) || defaultText);
                 setNotifPermission(window.Notification.permission);
-            } catch (err: any) {
+            } catch (err: unknown) {
                 console.error("Toggle error:", err);
             }
         }
@@ -217,8 +227,8 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
 
             setPhotoURL(url);
             toast.success(t('profile.imageUploadSuccess') || "Profile picture updated!");
-        } catch (error: any) {
-            console.error("Error uploading image:", error);
+        } catch (err: unknown) {
+            console.error("Error uploading image:", err);
             toast.error(t('profile.imageUploadError') || "Failed to update profile picture.");
         } finally {
             setIsUploading(false);
@@ -252,8 +262,8 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
             setTimeout(() => {
                 setMessage({ type: '', text: '' });
             }, 3000);
-        } catch (error: any) {
-            console.error("Error updating profile:", error);
+        } catch (err: unknown) {
+            console.error("Error updating profile:", err);
             setMessage({ type: 'error', text: t('profile.errorUpdate') });
         } finally {
             setIsSaving(false);
@@ -297,8 +307,8 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
                 await auth?.signOut();
                 navigate('/welcome');
             }
-        } catch (error: any) {
-            console.error("Error during account deletion process:", error);
+        } catch (err: unknown) {
+            console.error("Error during account deletion process:", err);
             toast.error(t('profile.deleteAccountError') || "Error deleting account");
             await auth?.signOut();
             navigate('/welcome');
@@ -329,24 +339,28 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
                     </div>
                 </div>
                 <input
+                    id="profile-photo-input"
                     type="file"
                     ref={fileInputRef}
                     onChange={handleFileChange}
                     accept="image/*"
-                    style={{ display: 'none' }}
+                    className="hidden-input"
+                    title={t('profile.photoHint') || "Change profile picture"}
                 />
                 <p className="photo-hint">{t('profile.photoHint') || "Tap to change profile picture"}</p>
             </div>
 
             <div className="profile-section notification-toggle-section">
-                <div style={{ flex: 1 }}>
-                    <h2 style={{ margin: 0, fontSize: '1.1rem' }}>{t('profile.notificationToggle.title')}</h2>
-                    <p style={{ fontSize: '0.8rem', color: 'var(--gray)', margin: '4px 0 0' }}>{t('profile.notificationToggle.description')}</p>
+                <div className="notif-text">
+                    <h2 className="notif-title">{t('profile.notificationToggle.title')}</h2>
+                    <p className="notif-desc">{t('profile.notificationToggle.description')}</p>
                 </div>
                 <div className="switch-wrapper">
-                    <label className="switch">
+                    <label className="switch" htmlFor="notif-toggle-input">
                         <input
+                            id="notif-toggle-input"
                             type="checkbox"
+                            aria-label={t('profile.notificationToggle.title')}
                             checked={notifPermission === 'granted'}
                             onChange={handleToggleNotifications}
                             disabled={isNotifLoading || notifPermission === 'denied'}
@@ -361,29 +375,21 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
 
             {/* PWA Install App Section */}
             {!isStandalone && platform && (
-                <div className="profile-section" style={{ marginTop: '-0.5rem', marginBottom: '2rem' }}>
-                    <h2 style={{ margin: 0, fontSize: '1.1rem' }}>{t('profile.installApp.title') || (language === 'ja' ? 'アプリをインストール' : 'Install App')}</h2>
-                    <p style={{ fontSize: '0.8rem', color: 'var(--gray)', margin: '4px 0 12px' }}>
+                <div className="profile-section install-app-section">
+                    <h2 className="section-title">{t('profile.installApp.title') || (language === 'ja' ? 'アプリをインストール' : 'Install App')}</h2>
+                    <p className="section-desc">
                         {t('profile.installApp.description') || (language === 'ja' ? 'ホーム画面に追加してアプリとしてご利用いただけます。' : 'Add to home screen for a better app experience.')}
                     </p>
                     {platform === 'ios' ? (
-                        <div style={{ background: 'rgba(107, 70, 193, 0.05)', padding: '12px', borderRadius: '12px' }}>
-                            <p style={{ fontSize: '0.9rem', color: '#4a5568', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <div className="ios-instruction">
+                            <p className="instruction-text">
                                 {t('profile.installApp.iosInstruction') || (language === 'ja' ? 'Safariの下部中央にある「シェア」ボタンをタップし、「ホーム画面に追加」を選んでください。' : "Tap the Share button at the bottom of Safari, then select 'Add to Home Screen'.")}
                             </p>
                         </div>
                     ) : (
                         <Button
                             onClick={handleInstallClick}
-                            style={{
-                                width: '100%',
-                                display: 'flex',
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                gap: '8px',
-                                background: !deferredPrompt ? undefined : 'linear-gradient(135deg, #FF919D 0%, #FF7081 100%)',
-                                color: !deferredPrompt ? undefined : 'white'
-                            }}
+                            className={`install-btn ${!deferredPrompt ? 'disabled' : ''}`}
                             disabled={!deferredPrompt}
                         >
                             {t('profile.installApp.androidButton') || (language === 'ja' ? 'アプリをホーム画面に追加' : "Add to Home Screen")}
@@ -394,8 +400,9 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
 
             <div className="profile-section">
                 <div className="input-group">
-                    <label className="input-label">{t('profile.nickname')}</label>
+                    <label className="input-label" htmlFor="profile-nickname">{t('profile.nickname')}</label>
                     <input
+                        id="profile-nickname"
                         type="text"
                         value={nickname}
                         onChange={(e) => setNickname(e.target.value)}
@@ -404,8 +411,9 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
                     />
                 </div>
                 <div className="input-group">
-                    <label className="input-label">{t('profile.stake')}</label>
+                    <label className="input-label" htmlFor="profile-stake">{t('profile.stake')}</label>
                     <input
+                        id="profile-stake"
                         type="text"
                         value={stake}
                         onChange={(e) => setStake(e.target.value)}
@@ -414,8 +422,9 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
                     />
                 </div>
                 <div className="input-group">
-                    <label className="input-label">{t('profile.ward')}</label>
+                    <label className="input-label" htmlFor="profile-ward">{t('profile.ward')}</label>
                     <input
+                        id="profile-ward"
                         type="text"
                         value={ward}
                         onChange={(e) => setWard(e.target.value)}
@@ -424,8 +433,9 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
                     />
                 </div>
                 <div className="input-group">
-                    <label className="input-label">{t('profile.bio')}</label>
+                    <label className="input-label" htmlFor="profile-bio">{t('profile.bio')}</label>
                     <input
+                        id="profile-bio"
                         type="text"
                         value={bio}
                         onChange={(e) => setBio(e.target.value)}
@@ -460,7 +470,7 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
                                 <div className="level-progress-bar">
                                     <div
                                         className="level-progress-fill"
-                                        style={{ width: `${((stats.daysStudied || 0) % 7) / 7 * 100}%` }}
+                                        style={{ '--progress': `${((stats.daysStudied || 0) % 7) / 7 * 100}%` } as React.CSSProperties}
                                     ></div>
                                 </div>
                             </div>
@@ -486,18 +496,18 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
 
 
             <div className="profile-section">
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '0.5rem' }}>
+                <div className="habit-pace-header">
                     <UilCalendarAlt size="20" color="var(--pink)" />
-                    <h2 style={{ margin: 0 }}>{t('groupChat.habitPaceProfileTitle')}</h2>
+                    <h2>{t('groupChat.habitPaceProfileTitle')}</h2>
                 </div>
-                <p style={{ marginBottom: '1.2rem', fontSize: '0.9rem', color: 'var(--gray)' }}>
+                <p className="section-desc-small">
                     {t('groupChat.habitPaceProfileDesc').replace('{days}', (userData?.kickThreshold || 3).toString())}
                 </p>
-                <div className="font-size-options" style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '8px' }}>
+                <div className="font-size-options habit-pace-grid">
                     {[3, 4, 5, 6, 7].map(days => (
                         <div
                             key={days}
-                            className={`font-option ${userData?.kickThreshold === days ? 'active' : ''}`}
+                            className={`font-option habit-pace-option ${userData?.kickThreshold === days ? 'active' : ''}`}
                             onClick={async () => {
                                 if (userData?.kickThreshold === days) return;
                                 try {
@@ -517,15 +527,15 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
                                         const errorData = await response.json();
                                         toast.error(`Failed to update: ${errorData.error || response.statusText}`);
                                     }
-                                } catch (error: any) {
-                                    console.error("Error updating pace:", error);
+                                } catch (err: unknown) {
+                                    console.error("Error updating pace:", err);
+                                    const error = err as Error;
                                     toast.error(`Error updating pace: ${error.message}`);
                                 }
                             }}
-                            style={{ padding: '10px 5px', minWidth: 0 }}
                         >
-                            <span style={{ fontSize: '1.1rem', fontWeight: 'bold' }}>{days}</span>
-                            <span style={{ fontSize: '0.7rem' }}>{t('dashboard.days')}</span>
+                            <span className="habit-pace-days">{days}</span>
+                            <span className="habit-pace-label">{t('dashboard.days')}</span>
                         </div>
                     ))}
                 </div>
@@ -533,34 +543,34 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
 
             <div className="profile-section">
                 <h2>{t('profile.fontSize.title')}</h2>
-                <p style={{ marginBottom: '1.2rem', fontSize: '0.9rem', color: 'var(--gray)' }}>{t('profile.fontSize.description')}</p>
+                <p className="section-desc-small">{t('profile.fontSize.description')}</p>
                 <div className="font-size-options">
                     <div
                         className={`font-option ${fontSize === 'small' ? 'active' : ''}`}
                         onClick={() => setFontSize('small')}
                     >
-                        <span style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>A</span>
+                        <span className="font-option-A-sm">A</span>
                         <span>{t('profile.fontSize.small')}</span>
                     </div>
                     <div
                         className={`font-option ${fontSize === 'medium' ? 'active' : ''}`}
                         onClick={() => setFontSize('medium')}
                     >
-                        <span style={{ fontSize: '1rem', fontWeight: 'bold' }}>A</span>
+                        <span className="font-option-A-md">A</span>
                         <span>{t('profile.fontSize.medium')}</span>
                     </div>
                     <div
                         className={`font-option ${fontSize === 'large' ? 'active' : ''}`}
                         onClick={() => setFontSize('large')}
                     >
-                        <span style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>A</span>
+                        <span className="font-option-A-lg">A</span>
                         <span>{t('profile.fontSize.large')}</span>
                     </div>
                     <div
                         className={`font-option ${fontSize === 'extraLarge' ? 'active' : ''}`}
                         onClick={() => setFontSize('extraLarge')}
                     >
-                        <span style={{ fontSize: '1.4rem', fontWeight: 'bold' }}>A</span>
+                        <span className="font-option-A-xl">A</span>
                         <span>{t('profile.fontSize.extraLarge')}</span>
                     </div>
                 </div>
@@ -643,10 +653,10 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
 
             </div>
 
-            <div className="profile-section" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', color: 'var(--red)', marginTop: '20px', marginBottom: '20px' }} onClick={handleSignOut}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div className="profile-section sign-out-section" onClick={handleSignOut}>
+                <div className="sign-out-btn-content">
                     <UilSignOutAlt />
-                    <span style={{ fontSize: '1.2rem', fontWeight: '500' }}>{t('signOut.title')}</span>
+                    <span className="sign-out-btn-text">{t('signOut.title')}</span>
                 </div>
             </div>
 
@@ -654,27 +664,19 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
             {/* Sign Out Confirmation Modal */}
             {showSignOutModal && (
                     <div className="group-modal-overlay" onClick={() => setShowSignOutModal(false)}>
-                        <div className="group-modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '300px', textAlign: 'center' }}>
+                        <div className="group-modal-content modal-small" onClick={(e) => e.stopPropagation()}>
                             <h3>{t('signOut.title')}</h3>
                             <p>{t('signOut.message')}</p>
-                            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', marginTop: '1rem' }}>
+                            <div className="modal-footer">
                                 <button
-                                    className="close-modal-btn"
+                                    className="close-modal-btn modal-btn-cancel"
                                     onClick={() => setShowSignOutModal(false)}
-                                    style={{ marginTop: 0, flex: 1 }}
                                 >
                                     {t('signOut.cancel')}
                                 </button>
                                 <button
-                                    className="close-modal-btn"
+                                    className="close-modal-btn modal-btn-confirm"
                                     onClick={confirmSignOut}
-                                    style={{
-                                        marginTop: 0,
-                                        flex: 1,
-                                        background: 'var(--pink)',
-                                        color: 'white',
-                                        border: 'none'
-                                    }}
                                 >
                                     {t('signOut.confirm')}
                                 </button>
@@ -684,20 +686,13 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
             )}
 
             {/* Account Deletion Verification */}
-            <div className="profile-section" style={{ marginTop: '40px', borderTop: '1px solid #eee', paddingTop: '20px', display: 'flex', justifyContent: 'center' }}>
+            <div className="profile-section delete-account-section">
                 <button
                     onClick={() => {
                         setConfirmNickname('');
                         setShowDeleteModal(true);
                     }}
-                    style={{
-                        background: 'none',
-                        border: 'none',
-                        color: '#a0aec0',
-                        fontSize: '0.9rem',
-                        textDecoration: 'underline',
-                        cursor: 'pointer'
-                    }}
+                    className="delete-account-link"
                 >
                     {t('profile.deleteAccount')}
                 </button>
@@ -706,12 +701,12 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
             {/* Delete Account Modal */}
             {showDeleteModal && (
                 <div className="group-modal-overlay" onClick={() => setShowDeleteModal(false)}>
-                    <div className="group-modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '400px', textAlign: 'center' }}>
-                        <h3 style={{ color: 'var(--red)' }}>{t('profile.deleteAccount')}</h3>
-                        <p style={{ margin: '1rem 0', lineHeight: '1.5', fontWeight: 'bold' }}>{t('profile.deleteAccountWarning')}</p>
+                    <div className="group-modal-content modal-medium" onClick={(e) => e.stopPropagation()}>
+                        <h3 className="modal-danger-title">{t('profile.deleteAccount')}</h3>
+                        <p className="modal-warning-text">{t('profile.deleteAccountWarning')}</p>
 
-                        <div style={{ marginBottom: '1.5rem', textAlign: 'left' }}>
-                            <p style={{ fontSize: '0.9rem', color: '#666', marginBottom: '0.5rem' }}>
+                        <div className="modal-confirm-wrapper">
+                            <p className="modal-confirm-hint">
                                 {t('profile.typeToConfirmNickname').replace('{nickname}', userData.nickname || '')}
                             </p>
                             <input
@@ -719,29 +714,21 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
                                 value={confirmNickname}
                                 onChange={(e) => setConfirmNickname(e.target.value)}
                                 placeholder={userData.nickname}
-                                style={{
-                                    width: '100%',
-                                    padding: '0.8rem',
-                                    borderRadius: '8px',
-                                    border: '1px solid #ddd',
-                                    boxSizing: 'border-box'
-                                }}
+                                className="modal-confirm-input"
                             />
                         </div>
 
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                        <div className="modal-footer-vertical">
                             <button
                                 className={`close-modal-btn ${confirmNickname.trim() === (userData.nickname || '').trim() ? 'delete-btn-active' : 'delete-btn-disabled'}`}
                                 onClick={handleDeleteAccount}
                                 disabled={isDeleting || confirmNickname.trim() !== (userData.nickname || '').trim()}
-                                style={{ marginTop: 0 }}
                             >
                                 {isDeleting ? '...' : t('profile.confirmDeleteAccount')}
                             </button>
                             <button
                                 className="close-modal-btn"
                                 onClick={() => setShowDeleteModal(false)}
-                                style={{ marginTop: 0 }}
                             >
                                 {t('profile.cancelDeleteAccount')}
                             </button>

@@ -2,8 +2,10 @@ import React, { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, useLocation, useNavigationType, createRoutesFromChildren, matchRoutes } from 'react-router-dom';
 import * as Sentry from "@sentry/react";
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import './index.css'
 import App from './App'
+import { AuthProvider } from './Context/AuthContext';
 import VConsole from 'vconsole';
 
 // Only initialize vConsole if ?vconsole=true is in the URL
@@ -15,7 +17,7 @@ if (window.location.search.includes('vconsole=true')) {
 window.deferredPWAPrompt = null;
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
-  window.deferredPWAPrompt = e;
+  window.deferredPWAPrompt = e as BeforeInstallPromptEvent;
 });
 
 // SILENCE NON-CRITICAL ERRORS: 
@@ -33,10 +35,12 @@ window.addEventListener('unhandledrejection', (event) => {
   }
 
   // Silence Firebase permission-denied errors that escape try/catch via internal async queue
+  // ONLY in production to ensure proper security rules debugging locally
   if (
-    reason.code === 'permission-denied' ||
+    import.meta.env.PROD &&
+    (reason.code === 'permission-denied' ||
     reason.message?.includes('Missing or insufficient permissions') ||
-    reason.message?.includes('permission-denied')
+    reason.message?.includes('permission-denied'))
   ) {
     event.preventDefault();
     return;
@@ -65,13 +69,44 @@ Sentry.init({
   replaysOnErrorSampleRate: 1.0, // Only record when an error occurs
 });
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      retry: 1,
+    },
+  },
+});
+
 const rootElement = document.getElementById('root');
 if (rootElement) {
   createRoot(rootElement).render(
     <StrictMode>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
+      <Sentry.ErrorBoundary
+        fallback={({ resetError }) => (
+          <div className="App error-screen-root">
+            <div className="AppGlass error-glass-card-root">
+              <h1 className="error-emoji-root">🛸</h1>
+              <h2 className="error-title-root">Something went wrong.</h2>
+              <p className="error-desc-root">We've been notified and are looking into it.</p>
+              <button 
+                onClick={() => { resetError(); window.location.href = '/'; }}
+                className="error-reload-btn-root"
+              >
+                Reload App
+              </button>
+            </div>
+          </div>
+        )}
+      >
+        <QueryClientProvider client={queryClient}>
+          <BrowserRouter>
+            <AuthProvider>
+              <App />
+            </AuthProvider>
+          </BrowserRouter>
+        </QueryClientProvider>
+      </Sentry.ErrorBoundary>
     </StrictMode>,
   )
 }

@@ -5,7 +5,7 @@ import { Message } from '../../../types/chat';
 
 interface SystemMessageProps {
   msg: Message;
-  t: (key: string, replacements?: any) => string;
+  t: (key: string, replacements?: Record<string, string | number>) => string;
   kickThreshold?: number;
 }
 
@@ -15,23 +15,28 @@ const SystemMessage: FC<SystemMessageProps> = ({ msg, t, kickThreshold = 3 }) =>
   const getSystemText = () => {
     // New format: has messageType and messageData
     if (msg.messageType === 'streakAnnouncement' && msg.messageData) {
+      const data = msg.messageData;
       return t('groupChat.streakAnnouncement', {
-        nickname: msg.messageData.nickname,
-        streak: msg.messageData.streakCount || msg.messageData.streak
+        nickname: String(data.nickname || ''),
+        streak: data.streakCount || data.streak || 0
       });
     }
 
     if (msg.messageType === 'userJoined' && msg.messageData) {
+      const data = msg.messageData;
       return t('groupChat.userJoined', {
-        nickname: msg.messageData.nickname
+        nickname: String(data.nickname || '')
       });
     }
 
     if (msg.messageType === 'userLeft' && msg.messageData) {
+      const data = msg.messageData;
       return t('groupChat.userLeft', {
-        nickname: msg.messageData.nickname
+        nickname: String(data.nickname || '')
       });
     }
+
+
 
     if (msg.messageType === 'unityAnnouncement') {
       return t('groupChat.unityAnnouncement');

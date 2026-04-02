@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { doc, onSnapshot, collection } from 'firebase/firestore';
+import { doc, onSnapshot, collection, FirestoreError } from 'firebase/firestore';
 import { db } from '../../../firebase';
 import { UserData } from '../../../types/user';
 import { Group } from '../../../types/chat';
@@ -7,7 +7,7 @@ import { Group } from '../../../types/chat';
 export const useDashboardGroups = (userData: UserData | null, initialGroupId: string | null) => {
     const [userGroups, setUserGroups] = useState<Group[]>([]);
     const [rawUserGroups, setRawUserGroups] = useState<Group[]>([]);
-    const [groupStates, setGroupStates] = useState<Record<string, any>>({});
+    const [groupStates, setGroupStates] = useState<Record<string, { readMessageCount?: number }>>({});
     const [loadingGroupStates, setLoadingGroupStates] = useState<boolean>(true);
     const [activeGroupId, setActiveGroupId] = useState<string | null>(initialGroupId);
 
@@ -22,19 +22,23 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
             return;
         }
 
+        // Immediately filter out groups that are no longer in userData.groupIds
+        setRawUserGroups(prev => prev.filter(g => groupIds.includes(g.id)));
+
         // Set active group if not set
         if (!activeGroupId && groupIds.length > 0) {
             setActiveGroupId(groupIds[0]);
         }
 
+
         const fetchGroups = async () => {
             const unsubscribers: (() => void)[] = [];
-            const groupsData: Record<string, any> = {};
+            const groupsData: Record<string, Group> = {};
 
             groupIds.forEach(gid => {
                 const unsub = onSnapshot(doc(db, 'groups', gid), (docSnap) => {
                     if (docSnap.exists()) {
-                        groupsData[gid] = { id: gid, ...docSnap.data() };
+                        groupsData[gid] = { id: gid, ...docSnap.data() } as Group;
                         setRawUserGroups(prev => {
                             const newGroups = groupIds
                                 .map(id => groupsData[id] || prev.find(g => g.id === id))
@@ -46,7 +50,7 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
                         delete groupsData[gid];
                         setRawUserGroups(prev => prev.filter(g => g.id !== gid));
                     }
-                }, (err: any) => {
+                }, (err: FirestoreError) => {
                     if (err.code === 'permission-denied') {
                         // Group deleted or access revoked - exclude from rawUserGroups
                         delete groupsData[gid];
@@ -67,7 +71,7 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
         return () => {
             cleanupPromise.then(cleanup => cleanup && cleanup());
         };
-    }, [userData?.groupIds, userData?.groupId]);
+    }, [userData, activeGroupId]);
 
     // Fetch user group states (read counts)
     useEffect(() => {
@@ -76,13 +80,13 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
         setLoadingGroupStates(true);
         const groupStatesRef = collection(db, 'users', userData.uid, 'groupStates');
         const unsubscribe = onSnapshot(groupStatesRef, (snapshot) => {
-            const states: Record<string, any> = {};
+            const states: Record<string, { readMessageCount?: number }> = {};
             snapshot.forEach(doc => {
                 states[doc.id] = doc.data();
             });
             setGroupStates(states);
             setLoadingGroupStates(false);
-        }, (err: any) => {
+        }, (err: FirestoreError) => {
             if (err.code !== 'permission-denied') {
                 console.log("Error fetching group states:", err);
             }

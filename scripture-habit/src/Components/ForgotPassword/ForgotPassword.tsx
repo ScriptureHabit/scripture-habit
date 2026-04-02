@@ -22,8 +22,9 @@ export default function ForgotPassword() {
       if (!auth) throw new Error("Authentication service is not available.");
       await sendPasswordResetEmail(auth, email);
       setMessage(t('forgotPasswordPage.successMessage'));
-    } catch (err: any) {
-      setError(err?.message || "An error occurred");
+    } catch (err: unknown) {
+      const error = err as Error;
+      setError(error?.message || "An error occurred");
     }
   };
 

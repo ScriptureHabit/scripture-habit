@@ -4,12 +4,13 @@ import { Message, Group, UserProfileBrief, MembersMap } from '../../../types/cha
 import { UserData } from '../../../types/user';
 import SystemMessage from './SystemMessage';
 import GospelLink from './GospelLink';
+import { parseTimestampToMillis } from '../../../Utils/timeUtils';
 import './MessageItem.css';
 
 interface MessageItemProps {
   msg: Message;
   userData: UserData | UserProfileBrief | null;
-  t: (key: string, replacements?: any) => string;
+  t: (key: string, replacements?: Record<string, string | number>) => string;
   handleMessageClick: (msg: Message, e: MouseEvent) => void;
   handleEditMessage: (msg: Message) => void;
   handleDeleteMessageClick: (msg: Message) => void;
@@ -47,7 +48,8 @@ const MessageItem: FC<MessageItemProps> = memo(({
   handleShowReactions,
   membersMap
 }) => {
-  const isMe = msg.senderId === userData?.uid;
+  const userUid = userData ? ('uid' in userData ? userData.uid : userData.id) : '';
+  const isMe = msg.senderId === userUid;
 
   const observerRef = useRef<HTMLDivElement>(null);
 
@@ -66,7 +68,8 @@ const MessageItem: FC<MessageItemProps> = memo(({
   }, [msg.id, isMe, msg.senderId, msg.isSystemMessage, handleLazyTranslate, msg]);
 
   if (msg.senderId === 'system' || msg.isSystemMessage) {
-    return <SystemMessage msg={msg} t={t} kickThreshold={(userData as UserData)?.kickThreshold} />;
+    const kickThreshold = userData && 'kickThreshold' in userData ? userData.kickThreshold : undefined;
+    return <SystemMessage msg={msg} t={t} kickThreshold={kickThreshold as number | undefined} />;
   }
 
   return (
@@ -110,7 +113,7 @@ const MessageItem: FC<MessageItemProps> = memo(({
             </>
           ) : (
             <>
-              <button className="hover-action-btn" onClick={(e) => { e.stopPropagation(); handleToggleReaction(msg); }} title={msg.reactions?.['👍']?.includes(userData?.uid || '') ? t('groupChat.unlike') : t('groupChat.like')}>👍</button>
+              <button className="hover-action-btn" onClick={(e) => { e.stopPropagation(); handleToggleReaction(msg); }} title={msg.reactions?.['👍']?.includes(userUid || '') ? t('groupChat.unlike') : t('groupChat.like')}>👍</button>
               <button className="hover-action-btn" onClick={(e) => { e.stopPropagation(); handleReply(msg); }} title={t('groupChat.reply')}>↩️</button>
               <button className="hover-action-btn report-btn" onClick={(e) => { e.stopPropagation(); handleReportClick(msg); }} title={t('groupChat.report')}>🚩</button>
             </>
@@ -130,35 +133,35 @@ const MessageItem: FC<MessageItemProps> = memo(({
               {(() => {
                 const memberLastReadAt = groupData?.memberLastReadAt;
                 if (!memberLastReadAt || !msg.createdAt) return null;
-                const msgTime = msg.createdAt.toMillis ? msg.createdAt.toMillis() : (msg.createdAt.seconds * 1000);
+                const msgTime = parseTimestampToMillis(msg.createdAt);
                 let readCount = 0;
                 Object.keys(memberLastReadAt).forEach(uid => {
                   if (uid === msg.senderId) return;
                   const readAt = memberLastReadAt[uid];
                   if (!readAt) return;
-                  const readTime = readAt.toMillis ? readAt.toMillis() : (readAt.seconds * 1000);
+                  const readTime = parseTimestampToMillis(readAt);
                   if (readTime >= msgTime) readCount++;
                 });
                 if (readCount === 0) return null;
                 return <span className="read-status">{t('groupChat.readStatus', { count: readCount })}</span>;
               })()}
               <span className="message-time">
-                {msg.createdAt?.seconds ? new Date(msg.createdAt.seconds * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
+                {msg.createdAt ? new Date(parseTimestampToMillis(msg.createdAt)).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
               </span>
             </div>
           )}
           <div className="message-bubble-column">
-            {msg.replyTo && typeof msg.replyTo === 'object' && (
+            {msg.replyTo && typeof msg.replyTo === 'object' && 'senderNickname' in msg.replyTo && (
               <div 
                 className={`reply-context-label ${isMe ? 'sent' : 'received'}`}
               >
                 <span className="reply-context-prefix">{t('groupChat.replyTo')} </span>
-                <span className="reply-context-name">{(msg.replyTo as any).senderNickname}</span>
+                <span className="reply-context-name">{msg.replyTo.senderNickname}</span>
                 <span className="reply-context-separator">: </span>
                 <span className="reply-context-text">
-                  {(msg.replyTo as any).isNote || (msg.replyTo as any).text?.startsWith('📖 **New Study') || (msg.replyTo as any).text?.startsWith('**New Study')
+                  {msg.replyTo.isNote || msg.replyTo.text?.startsWith('📖 **New Study') || msg.replyTo.text?.startsWith('**New Study')
                     ? t('groupChat.studyNote')
-                    : (msg.replyTo as any).text
+                    : msg.replyTo.text
                   }
                 </span>
               </div>
@@ -189,7 +192,7 @@ const MessageItem: FC<MessageItemProps> = memo(({
           </div>
           {!isMe && (
             <span className="message-time received">
-              {msg.createdAt?.seconds ? new Date(msg.createdAt.seconds * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
+              {msg.createdAt ? new Date(parseTimestampToMillis(msg.createdAt)).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
             </span>
           )}
         </div>

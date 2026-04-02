@@ -1,9 +1,11 @@
 import { useMemo, useEffect } from 'react';
-import { doc, collection, serverTimestamp, runTransaction } from 'firebase/firestore';
-import { db } from '../../../firebase';
+import { Capacitor } from '@capacitor/core';
+import { auth, appCheck } from '../../../firebase';
+import { getToken } from 'firebase/app-check';
 import { safeStorage } from '../../../Utils/storage';
 import confetti from 'canvas-confetti';
 import { Message, GroupData } from '../../../types/chat';
+import { parseTimestampToMillis } from '../../../Utils/timeUtils';
 import { UserData } from '../../../types/user';
 
 export const useUnityScore = (
@@ -11,8 +13,8 @@ export const useUnityScore = (
   userData: UserData,
   groupData: GroupData | null,
   messages: Message[]
-) => {
-  const unityPercentage = useMemo(() => {
+): number => {
+  const unityPercentage = useMemo<number>(() => {
     if (!groupData?.members || groupData.members.length === 0 || groupData?._groupId !== groupId) return 0;
 
     const effectiveTimeZone = groupData?.timeZone || userData?.timeZone || 'UTC';
@@ -30,9 +32,7 @@ export const useUnityScore = (
 
 
     messages.forEach(msg => {
-      let msgTime = 0;
-      if (msg.createdAt?.toDate) msgTime = msg.createdAt.toDate().getTime();
-      else if (msg.createdAt?.seconds) msgTime = msg.createdAt.seconds * 1000;
+      const msgTime = parseTimestampToMillis(msg.createdAt);
       if (msgTime >= todayTime && msg.senderId !== 'system' && !msg.isSystemMessage && msg.isNote) {
         uniquePosters.add(msg.senderId!);
       }
@@ -44,21 +44,20 @@ export const useUnityScore = (
       if (uniquePosters.has(uid)) return true; // Posted today -> count
       const joinedTs = memberJoinedAt[uid];
       if (!joinedTs) return true;
-      let joinedTime = 0;
-      if (joinedTs?.toDate) joinedTime = joinedTs.toDate().getTime();
-      else if (joinedTs?.seconds) joinedTime = joinedTs.seconds * 1000;
+      const joinedTime = parseTimestampToMillis(joinedTs);
       return joinedTime < todayTime;
     });
 
     if (eligibleMembers.length === 0) return 0;
-
     const eligiblePostersCount = [...uniquePosters].filter(uid => eligibleMembers.includes(uid)).length;
     const score = Math.round((eligiblePostersCount / eligibleMembers.length) * 100);
     return Math.min(100, Math.max(0, score));
   }, [messages, groupData, groupId, userData?.timeZone]);
 
   useEffect(() => {
+    // Only proceed if unity is reached AND user is still a member of this specific group
     if (!userData?.uid || !groupId || unityPercentage !== 100) return;
+    if (!groupData?.members?.includes(userData.uid)) return;
 
     const effectiveTimeZone = groupData?.timeZone || userData?.timeZone || 'UTC';
     const todayStr = new Date().toLocaleDateString('sv-SE', { timeZone: effectiveTimeZone });
@@ -81,24 +80,34 @@ export const useUnityScore = (
 
       safeStorage.set(storageKey, todayStr);
 
-      const groupRef = doc(db, 'groups', groupId);
       const checkAndSendAnnouncement = async () => {
         try {
-          await runTransaction(db, async (transaction) => {
-            const groupSnap = await transaction.get(groupRef);
-            if (!groupSnap.exists()) return;
-            const lastAnnouncementDate = groupSnap.data()?.lastUnityAnnouncementDate;
-            if (lastAnnouncementDate !== todayStr) {
-              transaction.update(groupRef, { lastUnityAnnouncementDate: todayStr });
-              const messageRef = doc(collection(groupRef, 'messages'));
-              transaction.set(messageRef, {
-                senderId: 'system',
-                isSystemMessage: true,
-                messageType: 'unityAnnouncement',
-                createdAt: serverTimestamp()
-              });
-            }
+          const user = auth?.currentUser;
+          if (!user) return;
+
+          const idToken = await user.getIdToken();
+          let appCheckToken = '';
+          try {
+            const appCheckTokenResponse = await getToken(appCheck, false);
+            appCheckToken = appCheckTokenResponse.token;
+          } catch (e) {
+            console.warn('[useUnityScore] AppCheck token failed:', e);
+          }
+
+          const API_BASE = Capacitor.isNativePlatform() ? 'https://scripturehabit.app' : '';
+          const response = await fetch(`${API_BASE}/api/announce-unity`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${idToken}`,
+              ...(appCheckToken ? { 'X-Firebase-AppCheck': appCheckToken } : {})
+            },
+            body: JSON.stringify({ groupId })
           });
+
+          if (!response.ok) {
+            console.error('Error sending unity announcement:', await response.text());
+          }
         } catch (err) {
           console.error("Error sending unity announcement:", err);
         }

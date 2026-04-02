@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, FC } from 'react';
-import { doc, updateDoc } from 'firebase/firestore';
 import { getToken } from 'firebase/app-check'; // Added AppCheck getToken
-import { db, auth, appCheck } from '../../../firebase'; // Added appCheck
+import { auth, appCheck } from '../../../firebase'; // Added appCheck
+import { parseTimestampToMillis } from '../../../Utils/timeUtils';
 import { Group } from '../../../types/chat';
 
 interface GroupMenuItemProps {
@@ -45,7 +45,8 @@ const GroupMenuItem: FC<GroupMenuItemProps> = ({ group, currentGroupId, language
 
             try {
                 const user = auth?.currentUser;
-                const idToken = await user?.getIdToken();
+                if (!user) return;
+                const idToken = await user.getIdToken();
                 const appCheckTokenResponse = await getToken(appCheck, false); // Get AppCheck token
                 const appCheckToken = appCheckTokenResponse.token;
                 const API_BASE = window.location.hostname === 'localhost' ? '' : 'https://scripturehabit.app';
@@ -54,9 +55,11 @@ const GroupMenuItem: FC<GroupMenuItemProps> = ({ group, currentGroupId, language
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${idToken}`,
                         'X-Firebase-AppCheck': appCheckToken, // Add AppCheck header
-                        ...(idToken ? { Authorization: `Bearer ${idToken}` } : {}),
                     },
+
+
                     body: JSON.stringify({
                         text: group.name,
                         targetLanguage: language,
@@ -68,16 +71,6 @@ const GroupMenuItem: FC<GroupMenuItemProps> = ({ group, currentGroupId, language
                     if (data.translatedText) {
                         setTranslatedName(data.translatedText);
                         sessionStorage.setItem(cacheKey, data.translatedText);
-
-                        // Save to Firestore (opportunistic)
-                        try {
-                            const groupRef = doc(db, 'groups', group.id);
-                            await updateDoc(groupRef, {
-                                [`translations.${language}.name`]: data.translatedText
-                            });
-                        } catch (e) {
-                            console.error("Failed to save translation to Firestore", e);
-                        }
                     }
                 }
             } catch (error) {
@@ -112,9 +105,7 @@ const GroupMenuItem: FC<GroupMenuItemProps> = ({ group, currentGroupId, language
             if (uniquePosters.has(uid)) return true; // Posted today -> count
             const joinedTs = memberJoinedAt[uid];
             if (!joinedTs) return true;
-            let joinedTime = 0;
-            if (joinedTs?.toDate) joinedTime = joinedTs.toDate().getTime();
-            else if (joinedTs?.seconds) joinedTime = joinedTs.seconds * 1000;
+            const joinedTime = parseTimestampToMillis(joinedTs);
             return joinedTime < todayTime;
         });
 

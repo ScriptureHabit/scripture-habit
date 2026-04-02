@@ -43,9 +43,10 @@ const MessageInput: FC<MessageInputProps> = ({
         const textarea = textareaRef.current;
         if (textarea) {
             textarea.style.height = 'auto';
-            const newHeight = Math.min(textarea.scrollHeight, 150);
+            const newHeight = Math.min(textarea.scrollHeight, 250);
             textarea.style.height = `${newHeight}px`;
         }
+
     }, [newMessage, textareaRef]);
 
     return (

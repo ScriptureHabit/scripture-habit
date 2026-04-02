@@ -1,13 +1,12 @@
 import { useState } from 'react';
-import { getToken } from 'firebase/app-check'; // Added AppCheck getToken
-import { auth, appCheck } from '../../../firebase'; // Added appCheck
+import apiClient from '../../../Utils/apiClient';
 import { toast } from 'react-toastify';
 import { GroupData } from '../../../types/chat';
+import { parseTimestampToDate } from '../../../Utils/timeUtils';
 
 export const useRecapManager = (
   groupId: string,
   groupData: GroupData | null,
-  API_BASE: string,
   language: string,
   t: (key: string) => string
 ) => {
@@ -17,38 +16,23 @@ export const useRecapManager = (
     if (isRecapLoading) return;
     setIsRecapLoading(true);
     try {
-      const idToken = await auth?.currentUser?.getIdToken();
-      const appCheckTokenResponse = await getToken(appCheck, false); // Get AppCheck token
-      const appCheckToken = appCheckTokenResponse.token;
+      await apiClient.post('/api/generate-weekly-recap', { groupId, language });
 
-      const response = await fetch(`${API_BASE}/api/generate-weekly-recap`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${idToken}`,
-          'X-Firebase-AppCheck': appCheckToken // Add AppCheck header
-        },
-        body: JSON.stringify({ groupId, language })
-      });
+      toast.success(t('groupChat.recapGenerated') || "Weekly recap generated!");
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { error?: string } }, message: string };
+      console.error("Error generating recap:", err.message);
+      const errorMessage = err.response?.data?.error || t('groupChat.errorGenerateRecap');
+      toast.error(errorMessage);
 
-      if (response.ok) {
-        toast.success(t('groupChat.recapGenerated') || "Weekly recap generated!");
-      } else {
-        const data = await response.json();
-        toast.error(data.error || "Failed to generate recap");
-      }
-    } catch (error) {
-      console.error("Error generating recap:", error);
-      toast.error(t('groupChat.errorGenerateRecap'));
     } finally {
       setIsRecapLoading(false);
     }
   };
 
   const getLastRecapDate = () => {
-    if (groupData?.lastRecapGeneratedAt?.toDate) return groupData.lastRecapGeneratedAt.toDate();
-    if (groupData?.lastRecapGeneratedAt?.seconds) return new Date(groupData.lastRecapGeneratedAt.seconds * 1000);
-    return null;
+    if (!groupData?.lastRecapGeneratedAt) return null;
+    return parseTimestampToDate(groupData.lastRecapGeneratedAt);
   };
 
   const lastRecapDate = getLastRecapDate();

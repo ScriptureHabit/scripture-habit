@@ -33,7 +33,7 @@ const DeleteGroupModal: FC<DeleteGroupModalProps> = ({
                 <div style={{ marginBottom: '1rem' }}>
                     {groupData && (
                         <ReactMarkdown components={{ p: ({ children }) => <span>{children}</span> }}>
-                            {t('groupChat.typeToConfirm').replace('{groupName}', groupData.name)}
+                            {t('groupChat.typeToConfirm').replace('{groupName}', groupData.name || '')}
                         </ReactMarkdown>
                     )}
                 </div>
@@ -51,8 +51,9 @@ const DeleteGroupModal: FC<DeleteGroupModalProps> = ({
                      <button
                         className="modal-btn leave"
                         onClick={handleDeleteGroup}
-                        disabled={deleteConfirmationName !== groupData?.name || isDeleting}
+                        disabled={deleteConfirmationName !== (groupData?.name || '') || isDeleting}
                     >
+
                         {isDeleting ? '...' : t('groupChat.confirmDelete')}
                     </button>
                 </div>

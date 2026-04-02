@@ -13,6 +13,7 @@ import Mascot from '../Mascot/Mascot';
 import { toast } from 'react-toastify';
 import { Group } from '../../types/chat';
 import { UserData } from '../../types/user';
+import { parseTimestampToDate } from '../../Utils/timeUtils';
 
 export default function JoinGroup() {
   const { t, language } = useLanguage();
@@ -29,15 +30,15 @@ export default function JoinGroup() {
   const [translatingIds, setTranslatingIds] = useState<Set<string>>(new Set());
   const navigate = useNavigate();
 
-  const handleTranslateGroup = useCallback(async (groupId: string, name: string, description?: string, translations?: any) => {
+  const handleTranslateGroup = useCallback(async (groupId: string, name: string, description?: string, translations?: Record<string, {name: string, description?: string}>) => {
     // 1. Check for manual translation in Firestore (Prioritize this)
     const manualTrans = translations?.[language];
     if (manualTrans?.name || manualTrans?.description) {
       if (manualTrans.name) {
-        setTranslatedNames(prev => prev[groupId] === manualTrans.name ? prev : { ...prev, [groupId]: manualTrans.name });
+        setTranslatedNames(prev => ({ ...prev, [groupId]: manualTrans.name }));
       }
       if (manualTrans.description) {
-        setTranslatedDescs(prev => prev[groupId] === manualTrans.description ? prev : { ...prev, [groupId]: manualTrans.description });
+        setTranslatedDescs(prev => ({ ...prev, [groupId]: manualTrans.description! }));
       }
       return;
     }
@@ -57,15 +58,16 @@ export default function JoinGroup() {
     if (alreadyTranslating) return;
 
     try {
-      const idToken = await (user?.getIdToken() || Promise.resolve(null));
+      if (!user) return;
+      const idToken = await user.getIdToken();
       const appCheckTokenResponse = await getToken(appCheck, false);
       const appCheckToken = appCheckTokenResponse.token;
 
       const headers: Record<string, string> = { 
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${idToken}`,
         'X-Firebase-AppCheck': appCheckToken
       };
-      if (idToken) headers['Authorization'] = `Bearer ${idToken}`;
 
       const translate = async (text: string) => {
         if (!text) return null;
@@ -217,8 +219,12 @@ export default function JoinGroup() {
 
     // Use memberPreviews already in the group data to avoid security-blocked user fetches
     if (groupData.memberPreviews && groupData.memberPreviews.length > 0) {
-      setMemberNames(groupData.memberPreviews);
+      setMemberNames(groupData.memberPreviews.map(m => ({
+        uid: m.uid,
+        nickname: m.nickname || 'Member'
+      })));
     } else {
+
       setMemberNames([]);
     }
     setLoadingMembers(false);
@@ -270,7 +276,7 @@ export default function JoinGroup() {
                 <GroupCard
                   key={group.id}
                   group={group}
-                  currentUser={user as any}
+                  currentUser={user}
                   onJoin={() => handleJoinClick(group.id, group)}
                   onOpen={() => handleJoinClick(group.id, group)}
                 />
@@ -325,13 +331,7 @@ export default function JoinGroup() {
             {selectedGroup.createdAt && (
               <p className="modal-created-at">
                 {t('joinGroup.createdAt')}: {(() => {
-                  let date: Date;
-                  const c = selectedGroup.createdAt as any;
-                  if (c?.toDate) date = c.toDate();
-                  else if (c?.seconds) date = new Date(c.seconds * 1000);
-                  else if (c?._seconds) date = new Date(c._seconds * 1000);
-                  else date = new Date(c);
-
+                  const date = parseTimestampToDate(selectedGroup.createdAt);
                   if (isNaN(date.getTime())) return '';
                   return date.toLocaleDateString(language === 'ja' ? 'ja-JP' : undefined, {
                     year: 'numeric',

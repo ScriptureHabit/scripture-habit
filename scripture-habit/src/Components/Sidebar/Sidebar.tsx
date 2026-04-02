@@ -11,6 +11,7 @@ import { auth, appCheck } from '../../firebase';
 // Removed unused Firestore imports
 import { getToken } from "firebase/app-check";
 import { useLanguage } from '../../Context/LanguageContext';
+import { parseTimestampToMillis } from '../../Utils/timeUtils';
 import { Group } from '../../types/chat';
 import { UserData } from '../../types/user';
 
@@ -56,6 +57,7 @@ const SidebarGroupItem: React.FC<SidebarGroupItemProps> = ({ group, language, is
 
       try {
         const idToken = await auth?.currentUser?.getIdToken();
+        if (!idToken) return;
         const appCheckTokenResponse = await getToken(appCheck, false);
         const appCheckToken = appCheckTokenResponse.token;
         const API_BASE = window.location.hostname === 'localhost' ? '' : 'https://scripturehabit.app';
@@ -64,9 +66,10 @@ const SidebarGroupItem: React.FC<SidebarGroupItemProps> = ({ group, language, is
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${idToken}`,
             'X-Firebase-AppCheck': appCheckToken,
-            ...(idToken ? { Authorization: `Bearer ${idToken}` } : {}),
           },
+
           body: JSON.stringify({
             text: group.name,
             targetLanguage: language,
@@ -193,9 +196,7 @@ const Sidebar: React.FC<SidebarProps> = ({ selected, setSelected, userGroups = [
 
       const joinedTs = memberJoinedAt[uid];
       if (!joinedTs) return true;
-      let joinedTime = 0;
-      if (joinedTs?.toDate) joinedTime = joinedTs.toDate().getTime();
-      else if (joinedTs?.seconds) joinedTime = joinedTs.seconds * 1000;
+      const joinedTime = parseTimestampToMillis(joinedTs);
       return joinedTime < todayTime;
     });
 
@@ -317,4 +318,4 @@ const Sidebar: React.FC<SidebarProps> = ({ selected, setSelected, userGroups = [
   );
 };
 
-export default Sidebar;
+export default Sidebar;

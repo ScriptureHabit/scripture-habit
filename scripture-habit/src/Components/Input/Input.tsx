@@ -44,7 +44,7 @@ const Input: React.FC<InputProps> = ({
         className="GlassInput"
         placeholder={placeholder}
         min={min}
-        {...(rest as any)}
+        {...rest}
       />
     </div>
   );

@@ -1,83 +1,61 @@
 import { useState, useEffect } from 'react';
-import { onAuthStateChanged, User } from 'firebase/auth';
-import { doc, onSnapshot, collection, getDocs, updateDoc, Timestamp } from 'firebase/firestore';
-import { auth, db } from '../../../firebase';
+import { User } from 'firebase/auth';
+import { doc, collection, getDocs, updateDoc, Timestamp } from 'firebase/firestore';
+import { db } from '../../../firebase';
 import { UserData } from '../../../types/user';
+import { useAuth } from '../../../Context/AuthContext';
+import { noteConverter } from '../../../Utils/firestoreConverters';
+
+export type DashboardSyncStatus = 
+  | { status: 'loading'; user: User | null; userData: UserData | null }
+  | { status: 'unauthenticated'; user: null; userData: null }
+  | { status: 'authenticated'; user: User; userData: UserData }
+  | { status: 'error'; user: User | null; userData: UserData | null; message: string };
 
 export const useDashboardSync = () => {
-    const [user, setUser] = useState<User | null>(null);
-    const [userData, setUserData] = useState<UserData | null>(null);
-    const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>(null);
+    const { user, userData, loading, error } = useAuth();
+    const [state, setState] = useState<DashboardSyncStatus>({ status: 'loading', user: null, userData: null });
 
     useEffect(() => {
-        let unsubUser: (() => void) | null = null;
-
-        const unsubscribeAuth = onAuthStateChanged(auth!, (currentUser) => {
-            setUser(currentUser);
-            
-            // Clean up previous user listener if it exists
-            if (unsubUser) {
-                unsubUser();
-                unsubUser = null;
-            }
-
-            if (currentUser) {
-                const userDocRef = doc(db, 'users', currentUser.uid);
-                unsubUser = onSnapshot(userDocRef, (docSnap) => {
-                    if (docSnap.exists()) {
-                        const data = docSnap.data() as any;
-                        setUserData({ uid: currentUser.uid, ...data });
-                        setLoading(false);
-                        setError(null);
-                    } else {
-                        console.log("User profile document no longer exists.");
-                        setLoading(false);
-                    }
-                }, (err: any) => {
-                    if (err.code === 'permission-denied') {
-                        console.log("Silenced permission error during possible logout/deletion.");
-                        setLoading(false);
-                        return;
-                    }
-                    console.error("Error fetching user data:", err);
-                    setError(err.message);
-                    setLoading(false);
-                });
-            } else {
-                setUserData(null);
-                setLoading(false);
-            }
-        });
-
-        return () => {
-            unsubscribeAuth();
-            if (unsubUser) unsubUser();
-        };
-    }, []);
+        if (loading) {
+            setState({ status: 'loading', user: null, userData: null });
+        } else if (error) {
+            setState({ status: 'error', user, userData, message: error.message });
+        } else if (user && userData) {
+            setState({ status: 'authenticated', user, userData });
+        } else {
+            setState({ status: 'unauthenticated', user: null, userData: null });
+        }
+    }, [user, userData, loading, error]);
 
     // Level Migration / Fix Logic
     useEffect(() => {
         const migrateLevelData = async () => {
+            if (state.status !== 'authenticated') return;
+            
+            const { user, userData } = state;
             const needsMigration = userData && (
                 userData.daysStudiedCount === undefined ||
                 (userData.daysStudiedCount < (userData.streakCount || 0))
             );
 
-            if (!user || !userData || !needsMigration) return;
+            if (!needsMigration) return;
 
             console.log("Migration/Fix triggered: calculating accurate daysStudiedCount...");
             try {
-                const notesRef = collection(db, 'users', user.uid, 'notes');
+                const notesRef = collection(db, 'users', user.uid, 'notes').withConverter(noteConverter);
                 const notesSnapshot = await getDocs(notesRef);
 
                 const studyDays = new Set<string>();
                 notesSnapshot.forEach(docSnap => {
                     const data = docSnap.data();
                     if (data.createdAt) {
-                        const date = (data.createdAt as Timestamp).toDate();
-                        const dateStr = date.toLocaleDateString('sv-SE');
-                        studyDays.add(dateStr);
+                        const createdAt = data.createdAt as unknown as Timestamp;
+                        if (createdAt?.toDate) {
+                            const date = createdAt.toDate();
+                            const dateStr = date.toLocaleDateString('sv-SE');
+                            studyDays.add(dateStr);
+                        }
                     }
                 });
 
@@ -95,10 +73,10 @@ export const useDashboardSync = () => {
             }
         };
 
-        if (!loading) {
+        if (state.status === 'authenticated') {
             migrateLevelData();
         }
-    }, [user, userData?.daysStudiedCount, userData?.streakCount, userData?.uid, loading]);
+    }, [state]);
 
-    return { user, userData, setUserData, loading, setLoading, error, setError };
+    return state;
 };

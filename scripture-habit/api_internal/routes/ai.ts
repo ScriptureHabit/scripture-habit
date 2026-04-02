@@ -1,7 +1,7 @@
-import express from 'express';
-import { admin, db } from '../lib/firebase-admin.js';
-import { aiLimiter, verifyAppCheck, authenticate } from '../lib/middleware.js';
-import { ponderQuestionsSchema, translateSchema, translateBatchSchema, weeklyRecapSchema, personalRecapSchema, languageNames } from '../lib/schemas.js';
+import express, { Response } from 'express';
+import { admin, db } from '../lib/firebase-admin.ts';
+import { aiLimiter, verifyAppCheck, authenticate, AuthenticatedRequest } from '../lib/middleware.ts';
+import { ponderQuestionsSchema, translateSchema, translateBatchSchema, weeklyRecapSchema, personalRecapSchema, languageNames } from '../lib/schemas.ts';
 import axios from 'axios';
 import crypto from 'crypto';
 
@@ -11,7 +11,7 @@ const router = express.Router();
  * --- AI Helper ---
  * Unified Gemini API call logic.
  */
-const callGemini = async (prompt) => {
+const callGemini = async (prompt: string): Promise<string> => {
     if (!process.env.GEMINI_API_KEY) throw new Error('Gemini API Key missing');
     
     // Using the Gemini 3.1 Flash-Lite Preview model with minimal thinking for best speed/cost
@@ -32,10 +32,11 @@ const callGemini = async (prompt) => {
     return generatedText.trim();
 };
 
-const handleAiError = (res, err, contextMessage) => {
-    const errorBody = err.response?.data || err.message;
+const handleAiError = (res: Response, err: unknown, contextMessage: string) => {
+    const error = err as Error & { response?: { data?: unknown, status?: number } }; 
+    const errorBody = error.response?.data || error.message;
     console.error(`[AI Error] ${contextMessage}:`, errorBody);
-    if (err.response?.status === 400) {
+    if (error.response?.status === 400) {
         return res.status(400).json({ error: `AI ${contextMessage} bad request`, details: errorBody });
     }
     res.status(500).json({ 
@@ -44,12 +45,13 @@ const handleAiError = (res, err, contextMessage) => {
     });
 };
 
+
 // --- Routes ---
 
 /**
  * AI Ponder Questions
  */
-router.post('/generate-ponder-questions', authenticate, aiLimiter, verifyAppCheck, async (req, res) => {
+router.post('/generate-ponder-questions', authenticate, aiLimiter, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
     const validation = ponderQuestionsSchema.safeParse(req.body);
     if (!validation.success) return res.status(400).json({ error: 'Invalid input', details: validation.error.format() });
     
@@ -77,7 +79,7 @@ router.post('/generate-ponder-questions', authenticate, aiLimiter, verifyAppChec
 /**
  * AI Translation
  */
-router.post('/translate', authenticate, aiLimiter, verifyAppCheck, async (req, res) => {
+router.post('/translate', authenticate, aiLimiter, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
     const validation = translateSchema.safeParse(req.body);
     if (!validation.success) return res.status(400).json({ error: 'Invalid input' });
     
@@ -88,9 +90,9 @@ router.post('/translate', authenticate, aiLimiter, verifyAppCheck, async (req, r
         const cacheRef = db.collection('translation_cache').doc(cacheKey);
         const cacheDoc = await cacheRef.get();
         
-        let translatedText = null;
+        let translatedText: string | null = null;
         if (cacheDoc.exists && !force) {
-            translatedText = cacheDoc.data().translatedText;
+            translatedText = cacheDoc.data()?.translatedText;
         } else {
             const targetLangName = languageNames[targetLanguage] || targetLanguage;
             const prompt = `Task: Translate the following study note into ${targetLangName}. 
@@ -133,8 +135,10 @@ router.post('/translate', authenticate, aiLimiter, verifyAppCheck, async (req, r
                 await messageRef.update({
                     [`translations.${targetLanguage}`]: translatedText
                 });
-            } catch (updateErr) {
-                console.error('[AI Error] Failed to update message with translation:', updateErr.message);
+            } catch (updateErr: unknown) {
+                const error = updateErr as Error;
+                console.error('[AI Error] Failed to update message with translation:', error.message);
+
                 // We still return the translation even if persistent storage fails
             }
         }
@@ -148,8 +152,10 @@ router.post('/translate', authenticate, aiLimiter, verifyAppCheck, async (req, r
                 await groupRef.update({
                     [`translations.${targetLanguage}.${field}`]: translatedText
                 });
-            } catch (groupUpdateErr) {
-                console.error(`[AI Error] Failed to update group metadata (${updateType}):`, groupUpdateErr.message);
+            } catch (groupUpdateErr: unknown) {
+                const error = groupUpdateErr as Error;
+                console.error(`[AI Error] Failed to update group metadata (${updateType}):`, error.message);
+
             }
         }
 
@@ -162,13 +168,14 @@ router.post('/translate', authenticate, aiLimiter, verifyAppCheck, async (req, r
 /**
  * AI Batch Translation
  */
-router.post('/translate-batch', authenticate, aiLimiter, verifyAppCheck, async (req, res) => {
+router.post('/translate-batch', authenticate, aiLimiter, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
     const validation = translateBatchSchema.safeParse(req.body);
     if (!validation.success) return res.status(400).json({ error: 'Invalid input', details: validation.error.format() });
     
     const { messages, targetLanguage, groupId } = validation.data;
-    const finalResults = {};
-    const toTranslate = [];
+    const finalResults: Record<string, string> = {};
+    const toTranslate: Array<{ id: string; text: string }> = [];
+
 
     // 1. Check cache for each message
     for (const msg of messages) {
@@ -176,7 +183,7 @@ router.post('/translate-batch', authenticate, aiLimiter, verifyAppCheck, async (
         const cacheRef = db.collection('translation_cache').doc(cacheKey);
         const cacheDoc = await cacheRef.get();
         if (cacheDoc.exists) {
-            finalResults[msg.id] = cacheDoc.data().translatedText;
+            finalResults[msg.id] = cacheDoc.data()?.translatedText;
         } else {
             toTranslate.push(msg);
         }
@@ -240,19 +247,19 @@ router.post('/translate-batch', authenticate, aiLimiter, verifyAppCheck, async (
 /**
  * AI Weekly Recap
  */
-router.post('/generate-weekly-recap', authenticate, aiLimiter, verifyAppCheck, async (req, res) => {
+router.post('/generate-weekly-recap', authenticate, aiLimiter, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
     const validation = weeklyRecapSchema.safeParse(req.body);
     if (!validation.success) return res.status(400).json({ error: 'Invalid input' });
 
     const { groupId, language } = validation.data;
     const baseLang = language?.split('-')[0] || 'en';
     const targetLangName = languageNames[baseLang] || 'English';
-    const uid = req.user.uid;
+    const uid = req.user?.uid;
 
     try {
         const groupRef = db.collection('groups').doc(groupId);
         const gSnap = await groupRef.get();
-        if (!gSnap.exists || gSnap.data().ownerUserId !== uid) return res.status(403).send('Access denied: Owner only');
+        if (!gSnap.exists || gSnap.data()?.ownerUserId !== uid) return res.status(403).send('Access denied: Owner only');
 
         const sevenDaysAgo = new Date();
         sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
@@ -260,7 +267,7 @@ router.post('/generate-weekly-recap', authenticate, aiLimiter, verifyAppCheck, a
             .where('createdAt', '>=', admin.firestore.Timestamp.fromDate(sevenDaysAgo))
             .limit(60).get();
 
-        const notes = [];
+        const notes: string[] = [];
         snapshot.forEach(d => { if (d.data().isNote || d.data().isEntry) notes.push(d.data().text); });
         if (notes.length === 0) return res.json({ message: 'No notes found for this week.' });
 
@@ -294,7 +301,7 @@ router.post('/generate-weekly-recap', authenticate, aiLimiter, verifyAppCheck, a
 /**
  * AI Discussion Starter
  */
-router.post('/generate-discussion-topic', authenticate, aiLimiter, verifyAppCheck, async (req, res) => {
+router.post('/generate-discussion-topic', authenticate, aiLimiter, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
     const { language } = req.body;
     const baseLang = language?.split('-')[0] || 'en';
     const targetLangName = languageNames[baseLang] || 'English';
@@ -317,7 +324,7 @@ router.post('/generate-discussion-topic', authenticate, aiLimiter, verifyAppChec
 /**
  * AI Personal Weekly Recap
  */
-router.post('/generate-personal-weekly-recap', authenticate, aiLimiter, verifyAppCheck, async (req, res) => {
+router.post('/generate-personal-weekly-recap', authenticate, aiLimiter, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
     const validation = personalRecapSchema.safeParse(req.body);
     if (!validation.success) return res.status(400).json({ error: 'Invalid input' });
 
@@ -326,7 +333,7 @@ router.post('/generate-personal-weekly-recap', authenticate, aiLimiter, verifyAp
     const targetLangName = languageNames[baseLang] || 'English';
 
     try {
-        if (req.user.uid !== uid) return res.status(403).send('Forbidden');
+        if (req.user?.uid !== uid) return res.status(403).send('Forbidden');
 
         const sevenDaysAgo = new Date();
         sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
@@ -334,7 +341,7 @@ router.post('/generate-personal-weekly-recap', authenticate, aiLimiter, verifyAp
             .where('createdAt', '>=', admin.firestore.Timestamp.fromDate(sevenDaysAgo))
             .limit(60).get();
 
-        const notes = [];
+        const notes: string[] = [];
         snapshot.forEach(d => { if (d.data().text || d.data().comment) notes.push(d.data().comment || d.data().text); });
         if (notes.length === 0) return res.json({ message: 'No personal notes found for this week.' });
 

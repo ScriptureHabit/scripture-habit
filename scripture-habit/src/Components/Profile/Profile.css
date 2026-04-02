@@ -1,4 +1,5 @@
 .Profile {
+    --text-color: var(--black, #242d49);
     color: var(--text-color);
     padding-top: 2rem;
     padding-bottom: 2rem;
@@ -11,7 +12,32 @@
     padding: 1.5rem;
     border-radius: 16px;
     border: 1px solid rgba(255, 255, 255, 0.3);
+    -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
+}
+
+.profile-section.install-app-section {
+    margin-top: -0.5rem;
+    margin-bottom: 2rem;
+}
+
+.profile-section .section-title {
+    margin: 0 0 0.5rem !important;
+    font-size: 1.1rem !important;
+    font-weight: 600 !important;
+    color: var(--black, #242d49) !important;
+    background: none !important;
+    -webkit-text-fill-color: initial !important;
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    text-align: left !important;
+}
+
+.profile-section .section-desc {
+    font-size: 0.8rem;
+    color: var(--gray);
+    margin: 4px 0 12px;
 }
 
 .profile-section h2 {
@@ -162,6 +188,7 @@
 
 .level-progress-fill {
     height: 100%;
+    width: var(--progress, 0%);
     background: linear-gradient(90deg, #ff919d, var(--pink));
     border-radius: 10px;
     transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
@@ -296,8 +323,22 @@
     align-items: center;
     justify-content: space-between;
     gap: 1.5rem;
-    background: rgba(255, 255, 255, 0.6);
-    border: 1px solid rgba(255, 145, 157, 0.3);
+}
+
+.notif-text {
+    flex: 1;
+}
+
+.notif-title {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.notif-desc {
+    font-size: 0.8rem;
+    color: var(--gray);
+    margin: 4px 0 0;
 }
 
 .switch-wrapper {
@@ -312,6 +353,34 @@
     color: var(--red);
     text-align: center;
     max-width: 80px;
+}
+
+.ios-instruction {
+    background: rgba(107, 70, 193, 0.05);
+    padding: 12px;
+    border-radius: 12px;
+}
+
+.instruction-text {
+    font-size: 0.9rem;
+    color: #4a5568;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.install-btn {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+
+.install-btn:not(.disabled) {
+    background: linear-gradient(135deg, #FF919D 0%, #FF7081 100%);
+    color: white;
 }
 
 /* Slider Toggle Switch */
@@ -457,3 +526,162 @@ input:disabled+.slider {
         transform: rotate(360deg);
     }
 }
+
+.hidden-input { display: none; }
+
+.habit-pace-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 0.5rem;
+}
+
+.habit-pace-header h2 {
+    margin: 0;
+}
+
+.section-desc-small {
+    margin-bottom: 1.2rem;
+    font-size: 0.9rem;
+    color: var(--gray);
+}
+
+.habit-pace-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+}
+
+.habit-pace-option {
+    padding: 10px 5px;
+    min-width: 0;
+}
+
+.habit-pace-days {
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+
+.habit-pace-label {
+    font-size: 0.7rem;
+}
+
+.font-option-A-sm { font-size: 0.8rem; font-weight: bold; }
+.font-option-A-md { font-size: 1rem; font-weight: bold; }
+.font-option-A-lg { font-size: 1.2rem; font-weight: bold; }
+.font-option-A-xl { font-size: 1.4rem; font-weight: bold; }
+
+.sign-out-section {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: var(--red);
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.sign-out-btn-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sign-out-btn-text {
+    font-size: 1.2rem;
+    font-weight: 500;
+}
+
+.delete-account-section {
+    margin-top: 40px;
+    border-top: 1px solid #eee;
+    padding-top: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.delete-account-link {
+    background: none;
+    border: none;
+    color: #a0aec0;
+    font-size: 0.9rem;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+/* Modals Refactoring */
+.modal-small {
+    max-width: 300px;
+    text-align: center;
+}
+
+.modal-footer {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.modal-btn-cancel {
+    margin-top: 0 !important;
+    flex: 1;
+}
+
+.modal-btn-confirm {
+    margin-top: 0 !important;
+    flex: 1;
+    background: var(--pink) !important;
+    color: white !important;
+    border: none !important;
+}
+
+.modal-medium {
+    max-width: 400px;
+    text-align: center;
+}
+
+.modal-danger-title {
+    color: var(--red);
+}
+
+.modal-warning-text {
+    margin: 1rem 0;
+    line-height: 1.5;
+    font-weight: bold;
+}
+
+.modal-confirm-wrapper {
+    margin-bottom: 1.5rem;
+    text-align: left;
+}
+
+.modal-confirm-hint {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 0.5rem;
+}
+
+.modal-confirm-input {
+    width: 100%;
+    padding: 0.8rem;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    box-sizing: border-box;
+}
+
+.modal-footer-vertical {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.delete-btn-active {
+    background-color: var(--red) !important;
+    color: white !important;
+}
+
+.delete-btn-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

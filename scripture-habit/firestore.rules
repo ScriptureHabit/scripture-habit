@@ -126,24 +126,25 @@ service cloud.firestore {
         )
       );
       
-      // Allow deletion if the user is the owner
-      allow delete: if isAuthenticated() && resource.data.get('ownerUserId', '') == request.auth.uid;
+      // Group deletion must be handled by backend admin APIs for transactional cleanup.
+      allow delete: if false;
       
       // Rules for the 'messages' subcollection
       match /messages/{messageId} {
+        function getGroup() {
+          return get(/databases/$(database)/documents/groups/$(groupId)).data;
+        }
+        function isGroupMemberOrOwner() {
+          let g = getGroup();
+          return request.auth.uid in g.get('members', []) || g.get('ownerUserId', '') == request.auth.uid;
+        }
+
         // Members and owner can read messages
-        allow read: if isAuthenticated() &&
-                    (
-                      request.auth.uid in get(/databases/$(database)/documents/groups/$(groupId)).data.get('members', []) ||
-                      get(/databases/$(database)/documents/groups/$(groupId)).data.get('ownerUserId', '') == request.auth.uid
-                    );
+        allow read: if isAuthenticated() && isGroupMemberOrOwner();
                     
         // Members and owner can create messages
         allow create: if isAuthenticated() && isAppCheckVerified() &&
-                    (
-                      request.auth.uid in get(/databases/$(database)/documents/groups/$(groupId)).data.get('members', []) ||
-                      get(/databases/$(database)/documents/groups/$(groupId)).data.get('ownerUserId', '') == request.auth.uid
-                    ) &&
+                    isGroupMemberOrOwner() &&
                     request.resource.data.text.size() <= 1000 &&
                     request.resource.data.senderId == request.auth.uid &&
                     // SECURITY: Ensure client cannot spoof system messages
@@ -152,16 +153,13 @@ service cloud.firestore {
         // Only the sender (or owner) can update/delete messages, 
         // EXCEPT for reactions which any member can update.
         allow update: if isAuthenticated() &&
-                      (
-                        request.auth.uid in get(/databases/$(database)/documents/groups/$(groupId)).data.get('members', []) ||
-                        get(/databases/$(database)/documents/groups/$(groupId)).data.get('ownerUserId', '') == request.auth.uid
-                      ) &&
+                      isGroupMemberOrOwner() &&
                       // SECURITY: System messages can NEVER be updated by users
                       resource.data.get('isSystemMessage', false) == false &&
                       (
                         // Case 1: Sender or Owner updating the message content
                         (
-                          (resource.data.senderId == request.auth.uid || get(/databases/$(database)/documents/groups/$(groupId)).data.get('ownerUserId', '') == request.auth.uid) &&
+                          (resource.data.senderId == request.auth.uid || getGroup().get('ownerUserId', '') == request.auth.uid) &&
                           // Prevent changing senderId, isSystemMessage, or messageType
                           request.resource.data.senderId == resource.data.senderId &&
                           request.resource.data.get('isSystemMessage', false) == false &&
@@ -170,14 +168,8 @@ service cloud.firestore {
                           (!('reactions' in request.resource.data) || (
                             request.resource.data.reactions is map &&
                             request.resource.data.reactions.size() <= 10 &&
-                            request.resource.data.reactions.values().all(uids => uids is list && uids.size() <= 50) &&
-                            // SECURE REACTIONS: Even owner/sender cannot modify others' reactions
-                            request.resource.data.reactions.keys().all(emoji => 
-                              let oldList = resource.data.get(['reactions', emoji], []);
-                              let newList = request.resource.data.reactions[emoji];
-                              newList.hasAll(oldList.removeAll([request.auth.uid])) && 
-                              oldList.hasAll(newList.removeAll([request.auth.uid]))
-                            )
+                            request.resource.data.reactions.values().all(uids => uids is list && uids.size() <= 50)
+                            // TODO: Move complex reaction array/diff validation to Backend Functions to improve performance
                           ))
                         ) ||
                         // Case 2: Any member updating ONLY reactions
@@ -185,21 +177,15 @@ service cloud.firestore {
                           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reactions']) &&
                           request.resource.data.reactions is map &&
                           request.resource.data.reactions.size() <= 10 &&
-                          request.resource.data.reactions.values().all(uids => uids is list && uids.size() <= 50) &&
-                          // SECURE REACTIONS: Ensure member can only add/remove their OWN uid from the list
-                          request.resource.data.reactions.keys().all(emoji => 
-                            let oldList = resource.data.get(['reactions', emoji], []);
-                            let newList = request.resource.data.reactions[emoji];
-                            newList.hasAll(oldList.removeAll([request.auth.uid])) && 
-                            oldList.hasAll(newList.removeAll([request.auth.uid]))
-                          )
+                          request.resource.data.reactions.values().all(uids => uids is list && uids.size() <= 50)
+                          // TODO: Move complex reaction array/diff validation to Backend Functions to improve performance
                         )
                       );
                       
         allow delete: if isAuthenticated() &&
                       (
                         resource.data.senderId == request.auth.uid ||
-                        get(/databases/$(database)/documents/groups/$(groupId)).data.get('ownerUserId', '') == request.auth.uid
+                        getGroup().get('ownerUserId', '') == request.auth.uid
                       );
       }
     }

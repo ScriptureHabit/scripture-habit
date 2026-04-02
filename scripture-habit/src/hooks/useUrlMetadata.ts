@@ -148,7 +148,7 @@ export const useUrlMetadata = (
                     memoryCache[cacheKey] = meta;
                     setData(meta);
                 }
-            } catch (err: any) {
+            } catch (err: unknown) {
                 console.error("useUrlMetadata error:", err);
                 if (active) setError(err instanceof Error ? err : new Error(String(err)));
             } finally {

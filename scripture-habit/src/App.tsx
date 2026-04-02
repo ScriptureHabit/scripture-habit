@@ -1,17 +1,47 @@
-/* eslint-disable react-refresh/only-export-components */
-import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
-import { ToastContainer, toast } from "react-toastify";
+import { Routes, Route, useLocation, useNavigate, Navigate } from 'react-router-dom';
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import "./App.css";
 import { useEffect, useState } from 'react';
+
+const ErrorFallback = ({ error, resetError }: { error: Error; resetError: () => void }) => {
+  const navigate = useNavigate();
+
+  return (
+    <div className="App error-fallback-container">
+      <div className="error-fallback-emoji">🙏</div>
+      <h1 className="error-fallback-title">Something went wrong</h1>
+      <p className="error-fallback-p">
+        We apologize for the inconvenience. A report has been sent to our team, and we are working to fix this.
+      </p>
+      <button
+        onClick={() => {
+          resetError();
+          navigate('/dashboard');
+        }}
+        className="error-fallback-button"
+      >
+        Reload Application
+      </button>
+      {import.meta.env.MODE === 'development' && (
+        <pre className="error-fallback-pre">
+          {error.toString()}
+        </pre>
+      )}
+    </div>
+  );
+};
+import { useQuery } from '@tanstack/react-query';
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
-import { db, auth } from './firebase';
+import { db } from './firebase';
 import { doc, getDoc } from 'firebase/firestore';
-import { onAuthStateChanged } from 'firebase/auth';
+import { FirebaseError } from 'firebase/app';
 
 import SignupForm from './Components/SignupForm/SignupForm';
 import LoginForm from './Components/LoginForm/LoginForm';
 import Dashboard from './Components/Dashboard/Dashboard';
+import { useAuth } from './Context/AuthContext';
 import GroupForm from './Components/GroupForm/GroupForm';
 import JoinGroup from './Components/JoinGroup/JoinGroup';
 import GroupDetails from "./Components/GroupDetails/GroupDetails";
@@ -26,83 +56,22 @@ import * as Sentry from "@sentry/react";
 import InstallPrompt from './Components/InstallPrompt/InstallPrompt';
 import { handleInAppBrowserRedirect, isInAppBrowser } from './Utils/browserDetection';
 import CookieConsent from './Components/CookieConsent/CookieConsent';
-import BrowserWarningModal from './Components/BrowserWarningModal/BrowserWarningModal';
 
 import PrivacyPolicy from './Components/PrivacyPolicy/PrivacyPolicy';
 import TermsOfService from './Components/TermsOfService/TermsOfService';
 import LegalDisclosure from './Components/LegalDisclosure/LegalDisclosure';
-import { LanguageProvider, useLanguage, SUPPORTED_LANGUAGES } from './Context/LanguageContext';
+import { LanguageProvider, SUPPORTED_LANGUAGES } from './Context/LanguageContext';
 import { SettingsProvider } from './Context/SettingsContext';
 import SEOManager from './Components/SEOManager';
+import PWAUpdateHandler from './Components/PWAUpdateHandler/PWAUpdateHandler';
+import LanguageRedirect from './Components/LanguageRedirect/LanguageRedirect';
+import BrowserWarningWrapper from './Components/BrowserWarningModal/BrowserWarningWrapper';
 
-const PWAUpdateHandler: React.FC = () => {
-  const { t } = useLanguage();
-
-  useEffect(() => {
-    const handleUpdateAvailable = (event: any) => {
-      const registration = event.detail;
-      const updateMessage = t('installPrompt.updateAvailable');
-      const updateButtonText = t('installPrompt.updateButton');
-
-      toast.info(
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', gap: '10px' }}>
-          <span style={{ fontSize: '0.9rem' }}>{updateMessage}</span>
-          <button
-            onClick={() => {
-              console.log('Update button clicked. Registration:', registration);
-
-              if (registration) {
-                const worker = registration.waiting || registration.installing;
-                if (worker) {
-                  worker.postMessage({ type: 'SKIP_WAITING' });
-                }
-              }
-
-              // If no worker found or signaling failed, or as a safety measure,
-              // give it a short moment to activate and then force reload
-              setTimeout(() => {
-                window.location.reload();
-              }, 500);
-            }}
-            style={{
-              padding: '6px 12px',
-              background: '#4a90e2',
-              color: 'white',
-              border: 'none',
-              borderRadius: '6px',
-              cursor: 'pointer',
-              fontWeight: 'bold',
-              fontSize: '0.8rem',
-              whiteSpace: 'nowrap'
-            }}
-          >
-            {updateButtonText}
-          </button>
-        </div>,
-        {
-          toastId: 'pwa-update',
-          position: "bottom-center",
-          autoClose: false,
-          closeOnClick: false,
-          draggable: false,
-          closeButton: false,
-          style: {
-            background: '#fff',
-            color: '#1a202c',
-            boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
-            borderRadius: '12px',
-            padding: '12px'
-          }
-        }
-      );
-    };
-
-    window.addEventListener('pwa-update-available', handleUpdateAvailable);
-    return () => window.removeEventListener('pwa-update-available', handleUpdateAvailable);
-  }, [t]);
-
-  return null;
-};
+declare global {
+  interface Navigator {
+    standalone?: boolean;
+  }
+}
 
 interface SystemStatus {
   loading: boolean;
@@ -111,19 +80,8 @@ interface SystemStatus {
 }
 
 const App: React.FC = () => {
-  const [authLoading, setAuthLoading] = useState(true);
+  const { loading: authLoading } = useAuth();
   const [showBrowserWarning, setShowBrowserWarning] = useState(false);
-
-  useEffect(() => {
-    if (!auth) {
-      setAuthLoading(false);
-      return;
-    }
-    const unsubscribe = onAuthStateChanged(auth, () => {
-      setAuthLoading(false);
-    });
-    return unsubscribe;
-  }, []);
 
   useEffect(() => {
     const isRedirecting = handleInAppBrowserRedirect();
@@ -132,45 +90,49 @@ const App: React.FC = () => {
     }
   }, []);
 
-  const [systemStatus, setSystemStatus] = useState<SystemStatus>({ loading: true, error: null });
+  const { data: systemStatus, error: systemStatusError } = useQuery<SystemStatus>({
+    queryKey: ['system', 'status'],
+    queryFn: async () => {
+      if (!db) throw new Error("Firestore not initialized");
 
-  useEffect(() => {
-    if (!db) return;
-
-    const fetchSystemStatus = async () => {
-      try {
-        const statusRef = doc(db, 'system', 'status');
-        const docSnap = await getDoc(statusRef);
-        
-        if (docSnap.exists()) {
-          setSystemStatus({ ...docSnap.data(), loading: false, error: null } as SystemStatus);
-        } else {
-          setSystemStatus({ loading: false, error: null });
-        }
-      } catch (err: any) {
-        // Suppress permission-denied errors to prevent full app crashes
+      const statusRef = doc(db, 'system', 'status');
+      const docSnap = await getDoc(statusRef);
+      if (docSnap.exists()) {
+        const data = docSnap.data() as SystemStatus;
+        return data;
+      }
+      return { loading: false, error: null };
+    },
+    enabled: !!db,
+    staleTime: 1000 * 60 * 30, // 30 mins memory cache
+    throwOnError: (err: unknown) => {
+      // Suppress permission-denied errors to prevent full app crashes
+      if (err instanceof FirebaseError) {
         const isQuota = err.code === 'resource-exhausted' || err.message?.toLowerCase().includes('quota exceeded');
-        
         if (err.code !== 'permission-denied' && !isQuota) {
           console.error("System probe failed:", err);
           Sentry.captureException(err);
         }
-
-        setSystemStatus({ loading: false, error: isQuota ? 'quota' : err.message });
+      } else if (err instanceof Error) {
+        console.error("System probe failed:", err);
+        Sentry.captureException(err);
+      } else {
+        console.error("System probe failed with unknown error:", err);
+        Sentry.captureException(new Error(String(err)));
       }
-    };
-
-    fetchSystemStatus();
-  }, []);
+      return false; // Don't trigger error boundary for these
+    }
+  });
 
   const location = useLocation();
 
-  if (MAINTENANCE_MODE || systemStatus.error === 'quota' || systemStatus.maintenance) {
+  const isMaintenance = MAINTENANCE_MODE || (systemStatusError instanceof FirebaseError && systemStatusError.code === 'resource-exhausted') || systemStatus?.maintenance;
+  if (isMaintenance) {
     return (
       <SettingsProvider>
         <LanguageProvider>
           <SEOManager />
-          <Maintenance isQuota={systemStatus.error === 'quota'} />
+          <Maintenance isQuota={systemStatusError instanceof FirebaseError && systemStatusError.code === 'resource-exhausted'} />
         </LanguageProvider>
       </SettingsProvider>
     );
@@ -199,35 +161,14 @@ const App: React.FC = () => {
     return 'App';
   };
 
-  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone;
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || !!window.navigator.standalone;
 
   const renderContent = () => {
     if (authLoading) {
       return (
-        <div style={{
-          height: '100vh',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          background: 'linear-gradient(135deg, #FF919D 0%, #FFD1FF 100%)',
-          color: 'white',
-          fontFamily: "'Outfit', sans-serif"
-        }}>
-          <div className="loading-spinner-container" style={{
-            width: '60px',
-            height: '60px',
-            border: '6px solid rgba(255,255,255,0.3)',
-            borderTop: '6px solid white',
-            borderRadius: '50%',
-            animation: 'spin 1s linear infinite',
-            marginBottom: '1rem'
-          }}></div>
-          <style>{`
-            @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-            @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-          `}</style>
-          <h2 style={{ fontSize: '1.2rem', fontWeight: '600', animation: 'fadeIn 0.5s ease-in' }}>
+        <div className="auth-loading-screen">
+          <div className="loading-spinner-container"></div>
+          <h2 className="auth-loading-text">
             Scripture Habit
           </h2>
         </div>
@@ -288,103 +229,8 @@ const App: React.FC = () => {
   );
 };
 
-interface LanguageRedirectProps {
-  location: any;
-}
-
-const LanguageRedirect: React.FC<LanguageRedirectProps> = ({ location }) => {
-  const { language } = useLanguage();
-  const path = location.pathname;
-  const pathParts = path.split('/');
-  const firstPart = pathParts[1];
-
-  // Exclude API routes and public assets from language redirection
-  const excludedPaths = ['api', 'sw.js', 'manifest.json', 'images', 'favicon.ico', 'logo.svg'];
-  if (SUPPORTED_LANGUAGES.includes(firstPart) || excludedPaths.includes(firstPart)) {
-    return null;
-  }
-
-  // Otherwise, prefix with current detected language
-  let newPath = `/${language}${path === '/' ? '/' : path}`;
-  if (!newPath.endsWith('/')) {
-    newPath += '/';
-  }
-
-  // Preserve query parameters
-  if (location.search) {
-    newPath += location.search;
-  }
-
-  return <Navigate to={newPath} replace state={location.state} />;
-};
-
-interface BrowserWarningWrapperProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-const BrowserWarningWrapper: React.FC<BrowserWarningWrapperProps> = ({ isOpen, onClose }) => {
-  const { t } = useLanguage();
-  return (
-    <BrowserWarningModal
-      isOpen={isOpen}
-      onClose={onClose}
-      onContinue={onClose}
-      t={t}
-    />
-  );
-};
-
 export default Sentry.withErrorBoundary(App, {
   fallback: ({ error, resetError }) => (
-    <div className="App" style={{
-      height: '100vh',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '2rem',
-      textAlign: 'center',
-      background: 'linear-gradient(135deg, #f6f8fb 0%, #e9edf5 100%)'
-    }}>
-      <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🙏</div>
-      <h1 style={{ color: '#2d3748', marginBottom: '1rem' }}>Something went wrong</h1>
-      <p style={{ color: '#4a5568', marginBottom: '2rem', maxWidth: '500px' }}>
-        We apologize for the inconvenience. A report has been sent to our team, and we are working to fix this.
-      </p>
-      <button
-        onClick={() => {
-          resetError();
-          window.location.href = '/dashboard';
-        }}
-        style={{
-          padding: '0.8rem 2rem',
-          background: 'linear-gradient(135deg, #FF919D 0%, #4a90e2 100%)',
-          color: 'white',
-          border: 'none',
-          borderRadius: '12px',
-          fontWeight: 'bold',
-          cursor: 'pointer',
-          boxShadow: '0 4px 12px rgba(107, 70, 193, 0.2)'
-        }}
-      >
-        Reload Application
-      </button>
-      {import.meta.env.MODE === 'development' && (
-        <pre style={{
-          marginTop: '2rem',
-          textAlign: 'left',
-          fontSize: '0.8rem',
-          background: '#fff',
-          padding: '1rem',
-          borderRadius: '8px',
-          maxWidth: '90%',
-          overflow: 'auto',
-          border: '1px solid #e2e8f0'
-        }}>
-          {(error as Error).toString()}
-        </pre>
-      )}
-    </div>
+    <ErrorFallback error={error as Error} resetError={resetError} />
   ),
 });

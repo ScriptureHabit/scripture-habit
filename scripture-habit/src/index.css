@@ -124,8 +124,8 @@ h1 {
   font-size: 3.2em;
   line-height: 1.1;
   background: black;
-  background-clip: text;
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
@@ -189,25 +189,6 @@ button {
 }
 
 .gospel-link.sent:hover {
-  color: white !important;
-  /* Keep white on hover for sent messages (pink background) for readability, or use purple if requested? User said "change to purple". */
-  /* If I use purple on pink it might be bad. But user asked for it. 
-     "recent note ... link changes to purple ... I want ... My notes and group chat ... to also change to purple"
-     Recent note is white background.
-     GroupChat Sent is Pink background.
-     GroupChat Received is White background.
-     
-     If I really want to follow the user "change to purple", I should let it change.
-     But purple on pink (#feac5e -> #c779d0 gradient) might be hard to read.
-     However, let's respect the user's explicit request for "purple".
-     
-     Wait, actually, I will default to purple (#747bff) for all.
-     If it looks terrible, the user will complain.
-     But wait, for .sent, the text is white. 
-     If I make it purple on hover, it's a distinct change.
-     
-     Let's try to make .sent hover also purple to be consistent with the request "change to purple".
-  */
   color: #747bff !important;
   background: rgba(255, 255, 255, 0.2);
   /* Add a little background to make it readable? */
@@ -269,4 +250,55 @@ button {
   75% {
     transform: translateX(5px);
   }
+}
+
+/* Root Error Boundary Styles */
+.error-screen-root {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  padding: 2rem;
+  text-align: center;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+.error-glass-card-root {
+  padding: 3rem;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.8);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.error-emoji-root {
+  font-size: 4rem;
+  margin: 0;
+}
+
+.error-title-root {
+  margin-top: 1rem;
+  color: #2d3748;
+}
+
+.error-desc-root {
+  color: #4a5568;
+  margin-bottom: 2rem;
+}
+
+.error-reload-btn-root {
+  padding: 0.8rem 2rem;
+  border-radius: 12px;
+  border: none;
+  background: #6B46C1;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.error-reload-btn-root:hover {
+  transform: scale(1.05);
 }

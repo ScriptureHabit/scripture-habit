@@ -1,7 +1,5 @@
 import { useState, useEffect, FC } from 'react';
-import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
-import { db } from '../../firebase';
-import { doc, updateDoc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { Link, Navigate, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { UilPlus, UilPen } from '@iconscout/react-unicons';
 import Sidebar from '../Sidebar/Sidebar';
 import GroupChat from '../GroupChat/GroupChat';
@@ -28,15 +26,16 @@ import { useDashboardNotifications } from './hooks/useDashboardNotifications';
 import { useDashboardHabitPace } from './hooks/useDashboardHabitPace';
 import { useDashboardWarnings } from './hooks/useDashboardWarnings';
 import { useDashboardInvitations } from './hooks/useDashboardInvitations';
+import { useDashboardActions } from './hooks/useDashboardActions';
 
 const Dashboard: FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { t, language, isLoaded, translateChapterField } = useLanguage();
 
   // Initialize state from URL query parameters or location state
   const getInitialState = () => {
-    const searchParams = new URLSearchParams(location.search);
     const gid = searchParams.get('groupId');
     const viewParam = searchParams.get('view');
     const openNewNote = searchParams.get('openNewNote');
@@ -51,7 +50,6 @@ const Dashboard: FC = () => {
   const initialState = getInitialState();
   const [selectedView, setSelectedView] = useState<number>(initialState.selectedView);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(initialState.isModalOpen);
-  const [initialShowInviteModal] = useState<boolean>(!!location.state?.showInviteModal);
 
   const [showWelcomeStory, setShowWelcomeStory] = useState<boolean>(false);
   const [isInputFocused, setIsInputFocused] = useState<boolean>(false);
@@ -59,7 +57,11 @@ const Dashboard: FC = () => {
   const [newNickname, setNewNickname] = useState<string>('');
 
   // 1. Core Sync Hook
-  const { user, userData, loading, error } = useDashboardSync();
+  const syncState = useDashboardSync();
+  const loading = syncState.status === 'loading';
+  const error = syncState.status === 'error' ? syncState.message : null;
+  const user = syncState.user;
+  const userData = syncState.userData;
 
   // 2. Groups Hook
   const { userGroups, activeGroupId, setActiveGroupId, loadingGroupStates } = useDashboardGroups(userData, initialState.activeGroupId);
@@ -72,7 +74,7 @@ const Dashboard: FC = () => {
     kickConfirmInput, setKickConfirmInput,
     autoKickError,
     handleAutoKickSubmit 
-  } = useDashboardHabitPace(userData, loading, false /* placeholder for isJoiningInvite until hook 6 */, t);
+  } = useDashboardHabitPace(userData, loading, false, t);
 
   // 4. Invitation Hook
   const { isJoiningInvite } = useDashboardInvitations(user, userData, showWelcomeStory, setActiveGroupId, setSelectedView, t);
@@ -88,6 +90,8 @@ const Dashboard: FC = () => {
     handleEnableNotifications, handleCloseNotifPrompt 
   } = useDashboardNotifications(userData, userGroups, selectedView, loading, showWelcomeStory, showAutoKickModal, isJoiningInvite, loadingGroupStates, t);
 
+  const { markWelcomeStorySeen, updateNickname, syncNotificationReadStatus } = useDashboardActions(user, userData);
+
   const todayPlan = getTodayReadingPlan();
 
   const getReadingPlanUrl = (script: string) => {
@@ -102,52 +106,36 @@ const Dashboard: FC = () => {
       setActiveGroupId(location.state.initialGroupId);
     }
 
-    const searchParams = new URLSearchParams(location.search);
     if (searchParams.has('groupId') || searchParams.has('openNewNote') || searchParams.has('view')) {
       navigate(location.pathname, { replace: true });
     }
-  }, [location.search, location.state, navigate]);
+  }, [searchParams, location.pathname, location.state, navigate, setActiveGroupId]);
 
   useEffect(() => {
     if (!loading && userData && userData.uid && userData.hasSeenWelcomeStory === undefined && userData.hasSetKickThreshold === true) {
-      setTimeout(() => setShowWelcomeStory(true), 500);
+      const timer = setTimeout(() => setShowWelcomeStory(true), 500);
+      return () => clearTimeout(timer);
     }
-  }, [userData, loading]);
+  }, [userData, loading, setShowWelcomeStory]);
 
-  useEffect(() => {
-    const isAnyModalOpen = showWelcomeStory || showAutoKickModal || showNotifPrompt || isJoiningInvite || showEditProfileModal || isModalOpen;
-    if (isAnyModalOpen) {
-      document.body.setAttribute('data-dashboard-modal-open', 'true');
-    } else {
-      document.body.removeAttribute('data-dashboard-modal-open');
-    }
-  }, [showWelcomeStory, showAutoKickModal, showNotifPrompt, isJoiningInvite, showEditProfileModal, isModalOpen]);
+  // Body class manipulation for modals should ideally be managed via contexts or head components,
+  // but we'll remove direct DOM manipulation to maintain proper React data flow.
+  // We recommend using custom hooks (e.g. useScrollLock) or <dialog> instead of data-attributes on body.
 
   const handleCloseWelcomeStory = async () => {
     setShowWelcomeStory(false);
-    if (user && userData && userData.hasSeenWelcomeStory === undefined) {
-      try {
-        await updateDoc(doc(db, 'users', user.uid), {
-          hasSeenWelcomeStory: true
-        });
-      } catch (error) {
-        console.error("Error marking welcome story as seen:", error);
-      }
+    if (await markWelcomeStorySeen()) {
+      // no-op: state update already handled by external sync
     }
   };
 
   const handleUpdateProfile = async () => {
     if (!newNickname.trim() || !user || !userData) return;
-    try {
-      const userRef = doc(db, 'users', user.uid);
-      await updateDoc(userRef, {
-        nickname: newNickname.trim()
-      });
+    const success = await updateNickname(newNickname);
+    if (success) {
       toast.success(t('groupChat.nicknameChanged'));
       setShowEditProfileModal(false);
       setNewNickname('');
-    } catch (error: any) {
-      console.error("Error updating nickname:", error);
     }
   };
 
@@ -173,33 +161,26 @@ const Dashboard: FC = () => {
     const isQuotaError = error.toLowerCase().includes('quota exceeded') || error.toLowerCase().includes('resource-exhausted');
     if (isQuotaError) {
       return (
-        <div className='App Dashboard' style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
-          <div className='AppGlass' style={{
-            padding: '2rem', textAlign: 'center', maxWidth: '500px', width: '90%',
-            background: 'rgba(255, 255, 255, 0.7)', backdropFilter: 'blur(15px)',
-            borderRadius: '24px', border: '1px solid rgba(255, 255, 255, 0.4)',
-            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)', display: 'flex', flexDirection: 'column', gap: '1.5rem'
-          }}>
-            <div style={{ fontSize: '3rem' }}>🛠️</div>
-            <h2 style={{ color: '#2d3748', margin: 0, fontSize: '1.5rem', fontWeight: '800' }}>{t('systemErrors.quotaExceededTitle')}</h2>
-            <p style={{ color: '#4a5568', margin: 0, lineHeight: '1.6', fontSize: '1rem' }}>{t('systemErrors.quotaExceededMessage')}</p>
+        <div className='App Dashboard error-screen-container'>
+          <div className='AppGlass error-glass-card'>
+            <div className="error-icon-large">🛠️</div>
+            <h2 className="error-title-large">{t('systemErrors.quotaExceededTitle')}</h2>
+            <p className="error-message-detail">{t('systemErrors.quotaExceededMessage')}</p>
             <button onClick={() => window.location.reload()} className="retry-btn">Retry</button>
           </div>
         </div>
       );
     }
-    return <div className='App Dashboard'>Error: {error}</div>;
+    return <div className='App Dashboard error-screen-container'>Error: {error}</div>;
   }
 
   if (!user) {
-    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone;
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
     return <Navigate to={isStandalone ? "/welcome" : "/"} replace />;
   }
 
   if (!userData) return null;
 
-  // Use actually loaded groups (from Firestore snapshots) rather than stale userData.groupIds
-  // This correctly handles the case where a group was deleted
   const hasGroups = userGroups.length > 0;
 
   return (
@@ -220,18 +201,16 @@ const Dashboard: FC = () => {
               {isJoiningInvite && (
                 <div className="joining-overlay">
                   <div className="loading-spinner"></div>
-                  <h3>{t('joinGroup.joiningFromInvite')}</h3>
+                  <h3 title="Joining group...">{t('joinGroup.joiningFromInvite')}</h3>
                 </div>
               )}
             <div className="dashboard-inner-wrapper">
-              <div className="dashboard-header" style={{ paddingTop: '20px' }}>
+              <div className="dashboard-header dashboard-header-main">
               <div>
-                <h2 style={{ fontSize: '2.4rem', fontWeight: 'bold', color: '#242d49', margin: '0 0 10px 0', display: 'block' }}>
-                  Scripture Habit
-                </h2>
-                <p className="welcome-text" style={{ marginTop: '0' }}>
+                <h2 className="dashboard-title-text">Scripture Habit</h2>
+                <p className="welcome-text welcome-text-small">
                   {t('dashboard.welcomeBack')}, <strong>{userData.nickname}</strong>!
-                  <button className="edit-profile-btn" onClick={() => { setNewNickname(userData.nickname || ''); setShowEditProfileModal(true); }}>
+                  <button title="Edit Profile" className="edit-profile-btn" onClick={() => { setNewNickname(userData.nickname || ''); setShowEditProfileModal(true); }}>
                     <UilPen size="16" />
                   </button>
                 </p>
@@ -264,7 +243,7 @@ const Dashboard: FC = () => {
                 </div>
                 <div className="mini-progress-bar">
                   <div
-                    className="mini-progress-fill"
+                    className="mini-progress-fill mini-progress-fill-transition"
                     style={{ width: `${((userData.daysStudiedCount || 0) % 7) / 7 * 100}%` }}
                   ></div>
                 </div>
@@ -297,23 +276,8 @@ const Dashboard: FC = () => {
                     setSelectedView(2);
                     if (setLatestNoteNotification) setLatestNoteNotification(null);
 
-                    if (userData?.uid) {
-                      try {
-                        const userGroupStateRef = doc(db, 'users', userData.uid, 'groupStates', gid);
-                        const groupRef = doc(db, 'groups', gid);
-
-                        await Promise.all([
-                          setDoc(userGroupStateRef, {
-                            readMessageCount: totalMsgs,
-                            lastReadAt: serverTimestamp()
-                          }, { merge: true }),
-                          updateDoc(groupRef, {
-                            [`memberLastReadAt.${userData.uid}`]: serverTimestamp()
-                          })
-                        ]);
-                      } catch (err: any) {
-                        console.error("Background read status update failed:", err);
-                      }
+                    if (user && gid != null) {
+                      await syncNotificationReadStatus(gid, totalMsgs);
                     }
                   }}
                 >
@@ -322,29 +286,14 @@ const Dashboard: FC = () => {
                 </div>
               )}
 
-              <div className="inspiration-card"
-                style={{ position: 'relative', cursor: 'pointer', transition: 'transform 0.2s' }}
+              <div className="inspiration-card inspiration-interactive-card"
                 onClick={() => setShowWelcomeStory(true)}
               >
                 <blockquote className="inspiration-quote">
                   {t('dashboard.inspirationQuote')}
                 </blockquote>
                 <p className="inspiration-source">{t('dashboard.inspirationSource')}</p>
-                <div style={{
-                  position: 'absolute',
-                  top: '-10px',
-                  right: '10px',
-                  background: 'white',
-                  padding: '2px 8px',
-                  borderRadius: '12px 12px 12px 0',
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                  fontSize: '0.8rem',
-                  fontWeight: 'bold',
-                  color: '#4A5568',
-                  border: '1px solid #E2E8F0',
-                  minWidth: '24px',
-                  textAlign: 'center'
-                }}>
+                <div className="inspiration-status-badge">
                   <span className="typing-dots"></span>
                 </div>
               </div>
@@ -352,19 +301,12 @@ const Dashboard: FC = () => {
 
             <div className="dashboard-split-row">
               <div className="reading-plan-section">
-                <div className="reading-plan-card" style={{
-                  background: 'rgba(255, 255, 255, 0.6)',
-                  padding: '1.2rem',
-                  borderRadius: '16px',
-                  border: '1px solid rgba(255, 255, 255, 0.3)',
-                  backdropFilter: 'blur(10px)',
-                  textAlign: 'center'
-                }}>
-                  <h3 style={{ margin: '0 0 10px 0', fontSize: '1.1rem', color: '#4a5568' }}>{t('dashboard.todaysComeFollowMe')}</h3>
+                <div className="reading-plan-card reading-plan-card-inner-box">
+                  <h3 className="reading-plan-title-styled">{t('dashboard.todaysComeFollowMe')}</h3>
                   {todayPlan ? (
                     <div>
-                      <p style={{ fontSize: '0.9rem', color: '#718096', marginBottom: '0.5rem' }}>{todayPlan.date}</p>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', alignItems: 'center' }}>
+                      <p className="reading-plan-date-detail">{todayPlan.date}</p>
+                      <div className="reading-plan-links-container">
                         {todayPlan.scripts.map((script, idx) => {
                           const url = getReadingPlanUrl(script);
                           const displayScript = translateChapterField(script);
@@ -375,7 +317,7 @@ const Dashboard: FC = () => {
                               href={url || '#'}
                               target="_blank"
                               rel="noopener noreferrer"
-                              style={{ color: '#6B46C1', fontWeight: 'bold', textDecoration: 'none', fontSize: '1.1rem' }}
+                              className="reading-plan-link-item"
                             >
                               {displayScript}
                             </a>
@@ -401,7 +343,7 @@ const Dashboard: FC = () => {
           )}
 
           {selectedView === 1 && <MyNotes userData={userData} isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} userGroups={userGroups} />}
-          {selectedView === 2 && activeGroupId && <GroupChat groupId={activeGroupId} userData={userData} userGroups={userGroups} onInputFocusChange={setIsInputFocused} isExternalModalOpen={isModalOpen} onBack={() => setSelectedView(0)} onGroupSelect={(gid) => setActiveGroupId(gid)} initialShowInviteModal={initialShowInviteModal} />}
+          {selectedView === 2 && activeGroupId && <GroupChat groupId={activeGroupId} userData={userData} userGroups={userGroups} onInputFocusChange={setIsInputFocused} isExternalModalOpen={isModalOpen} onBack={() => setSelectedView(0)} onGroupSelect={(gid) => setActiveGroupId(gid)} initialShowInviteModal={!!location.state?.showInviteModal} />}
           {selectedView === 3 && <Profile userData={userData} stats={{ streak: userData?.streakCount || 0, totalNotes: userData?.totalNotes || 0, daysStudied: userData?.daysStudiedCount || 0 }} />}
           {selectedView === 4 && <Donate userData={userData} />}
         </div>
@@ -429,28 +371,34 @@ const Dashboard: FC = () => {
           <div className="leave-modal-content auto-kick-setup">
             {autoKickStep === 0 ? (
               <>
-                <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>{t('groupChat.autoKickInitTitle')}</h2>
-                <p style={{ color: 'var(--gray)', lineHeight: '1.6' }}>{t('groupChat.autoKickInitDesc')}</p>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px', marginTop: '1.5rem' }}>
+                <h2 className="auto-kick-init-title-styled">{t('groupChat.autoKickInitTitle')}</h2>
+                <p className="auto-kick-init-desc-styled">{t('groupChat.autoKickInitDesc')}</p>
+                <div className="auto-kick-grid-options-styled">
                   {[3, 5, 7].map(d => (
-                    <button key={d} onClick={() => setSelectedKickDays(d)} style={{ padding: '15px', borderRadius: '12px', border: selectedKickDays === d ? '2px solid var(--pink)' : '1px solid #ddd', background: selectedKickDays === d ? '#ffe0e3' : 'white', fontWeight: 'bold' }}>{d} {t('dashboard.days')}</button>
+                    <button 
+                      key={d} 
+                      onClick={() => setSelectedKickDays(d)} 
+                      className={`auto-kick-day-option-styled ${selectedKickDays === d ? 'selected' : 'unselected'}`}
+                    >
+                      {d} {t('dashboard.days')}
+                    </button>
                   ))}
                 </div>
-                <button className="modal-btn primary" onClick={() => setAutoKickStep(1)} style={{ marginTop: '2rem', width: '100%' }}>{t('groupChat.next')}</button>
+                <button className="modal-btn primary mt-2 w-100" onClick={() => setAutoKickStep(1)}>{t('groupChat.next')}</button>
               </>
             ) : autoKickStep === 1 ? (
               <>
-                <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>{t('groupChat.autoKickConfirmTitle')}</h2>
-                <p style={{ color: '#e53e3e', fontWeight: 'bold' }}>{t('groupChat.autoKickWarning')}</p>
-                <p style={{ marginTop: '1rem' }}>{t('groupChat.autoKickConfirmText').replace('{days}', selectedKickDays.toString())}</p>
-                <input type="number" className="delete-confirmation-input" style={{ width: '80px', textAlign: 'center', margin: '1rem auto', display: 'block', fontSize: '1.5rem' }} value={kickConfirmInput} onChange={(e) => setKickConfirmInput(e.target.value)} />
-                {autoKickError && <p style={{ color: '#e53e3e', fontSize: '0.8rem' }}>{autoKickError}</p>}
-                <button className="modal-btn primary" onClick={handleAutoKickSubmit} style={{ marginTop: '1rem', width: '100%' }}>{t('groupChat.save')}</button>
+                <h2 className="auto-kick-init-title-styled">{t('groupChat.autoKickConfirmTitle')}</h2>
+                <p className="auto-kick-confirm-warning-styled">{t('groupChat.autoKickWarning')}</p>
+                <p className="mt-1">{t('groupChat.autoKickConfirmText').replace('{days}', selectedKickDays.toString())}</p>
+                <input type="number" title="Days Threshold" placeholder="7" className="delete-confirmation-input auto-kick-confirm-input-styled" value={kickConfirmInput} onChange={(e) => setKickConfirmInput(e.target.value)} />
+                {autoKickError && <p className="auto-kick-error-text-styled">{autoKickError}</p>}
+                <button className="modal-btn primary mt-1 w-100" onClick={handleAutoKickSubmit}>{t('groupChat.save')}</button>
               </>
             ) : (
-              <div style={{ textAlign: 'center', padding: '1rem' }}>
-                <p style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>{t('groupChat.autoKickSuccess')}</p>
-                <button className="modal-btn primary" onClick={() => setShowAutoKickModal(false)} style={{ marginTop: '1rem' }}>OK</button>
+              <div className="text-center p-1">
+                <p className="font-bold-large">{t('groupChat.autoKickSuccess')}</p>
+                <button className="modal-btn primary mt-1" onClick={() => setShowAutoKickModal(false)}>OK</button>
               </div>
             )}
           </div>

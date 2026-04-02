@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { db } from '../../../firebase';
-import { doc, updateDoc, Timestamp } from 'firebase/firestore';
+import { auth, appCheck } from '../../../firebase';
+import { getToken } from 'firebase/app-check';
 import { toast } from 'react-toastify';
 import { GroupData } from '../../../types/chat';
 
@@ -25,17 +25,38 @@ export const useInviteManager = (
   const handleRegenerateInviteCode = async () => {
     if (!groupId) return;
     try {
-      const { generateInviteCode } = await import('../../../Utils/inviteUtils');
-      const newCode = generateInviteCode();
-      const expiresAt = new Date();
-      expiresAt.setDate(expiresAt.getDate() + 7);
-      
-      await updateDoc(doc(db, 'groups', groupId), {
-        inviteCode: newCode,
-        inviteCodeExpiresAt: Timestamp.fromDate(expiresAt)
+      const user = auth?.currentUser;
+      if (!user) throw new Error('No user logged in');
+
+      const idToken = await user.getIdToken();
+      let appCheckToken = '';
+      if (appCheck) {
+        try {
+          const appCheckTokenResponse = await getToken(appCheck, false);
+          appCheckToken = appCheckTokenResponse.token;
+        } catch (e) {
+          console.warn('[useInviteManager] AppCheck token failed:', e);
+        }
+      }
+
+      const response = await fetch('/api/regenerate-invite-code', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${idToken}`,
+          ...(appCheckToken ? { 'X-Firebase-AppCheck': appCheckToken } : {})
+        },
+        body: JSON.stringify({ groupId })
       });
+
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(text || 'Failed to regenerate invite code');
+      }
+
       toast.success(t('groupChat.inviteCodeRegenerated'));
     } catch (err) {
+      console.error('Failed to regenerate invite code:', err);
       toast.error("Failed to regenerate code");
     }
   };

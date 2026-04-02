@@ -2,7 +2,7 @@ export {};
 
 declare global {
   interface Window {
-    deferredPWAPrompt: any;
+    deferredPWAPrompt: BeforeInstallPromptEvent | null;
   }
   
   interface BeforeInstallPromptEvent extends Event {

@@ -1,53 +1,47 @@
+import axios from 'axios';
 import { useState } from 'react';
-import { doc, updateDoc, deleteDoc } from 'firebase/firestore';
-import { getToken } from 'firebase/app-check'; // Added AppCheck getToken
-import { db, auth, appCheck } from '../../../firebase'; // Added appCheck
-import { Capacitor } from '@capacitor/core';
+import { useNavigate } from 'react-router-dom';
+import apiClient from '../../../Utils/apiClient';
 import { toast } from 'react-toastify';
 import { GroupData } from '../../../types/chat';
+import { UserData } from '../../../types/user';
 
 export const useGroupActions = (
   groupId: string,
-  userData: any,
+  userData: UserData | null,
   groupData: GroupData | null,
   language: string,
-  t: (key: string, replacements?: any) => string
+  t: (key: string, replacements?: Record<string, string | number>) => string,
+  onLeaveSuccess?: () => void,
+  onDeleteSuccess?: () => void
 ) => {
+
   const [isLeaving, setIsLeaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  const navigate = useNavigate();
 
   const handleLeaveGroup = async () => {
     if (!userData || isLeaving) return;
     
     setIsLeaving(true);
     try {
-      const idToken = await auth?.currentUser?.getIdToken();
-      const appCheckTokenResponse = await getToken(appCheck, false); // Get AppCheck token
-      const appCheckToken = appCheckTokenResponse.token;
+      await apiClient.post('/api/leave-group', { groupId });
 
-      if (!idToken) throw new Error("No idToken");
-
-      const API_BASE = Capacitor.isNativePlatform() ? 'https://scripturehabit.app' : '';
-      const response = await fetch(`${API_BASE}/api/leave-group`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${idToken}`,
-          'X-Firebase-AppCheck': appCheckToken // Add AppCheck header
-        },
-        body: JSON.stringify({ groupId })
-      });
-
-      if (!response.ok) {
-        const errText = await response.text();
-        throw new Error(errText || 'Failed to leave group');
+      toast.success(t('groupChat.leftGroupSuccess') || 'You have left the group.');
+      if (onLeaveSuccess) {
+        onLeaveSuccess();
+      } else {
+        navigate(`/${language}/dashboard`, { replace: true });
       }
 
-      toast.success(t('groupChat.leftGroupSuccess') || "You have left the group.");
-      window.location.href = `/${language}/dashboard`;
-    } catch (error) {
-      console.error("Error leaving group:", error);
-      toast.error(t('groupChat.errorLeaveGroup') || "Failed to leave group.");
+    } catch (err: unknown) {
+      console.error('Error leaving group:', err);
+      let errorMessage = t('groupChat.errorLeaveGroup') || 'Failed to leave group.';
+      if (axios.isAxiosError(err)) {
+        errorMessage = err.response?.data?.error || errorMessage;
+      }
+      toast.error(errorMessage);
     } finally {
       setIsLeaving(false);
     }
@@ -57,27 +51,22 @@ export const useGroupActions = (
     if (isDeleting) return;
     setIsDeleting(true);
     try {
-      await deleteDoc(doc(db, 'groups', groupId));
-      
-      if (userData?.uid) {
-        const userRef = doc(db, 'users', userData.uid);
-        const currentUserGroupIds = userData.groupIds || [];
-        const updatedGroupIds = currentUserGroupIds.filter((id: string) => id !== groupId);
-        
-        // Clear groupId if it matches the deleted group OR if no groups remain at all
-        const shouldClearLegacyGroupId = userData.groupId === groupId || updatedGroupIds.length === 0;
-        
-        await updateDoc(userRef, {
-          groupIds: updatedGroupIds,
-          ...(shouldClearLegacyGroupId ? { groupId: null } : {})
-        });
+      await apiClient.post('/api/delete-group', { groupId });
+
+      toast.success(t('groupChat.groupDeletedSuccess') || 'Group deleted successfully.');
+      if (onDeleteSuccess) {
+        onDeleteSuccess();
+      } else {
+        navigate(`/${language}/dashboard`, { replace: true });
       }
 
-      toast.success(t('groupChat.groupDeletedSuccess') || "Group deleted successfully.");
-      window.location.href = `/${language}/dashboard`;
-    } catch (error) {
-      console.error("Error deleting group:", error);
-      toast.error(t('groupChat.errorDeleteGroup') || "Failed to delete group.");
+    } catch (err: unknown) {
+      console.error("Error deleting group:", err);
+      let errorMessage = t('groupChat.errorDeleteGroup') || "Failed to delete group.";
+      if (axios.isAxiosError(err)) {
+        errorMessage = err.response?.data?.error || errorMessage;
+      }
+      toast.error(errorMessage);
     } finally {
       setIsDeleting(false);
     }
@@ -86,13 +75,14 @@ export const useGroupActions = (
   const togglePublicStatus = async () => {
     if (!groupData) return;
     try {
-      const groupRef = doc(db, 'groups', groupId);
-      await updateDoc(groupRef, {
-        isPublic: !groupData.isPublic
+      await apiClient.post('/api/update-group', { 
+        groupId, 
+        isPublic: !groupData.isPublic 
       });
+
       toast.success(groupData.isPublic ? t('groupChat.markedPrivate') : t('groupChat.markedPublic'));
-    } catch (error) {
-      console.error("Error toggling public status:", error);
+    } catch (err: unknown) {
+      console.error("Error toggling public status:", err);
       toast.error(t('groupChat.errorUpdateGroupStatus'));
     }
   };
@@ -104,22 +94,30 @@ export const useGroupActions = (
     newTransDesc: string
   ) => {
     try {
-      const groupRef = doc(db, 'groups', groupId);
-      const payload: any = {
-        name: newName,
-        description: newDesc
-      };
+      const payload: { 
+        groupId: string; 
+        name?: string; 
+        description?: string; 
+        translations?: Record<string, { name?: string; description?: string }> 
+      } = { groupId };
+      if (newName !== undefined) payload.name = newName;
+      if (newDesc !== undefined) payload.description = newDesc;
 
       if (newTransName || newTransDesc) {
-        if (newTransName) payload[`translations.${language}.name`] = newTransName;
-        if (newTransDesc) payload[`translations.${language}.description`] = newTransDesc;
+        payload.translations = {
+          [language]: {
+            ...(newTransName ? { name: newTransName } : {}),
+            ...(newTransDesc ? { description: newTransDesc } : {})
+          }
+        };
       }
 
-      await updateDoc(groupRef, payload);
+      await apiClient.post('/api/update-group', payload);
+
       toast.success(t('groupChat.groupNameChanged') || "Group info updated!");
       return true;
-    } catch (error) {
-      console.error("Error updating group name:", error);
+    } catch (err: unknown) {
+      console.error("Error updating group name:", err);
       toast.error(t('groupChat.errorChangeGroupName') || "Failed to update group info.");
       return false;
     }

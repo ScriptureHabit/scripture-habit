@@ -1,5 +1,5 @@
 import { useMemo, FC } from 'react';
-import { detectInAppBrowser, getAndroidIntentUrl, getLineExternalUrl } from '../../Utils/browserDetection';
+import { detectInAppBrowser, getAndroidIntentUrl, getLineExternalUrl, openExternalUrl } from '../../Utils/browserDetection';
 import './BrowserWarningModal.css';
 import { UilCheckCircle, UilInfoCircle, UilCopyAlt, UilExternalLinkAlt, UilTimes } from '@iconscout/react-unicons';
 import { toast } from 'react-toastify';
@@ -8,16 +8,17 @@ interface BrowserWarningModalProps {
     isOpen: boolean;
     onClose: () => void;
     onContinue: () => void;
-    t: (key: string, options?: any) => string;
+    t: (key: string, options?: Record<string, string | number>) => string;
 }
 
 const BrowserWarningModal: FC<BrowserWarningModalProps> = ({ isOpen, onClose, onContinue, t }) => {
     const { detectedApp, isAndroid, isIos } = useMemo(() => {
-        const ua = navigator.userAgent || navigator.vendor || (window as any).opera || '';
+        const ua = typeof navigator !== 'undefined' ? (navigator.userAgent || navigator.vendor || '') : '';
+        const isOpera = typeof window !== 'undefined' && 'opera' in window;
         return {
             detectedApp: detectInAppBrowser(),
             isAndroid: /Android/i.test(ua),
-            isIos: /iPhone|iPad|iPod/i.test(ua)
+            isIos: /iPhone|iPad|iPod/i.test(ua) || (isOpera)
         };
     }, []);
 
@@ -28,26 +29,29 @@ const BrowserWarningModal: FC<BrowserWarningModalProps> = ({ isOpen, onClose, on
         return t('browserWarning.copyLinkDefault');
     };
 
+    const currentUrl = typeof window !== 'undefined' ? window.location.href : '';
+
     const handleActionClick = () => {
+        if (!currentUrl) return;
+
         if (isAndroid) {
             // On Android, try to launch Chrome via Intent
-            window.location.href = getAndroidIntentUrl();
-            // Also copy to clipboard as fallback
-            navigator.clipboard.writeText(window.location.href);
+            openExternalUrl(getAndroidIntentUrl(currentUrl));
+            navigator.clipboard.writeText(currentUrl);
         } else if (isIos && detectedApp === 'line') {
             // SPECIFIC FOR LINE ON IOS: Open in Safari
-            window.location.href = getLineExternalUrl();
+            openExternalUrl(getLineExternalUrl(currentUrl));
         } else {
             // On iOS/others, copy to clipboard
-            navigator.clipboard.writeText(window.location.href);
+            navigator.clipboard.writeText(currentUrl);
             toast.info(t('browserWarning.linkCopied'), {
-                position: "bottom-center",
+                position: 'bottom-center',
                 autoClose: 2000,
                 hideProgressBar: true,
                 closeOnClick: true,
                 pauseOnHover: false,
                 draggable: true,
-                theme: "colored",
+                theme: 'colored',
             });
         }
     };

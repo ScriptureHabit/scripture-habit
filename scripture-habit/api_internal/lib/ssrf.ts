@@ -1,17 +1,17 @@
 import { URL } from 'url';
 
 /**
- * SSRF対策: 許可されないホスト名やプライベートIPをチェックします。
+ * SSRF Protection: Checks if a URL matches allowed hosts and is not a private IP.
  */
-export function isSafeUrl(urlStr) {
+export function isSafeUrl(urlStr: string): boolean {
     try {
         const parsedUrl = new URL(urlStr);
         if (parsedUrl.protocol !== 'http:' && parsedUrl.protocol !== 'https:') return false;
 
         const hostname = parsedUrl.hostname.toLowerCase();
 
-        // ブラックリスト: プライベートネットワークおよびメタデータサービス
-        const blockedPatterns = [
+        // Blocklist: Private networks and metadata services
+        const blockedPatterns: (string | RegExp)[] = [
             'localhost',
             '::1',
             /^127\./,
@@ -30,7 +30,7 @@ export function isSafeUrl(urlStr) {
             if (typeof pattern === 'string') return hostname === pattern;
             return pattern.test(hostname);
         });
-    } catch (e) {
+    } catch {
         return false;
     }
 }

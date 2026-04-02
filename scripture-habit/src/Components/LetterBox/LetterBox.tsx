@@ -1,17 +1,21 @@
 import React, { useState, useEffect, FC } from 'react';
 import { db } from '../../firebase';
-import { collection, query, orderBy, onSnapshot, doc, deleteDoc, Timestamp } from 'firebase/firestore';
+import { collection, query, orderBy, onSnapshot, doc, deleteDoc } from 'firebase/firestore';
 import { UilEnvelope, UilTrashAlt, UilTimes } from '@iconscout/react-unicons';
 import ReactMarkdown from 'react-markdown';
 import './LetterBox.css';
 import { useLanguage } from '../../Context/LanguageContext';
 import { UserData } from '../../types/user';
+import ConfirmModal from '../ConfirmModal/ConfirmModal';
+
+import { FirebaseTimestamp } from '../../types/chat';
+import { parseTimestampToDate } from '../../Utils/timeUtils';
 
 interface Letter {
     id: string;
     title?: string;
     content?: string;
-    createdAt?: Timestamp | any;
+    createdAt?: FirebaseTimestamp;
 }
 
 interface LetterBoxProps {
@@ -25,6 +29,7 @@ const LetterBox: FC<LetterBoxProps> = ({ isOpen, onClose, userData }) => {
     const [letters, setLetters] = useState<Letter[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedLetter, setSelectedLetter] = useState<Letter | null>(null);
+    const [deleteTargetLetterId, setDeleteTargetLetterId] = useState<string | null>(null);
 
     useEffect(() => {
         if (!userData || !userData.uid || !isOpen) return;
@@ -44,14 +49,23 @@ const LetterBox: FC<LetterBoxProps> = ({ isOpen, onClose, userData }) => {
         return () => unsubscribe();
     }, [userData, isOpen]);
 
-    const handleDelete = async (e: React.MouseEvent, letterId: string) => {
+    const handleDelete = (e: React.MouseEvent, letterId: string) => {
         e.stopPropagation();
-        if (userData?.uid && window.confirm(t('letterBox.deleteConfirm'))) {
-            try {
-                await deleteDoc(doc(db, 'users', userData.uid, 'letters', letterId));
-            } catch (error) {
-                console.error("Error deleting letter:", error);
-            }
+        setDeleteTargetLetterId(letterId);
+    };
+
+    const confirmDeleteLetter = async () => {
+        if (!userData?.uid || !deleteTargetLetterId) {
+            setDeleteTargetLetterId(null);
+            return;
+        }
+
+        try {
+            await deleteDoc(doc(db, 'users', userData.uid, 'letters', deleteTargetLetterId));
+        } catch (error) {
+            console.error('Error deleting letter:', error);
+        } finally {
+            setDeleteTargetLetterId(null);
         }
     };
 
@@ -73,9 +87,7 @@ const LetterBox: FC<LetterBoxProps> = ({ isOpen, onClose, userData }) => {
                             </button>
                             <div className="letter-paper">
                                 <div className="letter-date">
-                                    {selectedLetter.createdAt?.toDate ?
-                                        selectedLetter.createdAt.toDate().toLocaleDateString() :
-                                        new Date().toLocaleDateString()}
+                                    {parseTimestampToDate(selectedLetter.createdAt).toLocaleDateString()}
                                 </div>
                                 <ReactMarkdown>{selectedLetter.content || ""}</ReactMarkdown>
                             </div>
@@ -102,9 +114,7 @@ const LetterBox: FC<LetterBoxProps> = ({ isOpen, onClose, userData }) => {
                                         <div className="letter-info">
                                             <h3>{letter.title || t('letterBox.defaultTitle')}</h3>
                                             <span className="letter-date-meta">
-                                                {letter.createdAt?.toDate ?
-                                                    letter.createdAt.toDate().toLocaleDateString() :
-                                                    ""}
+                                                {letter.createdAt ? parseTimestampToDate(letter.createdAt).toLocaleDateString() : ""}
                                             </span>
                                         </div>
                                         <button
@@ -121,6 +131,15 @@ const LetterBox: FC<LetterBoxProps> = ({ isOpen, onClose, userData }) => {
                     )}
                 </div>
             </div>
+            <ConfirmModal
+                isOpen={Boolean(deleteTargetLetterId)}
+                title={t('letterBox.deleteTitle') || 'Delete letter'}
+                description={t('letterBox.deleteConfirm') || 'Are you sure you want to delete this letter?'}
+                confirmLabel={t('common.delete') || 'Delete'}
+                cancelLabel={t('common.cancel') || 'Cancel'}
+                onConfirm={confirmDeleteLetter}
+                onCancel={() => setDeleteTargetLetterId(null)}
+            />
         </div>
     );
 };
