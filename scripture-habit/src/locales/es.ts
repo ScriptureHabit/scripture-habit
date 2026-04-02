@@ -486,7 +486,10 @@ export default {
             confirmCloseMessage: "Si cierras ahora, tus cambios se perderán.",
             confirmCloseSave: "Publicar Nota",
             confirmCloseDiscard: "Descartar",
-            confirmCloseKeepEditing: "Seguir Editando"
+            confirmCloseKeepEditing: "Seguir Editando",
+            urlRequiredForGC: "Por favor, proporciona una URL de la Biblioteca del Evangelio para las notas de la Conferencia General.",
+            urlRequiredForBYU: "Por favor, proporciona una URL para BYU Speeches.",
+            urlRequiredForOther: "Por favor, proporciona una URL o un título para la categoría 'Otros'."
         },
         scriptures: {
             oldTestament: "Antiguo Testamento",
@@ -697,6 +700,12 @@ export default {
             quotaExceededMessage: "Actualmente estamos experimentando un alto tráfico y hemos alcanzado nuestro límite de base de datos. Se espera que el sistema se reinicie y esté plenamente operativo a las 5:00 PM JST. Lamentamos las molestias.",
             underMaintenanceTitle: "Mantenimiento del Sistema",
             underMaintenanceMessage: "La aplicación está en mantenimiento para ofrecer una mejor experiencia. Volveremos pronto. Gracias por su paciencia."
+        },
+        errors: {
+            prefix: "Error",
+            networkError: "La solicitud de red falló. Verifique su conexión de Internet o desactive los bloqueadores de anuncios e inténtelo de nuevo.",
+            authError: "Ocurrió un error de autenticación. Intente iniciar sesión de nuevo.",
+            unexpectedError: "Ocurrió un error inesperado."
         },
         installPrompt: {
             title: "Instalar App",

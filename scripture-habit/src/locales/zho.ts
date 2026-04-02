@@ -485,7 +485,10 @@ export default {
             confirmCloseMessage: "如果現在關閉，您的變更將會遺失。",
             confirmCloseSave: "發布筆記",
             confirmCloseDiscard: "放棄",
-            confirmCloseKeepEditing: "繼續編輯"
+            confirmCloseKeepEditing: "繼續編輯",
+            urlRequiredForGC: "請提供總會大會筆記的福音圖書館連結。",
+            urlRequiredForBYU: "請提供 BYU Speeches 的連結。",
+            urlRequiredForOther: "請在「其他」類別中提供連結或標題。"
         },
         scriptures: {
             oldTestament: "舊約",
@@ -696,6 +699,12 @@ export default {
             quotaExceededMessage: "目前由於訪問量超出預期，已達到資料庫使用限制。預計將於日本時間 17:00 自動重置並恢復正常運作。對您造成的不便我們深表歉意。",
             underMaintenanceTitle: "系統維護中",
             underMaintenanceMessage: "應用程序目前正在進行維護，以提供更好的體驗。我們很快就會回來。感謝您的耐心配合。"
+        },
+        errors: {
+            prefix: "錯誤",
+            networkError: "網絡請求失敗。請檢查您的互聯網連接或禁用廣告攔截器後重試。",
+            authError: "發生身份驗證錯誤。請重新登錄。",
+            unexpectedError: "發生意外錯誤。"
         },
         installPrompt: {
             title: "安裝應用程式",

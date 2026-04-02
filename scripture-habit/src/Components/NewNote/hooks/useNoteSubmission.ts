@@ -26,6 +26,18 @@ export const useNoteSubmission = (
         onSuccess: () => void
     ) => {
         if (loading || !scripture || !chapter || !comment) return;
+
+        // --- NEW VALIDATION: Enforce URL for certain categories ---
+        const isUrl = chapter.startsWith('http');
+        if (scripture === "General Conference" && !isUrl) {
+            toast.error(t('newNote.urlRequiredForGC'));
+            return;
+        }
+        if (scripture === "BYU Speeches" && !isUrl) {
+            toast.error(t('newNote.urlRequiredForBYU'));
+            return;
+        }
+
         setLoading(true);
 
         const API_BASE = Capacitor.isNativePlatform() ? 'https://scripturehabit.app' : '';

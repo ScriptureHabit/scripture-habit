@@ -440,7 +440,10 @@ export default {
             confirmCloseMessage: "If you close now, your changes will be lost.",
             confirmCloseSave: "Post Note",
             confirmCloseDiscard: "Discard",
-            confirmCloseKeepEditing: "Keep Editing"
+            confirmCloseKeepEditing: "Keep Editing",
+            urlRequiredForGC: "Please provide a Gospel Library URL for General Conference notes.",
+            urlRequiredForBYU: "Please provide a URL for BYU Speeches.",
+            urlRequiredForOther: "Please provide a URL or Title for the 'Other' category."
         },
         scriptures: {
             oldTestament: "Old Testament",

@@ -543,7 +543,10 @@ export default {
             confirmCloseMessage: "지금 닫으면 변경 사항이 손실됩니다.",
             confirmCloseSave: "게시하기",
             confirmCloseDiscard: "취소",
-            confirmCloseKeepEditing: "계속 편집"
+            confirmCloseKeepEditing: "계속 편집",
+            urlRequiredForGC: "연차 대회 노트의 복음 자료실 URL을 입력해 주세요.",
+            urlRequiredForBYU: "BYU Speeches의 URL을 입력해 주세요.",
+            urlRequiredForOther: "기타 카테고리의 URL 또는 제목을 입력해 주세요."
         },
         scriptures: {
             oldTestament: "구약전서",
@@ -748,6 +751,12 @@ export default {
             quotaExceededMessage: "현재 예상보다 많은 접속으로 인해 데이터베이스 이용 한도에 도달했습니다. 일본 시간 오후 5:00(17:00 JST)에 자동으로 리셋되어 복구될 예정입니다. 이용에 불편을 드려 죄송합니다.",
             underMaintenanceTitle: "시스템 점검 중",
             underMaintenanceMessage: "현재 시스템 점검 또는 할당량 초과로 인해 서비스를 일시적으로 이용할 수 없습니다."
+        },
+        errors: {
+            prefix: "오류",
+            networkError: "네트워크 요청이 실패했습니다. 인터넷 연결을 확인하거나 광고 차단기를 비활성화한 후 다시 시도하십시오.",
+            authError: "인증 오류가 발생했습니다. 다시 로그인하십시오.",
+            unexpectedError: "예기치 않은 오류가 발생했습니다."
         },
         installPrompt: {
             title: "앱 설치",

@@ -446,7 +446,10 @@ export default {
             confirmCloseMessage: "このまま閉じると、入力した内容は失われます。",
             confirmCloseSave: "投稿する",
             confirmCloseDiscard: "破棄する",
-            confirmCloseKeepEditing: "編集を続ける"
+            confirmCloseKeepEditing: "編集を続ける",
+            urlRequiredForGC: "総大会のノートには福音ライブラリーのURLを入力してください。",
+            urlRequiredForBYU: "BYU SpeechesのノートにはURLを入力してください。",
+            urlRequiredForOther: "「その他」カテゴリではURL、または学習資料のタイトルを入力してください。"
         },
         scriptures: {
             oldTestament: "旧約聖書",

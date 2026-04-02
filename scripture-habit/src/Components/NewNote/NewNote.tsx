@@ -227,7 +227,7 @@ const NewNote: FC<NewNoteProps> = ({
 
                     <div className="suggestions-container">
                         <Input
-                            label={scripture === "General Conference" ? t('newNote.urlLabel') : t('newNote.chapterLabel')}
+                            label={['General Conference', 'BYU Speeches', 'Other'].includes(scripture) ? t('newNote.urlLabel') : t('newNote.chapterLabel')}
                             type="text"
                             value={chapter}
                             onChange={(e) => {
@@ -246,6 +246,11 @@ const NewNote: FC<NewNoteProps> = ({
                             required
                             placeholder={getPlaceholder()}
                         />
+                        {['General Conference', 'BYU Speeches'].includes(scripture) && chapter && !isUrl && (
+                            <div className="url-warning-hint">
+                                ⚠️ {scripture === "General Conference" ? t('newNote.urlRequiredForGC') : t('newNote.urlRequiredForBYU')}
+                            </div>
+                        )}
                         {showSuggestions && suggestions.length > 0 && (
                             <div className="suggestions-list">
                                 {suggestions.map((book, idx) => (

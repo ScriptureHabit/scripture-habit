@@ -529,7 +529,10 @@ export default {
             confirmCloseMessage: "Kung isasara mo ngayon, mawawala ang iyong mga pagbabago.",
             confirmCloseSave: "I-post",
             confirmCloseDiscard: "Itapon",
-            confirmCloseKeepEditing: "Ipagpatuloy ang Pag-edit"
+            confirmCloseKeepEditing: "Ipagpatuloy ang Pag-edit",
+            urlRequiredForGC: "Pakibigay ang URL ng Gospel Library para sa mga tala ng General Conference.",
+            urlRequiredForBYU: "Pakibigay ang URL para sa BYU Speeches.",
+            urlRequiredForOther: "Pakibigay ang URL o Pamagat para sa kategoryang 'Iba pa'."
         },
         scriptures: {
             oldTestament: "Lumang Tipan",
@@ -734,6 +737,12 @@ export default {
             quotaExceededMessage: "Kasalukuyan kaming nakakaranas ng mataas na trapiko at naabot na ang limitasyon ng aming database. Inaasahang mag-reset ang system at magiging ganap na gumagana sa ganap na 5:00 PM JST. Humihingi kami ng paumanhin sa abala.",
             underMaintenanceTitle: "Maintenance ng System",
             underMaintenanceMessage: "Kasalukuyang sumasailalim sa maintenance ang application upang makapagbigay ng mas magandang karanasan. Babalik kami sa lalong madaling panahon. Salamat sa inyong pasensya."
+        },
+        errors: {
+            prefix: "Error",
+            networkError: "Nabigo ang network request. Pakisuri ang iyong internet connection o i-disable ang ad-blockers at subukan muli.",
+            authError: "Nagkaroon ng authentication error. Pakisubukang mag-log in muli.",
+            unexpectedError: "Nagkaroon ng hindi inaasahang error."
         },
         installPrompt: {
             title: "I-install ang App",

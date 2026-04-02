@@ -93,13 +93,17 @@ router.post('/translate', authenticate, aiLimiter, verifyAppCheck, async (req, r
             translatedText = cacheDoc.data().translatedText;
         } else {
             const targetLangName = languageNames[targetLanguage] || targetLanguage;
-            const prompt = `Task: Translate the following text into ${targetLangName}. 
+            const prompt = `Task: Translate the following study note into ${targetLangName}. 
             【STRICT RULES】:
             1. If the text is a structured note with labels like **Category:**, **Chapter:** and **Comment:** (or their equivalents), you MUST preserve this exact markdown structure.
-            2. Translate the labels themselves into ${targetLangName} (e.g., use **カテゴリ:** for Japanese, **Category:** for English, **Escritura:** for Portuguese).
-            3. Each label and its value MUST be on its own line. NEVER merge them into a single line.
-            4. ALWAYS use bold markdown for labels: **Label:**
-            5. Keep all line breaks exactly as they appear in the original.
+            2. Translate EVERYTHING, including the values for 'Category', 'Chapter', 'Title', and 'Talk' fields.
+               - For scripture references, translate the book names to ${targetLangName} (e.g., '1 Nefi' -> '1 Nephi', 'マタイ' -> 'Matthew') but keep the chapter/verse numbers as-is.
+               - If the value is a URL, keep it exactly as-is.
+            3. For the labels themselves, use these standard labels in ${targetLangName}:
+               - English: **Category:**, **Chapter:**, **Comment:**, **Title:**, **Talk:**, **Speech:**
+               - Japanese: **カテゴリ:**, **章:**, **コメント:**, **タイトル:**, **お話:**, **スピーチ:**
+            4. Each label and its value MUST be on its own line. NEVER merge them into a single line.
+            5. ALWAYS use bold markdown for labels: **Label:**
             6. Output ONLY the translated content.
 
             Example structure (MANDATORY):

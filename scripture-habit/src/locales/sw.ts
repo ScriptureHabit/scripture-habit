@@ -543,7 +543,10 @@ export default {
             confirmCloseMessage: "Ukifunga sasa, mabadiliko yako yatapotea.",
             confirmCloseSave: "Chapisha",
             confirmCloseDiscard: "Tupa",
-            confirmCloseKeepEditing: "Endelea Kuhariri"
+            confirmCloseKeepEditing: "Endelea Kuhariri",
+            urlRequiredForGC: "Tafadhali weka URL ya Maktaba ya Injili kwa ajili ya maelezo ya Mkutano Mkuu.",
+            urlRequiredForBYU: "Tafadhali weka URL kwa ajili ya BYU Speeches.",
+            urlRequiredForOther: "Tafadhali weka URL au Kichwa kwa ajili ya kategoria ya 'Nyingine'."
         },
         scriptures: {
             oldTestament: "Agano la Kale",
@@ -748,6 +751,12 @@ export default {
             quotaExceededMessage: "Kwa sasa tunapata trafiki kubwa na tumefikia kikomo cha hifadhidata yetu. Mfumo unatarajiwa kuwekwa upya na kufanya kazi kikamilifu ifikapo saa 11:00 jioni JST (Saa za Japani). Tunatabaika kwa usumbufu huu.",
             underMaintenanceTitle: "Matengenezo ya Mfumo",
             underMaintenanceMessage: "Programu kwa sasa inafanyiwa matengenezo ili kutoa uzoefu bora zaidi. Tutarejea hivi punde. Asante kwa subira yako."
+        },
+        errors: {
+            prefix: "Hitilafu",
+            networkError: "Ombi la mtandao limeshindwa. Tafadhali angalia muunganisho wako wa intaneti au zima vizuizi vya matangazo na ujaribu tena.",
+            authError: "Hitilafu ya uthibitishaji imetokea. Tafadhali jaribu kuingia tena.",
+            unexpectedError: "Hitilafu isiyotarajiwa imetokea."
         },
         installPrompt: {
             title: "Sakinisha Programu",

@@ -517,7 +517,10 @@ export default {
             confirmCloseMessage: "Nếu đóng bây giờ, thay đổi của bạn sẽ bị mất.",
             confirmCloseSave: "Đăng Bài",
             confirmCloseDiscard: "Hủy bỏ",
-            confirmCloseKeepEditing: "Tiếp tục Chỉnh sửa"
+            confirmCloseKeepEditing: "Tiếp tục Chỉnh sửa",
+            urlRequiredForGC: "Vui lòng cung cấp URL Thư viện Phúc âm cho các ghi chép Đại Hội Trung Ương.",
+            urlRequiredForBYU: "Vui lòng cung cấp URL cho BYU Speeches.",
+            urlRequiredForOther: "Vui lòng cung cấp URL hoặc Tiêu đề cho danh mục 'Khác'."
         },
         scriptures: {
             oldTestament: "Cựu Ước",
@@ -722,6 +725,12 @@ export default {
             quotaExceededMessage: "Chúng tôi hiện đang gặp lưu lượng truy cập cao và đã đạt đến giới hạn cơ sở dữ liệu. Hệ thống dự kiến sẽ được thiết lập lại và hoạt động đầy đủ vào lúc 5:00 chiều JST (Giờ Nhật Bản). Chúng tôi xin lỗi vì sự bất tiện này.",
             underMaintenanceTitle: "Bảo trì hệ thống",
             underMaintenanceMessage: "Ứng dụng hiện đang được bảo trì để cải thiện trải nghiệm của bạn. Chúng tôi sẽ sớm quay lại. Cảm ơn sự kiên nhẫn của bạn."
+        },
+        errors: {
+            prefix: "Lỗi",
+            networkError: "Yêu cầu mạng thất bại. Vui lòng kiểm tra kết nối internet của bạn hoặc tắt trình chặn quảng cáo và thử lại.",
+            authError: "Đã xảy ra lỗi xác thực. Vui lòng thử đăng nhập lại.",
+            unexpectedError: "Đã xảy ra lỗi không mong muốn."
         },
         installPrompt: {
             title: "Cài đặt ứng dụng",
