@@ -2,7 +2,6 @@
     position: relative;
     width: 100%;
     display: flex;
-    justify-content: flex-start;
     margin-bottom: 0.5rem;
     box-sizing: border-box;
 }
@@ -30,6 +29,8 @@
     font-size: 1rem;
     flex-shrink: 0;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    overflow: hidden;
 }
 
 .profile-avatar-img {
@@ -48,6 +49,12 @@
     position: relative;
     animation: fadeIn 0.3s ease;
     -webkit-tap-highlight-color: transparent;
+    cursor: pointer;
+}
+
+.message.is-optimistic {
+    cursor: default;
+    opacity: 0.7;
 }
 
 .message.sent {
@@ -67,6 +74,7 @@
     margin-left: 0.2rem;
     font-weight: 600;
     transition: color 0.1s ease;
+    cursor: pointer;
 }
 
 .sender-name:hover {
@@ -115,6 +123,11 @@
 .message-time {
     font-size: 0.7rem;
     color: var(--gray);
+    flex-shrink: 0;
+}
+
+.message-time.received {
+    margin-bottom: 2px;
 }
 
 .read-status {
@@ -224,6 +237,11 @@
 }
 
 .message.sent .reply-context-label {
+    align-self: flex-end;
+    text-align: left;
+}
+
+.message.received .reply-context-label {
     align-self: flex-start;
     text-align: left;
 }
@@ -280,10 +298,40 @@
 /* Status styles */
 .message-bubble-row {
     width: 100%;
+    display: flex;
+    align-items: flex-end;
+    gap: 5px;
+}
+
+.message-bubble-row.sent {
+    justify-content: flex-end;
+}
+
+.message-bubble-row.received {
+    justify-content: flex-start;
 }
 
 .message-status-column {
     min-width: 35px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+    flex-shrink: 0;
+}
+
+.message-bubble-column {
+    display: flex;
+    flex-direction: column;
+    max-width: 100%;
+}
+
+.message.sent .message-bubble-column {
+    align-items: flex-end;
+}
+
+.message.received .message-bubble-column {
+    align-items: flex-start;
 }
 
 /* Mobile adjustments */

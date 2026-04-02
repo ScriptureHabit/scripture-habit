@@ -83,7 +83,7 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], onI
 
   const { 
     translatingIds, translatedTexts, handleSendMessage, handleSaveEdit, 
-    handleConfirmDeleteMessage, handleToggleReaction, handleTranslateMessage 
+    handleConfirmDeleteMessage, handleToggleReaction, handleTranslateMessage, handleLazyTranslate
   } = useMessageActions(groupId, userData, language || 'en', t, API_BASE);
 
   const { 
@@ -498,7 +498,26 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], onI
           return (
             <Fragment key={msg.id}>
               {showDateDivider && <div className="date-separator"><span>{messageDate.toLocaleDateString(language || 'en', { month: 'long', day: 'numeric' })}</span></div>}
-              <MessageItem msg={msg} userData={userData} t={t} handleMessageClick={handleMessageClick} handleEditMessage={() => handleEditMessage(msg)} handleDeleteMessageClick={() => handleDeleteMessageClick(msg)} handleReply={() => handleReply(msg)} handleTranslateMessage={() => handleTranslateMessage(msg)} translatingIds={translatingIds} handleToggleReaction={() => handleToggleReaction(msg)} handleReportClick={() => handleReportClick(msg)} handleUserProfileClick={handleUserProfileClick} groupData={groupData} translatedTexts={translatedTexts} language={language || 'en'} handleShowReactions={handleShowReactions} membersMap={membersMap} />
+              <MessageItem 
+                msg={msg} 
+                userData={userData} 
+                t={t} 
+                handleMessageClick={handleMessageClick} 
+                handleEditMessage={() => handleEditMessage(msg)} 
+                handleDeleteMessageClick={() => handleDeleteMessageClick(msg)} 
+                handleReply={() => handleReply(msg)} 
+                handleTranslateMessage={() => handleTranslateMessage(msg)} 
+                handleLazyTranslate={() => handleLazyTranslate(msg)} 
+                isTranslating={translatingIds.has(msg.id)} 
+                handleToggleReaction={() => handleToggleReaction(msg)} 
+                handleReportClick={() => handleReportClick(msg)} 
+                handleUserProfileClick={handleUserProfileClick} 
+                groupData={groupData} 
+                translatedText={translatedTexts[msg.id] || msg.translations?.[language || 'en']} 
+                language={language || 'en'} 
+                handleShowReactions={handleShowReactions} 
+                membersMap={membersMap} 
+              />
               {userReadCount !== null && index === Math.max(0, userReadCount - 1) && index < messages.length - 1 && msg.senderId !== 'system' && (
                 <div className="unread-divider"><span>{t('groupChat.newMessages')}</span></div>
               )}

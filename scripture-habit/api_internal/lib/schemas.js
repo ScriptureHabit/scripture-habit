@@ -46,7 +46,20 @@ export const personalRecapSchema = z.object({
 
 export const translateSchema = z.object({
     text: z.string().min(1).max(5000),
-    targetLanguage: z.enum(supportedLanguages)
+    targetLanguage: z.enum(supportedLanguages),
+    messageId: z.string().optional(),
+    groupId: z.string().optional(),
+    updateType: z.enum(['group_name', 'group_description']).optional(),
+    force: z.boolean().optional()
+});
+
+export const translateBatchSchema = z.object({
+    messages: z.array(z.object({
+        id: z.string(),
+        text: z.string().min(1).max(5000)
+    })).min(1).max(20),
+    targetLanguage: z.enum(supportedLanguages),
+    groupId: z.string().min(1)
 });
 
 export const postNoteSchema = z.object({

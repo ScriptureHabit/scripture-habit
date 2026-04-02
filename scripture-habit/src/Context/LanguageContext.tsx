@@ -188,15 +188,25 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
             }
         }
 
-        const match = chapterText.match(/^((?:\d\s*)?[\p{L}\s—-]+)(?:\s+|(?=\d))(\d+(?::[\d\s,-]+)?)$/u);
+        // 0. Normalize full-width digits, colons, and the '〜' dash (which is rarely in book names)
+        let normalized = chapterText.replace(/[０-９：〜]/g, (s) => {
+            if (s === '：') return ':';
+            if (s === '〜') return '-';
+            return String.fromCharCode(s.charCodeAt(0) - 0xFEE0);
+        });
+
+        // Expanded regex to allow Japanese chapter/verse markers like 章 and 節
+        // Note: we still allow 'ー' in the second part for ranges
+        const match = normalized.match(/^((?:\d\s*)?[\p{L}\s—-]+)(?:\s+|(?=\d))(\d+[\d\s:,-ー章節]*)$/u);
         if (match) {
             const bookName = match[1].trim().replace(/—/g, '-');
-            const chapterVerse = match[2];
+            // For the chapter/verse part, we CAN safely convert 'ー' to '-'
+            const chapterVerse = match[2].trim().replace(/ー/g, '-');
             const translatedBook = translateBookName(bookName);
             return `${translatedBook} ${chapterVerse}`;
         }
 
-        return translateBookName(chapterText);
+        return translateBookName(normalized.trim());
     }, [translateBookName]);
 
     const setLanguage = useCallback((newLanguage: Language) => {

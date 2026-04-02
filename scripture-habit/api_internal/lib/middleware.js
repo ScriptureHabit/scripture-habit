@@ -21,7 +21,7 @@ export const inviteLimiter = rateLimit({
 
 export const aiLimiter = rateLimit({
     windowMs: 60 * 60 * 1000,
-    limit: 20,
+    limit: 100, // Increased for lazy-loading scroll
     message: { error: 'AI limit reached. Please try again in an hour.' },
     standardHeaders: 'draft-7',
     legacyHeaders: false,

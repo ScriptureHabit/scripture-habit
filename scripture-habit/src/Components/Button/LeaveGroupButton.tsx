@@ -1,4 +1,5 @@
-import { auth } from '../../firebase';
+import { getToken } from 'firebase/app-check'; // Added AppCheck getToken
+import { auth, appCheck } from '../../firebase'; // Added appCheck
 import { toast } from 'react-toastify';
 import { useLanguage } from '../../Context/LanguageContext';
 import { Capacitor } from '@capacitor/core';
@@ -19,12 +20,15 @@ export default function LeaveGroupButton({ groupId }: LeaveGroupButtonProps) {
 
     try {
       const idToken = await user.getIdToken();
+      const appCheckTokenResponse = await getToken(appCheck, false); // Get AppCheck token
+      const appCheckToken = appCheckTokenResponse.token;
 
       const response = await fetch(`${API_BASE}/api/leave-group`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${idToken}`
+          'Authorization': `Bearer ${idToken}`,
+          'X-Firebase-AppCheck': appCheckToken // Add AppCheck header
         },
         body: JSON.stringify({ groupId })
       });

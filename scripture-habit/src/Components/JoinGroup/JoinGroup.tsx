@@ -1,6 +1,7 @@
 import './JoinGroup.css';
 import { useState, useEffect, useCallback } from "react";
-import { auth, db } from '../../firebase';
+import { getToken } from "firebase/app-check";
+import { auth, db, appCheck } from '../../firebase';
 import { doc, onSnapshot, collection, query, where, getDocs, limit } from 'firebase/firestore';
 import { useNavigate, Link } from 'react-router-dom';
 import { onAuthStateChanged, User } from "firebase/auth";
@@ -57,7 +58,13 @@ export default function JoinGroup() {
 
     try {
       const idToken = await (user?.getIdToken() || Promise.resolve(null));
-      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      const appCheckTokenResponse = await getToken(appCheck, false);
+      const appCheckToken = appCheckTokenResponse.token;
+
+      const headers: Record<string, string> = { 
+        'Content-Type': 'application/json',
+        'X-Firebase-AppCheck': appCheckToken
+      };
       if (idToken) headers['Authorization'] = `Bearer ${idToken}`;
 
       const translate = async (text: string) => {
@@ -173,11 +180,15 @@ export default function JoinGroup() {
 
     try {
       const idToken = await user.getIdToken();
+      const appCheckTokenResponse = await getToken(appCheck, false);
+      const appCheckToken = appCheckTokenResponse.token;
+
       const resp = await fetch(`${API_BASE}/api/join-group`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${idToken}`
+          'Authorization': `Bearer ${idToken}`,
+          'X-Firebase-AppCheck': appCheckToken
         },
         body: JSON.stringify({ groupId })
       });
@@ -237,7 +248,7 @@ export default function JoinGroup() {
   return (
     <div className="App">
       <div className="AppGlass join-group-container">
-        {error && <p className="error" style={{ color: 'red', textAlign: 'center', width: '100%', marginBottom: '1rem' }}>{error}</p>}
+        {error && <p className="error-banner">{error}</p>}
 
         <Mascot
           userData={userData}
@@ -273,7 +284,7 @@ export default function JoinGroup() {
           <Link to="/group-form" className="create-group-link">{t('joinGroup.createGroupLink')}</Link>
         </div>
 
-        <div style={{ textAlign: 'center', marginTop: '1rem', width: '100%' }}>
+        <div className="back-to-dashboard-container">
           <Link to="/dashboard" className="back-link">
             {t('groupOptions.backToDashboard')}
           </Link>
@@ -284,27 +295,27 @@ export default function JoinGroup() {
       {/* Join Confirmation Modal */}
       {showConfirmModal && selectedGroup && (
         <div className="group-modal-overlay" onClick={() => setShowConfirmModal(false)}>
-          <div className="group-modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '400px', textAlign: 'center' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '1rem', borderBottom: '1px solid #edf2f7', paddingBottom: '1rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center' }}>
-                <h3 style={{ margin: 0 }}>
+          <div className="group-modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header-section">
+              <div className="modal-group-title-container">
+                <h3 className="modal-group-title">
                   {translatingIds.has(selectedGroup.id) ? '...' : (translatedNames[selectedGroup.id] || selectedGroup.name)}
                 </h3>
               </div>
               {translatedNames[selectedGroup.id] && translatedNames[selectedGroup.id] !== selectedGroup.name && (
-                <p style={{ fontSize: '0.75rem', color: '#a0aec0', marginTop: '4px' }}>
+                <p className="original-text-hint">
                   {t('groupChat.original')}: {selectedGroup.name}
                 </p>
               )}
             </div>
 
             {selectedGroup.description && (
-              <div style={{ marginBottom: '1rem' }}>
-                <p style={{ color: '#4A5568', marginBottom: '0.5rem', fontStyle: 'italic', whiteSpace: 'pre-wrap' }}>
+              <div className="modal-description-section">
+                <p className="modal-description-text">
                   {translatingIds.has(selectedGroup.id) ? '...' : (translatedDescs[selectedGroup.id] || selectedGroup.description)}
                 </p>
                 {translatedDescs[selectedGroup.id] && translatedDescs[selectedGroup.id] !== selectedGroup.description && (
-                  <p style={{ fontSize: '0.75rem', color: '#a0aec0' }}>
+                  <p className="original-text-hint">
                     {t('groupChat.original')}: {selectedGroup.description}
                   </p>
                 )}
@@ -312,7 +323,7 @@ export default function JoinGroup() {
             )}
 
             {selectedGroup.createdAt && (
-              <p style={{ fontSize: '0.8rem', color: '#a0aec0', marginBottom: '1rem' }}>
+              <p className="modal-created-at">
                 {t('joinGroup.createdAt')}: {(() => {
                   let date: Date;
                   const c = selectedGroup.createdAt as any;
@@ -331,37 +342,30 @@ export default function JoinGroup() {
               </p>
             )}
 
-            <div style={{ marginBottom: '1.5rem', textAlign: 'left' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.25rem' }}>
-                <h4 style={{ fontSize: '0.9rem', color: '#4A5568', margin: 0 }}>
+            <div className="modal-members-section">
+              <div className="modal-members-header">
+                <h4>
                   {t('groupChat.members')} ({selectedGroup.membersCount || 0})
                 </h4>
-                <span style={{ fontSize: '0.8rem', color: '#718096', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <span style={{ fontSize: '1rem' }}>📄</span> {groupNoteCount} {t('joinGroup.notes')}
+                <span className="modal-note-stats">
+                  <span className="emoji">📄</span> {groupNoteCount} {t('joinGroup.notes')}
                 </span>
               </div>
               {loadingMembers ? (
-                <p style={{ fontSize: '0.8rem', color: '#718096' }}>{t('letterBox.loading') || 'Loading members...'}</p>
+                <p className="modal-loading-text">{t('letterBox.loading') || 'Loading members...'}</p>
               ) : (
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                <div className="modal-members-list">
                   {memberNames.length > 0 ? (
                     memberNames.map((userObj, idx) => (
                       <span
                         key={idx}
-                        style={{
-                          backgroundColor: '#EDF2F7',
-                          color: '#4A5568',
-                          padding: '0.25rem 0.5rem',
-                          borderRadius: '9999px',
-                          fontSize: '0.8rem',
-                          cursor: 'default',
-                        }}
+                        className="modal-member-badge"
                       >
                         {userObj.nickname || 'Unknown'}
                       </span>
                     ))
                   ) : (
-                    <p style={{ fontSize: '0.8rem', color: '#718096' }}>{t('groupCard.noDescription') || 'None'}</p>
+                    <p className="modal-none-text">{t('groupCard.noDescription') || 'None'}</p>
                   )}
                 </div>
               )}
@@ -369,7 +373,7 @@ export default function JoinGroup() {
 
             {/* Profile Modal inside Confirm Modal */}
             {selectedMemberForProfile && (
-              <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', zIndex: 3000 }}>
+              <div className="user-profile-modal-wrapper">
                 <UserProfileModal
                   user={selectedMemberForProfile}
                   onClose={() => setSelectedMemberForProfile(null)}
@@ -377,29 +381,23 @@ export default function JoinGroup() {
               </div>
             )}
 
-            <p style={{ marginBottom: '1.5rem' }}>
+            <p className="modal-confirm-message">
               {userData?.groupIds?.includes(selectedGroup.id)
                 ? t('joinGroup.errorAlreadyMember')
                 : t('joinGroup.joinConfirmMessage')}
             </p>
 
-            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', marginTop: '1rem' }}>
+            <div className="modal-actions-container">
               <button
                 className="close-modal-btn"
                 onClick={() => setShowConfirmModal(false)}
-                style={{ marginTop: 0, flex: 1 }}
               >
                 {t('joinGroup.cancelJoin')}
               </button>
               {userData?.groupIds?.includes(selectedGroup.id) ? (
                 <button
-                  className="close-modal-btn confirm-join-btn"
+                  className="close-modal-btn confirm-join-btn open-group-btn"
                   onClick={() => handleOpenGroup(selectedGroup.id)}
-                  style={{
-                    marginTop: 0,
-                    flex: 1,
-                    backgroundColor: 'var(--blue-gradient-start)'
-                  }}
                 >
                   {t('groupCard.open')}
                 </button>
@@ -407,10 +405,6 @@ export default function JoinGroup() {
                 <button
                   className="close-modal-btn confirm-join-btn"
                   onClick={confirmJoin}
-                  style={{
-                    marginTop: 0,
-                    flex: 1
-                  }}
                 >
                   {t('joinGroup.confirmJoin')}
                 </button>

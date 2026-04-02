@@ -1,4 +1,4 @@
-import { FC, MouseEvent } from 'react';
+import { FC, MouseEvent, useEffect, useRef, memo } from 'react';
 import NoteDisplay from '../../NoteDisplay/NoteDisplay';
 import { Message, Group, UserProfileBrief, MembersMap } from '../../../types/chat';
 import { UserData } from '../../../types/user';
@@ -14,19 +14,20 @@ interface MessageItemProps {
   handleEditMessage: (msg: Message) => void;
   handleDeleteMessageClick: (msg: Message) => void;
   handleReply: (msg: Message) => void;
-  handleTranslateMessage: (msg: Message) => Promise<void>;
-  translatingIds: Set<string>;
+  handleTranslateMessage: (msg: Message, force?: boolean) => Promise<void>;
+  handleLazyTranslate: (msg: Message) => void;
+  isTranslating: boolean; // Replaced translatingIds
   handleToggleReaction: (msg: Message) => Promise<void>;
   handleReportClick: (msg: Message) => void;
   handleUserProfileClick: (userId: string | null) => Promise<void>;
   groupData: Group | null;
-  translatedTexts: Record<string, string>;
+  translatedText?: string; // Replaced translatedTexts
   language: string;
   handleShowReactions: (reactions: Record<string, string[]>) => void;
   membersMap: MembersMap;
 }
 
-const MessageItem: FC<MessageItemProps> = ({
+const MessageItem: FC<MessageItemProps> = memo(({
   msg,
   userData,
   t,
@@ -35,17 +36,34 @@ const MessageItem: FC<MessageItemProps> = ({
   handleDeleteMessageClick,
   handleReply,
   handleTranslateMessage,
-  translatingIds,
+  handleLazyTranslate,
+  isTranslating,
   handleToggleReaction,
   handleReportClick,
   handleUserProfileClick,
   groupData,
-  translatedTexts,
+  translatedText,
   language,
   handleShowReactions,
   membersMap
 }) => {
   const isMe = msg.senderId === userData?.uid;
+
+  const observerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!observerRef.current || isMe || msg.senderId === 'system' || msg.isSystemMessage) return;
+    
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        handleLazyTranslate(msg);
+        observer.disconnect();
+      }
+    }, { threshold: 0.1 });
+
+    observer.observe(observerRef.current);
+    return () => observer.disconnect();
+  }, [msg.id, isMe, msg.senderId, msg.isSystemMessage, handleLazyTranslate, msg]);
 
   if (msg.senderId === 'system' || msg.isSystemMessage) {
     return <SystemMessage msg={msg} t={t} kickThreshold={(userData as UserData)?.kickThreshold} />;
@@ -53,22 +71,20 @@ const MessageItem: FC<MessageItemProps> = ({
 
   return (
     <div 
+      ref={observerRef}
       id={`message-${msg.id}`} 
       className={`message-wrapper ${isMe ? 'sent' : 'received'}`}
-      style={{ display: 'flex', width: '100%', justifyContent: isMe ? 'flex-end' : 'flex-start' }}
     >
       {!isMe && (
         <div
           className="message-avatar"
           onClick={(e) => { e.stopPropagation(); if (msg.senderId) handleUserProfileClick(msg.senderId); }}
-          style={{ cursor: 'pointer', overflow: 'hidden' }}
         >
           {(msg.senderPhotoURL || (msg.senderId && membersMap?.[msg.senderId]?.photoURL)) ? (
             <img
               src={msg.senderPhotoURL || (msg.senderId ? (membersMap?.[msg.senderId]?.photoURL as string) : undefined)}
               alt=""
               className="profile-avatar-img"
-              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             />
           ) : (
             msg.senderNickname ? msg.senderNickname.substring(0, 1).toUpperCase() : '?'
@@ -76,7 +92,7 @@ const MessageItem: FC<MessageItemProps> = ({
         </div>
       )}
       <div
-        className={`message ${isMe ? 'sent' : 'received'}`}
+        className={`message ${isMe ? 'sent' : 'received'} ${msg.isOptimistic ? 'is-optimistic' : ''}`}
         onClick={(e) => {
           if (msg.isOptimistic) return;
           if ((e.target as HTMLElement).tagName !== 'A') {
@@ -84,7 +100,6 @@ const MessageItem: FC<MessageItemProps> = ({
             handleMessageClick(msg, e);
           }
         }}
-        style={{ cursor: msg.isOptimistic ? 'default' : 'pointer', opacity: msg.isOptimistic ? 0.7 : 1 }}
       >
         <div className={`message-hover-actions ${isMe ? 'sent' : 'received'}`}>
           {isMe ? (
@@ -92,13 +107,13 @@ const MessageItem: FC<MessageItemProps> = ({
               <button className="hover-action-btn" onClick={(e) => { e.stopPropagation(); handleEditMessage(msg); }} title={t('groupChat.editMessage')}>✏️</button>
               <button className="hover-action-btn delete" onClick={(e) => { e.stopPropagation(); handleDeleteMessageClick(msg); }} title={t('groupChat.deleteMessage')}>🗑️</button>
               <button className="hover-action-btn" onClick={(e) => { e.stopPropagation(); handleReply(msg); }} title={t('groupChat.reply')}>↩️</button>
-              <button className={`hover-action-btn ${translatingIds.has(msg.id) ? 'translating' : ''}`} onClick={(e) => { e.stopPropagation(); handleTranslateMessage(msg); }} title={t('groupChat.translate')}>{translatingIds.has(msg.id) ? '⏳' : '✨'}</button>
+              <button className={`hover-action-btn ${isTranslating ? 'translating' : ''}`} onClick={(e) => { e.stopPropagation(); handleTranslateMessage(msg); }} title={t('groupChat.translate')}>{isTranslating ? '⏳' : '✨'}</button>
             </>
           ) : (
             <>
               <button className="hover-action-btn" onClick={(e) => { e.stopPropagation(); handleToggleReaction(msg); }} title={msg.reactions?.['👍']?.includes(userData?.uid || '') ? t('groupChat.unlike') : t('groupChat.like')}>👍</button>
               <button className="hover-action-btn" onClick={(e) => { e.stopPropagation(); handleReply(msg); }} title={t('groupChat.reply')}>↩️</button>
-              <button className={`hover-action-btn ${translatingIds.has(msg.id) ? 'translating' : ''}`} onClick={(e) => { e.stopPropagation(); handleTranslateMessage(msg); }} title={t('groupChat.translate')}>{translatingIds.has(msg.id) ? '⏳' : '✨'}</button>
+              <button className={`hover-action-btn ${isTranslating ? 'translating' : ''}`} onClick={(e) => { e.stopPropagation(); handleTranslateMessage(msg); }} title={t('groupChat.translate')}>{isTranslating ? '⏳' : '✨'}</button>
               <button className="hover-action-btn report-btn" onClick={(e) => { e.stopPropagation(); handleReportClick(msg); }} title={t('groupChat.report')}>🚩</button>
             </>
           )}
@@ -107,14 +122,13 @@ const MessageItem: FC<MessageItemProps> = ({
           <span
             className="sender-name"
             onClick={(e) => { e.stopPropagation(); if (msg.senderId) handleUserProfileClick(msg.senderId); }}
-            style={{ cursor: 'pointer' }}
           >
             {msg.senderNickname}{msg.isEdited && <span className="edited-indicator"> ({t('groupChat.messageEdited')})</span>}
           </span>
         )}
-        <div className="message-bubble-row" style={{ display: 'flex', alignItems: 'flex-end', gap: '5px', justifyContent: isMe ? 'flex-end' : 'flex-start' }}>
+        <div className={`message-bubble-row ${isMe ? 'sent' : 'received'}`}>
           {isMe && (
-            <div className="message-status-column" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '2px', flexShrink: 0 }}>
+            <div className="message-status-column">
               {(() => {
                 const memberLastReadAt = groupData?.memberLastReadAt;
                 if (!memberLastReadAt || !msg.createdAt) return null;
@@ -135,11 +149,10 @@ const MessageItem: FC<MessageItemProps> = ({
               </span>
             </div>
           )}
-          <div className="message-bubble-column" style={{ display: 'flex', flexDirection: 'column', maxWidth: '100%', alignItems: isMe ? 'flex-end' : 'flex-start' }}>
+          <div className="message-bubble-column">
             {msg.replyTo && typeof msg.replyTo === 'object' && (
               <div 
                 className={`reply-context-label ${isMe ? 'sent' : 'received'}`}
-                style={{ alignSelf: isMe ? 'flex-end' : 'flex-start' }}
               >
                 <span className="reply-context-prefix">{t('groupChat.replyTo')} </span>
                 <span className="reply-context-name">{(msg.replyTo as any).senderNickname}</span>
@@ -158,9 +171,11 @@ const MessageItem: FC<MessageItemProps> = ({
                   <NoteDisplay
                     text={msg.text}
                     isSent={isMe}
-                    translatedText={translatedTexts[msg.id]}
+                    translatedText={translatedText || msg.translations?.[language]}
                     scripture={msg.scripture}
                     chapter={msg.chapter}
+                    isTranslating={isTranslating}
+                    onRetranslate={() => handleTranslateMessage(msg, true)}
                   />
                   <GospelLink
                     text={msg.text}
@@ -175,7 +190,7 @@ const MessageItem: FC<MessageItemProps> = ({
             </div>
           </div>
           {!isMe && (
-            <span className="message-time" style={{ marginBottom: '2px', flexShrink: 0 }}>
+            <span className="message-time received">
               {msg.createdAt?.seconds ? new Date(msg.createdAt.seconds * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
             </span>
           )}
@@ -197,6 +212,6 @@ const MessageItem: FC<MessageItemProps> = ({
       </div>
     </div>
   );
-};
+});
 
 export default MessageItem;

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, FC } from 'react';
 import { doc, updateDoc } from 'firebase/firestore';
-import { db, auth } from '../../../firebase';
+import { getToken } from 'firebase/app-check'; // Added AppCheck getToken
+import { db, auth, appCheck } from '../../../firebase'; // Added appCheck
 import { Group } from '../../../types/chat';
 
 interface GroupMenuItemProps {
@@ -45,12 +46,15 @@ const GroupMenuItem: FC<GroupMenuItemProps> = ({ group, currentGroupId, language
             try {
                 const user = auth?.currentUser;
                 const idToken = await user?.getIdToken();
+                const appCheckTokenResponse = await getToken(appCheck, false); // Get AppCheck token
+                const appCheckToken = appCheckTokenResponse.token;
                 const API_BASE = window.location.hostname === 'localhost' ? '' : 'https://scripturehabit.app';
 
                 const response = await fetch(`${API_BASE}/api/translate`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
+                        'X-Firebase-AppCheck': appCheckToken, // Add AppCheck header
                         ...(idToken ? { Authorization: `Bearer ${idToken}` } : {}),
                     },
                     body: JSON.stringify({

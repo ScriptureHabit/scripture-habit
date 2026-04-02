@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { doc, updateDoc, deleteDoc } from 'firebase/firestore';
-import { db, auth } from '../../../firebase';
+import { getToken } from 'firebase/app-check'; // Added AppCheck getToken
+import { db, auth, appCheck } from '../../../firebase'; // Added appCheck
 import { Capacitor } from '@capacitor/core';
 import { toast } from 'react-toastify';
 import { GroupData } from '../../../types/chat';
@@ -21,6 +22,9 @@ export const useGroupActions = (
     setIsLeaving(true);
     try {
       const idToken = await auth?.currentUser?.getIdToken();
+      const appCheckTokenResponse = await getToken(appCheck, false); // Get AppCheck token
+      const appCheckToken = appCheckTokenResponse.token;
+
       if (!idToken) throw new Error("No idToken");
 
       const API_BASE = Capacitor.isNativePlatform() ? 'https://scripturehabit.app' : '';
@@ -28,7 +32,8 @@ export const useGroupActions = (
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${idToken}`
+          'Authorization': `Bearer ${idToken}`,
+          'X-Firebase-AppCheck': appCheckToken // Add AppCheck header
         },
         body: JSON.stringify({ groupId })
       });

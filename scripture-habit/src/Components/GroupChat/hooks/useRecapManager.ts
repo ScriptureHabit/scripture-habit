@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { auth } from '../../../firebase';
+import { getToken } from 'firebase/app-check'; // Added AppCheck getToken
+import { auth, appCheck } from '../../../firebase'; // Added appCheck
 import { toast } from 'react-toastify';
 import { GroupData } from '../../../types/chat';
 
@@ -17,11 +18,15 @@ export const useRecapManager = (
     setIsRecapLoading(true);
     try {
       const idToken = await auth?.currentUser?.getIdToken();
+      const appCheckTokenResponse = await getToken(appCheck, false); // Get AppCheck token
+      const appCheckToken = appCheckTokenResponse.token;
+
       const response = await fetch(`${API_BASE}/api/generate-weekly-recap`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${idToken}`
+          'Authorization': `Bearer ${idToken}`,
+          'X-Firebase-AppCheck': appCheckToken // Add AppCheck header
         },
         body: JSON.stringify({ groupId, language })
       });

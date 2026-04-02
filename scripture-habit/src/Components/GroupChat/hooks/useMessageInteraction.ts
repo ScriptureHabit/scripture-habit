@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { Message } from '../../../types/chat';
 
 interface ContextMenu {
@@ -22,12 +22,12 @@ export const useMessageInteraction = () => {
   
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const handleReply = (message: Message) => {
+  const handleReply = useCallback((message: Message) => {
     setReplyTo(message);
     if (textareaRef.current) textareaRef.current.focus();
-  };
+  }, []);
 
-  const handleMessageClick = (message: Message, e: React.MouseEvent) => {
+  const handleMessageClick = useCallback((message: Message, e: React.MouseEvent) => {
     if (message.senderId === 'system') return;
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
     const menuWidth = 160;
@@ -41,28 +41,28 @@ export const useMessageInteraction = () => {
       messageId: message.id,
       message
     });
-  };
+  }, []);
 
-  const closeContextMenu = () => {
+  const closeContextMenu = useCallback(() => {
     setContextMenu({ show: false, x: 0, y: 0, messageId: null, message: null, showBelow: false });
-  };
+  }, []);
 
-  const handleEditMessage = (message: Message) => {
+  const handleEditMessage = useCallback((message: Message) => {
     setEditingMessage(message);
     setEditText(message.text || '');
     closeContextMenu();
-  };
+  }, [closeContextMenu]);
 
-  const handleCancelEdit = () => {
+  const handleCancelEdit = useCallback(() => {
     setEditingMessage(null);
     setEditText('');
-  };
+  }, []);
 
-  const handleDeleteMessageClick = (message: Message) => {
+  const handleDeleteMessageClick = useCallback((message: Message) => {
     setMessageToDelete(message);
     setShowDeleteMessageModal(true);
     closeContextMenu();
-  };
+  }, [closeContextMenu]);
 
   return {
     replyTo, setReplyTo,

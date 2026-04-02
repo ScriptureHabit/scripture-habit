@@ -7,8 +7,9 @@ import {
   UilPlusCircle,
 } from "@iconscout/react-unicons";
 import { useNavigate } from 'react-router-dom';
-import { auth, db } from '../../firebase';
-import { doc, updateDoc } from 'firebase/firestore';
+import { auth, appCheck } from '../../firebase';
+// Removed unused Firestore imports
+import { getToken } from "firebase/app-check";
 import { useLanguage } from '../../Context/LanguageContext';
 import { Group } from '../../types/chat';
 import { UserData } from '../../types/user';
@@ -37,20 +38,7 @@ const SidebarGroupItem: React.FC<SidebarGroupItemProps> = ({ group, language, is
     // Check if we already attempted translation in this session
     if (translationAttemptedRef.current) return;
 
-    // Firestore update helper
-    const saveTranslationToFirestore = async (translatedText: string) => {
-      try {
-        const groupRef = doc(db, 'groups', group.id);
-        // Construct the update object strictly for this language's name to merge
-        const updateData: Record<string, string> = {};
-        updateData[`translations.${language}.name`] = translatedText;
-
-        await updateDoc(groupRef, updateData);
-        console.log(`Saved translation for ${language} to Firestore`);
-      } catch (err) {
-        console.error('Failed to save translation to Firestore:', err);
-      }
-    };
+    // Group metadata is now persisted by the backend directly
 
     const autoTranslate = async () => {
       if (!group.name || !language) return;
@@ -68,17 +56,22 @@ const SidebarGroupItem: React.FC<SidebarGroupItemProps> = ({ group, language, is
 
       try {
         const idToken = await auth?.currentUser?.getIdToken();
+        const appCheckTokenResponse = await getToken(appCheck, false);
+        const appCheckToken = appCheckTokenResponse.token;
         const API_BASE = window.location.hostname === 'localhost' ? '' : 'https://scripturehabit.app';
 
         const res = await fetch(`${API_BASE}/api/translate`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'X-Firebase-AppCheck': appCheckToken,
             ...(idToken ? { Authorization: `Bearer ${idToken}` } : {}),
           },
           body: JSON.stringify({
             text: group.name,
             targetLanguage: language,
+            groupId: group.id,
+            updateType: 'group_name'
           }),
         });
 
@@ -88,8 +81,7 @@ const SidebarGroupItem: React.FC<SidebarGroupItemProps> = ({ group, language, is
             setTranslatedName(data.translatedText);
             sessionStorage.setItem(cacheKey, data.translatedText);
 
-            // SAVE TO FIRESTORE
-            await saveTranslationToFirestore(data.translatedText);
+            // Backend handled the saving to Firestore
           }
         } else {
           console.warn('Translation API returned error status:', res.status);

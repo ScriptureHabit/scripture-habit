@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { safeStorage } from '../../../Utils/storage';
 import { Capacitor } from '@capacitor/core';
 import { User } from 'firebase/auth';
+import { getToken } from 'firebase/app-check'; // Added AppCheck getToken
+import { appCheck } from '../../../firebase'; // Removed unused auth
 import { UserData } from '../../../types/user';
 import { toast } from 'react-toastify';
 
@@ -26,11 +28,15 @@ export const useDashboardInvitations = (
             try {
                 const API_BASE = Capacitor.isNativePlatform() ? 'https://scripturehabit.app' : '';
                 const idToken = await user.getIdToken();
+                const appCheckTokenResponse = await getToken(appCheck, false); // Get AppCheck token
+                const appCheckToken = appCheckTokenResponse.token;
+
                 const resp = await fetch(`${API_BASE}/api/join-group`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${idToken}`
+                        'Authorization': `Bearer ${idToken}`,
+                        'X-Firebase-AppCheck': appCheckToken // Add AppCheck header
                     },
                     body: JSON.stringify({ inviteCode })
                 });

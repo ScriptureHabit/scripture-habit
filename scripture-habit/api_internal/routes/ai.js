@@ -1,7 +1,7 @@
 import express from 'express';
 import { admin, db } from '../lib/firebase-admin.js';
 import { aiLimiter, verifyAppCheck, authenticate } from '../lib/middleware.js';
-import { ponderQuestionsSchema, translateSchema, weeklyRecapSchema, personalRecapSchema, languageNames } from '../lib/schemas.js';
+import { ponderQuestionsSchema, translateSchema, translateBatchSchema, weeklyRecapSchema, personalRecapSchema, languageNames } from '../lib/schemas.js';
 import axios from 'axios';
 import crypto from 'crypto';
 
@@ -14,11 +14,16 @@ const router = express.Router();
 const callGemini = async (prompt) => {
     if (!process.env.GEMINI_API_KEY) throw new Error('Gemini API Key missing');
     
-    // Using the user-requested Gemini 3.1 Flash-Lite model
+    // Using the Gemini 3.1 Flash-Lite Preview model with minimal thinking for best speed/cost
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent?key=${process.env.GEMINI_API_KEY}`;
     
     const response = await axios.post(apiUrl, { 
-        contents: [{ parts: [{ text: prompt }] }] 
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: {
+            thinkingConfig: {
+                thinkingLevel: "minimal"
+            }
+        }
     });
 
     const generatedText = response.data?.candidates?.[0]?.content?.parts?.[0]?.text;
@@ -28,10 +33,14 @@ const callGemini = async (prompt) => {
 };
 
 const handleAiError = (res, err, contextMessage) => {
-    console.error(`[AI Error] ${contextMessage}:`, err.response?.data || err.message);
+    const errorBody = err.response?.data || err.message;
+    console.error(`[AI Error] ${contextMessage}:`, errorBody);
+    if (err.response?.status === 400) {
+        return res.status(400).json({ error: `AI ${contextMessage} bad request`, details: errorBody });
+    }
     res.status(500).json({ 
         error: `AI ${contextMessage} failed`, 
-        details: err.response?.data?.error?.message || err.message 
+        details: typeof errorBody === 'string' ? errorBody : JSON.stringify(errorBody)
     });
 };
 
@@ -72,27 +81,155 @@ router.post('/translate', authenticate, aiLimiter, verifyAppCheck, async (req, r
     const validation = translateSchema.safeParse(req.body);
     if (!validation.success) return res.status(400).json({ error: 'Invalid input' });
     
-    const { text, targetLanguage } = validation.data;
+    const { text, targetLanguage, messageId, groupId, updateType, force } = validation.data;
 
     try {
         const cacheKey = crypto.createHash('md5').update(`${text}_${targetLanguage}`).digest('hex');
         const cacheRef = db.collection('translation_cache').doc(cacheKey);
         const cacheDoc = await cacheRef.get();
-        if (cacheDoc.exists) return res.json({ translatedText: cacheDoc.data().translatedText });
-
-        const targetLangName = languageNames[targetLanguage] || targetLanguage;
-        const prompt = `Task: Translate the following text into ${targetLangName}. Output only the translated text. No explanations.\n\nText:\n"""\n${text}\n"""`;
         
-        const resultText = await callGemini(prompt);
-        // Clean result in case of markdown or quotes
-        const cleanedText = resultText.replace(/<translation>|<\/translation>/gi, '').replace(/^.*?translation.*?:/i, '').replace(/^["'](.*)["']$/g, '$1').trim();
+        let translatedText = null;
+        if (cacheDoc.exists && !force) {
+            translatedText = cacheDoc.data().translatedText;
+        } else {
+            const targetLangName = languageNames[targetLanguage] || targetLanguage;
+            const prompt = `Task: Translate the following text into ${targetLangName}. 
+            【STRICT RULES】:
+            1. If the text is a structured note with labels like **Category:**, **Chapter:** and **Comment:** (or their equivalents), you MUST preserve this exact markdown structure.
+            2. Translate the labels themselves into ${targetLangName} (e.g., use **カテゴリ:** for Japanese, **Category:** for English, **Escritura:** for Portuguese).
+            3. Each label and its value MUST be on its own line. NEVER merge them into a single line.
+            4. ALWAYS use bold markdown for labels: **Label:**
+            5. Keep all line breaks exactly as they appear in the original.
+            6. Output ONLY the translated content.
 
-        if (!cleanedText) throw new Error('AI blocked response');
+            Example structure (MANDATORY):
+            **Category:** [Translated Name]
+            **Chapter:** [Translated Chapter]
 
-        cacheRef.set({ originalText: text, translatedText: cleanedText, targetLanguage, createdAt: admin.firestore.FieldValue.serverTimestamp() });
-        res.json({ success: true, translatedText: cleanedText });
+            **Comment:**
+            [Translated Text]
+
+            Text:
+            """
+            ${text}
+            """`;
+            
+            const resultText = await callGemini(prompt);
+            translatedText = resultText.replace(/<translation>|<\/translation>/gi, '').replace(/^.*?translation.*?:/i, '').replace(/^["'](.*)["']$/g, '$1').trim();
+            
+            if (!translatedText) throw new Error('AI blocked response');
+            
+            await cacheRef.set({ originalText: text, translatedText, targetLanguage, createdAt: admin.firestore.FieldValue.serverTimestamp() });
+        }
+
+        // If messageId and groupId are provided, persist the translation to the message document
+        if (messageId && groupId && translatedText) {
+            try {
+                const messageRef = db.collection('groups').doc(groupId).collection('messages').doc(messageId);
+                await messageRef.update({
+                    [`translations.${targetLanguage}`]: translatedText
+                });
+            } catch (updateErr) {
+                console.error('[AI Error] Failed to update message with translation:', updateErr.message);
+                // We still return the translation even if persistent storage fails
+            }
+        }
+
+
+        // If it's a group-level metadata (name/desc), persist to the group doc in backend
+        if (groupId && translatedText && updateType) {
+            try {
+                const groupRef = db.collection('groups').doc(groupId);
+                const field = updateType === 'group_name' ? 'name' : 'description';
+                await groupRef.update({
+                    [`translations.${targetLanguage}.${field}`]: translatedText
+                });
+            } catch (groupUpdateErr) {
+                console.error(`[AI Error] Failed to update group metadata (${updateType}):`, groupUpdateErr.message);
+            }
+        }
+
+        res.json({ success: true, translatedText });
     } catch (err) {
         handleAiError(res, err, 'translation');
+    }
+});
+
+/**
+ * AI Batch Translation
+ */
+router.post('/translate-batch', authenticate, aiLimiter, verifyAppCheck, async (req, res) => {
+    const validation = translateBatchSchema.safeParse(req.body);
+    if (!validation.success) return res.status(400).json({ error: 'Invalid input', details: validation.error.format() });
+    
+    const { messages, targetLanguage, groupId } = validation.data;
+    const finalResults = {};
+    const toTranslate = [];
+
+    // 1. Check cache for each message
+    for (const msg of messages) {
+        const cacheKey = crypto.createHash('md5').update(`${msg.text}_${targetLanguage}`).digest('hex');
+        const cacheRef = db.collection('translation_cache').doc(cacheKey);
+        const cacheDoc = await cacheRef.get();
+        if (cacheDoc.exists) {
+            finalResults[msg.id] = cacheDoc.data().translatedText;
+        } else {
+            toTranslate.push(msg);
+        }
+    }
+
+    // 2. If everything was cached, return early
+    if (toTranslate.length === 0) return res.json({ success: true, translations: finalResults });
+
+    // 3. Batch translate the rest
+    try {
+        const targetLangName = languageNames[targetLanguage] || targetLanguage;
+        const prompt = `Task: Translate these message items into ${targetLangName}.
+            【STRICT RULES】:
+            1. Preserve the exact markdown structure, especially bold labels like **Category:** or **Comment:**.
+            2. Translate the labels themselves into ${targetLangName}.
+            3. Output ONLY a valid JSON object mapping IDs to their translations. NO markdown backticks or extra text.
+            
+            Format: {"msg_id": "translated_text", ...}
+            
+            Messages:
+            ${JSON.stringify(toTranslate.map(m => ({ id: m.id, text: m.text })))} `;
+        
+        const resultRaw = await callGemini(prompt);
+        // Robust JSON cleaning: Find first { and last }
+        const jsonStart = resultRaw.indexOf('{');
+        const jsonEnd = resultRaw.lastIndexOf('}');
+        if (jsonStart === -1 || jsonEnd === -1) {
+            console.error('[AI Batch] Invalid JSON response:', resultRaw);
+            throw new Error('AI returned invalid JSON format');
+        }
+        const cleanedJson = resultRaw.substring(jsonStart, jsonEnd + 1);
+        const batchTranslations = JSON.parse(cleanedJson);
+
+        // 4. Update results, cache, and Firestore
+        const batch = db.batch();
+        for (const msg of toTranslate) {
+            const translated = batchTranslations[msg.id];
+            if (translated) {
+                finalResults[msg.id] = translated;
+                
+                // Cache
+                const cacheKey = crypto.createHash('md5').update(`${msg.text}_${targetLanguage}`).digest('hex');
+                const cacheRef = db.collection('translation_cache').doc(cacheKey);
+                batch.set(cacheRef, { originalText: msg.text, translatedText: translated, targetLanguage, createdAt: admin.firestore.FieldValue.serverTimestamp() });
+                
+                // Message Persistence (use set with merge to avoid "document not found" errors)
+                const messageRef = db.collection('groups').doc(groupId).collection('messages').doc(msg.id);
+                batch.set(messageRef, { 
+                    translations: { [targetLanguage]: translated } 
+                }, { merge: true });
+            }
+        }
+        await batch.commit();
+
+        res.json({ success: true, translations: finalResults });
+    } catch (err) {
+        handleAiError(res, err, 'batch translation');
     }
 });
 

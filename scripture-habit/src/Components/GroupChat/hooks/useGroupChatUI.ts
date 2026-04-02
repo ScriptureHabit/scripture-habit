@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import { doc, updateDoc } from 'firebase/firestore';
-import { db, auth } from '../../../firebase';
+import { getToken } from 'firebase/app-check'; // Added AppCheck getToken
+import { auth, appCheck } from '../../../firebase'; // Added appCheck
 import { safeStorage } from '../../../Utils/storage';
 import { GroupData } from '../../../types/chat';
 
@@ -61,14 +61,23 @@ export const useGroupChatUI = (
 
         try {
           const idToken = await auth?.currentUser?.getIdToken();
+          const appCheckTokenResponse = await getToken(appCheck, false); // Get AppCheck token
+          const appCheckToken = appCheckTokenResponse.token;
+
           if (!idToken) return '';
           const response = await fetch(`${API_BASE}/api/translate`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${idToken}`
+              'Authorization': `Bearer ${idToken}`,
+              'X-Firebase-AppCheck': appCheckToken // Add AppCheck header
             },
-            body: JSON.stringify({ text, targetLanguage: language })
+            body: JSON.stringify({ 
+              text, 
+              targetLanguage: language,
+              groupId,
+              updateType: type === 'group_name' ? 'group_name' : 'group_description'
+            })
           });
 
           if (response.ok) {
@@ -92,16 +101,8 @@ export const useGroupChatUI = (
       if (newName) setTranslatedGroupName(newName);
       if (newDesc) setTranslatedGroupDesc(newDesc);
 
-      if (newName || newDesc) {
-        try {
-          const updatePayload: any = {};
-          if (newName) updatePayload[`translations.${language}.name`] = newName;
-          if (newDesc) updatePayload[`translations.${language}.description`] = newDesc;
-          await updateDoc(doc(db, 'groups', groupId), updatePayload);
-        } catch (e) {
-          console.error("Error saving translations:", e);
-        }
-      }
+      // Group metadata is now persisted by the backend directly
+      // This avoids client-side permission issues for regular members
     };
 
     autoTranslate();

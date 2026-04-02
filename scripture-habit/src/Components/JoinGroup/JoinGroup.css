@@ -276,6 +276,7 @@
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.5);
+  -webkit-backdrop-filter: blur(5px);
   backdrop-filter: blur(5px);
   display: flex;
   justify-content: center;
@@ -368,4 +369,141 @@
 .translate-btn-inline:hover {
   opacity: 1 !important;
   transform: scale(1.1);
+}
+
+.error-banner {
+    color: red;
+    text-align: center;
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+.modal-header-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #edf2f7;
+    padding-bottom: 1rem;
+}
+
+.modal-group-title-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+}
+
+.modal-group-title {
+    margin: 0;
+}
+
+.original-text-hint {
+    font-size: 0.75rem;
+    color: #a0aec0;
+    margin-top: 4px;
+}
+
+.modal-description-section {
+    margin-bottom: 1rem;
+}
+
+.modal-description-text {
+    color: #4A5568;
+    margin-bottom: 0.5rem;
+    font-style: italic;
+    white-space: pre-wrap;
+}
+
+.modal-created-at {
+    font-size: 0.8rem;
+    color: #a0aec0;
+    margin-bottom: 1rem;
+}
+
+.modal-members-section {
+    margin-bottom: 1.5rem;
+    text-align: left;
+}
+
+.modal-members-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 0.25rem;
+}
+
+.modal-members-header h4 {
+    font-size: 0.9rem;
+    color: #4A5568;
+    margin: 0;
+}
+
+.modal-note-stats {
+    font-size: 0.8rem;
+    color: #718096;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.modal-note-stats .emoji {
+    font-size: 1rem;
+}
+
+.modal-members-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.modal-member-badge {
+    background-color: #EDF2F7;
+    color: #4A5568;
+    padding: 0.25rem 0.5rem;
+    border-radius: 9999px;
+    font-size: 0.8rem;
+    cursor: default;
+}
+
+.modal-loading-text, .modal-none-text {
+    font-size: 0.8rem;
+    color: #718096;
+}
+
+.modal-confirm-message {
+    margin-bottom: 1.5rem;
+}
+
+.modal-actions-container {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.modal-actions-container .close-modal-btn {
+    margin-top: 0;
+    flex: 1;
+}
+
+.open-group-btn {
+    background: var(--blue-gradient-start) !important;
+}
+
+.user-profile-modal-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 3000;
+}
+
+.back-to-dashboard-container {
+    text-align: center;
+    margin-top: 1rem;
+    width: 100%;
 }

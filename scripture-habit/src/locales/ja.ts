@@ -208,6 +208,8 @@ export default {
             translating: "翻訳中...",
             translation: "翻訳",
             translated: "翻訳済み",
+            showOriginal: "原文を表示",
+            showTranslation: "翻訳を表示",
             reply: "返信",
             like: "いいね",
             unlike: "いいね解除",

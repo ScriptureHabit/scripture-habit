@@ -761,12 +761,16 @@ export const BOOK_IDENTITY_MAP: Record<string, string> = {
  * Normalizes any book name to its English key if possible.
  */
 export const identifyBookKey = (bookName: string): string => {
-    // 1. Try common identity map
-    const mapped = BOOK_IDENTITY_MAP[bookName];
+    // 1. Try common identity map (with trimming)
+    const cleanName = bookName.trim();
+    const mapped = BOOK_IDENTITY_MAP[cleanName];
     if (mapped) return mapped;
 
-    // 2. Try case-insensitive comparison (for English/etc)
-    // (In a full implementation, we could loop over all translations, but identity map covers most issues)
+    // 2. Try case-insensitive comparison
+    const lower = cleanName.toLowerCase();
+    for (const [key, value] of Object.entries(BOOK_IDENTITY_MAP)) {
+        if (key.toLowerCase() === lower) return value;
+    }
     
-    return bookName;
+    return cleanName;
 };

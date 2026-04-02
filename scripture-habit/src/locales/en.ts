@@ -252,6 +252,8 @@ export default {
             translating: "Translating...",
             translation: "Translation",
             translated: "Translated",
+            showOriginal: "See original",
+            showTranslation: "Translate",
             reply: "Reply",
             like: "Like",
             unlike: "Unlike",
