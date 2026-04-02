@@ -107,13 +107,11 @@ const MessageItem: FC<MessageItemProps> = memo(({
               <button className="hover-action-btn" onClick={(e) => { e.stopPropagation(); handleEditMessage(msg); }} title={t('groupChat.editMessage')}>✏️</button>
               <button className="hover-action-btn delete" onClick={(e) => { e.stopPropagation(); handleDeleteMessageClick(msg); }} title={t('groupChat.deleteMessage')}>🗑️</button>
               <button className="hover-action-btn" onClick={(e) => { e.stopPropagation(); handleReply(msg); }} title={t('groupChat.reply')}>↩️</button>
-              <button className={`hover-action-btn ${isTranslating ? 'translating' : ''}`} onClick={(e) => { e.stopPropagation(); handleTranslateMessage(msg); }} title={t('groupChat.translate')}>{isTranslating ? '⏳' : '✨'}</button>
             </>
           ) : (
             <>
               <button className="hover-action-btn" onClick={(e) => { e.stopPropagation(); handleToggleReaction(msg); }} title={msg.reactions?.['👍']?.includes(userData?.uid || '') ? t('groupChat.unlike') : t('groupChat.like')}>👍</button>
               <button className="hover-action-btn" onClick={(e) => { e.stopPropagation(); handleReply(msg); }} title={t('groupChat.reply')}>↩️</button>
-              <button className={`hover-action-btn ${isTranslating ? 'translating' : ''}`} onClick={(e) => { e.stopPropagation(); handleTranslateMessage(msg); }} title={t('groupChat.translate')}>{isTranslating ? '⏳' : '✨'}</button>
               <button className="hover-action-btn report-btn" onClick={(e) => { e.stopPropagation(); handleReportClick(msg); }} title={t('groupChat.report')}>🚩</button>
             </>
           )}

@@ -540,7 +540,6 @@ const GroupChat: FC<GroupChatProps> = ({ groupId, userData, userGroups = [], onI
             {contextMenu.message.senderId === userData?.uid && (
               <button className="delete-option" onClick={() => { handleDeleteMessageClick(contextMenu.message!); closeContextMenu(); }}><div className="context-menu-icon-wrapper"><UilTrashAlt size="18" /></div><span>{t('groupChat.deleteMessage')}</span></button>
             )}
-            <button onClick={() => { handleTranslateMessage(contextMenu.message!); closeContextMenu(); }}><div className="context-menu-icon-wrapper large">{translatingIds.has(contextMenu.message!.id) ? '⏳' : '✨'}</div><span>{t('groupChat.translate')}</span></button>
             {contextMenu.message.senderId !== userData?.uid && (
               <button onClick={() => { handleReportClick(contextMenu.message!); closeContextMenu(); }}><div className="context-menu-icon-wrapper large">🚩</div><span>{t('groupChat.report')}</span></button>
             )}
