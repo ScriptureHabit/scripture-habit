@@ -49,11 +49,15 @@ app.use((req, _res, next) => {
     // If path ends with / and is longer than 1 char, strip it internally
     // to match standard router paths without duplicating every route definition.
     if (req.path.length > 1 && req.path.endsWith('/')) {
+        const query = req.url.includes('?') ? '?' + req.url.split('?')[1] : '';
         const newPath = req.path.slice(0, -1);
-        req.url = newPath + (req.url.slice(req.path.length));
+        req.url = newPath + query;
     }
     next();
 });
+
+// Explicitly allow both slash and non-slash paths
+app.set('strict routing', false);
 
 // --- Diagnostics ---
 app.get(['/api/health', '/api/health/'], (_req, res) => {
@@ -73,6 +77,11 @@ app.use('/api', previewRoutes);
 app.use('/api', cronRoutes);
 app.use('/api', reportRoutes);
 app.use('/api', adminRoutes);
+
+// --- 404 Handler (Keep it JSON for API) ---
+app.use('/api', (_req, res) => {
+    res.status(404).json({ error: 'NotFound', message: 'The requested API endpoint was not found.' });
+});
 
 // --- Error Handling ---
 import { AppError } from '../api_internal/lib/errors.ts';
