@@ -66,12 +66,14 @@ router.get(['/fetch-church-metadata', '/fetch-church-metadata/'], authenticate, 
 
         res.json({ title: title || '', speaker: speaker || '' });
     } catch (error) {
+        let message = 'Internal Server Error';
         if (error instanceof Error) {
+            message = error.message;
             console.error('Error in fetch-church-metadata:', error.message);
         } else {
             console.error('Error in fetch-church-metadata:', error);
         }
-        res.json({ title: '', speaker: '' });
+        res.status(500).json({ error: 'Internal Fetch Error', message, details: String(error) });
     }
 });
 
