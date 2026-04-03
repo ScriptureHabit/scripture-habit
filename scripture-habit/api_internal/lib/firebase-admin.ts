@@ -29,25 +29,30 @@ if (!admin.apps.length) {
 
 
     if (serviceAccount) {
-        admin.initializeApp({
-            credential: admin.credential.cert(serviceAccount)
-        });
-        console.log('Firebase Admin initialized successfully');
+        try {
+            admin.initializeApp({
+                credential: admin.credential.cert(serviceAccount)
+            });
+            console.log('Firebase Admin initialized successfully');
+        } catch (error) {
+            console.error('Firebase Admin initialization error:', error);
+        }
     } else {
-        console.warn('Firebase Admin NOT initialized: Missing credentials');
+        console.warn('Firebase Admin NOT initialized: Missing credentials. API routes requiring Auth or Firestore will fail.');
     }
 }
 
-const db = admin.firestore();
-try {
-    // This can only be called once, so we wrap it just in case
-    db.settings({ ignoreUndefinedProperties: true });
-} catch {
-    // If settings were already applied, ignore the error
+const db = (admin.apps.length ? admin.firestore() : null) as admin.firestore.Firestore;
+if (db) {
+    try {
+        db.settings({ ignoreUndefinedProperties: true });
+    } catch (e) {
+        // Settings already applied or failed
+    }
 }
 
-export const messaging = admin.messaging();
-export const auth = admin.auth();
-export const appCheck = admin.appCheck();
+export const messaging = (admin.apps.length ? admin.messaging() : null) as admin.messaging.Messaging;
+export const auth = (admin.apps.length ? admin.auth() : null) as admin.auth.Auth;
+export const appCheck = (admin.apps.length ? admin.appCheck() : null) as admin.appCheck.AppCheck;
 export { admin, db };
 export default admin;

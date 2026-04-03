@@ -67,12 +67,18 @@ export const verifyAppCheck = async (req: Request, res: Response, next: NextFunc
     }
 
     try {
+        if (!appCheck) {
+            throw new Error('Firebase App Check service is unavailable. Please ensure FIREBASE_SERVICE_ACCOUNT or similar environment variables are set in production.');
+        }
         await appCheck.verifyToken(token);
         next();
     } catch (err: unknown) {
         const error = err as Error;
         console.warn('[AppCheck] Verification failed for token:', token.substring(0, 10) + '...', 'Error:', error.message);
-        return res.status(401).json({ error: 'Unauthorized: Security check failed' });
+        return res.status(error.message.includes('unavailable') ? 503 : 401).json({ 
+            error: 'Unauthorized: Security check failed',
+            details: error.message
+        });
     }
 };
 
@@ -87,13 +93,19 @@ export const authenticate = async (req: AuthenticatedRequest, res: Response, nex
 
     const token = authHeader.split('Bearer ')[1];
     try {
+        if (!auth) {
+            throw new Error('Firebase Auth service is unavailable. Please ensure FIREBASE_SERVICE_ACCOUNT or similar environment variables are set in production.');
+        }
         const decodedToken = await auth.verifyIdToken(token);
         req.user = decodedToken;
         next();
     } catch (err: unknown) {
         const error = err as Error;
         console.warn('[Auth] Verification failed:', error.message);
-        return res.status(401).json({ error: 'Unauthorized: Invalid or expired token' });
+        return res.status(error.message.includes('unavailable') ? 503 : 401).json({ 
+            error: 'Unauthorized: Invalid or expired token',
+            details: error.message
+        });
     }
 };
 
