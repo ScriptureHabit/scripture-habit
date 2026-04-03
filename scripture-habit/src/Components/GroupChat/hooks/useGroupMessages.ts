@@ -1,5 +1,5 @@
 import { useReducer, useEffect, useRef, useCallback } from 'react';
-import { collection, query, orderBy, onSnapshot, doc, getDoc, getDocs, limit, startAfter, startAt, where, documentId } from 'firebase/firestore';
+import { collection, query, orderBy, onSnapshot, doc, getDoc, getDocs, limit, startAfter, startAt } from 'firebase/firestore';
 import apiClient from '../../../Utils/apiClient';
 import confetti from 'canvas-confetti';
 import * as Sentry from "@sentry/react";
