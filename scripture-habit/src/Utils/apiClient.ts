@@ -33,10 +33,15 @@ apiClient.interceptors.request.use(
             // Fix for Vercel trailingSlash: true
             // If we are on native and it's a POST/PUT/DELETE request, ensure it ends with a slash
             // to avoid 308 redirects that get turned into GET requests (causing 405)
-            if (Capacitor.isNativePlatform() && config.url && !config.url.endsWith('/')) {
-                // Only for our internal API routes
-                if (config.url.startsWith('/api/') || config.url.startsWith('api/')) {
-                    config.url += '/';
+            if (Capacitor.isNativePlatform() && config.url) {
+                const [path, query] = config.url.split('?');
+                
+                // Ensure internal API routes have a trailing slash to avoid Vercel 308 POST->GET 405 errors.
+                // Redirects are only problematic for non-GET methods (POST, PUT, DELETE).
+                if (config.method && !['get', 'head'].includes(config.method.toLowerCase())) {
+                    if (path.includes('/api/') && !path.endsWith('/')) {
+                        config.url = path + '/' + (query ? '?' + query : '');
+                    }
                 }
             }
 
