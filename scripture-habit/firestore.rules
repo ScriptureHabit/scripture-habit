@@ -3,190 +3,101 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Helper function to check if user is authenticated and email verified (if using password provider)
+    // Helper: Valid Auth with Email Verification (Guard against fakes)
     function isAuthenticated() {
+      // In production, we require email verification for social interaction
       return request.auth != null && (
         request.auth.token.firebase.sign_in_provider != 'password' || 
         request.auth.token.email_verified == true
       );
     }
 
-    // Helper to verify App Check
     function isAppCheckVerified() {
       return request.app != null;
     }
 
-    // Helpers for Efficient Access Control
+    // Helpers for Membership Logic
     function isMemberOfGroup(groupId) {
-      return exists(/databases/$(database)/documents/groups/$(groupId)/members/$(request.auth.uid)) ||
-             (request.auth != null && request.auth.uid in get(/databases/$(database)/documents/groups/$(groupId)).data.get('members', []));
+      // Ensure we check the parent doc's member list (most efficient for group listing queries)
+      return request.auth != null && (
+        request.auth.uid in get(/databases/$(database)/documents/groups/$(groupId)).data.get('members', []) ||
+        get(/databases/$(database)/documents/groups/$(groupId)).data.get('ownerUserId', '') == request.auth.uid
+      );
     }
 
-    // Rules for the 'users' collection
+    // 1. Users Collection: Maintain self-access even if unverified (to see verification UI)
     match /users/{userId} {
-      // A user can create their own document upon signup (before email verification)
       allow create: if request.auth != null && request.auth.uid == userId && isAppCheckVerified();
+      // Allow self-lookup even if not verified yet
+      allow get: if request.auth != null && (request.auth.uid == userId || isAuthenticated());
+      allow list: if isAuthenticated(); 
+      allow update: if false; // All updates via API
+      allow delete: if isAuthenticated() && request.auth.uid == userId;
 
-      // A user can read a specific user document (needed for group members list).
-      // SECURITY: Only allow reading if it's your own profile, or if you are in a group together.
-      // OPTIMIZED: Use exists() on the members subcollection instead of get() on the parent group.
-      allow get: if request.auth != null && (
-        request.auth.uid == userId ||
-        ('groupId' in resource.data && isMemberOfGroup(resource.data.groupId))
-      );
-      // Allow list for authenticated users to support batch profile lookups (e.g. 'in' query).
-      // Privacy is maintained by the 'get' rules which restrict which documents can actually be returned.
-      allow list: if request.auth != null;
-
-      // A user can update their own document, but only specific fields to prevent mass-assignment.
-      allow update: if request.auth != null && request.auth.uid == userId &&
-                    isAppCheckVerified() &&
-                    request.resource.data.diff(resource.data).affectedKeys().hasOnly([
-                      'nickname', 'stake', 'ward', 'bio', 'photoURL', 'language', 'timeZone', 'lastInteractionAt', 'kickThreshold', 'hasSetKickThreshold'
-                    ]) &&
-                    (request.resource.data.nickname == null || 
-                      (request.resource.data.nickname is string && 
-                       request.resource.data.nickname.size() <= 100 && 
-                       request.resource.data.nickname.matches('^[^<>]*$'))) &&
-                    (request.resource.data.bio == null || 
-                      (request.resource.data.bio is string && 
-                       request.resource.data.bio.size() <= 1000 && 
-                       request.resource.data.bio.matches('^[^<>]*$')));
-
-      // A user can delete their own document.
-      allow delete: if request.auth != null && request.auth.uid == userId && isAppCheckVerified();
-
-      // Rules for private user data (e.g. fcmTokens)
       match /private/{docId} {
         allow read: if request.auth != null && request.auth.uid == userId;
-        // Only allow updating 'tokens' document with 'fcmTokens' field to prevent arbitrary data storage
-        allow write: if request.auth != null && request.auth.uid == userId &&
-                      docId == 'tokens' &&
-                      request.resource.data.keys().hasAll(['fcmTokens']) &&
-                      request.resource.data.keys().size() == 1;
+        allow write: if request.auth != null && request.auth.uid == userId && docId == 'tokens';
       }
 
-      // Rules for the 'notes' subcollection
       match /notes/{noteId} {
-        allow read: if request.auth != null && request.auth.uid == userId;
-        // Writes handled by backend NoteService (Transaction)
+        allow read: if isAuthenticated() && request.auth.uid == userId;
         allow write: if false;
       }
 
-      // Rules for the 'groupStates' subcollection
       match /groupStates/{groupId} {
-        allow read, write: if request.auth != null && request.auth.uid == userId;
-      }
-
-      // Rules for the 'letters' subcollection
-      match /letters/{letterId} {
         allow read, write: if request.auth != null && request.auth.uid == userId;
       }
     }
     
-    // Rules for the 'groups' collection
+    // 2. Groups Collection: Tightly guarded by Email Verification
     match /groups/{groupId} {
-      // GET: Allow reading a specific group if public, or if the user is a member/owner
+      // Allow 'get' for public groups or if verified member
       allow get: if isAuthenticated() && (
-        resource.data.isPublic == true ||
-        request.auth.uid in resource.data.get('members', []) ||
-        resource.data.get('ownerUserId', '') == request.auth.uid
+        resource.data.isPublic == true || 
+        request.auth.uid in resource.data.get('members', [])
       );
       
-      // LIST: Only allow querying public groups, never all groups unconditionally
-      allow list: if request.auth != null && resource.data.isPublic == true;
-
-      // A user can create a group, but they must set themselves as the owner.
-      allow create: if isAuthenticated() && isAppCheckVerified() &&
-                    request.auth.uid == request.resource.data.ownerUserId &&
-                    request.resource.data.name.size() <= 100 &&
-                    request.resource.data.description.size() <= 1000 &&
-                    // Validate invite code if provided
-                    (!('inviteCode' in request.resource.data) || 
-                     (request.resource.data.inviteCode is string && 
-                      request.resource.data.inviteCode.size() >= 8 && 
-                      request.resource.data.inviteCode.size() <= 20)) &&
-                    // Validate expiry if provided
-                    (!('inviteCodeExpiresAt' in request.resource.data) || 
-                     (request.resource.data.inviteCodeExpiresAt is timestamp));
+      // CRITICAL FIX: Allow 'list' if the result is either Public OR a group I'm in.
+      // This enables the membership query query(collection(db, 'groups'), where('members', 'array-contains', uid))
+      allow list: if isAuthenticated() && (
+        resource.data.isPublic == true ||
+        request.auth.uid in resource.data.get('members', [])
+      );
       
-      allow update: if isAuthenticated() && 
-                    (!('membersCount' in request.resource.data) || request.resource.data.membersCount >= 0) &&
-                    // Owner can change basic info but NOT the ownerUserId directly (protect against lock-out/spoofing)
-                    // and NOT the global stats which should be handled by API transactions.
-                    (resource.data.get('ownerUserId', '') == request.auth.uid &&
-                     request.resource.data.get('ownerUserId', '') == resource.data.ownerUserId &&
-                     (request.resource.data.name == null || request.resource.data.name.size() <= 100) &&
-                     (request.resource.data.description == null || request.resource.data.description.size() <= 1000) &&
-                     // Validate invite code updates
-                     (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['inviteCode']) || 
-                      (request.resource.data.inviteCode is string && 
-                       request.resource.data.inviteCode.size() >= 8 && 
-                       request.resource.data.inviteCode.size() <= 20)) &&
-                     // Validate expiry updates
-                     (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['inviteCodeExpiresAt']) || 
-                      (request.resource.data.inviteCodeExpiresAt is timestamp)));
+      allow create, update, delete: if false; // All group mutation via API
       
-      // Group deletion must be handled by backend admin APIs for transactional cleanup.
-      allow delete: if false;
-      
-      // Rules for the 'messages' subcollection
+      // 3. Subcollections under groups
       match /messages/{messageId} {
-        function getGroupData() {
-          return get(/databases/$(database)/documents/groups/$(groupId)).data;
-        }
-        function isGroupOwner() {
-          return getGroupData().ownerUserId == request.auth.uid;
-        }
-        function isGroupMemberOrOwner() {
-          return isMemberOfGroup(groupId) || isGroupOwner();
-        }
-
-        // Members and owner can read messages
-        allow read: if isAuthenticated() && isGroupMemberOrOwner();
-                    
-        // Writes handled by secure Backend APIs for sharding, transactions, and Facepiles.
+        // Members who are VERIFIED can read messages
+        allow read: if isAuthenticated() && isMemberOfGroup(groupId);
         allow write: if false;
       }
 
-      // Rules for the 'message_buckets' subcollection (Bucket Pattern)
       match /message_buckets/{bucketId} {
-        // Same visibility rules as messages
-        allow read: if isAuthenticated() && (isMemberOfGroup(groupId) || (get(/databases/$(database)/documents/groups/$(groupId)).data.ownerUserId == request.auth.uid));
-        // Only internal backend can write to buckets
+        allow read: if isAuthenticated() && isMemberOfGroup(groupId);
         allow write: if false; 
       }
 
-
-      // Rules for the 'members' subcollection
       match /members/{userId} {
-        // All group members can read other members' status (for read receipts)
-        allow read: if isAuthenticated() && isGroupMemberOrOwner();
-
-        // Users can only update their own member document
-        allow write: if isAuthenticated() && request.auth.uid == userId && isGroupMemberOrOwner();
+        allow read: if isAuthenticated() && isMemberOfGroup(groupId);
+        allow write: if false;
       }
     }
 
-    // Rules for the 'system' collection (Maintenance & Status)
+    // System and Social
     match /system/{docId} {
       allow read: if true;
       allow write: if false;
     }
 
-    // Rules for the 'cheers' collection
     match /cheers/{cheerId} {
-      allow read: if request.auth != null && (
-        resource.data.senderUid == request.auth.uid || 
-        resource.data.targetUid == request.auth.uid
-      );
+      allow read: if isAuthenticated() && (resource.data.senderUid == request.auth.uid || resource.data.targetUid == request.auth.uid);
       allow write: if false;
     }
 
-    // Rules for the 'reports' collection
     match /reports/{reportId} {
-      allow create: if request.auth != null && request.resource.data.reporterId == request.auth.uid;
-      allow read, update, delete: if false; // Only admins via backend can read/manage
+      allow create: if isAuthenticated() && request.resource.data.reporterId == request.auth.uid;
+      allow read, update, delete: if false;
     }
   }
 }

@@ -34,11 +34,13 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
         // 1. Unified Listener for all Groups (up to 30)
         // This is MUCH more efficient than separate listeners per ID.
         // It counts as separate document reads, but uses 1 connection and returns 1 set of metadata.
-        import('firebase/firestore').then(({ query, collection, where, documentId, onSnapshot }) => {
+        import('firebase/firestore').then(({ query, collection, where, onSnapshot }) => {
+
             const groupsQuery = query(
                 collection(db, 'groups'),
-                where(documentId(), 'in', groupIds)
+                where('members', 'array-contains', userData.uid)
             );
+
 
             const unsubGroups = onSnapshot(groupsQuery, { includeMetadataChanges: true }, (snapshot) => {
                 const groupsMap: Record<string, Group> = {};

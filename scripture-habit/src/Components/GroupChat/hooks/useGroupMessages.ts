@@ -3,12 +3,11 @@ import { collection, query, orderBy, onSnapshot, doc, getDocs, limit, startAfter
 import confetti from 'canvas-confetti';
 import * as Sentry from "@sentry/react";
 import { Message, GroupData, MembersMap, UserProfileBrief } from '../../../types/chat';
-import { db, auth, appCheck } from '../../../firebase';
-import { getToken } from 'firebase/app-check';
-import { Capacitor } from '@capacitor/core';
+import { db } from '../../../firebase';
 import { UserData } from '../../../types/user';
 import { groupConverter, messageConverter, userConverter, groupMemberConverter } from '../../../Utils/firestoreConverters';
 import { parseTimestampToMillis } from '../../../Utils/timeUtils';
+
 import apiClient from '../../../Utils/apiClient';
 import { chatReducer, initialState } from './chatReducer';
 
@@ -28,56 +27,21 @@ export const useGroupMessages = (groupId: string | null, userData: UserData | nu
     membersMapRef.current = state.membersMap;
   }, [state.userReadCount, state.membersMap]);
 
-  // Helper for read status (Robust: Use direct write + API fallback)
+  // Helper for read status (Secure: API-only to satisfy rules and sync aggregation)
   const updateReadStatus = useCallback(async (gid: string, totalCount: number) => {
     if (!userData?.uid || !gid) return;
     
-    // 1. Optimistic direct write (Fast, works even if App Check/API is jittery)
     try {
-      const { writeBatch, doc: fireDoc, serverTimestamp } = await import('firebase/firestore');
-      const batch = writeBatch(db);
-      
-      const memberRef = fireDoc(db, 'groups', gid, 'members', userData.uid);
-      batch.set(memberRef, {
-        lastReadAt: serverTimestamp(),
-        readMessageCount: totalCount
-      }, { merge: true });
-
-      const groupStateRef = fireDoc(db, 'users', userData.uid, 'groupStates', gid);
-      batch.set(groupStateRef, {
-        readMessageCount: totalCount,
-        lastReadAt: serverTimestamp()
-      }, { merge: true });
-
-      await batch.commit();
-      dispatch({ type: 'SET_READ_COUNT', count: totalCount });
-    } catch (directErr) {
-      console.warn('[useGroupMessages] Direct write failed, falling back to API:', directErr);
-    }
-
-    // 2. API Sync (Ensures server-side truth is applied)
-    try {
-      const idToken = await auth?.currentUser?.getIdToken();
-      if (!idToken) return;
-
-      let appCheckToken = '';
-      try {
-        const appCheckTokenResponse = await getToken(appCheck, false);
-        appCheckToken = appCheckTokenResponse.token;
-      } catch (e) { /* ignore */ }
-
-      const API_BASE = Capacitor.isNativePlatform() ? 'https://scripturehabit.app' : '';
-      await fetch(`${API_BASE}/api/update-read-status`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${idToken}`,
-          ...(appCheckToken ? { 'X-Firebase-AppCheck': appCheckToken } : {})
-        },
-        body: JSON.stringify({ groupId: gid, readMessageCount: totalCount })
+      // API Sync (Ensures server-side truth is applied across all shards and dashboard fields)
+      await apiClient.post('/api/update-read-status', { 
+        groupId: gid, 
+        readCount: totalCount 
       });
+      
+      // Update local state immediately for snappy UI
+      dispatch({ type: 'SET_READ_COUNT', count: totalCount });
     } catch (err) {
-      console.error("Failed to sync read status via API:", err);
+      console.error("[useGroupMessages] Failed to sync read status:", err);
     }
   }, [userData?.uid]);
 
