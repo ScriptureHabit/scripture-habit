@@ -211,6 +211,16 @@ const MessageItem: FC<MessageItemProps> = memo(({
               if (msg.reactions) handleShowReactions(msg.reactions);
             }}
           >
+            <div className="reaction-previews">
+              {(msg.reactionPreviews?.['👍'] || []).map((p: any) => p.photoURL && (
+                <img key={p.uid} src={p.photoURL} alt="" className="reaction-preview-avatar" />
+              ))}
+              {(!(msg.reactionPreviews?.['👍']) && msg.reactions['👍']?.slice(0, 3).map(uid => (
+                membersMap?.[uid]?.photoURL && (
+                  <img key={uid} src={membersMap[uid].photoURL} alt="" className="reaction-preview-avatar" />
+                )
+              )))}
+            </div>
             <span className="reaction-emoji">👍</span>
             <span className="reaction-count">
               {Object.values(msg.reactions).reduce((acc, uids) => acc + (uids?.length || 0), 0)}

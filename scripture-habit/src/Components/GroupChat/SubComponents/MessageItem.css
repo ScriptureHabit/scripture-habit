@@ -212,6 +212,32 @@
     width: fit-content;
 }
 
+.reaction-previews {
+    display: flex;
+    align-items: center;
+}
+
+.reaction-preview-avatar {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 1.5px solid white;
+    margin-right: -6px;
+    object-fit: cover;
+    background: #f0f0f0;
+    transition: transform 0.2s;
+}
+
+.reaction-preview-avatar:hover {
+    transform: scale(1.2);
+    z-index: 10;
+}
+
+.reaction-preview-avatar:last-child {
+    margin-right: 4px;
+}
+
+
 .message.sent .message-reactions {
     margin-right: 0.5rem;
     background: white;

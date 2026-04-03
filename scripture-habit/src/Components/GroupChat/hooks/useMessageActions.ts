@@ -138,35 +138,37 @@ export const useMessageActions = (
       const emoji = '👍';
       const currentReactions = message.reactions || {};
       const uids = currentReactions[emoji] || [];
+      const currentPreviews = message.reactionPreviews?.[emoji] || [];
       const hasReacted = uids.includes(userData.uid);
+
+      // Prepare new state
+      const newUids = hasReacted 
+        ? uids.filter(uid => uid !== userData.uid)
+        : [...uids, userData.uid];
+
+      const newPreviews = hasReacted
+        ? currentPreviews.filter((p: any) => p.uid !== userData.uid)
+        : (currentPreviews.length < 3 
+            ? [...currentPreviews, { uid: userData.uid, nickname: userData.nickname, photoURL: userData.photoURL }]
+            : currentPreviews); // Keep only first 3 for simplicity
 
       // Optimistic update
       if (dispatch) {
-        const newUids = hasReacted 
-          ? uids.filter(uid => uid !== userData.uid)
-          : [...uids, userData.uid];
-        
         dispatch({
           type: 'UPDATE_MESSAGE',
           messageId: message.id,
           data: {
-            reactions: {
-              ...currentReactions,
-              [emoji]: newUids
-            }
+            reactions: { ...currentReactions, [emoji]: newUids },
+            reactionPreviews: { ...(message.reactionPreviews || {}), [emoji]: newPreviews }
           }
         });
       }
 
-      if (hasReacted) {
-        await updateDoc(messageRef, {
-          [`reactions.${emoji}`]: arrayRemove(userData.uid)
-        });
-      } else {
-        await updateDoc(messageRef, {
-          [`reactions.${emoji}`]: arrayUnion(userData.uid)
-        });
-      }
+      await updateDoc(messageRef, {
+        [`reactions.${emoji}`]: hasReacted ? arrayRemove(userData.uid) : arrayUnion(userData.uid),
+        [`reactionPreviews.${emoji}`]: newPreviews
+      });
+
     } catch (error) {
       console.error("Error toggling reaction:", error);
       toast.error(t('groupChat.errorToggleReaction'));

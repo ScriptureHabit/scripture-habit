@@ -130,6 +130,7 @@ export interface MessageDocument {
     
     // Interaction
     reactions?: Record<string, string[]>;
+    reactionPreviews?: Record<string, any[]>;
     translations?: Record<string, string>;
     messageData?: Record<string, string | number>; // Dynamic metadata for system messages
 
