@@ -39,11 +39,12 @@ export const aiLimiter = rateLimit({
         if (authHeader && authHeader.startsWith('Bearer ')) {
             return crypto.createHash('sha256').update(authHeader).digest('hex');
         }
-        // Use a safe ID that combines IP and other info, hash it to avoid IPv6 warnings
-        const ip = req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
-        const ipStr = Array.isArray(ip) ? ip[0] : ip;
-        return crypto.createHash('sha256').update(ipStr).digest('hex');
+        // Fallback to hashed IP for better privacy and consistency across proxies
+        const ip = (req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown').toString();
+        return crypto.createHash('sha256').update(ip).digest('hex');
     },
+    // Required to silence the IPv6 warning when using a custom keyGenerator for hashed IPs
+    validate: { ip: false } 
 });
 
 export const verifyAppCheck = async (req: Request, res: Response, next: NextFunction) => {
