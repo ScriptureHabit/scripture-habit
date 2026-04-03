@@ -62,7 +62,7 @@ const chatReducer = (state: ChatState, action: ChatAction): ChatState => {
         ...state,
         status: 'active',
         messages: action.messages,
-        groupData: action.groupData,
+        groupData: action.groupData || state.groupData,
         userReadCount: action.readCount
       };
     case 'UPDATE_GROUP':
@@ -255,7 +255,7 @@ export const useGroupMessages = (groupId: string | null, userData: UserData | nu
           dispatch({ 
             type: 'SET_INITIAL_STATE', 
             messages: [], 
-            groupData: null as unknown as GroupData, 
+            groupData: state.groupData as GroupData, // Preserve the groupData if onSnapshot already caught it
             readCount: initialReadCount 
           });
 

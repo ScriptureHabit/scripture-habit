@@ -599,6 +599,14 @@
     gap: 4px;
     scroll-behavior: auto; /* Changed to auto to prevent "hurrying" on initial load */
     overflow-anchor: auto; /* Keep anchored to bottom during updates */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease-in-out;
+}
+
+.message-list-container.fully-visible {
+    opacity: 1;
+    visibility: visible;
 }
 
 .message-list-container::-webkit-scrollbar {

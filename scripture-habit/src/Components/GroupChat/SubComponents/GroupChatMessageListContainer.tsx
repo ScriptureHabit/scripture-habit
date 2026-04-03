@@ -66,13 +66,8 @@ const GroupChatMessageListContainer: FC = () => {
   return (
     <div className="message-list-outer">
       <div 
-        className="message-list-container" 
+        className={`message-list-container ${isVisible ? 'fully-visible' : ''}`} 
         ref={containerRef}
-        style={{ 
-          opacity: isVisible ? 1 : 0,
-          visibility: isVisible ? 'visible' : 'hidden',
-          transition: 'opacity 0.2s ease-in-out'
-        }}
       >
         {isLoadingOlder && (
           <div className="loading-older">
