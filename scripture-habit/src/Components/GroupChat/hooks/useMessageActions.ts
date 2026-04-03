@@ -1,7 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import axios from 'axios';
-import { doc, updateDoc, arrayRemove, arrayUnion, serverTimestamp } from 'firebase/firestore';
-import { db } from '../../../firebase';
 import apiClient from '../../../Utils/apiClient';
 import { toast } from 'react-toastify';
 import { Message } from '../../../types/chat';
@@ -82,10 +80,10 @@ export const useMessageActions = (
         });
       }
 
-      await updateDoc(doc(db, 'groups', groupId, 'messages', message.id), {
-        text: newText,
-        isEdited: true,
-        editedAt: serverTimestamp()
+      await apiClient.post('/api/edit-message', {
+        groupId,
+        messageId: message.id,
+        text: newText
       });
       return true;
     } catch (error) {
@@ -123,8 +121,6 @@ export const useMessageActions = (
 
       // Rollback
       if (dispatch) {
-        // We add it back as a 'new' message or use a specific restore action if available
-        // ADD_NEW_MESSAGES will handle adding it back to the list
         dispatch({ type: 'ADD_NEW_MESSAGES', newMessages: [message] });
       }
       return false;
@@ -134,7 +130,6 @@ export const useMessageActions = (
   const handleToggleReaction = useCallback(async (message: Message) => {
     if (!userData || !userData.uid) return;
     try {
-      const messageRef = doc(db, 'groups', groupId, 'messages', message.id);
       const emoji = '👍';
       const currentReactions = message.reactions || {};
       const uids = currentReactions[emoji] || [];
@@ -149,8 +144,8 @@ export const useMessageActions = (
       const newPreviews = hasReacted
         ? currentPreviews.filter((p: any) => p.uid !== userData.uid)
         : (currentPreviews.length < 3 
-            ? [...currentPreviews, { uid: userData.uid, nickname: userData.nickname, photoURL: userData.photoURL }]
-            : currentPreviews); // Keep only first 3 for simplicity
+            ? [{ uid: userData.uid, nickname: userData.nickname, photoURL: userData.photoURL }, ...currentPreviews].slice(0, 3)
+            : currentPreviews);
 
       // Optimistic update
       if (dispatch) {
@@ -164,9 +159,10 @@ export const useMessageActions = (
         });
       }
 
-      await updateDoc(messageRef, {
-        [`reactions.${emoji}`]: hasReacted ? arrayRemove(userData.uid) : arrayUnion(userData.uid),
-        [`reactionPreviews.${emoji}`]: newPreviews
+      await apiClient.post('/api/toggle-reaction', {
+        groupId,
+        messageId: message.id,
+        emoji
       });
 
     } catch (error) {
@@ -178,18 +174,17 @@ export const useMessageActions = (
         dispatch({
           type: 'UPDATE_MESSAGE',
           messageId: message.id,
-          data: { reactions: message.reactions }
+          data: { reactions: message.reactions, reactionPreviews: message.reactionPreviews }
         });
       }
     }
-  }, [groupId, userData]);
+  }, [groupId, userData, dispatch, t]);
 
   const processBatch = useCallback(async () => {
     const queue = [...batchQueueRef.current];
     batchQueueRef.current = [];
     if (queue.length === 0) return;
 
-    // Filter out duplicates and ones already in flight
     const toProcess = queue.filter((m, index, self) => 
       self.findIndex(t => t.id === m.id) === index && !translatingIdsRef.current.has(m.id)
     );
@@ -222,12 +217,12 @@ export const useMessageActions = (
         message.translations?.[language] || 
         translatedTexts[message.id] || 
         translatingIdsRef.current.has(message.id) ||
-        isLikelyAlreadyInLanguage(message.text, language) // Skip if already in this language
+        isLikelyAlreadyInLanguage(message.text, language)
     ) return;
     
     batchQueueRef.current.push(message);
     if (batchTimerRef.current) clearTimeout(batchTimerRef.current);
-    batchTimerRef.current = setTimeout(processBatch, 400); // 400ms buffer
+    batchTimerRef.current = setTimeout(processBatch, 400);
   }, [language, translatedTexts, processBatch]);
 
   const handleTranslateMessage = useCallback(async (message: Message, force = false) => {
@@ -241,11 +236,11 @@ export const useMessageActions = (
         targetLanguage: language,
         messageId: message.id,
         groupId: groupId,
-        force // Added force flag
+        force
       });
 
       if (response.data?.translatedText) {
-        setTranslatedTexts(prev => ({ ...prev, [message.id]: response.data.translatedText }));
+        setTranslatedTexts((prev: Record<string, string>) => ({ ...prev, [message.id]: response.data.translatedText }));
       }
     } catch (e) {
       console.error("Translation error:", e);
@@ -256,9 +251,8 @@ export const useMessageActions = (
     }
   }, [language, groupId]);
 
-
   return {
-    translatingIds: translatingIds,
+    translatingIds,
     translatedTexts,
     handleSendMessage,
     handleSaveEdit,

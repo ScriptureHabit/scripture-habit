@@ -234,7 +234,19 @@ export class NoteService {
             userToGroupMapEntries: result._internalNotifications.userToGroupMapEntries
         });
 
+        // 7. Probabilistic Aggregation (Sync shards back to main doc every ~10 posts)
+        if (Math.random() < 0.1) {
+            Promise.all(result._internalNotifications.userToGroupMapEntries.map(async ([_, gid]) => {
+                try {
+                    await CounterService.aggregateAndSync(db.collection('groups').doc(gid), 'messageCount');
+                } catch (e) {
+                    console.warn(`[NoteService] Aggregation failed for group ${gid}:`, e);
+                }
+            })).catch(err => console.error("[NoteService] Aggregation background task error:", err));
+        }
+
         const { _internalNotifications, ...publicResult } = result;
         return publicResult;
+
     }
 }

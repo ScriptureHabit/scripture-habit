@@ -148,13 +148,78 @@ router.post('/post-message', authenticate, verifyAppCheck, async (req: Authentic
             }, result.members);
         } catch (err) { console.error('Chat notification error:', err); }
 
+        // Probabilistic Aggregation (Sync shards back to main doc every ~10 messages)
+        if (Math.random() < 0.1) {
+            CounterService.aggregateAndSync(db.collection('groups').doc(groupId), 'messageCount').catch(err => {
+                console.warn(`[API] Aggregation failed for group ${groupId}:`, err);
+            });
+        }
+
         res.json({ success: true, messageId: result.messageId });
+
+    } catch (error) {
+        next(error);
+    }
+});
+
+// Toggle Reaction (Atomic & Scalable)
+router.post('/toggle-reaction', authenticate, verifyAppCheck, async (req: AuthenticatedRequest, res: Response, next) => {
+    const { groupId, messageId, emoji = '👍' } = req.body;
+    const uid = req.user!.uid;
+
+    if (!groupId || !messageId) return res.status(400).json({ error: 'Missing params' });
+
+    try {
+        const result = await db.runTransaction(async (transaction) => {
+            const userRef = db.collection('users').doc(uid);
+            const messageRef = db.collection('groups').doc(groupId).collection('messages').doc(messageId);
+            const groupRef = db.collection('groups').doc(groupId);
+
+            const [uSnap, mSnap, gSnap] = await transaction.getAll(userRef, messageRef, groupRef);
+
+            if (!mSnap.exists || !gSnap.exists || !uSnap.exists) throw new Error('Not found');
+            const gData = gSnap.data()!;
+            if (!(gData.members || []).includes(uid)) throw new Error('Forbidden');
+
+            const mData = mSnap.data()!;
+            const reactions = mData.reactions || {};
+            const uids: string[] = reactions[emoji] || [];
+            const hasReacted = uids.includes(uid);
+
+            const newUserNickname = uSnap.data()?.nickname || 'Member';
+            const newUserPhotoURL = uSnap.data()?.photoURL || null;
+
+            // Update UIDs list
+            const newUids = hasReacted 
+                ? uids.filter(id => id !== uid) 
+                : [...uids, uid];
+            
+            // Build new Previews (top 3)
+            // Simplified: If adding, we put ourselves first. If removing, we filter.
+            let newPreviews = mData.reactionPreviews?.[emoji] || [];
+            if (hasReacted) {
+                newPreviews = newPreviews.filter((p: any) => p.uid !== uid);
+            } else {
+                const myPreview = { uid, nickname: newUserNickname, photoURL: newUserPhotoURL };
+                newPreviews = [myPreview, ...newPreviews].slice(0, 3);
+            }
+
+            transaction.update(mSnap.ref, {
+                [`reactions.${emoji}`]: newUids,
+                [`reactionPreviews.${emoji}`]: newPreviews
+            });
+
+            return { hasReacted: !hasReacted, newUids, newPreviews };
+        });
+
+        res.json({ success: true, ...result });
     } catch (error) {
         next(error);
     }
 });
 
 router.post('/delete-note', authenticate, requireEmailVerified, verifyAppCheck, async (req: AuthenticatedRequest, res: Response, next) => {
+
     const validation = deleteNoteSchema.safeParse(req.body);
     if (!validation.success) return res.status(400).json({ error: 'Invalid input', details: validation.error.format() });
 
@@ -191,7 +256,35 @@ router.post('/delete-note', authenticate, requireEmailVerified, verifyAppCheck, 
     }
 });
 
+// Edit Message
+router.post('/edit-message', authenticate, verifyAppCheck, async (req: AuthenticatedRequest, res: Response, next) => {
+    const { groupId, messageId, text } = req.body;
+    const uid = req.user!.uid;
+
+    if (!groupId || !messageId || !text) return res.status(400).json({ error: 'Missing params' });
+
+    try {
+        const messageRef = db.collection('groups').doc(groupId).collection('messages').doc(messageId);
+        const mSnap = await messageRef.get();
+        if (!mSnap.exists) return res.status(404).json({ error: 'Message not found' });
+
+        const mData = mSnap.data()!;
+        if (mData.senderId !== uid) return res.status(403).json({ error: 'Forbidden' });
+
+        await messageRef.update({
+            text,
+            isEdited: true,
+            editedAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+
+        res.json({ success: true });
+    } catch (error) {
+        next(error);
+    }
+});
+
 router.post('/delete-message', authenticate, verifyAppCheck, async (req: AuthenticatedRequest, res: Response, next) => {
+
     const validation = deleteMessageSchema.safeParse(req.body);
     if (!validation.success) return res.status(400).json({ error: 'Invalid input', details: validation.error.format() });
 

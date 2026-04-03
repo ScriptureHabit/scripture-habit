@@ -201,44 +201,49 @@ export const useGroupMessages = (groupId: string | null, userData: UserData | nu
         unsubscribeNewMessages = unsubscribe;
       };
 
-      startListener();
-      listenerStarterRef.current = startListener;
-
-      // Background Tasks (Optimizations)
+      // Background Tasks & Bundle Hydration (Cost reduction)
       try {
         if (userData?.uid) {
-          // A. Sync Read Count in Real-time
+          // 1. Load Bundle FIRST to populate cache (ONE read cost for 50 messages)
+          try {
+            const bundleResponse = await apiClient.get(`/api/bundle/${groupId}`, { 
+              responseType: 'arraybuffer',
+              timeout: 3000 
+            });
+            if (bundleResponse.data && !isCancelled) {
+              await loadBundle(db, bundleResponse.data);
+              console.log("[useGroupMessages] Bundle hydrated successfully");
+            }
+          } catch (err) {
+            console.warn("[useGroupMessages] Bundle hydration skipped/failed:", err);
+          }
+
+          // 2. Start Listener AFTER bundle (or after failure) to maximize savings
+          startListener();
+          listenerStarterRef.current = startListener;
+
+          // 3. Sync Read Count in parallel
           unsubscribeReadCount = onSnapshot(doc(db, 'users', userData.uid, 'groupStates', groupId), (stateSnap) => {
             if (isCancelled) return;
             if (stateSnap.exists()) {
               dispatch({ type: 'SET_READ_COUNT', count: stateSnap.data().readMessageCount || 0 });
             } else {
-              // IMPORTANT: If doc doesn't exist, it means 0 messages read.
-              // Setting this to 0 (instead of leaving it null) breaks the sync deadlock.
               dispatch({ type: 'SET_READ_COUNT', count: 0 });
             }
           });
-
-          // B. Hydrate Firestore cache with a Bundle in background (Cost reduction)
-          apiClient.get(`/api/bundle/${groupId}`, { 
-            responseType: 'arraybuffer',
-            timeout: 5000 
-          }).then(bundleResponse => {
-            if (bundleResponse.data && !isCancelled) {
-              loadBundle(db, bundleResponse.data).then(() => {
-                console.log("[useGroupMessages] Bundle hydrated in background");
-              });
-            }
-          }).catch(err => {
-            console.warn("[useGroupMessages] Background bundle hydration skipped:", err);
-          });
+        } else {
+          startListener();
+          listenerStarterRef.current = startListener;
         }
       } catch (err: unknown) {
-        console.error("[useGroupMessages] Background tasks error:", err);
+        console.error("[useGroupMessages] Initialization Chain error:", err);
+        // Fallback: Ensure listener starts even if tasks fail
+        startListener();
       }
     };
 
     initChain();
+
 
     return () => {
       isCancelled = true;

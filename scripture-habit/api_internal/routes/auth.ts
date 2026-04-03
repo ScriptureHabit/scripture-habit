@@ -3,8 +3,46 @@ import { admin, db } from '../lib/firebase-admin.js';
 import { verifyAppCheck, authenticate, AuthenticatedRequest } from '../lib/middleware.js';
 import { verifyLoginSchema } from '../lib/schemas.js';
 import { AuthenticationError, ForbiddenError } from '../lib/errors.js';
+import { ProfileService } from '../services/profile-service.js';
 
 const router = express.Router();
+
+/**
+ * Update User Profile and Sync to Chats
+ */
+router.post('/update-profile', authenticate, verifyAppCheck, async (req: AuthenticatedRequest, res: Response, next) => {
+    const { nickname, photoURL, stake, ward, bio } = req.body;
+    const uid = req.user!.uid;
+
+    try {
+        const userRef = db.collection('users').doc(uid);
+        
+        const updates: any = {};
+        if (nickname !== undefined) updates.nickname = nickname;
+        if (photoURL !== undefined) updates.photoURL = photoURL;
+        if (stake !== undefined) updates.stake = stake;
+        if (ward !== undefined) updates.ward = ward;
+        if (bio !== undefined) updates.bio = bio;
+
+        if (Object.keys(updates).length === 0) {
+            return res.status(400).json({ error: 'No fields to update' });
+        }
+
+        await userRef.update(updates);
+
+        // SYNC: Propagate identity changes to recent messages (no await required for response)
+        if (nickname || photoURL) {
+            ProfileService.syncProfileToChats(uid, { nickname, photoURL }).catch(err => {
+                console.error('[ProfileSync] Error in background sync:', err);
+            });
+        }
+
+        res.status(200).json({ success: true, message: 'Profile updated and synced.' });
+    } catch (err) {
+        next(err);
+    }
+});
+
 
 /**
  * Verify Login

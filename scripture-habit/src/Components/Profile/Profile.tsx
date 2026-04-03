@@ -2,10 +2,9 @@ import { useState, useEffect, FC, useRef, ChangeEvent } from 'react';
 import './Profile.css';
 import { useLanguage } from '../../Context/LanguageContext';
 import { useSettings } from '../../Context/SettingsContext';
-import { auth, db, storage } from '../../firebase';
+import { auth, storage } from '../../firebase';
 import { useNavigate } from 'react-router-dom';
 import { UilSignOutAlt, UilCamera, UilCalendarAlt } from '@iconscout/react-unicons';
-import { doc, updateDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { Capacitor } from '@capacitor/core';
 import Button from '../Button/Button';
@@ -221,9 +220,18 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
             // Get download URL
             const url = await getDownloadURL(storageRef);
 
-            // Update user document in Firestore
-            const userRef = doc(db, 'users', userData.uid);
-            await updateDoc(userRef, { photoURL: url });
+            // Use Backend API for update and sync
+            const idToken = await auth?.currentUser?.getIdToken();
+            const response = await fetch(`${API_BASE}/api/update-profile`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${idToken}`
+                },
+                body: JSON.stringify({ photoURL: url })
+            });
+
+            if (!response.ok) throw new Error("API update failed");
 
             setPhotoURL(url);
             toast.success(t('profile.imageUploadSuccess') || "Profile picture updated!");
@@ -249,13 +257,23 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
         setMessage({ type: '', text: '' });
 
         try {
-            const userRef = doc(db, 'users', userData.uid);
-            await updateDoc(userRef, {
-                nickname: newNickname,
-                stake: newStake,
-                ward: newWard,
-                bio: newBio
+            const idToken = await auth?.currentUser?.getIdToken();
+            const response = await fetch(`${API_BASE}/api/update-profile`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${idToken}`
+                },
+                body: JSON.stringify({
+                    nickname: newNickname,
+                    stake: newStake,
+                    ward: newWard,
+                    bio: newBio
+                })
             });
+
+            if (!response.ok) throw new Error("API update failed");
+
             setMessage({ type: 'success', text: t('profile.successUpdate') });
 
             // Clear message after 3 seconds
