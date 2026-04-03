@@ -191,6 +191,15 @@ service cloud.firestore {
                       );
       }
 
+      // Rules for the 'message_buckets' subcollection (Bucket Pattern)
+      match /message_buckets/{bucketId} {
+        // Same visibility rules as messages
+        allow read: if isAuthenticated() && (isMemberOfGroup(groupId) || (get(/databases/$(database)/documents/groups/$(groupId)).data.ownerUserId == request.auth.uid));
+        // Only internal backend can write to buckets
+        allow write: if false; 
+      }
+
+
       // Rules for the 'members' subcollection
       match /members/{userId} {
         // All group members can read other members' status (for read receipts)

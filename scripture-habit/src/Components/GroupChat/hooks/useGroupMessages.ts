@@ -300,16 +300,49 @@ export const useGroupMessages = (groupId: string | null, userData: UserData | nu
     try {
       const oldestMsg = state.messages[0];
       if (!oldestMsg.createdAt) return;
-      const q = query(collection(db, 'groups', groupId, 'messages').withConverter(messageConverter), orderBy('createdAt', 'desc'), startAfter(oldestMsg.createdAt), limit(20));
-      const snaps = await getDocs(q);
-      if (snaps.empty) {
-        dispatch({ type: 'ADD_OLDER_MESSAGES', olderMessages: [], hasMore: false });
-      } else {
+      
+      // 1. Try to load from individual messages first
+      let q = query(
+        collection(db, 'groups', groupId, 'messages').withConverter(messageConverter), 
+        orderBy('createdAt', 'desc'), 
+        startAfter(oldestMsg.createdAt), 
+        limit(20)
+      );
+      let snaps = await getDocs(q);
+      
+      if (!snaps.empty) {
         const newOlderMsgs = snaps.docs.map(d => d.data()).reverse();
         dispatch({ type: 'ADD_OLDER_MESSAGES', olderMessages: newOlderMsgs, hasMore: true });
+        return;
+      }
+
+      // 2. Fallback to Buckets if messages are exhausted
+      // Find the most recent bucket (startTime < oldestMsg.createdAt)
+      const bucketsRef = collection(db, 'groups', groupId, 'message_buckets');
+      const bq = query(
+        bucketsRef, 
+        orderBy('startTime', 'desc'), 
+        startAfter(oldestMsg.createdAt), // Buckets are indexed by startTime
+        limit(1)
+      );
+      const bucketSnaps = await getDocs(bq);
+
+      if (bucketSnaps.empty) {
+        dispatch({ type: 'ADD_OLDER_MESSAGES', olderMessages: [], hasMore: false });
+        // Also check if we might find some even older messages NOT in buckets? unlikely.
+      } else {
+        const bucketData = bucketSnaps.docs[0].data() as { messages: any[] };
+        const bucketMessages = (bucketData.messages || []).map((m: any) => ({
+          ...m,
+          // Ensure nested timestamps are correctly parsed by reducer if needed
+          // Firestore SDK usually handles this in arrays too
+        }));
         
-        // NO RESTART NEEDED: The listener stays on the tail of the conversation.
-        // History is static once loaded via getDocs.
+        dispatch({
+          type: 'ADD_OLDER_MESSAGES',
+          olderMessages: bucketMessages, // Bucket messages are already in chunk
+          hasMore: true // Assume more buckets exist
+        });
       }
     } catch (e) {
       console.error("Error loading older messages", e);

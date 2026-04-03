@@ -1,5 +1,7 @@
 import express, { Request, Response, NextFunction } from 'express';
 import { admin, db } from '../lib/firebase-admin.js';
+import { CounterService } from '../services/counter-service.js';
+import { ArchiveService } from '../services/archive-service.js';
 
 interface MemberPreview {
     uid: string;
@@ -339,6 +341,81 @@ router.get('/test-inactive-check/:groupId', verifyCronSecret, async (req: Reques
     } catch (err: unknown) {
         const error = err as Error;
         res.status(500).json({ error: error.message });
+    }
+});
+
+/**
+ * Archive Old Messages (Bucket Pattern)
+ */
+router.all('/archive-old-messages', verifyCronSecret, async (_req: Request, res: Response) => {
+    console.log('[Cron] Starting message archiving...');
+    try {
+        const groupsToArchive = await ArchiveService.getGroupsNeedingArchive(150);
+        let groupsProcessed = 0;
+        let totalMessagesArchived = 0;
+
+        for (const groupId of groupsToArchive) {
+            try {
+                const count = await ArchiveService.archiveOldMessages(groupId);
+                if (count > 0) {
+                    groupsProcessed++;
+                    totalMessagesArchived += count;
+                }
+            } catch (err) {
+                console.error(`Failed to archive group ${groupId}:`, err);
+            }
+        }
+
+        res.json({
+            message: 'Archiving complete.',
+            stats: { 
+                targetGroupsFound: groupsToArchive.length,
+                groupsProcessed,
+                totalMessagesArchived
+            }
+        });
+    } catch (err: unknown) {
+        const error = err as Error;
+        console.error('Error during archiving:', error);
+        res.status(500).send('Error during archiving: ' + error.message);
+    }
+});
+
+/**
+ * Aggregate Message Counts (Background Sync)
+ */
+router.all('/aggregate-message-counts', verifyCronSecret, async (_req: Request, res: Response) => {
+    console.log('[Cron] Starting message count aggregation...');
+    try {
+        const now = new Date();
+        const tenMinutesAgo = new Date(now.getTime() - 10 * 60 * 1000);
+
+        // Find groups active in the last 10 minutes
+        const activeGroupsSnap = await db.collection('groups')
+            .where('lastMessageAt', '>=', tenMinutesAgo)
+            .get();
+
+        let updatedCount = 0;
+        for (const groupDoc of activeGroupsSnap.docs) {
+            try {
+                await CounterService.aggregateAndSync(groupDoc.ref, 'messageCount');
+                updatedCount++;
+            } catch (err) {
+                console.error(`Failed to aggregate group ${groupDoc.id}:`, err);
+            }
+        }
+
+        res.json({
+            message: 'Aggregation complete.',
+            stats: {
+                groupsProcessed: activeGroupsSnap.size,
+                groupsUpdated: updatedCount
+            }
+        });
+    } catch (err: unknown) {
+        const error = err as Error;
+        console.error('Error in aggregation:', error);
+        res.status(500).send('Error during aggregation: ' + error.message);
     }
 });
 

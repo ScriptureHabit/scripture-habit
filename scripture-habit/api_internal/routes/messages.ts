@@ -4,6 +4,7 @@ import { verifyAppCheck, authenticate, requireEmailVerified, AuthenticatedReques
 import { postNoteSchema, postMessageSchema, sendCheerSchema, deleteNoteSchema, deleteMessageSchema } from '../lib/schemas.js';
 import { notifyGroupMembers, sendPushNotification, getUserFcmTokens } from '../lib/notifications.js';
 import { tArray } from '../lib/i18n.js';
+import { CounterService } from '../services/counter-service.js';
 
 const router = express.Router();
 
@@ -121,13 +122,16 @@ router.post('/post-message', authenticate, verifyAppCheck, async (req: Authentic
 
             transaction.set(msgRef, msgData);
 
+            CounterService.increment(transaction, groupRef);
+
             transaction.update(groupRef, {
-                messageCount: admin.firestore.FieldValue.increment(1),
+                // messageCount: admin.firestore.FieldValue.increment(1), // MOVED TO SHARDS
                 lastMessageAt: admin.firestore.FieldValue.serverTimestamp(),
                 lastMessageByNickname: uSnap.data()?.nickname || 'Member',
                 lastMessageByUid: uid,
                 [`memberLastReadAt.${uid}`]: admin.firestore.FieldValue.serverTimestamp()
             });
+
             
             const userGS = userRef.collection('groupStates').doc(groupId);
             transaction.set(userGS, { readMessageCount: admin.firestore.FieldValue.increment(1), lastReadAt: admin.firestore.FieldValue.serverTimestamp() }, { merge: true });
