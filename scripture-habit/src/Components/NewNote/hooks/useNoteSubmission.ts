@@ -111,7 +111,7 @@ export const useNoteSubmission = (
             } else {
                 const messageText = `**${scripture} ${chapter}**\n\n${comment}`;
 
-                const response = await apiClient.post('/api/post-note', {
+                const response = await apiClient.post('/api/post-note/', {
                     chapter,
                     comment,
                     scripture,

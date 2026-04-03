@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Capacitor } from '@capacitor/core';
-import { auth, appCheck } from '../../../firebase';
-import { getToken } from 'firebase/app-check';
+import apiClient from '../../../Utils/apiClient';
+import { auth } from '../../../firebase';
 
 /**
  * Hook to fetch metadata for Church URLs (GC, Liahona, etc.) during note creation.
@@ -18,8 +17,6 @@ export const useUrlMetaFetcher = (chapter: string, scripture: string, language: 
             if ((isUrl || isShortcode) && (scripture === 'General Conference' || scripture === 'BYU Speeches' || scripture === 'Other')) {
                 setUrlLoading(true);
                 try {
-                    const API_BASE = Capacitor.isNativePlatform() ? 'https://scripturehabit.app' : '';
-                    
                     // Map app language to API lang
                     const LAN_MAP: Record<string, string> = { 'ja': 'jpn', 'en': 'eng', 'pt': 'por', 'es': 'spa', 'zho': 'zho', 'ko': 'kor', 'vi': 'vie', 'th': 'tha', 'tl': 'tgl', 'sw': 'swa' };
                     const apiLang = LAN_MAP[language] || 'eng';
@@ -29,32 +26,17 @@ export const useUrlMetaFetcher = (chapter: string, scripture: string, language: 
                         targetUrl = `https://www.churchofjesuschrist.org${targetUrl.startsWith('/') ? '' : '/'}${targetUrl}`;
                     }
 
-                    const url = `${API_BASE}/api/fetch-church-metadata/?url=${encodeURIComponent(targetUrl)}&lang=${apiLang}`;
+                    const response = await apiClient.get(`/api/fetch-church-metadata/`, {
+                        params: {
+                            url: targetUrl,
+                            lang: apiLang
+                        }
+                    });
 
-                    const headers: Record<string, string> = { 'Accept': 'application/json' };
-                    
-                    if (auth?.currentUser) {
-                        try {
-                            const idToken = await auth.currentUser.getIdToken();
-                            headers['Authorization'] = `Bearer ${idToken}`;
-                        } catch (e) { console.warn("[useUrlMetaFetcher] Auth token failed", e); }
-                    }
-
-                    if (appCheck) {
-                        try {
-                            const acToken = await getToken(appCheck, false);
-                            if (acToken?.token) headers['X-Firebase-AppCheck'] = acToken.token;
-                        } catch (e) { console.warn("[useUrlMetaFetcher] AppCheck token failed", e); }
-                    }
-
-                    const response = await fetch(url, { headers });
-                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-                    const data = await response.json();
-                    if (data && data.title) {
+                    if (response.data && response.data.title) {
                         setUrlMeta({
-                            title: data.title,
-                            speaker: data.speaker
+                            title: response.data.title,
+                            speaker: response.data.speaker
                         });
                     }
                 } catch (error) {
@@ -74,4 +56,3 @@ export const useUrlMetaFetcher = (chapter: string, scripture: string, language: 
 
     return { urlMeta, urlLoading };
 };
-
