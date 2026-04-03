@@ -28,9 +28,34 @@ export const useGroupMessages = (groupId: string | null, userData: UserData | nu
     membersMapRef.current = state.membersMap;
   }, [state.userReadCount, state.membersMap]);
 
-  // Helper for read status (Robust: Use API to sync with server-truth)
+  // Helper for read status (Robust: Use direct write + API fallback)
   const updateReadStatus = useCallback(async (gid: string, totalCount: number) => {
     if (!userData?.uid || !gid) return;
+    
+    // 1. Optimistic direct write (Fast, works even if App Check/API is jittery)
+    try {
+      const { writeBatch, doc: fireDoc, serverTimestamp } = await import('firebase/firestore');
+      const batch = writeBatch(db);
+      
+      const memberRef = fireDoc(db, 'groups', gid, 'members', userData.uid);
+      batch.set(memberRef, {
+        lastReadAt: serverTimestamp(),
+        readMessageCount: totalCount
+      }, { merge: true });
+
+      const groupStateRef = fireDoc(db, 'users', userData.uid, 'groupStates', gid);
+      batch.set(groupStateRef, {
+        readMessageCount: totalCount,
+        lastReadAt: serverTimestamp()
+      }, { merge: true });
+
+      await batch.commit();
+      dispatch({ type: 'SET_READ_COUNT', count: totalCount });
+    } catch (directErr) {
+      console.warn('[useGroupMessages] Direct write failed, falling back to API:', directErr);
+    }
+
+    // 2. API Sync (Ensures server-side truth is applied)
     try {
       const idToken = await auth?.currentUser?.getIdToken();
       if (!idToken) return;
@@ -39,12 +64,10 @@ export const useGroupMessages = (groupId: string | null, userData: UserData | nu
       try {
         const appCheckTokenResponse = await getToken(appCheck, false);
         appCheckToken = appCheckTokenResponse.token;
-      } catch (e) {
-        console.warn('[useGroupMessages] AppCheck failed:', e);
-      }
+      } catch (e) { /* ignore */ }
 
       const API_BASE = Capacitor.isNativePlatform() ? 'https://scripturehabit.app' : '';
-      const response = await fetch(`${API_BASE}/api/update-read-status`, {
+      await fetch(`${API_BASE}/api/update-read-status`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -53,12 +76,8 @@ export const useGroupMessages = (groupId: string | null, userData: UserData | nu
         },
         body: JSON.stringify({ groupId: gid, readMessageCount: totalCount })
       });
-
-      if (response.ok) {
-        dispatch({ type: 'SET_READ_COUNT', count: totalCount });
-      }
     } catch (err) {
-      console.error("Failed to update read status via API:", err);
+      console.error("Failed to sync read status via API:", err);
     }
   }, [userData?.uid]);
 
@@ -190,8 +209,13 @@ export const useGroupMessages = (groupId: string | null, userData: UserData | nu
         if (userData?.uid) {
           // A. Sync Read Count in Real-time
           unsubscribeReadCount = onSnapshot(doc(db, 'users', userData.uid, 'groupStates', groupId), (stateSnap) => {
-            if (stateSnap.exists() && !isCancelled) {
+            if (isCancelled) return;
+            if (stateSnap.exists()) {
               dispatch({ type: 'SET_READ_COUNT', count: stateSnap.data().readMessageCount || 0 });
+            } else {
+              // IMPORTANT: If doc doesn't exist, it means 0 messages read.
+              // Setting this to 0 (instead of leaving it null) breaks the sync deadlock.
+              dispatch({ type: 'SET_READ_COUNT', count: 0 });
             }
           });
 
