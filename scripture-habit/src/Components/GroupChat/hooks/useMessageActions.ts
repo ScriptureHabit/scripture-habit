@@ -59,6 +59,7 @@ export const useMessageActions = (
       senderPhotoURL: userData.photoURL || null,
       createdAt: new Date(), // Local timestamp for immediate sorting
       isOptimistic: true,
+      optimisticId: optimisticId,
       ...(replyTo ? { 
         replyTo: {
           id: replyTo.id,
@@ -78,7 +79,8 @@ export const useMessageActions = (
       const response = await apiClient.post('/api/post-message', {
         groupId,
         text: text.trim(),
-        replyTo
+        replyTo,
+        optimisticId
       });
 
       // 2. Resolve Optimistic Message with real ID

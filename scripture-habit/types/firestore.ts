@@ -133,7 +133,7 @@ export interface MessageDocument {
     reactionPreviews?: Record<string, any[]>;
     translations?: Record<string, string>;
     messageData?: Record<string, string | number>; // Dynamic metadata for system messages
-
+    optimisticId?: string;
 }
 
 

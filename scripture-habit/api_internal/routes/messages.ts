@@ -94,7 +94,7 @@ router.post('/post-message', authenticate, verifyAppCheck, async (req: Authentic
     const validation = postMessageSchema.safeParse(req.body);
     if (!validation.success) return res.status(400).json({ error: 'Invalid input' });
 
-    const { groupId, text, replyTo } = validation.data;
+    const { groupId, text, replyTo, optimisticId } = validation.data;
     const uid = req.user!.uid;
 
     try {
@@ -117,7 +117,8 @@ router.post('/post-message', authenticate, verifyAppCheck, async (req: Authentic
                 createdAt: admin.firestore.FieldValue.serverTimestamp(),
                 isNote: false,
                 isEntry: false,
-                ...(replyTo ? { replyTo } : {})
+                ...(replyTo ? { replyTo } : {}),
+                ...(optimisticId ? { optimisticId } : {})
             };
 
             transaction.set(msgRef, msgData);

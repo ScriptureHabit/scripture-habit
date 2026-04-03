@@ -127,7 +127,8 @@ export const postMessageSchema = z.object({
         senderNickname: z.string(),
         text: z.string(),
         isNote: z.boolean().optional()
-    }).optional().nullable()
+    }).optional().nullable(),
+    optimisticId: z.string().optional()
 });
 
 export const sendCheerSchema = z.object({
