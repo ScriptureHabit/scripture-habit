@@ -17,7 +17,7 @@ import InviteModal from './Modals/InviteModal';
 import './GroupChatModals.css';
 
 const GroupChatModals: FC = () => {
-    const { userData, groupData, unityPercentage, language, membersList } = useChatData();
+    const { userData, groupData, unityPercentage, language, membersList, membersMap } = useChatData();
     const { 
         t, handleLeaveGroup, handleDeleteGroup, handleUpdateGroupName, handleConfirmDeleteMessage,
         handleSaveEdit, handleCancelEdit, handleUserProfileClick, handleSendCheer, handleCheerClick,
@@ -125,6 +125,7 @@ const GroupChatModals: FC = () => {
                 showMembersModal={activeModal === 'members'}
                 setShowMembersModal={(show) => setActiveModal(show ? 'members' : null)}
                 membersList={membersList}
+                membersMap={membersMap}
                 membersLoading={false}
                 setSelectedMember={setSelectedMember}
             />

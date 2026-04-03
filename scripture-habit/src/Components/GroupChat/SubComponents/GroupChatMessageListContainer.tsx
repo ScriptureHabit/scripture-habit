@@ -18,6 +18,7 @@ const GroupChatMessageListContainer: FC = () => {
   const { isRecapAvailable } = useChatUI();
 
   const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const [isVisible, setIsVisible] = useState(false);
   const scrollAtBottomRef = useRef(true);
 
   // Keep track if user was at bottom before messages update
@@ -37,6 +38,10 @@ const GroupChatMessageListContainer: FC = () => {
     if (isInitialLoad && messages.length > 0) {
       container.scrollTop = container.scrollHeight;
       setIsInitialLoad(false);
+      // Give the browser a frame to paint the scroll position before showing
+      requestAnimationFrame(() => {
+        setIsVisible(true);
+      });
     } else if (scrollAtBottomRef.current) {
       container.scrollTop = container.scrollHeight;
     }
@@ -63,6 +68,11 @@ const GroupChatMessageListContainer: FC = () => {
       <div 
         className="message-list-container" 
         ref={containerRef}
+        style={{ 
+          opacity: isVisible ? 1 : 0,
+          visibility: isVisible ? 'visible' : 'hidden',
+          transition: 'opacity 0.2s ease-in-out'
+        }}
       >
         {isLoadingOlder && (
           <div className="loading-older">

@@ -10,6 +10,58 @@ const router = express.Router();
 
 import { NoteService } from '../services/note-service.js';
 
+// Simple in-memory cache for bundles to prevent redundant Firestore reads
+const bundleCache = new Map<string, { data: Buffer; expiresAt: number }>();
+const BUNDLE_TTL_MS = 60 * 1000; // 1 minute
+
+/**
+ * Get Firestore Bundle for group messages
+ * This allows the client to load the last 50 messages in 1 Read instead of 50.
+ */
+router.get('/bundle/:groupId', authenticate, verifyAppCheck, async (req: AuthenticatedRequest, res: Response, next) => {
+    const groupId = req.params.groupId as string;
+    const uid = req.user!.uid;
+
+    try {
+        // 1. Check permissions first
+        const groupRef = db.collection('groups').doc(groupId);
+        const gSnap = await groupRef.get();
+        if (!gSnap.exists) return res.status(404).json({ error: 'Group not found' });
+        
+        const gData = gSnap.data()!;
+        if (!(gData.members || []).includes(uid)) return res.status(403).json({ error: 'Forbidden' });
+
+        // 2. Check cache
+        const now = Date.now();
+        const cached = bundleCache.get(groupId);
+        if (cached && cached.expiresAt > now) {
+            console.log(`[Bundle] Serving cached bundle for ${groupId}`);
+            res.setHeader('Content-Type', 'application/octet-stream');
+            return res.send(cached.data);
+        }
+
+        // 3. Generate Bundle
+        console.log(`[Bundle] Generating new bundle for ${groupId}`);
+        const messagesRef = groupRef.collection('messages');
+        const q = messagesRef.orderBy('createdAt', 'desc').limit(50);
+        const querySnap = await q.get();
+
+        // Create the bundle
+        const bundle = db.bundle(`group-messages-${groupId}`);
+        const bundleBuffer = bundle
+            .add(`latest-messages-${groupId}`, querySnap)
+            .build();
+
+        // 4. Cache and Send
+        bundleCache.set(groupId, { data: bundleBuffer, expiresAt: now + BUNDLE_TTL_MS });
+        res.setHeader('Content-Type', 'application/octet-stream');
+        res.send(bundleBuffer);
+
+    } catch (error) {
+        next(error);
+    }
+});
+
 // Post Note
 router.post(['/post-note', '/post-note/'], authenticate, requireEmailVerified, verifyAppCheck, async (req: AuthenticatedRequest, res: Response, next) => {
     const validation = postNoteSchema.safeParse(req.body);

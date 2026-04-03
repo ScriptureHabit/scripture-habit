@@ -2,7 +2,7 @@ import express, { Request, Response } from 'express';
 import { admin, db } from '../lib/firebase-admin.js';
 import { verifyAppCheck, authenticate, requireEmailVerified, AuthenticatedRequest } from '../lib/middleware.js';
 import { joinGroupSchema, updateKickThresholdSchema, leaveGroupSchema, deleteGroupSchema, updateReadStatusSchema, announceUnitySchema, updateGroupSchema, regenerateInviteCodeSchema } from '../lib/schemas.js';
-import { GroupDocument, UserDocument, MemberPreview as PreviewItem } from '../../types/firestore.js';
+import { GroupDocument, UserDocument, MemberPreview as PreviewItem, GroupMemberDocument } from '../../types/firestore.js';
 
 const router = express.Router();
 
@@ -86,10 +86,21 @@ router.post('/join-group', authenticate, requireEmailVerified, verifyAppCheck, a
             transaction.update(groupDoc.ref, {
                 members: admin.firestore.FieldValue.arrayUnion(uid),
                 membersCount: admin.firestore.FieldValue.increment(1),
-                memberPreviews: updatedPreviews,
-                [`memberLastActive.${uid}`]: admin.firestore.FieldValue.serverTimestamp(),
-                [`memberKickThresholds.${uid}`]: userData.kickThreshold || 3
+                memberPreviews: updatedPreviews
             });
+
+            // New: Per-user member document in subcollection
+            const memberRef = groupDoc.ref.collection('members').doc(uid);
+            transaction.set(memberRef, {
+                uid,
+                nickname: userData.nickname || 'Member',
+                photoURL: userData.photoURL || '',
+                joinedAt: admin.firestore.FieldValue.serverTimestamp(),
+                lastActiveAt: admin.firestore.FieldValue.serverTimestamp(),
+                kickThreshold: userData.kickThreshold || 3,
+                lastReadAt: admin.firestore.FieldValue.serverTimestamp(),
+                readMessageCount: 0
+            } as unknown as GroupMemberDocument);
 
             transaction.update(userRef, {
                 groupIds: admin.firestore.FieldValue.arrayUnion(gid),
@@ -157,10 +168,7 @@ router.post('/leave-group', authenticate, verifyAppCheck, async (req: Authentica
                         ownerUserId: updatedMembers[0],
                         members: updatedMembers,
                         membersCount: admin.firestore.FieldValue.increment(-1),
-                        memberPreviews: updatedPreviews,
-                        [`memberLastActive.${uid}`]: admin.firestore.FieldValue.delete(),
-                        [`memberLastReadAt.${uid}`]: admin.firestore.FieldValue.delete(),
-                        [`memberKickThresholds.${uid}`]: admin.firestore.FieldValue.delete()
+                        memberPreviews: updatedPreviews
                     });
                 } else {
                     transaction.delete(groupRef);
@@ -169,12 +177,12 @@ router.post('/leave-group', authenticate, verifyAppCheck, async (req: Authentica
                 transaction.update(groupRef, {
                     members: updatedMembers,
                     membersCount: admin.firestore.FieldValue.increment(-1),
-                    memberPreviews: updatedPreviews,
-                    [`memberLastActive.${uid}`]: admin.firestore.FieldValue.delete(),
-                    [`memberLastReadAt.${uid}`]: admin.firestore.FieldValue.delete(),
-                    [`memberKickThresholds.${uid}`]: admin.firestore.FieldValue.delete()
+                    memberPreviews: updatedPreviews
                 });
             }
+
+            // Always delete the member subcollection document
+            transaction.delete(groupRef.collection('members').doc(uid));
 
             if (updatedMembers.length > 0) {
                 const msgRef = groupRef.collection('messages').doc();
@@ -236,9 +244,14 @@ router.post('/update-read-status', authenticate, verifyAppCheck, async (req: Aut
             readMessageCount,
             lastReadAt: admin.firestore.FieldValue.serverTimestamp()
         }, { merge: true });
-        batch.update(groupRef, {
-            [`memberLastReadAt.${uid}`]: admin.firestore.FieldValue.serverTimestamp()
-        });
+
+        // IMPORTANT: Stop updating the main 'groups' document map to avoid hotspots.
+        // Instead, update the member's private document in the 'members' subcollection.
+        batch.set(groupRef.collection('members').doc(uid), {
+            lastReadAt: admin.firestore.FieldValue.serverTimestamp(),
+            readMessageCount
+        }, { merge: true });
+
         await batch.commit();
 
         res.json({ success: true });
@@ -346,9 +359,10 @@ router.post('/update-kick-threshold', authenticate, verifyAppCheck, async (req: 
             const batch = db.batch();
             groupIds.forEach((gid: string) => {
                 const gRef = db.collection('groups').doc(gid);
-                batch.update(gRef, {
-                    [`memberKickThresholds.${uid}`]: threshold
-                });
+                // New: Only store in the member subcollection document
+                batch.set(gRef.collection('members').doc(uid), {
+                    kickThreshold: threshold
+                }, { merge: true });
             });
             await batch.commit();
         }

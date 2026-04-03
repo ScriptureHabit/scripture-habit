@@ -18,14 +18,16 @@ export const useDashboardWarnings = (userData: UserData | null, userGroups: Grou
         const now = new Date();
 
         userGroups.forEach(group => {
-            const memberLastActive = group.memberLastActive || {};
-            const lastActiveTimestamp = memberLastActive[userData.uid];
+            // Prioritize the new scalable myMemberStatus from the subcollection
+            const myStatus = group.myMemberStatus;
+            const lastActiveTimestamp = myStatus?.lastActiveAt || (group.memberLastActive && group.memberLastActive[userData.uid]);
 
             if (lastActiveTimestamp) {
                 const lastActiveDate = parseTimestampToDate(lastActiveTimestamp);
                 const diffMs = now.getTime() - lastActiveDate.getTime();
                 
-                const threshold = (group.memberKickThresholds && group.memberKickThresholds[userData.uid]) || userData.kickThreshold || 3;
+                // Use the threshold from myMemberStatus if available
+                const threshold = myStatus?.kickThreshold || (group.memberKickThresholds && group.memberKickThresholds[userData.uid]) || userData.kickThreshold || 3;
                 const thresholdMs = threshold * 24 * 60 * 60 * 1000;
                 
                 const remainingMs = thresholdMs - diffMs;

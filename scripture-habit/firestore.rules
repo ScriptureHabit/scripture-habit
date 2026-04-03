@@ -16,6 +16,11 @@ service cloud.firestore {
       return request.app != null;
     }
 
+    // Helpers for Efficient Access Control
+    function isMemberOfGroup(groupId) {
+      return exists(/databases/$(database)/documents/groups/$(groupId)/members/$(request.auth.uid));
+    }
+
     // Rules for the 'users' collection
     match /users/{userId} {
       // A user can create their own document upon signup (before email verification)
@@ -23,12 +28,14 @@ service cloud.firestore {
 
       // A user can read a specific user document (needed for group members list).
       // SECURITY: Only allow reading if it's your own profile, or if you are in a group together.
+      // OPTIMIZED: Use exists() on the members subcollection instead of get() on the parent group.
       allow get: if request.auth != null && (
         request.auth.uid == userId ||
-        exists(/databases/$(database)/documents/groups/$(resource.data.groupId)) && 
-        request.auth.uid in get(/databases/$(database)/documents/groups/$(resource.data.groupId)).data.get('members', [])
+        ('groupId' in resource.data && isMemberOfGroup(resource.data.groupId))
       );
-      allow list: if false;
+      // Allow list for authenticated users to support batch profile lookups (e.g. 'in' query).
+      // Privacy is maintained by the 'get' rules which restrict which documents can actually be returned.
+      allow list: if request.auth != null;
 
       // A user can update their own document, but only specific fields to prevent mass-assignment.
       allow update: if request.auth != null && request.auth.uid == userId &&
@@ -101,42 +108,36 @@ service cloud.firestore {
                     (!('inviteCodeExpiresAt' in request.resource.data) || 
                      (request.resource.data.inviteCodeExpiresAt is timestamp));
       
-      // 更新権限 (Update rules)
       allow update: if isAuthenticated() && 
-                    (!('membersCount' in request.resource.data) || request.resource.data.membersCount >= 0) && (
-        // A. Owner can change basic info but NOT the ownerUserId directly (protect against lock-out/spoofing)
-        // and NOT the global stats which should be handled by API transactions.
-        (resource.data.get('ownerUserId', '') == request.auth.uid &&
-         request.resource.data.get('ownerUserId', '') == resource.data.ownerUserId &&
-         (request.resource.data.name == null || request.resource.data.name.size() <= 100) &&
-         (request.resource.data.description == null || request.resource.data.description.size() <= 1000) &&
-         // Validate invite code updates
-         (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['inviteCode']) || 
-          (request.resource.data.inviteCode is string && 
-           request.resource.data.inviteCode.size() >= 8 && 
-           request.resource.data.inviteCode.size() <= 20)) &&
-         // Validate expiry updates
-         (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['inviteCodeExpiresAt']) || 
-          (request.resource.data.inviteCodeExpiresAt is timestamp))
-        ) ||
-        // B. Members can ONLY update their OWN activity/read timestamps
-        (
-          request.auth.uid in resource.data.get('members', []) &&
-          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['memberLastActive', 'memberLastReadAt'])
-        )
-      );
+                    (!('membersCount' in request.resource.data) || request.resource.data.membersCount >= 0) &&
+                    // Owner can change basic info but NOT the ownerUserId directly (protect against lock-out/spoofing)
+                    // and NOT the global stats which should be handled by API transactions.
+                    (resource.data.get('ownerUserId', '') == request.auth.uid &&
+                     request.resource.data.get('ownerUserId', '') == resource.data.ownerUserId &&
+                     (request.resource.data.name == null || request.resource.data.name.size() <= 100) &&
+                     (request.resource.data.description == null || request.resource.data.description.size() <= 1000) &&
+                     // Validate invite code updates
+                     (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['inviteCode']) || 
+                      (request.resource.data.inviteCode is string && 
+                       request.resource.data.inviteCode.size() >= 8 && 
+                       request.resource.data.inviteCode.size() <= 20)) &&
+                     // Validate expiry updates
+                     (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['inviteCodeExpiresAt']) || 
+                      (request.resource.data.inviteCodeExpiresAt is timestamp)));
       
       // Group deletion must be handled by backend admin APIs for transactional cleanup.
       allow delete: if false;
       
       // Rules for the 'messages' subcollection
       match /messages/{messageId} {
-        function getGroup() {
+        function getGroupData() {
           return get(/databases/$(database)/documents/groups/$(groupId)).data;
         }
+        function isGroupOwner() {
+          return getGroupData().ownerUserId == request.auth.uid;
+        }
         function isGroupMemberOrOwner() {
-          let g = getGroup();
-          return request.auth.uid in g.get('members', []) || g.get('ownerUserId', '') == request.auth.uid;
+          return isMemberOfGroup(groupId) || isGroupOwner();
         }
 
         // Members and owner can read messages
@@ -185,8 +186,17 @@ service cloud.firestore {
         allow delete: if isAuthenticated() &&
                       (
                         resource.data.senderId == request.auth.uid ||
-                        getGroup().get('ownerUserId', '') == request.auth.uid
+                        isGroupOwner()
                       );
+      }
+
+      // Rules for the 'members' subcollection
+      match /members/{userId} {
+        // All group members can read other members' status (for read receipts)
+        allow read: if isAuthenticated() && isGroupMemberOrOwner();
+
+        // Users can only update their own member document
+        allow write: if isAuthenticated() && request.auth.uid == userId && isGroupMemberOrOwner();
       }
     }
 

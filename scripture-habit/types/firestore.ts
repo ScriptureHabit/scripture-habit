@@ -6,7 +6,7 @@
  */
 
 // Basic nested types
-export type FirestoreTimestamp = { seconds: number; nanoseconds: number } | { toDate: () => Date } | Date | number | string;
+export type FirestoreTimestamp = { seconds: number; nanoseconds: number } | { toDate: () => Date } | Date | number | string | any;
 
 export interface MemberPreview {
     uid: string;
@@ -54,6 +54,20 @@ export interface GroupDocument {
     // Localization
     timeZone?: string;
     translations?: Record<string, { name: string; description?: string }>;
+}
+
+/**
+ * Group Member Document Schema (inside /groups/{groupId}/members)
+ */
+export interface GroupMemberDocument {
+    uid: string;
+    nickname?: string;
+    photoURL?: string;
+    lastReadAt?: FirestoreTimestamp;
+    lastActiveAt?: FirestoreTimestamp;
+    readMessageCount?: number;
+    joinedAt?: FirestoreTimestamp;
+    kickThreshold?: number;
 }
 
 /**

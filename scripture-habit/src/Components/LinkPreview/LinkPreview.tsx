@@ -1,6 +1,6 @@
 import { useState, useEffect, FC } from 'react';
 import './LinkPreview.css';
-import { Capacitor } from '@capacitor/core';
+import apiClient from '../../Utils/apiClient';
 
 interface PreviewData {
     title?: string;
@@ -22,29 +22,16 @@ const LinkPreview: FC<LinkPreviewProps> = ({ url, isSent, language }) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
 
-    // TODO: Replace with your actual production URL
-    const API_BASE_URL = 'https://scripturehabit.app';
-
     useEffect(() => {
         const fetchPreview = async () => {
             try {
                 setLoading(true);
                 setError(false);
 
-                const baseUrl = Capacitor.isNativePlatform() ? API_BASE_URL : '';
                 const langParam = language ? `&lang=${language}` : '';
-                const response = await fetch(`${baseUrl}/api/url-preview?url=${encodeURIComponent(url)}${langParam}`, {
-                    cache: 'no-store'
-                });
+                const response = await apiClient.get<PreviewData>(`/api/url-preview?url=${encodeURIComponent(url)}${langParam}`);
 
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    console.error('Link preview API error response:', errorText);
-                    throw new Error(`Failed to fetch preview: ${response.status}`);
-                }
-
-                const data = await response.json();
-                setPreview(data);
+                setPreview(response.data);
             } catch (err) {
                 console.error('Error fetching link preview for URL:', url, err);
                 setError(true);

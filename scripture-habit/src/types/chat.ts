@@ -1,5 +1,5 @@
 import { Timestamp } from 'firebase/firestore';
-import { MessageDocument, GroupDocument as SharedGroupDocument, UserDocument as SharedUserDocument } from '../../types/firestore';
+import { MessageDocument, GroupDocument as SharedGroupDocument, UserDocument as SharedUserDocument, GroupMemberDocument } from '../../types/firestore';
 
 /**
  * Common Firebase Timestamp type to handle both Firestore Timestamp
@@ -80,6 +80,7 @@ export interface Group extends Omit<SharedGroupDocument, 'id' | 'inviteCodeExpir
   memberJoinedAt?: Record<string, FirebaseTimestamp>;
   memberLastActive?: Record<string, FirebaseTimestamp>;
   memberLastReadAt?: Record<string, FirebaseTimestamp>;
+  myMemberStatus?: GroupMemberDocument;
 
   // Client-side UI state
   unreadCount?: number;
@@ -99,10 +100,13 @@ export interface GroupData extends Group {
 
 export interface UserProfileBrief {
   id: string;
+  uid?: string;
   nickname?: string;
   photoURL?: string;
   profilePicUrl?: string; // Potential legacy field
   lastPostDate?: FirebaseTimestamp;
+  lastActiveAt?: FirebaseTimestamp;
+  lastReadAt?: FirebaseTimestamp;
 }
 
 export interface MembersMap {

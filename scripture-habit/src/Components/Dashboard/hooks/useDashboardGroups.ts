@@ -3,6 +3,7 @@ import { doc, onSnapshot, collection, FirestoreError } from 'firebase/firestore'
 import { db } from '../../../firebase';
 import { UserData } from '../../../types/user';
 import { Group } from '../../../types/chat';
+import { groupMemberConverter } from '../../../Utils/firestoreConverters';
 
 export const useDashboardGroups = (userData: UserData | null, initialGroupId: string | null) => {
     const [userGroups, setUserGroups] = useState<Group[]>([]);
@@ -60,6 +61,28 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
                     }
                 });
                 unsubscribers.push(unsub);
+
+                // Listen to my member doc in this group (for scalable activity/threshold status)
+                const memberRef = doc(db, 'groups', gid, 'members', userData.uid).withConverter(groupMemberConverter);
+                const unsubMember = onSnapshot(memberRef, (memberSnap) => {
+                    if (memberSnap.exists()) {
+                        const mData = memberSnap.data();
+                        groupsData[gid] = { 
+                            ...groupsData[gid], 
+                            // Prioritize the scalable subcollection source
+                            myMemberStatus: mData 
+                        } as Group;
+                        setRawUserGroups(prev => {
+                            return groupIds
+                                .map(id => groupsData[id] || prev.find(g => g.id === id))
+                                .filter(Boolean) as Group[];
+                        });
+                    }
+                }, (err) => {
+                    // It's okay if this doc doesn't exist yet for legacy group members
+                    if (err.code !== 'permission-denied') console.log(`Member fetch error ${gid}:`, err);
+                });
+                unsubscribers.push(unsubMember);
             });
 
             return () => {

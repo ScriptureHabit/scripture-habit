@@ -1,4 +1,4 @@
-import { FC, MouseEvent, useEffect, useRef, memo } from 'react';
+import { FC, MouseEvent, useEffect, useRef, memo, useMemo } from 'react';
 import NoteDisplay from '../../NoteDisplay/NoteDisplay';
 import { Message, Group, UserProfileBrief, MembersMap } from '../../../types/chat';
 import { UserData } from '../../../types/user';
@@ -68,6 +68,24 @@ const MessageItem: FC<MessageItemProps> = memo(({
     return () => observer.disconnect();
   }, [msg.id, isMe, msg.senderId, msg.isSystemMessage, handleLazyTranslate, msg]);
 
+  const readCount = useMemo(() => {
+    if (!isMe || !msg.createdAt || !groupData) return 0;
+    const msgTime = parseTimestampToMillis(msg.createdAt);
+    const legacyLastReadAt = groupData?.memberLastReadAt;
+    const allMemberUids = groupData?.members || [];
+    let count = 0;
+
+    allMemberUids.forEach(uid => {
+      if (uid === msg.senderId) return;
+      const memberStatus = membersMap?.[uid];
+      const readAt = memberStatus?.lastReadAt || legacyLastReadAt?.[uid];
+      if (!readAt) return;
+      const readTime = parseTimestampToMillis(readAt);
+      if (readTime >= msgTime) count++;
+    });
+    return count;
+  }, [isMe, msg.createdAt, msg.senderId, groupData?.members, groupData?.memberLastReadAt, membersMap]);
+
   if (msg.senderId === 'system' || msg.isSystemMessage) {
     const kickThreshold = userData && 'kickThreshold' in userData ? userData.kickThreshold : undefined;
     return <SystemMessage msg={msg} t={t} kickThreshold={kickThreshold as number | undefined} />;
@@ -125,27 +143,15 @@ const MessageItem: FC<MessageItemProps> = memo(({
             className="sender-name"
             onClick={(e) => { e.stopPropagation(); if (msg.senderId) handleUserProfileClick(msg.senderId); }}
           >
-            {msg.senderNickname}{msg.isEdited && <span className="edited-indicator"> ({t('groupChat.messageEdited')})</span>}
+            {membersMap?.[msg.senderId || '']?.nickname || msg.senderNickname}{msg.isEdited && <span className="edited-indicator"> ({t('groupChat.messageEdited')})</span>}
           </span>
         )}
         <div className={`message-bubble-row ${isMe ? 'sent' : 'received'}`}>
           {isMe && (
             <div className="message-status-column">
-              {(() => {
-                const memberLastReadAt = groupData?.memberLastReadAt;
-                if (!memberLastReadAt || !msg.createdAt) return null;
-                const msgTime = parseTimestampToMillis(msg.createdAt);
-                let readCount = 0;
-                Object.keys(memberLastReadAt).forEach(uid => {
-                  if (uid === msg.senderId) return;
-                  const readAt = memberLastReadAt[uid];
-                  if (!readAt) return;
-                  const readTime = parseTimestampToMillis(readAt);
-                  if (readTime >= msgTime) readCount++;
-                });
-                if (readCount === 0) return null;
-                return <span className="read-status">{t('groupChat.readStatus', { count: readCount })}</span>;
-              })()}
+              {readCount > 0 && (
+                <span className="read-status">{t('groupChat.readStatus', { count: readCount })}</span>
+              )}
               <span className="message-time">
                 {msg.createdAt ? new Date(parseTimestampToMillis(msg.createdAt)).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
               </span>

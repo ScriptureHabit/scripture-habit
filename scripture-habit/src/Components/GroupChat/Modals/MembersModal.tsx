@@ -11,6 +11,7 @@ interface MembersModalProps {
     showMembersModal: boolean;
     setShowMembersModal: (show: boolean) => void;
     membersList: UserProfileBrief[];
+    membersMap?: Record<string, UserProfileBrief>;
     membersLoading: boolean;
     setSelectedMember: (member: UserProfileBrief | null) => void;
 }
@@ -22,6 +23,7 @@ const MembersModal: FC<MembersModalProps> = ({
     showMembersModal,
     setShowMembersModal,
     membersList,
+    membersMap,
     membersLoading,
     setSelectedMember,
 }) => {
@@ -32,7 +34,13 @@ const MembersModal: FC<MembersModalProps> = ({
             <div className="leave-modal-content members-modal" onClick={(e) => e.stopPropagation()} style={{ maxHeight: '80vh', display: 'flex', flexDirection: 'column' }}>
                 <div className="modal-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
                     <h3>{t('groupChat.groupMembers')} ({membersList.length})</h3>
-                    <button className="close-menu-btn" onClick={() => setShowMembersModal(false)} style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}>
+                    <button 
+                        className="close-menu-btn" 
+                        onClick={() => setShowMembersModal(false)} 
+                        style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}
+                        aria-label={t('sidebar.close')}
+                        title={t('sidebar.close')}
+                    >
                         <UilTimes size="24" />
                     </button>
                 </div>
@@ -67,7 +75,8 @@ const MembersModal: FC<MembersModalProps> = ({
                                     </span>
                                     <span style={{ fontSize: '0.75rem', color: 'var(--gray)' }}>
                                         {(() => {
-                                            const lastActive = (groupData?.memberLastActive && member.id && groupData.memberLastActive[member.id]) || member.lastPostDate;
+                                            const memberStatus = membersMap?.[member.id] || member;
+                                            const lastActive = memberStatus.lastActiveAt || (groupData?.memberLastActive && member.id && groupData.memberLastActive[member.id]) || member.lastPostDate;
                                             if (!lastActive) return t('groupChat.noActivity') || "No recent activity";
 
                                             const dateObj = parseTimestampToDate(lastActive);

@@ -161,6 +161,7 @@ export class NoteService {
                     text: messageText,
                     senderId: uid,
                     senderNickname: userNickname,
+                    senderPhotoURL: userData.photoURL || null,
                     createdAt: noteTimestamp,
                     isNote: true,
                     originalNoteId: noteRef.id,
@@ -183,8 +184,7 @@ export class NoteService {
                     lastMessageAt: noteTimestamp,
                     lastNoteAt: noteTimestamp,
                     lastNoteByNickname: userNickname,
-                    lastNoteByUid: uid,
-                    [`memberLastActive.${uid}`]: admin.firestore.FieldValue.serverTimestamp()
+                    lastNoteByUid: uid
                 };
 
                 if (gData.dailyActivity?.date !== groupToday) {
@@ -193,9 +193,20 @@ export class NoteService {
                     updatePayload['dailyActivity.activeMembers'] = admin.firestore.FieldValue.arrayUnion(uid);
                 }
                 transaction.update(groupRefs[idx], updatePayload);
+
+                // Update member subcollection for activity tracking (Scalable)
+                const memberRef = groupRefs[idx].collection('members').doc(uid);
+                transaction.set(memberRef, {
+                    lastActiveAt: admin.firestore.FieldValue.serverTimestamp(),
+                    lastReadAt: admin.firestore.FieldValue.serverTimestamp()
+                }, { merge: true });
                 
                 const userGS = userRef.collection('groupStates').doc(gid);
-                transaction.set(userGS, { readMessageCount: admin.firestore.FieldValue.increment(1), lastReadAt: admin.firestore.FieldValue.serverTimestamp() }, { merge: true });
+                transaction.set(userGS, { 
+                    readMessageCount: admin.firestore.FieldValue.increment(1), 
+                    lastReadAt: admin.firestore.FieldValue.serverTimestamp(),
+                    lastActiveAt: admin.firestore.FieldValue.serverTimestamp()
+                }, { merge: true });
             });
 
             // 4. Record personal note

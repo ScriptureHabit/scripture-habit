@@ -48,6 +48,7 @@ export const userConverter = createConverter<UserData>('uid');
 export const groupConverter = createConverter<Group>('id');
 export const messageConverter = createConverter<Message>('id');
 export const noteConverter = createConverter<Note>('id');
+export const groupMemberConverter = createConverter<import('../../types/firestore').GroupMemberDocument>('uid');
 
 /**
  * Helper to add a converter to a collection reference

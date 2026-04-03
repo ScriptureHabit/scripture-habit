@@ -1,14 +1,14 @@
 import { useReducer, useEffect, useRef, useCallback } from 'react';
-import { collection, query, orderBy, onSnapshot, doc, getDoc, getDocs, limit, startAfter, startAt } from 'firebase/firestore';
-import apiClient from '../../../Utils/apiClient';
+import { collection, query, orderBy, onSnapshot, doc, getDoc, getDocs, limit, startAfter, where, documentId, loadBundle } from 'firebase/firestore';
 import confetti from 'canvas-confetti';
 import * as Sentry from "@sentry/react";
 import { Message, GroupData, MembersMap, UserProfileBrief } from '../../../types/chat';
 import { db } from '../../../firebase';
 import { FirebaseError } from 'firebase/app';
 import { UserData } from '../../../types/user';
-import { groupConverter, messageConverter, userConverter } from '../../../Utils/firestoreConverters';
+import { groupConverter, messageConverter, userConverter, groupMemberConverter } from '../../../Utils/firestoreConverters';
 import { parseTimestampToMillis } from '../../../Utils/timeUtils';
+import apiClient from '../../../Utils/apiClient';
 
 // 1. Define Discriminated Union for State
 export type ChatStatus = 'loading' | 'active' | 'error' | 'notFound';
@@ -76,7 +76,13 @@ const chatReducer = (state: ChatState, action: ChatAction): ChatState => {
     case 'ADD_NEW_MESSAGES': {
       const cleanIncoming = action.newMessages.filter(n => !state.messages.some(p => p.id === n.id));
       if (cleanIncoming.length === 0) return state;
-      return { ...state, messages: [...state.messages, ...cleanIncoming] };
+      // Ensure we sort by date after adding (to handle potential out-of-order listener events)
+      const newMessages = [...state.messages, ...cleanIncoming].sort((a, b) => {
+        const timeA = parseTimestampToMillis(a.createdAt);
+        const timeB = parseTimestampToMillis(b.createdAt);
+        return timeA - timeB;
+      });
+      return { ...state, messages: newMessages };
     }
     case 'SET_LOADING_OLDER':
       return { ...state, isLoadingOlder: action.isLoading };
@@ -128,20 +134,34 @@ export const useGroupMessages = (groupId: string | null, userData: UserData | nu
     membersMapRef.current = state.membersMap;
   }, [state.userReadCount, state.membersMap]);
 
-  // Helper for read status
+  // Helper for read status (Optimized for performance: direct Firestore write instead of API call)
   const updateReadStatus = useCallback(async (gid: string, totalCount: number) => {
     if (!userData?.uid || !gid || totalCount <= 0) return;
     try {
-      await apiClient.post('/api/update-read-status', { 
-        groupId: gid, 
-        readMessageCount: totalCount 
-      });
+      const { writeBatch, doc, serverTimestamp } = await import('firebase/firestore');
+      const batch = writeBatch(db);
+
+      // 1. Update personal read count for this group
+      const memberRef = doc(db, 'groups', gid, 'members', userData.uid);
+      batch.set(memberRef, {
+        lastReadAt: serverTimestamp(),
+        readMessageCount: totalCount
+      }, { merge: true });
+
+      // 2. Update general user state for group unread counts (Dashboard)
+      const groupStateRef = doc(db, 'users', userData.uid, 'groupStates', gid);
+      batch.set(groupStateRef, {
+        readMessageCount: totalCount,
+        lastReadAt: serverTimestamp()
+      }, { merge: true });
+
+      await batch.commit();
 
       dispatch({ type: 'SET_READ_COUNT', count: totalCount });
     } catch (err) {
-      console.error("Failed to update read status:", err);
+      console.error("Failed to update read status directly:", err);
     }
-  }, [userData?.uid]);
+  }, [userData?.uid, dispatch]);
 
   // Robust Read Synchronization Effect
   useEffect(() => {
@@ -161,6 +181,7 @@ export const useGroupMessages = (groupId: string | null, userData: UserData | nu
     let isCancelled = false;
     let unsubscribeGroup = () => { };
     let unsubscribeNewMessages = () => { };
+    let unsubscribeMembers = () => { };
 
     const groupRef = doc(db, 'groups', groupId).withConverter(groupConverter);
 
@@ -180,6 +201,29 @@ export const useGroupMessages = (groupId: string | null, userData: UserData | nu
       if (!isQuota) Sentry.captureException(err);
     });
 
+    // 1.5 Fetch Members once (One-time fetch to avoid N^2 snapshot explosion)
+    // We fetch everyone once to get their names/avatars/statuses.
+    // Real-time read receipts for everyone as they happen is omitted to save significant costs.
+    const fetchMembers = async () => {
+      try {
+        const membersRef = collection(db, 'groups', groupId, 'members').withConverter(groupMemberConverter);
+        const snapshot = await getDocs(membersRef);
+        const initialMembers: MembersMap = {};
+        snapshot.forEach((doc) => {
+          const data = doc.data();
+          initialMembers[doc.id] = { ...data, id: data.uid } as UserProfileBrief;
+        });
+        if (Object.keys(initialMembers).length > 0) {
+          dispatch({ type: 'UPDATE_MEMBERS', newMembers: initialMembers });
+        }
+      } catch (err) {
+        if (!isCancelled && (err as any).code !== 'permission-denied') {
+          console.error("[useGroupMessages] Members fetch error:", err);
+        }
+      }
+    };
+    fetchMembers();
+
     // 2. Initial State & Sync Fetch
     const initChain = async () => {
       try {
@@ -188,57 +232,40 @@ export const useGroupMessages = (groupId: string | null, userData: UserData | nu
           const stateSnap = await getDoc(stateRef);
           const initialReadCount = stateSnap.exists() ? (stateSnap.data().readMessageCount || 0) : 0;
 
-          const gSnap = await getDoc(groupRef);
-          let currentGroupData = null;
-          if (gSnap.exists()) {
-            currentGroupData = gSnap.data();
-            if (currentGroupData.members) {
-              // Batch fetch missing members (limit of 30 per 'in' query)
-              const missingUids = currentGroupData.members.filter(uid => !membersMapRef.current[uid]);
-              if (missingUids.length > 0) {
-                const batches = [];
-                for (let i = 0; i < missingUids.length; i += 30) {
-                  batches.push(missingUids.slice(i, i + 30));
-                }
+          const messagesRef = collection(db, 'groups', groupId, 'messages').withConverter(messageConverter);
 
-                const newMembers: MembersMap = {};
-                await Promise.all(batches.map(async (batch) => {
-                  // Fetch each member profile individually to satisfy Firestore 'get' rule,
-                  // as the 'users' collection has 'list: if false'.
-                  const profilePromises = batch.map(uid => 
-                    getDoc(doc(db, 'users', uid).withConverter(userConverter))
-                  );
-                  const profileSnaps = await Promise.all(profilePromises);
-                  
-                  profileSnaps.forEach(s => {
-                    if (s.exists()) {
-                      const data = s.data();
-                      newMembers[s.id] = { id: s.id, ...data } as UserProfileBrief;
-                    }
-                  });
-                }));
-
-                dispatch({ type: 'UPDATE_MEMBERS', newMembers });
-              }
+          // 2.5 Hydrate Firestore cache with a Bundle
+          // This allows us to load the latest 50 messages in 1 Read instead of 50.
+          try {
+            console.log(`[useGroupMessages] Fetching bundle for ${groupId}`);
+            const bundleResponse = await apiClient.get(`/api/bundle/${groupId}`, { 
+              responseType: 'arraybuffer',
+              timeout: 5000 
+            });
+            if (bundleResponse.data) {
+              await loadBundle(db, bundleResponse.data);
+              console.log("[useGroupMessages] Bundle loaded successfully");
             }
+          } catch (bundleErr) {
+            // Bundle loading is an optimization - if it fails, onSnapshot will fall back to server fetch.
+            console.warn("[useGroupMessages] Bundle hydration skipped:", bundleErr);
           }
 
-          // 3. Init Messages
-          const messagesRef = collection(db, 'groups', groupId, 'messages').withConverter(messageConverter);
-          let initialMsgs: Message[] = [];
           if (isCancelled) return;
-          dispatch({ type: 'SET_INITIAL_STATE', messages: initialMsgs, groupData: { ...currentGroupData, _groupId: groupId } as GroupData, readCount: initialReadCount });
+          dispatch({ 
+            type: 'SET_INITIAL_STATE', 
+            messages: [], 
+            groupData: null as unknown as GroupData, 
+            readCount: initialReadCount 
+          });
 
-          // 4. Real-time Message Listener (Dynamic Window)
-          // We listen from the oldest message we have currently loaded to the newest
-          const startListener = (oldest: Message | null) => {
+          // 3. Real-time Message Listener (Fixed Window for Scale)
+          // We only listen to the last 50 messages to keep the listener overhead constant
+          const startListener = () => {
             if (unsubscribeNewMessages) unsubscribeNewMessages();
 
-            let q = query(messagesRef, orderBy('createdAt', 'asc'));
-            if (oldest?.createdAt) {
-              // We use startAt with the oldest message's timestamp to cover the whole range
-              q = query(messagesRef, orderBy('createdAt', 'asc'), startAt(oldest.createdAt));
-            }
+            // Fixed window query - last 50 messages
+            const q = query(messagesRef, orderBy('createdAt', 'desc'), limit(50));
 
             const unsubscribe = onSnapshot(q, (snapshot) => {
               if (isCancelled) return;
@@ -247,7 +274,7 @@ export const useGroupMessages = (groupId: string | null, userData: UserData | nu
               const removedIds: string[] = [];
 
               snapshot.docChanges().forEach((change) => {
-                const data = change.doc.data();
+                const data = change.doc.data() as Message;
                 if (change.type === "added") {
                   // Only add if it's not already in our state (to handle overlap)
                   newIncoming.push(data);
@@ -287,9 +314,9 @@ export const useGroupMessages = (groupId: string | null, userData: UserData | nu
           };
 
           // Initial listener start
-          startListener(initialMsgs.length > 0 ? initialMsgs[0] : null);
+          startListener();
           
-          // Store the listener function in a ref so we can restart it when pagination happens
+          // No need to store in a ref anymore for restarts, but kept for cleanup logic if any
           listenerStarterRef.current = startListener;
         }
 
@@ -315,8 +342,46 @@ export const useGroupMessages = (groupId: string | null, userData: UserData | nu
       isCancelled = true;
       unsubscribeGroup();
       if (unsubscribeNewMessages) unsubscribeNewMessages();
+      unsubscribeMembers();
     };
   }, [groupId, userData?.uid, updateReadStatus, t]);
+
+  // Reactive Profile Fetcher: Whenever groupData or membersMap changes, 
+  // fetch info for any unknown users found in the group members list.
+  useEffect(() => {
+    const members = state.groupData?.members;
+    if (!groupId || !members || state.status === 'loading') return;
+
+    const fetchUnknownProfiles = async () => {
+      const missingUids = members.filter(uid => !state.membersMap[uid]);
+      if (missingUids.length === 0) return;
+
+      const batches = [];
+      for (let i = 0; i < missingUids.length; i += 30) {
+        batches.push(missingUids.slice(i, i + 30));
+      }
+
+      const newMembers: MembersMap = {};
+      try {
+        await Promise.all(batches.map(async (batch) => {
+          const q = query(collection(db, 'users').withConverter(userConverter), where(documentId(), 'in', batch));
+          const snaps = await getDocs(q);
+          snaps.forEach(s => {
+            const data = s.data();
+            newMembers[s.id] = { id: s.id, ...data } as UserProfileBrief;
+          });
+        }));
+
+        if (Object.keys(newMembers).length > 0) {
+          dispatch({ type: 'UPDATE_MEMBERS', newMembers });
+        }
+      } catch (err) {
+        console.error("[useGroupMessages] Reactive profiles fetch error:", err);
+      }
+    };
+
+    fetchUnknownProfiles();
+  }, [groupId, state.groupData?.members, state.status]); // Keep membersMap out of deps to avoid loops, status gate ensures we have initial state.
 
   const listenerStarterRef = useRef<((oldest: Message | null) => void) | null>(null);
 
@@ -340,10 +405,8 @@ export const useGroupMessages = (groupId: string | null, userData: UserData | nu
         const newOlderMsgs = snaps.docs.map(d => d.data()).reverse();
         dispatch({ type: 'ADD_OLDER_MESSAGES', olderMessages: newOlderMsgs, hasMore: true });
         
-        // Restart the listener to include the newly loaded older messages
-        if (listenerStarterRef.current) {
-          listenerStarterRef.current(newOlderMsgs[0]);
-        }
+        // NO RESTART NEEDED: The listener stays on the tail of the conversation.
+        // History is static once loaded via getDocs.
       }
     } catch (e) {
       console.error("Error loading older messages", e);
