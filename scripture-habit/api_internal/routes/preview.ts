@@ -29,21 +29,28 @@ router.get(['/fetch-church-metadata', '/fetch-church-metadata/'], authenticate, 
         try {
             response = await axios.get(targetUrl.toString(), {
                 headers: { 'User-Agent': USER_AGENT },
-                timeout: 10000,
-                maxRedirects: 0,
+                timeout: 5000,
+                maxRedirects: 5,
                 maxContentLength: 512 * 1024
             });
         } catch (axiosError) {
              // Fallback: If requested language fails, try without lang param
              if (lang) {
+                console.warn(`Initial fetch with lang=${lang} failed, trying fallback...`);
                 targetUrl.searchParams.delete('lang');
                 response = await axios.get(targetUrl.toString(), {
                     headers: { 'User-Agent': USER_AGENT },
-                    timeout: 10000
+                    timeout: 5000,
+                    maxRedirects: 5,
+                    maxContentLength: 512 * 1024
                 });
              } else {
                  throw axiosError;
              }
+        }
+
+        if (!response || !response.data) {
+             throw new Error('No response from church server');
         }
 
         const $ = cheerio.load(response.data);
