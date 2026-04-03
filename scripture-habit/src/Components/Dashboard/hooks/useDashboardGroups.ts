@@ -12,19 +12,15 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
     const [loadingGroupStates, setLoadingGroupStates] = useState<boolean>(true);
     const [activeGroupId, setActiveGroupId] = useState<string | null>(initialGroupId);
 
+    const groupIds: string[] = userData?.groupIds || (userData?.groupId ? [userData.groupId] : []);
+    const groupIdsKey = JSON.stringify([...groupIds].sort());
+
     // Fetch user groups details
     useEffect(() => {
-        if (!userData) return;
-
-        const groupIds: string[] = userData.groupIds || (userData.groupId ? [userData.groupId] : []);
-
-        if (groupIds.length === 0) {
+        if (!userData?.uid || groupIds.length === 0) {
             setRawUserGroups([]);
             return;
         }
-
-        // Immediately filter out groups that are no longer in userData.groupIds
-        setRawUserGroups(prev => prev.filter(g => groupIds.includes(g.id)));
 
         // Set active group if not set
         if (!activeGroupId && groupIds.length > 0) {
@@ -32,69 +28,61 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
         }
 
 
-        const fetchGroups = async () => {
-            const unsubscribers: (() => void)[] = [];
-            const groupsData: Record<string, Group> = {};
+        const unsubscribers: (() => void)[] = [];
 
-            groupIds.forEach(gid => {
-                const unsub = onSnapshot(doc(db, 'groups', gid), (docSnap) => {
-                    if (docSnap.exists()) {
-                        groupsData[gid] = { id: gid, ...docSnap.data() } as Group;
-                        setRawUserGroups(prev => {
-                            const newGroups = groupIds
-                                .map(id => groupsData[id] || prev.find(g => g.id === id))
-                                .filter(Boolean);
-                            return newGroups as Group[];
-                        });
-                    } else {
-                        // Group was deleted - exclude from rawUserGroups
-                        delete groupsData[gid];
-                        setRawUserGroups(prev => prev.filter(g => g.id !== gid));
-                    }
-                }, (err: FirestoreError) => {
-                    if (err.code === 'permission-denied') {
-                        // Group deleted or access revoked - exclude from rawUserGroups
-                        delete groupsData[gid];
-                        setRawUserGroups(prev => prev.filter(g => g.id !== gid));
-                    } else {
-                        console.log(`Error fetching group ${gid}:`, err);
-                    }
+        
+        // 1. Unified Listener for all Groups (up to 30)
+        // This is MUCH more efficient than separate listeners per ID.
+        // It counts as separate document reads, but uses 1 connection and returns 1 set of metadata.
+        import('firebase/firestore').then(({ query, collection, where, documentId, onSnapshot }) => {
+            const groupsQuery = query(
+                collection(db, 'groups'),
+                where(documentId(), 'in', groupIds)
+            );
+
+            const unsubGroups = onSnapshot(groupsQuery, { includeMetadataChanges: true }, (snapshot) => {
+                const groupsMap: Record<string, Group> = {};
+                snapshot.docs.forEach(docSnap => {
+                    groupsMap[docSnap.id] = { id: docSnap.id, ...docSnap.data() } as Group;
                 });
-                unsubscribers.push(unsub);
 
-                // Listen to my member doc in this group (for scalable activity/threshold status)
+                setRawUserGroups(prev => {
+                    // Maintain original order from groupIds list
+                    return groupIds
+                        .map(id => groupsMap[id] || prev.find(g => g.id === id))
+                        .filter(Boolean) as Group[];
+                });
+
+                if (!snapshot.metadata.fromCache) {
+                    // console.log("[Dashboard] Loaded groups from server");
+                }
+            });
+            unsubscribers.push(unsubGroups);
+
+            // 2. Specialized Listeners for Member specific data in each group
+            // We still need these because they are in subcollections.
+            groupIds.forEach(gid => {
                 const memberRef = doc(db, 'groups', gid, 'members', userData.uid).withConverter(groupMemberConverter);
                 const unsubMember = onSnapshot(memberRef, (memberSnap) => {
                     if (memberSnap.exists()) {
                         const mData = memberSnap.data();
-                        groupsData[gid] = { 
-                            ...groupsData[gid], 
-                            // Prioritize the scalable subcollection source
-                            myMemberStatus: mData 
-                        } as Group;
-                        setRawUserGroups(prev => {
-                            return groupIds
-                                .map(id => groupsData[id] || prev.find(g => g.id === id))
-                                .filter(Boolean) as Group[];
-                        });
+                        setRawUserGroups(prev => prev.map(g => 
+                            g.id === gid ? { ...g, myMemberStatus: mData } : g
+                        ));
                     }
                 }, (err) => {
-                    // It's okay if this doc doesn't exist yet for legacy group members
                     if (err.code !== 'permission-denied') console.log(`Member fetch error ${gid}:`, err);
                 });
                 unsubscribers.push(unsubMember);
             });
+        });
 
-            return () => {
-                unsubscribers.forEach(unsub => unsub());
-            };
-        };
-
-        const cleanupPromise = fetchGroups();
         return () => {
-            cleanupPromise.then(cleanup => cleanup && cleanup());
+            unsubscribers.forEach(unsub => unsub());
         };
-    }, [userData, activeGroupId]);
+    }, [userData?.uid, groupIdsKey, activeGroupId === null]);
+
+
 
     // Fetch user group states (read counts)
     useEffect(() => {
