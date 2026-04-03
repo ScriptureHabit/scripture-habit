@@ -1,27 +1,31 @@
 import { FC, ReactNode, useMemo } from 'react';
 import { Capacitor } from '@capacitor/core';
 import { useLanguage } from '../../Context/LanguageContext';
-import { ChatProvider, ChatDataContextType, ChatInteractionContextType, ChatUIContextType, ChatActionContextType } from './ChatContext';
+import { ChatProvider, ChatDataContextType, ChatInteractionContextType, ChatUIContextType, ChatActionContextType, ActiveModalType } from './ChatContext';
 import { UserData } from '../../types/user';
-import { Group } from '../../types/chat';
+import { Group, Message } from '../../types/chat';
 import { useModalStore, ActiveModal } from '../../store/useModalStore';
 
 // Hooks
-import { useGroupMessages } from './hooks/useGroupMessages';
-import { useUnityScore } from './hooks/useUnityScore';
-import { useGroupActions } from './hooks/useGroupActions';
-import { useMessageActions } from './hooks/useMessageActions';
-import { useGroupChatUI } from './hooks/useGroupChatUI';
-import { useScrollManager } from './hooks/useScrollManager';
-import { useRecapManager } from './hooks/useRecapManager';
-import { useUnityDetails } from './hooks/useUnityDetails';
-import { useCheerSystem } from './hooks/useCheerSystem';
-import { useReportSystem } from './hooks/useReportSystem';
-import { useInviteManager } from './hooks/useInviteManager';
-import { useUserProfile } from './hooks/useUserProfile';
-import { useGroupChatState } from './hooks/useGroupChatState';
-import { useGroupChatHandlers } from './hooks/useGroupChatHandlers';
-import { useMessageInteraction } from './hooks/useMessageInteraction';
+// Hooks
+import { useGroupMessages } from './hooks/core/useGroupMessages';
+import { useGroupChatState } from './hooks/core/useGroupChatState';
+
+import { useGroupActions } from './hooks/api/useGroupActions';
+import { useMessageActions } from './hooks/api/useMessageActions';
+import { useRecapManager } from './hooks/api/useRecapManager';
+import { useReportSystem } from './hooks/api/useReportSystem';
+import { useInviteManager } from './hooks/api/useInviteManager';
+import { useUserProfile } from './hooks/api/useUserProfile';
+
+import { useGroupChatHandlers } from './hooks/interaction/useGroupChatHandlers';
+import { useMessageInteraction } from './hooks/interaction/useMessageInteraction';
+import { useCheerSystem } from './hooks/interaction/useCheerSystem';
+
+import { useUnityScore } from './hooks/view/useUnityScore';
+import { useGroupChatUI } from './hooks/view/useGroupChatUI';
+import { useScrollManager } from './hooks/view/useScrollManager';
+import { useUnityDetails } from './hooks/view/useUnityDetails';
 
 interface GroupChatProviderProps {
   groupId: string;
@@ -140,7 +144,7 @@ const GroupChatProvider: FC<GroupChatProviderProps> = ({
 
   // UI Context
   const uiValue = useMemo<ChatUIContextType>(() => ({
-    activeModal: activeModal as any, 
+    activeModal: activeModal as ActiveModalType, 
     showDeleteMessageModal, showUnityModal, showInviteModal, showReportModal, 
     showInactivityPolicyBanner, showAddNoteTooltip, showMobileMenu, isRecapLoading, 
     isRecapAvailable, unityModalData
@@ -149,13 +153,13 @@ const GroupChatProvider: FC<GroupChatProviderProps> = ({
   // Actions Context
   const actionsValue = useMemo<ChatActionContextType>(() => ({
     t, tArray, handleSendMessage, handleSaveEdit, 
-    handleConfirmDeleteMessage: (message: any) => handleConfirmDeleteMessage(message),
+    handleConfirmDeleteMessage: (message: Message) => handleConfirmDeleteMessage(message),
     handleToggleReaction, handleTranslateMessage, handleLazyTranslate, handleCancelEdit,
     handleReply, handleMessageClick, handleEditMessage, handleDeleteMessageClick, handleReportClick,
     handleUserProfileClick, handleShowReactions, handleShowMembers, handleShowUnityModal,
     handleGenerateWeeklyRecap, handleLeaveGroup, handleDeleteGroup, handleUpdateGroupName,
     togglePublicStatus, scrollToBottom, handleScroll, dispatch,
-    setActiveModal: (modal: any) => setActiveModal(modal as ActiveModal), 
+    setActiveModal: (modal: ActiveModalType) => setActiveModal(modal as ActiveModal), 
     setShowDeleteMessageModal, setShowUnityModal, setShowInviteModal, setShowReportModal, 
     setShowInactivityPolicyBanner, setShowAddNoteTooltip, setShowMobileMenu, setMembersLoading,
     handleDismissTooltip: () => setShowAddNoteTooltip(false), handleDismissInactivityBanner, 

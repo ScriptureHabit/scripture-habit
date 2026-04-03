@@ -22,7 +22,10 @@ import tl from '../locales/tl.js';
 // @ts-ignore
 import sw from '../locales/sw.js';
 
-const translations: Record<string, any> = {
+type TranslationValue = string | string[] | { [key: string]: TranslationValue };
+type TranslationBundle = { [key: string]: TranslationValue };
+
+const translations: Record<string, TranslationBundle> = {
     en, ja, es, pt, zho, vi, th, ko, tl, sw
 };
 
@@ -37,11 +40,11 @@ export function t(lang: string | undefined | null, key: string, replacements: Re
     const bundle = translations[language] || translations.en;
     
     const keys = key.split('.');
-    let value: any = bundle;
+    let value: TranslationValue | undefined = bundle;
     
     for (const k of keys) {
-        if (value && typeof value === 'object' && value[k] !== undefined) {
-            value = value[k];
+        if (value && typeof value === 'object' && !Array.isArray(value) && (value as Record<string, TranslationValue>)[k] !== undefined) {
+            value = (value as Record<string, TranslationValue>)[k];
         } else {
             // Fallback to English if not found in current language
             if (language !== 'en') {
@@ -69,11 +72,11 @@ export function tArray(lang: string | undefined | null, key: string): string[] {
     const bundle = translations[language] || translations.en;
     
     const keys = key.split('.');
-    let value: any = bundle;
+    let value: TranslationValue | undefined = bundle;
     
     for (const k of keys) {
-        if (value && typeof value === 'object' && value[k] !== undefined) {
-            value = value[k];
+        if (value && typeof value === 'object' && !Array.isArray(value) && (value as Record<string, TranslationValue>)[k] !== undefined) {
+            value = (value as Record<string, TranslationValue>)[k];
         } else {
             if (language !== 'en') {
                 return tArray('en', key);

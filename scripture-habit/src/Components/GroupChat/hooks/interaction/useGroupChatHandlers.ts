@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useRef } from 'react';
-import { db } from '../../../firebase';
+import { db } from '../../../../firebase';
 import { doc, getDoc } from 'firebase/firestore';
-import { safeStorage } from '../../../Utils/storage';
-import { UserProfileBrief, GroupData, MembersMap } from '../../../types/chat';
-import { ReactionItem, ActiveModal } from '../../../store/useModalStore';
+import { safeStorage } from '../../../../Utils/storage';
+import { UserProfileBrief, GroupData, MembersMap } from '../../../../types/chat';
+import { ReactionItem, ActiveModal } from '../../../../store/useModalStore';
 
 interface UseGroupChatHandlersParams {
   groupData: GroupData | null;

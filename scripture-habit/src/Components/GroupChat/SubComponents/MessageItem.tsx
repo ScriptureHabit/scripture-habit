@@ -2,6 +2,7 @@ import { FC, MouseEvent, useEffect, useRef, memo, useMemo } from 'react';
 import NoteDisplay from '../../NoteDisplay/NoteDisplay';
 import { Message, Group, UserProfileBrief, MembersMap } from '../../../types/chat';
 import { UserData } from '../../../types/user';
+import { ReactionPreview } from '../../../../types/firestore';
 import SystemMessage from './SystemMessage';
 import GospelLink from './GospelLink';
 import { parseTimestampToMillis } from '../../../Utils/timeUtils';
@@ -212,7 +213,7 @@ const MessageItem: FC<MessageItemProps> = memo(({
             }}
           >
             <div className="reaction-previews">
-              {(msg.reactionPreviews?.['👍'] || []).map((p: any) => p.photoURL && (
+              {(msg.reactionPreviews?.['👍'] || []).map((p: ReactionPreview) => p.photoURL && (
                 <img key={p.uid} src={p.photoURL} alt="" className="reaction-preview-avatar" />
               ))}
               {(!(msg.reactionPreviews?.['👍']) && msg.reactions['👍']?.slice(0, 3).map(uid => (

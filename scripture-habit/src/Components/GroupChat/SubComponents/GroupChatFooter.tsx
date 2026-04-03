@@ -1,7 +1,7 @@
 import { FC, FormEvent } from 'react';
 import { UilTimes } from '@iconscout/react-unicons';
 import MessageInput from './MessageInput';
-import { useMessageInput } from '../hooks/useMessageInput';
+import { useMessageInput } from '../hooks/interaction/useMessageInput';
 import { useChatData, useChatActions, useChatInteraction, useChatUI } from '../ChatContext';
 
 const GroupChatFooter: FC = () => {

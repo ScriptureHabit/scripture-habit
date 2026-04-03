@@ -5,6 +5,7 @@ import { postNoteSchema, postMessageSchema, sendCheerSchema, deleteNoteSchema, d
 import { notifyGroupMembers, sendPushNotification, getUserFcmTokens } from '../lib/notifications.js';
 import { tArray } from '../lib/i18n.js';
 import { CounterService } from '../services/counter-service.js';
+import { ReactionPreview } from '../../types/firestore.js';
 
 const router = express.Router();
 
@@ -199,7 +200,7 @@ router.post('/toggle-reaction', authenticate, verifyAppCheck, async (req: Authen
             // Simplified: If adding, we put ourselves first. If removing, we filter.
             let newPreviews = mData.reactionPreviews?.[emoji] || [];
             if (hasReacted) {
-                newPreviews = newPreviews.filter((p: any) => p.uid !== uid);
+                newPreviews = newPreviews.filter((p: ReactionPreview) => p.uid !== uid);
             } else {
                 const myPreview = { uid, nickname: newUserNickname, photoURL: newUserPhotoURL };
                 newPreviews = [myPreview, ...newPreviews].slice(0, 3);

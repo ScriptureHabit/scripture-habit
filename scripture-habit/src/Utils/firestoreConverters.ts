@@ -5,54 +5,82 @@ import {
   WithFieldValue,
   DocumentData
 } from 'firebase/firestore';
+import { z } from 'zod';
 import { UserData } from '../types/user';
 import { Group, Message } from '../types/chat';
 import { Note } from '../types/note';
 import { normalizeScriptureCategory, buildNoteSearchTokens } from './searchTokenUtils';
+import { 
+  MessageSchema, 
+  GroupSchema, 
+  UserDataSchema, 
+  GroupMemberSchema 
+} from '../types/schemas';
 
 /**
- * Creates a generic converter that ensures the ID is included in the object
- * and provides basic type safety for Firestore operations.
+ * Creates a generic, type-safe converter with optional Zod validation.
  */
 const createConverter = <T extends { id?: string; uid?: string }>(
-  idField: 'id' | 'uid' = 'id'
+  idField: 'id' | 'uid' = 'id',
+  schema?: z.ZodSchema
 ): FirestoreDataConverter<T> => ({
   toFirestore(data: WithFieldValue<T>): DocumentData {
-    // Remove the ID field from the data being sent to Firestore
+    // Basic scrubbing of the ID field before write
     const payload = { ...data } as Record<string, unknown>;
     delete payload[idField];
     return payload as DocumentData;
   },
   fromFirestore(snapshot: QueryDocumentSnapshot, options: SnapshotOptions): T {
-    const data = snapshot.data(options) as Record<string, unknown>;
-    const scripture = normalizeScriptureCategory(data.scripture);
-    const title = typeof data.title === 'string' ? data.title : null;
-    const speaker = typeof data.speaker === 'string' ? data.speaker : null;
-    const comment = typeof data.comment === 'string' ? data.comment : '';
-    const searchTokens = Array.isArray(data.searchTokens)
-      ? data.searchTokens.filter((value): value is string => typeof value === 'string')
-      : buildNoteSearchTokens({ scripture, chapter: typeof data.chapter === 'string' ? data.chapter : '', comment, title, speaker });
-
-    const convertedData = {
-      ...data,
+    // 1. Get raw data
+    const rawData = snapshot.data(options);
+    
+    // 2. Normalize basic metadata
+    const baseData = {
+      ...rawData,
       [idField]: snapshot.id,
+    };
+
+    // 3. Optional Strict Validation (Zod)
+    // If a schema is provided, we parse it to catch runtime inconsistencies immediately.
+    // .passthrough() in schemas ensures we don't lose un-mapped fields during first implementation.
+    const validatedData = (schema ? schema.parse(baseData) : baseData) as any;
+
+    // 4. Custom Transformations (Legacy/Migration logic)
+    const scripture = normalizeScriptureCategory(validatedData.scripture);
+    const title = typeof validatedData.title === 'string' ? validatedData.title : null;
+    const speaker = typeof validatedData.speaker === 'string' ? validatedData.speaker : null;
+    const comment = typeof validatedData.comment === 'string' ? validatedData.comment : '';
+    
+    // Build search tokens if they don't exist in DB (Legacy support)
+    const searchTokens = Array.isArray(validatedData.searchTokens)
+      ? (validatedData.searchTokens as unknown[]).filter((value): value is string => typeof value === 'string')
+      : buildNoteSearchTokens({ 
+          scripture, 
+          chapter: typeof validatedData.chapter === 'string' ? validatedData.chapter : '', 
+          comment, 
+          title, 
+          speaker 
+        });
+
+    return {
+      ...validatedData,
       scripture,
       searchTokens,
-    } as const;
-
-    return convertedData as unknown as T;
+    } as T;
   }
 });
 
-export const userConverter = createConverter<UserData>('uid');
-export const groupConverter = createConverter<Group>('id');
-export const messageConverter = createConverter<Message>('id');
-export const noteConverter = createConverter<Note>('id');
-export const groupMemberConverter = createConverter<import('../../types/firestore').GroupMemberDocument>('uid');
+// Primary Converters with Strict Validation
+export const userConverter = createConverter<UserData>('uid', UserDataSchema);
+export const groupConverter = createConverter<Group>('id', GroupSchema);
+export const messageConverter = createConverter<Message>('id', MessageSchema);
+export const noteConverter = createConverter<Note>('id'); // NoteSchema could be added next
+export const groupMemberConverter = createConverter<import('../../types/firestore').GroupMemberDocument>('uid', GroupMemberSchema);
 
 /**
- * Helper to add a converter to a collection reference
+ * Helper to create ad-hoc converters with custom schemas
  */
 export const withConverter = <T extends { id?: string; uid?: string }>(
-  idField: 'id' | 'uid' = 'id'
-) => createConverter<T>(idField);
+  idField: 'id' | 'uid' = 'id',
+  schema?: z.ZodSchema
+) => createConverter<T>(idField, schema);

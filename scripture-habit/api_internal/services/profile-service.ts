@@ -1,4 +1,5 @@
 import { db } from '../lib/firebase-admin.js';
+import { MessageDocument } from '../../types/firestore.js';
 
 export class ProfileService {
     /**
@@ -35,7 +36,7 @@ export class ProfileService {
                     .get();
 
                 for (const mDoc of recentMyMessages.docs) {
-                    const msgUpdate: any = {};
+                    const msgUpdate: Partial<MessageDocument> = {};
                     if (updates.nickname) msgUpdate.senderNickname = updates.nickname;
                     if (updates.photoURL) msgUpdate.senderPhotoURL = updates.photoURL;
                     

@@ -6,7 +6,13 @@
  */
 
 // Basic nested types
-export type FirestoreTimestamp = { seconds: number; nanoseconds: number } | { toDate: () => Date } | Date | number | string | any;
+export type FirestoreTimestamp = { seconds: number; nanoseconds: number } | { toDate: () => Date } | Date | number | string;
+
+export interface ReactionPreview {
+    uid: string;
+    nickname?: string;
+    photoURL?: string | null;
+}
 
 export interface MemberPreview {
     uid: string;
@@ -103,6 +109,8 @@ export interface MessageDocument {
     id?: string;
     text: string;
     senderId: string;
+    senderNickname?: string;
+    senderPhotoURL?: string | null;
     createdAt: FirestoreTimestamp;
     
     // Message Types
@@ -130,7 +138,7 @@ export interface MessageDocument {
     
     // Interaction
     reactions?: Record<string, string[]>;
-    reactionPreviews?: Record<string, any[]>;
+    reactionPreviews?: Record<string, ReactionPreview[]>;
     translations?: Record<string, string>;
     messageData?: Record<string, string | number>; // Dynamic metadata for system messages
     optimisticId?: string;

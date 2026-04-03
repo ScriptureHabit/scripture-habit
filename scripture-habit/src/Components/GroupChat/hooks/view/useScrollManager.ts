@@ -1,6 +1,6 @@
 import { useRef, useLayoutEffect, useEffect } from 'react';
-import { safeStorage } from '../../../Utils/storage';
-import { Message } from '../../../types/chat';
+import { safeStorage } from '../../../../Utils/storage';
+import { Message } from '../../../../types/chat';
 
 interface ScrollUserData {
   uid: string;

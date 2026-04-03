@@ -4,6 +4,7 @@ import { verifyAppCheck, authenticate, AuthenticatedRequest } from '../lib/middl
 import { verifyLoginSchema } from '../lib/schemas.js';
 import { AuthenticationError, ForbiddenError } from '../lib/errors.js';
 import { ProfileService } from '../services/profile-service.js';
+import { UserDocument } from '../../types/firestore.js';
 
 const router = express.Router();
 
@@ -17,7 +18,7 @@ router.post('/update-profile', authenticate, verifyAppCheck, async (req: Authent
     try {
         const userRef = db.collection('users').doc(uid);
         
-        const updates: any = {};
+        const updates: Partial<UserDocument> = {};
         if (nickname !== undefined) updates.nickname = nickname;
         if (photoURL !== undefined) updates.photoURL = photoURL;
         if (stake !== undefined) updates.stake = stake;

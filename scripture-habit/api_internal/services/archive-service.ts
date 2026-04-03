@@ -1,4 +1,5 @@
 import { admin, db } from '../lib/firebase-admin.js';
+import { MessageDocument, FirestoreTimestamp } from '../../types/firestore.js';
 
 /**
  * Archive Service for handling Bucket Pattern (Message Bundling)
@@ -33,7 +34,7 @@ export class ArchiveService {
         for (let i = 0; i < toArchive.length; i += this.BUCKET_SIZE) {
             const chunk = toArchive.slice(i, i + this.BUCKET_SIZE);
             const messagesData = chunk.map(doc => {
-                const data = doc.data() as any;
+                const data = doc.data() as MessageDocument;
                 return { 
                     id: doc.id, 
                     ...data 
@@ -44,8 +45,9 @@ export class ArchiveService {
 
             // Generate a bucket ID based on the start time (oldest message in chunk)
             const firstMsg = messagesData[0];
-            const startTime = firstMsg.createdAt as any;
-            const timeMillis = startTime.toMillis ? startTime.toMillis() : (startTime._seconds ? startTime._seconds * 1000 : Date.now());
+            const startTime = firstMsg.createdAt as FirestoreTimestamp;
+            // @ts-ignore - Handle private property access for different versions of Firestore Timestamp
+            const timeMillis = startTime.toMillis ? startTime.toMillis() : (startTime._seconds ? startTime._seconds * 1000 : (startTime.seconds ? startTime.seconds * 1000 : Date.now()));
 
             const bucketId = `bucket_${timeMillis}`;
             

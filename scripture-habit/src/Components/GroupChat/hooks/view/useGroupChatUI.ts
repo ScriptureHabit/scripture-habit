@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { getToken } from 'firebase/app-check'; // Added AppCheck getToken
-import { auth, appCheck } from '../../../firebase'; // Added appCheck
-import { safeStorage } from '../../../Utils/storage';
-import { GroupData } from '../../../types/chat';
+import { auth, appCheck } from '../../../../firebase'; // Added appCheck
+import { safeStorage } from '../../../../Utils/storage';
+import { GroupData } from '../../../../types/chat';
 
 export const useGroupChatUI = (
   groupId: string,

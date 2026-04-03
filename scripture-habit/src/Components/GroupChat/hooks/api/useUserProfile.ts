@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { db } from '../../../firebase';
+import { db } from '../../../../firebase';
 import { doc, getDoc } from 'firebase/firestore';
-import { UserProfileBrief, MembersMap } from '../../../types/chat';
+import { UserProfileBrief, MembersMap } from '../../../../types/chat';
 
 export const useUserProfile = (
   membersMap: MembersMap,

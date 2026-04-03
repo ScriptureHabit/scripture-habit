@@ -1,5 +1,5 @@
 import { useReducer, useRef, useCallback } from 'react';
-import { Message } from '../../../types/chat';
+import { Message } from '../../../../types/chat';
 
 export interface ContextMenu {
   show: boolean;

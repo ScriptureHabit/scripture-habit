@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { db } from '../../../firebase';
+import { db } from '../../../../firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { toast } from 'react-toastify';
-import { Message } from '../../../types/chat';
-import { UserData } from '../../../types/user';
+import { Message } from '../../../../types/chat';
+import { UserData } from '../../../../types/user';
 
 export const useReportSystem = (
   groupId: string,

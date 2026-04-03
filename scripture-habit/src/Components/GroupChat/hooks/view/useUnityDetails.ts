@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { doc, getDoc } from 'firebase/firestore';
-import { db } from '../../../firebase';
-import { GroupData, Message, UserProfileBrief } from '../../../types/chat';
-import { UserData } from '../../../types/user';
-import { parseTimestampToMillis } from '../../../Utils/timeUtils';
+import { db } from '../../../../firebase';
+import { GroupData, Message, UserProfileBrief } from '../../../../types/chat';
+import { UserData } from '../../../../types/user';
+import { parseTimestampToMillis } from '../../../../Utils/timeUtils';
 
 export const useUnityDetails = (
   groupData: GroupData | null,

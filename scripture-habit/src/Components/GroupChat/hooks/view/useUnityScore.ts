@@ -1,12 +1,12 @@
 import { useMemo, useEffect } from 'react';
 import { Capacitor } from '@capacitor/core';
-import { auth, appCheck } from '../../../firebase';
+import { auth, appCheck } from '../../../../firebase';
 import { getToken } from 'firebase/app-check';
-import { safeStorage } from '../../../Utils/storage';
+import { safeStorage } from '../../../../Utils/storage';
 import confetti from 'canvas-confetti';
-import { Message, GroupData } from '../../../types/chat';
-import { parseTimestampToMillis } from '../../../Utils/timeUtils';
-import { UserData } from '../../../types/user';
+import { Message, GroupData } from '../../../../types/chat';
+import { parseTimestampToMillis } from '../../../../Utils/timeUtils';
+import { UserData } from '../../../../types/user';
 
 export const useUnityScore = (
   groupId: string,

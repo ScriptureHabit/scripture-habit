@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-import { db } from '../../../firebase';
-import apiClient from '../../../Utils/apiClient';
+import { db } from '../../../../firebase';
+import apiClient from '../../../../Utils/apiClient';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { toast } from 'react-toastify';
-import { UserData } from '../../../types/user';
-import { UserProfileBrief } from '../../../types/chat';
+import { UserData } from '../../../../types/user';
+import { UserProfileBrief } from '../../../../types/chat';
 
 export const useCheerSystem = (
   groupId: string,

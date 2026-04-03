@@ -3,8 +3,8 @@ import { Message, Group, MembersMap, UserProfileBrief, GroupData } from '../../t
 import { UserData } from '../../types/user';
 import { Note } from '../../types/note';
 import { ReactionItem } from '../../store/useModalStore';
-import { ContextMenu } from './hooks/useMessageInteraction';
-import { ChatAction } from './hooks/chatReducer';
+import { ContextMenu } from './hooks/interaction/useMessageInteraction';
+import { ChatAction } from './hooks/core/chatReducer';
 
 export type ActiveModalType = 
   | 'leave' 

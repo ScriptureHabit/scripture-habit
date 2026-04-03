@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { auth, appCheck } from '../../../firebase';
+import { auth, appCheck } from '../../../../firebase';
 import { getToken } from 'firebase/app-check';
 import { toast } from 'react-toastify';
-import { GroupData } from '../../../types/chat';
+import { GroupData } from '../../../../types/chat';
 
 export const useInviteManager = (
   groupId: string,

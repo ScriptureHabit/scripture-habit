@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import axios from 'axios';
-import apiClient from '../../../Utils/apiClient';
+import apiClient from '../../../../Utils/apiClient';
 import { toast } from 'react-toastify';
-import { Message } from '../../../types/chat';
-import { ChatAction } from './chatReducer';
+import { Message } from '../../../../types/chat';
+import { ChatAction } from '../core/chatReducer';
+import { ReactionPreview } from '../../../../../types/firestore';
 
 interface SenderData {
   uid: string;
@@ -184,7 +185,7 @@ export const useMessageActions = (
         : [...uids, userData.uid];
 
       const newPreviews = hasReacted
-        ? currentPreviews.filter((p: any) => p.uid !== userData.uid)
+        ? currentPreviews.filter((p: ReactionPreview) => p.uid !== userData.uid)
         : (currentPreviews.length < 3 
             ? [{ uid: userData.uid, nickname: userData.nickname, photoURL: userData.photoURL }, ...currentPreviews].slice(0, 3)
             : currentPreviews);

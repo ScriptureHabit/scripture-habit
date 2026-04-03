@@ -1,10 +1,10 @@
 import axios from 'axios';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import apiClient from '../../../Utils/apiClient';
+import apiClient from '../../../../Utils/apiClient';
 import { toast } from 'react-toastify';
-import { GroupData } from '../../../types/chat';
-import { UserData } from '../../../types/user';
+import { GroupData } from '../../../../types/chat';
+import { UserData } from '../../../../types/user';
 
 export const useGroupActions = (
   groupId: string,
