@@ -9,7 +9,7 @@ const router = express.Router();
 const USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36';
 
 // Fetch Church (GC, Liahona, etc.) Metadata
-router.get('/fetch-church-metadata', authenticate, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
+router.get(['/fetch-church-metadata', '/fetch-church-metadata/'], authenticate, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
 
     const { url, lang } = req.query as { url?: string, lang?: string };
     if (!url) return res.status(400).send({ error: 'URL is required' });
@@ -66,7 +66,7 @@ router.get('/fetch-church-metadata', authenticate, verifyAppCheck, async (req: A
 });
 
 // URL Preview
-router.get('/url-preview', authenticate, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
+router.get(['/url-preview', '/url-preview/'], authenticate, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
 
     const { url } = req.query as { url?: string };
     if (!url || typeof url !== 'string') return res.status(400).json({ error: 'URL required' });
