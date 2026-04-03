@@ -1,6 +1,7 @@
 import { admin, db } from '../lib/firebase-admin.ts';
 import { STREAK_ANNOUNCEMENT_TEMPLATES, notifyGroupMembers } from '../lib/notifications.ts';
 import { NotFoundError } from '../lib/errors.ts';
+import { buildNoteSearchTokens } from '../lib/search-utils.ts';
 
 // Private types for service internal use
 export interface PostNoteInput {
@@ -46,6 +47,7 @@ export class NoteService {
             else if (shareOption === 'current' && userData.groupId) groupsToPostTo = [userData.groupId];
 
             groupsToPostTo = groupsToPostTo.filter(gid => typeof gid === 'string' && gid.length > 0);
+            groupsToPostTo = [...new Set(groupsToPostTo)];
 
             const groupRefs = groupsToPostTo.map(gid => db.collection('groups').doc(gid));
             const groupDocs = groupRefs.length > 0 ? await transaction.getAll(...groupRefs) : [];
@@ -208,8 +210,7 @@ export class NoteService {
                 shareOption,
                 sharedWithGroups: validatedGroupsToPostTo,
                 sharedMessageIds,
-                // Assuming script-categories and buildNoteSearchTokens are accessible via util if really separated
-                searchTokens: Array.from(new Set([scripture, chapter || '', comment, title || '', speaker || ''].join(' ').toLowerCase().split(' ').filter(Boolean)))
+                searchTokens: buildNoteSearchTokens({ scripture, chapter, comment, title, speaker })
             });
 
             // 5. Streak Announcements
@@ -235,7 +236,13 @@ export class NoteService {
                 });
             }
 
-            return { personalNoteId: noteRef.id, newStreak, streakUpdated, nickname: userData.nickname, userToGroupMapEntries: Array.from(userToGroupMap.entries()) };
+            return { 
+                personalNoteId: noteRef.id, 
+                newStreak, 
+                streakUpdated, 
+                nickname: userData.nickname, 
+                _internalNotifications: { userToGroupMapEntries: Array.from(userToGroupMap.entries()) } 
+            };
         });
 
         // 6. Push Notifications (Async after transaction)
@@ -252,7 +259,7 @@ export class NoteService {
             const notifBody = (bodyTemplateMap[lang] || bodyTemplateMap['en']).replace('{nickname}', result.nickname || 'Member');
 
             const groupsToNotifyMap = new Map<string, string[]>();
-            result.userToGroupMapEntries.forEach(([memberUid, gid]: [string, string]) => {
+            result._internalNotifications.userToGroupMapEntries.forEach(([memberUid, gid]: [string, string]) => {
                 if (!groupsToNotifyMap.has(gid)) groupsToNotifyMap.set(gid, []);
                 groupsToNotifyMap.get(gid)!.push(memberUid);
             });
@@ -262,6 +269,7 @@ export class NoteService {
             ));
         } catch (err) { console.error('[NotificationService] Error:', err); }
 
-        return result;
+        const { _internalNotifications, ...publicResult } = result;
+        return publicResult;
     }
 }

@@ -58,9 +58,12 @@ router.get(['/fetch-church-metadata', '/fetch-church-metadata/'], authenticate, 
         if (speaker) speaker = speaker.replace(/^(By|Par|De|Por)\s+/i, '').trim();
 
         res.json({ title: title || '', speaker: speaker || '' });
-    } catch (error: unknown) {
-        const err = error as Error;
-        console.error('Error in fetch-church-metadata:', err.message);
+    } catch (error) {
+        if (error instanceof Error) {
+            console.error('Error in fetch-church-metadata:', error.message);
+        } else {
+            console.error('Error in fetch-church-metadata:', error);
+        }
         res.json({ title: '', speaker: '' });
     }
 });
@@ -142,9 +145,12 @@ router.get(['/url-preview', '/url-preview/'], authenticate, verifyAppCheck, asyn
         }
 
         res.json(previewData);
-    } catch (error: unknown) {
-        const err = error as Error;
-        console.error('Error in url-preview:', err.message);
+    } catch (error) {
+        if (error instanceof Error) {
+            console.error('Error in url-preview:', error.message);
+        } else {
+            console.error('Error in url-preview:', error);
+        }
         res.status(500).json({ error: 'Failed' });
     }
 

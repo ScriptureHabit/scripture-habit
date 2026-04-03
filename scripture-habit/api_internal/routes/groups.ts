@@ -109,10 +109,15 @@ router.post('/join-group', authenticate, requireEmailVerified, verifyAppCheck, a
         });
 
         res.status(200).json({ message: 'Success', ...result });
-    } catch (error: unknown) {
-        const err = error as Error;
-        console.error('Error joining group:', err.message);
-        res.status(400).json({ error: err.message });
+    } catch (error) {
+        let message = 'Internal Server Error';
+        if (error instanceof Error) {
+            message = error.message;
+            console.error('Error joining group:', error.message);
+        } else {
+            console.error('Error joining group:', error);
+        }
+        res.status(400).json({ error: message });
     }
 });
 
@@ -190,10 +195,15 @@ router.post('/leave-group', authenticate, verifyAppCheck, async (req: Authentica
         });
 
         res.json({ success: true });
-    } catch (error: unknown) {
-        const err = error as Error;
-        console.error('Leave group failed:', err.message);
-        res.status(500).json({ error: err.message });
+    } catch (error) {
+        let message = 'Internal Server Error';
+        if (error instanceof Error) {
+            message = error.message;
+            console.error('Leave group failed:', error.message);
+        } else {
+            console.error('Leave group failed:', error);
+        }
+        res.status(500).json({ error: message });
     }
 });
 
@@ -232,10 +242,15 @@ router.post('/update-read-status', authenticate, verifyAppCheck, async (req: Aut
         await batch.commit();
 
         res.json({ success: true });
-    } catch (error: unknown) {
-        const err = error as Error;
-        console.error('Update read status failed:', err);
-        res.status(500).json({ error: err.message || 'Internal Server Error' });
+    } catch (error) {
+        let message = 'Internal Server Error';
+        if (error instanceof Error) {
+            message = error.message;
+            console.error('Update read status failed:', error.message);
+        } else {
+            console.error('Update read status failed:', error);
+        }
+        res.status(500).json({ error: message });
     }
 });
 
@@ -288,13 +303,18 @@ router.post('/announce-unity', authenticate, verifyAppCheck, async (req: Authent
         });
 
         res.json({ success: true });
-    } catch (error: unknown) {
-        const err = error as Error;
-        console.error('Announce unity failed:', err);
-        if (err.message === 'Forbidden') {
-            return res.status(403).json({ error: 'Forbidden' });
+    } catch (error) {
+        let message = 'Internal Server Error';
+        if (error instanceof Error) {
+            message = error.message;
+            console.error('Announce unity failed:', error.message);
+            if (message === 'Forbidden') {
+                return res.status(403).json({ error: 'Forbidden' });
+            }
+        } else {
+            console.error('Announce unity failed:', error);
         }
-        res.status(500).json({ error: err.message || 'Internal Server Error' });
+        res.status(500).json({ error: message });
     }
 });
 
@@ -334,10 +354,15 @@ router.post('/update-kick-threshold', authenticate, verifyAppCheck, async (req: 
         }
 
         res.json({ success: true });
-    } catch (error: unknown) {
-        const err = error as Error;
-        console.error('Update threshold failed:', err);
-        res.status(500).json({ error: err.message || 'Internal Server Error' });
+    } catch (error) {
+        let message = 'Internal Server Error';
+        if (error instanceof Error) {
+            message = error.message;
+            console.error('Update threshold failed:', error.message);
+        } else {
+            console.error('Update threshold failed:', error);
+        }
+        res.status(500).json({ error: message });
     }
 });
 
@@ -387,10 +412,15 @@ router.post('/delete-group', authenticate, verifyAppCheck, async (req: Authentic
         await db.recursiveDelete(groupRef);
 
         res.json({ success: true });
-    } catch (error: unknown) {
-        const err = error as Error;
-        console.error('Group deletion failed:', err);
-        res.status(500).send(err.message);
+    } catch (error) {
+        let message = 'Internal Server Error';
+        if (error instanceof Error) {
+            message = error.message;
+            console.error('Group deletion failed:', error.message);
+        } else {
+            console.error('Group deletion failed:', error);
+        }
+        res.status(500).send(message);
     }
 });
 
@@ -428,10 +458,15 @@ router.post('/update-group', authenticate, verifyAppCheck, async (req: Authentic
 
         await groupRef.update(updatePayload);
         res.json({ success: true });
-    } catch (error: unknown) {
-        const err = error as Error;
-        console.error('Update group failed:', err);
-        res.status(500).json({ error: err.message || 'Request failed.' });
+    } catch (error) {
+        let message = 'Request failed.';
+        if (error instanceof Error) {
+            message = error.message;
+            console.error('Update group failed:', error.message);
+        } else {
+            console.error('Update group failed:', error);
+        }
+        res.status(500).json({ error: message });
     }
 });
 
@@ -465,10 +500,15 @@ router.post('/regenerate-invite-code', authenticate, verifyAppCheck, async (req:
         });
 
         res.json({ success: true, inviteCode: newCode });
-    } catch (error: unknown) {
-        const err = error as Error;
-        console.error('Regenerate invite code failed:', err);
-        res.status(500).json({ error: err.message || 'Request failed.' });
+    } catch (error) {
+        let message = 'Request failed.';
+        if (error instanceof Error) {
+            message = error.message;
+            console.error('Regenerate invite code failed:', error.message);
+        } else {
+            console.error('Regenerate invite code failed:', error);
+        }
+        res.status(500).json({ error: message });
     }
 });
 
@@ -504,10 +544,15 @@ router.get('/groups', async (_req: Request, res: Response) => {
             .slice(0, 50);
 
         res.json(groups);
-    } catch (error: unknown) {
-        const err = error as Error;
-        console.error('Error fetching groups:', err);
-        res.status(500).json({ error: 'Search failed', details: err.message });
+    } catch (error) {
+        let message = 'Search failed';
+        if (error instanceof Error) {
+            message = error.message;
+            console.error('Error fetching groups:', error.message);
+        } else {
+            console.error('Error fetching groups:', error);
+        }
+        res.status(500).json({ error: 'Search failed', details: message });
     }
 });
 
@@ -534,9 +579,12 @@ router.get('/group-preview/:inviteCode', async (req: Request, res: Response) => 
             membersCount: (groupData.members || []).length,
             isPrivate: groupData.isPrivate || false
         });
-    } catch (error: unknown) {
-        const err = error as Error;
-        console.error('Group preview failed:', err);
+    } catch (error) {
+        if (error instanceof Error) {
+            console.error('Group preview failed:', error.message);
+        } else {
+            console.error('Group preview failed:', error);
+        }
         res.status(500).send('Fetch failed');
     }
 });
