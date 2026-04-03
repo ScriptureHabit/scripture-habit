@@ -18,7 +18,8 @@ service cloud.firestore {
 
     // Helpers for Efficient Access Control
     function isMemberOfGroup(groupId) {
-      return exists(/databases/$(database)/documents/groups/$(groupId)/members/$(request.auth.uid));
+      return exists(/databases/$(database)/documents/groups/$(groupId)/members/$(request.auth.uid)) ||
+             (request.auth != null && request.auth.uid in get(/databases/$(database)/documents/groups/$(groupId)).data.get('members', []));
     }
 
     // Rules for the 'users' collection

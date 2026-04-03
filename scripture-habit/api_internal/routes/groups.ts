@@ -219,7 +219,7 @@ router.post('/update-read-status', authenticate, verifyAppCheck, async (req: Aut
     const validation = updateReadStatusSchema.safeParse(req.body);
     if (!validation.success) return res.status(400).json({ error: 'Invalid input', details: validation.error.format() });
 
-    const { groupId, readMessageCount } = validation.data;
+    const { groupId } = validation.data;
     const uid = req.user?.uid;
     if (!uid) return res.status(401).json({ error: 'Unauthorized' });
 
@@ -239,9 +239,11 @@ router.post('/update-read-status', authenticate, verifyAppCheck, async (req: Aut
             return res.status(403).json({ error: 'Forbidden' });
         }
 
+        const totalMessages = groupData.messageCount || 0;
+
         const batch = db.batch();
         batch.set(userRef.collection('groupStates').doc(groupId), {
-            readMessageCount,
+            readMessageCount: totalMessages, // We assume "opening it" or "marking as read" from dashboard means reading all
             lastReadAt: admin.firestore.FieldValue.serverTimestamp()
         }, { merge: true });
 
@@ -249,7 +251,7 @@ router.post('/update-read-status', authenticate, verifyAppCheck, async (req: Aut
         // Instead, update the member's private document in the 'members' subcollection.
         batch.set(groupRef.collection('members').doc(uid), {
             lastReadAt: admin.firestore.FieldValue.serverTimestamp(),
-            readMessageCount
+            readMessageCount: totalMessages
         }, { merge: true });
 
         await batch.commit();
