@@ -1,5 +1,5 @@
 import { useReducer, useEffect, useRef, useCallback } from 'react';
-import { collection, query, orderBy, onSnapshot, doc, getDoc, getDocs, limit, startAfter, startAt } from 'firebase/firestore';
+import { collection, query, orderBy, onSnapshot, doc, getDoc, getDocs, limit, startAfter, startAt, where, documentId } from 'firebase/firestore';
 import apiClient from '../../../Utils/apiClient';
 import confetti from 'canvas-confetti';
 import * as Sentry from "@sentry/react";
@@ -193,14 +193,31 @@ export const useGroupMessages = (groupId: string | null, userData: UserData | nu
           if (gSnap.exists()) {
             currentGroupData = gSnap.data();
             if (currentGroupData.members) {
-              // Quick fetch members
+              // Batch fetch missing members (limit of 30 per 'in' query)
               const missingUids = currentGroupData.members.filter(uid => !membersMapRef.current[uid]);
               if (missingUids.length > 0) {
-                const snapshots = await Promise.all(missingUids.map(uid => getDoc(doc(db, 'users', uid).withConverter(userConverter))));
+                const batches = [];
+                for (let i = 0; i < missingUids.length; i += 30) {
+                  batches.push(missingUids.slice(i, i + 30));
+                }
+
                 const newMembers: MembersMap = {};
-                snapshots.forEach(s => {
-                  if (s.exists()) newMembers[s.id] = { id: s.id, ...s.data() } as UserProfileBrief;
-                });
+                await Promise.all(batches.map(async (batch) => {
+                  // Fetch each member profile individually to satisfy Firestore 'get' rule,
+                  // as the 'users' collection has 'list: if false'.
+                  const profilePromises = batch.map(uid => 
+                    getDoc(doc(db, 'users', uid).withConverter(userConverter))
+                  );
+                  const profileSnaps = await Promise.all(profilePromises);
+                  
+                  profileSnaps.forEach(s => {
+                    if (s.exists()) {
+                      const data = s.data();
+                      newMembers[s.id] = { id: s.id, ...data } as UserProfileBrief;
+                    }
+                  });
+                }));
+
                 dispatch({ type: 'UPDATE_MEMBERS', newMembers });
               }
             }
@@ -277,11 +294,17 @@ export const useGroupMessages = (groupId: string | null, userData: UserData | nu
         }
 
       } catch (err: unknown) {
-        if (err instanceof FirebaseError && err.code !== 'permission-denied' && !isCancelled) {
-          console.error("Error in initChain:", err);
-          dispatch({ type: 'SET_ERROR', message: "Failed to load chat." });
-        } else if (err instanceof Error && !isCancelled) {
-          console.error("Non-Firebase error in initChain:", err);
+        if (!isCancelled) {
+          if (err instanceof FirebaseError) {
+            console.error(`[useGroupMessages] Firebase Error (${err.code}):`, err);
+            if (err.code === 'permission-denied') {
+              dispatch({ type: 'SET_ERROR', message: "Access denied. Please check your group membership." });
+            } else {
+              dispatch({ type: 'SET_ERROR', message: "Failed to load chat." });
+            }
+          } else if (err instanceof Error) {
+            console.error("[useGroupMessages] Generic Error in initChain:", err);
+          }
         }
       }
     };

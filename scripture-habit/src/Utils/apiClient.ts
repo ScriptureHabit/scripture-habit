@@ -1,4 +1,5 @@
 import axios from 'axios';
+import * as Sentry from '@sentry/react';
 import { auth, appCheck } from '../firebase';
 import { getToken } from 'firebase/app-check';
 import { Capacitor } from '@capacitor/core';
@@ -64,17 +65,31 @@ apiClient.interceptors.request.use(
     }
 );
 
-// Response Interceptor: Handle global errors (e.g. 401, 403)
+// Response Interceptor: Handle global errors (e.g. 401, 403, 500+)
 apiClient.interceptors.response.use(
     (response) => response,
     (error) => {
         if (error.response) {
-            const { status } = error.response;
+            const { status, config } = error.response;
             if (status === 401) {
                 console.error('[apiClient] Unauthorized - redirecting or showing login modal may be needed.');
             }
-            // You can add more global error handling here (e.g. toast notifications)
+            
+            // Log server errors to Sentry for observability
+            if (status >= 500) {
+                Sentry.withScope((scope) => {
+                    scope.setTag('api_url', config?.url || 'unknown');
+                    scope.setTag('status_code', status.toString());
+                    scope.setExtra('response_data', error.response?.data);
+                    Sentry.captureException(error);
+                });
+                console.error(`[apiClient] Server Error (${status}) at ${config?.url}`);
+            }
+        } else if (error.request) {
+            // No response was received (Network error)
+            console.error('[apiClient] Network error - no response received');
         }
+        
         return Promise.reject(error);
     }
 );

@@ -1,4 +1,5 @@
 import { FC } from 'react';
+import './GroupChat.css';
 import GroupChatMessageListContainer from './SubComponents/GroupChatMessageListContainer';
 import GroupChatFooter from './SubComponents/GroupChatFooter';
 import GroupChatModals from './GroupChatModals';
@@ -26,7 +27,7 @@ const GroupChatContent: FC = () => {
 
     return (
         <>
-            <div className={`group-chat-main ${activeModal === 'members' ? 'members-open' : ''}`}>
+            <div className={`GroupChat ${activeModal === 'members' ? 'members-open' : ''}`}>
                 <ChatHeader />
                 <GroupChatMessageListContainer />
                 <GroupChatFooter />

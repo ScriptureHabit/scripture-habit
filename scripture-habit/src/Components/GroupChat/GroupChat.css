@@ -969,58 +969,82 @@
         top: 0;
         left: 0;
         right: 0;
-        /* Add top padding for safe area + small buffer */
         padding-top: calc(env(safe-area-inset-top, 24px) + 8px);
-        padding-bottom: 0.5rem;
-        padding-left: 1rem;
-        padding-right: 1rem;
+        padding-bottom: 8px;
+        padding-left: 10px;
+        padding-right: 10px;
         border-radius: 0;
         height: auto;
+        min-height: 60px;
         z-index: 100;
         background: linear-gradient(135deg, #FF919D 0%, #fc6777 100%) !important;
-        -webkit-backdrop-filter: blur(10px);
-        backdrop-filter: blur(10px);
-        border-bottom: none;
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: space-between !important;
         box-shadow: 0 4px 20px rgba(255, 145, 157, 0.4);
-        border-bottom-left-radius: 0.5rem;
-        border-bottom-right-radius: 0.5rem;
-    }
-
-    .chat-header .back-button {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        background: transparent;
-        box-shadow: none;
-        cursor: pointer;
-    }
-
-    .back-button svg {
-        stroke: white !important;
-        fill: white !important;
+        border-bottom-left-radius: 1rem;
+        border-bottom-right-radius: 1rem;
     }
 
     .edit-group-name-btn {
         display: none !important;
     }
 
+    .header-left {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        gap: 8px !important;
+        flex: 1;
+        min-width: 0;
+    }
+
     .chat-header h2 {
-        font-size: 1.15rem;
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        margin: 0 !important;
+        font-size: 1.15rem !important;
         color: white !important;
+        gap: 6px !important;
+        flex: 1;
+        min-width: 0;
+        white-space: nowrap;
+    }
+
+    .unity-score-container {
+        display: flex !important;
+        align-items: center !important;
+        flex-shrink: 0;
+    }
+
+    .unity-score-badge {
+        font-size: 1rem !important;
+        background: rgba(255, 255, 255, 0.2);
+        padding: 2px 8px;
+        border-radius: 8px;
+        margin-left: 4px !important;
+        white-space: nowrap;
+        display: flex !important;
+        align-items: center !important;
+        gap: 3px;
     }
 
     .member-count-badge {
         color: white !important;
         font-size: 1rem;
+        flex-shrink: 0;
     }
 
-    .unity-score-badge {
-        font-size: 1.1rem !important;
-        background: rgba(255, 255, 255, 0.2);
-        padding: 2px 8px;
-        border-radius: 8px;
-        margin-left: 0.5rem !important;
+    .chat-header .back-button {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        color: white !important;
+        width: 32px;
+        height: 32px;
+        flex-shrink: 0;
     }
 
     /* Change hamburger menu color to white on mobile */
