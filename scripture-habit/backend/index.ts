@@ -1,5 +1,5 @@
 import '../api_internal/lib/load-env.ts';
-import app from '../api/index.ts';
+import app from '../api/api.ts';
 
 const PORT = process.env.PORT || 5000;
 
