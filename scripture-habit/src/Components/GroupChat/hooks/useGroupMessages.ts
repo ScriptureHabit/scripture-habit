@@ -226,113 +226,86 @@ export const useGroupMessages = (groupId: string | null, userData: UserData | nu
 
     // 2. Initial State & Sync Fetch
     const initChain = async () => {
-      try {
-        if (userData?.uid) {
-          const stateRef = doc(db, 'users', userData.uid, 'groupStates', groupId);
-          const stateSnap = await getDoc(stateRef);
-          const initialReadCount = stateSnap.exists() ? (stateSnap.data().readMessageCount || 0) : 0;
+      // 3. Real-time Message Listener (Fixed Window for Scale) - START IMMEDIATELY
+      // Because Firestore Persistence is enabled in firebase.ts, this will return 
+      // cached messages from local disk in milliseconds, providing the "Instant" feel.
+      const messagesRef = collection(db, 'groups', groupId, 'messages').withConverter(messageConverter);
+      
+      const startListener = () => {
+        if (unsubscribeNewMessages) unsubscribeNewMessages();
+        const q = query(messagesRef, orderBy('createdAt', 'desc'), limit(50));
 
-          const messagesRef = collection(db, 'groups', groupId, 'messages').withConverter(messageConverter);
-
-          // 2.5 Hydrate Firestore cache with a Bundle
-          // This allows us to load the latest 50 messages in 1 Read instead of 50.
-          try {
-            console.log(`[useGroupMessages] Fetching bundle for ${groupId}`);
-            const bundleResponse = await apiClient.get(`/api/bundle/${groupId}`, { 
-              responseType: 'arraybuffer',
-              timeout: 5000 
-            });
-            if (bundleResponse.data) {
-              await loadBundle(db, bundleResponse.data);
-              console.log("[useGroupMessages] Bundle loaded successfully");
-            }
-          } catch (bundleErr) {
-            // Bundle loading is an optimization - if it fails, onSnapshot will fall back to server fetch.
-            console.warn("[useGroupMessages] Bundle hydration skipped:", bundleErr);
-          }
-
+        const unsubscribe = onSnapshot(q, (snapshot) => {
           if (isCancelled) return;
-          dispatch({ 
-            type: 'SET_INITIAL_STATE', 
-            messages: [], 
-            groupData: state.groupData as GroupData, // Preserve the groupData if onSnapshot already caught it
-            readCount: initialReadCount 
+          const newIncoming: Message[] = [];
+          const updatedMessages: Message[] = [];
+          const removedIds: string[] = [];
+
+          snapshot.docChanges().forEach((change) => {
+            const data = change.doc.data() as Message;
+            if (change.type === "added") {
+              newIncoming.push(data);
+            } else if (change.type === "modified") {
+              updatedMessages.push(data);
+            } else if (change.type === "removed") {
+              removedIds.push(change.doc.id);
+            }
           });
 
-          // 3. Real-time Message Listener (Fixed Window for Scale)
-          // We only listen to the last 50 messages to keep the listener overhead constant
-          const startListener = () => {
-            if (unsubscribeNewMessages) unsubscribeNewMessages();
-
-            // Fixed window query - last 50 messages
-            const q = query(messagesRef, orderBy('createdAt', 'desc'), limit(50));
-
-            const unsubscribe = onSnapshot(q, (snapshot) => {
-              if (isCancelled) return;
-              const newIncoming: Message[] = [];
-              const updatedMessages: Message[] = [];
-              const removedIds: string[] = [];
-
-              snapshot.docChanges().forEach((change) => {
-                const data = change.doc.data() as Message;
-                if (change.type === "added") {
-                  // Only add if it's not already in our state (to handle overlap)
-                  newIncoming.push(data);
-                } else if (change.type === "modified") {
-                  updatedMessages.push(data);
-                } else if (change.type === "removed") {
-                  removedIds.push(change.doc.id);
-                }
-              });
-
-              // Apply changes
-              if (newIncoming.length > 0) {
-                dispatch({ type: 'ADD_NEW_MESSAGES', newMessages: newIncoming });
-              }
-              updatedMessages.forEach(msg => {
-                dispatch({ type: 'UPDATE_MESSAGE', messageId: msg.id, data: msg });
-              });
-              removedIds.forEach(id => {
-                dispatch({ type: 'REMOVE_MESSAGE', messageId: id });
-              });
-
-              // Confetti logic for streak announcements
-              newIncoming.forEach(data => {
-                const messageTime = parseTimestampToMillis(data.createdAt);
-                const isRecent = messageTime && (Date.now() - messageTime) < 30000;
-                if (data.messageType === 'streakAnnouncement' && data.messageData?.userId !== userData?.uid && isRecent) {
-                  confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, zIndex: 10000 });
-                }
-              });
-
-            }, (err) => {
-              if (isCancelled || err.code === 'permission-denied') return;
-              console.error("[useGroupMessages] Listener error:", err);
-            });
-            
-            unsubscribeNewMessages = unsubscribe;
-          };
-
-          // Initial listener start
-          startListener();
-          
-          // No need to store in a ref anymore for restarts, but kept for cleanup logic if any
-          listenerStarterRef.current = startListener;
-        }
-
-      } catch (err: unknown) {
-        if (!isCancelled) {
-          if (err instanceof FirebaseError) {
-            console.error(`[useGroupMessages] Firebase Error (${err.code}):`, err);
-            if (err.code === 'permission-denied') {
-              dispatch({ type: 'SET_ERROR', message: "Access denied. Please check your group membership." });
-            } else {
-              dispatch({ type: 'SET_ERROR', message: "Failed to load chat." });
-            }
-          } else if (err instanceof Error) {
-            console.error("[useGroupMessages] Generic Error in initChain:", err);
+          if (newIncoming.length > 0) {
+            dispatch({ type: 'ADD_NEW_MESSAGES', newMessages: newIncoming });
           }
+          updatedMessages.forEach(msg => {
+            dispatch({ type: 'UPDATE_MESSAGE', messageId: msg.id, data: msg });
+          });
+          removedIds.forEach(id => {
+            dispatch({ type: 'REMOVE_MESSAGE', messageId: id });
+          });
+
+          newIncoming.forEach(data => {
+            const messageTime = parseTimestampToMillis(data.createdAt);
+            const isRecent = messageTime && (Date.now() - messageTime) < 30000;
+            if (data.messageType === 'streakAnnouncement' && data.messageData?.userId !== userData?.uid && isRecent) {
+              confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, zIndex: 10000 });
+            }
+          });
+        }, (err) => {
+          if (isCancelled || err.code === 'permission-denied') return;
+          console.error("[useGroupMessages] Listener error:", err);
+        });
+        
+        unsubscribeNewMessages = unsubscribe;
+      };
+
+      startListener();
+      listenerStarterRef.current = startListener;
+
+      // Background Tasks (Optimizations)
+      try {
+        if (userData?.uid) {
+          // A. Fetch Read Count in background
+          getDoc(doc(db, 'users', userData.uid, 'groupStates', groupId)).then(stateSnap => {
+            if (stateSnap.exists() && !isCancelled) {
+              dispatch({ type: 'SET_READ_COUNT', count: stateSnap.data().readMessageCount || 0 });
+            }
+          });
+
+          // B. Hydrate Firestore cache with a Bundle in background (Cost reduction)
+          apiClient.get(`/api/bundle/${groupId}`, { 
+            responseType: 'arraybuffer',
+            timeout: 5000 
+          }).then(bundleResponse => {
+            if (bundleResponse.data && !isCancelled) {
+              loadBundle(db, bundleResponse.data).then(() => {
+                console.log("[useGroupMessages] Bundle hydrated in background");
+              });
+            }
+          }).catch(err => {
+            console.warn("[useGroupMessages] Background bundle hydration skipped:", err);
+          });
         }
+      } catch (err: unknown) {
+        console.error("[useGroupMessages] Background tasks error:", err);
       }
     };
 
