@@ -88,7 +88,7 @@ const Dashboard: FC = () => {
     setLatestNoteNotification,
     showNotifPrompt, 
     handleEnableNotifications, handleCloseNotifPrompt 
-  } = useDashboardNotifications(userData, userGroups, selectedView, loading, showWelcomeStory, showAutoKickModal, isJoiningInvite, loadingGroupStates, t);
+  } = useDashboardNotifications(userData, userGroups, selectedView, loading, showWelcomeStory, showAutoKickModal, isJoiningInvite, loadingGroupStates, activeGroupId, t);
 
   const { markWelcomeStorySeen, updateNickname, syncNotificationReadStatus } = useDashboardActions(user, userData);
 

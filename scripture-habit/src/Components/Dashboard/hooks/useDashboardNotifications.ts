@@ -23,6 +23,7 @@ export const useDashboardNotifications = (
     showAutoKickModal: boolean, 
     isJoiningInvite: boolean,
     loadingGroupStates: boolean,
+    activeGroupId: string | null,
     t: (key: string) => string
 ) => {
     const [latestNoteNotification, setLatestNoteNotification] = useState<NotificationInfo | null>(null);
@@ -68,6 +69,8 @@ export const useDashboardNotifications = (
         let mostRecent: NotificationInfo | null = null;
 
         userGroups.forEach(group => {
+            if (group.id === activeGroupId) return;
+
             const noteTime = parseTimestampToMillis(group.lastNoteAt);
             const messageTime = parseTimestampToMillis(group.lastMessageAt);
 
@@ -105,7 +108,7 @@ export const useDashboardNotifications = (
         });
 
         setLatestNoteNotification(mostRecent);
-    }, [userGroups, userData?.uid, loadingGroupStates]);
+    }, [userGroups, userData?.uid, loadingGroupStates, activeGroupId]);
 
     return { 
         latestNoteNotification,

@@ -62,13 +62,18 @@ export const useGroupMessages = (groupId: string | null, userData: UserData | nu
     }
   }, [userData?.uid]);
 
+  const lastForcedSyncGidRef = useRef<string | null>(null);
+
   // Robust Read Synchronization Effect
   useEffect(() => {
     if (!groupId || !state.groupData || state.userReadCount === null) return;
     
     const totalMsgs = state.groupData.messageCount || 0;
-    if (totalMsgs > state.userReadCount) {
+    const isNewGroupSession = lastForcedSyncGidRef.current !== groupId;
+
+    if (totalMsgs > state.userReadCount || (isNewGroupSession && totalMsgs > 0)) {
       updateReadStatus(groupId, totalMsgs);
+      lastForcedSyncGidRef.current = groupId;
     }
   }, [groupId, state.groupData?.messageCount, state.userReadCount, updateReadStatus]);
 
