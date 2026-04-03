@@ -1,9 +1,11 @@
 import { useReducer, useEffect, useRef, useCallback } from 'react';
-import { collection, query, orderBy, onSnapshot, doc, getDoc, getDocs, limit, startAfter, where, documentId, loadBundle } from 'firebase/firestore';
+import { collection, query, orderBy, onSnapshot, doc, getDocs, limit, startAfter, where, documentId, loadBundle } from 'firebase/firestore';
 import confetti from 'canvas-confetti';
 import * as Sentry from "@sentry/react";
 import { Message, GroupData, MembersMap, UserProfileBrief } from '../../../types/chat';
-import { db } from '../../../firebase';
+import { db, auth, appCheck } from '../../../firebase';
+import { getToken } from 'firebase/app-check';
+import { Capacitor } from '@capacitor/core';
 import { UserData } from '../../../types/user';
 import { groupConverter, messageConverter, userConverter, groupMemberConverter } from '../../../Utils/firestoreConverters';
 import { parseTimestampToMillis } from '../../../Utils/timeUtils';
@@ -26,34 +28,39 @@ export const useGroupMessages = (groupId: string | null, userData: UserData | nu
     membersMapRef.current = state.membersMap;
   }, [state.userReadCount, state.membersMap]);
 
-  // Helper for read status (Optimized for performance: direct Firestore write instead of API call)
+  // Helper for read status (Robust: Use API to sync with server-truth)
   const updateReadStatus = useCallback(async (gid: string, totalCount: number) => {
-    if (!userData?.uid || !gid || totalCount <= 0) return;
+    if (!userData?.uid || !gid) return;
     try {
-      const { writeBatch, doc, serverTimestamp } = await import('firebase/firestore');
-      const batch = writeBatch(db);
+      const idToken = await auth?.currentUser?.getIdToken();
+      if (!idToken) return;
 
-      // 1. Update personal read count for this group
-      const memberRef = doc(db, 'groups', gid, 'members', userData.uid);
-      batch.set(memberRef, {
-        lastReadAt: serverTimestamp(),
-        readMessageCount: totalCount
-      }, { merge: true });
+      let appCheckToken = '';
+      try {
+        const appCheckTokenResponse = await getToken(appCheck, false);
+        appCheckToken = appCheckTokenResponse.token;
+      } catch (e) {
+        console.warn('[useGroupMessages] AppCheck failed:', e);
+      }
 
-      // 2. Update general user state for group unread counts (Dashboard)
-      const groupStateRef = doc(db, 'users', userData.uid, 'groupStates', gid);
-      batch.set(groupStateRef, {
-        readMessageCount: totalCount,
-        lastReadAt: serverTimestamp()
-      }, { merge: true });
+      const API_BASE = Capacitor.isNativePlatform() ? 'https://scripturehabit.app' : '';
+      const response = await fetch(`${API_BASE}/api/update-read-status`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${idToken}`,
+          ...(appCheckToken ? { 'X-Firebase-AppCheck': appCheckToken } : {})
+        },
+        body: JSON.stringify({ groupId: gid, readMessageCount: totalCount })
+      });
 
-      await batch.commit();
-
-      dispatch({ type: 'SET_READ_COUNT', count: totalCount });
+      if (response.ok) {
+        dispatch({ type: 'SET_READ_COUNT', count: totalCount });
+      }
     } catch (err) {
-      console.error("Failed to update read status directly:", err);
+      console.error("Failed to update read status via API:", err);
     }
-  }, [userData?.uid, dispatch]);
+  }, [userData?.uid]);
 
   // Robust Read Synchronization Effect
   useEffect(() => {
@@ -74,6 +81,7 @@ export const useGroupMessages = (groupId: string | null, userData: UserData | nu
     let unsubscribeGroup = () => { };
     let unsubscribeNewMessages = () => { };
     let unsubscribeMembers = () => { };
+    let unsubscribeReadCount = () => { };
 
     const groupRef = doc(db, 'groups', groupId).withConverter(groupConverter);
 
@@ -175,8 +183,8 @@ export const useGroupMessages = (groupId: string | null, userData: UserData | nu
       // Background Tasks (Optimizations)
       try {
         if (userData?.uid) {
-          // A. Fetch Read Count in background
-          getDoc(doc(db, 'users', userData.uid, 'groupStates', groupId)).then(stateSnap => {
+          // A. Sync Read Count in Real-time
+          unsubscribeReadCount = onSnapshot(doc(db, 'users', userData.uid, 'groupStates', groupId), (stateSnap) => {
             if (stateSnap.exists() && !isCancelled) {
               dispatch({ type: 'SET_READ_COUNT', count: stateSnap.data().readMessageCount || 0 });
             }
@@ -206,8 +214,9 @@ export const useGroupMessages = (groupId: string | null, userData: UserData | nu
     return () => {
       isCancelled = true;
       unsubscribeGroup();
-      if (unsubscribeNewMessages) unsubscribeNewMessages();
+      unsubscribeNewMessages();
       unsubscribeMembers();
+      unsubscribeReadCount();
     };
   }, [groupId, userData?.uid, updateReadStatus, t]);
 
