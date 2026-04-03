@@ -45,11 +45,7 @@
             "destination": "https://scripturehabit.app/:lang",
             "permanent": true
         },
-        {
-            "source": "/:lang(en|ja|pt|zho|es|vi|th|ko|tl|sw)",
-            "destination": "/:lang",
-            "permanent": true
-        },
+
         {
             "source": "/(.*)",
             "has": [
