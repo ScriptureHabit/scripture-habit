@@ -1487,6 +1487,8 @@ input:checked+.slider:before {
 /* Message Context Menu (Edit/Delete) */
 .message-context-menu {
     position: fixed;
+    top: 50%;
+    left: 50%;
     background: rgba(255, 255, 255, 0.95);
     -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
@@ -1842,17 +1844,21 @@ input:checked+.slider:before {
 /* Mobile Menu Panel */
 .mobile-menu {
     position: absolute;
-    top: 0;
-    right: 0;
-    width: 280px;
-    max-width: 85vw;
-    height: 100%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 320px;
+    max-width: 90vw;
+    height: auto;
+    max-height: 85vh;
     background: #ffffff;
-    box-shadow: -10px 0 40px rgba(0, 0, 0, 0.25);
-    animation: slideInRight 0.3s ease;
+    border-radius: 1.5rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+    animation: menuScaleIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     display: flex;
     flex-direction: column;
     z-index: 10000;
+    overflow: hidden;
 }
 
 @keyframes slideInRight {
@@ -1905,6 +1911,18 @@ input:checked+.slider:before {
     background: rgba(0, 0, 0, 0.1);
     color: var(--black);
 }
+
+.mobile-menu-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0.5rem 0;
+    scrollbar-width: thin;
+}
+
+.mobile-menu-content::-webkit-scrollbar {
+    width: 4px;
+}
+
 
 /* Mobile Menu Sections & Items */
 .mobile-menu-item-card {
