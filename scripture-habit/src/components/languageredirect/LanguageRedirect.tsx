@@ -1,6 +1,6 @@
 import React from 'react';
 import { Navigate, Location } from 'react-router-dom';
-import { useLanguage, SUPPORTED_LANGUAGES } from '../../Context/LanguageContext';
+import { useLanguage, SUPPORTED_LANGUAGES } from '../../context/LanguageContext';
 
 interface LanguageRedirectProps {
   location: Location;

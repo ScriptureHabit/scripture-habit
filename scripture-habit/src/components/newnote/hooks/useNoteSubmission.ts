@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import axios from 'axios';
-import apiClient from '../../../Utils/apiClient';
+import apiClient from '../../../utils/apiClient';
 import { db } from '../../../firebase';
 import { doc, writeBatch, serverTimestamp } from 'firebase/firestore';
 import { toast } from 'react-toastify';
 import confetti from 'canvas-confetti';
 import { UserData } from '../../../types/user';
-import { buildNoteSearchTokens } from '../../../Utils/searchTokenUtils';
+import { buildNoteSearchTokens } from '../../../utils/searchTokenUtils';
 
 import { Message } from '../../../types/chat';
 import { Note } from '../../../types/note';

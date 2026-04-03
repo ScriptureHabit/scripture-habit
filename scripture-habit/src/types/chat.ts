@@ -5,7 +5,7 @@ import { MessageDocument, GroupDocument as SharedGroupDocument, UserDocument as 
  * Common Firebase Timestamp type to handle both Firestore Timestamp
  * and plain JS objects from APIs or persistence.
  */
-export type FirebaseTimestamp = Timestamp | { seconds: number; nanoseconds: number } | string | Date | number;
+export type FirebaseTimestamp = Timestamp | { seconds: number; nanoseconds: number } | { toDate: () => Date } | string | Date | number;
 
 export interface Reaction {
   userId: string; // Internal standard

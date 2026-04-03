@@ -1,6 +1,6 @@
 import { FC, ReactNode, useMemo } from 'react';
 import { Capacitor } from '@capacitor/core';
-import { useLanguage } from '../../Context/LanguageContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { ChatProvider, ChatDataContextType, ChatInteractionContextType, ChatUIContextType, ChatActionContextType, ActiveModalType } from './ChatContext';
 import { UserData } from '../../types/user';
 import { Group, Message } from '../../types/chat';

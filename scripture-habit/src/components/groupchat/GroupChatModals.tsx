@@ -1,19 +1,19 @@
 import { FC } from 'react';
-import UserProfileModal from '../UserProfileModal/UserProfileModal';
+import UserProfileModal from '../userprofilemodal/UserProfileModal';
 import { useChatData, useChatActions, useChatInteraction, useChatUI } from './ChatContext';
 
 // Sub-modal components
-import LeaveGroupModal from './Modals/LeaveGroupModal';
-import DeleteGroupModal from './Modals/DeleteGroupModal';
-import EditGroupNameModal from './Modals/EditGroupNameModal';
-import DeleteMessageModal from './Modals/DeleteMessageModal';
-import EditMessageModal from './Modals/EditMessageModal';
-import ReactionsModal from './Modals/ReactionsModal';
-import MembersModal from './Modals/MembersModal';
-import UnityModal from './Modals/UnityModal';
-import CheerConfirmModal from './Modals/CheerConfirmModal';
-import ReportModal from './Modals/ReportModal';
-import InviteModal from './Modals/InviteModal';
+import LeaveGroupModal from './modals/LeaveGroupModal';
+import DeleteGroupModal from './modals/DeleteGroupModal';
+import EditGroupNameModal from './modals/EditGroupNameModal';
+import DeleteMessageModal from './modals/DeleteMessageModal';
+import EditMessageModal from './modals/EditMessageModal';
+import ReactionsModal from './modals/ReactionsModal';
+import MembersModal from './modals/MembersModal';
+import UnityModal from './modals/UnityModal';
+import CheerConfirmModal from './modals/CheerConfirmModal';
+import ReportModal from './modals/ReportModal';
+import InviteModal from './modals/InviteModal';
 import './GroupChatModals.css';
 
 const GroupChatModals: FC = () => {

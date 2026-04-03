@@ -1,10 +1,10 @@
 import { FC } from 'react';
 import './GroupChat.css';
-import GroupChatMessageListContainer from './SubComponents/GroupChatMessageListContainer';
-import GroupChatFooter from './SubComponents/GroupChatFooter';
+import GroupChatMessageListContainer from './subcomponents/GroupChatMessageListContainer';
+import GroupChatFooter from './subcomponents/GroupChatFooter';
 import GroupChatModals from './GroupChatModals';
-import ChatHeader from './SubComponents/ChatHeader';
-import GroupChatContextMenu from './SubComponents/GroupChatContextMenu';
+import ChatHeader from './subcomponents/ChatHeader';
+import GroupChatContextMenu from './subcomponents/GroupChatContextMenu';
 import GroupChatProvider from './GroupChatProvider';
 import { useChatUI, useChatActions } from './ChatContext';
 import { UserData } from '../../types/user';

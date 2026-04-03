@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { useLanguage, SUPPORTED_LANGUAGES } from '../Context/LanguageContext';
+import { useLanguage, SUPPORTED_LANGUAGES } from '../context/LanguageContext';
 
 const SEOManager: React.FC = () => {
     const { t, language } = useLanguage();

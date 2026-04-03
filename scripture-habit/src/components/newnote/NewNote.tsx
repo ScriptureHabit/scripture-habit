@@ -1,8 +1,8 @@
 import { useState, useEffect, FC, useMemo } from 'react';
 import Select from 'react-select';
 import { UilShuffle, UilRobot } from '@iconscout/react-unicons';
-import { useLanguage } from '../../Context/LanguageContext';
-import Input from '../Input/Input';
+import { useLanguage } from '../../context/LanguageContext';
+import Input from '../input/Input';
 import './NewNote.css';
 
 // Hooks
@@ -11,20 +11,20 @@ import { useAIGenerator } from './hooks/useAIGenerator';
 import { useNoteSubmission } from './hooks/useNoteSubmission';
 
 // Subcomponents
-import RandomScriptureMenu from './SubComponents/RandomScriptureMenu';
-import ScriptureSelectionModal from './SubComponents/ScriptureSelectionModal';
-import CloseConfirmModal from './SubComponents/CloseConfirmModal';
+import RandomScriptureMenu from './subcomponents/RandomScriptureMenu';
+import ScriptureSelectionModal from './subcomponents/ScriptureSelectionModal';
+import CloseConfirmModal from './subcomponents/CloseConfirmModal';
 
-import { getTodayReadingPlan } from '../../Data/DailyReadingPlan';
-import { AdversityScriptures } from '../../Data/AdversityScriptures';
-import { JoyScriptures } from '../../Data/JoyScriptures';
-import { RelationshipScriptures } from '../../Data/RelationshipScriptures';
-import { MasteryScriptures } from '../../Data/MasteryScriptures';
-import { PeaceScriptures } from '../../Data/PeaceScriptures';
-import { localizeLdsUrl } from '../../Utils/urlLocalizer';
-import { getBookSuggestions } from '../../Utils/suggestionUtils';
-import { getGospelLibraryUrl, getCategoryFromScripture } from '../../Utils/gospelLibraryMapper';
-import { removeNoteHeader } from '../../Utils/noteUtils';
+import { getTodayReadingPlan } from '../../data/DailyReadingPlan';
+import { AdversityScriptures } from '../../data/AdversityScriptures';
+import { JoyScriptures } from '../../data/JoyScriptures';
+import { RelationshipScriptures } from '../../data/RelationshipScriptures';
+import { MasteryScriptures } from '../../data/MasteryScriptures';
+import { PeaceScriptures } from '../../data/PeaceScriptures';
+import { localizeLdsUrl } from '../../utils/urlLocalizer';
+import { getBookSuggestions } from '../../utils/suggestionUtils';
+import { getGospelLibraryUrl, getCategoryFromScripture } from '../../utils/gospelLibraryMapper';
+import { removeNoteHeader } from '../../utils/noteUtils';
 import { UserData } from '../../types/user';
 import { Group, Message } from '../../types/chat';
 

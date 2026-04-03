@@ -2,10 +2,10 @@ import { useMemo, useEffect } from 'react';
 import { Capacitor } from '@capacitor/core';
 import { auth, appCheck } from '../../../../firebase';
 import { getToken } from 'firebase/app-check';
-import { safeStorage } from '../../../../Utils/storage';
+import { safeStorage } from '../../../../utils/storage';
 import confetti from 'canvas-confetti';
 import { Message, GroupData } from '../../../../types/chat';
-import { parseTimestampToMillis } from '../../../../Utils/timeUtils';
+import { parseTimestampToMillis } from '../../../../utils/timeUtils';
 import { UserData } from '../../../../types/user';
 
 export const useUnityScore = (

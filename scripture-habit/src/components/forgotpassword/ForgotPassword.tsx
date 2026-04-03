@@ -1,11 +1,11 @@
 import { useState, FormEvent } from "react";
 import "./ForgotPassword.css";
-import Button from "../Button/Button";
-import Input from "../Input/Input";
+import Button from "../button/Button";
+import Input from "../input/Input";
 import { auth } from "../../firebase";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { Link } from "react-router-dom";
-import { useLanguage } from "../../Context/LanguageContext";
+import { useLanguage } from "../../context/LanguageContext";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");

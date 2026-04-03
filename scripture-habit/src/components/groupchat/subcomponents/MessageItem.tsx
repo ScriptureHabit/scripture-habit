@@ -1,11 +1,11 @@
 import { FC, MouseEvent, useEffect, useRef, memo, useMemo } from 'react';
-import NoteDisplay from '../../NoteDisplay/NoteDisplay';
+import NoteDisplay from '../../notedisplay/NoteDisplay';
 import { Message, Group, UserProfileBrief, MembersMap } from '../../../types/chat';
 import { UserData } from '../../../types/user';
 import { ReactionPreview } from '../../../../types/firestore';
 import SystemMessage from './SystemMessage';
 import GospelLink from './GospelLink';
-import { parseTimestampToMillis } from '../../../Utils/timeUtils';
+import { parseTimestampToMillis } from '../../../utils/timeUtils';
 import './MessageItem.css';
 
 interface MessageItemProps {

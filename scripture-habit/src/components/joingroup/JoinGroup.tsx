@@ -5,15 +5,15 @@ import { auth, db, appCheck } from '../../firebase';
 import { doc, onSnapshot, collection, query, where, getDocs, limit } from 'firebase/firestore';
 import { useNavigate, Link } from 'react-router-dom';
 import { onAuthStateChanged, User } from "firebase/auth";
-import '../GroupForm/GroupForm.css';
+import '../groupform/GroupForm.css';
 import GroupCard from '../../groups/GroupCard';
-import { useLanguage } from '../../Context/LanguageContext';
-import UserProfileModal from '../UserProfileModal/UserProfileModal';
-import Mascot from '../Mascot/Mascot';
+import { useLanguage } from '../../context/LanguageContext';
+import UserProfileModal from '../userprofilemodal/UserProfileModal';
+import Mascot from '../mascot/Mascot';
 import { toast } from 'react-toastify';
 import { Group } from '../../types/chat';
 import { UserData } from '../../types/user';
-import { parseTimestampToDate } from '../../Utils/timeUtils';
+import { parseTimestampToDate } from '../../utils/timeUtils';
 
 export default function JoinGroup() {
   const { t, language } = useLanguage();

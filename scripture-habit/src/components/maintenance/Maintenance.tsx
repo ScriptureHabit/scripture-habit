@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { useLanguage } from '../../Context/LanguageContext';
+import { useLanguage } from '../../context/LanguageContext';
 import './Maintenance.css';
 
 interface MaintenanceProps {

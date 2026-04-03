@@ -1,16 +1,16 @@
 import { useState, useEffect, FC, useRef, ChangeEvent } from 'react';
 import './Profile.css';
-import { useLanguage } from '../../Context/LanguageContext';
-import { useSettings } from '../../Context/SettingsContext';
+import { useLanguage } from '../../context/LanguageContext';
+import { useSettings } from '../../context/SettingsContext';
 import { auth, storage } from '../../firebase';
 import { useNavigate } from 'react-router-dom';
 import { UilSignOutAlt, UilCamera, UilCalendarAlt } from '@iconscout/react-unicons';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { Capacitor } from '@capacitor/core';
-import Button from '../Button/Button';
+import Button from '../button/Button';
 import { toast } from 'react-toastify';
 
-import { requestNotificationPermission, disableNotifications } from '../../Utils/notificationHelper';
+import { requestNotificationPermission, disableNotifications } from '../../utils/notificationHelper';
 import { UserData } from '../../types/user';
 
 interface ProfileStats {

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { safeStorage } from '../../../Utils/storage';
+import { safeStorage } from '../../../utils/storage';
 import { Capacitor } from '@capacitor/core';
 import { User } from 'firebase/auth';
 import { getToken } from 'firebase/app-check'; // Added AppCheck getToken

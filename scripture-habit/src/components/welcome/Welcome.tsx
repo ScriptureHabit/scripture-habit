@@ -1,12 +1,12 @@
 import { useState, FC } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Button from '../Button/Button';
-import Mascot from '../Mascot/Mascot';
-import { useLanguage } from '../../Context/LanguageContext';
-import BrowserWarningModal from '../BrowserWarningModal/BrowserWarningModal';
-import { isInAppBrowser } from '../../Utils/browserDetection';
+import Button from '../button/Button';
+import Mascot from '../mascot/Mascot';
+import { useLanguage } from '../../context/LanguageContext';
+import BrowserWarningModal from '../browserwarningmodal/BrowserWarningModal';
+import { isInAppBrowser } from '../../utils/browserDetection';
 import './Welcome.css';
-import Footer from '../Footer/Footer';
+import Footer from '../footer/Footer';
 
 const Welcome: FC = () => {
     const { t, setLanguage, language } = useLanguage();

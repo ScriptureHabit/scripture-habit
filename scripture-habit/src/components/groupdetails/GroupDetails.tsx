@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import { useParams } from 'react-router-dom';
-import LeaveGroupButton from "../Button/LeaveGroupButton";
-import DeleteGroupButton from "../Button/DeleteGroupButton";
+import LeaveGroupButton from "../button/LeaveGroupButton";
+import DeleteGroupButton from "../button/DeleteGroupButton";
 import { Group } from '../../types/chat';
 
 interface GroupDetailsProps {

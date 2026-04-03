@@ -1,10 +1,10 @@
 import { FC, useState } from 'react';
 import { UilTimes, UilCopy } from '@iconscout/react-unicons';
-import Mascot from '../../Mascot/Mascot';
-import ConfirmModal from '../../ConfirmModal/ConfirmModal';
+import Mascot from '../../mascot/Mascot';
+import ConfirmModal from '../../confirmmodal/ConfirmModal';
 import { Group } from '../../../types/chat';
 import { UserData } from '../../../types/user';
-import { parseTimestampToDate } from '../../../Utils/timeUtils';
+import { parseTimestampToDate } from '../../../utils/timeUtils';
 
 interface InviteModalProps {
     t: (key: string, replacements?: Record<string, string | number>) => string;

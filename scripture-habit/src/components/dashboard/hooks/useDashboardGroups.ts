@@ -3,7 +3,7 @@ import { doc, onSnapshot, collection, FirestoreError } from 'firebase/firestore'
 import { db } from '../../../firebase';
 import { UserData } from '../../../types/user';
 import { Group } from '../../../types/chat';
-import { groupMemberConverter } from '../../../Utils/firestoreConverters';
+import { groupMemberConverter } from '../../../utils/firestoreConverters';
 
 export const useDashboardGroups = (userData: UserData | null, initialGroupId: string | null) => {
     const [userGroups, setUserGroups] = useState<Group[]>([]);

@@ -1,5 +1,5 @@
 import { useRef, useLayoutEffect, useEffect } from 'react';
-import { safeStorage } from '../../../../Utils/storage';
+import { safeStorage } from '../../../../utils/storage';
 import { Message } from '../../../../types/chat';
 
 interface ScrollUserData {

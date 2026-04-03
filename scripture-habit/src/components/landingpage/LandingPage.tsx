@@ -1,9 +1,9 @@
 import { useState, FC } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useLanguage, Language } from '../../Context/LanguageContext';
-import Button from '../Button/Button';
+import { useLanguage, Language } from '../../context/LanguageContext';
+import Button from '../button/Button';
 import './LandingPage.css';
-import Footer from '../Footer/Footer';
+import Footer from '../footer/Footer';
 import { UilGlobe } from '@iconscout/react-unicons';
 
 interface LanguageOption {

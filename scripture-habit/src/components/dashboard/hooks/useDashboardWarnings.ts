@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { UserData } from '../../../types/user';
 import { Group } from '../../../types/chat';
-import { parseTimestampToDate } from '../../../Utils/timeUtils';
+import { parseTimestampToDate } from '../../../utils/timeUtils';
 
 interface WarningInfo {
   name: string;

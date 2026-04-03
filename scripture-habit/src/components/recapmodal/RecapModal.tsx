@@ -2,7 +2,7 @@ import { FC } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { UilEnvelopeAlt, UilSave, UilTimes } from '@iconscout/react-unicons';
 import './RecapModal.css';
-import { useLanguage } from '../../Context/LanguageContext';
+import { useLanguage } from '../../context/LanguageContext';
 
 interface RecapModalProps {
     isOpen: boolean;

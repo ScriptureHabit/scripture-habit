@@ -1,7 +1,7 @@
 import { FC, useState } from 'react';
 import './UserProfileModal.css';
 import { UilTimes, UilFire, UilFileAlt } from '@iconscout/react-unicons';
-import { useLanguage } from '../../Context/LanguageContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { UserData } from '../../types/user';
 import { UserProfile } from '../../types/chat';
 

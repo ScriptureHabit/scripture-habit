@@ -1,7 +1,7 @@
 import { useState, useEffect, FC } from 'react';
 import { UilMultiply, UilShare, UilPlusSquare, UilApps } from '@iconscout/react-unicons';
 import { useLocation } from 'react-router-dom';
-import { useLanguage, SUPPORTED_LANGUAGES, Language } from '../../Context/LanguageContext';
+import { useLanguage, SUPPORTED_LANGUAGES, Language } from '../../context/LanguageContext';
 import './InstallPrompt.css';
 
 // Extend Navigator for iOS standalone check
@@ -30,11 +30,11 @@ const InstallPrompt: FC = () => {
 
         window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
-        // Check if the event was already captured globally (in main.jsx)
+        // Check if the event was already captured globally (in main.tsx)
         if (window.deferredPWAPrompt) {
             console.log('[PWA] Using global deferred prompt');
             handleBeforeInstallPrompt(window.deferredPWAPrompt);
-            // DO NOT set to null so Profile.jsx can also access it
+            // DO NOT set to null so Profile.tsx can also access it
         }
 
         // Immediate platform detection

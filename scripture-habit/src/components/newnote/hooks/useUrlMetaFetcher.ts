@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import apiClient from '../../../Utils/apiClient';
+import apiClient from '../../../utils/apiClient';
 import { auth } from '../../../firebase';
 
 /**

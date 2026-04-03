@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { safeStorage } from '../../../Utils/storage';
-import { requestNotificationPermission } from '../../../Utils/notificationHelper';
+import { safeStorage } from '../../../utils/storage';
+import { requestNotificationPermission } from '../../../utils/notificationHelper';
 import { UserData } from '../../../types/user';
 import { Group } from '../../../types/chat';
-import { parseTimestampToMillis } from '../../../Utils/timeUtils';
+import { parseTimestampToMillis } from '../../../utils/timeUtils';
 
 interface NotificationInfo {
   type: 'note' | 'message';

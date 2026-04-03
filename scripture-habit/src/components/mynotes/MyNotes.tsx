@@ -1,15 +1,15 @@
 import { useState, FC } from 'react';
 import { UilBookOpen, UilSearchAlt, UilAnalysis, UilEnvelope, UilAngleLeft, UilAngleRight } from '@iconscout/react-unicons';
-import NewNote from '../NewNote/NewNote';
-import NoteCard from '../NoteCard/NoteCard';
-import RecapModal from '../RecapModal/RecapModal';
-import LetterBox from '../LetterBox/LetterBox';
+import NewNote from '../newnote/NewNote';
+import NoteCard from '../notecard/NoteCard';
+import RecapModal from '../recapmodal/RecapModal';
+import LetterBox from '../letterbox/LetterBox';
 import { toast } from 'react-toastify';
 import './MyNotes.css';
-import { useLanguage } from '../../Context/LanguageContext';
+import { useLanguage } from '../../context/LanguageContext';
 import NoteDetailModal from './NoteDetailModal';
-import Mascot from '../Mascot/Mascot';
-import { NoteGridSkeleton } from '../Skeleton/Skeleton';
+import Mascot from '../mascot/Mascot';
+import { NoteGridSkeleton } from '../skeleton/Skeleton';
 
 import { UserData } from '../../types/user';
 import { Group } from '../../types/chat';
@@ -23,7 +23,7 @@ import { useRecap } from './hooks/useRecap';
 
 // Types
 import { SCRIPTURE_CATEGORIES, CATEGORY_TRANSLATION_MAP } from '../../types/scripture';
-import { parseTimestampToDate } from '../../Utils/timeUtils';
+import { parseTimestampToDate } from '../../utils/timeUtils';
 
 interface MyNotesProps {
   userData: UserData;

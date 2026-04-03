@@ -2,7 +2,7 @@ import { FC, Fragment, MouseEvent } from 'react';
 import MessageItem from './MessageItem';
 import { Message, GroupData, MembersMap } from '../../../types/chat';
 import { UserData } from '../../../types/user';
-import { parseTimestampToDate } from '../../../Utils/timeUtils';
+import { parseTimestampToDate } from '../../../utils/timeUtils';
 
 interface GroupChatMessageListProps {
   messages: Message[];

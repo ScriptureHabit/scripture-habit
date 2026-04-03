@@ -1,17 +1,17 @@
 import React, { useState, FC } from 'react';
 import './LoginForm.css';
-import Button from '../Button/Button';
-import Input from '../Input/Input';
+import Button from '../button/Button';
+import Input from '../input/Input';
 import { auth, db } from '../../firebase';
 import { signInWithEmailAndPassword, GoogleAuthProvider, GithubAuthProvider, signInWithPopup, sendEmailVerification, signInWithCredential, signOut, User, AuthProvider, AuthError, UserCredential } from 'firebase/auth';
 import { Capacitor } from '@capacitor/core';
 import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
 import { doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
 import { useNavigate, Link } from 'react-router-dom';
-import { useLanguage } from '../../Context/LanguageContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { UilGoogle, UilGithub } from '@iconscout/react-unicons';
 import { toast } from 'react-toastify';
-import Footer from '../Footer/Footer';
+import Footer from '../footer/Footer';
 
 const LoginForm: FC = () => {
   const { t, language } = useLanguage();

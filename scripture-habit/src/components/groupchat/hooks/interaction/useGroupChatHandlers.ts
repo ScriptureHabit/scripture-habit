@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { db } from '../../../../firebase';
 import { doc, getDoc } from 'firebase/firestore';
-import { safeStorage } from '../../../../Utils/storage';
+import { safeStorage } from '../../../../utils/storage';
 import { UserProfileBrief, GroupData, MembersMap } from '../../../../types/chat';
 import { ReactionItem, ActiveModal } from '../../../../store/useModalStore';
 

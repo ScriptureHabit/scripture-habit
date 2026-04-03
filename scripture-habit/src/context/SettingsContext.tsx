@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useState, useContext, useEffect, ReactNode, useCallback, useMemo } from 'react';
-import { safeStorage } from '../Utils/storage';
+import { safeStorage } from '../utils/storage';
 
 export type FontSize = 'small' | 'medium' | 'large' | 'extraLarge';
 

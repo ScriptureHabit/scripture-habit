@@ -1,8 +1,8 @@
 import React, { createContext, useState, useContext, useEffect, ReactNode, useCallback, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { safeStorage } from '../Utils/storage';
+import { safeStorage } from '../utils/storage';
 import { loadTranslations, loadBookTranslations } from '../locales/i18n';
-import { identifyBookKey } from '../Utils/bookRefMapper';
+import { identifyBookKey } from '../utils/bookRefMapper';
 
 // Static en for initial load/fallback
 import enTranslations from '../locales/en';

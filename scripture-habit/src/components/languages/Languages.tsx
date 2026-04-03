@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import './Languages.css';
-import { useLanguage } from '../../Context/LanguageContext';
+import { useLanguage } from '../../context/LanguageContext';
 
 const Languages: FC = () => {
     const { language, setLanguage, t } = useLanguage();

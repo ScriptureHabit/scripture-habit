@@ -4,10 +4,10 @@ import * as Sentry from "@sentry/react";
 import { Message, GroupData, MembersMap, UserProfileBrief } from '../../../../types/chat';
 import { db } from '../../../../firebase';
 import { UserData } from '../../../../types/user';
-import { groupConverter, messageConverter, userConverter, groupMemberConverter } from '../../../../Utils/firestoreConverters';
+import { groupConverter, messageConverter, userConverter, groupMemberConverter } from '../../../../utils/firestoreConverters';
 import { UserProfileBriefSchema, GroupSchema } from '../../../../types/schemas';
 
-import apiClient from '../../../../Utils/apiClient';
+import apiClient from '../../../../utils/apiClient';
 import { chatReducer, initialState, ChatAction, ChatStatus } from './chatReducer';
 
 /**
@@ -110,7 +110,7 @@ const useGroupMembersSync = (groupId: string | null, status: ChatStatus, members
 
 /**
  * Sub-hook for Message Stream (Bundle hydration & Real-time messages)
- * !! UI Effects (confetti) removed for Data/UI separation !!
+ * !! UI Effects (confetti) removed for data/UI separation !!
  */
 const useMessageStreamSync = (groupId: string | null, userData: UserData | null, dispatch: Dispatch<ChatAction>) => {
   useEffect(() => {

@@ -5,7 +5,7 @@ import * as Sentry from "@sentry/react";
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import './index.css'
 import App from './App'
-import { AuthProvider } from './Context/AuthContext';
+import { AuthProvider } from './context/AuthContext';
 import VConsole from 'vconsole';
 
 // Only initialize vConsole if ?vconsole=true is in the URL

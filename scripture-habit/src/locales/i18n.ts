@@ -1,4 +1,4 @@
-import { Language } from '../Context/LanguageContext';
+import { Language } from '../context/LanguageContext';
 
 const loaders: Record<Language, () => Promise<{ default: Record<string, unknown> }>> = {
   en: () => import('./en'),

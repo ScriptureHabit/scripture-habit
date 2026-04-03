@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { auth, appCheck } from '../../firebase';
 import { getToken } from 'firebase/app-check';
 import { toast } from 'react-toastify';
-import { useLanguage } from '../../Context/LanguageContext';
-import ConfirmModal from '../ConfirmModal/ConfirmModal';
+import { useLanguage } from '../../context/LanguageContext';
+import ConfirmModal from '../confirmmodal/ConfirmModal';
 
 interface DeleteGroupButtonProps {
   groupId: string;

@@ -1,13 +1,13 @@
 import { useState, useEffect, FC } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './GroupOptions.css';
-import { useLanguage } from '../../Context/LanguageContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { auth, db } from '../../firebase';
 import { doc, onSnapshot, updateDoc } from 'firebase/firestore';
 import { onAuthStateChanged, User } from 'firebase/auth';
-import WelcomeStoryModal from '../WelcomeStoryModal/WelcomeStoryModal';
-import Mascot from '../Mascot/Mascot';
-import { OptionsSkeleton } from '../Skeleton/Skeleton';
+import WelcomeStoryModal from '../welcomestorymodal/WelcomeStoryModal';
+import Mascot from '../mascot/Mascot';
+import { OptionsSkeleton } from '../skeleton/Skeleton';
 import { UserData } from '../../types/user';
 
 const GroupOptions: FC = () => {

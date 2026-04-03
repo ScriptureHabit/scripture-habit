@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { toast } from "react-toastify";
-import { useLanguage } from '../../Context/LanguageContext';
+import { useLanguage } from '../../context/LanguageContext';
 
 interface PWAUpdateEvent extends CustomEvent {
   detail: ServiceWorkerRegistration;

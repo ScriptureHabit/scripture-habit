@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import './Mascot.css';
-import { useLanguage } from '../../Context/LanguageContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { UserData } from '../../types/user';
 
 interface MascotProps {

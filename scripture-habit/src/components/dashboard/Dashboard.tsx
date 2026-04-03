@@ -1,22 +1,22 @@
 import { useState, useEffect, FC } from 'react';
 import { Link, Navigate, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { UilPlus, UilPen } from '@iconscout/react-unicons';
-import Sidebar from '../Sidebar/Sidebar';
-import GroupChat from '../GroupChat/GroupChat';
+import Sidebar from '../sidebar/Sidebar';
+import GroupChat from '../groupchat/GroupChat';
 import './Dashboard.css';
 import { toast } from 'react-toastify';
 
-import NewNote from '../NewNote/NewNote';
-import MyNotes from '../MyNotes/MyNotes';
-import Profile from '../Profile/Profile';
-import { getGospelLibraryUrl } from '../../Utils/gospelLibraryMapper';
-import { useLanguage } from '../../Context/LanguageContext';
-import { getTodayReadingPlan } from '../../Data/DailyReadingPlan';
-import WelcomeStoryModal from '../WelcomeStoryModal/WelcomeStoryModal';
-import Donate from '../Donate/Donate';
-import Mascot from '../Mascot/Mascot';
-import Footer from '../Footer/Footer';
-import { DashboardSkeleton } from '../Skeleton/Skeleton';
+import NewNote from '../newnote/NewNote';
+import MyNotes from '../mynotes/MyNotes';
+import Profile from '../profile/Profile';
+import { getGospelLibraryUrl } from '../../utils/gospelLibraryMapper';
+import { useLanguage } from '../../context/LanguageContext';
+import { getTodayReadingPlan } from '../../data/DailyReadingPlan';
+import WelcomeStoryModal from '../welcomestorymodal/WelcomeStoryModal';
+import Donate from '../donate/Donate';
+import Mascot from '../mascot/Mascot';
+import Footer from '../footer/Footer';
+import { DashboardSkeleton } from '../skeleton/Skeleton';
 import NotificationPromptModal from './NotificationPromptModal';
 
 // Hooks

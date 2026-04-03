@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import axios from 'axios';
-import apiClient from '../../../../Utils/apiClient';
+import apiClient from '../../../../utils/apiClient';
 import { toast } from 'react-toastify';
 import { Message } from '../../../../types/chat';
 import { ChatAction } from '../core/chatReducer';

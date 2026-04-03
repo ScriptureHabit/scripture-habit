@@ -1,6 +1,6 @@
 import { useState, useEffect, FC } from 'react';
 import './WelcomeStoryModal.css';
-import { useLanguage } from '../../Context/LanguageContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { UilTimes, UilCheck } from '@iconscout/react-unicons';
 import confetti from 'canvas-confetti';
 import { UserData } from '../../types/user';

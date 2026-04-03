@@ -2,13 +2,13 @@ import { useState, useEffect, FC } from 'react';
 import { UilTimes, UilPen, UilTrashAlt, UilComment, UilThumbsUp } from '@iconscout/react-unicons';
 import { db } from '../../firebase';
 import { doc, collection, query, where, onSnapshot, Timestamp } from 'firebase/firestore';
-import NoteDisplay from '../NoteDisplay/NoteDisplay';
-import { useLanguage } from '../../Context/LanguageContext';
+import NoteDisplay from '../notedisplay/NoteDisplay';
+import { useLanguage } from '../../context/LanguageContext';
 import './NoteDetailModal.css';
 import { Note } from '../../types/note';
 import { Group, Message, FirebaseTimestamp } from '../../types/chat';
 import { UserData } from '../../types/user';
-import { parseTimestampToDate } from '../../Utils/timeUtils';
+import { parseTimestampToDate } from '../../utils/timeUtils';
 
 interface NoteDetailModalProps {
     isOpen: boolean;

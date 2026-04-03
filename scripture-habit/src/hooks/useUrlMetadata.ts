@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { safeStorage } from '../Utils/storage';
-import type { Language } from '../Context/LanguageContext';
+import { safeStorage } from '../utils/storage';
+import type { Language } from '../context/LanguageContext';
 import { auth, appCheck } from '../firebase';
 import { getToken } from 'firebase/app-check';
 

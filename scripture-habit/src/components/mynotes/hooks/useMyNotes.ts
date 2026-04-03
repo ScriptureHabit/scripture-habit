@@ -4,8 +4,8 @@ import { db } from '../../../firebase';
 import { Note } from '../../../types/note';
 import { UserData } from '../../../types/user';
 import { NoteCategory } from '../../../types/scripture';
-import { noteConverter } from '../../../Utils/firestoreConverters';
-import { createSearchTokens } from '../../../Utils/searchTokenUtils';
+import { noteConverter } from '../../../utils/firestoreConverters';
+import { createSearchTokens } from '../../../utils/searchTokenUtils';
 
 export type NoteFetchStatus = 
   | { status: 'loading'; notes: Note[] }

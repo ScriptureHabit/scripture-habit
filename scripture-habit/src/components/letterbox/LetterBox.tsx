@@ -4,12 +4,12 @@ import { collection, query, orderBy, onSnapshot, doc, deleteDoc } from 'firebase
 import { UilEnvelope, UilTrashAlt, UilTimes } from '@iconscout/react-unicons';
 import ReactMarkdown from 'react-markdown';
 import './LetterBox.css';
-import { useLanguage } from '../../Context/LanguageContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { UserData } from '../../types/user';
-import ConfirmModal from '../ConfirmModal/ConfirmModal';
+import ConfirmModal from '../confirmmodal/ConfirmModal';
 
 import { FirebaseTimestamp } from '../../types/chat';
-import { parseTimestampToDate } from '../../Utils/timeUtils';
+import { parseTimestampToDate } from '../../utils/timeUtils';
 
 interface Letter {
     id: string;

@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import apiClient from '../../../Utils/apiClient';
+import apiClient from '../../../utils/apiClient';
 import { db } from '../../../firebase';
 import { doc, updateDoc, serverTimestamp, collection, addDoc } from 'firebase/firestore';
 import { toast } from 'react-toastify';
 import { UserData } from '../../../types/user';
-import { parseTimestampToDate } from '../../../Utils/timeUtils';
+import { parseTimestampToDate } from '../../../utils/timeUtils';
 
 /**
  * Hook for the business logic of generating and saving recaps.

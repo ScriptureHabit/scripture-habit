@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { safeStorage } from '../../../Utils/storage';
+import { safeStorage } from '../../../utils/storage';
 import { auth } from '../../../firebase';
 import { Capacitor } from '@capacitor/core';
 import { toast } from 'react-toastify';

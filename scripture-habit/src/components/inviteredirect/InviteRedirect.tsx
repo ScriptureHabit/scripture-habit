@@ -1,9 +1,9 @@
 import { useEffect, useState, FC } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { safeStorage } from '../../Utils/storage';
+import { safeStorage } from '../../utils/storage';
 import { auth } from '../../firebase';
-import { useLanguage } from '../../Context/LanguageContext';
-import Button from '../Button/Button';
+import { useLanguage } from '../../context/LanguageContext';
+import Button from '../button/Button';
 import './InviteRedirect.css';
 
 interface InviteGroupInfo {

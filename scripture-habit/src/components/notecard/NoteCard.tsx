@@ -1,8 +1,8 @@
 import { FC, MouseEvent } from 'react';
-import NoteDisplay from '../NoteDisplay/NoteDisplay';
-import { getGospelLibraryUrl } from '../../Utils/gospelLibraryMapper';
-import { useLanguage } from '../../Context/LanguageContext';
-import { parseTimestampToDate } from '../../Utils/timeUtils';
+import NoteDisplay from '../notedisplay/NoteDisplay';
+import { getGospelLibraryUrl } from '../../utils/gospelLibraryMapper';
+import { useLanguage } from '../../context/LanguageContext';
+import { parseTimestampToDate } from '../../utils/timeUtils';
 import './NoteCard.css';
 import { Note } from '../../types/note';
 

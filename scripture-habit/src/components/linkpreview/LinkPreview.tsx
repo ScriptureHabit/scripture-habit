@@ -1,6 +1,6 @@
 import { useState, useEffect, FC } from 'react';
 import './LinkPreview.css';
-import apiClient from '../../Utils/apiClient';
+import apiClient from '../../utils/apiClient';
 
 interface PreviewData {
     title?: string;

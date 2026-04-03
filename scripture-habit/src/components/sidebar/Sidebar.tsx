@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './Sidebar.css';
-import { SidebarData } from '../../Data/Data';
+import { SidebarData } from '../../data/Data';
 import {
   UilUsersAlt,
   UilBookOpen,
@@ -10,8 +10,8 @@ import { useNavigate } from 'react-router-dom';
 import { auth, appCheck } from '../../firebase';
 // Removed unused Firestore imports
 import { getToken } from "firebase/app-check";
-import { useLanguage } from '../../Context/LanguageContext';
-import { parseTimestampToMillis } from '../../Utils/timeUtils';
+import { useLanguage } from '../../context/LanguageContext';
+import { parseTimestampToMillis } from '../../utils/timeUtils';
 import { Group } from '../../types/chat';
 import { UserData } from '../../types/user';
 

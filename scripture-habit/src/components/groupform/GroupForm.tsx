@@ -3,13 +3,13 @@ import React, { useState } from "react";
 import { auth, db } from '../../firebase';
 import { collection, addDoc, doc, updateDoc, arrayUnion, Timestamp, setDoc, getDoc } from 'firebase/firestore';
 import { useNavigate, Link } from 'react-router-dom';
-import Input from '../Input/Input';
-import Button from '../Button/Button';
-import Toggle from '../Input/Toggle';
+import Input from '../input/Input';
+import Button from '../button/Button';
+import Toggle from '../input/Toggle';
 import { toast } from "react-toastify";
-import { useLanguage } from '../../Context/LanguageContext';
-import Mascot from '../Mascot/Mascot';
-import { generateInviteCode } from '../../Utils/inviteUtils';
+import { useLanguage } from '../../context/LanguageContext';
+import Mascot from '../mascot/Mascot';
+import { generateInviteCode } from '../../utils/inviteUtils';
 
 export default function GroupForm() {
   const { t, language } = useLanguage();

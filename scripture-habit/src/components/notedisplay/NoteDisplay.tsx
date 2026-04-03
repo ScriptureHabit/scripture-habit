@@ -1,9 +1,9 @@
 import { useMemo, FC, useState, useEffect, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { useLanguage } from '../../Context/LanguageContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { useUrlMetadata } from '../../hooks/useUrlMetadata';
-import { NOTE_HEADER_REGEX, removeNoteHeader } from '../../Utils/noteUtils';
-import LinkPreview from '../LinkPreview/LinkPreview';
+import { NOTE_HEADER_REGEX, removeNoteHeader } from '../../utils/noteUtils';
+import LinkPreview from '../linkpreview/LinkPreview';
 import './NoteDisplay.css';
 
 /**
