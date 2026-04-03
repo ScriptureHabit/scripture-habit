@@ -148,7 +148,8 @@ const GroupChatProvider: FC<GroupChatProviderProps> = ({
 
   // Actions Context
   const actionsValue = useMemo<ChatActionContextType>(() => ({
-    t, tArray, handleSendMessage, handleSaveEdit, handleConfirmDeleteMessage,
+    t, tArray, handleSendMessage, handleSaveEdit, 
+    handleConfirmDeleteMessage: (message: any) => handleConfirmDeleteMessage(message),
     handleToggleReaction, handleTranslateMessage, handleLazyTranslate, handleCancelEdit,
     handleReply, handleMessageClick, handleEditMessage, handleDeleteMessageClick, handleReportClick,
     handleUserProfileClick, handleShowReactions, handleShowMembers, handleShowUnityModal,

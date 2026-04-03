@@ -76,8 +76,8 @@ export interface ChatActionContextType {
   t: (key: string, replacements?: Record<string, string | number>) => string;
   tArray: (key: string) => string[];
   handleSendMessage: (text: string, replyTo: Message | null) => Promise<boolean>;
-  handleSaveEdit: (messageId: string, text: string) => Promise<boolean>;
-  handleConfirmDeleteMessage: (messageId: string) => Promise<boolean>;
+  handleSaveEdit: (message: Message, text: string) => Promise<boolean>;
+  handleConfirmDeleteMessage: (message: Message) => Promise<boolean>;
   handleToggleReaction: (msg: Message) => Promise<void>;
   handleTranslateMessage: (msg: Message, force?: boolean) => Promise<void>;
   handleLazyTranslate: (msg: Message) => void;

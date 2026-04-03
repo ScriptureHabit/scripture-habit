@@ -91,7 +91,7 @@ const GroupChatModals: FC = () => {
                 setMessageToDelete={setMessageToDelete}
                 handleConfirmDeleteMessage={async () => {
                     if (messageToDelete) {
-                        await handleConfirmDeleteMessage(messageToDelete.id);
+                        await handleConfirmDeleteMessage(messageToDelete);
                         setShowDeleteMessageModal(false);
                     }
                 }}
@@ -105,7 +105,7 @@ const GroupChatModals: FC = () => {
                 handleCancelEdit={handleCancelEdit}
                 handleSaveEdit={async () => {
                     if (editingMessage) {
-                        await handleSaveEdit(editingMessage.id, editText);
+                        await handleSaveEdit(editingMessage, editText);
                     }
                 }}
             />

@@ -1,6 +1,5 @@
 import { useReducer, useEffect, useRef, useCallback } from 'react';
-import { collection, query, orderBy, onSnapshot, doc, getDoc, getDocs, limit, startAfter, startAt, DocumentSnapshot } from 'firebase/firestore';
-import { safeStorage } from '../../../Utils/storage';
+import { collection, query, orderBy, onSnapshot, doc, getDoc, getDocs, limit, startAfter, startAt } from 'firebase/firestore';
 import apiClient from '../../../Utils/apiClient';
 import confetti from 'canvas-confetti';
 import * as Sentry from "@sentry/react";
@@ -209,76 +208,72 @@ export const useGroupMessages = (groupId: string | null, userData: UserData | nu
 
           // 3. Init Messages
           const messagesRef = collection(db, 'groups', groupId, 'messages').withConverter(messageConverter);
-          const lastViewedMsgId = safeStorage.get(`last_viewed_msg_${groupId}_${userData.uid}`);
-
           let initialMsgs: Message[] = [];
-          let lastDocInInitialBatch: DocumentSnapshot<Message> | null = null;
-          let anchorSnapshot: DocumentSnapshot<Message> | null = null;
-          
-          if (lastViewedMsgId) {
-            anchorSnapshot = await getDoc(doc(db, 'groups', groupId, 'messages', lastViewedMsgId).withConverter(messageConverter));
-          }
-
-          if (isCancelled) return;
-
-          if (anchorSnapshot?.exists()) {
-            const [nextSnaps, prevSnaps] = await Promise.all([
-              getDocs(query(messagesRef, orderBy('createdAt', 'asc'), startAt(anchorSnapshot), limit(25))),
-              getDocs(query(messagesRef, orderBy('createdAt', 'desc'), startAfter(anchorSnapshot), limit(5)))
-            ]);
-            initialMsgs = [...prevSnaps.docs.map(d => d.data()).reverse(), ...nextSnaps.docs.map(d => d.data())];
-            if (nextSnaps.docs.length > 0) {
-              lastDocInInitialBatch = nextSnaps.docs[0]; // The oldest of this batch (since we ordered asc)
-            } else {
-              lastDocInInitialBatch = anchorSnapshot;
-            }
-          } else {
-            const latestSnaps = await getDocs(query(messagesRef, orderBy('createdAt', 'desc'), limit(50)));
-            initialMsgs = latestSnaps.docs.map(d => d.data()).reverse();
-            if (latestSnaps.docs.length > 0) {
-              // latestSnaps is DESC (newest at [0]), so the last one is the oldest
-              lastDocInInitialBatch = latestSnaps.docs[latestSnaps.docs.length - 1];
-            }
-          }
-
           if (isCancelled) return;
           dispatch({ type: 'SET_INITIAL_STATE', messages: initialMsgs, groupData: { ...currentGroupData, _groupId: groupId } as GroupData, readCount: initialReadCount });
 
-          // 4. Real-time Message Listener
-          const startListener = (anchor: DocumentSnapshot<Message> | null) => {
+          // 4. Real-time Message Listener (Dynamic Window)
+          // We listen from the oldest message we have currently loaded to the newest
+          const startListener = (oldest: Message | null) => {
+            if (unsubscribeNewMessages) unsubscribeNewMessages();
+
             let q = query(messagesRef, orderBy('createdAt', 'asc'));
-            if (anchor) {
-              q = query(messagesRef, orderBy('createdAt', 'asc'), startAt(anchor));
+            if (oldest?.createdAt) {
+              // We use startAt with the oldest message's timestamp to cover the whole range
+              q = query(messagesRef, orderBy('createdAt', 'asc'), startAt(oldest.createdAt));
             }
 
             const unsubscribe = onSnapshot(q, (snapshot) => {
               if (isCancelled) return;
               const newIncoming: Message[] = [];
+              const updatedMessages: Message[] = [];
+              const removedIds: string[] = [];
+
               snapshot.docChanges().forEach((change) => {
                 const data = change.doc.data();
                 if (change.type === "added") {
-                  const messageTime = parseTimestampToMillis(data.createdAt);
-                  const isRecent = messageTime && (Date.now() - messageTime) < 30000;
-                  if (data.messageType === 'streakAnnouncement' && data.messageData?.userId !== userData?.uid && isRecent) {
-                    confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, zIndex: 10000 });
-                  }
+                  // Only add if it's not already in our state (to handle overlap)
                   newIncoming.push(data);
                 } else if (change.type === "modified") {
-                  dispatch({ type: 'UPDATE_MESSAGE', messageId: change.doc.id, data });
+                  updatedMessages.push(data);
                 } else if (change.type === "removed") {
-                  dispatch({ type: 'REMOVE_MESSAGE', messageId: change.doc.id });
+                  removedIds.push(change.doc.id);
                 }
               });
-              if (newIncoming.length > 0) dispatch({ type: 'ADD_NEW_MESSAGES', newMessages: newIncoming });
+
+              // Apply changes
+              if (newIncoming.length > 0) {
+                dispatch({ type: 'ADD_NEW_MESSAGES', newMessages: newIncoming });
+              }
+              updatedMessages.forEach(msg => {
+                dispatch({ type: 'UPDATE_MESSAGE', messageId: msg.id, data: msg });
+              });
+              removedIds.forEach(id => {
+                dispatch({ type: 'REMOVE_MESSAGE', messageId: id });
+              });
+
+              // Confetti logic for streak announcements
+              newIncoming.forEach(data => {
+                const messageTime = parseTimestampToMillis(data.createdAt);
+                const isRecent = messageTime && (Date.now() - messageTime) < 30000;
+                if (data.messageType === 'streakAnnouncement' && data.messageData?.userId !== userData?.uid && isRecent) {
+                  confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, zIndex: 10000 });
+                }
+              });
+
             }, (err) => {
               if (isCancelled || err.code === 'permission-denied') return;
               console.error("[useGroupMessages] Listener error:", err);
             });
-            return unsubscribe;
-
+            
+            unsubscribeNewMessages = unsubscribe;
           };
 
-          unsubscribeNewMessages = startListener(lastDocInInitialBatch);
+          // Initial listener start
+          startListener(initialMsgs.length > 0 ? initialMsgs[0] : null);
+          
+          // Store the listener function in a ref so we can restart it when pagination happens
+          listenerStarterRef.current = startListener;
         }
 
       } catch (err: unknown) {
@@ -296,9 +291,11 @@ export const useGroupMessages = (groupId: string | null, userData: UserData | nu
     return () => {
       isCancelled = true;
       unsubscribeGroup();
-      unsubscribeNewMessages();
+      if (unsubscribeNewMessages) unsubscribeNewMessages();
     };
   }, [groupId, userData?.uid, updateReadStatus, t]);
+
+  const listenerStarterRef = useRef<((oldest: Message | null) => void) | null>(null);
 
   const loadMoreOlderMessages = async (containerRef: React.RefObject<HTMLDivElement | null>, previousScrollHeightRef: React.MutableRefObject<number>, previousScrollTopRef: React.MutableRefObject<number>) => {
     if (!groupId || state.isLoadingOlder || !state.hasMoreOlder || state.messages.length === 0) return;
@@ -319,6 +316,11 @@ export const useGroupMessages = (groupId: string | null, userData: UserData | nu
       } else {
         const newOlderMsgs = snaps.docs.map(d => d.data()).reverse();
         dispatch({ type: 'ADD_OLDER_MESSAGES', olderMessages: newOlderMsgs, hasMore: true });
+        
+        // Restart the listener to include the newly loaded older messages
+        if (listenerStarterRef.current) {
+          listenerStarterRef.current(newOlderMsgs[0]);
+        }
       }
     } catch (e) {
       console.error("Error loading older messages", e);

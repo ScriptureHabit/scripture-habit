@@ -70,9 +70,19 @@ export const useMessageActions = (
     }
   };
 
-  const handleSaveEdit = async (messageId: string, newText: string) => {
+  const handleSaveEdit = async (message: Message, newText: string) => {
+    const originalText = message.text;
     try {
-      await updateDoc(doc(db, 'groups', groupId, 'messages', messageId), {
+      // Optimistic update
+      if (dispatch) {
+        dispatch({
+          type: 'UPDATE_MESSAGE',
+          messageId: message.id,
+          data: { text: newText, isEdited: true }
+        });
+      }
+
+      await updateDoc(doc(db, 'groups', groupId, 'messages', message.id), {
         text: newText,
         isEdited: true,
         editedAt: serverTimestamp()
@@ -81,13 +91,27 @@ export const useMessageActions = (
     } catch (error) {
       console.error("Error editing message:", error);
       toast.error(t('groupChat.errorEditMessage'));
+
+      // Rollback
+      if (dispatch) {
+        dispatch({
+          type: 'UPDATE_MESSAGE',
+          messageId: message.id,
+          data: { text: originalText }
+        });
+      }
       return false;
     }
   };
 
-  const handleConfirmDeleteMessage = async (messageId: string) => {
+  const handleConfirmDeleteMessage = async (message: Message) => {
     try {
-      await apiClient.post('/api/delete-message', { groupId, messageId });
+      // Optimistic delete
+      if (dispatch) {
+        dispatch({ type: 'REMOVE_MESSAGE', messageId: message.id });
+      }
+
+      await apiClient.post('/api/delete-message', { groupId, messageId: message.id });
       return true;
     } catch (error: unknown) {
       console.error("Error deleting message:", error);
@@ -96,6 +120,13 @@ export const useMessageActions = (
         errorMessage = error.response?.data?.error || errorMessage;
       }
       toast.error(errorMessage);
+
+      // Rollback
+      if (dispatch) {
+        // We add it back as a 'new' message or use a specific restore action if available
+        // ADD_NEW_MESSAGES will handle adding it back to the list
+        dispatch({ type: 'ADD_NEW_MESSAGES', newMessages: [message] });
+      }
       return false;
     }
   };
@@ -138,6 +169,16 @@ export const useMessageActions = (
       }
     } catch (error) {
       console.error("Error toggling reaction:", error);
+      toast.error(t('groupChat.errorToggleReaction'));
+      
+      // Rollback on failure
+      if (dispatch) {
+        dispatch({
+          type: 'UPDATE_MESSAGE',
+          messageId: message.id,
+          data: { reactions: message.reactions }
+        });
+      }
     }
   }, [groupId, userData]);
 
