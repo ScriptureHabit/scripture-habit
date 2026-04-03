@@ -44,6 +44,17 @@ app.use(cors({
 app.use(express.json({ limit: '50kb' }));
 app.use(globalLimiter);
 
+// --- Path Normalization for Vercel trailingSlash: true ---
+app.use((req, _res, next) => {
+    // If path ends with / and is longer than 1 char, strip it internally
+    // to match standard router paths without duplicating every route definition.
+    if (req.path.length > 1 && req.path.endsWith('/')) {
+        const newPath = req.path.slice(0, -1);
+        req.url = newPath + (req.url.slice(req.path.length));
+    }
+    next();
+});
+
 // --- Diagnostics ---
 app.get(['/api/health', '/api/health/'], (_req, res) => {
     res.json({

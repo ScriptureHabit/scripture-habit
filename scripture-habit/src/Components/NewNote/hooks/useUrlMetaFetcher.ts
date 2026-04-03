@@ -29,7 +29,7 @@ export const useUrlMetaFetcher = (chapter: string, scripture: string, language: 
                         targetUrl = `https://www.churchofjesuschrist.org${targetUrl.startsWith('/') ? '' : '/'}${targetUrl}`;
                     }
 
-                    const url = `${API_BASE}/api/fetch-church-metadata?url=${encodeURIComponent(targetUrl)}&lang=${apiLang}`;
+                    const url = `${API_BASE}/api/fetch-church-metadata/?url=${encodeURIComponent(targetUrl)}&lang=${apiLang}`;
 
                     const headers: Record<string, string> = { 'Accept': 'application/json' };
                     
