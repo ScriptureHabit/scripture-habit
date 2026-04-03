@@ -67,7 +67,6 @@ const OFFLINE_URL = '/offline.html';
 
 const ASSETS_TO_CACHE = [
     '/',
-    '/index.html',
     OFFLINE_URL,
     '/logo.svg',
     '/manifest.json',
@@ -76,10 +75,12 @@ const ASSETS_TO_CACHE = [
 
 // Install Event
 self.addEventListener('install', (event) => {
-    self.skipWaiting(); // Force the waiting service worker to become the active service worker
+    self.skipWaiting();
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
-            return cache.addAll(ASSETS_TO_CACHE);
+            return cache.addAll(ASSETS_TO_CACHE).catch(err => {
+                console.warn('[sw.js] Pre-caching semi-failed, but proceeding:', err);
+            });
         })
     );
 });
@@ -121,22 +122,28 @@ self.addEventListener('fetch', (event) => {
     // Custom strategies for assets
     event.respondWith(
         caches.match(event.request).then((response) => {
-            return response || fetch(event.request).then((networkResponse) => {
-                // Cache fonts on the fly
-                if (event.request.url.startsWith('https://fonts.')) {
+            if (response) return response;
+            
+            return fetch(event.request).then((networkResponse) => {
+                if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
+                    return networkResponse;
+                }
+
+                // Cache fonts and other static assets on the fly
+                if (event.request.url.startsWith('https://fonts.') || event.request.destination === 'image') {
                     const responseToCache = networkResponse.clone();
                     caches.open(CACHE_NAME).then((cache) => {
                         cache.put(event.request, responseToCache);
                     });
                 }
                 return networkResponse;
+            }).catch(() => {
+                // If network fails and it's an image, return logo
+                if (event.request.destination === 'image') {
+                    return caches.match('/logo.svg');
+                }
+                return caches.match(OFFLINE_URL);
             });
-        }).catch((error) => {
-            if (event.request.destination === 'image') {
-                return caches.match('/logo.svg');
-            }
-            // Return error so browser can handle it normally, instead of returning undefined
-            throw error;
         })
     );
 });
