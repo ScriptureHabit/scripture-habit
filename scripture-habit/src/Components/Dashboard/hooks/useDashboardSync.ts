@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { User } from 'firebase/auth';
-import { doc, collection, getDocs, updateDoc, Timestamp } from 'firebase/firestore';
+import { doc, collection, getDocs, updateDoc, Timestamp, getCountFromServer } from 'firebase/firestore';
 import { db } from '../../../firebase';
 import { UserData } from '../../../types/user';
 import { useAuth } from '../../../Context/AuthContext';
@@ -34,40 +34,54 @@ export const useDashboardSync = () => {
             if (state.status !== 'authenticated') return;
             
             const { user, userData } = state;
-            const needsMigration = userData && (
+
+            // PREVENT REPEAT RUNS: Only run if not already migrated AND data seems broken
+            const needsMigration = userData && !userData.isLevelMigrated && (
                 userData.daysStudiedCount === undefined ||
                 (userData.daysStudiedCount < (userData.streakCount || 0))
             );
 
             if (!needsMigration) return;
 
-            console.log("Migration/Fix triggered: calculating accurate daysStudiedCount...");
+            console.log("Migration triggered: fixing level stats once...");
             try {
                 const notesRef = collection(db, 'users', user.uid, 'notes').withConverter(noteConverter);
-                const notesSnapshot = await getDocs(notesRef);
+                
+                // 1. Efficiency: Use server-side count if available (low cost)
+                const countSnap = await getCountFromServer(notesRef);
+                const totalNotesCount = countSnap.data().count;
 
+                if (totalNotesCount === 0) {
+                    await updateDoc(doc(db, 'users', user.uid), {
+                        daysStudiedCount: 0,
+                        totalNotes: 0,
+                        isLevelMigrated: true
+                    });
+                    return;
+                }
+
+                // 2. Perform one-time aggregation for unique study days
+                const notesSnapshot = await getDocs(notesRef);
                 const studyDays = new Set<string>();
                 notesSnapshot.forEach(docSnap => {
                     const data = docSnap.data();
                     if (data.createdAt) {
                         const createdAt = data.createdAt as unknown as Timestamp;
                         if (createdAt?.toDate) {
-                            const date = createdAt.toDate();
-                            const dateStr = date.toLocaleDateString('sv-SE');
+                            const dateStr = createdAt.toDate().toLocaleDateString('sv-SE');
                             studyDays.add(dateStr);
                         }
                     }
                 });
 
-                const initialDaysCount = Math.max(studyDays.size, userData.streakCount || 0);
+                const finalDaysCount = Math.max(studyDays.size, userData.streakCount || 0);
 
-                if (initialDaysCount !== userData.daysStudiedCount) {
-                    await updateDoc(doc(db, 'users', user.uid), {
-                        daysStudiedCount: initialDaysCount,
-                        totalNotes: userData.totalNotes || notesSnapshot.size
-                    });
-                    console.log(`Level data corrected: ${initialDaysCount} days studied.`);
-                }
+                await updateDoc(doc(db, 'users', user.uid), {
+                    daysStudiedCount: finalDaysCount,
+                    totalNotes: totalNotesCount,
+                    isLevelMigrated: true // LOCK THE MIGRATION SUCCESS
+                });
+                console.log(`Level data corrected: ${finalDaysCount} days studied.`);
             } catch (err) {
                 console.error("Error during level data migration:", err);
             }
@@ -76,7 +90,7 @@ export const useDashboardSync = () => {
         if (state.status === 'authenticated') {
             migrateLevelData();
         }
-    }, [state]);
+    }, [state.status, userData?.uid, userData?.isLevelMigrated]);
 
     return state;
 };
