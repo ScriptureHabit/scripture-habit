@@ -1,8 +1,8 @@
 import express, { Response } from 'express';
-import { admin, db } from '../lib/firebase-admin.ts';
-import { verifyAppCheck, authenticate, AuthenticatedRequest } from '../lib/middleware.ts';
-import { verifyLoginSchema } from '../lib/schemas.ts';
-import { AuthenticationError, ForbiddenError } from '../lib/errors.ts';
+import { admin, db } from '../lib/firebase-admin.js';
+import { verifyAppCheck, authenticate, AuthenticatedRequest } from '../lib/middleware.js';
+import { verifyLoginSchema } from '../lib/schemas.js';
+import { AuthenticationError, ForbiddenError } from '../lib/errors.js';
 
 const router = express.Router();
 

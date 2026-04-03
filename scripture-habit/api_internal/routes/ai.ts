@@ -1,7 +1,7 @@
 import express, { Response } from 'express';
-import { admin, db } from '../lib/firebase-admin.ts';
-import { aiLimiter, verifyAppCheck, authenticate, AuthenticatedRequest } from '../lib/middleware.ts';
-import { ponderQuestionsSchema, translateSchema, translateBatchSchema, weeklyRecapSchema, personalRecapSchema, languageNames } from '../lib/schemas.ts';
+import { admin, db } from '../lib/firebase-admin.js';
+import { aiLimiter, verifyAppCheck, authenticate, AuthenticatedRequest } from '../lib/middleware.js';
+import { ponderQuestionsSchema, translateSchema, translateBatchSchema, weeklyRecapSchema, personalRecapSchema, languageNames } from '../lib/schemas.js';
 import axios from 'axios';
 import crypto from 'crypto';
 

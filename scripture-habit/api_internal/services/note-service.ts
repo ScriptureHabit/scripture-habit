@@ -1,7 +1,7 @@
-import { admin, db } from '../lib/firebase-admin.ts';
-import { STREAK_ANNOUNCEMENT_TEMPLATES, notifyGroupMembers } from '../lib/notifications.ts';
-import { NotFoundError } from '../lib/errors.ts';
-import { buildNoteSearchTokens } from '../lib/search-utils.ts';
+import { admin, db } from '../lib/firebase-admin.js';
+import { STREAK_ANNOUNCEMENT_TEMPLATES, notifyGroupMembers } from '../lib/notifications.js';
+import { NotFoundError } from '../lib/errors.js';
+import { buildNoteSearchTokens } from '../lib/search-utils.js';
 
 // Private types for service internal use
 export interface PostNoteInput {

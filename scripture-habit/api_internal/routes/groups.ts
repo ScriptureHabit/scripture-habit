@@ -1,8 +1,8 @@
 import express, { Request, Response } from 'express';
-import { admin, db } from '../lib/firebase-admin.ts';
-import { verifyAppCheck, authenticate, requireEmailVerified, AuthenticatedRequest } from '../lib/middleware.ts';
-import { joinGroupSchema, updateKickThresholdSchema, leaveGroupSchema, deleteGroupSchema, updateReadStatusSchema, announceUnitySchema, updateGroupSchema, regenerateInviteCodeSchema } from '../lib/schemas.ts';
-import { GroupDocument, UserDocument, MemberPreview as PreviewItem } from '../../types/firestore.ts';
+import { admin, db } from '../lib/firebase-admin.js';
+import { verifyAppCheck, authenticate, requireEmailVerified, AuthenticatedRequest } from '../lib/middleware.js';
+import { joinGroupSchema, updateKickThresholdSchema, leaveGroupSchema, deleteGroupSchema, updateReadStatusSchema, announceUnitySchema, updateGroupSchema, regenerateInviteCodeSchema } from '../lib/schemas.js';
+import { GroupDocument, UserDocument, MemberPreview as PreviewItem } from '../../types/firestore.js';
 
 const router = express.Router();
 

@@ -145,15 +145,26 @@ export const useNoteSubmission = (
             let errorMessage = t('errors.unexpectedError');
             
             if (axios.isAxiosError(err)) {
-                errorMessage = err.response?.data?.error || err.message;
+                // Safely extract error message string from potentially nested object
+                const serverError = err.response?.data?.error;
+                if (typeof serverError === 'string') {
+                    errorMessage = serverError;
+                } else if (serverError && typeof serverError === 'object' && 'message' in serverError) {
+                    errorMessage = String(serverError.message);
+                } else {
+                    errorMessage = err.message;
+                }
             } else if (err instanceof Error) {
                 errorMessage = err.message;
             }
             
+            // Ensure we handle the search safely in case it's still not a string
+            const safeErrorStr = String(errorMessage);
+            
             // Firebase Auth error code check
-            if (errorMessage.includes('auth/network-request-failed')) {
+            if (safeErrorStr.includes('auth/network-request-failed')) {
                 errorMessage = t('errors.networkError');
-            } else if (errorMessage.includes('auth/')) {
+            } else if (safeErrorStr.includes('auth/')) {
                 errorMessage = t('errors.authError');
             }
 

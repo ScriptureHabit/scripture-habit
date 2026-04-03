@@ -1,7 +1,7 @@
 import express, { Response } from 'express';
-import { admin, db } from '../lib/firebase-admin.ts';
-import { authenticate, verifyAppCheck, inviteLimiter, AuthenticatedRequest } from '../lib/middleware.ts';
-import { reportSchema } from '../lib/schemas.ts';
+import { admin, db } from '../lib/firebase-admin.js';
+import { authenticate, verifyAppCheck, inviteLimiter, AuthenticatedRequest } from '../lib/middleware.js';
+import { reportSchema } from '../lib/schemas.js';
 
 const router = express.Router();
 

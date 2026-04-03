@@ -1,5 +1,5 @@
 import { db, messaging, admin } from './firebase-admin.js';
-import { SupportedLanguage } from './schemas.ts';
+import { SupportedLanguage } from './schemas.js';
 
 export const STREAK_ANNOUNCEMENT_TEMPLATES: Record<SupportedLanguage, string> = {
     en: "🎉🎉🎉 **{nickname} reached a {streak} day streak!!** 🎉🎉🎉",

@@ -1,6 +1,6 @@
 import express, { Response } from 'express';
-import { isSafeUrl } from '../lib/ssrf.ts';
-import { verifyAppCheck, authenticate, AuthenticatedRequest } from '../lib/middleware.ts';
+import { isSafeUrl } from '../lib/ssrf.js';
+import { verifyAppCheck, authenticate, AuthenticatedRequest } from '../lib/middleware.js';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 
@@ -66,14 +66,13 @@ router.get(['/fetch-church-metadata', '/fetch-church-metadata/'], authenticate, 
 
         res.json({ title: title || '', speaker: speaker || '' });
     } catch (error) {
-        let message = 'Internal Server Error';
         if (error instanceof Error) {
-            message = error.message;
             console.error('Error in fetch-church-metadata:', error.message);
         } else {
             console.error('Error in fetch-church-metadata:', error);
         }
-        res.status(500).json({ error: 'Internal Fetch Error', message, details: String(error) });
+        // Fallback for metadata errors: return empty result so the UI can proceed
+        res.json({ title: '', speaker: '' });
     }
 });
 

@@ -1,14 +1,14 @@
 import express, { Response } from 'express';
-import { admin, db } from '../lib/firebase-admin.ts';
-import { verifyAppCheck, authenticate, requireEmailVerified, AuthenticatedRequest } from '../lib/middleware.ts';
-import { postNoteSchema, postMessageSchema, sendCheerSchema, deleteNoteSchema, deleteMessageSchema } from '../lib/schemas.ts';
-import { notifyGroupMembers, sendPushNotification, getUserFcmTokens, CHEER_NOTIFICATION_TEMPLATES } from '../lib/notifications.ts';
+import { admin, db } from '../lib/firebase-admin.js';
+import { verifyAppCheck, authenticate, requireEmailVerified, AuthenticatedRequest } from '../lib/middleware.js';
+import { postNoteSchema, postMessageSchema, sendCheerSchema, deleteNoteSchema, deleteMessageSchema } from '../lib/schemas.js';
+import { notifyGroupMembers, sendPushNotification, getUserFcmTokens, CHEER_NOTIFICATION_TEMPLATES } from '../lib/notifications.js';
 
 const router = express.Router();
 
 // Remove redundant logic here as it's being moved or is unused
 
-import { NoteService } from '../services/note-service.ts';
+import { NoteService } from '../services/note-service.js';
 
 // Post Note
 router.post(['/post-note', '/post-note/'], authenticate, requireEmailVerified, verifyAppCheck, async (req: AuthenticatedRequest, res: Response, next) => {
