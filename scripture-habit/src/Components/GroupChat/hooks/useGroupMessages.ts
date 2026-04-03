@@ -4,7 +4,6 @@ import confetti from 'canvas-confetti';
 import * as Sentry from "@sentry/react";
 import { Message, GroupData, MembersMap, UserProfileBrief } from '../../../types/chat';
 import { db } from '../../../firebase';
-import { FirebaseError } from 'firebase/app';
 import { UserData } from '../../../types/user';
 import { groupConverter, messageConverter, userConverter, groupMemberConverter } from '../../../Utils/firestoreConverters';
 import { parseTimestampToMillis } from '../../../Utils/timeUtils';
