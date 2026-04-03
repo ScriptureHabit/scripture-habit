@@ -26,7 +26,7 @@ export const useUrlMetaFetcher = (chapter: string, scripture: string, language: 
                         targetUrl = `https://www.churchofjesuschrist.org${targetUrl.startsWith('/') ? '' : '/'}${targetUrl}`;
                     }
 
-                    const response = await apiClient.get(`/api/fetch-church-metadata/`, {
+                    const response = await apiClient.get(`/api/fetch-church-metadata`, {
                         params: {
                             url: targetUrl,
                             lang: apiLang

@@ -5,7 +5,7 @@
             "schedule": "0 0 * * *"
         }
     ],
-    "trailingSlash": true,
+    "trailingSlash": false,
     "redirects": [
         {
             "source": "/",
@@ -20,7 +20,7 @@
                     "value": "ja.*"
                 }
             ],
-            "destination": "https://scripturehabit.app/ja/",
+            "destination": "https://scripturehabit.app/ja",
             "permanent": true
         },
         {
@@ -31,7 +31,7 @@
                     "value": "www.scripturehabit.app"
                 }
             ],
-            "destination": "https://scripturehabit.app/en/",
+            "destination": "https://scripturehabit.app/en",
             "permanent": true
         },
         {
@@ -42,12 +42,12 @@
                     "value": "www.scripturehabit.app"
                 }
             ],
-            "destination": "https://scripturehabit.app/:lang/",
+            "destination": "https://scripturehabit.app/:lang",
             "permanent": true
         },
         {
             "source": "/:lang(en|ja|pt|zho|es|vi|th|ko|tl|sw)",
-            "destination": "/:lang/",
+            "destination": "/:lang",
             "permanent": true
         },
         {
@@ -81,19 +81,19 @@
                     "value": "ja.*"
                 }
             ],
-            "destination": "/ja/",
+            "destination": "/ja",
             "permanent": false
         },
         {
             "source": "/",
-            "destination": "/en/",
+            "destination": "/en",
             "permanent": false
         }
     ],
     "rewrites": [
         {
-            "source": "/api/:path*",
-            "destination": "/api/index"
+            "source": "/api/(.*)",
+            "destination": "/api/api"
         },
         {
             "source": "/(.*)",

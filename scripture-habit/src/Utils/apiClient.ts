@@ -35,8 +35,8 @@ apiClient.interceptors.request.use(
             // This is critical for POST/PUT/DELETE to avoid method-dropping (405) and for GET to avoid latency.
             if (config.url && config.url.includes('/api/')) {
                 const [path, query] = config.url.split('?');
-                if (!path.endsWith('/')) {
-                    config.url = path + '/' + (query ? '?' + query : '');
+                if (path.length > 1 && path.endsWith('/')) {
+                    config.url = path.slice(0, -1) + (query ? '?' + query : '');
                 }
             }
 
