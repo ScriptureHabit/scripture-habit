@@ -35,7 +35,7 @@ export const useGroupMessages = (groupId: string | null, userData: UserData | nu
       // API Sync (Ensures server-side truth is applied across all shards and dashboard fields)
       await apiClient.post('/api/update-read-status', { 
         groupId: gid, 
-        readCount: totalCount 
+        readMessageCount: totalCount 
       });
       
       // Update local state immediately for snappy UI

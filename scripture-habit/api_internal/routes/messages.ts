@@ -400,45 +400,5 @@ router.post('/send-cheer', authenticate, verifyAppCheck, async (req: Authenticat
 
 });
 
-// Update Read Status (Sync with Dashboard)
-router.post('/update-read-status', authenticate, verifyAppCheck, async (req: AuthenticatedRequest, res: Response, next) => {
-    const { groupId, readCount } = req.body;
-    const uid = req.user!.uid;
-
-    if (!groupId || readCount === undefined) return res.status(400).json({ error: 'Missing params' });
-
-    try {
-        const batch = db.batch();
-        const groupRef = db.collection('groups').doc(groupId);
-        const memberRef = groupRef.collection('members').doc(uid);
-        const userRef = db.collection('users').doc(uid);
-        const stateRef = userRef.collection('groupStates').doc(groupId);
-
-        const now = admin.firestore.FieldValue.serverTimestamp();
-
-        // 1. Update Member activity
-        batch.set(memberRef, {
-            lastReadAt: now,
-            readMessageCount: readCount
-        }, { merge: true });
-
-        // 2. Update Group metadata (for dashboard performance)
-        batch.update(groupRef, {
-            [`memberLastReadAt.${uid}`]: now
-        });
-
-        // 3. Update User's personal group state (for badge calculations)
-        batch.set(stateRef, {
-            readMessageCount: readCount,
-            lastReadAt: now
-        }, { merge: true });
-
-        await batch.commit();
-        res.json({ success: true });
-    } catch (error) {
-        next(error);
-    }
-});
-
 export default router;
 

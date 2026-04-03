@@ -49,16 +49,56 @@ export const useMessageActions = (
 
   const handleSendMessage = async (text: string, replyTo: Message | null) => {
     if (!text.trim() || !userData || !userData.uid) return false;
+    
+    const optimisticId = `temp-${Date.now()}`;
+    const optimisticMessage: Message = {
+      id: optimisticId,
+      text: text.trim(),
+      senderId: userData.uid,
+      senderNickname: userData.nickname || 'Member',
+      senderPhotoURL: userData.photoURL || null,
+      createdAt: new Date(), // Local timestamp for immediate sorting
+      isOptimistic: true,
+      ...(replyTo ? { 
+        replyTo: {
+          id: replyTo.id,
+          senderNickname: replyTo.senderNickname || 'Member',
+          text: replyTo.text,
+          isNote: replyTo.messageType === 'studyNote'
+        }
+      } : {})
+    };
+
     try {
-      await apiClient.post('/api/post-message', {
+      // 1. Optimistic Add
+      if (dispatch) {
+        dispatch({ type: 'ADD_NEW_MESSAGES', newMessages: [optimisticMessage] });
+      }
+
+      const response = await apiClient.post('/api/post-message', {
         groupId,
         text: text.trim(),
         replyTo
       });
 
+      // 2. Resolve Optimistic Message with real ID
+      if (response.data?.messageId && dispatch) {
+        dispatch({
+          type: 'UPDATE_MESSAGE',
+          messageId: optimisticId,
+          data: { id: response.data.messageId, isOptimistic: false }
+        });
+      }
+
       return true;
     } catch (error: unknown) {
       console.error("Error sending message:", error);
+      
+      // 3. Rollback on failure
+      if (dispatch) {
+        dispatch({ type: 'REMOVE_MESSAGE', messageId: optimisticId });
+      }
+
       let errorMessage = t('groupChat.errorSendMessage');
       if (axios.isAxiosError(error)) {
         errorMessage = error.response?.data?.error || errorMessage;
