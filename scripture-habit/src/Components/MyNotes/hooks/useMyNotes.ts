@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { collection, query, where, orderBy, onSnapshot, limit, startAfter, DocumentSnapshot, QueryConstraint } from 'firebase/firestore';
+import { collection, query, where, orderBy, onSnapshot, limit, startAfter, DocumentSnapshot, QueryConstraint, getCountFromServer } from 'firebase/firestore';
 import { db } from '../../../firebase';
 import { Note } from '../../../types/note';
 import { UserData } from '../../../types/user';
@@ -16,8 +16,33 @@ export const useMyNotes = (userData: UserData, selectedCategory: NoteCategory, s
   const [dataState, setDataState] = useState<NoteFetchStatus>({ status: 'loading', notes: [] });
   const [currentPage, setCurrentPage] = useState(1);
   const [lastDocsStack, setLastDocsStack] = useState<DocumentSnapshot[]>([]);
+
   const [latestSnapshotDocs, setLatestSnapshotDocs] = useState<DocumentSnapshot[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
   const [isLastPage, setIsLastPage] = useState(false);
+
+  // Sync total count separately
+  useEffect(() => {
+    if (!userData?.uid) return;
+
+    const notesRef = collection(db, 'users', userData.uid, 'notes').withConverter(noteConverter);
+    const constraints: QueryConstraint[] = [];
+    if (selectedCategory !== 'All') {
+      constraints.push(where('scripture', '==', selectedCategory));
+    }
+    if (searchTerm) {
+      const tokens = createSearchTokens(searchTerm).slice(0, 10);
+      if (tokens.length > 0) {
+        constraints.push(where('searchTokens', 'array-contains-any', tokens));
+      }
+    }
+
+    const q = query(notesRef, ...constraints);
+    getCountFromServer(q).then(snap => {
+      setTotalCount(snap.data().count);
+    }).catch(err => console.error("Error counting notes:", err));
+  }, [userData?.uid, selectedCategory, searchTerm]);
+
 
   useEffect(() => {
     setCurrentPage(1);
@@ -62,7 +87,8 @@ export const useMyNotes = (userData: UserData, selectedCategory: NoteCategory, s
       setLatestSnapshotDocs(snapshot.docs);
       
       setDataState({ status: 'success', notes: fetchedNotes });
-      setIsLastPage(searchTerm ? false : fetchedNotes.length < notesPerPage);
+      setIsLastPage(fetchedNotes.length < notesPerPage);
+
     }, (error) => {
       console.error("Error fetching notes:", error);
       setDataState(prev => ({ status: 'error', notes: prev.notes, error: error as Error }));
@@ -91,6 +117,7 @@ export const useMyNotes = (userData: UserData, selectedCategory: NoteCategory, s
     currentPage,
     setCurrentPage,
     isLastPage,
+    totalCount,
     handleNextPage,
     handlePrevPage,
     setLastDocsStack

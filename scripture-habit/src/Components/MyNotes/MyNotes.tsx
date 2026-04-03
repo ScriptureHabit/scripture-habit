@@ -1,4 +1,4 @@
-import { useState, useMemo, FC } from 'react';
+import { useState, FC } from 'react';
 import { UilBookOpen, UilSearchAlt, UilAnalysis, UilEnvelope, UilAngleLeft, UilAngleRight } from '@iconscout/react-unicons';
 import NewNote from '../NewNote/NewNote';
 import NoteCard from '../NoteCard/NoteCard';
@@ -48,6 +48,7 @@ const MyNotes: FC<MyNotesProps> = ({ userData, isModalOpen, setIsModalOpen, user
   const {
     status,
     notes,
+    totalCount,
     currentPage,
     isLastPage,
     handleNextPage,
@@ -82,23 +83,9 @@ const MyNotes: FC<MyNotesProps> = ({ userData, isModalOpen, setIsModalOpen, user
     }
   };
 
-  const filteredNotes = useMemo(() => notes.filter(note => {
-    const text = note.text || '';
-    const chapter = note.chapter || '';
-    const matchesSearch = text.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          chapter.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesSearch;
-  }), [notes, searchTerm]);
+  const totalPages = Math.ceil(totalCount / NOTES_PER_PAGE);
+  const displayNotes = notes; // Server already filtered and paginated these
 
-  const totalPages = searchTerm ? Math.ceil(filteredNotes.length / NOTES_PER_PAGE) : -1;
-
-  const paginatedNotes = useMemo(() => {
-    if (searchTerm) {
-      const startIndex = (currentPage - 1) * NOTES_PER_PAGE;
-      return filteredNotes.slice(startIndex, startIndex + NOTES_PER_PAGE);
-    }
-    return filteredNotes;
-  }, [filteredNotes, currentPage, searchTerm]);
 
   // Recap Logic
   let canGenerateRecap = true;
@@ -203,11 +190,11 @@ const MyNotes: FC<MyNotesProps> = ({ userData, isModalOpen, setIsModalOpen, user
         </div>
       ) : (
         <div className="notes-grid">
-          {filteredNotes.length === 0 && notes.length > 0 ? (
+          {displayNotes.length === 0 && notes.length > 0 ? (
             <div className="no-results-container">
               {t('dashboard.noRecentNotes')}
             </div>
-          ) : paginatedNotes.map((note) => (
+          ) : displayNotes.map((note) => (
             <NoteCard
               key={note.id}
               note={note}
@@ -219,37 +206,22 @@ const MyNotes: FC<MyNotesProps> = ({ userData, isModalOpen, setIsModalOpen, user
         </div>
       )}
 
-      {searchTerm ? (
-        totalPages > 1 && (
-          <div className="pagination-controls">
-            <button className="pagination-btn" onClick={handlePrevPage} disabled={currentPage === 1}>
-              <UilAngleLeft size="20" />
-              <span>{t('myNotes.prevPage')}</span>
-            </button>
-            <div className="page-indicator">
-              {t('myNotes.pageInfo', { current: currentPage, total: totalPages })}
-            </div>
-            <button className="pagination-btn" onClick={handleNextPage} disabled={currentPage === totalPages}>
-              <span>{t('myNotes.nextPage')}</span>
-              <UilAngleRight size="20" />
-            </button>
+      {totalPages > 1 && (
+        <div className="pagination-controls">
+          <button className="pagination-btn" onClick={handlePrevPage} disabled={currentPage === 1}>
+            <UilAngleLeft size="20" />
+            <span>{t('myNotes.prevPage')}</span>
+          </button>
+          <div className="page-indicator">
+            {t('myNotes.pageInfo', { current: currentPage, total: totalPages })}
           </div>
-        )
-      ) : (
-        (currentPage > 1 || (!isLastPage && notes.length === NOTES_PER_PAGE)) && (
-          <div className="pagination-controls">
-            <button className="pagination-btn" onClick={handlePrevPage} disabled={currentPage === 1}>
-              <UilAngleLeft size="20" />
-              <span>{t('myNotes.prevPage')}</span>
-            </button>
-            <div className="page-indicator">Page {currentPage}</div>
-            <button className="pagination-btn" onClick={handleNextPage} disabled={isLastPage || notes.length < NOTES_PER_PAGE}>
-              <span>{t('myNotes.nextPage')}</span>
-              <UilAngleRight size="20" />
-            </button>
-          </div>
-        )
+          <button className="pagination-btn" onClick={handleNextPage} disabled={isLastPage}>
+            <span>{t('myNotes.nextPage')}</span>
+            <UilAngleRight size="20" />
+          </button>
+        </div>
       )}
+
 
       {activeModal === 'delete' && (
         <div className="ModalOverlay delete-modal-overlay-custom" onClick={() => setActiveModal(null)}>

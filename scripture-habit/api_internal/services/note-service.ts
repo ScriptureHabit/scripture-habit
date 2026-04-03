@@ -4,6 +4,7 @@ import { buildNoteSearchTokens } from '../lib/search-utils.js';
 import { t } from '../lib/i18n.js';
 import { StreakEngine } from '../lib/streak-engine.js';
 import { NotificationService } from './notification-service.js';
+import { CounterService } from './counter-service.js';
 
 // Private types for service internal use
 export interface PostNoteInput {
@@ -142,7 +143,7 @@ export class NoteService {
                 }
 
                 const updatePayload: admin.firestore.UpdateData<admin.firestore.DocumentData> = {
-                    messageCount: admin.firestore.FieldValue.increment(1),
+                    // messageCount: admin.firestore.FieldValue.increment(1), // MOVED TO SHARDS
                     noteCount: admin.firestore.FieldValue.increment(1),
 
                     lastMessageAt: noteTimestamp,
@@ -150,6 +151,9 @@ export class NoteService {
                     lastNoteByNickname: userNickname,
                     lastNoteByUid: uid
                 };
+
+                CounterService.increment(transaction, groupRefs[idx]);
+
 
                 if (gData.dailyActivity?.date !== groupToday) {
                     updatePayload.dailyActivity = { date: groupToday, activeMembers: [uid] };
