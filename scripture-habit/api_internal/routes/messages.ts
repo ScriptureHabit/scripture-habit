@@ -2,7 +2,8 @@ import express, { Response } from 'express';
 import { admin, db } from '../lib/firebase-admin.js';
 import { verifyAppCheck, authenticate, requireEmailVerified, AuthenticatedRequest } from '../lib/middleware.js';
 import { postNoteSchema, postMessageSchema, sendCheerSchema, deleteNoteSchema, deleteMessageSchema } from '../lib/schemas.js';
-import { notifyGroupMembers, sendPushNotification, getUserFcmTokens, CHEER_NOTIFICATION_TEMPLATES } from '../lib/notifications.js';
+import { notifyGroupMembers, sendPushNotification, getUserFcmTokens } from '../lib/notifications.js';
+import { tArray } from '../lib/i18n.js';
 
 const router = express.Router();
 
@@ -284,7 +285,7 @@ router.post('/send-cheer', authenticate, verifyAppCheck, async (req: Authenticat
             if (tokens.length > 0) {
                 const targetLang = (result.targetData?.language as string) || 'en';
                 const lang = (language as string) || targetLang || 'en';
-                const templates = (CHEER_NOTIFICATION_TEMPLATES[lang as keyof typeof CHEER_NOTIFICATION_TEMPLATES] || CHEER_NOTIFICATION_TEMPLATES['en']) as string[];
+                const templates = tArray(lang, 'notifications.cheer_options');
                 const body = templates[Math.floor(Math.random() * templates.length)].replace('{nickname}', senderNickname);
 
                 await sendPushNotification(tokens, { 

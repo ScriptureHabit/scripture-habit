@@ -4,7 +4,7 @@ import { UserData } from '../../types/user';
 import { Note } from '../../types/note';
 import { ReactionItem } from '../../store/useModalStore';
 import { ContextMenu } from './hooks/useMessageInteraction';
-import { ChatAction } from './hooks/useGroupMessages';
+import { ChatAction } from './hooks/chatReducer';
 
 export type ActiveModalType = 
   | 'leave' 

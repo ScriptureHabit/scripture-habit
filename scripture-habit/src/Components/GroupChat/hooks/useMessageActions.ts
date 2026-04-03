@@ -5,7 +5,7 @@ import { db } from '../../../firebase';
 import apiClient from '../../../Utils/apiClient';
 import { toast } from 'react-toastify';
 import { Message } from '../../../types/chat';
-import { ChatAction } from './useGroupMessages';
+import { ChatAction } from './chatReducer';
 
 interface SenderData {
   uid: string;

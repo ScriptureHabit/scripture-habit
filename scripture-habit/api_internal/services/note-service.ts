@@ -1,7 +1,9 @@
 import { admin, db } from '../lib/firebase-admin.js';
-import { STREAK_ANNOUNCEMENT_TEMPLATES, notifyGroupMembers } from '../lib/notifications.js';
 import { NotFoundError } from '../lib/errors.js';
 import { buildNoteSearchTokens } from '../lib/search-utils.js';
+import { t } from '../lib/i18n.js';
+import { StreakEngine } from '../lib/streak-engine.js';
+import { NotificationService } from './notification-service.js';
 
 // Private types for service internal use
 export interface PostNoteInput {
@@ -54,72 +56,34 @@ export class NoteService {
 
             // 2. Calculate Streak
             const now = new Date();
-            let timeZone = userData.timeZone || 'UTC';
-            let today: string, yesterday: string;
+            const timeZone = userData.timeZone || 'UTC';
+            const streakResult = StreakEngine.calculateNextStreak({
+                streakCount: Number(userData.streakCount || userData.streak || 0),
+                highestStreak: Number(userData.highestStreak || userData.streak || 0),
+                lastPostDate: userData.lastPostDate || null,
+                lastPostAt: userData.lastPostAt ? (userData.lastPostAt.toDate ? userData.lastPostAt.toDate() : new Date(userData.lastPostAt)) : null,
+                timeZone
+            }, { now, clientTimeZone });
 
-            try {
-                today = now.toLocaleDateString('sv-SE', { timeZone });
-                const yesterdayDate = new Date(now);
-                yesterdayDate.setDate(yesterdayDate.getDate() - 1);
-                yesterday = yesterdayDate.toLocaleDateString('sv-SE', { timeZone });
-            } catch {
-                timeZone = 'UTC';
-                today = now.toLocaleDateString('sv-SE', { timeZone });
-                const yesterdayDate = new Date(now);
-                yesterdayDate.setDate(yesterdayDate.getDate() - 1);
-                yesterday = yesterdayDate.toLocaleDateString('sv-SE', { timeZone });
-            }
-
-            let newStreak = Number(userData.streakCount || userData.streak || 0);
-            if (isNaN(newStreak)) newStreak = 0;
-
-            let currentHighest = Number(userData.highestStreak || newStreak);
-            if (isNaN(currentHighest)) currentHighest = newStreak;
-
-            let streakUpdated = false;
-            const lastPostAt = userData.lastPostAt ? (userData.lastPostAt.toDate ? userData.lastPostAt.toDate() : new Date(userData.lastPostAt)) : new Date(0);
-            const hoursSinceLastPost = (now.getTime() - lastPostAt.getTime()) / (1000 * 60 * 60);
+            const { newStreak, currentHighest, today, streakUpdated } = streakResult;
 
             const userUpdate: admin.firestore.UpdateData<admin.firestore.DocumentData> = {
                 totalNotes: admin.firestore.FieldValue.increment(1),
                 lastPostAt: admin.firestore.Timestamp.fromDate(now)
             };
 
+            // Cleanup legacy streak field if present
+            if (userData.streak !== undefined) userUpdate.streak = admin.firestore.FieldValue.delete();
 
-            if (userData.streak !== undefined) {
-                userUpdate.streak = admin.firestore.FieldValue.delete();
-            }
-
-            if (userData.lastPostDate !== today) {
-                if (userData.lastPostDate > today) {
-                    // Future date guard
-                } else {
-                    userUpdate.daysStudiedCount = admin.firestore.FieldValue.increment(1);
-
-                    if (!userData.lastPostDate) {
-                        newStreak = (newStreak > 0) ? newStreak + 1 : 1;
-                        streakUpdated = true;
-                    } else {
-                        const isConsecutiveDay = userData.lastPostDate === yesterday;
-                        const isTraveling = clientTimeZone && clientTimeZone !== timeZone;
-                        const withinGracePeriod = isTraveling && hoursSinceLastPost < 45;
-
-                        if (isConsecutiveDay || withinGracePeriod) {
-                            newStreak += 1;
-                        } else {
-                            newStreak = 1;
-                        }
-                        streakUpdated = true;
-                    }
-
-                    if (streakUpdated) {
-                        userUpdate.streakCount = newStreak;
-                        userUpdate.lastPostDate = today;
-                        if (newStreak > currentHighest) userUpdate.highestStreak = newStreak;
-                        if (clientTimeZone && (!userData.timeZone || userData.timeZone === 'UTC')) {
-                            userUpdate.timeZone = clientTimeZone;
-                        }
-                    }
+            if (streakUpdated) {
+                userUpdate.daysStudiedCount = admin.firestore.FieldValue.increment(1);
+                userUpdate.streakCount = newStreak;
+                userUpdate.lastPostDate = today;
+                if (newStreak > currentHighest) userUpdate.highestStreak = newStreak;
+                
+                // Update timezone if missing
+                if (clientTimeZone && (!userData.timeZone || userData.timeZone === 'UTC')) {
+                    userUpdate.timeZone = clientTimeZone;
                 }
             }
 
@@ -227,18 +191,19 @@ export class NoteService {
             // 5. Streak Announcements
             if (streakUpdated && newStreak > 0) {
                 const safeNickname = this.escapeMarkdown(userData.nickname || 'Member');
-                const templates = STREAK_ANNOUNCEMENT_TEMPLATES as Record<string, string>;
-                const announceMsg = (templates[language || 'en'] || templates.en)
-                    .replace('{nickname}', safeNickname)
-
-                    .replace('{streak}', String(newStreak));
+                const announceMsg = t(language, 'notifications.streak_announcement', { 
+                    nickname: safeNickname, 
+                    streak: newStreak 
+                });
+                
+                const botName = t(language, 'notifications.bot_name');
                 
                 [...new Set(userGroupIds)].forEach(gid => {
                     const announceRef = db.collection('groups').doc(gid).collection('messages').doc();
                     transaction.set(announceRef, {
                         text: announceMsg,
                         senderId: 'system',
-                        senderNickname: 'Scripture Habit Bot',
+                        senderNickname: botName,
                         createdAt: admin.firestore.Timestamp.fromMillis(noteTimestamp.toMillis() + 2000),
                         isSystemMessage: true,
                         messageType: 'streakAnnouncement',
@@ -257,28 +222,13 @@ export class NoteService {
         });
 
         // 6. Push Notifications (Async after transaction)
-        try {
-            const lang = language || 'ja';
-            const titleMap: Record<string, string> = {
-                'ja': '📖 聖典学習', 'en': '📖 Scripture Study', 'es': '📖 Estudio de las escrituras'
-            };
-            const bodyTemplateMap: Record<string, string> = {
-                'ja': '{nickname}さんがノートを投稿しました！✨', 'en': '{nickname} posted a note! ✨'
-            };
-
-            const notifTitle = titleMap[lang] || titleMap['en'];
-            const notifBody = (bodyTemplateMap[lang] || bodyTemplateMap['en']).replace('{nickname}', result.nickname || 'Member');
-
-            const groupsToNotifyMap = new Map<string, string[]>();
-            result._internalNotifications.userToGroupMapEntries.forEach(([memberUid, gid]: [string, string]) => {
-                if (!groupsToNotifyMap.has(gid)) groupsToNotifyMap.set(gid, []);
-                groupsToNotifyMap.get(gid)!.push(memberUid);
-            });
-
-            await Promise.all(Array.from(groupsToNotifyMap.entries()).map(([gid, membersList]) => 
-                notifyGroupMembers(gid, uid, { title: notifTitle, body: notifBody, data: { type: 'note', groupId: gid } }, membersList)
-            ));
-        } catch (err) { console.error('[NotificationService] Error:', err); }
+        NotificationService.notifyNotePosted({
+            groupIds: Array.from(new Set(result._internalNotifications.userToGroupMapEntries.map(e => e[1]))),
+            senderUid: uid,
+            senderNickname: result.nickname || 'Member',
+            language: language,
+            userToGroupMapEntries: result._internalNotifications.userToGroupMapEntries
+        });
 
         const { _internalNotifications, ...publicResult } = result;
         return publicResult;

@@ -1,32 +1,5 @@
 import { db, messaging, admin } from './firebase-admin.js';
-import { SupportedLanguage } from './schemas.js';
-
-export const STREAK_ANNOUNCEMENT_TEMPLATES: Record<SupportedLanguage, string> = {
-    en: "🎉🎉🎉 **{nickname} reached a {streak} day streak!!** 🎉🎉🎉",
-    ja: "🎉🎉🎉 **{nickname}さんが{streak}日連続達成しました！！** 🎉🎉🎉",
-    es: "🎉🎉🎉 **¡{nickname} alcanzó una racha de {streak} días!** 🎉🎉🎉",
-    pt: "🎉🎉🎉 **{nickname} atingiu uma sequência de {streak} dias!!** 🎉🎉🎉",
-    zh: "🎉🎉🎉 **{nickname} 已連讀 {streak} 天！！** 🎉🎉🎉",
-    zho: "🎉🎉🎉 **{nickname} 已連讀 {streak} 天！！** 🎉🎉🎉",
-    vi: "🎉🎉🎉 **{nickname} đã đạt chuỗi {streak} ngày!!** 🎉🎉🎉",
-    th: "🎉🎉🎉 **{nickname} บรรลุสถิติต่อเนื่อง {streak} วัน!!** 🎉🎉🎉",
-    ko: "🎉🎉🎉 **{nickname}님이 {streak}일 연속 달성했습니다!!** 🎉🎉🎉",
-    tl: "🎉🎉🎉 **Naabot ni {nickname} ang {streak} na araw na streak!!** 🎉🎉🎉",
-    sw: "🎉🎉🎉 **{nickname} amefikisha mfululizo wa siku {streak}!!** 🎉🎉🎉"
-};
-
-export const CHEER_NOTIFICATION_TEMPLATES: Record<string, string[]> = {
-    en: [
-        "{nickname} is waiting for your post! ✨",
-        "{nickname} is looking forward to your study note! 📖",
-        "Let's aim for 100% unity! {nickname} sent you an energy boost! 💪"
-    ],
-    ja: [
-        "{nickname}さんがあなたの投稿を楽しみに待っています！✨",
-        "{nickname}さんがあなたの学習ノートを心待ちにしています！📖",
-        "全員投稿まであと少し！{nickname}さんからエールが届きました！💪"
-    ],
-};
+// Using centralized i18n for templates now
 
 export async function getUserFcmTokens(uid: string): Promise<string[]> {
     const tokens: string[] = [];
