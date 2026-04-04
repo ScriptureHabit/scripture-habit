@@ -1,12 +1,11 @@
-import { FC, ReactNode, useMemo } from 'react';
+import { FC, ReactNode, useMemo, useCallback } from 'react';
 import { Capacitor } from '@capacitor/core';
 import { useLanguage } from '../../context/LanguageContext';
 import { ChatProvider, ChatDataContextType, ChatInteractionContextType, ChatUIContextType, ChatActionContextType, ActiveModalType } from './ChatContext';
 import { UserData } from '../../types/user';
-import { Group, Message } from '../../types/chat';
-import { useModalStore, ActiveModal } from '../../store/useModalStore';
+import { Group } from '../../types/chat';
+import { useModalStore } from '../../store/useModalStore';
 
-// Hooks
 // Hooks
 import { useGroupMessages } from './hooks/core/useGroupMessages';
 import { useGroupChatState } from './hooks/core/useGroupChatState';
@@ -150,19 +149,22 @@ const GroupChatProvider: FC<GroupChatProviderProps> = ({
     isRecapAvailable, unityModalData
   }), [activeModal, showDeleteMessageModal, showUnityModal, showInviteModal, showReportModal, showInactivityPolicyBanner, showAddNoteTooltip, showMobileMenu, isRecapLoading, isRecapAvailable, unityModalData]);
 
+  const handleDismissTooltip = useCallback(() => setShowAddNoteTooltip(false), []);
+  const handleDismissInactivityBannerLocal = useCallback(() => handleDismissInactivityBanner(), [handleDismissInactivityBanner]);
+
   // Actions Context
   const actionsValue = useMemo<ChatActionContextType>(() => ({
     t, tArray, handleSendMessage, handleSaveEdit, 
-    handleConfirmDeleteMessage: (message: Message) => handleConfirmDeleteMessage(message),
+    handleConfirmDeleteMessage,
     handleToggleReaction, handleTranslateMessage, handleLazyTranslate, handleCancelEdit,
     handleReply, handleMessageClick, handleEditMessage, handleDeleteMessageClick, handleReportClick,
     handleUserProfileClick, handleShowReactions, handleShowMembers, handleShowUnityModal,
     handleGenerateWeeklyRecap, handleLeaveGroup, handleDeleteGroup, handleUpdateGroupName,
     togglePublicStatus, scrollToBottom, handleScroll, dispatch,
-    setActiveModal: (modal: ActiveModalType) => setActiveModal(modal as ActiveModal), 
+    setActiveModal, 
     setShowDeleteMessageModal, setShowUnityModal, setShowInviteModal, setShowReportModal, 
     setShowInactivityPolicyBanner, setShowAddNoteTooltip, setShowMobileMenu, setMembersLoading,
-    handleDismissTooltip: () => setShowAddNoteTooltip(false), handleDismissInactivityBanner, 
+    handleDismissTooltip, handleDismissInactivityBanner: handleDismissInactivityBannerLocal, 
     closeContextMenu, onBack, onGroupSelect, onInputFocusChange, hasMoreOlder, isLoadingOlder, loadMoreOlderMessages,
     isLeaving, isDeleting, cheerTarget, setCheerTarget, isSendingCheer, cheeredTodayUids,
     handleSendCheer, handleCheerClick, reportReason, setReportReason, confirmReport, 
@@ -180,7 +182,7 @@ const GroupChatProvider: FC<GroupChatProviderProps> = ({
     togglePublicStatus, scrollToBottom, handleScroll, dispatch,
     setActiveModal, setShowDeleteMessageModal, setShowUnityModal, setShowInviteModal, 
     setShowReportModal, setShowInactivityPolicyBanner, setShowAddNoteTooltip, 
-    setShowMobileMenu, setMembersLoading, handleDismissInactivityBanner, closeContextMenu,
+    setShowMobileMenu, setMembersLoading, closeContextMenu,
     onBack, onGroupSelect, onInputFocusChange, hasMoreOlder, isLoadingOlder, loadMoreOlderMessages,
     isLeaving, isDeleting, cheerTarget, setCheerTarget, isSendingCheer, cheeredTodayUids,
     handleSendCheer, handleCheerClick, reportReason, setReportReason, confirmReport,
@@ -189,6 +191,7 @@ const GroupChatProvider: FC<GroupChatProviderProps> = ({
     newGroupName, setNewGroupName, newGroupDescription, setNewGroupDescription,
     newTranslatedName, setNewTranslatedName, newTranslatedDesc, setNewTranslatedDesc,
     deleteConfirmationName, setDeleteConfirmationName, noteToEdit, setNoteToEdit,
+    handleDismissTooltip, handleDismissInactivityBannerLocal,
     translatingIds, translatedTexts
   ]);
 

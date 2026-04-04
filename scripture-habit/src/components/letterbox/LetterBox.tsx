@@ -44,6 +44,9 @@ const LetterBox: FC<LetterBoxProps> = ({ isOpen, onClose, userData }) => {
             } as Letter));
             setLetters(fetchedLetters);
             setLoading(false);
+        }, (err) => {
+            if (err.code !== 'permission-denied') console.error("[LetterBox] Stream error:", err);
+            setLoading(false);
         });
 
         return () => unsubscribe();

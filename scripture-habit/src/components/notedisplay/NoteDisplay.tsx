@@ -244,22 +244,29 @@ const NoteDisplay: FC<NoteDisplayProps> = ({ text, isSent, linkColor, translated
     }, [linkColor, isSent]);
 
     const isTranslated = !!translatedText && !showOriginal;
-    const headerMatch = text.match(NOTE_HEADER_REGEX);
-    const hasStructuredLabel = /^(?:\*\*|)\s*(Category|Categoría|Scripture|カテゴリ|聖句|성구|經文|Thánh thư|Kinh Thánh|Kasulatan|Andiko|พระคัมภีร์|章|Chapter|Capítulo|장|章節|Chương|Kabanata|Sura|บท|Title|Talk|Speech|Discurso|Discurso|제목|標題|Tiêu đề|Pamagat|Mensahe|リンク|Url)\s*(?:\*\*|)\s*[:：]/mi.test(text);
 
-    // CRITICAL: Determine mode based on ORIGINAL text structure
-    const isOriginalStructured = !!headerMatch || hasStructuredLabel;
+    // --- Structural Detection (Memoized) ---
+    const { isOriginalStructured, headerMatch } = useMemo(() => {
+        const hm = text.match(NOTE_HEADER_REGEX);
+        const hasFixedLabel = /^(?:\*\*|)\s*(Category|Categoría|Scripture|カテゴリ|聖句|성구|經文|Thánh thư|Kinh Thánh|Kasulatan|Andiko|พระคัมภีร์|章|Chapter|Capítulo|장|章節|Chương|Kabanata|Sura|บท|Title|Talk|Speech|Discurso|Discurso|제목|標題|Tiêu đề|Pamagat|Mensahe|リンク|Url)\s*(?:\*\*|)\s*[:：]/mi.test(text);
+        return { isOriginalStructured: !!hm || hasFixedLabel, headerMatch: hm };
+    }, [text]);
 
-    if (!isOriginalStructured) {
+    // --- Simple View Content (Memoized) ---
+    const { finalContent, simpleUrls } = useMemo(() => {
+        if (isOriginalStructured) return { finalContent: '', simpleUrls: [] as string[] };
         const sourceContent = isTranslated ? translatedText! : text;
-        const simpleUrls = extractUrls(isTranslated ? `${text} ${translatedText}` : text);
-        const finalContent = (sourceContent || '').replace(/(\]\()?https?:\/\/[^\s]+/g, (match: string, p1: string) => {
+        const urls = extractUrls(isTranslated ? `${text} ${translatedText}` : text);
+        const content = (sourceContent || '').replace(/(\]\()?https?:\/\/[^\s]+/g, (match: string, p1: string) => {
             if (p1) return match;
             const cleanUrl = match.replace(/[.,:;"')\]*_]+$/, '');
             const trailing = match.substring(cleanUrl.length);
             return `[${cleanUrl}](${cleanUrl})${trailing}`;
         });
+        return { finalContent: content, simpleUrls: urls };
+    }, [isOriginalStructured, isTranslated, translatedText, text]);
 
+    if (!isOriginalStructured) {
         return (
             <div className="note-display-container" ref={containerRef}>
                 {isTranslated && (
@@ -308,74 +315,78 @@ const NoteDisplay: FC<NoteDisplayProps> = ({ text, isSent, linkColor, translated
         );
     }
 
-    // --- Structured Parsing Flow ---
-    const sourceText = isTranslated ? translatedText! : text;
-    const contentBody = headerMatch ? removeNoteHeader(sourceText) : sourceText;
-    const initialLines = contentBody.split('\n');
-    const lines: string[] = [];
+    // --- Structured Parsing Flow (Memoized for Extreme Performance) ---
+    const { scriptureValue, chapterValue, comment, primaryUrl } = useMemo(() => {
+        const sourceText = isTranslated ? translatedText! : text;
+        const contentBody = headerMatch ? removeNoteHeader(sourceText) : sourceText;
+        const initialLines = contentBody.split('\n');
+        const lines: string[] = [];
 
-    const labelMarkers = [
-        'Category:', 'Chapter:', 'Scripture:', 'Title:', 'Talk:', 'Speech:', 'Comment:', 'Url:',
-        'カテゴリ:', 'カテゴリ：', '章:', '章：', '聖句:', '聖句：', 'タイトル:', 'タイトル：', 'お話:', 'お話：', 'スピーチ:', 'スピーチ：', 'コメント:', 'コメント：', 'Url：',
-        'Categoría:', 'Categoria:', 'Escritura:', 'Capítulo:', 'Título:', 'Comentario:', 'Comentário:', 'Discurso:',
-        '카테고리:', '성구:', '장:', '제목:', '코メント:',
-        '類別:', '分類:', '經文:', '章節:', '標題:', '評論:',
-        'Kinh Thánh:', 'Thánh thư:', 'Chương:', 'Tiêu đề:', 'Bình luận:',
-        'Kasulatan:', 'Banal na Kasulatan:', 'Kabanata:', 'Pamagat:', 'Mensahe:', 'Komento:',
-        'Andiko:', 'Sura:', 'Jamii:', 'Kundi:', 'Maoni:',
-        'พระคัมภีร์:', 'บท:', 'หมวดหมู่:', 'ความคิดเห็น:',
-    ];
+        const labelMarkers = [
+            'Category:', 'Chapter:', 'Scripture:', 'Title:', 'Talk:', 'Speech:', 'Comment:', 'Url:',
+            'カテゴリ:', 'カテゴリ：', '章:', '章：', '聖句:', '聖句：', 'タイトル:', 'タイトル：', 'お話:', 'お話：', 'スピーチ:', 'スピーチ：', 'コメント:', 'コメント：', 'Url：',
+            'Categoría:', 'Categoria:', 'Escritura:', 'Capítulo:', 'Título:', 'Comentario:', 'Comentário:', 'Discurso:',
+            '카테고리:', '성구:', '장:', '제목:', '코メント:',
+            '類別:', '分類:', '經文:', '章節:', '標題:', '評論:',
+            'Kinh Thánh:', 'Thánh thư:', 'Chương:', 'Tiêu đề:', 'Bình luận:',
+            'Kasulatan:', 'Banal na Kasulatan:', 'Kabanata:', 'Pamagat:', 'Mensahe:', 'Komento:',
+            'Andiko:', 'Sura:', 'Jamii:', 'Kundi:', 'Maoni:',
+            'พระคัมภีร์:', 'บท:', 'หมวดหมู่:', 'ความคิดเห็น:',
+        ];
 
-    initialLines.forEach(line => {
-        const foundPos: { pos: number; marker: string }[] = [];
-        labelMarkers.forEach(marker => {
-            const pos = line.indexOf(marker);
-            if (pos > 5) foundPos.push({ pos, marker });
+        initialLines.forEach(line => {
+            const foundPos: { pos: number; marker: string }[] = [];
+            labelMarkers.forEach(marker => {
+                const pos = line.indexOf(marker);
+                if (pos > 5) foundPos.push({ pos, marker });
+            });
+
+            if (foundPos.length > 0) {
+                foundPos.sort((a, b) => a.pos - b.pos);
+                let lastIdx = 0;
+                foundPos.forEach(fp => {
+                    lines.push(line.substring(lastIdx, fp.pos).trim());
+                    lastIdx = fp.pos;
+                });
+                lines.push(line.substring(lastIdx).trim());
+            } else {
+                lines.push(line);
+            }
         });
 
-        if (foundPos.length > 0) {
-            foundPos.sort((a, b) => a.pos - b.pos);
-            let lastIdx = 0;
-            foundPos.forEach(fp => {
-                lines.push(line.substring(lastIdx, fp.pos).trim());
-                lastIdx = fp.pos;
-            });
-            lines.push(line.substring(lastIdx).trim());
-        } else {
-            lines.push(line);
-        }
-    });
+        let sVal = scripture || '';
+        let cVal = chapter || '';
+        const cLines: string[] = [];
 
-    let scriptureValue = scripture || '';
-    let chapterValue = chapter || '';
-    const commentLines: string[] = [];
+        lines.forEach(line => {
+            const trimmed = line.trim();
+            if (!trimmed) return;
+            const dividerIndex = trimmed.indexOf(':') !== -1 ? trimmed.indexOf(':') : trimmed.indexOf('：');
 
-    lines.forEach(line => {
-        const trimmed = line.trim();
-        if (!trimmed) return;
-        const dividerIndex = trimmed.indexOf(':') !== -1 ? trimmed.indexOf(':') : trimmed.indexOf('：');
+            if (dividerIndex !== -1 && dividerIndex < 60) {
+                const labelRaw = trimmed.substring(0, dividerIndex).replace(/\*/g, '').trim().toLowerCase();
+                const value = trimmed.substring(dividerIndex + 1).replace(/\*\*/g, '').trim();
 
-        if (dividerIndex !== -1 && dividerIndex < 60) {
-            const labelRaw = trimmed.substring(0, dividerIndex).replace(/\*/g, '').trim().toLowerCase();
-            const value = trimmed.substring(dividerIndex + 1).replace(/\*\*/g, '').trim();
-
-            if (/category|scripture|カテゴリ|categoría|categoria|jamii|kundi|หมวดหมู่|escritura|성구|카테고리|經文|類別|kinh thánh|thánh thư|kasulatan|andiko|พระคัมภีร์/i.test(labelRaw)) {
-                scriptureValue = value;
-            } else if (/chapter|url|title|章|リンク|speech|talk|capítulo|título|discurso|제목|標題|tiêu đề|pamagat|kabanata|chương|章節|sura|บท|mensahe/i.test(labelRaw)) {
-                if (!chapterValue || isGCUrl(value)) chapterValue = value;
-            } else if (/comment|コメント|comentario|comentário|코メント|評論|bình luận|komento|maoni|ความคิดเห็น/i.test(labelRaw)) {
-                if (value) commentLines.push(value);
+                if (/category|scripture|カテゴリ|categoría|categoria|jamii|kundi|หมวดหมู่|escritura|성구|카테고리|經文|類別|kinh thánh|thánh thư|kasulatan|andiko|พระคัมภีร์/i.test(labelRaw)) {
+                    sVal = value;
+                } else if (/chapter|url|title|章|リンク|speech|talk|capítulo|título|discurso|제목|標題|tiêu đề|pamagat|kabanata|chương|章節|sura|บท|mensahe/i.test(labelRaw)) {
+                    if (!cVal || isGCUrl(value)) cVal = value;
+                } else if (/comment|コメント|comentario|comentário|코メント|評論|bình luận|komento|maoni|ความคิดเห็น/i.test(labelRaw)) {
+                    if (value) cLines.push(value);
+                } else {
+                    cLines.push(trimmed);
+                }
             } else {
-                commentLines.push(trimmed);
+                cLines.push(trimmed);
             }
-        } else {
-            commentLines.push(trimmed);
-        }
-    });
+        });
 
-    const comment = commentLines.join('\n').trim();
-    const allUrls = extractUrls(text);
-    const primaryUrl = isGCUrl(chapterValue) ? chapterValue : (allUrls[0] || null);
+        const comm = cLines.join('\n').trim();
+        const allUrls = extractUrls(text);
+        const pUrl = isGCUrl(cVal) ? cVal : (allUrls[0] || null);
+
+        return { scriptureValue: sVal, chapterValue: cVal, comment: comm, primaryUrl: pUrl };
+    }, [text, isTranslated, translatedText, headerMatch, scripture, chapter]);
 
     const scripLower = (scriptureValue || '').toLowerCase();
     const isOther = scripLower.includes('other') || scripLower.includes('その他') || scriptureValue === '';
@@ -420,19 +431,21 @@ const NoteDisplay: FC<NoteDisplayProps> = ({ text, isSent, linkColor, translated
         return val;
     };
 
-    const scriptureNameTrans = translateScriptureName(scriptureValue, t);
-    const displayChapter = translateChapterField(chapterValue) || chapterValue;
-    const chapterLine = displayChapter ? `**${tWithFall('noteLabels.chapter', language)}:** ${displayChapter}` : null;
-    
-    const finalMd = [
-        `**${tWithFall('noteLabels.scripture', language)}:** ${scriptureNameTrans}`,
-        chapterLine,
-        `\n**${tWithFall('noteLabels.comment', language)}:**\n${comment.replace(/(https?:\/\/[^\s]+)/g, (match: string) => {
-            const cleanUrl = match.replace(/[.,:;"')\]*_]+$/, '');
-            const trailing = match.substring(cleanUrl.length);
-            return `[${cleanUrl}](${cleanUrl})${trailing}`;
-        })}`
-    ].filter(Boolean).join('\n');
+    const finalMd = useMemo(() => {
+        const scriptureNameTrans = translateScriptureName(scriptureValue, t);
+        const displayChapter = translateChapterField(chapterValue) || chapterValue;
+        const chapterLine = displayChapter ? `**${tWithFall('noteLabels.chapter', language)}:** ${displayChapter}` : null;
+        
+        return [
+            `**${tWithFall('noteLabels.scripture', language)}:** ${scriptureNameTrans}`,
+            chapterLine,
+            `\n**${tWithFall('noteLabels.comment', language)}:**\n${comment.replace(/(https?:\/\/[^\s]+)/g, (match: string) => {
+                const cleanUrl = match.replace(/[.,:;"')\]*_]+$/, '');
+                const trailing = match.substring(cleanUrl.length);
+                return `[${cleanUrl}](${cleanUrl})${trailing}`;
+            })}`
+        ].filter(Boolean).join('\n');
+    }, [scriptureValue, t, translateChapterField, chapterValue, language, comment]);
 
     return (
         <div className="note-display-container" ref={containerRef}>

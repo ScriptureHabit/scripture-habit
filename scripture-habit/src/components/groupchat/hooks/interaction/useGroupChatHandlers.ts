@@ -3,6 +3,7 @@ import { db } from '../../../../firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import { safeStorage } from '../../../../utils/storage';
 import { UserProfileBrief, GroupData, MembersMap } from '../../../../types/chat';
+import { ReactionPreview } from '../../../../../types/firestore';
 import { ReactionItem, ActiveModal } from '../../../../store/useModalStore';
 
 interface UseGroupChatHandlersParams {
@@ -61,15 +62,16 @@ export const useGroupChatHandlers = ({
     }
   }, [groupData?.members, membersList, setActiveModal, setMembersLoading, setMembersList, setShowMobileMenu]);
 
-  const handleShowReactions = useCallback((reactions: Record<string, string[]>) => {
+  const handleShowReactions = useCallback((reactions: Record<string, string[]>, previews?: Record<string, ReactionPreview[]>) => {
     const reactionsList: ReactionItem[] = [];
     Object.entries(reactions).forEach(([emoji, uids]) => {
       if (!Array.isArray(uids)) return;
       uids.forEach(uid => {
+        const preview = previews?.[emoji]?.find((p: ReactionPreview) => p.uid === uid);
         reactionsList.push({
           userId: uid,
           emoji,
-          nickname: membersMap[uid]?.nickname || 'Unknown'
+          nickname: membersMap[uid]?.nickname || preview?.nickname || 'Unknown'
         });
       });
     });

@@ -48,7 +48,7 @@ export const useMessageActions = (
     };
   }, [groupId]);
 
-  const handleSendMessage = async (text: string, replyTo: Message | null) => {
+  const handleSendMessage = useCallback(async (text: string, replyTo: Message | null) => {
     if (!text.trim() || !userData || !userData.uid) return false;
     
     const optimisticId = `temp-${Date.now()}`;
@@ -109,9 +109,9 @@ export const useMessageActions = (
       toast.error(errorMessage);
       return false;
     }
-  };
+  }, [groupId, userData, dispatch, t]);
 
-  const handleSaveEdit = async (message: Message, newText: string) => {
+  const handleSaveEdit = useCallback(async (message: Message, newText: string) => {
     const originalText = message.text;
     try {
       // Optimistic update
@@ -143,9 +143,9 @@ export const useMessageActions = (
       }
       return false;
     }
-  };
+  }, [groupId, dispatch, t]);
 
-  const handleConfirmDeleteMessage = async (message: Message) => {
+  const handleConfirmDeleteMessage = useCallback(async (message: Message) => {
     try {
       // Optimistic delete
       if (dispatch) {
@@ -168,7 +168,7 @@ export const useMessageActions = (
       }
       return false;
     }
-  };
+  }, [groupId, dispatch, t]);
 
   const handleToggleReaction = useCallback(async (message: Message) => {
     if (!userData || !userData.uid) return;

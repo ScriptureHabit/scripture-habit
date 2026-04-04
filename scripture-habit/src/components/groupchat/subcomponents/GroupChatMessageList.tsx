@@ -1,6 +1,7 @@
 import { FC, Fragment, MouseEvent } from 'react';
 import MessageItem from './MessageItem';
 import { Message, GroupData, MembersMap } from '../../../types/chat';
+import { ReactionPreview } from '../../../../types/firestore';
 import { UserData } from '../../../types/user';
 import { parseTimestampToDate } from '../../../utils/timeUtils';
 
@@ -21,7 +22,7 @@ interface GroupChatMessageListProps {
   handleUserProfileClick: (userId: string | null) => Promise<void>;
   groupData: GroupData | null;
   translatedTexts: Record<string, string>;
-  handleShowReactions: (reactions: Record<string, string[]>) => void;
+  handleShowReactions: (reactions: Record<string, string[]>, previews?: Record<string, ReactionPreview[]>) => void;
   membersMap: MembersMap;
   userReadCount: number | null;
   isRecapAvailable: boolean;
@@ -69,14 +70,14 @@ const GroupChatMessageList: FC<GroupChatMessageListProps> = ({
               userData={userData}
               t={t}
               handleMessageClick={handleMessageClick}
-              handleEditMessage={() => handleEditMessage(msg)}
-              handleDeleteMessageClick={() => handleDeleteMessageClick(msg)}
-              handleReply={() => handleReply(msg)}
-              handleTranslateMessage={() => handleTranslateMessage(msg)}
-              handleLazyTranslate={() => handleLazyTranslate(msg)}
+              handleEditMessage={handleEditMessage}
+              handleDeleteMessageClick={handleDeleteMessageClick}
+              handleReply={handleReply}
+              handleTranslateMessage={handleTranslateMessage}
+              handleLazyTranslate={handleLazyTranslate}
               isTranslating={translatingIds.has(msg.id)}
-              handleToggleReaction={() => handleToggleReaction(msg)}
-              handleReportClick={() => handleReportClick(msg)}
+              handleToggleReaction={handleToggleReaction}
+              handleReportClick={handleReportClick}
               handleUserProfileClick={handleUserProfileClick}
               groupData={groupData}
               translatedText={translatedTexts[msg.id] || msg.translations?.[language]}

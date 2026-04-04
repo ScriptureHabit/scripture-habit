@@ -34,6 +34,9 @@ const GroupOptions: FC = () => {
                         }
                     }
                     setLoading(false);
+                }, (err) => {
+                    if (err.code !== 'permission-denied') console.error("[GroupOptions] User data listener error:", err);
+                    setLoading(false);
                 });
                 return () => unsubUser();
             } else {

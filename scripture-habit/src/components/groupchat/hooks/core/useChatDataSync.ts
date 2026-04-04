@@ -43,7 +43,9 @@ const useGroupMetadataSync = (groupId: string | null, dispatch: Dispatch<ChatAct
 /**
  * Sub-hook for syncing Group Members
  */
-const useGroupMembersSync = (groupId: string | null, status: ChatStatus, members: string[] | undefined, membersMap: MembersMap, dispatch: Dispatch<ChatAction>) => {
+const useGroupMembersSync = (groupId: string | null, status: ChatStatus, members: string[] | undefined, messages: Message[], membersMap: MembersMap, dispatch: Dispatch<ChatAction>) => {
+  const attemptedUidsRef = useRef<Set<string>>(new Set());
+
   useEffect(() => {
     if (!groupId) return;
 
@@ -54,9 +56,10 @@ const useGroupMembersSync = (groupId: string | null, status: ChatStatus, members
         const snapshot = await getDocs(membersRef);
         const initialMembers: MembersMap = {};
         
-        snapshot.forEach((doc) => {
-          const data = doc.data();
-          initialMembers[doc.id] = UserProfileBriefSchema.parse({ ...data, id: data.uid }) as UserProfileBrief;
+        snapshot.forEach((docSnap) => {
+          const data = docSnap.data();
+          initialMembers[docSnap.id] = UserProfileBriefSchema.parse({ ...data, id: data.uid }) as UserProfileBrief;
+          attemptedUidsRef.current.add(docSnap.id); // Mark existing members as attempted
         });
 
         if (!isCancelled && Object.keys(initialMembers).length > 0) {
@@ -76,9 +79,26 @@ const useGroupMembersSync = (groupId: string | null, status: ChatStatus, members
   useEffect(() => {
     if (!groupId || !members || status === 'loading') return;
 
+    let isCancelled = false;
     const fetchUnknownProfiles = async () => {
-      const missingUids = members.filter(uid => !membersMap[uid]);
+      const uidsFromReactions = new Set<string>();
+      messages.forEach(msg => {
+        if (msg.reactions) {
+          Object.values(msg.reactions).forEach(uids => {
+            if (Array.isArray(uids)) {
+              uids.forEach(uid => uidsFromReactions.add(uid));
+            }
+          });
+        }
+      });
+
+      const allUids = Array.from(new Set([...(members || []), ...Array.from(uidsFromReactions)]));
+      const missingUids = allUids.filter(uid => !membersMap[uid] && !attemptedUidsRef.current.has(uid));
+      
       if (missingUids.length === 0) return;
+
+      // Mark as attempted immediately to prevent duplicate triggers during the async fetch
+      missingUids.forEach(uid => attemptedUidsRef.current.add(uid));
 
       const batches = [];
       for (let i = 0; i < missingUids.length; i += 30) {
@@ -96,7 +116,7 @@ const useGroupMembersSync = (groupId: string | null, status: ChatStatus, members
           });
         }));
 
-        if (Object.keys(newMembers).length > 0) {
+        if (!isCancelled && Object.keys(newMembers).length > 0) {
           dispatch({ type: 'UPDATE_MEMBERS', newMembers });
         }
       } catch (err) {
@@ -105,7 +125,8 @@ const useGroupMembersSync = (groupId: string | null, status: ChatStatus, members
     };
 
     fetchUnknownProfiles();
-  }, [groupId, members, status, dispatch, membersMap]);
+    return () => { isCancelled = true; };
+  }, [groupId, members, messages, status, dispatch, membersMap]);
 };
 
 /**
@@ -160,18 +181,32 @@ const useMessageStreamSync = (groupId: string | null, userData: UserData | null,
 
     const initializeMessageStream = async () => {
       if (userData?.uid) {
-        try {
-          const bundleResponse = await apiClient.get(`/api/bundle/${groupId}`, { 
-            responseType: 'arraybuffer',
-            timeout: 3000 
-          });
-          if (bundleResponse.data && !isCancelled) {
-            await loadBundle(db, bundleResponse.data);
+        // Boost strategy: Attempt hydration, but don't block the UI for more than 800ms.
+        const bundlePromise = (async () => {
+          try {
+            const bundleResponse = await apiClient.get(`/api/bundle/${groupId}`, { 
+              responseType: 'arraybuffer',
+              timeout: 6000 // Total patience for background hydration
+            });
+            if (bundleResponse.data && !isCancelled) {
+              await loadBundle(db, bundleResponse.data);
+            }
+          } catch (err) {
+            // Bundle failure is non-critical for the chat functionality
+            console.warn("[useMessageStreamSync] Bundle boost failed or timed out:", err);
           }
-        } catch (err) {
-          console.warn("[useMessageStreamSync] Bundle hydration failed:", err);
-        }
+        })();
+
+        // Race the hydration boost against a hard 800ms cutoff
+        await Promise.race([
+          bundlePromise,
+          new Promise(resolve => setTimeout(resolve, 800))
+        ]);
       }
+      
+      // Start the real-time listener. 
+      // If the bundle finished in time, this starts instantly from cache.
+      // If the bundle was slow, this starts from network immediately after the 800ms cutoff.
       if (!isCancelled) startListener();
     };
 
@@ -213,6 +248,8 @@ const useUserReadStateSync = (groupId: string | null, userData: UserData | null,
     if (!groupId || !userData?.uid) return;
     const unsubscribe = onSnapshot(doc(db, 'users', userData.uid, 'groupStates', groupId), (stateSnap) => {
       dispatch({ type: 'SET_READ_COUNT', count: stateSnap.exists() ? stateSnap.data().readMessageCount || 0 : 0 });
+    }, (err) => {
+      if (err.code !== 'permission-denied') console.error("[useChatDataSync] Read count listener error:", err);
     });
     return unsubscribe;
   }, [groupId, userData?.uid, dispatch]);
@@ -239,7 +276,7 @@ export const useChatDataSync = (groupId: string | null, userData: UserData | nul
 
   // Sync Subscriptions
   useGroupMetadataSync(groupId, dispatch, t);
-  useGroupMembersSync(groupId, state.status, state.groupData?.members, state.membersMap, dispatch);
+  useGroupMembersSync(groupId, state.status, state.groupData?.members, state.messages, state.membersMap, dispatch);
   useMessageStreamSync(groupId, userData, dispatch);
   useUserReadStateSync(groupId, userData, state.groupData, state.userReadCount, dispatch);
 

@@ -18,14 +18,14 @@ interface MessageItemProps {
   handleReply: (msg: Message) => void;
   handleTranslateMessage: (msg: Message, force?: boolean) => Promise<void>;
   handleLazyTranslate: (msg: Message) => void;
-  isTranslating: boolean; // Replaced translatingIds
+  isTranslating: boolean;
   handleToggleReaction: (msg: Message) => Promise<void>;
   handleReportClick: (msg: Message) => void;
   handleUserProfileClick: (userId: string | null) => Promise<void>;
   groupData: Group | null;
   translatedText?: string; // Replaced translatedTexts
   language: string;
-  handleShowReactions: (reactions: Record<string, string[]>) => void;
+  handleShowReactions: (reactions: Record<string, string[]>, previews?: Record<string, ReactionPreview[]>) => void;
   membersMap: MembersMap;
   isRecapAvailable: boolean;
 }
@@ -70,20 +70,19 @@ const MessageItem: FC<MessageItemProps> = memo(({
   }, [msg.id, isMe, msg.senderId, msg.isSystemMessage, handleLazyTranslate, msg]);
 
   const readCount = useMemo(() => {
-    if (!isMe || !msg.createdAt || !groupData) return 0;
+    if (!isMe || !msg.createdAt || !groupData?.members) return 0;
     const msgTime = parseTimestampToMillis(msg.createdAt);
-    const legacyLastReadAt = groupData?.memberLastReadAt;
-    const allMemberUids = groupData?.members || [];
+    const legacyLastReadAt = groupData.memberLastReadAt;
     let count = 0;
 
-    allMemberUids.forEach(uid => {
-      if (uid === msg.senderId) return;
+    for (const uid of groupData.members) {
+      if (uid === msg.senderId) continue;
       const memberStatus = membersMap?.[uid];
       const readAt = memberStatus?.lastReadAt || legacyLastReadAt?.[uid];
-      if (!readAt) return;
-      const readTime = parseTimestampToMillis(readAt);
-      if (readTime >= msgTime) count++;
-    });
+      if (readAt && parseTimestampToMillis(readAt) >= msgTime) {
+        count++;
+      }
+    }
     return count;
   }, [isMe, msg.createdAt, msg.senderId, groupData?.members, groupData?.memberLastReadAt, membersMap]);
 
@@ -209,7 +208,7 @@ const MessageItem: FC<MessageItemProps> = memo(({
             className={`message-reactions ${isMe ? 'sent' : 'received'}`}
             onClick={(e) => {
               e.stopPropagation();
-              if (msg.reactions) handleShowReactions(msg.reactions);
+              if (msg.reactions) handleShowReactions(msg.reactions, msg.reactionPreviews);
             }}
           >
             <div className="reaction-previews">

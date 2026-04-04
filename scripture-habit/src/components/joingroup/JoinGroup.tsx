@@ -111,6 +111,8 @@ export default function JoinGroup() {
           if (docSnap.exists()) {
             setUserData(docSnap.data() as UserData);
           }
+        }, (err) => {
+          if (err.code !== 'permission-denied') console.error("[JoinGroup] User data listener error:", err);
         });
       }
     });

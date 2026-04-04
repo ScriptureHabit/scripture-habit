@@ -1,5 +1,6 @@
 import React, { createContext, useContext, ReactNode, RefObject, Dispatch } from 'react';
 import { Message, Group, MembersMap, UserProfileBrief, GroupData } from '../../types/chat';
+import { ReactionPreview } from '../../../types/firestore';
 import { UserData } from '../../types/user';
 import { Note } from '../../types/note';
 import { ReactionItem } from '../../store/useModalStore';
@@ -88,7 +89,7 @@ export interface ChatActionContextType {
   handleDeleteMessageClick: (msg: Message) => void;
   handleReportClick: (msg: Message) => void;
   handleUserProfileClick: (userId: string | null) => Promise<void>;
-  handleShowReactions: (reactions: Record<string, string[]>) => void;
+  handleShowReactions: (reactions: Record<string, string[]>, previews?: Record<string, ReactionPreview[]>) => void;
   handleShowMembers: () => void;
   handleShowUnityModal: () => void;
   handleGenerateWeeklyRecap: () => Promise<void>;

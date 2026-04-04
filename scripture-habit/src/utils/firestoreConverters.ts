@@ -43,7 +43,7 @@ const createConverter = <T extends { id?: string; uid?: string }>(
     // 3. Optional Strict Validation (Zod)
     // If a schema is provided, we parse it to catch runtime inconsistencies immediately.
     // .passthrough() in schemas ensures we don't lose un-mapped fields during first implementation.
-    const validatedData = (schema ? schema.parse(baseData) : baseData) as any;
+    const validatedData = (schema ? schema.parse(baseData) : baseData) as Record<string, unknown>;
 
     // 4. Custom Transformations (Legacy/Migration logic)
     const scripture = normalizeScriptureCategory(validatedData.scripture);
@@ -66,7 +66,7 @@ const createConverter = <T extends { id?: string; uid?: string }>(
       ...validatedData,
       scripture,
       searchTokens,
-    } as T;
+    } as unknown as T;
   }
 });
 

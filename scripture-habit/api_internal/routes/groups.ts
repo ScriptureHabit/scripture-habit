@@ -3,6 +3,7 @@ import { admin, db } from '../lib/firebase-admin.js';
 import { verifyAppCheck, authenticate, requireEmailVerified, AuthenticatedRequest } from '../lib/middleware.js';
 import { joinGroupSchema, updateKickThresholdSchema, leaveGroupSchema, deleteGroupSchema, updateReadStatusSchema, announceUnitySchema, updateGroupSchema, regenerateInviteCodeSchema } from '../lib/schemas.js';
 import { GroupDocument, UserDocument, MemberPreview as PreviewItem, GroupMemberDocument } from '../../types/firestore.js';
+import { CounterService } from '../services/counter-service.js';
 
 const router = express.Router();
 
@@ -239,11 +240,11 @@ router.post('/update-read-status', authenticate, verifyAppCheck, async (req: Aut
             return res.status(403).json({ error: 'Forbidden' });
         }
 
-        const totalMessages = groupData.messageCount || 0;
+        const totalMessages = await CounterService.getCount(groupRef);
 
         const batch = db.batch();
         batch.set(userRef.collection('groupStates').doc(groupId), {
-            readMessageCount: totalMessages, // We assume "opening it" or "marking as read" from dashboard means reading all
+            readMessageCount: totalMessages, // Fetch most accurate count including shards
             lastReadAt: admin.firestore.FieldValue.serverTimestamp()
         }, { merge: true });
 

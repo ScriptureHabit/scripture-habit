@@ -62,6 +62,13 @@ self.addEventListener('notificationclick', (event) => {
     );
 });
 
+// Handle messages from the UI
+self.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'SKIP_WAITING') {
+        self.skipWaiting();
+    }
+});
+
 const CACHE_NAME = 'scripture-habit-v2'; // Bumped version
 const OFFLINE_URL = '/offline.html';
 

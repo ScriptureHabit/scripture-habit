@@ -4,6 +4,8 @@
     display: flex;
     margin-bottom: 0.5rem;
     box-sizing: border-box;
+    content-visibility: auto;
+    contain-intrinsic-size: auto 60px;
 }
 
 .message-wrapper.sent {

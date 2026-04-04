@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { doc, onSnapshot, collection, FirestoreError } from 'firebase/firestore';
+import { doc, onSnapshot, collection, FirestoreError, query, where } from 'firebase/firestore';
 import { db } from '../../../firebase';
 import { UserData } from '../../../types/user';
 import { Group } from '../../../types/chat';
@@ -27,56 +27,45 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
             setActiveGroupId(groupIds[0]);
         }
 
-
         const unsubscribers: (() => void)[] = [];
 
-        
         // 1. Unified Listener for all Groups (up to 30)
-        // This is MUCH more efficient than separate listeners per ID.
-        // It counts as separate document reads, but uses 1 connection and returns 1 set of metadata.
-        import('firebase/firestore').then(({ query, collection, where, onSnapshot }) => {
+        const groupsQuery = query(
+            collection(db, 'groups'),
+            where('members', 'array-contains', userData.uid)
+        );
 
-            const groupsQuery = query(
-                collection(db, 'groups'),
-                where('members', 'array-contains', userData.uid)
-            );
+        const unsubGroups = onSnapshot(groupsQuery, { includeMetadataChanges: true }, (snapshot) => {
+            const groupsMap: Record<string, Group> = {};
+            snapshot.docs.forEach(docSnap => {
+                groupsMap[docSnap.id] = { id: docSnap.id, ...docSnap.data() } as Group;
+            });
 
+            setRawUserGroups(prev => {
+                // Maintain original order from groupIds list
+                return groupIds
+                    .map(id => groupsMap[id] || prev.find(g => g.id === id))
+                    .filter(Boolean) as Group[];
+            });
+        }, (err) => {
+            if (err.code !== 'permission-denied') console.error("Dashboard groups query listener error:", err);
+        });
+        unsubscribers.push(unsubGroups);
 
-            const unsubGroups = onSnapshot(groupsQuery, { includeMetadataChanges: true }, (snapshot) => {
-                const groupsMap: Record<string, Group> = {};
-                snapshot.docs.forEach(docSnap => {
-                    groupsMap[docSnap.id] = { id: docSnap.id, ...docSnap.data() } as Group;
-                });
-
-                setRawUserGroups(prev => {
-                    // Maintain original order from groupIds list
-                    return groupIds
-                        .map(id => groupsMap[id] || prev.find(g => g.id === id))
-                        .filter(Boolean) as Group[];
-                });
-
-                if (!snapshot.metadata.fromCache) {
-                    // console.log("[Dashboard] Loaded groups from server");
+        // 2. Specialized Listeners for Member specific data in each group
+        groupIds.forEach(gid => {
+            const memberRef = doc(db, 'groups', gid, 'members', userData.uid).withConverter(groupMemberConverter);
+            const unsubMember = onSnapshot(memberRef, (memberSnap) => {
+                if (memberSnap.exists()) {
+                    const mData = memberSnap.data();
+                    setRawUserGroups(prev => prev.map(g => 
+                        g.id === gid ? { ...g, myMemberStatus: mData } : g
+                    ));
                 }
+            }, (err) => {
+                if (err.code !== 'permission-denied') console.log(`Member fetch error ${gid}:`, err);
             });
-            unsubscribers.push(unsubGroups);
-
-            // 2. Specialized Listeners for Member specific data in each group
-            // We still need these because they are in subcollections.
-            groupIds.forEach(gid => {
-                const memberRef = doc(db, 'groups', gid, 'members', userData.uid).withConverter(groupMemberConverter);
-                const unsubMember = onSnapshot(memberRef, (memberSnap) => {
-                    if (memberSnap.exists()) {
-                        const mData = memberSnap.data();
-                        setRawUserGroups(prev => prev.map(g => 
-                            g.id === gid ? { ...g, myMemberStatus: mData } : g
-                        ));
-                    }
-                }, (err) => {
-                    if (err.code !== 'permission-denied') console.log(`Member fetch error ${gid}:`, err);
-                });
-                unsubscribers.push(unsubMember);
-            });
+            unsubscribers.push(unsubMember);
         });
 
         return () => {

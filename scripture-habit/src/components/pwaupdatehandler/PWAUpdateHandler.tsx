@@ -29,10 +29,6 @@ const PWAUpdateHandler: React.FC = () => {
                   worker.postMessage({ type: 'SKIP_WAITING' });
                 }
               }
-
-              setTimeout(() => {
-                window.location.reload();
-              }, 500);
             }}
             className="pwa-update-button"
           >

@@ -40,6 +40,7 @@ router.get('/bundle/:groupId', authenticate, verifyAppCheck, async (req: Authent
         if (cached && cached.expiresAt > now) {
             console.log(`[Bundle] Serving cached bundle for ${groupId}`);
             res.setHeader('Content-Type', 'application/octet-stream');
+            res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
             return res.send(cached.data);
         }
 
@@ -55,9 +56,12 @@ router.get('/bundle/:groupId', authenticate, verifyAppCheck, async (req: Authent
             .add(`latest-messages-${groupId}`, querySnap)
             .build();
 
-        // 4. Cache and Send
+        // 4. Cache and Send (Both in-memory and Edge CDN)
+        const cacheHeader = 'public, s-maxage=60, stale-while-revalidate=300';
         bundleCache.set(groupId, { data: bundleBuffer, expiresAt: now + BUNDLE_TTL_MS });
+        
         res.setHeader('Content-Type', 'application/octet-stream');
+        res.setHeader('Cache-Control', cacheHeader);
         res.send(bundleBuffer);
 
     } catch (error) {
