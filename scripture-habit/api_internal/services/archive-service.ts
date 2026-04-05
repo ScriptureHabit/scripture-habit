@@ -16,16 +16,25 @@ export class ArchiveService {
         const messagesRef = db.collection('groups').doc(groupId).collection('messages');
         const bucketsRef = db.collection('groups').doc(groupId).collection('message_buckets');
         
-        // 1. Fetch all messages ordered by time (newest first)
-        const allMessages = await messagesRef.orderBy('createdAt', 'desc').get();
+        // 1. Fetch small chunk of old messages (Oldest first)
+        const messagesToArchiveSnap = await messagesRef.orderBy('createdAt', 'asc').limit(100).get();
         
-        // Only archive if we have more than the "keep" threshold
-        if (allMessages.size <= this.KEEP_INDIVIDUAL_COUNT) {
+        // 2. Only archive if we have a reasonable amount to bundle, 
+        // AND we are strictly above the threshold to keep latest real-time messages
+        const groupSnap = await db.collection('groups').doc(groupId).get();
+        const totalCount = groupSnap.data()?.messageCount || 0;
+
+        if (totalCount <= this.KEEP_INDIVIDUAL_COUNT || messagesToArchiveSnap.empty) {
             return 0;
         }
 
-        // 2. Take only the messages older than the top 100
-        const toArchive = allMessages.docs.slice(this.KEEP_INDIVIDUAL_COUNT).reverse(); // Oldest first for bundling
+        // To be safe, we only archive if we have at least BUCKET_SIZE messages to process
+        // or if we are way above the limit.
+        if (messagesToArchiveSnap.size < this.BUCKET_SIZE && totalCount < (this.KEEP_INDIVIDUAL_COUNT + this.BUCKET_SIZE)) {
+            return 0;
+        }
+
+        const toArchive = messagesToArchiveSnap.docs;
         console.log(`[ArchiveService] Archiving ${toArchive.length} messages for group ${groupId}`);
 
         let archivedCount = 0;
@@ -46,8 +55,16 @@ export class ArchiveService {
             // Generate a bucket ID based on the start time (oldest message in chunk)
             const firstMsg = messagesData[0];
             const startTime = firstMsg.createdAt as FirestoreTimestamp;
-            // @ts-ignore - Handle private property access for different versions of Firestore Timestamp
-            const timeMillis = startTime.toMillis ? startTime.toMillis() : (startTime._seconds ? startTime._seconds * 1000 : (startTime.seconds ? startTime.seconds * 1000 : Date.now()));
+            
+            const getMillis = (ts: any) => {
+                if (!ts) return Date.now();
+                if (typeof ts.toMillis === 'function') return ts.toMillis();
+                if (ts.seconds !== undefined) return ts.seconds * 1000;
+                if (ts._seconds !== undefined) return ts._seconds * 1000;
+                if (ts instanceof Date) return ts.getTime();
+                return Date.now();
+            };
+            const timeMillis = getMillis(startTime);
 
             const bucketId = `bucket_${timeMillis}`;
             

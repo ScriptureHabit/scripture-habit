@@ -2,7 +2,8 @@ import express, { Request, Response } from 'express';
 import { admin, db } from '../lib/firebase-admin.js';
 import { verifyAppCheck, authenticate, requireEmailVerified, AuthenticatedRequest } from '../lib/middleware.js';
 import { joinGroupSchema, updateKickThresholdSchema, leaveGroupSchema, deleteGroupSchema, updateReadStatusSchema, announceUnitySchema, updateGroupSchema, regenerateInviteCodeSchema } from '../lib/schemas.js';
-import { GroupDocument, UserDocument, MemberPreview as PreviewItem, GroupMemberDocument } from '../../types/firestore.js';
+import { CounterService } from '../services/counter-service.js';
+import { GroupDocument, UserDocument, MemberPreview as PreviewItem, GroupMemberDocument, FirestoreTimestamp } from '../../types/firestore.js';
 
 
 const router = express.Router();
@@ -87,21 +88,37 @@ router.post('/join-group', authenticate, requireEmailVerified, verifyAppCheck, a
             transaction.update(groupDoc.ref, {
                 members: admin.firestore.FieldValue.arrayUnion(uid),
                 membersCount: admin.firestore.FieldValue.increment(1),
-                memberPreviews: updatedPreviews
+                memberPreviews: updatedPreviews,
+                // TRUTH: A join IS activity. Dashboard should reflect this.
+                lastMessageAt: admin.firestore.FieldValue.serverTimestamp(),
+                lastMessageByNickname: userData.nickname || 'Member',
+                lastMessageByUid: uid
             });
 
+            // Calculate accurate initial read count from shards
+            const totalMessages = await CounterService.getCountInTransaction(transaction, groupDoc.ref);
+
             // New: Per-user member document in subcollection
-            const memberRef = groupDoc.ref.collection('members').doc(uid);
-            transaction.set(memberRef, {
+            const memberData: GroupMemberDocument = {
                 uid,
                 nickname: userData.nickname || 'Member',
                 photoURL: userData.photoURL || '',
-                joinedAt: admin.firestore.FieldValue.serverTimestamp(),
-                lastActiveAt: admin.firestore.FieldValue.serverTimestamp(),
+                joinedAt: admin.firestore.FieldValue.serverTimestamp() as unknown as FirestoreTimestamp,
+                lastActiveAt: admin.firestore.FieldValue.serverTimestamp() as unknown as FirestoreTimestamp,
                 kickThreshold: userData.kickThreshold || 3,
+                lastReadAt: admin.firestore.FieldValue.serverTimestamp() as unknown as FirestoreTimestamp,
+                readMessageCount: totalMessages
+            };
+            const memberRef = groupDoc.ref.collection('members').doc(uid);
+            transaction.set(memberRef, memberData);
+
+            // Also update the groupStates subcollection for the User (Source of truth for dashboard lists)
+            const userGS = userRef.collection('groupStates').doc(gid);
+            transaction.set(userGS, {
+                readMessageCount: totalMessages,
                 lastReadAt: admin.firestore.FieldValue.serverTimestamp(),
-                readMessageCount: 0
-            } as unknown as GroupMemberDocument);
+                lastActiveAt: admin.firestore.FieldValue.serverTimestamp()
+            });
 
             transaction.update(userRef, {
                 groupIds: admin.firestore.FieldValue.arrayUnion(gid),
@@ -196,9 +213,16 @@ router.post('/leave-group', authenticate, verifyAppCheck, async (req: Authentica
                 });
             }
 
-            transaction.update(userRef, {
+            const userUpdate: Record<string, any> = {
                 groupIds: admin.firestore.FieldValue.arrayRemove(groupId)
-            });
+            };
+            
+            // TRUTH: If the user was using this group as their "active" group, clear the legacy field
+            if (uData.groupId === groupId) {
+                userUpdate.groupId = admin.firestore.FieldValue.delete();
+            }
+
+            transaction.update(userRef, userUpdate);
 
             transaction.delete(userRef.collection('groupStates').doc(groupId));
         });
@@ -240,11 +264,12 @@ router.post('/update-read-status', authenticate, verifyAppCheck, async (req: Aut
             return res.status(403).json({ error: 'Forbidden' });
         }
 
-        const { readMessageCount: totalMessages } = validation.data;
+        // Calculate the actual current message count from shards to stay accurate
+        const totalMessages = await CounterService.getCount(groupRef);
 
         const batch = db.batch();
         batch.set(userRef.collection('groupStates').doc(groupId), {
-            readMessageCount: totalMessages, // Fetch most accurate count including shards
+            readMessageCount: totalMessages, 
             lastReadAt: admin.firestore.FieldValue.serverTimestamp()
         }, { merge: true });
 
@@ -543,11 +568,12 @@ router.get('/groups', async (_req: Request, res: Response) => {
     try {
         const snapshot = await db.collection('groups')
             .where('isPublic', '==', true)
-            .limit(200)
+            .orderBy('lastMessageAt', 'desc')
+            .limit(100)
             .get();
 
-        let groups = snapshot.docs.map(doc => {
-            const data = doc.data();
+        const groups = snapshot.docs.map(doc => {
+            const data = doc.data() as GroupDocument;
             return {
                 id: doc.id,
                 name: data.name,
@@ -563,11 +589,6 @@ router.get('/groups', async (_req: Request, res: Response) => {
                 translations: data.translations
             };
         });
-
-        groups = groups
-            .filter(g => g.membersCount > 0)
-            .sort((a, b) => (b.membersCount || 0) - (a.membersCount || 0))
-            .slice(0, 50);
 
         res.json(groups);
     } catch (error) {

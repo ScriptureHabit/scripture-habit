@@ -69,26 +69,46 @@ export class StreakEngine {
 
         // Logic for first post ever OR post on a new day
         if (!lastPostDate) {
-            newStreak = (newStreak > 0) ? newStreak + 1 : 1;
+            // Truthful: If we don't know the last post date, we can't confirm continuity.
+            // Reset to 1 to start a new verifiable streak.
+            newStreak = 1;
             streakUpdated = true;
         } else {
             const isTargetDay = lastPostDate === yesterday;
             
             // Grace period: If user is traveling (tz mismatch) or just slightly late, 
             // allow a wider window (45 hours) instead of strict calendar day.
-            const lastTime = lastPostAt ? new Date(lastPostAt) : new Date(0);
-            const hoursSinceLastPost = (now.getTime() - lastTime.getTime()) / (1000 * 60 * 60);
             
-            const isTraveling = clientTimeZone && clientTimeZone !== effectiveTimeZone;
-            const withinGracePeriod = isTraveling && hoursSinceLastPost < 45;
+            interface MinimalTimestamp { 
+                toMillis?: () => number; 
+                seconds?: number; 
+            }
+
+            const getMillisSafely = (ts: MinimalTimestamp | Date | number | null | undefined): number => {
+                if (!ts) return 0;
+                if (typeof ts === 'object') {
+                    if (ts instanceof Date) return ts.getTime();
+                    if ('toMillis' in ts && typeof ts.toMillis === 'function') return ts.toMillis();
+                    if ('seconds' in ts && ts.seconds !== undefined) return ts.seconds * 1000;
+                }
+                if (typeof ts === 'number') return ts;
+                return 0;
+            };
+
+            const lastTimeMillis = getMillisSafely(lastPostAt as MinimalTimestamp | Date | number | null | undefined);
+            const hoursSinceLastPost = (now.getTime() - lastTimeMillis) / (1000 * 60 * 60);
+            
+            const isTraveling = !!(clientTimeZone && clientTimeZone !== effectiveTimeZone);
+            const withinGracePeriod = isTraveling && lastTimeMillis > 0 && hoursSinceLastPost < 45;
 
             if (isTargetDay || withinGracePeriod) {
                 newStreak += 1;
                 isConsecutive = true;
+                streakUpdated = true;
             } else {
                 newStreak = 1; // Reset streak
+                streakUpdated = true;
             }
-            streakUpdated = true;
         }
 
         if (newStreak > currentHighest) {

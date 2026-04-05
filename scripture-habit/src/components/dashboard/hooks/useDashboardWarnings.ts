@@ -20,32 +20,40 @@ export const useDashboardWarnings = (userData: UserData | null, userGroups: Grou
         userGroups.forEach(group => {
             const myStatus = group.myMemberStatus;
             
-            // Collect all potential activity timestamps
-            const candidateTimestamps = [
+            // TRUTH: Collect all potential activity timestamps to avoid false kick warnings
+            const candidateTimestamps: Parameters<typeof parseTimestampToDate>[0][] = [
+                userData.lastPostAt,
                 myStatus?.lastNoteAt,
+                myStatus?.lastReadAt,
                 // Only count the group's last note if the user themselves was the poster
-                (group.lastNoteByUid === userData.uid ? group.lastNoteAt : null),
+                (group.lastMessageByUid === userData.uid ? (group.lastNoteAt || group.lastMessageAt) : null),
                 myStatus?.lastActiveAt,
                 (group.memberLastActive && group.memberLastActive[userData.uid])
             ].filter(Boolean);
 
             if (candidateTimestamps.length > 0) {
-                // Convert all candidates to Date objects and find the newest one
-                const dates = candidateTimestamps.map(t => parseTimestampToDate(t));
+                // Convert all candidates to Date objects and find the newest valid one
+                // parseTimestampToDate handles various Firestore timestamp formats safely
+                const dates = candidateTimestamps
+                    .map(t => parseTimestampToDate(t))
+                    .filter(d => !isNaN(d.getTime()));
+
+                if (dates.length === 0) return;
+
                 const lastActiveDate = new Date(Math.max(...dates.map(d => d.getTime())));
-                
                 const diffMs = now.getTime() - lastActiveDate.getTime();
                 
-                // Use the threshold from myMemberStatus if available
+                // Use the threshold from myStatus if available
                 const threshold = myStatus?.kickThreshold || (group.memberKickThresholds && group.memberKickThresholds[userData.uid]) || userData.kickThreshold || 3;
                 const thresholdMs = threshold * 24 * 60 * 60 * 1000;
                 
                 const remainingMs = thresholdMs - diffMs;
-                const hoursRemaining = Math.ceil(remainingMs / (1000 * 60 * 60));
+                const hoursRemaining = Math.max(0, Math.ceil(remainingMs / (1000 * 60 * 60)));
 
-                // Warn if less than 24 hours remain (or if already overdue but still in group)
-                if (hoursRemaining <= 24) {
-                    newWarnings.push({ name: group.name || 'Group', hoursRemaining: Math.max(0, hoursRemaining) });
+                // Avoid false positives: Warning shows only if less than 24 hours remain 
+                // and it's strictly smaller than the full threshold period.
+                if (hoursRemaining <= 24 && hoursRemaining < threshold * 24 - 1) {
+                    newWarnings.push({ name: group.name || 'Group', hoursRemaining });
                 }
             }
         });

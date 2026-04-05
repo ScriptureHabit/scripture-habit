@@ -19,6 +19,7 @@ export interface PostNoteInput {
     selectedShareGroups?: string[] | null;
     language?: string | null;
     timeZone?: string | null;
+    optimisticId?: string | null;
 }
 
 export class NoteService {
@@ -33,17 +34,36 @@ export class NoteService {
      * Posts a new note for a user, updates streaks, and shares with groups.
      */
     static async postNote(input: PostNoteInput) {
-        const { uid, messageText, scripture, chapter, comment, title, speaker, shareOption, selectedShareGroups, language, timeZone: clientTimeZone } = input;
+        const { uid, messageText, scripture, chapter, comment, title, speaker, shareOption, selectedShareGroups, language, timeZone: clientTimeZone, optimisticId } = input;
 
         const result = await db.runTransaction(async (transaction) => {
             const userRef = db.collection('users').doc(uid);
+            
+            // 1. Idempotency Check: If optimisticId is provided, check if it was already processed.
+            // Using it as the document ID for the personal note is the most robust way.
+            const noteRef = optimisticId 
+                ? userRef.collection('notes').doc(optimisticId) 
+                : userRef.collection('notes').doc();
+
+            const existingNote = await transaction.get(noteRef);
+            if (existingNote.exists) {
+                // Already posted. Return existing data for idempotency.
+                return { 
+                    personalNoteId: noteRef.id, 
+                    alreadyPosted: true,
+                    streakUpdated: false,
+                    newStreak: 0,
+                    _internalNotifications: { userToGroupMapEntries: [] as [string, string][] } 
+                };
+            }
+
             const userDoc = await transaction.get(userRef);
             if (!userDoc.exists) throw new NotFoundError('User not found.');
 
             const userData = userDoc.data()!;
             const userGroupIds: string[] = userData.groupIds || (userData.groupId ? [userData.groupId] : []);
 
-            // 1. Identify target groups
+            // 2. Identify target groups
             let groupsToPostTo: string[] = [];
             if (shareOption === 'all') groupsToPostTo = userGroupIds;
             else if (shareOption === 'specific') groupsToPostTo = selectedShareGroups || [];
@@ -55,7 +75,7 @@ export class NoteService {
             const groupRefs = groupsToPostTo.map(gid => db.collection('groups').doc(gid));
             const groupDocs = groupRefs.length > 0 ? await transaction.getAll(...groupRefs) : [];
 
-            // 2. Calculate Streak
+            // 3. Calculate Streak
             const now = new Date();
             const timeZone = userData.timeZone || 'UTC';
             const streakResult = StreakEngine.calculateNextStreak({
@@ -90,7 +110,7 @@ export class NoteService {
 
             transaction.update(userRef, userUpdate);
 
-            const userToGroupMap = new Map();
+            const userToGroupMap = new Map<string, string>();
             const validatedGroupsToPostTo: string[] = [];
 
             groupDocs.forEach(gDoc => {
@@ -107,14 +127,17 @@ export class NoteService {
                 });
             });
 
-            const noteRef = userRef.collection('notes').doc();
             const noteTimestamp = admin.firestore.Timestamp.now();
             const sharedMessageIds: Record<string, string> = {};
 
-            // 3. Post to groups
-            groupDocs.forEach((gDoc, idx) => {
+            // 4. Post to groups
+            let idx = 0;
+            for (const gDoc of groupDocs) {
                 const gid = gDoc.id;
-                if (!validatedGroupsToPostTo.includes(gid)) return;
+                if (!validatedGroupsToPostTo.includes(gid)) {
+                    idx++;
+                    continue;
+                }
                 
                 const gData = gDoc.data()!;
                 const msgRef = db.collection('groups').doc(gid).collection('messages').doc();
@@ -143,9 +166,7 @@ export class NoteService {
                 }
 
                 const updatePayload: admin.firestore.UpdateData<admin.firestore.DocumentData> = {
-                    // messageCount: admin.firestore.FieldValue.increment(1), // MOVED TO SHARDS
                     noteCount: admin.firestore.FieldValue.increment(1),
-
                     lastMessageAt: noteTimestamp,
                     lastNoteAt: noteTimestamp,
                     lastNoteByNickname: userNickname,
@@ -153,7 +174,7 @@ export class NoteService {
                 };
 
                 CounterService.increment(transaction, groupRefs[idx]);
-
+                const totalMessages = (await CounterService.getCountInTransaction(transaction, groupRefs[idx])) + 1;
 
                 if (gData.dailyActivity?.date !== groupToday) {
                     updatePayload.dailyActivity = { date: groupToday, activeMembers: [uid] };
@@ -169,20 +190,23 @@ export class NoteService {
                 // Update member subcollection for activity tracking (Scalable)
                 const memberRef = groupRefs[idx].collection('members').doc(uid);
                 transaction.set(memberRef, {
-                    lastActiveAt: admin.firestore.FieldValue.serverTimestamp(),
-                    lastReadAt: admin.firestore.FieldValue.serverTimestamp(),
-                    lastNoteAt: noteTimestamp
+                    lastActiveAt: noteTimestamp,
+                    lastReadAt: noteTimestamp,
+                    lastNoteAt: noteTimestamp,
+                    readMessageCount: totalMessages
                 }, { merge: true });
                 
                 const userGS = userRef.collection('groupStates').doc(gid);
                 transaction.set(userGS, { 
-                    readMessageCount: admin.firestore.FieldValue.increment(1), 
-                    lastReadAt: admin.firestore.FieldValue.serverTimestamp(),
-                    lastActiveAt: admin.firestore.FieldValue.serverTimestamp()
+                    readMessageCount: totalMessages, 
+                    lastReadAt: noteTimestamp,
+                    lastActiveAt: noteTimestamp
                 }, { merge: true });
-            });
 
-            // 4. Record personal note
+                idx++;
+            }
+
+            // 5. Record personal note
             transaction.set(noteRef, {
                 text: messageText,
                 createdAt: noteTimestamp,
@@ -197,15 +221,15 @@ export class NoteService {
                 searchTokens: buildNoteSearchTokens({ scripture, chapter, comment, title, speaker })
             });
 
-            // 5. Streak Announcements
+            // 6. Streak Announcements
             if (streakUpdated && newStreak > 0) {
                 const safeNickname = this.escapeMarkdown(userData.nickname || 'Member');
-                const announceMsg = t(language, 'notifications.streak_announcement', { 
+                const announceMsg = t(language || 'en', 'notifications.streak_announcement', { 
                     nickname: safeNickname, 
                     streak: newStreak 
                 });
                 
-                const botName = t(language, 'notifications.bot_name');
+                const botName = t(language || 'en', 'notifications.bot_name');
                 
                 [...new Set(userGroupIds)].forEach(gid => {
                     const announceRef = db.collection('groups').doc(gid).collection('messages').doc();
@@ -223,6 +247,7 @@ export class NoteService {
 
             return { 
                 personalNoteId: noteRef.id, 
+                alreadyPosted: false,
                 newStreak, 
                 streakUpdated, 
                 nickname: userData.nickname, 
@@ -230,28 +255,30 @@ export class NoteService {
             };
         });
 
-        // 6. Push Notifications (Async after transaction)
-        NotificationService.notifyNotePosted({
-            groupIds: Array.from(new Set(result._internalNotifications.userToGroupMapEntries.map(e => e[1]))),
-            senderUid: uid,
-            senderNickname: result.nickname || 'Member',
-            language: language,
-            userToGroupMapEntries: result._internalNotifications.userToGroupMapEntries
-        });
+        // 7. Push Notifications (Async after transaction)
+        if (!result.alreadyPosted) {
+            NotificationService.notifyNotePosted({
+                groupIds: Array.from(new Set(result._internalNotifications.userToGroupMapEntries.map(e => e[1]))),
+                senderUid: uid,
+                senderNickname: result.nickname || 'Member',
+                language: language || 'en',
+                userToGroupMapEntries: result._internalNotifications.userToGroupMapEntries
+            });
 
-        // 7. Probabilistic Aggregation (Sync shards back to main doc every ~10 posts)
-        if (Math.random() < 0.1) {
-            Promise.all(result._internalNotifications.userToGroupMapEntries.map(async ([_, gid]) => {
-                try {
-                    await CounterService.aggregateAndSync(db.collection('groups').doc(gid), 'messageCount');
-                } catch (e) {
-                    console.warn(`[NoteService] Aggregation failed for group ${gid}:`, e);
-                }
-            })).catch(err => console.error("[NoteService] Aggregation background task error:", err));
+            // 8. Probabilistic Aggregation (Sync shards back to main doc every ~10 posts)
+            if (Math.random() < 0.1) {
+                Promise.all(result._internalNotifications.userToGroupMapEntries.map(async (entry) => {
+                    const gid = entry[1];
+                    try {
+                        await CounterService.aggregateAndSync(db.collection('groups').doc(gid), 'messageCount');
+                    } catch (e) {
+                        console.warn(`[NoteService] Aggregation failed for group ${gid}:`, e);
+                    }
+                })).catch(err => console.error("[NoteService] Aggregation background task error:", err));
+            }
         }
 
         const { _internalNotifications, ...publicResult } = result;
         return publicResult;
-
     }
 }

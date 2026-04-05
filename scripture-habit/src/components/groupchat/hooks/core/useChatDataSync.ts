@@ -120,7 +120,9 @@ const useGroupMembersSync = (groupId: string | null, status: ChatStatus, members
           dispatch({ type: 'UPDATE_MEMBERS', newMembers });
         }
       } catch (err) {
-        console.error("[useGroupMembersSync] Reactive profiles fetch error:", err);
+        // Log warning but don't clear attemptedUidsRef so we don't keep retrying failed IDs this session.
+        // This ensures truth in performance by not hammering the network for bad UIDs.
+        console.warn("[useGroupMembersSync] One or more reactive profiles could not be fetched:", err);
       }
     };
 
@@ -222,7 +224,14 @@ const useMessageStreamSync = (groupId: string | null, userData: UserData | null,
 /**
  * Sub-hook for Syncing Read Status
  */
-const useUserReadStateSync = (groupId: string | null, userData: UserData | null, groupData: GroupData | null, userReadCount: number | null, dispatch: Dispatch<ChatAction>) => {
+const useUserReadStateSync = (
+  groupId: string | null, 
+  userData: UserData | null, 
+  groupData: GroupData | null, 
+  userReadCount: number | null, 
+  actualMessageCount: number,
+  dispatch: Dispatch<ChatAction>
+) => {
   const updateReadStatus = useCallback(async (gid: string, totalCount: number) => {
     if (!userData?.uid || !gid) return;
     try {
@@ -237,12 +246,15 @@ const useUserReadStateSync = (groupId: string | null, userData: UserData | null,
 
   useEffect(() => {
     if (!groupId || !groupData || userReadCount === null) return;
-    const totalMsgs = groupData.messageCount || 0;
+    
+    // TRUTH: Use the highest of metadata count or listener count to avoid stale overwrites
+    const totalMsgs = Math.max(groupData.messageCount || 0, actualMessageCount);
+    
     if (totalMsgs > userReadCount || (lastForcedSyncGidRef.current !== groupId && totalMsgs > 0)) {
       updateReadStatus(groupId, totalMsgs);
       lastForcedSyncGidRef.current = groupId;
     }
-  }, [groupId, groupData?.messageCount, userReadCount, updateReadStatus]);
+  }, [groupId, groupData?.messageCount, actualMessageCount, userReadCount, updateReadStatus]);
 
   useEffect(() => {
     if (!groupId || !userData?.uid) return;
@@ -278,7 +290,11 @@ export const useChatDataSync = (groupId: string | null, userData: UserData | nul
   useGroupMetadataSync(groupId, dispatch, t);
   useGroupMembersSync(groupId, state.status, state.groupData?.members, state.messages, state.membersMap, dispatch);
   useMessageStreamSync(groupId, userData, dispatch);
-  useUserReadStateSync(groupId, userData, state.groupData, state.userReadCount, dispatch);
+  
+  // Calculate current "truthful" message count including what we've loaded in session
+  const actualMessageCount = state.messages.length;
+  
+  useUserReadStateSync(groupId, userData, state.groupData, state.userReadCount, actualMessageCount, dispatch);
 
   /**
    * Action: Pure Data Fetch (No Ref references)

@@ -57,6 +57,10 @@ export interface GroupDocument {
     lastUnityAnnouncementDate?: string;
 
     
+    // Metadata
+    createdAt?: FirestoreTimestamp;
+    lastInactivityCheckedAt?: FirestoreTimestamp;
+    
     // Localization
     timeZone?: string;
     translations?: Record<string, { name: string; description?: string }>;

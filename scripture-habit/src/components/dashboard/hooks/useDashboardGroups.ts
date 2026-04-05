@@ -42,9 +42,18 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
             });
 
             setRawUserGroups(prev => {
-                // Maintain original order from groupIds list
+                // Maintain original order and preserve member-specific status
                 return groupIds
-                    .map(id => groupsMap[id] || prev.find(g => g.id === id))
+                    .map(id => {
+                        const newGroup = groupsMap[id];
+                        if (!newGroup) return prev.find(g => g.id === id);
+                        
+                        const oldGroup = prev.find(g => g.id === id);
+                        return {
+                            ...newGroup,
+                            myMemberStatus: oldGroup?.myMemberStatus || newGroup.myMemberStatus
+                        } as Group;
+                    })
                     .filter(Boolean) as Group[];
             });
         }, (err) => {

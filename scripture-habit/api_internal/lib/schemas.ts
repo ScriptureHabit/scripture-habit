@@ -116,7 +116,8 @@ export const postNoteSchema = z.object({
     isGroupContext: z.boolean().optional().nullable(),
     currentGroupId: z.string().optional().nullable(),
     language: z.enum(supportedLanguages).optional().nullable(),
-    timeZone: z.string().optional().nullable()
+    timeZone: z.string().optional().nullable(),
+    optimisticId: z.string().optional()
 });
 
 export const postMessageSchema = z.object({

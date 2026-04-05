@@ -16,6 +16,7 @@ export interface UserData {
   streakCount?: number;
   highestStreak?: number;
   lastPostDate?: Timestamp | string | number | Date; // Timestamp or ISO string
+  lastPostAt?: Timestamp | string | number | Date;
   postsCount?: number;
   level?: number;
   xp?: number;

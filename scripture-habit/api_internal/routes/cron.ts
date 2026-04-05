@@ -4,6 +4,7 @@ import { CounterService } from '../services/counter-service.js';
 import { ArchiveService } from '../services/archive-service.js';
 import { getUserFcmTokens, sendPushNotification } from '../lib/notifications.js';
 import { t } from '../lib/i18n.js';
+import { FirestoreTimestamp } from '../../types/firestore.js';
 
 interface MemberPreview {
     uid: string;
@@ -52,7 +53,19 @@ router.all('/check-inactive-users', verifyCronSecret, async (_req: Request, res:
     console.log('Starting inactivity check...');
     try {
         const groupsRef = db.collection('groups');
-        const snapshot = await groupsRef.get();
+        // Optimization: Only check groups that were NOT checked in the last 6 hours
+        // Note: Existing groups won't have this field yet, so we fetch those where it's null as well.
+        const sixHoursAgo = new Date(Date.now() - 6 * 60 * 60 * 1000);
+        let snapshot = await groupsRef.where('lastInactivityCheckedAt', '<', sixHoursAgo).limit(100).get();
+        
+        let list = snapshot.docs;
+        if (list.length === 0) {
+            // Fallback 1: Fetch groups that don't have the field at all. 
+            // Firestore doesn't have "where not exists", so we fetch any groups 
+            // and trust the loop to update the field.
+            const fallback = await groupsRef.limit(50).get();
+            list = fallback.docs;
+        }
 
         let processedCount = 0;
         let removedCount = 0;
@@ -65,44 +78,74 @@ router.all('/check-inactive-users', verifyCronSecret, async (_req: Request, res:
 
         const now = new Date();
 
-        for (const docSnapshot of snapshot.docs) {
+        for (const docSnapshot of list) {
             const groupData = docSnapshot.data();
             const groupId = docSnapshot.id;
-            const members: string[] = groupData.members || [];
-            const memberLastActive = groupData.memberLastActive || {};
             let ownerUserId: string = groupData.ownerUserId;
 
-            if (members.length === 0) continue;
+            const membersSnap = await docSnapshot.ref.collection('members').get();
+            if (membersSnap.empty) continue;
 
             let groupChanged = false;
-            const groupUpdates: Record<string, string | number | string[] | admin.firestore.FieldValue | MemberPreview[]> = {};
+            const groupUpdates: Record<string, any> = {
+                lastInactivityCheckedAt: admin.firestore.FieldValue.serverTimestamp()
+            };
             let isGroupDeleted = false;
 
             const activeMembers: string[] = [];
             const inactiveMembers: string[] = [];
             const membersToInitialize: string[] = [];
 
-            const memberKickThresholds = groupData.memberKickThresholds || {};
+            membersSnap.forEach(memberDoc => {
+                const memberData = memberDoc.data();
+                const memberId = memberDoc.id;
+                
+                // Collect all possible activity markers for this member
+                const candidates: FirestoreTimestamp[] = [
+                    memberData.lastActiveAt,
+                    memberData.lastNoteAt,
+                    memberData.joinedAt,
+                    (groupData.memberLastActive && groupData.memberLastActive[memberId]) as FirestoreTimestamp
+                ].filter(Boolean);
 
-            for (const memberId of members) {
-                const lastActiveTimestamp = memberLastActive[memberId];
-                const individualThresholdDays = memberKickThresholds[memberId] || 3;
+                const individualThresholdDays = memberData.kickThreshold || (groupData.memberKickThresholds && groupData.memberKickThresholds[memberId]) || 3;
                 const individualThresholdMs = individualThresholdDays * 24 * 60 * 60 * 1000;
 
-                if (!lastActiveTimestamp) {
+                if (candidates.length === 0) {
                     membersToInitialize.push(memberId);
                     activeMembers.push(memberId);
                 } else {
-                    const lastActiveDate = lastActiveTimestamp.toDate ? lastActiveTimestamp.toDate() : new Date(lastActiveTimestamp.seconds * 1000 || lastActiveTimestamp);
-                    const diff = now.getTime() - lastActiveDate.getTime();
+                    // Find the newest among candidates
+                    const candidateDates = candidates.map(c => {
+                        if (!c) return 0;
+                        
+                        // Type-safe approach to extract milliseconds
+                        if (typeof (c as admin.firestore.Timestamp).toMillis === 'function') {
+                            return (c as admin.firestore.Timestamp).toMillis();
+                        }
+                        
+                        const tsObj = c as { seconds?: number; _seconds?: number };
+                        if (tsObj.seconds !== undefined) return tsObj.seconds * 1000;
+                        if (tsObj._seconds !== undefined) return tsObj._seconds * 1000;
+                        
+                        if (c instanceof Date) return c.getTime();
+                        if (typeof c === 'number') return c;
+                        
+                        return 0;
+                    }).filter(t => t > 0);
 
-                    if (diff > individualThresholdMs) {
+                    const lastActiveTime = candidateDates.length > 0 ? Math.max(...candidateDates) : 0;
+                    const diff = lastActiveTime > 0 ? now.getTime() - lastActiveTime : 0;
+
+                    if (lastActiveTime > 0 && diff > individualThresholdMs) {
                         inactiveMembers.push(memberId);
                     } else {
                         activeMembers.push(memberId);
                     }
                 }
-            }
+            });
+
+            const allMemberIds = membersSnap.docs.map(d => d.id);
 
             // Check if Owner is Inactive
             if (inactiveMembers.includes(ownerUserId)) {
@@ -127,7 +170,7 @@ router.all('/check-inactive-users', verifyCronSecret, async (_req: Request, res:
                     deletedGroupCount++;
                     isGroupDeleted = true;
 
-                    for (const uid of members) {
+                    for (const uid of allMemberIds) {
                         const userRef = db.collection('users').doc(uid);
                         batch.update(userRef, { groupIds: admin.firestore.FieldValue.arrayRemove(groupId) });
                         batch.delete(userRef.collection('groupStates').doc(groupId));
@@ -178,7 +221,11 @@ router.all('/check-inactive-users', verifyCronSecret, async (_req: Request, res:
                     const userRef = db.collection('users').doc(uid);
                     batch.update(userRef, { groupIds: admin.firestore.FieldValue.arrayRemove(groupId) });
                     batch.delete(userRef.collection('groupStates').doc(groupId));
-                    batchOpCount += 2;
+                    
+                    // Cleanup the member subcollection document (Ghost Buster)
+                    batch.delete(groupsRef.doc(groupId).collection('members').doc(uid));
+                    
+                    batchOpCount += 3;
 
                     // Send localized kick notification
                     getUserFcmTokens(uid).then(async tokens => {
@@ -230,19 +277,20 @@ router.get('/purge-initialized-users', verifyCronSecret, async (_req: Request, r
     try {
         const groupsRef = db.collection('groups');
         const snapshot = await groupsRef.get();
+        const list = snapshot.docs;
+        
         let totalRemoved = 0;
         let batch = db.batch();
         let batchOpCount = 0;
         const now = new Date();
-        const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
+        const TWENTY_FOUR_HOURS_MS = 24 * 60 * 60 * 1000;
 
-        for (const groupDoc of snapshot.docs) {
+        for (const groupDoc of list) {
             const groupId = groupDoc.id;
             const groupData = groupDoc.data();
-            const members: string[] = groupData.members || [];
-            const memberLastActive = groupData.memberLastActive || {};
-
-            if (members.length === 0) continue;
+            
+            const membersSnap = await groupDoc.ref.collection('members').get();
+            if (membersSnap.empty) continue;
 
             const messagesRef = groupsRef.doc(groupId).collection('messages');
             const msgsSnap = await messagesRef.orderBy('createdAt', 'desc').limit(200).get();
@@ -253,18 +301,20 @@ router.get('/purge-initialized-users', verifyCronSecret, async (_req: Request, r
             });
 
             const ghostsToRemove: string[] = [];
-            for (const uid of members) {
-                if (activeUserIds.has(uid)) continue;
-                if (uid === groupData.ownerUserId) continue;
+            membersSnap.forEach((memberDoc: admin.firestore.QueryDocumentSnapshot) => {
+                const uid = memberDoc.id;
+                const memberData = memberDoc.data();
+                if (activeUserIds.has(uid)) return;
+                if (uid === groupData.ownerUserId) return;
 
-                const lastActive = memberLastActive[uid];
+                const lastActive = memberData.lastActiveAt;
                 if (lastActive) {
                     const lastActiveDate = lastActive.toDate();
-                    if ((now.getTime() - lastActiveDate.getTime()) < TWO_HOURS_MS) {
+                    if ((now.getTime() - lastActiveDate.getTime()) > TWENTY_FOUR_HOURS_MS) {
                         ghostsToRemove.push(uid);
                     }
                 }
-            }
+            });
 
             if (ghostsToRemove.length > 0) {
                 totalRemoved += ghostsToRemove.length;
@@ -409,14 +459,28 @@ router.all('/aggregate-message-counts', verifyCronSecret, async (_req: Request, 
     try {
         const now = new Date();
         const tenMinutesAgo = new Date(now.getTime() - 10 * 60 * 1000);
+        const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
 
-        // Find groups active in the last 10 minutes
+        // 1. Groups active in the last 10 minutes (priority)
         const activeGroupsSnap = await db.collection('groups')
             .where('lastMessageAt', '>=', tenMinutesAgo)
             .get();
 
+        // 2. Groups that haven't been synced in > 24 hours (cleanup)
+        const staleGroupsSnap = await db.collection('groups')
+            .where('messageCount_syncedAt', '<', twentyFourHoursAgo)
+            .limit(50)
+            .get();
+
+        const allDocs = [...activeGroupsSnap.docs];
+        // Deduplicate
+        const seenIds = new Set(allDocs.map(d => d.id));
+        staleGroupsSnap.docs.forEach(doc => {
+            if (!seenIds.has(doc.id)) allDocs.push(doc);
+        });
+
         let updatedCount = 0;
-        for (const groupDoc of activeGroupsSnap.docs) {
+        for (const groupDoc of allDocs) {
             try {
                 await CounterService.aggregateAndSync(groupDoc.ref, 'messageCount');
                 updatedCount++;
@@ -428,7 +492,7 @@ router.all('/aggregate-message-counts', verifyCronSecret, async (_req: Request, 
         res.json({
             message: 'Aggregation complete.',
             stats: {
-                groupsProcessed: activeGroupsSnap.size,
+                groupsProcessed: allDocs.length,
                 groupsUpdated: updatedCount
             }
         });
@@ -436,6 +500,58 @@ router.all('/aggregate-message-counts', verifyCronSecret, async (_req: Request, 
         const error = err as Error;
         console.error('Error in aggregation:', error);
         res.status(500).send('Error during aggregation: ' + error.message);
+    }
+});
+
+/**
+ * Sync User Stats (totalNotes, etc.)
+ */
+router.all('/sync-user-stats', verifyCronSecret, async (_req: Request, res: Response) => {
+    console.log('[Cron] Starting user stats sync...');
+    try {
+        const now = new Date();
+        const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+
+        // Target users who have been active in the last 24 hours
+        const activeUsersSnap = await db.collection('users')
+            .where('lastPostAt', '>=', oneDayAgo)
+            .limit(100)
+            .get();
+
+        let updatedCount = 0;
+        let batch = db.batch();
+        let batchOpCount = 0;
+
+        for (const userDoc of activeUsersSnap.docs) {
+            const notesSnap = await userDoc.ref.collection('notes').get();
+            const actualCount = notesSnap.size;
+
+            const userData = userDoc.data();
+            const currentCount = userData.totalNotes || 0;
+
+            if (actualCount !== currentCount) {
+                batch.update(userDoc.ref, { totalNotes: actualCount });
+                batchOpCount++;
+                updatedCount++;
+            }
+
+            if (batchOpCount > 400) {
+                await batch.commit();
+                batch = db.batch();
+                batchOpCount = 0;
+            }
+        }
+
+        if (batchOpCount > 0) await batch.commit();
+
+        res.json({
+            message: 'User stats sync complete.',
+            stats: { usersProcessed: activeUsersSnap.size, usersUpdated: updatedCount }
+        });
+    } catch (err: unknown) {
+        const error = err as Error;
+        console.error('Error in user stats sync:', error);
+        res.status(500).send('Error: ' + error.message);
     }
 });
 

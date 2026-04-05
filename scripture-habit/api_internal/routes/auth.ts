@@ -4,7 +4,7 @@ import { verifyAppCheck, authenticate, AuthenticatedRequest } from '../lib/middl
 import { verifyLoginSchema } from '../lib/schemas.js';
 import { AuthenticationError, ForbiddenError } from '../lib/errors.js';
 import { ProfileService } from '../services/profile-service.js';
-import { UserDocument } from '../../types/firestore.js';
+import { UserDocument, MemberPreview, GroupDocument } from '../../types/firestore.js';
 
 const router = express.Router();
 
@@ -90,81 +90,73 @@ router.post('/delete-account', authenticate, verifyAppCheck, async (req: Authent
     try {
         console.log(`Starting account deletion for UID: ${uid}`);
 
-        // --- STEP 1: Get User Data for Cleanup ---
         const userRef = db.collection('users').doc(uid);
         const userDoc = await userRef.get();
 
         if (userDoc.exists) {
-            const userData = userDoc.data();
-            if (userData) {
-                const groupIds: string[] = userData.groupIds || (userData.groupId ? [userData.groupId] : []);
+            const userData = userDoc.data()!;
+            const groupIds: string[] = userData.groupIds || (userData.groupId ? [userData.groupId] : []);
 
-                // --- STEP 2: Exit Groups ---
-                for (const gid of groupIds) {
-                    try {
-                        const groupRef = db.collection('groups').doc(gid);
-                        await db.runTransaction(async (transaction) => {
-                            const gSnap = await transaction.get(groupRef);
-                            if (!gSnap.exists) return;
+            // --- STEP 1: Exit Groups Properly ---
+            for (const gid of groupIds) {
+                try {
+                    const groupRef = db.collection('groups').doc(gid);
+                    await db.runTransaction(async (transaction) => {
+                        const gSnap = await transaction.get(groupRef);
+                        if (!gSnap.exists) return;
 
-                            const gData = gSnap.data();
-                            if (gData) {
-                                const members: string[] = gData.members || [];
-                                const updatedMembers = members.filter(mUid => mUid !== uid);
+                        const gData = gSnap.data()! as GroupDocument;
+                        const members: string[] = gData.members || [];
+                        const updatedMembers = members.filter(mU => mU !== uid);
+                        
+                        // Update Previews
+                        const previews = gData.memberPreviews || [];
+                        const updatedPreviews = previews.filter((p: MemberPreview) => p.uid !== uid);
 
-                                if (gData.ownerUserId === uid) {
-                                    if (updatedMembers.length > 0) {
-                                        // Transfer ownership
-                                        transaction.update(groupRef, {
-                                            ownerUserId: updatedMembers[0],
-                                            members: updatedMembers,
-                                            membersCount: admin.firestore.FieldValue.increment(-1),
-                                            [`memberKickThresholds.${uid}`]: admin.firestore.FieldValue.delete()
-                                        });
-                                    } else {
-                                        // Delete group if no one left
-                                        transaction.delete(groupRef);
-                                    }
-                                } else {
-                                    // Just leave
-                                    transaction.update(groupRef, {
-                                        members: updatedMembers,
-                                        membersCount: admin.firestore.FieldValue.increment(-1),
-                                        [`memberKickThresholds.${uid}`]: admin.firestore.FieldValue.delete()
-                                    });
-                                }
+                        if (gData.ownerUserId === uid) {
+                            if (updatedMembers.length > 0) {
+                                transaction.update(groupRef, {
+                                    ownerUserId: updatedMembers[0],
+                                    members: updatedMembers,
+                                    membersCount: admin.firestore.FieldValue.increment(-1),
+                                    memberPreviews: updatedPreviews
+                                });
+                            } else {
+                                transaction.delete(groupRef);
                             }
-                        });
-                    } catch (groupErr: unknown) {
-                        const error = groupErr as Error;
-                        console.error(`Group cleanup failed for ${gid}:`, error.message);
-                    }
+                        } else {
+                            transaction.update(groupRef, {
+                                members: updatedMembers,
+                                membersCount: admin.firestore.FieldValue.increment(-1),
+                                memberPreviews: updatedPreviews
+                            });
+                        }
+
+                        // IMPORTANT: Cleanup member subcollection
+                        transaction.delete(groupRef.collection('members').doc(uid));
+
+                        if (updatedMembers.length > 0) {
+                            const msgRef = groupRef.collection('messages').doc();
+                            transaction.set(msgRef, {
+                                text: `👋 **${userData.nickname || 'Someone'}** deleted their account and left the group.`,
+                                createdAt: admin.firestore.FieldValue.serverTimestamp(),
+                                senderId: 'system',
+                                isSystemMessage: true,
+                                type: 'leave'
+                            });
+                        }
+                    });
+                } catch (groupErr) {
+                    console.error(`Group cleanup failed for ${gid}:`, groupErr);
                 }
             }
 
-            // --- STEP 3: Delete Subcollections ---
-            const subcollections = ['notes', 'groupStates', 'letters'];
-            for (const sub of subcollections) {
-                const snapshot = await userRef.collection(sub).limit(500).get();
-                if (!snapshot.empty) {
-                    const batch = db.batch();
-                    snapshot.docs.forEach(doc => batch.delete(doc.ref));
-                    await batch.commit();
-                }
-            }
-
-            // --- STEP 3.5: Delete Private Collection (FCM Tokens) ---
-            try {
-                await userRef.collection('private').doc('tokens').delete();
-            } catch {
-                // Ignore failure if subcollection doesn't exist or is empty
-            }
-
-            // --- STEP 4: Delete User Profile ---
-            await userRef.delete();
+            // --- STEP 2: Recursive Delete All User Data ---
+            // This handles notes, groupStates, letters, private collections etc. efficiently.
+            await db.recursiveDelete(userRef);
         }
 
-        // --- STEP 5: Delete from Firebase Auth ---
+        // --- STEP 3: Delete from Firebase Auth ---
         await admin.auth().deleteUser(uid);
 
         console.log(`Successfully deleted account and data for UID: ${uid}`);

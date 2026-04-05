@@ -1,7 +1,7 @@
 import { admin } from '../lib/firebase-admin.js';
 
 export class CounterService {
-    private static NUM_SHARDS = 5;
+    private static NUM_SHARDS = 10;
 
     /**
      * Get the total count by summing all shards
@@ -25,6 +25,25 @@ export class CounterService {
         transaction.set(shardRef, {
             count: admin.firestore.FieldValue.increment(value)
         }, { merge: true });
+    }
+
+    /**
+     * Get the total count within a transaction (Ensures consistency)
+     */
+    static async getCountInTransaction(transaction: admin.firestore.Transaction, ref: admin.firestore.DocumentReference): Promise<number> {
+        const shardRefs = [];
+        for (let i = 0; i < this.NUM_SHARDS; i++) {
+            shardRefs.push(ref.collection('shards').doc(i.toString()));
+        }
+        
+        const snaps = await transaction.getAll(...shardRefs);
+        let totalCount = 0;
+        snaps.forEach((doc) => {
+            if (doc.exists) {
+                totalCount += doc.data()?.count || 0;
+            }
+        });
+        return totalCount;
     }
 
     /**
