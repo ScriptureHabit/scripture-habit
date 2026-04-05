@@ -18,24 +18,22 @@ export const useDashboardWarnings = (userData: UserData | null, userGroups: Grou
         const now = new Date();
 
         userGroups.forEach(group => {
-            // Prioritize the new scalable myMemberStatus from the subcollection
             const myStatus = group.myMemberStatus;
             
-            // Candidate 1: The individual member status (most accurate if we just updated)
-            let lastActiveTimestamp = myStatus?.lastNoteAt || myStatus?.lastActiveAt;
-            
-            // Candidate 2: If no individual status, but I was the last one to post in the group globally
-            if (!lastActiveTimestamp && group.lastNoteByUid === userData.uid) {
-                lastActiveTimestamp = group.lastNoteAt;
-            }
-            
-            // Candidate 3: Legacy mapping on the group document
-            if (!lastActiveTimestamp) {
-                lastActiveTimestamp = (group.memberLastActive && group.memberLastActive[userData.uid]);
-            }
+            // Collect all potential activity timestamps
+            const candidateTimestamps = [
+                myStatus?.lastNoteAt,
+                // Only count the group's last note if the user themselves was the poster
+                (group.lastNoteByUid === userData.uid ? group.lastNoteAt : null),
+                myStatus?.lastActiveAt,
+                (group.memberLastActive && group.memberLastActive[userData.uid])
+            ].filter(Boolean);
 
-            if (lastActiveTimestamp) {
-                const lastActiveDate = parseTimestampToDate(lastActiveTimestamp);
+            if (candidateTimestamps.length > 0) {
+                // Convert all candidates to Date objects and find the newest one
+                const dates = candidateTimestamps.map(t => parseTimestampToDate(t));
+                const lastActiveDate = new Date(Math.max(...dates.map(d => d.getTime())));
+                
                 const diffMs = now.getTime() - lastActiveDate.getTime();
                 
                 // Use the threshold from myMemberStatus if available
