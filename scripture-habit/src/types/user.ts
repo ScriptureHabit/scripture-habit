@@ -43,4 +43,5 @@ export interface UserData {
   
   // Feature/AI timestamps
   lastRecapGeneratedAt?: Timestamp | string | number | Date;
+  lastActiveAt?: Timestamp | string | number | Date;
 }

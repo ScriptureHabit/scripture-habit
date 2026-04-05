@@ -34,28 +34,21 @@ export class NoteService {
      * Posts a new note for a user, updates streaks, and shares with groups.
      */
     static async postNote(input: PostNoteInput) {
-        const { uid, messageText, scripture, chapter, comment, title, speaker, shareOption, selectedShareGroups, language, timeZone: clientTimeZone, optimisticId } = input;
+        const { uid, messageText, comment, title, speaker, shareOption, selectedShareGroups, language, timeZone: clientTimeZone, optimisticId } = input;
+        
+        // TRUTH: Normalize inputs to prevent "1 Nephi 1" vs "1 Nephi 01" drift
+        const scripture = input.scripture.trim();
+        const chapter = input.chapter?.trim().replace(/^0+/, '') || "";
 
         const result = await db.runTransaction(async (transaction) => {
             const userRef = db.collection('users').doc(uid);
-            
-            // 1. Idempotency Check: If optimisticId is provided, check if it was already processed.
-            // Using it as the document ID for the personal note is the most robust way.
             const noteRef = optimisticId 
                 ? userRef.collection('notes').doc(optimisticId) 
                 : userRef.collection('notes').doc();
 
-            const existingNote = await transaction.get(noteRef);
-            if (existingNote.exists) {
-                // Already posted. Return existing data for idempotency.
-                return { 
-                    personalNoteId: noteRef.id, 
-                    alreadyPosted: true,
-                    streakUpdated: false,
-                    newStreak: 0,
-                    _internalNotifications: { userToGroupMapEntries: [] as [string, string][] } 
-                };
-            }
+            const existingNoteSnap = await transaction.get(noteRef);
+            const existingNote = existingNoteSnap.data();
+            const existingSharedIds = existingNote?.sharedMessageIds || {};
 
             const userDoc = await transaction.get(userRef);
             if (!userDoc.exists) throw new NotFoundError('User not found.');
@@ -71,6 +64,12 @@ export class NoteService {
 
             groupsToPostTo = groupsToPostTo.filter(gid => typeof gid === 'string' && gid.length > 0);
             groupsToPostTo = [...new Set(groupsToPostTo)];
+            
+            // TRUTH: Limit the number of groups per transaction to avoid Firestore 500-doc write limit.
+            // Sharing with 20 groups is plenty; beyond that, it should be a separate operation or background job.
+            if (groupsToPostTo.length > 20) {
+                groupsToPostTo = groupsToPostTo.slice(0, 20);
+            }
 
             const groupRefs = groupsToPostTo.map(gid => db.collection('groups').doc(gid));
             const groupDocs = groupRefs.length > 0 ? await transaction.getAll(...groupRefs) : [];
@@ -88,58 +87,53 @@ export class NoteService {
 
             const { newStreak, currentHighest, today, streakUpdated } = streakResult;
 
-            const userUpdate: admin.firestore.UpdateData<admin.firestore.DocumentData> = {
-                totalNotes: admin.firestore.FieldValue.increment(1),
+            const userUpdate: Record<string, unknown> = {
                 lastPostAt: admin.firestore.Timestamp.fromDate(now)
             };
 
+            // TRUTH: If editing an existing note (retry/idempotency), do NOT increment totalNotes.
+            // This prevents duplicate counting and SDK crashes from 'undefined' values.
+            if (!existingNoteSnap.exists) {
+                userUpdate.totalNotes = admin.firestore.FieldValue.increment(1);
+            }
+
             // Cleanup legacy streak field if present
-            if (userData.streak !== undefined) userUpdate.streak = admin.firestore.FieldValue.delete();
+            if (userData.streak !== undefined) {
+                userUpdate.streak = admin.firestore.FieldValue.delete();
+            }
 
             if (streakUpdated) {
                 userUpdate.daysStudiedCount = admin.firestore.FieldValue.increment(1);
                 userUpdate.streakCount = newStreak;
                 userUpdate.lastPostDate = today;
-                if (newStreak > currentHighest) userUpdate.highestStreak = newStreak;
+                if (newStreak > currentHighest) {
+                    userUpdate.highestStreak = newStreak;
+                }
                 
-                // Update timezone if missing
+                // Update timezone if missing or default
                 if (clientTimeZone && (!userData.timeZone || userData.timeZone === 'UTC')) {
                     userUpdate.timeZone = clientTimeZone;
                 }
             }
 
-            transaction.update(userRef, userUpdate);
+            transaction.update(userRef, userUpdate as admin.firestore.UpdateData<admin.firestore.DocumentData>);
 
             const userToGroupMap = new Map<string, string>();
-            const validatedGroupsToPostTo: string[] = [];
+            const sharedMessageIds: Record<string, string> = { ...existingSharedIds };
 
-            groupDocs.forEach(gDoc => {
-                if (!gDoc.exists) return;
-                const gid = gDoc.id;
-                const members: string[] = gDoc.data()?.members || [];
-                if (!members.includes(uid)) return;
-
-                validatedGroupsToPostTo.push(gid);
-                members.forEach(mUid => {
-                    if (mUid !== uid && !userToGroupMap.has(mUid)) {
-                        userToGroupMap.set(mUid, gid);
-                    }
-                });
-            });
-
-            const noteTimestamp = admin.firestore.Timestamp.now();
-            const sharedMessageIds: Record<string, string> = {};
-
-            // 4. Post to groups
-            let idx = 0;
-            for (const gDoc of groupDocs) {
-                const gid = gDoc.id;
-                if (!validatedGroupsToPostTo.includes(gid)) {
-                    idx++;
-                    continue;
-                }
+            // 4. Post to groups (Carefully handle idempotency per group)
+            for (let i = 0; i < groupDocs.length; i++) {
+                const gDoc = groupDocs[i];
+                if (!gDoc.exists) continue;
                 
+                const gid = gDoc.id;
                 const gData = gDoc.data()!;
+                const members: string[] = gData.members || [];
+                if (!members.includes(uid)) continue;
+
+                // TRUTH: If already shared with this group, don't duplicate.
+                if (existingSharedIds[gid]) continue;
+
                 const msgRef = db.collection('groups').doc(gid).collection('messages').doc();
                 sharedMessageIds[gid] = msgRef.id;
 
@@ -150,7 +144,7 @@ export class NoteService {
                     senderId: uid,
                     senderNickname: userNickname,
                     senderPhotoURL: userData.photoURL || null,
-                    createdAt: noteTimestamp,
+                    createdAt: admin.firestore.Timestamp.fromDate(now),
                     isNote: true,
                     originalNoteId: noteRef.id,
                     scripture,
@@ -166,17 +160,19 @@ export class NoteService {
                 }
 
                 const updatePayload: admin.firestore.UpdateData<admin.firestore.DocumentData> = {
-                    lastMessageAt: noteTimestamp,
-                    lastNoteAt: noteTimestamp,
+                    lastMessageAt: admin.firestore.FieldValue.serverTimestamp(),
+                    lastNoteAt: admin.firestore.FieldValue.serverTimestamp(),
                     lastNoteByNickname: userNickname,
-                    lastNoteByUid: uid
+                    lastNoteByUid: uid,
+                    [`memberLastActive.${uid}`]: admin.firestore.FieldValue.serverTimestamp()
                 };
 
-                // TRUTH: Shard BOTH messageCount and noteCount to prevent document hotspots
-                CounterService.increment(transaction, groupRefs[idx], 'messageCount');
-                CounterService.increment(transaction, groupRefs[idx], 'noteCount');
+                // TRUTH: Shard increment without waiting for expensive shard sum
+                CounterService.increment(transaction, gDoc.ref, 'messageCount');
+                CounterService.increment(transaction, gDoc.ref, 'noteCount');
                 
-                const totalMessages = (await CounterService.getCountInTransaction(transaction, groupRefs[idx], 'messageCount')) + 1;
+                // Use approximate total for read count to avoid transaction contention
+                const approxTotal = (gData.messageCount || 0) + 1;
 
                 if (gData.dailyActivity?.date !== groupToday) {
                     updatePayload.dailyActivity = { date: groupToday, activeMembers: [uid] };
@@ -184,41 +180,43 @@ export class NoteService {
                     updatePayload['dailyActivity.activeMembers'] = admin.firestore.FieldValue.arrayUnion(uid);
                 }
                 
-                // Keep the legacy map updated for dashboard quick-scanning
-                updatePayload[`memberLastActive.${uid}`] = noteTimestamp;
-                
-                transaction.update(groupRefs[idx], updatePayload);
+                transaction.update(gDoc.ref, updatePayload);
 
                 // Update member subcollection for activity tracking (Scalable)
-                const memberRef = groupRefs[idx].collection('members').doc(uid);
+                const memberRef = gDoc.ref.collection('members').doc(uid);
                 transaction.set(memberRef, {
-                    lastActiveAt: noteTimestamp,
-                    lastReadAt: noteTimestamp,
-                    lastNoteAt: noteTimestamp,
-                    readMessageCount: totalMessages
+                    lastActiveAt: admin.firestore.FieldValue.serverTimestamp(),
+                    lastReadAt: admin.firestore.FieldValue.serverTimestamp(),
+                    lastNoteAt: admin.firestore.FieldValue.serverTimestamp(),
+                    readMessageCount: approxTotal
                 }, { merge: true });
                 
                 const userGS = userRef.collection('groupStates').doc(gid);
                 transaction.set(userGS, { 
-                    readMessageCount: totalMessages, 
-                    lastReadAt: noteTimestamp,
-                    lastActiveAt: noteTimestamp
+                    readMessageCount: approxTotal, 
+                    lastReadAt: admin.firestore.FieldValue.serverTimestamp(),
+                    lastActiveAt: admin.firestore.FieldValue.serverTimestamp()
                 }, { merge: true });
 
-                idx++;
+                // Fill notification map
+                members.forEach(mUid => {
+                    if (mUid !== uid && !userToGroupMap.has(mUid)) {
+                        userToGroupMap.set(mUid, gid);
+                    }
+                });
             }
 
             // 5. Record personal note
             transaction.set(noteRef, {
                 text: messageText,
-                createdAt: noteTimestamp,
+                createdAt: admin.firestore.Timestamp.fromDate(now),
                 scripture,
                 chapter,
                 title: title || null,
                 speaker: speaker || null,
                 comment,
                 shareOption,
-                sharedWithGroups: validatedGroupsToPostTo,
+                sharedWithGroups: Object.keys(sharedMessageIds),
                 sharedMessageIds,
                 searchTokens: buildNoteSearchTokens({ scripture, chapter, comment, title, speaker })
             });
@@ -239,7 +237,8 @@ export class NoteService {
                         text: announceMsg,
                         senderId: 'system',
                         senderNickname: botName,
-                        createdAt: admin.firestore.Timestamp.fromMillis(noteTimestamp.toMillis() + 2000),
+                        // TRUTH: Offset by 1 second to ensure it follows the note logically in chat lists
+                        createdAt: admin.firestore.Timestamp.fromMillis(now.getTime() + 1000),
                         isSystemMessage: true,
                         messageType: 'streakAnnouncement',
                         messageData: { nickname: userData.nickname, userId: uid, streakCount: newStreak }

@@ -2,8 +2,8 @@ import express, { Request, Response } from 'express';
 import { admin, db } from '../lib/firebase-admin.js';
 import { verifyAppCheck, authenticate, requireEmailVerified, AuthenticatedRequest } from '../lib/middleware.js';
 import { joinGroupSchema, updateKickThresholdSchema, leaveGroupSchema, deleteGroupSchema, updateReadStatusSchema, announceUnitySchema, updateGroupSchema, regenerateInviteCodeSchema } from '../lib/schemas.js';
-import { CounterService } from '../services/counter-service.js';
 import { GroupDocument, UserDocument, MemberPreview as PreviewItem, GroupMemberDocument, FirestoreTimestamp } from '../../types/firestore.js';
+import { CounterService } from '../services/counter-service.js';
 
 
 const router = express.Router();
@@ -86,8 +86,10 @@ router.post('/join-group', authenticate, requireEmailVerified, verifyAppCheck, a
                 lastMessageByUid: uid
             });
 
-            // Calculate accurate initial read count from shards
-            const totalMessages = await CounterService.getCountInTransaction(transaction, groupDoc.ref);
+            // TRUTH: Use the main document's count for initial read state.
+            // Shards will catch up soon, but this keeps join performance high.
+            const totalMessages = gData.messageCount || 0;
+
 
             // New: Per-user member document in subcollection
             const memberData: GroupMemberDocument = {
@@ -173,7 +175,7 @@ router.post('/leave-group', authenticate, verifyAppCheck, async (req: Authentica
 
             if (gData.ownerUserId === uid) {
                 if (updatedMembers.length > 0) {
-                    const updatePayload: Record<string, any> = {
+                    const updatePayload: admin.firestore.UpdateData<GroupDocument> = {
                         ownerUserId: updatedMembers[0],
                         members: updatedMembers,
                         membersCount: admin.firestore.FieldValue.increment(-1),
@@ -190,7 +192,7 @@ router.post('/leave-group', authenticate, verifyAppCheck, async (req: Authentica
                     transaction.delete(groupRef);
                 }
             } else {
-                    const updatePayload: Record<string, any> = {
+                    const updatePayload: admin.firestore.UpdateData<GroupDocument> = {
                         members: updatedMembers,
                         membersCount: admin.firestore.FieldValue.increment(-1),
                         memberPreviews: updatedPreviews
@@ -269,8 +271,10 @@ router.post('/update-read-status', authenticate, verifyAppCheck, async (req: Aut
             return res.status(403).json({ error: 'Forbidden' });
         }
 
-        // Calculate the actual current message count from shards to stay accurate
-        const totalMessages = await CounterService.getCount(groupRef);
+        // TRUTH: Proactively aggregate shards during the manual "Mark as Read" action.
+        // This ensures the doc-level counter (Source of truth for dashboard) is fresh.
+        const totalMessages = await CounterService.aggregateAndSync(groupRef, 'messageCount');
+
 
         const batch = db.batch();
         batch.set(userRef.collection('groupStates').doc(groupId), {
@@ -392,7 +396,7 @@ router.post('/update-kick-threshold', authenticate, verifyAppCheck, async (req: 
         });
 
         if (groupIds.length > 0) {
-            const batch = db.batch();
+            let batch = db.batch();
             groupIds.forEach((gid: string) => {
                 const gRef = db.collection('groups').doc(gid);
                 
@@ -443,28 +447,36 @@ router.post('/delete-group', authenticate, verifyAppCheck, async (req: Authentic
         }
 
         const members = groupData.members || [];
-        const batch = db.batch();
         const userRefs = members.map((mUid: string) => db.collection('users').doc(mUid));
-        const userDocs = await db.getAll(...userRefs);
+        
+        // TRUTH: Process user updates in chunks of 200 to stay within Firestore's 500-write limit.
+        // Each user needs 2 writes (UserDoc update + groupState delete).
+        const CHUNK_SIZE = 200;
+        for (let i = 0; i < userRefs.length; i += CHUNK_SIZE) {
+            const batch = db.batch();
+            const chunkRefs = userRefs.slice(i, i + CHUNK_SIZE);
+            const userDocs = await db.getAll(...chunkRefs);
 
-        userDocs.forEach((userDoc) => {
-            if (!userDoc.exists) return;
-            const uRef = userDoc.ref;
-            const userData = userDoc.data()! as UserDocument;
-            const updatePayload: Record<string, admin.firestore.FieldValue | string | string[] | number | object | undefined> = {
-                groupIds: admin.firestore.FieldValue.arrayRemove(groupId)
-            };
+            userDocs.forEach((userDoc) => {
+                if (!userDoc.exists) return;
+                const uRef = userDoc.ref;
+                const userData = userDoc.data()! as UserDocument;
+                const updatePayload: admin.firestore.UpdateData<UserDocument> = {
+                    groupIds: admin.firestore.FieldValue.arrayRemove(groupId)
+                };
 
-            if (userData.groupId === groupId) {
-                updatePayload.groupId = admin.firestore.FieldValue.delete();
-            }
+                if (userData.groupId === groupId) {
+                    updatePayload.groupId = admin.firestore.FieldValue.delete();
+                }
 
-            batch.update(uRef, updatePayload);
-            const gsRef = uRef.collection('groupStates').doc(groupId);
-            batch.delete(gsRef);
-        });
-        await batch.commit();
+                batch.update(uRef, updatePayload);
+                const gsRef = uRef.collection('groupStates').doc(groupId);
+                batch.delete(gsRef);
+            });
+            await batch.commit();
+        }
 
+        // Final cleanup of the group and its subcollections
         await db.recursiveDelete(groupRef);
 
         res.json({ success: true });
@@ -501,7 +513,7 @@ router.post('/update-group', authenticate, verifyAppCheck, async (req: Authentic
             return res.status(403).json({ error: 'Forbidden: Only owner can update group' });
         }
 
-        const updatePayload: Record<string, admin.firestore.FieldValue | string | number | boolean | string[] | object | undefined> = {};
+        const updatePayload: Record<string, unknown> = {};
         if (name !== undefined) updatePayload.name = name;
         if (description !== undefined) updatePayload.description = description;
         if (isPublic !== undefined) updatePayload.isPublic = isPublic;
@@ -512,7 +524,7 @@ router.post('/update-group', authenticate, verifyAppCheck, async (req: Authentic
             return res.status(400).json({ error: 'No updates provided' });
         }
 
-        await groupRef.update(updatePayload);
+        await groupRef.update(updatePayload as admin.firestore.UpdateData<GroupDocument>);
         res.json({ success: true });
     } catch (error) {
         let message = 'Request failed.';

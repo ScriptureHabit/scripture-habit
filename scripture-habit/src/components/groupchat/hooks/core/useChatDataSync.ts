@@ -250,7 +250,7 @@ const useUserReadStateSync = (
     // TRUTH: Use the highest of metadata count or listener count to avoid stale overwrites
     const totalMsgs = Math.max(groupData.messageCount || 0, actualMessageCount);
     
-    if (totalMsgs > userReadCount || (lastForcedSyncGidRef.current !== groupId && totalMsgs > 0)) {
+    if (totalMsgs > (userReadCount || 0) || (lastForcedSyncGidRef.current !== groupId && totalMsgs > 0)) {
       updateReadStatus(groupId, totalMsgs);
       lastForcedSyncGidRef.current = groupId;
     }

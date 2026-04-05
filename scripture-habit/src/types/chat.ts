@@ -92,6 +92,11 @@ export interface Group extends Omit<SharedGroupDocument, 'id' | 'inviteCodeExpir
     date: string;
     activeMembers: string[];
   };
+  myGroupState?: {
+    lastReadAt?: FirebaseTimestamp;
+    lastActiveAt?: FirebaseTimestamp;
+    readMessageCount?: number;
+  };
 }
 
 export interface GroupData extends Group {

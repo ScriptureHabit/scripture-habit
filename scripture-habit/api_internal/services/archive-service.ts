@@ -15,10 +15,10 @@ export class ArchiveService {
     static async archiveOldMessages(groupId: string) {
         const messagesRef = db.collection('groups').doc(groupId).collection('messages');
         const bucketsRef = db.collection('groups').doc(groupId).collection('message_buckets');
-        
+
         // 1. Fetch small chunk of old messages (Oldest first)
         const messagesToArchiveSnap = await messagesRef.orderBy('createdAt', 'asc').limit(100).get();
-        
+
         // 2. Only archive if we have a reasonable amount to bundle, 
         // AND we are strictly above the threshold to keep latest real-time messages
         const groupSnap = await db.collection('groups').doc(groupId).get();
@@ -38,41 +38,65 @@ export class ArchiveService {
         console.log(`[ArchiveService] Archiving ${toArchive.length} messages for group ${groupId}`);
 
         let archivedCount = 0;
-        
+
         // 3. Process in chunks (each chunk becomes one bucket)
         for (let i = 0; i < toArchive.length; i += this.BUCKET_SIZE) {
             const chunk = toArchive.slice(i, i + this.BUCKET_SIZE);
             const messagesData = chunk.map(doc => {
                 const data = doc.data() as MessageDocument;
-                return { 
-                    id: doc.id, 
-                    ...data 
+                return {
+                    id: doc.id,
+                    ...data
                 };
             });
-            
+
             if (messagesData.length === 0) continue;
 
             // Generate a bucket ID based on the start time (oldest message in chunk)
             const firstMsg = messagesData[0];
             const startTime = firstMsg.createdAt as FirestoreTimestamp;
-            
-            const getMillis = (ts: any) => {
-                if (!ts) return Date.now();
-                if (typeof ts.toMillis === 'function') return ts.toMillis();
-                if (ts.seconds !== undefined) return ts.seconds * 1000;
-                if (ts._seconds !== undefined) return ts._seconds * 1000;
-                if (ts instanceof Date) return ts.getTime();
-                return Date.now();
-            };
-            const timeMillis = getMillis(startTime);
 
-            const bucketId = `bucket_${timeMillis}`;
-            
+            // TRUTH: Properly handle all forms of FirestoreTimestamp (Date, Admin Timestamp, Client Timestamp, number, string)
+            let timeMillis: number;
+            if (startTime instanceof Date) {
+                timeMillis = startTime.getTime();
+            } else if (typeof startTime === 'number') {
+                timeMillis = startTime;
+            } else if (typeof startTime === 'string') {
+                timeMillis = new Date(startTime).getTime();
+            } else if (startTime && typeof startTime === 'object') {
+                // Type narrowing for non-Date objects without using 'any'
+                const asRecord = startTime as Record<string, unknown>;
+                const toMillis = asRecord.toMillis;
+                const seconds = asRecord.seconds;
+                
+                if (typeof toMillis === 'function') {
+                    timeMillis = (toMillis as () => number)();
+                } else if (typeof seconds === 'number') {
+                    timeMillis = seconds * 1000;
+                } else {
+                    timeMillis = Date.now();
+                }
+            } else {
+                timeMillis = Date.now();
+            }
+
+            // TRUTH: Use a truly unique bucket ID to prevent race conditions (Overwriting data).
+            // We combine the start time with the ID of the first message in the chunk.
+            const bucketId = `bucket_${timeMillis}_${firstMsg.id.substring(0, 8)}`;
+
             const bucketRef = bucketsRef.doc(bucketId);
 
             // 4. Atomic transaction to create bucket and delete individual docs
             // Limit to 500 ops per transaction (Firestore limit)
             await db.runTransaction(async (transaction) => {
+                // TRUTH: Check if this bucket already exists to prevent duplication artifacts
+                const existingBucket = await transaction.get(bucketRef);
+                if (existingBucket.exists) {
+                    console.log(`[ArchiveService] Bucket ${bucketId} already exists, skipping chunk.`);
+                    return;
+                }
+
                 transaction.set(bucketRef, {
                     groupId,
                     messages: messagesData,
@@ -88,7 +112,7 @@ export class ArchiveService {
 
             archivedCount += chunk.length;
         }
-        
+
         return archivedCount;
     }
 

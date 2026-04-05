@@ -1,6 +1,6 @@
 import { buildNoteSearchTokens } from '../lib/search-utils.js';
 import { db } from '../lib/firebase-admin.js';
-import { MessageDocument, ReactionPreview } from '../../types/firestore.js';
+import { MessageDocument, ReactionPreview, GroupDocument, MemberPreview, PersonalNoteDocument } from '../../types/firestore.js';
 
 export class ProfileService {
     /**
@@ -28,45 +28,46 @@ export class ProfileService {
             let totalOps = 0;
             let currentBatchSize = 0;
 
-            // 2. For each group, update metadata and RECENT messages
-            for (const gid of groupIds) {
-                const groupRef = db.collection('groups').doc(gid);
-                const gSnap = await groupRef.get();
-                if (gSnap.exists) {
-                    const gData = gSnap.data() || {};
-                    const groupUpdates: any = {};
+            // 2. Fetch all group metadata in a single call (Speed Boost)
+            const groupRefs = groupIds.map(gid => db.collection('groups').doc(gid));
+            const groupSnaps = groupRefs.length > 0 ? await db.getAll(...groupRefs) : [];
+
+            for (const gSnap of groupSnaps) {
+                if (!gSnap.exists) continue;
+                const gid = gSnap.id;
+                const gData = gSnap.data() || {};
+                const groupUpdates: Partial<GroupDocument> = {};
+                
+                const memberUpdate: Record<string, string | undefined> = {};
+                if (updates.nickname) memberUpdate.nickname = updates.nickname;
+                if (updates.photoURL) memberUpdate.photoURL = updates.photoURL;
+
+                if (Object.keys(memberUpdate).length > 0) {
+                    currentBatch.set(gSnap.ref.collection('members').doc(uid), memberUpdate, { merge: true });
+                    currentBatchSize++;
+                }
                     
-                    const memberUpdate: Record<string, string | undefined> = {};
-                    if (updates.nickname) memberUpdate.nickname = updates.nickname;
-                    if (updates.photoURL) memberUpdate.photoURL = updates.photoURL;
+                // B. Update memberPreviews array if user is in it
+                const previews = gData.memberPreviews || [];
+                const userIdx = previews.findIndex((p: MemberPreview) => p.uid === uid);
+                if (userIdx !== -1) {
+                    const newPreviews = [...previews];
+                    if (updates.nickname) newPreviews[userIdx].nickname = updates.nickname;
+                    if (updates.photoURL) newPreviews[userIdx].photoURL = updates.photoURL;
+                    groupUpdates.memberPreviews = newPreviews;
+                }
 
-                    if (Object.keys(memberUpdate).length > 0) {
-                        currentBatch.set(groupRef.collection('members').doc(uid), memberUpdate, { merge: true });
-                        currentBatchSize++;
-                    }
-                     
-                    // B. Update memberPreviews array if user is in it
-                    const previews = gData.memberPreviews || [];
-                    const userIdx = previews.findIndex((p: any) => p.uid === uid);
-                    if (userIdx !== -1) {
-                        const newPreviews = [...previews];
-                        if (updates.nickname) newPreviews[userIdx].nickname = updates.nickname;
-                        if (updates.photoURL) newPreviews[userIdx].photoURL = updates.photoURL;
-                        groupUpdates.memberPreviews = newPreviews;
-                    }
+                // C. Update 'lastNoteByNickname' if this user was the last poster
+                if (updates.nickname && gData.lastNoteByUid === uid) {
+                    groupUpdates.lastNoteByNickname = updates.nickname;
+                }
+                if (updates.nickname && gData.lastMessageByUid === uid) {
+                    groupUpdates.lastMessageByNickname = updates.nickname;
+                }
 
-                    // C. Update 'lastNoteByNickname' if this user was the last poster
-                    if (updates.nickname && gData.lastNoteByUid === uid) {
-                        groupUpdates.lastNoteByNickname = updates.nickname;
-                    }
-                    if (updates.nickname && gData.lastMessageByUid === uid) {
-                        groupUpdates.lastMessageByNickname = updates.nickname;
-                    }
-
-                    if (Object.keys(groupUpdates).length > 0) {
-                        currentBatch.update(groupRef, groupUpdates);
-                        currentBatchSize++;
-                    }
+                if (Object.keys(groupUpdates).length > 0) {
+                    currentBatch.update(gSnap.ref, groupUpdates);
+                    currentBatchSize++;
                 }
 
                 // D. Update recent individual messages
@@ -113,16 +114,30 @@ export class ProfileService {
 
             // 3. Sync Identity to archived Notes (Search Truth)
             if (updates.nickname) {
-                const notesSnap = await userRef.collection('notes').get();
+                const oldNickname = userData.nickname || 'Member';
+                
+                // TRUTH: We only update the most recent 100 notes to prevent timeouts.
+                // Rebuilding thousands of tokens synchronously is a recipe for disaster.
+                // Also, ONLY update if the speaker was the user themselves (matched old nickname).
+                const notesSnap = await userRef.collection('notes')
+                    .orderBy('createdAt', 'desc')
+                    .limit(100)
+                    .get();
+
                 if (!notesSnap.empty) {
                     for (const nDoc of notesSnap.docs) {
-                        const nData = nDoc.data();
+                        const nData = nDoc.data() as PersonalNoteDocument;
+                        
+                        // TRUTH: If the user manually set a different speaker (e.g. quoting someone), 
+                        // we MUST NOT overwrite it with their own new nickname.
+                        if (nData.speaker !== oldNickname) continue;
+
                         const updatedTokens = buildNoteSearchTokens({
                             scripture: nData.scripture || '',
                             chapter: nData.chapter || '',
                             comment: nData.comment || '',
                             title: nData.title || '',
-                            speaker: updates.nickname // Update speaker truth
+                            speaker: updates.nickname // Use new nickname
                         });
 
                         currentBatch.update(nDoc.ref, {

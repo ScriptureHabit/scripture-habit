@@ -30,7 +30,7 @@ export class StreakEngine {
         currentState: StreakState,
         options: { now: Date; clientTimeZone?: string | null }
     ): StreakResult {
-        const { now, clientTimeZone } = options;
+        const { now } = options;
         let { streakCount, highestStreak, lastPostDate, lastPostAt, timeZone } = currentState;
 
         // Use client timezone if user has none, else fallback to UTC
@@ -39,16 +39,25 @@ export class StreakEngine {
         let today: string;
         let yesterday: string;
 
+        // TRUTH: Calculate today and yesterday correctly within the target timezone
+        // This avoids bugs where 'now - 1 day' calculation happens in server local time.
         try {
-            today = now.toLocaleDateString('sv-SE', { timeZone: effectiveTimeZone });
-            const yesterdayDate = new Date(now);
-            yesterdayDate.setDate(yesterdayDate.getDate() - 1);
-            yesterday = yesterdayDate.toLocaleDateString('sv-SE', { timeZone: effectiveTimeZone });
+            const formatter = new Intl.DateTimeFormat('sv-SE', { 
+                timeZone: effectiveTimeZone, 
+                year: 'numeric', 
+                month: '2-digit', 
+                day: '2-digit' 
+            });
+            today = formatter.format(now);
+            
+            // Subtracting 24 hours from 'now' and formatting it in TZ 
+            // is the most robust way to get 'yesterday' in that specific timezone.
+            const yesterdayDate = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+            yesterday = formatter.format(yesterdayDate);
         } catch {
-            today = now.toLocaleDateString('sv-SE', { timeZone: 'UTC' });
-            const yesterdayDate = new Date(now);
-            yesterdayDate.setDate(yesterdayDate.getDate() - 1);
-            yesterday = yesterdayDate.toLocaleDateString('sv-SE', { timeZone: 'UTC' });
+            today = now.toISOString().split('T')[0];
+            const yesterdayDate = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+            yesterday = yesterdayDate.toISOString().split('T')[0];
         }
 
         let newStreak = Number(streakCount || 0);
@@ -76,8 +85,7 @@ export class StreakEngine {
         } else {
             const isTargetDay = lastPostDate === yesterday;
             
-            // Grace period: If user is traveling (tz mismatch) or just slightly late, 
-            // allow a wider window (45 hours) instead of strict calendar day.
+            // Grace period: allows a wider window (36 hours) instead of strict calendar day.
             
             interface MinimalTimestamp { 
                 toMillis?: () => number; 
@@ -98,8 +106,9 @@ export class StreakEngine {
             const lastTimeMillis = getMillisSafely(lastPostAt as MinimalTimestamp | Date | number | null | undefined);
             const hoursSinceLastPost = (now.getTime() - lastTimeMillis) / (1000 * 60 * 60);
             
-            const isTraveling = !!(clientTimeZone && clientTimeZone !== effectiveTimeZone);
-            const withinGracePeriod = isTraveling && lastTimeMillis > 0 && hoursSinceLastPost < 45;
+            // TRUTH: A universal 36-hour window (1.5 days) is fairer and more accurate 
+            // than a strict calendar day which varies by TZ. This allows for life's delays.
+            const withinGracePeriod = lastTimeMillis > 0 && hoursSinceLastPost <= 36;
 
             if (isTargetDay || withinGracePeriod) {
                 newStreak += 1;

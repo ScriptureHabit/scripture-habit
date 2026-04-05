@@ -20,15 +20,13 @@ export const useDashboardWarnings = (userData: UserData | null, userGroups: Grou
         userGroups.forEach(group => {
             const myStatus = group.myMemberStatus;
             
-            // TRUTH: Collect all potential activity timestamps to avoid false kick warnings
+            // TRUTH: Only consider WRITING activity (notes/posts) as valid participation.
+            // ROM (Read-only) users who do not contribute are considered inactive here.
             const candidateTimestamps: Parameters<typeof parseTimestampToDate>[0][] = [
                 userData.lastPostAt,
                 myStatus?.lastNoteAt,
-                myStatus?.lastReadAt,
                 // Only count the group's last note if the user themselves was the poster
-                (group.lastMessageByUid === userData.uid ? (group.lastNoteAt || group.lastMessageAt) : null),
-                myStatus?.lastActiveAt,
-                (group.memberLastActive && group.memberLastActive[userData.uid])
+                (group.lastMessageByUid === userData.uid ? (group.lastNoteAt || group.lastMessageAt) : null)
             ].filter(Boolean);
 
             if (candidateTimestamps.length > 0) {

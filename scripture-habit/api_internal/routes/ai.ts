@@ -278,7 +278,10 @@ router.post('/generate-weekly-recap', authenticate, aiLimiter, verifyAppCheck, a
         sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
         const snapshot = await groupRef.collection('messages')
             .where('createdAt', '>=', admin.firestore.Timestamp.fromDate(sevenDaysAgo))
-            .limit(60).get();
+            // TRUTH: Order by date to ensure the recap reflects the WHOLE week's progress
+            .orderBy('createdAt', 'asc')
+            .limit(100) 
+            .get();
 
         const notes: string[] = [];
         snapshot.forEach(d => { if (d.data().isNote || d.data().isEntry) notes.push(d.data().text); });
@@ -363,11 +366,28 @@ router.post('/generate-personal-weekly-recap', authenticate, aiLimiter, verifyAp
     try {
         if (req.user?.uid !== uid) return res.status(403).send('Forbidden');
 
+        const userRef = db.collection('users').doc(uid);
+        const uSnap = await userRef.get();
+        if (!uSnap.exists) return res.status(404).send('User not found');
+        const uData = uSnap.data() || {};
+
+        // TRUTH: Prevent duplicate generations (6-day cooldown) just like group recaps
+        if (uData.lastRecapGeneratedAt) {
+            const lastDate = (uData.lastRecapGeneratedAt as admin.firestore.Timestamp).toDate();
+            const sixDaysAgo = new Date();
+            sixDaysAgo.setDate(sixDaysAgo.getDate() - 6);
+            if (lastDate > sixDaysAgo) {
+                return res.status(429).json({ error: 'Personal recap already generated recently. Please wait a week.' });
+            }
+        }
+
         const sevenDaysAgo = new Date();
         sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-        const snapshot = await db.collection('users').doc(uid).collection('notes')
+        const snapshot = await userRef.collection('notes')
             .where('createdAt', '>=', admin.firestore.Timestamp.fromDate(sevenDaysAgo))
-            .limit(60).get();
+            .orderBy('createdAt', 'asc')
+            .limit(100)
+            .get();
 
         const notes: string[] = [];
         snapshot.forEach(d => { if (d.data().text || d.data().comment) notes.push(d.data().comment || d.data().text); });

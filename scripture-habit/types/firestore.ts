@@ -154,4 +154,24 @@ export interface MessageDocument {
     optimisticId?: string;
 }
 
+/**
+ * Personal Note Document Schema (inside /users/{uid}/notes)
+ */
+export interface PersonalNoteDocument {
+    id?: string;
+    text: string;
+    createdAt: FirestoreTimestamp;
+    scripture: string;
+    chapter?: string | null;
+    title?: string | null;
+    speaker?: string | null;
+    comment: string;
+    shareOption: 'all' | 'current' | 'specific' | 'none';
+    sharedWithGroups: string[];
+    sharedMessageIds: Record<string, string>;
+    searchTokens?: string[];
+    isEdited?: boolean;
+    editedAt?: FirestoreTimestamp;
+}
+
 

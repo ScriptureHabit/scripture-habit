@@ -10,10 +10,14 @@ export const parseTimestampToDate = (ts?: FirebaseTimestamp | null): Date => {
 };
 
 export const parseTimestampToMillis = (ts?: FirebaseTimestamp | null): number => {
-  if (!ts) return 0;
+  if (!ts) return Date.now(); // TRUTH: Default to current time for pending server timestamps
   if (ts instanceof Date) return ts.getTime();
   if (typeof ts === 'string' || typeof ts === 'number') return new Date(ts).getTime();
-  if ('toMillis' in ts && typeof ts.toMillis === 'function') return ts.toMillis();
-  if ('seconds' in ts && typeof ts.seconds === 'number') return ts.seconds * 1000;
-  return 0;
+  
+  if (typeof ts === 'object' && ts !== null) {
+    if ('toMillis' in ts && typeof ts.toMillis === 'function') return ts.toMillis();
+    if ('seconds' in ts && typeof ts.seconds === 'number') return ts.seconds * 1000;
+  }
+  
+  return Date.now(); // TRUTH: Fallback to now to prevent UI jumps
 };

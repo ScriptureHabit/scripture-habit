@@ -55,17 +55,13 @@ router.all('/check-inactive-users', verifyCronSecret, async (_req: Request, res:
         const groupsRef = db.collection('groups');
         // Optimization: Only check groups that were NOT checked in the last 6 hours
         // Note: Existing groups won't have this field yet, so we fetch those where it's null as well.
-        const sixHoursAgo = new Date(Date.now() - 6 * 60 * 60 * 1000);
-        let snapshot = await groupsRef.where('lastInactivityCheckedAt', '<', sixHoursAgo).limit(100).get();
-        
+        // TRUTH: Order by 'lastInactivityCheckedAt' ASC to ensure all groups are eventually checked fairly.
+        let snapshot = await groupsRef
+            .orderBy('lastInactivityCheckedAt', 'asc')
+            .limit(100)
+            .get();
+
         let list = snapshot.docs;
-        if (list.length === 0) {
-            // Fallback 1: Fetch groups that don't have the field at all. 
-            // Firestore doesn't have "where not exists", so we fetch any groups 
-            // and trust the loop to update the field.
-            const fallback = await groupsRef.limit(50).get();
-            list = fallback.docs;
-        }
 
         let processedCount = 0;
         let removedCount = 0;
@@ -99,13 +95,12 @@ router.all('/check-inactive-users', verifyCronSecret, async (_req: Request, res:
             membersSnap.forEach(memberDoc => {
                 const memberData = memberDoc.data();
                 const memberId = memberDoc.id;
-                
-                // Collect all possible activity markers for this member
+
+                // TRUTH: Only consider WRITING activity (notes/posts) as valid participation.
+                // ROM (Read-only) users who do not contribute are considered inactive in this vision.
                 const candidates: FirestoreTimestamp[] = [
-                    memberData.lastActiveAt,
                     memberData.lastNoteAt,
-                    memberData.joinedAt,
-                    (groupData.memberLastActive && groupData.memberLastActive[memberId]) as FirestoreTimestamp
+                    memberData.lastPostAt
                 ].filter(Boolean);
 
                 const individualThresholdDays = memberData.kickThreshold || (groupData.memberKickThresholds && groupData.memberKickThresholds[memberId]) || 3;
@@ -118,19 +113,19 @@ router.all('/check-inactive-users', verifyCronSecret, async (_req: Request, res:
                     // Find the newest among candidates
                     const candidateDates = candidates.map(c => {
                         if (!c) return 0;
-                        
+
                         // Type-safe approach to extract milliseconds
                         if (typeof (c as admin.firestore.Timestamp).toMillis === 'function') {
                             return (c as admin.firestore.Timestamp).toMillis();
                         }
-                        
+
                         const tsObj = c as { seconds?: number; _seconds?: number };
                         if (tsObj.seconds !== undefined) return tsObj.seconds * 1000;
                         if (tsObj._seconds !== undefined) return tsObj._seconds * 1000;
-                        
+
                         if (c instanceof Date) return c.getTime();
                         if (typeof c === 'number') return c;
-                        
+
                         return 0;
                     }).filter(t => t > 0);
 
@@ -166,15 +161,36 @@ router.all('/check-inactive-users', verifyCronSecret, async (_req: Request, res:
                     });
                     batchOpCount++;
                 } else {
-                    await db.recursiveDelete(groupsRef.doc(groupId));
-                    deletedGroupCount++;
-                    isGroupDeleted = true;
-
+                    // TRUTH: Before deleting the group, we MUST clean up all member references 
+                    // to prevent "stuck" users in non-existent groups.
                     for (const uid of allMemberIds) {
                         const userRef = db.collection('users').doc(uid);
-                        batch.update(userRef, { groupIds: admin.firestore.FieldValue.arrayRemove(groupId) });
+                        batch.update(userRef, {
+                            groupIds: admin.firestore.FieldValue.arrayRemove(groupId),
+                            // If this was their primary group, clear it
+                            groupId: admin.firestore.FieldValue.delete()
+                        });
                         batch.delete(userRef.collection('groupStates').doc(groupId));
                         batchOpCount += 2;
+                    }
+
+                    // Commit user cleanup BEFORE the recursive delete to ensure safety
+                    if (batchOpCount > 0) {
+                        try {
+                            await batch.commit();
+                        } catch (err) {
+                            console.error(`Failed to commit pre-delete batch for group ${groupId}:`, err);
+                        }
+                        batch = db.batch();
+                        batchOpCount = 0;
+                    }
+
+                    try {
+                        await db.recursiveDelete(groupsRef.doc(groupId));
+                        deletedGroupCount++;
+                        isGroupDeleted = true;
+                    } catch (err) {
+                        console.error(`CRITICAL: Recursive delete failed for group ${groupId}:`, err);
                     }
                 }
             }
@@ -195,19 +211,19 @@ router.all('/check-inactive-users', verifyCronSecret, async (_req: Request, res:
             if (finalMembersToRemove.length > 0) {
                 // Using remainingMembers for future logic if needed, but for now just filter previews
                 const updatedPreviews = (groupData.memberPreviews || []).filter((p: MemberPreview) => !finalMembersToRemove.includes(p.uid));
-                
+
                 groupUpdates['members'] = admin.firestore.FieldValue.arrayRemove(...finalMembersToRemove);
                 groupUpdates['membersCount'] = admin.firestore.FieldValue.increment(-finalMembersToRemove.length);
                 groupUpdates['memberPreviews'] = updatedPreviews;
-                
+
                 // TRUTH: If kicked members contributed to unity today, remove them to keep it honest
                 if (groupData.dailyActivity?.date && groupData.dailyActivity?.activeMembers?.some((id: string) => finalMembersToRemove.includes(id))) {
                     const remainingActive = (groupData.dailyActivity.activeMembers as string[]).filter(id => !finalMembersToRemove.includes(id));
                     groupUpdates['dailyActivity.activeMembers'] = remainingActive;
                 }
 
-                finalMembersToRemove.forEach(uid => { 
-                    groupUpdates[`memberLastActive.${uid}`] = admin.firestore.FieldValue.delete(); 
+                finalMembersToRemove.forEach(uid => {
+                    groupUpdates[`memberLastActive.${uid}`] = admin.firestore.FieldValue.delete();
                     groupUpdates[`memberLastReadAt.${uid}`] = admin.firestore.FieldValue.delete();
                 });
                 groupChanged = true;
@@ -227,10 +243,10 @@ router.all('/check-inactive-users', verifyCronSecret, async (_req: Request, res:
                     const userRef = db.collection('users').doc(uid);
                     batch.update(userRef, { groupIds: admin.firestore.FieldValue.arrayRemove(groupId) });
                     batch.delete(userRef.collection('groupStates').doc(groupId));
-                    
+
                     // Cleanup the member subcollection document (Ghost Buster)
                     batch.delete(groupsRef.doc(groupId).collection('members').doc(uid));
-                    
+
                     batchOpCount += 3;
 
                     // Send localized kick notification
@@ -239,7 +255,7 @@ router.all('/check-inactive-users', verifyCronSecret, async (_req: Request, res:
                             const uSnap = await db.collection('users').doc(uid).get();
                             const uData = uSnap.data();
                             const lang = uData?.language || 'en';
-                            
+
                             const title = t(lang, 'notifications.kick_title');
                             const body = t(lang, 'notifications.kick_body', { groupName: groupData.name || 'Group' });
 
@@ -288,39 +304,52 @@ router.get('/purge-initialized-users', verifyCronSecret, async (_req: Request, r
         const groupsRef = db.collection('groups');
         const snapshot = await groupsRef.get();
         const list = snapshot.docs;
-        
+
         let totalRemoved = 0;
         let batch = db.batch();
         let batchOpCount = 0;
         const now = new Date();
-        const TWENTY_FOUR_HOURS_MS = 24 * 60 * 60 * 1000;
 
         for (const groupDoc of list) {
             const groupId = groupDoc.id;
             const groupData = groupDoc.data();
-            
+
             const membersSnap = await groupDoc.ref.collection('members').get();
             if (membersSnap.empty) continue;
 
             const messagesRef = groupsRef.doc(groupId).collection('messages');
             const msgsSnap = await messagesRef.orderBy('createdAt', 'desc').limit(200).get();
             const activeUserIds = new Set<string>();
-            msgsSnap.forEach(m => { 
+            msgsSnap.forEach(m => {
                 const data = m.data();
-                if (data.senderId) activeUserIds.add(data.senderId); 
+                if (data.senderId) activeUserIds.add(data.senderId);
             });
 
             const ghostsToRemove: string[] = [];
             membersSnap.forEach((memberDoc: admin.firestore.QueryDocumentSnapshot) => {
                 const uid = memberDoc.id;
                 const memberData = memberDoc.data();
-                if (activeUserIds.has(uid)) return;
+
+                // TRUTH: Do not purge the owner.
                 if (uid === groupData.ownerUserId) return;
 
-                const lastActive = memberData.lastActiveAt;
-                if (lastActive) {
-                    const lastActiveDate = lastActive.toDate();
-                    if ((now.getTime() - lastActiveDate.getTime()) > TWENTY_FOUR_HOURS_MS) {
+                // TRUTH: If the user has posted recently (found in messages), they are 100% active.
+                if (activeUserIds.has(uid)) return;
+
+                // TRUTH: ROM (Read-only) users are intentionally purged. 
+                // Only consider recent note/message timestamps as writing activity.
+                const lastWritingActivity = memberData.lastNoteAt || memberData.lastActiveAt;
+
+                if (!lastWritingActivity) {
+                    // Never posted = Ghost (No grace period for ROM)
+                    ghostsToRemove.push(uid);
+                } else {
+                    const thresholdDays = memberData.kickThreshold || (groupData.memberKickThresholds?.[uid]) || 3;
+                    const thresholdMs = thresholdDays * 24 * 60 * 60 * 1000;
+                    const lastDate = lastWritingActivity.toDate();
+                    const diff = now.getTime() - lastDate.getTime();
+                    // Respect the threshold for those who previously posted but stopped
+                    if (diff > thresholdMs) {
                         ghostsToRemove.push(uid);
                     }
                 }
@@ -329,20 +358,20 @@ router.get('/purge-initialized-users', verifyCronSecret, async (_req: Request, r
             if (ghostsToRemove.length > 0) {
                 totalRemoved += ghostsToRemove.length;
                 const updatedPreviews = (groupData.memberPreviews || []).filter((p: MemberPreview) => !ghostsToRemove.includes(p.uid));
-                
+
                 batch.update(groupsRef.doc(groupId), {
                     members: admin.firestore.FieldValue.arrayRemove(...ghostsToRemove),
                     membersCount: admin.firestore.FieldValue.increment(-ghostsToRemove.length),
                     memberPreviews: updatedPreviews
                 });
-                
-                ghostsToRemove.forEach(uid => { 
-                    batch.update(groupsRef.doc(groupId), { 
+
+                ghostsToRemove.forEach(uid => {
+                    batch.update(groupsRef.doc(groupId), {
                         [`memberLastActive.${uid}`]: admin.firestore.FieldValue.delete(),
                         [`memberLastReadAt.${uid}`]: admin.firestore.FieldValue.delete()
-                    }); 
+                    });
                 });
-                
+
                 const msgRef = messagesRef.doc();
                 batch.set(msgRef, {
                     text: `👋 **${ghostsToRemove.length} inactive member(s)** were removed.`,
@@ -357,11 +386,22 @@ router.get('/purge-initialized-users', verifyCronSecret, async (_req: Request, r
                     const userRef = db.collection('users').doc(uid);
                     batch.update(userRef, { groupIds: admin.firestore.FieldValue.arrayRemove(groupId) });
                     batch.delete(userRef.collection('groupStates').doc(groupId));
-                    batchOpCount += 2;
+
+                    // Cleanup private member document
+                    batch.delete(groupDoc.ref.collection('members').doc(uid));
+
+                    batchOpCount += 3;
+
+                    // Frequent batch commitment for safety within the user loop
+                    if (batchOpCount > 450) {
+                        await batch.commit();
+                        batch = db.batch();
+                        batchOpCount = 0;
+                    }
                 }
             }
 
-            if (batchOpCount > 300) { await batch.commit(); batch = db.batch(); batchOpCount = 0; }
+            if (batchOpCount > 450) { await batch.commit(); batch = db.batch(); batchOpCount = 0; }
         }
         if (batchOpCount > 0) await batch.commit();
         res.json({ message: `Purge complete. Removed ${totalRemoved} ghost users.` });
@@ -384,7 +424,7 @@ router.get('/test-inactive-check/:groupId', verifyCronSecret, async (req: Reques
 
         const groupData = groupDoc.data();
         if (!groupData) return res.status(404).json({ error: 'Data Not Found' });
-        
+
         const members: string[] = groupData.members || [];
         const memberLastActive = groupData.memberLastActive || {};
         const ownerUserId = groupData.ownerUserId;
@@ -448,7 +488,7 @@ router.all('/archive-old-messages', verifyCronSecret, async (_req: Request, res:
 
         res.json({
             message: 'Archiving complete.',
-            stats: { 
+            stats: {
                 targetGroupsFound: groupsToArchive.length,
                 groupsProcessed,
                 totalMessagesArchived
@@ -490,7 +530,7 @@ router.all('/aggregate-message-counts', verifyCronSecret, async (_req: Request, 
         });
 
         let updatedCount = 0;
-        
+
         // 1. Priority Sync (Fast Shard Hum)
         for (const groupDoc of activeGroupsSnap.docs) {
             try {
@@ -505,8 +545,8 @@ router.all('/aggregate-message-counts', verifyCronSecret, async (_req: Request, 
         // 2. SUPREME TRUTH Sync (Document counting for stale groups)
         for (const groupDoc of staleGroupsSnap.docs) {
             // Already handled if in activeGroups
-            if (seenIds.has(groupDoc.id)) continue; 
-            
+            if (seenIds.has(groupDoc.id)) continue;
+
             try {
                 // TRUTH: We only recount 'noteCount' (physical). 
                 // 'messageCount' must stay as a sharded aggregate sum to preserve its sequence value.
@@ -578,7 +618,7 @@ router.all('/sync-user-stats', verifyCronSecret, async (_req: Request, res: Resp
             }
 
             if (profileChanged) {
-                batch.update(userDoc.ref, { 
+                batch.update(userDoc.ref, {
                     totalNotes: actualCount,
                     groupIds: validGroupIds
                 });

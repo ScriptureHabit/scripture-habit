@@ -47,6 +47,14 @@ export class CounterService {
     }
 
     /**
+     * Get the count from the main document (might be slightly behind shards)
+     */
+    static async getCountFromDoc(ref: admin.firestore.DocumentReference, fieldName: string): Promise<number> {
+        const snap = await ref.get();
+        return (snap.data()?.[fieldName] || 0) as number;
+    }
+
+    /**
      * Sync the sharded count back to the main document field
      */
     static async aggregateAndSync(ref: admin.firestore.DocumentReference, fieldName: string) {

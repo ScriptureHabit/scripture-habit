@@ -67,31 +67,28 @@ export const chatReducer = (state: ChatState, action: ChatAction): ChatState => 
     case 'SET_MESSAGES':
       return { ...state, messages: action.messages, status: 'active' };
     case 'ADD_NEW_MESSAGES': {
-      // 1. Identify which optimistic IDs are being resolved by ANY incoming message
+      // TRUTH: Identify which optimistic IDs are being resolved by ANY incoming message
       const optimisticIdsToResolve = new Set(
         action.newMessages.map(m => m.optimisticId).filter(Boolean) as string[]
       );
 
-      // 2. Filter out incoming messages that already exist in the state by their real ID
+      // TRUTH: Solid deduplication strategy
       const incoming = action.newMessages.filter(n => !state.messages.some(p => p.id === n.id));
       
-      // 3. Keep existing messages, but remove those that are now being resolved by the server's truth
-      const existingMessages = state.messages.filter(m => 
-        !optimisticIdsToResolve.has(m.id) && 
-        !(m.optimisticId && optimisticIdsToResolve.has(m.optimisticId))
-      );
+      const existingMessages = state.messages.filter(m => {
+        const isResolvedOptimistic = optimisticIdsToResolve.has(m.id);
+        const matchesServerOptimisticId = m.optimisticId && optimisticIdsToResolve.has(m.optimisticId);
+        return !isResolvedOptimistic && !matchesServerOptimisticId;
+      });
 
-      // If nothing new to add and nothing to resolve, just stay the same
-      if (incoming.length === 0 && existingMessages.length === state.messages.length) {
-        return state;
-      }
+      if (incoming.length === 0 && existingMessages.length === state.messages.length) return state;
 
       const newMessages = [...existingMessages, ...incoming].sort((a, b) => {
         const timeA = parseTimestampToMillis(a.createdAt);
         const timeB = parseTimestampToMillis(b.createdAt);
-        return timeA - timeB;
+        return timeA - timeB; // No more sorting to 0 (top of chat)
       });
-      return { ...state, messages: newMessages };
+      return { ...state, messages: newMessages, status: 'active' };
     }
     case 'SET_LOADING_OLDER':
       return { ...state, isLoadingOlder: action.isLoading };

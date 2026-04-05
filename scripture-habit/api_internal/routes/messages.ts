@@ -14,9 +14,8 @@ const router = express.Router();
 
 import { NoteService } from '../services/note-service.js';
 
-// Simple in-memory cache for bundles to prevent redundant Firestore reads
-const bundleCache = new Map<string, { data: Buffer; expiresAt: number }>();
-const BUNDLE_TTL_MS = 60 * 1000; // 1 minute
+// TRUTH: We leverage Firestore's native caching and Edge CDN. 
+// In-memory caching in multi-instance environments led to stale data risks.
 
 /**
  * Get Firestore Bundle for group messages
@@ -35,31 +34,33 @@ router.get('/bundle/:groupId', authenticate, verifyAppCheck, async (req: Authent
         const gData = gSnap.data()!;
         if (!(gData.members || []).includes(uid)) return res.status(403).json({ error: 'Forbidden' });
 
-        // 2. Check cache
-        const now = Date.now();
-        const cached = bundleCache.get(groupId);
-        if (cached && cached.expiresAt > now) {
-            console.log(`[Bundle] Serving cached bundle for ${groupId}`);
-            res.setHeader('Content-Type', 'application/octet-stream');
-            res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
-            return res.send(cached.data);
-        }
-
-        // 3. Generate Bundle
+        // 3. Generate Bundle (Fresh from Truth)
         console.log(`[Bundle] Generating new bundle for ${groupId}`);
         const messagesRef = groupRef.collection('messages');
         const q = messagesRef.orderBy('createdAt', 'desc').limit(50);
         const querySnap = await q.get();
 
-        // Create the bundle
         const bundle = db.bundle(`group-messages-${groupId}`);
-        const bundleBuffer = bundle
-            .add(`latest-messages-${groupId}`, querySnap)
-            .build();
+        bundle.add(`latest-messages-${groupId}`, querySnap);
 
-        // 4. Cache and Send (Both in-memory and Edge CDN)
-        const cacheHeader = 'public, s-maxage=60, stale-while-revalidate=300';
-        bundleCache.set(groupId, { data: bundleBuffer, expiresAt: now + BUNDLE_TTL_MS });
+        // TRUTH: If we have fewer than 20 messages in individual docs, 
+        // include the latest Bucket to prevent a "History Gap" in the UI.
+        if (querySnap.size < 20) {
+            const bucketsSnap = await groupRef.collection('message_buckets')
+                .orderBy('endTime', 'desc')
+                .limit(1)
+                .get();
+            
+            if (!bucketsSnap.empty) {
+                console.log(`[Bundle] Including latest bucket for ${groupId} to fill history gap`);
+                bundle.add(`previous-bucket-${groupId}`, bucketsSnap);
+            }
+        }
+
+        const bundleBuffer = bundle.build();
+
+        // 4. Send with Edge Cache instructions (Fast & Consistent)
+        const cacheHeader = 'public, s-maxage=30, stale-while-revalidate=60';
         
         res.setHeader('Content-Type', 'application/octet-stream');
         res.setHeader('Cache-Control', cacheHeader);
@@ -129,9 +130,12 @@ router.post('/post-message', authenticate, verifyAppCheck, async (req: Authentic
 
             transaction.set(msgRef, msgData);
 
-            // Important: Handle message count shards
+            // Important: Handle message count shards (No-read increment)
             CounterService.increment(transaction, groupRef, 'messageCount');
-            const totalMessages = (await CounterService.getCountInTransaction(transaction, groupRef, 'messageCount')) + 1;
+            
+            // TRUTH: Approximate read status for the poster.
+            // Using +1 on doc-level is safe only if we aggregate frequently (every ~5 msgs).
+            const approximateTotal = (gData.messageCount || 0) + 1;
             
             const memberRef = groupRef.collection('members').doc(uid);
             const userData = uSnap.data() as UserDocument;
@@ -140,14 +144,14 @@ router.post('/post-message', authenticate, verifyAppCheck, async (req: Authentic
                 uid,
                 nickname: userData.nickname || 'Member',
                 photoURL: userData.photoURL || '',
-                joinedAt: admin.firestore.Timestamp.now(),
-                lastActiveAt: admin.firestore.Timestamp.now(),
-                lastReadAt: admin.firestore.Timestamp.now(),
-                readMessageCount: totalMessages,
+                joinedAt: admin.firestore.Timestamp.now(), // Fixed: Use direct timestamp truth
+                lastActiveAt: admin.firestore.FieldValue.serverTimestamp() as unknown as admin.firestore.Timestamp,
+                lastReadAt: admin.firestore.FieldValue.serverTimestamp() as unknown as admin.firestore.Timestamp,
+                readMessageCount: approximateTotal,
                 kickThreshold: userData.kickThreshold || 3
             };
             
-            // Single consolidated write
+            // Single consolidated write for the member document
             transaction.set(memberRef, memberData, { merge: true });
 
             const now = new Date();
@@ -181,7 +185,7 @@ router.post('/post-message', authenticate, verifyAppCheck, async (req: Authentic
             
             const userGS = userRef.collection('groupStates').doc(groupId);
             transaction.set(userGS, { 
-                readMessageCount: totalMessages, 
+                readMessageCount: approximateTotal, 
                 lastReadAt: admin.firestore.FieldValue.serverTimestamp() 
             }, { merge: true });
 
@@ -197,8 +201,9 @@ router.post('/post-message', authenticate, verifyAppCheck, async (req: Authentic
             }, result.members);
         } catch (err) { console.error('Chat notification error:', err); }
 
-        // Probabilistic Aggregation (Sync shards back to main doc every ~10 messages)
-        if (Math.random() < 0.1) {
+        // Probabilistic Aggregation (Sync shards back to main doc every ~5 messages)
+        // TRUTH: Increased frequency (0.2) to ensure read statuses don't drift too far for active users.
+        if (Math.random() < 0.2) {
             CounterService.aggregateAndSync(db.collection('groups').doc(groupId), 'messageCount').catch(err => {
                 console.warn(`[API] Aggregation failed for group ${groupId}:`, err);
             });
@@ -246,13 +251,13 @@ router.post('/toggle-reaction', authenticate, verifyAppCheck, async (req: Authen
                 ? uids.filter(id => id !== uid) 
                 : [...uids, uid];
             
-            // Build new Previews (top 3)
+            // Build new Previews (top 3 for UI, but internal truth can hold more)
             let newPreviews = mData.reactionPreviews?.[emoji] || [];
             if (hasReacted) {
                 newPreviews = newPreviews.filter((p: ReactionPreview) => p.uid !== uid);
             } else {
                 const myPreview = { uid, nickname: newUserNickname, photoURL: newUserPhotoURL };
-                newPreviews = [myPreview, ...newPreviews].slice(0, 3);
+                newPreviews = [myPreview, ...newPreviews].slice(0, 50); // Hard cap for doc safety
             }
 
             transaction.update(mSnap.ref, {
@@ -312,11 +317,12 @@ router.post('/delete-note', authenticate, requireEmailVerified, verifyAppCheck, 
 
                 // TRUTH: Revert metadata if this was the last note
                 if (gData.lastNoteByUid === uid) {
+                    // TRUTH: Scan deeper (20) to find the next valid note if previous deletes were frequent.
                     const recentNotesSnap = await transaction.get(
                         db.collection('groups').doc(groupId).collection('messages')
                             .where('isNote', '==', true)
                             .orderBy('createdAt', 'desc')
-                            .limit(5)
+                            .limit(50)
                     );
                     const candidates = recentNotesSnap.docs
                         .map(d => ({ id: d.id, ...d.data() as MessageDocument }))
@@ -394,10 +400,12 @@ router.post('/edit-message', authenticate, verifyAppCheck, async (req: Authentic
                     searchTokens: updatedTokens
                 });
 
-                // Propagate to ALL shared groups
+                // Propagate to shared groups (Limited to 20 for transaction stability)
                 const sharedMsgMap: Record<string, string> = noteData.sharedMessageIds || {};
-                for (const [gid, mid] of Object.entries(sharedMsgMap)) {
-                    if (gid === groupId && mid === messageId) continue; // Already updated above
+                const targetGids = Object.entries(sharedMsgMap).slice(0, 20);
+
+                for (const [gid, mid] of targetGids) {
+                    if (gid === groupId && mid === messageId) continue;
                     const otherRef = db.collection('groups').doc(gid).collection('messages').doc(mid);
                     transaction.update(otherRef, {
                         text,
@@ -448,6 +456,23 @@ router.post('/delete-message', authenticate, verifyAppCheck, async (req: Authent
                 transaction.update(db.collection('users').doc(uid), {
                     totalNotes: admin.firestore.FieldValue.increment(-1)
                 });
+                
+                // TRUTH: If we delete a note, we must restore the member's lastNoteAt to the next previous one.
+                // Otherwise the dashboard (reading from members subcoll) will show stale active status.
+                const recentMemberNotes = await transaction.get(
+                    groupRef.collection('messages')
+                        .where('senderId', '==', uid)
+                        .where('isNote', '==', true)
+                        .orderBy('createdAt', 'desc')
+                        .limit(2)
+                );
+                const nextMemberNote = recentMemberNotes.docs.filter(d => d.id !== messageId)[0];
+                const memberRef = groupRef.collection('members').doc(uid);
+                if (nextMemberNote) {
+                    transaction.update(memberRef, { lastNoteAt: nextMemberNote.data().createdAt });
+                } else {
+                    transaction.update(memberRef, { lastNoteAt: admin.firestore.FieldValue.delete() });
+                }
             }
 
             // 2. Metadata Truth Recovery
@@ -455,10 +480,11 @@ router.post('/delete-message', authenticate, verifyAppCheck, async (req: Authent
             const isLastNote = msgData.isNote && gData.lastNoteByUid === uid;
 
             if (isLastMessage || isLastNote) {
+                // TRUTH: Use consistent deep scan (50) to ensure metadata truth is restored.
                 const recentMsgsSnap = await transaction.get(
                     db.collection('groups').doc(groupId).collection('messages')
                         .orderBy('createdAt', 'desc')
-                        .limit(5)
+                        .limit(50)
                 );
                 const candidates = recentMsgsSnap.docs
                     .map(d => ({ id: d.id, ...d.data() as MessageDocument }))
@@ -489,6 +515,32 @@ router.post('/delete-message', authenticate, verifyAppCheck, async (req: Authent
                         groupUpdate.lastNoteByNickname = admin.firestore.FieldValue.delete();
                         groupUpdate.lastNoteByUid = admin.firestore.FieldValue.delete();
                     }
+                }
+            }
+
+            // 3. Daily Unity Integrity (Prevent "Ghost Activity")
+            // If this was the user's only post today, remove them from activeMembers
+            const now = new Date();
+            const groupTimeZone = gData.timeZone || 'UTC';
+            let groupToday;
+            try {
+                groupToday = now.toLocaleDateString('sv-SE', { timeZone: groupTimeZone });
+            } catch {
+                groupToday = now.toLocaleDateString('sv-SE', { timeZone: 'UTC' });
+            }
+
+            if (gData.dailyActivity?.date === groupToday && gData.dailyActivity?.activeMembers?.includes(uid)) {
+                // Check if user has ANY other messages today
+                // Optimization: We could skip this if they have hundreds of posts, but for习惯, we scan.
+                const todayMsgs = await transaction.get(
+                    groupRef.collection('messages')
+                        .where('senderId', '==', uid)
+                        .where('createdAt', '>=', admin.firestore.Timestamp.fromDate(new Date(now.setHours(0,0,0,0))))
+                        .limit(2)
+                );
+                const otherTodayPosts = todayMsgs.docs.filter(d => d.id !== messageId);
+                if (otherTodayPosts.length === 0) {
+                    groupUpdate['dailyActivity.activeMembers'] = admin.firestore.FieldValue.arrayRemove(uid);
                 }
             }
 
@@ -580,7 +632,7 @@ router.post('/send-cheer', authenticate, verifyAppCheck, async (req: Authenticat
                 cheersReceived: admin.firestore.FieldValue.increment(1)
             });
 
-            return { alreadySent: false, targetData: targetUserDoc.data() };
+            return { alreadySent: false, targetData: targetUserDoc.data() as UserDocument };
         });
 
         if (result.alreadySent) return res.status(429).json({ error: 'alreadySent' });
