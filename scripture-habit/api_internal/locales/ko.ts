@@ -8,6 +8,8 @@ export default {
             "{nickname}님이 당신의 공부 노트를 기대하고 있습니다! 📖",
             "100% 일치를 목표로 합시다! {nickname}님이 당신에게 응원을 보냈습니다! 💪"
         ],
+        kick_title: "활동 업데이트",
+        kick_body: "⚠️ 활동 부족으로 '{groupName}'에서 퇴장되었습니다. 언제든지 다시 가입해 주세요! 💪",
         bot_name: "Scripture Habit Bot"
     }
 };

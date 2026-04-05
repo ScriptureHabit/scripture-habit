@@ -8,6 +8,8 @@ export default {
             "{nickname} está ansioso pela sua nota de estudo! 📖",
             "Vamos buscar 100% de unidade! {nickname} enviou um impulso de energia! 💪"
         ],
+        kick_title: "Atualização de atividade",
+        kick_body: "⚠️ Você foi removido de '{groupName}' por inatividade. Volte quando quiser! 💪",
         bot_name: "Scripture Habit Bot"
     }
 };

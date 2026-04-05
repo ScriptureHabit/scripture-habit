@@ -8,6 +8,8 @@ export default {
             "Inaabangan ni {nickname} ang iyong study note! 📖",
             "Layon nating makamit ang 100% pagkakaisa! Nagpadala si {nickname} ng lakas sa iyo! 💪"
         ],
+        kick_title: "Update sa Aktibidad",
+        kick_body: "⚠️ Natanggal ka sa '{groupName}' dahil sa hindi pag-activity. Balik ka lang kapag handa ka na! 💪",
         bot_name: "Scripture Habit Bot"
     }
 };

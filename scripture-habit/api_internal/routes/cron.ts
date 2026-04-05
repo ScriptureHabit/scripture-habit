@@ -2,6 +2,8 @@ import express, { Request, Response, NextFunction } from 'express';
 import { admin, db } from '../lib/firebase-admin.js';
 import { CounterService } from '../services/counter-service.js';
 import { ArchiveService } from '../services/archive-service.js';
+import { getUserFcmTokens, sendPushNotification } from '../lib/notifications.js';
+import { t } from '../lib/i18n.js';
 
 interface MemberPreview {
     uid: string;
@@ -177,6 +179,24 @@ router.all('/check-inactive-users', verifyCronSecret, async (_req: Request, res:
                     batch.update(userRef, { groupIds: admin.firestore.FieldValue.arrayRemove(groupId) });
                     batch.delete(userRef.collection('groupStates').doc(groupId));
                     batchOpCount += 2;
+
+                    // Send localized kick notification
+                    getUserFcmTokens(uid).then(async tokens => {
+                        if (tokens.length > 0) {
+                            const uSnap = await db.collection('users').doc(uid).get();
+                            const uData = uSnap.data();
+                            const lang = uData?.language || 'en';
+                            
+                            const title = t(lang, 'notifications.kick_title');
+                            const body = t(lang, 'notifications.kick_body', { groupName: groupData.name || 'Group' });
+
+                            sendPushNotification(tokens, {
+                                title,
+                                body,
+                                data: { type: 'kick', groupId }
+                            });
+                        }
+                    }).catch(err => console.error(`Failed to send kick notification to ${uid}:`, err));
                 }
             }
 

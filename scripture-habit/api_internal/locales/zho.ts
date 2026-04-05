@@ -8,6 +8,8 @@ export default {
             "{nickname} 期待看到您的學習筆記！📖",
             "讓我們以 100% 團結為目標！ {nickname} 給你加了一把勁！ 💪"
         ],
+        kick_title: "活动更新",
+        kick_body: "⚠️ 由于未活动，您已从 '{groupName}' 中移除。欢迎随时重新加入！ 💪",
         bot_name: "Scripture Habit Bot"
     }
 };
