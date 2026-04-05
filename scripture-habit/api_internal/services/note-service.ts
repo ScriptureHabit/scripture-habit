@@ -166,7 +166,8 @@ export class NoteService {
                 const memberRef = groupRefs[idx].collection('members').doc(uid);
                 transaction.set(memberRef, {
                     lastActiveAt: admin.firestore.FieldValue.serverTimestamp(),
-                    lastReadAt: admin.firestore.FieldValue.serverTimestamp()
+                    lastReadAt: admin.firestore.FieldValue.serverTimestamp(),
+                    lastNoteAt: noteTimestamp
                 }, { merge: true });
                 
                 const userGS = userRef.collection('groupStates').doc(gid);

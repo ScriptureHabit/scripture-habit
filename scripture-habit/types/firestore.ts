@@ -71,6 +71,7 @@ export interface GroupMemberDocument {
     photoURL?: string;
     lastReadAt?: FirestoreTimestamp;
     lastActiveAt?: FirestoreTimestamp;
+    lastNoteAt?: FirestoreTimestamp;
     readMessageCount?: number;
     joinedAt?: FirestoreTimestamp;
     kickThreshold?: number;

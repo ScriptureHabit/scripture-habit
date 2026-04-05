@@ -20,7 +20,7 @@ export const useDashboardWarnings = (userData: UserData | null, userGroups: Grou
         userGroups.forEach(group => {
             // Prioritize the new scalable myMemberStatus from the subcollection
             const myStatus = group.myMemberStatus;
-            const lastActiveTimestamp = myStatus?.lastActiveAt || (group.memberLastActive && group.memberLastActive[userData.uid]);
+            const lastActiveTimestamp = myStatus?.lastNoteAt || myStatus?.lastActiveAt || (group.memberLastActive && group.memberLastActive[userData.uid]);
 
             if (lastActiveTimestamp) {
                 const lastActiveDate = parseTimestampToDate(lastActiveTimestamp);
