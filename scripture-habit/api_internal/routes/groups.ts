@@ -356,16 +356,25 @@ router.post('/update-kick-threshold', authenticate, verifyAppCheck, async (req: 
         const userData = userDoc.data()! as UserDocument;
         const groupIds = userData.groupIds || (userData.groupId ? [userData.groupId] : []);
 
-        await userRef.update({ kickThreshold: threshold });
+        await userRef.update({ 
+            kickThreshold: threshold,
+            hasSetKickThreshold: true
+        });
 
         if (groupIds.length > 0) {
             const batch = db.batch();
             groupIds.forEach((gid: string) => {
                 const gRef = db.collection('groups').doc(gid);
-                // New: Only store in the member subcollection document
+                
+                // Update the new scalable subcollection
                 batch.set(gRef.collection('members').doc(uid), {
                     kickThreshold: threshold
                 }, { merge: true });
+                
+                // Also update the legacy map for backward compatibility in dashboards
+                batch.update(gRef, {
+                    [`memberKickThresholds.${uid}`]: threshold
+                });
             });
             await batch.commit();
         }

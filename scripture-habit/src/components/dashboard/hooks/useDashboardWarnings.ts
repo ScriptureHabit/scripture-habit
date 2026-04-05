@@ -20,7 +20,19 @@ export const useDashboardWarnings = (userData: UserData | null, userGroups: Grou
         userGroups.forEach(group => {
             // Prioritize the new scalable myMemberStatus from the subcollection
             const myStatus = group.myMemberStatus;
-            const lastActiveTimestamp = myStatus?.lastNoteAt || myStatus?.lastActiveAt || (group.memberLastActive && group.memberLastActive[userData.uid]);
+            
+            // Candidate 1: The individual member status (most accurate if we just updated)
+            let lastActiveTimestamp = myStatus?.lastNoteAt || myStatus?.lastActiveAt;
+            
+            // Candidate 2: If no individual status, but I was the last one to post in the group globally
+            if (!lastActiveTimestamp && group.lastNoteByUid === userData.uid) {
+                lastActiveTimestamp = group.lastNoteAt;
+            }
+            
+            // Candidate 3: Legacy mapping on the group document
+            if (!lastActiveTimestamp) {
+                lastActiveTimestamp = (group.memberLastActive && group.memberLastActive[userData.uid]);
+            }
 
             if (lastActiveTimestamp) {
                 const lastActiveDate = parseTimestampToDate(lastActiveTimestamp);

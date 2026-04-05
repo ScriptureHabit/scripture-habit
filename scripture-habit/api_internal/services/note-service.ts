@@ -160,6 +160,10 @@ export class NoteService {
                 } else {
                     updatePayload['dailyActivity.activeMembers'] = admin.firestore.FieldValue.arrayUnion(uid);
                 }
+                
+                // Keep the legacy map updated for dashboard quick-scanning
+                updatePayload[`memberLastActive.${uid}`] = noteTimestamp;
+                
                 transaction.update(groupRefs[idx], updatePayload);
 
                 // Update member subcollection for activity tracking (Scalable)
