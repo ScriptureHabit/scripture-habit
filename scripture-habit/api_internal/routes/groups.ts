@@ -240,7 +240,7 @@ router.post('/update-read-status', authenticate, verifyAppCheck, async (req: Aut
             return res.status(403).json({ error: 'Forbidden' });
         }
 
-        const totalMessages = await CounterService.getCount(groupRef);
+        const { readMessageCount: totalMessages } = validation.data;
 
         const batch = db.batch();
         batch.set(userRef.collection('groupStates').doc(groupId), {
