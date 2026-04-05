@@ -154,15 +154,6 @@ router.post('/post-message', authenticate, verifyAppCheck, async (req: Authentic
             // Single consolidated write for the member document
             transaction.set(memberRef, memberData, { merge: true });
 
-            const now = new Date();
-            const groupTimeZone = gData.timeZone || 'UTC';
-            let groupToday;
-            try {
-                groupToday = now.toLocaleDateString('sv-SE', { timeZone: groupTimeZone });
-            } catch {
-                groupToday = now.toLocaleDateString('sv-SE', { timeZone: 'UTC' });
-            }
-
             const updatePayload: Record<string, admin.firestore.FieldValue | string | string[] | number | object | undefined> = {
                 lastMessageAt: admin.firestore.FieldValue.serverTimestamp(),
                 lastMessageByNickname: userData.nickname || 'Member',
@@ -171,17 +162,7 @@ router.post('/post-message', authenticate, verifyAppCheck, async (req: Authentic
                 [`memberLastActive.${uid}`]: admin.firestore.FieldValue.serverTimestamp()
             };
 
-            // TRUTH: Messages should contribute to daily activity/unity just like notes
-            if (gData.dailyActivity?.date !== groupToday) {
-                updatePayload.dailyActivity = { date: groupToday, activeMembers: [uid] };
-            } else {
-                updatePayload['dailyActivity.activeMembers'] = admin.firestore.FieldValue.arrayUnion(uid);
-            }
-
             transaction.update(groupRef, updatePayload);
-
-            // (Removed redundant second set on memberRef)
-
             
             const userGS = userRef.collection('groupStates').doc(groupId);
             transaction.set(userGS, { 
@@ -337,6 +318,30 @@ router.post('/delete-note', authenticate, requireEmailVerified, verifyAppCheck, 
                         updatePayload.lastNoteAt = admin.firestore.FieldValue.delete();
                         updatePayload.lastNoteByNickname = admin.firestore.FieldValue.delete();
                         updatePayload.lastNoteByUid = admin.firestore.FieldValue.delete();
+                    }
+                }
+
+                // TRUTH: If this was the user's only note today, remove them from activeMembers to keep Unity honest
+                const now = new Date();
+                const groupTimeZone = gData.timeZone || 'UTC';
+                let groupToday;
+                try {
+                    groupToday = now.toLocaleDateString('sv-SE', { timeZone: groupTimeZone });
+                } catch {
+                    groupToday = now.toLocaleDateString('sv-SE', { timeZone: 'UTC' });
+                }
+
+                if (gData.dailyActivity?.date === groupToday && gData.dailyActivity?.activeMembers?.includes(uid)) {
+                    const todayNotesSnap = await transaction.get(
+                        groupRef.collection('messages')
+                            .where('senderId', '==', uid)
+                            .where('isNote', '==', true)
+                            .where('createdAt', '>=', admin.firestore.Timestamp.fromDate(new Date(now.setHours(0,0,0,0))))
+                            .limit(2)
+                    );
+                    const otherNotesToday = todayNotesSnap.docs.filter(d => d.id !== messageId);
+                    if (otherNotesToday.length === 0) {
+                        updatePayload['dailyActivity.activeMembers'] = admin.firestore.FieldValue.arrayRemove(uid);
                     }
                 }
 
@@ -532,13 +537,14 @@ router.post('/delete-message', authenticate, verifyAppCheck, async (req: Authent
             if (gData.dailyActivity?.date === groupToday && gData.dailyActivity?.activeMembers?.includes(uid)) {
                 // Check if user has ANY other messages today
                 // Optimization: We could skip this if they have hundreds of posts, but for习惯, we scan.
-                const todayMsgs = await transaction.get(
+                const todayNotesSnap = await transaction.get(
                     groupRef.collection('messages')
                         .where('senderId', '==', uid)
+                        .where('isNote', '==', true)
                         .where('createdAt', '>=', admin.firestore.Timestamp.fromDate(new Date(now.setHours(0,0,0,0))))
                         .limit(2)
                 );
-                const otherTodayPosts = todayMsgs.docs.filter(d => d.id !== messageId);
+                const otherTodayPosts = todayNotesSnap.docs.filter(d => d.id !== messageId);
                 if (otherTodayPosts.length === 0) {
                     groupUpdate['dailyActivity.activeMembers'] = admin.firestore.FieldValue.arrayRemove(uid);
                 }
