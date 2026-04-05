@@ -96,18 +96,19 @@ router.all('/check-inactive-users', verifyCronSecret, async (_req: Request, res:
                 const memberData = memberDoc.data();
                 const memberId = memberDoc.id;
 
-                // TRUTH: Only consider WRITING activity (notes/posts) as valid participation.
-                // ROM (Read-only) users who do not contribute are considered inactive in this vision.
+                // TRUTH: If no written activity exists, we fall back to joinedAt to give new members a grace period.
+                // This ensures we respect the "habit rule" (threshold) even for those who haven't started posting yet.
                 const candidates: FirestoreTimestamp[] = [
                     memberData.lastNoteAt,
-                    memberData.lastPostAt
+                    memberData.lastPostAt,
+                    memberData.joinedAt
                 ].filter(Boolean);
 
                 const individualThresholdDays = memberData.kickThreshold || (groupData.memberKickThresholds && groupData.memberKickThresholds[memberId]) || 3;
                 const individualThresholdMs = individualThresholdDays * 24 * 60 * 60 * 1000;
 
                 if (candidates.length === 0) {
-                    membersToInitialize.push(memberId);
+                    // This case is rare as joinedAt should exist, but safety first.
                     activeMembers.push(memberId);
                 } else {
                     // Find the newest among candidates
@@ -336,19 +337,22 @@ router.get('/purge-initialized-users', verifyCronSecret, async (_req: Request, r
                 // TRUTH: If the user has posted recently (found in messages), they are 100% active.
                 if (activeUserIds.has(uid)) return;
 
-                // TRUTH: ROM (Read-only) users are intentionally purged. 
-                // Only consider recent note/message timestamps as writing activity.
-                const lastWritingActivity = memberData.lastNoteAt || memberData.lastActiveAt;
+                // TRUTH: We respect the threshold even for users with zero activity (ROM users).
+                // They are given a grace period from their joinedAt date.
+                const lastWritingActivity = memberData.lastNoteAt || memberData.lastActiveAt || memberData.joinedAt;
 
-                if (!lastWritingActivity) {
-                    // Never posted = Ghost (No grace period for ROM)
-                    ghostsToRemove.push(uid);
-                } else {
+                if (lastWritingActivity) {
                     const thresholdDays = memberData.kickThreshold || (groupData.memberKickThresholds?.[uid]) || 3;
                     const thresholdMs = thresholdDays * 24 * 60 * 60 * 1000;
-                    const lastDate = lastWritingActivity.toDate();
+                    
+                    // Handle various timestamp formats safely
+                    const lastDate = (typeof (lastWritingActivity as any).toDate === 'function') 
+                        ? (lastWritingActivity as any).toDate() 
+                        : new Date(lastWritingActivity as any);
+                    
                     const diff = now.getTime() - lastDate.getTime();
-                    // Respect the threshold for those who previously posted but stopped
+                    
+                    // Only remove if they've exceeded their threshold grace period
                     if (diff > thresholdMs) {
                         ghostsToRemove.push(uid);
                     }
