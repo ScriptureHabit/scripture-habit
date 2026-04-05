@@ -27,8 +27,46 @@ export class ProfileService {
             let totalOps = 0;
             let currentBatchSize = 0;
 
-            // 2. For each group, update RECENT messages
+            // 2. For each group, update metadata and RECENT messages
             for (const gid of groupIds) {
+                const groupRef = db.collection('groups').doc(gid);
+                const gSnap = await groupRef.get();
+                if (gSnap.exists) {
+                    const gData = gSnap.data() || {};
+                    const groupUpdates: any = {};
+                    
+                    // A. Update Member Subcollection Document (the source of truth)
+                    currentBatch.set(groupRef.collection('members').doc(uid), {
+                        nickname: updates.nickname || gData.nickname, // fallback to existing or new
+                        photoURL: updates.photoURL || gData.photoURL
+                    }, { merge: true });
+                    currentBatchSize++;
+
+                    // B. Update memberPreviews array if user is in it
+                    const previews = gData.memberPreviews || [];
+                    const userIdx = previews.findIndex((p: any) => p.uid === uid);
+                    if (userIdx !== -1) {
+                        const newPreviews = [...previews];
+                        if (updates.nickname) newPreviews[userIdx].nickname = updates.nickname;
+                        if (updates.photoURL) newPreviews[userIdx].photoURL = updates.photoURL;
+                        groupUpdates.memberPreviews = newPreviews;
+                    }
+
+                    // C. Update 'lastNoteByNickname' if this user was the last poster
+                    if (updates.nickname && gData.lastNoteByUid === uid) {
+                        groupUpdates.lastNoteByNickname = updates.nickname;
+                    }
+                    if (updates.nickname && gData.lastMessageByUid === uid) {
+                        groupUpdates.lastMessageByNickname = updates.nickname;
+                    }
+
+                    if (Object.keys(groupUpdates).length > 0) {
+                        currentBatch.update(groupRef, groupUpdates);
+                        currentBatchSize++;
+                    }
+                }
+
+                // D. Update recent individual messages
                 const recentMyMessages = await db.collection('groups').doc(gid).collection('messages')
                     .where('senderId', '==', uid)
                     .orderBy('createdAt', 'desc')
