@@ -113,22 +113,29 @@ router.post('/delete-account', authenticate, verifyAppCheck, async (req: Authent
                         const previews = gData.memberPreviews || [];
                         const updatedPreviews = previews.filter((p: MemberPreview) => p.uid !== uid);
 
+                        const updatePayload: Record<string, admin.firestore.FieldValue | string | number | boolean | string[] | object | undefined> = {
+                            members: updatedMembers,
+                            membersCount: admin.firestore.FieldValue.increment(-1),
+                            memberPreviews: updatedPreviews,
+                            [`memberLastActive.${uid}`]: admin.firestore.FieldValue.delete(),
+                            [`memberLastReadAt.${uid}`]: admin.firestore.FieldValue.delete()
+                        };
+
                         if (gData.ownerUserId === uid) {
                             if (updatedMembers.length > 0) {
-                                transaction.update(groupRef, {
-                                    ownerUserId: updatedMembers[0],
-                                    members: updatedMembers,
-                                    membersCount: admin.firestore.FieldValue.increment(-1),
-                                    memberPreviews: updatedPreviews
-                                });
+                                updatePayload.ownerUserId = updatedMembers[0];
+                                transaction.update(groupRef, updatePayload);
                             } else {
                                 transaction.delete(groupRef);
                             }
                         } else {
+                            transaction.update(groupRef, updatePayload);
+                        }
+
+                        // TRUTH: If the user was an active contributor today, remove them to keep Unity honest
+                        if (gData.dailyActivity?.activeMembers?.includes(uid)) {
                             transaction.update(groupRef, {
-                                members: updatedMembers,
-                                membersCount: admin.firestore.FieldValue.increment(-1),
-                                memberPreviews: updatedPreviews
+                                'dailyActivity.activeMembers': admin.firestore.FieldValue.arrayRemove(uid)
                             });
                         }
 
@@ -151,7 +158,12 @@ router.post('/delete-account', authenticate, verifyAppCheck, async (req: Authent
                 }
             }
 
-            // --- STEP 2: Recursive Delete All User Data ---
+            // --- STEP 2: Social Identity Purge (Anonymize Recent Reactions) ---
+            ProfileService.purgeSocialIdentity(uid).catch(err => {
+                console.error('[AccountDelete] Social identity purge failed:', err);
+            });
+
+            // --- STEP 3: Recursive Delete All User Data ---
             // This handles notes, groupStates, letters, private collections etc. efficiently.
             await db.recursiveDelete(userRef);
         }

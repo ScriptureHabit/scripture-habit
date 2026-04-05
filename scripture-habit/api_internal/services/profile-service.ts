@@ -1,5 +1,6 @@
+import { buildNoteSearchTokens } from '../lib/search-utils.js';
 import { db } from '../lib/firebase-admin.js';
-import { MessageDocument } from '../../types/firestore.js';
+import { MessageDocument, ReactionPreview } from '../../types/firestore.js';
 
 export class ProfileService {
     /**
@@ -35,13 +36,15 @@ export class ProfileService {
                     const gData = gSnap.data() || {};
                     const groupUpdates: any = {};
                     
-                    // A. Update Member Subcollection Document (the source of truth)
-                    currentBatch.set(groupRef.collection('members').doc(uid), {
-                        nickname: updates.nickname || gData.nickname, // fallback to existing or new
-                        photoURL: updates.photoURL || gData.photoURL
-                    }, { merge: true });
-                    currentBatchSize++;
+                    const memberUpdate: Record<string, string | undefined> = {};
+                    if (updates.nickname) memberUpdate.nickname = updates.nickname;
+                    if (updates.photoURL) memberUpdate.photoURL = updates.photoURL;
 
+                    if (Object.keys(memberUpdate).length > 0) {
+                        currentBatch.set(groupRef.collection('members').doc(uid), memberUpdate, { merge: true });
+                        currentBatchSize++;
+                    }
+                     
                     // B. Update memberPreviews array if user is in it
                     const previews = gData.memberPreviews || [];
                     const userIdx = previews.findIndex((p: any) => p.uid === uid);
@@ -74,10 +77,28 @@ export class ProfileService {
                     .get();
 
                 for (const mDoc of recentMyMessages.docs) {
+                    const mData = mDoc.data() as MessageDocument;
                     const msgUpdate: Partial<MessageDocument> = {};
                     if (updates.nickname) msgUpdate.senderNickname = updates.nickname;
                     if (updates.photoURL) msgUpdate.senderPhotoURL = updates.photoURL;
                     
+                    // TRUTH: If the user has reacted to this message, update their identity in the previews
+                    if (mData.reactionPreviews) {
+                        const rp = { ...mData.reactionPreviews };
+                        let rpChanged = false;
+                        for (const emoji of Object.keys(rp)) {
+                            const previews = (rp[emoji] || []) as ReactionPreview[];
+                            const myIdx = previews.findIndex(p => p.uid === uid);
+                            if (myIdx !== -1) {
+                                if (updates.nickname) previews[myIdx].nickname = updates.nickname;
+                                if (updates.photoURL) previews[myIdx].photoURL = updates.photoURL;
+                                rp[emoji] = previews;
+                                rpChanged = true;
+                            }
+                        }
+                        if (rpChanged) msgUpdate.reactionPreviews = rp;
+                    }
+
                     currentBatch.update(mDoc.ref, msgUpdate);
                     currentBatchSize++;
                     totalOps++;
@@ -90,12 +111,90 @@ export class ProfileService {
                 }
             }
 
+            // 3. Sync Identity to archived Notes (Search Truth)
+            if (updates.nickname) {
+                const notesSnap = await userRef.collection('notes').get();
+                if (!notesSnap.empty) {
+                    for (const nDoc of notesSnap.docs) {
+                        const nData = nDoc.data();
+                        const updatedTokens = buildNoteSearchTokens({
+                            scripture: nData.scripture || '',
+                            chapter: nData.chapter || '',
+                            comment: nData.comment || '',
+                            title: nData.title || '',
+                            speaker: updates.nickname // Update speaker truth
+                        });
+
+                        currentBatch.update(nDoc.ref, {
+                            speaker: updates.nickname,
+                            searchTokens: updatedTokens
+                        });
+                        currentBatchSize++;
+
+                        if (currentBatchSize >= 450) {
+                            await currentBatch.commit();
+                            currentBatch = db.batch();
+                            currentBatchSize = 0;
+                        }
+                    }
+                }
+            }
+
             if (currentBatchSize > 0) {
                 await currentBatch.commit();
             }
             console.log(`[ProfileSync] Successfully completed sync for user ${uid}. Total updates: ${totalOps}`);
         } catch (error) {
             console.error(`[ProfileSync] Error syncing profile for ${uid}:`, error);
+        }
+    }
+
+    /**
+     * Anonymize user identity in recent reaction previews when account is deleted.
+     */
+    static async purgeSocialIdentity(uid: string) {
+        try {
+            const userSnap = await db.collection('users').doc(uid).get();
+            if (!userSnap.exists) return;
+            const userData = userSnap.data() || {};
+            const groupIds: string[] = userData.groupIds || [];
+
+            for (const gid of groupIds) {
+                const recentMsgs = await db.collection('groups').doc(gid).collection('messages')
+                    .orderBy('createdAt', 'desc')
+                    .limit(50)
+                    .get();
+
+                const batch = db.batch();
+                let hasChanges = false;
+
+                for (const mDoc of recentMsgs.docs) {
+                    const mData = mDoc.data() as MessageDocument;
+                    if (mData.reactionPreviews) {
+                        const rp = { ...mData.reactionPreviews };
+                        let rpChanged = false;
+
+                        for (const emoji of Object.keys(rp)) {
+                            const previews = (rp[emoji] || []) as ReactionPreview[];
+                            const myIdx = previews.findIndex(p => p.uid === uid);
+                            if (myIdx !== -1) {
+                                previews[myIdx].nickname = '...';
+                                previews[myIdx].photoURL = '';
+                                rp[emoji] = previews;
+                                rpChanged = true;
+                            }
+                        }
+
+                        if (rpChanged) {
+                            batch.update(mDoc.ref, { reactionPreviews: rp });
+                            hasChanges = true;
+                        }
+                    }
+                }
+                if (hasChanges) await batch.commit();
+            }
+        } catch (err) {
+            console.error('[ProfileService] Purge failed:', err);
         }
     }
 }

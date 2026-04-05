@@ -9,15 +9,6 @@ import { GroupDocument, UserDocument, MemberPreview as PreviewItem, GroupMemberD
 const router = express.Router();
 
 
-const generateInviteCode = (length = 10) => {
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let code = '';
-    for (let i = 0; i < length; i++) {
-        code += characters.charAt(Math.floor(Math.random() * characters.length));
-    }
-    return code;
-};
-
 // Join Group
 router.post('/join-group', authenticate, requireEmailVerified, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
     const validation = joinGroupSchema.safeParse(req.body);
@@ -182,21 +173,35 @@ router.post('/leave-group', authenticate, verifyAppCheck, async (req: Authentica
 
             if (gData.ownerUserId === uid) {
                 if (updatedMembers.length > 0) {
-                    transaction.update(groupRef, {
+                    const updatePayload: Record<string, any> = {
                         ownerUserId: updatedMembers[0],
                         members: updatedMembers,
                         membersCount: admin.firestore.FieldValue.increment(-1),
                         memberPreviews: updatedPreviews
-                    });
+                    };
+
+                    // TRUTH: If they already contributed to unity today, remove them to keep percentage honest
+                    if (gData.dailyActivity?.activeMembers?.includes(uid)) {
+                        updatePayload['dailyActivity.activeMembers'] = admin.firestore.FieldValue.arrayRemove(uid);
+                    }
+
+                    transaction.update(groupRef, updatePayload);
                 } else {
                     transaction.delete(groupRef);
                 }
             } else {
-                transaction.update(groupRef, {
-                    members: updatedMembers,
-                    membersCount: admin.firestore.FieldValue.increment(-1),
-                    memberPreviews: updatedPreviews
-                });
+                    const updatePayload: Record<string, any> = {
+                        members: updatedMembers,
+                        membersCount: admin.firestore.FieldValue.increment(-1),
+                        memberPreviews: updatedPreviews
+                    };
+
+                    // TRUTH: Keep unity percentage accurate after member removal
+                    if (gData.dailyActivity?.activeMembers?.includes(uid)) {
+                        updatePayload['dailyActivity.activeMembers'] = admin.firestore.FieldValue.arrayRemove(uid);
+                    }
+
+                    transaction.update(groupRef, updatePayload);
             }
 
             // Always delete the member subcollection document
@@ -213,7 +218,7 @@ router.post('/leave-group', authenticate, verifyAppCheck, async (req: Authentica
                 });
             }
 
-            const userUpdate: Record<string, any> = {
+            const userUpdate: Record<string, admin.firestore.FieldValue | string | number | boolean | string[] | object | undefined> = {
                 groupIds: admin.firestore.FieldValue.arrayRemove(groupId)
             };
             
@@ -446,7 +451,7 @@ router.post('/delete-group', authenticate, verifyAppCheck, async (req: Authentic
             if (!userDoc.exists) return;
             const uRef = userDoc.ref;
             const userData = userDoc.data()! as UserDocument;
-            const updatePayload: Record<string, unknown> = {
+            const updatePayload: Record<string, admin.firestore.FieldValue | string | string[] | number | object | undefined> = {
                 groupIds: admin.firestore.FieldValue.arrayRemove(groupId)
             };
 
@@ -496,7 +501,7 @@ router.post('/update-group', authenticate, verifyAppCheck, async (req: Authentic
             return res.status(403).json({ error: 'Forbidden: Only owner can update group' });
         }
 
-        const updatePayload: Record<string, unknown> = {};
+        const updatePayload: Record<string, admin.firestore.FieldValue | string | number | boolean | string[] | object | undefined> = {};
         if (name !== undefined) updatePayload.name = name;
         if (description !== undefined) updatePayload.description = description;
         if (isPublic !== undefined) updatePayload.isPublic = isPublic;
@@ -521,45 +526,60 @@ router.post('/update-group', authenticate, verifyAppCheck, async (req: Authentic
     }
 });
 
+/**
+ * Helper to generate a unique 6-character alphanumeric invite code.
+ */
+async function generateUniqueInviteCode(): Promise<string> {
+    const characters = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // Avoid ambiguous chars O, 0, I, 1
+    const groupsRef = db.collection('groups');
+    let code = '';
+    let isUnique = false;
+    let attempts = 0;
+
+    while (!isUnique && attempts < 10) {
+        code = '';
+        for (let i = 0; i < 6; i++) {
+            code += characters.charAt(Math.floor(Math.random() * characters.length));
+        }
+        const existing = await groupsRef.where('inviteCode', '==', code).get();
+        if (existing.empty) {
+            isUnique = true;
+        }
+        attempts++;
+    }
+    return code;
+}
+
+/**
+ * Generate/Refresh Invite Code
+ */
 router.post('/regenerate-invite-code', authenticate, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
     const validation = regenerateInviteCodeSchema.safeParse(req.body);
-    if (!validation.success) {
-        return res.status(400).json({ error: 'Invalid input', details: validation.error.format() });
-    }
+    if (!validation.success) return res.status(400).json({ error: 'Invalid input', details: validation.error.format() });
 
     const { groupId, expiryDays = 7 } = validation.data;
-    const uid = req.user?.uid;
-    if (!uid) return res.status(401).json({ error: 'Unauthorized' });
+    const uid = req.user!.uid;
 
     try {
         const groupRef = db.collection('groups').doc(groupId);
-        const groupDoc = await groupRef.get();
+        const groupSnap = await groupRef.get();
 
-        if (!groupDoc.exists) return res.status(404).json({ error: 'Group not found' });
-        const groupData = groupDoc.data()! as GroupDocument;
+        if (!groupSnap.exists) return res.status(404).json({ error: 'Group not found' });
+        const gData = groupSnap.data()! as GroupDocument;
+        if (gData.ownerUserId !== uid) return res.status(403).json({ error: 'Only owner can regenerate codes' });
 
-        if (groupData.ownerUserId !== uid) {
-            return res.status(403).json({ error: 'Forbidden: Only owner can regenerate invite code' });
-        }
-
-        const newCode = generateInviteCode(10);
-        const expiresAt = admin.firestore.Timestamp.fromDate(new Date(Date.now() + expiryDays * 24 * 60 * 60 * 1000));
-
-        await groupRef.update({
-            inviteCode: newCode,
-            inviteCodeExpiresAt: expiresAt
+        const inviteCode = await generateUniqueInviteCode();
+        const inviteCodeExpiresAt = admin.firestore.Timestamp.fromDate(new Date(Date.now() + expiryDays * 24 * 60 * 60 * 1000));
+        
+        await groupRef.update({ 
+            inviteCode, 
+            inviteCodeExpiresAt
         });
 
-        res.json({ success: true, inviteCode: newCode });
-    } catch (error) {
-        let message = 'Request failed.';
-        if (error instanceof Error) {
-            message = error.message;
-            console.error('Regenerate invite code failed:', error.message);
-        } else {
-            console.error('Regenerate invite code failed:', error);
-        }
-        res.status(500).json({ error: message });
+        res.status(200).json({ success: true, inviteCode, expiresAt: inviteCodeExpiresAt.toDate().toISOString() });
+    } catch (err) {
+        console.error('Error regenerating invite code:', err);
+        res.status(500).json({ error: 'Failed to generate invite code' });
     }
 });
 
@@ -591,15 +611,11 @@ router.get('/groups', async (_req: Request, res: Response) => {
         });
 
         res.json(groups);
-    } catch (error) {
-        let message = 'Search failed';
+    } catch (error: unknown) {
         if (error instanceof Error) {
-            message = error.message;
             console.error('Error fetching groups:', error.message);
-        } else {
-            console.error('Error fetching groups:', error);
         }
-        res.status(500).json({ error: 'Search failed', details: message });
+        res.status(500).json({ error: 'Search failed' });
     }
 });
 
@@ -620,17 +636,18 @@ router.get('/group-preview/:inviteCode', async (req: Request, res: Response) => 
             }
         }
 
+        const langQuery = (req.query.lang as string) || 'en';
+        const translation = groupData.translations?.[langQuery] || groupData.translations?.['en'];
+
         res.json({
-            name: groupData.name,
-            description: groupData.description,
+            name: translation?.name || groupData.name,
+            description: translation?.description || groupData.description,
             membersCount: (groupData.members || []).length,
             isPrivate: groupData.isPrivate || false
         });
-    } catch (error) {
+    } catch (error: unknown) {
         if (error instanceof Error) {
             console.error('Group preview failed:', error.message);
-        } else {
-            console.error('Group preview failed:', error);
         }
         res.status(500).send('Fetch failed');
     }

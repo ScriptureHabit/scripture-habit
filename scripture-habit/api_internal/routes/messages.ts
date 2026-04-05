@@ -2,8 +2,8 @@ import express, { Response } from 'express';
 import { admin, db } from '../lib/firebase-admin.js';
 import { verifyAppCheck, authenticate, requireEmailVerified, AuthenticatedRequest } from '../lib/middleware.js';
 import { postNoteSchema, postMessageSchema, sendCheerSchema, deleteNoteSchema, deleteMessageSchema } from '../lib/schemas.js';
-import { notifyGroupMembers, sendPushNotification, getUserFcmTokens } from '../lib/notifications.js';
-import { tArray } from '../lib/i18n.js';
+import { notifyGroupMembers, getUserFcmTokens, sendPushNotification, cleanupTokens } from '../lib/notifications.js';
+import { t } from '../lib/i18n.js';
 import { CounterService } from '../services/counter-service.js';
 import { ReactionPreview, GroupDocument, MessageDocument, UserDocument, GroupMemberDocument } from '../../types/firestore.js';
 import { buildNoteSearchTokens } from '../lib/search-utils.js';
@@ -130,8 +130,8 @@ router.post('/post-message', authenticate, verifyAppCheck, async (req: Authentic
             transaction.set(msgRef, msgData);
 
             // Important: Handle message count shards
-            CounterService.increment(transaction, groupRef);
-            const totalMessages = (await CounterService.getCountInTransaction(transaction, groupRef)) + 1;
+            CounterService.increment(transaction, groupRef, 'messageCount');
+            const totalMessages = (await CounterService.getCountInTransaction(transaction, groupRef, 'messageCount')) + 1;
             
             const memberRef = groupRef.collection('members').doc(uid);
             const userData = uSnap.data() as UserDocument;
@@ -140,7 +140,7 @@ router.post('/post-message', authenticate, verifyAppCheck, async (req: Authentic
                 uid,
                 nickname: userData.nickname || 'Member',
                 photoURL: userData.photoURL || '',
-                joinedAt: admin.firestore.Timestamp.now(), // admin.Timestamp is compatible with our interface shape
+                joinedAt: admin.firestore.Timestamp.now(),
                 lastActiveAt: admin.firestore.Timestamp.now(),
                 lastReadAt: admin.firestore.Timestamp.now(),
                 readMessageCount: totalMessages,
@@ -299,37 +299,44 @@ router.post('/delete-note', authenticate, requireEmailVerified, verifyAppCheck, 
                 const msgRef = groupRef.collection('messages').doc(String(messageId));
                 
                 const groupSnap = await transaction.get(groupRef);
-                if (!groupSnap.exists) continue;
+                const msgSnap = await transaction.get(msgRef);
+                if (!groupSnap.exists || !msgSnap.exists) continue;
 
                 const gData = groupSnap.data() as GroupDocument;
                 const updatePayload: admin.firestore.UpdateData<GroupDocument> = {};
 
-                // Use sharded counter for consistency
-                CounterService.increment(transaction, groupRef, -1);
-                
-                if (gData.noteCount !== undefined) {
-                    updatePayload.noteCount = admin.firestore.FieldValue.increment(-1);
+                // TRUTH: High-Water Mark Logic (Sequence Integrity)
+                if (gData.noteCount && gData.noteCount > 0) {
+                    CounterService.increment(transaction, groupRef, 'noteCount', -1);
+                }
+
+                // TRUTH: Revert metadata if this was the last note
+                if (gData.lastNoteByUid === uid) {
+                    const recentNotesSnap = await transaction.get(
+                        db.collection('groups').doc(groupId).collection('messages')
+                            .where('isNote', '==', true)
+                            .orderBy('createdAt', 'desc')
+                            .limit(5)
+                    );
+                    const candidates = recentNotesSnap.docs
+                        .map(d => ({ id: d.id, ...d.data() as MessageDocument }))
+                        .filter(n => n.id !== messageId);
+                    
+                    const next = candidates[0];
+                    if (next) {
+                        updatePayload.lastNoteAt = next.createdAt;
+                        updatePayload.lastNoteByNickname = next.senderNickname || 'Member';
+                        updatePayload.lastNoteByUid = next.senderId;
+                    } else {
+                        updatePayload.lastNoteAt = admin.firestore.FieldValue.delete();
+                        updatePayload.lastNoteByNickname = admin.firestore.FieldValue.delete();
+                        updatePayload.lastNoteByUid = admin.firestore.FieldValue.delete();
+                    }
                 }
 
                 transaction.delete(msgRef);
 
-                // TRUTH: If we deleted the message that was currently recorded as lastNote, 
-                // we should clear the metadata so the dashboard doesn't show a ghost note.
-                if (gData.lastNoteByUid === uid) {
-                    const deletedNoteAtMillis = (noteData.createdAt as admin.firestore.Timestamp)?.toMillis?.() || 0;
-                    const groupLastNoteAtMillis = (gData.lastNoteAt as admin.firestore.Timestamp)?.toMillis?.() || 0;
-
-                    if (deletedNoteAtMillis > 0 && deletedNoteAtMillis === groupLastNoteAtMillis) {
-                        transaction.update(groupRef, {
-                            ...updatePayload,
-                            lastNoteAt: admin.firestore.FieldValue.delete(),
-                            lastNoteByNickname: admin.firestore.FieldValue.delete(),
-                            lastNoteByUid: admin.firestore.FieldValue.delete()
-                        });
-                    } else {
-                        transaction.update(groupRef, updatePayload);
-                    }
-                } else {
+                if (Object.keys(updatePayload).length > 0) {
                     transaction.update(groupRef, updatePayload);
                 }
             }
@@ -350,39 +357,54 @@ router.post('/edit-message', authenticate, verifyAppCheck, async (req: Authentic
 
     try {
         const messageRef = db.collection('groups').doc(groupId).collection('messages').doc(messageId);
-        const mSnap = await messageRef.get();
-        if (!mSnap.exists) return res.status(404).json({ error: 'Message not found' });
-
-        const mData = mSnap.data() as MessageDocument;
-        if (mData.senderId !== uid) return res.status(403).json({ error: 'Forbidden' });
 
         await db.runTransaction(async (transaction) => {
+            const mSnap = await transaction.get(messageRef);
+            if (!mSnap.exists) throw new Error('Message not found');
+
+            const mData = mSnap.data() as MessageDocument;
+            if (mData.senderId !== uid) throw new Error('Forbidden');
+
+            // 1. Update the current message
             transaction.update(messageRef, {
                 text,
                 isEdited: true,
                 editedAt: admin.firestore.FieldValue.serverTimestamp()
             });
 
-            // TRUTH: If this message is a Note, sync the change back to the personal note原本 
-            // AND rebuild search tokens so the index doesn't provide "stale truth".
+            // 2. TRUTH: If it's a shared Note, update ALL groups and the original note
             if (mData.isNote && mData.originalNoteId) {
                 const noteRef = db.collection('users').doc(uid).collection('notes').doc(mData.originalNoteId);
                 const noteSnap = await transaction.get(noteRef);
                 const noteData = noteSnap.data() || {};
                 
+                // Rebuild search tokens for the personal index
+                const updatedTokens = buildNoteSearchTokens({
+                    scripture: noteData.scripture || '',
+                    chapter: noteData.chapter || '',
+                    comment: text,
+                    title: noteData.title || '',
+                    speaker: noteData.speaker || ''
+                });
+
                 transaction.update(noteRef, {
                     text,
                     isEdited: true,
                     editedAt: admin.firestore.FieldValue.serverTimestamp(),
-                    // Rebuild search tokens with new content while preserving other index fields
-                    searchTokens: buildNoteSearchTokens({
-                        scripture: noteData.scripture || '',
-                        chapter: noteData.chapter || '',
-                        comment: text, // The edited text is the 'comment' in the original structure
-                        title: noteData.title || '',
-                        speaker: noteData.speaker || ''
-                    })
+                    searchTokens: updatedTokens
                 });
+
+                // Propagate to ALL shared groups
+                const sharedMsgMap: Record<string, string> = noteData.sharedMessageIds || {};
+                for (const [gid, mid] of Object.entries(sharedMsgMap)) {
+                    if (gid === groupId && mid === messageId) continue; // Already updated above
+                    const otherRef = db.collection('groups').doc(gid).collection('messages').doc(mid);
+                    transaction.update(otherRef, {
+                        text,
+                        isEdited: true,
+                        editedAt: admin.firestore.FieldValue.serverTimestamp()
+                    });
+                }
             }
         });
 
@@ -393,14 +415,13 @@ router.post('/edit-message', authenticate, verifyAppCheck, async (req: Authentic
 });
 
 router.post('/delete-message', authenticate, verifyAppCheck, async (req: AuthenticatedRequest, res: Response, next) => {
-
     const validation = deleteMessageSchema.safeParse(req.body);
     if (!validation.success) return res.status(400).json({ error: 'Invalid input', details: validation.error.format() });
 
     try {
         const { groupId, messageId } = validation.data;
         const uid = req.user!.uid;
-            const groupRef = db.collection('groups').doc(groupId);
+        const groupRef = db.collection('groups').doc(groupId);
 
         await db.runTransaction(async (transaction) => {
             const gSnap = await transaction.get(groupRef);
@@ -410,32 +431,74 @@ router.post('/delete-message', authenticate, verifyAppCheck, async (req: Authent
             const msgRef = groupRef.collection('messages').doc(messageId);
             const msgSnap = await transaction.get(msgRef);
             if (!msgSnap.exists) throw new Error('Message not found');
-
             const msgData = msgSnap.data() as MessageDocument;
             if (msgData.isSystemMessage === true) {
                 throw new Error('Cannot delete system messages');
             }
-            if (msgData.senderId !== uid && gData.ownerUserId !== uid) {
-                throw new Error('Forbidden');
+
+            if (msgData.senderId !== uid) {
+                throw new Error('Forbidden: You can only delete your own messages');
             }
 
-            const updatePayload: admin.firestore.UpdateData<GroupDocument> = {};
-            
-            // Use sharded counter for consistency
-            CounterService.increment(transaction, groupRef, -1);
+            const groupUpdate: admin.firestore.UpdateData<GroupDocument> = {};
 
+            // 1. Counters Integrity (Round 24 Logic)
             if (msgData.isNote) {
-                updatePayload.noteCount = admin.firestore.FieldValue.increment(-1);
-                // TRUTH: Also decrement the user's totalNotes to maintain statistical consistency
+                CounterService.increment(transaction, groupRef, 'noteCount', -1);
                 transaction.update(db.collection('users').doc(uid), {
                     totalNotes: admin.firestore.FieldValue.increment(-1)
                 });
             }
 
-            // --- LOCAL DELETION ONLY ---
+            // 2. Metadata Truth Recovery
+            const isLastMessage = gData.lastMessageByUid === uid;
+            const isLastNote = msgData.isNote && gData.lastNoteByUid === uid;
+
+            if (isLastMessage || isLastNote) {
+                const recentMsgsSnap = await transaction.get(
+                    db.collection('groups').doc(groupId).collection('messages')
+                        .orderBy('createdAt', 'desc')
+                        .limit(5)
+                );
+                const candidates = recentMsgsSnap.docs
+                    .map(d => ({ id: d.id, ...d.data() as MessageDocument }))
+                    .filter(m => m.id !== messageId);
+                
+                if (isLastMessage) {
+                    const nextLastMsg = candidates[0];
+                    if (nextLastMsg) {
+                        groupUpdate.lastMessageAt = nextLastMsg.createdAt;
+                        groupUpdate.lastMessageByNickname = nextLastMsg.senderNickname || 'Someone';
+                        groupUpdate.lastMessageByUid = nextLastMsg.senderId;
+                    } else {
+                        groupUpdate.lastMessageAt = admin.firestore.FieldValue.delete();
+                        groupUpdate.lastMessageByNickname = admin.firestore.FieldValue.delete();
+                        groupUpdate.lastMessageByUid = admin.firestore.FieldValue.delete();
+                    }
+                }
+                
+                if (isLastNote) {
+                    const nextNotes = candidates.filter(c => c.isNote);
+                    const nextLastNote = nextNotes[0];
+                    if (nextLastNote) {
+                        groupUpdate.lastNoteAt = nextLastNote.createdAt;
+                        groupUpdate.lastNoteByNickname = nextLastNote.senderNickname || 'Member';
+                        groupUpdate.lastNoteByUid = nextLastNote.senderId;
+                    } else {
+                        groupUpdate.lastNoteAt = admin.firestore.FieldValue.delete();
+                        groupUpdate.lastNoteByNickname = admin.firestore.FieldValue.delete();
+                        groupUpdate.lastNoteByUid = admin.firestore.FieldValue.delete();
+                    }
+                }
+            }
+
             transaction.delete(msgRef);
 
-            // Cleanup Note Metadata safely if it was a Note
+            if (Object.keys(groupUpdate).length > 0) {
+                transaction.update(groupRef, groupUpdate);
+            }
+
+            // 3. Cleanup Personal Note Metadata safely
             if (msgData.isNote && msgData.originalNoteId) {
                 const noteRef = db.collection('users').doc(uid).collection('notes').doc(msgData.originalNoteId);
                 const noteSnap = await transaction.get(noteRef);
@@ -451,63 +514,12 @@ router.post('/delete-message', authenticate, verifyAppCheck, async (req: Authent
                     });
                 }
             }
-
-            // --- Metadata Regression: Find new latest if we just deleted it ---
-            const currentLastAtMillis = (gData.lastMessageAt as admin.firestore.Timestamp)?.toMillis?.() || 0;
-            const deletedAtMillis = (msgData.createdAt as admin.firestore.Timestamp)?.toMillis?.() || 0;
-
-            if (currentLastAtMillis > 0 && currentLastAtMillis === deletedAtMillis) {
-                // Try to find the *actual* previous message to restore truth in the dashboard
-                const prevMsgSnap = await transaction.get(
-                    groupRef.collection('messages')
-                        .orderBy('createdAt', 'desc')
-                        .limit(2) // Get current (about to be deleted) and the real previous
-                );
-                
-                const realPrev = prevMsgSnap.docs.find(d => d.id !== messageId);
-                if (realPrev) {
-                    const prevData = realPrev.data() as MessageDocument;
-                    updatePayload.lastMessageAt = prevData.createdAt;
-                    updatePayload.lastMessageByNickname = prevData.senderNickname;
-                    updatePayload.lastMessageByUid = prevData.senderId;
-                } else {
-                    // Truly the last message in the group
-                    updatePayload.lastMessageAt = admin.firestore.FieldValue.delete();
-                    updatePayload.lastMessageByNickname = admin.firestore.FieldValue.delete();
-                    updatePayload.lastMessageByUid = admin.firestore.FieldValue.delete();
-                }
-            }
-
-            if (msgData.isNote) {
-                const currentLastNoteAtMillis = (gData.lastNoteAt as admin.firestore.Timestamp)?.toMillis?.() || 0;
-                if (currentLastNoteAtMillis > 0 && currentLastNoteAtMillis === deletedAtMillis) {
-                    const prevNoteSnap = await transaction.get(
-                        groupRef.collection('messages')
-                            .where('isNote', '==', true)
-                            .orderBy('createdAt', 'desc')
-                            .limit(2)
-                    );
-                    const realPrevNote = prevNoteSnap.docs.find(d => d.id !== messageId);
-                    if (realPrevNote) {
-                        const pnData = realPrevNote.data() as MessageDocument;
-                        updatePayload.lastNoteAt = pnData.createdAt;
-                        updatePayload.lastNoteByNickname = pnData.senderNickname;
-                        updatePayload.lastNoteByUid = pnData.senderId;
-                    } else {
-                        updatePayload.lastNoteAt = admin.firestore.FieldValue.delete();
-                        updatePayload.lastNoteByNickname = admin.firestore.FieldValue.delete();
-                        updatePayload.lastNoteByUid = admin.firestore.FieldValue.delete();
-                    }
-                }
-            }
-
-            transaction.update(groupRef, updatePayload);
         });
 
         res.json({ success: true });
     } catch (error: unknown) {
         if (error instanceof Error) {
-            if (error.message === 'Forbidden') return res.status(403).json({ error: 'Forbidden' });
+            if (error.message === 'Forbidden' || error.message.includes('own messages')) return res.status(403).json({ error: error.message });
             if (error.message === 'Group not found' || error.message === 'Message not found') return res.status(404).json({ error: error.message });
         }
         next(error);
@@ -529,7 +541,14 @@ router.post('/send-cheer', authenticate, verifyAppCheck, async (req: Authenticat
         const senderData = senderDoc.data() || {};
         const senderNickname = senderData.nickname || 'Member';
 
-        const today = new Date().toISOString().split('T')[0]; // TRUTH: Constant UTC-based date ID
+        const senderTimeZone = senderData.timeZone || 'UTC';
+        let today;
+        try {
+            today = new Date().toLocaleDateString('sv-SE', { timeZone: senderTimeZone });
+        } catch {
+            today = new Date().toISOString().split('T')[0];
+        }
+
         const cheerDocId = `cheer_${senderUid}_${targetUid}_${today}`;
         const cheerRef = db.collection('cheers').doc(cheerDocId);
 
@@ -555,6 +574,12 @@ router.post('/send-cheer', authenticate, verifyAppCheck, async (req: Authenticat
                 date: today, 
                 timestamp: admin.firestore.FieldValue.serverTimestamp() 
             });
+
+            // TRUTH: Increment the target user's cheer counter so they can see their total social proof
+            transaction.update(db.collection('users').doc(targetUid), {
+                cheersReceived: admin.firestore.FieldValue.increment(1)
+            });
+
             return { alreadySent: false, targetData: targetUserDoc.data() };
         });
 
@@ -566,14 +591,18 @@ router.post('/send-cheer', authenticate, verifyAppCheck, async (req: Authenticat
             if (tokens.length > 0) {
                 const targetLang = (result.targetData?.language as string) || 'en';
                 const lang = (language as string) || targetLang || 'en';
-                const templates = tArray(lang, 'notifications.cheer_options');
-                const body = templates[Math.floor(Math.random() * templates.length)].replace('{nickname}', senderNickname);
-
-                await sendPushNotification(tokens, { 
-                    title: '💪 Cheer received!', 
-                    body, 
-                    data: { type: 'cheer', groupId } 
+                
+                const resultNotification = await sendPushNotification(tokens, {
+                    title: senderNickname,
+                    body: t(lang, 'notifications.cheer_body'),
+                    data: { type: 'cheer', groupId }
                 });
+
+                if (resultNotification.failedTokens.length > 0) {
+                    cleanupTokens(targetUid, resultNotification.failedTokens).catch(err => {
+                        console.error('[NotificationSync] Failed to cleanup cheer tokens:', err);
+                    });
+                }
             }
         } catch (err) { console.error('Cheer notification error:', err); }
 

@@ -166,15 +166,17 @@ export class NoteService {
                 }
 
                 const updatePayload: admin.firestore.UpdateData<admin.firestore.DocumentData> = {
-                    noteCount: admin.firestore.FieldValue.increment(1),
                     lastMessageAt: noteTimestamp,
                     lastNoteAt: noteTimestamp,
                     lastNoteByNickname: userNickname,
                     lastNoteByUid: uid
                 };
 
-                CounterService.increment(transaction, groupRefs[idx]);
-                const totalMessages = (await CounterService.getCountInTransaction(transaction, groupRefs[idx])) + 1;
+                // TRUTH: Shard BOTH messageCount and noteCount to prevent document hotspots
+                CounterService.increment(transaction, groupRefs[idx], 'messageCount');
+                CounterService.increment(transaction, groupRefs[idx], 'noteCount');
+                
+                const totalMessages = (await CounterService.getCountInTransaction(transaction, groupRefs[idx], 'messageCount')) + 1;
 
                 if (gData.dailyActivity?.date !== groupToday) {
                     updatePayload.dailyActivity = { date: groupToday, activeMembers: [uid] };

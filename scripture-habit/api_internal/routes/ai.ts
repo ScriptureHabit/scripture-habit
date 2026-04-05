@@ -259,7 +259,20 @@ router.post('/generate-weekly-recap', authenticate, aiLimiter, verifyAppCheck, a
     try {
         const groupRef = db.collection('groups').doc(groupId);
         const gSnap = await groupRef.get();
-        if (!gSnap.exists || gSnap.data()?.ownerUserId !== uid) return res.status(403).send('Access denied: Owner only');
+        if (!gSnap.exists) return res.status(404).send('Group not found');
+        const gData = gSnap.data() || {};
+        
+        if (gData.ownerUserId !== uid) return res.status(403).send('Access denied: Owner only');
+
+        // TRUTH: Prevent duplicate generations within the same week (6-day cooldown)
+        if (gData.lastRecapGeneratedAt) {
+            const lastDate = (gData.lastRecapGeneratedAt as admin.firestore.Timestamp).toDate();
+            const sixDaysAgo = new Date();
+            sixDaysAgo.setDate(sixDaysAgo.getDate() - 6);
+            if (lastDate > sixDaysAgo) {
+                return res.status(429).json({ error: 'Recap already generated recently. Please wait a week.' });
+            }
+        }
 
         const sevenDaysAgo = new Date();
         sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
@@ -302,13 +315,28 @@ router.post('/generate-weekly-recap', authenticate, aiLimiter, verifyAppCheck, a
  * AI Discussion Starter
  */
 router.post('/generate-discussion-topic', authenticate, aiLimiter, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
-    const { language } = req.body;
+    const { language, groupId } = req.body;
     const baseLang = language?.split('-')[0] || 'en';
     const targetLangName = languageNames[baseLang] || 'English';
 
     try {
+        let context = '';
+        if (groupId) {
+            const recentNotesSnap = await db.collection('groups').doc(groupId).collection('messages')
+                .where('isNote', '==', true)
+                .orderBy('createdAt', 'desc')
+                .limit(3)
+                .get();
+            
+            const noteTexts = recentNotesSnap.docs.map(d => d.data().text).filter(Boolean);
+            if (noteTexts.length > 0) {
+                context = `Recent study context: ${noteTexts.join('\n')}`;
+            }
+        }
+
         const prompt = `You are a facilitator for a scripture study group. 
             Suggest 1 discussion starter question that encourages members to share their experiences and testimonies. 
+            ${context ? `Base it loosely on this recent study: ${context}` : ''}
             
             【STRICT RULES】:
             1. You MUST respond ONLY in ${targetLangName}.
@@ -353,6 +381,19 @@ router.post('/generate-personal-weekly-recap', authenticate, aiLimiter, verifyAp
             1. You MUST respond ONLY in ${targetLangName}.`;
 
         const generatedText = await callGemini(prompt);
+
+        // TRUTH: Persist the personal recap so users can revisit it
+        const recapRef = db.collection('users').doc(uid).collection('recaps').doc();
+        await recapRef.set({
+            text: generatedText,
+            createdAt: admin.firestore.FieldValue.serverTimestamp(),
+            type: 'weekly_encouragement'
+        });
+
+        // Update the timestamp to prevent UI drift
+        await db.collection('users').doc(uid).update({
+            lastRecapGeneratedAt: admin.firestore.FieldValue.serverTimestamp()
+        });
 
         res.json({ success: true, recap: generatedText });
     } catch (err) {

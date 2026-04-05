@@ -2,7 +2,7 @@ import express, { Request, Response, NextFunction } from 'express';
 import { admin, db } from '../lib/firebase-admin.js';
 import { CounterService } from '../services/counter-service.js';
 import { ArchiveService } from '../services/archive-service.js';
-import { getUserFcmTokens, sendPushNotification } from '../lib/notifications.js';
+import { getUserFcmTokens, sendPushNotification, cleanupTokens } from '../lib/notifications.js';
 import { t } from '../lib/i18n.js';
 import { FirestoreTimestamp } from '../../types/firestore.js';
 
@@ -87,7 +87,7 @@ router.all('/check-inactive-users', verifyCronSecret, async (_req: Request, res:
             if (membersSnap.empty) continue;
 
             let groupChanged = false;
-            const groupUpdates: Record<string, any> = {
+            const groupUpdates: Record<string, admin.firestore.FieldValue | string | number | boolean | string[] | object | undefined | null> = {
                 lastInactivityCheckedAt: admin.firestore.FieldValue.serverTimestamp()
             };
             let isGroupDeleted = false;
@@ -200,6 +200,12 @@ router.all('/check-inactive-users', verifyCronSecret, async (_req: Request, res:
                 groupUpdates['membersCount'] = admin.firestore.FieldValue.increment(-finalMembersToRemove.length);
                 groupUpdates['memberPreviews'] = updatedPreviews;
                 
+                // TRUTH: If kicked members contributed to unity today, remove them to keep it honest
+                if (groupData.dailyActivity?.date && groupData.dailyActivity?.activeMembers?.some((id: string) => finalMembersToRemove.includes(id))) {
+                    const remainingActive = (groupData.dailyActivity.activeMembers as string[]).filter(id => !finalMembersToRemove.includes(id));
+                    groupUpdates['dailyActivity.activeMembers'] = remainingActive;
+                }
+
                 finalMembersToRemove.forEach(uid => { 
                     groupUpdates[`memberLastActive.${uid}`] = admin.firestore.FieldValue.delete(); 
                     groupUpdates[`memberLastReadAt.${uid}`] = admin.firestore.FieldValue.delete();
@@ -237,11 +243,15 @@ router.all('/check-inactive-users', verifyCronSecret, async (_req: Request, res:
                             const title = t(lang, 'notifications.kick_title');
                             const body = t(lang, 'notifications.kick_body', { groupName: groupData.name || 'Group' });
 
-                            sendPushNotification(tokens, {
+                            const result = await sendPushNotification(tokens, {
                                 title,
                                 body,
                                 data: { type: 'kick', groupId }
                             });
+
+                            if (result.failedTokens.length > 0) {
+                                await cleanupTokens(uid, result.failedTokens);
+                            }
                         }
                     }).catch(err => console.error(`Failed to send kick notification to ${uid}:`, err));
                 }
@@ -480,19 +490,38 @@ router.all('/aggregate-message-counts', verifyCronSecret, async (_req: Request, 
         });
 
         let updatedCount = 0;
-        for (const groupDoc of allDocs) {
+        
+        // 1. Priority Sync (Fast Shard Hum)
+        for (const groupDoc of activeGroupsSnap.docs) {
             try {
+                await CounterService.aggregateAndSync(groupDoc.ref, 'messageCount');
+                await CounterService.aggregateAndSync(groupDoc.ref, 'noteCount');
+                updatedCount++;
+            } catch (err) {
+                console.error(`Priority aggregation failed for group ${groupDoc.id}:`, err);
+            }
+        }
+
+        // 2. SUPREME TRUTH Sync (Document counting for stale groups)
+        for (const groupDoc of staleGroupsSnap.docs) {
+            // Already handled if in activeGroups
+            if (seenIds.has(groupDoc.id)) continue; 
+            
+            try {
+                // TRUTH: We only recount 'noteCount' (physical). 
+                // 'messageCount' must stay as a sharded aggregate sum to preserve its sequence value.
+                await CounterService.recountAndSync(groupDoc.ref, 'notes', 'noteCount');
                 await CounterService.aggregateAndSync(groupDoc.ref, 'messageCount');
                 updatedCount++;
             } catch (err) {
-                console.error(`Failed to aggregate group ${groupDoc.id}:`, err);
+                console.error(`Maintenance sync failed for group ${groupDoc.id}:`, err);
             }
         }
 
         res.json({
             message: 'Aggregation complete.',
             stats: {
-                groupsProcessed: allDocs.length,
+                totalGroupsHandled: activeGroupsSnap.size + staleGroupsSnap.size,
                 groupsUpdated: updatedCount
             }
         });
@@ -527,10 +556,32 @@ router.all('/sync-user-stats', verifyCronSecret, async (_req: Request, res: Resp
             const actualCount = notesSnap.size;
 
             const userData = userDoc.data();
-            const currentCount = userData.totalNotes || 0;
+            const groupIds: string[] = userData.groupIds || [];
+            const validGroupIds: string[] = [];
+            let profileChanged = false;
 
-            if (actualCount !== currentCount) {
-                batch.update(userDoc.ref, { totalNotes: actualCount });
+            // 1. Verify Note Count Truth
+            if (actualCount !== (userData.totalNotes || 0)) {
+                profileChanged = true;
+            }
+
+            // 2. Verify Membership Truth (Prune Orphans)
+            for (const gid of groupIds) {
+                const memberSnap = await db.collection('groups').doc(gid).collection('members').doc(userDoc.id).get();
+                if (memberSnap.exists) {
+                    validGroupIds.push(gid);
+                } else {
+                    profileChanged = true;
+                    // Individual cleanup for the orphan association
+                    batch.delete(userDoc.ref.collection('groupStates').doc(gid));
+                }
+            }
+
+            if (profileChanged) {
+                batch.update(userDoc.ref, { 
+                    totalNotes: actualCount,
+                    groupIds: validGroupIds
+                });
                 batchOpCount++;
                 updatedCount++;
             }

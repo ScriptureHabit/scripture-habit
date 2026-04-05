@@ -67,6 +67,23 @@ export async function sendPushNotification(tokens: string[], payload: PushPayloa
     return { successCount: totalSuccess, failureCount: totalFailure, failedTokens };
 }
 
+/**
+ * Cleanup failed tokens from a user's account
+ */
+export async function cleanupTokens(uid: string, failedTokens: string[]) {
+    if (!failedTokens.length) return;
+    const batch = db.batch();
+    const userRef = db.collection('users').doc(uid);
+    const privateRef = userRef.collection('private').doc('tokens');
+
+    failedTokens.forEach(token => {
+        batch.update(userRef, { fcmTokens: admin.firestore.FieldValue.arrayRemove(token) });
+        batch.update(privateRef, { fcmTokens: admin.firestore.FieldValue.arrayRemove(token) });
+    });
+
+    await batch.commit();
+}
+
 export async function notifyGroupMembers(groupId: string, senderUid: string, payload: PushPayload, memberIdsOverride: string[] | null = null) {
     try {
         let membersToNotifyIds: string[];

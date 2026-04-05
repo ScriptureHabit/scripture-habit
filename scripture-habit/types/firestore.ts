@@ -56,7 +56,11 @@ export interface GroupDocument {
 
     lastUnityAnnouncementDate?: string;
 
-    
+    dailyActivity?: {
+        date: string; // YYYY-MM-DD
+        activeMembers: string[]; // List of UIDs who posted/chatted today
+    };
+
     // Metadata
     createdAt?: FirestoreTimestamp;
     lastInactivityCheckedAt?: FirestoreTimestamp;
@@ -102,8 +106,9 @@ export interface UserDocument {
     lastInteractionAt?: FirestoreTimestamp;
     language?: string;
     timeZone?: string;
-    totalNotesCount?: number;
+    totalNotes?: number; // Standardized from totalNotesCount to match active logic
     streakCount?: number;
+    cheersReceived?: number;
     lastRecapGeneratedAt?: FirestoreTimestamp;
 }
 
