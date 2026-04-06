@@ -11,9 +11,9 @@ import { auth, appCheck } from '../../firebase';
 // Removed unused Firestore imports
 import { getToken } from "firebase/app-check";
 import { useLanguage } from '../../context/LanguageContext';
-import { parseTimestampToMillis } from '../../utils/timeUtils';
-import { Group } from '../../types/chat';
 import { UserData } from '../../types/user';
+import { Group } from '../../types/chat';
+import { calculateUnityPercentage } from '../../utils/unityUtils';
 
 interface SidebarGroupItemProps {
   group: Group;
@@ -162,8 +162,12 @@ const Sidebar: React.FC<SidebarProps> = ({ selected, setSelected, userGroups = [
     setShowGroupModal(false);
   };
 
+  const getUnityPercentageLocal = (group: Group): number => {
+    return calculateUnityPercentage(group, userData?.timeZone || 'UTC');
+  };
+
   const getGroupStatusEmoji = (group: Group): string => {
-    const percentage = getUnityPercentage(group);
+    const percentage = getUnityPercentageLocal(group);
 
     if (percentage === 100) return '☀️';
     if (percentage >= 66) return '🌕';
@@ -171,40 +175,6 @@ const Sidebar: React.FC<SidebarProps> = ({ selected, setSelected, userGroups = [
     return '🌑';
   };
 
-  const getUnityPercentage = (group: Group): number => {
-    if (!group || !group.members || group.members.length === 0) return 0;
-
-    const effectiveTimeZone = group.timeZone || userData?.timeZone || 'UTC';
-    const todayStr = new Date().toLocaleDateString('sv-SE', { timeZone: effectiveTimeZone });
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const todayTime = today.getTime();
-
-    const uniquePosters = new Set<string>();
-
-    // SOURCE 1: dailyActivity
-    if (group.dailyActivity?.activeMembers && (group.dailyActivity.date === todayStr || group.dailyActivity.date === new Date().toDateString())) {
-      group.dailyActivity.activeMembers.forEach(uid => uniquePosters.add(uid));
-    }
-
-
-
-    // Exclude members who joined today UNLESS they have already posted
-    const memberJoinedAt = group.memberJoinedAt || {};
-    const eligibleMembers = group.members.filter(uid => {
-      if (uniquePosters.has(uid)) return true; // If they posted, they are eligible regardless of join date
-
-      const joinedTs = memberJoinedAt[uid];
-      if (!joinedTs) return true;
-      const joinedTime = parseTimestampToMillis(joinedTs);
-      return joinedTime < todayTime;
-    });
-
-    if (eligibleMembers.length === 0) return 0;
-
-    const eligiblePostersCount = [...uniquePosters].filter(uid => eligibleMembers.includes(uid)).length;
-    return Math.round((eligiblePostersCount / eligibleMembers.length) * 100);
-  };
 
   return (
     <>
@@ -251,7 +221,7 @@ const Sidebar: React.FC<SidebarProps> = ({ selected, setSelected, userGroups = [
                   isActive={selected === 2 && activeGroupId === group.id}
                   onClick={() => handleGroupClick(group.id)}
                   getGroupStatusEmoji={getGroupStatusEmoji}
-                  getUnityPercentage={getUnityPercentage}
+                  getUnityPercentage={getUnityPercentageLocal}
                 />
               ))}
             </div>
@@ -296,7 +266,7 @@ const Sidebar: React.FC<SidebarProps> = ({ selected, setSelected, userGroups = [
                   isActive={activeGroupId === group.id}
                   onClick={() => handleGroupClick(group.id)}
                   getGroupStatusEmoji={getGroupStatusEmoji}
-                  getUnityPercentage={getUnityPercentage}
+                  getUnityPercentage={getUnityPercentageLocal}
                   isModal={true}
                 />
               ))}

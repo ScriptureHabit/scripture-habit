@@ -117,11 +117,12 @@ const useGroupMembersSync = (groupId: string | null, status: ChatStatus, members
  * !! UI Effects (confetti) removed for data/UI separation !!
  */
 const useMessageStreamSync = (groupId: string | null, userData: UserData | null, dispatch: Dispatch<ChatAction>) => {
+  const unsubMessagesRef = useRef<Unsubscribe | null>(null);
+
   useEffect(() => {
     if (!groupId) return;
 
     let isCancelled = false;
-    let unsubscribeMessages: Unsubscribe | null = null;
 
     const startListener = () => {
       if (isCancelled) return;
@@ -129,7 +130,7 @@ const useMessageStreamSync = (groupId: string | null, userData: UserData | null,
       const messagesRef = collection(db, 'groups', groupId, 'messages').withConverter(messageConverter);
       const q = query(messagesRef, orderBy('createdAt', 'desc'), limit(50));
 
-      unsubscribeMessages = onSnapshot(q, (snapshot) => {
+      const unsubscribe = onSnapshot(q, (snapshot) => {
         if (isCancelled) return;
         
         const newIncoming: Message[] = [];
@@ -160,36 +161,41 @@ const useMessageStreamSync = (groupId: string | null, userData: UserData | null,
         if (isCancelled || err.code === 'permission-denied') return;
         console.error("[useMessageStreamSync] Listener error:", err);
       });
+
+      if (isCancelled) {
+        unsubscribe();
+      } else {
+        unsubMessagesRef.current = unsubscribe;
+      }
     };
 
     const initializeMessageStream = async () => {
       if (userData?.uid) {
         // Boost strategy: Attempt hydration, but don't block the UI for more than 800ms.
-        const bundlePromise = (async () => {
-          try {
-            const bundleResponse = await apiClient.get(`/api/bundle/${groupId}`, { 
-              responseType: 'arraybuffer',
-              timeout: 6000 // Total patience for background hydration
-            });
-            if (bundleResponse.data && !isCancelled) {
-              await loadBundle(db, bundleResponse.data);
+        try {
+          const bundlePromise = (async () => {
+            try {
+              const bundleResponse = await apiClient.get(`/api/bundle/${groupId}`, { 
+                responseType: 'arraybuffer',
+                timeout: 6000 
+              });
+              if (bundleResponse.data && !isCancelled) {
+                await loadBundle(db, bundleResponse.data);
+              }
+            } catch (err) {
+              console.warn("[useMessageStreamSync] Bundle boost failed or timed out:", err);
             }
-          } catch (err) {
-            // Bundle failure is non-critical for the chat functionality
-            console.warn("[useMessageStreamSync] Bundle boost failed or timed out:", err);
-          }
-        })();
+          })();
 
-        // Race the hydration boost against a hard 800ms cutoff
-        await Promise.race([
-          bundlePromise,
-          new Promise(resolve => setTimeout(resolve, 800))
-        ]);
+          await Promise.race([
+            bundlePromise,
+            new Promise(resolve => setTimeout(resolve, 800))
+          ]);
+        } catch (e) {
+          // Promise.race or bundle failure is non-critical
+        }
       }
       
-      // Start the real-time listener. 
-      // If the bundle finished in time, this starts instantly from cache.
-      // If the bundle was slow, this starts from network immediately after the 800ms cutoff.
       if (!isCancelled) startListener();
     };
 
@@ -197,7 +203,10 @@ const useMessageStreamSync = (groupId: string | null, userData: UserData | null,
 
     return () => {
       isCancelled = true;
-      if (unsubscribeMessages) unsubscribeMessages();
+      if (unsubMessagesRef.current) {
+        unsubMessagesRef.current();
+        unsubMessagesRef.current = null;
+      }
     };
   }, [groupId, userData?.uid, dispatch]);
 };

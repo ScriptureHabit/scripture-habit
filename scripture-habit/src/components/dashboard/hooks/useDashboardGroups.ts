@@ -35,14 +35,14 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
             where('members', 'array-contains', userData.uid)
         );
 
-        const unsubGroups = onSnapshot(groupsQuery, { includeMetadataChanges: true }, (snapshot) => {
+        // Remove includeMetadataChanges to avoid excessive internal SDK state updates and B815 errors
+        const unsubGroups = onSnapshot(groupsQuery, (snapshot) => {
             const groupsMap: Record<string, Group> = {};
             snapshot.docs.forEach(docSnap => {
                 groupsMap[docSnap.id] = { id: docSnap.id, ...docSnap.data() } as Group;
             });
 
             setRawUserGroups(prev => {
-                // Maintain original order and preserve member-specific status
                 return groupIds
                     .map(id => {
                         const newGroup = groupsMap[id];
@@ -62,14 +62,18 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
         unsubscribers.push(unsubGroups);
 
         // 2. Specialized Listeners for Member specific data in each group
+        // We use a Map to track these listeners if the effect re-runs, 
+        // though for now simple unsubscription on cleanup is fine.
         groupIds.forEach(gid => {
             const memberRef = doc(db, 'groups', gid, 'members', userData.uid).withConverter(groupMemberConverter);
             const unsubMember = onSnapshot(memberRef, (memberSnap) => {
                 if (memberSnap.exists()) {
                     const mData = memberSnap.data();
-                    setRawUserGroups(prev => prev.map(g => 
-                        g.id === gid ? { ...g, myMemberStatus: mData } : g
-                    ));
+                    setRawUserGroups(prev => {
+                        const existing = prev.find(g => g.id === gid);
+                        if (!existing || existing.myMemberStatus === mData) return prev;
+                        return prev.map(g => g.id === gid ? { ...g, myMemberStatus: mData } : g);
+                    });
                 }
             }, (err) => {
                 if (err.code !== 'permission-denied') console.log(`Member fetch error ${gid}:`, err);
@@ -80,7 +84,7 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
         return () => {
             unsubscribers.forEach(unsub => unsub());
         };
-    }, [userData?.uid, groupIdsKey, activeGroupId === null]);
+    }, [userData?.uid, groupIdsKey]); // Removed activeGroupId from dependencies to prevent churn when simply switching views
 
 
 

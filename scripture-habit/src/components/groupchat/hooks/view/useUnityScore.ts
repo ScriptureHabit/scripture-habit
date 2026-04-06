@@ -5,8 +5,9 @@ import { getToken } from 'firebase/app-check';
 import { safeStorage } from '../../../../utils/storage';
 import confetti from 'canvas-confetti';
 import { Message, GroupData } from '../../../../types/chat';
-import { parseTimestampToMillis } from '../../../../utils/timeUtils';
 import { UserData } from '../../../../types/user';
+
+import { calculateUnityPercentage } from '../../../../utils/unityUtils';
 
 export const useUnityScore = (
   groupId: string,
@@ -15,43 +16,8 @@ export const useUnityScore = (
   messages: Message[]
 ): number => {
   const unityPercentage = useMemo<number>(() => {
-    if (!groupData?.members || groupData.members.length === 0 || groupData?._groupId !== groupId) return 0;
-
-    const effectiveTimeZone = groupData?.timeZone || userData?.timeZone || 'UTC';
-    const todayStr = new Date().toLocaleDateString('sv-SE', { timeZone: effectiveTimeZone });
-
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const todayTime = today.getTime();
-
-    const uniquePosters = new Set<string>();
-
-    if (groupData.dailyActivity?.activeMembers && (groupData.dailyActivity.date === todayStr || groupData.dailyActivity.date === new Date().toDateString())) {
-      groupData.dailyActivity.activeMembers.forEach(uid => uniquePosters.add(uid));
-    }
-
-
-    messages.forEach(msg => {
-      const msgTime = parseTimestampToMillis(msg.createdAt);
-      if (msgTime >= todayTime && msg.senderId !== 'system' && !msg.isSystemMessage && msg.isNote) {
-        uniquePosters.add(msg.senderId!);
-      }
-    });
-
-    // Exclude members who joined today UNLESS they have already posted
-    const memberJoinedAt = groupData.memberJoinedAt || {};
-    const eligibleMembers = groupData.members.filter(uid => {
-      if (uniquePosters.has(uid)) return true; // Posted today -> count
-      const joinedTs = memberJoinedAt[uid];
-      if (!joinedTs) return true;
-      const joinedTime = parseTimestampToMillis(joinedTs);
-      return joinedTime < todayTime;
-    });
-
-    if (eligibleMembers.length === 0) return 0;
-    const eligiblePostersCount = [...uniquePosters].filter(uid => eligibleMembers.includes(uid)).length;
-    const score = Math.round((eligiblePostersCount / eligibleMembers.length) * 100);
-    return Math.min(100, Math.max(0, score));
+    if (!groupId || !groupData || groupData.id !== groupId) return 0;
+    return calculateUnityPercentage(groupData, userData?.timeZone, messages);
   }, [messages, groupData, groupId, userData?.timeZone]);
 
   useEffect(() => {
