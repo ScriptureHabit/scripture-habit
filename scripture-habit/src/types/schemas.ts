@@ -21,7 +21,7 @@ export const FirebaseTimestampSchema = z.union([
 export const ReactionPreviewSchema = z.object({
   uid: z.string(),
   nickname: z.string().optional(),
-  photoURL: z.string().optional(),
+  photoURL: z.string().nullable().optional(),
 });
 
 export const ReactionSchema = z.object({
@@ -81,14 +81,14 @@ export const UserProfileBriefSchema = z.object({
   id: z.string(),
   uid: z.string().optional(),
   nickname: z.string().optional(),
-  photoURL: z.string().optional(),
+  photoURL: z.string().nullable().optional(),
   lastActiveAt: FirebaseTimestampSchema.optional(),
 }).passthrough();
 
 export const GroupMemberSchema = z.object({
   uid: z.string(),
   nickname: z.string().optional(),
-  photoURL: z.string().optional(),
+  photoURL: z.string().nullable().optional(),
   joinedAt: FirebaseTimestampSchema.optional(),
 }).passthrough();
 
@@ -96,5 +96,5 @@ export const UserDataSchema = z.object({
   uid: z.string(),
   nickname: z.string().optional(),
   email: z.string().optional(),
-  photoURL: z.string().optional(),
+  photoURL: z.string().nullable().optional(),
 }).passthrough();
