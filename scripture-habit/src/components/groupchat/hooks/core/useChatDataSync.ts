@@ -1,5 +1,5 @@
 import { useReducer, useEffect, useRef, useCallback, Dispatch } from 'react';
-import { collection, query, orderBy, onSnapshot, doc, getDocs, limit, startAfter, loadBundle, Unsubscribe, FirestoreError } from 'firebase/firestore';
+import { collection, query, orderBy, onSnapshot, doc, getDocs, limit, startAfter, loadBundle, Unsubscribe } from 'firebase/firestore';
 import * as Sentry from "@sentry/react";
 import { Message, GroupData, MembersMap, UserProfileBrief } from '../../../../types/chat';
 import { db } from '../../../../firebase';
@@ -49,31 +49,30 @@ const useGroupMembersSync = (groupId: string | null, status: ChatStatus, members
   useEffect(() => {
     if (!groupId) return;
 
-    let isCancelled = false;
-    const fetchMembers = async () => {
-      try {
-        const membersRef = collection(db, 'groups', groupId, 'members').withConverter(groupMemberConverter);
-        const snapshot = await getDocs(membersRef);
-        const initialMembers: MembersMap = {};
-        
-        snapshot.forEach((docSnap) => {
-          const data = docSnap.data();
-          initialMembers[docSnap.id] = UserProfileBriefSchema.parse({ ...data, id: data.uid }) as UserProfileBrief;
-          attemptedUidsRef.current.add(docSnap.id); // Mark existing members as attempted
-        });
+    // TRUTH: Real-time listener for members subcollection to capture read status changes
+    const membersRef = collection(db, 'groups', groupId, 'members').withConverter(groupMemberConverter);
+    
+    const unsubscribe = onSnapshot(membersRef, (snapshot) => {
+      const updatedMembers: MembersMap = {};
+      
+      snapshot.docChanges().forEach((change) => {
+        if (change.type === 'added' || change.type === 'modified') {
+          const data = change.doc.data();
+          updatedMembers[change.doc.id] = UserProfileBriefSchema.parse({ ...data, id: data.uid }) as UserProfileBrief;
+          attemptedUidsRef.current.add(change.doc.id);
+        }
+      });
 
-        if (!isCancelled && Object.keys(initialMembers).length > 0) {
-          dispatch({ type: 'UPDATE_MEMBERS', newMembers: initialMembers });
-        }
-      } catch (err) {
-        if (!isCancelled && (err as FirestoreError).code !== 'permission-denied') {
-          console.error("[useGroupMembersSync] Members fetch error:", err);
-        }
+      if (Object.keys(updatedMembers).length > 0) {
+        dispatch({ type: 'UPDATE_MEMBERS', newMembers: updatedMembers });
       }
-    };
-    fetchMembers();
+    }, (err) => {
+      if (err.code !== 'permission-denied') {
+        console.error("[useGroupMembersSync] Members sync error:", err);
+      }
+    });
 
-    return () => { isCancelled = true; };
+    return () => unsubscribe();
   }, [groupId, dispatch]);
 
   useEffect(() => {
