@@ -26,7 +26,7 @@ export const ReactionPreviewSchema = z.object({
 
 export const ReactionSchema = z.object({
   userId: z.string(),
-  nickname: z.string(),
+  nickname: z.string().nullable().optional(),
   emoji: z.string(),
 });
 
@@ -56,9 +56,9 @@ export const MessageSchema = z.object({
     z.string(),
     z.object({
       id: z.string(),
-      senderNickname: z.string(),
-      text: z.string(),
-      isNote: z.boolean(),
+      senderNickname: z.string().nullable().optional(),
+      text: z.string().nullable().optional(),
+      isNote: z.boolean().nullable().optional(),
     }),
   ]).nullable().optional(),
   reactions: z.record(z.string(), z.array(z.string())).optional(),
