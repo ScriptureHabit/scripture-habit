@@ -19,6 +19,7 @@ interface GroupChatProps {
   onInputFocusChange?: (focused: boolean) => void;
   isExternalModalOpen?: boolean;
   initialShowInviteModal?: boolean;
+  onUnityUpdate?: (percentage: number) => void;
 }
 
 const GroupChatContent: FC = () => {

@@ -97,6 +97,7 @@ export interface Group extends Omit<SharedGroupDocument, 'id' | 'inviteCodeExpir
     lastActiveAt?: FirebaseTimestamp;
     readMessageCount?: number;
   };
+  unityPercentageOverride?: number;
 }
 
 export interface GroupData extends Group {

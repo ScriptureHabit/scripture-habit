@@ -1,4 +1,4 @@
-import { FC, ReactNode, useMemo, useCallback } from 'react';
+import { FC, ReactNode, useMemo, useCallback, useEffect } from 'react';
 import { Capacitor } from '@capacitor/core';
 import { useLanguage } from '../../context/LanguageContext';
 import { ChatProvider, ChatDataContextType, ChatInteractionContextType, ChatUIContextType, ChatActionContextType, ActiveModalType } from './ChatContext';
@@ -36,11 +36,12 @@ interface GroupChatProviderProps {
   isExternalModalOpen?: boolean;
   initialShowInviteModal?: boolean;
   onInputFocusChange?: (focused: boolean) => void;
+  onUnityUpdate?: (percentage: number) => void;
   children: ReactNode;
 }
 
 const GroupChatProvider: FC<GroupChatProviderProps> = ({ 
-  groupId, userData, userGroups = [], onBack, onGroupSelect, initialShowInviteModal = false, onInputFocusChange, children 
+  groupId, userData, userGroups = [], onBack, onGroupSelect, initialShowInviteModal = false, onInputFocusChange, onUnityUpdate, children 
 }) => {
   const { language, t, tArray, isLoaded } = useLanguage();
   const API_BASE = Capacitor.isNativePlatform() ? 'https://scripturehabit.app' : '';
@@ -59,6 +60,10 @@ const GroupChatProvider: FC<GroupChatProviderProps> = ({
   } = useGroupChatUI(groupId, groupData, language || 'en', API_BASE);
 
   const unityPercentage = useUnityScore(groupId, userData, groupData, messages);
+
+  useEffect(() => {
+    if (onUnityUpdate) onUnityUpdate(unityPercentage);
+  }, [unityPercentage, onUnityUpdate, groupId]);
   
   const { 
     isLeaving, isDeleting, handleLeaveGroup, handleDeleteGroup, togglePublicStatus, handleUpdateGroupName

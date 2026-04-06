@@ -163,6 +163,9 @@ const Sidebar: React.FC<SidebarProps> = ({ selected, setSelected, userGroups = [
   };
 
   const getUnityPercentageLocal = (group: Group): number => {
+    if (group.unityPercentageOverride !== undefined) {
+      return group.unityPercentageOverride;
+    }
     return calculateUnityPercentage(group, userData?.timeZone || 'UTC');
   };
 

@@ -55,6 +55,7 @@ const Dashboard: FC = () => {
   const [isInputFocused, setIsInputFocused] = useState<boolean>(false);
   const [showEditProfileModal, setShowEditProfileModal] = useState<boolean>(false);
   const [newNickname, setNewNickname] = useState<string>('');
+  const [unityOverrides, setUnityOverrides] = useState<Record<string, number>>({});
 
   // 1. Core Sync Hook
   const syncState = useDashboardSync();
@@ -129,6 +130,12 @@ const Dashboard: FC = () => {
     }
   };
 
+  const handleUnityUpdate = (percentage: number) => {
+    if (activeGroupId && unityOverrides[activeGroupId] !== percentage) {
+      setUnityOverrides(prev => ({ ...prev, [activeGroupId]: percentage }));
+    }
+  };
+
   const handleUpdateProfile = async () => {
     if (!newNickname.trim() || !user || !userData) return;
     const success = await updateNickname(newNickname);
@@ -181,7 +188,15 @@ const Dashboard: FC = () => {
 
   if (!userData) return null;
 
-  const hasGroups = userGroups.length > 0;
+  // Enrich userGroups with real-time unity scores from active sessions
+  const enrichedUserGroups = userGroups.map(group => {
+    if (unityOverrides[group.id] !== undefined) {
+      return { ...group, unityPercentageOverride: unityOverrides[group.id] };
+    }
+    return group;
+  });
+
+  const hasGroups = enrichedUserGroups.length > 0;
 
   return (
     <>
@@ -189,7 +204,7 @@ const Dashboard: FC = () => {
         <Sidebar
           selected={selectedView}
           setSelected={setSelectedView}
-          userGroups={userGroups}
+          userGroups={enrichedUserGroups}
           activeGroupId={activeGroupId}
           setActiveGroupId={setActiveGroupId}
           hideMobile={isInputFocused || isJoiningInvite}
@@ -342,14 +357,14 @@ const Dashboard: FC = () => {
             </div>
           )}
 
-          {selectedView === 1 && <MyNotes userData={userData} isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} userGroups={userGroups} />}
-          {selectedView === 2 && activeGroupId && <GroupChat groupId={activeGroupId} userData={userData} userGroups={userGroups} onInputFocusChange={setIsInputFocused} isExternalModalOpen={isModalOpen} onBack={() => setSelectedView(0)} onGroupSelect={(gid) => setActiveGroupId(gid)} initialShowInviteModal={!!location.state?.showInviteModal} />}
+          {selectedView === 1 && <MyNotes userData={userData} isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} userGroups={enrichedUserGroups} />}
+          {selectedView === 2 && activeGroupId && <GroupChat groupId={activeGroupId} userData={userData} userGroups={enrichedUserGroups} onInputFocusChange={setIsInputFocused} isExternalModalOpen={isModalOpen} onBack={() => setSelectedView(0)} onGroupSelect={(gid) => setActiveGroupId(gid)} initialShowInviteModal={!!location.state?.showInviteModal} onUnityUpdate={handleUnityUpdate} />}
           {selectedView === 3 && <Profile userData={userData} stats={{ streak: userData?.streakCount || 0, totalNotes: userData?.totalNotes || 0, daysStudied: userData?.daysStudiedCount || 0 }} />}
           {selectedView === 4 && <Donate userData={userData} />}
         </div>
       </div>
 
-      <NewNote isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} userData={userData} userGroups={userGroups} />
+      <NewNote isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} userData={userData} userGroups={enrichedUserGroups} />
       <WelcomeStoryModal isOpen={showWelcomeStory} onClose={handleCloseWelcomeStory} userData={userData} />
       <NotificationPromptModal isOpen={showNotifPrompt} onConfirm={handleEnableNotifications} onClose={handleCloseNotifPrompt} t={t} />
 
