@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { doc, onSnapshot, collection, FirestoreError, query, where } from 'firebase/firestore';
 import { db } from '../../../firebase';
 import { UserData } from '../../../types/user';
@@ -90,14 +90,17 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
 
     // Fetch user group states (read counts)
     useEffect(() => {
-        if (!userData?.uid) return;
+        if (!userData?.uid) {
+            setGroupStates({});
+            setLoadingGroupStates(false);
+            return;
+        }
 
-        setLoadingGroupStates(true);
         const groupStatesRef = collection(db, 'users', userData.uid, 'groupStates');
         const unsubscribe = onSnapshot(groupStatesRef, (snapshot) => {
             const states: Record<string, { readMessageCount?: number }> = {};
-            snapshot.forEach(doc => {
-                states[doc.id] = doc.data();
+            snapshot.forEach(docSnap => {
+                states[docSnap.id] = docSnap.data();
             });
             setGroupStates(states);
             setLoadingGroupStates(false);
@@ -111,11 +114,14 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
         return () => unsubscribe();
     }, [userData?.uid]);
 
-    // Combine raw groups with unread counts
-    useEffect(() => {
-        const combinedGroups = rawUserGroups.map(group => {
+    // Combine raw groups with unread counts using useMemo for atomic updates
+    const combinedGroups = useMemo(() => {
+        return rawUserGroups.map(group => {
             const state = groupStates[group.id];
-            const readCount = loadingGroupStates ? (group.messageCount || 0) : (state?.readMessageCount || 0);
+            // TRUTH: If we have a state, use its readCount. 
+            // If No state yet (loading or never read), assume 0 read.
+            // DO NOT override with messageCount during loading as it hides unreads.
+            const readCount = state?.readMessageCount || 0;
             const totalCount = group.messageCount || 0;
             const unreadCount = Math.max(0, totalCount - readCount);
 
@@ -123,9 +129,13 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
                 ...group,
                 unreadCount
             };
-        });
-        setUserGroups(combinedGroups as Group[]);
-    }, [rawUserGroups, groupStates, loadingGroupStates]);
+        }) as Group[];
+    }, [rawUserGroups, groupStates]);
+
+    // Expose combined groups
+    useEffect(() => {
+        setUserGroups(combinedGroups);
+    }, [combinedGroups]);
 
     // Update activeGroupId if it needs to be updated based on memberships
     useEffect(() => {
