@@ -91,4 +91,40 @@ export class CounterService {
         await batch.commit();
         return actualTotal;
     }
+
+    /**
+     * TRUTH RECOVERY: Recount messages INCLUDING archived buckets.
+     * This prevents counter resets to 100 after archiving old messages.
+     */
+    static async recountMessageCountWithArchive(groupRef: admin.firestore.DocumentReference) {
+        // 1. Count current individual messages
+        const msgSnapshot = await groupRef.collection('messages').count().get();
+        const individualCount = msgSnapshot.data().count;
+
+        // 2. Sum counts from all archived buckets
+        const bucketSnapshot = await groupRef.collection('message_buckets').get();
+        let archivedCount = 0;
+        bucketSnapshot.forEach(doc => {
+            archivedCount += (doc.data().count || 0);
+        });
+
+        const trueTotal = individualCount + archivedCount;
+
+        // 3. Reset shards
+        const batch = db.batch();
+        for (let i = 0; i < this.NUM_SHARDS; i++) {
+            batch.set(groupRef.collection('shards').doc(i.toString()), {
+                'messageCount': i === 0 ? trueTotal : 0
+            }, { merge: true });
+        }
+
+        batch.update(groupRef, {
+            'messageCount': trueTotal,
+            'messageCount_syncedAt': admin.firestore.FieldValue.serverTimestamp(),
+            'messageCount_recountedAt': admin.firestore.FieldValue.serverTimestamp()
+        });
+
+        await batch.commit();
+        return trueTotal;
+    }
 }

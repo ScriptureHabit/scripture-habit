@@ -86,9 +86,9 @@ router.post('/join-group', authenticate, requireEmailVerified, verifyAppCheck, a
                 lastMessageByUid: uid
             });
 
-            // TRUTH: Use the main document's count for initial read state.
-            // Shards will catch up soon, but this keeps join performance high.
-            const totalMessages = gData.messageCount || 0;
+            // TRUTH: Always use the shard-aggregate truth for the read status during join.
+            // Documentation field 'messageCount' might be several minutes behind actual activity.
+            const totalMessages = await CounterService.getCountInTransaction(transaction, groupDoc.ref, 'messageCount');
 
 
             // New: Per-user member document in subcollection
@@ -271,9 +271,9 @@ router.post('/update-read-status', authenticate, verifyAppCheck, async (req: Aut
             return res.status(403).json({ error: 'Forbidden' });
         }
 
-        // TRUTH: Proactively aggregate shards during the manual "Mark as Read" action.
-        // This ensures the doc-level counter (Source of truth for dashboard) is fresh.
-        const totalMessages = await CounterService.aggregateAndSync(groupRef, 'messageCount');
+        // TRUTH RECOVERY: Use the archive-aware recount method instead of simple aggregation.
+        // This heals the user's view if the counter was previously corrupted or reset by archive deletes.
+        const totalMessages = await CounterService.recountMessageCountWithArchive(groupRef);
 
 
         const batch = db.batch();

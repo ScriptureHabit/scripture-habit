@@ -433,10 +433,9 @@ router.all('/aggregate-message-counts', verifyCronSecret, async (_req: Request, 
             if (seenIds.has(groupDoc.id)) continue;
 
             try {
-                // TRUTH: We only recount 'noteCount' (physical). 
-                // 'messageCount' must stay as a sharded aggregate sum to preserve its sequence value.
+                // TRUTH: Physical recount for notes, and archive-aware recount for messages.
                 await CounterService.recountAndSync(groupDoc.ref, 'notes', 'noteCount');
-                await CounterService.aggregateAndSync(groupDoc.ref, 'messageCount');
+                await CounterService.recountMessageCountWithArchive(groupDoc.ref);
                 updatedCount++;
             } catch (err) {
                 console.error(`Maintenance sync failed for group ${groupDoc.id}:`, err);

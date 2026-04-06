@@ -1,10 +1,10 @@
 import { useReducer, useEffect, useRef, useCallback, Dispatch } from 'react';
-import { collection, query, orderBy, onSnapshot, doc, getDocs, limit, startAfter, where, documentId, loadBundle, Unsubscribe, FirestoreError } from 'firebase/firestore';
+import { collection, query, orderBy, onSnapshot, doc, getDocs, limit, startAfter, loadBundle, Unsubscribe, FirestoreError } from 'firebase/firestore';
 import * as Sentry from "@sentry/react";
 import { Message, GroupData, MembersMap, UserProfileBrief } from '../../../../types/chat';
 import { db } from '../../../../firebase';
 import { UserData } from '../../../../types/user';
-import { groupConverter, messageConverter, userConverter, groupMemberConverter } from '../../../../utils/firestoreConverters';
+import { groupConverter, messageConverter, groupMemberConverter } from '../../../../utils/firestoreConverters';
 import { UserProfileBriefSchema, GroupSchema } from '../../../../types/schemas';
 
 import apiClient from '../../../../utils/apiClient';
@@ -81,48 +81,29 @@ const useGroupMembersSync = (groupId: string | null, status: ChatStatus, members
 
     let isCancelled = false;
     const fetchUnknownProfiles = async () => {
-      const uidsFromReactions = new Set<string>();
+      const newMembers: MembersMap = {};
+
       messages.forEach(msg => {
-        if (msg.reactions) {
-          Object.values(msg.reactions).forEach(uids => {
-            if (Array.isArray(uids)) {
-              uids.forEach(uid => uidsFromReactions.add(uid));
+        if (msg.reactionPreviews) {
+          Object.values(msg.reactionPreviews).forEach(previews => {
+            if (Array.isArray(previews)) {
+              previews.forEach(p => {
+                if (p.uid && !membersMap[p.uid] && !attemptedUidsRef.current.has(p.uid)) {
+                  newMembers[p.uid] = {
+                    id: p.uid,
+                    nickname: p.nickname || 'Unknown',
+                    photoURL: p.photoURL || ''
+                  } as UserProfileBrief;
+                  attemptedUidsRef.current.add(p.uid);
+                }
+              });
             }
           });
         }
       });
 
-      const allUids = Array.from(new Set([...(members || []), ...Array.from(uidsFromReactions)]));
-      const missingUids = allUids.filter(uid => !membersMap[uid] && !attemptedUidsRef.current.has(uid));
-      
-      if (missingUids.length === 0) return;
-
-      // Mark as attempted immediately to prevent duplicate triggers during the async fetch
-      missingUids.forEach(uid => attemptedUidsRef.current.add(uid));
-
-      const batches = [];
-      for (let i = 0; i < missingUids.length; i += 30) {
-        batches.push(missingUids.slice(i, i + 30));
-      }
-
-      const newMembers: MembersMap = {};
-      try {
-        await Promise.all(batches.map(async (batch) => {
-          const q = query(collection(db, 'users').withConverter(userConverter), where(documentId(), 'in', batch));
-          const snaps = await getDocs(q);
-          snaps.forEach(s => {
-            const data = s.data();
-            newMembers[s.id] = UserProfileBriefSchema.parse({ id: s.id, ...data }) as UserProfileBrief;
-          });
-        }));
-
-        if (!isCancelled && Object.keys(newMembers).length > 0) {
-          dispatch({ type: 'UPDATE_MEMBERS', newMembers });
-        }
-      } catch (err) {
-        // Log warning but don't clear attemptedUidsRef so we don't keep retrying failed IDs this session.
-        // This ensures truth in performance by not hammering the network for bad UIDs.
-        console.warn("[useGroupMembersSync] One or more reactive profiles could not be fetched:", err);
+      if (!isCancelled && Object.keys(newMembers).length > 0) {
+        dispatch({ type: 'UPDATE_MEMBERS', newMembers });
       }
     };
 

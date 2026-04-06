@@ -130,12 +130,14 @@ router.post('/post-message', authenticate, verifyAppCheck, async (req: Authentic
 
             transaction.set(msgRef, msgData);
 
-            // Important: Handle message count shards (No-read increment)
+            // Important: Increment message count shards (No-read increment)
             CounterService.increment(transaction, groupRef, 'messageCount');
-            
-            // TRUTH: Approximate read status for the poster.
-            // Using +1 on doc-level is safe only if we aggregate frequently (every ~5 msgs).
-            const approximateTotal = (gData.messageCount || 0) + 1;
+
+            // TRUTH: Always fetch the actual aggregate sum from shards within the transaction
+            // instead of relying on the potentially stale document-level counter.
+            // This represents the count BEFORE the current message + this new one.
+            const currentTotal = await CounterService.getCountInTransaction(transaction, groupRef, 'messageCount');
+            const approximateTotal = currentTotal + 1;
             
             const memberRef = groupRef.collection('members').doc(uid);
             const userData = uSnap.data() as UserDocument;
