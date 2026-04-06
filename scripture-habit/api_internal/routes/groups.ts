@@ -22,38 +22,44 @@ router.post('/join-group', authenticate, requireEmailVerified, verifyAppCheck, a
 
     try {
         const result = await db.runTransaction(async (transaction) => {
-            let groupDoc;
+            let groupRef;
             if (groupId) {
-                const groupRef = db.collection('groups').doc(groupId);
-                groupDoc = await transaction.get(groupRef);
-                if (!groupDoc.exists) throw new Error('Group not found.');
+                groupRef = db.collection('groups').doc(groupId);
             } else if (inviteCode) {
                 const groupQuery = db.collection('groups').where('inviteCode', '==', inviteCode).limit(1);
-                const groupQuerySnap = await transaction.get(groupQuery);
-                if (groupQuerySnap.empty) throw new Error('Invalid invite code.');
-                groupDoc = groupQuerySnap.docs[0];
+                const querySnap = await transaction.get(groupQuery);
+                if (querySnap.empty) throw new Error('Invalid invite code.');
+                groupRef = querySnap.docs[0].ref;
             } else {
                 throw new Error('Group ID or Invite Code is required.');
             }
 
+            const userRef = db.collection('users').doc(uid);
+
+            // TRUTH: Execute all READS before any WRITES
+            const [groupDoc, userDoc, totalMessages] = await Promise.all([
+                transaction.get(groupRef),
+                transaction.get(userRef),
+                CounterService.getCountInTransaction(transaction, groupRef, 'messageCount')
+            ]);
+
+            if (!groupDoc.exists) throw new Error('Group not found.');
+            if (!userDoc.exists) throw new Error('User not found.');
+
             const gid = groupDoc.id;
             const gData = groupDoc.data()! as GroupDocument;
-            if (!gData) throw new Error('Group data unavailable.');
+            const userData = userDoc.data()! as UserDocument;
 
+            // 1. Validation Phase
             if (gData.isPrivate === true || gData.isPublic === false) {
                 if (inviteCode) {
                     if (gData.inviteCode !== inviteCode) {
                         throw new Error('Invalid or expired invite code.');
                     }
                     if (gData.inviteCodeExpiresAt) {
-                        const ts = gData.inviteCodeExpiresAt as unknown as { toDate?: () => Date };
-                        const expiresAt = typeof ts.toDate === 'function'
-                            ? ts.toDate()
-                            : new Date(gData.inviteCodeExpiresAt as string | number | Date);
-
-                        
+                        const ts = gData.inviteCodeExpiresAt as any;
+                        const expiresAt = typeof ts.toDate === 'function' ? ts.toDate() : new Date(ts);
                         if (expiresAt < new Date()) {
-
                             throw new Error('This invite link has expired. Please ask the group owner for a new one.');
                         }
                     }
@@ -66,32 +72,11 @@ router.post('/join-group', authenticate, requireEmailVerified, verifyAppCheck, a
             if (members.includes(uid)) throw new Error('You are already a member of this group.');
             if (members.length >= (gData.maxMembers || 500)) throw new Error('This group is full.');
 
-            const userRef = db.collection('users').doc(uid);
-            const userDoc = await transaction.get(userRef);
-            if (!userDoc.exists) throw new Error('User not found.');
-            const userData = userDoc.data()! as UserDocument;
-            if (!userData) throw new Error('User data unavailable.');
-
+            // 2. Prepare Data
             const newMemberPreview = { uid, nickname: userData.nickname || 'Member' };
             const existingPreviews = (gData.memberPreviews || []) as PreviewItem[];
             const updatedPreviews = [newMemberPreview, ...existingPreviews.filter((p) => p.uid !== uid)].slice(0, 15);
 
-            transaction.update(groupDoc.ref, {
-                members: admin.firestore.FieldValue.arrayUnion(uid),
-                membersCount: admin.firestore.FieldValue.increment(1),
-                memberPreviews: updatedPreviews,
-                // TRUTH: A join IS activity. Dashboard should reflect this.
-                lastMessageAt: admin.firestore.FieldValue.serverTimestamp(),
-                lastMessageByNickname: userData.nickname || 'Member',
-                lastMessageByUid: uid
-            });
-
-            // TRUTH: Always use the shard-aggregate truth for the read status during join.
-            // Documentation field 'messageCount' might be several minutes behind actual activity.
-            const totalMessages = await CounterService.getCountInTransaction(transaction, groupDoc.ref, 'messageCount');
-
-
-            // New: Per-user member document in subcollection
             const memberData: GroupMemberDocument = {
                 uid,
                 nickname: userData.nickname || 'Member',
@@ -102,10 +87,20 @@ router.post('/join-group', authenticate, requireEmailVerified, verifyAppCheck, a
                 lastReadAt: admin.firestore.FieldValue.serverTimestamp() as unknown as FirestoreTimestamp,
                 readMessageCount: totalMessages
             };
-            const memberRef = groupDoc.ref.collection('members').doc(uid);
+
+            // 3. START WRITES (Execution Phase)
+            transaction.update(groupRef, {
+                members: admin.firestore.FieldValue.arrayUnion(uid),
+                membersCount: admin.firestore.FieldValue.increment(1),
+                memberPreviews: updatedPreviews,
+                lastMessageAt: admin.firestore.FieldValue.serverTimestamp(),
+                lastMessageByNickname: userData.nickname || 'Member',
+                lastMessageByUid: uid
+            });
+
+            const memberRef = groupRef.collection('members').doc(uid);
             transaction.set(memberRef, memberData);
 
-            // Also update the groupStates subcollection for the User (Source of truth for dashboard lists)
             const userGS = userRef.collection('groupStates').doc(gid);
             transaction.set(userGS, {
                 readMessageCount: totalMessages,
@@ -118,7 +113,7 @@ router.post('/join-group', authenticate, requireEmailVerified, verifyAppCheck, a
                 groupId: gid
             });
 
-            const msgRef = groupDoc.ref.collection('messages').doc();
+            const msgRef = groupRef.collection('messages').doc();
             transaction.set(msgRef, {
                 text: `✨ **${userData.nickname || 'Someone'}** joined the group! Welcome!`,
                 createdAt: admin.firestore.FieldValue.serverTimestamp(),

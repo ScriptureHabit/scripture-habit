@@ -109,13 +109,19 @@ router.post('/post-message', authenticate, verifyAppCheck, async (req: Authentic
         const result = await db.runTransaction(async (transaction) => {
             const userRef = db.collection('users').doc(uid);
             const groupRef = db.collection('groups').doc(groupId);
-            const uSnap = await transaction.get(userRef);
-            const gSnap = await transaction.get(groupRef);
+            
+            // TRUTH: Execute all READS before any WRITES (Firestore Transaction Rule)
+            const [uSnap, gSnap, currentTotal] = await Promise.all([
+                transaction.get(userRef),
+                transaction.get(groupRef),
+                CounterService.getCountInTransaction(transaction, groupRef, 'messageCount')
+            ]);
 
             if (!uSnap.exists || !gSnap.exists) throw new Error('Not found.');
             const gData = gSnap.data()!;
             if (!(gData.members || []).includes(uid)) throw new Error('Forbidden.');
 
+            const approximateTotal = currentTotal + 1;
             const msgRef = groupRef.collection('messages').doc();
             const msgData = {
                 text,
@@ -128,16 +134,11 @@ router.post('/post-message', authenticate, verifyAppCheck, async (req: Authentic
                 ...(optimisticId ? { optimisticId } : {})
             };
 
+            // START WRITES
             transaction.set(msgRef, msgData);
 
             // Important: Increment message count shards (No-read increment)
             CounterService.increment(transaction, groupRef, 'messageCount');
-
-            // TRUTH: Always fetch the actual aggregate sum from shards within the transaction
-            // instead of relying on the potentially stale document-level counter.
-            // This represents the count BEFORE the current message + this new one.
-            const currentTotal = await CounterService.getCountInTransaction(transaction, groupRef, 'messageCount');
-            const approximateTotal = currentTotal + 1;
             
             const memberRef = groupRef.collection('members').doc(uid);
             const userData = uSnap.data() as UserDocument;
