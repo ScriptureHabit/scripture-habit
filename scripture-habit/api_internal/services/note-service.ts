@@ -136,9 +136,15 @@ export class NoteService {
 
                     let groupToday;
                     try {
-                        groupToday = now.toLocaleDateString('sv-SE', { timeZone: gData.timeZone || timeZone });
+                        groupToday = new Intl.DateTimeFormat('sv-SE', { 
+                            timeZone: gData.timeZone || timeZone,
+                            year: 'numeric', month: '2-digit', day: '2-digit'
+                        }).format(now);
                     } catch {
-                        groupToday = now.toLocaleDateString('sv-SE', { timeZone: 'UTC' });
+                        groupToday = new Intl.DateTimeFormat('sv-SE', { 
+                            timeZone: 'UTC',
+                            year: 'numeric', month: '2-digit', day: '2-digit'
+                        }).format(now);
                     }
 
                     const groupUpdate: Record<string, any> = {

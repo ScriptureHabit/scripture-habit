@@ -24,10 +24,16 @@ export const calculateUnityPercentage = (
   // We use this as the primary boundary for Unity.
   let todayStr: string;
   try {
-      todayStr = now.toLocaleDateString('sv-SE', { timeZone: groupTimeZone });
+      todayStr = new Intl.DateTimeFormat('sv-SE', { 
+          timeZone: groupTimeZone,
+          year: 'numeric', month: '2-digit', day: '2-digit'
+      }).format(now);
   } catch (e) {
       console.warn(`[UnityUtils] Invalid timezone ${groupTimeZone}, falling back to UTC`);
-      todayStr = now.toLocaleDateString('sv-SE', { timeZone: 'UTC' });
+      todayStr = new Intl.DateTimeFormat('sv-SE', { 
+          timeZone: 'UTC',
+          year: 'numeric', month: '2-digit', day: '2-digit'
+      }).format(now);
   }
   
   const uniquePosters = new Set<string>();
