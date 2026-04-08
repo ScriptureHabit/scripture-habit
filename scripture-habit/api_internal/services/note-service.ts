@@ -71,8 +71,10 @@ export class NoteService {
                 groupsToPostTo = groupsToPostTo.slice(0, 20);
             }
 
-            const groupRefs = groupsToPostTo.map(gid => db.collection('groups').doc(gid));
+            const allGroupIds = [...new Set([...userGroupIds, ...groupsToPostTo])].filter(gid => gid && gid.length > 0);
+            const groupRefs = allGroupIds.map(gid => db.collection('groups').doc(gid));
             const groupDocs = groupRefs.length > 0 ? await transaction.getAll(...groupRefs) : [];
+            const groupDocsMap = new Map(groupDocs.map(doc => [doc.id, doc]));
 
             // 3. Calculate Streak
             const now = new Date();
@@ -92,12 +94,10 @@ export class NoteService {
             };
 
             // TRUTH: If editing an existing note (retry/idempotency), do NOT increment totalNotes.
-            // This prevents duplicate counting and SDK crashes from 'undefined' values.
             if (!existingNoteSnap.exists) {
                 userUpdate.totalNotes = admin.firestore.FieldValue.increment(1);
             }
 
-            // Cleanup legacy streak field if present
             if (userData.streak !== undefined) {
                 userUpdate.streak = admin.firestore.FieldValue.delete();
             }
@@ -110,7 +110,6 @@ export class NoteService {
                     userUpdate.highestStreak = newStreak;
                 }
                 
-                // Update timezone if missing or default
                 if (clientTimeZone && (!userData.timeZone || userData.timeZone === 'UTC')) {
                     userUpdate.timeZone = clientTimeZone;
                 }
@@ -122,16 +121,14 @@ export class NoteService {
             const sharedMessageIds: Record<string, string> = { ...existingSharedIds };
 
             // 4. Post to groups (Carefully handle idempotency per group)
-            for (let i = 0; i < groupDocs.length; i++) {
-                const gDoc = groupDocs[i];
-                if (!gDoc.exists) continue;
+            for (const gid of groupsToPostTo) {
+                const gDoc = groupDocsMap.get(gid);
+                if (!gDoc || !gDoc.exists) continue;
                 
-                const gid = gDoc.id;
                 const gData = gDoc.data()!;
                 const members: string[] = gData.members || [];
                 if (!members.includes(uid)) continue;
 
-                // TRUTH: If already shared with this group, don't duplicate.
                 if (existingSharedIds[gid]) continue;
 
                 const msgRef = db.collection('groups').doc(gid).collection('messages').doc();
@@ -159,20 +156,19 @@ export class NoteService {
                     groupToday = now.toLocaleDateString('sv-SE', { timeZone: 'UTC' });
                 }
 
+                // TRUTH: Deterministic counting. Calculate the exact new total count for consistent read status.
+                const newTotal = (Number(gData.messageCount) || 0) + 1;
+
                 const updatePayload: admin.firestore.UpdateData<admin.firestore.DocumentData> = {
                     lastMessageAt: admin.firestore.FieldValue.serverTimestamp(),
                     lastNoteAt: admin.firestore.FieldValue.serverTimestamp(),
                     lastNoteByNickname: userNickname,
                     lastNoteByUid: uid,
-                    [`memberLastActive.${uid}`]: admin.firestore.FieldValue.serverTimestamp()
+                    [`memberLastActive.${uid}`]: admin.firestore.FieldValue.serverTimestamp(),
+                    [`memberLastReadAt.${uid}`]: admin.firestore.FieldValue.serverTimestamp(),
+                    messageCount: admin.firestore.FieldValue.increment(1),
+                    noteCount: admin.firestore.FieldValue.increment(1)
                 };
-
-                // TRUTH: Shard increment without waiting for expensive shard sum
-                CounterService.increment(transaction, gDoc.ref, 'messageCount');
-                CounterService.increment(transaction, gDoc.ref, 'noteCount');
-                
-                // Use approximate total for read count to avoid transaction contention
-                const approxTotal = (gData.messageCount || 0) + 1;
 
                 if (gData.dailyActivity?.date !== groupToday) {
                     updatePayload.dailyActivity = { date: groupToday, activeMembers: [uid] };
@@ -182,23 +178,14 @@ export class NoteService {
                 
                 transaction.update(gDoc.ref, updatePayload);
 
-                // Update member subcollection for activity tracking (Scalable)
-                const memberRef = gDoc.ref.collection('members').doc(uid);
-                transaction.set(memberRef, {
-                    lastActiveAt: admin.firestore.FieldValue.serverTimestamp(),
-                    lastReadAt: admin.firestore.FieldValue.serverTimestamp(),
-                    lastNoteAt: admin.firestore.FieldValue.serverTimestamp(),
-                    readMessageCount: approxTotal
-                }, { merge: true });
-                
+                // Update member state for read-sync
                 const userGS = userRef.collection('groupStates').doc(gid);
                 transaction.set(userGS, { 
-                    readMessageCount: approxTotal, 
+                    readMessageCount: newTotal, 
                     lastReadAt: admin.firestore.FieldValue.serverTimestamp(),
                     lastActiveAt: admin.firestore.FieldValue.serverTimestamp()
                 }, { merge: true });
 
-                // Fill notification map
                 members.forEach(mUid => {
                     if (mUid !== uid && !userToGroupMap.has(mUid)) {
                         userToGroupMap.set(mUid, gid);
@@ -228,26 +215,24 @@ export class NoteService {
                     nickname: safeNickname, 
                     streak: newStreak 
                 });
-                
                 const botName = t(language || 'en', 'notifications.bot_name');
                 
                 [...new Set(userGroupIds)].forEach(gid => {
-                    const announceGrpRef = db.collection('groups').doc(gid);
-                    const announceRef = announceGrpRef.collection('messages').doc();
+                    const gDoc = groupDocsMap.get(gid);
+                    if (!gDoc || !gDoc.exists) return; // SAFE: Document is already in the transaction context
+
+                    const announceRef = gDoc.ref.collection('messages').doc();
                     transaction.set(announceRef, {
                         text: announceMsg,
                         senderId: 'system',
                         senderNickname: botName,
-                        // TRUTH: Offset by 1 second to ensure it follows the note logically in chat lists
                         createdAt: admin.firestore.Timestamp.fromMillis(now.getTime() + 1000),
                         isSystemMessage: true,
                         messageType: 'streakAnnouncement',
                         messageData: { nickname: userData.nickname, userId: uid, streakCount: newStreak }
                     });
                     
-                    // CRITICAL: Increment message count for the announcement too!
-                    CounterService.increment(transaction, announceGrpRef, 'messageCount');
-                    transaction.update(announceGrpRef, {
+                    transaction.update(gDoc.ref, {
                         messageCount: admin.firestore.FieldValue.increment(1),
                         lastMessageAt: admin.firestore.Timestamp.fromMillis(now.getTime() + 1000),
                         lastMessageByNickname: botName,
@@ -275,18 +260,6 @@ export class NoteService {
                 language: language || 'en',
                 userToGroupMapEntries: result._internalNotifications.userToGroupMapEntries
             });
-
-            // 8. Probabilistic Aggregation (Sync shards back to main doc every ~10 posts)
-            if (Math.random() < 0.1) {
-                Promise.all(result._internalNotifications.userToGroupMapEntries.map(async (entry) => {
-                    const gid = entry[1];
-                    try {
-                        await CounterService.aggregateAndSync(db.collection('groups').doc(gid), 'messageCount');
-                    } catch (e) {
-                        console.warn(`[NoteService] Aggregation failed for group ${gid}:`, e);
-                    }
-                })).catch(err => console.error("[NoteService] Aggregation background task error:", err));
-            }
         }
 
         const { _internalNotifications, ...publicResult } = result;
