@@ -158,6 +158,7 @@ router.post('/post-message', authenticate, verifyAppCheck, async (req: Authentic
             transaction.set(memberRef, memberData, { merge: true });
 
             const updatePayload: Record<string, admin.firestore.FieldValue | string | string[] | number | object | undefined> = {
+                messageCount: admin.firestore.FieldValue.increment(1),
                 lastMessageAt: admin.firestore.FieldValue.serverTimestamp(),
                 lastMessageByNickname: userData.nickname || 'Member',
                 lastMessageByUid: uid,
@@ -185,13 +186,8 @@ router.post('/post-message', authenticate, verifyAppCheck, async (req: Authentic
             }, result.members);
         } catch (err) { console.error('Chat notification error:', err); }
 
-        // Probabilistic Aggregation (Sync shards back to main doc every ~5 messages)
-        // TRUTH: Increased frequency (0.2) to ensure read statuses don't drift too far for active users.
-        if (Math.random() < 0.2) {
-            CounterService.aggregateAndSync(db.collection('groups').doc(groupId), 'messageCount').catch(err => {
-                console.warn(`[API] Aggregation failed for group ${groupId}:`, err);
-            });
-        }
+        // TRUTH: Shards are still updated for deep consistency, but the main doc is incremented directly above.
+        // This ensures the dashboard sees the new messageCount instantly.
 
         res.json({ success: true, messageId: result.messageId });
 
