@@ -254,6 +254,7 @@ const useUserReadStateSync = (
     const isVisible = document.visibilityState === 'visible';
 
     if ((totalMsgs > (userReadCount || 0) || needsHealing || (lastForcedSyncGidRef.current !== groupId && totalMsgs > 0)) && isWindowFocused && isVisible) {
+      console.log(`📡 [READ-SYNC] Marking as read: group=${groupId}, count=${totalMsgs}, tab=${window.location.href}`);
       updateReadStatus(groupId, totalMsgs);
       lastForcedSyncGidRef.current = groupId;
     }
