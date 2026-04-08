@@ -20,7 +20,6 @@ const InstallPrompt: FC = () => {
     useEffect(() => {
         const handleBeforeInstallPrompt = (e: Event) => {
             const installEvent = e as BeforeInstallPromptEvent;
-            console.log('[PWA] beforeinstallprompt event fired');
             // Prevent Chrome 76 and later from automatically showing the prompt
             installEvent.preventDefault();
             // Stash the event so it can be triggered later.
@@ -32,7 +31,6 @@ const InstallPrompt: FC = () => {
 
         // Check if the event was already captured globally (in main.tsx)
         if (window.deferredPWAPrompt) {
-            console.log('[PWA] Using global deferred prompt');
             handleBeforeInstallPrompt(window.deferredPWAPrompt);
             // DO NOT set to null so Profile.tsx can also access it
         }
@@ -44,8 +42,6 @@ const InstallPrompt: FC = () => {
         const isAndroid = /Android/i.test(ua);
 
         const isStandalone = window.matchMedia('(display-mode: standalone)').matches || (navigator as NavigatorWithStandalone).standalone;
-
-        console.log('[PWA] Detection:', { isIOS, isAndroid, isStandalone, ua });
 
         if (!isStandalone) {
             if (isIOS) setPlatform('ios');
@@ -93,8 +89,6 @@ const InstallPrompt: FC = () => {
         // Check for active modals on dashboard
         const isModalActive = document.body.getAttribute('data-dashboard-modal-open') === 'true';
 
-        console.log('[PWA] Status:', { base, isDashboard, hasDismissed, isStandalone, platform, isModalActive });
-
         if (!isDashboard || hasDismissed || isStandalone || isModalActive) {
             setShowPrompt(false);
             return;
@@ -112,7 +106,6 @@ const InstallPrompt: FC = () => {
                 const finalModalCheck = document.body.getAttribute('data-dashboard-modal-open') === 'true';
                 if (!finalModalCheck) {
                   setShowPrompt(true);
-                  console.log('[PWA] Showing iOS Prompt');
                 }
             }, 4000);
             return () => clearTimeout(timer);

@@ -239,7 +239,11 @@ const useUserReadStateSync = (
     // TRUTH: Use the highest of metadata count or listener count to avoid stale overwrites
     const totalMsgs = Math.max(groupData.messageCount || 0, actualMessageCount);
     
-    if (totalMsgs > (userReadCount || 0) || (lastForcedSyncGidRef.current !== groupId && totalMsgs > 0)) {
+    // HEALING LOGIC: If total < read, it means data is corrupted and unread badges are broken.
+    // We force a sync to recover the true total from the archive service.
+    const needsHealing = totalMsgs < (userReadCount || 0);
+
+    if (totalMsgs > (userReadCount || 0) || needsHealing || (lastForcedSyncGidRef.current !== groupId && totalMsgs > 0)) {
       updateReadStatus(groupId, totalMsgs);
       lastForcedSyncGidRef.current = groupId;
     }

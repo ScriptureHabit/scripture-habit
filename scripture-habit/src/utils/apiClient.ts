@@ -38,6 +38,7 @@ apiClient.interceptors.request.use(
                 if (path.length > 1 && path.endsWith('/')) {
                     config.url = path.slice(0, -1) + (query ? '?' + query : '');
                 }
+
             }
 
             // 1. Inject Firebase ID Token

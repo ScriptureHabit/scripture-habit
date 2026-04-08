@@ -224,6 +224,7 @@
   background: linear-gradient(90deg, #ff919d, var(--pink));
   border-radius: 10px;
   transition: width 0.8s ease;
+  width: var(--progress-percentage, 0%);
 }
 
 

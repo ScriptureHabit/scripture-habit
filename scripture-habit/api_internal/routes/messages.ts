@@ -166,6 +166,17 @@ router.post('/post-message', authenticate, verifyAppCheck, async (req: Authentic
                 [`memberLastActive.${uid}`]: admin.firestore.FieldValue.serverTimestamp()
             };
 
+            // SELF-HEALING: If the group's cached messageCount is smaller than the true approximate total (which includes archives), 
+            // we must force-update it to the true total to prevent 'negative unread' issues in the UI.
+            const trueTotalCount = (gData.messageCount || 0) + 1;
+            const needsHealing = trueTotalCount < approximateTotal;
+            
+            if (needsHealing) {
+                updatePayload.messageCount = approximateTotal;
+            } else {
+                updatePayload.messageCount = admin.firestore.FieldValue.increment(1);
+            }
+
             // TRUTH: Direct update to the group doc for real-time dashboard sync
             transaction.update(groupRef, updatePayload);
             

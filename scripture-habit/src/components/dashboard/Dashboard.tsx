@@ -270,7 +270,7 @@ const Dashboard: FC = () => {
                 <div className="mini-progress-bar">
                   <div
                     className="mini-progress-fill mini-progress-fill-transition"
-                    style={{ width: `${((userData.daysStudiedCount || 0) % 7) / 7 * 100}%` }}
+                    style={{ '--progress-percentage': `${((userData.daysStudiedCount || 0) % 7) / 7 * 100}%` } as React.CSSProperties}
                   ></div>
                 </div>
               </div>

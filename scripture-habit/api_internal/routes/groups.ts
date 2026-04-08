@@ -290,6 +290,7 @@ router.post('/update-read-status', authenticate, verifyAppCheck, async (req: Aut
             readMessageCount: totalMessages
         }, { merge: true });
 
+        console.log(`[API] Updating read status: uid=${uid}, groupId=${groupId}, readCount=${totalMessages}`);
         await batch.commit();
 
         res.json({ success: true });

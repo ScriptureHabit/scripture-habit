@@ -102,6 +102,7 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
             snapshot.forEach(docSnap => {
                 states[docSnap.id] = docSnap.data();
             });
+            console.log("[DashboardGroups] GroupStates Live Sync:", states);
             setGroupStates(states);
             setLoadingGroupStates(false);
         }, (err: FirestoreError) => {
@@ -116,7 +117,8 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
 
     // Combine raw groups with unread counts using useMemo for atomic updates
     const combinedGroups = useMemo(() => {
-        return rawUserGroups.map(group => {
+        const counts: Record<string, any> = {};
+        const result = rawUserGroups.map(group => {
             const state = groupStates[group.id];
             
             // TRUTH: Ensure we are working with numbers to prevent calculation failure
@@ -124,11 +126,26 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
             const totalCount = Number(group.messageCount || 0);
             const unreadCount = Math.max(0, totalCount - readCount);
 
+            counts[group.id] = { 
+                total: totalCount, 
+                read: readCount, 
+                unread: unreadCount, 
+                name: group.name,
+                hasState: !!state,
+                stateData: state // Log the raw state data for each group
+            };
+
             return {
                 ...group,
                 unreadCount
             };
         }) as Group[];
+
+        if (Object.keys(counts).length > 0) {
+            console.log("[DashboardGroups] Sync Detail:", counts);
+        }
+        
+        return result;
     }, [rawUserGroups, groupStates]);
 
     // Expose combined groups

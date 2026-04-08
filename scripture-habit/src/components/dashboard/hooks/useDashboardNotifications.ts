@@ -70,7 +70,10 @@ export const useDashboardNotifications = (
 
         userGroups.forEach(group => {
             // Only suppress notifications if we are CURRENTLY looking at the chat for this group
-            if (group.id === activeGroupId && selectedView === 2) return;
+            if (group.id === activeGroupId && selectedView === 2) {
+                console.log(`[DashboardNotifications] Skipping active group chat: ${group.name} (${group.id})`);
+                return;
+            }
 
             const noteTime = parseTimestampToMillis(group.lastNoteAt);
             const messageTime = parseTimestampToMillis(group.lastMessageAt);
@@ -93,7 +96,10 @@ export const useDashboardNotifications = (
             }
 
             if (currentTime > 0 && currentUid !== userData.uid) {
-                if (currentTime >= todayTime && (group.unreadCount || 0) > 0) {
+                const isNewToday = currentTime >= todayTime;
+                const hasUnreads = (group.unreadCount || 0) > 0;
+                
+                if (isNewToday && hasUnreads) {
                     if (!mostRecent || currentTime > mostRecent.time) {
                         mostRecent = {
                             type: currentType as 'note' | 'message',
@@ -104,10 +110,13 @@ export const useDashboardNotifications = (
                             totalMessages: group.messageCount || 0
                         };
                     }
-                }
+                } 
             }
         });
 
+        if (mostRecent) {
+            console.log("[DashboardNotifications] Set Most Recent Notification:", mostRecent);
+        }
         setLatestNoteNotification(mostRecent);
     }, [userGroups, userData?.uid, loadingGroupStates, activeGroupId]);
 

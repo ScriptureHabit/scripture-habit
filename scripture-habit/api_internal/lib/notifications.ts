@@ -100,7 +100,12 @@ export async function notifyGroupMembers(groupId: string, senderUid: string, pay
             membersToNotifyIds = ((groupData.members as string[]) || []).filter(uid => uid !== senderUid);
         }
 
-        if (membersToNotifyIds.length === 0) return;
+        if (membersToNotifyIds.length === 0) {
+            console.log(`[PushService] Group ${groupId}: No other members to notify (sender=${senderUid}).`);
+            return;
+        }
+
+        console.log(`[PushService] Group ${groupId}: Attempting to notify ${membersToNotifyIds.length} members: ${membersToNotifyIds.join(', ')}`);
 
         const memberRefs = membersToNotifyIds.map(uid => db.collection('users').doc(uid));
         const privateRefs = membersToNotifyIds.map(uid => db.collection('users').doc(uid).collection('private').doc('tokens'));
@@ -138,8 +143,11 @@ export async function notifyGroupMembers(groupId: string, senderUid: string, pay
             }
         });
 
+        console.log(`[PushService] Group ${groupId}: Collected ${tokens.length} total tokens from ${membersToNotifyIds.length} members.`);
+
         if (tokens.length > 0) {
             const result = await sendPushNotification(tokens, payload);
+            console.log(`[PushService] FCMSend Success: ${result.successCount}, Failure: ${result.failureCount}. Tokens: ${tokens.map(t => t.substring(0, 10) + '...').join(', ')}`);
             if (result.failedTokens && result.failedTokens.length > 0) {
                 const batch = db.batch();
                 result.failedTokens.forEach(t => {
