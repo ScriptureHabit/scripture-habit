@@ -114,6 +114,10 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
             const totalCount = Number(group.messageCount || 0);
             const unreadCount = Math.max(0, totalCount - readCount);
 
+            if (unreadCount > 0 || totalCount > 0) {
+                console.log(`[useDashboardGroups] Group ${group.name}: unread=${unreadCount} (total=${totalCount}, read=${readCount})`);
+            }
+
             return {
                 ...group,
                 unreadCount
