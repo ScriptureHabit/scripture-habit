@@ -14,31 +14,33 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
     const groupIds: string[] = userData?.groupIds || (userData?.groupId ? [userData.groupId] : []);
     const groupIdsKey = JSON.stringify([...groupIds].sort());
 
+    // Fetch user groups details
     useEffect(() => {
         if (!userData?.uid || groupIds.length === 0) {
-            console.log("[useDashboardGroups] No UID or GroupIDs:", { uid: userData?.uid, groupIds });
             setRawUserGroups([]);
             return;
         }
 
-        console.log("[useDashboardGroups] Starting Listeners for groupIDs:", groupIds);
+        if (!activeGroupId && groupIds.length > 0) {
+            setActiveGroupId(groupIds[0]);
+        }
 
         const unsubscribers: (() => void)[] = [];
 
+        // 1. Unified Listener for all Groups
         const groupsQuery = query(
             collection(db, 'groups'),
             where('members', 'array-contains', userData.uid)
         );
 
         const unsubGroups = onSnapshot(groupsQuery, (snapshot) => {
-            console.log(`[useDashboardGroups] Groups Snapshot received: ${snapshot.size} docs`);
             const groupsMap: Record<string, Group> = {};
             snapshot.docs.forEach(docSnap => {
                 groupsMap[docSnap.id] = { id: docSnap.id, ...docSnap.data() } as Group;
             });
 
             setRawUserGroups(prev => {
-                const updated = groupIds
+                return groupIds
                     .map(id => {
                         const newGroup = groupsMap[id];
                         if (!newGroup) return prev.find(g => g.id === id);
@@ -50,14 +52,14 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
                         } as Group;
                     })
                     .filter(Boolean) as Group[];
-                console.log("[useDashboardGroups] Updating rawUserGroups, count:", updated.length);
-                return updated;
             });
         }, (err) => {
-            console.error("[useDashboardGroups] Groups Query Error:", err);
+            // Log but don't crash, might be transient during auth state changes
+            if (err.code !== 'permission-denied') console.error("Dashboard groups query listener error:", err);
         });
         unsubscribers.push(unsubGroups);
 
+        // 2. Individual member status listeners
         groupIds.forEach(gid => {
             const memberRef = doc(db, 'groups', gid, 'members', userData.uid).withConverter(groupMemberConverter);
             const unsubMember = onSnapshot(memberRef, (memberSnap) => {
@@ -69,6 +71,8 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
                         return prev.map(g => g.id === gid ? { ...g, myMemberStatus: mData } : g);
                     });
                 }
+            }, (err) => {
+                if (err.code !== 'permission-denied') console.log(`Member fetch error ${gid}:`, err);
             });
             unsubscribers.push(unsubMember);
         });
@@ -76,39 +80,56 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
         return () => unsubscribers.forEach(unsub => unsub());
     }, [userData?.uid, groupIdsKey]);
 
+    // Fetch user group states
     useEffect(() => {
-        if (!userData?.uid) return;
+        if (!userData?.uid) {
+            setGroupStates({});
+            setLoadingGroupStates(false);
+            return;
+        }
+
         const groupStatesRef = collection(db, 'users', userData.uid, 'groupStates');
         const unsubscribe = onSnapshot(groupStatesRef, (snapshot) => {
-            const states: Record<string, any> = {};
-            snapshot.forEach(docSnap => { states[docSnap.id] = docSnap.data(); });
-            console.log("[useDashboardGroups] GroupStates received:", Object.keys(states).length);
+            const states: Record<string, { readMessageCount?: number }> = {};
+            snapshot.forEach(docSnap => {
+                states[docSnap.id] = docSnap.data();
+            });
             setGroupStates(states);
             setLoadingGroupStates(false);
+        }, (err) => {
+            if (err.code !== 'permission-denied') console.error("Error fetching group states:", err);
+            setLoadingGroupStates(false);
         });
+
         return () => unsubscribe();
     }, [userData?.uid]);
 
-    const userGroups = useMemo(() => {
-        const result = rawUserGroups.map(group => {
+    // Use state-based userGroups to ensure we don't break Dashboard expectation
+    const [userGroups, setUserGroups] = useState<Group[]>([]);
+
+    useEffect(() => {
+        const combined = rawUserGroups.map(group => {
             const state = groupStates[group.id];
             const readCount = Number(state?.readMessageCount || 0);
             const totalCount = Number(group.messageCount || 0);
             const unreadCount = Math.max(0, totalCount - readCount);
 
-            return { ...group, unreadCount };
+            return {
+                ...group,
+                unreadCount
+            };
         }) as Group[];
-        console.log("[useDashboardGroups] Combined userGroups result count:", result.length);
-        return result;
+        setUserGroups(combined);
     }, [rawUserGroups, groupStates]);
 
+    // Sync active group
     useEffect(() => {
         if (!userData || userGroups.length === 0) return;
         const isActiveGroupLoaded = userGroups.find(g => g.id === activeGroupId);
         if (!isActiveGroupLoaded) {
             const userGroupIds = userData?.groupIds || (userData?.groupId ? [userData.groupId] : []);
             if (activeGroupId && !userGroupIds.includes(activeGroupId)) {
-                setActiveGroupId(userGroups[0]?.id || null);
+                setActiveGroupId(userGroups[0].id);
             }
         }
     }, [userGroups, userData, activeGroupId]);
