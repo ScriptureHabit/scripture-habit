@@ -84,7 +84,7 @@ const Dashboard: FC = () => {
   }, [userData?.daysStudiedCount]);
 
   // 2. Groups Hook
-  const { userGroups, activeGroupId, setActiveGroupId, loadingGroupStates } = useDashboardGroups(userData, initialState.activeGroupId, selectedView);
+  const { userGroups, activeGroupId, setActiveGroupId, loadingGroupStates } = useDashboardGroups(userData, initialState.activeGroupId);
 
   // WATCHDOG: Track state changes to find why notifications are suppressed
   useEffect(() => {
@@ -114,13 +114,11 @@ const Dashboard: FC = () => {
 
   // 6. Notifications Hook
   const { 
-    latestNoteNotification,
-    setLatestNoteNotification,
     showNotifPrompt, 
     handleEnableNotifications, handleCloseNotifPrompt 
   } = useDashboardNotifications(userData, userGroups, selectedView, loading, showWelcomeStory, showAutoKickModal, isJoiningInvite, loadingGroupStates, activeGroupId, t);
 
-  const { markWelcomeStorySeen, updateNickname, syncNotificationReadStatus } = useDashboardActions(user, userData);
+  const { markWelcomeStorySeen, updateNickname } = useDashboardActions(user, userData);
 
   const todayPlan = getTodayReadingPlan();
 
@@ -442,33 +440,6 @@ const Dashboard: FC = () => {
                 <button className="modal-btn primary mt-1" onClick={() => setShowAutoKickModal(false)}>OK</button>
               </div>
             )}
-          </div>
-        </div>
-      )}
-
-      {latestNoteNotification && selectedView !== 2 && (
-        <div
-          className="note-notification"
-          onClick={async () => {
-            console.log("[Dashboard] Banner Clicked!");
-            const gid = latestNoteNotification.groupId;
-            const totalMsgs = latestNoteNotification.totalMessages;
-
-            setActiveGroupId(gid);
-            setSelectedView(2);
-            if (setLatestNoteNotification) setLatestNoteNotification(null);
-
-            if (user && gid != null) {
-              await syncNotificationReadStatus(gid, totalMsgs);
-            }
-          }}
-        >
-          <span>{latestNoteNotification.type === 'note' ? '📖' : '💬'}</span>
-          <div className="note-notification-content">
-            <div className="note-notification-group">{latestNoteNotification.groupName}</div>
-            <div className="note-notification-text">
-              {t(latestNoteNotification.type === 'note' ? 'dashboard.postedANote' : 'dashboard.sentAMessage', { nickname: latestNoteNotification.nickname })}
-            </div>
           </div>
         </div>
       )}

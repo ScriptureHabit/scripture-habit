@@ -112,11 +112,6 @@ const SidebarGroupItem: React.FC<SidebarGroupItemProps> = ({ group, language, is
         <span className="group-name-sidebar-modal">
           {displayName}
         </span>
-        {(group.unreadCount !== undefined && group.unreadCount > 0) && (
-          <span className="unread-badge-sidebar" key={`badge-${group.id}-${group.unreadCount}`}>
-            {group.unreadCount > 99 ? '99+' : group.unreadCount}
-          </span>
-        )}
       </div>
     );
   }
@@ -131,15 +126,6 @@ const SidebarGroupItem: React.FC<SidebarGroupItemProps> = ({ group, language, is
         {getUnityPercentage(group)}%
       </span>
       <span className="group-name-sidebar">{displayName}</span>
-      {(group.unreadCount !== undefined && group.unreadCount > 0) && (
-        <span 
-          className="unread-badge-sidebar" 
-          key={`badge-${group.id}-${group.unreadCount}-${Date.now()}`}
-          style={{ display: 'flex !important' }}
-        >
-          {group.unreadCount > 99 ? '99+' : group.unreadCount}
-        </span>
-      )}
     </div>
   );
 };
@@ -249,9 +235,6 @@ const Sidebar: React.FC<SidebarProps> = ({ selected, setSelected, userGroups = [
             onClick={() => setShowGroupModal(true)}
           >
             <UilUsersAlt />
-            {userGroups.some(g => (g.unreadCount ?? 0) > 0) && (
-              <span className="unread-dot"></span>
-            )}
           </div>
 
           <div className={selected === 4 ? 'menuItem active' : 'menuItem'} onClick={() => setSelected(4)}>
