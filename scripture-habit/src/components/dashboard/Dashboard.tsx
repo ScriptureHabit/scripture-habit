@@ -1,4 +1,4 @@
-import { useState, useEffect, FC } from 'react';
+import { useState, useEffect, useRef, FC } from 'react';
 import { Link, Navigate, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { UilPlus, UilPen } from '@iconscout/react-unicons';
 import Sidebar from '../sidebar/Sidebar';
@@ -33,6 +33,7 @@ const Dashboard: FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  
   const { t, language, isLoaded, translateChapterField } = useLanguage();
 
   // Initialize state from URL query parameters or location state
@@ -57,6 +58,7 @@ const Dashboard: FC = () => {
   const [selectedView, setSelectedView] = useState<number>(initialState.selectedView);
   
   const { activeModal, setActiveModal } = useModalStore();
+  const progressRef = useRef<HTMLDivElement>(null);
   const isModalOpen = activeModal === 'newNote';
   const setIsModalOpen = (open: boolean) => setActiveModal(open ? 'newNote' : null);
 
@@ -72,6 +74,14 @@ const Dashboard: FC = () => {
   const error = syncState.status === 'error' ? syncState.message : null;
   const user = syncState.user;
   const userData = syncState.userData;
+
+  // Progress bar imperative update to avoid inline style warnings
+  useEffect(() => {
+    if (progressRef.current && (userData?.daysStudiedCount !== undefined)) {
+      const percentage = ((userData.daysStudiedCount || 0) % 7) / 7 * 100;
+      progressRef.current.style.width = `${percentage}%`;
+    }
+  }, [userData?.daysStudiedCount]);
 
   // 2. Groups Hook
   const { userGroups, activeGroupId, setActiveGroupId, loadingGroupStates } = useDashboardGroups(userData, initialState.activeGroupId);
@@ -280,8 +290,8 @@ const Dashboard: FC = () => {
                 </div>
                 <div className="mini-progress-bar">
                   <div
+                    ref={progressRef}
                     className="mini-progress-fill mini-progress-fill-transition"
-                    style={{ '--progress-percentage': `${((userData.daysStudiedCount || 0) % 7) / 7 * 100}%` } as React.CSSProperties}
                   ></div>
                 </div>
               </div>
@@ -438,7 +448,6 @@ const Dashboard: FC = () => {
       {latestNoteNotification && selectedView !== 2 && (
         <div
           className="note-notification"
-          style={{ outline: '5px solid red', zIndex: 100000 }}
           onClick={async () => {
             console.log("[Dashboard] Banner Clicked!");
             const gid = latestNoteNotification.groupId;
@@ -454,7 +463,12 @@ const Dashboard: FC = () => {
           }}
         >
           <span>{latestNoteNotification.type === 'note' ? '📖' : '💬'}</span>
-          {t(latestNoteNotification.type === 'note' ? 'dashboard.postedANote' : 'dashboard.sentAMessage', { nickname: latestNoteNotification.nickname })}
+          <div className="note-notification-content">
+            <div className="note-notification-group">{latestNoteNotification.groupName}</div>
+            <div className="note-notification-text">
+              {t(latestNoteNotification.type === 'note' ? 'dashboard.postedANote' : 'dashboard.sentAMessage', { nickname: latestNoteNotification.nickname })}
+            </div>
+          </div>
         </div>
       )}
 

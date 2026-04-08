@@ -171,6 +171,51 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+.note-notification {
+  position: fixed !important;
+  top: 15px !important;
+  left: 50% !important;
+  transform: translateX(-50%) translateY(-20px);
+  width: 90% !important;
+  max-width: 500px !important;
+  background: rgba(255, 69, 58, 0.95) !important; /* Vibrant Red */
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  color: white !important;
+  padding: 16px 24px !important;
+  border-radius: 16px !important;
+  z-index: 9999999 !important;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.3) !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  animation: slideDownIn 0.5s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards !important;
+  border: 2px solid rgba(255,255,255,0.3) !important;
+}
+
+.note-notification-content {
+  flex: 1;
+}
+
+.note-notification-group {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.note-notification-text {
+  font-size: 16px;
+}
+
+@keyframes slideDownIn {
+  to { transform: translateX(-50%) translateY(0); }
+}
+
+.note-notification span {
+  font-size: 24px;
+}
+
 .stat-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);

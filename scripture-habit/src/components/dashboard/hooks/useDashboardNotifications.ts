@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { safeStorage } from '../../../utils/storage';
 import { requestNotificationPermission } from '../../../utils/notificationHelper';
 import { UserData } from '../../../types/user';
@@ -28,6 +28,10 @@ export const useDashboardNotifications = (
 ) => {
     const [latestNoteNotification, setLatestNoteNotification] = useState<NotificationInfo | null>(null);
     const [showNotifPrompt, setShowNotifPrompt] = useState<boolean>(false);
+    
+    // Persistence refs for the notification latch
+    const lastNotifIdRef = useRef<string | null>(null);
+    const lastNotifVisibleAtRef = useRef<number>(0);
 
     useEffect(() => {
         if (selectedView === 0 && !loading && userData && !showWelcomeStory && !showAutoKickModal && !isJoiningInvite) {
@@ -62,6 +66,7 @@ export const useDashboardNotifications = (
     useEffect(() => {
         if (!userGroups || userGroups.length === 0 || !userData || loadingGroupStates) return;
 
+        const now = Date.now();
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         const todayTime = today.getTime();
@@ -80,47 +85,55 @@ export const useDashboardNotifications = (
 
             let currentType: 'note' | 'message' | '' = '';
             let currentTime = 0;
-            let currentNickname = '';
             let currentUid = '';
 
             if (noteTime >= messageTime && noteTime > 0) {
                 currentType = 'note';
                 currentTime = noteTime;
-                currentNickname = group.lastNoteByNickname || '';
                 currentUid = group.lastNoteByUid || '';
             } else if (messageTime > noteTime && messageTime > 0) {
                 currentType = 'message';
                 currentTime = messageTime;
-                currentNickname = group.lastMessageByNickname || '';
                 currentUid = group.lastMessageByUid || '';
             }
 
             if (currentTime > 0 && currentUid !== userData.uid) {
                 const isNewToday = currentTime >= todayTime;
                 const hasUnreads = (group.unreadCount || 0) > 0;
-                
+
                 if (isNewToday && hasUnreads) {
                     if (!mostRecent || currentTime > mostRecent.time) {
-                        mostRecent = {
-                            type: currentType as 'note' | 'message',
-                            nickname: currentNickname || 'Someone',
-                            time: currentTime,
-                            groupId: group.id,
-                            groupName: group.name || '',
-                            totalMessages: group.messageCount || 0
-                        };
+                    const info: NotificationInfo = {
+                        type: currentType as 'note' | 'message',
+                        nickname: (currentType === 'note' ? group.lastNoteByNickname : group.lastMessageByNickname) || 'Someone',
+                        time: currentTime,
+                        groupId: group.id,
+                        groupName: group.name || 'Group',
+                        totalMessages: group.messageCount || 0
+                    };
+                    mostRecent = info;
                     }
                 }
             }
         });
 
+        // LATCH LOGIC: Do not clear notification if it was shown recently, unless a NEWER one comes.
+        const currentMostRecent = mostRecent as NotificationInfo | null;
+        const notifId = currentMostRecent ? `${currentMostRecent.groupId}-${currentMostRecent.time}` : null;
+        const isCurrentNotifOld = (now - lastNotifVisibleAtRef.current) > 15000; // 15 seconds stay-time
+
         if (mostRecent) {
-            console.log("[DashboardNotifications] Set Most Recent Notification:", mostRecent);
-        } else if (latestNoteNotification) {
-            const groupThatCleared = userGroups.find(g => g.id === latestNoteNotification.groupId);
-            console.log(`[DashboardNotifications] Clearing Most Recent Notification. Group: ${latestNoteNotification.groupName}, currentUnreadCount: ${groupThatCleared?.unreadCount}`);
+            if (notifId !== lastNotifIdRef.current) {
+                console.log("[DashboardNotifications] Set Most Recent Notification:", mostRecent);
+                lastNotifIdRef.current = notifId;
+                lastNotifVisibleAtRef.current = now;
+                setLatestNoteNotification(mostRecent);
+            }
+        } else if (latestNoteNotification && isCurrentNotifOld) {
+            console.log("[DashboardNotifications] Clearing Most Recent Notification after timeout.");
+            setLatestNoteNotification(null);
+            lastNotifIdRef.current = null;
         }
-        setLatestNoteNotification(mostRecent);
     }, [userGroups, userData?.uid, loadingGroupStates, activeGroupId, selectedView]);
 
     return { 

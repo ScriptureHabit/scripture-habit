@@ -232,7 +232,8 @@ export class NoteService {
                 const botName = t(language || 'en', 'notifications.bot_name');
                 
                 [...new Set(userGroupIds)].forEach(gid => {
-                    const announceRef = db.collection('groups').doc(gid).collection('messages').doc();
+                    const announceGrpRef = db.collection('groups').doc(gid);
+                    const announceRef = announceGrpRef.collection('messages').doc();
                     transaction.set(announceRef, {
                         text: announceMsg,
                         senderId: 'system',
@@ -242,6 +243,15 @@ export class NoteService {
                         isSystemMessage: true,
                         messageType: 'streakAnnouncement',
                         messageData: { nickname: userData.nickname, userId: uid, streakCount: newStreak }
+                    });
+                    
+                    // CRITICAL: Increment message count for the announcement too!
+                    CounterService.increment(transaction, announceGrpRef, 'messageCount');
+                    transaction.update(announceGrpRef, {
+                        messageCount: admin.firestore.FieldValue.increment(1),
+                        lastMessageAt: admin.firestore.Timestamp.fromMillis(now.getTime() + 1000),
+                        lastMessageByNickname: botName,
+                        lastMessageByUid: 'system'
                     });
                 });
             }
