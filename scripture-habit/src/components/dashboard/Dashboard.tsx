@@ -56,6 +56,11 @@ const Dashboard: FC = () => {
   const initialState = getInitialState();
   const [selectedView, setSelectedView] = useState<number>(initialState.selectedView);
   
+  // WATCHDOG: Track state changes to find why notifications are suppressed
+  useEffect(() => {
+    console.log(`🔥 [DASHBOARD-WATCHDOG] selectedView changed: ${selectedView}, activeGroupId: ${activeGroupId}`);
+  }, [selectedView, activeGroupId]);
+
   const { activeModal, setActiveModal } = useModalStore();
   const isModalOpen = activeModal === 'newNote';
   const setIsModalOpen = (open: boolean) => setActiveModal(open ? 'newNote' : null);
