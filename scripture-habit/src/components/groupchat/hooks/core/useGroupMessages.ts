@@ -11,10 +11,11 @@ import { UserData } from '../../../../types/user';
 export const useGroupMessages = (
   groupId: string | null, 
   userData: UserData | null, 
-  t: (key: string) => string
+  t: (key: string) => string,
+  isViewActive: boolean = false
 ) => {
   // 1. Core Data Sync (Pure Data Engine)
-  const sync = useChatDataSync(groupId, userData, t);
+  const sync = useChatDataSync(groupId, userData, t, isViewActive);
 
   // 2. Visual Effects (Confetti for streaks, etc.)
   useChatVisualEffects(sync.messages, userData);

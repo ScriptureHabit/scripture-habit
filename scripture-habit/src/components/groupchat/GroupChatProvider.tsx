@@ -41,7 +41,7 @@ interface GroupChatProviderProps {
 }
 
 const GroupChatProvider: FC<GroupChatProviderProps> = ({ 
-  groupId, userData, userGroups = [], onBack, onGroupSelect, initialShowInviteModal = false, onInputFocusChange, onUnityUpdate, children 
+  groupId, userData, userGroups = [], isActive = false, onBack, onGroupSelect, initialShowInviteModal = false, onInputFocusChange, onUnityUpdate, children 
 }) => {
   const { language, t, tArray, isLoaded } = useLanguage();
   const API_BASE = Capacitor.isNativePlatform() ? 'https://scripturehabit.app' : '';
@@ -51,7 +51,7 @@ const GroupChatProvider: FC<GroupChatProviderProps> = ({
     messages, groupData, loading, groupNotFound, userReadCount,
     initialScrollDone, setInitialScrollDone, hasMoreOlder, isLoadingOlder, loadMoreOlderMessages,
     membersMap, latestMessageRef, prevMessageCountRef, dispatch
-  } = useGroupMessages(groupId, userData, t);
+  } = useGroupMessages(groupId, userData, t, isActive);
 
   // Feature Hooks
   const { 

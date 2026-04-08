@@ -490,7 +490,7 @@
 }
 
 .open-group-btn {
-    background: var(--blue-gradient-start) !important;
+    /* Uses confirm-join-btn gradient */
 }
 
 .user-profile-modal-wrapper {

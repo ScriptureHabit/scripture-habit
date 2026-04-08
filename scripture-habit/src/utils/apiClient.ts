@@ -30,15 +30,18 @@ const apiClient = axios.create({
 apiClient.interceptors.request.use(
     async (config) => {
         try {
-            // Fix for Vercel trailingSlash: true
-            // Ensure all internal API routes have a trailing slash to avoid Vercel 308 redirects.
-            // This is critical for POST/PUT/DELETE to avoid method-dropping (405) and for GET to avoid latency.
             if (config.url && config.url.includes('/api/')) {
+                if (config.url.includes('/api/update-read-status')) {
+                    console.error('🔥 [CRITICAL-TRACE] update-read-status CALLED!');
+                    console.error('URL:', config.url);
+                    console.error('Payload:', config.data);
+                    console.error('Stack:', new Error().stack);
+                }
+                
                 const [path, query] = config.url.split('?');
                 if (path.length > 1 && path.endsWith('/')) {
                     config.url = path.slice(0, -1) + (query ? '?' + query : '');
                 }
-
             }
 
             // 1. Inject Firebase ID Token

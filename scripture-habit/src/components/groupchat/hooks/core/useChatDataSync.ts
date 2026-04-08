@@ -8,6 +8,8 @@ import { groupConverter, messageConverter, groupMemberConverter } from '../../..
 import { UserProfileBriefSchema, GroupSchema } from '../../../../types/schemas';
 
 import apiClient from '../../../../utils/apiClient';
+import { auth } from '../../../../firebase';
+import { useDashboardActions } from '../../../../components/dashboard/hooks/useDashboardActions';
 import { chatReducer, initialState, ChatAction, ChatStatus } from './chatReducer';
 
 /**
@@ -221,20 +223,26 @@ const useUserReadStateSync = (
   actualMessageCount: number,
   dispatch: Dispatch<ChatAction>
 ) => {
+  const { syncNotificationReadStatus: syncReadStatus } = useDashboardActions(auth?.currentUser as any, userData);
+
   const updateReadStatus = useCallback(async (gid: string, totalCount: number) => {
-    if (!userData?.uid || !gid) return;
+    if (!userData?.uid || !gid || !syncReadStatus) return;
     try {
-      await apiClient.post('/api/update-read-status', { groupId: gid, readMessageCount: totalCount });
+      console.log(`[useUserReadStateSync] Calling syncReadStatus for group ${gid}. Target: ${totalCount}`);
+      await syncReadStatus(gid, totalCount);
       dispatch({ type: 'SET_READ_COUNT', count: totalCount });
     } catch (err) {
       console.error("[useUserReadStateSync] Failed to sync read status:", err);
     }
-  }, [userData?.uid, dispatch]);
+  }, [userData?.uid, syncReadStatus, dispatch]);
 
   const lastForcedSyncGidRef = useRef<string | null>(null);
 
   useEffect(() => {
-    if (!groupId || !groupData || userReadCount === null) return;
+    if (!groupId || !groupData || userReadCount === null) {
+        if (!groupId) console.log("[useUserReadStateSync] Skipping sync (groupId is null/inactive)");
+        return;
+    }
     
     // TRUTH: Use the highest of metadata count or listener count to avoid stale overwrites
     const totalMsgs = Math.max(groupData.messageCount || 0, actualMessageCount);
@@ -243,7 +251,11 @@ const useUserReadStateSync = (
     // We force a sync to recover the true total from the archive service.
     const needsHealing = totalMsgs < (userReadCount || 0);
 
-    if (totalMsgs > (userReadCount || 0) || needsHealing || (lastForcedSyncGidRef.current !== groupId && totalMsgs > 0)) {
+    const isWindowFocused = document.hasFocus();
+    const isVisible = document.visibilityState === 'visible';
+
+    if ((totalMsgs > (userReadCount || 0) || needsHealing || (lastForcedSyncGidRef.current !== groupId && totalMsgs > 0)) && isWindowFocused && isVisible) {
+      console.log(`[useUserReadStateSync-TRACE] Triggering updateReadStatus: gid=${groupId}, total=${totalMsgs}, userRead=${userReadCount}. Stack:`, new Error().stack);
       updateReadStatus(groupId, totalMsgs);
       lastForcedSyncGidRef.current = groupId;
     }
@@ -265,9 +277,13 @@ const useUserReadStateSync = (
  * Purely handles Firestore subscriptions, bundle hydration, and state dispatching.
  * UI-agnostic and side-effect free (except for fetching data).
  */
-export const useChatDataSync = (groupId: string | null, userData: UserData | null, t: (key: string) => string) => {
+export const useChatDataSync = (groupId: string | null, userData: UserData | null, t: (key: string) => string, isViewActive: boolean = false) => {
   const [state, dispatch] = useReducer(chatReducer, initialState);
   
+  useEffect(() => {
+    console.log(`[useChatDataSync] isViewActive CHANGED: ${isViewActive} (groupId: ${groupId})`);
+  }, [isViewActive, groupId]);
+
   const currentGroupIdRef = useRef<string | null>(groupId);
   const prevMessageCountRef = useRef(0);
   const latestMessageRef = useRef<Message | null>(null);
@@ -287,7 +303,7 @@ export const useChatDataSync = (groupId: string | null, userData: UserData | nul
   // Calculate current "truthful" message count including what we've loaded in session
   const actualMessageCount = state.messages.length;
   
-  useUserReadStateSync(groupId, userData, state.groupData, state.userReadCount, actualMessageCount, dispatch);
+  useUserReadStateSync(isViewActive ? groupId : null, userData, state.groupData, state.userReadCount, actualMessageCount, dispatch);
 
   /**
    * Action: Pure Data Fetch (No Ref references)

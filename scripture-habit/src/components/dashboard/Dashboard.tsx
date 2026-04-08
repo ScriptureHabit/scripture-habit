@@ -41,15 +41,21 @@ const Dashboard: FC = () => {
     const viewParam = searchParams.get('view');
     const openNewNote = searchParams.get('openNewNote');
 
+    // TRUTH: If we have a groupId but no viewParam, we are likely in a deep-link/notification scenario.
+    // We should DEFAULT to Dashboard (0) to see the notification banner instead of jumping into the chat.
+    // Jumping into the chat (2) automatically marks messages as read, which is undesirable for notifications.
+    const initialView = viewParam ? parseInt(viewParam) : (location.state?.initialView ?? 0);
+    
     return {
       activeGroupId: gid || location.state?.initialGroupId || null as string | null,
-      selectedView: gid ? 2 : (viewParam ? parseInt(viewParam) : (location.state?.initialView !== undefined ? location.state.initialView : 0)),
+      selectedView: initialView,
       isModalOpen: openNewNote === 'true'
     };
   };
 
   const initialState = getInitialState();
   const [selectedView, setSelectedView] = useState<number>(initialState.selectedView);
+  
   const { activeModal, setActiveModal } = useModalStore();
   const isModalOpen = activeModal === 'newNote';
   const setIsModalOpen = (open: boolean) => setActiveModal(open ? 'newNote' : null);
@@ -100,6 +106,10 @@ const Dashboard: FC = () => {
   } = useDashboardNotifications(userData, userGroups, selectedView, loading, showWelcomeStory, showAutoKickModal, isJoiningInvite, loadingGroupStates, activeGroupId, t);
 
   const { markWelcomeStorySeen, updateNickname, syncNotificationReadStatus } = useDashboardActions(user, userData);
+
+  useEffect(() => {
+    console.log(`🔥 [DASHBOARD-WATCHDOG] selectedView: ${selectedView}, activeGroupId: ${activeGroupId}`);
+  }, [selectedView, activeGroupId]);
 
   const todayPlan = getTodayReadingPlan();
 
@@ -369,7 +379,20 @@ const Dashboard: FC = () => {
           )}
 
           {selectedView === 1 && <MyNotes userData={userData} isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} userGroups={enrichedUserGroups} />}
-          {selectedView === 2 && activeGroupId && <GroupChat groupId={activeGroupId} userData={userData} userGroups={enrichedUserGroups} onInputFocusChange={setIsInputFocused} isExternalModalOpen={isModalOpen} onBack={() => setSelectedView(0)} onGroupSelect={(gid) => setActiveGroupId(gid)} initialShowInviteModal={!!location.state?.showInviteModal} onUnityUpdate={handleUnityUpdate} />}
+          {selectedView === 2 && activeGroupId && (
+            <GroupChat 
+              groupId={activeGroupId} 
+              userData={userData} 
+              userGroups={enrichedUserGroups} 
+              onInputFocusChange={setIsInputFocused} 
+              isExternalModalOpen={isModalOpen} 
+              onBack={() => setSelectedView(0)} 
+              onGroupSelect={(gid) => setActiveGroupId(gid)} 
+              initialShowInviteModal={!!location.state?.showInviteModal} 
+              onUnityUpdate={handleUnityUpdate}
+              isActive={selectedView === 2}
+            />
+          )}
           {selectedView === 3 && <Profile userData={userData} stats={{ streak: userData?.streakCount || 0, totalNotes: userData?.totalNotes || 0, daysStudied: userData?.daysStudiedCount || 0 }} />}
           {selectedView === 4 && <Donate userData={userData} />}
         </div>

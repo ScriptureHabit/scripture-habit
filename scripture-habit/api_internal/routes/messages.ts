@@ -121,7 +121,9 @@ router.post('/post-message', authenticate, verifyAppCheck, async (req: Authentic
             const gData = gSnap.data()!;
             if (!(gData.members || []).includes(uid)) throw new Error('Forbidden.');
 
-            const approximateTotal = currentTotal + 1;
+            const currentTotalNum = Number(currentTotal || 0);
+            const approximateTotal = currentTotalNum + 1;
+            
             const msgRef = groupRef.collection('messages').doc();
             const msgData = {
                 text,
@@ -168,7 +170,7 @@ router.post('/post-message', authenticate, verifyAppCheck, async (req: Authentic
 
             // SELF-HEALING: If the group's cached messageCount is smaller than the true approximate total (which includes archives), 
             // we must force-update it to the true total to prevent 'negative unread' issues in the UI.
-            const trueTotalCount = (gData.messageCount || 0) + 1;
+            const trueTotalCount = Number(gData.messageCount || 0) + 1;
             const needsHealing = trueTotalCount < approximateTotal;
             
             if (needsHealing) {

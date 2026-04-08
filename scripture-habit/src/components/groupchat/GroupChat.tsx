@@ -20,6 +20,7 @@ interface GroupChatProps {
   isExternalModalOpen?: boolean;
   initialShowInviteModal?: boolean;
   onUnityUpdate?: (percentage: number) => void;
+  isActive?: boolean;
 }
 
 const GroupChatContent: FC = () => {
@@ -51,7 +52,7 @@ const GroupChatContent: FC = () => {
 
 const GroupChat: FC<GroupChatProps> = (props) => {
   return (
-    <GroupChatProvider {...props}>
+    <GroupChatProvider {...props} isActive={props.isActive ?? true}>
       <GroupChatContent />
     </GroupChatProvider>
   );
