@@ -116,6 +116,8 @@ export const useDashboardNotifications = (
 
         if (mostRecent) {
             console.log("[DashboardNotifications] Set Most Recent Notification:", mostRecent);
+        } else if (latestNoteNotification) {
+            console.log("[DashboardNotifications] Clearing Most Recent Notification");
         }
         setLatestNoteNotification(mostRecent);
     }, [userGroups, userData?.uid, loadingGroupStates, activeGroupId, selectedView]);
