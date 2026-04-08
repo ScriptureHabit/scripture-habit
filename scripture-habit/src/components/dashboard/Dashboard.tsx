@@ -297,26 +297,6 @@ const Dashboard: FC = () => {
                 </div>
               )}
 
-              {latestNoteNotification && (
-                <div
-                  className="note-notification"
-                  onClick={async () => {
-                    const gid = latestNoteNotification.groupId;
-                    const totalMsgs = latestNoteNotification.totalMessages;
-
-                    setActiveGroupId(gid);
-                    setSelectedView(2);
-                    if (setLatestNoteNotification) setLatestNoteNotification(null);
-
-                    if (user && gid != null) {
-                      await syncNotificationReadStatus(gid, totalMsgs);
-                    }
-                  }}
-                >
-                  <span>{latestNoteNotification.type === 'note' ? '📖' : '💬'}</span>
-                  {t(latestNoteNotification.type === 'note' ? 'dashboard.postedANote' : 'dashboard.sentAMessage', { nickname: latestNoteNotification.nickname })}
-                </div>
-              )}
 
               <div className="inspiration-card inspiration-interactive-card"
                 onClick={() => setShowWelcomeStory(true)}
@@ -447,6 +427,27 @@ const Dashboard: FC = () => {
               </div>
             )}
           </div>
+        </div>
+      )}
+
+      {latestNoteNotification && selectedView !== 2 && (
+        <div
+          className="note-notification"
+          onClick={async () => {
+            const gid = latestNoteNotification.groupId;
+            const totalMsgs = latestNoteNotification.totalMessages;
+
+            setActiveGroupId(gid);
+            setSelectedView(2);
+            if (setLatestNoteNotification) setLatestNoteNotification(null);
+
+            if (user && gid != null) {
+              await syncNotificationReadStatus(gid, totalMsgs);
+            }
+          }}
+        >
+          <span>{latestNoteNotification.type === 'note' ? '📖' : '💬'}</span>
+          {t(latestNoteNotification.type === 'note' ? 'dashboard.postedANote' : 'dashboard.sentAMessage', { nickname: latestNoteNotification.nickname })}
         </div>
       )}
 
