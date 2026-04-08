@@ -280,6 +280,7 @@ router.post('/update-read-status', authenticate, verifyAppCheck, async (req: Aut
         // TRUTH: Restore updating the main 'groups' document map for immediate UI sync.
         // For habit groups (<20 members), hotspots are rare, and immediate feedback is priority.
         batch.update(groupRef, {
+            messageCount: totalMessages,
             [`memberLastReadAt.${uid}`]: admin.firestore.FieldValue.serverTimestamp()
         });
 

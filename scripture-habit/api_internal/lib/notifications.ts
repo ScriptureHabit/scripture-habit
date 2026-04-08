@@ -33,6 +33,10 @@ export async function sendPushNotification(tokens: string[], payload: PushPayloa
     for (let i = 0; i < uniqueTokens.length; i += CHUNK_SIZE) {
         const chunk = uniqueTokens.slice(i, i + CHUNK_SIZE);
         const message = {
+            notification: {
+                title: payload.title,
+                body: payload.body,
+            },
             data: {
                 title: payload.title,
                 body: payload.body,
