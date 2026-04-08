@@ -100,6 +100,7 @@ export const useDashboardNotifications = (
                 const hasUnreads = (group.unreadCount || 0) > 0;
                 
                 if (isNewToday && hasUnreads) {
+                    console.log(`[DashboardNotifications] Found potential notification for ${group.name}: unreadCount=${group.unreadCount}, isNewToday=${isNewToday}, selectedView=${selectedView}`);
                     if (!mostRecent || currentTime > mostRecent.time) {
                         mostRecent = {
                             type: currentType as 'note' | 'message',
@@ -110,7 +111,10 @@ export const useDashboardNotifications = (
                             totalMessages: group.messageCount || 0
                         };
                     }
-                } 
+                } else if (isNewToday) {
+                    // Log why it was NOT shown
+                    // console.log(`[DashboardNotifications] Notification inhibited for ${group.name}: unreadCount=${group.unreadCount}, hasUnreads=${hasUnreads}`);
+                }
             }
         });
 
