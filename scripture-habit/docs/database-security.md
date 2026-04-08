@@ -1,56 +1,106 @@
-# Database & Security: The Foundation
+# Database & Security: The Technical Foundation
 
-**scripture-habit** uses Google Cloud Firestore as its primary database. We follow a "Centralized Write" pattern where most data mutations occur via a backend API to ensure strict business logic and security.
-
----
-
-## 📂 Collection Structure
-
-### 1. `users` (User Profiles & Personal Data)
-- **Document ID**: Firebase UID.
-- **`groupStates/{groupId}` (Subcollection)**: Tracks unread counts and read markers for the user in each group.
-- **`notes` (Subcollection)**: Personal study notes, synced from group posts.
-- **`private/tokens`**: Sensitive FCM tokens for push notifications.
-
-### 2. `groups` (Social Hubs)
-- **Metadata**: Name, description, `memberCount`, `lastMessageAt`, `targetScripture`.
-- **`members` (Array of UIDs)**: Used for fast membership queries.
-- **`members/{userId}` (Subcollection)**: Detailed individual stats within the group (total points, activity time).
-- **`messages` (Subcollection)**: The chat history, including notes, images, and system messages.
-
-### 3. `translation_cache`
-- Used by the AI translation subsystem to avoid redundant Gemini calls.
-- **ID**: MD5 hash of `text + targetLanguage`.
+This document defines the data architecture, security logic, and integrity patterns used to maintain a secure and scalable environment for **scripture-habit**.
 
 ---
 
-## 🛡️ Security Rules (`firestore.rules`)
+## 📂 Entity-Relationship (ER) Diagram
 
-We implement a multi-layered security model to prevent unauthorized access and data tampering.
+Our data model is hierarchical, balancing the need for real-time synchronization with long-term data persistence.
 
-### A. Authentication Guards
-- **`isAuthenticated()`**: Ensures the user is logged in. In production, we also verify that their email is verified for social features.
-- **`isAppCheckVerified()`**: **Mandatory for all writes.** This ensures requests only come from our official web or mobile application.
-
-### B. Path-Based Permissions
-- **Groups**: Users can only `get` or `list` groups if they are a member or if the group is marked as `isPublic`.
-- **Messages**: Users can only read messages in groups where they are an active member (`isMemberOfGroup(groupId)`).
-
-### C. "API-Only Write" Policy
-To maintain data integrity (like streaks and counters), almost all collections have `allow write: if false;`. 
-- **The Backend (Admin SDK)**: Bypasses these rules to perform atomic updates within transactions.
-- **Exception**: Individual users can update their own `groupStates` (for local read-count feedback) and their FCM tokens in the `private` subcollection.
+```mermaid
+erDiagram
+    USERS ||--o{ NOTES : "personal copies"
+    USERS ||--o{ GROUP_STATES : "read markers"
+    USERS ||--o{ PRIVATE_TOKENS : "sensitive fcm"
+    
+    GROUPS ||--o{ MESSAGES : "active chat"
+    GROUPS ||--o{ MESSAGE_BUCKETS : "archived history"
+    GROUPS ||--o{ MEMBERS_STATS : "individual progress"
+    
+    USERS }|--o{ GROUPS : "many-to-many (membership)"
+    
+    USERS {
+        string uid PK
+        string nickname
+        int streakCount
+        int totalNotes
+    }
+    
+    GROUPS {
+        string groupId PK
+        string ownerUserId FK
+        string[] members
+        int membersCount
+        timestamp lastMessageAt
+    }
+    
+    MESSAGES {
+        string id PK
+        string text
+        string senderId FK
+        timestamp createdAt
+        boolean isNote
+    }
+```
 
 ---
 
-## 💎 Data Integrity & Normalization
+## 🗺️ Schema Roadmap
 
-### Zod-Based Converters (`src/utils/firestoreConverters.ts`)
-Before any data reaches the React components, it passes through a `FirestoreDataConverter` that:
-1.  **Validates**: Ensures the data matches the expected Zod schema.
-2.  **Normalizes**: Converts legacy data formats or missing fields into safe defaults.
-3.  **Parses IDs**: Automatically maps the Firestore document ID to an `id` or `uid` field in the object.
+### 1. `groups` (The Center of Gravity)
+- **Denormalization**: We store `memberPreviews` (nickname/photo) and `lastMessageAt` directly on the group document to allow for high-performance dashboard rendering without multiple lookups.
+- **Activity Tracking**: `dailyActivity` stores a timestamped list of active UIDs to calculate group "Unity" without querying the entire message collection.
 
-### The "Truth" vs. "Cache"
-- **The Truth**: Stored in the database and updated via API.
-- **The UI State**: Derived from `onSnapshot` listeners, providing an "optimistic-like" experience because Firestore's local cache reflects changes nearly instantly after the server receives them.
+### 2. `users` (The Profile & Personal Sync)
+- **Shared ID**: The document ID is the Firebase Auth UID.
+- **Redundancy**: `groupIds` (array) is maintained to allow for `array-contains` queries when a user needs to see all their groups.
+
+### 3. Subcollections (Granular Data)
+- **`messages`**: Optimized for real-time listeners. Kept small via archiving.
+- **`members`**: Stores per-group statistics (points, activity counts) that are too large to fit in the main group document.
+
+---
+
+## 🛡️ The "Safety Chain" (Security Logic)
+
+Our `firestore.rules` implements a "Swiss Cheese" model where multiple layers of checks must pass.
+
+### 1. Verification Logic
+- **`isAuthenticated()`**: Checks `request.auth != null`. In production, it further validates `request.auth.token.email_verified == true`.
+- **`isAppCheckVerified()`**: **The Anti-Abuse Layer.** Every write request must include a valid AppCheck token issued by the Firebase SDK. This prevents direct `curl` or script-based attacks.
+
+### 2. Role-Based Access (RBAC)
+- **Member-Only Read**: To read messages, the system uses `isMemberOfGroup(groupId)`. 
+  - Implementation: `request.auth.uid in get(/databases/$(database)/documents/groups/$(groupId)).data.members`.
+  - This ensures users cannot "peek" into groups they haven't joined.
+
+---
+
+## 💎 Integrity & The "API-Only Write" Policy
+
+To prevent users from manually updating their own streaks, levels, or coins, the following architecture is enforced:
+
+1.  **Frontend Lockdown**: All core collections have `allow write: if false;`.
+2.  **Service Actions**: Updates must go through the **Backend API**.
+3.  **Atomic Transactions**: The API uses `db.runTransaction()` to ensure that if a note is created, the user's streak and group statistics are updated **simultaneously**. If any part fails, the entire action is rolled back.
+
+---
+
+## 📦 Scalability: The Bucket Pattern
+
+To avoid Firestore's document limits and keep queries fast, we implement the **Bucket Pattern** for chat history.
+
+- **Active Collection**: High-frequency messages are stored in `groups/{id}/messages`.
+- **Archiving**: An automated Cron job (`ArchiveService`) moves messages older than 30 days into `groups/{id}/message_buckets/{bucketId}`.
+- **Result**: The "active" chat remains lightweight, ensuring that `onSnapshot` listeners don't consume excessive bandwidth or memory on mobile devices.
+
+---
+
+## 🔐 Private Data Isolation
+
+Sensitive information like FCM tokens for push notifications are stored in:
+`users/{uid}/private/tokens`
+
+- **Rule**: `allow read, write: if request.auth.uid == userId;`
+- **Isolation**: Not even group members or group owners can see these tokens. Only the user and the **Service Account (Admin SDK)** have access.

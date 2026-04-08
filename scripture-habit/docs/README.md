@@ -35,8 +35,25 @@ Welcome to the **scripture-habit** technical documentation. This directory conta
 - **[I18n & Localization: Global Reach](logic-i18n.md)**
   - Frontend context and backend template systems.
   - Automated AU translation strategies.
+
+---
+
+## 🛠️ Operations & Development
 - **[Development & Environment Guide](development-guide.md)**
   - Local setup, mobile development (Capacitor), and deployment instructions.
+- **[Maintenance & Batch Jobs](maintenance-cron.md)**
+  - Inactivity checks, owner transfers, and counter aggregation.
+  - Archiving and self-healing mechanisms.
+- **[Monitoring & Observability](monitoring-observability.md)**
+  - Sentry integration, vConsole, and PWA lifecycle.
+  - Error silencing and performance tracing.
+
+---
+
+## 🎨 Design & UX
+- **[UI/UX Design System: Premium Aesthetics](design-system.md)**
+  - Global CSS tokens, Glassmorphism, and mobile-first rules.
+  - Animation patterns and typography standards.
 
 ---
 

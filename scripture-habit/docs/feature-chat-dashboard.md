@@ -1,98 +1,60 @@
-# Group Chat & Dashboard: Deep-Dive Documentation
+# Chat & Dashboard: The Real-time Sync Engine
 
-This document provides a technical deep-dive into the structure, data flow, and Firebase synchronization mechanisms of the two core features of **scripture-habit**: the Dashboard and the Group Chat.
-
----
-
-## 🏗️ Architectural Overview
-
-The application is built on a "Reactive State & Authoritative Write" model:
-- **Reactive State (Snapshots)**: The UI listens directly to Firestore using `onSnapshot` for immediate, real-time updates.
-- **Authoritative Write (API)**: Complex mutations (posting notes, updating streaks, changing group settings) are performed via the Express API using the Firebase Admin SDK to ensure transactionality and security.
+The **Chat Dashboard** is the most complex UI component in **scripture-habit**. It must handle dozens of real-time messages, image uploads, and unread status markers across multiple groups simultaneously without flickering or UI lag.
 
 ---
 
-## 📊 Dashboard Synchronization
+## 🛰️ Real-time Core: `onSnapshot` Architecture
 
-The Dashboard acts as the control center, coordinating multiple data streams.
+We avoid traditional "Pull" (polling) or "Manual Fetch" patterns. Instead, the UI is a direct reflection of the Firestore database via persistent WebSocket listeners.
 
-### 1. `useDashboardSync` (Profile & Maintenance)
-- **Auth Sync**: Listens to the current user's profile.
-- **Self-Healing (Migration)**: Automatically recalculates and "fixes" user statistics (like `daysStudiedCount`) if they appear inconsistent with the underlying note data.
-
-### 2. `useDashboardGroups` (The Group Engine)
-- **Unified Listener**: Maintains a single listener on the `groups` collection for all groups the user is a member of.
-- **Member Status Listeners**: Attaches individual listeners to the `/members/{uid}` subcollection for every group to track personal status (e.g., last read time, activity status).
-- **Badge Reset**: In the dashboard view, unread counts are managed globally to prevent UI noise.
+### Delta Handling
+The sync engine (primarily through `useChatDataSync.ts`) utilizes Firestore's ability to send only "Modified" or "Added" documents.
+- **Optimistic State**: When a user reads a message, the UI updates local state immediately while the API update processes in the background.
+- **Snapshot Merging**: New messages are appended to the local list, ensuring that deep tree re-renders are minimized by using stable React `key` properties based on Firestore `doc.id`.
 
 ---
 
-## 💬 Group Chat Core Architecture
+## 🏁 Race Condition Prevention: Read Markers
 
-The Group Chat is a high-performance feature designed for low latency and high consistency.
+Synchronizing "Unread Counts" is a classic distributed systems problem. We solve it using a **"Server-Side Truth"** model:
 
-### 1. `GroupChatProvider` (Context Hub)
-Everything within the chat view is wrapped in this provider. It orchestrates dozens of hooks (~20+) and provides four specialized contexts:
-- `Data`: Messages, Members, Group Meta.
-- `Interaction`: Replies, Edits, Context Menus, Scroll state.
-- `UI`: Modal visibility, Tooltips.
-- `Actions`: Handlers for all user inputs.
-
-### 2. `useChatDataSync` (The Data Engine)
-The core logic resides here, separated into sub-sync hooks:
-- **Bundle Hydration**: Uses Firestore "Bundles" (via `/api/bundle/{id}`) to boost initial load performance by loading the most recent messages in a single binary chunk.
-- **Message Stream**: Swaps from the bundle to a live `onSnapshot` listener (limited to the last 50 messages) for real-time reactivity.
-- **Member Cache**: Dynamically fetches and caches profiles of reactors or senders not in the main member list.
+1.  **Local Read**: When a user enters a chat, the app marks the local `unreadCount` as zero.
+2.  **API Sync**: It calls `/api/update-read-status` to inform the server of the new "Last Read" timestamp.
+3.  **Healing Logic**: If the API call fails or a background tab conflict occurs, the next `onSnapshot` trigger from the server will "heal" the local state by overwriting it with the absolute truth from the database.
 
 ---
 
-## 🔄 The "Unread Sync" Mechanism
+## 🖼️ Media & Image Handling
 
-Synchronizing read status is the most complex part of the app. It ensures that "Read by X" indicators are accurate across all devices.
+Images in the chat follow a multi-stage lifecycle to ensure the UI feels responsive:
+- **Optimization**: Images are resized/compressed on the client using `sharp`-like logic before upload to save user bandwidth.
+- **Storage**: Real-time URLs are generated via Firebase Storage.
+- **Optimistic Preview**: The component displays a local blob URL instantly after the user selects an image, replacing it with the permanent URL only once the upload is confirmed.
 
-### Flow: Marking as Read
-1.  **Detection**: `useUserReadStateSync` (inside the chat hook) detects when the user is viewing the chat and new messages have arrived.
-2.  **Comparison**: It compares the `groupData.messageCount` (from metadata) with the user's `readMessageCount` (from `users/{uid}/groupStates/{gid}`).
-3.  **Local Update**: The hook optimistically updates a local React state to 0 unread messages for instant UI feedback.
-4.  **Backend Sync**: It calls the `/api/update-read-status` endpoint.
-5.  **Authoritative Write**: The API uses a Firestore Transaction to:
-    - Update `users/{uid}/groupStates/{gid}`.
-    - Update `groups/{gid}/members/{uid}` (so others see "Read by you").
-    - Update `groups/{gid}` metadata if necessary.
+---
 
-### Visualization: Read Status Loop
+## 🚦 Synchronization State Diagram
 
 ```mermaid
-sequenceDiagram
-    participant FE as Frontend (Chat View)
-    participant API as Express API
-    participant DB as Firestore
-    participant OF as Other Member Frontend
-
-    DB-->>FE: New message arrives (onSnapshot)
-    FE->>FE: Detect "In View" + New Message
-    FE->>API: POST /api/update-read-status
-    API->>DB: Transaction: Update My Read Count
-    DB-->>OF: Member Data Update (onSnapshot)
-    OF->>OF: Update "Read by" list on message UI
+stateDiagram-v2
+    [*] --> Initializing
+    Initializing --> FetchingMetadata: React Query (Metadata)
+    FetchingMetadata --> AttachingListeners: onSnapshot (Messages)
+    AttachingListeners --> ActiveSync
+    
+    state ActiveSync {
+        [*] --> Idle
+        Idle --> LocalUpdate: User Reads/Posts
+        LocalUpdate --> APISync: POST /api/...
+        APISync --> Idle: Success (Truth Confirmed)
+        APISync --> Idle: Failure (Rollback to Last Truth)
+    }
 ```
 
 ---
 
-## 📡 Firebase Integration Details
-
-### 1. Firestore Converters (`utils/firestoreConverters.ts`)
-We use `FirestoreDataConverter` combined with **Zod Schema validation**. 
-- **Validation**: Incoming data is parsed through Zod to catch field type errors immediately.
-- **Normalization**: Legacy data formats (e.g., old scripture categories) are normalized to modern formats on-the-fly.
-
-### 2. Persistence
-The app uses `persistentLocalCache` with `persistentMultipleTabManager` to ensure that data remains available offline and synchronized across multiple browser tabs without redundant network requests.
-
----
-
-## 💡 Key Design Decisions
-
-- **Why API for Read Status?**: We use an API call rather than a client-side write to ensure that read-status updates are bundled with other side-effects (like calculating attendance or triggering bots) and because client-side security rules for updating metadata can be overly complex.
-- **Scroll Management**: The `useScrollManager` uses a "Scroll Lock" logic to prevent the view from jumping when new messages arrive while the user is reading history.
-- **Hydration Boost**: By fetching a pre-calculated bundle of the last 50 messages, we avoid the initial "empty state -> loading -> pop-in" flicker common in real-time apps.
+## 🚀 Performance Tips for Developers
+- **Limit Snapshots**: Always use `limit(N)` and `orderBy('createdAt', 'desc')` in chat queries to prevent loading thousands of historical messages.
+- **Stable References**: Use `useMemo` for derived chat data to prevent the sidebar from re-rendering on every typing event.
+- **Background Suppression**: When the browser tab is inactive, the listeners remain active but computationally heavy UI updates are throttled to save CPU.

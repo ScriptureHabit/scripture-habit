@@ -1,59 +1,69 @@
-# I18n & Localization: Global Reach
+# I18n & Localization: Global Foundation
 
-**scripture-habit** is designed for a global audience, supporting multiple languages (English, Japanese, Spanish, Portuguese, Chinese, etc.) across both the user interface and system-generated content.
-
----
-
-## 🎨 Frontend Localization
-
-The frontend Uses a React Context-based system (**`LanguageContext`**) to manage the current UI language.
-
-### Key Logic
-- **`useLanguage` Hook**: Provides the `t()` function to components for immediate translation.
-- **Dynamic Book Mapping**: The `bookTranslations` map ensures that scripture books (e.g., "Mormon 1") are always displayed in the user's preferred language, even if the underlying data is stored in English.
-- **Date/Time Localization**: Uses standard JavaScript `Intl` APIs combined with the user's selected language to format dates according to local conventions.
+**scripture-habit** is a global-first application. Our localization strategy ensures that every user, regardless of their language (English, Japanese, Spanish, Tagalog, etc.), feels at home with both the interface and the content.
 
 ---
 
-## ⚙️ Backend Localization
+## 🎨 Frontend Architecture: `LanguageContext`
 
-The backend API handles localized content for system messages, automated posts, and push notifications.
+The heart of frontend localization is the `LanguageContext.tsx`.
 
-### `api_internal/lib/i18n.ts`
-This library acts as the central hub for server-side translations:
-- **`translations` Bundle**: A static store of all translated strings (locales) for backend triggers.
-- **`t(lang, key, replacements)`**:
-  - Fetches the correct string based on the user's documented language preference.
-  - Supports string interpolation (e.g., `"{nickname} started a streak!"`).
-  - **Auto-fallback**: If a key is missing in the target language, it automatically falls back to English to prevent empty UI elements.
+### 1. The `t()` Hook
+We use a streamlined translation hook that provides:
+- **String Interpolation**: Supports dynamic values (e.g., `"{name} added a note"`).
+- **Graceful Fallback**: If a key is missing in the current language, it automatically returns the English (`en`) equivalent to avoid blank UI elements.
 
----
-
-## 🤖 AI-Driven Content Localization
-
-Traditional i18n handles static strings, but **scripture-habit** also localizes user-generated content using AI.
-
-### Automated Translation
-When a user views a note in a group with members speaking mixed languages:
-1.  The app detects if the note's language differs from the viewer's language.
-2.  It invokes the AI Translation subsystem (`/api/translate`).
-3.  The result is cached and persisted, allowing for a localized chat experience without manual translation.
-
-### Localized Recaps & Questions
-The AI is instructed to generate **Weekly Recaps** and **Ponder Questions** directly in the specific dialect of the user. For example, a group of Japanese speakers will receive an AI-generated summary entirely in Japanese, even if the system-level prompts were managed in a mix of languages.
+### 2. Scripture Book Normalization
+Handling scripture titles across languages is difficult. We solve this with a **Mapping Strategy**:
+- All scripture data is stored internally with a standardized key.
+- The `UI` Layer uses a mapping function (e.g., `getBookTitle(standardKey, userLang)`) to display "Book of Mormon" as "モルモン書" or "Libro de Mormón" instantly.
 
 ---
 
-## 🌎 Supported Languages
+## ⚙️ Backend Logic: Template System
 
-We currently support and maintain locale files for:
-- English (`en`)
-- Japanese (`ja`)
-- Spanish (`es`)
-- Portuguese (`pt`)
-- Chinese (`zh`/`zho`)
-- Vietnamese (`vi`)
-- Thai (`th`)
-- Korean (`ko`)
-- Tagalog (`tl`)
-- Swahili (`sw`)
+The backend (`api_internal/lib/i18n.ts`) handles strings for system messages, push notifications, and AI prompts.
+
+### Locale Bundles
+Translations are stored in modular `.ts` files under `api_internal/locales/`. 
+- **Type Safety**: The `SupportedLanguage` type ensures we only attempt to load valid bundles.
+- **Replacements**: A robust substitution engine handles placeholders like `{nickname}` or `{streak}` within notification templates.
+
+---
+
+## 🤖 AI Localization: Content Translation
+
+Unlike static UI strings, user-generated study notes are localized dynamically.
+
+### 1. Auto-Detection
+The app detects if a note's language differs from the viewer's preferred language.
+
+### 2. AI Translation (`/api/translate`)
+- The backend identifies the `targetLanguage`.
+- A specialized AI prompt ensures that the markdown structure is preserved while the religious terminology is translated accurately.
+- **Result Persistence**: The translation is saved to the message document, ensuring it only needs to be translated *once* per language.
+
+---
+
+## 🌍 Supported Language Matrix
+
+| Code | Language | Region |
+| :--- | :--- | :--- |
+| `en` | English | Global |
+| `ja` | Japanese | Japan |
+| `es` | Spanish | Latin America / Spain |
+| `pt` | Portuguese | Brazil / Portugal |
+| `zh` | Chinese | Simpl. / Trad. |
+| `vi` | Vietnamese | Vietnam |
+| `th` | Thai | Thailand |
+| `ko` | Korean | South Korea |
+| `tl` | Tagalog | Philippines |
+| `sw` | Swahili | East Africa |
+
+---
+
+## 🚀 Adding a New Language
+
+1.  **Backend**: Add a new file in `api_internal/locales/` (e.g., `fr.ts`) and register it in `i18n.ts`.
+2.  **Frontend**: Update `LanguageContext.tsx` with the new translation bundle and flag icon.
+3.  **AI**: Add the language name to `languageNames` in `lib/schemas.ts` so the AI knows the target destination.

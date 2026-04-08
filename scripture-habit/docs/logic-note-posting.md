@@ -1,106 +1,80 @@
-# Note Posting Mechanism: Detailed Documentation
+# Note Posting & Streak Logic: Technical Deep-Dive
 
-This document explains the end-to-end flow of posting a note in **scripture-habit**, covering calculations, database transactions, and real-time synchronization.
-
----
-
-## 1. Frontend Phase (`src/components/newnote/`)
-
-### User Interaction
-1.  **Form Input**: User selects a scripture category, enters a chapter/URL, and writes a comment.
-2.  **Validation**: `useNoteSubmission` ensures mandatory fields are filled. It enforces URL requirements for specific categories like "General Conference".
-3.  **Submission**: On clicking "Post", `useNoteSubmission` triggers an API request to `/api/post-note`.
-
-### API Request Payload
-```json
-{
-  "chapter": "John 3:16",
-  "comment": "God so loved the world...",
-  "scripture": "New Testament",
-  "shareOption": "all",
-  "timeZone": "Asia/Tokyo",
-  "language": "ja",
-  "optimisticId": "..."
-}
-```
+The Note Posting mechanism is the heart of the "Habit" loop in **scripture-habit**. It is designed to be fair, encouraging, and highly reliable across timezones.
 
 ---
 
-## 2. Backend Transaction Phase (`api_internal/services/NoteService`)
+## 🔥 The Streak Engine (`api_internal/lib/streak-engine.ts`)
 
-The backend processing is wrapped in a **strict Firestore Transaction** to ensure atomicity.
+We use a unique **36-hour window** logic to calculate streaks, rather than a strict 24-hour calendar day.
 
-### Step A: Dependency Reads
-The service reads current state before any writes:
-- **User Document**: Fetches `streakCount`, `highestStreak`, `lastPostDate`, and `groupIds`.
-- **Group Documents**: Fetches metadata for all groups the user belongs to (up to a limit of 20).
-
-### Step B: The Calculation Core (`StreakEngine`)
-The `StreakEngine` determines if the streak should increment, reset, or stay the same:
-- **Today/Yesterday Logic**: Calculated based on the provided `timeZone`.
-- **36-Hour Grace Period**: A post is considered "consecutive" if it's within **36 hours** of the last post, or if it's on the calendar "yesterday". This handles life's delays more gracefully than a strict calendar day.
-- **Level Calculation**: Level is derived from `daysStudiedCount`.
-  - 公式: `Level = floor(daysStudiedCount / 7) + 1`
-  - (例: 7日勉強するごとにレベルが1上がります)
-
-### Step C: Atomized Writes
-The transaction executes all writes simultaneously:
-1.  **User Stats Update**:
-    - `lastPostAt`: Current server time.
-    - `daysStudiedCount`: +1 (if a new day).
-    - `streakCount`: Updated based on `StreakEngine`.
-    - `highestStreak`: Updated if `newStreak > currentHighest`.
-2.  **Message Creation**: A new message document is created in `groups/{gid}/messages/`.
-3.  **Group Metadata Update**:
-    - `lastMessageAt`: Current time.
-    - `messageCount`: +1.
-    - `noteCount`: +1.
-    - `memberLastActive.{uid}`: Updated to track inactivity.
-4.  **Read Status Sync**: The user's `groupStates/{gid}.readMessageCount` is set to the current `messageCount` so the sender sees 0 unread.
-5.  **Personal Note**: The note is saved to `users/{uid}/notes/`.
+### The Algorithm
+1.  **Timezone Normalization**: The system takes the user's `timeZone` and `lastPostAt` timestamp.
+2.  **Grace Period**: 
+    - A streak continues if a new note is posted within **36 hours** of the last note.
+    - This allows users to post late at night one day and early the next morning without losing progress, or miss a full calendar day due to travel/timezone shifts.
+3.  **Calculation**:
+    ```typescript
+    // Pseudocode
+    if (diffMs < 36 * 3600 * 1000) {
+       streak += 1; // Or stays the same if posted twice in 24h
+    } else {
+       streak = 1; // Reset
+    }
+    ```
 
 ---
 
-## 3. Synchronization & Side Effects
+## 💎 The Post Transaction (Atomic Steps)
 
-### Real-time UI Propagation
-- **Sender**: Receives a success 200 OK, triggers **Confetti** and a Toast notification. The `useDashboardGroups` listener picks up the metadata change instantly.
-- **Group Members**: Their `onSnapshot` listeners on `groups/{gid}/messages` trigger, showing the new note immediately.
+To ensure data integrity, every note post is wrapped in a `db.runTransaction()`. The following **6 steps** happen at once:
 
-### Streak Announcements (System Messages)
-If the user's streak was updated and is > 0, the system automatically posts an "announcement" message to all groups:
-- **Message Type**: `streakAnnouncement`.
-- **Content**: "[User] has reached a [N] day streak! 🔥" (localized).
-
-### Push Notifications
-`NotificationService.notifyNotePosted` is called outside the transaction (post-success):
-1.  Fetches tokens for all group members (excluding the sender).
-2.  Sends an FCM (Firebase Cloud Messaging) payload with the note preview.
+1.  **Validate**: Ensures the user is a member of the target group.
+2.  **Calculate Stats**: Invokes `StreakEngine` to determine the new `streakCount` and `level` (based on `daysStudiedCount`).
+3.  **Create Message**: A new document is written to `groups/{id}/messages` containing the note content.
+4.  **Sync Personal Note**: A duplicate is written to `users/{uid}/notes` for long-term personal storage.
+5.  **Update User Profile**: Atomic increment of `totalNotes` and updates to `lastPostAt`, `streakCount`, and `level`.
+6.  **Metadata Update**: Updates `lastMessageAt/Nickname` and `lastNoteAt/Nickname` on the main group document to trigger real-time sidebar updates.
 
 ---
 
-## 🔄 Data Flow Summary
+## 🤝 Group Unity Logic (`dailyActivity`)
+
+The "Unity" bar in the group chat reflects collective effort for the current calendar day (UTC).
+- **Active Members**: During the transaction, the user's UID is added to the group's `dailyActivity.activeMembers[]` array.
+- **Deduplication**: The array is unique; posting multiple times in one day only counts as one "Unity point" per member.
+- **Reset**: The cron job OR the first post of a new UTC day resets the `dailyActivity` object.
+
+---
+
+## 🏆 Level Derivation
+
+Level is a derived value calculated as follows:
+`Level = floor(daysStudiedCount / 7) + 1`
+
+- **Why 7?**: We use a weekly cadence. Completing 7 distinct days of study (regardless of streaks) earns you a new level.
+- **Persistence**: While it's a derived value, we persist it to the `users` document to allow for high-performance sorting in leaderboards and profiles.
+
+---
+
+## 🚦 Posting Flow Diagram
 
 ```mermaid
-graph TD
-    A[Frontend: Submit Form] -->|POST /api/post-note| B(Express API)
-    B --> C{Firestore Transaction}
-    C -->|Read| D[User & Group Data]
-    D --> E[StreakEngine Calculation]
-    E -->|Write| F[Update User Stats]
-    E -->|Write| G[Create Messages in Groups]
-    E -->|Write| H[Update Group Metadata]
-    C -->|Success| I[Confetti & Success Toast]
-    C -->|Success| J[System Streak Announcement]
-    C -->|Success| K[Push Notifications]
+sequenceDiagram
+    participant FE as Frontend (NewNote)
+    participant API as PostNote API
+    participant SE as StreakEngine
+    participant DB as Firestore Transaction
+    
+    FE->>API: Post Note (Text, scripture, etc.)
+    API->>SE: calculateNextStreak(lastPostAt, currentTime)
+    SE-->>API: New streak = 7, Level = 2
+    API->>DB: [Atomic Write]
+    Note right of DB: Create Message
+    Note right of DB: Create Personal Note
+    Note right of DB: Update User Stats
+    Note right of DB: Update Group Activity
+    DB-->>API: Success
+    API-->>FE: HTTP 200 + New Stats
+    FE->>FE: Trigger Confetti & Success Toast
 ```
-
----
-
-## 💎 Critical Synchronization Logic
-
-### 1. Inactivity Protection
-Each note post updates `memberLastActive.{uid}` in the group metadata. This is used by a separate background "Auto-Kick" logic to determine if a member has been inactive longer than the group's threshold.
-
-### 2. Note-Message Linking
-The message in the group contains `originalNoteId`. If the user edits their note later, the system uses this ID to synchronize changes across all shared groups.

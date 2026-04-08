@@ -1,45 +1,77 @@
-# Notification System: Push & Delivery
+# Notification System: Delivery Reliability
 
-The **scripture-habit** notification system ensures that users stay engaged with their groups through real-time push notifications delivered via Firebase Cloud Messaging (FCM).
-
----
-
-## 🔑 Token Management
-
-The system stores FCM tokens in two locations to balance privacy and functionality:
-1.  **Public (`users/{uid}/fcmTokens`)**: Primary storage for easy retrieval during group notifications.
-2.  **Private (`users/{uid}/private/tokens/fcmTokens`)**: Secondary fallback for enhanced security logic.
-
-The backend `getUserFcmTokens` helper retrieves and deduplicates tokens from both locations to ensure maximum deliverability.
+The **Notifications Subsystem** ensures that the "social pressure" of the habit loop works effectively by delivering real-time alerts when group members post notes or achieves milestones.
 
 ---
 
-## 📡 Delivery Pipeline
+## 🔑 Dual Token Strategy
 
-The notification flow follows a **Decoupled Delivery** pattern:
-1.  **Trigger**: A business action occurs (e.g., `NoteService.postNote` succeeds).
-2.  **Notification Service**: `NotificationService.notifyNotePosted` is invoked.
-3.  **Token Collection**: The service identifies all members of the target groups.
-4.  **Multicast Sending**: `sendPushNotification` uses FCM's `sendEachForMulticast` to deliver the payload to up to 500 tokens in a single batch.
+We store FCM tokens in two locations to maximize deliverability while maintaining privacy:
+1.  **Public Site (`users/{uid}/fcmTokens`)**: Fast access for multicast group notifications.
+2.  **Private Vault (`users/{uid}/private/tokens/fcmTokens`)**: Fallback for more sensitive system alerts.
 
-### Payload Structure
-We send both `notification` (system-handled) and `data` (app-handled) fields:
-- **Title/Body**: Visible notification text (e.g., "New note from [User]").
-- **Data**: JSON object containing `groupId` and `type: 'note'`. This allows the app to open the correct chat screen when the user taps the notification.
+During notification delivery, the `getUserFcmTokens` helper aggregates and unique-ifies tokens from both locations.
 
 ---
 
-## 🧹 Self-Healing & Cleanup
+## ⚡ Multicast Sending & Chunking
 
-To prevent "ghost" tokens from slowing down deliveries, the system implements an automatic cleanup loop:
-- **Detection**: FCM returns `messaging/invalid-registration-token` or `messaging/registration-token-not-registered` if a token is no longer valid (e.g., app uninstalled).
-- **Cleanup**: The `cleanupTokens` helper is immediately triggered to remove these specific tokens from both the public and private Firestore locations.
+Firestore messaging supports high-volume sending, but it has a 500-token limit per request. Our `sendPushNotification` utility implements **Automatic Chunking**:
+
+- **Chunk Size**: 500 tokens.
+- **Multicast Loop**: If a group has 2,000 active tokens across all members, the system automatically performs 4 optimized parallel requests.
+- **`sendEachForMulticast`**: We use the latest Firebase Admin SDK method which provides granular success/failure reports for *each individual token* within the chunk.
 
 ---
 
-## 🛠️ Native Integration (Capacitor)
+## 🧹 Self-Healing Token Lifecycle
 
-On mobile devices (Android/iOS), the app uses the `@capacitor/push-notifications` plugin:
-1.  **Permission**: Requested when the user clicks "Enable Notifications" on the Dashboard.
-2.  **Registration**: Once granted, the FCM token is generated and sent to our `/api/register-fcm-token` endpoint.
-3.  **Foreground Handling**: If the app is open, the notification is suppressed to prevent UI overlapping, as the real-time `onSnapshot` listener will already reflect the changes.
+Ghost tokens (tokens for uninstalled apps or expired devices) cause latency and unnecessary API load. We implement a **Self-Healing Loop**:
+
+1.  **Detection**: The Admin SDK reports `messaging/invalid-registration-token`.
+2.  **Capture**: The failed tokens are extracted from the multicast response.
+3.  **Traceability**: The `tokenToUserMap` identifies which User ID owns the failed token.
+4.  **Pruning**: `cleanupTokens` removes the failed token from both the Public and Private Firestore locations.
+
+---
+
+## 📦 Payload Architecture: Notification vs. Data
+
+Every push we send is a "Hybrid Payload" to ensure best compatibility across Android and iOS.
+
+| Key | Purpose | Logic |
+| :--- | :--- | :--- |
+| **`notification`** | **Visual** | Handled by OS. Displays title and body even if app is closed. |
+| **`data`** | **Programmatic** | Handled by Capacitor. Includes `groupId` and `type` for deep-linking. |
+
+### Foreground Suppression
+If the app is open (foreground), we often suppress the visual notification banner because the **real-time `onSnapshot` listener** already shows the content in the chat. This prevents redundant information overload.
+
+---
+
+## 🚦 Communication Flow Diagram
+
+```mermaid
+graph LR
+    subgraph Backend
+        Trigger[Action Trigger]
+        Sync[NotificationService]
+        Push[lib/notifications]
+    end
+
+    subgraph Firebase
+        FCM[Cloud Messaging]
+    end
+
+    subgraph Native_Mobile
+        Capacitor[Capacitor Bridge]
+        OS[Android/iOS Tray]
+    end
+
+    Trigger --> Sync
+    Sync -->|get tokens| Push
+    Push -->|chunk 500| FCM
+    FCM --> Capacitor
+    FCM --> OS
+    Capacitor -->|open group| AppUI[App UI]
+```
