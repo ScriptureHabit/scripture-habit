@@ -6,7 +6,6 @@ import { Group } from '../../../types/chat';
 import { groupMemberConverter } from '../../../utils/firestoreConverters';
 
 export const useDashboardGroups = (userData: UserData | null, initialGroupId: string | null) => {
-    const [userGroups, setUserGroups] = useState<Group[]>([]);
     const [rawUserGroups, setRawUserGroups] = useState<Group[]>([]);
     const [groupStates, setGroupStates] = useState<Record<string, { readMessageCount?: number }>>({});
     const [loadingGroupStates, setLoadingGroupStates] = useState<boolean>(true);
@@ -15,27 +14,24 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
     const groupIds: string[] = userData?.groupIds || (userData?.groupId ? [userData.groupId] : []);
     const groupIdsKey = JSON.stringify([...groupIds].sort());
 
-    // Fetch user groups details
+    // Fetch user groups details with real-time listeners
     useEffect(() => {
         if (!userData?.uid || groupIds.length === 0) {
             setRawUserGroups([]);
             return;
         }
 
-        // Set active group if not set
         if (!activeGroupId && groupIds.length > 0) {
             setActiveGroupId(groupIds[0]);
         }
 
         const unsubscribers: (() => void)[] = [];
 
-        // 1. Unified Listener for all Groups (up to 30)
         const groupsQuery = query(
             collection(db, 'groups'),
             where('members', 'array-contains', userData.uid)
         );
 
-        // Remove includeMetadataChanges to avoid excessive internal SDK state updates and B815 errors
         const unsubGroups = onSnapshot(groupsQuery, (snapshot) => {
             const groupsMap: Record<string, Group> = {};
             snapshot.docs.forEach(docSnap => {
@@ -61,9 +57,6 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
         });
         unsubscribers.push(unsubGroups);
 
-        // 2. Specialized Listeners for Member specific data in each group
-        // We use a Map to track these listeners if the effect re-runs, 
-        // though for now simple unsubscription on cleanup is fine.
         groupIds.forEach(gid => {
             const memberRef = doc(db, 'groups', gid, 'members', userData.uid).withConverter(groupMemberConverter);
             const unsubMember = onSnapshot(memberRef, (memberSnap) => {
@@ -81,14 +74,10 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
             unsubscribers.push(unsubMember);
         });
 
-        return () => {
-            unsubscribers.forEach(unsub => unsub());
-        };
-    }, [userData?.uid, groupIdsKey]); // Removed activeGroupId from dependencies to prevent churn when simply switching views
+        return () => unsubscribers.forEach(unsub => unsub());
+    }, [userData?.uid, groupIdsKey]);
 
-
-
-    // Fetch user group states (read counts)
+    // Fetch user group states (read counts) with real-time listener
     useEffect(() => {
         if (!userData?.uid) {
             setGroupStates({});
@@ -102,75 +91,40 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
             snapshot.forEach(docSnap => {
                 states[docSnap.id] = docSnap.data();
             });
-            console.log("[DashboardGroups] GroupStates Live Sync:", states);
             setGroupStates(states);
             setLoadingGroupStates(false);
         }, (err: FirestoreError) => {
-            if (err.code !== 'permission-denied') {
-                console.log("Error fetching group states:", err);
-            }
+            if (err.code !== 'permission-denied') console.log("Error fetching group states:", err);
             setLoadingGroupStates(false);
         });
 
         return () => unsubscribe();
     }, [userData?.uid]);
 
-    // Combine raw groups with unread counts using useMemo for atomic updates
-    const combinedGroups = useMemo(() => {
-        const counts: Record<string, any> = {};
-        const result = rawUserGroups.map(group => {
+    // Compute userGroups in real-time based on raw data and states
+    const userGroups = useMemo(() => {
+        return rawUserGroups.map(group => {
             const state = groupStates[group.id];
-            
-            // TRUTH: Ensure we are working with numbers to prevent calculation failure
             const readCount = Number(state?.readMessageCount || 0);
             const totalCount = Number(group.messageCount || 0);
             const unreadCount = Math.max(0, totalCount - readCount);
-
-            counts[group.id] = { 
-                total: totalCount, 
-                read: readCount, 
-                unread: unreadCount, 
-                name: group.name,
-                hasState: !!state,
-                stateData: state // Log the raw state data for each group
-            };
 
             return {
                 ...group,
                 unreadCount
             };
         }) as Group[];
-
-        if (Object.keys(counts).length > 0) {
-            console.log("[DashboardGroups] Sync Detail:", counts);
-        }
-        
-        return result;
     }, [rawUserGroups, groupStates]);
 
-    // Expose combined groups
+    // Atomic update of activeGroupId if membership changes
     useEffect(() => {
-        setUserGroups(combinedGroups);
-    }, [combinedGroups]);
+        if (!userData || userGroups.length === 0) return;
 
-    // Update activeGroupId if it needs to be updated based on memberships
-    useEffect(() => {
-        if (!userData) return;
-
-        if (userGroups.length > 0) {
-            const isActiveGroupLoaded = userGroups.find(g => g.id === activeGroupId);
-            if (!isActiveGroupLoaded) {
-                const userGroupIds = userData?.groupIds || (userData?.groupId ? [userData.groupId] : []);
-                const isMemberOfActiveGroup = activeGroupId && userGroupIds.includes(activeGroupId);
-
-                if (!isMemberOfActiveGroup) {
-                    setActiveGroupId(userGroups[0].id);
-                }
-            }
-        } else {
-            const hasGroups = (userData.groupIds && userData.groupIds.length > 0) || userData.groupId;
-            if (!hasGroups) {
-                setActiveGroupId(null);
+        const isActiveGroupLoaded = userGroups.find(g => g.id === activeGroupId);
+        if (!isActiveGroupLoaded) {
+            const userGroupIds = userData?.groupIds || (userData?.groupId ? [userData.groupId] : []);
+            if (activeGroupId && !userGroupIds.includes(activeGroupId)) {
+                setActiveGroupId(userGroups[0].id);
             }
         }
     }, [userGroups, userData, activeGroupId]);

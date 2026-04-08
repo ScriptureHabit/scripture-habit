@@ -118,7 +118,7 @@ export const useDashboardNotifications = (
             console.log("[DashboardNotifications] Set Most Recent Notification:", mostRecent);
         }
         setLatestNoteNotification(mostRecent);
-    }, [userGroups, userData?.uid, loadingGroupStates, activeGroupId]);
+    }, [userGroups, userData?.uid, loadingGroupStates, activeGroupId, selectedView]);
 
     return { 
         latestNoteNotification,
