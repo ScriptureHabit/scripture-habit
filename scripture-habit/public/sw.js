@@ -17,12 +17,15 @@ const messaging = firebase.messaging();
 messaging.onBackgroundMessage((payload) => {
     console.log('[sw.js] Received background message ', payload);
 
-    const notificationTitle = payload.data?.title || 'Scripture Habit';
+    // Prefer data block but fallback to notification if sent by other tools
+    const notificationTitle = payload.data?.title || payload.notification?.title || 'Scripture Habit';
+    const notificationBody = payload.data?.body || payload.notification?.body || '';
+    
     const notificationOptions = {
-        body: payload.data?.body || '',
+        body: notificationBody,
         icon: '/favicon-192.png',
         badge: '/favicon-192.png', 
-        data: payload.data,
+        data: payload.data || payload.notification,
     };
 
     self.registration.showNotification(notificationTitle, notificationOptions);
