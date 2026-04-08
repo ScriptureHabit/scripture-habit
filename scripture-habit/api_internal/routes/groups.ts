@@ -248,7 +248,6 @@ router.post('/update-read-status', authenticate, verifyAppCheck, async (req: Aut
 
     const { groupId } = validation.data;
     const uid = req.user?.uid;
-    const userAgent = req.header('User-Agent') || 'unknown';
     if (!uid) return res.status(401).json({ error: 'Unauthorized' });
 
     try {
