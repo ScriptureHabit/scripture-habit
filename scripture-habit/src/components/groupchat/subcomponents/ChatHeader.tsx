@@ -1,23 +1,41 @@
 import { FC } from 'react';
 import { UilArrowLeft, UilPen, UilCopy, UilCommentAlt, UilTrashAlt, UilTimes, UilUsersAlt, UilAnalysis } from '@iconscout/react-unicons';
 import GroupMenuItem from './GroupMenuItem';
-import { useChatData, useChatActions, useChatUI } from '../ChatContext';
+import { 
+  useChatData, 
+  useChatGroupActions, 
+  useChatUIActions 
+} from '../ChatContext';
+import { useChatStore } from '../../../store/useChatStore';
+import { useModalStore } from '../../../store/useModalStore';
 import { Group } from '../../../types/chat';
 
 const ChatHeader: FC = () => {
+  // 1. Data
   const { 
-      groupData, unityPercentage, isOwner, language, groupId, userData, userGroups 
+      groupData, unityPercentage, isOwner, language, groupId, userData, userGroups,
+      isRecapAvailable, isRecapLoading
   } = useChatData();
+
+  // 2. Actions
   const { 
-      t, onBack, onGroupSelect, togglePublicStatus, handleShowMembers, handleShowUnityModal,
+      togglePublicStatus, handleShowMembers, handleShowUnityModal,
       handleGenerateWeeklyRecap, handleCopyInviteLink,
-      setShowInviteModal, setActiveModal, setNewGroupName, setNewGroupDescription,
-      setNewTranslatedName, setNewTranslatedDesc, translatedGroupName, translatedGroupDesc,
-      setShowMobileMenu
-  } = useChatActions();
+      translatedGroupName, translatedGroupDesc
+  } = useChatGroupActions();
+
   const { 
-      isRecapAvailable, isRecapLoading, showMobileMenu 
-  } = useChatUI();
+      t, onBack, onGroupSelect 
+  } = useChatUIActions();
+
+  // 3. Zustand UI State
+  const { 
+    showMobileMenu, setShowMobileMenu, setShowInviteModal 
+  } = useChatStore();
+  const { 
+    setActiveModal, setNewGroupName, setNewGroupDescription,
+    setNewTranslatedName, setNewTranslatedDesc 
+  } = useModalStore();
 
   return (
     <>

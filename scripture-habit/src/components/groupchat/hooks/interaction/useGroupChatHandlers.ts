@@ -4,7 +4,9 @@ import { doc, getDoc } from 'firebase/firestore';
 import { safeStorage } from '../../../../utils/storage';
 import { UserProfileBrief, GroupData, MembersMap } from '../../../../types/chat';
 import { ReactionPreview } from '../../../../../types/firestore';
-import { ReactionItem, ActiveModal } from '../../../../store/useModalStore';
+import { ReactionItem } from '../../../../store/useModalStore';
+import { useChatStore } from '../../../../store/useChatStore';
+import { useModalStore } from '../../../../store/useModalStore';
 
 interface UseGroupChatHandlersParams {
   groupData: GroupData | null;
@@ -12,13 +14,8 @@ interface UseGroupChatHandlersParams {
   membersList: UserProfileBrief[];
   initialShowInviteModal: boolean;
   loading: boolean;
-  setShowInviteModal: (show: boolean) => void;
-  setActiveModal: (modal: ActiveModal) => void;
   setMembersLoading: (loading: boolean) => void;
-  setShowMobileMenu: (value: boolean) => void;
   setMembersList: (updater: (prev: UserProfileBrief[]) => UserProfileBrief[]) => void;
-  setReactionsToShow: (reactions: ReactionItem[]) => void;
-  setShowInactivityPolicyBanner: (value: boolean) => void;
 }
 
 export const useGroupChatHandlers = ({
@@ -27,14 +24,13 @@ export const useGroupChatHandlers = ({
   membersList,
   initialShowInviteModal,
   loading,
-  setShowInviteModal,
-  setActiveModal,
   setMembersLoading,
-  setShowMobileMenu,
   setMembersList,
-  setReactionsToShow,
-  setShowInactivityPolicyBanner,
 }: UseGroupChatHandlersParams) => {
+  const { 
+    setShowInviteModal, setShowInactivityPolicyBanner, setShowMobileMenu 
+  } = useChatStore();
+  const { setActiveModal, setReactionsToShow } = useModalStore();
   const contextMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

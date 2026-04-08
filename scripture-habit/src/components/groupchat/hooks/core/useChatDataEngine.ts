@@ -1,15 +1,12 @@
-import { useReducer, useEffect, useRef, useCallback, Dispatch } from 'react';
-import { collection, query, orderBy, onSnapshot, doc, getDocs, limit, startAfter, loadBundle, Unsubscribe } from 'firebase/firestore';
+import { useReducer, useEffect, useRef, Dispatch } from 'react';
+import { collection, query, orderBy, onSnapshot, doc, limit, loadBundle, Unsubscribe } from 'firebase/firestore';
 import * as Sentry from "@sentry/react";
 import { Message, GroupData, MembersMap, UserProfileBrief } from '../../../../types/chat';
 import { db } from '../../../../firebase';
 import { UserData } from '../../../../types/user';
 import { groupConverter, messageConverter, groupMemberConverter } from '../../../../utils/firestoreConverters';
 import { UserProfileBriefSchema, GroupSchema } from '../../../../types/schemas';
-
 import apiClient from '../../../../utils/apiClient';
-import { auth } from '../../../../firebase';
-import { useDashboardActions } from '../../../../components/dashboard/hooks/useDashboardActions';
 import { chatReducer, initialState, ChatAction, ChatStatus } from './chatReducer';
 
 /**
@@ -51,7 +48,6 @@ const useGroupMembersSync = (groupId: string | null, status: ChatStatus, members
   useEffect(() => {
     if (!groupId) return;
 
-    // TRUTH: Real-time listener for members subcollection to capture read status changes
     const membersRef = collection(db, 'groups', groupId, 'members').withConverter(groupMemberConverter);
     
     const unsubscribe = onSnapshot(membersRef, (snapshot) => {
@@ -74,7 +70,7 @@ const useGroupMembersSync = (groupId: string | null, status: ChatStatus, members
       }
     });
 
-    return () => unsubscribe();
+    return unsubscribe;
   }, [groupId, dispatch]);
 
   useEffect(() => {
@@ -115,7 +111,6 @@ const useGroupMembersSync = (groupId: string | null, status: ChatStatus, members
 
 /**
  * Sub-hook for Message Stream (Bundle hydration & Real-time messages)
- * !! UI Effects (confetti) removed for data/UI separation !!
  */
 const useMessageStreamSync = (groupId: string | null, userData: UserData | null, dispatch: Dispatch<ChatAction>) => {
   const unsubMessagesRef = useRef<Unsubscribe | null>(null);
@@ -172,7 +167,6 @@ const useMessageStreamSync = (groupId: string | null, userData: UserData | null,
 
     const initializeMessageStream = async () => {
       if (userData?.uid) {
-        // Boost strategy: Attempt hydration, but don't block the UI for more than 800ms.
         try {
           const bundlePromise = (async () => {
             try {
@@ -184,7 +178,7 @@ const useMessageStreamSync = (groupId: string | null, userData: UserData | null,
                 await loadBundle(db, bundleResponse.data);
               }
             } catch (err) {
-              console.warn("[useMessageStreamSync] Bundle boost failed or timed out:", err);
+              console.warn("[useMessageStreamSync] Bundle boost failed:", err);
             }
           })();
 
@@ -192,9 +186,7 @@ const useMessageStreamSync = (groupId: string | null, userData: UserData | null,
             bundlePromise,
             new Promise(resolve => setTimeout(resolve, 800))
           ]);
-        } catch (e) {
-          // Promise.race or bundle failure is non-critical
-        }
+        } catch (e) {}
       }
       
       if (!isCancelled) startListener();
@@ -213,83 +205,14 @@ const useMessageStreamSync = (groupId: string | null, userData: UserData | null,
 };
 
 /**
- * Sub-hook for Syncing Read Status
+ * useChatDataEngine
+ * Pure synchronization with Firestore. UI-agnostic.
  */
-const useUserReadStateSync = (
-  groupId: string | null, 
-  userData: UserData | null, 
-  groupData: GroupData | null, 
-  userReadCount: number | null, 
-  actualMessageCount: number,
-  dispatch: Dispatch<ChatAction>
-) => {
-  const { updateGroupReadStatus } = useDashboardActions(auth?.currentUser as any, userData);
-
-  const updateReadStatus = useCallback(async (gid: string, totalCount: number) => {
-    if (!userData?.uid || !gid || !updateGroupReadStatus) return;
-    try {
-      // Optimistic locally update first so Sidebar/UI feels snappy
-      dispatch({ type: 'SET_READ_COUNT', count: totalCount });
-      await updateGroupReadStatus(gid, totalCount);
-    } catch (err) {
-      console.error("[useUserReadStateSync] Failed to sync read status:", err);
-    }
-  }, [userData?.uid, updateGroupReadStatus, dispatch]);
-
-  const lastForcedSyncGidRef = useRef<string | null>(null);
-
-  useEffect(() => {
-    if (!groupId || !groupData || userReadCount === null) {
-        return;
-    }
-    
-    // TRUTH: Use the highest of metadata count or listener count
-    const totalMsgs = Math.max(groupData.messageCount || 0, actualMessageCount);
-    
-    const isVisible = document.visibilityState === 'visible';
-    // Relaxation: On mobile/PWA, focus is unstable. We rely on visibility + being in the chat view.
-    const isAppActive = isVisible || document.hasFocus();
-
-    // Paranoiac Mode relaxed: Only sync if we have NEW messages to mark as read.
-    // This prevents "downgrading" the read count if groupData.messageCount is stale or messages were deleted.
-    const hasNewContent = totalMsgs > (userReadCount || 0);
-
-    if (hasNewContent && isAppActive) {
-      console.log(`📡 [READ-SYNC] TRIGGERED: group=${groupId}, currentRead=${userReadCount}, newRead=${totalMsgs}, reason=${lastForcedSyncGidRef.current !== groupId ? 'mount' : 'new_msg'}`);
-      updateReadStatus(groupId, totalMsgs);
-      lastForcedSyncGidRef.current = groupId;
-    }
-  }, [groupId, groupData?.messageCount, actualMessageCount, userReadCount, updateReadStatus]);
-
-  useEffect(() => {
-    if (!groupId || !userData?.uid) return;
-    const unsubscribe = onSnapshot(doc(db, 'users', userData.uid, 'groupStates', groupId), (stateSnap) => {
-      dispatch({ type: 'SET_READ_COUNT', count: stateSnap.exists() ? stateSnap.data().readMessageCount || 0 : 0 });
-    }, (err) => {
-      if (err.code !== 'permission-denied') console.error("[useChatDataSync] Read count listener error:", err);
-    });
-    return unsubscribe;
-  }, [groupId, userData?.uid, dispatch]);
-};
-
-/**
- * Main Data Engine: useChatDataSync
- * Purely handles Firestore subscriptions, bundle hydration, and state dispatching.
- * UI-agnostic and side-effect free (except for fetching data).
- */
-export const useChatDataSync = (groupId: string | null, userData: UserData | null, t: (key: string) => string, isViewActive: boolean = false) => {
+export const useChatDataEngine = (groupId: string | null, userData: UserData | null, t: (key: string) => string) => {
   const [state, dispatch] = useReducer(chatReducer, initialState);
   
   useEffect(() => {
-  }, [isViewActive, groupId]);
-
-  const currentGroupIdRef = useRef<string | null>(groupId);
-  const prevMessageCountRef = useRef(0);
-  const latestMessageRef = useRef<Message | null>(null);
-
-  useEffect(() => {
     if (groupId) {
-      currentGroupIdRef.current = groupId;
       dispatch({ type: 'RESET', groupId });
     }
   }, [groupId]);
@@ -298,62 +221,6 @@ export const useChatDataSync = (groupId: string | null, userData: UserData | nul
   useGroupMetadataSync(groupId, dispatch, t);
   useGroupMembersSync(groupId, state.status, state.groupData?.members, state.messages, state.membersMap, dispatch);
   useMessageStreamSync(groupId, userData, dispatch);
-  
-  // Calculate current "truthful" message count including what we've loaded in session
-  const actualMessageCount = state.messages.length;
-  
-  useUserReadStateSync(isViewActive ? groupId : null, userData, state.groupData, state.userReadCount, actualMessageCount, dispatch);
 
-  /**
-   * Action: Pure Data Fetch (No Ref references)
-   */
-  const fetchOlderMessages = async () => {
-    if (!groupId || state.isLoadingOlder || !state.hasMoreOlder || state.messages.length === 0) return;
-    dispatch({ type: 'SET_LOADING_OLDER', isLoading: true });
-
-    try {
-      const oldestMsg = state.messages[0];
-      if (!oldestMsg.createdAt) return;
-      
-      const q = query(
-        collection(db, 'groups', groupId, 'messages').withConverter(messageConverter), 
-        orderBy('createdAt', 'desc'), 
-        startAfter(oldestMsg.createdAt), 
-        limit(20)
-      );
-      const snaps = await getDocs(q);
-      
-      if (!snaps.empty) {
-        const newOlderMsgs = snaps.docs.map(d => d.data()).reverse();
-        dispatch({ type: 'ADD_OLDER_MESSAGES', olderMessages: newOlderMsgs, hasMore: true });
-        return;
-      }
-
-      const bucketsRef = collection(db, 'groups', groupId, 'message_buckets');
-      const bq = query(bucketsRef, orderBy('startTime', 'desc'), startAfter(oldestMsg.createdAt), limit(1));
-      const bucketSnaps = await getDocs(bq);
-
-      if (bucketSnaps.empty) {
-        dispatch({ type: 'ADD_OLDER_MESSAGES', olderMessages: [], hasMore: false });
-      } else {
-        const bucketData = bucketSnaps.docs[0].data() as { messages: Message[] };
-        dispatch({ type: 'ADD_OLDER_MESSAGES', olderMessages: [...(bucketData.messages || [])], hasMore: true });
-      }
-    } catch (e) {
-      console.error("[useGroupMessages] Error loading older messages", e);
-      dispatch({ type: 'SET_LOADING_OLDER', isLoading: false });
-    }
-  };
-
-  return {
-    ...state,
-    loading: state.status === 'loading',
-    groupNotFound: state.status === 'notFound',
-    setInitialScrollDone: () => dispatch({ type: 'SET_SCROLL_DONE' }),
-    fetchOlderMessages,
-    currentGroupIdRef,
-    prevMessageCountRef,
-    latestMessageRef,
-    dispatch
-  };
+  return { state, dispatch };
 };

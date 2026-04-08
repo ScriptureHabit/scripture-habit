@@ -179,10 +179,9 @@ export const useMessageActions = (
     }
   }, [groupId, dispatch, t]);
 
-  const handleToggleReaction = useCallback(async (message: Message) => {
+  const handleToggleReactionDirect = useCallback(async (message: Message, emoji: string) => {
     if (!userData || !userData.uid) return;
     try {
-      const emoji = '👍';
       const currentReactions = message.reactions || {};
       const uids = currentReactions[emoji] || [];
       const currentPreviews = message.reactionPreviews?.[emoji] || [];
@@ -231,6 +230,10 @@ export const useMessageActions = (
       }
     }
   }, [groupId, userData, dispatch, t]);
+
+  const handleToggleReaction = useCallback(async (message: Message) => {
+    return handleToggleReactionDirect(message, '👍');
+  }, [handleToggleReactionDirect]);
 
   const processBatch = useCallback(async () => {
     const queue = [...batchQueueRef.current];
@@ -310,6 +313,7 @@ export const useMessageActions = (
     handleSaveEdit,
     handleConfirmDeleteMessage,
     handleToggleReaction,
+    handleToggleReactionDirect,
     handleTranslateMessage,
     handleLazyTranslate
   };

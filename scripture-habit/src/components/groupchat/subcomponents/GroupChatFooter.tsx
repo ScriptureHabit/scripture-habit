@@ -2,19 +2,29 @@ import { FC, FormEvent } from 'react';
 import { UilTimes } from '@iconscout/react-unicons';
 import MessageInput from './MessageInput';
 import { useMessageInput } from '../hooks/interaction/useMessageInput';
-import { useChatData, useChatActions, useChatInteraction, useChatUI } from '../ChatContext';
+import { 
+    useChatData, 
+    useChatMessageActions, 
+    useChatUIActions 
+} from '../ChatContext';
+import { useChatStore } from '../../../store/useChatStore';
+import { useModalStore } from '../../../store/useModalStore';
 
 const GroupChatFooter: FC = () => {
     const { userData } = useChatData();
+    const { handleSendMessage } = useChatMessageActions();
     const { 
-        t, tArray, handleSendMessage, scrollToBottom, handleDismissInactivityBanner, 
-        onInputFocusChange, handleDismissTooltip, setActiveModal
-    } = useChatActions();
-    const { replyTo, setReplyTo, textareaRef, containerRef, editingMessage } = useChatInteraction();
+        t, tArray, scrollToBottom, onInputFocusChange, 
+        containerRef, textareaRef 
+    } = useChatUIActions();
+    
+    // Zustand States
     const { 
-        showInactivityPolicyBanner, showAddNoteTooltip, activeModal, showDeleteMessageModal,
-        showUnityModal, showInviteModal, showReportModal
-    } = useChatUI();
+        replyTo, setReplyTo, showInactivityPolicyBanner, showAddNoteTooltip,
+        editingMessage, showDeleteMessageModal, showUnityModal, showInviteModal, showReportModal,
+        setShowAddNoteTooltip, setShowInactivityPolicyBanner
+    } = useChatStore();
+    const { activeModal, setActiveModal } = useModalStore();
 
     const isAnyModalOpen = activeModal !== null || showDeleteMessageModal || !!editingMessage || showUnityModal || showInviteModal || showReportModal;
 
@@ -25,10 +35,16 @@ const GroupChatFooter: FC = () => {
         tArray, 
         userData, 
         handleSendMessage, 
-        scrollToBottom, 
-        setReplyTo, 
-        replyTo
+        scrollToBottom
     );
+
+    const handleDismissInactivityBanner = () => {
+        setShowInactivityPolicyBanner(false);
+    };
+
+    const handleDismissTooltip = () => {
+        setShowAddNoteTooltip(false);
+    };
 
     return (
         <>
@@ -44,7 +60,7 @@ const GroupChatFooter: FC = () => {
             replyTo={replyTo}
             setReplyTo={setReplyTo}
             t={t}
-            textareaRef={textareaRef}
+            textareaRef={textareaRef as any}
             newMessage={newMessage}
             setNewMessage={setNewMessage}
             handleKeyDown={handleKeyDown}

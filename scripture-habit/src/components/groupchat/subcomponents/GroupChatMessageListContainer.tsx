@@ -1,21 +1,14 @@
 import { FC, useRef, useLayoutEffect, useState, useEffect } from 'react';
 import GroupChatMessageList from './GroupChatMessageList';
-import { useChatData, useChatInteraction, useChatActions, useChatUI } from '../ChatContext';
+import { useChatData, useChatUIActions } from '../ChatContext';
 
 const GroupChatMessageListContainer: FC = () => {
-  const { messages, userData, membersMap, loading, userReadCount, groupData, language } = useChatData();
+  const { messages, loading } = useChatData();
   const { 
     containerRef, previousScrollHeightRef, 
-    previousScrollTopRef 
-  } = useChatInteraction();
-  const { 
-    t, handleToggleReaction, handleTranslateMessage, handleLazyTranslate, 
-    handleReply, handleMessageClick, handleEditMessage, handleDeleteMessageClick,
-    handleReportClick, handleUserProfileClick, handleShowReactions,
-    loadMoreOlderMessages, hasMoreOlder, isLoadingOlder, translatingIds, translatedTexts,
-    handleScroll
-  } = useChatActions();
-  const { isRecapAvailable } = useChatUI();
+    previousScrollTopRef, loadMoreOlderMessages,
+    hasMoreOlder, isLoadingOlder, handleScroll
+  } = useChatUIActions();
 
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [isVisible, setIsVisible] = useState(false);
@@ -81,28 +74,7 @@ const GroupChatMessageListContainer: FC = () => {
           </div>
         )}
 
-        <GroupChatMessageList 
-          messages={messages}
-          language={language}
-          userData={userData}
-          t={t}
-          handleMessageClick={handleMessageClick}
-          handleEditMessage={handleEditMessage}
-          handleDeleteMessageClick={handleDeleteMessageClick}
-          handleReply={handleReply}
-          handleTranslateMessage={handleTranslateMessage}
-          handleLazyTranslate={handleLazyTranslate}
-          translatingIds={translatingIds}
-          handleToggleReaction={handleToggleReaction}
-          handleReportClick={handleReportClick}
-          handleUserProfileClick={handleUserProfileClick}
-          groupData={groupData}
-          translatedTexts={translatedTexts}
-          handleShowReactions={handleShowReactions}
-          membersMap={membersMap}
-          userReadCount={userReadCount}
-          isRecapAvailable={isRecapAvailable}
-        />
+        <GroupChatMessageList messages={messages} />
       </div>
     </div>
   );

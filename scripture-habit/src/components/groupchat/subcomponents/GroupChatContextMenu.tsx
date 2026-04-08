@@ -1,14 +1,22 @@
 import { FC } from 'react';
 import { UilTrashAlt, UilPen, UilCommentAlt } from '@iconscout/react-unicons';
-import { useChatActions, useChatData, useChatInteraction } from '../ChatContext';
+import { 
+  useChatData, 
+  useChatMessageActions, 
+  useChatUIActions 
+} from '../ChatContext';
+import { useChatStore } from '../../../store/useChatStore';
 
 const GroupChatContextMenu: FC = () => {
     const { userData } = useChatData();
     const { 
-        t, handleReply, handleToggleReaction, handleEditMessage, handleDeleteMessageClick,
-        handleReportClick, closeContextMenu
-    } = useChatActions();
-    const { contextMenu, contextMenuRef } = useChatInteraction();
+        handleReply, handleToggleReaction, handleEditMessage, 
+        handleDeleteMessageClick, handleReportClick
+    } = useChatMessageActions();
+    const { t, closeContextMenu, contextMenuRef } = useChatUIActions();
+    
+    // Zustand UI State
+    const { contextMenu } = useChatStore();
 
     if (!contextMenu.show || !contextMenu.message) return null;
 

@@ -1,56 +1,35 @@
-import { FC, MouseEvent, useEffect, useRef, memo, useMemo } from 'react';
+import { FC, useEffect, useRef, memo, useMemo } from 'react';
 import NoteDisplay from '../../notedisplay/NoteDisplay';
-import { Message, Group, UserProfileBrief, MembersMap } from '../../../types/chat';
-import { UserData } from '../../../types/user';
+import { Message } from '../../../types/chat';
 import { ReactionPreview } from '../../../../types/firestore';
 import SystemMessage from './SystemMessage';
 import GospelLink from './GospelLink';
 import { parseTimestampToMillis } from '../../../utils/timeUtils';
+import { 
+  useChatData, 
+  useChatMessageActions, 
+  useChatGroupActions, 
+  useChatUIActions 
+} from '../ChatContext';
 import './MessageItem.css';
 
 interface MessageItemProps {
   msg: Message;
-  userData: UserData | UserProfileBrief | null;
-  t: (key: string, replacements?: Record<string, string | number>) => string;
-  handleMessageClick: (msg: Message, e: MouseEvent) => void;
-  handleEditMessage: (msg: Message) => void;
-  handleDeleteMessageClick: (msg: Message) => void;
-  handleReply: (msg: Message) => void;
-  handleTranslateMessage: (msg: Message, force?: boolean) => Promise<void>;
-  handleLazyTranslate: (msg: Message) => void;
-  isTranslating: boolean;
-  handleToggleReaction: (msg: Message) => Promise<void>;
-  handleReportClick: (msg: Message) => void;
-  handleUserProfileClick: (userId: string | null) => Promise<void>;
-  groupData: Group | null;
-  translatedText?: string; // Replaced translatedTexts
-  language: string;
-  handleShowReactions: (reactions: Record<string, string[]>, previews?: Record<string, ReactionPreview[]>) => void;
-  membersMap: MembersMap;
-  isRecapAvailable: boolean;
 }
 
 const MessageItem: FC<MessageItemProps> = memo(({
-  msg,
-  userData,
-  t,
-  handleMessageClick,
-  handleEditMessage,
-  handleDeleteMessageClick,
-  handleReply,
-  handleTranslateMessage,
-  handleLazyTranslate,
-  isTranslating,
-  handleToggleReaction,
-  handleReportClick,
-  handleUserProfileClick,
-  groupData,
-  translatedText,
-  language,
-  handleShowReactions,
-  membersMap
+  msg
 }) => {
-  const userUid = userData ? ('uid' in userData ? userData.uid : userData.id) : '';
+  const { userData, groupData, language, membersMap } = useChatData();
+  const { 
+    handleToggleReaction, handleTranslateMessage, handleLazyTranslate, 
+    handleReply, handleMessageClick, handleEditMessage, handleDeleteMessageClick,
+    handleReportClick, translatingIds, translatedTexts 
+  } = useChatMessageActions();
+  const { handleUserProfileClick, handleShowReactions } = useChatGroupActions();
+  const { t } = useChatUIActions();
+
+  const userUid = userData ? ('uid' in userData ? userData.uid : (userData as any).id) : '';
   const isMe = msg.senderId === userUid;
 
   const observerRef = useRef<HTMLDivElement>(null);
@@ -81,11 +60,7 @@ const MessageItem: FC<MessageItemProps> = memo(({
       const memberStatus = membersMap?.[uid];
       const readAt = memberStatus?.lastReadAt || legacyLastReadAt?.[uid];
       
-      // 1. Check timestamp-based read status
       const didReadByTime = readAt && parseTimestampToMillis(readAt) >= msgTime;
-      
-      // 2. NEW: Check reaction-based read status (If you reacted, you definitely saw it)
-      // This bridges the sync gap when someone reacts but the lastReadAt hasn't propagated yet.
       const didReact = msg.reactions && Object.values(msg.reactions).some(uids => uids.includes(uid));
 
       if (didReadByTime || didReact) {
@@ -99,6 +74,9 @@ const MessageItem: FC<MessageItemProps> = memo(({
     const kickThreshold = userData && 'kickThreshold' in userData ? userData.kickThreshold : undefined;
     return <SystemMessage msg={msg} t={t} kickThreshold={kickThreshold as number | undefined} />;
   }
+
+  const translatedText = translatedTexts[msg.id] || msg.translations?.[language];
+  const isTranslating = translatingIds.has(msg.id);
 
   return (
     <div 
@@ -128,7 +106,7 @@ const MessageItem: FC<MessageItemProps> = memo(({
           if (msg.isOptimistic) return;
           if ((e.target as HTMLElement).tagName !== 'A') {
             e.stopPropagation();
-            handleMessageClick(msg, e);
+            handleMessageClick(msg, e as any);
           }
         }}
       >
@@ -188,7 +166,7 @@ const MessageItem: FC<MessageItemProps> = memo(({
                   <NoteDisplay
                     text={msg.text}
                     isSent={isMe}
-                    translatedText={translatedText || msg.translations?.[language]}
+                    translatedText={translatedText}
                     scripture={msg.scripture}
                     chapter={msg.chapter}
                     isTranslating={isTranslating}

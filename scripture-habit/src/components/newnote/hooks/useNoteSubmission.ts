@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 import confetti from 'canvas-confetti';
 import { UserData } from '../../../types/user';
 import { buildNoteSearchTokens } from '../../../utils/searchTokenUtils';
+import { formatNoteText, getNoteValidationError } from '../../../utils/noteLogic';
 
 import { Message } from '../../../types/chat';
 import { Note } from '../../../types/note';
@@ -39,29 +40,33 @@ export const useNoteSubmission = (
         urlMeta: { title: string; speaker?: string } | null,
         onSuccess: () => void
     ) => {
-        if (loading || !scripture || !chapter || !comment) return;
+        if (loading) return;
 
-        // --- NEW VALIDATION: Enforce URL for certain categories ---
-        const isUrl = chapter.startsWith('http');
-        if (scripture === "General Conference" && !isUrl) {
-            toast.error(t('newNote.urlRequiredForGC'));
-            return;
-        }
-        if (scripture === "BYU Speeches" && !isUrl) {
-            toast.error(t('newNote.urlRequiredForBYU'));
+        // 1. Validation
+        const validationError = getNoteValidationError(scripture, chapter);
+        if (validationError) {
+            toast.error(t(validationError));
             return;
         }
 
         setLoading(true);
 
         try {
+            const messageText = formatNoteText(scripture, chapter, comment);
+            const searchTokens = buildNoteSearchTokens({ 
+                scripture, 
+                chapter, 
+                comment, 
+                title: urlMeta?.title, 
+                speaker: urlMeta?.speaker 
+            });
+
             if (noteToEdit) {
-                // UPDATE LOGIC (Batched updates)
+                // UPDATE FLOW (Direct Firestore)
                 const batch = writeBatch(db);
-                const messageText = `**${scripture} ${chapter}**\n\n${comment}`;
 
                 if (noteToEdit.isMessage || noteToEdit.isNote || noteToEdit.isEntry) {
-                    // Editing an existing message in a group
+                    // Update group message
                     const targetGroupId = noteToEdit.groupId || currentGroupId || userData.groupId;
                     if (!targetGroupId || !noteToEdit.id) throw new Error("No group or message ID specified");
 
@@ -83,14 +88,14 @@ export const useNoteSubmission = (
                                 scripture,
                                 chapter,
                                 comment,
-                                searchTokens: buildNoteSearchTokens({ scripture, chapter, comment, title: urlMeta?.title, speaker: urlMeta?.speaker })
+                                searchTokens
                             });
                         } catch (err) {
                             console.log("Could not sync back to personal note:", err);
                         }
                     }
                 } else {
-                    // Editing a personal note
+                    // Update standalone personal note
                     if (!userData.uid || !noteToEdit.id) throw new Error("No user ID or note ID found");
                     const noteRef = doc(db, 'users', userData.uid, 'notes', noteToEdit.id);
                     batch.update(noteRef, {
@@ -100,17 +105,15 @@ export const useNoteSubmission = (
                         comment,
                         title: urlMeta?.title || null,
                         speaker: urlMeta?.speaker || null,
-                        searchTokens: buildNoteSearchTokens({ scripture, chapter, comment, title: urlMeta?.title, speaker: urlMeta?.speaker })
+                        searchTokens
                     });
                 }
-
 
                 await batch.commit();
                 toast.success(t('newNote.successUpdate'));
                 onSuccess();
             } else {
-                const messageText = `**${scripture} ${chapter}**\n\n${comment}`;
-
+                // CREATE FLOW (Backend API)
                 const response = await apiClient.post('/api/post-note', {
                     chapter,
                     comment,
@@ -132,36 +135,25 @@ export const useNoteSubmission = (
                         origin: { y: 0.6 },
                         zIndex: 10000
                     });
-
                     toast.success(t('newNote.successPost'));
                     onSuccess();
                 } else {
                     throw new Error(response.data.error || "Post failed");
                 }
             }
-
         } catch (err: unknown) {
             console.error("Error submitting note:", err);
             let errorMessage = t('errors.unexpectedError');
             
             if (axios.isAxiosError(err)) {
-                // Safely extract error message string from potentially nested object
                 const serverError = err.response?.data?.error;
-                if (typeof serverError === 'string') {
-                    errorMessage = serverError;
-                } else if (serverError && typeof serverError === 'object' && 'message' in serverError) {
-                    errorMessage = String(serverError.message);
-                } else {
-                    errorMessage = err.message;
-                }
+                errorMessage = (typeof serverError === 'string') ? serverError : 
+                             (serverError?.message ? String(serverError.message) : err.message);
             } else if (err instanceof Error) {
                 errorMessage = err.message;
             }
             
-            // Ensure we handle the search safely in case it's still not a string
             const safeErrorStr = String(errorMessage);
-            
-            // Firebase Auth error code check
             if (safeErrorStr.includes('auth/network-request-failed')) {
                 errorMessage = t('errors.networkError');
             } else if (safeErrorStr.includes('auth/')) {
@@ -176,4 +168,3 @@ export const useNoteSubmission = (
 
     return { loading, handleSubmit };
 };
-

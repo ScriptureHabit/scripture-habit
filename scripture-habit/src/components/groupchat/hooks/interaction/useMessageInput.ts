@@ -1,5 +1,6 @@
-import { useState, useMemo, FormEvent, KeyboardEvent } from 'react';
+import { useMemo, FormEvent, KeyboardEvent } from 'react';
 import { Message } from '../../../../types/chat';
+import { useChatStore } from '../../../../store/useChatStore';
 
 /**
  * Hook for managing the chat message input state and logic.
@@ -9,17 +10,15 @@ export const useMessageInput = (
   tArray: (key: string) => string[],
   userData: { kickThreshold?: number } | null,
   handleSendMessage: (text: string, replyTo: Message | null) => Promise<boolean>,
-  scrollToBottom: () => void,
-  setReplyTo: (msg: Message | null) => void,
-  replyTo: Message | null
+  scrollToBottom: () => void
 ) => {
-
-
-  const [newMessage, setNewMessage] = useState('');
+  const { 
+    replyTo, setReplyTo, editText: newMessage, setEditText: setNewMessage 
+  } = useChatStore();
 
   const inputPlaceholder = useMemo(() => {
     const typeMessageRaw = tArray('groupChat.typeMessage');
-    let candidates = Array.isArray(typeMessageRaw) ? [...typeMessageRaw] : [typeMessageRaw];
+    const candidates = Array.isArray(typeMessageRaw) ? [...typeMessageRaw] : [typeMessageRaw];
     const inactivityThreshold = userData?.kickThreshold || 3;
     candidates.push(t('groupChat.placeholderInactivity', { days: inactivityThreshold }));
     candidates.push(t('groupChat.placeholderShare'));
@@ -29,6 +28,8 @@ export const useMessageInput = (
 
   const onSendMessage = async (e?: FormEvent) => {
     if (e) e.preventDefault();
+    if (!newMessage.trim()) return;
+    
     const success = await handleSendMessage(newMessage, replyTo);
     if (success) {
       setNewMessage('');

@@ -1,6 +1,13 @@
 import { FC } from 'react';
 import UserProfileModal from '../userprofilemodal/UserProfileModal';
-import { useChatData, useChatActions, useChatInteraction, useChatUI } from './ChatContext';
+import { 
+  useChatData, 
+  useChatMessageActions, 
+  useChatGroupActions, 
+  useChatUIActions 
+} from './ChatContext';
+import { useChatStore } from '../../store/useChatStore';
+import { useModalStore } from '../../store/useModalStore';
 
 // Sub-modal components
 import LeaveGroupModal from './modals/LeaveGroupModal';
@@ -17,26 +24,43 @@ import InviteModal from './modals/InviteModal';
 import './GroupChatModals.css';
 
 const GroupChatModals: FC = () => {
-    const { userData, groupData, unityPercentage, language, membersList, membersMap } = useChatData();
+    // 1. Data
     const { 
-        t, handleLeaveGroup, handleDeleteGroup, handleUpdateGroupName, handleConfirmDeleteMessage,
-        handleSaveEdit, handleCancelEdit, handleUserProfileClick, handleSendCheer, handleCheerClick,
-        confirmReport, handleCopyInviteLink, handleRegenerateInviteCode,
-        isLeaving, isDeleting, deleteConfirmationName, setDeleteConfirmationName,
+        userData, groupData, unityPercentage, language, 
+        membersList, membersMap, unityModalData 
+    } = useChatData();
+
+    // 2. Actions
+    const { 
+        handleConfirmDeleteMessage, handleSaveEdit 
+    } = useChatMessageActions();
+
+    const { 
+        handleLeaveGroup, handleDeleteGroup, handleUpdateGroupName, 
+        handleCopyInviteLink, handleRegenerateInviteCode,
+        handleUserProfileClick,
+        translatedGroupName, translatedGroupDesc, isLeaving, isDeleting,
+        isSendingCheer, cheeredTodayUids, confirmReport, handleSendCheer, handleCheerClick
+    } = useChatGroupActions();
+
+    const { t } = useChatUIActions();
+
+    // 3. Zustand UI State (Chat Specific)
+    const { 
+        editingMessage, setEditingMessage, editText, setEditText, messageToDelete, setMessageToDelete,
+        showDeleteMessageModal, setShowDeleteMessageModal, showUnityModal, setShowUnityModal,
+        showReportModal, setShowReportModal, showInviteModal, setShowInviteModal,
+        cheerTarget, setCheerTarget, reportReason, setReportReason,
+        selectedMember, setSelectedMember 
+    } = useChatStore();
+
+    // 4. Zustand Modal State (Shared across App)
+    const { 
+        activeModal, setActiveModal, reactionsToShow,
         newGroupName, setNewGroupName, newGroupDescription, setNewGroupDescription,
         newTranslatedName, setNewTranslatedName, newTranslatedDesc, setNewTranslatedDesc,
-        translatedGroupName, translatedGroupDesc, reactionsToShow, 
-        setSelectedMember,
-        reportReason, setReportReason, isSendingCheer, cheeredTodayUids,
-        cheerTarget, setCheerTarget, selectedMember, setActiveModal,
-        setShowDeleteMessageModal, setShowUnityModal, setShowInviteModal, setShowReportModal
-    } = useChatActions();
-    
-    const { editingMessage, editText, setEditText, messageToDelete, setMessageToDelete } = useChatInteraction();
-    const { 
-        activeModal, showDeleteMessageModal, showUnityModal, 
-        showReportModal, showInviteModal, unityModalData
-    } = useChatUI();
+        deleteConfirmationName, setDeleteConfirmationName
+    } = useModalStore();
 
     return (
         <>
@@ -102,10 +126,14 @@ const GroupChatModals: FC = () => {
                 editingMessage={editingMessage}
                 editText={editText}
                 setEditText={setEditText}
-                handleCancelEdit={handleCancelEdit}
+                handleCancelEdit={() => { setEditingMessage(null); setEditText(''); }}
                 handleSaveEdit={async () => {
                     if (editingMessage) {
-                        await handleSaveEdit(editingMessage, editText);
+                        const success = await handleSaveEdit(editingMessage, editText);
+                        if (success) {
+                            setEditingMessage(null);
+                            setEditText('');
+                        }
                     }
                 }}
             />

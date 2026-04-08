@@ -9,36 +9,25 @@ import './NewNote.css';
 import { useUrlMetaFetcher } from './hooks/useUrlMetaFetcher';
 import { useAIGenerator } from './hooks/useAIGenerator';
 import { useNoteSubmission } from './hooks/useNoteSubmission';
+import { useRandomNote } from './hooks/useRandomNote';
 
 // Subcomponents
 import RandomScriptureMenu from './subcomponents/RandomScriptureMenu';
 import ScriptureSelectionModal from './subcomponents/ScriptureSelectionModal';
 import CloseConfirmModal from './subcomponents/CloseConfirmModal';
+import NoteSharingOptions from './subcomponents/NoteSharingOptions';
 
-import { getTodayReadingPlan } from '../../data/DailyReadingPlan';
-import { AdversityScriptures } from '../../data/AdversityScriptures';
-import { JoyScriptures } from '../../data/JoyScriptures';
-import { RelationshipScriptures } from '../../data/RelationshipScriptures';
-import { MasteryScriptures } from '../../data/MasteryScriptures';
-import { PeaceScriptures } from '../../data/PeaceScriptures';
-import { localizeLdsUrl } from '../../utils/urlLocalizer';
 import { getBookSuggestions } from '../../utils/suggestionUtils';
 import { getGospelLibraryUrl, getCategoryFromScripture } from '../../utils/gospelLibraryMapper';
 import { removeNoteHeader } from '../../utils/noteUtils';
 import { UserData } from '../../types/user';
 import { Group, Message } from '../../types/chat';
+import { Note } from '../../types/note';
 
 interface Suggestion {
     translated: string;
     english: string;
 }
-
-interface RandomScripture {
-    scripture: string;
-    chapter: string;
-}
-
-import { Note } from '../../types/note';
 
 interface NewNoteProps {
     isOpen: boolean;
@@ -49,29 +38,42 @@ interface NewNoteProps {
     noteToEdit?: Message | Note | null;
 }
 
-
 const NewNote: FC<NewNoteProps> = ({
     isOpen, onClose, userData,
     userGroups = [], currentGroupId = null, noteToEdit = null
 }) => {
     const { t, language, tArray, translateChapterField, bookTranslations } = useLanguage();
+    
+    // Form State
     const [scripture, setScripture] = useState<string>('');
     const [chapter, setChapter] = useState<string>('');
     const [comment, setComment] = useState<string>('');
     const [shareOption, setShareOption] = useState<string>('all');
     const [selectedShareGroups, setSelectedShareGroups] = useState<string[]>([]);
-    const [showRandomMenu, setShowRandomMenu] = useState(false);
-    const [showScriptureSelectionModal, setShowScriptureSelectionModal] = useState(false);
     const [showCloseConfirm, setShowCloseConfirm] = useState(false);
 
-    // Auto-suggestions logic
+    // Suggestions UI State
     const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
 
+    // Modular Hooks
     const { urlMeta, urlLoading } = useUrlMetaFetcher(chapter, scripture, language || 'en');
     const { aiQuestion, setAiQuestion, aiLoading, handleGenerateQuestions } = useAIGenerator(language);
     const { loading, handleSubmit } = useNoteSubmission(userData, language, t);
+    const { 
+        showRandomMenu, setShowRandomMenu, 
+        showSelectionModal, setShowSelectionModal,
+        availableReadingPlanScripts,
+        handlePickRandomReadingPlan,
+        handlePickRandomMastery, handlePickRandomPeace,
+        handlePickRandomAdversity, handlePickRandomRelationship,
+        handlePickRandomJoy 
+    } = useRandomNote(language, translateChapterField, (s, c) => {
+        setScripture(s);
+        setChapter(c);
+    });
 
+    // Random Placeholders
     const commentPlaceholder = useMemo(() => {
         const placeholders = tArray('newNote.commentPlaceholder');
         return placeholders[Math.floor(Math.random() * placeholders.length)] || '';
@@ -82,8 +84,11 @@ const NewNote: FC<NewNoteProps> = ({
         return placeholders[Math.floor(Math.random() * placeholders.length)] || '';
     }, [tArray]);
 
+    // Computed Values
     const glUrl = useMemo(() => getGospelLibraryUrl(scripture, chapter, language), [scripture, chapter, language]);
+    const isUrl = typeof chapter === 'string' && chapter.startsWith('http');
 
+    // Sync state for Edit Mode
     useEffect(() => {
         if (noteToEdit) {
             setScripture(noteToEdit.scripture || '');
@@ -99,9 +104,6 @@ const NewNote: FC<NewNoteProps> = ({
 
     if (!isOpen) return null;
 
-    const availableReadingPlanScripts = getTodayReadingPlan()?.scripts || [];
-    const isUrl = typeof chapter === 'string' && chapter.startsWith('http');
-
     const getPlaceholder = () => {
         if (isUrl) return t('newNote.urlPlaceholder');
         if (scripture === "General Conference") return t('newNote.urlPlaceholder');
@@ -110,34 +112,15 @@ const NewNote: FC<NewNoteProps> = ({
         return chapterPlaceholder;
     };
 
-    const handleSurpriseMe = () => {
-        setShowRandomMenu(true);
-    };
-
     const handleClose = () => {
-        if (chapter || comment) {
-            setShowCloseConfirm(true);
-        } else {
-            onClose();
-        }
+        if (chapter || comment) setShowCloseConfirm(true);
+        else onClose();
     };
 
     const handleGroupSelection = (groupId: string) => {
         setSelectedShareGroups(prev =>
             prev.includes(groupId) ? prev.filter(id => id !== groupId) : [...prev, groupId]
         );
-    };
-
-    const pickAndFillRandom = (randomScripture: RandomScripture) => {
-        setScripture(randomScripture.scripture);
-        let finalChapter = randomScripture.chapter;
-        if (finalChapter.startsWith('http')) {
-            finalChapter = localizeLdsUrl(finalChapter, language) || finalChapter;
-        } else {
-            finalChapter = translateChapterField(finalChapter);
-        }
-        setChapter(finalChapter);
-        setShowRandomMenu(false);
     };
 
     const translatedScripturesOptions = [
@@ -152,44 +135,35 @@ const NewNote: FC<NewNoteProps> = ({
         { value: 'Other', label: t('scriptures.other') },
     ];
 
+    // Sub-modal views
     if (showRandomMenu) {
         return (
             <RandomScriptureMenu
                 t={t}
                 setShowRandomMenu={setShowRandomMenu}
                 availableReadingPlanScripts={availableReadingPlanScripts}
-                handlePickRandomReadingPlan={() => {
-                    if (availableReadingPlanScripts.length === 1) {
-                        const script = availableReadingPlanScripts[0];
-                        const detectedCategory = getCategoryFromScripture(script);
-                        pickAndFillRandom({ scripture: detectedCategory !== 'Other' ? detectedCategory : 'Book of Mormon', chapter: script || '' });
-                        setShowRandomMenu(false);
-                    } else {
-                        setShowScriptureSelectionModal(true);
-                        setShowRandomMenu(false);
-                    }
-                }}
-                handlePickRandomMastery={() => pickAndFillRandom(MasteryScriptures[Math.floor(Math.random() * MasteryScriptures.length)])}
-                handlePickRandomPeace={() => pickAndFillRandom(PeaceScriptures[Math.floor(Math.random() * PeaceScriptures.length)])}
-                handlePickRandomAdversity={() => pickAndFillRandom(AdversityScriptures[Math.floor(Math.random() * AdversityScriptures.length)])}
-                handlePickRandomRelationship={() => pickAndFillRandom(RelationshipScriptures[Math.floor(Math.random() * RelationshipScriptures.length)])}
-                handlePickRandomJoy={() => pickAndFillRandom(JoyScriptures[Math.floor(Math.random() * JoyScriptures.length)])}
+                handlePickRandomReadingPlan={handlePickRandomReadingPlan}
+                handlePickRandomMastery={handlePickRandomMastery}
+                handlePickRandomPeace={handlePickRandomPeace}
+                handlePickRandomAdversity={handlePickRandomAdversity}
+                handlePickRandomRelationship={handlePickRandomRelationship}
+                handlePickRandomJoy={handlePickRandomJoy}
             />
         );
     }
 
-    if (showScriptureSelectionModal) {
+    if (showSelectionModal) {
         return (
             <ScriptureSelectionModal
                 t={t}
-                onClose={() => setShowScriptureSelectionModal(false)}
+                onClose={() => setShowSelectionModal(false)}
                 availableReadingPlanScripts={availableReadingPlanScripts}
                 fillScriptureData={(script) => {
                     const detectedCategory = getCategoryFromScripture(script);
                     setScripture(detectedCategory !== 'Other' ? detectedCategory : 'Book of Mormon');
                     setChapter(translateChapterField(script));
                 }}
-                setShowScriptureSelectionModal={setShowScriptureSelectionModal}
+                setShowScriptureSelectionModal={setShowSelectionModal}
                 translateChapterField={translateChapterField}
             />
         );
@@ -283,7 +257,7 @@ const NewNote: FC<NewNoteProps> = ({
                     {!noteToEdit && (
                         <div className="action-buttons-stack">
                             <div className="action-btn-wrapper">
-                                <button type="button" onClick={handleSurpriseMe} className="modern-action-btn">
+                                <button type="button" onClick={() => setShowRandomMenu(true)} className="modern-action-btn">
                                     <UilShuffle size="16" />
                                     <span>{t('newNote.surpriseMe')}</span>
                                 </button>
@@ -310,11 +284,7 @@ const NewNote: FC<NewNoteProps> = ({
                             {urlLoading ? <span>Fetching title...</span> : urlMeta && (
                                 <div>
                                     <strong>{urlMeta.title}</strong>
-                                    {urlMeta.speaker && (
-                                        <div className="url-meta-speaker">
-                                            {urlMeta.speaker}
-                                        </div>
-                                    )}
+                                    {urlMeta.speaker && <div className="url-meta-speaker">{urlMeta.speaker}</div>}
                                 </div>
                             )}
                         </div>
@@ -337,42 +307,14 @@ const NewNote: FC<NewNoteProps> = ({
                     />
 
                     {!noteToEdit && (
-                        <div className="sharing-options">
-                            <label className="sharing-label">{t('newNote.shareLabel')}</label>
-                            <div className="radio-group">
-                                {(userGroups.length === 1 ? ['all', 'none'] : ['all', 'specific', 'none']).map(opt => (
-                                    <label key={opt} className={`radio-option ${(opt === 'all' || opt === 'specific') && userGroups.length === 0 ? 'disabled' : ''}`}>
-                                        <input
-                                            type="radio" value={opt}
-                                            checked={shareOption === opt}
-                                            onChange={(e) => setShareOption(e.target.value)}
-                                            disabled={(opt === 'all' || opt === 'specific') && userGroups.length === 0}
-                                        />
-                                        <span>
-                                            {userGroups.length === 1 && opt === 'all'
-                                                ? t('newNote.shareToGroup')
-                                                : t(`newNote.share${opt.charAt(0).toUpperCase() + opt.slice(1)}`)
-                                            }
-                                        </span>
-                                    </label>
-                                ))}
-                            </div>
-
-                            {shareOption === 'specific' && (
-                                <div className="group-selection-list">
-                                    {userGroups.map(group => (
-                                        <label key={group.id} className="group-checkbox-item">
-                                            <input
-                                                type="checkbox"
-                                                checked={selectedShareGroups.includes(group.id)}
-                                                onChange={() => handleGroupSelection(group.id)}
-                                            />
-                                            <span>{group.name || t('newNote.unnamedGroup')}</span>
-                                        </label>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
+                        <NoteSharingOptions
+                            userGroups={userGroups}
+                            shareOption={shareOption}
+                            setShareOption={setShareOption}
+                            selectedShareGroups={selectedShareGroups}
+                            handleGroupSelection={handleGroupSelection}
+                            t={t}
+                        />
                     )}
 
                     <div className="modal-actions">

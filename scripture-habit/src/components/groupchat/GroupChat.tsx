@@ -6,7 +6,7 @@ import GroupChatModals from './GroupChatModals';
 import ChatHeader from './subcomponents/ChatHeader';
 import GroupChatContextMenu from './subcomponents/GroupChatContextMenu';
 import GroupChatProvider from './GroupChatProvider';
-import { useChatUI, useChatActions } from './ChatContext';
+import { useModalStore } from '../../store/useModalStore';
 import { UserData } from '../../types/user';
 import { Group } from '../../types/chat';
 
@@ -24,8 +24,7 @@ interface GroupChatProps {
 }
 
 const GroupChatContent: FC = () => {
-    const { activeModal } = useChatUI();
-    const { setActiveModal } = useChatActions();
+    const { activeModal, setActiveModal } = useModalStore();
 
     return (
         <>
