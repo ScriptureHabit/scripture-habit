@@ -128,7 +128,8 @@
         /* Stop items from stretching */
     }
 
-    .menuItem span {
+    /* Target only the text label span, not badges or emojis */
+    .menuItem > span:not(.unread-badge-sidebar):not(.status-emoji-sidebar) {
         display: none !important;
     }
 
@@ -200,6 +201,7 @@
 }
 
 .unread-badge-sidebar {
+    display: flex !important;
     background: linear-gradient(135deg, #ff453a, #ff9f0a);
     color: white;
     font-size: 0.75rem;
@@ -208,15 +210,21 @@
     border-radius: 12px;
     margin-left: auto;
     margin-right: 0.5rem;
-    min-width: 22px;
+    min-width: 24px;
     height: 22px;
-    display: flex;
     align-items: center;
     justify-content: center;
     box-shadow: 0 4px 10px rgba(255, 69, 58, 0.4);
     line-height: 1;
     border: 2px solid white;
     animation: badge-pulse 2s infinite;
+    flex-shrink: 0;
+    z-index: 10;
+}
+
+/* Ensure modal group item handles badges correctly */
+.modal-group-item .unread-badge-sidebar {
+    margin-left: 1rem;
 }
 
 @keyframes badge-pulse {

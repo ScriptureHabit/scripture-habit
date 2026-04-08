@@ -91,6 +91,15 @@ export const useMessageActions = (
           messageId: optimisticId,
           data: { id: response.data.messageId, isOptimistic: false }
         });
+
+        // 📡 FORCE READ SYNC: Mark this new message as read for the sender immediately
+        // We use a background fire-and-forget call to keep UX snappy
+        try {
+          apiClient.post('/api/update-read-status', {
+            groupId,
+            readMessageCount: response.data.totalCount || 0 // Assuming backend returns the new total
+          }).catch(() => {}); // Silently fail if just sync
+        } catch (e) {}
       }
 
       return true;

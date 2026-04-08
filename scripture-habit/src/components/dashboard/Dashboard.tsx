@@ -84,7 +84,7 @@ const Dashboard: FC = () => {
   }, [userData?.daysStudiedCount]);
 
   // 2. Groups Hook
-  const { userGroups, activeGroupId, setActiveGroupId, loadingGroupStates } = useDashboardGroups(userData, initialState.activeGroupId);
+  const { userGroups, activeGroupId, setActiveGroupId, loadingGroupStates } = useDashboardGroups(userData, initialState.activeGroupId, selectedView);
 
   // WATCHDOG: Track state changes to find why notifications are suppressed
   useEffect(() => {
@@ -225,7 +225,8 @@ const Dashboard: FC = () => {
     if (unityOverrides[group.id] !== undefined) {
       return { ...group, unityPercentageOverride: unityOverrides[group.id] };
     }
-    return group;
+    // Return a copy to ensure immutability and property preservation
+    return { ...group };
   });
 
   const hasGroups = enrichedUserGroups.length > 0;

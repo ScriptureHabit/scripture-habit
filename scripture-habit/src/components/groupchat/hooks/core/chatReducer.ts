@@ -100,7 +100,7 @@ export const chatReducer = (state: ChatState, action: ChatAction): ChatState => 
         isLoadingOlder: false
       };
     case 'SET_READ_COUNT':
-      return { ...state, userReadCount: action.count };
+      return { ...state, userReadCount: Math.max(state.userReadCount || 0, action.count) };
     case 'SET_SCROLL_DONE':
       return { ...state, initialScrollDone: true };
     case 'UPDATE_MEMBERS':

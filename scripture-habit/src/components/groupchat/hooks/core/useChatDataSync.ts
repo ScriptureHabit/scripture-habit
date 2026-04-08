@@ -228,8 +228,9 @@ const useUserReadStateSync = (
   const updateReadStatus = useCallback(async (gid: string, totalCount: number) => {
     if (!userData?.uid || !gid || !syncReadStatus) return;
     try {
-      await syncReadStatus(gid, totalCount);
+      // Optimistic locally update first so Sidebar/UI feels snappy
       dispatch({ type: 'SET_READ_COUNT', count: totalCount });
+      await syncReadStatus(gid, totalCount);
     } catch (err) {
       console.error("[useUserReadStateSync] Failed to sync read status:", err);
     }
@@ -245,11 +246,15 @@ const useUserReadStateSync = (
     // TRUTH: Use the highest of metadata count or listener count
     const totalMsgs = Math.max(groupData.messageCount || 0, actualMessageCount);
     
-    const isWindowFocused = document.hasFocus();
     const isVisible = document.visibilityState === 'visible';
+    // Relaxation: On mobile/PWA, focus is unstable. We rely on visibility + being in the chat view.
+    const isAppActive = isVisible || document.hasFocus();
 
-    // Paranoiac Mode: Only sync if we are SURE this tab is the active one
-    if ((totalMsgs > (userReadCount || 0) || (lastForcedSyncGidRef.current !== groupId && totalMsgs > 0)) && isWindowFocused && isVisible) {
+    // Paranoiac Mode relaxed: Only sync if we have NEW messages to mark as read.
+    // This prevents "downgrading" the read count if groupData.messageCount is stale or messages were deleted.
+    const hasNewContent = totalMsgs > (userReadCount || 0);
+
+    if (hasNewContent && isAppActive) {
       console.log(`📡 [READ-SYNC] TRIGGERED: group=${groupId}, currentRead=${userReadCount}, newRead=${totalMsgs}, reason=${lastForcedSyncGidRef.current !== groupId ? 'mount' : 'new_msg'}`);
       updateReadStatus(groupId, totalMsgs);
       lastForcedSyncGidRef.current = groupId;

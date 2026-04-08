@@ -5,7 +5,7 @@ import { UserData } from '../../../types/user';
 import { Group } from '../../../types/chat';
 import { groupMemberConverter } from '../../../utils/firestoreConverters';
 
-export const useDashboardGroups = (userData: UserData | null, initialGroupId: string | null) => {
+export const useDashboardGroups = (userData: UserData | null, initialGroupId: string | null, selectedView?: number) => {
     const [rawUserGroups, setRawUserGroups] = useState<Group[]>([]);
     const [groupStates, setGroupStates] = useState<Record<string, { readMessageCount?: number }>>({});
     const [loadingGroupStates, setLoadingGroupStates] = useState<boolean>(true);
@@ -54,7 +54,6 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
                     .filter(Boolean) as Group[];
             });
         }, (err) => {
-            // Log but don't crash, might be transient during auth state changes
             if (err.code !== 'permission-denied') console.error("Dashboard groups query listener error:", err);
         });
         unsubscribers.push(unsubGroups);
@@ -67,7 +66,7 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
                     const mData = memberSnap.data();
                     setRawUserGroups(prev => {
                         const existing = prev.find(g => g.id === gid);
-                        if (!existing || existing.myMemberStatus === mData) return prev;
+                        if (!existing || JSON.stringify(existing.myMemberStatus) === JSON.stringify(mData)) return prev;
                         return prev.map(g => g.id === gid ? { ...g, myMemberStatus: mData } : g);
                     });
                 }
@@ -104,7 +103,7 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
         return () => unsubscribe();
     }, [userData?.uid]);
 
-    // Use state-based userGroups to ensure we don't break Dashboard expectation
+    // Construct userGroups with unread analysis
     const [userGroups, setUserGroups] = useState<Group[]>([]);
 
     useEffect(() => {
@@ -112,9 +111,13 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
             const state = groupStates[group.id];
             const readCount = Number(state?.readMessageCount || 0);
             const totalCount = Number(group.messageCount || 0);
-            const unreadCount = Math.max(0, totalCount - readCount);
+            
+            // OPTIMISTIC SUPPRESSION: If the user is currently looking at this chat,
+            // assume unread count is 0 to avoid badge flickering during API sync.
+            const isCurrentlyViewing = selectedView === 2 && activeGroupId === group.id;
+            const unreadCount = isCurrentlyViewing ? 0 : Math.max(0, totalCount - readCount);
 
-            if (unreadCount > 0 || totalCount > 0) {
+            if (unreadCount > 0 && !isCurrentlyViewing) {
                 console.log(`[useDashboardGroups] Group ${group.name}: unread=${unreadCount} (total=${totalCount}, read=${readCount})`);
             }
 
@@ -124,7 +127,7 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
             };
         }) as Group[];
         setUserGroups(combined);
-    }, [rawUserGroups, groupStates]);
+    }, [rawUserGroups, groupStates, activeGroupId, selectedView]);
 
     // Sync active group
     useEffect(() => {
