@@ -109,7 +109,7 @@ export class NoteService {
 
                 // Group Writes
                 const userNickname = userData.nickname || 'Member';
-                const serverTime = admin.firestore.FieldValue.serverTimestamp();
+                const serverTime = admin.firestore.Timestamp.fromDate(now);
 
                 for (const gid of groupsToPostTo) {
                     const gDoc = groupDocsMap.get(gid);
