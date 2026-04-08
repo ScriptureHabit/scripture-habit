@@ -69,7 +69,8 @@ export const useDashboardNotifications = (
         let mostRecent: NotificationInfo | null = null;
 
         userGroups.forEach(group => {
-            if (group.id === activeGroupId) return;
+            // Only suppress notifications if we are CURRENTLY looking at the chat for this group
+            if (group.id === activeGroupId && selectedView === 2) return;
 
             const noteTime = parseTimestampToMillis(group.lastNoteAt);
             const messageTime = parseTimestampToMillis(group.lastMessageAt);

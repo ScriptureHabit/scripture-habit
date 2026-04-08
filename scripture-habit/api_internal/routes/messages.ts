@@ -166,6 +166,7 @@ router.post('/post-message', authenticate, verifyAppCheck, async (req: Authentic
                 [`memberLastActive.${uid}`]: admin.firestore.FieldValue.serverTimestamp()
             };
 
+            // TRUTH: Direct update to the group doc for real-time dashboard sync
             transaction.update(groupRef, updatePayload);
             
             const userGS = userRef.collection('groupStates').doc(groupId);

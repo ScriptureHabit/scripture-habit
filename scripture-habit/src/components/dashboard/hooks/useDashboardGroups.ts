@@ -118,11 +118,10 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
     const combinedGroups = useMemo(() => {
         return rawUserGroups.map(group => {
             const state = groupStates[group.id];
-            // TRUTH: If we have a state, use its readCount. 
-            // If No state yet (loading or never read), assume 0 read.
-            // DO NOT override with messageCount during loading as it hides unreads.
-            const readCount = state?.readMessageCount || 0;
-            const totalCount = group.messageCount || 0;
+            
+            // TRUTH: Ensure we are working with numbers to prevent calculation failure
+            const readCount = Number(state?.readMessageCount || 0);
+            const totalCount = Number(group.messageCount || 0);
             const unreadCount = Math.max(0, totalCount - readCount);
 
             return {
