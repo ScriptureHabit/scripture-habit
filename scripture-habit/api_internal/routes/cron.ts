@@ -54,12 +54,17 @@ router.all('/check-inactive-users', verifyCronSecret, async (_req: Request, res:
     try {
         const groupsRef = db.collection('groups');
         // Optimization: Only check groups that were NOT checked in the last 6 hours
-        // Note: Existing groups won't have this field yet, so we fetch those where it's null as well.
-        // TRUTH: Order by 'lastInactivityCheckedAt' ASC to ensure all groups are eventually checked fairly.
+        // Step 1: Rotation - Fetch groups that haven't been checked in the longest time.
+        // NOTE: This skips groups where the field is missing (new groups).
         let snapshot = await groupsRef
             .orderBy('lastInactivityCheckedAt', 'asc')
             .limit(100)
             .get();
+
+        // Step 2: "The Net" - Catch new/stale groups that doesn't have the field yet.
+        if (snapshot.size < 50) {
+            snapshot = await groupsRef.limit(50).get();
+        }
 
         let list = snapshot.docs;
 
@@ -96,7 +101,6 @@ router.all('/check-inactive-users', verifyCronSecret, async (_req: Request, res:
                 const memberData = memberDoc.data();
                 const memberId = memberDoc.id;
 
-                // TRUTH: If no written activity exists, we fall back to joinedAt to give new members a grace period.
                 // This ensures we respect the "habit rule" (threshold) even for those who haven't started posting yet.
                 const candidates: FirestoreTimestamp[] = [
                     memberData.lastNoteAt,
@@ -108,7 +112,10 @@ router.all('/check-inactive-users', verifyCronSecret, async (_req: Request, res:
                 const individualThresholdMs = individualThresholdDays * 24 * 60 * 60 * 1000;
 
                 if (candidates.length === 0) {
-                    // This case is rare as joinedAt should exist, but safety first.
+                    // GHOST BUSTER: If no activity data or joinedAt exists (corrupt/v1 legacy),
+                    // we initialize joinedAt now to start their 3-day grace period.
+                    batch.update(memberDoc.ref, { joinedAt: admin.firestore.FieldValue.serverTimestamp() });
+                    batchOpCount++;
                     activeMembers.push(memberId);
                 } else {
                     // Find the newest among candidates

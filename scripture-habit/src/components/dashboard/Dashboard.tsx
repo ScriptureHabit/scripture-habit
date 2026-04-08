@@ -9,6 +9,7 @@ import { toast } from 'react-toastify';
 import NewNote from '../newnote/NewNote';
 import MyNotes from '../mynotes/MyNotes';
 import Profile from '../profile/Profile';
+import { useModalStore } from '../../store/useModalStore';
 import { getGospelLibraryUrl } from '../../utils/gospelLibraryMapper';
 import { useLanguage } from '../../context/LanguageContext';
 import { getTodayReadingPlan } from '../../data/DailyReadingPlan';
@@ -49,7 +50,9 @@ const Dashboard: FC = () => {
 
   const initialState = getInitialState();
   const [selectedView, setSelectedView] = useState<number>(initialState.selectedView);
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(initialState.isModalOpen);
+  const { activeModal, setActiveModal } = useModalStore();
+  const isModalOpen = activeModal === 'newNote';
+  const setIsModalOpen = (open: boolean) => setActiveModal(open ? 'newNote' : null);
 
   const [showWelcomeStory, setShowWelcomeStory] = useState<boolean>(false);
   const [isInputFocused, setIsInputFocused] = useState<boolean>(false);
@@ -66,6 +69,11 @@ const Dashboard: FC = () => {
 
   // 2. Groups Hook
   const { userGroups, activeGroupId, setActiveGroupId, loadingGroupStates } = useDashboardGroups(userData, initialState.activeGroupId);
+
+  // CRITICAL: Prevent modal state leakage between groups
+  useEffect(() => {
+    setActiveModal(null);
+  }, [activeGroupId, setActiveModal]);
 
   // 3. Habit Pace Hook
   const { 
@@ -108,9 +116,12 @@ const Dashboard: FC = () => {
     }
 
     if (searchParams.has('groupId') || searchParams.has('openNewNote') || searchParams.has('view')) {
+      if (searchParams.get('openNewNote') === 'true') {
+        setActiveModal('newNote');
+      }
       navigate(location.pathname, { replace: true });
     }
-  }, [searchParams, location.pathname, location.state, navigate, setActiveGroupId]);
+  }, [searchParams, location.pathname, location.state, navigate, setActiveGroupId, setActiveModal]);
 
   useEffect(() => {
     if (!loading && userData && userData.uid && userData.hasSeenWelcomeStory === undefined && userData.hasSetKickThreshold === true) {
