@@ -246,15 +246,12 @@ const useUserReadStateSync = (
     // TRUTH: Use the highest of metadata count or listener count to avoid stale overwrites
     const totalMsgs = Math.max(groupData.messageCount || 0, actualMessageCount);
     
-    // HEALING LOGIC: If total < read, it means data is corrupted and unread badges are broken.
-    // We force a sync to recover the true total from the archive service.
-    const needsHealing = totalMsgs < (userReadCount || 0);
-
     const isWindowFocused = document.hasFocus();
     const isVisible = document.visibilityState === 'visible';
 
-    if ((totalMsgs > (userReadCount || 0) || needsHealing || (lastForcedSyncGidRef.current !== groupId && totalMsgs > 0)) && isWindowFocused && isVisible) {
-      console.log(`📡 [READ-SYNC] Marking as read: group=${groupId}, count=${totalMsgs}, tab=${window.location.href}`);
+    // Remove needsHealing to prevent mass destruction of unread states
+    if ((totalMsgs > (userReadCount || 0) || (lastForcedSyncGidRef.current !== groupId && totalMsgs > 0)) && isWindowFocused && isVisible) {
+      console.log(`📡 [READ-SYNC] Marking as read: group=${groupId}, count=${totalMsgs}, reason=${lastForcedSyncGidRef.current !== groupId ? 'initial_load' : 'new_messages'}`);
       updateReadStatus(groupId, totalMsgs);
       lastForcedSyncGidRef.current = groupId;
     }
