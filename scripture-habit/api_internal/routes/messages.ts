@@ -249,6 +249,19 @@ router.post('/toggle-reaction', authenticate, verifyAppCheck, async (req: Authen
                 [`reactionPreviews.${emoji}`]: newPreviews
             });
 
+            // TRUTH: If you react to a message, you have read up to this point. 
+            // This prevents the "Reaction but no Read Count" UI paradox.
+            const now = admin.firestore.FieldValue.serverTimestamp();
+            transaction.update(groupRef, {
+                [`memberLastReadAt.${uid}`]: now
+            });
+            transaction.set(groupRef.collection('members').doc(uid), {
+                lastReadAt: now
+            }, { merge: true });
+            transaction.set(userRef.collection('groupStates').doc(groupId), {
+                lastReadAt: now
+            }, { merge: true });
+
             return { hasReacted: !hasReacted, newUids, newPreviews };
         });
 

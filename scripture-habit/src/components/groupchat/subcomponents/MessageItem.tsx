@@ -77,14 +77,23 @@ const MessageItem: FC<MessageItemProps> = memo(({
 
     for (const uid of groupData.members) {
       if (uid === msg.senderId) continue;
+      
       const memberStatus = membersMap?.[uid];
       const readAt = memberStatus?.lastReadAt || legacyLastReadAt?.[uid];
-      if (readAt && parseTimestampToMillis(readAt) >= msgTime) {
+      
+      // 1. Check timestamp-based read status
+      const didReadByTime = readAt && parseTimestampToMillis(readAt) >= msgTime;
+      
+      // 2. NEW: Check reaction-based read status (If you reacted, you definitely saw it)
+      // This bridges the sync gap when someone reacts but the lastReadAt hasn't propagated yet.
+      const didReact = msg.reactions && Object.values(msg.reactions).some(uids => uids.includes(uid));
+
+      if (didReadByTime || didReact) {
         count++;
       }
     }
     return count;
-  }, [isMe, msg.createdAt, msg.senderId, groupData?.members, groupData?.memberLastReadAt, membersMap]);
+  }, [isMe, msg.createdAt, msg.senderId, groupData?.members, groupData?.memberLastReadAt, membersMap, msg.reactions]);
 
   if (msg.senderId === 'system' || msg.isSystemMessage) {
     const kickThreshold = userData && 'kickThreshold' in userData ? userData.kickThreshold : undefined;

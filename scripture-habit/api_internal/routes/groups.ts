@@ -277,8 +277,13 @@ router.post('/update-read-status', authenticate, verifyAppCheck, async (req: Aut
             lastReadAt: admin.firestore.FieldValue.serverTimestamp()
         }, { merge: true });
 
-        // IMPORTANT: Stop updating the main 'groups' document map to avoid hotspots.
-        // Instead, update the member's private document in the 'members' subcollection.
+        // TRUTH: Restore updating the main 'groups' document map for immediate UI sync.
+        // For habit groups (<20 members), hotspots are rare, and immediate feedback is priority.
+        batch.update(groupRef, {
+            [`memberLastReadAt.${uid}`]: admin.firestore.FieldValue.serverTimestamp()
+        });
+
+        // Secondary TRUTH: Update the member's private document for deep history/archiving.
         batch.set(groupRef.collection('members').doc(uid), {
             lastReadAt: admin.firestore.FieldValue.serverTimestamp(),
             readMessageCount: totalMessages
