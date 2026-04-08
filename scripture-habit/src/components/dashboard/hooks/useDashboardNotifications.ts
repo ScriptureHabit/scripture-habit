@@ -71,7 +71,7 @@ export const useDashboardNotifications = (
         userGroups.forEach(group => {
             // Only suppress notifications if we are CURRENTLY looking at the chat for this group
             if (group.id === activeGroupId && selectedView === 2) {
-                console.log(`[DashboardNotifications] Skipping active group chat: ${group.name} (${group.id})`);
+                console.log(`[DashboardNotifications] Skipping active group chat: ${group.name} (${group.id}). Current View: ${selectedView}`);
                 return;
             }
 
