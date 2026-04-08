@@ -35,7 +35,11 @@ export const useDashboardActions = (user: User | null, userData: UserData | null
     }
   }, [user]);
 
-  const syncNotificationReadStatus = useCallback(async (groupId: string, totalMessages: number): Promise<boolean> => {
+  /**
+   * TRUTH: Synchronizes message read status with the backend. 
+   * This ensures that "Read by X" logic works accurately for other members.
+   */
+  const updateGroupReadStatus = useCallback(async (groupId: string, totalMessages: number): Promise<boolean> => {
     if (!user?.uid || !groupId || totalMessages < 0) return false;
 
     try {
@@ -73,5 +77,5 @@ export const useDashboardActions = (user: User | null, userData: UserData | null
     }
   }, [user]);
 
-  return { markWelcomeStorySeen, updateNickname, syncNotificationReadStatus };
+  return { markWelcomeStorySeen, updateNickname, updateGroupReadStatus };
 };

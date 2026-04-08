@@ -7,7 +7,6 @@ import { groupMemberConverter } from '../../../utils/firestoreConverters';
 
 export const useDashboardGroups = (userData: UserData | null, initialGroupId: string | null) => {
     const [rawUserGroups, setRawUserGroups] = useState<Group[]>([]);
-    const [loadingGroupStates, setLoadingGroupStates] = useState<boolean>(true);
     const [activeGroupId, setActiveGroupId] = useState<string | null>(initialGroupId);
 
     const groupIds: string[] = userData?.groupIds || (userData?.groupId ? [userData.groupId] : []);
@@ -78,21 +77,14 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
         return () => unsubscribers.forEach(unsub => unsub());
     }, [userData?.uid, groupIdsKey]);
 
-    // Fetch group states (DEPRECATED: Removed for simplicity and stability)
-    useEffect(() => {
-        setLoadingGroupStates(false);
-    }, []);
-
-    // Construct userGroups
+    // Construct userGroups (Force unreadCount to 0)
     const [userGroups, setUserGroups] = useState<Group[]>([]);
 
     useEffect(() => {
-        const combined = rawUserGroups.map(group => {
-            return {
-                ...group,
-                unreadCount: 0 // Force to 0 as unread logic is removed
-            };
-        }) as Group[];
+        const combined = rawUserGroups.map(group => ({
+            ...group,
+            unreadCount: 0
+        })) as Group[];
         setUserGroups(combined);
     }, [rawUserGroups]);
 
@@ -108,5 +100,5 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
         }
     }, [userGroups, userData, activeGroupId]);
 
-    return { userGroups, activeGroupId, setActiveGroupId, loadingGroupStates };
+    return { userGroups, activeGroupId, setActiveGroupId };
 };

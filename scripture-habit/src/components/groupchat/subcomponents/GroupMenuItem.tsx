@@ -122,7 +122,6 @@ const GroupMenuItem: FC<GroupMenuItemProps> = ({ group, currentGroupId, language
 
     const isActive = group.id === currentGroupId;
     const displayName = translatedName || group.name;
-    const unreadCount = group.unreadCount || 0;
 
     return (
         <div
@@ -135,11 +134,6 @@ const GroupMenuItem: FC<GroupMenuItemProps> = ({ group, currentGroupId, language
             <span className="menu-item-label">
                 {displayName} {group.members && <span className="sidebar-members-count">({group.members.length})</span>}
             </span>
-            {unreadCount > 0 && (
-                <span className="unread-badge-mini">
-                    {unreadCount > 99 ? '99+' : unreadCount}
-                </span>
-            )}
         </div>
     );
 };

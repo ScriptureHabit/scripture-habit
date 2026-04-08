@@ -84,7 +84,7 @@ const Dashboard: FC = () => {
   }, [userData?.daysStudiedCount]);
 
   // 2. Groups Hook
-  const { userGroups, activeGroupId, setActiveGroupId, loadingGroupStates } = useDashboardGroups(userData, initialState.activeGroupId);
+  const { userGroups, activeGroupId, setActiveGroupId } = useDashboardGroups(userData, initialState.activeGroupId);
 
   // WATCHDOG: Track state changes to find why notifications are suppressed
   useEffect(() => {
@@ -115,8 +115,9 @@ const Dashboard: FC = () => {
   // 6. Notifications Hook
   const { 
     showNotifPrompt, 
-    handleEnableNotifications, handleCloseNotifPrompt 
-  } = useDashboardNotifications(userData, userGroups, selectedView, loading, showWelcomeStory, showAutoKickModal, isJoiningInvite, loadingGroupStates, activeGroupId, t);
+    handleEnableNotifications, 
+    handleCloseNotifPrompt 
+  } = useDashboardNotifications(userData, t);
 
   const { markWelcomeStorySeen, updateNickname } = useDashboardActions(user, userData);
 

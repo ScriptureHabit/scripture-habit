@@ -4,8 +4,7 @@ import { verifyAppCheck, authenticate, requireEmailVerified, AuthenticatedReques
 import { postNoteSchema, postMessageSchema, sendCheerSchema, deleteNoteSchema, deleteMessageSchema } from '../lib/schemas.js';
 import { notifyGroupMembers, getUserFcmTokens, sendPushNotification, cleanupTokens } from '../lib/notifications.js';
 import { t } from '../lib/i18n.js';
-import { CounterService } from '../services/counter-service.js';
-import { ReactionPreview, GroupDocument, MessageDocument, UserDocument, GroupMemberDocument } from '../../types/firestore.js';
+import { ReactionPreview, GroupDocument, MessageDocument, UserDocument } from '../../types/firestore.js';
 import { buildNoteSearchTokens } from '../lib/search-utils.js';
 
 const router = express.Router();
@@ -111,24 +110,22 @@ router.post('/post-message', authenticate, verifyAppCheck, async (req: Authentic
             const groupRef = db.collection('groups').doc(groupId);
             
             // TRUTH: Execute all READS before any WRITES (Firestore Transaction Rule)
-            const [uSnap, gSnap, currentTotal] = await Promise.all([
+            const [uSnap, gSnap] = await Promise.all([
                 transaction.get(userRef),
-                transaction.get(groupRef),
-                CounterService.getCountInTransaction(transaction, groupRef, 'messageCount')
+                transaction.get(groupRef)
             ]);
 
             if (!uSnap.exists || !gSnap.exists) throw new Error('Not found.');
             const gData = gSnap.data()!;
-            if (!(gData.members || []).includes(uid)) throw new Error('Forbidden.');
-
-            const currentTotalNum = Number(currentTotal || 0);
-            const approximateTotal = currentTotalNum + 1;
+            const currentTotalNum = Number(gData.messageCount || 0);
+            const newTotalCount = currentTotalNum + 1;
             
             const msgRef = groupRef.collection('messages').doc();
+            const userData = uSnap.data() as UserDocument;
             const msgData = {
                 text,
                 senderId: uid,
-                senderNickname: uSnap.data()?.nickname || 'Member',
+                senderNickname: userData.nickname || 'Member',
                 createdAt: admin.firestore.FieldValue.serverTimestamp(),
                 isNote: false,
                 isEntry: false,
@@ -139,26 +136,8 @@ router.post('/post-message', authenticate, verifyAppCheck, async (req: Authentic
             // START WRITES
             transaction.set(msgRef, msgData);
 
-            // Important: Increment message count shards (No-read increment)
-            CounterService.increment(transaction, groupRef, 'messageCount');
-            
-            const memberRef = groupRef.collection('members').doc(uid);
-            const userData = uSnap.data() as UserDocument;
-
-            const memberData: GroupMemberDocument = {
-                uid,
-                nickname: userData.nickname || 'Member',
-                photoURL: userData.photoURL || '',
-                joinedAt: admin.firestore.Timestamp.now(), // Fixed: Use direct timestamp truth
-                lastActiveAt: admin.firestore.FieldValue.serverTimestamp() as unknown as admin.firestore.Timestamp,
-                lastReadAt: admin.firestore.FieldValue.serverTimestamp() as unknown as admin.firestore.Timestamp,
-                readMessageCount: approximateTotal,
-                kickThreshold: userData.kickThreshold || 3
-            };
-            
-            // Single consolidated write for the member document
-            transaction.set(memberRef, memberData, { merge: true });
-
+            // TRUTH: Synchronous update of the group meta-data and member state
+            // memberLastReadAt is updated to effectively 'mark as read' for the sender in real-time.
             const updatePayload: Record<string, admin.firestore.FieldValue | string | string[] | number | object | undefined> = {
                 messageCount: admin.firestore.FieldValue.increment(1),
                 lastMessageAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -168,40 +147,36 @@ router.post('/post-message', authenticate, verifyAppCheck, async (req: Authentic
                 [`memberLastActive.${uid}`]: admin.firestore.FieldValue.serverTimestamp()
             };
 
-            // SELF-HEALING: If the group's cached messageCount is smaller than the true approximate total (which includes archives), 
-            // we must force-update it to the true total to prevent 'negative unread' issues in the UI.
-            const trueTotalCount = Number(gData.messageCount || 0) + 1;
-            const needsHealing = trueTotalCount < approximateTotal;
-            
-            if (needsHealing) {
-                updatePayload.messageCount = approximateTotal;
-            } else {
-                updatePayload.messageCount = admin.firestore.FieldValue.increment(1);
-            }
-
-            // TRUTH: Direct update to the group doc for real-time dashboard sync
             transaction.update(groupRef, updatePayload);
             
-            const userGS = userRef.collection('groupStates').doc(groupId);
-            transaction.set(userGS, { 
-                readMessageCount: approximateTotal, 
-                lastReadAt: admin.firestore.FieldValue.serverTimestamp() 
+            const memberRef = groupRef.collection('members').doc(uid);
+            transaction.set(memberRef, {
+                uid,
+                nickname: userData.nickname || 'Member',
+                photoURL: userData.photoURL || '',
+                lastActiveAt: admin.firestore.FieldValue.serverTimestamp() as unknown as admin.firestore.Timestamp,
+                lastReadAt: admin.firestore.FieldValue.serverTimestamp() as unknown as admin.firestore.Timestamp,
+                readMessageCount: newTotalCount
             }, { merge: true });
 
-            return { messageId: msgRef.id, nickname: uSnap.data()?.nickname, members: gData.members };
+            const userGS = userRef.collection('groupStates').doc(groupId);
+            transaction.set(userGS, { 
+                readMessageCount: newTotalCount, 
+                lastReadAt: admin.firestore.FieldValue.serverTimestamp(), 
+                lastActiveAt: admin.firestore.FieldValue.serverTimestamp()
+            }, { merge: true });
+
+            return { messageId: msgRef.id, nickname: userData.nickname, members: gData.members };
         });
 
         // Notifications
         try {
             await notifyGroupMembers(groupId, uid, {
-                title: result.nickname,
+                title: result.nickname || 'Member',
                 body: text.length > 100 ? text.substring(0, 97) + '...' : text,
                 data: { type: 'chat', groupId }
             }, result.members);
         } catch (err) { console.error('Chat notification error:', err); }
-
-        // TRUTH: Shards are still updated for deep consistency, but the main doc is incremented directly above.
-        // This ensures the dashboard sees the new messageCount instantly.
 
         res.json({ success: true, messageId: result.messageId });
 
@@ -319,7 +294,7 @@ router.post('/delete-note', authenticate, requireEmailVerified, verifyAppCheck, 
 
                 // TRUTH: High-Water Mark Logic (Sequence Integrity)
                 if (gData.noteCount && gData.noteCount > 0) {
-                    CounterService.increment(transaction, groupRef, 'noteCount', -1);
+                    updatePayload.noteCount = admin.firestore.FieldValue.increment(-1);
                 }
 
                 // TRUTH: Revert metadata if this was the last note
@@ -483,7 +458,7 @@ router.post('/delete-message', authenticate, verifyAppCheck, async (req: Authent
 
             // 1. Counters Integrity (Round 24 Logic)
             if (msgData.isNote) {
-                CounterService.increment(transaction, groupRef, 'noteCount', -1);
+                groupUpdate.noteCount = admin.firestore.FieldValue.increment(-1);
                 transaction.update(db.collection('users').doc(uid), {
                     totalNotes: admin.firestore.FieldValue.increment(-1)
                 });

@@ -223,18 +223,18 @@ const useUserReadStateSync = (
   actualMessageCount: number,
   dispatch: Dispatch<ChatAction>
 ) => {
-  const { syncNotificationReadStatus: syncReadStatus } = useDashboardActions(auth?.currentUser as any, userData);
+  const { updateGroupReadStatus } = useDashboardActions(auth?.currentUser as any, userData);
 
   const updateReadStatus = useCallback(async (gid: string, totalCount: number) => {
-    if (!userData?.uid || !gid || !syncReadStatus) return;
+    if (!userData?.uid || !gid || !updateGroupReadStatus) return;
     try {
       // Optimistic locally update first so Sidebar/UI feels snappy
       dispatch({ type: 'SET_READ_COUNT', count: totalCount });
-      await syncReadStatus(gid, totalCount);
+      await updateGroupReadStatus(gid, totalCount);
     } catch (err) {
       console.error("[useUserReadStateSync] Failed to sync read status:", err);
     }
-  }, [userData?.uid, syncReadStatus, dispatch]);
+  }, [userData?.uid, updateGroupReadStatus, dispatch]);
 
   const lastForcedSyncGidRef = useRef<string | null>(null);
 
