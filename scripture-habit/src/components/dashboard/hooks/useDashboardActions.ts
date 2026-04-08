@@ -38,9 +38,6 @@ export const useDashboardActions = (user: User | null, userData: UserData | null
   const syncNotificationReadStatus = useCallback(async (groupId: string, totalMessages: number): Promise<boolean> => {
     if (!user?.uid || !groupId || totalMessages < 0) return false;
 
-    // TRACE: Identify the code that is automatically resetting unread counts
-    console.log(`[DashboardActions-TRACE] Calling syncNotificationReadStatus for group ${groupId}. Caller:`, new Error().stack);
-
     try {
       const idToken = await auth?.currentUser?.getIdToken();
       if (!idToken) return false;

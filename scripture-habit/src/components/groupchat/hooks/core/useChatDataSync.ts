@@ -228,7 +228,6 @@ const useUserReadStateSync = (
   const updateReadStatus = useCallback(async (gid: string, totalCount: number) => {
     if (!userData?.uid || !gid || !syncReadStatus) return;
     try {
-      console.log(`[useUserReadStateSync] Calling syncReadStatus for group ${gid}. Target: ${totalCount}`);
       await syncReadStatus(gid, totalCount);
       dispatch({ type: 'SET_READ_COUNT', count: totalCount });
     } catch (err) {
@@ -255,7 +254,6 @@ const useUserReadStateSync = (
     const isVisible = document.visibilityState === 'visible';
 
     if ((totalMsgs > (userReadCount || 0) || needsHealing || (lastForcedSyncGidRef.current !== groupId && totalMsgs > 0)) && isWindowFocused && isVisible) {
-      console.log(`[useUserReadStateSync-TRACE] Triggering updateReadStatus: gid=${groupId}, total=${totalMsgs}, userRead=${userReadCount}. Stack:`, new Error().stack);
       updateReadStatus(groupId, totalMsgs);
       lastForcedSyncGidRef.current = groupId;
     }
@@ -281,7 +279,6 @@ export const useChatDataSync = (groupId: string | null, userData: UserData | nul
   const [state, dispatch] = useReducer(chatReducer, initialState);
   
   useEffect(() => {
-    console.log(`[useChatDataSync] isViewActive CHANGED: ${isViewActive} (groupId: ${groupId})`);
   }, [isViewActive, groupId]);
 
   const currentGroupIdRef = useRef<string | null>(groupId);

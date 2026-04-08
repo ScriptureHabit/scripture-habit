@@ -249,11 +249,6 @@ router.post('/update-read-status', authenticate, verifyAppCheck, async (req: Aut
     const { groupId } = validation.data;
     const uid = req.user?.uid;
     const userAgent = req.header('User-Agent') || 'unknown';
-    const ip = req.ip || req.header('x-forwarded-for') || 'unknown';
-    
-    const referer = req.header('Referer') || 'N/A';
-    console.log(`🚀 [API-GHOST-HUNTER] update-read-status CALLED! uid=${uid}, groupId=${groupId}, IP=${ip}, Referer=${referer}, UA=${userAgent}`);
-
     if (!uid) return res.status(401).json({ error: 'Unauthorized' });
 
     try {

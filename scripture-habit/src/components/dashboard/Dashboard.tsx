@@ -107,10 +107,6 @@ const Dashboard: FC = () => {
 
   const { markWelcomeStorySeen, updateNickname, syncNotificationReadStatus } = useDashboardActions(user, userData);
 
-  useEffect(() => {
-    console.log(`🔥 [DASHBOARD-WATCHDOG] selectedView: ${selectedView}, activeGroupId: ${activeGroupId}`);
-  }, [selectedView, activeGroupId]);
-
   const todayPlan = getTodayReadingPlan();
 
   const getReadingPlanUrl = (script: string) => {

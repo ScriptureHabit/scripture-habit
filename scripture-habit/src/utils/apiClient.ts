@@ -31,13 +31,6 @@ apiClient.interceptors.request.use(
     async (config) => {
         try {
             if (config.url && config.url.includes('/api/')) {
-                if (config.url.includes('/api/update-read-status')) {
-                    console.error('🔥 [CRITICAL-TRACE] update-read-status CALLED!');
-                    console.error('URL:', config.url);
-                    console.error('Payload:', config.data);
-                    console.error('Stack:', new Error().stack);
-                }
-                
                 const [path, query] = config.url.split('?');
                 if (path.length > 1 && path.endsWith('/')) {
                     config.url = path.slice(0, -1) + (query ? '?' + query : '');
