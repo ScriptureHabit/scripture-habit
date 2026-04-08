@@ -433,7 +433,9 @@ const Dashboard: FC = () => {
       {latestNoteNotification && selectedView !== 2 && (
         <div
           className="note-notification"
+          style={{ outline: '5px solid red', zIndex: 100000 }}
           onClick={async () => {
+            console.log("[Dashboard] Banner Clicked!");
             const gid = latestNoteNotification.groupId;
             const totalMsgs = latestNoteNotification.totalMessages;
 
