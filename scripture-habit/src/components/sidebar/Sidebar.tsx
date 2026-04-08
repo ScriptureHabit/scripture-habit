@@ -109,12 +109,11 @@ const SidebarGroupItem: React.FC<SidebarGroupItemProps> = ({ group, language, is
         <span className={`unity-percentage-sidebar ${getUnityPercentage(group) === 100 ? 'celestial' : ''}`}>
           {getUnityPercentage(group)}%
         </span>
-        <span>
+        <span className="group-name-sidebar-modal">
           {displayName}
-          {group.members && <span className="sidebar-members-count">({group.members.length})</span>}
         </span>
         {(group.unreadCount ?? 0) > 0 && (
-          <span className="unread-badge">{(group.unreadCount ?? 0) > 99 ? '99+' : group.unreadCount}</span>
+          <span className="unread-badge-sidebar">{(group.unreadCount ?? 0) > 99 ? '99+' : group.unreadCount}</span>
         )}
       </div>
     );
@@ -131,7 +130,7 @@ const SidebarGroupItem: React.FC<SidebarGroupItemProps> = ({ group, language, is
       </span>
       <span className="group-name-sidebar">{displayName}</span>
       {(group.unreadCount ?? 0) > 0 && (
-        <span className="unread-badge">{(group.unreadCount ?? 0) > 99 ? '99+' : group.unreadCount}</span>
+        <span className="unread-badge-sidebar">{(group.unreadCount ?? 0) > 99 ? '99+' : group.unreadCount}</span>
       )}
     </div>
   );

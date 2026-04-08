@@ -199,22 +199,38 @@
     max-width: 120px;
 }
 
-.unread-badge {
-    background-color: var(--pink);
+.unread-badge-sidebar {
+    background: linear-gradient(135deg, #ff453a, #ff9f0a);
     color: white;
-    font-size: 0.7rem;
-    font-weight: bold;
-    padding: 2px 6px;
-    border-radius: 10px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    padding: 0 8px;
+    border-radius: 12px;
     margin-left: auto;
     margin-right: 0.5rem;
-    min-width: 18px;
-    height: 18px;
+    min-width: 22px;
+    height: 22px;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 10px rgba(255, 69, 58, 0.4);
     line-height: 1;
+    border: 2px solid white;
+    animation: badge-pulse 2s infinite;
+}
+
+@keyframes badge-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(255, 69, 58, 0.7); }
+    70% { box-shadow: 0 0 0 8px rgba(255, 69, 58, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 69, 58, 0); }
+}
+
+.group-name-sidebar-modal {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 1.1rem;
 }
 
 .status-emoji-sidebar {

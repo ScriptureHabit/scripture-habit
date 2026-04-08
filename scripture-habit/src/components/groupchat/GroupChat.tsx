@@ -52,7 +52,7 @@ const GroupChatContent: FC = () => {
 
 const GroupChat: FC<GroupChatProps> = (props) => {
   return (
-    <GroupChatProvider {...props} isActive={props.isActive ?? true}>
+    <GroupChatProvider {...props} isActive={props.isActive ?? false}>
       <GroupChatContent />
     </GroupChatProvider>
   );

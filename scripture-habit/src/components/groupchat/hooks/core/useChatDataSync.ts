@@ -239,19 +239,18 @@ const useUserReadStateSync = (
 
   useEffect(() => {
     if (!groupId || !groupData || userReadCount === null) {
-        if (!groupId) console.log("[useUserReadStateSync] Skipping sync (groupId is null/inactive)");
         return;
     }
     
-    // TRUTH: Use the highest of metadata count or listener count to avoid stale overwrites
+    // TRUTH: Use the highest of metadata count or listener count
     const totalMsgs = Math.max(groupData.messageCount || 0, actualMessageCount);
     
     const isWindowFocused = document.hasFocus();
     const isVisible = document.visibilityState === 'visible';
 
-    // Remove needsHealing to prevent mass destruction of unread states
+    // Paranoiac Mode: Only sync if we are SURE this tab is the active one
     if ((totalMsgs > (userReadCount || 0) || (lastForcedSyncGidRef.current !== groupId && totalMsgs > 0)) && isWindowFocused && isVisible) {
-      console.log(`📡 [READ-SYNC] Marking as read: group=${groupId}, count=${totalMsgs}, reason=${lastForcedSyncGidRef.current !== groupId ? 'initial_load' : 'new_messages'}`);
+      console.log(`📡 [READ-SYNC] TRIGGERED: group=${groupId}, currentRead=${userReadCount}, newRead=${totalMsgs}, reason=${lastForcedSyncGidRef.current !== groupId ? 'mount' : 'new_msg'}`);
       updateReadStatus(groupId, totalMsgs);
       lastForcedSyncGidRef.current = groupId;
     }

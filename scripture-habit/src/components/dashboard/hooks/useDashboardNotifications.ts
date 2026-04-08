@@ -120,7 +120,9 @@ export const useDashboardNotifications = (
         // LATCH LOGIC: Do not clear notification if it was shown recently, unless a NEWER one comes.
         const currentMostRecent = mostRecent as NotificationInfo | null;
         const notifId = currentMostRecent ? `${currentMostRecent.groupId}-${currentMostRecent.time}` : null;
-        const isCurrentNotifOld = (now - lastNotifVisibleAtRef.current) > 15000; // 15 seconds stay-time
+        
+        const timeSinceShown = now - lastNotifVisibleAtRef.current;
+        const isCurrentNotifOld = timeSinceShown > 15000; // 15 seconds stay-time
 
         if (mostRecent) {
             if (notifId !== lastNotifIdRef.current) {
@@ -133,6 +135,21 @@ export const useDashboardNotifications = (
             console.log("[DashboardNotifications] Clearing Most Recent Notification after timeout.");
             setLatestNoteNotification(null);
             lastNotifIdRef.current = null;
+        } else if (latestNoteNotification && !isCurrentNotifOld) {
+            // BUG SHIELD: If it's not old yet, but unread count is 0 (mostRecent is null), 
+            // we MUST set a timer to re-evaluate after the remaining time.
+            const remainingTime = 15500 - timeSinceShown; // Extra 500ms safety
+            const timer = setTimeout(() => {
+                // This will trigger a re-render if we toggle a dummy state, 
+                // but better: just let it wait for the next natural sync or 
+                // we can force a clear by calling the setter directly.
+                setLatestNoteNotification(prev => {
+                    const elapsed = Date.now() - lastNotifVisibleAtRef.current;
+                    if (elapsed >= 15000) return null;
+                    return prev;
+                });
+            }, remainingTime);
+            return () => clearTimeout(timer);
         }
     }, [userGroups, userData?.uid, loadingGroupStates, activeGroupId, selectedView]);
 
