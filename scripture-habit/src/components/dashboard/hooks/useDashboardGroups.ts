@@ -14,7 +14,7 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
     const groupIds: string[] = userData?.groupIds || (userData?.groupId ? [userData.groupId] : []);
     const groupIdsKey = JSON.stringify([...groupIds].sort());
 
-    // Fetch user groups details with real-time listeners
+    // Fetch user groups details
     useEffect(() => {
         if (!userData?.uid || groupIds.length === 0) {
             setRawUserGroups([]);
@@ -27,6 +27,7 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
 
         const unsubscribers: (() => void)[] = [];
 
+        // 1. Unified Listener for all Groups
         const groupsQuery = query(
             collection(db, 'groups'),
             where('members', 'array-contains', userData.uid)
@@ -57,6 +58,7 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
         });
         unsubscribers.push(unsubGroups);
 
+        // 2. Specialized Listeners for Member specific data in each group
         groupIds.forEach(gid => {
             const memberRef = doc(db, 'groups', gid, 'members', userData.uid).withConverter(groupMemberConverter);
             const unsubMember = onSnapshot(memberRef, (memberSnap) => {
@@ -77,7 +79,7 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
         return () => unsubscribers.forEach(unsub => unsub());
     }, [userData?.uid, groupIdsKey]);
 
-    // Fetch user group states (read counts) with real-time listener
+    // Fetch user group states (read counts)
     useEffect(() => {
         if (!userData?.uid) {
             setGroupStates({});
@@ -94,14 +96,16 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
             setGroupStates(states);
             setLoadingGroupStates(false);
         }, (err: FirestoreError) => {
-            if (err.code !== 'permission-denied') console.log("Error fetching group states:", err);
+            if (err.code !== 'permission-denied') {
+                console.log("Error fetching group states:", err);
+            }
             setLoadingGroupStates(false);
         });
 
         return () => unsubscribe();
     }, [userData?.uid]);
 
-    // Compute userGroups in real-time based on raw data and states
+    // Combine raw groups with unread counts using useMemo for atomic updates
     const userGroups = useMemo(() => {
         return rawUserGroups.map(group => {
             const state = groupStates[group.id];
@@ -116,14 +120,16 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
         }) as Group[];
     }, [rawUserGroups, groupStates]);
 
-    // Atomic update of activeGroupId if membership changes
+    // Update activeGroupId if it needs to be updated based on memberships
     useEffect(() => {
         if (!userData || userGroups.length === 0) return;
 
         const isActiveGroupLoaded = userGroups.find(g => g.id === activeGroupId);
         if (!isActiveGroupLoaded) {
             const userGroupIds = userData?.groupIds || (userData?.groupId ? [userData.groupId] : []);
-            if (activeGroupId && !userGroupIds.includes(activeGroupId)) {
+            const isMemberOfActiveGroup = activeGroupId && userGroupIds.includes(activeGroupId);
+
+            if (!isMemberOfActiveGroup) {
                 setActiveGroupId(userGroups[0].id);
             }
         }
