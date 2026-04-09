@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { Capacitor } from '@capacitor/core';
 import { User } from 'firebase/auth';
-import { doc, updateDoc } from 'firebase/firestore';
+import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, appCheck, db } from '../../../firebase';
 import { getToken } from 'firebase/app-check';
 import { UserData } from '../../../types/user';
@@ -43,36 +43,56 @@ export const useDashboardActions = (user: User | null, userData: UserData | null
     if (!user?.uid || !groupId || totalMessages < 0) return false;
 
     try {
-      const idToken = await auth?.currentUser?.getIdToken();
-      if (!idToken) return false;
-
-      let appCheckToken = '';
-      try {
-        const appCheckTokenResponse = await getToken(appCheck, false);
-        appCheckToken = appCheckTokenResponse.token;
-      } catch (e) {
-        console.warn('[useDashboardActions] AppCheck token failed:', e);
-      }
-
-      const API_BASE = Capacitor.isNativePlatform() ? 'https://scripturehabit.app' : '';
-      const response = await fetch(`${API_BASE}/api/update-read-status`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${idToken}`,
-          ...(appCheckToken ? { 'X-Firebase-AppCheck': appCheckToken } : {})
-        },
-        body: JSON.stringify({ groupId, readMessageCount: totalMessages })
+      // 1. Latency Compensation (Direct Write)
+      // This ensures the UI (unread count badge) updates immediately even if offline.
+      // Firestore will sync this field automatically when back online.
+      await updateDoc(doc(db, 'users', user.uid, 'groupStates', groupId), {
+        readMessageCount: totalMessages,
+        lastReadAt: serverTimestamp()
       });
 
-      if (!response.ok) {
-        console.error('Background read status update failed:', await response.text());
-        return false;
-      }
+      // 2. Background Sync (API)
+      // The API performs additional "Truth Recovery" (counter healing) and updates
+      // global member/group metadata for other users.
+      // We run this in the background and don't block the UI result on its success.
+      const performApiSync = async () => {
+        try {
+          const idToken = await auth?.currentUser?.getIdToken();
+          if (!idToken) return;
+
+          let appCheckToken = '';
+          try {
+            const appCheckTokenResponse = await getToken(appCheck, false);
+            appCheckToken = appCheckTokenResponse.token;
+          } catch (e) {
+            console.warn('[useDashboardActions] AppCheck token failed:', e);
+          }
+
+          const API_BASE = Capacitor.isNativePlatform() ? 'https://scripturehabit.app' : '';
+          const response = await fetch(`${API_BASE}/api/update-read-status`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${idToken}`,
+              ...(appCheckToken ? { 'X-Firebase-AppCheck': appCheckToken } : {})
+            },
+            body: JSON.stringify({ groupId, readMessageCount: totalMessages })
+          });
+
+          if (!response.ok) {
+            console.warn('Background read status API sync failed:', await response.text());
+          }
+        } catch (error) {
+          console.error('Background read status API sync failed:', error);
+        }
+      };
+
+      // Fire and forget (or handle errors silently in production)
+      performApiSync();
 
       return true;
     } catch (error) {
-      console.error('Background read status update failed:', error);
+      console.error('Immediate read status update failed:', error);
       return false;
     }
   }, [user]);
