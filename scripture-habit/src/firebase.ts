@@ -3,7 +3,7 @@ import { getAnalytics, Analytics } from "firebase/analytics";
 import { getAuth, Auth } from "firebase/auth";
 import { getMessaging, Messaging, isSupported } from "firebase/messaging";
 import { getStorage, FirebaseStorage } from "firebase/storage";
-import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, Firestore } from "firebase/firestore";
+import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, Firestore, getFirestore } from "firebase/firestore";
 import { initializeAppCheck, ReCaptchaEnterpriseProvider, CustomProvider } from "firebase/app-check";
 
 const firebaseConfig = {
@@ -50,11 +50,18 @@ if (typeof window !== 'undefined') {
 }
 
 // Initialize Firestore with persistent cache (modern way)
-const db: Firestore = initializeFirestore(app, {
-  localCache: persistentLocalCache({
-    tabManager: persistentMultipleTabManager()
-  })
-});
+// Wrap in try-catch to avoid app crash if IndexedDB is blocked (e.g. private mode)
+let db: Firestore;
+try {
+  db = initializeFirestore(app, {
+    localCache: persistentLocalCache({
+      tabManager: persistentMultipleTabManager()
+    })
+  });
+} catch (e) {
+  console.error("Firestore initialization with persistence failed, falling back to default:", e);
+  db = getFirestore(app);
+}
 
 const storage: FirebaseStorage = getStorage(app);
 
@@ -62,19 +69,24 @@ if (import.meta.env.DEV) {
     (self as unknown as { FIREBASE_APPCHECK_DEBUG_TOKEN: boolean }).FIREBASE_APPCHECK_DEBUG_TOKEN = true;
 }
 
-const appCheck = initializeAppCheck(app, {
-    provider: import.meta.env.DEV ? new CustomProvider({
-        getToken: () => {
-            // This is a minimal implementation for local dev.
-            // Firebase script handles the debug tokens when they are provided in globals.
-            return Promise.resolve({
-                token: 'debug-token-placeholder',
-                expireTimeMillis: Date.now() + 3600000
-            });
-        }
-    }) : new ReCaptchaEnterpriseProvider(import.meta.env.VITE_APPCHECK_SITE_KEY),
-    isTokenAutoRefreshEnabled: true
-});
+let appCheck: any = null;
+try {
+  appCheck = initializeAppCheck(app, {
+      provider: import.meta.env.DEV ? new CustomProvider({
+          getToken: () => {
+              // This is a minimal implementation for local dev.
+              // Firebase script handles the debug tokens when they are provided in globals.
+              return Promise.resolve({
+                  token: 'debug-token-placeholder',
+                  expireTimeMillis: Date.now() + 3600000
+              });
+          }
+      }) : new ReCaptchaEnterpriseProvider(import.meta.env.VITE_APPCHECK_SITE_KEY || ""),
+      isTokenAutoRefreshEnabled: true
+  });
+} catch (e) {
+  console.error("App Check failed to initialize:", e);
+}
 
 export { app, analytics, auth, db, messaging, storage, appCheck };
 
