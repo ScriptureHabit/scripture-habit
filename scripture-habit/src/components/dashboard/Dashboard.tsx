@@ -49,7 +49,11 @@ const Dashboard: FC = () => {
     const gid = searchParams.get('groupId');
     const viewParam = searchParams.get('view');
     const openNewNote = searchParams.get('openNewNote');
-    const initialView = viewParam ? parseInt(viewParam) : (location.state?.initialView ?? 0);
+    
+    // Default to Chat (2) if groupId is provided but view is missing
+    const initialView = viewParam 
+      ? parseInt(viewParam) 
+      : (gid ? 2 : (location.state?.initialView ?? 0));
     
     return {
       activeGroupId: gid || location.state?.initialGroupId || null as string | null,
@@ -101,7 +105,16 @@ const Dashboard: FC = () => {
     if (location.state?.initialGroupId) setActiveGroupId(location.state.initialGroupId);
 
     if (searchParams.has('groupId') || searchParams.has('openNewNote') || searchParams.has('view')) {
-      if (searchParams.get('openNewNote') === 'true') setActiveModal('newNote');
+      const gid = searchParams.get('groupId');
+      const v = searchParams.get('view');
+      const openNote = searchParams.get('openNewNote');
+
+      if (gid) setActiveGroupId(gid);
+      if (v) setSelectedView(parseInt(v));
+      else if (gid) setSelectedView(2); // Switch to chat if only groupId is provided
+
+      if (openNote === 'true') setActiveModal('newNote');
+      
       navigate(location.pathname, { replace: true });
     }
   }, [searchParams, location.pathname, location.state, navigate, setActiveGroupId, setActiveModal]);

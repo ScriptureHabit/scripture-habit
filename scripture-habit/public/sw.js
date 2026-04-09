@@ -38,7 +38,7 @@ self.addEventListener('notificationclick', (event) => {
     const data = event.notification.data;
     const groupId = data?.groupId;
     const openNewNote = data?.openNewNote;
-    let targetPath = groupId ? `/dashboard?groupId=${groupId}` : '/dashboard';
+    let targetPath = groupId ? `/dashboard?groupId=${groupId}&view=2` : '/dashboard';
     
     if (openNewNote === 'true') {
         targetPath += (targetPath.includes('?') ? '&' : '?') + 'openNewNote=true';
