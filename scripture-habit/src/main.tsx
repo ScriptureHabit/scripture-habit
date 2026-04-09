@@ -144,8 +144,13 @@ if ('serviceWorker' in navigator) {
 
   // Handle SW controller change (reload the page when new SW takes over)
   let refreshing = false;
+  const wasControlled = !!navigator.serviceWorker.controller;
+
   navigator.serviceWorker.addEventListener('controllerchange', () => {
-    if (refreshing) return;
+    // Only reload if the page was already controlled (i.e., this is an update)
+    // and we haven't already started a refresh.
+    if (!wasControlled || refreshing) return;
+    
     refreshing = true;
     window.location.reload();
   });
