@@ -6,12 +6,11 @@ import { auth, storage } from '../../firebase';
 import { useNavigate } from 'react-router-dom';
 import { UilSignOutAlt, UilCamera, UilCalendarAlt } from '@iconscout/react-unicons';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { Capacitor } from '@capacitor/core';
-import Button from '../button/Button';
 import { toast } from 'react-toastify';
-
+import Button from '../button/Button';
 import { requestNotificationPermission, disableNotifications } from '../../utils/notificationHelper';
 import { UserData } from '../../types/user';
+import apiClient from '../../utils/apiClient';
 
 interface ProfileStats {
     streak: number;
@@ -36,14 +35,12 @@ interface BeforeInstallPromptEvent extends Event {
 const Profile: FC<ProfileProps> = ({ userData, stats }) => {
     const { language, setLanguage, t } = useLanguage();
     const { fontSize, setFontSize } = useSettings();
-    const API_BASE = Capacitor.isNativePlatform() ? 'https://scripturehabit.app' : '';
     const navigate = useNavigate();
     const [nickname, setNickname] = useState('');
     const [stake, setStake] = useState('');
     const [ward, setWard] = useState('');
     const [bio, setBio] = useState('');
     const [isSaving, setIsSaving] = useState(false);
-    const [message, setMessage] = useState({ type: '', text: '' });
     const [showSignOutModal, setShowSignOutModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
@@ -119,6 +116,7 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
                 setNotifPermission(window.Notification.permission);
             } catch (err: unknown) {
                 console.error("Toggle error:", err);
+                toast.error(t('profile.notificationToggle.error') || "Failed to update notification settings.");
             }
         }
         setIsNotifLoading(false);
@@ -220,18 +218,8 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
             // Get download URL
             const url = await getDownloadURL(storageRef);
 
-            // Use Backend API for update and sync
-            const idToken = await auth?.currentUser?.getIdToken();
-            const response = await fetch(`${API_BASE}/api/update-profile`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${idToken}`
-                },
-                body: JSON.stringify({ photoURL: url })
-            });
-
-            if (!response.ok) throw new Error("API update failed");
+            // Use Backend API for update and sync with apiClient (handles auth and app check)
+            await apiClient.post('/api/update-profile', { photoURL: url });
 
             setPhotoURL(url);
             toast.success(t('profile.imageUploadSuccess') || "Profile picture updated!");
@@ -254,35 +242,18 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
         if (newNickname === userData?.nickname && newStake === (userData?.stake || '') && newWard === (userData?.ward || '') && newBio === (userData?.bio || '')) return;
 
         setIsSaving(true);
-        setMessage({ type: '', text: '' });
-
         try {
-            const idToken = await auth?.currentUser?.getIdToken();
-            const response = await fetch(`${API_BASE}/api/update-profile`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${idToken}`
-                },
-                body: JSON.stringify({
-                    nickname: newNickname,
-                    stake: newStake,
-                    ward: newWard,
-                    bio: newBio
-                })
+            await apiClient.post('/api/update-profile', {
+                nickname: newNickname,
+                stake: newStake,
+                ward: newWard,
+                bio: newBio
             });
 
-            if (!response.ok) throw new Error("API update failed");
-
-            setMessage({ type: 'success', text: t('profile.successUpdate') });
-
-            // Clear message after 3 seconds
-            setTimeout(() => {
-                setMessage({ type: '', text: '' });
-            }, 3000);
+            toast.success(t('profile.successUpdate') || "Profile updated successfully!");
         } catch (err: unknown) {
             console.error("Error updating profile:", err);
-            setMessage({ type: 'error', text: t('profile.errorUpdate') });
+            toast.error(t('profile.errorUpdate') || "Failed to update profile.");
         } finally {
             setIsSaving(false);
         }
@@ -304,21 +275,14 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
 
         setIsDeleting(true);
         try {
-            const idToken = await user.getIdToken();
-            const response = await fetch(`${API_BASE}/api/delete-account`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${idToken}`
-                }
-            });
+            const response = await apiClient.post('/api/delete-account');
 
-            if (response.ok) {
+            if (response.status === 200) {
                 toast.success(t('profile.deleteAccountSuccess'));
                 await auth?.signOut();
                 navigate('/welcome');
             } else {
-                const errorData = await response.json();
+                const errorData = response.data;
                 console.error("Server-side deletion failed:", errorData);
                 toast.error(t('profile.deleteAccountError') || "Error deleting account");
                 // If it failed but maybe partially deleted, we should still sign out to be safe
@@ -468,11 +432,6 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
                 >
                     {isSaving ? t('newNote.saving') : t('profile.save')}
                 </Button>
-                {message.text && (
-                    <p className={`message ${message.type}`}>
-                        {message.text}
-                    </p>
-                )}
                 {stats && (
                     <div className="profile-stats">
                         <div className="level-section">
@@ -519,7 +478,7 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
                     <h2>{t('groupChat.habitPaceProfileTitle')}</h2>
                 </div>
                 <p className="section-desc-small">
-                    {t('groupChat.habitPaceProfileDesc').replace('{days}', (userData?.kickThreshold || 3).toString())}
+                    {t('groupChat.habitPaceProfileDesc', { days: userData?.kickThreshold || 3 })}
                 </p>
                 <div className="font-size-options habit-pace-grid">
                     {[3, 4, 5, 6, 7].map(days => (
@@ -529,26 +488,11 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
                             onClick={async () => {
                                 if (userData?.kickThreshold === days) return;
                                 try {
-                                    const idToken = await auth?.currentUser?.getIdToken();
-                                    if (!idToken) throw new Error("No idToken");
-                                    const response = await fetch(`${API_BASE}/api/update-kick-threshold`, {
-                                        method: 'POST',
-                                        headers: {
-                                            'Content-Type': 'application/json',
-                                            'Authorization': `Bearer ${idToken}`
-                                        },
-                                        body: JSON.stringify({ threshold: days })
-                                    });
-                                    if (response.ok) {
-                                        toast.success(t('groupChat.autoKickSuccess'));
-                                    } else {
-                                        const errorData = await response.json();
-                                        toast.error(`Failed to update: ${errorData.error || response.statusText}`);
-                                    }
+                                    await apiClient.post('/api/update-kick-threshold', { threshold: days });
+                                    toast.success(t('groupChat.autoKickSuccess'));
                                 } catch (err: unknown) {
                                     console.error("Error updating pace:", err);
-                                    const error = err as Error;
-                                    toast.error(`Error updating pace: ${error.message}`);
+                                    toast.error(t('profile.errorUpdate') || "Error updating pace");
                                 }
                             }}
                         >

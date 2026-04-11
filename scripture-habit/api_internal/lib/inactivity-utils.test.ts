@@ -92,5 +92,97 @@ describe('Inactivity Utils', () => {
             const result = calculateMemberStatus('u1', memberData, groupData, NOW);
             expect(result.status).toBe('active');
         });
+
+        describe('Boundary Conditions', () => {
+            it('should be active exactly at the grace period limit', () => {
+                const memberData = {
+                    joinedAt: new Date(NOW.getTime() - 3 * dayMs), // Exactly 3 days ago
+                    lastReadAt: new Date(NOW.getTime() - 1 * dayMs),
+                };
+                const result = calculateMemberStatus('u1', memberData, {}, NOW);
+                // Grace period is 3 days. 3.0 days ago is NOT < 3.0 days ago.
+                expect(result.isNewMember).toBe(false);
+                // Even if not a new member, being exactly at the threshold (3 days) means status is still 'active'.
+                // Status is 'inactive' only if diff > threshold.
+                expect(result.status).toBe('active');
+            });
+
+            it('should be active slightly before the grace period limit', () => {
+                const memberData = {
+                    joinedAt: new Date(NOW.getTime() - (3 * dayMs - 1000)), // 3 days minus 1 second
+                    lastReadAt: new Date(NOW.getTime() - 1000),
+                };
+                const result = calculateMemberStatus('u1', memberData, {}, NOW);
+                expect(result.isNewMember).toBe(true);
+                expect(result.status).toBe('active');
+            });
+
+            it('should be active exactly at the kick threshold limit', () => {
+                const memberData = {
+                    joinedAt: new Date(NOW.getTime() - 10 * dayMs),
+                    lastNoteAt: new Date(NOW.getTime() - 3 * dayMs), // Exactly 3 days ago
+                };
+                const result = calculateMemberStatus('u1', memberData, {}, NOW);
+                // Code: diffMs > thresholdMs ? 'inactive' : 'active'
+                // If diff is exactly threshold, it is 'active'.
+                expect(result.status).toBe('active');
+            });
+
+            it('should be inactive slightly after the kick threshold limit', () => {
+                const memberData = {
+                    joinedAt: new Date(NOW.getTime() - 10 * dayMs),
+                    lastNoteAt: new Date(NOW.getTime() - (3 * dayMs + 1000)), // 3 days and 1 second ago
+                };
+                const result = calculateMemberStatus('u1', memberData, {}, NOW);
+                expect(result.status).toBe('inactive');
+            });
+        });
+
+        describe('Priority and Precedence', () => {
+            it('should prefer lastPostAt over lastNoteAt if it is newer', () => {
+                const memberData = {
+                    joinedAt: new Date(NOW.getTime() - 10 * dayMs),
+                    lastNoteAt: new Date(NOW.getTime() - 5 * dayMs),
+                    lastPostAt: new Date(NOW.getTime() - 1 * dayMs), // Post is newer
+                };
+                const result = calculateMemberStatus('u1', memberData, {}, NOW);
+                expect(result.lastActiveTime).toBe(memberData.lastPostAt.getTime());
+                expect(result.status).toBe('active');
+            });
+
+            it('should prioritize member thresholds over group thresholds', () => {
+                const memberData = {
+                    joinedAt: new Date(NOW.getTime() - 10 * dayMs),
+                    lastNoteAt: new Date(NOW.getTime() - 5 * dayMs), 
+                    kickThreshold: 7, // User wants 7 days
+                };
+                const groupData = {
+                    memberKickThresholds: { u1: 2 } // Group wants 2 days
+                };
+                const result = calculateMemberStatus('u1', memberData, groupData, NOW);
+                expect(result.status).toBe('active'); // 5 < 7
+                expect(result.thresholdMs).toBe(7 * dayMs);
+            });
+        });
+
+        describe('Edge Cases', () => {
+            it('should handle joinedAt as the sole activity source', () => {
+                const memberData = {
+                    joinedAt: new Date(NOW.getTime() - 1 * dayMs), // Joined 1 day ago, no reading/posting
+                };
+                const result = calculateMemberStatus('u1', memberData, {}, NOW);
+                expect(result.status).toBe('active'); // Still within 3 day threshold
+                expect(result.lastActiveTime).toBe(memberData.joinedAt.getTime());
+            });
+
+            it('should handle missing groupData partially', () => {
+                const memberData = {
+                    joinedAt: new Date(NOW.getTime() - 1 * dayMs),
+                };
+                // @ts-ignore - testing runtime robustness
+                const result = calculateMemberStatus('u1', memberData, null, NOW);
+                expect(result.status).toBe('active');
+            });
+        });
     });
 });

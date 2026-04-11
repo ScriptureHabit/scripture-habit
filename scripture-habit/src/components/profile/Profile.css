@@ -206,8 +206,19 @@
     align-items: center;
     flex: 1;
     background: rgba(255, 255, 255, 0.5);
-    padding: 1rem;
+    padding: 1rem 0.5rem;
     border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    transition: all 0.3s ease;
+}
+
+.stat-item.highlight {
+    background: rgba(255, 145, 157, 0.15);
+    border-color: rgba(255, 145, 157, 0.3);
+}
+
+.stat-item.highlight .stat-value {
+    color: var(--pink);
 }
 
 .stat-value {
@@ -549,21 +560,51 @@ input:disabled+.slider {
 .habit-pace-grid {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: 8px;
+    gap: 10px;
 }
 
 .habit-pace-option {
-    padding: 10px 5px;
+    padding: 12px 5px;
     min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.habit-pace-option:hover {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.habit-pace-option.active {
+    background: var(--pink);
+    border-color: var(--pink);
+    color: white;
+    box-shadow: 0 4px 15px rgba(255, 145, 157, 0.4);
+}
+
+.habit-pace-option.active .habit-pace-label {
+    color: rgba(255, 255, 255, 0.9);
 }
 
 .habit-pace-days {
-    font-size: 1.1rem;
-    font-weight: bold;
+    font-size: 1.2rem;
+    font-weight: 800;
 }
 
 .habit-pace-label {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--gray);
 }
 
 .font-option-A-sm { font-size: 0.8rem; font-weight: bold; }

@@ -207,7 +207,8 @@ export default {
                 statusBlocked: "차단됨 (설정 확인)",
                 enable: "활성화",
                 disable: "비활성화",
-                disabledSuccess: "알림이 비활성화되었습니다"
+                disabledSuccess: "알림이 비활성화되었습니다",
+                error: "알림 설정을 업데이트하지 못했습니다."
             },
             deleteAccount: "계정 삭제",
             deleteAccountWarning: "계정을 삭제하면 모든 학습 노트, 학습 기록 및 프로필 설정이 영구적으로 삭제됩니다. 이 작업은 취소할 수 없으며 데이터를 복구할 수 없습니다. 정말로 삭제하시겠습니까?",

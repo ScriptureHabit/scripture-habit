@@ -193,7 +193,8 @@ export default {
                 statusBlocked: "Blocked (I-check ang Settings)",
                 enable: "I-enable",
                 disable: "I-disable",
-                disabledSuccess: "Na-disable ang mga notification"
+                disabledSuccess: "Na-disable ang mga notification",
+                error: "Hindi ma-update ang mga settings ng notification."
             },
             deleteAccount: "I-delete ang Account",
             deleteAccountWarning: "Ang pag-delete ng iyong account ay permanenteng magbubura sa lahat ng iyong mga study notes, history, at profile settings. Ang aksyong ito ay hindi na maaaring bawiin at ang data ay hindi na maibabalik. Sigurado ka ba?",

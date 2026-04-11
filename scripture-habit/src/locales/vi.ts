@@ -207,7 +207,8 @@ export default {
                 statusBlocked: "Đã chặn (Kiểm tra Cài đặt)",
                 enable: "Bật",
                 disable: "Tắt",
-                disabledSuccess: "Đã tắt thông báo"
+                disabledSuccess: "Đã tắt thông báo",
+                error: "Không thể cập nhật cài đặt thông báo."
             },
             deleteAccount: "Xóa tài khoản",
             deleteAccountWarning: "Xóa tài khoản sẽ xóa vĩnh viễn tất cả ghi chú học tập, lịch sử và cài đặt hồ sơ của bạn. Hành động này không thể hoàn tác và dữ liệu không thể khôi phục. Bạn có chắc chắn không?",

@@ -63,11 +63,11 @@ export function calculateMemberStatus(
     const tJoined = toMillis(memberData.joinedAt);
     const tLastNote = toMillis(memberData.lastNoteAt);
     const tLastPost = toMillis(memberData.lastPostAt);
-    const tGroupLastActive = toMillis(groupData.memberLastActive?.[memberId]);
+    const tGroupLastActive = groupData ? toMillis(groupData.memberLastActive?.[memberId]) : 0;
     
     const tLastRead = toMillis(memberData.lastReadAt);
     const tLastActiveAt = toMillis(memberData.lastActiveAt);
-    const tGroupLastRead = toMillis(groupData.memberLastReadAt?.[memberId]);
+    const tGroupLastRead = groupData ? toMillis(groupData.memberLastReadAt?.[memberId]) : 0;
 
     // 2. Identify "Posting" Activity (includes joining)
     const lastPostAtTime = Math.max(tLastNote, tLastPost, tGroupLastActive, tJoined);
@@ -88,7 +88,7 @@ export function calculateMemberStatus(
     }
 
     // 5. Threshold Calculation
-    const thresholdDays = memberData.kickThreshold || groupData.memberKickThresholds?.[memberId] || 3;
+    const thresholdDays = memberData.kickThreshold || (groupData ? groupData.memberKickThresholds?.[memberId] : 0) || 3;
     const thresholdMs = thresholdDays * 24 * 60 * 60 * 1000;
 
     if (candidates.length === 0) {

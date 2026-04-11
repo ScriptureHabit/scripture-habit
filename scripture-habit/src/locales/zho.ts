@@ -193,7 +193,8 @@ export default {
                 statusBlocked: "已阻止（請檢查設置）",
                 enable: "啟用",
                 disable: "禁用",
-                disabledSuccess: "通知已禁用"
+                disabledSuccess: "通知已禁用",
+                error: "無法更新通知設置。"
             },
             deleteAccount: "刪除帳號",
             deleteAccountWarning: "刪除帳號將永久抹除您所有的學習筆記、歷史記錄和個人資料設定。此操作無法撤銷，數據也無法恢復。您確定要繼續嗎？",

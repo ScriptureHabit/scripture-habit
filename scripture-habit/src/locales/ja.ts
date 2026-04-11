@@ -115,7 +115,8 @@ export default {
                 statusBlocked: "ブロック中（設定を確認してください）",
                 enable: "有効にする",
                 disable: "無効にする",
-                disabledSuccess: "通知を無効にしました"
+                disabledSuccess: "通知を無効にしました",
+                error: "通知設定の更新に失敗しました。"
             },
             deleteAccount: "アカウントを削除",
             deleteAccountWarning: "アカウントを削除すると、これまでに作成したすべての学習ノート、学習履歴、およびプロフィール設定が完全に消去されます。この操作は取り消すことができず、データの復元もできません。本当によろしいですか？",

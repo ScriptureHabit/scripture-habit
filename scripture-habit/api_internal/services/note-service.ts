@@ -232,6 +232,7 @@ export class NoteService {
 
                 return { 
                     personalNoteId: noteRef.id, 
+                    sharedMessageIds,
                     newStreak, 
                     streakUpdated, 
                     nickname: userNickname, 

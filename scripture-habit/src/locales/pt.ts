@@ -193,7 +193,8 @@ export default {
                 statusBlocked: "Bloqueado (Verifique as Configurações)",
                 enable: "Ativar",
                 disable: "Desativar",
-                disabledSuccess: "Notificações desativadas"
+                disabledSuccess: "Notificações desativadas",
+                error: "Falha ao atualizar as configurações de notificação."
             },
             deleteAccount: "Excluir Conta",
             deleteAccountWarning: "Ao excluir sua conta, todas as suas notas de estudo, histórico e configurações de perfil serão apagados permanentemente. Esta ação não pode ser desfeita e os dados não podem ser restaurados. Você tem certeza?",

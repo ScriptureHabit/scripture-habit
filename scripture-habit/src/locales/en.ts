@@ -115,7 +115,8 @@ export default {
                 statusBlocked: "Blocked (Check Settings)",
                 enable: "Enable",
                 disable: "Disable",
-                disabledSuccess: "Notifications disabled"
+                disabledSuccess: "Notifications disabled",
+                error: "Failed to update notification settings."
             },
             deleteAccount: "Delete Account",
             deleteAccountWarning: "Warning: This action is permanent. All your data, including your notes and profile, will be permanently deleted.",

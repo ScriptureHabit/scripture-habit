@@ -393,14 +393,43 @@ router.post('/update-kick-threshold', authenticate, verifyAppCheck, async (req: 
         const userData = userDoc.data()! as UserDocument;
         const groupIds = userData.groupIds || (userData.groupId ? [userData.groupId] : []);
 
-        await userRef.update({ 
-            kickThreshold: threshold,
-            hasSetKickThreshold: true
-        });
+        // TRUTH: If the user is part of multiple groups, we need to handle the case where some might be deleted.
+        // We fetch all group documents to verify their existence before batch updating.
+        let existingGroupIds: string[] = [];
+        let missingGroupIds: string[] = [];
 
         if (groupIds.length > 0) {
+            const groupRefs = groupIds.map(gid => db.collection('groups').doc(gid));
+            const groupSnaps = await db.getAll(...groupRefs);
+            
+            groupSnaps.forEach((snap, index) => {
+                if (snap.exists) {
+                    existingGroupIds.push(groupIds[index]);
+                } else {
+                    missingGroupIds.push(groupIds[index]);
+                    console.warn(`[Cleanup] Found ghost group reference: ${groupIds[index]} for user ${uid}`);
+                }
+            });
+        }
+
+        const userUpdate: admin.firestore.UpdateData<UserDocument> = { 
+            kickThreshold: threshold,
+            hasSetKickThreshold: true
+        };
+
+        // If we found ghost groups, clean them up from the user's record
+        if (missingGroupIds.length > 0) {
+            userUpdate.groupIds = admin.firestore.FieldValue.arrayRemove(...missingGroupIds);
+            if (userData.groupId && missingGroupIds.includes(userData.groupId)) {
+                userUpdate.groupId = admin.firestore.FieldValue.delete();
+            }
+        }
+
+        await userRef.update(userUpdate);
+
+        if (existingGroupIds.length > 0) {
             let batch = db.batch();
-            groupIds.forEach((gid: string) => {
+            existingGroupIds.forEach((gid: string) => {
                 const gRef = db.collection('groups').doc(gid);
                 
                 // Update the new scalable subcollection
@@ -409,6 +438,7 @@ router.post('/update-kick-threshold', authenticate, verifyAppCheck, async (req: 
                 }, { merge: true });
                 
                 // Also update the legacy map for backward compatibility in dashboards
+                // This is safe because existingGroupIds only contains IDs that actually exist.
                 batch.update(gRef, {
                     [`memberKickThresholds.${uid}`]: threshold
                 });
@@ -416,7 +446,7 @@ router.post('/update-kick-threshold', authenticate, verifyAppCheck, async (req: 
             await batch.commit();
         }
 
-        res.json({ success: true });
+        res.json({ success: true, cleanedUpGroups: missingGroupIds });
     } catch (error) {
         let message = 'Internal Server Error';
         if (error instanceof Error) {

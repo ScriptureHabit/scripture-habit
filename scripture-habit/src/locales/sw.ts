@@ -207,7 +207,8 @@ export default {
                 statusBlocked: "Imezuiwa (Angalia Mipangilio)",
                 enable: "Wezesha",
                 disable: "Zima",
-                disabledSuccess: "Arifa zimezimwa"
+                disabledSuccess: "Arifa zimezimwa",
+                error: "Imeshindwa kusasisha mipangilio ya arifa."
             },
             deleteAccount: "Futa Akaunti",
             deleteAccountWarning: "Kufuta akaunti yako kutafuta kabisa maelezo yako yote ya funzo, historia, na mipangilio ya wasifu. Kitendo hiki hakiwezi kubatilishwa na data haiwezi kurejeshwa. Una uhakika?",
