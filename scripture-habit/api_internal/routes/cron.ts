@@ -4,7 +4,7 @@ import { CounterService } from '../services/counter-service.js';
 import { ArchiveService } from '../services/archive-service.js';
 import { getUserFcmTokens, sendPushNotification, cleanupTokens } from '../lib/notifications.js';
 import { t } from '../lib/i18n.js';
-import { FirestoreTimestamp } from '../../types/firestore.js';
+import { calculateMemberStatus, InactivityMemberData, InactivityGroupData } from '../lib/inactivity-utils.js';
 
 interface MemberPreview {
     uid: string;
@@ -28,6 +28,7 @@ interface CronMemberInfo {
     action: string;
     lastActive?: string;
     daysSinceActive?: number;
+    reason?: string;
 }
 
 const router = express.Router();
@@ -66,7 +67,7 @@ router.all('/check-inactive-users', verifyCronSecret, async (_req: Request, res:
             snapshot = await groupsRef.limit(50).get();
         }
 
-        let list = snapshot.docs;
+        const list = snapshot.docs;
 
         let processedCount = 0;
         let removedCount = 0;
@@ -97,57 +98,42 @@ router.all('/check-inactive-users', verifyCronSecret, async (_req: Request, res:
             const inactiveMembers: string[] = [];
             const membersToInitialize: string[] = [];
 
+            const processedMemberIds = new Set<string>();
+
             membersSnap.forEach(memberDoc => {
-                const memberData = memberDoc.data();
+                const memberData = memberDoc.data() as InactivityMemberData;
                 const memberId = memberDoc.id;
+                processedMemberIds.add(memberId);
 
-                // This ensures we respect the "habit rule" (threshold) even for those who haven't started posting yet.
-                const candidates: FirestoreTimestamp[] = [
-                    memberData.lastNoteAt,
-                    memberData.lastPostAt,
-                    memberData.lastActiveAt,
-                    memberData.joinedAt
-                ].filter(Boolean);
+                const result = calculateMemberStatus(memberId, memberData, groupData as InactivityGroupData, now);
 
-                const individualThresholdDays = memberData.kickThreshold || (groupData.memberKickThresholds && groupData.memberKickThresholds[memberId]) || 3;
-                const individualThresholdMs = individualThresholdDays * 24 * 60 * 60 * 1000;
-
-                if (candidates.length === 0) {
-                    // GHOST BUSTER: If no activity data or joinedAt exists (corrupt/v1 legacy),
-                    // we initialize joinedAt now to start their 3-day grace period.
+                if (result.status === 'needs_initialization') {
+                    // GHOST BUSTER: If truly no activity exists anywhere, we initialize joinedAt now.
                     batch.update(memberDoc.ref, { joinedAt: admin.firestore.FieldValue.serverTimestamp() });
                     batchOpCount++;
                     activeMembers.push(memberId);
+                    initializedCount++;
+                } else if (result.status === 'inactive') {
+                    inactiveMembers.push(memberId);
                 } else {
-                    // Find the newest among candidates
-                    const candidateDates = candidates.map(c => {
-                        if (!c) return 0;
-
-                        // Type-safe approach to extract milliseconds
-                        if (typeof (c as admin.firestore.Timestamp).toMillis === 'function') {
-                            return (c as admin.firestore.Timestamp).toMillis();
-                        }
-
-                        const tsObj = c as { seconds?: number; _seconds?: number };
-                        if (tsObj.seconds !== undefined) return tsObj.seconds * 1000;
-                        if (tsObj._seconds !== undefined) return tsObj._seconds * 1000;
-
-                        if (c instanceof Date) return c.getTime();
-                        if (typeof c === 'number') return c;
-
-                        return 0;
-                    }).filter(t => t > 0);
-
-                    const lastActiveTime = candidateDates.length > 0 ? Math.max(...candidateDates) : 0;
-                    const diff = lastActiveTime > 0 ? now.getTime() - lastActiveTime : 0;
-
-                    if (lastActiveTime > 0 && diff > individualThresholdMs) {
-                        inactiveMembers.push(memberId);
-                    } else {
-                        activeMembers.push(memberId);
-                    }
+                    activeMembers.push(memberId);
                 }
             });
+
+            // GHOST CLEANUP: Identify UIDs in the members array that were NOT in the subcollection.
+            // These are orphaned and should be removed immediately.
+            const groupMemberIds = groupData.members || [];
+            for (const uid in groupData.memberLastReadAt || {}) {
+                if (!processedMemberIds.has(uid)) {
+                   // This is a ghost member who has activity metadata but no member document.
+                   if (!inactiveMembers.includes(uid)) inactiveMembers.push(uid);
+                }
+            }
+            for (const uid of groupMemberIds) {
+                if (!processedMemberIds.has(uid)) {
+                    if (!inactiveMembers.includes(uid)) inactiveMembers.push(uid);
+                }
+            }
 
             const allMemberIds = membersSnap.docs.map(d => d.id);
 
@@ -335,41 +321,58 @@ router.get('/test-inactive-check/:groupId', verifyCronSecret, async (req: Reques
         const groupDoc = await groupRef.get();
         if (!groupDoc.exists) return res.status(404).json({ error: 'Not Found' });
 
-        const groupData = groupDoc.data();
-        if (!groupData) return res.status(404).json({ error: 'Data Not Found' });
-
+        const groupData = groupDoc.data() || {};
         const members: string[] = groupData.members || [];
-        const memberLastActive = groupData.memberLastActive || {};
         const ownerUserId = groupData.ownerUserId;
         const now = new Date();
         const groupName = groupData.name || '';
-        const report: CronReport = { groupId: groupId as string, groupName, totalMembers: members.length, ownerUserId, checkTime: now.toISOString(), members: [] };
-        const memberKickThresholds = groupData.memberKickThresholds || {};
+        const report: CronReport = { groupId, groupName, totalMembers: members.length, ownerUserId, checkTime: now.toISOString(), members: [] };
+        
+        const membersSnap = await groupRef.collection('members').get();
+        const processedMemberIds = new Set<string>();
 
-        for (const memberId of members) {
-            const threshold = memberKickThresholds[memberId] || 3;
-            const thresholdMs = threshold * 24 * 60 * 60 * 1000;
-            const info: CronMemberInfo = { memberId, isOwner: memberId === ownerUserId, threshold, status: '', action: '' };
+        // Check members in subcollection
+        membersSnap.forEach(memberDoc => {
+            const memberId = memberDoc.id;
+            const memberData = memberDoc.data() as InactivityMemberData;
+            processedMemberIds.add(memberId);
+            
+            const result = calculateMemberStatus(memberId, memberData, groupData as InactivityGroupData, now);
+            
+            const info: CronMemberInfo = { 
+                memberId, 
+                isOwner: memberId === ownerUserId, 
+                threshold: Math.floor(result.thresholdMs / (24 * 60 * 60 * 1000)), 
+                status: '', 
+                action: '',
+                reason: result.reason
+            };
 
-            if (memberId === ownerUserId) {
-                info.status = 'Owner (skipped)';
-                info.action = 'none';
+            if (result.status === 'needs_initialization') {
+                info.status = 'Ghost (No activity data)';
+                info.action = 'would initialize joinedAt';
             } else {
-                const lastTs = memberLastActive[memberId];
-                if (!lastTs) {
-                    info.status = 'No tracking data';
-                    info.action = 'would initialize';
-                } else {
-                    const lastDate = lastTs.toDate();
-                    const diff = now.getTime() - lastDate.getTime();
-                    info.lastActive = lastDate.toISOString();
-                    info.daysSinceActive = Math.floor(diff / (24 * 60 * 60 * 1000));
-                    info.status = diff > thresholdMs ? '⚠️ Inactive' : '✅ Active';
-                    info.action = diff > thresholdMs ? 'would remove' : 'keep';
-                }
+                info.lastActive = result.lastActiveTime > 0 ? new Date(result.lastActiveTime).toISOString() : undefined;
+                info.daysSinceActive = result.lastActiveTime > 0 ? Math.floor(result.diffMs / (24 * 60 * 60 * 1000)) : undefined;
+                info.status = result.status === 'inactive' ? '⚠️ Inactive' : '✅ Active';
+                info.action = result.status === 'inactive' ? 'would remove' : 'keep';
             }
             report.members.push(info);
+        });
+
+        // Check for Ghost members (in array but not in subcollection)
+        for (const memberId of members) {
+            if (!processedMemberIds.has(memberId)) {
+                report.members.push({
+                    memberId,
+                    isOwner: memberId === ownerUserId,
+                    threshold: 0,
+                    status: '👻 GHOST (Missing member document)',
+                    action: 'REMOVE'
+                });
+            }
         }
+
         res.json(report);
     } catch (err: unknown) {
         const error = err as Error;

@@ -287,6 +287,7 @@ router.post('/update-read-status', authenticate, verifyAppCheck, async (req: Aut
         // Secondary TRUTH: Update the member's private document for deep history/archiving.
         batch.set(groupRef.collection('members').doc(uid), {
             lastReadAt: admin.firestore.FieldValue.serverTimestamp(),
+            lastActiveAt: admin.firestore.FieldValue.serverTimestamp(),
             readMessageCount: totalMessages
         }, { merge: true });
 
