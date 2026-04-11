@@ -5,6 +5,7 @@ import { postNoteSchema, postMessageSchema, sendCheerSchema, deleteNoteSchema, d
 import { notifyGroupMembers, getUserFcmTokens, sendPushNotification, cleanupTokens } from '../lib/notifications.js';
 import { t } from '../lib/i18n.js';
 import { GroupDocument, MessageDocument } from '../../types/firestore.js';
+import { waitUntil } from '@vercel/functions';
 
 const router = express.Router();
 
@@ -116,14 +117,15 @@ router.post('/post-message', authenticate, verifyAppCheck, async (req: Authentic
             optimisticId
         });
 
-        // Notifications
-        try {
-            await notifyGroupMembers(groupId, uid, {
+        // Notifications: waitUntil() keeps the function alive after response
+        // to ensure notifications are reliably sent without blocking the client.
+        waitUntil(
+            notifyGroupMembers(groupId, uid, {
                 title: result.nickname || 'Member',
                 body: text.length > 100 ? text.substring(0, 97) + '...' : text,
                 data: { type: 'chat', groupId }
-            }, result.members);
-        } catch (err) { console.error('Chat notification error:', err); }
+            }, result.members).catch(err => console.error('Chat notification error:', err))
+        );
 
         res.json({ success: true, messageId: result.messageId });
 
@@ -321,26 +323,31 @@ router.post('/send-cheer', authenticate, verifyAppCheck, async (req: Authenticat
 
         if (result.alreadySent) return res.status(429).json({ error: 'alreadySent' });
 
-        // Notification
-        try {
-            const tokens = await getUserFcmTokens(targetUid);
-            if (tokens.length > 0) {
-                const targetLang = (result.targetData?.language as string) || 'en';
-                const lang = (language as string) || targetLang || 'en';
-                
-                const resultNotification = await sendPushNotification(tokens, {
-                    title: result.senderNickname || 'Member',
-                    body: t(lang, 'notifications.cheer_body'),
-                    data: { type: 'cheer', groupId }
-                });
+        // Notification: waitUntil() ensures this runs after the response
+        // without blocking the client and without being killed by Vercel.
+        waitUntil(
+            (async () => {
+                try {
+                    const tokens = await getUserFcmTokens(targetUid);
+                    if (tokens.length > 0) {
+                        const targetLang = (result.targetData?.language as string) || 'en';
+                        const lang = (language as string) || targetLang || 'en';
 
-                if (resultNotification.failedTokens.length > 0) {
-                    cleanupTokens(targetUid, resultNotification.failedTokens).catch(err => {
-                        console.error('[NotificationSync] Failed to cleanup cheer tokens:', err);
-                    });
-                }
-            }
-        } catch (err) { console.error('Cheer notification error:', err); }
+                        const resultNotification = await sendPushNotification(tokens, {
+                            title: result.senderNickname || 'Member',
+                            body: t(lang, 'notifications.cheer_body'),
+                            data: { type: 'cheer', groupId }
+                        });
+
+                        if (resultNotification.failedTokens.length > 0) {
+                            cleanupTokens(targetUid, resultNotification.failedTokens).catch(err => {
+                                console.error('[NotificationSync] Failed to cleanup cheer tokens:', err);
+                            });
+                        }
+                    }
+                } catch (err) { console.error('Cheer notification error:', err); }
+            })()
+        );
 
         res.json({ success: true });
     } catch (error: unknown) {

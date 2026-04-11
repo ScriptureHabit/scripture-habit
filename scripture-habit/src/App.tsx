@@ -3,6 +3,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 import { useEffect, useState } from 'react';
+import { useApiWarmup } from './hooks/useApiWarmup';
 
 const ErrorFallback = ({ error, resetError }: { error: Error; resetError: () => void }) => {
   const navigate = useNavigate();
@@ -82,6 +83,7 @@ interface SystemStatus {
 const App: React.FC = () => {
   const { loading: authLoading } = useAuth();
   const [showBrowserWarning, setShowBrowserWarning] = useState(false);
+  useApiWarmup();
 
   useEffect(() => {
     const isRedirecting = handleInAppBrowserRedirect();
