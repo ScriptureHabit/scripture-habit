@@ -4,13 +4,14 @@ import { db } from '../../../../firebase';
 import { GroupData, Message, UserProfileBrief } from '../../../../types/chat';
 import { UserData } from '../../../../types/user';
 import { parseTimestampToMillis } from '../../../../utils/timeUtils';
+import { useChatStore } from '../../../../store/useChatStore';
 
 export const useUnityDetails = (
   groupData: GroupData | null,
   messages: Message[],
   userData: UserData | null
 ) => {
-  const [showUnityModal, setShowUnityModal] = useState(false);
+  const { setShowUnityModal } = useChatStore();
   const [unityModalData, setUnityModalData] = useState<{ posted: { id: string; nickname: string }[]; notPosted: { id: string; nickname: string }[] }>({ posted: [], notPosted: [] });
   const [detailsLoading, setDetailsLoading] = useState(false);
   const [membersList, setMembersList] = useState<UserProfileBrief[]>([]);
@@ -64,5 +65,5 @@ export const useUnityDetails = (
     }
   };
 
-  return { showUnityModal, setShowUnityModal, unityModalData, detailsLoading, membersList, setMembersList, handleShowUnityModal };
+  return { unityModalData, detailsLoading, membersList, setMembersList, handleShowUnityModal };
 };
