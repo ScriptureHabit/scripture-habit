@@ -10,6 +10,8 @@ export default {
         ],
         kick_title: "Actualización de actividad",
         kick_body: "⚠️ Has sido eliminado de '{groupName}' por inactividad. ¡Vuelve cuando quieras! 💪",
+        ownership_transferred: "👑 **Cambio de propietario**\nEl propietario anterior estuvo inactivo. La propiedad se ha transferido a un miembro activo verificado.",
+        members_removed: "👋 **{count} miembro(s)** fueron eliminados por inactividad.",
         bot_name: "Scripture Habit Bot"
     }
 };

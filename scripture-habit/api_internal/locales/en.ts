@@ -10,6 +10,8 @@ export default {
         ],
         kick_title: "Activity Update",
         kick_body: "⚠️ You've been removed from '{groupName}' due to inactivity. We'd love to have you back whenever you're ready! 💪",
+        ownership_transferred: "👑 **Ownership Transferred**\nThe previous owner was inactive. Ownership has been transferred to a verified active member.",
+        members_removed: "👋 **{count} member(s)** were removed due to inactivity.",
         bot_name: "Scripture Habit Bot"
     }
 };

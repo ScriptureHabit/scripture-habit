@@ -10,6 +10,8 @@ export default {
         ],
         kick_title: "自動退出のお知らせ",
         kick_body: "⚠️ グループ『{groupName}』から自動退出となりました。一定期間学習が確認されなかったため、ルールに基づき退出となりました。またいつでも戻ってきてくださいね！お待ちしています💪",
+        ownership_transferred: "👑 **オーナーが交代しました**\n以前のオーナーが一定期間不在だったため、アクティブなメンバーにオーナー権限が委譲されました。",
+        members_removed: "👋 **{count}名**が活動休止のため退室しました。",
         bot_name: "Scripture Habit Bot"
     }
 };

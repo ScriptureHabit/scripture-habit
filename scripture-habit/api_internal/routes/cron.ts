@@ -161,8 +161,18 @@ router.all('/check-inactive-users', verifyCronSecret, async (_req: Request, res:
                     transferCount++;
 
                     const transferMsgRef = groupsRef.doc(groupId).collection('messages').doc();
+
+                    // Localization: Use the new owner's language for the transfer message
+                    let transferLang = 'en';
+                    try {
+                        const newOwnerUserDoc = await db.collection('users').doc(newOwnerId).get();
+                        transferLang = newOwnerUserDoc.data()?.lang || 'en';
+                    } catch (err) {
+                        console.error(`Failed to fetch lang for new owner ${newOwnerId}:`, err);
+                    }
+
                     batch.set(transferMsgRef, {
-                        text: `👑 **Ownership Transferred**\nThe previous owner was inactive. Ownership has been transferred to a verified active member.`,
+                        text: t(transferLang, 'notifications.ownership_transferred'),
                         createdAt: admin.firestore.FieldValue.serverTimestamp(),
                         senderId: 'system',
                         isSystemMessage: true,
@@ -239,8 +249,18 @@ router.all('/check-inactive-users', verifyCronSecret, async (_req: Request, res:
                 removedCount += finalMembersToRemove.length;
 
                 const messageRef = groupsRef.doc(groupId).collection('messages').doc();
+
+                // Localization: Use the current owner's language for the removal message
+                let removalLang = 'en';
+                try {
+                    const ownerUserDoc = await db.collection('users').doc(ownerUserId).get();
+                    removalLang = ownerUserDoc.data()?.lang || 'en';
+                } catch (err) {
+                    console.error(`Failed to fetch lang for owner ${ownerUserId} for removal message:`, err);
+                }
+
                 batch.set(messageRef, {
-                    text: `👋 **${finalMembersToRemove.length} member(s)** were removed due to inactivity.`,
+                    text: t(removalLang, 'notifications.members_removed', { count: finalMembersToRemove.length }),
                     createdAt: admin.firestore.FieldValue.serverTimestamp(),
                     senderId: 'system',
                     isSystemMessage: true,

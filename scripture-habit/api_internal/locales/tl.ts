@@ -9,7 +9,9 @@ export default {
             "Layon nating makamit ang 100% pagkakaisa! Nagpadala si {nickname} ng lakas sa iyo! 💪"
         ],
         kick_title: "Update sa Aktibidad",
-        kick_body: "⚠️ Natanggal ka sa '{groupName}' dahil sa hindi pag-activity. Balik ka lang kapag handa ka na! 💪",
+        kick_body: "⚠️ Naalis ka sa '{groupName}' dahil sa hindi pagiging aktibo. Masaya kaming makita kang muli kapag handa ka na! 💪",
+        ownership_transferred: "👑 **Inilipat ang Pagmamay-ari**\nHindi aktibo ang nakaraang may-ari. Ang pagmamay-ari ay inilipat sa isang na-verify na aktibong miyembro.",
+        members_removed: "👋 **{count} miyembro** ang inalis dahil sa hindi pagiging aktibo.",
         bot_name: "Scripture Habit Bot"
     }
 };

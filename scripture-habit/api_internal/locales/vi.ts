@@ -9,7 +9,9 @@ export default {
             "Hãy hướng tới 100% sự đoàn kết! {nickname} đã gửi cho bạn một nguồn năng lượng! 💪"
         ],
         kick_title: "Cập nhật hoạt động",
-        kick_body: "⚠️ Bạn đã bị xóa khỏi '{groupName}' do không hoạt động. Hãy quay lại bất cứ khi nào bạn sẵn sàng! 💪",
+        kick_body: "⚠️ Bạn đã bị xóa khỏi '{groupName}' do không hoạt động. Chúng tôi rất mong bạn quay lại khi đã sẵn sàng! 💪",
+        ownership_transferred: "👑 **Đã chuyển quyền sở hữu**\nChủ sở hữu trước đó không hoạt động. Quyền sở hữu đã được chuyển cho một thành viên hoạt động tích cực.",
+        members_removed: "👋 **{count} thành viên** đã bị xóa do không hoạt động.",
         bot_name: "Scripture Habit Bot"
     }
 };
