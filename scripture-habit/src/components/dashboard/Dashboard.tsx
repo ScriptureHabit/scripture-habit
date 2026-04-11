@@ -173,7 +173,7 @@ const Dashboard: FC = () => {
     );
   }
 
-  if (!user) return <Navigate to="/welcome" replace />;
+  if (status === 'unauthenticated') return <Navigate to="/welcome" replace />;
   if (!userData) return null;
 
   const enrichedUserGroups = userGroups.map(group => ({
