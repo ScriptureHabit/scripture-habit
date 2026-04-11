@@ -166,6 +166,13 @@ export class NoteService {
                     
                     transaction.update(gDoc.ref, groupUpdate);
 
+                    const memberRef = db.collection('groups').doc(gid).collection('members').doc(uid);
+                    transaction.set(memberRef, { 
+                        lastNoteAt: serverTime,
+                        lastActiveAt: serverTime,
+                        lastPostAt: serverTime
+                    }, { merge: true });
+
                     const userGS = userRef.collection('groupStates').doc(gid);
                     transaction.set(userGS, { 
                         readMessageCount: (Number(gData.messageCount) || 0) + 1, 

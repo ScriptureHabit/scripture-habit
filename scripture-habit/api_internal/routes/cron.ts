@@ -105,6 +105,7 @@ router.all('/check-inactive-users', verifyCronSecret, async (_req: Request, res:
                 const candidates: FirestoreTimestamp[] = [
                     memberData.lastNoteAt,
                     memberData.lastPostAt,
+                    memberData.lastActiveAt,
                     memberData.joinedAt
                 ].filter(Boolean);
 

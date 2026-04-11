@@ -155,6 +155,7 @@ router.post('/post-message', authenticate, verifyAppCheck, async (req: Authentic
                 nickname: userData.nickname || 'Member',
                 photoURL: userData.photoURL || '',
                 lastActiveAt: admin.firestore.FieldValue.serverTimestamp() as unknown as admin.firestore.Timestamp,
+                lastPostAt: admin.firestore.FieldValue.serverTimestamp() as unknown as admin.firestore.Timestamp,
                 lastReadAt: admin.firestore.FieldValue.serverTimestamp() as unknown as admin.firestore.Timestamp,
                 readMessageCount: newTotalCount
             }, { merge: true });
