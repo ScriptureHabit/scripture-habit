@@ -126,7 +126,17 @@ export class MessageService {
 
             const [uSnap, mSnap, gSnap] = await transaction.getAll(userRef, messageRef, groupRef);
 
-            if (!mSnap.exists || !gSnap.exists || !uSnap.exists) throw new Error('Not found');
+            if (!mSnap.exists || !gSnap.exists || !uSnap.exists) {
+                if (!mSnap.exists) {
+                    // Check if archived
+                    const bucketsSnap = await db.collection('groups').doc(groupId).collection('message_buckets')
+                        .limit(1).get();
+                    if (!bucketsSnap.empty) {
+                        throw new Error('Message not found or archived (Archived messages are read-only)');
+                    }
+                }
+                throw new Error('Not found');
+            }
             const gData = gSnap.data() as GroupDocument;
             if (!gData || !(gData.members || []).includes(uid)) throw new Error('Forbidden');
 
@@ -177,7 +187,14 @@ export class MessageService {
         return await db.runTransaction(async (transaction) => {
             const messageRef = db.collection('groups').doc(groupId).collection('messages').doc(messageId);
             const mSnap = await transaction.get(messageRef);
-            if (!mSnap.exists) throw new Error('Message not found');
+            if (!mSnap.exists) {
+                const bucketsSnap = await db.collection('groups').doc(groupId).collection('message_buckets')
+                    .limit(1).get();
+                if (!bucketsSnap.empty) {
+                    throw new Error('Message not found or archived (Archived messages are read-only)');
+                }
+                throw new Error('Message not found');
+            }
 
             const mData = mSnap.data() as MessageDocument;
             if (mData.senderId !== uid) throw new Error('Forbidden');
@@ -237,13 +254,21 @@ export class MessageService {
 
             const msgRef = groupRef.collection('messages').doc(messageId);
             const msgSnap = await transaction.get(msgRef);
-            if (!msgSnap.exists) throw new Error('Message not found');
+            if (!msgSnap.exists) {
+                const bucketsSnap = await groupRef.collection('message_buckets').limit(1).get();
+                if (!bucketsSnap.empty) {
+                    throw new Error('Message not found or archived (Archived messages are read-only)');
+                }
+                throw new Error('Message not found');
+            }
             const msgData = msgSnap.data() as MessageDocument;
 
             if (msgData.isSystemMessage === true) throw new Error('Cannot delete system messages');
             if (msgData.senderId !== uid) throw new Error('Forbidden: You can only delete your own messages');
 
-            const groupUpdate: any = {};
+            const groupUpdate: any = {
+                messageCount: admin.firestore.FieldValue.increment(-1)
+            };
 
             if (msgData.isNote) {
                 groupUpdate.noteCount = admin.firestore.FieldValue.increment(-1);
@@ -332,6 +357,32 @@ export class MessageService {
             }
 
             transaction.delete(msgRef);
+
+            // GHOST CLEANUP: If a note is deleted, check for related streak announcements
+            // (System messages about "X days in a row!" for this user)
+            if (msgData.isNote) {
+                const streakAnnouncementSnap = await transaction.get(
+                    groupRef.collection('messages')
+                        .where('senderId', '==', 'system')
+                        .where('isSystemMessage', '==', true)
+                        .where('type', '==', 'system')
+                        .where('messageType', '==', 'system') // Recents standard
+                        .orderBy('createdAt', 'desc')
+                        .limit(10)
+                );
+                
+                streakAnnouncementSnap.docs.forEach(doc => {
+                    const data = doc.data();
+                    // Streak announcements usually mention the nickname or are posted around the same time
+                    // For safety, we check if the text contains the user's nickname and "streak" or "day"
+                    const text = (data.text || '').toLowerCase();
+                    const nickname = (msgData.senderNickname || '').toLowerCase();
+                    if (text.includes(nickname) && (text.includes('streak') || text.includes('連続') || text.includes('日'))) {
+                         transaction.delete(doc.ref);
+                         console.log(`[MessageService] Cleaned up streak announcement for ${nickname}`);
+                    }
+                });
+            }
 
             if (Object.keys(groupUpdate).length > 0) {
                 transaction.update(groupRef, groupUpdate);

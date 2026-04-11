@@ -1,9 +1,10 @@
 import express, { Request, Response } from 'express';
 import { admin, db } from '../lib/firebase-admin.js';
 import { verifyAppCheck, authenticate, requireEmailVerified, AuthenticatedRequest } from '../lib/middleware.js';
-import { joinGroupSchema, updateKickThresholdSchema, leaveGroupSchema, deleteGroupSchema, updateReadStatusSchema, announceUnitySchema, updateGroupSchema, regenerateInviteCodeSchema } from '../lib/schemas.js';
-import { GroupDocument, UserDocument, MemberPreview as PreviewItem, GroupMemberDocument, FirestoreTimestamp } from '../../types/firestore.js';
+import { joinGroupSchema, updateKickThresholdSchema, leaveGroupSchema, deleteGroupSchema, updateReadStatusSchema, announceUnitySchema, updateGroupSchema, regenerateInviteCodeSchema, kickMemberSchema } from '../lib/schemas.js';
+import { GroupDocument, UserDocument, MemberPreview as PreviewItem, GroupMemberDocument } from '../../types/firestore.js';
 import { CounterService } from '../services/counter-service.js';
+import { removeMemberFromGroup } from '../lib/membership-utils.js';
 
 
 const router = express.Router();
@@ -57,8 +58,11 @@ router.post('/join-group', authenticate, requireEmailVerified, verifyAppCheck, a
                         throw new Error('Invalid or expired invite code.');
                     }
                     if (gData.inviteCodeExpiresAt) {
-                        const ts = gData.inviteCodeExpiresAt as any;
-                        const expiresAt = typeof ts.toDate === 'function' ? ts.toDate() : new Date(ts);
+                        const ts = gData.inviteCodeExpiresAt;
+                        const expiresAt = (ts && typeof ts === 'object' && 'toDate' in ts && typeof ts.toDate === 'function') 
+                            ? ts.toDate() 
+                            : new Date(ts as string | number | Date);
+                        
                         if (expiresAt < new Date()) {
                             throw new Error('This invite link has expired. Please ask the group owner for a new one.');
                         }
@@ -77,22 +81,23 @@ router.post('/join-group', authenticate, requireEmailVerified, verifyAppCheck, a
             const existingPreviews = (gData.memberPreviews || []) as PreviewItem[];
             const updatedPreviews = [newMemberPreview, ...existingPreviews.filter((p) => p.uid !== uid)].slice(0, 15);
 
-            const memberData: GroupMemberDocument = {
+            const memberData: admin.firestore.WithFieldValue<GroupMemberDocument> = {
                 uid,
                 nickname: userData.nickname || 'Member',
                 photoURL: userData.photoURL || '',
-                joinedAt: admin.firestore.FieldValue.serverTimestamp() as unknown as FirestoreTimestamp,
-                lastActiveAt: admin.firestore.FieldValue.serverTimestamp() as unknown as FirestoreTimestamp,
+                joinedAt: admin.firestore.FieldValue.serverTimestamp(),
+                lastActiveAt: admin.firestore.FieldValue.serverTimestamp(),
                 kickThreshold: userData.kickThreshold || 3,
-                lastReadAt: admin.firestore.FieldValue.serverTimestamp() as unknown as FirestoreTimestamp,
+                lastReadAt: admin.firestore.FieldValue.serverTimestamp(),
                 readMessageCount: totalMessages
             };
 
             // 3. START WRITES (Execution Phase)
             transaction.update(groupRef, {
                 members: admin.firestore.FieldValue.arrayUnion(uid),
-                membersCount: admin.firestore.FieldValue.increment(1),
+                membersCount: members.length + 1,
                 memberPreviews: updatedPreviews,
+                [`memberJoinedAt.${uid}`]: admin.firestore.FieldValue.serverTimestamp(),
                 lastMessageAt: admin.firestore.FieldValue.serverTimestamp(),
                 lastMessageByNickname: userData.nickname || 'Member',
                 lastMessageByUid: uid
@@ -119,7 +124,8 @@ router.post('/join-group', authenticate, requireEmailVerified, verifyAppCheck, a
                 createdAt: admin.firestore.FieldValue.serverTimestamp(),
                 senderId: 'system',
                 isSystemMessage: true,
-                type: 'join'
+                type: 'join',
+                messageType: 'join'
             });
 
             return { gid, groupName: gData.name };
@@ -164,69 +170,21 @@ router.post('/leave-group', authenticate, verifyAppCheck, async (req: Authentica
 
             const uData = uSnap.data()! as UserDocument;
             if (!uData) throw new Error('User data unavailable.');
-            const updatedMembers = members.filter((m: string) => m !== uid);
-            const existingPreviews = (gData.memberPreviews || []) as PreviewItem[];
-            const updatedPreviews = existingPreviews.filter((p) => p.uid !== uid);
-
-            if (gData.ownerUserId === uid) {
-                if (updatedMembers.length > 0) {
-                    const updatePayload: admin.firestore.UpdateData<GroupDocument> = {
-                        ownerUserId: updatedMembers[0],
-                        members: updatedMembers,
-                        membersCount: admin.firestore.FieldValue.increment(-1),
-                        memberPreviews: updatedPreviews
-                    };
-
-                    // TRUTH: If they already contributed to unity today, remove them to keep percentage honest
-                    if (gData.dailyActivity?.activeMembers?.includes(uid)) {
-                        updatePayload['dailyActivity.activeMembers'] = admin.firestore.FieldValue.arrayRemove(uid);
-                    }
-
-                    transaction.update(groupRef, updatePayload);
-                } else {
-                    transaction.delete(groupRef);
-                }
-            } else {
-                    const updatePayload: admin.firestore.UpdateData<GroupDocument> = {
-                        members: updatedMembers,
-                        membersCount: admin.firestore.FieldValue.increment(-1),
-                        memberPreviews: updatedPreviews
-                    };
-
-                    // TRUTH: Keep unity percentage accurate after member removal
-                    if (gData.dailyActivity?.activeMembers?.includes(uid)) {
-                        updatePayload['dailyActivity.activeMembers'] = admin.firestore.FieldValue.arrayRemove(uid);
-                    }
-
-                    transaction.update(groupRef, updatePayload);
-            }
-
-            // Always delete the member subcollection document
-            transaction.delete(groupRef.collection('members').doc(uid));
-
-            if (updatedMembers.length > 0) {
-                const msgRef = groupRef.collection('messages').doc();
-                transaction.set(msgRef, {
-                    text: `👋 **${uData.nickname || 'Someone'}** left the group.`,
-                    createdAt: admin.firestore.FieldValue.serverTimestamp(),
-                    senderId: 'system',
-                    isSystemMessage: true,
-                    type: 'leave'
-                });
-            }
-
-            const userUpdate: Record<string, admin.firestore.FieldValue | string | number | boolean | string[] | object | undefined> = {
-                groupIds: admin.firestore.FieldValue.arrayRemove(groupId)
-            };
             
-            // TRUTH: If the user was using this group as their "active" group, clear the legacy field
-            if (uData.groupId === groupId) {
-                userUpdate.groupId = admin.firestore.FieldValue.delete();
-            }
+            // Use centralized utility for the heavy lifting
+            await removeMemberFromGroup(transaction, groupId, uid, { 
+                removeFromUserDoc: true, 
+                clearUserGroupId: true,
+                removeGroupState: true,
+                transferOwnership: true,
+                preferredLanguage: uData.language || 'en',
+                systemMessage: {
+                    type: 'leave',
+                    nickname: uData.nickname || 'Someone'
+                }
+            });
 
-            transaction.update(userRef, userUpdate);
-
-            transaction.delete(userRef.collection('groupStates').doc(groupId));
+            return { success: true };
         });
 
         res.json({ success: true });
@@ -368,6 +326,64 @@ router.post('/announce-unity', authenticate, verifyAppCheck, async (req: Authent
             console.error('Announce unity failed:', error);
         }
         res.status(500).json({ error: message });
+    }
+});
+
+router.post('/kick-member', authenticate, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
+    const validation = kickMemberSchema.safeParse(req.body);
+    if (!validation.success) return res.status(400).json({ error: 'Invalid input' });
+
+    const { groupId, targetUid } = validation.data;
+    const uid = req.user!.uid;
+
+    try {
+        await db.runTransaction(async (transaction) => {
+            const groupRef = db.collection('groups').doc(groupId);
+            const userRef = db.collection('users').doc(targetUid);
+            const [gSnap, uSnap] = await Promise.all([
+                transaction.get(groupRef),
+                transaction.get(userRef)
+            ]);
+
+            if (!gSnap.exists) throw new Error('Group not found.');
+            if (!uSnap.exists) throw new Error('Target user not found.');
+
+            const gData = gSnap.data()! as GroupDocument;
+            const uData = uSnap.data()! as UserDocument;
+
+            // 1. Validation: Only owner can kick
+            if (gData.ownerUserId !== uid) {
+                throw new Error('Forbidden: Only the group owner can kick members.');
+            }
+
+            // 2. Validation: Cannot kick yourself
+            if (targetUid === uid) {
+                throw new Error('You cannot kick yourself. Please use the leave group option if you wish to exit.');
+            }
+
+            // 3. Validation: Must be a member
+            if (!(gData.members || []).includes(targetUid)) {
+                throw new Error('Target user is not a member of this group.');
+            }
+
+            // 4. USE CENTRALIZED UTILITY
+            await removeMemberFromGroup(transaction, groupId, targetUid, {
+                removeFromUserDoc: true,
+                clearUserGroupId: true,
+                removeGroupState: true,
+                preferredLanguage: uData.language || 'en',
+                systemMessage: {
+                    type: 'kick',
+                    nickname: uData.nickname || 'Someone'
+                }
+            });
+        });
+
+        res.json({ success: true });
+    } catch (err) {
+        let message = 'Kick failed';
+        if (err instanceof Error) message = err.message;
+        res.status(400).json({ error: message });
     }
 });
 
@@ -546,12 +562,12 @@ router.post('/update-group', authenticate, verifyAppCheck, async (req: Authentic
             return res.status(403).json({ error: 'Forbidden: Only owner can update group' });
         }
 
-        const updatePayload: Record<string, unknown> = {};
+        const updatePayload: Partial<GroupDocument> = {};
         if (name !== undefined) updatePayload.name = name;
         if (description !== undefined) updatePayload.description = description;
         if (isPublic !== undefined) updatePayload.isPublic = isPublic;
         if (isPrivate !== undefined) updatePayload.isPrivate = isPrivate;
-        if (translations !== undefined) updatePayload.translations = translations;
+        if (translations !== undefined) updatePayload.translations = translations as GroupDocument['translations'];
 
         if (Object.keys(updatePayload).length === 0) {
             return res.status(400).json({ error: 'No updates provided' });
@@ -681,8 +697,8 @@ router.get('/group-preview/:inviteCode', async (req: Request, res: Response) => 
             }
         }
 
-        const langQuery = (req.query.lang as string) || 'en';
-        const translation = groupData.translations?.[langQuery] || groupData.translations?.['en'];
+        const language = (req.query.language as string) || (req.query.lang as string) || 'en';
+        const translation = groupData.translations?.[language] || groupData.translations?.['en'];
 
         res.json({
             name: translation?.name || groupData.name,

@@ -70,45 +70,60 @@ export class ProfileService {
                     currentBatchSize++;
                 }
 
-                // D. Update recent individual messages
-                const recentMyMessages = await db.collection('groups').doc(gid).collection('messages')
-                    .where('senderId', '==', uid)
-                    .orderBy('createdAt', 'desc')
-                    .limit(20)
-                    .get();
+                // D. Update individual messages (Exhaustive Batching)
+                let messagesProcessed = 0;
+                let lastMsgDoc = null;
+                const MAX_MESSAGES_PER_GROUP = 500; 
 
-                for (const mDoc of recentMyMessages.docs) {
-                    const mData = mDoc.data() as MessageDocument;
-                    const msgUpdate: Partial<MessageDocument> = {};
-                    if (updates.nickname) msgUpdate.senderNickname = updates.nickname;
-                    if (updates.photoURL) msgUpdate.senderPhotoURL = updates.photoURL;
+                while (messagesProcessed < MAX_MESSAGES_PER_GROUP) {
+                    let query = db.collection('groups').doc(gid).collection('messages')
+                        .where('senderId', '==', uid)
+                        .orderBy('createdAt', 'desc')
+                        .limit(100);
                     
-                    // TRUTH: If the user has reacted to this message, update their identity in the previews
-                    if (mData.reactionPreviews) {
-                        const rp = { ...mData.reactionPreviews };
-                        let rpChanged = false;
-                        for (const emoji of Object.keys(rp)) {
-                            const previews = (rp[emoji] || []) as ReactionPreview[];
-                            const myIdx = previews.findIndex(p => p.uid === uid);
-                            if (myIdx !== -1) {
-                                if (updates.nickname) previews[myIdx].nickname = updates.nickname;
-                                if (updates.photoURL) previews[myIdx].photoURL = updates.photoURL;
-                                rp[emoji] = previews;
-                                rpChanged = true;
+                    if (lastMsgDoc) {
+                        query = query.startAfter(lastMsgDoc);
+                    }
+
+                    const messagesSnap = await query.get();
+                    if (messagesSnap.empty) break;
+
+                    for (const mDoc of messagesSnap.docs) {
+                        const mData = mDoc.data() as MessageDocument;
+                        const msgUpdate: Partial<MessageDocument> = {};
+                        if (updates.nickname) msgUpdate.senderNickname = updates.nickname;
+                        if (updates.photoURL) msgUpdate.senderPhotoURL = updates.photoURL;
+                        
+                        // TRUTH: If the user has reacted to this message, update their identity in the previews
+                        if (mData.reactionPreviews) {
+                            const rp = { ...mData.reactionPreviews };
+                            let rpChanged = false;
+                            for (const emoji of Object.keys(rp)) {
+                                const previews = (rp[emoji] || []) as ReactionPreview[];
+                                const myIdx = previews.findIndex(p => p.uid === uid);
+                                if (myIdx !== -1) {
+                                    if (updates.nickname) previews[myIdx].nickname = updates.nickname;
+                                    if (updates.photoURL) previews[myIdx].photoURL = updates.photoURL;
+                                    rp[emoji] = previews;
+                                    rpChanged = true;
+                                }
                             }
+                            if (rpChanged) msgUpdate.reactionPreviews = rp;
                         }
-                        if (rpChanged) msgUpdate.reactionPreviews = rp;
-                    }
 
-                    currentBatch.update(mDoc.ref, msgUpdate);
-                    currentBatchSize++;
-                    totalOps++;
+                        currentBatch.update(mDoc.ref, msgUpdate);
+                        currentBatchSize++;
+                        totalOps++;
 
-                    if (currentBatchSize >= 450) {
-                        await currentBatch.commit();
-                        currentBatch = db.batch();
-                        currentBatchSize = 0;
+                        if (currentBatchSize >= 450) {
+                            await currentBatch.commit();
+                            currentBatch = db.batch();
+                            currentBatchSize = 0;
+                        }
                     }
+                    
+                    messagesProcessed += messagesSnap.size;
+                    lastMsgDoc = messagesSnap.docs[messagesSnap.size - 1];
                 }
             }
 
@@ -116,20 +131,21 @@ export class ProfileService {
             if (updates.nickname) {
                 const oldNickname = userData.nickname || 'Member';
                 
-                // TRUTH: We only update the most recent 100 notes to prevent timeouts.
-                // Rebuilding thousands of tokens synchronously is a recipe for disaster.
-                // Also, ONLY update if the speaker was the user themselves (matched old nickname).
-                const notesSnap = await userRef.collection('notes')
-                    .orderBy('createdAt', 'desc')
-                    .limit(100)
-                    .get();
+                // TRUTH: Exhaustive sync for notes as well (background safe)
+                let lastNoteDoc = null;
+                while (true) {
+                    let query = userRef.collection('notes')
+                        .orderBy('createdAt', 'desc')
+                        .limit(100);
+                    
+                    if (lastNoteDoc) query = query.startAfter(lastNoteDoc);
 
-                if (!notesSnap.empty) {
+                    const notesSnap = await query.get();
+                    if (notesSnap.empty) break;
+
                     for (const nDoc of notesSnap.docs) {
                         const nData = nDoc.data() as PersonalNoteDocument;
                         
-                        // TRUTH: If the user manually set a different speaker (e.g. quoting someone), 
-                        // we MUST NOT overwrite it with their own new nickname.
                         if (nData.speaker !== oldNickname) continue;
 
                         const updatedTokens = buildNoteSearchTokens({
@@ -137,7 +153,7 @@ export class ProfileService {
                             chapter: nData.chapter || '',
                             comment: nData.comment || '',
                             title: nData.title || '',
-                            speaker: updates.nickname // Use new nickname
+                            speaker: updates.nickname
                         });
 
                         currentBatch.update(nDoc.ref, {
@@ -152,6 +168,7 @@ export class ProfileService {
                             currentBatchSize = 0;
                         }
                     }
+                    lastNoteDoc = notesSnap.docs[notesSnap.size - 1];
                 }
             }
 
@@ -172,41 +189,56 @@ export class ProfileService {
             const userSnap = await db.collection('users').doc(uid).get();
             if (!userSnap.exists) return;
             const userData = userSnap.data() || {};
-            const groupIds: string[] = userData.groupIds || [];
+            const groupIds: string[] = userData.groupIds || (userData.groupId ? [userData.groupId] : []);
 
             for (const gid of groupIds) {
-                const recentMsgs = await db.collection('groups').doc(gid).collection('messages')
-                    .orderBy('createdAt', 'desc')
-                    .limit(50)
-                    .get();
+                let lastMsgDoc = null;
+                while (true) {
+                    let query = db.collection('groups').doc(gid).collection('messages')
+                        .orderBy('createdAt', 'desc')
+                        .limit(100);
+                    
+                    if (lastMsgDoc) query = query.startAfter(lastMsgDoc);
+                    const recentMsgs = await query.get();
+                    if (recentMsgs.empty) break;
 
-                const batch = db.batch();
-                let hasChanges = false;
+                    const batch = db.batch();
+                    let hasChanges = false;
+                    let opsInBatch = 0;
 
-                for (const mDoc of recentMsgs.docs) {
-                    const mData = mDoc.data() as MessageDocument;
-                    if (mData.reactionPreviews) {
-                        const rp = { ...mData.reactionPreviews };
-                        let rpChanged = false;
+                    for (const mDoc of recentMsgs.docs) {
+                        const mData = mDoc.data() as MessageDocument;
+                        if (mData.reactionPreviews) {
+                            const rp = { ...mData.reactionPreviews };
+                            let rpChanged = false;
 
-                        for (const emoji of Object.keys(rp)) {
-                            const previews = (rp[emoji] || []) as ReactionPreview[];
-                            const myIdx = previews.findIndex(p => p.uid === uid);
-                            if (myIdx !== -1) {
-                                previews[myIdx].nickname = '...';
-                                previews[myIdx].photoURL = '';
-                                rp[emoji] = previews;
-                                rpChanged = true;
+                            for (const emoji of Object.keys(rp)) {
+                                const previews = (rp[emoji] || []) as ReactionPreview[];
+                                const myIdx = previews.findIndex(p => p.uid === uid);
+                                if (myIdx !== -1) {
+                                    previews[myIdx].nickname = '...';
+                                    previews[myIdx].photoURL = '';
+                                    rp[emoji] = previews;
+                                    rpChanged = true;
+                                }
+                            }
+
+                            if (rpChanged) {
+                                batch.update(mDoc.ref, { reactionPreviews: rp });
+                                hasChanges = true;
+                                opsInBatch++;
                             }
                         }
-
-                        if (rpChanged) {
-                            batch.update(mDoc.ref, { reactionPreviews: rp });
-                            hasChanges = true;
+                        
+                        if (opsInBatch >= 450) {
+                            await batch.commit();
+                            // Reset batch if needed, but we typically commit one batch per query chunk for simplicity
                         }
                     }
+                    if (hasChanges && opsInBatch < 450) await batch.commit();
+                    
+                    lastMsgDoc = recentMsgs.docs[recentMsgs.size - 1];
                 }
-                if (hasChanges) await batch.commit();
             }
         } catch (err) {
             console.error('[ProfileService] Purge failed:', err);

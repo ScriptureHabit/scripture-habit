@@ -35,9 +35,9 @@ translations.zh = translations.zho;
 /**
  * Simple translate function for backend
  */
-export function t(lang: string | undefined | null, key: string, replacements: Record<string, string | number> = {}): string {
-    const language = (lang || 'en').split('-')[0] as SupportedLanguage;
-    const bundle = translations[language] || translations.en;
+export function t(language: string | undefined | null, key: string, replacements: Record<string, string | number> = {}): string {
+    const lang = (language || 'en').split('-')[0] as SupportedLanguage;
+    const bundle = translations[lang] || translations.en;
     
     const keys = key.split('.');
     let value: TranslationValue | undefined = bundle;
@@ -47,7 +47,7 @@ export function t(lang: string | undefined | null, key: string, replacements: Re
             value = (value as Record<string, TranslationValue>)[k];
         } else {
             // Fallback to English if not found in current language
-            if (language !== 'en') {
+            if (lang !== 'en') {
                 return t('en', key, replacements);
             }
             return key;
@@ -67,9 +67,9 @@ export function t(lang: string | undefined | null, key: string, replacements: Re
 /**
  * Get an array of translations (for cheers etc)
  */
-export function tArray(lang: string | undefined | null, key: string): string[] {
-    const language = (lang || 'en').split('-')[0] as SupportedLanguage;
-    const bundle = translations[language] || translations.en;
+export function tArray(language: string | undefined | null, key: string): string[] {
+    const lang = (language || 'en').split('-')[0] as SupportedLanguage;
+    const bundle = translations[lang] || translations.en;
     
     const keys = key.split('.');
     let value: TranslationValue | undefined = bundle;
@@ -78,7 +78,7 @@ export function tArray(lang: string | undefined | null, key: string): string[] {
         if (value && typeof value === 'object' && !Array.isArray(value) && (value as Record<string, TranslationValue>)[k] !== undefined) {
             value = (value as Record<string, TranslationValue>)[k];
         } else {
-            if (language !== 'en') {
+            if (lang !== 'en') {
                 return tArray('en', key);
             }
             return [];

@@ -4,7 +4,8 @@ import { verifyAppCheck, authenticate, AuthenticatedRequest } from '../lib/middl
 import { verifyLoginSchema } from '../lib/schemas.js';
 import { AuthenticationError, ForbiddenError } from '../lib/errors.js';
 import { ProfileService } from '../services/profile-service.js';
-import { UserDocument, MemberPreview, GroupDocument } from '../../types/firestore.js';
+import { UserDocument } from '../../types/firestore.js';
+import { removeMemberFromGroup } from '../lib/membership-utils.js';
 
 const router = express.Router();
 
@@ -96,65 +97,22 @@ router.post('/delete-account', authenticate, verifyAppCheck, async (req: Authent
         if (userDoc.exists) {
             const userData = userDoc.data()!;
             const groupIds: string[] = userData.groupIds || (userData.groupId ? [userData.groupId] : []);
+            const groupStates = await db.collection(`users/${uid}/groupStates`).get();
+            const uniqueGroupIds = Array.from(new Set([...groupIds, ...groupStates.docs.map(doc => doc.id)]));
 
             // --- STEP 1: Exit Groups Properly ---
-            for (const gid of groupIds) {
+            for (const gid of uniqueGroupIds) {
                 try {
-                    const groupRef = db.collection('groups').doc(gid);
                     await db.runTransaction(async (transaction) => {
-                        const gSnap = await transaction.get(groupRef);
-                        if (!gSnap.exists) return;
-
-                        const gData = gSnap.data()! as GroupDocument;
-                        const members: string[] = gData.members || [];
-                        const updatedMembers = members.filter(mU => mU !== uid);
-                        
-                        // Update Previews
-                        const previews = gData.memberPreviews || [];
-                        const updatedPreviews = previews.filter((p: MemberPreview) => p.uid !== uid);
-
-                        const updatePayload: Record<string, admin.firestore.FieldValue | string | number | boolean | string[] | object | undefined> = {
-                            members: updatedMembers,
-                            membersCount: admin.firestore.FieldValue.increment(-1),
-                            memberPreviews: updatedPreviews,
-                            [`memberLastActive.${uid}`]: admin.firestore.FieldValue.delete(),
-                            [`memberLastReadAt.${uid}`]: admin.firestore.FieldValue.delete()
-                        };
-
-                        if (gData.ownerUserId === uid) {
-                            if (updatedMembers.length > 0) {
-                                updatePayload.ownerUserId = updatedMembers[0];
-                                transaction.update(groupRef, updatePayload);
-                            } else {
-                                transaction.delete(groupRef);
-                            }
-                        } else {
-                            transaction.update(groupRef, updatePayload);
-                        }
-
-                        // TRUTH: If the user was an active contributor today, remove them to keep Unity honest
-                        if (gData.dailyActivity?.activeMembers?.includes(uid)) {
-                            transaction.update(groupRef, {
-                                'dailyActivity.activeMembers': admin.firestore.FieldValue.arrayRemove(uid)
-                            });
-                        }
-
-                        // IMPORTANT: Cleanup member subcollection
-                        transaction.delete(groupRef.collection('members').doc(uid));
-
-                        if (updatedMembers.length > 0) {
-                            const msgRef = groupRef.collection('messages').doc();
-                            transaction.set(msgRef, {
-                                text: `👋 **${userData.nickname || 'Someone'}** deleted their account and left the group.`,
-                                createdAt: admin.firestore.FieldValue.serverTimestamp(),
-                                senderId: 'system',
-                                isSystemMessage: true,
-                                type: 'leave'
-                            });
-                        }
+                        await removeMemberFromGroup(transaction, gid, uid, {
+                            transferOwnership: true,
+                            systemMessage: { type: 'leave', nickname: userData.nickname || 'Someone' },
+                            preferredLanguage: userData.language || 'en',
+                            removeGroupState: true
+                        });
                     });
                 } catch (groupErr) {
-                    console.error(`Group cleanup failed for ${gid}:`, groupErr);
+                    console.error(`[AccountDelete] Group cleanup failed for ${gid}:`, groupErr);
                 }
             }
 

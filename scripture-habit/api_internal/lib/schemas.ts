@@ -151,3 +151,9 @@ export const reportSchema = z.object({
     messageText: z.string().optional().nullable(),
     reason: z.string().min(1).max(1000)
 });
+
+export const kickMemberSchema = z.object({
+    groupId: z.string().min(1),
+    targetUid: z.string().min(1),
+    reason: z.string().max(200).optional()
+});

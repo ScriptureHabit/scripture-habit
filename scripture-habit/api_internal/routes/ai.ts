@@ -252,8 +252,8 @@ router.post('/generate-weekly-recap', authenticate, aiLimiter, verifyAppCheck, a
     if (!validation.success) return res.status(400).json({ error: 'Invalid input' });
 
     const { groupId, language } = validation.data;
-    const baseLang = language?.split('-')[0] || 'en';
-    const targetLangName = languageNames[baseLang] || 'English';
+    const baseLanguage = language?.split('-')[0] || 'en';
+    const targetLangName = languageNames[baseLanguage] || 'English';
     const uid = req.user?.uid;
 
     try {
@@ -301,6 +301,7 @@ router.post('/generate-weekly-recap', authenticate, aiLimiter, verifyAppCheck, a
             createdAt: admin.firestore.FieldValue.serverTimestamp(),
             senderId: 'system',
             isSystemMessage: true,
+            type: 'weeklyRecap',
             messageType: 'weeklyRecap'
         });
 
@@ -319,8 +320,8 @@ router.post('/generate-weekly-recap', authenticate, aiLimiter, verifyAppCheck, a
  */
 router.post('/generate-discussion-topic', authenticate, aiLimiter, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
     const { language, groupId } = req.body;
-    const baseLang = language?.split('-')[0] || 'en';
-    const targetLangName = languageNames[baseLang] || 'English';
+    const baseLanguage = language?.split('-')[0] || 'en';
+    const targetLangName = languageNames[baseLanguage] || 'English';
 
     try {
         let context = '';

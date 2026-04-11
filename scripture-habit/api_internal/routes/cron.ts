@@ -5,11 +5,8 @@ import { ArchiveService } from '../services/archive-service.js';
 import { getUserFcmTokens, sendPushNotification, cleanupTokens } from '../lib/notifications.js';
 import { t } from '../lib/i18n.js';
 import { calculateMemberStatus, InactivityMemberData, InactivityGroupData } from '../lib/inactivity-utils.js';
-
-interface MemberPreview {
-    uid: string;
-    nickname: string;
-}
+import { getGroupUpdatesForMultipleRemovals } from '../lib/membership-utils.js';
+import { UserDocument } from '../../types/firestore.js';
 
 interface CronReport {
     groupId: string;
@@ -57,17 +54,41 @@ router.all('/check-inactive-users', verifyCronSecret, async (_req: Request, res:
         // Optimization: Only check groups that were NOT checked in the last 6 hours
         // Step 1: Rotation - Fetch groups that haven't been checked in the longest time.
         // NOTE: This skips groups where the field is missing (new groups).
-        let snapshot = await groupsRef
+        // Step 1: Rotation - Fetch groups that haven't been checked in the longest time.
+        // NOTE: Standard orderBy skips groups where the field is missing.
+        const staleGroupsSnap = await groupsRef
             .orderBy('lastInactivityCheckedAt', 'asc')
             .limit(100)
             .get();
 
-        // Step 2: "The Net" - Catch new/stale groups that doesn't have the field yet.
-        if (snapshot.size < 50) {
-            snapshot = await groupsRef.limit(50).get();
-        }
+        // Step 2: "The Net" - Catch new groups that don't have the field yet.
+        // We use a separate query because orderBy excludes missing fields.
+        const newGroupsSnap = await groupsRef
+            .where('lastInactivityCheckedAt', '==', null)
+            .limit(50)
+            .get();
 
-        const list = snapshot.docs;
+        const list = [...staleGroupsSnap.docs];
+        const seenIds = new Set(list.map(d => d.id));
+        
+        // Add new groups if not already in list
+        newGroupsSnap.docs.forEach(doc => {
+            if (!seenIds.has(doc.id)) {
+                list.push(doc);
+                seenIds.add(doc.id);
+            }
+        });
+
+        // Step 3: Emergency Fallback - If we still have very few groups, just grab some.
+        if (list.length < 50) {
+            const fallbackSnap = await groupsRef.limit(50).get();
+            fallbackSnap.docs.forEach(doc => {
+                if (!seenIds.has(doc.id)) {
+                    list.push(doc);
+                    seenIds.add(doc.id);
+                }
+            });
+        }
 
         let processedCount = 0;
         let removedCount = 0;
@@ -86,7 +107,22 @@ router.all('/check-inactive-users', verifyCronSecret, async (_req: Request, res:
             let ownerUserId: string = groupData.ownerUserId;
 
             const membersSnap = await docSnapshot.ref.collection('members').get();
-            if (membersSnap.empty) continue;
+            if (membersSnap.empty || groupData.isDeleted === true) {
+                // TRUTH: Safe cleanup of groups with no members or marked for deletion.
+                // Since this happens outside the transaction loop of membership removal,
+                // it's the perfect place for Ghost Busting (recursiveDelete).
+                try {
+                    console.log(`[GhostBuster] Purging group ${groupId} (isDeleted: ${groupData.isDeleted}, empty: ${membersSnap.empty})`);
+                    await db.recursiveDelete(docSnapshot.ref);
+                    deletedGroupCount++;
+                } catch (err) {
+                    console.error(`[GhostBuster] Failed to purge group ${groupId}:`, err);
+                    // Fallback: move on in rotation so we don't get stuck
+                    batch.update(docSnapshot.ref, { lastInactivityCheckedAt: admin.firestore.FieldValue.serverTimestamp() });
+                    batchOpCount++;
+                }
+                continue;
+            }
 
             let groupChanged = false;
             const groupUpdates: Record<string, admin.firestore.FieldValue | string | number | boolean | string[] | object | undefined | null> = {
@@ -120,15 +156,27 @@ router.all('/check-inactive-users', verifyCronSecret, async (_req: Request, res:
                 }
             });
 
-            // GHOST CLEANUP: Identify UIDs in the members array that were NOT in the subcollection.
+            // GHOST CLEANUP: Identify UIDs in the members array or activity maps that were NOT in the subcollection.
             // These are orphaned and should be removed immediately.
             const groupMemberIds = groupData.members || [];
-            for (const uid in groupData.memberLastReadAt || {}) {
-                if (!processedMemberIds.has(uid)) {
-                   // This is a ghost member who has activity metadata but no member document.
-                   if (!inactiveMembers.includes(uid)) inactiveMembers.push(uid);
+            
+            // Comprehensive map check across all activity/config maps
+            const mapsToCheck = [
+                groupData.memberLastActive,
+                groupData.memberLastReadAt,
+                groupData.memberKickThresholds,
+                groupData.memberJoinedAt // Preserved for frontend Unity calculation, but checked for orphaned UIDs
+            ];
+
+            for (const map of mapsToCheck) {
+                if (!map) continue;
+                for (const uid in map) {
+                    if (!processedMemberIds.has(uid) && !inactiveMembers.includes(uid)) {
+                        inactiveMembers.push(uid);
+                    }
                 }
             }
+
             for (const uid of groupMemberIds) {
                 if (!processedMemberIds.has(uid)) {
                     if (!inactiveMembers.includes(uid)) inactiveMembers.push(uid);
@@ -152,7 +200,7 @@ router.all('/check-inactive-users', verifyCronSecret, async (_req: Request, res:
                     let transferLang = 'en';
                     try {
                         const newOwnerUserDoc = await db.collection('users').doc(newOwnerId).get();
-                        transferLang = newOwnerUserDoc.data()?.lang || 'en';
+                        transferLang = (newOwnerUserDoc.data() as UserDocument)?.language || 'en';
                     } catch (err) {
                         console.error(`Failed to fetch lang for new owner ${newOwnerId}:`, err);
                     }
@@ -162,7 +210,8 @@ router.all('/check-inactive-users', verifyCronSecret, async (_req: Request, res:
                         createdAt: admin.firestore.FieldValue.serverTimestamp(),
                         senderId: 'system',
                         isSystemMessage: true,
-                        type: 'system'
+                        type: 'system',
+                        messageType: 'system'
                     });
                     batchOpCount++;
                 } else {
@@ -214,23 +263,10 @@ router.all('/check-inactive-users', verifyCronSecret, async (_req: Request, res:
 
             const finalMembersToRemove = inactiveMembers.filter(uid => uid !== ownerUserId);
             if (finalMembersToRemove.length > 0) {
-                // Using remainingMembers for future logic if needed, but for now just filter previews
-                const updatedPreviews = (groupData.memberPreviews || []).filter((p: MemberPreview) => !finalMembersToRemove.includes(p.uid));
-
-                groupUpdates['members'] = admin.firestore.FieldValue.arrayRemove(...finalMembersToRemove);
-                groupUpdates['membersCount'] = admin.firestore.FieldValue.increment(-finalMembersToRemove.length);
-                groupUpdates['memberPreviews'] = updatedPreviews;
-
-                // TRUTH: If kicked members contributed to unity today, remove them to keep it honest
-                if (groupData.dailyActivity?.date && groupData.dailyActivity?.activeMembers?.some((id: string) => finalMembersToRemove.includes(id))) {
-                    const remainingActive = (groupData.dailyActivity.activeMembers as string[]).filter(id => !finalMembersToRemove.includes(id));
-                    groupUpdates['dailyActivity.activeMembers'] = remainingActive;
-                }
-
-                finalMembersToRemove.forEach(uid => {
-                    groupUpdates[`memberLastActive.${uid}`] = admin.firestore.FieldValue.delete();
-                    groupUpdates[`memberLastReadAt.${uid}`] = admin.firestore.FieldValue.delete();
-                });
+                // TRUTH: Use the standardized bulk removal logic to ensure all maps and arrays are in sync
+                const bulkRemovalUpdates = getGroupUpdatesForMultipleRemovals(groupData, finalMembersToRemove);
+                Object.assign(groupUpdates, bulkRemovalUpdates);
+                
                 groupChanged = true;
                 removedCount += finalMembersToRemove.length;
 
@@ -240,9 +276,9 @@ router.all('/check-inactive-users', verifyCronSecret, async (_req: Request, res:
                 let removalLang = 'en';
                 try {
                     const ownerUserDoc = await db.collection('users').doc(ownerUserId).get();
-                    removalLang = ownerUserDoc.data()?.lang || 'en';
+                    removalLang = ownerUserDoc.data()?.language || 'en';
                 } catch (err) {
-                    console.error(`Failed to fetch lang for owner ${ownerUserId} for removal message:`, err);
+                    console.error(`Failed to fetch language for owner ${ownerUserId} for removal message:`, err);
                 }
 
                 batch.set(messageRef, {
@@ -250,19 +286,29 @@ router.all('/check-inactive-users', verifyCronSecret, async (_req: Request, res:
                     createdAt: admin.firestore.FieldValue.serverTimestamp(),
                     senderId: 'system',
                     isSystemMessage: true,
-                    type: 'leave'
+                    type: 'leave',
+                    messageType: 'leave'
                 });
                 batchOpCount++;
 
                 for (const uid of finalMembersToRemove) {
                     const userRef = db.collection('users').doc(uid);
-                    batch.update(userRef, { groupIds: admin.firestore.FieldValue.arrayRemove(groupId) });
+                    batch.update(userRef, { 
+                        groupIds: admin.firestore.FieldValue.arrayRemove(groupId),
+                        // Also clear primary groupId if it matches (logic consistency)
+                        groupId: admin.firestore.FieldValue.delete() 
+                    });
                     batch.delete(userRef.collection('groupStates').doc(groupId));
 
                     // Cleanup the member subcollection document (Ghost Buster)
                     batch.delete(groupsRef.doc(groupId).collection('members').doc(uid));
 
                     batchOpCount += 3;
+                    if (batchOpCount > 400) {
+                        await batch.commit();
+                        batch = db.batch();
+                        batchOpCount = 0;
+                    }
 
                     // Send localized kick notification
                     getUserFcmTokens(uid).then(async tokens => {
@@ -507,8 +553,14 @@ router.all('/sync-user-stats', verifyCronSecret, async (_req: Request, res: Resp
         let batchOpCount = 0;
 
         for (const userDoc of activeUsersSnap.docs) {
-            const notesSnap = await userDoc.ref.collection('notes').get();
+            const userId = userDoc.id;
+            const [notesSnap, cheersSnap] = await Promise.all([
+                userDoc.ref.collection('notes').get(),
+                db.collection('cheers').where('targetUid', '==', userId).get()
+            ]);
+            
             const actualCount = notesSnap.size;
+            const actualCheers = cheersSnap.size;
 
             const userData = userDoc.data();
             const groupIds: string[] = userData.groupIds || [];
@@ -520,9 +572,14 @@ router.all('/sync-user-stats', verifyCronSecret, async (_req: Request, res: Resp
                 profileChanged = true;
             }
 
-            // 2. Verify Membership Truth (Prune Orphans)
+            // 2. Verify Cheers Count Truth
+            if (actualCheers !== (userData.cheersReceived || 0)) {
+                profileChanged = true;
+            }
+
+            // 3. Verify Membership Truth (Prune Orphans)
             for (const gid of groupIds) {
-                const memberSnap = await db.collection('groups').doc(gid).collection('members').doc(userDoc.id).get();
+                const memberSnap = await db.collection('groups').doc(gid).collection('members').doc(userId).get();
                 if (memberSnap.exists) {
                     validGroupIds.push(gid);
                 } else {
@@ -535,6 +592,7 @@ router.all('/sync-user-stats', verifyCronSecret, async (_req: Request, res: Resp
             if (profileChanged) {
                 batch.update(userDoc.ref, {
                     totalNotes: actualCount,
+                    cheersReceived: actualCheers,
                     groupIds: validGroupIds
                 });
                 batchOpCount++;
@@ -557,6 +615,86 @@ router.all('/sync-user-stats', verifyCronSecret, async (_req: Request, res: Resp
     } catch (err: unknown) {
         const error = err as Error;
         console.error('Error in user stats sync:', error);
+        res.status(500).send('Error: ' + error.message);
+    }
+});
+
+/**
+ * Cleanup Orphaned Cheers (Ghost Buster)
+ */
+router.all('/cleanup-orphaned-cheers', verifyCronSecret, async (_req: Request, res: Response) => {
+    console.log('[Cron] Starting cheers cleanup...');
+    try {
+        // Fetch a batch of cheers that haven't been checked recently or at all
+        const cheersSnap = await db.collection('cheers')
+            .orderBy('lastCheckedAt', 'asc')
+            .limit(200)
+            .get();
+
+        if (cheersSnap.empty) {
+            return res.json({ message: 'No cheers to check.' });
+        }
+
+        let deletedCount = 0;
+        let checkedCount = 0;
+        const batch = db.batch();
+
+        // existence cache to reduce redundant lookups
+        const groupExists = new Map<string, boolean>();
+        const userExists = new Map<string, boolean>();
+
+        for (const cheerDoc of cheersSnap.docs) {
+            const data = cheerDoc.data();
+            const { groupId, senderUid, targetUid } = data;
+            
+            let isOrphan = false;
+
+            // 1. Check Group
+            if (groupId) {
+                if (!groupExists.has(groupId)) {
+                    const gSnap = await db.collection('groups').doc(groupId).get();
+                    groupExists.set(groupId, gSnap.exists);
+                }
+                if (!groupExists.get(groupId)) isOrphan = true;
+            } else {
+                isOrphan = true;
+            }
+
+            // 2. Check Users
+            if (!isOrphan && senderUid) {
+                if (!userExists.has(senderUid)) {
+                    const uSnap = await db.collection('users').doc(senderUid).get();
+                    userExists.set(senderUid, uSnap.exists);
+                }
+                if (!userExists.get(senderUid)) isOrphan = true;
+            }
+
+            if (!isOrphan && targetUid) {
+                if (!userExists.has(targetUid)) {
+                    const uSnap = await db.collection('users').doc(targetUid).get();
+                    userExists.set(targetUid, uSnap.exists);
+                }
+                if (!userExists.get(targetUid)) isOrphan = true;
+            }
+
+            if (isOrphan) {
+                batch.delete(cheerDoc.ref);
+                deletedCount++;
+            } else {
+                batch.update(cheerDoc.ref, { lastCheckedAt: admin.firestore.FieldValue.serverTimestamp() });
+            }
+            checkedCount++;
+        }
+
+        await batch.commit();
+
+        res.json({
+            message: 'Cheers cleanup complete.',
+            stats: { checked: checkedCount, deletedOrphans: deletedCount }
+        });
+    } catch (err: unknown) {
+        const error = err as Error;
+        console.error('Error in cheers cleanup:', error);
         res.status(500).send('Error: ' + error.message);
     }
 });

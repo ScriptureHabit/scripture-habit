@@ -11,7 +11,7 @@ const USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
 // Fetch Church (GC, Liahona, etc.) Metadata
 router.get(['/fetch-church-metadata', '/fetch-church-metadata/'], authenticate, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
 
-    const { url, lang } = req.query as { url?: string, lang?: string };
+    const { url, language } = req.query as { url?: string, language?: string };
     if (!url) return res.status(400).send({ error: 'URL is required' });
 
     try {
@@ -23,7 +23,7 @@ router.get(['/fetch-church-metadata', '/fetch-church-metadata/'], authenticate, 
         }
         if (targetUrl.protocol !== 'https:') return res.status(400).json({ error: 'HTTPS only' });
 
-        if (lang) targetUrl.searchParams.set('lang', lang);
+        if (language) targetUrl.searchParams.set('lang', language);
 
         let response;
         try {
@@ -35,8 +35,8 @@ router.get(['/fetch-church-metadata', '/fetch-church-metadata/'], authenticate, 
             });
         } catch (axiosError) {
              // Fallback: If requested language fails, try without lang param
-             if (lang) {
-                console.warn(`Initial fetch with lang=${lang} failed, trying fallback...`);
+             if (language) {
+                console.warn(`Initial fetch with lang=${language} failed, trying fallback...`);
                 targetUrl.searchParams.delete('lang');
                 response = await axios.get(targetUrl.toString(), {
                     headers: { 'User-Agent': USER_AGENT },

@@ -12,6 +12,9 @@ export default {
         kick_body: "⚠️ グループ『{groupName}』から自動退出となりました。一定期間学習が確認されなかったため、ルールに基づき退出となりました。またいつでも戻ってきてくださいね！お待ちしています💪",
         ownership_transferred: "👑 **オーナーが交代しました**\n以前のオーナーが一定期間不在だったため、アクティブなメンバーにオーナー権限が委譲されました。",
         members_removed: "👋 **{count}名**が活動休止のため退室しました。",
+        member_leave_message: "👋 **{nickname}**さんがグループを退室しました。",
+        member_kick_message: "🚫 **{nickname}**さんがグループから削除されました。",
+        member_owner_removed_message: "👑 オーナー不在によりグループが閉鎖されました。",
         bot_name: "Scripture Habit Bot"
     }
 };

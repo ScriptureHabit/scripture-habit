@@ -55,7 +55,7 @@ export function calculateMemberStatus(
     memberData: InactivityMemberData,
     groupData: InactivityGroupData,
     now: Date = new Date(),
-    gracePeriodMs: number = 3 * 24 * 60 * 60 * 1000
+    // gracePeriodMs: number = 3 * 24 * 60 * 60 * 1000
 ): InactivityResult {
     const nowTime = now.getTime();
 
@@ -65,33 +65,18 @@ export function calculateMemberStatus(
     const tLastPost = toMillis(memberData.lastPostAt);
     const tGroupLastActive = groupData ? toMillis(groupData.memberLastActive?.[memberId]) : 0;
     
-    const tLastRead = toMillis(memberData.lastReadAt);
-    const tLastActiveAt = toMillis(memberData.lastActiveAt);
-    const tGroupLastRead = groupData ? toMillis(groupData.memberLastReadAt?.[memberId]) : 0;
+    // const tLastRead = toMillis(memberData.lastReadAt);
+    // const tLastActiveAt = toMillis(memberData.lastActiveAt);
+    // const tGroupLastRead = groupData ? toMillis(groupData.memberLastReadAt?.[memberId]) : 0;
 
-    // 2. Identify "Posting" Activity (includes joining)
-    const lastPostAtTime = Math.max(tLastNote, tLastPost, tGroupLastActive, tJoined);
+    // 2. Identify "Activity" (Posting or joining)
+    const lastActiveTime = Math.max(tLastNote, tLastPost, tGroupLastActive, tJoined);
     
-    // 3. Identify "Reading" Activity
-    const lastReadAtTime = Math.max(tLastRead, tLastActiveAt, tGroupLastRead);
-
-    // 4. Grace Period Logic
-    const isNewMember = tJoined > 0 && (nowTime - tJoined < gracePeriodMs);
-    
-    const candidates: number[] = [];
-    if (lastPostAtTime > 0) candidates.push(lastPostAtTime);
-    
-    let usedReading = false;
-    if (lastReadAtTime > 0 && isNewMember) {
-        candidates.push(lastReadAtTime);
-        usedReading = true;
-    }
-
-    // 5. Threshold Calculation
+    // 3. Threshold Calculation
     const thresholdDays = memberData.kickThreshold || (groupData ? groupData.memberKickThresholds?.[memberId] : 0) || 3;
     const thresholdMs = thresholdDays * 24 * 60 * 60 * 1000;
 
-    if (candidates.length === 0) {
+    if (lastActiveTime === 0) {
         return {
             status: 'needs_initialization',
             lastActiveTime: 0,
@@ -102,21 +87,13 @@ export function calculateMemberStatus(
         };
     }
 
-    const lastActiveTime = Math.max(...candidates);
     const diffMs = nowTime - lastActiveTime;
     const status: InactivityStatus = diffMs > thresholdMs ? 'inactive' : 'active';
-
-    // Construct Reason
-    let description = '';
-    if (status === 'active') {
-        description = 'Recent activity within threshold.';
-    } else {
-        const days = (diffMs / (24 * 60 * 60 * 1000)).toFixed(1);
+    
+    let description = 'Recently active.';
+    if (status === 'inactive') {
+        const days = Math.floor(diffMs / (24 * 60 * 60 * 1000));
         description = `Inactive for ${days} days (Threshold: ${thresholdDays} days).`;
-    }
-
-    if (usedReading && lastActiveTime === lastReadAtTime && lastActiveTime > lastPostAtTime) {
-        description = 'Active via Reading grace period.';
     }
 
     return {
@@ -125,6 +102,6 @@ export function calculateMemberStatus(
         thresholdMs,
         diffMs,
         reason: description,
-        isNewMember
+        isNewMember: false
     };
 }

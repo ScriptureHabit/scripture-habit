@@ -165,12 +165,14 @@ export class NoteService {
                     }
                     
                     transaction.update(gDoc.ref, groupUpdate);
-
-                    const memberRef = db.collection('groups').doc(gid).collection('members').doc(uid);
+                    
+                    const memberRef = gDoc.ref.collection('members').doc(uid);
                     transaction.set(memberRef, { 
                         lastNoteAt: serverTime,
                         lastActiveAt: serverTime,
-                        lastPostAt: serverTime
+                        lastPostAt: serverTime,
+                        lastReadAt: serverTime,
+                        readMessageCount: (Number(gData.messageCount) || 0) + 1
                     }, { merge: true });
 
                     const userGS = userRef.collection('groupStates').doc(gid);
@@ -217,6 +219,7 @@ export class NoteService {
                             senderNickname: botName,
                             createdAt: announceTime,
                             isSystemMessage: true,
+                            type: 'streakAnnouncement',
                             messageType: 'streakAnnouncement',
                             messageData: { nickname: userNickname, userId: uid, streakCount: newStreak }
                         });
