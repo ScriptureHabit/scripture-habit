@@ -188,7 +188,7 @@
 
 .level-progress-fill {
     height: 100%;
-    width: 0%;
+    width: var(--progress-width, 0%);
     background: linear-gradient(90deg, #ff919d, var(--pink));
     border-radius: 10px;
     transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);

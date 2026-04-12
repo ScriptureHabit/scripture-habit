@@ -71,6 +71,9 @@ const NoteDisplay: FC<NoteDisplayProps> = ({
         if (!parsed.isOriginalStructured) return parsed.finalSimpleContent;
 
         const showScripture = scripture || parsed.scriptureValue;
+        const scriptureLabel = getNoteLabelFallback('noteLabels.scripture', language, t('noteLabels.scripture') || 'Scripture');
+        const chapterLabel = getNoteLabelFallback('noteLabels.chapter', language, t('noteLabels.chapter') || 'Chapter');
+        
         const scriptureLine = !isPlaceholderValue(showScripture) 
             ? `**${scriptureLabel}:** ${translateScriptureName(showScripture, t)}`
             : null;

@@ -447,7 +447,7 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
                                 <div className="level-progress-bar">
                                     <div
                                         className="level-progress-fill"
-                                        style={{ width: `${((stats.daysStudied || 0) % 7) / 7 * 100}%` }}
+                                        style={{ '--progress-width': `${((stats.daysStudied || 0) % 7) / 7 * 100}%` } as React.CSSProperties}
                                     ></div>
                                 </div>
                             </div>
