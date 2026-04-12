@@ -41,9 +41,19 @@ const createConverter = <T extends { id?: string; uid?: string }>(
     };
 
     // 3. Optional Strict Validation (Zod)
-    // If a schema is provided, we parse it to catch runtime inconsistencies immediately.
-    // .passthrough() in schemas ensures we don't lose un-mapped fields during first implementation.
-    const validatedData = (schema ? schema.parse(baseData) : baseData) as Record<string, unknown>;
+    // If a schema is provided, we parse it. If it fails, we log + fallback to raw data
+    // so a single bad document doesn't crash the entire Firestore onSnapshot listener.
+    let validatedData: Record<string, unknown>;
+    if (schema) {
+      try {
+        validatedData = schema.parse(baseData) as Record<string, unknown>;
+      } catch (err) {
+        console.warn(`[firestoreConverter] Schema parse failed for doc "${snapshot.id}", falling back to raw data:`, err);
+        validatedData = baseData as Record<string, unknown>;
+      }
+    } else {
+      validatedData = baseData as Record<string, unknown>;
+    }
 
     // 4. Custom Transformations (Legacy/Migration logic)
     const scripture = normalizeScriptureCategory(validatedData.scripture);
