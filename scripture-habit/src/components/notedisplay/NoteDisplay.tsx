@@ -3,7 +3,7 @@ import ReactMarkdown from 'react-markdown';
 import { useLanguage } from '../../context/LanguageContext';
 import { useNoteParser } from './hooks/useNoteParser';
 import GCNoteRenderer from './components/GCNoteRenderer';
-import { getNoteLabelFallback, translateScriptureName } from './utils/noteTranslations';
+import { getNoteLabelFallback, translateScriptureName, isPlaceholderValue } from './utils/noteTranslations';
 import LinkPreview from '../linkpreview/LinkPreview';
 import './NoteDisplay.css';
 
@@ -70,12 +70,15 @@ const NoteDisplay: FC<NoteDisplayProps> = ({
     const standardMd = useMemo(() => {
         if (!parsed.isOriginalStructured) return parsed.finalSimpleContent;
 
-        const scriptureLabel = getNoteLabelFallback('noteLabels.scripture', language, t('noteLabels.scripture'));
-        const scriptureNameTrans = translateScriptureName(scripture || parsed.scriptureValue, t);
+        const showScripture = scripture || parsed.scriptureValue;
+        const scriptureLine = !isPlaceholderValue(showScripture) 
+            ? `**${scriptureLabel}:** ${translateScriptureName(showScripture, t)}`
+            : null;
         
-        const displayChapter = translateChapterField(chapter || parsed.chapterValue) || (chapter || parsed.chapterValue);
-        const chapterLabel = getNoteLabelFallback('noteLabels.chapter', language, t('noteLabels.chapter'));
-        const chapterLine = displayChapter ? `**${chapterLabel}:** ${displayChapter}` : null;
+        const showChapter = chapter || parsed.chapterValue;
+        const chapterLine = (showChapter && !isPlaceholderValue(showChapter)) 
+            ? `**${chapterLabel}:** ${translateChapterField(showChapter)}` 
+            : null;
         
         const commentLabel = getNoteLabelFallback('noteLabels.comment', language, t('noteLabels.comment'));
         const commentWithLinks = parsed.comment.replace(/(https?:\/\/[^\s]+)/g, (match: string) => {
@@ -85,7 +88,7 @@ const NoteDisplay: FC<NoteDisplayProps> = ({
         });
 
         return [
-            `**${scriptureLabel}:** ${scriptureNameTrans}`,
+            scriptureLine,
             chapterLine,
             `\n**${commentLabel}:**\n${commentWithLinks}`
         ].filter(Boolean).join('\n');

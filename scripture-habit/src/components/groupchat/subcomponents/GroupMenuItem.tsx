@@ -63,6 +63,7 @@ const GroupMenuItem: FC<GroupMenuItemProps> = ({ group, currentGroupId, language
                     body: JSON.stringify({
                         text: group.name,
                         targetLanguage: language,
+                        updateType: 'group_name'
                     }),
                 });
 

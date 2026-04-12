@@ -125,6 +125,7 @@ export default function GroupCard({ group, currentUser, onJoin, onOpen }: Props)
           body: JSON.stringify({
             text: group.name,
             targetLanguage: language,
+            updateType: 'group_name',
           }),
         });
 

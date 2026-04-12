@@ -52,3 +52,19 @@ export const translateScriptureName = (name: string, t: (key: string) => string)
     const key = map[name];
     return key ? t(key) : name;
 };
+
+/**
+ * Checks if a value is a placeholder that should be hidden (e.g., "(未分類)", "-", "Unclassified").
+ */
+export const isPlaceholderValue = (value: string | undefined): boolean => {
+    if (!value) return true;
+    const v = value.trim();
+    if (!v || v === '-' || v === 'ー') return true;
+    
+    const placeholders = [
+        '(未分類)', '未分類', '(unclassified)', 'unclassified', 'uncategorized', 
+        '(なし)', 'なし', 'none', 'n/a', 'unknown', 'その他', 'other', '(その他)'
+    ];
+    
+    return placeholders.includes(v.toLowerCase());
+};

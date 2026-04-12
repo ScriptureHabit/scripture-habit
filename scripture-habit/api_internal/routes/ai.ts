@@ -95,7 +95,8 @@ router.post('/translate', authenticate, aiLimiter, verifyAppCheck, async (req: A
             translatedText = cacheDoc.data()?.translatedText;
         } else {
             const targetLangName = languageNames[targetLanguage] || targetLanguage;
-            const prompt = `Task: Translate the following study note into ${targetLangName}. 
+            
+            let prompt = `Task: Translate the following study note into ${targetLangName}. 
             【STRICT RULES】:
             1. If the text is a structured note with labels like **Category:**, **Chapter:** and **Comment:** (or their equivalents), you MUST preserve this exact markdown structure.
             2. Translate EVERYTHING, including the values for 'Category', 'Chapter', 'Title', and 'Talk' fields.
@@ -119,6 +120,21 @@ router.post('/translate', authenticate, aiLimiter, verifyAppCheck, async (req: A
             """
             ${text}
             """`;
+
+            // If it's a group name or description, we use a plain translation prompt to avoid unwanted formatting
+            if (updateType === 'group_name' || updateType === 'group_description') {
+                const itemType = updateType === 'group_name' ? 'name' : 'description';
+                prompt = `Task: Translate the following group ${itemType} into ${targetLangName}.
+                【STRICT RULES】:
+                1. Output ONLY the translated plain text.
+                2. DO NOT add any labels, bold markers, or decorative symbols.
+                3. If the name is a proper noun that is commonly used in its original form in ${targetLangName}, you may keep it or provide the standard localized version.
+                
+                Text to translate:
+                """
+                ${text}
+                """`;
+            }
             
             const resultText = await callGemini(prompt);
             translatedText = resultText.replace(/<translation>|<\/translation>/gi, '').replace(/^.*?translation.*?:/i, '').replace(/^["'](.*)["']$/g, '$1').trim();

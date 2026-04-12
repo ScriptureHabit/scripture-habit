@@ -69,12 +69,12 @@ export default function JoinGroup() {
         'X-Firebase-AppCheck': appCheckToken
       };
 
-      const translate = async (text: string) => {
+      const translate = async (text: string, type: 'group_name' | 'group_description') => {
         if (!text) return null;
         const res = await fetch(`${API_BASE}/api/translate`, {
           method: 'POST',
           headers,
-          body: JSON.stringify({ text, targetLanguage: language })
+          body: JSON.stringify({ text, targetLanguage: language, updateType: type })
         });
         if (!res.ok) throw new Error('Translation failed');
         const data = await res.json();
@@ -82,8 +82,8 @@ export default function JoinGroup() {
       };
 
       const [newName, newDesc] = await Promise.all([
-        translate(name),
-        description ? translate(description) : Promise.resolve(null)
+        translate(name, 'group_name'),
+        description ? translate(description, 'group_description') : Promise.resolve(null)
       ]);
 
       if (newName) setTranslatedNames(prev => ({ ...prev, [groupId]: newName }));

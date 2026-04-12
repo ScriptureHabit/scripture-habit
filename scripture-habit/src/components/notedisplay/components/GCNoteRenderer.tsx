@@ -1,7 +1,7 @@
 import { FC, useMemo, useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { useUrlMetadata } from '../../../hooks/useUrlMetadata';
-import { getNoteLabelFallback, translateScriptureName } from '../utils/noteTranslations';
+import { getNoteLabelFallback, translateScriptureName, isPlaceholderValue } from '../utils/noteTranslations';
 import { isGCUrl } from '../../../utils/noteUtils';
 import '../NoteDisplay.css';
 
@@ -90,7 +90,11 @@ const GCNoteRenderer: FC<GCNoteRendererProps> = ({
             return `[${cleanUrl}](${cleanUrl})${trailing}`;
         });
 
-        return [`**${scriptureLabel}:** ${scriptName}`, `**${fieldLabel}:** ${fieldValue}`].join('\n') + `\n\n**${commentLabel}:**\n${commentWithLinks}`;
+        const scriptureLine = !isPlaceholderValue(scriptureValue) 
+            ? `**${scriptureLabel}:** ${scriptName}` 
+            : null;
+
+        return [scriptureLine, `**${fieldLabel}:** ${fieldValue}`].filter(Boolean).join('\n') + `\n\n**${commentLabel}:**\n${commentWithLinks}`;
     }, [data, loading, scriptureValue, comment, t, url, isOther, isBYU, language, isTranslated, translatedText, translateChapterField]);
 
     return (
