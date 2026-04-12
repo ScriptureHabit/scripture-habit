@@ -1,10 +1,9 @@
 import express, { Response } from 'express';
-import { admin, db } from '../lib/firebase-admin.js';
+import { db } from '../lib/firebase-admin.js';
 import { verifyAppCheck, authenticate, requireEmailVerified, AuthenticatedRequest } from '../lib/middleware.js';
 import { postNoteSchema, postMessageSchema, sendCheerSchema, deleteNoteSchema, deleteMessageSchema } from '../lib/schemas.js';
 import { notifyGroupMembers, getUserFcmTokens, sendPushNotification, cleanupTokens } from '../lib/notifications.js';
 import { t } from '../lib/i18n.js';
-import { GroupDocument, MessageDocument } from '../../types/firestore.js';
 import { waitUntil } from '@vercel/functions';
 
 const router = express.Router();
@@ -155,107 +154,22 @@ router.post('/toggle-reaction', authenticate, verifyAppCheck, async (req: Authen
     }
 });
 
-router.post('/delete-note', authenticate, requireEmailVerified, verifyAppCheck, async (req: AuthenticatedRequest, res: Response, next) => {
+router.post('/delete-note', authenticate, requireEmailVerified, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
 
     const validation = deleteNoteSchema.safeParse(req.body);
     if (!validation.success) return res.status(400).json({ error: 'Invalid input', details: validation.error.format() });
-
     try {
         const uid = req.user!.uid;
         const { noteId } = validation.data;
-        const userRef = db.collection('users').doc(uid);
-        const noteRef = userRef.collection('notes').doc(noteId);
 
-        await db.runTransaction(async (transaction) => {
-            const noteSnap = await transaction.get(noteRef);
-            if (!noteSnap.exists) throw new Error('Note not found');
-
-            const noteData = noteSnap.data() || {};
-            const sharedMessageIds: Record<string, string> = typeof noteData.sharedMessageIds === 'object' && noteData.sharedMessageIds !== null
-                ? noteData.sharedMessageIds
-                : {};
-
-            transaction.delete(noteRef);
-            transaction.update(userRef, {
-                totalNotes: admin.firestore.FieldValue.increment(-1)
-            });
-
-            for (const [groupId, messageId] of Object.entries(sharedMessageIds)) {
-                const groupRef = db.collection('groups').doc(groupId);
-                const msgRef = groupRef.collection('messages').doc(String(messageId));
-                
-                const groupSnap = await transaction.get(groupRef);
-                const msgSnap = await transaction.get(msgRef);
-                if (!groupSnap.exists || !msgSnap.exists) continue;
-
-                const gData = groupSnap.data() as GroupDocument;
-                const updatePayload: admin.firestore.UpdateData<GroupDocument> = {};
-
-                // TRUTH: High-Water Mark Logic (Sequence Integrity)
-                if (gData.noteCount && gData.noteCount > 0) {
-                    updatePayload.noteCount = admin.firestore.FieldValue.increment(-1);
-                }
-
-                // TRUTH: Revert metadata if this was the last note
-                if (gData.lastNoteByUid === uid) {
-                    // TRUTH: Scan deeper (20) to find the next valid note if previous deletes were frequent.
-                    const recentNotesSnap = await transaction.get(
-                        db.collection('groups').doc(groupId).collection('messages')
-                            .where('isNote', '==', true)
-                            .orderBy('createdAt', 'desc')
-                            .limit(50)
-                    );
-                    const candidates = recentNotesSnap.docs
-                        .map(d => ({ id: d.id, ...d.data() as MessageDocument }))
-                        .filter(n => n.id !== messageId);
-                    
-                    const next = candidates[0];
-                    if (next) {
-                        updatePayload.lastNoteAt = next.createdAt;
-                        updatePayload.lastNoteByNickname = next.senderNickname || 'Member';
-                        updatePayload.lastNoteByUid = next.senderId;
-                    } else {
-                        updatePayload.lastNoteAt = admin.firestore.FieldValue.delete();
-                        updatePayload.lastNoteByNickname = admin.firestore.FieldValue.delete();
-                        updatePayload.lastNoteByUid = admin.firestore.FieldValue.delete();
-                    }
-                }
-
-                // TRUTH: If this was the user's only note today, remove them from activeMembers to keep Unity honest
-                const now = new Date();
-                const groupTimeZone = gData.timeZone || 'UTC';
-                let groupToday;
-                try {
-                    groupToday = now.toLocaleDateString('sv-SE', { timeZone: groupTimeZone });
-                } catch {
-                    groupToday = now.toLocaleDateString('sv-SE', { timeZone: 'UTC' });
-                }
-
-                if (gData.dailyActivity?.date === groupToday && gData.dailyActivity?.activeMembers?.includes(uid)) {
-                    const todayNotesSnap = await transaction.get(
-                        groupRef.collection('messages')
-                            .where('senderId', '==', uid)
-                            .where('isNote', '==', true)
-                            .where('createdAt', '>=', admin.firestore.Timestamp.fromDate(new Date(now.setHours(0,0,0,0))))
-                            .limit(2)
-                    );
-                    const otherNotesToday = todayNotesSnap.docs.filter(d => d.id !== messageId);
-                    if (otherNotesToday.length === 0) {
-                        updatePayload['dailyActivity.activeMembers'] = admin.firestore.FieldValue.arrayRemove(uid);
-                    }
-                }
-
-                transaction.delete(msgRef);
-
-                if (Object.keys(updatePayload).length > 0) {
-                    transaction.update(groupRef, updatePayload);
-                }
-            }
-        });
-
+        await NoteService.deleteNote(uid, noteId);
         res.json({ success: true });
-    } catch (error) {
-        next(error);
+    } catch (error: any) {
+        console.error('Error deleting note:', error);
+        res.status(500).json({ 
+            error: 'InternalServerError', 
+            message: error.message || 'An unexpected error occurred' 
+        });
     }
 });
 

@@ -9,11 +9,27 @@ describe('MessageService Integration Test', () => {
     const TEST_GROUP_ID = 'OVtYdwOhB8uDor6MfDPG'; // test group
 
     beforeAll(async () => {
-        // Ensure user is in the group
+        const userRef = db.collection('users').doc(TEST_UID);
+        // Ensure user exists
+        await userRef.set({
+            nickname: 'TestUser',
+            groupIds: admin.firestore.FieldValue.arrayUnion(TEST_GROUP_ID)
+        }, { merge: true });
+
+        // Ensure group exists and user is in the group
         const groupRef = db.collection('groups').doc(TEST_GROUP_ID);
-        await groupRef.update({
-            members: admin.firestore.FieldValue.arrayUnion(TEST_UID)
-        });
+        const gSnap = await groupRef.get();
+        if (!gSnap.exists) {
+            await groupRef.set({
+                name: 'Test Group',
+                members: [TEST_UID],
+                messageCount: 0
+            } as GroupDocument);
+        } else {
+            await groupRef.set({
+                members: admin.firestore.FieldValue.arrayUnion(TEST_UID)
+            }, { merge: true });
+        }
     });
 
     it('should post a message and update group counters and member states', async () => {
@@ -146,9 +162,9 @@ describe('MessageService Integration Test', () => {
         }
 
         // Ensure dummy user is in group
-        await db.collection('groups').doc(TEST_GROUP_ID).update({
+        await db.collection('groups').doc(TEST_GROUP_ID).set({
             members: admin.firestore.FieldValue.arrayUnion(DUMMY_TARGET)
-        });
+        }, { merge: true });
 
         const initialCheers = (await targetRef.get()).data()?.cheersReceived || 0;
 

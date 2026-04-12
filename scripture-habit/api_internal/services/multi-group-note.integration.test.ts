@@ -18,6 +18,8 @@ describe('NoteService Multi-Group Integration Test', () => {
 
     beforeAll(async () => {
         const userRef = db.collection('users').doc(TEST_UID);
+        // Ensure user exists
+        await userRef.set({ nickname: 'Multi Tester', groupIds: [] }, { merge: true });
         
         // Ensure all groups exist and user is a member
         for (const gid of TEST_GROUP_IDS) {

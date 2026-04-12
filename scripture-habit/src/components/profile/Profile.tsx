@@ -55,6 +55,14 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
     const [platform, setPlatform] = useState<'ios' | 'android' | null>(null);
     const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
     const [isStandalone, setIsStandalone] = useState(false);
+    const levelProgressRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (levelProgressRef.current) {
+            const progress = ((stats.daysStudied || 0) % 7) / 7 * 100;
+            levelProgressRef.current.style.setProperty('--progress-width', `${progress}%`);
+        }
+    }, [stats.daysStudied]);
 
     useEffect(() => {
         // Platform detection
@@ -446,8 +454,8 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
                                 </div>
                                 <div className="level-progress-bar">
                                     <div
+                                        ref={levelProgressRef}
                                         className="level-progress-fill"
-                                        style={{ '--progress-width': `${((stats.daysStudied || 0) % 7) / 7 * 100}%` } as React.CSSProperties}
                                     ></div>
                                 </div>
                             </div>

@@ -9,7 +9,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "vitest"
+    "test": "vitest",
+    "test:internal": "firebase emulators:exec --project test-project \"npx vitest api_internal\""
   },
   "dependencies": {
     "@capacitor/android": "^8.0.0",

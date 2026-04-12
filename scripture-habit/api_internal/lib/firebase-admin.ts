@@ -37,6 +37,16 @@ if (!admin.apps.length) {
         } catch (error) {
             console.error('Firebase Admin initialization error:', error);
         }
+    } else if (process.env.FIRESTORE_EMULATOR_HOST) {
+        // Initialize for Emulator
+        try {
+            admin.initializeApp({
+                projectId: process.env.GCLOUD_PROJECT || 'test-project'
+            });
+            console.log('Firebase Admin initialized for Emulator');
+        } catch (error) {
+            console.error('Firebase Admin Emulator initialization error:', error);
+        }
     } else {
         console.warn('Firebase Admin NOT initialized: Missing credentials. API routes requiring Auth or Firestore will fail.');
     }

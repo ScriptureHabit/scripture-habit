@@ -259,4 +259,139 @@ export class NoteService {
             throw error;
         }
     }
+
+    static async deleteNote(uid: string, noteId: string) {
+        const userRef = db.collection('users').doc(uid);
+        const noteRef = userRef.collection('notes').doc(noteId);
+
+        try {
+            await db.runTransaction(async (transaction) => {
+                // --- 1. INITIAL READ: The Note itself ---
+                const noteSnap = await transaction.get(noteRef);
+                if (!noteSnap.exists) throw new NotFoundError('Note not found');
+
+                const noteData = noteSnap.data() || {};
+                const sharedMessageIds: Record<string, string> = typeof noteData.sharedMessageIds === 'object' && noteData.sharedMessageIds !== null
+                    ? noteData.sharedMessageIds
+                    : {};
+
+                const sharedEntries = Object.entries(sharedMessageIds);
+                const groupRefs = sharedEntries.map(([gid]) => db.collection('groups').doc(gid));
+                const msgRefs = sharedEntries.map(([gid, mid]) => db.collection('groups').doc(gid).collection('messages').doc(String(mid)));
+
+                // --- 2. BATCH READ: User, Groups, and affected Messages ---
+                const [_userDoc, ...sharedDocs] = await transaction.getAll(userRef, ...groupRefs, ...msgRefs);
+                const groupDocs = sharedDocs.slice(0, sharedEntries.length);
+                const msgDocs = sharedDocs.slice(sharedEntries.length);
+
+                const now = new Date();
+                const todayStart = new Date(now);
+                todayStart.setHours(0, 0, 0, 0);
+
+                // --- 3. DYNAMIC READS (Queries): Identify needs for lastNote recovery ---
+                const queryMetadata: { groupId: string, messageId: string, needsNextNote: boolean, needsTodayNotes: boolean }[] = [];
+                const queryPromises: Promise<admin.firestore.QuerySnapshot>[] = [];
+
+                for (let i = 0; i < sharedEntries.length; i++) {
+                    const [groupId, messageId] = sharedEntries[i];
+                    const gSnap = groupDocs[i];
+                    const mSnap = msgDocs[i];
+                    if (!gSnap.exists || !mSnap.exists) {
+                        queryMetadata.push({ groupId, messageId, needsNextNote: false, needsTodayNotes: false });
+                        continue;
+                    }
+
+                    const gData = gSnap.data()!;
+                    const needsNextNote = gData.lastNoteByUid === uid;
+
+                    let needsTodayNotes = false;
+                    const groupTimeZone = gData.timeZone || 'UTC';
+                    let groupToday;
+                    try {
+                        groupToday = now.toLocaleDateString('sv-SE', { timeZone: groupTimeZone });
+                    } catch {
+                        groupToday = now.toLocaleDateString('sv-SE', { timeZone: 'UTC' });
+                    }
+
+                    if (gData.dailyActivity?.date === groupToday && gData.dailyActivity?.activeMembers?.includes(uid)) {
+                        needsTodayNotes = true;
+                    }
+
+                    queryMetadata.push({ groupId, messageId, needsNextNote, needsTodayNotes });
+
+                    if (needsNextNote) {
+                        queryPromises.push(transaction.get(
+                            db.collection('groups').doc(groupId).collection('messages')
+                                .where('isNote', '==', true)
+                                .orderBy('createdAt', 'desc')
+                                .limit(5) // Just enough to find the next valid one
+                        ));
+                    }
+                    if (needsTodayNotes) {
+                        queryPromises.push(transaction.get(
+                            db.collection('groups').doc(groupId).collection('messages')
+                                .where('senderId', '==', uid)
+                                .where('isNote', '==', true)
+                                .where('createdAt', '>=', admin.firestore.Timestamp.fromDate(todayStart))
+                                .limit(2)
+                        ));
+                    }
+                }
+
+                const querySnaps = await Promise.all(queryPromises);
+                let snapIdx = 0;
+
+                // --- 4. ALL WRITES START HERE ---
+                transaction.delete(noteRef);
+                transaction.update(userRef, {
+                    totalNotes: admin.firestore.FieldValue.increment(-1)
+                });
+
+                for (let i = 0; i < sharedEntries.length; i++) {
+                    const [_groupId, messageId] = sharedEntries[i];
+                    const gSnap = groupDocs[i];
+                    const mSnap = msgDocs[i];
+                    const meta = queryMetadata[i];
+                    if (!gSnap.exists || !mSnap.exists) continue;
+
+                    const updatePayload: Record<string, any> = {};
+
+                    // Handle lastNote recovery
+                    if (meta.needsNextNote) {
+                        const notesSnap = querySnaps[snapIdx++];
+                        const nextNote = notesSnap.docs.find(doc => doc.id !== messageId);
+                        if (nextNote) {
+                            const nData = nextNote.data();
+                            updatePayload.lastNoteAt = nData.createdAt;
+                            updatePayload.lastNoteByNickname = nData.senderNickname || 'Member';
+                            updatePayload.lastNoteByUid = nData.senderId;
+                        } else {
+                            updatePayload.lastNoteAt = null;
+                            updatePayload.lastNoteByNickname = null;
+                            updatePayload.lastNoteByUid = null;
+                        }
+                    }
+
+                    // Handle Daily Activity Update
+                    if (meta.needsTodayNotes) {
+                        const todayNotesSnap = querySnaps[snapIdx++];
+                        const otherNotesToday = todayNotesSnap.docs.filter(doc => doc.id !== messageId);
+                        if (otherNotesToday.length === 0) {
+                            updatePayload['dailyActivity.activeMembers'] = admin.firestore.FieldValue.arrayRemove(uid);
+                        }
+                    }
+
+                    updatePayload.noteCount = admin.firestore.FieldValue.increment(-1);
+                    updatePayload.messageCount = admin.firestore.FieldValue.increment(-1);
+
+                    transaction.update(gSnap.ref, updatePayload);
+                    transaction.delete(mSnap.ref);
+                }
+            });
+            return { success: true };
+        } catch (error) {
+            console.error('[NoteService] DeleteNote Transaction Error:', error);
+            throw error;
+        }
+    }
 }

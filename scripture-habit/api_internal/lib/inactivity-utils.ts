@@ -2,14 +2,14 @@
  * Utility for determining user inactivity in group chats.
  * 
  * Logic Summary:
- * 1. Activity is primarily determined by POSTING (lastNoteAt, lastPostAt).
- * 2. JOINING counts as activity.
- * 3. READING (lastReadAt, lastActiveAt) ONLY counts as activity for the first 3 days after joining.
- * 4. A member is INACTIVE if the most recent qualifying activity is older than their threshold (default 3 days).
+ * 1. Activity is determined by ANY interaction: Posting, Reading, or Joining.
+ * 2. A member is INACTIVE if the most recent activity is older than their threshold (default 3 days).
+ * 3. Simplified: Removed the "new member" grace period. All activity counts equally.
  */
 
 export interface InactivityMemberData {
     joinedAt?: unknown;
+    createTime?: unknown;
     lastNoteAt?: unknown;
     lastPostAt?: unknown;
     lastReadAt?: unknown;
@@ -21,6 +21,7 @@ export interface InactivityGroupData {
     memberLastActive?: Record<string, unknown>;
     memberLastReadAt?: Record<string, unknown>;
     memberKickThresholds?: Record<string, number>;
+    memberJoinedAt?: Record<string, unknown>;
 }
 
 export type InactivityStatus = 'active' | 'inactive' | 'needs_initialization';
@@ -31,7 +32,6 @@ export interface InactivityResult {
     thresholdMs: number;
     diffMs: number;
     reason: string;
-    isNewMember: boolean;
 }
 
 /**
@@ -44,6 +44,10 @@ export function toMillis(ts: unknown): number {
     }
     if (ts instanceof Date) return ts.getTime();
     if (typeof ts === 'number') return ts;
+    if (typeof ts === 'string') {
+        const d = new Date(ts);
+        return isNaN(d.getTime()) ? 0 : d.getTime();
+    }
     const tsObj = ts as { seconds?: number; _seconds?: number };
     if (tsObj.seconds !== undefined) return tsObj.seconds * 1000;
     if (tsObj._seconds !== undefined) return tsObj._seconds * 1000;
@@ -54,24 +58,28 @@ export function calculateMemberStatus(
     memberId: string,
     memberData: InactivityMemberData,
     groupData: InactivityGroupData,
-    now: Date = new Date(),
-    // gracePeriodMs: number = 3 * 24 * 60 * 60 * 1000
+    now: Date = new Date()
 ): InactivityResult {
     const nowTime = now.getTime();
 
-    // 1. Determine Timestamps
-    const tJoined = toMillis(memberData.joinedAt);
-    const tLastNote = toMillis(memberData.lastNoteAt);
-    const tLastPost = toMillis(memberData.lastPostAt);
-    const tGroupLastActive = groupData ? toMillis(groupData.memberLastActive?.[memberId]) : 0;
-    
-    // const tLastRead = toMillis(memberData.lastReadAt);
-    // const tLastActiveAt = toMillis(memberData.lastActiveAt);
-    // const tGroupLastRead = groupData ? toMillis(groupData.memberLastReadAt?.[memberId]) : 0;
+    // 1. Collect All Timestamps
+    const timestamps = [
+        toMillis(memberData.joinedAt),
+        toMillis(memberData.lastNoteAt),
+        toMillis(memberData.lastPostAt),
+        toMillis(memberData.lastReadAt),
+        toMillis(memberData.lastActiveAt)
+    ];
 
-    // 2. Identify "Activity" (Posting or joining)
-    const lastActiveTime = Math.max(tLastNote, tLastPost, tGroupLastActive, tJoined);
-    
+    if (groupData) {
+        if (groupData.memberJoinedAt?.[memberId]) timestamps.push(toMillis(groupData.memberJoinedAt[memberId]));
+        if (groupData.memberLastActive?.[memberId]) timestamps.push(toMillis(groupData.memberLastActive[memberId]));
+        if (groupData.memberLastReadAt?.[memberId]) timestamps.push(toMillis(groupData.memberLastReadAt[memberId]));
+    }
+
+    // 2. Determine Most Recent Activity
+    const lastActiveTime = Math.max(...timestamps);
+
     // 3. Threshold Calculation
     const thresholdDays = memberData.kickThreshold || (groupData ? groupData.memberKickThresholds?.[memberId] : 0) || 3;
     const thresholdMs = thresholdDays * 24 * 60 * 60 * 1000;
@@ -82,18 +90,18 @@ export function calculateMemberStatus(
             lastActiveTime: 0,
             thresholdMs,
             diffMs: 0,
-            reason: 'No activity timestamps found. Requires joinedAt initialization.',
-            isNewMember: false
+            reason: 'No activity timestamps found. Requires joinedAt initialization.'
         };
     }
 
     const diffMs = nowTime - lastActiveTime;
-    const status: InactivityStatus = diffMs > thresholdMs ? 'inactive' : 'active';
-    
+    const isInactive = diffMs > thresholdMs;
+    const status: InactivityStatus = isInactive ? 'inactive' : 'active';
+
     let description = 'Recently active.';
-    if (status === 'inactive') {
-        const days = Math.floor(diffMs / (24 * 60 * 60 * 1000));
-        description = `Inactive for ${days} days (Threshold: ${thresholdDays} days).`;
+    if (isInactive) {
+        const days = diffMs / (24 * 60 * 60 * 1000);
+        description = `Inactive for ${days.toFixed(1)} days (Threshold: ${thresholdDays} days).`;
     }
 
     return {
@@ -101,7 +109,6 @@ export function calculateMemberStatus(
         lastActiveTime,
         thresholdMs,
         diffMs,
-        reason: description,
-        isNewMember: false
+        reason: description
     };
 }

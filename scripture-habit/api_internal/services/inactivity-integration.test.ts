@@ -39,10 +39,11 @@ describe('Inactivity Integration Test (Member Removal)', () => {
             lastReadAt: admin.firestore.FieldValue.serverTimestamp()
         });
 
-        // Ensure user has the group in their groupIds
-        await db.collection('users').doc(TEST_UID).update({
+        // Ensure user exists and has the group in their groupIds
+        await db.collection('users').doc(TEST_UID).set({
+            nickname: 'InactivityUser',
             groupIds: admin.firestore.FieldValue.arrayUnion(TEST_GROUP_ID)
-        });
+        }, { merge: true });
     });
 
     afterAll(async () => {

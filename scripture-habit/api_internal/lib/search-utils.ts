@@ -3,7 +3,8 @@ export const normalizeSearchText = (text: string): string => {
     .trim()
     .toLowerCase()
     .replace(/[\p{P}\p{S}]+/gu, ' ')
-    .replace(/\s+/g, ' ');
+    .replace(/\s+/g, ' ')
+    .trim();
 };
 
 export const createSearchTokens = (text: string): string[] => {
