@@ -21,3 +21,43 @@ export const parseTimestampToMillis = (ts?: FirebaseTimestamp | null): number =>
   
   return Date.now(); // TRUTH: Fallback to now to prevent UI jumps
 };
+
+export const formatDateInTimeZone = (date: Date, timeZone: string): string => {
+  try {
+    const parts = new Intl.DateTimeFormat('en-US', {
+      timeZone,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).formatToParts(date);
+
+    const year = parts.find(p => p.type === 'year')?.value;
+    const month = parts.find(p => p.type === 'month')?.value;
+    const day = parts.find(p => p.type === 'day')?.value;
+
+    return `${year}-${month}-${day}`;
+  } catch (e) {
+    console.warn(`[timeUtils] Invalid timezone ${timeZone}, falling back to UTC formatting`, e);
+    // Fallback to UTC if timezone is invalid
+    const parts = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'UTC',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).formatToParts(date);
+
+    const year = parts.find(p => p.type === 'year')?.value;
+    const month = parts.find(p => p.type === 'month')?.value;
+    const day = parts.find(p => p.type === 'day')?.value;
+
+    return `${year}-${month}-${day}`;
+  }
+};
+
+/**
+ * Strips any non-numeric and non-dash characters from a date string.
+ * Used to ensure consistency against hidden characters from Intl API.
+ */
+export const normalizeDateString = (dateStr: string): string => {
+  return dateStr.replace(/[^\d-]/g, '');
+};

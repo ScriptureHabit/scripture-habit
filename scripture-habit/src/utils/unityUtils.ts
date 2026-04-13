@@ -1,5 +1,5 @@
 import { Group, Message } from '../types/chat';
-import { parseTimestampToMillis } from './timeUtils';
+import { parseTimestampToMillis, formatDateInTimeZone, normalizeDateString } from './timeUtils';
 
 /**
  * Calculates current Unity percentage for a group.
@@ -20,26 +20,13 @@ export const calculateUnityPercentage = (
   const groupTimeZone = group.timeZone || userTimeZone || 'UTC';
   const now = new Date();
   
-  // 1. Get consistent "Today" string for dailyActivity comparison (YYYY-MM-DD)
-  // We use this as the primary boundary for Unity.
-  let todayStr: string;
-  try {
-      todayStr = new Intl.DateTimeFormat('sv-SE', { 
-          timeZone: groupTimeZone,
-          year: 'numeric', month: '2-digit', day: '2-digit'
-      }).format(now);
-  } catch {
-      console.warn(`[UnityUtils] Invalid timezone ${groupTimeZone}, falling back to UTC`);
-      todayStr = new Intl.DateTimeFormat('sv-SE', { 
-          timeZone: 'UTC',
-          year: 'numeric', month: '2-digit', day: '2-digit'
-      }).format(now);
-  }
+  const todayStr = formatDateInTimeZone(now, groupTimeZone);
+  const normalizedToday = normalizeDateString(todayStr);
   
   const uniquePosters = new Set<string>();
 
   // SOURCE A: Server-side dailyActivity (The state on the Group document)
-  if (group.dailyActivity?.activeMembers && group.dailyActivity.date === todayStr) {
+  if (group.dailyActivity?.activeMembers && normalizeDateString(group.dailyActivity.date) === normalizedToday) {
     group.dailyActivity.activeMembers.forEach(uid => uniquePosters.add(uid));
   }
 
@@ -51,8 +38,8 @@ export const calculateUnityPercentage = (
       const msgTime = parseTimestampToMillis(msg.createdAt);
       if (isNaN(msgTime)) return;
 
-      const msgDateStr = new Date(msgTime).toLocaleDateString('sv-SE', { timeZone: groupTimeZone });
-      if (msgDateStr === todayStr) {
+      const msgDateStr = formatDateInTimeZone(new Date(msgTime), groupTimeZone);
+      if (normalizeDateString(msgDateStr) === normalizedToday) {
         uniquePosters.add(msg.senderId!);
       }
     });
@@ -70,9 +57,9 @@ export const calculateUnityPercentage = (
     const joinedTime = parseTimestampToMillis(joinedTs);
     if (isNaN(joinedTime)) return true;
 
-    const joinedDateStr = new Date(joinedTime).toLocaleDateString('sv-SE', { timeZone: groupTimeZone });
+    const joinedDateStr = formatDateInTimeZone(new Date(joinedTime), groupTimeZone);
     // If they joined before today, they are eligible.
-    return joinedDateStr < todayStr;
+    return normalizeDateString(joinedDateStr) < normalizedToday;
   });
 
   if (eligibleMembers.length === 0) return 0;

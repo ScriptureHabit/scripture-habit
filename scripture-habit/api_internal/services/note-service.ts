@@ -5,6 +5,7 @@ import { buildNoteSearchTokens } from '../lib/search-utils.js';
 import { t } from '../lib/i18n.js';
 import { StreakEngine } from '../lib/streak-engine.js';
 import { NotificationService } from './notification-service.js';
+import { formatDateInTimeZone, normalizeDateString } from '../../src/utils/timeUtils.js';
 
 export interface PostNoteInput {
     uid: string;
@@ -149,18 +150,7 @@ export class NoteService {
                         chapter: chapter || ""
                     });
 
-                    let groupToday;
-                    try {
-                        groupToday = new Intl.DateTimeFormat('sv-SE', { 
-                            timeZone: gData.timeZone || timeZone,
-                            year: 'numeric', month: '2-digit', day: '2-digit'
-                        }).format(now);
-                    } catch {
-                        groupToday = new Intl.DateTimeFormat('sv-SE', { 
-                            timeZone: 'UTC',
-                            year: 'numeric', month: '2-digit', day: '2-digit'
-                        }).format(now);
-                    }
+                    const groupToday = formatDateInTimeZone(now, gData.timeZone || timeZone);
 
                     const groupUpdate = {
                         lastMessageAt: serverTime,
@@ -173,7 +163,7 @@ export class NoteService {
                         noteCount: admin.firestore.FieldValue.increment(1)
                     } as admin.firestore.UpdateData<GroupDocument>;
 
-                    if (gData.dailyActivity?.date !== groupToday) {
+                    if (normalizeDateString(gData.dailyActivity?.date || '') !== normalizeDateString(groupToday)) {
                         groupUpdate.dailyActivity = { date: groupToday, activeMembers: [uid] };
                     } else {
                         groupUpdate['dailyActivity.activeMembers'] = admin.firestore.FieldValue.arrayUnion(uid);

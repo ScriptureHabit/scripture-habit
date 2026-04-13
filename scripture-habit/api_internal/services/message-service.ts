@@ -1,5 +1,6 @@
 import { admin, db } from '../lib/firebase-admin.js';
 import { GroupDocument, MessageDocument, UserDocument, ReactionPreview, PersonalNoteDocument, FirestoreTimestamp } from '../../types/firestore.js';
+import { formatDateInTimeZone, normalizeDateString } from '../../src/utils/timeUtils.js';
 import { buildNoteSearchTokens } from '../lib/search-utils.js';
 
 export interface PostMessageParams {
@@ -334,15 +335,10 @@ export class MessageService {
             }
 
             const now = new Date();
-            const groupTimeZone = gData.timeZone || 'UTC';
-            let groupToday;
-            try {
-                groupToday = now.toLocaleDateString('sv-SE', { timeZone: groupTimeZone });
-            } catch {
-                groupToday = now.toLocaleDateString('sv-SE', { timeZone: 'UTC' });
-            }
+            const groupToday = formatDateInTimeZone(now, gData.timeZone || 'UTC');
+            const normalizedToday = normalizeDateString(groupToday);
 
-            if (gData.dailyActivity?.date === groupToday && gData.dailyActivity?.activeMembers?.includes(uid)) {
+            if (normalizeDateString(gData.dailyActivity?.date || '') === normalizedToday && gData.dailyActivity?.activeMembers?.includes(uid)) {
                 const todayNotesSnap = await transaction.get(
                     groupRef.collection('messages')
                         .where('senderId', '==', uid)
