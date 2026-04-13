@@ -7,21 +7,19 @@
 # Test info
 
 - Name: note-flow.spec.ts >> Core Note Flow >> should allow a user to take and then edit a note
-- Location: tests\note-flow.spec.ts:27:3
+- Location: tests\note-flow.spec.ts:4:3
 
 # Error details
 
 ```
-Error: expect(page).toHaveURL(expected) failed
+Test timeout of 60000ms exceeded while setting up "authenticatedPage".
+```
 
-Expected pattern: /.*dashboard/
-Received string:  "http://localhost:5173/en/login"
-Timeout: 15000ms
-
-Call log:
-  - Expect "toHaveURL" with timeout 15000ms
-    18 × unexpected value "http://localhost:5173/en/login"
-
+```
+Error: page.waitForURL: Test timeout of 60000ms exceeded.
+=========================== logs ===========================
+waiting for navigation until "load"
+============================================================
 ```
 
 # Page snapshot
@@ -49,7 +47,6 @@ Call log:
             - generic [ref=e21]: Password
             - textbox "Password" [ref=e22]:
               - /placeholder: ""
-              - text: password123
           - link "Forgot your password?" [ref=e24]:
             - /url: /forgot-password
           - button "Log In" [ref=e25] [cursor=pointer]
@@ -66,105 +63,74 @@ Call log:
             - generic [ref=e35]: •
             - generic [ref=e36] [cursor=pointer]: Legal Disclosure
           - generic [ref=e37]: © 2026 Scripture Habit
-    - region "Notifications Alt+T":
-      - alert [ref=e39]:
-        - img [ref=e41]
-        - generic [ref=e43]:
-          - generic [ref=e44]: A new version is available.
-          - button "Refresh to Update" [ref=e45] [cursor=pointer]
-    - generic [ref=e49]:
-      - paragraph [ref=e50]:
-        - text: We use cookies to improve your experience and analyze traffic. By continuing to use this site, you agree to our use of cookies.
-        - link "Privacy Policy" [ref=e51]:
-          - /url: /privacy
-      - button "Accept" [ref=e52] [cursor=pointer]
-  - paragraph [ref=e53]: Running in emulator mode. Do not use with production credentials.
-  - iframe [ref=e54]:
+    - region "Notifications Alt+T"
+  - paragraph [ref=e38]: Running in emulator mode. Do not use with production credentials.
+  - iframe [ref=e39]:
     
 ```
 
 # Test source
 
 ```ts
-  1  | import { test, expect } from '@playwright/test';
-  2  | 
-  3  | test.describe('Core Note Flow', () => {
-  4  |   let uniqueEmail: string;
-  5  | 
-  6  |   test.beforeEach(async ({ page }) => {
-  7  |     // 1. Navigate to signup
-  8  |     await page.goto('/en/signup');
-  9  |     uniqueEmail = `test-${Date.now()}@example.com`;
-  10 |     
-  11 |     // 2. Fill Signup Form
-  12 |     await page.getByLabel('Nickname').fill('E2E Tester');
-  13 |     await page.getByLabel('Email Address').fill(uniqueEmail);
-  14 |     await page.getByLabel('Password').fill('password123');
-  15 |     await page.getByRole('button', { name: 'Sign Up', exact: true }).click();
-  16 |     
-  17 |     // 3. Handle Login redirect
-  18 |     await expect(page).toHaveURL(/.*login/);
-  19 |     await page.getByLabel('Email Address').fill(uniqueEmail);
-  20 |     await page.getByLabel('Password').fill('password123');
-  21 |     await page.getByRole('button', { name: 'Log In', exact: true }).click();
-  22 |     
-  23 |     // 4. Verification of arrival at dashboard
-> 24 |     await expect(page).toHaveURL(/.*dashboard/, { timeout: 15000 });
-     |                        ^ Error: expect(page).toHaveURL(expected) failed
-  25 |   });
-  26 | 
-  27 |   test('should allow a user to take and then edit a note', async ({ page }) => {
-  28 |     // --- PART 1: CREATE NOTE ---
-  29 |     const newNoteBtn = page.getByRole('button', { name: 'New Note' });
-  30 |     await expect(newNoteBtn).toBeVisible();
-  31 |     await newNoteBtn.click();
-  32 | 
-  33 |     // Fill the form
-  34 |     await page.getByText('Please choose a category option').click();
-  35 |     await page.keyboard.type('Book of Mormon');
-  36 |     await page.keyboard.press('Enter');
-  37 | 
-  38 |     await page.getByLabel('Chapter').fill('1 Nephi 1');
-  39 |     await page.getByLabel('Comment').fill('Learning about faith and obedience.');
-  40 | 
-  41 |     // Submit
-  42 |     const submitBtn = page.getByRole('button', { name: 'Post Note' });
-  43 |     await submitBtn.click();
-  44 | 
-  45 |     // Verify Success Toast
-  46 |     await expect(page.getByText('Note posted successfully!')).toBeVisible();
-  47 |     
-  48 |     // Switch to My Notes view
-  49 |     await page.getByRole('link', { name: 'My Notes' }).click();
-  50 |     
-  51 |     // Verify it appears in My Notes
-  52 |     const noteCard = page.locator('.note-card').filter({ hasText: '1 Nephi 1' });
-  53 |     await expect(noteCard).toBeVisible();
-  54 |     await expect(noteCard).toContainText('Learning about faith and obedience.');
-  55 | 
-  56 |     // --- PART 2: EDIT NOTE ---
-  57 |     // Click the note card to open detail modal
-  58 |     await noteCard.click();
-  59 | 
-  60 |     // Click 'Edit' in the detail modal
-  61 |     const editBtn = page.getByRole('button', { name: 'Edit' });
-  62 |     await editBtn.click();
-  63 | 
-  64 |     // Modify the chapter and comment
-  65 |     await page.getByLabel('Chapter').fill('1 Nephi 2');
-  66 |     await page.getByLabel('Comment').fill('Updated: Faith follows obedience.');
-  67 | 
-  68 |     // Save update
-  69 |     const updateBtn = page.getByRole('button', { name: 'Update Note' });
-  70 |     await updateBtn.click();
-  71 | 
-  72 |     // Verify Success Toast
-  73 |     await expect(page.getByText('Note updated successfully!')).toBeVisible();
-  74 |     
-  75 |     // Verify updated values in the list
-  76 |     await expect(page.getByText('1 Nephi 2')).toBeVisible();
-  77 |     await expect(page.getByText('Updated: Faith follows obedience.')).toBeVisible();
-  78 |   });
-  79 | });
-  80 | 
+  1  | /* eslint-disable react-hooks/rules-of-hooks */
+  2  | import { test as base, Page } from '@playwright/test';
+  3  | 
+  4  | type AuthFixtures = {
+  5  |   authenticatedPage: Page;
+  6  |   uniqueEmail: string;
+  7  | };
+  8  | 
+  9  | export const test = base.extend<AuthFixtures>({
+  10 |   // Provide a unique email for each test to ensure fresh state
+  11 |   uniqueEmail: async ({}, use) => {
+  12 |     await use(`test-${Date.now()}@example.com`);
+  13 |   },
+  14 | 
+  15 |   // Provide a pre-authenticated page to the test
+  16 |   authenticatedPage: async ({ page, uniqueEmail }, use) => {
+  17 |     // PRE-INIT: Set localStorage flags and DISABLE ANIMATIONS
+  18 |     await page.addInitScript(() => {
+  19 |         window.localStorage.setItem('cookieConsent', 'true');
+  20 |         window.localStorage.setItem('lastNotifPrompt', Date.now().toString());
+  21 | 
+  22 |         // Force disable all CSS animations and transitions (set to near-zero to allow event firing)
+  23 |         const style = document.createElement('style');
+  24 |         style.innerHTML = `
+  25 |           *, *::before, *::after {
+  26 |             transition-duration: 0.001s !important;
+  27 |             animation-duration: 0.001s !important;
+  28 |             transition-delay: 0s !important;
+  29 |             animation-delay: 0s !important;
+  30 |           }
+  31 |         `;
+  32 |         document.head.appendChild(style);
+  33 |     });
+  34 | 
+  35 |     // 1. Navigate to signup
+  36 |     await page.goto('/en/signup');
+  37 |     
+  38 |     // 2. Fill Signup Form
+  39 |     await page.getByLabel('Nickname').fill('E2E Tester');
+  40 |     await page.getByLabel('Email Address').fill(uniqueEmail);
+  41 |     await page.getByLabel('Password').fill('password123');
+  42 |     await page.getByRole('button', { name: 'Sign Up', exact: true }).click({ force: true });
+  43 |     
+  44 |     // 3. Handle Login redirect
+  45 |     await page.waitForURL(/.*login/, { timeout: 60000 });
+  46 |     await page.getByLabel('Email Address').fill(uniqueEmail);
+  47 |     await page.getByLabel('Password').fill('password123');
+  48 |     await page.getByRole('button', { name: 'Log In', exact: true }).click({ force: true });
+  49 |     
+  50 |     // 4. Verification of arrival at dashboard
+  51 |     // No onboarding modals should appear now for @example.com users
+> 52 |     await page.waitForURL(/.*dashboard/, { timeout: 90000 });
+     |                ^ Error: page.waitForURL: Test timeout of 60000ms exceeded.
+  53 |     
+  54 |     // 5. Provide the authenticated page to the test
+  55 |     await use(page);
+  56 |   },
+  57 | });
+  58 | 
+  59 | export { expect } from '@playwright/test';
+  60 | 
 ```

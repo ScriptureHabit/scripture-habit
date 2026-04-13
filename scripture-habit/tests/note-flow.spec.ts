@@ -9,7 +9,8 @@ test.describe('Core Note Flow', () => {
     await newNoteBtn.click();
 
     // Fill the form
-    await page.getByText('Please choose a category option').click();
+    // Using force: true because react-select's input container often intercepts clicks on the placeholder
+    await page.getByText('Please choose a category option').click({ force: true });
     await page.keyboard.type('Book of Mormon');
     await page.keyboard.press('Enter');
 
@@ -20,11 +21,12 @@ test.describe('Core Note Flow', () => {
     const submitBtn = page.getByRole('button', { name: 'Post Note' });
     await submitBtn.click();
 
-    // Verify Success Toast
+    // Verify Success Toast and wait for modal to close
     await expect(page.getByText('Note posted successfully!')).toBeVisible();
+    await expect(page.locator('.ModalOverlay')).not.toBeVisible();
     
     // Switch to My Notes view
-    await page.getByRole('link', { name: 'My Notes' }).click();
+    await page.getByText('My Notes').click();
     
     // Verify it appears in My Notes
     const noteCard = page.locator('.note-card').filter({ hasText: '1 Nephi 1' });
@@ -48,7 +50,9 @@ test.describe('Core Note Flow', () => {
     await updateBtn.click();
 
     // Verify Success Toast
-    await expect(page.getByText('Note updated successfully!')).toBeVisible();
+    const toast = page.getByText('Note updated successfully!');
+    await toast.waitFor({ state: 'visible', timeout: 15000 });
+    await expect(toast).toBeVisible();
     
     // Verify updated values in the list
     await expect(page.getByText('1 Nephi 2')).toBeVisible();

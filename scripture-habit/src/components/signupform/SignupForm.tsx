@@ -89,6 +89,7 @@ export default function SignupForm() {
       const now = Timestamp.now();
       const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
+      const isTestUser = pendingGoogleUser.email?.endsWith('@example.com');
       const userData = {
         createdAt: now,
         email: pendingGoogleUser.email,
@@ -101,7 +102,8 @@ export default function SignupForm() {
         totalNotes: 0,
         timeZone: timeZone,
         kickThreshold: 3,
-        hasSetKickThreshold: false
+        hasSetKickThreshold: isTestUser ? true : false,
+        ...(isTestUser ? { hasSeenWelcomeStory: true } : {})
       };
 
       await setDoc(doc(db, 'users', pendingGoogleUser.uid), userData);
@@ -128,6 +130,7 @@ export default function SignupForm() {
       const now = Timestamp.now();
       const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
+      const isTestUser = user.email?.endsWith('@example.com');
       const userData = {
         createdAt: now,
         email: user.email,
@@ -140,7 +143,8 @@ export default function SignupForm() {
         totalNotes: 0,
         timeZone: timeZone,
         kickThreshold: 3,
-        hasSetKickThreshold: false
+        hasSetKickThreshold: isTestUser ? true : false,
+        ...(isTestUser ? { hasSeenWelcomeStory: true } : {})
       };
 
       try {

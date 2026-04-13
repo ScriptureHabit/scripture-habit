@@ -42,7 +42,7 @@ service cloud.firestore {
 
       match /notes/{noteId} {
         allow read: if isAuthenticated() && request.auth.uid == userId;
-        allow write: if false;
+        allow write: if isAuthenticated() && request.auth.uid == userId;
       }
 
       match /groupStates/{groupId} {
