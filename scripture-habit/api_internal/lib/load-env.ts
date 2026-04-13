@@ -15,13 +15,19 @@ const envResult = dotenv.config({ path: envPath });
 const envLocalResult = dotenv.config({ path: envLocalPath, override: true });
 
 if (envResult.error) {
-  console.warn(`[Env] Failed to load .env: ${envResult.error.message}`);
+  if (process.env.CI || process.env.VITE_USE_FIREBASE_EMULATOR === 'true') {
+    console.log(`[Env] .env not found, using system environment variables and fallback config.`);
+  } else {
+    console.warn(`[Env] Failed to load .env: ${envResult.error.message}`);
+  }
 } else {
   console.log(`[Env] Successfully loaded .env. Keys: ${Object.keys(envResult.parsed || {}).join(', ')}`);
 }
 
 if (envLocalResult.error) {
-  console.warn(`[Env] Failed to load .env.local: ${envLocalResult.error.message}`);
+  if (!process.env.CI) {
+    console.log(`[Env] .env.local not found (optional)`);
+  }
 } else {
   console.log(`[Env] Successfully loaded .env.local. Keys: ${Object.keys(envLocalResult.parsed || {}).join(', ')}`);
 }
