@@ -37,17 +37,13 @@ test.describe('Core Note Flow', () => {
     // In WebKit, sometimes the first click might not trigger correctly due to modal animations
     await myNotesLink.click({ force: true });
     
-    // Ensure data is loaded
-    await page.waitForLoadState('networkidle');
-
     // Fallback: if not visible after click, try again after a short delay
     const notesGrid = page.locator('.notes-grid');
     try {
-      await notesGrid.waitFor({ state: 'visible', timeout: 5000 });
+      await notesGrid.waitFor({ state: 'visible', timeout: 10000 });
     } catch {
       console.log('Retrying My Notes click for WebKit...');
       await myNotesLink.click({ force: true });
-      await page.waitForLoadState('networkidle');
     }
 
     await notesGrid.waitFor({ state: 'visible', timeout: 30000 });
