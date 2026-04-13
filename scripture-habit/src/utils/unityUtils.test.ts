@@ -50,4 +50,75 @@ describe('calculateUnityPercentage Timezone Discrepancy', () => {
     
     expect(calculateUnityPercentage(groupWithFutureDate)).toBe(0);
   });
+
+  it('respects the referenceDate parameter', () => {
+    const group: Group = {
+      ...mockGroup,
+      timeZone: 'UTC',
+      dailyActivity: { date: '2023-11-01', activeMembers: ['user1'] }
+    } as unknown as Group;
+
+    const date1 = new Date('2023-11-01T12:00:00Z');
+    const date2 = new Date('2023-11-02T12:00:00Z');
+
+    expect(calculateUnityPercentage(group, [], date1)).toBe(50);
+    expect(calculateUnityPercentage(group, [], date2)).toBe(0);
+  });
+
+  describe('Member Exclusion based on joinedAt', () => {
+    it('excludes members who joined after the reference date', () => {
+      const group: Group = {
+        id: 'g1',
+        members: ['oldUser', 'newUser'],
+        memberJoinedAt: {
+          'oldUser': { seconds: 1698451200, nanoseconds: 0 }, // 2023-10-28 00:00:00 UTC
+          'newUser': { seconds: 1698537600, nanoseconds: 0 }, // 2023-10-29 00:00:00 UTC
+        },
+        dailyActivity: {
+          date: '2023-10-28',
+          activeMembers: ['oldUser']
+        }
+      } as unknown as Group;
+
+      // referenceDate is 2023-10-28
+      const referenceDate = new Date('2023-10-28T12:00:00Z');
+      
+      // newUser joined on 10-29, so on 10-28 they shouldn't be counted in denominator.
+      // Denominator: 1 (oldUser), Active: 1 (oldUser) -> 100%
+      expect(calculateUnityPercentage(group, [], referenceDate)).toBe(100);
+
+      // On 10-29, denominator should be 2.
+      const referenceDateNext = new Date('2023-10-29T12:00:00Z');
+      // If dailyActivity is still 10-28, it counts as 0% for 10-29.
+      expect(calculateUnityPercentage(group, [], referenceDateNext)).toBe(0);
+    });
+
+    it('correctly handles members who joined ON the reference date (should be included)', () => {
+      const group: Group = {
+        id: 'g1',
+        members: ['user1'],
+        memberJoinedAt: {
+          'user1': { seconds: 1698537600, nanoseconds: 0 }, // 2023-10-29 00:00:00 UTC
+        },
+        dailyActivity: {
+          date: '2023-10-29',
+          activeMembers: ['user1']
+        }
+      } as unknown as Group;
+
+      const referenceDate = new Date('2023-10-29T23:59:59Z');
+      expect(calculateUnityPercentage(group, [], referenceDate)).toBe(100);
+    });
+  });
+
+  it('handles empty groups or groups with no members gracefully', () => {
+    const emptyGroup: Group = {
+      id: 'empty',
+      members: [],
+      memberJoinedAt: {},
+      dailyActivity: { date: '2023-10-28', activeMembers: [] }
+    } as unknown as Group;
+
+    expect(calculateUnityPercentage(emptyGroup)).toBe(0);
+  });
 });

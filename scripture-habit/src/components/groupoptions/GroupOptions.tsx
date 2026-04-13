@@ -85,7 +85,7 @@ const GroupOptions: FC = () => {
                                 customMessage={t('mascot.createGroupPrompt2')}
                             />
                         </div>
-                        <Link to="/group-form" className="option-card create-card">
+                        <Link to="/group-form" className="option-card create-card" data-testid="create-group-card">
                             <div className="icon">✨</div>
                             <h3>{t('groupOptions.createGroupTitle')}</h3>
                             <p>{t('groupOptions.createGroupDesc')}</p>

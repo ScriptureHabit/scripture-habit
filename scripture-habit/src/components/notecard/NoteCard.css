@@ -12,6 +12,11 @@
     position: relative;
     overflow: hidden;
     color: #444;
+    cursor: default;
+}
+
+.note-card.editable {
+    cursor: pointer;
 }
 
 .note-card:hover {

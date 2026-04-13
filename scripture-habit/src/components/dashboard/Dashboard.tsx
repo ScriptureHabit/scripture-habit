@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useRef, FC } from 'react';
+import { useState, useEffect, useRef, FC, useMemo } from 'react';
 import { Navigate, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
@@ -35,6 +35,7 @@ import { useDashboardHabitPace } from './hooks/useDashboardHabitPace';
 import { useDashboardWarnings } from './hooks/useDashboardWarnings';
 import { useDashboardInvitations } from './hooks/useDashboardInvitations';
 import { useDashboardActions } from './hooks/useDashboardActions';
+import { useToday } from '../../hooks/useToday';
 
 const Dashboard: FC = () => {
   const location = useLocation();
@@ -70,6 +71,9 @@ const Dashboard: FC = () => {
   const [showEditProfileModal, setShowEditProfileModal] = useState<boolean>(false);
   const [newNickname, setNewNickname] = useState<string>('');
   const [unityOverrides, setUnityOverrides] = useState<Record<string, number>>({});
+  const today = useToday(); // Triggers re-render at midnight local time
+
+
 
   // 1. Core Hooks
   const syncState = useDashboardSync();
@@ -86,6 +90,15 @@ const Dashboard: FC = () => {
 
   const { isJoiningInvite } = useDashboardInvitations(user, userData, showWelcomeStory, setActiveGroupId, setSelectedView, t);
   const { warnings } = useDashboardWarnings(userData, userGroups);
+
+  const enrichedUserGroups = useMemo(() => {
+    // today is used as a dependency to trigger re-calculation at midnight
+    return userGroups.map(group => ({
+      ...group,
+      unityPercentageOverride: unityOverrides[group.id],
+      _date: today // Explicitly use today to satisfy linter and dependencies
+    }));
+  }, [userGroups, unityOverrides, today]);
   const { showNotifPrompt, handleEnableNotifications, handleCloseNotifPrompt } = useDashboardNotifications(userData, t);
   const { markWelcomeStorySeen, updateNickname } = useDashboardActions(user, userData);
 
@@ -177,10 +190,7 @@ const Dashboard: FC = () => {
   if (status === 'unauthenticated') return <Navigate to="/welcome" replace />;
   if (!userData) return null;
 
-  const enrichedUserGroups = userGroups.map(group => ({
-    ...group,
-    unityPercentageOverride: unityOverrides[group.id]
-  }));
+
 
   const isModalOpen = activeModal === 'newNote';
   const setIsModalOpen = (open: boolean) => setActiveModal(open ? 'newNote' : null);

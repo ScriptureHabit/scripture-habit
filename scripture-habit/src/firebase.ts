@@ -57,12 +57,19 @@ if (typeof window !== 'undefined') {
   }
 }
 
+declare global {
+  interface Window {
+    firebaseAuth?: Auth;
+  }
+}
+
 let auth: Auth | null = null;
 try {
   auth = getAuth(app);
   
   // E2E Test Optimization: Force LocalStorage persistence so Playwright can capture it
   if (typeof window !== 'undefined' && navigator.webdriver && auth) {
+    window.firebaseAuth = auth;
     setPersistence(auth, browserLocalPersistence).catch(err => {
       console.error("Failed to set auth persistence:", err);
     });

@@ -113,7 +113,7 @@ const SidebarGroupItem: React.FC<SidebarGroupItemProps> = ({ group, language, is
         onClick={onClick}
       >
         <span className="status-emoji-sidebar">{getGroupStatusEmoji(group)}</span>
-        <span className={`unity-percentage-sidebar ${getUnityPercentage(group) === 100 ? 'celestial' : ''}`}>
+        <span className={`unity-percentage-sidebar ${getUnityPercentage(group) === 100 ? 'celestial' : ''}`} data-testid="sidebar-unity-percentage">
           {getUnityPercentage(group)}%
         </span>
         <span className="group-name-sidebar-modal">
@@ -129,7 +129,7 @@ const SidebarGroupItem: React.FC<SidebarGroupItemProps> = ({ group, language, is
       onClick={onClick}
     >
       <span className="status-emoji-sidebar">{getGroupStatusEmoji(group)}</span>
-      <span className={`unity-percentage-sidebar ${getUnityPercentage(group) === 100 ? 'celestial' : ''}`}>
+      <span className={`unity-percentage-sidebar ${getUnityPercentage(group) === 100 ? 'celestial' : ''}`} data-testid="sidebar-unity-percentage">
         {getUnityPercentage(group)}%
       </span>
       <span className="group-name-sidebar">{displayName}</span>
@@ -232,7 +232,7 @@ const Sidebar: React.FC<SidebarProps> = ({ selected, setSelected, userGroups = [
             </div>
 
             {userGroups.length < 4 && (
-              <div className="menuItem create-group-item" onClick={() => navigate(`/${language}/group-options`)}>
+              <div className="menuItem create-group-item" onClick={() => navigate(`/${language}/group-options`)} data-testid="sidebar-join-create-group">
                 <UilPlusCircle />
                 <span>{t('sidebar.joinCreateGroup')}</span>
               </div>
@@ -278,7 +278,7 @@ const Sidebar: React.FC<SidebarProps> = ({ selected, setSelected, userGroups = [
               ))}
             </div>
             {userGroups.length < 4 && (
-              <div className="modal-create-group" onClick={() => { navigate(`/${language}/group-options`); setShowGroupModal(false); }}>
+              <div className="modal-create-group" onClick={() => { navigate(`/${language}/group-options`); setShowGroupModal(false); }} data-testid="mobile-join-create-group">
                 <UilPlusCircle />
                 <span>{t('sidebar.joinCreateGroup')}</span>
               </div>

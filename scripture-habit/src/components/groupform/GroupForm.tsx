@@ -104,6 +104,7 @@ export default function GroupForm() {
             value={groupName}
             onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setGroupName(e.target.value)}
             required
+            data-testid="group-name-input"
           />
           <Input
             label={t('groupForm.descriptionLabel')}
@@ -128,7 +129,7 @@ export default function GroupForm() {
             </div>
           </div>
 
-          <Button type="submit" className="create-group-submit-btn">
+          <Button type="submit" className="create-group-submit-btn" data-testid="create-group-submit">
             {t('groupForm.createButton')}
           </Button>
         </form>

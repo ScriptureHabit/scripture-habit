@@ -51,7 +51,7 @@ const InviteModal: FC<InviteModalProps> = ({
                 <div className="leave-modal-content invite-modal" onClick={(e) => e.stopPropagation()}>
                     <div className="modal-header">
                         <h3>{t('groupChat.inviteLink')}</h3>
-                        <button className="close-menu-btn" onClick={() => setShowInviteModal(false)} aria-label={t('common.close') || 'Close'}>
+                        <button className="close-menu-btn" onClick={() => setShowInviteModal(false)} aria-label={t('common.close') || 'Close'} data-testid="close-invite-modal">
                             <UilTimes size="24" />
                         </button>
                     </div>

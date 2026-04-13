@@ -8,6 +8,7 @@ import { Message, GroupData } from '../../../../types/chat';
 import { UserData } from '../../../../types/user';
 
 import { calculateUnityPercentage } from '../../../../utils/unityUtils';
+import { useToday } from '../../../../hooks/useToday';
 
 export const useUnityScore = (
   groupId: string,
@@ -15,10 +16,12 @@ export const useUnityScore = (
   groupData: GroupData | null,
   messages: Message[]
 ): number => {
+  const today = useToday();
   const unityPercentage = useMemo<number>(() => {
-    if (!groupId || !groupData || groupData.id !== groupId) return 0;
-    return calculateUnityPercentage(groupData, messages);
-  }, [messages, groupData, groupId]);
+    // today is used as a dependency to trigger re-calculation at midnight
+    if (!groupId || !groupData || groupData.id !== groupId || !today) return 0;
+    return calculateUnityPercentage(groupData, messages, new Date());
+  }, [messages, groupData, groupId, today]);
 
   useEffect(() => {
     // Only proceed if unity is reached AND user is still a member of this specific group

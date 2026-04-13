@@ -60,9 +60,8 @@ const NoteCard: FC<NoteCardProps> = ({
 
     return (
         <div
-            className={`note-card ${className}`}
+            className={`note-card ${isEditable ? 'editable' : ''} ${className}`}
             onClick={isEditable ? () => onClick && onClick(note) : undefined}
-            style={{ cursor: isEditable ? 'pointer' : 'default' }}
             data-testid="note-card"
         >
             <div className="note-header">

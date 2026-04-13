@@ -34,7 +34,7 @@ export const Skeleton: React.FC<SkeletonProps> = ({
 
 export const DashboardSkeleton: React.FC = () => {
     return (
-        <div className="dashboard-skeleton">
+        <div className="dashboard-skeleton" data-testid="dashboard-skeleton">
             <div className="skeleton-header">
                 <div>
                     <Skeleton width="200px" height="32px" style={{ marginBottom: '10px' }} />
