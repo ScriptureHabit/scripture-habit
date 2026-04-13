@@ -4,7 +4,7 @@ import { admin, db } from '../lib/firebase-admin.js';
 import { MessageService } from './message-service.js';
 import { GroupDocument, MessageDocument, UserDocument } from '../../types/firestore.js';
 
-describe('MessageService Integration Test', () => {
+describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('MessageService Integration Test', () => {
     const TEST_UID = 'cFg1i9IybmfV1la4OekO2jDWE9h1'; // test1
     const TEST_GROUP_ID = 'MSG_SRV_TEST_GRP_001'; // Isolating group ID to prevent parallel test conflicts
 

@@ -40,8 +40,11 @@ if (!admin.apps.length) {
     } else if (process.env.FIRESTORE_EMULATOR_HOST || process.env.NODE_ENV === 'test') {
         // Initialize for Emulator
         try {
+            // For emulator mode, we don't need real credentials. 
+            // Providing a Dummy credential prevents "Could not load default credentials" errors in CI.
             admin.initializeApp({
-                projectId: process.env.GCLOUD_PROJECT || 'scripture-habit-auth'
+                projectId: process.env.GCLOUD_PROJECT || 'scripture-habit-auth',
+                credential: admin.credential.applicationDefault() 
             });
             console.log('Firebase Admin initialized for Emulator/Test Mode');
         } catch (error) {

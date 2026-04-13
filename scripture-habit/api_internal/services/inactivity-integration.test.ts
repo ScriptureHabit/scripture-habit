@@ -8,7 +8,7 @@ import { calculateMemberStatus, InactivityMemberData, InactivityGroupData } from
  * Note: This integration test mimics the logic in api_internal/routes/cron.ts
  * since the route handlers are not exported as functions.
  */
-describe('Inactivity Integration Test (Member Removal)', () => {
+describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Inactivity Integration Test (Member Removal)', () => {
     const TEST_UID = 'cFg1i9IybmfV1la4OekO2jDWE9h1' // test1;
     const TEST_GROUP_ID = 'TEST_INACTIVITY_GROUP_' + Date.now();
 

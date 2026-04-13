@@ -4,7 +4,7 @@ import { admin, db } from '../lib/firebase-admin.js';
 import { NoteService } from './note-service.js';
 import { GroupDocument, UserDocument } from '../../types/firestore.js';
 
-describe('NoteService Multi-Group Integration Test', () => {
+describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('NoteService Multi-Group Integration Test', () => {
     const TEST_UID = 'cFg1i9IybmfV1la4OekO2jDWE9h1'; // test1
     // We'll use 4 group IDs. If they don't exist, the test will fail, 
     // but in this project we can usually find/create them.

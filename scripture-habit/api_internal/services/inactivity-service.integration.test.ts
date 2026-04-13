@@ -8,7 +8,7 @@ import { t } from '../lib/i18n.js';
  * Integration Tests for InactivityService
  * Uses Firebase Emulator via `npm run test:internal`
  */
-describe('InactivityService Integration', () => {
+describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('InactivityService Integration', () => {
     const NOW = new Date();
     const SIX_DAYS_AGO = new Date(NOW.getTime() - 6 * 24 * 60 * 60 * 1000);
     const TWO_DAYS_AGO = new Date(NOW.getTime() - 2 * 24 * 60 * 60 * 1000);

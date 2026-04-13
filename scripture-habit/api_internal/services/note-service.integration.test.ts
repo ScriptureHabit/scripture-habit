@@ -5,7 +5,7 @@ import { NoteService } from './note-service.js';
 import { GroupDocument, UserDocument } from '../../types/firestore.js';
 import { StreakEngine } from '../lib/streak-engine.js';
 
-describe('NoteService Deletion Integration Test', () => {
+describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('NoteService Deletion Integration Test', () => {
     const TEST_UID = 'test-user-delete';
     const GROUP_1 = 'delete-test-group-1';
     const GROUP_2 = 'delete-test-group-2';
