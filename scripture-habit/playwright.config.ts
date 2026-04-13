@@ -73,13 +73,5 @@ export default defineConfig({
       stdout: 'pipe',
       stderr: 'pipe',
     },
-    {
-      command: 'firebase emulators:start --project scripture-habit-auth',
-      url: 'http://localhost:4000',
-      reuseExistingServer: !process.env.CI,
-      stdout: 'pipe',
-      stderr: 'pipe',
-      timeout: 120000,
-    }
   ],
 });
