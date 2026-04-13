@@ -70,8 +70,7 @@ jobs:
         run: |
           npm install --global vercel@latest
           vercel pull --yes --environment=production --token=$VERCEL_TOKEN
-          vercel build --prod --token=$VERCEL_TOKEN --skip-install
-          vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN
+          vercel deploy --prod --token=$VERCEL_TOKEN
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
