@@ -30,7 +30,7 @@ export const useDashboardInvitations = (
                 const idToken = await user.getIdToken();
                 let appCheckToken = '';
                 if (appCheck) {
-                    const appCheckTokenResponse = await getToken(appCheck, false); // Get AppCheck token
+                    const appCheckTokenResponse = await getToken(appCheck!, false); // Get AppCheck token
                     appCheckToken = appCheckTokenResponse.token;
                 }
 
@@ -81,7 +81,7 @@ export const useDashboardInvitations = (
         if (!showWelcomeStory && userData && user) {
             processPendingInvite();
         }
-    }, [user, userData, showWelcomeStory, t]);
+    }, [user, userData, showWelcomeStory, t, isJoiningInvite, setActiveGroupId, setSelectedView]);
 
     return { isJoiningInvite };
 };

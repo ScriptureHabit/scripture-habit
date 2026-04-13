@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef, FC } from 'react';
 import { Navigate, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -23,7 +24,7 @@ import './Dashboard.css';
 // Utils & Stores
 import { useModalStore } from '../../store/useModalStore';
 import { getGospelLibraryUrl } from '../../utils/gospelLibraryMapper';
-import { useLanguage } from '../../context/LanguageContext';
+import { useLanguage } from '../../../hooks/useLanguage';
 import { getTodayReadingPlan } from '../../data/DailyReadingPlan';
 
 // Hooks
@@ -238,3 +239,5 @@ const Dashboard: FC = () => {
 };
 
 export default Dashboard;
+
+

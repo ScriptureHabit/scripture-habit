@@ -1,7 +1,8 @@
+
 import { FC, MouseEvent } from 'react';
 import NoteDisplay from '../notedisplay/NoteDisplay';
 import { getGospelLibraryUrl } from '../../utils/gospelLibraryMapper';
-import { useLanguage } from '../../context/LanguageContext';
+import { useLanguage } from '../../../hooks/useLanguage';
 import { parseTimestampToDate } from '../../utils/timeUtils';
 import './NoteCard.css';
 import { Note } from '../../types/note';
@@ -78,3 +79,5 @@ const NoteCard: FC<NoteCardProps> = ({
 };
 
 export default NoteCard;
+
+

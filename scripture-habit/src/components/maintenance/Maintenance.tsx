@@ -1,5 +1,6 @@
+
 import { FC } from 'react';
-import { useLanguage } from '../../context/LanguageContext';
+import { useLanguage } from '../../../hooks/useLanguage';
 import './Maintenance.css';
 
 interface MaintenanceProps {
@@ -56,3 +57,5 @@ const Maintenance: FC<MaintenanceProps> = ({ isQuota }) => {
 };
 
 export default Maintenance;
+
+

@@ -63,7 +63,7 @@ export const useDashboardActions = (user: User | null, userData: UserData | null
           let appCheckToken = '';
           try {
             if (appCheck) {
-              const appCheckTokenResponse = await getToken(appCheck, false);
+              const appCheckTokenResponse = await getToken(appCheck!, false);
               appCheckToken = appCheckTokenResponse.token;
             }
           } catch (e) {

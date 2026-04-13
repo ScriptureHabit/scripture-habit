@@ -1,5 +1,6 @@
+
 import React from 'react';
-import { useLanguage } from '../../context/LanguageContext';
+import { useLanguage } from '../../../hooks/useLanguage';
 import BrowserWarningModal from './BrowserWarningModal';
 
 interface BrowserWarningWrapperProps {
@@ -20,3 +21,5 @@ const BrowserWarningWrapper: React.FC<BrowserWarningWrapperProps> = ({ isOpen, o
 };
 
 export default BrowserWarningWrapper;
+
+

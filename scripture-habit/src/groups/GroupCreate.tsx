@@ -1,8 +1,9 @@
+
 import React, { useState, useCallback, useMemo } from 'react';
 import { getFirestore, collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { app } from '../firebase';
 import { toast } from 'react-toastify';
-import { useLanguage } from '../context/LanguageContext';
+import { useLanguage } from '../../hooks/useLanguage';
 import './GroupCreate.css';
 
 interface UserInfo {
@@ -116,3 +117,5 @@ export default function GroupCreate({ currentUser, onCreated }: GroupCreateProps
     </div>
   );
 }
+
+

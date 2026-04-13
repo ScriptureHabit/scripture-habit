@@ -1,6 +1,7 @@
+
 import { useEffect, FC } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useLanguage } from '../../context/LanguageContext';
+import { useLanguage } from '../../../hooks/useLanguage';
 import './TermsOfService.css';
 
 const TermsOfService: FC = () => {
@@ -62,3 +63,5 @@ const TermsOfService: FC = () => {
 };
 
 export default TermsOfService;
+
+

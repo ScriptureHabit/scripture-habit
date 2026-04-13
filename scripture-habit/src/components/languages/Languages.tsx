@@ -1,6 +1,7 @@
+
 import { FC } from 'react';
 import './Languages.css';
-import { useLanguage } from '../../context/LanguageContext';
+import { useLanguage } from '../../../hooks/useLanguage';
 
 const Languages: FC = () => {
     const { language, setLanguage, t } = useLanguage();
@@ -90,3 +91,5 @@ const Languages: FC = () => {
 };
 
 export default Languages;
+
+

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import { test as base, Page } from '@playwright/test';
 
 type AuthFixtures = {
@@ -7,7 +8,7 @@ type AuthFixtures = {
 
 export const test = base.extend<AuthFixtures>({
   // Provide a unique email for each test to ensure fresh state
-  uniqueEmail: async ({}, use) => {
+  uniqueEmail: async (_, use) => {
     await use(`test-${Date.now()}@example.com`);
   },
 

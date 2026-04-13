@@ -186,7 +186,9 @@ const useMessageStreamSync = (groupId: string | null, userData: UserData | null,
             bundlePromise,
             new Promise(resolve => setTimeout(resolve, 800))
           ]);
-        } catch (e) {}
+        } catch {
+          // Promise.race might fail if both fail, which is fine
+        }
       }
       
       if (!isCancelled) startListener();

@@ -1,3 +1,4 @@
+
 import './GroupForm.css';
 import React, { useState } from "react";
 import { auth, db } from '../../firebase';
@@ -7,7 +8,7 @@ import Input from '../input/Input';
 import Button from '../button/Button';
 import Toggle from '../input/Toggle';
 import { toast } from "react-toastify";
-import { useLanguage } from '../../context/LanguageContext';
+import { useLanguage } from '../../../hooks/useLanguage';
 import Mascot from '../mascot/Mascot';
 import { generateInviteCode } from '../../utils/inviteUtils';
 
@@ -145,3 +146,5 @@ export default function GroupForm() {
     </div>
   );
 }
+
+

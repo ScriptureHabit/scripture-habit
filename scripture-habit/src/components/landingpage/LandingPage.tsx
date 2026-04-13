@@ -1,6 +1,7 @@
+
 import { useState, FC } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useLanguage, Language } from '../../context/LanguageContext';
+import { useLanguage } from '../../../hooks/useLanguage';
 import Button from '../button/Button';
 import './LandingPage.css';
 import Footer from '../footer/Footer';
@@ -211,3 +212,5 @@ const LandingPage: FC = () => {
 };
 
 export default LandingPage;
+
+

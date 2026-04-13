@@ -24,9 +24,10 @@ const reducer = (state: GroupChatLocalState, action: GroupChatLocalAction): Grou
       return { ...state, membersLoading: action.payload };
     case 'SET_SHOW_MOBILE_MENU':
       return { ...state, showMobileMenu: action.payload };
-    case 'SET_MEMBERS_LIST':
+    case 'SET_MEMBERS_LIST': {
       const nextList = typeof action.payload === 'function' ? action.payload(state.membersList) : action.payload;
       return { ...state, membersList: nextList };
+    }
     default:
       return state;
   }

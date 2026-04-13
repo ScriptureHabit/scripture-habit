@@ -1,6 +1,6 @@
 import { FC, useRef, useLayoutEffect, useState, useEffect } from 'react';
 import GroupChatMessageList from './GroupChatMessageList';
-import { useChatData, useChatUIActions } from '../ChatContext';
+import { useChatData, useChatUIActions } from '../hooks/useChatContext';
 
 const GroupChatMessageListContainer: FC = () => {
   const { messages, loading } = useChatData();
@@ -81,3 +81,4 @@ const GroupChatMessageListContainer: FC = () => {
 };
 
 export default GroupChatMessageListContainer;
+

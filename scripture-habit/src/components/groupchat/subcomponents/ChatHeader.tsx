@@ -5,7 +5,7 @@ import {
   useChatData, 
   useChatGroupActions, 
   useChatUIActions 
-} from '../ChatContext';
+} from '../hooks/useChatContext';
 import { useChatStore } from '../../../store/useChatStore';
 import { useModalStore } from '../../../store/useModalStore';
 import { Group } from '../../../types/chat';
@@ -260,3 +260,4 @@ const ChatHeader: FC = () => {
 };
 
 export default ChatHeader;
+

@@ -1,7 +1,8 @@
+
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import NoteDisplay from './NoteDisplay';
-import { useLanguage } from '../../context/LanguageContext';
+import { useLanguage } from '../../../hooks/useLanguage';
 
 // Mock LanguageContext
 vi.mock('../../context/LanguageContext', () => ({
@@ -90,3 +91,5 @@ describe('NoteDisplay', () => {
         expect(screen.getByText('Great talk')).toBeDefined();
     });
 });
+
+

@@ -1,3 +1,4 @@
+
 import React, { useState, FC } from 'react';
 import './LoginForm.css';
 import Button from '../button/Button';
@@ -8,7 +9,7 @@ import { Capacitor } from '@capacitor/core';
 import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
 import { doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
 import { useNavigate, Link } from 'react-router-dom';
-import { useLanguage } from '../../context/LanguageContext';
+import { useLanguage } from '../../../hooks/useLanguage';
 import { UilGoogle, UilGithub } from '@iconscout/react-unicons';
 import { toast } from 'react-toastify';
 import Footer from '../footer/Footer';
@@ -274,3 +275,5 @@ const LoginForm: FC = () => {
 }
 
 export default LoginForm;
+
+

@@ -43,6 +43,7 @@ export const useUrlMetadata = (
     const [data, setData] = useState<UrlMetadata | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<Error | null>(null);
+    const currentUserUid = auth?.currentUser?.uid;
 
     useEffect(() => {
         if (!urlOrSlug || !language) return;
@@ -159,7 +160,7 @@ export const useUrlMetadata = (
         fetchMetadata();
         return () => { active = false; };
 
-    }, [urlOrSlug, language, auth?.currentUser?.uid]);
+    }, [urlOrSlug, language, currentUserUid]);
 
 
     return { data, loading, error };

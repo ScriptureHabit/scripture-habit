@@ -81,15 +81,12 @@ export const useScrollManager = (
             prevMessageCountRef.current = messages.length;
         }, 500);
       };
-
-      // Initial immediate attempt
+      
       performInitialScroll();
-
-      // Slightly delayed second attempt to handle mobile layout timing shifts
       const timer = setTimeout(performInitialScroll, 150);
       return () => clearTimeout(timer);
     }
-  }, [messages, userReadCount, loading, initialScrollDone, groupId, userData?.uid]);
+  }, [messages, userReadCount, loading, initialScrollDone, groupId, userData?.uid, setInitialScrollDone, prevMessageCountRef]);
 
   useEffect(() => {
     if (!initialScrollDone || messages.length === 0) return;
@@ -105,7 +102,7 @@ export const useScrollManager = (
     
     prevMessageCountRef.current = messages.length;
     latestMessageRef.current = lastMsg;
-  }, [messages, initialScrollDone]);
+  }, [messages, initialScrollDone, prevMessageCountRef, latestMessageRef]);
 
   useLayoutEffect(() => {
     if (previousScrollHeightRef.current > 0 && containerRef.current) {

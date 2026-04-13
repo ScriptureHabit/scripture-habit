@@ -1,3 +1,4 @@
+
 import { useState, FC } from 'react';
 import { UilBookOpen, UilSearchAlt, UilAnalysis, UilEnvelope, UilAngleLeft, UilAngleRight } from '@iconscout/react-unicons';
 import NewNote from '../newnote/NewNote';
@@ -6,7 +7,7 @@ import RecapModal from '../recapmodal/RecapModal';
 import LetterBox from '../letterbox/LetterBox';
 import { toast } from 'react-toastify';
 import './MyNotes.css';
-import { useLanguage } from '../../context/LanguageContext';
+import { useLanguage } from '../../../hooks/useLanguage';
 import NoteDetailModal from './NoteDetailModal';
 import Mascot from '../mascot/Mascot';
 import { NoteGridSkeleton } from '../skeleton/Skeleton';
@@ -275,3 +276,5 @@ const MyNotes: FC<MyNotesProps> = ({ userData, isModalOpen, setIsModalOpen, user
 };
 
 export default MyNotes;
+
+

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback, Dispatch } from 'react';
+import { useEffect, useRef, useCallback, Dispatch, useMemo } from 'react';
 import { collection, query, orderBy, getDocs, limit, startAfter, doc, onSnapshot } from 'firebase/firestore';
 import { Message, GroupData } from '../../../../types/chat';
 import { db, auth } from '../../../../firebase';
@@ -54,7 +54,7 @@ export const useChatSyncController = (
     if (hasNewContent && isAppActive) {
       updateReadStatus(groupId, totalMsgs);
     }
-  }, [groupId, groupData?.messageCount, messages.length, userReadCount, updateReadStatus, isViewActive]);
+  }, [groupId, groupData, messages.length, userReadCount, updateReadStatus, isViewActive]);
 
   // Background listener for the source-of-truth read count from Firestore
   useEffect(() => {
@@ -120,10 +120,10 @@ export const useChatSyncController = (
     }
   }, [groupId, messages, dispatch]);
 
-  return {
+  return useMemo(() => ({
     fetchOlderMessages,
     currentGroupIdRef,
     prevMessageCountRef,
     latestMessageRef
-  };
+  }), [fetchOlderMessages]);
 };

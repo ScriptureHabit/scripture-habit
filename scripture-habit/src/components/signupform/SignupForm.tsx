@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import Button from '../button/Button';
 import { auth, db } from '../../firebase';
@@ -8,7 +9,7 @@ import { doc, setDoc, getDoc, Timestamp } from 'firebase/firestore';
 import { useNavigate, Link } from 'react-router-dom';
 import Input from '../input/Input';
 import './SignupForm.css'
-import { useLanguage } from '../../context/LanguageContext';
+import { useLanguage } from '../../../hooks/useLanguage';
 import { UilGoogle, UilGithub } from '@iconscout/react-unicons';
 import { toast } from 'react-toastify';
 import Footer from '../footer/Footer';
@@ -265,3 +266,5 @@ export default function SignupForm() {
     </div>
   );
 }
+
+

@@ -31,7 +31,7 @@ export class StreakEngine {
         options: { now: Date; clientTimeZone?: string | null }
     ): StreakResult {
         const { now } = options;
-        let { streakCount, highestStreak, lastPostDate, lastPostAt, timeZone } = currentState;
+        const { streakCount, highestStreak, lastPostDate, lastPostAt, timeZone } = currentState;
 
         // Use client timezone if user has none, else fallback to UTC
         const effectiveTimeZone = timeZone || 'UTC';

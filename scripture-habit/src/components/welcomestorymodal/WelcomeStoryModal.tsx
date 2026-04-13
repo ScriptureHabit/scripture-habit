@@ -1,6 +1,7 @@
+
 import { useState, useEffect, FC } from 'react';
 import './WelcomeStoryModal.css';
-import { useLanguage } from '../../context/LanguageContext';
+import { useLanguage } from '../../../hooks/useLanguage';
 import { UilTimes, UilCheck } from '@iconscout/react-unicons';
 import confetti from 'canvas-confetti';
 import { UserData } from '../../types/user';
@@ -143,3 +144,5 @@ const WelcomeStoryModal: FC<WelcomeStoryModalProps> = ({ isOpen, onClose, userDa
 };
 
 export default WelcomeStoryModal;
+
+

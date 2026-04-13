@@ -1,8 +1,9 @@
+
 import { FC, ReactNode, useMemo, useEffect } from 'react';
 import { Capacitor } from '@capacitor/core';
-import { useLanguage } from '../../context/LanguageContext';
+import { useLanguage } from '../../hooks/useLanguage';
+import { ChatProvider } from './ChatProvider';
 import { 
-  ChatProvider, 
   ChatDataContextType, 
   ChatMessageActionsContextType, 
   ChatGroupActionsContextType, 
@@ -154,7 +155,7 @@ const GroupChatProvider: FC<GroupChatProviderProps> = ({
     t, tArray, scrollToBottom, handleScroll, dispatch, closeContextMenu,
     onBack, onGroupSelect, onInputFocusChange, hasMoreOlder, isLoadingOlder, loadMoreOlderMessages,
     textareaRef, containerRef, contextMenuRef, previousScrollHeightRef, previousScrollTopRef
-  }), [t, tArray, scrollToBottom, handleScroll, dispatch, closeContextMenu, onBack, onGroupSelect, onInputFocusChange, hasMoreOlder, isLoadingOlder, loadMoreOlderMessages, containerRef, contextMenuRef, previousScrollHeightRef, previousScrollTopRef]);
+  }), [t, tArray, scrollToBottom, handleScroll, dispatch, closeContextMenu, onBack, onGroupSelect, onInputFocusChange, hasMoreOlder, isLoadingOlder, loadMoreOlderMessages, textareaRef, containerRef, contextMenuRef, previousScrollHeightRef, previousScrollTopRef]);
 
   if (groupNotFound && onBack) {
     onBack();
@@ -176,3 +177,5 @@ const GroupChatProvider: FC<GroupChatProviderProps> = ({
 };
 
 export default GroupChatProvider;
+
+

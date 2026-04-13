@@ -97,7 +97,7 @@ export const requestNotificationPermission = async (
                            await updateDoc(userRef, {
                                fcmTokens: arrayRemove(token)
                            });
-                        } catch (e: unknown) {
+                        } catch {
                            // Ignore if field doesn't exist
                         }
                     }
@@ -172,7 +172,9 @@ export const disableNotifications = async (userId: string | null | undefined): P
                     await updateDoc(userRef, {
                         fcmTokens: arrayRemove(token)
                     });
-                } catch(e) {}
+                } catch {
+                    // Ignore if field cleanup fails
+                }
             }
         }
         // Also try to delete the token from local storage/FCM

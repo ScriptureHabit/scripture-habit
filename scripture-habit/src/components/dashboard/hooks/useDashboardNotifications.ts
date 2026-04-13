@@ -23,7 +23,7 @@ export const useDashboardNotifications = (
             }
         }, 5000);
         return () => clearTimeout(timer);
-    }, [userData?.uid]);
+    }, [userData]);
 
     const handleEnableNotifications = async () => {
         setShowNotifPrompt(false);

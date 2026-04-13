@@ -207,7 +207,7 @@ describe('Inactivity Utils', () => {
                         fc.integer({ min: 0, max: 4 }), // which timestamp to make recent
                         fc.integer({ min: 0, max: 1 }), // how many days ago it was (strictly less than min threshold)
                         (now, thresholdDays, index, recentDays) => {
-                            const timestamps: Record<string, any> = {};
+                            const timestamps: Record<string, Date> = {};
                             const keys = ['joinedAt', 'lastNoteAt', 'lastPostAt', 'lastReadAt', 'lastActiveAt'];
                             
                             keys.forEach((key, i) => {

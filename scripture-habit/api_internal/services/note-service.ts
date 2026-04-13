@@ -274,8 +274,14 @@ export class NoteService {
                 userToGroupMapEntries: result.userToGroupEntries
             });
 
-            const { userToGroupEntries: _, ...publicResult } = result;
-            return publicResult;
+            return {
+                personalNoteId: result.personalNoteId,
+                sharedMessageIds: result.sharedMessageIds,
+                newStreak: result.newStreak,
+                streakUpdated: result.streakUpdated,
+                nickname: result.nickname
+            };
+
         } catch (error) {
             console.error('[NoteService] PostNote Transaction Error:', error);
             throw error;

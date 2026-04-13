@@ -8,6 +8,7 @@ import { auth } from '../../../firebase';
 export const useUrlMetaFetcher = (chapter: string, scripture: string, language: string = 'en') => {
     const [urlMeta, setUrlMeta] = useState<{ title: string; speaker?: string } | null>(null);
     const [urlLoading, setUrlLoading] = useState(false);
+    const currentUserUid = auth?.currentUser?.uid;
 
     useEffect(() => {
         const fetchUrlMeta = async () => {
@@ -52,7 +53,7 @@ export const useUrlMetaFetcher = (chapter: string, scripture: string, language: 
 
         const timer = setTimeout(fetchUrlMeta, 500);
         return () => clearTimeout(timer);
-    }, [chapter, scripture, language, auth?.currentUser?.uid]);
+    }, [chapter, scripture, language, currentUserUid]);
 
     return { urlMeta, urlLoading };
 };

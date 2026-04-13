@@ -1,6 +1,7 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useLanguage } from '../../context/LanguageContext';
+import { useLanguage } from '../../../hooks/useLanguage';
 import './Footer.css';
 
 const Footer: React.FC = () => {
@@ -32,3 +33,5 @@ const Footer: React.FC = () => {
 };
 
 export default Footer;
+
+

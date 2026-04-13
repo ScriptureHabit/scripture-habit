@@ -1,6 +1,8 @@
+
+import { SUPPORTED_LANGUAGES } from '../../../config/languages';
 import React from 'react';
 import { Navigate, Location } from 'react-router-dom';
-import { useLanguage, SUPPORTED_LANGUAGES } from '../../context/LanguageContext';
+import { useLanguage } from '../../../hooks/useLanguage';
 
 interface LanguageRedirectProps {
   location: Location;
@@ -33,3 +35,5 @@ const LanguageRedirect: React.FC<LanguageRedirectProps> = ({ location }) => {
 };
 
 export default LanguageRedirect;
+
+

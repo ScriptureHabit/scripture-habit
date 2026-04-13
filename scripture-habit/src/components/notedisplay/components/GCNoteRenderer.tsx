@@ -123,8 +123,8 @@ const GCNoteRenderer: FC<GCNoteRendererProps> = ({
             <div className="note-markdown">
                 <ReactMarkdown 
                     components={{
-                        a: ({ node, ...p }) => <a {...p} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} />,
-                        p: ({ node, ...p }) => <p {...p} />
+                        a: ({ ...p }) => <a {...p} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} />,
+                        p: ({ ...p }) => <p {...p} />
                     }}
                 >
                     {constructedMd}

@@ -1,9 +1,10 @@
+
 import { useState, useEffect, FC } from 'react';
 import { UilTimes, UilPen, UilTrashAlt, UilComment, UilThumbsUp } from '@iconscout/react-unicons';
 import { db } from '../../firebase';
 import { doc, collection, query, where, onSnapshot, Timestamp } from 'firebase/firestore';
 import NoteDisplay from '../notedisplay/NoteDisplay';
-import { useLanguage } from '../../context/LanguageContext';
+import { useLanguage } from '../../../hooks/useLanguage';
 import './NoteDetailModal.css';
 import { Note } from '../../types/note';
 import { Group, Message, FirebaseTimestamp } from '../../types/chat';
@@ -265,3 +266,5 @@ const SharedGroupSection: FC<SharedGroupSectionProps> = ({ groupId, messageId, g
 };
 
 export default NoteDetailModal;
+
+

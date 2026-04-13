@@ -1,7 +1,8 @@
+
 import { useState, useEffect, FC } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './GroupOptions.css';
-import { useLanguage } from '../../context/LanguageContext';
+import { useLanguage } from '../../../hooks/useLanguage';
 import { auth, db } from '../../firebase';
 import { doc, onSnapshot, updateDoc } from 'firebase/firestore';
 import { onAuthStateChanged, User } from 'firebase/auth';
@@ -122,3 +123,5 @@ const GroupOptions: FC = () => {
 };
 
 export default GroupOptions;
+
+

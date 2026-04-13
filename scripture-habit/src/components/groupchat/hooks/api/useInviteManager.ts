@@ -17,7 +17,7 @@ export const useInviteManager = (
     try {
       await navigator.clipboard.writeText(inviteLink);
       toast.success(t('groupChat.inviteLinkCopied'));
-    } catch (err) {
+    } catch {
       toast.error("Failed to copy link");
     }
   };

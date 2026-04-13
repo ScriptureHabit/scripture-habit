@@ -1,37 +1,11 @@
-import { Routes, Route, useLocation, useNavigate, Navigate } from 'react-router-dom';
+import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 import { useEffect, useState } from 'react';
 import { useApiWarmup } from './hooks/useApiWarmup';
 
-const ErrorFallback = ({ error, resetError }: { error: Error; resetError: () => void }) => {
-  const navigate = useNavigate();
-
-  return (
-    <div className="App error-fallback-container">
-      <div className="error-fallback-emoji">🙏</div>
-      <h1 className="error-fallback-title">Something went wrong</h1>
-      <p className="error-fallback-p">
-        We apologize for the inconvenience. A report has been sent to our team, and we are working to fix this.
-      </p>
-      <button
-        onClick={() => {
-          resetError();
-          navigate('/dashboard');
-        }}
-        className="error-fallback-button"
-      >
-        Reload Application
-      </button>
-      {import.meta.env.MODE === 'development' && (
-        <pre className="error-fallback-pre">
-          {error.toString()}
-        </pre>
-      )}
-    </div>
-  );
-};
+import { ErrorFallback } from './components/common/ErrorFallback';
 import { useQuery } from '@tanstack/react-query';
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
@@ -42,7 +16,8 @@ import { FirebaseError } from 'firebase/app';
 import SignupForm from './components/signupform/SignupForm';
 import LoginForm from './components/loginform/LoginForm';
 import Dashboard from './components/dashboard/Dashboard';
-import { useAuth } from './context/AuthContext';
+import { useAuth } from './hooks/useAuth';
+
 import GroupForm from './components/groupform/GroupForm';
 import JoinGroup from './components/joingroup/JoinGroup';
 import GroupDetails from "./components/groupdetails/GroupDetails";
@@ -61,7 +36,8 @@ import CookieConsent from './components/cookieconsent/CookieConsent';
 import PrivacyPolicy from './components/privacypolicy/PrivacyPolicy';
 import TermsOfService from './components/termsofservice/TermsOfService';
 import LegalDisclosure from './components/legaldisclosure/LegalDisclosure';
-import { LanguageProvider, SUPPORTED_LANGUAGES } from './context/LanguageContext';
+import { LanguageProvider } from './context/LanguageProvider';
+import { SUPPORTED_LANGUAGES } from './config/languages';
 import { SettingsProvider } from './context/SettingsContext';
 import SEOManager from './components/SEOManager';
 import PWAUpdateHandler from './components/pwaupdatehandler/PWAUpdateHandler';
@@ -231,8 +207,13 @@ const App: React.FC = () => {
   );
 };
 
-export default Sentry.withErrorBoundary(App, {
+const AppWithErrorBoundary = Sentry.withErrorBoundary(App, {
   fallback: ({ error, resetError }) => (
     <ErrorFallback error={error as Error} resetError={resetError} />
   ),
 });
+
+AppWithErrorBoundary.displayName = 'AppWithErrorBoundary';
+
+export default AppWithErrorBoundary;
+

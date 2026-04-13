@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useCallback } from 'react';
 import { useChatDataEngine } from './useChatDataEngine';
 import { useChatSyncController } from './useChatSyncController';
 import { useChatVisualEffects } from '../view/useChatVisualEffects';
@@ -35,7 +35,7 @@ export const useGroupMessages = (
   useChatVisualEffects(state.messages, userData);
 
   // 4. UI-Bridge Actions (Scroll management bridge)
-  const loadMoreOlderMessages = async (
+  const loadMoreOlderMessages = useCallback(async (
     containerRef: React.RefObject<HTMLDivElement | null>, 
     previousScrollHeightRef: React.MutableRefObject<number>, 
     previousScrollTopRef: React.MutableRefObject<number>
@@ -48,7 +48,7 @@ export const useGroupMessages = (
 
     // Call controller logic
     await controller.fetchOlderMessages();
-  };
+  }, [controller]);
 
   // Combine state and controller actions for a unified interface
   const combinedSync = useMemo(() => ({

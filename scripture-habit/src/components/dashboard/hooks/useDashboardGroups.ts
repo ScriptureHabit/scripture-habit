@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { doc, onSnapshot, collection, query, where } from 'firebase/firestore';
 import { db } from '../../../firebase';
 import { UserData } from '../../../types/user';
@@ -9,18 +9,19 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
     const [rawUserGroups, setRawUserGroups] = useState<Group[]>([]);
     const [activeGroupId, setActiveGroupId] = useState<string | null>(initialGroupId);
 
-    const groupIds: string[] = userData?.groupIds || (userData?.groupId ? [userData.groupId] : []);
-    const groupIdsKey = JSON.stringify([...groupIds].sort());
+    const groupIds = useMemo(() => {
+        return userData?.groupIds || (userData?.groupId ? [userData.groupId] : []);
+    }, [userData?.groupIds, userData?.groupId]);
+
+    const groupIdsKey = useMemo(() => {
+        return JSON.stringify([...groupIds].sort());
+    }, [groupIds]);
 
     // Fetch user groups details
     useEffect(() => {
         if (!userData?.uid || groupIds.length === 0) {
             setRawUserGroups([]);
             return;
-        }
-
-        if (!activeGroupId && groupIds.length > 0) {
-            setActiveGroupId(groupIds[0]);
         }
 
         const unsubscribers: (() => void)[] = [];
@@ -75,7 +76,15 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
         });
 
         return () => unsubscribers.forEach(unsub => unsub());
-    }, [userData?.uid, groupIdsKey]);
+    }, [userData?.uid, groupIds, groupIdsKey]);
+
+    // Initialize active group
+    useEffect(() => {
+        if (!userData?.uid) return;
+        if (!activeGroupId && groupIds.length > 0) {
+            setActiveGroupId(groupIds[0]);
+        }
+    }, [activeGroupId, groupIds, userData?.uid]);
 
     // Construct userGroups (Force unreadCount to 0)
     const [userGroups, setUserGroups] = useState<Group[]>([]);
@@ -98,7 +107,7 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
                 setActiveGroupId(userGroups[0].id);
             }
         }
-    }, [userGroups, userData, activeGroupId]);
+    }, [userGroups, userData, activeGroupId, setActiveGroupId]);
 
     return { userGroups, activeGroupId, setActiveGroupId };
 };

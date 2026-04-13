@@ -1,6 +1,7 @@
+
 import React, { useMemo } from 'react';
 import './Mascot.css';
-import { useLanguage } from '../../context/LanguageContext';
+import { useLanguage } from '../../../hooks/useLanguage';
 import { UserData } from '../../types/user';
 
 interface MascotProps {
@@ -78,3 +79,5 @@ const Mascot: React.FC<MascotProps> = ({ userData, onClick, customMessage = null
 };
 
 export default Mascot;
+
+

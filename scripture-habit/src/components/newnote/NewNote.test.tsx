@@ -1,7 +1,8 @@
+
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import NewNote from './NewNote';
-import { useLanguage } from '../../context/LanguageContext';
+import { useLanguage } from '../../../hooks/useLanguage';
 import { UserData } from '../../types/user';
 import { Note } from '../../types/note';
 import { ScriptureCategory } from '../../types/scripture';
@@ -119,3 +120,5 @@ describe('NewNote', () => {
         expect(screen.getByDisplayValue('Faith is like a seed')).toBeDefined();
     });
 });
+
+

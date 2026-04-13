@@ -1,17 +1,12 @@
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+/// <reference types="vite/client" />
+import React, { useEffect, useState, ReactNode } from 'react';
 import { User, onAuthStateChanged } from 'firebase/auth';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 import { UserData } from '../types/user';
 
-interface AuthContextType {
-  user: User | null;
-  userData: UserData | null;
-  loading: boolean;
-  error: Error | null;
-}
+import { AuthContext } from './AuthContext';
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -79,10 +74,4 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   );
 };
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-};
+

@@ -1,6 +1,7 @@
+
 import React from 'react';
 import './Donate.css';
-import { useLanguage } from '../../context/LanguageContext';
+import { useLanguage } from '../../../hooks/useLanguage';
 import Mascot from '../mascot/Mascot';
 
 import { UserData } from '../../types/user';
@@ -45,3 +46,5 @@ const Donate: React.FC<DonateProps> = ({ userData }) => {
 };
 
 export default Donate;
+
+

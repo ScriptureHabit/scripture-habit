@@ -98,8 +98,10 @@ export const useMessageActions = (
           apiClient.post('/api/update-read-status', {
             groupId,
             readMessageCount: response.data.totalCount || 0 // Assuming backend returns the new total
-          }).catch(() => {}); // Silently fail if just sync
-        } catch (e) {}
+          });
+        } catch {
+          // Ignore errors for non-critical notification sync
+        }
       }
 
       return true;

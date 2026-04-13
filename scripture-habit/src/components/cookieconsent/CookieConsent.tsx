@@ -1,7 +1,8 @@
+
 import { FC, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { safeStorage } from '../../utils/storage';
-import { useLanguage } from '../../context/LanguageContext';
+import { useLanguage } from '../../../hooks/useLanguage';
 import './CookieConsent.css';
 
 const CookieConsent: FC = () => {
@@ -55,3 +56,5 @@ const CookieConsent: FC = () => {
 };
 
 export default CookieConsent;
+
+

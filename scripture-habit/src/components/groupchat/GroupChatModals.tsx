@@ -8,6 +8,7 @@ import {
 } from './ChatContext';
 import { useChatStore } from '../../store/useChatStore';
 import { useModalStore } from '../../store/useModalStore';
+import { UserProfile } from '../../types/chat';
 
 // Sub-modal components
 import LeaveGroupModal from './modals/LeaveGroupModal';
@@ -190,7 +191,7 @@ const GroupChatModals: FC = () => {
 
             {selectedMember && (
                 <UserProfileModal
-                    user={selectedMember as any}
+                    user={selectedMember as unknown as UserProfile}
                     onClose={() => setSelectedMember(null)}
                 />
             )}

@@ -1,10 +1,11 @@
+
 import React, { useState, useEffect, FC } from 'react';
 import { db } from '../../firebase';
 import { collection, query, orderBy, onSnapshot, doc, deleteDoc } from 'firebase/firestore';
 import { UilEnvelope, UilTrashAlt, UilTimes } from '@iconscout/react-unicons';
 import ReactMarkdown from 'react-markdown';
 import './LetterBox.css';
-import { useLanguage } from '../../context/LanguageContext';
+import { useLanguage } from '../../../hooks/useLanguage';
 import { UserData } from '../../types/user';
 import ConfirmModal from '../confirmmodal/ConfirmModal';
 
@@ -148,3 +149,5 @@ const LetterBox: FC<LetterBoxProps> = ({ isOpen, onClose, userData }) => {
 };
 
 export default LetterBox;
+
+

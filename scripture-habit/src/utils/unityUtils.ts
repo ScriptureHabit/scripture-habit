@@ -28,7 +28,7 @@ export const calculateUnityPercentage = (
           timeZone: groupTimeZone,
           year: 'numeric', month: '2-digit', day: '2-digit'
       }).format(now);
-  } catch (e) {
+  } catch {
       console.warn(`[UnityUtils] Invalid timezone ${groupTimeZone}, falling back to UTC`);
       todayStr = new Intl.DateTimeFormat('sv-SE', { 
           timeZone: 'UTC',

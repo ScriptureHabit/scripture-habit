@@ -120,7 +120,7 @@ export interface UserDocument {
 
     // Study & Streak Tracking
     lastPostAt?: FirestoreTimestamp | null;
-    streak?: any; // Legacy field
+    streak?: unknown; // Legacy field
     daysStudiedCount?: number;
     lastPostDate?: string | null;
     highestStreak?: number;

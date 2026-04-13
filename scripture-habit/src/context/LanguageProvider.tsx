@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useEffect, ReactNode, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, ReactNode, useCallback, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { safeStorage } from '../utils/storage';
 import { loadTranslations, loadBookTranslations } from '../locales/i18n';
@@ -10,28 +10,8 @@ import enBooksRaw from '../locales/books/en';
 
 const enBooks = enBooksRaw as Record<string, string>;
 
-export type Language = 'en' | 'ja' | 'pt' | 'zho' | 'es' | 'vi' | 'th' | 'ko' | 'tl' | 'sw';
-
-export type TranslationValue = string | string[] | NestedTranslations;
-export interface NestedTranslations {
-    [key: string]: TranslationValue;
-}
-
-export const SUPPORTED_LANGUAGES: Language[] = ['en', 'ja', 'pt', 'zho', 'es', 'vi', 'th', 'ko', 'tl', 'sw'];
-const DEFAULT_LANGUAGE: Language = 'en';
-
-interface LanguageContextType {
-    language: Language;
-    setLanguage: (newLanguage: Language) => void;
-    t: (key: string, replacements?: Record<string, string | number>) => string;
-    tArray: (key: string) => string[];
-    isLoaded: boolean;
-    translateBookName: (bookName: string | null | undefined) => string;
-    translateChapterField: (chapterText: string | null | undefined) => string;
-    bookTranslations: Record<string, string>;
-}
-
-const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
+import { Language, TranslationValue, NestedTranslations, SUPPORTED_LANGUAGES, DEFAULT_LANGUAGE } from '../config/languages';
+import { LanguageContext } from './LanguageContext';
 
 // --- Helpers ---
 
@@ -301,13 +281,5 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
             {children}
         </LanguageContext.Provider>
     );
-};
-
-export const useLanguage = () => {
-    const context = useContext(LanguageContext);
-    if (!context) {
-        throw new Error('useLanguage must be used within a LanguageProvider');
-    }
-    return context;
 };
 

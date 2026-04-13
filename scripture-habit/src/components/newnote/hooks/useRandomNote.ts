@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { getTodayReadingPlan } from '../../../data/DailyReadingPlan';
 import { AdversityScriptures } from '../../../data/AdversityScriptures';
 import { JoyScriptures } from '../../../data/JoyScriptures';
@@ -22,7 +22,7 @@ export const useRandomNote = (
     const [showRandomMenu, setShowRandomMenu] = useState(false);
     const [showSelectionModal, setShowSelectionModal] = useState(false);
 
-    const availableReadingPlanScripts = getTodayReadingPlan()?.scripts || [];
+    const availableReadingPlanScripts = useMemo(() => getTodayReadingPlan()?.scripts || [], []);
 
     const pickAndFill = useCallback((random: RandomScripture) => {
         let finalChapter = random.chapter;

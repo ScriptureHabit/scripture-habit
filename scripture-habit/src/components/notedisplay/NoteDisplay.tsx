@@ -1,6 +1,7 @@
+
 import { FC, useState, useEffect, useRef, useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { useLanguage } from '../../context/LanguageContext';
+import { useLanguage } from '../../../hooks/useLanguage';
 import { useNoteParser } from './hooks/useNoteParser';
 import GCNoteRenderer from './components/GCNoteRenderer';
 import { getNoteLabelFallback, translateScriptureName, isPlaceholderValue } from './utils/noteTranslations';
@@ -46,26 +47,6 @@ const NoteDisplay: FC<NoteDisplayProps> = ({
     const scripLower = (parsed.scriptureValue || '').toLowerCase();
     const isSpecialSource = scripLower.includes('general') || scripLower.includes('総大会') || scripLower.includes('byu') || scripLower.includes('other') || scripLower.includes('その他') || parsed.scriptureValue === '';
 
-    if (parsed.isOriginalStructured && parsed.primaryUrl && isSpecialSource) {
-        return (
-            <GCNoteRenderer
-                scriptureValue={scripture || parsed.scriptureValue}
-                comment={parsed.comment}
-                url={chapter || parsed.primaryUrl || ''}
-                language={language} 
-                t={t} 
-                isSent={isSent} 
-                linkColor={linkColor} 
-                translatedText={isTranslated ? translatedText : undefined}
-                translateChapterField={translateChapterField}
-                isTranslating={isTranslating}
-                onRetranslate={onRetranslate}
-            />
-        );
-    }
-
-    // --- Standard View: Simple or Structured Scripture ---
-    
     // Memoized standard Markdown construction
     const standardMd = useMemo(() => {
         if (!parsed.isOriginalStructured) return parsed.finalSimpleContent;
@@ -95,7 +76,27 @@ const NoteDisplay: FC<NoteDisplayProps> = ({
             chapterLine,
             `\n**${commentLabel}:**\n${commentWithLinks}`
         ].filter(Boolean).join('\n');
-    }, [parsed, language, t, translateChapterField]);
+    }, [parsed, language, t, translateChapterField, scripture, chapter]);
+
+    if (parsed.isOriginalStructured && parsed.primaryUrl && isSpecialSource) {
+        return (
+            <GCNoteRenderer
+                scriptureValue={scripture || parsed.scriptureValue}
+                comment={parsed.comment}
+                url={chapter || parsed.primaryUrl || ''}
+                language={language} 
+                t={t} 
+                isSent={isSent} 
+                linkColor={linkColor} 
+                translatedText={isTranslated ? translatedText : undefined}
+                translateChapterField={translateChapterField}
+                isTranslating={isTranslating}
+                onRetranslate={onRetranslate}
+            />
+        );
+    }
+
+    // --- Standard View: Simple or Structured Scripture ---
 
     return (
         <div className="note-display-container" ref={containerRef}>
@@ -123,8 +124,8 @@ const NoteDisplay: FC<NoteDisplayProps> = ({
             <div className="note-markdown">
                 <ReactMarkdown 
                     components={{
-                        a: ({ node, ...p }) => <a {...p} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} />,
-                        p: ({ node, ...p }) => <p {...p} />
+                        a: ({ ...p }) => <a {...p} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} />,
+                        p: ({ ...p }) => <p {...p} />
                     }}
                 >
                     {standardMd}
@@ -150,3 +151,5 @@ const NoteDisplay: FC<NoteDisplayProps> = ({
 };
 
 export default NoteDisplay;
+
+

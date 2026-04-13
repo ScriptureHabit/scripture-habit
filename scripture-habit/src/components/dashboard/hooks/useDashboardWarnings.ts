@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { UserData } from '../../../types/user';
-import { Group } from '../../../types/chat';
+import { FirebaseTimestamp, Group } from '../../../types/chat';
 import { parseTimestampToDate } from '../../../utils/timeUtils';
 
 interface WarningInfo {
@@ -22,12 +22,12 @@ export const useDashboardWarnings = (userData: UserData | null, userGroups: Grou
             
             // TRUTH: Only consider WRITING activity (notes/posts) as valid participation.
             // ROM (Read-only) users who do not contribute are considered inactive here.
-            const candidateTimestamps: any[] = [
+            const candidateTimestamps: (FirebaseTimestamp | null | undefined)[] = [
                 userData.lastPostAt,
                 myStatus?.lastNoteAt,
                 // Only count the group's last note if the user themselves was the poster
                 (group.lastMessageByUid === userData.uid ? (group.lastNoteAt || group.lastMessageAt) : null)
-            ].filter(Boolean);
+            ];
 
             if (candidateTimestamps.length > 0) {
                 // Convert all candidates to Date objects and find the newest valid one

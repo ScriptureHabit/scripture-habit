@@ -6,7 +6,7 @@ import {
     useChatData, 
     useChatMessageActions, 
     useChatUIActions 
-} from '../ChatContext';
+} from '../hooks/useChatContext';
 import { useChatStore } from '../../../store/useChatStore';
 import { useModalStore } from '../../../store/useModalStore';
 
@@ -76,3 +76,4 @@ const GroupChatFooter: FC = () => {
 };
 
 export default GroupChatFooter;
+

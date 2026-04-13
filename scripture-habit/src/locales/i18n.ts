@@ -1,4 +1,4 @@
-import { Language } from '../context/LanguageContext';
+import { Language } from '/languages';
 
 const loaders: Record<Language, () => Promise<{ default: Record<string, unknown> }>> = {
   en: () => import('./en'),
@@ -35,3 +35,4 @@ export const loadBookTranslations = async (lang: Language) => {
   const module = await bookLoaders[lang]();
   return module.default;
 };
+

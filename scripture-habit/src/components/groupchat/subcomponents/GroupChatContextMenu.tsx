@@ -4,7 +4,7 @@ import {
   useChatData, 
   useChatMessageActions, 
   useChatUIActions 
-} from '../ChatContext';
+} from '../hooks/useChatContext';
 import { useChatStore } from '../../../store/useChatStore';
 
 const GroupChatContextMenu: FC = () => {
@@ -62,3 +62,4 @@ const GroupChatContextMenu: FC = () => {
 };
 
 export default GroupChatContextMenu;
+

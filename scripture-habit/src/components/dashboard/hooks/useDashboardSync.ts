@@ -3,7 +3,8 @@ import { User } from 'firebase/auth';
 import { doc, collection, getDocs, updateDoc, Timestamp, getCountFromServer } from 'firebase/firestore';
 import { db } from '../../../firebase';
 import { UserData } from '../../../types/user';
-import { useAuth } from '../../../context/AuthContext';
+import { useAuth } from '../../../hooks/useAuth';
+
 import { noteConverter } from '../../../utils/firestoreConverters';
 
 export type DashboardSyncStatus = 
@@ -90,7 +91,7 @@ export const useDashboardSync = () => {
         if (state.status === 'authenticated') {
             migrateLevelData();
         }
-    }, [state.status, userData?.uid, userData?.isLevelMigrated]);
+    }, [state, userData?.uid, userData?.isLevelMigrated]);
 
     return state;
 };

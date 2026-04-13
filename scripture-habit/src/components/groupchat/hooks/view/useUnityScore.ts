@@ -82,7 +82,7 @@ export const useUnityScore = (
       };
       checkAndSendAnnouncement();
     }
-  }, [unityPercentage, groupId, userData?.uid, userData?.timeZone]);
+  }, [unityPercentage, groupId, userData?.uid, userData?.timeZone, groupData?.members, groupData?.timeZone]);
 
   return unityPercentage;
 };

@@ -1,8 +1,9 @@
+
 import { useEffect, useState, FC } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { safeStorage } from '../../utils/storage';
 import { auth } from '../../firebase';
-import { useLanguage } from '../../context/LanguageContext';
+import { useLanguage } from '../../../hooks/useLanguage';
 import Button from '../button/Button';
 import './InviteRedirect.css';
 
@@ -118,4 +119,6 @@ interface NavigatorWithStandalone extends Navigator {
 function isStandalone() {
     return window.matchMedia('(display-mode: standalone)').matches || (navigator as NavigatorWithStandalone).standalone;
 }
+
+
 

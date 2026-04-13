@@ -10,7 +10,7 @@ import {
   useChatMessageActions, 
   useChatGroupActions, 
   useChatUIActions 
-} from '../ChatContext';
+} from '../hooks/useChatContext';
 import './MessageItem.css';
 
 interface MessageItemProps {
@@ -220,3 +220,4 @@ const MessageItem: FC<MessageItemProps> = memo(({
 });
 
 export default MessageItem;
+

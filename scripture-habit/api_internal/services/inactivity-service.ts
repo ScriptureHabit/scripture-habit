@@ -77,7 +77,7 @@ export class InactivityService {
         let ownerUserId = groupData.ownerUserId;
         const now = new Date();
         const batch = db.batch();
-        let batchOpCount = 0;
+
 
         const activeMembers: string[] = [];
         const inactiveMembers: string[] = [];
@@ -95,17 +95,13 @@ export class InactivityService {
             // If joinedAt is newer than when the document was actually created, it's invalid.
             // Silently reset it to createTime so inactivity is calculated correctly.
             if (memberData.joinedAt && memberDoc.createTime) {
-                const joinedMs = typeof (memberDoc.createTime as admin.firestore.Timestamp).toMillis === 'function'
-                    ? (memberDoc.createTime as admin.firestore.Timestamp).toMillis()
-                    : 0;
-                const storedJoinedMs = typeof (memberData.joinedAt as admin.firestore.Timestamp).toMillis === 'function'
-                    ? (memberData.joinedAt as admin.firestore.Timestamp).toMillis()
-                    : 0;
+                const joinedMs = (memberDoc.createTime as admin.firestore.Timestamp)?.toMillis?.() || 0;
+                const storedJoinedMs = (memberData.joinedAt as admin.firestore.Timestamp)?.toMillis?.() || 0;
                 if (storedJoinedMs > joinedMs && joinedMs > 0) {
                     console.warn(`[InactivityService] Corrupted joinedAt detected for ${memberId} in ${groupId}. Resetting to createTime.`);
                     memberData.joinedAt = memberDoc.createTime;
                     batch.update(memberDoc.ref, { joinedAt: memberDoc.createTime });
-                    batchOpCount++;
+
                 }
             }
 
@@ -115,7 +111,7 @@ export class InactivityService {
                 // Fix: Use createTime for initialization instead of "now" to avoid clock reset
                 const initTime = memberDoc.createTime || admin.firestore.FieldValue.serverTimestamp();
                 batch.update(memberDoc.ref, { joinedAt: initTime });
-                batchOpCount++;
+
                 
                 // Recalculate with the new initTime to see if they are actually inactive
                 const secondLook = calculateMemberStatus(memberId, { ...memberData, joinedAt: initTime }, groupData, now);
@@ -158,7 +154,7 @@ export class InactivityService {
 
         // 4. Handle Owner Inactivity
         let transferCount = 0;
-        let groupDeleted = false;
+        const groupDeleted = false;
         const groupUpdates: admin.firestore.UpdateData<GroupDocument> = {
             lastInactivityCheckedAt: admin.firestore.FieldValue.serverTimestamp()
         };
@@ -184,7 +180,7 @@ export class InactivityService {
                     type: 'system',
                     messageType: 'system'
                 });
-                batchOpCount++;
+
             } else {
                 // NO ACTIVE MEMBERS: Delete group safely
                 // Cleanup user refs first

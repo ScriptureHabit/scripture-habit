@@ -2,7 +2,7 @@ import { FC, Fragment } from 'react';
 import MessageItem from './MessageItem';
 import { Message } from '../../../types/chat';
 import { parseTimestampToDate } from '../../../utils/timeUtils';
-import { useChatData, useChatUIActions } from '../ChatContext';
+import { useChatData, useChatUIActions } from '../hooks/useChatContext';
 
 interface GroupChatMessageListProps {
   messages: Message[];
@@ -41,3 +41,4 @@ const GroupChatMessageList: FC<GroupChatMessageListProps> = ({
 };
 
 export default GroupChatMessageList;
+

@@ -1,5 +1,6 @@
+
 import { FC } from 'react';
-import { useLanguage } from '../../context/LanguageContext';
+import { useLanguage } from '../../../hooks/useLanguage';
 import { UilArrowLeft } from '@iconscout/react-unicons';
 import { useNavigate } from 'react-router-dom';
 import './LegalDisclosure.css';
@@ -52,3 +53,5 @@ const LegalDisclosure: FC = () => {
 };
 
 export default LegalDisclosure;
+
+

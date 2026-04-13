@@ -1,8 +1,9 @@
+
 import { FC } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { UilEnvelopeAlt, UilSave, UilTimes } from '@iconscout/react-unicons';
 import './RecapModal.css';
-import { useLanguage } from '../../context/LanguageContext';
+import { useLanguage } from '../../../hooks/useLanguage';
 
 interface RecapModalProps {
     isOpen: boolean;
@@ -52,3 +53,5 @@ const RecapModal: FC<RecapModalProps> = ({ isOpen, onClose, recapText, onSave })
 };
 
 export default RecapModal;
+
+

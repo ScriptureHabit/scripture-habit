@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import './Sidebar.css';
 import { SidebarData } from '../../data/Data';
@@ -10,7 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { auth, appCheck } from '../../firebase';
 // Removed unused Firestore imports
 import { getToken } from "firebase/app-check";
-import { useLanguage } from '../../context/LanguageContext';
+import { useLanguage } from '../../../hooks/useLanguage';
 import { UserData } from '../../types/user';
 import { Group } from '../../types/chat';
 import { calculateUnityPercentage } from '../../utils/unityUtils';
@@ -289,3 +290,5 @@ const Sidebar: React.FC<SidebarProps> = ({ selected, setSelected, userGroups = [
 };
 
 export default Sidebar;
+
+

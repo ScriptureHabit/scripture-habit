@@ -1,9 +1,10 @@
+
 import { useState } from 'react';
 import { getToken } from 'firebase/app-check'; // Added AppCheck getToken
 import { useNavigate } from 'react-router-dom';
 import { auth, appCheck } from '../../firebase'; // Added appCheck
 import { toast } from 'react-toastify';
-import { useLanguage } from '../../context/LanguageContext';
+import { useLanguage } from '../../../hooks/useLanguage';
 import { Capacitor } from '@capacitor/core';
 import ConfirmModal from '../confirmmodal/ConfirmModal';
 
@@ -25,7 +26,7 @@ export default function LeaveGroupButton({ groupId }: LeaveGroupButtonProps) {
       const idToken = await user.getIdToken();
       let appCheckToken = '';
       if (appCheck) {
-        const appCheckTokenResponse = await getToken(appCheck, false); // Get AppCheck token
+        const appCheckTokenResponse = await getToken(appCheck!, false); // Get AppCheck token
         appCheckToken = appCheckTokenResponse.token;
       }
 
@@ -76,3 +77,5 @@ export default function LeaveGroupButton({ groupId }: LeaveGroupButtonProps) {
     </>
   );
 }
+
+

@@ -115,7 +115,7 @@ export const useGroupChatUI = (
     };
 
     autoTranslate();
-  }, [groupId, groupData?.name, groupData?.description, groupData?.translations, language]);
+  }, [groupId, groupData?.name, groupData?.description, groupData?.translations, language, API_BASE]);
 
   // Tooltip & Inactivity Banner
   useEffect(() => {

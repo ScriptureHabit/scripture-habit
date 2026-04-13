@@ -1,7 +1,8 @@
+
 import { useState, useEffect, FC, useMemo } from 'react';
 import Select from 'react-select';
 import { UilShuffle, UilRobot } from '@iconscout/react-unicons';
-import { useLanguage } from '../../context/LanguageContext';
+import { useLanguage } from '../../../hooks/useLanguage';
 import Input from '../input/Input';
 import './NewNote.css';
 
@@ -334,3 +335,5 @@ const NewNote: FC<NewNoteProps> = ({
 };
 
 export default NewNote;
+
+

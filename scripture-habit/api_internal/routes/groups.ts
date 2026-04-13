@@ -411,8 +411,8 @@ router.post('/update-kick-threshold', authenticate, verifyAppCheck, async (req: 
 
         // TRUTH: If the user is part of multiple groups, we need to handle the case where some might be deleted.
         // We fetch all group documents to verify their existence before batch updating.
-        let existingGroupIds: string[] = [];
-        let missingGroupIds: string[] = [];
+        const existingGroupIds: string[] = [];
+        const missingGroupIds: string[] = [];
 
         if (groupIds.length > 0) {
             const groupRefs = groupIds.map(gid => db.collection('groups').doc(gid));
@@ -444,7 +444,7 @@ router.post('/update-kick-threshold', authenticate, verifyAppCheck, async (req: 
         await userRef.update(userUpdate);
 
         if (existingGroupIds.length > 0) {
-            let batch = db.batch();
+            const batch = db.batch();
             existingGroupIds.forEach((gid: string) => {
                 const gRef = db.collection('groups').doc(gid);
                 
