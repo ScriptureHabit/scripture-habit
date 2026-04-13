@@ -18,20 +18,22 @@ router.post('/test/setup-test-group', authenticate, async (req: AuthenticatedReq
     if (!uid) return res.status(401).json({ error: 'Unauthorized' });
 
     try {
-        const groupName = 'E2E Test Group';
+        const timeZone = req.body.timeZone || 'UTC';
+        const groupName = req.body.groupName || 'E2E Test Group';
         
         // 1. Check if user already has a group with this name
         const groupsSnapshot = await db.collection('groups')
             .where('members', 'array-contains', uid)
             .get();
         
-        const existingGroup = groupsSnapshot.docs.find(doc => doc.data().name === groupName);
+        const existingGroupDoc = groupsSnapshot.docs.find(doc => doc.data().name === groupName);
         
-        if (existingGroup) {
-            console.log(`[TestSetup] Group already exists: ${existingGroup.id}`);
+        if (existingGroupDoc) {
+            console.log(`[TestSetup] Group already exists: ${existingGroupDoc.id}. Ensuring timeZone is ${timeZone}`);
+            await existingGroupDoc.ref.update({ timeZone });
             return res.status(200).json({ 
-                message: 'Group already exists', 
-                groupId: existingGroup.id,
+                message: 'Group already exists (updated timezone if needed)', 
+                groupId: existingGroupDoc.id,
                 isNew: false
             });
         }
@@ -56,7 +58,7 @@ router.post('/test/setup-test-group', authenticate, async (req: AuthenticatedReq
                 members: [uid],
                 membersCount: 1,
                 memberPreviews: [{ uid, nickname }],
-                timeZone: 'UTC', // Deterministic for tests
+                timeZone: timeZone, // Use the provided or default timezone
                 isPublic: true,
                 isPrivate: false,
                 inviteCode: `TEST-${Math.floor(Math.random() * 10000)}`,
