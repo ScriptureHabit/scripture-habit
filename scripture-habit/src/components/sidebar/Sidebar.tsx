@@ -12,7 +12,6 @@ import { auth, appCheck } from '../../firebase';
 // Removed unused Firestore imports
 import { getToken } from "firebase/app-check";
 import { useLanguage } from '../../hooks/useLanguage';
-import { UserData } from '../../types/user';
 import { Group } from '../../types/chat';
 import { calculateUnityPercentage } from '../../utils/unityUtils';
 
@@ -145,10 +144,9 @@ interface SidebarProps {
   activeGroupId: string | null;
   setActiveGroupId: (id: string | null) => void;
   hideMobile?: boolean;
-  userData: UserData | null;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ selected, setSelected, userGroups = [], activeGroupId, setActiveGroupId, hideMobile = false, userData }) => {
+const Sidebar: React.FC<SidebarProps> = ({ selected, setSelected, userGroups = [], activeGroupId, setActiveGroupId, hideMobile = false }) => {
   const navigate = useNavigate();
   const { t, language } = useLanguage();
   const [showGroupModal, setShowGroupModal] = useState(false);

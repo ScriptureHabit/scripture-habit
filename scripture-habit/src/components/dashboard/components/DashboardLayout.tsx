@@ -1,6 +1,5 @@
 import { FC, ReactNode } from 'react';
 import Sidebar from '../../sidebar/Sidebar';
-import { UserData } from '../../../types/user';
 import { Group } from '../../../types/chat';
 
 interface DashboardLayoutProps {
@@ -11,7 +10,6 @@ interface DashboardLayoutProps {
   setActiveGroupId: (gid: string | null) => void;
   isInputFocused: boolean;
   isJoiningInvite: boolean;
-  userData: UserData;
   children: ReactNode;
 }
 
@@ -23,7 +21,6 @@ const DashboardLayout: FC<DashboardLayoutProps> = ({
   setActiveGroupId,
   isInputFocused,
   isJoiningInvite,
-  userData,
   children
 }) => {
   return (
@@ -35,7 +32,6 @@ const DashboardLayout: FC<DashboardLayoutProps> = ({
         activeGroupId={activeGroupId}
         setActiveGroupId={setActiveGroupId}
         hideMobile={isInputFocused || isJoiningInvite}
-        userData={userData}
       />
       <div className={`DashboardContent ${selectedView === 2 ? 'group-chat-view' : ''}`}>
         {children}

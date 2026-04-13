@@ -153,7 +153,7 @@ const Dashboard: FC = () => {
     return (
       <div className='App Dashboard'>
         <div className='AppGlass Grid'>
-          <Sidebar selected={selectedView} setSelected={setSelectedView} userGroups={[]} activeGroupId={activeGroupId} setActiveGroupId={setActiveGroupId} userData={userData} />
+          <Sidebar selected={selectedView} setSelected={setSelectedView} userGroups={[]} activeGroupId={activeGroupId} setActiveGroupId={setActiveGroupId} />
           <DashboardSkeleton />
         </div>
       </div>
@@ -195,7 +195,6 @@ const Dashboard: FC = () => {
         setActiveGroupId={setActiveGroupId}
         isInputFocused={isInputFocused}
         isJoiningInvite={isJoiningInvite}
-        userData={userData}
       >
         {selectedView === 0 && (
           <DashboardOverview 
