@@ -17,7 +17,10 @@ export const calculateUnityPercentage = (
 ): number => {
   if (!group || !group.members || group.members.length === 0) return 0;
 
-  const groupTimeZone = group.timeZone || userTimeZone || 'UTC';
+  // Standardize on Group TimeZone. 
+  // If missing, we MUST use a stable fallback (UTC) to ensure server and all clients agree.
+  // Using userTimeZone as fallback is what caused the discrepancy.
+  const groupTimeZone = group.timeZone || 'UTC';
   const now = new Date();
   
   const todayStr = formatDateInTimeZone(now, groupTimeZone);

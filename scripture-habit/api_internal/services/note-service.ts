@@ -150,7 +150,9 @@ export class NoteService {
                         chapter: chapter || ""
                     });
 
-                    const groupToday = formatDateInTimeZone(now, gData.timeZone || timeZone);
+                    // Calculate today's date for the group. Fallback to UTC if group has no timezone.
+                    // DO NOT fallback to user's timezone as that causes inconsistency in summaries.
+                    const groupToday = formatDateInTimeZone(now, gData.timeZone || 'UTC');
 
                     const groupUpdate = {
                         lastMessageAt: serverTime,
@@ -325,12 +327,7 @@ export class NoteService {
 
                     let needsTodayNotes = false;
                     const groupTimeZone = gData.timeZone || 'UTC';
-                    let groupToday;
-                    try {
-                        groupToday = now.toLocaleDateString('sv-SE', { timeZone: groupTimeZone });
-                    } catch {
-                        groupToday = now.toLocaleDateString('sv-SE', { timeZone: 'UTC' });
-                    }
+                    const groupToday = formatDateInTimeZone(now, groupTimeZone);
 
                     if (gData.dailyActivity?.date === groupToday && gData.dailyActivity?.activeMembers?.includes(uid)) {
                         needsTodayNotes = true;
