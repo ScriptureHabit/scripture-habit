@@ -22,7 +22,7 @@ export const useDashboardWarnings = (userData: UserData | null, userGroups: Grou
             
             // TRUTH: Only consider WRITING activity (notes/posts) as valid participation.
             // ROM (Read-only) users who do not contribute are considered inactive here.
-            const candidateTimestamps: Parameters<typeof parseTimestampToDate>[0][] = [
+            const candidateTimestamps: any[] = [
                 userData.lastPostAt,
                 myStatus?.lastNoteAt,
                 // Only count the group's last note if the user themselves was the poster

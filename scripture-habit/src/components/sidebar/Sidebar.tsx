@@ -58,17 +58,24 @@ const SidebarGroupItem: React.FC<SidebarGroupItemProps> = ({ group, language, is
       try {
         const idToken = await auth?.currentUser?.getIdToken();
         if (!idToken) return;
-        const appCheckTokenResponse = await getToken(appCheck, false);
-        const appCheckToken = appCheckTokenResponse.token;
+        let appCheckToken = '';
+        if (appCheck) {
+          const appCheckTokenResponse = await getToken(appCheck, false);
+          appCheckToken = appCheckTokenResponse.token;
+        }
         const API_BASE = window.location.hostname === 'localhost' ? '' : 'https://scripturehabit.app';
+
+        const headers: Record<string, string> = {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${idToken}`,
+        };
+        if (appCheckToken) {
+          headers['X-Firebase-AppCheck'] = appCheckToken;
+        }
 
         const res = await fetch(`${API_BASE}/api/translate`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${idToken}`,
-            'X-Firebase-AppCheck': appCheckToken,
-          },
+          headers,
 
           body: JSON.stringify({
             text: group.name,

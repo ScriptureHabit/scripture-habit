@@ -190,7 +190,7 @@ const GroupChatModals: FC = () => {
 
             {selectedMember && (
                 <UserProfileModal
-                    user={selectedMember}
+                    user={selectedMember as any}
                     onClose={() => setSelectedMember(null)}
                 />
             )}

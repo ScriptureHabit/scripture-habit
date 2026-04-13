@@ -54,8 +54,10 @@ export const useUnityScore = (
           const idToken = await user.getIdToken();
           let appCheckToken = '';
           try {
-            const appCheckTokenResponse = await getToken(appCheck, false);
-            appCheckToken = appCheckTokenResponse.token;
+            if (appCheck) {
+              const appCheckTokenResponse = await getToken(appCheck, false);
+              appCheckToken = appCheckTokenResponse.token;
+            }
           } catch (e) {
             console.warn('[useUnityScore] AppCheck token failed:', e);
           }

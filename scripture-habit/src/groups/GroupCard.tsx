@@ -108,20 +108,26 @@ export default function GroupCard({ group, currentUser, onJoin, onOpen }: Props)
           return;
         }
 
-        const [idToken, appCheckTokenResponse] = await Promise.all([
-          currentUser.getIdToken(),
-          getToken(appCheck, false)
-        ]);
+        const idToken = await currentUser.getIdToken();
+        let appCheckToken = '';
+        if (appCheck) {
+          const appCheckTokenResponse = await getToken(appCheck, false);
+          appCheckToken = appCheckTokenResponse.token;
+        }
 
         const API_BASE = import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' ? '' : 'https://scripturehabit.app');
 
+        const headers: Record<string, string> = {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${idToken}`,
+        };
+        if (appCheckToken) {
+          headers['x-firebase-appcheck'] = appCheckToken;
+        }
+
         const res = await fetch(`${API_BASE}/api/translate`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${idToken}`,
-            'x-firebase-appcheck': appCheckTokenResponse.token,
-          },
+          headers,
           body: JSON.stringify({
             text: group.name,
             targetLanguage: language,
@@ -174,8 +180,10 @@ export default function GroupCard({ group, currentUser, onJoin, onOpen }: Props)
 
       let appCheckToken = '';
       try {
-        const appCheckTokenResponse = await getToken(appCheck, false);
-        appCheckToken = appCheckTokenResponse.token;
+        if (appCheck) {
+          const appCheckTokenResponse = await getToken(appCheck, false);
+          appCheckToken = appCheckTokenResponse.token;
+        }
       } catch (e) {
         console.warn('[GroupCard] AppCheck token failed:', e);
       }

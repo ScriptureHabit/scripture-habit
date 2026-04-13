@@ -62,8 +62,10 @@ export const useDashboardActions = (user: User | null, userData: UserData | null
 
           let appCheckToken = '';
           try {
-            const appCheckTokenResponse = await getToken(appCheck, false);
-            appCheckToken = appCheckTokenResponse.token;
+            if (appCheck) {
+              const appCheckTokenResponse = await getToken(appCheck, false);
+              appCheckToken = appCheckTokenResponse.token;
+            }
           } catch (e) {
             console.warn('[useDashboardActions] AppCheck token failed:', e);
           }

@@ -2,8 +2,7 @@ import { renderHook, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { useNoteSubmission } from './useNoteSubmission';
 import apiClient from '../../../utils/apiClient';
-import { db } from '../../../firebase';
-import { writeBatch, doc } from 'firebase/firestore';
+import { writeBatch } from 'firebase/firestore';
 import { toast } from 'react-toastify';
 import confetti from 'canvas-confetti';
 

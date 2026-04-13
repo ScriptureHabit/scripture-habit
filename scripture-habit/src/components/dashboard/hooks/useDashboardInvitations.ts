@@ -28,16 +28,23 @@ export const useDashboardInvitations = (
             try {
                 const API_BASE = Capacitor.isNativePlatform() ? 'https://scripturehabit.app' : '';
                 const idToken = await user.getIdToken();
-                const appCheckTokenResponse = await getToken(appCheck, false); // Get AppCheck token
-                const appCheckToken = appCheckTokenResponse.token;
+                let appCheckToken = '';
+                if (appCheck) {
+                    const appCheckTokenResponse = await getToken(appCheck, false); // Get AppCheck token
+                    appCheckToken = appCheckTokenResponse.token;
+                }
+
+                const headers: Record<string, string> = {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${idToken}`
+                };
+                if (appCheckToken) {
+                    headers['X-Firebase-AppCheck'] = appCheckToken;
+                }
 
                 const resp = await fetch(`${API_BASE}/api/join-group`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${idToken}`,
-                        'X-Firebase-AppCheck': appCheckToken // Add AppCheck header
-                    },
+                    headers,
                     body: JSON.stringify({ inviteCode })
                 });
 

@@ -23,16 +23,23 @@ export default function LeaveGroupButton({ groupId }: LeaveGroupButtonProps) {
 
     try {
       const idToken = await user.getIdToken();
-      const appCheckTokenResponse = await getToken(appCheck, false); // Get AppCheck token
-      const appCheckToken = appCheckTokenResponse.token;
+      let appCheckToken = '';
+      if (appCheck) {
+        const appCheckTokenResponse = await getToken(appCheck, false); // Get AppCheck token
+        appCheckToken = appCheckTokenResponse.token;
+      }
+
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${idToken}`,
+      };
+      if (appCheckToken) {
+        headers['X-Firebase-AppCheck'] = appCheckToken;
+      }
 
       const response = await fetch(`${API_BASE}/api/leave-group`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${idToken}`,
-          'X-Firebase-AppCheck': appCheckToken // Add AppCheck header
-        },
+        headers,
         body: JSON.stringify({ groupId })
       });
 

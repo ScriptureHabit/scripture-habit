@@ -95,7 +95,7 @@ export class InactivityService {
             // If joinedAt is newer than when the document was actually created, it's invalid.
             // Silently reset it to createTime so inactivity is calculated correctly.
             if (memberData.joinedAt && memberDoc.createTime) {
-                const joinedMs = memberDoc.createTime.toMillis
+                const joinedMs = typeof (memberDoc.createTime as admin.firestore.Timestamp).toMillis === 'function'
                     ? (memberDoc.createTime as admin.firestore.Timestamp).toMillis()
                     : 0;
                 const storedJoinedMs = typeof (memberData.joinedAt as admin.firestore.Timestamp).toMillis === 'function'

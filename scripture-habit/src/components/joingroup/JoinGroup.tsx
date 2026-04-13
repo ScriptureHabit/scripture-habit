@@ -60,14 +60,19 @@ export default function JoinGroup() {
     try {
       if (!user) return;
       const idToken = await user.getIdToken();
-      const appCheckTokenResponse = await getToken(appCheck, false);
-      const appCheckToken = appCheckTokenResponse.token;
+      let appCheckToken = '';
+      if (appCheck) {
+        const appCheckTokenResponse = await getToken(appCheck, false);
+        appCheckToken = appCheckTokenResponse.token;
+      }
 
       const headers: Record<string, string> = { 
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${idToken}`,
-        'X-Firebase-AppCheck': appCheckToken
+        'Authorization': `Bearer ${idToken}`
       };
+      if (appCheckToken) {
+        headers['X-Firebase-AppCheck'] = appCheckToken;
+      }
 
       const translate = async (text: string, type: 'group_name' | 'group_description') => {
         if (!text) return null;
@@ -184,16 +189,23 @@ export default function JoinGroup() {
 
     try {
       const idToken = await user.getIdToken();
-      const appCheckTokenResponse = await getToken(appCheck, false);
-      const appCheckToken = appCheckTokenResponse.token;
+      let appCheckToken = '';
+      if (appCheck) {
+        const appCheckTokenResponse = await getToken(appCheck, false);
+        appCheckToken = appCheckTokenResponse.token;
+      }
+
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${idToken}`
+      };
+      if (appCheckToken) {
+        headers['X-Firebase-AppCheck'] = appCheckToken;
+      }
 
       const resp = await fetch(`${API_BASE}/api/join-group`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${idToken}`,
-          'X-Firebase-AppCheck': appCheckToken
-        },
+        headers,
         body: JSON.stringify({ groupId })
       });
       if (resp.ok) {

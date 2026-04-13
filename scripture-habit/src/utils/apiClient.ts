@@ -46,9 +46,11 @@ apiClient.interceptors.request.use(
 
             // 2. Inject Firebase App Check Token
             // set forceRefresh to false to use cached token if available
-            const appCheckTokenResponse = await getToken(appCheck, false);
-            if (appCheckTokenResponse.token) {
-                config.headers['X-Firebase-AppCheck'] = appCheckTokenResponse.token;
+            if (appCheck) {
+                const appCheckTokenResponse = await getToken(appCheck, false);
+                if (appCheckTokenResponse.token) {
+                    config.headers['X-Firebase-AppCheck'] = appCheckTokenResponse.token;
+                }
             }
         } catch (error) {
             // Log warning but don't block the request (backend will decide if it's mandatory)
