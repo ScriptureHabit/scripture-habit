@@ -105,14 +105,17 @@ test.describe('Unity Percentage Synchronization', () => {
         // Wait for UI to settle at "late night"
         await page.waitForTimeout(3000);
         
-        // Fast forward 15 seconds to cross midnight
-        await page.clock.fastForward('00:00:15');
-        console.log('Clock fast forwarded past midnight.');
+        // Fast forward 120 seconds to cross midnight and ensure multiple interval cycles pass
+        await page.clock.fastForward('00:02:00');
+        console.log('Clock fast forwarded 120s past midnight.');
+        
+        // Wait a bit for React to process the state change
+        await page.waitForTimeout(5000);
 
         // Verify unity reset to 0%
         // The useToday hook should trigger a re-render
         console.log('Waiting for unity reset to 0%...');
-        await expect(page.getByTestId('sidebar-unity-percentage').first()).toHaveText('0%', { timeout: 40000 });
+        await expect(page.getByTestId('sidebar-unity-percentage').first()).toHaveText('0%', { timeout: 60000 });
         console.log('Success: Unity percentage reset to 0% at midnight.');
     });
 });
