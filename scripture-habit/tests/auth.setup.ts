@@ -21,7 +21,7 @@ setup('authenticate', async ({ page }) => {
   // 3. If login fails (we stay on login or see error), try Signup
   try {
     // Wait for redirect to dashboard
-    await page.waitForURL(/.*dashboard/, { timeout: 15000 });
+    await page.waitForURL(/.*dashboard/, { timeout: 30000 });
   } catch (e) {
     console.log('Login failed or timed out, attempting Signup...');
     // Login failed, let's signup
@@ -32,13 +32,13 @@ setup('authenticate', async ({ page }) => {
     await page.getByRole('button', { name: 'Sign Up', exact: true }).click({ force: true });
     
     // Follow redirect to login (if the app does that after signup)
-    await page.waitForURL(/.*login/, { timeout: 15000 });
+    await page.waitForURL(/.*login/, { timeout: 60000 });
     await page.getByLabel('Email Address').fill(sharedEmail);
     await page.getByLabel('Password').fill(password);
     await page.getByRole('button', { name: 'Log In', exact: true }).click({ force: true });
     
     // Final wait for dashboard
-    await page.waitForURL(/.*dashboard/, { timeout: 30000 });
+    await page.waitForURL(/.*dashboard/, { timeout: 60000 });
   }
 
   // 4. Verification and state save

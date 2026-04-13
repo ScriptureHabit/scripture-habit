@@ -190,6 +190,7 @@ const Sidebar: React.FC<SidebarProps> = ({ selected, setSelected, userGroups = [
           {/* Dashboard */}
           <div className={selected === 0 ? 'menuItem active' : 'menuItem'}
             onClick={() => setSelected(0)}
+            data-testid="sidebar-dashboard"
           >
             <DashboardIcon />
             <span>{t('sidebar.dashboard')}</span>
@@ -198,14 +199,16 @@ const Sidebar: React.FC<SidebarProps> = ({ selected, setSelected, userGroups = [
           {/* My Notes */}
           <div className={selected === 1 ? 'menuItem active' : 'menuItem'}
             onClick={() => setSelected(1)}
+            data-testid="sidebar-notes"
           >
             <NotesIcon />
             <span>{t('sidebar.myNotes')}</span>
           </div>
 
           {/* Languages */}
-          <div className={selected === 3 ? 'menuItem active' : 'menuItem'}
+          <div className={selected === 3 ? 'menuItem active' : 'menuItem'} 
             onClick={() => setSelected(3)}
+            data-testid="sidebar-profile"
           >
             <ProfileIcon />
             <span>{t('sidebar.profile')}</span>
@@ -245,7 +248,11 @@ const Sidebar: React.FC<SidebarProps> = ({ selected, setSelected, userGroups = [
             <UilUsersAlt />
           </div>
 
-          <div className={selected === 4 ? 'menuItem active' : 'menuItem'} onClick={() => setSelected(4)}>
+          <div 
+            className={selected === 4 ? 'menuItem active' : 'menuItem'} 
+            onClick={() => setSelected(4)}
+            data-testid="sidebar-story"
+          >
             <UilBookOpen />
             <span>{t('sidebar.story')}</span>
           </div>
