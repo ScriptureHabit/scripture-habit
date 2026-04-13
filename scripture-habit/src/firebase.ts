@@ -16,13 +16,35 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
-const app: FirebaseApp = initializeApp(firebaseConfig);
+// Check for required environment variables
+const requiredVars = [
+  'VITE_FIREBASE_API_KEY',
+  'VITE_FIREBASE_AUTH_DOMAIN',
+  'VITE_FIREBASE_PROJECT_ID',
+  'VITE_FIREBASE_APP_ID'
+];
+
+requiredVars.forEach(v => {
+  if (!import.meta.env[v]) {
+    console.warn(`[Firebase] Missing environment variable: ${v}`);
+  }
+});
+
+let app: FirebaseApp;
+try {
+  app = initializeApp(firebaseConfig);
+} catch (e) {
+  console.error("Firebase initializeApp failed:", e);
+  throw e;
+}
 
 let analytics: Analytics | null = null;
-try {
-  analytics = getAnalytics(app);
-} catch {
-  console.log("Firebase Analytics not supported in this environment");
+if (typeof window !== 'undefined') {
+  try {
+    analytics = getAnalytics(app);
+  } catch (e) {
+    console.warn("Firebase Analytics not supported or failed:", e);
+  }
 }
 
 let auth: Auth | null = null;
@@ -30,13 +52,15 @@ try {
   auth = getAuth(app);
   
   // E2E Test Optimization: Force LocalStorage persistence so Playwright can capture it
-  if (typeof window !== 'undefined' && navigator.webdriver) {
+  if (typeof window !== 'undefined' && navigator.webdriver && auth) {
     setPersistence(auth, browserLocalPersistence).catch(err => {
       console.error("Failed to set auth persistence:", err);
     });
   }
-} catch {
-  console.log("Firebase Auth failed to initialize");
+} catch (e) {
+  console.error("Firebase Auth failed to initialize. Root cause:", e);
+  // Do NOT silence this - it causes "Cannot read properties of null (reading 'app')" later
+  throw e;
 }
 
 let messaging: Messaging | null = null;
