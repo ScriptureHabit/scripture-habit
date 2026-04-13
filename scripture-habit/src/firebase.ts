@@ -1,6 +1,6 @@
 import { initializeApp, FirebaseApp } from "firebase/app";
 import { getAnalytics, Analytics } from "firebase/analytics";
-import { getAuth, Auth, connectAuthEmulator } from "firebase/auth";
+import { getAuth, Auth, connectAuthEmulator, setPersistence, browserLocalPersistence } from "firebase/auth";
 import { getMessaging, Messaging, isSupported } from "firebase/messaging";
 import { getStorage, FirebaseStorage } from "firebase/storage";
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, Firestore, getFirestore, connectFirestoreEmulator } from "firebase/firestore";
@@ -28,6 +28,13 @@ try {
 let auth: Auth | null = null;
 try {
   auth = getAuth(app);
+  
+  // E2E Test Optimization: Force LocalStorage persistence so Playwright can capture it
+  if (typeof window !== 'undefined' && navigator.webdriver) {
+    setPersistence(auth, browserLocalPersistence).catch(err => {
+      console.error("Failed to set auth persistence:", err);
+    });
+  }
 } catch {
   console.log("Firebase Auth failed to initialize");
 }

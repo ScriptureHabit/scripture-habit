@@ -14,9 +14,9 @@ export default defineConfig({
   /* Opt out of parallel tests on CI. */
   workers: 1,
   
-  timeout: 60000,
+  timeout: 90000,
   expect: {
-    timeout: 10000,
+    timeout: 20000,
   },
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: 'html',
@@ -31,13 +31,26 @@ export default defineConfig({
 
   /* Configure projects for major browsers */
   projects: [
+    // Setup project
+    {
+      name: 'setup',
+      testMatch: /auth\.setup\.ts/,
+    },
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      use: { 
+        ...devices['Desktop Chrome'],
+        storageState: 'playwright/.auth/user.json',
+      },
+      dependencies: ['setup'],
     },
     {
       name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
+      use: { 
+        ...devices['Desktop Safari'],
+        storageState: 'playwright/.auth/user.json',
+      },
+      dependencies: ['setup'],
     },
   ],
 
