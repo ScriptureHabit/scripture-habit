@@ -10,20 +10,20 @@ test.describe('Core Note Flow', () => {
     const updatedComment = `Updated: Faith follows obedience. ID: ${testId}`;
 
     // --- PART 1: CREATE NOTE ---
-    const newNoteBtn = page.getByRole('button', { name: 'New Note' });
+    const newNoteBtn = page.getByTestId('new-note-button');
     await expect(newNoteBtn).toBeVisible();
     await newNoteBtn.click();
 
     // Fill the form
-    await page.getByText('Please choose a category option').click({ force: true });
+    await page.getByTestId('new-note-category').locator('input').first().click({ force: true });
     await page.keyboard.type('Book of Mormon');
     await page.keyboard.press('Enter');
 
-    await page.getByLabel('Chapter').fill(chapterName);
-    await page.getByLabel('Comment').fill(commentText);
+    await page.getByTestId('new-note-chapter').fill(chapterName);
+    await page.getByTestId('new-note-comment').fill(commentText);
 
     // Submit
-    const submitBtn = page.getByRole('button', { name: 'Post Note' });
+    const submitBtn = page.getByTestId('post-note-button');
     await submitBtn.click();
 
     // Verify Success Toast and wait for modal to close
@@ -31,20 +31,23 @@ test.describe('Core Note Flow', () => {
     await expect(page.locator('.ModalOverlay')).not.toBeVisible();
     
     // Switch to My Notes view
-    // Using data-testid for reliable selection and force: true to bypass potential WebKit overlay issues
     const myNotesLink = page.getByTestId('sidebar-notes');
     await myNotesLink.waitFor({ state: 'visible' });
     
     // In WebKit, sometimes the first click might not trigger correctly due to modal animations
     await myNotesLink.click({ force: true });
     
+    // Ensure data is loaded
+    await page.waitForLoadState('networkidle');
+
     // Fallback: if not visible after click, try again after a short delay
     const notesGrid = page.locator('.notes-grid');
     try {
       await notesGrid.waitFor({ state: 'visible', timeout: 5000 });
-    } catch (e) {
+    } catch {
       console.log('Retrying My Notes click for WebKit...');
       await myNotesLink.click({ force: true });
+      await page.waitForLoadState('networkidle');
     }
 
     await notesGrid.waitFor({ state: 'visible', timeout: 30000 });
@@ -63,11 +66,11 @@ test.describe('Core Note Flow', () => {
     await editBtn.click();
 
     // Modify the chapter and comment
-    await page.getByLabel('Chapter').fill(updatedChapter);
-    await page.getByLabel('Comment').fill(updatedComment);
+    await page.getByTestId('new-note-chapter').fill(updatedChapter);
+    await page.getByTestId('new-note-comment').fill(updatedComment);
 
     // Save update
-    const updateBtn = page.getByRole('button', { name: 'Update Note' });
+    const updateBtn = page.getByTestId('update-note-button');
     await updateBtn.click();
 
     // Verify Success Toast

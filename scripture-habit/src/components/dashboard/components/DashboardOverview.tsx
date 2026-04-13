@@ -161,7 +161,7 @@ const DashboardOverview: FC<DashboardOverviewProps> = ({
 
         <div className="share-learning-cta">
           <p>{t('dashboard.shareLearningCall')}</p>
-          <button className="new-note-btn cta-btn" onClick={() => setIsModalOpen(true)}>
+          <button className="new-note-btn cta-btn" onClick={() => setIsModalOpen(true)} data-testid="new-note-button">
             <UilPlus /> {t('dashboard.newNote')}
           </button>
         </div>

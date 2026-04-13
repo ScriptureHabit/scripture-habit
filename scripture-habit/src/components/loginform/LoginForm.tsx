@@ -223,6 +223,7 @@ const LoginForm: FC = () => {
 
         <form onSubmit={handleSubmit}>
           <Input
+            data-testid="login-email"
             label={t('login.emailLabel')}
             type="email"
             value={email}
@@ -231,6 +232,7 @@ const LoginForm: FC = () => {
           />
 
           <Input
+            data-testid="login-password"
             label={t('login.passwordLabel')}
             type='password'
             value={password}
@@ -244,14 +246,14 @@ const LoginForm: FC = () => {
             </Link>
           </div>
 
-          <Button type="submit">
+          <Button type="submit" data-testid="login-submit">
             {t('login.submitButton')}
           </Button>
         </form>
 
         {/* Error message */}
         {error && (
-          <div className='error-container'>
+          <div className='error-container' data-testid="login-error">
             <p className='error-message'>{error}</p>
             {unverifiedUser && (
               <button

@@ -232,6 +232,7 @@ export default function SignupForm() {
 
         <form onSubmit={handleSubmit}>
           <Input
+            data-testid="signup-nickname"
             label={t('signup.nicknameLabel')}
             type="text"
             value={nickname}
@@ -239,12 +240,14 @@ export default function SignupForm() {
             required
           />
           <Input
+            data-testid="signup-email"
             label={t('signup.emailLabel')}
             type="email"
             value={email}
             onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setEmail(e.target.value)}
             required />
           <Input
+            data-testid="signup-password"
             label={t('signup.passwordLabel')}
             type="password"
             value={password}
@@ -252,12 +255,12 @@ export default function SignupForm() {
             required
           />
           <p className="form-note">{t('signup.spamWarning')}</p>
-          <Button type="submit">
+          <Button type="submit" data-testid="signup-submit">
             {t('signup.submitButton')}
           </Button>
         </form>
         {error && (
-          <div className='error-container'>
+          <div className='error-container' data-testid="signup-error">
             <p className='error-message'>{error}</p>
           </div>
         )}

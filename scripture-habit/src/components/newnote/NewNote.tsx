@@ -186,7 +186,7 @@ const NewNote: FC<NewNoteProps> = ({
                         <h1>{noteToEdit ? t('newNote.editTitle') : t('newNote.newTitle')}</h1>
                     </div>
 
-                    <div className="form-group">
+                    <div className="form-group" data-testid="new-note-category">
                         <label className="input-label">{t('newNote.chooseScriptureLabel')}</label>
                         <Select
                             value={translatedScripturesOptions.find(o => o.value === scripture) || null}
@@ -218,6 +218,7 @@ const NewNote: FC<NewNoteProps> = ({
                             label={['General Conference', 'BYU Speeches', 'Other'].includes(scripture) ? t('newNote.urlLabel') : t('newNote.chapterLabel')}
                             type="text"
                             value={chapter}
+                            data-testid="new-note-chapter"
                             onChange={(e) => {
                                 const val = e.target.value;
                                 setChapter(val);
@@ -302,6 +303,7 @@ const NewNote: FC<NewNoteProps> = ({
                         label={t('newNote.commentLabel')}
                         as="textarea"
                         value={comment}
+                        data-testid="new-note-comment"
                         onChange={(e) => setComment(e.target.value)}
                         required
                         placeholder={commentPlaceholder}
@@ -324,6 +326,7 @@ const NewNote: FC<NewNoteProps> = ({
                             onClick={() => handleSubmit(noteToEdit, scripture, chapter, comment, shareOption, selectedShareGroups, currentGroupId, urlMeta, onClose)}
                             disabled={loading || !scripture || !chapter || !comment}
                             className="submit-btn"
+                            data-testid={noteToEdit ? "update-note-button" : "post-note-button"}
                         >
                             {loading ? t('newNote.saving') : (noteToEdit ? t('newNote.update') : t('newNote.post'))}
                         </button>
