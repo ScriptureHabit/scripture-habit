@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import fc from 'fast-check';
 import { StreakEngine, StreakState } from './streak-engine';
 
 describe('StreakEngine', () => {
@@ -78,5 +79,73 @@ describe('StreakEngine', () => {
 
         expect(result.newStreak).toBe(1);
         expect(result.streakUpdated).toBe(true);
+    });
+
+    describe('Property-Based Tests', () => {
+        it('should NEVER jump streak count by more than 1', () => {
+            fc.assert(
+                fc.property(
+                    fc.date({ min: new Date('2020-01-01T00:00:00Z'), max: new Date('2030-01-01T00:00:00Z') }).filter(d => !Number.isNaN(d.getTime())),
+                    fc.date({ min: new Date('2020-01-01T00:00:00Z'), max: new Date('2030-01-01T00:00:00Z') }).filter(d => !Number.isNaN(d.getTime())),
+                    fc.integer({ min: 1, max: 1000 }),
+                    fc.integer({ min: 1, max: 1000 }),
+                    (lastPostAt, currentNow, currentStreak, highest) => {
+                        // Ensure chronological order
+                        fc.pre(currentNow.getTime() >= lastPostAt.getTime());
+                        
+                        const state: StreakState = {
+                            streakCount: currentStreak,
+                            highestStreak: highest,
+                            lastPostDate: lastPostAt.toISOString().split('T')[0],
+                            lastPostAt: lastPostAt,
+                            timeZone: 'UTC'
+                        };
+
+                        const result = StreakEngine.calculateNextStreak(state, { now: currentNow });
+
+                        // The new streak MUST be either the old streak (if same day),
+                        // old streak + 1 (if within grace period), or 1 (if reset).
+                        // It can NEVER jump arbitrarily.
+                        expect(
+                            result.newStreak === 1 || 
+                            result.newStreak === currentStreak || 
+                            result.newStreak === currentStreak + 1
+                        ).toBe(true);
+
+                        // It should never exceed old highest by more than 1
+                        expect(result.currentHighest).toBeLessThanOrEqual(Math.max(highest, currentStreak + 1));
+                    }
+                ),
+                { numRuns: 100 }
+            );
+        });
+
+        it('should ALWAYS reset streak if gap is strictly greater than 48 hours (to be safe over 36 grace limit + 12 timezone variance max)', () => {
+            fc.assert(
+                fc.property(
+                    fc.date({ min: new Date('2020-01-01T00:00:00Z'), max: new Date('2030-01-01T00:00:00Z') }).filter(d => !Number.isNaN(d.getTime())),
+                    fc.integer({ min: 49, max: 10000 }), // hours gap
+                    fc.integer({ min: 1, max: 1000 }),
+                    (lastPostAt, hoursGap, currentStreak) => {
+                        const currentNow = new Date(lastPostAt.getTime() + hoursGap * 60 * 60 * 1000);
+                        
+                        const state: StreakState = {
+                            streakCount: currentStreak,
+                            highestStreak: currentStreak,
+                            lastPostDate: lastPostAt.toISOString().split('T')[0],
+                            lastPostAt: lastPostAt,
+                            timeZone: 'UTC'
+                        };
+
+                        const result = StreakEngine.calculateNextStreak(state, { now: currentNow });
+
+                        // If it's been more than 48 hours, it's definitely functionally impossible 
+                        // to be within a consecutive calculation timeframe correctly.
+                        expect(result.newStreak).toBe(1);
+                        expect(result.isConsecutive).toBe(false);
+                    }
+                )
+            );
+        });
     });
 });

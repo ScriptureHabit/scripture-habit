@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import fc from 'fast-check';
 import { calculateMemberStatus, toMillis, InactivityMemberData, InactivityGroupData } from './inactivity-utils.js';
 
 describe('Inactivity Utils', () => {
@@ -171,6 +172,64 @@ describe('Inactivity Utils', () => {
             const result = calculateMemberStatus('cosmos', memberDataAfterGuard, groupData, NOW);
             expect(result.status).toBe('inactive');
             expect(result.diffMs).toBeGreaterThanOrEqual(14 * 24 * 60 * 60 * 1000);
+        });
+
+        describe('Property-Based Tests', () => {
+            it('should ALWAYS mark member inactive if ALL timestamps are mathematically older than the threshold', () => {
+                fc.assert(
+                    fc.property(
+                        fc.date({ min: new Date('2020-01-01T00:00:00Z'), max: new Date('2030-01-01T00:00:00Z') }).filter(d => !Number.isNaN(d.getTime())),
+                        fc.integer({ min: 1, max: 100 }), // threshold in days
+                        fc.array(fc.integer({ min: 1, max: 1000 }), { minLength: 5, maxLength: 5 }), // exactly 5 gaps in days greater than threshold
+                        (now, thresholdDays, gaps) => {
+                            const memberData: InactivityMemberData = {
+                                joinedAt: new Date(now.getTime() - (thresholdDays + gaps[0]) * 24 * 60 * 60 * 1000),
+                                lastNoteAt: new Date(now.getTime() - (thresholdDays + gaps[1]) * 24 * 60 * 60 * 1000),
+                                lastPostAt: new Date(now.getTime() - (thresholdDays + gaps[2]) * 24 * 60 * 60 * 1000),
+                                lastReadAt: new Date(now.getTime() - (thresholdDays + gaps[3]) * 24 * 60 * 60 * 1000),
+                                lastActiveAt: new Date(now.getTime() - (thresholdDays + gaps[4]) * 24 * 60 * 60 * 1000),
+                                kickThreshold: thresholdDays
+                            };
+
+                            const result = calculateMemberStatus('u1', memberData, {} as InactivityGroupData, now);
+                            expect(result.status).toBe('inactive');
+                            expect(result.thresholdMs).toBe(thresholdDays * 24 * 60 * 60 * 1000);
+                        }
+                    )
+                );
+            });
+
+            it('should ALWAYS mark member active if ANY timestamp is newer than the threshold', () => {
+                fc.assert(
+                    fc.property(
+                        fc.date({ min: new Date('2020-01-01T00:00:00Z'), max: new Date('2030-01-01T00:00:00Z') }).filter(d => !Number.isNaN(d.getTime())),
+                        fc.integer({ min: 2, max: 100 }), // threshold in days
+                        fc.integer({ min: 0, max: 4 }), // which timestamp to make recent
+                        fc.integer({ min: 0, max: 1 }), // how many days ago it was (strictly less than min threshold)
+                        (now, thresholdDays, index, recentDays) => {
+                            const timestamps: Record<string, any> = {};
+                            const keys = ['joinedAt', 'lastNoteAt', 'lastPostAt', 'lastReadAt', 'lastActiveAt'];
+                            
+                            keys.forEach((key, i) => {
+                                if (i === index) {
+                                    timestamps[key] = new Date(now.getTime() - recentDays * 24 * 60 * 60 * 1000);
+                                } else {
+                                    // Old timestamps
+                                    timestamps[key] = new Date(now.getTime() - (thresholdDays + 10) * 24 * 60 * 60 * 1000);
+                                }
+                            });
+
+                            const memberData: InactivityMemberData = {
+                                ...timestamps,
+                                kickThreshold: thresholdDays
+                            };
+
+                            const result = calculateMemberStatus('u1', memberData, {} as InactivityGroupData, now);
+                            expect(result.status).toBe('active');
+                        }
+                    )
+                );
+            });
         });
     });
 });

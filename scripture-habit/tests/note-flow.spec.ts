@@ -1,30 +1,8 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures/auth.fixture';
 
 test.describe('Core Note Flow', () => {
-  let uniqueEmail: string;
-
-  test.beforeEach(async ({ page }) => {
-    // 1. Navigate to signup
-    await page.goto('/en/signup');
-    uniqueEmail = `test-${Date.now()}@example.com`;
-    
-    // 2. Fill Signup Form
-    await page.getByLabel('Nickname').fill('E2E Tester');
-    await page.getByLabel('Email Address').fill(uniqueEmail);
-    await page.getByLabel('Password').fill('password123');
-    await page.getByRole('button', { name: 'Sign Up', exact: true }).click();
-    
-    // 3. Handle Login redirect
-    await expect(page).toHaveURL(/.*login/);
-    await page.getByLabel('Email Address').fill(uniqueEmail);
-    await page.getByLabel('Password').fill('password123');
-    await page.getByRole('button', { name: 'Log In', exact: true }).click();
-    
-    // 4. Verification of arrival at dashboard
-    await expect(page).toHaveURL(/.*dashboard/, { timeout: 15000 });
-  });
-
-  test('should allow a user to take and then edit a note', async ({ page }) => {
+  test('should allow a user to take and then edit a note', async ({ authenticatedPage }) => {
+    const page = authenticatedPage; // Assign to page to reuse existing commands
     // --- PART 1: CREATE NOTE ---
     const newNoteBtn = page.getByRole('button', { name: 'New Note' });
     await expect(newNoteBtn).toBeVisible();
