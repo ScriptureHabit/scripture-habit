@@ -1,13 +1,13 @@
-import { useState } from 'react';
 import { db } from '../../../../firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import { UserProfileBrief, MembersMap } from '../../../../types/chat';
+import { useChatStore } from '../../../../store/useChatStore';
 
 export const useUserProfile = (
   membersMap: MembersMap,
   membersList: UserProfileBrief[]
 ) => {
-  const [selectedMember, setSelectedMember] = useState<UserProfileBrief | null>(null);
+  const { selectedMember, setSelectedMember } = useChatStore();
 
   const handleUserProfileClick = async (userId: string | null) => {
     if (!userId || userId === 'system') return;
