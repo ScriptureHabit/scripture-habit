@@ -14,6 +14,7 @@ jobs:
   build-and-test:
     name: Build & Test
     runs-on: ubuntu-latest
+    container: mcr.microsoft.com/playwright:v1.59.1-noble
 
     strategy:
       matrix:
@@ -51,8 +52,7 @@ jobs:
       - name: Run Integration Tests
         run: npm run test:internal
 
-      - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
+      # Playwright browsers are pre-installed in the container
 
       - name: Run E2E Tests
         run: npm run test:e2e
