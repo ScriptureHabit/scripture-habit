@@ -18,15 +18,14 @@ export const useUnityScore = (
   const unityPercentage = useMemo<number>(() => {
     if (!groupId || !groupData || groupData.id !== groupId) return 0;
     return calculateUnityPercentage(groupData, messages);
-  }, [messages, groupData, groupId, userData?.timeZone]);
+  }, [messages, groupData, groupId]);
 
   useEffect(() => {
     // Only proceed if unity is reached AND user is still a member of this specific group
     if (!userData?.uid || !groupId || unityPercentage !== 100) return;
     if (!groupData?.members?.includes(userData.uid)) return;
 
-    const effectiveTimeZone = groupData?.timeZone || userData?.timeZone || 'UTC';
-    const todayStr = new Date().toLocaleDateString('sv-SE', { timeZone: effectiveTimeZone });
+    const todayStr = new Date().toLocaleDateString('sv-SE');
     const storageKey = `unity_firework_${groupId}_${userData.uid}`;
     const lastSeen = safeStorage.get(storageKey);
 
@@ -82,7 +81,7 @@ export const useUnityScore = (
       };
       checkAndSendAnnouncement();
     }
-  }, [unityPercentage, groupId, userData?.uid, userData?.timeZone, groupData?.members, groupData?.timeZone]);
+  }, [unityPercentage, groupId, userData?.uid, groupData?.members, groupData?.timeZone]);
 
   return unityPercentage;
 };
