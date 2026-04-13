@@ -1,7 +1,7 @@
 
 import { useEffect, FC } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useLanguage } from '../../../hooks/useLanguage';
+import { useLanguage } from '../../hooks/useLanguage';
 import './PrivacyPolicy.css';
 
 const PrivacyPolicy: FC = () => {

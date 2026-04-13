@@ -1,9 +1,9 @@
-
-import { SUPPORTED_LANGUAGES } from '../../../config/languages';
 import { useState, useEffect, FC } from 'react';
-import { UilMultiply, UilShare, UilPlusSquare, UilApps } from '@iconscout/react-unicons';
 import { useLocation } from 'react-router-dom';
-import { useLanguage } from '../../../hooks/useLanguage';
+import { UilMultiply, UilShare, UilPlusSquare, UilApps } from '@iconscout/react-unicons';
+import { useLanguage } from '../../hooks/useLanguage';
+import { Language } from '../../context/LanguageContext';
+import { SUPPORTED_LANGUAGES } from '../../config/languages';
 import './InstallPrompt.css';
 
 // Extend Navigator for iOS standalone check

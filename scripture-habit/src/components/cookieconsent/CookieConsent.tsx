@@ -2,7 +2,7 @@
 import { FC, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { safeStorage } from '../../utils/storage';
-import { useLanguage } from '../../../hooks/useLanguage';
+import { useLanguage } from '../../hooks/useLanguage';
 import './CookieConsent.css';
 
 const CookieConsent: FC = () => {

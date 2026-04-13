@@ -1,8 +1,8 @@
 
-import { SUPPORTED_LANGUAGES } from '../../../config/languages';
+import { SUPPORTED_LANGUAGES } from '../../config/languages';
 import React from 'react';
 import { Navigate, Location } from 'react-router-dom';
-import { useLanguage } from '../../../hooks/useLanguage';
+import { useLanguage } from '../../hooks/useLanguage';
 
 interface LanguageRedirectProps {
   location: Location;

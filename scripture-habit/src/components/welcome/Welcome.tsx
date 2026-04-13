@@ -3,7 +3,7 @@ import { useState, FC } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Button from '../button/Button';
 import Mascot from '../mascot/Mascot';
-import { useLanguage } from '../../../hooks/useLanguage';
+import { useLanguage } from '../../hooks/useLanguage';
 import BrowserWarningModal from '../browserwarningmodal/BrowserWarningModal';
 import { isInAppBrowser } from '../../utils/browserDetection';
 import './Welcome.css';

@@ -1,6 +1,6 @@
 
 import { FC } from 'react';
-import { useLanguage } from '../../../hooks/useLanguage';
+import { useLanguage } from '../../hooks/useLanguage';
 import { UilArrowLeft } from '@iconscout/react-unicons';
 import { useNavigate } from 'react-router-dom';
 import './LegalDisclosure.css';

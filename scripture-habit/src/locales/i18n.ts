@@ -1,4 +1,4 @@
-import { Language } from '/languages';
+import { Language } from '../config/languages';
 
 const loaders: Record<Language, () => Promise<{ default: Record<string, unknown> }>> = {
   en: () => import('./en'),

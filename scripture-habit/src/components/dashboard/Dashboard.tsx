@@ -24,7 +24,7 @@ import './Dashboard.css';
 // Utils & Stores
 import { useModalStore } from '../../store/useModalStore';
 import { getGospelLibraryUrl } from '../../utils/gospelLibraryMapper';
-import { useLanguage } from '../../../hooks/useLanguage';
+import { useLanguage } from '../../hooks/useLanguage';
 import { getTodayReadingPlan } from '../../data/DailyReadingPlan';
 
 // Hooks

@@ -2,7 +2,7 @@
 import { useState, useEffect, FC, useMemo } from 'react';
 import Select from 'react-select';
 import { UilShuffle, UilRobot } from '@iconscout/react-unicons';
-import { useLanguage } from '../../../hooks/useLanguage';
+import { useLanguage } from '../../hooks/useLanguage';
 import Input from '../input/Input';
 import './NewNote.css';
 

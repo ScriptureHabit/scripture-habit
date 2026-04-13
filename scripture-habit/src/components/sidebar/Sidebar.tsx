@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { auth, appCheck } from '../../firebase';
 // Removed unused Firestore imports
 import { getToken } from "firebase/app-check";
-import { useLanguage } from '../../../hooks/useLanguage';
+import { useLanguage } from '../../hooks/useLanguage';
 import { UserData } from '../../types/user';
 import { Group } from '../../types/chat';
 import { calculateUnityPercentage } from '../../utils/unityUtils';

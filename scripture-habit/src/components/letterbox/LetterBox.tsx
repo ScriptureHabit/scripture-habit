@@ -5,7 +5,7 @@ import { collection, query, orderBy, onSnapshot, doc, deleteDoc } from 'firebase
 import { UilEnvelope, UilTrashAlt, UilTimes } from '@iconscout/react-unicons';
 import ReactMarkdown from 'react-markdown';
 import './LetterBox.css';
-import { useLanguage } from '../../../hooks/useLanguage';
+import { useLanguage } from '../../hooks/useLanguage';
 import { UserData } from '../../types/user';
 import ConfirmModal from '../confirmmodal/ConfirmModal';
 

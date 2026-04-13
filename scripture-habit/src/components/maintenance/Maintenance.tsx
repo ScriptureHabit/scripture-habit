@@ -1,6 +1,6 @@
 
 import { FC } from 'react';
-import { useLanguage } from '../../../hooks/useLanguage';
+import { useLanguage } from '../../hooks/useLanguage';
 import './Maintenance.css';
 
 interface MaintenanceProps {

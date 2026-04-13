@@ -1,7 +1,7 @@
-
 import { useState, FC } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useLanguage } from '../../../hooks/useLanguage';
+import { useLanguage } from '../../hooks/useLanguage';
+import { Language } from '../../context/LanguageContext';
 import Button from '../button/Button';
 import './LandingPage.css';
 import Footer from '../footer/Footer';

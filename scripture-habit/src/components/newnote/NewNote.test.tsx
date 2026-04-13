@@ -2,13 +2,13 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import NewNote from './NewNote';
-import { useLanguage } from '../../../hooks/useLanguage';
+import { useLanguage } from '../../hooks/useLanguage';
 import { UserData } from '../../types/user';
 import { Note } from '../../types/note';
 import { ScriptureCategory } from '../../types/scripture';
 
 // Mock LanguageContext
-vi.mock('../../context/LanguageContext', () => ({
+vi.mock('../../hooks/useLanguage', () => ({
     useLanguage: vi.fn(),
 }));
 

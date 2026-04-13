@@ -1,7 +1,7 @@
 
 import { useState, useEffect, FC, useRef, ChangeEvent } from 'react';
 import './Profile.css';
-import { useLanguage } from '../../../hooks/useLanguage';
+import { useLanguage } from '../../hooks/useLanguage';
 import { useSettings } from '../../context/SettingsContext';
 import { auth, storage } from '../../firebase';
 import { useNavigate } from 'react-router-dom';

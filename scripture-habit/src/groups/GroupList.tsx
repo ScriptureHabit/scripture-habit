@@ -3,7 +3,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { getFirestore, collection, onSnapshot, query, orderBy, limit } from 'firebase/firestore';
 import { app } from '../firebase';
 import GroupCard from './GroupCard';
-import { useLanguage } from '../../hooks/useLanguage';
+import { useLanguage } from '../hooks/useLanguage';
 import './GroupList.css';
 import { Group } from '../types/chat';
 

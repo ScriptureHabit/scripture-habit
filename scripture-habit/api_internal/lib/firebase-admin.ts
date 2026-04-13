@@ -37,13 +37,13 @@ if (!admin.apps.length) {
         } catch (error) {
             console.error('Firebase Admin initialization error:', error);
         }
-    } else if (process.env.FIRESTORE_EMULATOR_HOST) {
+    } else if (process.env.FIRESTORE_EMULATOR_HOST || process.env.NODE_ENV === 'test') {
         // Initialize for Emulator
         try {
             admin.initializeApp({
-                projectId: process.env.GCLOUD_PROJECT || 'test-project'
+                projectId: process.env.GCLOUD_PROJECT || 'scripture-habit-auth'
             });
-            console.log('Firebase Admin initialized for Emulator');
+            console.log('Firebase Admin initialized for Emulator/Test Mode');
         } catch (error) {
             console.error('Firebase Admin Emulator initialization error:', error);
         }

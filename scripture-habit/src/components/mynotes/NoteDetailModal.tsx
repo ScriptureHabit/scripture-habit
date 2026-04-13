@@ -4,7 +4,7 @@ import { UilTimes, UilPen, UilTrashAlt, UilComment, UilThumbsUp } from '@iconsco
 import { db } from '../../firebase';
 import { doc, collection, query, where, onSnapshot, Timestamp } from 'firebase/firestore';
 import NoteDisplay from '../notedisplay/NoteDisplay';
-import { useLanguage } from '../../../hooks/useLanguage';
+import { useLanguage } from '../../hooks/useLanguage';
 import './NoteDetailModal.css';
 import { Note } from '../../types/note';
 import { Group, Message, FirebaseTimestamp } from '../../types/chat';

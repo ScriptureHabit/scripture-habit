@@ -8,7 +8,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { onAuthStateChanged, User } from "firebase/auth";
 import '../groupform/GroupForm.css';
 import GroupCard from '../../groups/GroupCard';
-import { useLanguage } from '../../../hooks/useLanguage';
+import { useLanguage } from '../../hooks/useLanguage';
 import UserProfileModal from '../userprofilemodal/UserProfileModal';
 import Mascot from '../mascot/Mascot';
 import { toast } from 'react-toastify';

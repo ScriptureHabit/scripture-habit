@@ -3,7 +3,7 @@ import React, { useState, useCallback, useMemo } from 'react';
 import { getFirestore, collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { app } from '../firebase';
 import { toast } from 'react-toastify';
-import { useLanguage } from '../../hooks/useLanguage';
+import { useLanguage } from '../hooks/useLanguage';
 import './GroupCreate.css';
 
 interface UserInfo {

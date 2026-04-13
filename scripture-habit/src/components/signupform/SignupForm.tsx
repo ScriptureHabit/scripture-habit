@@ -9,7 +9,7 @@ import { doc, setDoc, getDoc, Timestamp } from 'firebase/firestore';
 import { useNavigate, Link } from 'react-router-dom';
 import Input from '../input/Input';
 import './SignupForm.css'
-import { useLanguage } from '../../../hooks/useLanguage';
+import { useLanguage } from '../../hooks/useLanguage';
 import { UilGoogle, UilGithub } from '@iconscout/react-unicons';
 import { toast } from 'react-toastify';
 import Footer from '../footer/Footer';

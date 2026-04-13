@@ -7,7 +7,7 @@ import RecapModal from '../recapmodal/RecapModal';
 import LetterBox from '../letterbox/LetterBox';
 import { toast } from 'react-toastify';
 import './MyNotes.css';
-import { useLanguage } from '../../../hooks/useLanguage';
+import { useLanguage } from '../../hooks/useLanguage';
 import NoteDetailModal from './NoteDetailModal';
 import Mascot from '../mascot/Mascot';
 import { NoteGridSkeleton } from '../skeleton/Skeleton';

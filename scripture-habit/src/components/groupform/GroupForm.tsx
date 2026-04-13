@@ -8,7 +8,7 @@ import Input from '../input/Input';
 import Button from '../button/Button';
 import Toggle from '../input/Toggle';
 import { toast } from "react-toastify";
-import { useLanguage } from '../../../hooks/useLanguage';
+import { useLanguage } from '../../hooks/useLanguage';
 import Mascot from '../mascot/Mascot';
 import { generateInviteCode } from '../../utils/inviteUtils';
 
