@@ -167,7 +167,7 @@ const Sidebar: React.FC<SidebarProps> = ({ selected, setSelected, userGroups = [
     if (group.unityPercentageOverride !== undefined) {
       return group.unityPercentageOverride;
     }
-    return calculateUnityPercentage(group, userData?.timeZone || 'UTC');
+    return calculateUnityPercentage(group);
   };
 
   const getGroupStatusEmoji = (group: Group): string => {

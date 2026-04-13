@@ -17,7 +17,7 @@ export const useUnityScore = (
 ): number => {
   const unityPercentage = useMemo<number>(() => {
     if (!groupId || !groupData || groupData.id !== groupId) return 0;
-    return calculateUnityPercentage(groupData, userData?.timeZone, messages);
+    return calculateUnityPercentage(groupData, messages);
   }, [messages, groupData, groupId, userData?.timeZone]);
 
   useEffect(() => {

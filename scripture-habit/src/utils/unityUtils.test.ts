@@ -40,14 +40,14 @@ describe('calculateUnityPercentage Timezone Discrepancy', () => {
     const groupWithNoTZ: Group = { ...mockGroup, timeZone: undefined, dailyActivity: { date: '2023-10-27', activeMembers: ['user1'] } } as any;
     
     // Both Tokyo and London viewers should see 50% because they both fallback to UTC (2023-10-27).
-    expect(calculateUnityPercentage(groupWithNoTZ, 'Asia/Tokyo')).toBe(50);
-    expect(calculateUnityPercentage(groupWithNoTZ, 'Europe/London')).toBe(50);
+    expect(calculateUnityPercentage(groupWithNoTZ)).toBe(50);
+    expect(calculateUnityPercentage(groupWithNoTZ)).toBe(50);
   });
 
   it('calculates 0% if the summary actually belongs to a different UTC day', () => {
     vi.setSystemTime(new Date('2023-10-28T05:00:00+09:00')); // UTC is 2023-10-27
     const groupWithFutureDate: Group = { ...mockGroup, timeZone: undefined, dailyActivity: { date: '2023-10-28', activeMembers: ['user1'] } } as any;
     
-    expect(calculateUnityPercentage(groupWithFutureDate, 'Asia/Tokyo')).toBe(0);
+    expect(calculateUnityPercentage(groupWithFutureDate)).toBe(0);
   });
 });

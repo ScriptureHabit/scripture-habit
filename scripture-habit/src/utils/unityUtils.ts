@@ -12,7 +12,6 @@ import { parseTimestampToMillis, formatDateInTimeZone, normalizeDateString } fro
  */
 export const calculateUnityPercentage = (
   group: Group | null,
-  userTimeZone: string = 'UTC',
   messages: Message[] = []
 ): number => {
   if (!group || !group.members || group.members.length === 0) return 0;
