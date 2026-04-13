@@ -1,4 +1,5 @@
 import { admin, db } from '../lib/firebase-admin.js';
+import { UserDocument, GroupDocument } from '../../types/firestore.js';
 import { NotFoundError } from '../lib/errors.js';
 import { buildNoteSearchTokens } from '../lib/search-utils.js';
 import { t } from '../lib/i18n.js';
@@ -39,13 +40,13 @@ export class NoteService {
                     : userRef.collection('notes').doc();
 
                 // --- 1. ALL READS FIRST ---
-                const [userDoc, existingNoteSnap] = await Promise.all([
+                const [userSnap, existingNoteSnap] = await Promise.all([
                     transaction.get(userRef),
                     transaction.get(noteRef)
-                ]);
+                ]) as [admin.firestore.DocumentSnapshot<UserDocument>, admin.firestore.DocumentSnapshot];
 
-                if (!userDoc.exists) throw new NotFoundError('User not found.');
-                const userData = userDoc.data()!;
+                if (!userSnap.exists) throw new NotFoundError('User not found.');
+                const userData = userSnap.data()!;
                 const userGroupIds: string[] = userData.groupIds || (userData.groupId ? [userData.groupId] : []);
 
                 // Target logic
@@ -60,27 +61,41 @@ export class NoteService {
                 
                 // SECOND BATCH OF READS (must be before any write)
                 const groupDocs = allGroupIds.length > 0 
-                  ? await transaction.getAll(...allGroupIds.map(gid => db.collection('groups').doc(gid)))
+                  ? await transaction.getAll(...allGroupIds.map(gid => db.collection('groups').doc(gid))) as admin.firestore.DocumentSnapshot<GroupDocument>[]
                   : [];
-                const groupDocsMap = new Map(groupDocs.map(d => [d.id, d]));
+                const groupDocsMap = new Map<string, admin.firestore.DocumentSnapshot<GroupDocument>>(
+                    groupDocs.map(d => [d.id, d])
+                );
 
                 // --- 2. CALCULATIONS (Pure Logic) ---
                 const existingNote = existingNoteSnap.data();
                 const existingSharedIds = existingNote?.sharedMessageIds || {};
                 const now = new Date();
                 const timeZone = userData.timeZone || 'UTC';
+                let lastPostAtDate: Date | null = null;
+                const lastPostAtRaw = userData.lastPostAt;
+                if (lastPostAtRaw) {
+                    if (typeof lastPostAtRaw === 'object' && 'toDate' in lastPostAtRaw) {
+                        lastPostAtDate = (lastPostAtRaw as { toDate: () => Date }).toDate();
+                    } else if (typeof lastPostAtRaw === 'object' && 'seconds' in lastPostAtRaw) {
+                        lastPostAtDate = new Date(lastPostAtRaw.seconds * 1000);
+                    } else {
+                        lastPostAtDate = new Date(lastPostAtRaw as string | number | Date);
+                    }
+                }
+
                 const streakResult = StreakEngine.calculateNextStreak({
                     streakCount: Number(userData.streakCount || userData.streak || 0),
                     highestStreak: Number(userData.highestStreak || userData.streak || 0),
                     lastPostDate: userData.lastPostDate || null,
-                    lastPostAt: userData.lastPostAt ? (userData.lastPostAt.toDate ? userData.lastPostAt.toDate() : new Date(userData.lastPostAt)) : null,
+                    lastPostAt: lastPostAtDate,
                     timeZone
                 }, { now, clientTimeZone });
 
                 const { newStreak, currentHighest, today, streakUpdated } = streakResult;
 
                 // --- 3. ALL WRITES START HERE ---
-                const userUpdate: Record<string, any> = {
+                const userUpdate: admin.firestore.UpdateData<UserDocument> = {
                     lastPostAt: admin.firestore.Timestamp.fromDate(now)
                 };
 
@@ -147,7 +162,7 @@ export class NoteService {
                         }).format(now);
                     }
 
-                    const groupUpdate: Record<string, any> = {
+                    const groupUpdate = {
                         lastMessageAt: serverTime,
                         lastNoteAt: serverTime,
                         lastNoteByNickname: userNickname,
@@ -156,7 +171,7 @@ export class NoteService {
                         [`memberLastReadAt.${uid}`]: serverTime,
                         messageCount: admin.firestore.FieldValue.increment(1),
                         noteCount: admin.firestore.FieldValue.increment(1)
-                    };
+                    } as admin.firestore.UpdateData<GroupDocument>;
 
                     if (gData.dailyActivity?.date !== groupToday) {
                         groupUpdate.dailyActivity = { date: groupToday, activeMembers: [uid] };
@@ -241,7 +256,14 @@ export class NoteService {
                     nickname: userNickname, 
                     userToGroupEntries 
                 };
-            });
+            }) as { 
+                personalNoteId: string, 
+                sharedMessageIds: Record<string, string>, 
+                newStreak: number, 
+                streakUpdated: boolean, 
+                nickname: string, 
+                userToGroupEntries: [string, string][] 
+            };
 
             // Push Notifications
             NotificationService.notifyNotePosted({
@@ -280,9 +302,10 @@ export class NoteService {
                 const msgRefs = sharedEntries.map(([gid, mid]) => db.collection('groups').doc(gid).collection('messages').doc(String(mid)));
 
                 // --- 2. BATCH READ: User, Groups, and affected Messages ---
-                const [_userDoc, ...sharedDocs] = await transaction.getAll(userRef, ...groupRefs, ...msgRefs);
-                const groupDocs = sharedDocs.slice(0, sharedEntries.length);
-                const msgDocs = sharedDocs.slice(sharedEntries.length);
+                const snapshotResults = await transaction.getAll(userRef, ...groupRefs, ...msgRefs) as admin.firestore.DocumentSnapshot[];
+                const [_userDoc, ...sharedDocs] = snapshotResults;
+                const groupDocs = sharedDocs.slice(0, sharedEntries.length) as admin.firestore.DocumentSnapshot<GroupDocument>[];
+                const msgDocs = sharedDocs.slice(sharedEntries.length) as admin.firestore.DocumentSnapshot[];
 
                 const now = new Date();
                 const todayStart = new Date(now);
@@ -354,7 +377,7 @@ export class NoteService {
                     const meta = queryMetadata[i];
                     if (!gSnap.exists || !mSnap.exists) continue;
 
-                    const updatePayload: Record<string, any> = {};
+                    const updatePayload: admin.firestore.UpdateData<GroupDocument> = {};
 
                     // Handle lastNote recovery
                     if (meta.needsNextNote) {

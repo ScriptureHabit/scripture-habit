@@ -1,5 +1,5 @@
 import { admin, db } from '../lib/firebase-admin.js';
-import { GroupDocument, MessageDocument, UserDocument, ReactionPreview, PersonalNoteDocument } from '../../types/firestore.js';
+import { GroupDocument, MessageDocument, UserDocument, ReactionPreview, PersonalNoteDocument, FirestoreTimestamp } from '../../types/firestore.js';
 import { buildNoteSearchTokens } from '../lib/search-utils.js';
 
 export interface PostMessageParams {
@@ -67,7 +67,7 @@ export class MessageService {
                 senderId: uid,
                 senderNickname: userData.nickname || 'Member',
                 senderPhotoURL: userData.photoURL || '',
-                createdAt: admin.firestore.FieldValue.serverTimestamp() as any,
+                createdAt: admin.firestore.FieldValue.serverTimestamp() as unknown as FirestoreTimestamp,
                 isNote: false,
                 isEntry: false,
                 ...(replyTo ? { 
@@ -83,14 +83,14 @@ export class MessageService {
 
             transaction.set(msgRef, msgData);
 
-            const updatePayload: any = {
+            const updatePayload = {
                 messageCount: admin.firestore.FieldValue.increment(1),
                 lastMessageAt: admin.firestore.FieldValue.serverTimestamp(),
                 lastMessageByNickname: userData.nickname || 'Member',
                 lastMessageByUid: uid,
                 [`memberLastReadAt.${uid}`]: admin.firestore.FieldValue.serverTimestamp(),
                 [`memberLastActive.${uid}`]: admin.firestore.FieldValue.serverTimestamp()
-            };
+            } as admin.firestore.UpdateData<GroupDocument>;
 
             transaction.update(groupRef, updatePayload);
             
@@ -266,7 +266,7 @@ export class MessageService {
             if (msgData.isSystemMessage === true) throw new Error('Cannot delete system messages');
             if (msgData.senderId !== uid) throw new Error('Forbidden: You can only delete your own messages');
 
-            const groupUpdate: any = {
+            const groupUpdate: admin.firestore.UpdateData<GroupDocument> = {
                 messageCount: admin.firestore.FieldValue.increment(-1)
             };
 

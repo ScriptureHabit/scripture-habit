@@ -1,10 +1,10 @@
 import { initializeApp, FirebaseApp } from "firebase/app";
 import { getAnalytics, Analytics } from "firebase/analytics";
-import { getAuth, Auth } from "firebase/auth";
+import { getAuth, Auth, connectAuthEmulator } from "firebase/auth";
 import { getMessaging, Messaging, isSupported } from "firebase/messaging";
 import { getStorage, FirebaseStorage } from "firebase/storage";
-import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, Firestore, getFirestore } from "firebase/firestore";
-import { initializeAppCheck, ReCaptchaEnterpriseProvider, CustomProvider } from "firebase/app-check";
+import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, Firestore, getFirestore, connectFirestoreEmulator } from "firebase/firestore";
+import { initializeAppCheck, ReCaptchaEnterpriseProvider, CustomProvider, AppCheck } from "firebase/app-check";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -65,11 +65,23 @@ try {
 
 const storage: FirebaseStorage = getStorage(app);
 
+// Connect to emulators if requested
+if (import.meta.env.VITE_USE_FIREBASE_EMULATOR === 'true') {
+  if (auth) {
+    connectAuthEmulator(auth, 'http://localhost:9099');
+    console.log("Connected to Auth Emulator");
+  }
+  if (db) {
+    connectFirestoreEmulator(db, 'localhost', 8080);
+    console.log("Connected to Firestore Emulator");
+  }
+}
+
 if (import.meta.env.DEV) {
     (self as unknown as { FIREBASE_APPCHECK_DEBUG_TOKEN: boolean }).FIREBASE_APPCHECK_DEBUG_TOKEN = true;
 }
 
-let appCheck: any = null;
+let appCheck: AppCheck | null = null;
 try {
   appCheck = initializeAppCheck(app, {
       provider: import.meta.env.DEV ? new CustomProvider({

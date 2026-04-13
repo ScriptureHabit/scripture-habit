@@ -121,7 +121,7 @@ const GroupChatProvider: FC<GroupChatProviderProps> = ({
   const { handleUserProfileClick } = useUserProfile(membersMap, localState.state.membersList);
 
   const isOwner = groupData?.ownerUserId === userData?.uid;
-  const textareaRef = chatUI.textareaRef as any; // Shim if needed, or better use specific ref
+  const textareaRef = chatUI.textareaRef;
 
   // --- SPLIT CONTEXT ASSEMBLY ---
 

@@ -60,7 +60,7 @@ const GroupChatFooter: FC = () => {
             replyTo={replyTo}
             setReplyTo={setReplyTo}
             t={t}
-            textareaRef={textareaRef as any}
+            textareaRef={textareaRef}
             newMessage={newMessage}
             setNewMessage={setNewMessage}
             handleKeyDown={handleKeyDown}

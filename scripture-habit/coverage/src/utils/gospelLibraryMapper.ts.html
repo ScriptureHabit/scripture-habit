@@ -1,0 +1,874 @@
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Code coverage report for src/utils/gospelLibraryMapper.ts</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../prettify.css" />
+    <link rel="stylesheet" href="../../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../../favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+    
+<body>
+<div class='wrapper'>
+    <div class='pad1'>
+        <h1><a href="../../index.html">All files</a> / <a href="index.html">src/utils</a> gospelLibraryMapper.ts</h1>
+        <div class='clearfix'>
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">34.75% </span>
+                <span class="quiet">Statements</span>
+                <span class='fraction'>49/141</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">22.17% </span>
+                <span class="quiet">Branches</span>
+                <span class='fraction'>55/248</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">33.33% </span>
+                <span class="quiet">Functions</span>
+                <span class='fraction'>2/6</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">42.72% </span>
+                <span class="quiet">Lines</span>
+                <span class='fraction'>47/110</span>
+            </div>
+        
+            
+        </div>
+        <p class="quiet">
+            Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
+        </p>
+        <template id="filterTemplate">
+            <div class="quiet">
+                Filter:
+                <input type="search" id="fileSearch">
+            </div>
+        </template>
+    </div>
+    <div class='status-line low'></div>
+    <pre><table class="coverage">
+<tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
+<a name='L2'></a><a href='#L2'>2</a>
+<a name='L3'></a><a href='#L3'>3</a>
+<a name='L4'></a><a href='#L4'>4</a>
+<a name='L5'></a><a href='#L5'>5</a>
+<a name='L6'></a><a href='#L6'>6</a>
+<a name='L7'></a><a href='#L7'>7</a>
+<a name='L8'></a><a href='#L8'>8</a>
+<a name='L9'></a><a href='#L9'>9</a>
+<a name='L10'></a><a href='#L10'>10</a>
+<a name='L11'></a><a href='#L11'>11</a>
+<a name='L12'></a><a href='#L12'>12</a>
+<a name='L13'></a><a href='#L13'>13</a>
+<a name='L14'></a><a href='#L14'>14</a>
+<a name='L15'></a><a href='#L15'>15</a>
+<a name='L16'></a><a href='#L16'>16</a>
+<a name='L17'></a><a href='#L17'>17</a>
+<a name='L18'></a><a href='#L18'>18</a>
+<a name='L19'></a><a href='#L19'>19</a>
+<a name='L20'></a><a href='#L20'>20</a>
+<a name='L21'></a><a href='#L21'>21</a>
+<a name='L22'></a><a href='#L22'>22</a>
+<a name='L23'></a><a href='#L23'>23</a>
+<a name='L24'></a><a href='#L24'>24</a>
+<a name='L25'></a><a href='#L25'>25</a>
+<a name='L26'></a><a href='#L26'>26</a>
+<a name='L27'></a><a href='#L27'>27</a>
+<a name='L28'></a><a href='#L28'>28</a>
+<a name='L29'></a><a href='#L29'>29</a>
+<a name='L30'></a><a href='#L30'>30</a>
+<a name='L31'></a><a href='#L31'>31</a>
+<a name='L32'></a><a href='#L32'>32</a>
+<a name='L33'></a><a href='#L33'>33</a>
+<a name='L34'></a><a href='#L34'>34</a>
+<a name='L35'></a><a href='#L35'>35</a>
+<a name='L36'></a><a href='#L36'>36</a>
+<a name='L37'></a><a href='#L37'>37</a>
+<a name='L38'></a><a href='#L38'>38</a>
+<a name='L39'></a><a href='#L39'>39</a>
+<a name='L40'></a><a href='#L40'>40</a>
+<a name='L41'></a><a href='#L41'>41</a>
+<a name='L42'></a><a href='#L42'>42</a>
+<a name='L43'></a><a href='#L43'>43</a>
+<a name='L44'></a><a href='#L44'>44</a>
+<a name='L45'></a><a href='#L45'>45</a>
+<a name='L46'></a><a href='#L46'>46</a>
+<a name='L47'></a><a href='#L47'>47</a>
+<a name='L48'></a><a href='#L48'>48</a>
+<a name='L49'></a><a href='#L49'>49</a>
+<a name='L50'></a><a href='#L50'>50</a>
+<a name='L51'></a><a href='#L51'>51</a>
+<a name='L52'></a><a href='#L52'>52</a>
+<a name='L53'></a><a href='#L53'>53</a>
+<a name='L54'></a><a href='#L54'>54</a>
+<a name='L55'></a><a href='#L55'>55</a>
+<a name='L56'></a><a href='#L56'>56</a>
+<a name='L57'></a><a href='#L57'>57</a>
+<a name='L58'></a><a href='#L58'>58</a>
+<a name='L59'></a><a href='#L59'>59</a>
+<a name='L60'></a><a href='#L60'>60</a>
+<a name='L61'></a><a href='#L61'>61</a>
+<a name='L62'></a><a href='#L62'>62</a>
+<a name='L63'></a><a href='#L63'>63</a>
+<a name='L64'></a><a href='#L64'>64</a>
+<a name='L65'></a><a href='#L65'>65</a>
+<a name='L66'></a><a href='#L66'>66</a>
+<a name='L67'></a><a href='#L67'>67</a>
+<a name='L68'></a><a href='#L68'>68</a>
+<a name='L69'></a><a href='#L69'>69</a>
+<a name='L70'></a><a href='#L70'>70</a>
+<a name='L71'></a><a href='#L71'>71</a>
+<a name='L72'></a><a href='#L72'>72</a>
+<a name='L73'></a><a href='#L73'>73</a>
+<a name='L74'></a><a href='#L74'>74</a>
+<a name='L75'></a><a href='#L75'>75</a>
+<a name='L76'></a><a href='#L76'>76</a>
+<a name='L77'></a><a href='#L77'>77</a>
+<a name='L78'></a><a href='#L78'>78</a>
+<a name='L79'></a><a href='#L79'>79</a>
+<a name='L80'></a><a href='#L80'>80</a>
+<a name='L81'></a><a href='#L81'>81</a>
+<a name='L82'></a><a href='#L82'>82</a>
+<a name='L83'></a><a href='#L83'>83</a>
+<a name='L84'></a><a href='#L84'>84</a>
+<a name='L85'></a><a href='#L85'>85</a>
+<a name='L86'></a><a href='#L86'>86</a>
+<a name='L87'></a><a href='#L87'>87</a>
+<a name='L88'></a><a href='#L88'>88</a>
+<a name='L89'></a><a href='#L89'>89</a>
+<a name='L90'></a><a href='#L90'>90</a>
+<a name='L91'></a><a href='#L91'>91</a>
+<a name='L92'></a><a href='#L92'>92</a>
+<a name='L93'></a><a href='#L93'>93</a>
+<a name='L94'></a><a href='#L94'>94</a>
+<a name='L95'></a><a href='#L95'>95</a>
+<a name='L96'></a><a href='#L96'>96</a>
+<a name='L97'></a><a href='#L97'>97</a>
+<a name='L98'></a><a href='#L98'>98</a>
+<a name='L99'></a><a href='#L99'>99</a>
+<a name='L100'></a><a href='#L100'>100</a>
+<a name='L101'></a><a href='#L101'>101</a>
+<a name='L102'></a><a href='#L102'>102</a>
+<a name='L103'></a><a href='#L103'>103</a>
+<a name='L104'></a><a href='#L104'>104</a>
+<a name='L105'></a><a href='#L105'>105</a>
+<a name='L106'></a><a href='#L106'>106</a>
+<a name='L107'></a><a href='#L107'>107</a>
+<a name='L108'></a><a href='#L108'>108</a>
+<a name='L109'></a><a href='#L109'>109</a>
+<a name='L110'></a><a href='#L110'>110</a>
+<a name='L111'></a><a href='#L111'>111</a>
+<a name='L112'></a><a href='#L112'>112</a>
+<a name='L113'></a><a href='#L113'>113</a>
+<a name='L114'></a><a href='#L114'>114</a>
+<a name='L115'></a><a href='#L115'>115</a>
+<a name='L116'></a><a href='#L116'>116</a>
+<a name='L117'></a><a href='#L117'>117</a>
+<a name='L118'></a><a href='#L118'>118</a>
+<a name='L119'></a><a href='#L119'>119</a>
+<a name='L120'></a><a href='#L120'>120</a>
+<a name='L121'></a><a href='#L121'>121</a>
+<a name='L122'></a><a href='#L122'>122</a>
+<a name='L123'></a><a href='#L123'>123</a>
+<a name='L124'></a><a href='#L124'>124</a>
+<a name='L125'></a><a href='#L125'>125</a>
+<a name='L126'></a><a href='#L126'>126</a>
+<a name='L127'></a><a href='#L127'>127</a>
+<a name='L128'></a><a href='#L128'>128</a>
+<a name='L129'></a><a href='#L129'>129</a>
+<a name='L130'></a><a href='#L130'>130</a>
+<a name='L131'></a><a href='#L131'>131</a>
+<a name='L132'></a><a href='#L132'>132</a>
+<a name='L133'></a><a href='#L133'>133</a>
+<a name='L134'></a><a href='#L134'>134</a>
+<a name='L135'></a><a href='#L135'>135</a>
+<a name='L136'></a><a href='#L136'>136</a>
+<a name='L137'></a><a href='#L137'>137</a>
+<a name='L138'></a><a href='#L138'>138</a>
+<a name='L139'></a><a href='#L139'>139</a>
+<a name='L140'></a><a href='#L140'>140</a>
+<a name='L141'></a><a href='#L141'>141</a>
+<a name='L142'></a><a href='#L142'>142</a>
+<a name='L143'></a><a href='#L143'>143</a>
+<a name='L144'></a><a href='#L144'>144</a>
+<a name='L145'></a><a href='#L145'>145</a>
+<a name='L146'></a><a href='#L146'>146</a>
+<a name='L147'></a><a href='#L147'>147</a>
+<a name='L148'></a><a href='#L148'>148</a>
+<a name='L149'></a><a href='#L149'>149</a>
+<a name='L150'></a><a href='#L150'>150</a>
+<a name='L151'></a><a href='#L151'>151</a>
+<a name='L152'></a><a href='#L152'>152</a>
+<a name='L153'></a><a href='#L153'>153</a>
+<a name='L154'></a><a href='#L154'>154</a>
+<a name='L155'></a><a href='#L155'>155</a>
+<a name='L156'></a><a href='#L156'>156</a>
+<a name='L157'></a><a href='#L157'>157</a>
+<a name='L158'></a><a href='#L158'>158</a>
+<a name='L159'></a><a href='#L159'>159</a>
+<a name='L160'></a><a href='#L160'>160</a>
+<a name='L161'></a><a href='#L161'>161</a>
+<a name='L162'></a><a href='#L162'>162</a>
+<a name='L163'></a><a href='#L163'>163</a>
+<a name='L164'></a><a href='#L164'>164</a>
+<a name='L165'></a><a href='#L165'>165</a>
+<a name='L166'></a><a href='#L166'>166</a>
+<a name='L167'></a><a href='#L167'>167</a>
+<a name='L168'></a><a href='#L168'>168</a>
+<a name='L169'></a><a href='#L169'>169</a>
+<a name='L170'></a><a href='#L170'>170</a>
+<a name='L171'></a><a href='#L171'>171</a>
+<a name='L172'></a><a href='#L172'>172</a>
+<a name='L173'></a><a href='#L173'>173</a>
+<a name='L174'></a><a href='#L174'>174</a>
+<a name='L175'></a><a href='#L175'>175</a>
+<a name='L176'></a><a href='#L176'>176</a>
+<a name='L177'></a><a href='#L177'>177</a>
+<a name='L178'></a><a href='#L178'>178</a>
+<a name='L179'></a><a href='#L179'>179</a>
+<a name='L180'></a><a href='#L180'>180</a>
+<a name='L181'></a><a href='#L181'>181</a>
+<a name='L182'></a><a href='#L182'>182</a>
+<a name='L183'></a><a href='#L183'>183</a>
+<a name='L184'></a><a href='#L184'>184</a>
+<a name='L185'></a><a href='#L185'>185</a>
+<a name='L186'></a><a href='#L186'>186</a>
+<a name='L187'></a><a href='#L187'>187</a>
+<a name='L188'></a><a href='#L188'>188</a>
+<a name='L189'></a><a href='#L189'>189</a>
+<a name='L190'></a><a href='#L190'>190</a>
+<a name='L191'></a><a href='#L191'>191</a>
+<a name='L192'></a><a href='#L192'>192</a>
+<a name='L193'></a><a href='#L193'>193</a>
+<a name='L194'></a><a href='#L194'>194</a>
+<a name='L195'></a><a href='#L195'>195</a>
+<a name='L196'></a><a href='#L196'>196</a>
+<a name='L197'></a><a href='#L197'>197</a>
+<a name='L198'></a><a href='#L198'>198</a>
+<a name='L199'></a><a href='#L199'>199</a>
+<a name='L200'></a><a href='#L200'>200</a>
+<a name='L201'></a><a href='#L201'>201</a>
+<a name='L202'></a><a href='#L202'>202</a>
+<a name='L203'></a><a href='#L203'>203</a>
+<a name='L204'></a><a href='#L204'>204</a>
+<a name='L205'></a><a href='#L205'>205</a>
+<a name='L206'></a><a href='#L206'>206</a>
+<a name='L207'></a><a href='#L207'>207</a>
+<a name='L208'></a><a href='#L208'>208</a>
+<a name='L209'></a><a href='#L209'>209</a>
+<a name='L210'></a><a href='#L210'>210</a>
+<a name='L211'></a><a href='#L211'>211</a>
+<a name='L212'></a><a href='#L212'>212</a>
+<a name='L213'></a><a href='#L213'>213</a>
+<a name='L214'></a><a href='#L214'>214</a>
+<a name='L215'></a><a href='#L215'>215</a>
+<a name='L216'></a><a href='#L216'>216</a>
+<a name='L217'></a><a href='#L217'>217</a>
+<a name='L218'></a><a href='#L218'>218</a>
+<a name='L219'></a><a href='#L219'>219</a>
+<a name='L220'></a><a href='#L220'>220</a>
+<a name='L221'></a><a href='#L221'>221</a>
+<a name='L222'></a><a href='#L222'>222</a>
+<a name='L223'></a><a href='#L223'>223</a>
+<a name='L224'></a><a href='#L224'>224</a>
+<a name='L225'></a><a href='#L225'>225</a>
+<a name='L226'></a><a href='#L226'>226</a>
+<a name='L227'></a><a href='#L227'>227</a>
+<a name='L228'></a><a href='#L228'>228</a>
+<a name='L229'></a><a href='#L229'>229</a>
+<a name='L230'></a><a href='#L230'>230</a>
+<a name='L231'></a><a href='#L231'>231</a>
+<a name='L232'></a><a href='#L232'>232</a>
+<a name='L233'></a><a href='#L233'>233</a>
+<a name='L234'></a><a href='#L234'>234</a>
+<a name='L235'></a><a href='#L235'>235</a>
+<a name='L236'></a><a href='#L236'>236</a>
+<a name='L237'></a><a href='#L237'>237</a>
+<a name='L238'></a><a href='#L238'>238</a>
+<a name='L239'></a><a href='#L239'>239</a>
+<a name='L240'></a><a href='#L240'>240</a>
+<a name='L241'></a><a href='#L241'>241</a>
+<a name='L242'></a><a href='#L242'>242</a>
+<a name='L243'></a><a href='#L243'>243</a>
+<a name='L244'></a><a href='#L244'>244</a>
+<a name='L245'></a><a href='#L245'>245</a>
+<a name='L246'></a><a href='#L246'>246</a>
+<a name='L247'></a><a href='#L247'>247</a>
+<a name='L248'></a><a href='#L248'>248</a>
+<a name='L249'></a><a href='#L249'>249</a>
+<a name='L250'></a><a href='#L250'>250</a>
+<a name='L251'></a><a href='#L251'>251</a>
+<a name='L252'></a><a href='#L252'>252</a>
+<a name='L253'></a><a href='#L253'>253</a>
+<a name='L254'></a><a href='#L254'>254</a>
+<a name='L255'></a><a href='#L255'>255</a>
+<a name='L256'></a><a href='#L256'>256</a>
+<a name='L257'></a><a href='#L257'>257</a>
+<a name='L258'></a><a href='#L258'>258</a>
+<a name='L259'></a><a href='#L259'>259</a>
+<a name='L260'></a><a href='#L260'>260</a>
+<a name='L261'></a><a href='#L261'>261</a>
+<a name='L262'></a><a href='#L262'>262</a>
+<a name='L263'></a><a href='#L263'>263</a>
+<a name='L264'></a><a href='#L264'>264</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// Helper to detect volume from input
+const detectVolume = (volume: string | null | undefined, chapterInput: string | null | undefined): string =&gt; {
+    let volumeUrlPart = "";
+    const lowerVolume = volume ? volume.toLowerCase() : <span class="branch-1 cbranch-no" title="branch not covered" >"";</span>
+&nbsp;
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (lowerVolume === "old testament" || volume === "旧約聖書" || volume === "Velho Testamento" || volume === "舊約" || volume === "Antiguo Testamento" || volume === "Cựu Ước" || volume === "พันธสัญญาเดิม" || volume === "구약전서" || volume === "Lumang Tipan" || volume === "Agano la Kale" || lowerVolume === "ot") {
+<span class="cstat-no" title="statement not covered" >        volumeUrlPart = "ot";</span>
+    <span class="missing-if-branch" title="if path not taken" >I</span>} else if (lowerVolume === "new testament" || volume === "新約聖書" || volume === "Novo Testamento" || volume === "新約" || volume === "Nuevo Testamento" || volume === "Tân Ước" || volume === "พันธสัญญาใหม่" || volume === "신약전서" || volume === "Bagong Tipan" || volume === "Agano Jipya" || lowerVolume === "nt") {
+<span class="cstat-no" title="statement not covered" >        volumeUrlPart = "nt";</span>
+    } else if (lowerVolume === "book of mormon" || <span class="branch-1 cbranch-no" title="branch not covered" >volume === "モルモン書" || <span class="branch-2 cbranch-no" title="branch not covered" >v</span>olume === "O Livro de Mórmon" || <span class="branch-3 cbranch-no" title="branch not covered" >v</span>olume === "摩爾門經" || <span class="branch-4 cbranch-no" title="branch not covered" >v</span>olume === "El Libro de Mormón" || <span class="branch-5 cbranch-no" title="branch not covered" >v</span>olume === "Sách Mặc Môn" || <span class="branch-6 cbranch-no" title="branch not covered" >v</span>olume === "พระคัมภีร์มอรมอน" || <span class="branch-7 cbranch-no" title="branch not covered" >v</span>olume === "몰몬경" || <span class="branch-8 cbranch-no" title="branch not covered" >v</span>olume === "Aklat ni Mormon" || <span class="branch-9 cbranch-no" title="branch not covered" >v</span>olume === "Kitabu cha Mormoni" || <span class="branch-10 cbranch-no" title="branch not covered" >l</span>owerVolume === "bofm") {</span>
+        volumeUrlPart = "bofm";
+<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="else path not taken" >E</span>} else if (lowerVolume.includes("doctrine and") || volume === "教義と聖約" || volume === "Doutrina e Convênios" || volume === "教義和聖約" || volume === "Doctrina y Convenios" || volume === "Giáo Lý và Giao Ước" || volume === "หลักคำสอนและพันธสัญญา" || volume === "교리와 성약" || volume === "Doktrina at mga Tipan" || volume === "Mafundisho na Maagano" || lowerVolume === "dc-testament" || lowerVolume === "dc") {</span>
+<span class="cstat-no" title="statement not covered" >        volumeUrlPart = "dc-testament";</span>
+<span class="cstat-no" title="statement not covered" >    } else if (lowerVolume === "pearl of great price" || volume === "高価な真珠" || volume === "Pérola de Grande Valor" || volume === "無價珍珠" || volume === "La Perla de Gran Precio" || volume === "Trân Châu Vô Giá" || volume === "ไข่มุกอันล้ำค่า" || volume === "값진 진주" || volume === "Mahalagang Perlas" || volume === "Lulu ya Thamani Kuu" || lowerVolume === "pgp") {</span>
+<span class="cstat-no" title="statement not covered" >        volumeUrlPart = "pgp";</span>
+<span class="cstat-no" title="statement not covered" >    } else if (lowerVolume === "general conference" || volume === "総大会" || volume === "Conferência Geral" || volume === "總會大會" || volume === "Conferencia General" || volume === "Đại Hội Trung Ương" || volume === "การประชุมใหญ่สามัญ" || volume === "연차 대회" || volume === "Pangkalahatang Kumperensya" || volume === "Mkutano Mkuu" || lowerVolume === "gc") {</span>
+<span class="cstat-no" title="statement not covered" >        volumeUrlPart = "general-conference";</span>
+<span class="cstat-no" title="statement not covered" >    } else if (lowerVolume === "byu speeches" || volume === "BYU Speeches") {</span>
+<span class="cstat-no" title="statement not covered" >        volumeUrlPart = "byu-speeches";</span>
+<span class="cstat-no" title="statement not covered" >    } else if (lowerVolume === "ordinances and proclamations" || volume === "儀式と宣言" || volume === "神権の儀式と宣言" || volume === "Ordenanças e Declarações" || volume === "聖職教儀和文告" || volume === "Ordenanzas del sacerdocio y proclamaciones" || lowerVolume === "proclamations") {</span>
+<span class="cstat-no" title="statement not covered" >        volumeUrlPart = "ordinances-and-proclamations";</span>
+    }
+&nbsp;
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (!volumeUrlPart &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >chapterInput) {</span>
+        const lowerChap = <span class="cstat-no" title="statement not covered" >chapterInput.toLowerCase();</span>
+<span class="cstat-no" title="statement not covered" >        if (lowerChap.includes("family") || lowerChap.includes("家族") || lowerChap.includes("família") || lowerChap.includes("proclamación sobre la familia") ||</span>
+            lowerChap.includes("living christ") || lowerChap.includes("生けるキリスト") || lowerChap.includes("cristo vivo") || lowerChap.includes("cristo viviente") ||
+            lowerChap.includes("restoration") || lowerChap.includes("回復") || lowerChap.includes("restauração") || lowerChap.includes("restauración") ||
+            lowerChap.includes("sacrament") || lowerChap.includes("聖餐") || lowerChap.includes("sacramental") || lowerChap.includes("tiệc thánh") ||
+            lowerChap.includes("baptism") || lowerChap.includes("バプテスマ") || lowerChap.includes("batismo") || lowerChap.includes("bautismo") || lowerChap.includes("báp têm")) {
+<span class="cstat-no" title="statement not covered" >            volumeUrlPart = "ordinances-and-proclamations";</span>
+<span class="cstat-no" title="statement not covered" >        } else if (lowerChap.includes("doctrine and covenants") || lowerChap.includes("d&amp;c") || lowerChap.includes("教義と聖約") || lowerChap.includes("official declarations")) {</span>
+<span class="cstat-no" title="statement not covered" >            volumeUrlPart = "dc-testament";</span>
+<span class="cstat-no" title="statement not covered" >        } else if (lowerChap.includes("joseph smith—history") || lowerChap.includes("joseph smith-history") || lowerChap.includes("faith") || lowerChap.includes("信條") || lowerChap.includes("moses") || lowerChap.includes("abr") || lowerChap.includes("信仰")) {</span>
+<span class="cstat-no" title="statement not covered" >            volumeUrlPart = "pgp";</span>
+        }
+    }
+    return volumeUrlPart;
+};
+&nbsp;
+export const getGospelLibraryUrl = (volume: string | null | undefined, chapterInput: string | null | undefined, language: string = 'en'): string | null =&gt; {
+    if (!chapterInput) return null;
+&nbsp;
+    const baseUrl = "https://www.churchofjesuschrist.org/study/scriptures";
+    let langParam = "?lang=eng";
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (language === 'ja') <span class="cstat-no" title="statement not covered" >langParam = <span class="missing-if-branch" title="if path not taken" >I</span>"?lang=jpn";</span>
+    else if (language === 'pt') <span class="cstat-no" title="statement not covered" >langParam = <span class="missing-if-branch" title="if path not taken" >I</span>"?lang=por";</span>
+    else if (language === 'zho') <span class="cstat-no" title="statement not covered" >langParam = <span class="missing-if-branch" title="if path not taken" >I</span>"?lang=zho";</span>
+    else if (language === 'es') <span class="cstat-no" title="statement not covered" >langParam = <span class="missing-if-branch" title="if path not taken" >I</span>"?lang=spa";</span>
+    else if (language === 'vi') <span class="cstat-no" title="statement not covered" >langParam = <span class="missing-if-branch" title="if path not taken" >I</span>"?lang=vie";</span>
+    else if (language === 'th') <span class="cstat-no" title="statement not covered" >langParam = <span class="missing-if-branch" title="if path not taken" >I</span>"?lang=tha";</span>
+    else if (language === 'ko') <span class="cstat-no" title="statement not covered" >langParam = <span class="missing-if-branch" title="if path not taken" >I</span>"?lang=kor";</span>
+    else if (language === 'tl') <span class="cstat-no" title="statement not covered" >langParam = <span class="missing-if-branch" title="if path not taken" >I</span>"?lang=tgl";</span>
+    else if (language === 'sw') <span class="cstat-no" title="statement not covered" >langParam = "?lang=swa";</span>
+&nbsp;
+    let volumeUrlPart = detectVolume(volume, chapterInput);
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (volumeUrlPart === 'ot' &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >language === 'vi') <span class="cstat-no" title="statement not covered" >l</span>angParam = "?lang=eng";</span>
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (volumeUrlPart === 'nt' &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >language === 'vi') <span class="cstat-no" title="statement not covered" >l</span>angParam = "?lang=eng";</span>
+&nbsp;
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (volumeUrlPart === "general-conference") {
+<span class="cstat-no" title="statement not covered" >        if (chapterInput.includes("churchofjesuschrist.org")) {</span>
+<span class="cstat-no" title="statement not covered" >            try {</span>
+                let urlStr = <span class="cstat-no" title="statement not covered" >chapterInput.trim();</span>
+<span class="cstat-no" title="statement not covered" >                if (!urlStr.startsWith('http')) <span class="cstat-no" title="statement not covered" >urlStr = 'https://' + urlStr;</span></span>
+                const url = <span class="cstat-no" title="statement not covered" >new URL(urlStr);</span>
+                const targetLang = <span class="cstat-no" title="statement not covered" >langParam.split('=')[1];</span>
+<span class="cstat-no" title="statement not covered" >                url.searchParams.set('lang', targetLang);</span>
+<span class="cstat-no" title="statement not covered" >                return url.toString();</span>
+            } catch {
+<span class="cstat-no" title="statement not covered" >                return chapterInput;</span>
+            }
+        }
+<span class="cstat-no" title="statement not covered" >        if (/^\d{4}\/\d{2}\/.+/.test(chapterInput)) {</span>
+<span class="cstat-no" title="statement not covered" >            return `https://www.churchofjesuschrist.org/study/general-conference/${chapterInput}${langParam}`;</span>
+        }
+<span class="cstat-no" title="statement not covered" >        if (/^\d{4}\/\d{2}$/.test(chapterInput)) {</span>
+<span class="cstat-no" title="statement not covered" >            return `https://www.churchofjesuschrist.org/study/general-conference/${chapterInput}${langParam}`;</span>
+        }
+    }
+&nbsp;
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (volumeUrlPart === "byu-speeches") <span class="cstat-no" title="statement not covered" >return chapterInput;</span>
+&nbsp;
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (volumeUrlPart === "ordinances-and-proclamations") {
+        const lowerChap = <span class="cstat-no" title="statement not covered" >chapterInput.toLowerCase();</span>
+<span class="cstat-no" title="statement not covered" >        if (lowerChap.includes("sacrament") || lowerChap.includes("聖餐") || lowerChap.includes("sacramental") || lowerChap.includes("tiệc thánh")) <span class="cstat-no" title="statement not covered" >return `${baseUrl}/sacrament${langParam}`;</span></span>
+<span class="cstat-no" title="statement not covered" >        if (lowerChap.includes("baptism") || lowerChap.includes("バプテスマ") || lowerChap.includes("batismo") || lowerChap.includes("bautismo") || lowerChap.includes("báp têm")) <span class="cstat-no" title="statement not covered" >return `${baseUrl}/baptism${langParam}`;</span></span>
+<span class="cstat-no" title="statement not covered" >        if (lowerChap.includes("family") || lowerChap.includes("家族") || lowerChap.includes("família") || lowerChap.includes("proclamación sobre la family")) <span class="cstat-no" title="statement not covered" >return `${baseUrl}/the-family-a-proclamation-to-the-world${langParam}`;</span></span>
+<span class="cstat-no" title="statement not covered" >        if (lowerChap.includes("living christ") || lowerChap.includes("生けるキリスト") || lowerChap.includes("cristo vivo") || lowerChap.includes("cristo viviente")) <span class="cstat-no" title="statement not covered" >return `${baseUrl}/the-living-christ-the-testimony-of-the-apostles${langParam}`;</span></span>
+<span class="cstat-no" title="statement not covered" >        if (lowerChap.includes("restoration") || lowerChap.includes("回復") || lowerChap.includes("restauração") || lowerChap.includes("restauración")) <span class="cstat-no" title="statement not covered" >return `${baseUrl}/the-restoration-of-the-fulness-of-the-gospel-of-jesus-christ${langParam}`;</span></span>
+<span class="cstat-no" title="statement not covered" >        return `${baseUrl}/ordinances-and-proclamations${langParam}`;</span>
+    }
+&nbsp;
+    let cleanChapterInput = chapterInput;
+    cleanChapterInput = cleanChapterInput.replace(/[０-９]/g, <span class="fstat-no" title="function not covered" >s =&gt; <span class="cstat-no" title="statement not covered" >S</span>tring.fromCharCode(s.charCodeAt(0) - 0xFEE0))</span>;
+    cleanChapterInput = cleanChapterInput.replace(/：/g, ':').replace(/[，、]/g, ',').replace(/\u3000/g, ' ').replace(/[－—―]/g, '-');
+    cleanChapterInput = cleanChapterInput.replace(/章\s*(?=\d)/g, ':').replace(/章/g, '').replace(/節/g, '');
+&nbsp;
+    const match = cleanChapterInput.match(/(.*?)\s*(\d+)(?::([\d\s,-]+))?\s*$/);
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (!match) <span class="cstat-no" title="statement not covered" >return null;</span>
+&nbsp;
+    const bookName = match[1].trim().toLowerCase().replace(/[.]/g, '').replace(/^第(?=\d)/, '');
+    const chapterNum = match[2];
+    const verses = match[3];
+&nbsp;
+    const bookMappings: Record&lt;string, string&gt; = {
+        "1 nephi": "1-ne", "1 néfi": "1-ne", "1 nefi": "1-ne", "1ニーファイ": "1-ne", "第1ニーファイ": "1-ne", "第１ニーファイ": "1-ne", "第一ニーファイ": "1-ne", "ニーファイ第一の書": "1-ne", "ニーファイ第一書": "1-ne", "尼腓一書": "1-ne", "1 นีไฟ": "1-ne", "니파이전서": "1-ne",
+        "2 nephi": "2-ne", "2 néfi": "2-ne", "2 nefi": "2-ne", "2ニーファイ": "2-ne", "第2ニーファイ": "2-ne", "第２ニーファイ": "2-ne", "第二ニーファイ": "2-ne", "ニーファイ第二の書": "2-ne", "ニーファイ第二書": "2-ne", "尼腓二書": "2-ne", "2 นีไฟ": "2-ne", "니파이후서": "2-ne",
+        "jacob": "jacob", "jacó": "jacob", "gia cốp": "jacob", "ヤコブ書": "jacob", "雅各書": "jacob", "ยาคอบ": "jacob", "야곱서": "jacob",
+        "enos": "enos", "enós": "enos", "ê nốt": "enos", "エノス書": "enos", "以挪士書": "enos", "อีนัส": "enos", "이노스서": "enos",
+        "jarom": "jarom", "gia rôm": "jarom", "ジェロム書": "jarom", "雅龍書": "jarom", "จารอม": "jarom", "예이롬서": "jarom",
+        "omni": "omni", "ômni": "omni", "オムナイ書": "omni", "奧姆奈書": "omni", "ออมไน": "omni", "옴나이서": "omni",
+        "words of mormon": "w-of-m", "palavras de mórmon": "w-of-m", "palabras de mormón": "w-of-m", "モルモンの言葉": "w-of-m", "摩爾門語": "w-of-m", "ถ้อยคำของมอรมอน": "w-of-m", "몰몬의 말씀": "w-of-m", "salita ni mormon": "w-of-m",
+        "mosiah": "mosiah", "mosías": "mosiah", "mosias": "mosiah", "モーサヤ書": "mosiah", "摩賽亞書": "mosiah", "โมไซยาห์": "mosiah", "모사이야서": "mosiah",
+        "alma": "alma", "an ma": "alma", "アルマ書": "alma", "阿爾瑪書": "alma", "แอลมา": "alma", "앨마서": "alma",
+        "helaman": "hel", "hel": "hel", "helamã": "hel", "helamán": "hel", "hê la man": "hel", "ヒラマン書": "hel", "希拉曼書": "hel", "ฮีลามัน": "hel", "힐라맨서": "hel",
+        "3 nephi": "3-ne", "3 néfi": "3-ne", "3 nefi": "3-ne", "3ニーファイ": "3-ne", "第3ニーファイ": "3-ne", "第三ニーファイ": "3-ne", "ニーファイ第三の書": "3-ne", "ニーファイ第三書": "3-ne", "尼腓三書": "3-ne", "3 นีไฟ": "3-ne", "제3니파이": "3-ne",
+        "4 nephi": "4-ne", "4 néfi": "4-ne", "4 nefi": "4-ne", "4ニーファイ": "4-ne", "第4ニーファイ": "4-ne", "第四ニーファイ": "4-ne", "ニーファイ第四の書": "4-ne", "ニーファイ第四書": "4-ne", "尼腓四書": "4-ne", "4 นีไฟ": "4-ne", "제4니파이": "4-ne",
+        "mormon": "morm", "mórmon": "morm", "mormón": "morm", "モルモン書": "morm", "摩爾門書": "morm", "มอรมอน": "morm", "몰몬경": "morm",
+        "ether": "eth", "éter": "eth", "エテル書": "eth", "以帖書": "eth", "อีเธอร์": "eth", "이더서": "eth",
+        "moroni": "moro", "morôni": "moro", "モロナイ書": "moro", "摩羅乃書": "moro", "โมโรไน": "moro", "모로나이서": "moro",
+        "genesis": "gen", "gênesis": "gen", "génesis": "gen", "創世記": "gen", "ปฐมกาล": "gen", "창세기": "gen",
+        "exodus": "ex", "êxodo": "ex", "éxodo": "ex", "出エジプト記": "ex", "出埃及記": "ex", "อพยพ": "ex", "출애굽기": "ex", "exodo": "ex",
+        "leviticus": "lev", "levítico": "lev", "レビ記": "lev", "利未記": "lev", "เลวีนิติ": "lev", "레위기": "lev", "levitico": "lev",
+        "numbers": "num", "números": "num", "民数記": "num", "民數記": "num", "กันดารวิถี": "num", "민수기": "num", "mga bilang": "num",
+        "deuteronomy": "deut", "deuteronômio": "deut", "deuteronomio": "deut", "申命記": "deut", "เฉลยธรรมบัญญัติ": "deut", "신명기": "deut",
+        "joshua": "josh", "josué": "josh", "josue": "josh", "ヨシュア記": "josh", "約書亞記": "josh", "โยชูวา": "josh", "여호와": "josh",
+        "judges": "judg", "juízes": "judg", "jueces": "judg", "士師記": "judg", "ผู้วินิจฉัย": "judg", "사사기": "judg", "mga hukom": "judg",
+        "ruth": "ruth", "rute": "ruth", "rut": "ruth", "ルツ記": "ruth", "路得記": "ruth", "นางรูธ": "ruth", "룻기": "ruth",
+        "1 samuel": "1-sam", "サムエル記上": "1-sam", "撒母耳記上": "1-sam", "1 ซามูเอล": "1-sam", "사무엘상": "1-sam",
+        "2 samuel": "2-sam", "サムエル記下": "2-sam", "撒母耳記下": "2-sam", "2 ซามูเอล": "2-sam", "사무엘하": "2-sam",
+        "1 kings": "1-kgs", "1 reis": "1-kgs", "1 reyes": "1-kgs", "列王記上": "1-kgs", "列王紀上": "1-kgs", "1 พงศ์กษัตริย์": "1-kgs", "열왕기상": "1-kgs", "1 mga hari": "1-kgs",
+        "2 kings": "2-kgs", "2 reis": "2-kgs", "2 reyes": "2-kgs", "列王記下": "2-kgs", "列王紀下": "2-kgs", "2 พงศ์กษัตริย์": "2-kgs", "열왕기하": "2-kgs", "2 mga hari": "2-kgs",
+        "1 chronicles": "1-chr", "1 crônicas": "1-chr", "1 crónicas": "1-chr", "歴代誌上": "1-chr", "歷代志上": "1-chr", "1 พงศาวดาร": "1-chr", "역대상": "1-chr", "1 mga cronica": "1-chr",
+        "2 chronicles": "2-chr", "2 crônicas": "2-chr", "2 crónicas": "2-chr", "歴代誌下": "2-chr", "歷代志下": "2-chr", "2 พงศาวดาร": "2-chr", "역대하": "2-chr", "2 mga cronica": "2-chr",
+        "ezra": "ezra", "esdras": "ezra", "エズラ記": "ezra", "以斯拉記": "ezra", "เอสรา": "ezra", "에스라": "ezra",
+        "nehemiah": "neh", "neemias": "neh", "nehemías": "neh", "ネヘミヤ記": "neh", "尼希米記": "neh", "เนหะมีย์": "neh", "느헤미야": "neh", "nehemias": "neh",
+        "esther": "esth", "ester": "esth", "エステル記": "esth", "以斯帖記": "esth", "เอสเธอร์": "esth", "에스더": "esth",
+        "job": "job", "jó": "job", "ヨブ記": "job", "約伯記": "job", "โยบ": "job", "욥기": "job",
+        "psalms": "ps", "psalm": "ps", "salmos": "ps", "詩篇": "ps", "สดุดี": "ps", "시편": "ps", "mga awit": "ps",
+        "proverbs": "prov", "provérbios": "prov", "proverbios": "prov", "箴言": "prov", "สุภาษิต": "prov", "잠언": "prov", "mga kawikaan": "prov",
+        "ecclesiastes": "eccl", "eclesiastes": "eccl", "eclesiastés": "eccl", "伝道の書": "eccl", "傳道書": "eccl", "ปัญญาจารย์": "eccl", "전도서": "eccl",
+        "song of solomon": "song", "cânticos de salomão": "song", "cantares": "song", "雅歌": "song", "เพลงไพเราะ": "song", "아가": "song", "ang awit ni solomon": "song",
+        "isaiah": "isa", "isaías": "isa", "isaias": "isa", "イザヤ書": "isa", "以賽亞書": "isa", "อิสยาห์": "isa", "이사야": "isa",
+        "jeremiah": "jer", "jeremias": "jer", "jeremías": "jer", "エレミヤ書": "jer", "耶利米書": "jer", "เยเรมีย์": "jer", "예레미야": "jer",
+        "lamentations": "lam", "lamentações": "lam", "lamentaciones": "lam", "哀歌": "lam", "耶利米哀歌": "lam", "เพลงคร่ำครวญ": "lam", "예레미야애가": "lam", "mga panaghoy": "lam",
+        "ezekiel": "ezek", "ezequiel": "ezek", "エゼキエル書": "ezek", "以西結書": "ezek", "เอเสเคียล": "ezek", "에스겔": "ezek",
+        "daniel": "dan", "ダニエル書": "dan", "但以理書": "dan", "ดาเนียล": "dan", "다니엘": "dan",
+        "hosea": "hosea", "oseias": "hosea", "oseas": "hosea", "ホセア書": "hosea", "何西阿書": "hosea", "โฮเชยา": "hosea", "호세า": "hosea",
+        "joel": "joel", "ヨエル書": "joel", "約珥書": "joel", "โยเอล": "joel", "요엘": "joel",
+        "amos": "amos", "amós": "amos", "アモス書": "amos", "阿摩司書": "amos", "อาโมส": "amos", "아โมส": "amos",
+        "obadiah": "obad", "obadias": "obad", "abdías": "obad", "オバデヤ書": "obad", "俄巴底亞書": "obad", "โอบาดีห์": "obad", "오바댜": "obad",
+        "jonah": "jonah", "jonas": "jonah", "jonás": "jonah", "ヨナ書": "jonah", "約拿書": "jonah", "โยนา": "jonah", "요나": "jonah",
+        "micah": "micah", "miqueias": "micah", "miqueas": "micah", "ミカ書": "micah", "彌迦書": "micah", "มีคาห์": "micah", "미가": "micah", "mikas": "micah",
+        "nahum": "nahum", "naum": "nahum", "nahúm": "nahum", "ナホム書": "nahum", "那鴻書": "nahum", "นาฮูม": "nahum", "나훔": "nahum",
+        "habakkuk": "hab", "habacuque": "hab", "habacuc": "hab", "ハバクク書": "hab", "哈巴谷書": "hab", "ฮาบากุก": "hab", "하박국": "hab",
+        "zephaniah": "zeph", "sofonias": "zeph", "sofonías": "zeph", "ゼパニヤ書": "zeph", "西番雅書": "zeph", "เศฟันยาห์": "zeph", "스바냐": "zeph", "zefanias": "zeph",
+        "haggai": "hag", "ageu": "hag", "hageo": "hag", "ハガイ書": "hag", "哈該書": "hag", "ฮักกัย": "hag", "학개": "hag", "hagai": "hag",
+        "zechariah": "zech", "zacarias": "zech", "zacarías": "zech", "ゼカリヤ書": "zech", "撒迦利亞書": "zech", "เศคาริยาห์": "zech", "스가랴": "zech",
+        "malachi": "mal", "malaquias": "mal", "malaquías": "mal", "マラキ書": "mal", "瑪拉基書": "mal", "มาลาคี": "mal", "말라기": "mal", "malakias": "mal",
+        "matthew": "matt", "mateus": "matt", "mateo": "matt", "マタイによる福音書": "matt", "馬太福音": "matt", "มัทธิว": "matt", "마태복음": "matt",
+        "mark": "mark", "marcos": "mark", "マルコによる福音書": "mark", "馬可福音": "mark", "มาระโก": "mark", "마가복음": "mark",
+        "luke": "luke", "lucas": "luke", "ルカによる福音書": "luke", "路加福音": "luke", "ลูกา": "luke", "누가복음": "luke",
+        "john": "john", "joão": "john", "juan": "john", "ヨハネによる福音書": "john", "約翰福音": "john", "ยอห์น": "john", "요한복음": "john",
+        "acts": "acts", "atos": "acts", "hechos": "acts", "使徒行伝": "acts", "使徒行傳": "acts", "กิจการ": "acts", "사도행전": "acts", "mga gawa": "acts",
+        "romans": "rom", "romanos": "rom", "ローマ人への手紙": "rom", "羅馬書": "rom", "โรม": "rom", "로마서": "rom", "mga taga-roma": "rom",
+        "1 corinthians": "1-cor", "1 coríntios": "1-cor", "1 corintios": "1-cor", "コリント人への第一の手紙": "1-cor", "コリント人への手紙第一": "1-cor", "哥林多前書": "1-cor", "1 โครินธ์": "1-cor", "고린도전서": "1-cor", "1 mga taga-corinto": "1-cor",
+        "2 corinthians": "2-cor", "2 coríntios": "2-cor", "2 corintios": "2-cor", "コリント人への第二の手紙": "2-cor", "コリント人への手紙第二": "2-cor", "哥林多後書": "2-cor", "2 โครินธ์": "2-cor", "고린도후서": "2-cor", "2 mga taga-corinto": "2-cor",
+        "galatians": "gal", "gálatas": "gal", "galatas": "gal", "ガラテヤ人への手紙": "gal", "加拉太書": "gal", "กาลาเทีย": "gal", "갈라디아서": "gal", "mga taga-galacia": "gal",
+        "ephesians": "eph", "efésios": "eph", "efesios": "eph", "エペソ人への手紙": "eph", "以弗所書": "eph", "เอเฟซัส": "eph", "에베소서": "eph", "mga taga-efeso": "eph",
+        "philippians": "philip", "filipenses": "philip", "ピリピ人への手紙": "philip", "腓立比書": "philip", "ฟิลิปปี": "philip", "빌립보서": "philip", "mga taga-filipos": "philip",
+        "colossians": "col", "colossenses": "col", "colosenses": "col", "コロサイ人への手紙": "col", "歌羅西書": "col", "โคโลสี": "col", "골로새서": "col", "mga taga-colosas": "col",
+        "1 thessalonians": "1-thes", "1 tessalonicenses": "1-thes", "1 tesalonicenses": "1-thes", "テサロニケ人への第一の手紙": "1-thes", "テサロニケ人への手紙第一": "1-thes", "帖撒羅尼迦前書": "1-thes", "1 เธสะโลนิกา": "1-thes", "데살로니가전서": "1-thes", "1 mga taga-tesalonica": "1-thes",
+        "2 thessalonians": "2-thes", "2 tessalonicenses": "2-thes", "2 tesalonicenses": "2-thes", "テサロニケ人への第二の手紙": "2-thes", "テサロニケ人への手紙第二": "2-thes", "帖撒羅尼迦後書": "2-thes", "2 เธสะโลนิกา": "2-thes", "데살로니가후서": "2-thes", "2 mga taga-tesalonica": "2-thes",
+        "1 timothy": "1-tim", "1 timóteo": "1-tim", "1 timoteo": "1-tim", "テモテへの第一の手紙": "1-tim", "テモテへの手紙第一": "1-tim", "提摩太前書": "1-tim", "1 ทิโมธี": "1-tim", "디모데전서": "1-tim",
+        "2 timothy": "2-tim", "2 timóteo": "2-tim", "2 timoteo": "2-tim", "テモテへの第二の手紙": "2-tim", "テモテへの手紙第二": "2-tim", "提摩太後書": "2-tim", "2 ทิโมธี": "2-tim", "디모데후서": "2-tim",
+        "titus": "titus", "tito": "titus", "テトスへの手紙": "titus", "提多書": "titus", "ทิตัส": "titus", "디도서": "titus",
+        "philemon": "philem", "filemom": "philem", "filemón": "philem", "filemon": "philem", "ピレモンへの手紙": "philem", "腓利門書": "philem", "ฟีเลโมน": "philem", "빌레몬서": "philem",
+        "hebrews": "heb", "hebreus": "heb", "hebreos": "heb", "ヘブル人への手紙": "heb", "希伯來書": "heb", "ฮีบรู": "heb", "히브리서": "heb", "mga hebreo": "heb",
+        "james": "jas", "tiago": "jas", "santiago": "jas", "ヤコブの手紙": "jas", "ยากอบ": "jas", "야고보서": "jas",
+        "1 peter": "1-pet", "1 pedro": "1-pet", "ペテロの第一の手紙": "1-pet", "ペテロの手紙第一": "1-pet", "彼得前書": "1-pet", "1 เปโตร": "1-pet", "베드로전서": "1-pet",
+        "2 peter": "2-pet", "2 pedro": "2-pet", "ペテロの第二の手紙": "2-pet", "ペテロの手紙第二": "2-pet", "彼得後書": "2-pet", "2 เปโตร": "2-pet", "베드로후서": "2-pet",
+        "1 john": "1-jn", "1 joão": "1-jn", "1 joao": "1-jn", "1 juan": "1-jn", "ヨハネの第一の手紙": "1-jn", "ヨハネの手紙第一": "1-jn", "約翰一書": "1-jn", "1 ยอห์น": "1-jn", "요한1서": "1-jn",
+        "2 john": "2-jn", "2 joão": "2-jn", "2 joao": "2-jn", "2 juan": "2-jn", "ヨハネの第二の手紙": "2-jn", "ヨハネの手紙第二": "2-jn", "約翰二書": "2-jn", "2 ยอห์น": "2-jn", "요한2서": "2-jn",
+        "3 john": "3-jn", "3 joão": "3-jn", "3 joao": "3-jn", "3 juan": "3-jn", "ヨハネの第三の手紙": "3-jn", "ヨハネの手紙第三": "3-jn", "約翰三書": "3-jn", "3 ยอห์น": "3-jn", "요한3서": "3-jn",
+        "jude": "jude", "judas": "jude", "ユダの手紙": "jude", "猶大書": "jude", "ยูดา": "jude", "유다서": "jude",
+        "revelation": "rev", "apocalipse": "rev", "apocalipsis": "rev", "ヨハネの黙示録": "rev", "啟示錄": "rev", "วิวรณ์": "rev", "요한계시록": "rev",
+        "moses": "moses", "moisés": "moses", "moises": "moses", "môi se": "moses", "モーセ書": "moses", "摩西書": "moses", "โมเสส": "moses", "모세서": "moses",
+        "abraham": "abr", "abraão": "abr", "abraao": "abr", "áp ra ham": "abr", "アブラハム書": "abr", "亞伯拉罕書": "abr", "อับราฮัม": "abr", "아브라함서": "abr",
+        "joseph smith-matthew": "js-m", "joseph smith matthew": "js-m", "joseph smith—mateus": "js-m", "josé smith—mateo": "js-m", "giô sép smith—ma thi ơ": "js-m", "ジョセフ・スミス—マタイ": "js-m", "約瑟·斯密——馬太": "js-m", "โจเซฟ สมิธ—มัทธิว": "js-m", "조셉 スミス—마태": "js-m",
+        "joseph smith-history": "js-h", "joseph smith history": "js-h", "joseph smith—história": "js-h", "josé smith—historia": "js-h", "giô sép smith—lịch sử": "js-h", "ジョセフ・スミス—歴史": "js-h", "約瑟·斯密——歷史": "js-h", "โจเซฟ สมิธ—ประวัติ": "js-h", "조셉 スミス—역사": "js-h",
+        "articles of faith": "a-of-f", "regras de fé": "a-of-f", "artículos de fe": "a-of-f", "những tín điều": "a-of-f", "信仰箇条": "a-of-f", "信條": "a-of-f", "หลักแห่งความเชื่อ": "a-of-f", "신앙개조": "a-of-f",
+        "doctrine and covenants": "dc", "教義と聖約": "dc", "doutrina e convênios": "dc", "教義和聖約": "dc", "doctrina y convenios": "dc", "giáo lý và giao ước": "dc", "หลักคำสอนและพันธสัญญา": "dc", "교리와 성약": "dc", "doktrina at mga tipan": "dc", "mafundisho na maagano": "dc", "d&amp;c": "dc", "dc": "dc",
+        "od": "od", "公式の宣言": "od", "official declarations": "od"
+    };
+&nbsp;
+    const bookUrlPart = bookMappings[bookName];
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (!bookUrlPart) <span class="cstat-no" title="statement not covered" >return null;</span>
+&nbsp;
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (!volumeUrlPart) {
+        const slugToVolume: Record&lt;string, string&gt; = <span class="cstat-no" title="statement not covered" >{</span>
+            'gen': 'ot', 'ex': 'ot', 'lev': 'ot', 'num': 'ot', 'deut': 'ot', 'josh': 'ot', 'judg': 'ot', 'ruth': 'ot',
+            '1-sam': 'ot', '2-sam': 'ot', '1-kgs': 'ot', '2-kgs': 'ot', '1-chr': 'ot', '2-chr': 'ot', 'ezra': 'ot',
+            'neh': 'ot', 'esth': 'ot', 'job': 'ot', 'ps': 'ot', 'prov': 'ot', 'eccl': 'ot', 'song': 'ot', 'isa': 'ot',
+            'jer': 'ot', 'lam': 'ot', 'ezek': 'ot', 'dan': 'ot', 'hosea': 'ot', 'joel': 'ot', 'amos': 'ot', 'obad': 'ot',
+            'jonah': 'ot', 'micah': 'ot', 'nahum': 'ot', 'hab': 'ot', 'zeph': 'ot', 'hag': 'ot', 'zech': 'ot', 'mal': 'ot',
+            'matt': 'nt', 'mark': 'nt', 'luke': 'nt', 'john': 'nt', 'acts': 'nt', 'rom': 'nt', '1-cor': 'nt', '2-cor': 'nt',
+            'gal': 'nt', 'eph': 'nt', 'philip': 'nt', 'col': 'nt', '1-thes': 'nt', '2-thes': 'nt', '1-tim': 'nt', '2-tim': 'nt',
+            'titus': 'nt', 'philem': 'nt', 'heb': 'nt', 'jas': 'nt', '1-pet': 'nt', '2-pet': 'nt', '1-jn': 'nt', '2-jn': 'nt',
+            '3-jn': 'nt', 'jude': 'nt', 'rev': 'nt',
+            '1-ne': 'bofm', '2-ne': 'bofm', 'jacob': 'bofm', 'enos': 'bofm', 'jarom': 'bofm', 'omni': 'bofm', 'w-of-m': 'bofm',
+            'mosiah': 'bofm', 'alma': 'bofm', 'hel': 'bofm', '3-ne': 'bofm', '4-ne': 'bofm', 'morm': 'bofm', 'eth': 'bofm',
+            'moro': 'bofm',
+            'moses': 'pgp', 'abr': 'pgp', 'js-m': 'pgp', 'js-h': 'pgp', 'a-of-f': 'pgp',
+            'dc': 'dc-testament', 'od': 'dc-testament'
+        };
+<span class="cstat-no" title="statement not covered" >        volumeUrlPart = slugToVolume[bookUrlPart] || "";</span>
+    }
+&nbsp;
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (!volumeUrlPart) <span class="cstat-no" title="statement not covered" >return null;</span>
+&nbsp;
+    let urlSuffix = langParam;
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (verses) {
+        const idValue = <span class="cstat-no" title="statement not covered" >verses.replace(/\d+/g, <span class="fstat-no" title="function not covered" >m =&gt; <span class="cstat-no" title="statement not covered" >`</span>p${m}`)</span>;</span>
+        const firstVerse = <span class="cstat-no" title="statement not covered" >verses.match(/\d+/)?.[0];</span>
+<span class="cstat-no" title="statement not covered" >        if (idValue) {</span>
+<span class="cstat-no" title="statement not covered" >            urlSuffix += `&amp;id=${idValue}`;</span>
+<span class="cstat-no" title="statement not covered" >            if (firstVerse) <span class="cstat-no" title="statement not covered" >urlSuffix += `#p${firstVerse}`;</span></span>
+        }
+    }
+&nbsp;
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (volumeUrlPart === "dc-testament" &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >bookUrlPart === "dc") {</span>
+<span class="cstat-no" title="statement not covered" >        return `${baseUrl}/dc-testament/dc/${chapterNum}${urlSuffix}`;</span>
+    }
+    return `${baseUrl}/${volumeUrlPart}/${bookUrlPart}/${chapterNum}${urlSuffix}`;
+};
+&nbsp;
+export const getCategoryFromScripture = <span class="fstat-no" title="function not covered" >(s</span>criptureText: string | null | undefined): string =&gt; {
+    const url = <span class="cstat-no" title="statement not covered" >getGospelLibraryUrl(null, scriptureText);</span>
+    let volumeUrlPart = <span class="cstat-no" title="statement not covered" >"";</span>
+<span class="cstat-no" title="statement not covered" >    if (url) {</span>
+        const scriptMatch = <span class="cstat-no" title="statement not covered" >url.match(/\/scriptures\/([^/?#]+)/);</span>
+<span class="cstat-no" title="statement not covered" >        if (scriptMatch) <span class="cstat-no" title="statement not covered" >volumeUrlPart = scriptMatch[1<span class="cstat-no" title="statement not covered" >];</span></span></span>
+        else if (url.includes('/general-conference/')) <span class="cstat-no" title="statement not covered" >volumeUrlPart = <span class="cstat-no" title="statement not covered" >'general-conference';</span></span>
+        else if (url.includes('speeches.byu.edu')) <span class="cstat-no" title="statement not covered" >volumeUrlPart = 'byu-speeches';</span>
+    }
+<span class="cstat-no" title="statement not covered" >    if (!volumeUrlPart) <span class="cstat-no" title="statement not covered" >volumeUrlPart = detectVolume(null, scriptureText);</span></span>
+&nbsp;
+    const mapping: Record&lt;string, string&gt; = <span class="cstat-no" title="statement not covered" >{</span>
+        'ot': 'Old Testament', 'nt': 'New Testament', 'bofm': 'Book of Mormon', 'dc-testament': 'Doctrine and Covenants', 'pgp': 'Pearl of Great Price',
+        'ordinances-and-proclamations': 'Ordinances and Proclamations', 'sacrament': 'Ordinances and Proclamations', 'baptism': 'Ordinances and Proclamations',
+        'the-family-a-proclamation-to-the-world': 'Ordinances and Proclamations', 'the-living-christ-the-testimony-of-the-apostles': 'Ordinances and Proclamations',
+        'the-restoration-of-the-fulness-of-the-gospel-of-jesus-christ': 'Ordinances and Proclamations', 'general-conference': 'General Conference', 'byu-speeches': 'BYU Speeches'
+    };
+<span class="cstat-no" title="statement not covered" >    return mapping[volumeUrlPart] || 'Other';</span>
+};
+&nbsp;
+export const getScriptureInfoFromText = <span class="fstat-no" title="function not covered" >(t</span>ext: string | null | undefined): string | null =&gt; {
+<span class="cstat-no" title="statement not covered" >    if (!text) <span class="cstat-no" title="statement not covered" >return null;</span></span>
+    const chapterMatch = <span class="cstat-no" title="statement not covered" >text.match(/\*\*(?:Chapter|Title):\*\* (.*?)(?:\n|$)/);</span>
+    const scriptureMatch = <span class="cstat-no" title="statement not covered" >text.match(/\*\*Scripture:\*\* (.*?)(?:\n|$)/);</span>
+<span class="cstat-no" title="statement not covered" >    if (chapterMatch &amp;&amp; scriptureMatch) <span class="cstat-no" title="statement not covered" >return getGospelLibraryUrl(scriptureMatch[1].trim(), chapterMatch[1].trim());</span></span>
+<span class="cstat-no" title="statement not covered" >    return null;</span>
+};
+&nbsp;</pre></td></tr></table></pre>
+
+                <div class='push'></div><!-- for sticky footer -->
+            </div><!-- /wrapper -->
+            <div class='footer quiet pad2 space-top1 center small'>
+                Code coverage generated by
+                <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
+                at 2026-04-13T00:20:32.664Z
+            </div>
+        <script src="../../prettify.js"></script>
+        <script>
+            window.onload = function () {
+                prettyPrint();
+            };
+        </script>
+        <script src="../../sorter.js"></script>
+        <script src="../../block-navigation.js"></script>
+    </body>
+</html>
+    

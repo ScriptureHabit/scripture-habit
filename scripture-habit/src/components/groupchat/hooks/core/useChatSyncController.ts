@@ -2,6 +2,7 @@ import { useEffect, useRef, useCallback, Dispatch } from 'react';
 import { collection, query, orderBy, getDocs, limit, startAfter, doc, onSnapshot } from 'firebase/firestore';
 import { Message, GroupData } from '../../../../types/chat';
 import { db, auth } from '../../../../firebase';
+import { User } from 'firebase/auth';
 import { UserData } from '../../../../types/user';
 import { messageConverter } from '../../../../utils/firestoreConverters';
 import { useDashboardActions } from '../../../../components/dashboard/hooks/useDashboardActions';
@@ -20,7 +21,7 @@ export const useChatSyncController = (
   dispatch: Dispatch<ChatAction>,
   isViewActive: boolean = false
 ) => {
-  const { updateGroupReadStatus } = useDashboardActions(auth?.currentUser as any, userData);
+  const { updateGroupReadStatus } = useDashboardActions(auth?.currentUser as User | null, userData);
   
   const currentGroupIdRef = useRef<string | null>(groupId);
   const prevMessageCountRef = useRef(0);

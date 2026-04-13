@@ -29,7 +29,7 @@ const MessageItem: FC<MessageItemProps> = memo(({
   const { handleUserProfileClick, handleShowReactions } = useChatGroupActions();
   const { t } = useChatUIActions();
 
-  const userUid = userData ? ('uid' in userData ? userData.uid : (userData as any).id) : '';
+  const userUid = userData?.uid || '';
   const isMe = msg.senderId === userUid;
 
   const observerRef = useRef<HTMLDivElement>(null);
@@ -91,7 +91,7 @@ const MessageItem: FC<MessageItemProps> = memo(({
         >
           {(msg.senderPhotoURL || (msg.senderId && membersMap?.[msg.senderId]?.photoURL)) ? (
             <img
-              src={msg.senderPhotoURL || (msg.senderId ? (membersMap?.[msg.senderId]?.photoURL as string) : undefined)}
+              src={msg.senderPhotoURL || (msg.senderId ? membersMap?.[msg.senderId]?.photoURL : undefined)}
               alt=""
               className="profile-avatar-img"
             />
@@ -106,7 +106,7 @@ const MessageItem: FC<MessageItemProps> = memo(({
           if (msg.isOptimistic) return;
           if ((e.target as HTMLElement).tagName !== 'A') {
             e.stopPropagation();
-            handleMessageClick(msg, e as any);
+            handleMessageClick(msg, e);
           }
         }}
       >

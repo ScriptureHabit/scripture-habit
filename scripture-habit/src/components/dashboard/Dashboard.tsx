@@ -73,7 +73,7 @@ const Dashboard: FC = () => {
   // 1. Core Hooks
   const syncState = useDashboardSync();
   const { user, userData, status } = syncState;
-  const errorMessage = status === 'error' ? (syncState as any).message : null;
+  const errorMessage = syncState.status === 'error' ? syncState.message : null;
   const loading = status === 'loading';
 
   const { userGroups, activeGroupId, setActiveGroupId } = useDashboardGroups(userData, initialState.activeGroupId);

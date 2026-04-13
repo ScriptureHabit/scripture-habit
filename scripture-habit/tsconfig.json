@@ -24,7 +24,8 @@
         "types": [
             "vite/client",
             "node",
-            "express"
+            "express",
+            "@playwright/test"
         ]
     },
     "include": [
@@ -33,7 +34,9 @@
         "api_internal",
         "backend",
         "types",
-        "vite.config.ts"
+        "vite.config.ts",
+        "playwright.config.ts",
+        "tests"
     ],
     "exclude": [
         "node_modules"

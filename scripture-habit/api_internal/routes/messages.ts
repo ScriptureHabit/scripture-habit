@@ -164,11 +164,12 @@ router.post('/delete-note', authenticate, requireEmailVerified, verifyAppCheck, 
 
         await NoteService.deleteNote(uid, noteId);
         res.json({ success: true });
-    } catch (error: any) {
-        console.error('Error deleting note:', error);
+    } catch (error: unknown) {
+        const err = error as Error;
+        console.error('Error deleting note:', err);
         res.status(500).json({ 
             error: 'InternalServerError', 
-            message: error.message || 'An unexpected error occurred' 
+            message: err.message || 'An unexpected error occurred' 
         });
     }
 });

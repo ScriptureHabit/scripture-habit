@@ -6,7 +6,13 @@
  */
 
 // Basic nested types
-export type FirestoreTimestamp = { seconds: number; nanoseconds: number } | { toDate: () => Date } | Date | number | string;
+export type FirestoreTimestamp = 
+    | { seconds: number; nanoseconds: number } 
+    | { toDate: () => Date } 
+    | Date 
+    | number 
+    | string 
+    | { _methodName?: string }; // Support for FieldValue sentinels in backend
 
 export interface ReactionPreview {
     uid: string;
@@ -29,6 +35,7 @@ export interface GroupDocument {
     membersCount?: number;
     ownerUserId?: string;
     maxMembers?: number;
+    isDeleted?: boolean;
     
     // Visibility & Invitations
     isPrivate?: boolean;
@@ -47,9 +54,9 @@ export interface GroupDocument {
     lastMessageAt?: FirestoreTimestamp;
     lastMessageByNickname?: string;
     lastMessageByUid?: string;
-    lastNoteAt?: FirestoreTimestamp;
-    lastNoteByNickname?: string;
-    lastNoteByUid?: string;
+    lastNoteAt?: FirestoreTimestamp | null;
+    lastNoteByNickname?: string | null;
+    lastNoteByUid?: string | null;
     messageCount?: number;
     noteCount?: number;
     lastRecapGeneratedAt?: FirestoreTimestamp;
@@ -110,6 +117,18 @@ export interface UserDocument {
     streakCount?: number;
     cheersReceived?: number;
     lastRecapGeneratedAt?: FirestoreTimestamp;
+
+    // Study & Streak Tracking
+    lastPostAt?: FirestoreTimestamp | null;
+    streak?: any; // Legacy field
+    daysStudiedCount?: number;
+    lastPostDate?: string | null;
+    highestStreak?: number;
+
+    // Recap Metadata
+    lastRecapPrompt?: string | null;
+    lastRecapSummary?: string | null;
+    lastRecapAudioURL?: string | null;
 }
 
 /**

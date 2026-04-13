@@ -23,26 +23,32 @@ vi.mock('./components/GCNoteRenderer', () => ({
 }));
 
 describe('NoteDisplay', () => {
+    const mockLanguageContext = {
+        language: 'en' as const,
+        setLanguage: vi.fn(),
+        t: (k: string) => k,
+        tArray: () => [],
+        isLoaded: true,
+        translateBookName: (b: string | null | undefined) => b || '',
+        translateChapterField: (v: string | null | undefined) => v || '',
+        bookTranslations: {},
+    };
+
     it('renders simple text correctly', () => {
-        (useLanguage as any).mockReturnValue({
-            language: 'en',
-            t: (key: string) => key,
-            translateChapterField: (v: string) => v,
-        });
+        vi.mocked(useLanguage).mockReturnValue(mockLanguageContext);
 
         render(<NoteDisplay text="Hello world" isSent={true} />);
         expect(screen.getByText('Hello world')).toBeDefined();
     });
 
     it('renders structured notes with labels', () => {
-        (useLanguage as any).mockReturnValue({
-            language: 'en',
+        vi.mocked(useLanguage).mockReturnValue({
+            ...mockLanguageContext,
             t: (key: string) => {
                 if (key === 'noteLabels.scripture') return 'Scripture';
                 if (key === 'noteLabels.comment') return 'Comment';
                 return key;
             },
-            translateChapterField: (v: string) => v,
         });
 
         const structuredText = `Scripture: Genesis 1:1\nComment: In the beginning`;
@@ -56,10 +62,10 @@ describe('NoteDisplay', () => {
     });
 
     it('shows AI translation header when translatedText is provided', () => {
-        (useLanguage as any).mockReturnValue({
+        vi.mocked(useLanguage).mockReturnValue({
+            ...mockLanguageContext,
             language: 'ja',
             t: (key: string) => key === 'groupChat.translated' ? '翻訳済み' : key,
-            translateChapterField: (v: string) => v,
         });
 
         render(
@@ -75,11 +81,7 @@ describe('NoteDisplay', () => {
     });
 
     it('uses GCNoteRenderer for General Conference notes', () => {
-        (useLanguage as any).mockReturnValue({
-            language: 'en',
-            t: (key: string) => key,
-            translateChapterField: (v: string) => v,
-        });
+        vi.mocked(useLanguage).mockReturnValue(mockLanguageContext);
 
         const gcNote = `Scripture: General Conference\nChapter: https://www.churchofjesuschrist.org/study/general-conference/2024/04/11nelson\nComment: Great talk`;
         render(<NoteDisplay text={gcNote} isSent={false} />);

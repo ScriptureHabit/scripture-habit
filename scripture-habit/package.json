@@ -10,7 +10,10 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest",
-    "test:internal": "firebase emulators:exec --project test-project \"npx vitest api_internal\""
+    "test:coverage": "vitest run --coverage",
+    "test:internal": "firebase emulators:exec --project test-project \"npx vitest api_internal\"",
+    "test:e2e": "firebase emulators:exec --project test-project \"npx playwright test\"",
+    "test:e2e:ui": "firebase emulators:exec --project test-project \"npx playwright test --ui\""
   },
   "dependencies": {
     "@capacitor/android": "^8.0.0",
@@ -47,6 +50,9 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
+    "@playwright/browser-chromium": "^1.59.1",
+    "@playwright/browser-webkit": "^1.59.1",
+    "@playwright/test": "^1.59.1",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.1",
@@ -58,6 +64,8 @@
     "@types/react-dom": "^19.2.2",
     "@vitejs/plugin-legacy": "^7.2.1",
     "@vitejs/plugin-react": "^5.1.0",
+    "@vitest/coverage-v8": "^4.1.4",
+    "cross-env": "^10.1.0",
     "eslint": "^9.39.1",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.24",
@@ -67,6 +75,6 @@
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.3",
     "vite": "^7.2.2",
-    "vitest": "^4.0.15"
+    "vitest": "^4.1.4"
   }
 }

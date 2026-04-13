@@ -75,6 +75,7 @@ export const GroupSchema = z.object({
   lastMessageAt: FirebaseTimestampSchema.optional(),
   lastNoteAt: FirebaseTimestampSchema.optional(),
   unreadCount: z.number().optional(),
+  isDeleted: z.boolean().optional(),
 }).passthrough();
 
 export const UserProfileBriefSchema = z.object({

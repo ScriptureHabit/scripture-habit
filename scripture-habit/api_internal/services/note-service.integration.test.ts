@@ -1,8 +1,9 @@
 // @vitest-environment node
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect, beforeAll, vi } from 'vitest';
 import { admin, db } from '../lib/firebase-admin.js';
 import { NoteService } from './note-service.js';
 import { GroupDocument, UserDocument } from '../../types/firestore.js';
+import { StreakEngine } from '../lib/streak-engine.js';
 
 describe('NoteService Deletion Integration Test', () => {
     const TEST_UID = 'test-user-delete';
@@ -94,4 +95,43 @@ describe('NoteService Deletion Integration Test', () => {
         const uSnapFinal = await db.collection('users').doc(TEST_UID).get();
         expect(uSnapFinal.data()?.totalNotes).toBe(0);
     }, 30000);
+
+    it('should rollback all changes if an error occurs during transaction (Atomicity)', async () => {
+        // 1. Get initial states
+        const uSnapBefore = await db.collection('users').doc(TEST_UID).get();
+        const initialTotalNotes = uSnapBefore.data()?.totalNotes || 0;
+        
+        const gSnapBefore = await db.collection('groups').doc(GROUP_1).get();
+        const initialGroupNoteCount = gSnapBefore.data()?.noteCount || 0;
+
+        // 2. Mock StreakEngine to throw an error MID-TRANSACTION
+        const spy = vi.spyOn(StreakEngine, 'calculateNextStreak').mockImplementationOnce(() => {
+            throw new Error('SIMULATED_TRANSACTION_FAILURE');
+        });
+
+        // 3. Attempt to post a note
+        await expect(NoteService.postNote({
+            uid: TEST_UID,
+            messageText: 'Failure Test Note',
+            scripture: 'Exodus 1:1',
+            comment: 'Should not exist',
+            shareOption: 'all',
+            timeZone: 'UTC'
+        })).rejects.toThrow('SIMULATED_TRANSACTION_FAILURE');
+
+        // 4. Verify that NO data was changed
+        const uSnapAfter = await db.collection('users').doc(TEST_UID).get();
+        expect(uSnapAfter.data()?.totalNotes).toBe(initialTotalNotes);
+
+        const gSnapAfter = await db.collection('groups').doc(GROUP_1).get();
+        expect(gSnapAfter.data()?.noteCount).toBe(initialGroupNoteCount);
+
+        // 5. Verify no note was created in the subcollection
+        const notesSnap = await db.collection('users').doc(TEST_UID).collection('notes')
+            .where('scripture', '==', 'Exodus 1:1')
+            .get();
+        expect(notesSnap.empty).toBe(true);
+
+        spy.mockRestore();
+    });
 });

@@ -1,5 +1,5 @@
 import { admin, db } from '../lib/firebase-admin.js';
-import { calculateMemberStatus, InactivityMemberData, InactivityGroupData } from '../lib/inactivity-utils.js';
+import { calculateMemberStatus, InactivityMemberData } from '../lib/inactivity-utils.js';
 import { getGroupUpdatesForMultipleRemovals } from '../lib/membership-utils.js';
 import { UserDocument, GroupDocument } from '../../types/firestore.js';
 import { t } from '../lib/i18n.js';
@@ -67,9 +67,9 @@ export class InactivityService {
         const groupData = groupSnap.data() as GroupDocument;
         const membersSnap = await groupRef.collection('members').get();
 
-        // 1. Ghost Buster: Safe cleanup of groups with no members or marked for deletion.
-        if (membersSnap.empty || (groupData as any).isDeleted === true) {
-            console.log(`[InactivityService] Purging empty/deleted group ${groupId}`);
+        // 1. Ghost Buster: Safe cleanup of groups explicitly marked for deletion.
+        if (groupData.isDeleted === true) {
+            console.log(`[InactivityService] Purging group marked for deletion: ${groupId}`);
             await db.recursiveDelete(groupRef);
             return { removedCount: 0, initializedCount: 0, transferCount: 0, groupDeleted: true };
         }
@@ -91,7 +91,7 @@ export class InactivityService {
             memberData.createTime = memberDoc.createTime;
             processedMemberIds.add(memberId);
 
-            const result = calculateMemberStatus(memberId, memberData, groupData as unknown as InactivityGroupData, now);
+            const result = calculateMemberStatus(memberId, memberData, groupData, now);
 
             if (result.status === 'needs_initialization') {
                 // Fix: Use createTime for initialization instead of "now" to avoid clock reset
@@ -100,7 +100,7 @@ export class InactivityService {
                 batchOpCount++;
                 
                 // Recalculate with the new initTime to see if they are actually inactive
-                const secondLook = calculateMemberStatus(memberId, { ...memberData, joinedAt: initTime }, groupData as unknown as InactivityGroupData, now);
+                const secondLook = calculateMemberStatus(memberId, { ...memberData, joinedAt: initTime }, groupData, now);
                 if (secondLook.status === 'inactive') {
                     inactiveMembers.push(memberId);
                 } else {
@@ -141,7 +141,7 @@ export class InactivityService {
         // 4. Handle Owner Inactivity
         let transferCount = 0;
         let groupDeleted = false;
-        const groupUpdates: Record<string, any> = {
+        const groupUpdates: admin.firestore.UpdateData<GroupDocument> = {
             lastInactivityCheckedAt: admin.firestore.FieldValue.serverTimestamp()
         };
 

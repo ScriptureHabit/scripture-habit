@@ -7,21 +7,24 @@
  * 3. Simplified: Removed the "new member" grace period. All activity counts equally.
  */
 
+import { FirestoreTimestamp } from '../../types/firestore';
+
 export interface InactivityMemberData {
-    joinedAt?: unknown;
-    createTime?: unknown;
-    lastNoteAt?: unknown;
-    lastPostAt?: unknown;
-    lastReadAt?: unknown;
-    lastActiveAt?: unknown;
+    joinedAt?: FirestoreTimestamp;
+    createTime?: FirestoreTimestamp;
+    lastNoteAt?: FirestoreTimestamp;
+    lastPostAt?: FirestoreTimestamp;
+    lastReadAt?: FirestoreTimestamp;
+    lastActiveAt?: FirestoreTimestamp;
     kickThreshold?: number;
 }
 
 export interface InactivityGroupData {
-    memberLastActive?: Record<string, unknown>;
-    memberLastReadAt?: Record<string, unknown>;
+    memberLastActive?: Record<string, FirestoreTimestamp>;
+    memberLastReadAt?: Record<string, FirestoreTimestamp>;
     memberKickThresholds?: Record<string, number>;
-    memberJoinedAt?: Record<string, unknown>;
+    memberJoinedAt?: Record<string, FirestoreTimestamp>;
+    pace?: number;
 }
 
 export type InactivityStatus = 'active' | 'inactive' | 'needs_initialization';
@@ -81,7 +84,7 @@ export function calculateMemberStatus(
     const lastActiveTime = Math.max(...timestamps);
 
     // 3. Threshold Calculation
-    const thresholdDays = memberData.kickThreshold || (groupData ? groupData.memberKickThresholds?.[memberId] : 0) || 3;
+    const thresholdDays = memberData.kickThreshold || (groupData ? (groupData.memberKickThresholds?.[memberId] || groupData.pace) : 0) || 3;
     const thresholdMs = thresholdDays * 24 * 60 * 60 * 1000;
 
     if (lastActiveTime === 0) {

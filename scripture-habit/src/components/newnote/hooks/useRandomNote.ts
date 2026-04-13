@@ -7,6 +7,7 @@ import { MasteryScriptures } from '../../../data/MasteryScriptures';
 import { PeaceScriptures } from '../../../data/PeaceScriptures';
 import { getCategoryFromScripture } from '../../../utils/gospelLibraryMapper';
 import { localizeLdsUrl } from '../../../utils/urlLocalizer';
+import { ScriptureQuote } from '../../../types/scriptures';
 
 interface RandomScripture {
     scripture: string;
@@ -49,7 +50,7 @@ export const useRandomNote = (
         }
     }, [availableReadingPlanScripts, pickAndFill]);
 
-    const pickRandomFromSet = useCallback((set: any[]) => {
+    const pickRandomFromSet = useCallback((set: ScriptureQuote[]) => {
         const item = set[Math.floor(Math.random() * set.length)];
         pickAndFill(item);
     }, [pickAndFill]);

@@ -1,6 +1,7 @@
 // @vitest-environment node
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { admin, db } from '../lib/firebase-admin.js';
+import { GroupDocument } from '../../types/firestore.js';
 import { calculateMemberStatus, InactivityMemberData, InactivityGroupData } from '../lib/inactivity-utils.js';
 
 /**
@@ -76,7 +77,7 @@ describe('Inactivity Integration Test (Member Removal)', () => {
         const finalMembersToRemove = inactiveMembers.filter(uid => uid !== ownerUserId);
         
         if (finalMembersToRemove.length > 0) {
-            const groupUpdates: any = {
+            const groupUpdates: admin.firestore.UpdateData<GroupDocument> = {
                 members: admin.firestore.FieldValue.arrayRemove(...finalMembersToRemove),
                 membersCount: admin.firestore.FieldValue.increment(-finalMembersToRemove.length),
                 [`memberLastActive.${TEST_UID}`]: admin.firestore.FieldValue.delete(),

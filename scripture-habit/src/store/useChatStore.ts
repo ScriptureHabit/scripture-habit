@@ -1,3 +1,4 @@
+import React from 'react';
 import { create } from 'zustand';
 import { Message, UserProfileBrief } from '../types/chat';
 
@@ -60,9 +61,9 @@ interface ChatUIState {
   setSelectedMember: (member: UserProfileBrief | null) => void;
 
   // Refs (Stored as Mutable Refs in store if needed, or better just placeholders)
-  textareaRef: any; 
-  containerRef: any;
-  contextMenuRef: any;
+  textareaRef: React.RefObject<HTMLTextAreaElement | null>; 
+  containerRef: React.RefObject<HTMLDivElement | null>;
+  contextMenuRef: React.RefObject<HTMLDivElement | null>;
 
   closeContextMenu: () => void;
   resetChatUI: () => void;
