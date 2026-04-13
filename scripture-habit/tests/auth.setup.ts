@@ -38,7 +38,7 @@ setup('authenticate', async ({ page }) => {
     } else {
       throw new Error('Login error message detected');
     }
-  } catch (e) {
+  } catch {
     console.log('Login failed or timed out, attempting Signup...');
     // Login failed, let's signup
     await page.goto('/en/signup');

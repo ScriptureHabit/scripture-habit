@@ -182,15 +182,17 @@ const MyNotes: FC<MyNotesProps> = ({ userData, isModalOpen, setIsModalOpen, user
       </div>
 
       {status === 'loading' ? (
-        <NoteGridSkeleton />
+        <div data-testid="notes-loading-skeleton">
+          <NoteGridSkeleton />
+        </div>
       ) : notes.length === 0 ? (
-        <div className="empty-state">
+        <div className="empty-state" data-testid="notes-empty-state">
           <UilBookOpen size="60" color="#ccc" />
           <h3>{t('myNotes.noNotesTitle')}</h3>
           <p>{t('myNotes.noNotesDesc')}</p>
         </div>
       ) : (
-        <div className="notes-grid">
+        <div className="notes-grid" data-testid="notes-grid">
           {displayNotes.length === 0 && notes.length > 0 ? (
             <div className="no-results-container">
               {t('dashboard.noRecentNotes')}

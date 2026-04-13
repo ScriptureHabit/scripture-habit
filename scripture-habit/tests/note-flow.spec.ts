@@ -31,31 +31,37 @@ test.describe('Core Note Flow', () => {
     await expect(page.locator('.ModalOverlay')).not.toBeVisible();
     
     // Switch to My Notes view
-    const myNotesLink = page.getByTestId('sidebar-notes');
-    await myNotesLink.waitFor({ state: 'visible' });
-    
-    // In WebKit, sometimes the first click might not trigger correctly due to modal animations
-    await myNotesLink.click({ force: true });
-    
-    // Fallback: if not visible after click, try again after a short delay
-    const notesGrid = page.locator('.notes-grid');
-    try {
-      await notesGrid.waitFor({ state: 'visible', timeout: 10000 });
-    } catch {
-      console.log('Retrying My Notes click for WebKit...');
-      await myNotesLink.click({ force: true });
+  // 6. Navigate to My Notes and verify it appears
+  console.log('Navigating to My Notes...');
+  const sidebarNotes = page.getByTestId('sidebar-notes');
+  await sidebarNotes.waitFor({ state: 'visible' });
+  await sidebarNotes.click();
+
+  // Wait for the My Notes view to mount (grid, skeleton, or even empty state)
+  // We wait for the note card specifically which is our "success" condition
+  const noteCard = page.getByTestId('note-card').filter({ hasText: chapterName });
+  
+  try {
+    // WebKit often needs a moment or a retry for the sidebar click to register 
+    // if a modal was just closed (animations).
+    await expect(noteCard).toBeVisible({ timeout: 15000 });
+  } catch {
+    console.log('Note card not found, verifying navigation and retrying click...');
+    const myNotesTitle = page.locator('h1', { hasText: 'Scripture Habit' });
+    const isMyNotes = await myNotesTitle.isVisible();
+    if (!isMyNotes) {
+      await sidebarNotes.click({ force: true });
     }
+    // Final wait for the note card
+    await expect(noteCard).toBeVisible({ timeout: 30000 });
+  }
 
-    await notesGrid.waitFor({ state: 'visible', timeout: 30000 });
-    
-    // Verify it appears in My Notes
-    const noteCard = page.locator('.note-card').filter({ hasText: chapterName });
-    await expect(noteCard).toBeVisible({ timeout: 20000 });
-    await expect(noteCard).toContainText(commentText);
+  await expect(noteCard).toContainText(commentText);
 
-    // --- PART 2: EDIT NOTE ---
-    // Click the note card to open detail modal
-    await noteCard.click();
+  // --- PART 2: EDIT NOTE ---
+  // Click the note card to open detail modal
+  console.log('Opening note detail...');
+  await noteCard.click();
 
     // Click 'Edit' in the detail modal
     const editBtn = page.getByRole('button', { name: 'Edit' });
