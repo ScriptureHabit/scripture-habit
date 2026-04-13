@@ -196,7 +196,6 @@ export class InactivityService {
                         groupId: admin.firestore.FieldValue.delete()
                     });
                     batch.delete(userRef.collection('groupStates').doc(groupId));
-                    batchOpCount += 2;
                 }
                 
                 await batch.commit();
@@ -224,7 +223,6 @@ export class InactivityService {
                 type: 'leave',
                 messageType: 'leave'
             });
-            batchOpCount++;
 
             for (const uid of finalMembersToRemove) {
                 const userRef = db.collection('users').doc(uid);
@@ -234,7 +232,6 @@ export class InactivityService {
                 });
                 batch.delete(userRef.collection('groupStates').doc(groupId));
                 batch.delete(groupRef.collection('members').doc(uid));
-                batchOpCount += 3;
 
                 // Fire-and-forget push notification
                 this.sendKickNotification(uid, groupId, groupData.name || 'Group').catch(() => {});

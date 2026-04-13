@@ -56,7 +56,7 @@ const db = (admin.apps.length ? admin.firestore() : null) as admin.firestore.Fir
 if (db) {
     try {
         db.settings({ ignoreUndefinedProperties: true });
-    } catch (e) {
+    } catch {
         // Settings already applied or failed
     }
 }

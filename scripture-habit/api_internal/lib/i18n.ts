@@ -1,25 +1,15 @@
 import { SupportedLanguage } from './schemas.js';
 
 // Import translation files
-// @ts-ignore
 import en from '../locales/en.js';
-// @ts-ignore
 import ja from '../locales/ja.js';
-// @ts-ignore
 import es from '../locales/es.js';
-// @ts-ignore
 import pt from '../locales/pt.js';
-// @ts-ignore
 import zho from '../locales/zho.js';
-// @ts-ignore
 import vi from '../locales/vi.js';
-// @ts-ignore
 import th from '../locales/th.js';
-// @ts-ignore
 import ko from '../locales/ko.js';
-// @ts-ignore
 import tl from '../locales/tl.js';
-// @ts-ignore
 import sw from '../locales/sw.js';
 
 type TranslationValue = string | string[] | { [key: string]: TranslationValue };

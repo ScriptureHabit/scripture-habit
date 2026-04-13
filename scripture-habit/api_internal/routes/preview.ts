@@ -146,7 +146,7 @@ router.get(['/url-preview', '/url-preview/'], authenticate, verifyAppCheck, asyn
             // 4. Image
             let img = $('meta[property="og:image"]').attr('content') || $('meta[name="twitter:image"]').attr('content');
             if (img && !img.startsWith('http')) {
-                try { img = new URL(img! as string, url).href; } catch (e) { }
+                try { img = new URL(img! as string, url).href; } catch { /* ignore */ }
             }
             previewData.image = img || null;
             previewData.siteName = $('meta[property="og:site_name"]').attr('content') || parsedUrl.hostname;

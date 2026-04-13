@@ -274,7 +274,7 @@ export class NoteService {
                 userToGroupMapEntries: result.userToGroupEntries
             });
 
-            const { userToGroupEntries, ...publicResult } = result;
+            const { userToGroupEntries: _, ...publicResult } = result;
             return publicResult;
         } catch (error) {
             console.error('[NoteService] PostNote Transaction Error:', error);
@@ -303,7 +303,7 @@ export class NoteService {
 
                 // --- 2. BATCH READ: User, Groups, and affected Messages ---
                 const snapshotResults = await transaction.getAll(userRef, ...groupRefs, ...msgRefs) as admin.firestore.DocumentSnapshot[];
-                const [_userDoc, ...sharedDocs] = snapshotResults;
+                const [, ...sharedDocs] = snapshotResults;
                 const groupDocs = sharedDocs.slice(0, sharedEntries.length) as admin.firestore.DocumentSnapshot<GroupDocument>[];
                 const msgDocs = sharedDocs.slice(sharedEntries.length) as admin.firestore.DocumentSnapshot[];
 
@@ -371,7 +371,7 @@ export class NoteService {
                 });
 
                 for (let i = 0; i < sharedEntries.length; i++) {
-                    const [_groupId, messageId] = sharedEntries[i];
+                    const [, messageId] = sharedEntries[i];
                     const gSnap = groupDocs[i];
                     const mSnap = msgDocs[i];
                     const meta = queryMetadata[i];
