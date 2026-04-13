@@ -31,9 +31,19 @@ export const test = base.extend<AuthFixtures>({
     // Since storageState is loaded, this should stay on dashboard
     await page.goto('/en/dashboard');
     
-    // 3. Simple verification that we are indeed logged in
-    // This serves as a health check for the storageState
+    // 3. Robust verification of page readiness
+    // Wait for URL and then wait for the Dashboard Skeleton to be GONE
+    // This ensures hydration is complete and elements are interactive.
     await page.waitForURL(/.*dashboard/, { timeout: 30000 });
+    
+    // Wait for the skeleton to detach (meaning real content is rendered)
+    // We use a high timeout for CI
+    await page.waitForSelector('.dashboard-skeleton', { state: 'detached', timeout: 30000 }).catch(() => {
+        console.log('[AuthFixture] Dashboard skeleton did not appear or timed out waiting for detachment. Continuing...');
+    });
+
+    // Final sanity check for interactive element
+    await page.waitForSelector('[data-testid="sidebar-notes"]', { timeout: 20000 });
     
     // 4. Provide the authenticated page to the test
     await use(page);

@@ -11,8 +11,11 @@ test.describe('Core Note Flow', () => {
 
     // --- PART 1: CREATE NOTE ---
     const newNoteBtn = page.getByTestId('new-note-button');
-    await expect(newNoteBtn).toBeVisible();
+    await expect(newNoteBtn).toBeVisible({ timeout: 40000 });
     await newNoteBtn.click();
+
+    // Ensure modal appears
+    await expect(page.getByTestId('new-note-category')).toBeVisible({ timeout: 20000 });
 
     // Fill the form
     await page.getByTestId('new-note-category').locator('input').first().click({ force: true });
@@ -27,33 +30,33 @@ test.describe('Core Note Flow', () => {
     await submitBtn.click();
 
     // Verify Success Toast and wait for modal to close
-    await expect(page.getByText('Note posted successfully!')).toBeVisible();
-    await expect(page.locator('.ModalOverlay')).not.toBeVisible();
+    // Increased timeout for slow Firestore write in WebKit CI
+    await expect(page.getByText('Note posted successfully!')).toBeVisible({ timeout: 30000 });
+    await expect(page.locator('.ModalOverlay')).not.toBeVisible({ timeout: 20000 });
     
     // Switch to My Notes view
-  // 6. Navigate to My Notes and verify it appears
   console.log('Navigating to My Notes...');
   const sidebarNotes = page.getByTestId('sidebar-notes');
-  await sidebarNotes.waitFor({ state: 'visible' });
+  await sidebarNotes.waitFor({ state: 'visible', timeout: 20000 });
+  
+  // Repeatedly click or ensure navigation happens. WebKit sometimes drops clicks during layout shifts.
   await sidebarNotes.click();
 
-  // Wait for the My Notes view to mount (grid, skeleton, or even empty state)
-  // We wait for the note card specifically which is our "success" condition
+  // Wait for the My Notes view to mount
   const noteCard = page.getByTestId('note-card').filter({ hasText: chapterName });
   
   try {
-    // WebKit often needs a moment or a retry for the sidebar click to register 
-    // if a modal was just closed (animations).
-    await expect(noteCard).toBeVisible({ timeout: 15000 });
+    // Generous wait for the note card to appear in the list (Firestore sync)
+    await expect(noteCard).toBeVisible({ timeout: 25000 });
   } catch {
     console.log('Note card not found, verifying navigation and retrying click...');
-    const myNotesTitle = page.locator('h1', { hasText: 'Scripture Habit' });
-    const isMyNotes = await myNotesTitle.isVisible();
+    // If not visible, maybe the click didn't register or we are on wrong view
+    const isMyNotes = await page.getByRole('heading', { name: /My Notes/i }).isVisible().catch(() => false);
     if (!isMyNotes) {
       await sidebarNotes.click({ force: true });
     }
-    // Final wait for the note card
-    await expect(noteCard).toBeVisible({ timeout: 30000 });
+    // Final wait with maximum timeout
+    await expect(noteCard).toBeVisible({ timeout: 60000 });
   }
 
   await expect(noteCard).toContainText(commentText);
