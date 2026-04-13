@@ -12,7 +12,7 @@ import { Group } from '../src/types/chat.js';
  * and that the percentage calculation logic (used by Sidebar/Chat) 
  * returns the expected value based on that state.
  */
-describe('Unity Percentage Integration', () => {
+describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Unity Percentage Integration', () => {
     const TEST_UID = 'unity-test-user-' + Date.now();
     const TEST_GROUP_ID = 'unity-test-group-' + Date.now();
     const NICKNAME = 'Unity Tester';
