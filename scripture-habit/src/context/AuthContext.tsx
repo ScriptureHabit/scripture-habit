@@ -28,6 +28,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     let unsubUserData: (() => void) | null = null;
 
     const unsubAuth = onAuthStateChanged(auth, (currentUser) => {
+      console.log(`[DEBUG] AuthContext: onAuthStateChanged fired. User: ${currentUser?.uid}, Email: ${currentUser?.email}`);
+      setLoading(true); // Reset loading state when auth changes
       // Clean up previous user data listener
       if (unsubUserData) {
         unsubUserData();

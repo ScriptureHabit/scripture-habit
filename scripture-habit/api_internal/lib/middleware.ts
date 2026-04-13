@@ -44,7 +44,7 @@ export const aiLimiter = rateLimit({
         return crypto.createHash('sha256').update(ip).digest('hex');
     },
     // Required to silence the IPv6 warning when using a custom keyGenerator for hashed IPs
-    validate: { ip: false } 
+    validate: { default: false } 
 });
 
 export const verifyAppCheck = async (req: Request, res: Response, next: NextFunction) => {

@@ -91,6 +91,24 @@ export class InactivityService {
             memberData.createTime = memberDoc.createTime;
             processedMemberIds.add(memberId);
 
+            // Guard: Detect joinedAt corrupted by old cron initialization (serverTimestamp bug).
+            // If joinedAt is newer than when the document was actually created, it's invalid.
+            // Silently reset it to createTime so inactivity is calculated correctly.
+            if (memberData.joinedAt && memberDoc.createTime) {
+                const joinedMs = memberDoc.createTime.toMillis
+                    ? (memberDoc.createTime as admin.firestore.Timestamp).toMillis()
+                    : 0;
+                const storedJoinedMs = typeof (memberData.joinedAt as admin.firestore.Timestamp).toMillis === 'function'
+                    ? (memberData.joinedAt as admin.firestore.Timestamp).toMillis()
+                    : 0;
+                if (storedJoinedMs > joinedMs && joinedMs > 0) {
+                    console.warn(`[InactivityService] Corrupted joinedAt detected for ${memberId} in ${groupId}. Resetting to createTime.`);
+                    memberData.joinedAt = memberDoc.createTime;
+                    batch.update(memberDoc.ref, { joinedAt: memberDoc.createTime });
+                    batchOpCount++;
+                }
+            }
+
             const result = calculateMemberStatus(memberId, memberData, groupData, now);
 
             if (result.status === 'needs_initialization') {

@@ -25,6 +25,7 @@ describe('InactivityService Integration', () => {
     const G_STALE_A = 'STALE_A';
     const G_STALE_B = 'STALE_B';
     const G_STALE_C = 'STALE_C';
+    const G8 = 'TEST_GRP_CORRUPTED_JOINEDAT'; // Regression: cron serverTimestamp bug
 
     const U_ACTIVE = 'USER_ACTIVE';
     const U_INACTIVE = 'USER_INACTIVE';
@@ -32,10 +33,11 @@ describe('InactivityService Integration', () => {
     const U_NEW_OWNER = 'USER_NEW_OWNER';
     const U_JA = 'USER_JAPANESE';
     const U_SEC = 'USER_SECONDARY';
+    const U_CORRUPTED = 'USER_CORRUPTED_JOINEDAT'; // Regression: user whose joinedAt was reset to "now" by old cron
 
     beforeAll(async () => {
         // Setup Users
-        const users = [U_ACTIVE, U_INACTIVE, U_OWNER, U_NEW_OWNER, U_JA, U_SEC];
+        const users = [U_ACTIVE, U_INACTIVE, U_OWNER, U_NEW_OWNER, U_JA, U_SEC, U_CORRUPTED];
         for (const uid of users) {
             await db.collection('users').doc(uid).set({
                 nickname: `Nick_${uid}`,
@@ -87,14 +89,46 @@ describe('InactivityService Integration', () => {
         
         await setupGroup(G_STALE_C, U_OWNER, [U_OWNER], 15, TWO_DAYS_AGO);
         await setMemberActivity(G_STALE_C, U_OWNER, TWO_DAYS_AGO);
-    });
+
+        // 9. Group 8: Corrupted joinedAt (Regression - Cosmos bug)
+        // Simulates a user who was truly inactive (last active 14 days ago via group map),
+        // but whose joinedAt in the member subcollection was set to a date AFTER createTime
+        // by the old cron's serverTimestamp initialization bug.
+        await setupGroup(G8, U_OWNER, [U_OWNER, U_CORRUPTED], 7);
+        await setMemberActivity(G8, U_OWNER, TWO_DAYS_AGO);
+        // U_CORRUPTED: last truly active 14+ days ago in group maps
+        const FOURTEEN_DAYS_AGO = new Date(NOW.getTime() - 14 * 24 * 60 * 60 * 1000);
+        const ts14 = admin.firestore.Timestamp.fromDate(FOURTEEN_DAYS_AGO);
+        // Step 1: Create the member doc WITHOUT joinedAt (old join path)
+        await db.collection('groups').doc(G8).collection('members').doc(U_CORRUPTED).set({
+            lastReadAt: ts14,
+            lastActiveAt: ts14,
+            readMessageCount: 1
+        });
+        // Step 2: Wait to ensure createTime < update timestamp
+        await new Promise(r => setTimeout(r, 100));
+        // Step 3: Simulate old cron bug by setting joinedAt = NOW (future relative to createTime)
+        // Using serverTimestamp() mirrors the exact old behavior that caused the bug on April 9
+        await db.collection('groups').doc(G8).collection('members').doc(U_CORRUPTED).update({
+            joinedAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+        // Also update group-level map to show truly old activity
+        await db.collection('groups').doc(G8).update({
+            [`memberLastActive.${U_CORRUPTED}`]: ts14,
+            [`memberLastReadAt.${U_CORRUPTED}`]: ts14
+        });
+        await db.collection('users').doc(U_CORRUPTED).update({
+            groupIds: admin.firestore.FieldValue.arrayUnion(G8)
+        });
+    }, 30000);
+
 
     afterAll(async () => {
-        const groups = [G1, G2, G3, G4, G5, G6, G7, G_STALE_A, G_STALE_B, G_STALE_C];
+        const groups = [G1, G2, G3, G4, G5, G6, G7, G8, G_STALE_A, G_STALE_B, G_STALE_C];
         for (const gid of groups) {
             await db.recursiveDelete(db.collection('groups').doc(gid));
         }
-        const users = [U_ACTIVE, U_INACTIVE, U_OWNER, U_NEW_OWNER, U_JA, U_SEC];
+        const users = [U_ACTIVE, U_INACTIVE, U_OWNER, U_NEW_OWNER, U_JA, U_SEC, U_CORRUPTED];
         for (const uid of users) {
             await db.collection('users').doc(uid).delete();
         }
@@ -226,5 +260,33 @@ describe('InactivityService Integration', () => {
         expect(tsA).toBeGreaterThan(TEN_DAYS_AGO.getTime());
         expect(tsB).toBeGreaterThan(SIX_DAYS_AGO.getTime());
         expect(tsC).toBe(TWO_DAYS_AGO.getTime()); // C should remain untouched
+    });
+
+    it('Scenario 9 (Regression - Cosmos bug): Member with corrupted joinedAt (newer than createTime) is correctly identified and repaired', async () => {
+        // U_CORRUPTED has:
+        //   - joinedAt = NOW (corrupted by old cron's serverTimestamp bug)
+        //   - createTime = JUST BEFORE NOW (emulator creation time)
+        //   - lastActiveAt = 14 days ago (true inactivity)
+        // Expected: the guard detects joinedAt > createTime, logs a warning, and resets it.
+        // However, because in the *emulator* createTime is literally "now", Math.max will still
+        // pick "now" as the latest activity. Therefore, the member will NOT be removed in the test,
+        // but the corruption will be fixed in the DB.
+        const result = await InactivityService.processGroupInactivity(G8);
+
+        // In a real environment createTime is old, so they'd be removed.
+        // Here, removedCount should be 0 because createTime is "now".
+        expect(result.removedCount).toBe(0);
+
+        const gDoc = await db.collection('groups').doc(G8).get();
+        expect(gDoc.data()?.members).toContain(U_CORRUPTED);
+
+        // Verify the member doc still exists but joinedAt was reset
+        const memberDoc = await db.collection('groups').doc(G8).collection('members').doc(U_CORRUPTED).get();
+        expect(memberDoc.exists).toBe(true);
+        
+        // Ensure joinedAt was indeed reset to createTime (they should match)
+        const joinedAtMs = (memberDoc.data()?.joinedAt as admin.firestore.Timestamp)?.toMillis();
+        const createTimeMs = (memberDoc.createTime as admin.firestore.Timestamp)?.toMillis();
+        expect(joinedAtMs).toBe(createTimeMs);
     });
 });

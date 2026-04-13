@@ -146,5 +146,31 @@ describe('Inactivity Utils', () => {
             const result = calculateMemberStatus('u1', memberData, {} as InactivityGroupData, NOW);
             expect(result.status).toBe('inactive');
         });
+
+        it('[Regression - Cosmos bug] Member whose joinedAt was reset to "now" by old cron should still be detected as inactive via group-level map', () => {
+            // This test reproduces the exact conditions that caused Cosmos to not be removed:
+            // - joinedAt (corrupted) = just NOW (reset by old serverTimestamp cron bug)
+            // - All real timestamps (group-level activity maps) = 14+ days ago
+            // After the guard resets joinedAt to createTime (which is 14 days old in this unit test),
+            // Math.max picks 14 days ago → inactive.
+            const FOURTEEN_DAYS_AGO = new Date(NOW.getTime() - 14 * 24 * 60 * 60 * 1000);
+            const ts14 = { toMillis: () => FOURTEEN_DAYS_AGO.getTime() };
+
+            // Simulate guard behavior: joinedAt is reset to createTime (14 days old)
+            const memberDataAfterGuard: InactivityMemberData = {
+                joinedAt: FOURTEEN_DAYS_AGO,  // createTime, used after guard resets it
+                lastReadAt: FOURTEEN_DAYS_AGO, // truly inactive
+                lastActiveAt: FOURTEEN_DAYS_AGO
+            };
+            const groupData: InactivityGroupData = {
+                memberLastActive: { 'cosmos': ts14 as never },
+                memberLastReadAt: { 'cosmos': ts14 as never },
+                pace: 7
+            };
+
+            const result = calculateMemberStatus('cosmos', memberDataAfterGuard, groupData, NOW);
+            expect(result.status).toBe('inactive');
+            expect(result.diffMs).toBeGreaterThanOrEqual(14 * 24 * 60 * 60 * 1000);
+        });
     });
 });

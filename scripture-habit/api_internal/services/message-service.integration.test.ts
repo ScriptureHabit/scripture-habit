@@ -6,7 +6,7 @@ import { GroupDocument, MessageDocument, UserDocument } from '../../types/firest
 
 describe('MessageService Integration Test', () => {
     const TEST_UID = 'cFg1i9IybmfV1la4OekO2jDWE9h1'; // test1
-    const TEST_GROUP_ID = 'OVtYdwOhB8uDor6MfDPG'; // test group
+    const TEST_GROUP_ID = 'MSG_SRV_TEST_GRP_001'; // Isolating group ID to prevent parallel test conflicts
 
     beforeAll(async () => {
         const userRef = db.collection('users').doc(TEST_UID);
