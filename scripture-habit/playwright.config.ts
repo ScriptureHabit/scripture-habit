@@ -67,11 +67,19 @@ export default defineConfig({
       stderr: 'pipe',
     },
     {
-      command: 'cross-env SKIP_APP_CHECK=true npm run server',
+      command: 'cross-env SKIP_APP_CHECK=true FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 FIREBASE_AUTH_EMULATOR_HOST=127.0.0.1:9099 GCLOUD_PROJECT=scripture-habit-auth npm run server',
       url: 'http://localhost:5000/api/health',
       reuseExistingServer: !process.env.CI,
       stdout: 'pipe',
       stderr: 'pipe',
+    },
+    {
+      command: 'firebase emulators:start --project scripture-habit-auth',
+      url: 'http://localhost:4000',
+      reuseExistingServer: !process.env.CI,
+      stdout: 'pipe',
+      stderr: 'pipe',
+      timeout: 120000,
     }
   ],
 });

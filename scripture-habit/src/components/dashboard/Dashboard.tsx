@@ -110,6 +110,11 @@ const Dashboard: FC = () => {
     }
   }, [userData?.daysStudiedCount]);
 
+  // Clear unity overrides at midnight local time
+  useEffect(() => {
+    setUnityOverrides({});
+  }, [today]);
+
   useEffect(() => {
     setActiveModal(null);
   }, [activeGroupId, setActiveModal]);

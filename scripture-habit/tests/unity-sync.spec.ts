@@ -1,7 +1,8 @@
 import { test, expect } from './fixtures/auth.fixture';
 
 test.describe('Unity Percentage Synchronization', () => {
-    test.slow(); // This test involves clock manipulation and multiple navigations
+    test.slow();
+    test.use({ timezoneId: 'UTC' });
 
     test('should update unity in real-time and reset at midnight', async ({ authenticatedPage }) => {
         const page = authenticatedPage;
@@ -96,8 +97,8 @@ test.describe('Unity Percentage Synchronization', () => {
         // --- PART 3: MIDNIGHT RESET TEST ---
         console.log('--- Step 3: Testing midnight reset via clock mocking ---');
         
-        const now = new Date();
-        const almostMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 50);
+        // Use a fixed UTC date for consistent testing regardless of current date/time
+        const almostMidnight = new Date('2024-01-01T23:59:50Z');
         
         await page.clock.install({ time: almostMidnight });
         console.log(`Clock installed and set to: ${almostMidnight.toLocaleString()}`);
