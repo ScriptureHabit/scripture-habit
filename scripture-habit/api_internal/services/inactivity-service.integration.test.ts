@@ -295,6 +295,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('InactivityService Integra
         // This case checks the new logic that fixed the "Cosmos" bug.
         const G9 = 'TEST_GRP_CORRUPTED_V2';
         const result = await InactivityService.processGroupInactivity(G9);
+        expect(result.removedCount).toBe(0);
 
         const memberDoc = await db.collection('groups').doc(G9).collection('members').doc(U_CORRUPTED_V2).get();
         const joinedAtMs = (memberDoc.data()?.joinedAt as admin.firestore.Timestamp)?.toMillis();
