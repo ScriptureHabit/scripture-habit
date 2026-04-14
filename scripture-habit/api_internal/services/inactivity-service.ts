@@ -1,5 +1,5 @@
 import { admin, db } from '../lib/firebase-admin.js';
-import { calculateMemberStatus, InactivityMemberData } from '../lib/inactivity-utils.js';
+import { calculateMemberStatus, InactivityMemberData, toMillis } from '../lib/inactivity-utils.js';
 import { getGroupUpdatesForMultipleRemovals } from '../lib/membership-utils.js';
 import { UserDocument, GroupDocument } from '../../types/firestore.js';
 import { t } from '../lib/i18n.js';
@@ -92,16 +92,46 @@ export class InactivityService {
             processedMemberIds.add(memberId);
 
             // Guard: Detect joinedAt corrupted by old cron initialization (serverTimestamp bug).
-            // If joinedAt is newer than when the document was actually created, it's invalid.
-            // Silently reset it to createTime so inactivity is calculated correctly.
+            // Logic:
+            // 1. If joinedAt is strictly in the future relative to createTime, it's definitely corrupted.
+            // 2. If joinedAt is identical to createTime, it MIGHT be corrupted if we have older activity recorded
+            //    in the group maps (proving they were already in the group before this document was created).
             if (memberData.joinedAt && memberDoc.createTime) {
                 const joinedMs = (memberDoc.createTime as admin.firestore.Timestamp)?.toMillis?.() || 0;
                 const storedJoinedMs = (memberData.joinedAt as admin.firestore.Timestamp)?.toMillis?.() || 0;
-                if (storedJoinedMs > joinedMs && joinedMs > 0) {
-                    console.warn(`[InactivityService] Corrupted joinedAt detected for ${memberId} in ${groupId}. Resetting to createTime.`);
-                    memberData.joinedAt = memberDoc.createTime;
-                    batch.update(memberDoc.ref, { joinedAt: memberDoc.createTime });
+                
+                let isCorrupted = (storedJoinedMs > joinedMs && joinedMs > 0);
 
+                // Check for "Reset-to-CreateTime" corruption:
+                // If they have activity OLDER than the creation time, then createTime is not the real join date.
+                if (!isCorrupted && Math.abs(storedJoinedMs - joinedMs) < 10 && joinedMs > 0) {
+                    const otherActivityMs = [
+                        toMillis(groupData.memberLastActive?.[memberId]),
+                        toMillis(groupData.memberLastReadAt?.[memberId]),
+                        toMillis(memberData.lastActiveAt),
+                        toMillis(memberData.lastPostAt)
+                    ].filter(t => t > 0);
+
+                    if (otherActivityMs.length > 0) {
+                        const oldestActivity = Math.min(...otherActivityMs);
+                        if (oldestActivity < storedJoinedMs - 1000) { // Solidly older
+                            isCorrupted = true;
+                            console.warn(`[InactivityService] Suspect joinedAt detected for ${memberId} (matches createTime but older activity exists). Repairing.`);
+                        }
+                    }
+                }
+
+                if (isCorrupted) {
+                    console.warn(`[InactivityService] Repairing joinedAt for ${memberId} in ${groupId}.`);
+                    // Fallback to the oldest recorded activity we found, or at least document creation
+                    const fallbackMs = Math.min(...[
+                        joinedMs, 
+                        ...[toMillis(groupData.memberLastActive?.[memberId]), toMillis(groupData.memberLastReadAt?.[memberId])].filter(t => t > 0)
+                    ]);
+                    
+                    const repairTimestamp = admin.firestore.Timestamp.fromMillis(fallbackMs);
+                    memberData.joinedAt = repairTimestamp;
+                    batch.update(memberDoc.ref, { joinedAt: repairTimestamp });
                 }
             }
 

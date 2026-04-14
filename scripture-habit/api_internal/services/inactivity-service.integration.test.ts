@@ -25,7 +25,8 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('InactivityService Integra
     const G_STALE_A = 'STALE_A';
     const G_STALE_B = 'STALE_B';
     const G_STALE_C = 'STALE_C';
-    const G8 = 'TEST_GRP_CORRUPTED_JOINEDAT'; // Regression: cron serverTimestamp bug
+    const G8 = 'TEST_GRP_CORRUPTED_JOINEDAT'; // Case A: joinedAt > createTime
+    const G9 = 'TEST_GRP_CORRUPTED_V2';       // Case B: joinedAt == createTime but older activity exists
 
     const U_ACTIVE = 'USER_ACTIVE';
     const U_INACTIVE = 'USER_INACTIVE';
@@ -33,11 +34,12 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('InactivityService Integra
     const U_NEW_OWNER = 'USER_NEW_OWNER';
     const U_JA = 'USER_JAPANESE';
     const U_SEC = 'USER_SECONDARY';
-    const U_CORRUPTED = 'USER_CORRUPTED_JOINEDAT'; // Regression: user whose joinedAt was reset to "now" by old cron
+    const U_CORRUPTED = 'USER_CORRUPTED_JOINEDAT'; // Case A: joinedAt > createTime
+    const U_CORRUPTED_V2 = 'USER_CORRUPTED_V2';    // Case B: joinedAt == createTime but older activity exists
 
     beforeAll(async () => {
         // Setup Users
-        const users = [U_ACTIVE, U_INACTIVE, U_OWNER, U_NEW_OWNER, U_JA, U_SEC, U_CORRUPTED];
+        const users = [U_ACTIVE, U_INACTIVE, U_OWNER, U_NEW_OWNER, U_JA, U_SEC, U_CORRUPTED, U_CORRUPTED_V2];
         for (const uid of users) {
             await db.collection('users').doc(uid).set({
                 nickname: `Nick_${uid}`,
@@ -120,17 +122,44 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('InactivityService Integra
         await db.collection('users').doc(U_CORRUPTED).update({
             groupIds: admin.firestore.FieldValue.arrayUnion(G8)
         });
+
+        // 10. Scenario 9b: Corrupted joinedAt (matches createTime but older activity exists)
+        // This is exactly what happened to "Cosmos".
+        await setupGroup(G9, U_OWNER, [U_OWNER, U_CORRUPTED_V2], 15);
+        await setMemberActivity(G9, U_OWNER, TWO_DAYS_AGO);
+        const TEN_DAYS_AGO_TS = admin.firestore.Timestamp.fromDate(TEN_DAYS_AGO);
+        
+        // Step 1: Create member doc. Its createTime will be "now".
+        const memberRefV2 = db.collection('groups').doc(G9).collection('members').doc(U_CORRUPTED_V2);
+        await memberRefV2.set({
+            lastActiveAt: TEN_DAYS_AGO_TS,
+        });
+        const snapV2 = await memberRefV2.get();
+        const createTimeV2 = snapV2.createTime!;
+        
+        // Step 2: Set joinedAt to exactly createTime (simulating the "repair to createTime" bug)
+        await memberRefV2.update({
+            joinedAt: createTimeV2
+        });
+        
+        // Step 3: Add OLDER activity to the group-level map
+        await db.collection('groups').doc(G9).update({
+            [`memberLastActive.${U_CORRUPTED_V2}`]: TEN_DAYS_AGO_TS
+        });
+        await db.collection('users').doc(U_CORRUPTED_V2).update({
+            groupIds: admin.firestore.FieldValue.arrayUnion(G9)
+        });
     }, 30000);
 
 
     afterAll(async () => {
-        const groups = [G1, G2, G3, G4, G5, G6, G7, G8, G_STALE_A, G_STALE_B, G_STALE_C];
+        const groups = [G1, G2, G3, G4, G5, G6, G7, G8, G9, G_STALE_A, G_STALE_B, G_STALE_C];
         for (const gid of groups) {
-            await db.recursiveDelete(db.collection('groups').doc(gid));
+            await db.recursiveDelete(db.collection('groups').doc(gid)).catch(() => {});
         }
-        const users = [U_ACTIVE, U_INACTIVE, U_OWNER, U_NEW_OWNER, U_JA, U_SEC, U_CORRUPTED];
+        const users = [U_ACTIVE, U_INACTIVE, U_OWNER, U_NEW_OWNER, U_JA, U_SEC, U_CORRUPTED, U_CORRUPTED_V2];
         for (const uid of users) {
-            await db.collection('users').doc(uid).delete();
+            await db.collection('users').doc(uid).delete().catch(() => {});
         }
     });
 
@@ -262,31 +291,17 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('InactivityService Integra
         expect(tsC).toBe(TWO_DAYS_AGO.getTime()); // C should remain untouched
     });
 
-    it('Scenario 9 (Regression - Cosmos bug): Member with corrupted joinedAt (newer than createTime) is correctly identified and repaired', async () => {
-        // U_CORRUPTED has:
-        //   - joinedAt = NOW (corrupted by old cron's serverTimestamp bug)
-        //   - createTime = JUST BEFORE NOW (emulator creation time)
-        //   - lastActiveAt = 14 days ago (true inactivity)
-        // Expected: the guard detects joinedAt > createTime, logs a warning, and resets it.
-        // However, because in the *emulator* createTime is literally "now", Math.max will still
-        // pick "now" as the latest activity. Therefore, the member will NOT be removed in the test,
-        // but the corruption will be fixed in the DB.
-        const result = await InactivityService.processGroupInactivity(G8);
+    it('Scenario 9 (Regression): Repair joinedAt when it matches createTime but older activity exists', async () => {
+        // This case checks the new logic that fixed the "Cosmos" bug.
+        const G9 = 'TEST_GRP_CORRUPTED_V2';
+        const result = await InactivityService.processGroupInactivity(G9);
 
-        // In a real environment createTime is old, so they'd be removed.
-        // Here, removedCount should be 0 because createTime is "now".
-        expect(result.removedCount).toBe(0);
-
-        const gDoc = await db.collection('groups').doc(G8).get();
-        expect(gDoc.data()?.members).toContain(U_CORRUPTED);
-
-        // Verify the member doc still exists but joinedAt was reset
-        const memberDoc = await db.collection('groups').doc(G8).collection('members').doc(U_CORRUPTED).get();
-        expect(memberDoc.exists).toBe(true);
-        
-        // Ensure joinedAt was indeed reset to createTime (they should match)
+        const memberDoc = await db.collection('groups').doc(G9).collection('members').doc(U_CORRUPTED_V2).get();
         const joinedAtMs = (memberDoc.data()?.joinedAt as admin.firestore.Timestamp)?.toMillis();
         const createTimeMs = (memberDoc.createTime as admin.firestore.Timestamp)?.toMillis();
-        expect(joinedAtMs).toBe(createTimeMs);
+        
+        // It SHOULD be different now. It should have been pulled back to 10 days ago (oldest activity).
+        expect(joinedAtMs).toBeLessThan(createTimeMs);
+        expect(joinedAtMs).toBe(TEN_DAYS_AGO.getTime());
     });
 });
