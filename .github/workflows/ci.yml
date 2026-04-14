@@ -18,7 +18,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [20.x] # 現在主流の安定版Node.jsを指定します
+        node-version: [22.x] # Node.js 22 (LTS) を使用して Capacitor 8 などの互換性を確保します
 
     steps:
       - name: Checkout repository
