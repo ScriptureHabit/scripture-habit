@@ -76,6 +76,10 @@ export const GroupSchema = z.object({
   lastNoteAt: FirebaseTimestampSchema.optional(),
   unreadCount: z.number().optional(),
   isDeleted: z.boolean().optional(),
+  dailyActivity: z.object({
+    date: z.string(),
+    activeMembers: z.array(z.string())
+  }).optional(),
 }).passthrough();
 
 export const UserProfileBriefSchema = z.object({

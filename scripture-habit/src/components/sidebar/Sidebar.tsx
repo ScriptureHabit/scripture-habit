@@ -13,7 +13,6 @@ import { auth, appCheck } from '../../firebase';
 import { getToken } from "firebase/app-check";
 import { useLanguage } from '../../hooks/useLanguage';
 import { Group } from '../../types/chat';
-import { calculateUnityPercentage } from '../../utils/unityUtils';
 
 interface SidebarGroupItemProps {
   group: Group;
@@ -162,10 +161,7 @@ const Sidebar: React.FC<SidebarProps> = ({ selected, setSelected, userGroups = [
   };
 
   const getUnityPercentageLocal = (group: Group): number => {
-    if (group.unityPercentageOverride !== undefined) {
-      return group.unityPercentageOverride;
-    }
-    return calculateUnityPercentage(group);
+    return group.unityPercentage ?? 0;
   };
 
   const getGroupStatusEmoji = (group: Group): string => {

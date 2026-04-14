@@ -98,6 +98,7 @@ export interface Group extends Omit<SharedGroupDocument, 'id' | 'inviteCodeExpir
     readMessageCount?: number;
   };
   unityPercentageOverride?: number;
+  unityPercentage?: number;
 }
 
 export interface GroupData extends Group {

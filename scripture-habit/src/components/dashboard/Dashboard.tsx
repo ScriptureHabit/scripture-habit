@@ -26,6 +26,7 @@ import { useModalStore } from '../../store/useModalStore';
 import { getGospelLibraryUrl } from '../../utils/gospelLibraryMapper';
 import { useLanguage } from '../../hooks/useLanguage';
 import { getTodayReadingPlan } from '../../data/DailyReadingPlan';
+import { calculateUnityPercentage } from '../../utils/unityUtils';
 
 // Hooks
 import { useDashboardSync } from './hooks/useDashboardSync';
@@ -92,12 +93,17 @@ const Dashboard: FC = () => {
   const { warnings } = useDashboardWarnings(userData, userGroups);
 
   const enrichedUserGroups = useMemo(() => {
-    // today is used as a dependency to trigger re-calculation at midnight
-    return userGroups.map(group => ({
-      ...group,
-      unityPercentageOverride: unityOverrides[group.id],
-      _date: today // Explicitly use today to satisfy linter and dependencies
-    }));
+    return userGroups.map(group => {
+      const override = unityOverrides[group.id];
+      // Use current time, but keep today as dependency for midnight re-calculation
+      const calculated = calculateUnityPercentage(group, [], new Date());
+      
+      return {
+        ...group,
+        unityPercentage: override !== undefined ? override : calculated,
+        _date: today
+      };
+    });
   }, [userGroups, unityOverrides, today]);
   const { showNotifPrompt, handleEnableNotifications, handleCloseNotifPrompt } = useDashboardNotifications(userData, t);
   const { markWelcomeStorySeen, updateNickname } = useDashboardActions(user, userData);

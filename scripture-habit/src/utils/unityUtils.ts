@@ -1,5 +1,5 @@
 import { Group, Message } from '../types/chat';
-import { parseTimestampToMillis, formatDateInTimeZone, normalizeDateString } from './timeUtils';
+import { parseTimestampToMillis, parseTimestampToDate, formatDateInTimeZone, normalizeDateString } from './timeUtils';
 
 /**
  * Calculates current Unity percentage for a group.
@@ -29,8 +29,15 @@ export const calculateUnityPercentage = (
   const uniquePosters = new Set<string>();
 
   // SOURCE A: Server-side dailyActivity (The state on the Group document)
-  if (group.dailyActivity?.activeMembers && normalizeDateString(group.dailyActivity.date) === normalizedToday) {
-    group.dailyActivity.activeMembers.forEach(uid => uniquePosters.add(uid));
+  const activity = group.dailyActivity;
+  if (activity?.activeMembers && activity.date) {
+    const activityDateStr = typeof activity.date === 'string' 
+      ? activity.date 
+      : formatDateInTimeZone(parseTimestampToDate(activity.date), groupTimeZone);
+      
+    if (normalizeDateString(activityDateStr) === normalizedToday) {
+      activity.activeMembers.forEach(uid => uniquePosters.add(uid));
+    }
   }
 
   // SOURCE B: Client-side real-time Messages (Augment if messages are provided)
