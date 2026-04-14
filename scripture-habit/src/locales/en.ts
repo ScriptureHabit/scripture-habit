@@ -4,10 +4,10 @@ export default {
             description: "Build a daily scripture habit with friends. Optimized for LDS members studying the Bible, Book of Mormon, and Come, Follow Me. The best tool to turn Gospel study into a joyful daily routine."
         },
         sidebar: {
-            dashboard: "Dashboard",
+            dashboard: "dashboard",
             myNotes: "My Notes",
-            languages: "Languages",
-            profile: "Profile",
+            languages: "languages",
+            profile: "profile",
             myGroups: "My Groups",
             joinCreateGroup: "Join/Create Group",
             signOut: "Sign Out",
@@ -54,7 +54,7 @@ export default {
             inactivityWarning: "⚠️ {name}: No activity confirmed. You will be automatically removed in {hours} hour(s) if you do not post a note!"
         },
         languages: {
-            title: "Languages",
+            title: "languages",
             description: "Select your preferred language.",
             english: "English (English)",
             japanese: "Japanese (Japanese)",
@@ -85,7 +85,7 @@ export default {
                 "androidButton": "Add to Home Screen"
             },
             you: "You",
-            title: "Profile",
+            title: "profile",
             description: "Manage your profile settings.",
             nickname: "Nickname",
             save: "Save",

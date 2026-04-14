@@ -41,8 +41,10 @@ export default defineConfig({
     sourcemap: true, // Sentryにソースマップをアップロードするために必須
     rollupOptions: {
       output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom', 'firebase/app', 'firebase/auth', 'firebase/firestore'],
+        manualChunks(id) {
+          if (id.includes('react') || id.includes('firebase')) {
+            return 'vendor';
+          }
         },
       },
     },

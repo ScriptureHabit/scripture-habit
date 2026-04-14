@@ -82,10 +82,10 @@ export default {
             }
         },
         sidebar: {
-            dashboard: "Dashboard",
+            dashboard: "dashboard",
             myNotes: "Aking mga Tala",
             languages: "Mga Wika",
-            profile: "Profile",
+            profile: "profile",
             myGroups: "Aking mga Grupo",
             joinCreateGroup: "Sumali/Lumikha ng Grupo",
             signOut: "Mag-sign Out",
@@ -163,7 +163,7 @@ export default {
                 "androidButton": "Add to Home Screen"
             },
             you: "Ikaw",
-            title: "Profile",
+            title: "profile",
             description: "Pamahalaan ang mga setting ng iyong profile.",
             nickname: "Palayaw",
             save: "I-save",

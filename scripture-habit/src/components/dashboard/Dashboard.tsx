@@ -4,22 +4,22 @@ import { Navigate, useLocation, useNavigate, useSearchParams } from 'react-route
 import { toast } from 'react-toastify';
 
 // Components
-import GroupChat from '../groupchat/GroupChat';
-import NewNote from '../newnote/NewNote';
-import MyNotes from '../mynotes/MyNotes';
-import Profile from '../profile/Profile';
-import Donate from '../donate/Donate';
-import Footer from '../footer/Footer';
-import { DashboardSkeleton } from '../skeleton/Skeleton';
-import Sidebar from '../sidebar/Sidebar';
+import GroupChat from '../groupchat/group-chat';
+import NewNote from '../newnote/new-note';
+import MyNotes from '../mynotes/my-notes';
+import Profile from '../profile/profile';
+import Donate from '../donate/donate';
+import Footer from '../footer/footer';
+import { DashboardSkeleton } from '../skeleton/skeleton';
+import Sidebar from '../sidebar/sidebar';
 
 // Refactored Sub-components
-import DashboardLayout from './components/DashboardLayout';
-import DashboardOverview from './components/DashboardOverview';
-import DashboardModals from './components/DashboardModals';
+import DashboardLayout from './components/dashboard-layout';
+import DashboardOverview from './components/dashboard-overview';
+import DashboardModals from './components/dashboard-modals';
 
 // Styles
-import './Dashboard.css';
+import './dashboard.css';
 
 // Utils & Stores
 import { useModalStore } from '../../store/useModalStore';
@@ -29,13 +29,13 @@ import { getTodayReadingPlan } from '../../data/DailyReadingPlan';
 import { calculateUnityPercentage } from '../../utils/unityUtils';
 
 // Hooks
-import { useDashboardSync } from './hooks/useDashboardSync';
-import { useDashboardGroups } from './hooks/useDashboardGroups';
-import { useDashboardNotifications } from './hooks/useDashboardNotifications';
-import { useDashboardHabitPace } from './hooks/useDashboardHabitPace';
-import { useDashboardWarnings } from './hooks/useDashboardWarnings';
-import { useDashboardInvitations } from './hooks/useDashboardInvitations';
-import { useDashboardActions } from './hooks/useDashboardActions';
+import { useDashboardSync } from './hooks/use-dashboard-sync';
+import { useDashboardGroups } from './hooks/use-dashboard-groups';
+import { useDashboardNotifications } from './hooks/use-dashboard-notifications';
+import { useDashboardHabitPace } from './hooks/use-dashboard-habit-pace';
+import { useDashboardWarnings } from './hooks/use-dashboard-warnings';
+import { useDashboardInvitations } from './hooks/use-dashboard-invitations';
+import { useDashboardActions } from './hooks/use-dashboard-actions';
 import { useToday } from '../../hooks/useToday';
 
 const Dashboard: FC = () => {
