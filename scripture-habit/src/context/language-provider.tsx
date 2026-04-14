@@ -2,7 +2,7 @@ import React, { useState, useEffect, ReactNode, useCallback, useMemo } from 'rea
 import { useNavigate, useLocation } from 'react-router-dom';
 import { safeStorage } from '../utils/storage';
 import { loadTranslations, loadBookTranslations } from '../locales/i18n';
-import { identifyBookKey } from '../utils/bookRefMapper';
+import { identifyBookKey } from '../utils/book-ref-mapper';
 
 // Static en for initial load/fallback
 import enTranslations from '../locales/en';
@@ -11,7 +11,7 @@ import enBooksRaw from '../locales/books/en';
 const enBooks = enBooksRaw as Record<string, string>;
 
 import { Language, TranslationValue, NestedTranslations, SUPPORTED_LANGUAGES, DEFAULT_LANGUAGE } from '../config/languages';
-import { LanguageContext } from './LanguageContext';
+import { LanguageContext } from './language-context';
 
 // --- Helpers ---
 

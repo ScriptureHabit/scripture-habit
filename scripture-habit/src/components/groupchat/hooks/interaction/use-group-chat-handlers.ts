@@ -4,9 +4,9 @@ import { doc, getDoc } from 'firebase/firestore';
 import { safeStorage } from '../../../../utils/storage';
 import { UserProfileBrief, GroupData, MembersMap } from '../../../../types/chat';
 import { ReactionPreview } from '../../../../../types/firestore';
-import { ReactionItem } from '../../../../store/useModalStore';
-import { useChatStore } from '../../../../store/useChatStore';
-import { useModalStore } from '../../../../store/useModalStore';
+import { ReactionItem } from '../../../../store/use-modal-store';
+import { useChatStore } from '../../../../store/use-chat-store';
+import { useModalStore } from '../../../../store/use-modal-store';
 
 interface UseGroupChatHandlersParams {
   groupData: GroupData | null;

@@ -6,8 +6,8 @@ import {
   useChatGroupActions, 
   useChatUIActions 
 } from '../hooks/use-chat-context';
-import { useChatStore } from '../../../store/useChatStore';
-import { useModalStore } from '../../../store/useModalStore';
+import { useChatStore } from '../../../store/use-chat-store';
+import { useModalStore } from '../../../store/use-modal-store';
 import { Group } from '../../../types/chat';
 
 const ChatHeader: FC = () => {

@@ -3,9 +3,9 @@ import { User } from 'firebase/auth';
 import { doc, collection, getDocs, updateDoc, Timestamp, getCountFromServer } from 'firebase/firestore';
 import { db } from '../../../firebase';
 import { UserData } from '../../../types/user';
-import { useAuth } from '../../../hooks/useAuth';
+import { useAuth } from '../../../hooks/use-auth';
 
-import { noteConverter } from '../../../utils/firestoreConverters';
+import { noteConverter } from '../../../utils/firestore-converters';
 
 export type DashboardSyncStatus = 
   | { status: 'loading'; user: User | null; userData: UserData | null }

@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { Message } from '../../../../types/chat';
-import { useChatStore } from '../../../../store/useChatStore';
+import { useChatStore } from '../../../../store/use-chat-store';
 
 export const useMessageInteraction = () => {
   const { 

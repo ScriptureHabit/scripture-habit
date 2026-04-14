@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { getGospelLibraryUrl } from '../../../utils/gospelLibraryMapper';
+import { getGospelLibraryUrl } from '../../../utils/gospel-library-mapper';
 
 interface GospelLinkProps {
   text: string;

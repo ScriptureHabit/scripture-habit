@@ -3,9 +3,9 @@ import { useState, FC } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Button from '../button/button';
 import Mascot from '../mascot/mascot';
-import { useLanguage } from '../../hooks/useLanguage';
+import { useLanguage } from '../../hooks/use-language';
 import BrowserWarningModal from '../browserwarningmodal/browser-warning-modal';
-import { isInAppBrowser } from '../../utils/browserDetection';
+import { isInAppBrowser } from '../../utils/browser-detection';
 import './welcome.css';
 import Footer from '../footer/footer';
 

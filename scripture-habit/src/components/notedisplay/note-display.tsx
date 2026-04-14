@@ -1,7 +1,7 @@
 
 import { FC, useState, useEffect, useRef, useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { useLanguage } from '../../hooks/useLanguage';
+import { useLanguage } from '../../hooks/use-language';
 import { useNoteParser } from './hooks/use-note-parser';
 import GCNoteRenderer from './components/gc-note-renderer';
 import { getNoteLabelFallback, translateScriptureName, isPlaceholderValue } from './utils/note-translations';

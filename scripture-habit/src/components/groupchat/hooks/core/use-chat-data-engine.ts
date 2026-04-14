@@ -4,9 +4,9 @@ import * as Sentry from "@sentry/react";
 import { Message, GroupData, MembersMap, UserProfileBrief } from '../../../../types/chat';
 import { db } from '../../../../firebase';
 import { UserData } from '../../../../types/user';
-import { groupConverter, messageConverter, groupMemberConverter } from '../../../../utils/firestoreConverters';
+import { groupConverter, messageConverter, groupMemberConverter } from '../../../../utils/firestore-converters';
 import { UserProfileBriefSchema, GroupSchema } from '../../../../types/schemas';
-import apiClient from '../../../../utils/apiClient';
+import apiClient from '../../../../utils/api-client';
 import { chatReducer, initialState, ChatAction, ChatStatus } from './chat-reducer';
 
 /**

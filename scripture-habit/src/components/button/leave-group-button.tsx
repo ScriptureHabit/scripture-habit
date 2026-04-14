@@ -4,7 +4,7 @@ import { getToken } from 'firebase/app-check'; // Added AppCheck getToken
 import { useNavigate } from 'react-router-dom';
 import { auth, appCheck } from '../../firebase'; // Added appCheck
 import { toast } from 'react-toastify';
-import { useLanguage } from '../../hooks/useLanguage';
+import { useLanguage } from '../../hooks/use-language';
 import { Capacitor } from '@capacitor/core';
 import ConfirmModal from '../confirmmodal/confirm-modal';
 

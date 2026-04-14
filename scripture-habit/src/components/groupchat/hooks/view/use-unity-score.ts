@@ -7,8 +7,8 @@ import confetti from 'canvas-confetti';
 import { Message, GroupData } from '../../../../types/chat';
 import { UserData } from '../../../../types/user';
 
-import { calculateUnityPercentage } from '../../../../utils/unityUtils';
-import { useToday } from '../../../../hooks/useToday';
+import { calculateUnityPercentage } from '../../../../utils/unity-utils';
+import { useToday } from '../../../../hooks/use-today';
 
 export const useUnityScore = (
   groupId: string,

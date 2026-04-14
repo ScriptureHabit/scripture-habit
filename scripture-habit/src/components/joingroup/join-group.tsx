@@ -7,14 +7,14 @@ import { doc, onSnapshot, collection, query, where, getDocs, limit } from 'fireb
 import { useNavigate, Link } from 'react-router-dom';
 import { onAuthStateChanged, User } from "firebase/auth";
 import '../groupform/group-form.css';
-import GroupCard from '../../groups/GroupCard';
-import { useLanguage } from '../../hooks/useLanguage';
+import GroupCard from '../../groups/group-card';
+import { useLanguage } from '../../hooks/use-language';
 import UserProfileModal from '../userprofilemodal/user-profile-modal';
 import Mascot from '../mascot/mascot';
 import { toast } from 'react-toastify';
 import { Group } from '../../types/chat';
 import { UserData } from '../../types/user';
-import { parseTimestampToDate } from '../../utils/timeUtils';
+import { parseTimestampToDate } from '../../utils/time-utils';
 
 export default function JoinGroup() {
   const { t, language } = useLanguage();

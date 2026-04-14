@@ -1,7 +1,7 @@
 import { FC, Fragment } from 'react';
 import MessageItem from './message-item';
 import { Message } from '../../../types/chat';
-import { parseTimestampToDate } from '../../../utils/timeUtils';
+import { parseTimestampToDate } from '../../../utils/time-utils';
 import { useChatData, useChatUIActions } from '../hooks/use-chat-context';
 
 interface GroupChatMessageListProps {

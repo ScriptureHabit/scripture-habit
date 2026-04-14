@@ -1,6 +1,6 @@
 import { admin, db } from '../lib/firebase-admin.js';
 import { GroupDocument, MessageDocument, UserDocument, ReactionPreview, PersonalNoteDocument, FirestoreTimestamp } from '../../types/firestore.js';
-import { formatDateInTimeZone, normalizeDateString } from '../../src/utils/timeUtils.js';
+import { formatDateInTimeZone, normalizeDateString } from '../../src/utils/time-utils.js';
 import { buildNoteSearchTokens } from '../lib/search-utils.js';
 
 export interface PostMessageParams {

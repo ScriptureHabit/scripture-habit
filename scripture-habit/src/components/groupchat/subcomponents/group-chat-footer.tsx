@@ -7,8 +7,8 @@ import {
     useChatMessageActions, 
     useChatUIActions 
 } from '../hooks/use-chat-context';
-import { useChatStore } from '../../../store/useChatStore';
-import { useModalStore } from '../../../store/useModalStore';
+import { useChatStore } from '../../../store/use-chat-store';
+import { useModalStore } from '../../../store/use-modal-store';
 
 const GroupChatFooter: FC = () => {
     const { userData } = useChatData();

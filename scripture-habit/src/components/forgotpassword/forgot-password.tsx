@@ -5,7 +5,7 @@ import Input from "../input/input";
 import { auth } from "../../firebase";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { Link } from "react-router-dom";
-import { useLanguage } from "../../hooks/useLanguage";
+import { useLanguage } from "../../hooks/use-language";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");

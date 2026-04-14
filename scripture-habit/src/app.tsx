@@ -1,9 +1,9 @@
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import "./App.css";
+import "./app.css";
 import { useEffect, useState } from 'react';
-import { useApiWarmup } from './hooks/useApiWarmup';
+import { useApiWarmup } from './hooks/use-api-warmup';
 
 import { ErrorFallback } from './components/common/error-fallback';
 import { useQuery } from '@tanstack/react-query';
@@ -16,7 +16,7 @@ import { FirebaseError } from 'firebase/app';
 import SignupForm from './components/signupform/signup-form';
 import LoginForm from './components/loginform/login-form';
 import Dashboard from './components/dashboard/dashboard';
-import { useAuth } from './hooks/useAuth';
+import { useAuth } from './hooks/use-auth';
 
 import GroupForm from './components/groupform/group-form';
 import JoinGroup from './components/joingroup/join-group';
@@ -30,16 +30,16 @@ import Maintenance from './components/maintenance/maintenance';
 import { MAINTENANCE_MODE } from './config';
 import * as Sentry from "@sentry/react";
 import InstallPrompt from './components/installprompt/install-prompt';
-import { handleInAppBrowserRedirect, isInAppBrowser } from './utils/browserDetection';
+import { handleInAppBrowserRedirect, isInAppBrowser } from './utils/browser-detection';
 import CookieConsent from './components/cookieconsent/cookie-consent';
 
 import PrivacyPolicy from './components/privacypolicy/privacy-policy';
 import TermsOfService from './components/termsofservice/terms-of-service';
 import LegalDisclosure from './components/legaldisclosure/legal-disclosure';
-import { LanguageProvider } from './context/LanguageProvider';
+import { LanguageProvider } from './context/language-provider';
 import { SUPPORTED_LANGUAGES } from './config/languages';
-import { SettingsProvider } from './context/SettingsContext';
-import SEOManager from './components/SEOManager';
+import { SettingsProvider } from './context/settings-context';
+import SEOManager from './components/seo-manager';
 import PWAUpdateHandler from './components/pwaupdatehandler/pwa-update-handler';
 import LanguageRedirect from './components/languageredirect/language-redirect';
 import BrowserWarningWrapper from './components/browserwarningmodal/browser-warning-wrapper';

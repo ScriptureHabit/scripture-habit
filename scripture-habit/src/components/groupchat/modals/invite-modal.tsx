@@ -4,7 +4,7 @@ import Mascot from '../../mascot/mascot';
 import ConfirmModal from '../../confirmmodal/confirm-modal';
 import { Group } from '../../../types/chat';
 import { UserData } from '../../../types/user';
-import { parseTimestampToDate } from '../../../utils/timeUtils';
+import { parseTimestampToDate } from '../../../utils/time-utils';
 
 interface InviteModalProps {
     t: (key: string, replacements?: Record<string, string | number>) => string;

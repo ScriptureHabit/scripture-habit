@@ -1,12 +1,12 @@
 import { useState, useCallback, useMemo } from 'react';
-import { getTodayReadingPlan } from '../../../data/DailyReadingPlan';
-import { AdversityScriptures } from '../../../data/AdversityScriptures';
-import { JoyScriptures } from '../../../data/JoyScriptures';
-import { RelationshipScriptures } from '../../../data/RelationshipScriptures';
-import { MasteryScriptures } from '../../../data/MasteryScriptures';
-import { PeaceScriptures } from '../../../data/PeaceScriptures';
-import { getCategoryFromScripture } from '../../../utils/gospelLibraryMapper';
-import { localizeLdsUrl } from '../../../utils/urlLocalizer';
+import { getTodayReadingPlan } from '../../../data/daily-reading-plan';
+import { AdversityScriptures } from '../../../data/adversity-scriptures';
+import { JoyScriptures } from '../../../data/joy-scriptures';
+import { RelationshipScriptures } from '../../../data/relationship-scriptures';
+import { MasteryScriptures } from '../../../data/mastery-scriptures';
+import { PeaceScriptures } from '../../../data/peace-scriptures';
+import { getCategoryFromScripture } from '../../../utils/gospel-library-mapper';
+import { localizeLdsUrl } from '../../../utils/url-localizer';
 import { ScriptureQuote } from '../../../types/scriptures';
 
 interface RandomScripture {

@@ -1,6 +1,6 @@
 import { useMemo, FormEvent, KeyboardEvent } from 'react';
 import { Message } from '../../../../types/chat';
-import { useChatStore } from '../../../../store/useChatStore';
+import { useChatStore } from '../../../../store/use-chat-store';
 
 /**
  * Hook for managing the chat message input state and logic.

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { safeStorage } from '../../../utils/storage';
-import { requestNotificationPermission } from '../../../utils/notificationHelper';
+import { requestNotificationPermission } from '../../../utils/notification-helper';
 import { UserData } from '../../../types/user';
 
 export const useDashboardNotifications = (

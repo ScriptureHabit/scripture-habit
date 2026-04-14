@@ -1,5 +1,5 @@
 import { useMemo, FC } from 'react';
-import { detectInAppBrowser, getAndroidIntentUrl, getLineExternalUrl, openExternalUrl } from '../../utils/browserDetection';
+import { detectInAppBrowser, getAndroidIntentUrl, getLineExternalUrl, openExternalUrl } from '../../utils/browser-detection';
 import './browser-warning-modal.css';
 import { UilCheckCircle, UilInfoCircle, UilCopyAlt, UilExternalLinkAlt, UilTimes } from '@iconscout/react-unicons';
 import { toast } from 'react-toastify';

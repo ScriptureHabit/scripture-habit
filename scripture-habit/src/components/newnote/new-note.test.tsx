@@ -2,7 +2,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import NewNote from './new-note';
-import { useLanguage } from '../../hooks/useLanguage';
+import { useLanguage } from '../../hooks/use-language';
 import { UserData } from '../../types/user';
 import { Note } from '../../types/note';
 import { ScriptureCategory } from '../../types/scripture';

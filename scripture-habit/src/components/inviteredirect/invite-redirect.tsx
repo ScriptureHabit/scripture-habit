@@ -3,7 +3,7 @@ import { useEffect, useState, FC } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { safeStorage } from '../../utils/storage';
 import { auth } from '../../firebase';
-import { useLanguage } from '../../hooks/useLanguage';
+import { useLanguage } from '../../hooks/use-language';
 import Button from '../button/button';
 import './invite-redirect.css';
 

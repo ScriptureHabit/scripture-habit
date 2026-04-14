@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import confetti from 'canvas-confetti';
 import { Message } from '../../../../types/chat';
-import { parseTimestampToMillis } from '../../../../utils/timeUtils';
+import { parseTimestampToMillis } from '../../../../utils/time-utils';
 import { UserData } from '../../../../types/user';
 
 /**

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import apiClient from '../../../../utils/apiClient';
+import apiClient from '../../../../utils/api-client';
 import { toast } from 'react-toastify';
 import { GroupData } from '../../../../types/chat';
 import { UserData } from '../../../../types/user';

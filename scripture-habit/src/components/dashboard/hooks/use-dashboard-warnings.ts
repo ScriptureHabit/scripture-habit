@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { UserData } from '../../../types/user';
 import { FirebaseTimestamp, Group } from '../../../types/chat';
-import { parseTimestampToDate } from '../../../utils/timeUtils';
+import { parseTimestampToDate } from '../../../utils/time-utils';
 
 interface WarningInfo {
   name: string;

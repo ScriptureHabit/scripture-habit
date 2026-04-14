@@ -3,8 +3,8 @@ import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../../../../firebase';
 import { GroupData, Message, UserProfileBrief } from '../../../../types/chat';
 import { UserData } from '../../../../types/user';
-import { parseTimestampToMillis } from '../../../../utils/timeUtils';
-import { useChatStore } from '../../../../store/useChatStore';
+import { parseTimestampToMillis } from '../../../../utils/time-utils';
+import { useChatStore } from '../../../../store/use-chat-store';
 
 export const useUnityDetails = (
   groupData: GroupData | null,

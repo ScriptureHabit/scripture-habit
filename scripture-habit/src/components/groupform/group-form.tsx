@@ -8,9 +8,9 @@ import Input from '../input/input';
 import Button from '../button/button';
 import Toggle from '../input/toggle';
 import { toast } from "react-toastify";
-import { useLanguage } from '../../hooks/useLanguage';
+import { useLanguage } from '../../hooks/use-language';
 import Mascot from '../mascot/mascot';
-import { generateInviteCode } from '../../utils/inviteUtils';
+import { generateInviteCode } from '../../utils/invite-utils';
 
 export default function GroupForm() {
   const { t, language } = useLanguage();

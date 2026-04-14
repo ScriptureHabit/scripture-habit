@@ -3,7 +3,7 @@ import { FC } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { UilEnvelopeAlt, UilSave, UilTimes } from '@iconscout/react-unicons';
 import './recap-modal.css';
-import { useLanguage } from '../../hooks/useLanguage';
+import { useLanguage } from '../../hooks/use-language';
 
 interface RecapModalProps {
     isOpen: boolean;

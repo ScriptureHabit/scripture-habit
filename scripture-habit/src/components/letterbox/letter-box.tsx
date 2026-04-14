@@ -5,12 +5,12 @@ import { collection, query, orderBy, onSnapshot, doc, deleteDoc } from 'firebase
 import { UilEnvelope, UilTrashAlt, UilTimes } from '@iconscout/react-unicons';
 import ReactMarkdown from 'react-markdown';
 import './letter-box.css';
-import { useLanguage } from '../../hooks/useLanguage';
+import { useLanguage } from '../../hooks/use-language';
 import { UserData } from '../../types/user';
 import ConfirmModal from '../confirmmodal/confirm-modal';
 
 import { FirebaseTimestamp } from '../../types/chat';
-import { parseTimestampToDate } from '../../utils/timeUtils';
+import { parseTimestampToDate } from '../../utils/time-utils';
 
 interface Letter {
     id: string;

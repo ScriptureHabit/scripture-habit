@@ -1,7 +1,7 @@
 
 import React from 'react';
 import './donate.css';
-import { useLanguage } from '../../hooks/useLanguage';
+import { useLanguage } from '../../hooks/use-language';
 import Mascot from '../mascot/mascot';
 
 import { UserData } from '../../types/user';

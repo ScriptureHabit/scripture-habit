@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, FC } from 'react';
 import { getToken } from 'firebase/app-check'; // Added AppCheck getToken
 import { auth, appCheck } from '../../../firebase'; // Added appCheck
-import { parseTimestampToMillis } from '../../../utils/timeUtils';
+import { parseTimestampToMillis } from '../../../utils/time-utils';
 import { Group } from '../../../types/chat';
 
 interface GroupMenuItemProps {

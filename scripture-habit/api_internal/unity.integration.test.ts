@@ -2,7 +2,7 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { admin, db } from './lib/firebase-admin.js';
 import { NoteService } from './services/note-service.js';
-import { calculateUnityPercentage } from '../src/utils/unityUtils.js';
+import { calculateUnityPercentage } from '../src/utils/unity-utils.js';
 import { Group } from '../src/types/chat.js';
 
 /**

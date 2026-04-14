@@ -2,7 +2,7 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import NoteDisplay from './note-display';
-import { useLanguage } from '../../hooks/useLanguage';
+import { useLanguage } from '../../hooks/use-language';
 
 // Mock LanguageContext
 vi.mock('../../hooks/useLanguage', () => ({

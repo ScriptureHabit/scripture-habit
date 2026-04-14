@@ -7,7 +7,7 @@ import RecapModal from '../recapmodal/recap-modal';
 import LetterBox from '../letterbox/letter-box';
 import { toast } from 'react-toastify';
 import './my-notes.css';
-import { useLanguage } from '../../hooks/useLanguage';
+import { useLanguage } from '../../hooks/use-language';
 import NoteDetailModal from './note-detail-modal';
 import Mascot from '../mascot/mascot';
 import { NoteGridSkeleton } from '../skeleton/skeleton';
@@ -24,7 +24,7 @@ import { useRecap } from './hooks/use-recap';
 
 // Types
 import { SCRIPTURE_CATEGORIES, CATEGORY_TRANSLATION_MAP } from '../../types/scripture';
-import { parseTimestampToDate } from '../../utils/timeUtils';
+import { parseTimestampToDate } from '../../utils/time-utils';
 
 interface MyNotesProps {
   userData: UserData;

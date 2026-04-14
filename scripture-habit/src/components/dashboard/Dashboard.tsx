@@ -22,11 +22,11 @@ import DashboardModals from './components/dashboard-modals';
 import './dashboard.css';
 
 // Utils & Stores
-import { useModalStore } from '../../store/useModalStore';
-import { getGospelLibraryUrl } from '../../utils/gospelLibraryMapper';
-import { useLanguage } from '../../hooks/useLanguage';
-import { getTodayReadingPlan } from '../../data/DailyReadingPlan';
-import { calculateUnityPercentage } from '../../utils/unityUtils';
+import { useModalStore } from '../../store/use-modal-store';
+import { getGospelLibraryUrl } from '../../utils/gospel-library-mapper';
+import { useLanguage } from '../../hooks/use-language';
+import { getTodayReadingPlan } from '../../data/daily-reading-plan';
+import { calculateUnityPercentage } from '../../utils/unity-utils';
 
 // Hooks
 import { useDashboardSync } from './hooks/use-dashboard-sync';
@@ -36,7 +36,7 @@ import { useDashboardHabitPace } from './hooks/use-dashboard-habit-pace';
 import { useDashboardWarnings } from './hooks/use-dashboard-warnings';
 import { useDashboardInvitations } from './hooks/use-dashboard-invitations';
 import { useDashboardActions } from './hooks/use-dashboard-actions';
-import { useToday } from '../../hooks/useToday';
+import { useToday } from '../../hooks/use-today';
 
 const Dashboard: FC = () => {
   const location = useLocation();

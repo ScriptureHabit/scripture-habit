@@ -1,5 +1,5 @@
 import { Message, GroupData, MembersMap } from '../../../../types/chat';
-import { parseTimestampToMillis } from '../../../../utils/timeUtils';
+import { parseTimestampToMillis } from '../../../../utils/time-utils';
 
 export type ChatStatus = 'loading' | 'active' | 'error' | 'notFound';
 

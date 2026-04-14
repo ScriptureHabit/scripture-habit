@@ -5,7 +5,7 @@ import * as Sentry from "@sentry/react";
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import './index.css'
 import App from './app'
-import { AuthProvider } from './Context/auth-provider';
+import { AuthProvider } from './context/auth-provider';
 import VConsole from 'vconsole';
 
 // Only initialize vConsole if ?vconsole=true is in the URL
@@ -25,7 +25,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 // and Firebase 'permission-denied' errors that can escape try/catch during state transitions
 // (e.g. after group deletion, auth state change, etc.)
 window.addEventListener('unhandledrejection', (event) => {
-  const reason = event.reason;
+  const reason = (event as PromiseRejectionEvent).reason;
   if (!reason) return;
 
   // Silence AbortErrors (mobile/SW related)

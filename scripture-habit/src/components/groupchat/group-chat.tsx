@@ -6,7 +6,7 @@ import GroupChatModals from './group-chat-modals';
 import ChatHeader from './subcomponents/chat-header';
 import GroupChatContextMenu from './subcomponents/group-chat-context-menu';
 import GroupChatProvider from './group-chat-provider';
-import { useModalStore } from '../../store/useModalStore';
+import { useModalStore } from '../../store/use-modal-store';
 import { UserData } from '../../types/user';
 import { Group } from '../../types/chat';
 

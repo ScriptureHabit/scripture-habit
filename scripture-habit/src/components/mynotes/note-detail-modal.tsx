@@ -4,12 +4,12 @@ import { UilTimes, UilPen, UilTrashAlt, UilComment, UilThumbsUp } from '@iconsco
 import { db } from '../../firebase';
 import { doc, collection, query, where, onSnapshot, Timestamp } from 'firebase/firestore';
 import NoteDisplay from '../notedisplay/note-display';
-import { useLanguage } from '../../hooks/useLanguage';
+import { useLanguage } from '../../hooks/use-language';
 import './note-detail-modal.css';
 import { Note } from '../../types/note';
 import { Group, Message, FirebaseTimestamp } from '../../types/chat';
 import { UserData } from '../../types/user';
-import { parseTimestampToDate } from '../../utils/timeUtils';
+import { parseTimestampToDate } from '../../utils/time-utils';
 
 interface NoteDetailModalProps {
     isOpen: boolean;

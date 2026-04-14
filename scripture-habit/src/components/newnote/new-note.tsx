@@ -2,7 +2,7 @@
 import { useState, useEffect, FC, useMemo } from 'react';
 import Select from 'react-select';
 import { UilShuffle, UilRobot } from '@iconscout/react-unicons';
-import { useLanguage } from '../../hooks/useLanguage';
+import { useLanguage } from '../../hooks/use-language';
 import Input from '../input/input';
 import './new-note.css';
 
@@ -18,9 +18,9 @@ import ScriptureSelectionModal from './subcomponents/scripture-selection-modal';
 import CloseConfirmModal from './subcomponents/close-confirm-modal';
 import NoteSharingOptions from './subcomponents/note-sharing-options';
 
-import { getBookSuggestions } from '../../utils/suggestionUtils';
-import { getGospelLibraryUrl, getCategoryFromScripture } from '../../utils/gospelLibraryMapper';
-import { removeNoteHeader } from '../../utils/noteUtils';
+import { getBookSuggestions } from '../../utils/suggestion-utils';
+import { getGospelLibraryUrl, getCategoryFromScripture } from '../../utils/gospel-library-mapper';
+import { removeNoteHeader } from '../../utils/note-utils';
 import { UserData } from '../../types/user';
 import { Group, Message } from '../../types/chat';
 import { Note } from '../../types/note';

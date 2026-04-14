@@ -2,7 +2,7 @@ import { FC } from 'react';
 import { UilTimes } from '@iconscout/react-unicons';
 import { Group, UserProfileBrief } from '../../../types/chat';
 import { UserData } from '../../../types/user';
-import { parseTimestampToDate } from '../../../utils/timeUtils';
+import { parseTimestampToDate } from '../../../utils/time-utils';
 
 interface MembersModalProps {
     t: (key: string) => string;

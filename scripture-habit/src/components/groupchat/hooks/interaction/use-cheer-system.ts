@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { db } from '../../../../firebase';
-import apiClient from '../../../../utils/apiClient';
+import apiClient from '../../../../utils/api-client';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { toast } from 'react-toastify';
 import { UserData } from '../../../../types/user';

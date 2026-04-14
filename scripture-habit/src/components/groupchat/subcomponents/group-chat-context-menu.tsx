@@ -5,7 +5,7 @@ import {
   useChatMessageActions, 
   useChatUIActions 
 } from '../hooks/use-chat-context';
-import { useChatStore } from '../../../store/useChatStore';
+import { useChatStore } from '../../../store/use-chat-store';
 
 const GroupChatContextMenu: FC = () => {
     const { userData } = useChatData();

@@ -4,7 +4,7 @@ import { Message } from '../../../types/chat';
 import { ReactionPreview } from '../../../../types/firestore';
 import SystemMessage from './system-message';
 import GospelLink from './gospel-link';
-import { parseTimestampToMillis } from '../../../utils/timeUtils';
+import { parseTimestampToMillis } from '../../../utils/time-utils';
 import { 
   useChatData, 
   useChatMessageActions, 

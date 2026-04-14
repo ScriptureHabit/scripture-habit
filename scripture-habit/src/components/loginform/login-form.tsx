@@ -9,7 +9,7 @@ import { Capacitor } from '@capacitor/core';
 import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
 import { doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
 import { useNavigate, Link } from 'react-router-dom';
-import { useLanguage } from '../../hooks/useLanguage';
+import { useLanguage } from '../../hooks/use-language';
 import { UilGoogle, UilGithub } from '@iconscout/react-unicons';
 import { toast } from 'react-toastify';
 import Footer from '../footer/footer';

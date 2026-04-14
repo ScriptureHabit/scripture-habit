@@ -1,7 +1,7 @@
 
 import { FC, ReactNode, useMemo, useEffect } from 'react';
 import { Capacitor } from '@capacitor/core';
-import { useLanguage } from '../../hooks/useLanguage';
+import { useLanguage } from '../../hooks/use-language';
 import { ChatProvider } from './chat-provider';
 import { 
   ChatDataContextType, 
@@ -11,7 +11,7 @@ import {
 } from './chat-context';
 import { UserData } from '../../types/user';
 import { Group } from '../../types/chat';
-import { useChatStore } from '../../store/useChatStore';
+import { useChatStore } from '../../store/use-chat-store';
 
 // Hooks
 import { useGroupMessages } from './hooks/core/use-group-messages';

@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import './sidebar.css';
-import { SidebarData } from '../../data/Data';
+import { SidebarData } from '../../data/data';
 import {
   UilUsersAlt,
   UilBookOpen,
@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { auth, appCheck } from '../../firebase';
 // Removed unused Firestore imports
 import { getToken } from "firebase/app-check";
-import { useLanguage } from '../../hooks/useLanguage';
+import { useLanguage } from '../../hooks/use-language';
 import { Group } from '../../types/chat';
 
 interface SidebarGroupItemProps {

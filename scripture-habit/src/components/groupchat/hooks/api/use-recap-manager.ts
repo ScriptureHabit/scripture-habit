@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import apiClient from '../../../../utils/apiClient';
+import apiClient from '../../../../utils/api-client';
 import { toast } from 'react-toastify';
 import { GroupData } from '../../../../types/chat';
-import { parseTimestampToDate } from '../../../../utils/timeUtils';
+import { parseTimestampToDate } from '../../../../utils/time-utils';
 
 export const useRecapManager = (
   groupId: string,

@@ -5,7 +5,7 @@ import { buildNoteSearchTokens } from '../lib/search-utils.js';
 import { t } from '../lib/i18n.js';
 import { StreakEngine } from '../lib/streak-engine.js';
 import { NotificationService } from './notification-service.js';
-import { formatDateInTimeZone, normalizeDateString } from '../../src/utils/timeUtils.js';
+import { formatDateInTimeZone, normalizeDateString } from '../../src/utils/time-utils.js';
 
 export interface PostNoteInput {
     uid: string;

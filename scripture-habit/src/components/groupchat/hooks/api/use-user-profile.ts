@@ -1,7 +1,7 @@
 import { db } from '../../../../firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import { UserProfileBrief, MembersMap } from '../../../../types/chat';
-import { useChatStore } from '../../../../store/useChatStore';
+import { useChatStore } from '../../../../store/use-chat-store';
 
 export const useUserProfile = (
   membersMap: MembersMap,

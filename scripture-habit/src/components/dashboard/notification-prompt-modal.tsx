@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import './NotificationPromptModal.css';
+import './notification-prompt-modal.css';
 
 interface NotificationPromptModalProps {
     isOpen: boolean;

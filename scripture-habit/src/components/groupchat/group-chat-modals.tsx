@@ -6,8 +6,8 @@ import {
   useChatGroupActions, 
   useChatUIActions 
 } from './chat-context';
-import { useChatStore } from '../../store/useChatStore';
-import { useModalStore } from '../../store/useModalStore';
+import { useChatStore } from '../../store/use-chat-store';
+import { useModalStore } from '../../store/use-modal-store';
 import { UserProfile } from '../../types/chat';
 
 // Sub-modal components

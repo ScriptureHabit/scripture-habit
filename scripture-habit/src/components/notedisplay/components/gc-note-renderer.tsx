@@ -1,8 +1,8 @@
 import { FC, useMemo, useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { useUrlMetadata } from '../../../hooks/useUrlMetadata';
+import { useUrlMetadata } from '../../../hooks/use-url-metadata';
 import { getNoteLabelFallback, translateScriptureName, isPlaceholderValue } from '../utils/note-translations';
-import { isGCUrl } from '../../../utils/noteUtils';
+import { isGCUrl } from '../../../utils/note-utils';
 import '../note-display.css';
 
 interface GCNoteRendererProps {

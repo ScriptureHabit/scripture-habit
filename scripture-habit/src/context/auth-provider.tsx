@@ -5,7 +5,7 @@ import { doc, onSnapshot } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 import { UserData } from '../types/user';
 
-import { AuthContext } from './AuthContext';
+import { AuthContext } from './auth-context';
 
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {

@@ -4,7 +4,7 @@ import { Message, GroupData } from '../../../../types/chat';
 import { db, auth } from '../../../../firebase';
 import { User } from 'firebase/auth';
 import { UserData } from '../../../../types/user';
-import { messageConverter } from '../../../../utils/firestoreConverters';
+import { messageConverter } from '../../../../utils/firestore-converters';
 import { useDashboardActions } from '../../../../components/dashboard/hooks/use-dashboard-actions';
 import { ChatAction } from './chat-reducer';
 

@@ -3,8 +3,8 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { auth, appCheck } from '../firebase';
 import { getToken } from 'firebase/app-check';
 import { Group, FirebaseTimestamp } from '../types/chat';
-import './GroupCard.css';
-import { useLanguage } from '../hooks/useLanguage';
+import './group-card.css';
+import { useLanguage } from '../hooks/use-language';
 import { toast } from 'react-toastify';
 
 

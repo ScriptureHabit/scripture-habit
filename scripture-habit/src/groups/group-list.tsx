@@ -2,9 +2,9 @@
 import { useEffect, useState, useMemo } from 'react';
 import { getFirestore, collection, onSnapshot, query, orderBy, limit } from 'firebase/firestore';
 import { app } from '../firebase';
-import GroupCard from './GroupCard';
-import { useLanguage } from '../hooks/useLanguage';
-import './GroupList.css';
+import GroupCard from './group-card';
+import { useLanguage } from '../hooks/use-language';
+import './group-list.css';
 import { Group } from '../types/chat';
 
 // --- Types ---

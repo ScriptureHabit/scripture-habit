@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { NOTE_HEADER_REGEX, removeNoteHeader, isGCUrl, extractUrls } from '../../../utils/noteUtils';
+import { NOTE_HEADER_REGEX, removeNoteHeader, isGCUrl, extractUrls } from '../../../utils/note-utils';
 
 export interface ParsedNote {
     isOriginalStructured: boolean;
@@ -59,7 +59,7 @@ export const useNoteParser = (text: string, translatedText?: string, isTranslate
         const initialLines = contentBody.split('\n');
         const lines: string[] = [];
 
-        initialLines.forEach(line => {
+        initialLines.forEach((line: string) => {
             const foundPos: { pos: number; marker: string }[] = [];
             LABEL_MARKERS.forEach(marker => {
                 const pos = line.indexOf(marker);

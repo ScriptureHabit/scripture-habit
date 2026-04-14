@@ -1,17 +1,17 @@
 
 import { useState, useEffect, FC, useRef, ChangeEvent } from 'react';
 import './profile.css';
-import { useLanguage } from '../../hooks/useLanguage';
-import { useSettings } from '../../context/SettingsContext';
+import { useLanguage } from '../../hooks/use-language';
+import { useSettings } from '../../context/settings-context';
 import { auth, storage } from '../../firebase';
 import { useNavigate } from 'react-router-dom';
 import { UilSignOutAlt, UilCamera, UilCalendarAlt } from '@iconscout/react-unicons';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { toast } from 'react-toastify';
 import Button from '../button/button';
-import { requestNotificationPermission, disableNotifications } from '../../utils/notificationHelper';
+import { requestNotificationPermission, disableNotifications } from '../../utils/notification-helper';
 import { UserData } from '../../types/user';
-import apiClient from '../../utils/apiClient';
+import apiClient from '../../utils/api-client';
 
 interface ProfileStats {
     streak: number;
@@ -121,7 +121,8 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
             }
         } else {
             try {
-                await requestNotificationPermission(userData.uid, (key, defaultText) => t(key) || defaultText);
+                const getTranslatedText = (key: string, defaultText: string) => t(key) || defaultText;
+                await requestNotificationPermission(userData.uid, getTranslatedText);
                 setNotifPermission(window.Notification.permission);
             } catch (err: unknown) {
                 console.error("Toggle error:", err);
@@ -149,11 +150,11 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
         }
     }, [userData]);
 
-    const resizeImage = (file: File, targetSize = 400): Promise<Blob> => {
+    const resizeImage = (file: File, targetSize: number = 400): Promise<Blob> => {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.readAsDataURL(file);
-            reader.onload = (event) => {
+            reader.onload = (event: ProgressEvent<FileReader>) => {
                 const img = new Image();
                 img.src = event.target?.result as string;
                 img.onload = () => {
@@ -191,13 +192,13 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
                         0, 0, targetSize, targetSize               // Destination
                     );
 
-                    canvas.toBlob((blob) => {
+                    canvas.toBlob((blob: Blob | null) => {
                         if (blob) resolve(blob);
                         else reject(new Error("Canvas toBlob failed"));
                     }, 'image/jpeg', 0.85); // Compress quality
                 };
             };
-            reader.onerror = (error) => reject(error);
+            reader.onerror = (error: ProgressEvent<FileReader>) => reject(error);
         });
     };
 

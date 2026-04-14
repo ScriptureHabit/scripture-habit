@@ -1,8 +1,8 @@
 import { useState, useEffect, FC } from 'react';
 import { useLocation } from 'react-router-dom';
 import { UilMultiply, UilShare, UilPlusSquare, UilApps } from '@iconscout/react-unicons';
-import { useLanguage } from '../../hooks/useLanguage';
-import { Language } from '../../context/LanguageContext';
+import { useLanguage } from '../../hooks/use-language';
+import { Language } from '../../context/language-context';
 import { SUPPORTED_LANGUAGES } from '../../config/languages';
 import './install-prompt.css';
 
