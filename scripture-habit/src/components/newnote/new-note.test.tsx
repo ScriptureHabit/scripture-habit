@@ -8,7 +8,7 @@ import { Note } from '../../types/note';
 import { ScriptureCategory } from '../../types/scripture';
 
 // Mock LanguageContext
-vi.mock('../../hooks/useLanguage', () => ({
+vi.mock('../../hooks/use-language', () => ({
     useLanguage: vi.fn(),
 }));
 

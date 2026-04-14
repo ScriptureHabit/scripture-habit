@@ -8,7 +8,7 @@ import { toast } from 'react-toastify';
 import confetti from 'canvas-confetti';
 
 // Mock dependencies
-vi.mock('../../../utils/apiClient', () => ({
+vi.mock('../../../utils/api-client', () => ({
     default: {
         post: vi.fn(),
     },

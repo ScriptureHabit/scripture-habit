@@ -5,7 +5,7 @@ import NoteDisplay from './note-display';
 import { useLanguage } from '../../hooks/use-language';
 
 // Mock LanguageContext
-vi.mock('../../hooks/useLanguage', () => ({
+vi.mock('../../hooks/use-language', () => ({
     useLanguage: vi.fn(),
 }));
 

@@ -21,12 +21,12 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
-    setupFiles: './src/setupTests.ts',
+    setupFiles: './src/setup-tests.ts',
     exclude: ['**/node_modules/**', '**/dist/**', 'tests/**'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html'],
-    exclude: ['node_modules/', 'src/setupTests.ts', 'tests/**']
+    exclude: ['node_modules/', 'src/setup-tests.ts', 'tests/**']
     },
   },
   server: {
