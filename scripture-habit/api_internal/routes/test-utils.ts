@@ -20,6 +20,7 @@ router.post('/test/setup-test-group', authenticate, async (req: AuthenticatedReq
     try {
         const timeZone = req.body.timeZone || 'UTC';
         const groupName = req.body.groupName || 'E2E Test Group';
+        const memberCount = req.body.memberCount || 1; // Number of members for unity percentage testing
         
         // 1. Check if user already has a group with this name
         const groupsSnapshot = await db.collection('groups')
@@ -49,16 +50,33 @@ router.post('/test/setup-test-group', authenticate, async (req: AuthenticatedReq
 
         const now = admin.firestore.FieldValue.serverTimestamp();
         
+        // Generate additional dummy members if memberCount > 1
+        const additionalMembers: string[] = [];
+        const additionalMemberPreviews: { uid: string; nickname: string }[] = [];
+        const memberJoinedAtRecord: Record<string, admin.firestore.FieldValue> = {};
+        
+        if (memberCount > 1) {
+            for (let i = 1; i < memberCount; i++) {
+                const dummyUid = `dummy-member-${i}-${Date.now()}`;
+                additionalMembers.push(dummyUid);
+                additionalMemberPreviews.push({ uid: dummyUid, nickname: `Test Member ${i}` });
+                memberJoinedAtRecord[`memberJoinedAt.${dummyUid}`] = now;
+            }
+        }
+        
+        const allMembers = [uid, ...additionalMembers];
+        const allMemberPreviews = [{ uid, nickname }, ...additionalMemberPreviews];
+        
         await db.runTransaction(async (transaction) => {
             // Group Document
             transaction.set(groupRef, {
                 name: groupName,
                 description: 'Automatically created for E2E tests',
                 ownerUserId: uid,
-                members: [uid],
-                membersCount: 1,
-                memberPreviews: [{ uid, nickname }],
-                timeZone: timeZone, // Use the provided or default timezone
+                members: allMembers,
+                membersCount: allMembers.length,
+                memberPreviews: allMemberPreviews,
+                timeZone: timeZone,
                 isPublic: true,
                 isPrivate: false,
                 inviteCode: `TEST-${Math.floor(Math.random() * 10000)}`,
@@ -67,10 +85,13 @@ router.post('/test/setup-test-group', authenticate, async (req: AuthenticatedReq
                 lastMessageByNickname: nickname,
                 lastMessageByUid: uid,
                 messageCount: 0,
-                [`memberJoinedAt.${uid}`]: now
+                [`memberJoinedAt.${uid}`]: now,
+                ...memberJoinedAtRecord,
+                dailyActivity: { date: '', activeMembers: [] }, // Empty daily activity for testing
+                unityPercentage: 0
             });
 
-            // Member subcollection
+            // Current user member subcollection
             const memberRef = groupRef.collection('members').doc(uid);
             transaction.set(memberRef, {
                 uid,
@@ -82,10 +103,24 @@ router.post('/test/setup-test-group', authenticate, async (req: AuthenticatedReq
                 kickThreshold: 3
             });
 
+            // Additional dummy members
+            additionalMembers.forEach((dummyUid, index) => {
+                const dummyMemberRef = groupRef.collection('members').doc(dummyUid);
+                transaction.set(dummyMemberRef, {
+                    uid: dummyUid,
+                    nickname: `Test Member ${index + 1}`,
+                    joinedAt: now,
+                    lastActiveAt: now,
+                    lastReadAt: now,
+                    readMessageCount: 0,
+                    kickThreshold: 3
+                });
+            });
+
             // User document update
             transaction.update(userRef, {
                 groupIds: admin.firestore.FieldValue.arrayUnion(groupId),
-                groupId: groupId // Set as primary for dashboard redirection
+                groupId: groupId
             });
             
             // Initial system message

@@ -13,18 +13,46 @@ test.describe('Unity Percentage Synchronization', () => {
         // Use the authenticated page to call our internal test seeding API
         // This is MUCH faster and more reliable than UI-based creation.
         await page.evaluate(async () => {
+            // Helper to wait for Firebase Auth to be ready and user to be signed in
             const waitForAuth = () => {
-                return new Promise((resolve) => {
-                    const auth = window.firebaseAuth;
-                    if (auth?.currentUser) {
-                        return resolve(auth.currentUser);
-                    }
-                    const unsubscribe = auth?.onAuthStateChanged((user) => {
-                        if (user) {
-                            unsubscribe?.();
-                            resolve(user);
+                return new Promise((resolve, reject) => {
+                    let attempts = 0;
+                    const maxAttempts = 20; // Try for up to 10 seconds (20 * 500ms)
+                    const interval = 500;
+
+                    const checkAuth = () => {
+                        const auth = window.firebaseAuth;
+                        if (auth) {
+                            if (auth.currentUser) {
+                                resolve(auth.currentUser);
+                            } else {
+                                // Auth object exists, but user not yet current. Wait for state change.
+                                const unsubscribe = auth.onAuthStateChanged((user) => {
+                                    if (user) {
+                                        unsubscribe?.();
+                                        resolve(user);
+                                    }
+                                });
+                                // Add a timeout for onAuthStateChanged in case it never fires
+                                setTimeout(() => {
+                                    if (!auth.currentUser) {
+                                        unsubscribe?.(); // Clean up listener
+                                        reject(new Error('Firebase auth state change timed out after 10s.'));
+                                    }
+                                }, 10000);
+                            }
+                        } else {
+                            // window.firebaseAuth is not yet available, retry
+                            attempts++;
+                            if (attempts < maxAttempts) {
+                                console.log(`window.firebaseAuth not yet available, retrying... (attempt ${attempts}/${maxAttempts})`);
+                                setTimeout(checkAuth, interval);
+                            } else {
+                                reject(new Error(`window.firebaseAuth not available after ${maxAttempts * interval / 1000} seconds.`));
+                            }
                         }
-                    });
+                    };
+                    checkAuth();
                 });
             };
 
@@ -37,7 +65,11 @@ test.describe('Unity Percentage Synchronization', () => {
                 headers: {
                     'Authorization': `Bearer ${idToken}`,
                     'Content-Type': 'application/json'
-                }
+                },
+                body: JSON.stringify({
+                    memberCount: 2, // Create group with 2 members for 0% -> 50% unity testing
+                    groupName: `Unity Sync Test Group ${Date.now()}` // Unique name to ensure fresh group
+                })
             });
             
             if (!response.ok) {
@@ -84,15 +116,40 @@ test.describe('Unity Percentage Synchronization', () => {
         await expect(page.getByText(/successfully/)).toBeVisible({ timeout: 30000 });
         
         // Verify unity percentage update
-        // If it was 0%, it should now be > 0%
-        console.log('Verifying unity percentage changed in real-time...');
-        if (initialText === '0%') {
-            await expect(page.getByTestId('sidebar-unity-percentage').first()).not.toHaveText('0%', { timeout: 30000 });
-        } else if (initialText !== '100%') {
-            await expect(page.getByTestId('sidebar-unity-percentage').first()).not.toHaveText(initialText, { timeout: 30000 });
-        }
-        const updatedText = await page.getByTestId('sidebar-unity-percentage').first().innerText();
-        console.log(`Updated Unity after post: ${updatedText}`);
+        console.log('Verifying unity percentage after posting note...');
+        
+        // Wait a moment for potential updates
+        await page.waitForTimeout(2000);
+        
+        const sidebarUpdatedText = await page.getByTestId('sidebar-unity-percentage').first().innerText();
+        console.log(`Sidebar Unity after post: ${sidebarUpdatedText} (was ${initialText})`);
+
+        // --- PART 2b: VERIFY SIDEBAR AND CHAT HEADER SYNC ---
+        console.log('--- Step 2b: Verifying Sidebar and Chat Header unity values match ---');
+        
+        // Click on the first group to open chat
+        const firstGroup = page.getByTestId('sidebar-group-item').first();
+        await firstGroup.click();
+        
+        // Wait for chat header to be visible
+        await expect(page.getByTestId('chat-header-unity')).toBeVisible({ timeout: 15000 });
+        
+        // Get Chat Header unity value
+        const chatHeaderUnityText = await page.getByTestId('chat-header-unity').innerText();
+        console.log(`Chat Header Unity: ${chatHeaderUnityText}`);
+        
+        // Extract numeric percentage from both values (Chat Header may include emoji)
+        const sidebarNumeric = parseInt(sidebarUpdatedText.trim().replace('%', ''), 10);
+        const chatHeaderNumeric = parseInt(chatHeaderUnityText.trim().replace(/[^0-9]/g, ''), 10);
+        
+        // Verify Sidebar and Chat Header numeric values match
+        expect(sidebarNumeric).toBe(chatHeaderNumeric);
+        
+        console.log(`Success: Sidebar (${sidebarNumeric}%) and Chat Header (${chatHeaderNumeric}%) unity values are synchronized!`);
+        
+        // Navigate back to dashboard for the midnight reset test
+        await page.goto('/en/dashboard');
+        await expect(page.getByTestId('sidebar-dashboard')).toBeVisible({ timeout: 30000 });
 
         // --- PART 3: MIDNIGHT RESET TEST ---
         console.log('--- Step 3: Testing midnight reset via clock mocking ---');

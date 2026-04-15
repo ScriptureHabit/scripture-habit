@@ -116,11 +116,11 @@ const storage: FirebaseStorage = getStorage(app);
 // Connect to emulators if requested
 if (import.meta.env.VITE_USE_FIREBASE_EMULATOR === 'true') {
   if (auth) {
-    connectAuthEmulator(auth, 'http://localhost:9099');
+    connectAuthEmulator(auth, 'http://127.0.0.1:9099');
     console.log("Connected to Auth Emulator");
   }
   if (db) {
-    connectFirestoreEmulator(db, 'localhost', 8080);
+    connectFirestoreEmulator(db, '127.0.0.1', 8080);
     console.log("Connected to Firestore Emulator");
   }
 }

@@ -67,6 +67,7 @@ export interface GroupDocument {
         date: string; // YYYY-MM-DD
         activeMembers: string[]; // List of UIDs who posted/chatted today
     };
+    unityPercentage?: number; // 0-100 percentage for sidebar display
 
     // Metadata
     createdAt?: FirestoreTimestamp;

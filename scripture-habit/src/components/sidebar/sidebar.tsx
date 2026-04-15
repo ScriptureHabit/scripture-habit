@@ -110,6 +110,7 @@ const SidebarGroupItem: React.FC<SidebarGroupItemProps> = ({ group, language, is
       <div
         className={`modal-group-item ${isActive ? 'active-group' : ''}`}
         onClick={onClick}
+        data-testid="sidebar-group-item"
       >
         <span className="status-emoji-sidebar">{getGroupStatusEmoji(group)}</span>
         <span className={`unity-percentage-sidebar ${getUnityPercentage(group) === 100 ? 'celestial' : ''}`} data-testid="sidebar-unity-percentage">
@@ -126,6 +127,7 @@ const SidebarGroupItem: React.FC<SidebarGroupItemProps> = ({ group, language, is
     <div
       className={`menuItem ${isActive ? 'active' : ''}`}
       onClick={onClick}
+      data-testid="sidebar-group-item"
     >
       <span className="status-emoji-sidebar">{getGroupStatusEmoji(group)}</span>
       <span className={`unity-percentage-sidebar ${getUnityPercentage(group) === 100 ? 'celestial' : ''}`} data-testid="sidebar-unity-percentage">

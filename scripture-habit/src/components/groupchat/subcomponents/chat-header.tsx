@@ -69,7 +69,7 @@ const ChatHeader: FC = () => {
             {groupData?.members && <span className="member-count-badge">({groupData.members.length})</span>}
             {groupData && (
               <div className="unity-score-container">
-                <span className={`unity-score-badge ${unityPercentage === 100 ? 'celestial' : ''}`} onClick={handleShowUnityModal} title="Unity Score: members who posted notes today">
+                <span className={`unity-score-badge ${unityPercentage === 100 ? 'celestial' : ''}`} onClick={handleShowUnityModal} title="Unity Score: members who posted notes today" data-testid="chat-header-unity">
                   <span className="unity-icon">{unityPercentage === 100 ? '☀️' : unityPercentage >= 66 ? '🌕' : unityPercentage >= 33 ? '🌠' : '🌑'}</span>
                   <span className="unity-percent-text">{unityPercentage}%</span>
                 </span>

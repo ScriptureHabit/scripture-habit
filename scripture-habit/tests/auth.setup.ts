@@ -55,7 +55,30 @@ setup('authenticate', async ({ page }) => {
       page.waitForSelector('[data-testid="signup-error"]', { timeout: 20000 })
     ]);
 
+    // Handle email verification for Firebase emulator
     const currentUrl = page.url();
+    if (currentUrl.includes('signup') || currentUrl.includes('login')) {
+      console.log('Checking for email verification requirement...');
+      
+      // Check if we need to verify email (Firebase emulator shows verification link in console)
+      // For emulator, we can directly visit the verification endpoint
+      try {
+        // Get the verification code from Firebase emulator logs or use a direct approach
+        await page.goto('http://127.0.0.1:9099/emulator/action?mode=verifyEmail&lang=en&oobCode=test');
+        console.log('Email verification attempted via emulator endpoint');
+        
+        // Wait a moment for verification to process
+        await page.waitForTimeout(2000);
+        
+        // Go back to login
+        await page.goto('/en/login');
+        await page.waitForSelector('[data-testid="login-email"]', { timeout: 20000 });
+        await fillLoginForm();
+      } catch (error) {
+        console.log('Email verification failed, proceeding with normal flow:', error);
+      }
+    }
+
     const errorVisible = await page.getByTestId('signup-error').isVisible().catch(() => false);
 
     if (errorVisible) {
