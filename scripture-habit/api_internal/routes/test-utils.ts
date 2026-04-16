@@ -21,6 +21,11 @@ router.post('/test/setup-test-group', authenticate, async (req: AuthenticatedReq
         const timeZone = req.body.timeZone || 'UTC';
         const groupName = req.body.groupName || 'E2E Test Group';
         const memberCount = req.body.memberCount || 1; // Number of members for unity percentage testing
+        const setYesterdayDate = req.body.setYesterdayDate || false; // For testing midnight reset
+        const unityPercentage = req.body.unityPercentage !== undefined ? req.body.unityPercentage : 0; // Direct unity percentage setting
+        
+        console.log(`[TestSetup] Creating group with params: setYesterdayDate=${setYesterdayDate}, unityPercentage=${unityPercentage}`);
+        console.log(`[TestSetup] Request body:`, JSON.stringify(req.body));
         
         // 1. Check if user already has a group with this name
         const groupsSnapshot = await db.collection('groups')
@@ -43,17 +48,23 @@ router.post('/test/setup-test-group', authenticate, async (req: AuthenticatedReq
         const groupRef = db.collection('groups').doc();
         const groupId = groupRef.id;
 
+        // Calculate yesterday's date in the specified timezone
+        const now = new Date();
+        const yesterdayInTZ = new Date(now.toLocaleString('en-US', { timeZone: timeZone }));
+        yesterdayInTZ.setDate(yesterdayInTZ.getDate() - 1);
+        const yesterdayStr = yesterdayInTZ.toISOString().split('T')[0];
+        
+        // dailyActivity: empty for testing, or yesterday if setYesterdayDate is true
+        const dailyActivityDate = setYesterdayDate ? yesterdayStr : '';
         const userRef = db.collection('users').doc(uid);
         const userDoc = await userRef.get();
         const userData = userDoc.data() || {};
         const nickname = userData.nickname || 'Test User';
 
-        const now = admin.firestore.FieldValue.serverTimestamp();
-        
         // Generate additional dummy members if memberCount > 1
         const additionalMembers: string[] = [];
         const additionalMemberPreviews: { uid: string; nickname: string }[] = [];
-        const memberJoinedAtRecord: Record<string, admin.firestore.FieldValue> = {};
+        const memberJoinedAtRecord: Record<string, Date> = {};
         
         if (memberCount > 1) {
             for (let i = 1; i < memberCount; i++) {
@@ -87,8 +98,11 @@ router.post('/test/setup-test-group', authenticate, async (req: AuthenticatedReq
                 messageCount: 0,
                 [`memberJoinedAt.${uid}`]: now,
                 ...memberJoinedAtRecord,
-                dailyActivity: { date: '', activeMembers: [] }, // Empty daily activity for testing
-                unityPercentage: 0
+                dailyActivity: { 
+                    date: dailyActivityDate, 
+                    activeMembers: unityPercentage === 100 ? allMembers : [] 
+                }, // Set to empty or yesterday for testing
+                unityPercentage: unityPercentage // Use provided value (0 or 100)
             });
 
             // Current user member subcollection

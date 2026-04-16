@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { renderHook, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { useNoteSubmission } from './use-note-submission';
@@ -6,6 +5,8 @@ import apiClient from '../../../utils/api-client';
 import { writeBatch } from 'firebase/firestore';
 import { toast } from 'react-toastify';
 import confetti from 'canvas-confetti';
+import { UserData } from '../../../types/user';
+import { Message } from '../../../types/chat';
 
 // Mock dependencies
 vi.mock('../../../utils/api-client', () => ({
@@ -39,7 +40,13 @@ vi.mock('canvas-confetti', () => ({
 }));
 
 describe('use-note-submission', () => {
-    const mockUserData = { uid: 'user1', groupId: 'group1' };
+    const mockUserData: UserData = { 
+        uid: 'user1', 
+        groupId: 'group1',
+        email: 'test@example.com',
+        nickname: 'Test User',
+        createdAt: new Date().toISOString()
+    };
     const mockT = (key: string) => key;
 
     beforeEach(() => {
@@ -47,7 +54,7 @@ describe('use-note-submission', () => {
     });
 
     it('should fail validation if scripture or chapter is missing', async () => {
-        const { result } = renderHook(() => useNoteSubmission(mockUserData as any, 'en', mockT));
+        const { result } = renderHook(() => useNoteSubmission(mockUserData, 'en', mockT));
         
         await act(async () => {
             await result.current.handleSubmit(
@@ -62,7 +69,7 @@ describe('use-note-submission', () => {
         vi.mocked(apiClient.post).mockResolvedValue({ data: { success: true } });
         const onSuccess = vi.fn();
 
-        const { result } = renderHook(() => useNoteSubmission(mockUserData as any, 'en', mockT));
+        const { result } = renderHook(() => useNoteSubmission(mockUserData, 'en', mockT));
         
         await act(async () => {
             await result.current.handleSubmit(
@@ -81,19 +88,27 @@ describe('use-note-submission', () => {
     });
 
     it('should update Firestore via batch for EDITING an existing note', async () => {
-        const mockNote = { id: 'note123', isNote: true, groupId: 'group1' };
+        const mockNote: Message = { 
+            id: 'note123', 
+            isNote: true, 
+            text: 'Test note',
+            senderId: 'user1',
+            senderNickname: 'Test User',
+            createdAt: Date.now(),
+            messageType: 'studyNote'
+        };
         const mockBatch = {
             update: vi.fn(),
             commit: vi.fn().mockResolvedValue(true),
         };
-        vi.mocked(writeBatch).mockReturnValue(mockBatch as any);
+        vi.mocked(writeBatch).mockReturnValue(mockBatch as unknown as ReturnType<typeof writeBatch>);
         const onSuccess = vi.fn();
 
-        const { result } = renderHook(() => useNoteSubmission(mockUserData as any, 'en', mockT));
+        const { result } = renderHook(() => useNoteSubmission(mockUserData, 'en', mockT));
         
         await act(async () => {
             await result.current.handleSubmit(
-                mockNote as any, 'Book of Mormon', '1 Nephi 2', 'Edit comment', 'all', [], 'group1', null, onSuccess
+                mockNote, 'Book of Mormon', '1 Nephi 2', 'Edit comment', 'all', [], 'group1', null, onSuccess
             );
         });
 
@@ -107,7 +122,7 @@ describe('use-note-submission', () => {
     it('should handle API errors gracefully', async () => {
         vi.mocked(apiClient.post).mockRejectedValue(new Error('Network error'));
         
-        const { result } = renderHook(() => useNoteSubmission(mockUserData as any, 'en', mockT));
+        const { result } = renderHook(() => useNoteSubmission(mockUserData, 'en', mockT));
         
         await act(async () => {
             await result.current.handleSubmit(

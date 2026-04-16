@@ -60,22 +60,37 @@ setup('authenticate', async ({ page }) => {
     if (currentUrl.includes('signup') || currentUrl.includes('login')) {
       console.log('Checking for email verification requirement...');
       
-      // Check if we need to verify email (Firebase emulator shows verification link in console)
-      // For emulator, we can directly visit the verification endpoint
+      // Check if Firebase emulator auth endpoint is accessible
+      // If disableEmailVerification is set in firebase.json, this should not be needed
       try {
-        // Get the verification code from Firebase emulator logs or use a direct approach
-        await page.goto('http://127.0.0.1:9099/emulator/action?mode=verifyEmail&lang=en&oobCode=test');
-        console.log('Email verification attempted via emulator endpoint');
+        // Quick check if emulator auth is running
+        const emulatorCheck = await fetch('http://127.0.0.1:9099/').then(() => true).catch(() => false);
         
-        // Wait a moment for verification to process
-        await page.waitForTimeout(2000);
-        
-        // Go back to login
-        await page.goto('/en/login');
+        if (!emulatorCheck) {
+          console.log('Firebase Auth Emulator not accessible, skipping email verification (disableEmailVerification likely enabled)');
+          // Just proceed with login
+          if (currentUrl.includes('signup')) {
+            await page.goto('/en/login');
+          }
+          await page.waitForSelector('[data-testid="login-email"]', { timeout: 20000 });
+          await fillLoginForm();
+        } else {
+          // Emulator is running, try verification
+          await page.goto('http://127.0.0.1:9099/emulator/action?mode=verifyEmail&lang=en&oobCode=test');
+          console.log('Email verification attempted via emulator endpoint');
+          await page.waitForTimeout(2000);
+          await page.goto('/en/login');
+          await page.waitForSelector('[data-testid="login-email"]', { timeout: 20000 });
+          await fillLoginForm();
+        }
+      } catch (error) {
+        console.log('Email verification step failed, proceeding with normal flow:', error);
+        // Ensure we're on login page and try again
+        if (!page.url().includes('login')) {
+          await page.goto('/en/login');
+        }
         await page.waitForSelector('[data-testid="login-email"]', { timeout: 20000 });
         await fillLoginForm();
-      } catch (error) {
-        console.log('Email verification failed, proceeding with normal flow:', error);
       }
     }
 

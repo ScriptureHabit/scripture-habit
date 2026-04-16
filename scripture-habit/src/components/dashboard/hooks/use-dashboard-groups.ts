@@ -4,6 +4,7 @@ import { db } from '../../../firebase';
 import { UserData } from '../../../types/user';
 import { Group } from '../../../types/chat';
 import { groupMemberConverter } from '../../../utils/firestore-converters';
+import { useUnityMidnightReset } from '../../../hooks/use-unity-midnight-reset';
 
 export const useDashboardGroups = (userData: UserData | null, initialGroupId: string | null) => {
     const [rawUserGroups, setRawUserGroups] = useState<Group[]>([]);
@@ -108,6 +109,18 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
             }
         }
     }, [userGroups, userData, activeGroupId, setActiveGroupId]);
+
+    // Midnight reset for active group
+    const activeGroup = userGroups.find(g => g.id === activeGroupId);
+    useUnityMidnightReset({
+        groupId: activeGroupId,
+        groupTimeZone: activeGroup?.timeZone || 'UTC',
+        dailyActivityDate: activeGroup?.dailyActivity?.date || null,
+        onReset: () => {
+            // Data will be refreshed by onSnapshot listener automatically
+            console.log('[Dashboard] Midnight reset triggered for active group');
+        }
+    });
 
     return { userGroups, activeGroupId, setActiveGroupId };
 };

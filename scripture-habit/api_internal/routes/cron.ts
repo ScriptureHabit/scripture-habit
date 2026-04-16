@@ -402,4 +402,72 @@ router.all('/cleanup-orphaned-cheers', verifyCronSecret, async (_req: Request, r
     }
 });
 
+/**
+ * Reset Unity Percentage at Midnight
+ * This should be called by a scheduled cron job at midnight for each timezone
+ */
+router.all('/reset-unity-at-midnight', verifyCronSecret, async (_req: Request, res: Response) => {
+    console.log('[Cron] Starting unity percentage midnight reset...');
+    try {
+        const now = new Date();
+        
+        // Get all groups that need reset (where dailyActivity date is not today)
+        // We process in batches to avoid timeout
+        const groupsSnap = await db.collection('groups')
+            .where('dailyActivity.date', '!=', '')
+            .limit(500)
+            .get();
+        
+        if (groupsSnap.empty) {
+            return res.json({ message: 'No groups need unity reset.' });
+        }
+
+        let resetCount = 0;
+        const batch = db.batch();
+        const MAX_BATCH_SIZE = 500;
+
+        for (const groupDoc of groupsSnap.docs) {
+            const groupData = groupDoc.data();
+            const groupTimeZone = groupData.timeZone || 'UTC';
+            
+            // Calculate "today" in the group's timezone
+            const todayInGroupTZ = new Date(now.toLocaleString('en-US', { timeZone: groupTimeZone }));
+            const todayStr = todayInGroupTZ.toISOString().split('T')[0];
+            
+            // Check if dailyActivity is from a different day
+            const activityDate = groupData.dailyActivity?.date;
+            if (activityDate && activityDate !== todayStr) {
+                // Reset dailyActivity and unityPercentage
+                batch.update(groupDoc.ref, {
+                    'dailyActivity.date': todayStr,
+                    'dailyActivity.activeMembers': [],
+                    'unityPercentage': 0
+                });
+                resetCount++;
+                
+                // Commit batch if it reaches the limit
+                if (resetCount % MAX_BATCH_SIZE === 0) {
+                    await batch.commit();
+                    console.log(`[Cron] Processed ${resetCount} groups for unity reset...`);
+                }
+            }
+        }
+
+        // Commit remaining updates
+        if (resetCount % MAX_BATCH_SIZE !== 0) {
+            await batch.commit();
+        }
+
+        console.log(`[Cron] Unity reset complete. Reset ${resetCount} groups.`);
+        res.json({
+            message: 'Unity percentage midnight reset complete.',
+            stats: { resetCount, processedAt: now.toISOString() }
+        });
+    } catch (err: unknown) {
+        const error = err as Error;
+        console.error('[Cron] Error in unity reset:', error);
+        res.status(500).send('Error: ' + error.message);
+    }
+});
+
 export default router;

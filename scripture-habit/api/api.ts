@@ -13,6 +13,7 @@ import cronRoutes from '../api_internal/routes/cron.js';
 import reportRoutes from '../api_internal/routes/reports.js';
 import adminRoutes from '../api_internal/routes/admin.js';
 import testUtilsRoutes from '../api_internal/routes/test-utils.js';
+import resetUnityRoutes from '../api_internal/routes/reset-unity.js';
 
 // Middleware
 import { globalLimiter } from '../api_internal/lib/middleware.js';
@@ -79,6 +80,7 @@ app.use('/api', cronRoutes);
 app.use('/api', reportRoutes);
 app.use('/api', adminRoutes);
 app.use('/api', testUtilsRoutes);
+app.use('/api', resetUnityRoutes);
 
 // --- 404 Handler (Keep it JSON for API) ---
 app.use('/api', (_req, res) => {

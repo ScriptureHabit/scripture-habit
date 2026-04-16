@@ -73,5 +73,12 @@ export default defineConfig({
       stdout: 'pipe',
       stderr: 'pipe',
     },
+    {
+      command: 'npx firebase emulators:start --only auth,firestore --project scripture-habit-auth',
+      url: 'http://127.0.0.1:9099',
+      reuseExistingServer: !process.env.CI,
+      stdout: 'pipe',
+      stderr: 'pipe',
+    },
   ],
 });

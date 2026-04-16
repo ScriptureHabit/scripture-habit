@@ -9,6 +9,7 @@ import { UserData } from '../../../../types/user';
 
 import { calculateUnityPercentage } from '../../../../utils/unity-utils';
 import { useToday } from '../../../../hooks/use-today';
+import { useUnityMidnightReset } from '../../../../hooks/use-unity-midnight-reset';
 
 export const useUnityScore = (
   groupId: string,
@@ -22,6 +23,18 @@ export const useUnityScore = (
     if (!groupId || !groupData || groupData.id !== groupId || !today) return 0;
     return calculateUnityPercentage(groupData, messages, new Date());
   }, [messages, groupData, groupId, today]);
+
+  // Handle midnight reset for Unity Percentage
+  useUnityMidnightReset({
+    groupId,
+    groupTimeZone: groupData?.timeZone || 'UTC',
+    dailyActivityDate: groupData?.dailyActivity?.date || null,
+    onReset: () => {
+      // Force refresh group data when reset occurs
+      // This will be handled by the parent component's onSnapshot listener
+      console.log('[useUnityScore] Midnight reset triggered, refreshing...');
+    }
+  });
 
   useEffect(() => {
     // Only proceed if unity is reached AND user is still a member of this specific group
