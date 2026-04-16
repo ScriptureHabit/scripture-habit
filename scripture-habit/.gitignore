@@ -39,3 +39,6 @@ playwright-report/
 blob-report/
 playwright/.auth/
 
+# Test Coverage
+coverage/
+

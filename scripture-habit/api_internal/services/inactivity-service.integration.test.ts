@@ -27,6 +27,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('InactivityService Integra
     const G_STALE_C = 'STALE_C';
     const G8 = 'TEST_GRP_CORRUPTED_JOINEDAT'; // Case A: joinedAt > createTime
     const G9 = 'TEST_GRP_CORRUPTED_V2';       // Case B: joinedAt == createTime but older activity exists
+    const G10 = 'TEST_GRP_MASSIVE';           // Case 10: 50+ members removed
 
     const U_ACTIVE = 'USER_ACTIVE';
     const U_INACTIVE = 'USER_INACTIVE';
@@ -36,10 +37,12 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('InactivityService Integra
     const U_SEC = 'USER_SECONDARY';
     const U_CORRUPTED = 'USER_CORRUPTED_JOINEDAT'; // Case A: joinedAt > createTime
     const U_CORRUPTED_V2 = 'USER_CORRUPTED_V2';    // Case B: joinedAt == createTime but older activity exists
+    const U_MASSIVE_PREFIX = 'U_MASS_';
 
     beforeAll(async () => {
         // Setup Users
         const users = [U_ACTIVE, U_INACTIVE, U_OWNER, U_NEW_OWNER, U_JA, U_SEC, U_CORRUPTED, U_CORRUPTED_V2];
+        for (let i = 0; i < 50; i++) users.push(`${U_MASSIVE_PREFIX}${i}`);
         for (const uid of users) {
             await db.collection('users').doc(uid).set({
                 nickname: `Nick_${uid}`,
@@ -149,15 +152,25 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('InactivityService Integra
         await db.collection('users').doc(U_CORRUPTED_V2).update({
             groupIds: admin.firestore.FieldValue.arrayUnion(G9)
         });
-    }, 30000);
+        
+        // 11. Group 10: Massive Group (50 inactive + 1 active owner)
+        const massiveMembers = [];
+        for (let i = 0; i < 50; i++) massiveMembers.push(`${U_MASSIVE_PREFIX}${i}`);
+        await setupGroup(G10, U_OWNER, [U_OWNER, ...massiveMembers], 3);
+        await setMemberActivity(G10, U_OWNER, TWO_DAYS_AGO);
+        for (const uid of massiveMembers) {
+            await setMemberActivity(G10, uid, SIX_DAYS_AGO);
+        }
+    }, 60000);
 
 
     afterAll(async () => {
-        const groups = [G1, G2, G3, G4, G5, G6, G7, G8, G9, G_STALE_A, G_STALE_B, G_STALE_C];
+        const groups = [G1, G2, G3, G4, G5, G6, G7, G8, G9, G10, G_STALE_A, G_STALE_B, G_STALE_C];
         for (const gid of groups) {
             await db.recursiveDelete(db.collection('groups').doc(gid)).catch(() => {});
         }
         const users = [U_ACTIVE, U_INACTIVE, U_OWNER, U_NEW_OWNER, U_JA, U_SEC, U_CORRUPTED, U_CORRUPTED_V2];
+        for (let i = 0; i < 50; i++) users.push(`${U_MASSIVE_PREFIX}${i}`);
         for (const uid of users) {
             await db.collection('users').doc(uid).delete().catch(() => {});
         }
@@ -304,5 +317,20 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('InactivityService Integra
         // It SHOULD be different now. It should have been pulled back to 10 days ago (oldest activity).
         expect(joinedAtMs).toBeLessThan(createTimeMs);
         expect(joinedAtMs).toBe(TEN_DAYS_AGO.getTime());
+    });
+
+    it('Scenario 10: Massive Group cleanup (50 members)', async () => {
+        const result = await InactivityService.processGroupInactivity(G10);
+        expect(result.removedCount).toBe(50);
+        expect(result.groupDeleted).toBe(false);
+
+        const gDoc = await db.collection('groups').doc(G10).get();
+        expect(gDoc.data()?.membersCount).toBe(1);
+        expect(gDoc.data()?.members).toEqual([U_OWNER]);
+        
+        // Verify a random user is cleaned up
+        const randomUser = `${U_MASSIVE_PREFIX}25`;
+        const uDoc = await db.collection('users').doc(randomUser).get();
+        expect(uDoc.data()?.groupIds).not.toContain(G10);
     });
 });
