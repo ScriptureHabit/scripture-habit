@@ -84,7 +84,12 @@ export class InactivityService {
         let initializedCount = 0;
         const processedMemberIds = new Set<string>();
 
-        // 2. Identify Status for each member in subcollection
+        // 2. Prepare Updates
+        const groupUpdates: admin.firestore.UpdateData<GroupDocument> = {
+            lastInactivityCheckedAt: admin.firestore.FieldValue.serverTimestamp()
+        };
+
+        // 3. Identify Status for each member in subcollection
         membersSnap.forEach(memberDoc => {
             const memberId = memberDoc.id;
             const memberData = memberDoc.data() as InactivityMemberData;
@@ -132,6 +137,7 @@ export class InactivityService {
                     const repairTimestamp = admin.firestore.Timestamp.fromMillis(fallbackMs);
                     memberData.joinedAt = repairTimestamp;
                     batch.update(memberDoc.ref, { joinedAt: repairTimestamp });
+                    groupUpdates[`memberJoinedAt.${memberId}`] = repairTimestamp; // Sync repair
                 }
             }
 
@@ -141,6 +147,7 @@ export class InactivityService {
                 // Fix: Use createTime for initialization instead of "now" to avoid clock reset
                 const initTime = memberDoc.createTime || admin.firestore.FieldValue.serverTimestamp();
                 batch.update(memberDoc.ref, { joinedAt: initTime });
+                groupUpdates[`memberJoinedAt.${memberId}`] = initTime; // Fortification: Sync map
 
                 
                 // Recalculate with the new initTime to see if they are actually inactive
@@ -185,9 +192,7 @@ export class InactivityService {
         // 4. Handle Owner Inactivity
         let transferCount = 0;
         const groupDeleted = false;
-        const groupUpdates: admin.firestore.UpdateData<GroupDocument> = {
-            lastInactivityCheckedAt: admin.firestore.FieldValue.serverTimestamp()
-        };
+        // groupUpdates already declared and partially populated
 
         if (ownerUserId && inactiveMembers.includes(ownerUserId)) {
             if (activeMembers.length > 0) {
