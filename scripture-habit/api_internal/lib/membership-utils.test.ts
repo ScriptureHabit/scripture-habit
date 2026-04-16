@@ -16,6 +16,7 @@ describe('MembershipUtils Unit Tests', () => {
             { uid: 'u3', nickname: 'N3' }
         ],
         dailyActivity: {
+            date: '2026-04-16',
             activeMembers: ['u1', 'u2']
         }
     };
