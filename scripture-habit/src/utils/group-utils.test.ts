@@ -28,15 +28,15 @@ describe('Group Utils - enrichGroupUnity', () => {
     expect(result.unityPercentage).toBe(50);
   });
 
-  it('should fall back to Firestore value when calculated value is 0 (Mismatch Case)', () => {
+  it('should return 0 when date mismatch occurs (Midnight Reset Case)', () => {
     // Simulate a date mismatch: client is on the 19th
     const tomorrow = new Date('2024-04-19T05:00:00Z');
     
     // calculated will be 0 because 2024-04-18 (activity) != 2024-04-19 (today)
     const result = enrichGroupUnity(mockGroup, undefined, tomorrow);
     
-    // Should fall back to 33 (Firestore) instead of 0
-    expect(result.unityPercentage).toBe(33);
+    // Should return 0 (reset) instead of 33 (stale Firestore value)
+    expect(result.unityPercentage).toBe(0);
   });
 
   it('should return 0 if both calculated and Firestore values are missing/0', () => {
