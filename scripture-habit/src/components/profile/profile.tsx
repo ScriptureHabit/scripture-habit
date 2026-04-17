@@ -24,14 +24,6 @@ interface ProfileProps {
     stats: ProfileStats;
 }
 
-interface BeforeInstallPromptEvent extends Event {
-    readonly platforms: string[];
-    readonly userChoice: Promise<{
-        outcome: 'accepted' | 'dismissed';
-        platform: string;
-    }>;
-    prompt(): Promise<void>;
-}
 
 const Profile: FC<ProfileProps> = ({ userData, stats }) => {
     const { language, setLanguage, t } = useLanguage();
@@ -80,21 +72,17 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
             else if (isAndroid) setPlatform('android');
         }
 
-        const handleBeforeInstallPrompt = (e: Event) => {
-            e.preventDefault();
-            setDeferredPrompt(e as BeforeInstallPromptEvent);
-            setPlatform('android');
+        const checkPrompt = () => {
+            if (window.deferredPWAPrompt) {
+                setDeferredPrompt(window.deferredPWAPrompt);
+                setPlatform('android');
+            }
         };
 
-
-        window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-
-        if ('deferredPWAPrompt' in window) {
-            setDeferredPrompt((window as { deferredPWAPrompt?: BeforeInstallPromptEvent }).deferredPWAPrompt || null);
-        }
-
-        return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-    }, [deferredPrompt]);
+        checkPrompt();
+        const interval = setInterval(checkPrompt, 1000);
+        return () => clearInterval(interval);
+    }, []);
 
     const handleInstallClick = async () => {
         if (!deferredPrompt) return;

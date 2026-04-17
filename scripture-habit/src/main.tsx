@@ -16,7 +16,9 @@ if (window.location.search.includes('vconsole=true')) {
 // Capture beforeinstallprompt event globally 
 window.deferredPWAPrompt = null;
 window.addEventListener('beforeinstallprompt', (e) => {
+  // Prevent Chrome 76 and later from automatically showing the prompt
   e.preventDefault();
+  // Stash the event so it can be triggered later.
   window.deferredPWAPrompt = e as BeforeInstallPromptEvent;
 });
 

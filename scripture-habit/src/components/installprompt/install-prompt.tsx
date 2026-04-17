@@ -18,26 +18,9 @@ const InstallPrompt: FC = () => {
     const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
     const [platform, setPlatform] = useState<'ios' | 'android' | null>(null);
 
-    // Capture beforeinstallprompt event and detect platform
+    // Detect platform and check for deferred prompt
     useEffect(() => {
-        const handleBeforeInstallPrompt = (e: Event) => {
-            const installEvent = e as BeforeInstallPromptEvent;
-            // Prevent Chrome 76 and later from automatically showing the prompt
-            installEvent.preventDefault();
-            // Stash the event so it can be triggered later.
-            setDeferredPrompt(installEvent);
-            setPlatform('android');
-        };
-
-        window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-
-        // Check if the event was already captured globally (in main.tsx)
-        if (window.deferredPWAPrompt) {
-            handleBeforeInstallPrompt(window.deferredPWAPrompt);
-            // DO NOT set to null so Profile.tsx can also access it
-        }
-
-        // Immediate platform detection
+        // Platform detection
         const ua = navigator.userAgent;
         const isIOS = /iPad|iPhone|iPod/.test(ua) ||
             (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
@@ -50,7 +33,19 @@ const InstallPrompt: FC = () => {
             else if (isAndroid) setPlatform('android');
         }
 
-        return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+        // Check for the event captured globally (in main.tsx)
+        const checkPrompt = () => {
+            if (window.deferredPWAPrompt) {
+                setDeferredPrompt(window.deferredPWAPrompt);
+                setPlatform('android');
+            }
+        };
+
+        checkPrompt();
+        
+        // Use a small interval to check if it's captured late
+        const interval = setInterval(checkPrompt, 1000);
+        return () => clearInterval(interval);
     }, []);
 
     // Handle showing/hiding the prompt based on route and state
