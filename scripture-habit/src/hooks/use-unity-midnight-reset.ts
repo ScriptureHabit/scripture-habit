@@ -27,8 +27,14 @@ export const useUnityMidnightReset = ({
 
         // Calculate "today" in the group's timezone
         const now = new Date();
-        const todayInGroupTZ = new Date(now.toLocaleString('en-US', { timeZone: groupTimeZone || 'UTC' }));
-        const todayStr = todayInGroupTZ.toISOString().split('T')[0];
+        // Use Intl.DateTimeFormat to get a reliable YYYY-MM-DD string in the target timezone
+        // 'en-CA' is a convenient locale that defaults to YYYY-MM-DD
+        const todayStr = new Intl.DateTimeFormat('en-CA', {
+            timeZone: groupTimeZone || 'UTC',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit'
+        }).format(now);
 
         // Skip if already checked today
         if (lastCheckedDateRef.current === todayStr) return;

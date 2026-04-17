@@ -47,7 +47,7 @@ const LandingPage: FC = () => {
 
     return (
         <div className="LandingPageRoot">
-            <div className="LandingGlass">
+            <main className="LandingGlass">
                 {/* Click outside to close lang menu */}
                 {isLangMenuOpen && <div className="lang-menu-backdrop" onClick={() => setIsLangMenuOpen(false)}></div>}
 
@@ -205,8 +205,8 @@ const LandingPage: FC = () => {
                     </Button>
                 </section>
 
-                <Footer />
-            </div>
+            </main>
+            <Footer />
         </div>
     );
 };

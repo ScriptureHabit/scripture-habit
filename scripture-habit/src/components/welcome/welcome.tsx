@@ -34,7 +34,7 @@ const Welcome: FC = () => {
 
     return (
         <div className="App Welcome">
-            <div className="AppGlass welcome-container">
+            <main className="AppGlass welcome-container">
                 <h1>{t('welcome.title')}</h1>
 
                 <Mascot customMessage={t('mascot.welcomeMessage')} />
@@ -126,7 +126,7 @@ const Welcome: FC = () => {
                     onContinue={handleContinue}
                     t={t}
                 />
-            </div>
+            </main>
             <Footer />
         </div>
     );

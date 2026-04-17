@@ -192,7 +192,7 @@ const LoginForm: FC = () => {
 
   return (
     <div className='App LoginForm'>
-      <div className='AppGlass'>
+      <main className='AppGlass'>
         <h2>{t('login.title')}</h2>
 
         <div className="browser-warning">
@@ -270,7 +270,7 @@ const LoginForm: FC = () => {
         <div className="auth-switch">
           <p>{t('login.noAccount')} <Link to="/signup" className="auth-link">{t('login.signupLink')}</Link></p>
         </div>
-      </div>
+      </main>
       <Footer />
     </div>
   );

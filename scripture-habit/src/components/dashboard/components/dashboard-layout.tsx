@@ -33,9 +33,9 @@ const DashboardLayout: FC<DashboardLayoutProps> = ({
         setActiveGroupId={setActiveGroupId}
         hideMobile={isInputFocused || isJoiningInvite}
       />
-      <div className={`DashboardContent ${selectedView === 2 ? 'group-chat-view' : ''}`}>
+      <main className={`DashboardContent ${selectedView === 2 ? 'group-chat-view' : ''}`}>
         {children}
-      </div>
+      </main>
     </div>
   );
 };

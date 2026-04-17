@@ -12,7 +12,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "vitest",
+    "test": "vitest src",
     "test:coverage": "vitest run --coverage",
     "test:internal": "firebase emulators:exec --project scripture-habit-auth \"npx vitest api_internal\"",
     "test:e2e": "firebase emulators:exec --project scripture-habit-auth \"npx playwright test\"",
@@ -52,6 +52,7 @@
   "devDependencies": {
     "@axe-core/playwright": "^4.11.1",
     "@eslint/js": "^9.39.1",
+    "@firebase/rules-unit-testing": "^5.0.0",
     "@playwright/browser-chromium": "^1.59.1",
     "@playwright/browser-webkit": "^1.59.1",
     "@playwright/test": "^1.59.1",

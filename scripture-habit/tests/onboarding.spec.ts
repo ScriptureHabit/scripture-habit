@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
 
 test.describe('Onboarding Flow', () => {
   test.beforeEach(async ({ page }) => {
@@ -13,6 +14,12 @@ test.describe('Onboarding Flow', () => {
     // Check if the CTA button is visible
     const ctaButton = page.getByRole('button', { name: 'Start Now' });
     await expect(ctaButton).toBeVisible();
+
+    // Accessibility check
+    const accessibilityScanResults = await new AxeBuilder({ page })
+      .exclude('.firebase-emulator-warning')
+      .analyze();
+    expect(accessibilityScanResults.violations).toEqual([]);
   });
 
   test('should navigate to the welcome page when CTA is clicked', async ({ page }) => {
@@ -50,5 +57,11 @@ test.describe('Onboarding Flow', () => {
 
     await expect(loginButton).toBeVisible();
     await expect(signupButton).toBeVisible();
+
+    // Accessibility check
+    const accessibilityScanResults = await new AxeBuilder({ page })
+      .exclude('.firebase-emulator-warning')
+      .analyze();
+    expect(accessibilityScanResults.violations).toEqual([]);
   });
 });

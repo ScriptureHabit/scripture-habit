@@ -202,7 +202,7 @@ export default function SignupForm() {
 
   return (
     <div className="App SignupForm">
-      <div className='AppGlass Form'>
+      <main className='AppGlass Form'>
         <h2>{t('signup.title')}</h2>
 
         <div className="browser-warning">
@@ -268,7 +268,7 @@ export default function SignupForm() {
         <div className="auth-switch">
           <p>{t('signup.hasAccount')} <Link to="/login" className="auth-link">{t('signup.loginLink')}</Link></p>
         </div>
-      </div>
+      </main>
       <Footer />
     </div>
   );
