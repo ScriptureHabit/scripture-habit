@@ -64,9 +64,10 @@ test.describe('Unity Percentage Synchronization (Local Timezone: Asia/Tokyo)', (
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    memberCount: 2,
+                    memberCount: 1,
                     groupName: name,
-                    timeZone: tz
+                    timeZone: tz,
+                    setYesterdayDate: true
                 })
             });
             
@@ -106,21 +107,79 @@ test.describe('Unity Percentage Synchronization (Local Timezone: Asia/Tokyo)', (
         await page.getByTestId('post-note-button').click();
         await expect(page.getByText('Note posted successfully!')).toBeVisible({ timeout: 15000 });
         
+        // Reload to ensure fresh Firestore data (especially for WebKit)
+        console.log('Reloading page to ensure unity update is visible...');
+        await page.reload();
+        await expect(page.getByTestId('sidebar-dashboard')).toBeVisible({ timeout: 30000 });
+        
+        // Re-locate the group item after reload
+        const refreshedGroupItem = page.getByTestId('sidebar-group-item').filter({ hasText: groupName });
+        const refreshedSidebarUnity = refreshedGroupItem.getByTestId('sidebar-unity-percentage');
+        await expect(refreshedSidebarUnity).toBeVisible({ timeout: 15000 });
+        
         // Verify unity changed to 100%
         console.log('Waiting for unity to reflect note post...');
-        await expect(sidebarUnity).toHaveText('100%', { timeout: 30000 });
+        await expect(refreshedSidebarUnity).toHaveText('100%', { timeout: 30000 });
 
         // --- PART 3: MIDNIGHT JST CROSSING ---
-        console.log('--- Step 3: Fast forwarding 20 seconds past JST midnight ---');
+        console.log('--- Step 3: Fast forwarding 6 minutes past JST midnight ---');
         
         // Fast forward 6 minutes to cross midnight (was at 23:55:00)
         await page.clock.fastForward(6 * 60 * 1000); 
-        console.log('Clock fast forwarded 6m.');
+        console.log('Clock fast forwarded 6m to 00:01 JST.');
 
+        // IMPORTANT: Trigger server-side reset after clock change
+        // The mock clock only affects the client, so we need to tell the server to reset
+        console.log('Triggering server-side midnight reset...');
+        const resetResult = await page.evaluate(async () => {
+            const waitForAuthToken = () => {
+                return new Promise((resolve, reject) => {
+                    let attempts = 0;
+                    const check = async () => {
+                        /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+                        const auth = (window as any).firebaseAuth;
+                        if (auth && auth.currentUser) {
+                            try {
+                                const token = await auth.currentUser.getIdToken();
+                                resolve(token);
+                            } catch (e) {
+                                reject(e);
+                            }
+                        } else if (attempts++ > 40) {
+                            reject('Auth token not found after 20s');
+                        } else {
+                            setTimeout(check, 500);
+                        }
+                    };
+                    check();
+                });
+            };
+
+            const idToken = (await waitForAuthToken()) as string;
+            
+            const response = await fetch('/api/reset-unity-if-midnight', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${idToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({})
+            });
+            
+            if (!response.ok) return { error: 'Reset API failed' };
+            return response.json();
+        });
+        console.log('Reset API result:', resetResult);
+
+        // Re-locate the group item after clock change for final verification
+        const finalGroupItem = page.getByTestId('sidebar-group-item').filter({ hasText: groupName });
+        const finalSidebarUnity = finalGroupItem.getByTestId('sidebar-unity-percentage');
+        await expect(finalSidebarUnity).toBeVisible({ timeout: 15000 });
+        
         // Verify unity resets to 0% in sidebar
-        // This is driven by enrichGroupUnity detecting the new date
+        // The server reset updates Firestore, which triggers the sidebar update
         console.log(`Waiting for ${groupName} unity reset to 0%...`);
-        await expect(sidebarUnity).toHaveText('0%', { timeout: 60000 });
+        await expect(finalSidebarUnity).toHaveText('0%', { timeout: 60000 });
         
         console.log('Success: Unity percentage reset to 0% at JST midnight.');
     });

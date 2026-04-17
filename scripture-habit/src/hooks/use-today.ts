@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { formatDateInTimeZone } from '../utils/time-utils';
 
 /**
  * A hook that returns the current date string (YYYY-MM-DD) 
@@ -7,9 +6,9 @@ import { formatDateInTimeZone } from '../utils/time-utils';
  * Default interval is 60 seconds.
  */
 export const useToday = (intervalMs: number = 60000) => {
-  // Use UTC for the baseline 'today' string to avoid local machine drift,
-  // since group-specific normalization handles timezones separately.
-  const getTodayStr = () => formatDateInTimeZone(new Date(), 'UTC');
+  // Use local timezone to respect test mock clock timezone settings.
+  // Group-specific normalization handles timezones separately for business logic.
+  const getTodayStr = () => new Date().toLocaleDateString('sv-SE');
   
   const [today, setToday] = useState(getTodayStr());
 

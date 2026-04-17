@@ -62,8 +62,9 @@ router.post('/test/setup-test-group', authenticate, async (req: AuthenticatedReq
         const userData = userDoc.data() || {};
         const nickname = userData.nickname || 'Test User';
 
+        const memberJoinedTime = setYesterdayDate ? yesterday : now;
         const memberJoinedAt: Record<string, admin.firestore.Timestamp | Date> = {};
-        memberJoinedAt[uid] = now;
+        memberJoinedAt[uid] = memberJoinedTime;
         
         const additionalMembers: string[] = [];
         const additionalMemberPreviews: { uid: string; nickname: string }[] = [];
@@ -73,7 +74,7 @@ router.post('/test/setup-test-group', authenticate, async (req: AuthenticatedReq
                 const dummyUid = `dummy-member-${i}-${Date.now()}`;
                 additionalMembers.push(dummyUid);
                 additionalMemberPreviews.push({ uid: dummyUid, nickname: `Test Member ${i}` });
-                memberJoinedAt[dummyUid] = now;
+                memberJoinedAt[dummyUid] = memberJoinedTime;
             }
         }
         
@@ -93,14 +94,14 @@ router.post('/test/setup-test-group', authenticate, async (req: AuthenticatedReq
                 isPublic: true,
                 isPrivate: false,
                 inviteCode: `TEST-${Math.floor(Math.random() * 10000)}`,
-                createdAt: now,
-                lastMessageAt: now,
+                createdAt: memberJoinedTime,
+                lastMessageAt: memberJoinedTime,
                 lastMessageByNickname: nickname,
                 lastMessageByUid: uid,
                 messageCount: 0,
                 memberJoinedAt: memberJoinedAt,
-                memberLastActive: { [uid]: now },
-                memberLastReadAt: { [uid]: now },
+                memberLastActive: { [uid]: memberJoinedTime },
+                memberLastReadAt: { [uid]: memberJoinedTime },
                 dailyActivity: { 
                     date: dailyActivityDate, 
                     activeMembers: unityPercentage === 100 ? allMembers : [] 
@@ -113,9 +114,9 @@ router.post('/test/setup-test-group', authenticate, async (req: AuthenticatedReq
             transaction.set(memberRef, {
                 uid,
                 nickname,
-                joinedAt: now,
-                lastActiveAt: now,
-                lastReadAt: now,
+                joinedAt: memberJoinedTime,
+                lastActiveAt: memberJoinedTime,
+                lastReadAt: memberJoinedTime,
                 readMessageCount: 0,
                 kickThreshold: 3
             });
@@ -126,9 +127,9 @@ router.post('/test/setup-test-group', authenticate, async (req: AuthenticatedReq
                 transaction.set(dummyMemberRef, {
                     uid: dummyUid,
                     nickname: `Test Member ${index + 1}`,
-                    joinedAt: now,
-                    lastActiveAt: now,
-                    lastReadAt: now,
+                    joinedAt: memberJoinedTime,
+                    lastActiveAt: memberJoinedTime,
+                    lastReadAt: memberJoinedTime,
                     readMessageCount: 0,
                     kickThreshold: 3
                 });

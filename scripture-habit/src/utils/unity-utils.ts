@@ -52,6 +52,11 @@ export const getUnityParticipation = (
       
     const normActivityDate = normalizeDateString(activityDateStr);
     
+    // Debug logging for Unity Test groups
+    if (group.name?.includes('Unity Test')) {
+      console.log(`[getUnityParticipation] ${group.name}: activityDate=${normActivityDate}, today=${normalizedToday}, match=${normActivityDate === normalizedToday}`);
+    }
+    
     if (normActivityDate === normalizedToday) {
       activity.activeMembers.forEach(uid => uniquePosters.add(uid));
     }
@@ -102,10 +107,16 @@ export const getUnityParticipation = (
 
   // TRUTH: If no one is required to post (e.g. all new joins), unity is 100%
   if (eligibleMembers.length === 0) {
+    if (group.name?.includes('Unity Test')) {
+      console.log(`[getUnityParticipation] ${group.name}: No eligible members (all joined today), returning 100%`);
+    }
     return { eligibleMembers: [], postedMembers: [], notPostedMembers: [], percentage: 100 };
   }
 
   const percentage = Math.round((postedMembers.length / eligibleMembers.length) * 100);
+  if (group.name?.includes('Unity Test')) {
+    console.log(`[getUnityParticipation] ${group.name}: posters=${postedMembers.length}, eligible=${eligibleMembers.length}, percentage=${percentage}%`);
+  }
   return { eligibleMembers, postedMembers, notPostedMembers, percentage };
 };
 

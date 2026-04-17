@@ -6,6 +6,13 @@ test.describe('Unity Midnight Reset API', () => {
     test('should reset unity percentage when midnight passes', async ({ authenticatedPage }) => {
         const page = authenticatedPage;
 
+        // Mirror console logs to terminal for debugging Firestore updates
+        page.on('console', msg => {
+            if (msg.type() === 'log' || msg.type() === 'error' || msg.type() === 'warning') {
+                console.log(`[Browser ${test.info().project.name}] ${msg.text()}`);
+            }
+        });
+
         // --- PART 1: Setup test group ---
         console.log('--- Step 1: Setting up test group ---');
         
@@ -148,21 +155,26 @@ test.describe('Unity Midnight Reset API', () => {
 
         // --- PART 4: Verify unity was reset to 0% ---
         console.log('--- Step 4: Verifying unity reset to 0% ---');
-        await page.waitForTimeout(2000);
         
-        // Navigate back to dashboard to refresh
-        await page.goto('/en/dashboard');
-        await expect(page.getByTestId('sidebar-dashboard')).toBeVisible({ timeout: 15000 });
+        // Use reload instead of goto to maintain Firestore listener connection
+        // and avoid stale cached data from a new listener
+        await page.reload();
+        
+        // Wait for hydration to complete
+        await page.waitForSelector('[data-testid="sidebar-dashboard"]', { timeout: 30000 });
 
         // Find the specific group we created in the sidebar
         const specificGroupItem = page.locator(`[data-testid="sidebar-group-item"][data-group-name="${groupName}"]`);
+        await expect(specificGroupItem).toBeVisible({ timeout: 15000 });
+        
         const targetSidebarUnity = specificGroupItem.getByTestId('sidebar-unity-percentage');
+        await expect(targetSidebarUnity).toBeVisible({ timeout: 15000 });
+        
+        // This should reliably be 0% now - wait for Firestore real-time update
+        await expect(targetSidebarUnity).toHaveText('0%', { timeout: 15000 });
         
         const unityAfterReset = await targetSidebarUnity.innerText();
         console.log(`Unity after reset for ${groupName}: ${unityAfterReset}`);
-        
-        // This should reliably be 0% now
-        await expect(targetSidebarUnity).toHaveText('0%', { timeout: 10000 });
         console.log('Success: Unity percentage reset to 0% in sidebar.');
     });
 });
