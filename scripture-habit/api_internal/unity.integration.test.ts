@@ -47,12 +47,30 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Unity Percentage Integrat
         await db.collection('groups').doc(TEST_GROUP_ID).delete();
     }, 30000);
 
-    it('should start with 0% unity when no notes are posted', async () => {
+    it('should start with 100% unity for a new group (joined today, no posters yet)', async () => {
+        // Current setup has member joined today (serverTimestamp)
         const groupSnap = await db.collection('groups').doc(TEST_GROUP_ID).get();
         const groupData = groupSnap.data() as Group;
         
         const percentage = calculateUnityPercentage(groupData);
-        expect(percentage).toBe(0);
+        expect(percentage).toBe(100); // New spec: No eligible members = 100%
+    });
+
+    it('should start with 0% unity when member joined yesterday and has not posted', async () => {
+        // Setup a member who joined yesterday
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        const yesterdayTs = admin.firestore.Timestamp.fromDate(yesterday);
+        
+        await db.collection('groups').doc(TEST_GROUP_ID).update({
+            [`memberJoinedAt.${TEST_UID}`]: yesterdayTs
+        });
+
+        const groupSnap = await db.collection('groups').doc(TEST_GROUP_ID).get();
+        const groupData = groupSnap.data() as Group;
+        
+        const percentage = calculateUnityPercentage(groupData);
+        expect(percentage).toBe(0); // Eligible member has not posted
     });
 
     it('should update to 100% unity after the only member posts a note', async () => {
