@@ -12,6 +12,7 @@ describe('Group Utils - enrichGroupUnity', () => {
       date: '2024-04-18',
       activeMembers: ['u1']
     },
+    name: 'Test Group',
     timeZone: 'Asia/Tokyo'
   } as unknown as Group;
 

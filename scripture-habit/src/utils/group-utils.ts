@@ -47,7 +47,7 @@ export const enrichGroupUnity = (
     ? override 
     : (isStale ? 0 : (calculated > 0 ? calculated : (group.unityPercentage ?? 0)));
 
-  if (group.name.includes('Unity Test')) {
+  if (group.name?.includes('Unity Test')) {
     console.log(`[enrichGroupUnity] Group: ${group.name}, id: ${group.id}`);
     console.log(`  Today: ${normalizedToday} (${todayStr})`);
     console.log(`  ActivityDate: ${activityDateStr}`);
