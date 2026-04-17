@@ -1,0 +1,47 @@
+
+import { describe, it, expect } from 'vitest';
+import { enrichGroupUnity } from './group-utils';
+import { Group } from '../types/chat';
+
+describe('Group Utils - enrichGroupUnity', () => {
+  const mockGroup: Group = {
+    id: 'test-group',
+    members: ['u1', 'u2'],
+    unityPercentage: 33, // Firestore value (backend)
+    dailyActivity: {
+      date: '2024-04-18',
+      activeMembers: ['u1']
+    },
+    timeZone: 'Asia/Tokyo'
+  } as unknown as Group;
+
+  const today = new Date('2024-04-18T05:00:00Z'); // 2:00 PM JST
+
+  it('should prefer the override value when provided', () => {
+    const result = enrichGroupUnity(mockGroup, 50, today);
+    expect(result.unityPercentage).toBe(50);
+  });
+
+  it('should use calculated value when it matches the date and is > 0', () => {
+    // Calculated should be 50% (1/2 members)
+    const result = enrichGroupUnity(mockGroup, undefined, today);
+    expect(result.unityPercentage).toBe(50);
+  });
+
+  it('should fall back to Firestore value when calculated value is 0 (Mismatch Case)', () => {
+    // Simulate a date mismatch: client is on the 19th
+    const tomorrow = new Date('2024-04-19T05:00:00Z');
+    
+    // calculated will be 0 because 2024-04-18 (activity) != 2024-04-19 (today)
+    const result = enrichGroupUnity(mockGroup, undefined, tomorrow);
+    
+    // Should fall back to 33 (Firestore) instead of 0
+    expect(result.unityPercentage).toBe(33);
+  });
+
+  it('should return 0 if both calculated and Firestore values are missing/0', () => {
+    const emptyGroup = { ...mockGroup, unityPercentage: 0, dailyActivity: undefined };
+    const result = enrichGroupUnity(emptyGroup as unknown as Group, undefined, today);
+    expect(result.unityPercentage).toBe(0);
+  });
+});

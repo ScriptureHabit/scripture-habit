@@ -26,7 +26,7 @@ import { useModalStore } from '../../store/use-modal-store';
 import { getGospelLibraryUrl } from '../../utils/gospel-library-mapper';
 import { useLanguage } from '../../hooks/use-language';
 import { getTodayReadingPlan } from '../../data/daily-reading-plan';
-import { calculateUnityPercentage } from '../../utils/unity-utils';
+import { enrichGroupUnity } from '../../utils/group-utils';
 
 // Hooks
 import { useDashboardSync } from './hooks/use-dashboard-sync';
@@ -94,13 +94,9 @@ const Dashboard: FC = () => {
 
   const enrichedUserGroups = useMemo(() => {
     return userGroups.map(group => {
-      const override = unityOverrides[group.id];
-      // Use current time, but keep today as dependency for midnight re-calculation
-      const calculated = calculateUnityPercentage(group, [], new Date());
-      
+      const enriched = enrichGroupUnity(group, unityOverrides[group.id], new Date());
       return {
-        ...group,
-        unityPercentage: override !== undefined ? override : calculated,
+        ...enriched,
         _date: today
       };
     });

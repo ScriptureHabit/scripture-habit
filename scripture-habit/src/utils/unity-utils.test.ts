@@ -76,4 +76,48 @@ describe('Unity Utils - getUnityParticipation', () => {
     const result = getUnityParticipation(groupWithWeirdDate as unknown as Group, [], referenceDate);
     expect(result.postedMembers).toContain('user1'); // Should still match due to normalization
   });
+
+  describe('Edge Cases - Timezones and Date Mismatches', () => {
+    it('should return 0% if the client date is ahead of the group activity date (Midnight Mismatch)', () => {
+      // Group is in Tokyo, activity is from April 17th
+      const group: Group = {
+        ...mockGroup,
+        timeZone: 'Asia/Tokyo',
+        dailyActivity: {
+          date: '2024-04-17',
+          activeMembers: ['user1']
+        }
+      } as unknown as Group;
+
+      // Client is also in Tokyo, but it's now April 18th (Reference date)
+      const clientDate = new Date('2024-04-18T00:05:00+09:00'); // Just after midnight on the 18th
+      
+      const result = getUnityParticipation(group, [], clientDate);
+      
+      // Should be 0% because the activity date (17th) doesn't match client's "today" (18th)
+      expect(result.percentage).toBe(0);
+      expect(result.postedMembers.length).toBe(0);
+    });
+
+    it('should return 0% if the client has a missing timezone and falls back to UTC (Timezone Mismatch)', () => {
+      // Group is in Tokyo, activity is '2024-04-18' (JST)
+      // Reference date is 2024-04-18 05:00 JST -> which is 2024-04-17 20:00 UTC
+      const referenceDateJST = new Date('2024-04-17T20:00:00Z'); 
+
+      const groupWithNoTZ: Group = {
+        ...mockGroup,
+        timeZone: undefined, // Missing TZ -> Defaults to UTC
+        dailyActivity: {
+          date: '2024-04-18', // Saved by backend which knows it's Tokyo
+          activeMembers: ['user1']
+        }
+      } as unknown as Group;
+
+      const result = getUnityParticipation(groupWithNoTZ, [], referenceDateJST);
+      
+      // In UTC, the date is still April 17th. 
+      // So it doesn't match the activity's '2024-04-18'.
+      expect(result.percentage).toBe(0);
+    });
+  });
 });
