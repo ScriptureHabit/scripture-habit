@@ -24,22 +24,38 @@ export const parseTimestampToMillis = (ts?: FirebaseTimestamp | null): number =>
 
 export const formatDateInTimeZone = (date: Date, timeZone: string): string => {
   try {
-    // sv-SE locale is known for its YYYY-MM-DD format (ISO 8601 style)
-    // Most modern browsers and environments support the timeZone option in toLocaleDateString.
-    // We also replace slashes with dashes just in case some browser uses YYYY/MM/DD for sv-SE.
+    // We use Intl.DateTimeFormat with formatToParts to guarantee a consistent YYYY-MM-DD structure
+    // regardless of the environment's default locale behavior for 'sv-SE'.
+    const formatter = new Intl.DateTimeFormat('en-GB', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      timeZone
+    });
+
+    const parts = formatter.formatToParts(date);
+    const y = parts.find(p => p.type === 'year')?.value;
+    const m = parts.find(p => p.type === 'month')?.value;
+    const d = parts.find(p => p.type === 'day')?.value;
+
+    if (y && m && d) {
+      return `${y}-${m}-${d}`;
+    }
+
+    // Fallback if parts are missing
     return date.toLocaleDateString('sv-SE', { timeZone }).replace(/\//g, '-');
   } catch (e) {
-    console.warn(`[timeUtils] toLocaleDateString failed for ${timeZone}, falling back to UTC ISO string`, e);
-    // Fallback for extremely old/limited environments
-    const iso = date.toISOString(); // This is UTC
-    return iso.split('T')[0];
+    console.warn(`[timeUtils] formatDateInTimeZone failed for ${timeZone}, falling back to UTC ISO`, e);
+    return date.toISOString().split('T')[0];
   }
 };
 
 /**
- * Strips any non-numeric and non-dash characters from a date string.
- * Used to ensure consistency against hidden characters from Intl API.
+ * Strips all non-numeric characters from a date string.
+ * This ensures that strings like "2026-04-17" and "2026/04/17" both become "20260417",
+ * allowing for reliable numeric-like string comparison.
  */
 export const normalizeDateString = (dateStr: string): string => {
-  return dateStr.replace(/[^\d-]/g, '');
+  if (!dateStr) return '';
+  return dateStr.replace(/\D/g, '');
 };

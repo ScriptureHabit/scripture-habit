@@ -31,9 +31,10 @@ describe('Group Utils - enrichGroupUnity', () => {
 
   it('should return 0 when date mismatch occurs (Midnight Reset Case)', () => {
     // Simulate a date mismatch: client is on the 19th
+    // Today in Japan (Asia/Tokyo) for 2024-04-19T05:00:00Z is 2024-04-19 14:00
     const tomorrow = new Date('2024-04-19T05:00:00Z');
     
-    // calculated will be 0 because 2024-04-18 (activity) != 2024-04-19 (today)
+    // calculated will be 0 because 20240418 (activity) != 20240419 (today)
     const result = enrichGroupUnity(mockGroup, undefined, tomorrow);
     
     // Should return 0 (reset) instead of 33 (stale Firestore value)
@@ -70,5 +71,20 @@ describe('Group Utils - enrichGroupUnity', () => {
     const emptyGroup = { ...mockGroup, unityPercentage: 0, dailyActivity: undefined };
     const result = enrichGroupUnity(emptyGroup as unknown as Group, undefined, today);
     expect(result.unityPercentage).toBe(0);
+  });
+
+  it('should prefer higher Firestore value over lower local calculation (Metadata Lag Case)', () => {
+    const laggingGroup = {
+      ...mockGroup,
+      unityPercentage: 100, // Firestore already updated to 100%
+      dailyActivity: {
+        date: '2024-04-18',
+        activeMembers: ['u1'] // Metadata only has 1 person (50%)
+      }
+    } as unknown as Group;
+
+    const result = enrichGroupUnity(laggingGroup, undefined, today);
+    // Should return 100 (from Firestore) instead of 50 (from incomplete local metadata)
+    expect(result.unityPercentage).toBe(100);
   });
 });

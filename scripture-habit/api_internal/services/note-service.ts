@@ -184,6 +184,10 @@ export class NoteService {
                     
                     groupUpdate.unityPercentage = calculateUnityPercentage(simulatedGroup as unknown as Group, [], now);
                     
+                    if (gData.name?.includes('Unity Test')) {
+                        console.log(`[NoteService] Group ${gid} (${gData.name}): Unity updated to ${groupUpdate.unityPercentage}% for ${uid}. Active: ${simulatedGroup.dailyActivity.activeMembers.length}/${simulatedGroup.members?.length}`);
+                    }
+                    
                     transaction.update(gDoc.ref, groupUpdate);
                     
                     const memberRef = gDoc.ref.collection('members').doc(uid);
