@@ -152,9 +152,14 @@ export class NoteService {
                         chapter: chapter || ""
                     });
 
-                    // Calculate today's date for the group. Fallback to UTC if group has no timezone.
-                    // DO NOT fallback to user's timezone as that causes inconsistency in summaries.
-                    const groupToday = formatDateInTimeZone(now, gData.timeZone || 'UTC');
+                    // Calculate today's date for the group. Fallback to user's timezone if group has none.
+                    // This is more likely to match the user's perspective than UTC.
+                    const groupTimeZone = gData.timeZone || userData.timeZone || 'UTC';
+                    const groupToday = formatDateInTimeZone(now, groupTimeZone);
+                    
+                    const currentActivityDate = gData.dailyActivity?.date || '';
+                    const normCurrent = normalizeDateString(currentActivityDate);
+                    const normToday = normalizeDateString(groupToday);
 
                     const groupUpdate = {
                         lastMessageAt: serverTime,
@@ -167,19 +172,39 @@ export class NoteService {
                         noteCount: admin.firestore.FieldValue.increment(1)
                     } as admin.firestore.UpdateData<GroupDocument>;
 
-                    if (normalizeDateString(gData.dailyActivity?.date || '') !== normalizeDateString(groupToday)) {
+                    // Only reset if today is strictly newer than the stored date.
+                    // If stored date is newer (future) or same, we just add the member.
+                    if (normCurrent !== '' && normToday > normCurrent) {
                         groupUpdate.dailyActivity = { date: groupToday, activeMembers: [uid] };
+                    } else if (normCurrent === '' || normToday === normCurrent) {
+                        groupUpdate['dailyActivity.activeMembers'] = admin.firestore.FieldValue.arrayUnion(uid);
+                        if (normCurrent === '') groupUpdate['dailyActivity.date'] = groupToday;
                     } else {
+                        // Clock drift case: stored date is in the "future". 
+                        // We keep the future date but still add this user to activeMembers.
                         groupUpdate['dailyActivity.activeMembers'] = admin.firestore.FieldValue.arrayUnion(uid);
                     }
 
-                    // Calculate and update unityPercentage for real-time sidebar sync
-                    // We simulate the updated group state to get the correct percentage
+                    // Calculate and update unityPercentage for real-time sidebar sync.
+                    // We simulate the updated group state to get the correct percentage.
+                    // If we just reset, simulated active members is just [uid].
+                    // Otherwise, we merge current active members with this uid.
+                    let simulatedActiveMembers: string[] = [];
+                    let simulatedDate = groupToday;
+
+                    if (normCurrent !== '' && normToday > normCurrent) {
+                        simulatedActiveMembers = [uid];
+                    } else {
+                        simulatedActiveMembers = Array.from(new Set([...(gData.dailyActivity?.activeMembers || []), uid]));
+                        simulatedDate = currentActivityDate || groupToday;
+                    }
+
                     const simulatedGroup = {
                         ...gData,
-                        dailyActivity: normalizeDateString(gData.dailyActivity?.date || '') !== normalizeDateString(groupToday)
-                            ? { date: groupToday, activeMembers: [uid] }
-                            : { ...gData.dailyActivity!, activeMembers: Array.from(new Set([...(gData.dailyActivity?.activeMembers || []), uid])) }
+                        dailyActivity: {
+                            date: simulatedDate,
+                            activeMembers: simulatedActiveMembers
+                        }
                     };
                     
                     groupUpdate.unityPercentage = calculateUnityPercentage(simulatedGroup as unknown as Group, [], now);

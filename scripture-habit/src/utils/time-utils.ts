@@ -51,11 +51,24 @@ export const formatDateInTimeZone = (date: Date, timeZone: string): string => {
 };
 
 /**
- * Strips all non-numeric characters from a date string.
- * This ensures that strings like "2026-04-17" and "2026/04/17" both become "20260417",
- * allowing for reliable numeric-like string comparison.
+ * Normalizes a date string to a purely numeric representation (YYYYMMDD)
+ * for safe lexicographical comparison. Handles strings and potentially 
+ * Timestamp-like objects by converting to string first.
  */
-export const normalizeDateString = (dateStr: string): string => {
-  if (!dateStr) return '';
-  return dateStr.replace(/\D/g, '');
+export const normalizeDateString = (dateInput: string | Date | { toDate: () => Date } | null | undefined): string => {
+  if (!dateInput) return '';
+  
+  // Handle Firestore Timestamp or Date objects if passed directly
+  if (dateInput && typeof dateInput === 'object') {
+    if ('toDate' in dateInput && typeof dateInput.toDate === 'function') {
+      // It's a Firestore Timestamp
+      return normalizeDateString(formatDateInTimeZone(dateInput.toDate(), 'UTC'));
+    }
+    if (dateInput instanceof Date) {
+      return normalizeDateString(formatDateInTimeZone(dateInput, 'UTC'));
+    }
+  }
+
+  const str = String(dateInput);
+  return str.replace(/\D/g, '');
 };

@@ -54,10 +54,6 @@ export const getUnityParticipation = (
     
     if (normActivityDate === normalizedToday) {
       activity.activeMembers.forEach(uid => uniquePosters.add(uid));
-    } else {
-      if (group?.name?.includes('Unity Test')) {
-        console.log(`[getUnityParticipation] Date mismatch for ${group.name}: activity=${normActivityDate} (${activityDateStr}), today=${normalizedToday} (${todayStr}), groupTZ=${groupTimeZone}`);
-      }
     }
   }
 
@@ -79,7 +75,10 @@ export const getUnityParticipation = (
   // ELIGIBILITY LOGIC
   // Members who joined today are excluded from the denominator UNLESS they already posted.
   const memberJoinedAt = group.memberJoinedAt || {};
-  const eligibleMembers = group.members.filter(uid => {
+  // Ensure we only count unique member IDs
+  const uniqueMemberIds = Array.from(new Set(group.members));
+  
+  const eligibleMembers = uniqueMemberIds.filter(uid => {
     if (uniquePosters.has(uid)) return true; // Posted today -> count
     
     const joinedTs = memberJoinedAt[uid];
@@ -89,15 +88,17 @@ export const getUnityParticipation = (
     if (isNaN(joinedTime)) return true;
 
     const joinedDateStr = formatDateInTimeZone(new Date(joinedTime), groupTimeZone);
+    const normalizedJoined = normalizeDateString(joinedDateStr);
+    
     // If they joined before today, they are eligible.
-    return normalizeDateString(joinedDateStr) < normalizedToday;
+    return normalizedJoined < normalizedToday;
   });
 
   if (eligibleMembers.length === 0) {
     return { eligibleMembers: [], postedMembers: [], notPostedMembers: [], percentage: 0 };
   }
 
-  const postedMembers = [...uniquePosters].filter(uid => eligibleMembers.includes(uid));
+  const postedMembers = Array.from(uniquePosters).filter(uid => eligibleMembers.includes(uid));
   const notPostedMembers = eligibleMembers.filter(uid => !postedMembers.includes(uid));
   
   const score = Math.round((postedMembers.length / eligibleMembers.length) * 100);

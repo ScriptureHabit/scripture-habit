@@ -37,9 +37,8 @@ export const useUnityMidnightReset = ({
         // Check if reset is needed (dailyActivity is from a different day)
         let normalizedActivityDate = null;
         if (dailyActivityDate) {
-            // Handle Timestamp objects if passed (though prop type says string, runtime data might vary)
             const rawDate = dailyActivityDate;
-            const dateObj = typeof rawDate === 'string' ? null : parseTimestampToDate(rawDate as any);
+            const dateObj = typeof rawDate === 'string' ? null : parseTimestampToDate(rawDate as { seconds: number; nanoseconds: number });
             const dateStr = dateObj ? formatDateInTimeZone(dateObj, groupTimeZone) : String(rawDate);
             normalizedActivityDate = normalizeDateString(dateStr);
         }

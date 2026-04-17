@@ -93,7 +93,10 @@ const Dashboard: FC = () => {
   const { isJoiningInvite } = useDashboardInvitations(user, userData, showWelcomeStory, setActiveGroupId, setSelectedView, t);
   const { warnings } = useDashboardWarnings(userData, userGroups);
 
-  const referenceDate = useMemo(() => new Date(), [today]);
+  const referenceDate = useMemo(() => {
+    // We include 'today' to ensure this date object refreshes at midnight
+    return new Date();
+  }, [today]);
 
   const enrichedUserGroups = useMemo(() => {
     return userGroups.map(group => {
