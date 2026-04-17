@@ -13,7 +13,7 @@ import { Group } from '../../../types/chat';
 const ChatHeader: FC = () => {
   // 1. Data
   const { 
-      groupData, unityPercentage, isOwner, language, groupId, userData, userGroups,
+      groupData, unityPercentage, isOwner, language, groupId, userGroups,
       isRecapAvailable, isRecapLoading
   } = useChatData();
 
@@ -244,7 +244,6 @@ const ChatHeader: FC = () => {
                           currentGroupId={groupId}
                           language={language || 'en'}
                           onSelect={() => { if (onGroupSelect) onGroupSelect(g.id); setShowMobileMenu(false); }}
-                          timeZone={userData?.timeZone}
                         />
                       ))}
                     </div>

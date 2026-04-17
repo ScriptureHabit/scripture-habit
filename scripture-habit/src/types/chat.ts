@@ -123,6 +123,7 @@ export interface UserProfileBrief {
   lastPostDate?: FirebaseTimestamp;
   lastActiveAt?: FirebaseTimestamp;
   lastReadAt?: FirebaseTimestamp;
+  joinedAt?: FirebaseTimestamp;
 }
 
 export interface MembersMap {

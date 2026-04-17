@@ -1,14 +1,15 @@
 import { useState } from 'react';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../../../../firebase';
-import { GroupData, Message, UserProfileBrief } from '../../../../types/chat';
+import { GroupData, Message, UserProfileBrief, MembersMap } from '../../../../types/chat';
 import { useChatStore } from '../../../../store/use-chat-store';
 
 import { getUnityParticipation } from '../../../../utils/unity-utils';
 
 export const useUnityDetails = (
   groupData: GroupData | null,
-  messages: Message[]
+  messages: Message[],
+  membersMap: MembersMap
 ) => {
   const { setShowUnityModal } = useChatStore();
   const [unityModalData, setUnityModalData] = useState<{ posted: { id: string; nickname: string }[]; notPosted: { id: string; nickname: string }[] }>({ posted: [], notPosted: [] });
@@ -20,7 +21,7 @@ export const useUnityDetails = (
     setShowUnityModal(true);
     setDetailsLoading(true);
 
-    const { postedMembers, notPostedMembers } = getUnityParticipation(groupData as unknown as GroupData, messages);
+    const { postedMembers, notPostedMembers } = getUnityParticipation(groupData as unknown as GroupData, messages, new Date(), membersMap);
     const postedUids = postedMembers;
     const notPostedUids = notPostedMembers;
 

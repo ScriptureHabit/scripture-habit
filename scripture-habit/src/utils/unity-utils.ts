@@ -1,4 +1,4 @@
-import { Group, Message } from '../types/chat.js';
+import { Group, Message, MembersMap } from '../types/chat.js';
 import { parseTimestampToMillis, parseTimestampToDate, formatDateInTimeZone, normalizeDateString } from './time-utils.js';
 
 /**
@@ -29,7 +29,8 @@ export interface UnityParticipation {
 export const getUnityParticipation = (
   group: Group | null,
   messages: Message[] = [],
-  referenceDate: Date = new Date()
+  referenceDate: Date = new Date(),
+  membersMap?: MembersMap
 ): UnityParticipation => {
   if (!group || !group.members || group.members.length === 0) {
     return { eligibleMembers: [], postedMembers: [], notPostedMembers: [], percentage: 0 };
@@ -89,7 +90,18 @@ export const getUnityParticipation = (
     const isPoster = uniquePosters.has(uid);
     if (isPoster) return true; // Posted today -> count
 
-    const joinedTs = memberJoinedAt[uid];
+    let joinedTs = memberJoinedAt[uid];
+    
+    // Fallback 1: membersMap (more up-to-date in GroupChat)
+    if (!joinedTs && membersMap?.[uid]?.joinedAt) {
+      joinedTs = membersMap[uid].joinedAt;
+    }
+
+    // Fallback 2: myMemberStatus (available in Sidebar for current user)
+    if (!joinedTs && group.myMemberStatus?.uid === uid && group.myMemberStatus.joinedAt) {
+      joinedTs = group.myMemberStatus.joinedAt;
+    }
+
     if (!joinedTs) return true;
 
     const joinedTime = parseTimestampToMillis(joinedTs);
@@ -126,7 +138,8 @@ export const getUnityParticipation = (
 export const calculateUnityPercentage = (
   group: Group | null,
   messages: Message[] = [],
-  referenceDate: Date = new Date()
+  referenceDate: Date = new Date(),
+  membersMap?: MembersMap
 ): number => {
-  return getUnityParticipation(group, messages, referenceDate).percentage;
+  return getUnityParticipation(group, messages, referenceDate, membersMap).percentage;
 };

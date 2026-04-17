@@ -65,7 +65,7 @@ const GroupChatProvider: FC<GroupChatProviderProps> = ({
     translatedGroupName, translatedGroupDesc 
   } = useGroupChatUI(groupId, groupData, language || 'en', API_BASE);
 
-  const unityPercentage = useUnityScore(groupId, userData, groupData, messages);
+  const unityPercentage = useUnityScore(groupId, userData, groupData, messages, membersMap);
 
   useEffect(() => {
     if (onUnityUpdate) onUnityUpdate(unityPercentage);
@@ -96,7 +96,7 @@ const GroupChatProvider: FC<GroupChatProviderProps> = ({
 
   const { 
     unityModalData, handleShowUnityModal 
-  } = useUnityDetails(groupData, messages);
+  } = useUnityDetails(groupData, messages, membersMap);
 
   const {
     handleReply, handleMessageClick, closeContextMenu, handleEditMessage, handleDeleteMessageClick

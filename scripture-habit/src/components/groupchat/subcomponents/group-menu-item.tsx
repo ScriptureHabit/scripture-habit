@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, FC } from 'react';
-import { getToken } from 'firebase/app-check'; // Added AppCheck getToken
-import { auth, appCheck } from '../../../firebase'; // Added appCheck
-import { parseTimestampToMillis } from '../../../utils/time-utils';
+import { getToken } from 'firebase/app-check';
+import { auth, appCheck } from '../../../firebase';
+import { calculateUnityPercentage } from '../../../utils/unity-utils';
 import { Group } from '../../../types/chat';
 
 interface GroupMenuItemProps {
@@ -9,10 +9,9 @@ interface GroupMenuItemProps {
     currentGroupId: string | null;
     language: string;
     onSelect: () => void;
-    timeZone?: string;
 }
 
-const GroupMenuItem: FC<GroupMenuItemProps> = ({ group, currentGroupId, language, onSelect, timeZone = 'UTC' }) => {
+const GroupMenuItem: FC<GroupMenuItemProps> = ({ group, currentGroupId, language, onSelect }) => {
     const [translatedName, setTranslatedName] = useState('');
     const translationAttemptedRef = useRef(false);
 
@@ -90,37 +89,7 @@ const GroupMenuItem: FC<GroupMenuItemProps> = ({ group, currentGroupId, language
     }, [group.id, group.name, group.translations, language]);
 
     const getEmoji = (g: Group) => {
-        if (!g || !g.members || g.members.length === 0) return '🌑';
-
-        const effectiveTimeZone = g.timeZone || timeZone || 'UTC';
-        const todayStr = new Date().toLocaleDateString('sv-SE', { timeZone: effectiveTimeZone });
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        const todayTime = today.getTime();
-
-        const uniquePosters = new Set<string>();
-
-        // SOURCE 1: dailyActivity
-        if (g.dailyActivity?.activeMembers && (g.dailyActivity.date === todayStr || g.dailyActivity.date === new Date().toDateString())) {
-            g.dailyActivity.activeMembers.forEach(uid => uniquePosters.add(uid));
-        }
-
-
-
-        // Exclude members who joined today UNLESS they have already posted
-        const memberJoinedAt = g.memberJoinedAt || {};
-        const eligibleMembers = g.members.filter(uid => {
-            if (uniquePosters.has(uid)) return true; // Posted today -> count
-            const joinedTs = memberJoinedAt[uid];
-            if (!joinedTs) return true;
-            const joinedTime = parseTimestampToMillis(joinedTs);
-            return joinedTime < todayTime;
-        });
-
-        if (eligibleMembers.length === 0) return '🌑';
-
-        const eligiblePostersCount = [...uniquePosters].filter(uid => eligibleMembers.includes(uid)).length;
-        const percentage = Math.round((eligiblePostersCount / eligibleMembers.length) * 100);
+        const percentage = calculateUnityPercentage(g);
 
         if (percentage === 100) return '☀️';
         if (percentage >= 66) return '🌕';

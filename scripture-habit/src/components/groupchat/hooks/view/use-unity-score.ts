@@ -4,7 +4,7 @@ import { auth, appCheck } from '../../../../firebase';
 import { getToken } from 'firebase/app-check';
 import { safeStorage } from '../../../../utils/storage';
 import confetti from 'canvas-confetti';
-import { Message, GroupData } from '../../../../types/chat';
+import { Message, GroupData, MembersMap } from '../../../../types/chat';
 import { UserData } from '../../../../types/user';
 
 import { calculateUnityPercentage } from '../../../../utils/unity-utils';
@@ -15,18 +15,19 @@ export const useUnityScore = (
   groupId: string,
   userData: UserData,
   groupData: GroupData | null,
-  messages: Message[]
+  messages: Message[],
+  membersMap: MembersMap
 ): number => {
   const today = useToday();
   const unityPercentage = useMemo<number>(() => {
     // today is used as a dependency to trigger re-calculation at midnight
     if (!groupId || !groupData || groupData.id !== groupId || !today) return 0;
-    const result = calculateUnityPercentage(groupData, messages, new Date());
+    const result = calculateUnityPercentage(groupData, messages, new Date(), membersMap);
     if (groupData.name?.includes('Persistence')) {
       console.log(`[useUnityScore] ${groupData.name}: calculated=${result}%, msgCount=${messages.length}`);
     }
     return result;
-  }, [messages, groupData, groupId, today]);
+  }, [messages, groupData, groupId, today, membersMap]);
 
   // Handle midnight reset for Unity Percentage
   useUnityMidnightReset({
