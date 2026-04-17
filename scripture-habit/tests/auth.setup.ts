@@ -14,112 +14,109 @@ setup('authenticate', async ({ page }) => {
 
   // Helper for login form filling
   const fillLoginForm = async () => {
-    await page.getByTestId('login-email').fill(sharedEmail);
-    await page.getByTestId('login-password').fill(password);
-    await page.getByTestId('login-submit').click({ force: true });
+    console.log('Filling login form...');
+    const emailInput = page.getByTestId('login-email');
+    const passwordInput = page.getByTestId('login-password');
+    const submitBtn = page.getByTestId('login-submit');
+
+    await emailInput.waitFor({ state: 'visible', timeout: 20000 });
+    await emailInput.fill(sharedEmail);
+    await passwordInput.fill(password);
+    
+    // Ensure button is visible and stable before clicking
+    await submitBtn.waitFor({ state: 'visible', timeout: 20000 });
+    await submitBtn.click();
   };
 
   // 2. Try Login First (Robustness for persistent emulators)
-  console.log('Attempting initial login...');
+  console.log('Attempting initial login check...');
   await page.goto('/en/login');
-  await page.waitForSelector('[data-testid="login-email"]', { timeout: 20000 });
-  await fillLoginForm();
-
-  // 3. Handle Login redirect or fallback to Signup
+  
+  // Wait for either login form or already logged in (dashboard)
   try {
-    // Wait for either success (dashboard) or known failure (error message)
     await Promise.race([
-      page.waitForURL(/.*dashboard/, { timeout: 15000 }),
-      page.waitForSelector('[data-testid="login-error"]', { timeout: 10000 })
+      page.waitForSelector('[data-testid="login-email"]', { timeout: 15000 }),
+      page.waitForURL(/.*dashboard/, { timeout: 15000 })
     ]);
-    
-    if (page.url().includes('dashboard')) {
-      console.log('Initial login successful.');
-    } else {
-      throw new Error('Login error message detected');
-    }
-  } catch {
-    console.log('Login failed or timed out, attempting Signup...');
-    // Login failed, let's signup
-    await page.goto('/en/signup');
-    await page.waitForSelector('[data-testid="signup-nickname"]', { timeout: 20000 });
-    await page.getByTestId('signup-nickname').fill('Shared Tester');
-    await page.getByTestId('signup-email').fill(sharedEmail);
-    await page.getByTestId('signup-password').fill(password);
-    await page.getByTestId('signup-submit').click({ force: true });
-    
-    // Wait for either success or error
-    await Promise.race([
-      page.waitForURL(/.*login/, { timeout: 40000 }),
-      page.waitForURL(/.*dashboard/, { timeout: 40000 }),
-      page.waitForSelector('[data-testid="signup-error"]', { timeout: 20000 })
-    ]);
+  } catch (e) {
+    console.log('Neither login form nor dashboard appeared quickly, proceeding anyway...');
+  }
 
-    // Handle email verification for Firebase emulator
-    const currentUrl = page.url();
-    if (currentUrl.includes('signup') || currentUrl.includes('login')) {
-      console.log('Checking for email verification requirement...');
+  if (page.url().includes('dashboard')) {
+    console.log('Already logged in detected.');
+  } else {
+    try {
+      await fillLoginForm();
+      // Wait for success or error
+      await Promise.race([
+        page.waitForURL(/.*dashboard/, { timeout: 15000 }),
+        page.waitForSelector('[data-testid="login-error"]', { timeout: 10000 })
+      ]);
+    } catch (e) {
+      console.log('Initial login attempt failed or timed out, will try Signup flow.');
+    }
+  }
+
+  // 3. Handle Signup if not yet on dashboard
+  if (!page.url().includes('dashboard')) {
+    console.log('Not on dashboard, attempting Signup...');
+    await page.goto('/en/signup');
+    
+    // Check if we were redirected to dashboard (already logged in)
+    if (page.url().includes('dashboard')) {
+      console.log('Redirected to dashboard from signup page.');
+    } else {
+      await page.waitForSelector('[data-testid="signup-nickname"]', { timeout: 20000 });
+      await page.getByTestId('signup-nickname').fill('Shared Tester');
+      await page.getByTestId('signup-email').fill(sharedEmail);
+      await page.getByTestId('signup-password').fill(password);
+      await page.getByTestId('signup-submit').waitFor({ state: 'visible' });
+      await page.getByTestId('signup-submit').click();
       
-      // Check if Firebase emulator auth endpoint is accessible
-      // If disableEmailVerification is set in firebase.json, this should not be needed
+      // Wait for either success (redirect to login or dashboard) or error
+      await Promise.race([
+        page.waitForURL(/.*login/, { timeout: 30000 }),
+        page.waitForURL(/.*dashboard/, { timeout: 30000 }),
+        page.waitForSelector('[data-testid="signup-error"]', { timeout: 15000 })
+      ]);
+
+      const currentUrl = page.url();
+      if (currentUrl.includes('signup')) {
+        const errorVisible = await page.getByTestId('signup-error').isVisible().catch(() => false);
+        if (errorVisible) {
+          console.log('Signup error detected, trying login as fallback...');
+          await page.goto('/en/login');
+          await fillLoginForm();
+        }
+      } else if (currentUrl.includes('login')) {
+        console.log('Signup redirected to login, completing login...');
+        await fillLoginForm();
+      }
+    }
+    
+    // Handle Firebase emulator email verification if stuck
+    if (!page.url().includes('dashboard')) {
+      console.log('Still not on dashboard, attempting verification/login fallback...');
       try {
-        // Quick check if emulator auth is running
         const emulatorCheck = await fetch('http://127.0.0.1:9099/').then(() => true).catch(() => false);
-        
-        if (!emulatorCheck) {
-          console.log('Firebase Auth Emulator not accessible, skipping email verification (disableEmailVerification likely enabled)');
-          // Just proceed with login
-          if (currentUrl.includes('signup')) {
-            await page.goto('/en/login');
-          }
-          await page.waitForSelector('[data-testid="login-email"]', { timeout: 20000 });
-          await fillLoginForm();
-        } else {
-          // Emulator is running, try verification
+        if (emulatorCheck) {
           await page.goto('http://127.0.0.1:9099/emulator/action?mode=verifyEmail&lang=en&oobCode=test');
-          console.log('Email verification attempted via emulator endpoint');
-          await page.waitForTimeout(2000);
-          await page.goto('/en/login');
-          await page.waitForSelector('[data-testid="login-email"]', { timeout: 20000 });
-          await fillLoginForm();
+          await page.waitForTimeout(1000);
         }
-      } catch (error) {
-        console.log('Email verification step failed, proceeding with normal flow:', error);
-        // Ensure we're on login page and try again
-        if (!page.url().includes('login')) {
-          await page.goto('/en/login');
-        }
-        await page.waitForSelector('[data-testid="login-email"]', { timeout: 20000 });
+      } catch (e) {}
+      
+      await page.goto('/en/login');
+      if (!page.url().includes('dashboard')) {
         await fillLoginForm();
       }
     }
 
-    const errorVisible = await page.getByTestId('signup-error').isVisible().catch(() => false);
-
-    if (errorVisible) {
-      const errorText = await page.getByTestId('signup-error').innerText();
-      console.log('Signup error detected:', errorText, '. Retrying final login...');
-      await page.goto('/en/login');
-      await page.waitForSelector('[data-testid="login-email"]', { timeout: 20000 });
-      await fillLoginForm();
-    } else if (currentUrl.includes('login')) {
-      console.log('Signup succeeded, moving to login form...');
-      await page.waitForSelector('[data-testid="login-email"]', { timeout: 20000 });
-      await fillLoginForm();
-    } else if (currentUrl.includes('signup')) {
-      // Still on signup but no error visible? Possible timeout.
-      console.log('Still on signup page, forcing jump to login...');
-      await page.goto('/en/login');
-      await page.waitForSelector('[data-testid="login-email"]', { timeout: 20000 });
-      await fillLoginForm();
-    }
-    
     // Final wait for dashboard
-    console.log('Waiting for dashboard navigation...');
+    console.log('Waiting for final dashboard navigation...');
     await page.waitForURL(/.*dashboard/, { timeout: 60000 });
-    console.log('Authentication setup complete.');
   }
 
-  // 4. Verification and state save
+  console.log('Authentication setup complete. Saving state.');
+  // 4. State save
   await page.context().storageState({ path: authFile });
 });
