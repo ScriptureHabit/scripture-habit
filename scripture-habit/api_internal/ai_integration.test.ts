@@ -2,7 +2,7 @@
 import { describe, it, expect, beforeAll, afterAll, vi, beforeEach } from 'vitest';
 import app from '../api/api.js';
 import { Server } from 'http';
-import { auth } from './lib/firebase-admin.js';
+import { auth, admin } from './lib/firebase-admin.js';
 import axios from 'axios';
 
 vi.mock('axios');
@@ -48,7 +48,7 @@ describe('AI Prompt Construction Regression', () => {
             uid,
             email_verified: true,
             firebase: { sign_in_provider: 'password' }
-        } as any);
+        } as unknown as admin.auth.DecodedIdToken);
     };
 
     it('should construct correct prompt for /api/generate-ponder-questions', async () => {
@@ -67,7 +67,7 @@ describe('AI Prompt Construction Regression', () => {
         });
 
         const axiosCall = vi.mocked(axios.post).mock.calls[0];
-        const prompt = (axiosCall[1] as any).contents[0].parts[0].text;
+        const prompt = (axiosCall[1] as { contents: Array<{ parts: Array<{ text: string }> }> }).contents[0].parts[0].text;
 
         expect(prompt).toContain('John 3:16 1');
         expect(prompt).toContain('Japanese');
@@ -89,7 +89,7 @@ describe('AI Prompt Construction Regression', () => {
         });
 
         const axiosCall = vi.mocked(axios.post).mock.calls[0];
-        const prompt = (axiosCall[1] as any).contents[0].parts[0].text;
+        const prompt = (axiosCall[1] as { contents: Array<{ parts: Array<{ text: string }> }> }).contents[0].parts[0].text;
 
         expect(prompt).toContain('Translate the following study note into Spanish');
         expect(prompt).toContain('Hello world');
@@ -112,7 +112,7 @@ describe('AI Prompt Construction Regression', () => {
         });
 
         const axiosCall = vi.mocked(axios.post).mock.calls[0];
-        const prompt = (axiosCall[1] as any).contents[0].parts[0].text;
+        const prompt = (axiosCall[1] as { contents: Array<{ parts: Array<{ text: string }> }> }).contents[0].parts[0].text;
 
         expect(prompt).toContain('Translate the following group name into Japanese');
         expect(prompt).toContain('Output ONLY the translated plain text');
@@ -135,7 +135,7 @@ describe('AI Prompt Construction Regression', () => {
         });
 
         const axiosCall = vi.mocked(axios.post).mock.calls[0];
-        const prompt = (axiosCall[1] as any).contents[0].parts[0].text;
+        const prompt = (axiosCall[1] as { contents: Array<{ parts: Array<{ text: string }> }> }).contents[0].parts[0].text;
 
         expect(prompt).toContain('Translate these message items into Portuguese');
         expect(prompt).toContain('Note 1');
@@ -169,7 +169,7 @@ describe('AI Prompt Construction Regression', () => {
         });
 
         const axiosCall = vi.mocked(axios.post).mock.calls[0];
-        const prompt = (axiosCall[1] as any).contents[0].parts[0].text;
+        const prompt = (axiosCall[1] as { contents: Array<{ parts: Array<{ text: string }> }> }).contents[0].parts[0].text;
 
         expect(prompt).toContain('Task: Write a warm personal letter');
         expect(prompt).toContain('I learned about faith today.');

@@ -2,7 +2,7 @@
 import { describe, it, expect, beforeAll, afterAll, vi, beforeEach } from 'vitest';
 import app from '../api/api.js';
 import { Server } from 'http';
-import { auth, db } from './lib/firebase-admin.js';
+import { auth, db, admin } from './lib/firebase-admin.js';
 
 describe('Groups API Error Handling & Validation', () => {
     let server: Server;
@@ -39,7 +39,7 @@ describe('Groups API Error Handling & Validation', () => {
             uid,
             email_verified: emailVerified,
             firebase: { sign_in_provider: 'password' }
-        } as any);
+        } as unknown as admin.auth.DecodedIdToken);
     };
 
     describe('POST /api/join-group', () => {

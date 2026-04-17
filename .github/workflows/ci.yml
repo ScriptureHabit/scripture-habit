@@ -44,7 +44,7 @@ jobs:
         run: npm run lint || true # Lintを実行しますが、一時的に失敗してもCIを進めるようにします
 
       - name: Run Tests (Vitest)
-        run: npx vitest run # Vitestを1度だけ実行（監視モードをオフ）してテストします
+        run: npm test
 
       - name: Build Project
         run: npm run build # 本番用のビルドが正常に通るかも確認します

@@ -32,7 +32,7 @@ describe('MembershipUtils Unit Tests', () => {
         
         // Preview cleanup
         expect(updates.memberPreviews).toHaveLength(2);
-        expect((updates.memberPreviews as any[]).find(p => p.uid === 'u3')).toBeUndefined();
+        expect((updates.memberPreviews as Array<{ uid: string }>).find(p => p.uid === 'u3')).toBeUndefined();
 
         // Map deletions
         expect(updates['memberJoinedAt.u3']).toBeDefined();
@@ -44,7 +44,7 @@ describe('MembershipUtils Unit Tests', () => {
         
         expect(updates.membersCount).toBe(1);
         expect(updates.memberPreviews).toHaveLength(1);
-        expect((updates.memberPreviews as any[])[0].uid).toBe('u1');
+        expect((updates.memberPreviews as Array<{ uid: string }>)[0].uid).toBe('u1');
         
         expect(updates['memberJoinedAt.u2']).toBeDefined();
         expect(updates['memberJoinedAt.u3']).toBeDefined();

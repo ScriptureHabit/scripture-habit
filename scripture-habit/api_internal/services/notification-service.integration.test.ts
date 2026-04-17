@@ -1,6 +1,6 @@
 // @vitest-environment node
 import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
-import { db } from '../lib/firebase-admin.js';
+import { db, admin } from '../lib/firebase-admin.js';
 import * as NotificationsLib from '../lib/notifications.js';
 
 describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('NotificationService Integration', () => {
@@ -39,7 +39,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('NotificationService Integ
             responses: [
                 { success: true },
                 { success: true },
-                { success: false, error: { code: 'messaging/registration-token-not-registered' } as any }
+                { success: false, error: { code: 'messaging/registration-token-not-registered' } as unknown as admin.FirebaseError }
             ]
         });
 
@@ -50,7 +50,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('NotificationService Integ
 
         // Verify send was called
         expect(sendSpy).toHaveBeenCalled();
-        const calledTokens = (sendSpy.mock.calls[0][0] as any).tokens;
+        const calledTokens = (sendSpy.mock.calls[0][0] as { tokens: string[] }).tokens;
         expect(calledTokens).toContain('token_public_1');
         expect(calledTokens).toContain('token_private_1');
         expect(calledTokens).toContain('token_dead');

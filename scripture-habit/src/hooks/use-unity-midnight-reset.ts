@@ -60,7 +60,7 @@ export const useUnityMidnightReset = ({
                     try {
                         const tokenResponse = await getToken(appCheck, false);
                         appCheckToken = tokenResponse.token;
-                    } catch (e) {
+                    } catch {
                         // App Check might fail in development, continue without it
                         console.log('[UnityReset] App Check token not available');
                     }
