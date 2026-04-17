@@ -24,51 +24,57 @@ export const parseTimestampToMillis = (ts?: FirebaseTimestamp | null): number =>
 
 export const formatDateInTimeZone = (date: Date, timeZone: string): string => {
   try {
-    // We use Intl.DateTimeFormat with formatToParts to guarantee a consistent YYYY-MM-DD structure
-    // regardless of the environment's default locale behavior for 'sv-SE'.
+    // Explicitly use en-GB as it defaults to numeric day/month
     const formatter = new Intl.DateTimeFormat('en-GB', {
       year: 'numeric',
       month: '2-digit',
       day: '2-digit',
-      timeZone
+      timeZone: timeZone
     });
 
     const parts = formatter.formatToParts(date);
-    const y = parts.find(p => p.type === 'year')?.value;
-    const m = parts.find(p => p.type === 'month')?.value;
-    const d = parts.find(p => p.type === 'day')?.value;
+    const year = parts.find(p => p.type === 'year')?.value;
+    const month = parts.find(p => p.type === 'month')?.value;
+    const day = parts.find(p => p.type === 'day')?.value;
 
-    if (y && m && d) {
-      return `${y}-${m}-${d}`;
+    if (!year || !month || !day) {
+      return date.toISOString().split('T')[0];
     }
 
-    // Fallback if parts are missing
-    return date.toLocaleDateString('sv-SE', { timeZone }).replace(/\//g, '-');
+    return `${year}-${month}-${day}`;
   } catch (e) {
-    console.warn(`[timeUtils] formatDateInTimeZone failed for ${timeZone}, falling back to UTC ISO`, e);
     return date.toISOString().split('T')[0];
   }
 };
 
 /**
- * Normalizes a date string to a purely numeric representation (YYYYMMDD)
- * for safe lexicographical comparison. Handles strings and potentially 
- * Timestamp-like objects by converting to string first.
+ * Normalizes a date-like input into a strictly numeric YYYYMMDD string.
  */
 export const normalizeDateString = (dateInput: string | Date | { toDate: () => Date } | null | undefined): string => {
   if (!dateInput) return '';
-  
-  // Handle Firestore Timestamp or Date objects if passed directly
-  if (dateInput && typeof dateInput === 'object') {
-    if ('toDate' in dateInput && typeof dateInput.toDate === 'function') {
-      // It's a Firestore Timestamp
-      return normalizeDateString(formatDateInTimeZone(dateInput.toDate(), 'UTC'));
-    }
+
+  try {
+    // Handle Date objects
     if (dateInput instanceof Date) {
       return normalizeDateString(formatDateInTimeZone(dateInput, 'UTC'));
     }
-  }
 
-  const str = String(dateInput);
-  return str.replace(/\D/g, '');
+    // Handle Firestore Timestamps
+    if (typeof dateInput === 'object' && 'toDate' in dateInput) {
+      return normalizeDateString(dateInput.toDate());
+    }
+
+    // Handle strings (ISO or formatted)
+    const str = String(dateInput);
+    const digits = str.replace(/\D/g, '');
+    
+    // If it's a long timestamp string (e.g. ISO digits), just take the date part
+    if (digits.length >= 8) {
+      return digits.substring(0, 8);
+    }
+    
+    return digits;
+  } catch (e) {
+    return '';
+  }
 };

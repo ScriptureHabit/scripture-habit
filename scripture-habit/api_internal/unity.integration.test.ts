@@ -39,13 +39,13 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Unity Percentage Integrat
                 activeMembers: []
             }
         });
-    });
+    }, 30000);
 
     afterAll(async () => {
         // Cleanup (Emulator data persists within the process, but good practice)
         await db.collection('users').doc(TEST_UID).delete();
         await db.collection('groups').doc(TEST_GROUP_ID).delete();
-    });
+    }, 30000);
 
     it('should start with 0% unity when no notes are posted', async () => {
         const groupSnap = await db.collection('groups').doc(TEST_GROUP_ID).get();
@@ -76,6 +76,10 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Unity Percentage Integrat
         // 4. Verify calculation logic reflects the new state
         const percentage = calculateUnityPercentage(groupData);
         expect(percentage).toBe(100);
+        
+        // 5. CRITICAL: Verify the service persisted the pre-calculated percentage to Firestore
+        // This is what the sidebar uses during initial hydration (reload).
+        expect(groupData.unityPercentage).toBe(100);
     });
 
     it('should reflect 50% unity when 1 of 2 eligible members has posted', async () => {

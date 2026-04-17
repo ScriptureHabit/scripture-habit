@@ -32,24 +32,17 @@ export const enrichGroupUnity = (
     activityDateStr = normalizeDateString(dateStr);
   }
   
-  // Resilient check: only mark as stale if the activity date is strictly OLDER than today.
-  // This prevents premature 0% resets due to minor clock drift or timezone misalignments.
   const isStale = activityDateStr !== '' && activityDateStr < normalizedToday;
-  
-  // 1. Live local calculation (based on activeMembers in dailyActivity)
-  const calculated = calculateUnityPercentage(group, [], referenceDate);
-  
-  // 2. Persisted Firestore value (last known truth from backend)
-  // We only use this if it's NOT stale (i.e. it belongs to today)
-  const firestoreValue = isStale ? 0 : (group.unityPercentage ?? 0);
 
-  // The final display percentage is the highest of:
-  // - The local override (if a chat session is active)
-  // - The live calculation (if metadata is current)
-  // - The persisted Firestore value (to bridge data hydration gaps)
+  const calculated = calculateUnityPercentage(group, [], referenceDate);
+  const firestoreValue = isStale ? 0 : (group.unityPercentage ?? 0);
   const finalPercentage = override !== undefined 
     ? override 
     : (isStale ? 0 : Math.max(calculated, firestoreValue));
+
+  if (group.name?.includes('Persistence')) {
+    console.log(`[enrichGroupUnity] ${group.name}: override=${override}, calculated=${calculated}, firestoreValue=${firestoreValue}, final=${finalPercentage}%`);
+  }
 
   return {
     ...group,

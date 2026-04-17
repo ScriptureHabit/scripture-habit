@@ -173,6 +173,7 @@ const Dashboard: FC = () => {
 
   const handleUnityUpdate = (percentage: number) => {
     if (activeGroupId && unityOverrides[activeGroupId] !== percentage) {
+      console.log(`[Dashboard] handleUnityUpdate: group=${activeGroupId}, percentage=${percentage}, prev=${unityOverrides[activeGroupId]}`);
       setUnityOverrides(prev => ({ ...prev, [activeGroupId]: percentage }));
     }
   };

@@ -66,7 +66,9 @@ export const getUnityParticipation = (
       if (isNaN(msgTime)) return;
 
       const msgDateStr = formatDateInTimeZone(new Date(msgTime), groupTimeZone);
-      if (normalizeDateString(msgDateStr) === normalizedToday) {
+      const normMsgDate = normalizeDateString(msgDateStr);
+      
+      if (normMsgDate === normalizedToday) {
         uniquePosters.add(msg.senderId!);
       }
     });
@@ -79,37 +81,32 @@ export const getUnityParticipation = (
   const uniqueMemberIds = Array.from(new Set(group.members));
   
   const eligibleMembers = uniqueMemberIds.filter(uid => {
-    if (uniquePosters.has(uid)) return true; // Posted today -> count
-    
+    const isPoster = uniquePosters.has(uid);
+    if (isPoster) return true; // Posted today -> count
+
     const joinedTs = memberJoinedAt[uid];
     if (!joinedTs) return true;
-    
-    const joinedTime = parseTimestampToMillis(joinedTs);
-    if (isNaN(joinedTime)) return true;
 
+    const joinedTime = parseTimestampToMillis(joinedTs);
     const joinedDateStr = formatDateInTimeZone(new Date(joinedTime), groupTimeZone);
     const normalizedJoined = normalizeDateString(joinedDateStr);
+
+    // If joined < today (lexicographical), they are eligible for the daily requirement
+    const isEligible = normalizedJoined < normalizedToday;
     
-    // If they joined before today, they are eligible.
-    return normalizedJoined < normalizedToday;
+    return isEligible;
   });
 
+  const postedMembers = eligibleMembers.filter(uid => uniquePosters.has(uid));
+  const notPostedMembers = eligibleMembers.filter(uid => !uniquePosters.has(uid));
+
+  // TRUTH: If no one is required to post (e.g. all new joins), unity is 100%
   if (eligibleMembers.length === 0) {
-    return { eligibleMembers: [], postedMembers: [], notPostedMembers: [], percentage: 0 };
+    return { eligibleMembers: [], postedMembers: [], notPostedMembers: [], percentage: 100 };
   }
 
-  const postedMembers = Array.from(uniquePosters).filter(uid => eligibleMembers.includes(uid));
-  const notPostedMembers = eligibleMembers.filter(uid => !postedMembers.includes(uid));
-  
-  const score = Math.round((postedMembers.length / eligibleMembers.length) * 100);
-  const percentage = Math.min(100, Math.max(0, score));
-
-  return {
-    eligibleMembers,
-    postedMembers,
-    notPostedMembers,
-    percentage
-  };
+  const percentage = Math.round((postedMembers.length / eligibleMembers.length) * 100);
+  return { eligibleMembers, postedMembers, notPostedMembers, percentage };
 };
 
 /**

@@ -28,6 +28,11 @@ const SidebarGroupItem: React.FC<SidebarGroupItemProps> = ({ group, language, is
   const [translatedName, setTranslatedName] = useState('');
   const translationAttemptedRef = useRef(false);
 
+  // Debug log for Webkit unity percentage issue
+  if (group.name?.includes('Persistence')) {
+    console.log(`[SidebarGroupItem] Rendering ${group.name}: unity=${getUnityPercentage(group)}%, id=${group.id}`);
+  }
+
   useEffect(() => {
     // 1. Check Firestore Data (Real-time sync makes this fast)
     if (group.translations && group.translations[language] && group.translations[language].name) {

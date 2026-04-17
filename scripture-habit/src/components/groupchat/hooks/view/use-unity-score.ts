@@ -21,7 +21,11 @@ export const useUnityScore = (
   const unityPercentage = useMemo<number>(() => {
     // today is used as a dependency to trigger re-calculation at midnight
     if (!groupId || !groupData || groupData.id !== groupId || !today) return 0;
-    return calculateUnityPercentage(groupData, messages, new Date());
+    const result = calculateUnityPercentage(groupData, messages, new Date());
+    if (groupData.name?.includes('Persistence')) {
+      console.log(`[useUnityScore] ${groupData.name}: calculated=${result}%, msgCount=${messages.length}`);
+    }
+    return result;
   }, [messages, groupData, groupId, today]);
 
   // Handle midnight reset for Unity Percentage
