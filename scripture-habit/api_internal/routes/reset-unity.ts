@@ -2,6 +2,8 @@ import express, { Response } from 'express';
 import { db } from '../lib/firebase-admin.js';
 import { authenticate, AuthenticatedRequest } from '../lib/middleware.js';
 
+import { formatDateInTimeZone, normalizeDateString } from '../../src/utils/time-utils.js';
+
 const router = express.Router();
 
 /**
@@ -38,15 +40,16 @@ router.post('/reset-unity-if-midnight', authenticate, async (req: AuthenticatedR
         const groupTimeZone = groupData.timeZone || 'UTC';
         const now = new Date();
         
-        // Calculate "today" in the group's timezone
-        const todayInGroupTZ = new Date(now.toLocaleString('en-US', { timeZone: groupTimeZone }));
-        const todayStr = todayInGroupTZ.toISOString().split('T')[0];
+        // Calculate "today" in the group's timezone robustly
+        const todayStr = formatDateInTimeZone(now, groupTimeZone);
+        const normalizedToday = normalizeDateString(todayStr);
         
         // Check if dailyActivity is from a different day (or empty/needs initialization)
         const activityDate = groupData.dailyActivity?.date;
+        const normalizedActivityDate = activityDate ? normalizeDateString(activityDate) : null;
         
         // If already today, no reset needed
-        if (activityDate && activityDate === todayStr) {
+        if (normalizedActivityDate === normalizedToday) {
             return res.json({ 
                 reset: false, 
                 reason: 'Already reset for today',

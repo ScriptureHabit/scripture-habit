@@ -38,7 +38,7 @@ setup('authenticate', async ({ page }) => {
       page.waitForSelector('[data-testid="login-email"]', { timeout: 15000 }),
       page.waitForURL(/.*dashboard/, { timeout: 15000 })
     ]);
-  } catch (e) {
+  } catch {
     console.log('Neither login form nor dashboard appeared quickly, proceeding anyway...');
   }
 
@@ -52,7 +52,7 @@ setup('authenticate', async ({ page }) => {
         page.waitForURL(/.*dashboard/, { timeout: 15000 }),
         page.waitForSelector('[data-testid="login-error"]', { timeout: 10000 })
       ]);
-    } catch (e) {
+    } catch {
       console.log('Initial login attempt failed or timed out, will try Signup flow.');
     }
   }
@@ -103,7 +103,9 @@ setup('authenticate', async ({ page }) => {
           await page.goto('http://127.0.0.1:9099/emulator/action?mode=verifyEmail&lang=en&oobCode=test');
           await page.waitForTimeout(1000);
         }
-      } catch (e) {}
+      } catch {
+        // Emulator check is best-effort
+      }
       
       await page.goto('/en/login');
       if (!page.url().includes('dashboard')) {

@@ -96,7 +96,7 @@ const GroupChatProvider: FC<GroupChatProviderProps> = ({
 
   const { 
     unityModalData, handleShowUnityModal 
-  } = useUnityDetails(groupData, messages, userData);
+  } = useUnityDetails(groupData, messages);
 
   const {
     handleReply, handleMessageClick, closeContextMenu, handleEditMessage, handleDeleteMessageClick

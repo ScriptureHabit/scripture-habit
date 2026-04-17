@@ -1,6 +1,7 @@
 import express, { Response } from 'express';
 import { admin, db } from '../lib/firebase-admin.js';
 import { authenticate, AuthenticatedRequest } from '../lib/middleware.js';
+import { formatDateInTimeZone } from '../../src/utils/time-utils.js';
 
 const router = express.Router();
 
@@ -48,11 +49,11 @@ router.post('/test/setup-test-group', authenticate, async (req: AuthenticatedReq
         const groupRef = db.collection('groups').doc();
         const groupId = groupRef.id;
 
-        // Calculate yesterday's date in the specified timezone
+        // Calculate yesterday's date in the specified timezone robustly
         const now = new Date();
-        const yesterdayInTZ = new Date(now.toLocaleString('en-US', { timeZone: timeZone }));
-        yesterdayInTZ.setDate(yesterdayInTZ.getDate() - 1);
-        const yesterdayStr = yesterdayInTZ.toISOString().split('T')[0];
+        const yesterday = new Date(now);
+        yesterday.setDate(yesterday.getDate() - 1);
+        const yesterdayStr = formatDateInTimeZone(yesterday, timeZone);
         
         // dailyActivity: empty for testing, or yesterday if setYesterdayDate is true
         const dailyActivityDate = setYesterdayDate ? yesterdayStr : '';

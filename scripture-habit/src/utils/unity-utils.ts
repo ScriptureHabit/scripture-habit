@@ -10,16 +10,31 @@ import { parseTimestampToMillis, parseTimestampToDate, formatDateInTimeZone, nor
  * @param messages Optional messages list for real-time augmentation
  * @returns Unity percentage (0-100)
  */
-export const calculateUnityPercentage = (
+export interface UnityParticipation {
+  eligibleMembers: string[];
+  postedMembers: string[];
+  notPostedMembers: string[];
+  percentage: number;
+}
+
+/**
+ * Calculates current Unity participation details for a group.
+ * Can be used in both Sidebar (metadata-only) and Group Chat (real-time messages).
+ * 
+ * @param group Group data (must include members and dailyActivity)
+ * @param messages Optional messages list for real-time augmentation
+ * @param referenceDate Optional reference date (defaults to now)
+ * @returns Unity participation details
+ */
+export const getUnityParticipation = (
   group: Group | null,
   messages: Message[] = [],
   referenceDate: Date = new Date()
-): number => {
-  if (!group || !group.members || group.members.length === 0) return 0;
+): UnityParticipation => {
+  if (!group || !group.members || group.members.length === 0) {
+    return { eligibleMembers: [], postedMembers: [], notPostedMembers: [], percentage: 0 };
+  }
 
-  // Standardize on Group TimeZone. 
-  // If missing, we MUST use a stable fallback (UTC) to ensure server and all clients agree.
-  // Using userTimeZone as fallback is what caused the discrepancy.
   const groupTimeZone = group.timeZone || 'UTC';
   const now = referenceDate;
   
@@ -72,10 +87,31 @@ export const calculateUnityPercentage = (
     return normalizeDateString(joinedDateStr) < normalizedToday;
   });
 
-  if (eligibleMembers.length === 0) return 0;
+  if (eligibleMembers.length === 0) {
+    return { eligibleMembers: [], postedMembers: [], notPostedMembers: [], percentage: 0 };
+  }
 
-  const eligiblePostersCount = [...uniquePosters].filter(uid => eligibleMembers.includes(uid)).length;
-  const score = Math.round((eligiblePostersCount / eligibleMembers.length) * 100);
+  const postedMembers = [...uniquePosters].filter(uid => eligibleMembers.includes(uid));
+  const notPostedMembers = eligibleMembers.filter(uid => !postedMembers.includes(uid));
   
-  return Math.min(100, Math.max(0, score));
+  const score = Math.round((postedMembers.length / eligibleMembers.length) * 100);
+  const percentage = Math.min(100, Math.max(0, score));
+
+  return {
+    eligibleMembers,
+    postedMembers,
+    notPostedMembers,
+    percentage
+  };
+};
+
+/**
+ * Legacy wrapper for getUnityParticipation
+ */
+export const calculateUnityPercentage = (
+  group: Group | null,
+  messages: Message[] = [],
+  referenceDate: Date = new Date()
+): number => {
+  return getUnityParticipation(group, messages, referenceDate).percentage;
 };

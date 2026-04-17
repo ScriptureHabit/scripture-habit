@@ -1,124 +1,79 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { calculateUnityPercentage } from './unity-utils';
-import { Group } from '../types/chat';
+import { describe, it, expect } from 'vitest';
+import { getUnityParticipation } from './unity-utils';
+import { Group, Message } from '../types/chat';
 
-describe('calculateUnityPercentage Timezone Discrepancy', () => {
+describe('Unity Utils - getUnityParticipation', () => {
   const mockGroup: Group = {
-    id: 'group1',
+    id: 'test-group',
     name: 'Test Group',
-    members: ['user1', 'user2'],
-    dailyActivity: {
-      date: '2023-10-28', // Set by a poster in Tokyo (UTC+9)
-      activeMembers: ['user1']
-    },
+    members: ['user1', 'user2', 'user3'],
     memberJoinedAt: {
-      'user1': { seconds: 1000000000, nanoseconds: 0 },
-      'user2': { seconds: 1000000000, nanoseconds: 0 }
+      'user1': '2024-04-10T00:00:00Z', // Old member
+      'user2': '2024-04-10T00:00:00Z', // Old member
+      'user3': '2024-04-18T12:00:00Z', // Joined today (reference date below)
+    },
+    timeZone: 'Asia/Tokyo',
+    dailyActivity: {
+      date: '2024-04-18',
+      activeMembers: ['user1']
     }
   } as unknown as Group;
 
-  beforeEach(() => {
-    vi.useFakeTimers();
+  // Reference date: 2024-04-18 15:00 Japan Time
+  const referenceDate = new Date('2024-04-18T06:00:00Z'); 
+
+  it('should correctly identify eligible members (excluding those who joined today and haven\'t posted)', () => {
+    const result = getUnityParticipation(mockGroup, [], referenceDate);
+    
+    // user1, user2 are eligible. user3 joined today so is NOT eligible unless they post.
+    expect(result.eligibleMembers).toContain('user1');
+    expect(result.eligibleMembers).toContain('user2');
+    expect(result.eligibleMembers).not.toContain('user3');
+    expect(result.eligibleMembers.length).toBe(2);
   });
 
-  afterEach(() => {
-    vi.useRealTimers();
-  });
-
-  it('calculates 50% for London viewer when stable fallback is used', () => {
-    // Current time: 2023-10-28 05:00 Tokyo time -> WHICH IS 2023-10-27 20:00 UTC
-    vi.setSystemTime(new Date('2023-10-28T05:00:00+09:00'));
-
-    // Poster A was in Tokyo and it was 2023-10-28 for them.
-    // BUT! Our new logic says: If group has no timezone, use UTC.
-    // In UTC, it's currently 2023-10-27 20:00 -> Date: 2023-10-27.
-    
-    // So if the summary was set to "2023-10-28", it means the POSTER also should have used UTC 
-    // (which would have result in 2023-10-27).
-    
-    // Let's test absolute consistency:
-    const groupWithNoTZ: Group = { ...mockGroup, timeZone: undefined, dailyActivity: { date: '2023-10-27', activeMembers: ['user1'] } } as unknown as Group;
-    
-    // Both Tokyo and London viewers should see 50% because they both fallback to UTC (2023-10-27).
-    expect(calculateUnityPercentage(groupWithNoTZ)).toBe(50);
-    expect(calculateUnityPercentage(groupWithNoTZ)).toBe(50);
-  });
-
-  it('calculates 0% if the summary actually belongs to a different UTC day', () => {
-    vi.setSystemTime(new Date('2023-10-28T05:00:00+09:00')); // UTC is 2023-10-27
-    const groupWithFutureDate: Group = { ...mockGroup, timeZone: undefined, dailyActivity: { date: '2023-10-28', activeMembers: ['user1'] } } as unknown as Group;
-    
-    expect(calculateUnityPercentage(groupWithFutureDate)).toBe(0);
-  });
-
-  it('respects the referenceDate parameter', () => {
-    const group: Group = {
+  it('should include new members in eligibility if they HAVE posted', () => {
+    const groupWithNewPoster = {
       ...mockGroup,
-      timeZone: 'UTC',
-      dailyActivity: { date: '2023-11-01', activeMembers: ['user1'] }
-    } as unknown as Group;
-
-    const date1 = new Date('2023-11-01T12:00:00Z');
-    const date2 = new Date('2023-11-02T12:00:00Z');
-
-    expect(calculateUnityPercentage(group, [], date1)).toBe(50);
-    expect(calculateUnityPercentage(group, [], date2)).toBe(0);
+      dailyActivity: {
+        date: '2024-04-18',
+        activeMembers: ['user1', 'user3']
+      }
+    };
+    const result = getUnityParticipation(groupWithNewPoster as unknown as Group, [], referenceDate);
+    
+    expect(result.eligibleMembers).toContain('user3');
+    expect(result.eligibleMembers.length).toBe(3);
+    expect(result.percentage).toBe(67); // 2/3 = 66.6 -> 67
   });
 
-  describe('Member Exclusion based on joinedAt', () => {
-    it('excludes members who joined after the reference date', () => {
-      const group: Group = {
-        id: 'g1',
-        members: ['oldUser', 'newUser'],
-        memberJoinedAt: {
-          'oldUser': { seconds: 1698451200, nanoseconds: 0 }, // 2023-10-28 00:00:00 UTC
-          'newUser': { seconds: 1698537600, nanoseconds: 0 }, // 2023-10-29 00:00:00 UTC
-        },
-        dailyActivity: {
-          date: '2023-10-28',
-          activeMembers: ['oldUser']
-        }
-      } as unknown as Group;
-
-      // referenceDate is 2023-10-28
-      const referenceDate = new Date('2023-10-28T12:00:00Z');
-      
-      // newUser joined on 10-29, so on 10-28 they shouldn't be counted in denominator.
-      // Denominator: 1 (oldUser), Active: 1 (oldUser) -> 100%
-      expect(calculateUnityPercentage(group, [], referenceDate)).toBe(100);
-
-      // On 10-29, denominator should be 2.
-      const referenceDateNext = new Date('2023-10-29T12:00:00Z');
-      // If dailyActivity is still 10-28, it counts as 0% for 10-29.
-      expect(calculateUnityPercentage(group, [], referenceDateNext)).toBe(0);
-    });
-
-    it('correctly handles members who joined ON the reference date (should be included)', () => {
-      const group: Group = {
-        id: 'g1',
-        members: ['user1'],
-        memberJoinedAt: {
-          'user1': { seconds: 1698537600, nanoseconds: 0 }, // 2023-10-29 00:00:00 UTC
-        },
-        dailyActivity: {
-          date: '2023-10-29',
-          activeMembers: ['user1']
-        }
-      } as unknown as Group;
-
-      const referenceDate = new Date('2023-10-29T23:59:59Z');
-      expect(calculateUnityPercentage(group, [], referenceDate)).toBe(100);
-    });
+  it('should handle real-time messages correctly', () => {
+    const messages: Message[] = [
+      { senderId: 'user2', isNote: true, createdAt: '2024-04-18T00:05:00Z' } as unknown as Message // Posted today in Japan
+    ];
+    
+    const result = getUnityParticipation(mockGroup, messages, referenceDate);
+    
+    expect(result.postedMembers).toContain('user1'); // From Source A
+    expect(result.postedMembers).toContain('user2'); // From Source B
+    expect(result.percentage).toBe(100); // 2/2 = 100%
   });
 
-  it('handles empty groups or groups with no members gracefully', () => {
-    const emptyGroup: Group = {
-      id: 'empty',
-      members: [],
-      memberJoinedAt: {},
-      dailyActivity: { date: '2023-10-28', activeMembers: [] }
-    } as unknown as Group;
-
-    expect(calculateUnityPercentage(emptyGroup)).toBe(0);
+  it('should return 0% if no one is eligible', () => {
+    const emptyGroup = { ...mockGroup, members: [] };
+    const result = getUnityParticipation(emptyGroup as unknown as Group, [], referenceDate);
+    expect(result.percentage).toBe(0);
+  });
+  
+  it('should handle date normalization issues (hidden characters)', () => {
+    const groupWithWeirdDate = {
+      ...mockGroup,
+      dailyActivity: {
+        date: '2024-04-18\n', // Hidden newline
+        activeMembers: ['user1']
+      }
+    };
+    const result = getUnityParticipation(groupWithWeirdDate as unknown as Group, [], referenceDate);
+    expect(result.postedMembers).toContain('user1'); // Should still match due to normalization
   });
 });

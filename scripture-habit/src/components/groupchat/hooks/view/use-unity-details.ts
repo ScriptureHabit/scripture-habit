@@ -2,14 +2,13 @@ import { useState } from 'react';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../../../../firebase';
 import { GroupData, Message, UserProfileBrief } from '../../../../types/chat';
-import { UserData } from '../../../../types/user';
-import { parseTimestampToMillis } from '../../../../utils/time-utils';
 import { useChatStore } from '../../../../store/use-chat-store';
+
+import { getUnityParticipation } from '../../../../utils/unity-utils';
 
 export const useUnityDetails = (
   groupData: GroupData | null,
-  messages: Message[],
-  userData: UserData | null
+  messages: Message[]
 ) => {
   const { setShowUnityModal } = useChatStore();
   const [unityModalData, setUnityModalData] = useState<{ posted: { id: string; nickname: string }[]; notPosted: { id: string; nickname: string }[] }>({ posted: [], notPosted: [] });
@@ -21,27 +20,9 @@ export const useUnityDetails = (
     setShowUnityModal(true);
     setDetailsLoading(true);
 
-    const effectiveTimeZone = groupData?.timeZone || userData?.timeZone || 'UTC';
-    const todayStr = new Date().toLocaleDateString('sv-SE', { timeZone: effectiveTimeZone });
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const todayTime = today.getTime();
-    const eligibleMemberIds = groupData.members;
-
-    const uniquePosters = new Set<string>();
-    if (groupData.dailyActivity?.activeMembers && (groupData.dailyActivity.date === todayStr || groupData.dailyActivity.date === new Date().toDateString())) {
-      groupData.dailyActivity.activeMembers.forEach(uid => uniquePosters.add(uid));
-    }
-
-    messages.forEach(msg => {
-      const msgTime = parseTimestampToMillis(msg.createdAt);
-      if (msgTime >= todayTime && msg.senderId !== 'system' && !msg.isSystemMessage && msg.isNote) {
-        uniquePosters.add(msg.senderId!);
-      }
-    });
-
-    const postedUids = Array.from(uniquePosters).filter(uid => eligibleMemberIds.includes(uid));
-    const notPostedUids = eligibleMemberIds.filter(uid => !postedUids.includes(uid));
+    const { postedMembers, notPostedMembers } = getUnityParticipation(groupData as unknown as GroupData, messages);
+    const postedUids = postedMembers;
+    const notPostedUids = notPostedMembers;
 
     try {
       const allUids = Array.from(new Set([...postedUids, ...notPostedUids]));

@@ -6,6 +6,8 @@ import { t } from '../lib/i18n.js';
 import { StreakEngine } from '../lib/streak-engine.js';
 import { NotificationService } from './notification-service.js';
 import { formatDateInTimeZone, normalizeDateString } from '../../src/utils/time-utils.js';
+import { calculateUnityPercentage } from '../../src/utils/unity-utils.js';
+import { Group } from '../../src/types/chat.js';
 
 export interface PostNoteInput {
     uid: string;
@@ -172,32 +174,15 @@ export class NoteService {
                     }
 
                     // Calculate and update unityPercentage for real-time sidebar sync
-                    const currentActiveMembers = normalizeDateString(gData.dailyActivity?.date || '') !== normalizeDateString(groupToday)
-                        ? [uid]
-                        : [...(gData.dailyActivity?.activeMembers || []).filter(m => m !== uid), uid];
+                    // We simulate the updated group state to get the correct percentage
+                    const simulatedGroup = {
+                        ...gData,
+                        dailyActivity: normalizeDateString(gData.dailyActivity?.date || '') !== normalizeDateString(groupToday)
+                            ? { date: groupToday, activeMembers: [uid] }
+                            : { ...gData.dailyActivity!, activeMembers: Array.from(new Set([...(gData.dailyActivity?.activeMembers || []), uid])) }
+                    };
                     
-                    const eligibleMembers = (gData.members || []).filter(memberUid => {
-                        const memberJoinedAt = gData.memberJoinedAt?.[memberUid];
-                        if (!memberJoinedAt) return true;
-                        // Handle Firestore timestamp types safely
-                        let joinedTime: Date;
-                        if (typeof memberJoinedAt === 'object' && 'toDate' in memberJoinedAt && typeof memberJoinedAt.toDate === 'function') {
-                            joinedTime = memberJoinedAt.toDate();
-                        } else if (typeof memberJoinedAt === 'object' && 'seconds' in memberJoinedAt) {
-                            joinedTime = new Date((memberJoinedAt as { seconds: number }).seconds * 1000);
-                        } else {
-                            joinedTime = new Date(memberJoinedAt as string | number | Date);
-                        }
-                        const joinedDateStr = formatDateInTimeZone(joinedTime, gData.timeZone || 'UTC');
-                        return normalizeDateString(joinedDateStr) < normalizeDateString(groupToday);
-                    });
-                    
-                    const postingMembers = currentActiveMembers.filter(m => eligibleMembers.includes(m));
-                    const unityPercentage = eligibleMembers.length > 0
-                        ? Math.round((postingMembers.length / eligibleMembers.length) * 100)
-                        : 0;
-                    
-                    groupUpdate.unityPercentage = Math.min(100, Math.max(0, unityPercentage));
+                    groupUpdate.unityPercentage = calculateUnityPercentage(simulatedGroup as unknown as Group, [], now);
                     
                     transaction.update(gDoc.ref, groupUpdate);
                     
@@ -430,31 +415,16 @@ export class NoteService {
                     // Recalculate unityPercentage after note deletion
                     const gDataForCalc = gSnap.data()!;
                     const now = new Date();
-                    const groupTimeZone = gDataForCalc.timeZone || 'UTC';
-                    const groupToday = formatDateInTimeZone(now, groupTimeZone);
                     
-                    const eligibleMembers = (gDataForCalc.members || []).filter((memberUid: string) => {
-                        const memberJoinedAt = gDataForCalc.memberJoinedAt?.[memberUid];
-                        if (!memberJoinedAt) return true;
-                        // Handle Firestore timestamp types safely
-                        let joinedTime: Date;
-                        if (typeof memberJoinedAt === 'object' && 'toDate' in memberJoinedAt && typeof memberJoinedAt.toDate === 'function') {
-                            joinedTime = memberJoinedAt.toDate();
-                        } else if (typeof memberJoinedAt === 'object' && 'seconds' in memberJoinedAt) {
-                            joinedTime = new Date((memberJoinedAt as { seconds: number }).seconds * 1000);
-                        } else {
-                            joinedTime = new Date(memberJoinedAt as string | number | Date);
+                    const simulatedGroup = {
+                        ...gDataForCalc,
+                        dailyActivity: {
+                            ...gDataForCalc.dailyActivity,
+                            activeMembers: updatedActiveMembers
                         }
-                        const joinedDateStr = formatDateInTimeZone(joinedTime, groupTimeZone);
-                        return normalizeDateString(joinedDateStr) < normalizeDateString(groupToday);
-                    });
+                    };
                     
-                    const postingMembers = updatedActiveMembers.filter(m => eligibleMembers.includes(m));
-                    const unityPercentage = eligibleMembers.length > 0
-                        ? Math.round((postingMembers.length / eligibleMembers.length) * 100)
-                        : 0;
-                    
-                    updatePayload.unityPercentage = Math.min(100, Math.max(0, unityPercentage));
+                    updatePayload.unityPercentage = calculateUnityPercentage(simulatedGroup as unknown as Group, [], now);
 
                     updatePayload.noteCount = admin.firestore.FieldValue.increment(-1);
                     updatePayload.messageCount = admin.firestore.FieldValue.increment(-1);

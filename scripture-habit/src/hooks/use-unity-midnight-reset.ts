@@ -1,6 +1,7 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { auth, appCheck } from '../firebase';
 import { getToken } from 'firebase/app-check';
+import { formatDateInTimeZone, normalizeDateString } from '../utils/time-utils';
 
 interface UseUnityMidnightResetProps {
     groupId: string | null;
@@ -25,23 +26,19 @@ export const useUnityMidnightReset = ({
     const checkAndReset = useCallback(async () => {
         if (!groupId || isResettingRef.current) return;
 
-        // Calculate "today" in the group's timezone
+        // Calculate "today" in the group's timezone robustly
         const now = new Date();
-        // Use Intl.DateTimeFormat to get a reliable YYYY-MM-DD string in the target timezone
-        // 'en-CA' is a convenient locale that defaults to YYYY-MM-DD
-        const todayStr = new Intl.DateTimeFormat('en-CA', {
-            timeZone: groupTimeZone || 'UTC',
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit'
-        }).format(now);
+        const todayStr = formatDateInTimeZone(now, groupTimeZone || 'UTC');
+        const normalizedToday = normalizeDateString(todayStr);
 
         // Skip if already checked today
-        if (lastCheckedDateRef.current === todayStr) return;
+        if (lastCheckedDateRef.current === normalizedToday) return;
 
         // Check if reset is needed (dailyActivity is from a different day)
-        if (dailyActivityDate && dailyActivityDate !== todayStr) {
-            console.log(`[UnityReset] Date change detected: ${dailyActivityDate} -> ${todayStr}, resetting...`);
+        const normalizedActivityDate = dailyActivityDate ? normalizeDateString(dailyActivityDate) : null;
+        
+        if (normalizedActivityDate && normalizedActivityDate !== normalizedToday) {
+            console.log(`[UnityReset] Date change detected: ${normalizedActivityDate} -> ${normalizedToday}, resetting...`);
             
             isResettingRef.current = true;
             
@@ -98,7 +95,7 @@ export const useUnityMidnightReset = ({
                 }
 
                 // Mark as checked for today
-                lastCheckedDateRef.current = todayStr;
+                lastCheckedDateRef.current = normalizedToday;
 
             } catch (error) {
                 console.error('[UnityReset] Error:', error);
@@ -107,7 +104,7 @@ export const useUnityMidnightReset = ({
             }
         } else {
             // No reset needed, mark as checked
-            lastCheckedDateRef.current = todayStr;
+            lastCheckedDateRef.current = normalizedToday;
         }
     }, [groupId, groupTimeZone, dailyActivityDate, onReset]);
 
