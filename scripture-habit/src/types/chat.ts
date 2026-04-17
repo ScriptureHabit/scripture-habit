@@ -1,4 +1,4 @@
-import { MessageDocument, GroupDocument as SharedGroupDocument, UserDocument as SharedUserDocument, GroupMemberDocument } from '../../types/firestore';
+import { MessageDocument, GroupDocument as SharedGroupDocument, UserDocument as SharedUserDocument, GroupMemberDocument } from '../../types/firestore.js';
 
 /**
  * Environment-agnostic Timestamp interface that matches both

@@ -76,20 +76,41 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Test Infrastructure Valid
         const rawData = groupSnap.data() as GroupDocument;
 
         // 3. Verify memberJoinedAt is a MAP/OBJECT, not flattened keys
-        // If it was flattened, rawData would contain a key named "memberJoinedAt.uid"
         expect(typeof rawData.memberJoinedAt).toBe('object');
         expect(rawData.memberJoinedAt).not.toBeNull();
         
         // Check that there are NO keys containing dots at the root level
         const rootKeys = Object.keys(rawData);
         const flattenedKeys = rootKeys.filter(k => k.includes('.'));
-        
         expect(flattenedKeys, `Found flattened keys in Firestore doc: ${flattenedKeys.join(', ')}`).toHaveLength(0);
 
-        // 4. Verify specific membership data is accessible via nested paths
+        // 4. Verify specific membership data is consistent
+        expect(rawData.members).toHaveLength(2); // TEST_UID + 1 dummy
         expect(rawData.memberJoinedAt).toBeDefined();
+        
         if (rawData.memberJoinedAt) {
-            expect(rawData.memberJoinedAt[TEST_UID]).toBeDefined();
+            // Check both members exist in the map
+            const joinedUids = Object.keys(rawData.memberJoinedAt);
+            expect(joinedUids).toHaveLength(2);
+            expect(joinedUids).toContain(TEST_UID);
+            
+            // Verify types are Firestore Timestamps (they have seconds/nanoseconds)
+            const joinedTs = rawData.memberJoinedAt[TEST_UID] as any;
+            expect(joinedTs).toBeDefined();
+            expect(joinedTs._seconds ?? joinedTs.seconds).toBeDefined();
+        }
+
+        // 5. Verify dailyActivity structure
+        expect(rawData.dailyActivity).toBeDefined();
+        if (rawData.dailyActivity) {
+            expect(typeof rawData.dailyActivity.date).toBe('string');
+            expect(Array.isArray(rawData.dailyActivity.activeMembers)).toBe(true);
+        }
+
+        // 6. Verify other maps (memberLastActive, etc.) are also correctly nested
+        expect(typeof rawData.memberLastActive).toBe('object');
+        if (rawData.memberLastActive) {
+            expect(rawData.memberLastActive[TEST_UID]).toBeDefined();
         }
         
         // Cleanup

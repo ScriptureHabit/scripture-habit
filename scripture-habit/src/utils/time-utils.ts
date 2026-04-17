@@ -1,4 +1,4 @@
-import { FirebaseTimestamp } from '../types/chat';
+import { FirebaseTimestamp } from '../types/chat.js';
 
 export const parseTimestampToDate = (ts?: FirebaseTimestamp | null): Date => {
   if (!ts) return new Date();

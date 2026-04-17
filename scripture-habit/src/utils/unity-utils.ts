@@ -1,5 +1,5 @@
-import { Group, Message } from '../types/chat';
-import { parseTimestampToMillis, parseTimestampToDate, formatDateInTimeZone, normalizeDateString } from './time-utils';
+import { Group, Message } from '../types/chat.js';
+import { parseTimestampToMillis, parseTimestampToDate, formatDateInTimeZone, normalizeDateString } from './time-utils.js';
 
 /**
  * Calculates current Unity percentage for a group.
