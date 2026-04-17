@@ -40,6 +40,32 @@ describe('Group Utils - enrichGroupUnity', () => {
     expect(result.unityPercentage).toBe(0);
   });
 
+  it('should handle Firestore Timestamp in dailyActivity.date', () => {
+    const timestampGroup = {
+      ...mockGroup,
+      unityPercentage: 75,
+      dailyActivity: {
+        date: { seconds: 1713416400, nanoseconds: 0, toDate: () => new Date(1713416400 * 1000) }, // 2024-04-18
+        activeMembers: ['u1', 'u2']
+      }
+    } as unknown as Group;
+
+    const result = enrichGroupUnity(timestampGroup, undefined, today);
+    // 2/2 members = 100%
+    expect(result.unityPercentage).toBe(100);
+  });
+
+  it('should fallback to Firestore value when dailyActivity.date is missing but not stale', () => {
+    const noActivityGroup = {
+      ...mockGroup,
+      unityPercentage: 42,
+      dailyActivity: undefined
+    } as unknown as Group;
+
+    const result = enrichGroupUnity(noActivityGroup, undefined, today);
+    expect(result.unityPercentage).toBe(42);
+  });
+
   it('should return 0 if both calculated and Firestore values are missing/0', () => {
     const emptyGroup = { ...mockGroup, unityPercentage: 0, dailyActivity: undefined };
     const result = enrichGroupUnity(emptyGroup as unknown as Group, undefined, today);

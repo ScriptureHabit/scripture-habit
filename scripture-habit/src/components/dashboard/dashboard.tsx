@@ -93,15 +93,17 @@ const Dashboard: FC = () => {
   const { isJoiningInvite } = useDashboardInvitations(user, userData, showWelcomeStory, setActiveGroupId, setSelectedView, t);
   const { warnings } = useDashboardWarnings(userData, userGroups);
 
+  const referenceDate = useMemo(() => new Date(), [today]);
+
   const enrichedUserGroups = useMemo(() => {
     return userGroups.map(group => {
-      const enriched = enrichGroupUnity(group, unityOverrides[group.id], new Date());
+      const enriched = enrichGroupUnity(group, unityOverrides[group.id], referenceDate);
       return {
         ...enriched,
         _date: today
       };
     });
-  }, [userGroups, unityOverrides, today]);
+  }, [userGroups, unityOverrides, today, referenceDate]);
   const { showNotifPrompt, handleEnableNotifications, handleCloseNotifPrompt } = useDashboardNotifications(userData, t);
   const { markWelcomeStorySeen, updateNickname } = useDashboardActions(user, userData);
 

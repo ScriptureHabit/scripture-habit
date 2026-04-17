@@ -1,7 +1,7 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { auth, appCheck } from '../firebase';
 import { getToken } from 'firebase/app-check';
-import { formatDateInTimeZone, normalizeDateString } from '../utils/time-utils';
+import { formatDateInTimeZone, normalizeDateString, parseTimestampToDate } from '../utils/time-utils';
 
 interface UseUnityMidnightResetProps {
     groupId: string | null;
@@ -35,11 +35,16 @@ export const useUnityMidnightReset = ({
         if (lastCheckedDateRef.current === normalizedToday) return;
 
         // Check if reset is needed (dailyActivity is from a different day)
-        const normalizedActivityDate = dailyActivityDate ? normalizeDateString(dailyActivityDate) : null;
+        let normalizedActivityDate = null;
+        if (dailyActivityDate) {
+            // Handle Timestamp objects if passed (though prop type says string, runtime data might vary)
+            const rawDate = dailyActivityDate;
+            const dateObj = typeof rawDate === 'string' ? null : parseTimestampToDate(rawDate as any);
+            const dateStr = dateObj ? formatDateInTimeZone(dateObj, groupTimeZone) : String(rawDate);
+            normalizedActivityDate = normalizeDateString(dateStr);
+        }
         
         if (normalizedActivityDate && normalizedActivityDate !== normalizedToday) {
-            console.log(`[UnityReset] Date change detected: ${normalizedActivityDate} -> ${normalizedToday}, resetting...`);
-            
             isResettingRef.current = true;
             
             try {
@@ -59,7 +64,6 @@ export const useUnityMidnightReset = ({
                         appCheckToken = tokenResponse.token;
                     } catch {
                         // App Check might fail in development, continue without it
-                        console.log('[UnityReset] App Check token not available');
                     }
                 }
 
@@ -87,7 +91,6 @@ export const useUnityMidnightReset = ({
                 }
 
                 const result = await response.json();
-                console.log('[UnityReset] Result:', result);
 
                 if (result.reset) {
                     // Notify parent component to refresh data
