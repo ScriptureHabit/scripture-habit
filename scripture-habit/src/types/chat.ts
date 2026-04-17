@@ -1,11 +1,20 @@
-import { Timestamp } from 'firebase/firestore';
 import { MessageDocument, GroupDocument as SharedGroupDocument, UserDocument as SharedUserDocument, GroupMemberDocument } from '../../types/firestore';
+
+/**
+ * Environment-agnostic Timestamp interface that matches both
+ * firebase/firestore and firebase-admin/firestore.
+ */
+export interface CompatibleTimestamp {
+  seconds: number;
+  nanoseconds: number;
+  toDate(): Date;
+}
 
 /**
  * Common Firebase Timestamp type to handle both Firestore Timestamp
  * and plain JS objects from APIs or persistence.
  */
-export type FirebaseTimestamp = Timestamp | { seconds: number; nanoseconds: number } | { toDate: () => Date } | string | Date | number | { _methodName?: string };
+export type FirebaseTimestamp = CompatibleTimestamp | { seconds: number; nanoseconds: number } | { toDate: () => Date } | string | Date | number | { _methodName?: string };
 
 export interface Reaction {
   userId: string; // Internal standard

@@ -62,17 +62,18 @@ router.post('/test/setup-test-group', authenticate, async (req: AuthenticatedReq
         const userData = userDoc.data() || {};
         const nickname = userData.nickname || 'Test User';
 
-        // Generate additional dummy members if memberCount > 1
+        const memberJoinedAt: Record<string, admin.firestore.Timestamp | Date> = {};
+        memberJoinedAt[uid] = now;
+        
         const additionalMembers: string[] = [];
         const additionalMemberPreviews: { uid: string; nickname: string }[] = [];
-        const memberJoinedAtRecord: Record<string, Date> = {};
         
         if (memberCount > 1) {
             for (let i = 1; i < memberCount; i++) {
                 const dummyUid = `dummy-member-${i}-${Date.now()}`;
                 additionalMembers.push(dummyUid);
                 additionalMemberPreviews.push({ uid: dummyUid, nickname: `Test Member ${i}` });
-                memberJoinedAtRecord[`memberJoinedAt.${dummyUid}`] = now;
+                memberJoinedAt[dummyUid] = now;
             }
         }
         
@@ -97,8 +98,9 @@ router.post('/test/setup-test-group', authenticate, async (req: AuthenticatedReq
                 lastMessageByNickname: nickname,
                 lastMessageByUid: uid,
                 messageCount: 0,
-                [`memberJoinedAt.${uid}`]: now,
-                ...memberJoinedAtRecord,
+                memberJoinedAt: memberJoinedAt,
+                memberLastActive: { [uid]: now },
+                memberLastReadAt: { [uid]: now },
                 dailyActivity: { 
                     date: dailyActivityDate, 
                     activeMembers: unityPercentage === 100 ? allMembers : [] 
