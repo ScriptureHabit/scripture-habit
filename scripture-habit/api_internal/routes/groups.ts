@@ -547,7 +547,7 @@ router.post('/update-group', authenticate, verifyAppCheck, async (req: Authentic
         return res.status(400).json({ error: 'Invalid input', details: validation.error.format() });
     }
 
-    const { groupId, name, description, isPublic, isPrivate, translations } = validation.data;
+    const { groupId, name, description, isPublic, isPrivate, timeZone, translations } = validation.data;
     const uid = req.user?.uid;
     if (!uid) return res.status(401).json({ error: 'Unauthorized' });
 
@@ -567,6 +567,7 @@ router.post('/update-group', authenticate, verifyAppCheck, async (req: Authentic
         if (description !== undefined) updatePayload.description = description;
         if (isPublic !== undefined) updatePayload.isPublic = isPublic;
         if (isPrivate !== undefined) updatePayload.isPrivate = isPrivate;
+        if (timeZone !== undefined) updatePayload.timeZone = timeZone;
         if (translations !== undefined) updatePayload.translations = translations as GroupDocument['translations'];
 
         if (Object.keys(updatePayload).length === 0) {

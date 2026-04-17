@@ -64,6 +64,7 @@ export const updateGroupSchema = z.object({
     description: z.string().max(1000).optional(),
     isPublic: z.boolean().optional(),
     isPrivate: z.boolean().optional(),
+    timeZone: z.string().optional(),
     translations: z.record(z.string(), z.object({
         name: z.string().max(100).optional(),
         description: z.string().max(1000).optional()

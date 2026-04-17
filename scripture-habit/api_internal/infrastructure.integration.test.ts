@@ -74,6 +74,11 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Test Infrastructure Valid
         // 2. Fetch the RAW document from Firestore
         const groupSnap = await db.collection('groups').doc(groupId).get();
         const rawData = groupSnap.data() as GroupDocument;
+        
+        // 2.5 Verify timeZone exists (New Guardrail)
+        expect(rawData.timeZone, "Group MUST have a timeZone field for correct Unity calculation").toBeDefined();
+        expect(typeof rawData.timeZone).toBe('string');
+        expect(rawData.timeZone?.length).toBeGreaterThan(0);
 
         // 3. Verify memberJoinedAt is a MAP/OBJECT, not flattened keys
         expect(typeof rawData.memberJoinedAt).toBe('object');
@@ -95,7 +100,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Test Infrastructure Valid
             expect(joinedUids).toContain(TEST_UID);
             
             // Verify types are Firestore Timestamps (they have seconds/nanoseconds)
-            const joinedTs = rawData.memberJoinedAt[TEST_UID] as any;
+            const joinedTs = rawData.memberJoinedAt[TEST_UID] as { seconds?: number; _seconds?: number };
             expect(joinedTs).toBeDefined();
             expect(joinedTs._seconds ?? joinedTs.seconds).toBeDefined();
         }

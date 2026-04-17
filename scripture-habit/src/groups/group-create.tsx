@@ -60,7 +60,8 @@ export default function GroupCreate({ currentUser, onCreated }: GroupCreateProps
         isPrivate: false, // Default to public unless specified
         inviteCode: Math.random().toString(36).substring(2, 8).toUpperCase(), // Basic invite code
         messageCount: 0,
-        noteCount: 0
+        noteCount: 0,
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
       });
 
       // 2. Clear Form
