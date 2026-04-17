@@ -9,7 +9,8 @@ test.describe('Unity Midnight Reset API', () => {
         // --- PART 1: Setup test group ---
         console.log('--- Step 1: Setting up test group ---');
         
-        const groupId = await page.evaluate(async () => {
+        const groupName = `Midnight Reset Test ${Date.now()}`;
+        const groupId = await page.evaluate(async ({ name }) => {
             const waitForAuth = () => {
                 return new Promise((resolve, reject) => {
                     let attempts = 0;
@@ -59,7 +60,7 @@ test.describe('Unity Midnight Reset API', () => {
                 },
                 body: JSON.stringify({
                     timeZone: 'UTC',
-                    groupName: `Midnight Reset Test ${Date.now()}`,
+                    groupName: name,
                     setYesterdayDate: true, // Set dailyActivity to yesterday for reset testing
                     unityPercentage: 100  // Directly set to 100% (skip note posting)
                 })
@@ -68,9 +69,9 @@ test.describe('Unity Midnight Reset API', () => {
             if (!response.ok) throw new Error('Failed to create test group');
             const data = await response.json();
             return data.groupId;
-        });
+        }, { name: groupName });
 
-        console.log(`Created test group: ${groupId}`);
+        console.log(`Created test group: ${groupId} (Name: ${groupName})`);
 
         // --- PART 2: Navigate to dashboard (UI calculates unity dynamically) ---
         console.log('--- Step 2: Navigating to dashboard ---');
@@ -147,18 +148,21 @@ test.describe('Unity Midnight Reset API', () => {
 
         // --- PART 4: Verify unity was reset to 0% ---
         console.log('--- Step 4: Verifying unity reset to 0% ---');
-        
-        // Wait for Firestore update to propagate
         await page.waitForTimeout(2000);
         
         // Navigate back to dashboard to refresh
         await page.goto('/en/dashboard');
-        await expect(page.getByTestId('sidebar-dashboard')).toBeVisible({ timeout: 30000 });
+        await expect(page.getByTestId('sidebar-dashboard')).toBeVisible({ timeout: 15000 });
+
+        // Find the specific group we created in the sidebar
+        const specificGroupItem = page.locator(`[data-testid="sidebar-group-item"][data-group-name="${groupName}"]`);
+        const targetSidebarUnity = specificGroupItem.getByTestId('sidebar-unity-percentage');
         
-        const unityAfterReset = await page.getByTestId('sidebar-unity-percentage').first().innerText();
-        console.log(`Unity after reset: ${unityAfterReset}`);
-        expect(unityAfterReset.trim()).toBe('0%');
+        const unityAfterReset = await targetSidebarUnity.innerText();
+        console.log(`Unity after reset for ${groupName}: ${unityAfterReset}`);
         
-        console.log('Success: Unity percentage was reset to 0%');
+        // This should reliably be 0% now
+        await expect(targetSidebarUnity).toHaveText('0%', { timeout: 10000 });
+        console.log('Success: Unity percentage reset to 0% in sidebar.');
     });
 });

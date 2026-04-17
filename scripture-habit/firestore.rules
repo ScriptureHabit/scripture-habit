@@ -32,7 +32,7 @@ service cloud.firestore {
       // Allow self-lookup even if not verified yet
       allow get: if request.auth != null && (request.auth.uid == userId || isAuthenticated());
       allow list: if isAuthenticated(); 
-      allow update: if false; // All updates via API
+      allow update: if request.auth != null && request.auth.uid == userId; // Migration and profile updates
       allow delete: if isAuthenticated() && request.auth.uid == userId;
 
       match /private/{docId} {

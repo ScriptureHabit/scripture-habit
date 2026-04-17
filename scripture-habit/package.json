@@ -14,9 +14,9 @@
     "preview": "vite preview",
     "test": "vitest src",
     "test:coverage": "vitest run --coverage",
-    "test:internal": "firebase emulators:exec --project scripture-habit-auth \"npx vitest api_internal\"",
-    "test:e2e": "firebase emulators:exec --project scripture-habit-auth \"npx playwright test\"",
-    "test:e2e:ui": "firebase emulators:exec --project scripture-habit-auth \"npx playwright test --ui\""
+    "test:internal": "node scripts/test-emulated.js \"npx vitest api_internal\"",
+    "test:e2e": "node scripts/test-emulated.js \"npx playwright test\"",
+    "test:e2e:ui": "node scripts/test-emulated.js \"npx playwright test --ui\""
   },
   "dependencies": {
     "@capacitor/android": "^8.0.0",

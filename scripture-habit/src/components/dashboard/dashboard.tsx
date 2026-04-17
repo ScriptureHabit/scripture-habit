@@ -43,6 +43,7 @@ const Dashboard: FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { t, language, isLoaded, translateChapterField } = useLanguage();
+  console.log('[Dashboard] Render', { isLoaded, status: isLoaded ? 'Ready' : 'Loading' });
   
   const { activeModal, setActiveModal } = useModalStore();
   const progressRef = useRef<HTMLDivElement>(null);
@@ -130,12 +131,15 @@ const Dashboard: FC = () => {
       const v = searchParams.get('view');
       const openNote = searchParams.get('openNewNote');
 
+      console.log('[Dashboard] Processing searchParams', { gid, v, openNote });
+
       if (gid) setActiveGroupId(gid);
       if (v) setSelectedView(parseInt(v));
       else if (gid) setSelectedView(2); // Switch to chat if only groupId is provided
 
       if (openNote === 'true') setActiveModal('newNote');
       
+      console.log('[Dashboard] Navigating to clear searchParams');
       navigate(location.pathname, { replace: true });
     }
   }, [searchParams, location.pathname, location.state, navigate, setActiveGroupId, setActiveModal]);

@@ -101,7 +101,7 @@ const MessageInput: FC<MessageInputProps> = ({
                             <div className="tooltip-arrow"></div>
                         </div>
                     )}
-                    <div className="add-entry-btn" onClick={() => { setIsNewNoteOpen(true); handleDismissTooltip(); }}>
+                    <div className="add-entry-btn" onClick={() => { setIsNewNoteOpen(true); handleDismissTooltip(); }} data-testid="new-note-button">
                         <UilPlus />
                     </div>
                 </div>

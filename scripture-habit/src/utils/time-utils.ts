@@ -24,33 +24,15 @@ export const parseTimestampToMillis = (ts?: FirebaseTimestamp | null): number =>
 
 export const formatDateInTimeZone = (date: Date, timeZone: string): string => {
   try {
-    const parts = new Intl.DateTimeFormat('en-US', {
-      timeZone,
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-    }).formatToParts(date);
-
-    const year = parts.find(p => p.type === 'year')?.value;
-    const month = parts.find(p => p.type === 'month')?.value;
-    const day = parts.find(p => p.type === 'day')?.value;
-
-    return `${year}-${month}-${day}`;
+    // sv-SE locale is known for its YYYY-MM-DD format (ISO 8601 style)
+    // Most modern browsers and environments support the timeZone option in toLocaleDateString.
+    // We also replace slashes with dashes just in case some browser uses YYYY/MM/DD for sv-SE.
+    return date.toLocaleDateString('sv-SE', { timeZone }).replace(/\//g, '-');
   } catch (e) {
-    console.warn(`[timeUtils] Invalid timezone ${timeZone}, falling back to UTC formatting`, e);
-    // Fallback to UTC if timezone is invalid
-    const parts = new Intl.DateTimeFormat('en-US', {
-      timeZone: 'UTC',
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-    }).formatToParts(date);
-
-    const year = parts.find(p => p.type === 'year')?.value;
-    const month = parts.find(p => p.type === 'month')?.value;
-    const day = parts.find(p => p.type === 'day')?.value;
-
-    return `${year}-${month}-${day}`;
+    console.warn(`[timeUtils] toLocaleDateString failed for ${timeZone}, falling back to UTC ISO string`, e);
+    // Fallback for extremely old/limited environments
+    const iso = date.toISOString(); // This is UTC
+    return iso.split('T')[0];
   }
 };
 

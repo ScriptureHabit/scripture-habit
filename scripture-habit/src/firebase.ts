@@ -130,22 +130,26 @@ if (import.meta.env.DEV) {
 }
 
 let appCheck: AppCheck | null = null;
-try {
-  appCheck = initializeAppCheck(app, {
-      provider: import.meta.env.DEV ? new CustomProvider({
-          getToken: () => {
-              // This is a minimal implementation for local dev.
-              // Firebase script handles the debug tokens when they are provided in globals.
-              return Promise.resolve({
-                  token: 'debug-token-placeholder',
-                  expireTimeMillis: Date.now() + 3600000
-              });
-          }
-      }) : new ReCaptchaEnterpriseProvider(import.meta.env.VITE_APPCHECK_SITE_KEY || ""),
-      isTokenAutoRefreshEnabled: true
-  });
-} catch (e) {
-  console.error("App Check failed to initialize:", e);
+if (!isEmulator) {
+  try {
+    appCheck = initializeAppCheck(app, {
+        provider: import.meta.env.DEV ? new CustomProvider({
+            getToken: () => {
+                // This is a minimal implementation for local dev.
+                // Firebase script handles the debug tokens when they are provided in globals.
+                return Promise.resolve({
+                    token: 'debug-token-placeholder',
+                    expireTimeMillis: Date.now() + 3600000
+                });
+            }
+        }) : new ReCaptchaEnterpriseProvider(import.meta.env.VITE_APPCHECK_SITE_KEY || ""),
+        isTokenAutoRefreshEnabled: true
+    });
+  } catch (e) {
+    console.error("App Check failed to initialize:", e);
+  }
+} else {
+  console.log("[Firebase] App Check disabled in Emulator mode.");
 }
 
 export { app, analytics, auth, db, messaging, storage, appCheck };

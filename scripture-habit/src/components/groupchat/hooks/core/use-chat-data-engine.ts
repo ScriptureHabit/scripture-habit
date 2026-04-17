@@ -119,9 +119,11 @@ const useMessageStreamSync = (groupId: string | null, userData: UserData | null,
     if (!groupId) return;
 
     let isCancelled = false;
+    console.log('[useMessageStreamSync] Effect triggered', { groupId, uid: userData?.uid });
 
     const startListener = () => {
       if (isCancelled) return;
+      console.log('[useMessageStreamSync] Starting real-time listener', { groupId });
       
       const messagesRef = collection(db, 'groups', groupId, 'messages').withConverter(messageConverter);
       const q = query(messagesRef, orderBy('createdAt', 'desc'), limit(50));
@@ -142,6 +144,13 @@ const useMessageStreamSync = (groupId: string | null, userData: UserData | null,
           } else if (change.type === "removed") {
             removedIds.push(change.doc.id);
           }
+        });
+
+        console.log('[useMessageStreamSync] Snapshot received', { 
+          groupId, 
+          new: newIncoming.length, 
+          modified: updatedMessages.length, 
+          removed: removedIds.length 
         });
 
         if (newIncoming.length > 0) {
@@ -168,6 +177,7 @@ const useMessageStreamSync = (groupId: string | null, userData: UserData | null,
     const initializeMessageStream = async () => {
       if (userData?.uid) {
         try {
+          console.log('[useMessageStreamSync] Fetching bundle...', { groupId });
           const bundlePromise = (async () => {
             try {
               const bundleResponse = await apiClient.get(`/api/bundle/${groupId}`, { 
@@ -175,7 +185,9 @@ const useMessageStreamSync = (groupId: string | null, userData: UserData | null,
                 timeout: 6000 
               });
               if (bundleResponse.data && !isCancelled) {
+                console.log('[useMessageStreamSync] Bundle received, loading...', { size: bundleResponse.data.byteLength });
                 await loadBundle(db, bundleResponse.data);
+                console.log('[useMessageStreamSync] Bundle loaded');
               }
             } catch (err) {
               console.warn("[useMessageStreamSync] Bundle boost failed:", err);
@@ -186,8 +198,8 @@ const useMessageStreamSync = (groupId: string | null, userData: UserData | null,
             bundlePromise,
             new Promise(resolve => setTimeout(resolve, 800))
           ]);
-        } catch {
-          // Promise.race might fail if both fail, which is fine
+        } catch (err) {
+          console.warn("[useMessageStreamSync] Race error:", err);
         }
       }
       
@@ -197,6 +209,7 @@ const useMessageStreamSync = (groupId: string | null, userData: UserData | null,
     initializeMessageStream();
 
     return () => {
+      console.log('[useMessageStreamSync] Cleaning up effect', { groupId });
       isCancelled = true;
       if (unsubMessagesRef.current) {
         unsubMessagesRef.current();

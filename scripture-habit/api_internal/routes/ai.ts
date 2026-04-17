@@ -59,6 +59,10 @@ router.post('/generate-ponder-questions', authenticate, aiLimiter, verifyAppChec
     const baseLang = language?.split('-')[0] || 'en';
     const targetLangName = languageNames[baseLang] || 'English';
 
+    if (process.env.SKIP_AI === 'true') {
+        return res.json({ success: true, questions: "Mocked Study Question" });
+    }
+
     try {
         const prompt = `You are a warm, encouraging scripture study facilitator who loves to help people apply the gospel to their daily lives.
             Based on the scripture: ${scripture} ${chapter}, provide ONE simple, clear, and easy-to-understand question.
@@ -84,6 +88,10 @@ router.post('/translate', authenticate, aiLimiter, verifyAppCheck, async (req: A
     if (!validation.success) return res.status(400).json({ error: 'Invalid input' });
     
     const { text, targetLanguage, messageId, groupId, updateType, force } = validation.data;
+
+    if (process.env.SKIP_AI === 'true') {
+        return res.json({ success: true, translatedText: text });
+    }
 
     try {
         const cacheKey = crypto.createHash('md5').update(`${text}_${targetLanguage}`).digest('hex');
@@ -192,6 +200,11 @@ router.post('/translate-batch', authenticate, aiLimiter, verifyAppCheck, async (
     const finalResults: Record<string, string> = {};
     const toTranslate: Array<{ id: string; text: string }> = [];
 
+    if (process.env.SKIP_AI === 'true') {
+        messages.forEach(m => { finalResults[m.id] = m.text; });
+        return res.json({ success: true, translations: finalResults });
+    }
+
 
     // 1. Check cache for each message
     for (const msg of messages) {
@@ -272,6 +285,10 @@ router.post('/generate-weekly-recap', authenticate, aiLimiter, verifyAppCheck, a
     const targetLangName = languageNames[baseLanguage] || 'English';
     const uid = req.user?.uid;
 
+    if (process.env.SKIP_AI === 'true') {
+        return res.json({ success: true, recap: "Mocked Weekly Recap" });
+    }
+
     try {
         const groupRef = db.collection('groups').doc(groupId);
         const gSnap = await groupRef.get();
@@ -339,6 +356,10 @@ router.post('/generate-discussion-topic', authenticate, aiLimiter, verifyAppChec
     const baseLanguage = language?.split('-')[0] || 'en';
     const targetLangName = languageNames[baseLanguage] || 'English';
 
+    if (process.env.SKIP_AI === 'true') {
+        return res.json({ success: true, topic: "Mocked Discussion Topic" });
+    }
+
     try {
         let context = '';
         if (groupId) {
@@ -379,6 +400,10 @@ router.post('/generate-personal-weekly-recap', authenticate, aiLimiter, verifyAp
     const { uid, language } = validation.data;
     const baseLang = language?.split('-')[0] || 'en';
     const targetLangName = languageNames[baseLang] || 'English';
+
+    if (process.env.SKIP_AI === 'true') {
+        return res.json({ success: true, recap: "Mocked Personal Recap" });
+    }
 
     try {
         if (req.user?.uid !== uid) return res.status(403).send('Forbidden');

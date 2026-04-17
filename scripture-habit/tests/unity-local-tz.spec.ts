@@ -11,122 +11,117 @@ test.describe('Unity Percentage Synchronization (Local Timezone: Asia/Tokyo)', (
     test('should reset at midnight JST when group is set to Asia/Tokyo', async ({ authenticatedPage }) => {
         const page = authenticatedPage;
 
-        // --- PART 1: SETUP TEST GROUP WITH ASIA/TOKYO ---
-        console.log('--- Step 1: Setting up test group with Asia/Tokyo timezone ---');
+        // Mirror console logs to terminal for easier debugging
+        page.on('console', msg => {
+            if (msg.type() === 'log' || msg.type() === 'error' || msg.type() === 'warning') {
+                console.log(`[Browser ${test.info().project.name}] ${msg.text()}`);
+            }
+        });
+
+        // --- PRE-STEP: ALIGN MOCK CLOCK WITH SERVER TODAY ---
+        // We calculate "today" in Asia/Tokyo for the server to match the client.
+        const todayJSTStr = new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Tokyo' });
+        const almostMidnightJST = new Date(`${todayJSTStr}T23:55:00+09:00`);
         
-        await page.evaluate(async () => {
-            // Helper to wait for Firebase Auth to be ready and user to be signed in
-            const waitForAuth = () => {
+        console.log(`--- Pre-step: Installing mock clock at ${almostMidnightJST.toISOString()} (Local JST: ${todayJSTStr} 23:55:00) ---`);
+        await page.clock.install({ time: almostMidnightJST });
+
+        // --- PART 1: Setup test group with Asia/Tokyo timezone ---
+        console.log('--- Step 1: Setting up test group in Asia/Tokyo ---');
+        
+        const groupName = `JST Unity Test ${Date.now()}`;
+        
+        const groupId = await page.evaluate(async ({ name, tz }) => {
+            const waitForAuthToken = () => {
                 return new Promise((resolve, reject) => {
                     let attempts = 0;
-                    const maxAttempts = 20; // Try for up to 10 seconds (20 * 500ms)
-                    const interval = 500;
-
-                    const checkAuth = () => {
-                        const auth = window.firebaseAuth;
-                        if (auth) {
-                            if (auth.currentUser) {
-                                resolve(auth.currentUser);
-                            } else {
-                                // Auth object exists, but user not yet current. Wait for state change.
-                                const unsubscribe = auth.onAuthStateChanged((user) => {
-                                    if (user) {
-                                        unsubscribe?.();
-                                        resolve(user);
-                                    }
-                                });
-                                // Add a timeout for onAuthStateChanged in case it never fires
-                                setTimeout(() => {
-                                    if (!auth.currentUser) {
-                                        unsubscribe?.(); // Clean up listener
-                                        reject(new Error('Firebase auth state change timed out after 10s.'));
-                                    }
-                                }, 10000);
+                    const check = async () => {
+                        /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+                        const auth = (window as any).firebaseAuth;
+                        if (auth && auth.currentUser) {
+                            try {
+                                const token = await auth.currentUser.getIdToken();
+                                resolve(token);
+                            } catch (e) {
+                                reject(e);
                             }
+                        } else if (attempts++ > 40) {
+                            reject('Auth token not found after 20s');
                         } else {
-                            // window.firebaseAuth is not yet available, retry
-                            attempts++;
-                            if (attempts < maxAttempts) {
-                                console.log(`window.firebaseAuth not yet available, retrying... (attempt ${attempts}/${maxAttempts})`);
-                                setTimeout(checkAuth, interval);
-                            } else {
-                                reject(new Error(`window.firebaseAuth not available after ${maxAttempts * interval / 1000} seconds.`));
-                            }
+                            setTimeout(check, 500);
                         }
                     };
-                    checkAuth();
+                    check();
                 });
             };
 
-            const user = await waitForAuth() as { getIdToken: () => Promise<string> };
-            const idToken = await user.getIdToken();
+            const idToken = (await waitForAuthToken()) as string;
+            
             const response = await fetch('/api/test/setup-test-group', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${idToken}`,
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ 
-                    timeZone: 'Asia/Tokyo',
-                    memberCount: 2, // 2 members for meaningful unity testing (0% -> 50%)
-                    groupName: `JST Unity Test ${Date.now()}` // Unique name for fresh group
+                body: JSON.stringify({
+                    memberCount: 2,
+                    groupName: name,
+                    timeZone: tz
                 })
             });
             
-            if (!response.ok) {
-                const error = await response.text();
-                throw new Error(`Failed to seed test group: ${error}`);
-            }
-            return await response.json();
-        });
+            if (!response.ok) throw new Error('Failed to seed JST test group');
+            const data = await response.json();
+            return data.groupId;
+        }, { name: groupName, tz: 'Asia/Tokyo' });
 
+        console.log(`Created group ${groupId} with Asia/Tokyo timezone.`);
+
+        // Navigate to dashboard
         await page.goto('/en/dashboard');
         await expect(page.getByTestId('sidebar-dashboard')).toBeVisible({ timeout: 30000 });
+
+        // --- PART 2: Verify unity logic in Asia/Tokyo ---
+        console.log('--- Step 2: Posting note to verify unity calculation ---');
         
-        const sidebarUnity = page.getByTestId('sidebar-unity-percentage').first();
-        await expect(sidebarUnity).toBeVisible({ timeout: 30000 });
+        const groupItem = page.getByTestId('sidebar-group-item').filter({ hasText: groupName });
+        const sidebarUnity = groupItem.getByTestId('sidebar-unity-percentage');
+        
+        await expect(sidebarUnity).toBeVisible({ timeout: 20000 });
+        
+        // Initial state should be 0%
+        await expect(sidebarUnity).toHaveText('0%', { timeout: 10000 });
 
-        // --- PART 2: TRIGGER UNITY ---
-        console.log('--- Step 2: Posting note ---');
-        const newNoteBtn = page.getByTestId('new-note-button');
-        await expect(newNoteBtn).toBeVisible();
-        await newNoteBtn.click();
-
-        await page.getByTestId('new-note-category').locator('input').first().click({ force: true });
+        // Post a note
+        await groupItem.click();
+        await page.getByTestId('new-note-button').click();
+        
+        const scriptureSelect = page.getByTestId('new-note-category').locator('input').first();
+        await scriptureSelect.click({ force: true });
         await page.keyboard.type('Book of Mormon');
-        await page.keyboard.press('Enter');
-        await page.getByTestId('new-note-chapter').fill('Moroni 10');
-        await page.getByTestId('new-note-comment').fill(`JST Test ${Date.now()}`);
+        await page.locator('.react-select__option', { hasText: 'Book of Mormon' }).first().click();
+        await page.getByTestId('new-note-chapter').fill('1 Nephi 1');
+        await page.getByTestId('new-note-comment').fill('Tokyo Unity Test');
+        
         await page.getByTestId('post-note-button').click();
-
-        await expect(page.getByText(/successfully/)).toBeVisible();
+        await expect(page.getByText('Note posted successfully!')).toBeVisible({ timeout: 15000 });
         
         // Verify unity changed to 100%
-        // Note: The dummy member joined today, so they're excluded from denominator.
-        // Only the posting user is eligible, resulting in 100% (1/1).
+        console.log('Waiting for unity to reflect note post...');
         await expect(sidebarUnity).toHaveText('100%', { timeout: 30000 });
-        console.log('Verified: Unity is 100% (only posting member is eligible)');
 
         // --- PART 3: MIDNIGHT JST CROSSING ---
-        console.log('--- Step 3: Fast forwarding past JST midnight ---');
+        console.log('--- Step 3: Fast forwarding 20 seconds past JST midnight ---');
         
-        // 2024-05-20 00:00:00 JST is 2024-05-19 15:00:00 UTC
-        // We start at 23:59:50 JST
-        const almostMidnightJST = new Date('2024-05-19T14:59:50Z');
-        
-        await page.clock.install({ time: almostMidnightJST });
-        console.log(`Clock JST: ${almostMidnightJST.toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' })}`);
+        // Fast forward 6 minutes to cross midnight (was at 23:55:00)
+        await page.clock.fastForward(6 * 60 * 1000); 
+        console.log('Clock fast forwarded 6m.');
 
-        await page.waitForTimeout(2000);
-        
-        // Fast forward 2 minutes to cross midnight JST
-        await page.clock.fastForward('00:02:00');
-        console.log('Clock fast forwarded 120s past JST midnight.');
-        
-        await page.waitForTimeout(5000);
-
-        // Verify unity reset to 0%
-        console.log('Verifying unity reset to 0% at JST midnight...');
+        // Verify unity resets to 0% in sidebar
+        // This is driven by enrichGroupUnity detecting the new date
+        console.log(`Waiting for ${groupName} unity reset to 0%...`);
         await expect(sidebarUnity).toHaveText('0%', { timeout: 60000 });
+        
+        console.log('Success: Unity percentage reset to 0% at JST midnight.');
     });
 });

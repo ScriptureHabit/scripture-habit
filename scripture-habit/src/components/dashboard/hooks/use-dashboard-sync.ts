@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { User } from 'firebase/auth';
 import { doc, collection, getDocs, updateDoc, Timestamp, getCountFromServer } from 'firebase/firestore';
 import { db } from '../../../firebase';
@@ -16,6 +16,7 @@ export type DashboardSyncStatus =
 export const useDashboardSync = () => {
     const { user, userData, loading, error } = useAuth();
     const [state, setState] = useState<DashboardSyncStatus>({ status: 'loading', user: null, userData: null });
+    const migrationInProgress = useRef(false);
 
     useEffect(() => {
         if (loading) {
@@ -32,6 +33,7 @@ export const useDashboardSync = () => {
     // Level Migration / Fix Logic
     useEffect(() => {
         const migrateLevelData = async () => {
+            if (migrationInProgress.current) return;
             if (state.status !== 'authenticated') return;
             
             const { user, userData } = state;
@@ -43,26 +45,33 @@ export const useDashboardSync = () => {
             );
 
             if (!needsMigration) return;
-
+            
+            migrationInProgress.current = true;
             console.log("Migration triggered: fixing level stats once...");
             try {
+                console.log("[Migration] Fetching notes count...");
                 const notesRef = collection(db, 'users', user.uid, 'notes').withConverter(noteConverter);
                 
                 // 1. Efficiency: Use server-side count if available (low cost)
                 const countSnap = await getCountFromServer(notesRef);
                 const totalNotesCount = countSnap.data().count;
+                console.log(`[Migration] Total notes count: ${totalNotesCount}`);
 
                 if (totalNotesCount === 0) {
+                    console.log("[Migration] No notes found, updating metadata...");
                     await updateDoc(doc(db, 'users', user.uid), {
                         daysStudiedCount: 0,
                         totalNotes: 0,
                         isLevelMigrated: true
                     });
+                    console.log("[Migration] Finished (Zero notes).");
                     return;
                 }
 
                 // 2. Perform one-time aggregation for unique study days
+                console.log("[Migration] Fetching all notes for date aggregation...");
                 const notesSnapshot = await getDocs(notesRef);
+                console.log(`[Migration] Fetched ${notesSnapshot.size} notes.`);
                 const studyDays = new Set<string>();
                 notesSnapshot.forEach(docSnap => {
                     const data = docSnap.data();
@@ -76,6 +85,7 @@ export const useDashboardSync = () => {
                 });
 
                 const finalDaysCount = Math.max(studyDays.size, userData.streakCount || 0);
+                console.log(`[Migration] Final days count calculated: ${finalDaysCount}. Updating user document...`);
 
                 await updateDoc(doc(db, 'users', user.uid), {
                     daysStudiedCount: finalDaysCount,

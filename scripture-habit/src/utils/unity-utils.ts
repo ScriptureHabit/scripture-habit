@@ -50,8 +50,14 @@ export const getUnityParticipation = (
       ? activity.date 
       : formatDateInTimeZone(parseTimestampToDate(activity.date), groupTimeZone);
       
-    if (normalizeDateString(activityDateStr) === normalizedToday) {
+    const normActivityDate = normalizeDateString(activityDateStr);
+    
+    if (normActivityDate === normalizedToday) {
       activity.activeMembers.forEach(uid => uniquePosters.add(uid));
+    } else {
+      if (group?.name?.includes('Unity Test')) {
+        console.log(`[getUnityParticipation] Date mismatch for ${group.name}: activity=${normActivityDate} (${activityDateStr}), today=${normalizedToday} (${todayStr}), groupTZ=${groupTimeZone}`);
+      }
     }
   }
 
