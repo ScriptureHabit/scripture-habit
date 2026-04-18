@@ -31,20 +31,64 @@
       min-height: 100vh;
       width: 100%;
       display: flex;
+      flex-direction: row;
       justify-content: center;
       align-items: center;
       margin: 0;
+      gap: 15px;
     }
-    .loader-logo {
+    .loader-mascot {
       width: 80px;
       height: 80px;
-      opacity: 0.6;
-      animation: pulse 2s infinite ease-in-out;
+      object-fit: contain;
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+      animation: float 3s ease-in-out infinite;
     }
-    @keyframes pulse {
-      0% { transform: scale(0.95); opacity: 0.4; }
-      50% { transform: scale(1); opacity: 0.7; }
-      100% { transform: scale(0.95); opacity: 0.4; }
+    .loader-bubble {
+      background: white;
+      border-radius: 1rem;
+      padding: 0.6rem 1rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      position: relative;
+      border: 2px solid #E2E8F0;
+      animation: bounceHorizontal 2s ease-in-out infinite;
+    }
+    .loader-text {
+      margin: 0;
+      font-size: 0.85rem;
+      color: #4A5568;
+      font-weight: 600;
+      font-family: 'Outfit', sans-serif;
+    }
+    .loader-bubble-tail {
+      position: absolute;
+      left: -8px;
+      top: 50%;
+      transform: translateY(-50%) rotate(90deg);
+      width: 0;
+      height: 0;
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-top: 8px solid #E2E8F0;
+    }
+    .loader-bubble-tail::after {
+      content: '';
+      position: absolute;
+      top: -10px;
+      left: -8px;
+      width: 0;
+      height: 0;
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-top: 8px solid white;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+    @keyframes bounceHorizontal {
+      0%, 100% { transform: translateX(0); }
+      50% { transform: translateX(5px); }
     }
   </style>
   <title>Scripture Habit</title>
@@ -53,7 +97,11 @@
 <body>
   <div id="root">
     <div class="initial-loader">
-      <img src="/logo.svg" alt="Loading..." class="loader-logo" />
+      <img src="/images/mascot.png" alt="Loading..." class="loader-mascot" />
+      <div class="loader-bubble">
+        <p class="loader-text">Loading...</p>
+        <div class="loader-bubble-tail"></div>
+      </div>
     </div>
   </div>
   <script type="module" src="/src/main.tsx"></script>

@@ -146,8 +146,12 @@ const App: React.FC = () => {
     // If auth is still determining, show nothing or a very light shell
     // This avoids the flicker of the landing page before redirecting to dashboard
     if (authLoading) return (
-      <div className="App">
-        <img src="/logo.svg" alt="Loading..." style={{ width: '80px', opacity: 0.6 }} />
+      <div className="App" style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row' }}>
+        <img src="/images/mascot.png" alt="Loading..." className="loader-mascot" />
+        <div className="loader-bubble">
+          <p className="loader-text">Loading...</p>
+          <div className="loader-bubble-tail"></div>
+        </div>
       </div>
     );
 
