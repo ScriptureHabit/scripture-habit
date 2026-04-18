@@ -42,7 +42,7 @@ export const formatDateInTimeZone = (date: Date, timeZone: string): string => {
     }
 
     return `${year}-${month}-${day}`;
-  } catch (e) {
+  } catch {
     return date.toISOString().split('T')[0];
   }
 };
@@ -74,7 +74,7 @@ export const normalizeDateString = (dateInput: string | Date | { toDate: () => D
     }
     
     return digits;
-  } catch (e) {
+  } catch {
     return '';
   }
 };

@@ -1,4 +1,4 @@
-import { Group } from '../types/chat';
+import { Group, Message } from '../types/chat';
 import { calculateUnityPercentage } from './unity-utils';
 import { formatDateInTimeZone, normalizeDateString, parseTimestampToDate } from './time-utils';
 
@@ -16,6 +16,7 @@ import { formatDateInTimeZone, normalizeDateString, parseTimestampToDate } from 
  */
 export const enrichGroupUnity = (
   group: Group,
+  messages: Message[] = [],
   override?: number,
   referenceDate: Date = new Date()
 ): Group => {
@@ -34,15 +35,15 @@ export const enrichGroupUnity = (
   
   const isStale = activityDateStr !== '' && activityDateStr < normalizedToday;
 
-  const calculated = calculateUnityPercentage(group, [], referenceDate);
+  const calculated = calculateUnityPercentage(group, messages, referenceDate);
+  
+  // If stale, we ignore the firestoreValue from yesterday, but we still respect today's 'calculated' value.
+  // This is critical for groups with only new members (100% exempt).
   const firestoreValue = isStale ? 0 : (group.unityPercentage ?? 0);
   const finalPercentage = override !== undefined 
     ? override 
-    : (isStale ? 0 : Math.max(calculated, firestoreValue));
+    : Math.max(calculated, firestoreValue);
 
-  if (group.name?.includes('Persistence')) {
-    console.log(`[enrichGroupUnity] ${group.name}: override=${override}, calculated=${calculated}, firestoreValue=${firestoreValue}, final=${finalPercentage}%`);
-  }
 
   return {
     ...group,

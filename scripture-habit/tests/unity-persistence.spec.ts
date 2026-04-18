@@ -29,7 +29,9 @@ test.describe('Unity Persistence (Reload Robustness)', () => {
                 return new Promise((resolve, reject) => {
                     let attempts = 0;
                     const check = async () => {
-                        const auth = (window as any).firebaseAuth;
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        const win = window as unknown as { firebaseAuth?: any };
+                        const auth = win.firebaseAuth;
                         if (auth && auth.currentUser) {
                             try {
                                 const token = await auth.currentUser.getIdToken();

@@ -1,8 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
-import { doc, onSnapshot, collection, query, where } from 'firebase/firestore';
+import { doc, onSnapshot, collection, query, where, Timestamp } from 'firebase/firestore';
 import { db } from '../../../firebase';
 import { UserData } from '../../../types/user';
-import { Group } from '../../../types/chat';
+import { Group, Message } from '../../../types/chat';
 import { groupMemberConverter } from '../../../utils/firestore-converters';
 import { useUnityMidnightReset } from '../../../hooks/use-unity-midnight-reset';
 
@@ -76,6 +76,34 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
             unsubscribers.push(unsubMember);
         });
 
+        // 3. Recent messages listeners (last 24h) for accurate sidebar unity
+        const dayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+        groupIds.forEach(gid => {
+            const msgsQuery = query(
+                collection(db, 'groups', gid, 'messages'),
+                where('isNote', '==', true),
+                where('createdAt', '>=', Timestamp.fromDate(dayAgo))
+            );
+            const unsubMsgs = onSnapshot(msgsQuery, (snap) => {
+                const msgs = snap.docs.map(d => ({ id: d.id, ...d.data() } as Message));
+                setRawUserGroups(prev => {
+                    const existing = prev.find(g => g.id === gid);
+                    if (!existing) return prev;
+                    
+                    // Simple optimization: only update if message count or IDs changed
+                    const oldMsgs = existing.recentMessages || [];
+                    if (oldMsgs.length === msgs.length && oldMsgs.every((m, i) => m.id === msgs[i].id)) {
+                        return prev;
+                    }
+                    
+                    return prev.map(g => g.id === gid ? { ...g, recentMessages: msgs } : g);
+                });
+            }, (err) => {
+                if (err.code !== 'permission-denied') console.log(`Dashboard messages fetch error ${gid}:`, err);
+            });
+            unsubscribers.push(unsubMsgs);
+        });
+
         return () => unsubscribers.forEach(unsub => unsub());
     }, [userData?.uid, groupIds, groupIdsKey]);
 
@@ -118,7 +146,6 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
         dailyActivityDate: activeGroup?.dailyActivity?.date || null,
         onReset: () => {
             // Data will be refreshed by onSnapshot listener automatically
-            console.log('[Dashboard] Midnight reset triggered for active group');
         }
     });
 

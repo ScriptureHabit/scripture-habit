@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef, FC, useMemo } from 'react';
 import { Navigate, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -43,7 +42,6 @@ const Dashboard: FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { t, language, isLoaded, translateChapterField } = useLanguage();
-  console.log('[Dashboard] Render', { isLoaded, status: isLoaded ? 'Ready' : 'Loading' });
   
   const { activeModal, setActiveModal } = useModalStore();
   const progressRef = useRef<HTMLDivElement>(null);
@@ -94,13 +92,13 @@ const Dashboard: FC = () => {
   const { warnings } = useDashboardWarnings(userData, userGroups);
 
   const referenceDate = useMemo(() => {
-    // We include 'today' to ensure this date object refreshes at midnight
+    void today;
     return new Date();
   }, [today]);
 
   const enrichedUserGroups = useMemo(() => {
     return userGroups.map(group => {
-      const enriched = enrichGroupUnity(group, unityOverrides[group.id], referenceDate);
+      const enriched = enrichGroupUnity(group, group.recentMessages || [], unityOverrides[group.id], referenceDate);
       return {
         ...enriched,
         _date: today
@@ -136,7 +134,6 @@ const Dashboard: FC = () => {
       const v = searchParams.get('view');
       const openNote = searchParams.get('openNewNote');
 
-      console.log('[Dashboard] Processing searchParams', { gid, v, openNote });
 
       if (gid) setActiveGroupId(gid);
       if (v) setSelectedView(parseInt(v));
@@ -144,7 +141,6 @@ const Dashboard: FC = () => {
 
       if (openNote === 'true') setActiveModal('newNote');
       
-      console.log('[Dashboard] Navigating to clear searchParams');
       navigate(location.pathname, { replace: true });
     }
   }, [searchParams, location.pathname, location.state, navigate, setActiveGroupId, setActiveModal]);
@@ -173,7 +169,6 @@ const Dashboard: FC = () => {
 
   const handleUnityUpdate = (percentage: number) => {
     if (activeGroupId && unityOverrides[activeGroupId] !== percentage) {
-      console.log(`[Dashboard] handleUnityUpdate: group=${activeGroupId}, percentage=${percentage}, prev=${unityOverrides[activeGroupId]}`);
       setUnityOverrides(prev => ({ ...prev, [activeGroupId]: percentage }));
     }
   };

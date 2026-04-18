@@ -50,7 +50,6 @@ const GroupChatContent: FC = () => {
 };
 
 const GroupChat: FC<GroupChatProps> = (props) => {
-  console.log('[GroupChat] Render', { groupId: props.groupId, isActive: props.isActive });
   return (
     <GroupChatProvider {...props} isActive={props.isActive ?? false}>
       <GroupChatContent />
