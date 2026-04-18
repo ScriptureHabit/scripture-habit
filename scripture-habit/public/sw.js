@@ -153,8 +153,14 @@ self.addEventListener('fetch', (event) => {
                     return networkResponse;
                 }
 
-                // Cache fonts and other static assets on the fly
-                if (event.request.url.startsWith('https://fonts.') || event.request.destination === 'image') {
+                // Cache fonts, images, and other static assets on the fly
+                const isStaticAsset = event.request.destination === 'image' || 
+                                     event.request.destination === 'script' || 
+                                     event.request.destination === 'style' ||
+                                     event.request.destination === 'font' ||
+                                     event.request.url.startsWith('https://fonts.');
+
+                if (isStaticAsset) {
                     const responseToCache = networkResponse.clone();
                     caches.open(CACHE_NAME).then((cache) => {
                         cache.put(event.request, responseToCache);

@@ -24,11 +24,38 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,200..900;1,200..900&family=Inter:wght@400;500;600;700&family=Noto+Serif+JP:wght@400;500;700&family=Outfit:wght@300;400;500;600;700&display=swap"
     rel="stylesheet">
+  <style>
+    /* Immediate paint for app shell */
+    .initial-loader {
+      background: linear-gradient(106.37deg, #feac5e 29.63%, #c779d0 51.55%, #4bc0c8 90.85%);
+      min-height: 100vh;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0;
+    }
+    .loader-logo {
+      width: 80px;
+      height: 80px;
+      opacity: 0.6;
+      animation: pulse 2s infinite ease-in-out;
+    }
+    @keyframes pulse {
+      0% { transform: scale(0.95); opacity: 0.4; }
+      50% { transform: scale(1); opacity: 0.7; }
+      100% { transform: scale(0.95); opacity: 0.4; }
+    }
+  </style>
   <title>Scripture Habit</title>
 </head>
 
 <body>
-  <div id="root"></div>
+  <div id="root">
+    <div class="initial-loader">
+      <img src="/logo.svg" alt="Loading..." class="loader-logo" />
+    </div>
+  </div>
   <script type="module" src="/src/main.tsx"></script>
 </body>
 
