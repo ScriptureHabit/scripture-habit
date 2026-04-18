@@ -19,13 +19,13 @@ describe('Group Utils - enrichGroupUnity', () => {
   const today = new Date('2024-04-18T05:00:00Z'); // 2:00 PM JST
 
   it('should prefer the override value when provided', () => {
-    const result = enrichGroupUnity(mockGroup, 50, today);
+    const result = enrichGroupUnity(mockGroup, [], 50, today);
     expect(result.unityPercentage).toBe(50);
   });
 
   it('should use calculated value when it matches the date and is > 0', () => {
     // Calculated should be 50% (1/2 members)
-    const result = enrichGroupUnity(mockGroup, undefined, today);
+    const result = enrichGroupUnity(mockGroup, [],undefined, today);
     expect(result.unityPercentage).toBe(50);
   });
 
@@ -35,7 +35,7 @@ describe('Group Utils - enrichGroupUnity', () => {
     const tomorrow = new Date('2024-04-19T05:00:00Z');
     
     // calculated will be 0 because 20240418 (activity) != 20240419 (today)
-    const result = enrichGroupUnity(mockGroup, undefined, tomorrow);
+    const result = enrichGroupUnity(mockGroup, [], undefined, tomorrow);
     
     // Should return 0 (reset) instead of 33 (stale Firestore value)
     expect(result.unityPercentage).toBe(0);
@@ -51,7 +51,7 @@ describe('Group Utils - enrichGroupUnity', () => {
       }
     } as unknown as Group;
 
-    const result = enrichGroupUnity(timestampGroup, undefined, today);
+    const result = enrichGroupUnity(timestampGroup, [], undefined, today);
     // 2/2 members = 100%
     expect(result.unityPercentage).toBe(100);
   });
@@ -63,13 +63,13 @@ describe('Group Utils - enrichGroupUnity', () => {
       dailyActivity: undefined
     } as unknown as Group;
 
-    const result = enrichGroupUnity(noActivityGroup, undefined, today);
+    const result = enrichGroupUnity(noActivityGroup, [], undefined, today);
     expect(result.unityPercentage).toBe(42);
   });
 
   it('should return 0 if both calculated and Firestore values are missing/0', () => {
     const emptyGroup = { ...mockGroup, unityPercentage: 0, dailyActivity: undefined };
-    const result = enrichGroupUnity(emptyGroup as unknown as Group, undefined, today);
+    const result = enrichGroupUnity(emptyGroup as unknown as Group, [], undefined, today);
     expect(result.unityPercentage).toBe(0);
   });
 
@@ -83,7 +83,7 @@ describe('Group Utils - enrichGroupUnity', () => {
       }
     } as unknown as Group;
 
-    const result = enrichGroupUnity(laggingGroup, undefined, today);
+    const result = enrichGroupUnity(laggingGroup, [], undefined, today);
     // Should return 100 (from Firestore) instead of 50 (from incomplete local metadata)
     expect(result.unityPercentage).toBe(100);
   });
