@@ -25,11 +25,37 @@
     href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,200..900;1,200..900&family=Inter:wght@400;500;600;700&family=Noto+Serif+JP:wght@400;500;700&family=Outfit:wght@300;400;500;600;700&display=swap"
     rel="stylesheet">
   <style>
-    /* Immediate paint for app shell */
-    .initial-loader {
+    :root {
+      --glass: rgba(255, 255, 255, 0.54);
+    }
+    html, body {
+      margin: 0;
+      padding: 0;
       background: linear-gradient(106.37deg, #feac5e 29.63%, #c779d0 51.55%, #4bc0c8 90.85%);
       min-height: 100vh;
       width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+    /* Core App layout to prevent flash */
+    .App {
+      background: linear-gradient(106.37deg, #feac5e 29.63%, #c779d0 51.55%, #4bc0c8 90.85%);
+      min-height: 100vh;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .AppGlass {
+      width: 97%;
+      min-height: 97%;
+      background: var(--glass);
+      border-radius: 2rem;
+      box-shadow: 0px 19px 60px rgb(0 0 0 / 8%);
+    }
+    .initial-loader {
+      width: 100%;
+      height: 100%;
       display: flex;
       flex-direction: row;
       justify-content: center;
@@ -108,12 +134,14 @@
 
 <body>
   <div id="root">
-    <div class="initial-loader">
-      <div class="loader-glass">
-        <img src="/images/mascot.png" alt="Loading..." class="loader-mascot" />
-        <div class="loader-bubble">
-          <p class="loader-text">Loading...</p>
-          <div class="loader-bubble-tail"></div>
+    <div class="App">
+      <div class="AppGlass">
+        <div class="initial-loader">
+          <img src="/images/mascot.png" alt="Loading..." class="loader-mascot" />
+          <div class="loader-bubble">
+            <p class="loader-text">Loading...</p>
+            <div class="loader-bubble-tail"></div>
+          </div>
         </div>
       </div>
     </div>
