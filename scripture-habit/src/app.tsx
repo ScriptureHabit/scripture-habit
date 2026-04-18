@@ -145,19 +145,23 @@ const App: React.FC = () => {
   const renderContent = () => {
     // If auth is still determining, show nothing or a very light shell
     // This avoids the flicker of the landing page before redirecting to dashboard
-    if (authLoading) return (
-      <div className="App" style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row' }}>
-        <img src="/images/mascot.png" alt="Loading..." className="loader-mascot" />
-        <div className="loader-bubble">
-          <p className="loader-text">Loading...</p>
-          <div className="loader-bubble-tail"></div>
+    const MascotLoader = () => (
+      <div className="App">
+        <div className="AppGlass" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'row' }}>
+          <img src="/images/mascot.png" alt="Loading..." className="loader-mascot" />
+          <div className="loader-bubble">
+            <p className="loader-text">Loading...</p>
+            <div className="loader-bubble-tail"></div>
+          </div>
         </div>
       </div>
     );
 
+    if (authLoading) return <MascotLoader />;
+
     return (
       <div className={getAppClass()}>
-        <Suspense fallback={<div className="App" />}>
+        <Suspense fallback={<MascotLoader />}>
           <Routes>
             {SUPPORTED_LANGUAGES.map(lang => (
               <Route key={lang} path={lang}>

@@ -82,6 +82,18 @@
       border-right: 8px solid transparent;
       border-top: 8px solid white;
     }
+    .loader-glass {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+      width: 97%;
+      min-height: 97vh;
+      background: rgba(255, 255, 255, 0.54);
+      border-radius: 2rem;
+      box-shadow: 0px 19px 60px rgb(0 0 0 / 8%);
+    }
     @keyframes float {
       0%, 100% { transform: translateY(0); }
       50% { transform: translateY(-5px); }
@@ -97,10 +109,12 @@
 <body>
   <div id="root">
     <div class="initial-loader">
-      <img src="/images/mascot.png" alt="Loading..." class="loader-mascot" />
-      <div class="loader-bubble">
-        <p class="loader-text">Loading...</p>
-        <div class="loader-bubble-tail"></div>
+      <div class="loader-glass">
+        <img src="/images/mascot.png" alt="Loading..." class="loader-mascot" />
+        <div class="loader-bubble">
+          <p class="loader-text">Loading...</p>
+          <div class="loader-bubble-tail"></div>
+        </div>
       </div>
     </div>
   </div>
