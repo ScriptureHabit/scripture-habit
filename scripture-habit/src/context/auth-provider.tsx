@@ -11,7 +11,8 @@ import { AuthContext } from './auth-context';
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [userData, setUserData] = useState<UserData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true); // Auth loading
+  const [dataLoading, setDataLoading] = useState(false); // Data loading
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
@@ -23,7 +24,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     let unsubUserData: (() => void) | null = null;
 
     const unsubAuth = onAuthStateChanged(auth, (currentUser) => {
-      setLoading(true); // Reset loading state when auth changes
       // Clean up previous user data listener
       if (unsubUserData) {
         unsubUserData();
@@ -31,8 +31,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }
 
       setUser(currentUser);
+      setLoading(false); // Auth state is now determined
 
       if (currentUser) {
+        setDataLoading(true);
         // Start listening to user document in Firestore
         const userDocRef = doc(db, 'users', currentUser.uid);
         unsubUserData = onSnapshot(
@@ -43,7 +45,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             } else {
               setUserData(null);
             }
-            setLoading(false);
+            setDataLoading(false);
           },
           (err) => {
             console.error('Error listening to user data:', err);
@@ -51,12 +53,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             if (err.code !== 'permission-denied' || !import.meta.env.PROD) {
               setError(err as Error);
             }
-            setLoading(false);
+            setDataLoading(false);
           }
         );
       } else {
         setUserData(null);
-        setLoading(false);
+        setDataLoading(false);
       }
     });
 
@@ -67,7 +69,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, userData, loading, error }}>
+    <AuthContext.Provider value={{ user, userData, loading, dataLoading, error }}>
       {children}
     </AuthContext.Provider>
   );

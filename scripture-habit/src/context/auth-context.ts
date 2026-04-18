@@ -6,6 +6,7 @@ export interface AuthContextType {
   user: User | null;
   userData: UserData | null;
   loading: boolean;
+  dataLoading: boolean;
   error: Error | null;
 }
 

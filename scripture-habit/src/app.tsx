@@ -2,7 +2,7 @@ import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./app.css";
-import { useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { useApiWarmup } from './hooks/use-api-warmup';
 
 import { ErrorFallback } from './components/common/error-fallback';
@@ -13,29 +13,11 @@ import { db } from './firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import { FirebaseError } from 'firebase/app';
 
-import SignupForm from './components/signupform/signup-form';
-import LoginForm from './components/loginform/login-form';
-import Dashboard from './components/dashboard/dashboard';
 import { useAuth } from './hooks/use-auth';
-
-import GroupForm from './components/groupform/group-form';
-import JoinGroup from './components/joingroup/join-group';
-import GroupDetails from "./components/groupdetails/group-details";
-import GroupOptions from './components/groupoptions/group-options';
-import LandingPage from './components/landingpage/landing-page';
-import Welcome from './components/welcome/welcome';
-import ForgotPassword from "./components/forgotpassword/forgot-password";
-import InviteRedirect from './components/inviteredirect/invite-redirect';
-import Maintenance from './components/maintenance/maintenance';
 import { MAINTENANCE_MODE } from './config';
 import * as Sentry from "@sentry/react";
-import InstallPrompt from './components/installprompt/install-prompt';
 import { handleInAppBrowserRedirect, isInAppBrowser } from './utils/browser-detection';
-import CookieConsent from './components/cookieconsent/cookie-consent';
 
-import PrivacyPolicy from './components/privacypolicy/privacy-policy';
-import TermsOfService from './components/termsofservice/terms-of-service';
-import LegalDisclosure from './components/legaldisclosure/legal-disclosure';
 import { LanguageProvider } from './context/language-provider';
 import { SUPPORTED_LANGUAGES } from './config/languages';
 import { SettingsProvider } from './context/settings-context';
@@ -43,6 +25,25 @@ import SEOManager from './components/seo-manager';
 import PWAUpdateHandler from './components/pwaupdatehandler/pwa-update-handler';
 import LanguageRedirect from './components/languageredirect/language-redirect';
 import BrowserWarningWrapper from './components/browserwarningmodal/browser-warning-wrapper';
+
+// Lazy load components
+const SignupForm = lazy(() => import('./components/signupform/signup-form'));
+const LoginForm = lazy(() => import('./components/loginform/login-form'));
+const Dashboard = lazy(() => import('./components/dashboard/dashboard'));
+const GroupForm = lazy(() => import('./components/groupform/group-form'));
+const JoinGroup = lazy(() => import('./components/joingroup/join-group'));
+const GroupDetails = lazy(() => import('./components/groupdetails/group-details'));
+const GroupOptions = lazy(() => import('./components/groupoptions/group-options'));
+const LandingPage = lazy(() => import('./components/landingpage/landing-page'));
+const Welcome = lazy(() => import('./components/welcome/welcome'));
+const ForgotPassword = lazy(() => import('./components/forgotpassword/forgot-password'));
+const InviteRedirect = lazy(() => import('./components/inviteredirect/invite-redirect'));
+const Maintenance = lazy(() => import('./components/maintenance/maintenance'));
+const InstallPrompt = lazy(() => import('./components/installprompt/install-prompt'));
+const CookieConsent = lazy(() => import('./components/cookieconsent/cookie-consent'));
+const PrivacyPolicy = lazy(() => import('./components/privacypolicy/privacy-policy'));
+const TermsOfService = lazy(() => import('./components/termsofservice/terms-of-service'));
+const LegalDisclosure = lazy(() => import('./components/legaldisclosure/legal-disclosure'));
 
 declare global {
   interface Navigator {
@@ -142,47 +143,42 @@ const App: React.FC = () => {
   const isStandalone = window.matchMedia('(display-mode: standalone)').matches || !!window.navigator.standalone;
 
   const renderContent = () => {
-    if (authLoading) {
-      return (
-        <div className="auth-loading-screen">
-          <div className="loading-spinner-container"></div>
-          <h2 className="auth-loading-text">
-            Scripture Habit
-          </h2>
-        </div>
-      );
-    }
+    // If auth is still determining, show nothing or a very light shell
+    // This avoids the flicker of the landing page before redirecting to dashboard
+    if (authLoading) return <div className="App" />;
 
     return (
       <div className={getAppClass()}>
-        <Routes>
-          {SUPPORTED_LANGUAGES.map(lang => (
-            <Route key={lang} path={lang}>
-              <Route
-                index
-                element={isStandalone ? <Navigate to="dashboard" replace /> : <LandingPage />}
-              />
-              <Route path="welcome" element={<Welcome />} />
-              <Route path="login" element={<LoginForm />} />
-              <Route path="signup" element={<SignupForm />} />
-              <Route path="dashboard" element={<Dashboard />} />
-              <Route path="group-form" element={<GroupForm />} />
-              <Route path="join-group" element={<JoinGroup />} />
+        <Suspense fallback={<div className="App" />}>
+          <Routes>
+            {SUPPORTED_LANGUAGES.map(lang => (
+              <Route key={lang} path={lang}>
+                <Route
+                  index
+                  element={isStandalone ? <Navigate to="dashboard" replace /> : <LandingPage />}
+                />
+                <Route path="welcome" element={<Welcome />} />
+                <Route path="login" element={<LoginForm />} />
+                <Route path="signup" element={<SignupForm />} />
+                <Route path="dashboard" element={<Dashboard />} />
+                <Route path="group-form" element={<GroupForm />} />
+                <Route path="join-group" element={<JoinGroup />} />
 
-              <Route path="group-options" element={<GroupOptions />} />
-              <Route path="group/:id" element={<GroupDetails group={null} />} />
-              <Route path="forgot-password" element={<ForgotPassword />} />
-              <Route path="join/:inviteCode" element={<InviteRedirect />} />
-              <Route path="privacy" element={<PrivacyPolicy />} />
-              <Route path="terms" element={<TermsOfService />} />
-              <Route path="legal" element={<LegalDisclosure />} />
-              {/* Catch-all for invalid paths within a language prefix */}
-              <Route path="*" element={<Navigate to="" replace />} />
-            </Route>
-          ))}
-          {/* Support root path and any prefix-less path by redirecting to detected lang */}
-          <Route path="*" element={<LanguageRedirect location={location} />} />
-        </Routes>
+                <Route path="group-options" element={<GroupOptions />} />
+                <Route path="group/:id" element={<GroupDetails group={null} />} />
+                <Route path="forgot-password" element={<ForgotPassword />} />
+                <Route path="join/:inviteCode" element={<InviteRedirect />} />
+                <Route path="privacy" element={<PrivacyPolicy />} />
+                <Route path="terms" element={<TermsOfService />} />
+                <Route path="legal" element={<LegalDisclosure />} />
+                {/* Catch-all for invalid paths within a language prefix */}
+                <Route path="*" element={<Navigate to="" replace />} />
+              </Route>
+            ))}
+            {/* Support root path and any prefix-less path by redirecting to detected lang */}
+            <Route path="*" element={<LanguageRedirect location={location} />} />
+          </Routes>
+        </Suspense>
       </div>
     );
   };

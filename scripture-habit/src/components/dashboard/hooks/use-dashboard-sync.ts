@@ -23,8 +23,12 @@ export const useDashboardSync = () => {
             setState({ status: 'loading', user: null, userData: null });
         } else if (error) {
             setState({ status: 'error', user, userData, message: error.message });
-        } else if (user && userData) {
-            setState({ status: 'authenticated', user, userData });
+        } else if (user) {
+            if (userData) {
+                setState({ status: 'authenticated', user, userData });
+            } else {
+                setState({ status: 'loading', user, userData: null });
+            }
         } else {
             setState({ status: 'unauthenticated', user: null, userData: null });
         }
