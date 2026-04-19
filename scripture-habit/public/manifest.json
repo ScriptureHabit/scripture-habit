@@ -1,5 +1,5 @@
 {
-    "id": "/",
+    "id": "scripture-habit-pwa",
     "short_name": "Scripture Habit",
     "name": "Scripture Habit - Build a Study Habit",
     "description": "Learn scriptures with friends and share your insights in a community.",
@@ -18,13 +18,13 @@
         },
         {
             "src": "/apple-touch-icon.png",
-            "sizes": "1024x1024",
+            "sizes": "512x512",
             "type": "image/png",
             "purpose": "any"
         },
         {
             "src": "/apple-touch-icon.png",
-            "sizes": "512x512",
+            "sizes": "1024x1024",
             "type": "image/png",
             "purpose": "any"
         }
@@ -73,9 +73,6 @@
     ],
     "start_url": "/dashboard",
     "display": "standalone",
-    "display_override": [
-        "window-controls-overlay"
-    ],
     "orientation": "portrait",
     "theme_color": "#FF919D",
     "background_color": "#ffffff",
