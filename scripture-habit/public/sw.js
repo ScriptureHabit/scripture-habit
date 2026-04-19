@@ -125,16 +125,16 @@ self.addEventListener('fetch', (event) => {
     if (event.request.mode === 'navigate') {
         event.respondWith(
             caches.match('/').then((cachedResponse) => {
-                const fetchPromise = fetch(event.request).then((networkResponse) => {
-                    // Update the cache with the fresh version
-                    if (networkResponse && networkResponse.status === 200) {
-                        const responseToCache = networkResponse.clone();
-                        caches.open(CACHE_NAME).then((cache) => {
-                            cache.put('/', responseToCache);
-                        });
-                    }
-                    return networkResponse;
-                }).catch(() => caches.match(OFFLINE_URL));
+                const fetchPromise = fetch('/').then((networkResponse) => {
+                if (networkResponse && networkResponse.status === 200) {
+                    const responseToCache = networkResponse.clone();
+                    caches.open(CACHE_NAME).then((cache) => {
+                        cache.put('/', responseToCache);
+                    });
+                }
+                return networkResponse;
+            }).catch(() => caches.match(OFFLINE_URL));
+
 
                 // Return cached response immediately if available, else wait for network
                 return cachedResponse || fetchPromise;
