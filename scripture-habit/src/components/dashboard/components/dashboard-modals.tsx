@@ -110,7 +110,7 @@ const DashboardModals: FC<DashboardModalsProps> = ({
                 <h2 className="auto-kick-init-title-styled">{t('groupChat.autoKickInitTitle')}</h2>
                 <p className="auto-kick-init-desc-styled">{t('groupChat.autoKickInitDesc')}</p>
                 <div className="auto-kick-grid-options-styled">
-                  {[3, 5, 7].map(d => (
+                  {[3, 4, 5, 6, 7].map(d => (
                     <button 
                       key={d} 
                       onClick={() => setSelectedKickDays(d)} 
@@ -132,7 +132,7 @@ const DashboardModals: FC<DashboardModalsProps> = ({
                 <input 
                   type="number" 
                   title="Days Threshold" 
-                  placeholder="7" 
+                  placeholder={selectedKickDays.toString()}
                   className="delete-confirmation-input auto-kick-confirm-input-styled" 
                   value={kickConfirmInput} 
                   onChange={(e) => setKickConfirmInput(e.target.value)} 

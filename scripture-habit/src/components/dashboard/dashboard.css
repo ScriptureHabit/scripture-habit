@@ -863,6 +863,11 @@
   font-size: 1.5rem;
 }
 
+.auto-kick-confirm-input-styled::placeholder {
+  color: var(--gray);
+  opacity: 0.6;
+}
+
 .auto-kick-error-text-styled {
   color: #e53e3e;
   font-size: 0.8rem;
