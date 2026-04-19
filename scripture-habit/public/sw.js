@@ -123,25 +123,38 @@ self.addEventListener('fetch', (event) => {
 
     // Navigation requests (Stale-While-Revalidate for App Shell)
     if (event.request.mode === 'navigate') {
-    event.respondWith(
-        caches.match('/').then((cachedResponse) => {
-            const fetchPromise = fetch('/').then((networkResponse) => {
-                if (networkResponse && networkResponse.status === 200) {
-                    const responseToCache = networkResponse.clone();
-                    caches.open(CACHE_NAME).then((cache) => {
-                        cache.put('/', responseToCache);
-                    });
-                    
-                    if (networkResponse.redirected) {
-                        return new Response(networkResponse.body, {
-                            status: networkResponse.status,
-                            statusText: networkResponse.statusText,
-                            headers: networkResponse.headers
+        event.respondWith(
+            caches.match('/').then((cachedResponse) => {
+                const fetchPromise = fetch('/').then((networkResponse) => {
+                    if (networkResponse && networkResponse.status === 200) {
+                        // "Clean" the response if it was redirected
+                        let cleanResponse = networkResponse;
+                        if (networkResponse.redirected) {
+                            cleanResponse = new Response(networkResponse.body, {
+                                status: networkResponse.status,
+                                statusText: networkResponse.statusText,
+                                headers: networkResponse.headers
+                            });
+                        }
+
+                        const responseToCache = cleanResponse.clone();
+                        caches.open(CACHE_NAME).then((cache) => {
+                            cache.put('/', responseToCache);
                         });
+                        return cleanResponse;
                     }
-                }
-                return networkResponse;
+                    return networkResponse;
                 }).catch(() => caches.match(OFFLINE_URL));
+
+                // Ensure cached response is also "clean" if it was somehow cached with redirected: true
+                if (cachedResponse && cachedResponse.redirected) {
+                    return new Response(cachedResponse.body, {
+                        status: cachedResponse.status,
+                        statusText: cachedResponse.statusText,
+                        headers: cachedResponse.headers
+                    });
+                }
+
                 return cachedResponse || fetchPromise;
             })
         );
