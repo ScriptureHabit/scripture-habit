@@ -82,7 +82,8 @@ export default {
                 "title": "アプリをインストール",
                 "description": "ホーム画面に追加してアプリとしてご利用いただけます。",
                 "iosInstruction": "Safariの下部中央にある「シェア」ボタンをタップし、「ホーム画面に追加」を選んでください。",
-                "androidButton": "アプリをホーム画面に追加"
+                "androidButton": "アプリをホーム画面に追加",
+                "androidInstruction": "ブラウザのメニュー（︙）から「アプリをインストール」または「ホーム画面に追加」を選択してください。"
             },
             you: "あなた",
             title: "プロフィール",

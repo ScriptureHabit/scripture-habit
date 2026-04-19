@@ -112,12 +112,9 @@ const InviteRedirect: FC = () => {
 
 export default InviteRedirect;
 
-interface NavigatorWithStandalone extends Navigator {
-    standalone?: boolean;
-}
 
 function isStandalone() {
-    return window.matchMedia('(display-mode: standalone)').matches || (navigator as NavigatorWithStandalone).standalone;
+    return window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
 }
 
 

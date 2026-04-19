@@ -82,7 +82,8 @@ export default {
                 "title": "Install App",
                 "description": "Add to home screen for a better app experience.",
                 "iosInstruction": "Tap the Share button at the bottom of Safari, then select 'Add to Home Screen'.",
-                "androidButton": "Add to Home Screen"
+                "androidButton": "Add to Home Screen",
+                "androidInstruction": "Open your browser menu (⋮) and select 'Install app' or 'Add to Home Screen'."
             },
             you: "You",
             title: "profile",

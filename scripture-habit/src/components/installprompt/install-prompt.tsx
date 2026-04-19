@@ -6,10 +6,6 @@ import { Language } from '../../context/language-context';
 import { SUPPORTED_LANGUAGES } from '../../config/languages';
 import './install-prompt.css';
 
-// Extend Navigator for iOS standalone check
-interface NavigatorWithStandalone extends Navigator {
-    standalone?: boolean;
-}
 
 const InstallPrompt: FC = () => {
     const { t } = useLanguage();
@@ -26,7 +22,7 @@ const InstallPrompt: FC = () => {
             (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
         const isAndroid = /Android/i.test(ua);
 
-        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || (navigator as NavigatorWithStandalone).standalone;
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
 
         if (!isStandalone) {
             if (isIOS) setPlatform('ios');
@@ -66,7 +62,7 @@ const InstallPrompt: FC = () => {
         }
 
         const isDashboard = base === '/dashboard';
-        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || (navigator as NavigatorWithStandalone).standalone;
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
 
         // Check for 7-day cooldown in localStorage
         let hasDismissed = false;

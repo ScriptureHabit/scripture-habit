@@ -45,11 +45,6 @@ const PrivacyPolicy = lazy(() => import('./components/privacypolicy/privacy-poli
 const TermsOfService = lazy(() => import('./components/termsofservice/terms-of-service'));
 const LegalDisclosure = lazy(() => import('./components/legaldisclosure/legal-disclosure'));
 
-declare global {
-  interface Navigator {
-    standalone?: boolean;
-  }
-}
 
 interface SystemStatus {
   loading: boolean;
@@ -140,7 +135,7 @@ const App: React.FC = () => {
     return 'App';
   };
 
-  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || !!window.navigator.standalone;
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || !!navigator.standalone;
 
   const renderContent = () => {
     // If auth is still determining, show nothing or a very light shell

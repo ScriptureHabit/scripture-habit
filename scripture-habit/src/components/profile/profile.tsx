@@ -64,7 +64,9 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
             (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
         const isAndroid = /Android/i.test(ua);
 
-        const standaloneCheck = window.matchMedia('(display-mode: standalone)').matches || ('standalone' in window.navigator);
+        const standaloneCheck = window.matchMedia('(display-mode: standalone)').matches || 
+                             navigator.standalone || 
+                             document.referrer.includes('android-app://');
         setIsStandalone(!!standaloneCheck);
 
         if (!standaloneCheck) {
@@ -80,8 +82,14 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
         };
 
         checkPrompt();
+        // Check more frequently initially, then slow down
         const interval = setInterval(checkPrompt, 1000);
-        return () => clearInterval(interval);
+        const timeout = setTimeout(() => clearInterval(interval), 10000); // Stop after 10s if not found
+
+        return () => {
+            clearInterval(interval);
+            clearTimeout(timeout);
+        };
     }, []);
 
     const handleInstallClick = async () => {
@@ -363,17 +371,26 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
                     {platform === 'ios' ? (
                         <div className="ios-instruction">
                             <p className="instruction-text">
-                                {t('profile.installApp.iosInstruction') || (language === 'ja' ? 'Safariの下部中央にある「シェア」ボタンをタップし、「ホーム画面に追加」を選んでください。' : "Tap the Share button at the bottom of Safari, then select 'Add to Home Screen'.")}
+                                {t('profile.installApp.iosInstruction')}
                             </p>
                         </div>
                     ) : (
-                        <Button
-                            onClick={handleInstallClick}
-                            className={`install-btn ${!deferredPrompt ? 'disabled' : ''}`}
-                            disabled={!deferredPrompt}
-                        >
-                            {t('profile.installApp.androidButton') || (language === 'ja' ? 'アプリをホーム画面に追加' : "Add to Home Screen")}
-                        </Button>
+                        <div className="android-install-container">
+                            {deferredPrompt ? (
+                                <Button
+                                    onClick={handleInstallClick}
+                                    className="install-btn"
+                                >
+                                    {t('profile.installApp.androidButton')}
+                                </Button>
+                            ) : (
+                                <div className="android-instruction">
+                                    <p className="instruction-text">
+                                        {t('profile.installApp.androidInstruction') || (language === 'ja' ? 'ブラウザのメニュー（︙）から「アプリをインストール」または「ホーム画面に追加」を選択してください。' : "Open your browser menu (⋮) and select 'Install app' or 'Add to Home Screen'.")}
+                                    </p>
+                                </div>
+                            )}
+                        </div>
                     )}
                 </div>
             )}

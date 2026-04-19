@@ -372,6 +372,16 @@
     border-radius: 12px;
 }
 
+.android-instruction {
+    background: rgba(49, 130, 206, 0.05);
+    padding: 12px;
+    border-radius: 12px;
+}
+
+.android-install-container {
+    width: 100%;
+}
+
 .instruction-text {
     font-size: 0.9rem;
     color: #4a5568;

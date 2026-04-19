@@ -5,6 +5,10 @@ declare global {
     deferredPWAPrompt: BeforeInstallPromptEvent | null;
   }
   
+  interface Navigator {
+    standalone?: boolean;
+  }
+  
   interface BeforeInstallPromptEvent extends Event {
     readonly platforms: string[];
     readonly userChoice: Promise<{
