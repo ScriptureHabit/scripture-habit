@@ -123,20 +123,25 @@ self.addEventListener('fetch', (event) => {
 
     // Navigation requests (Stale-While-Revalidate for App Shell)
     if (event.request.mode === 'navigate') {
-        event.respondWith(
-            caches.match('/').then((cachedResponse) => {
-                const fetchPromise = fetch('/').then((networkResponse) => {
+    event.respondWith(
+        caches.match('/').then((cachedResponse) => {
+            const fetchPromise = fetch('/').then((networkResponse) => {
                 if (networkResponse && networkResponse.status === 200) {
                     const responseToCache = networkResponse.clone();
                     caches.open(CACHE_NAME).then((cache) => {
                         cache.put('/', responseToCache);
                     });
+                    
+                    if (networkResponse.redirected) {
+                        return new Response(networkResponse.body, {
+                            status: networkResponse.status,
+                            statusText: networkResponse.statusText,
+                            headers: networkResponse.headers
+                        });
+                    }
                 }
                 return networkResponse;
-            }).catch(() => caches.match(OFFLINE_URL));
-
-
-                // Return cached response immediately if available, else wait for network
+                }).catch(() => caches.match(OFFLINE_URL));
                 return cachedResponse || fetchPromise;
             })
         );
