@@ -161,7 +161,7 @@ button {
     border-radius: 0;
     padding-top: env(safe-area-inset-top, 24px);
     /* Frosted glass effect removed to fix fixed positioning context */
-    background-color: rgba(255, 255, 255, 0.95);
+    background-color: transparent;
   }
 }
 
