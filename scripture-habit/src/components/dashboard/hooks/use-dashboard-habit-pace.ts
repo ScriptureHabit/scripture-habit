@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { safeStorage } from '../../../utils/storage';
-import { auth } from '../../../firebase';
+import { auth, appCheck } from '../../../firebase';
+import { getToken } from 'firebase/app-check';
 import { Capacitor } from '@capacitor/core';
 import { toast } from 'react-toastify';
 import { UserData } from '../../../types/user';
@@ -44,13 +45,30 @@ export const useDashboardHabitPace = (
             const idToken = await auth?.currentUser?.getIdToken();
             if (!idToken) throw new Error("No idToken");
 
+            // Get App Check token
+            let appCheckToken: string | undefined;
+            if (appCheck) {
+                try {
+                    const result = await getToken(appCheck);
+                    appCheckToken = result.token;
+                } catch (err) {
+                    console.warn("Failed to get App Check token:", err);
+                }
+            }
+
             const API_BASE_URL = Capacitor.isNativePlatform() ? 'https://scripturehabit.app' : '';
+            const headers: Record<string, string> = {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${idToken}`
+            };
+
+            if (appCheckToken) {
+                headers['X-Firebase-AppCheck'] = appCheckToken;
+            }
+
             const response = await fetch(`${API_BASE_URL}/api/update-kick-threshold`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${idToken}`
-                },
+                headers: headers,
                 body: JSON.stringify({
                     threshold: selectedKickDays
                 })
