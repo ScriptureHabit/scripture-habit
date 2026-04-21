@@ -43,11 +43,13 @@ const MessageInput: FC<MessageInputProps> = ({
         const textarea = textareaRef.current;
         if (textarea) {
             textarea.style.height = 'auto';
-            const newHeight = Math.min(textarea.scrollHeight, 250);
+            // If message is empty, use a base height to avoid placeholder wrapping affecting height
+            const scrollHeight = newMessage ? textarea.scrollHeight : 0;
+            const newHeight = newMessage ? Math.min(scrollHeight, 250) : 40; 
             textarea.style.height = `${newHeight}px`;
         }
 
-    }, [newMessage, textareaRef]);
+    }, [newMessage, textareaRef, inputPlaceholder]);
 
     return (
         <form

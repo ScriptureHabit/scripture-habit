@@ -582,7 +582,7 @@
 .message-list-container {
     flex: 1;
     overflow-y: auto;
-    padding: 1rem 1rem 1.5rem 1rem;
+    padding: 1rem 1rem 2rem 1rem;
     display: flex;
     flex-direction: column;
     gap: 4px;
@@ -660,12 +660,10 @@
 @keyframes fadeIn {
     from {
         opacity: 0;
-        transform: translateY(10px);
     }
 
     to {
         opacity: 1;
-        transform: translateY(0);
     }
 }
 

@@ -2,7 +2,7 @@
     align-self: center;
     align-items: center;
     max-width: 90%;
-    margin: 1rem 0;
+    margin: 1rem 0 2rem 0;
 }
 
 .message.system-message p {

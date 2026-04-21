@@ -4,8 +4,6 @@
     display: flex;
     margin-bottom: 0.5rem;
     box-sizing: border-box;
-    content-visibility: auto;
-    contain-intrinsic-size: auto 60px;
 }
 
 .message-wrapper.sent {
@@ -315,11 +313,9 @@
 @keyframes fadeIn {
     from {
         opacity: 0;
-        transform: translateY(10px);
     }
     to {
         opacity: 1;
-        transform: translateY(0);
     }
 }
 
