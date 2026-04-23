@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { admin, db } from '../lib/firebase-admin.js';
 import { MessageService } from './message-service.js';
 import { GroupDocument, MessageDocument, UserDocument } from '../../types/firestore.js';
@@ -8,28 +8,30 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('MessageService Integratio
     const TEST_UID = 'cFg1i9IybmfV1la4OekO2jDWE9h1'; // test1
     const TEST_GROUP_ID = 'MSG_SRV_TEST_GRP_001'; // Isolating group ID to prevent parallel test conflicts
 
-    beforeAll(async () => {
+    beforeEach(async () => {
         const userRef = db.collection('users').doc(TEST_UID);
         // Ensure user exists
         await userRef.set({
+            uid: TEST_UID,
             nickname: 'TestUser',
             groupIds: admin.firestore.FieldValue.arrayUnion(TEST_GROUP_ID)
         }, { merge: true });
 
         // Ensure group exists and user is in the group
         const groupRef = db.collection('groups').doc(TEST_GROUP_ID);
-        const gSnap = await groupRef.get();
-        if (!gSnap.exists) {
-            await groupRef.set({
-                name: 'Test Group',
-                members: [TEST_UID],
-                messageCount: 0
-            } as GroupDocument);
-        } else {
-            await groupRef.set({
-                members: admin.firestore.FieldValue.arrayUnion(TEST_UID)
-            }, { merge: true });
-        }
+        await groupRef.set({
+            name: 'Test Group',
+            members: [TEST_UID],
+            messageCount: 0,
+            timeZone: 'Asia/Tokyo'
+        }, { merge: true });
+        
+        // Also setup member subcollection
+        await groupRef.collection('members').doc(TEST_UID).set({
+            uid: TEST_UID,
+            nickname: 'TestUser',
+            joinedAt: admin.firestore.FieldValue.serverTimestamp()
+        });
     });
 
     it('should post a message and update group counters and member states', async () => {

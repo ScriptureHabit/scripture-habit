@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { describe, it, expect, beforeAll, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { admin, db } from '../lib/firebase-admin.js';
 import { NoteService } from './note-service.js';
 import { GroupDocument, UserDocument } from '../../types/firestore.js';
@@ -10,9 +10,10 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('NoteService Deletion Inte
     const GROUP_1 = 'delete-test-group-1';
     const GROUP_2 = 'delete-test-group-2';
 
-    beforeAll(async () => {
+    beforeEach(async () => {
         // Setup user
         await db.collection('users').doc(TEST_UID).set({
+            uid: TEST_UID,
             nickname: 'Delete Tester',
             totalNotes: 0,
             groupIds: [GROUP_1, GROUP_2],
@@ -26,6 +27,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('NoteService Deletion Inte
                 members: [TEST_UID],
                 noteCount: 0,
                 messageCount: 0,
+                timeZone: 'UTC',
                 createdAt: admin.firestore.Timestamp.now()
             } as GroupDocument);
         }

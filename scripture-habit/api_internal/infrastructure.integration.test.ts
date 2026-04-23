@@ -73,7 +73,9 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Test Infrastructure Valid
 
         // 2. Fetch the RAW document from Firestore
         const groupSnap = await db.collection('groups').doc(groupId).get();
+        expect(groupSnap.exists, `Group ${groupId} was not found in Firestore after creation`).toBe(true);
         const rawData = groupSnap.data() as GroupDocument;
+        expect(rawData, "Group data should not be null").toBeDefined();
         
         // 2.5 Verify timeZone exists (New Guardrail)
         expect(rawData.timeZone, "Group MUST have a timeZone field for correct Unity calculation").toBeDefined();

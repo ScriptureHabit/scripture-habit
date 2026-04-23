@@ -2,6 +2,7 @@ import '../api_internal/lib/load-env.js';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
+import * as Sentry from "@sentry/node";
 
 // Import Route Handlers
 import authRoutes from '../api_internal/routes/auth.js';
@@ -23,6 +24,14 @@ const app = express();
 // --- Middleware & Configuration ---
 app.use(helmet());
 app.set('trust proxy', 1);
+
+// Initialize Sentry
+if (process.env.SENTRY_DISABLED !== 'true') {
+  Sentry.init({
+    dsn: process.env.VITE_SENTRY_DSN || "",
+    tracesSampleRate: 1.0,
+  });
+}
 
 const ALLOWED_ORIGINS = [
     'https://scripturehabit.app',
@@ -76,11 +85,17 @@ app.use('/api', groupRoutes);
 app.use('/api', messageRoutes);
 app.use('/api', aiRoutes);
 app.use('/api', previewRoutes);
+
 app.use('/api', cronRoutes);
 app.use('/api', reportRoutes);
 app.use('/api', adminRoutes);
 app.use('/api', testUtilsRoutes);
 app.use('/api', resetUnityRoutes);
+
+// The Sentry error handler must be before any other error middleware and after all controllers
+if (process.env.SENTRY_DISABLED !== 'true') {
+  Sentry.setupExpressErrorHandler(app);
+}
 
 // --- 404 Handler (Keep it JSON for API) ---
 app.use('/api', (_req, res) => {
@@ -96,6 +111,12 @@ app.use((err: unknown, req: express.Request, res: express.Response, _next: expre
     console.error(`[Error] ${req.method} ${req.path} | RequestID: ${requestId}`, {
         message: err instanceof Error ? err.message : 'Unknown error',
         user: (req as { user?: { uid: string } }).user?.uid
+    });
+
+    // Capture error in Sentry
+    Sentry.captureException(err, {
+        user: { id: (req as { user?: { uid: string } }).user?.uid },
+        tags: { requestId }
     });
 
 

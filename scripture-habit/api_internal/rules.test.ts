@@ -4,7 +4,7 @@ import {
     initializeTestEnvironment,
     RulesTestEnvironment,
 } from '@firebase/rules-unit-testing';
-import { describe, it, beforeAll, afterAll, beforeEach } from 'vitest';
+import { describe, it, beforeAll, afterAll, beforeEach, vi } from 'vitest';
 import { readFileSync } from 'fs';
 import { doc, getDoc, setDoc, collection, getDocs, query, where } from 'firebase/firestore';
 
@@ -13,8 +13,9 @@ import { doc, getDoc, setDoc, collection, getDocs, query, where } from 'firebase
  * Run with: firebase emulators:exec "npx vitest tests/rules.test.ts"
  */
 describe('Firestore Security Rules', () => {
+    vi.setConfig({ testTimeout: 30000 });
     let testEnv: RulesTestEnvironment;
-    const PROJECT_ID = 'scripture-habit-auth';
+    const PROJECT_ID = 'rules-test-project';
 
     beforeAll(async () => {
         testEnv = await initializeTestEnvironment({

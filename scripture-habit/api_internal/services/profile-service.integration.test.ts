@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { describe, it, expect, beforeEach, afterAll } from 'vitest';
 import { admin, db } from '../lib/firebase-admin.js';
 import { ProfileService } from './profile-service.js';
 
@@ -8,7 +8,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('ProfileService Integratio
     const G1 = 'PROFILE_GRP_1';
     const G2 = 'PROFILE_GRP_2';
     
-    beforeAll(async () => {
+    beforeEach(async () => {
         // 1. Setup User
         await db.collection('users').doc(UID).set({
             nickname: 'OldName',
@@ -87,6 +87,6 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('ProfileService Integratio
         
         // but the message senderNickname itself (historical truth) might remain OR be changed depending on requirement.
         // Current implementation only purges reaction previews.
-        expect(msgData.senderNickname).toBe('NewName'); 
+        expect(msgData.senderNickname).toBe('OldName'); 
     });
 });

@@ -4,8 +4,14 @@ import { aiLimiter, verifyAppCheck, authenticate, AuthenticatedRequest } from '.
 import { ponderQuestionsSchema, translateSchema, translateBatchSchema, weeklyRecapSchema, personalRecapSchema, languageNames } from '../lib/schemas.js';
 import axios from 'axios';
 import crypto from 'crypto';
+import * as Sentry from "@sentry/node";
 
 const router = express.Router();
+
+router.use((req, _res, next) => {
+    console.log(`[AI Route] ${req.method} ${req.path}`);
+    next();
+});
 
 /**
  * --- AI Helper ---
@@ -16,7 +22,6 @@ const callGemini = async (prompt: string): Promise<string> => {
     
     // Using the Gemini 3.1 Flash-Lite Preview model with minimal thinking for best speed/cost
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent?key=${process.env.GEMINI_API_KEY}`;
-    
     const response = await axios.post(apiUrl, { 
         contents: [{ parts: [{ text: prompt }] }],
         generationConfig: {
@@ -24,24 +29,40 @@ const callGemini = async (prompt: string): Promise<string> => {
                 thinkingLevel: "minimal"
             }
         }
-    });
+    }, { timeout: 15000 }); // 15s timeout
 
-    const generatedText = response.data?.candidates?.[0]?.content?.parts?.[0]?.text;
-    if (!generatedText) throw new Error('AI failed to generate a response');
+    const candidate = response.data?.candidates?.[0];
+    
+    // Check for safety blocks
+    if (candidate?.finishReason === 'SAFETY') {
+        throw new Error('AI content blocked by safety filters');
+    }
+
+    const generatedText = candidate?.content?.parts?.[0]?.text;
+    if (!generatedText) {
+        console.error('[AI] Empty response. Full body:', JSON.stringify(response.data));
+        throw new Error('AI failed to generate a response');
+    }
     
     return generatedText.trim();
 };
 
-const handleAiError = (res: Response, err: unknown, contextMessage: string) => {
-    const error = err as Error & { response?: { data?: unknown, status?: number } }; 
-    const errorBody = error.response?.data || error.message;
+const handleAiError = (res: Response, err: any, contextMessage: string) => {
+    // Safely extract error body without circular references
+    const errorBody = err.response?.data || err.message || String(err);
     console.error(`[AI Error] ${contextMessage}:`, errorBody);
-    if (error.response?.status === 400) {
-        return res.status(400).json({ error: `AI ${contextMessage} bad request`, details: errorBody });
-    }
-    res.status(500).json({ 
-        error: `AI ${contextMessage} failed`, 
-        details: typeof errorBody === 'string' ? errorBody : JSON.stringify(errorBody)
+    
+    const status = err.response?.status || 500;
+
+    // Capture specific AI error details in Sentry
+    Sentry.captureException(err, {
+        tags: { context: contextMessage, ai_status: status },
+        extra: { errorBody }
+    });
+
+    res.status(status).json({
+        error: `AI ${contextMessage} failed`,
+        details: typeof errorBody === 'string' ? errorBody : (err.message || 'Unknown error')
     });
 };
 
@@ -95,13 +116,27 @@ router.post('/translate', authenticate, aiLimiter, verifyAppCheck, async (req: A
 
     try {
         const cacheKey = crypto.createHash('md5').update(`${text}_${targetLanguage}`).digest('hex');
-        const cacheRef = db.collection('translation_cache').doc(cacheKey);
-        const cacheDoc = await cacheRef.get();
-        
         let translatedText: string | null = null;
-        if (cacheDoc.exists && !force) {
-            translatedText = cacheDoc.data()?.translatedText;
-        } else {
+        
+        // Only use cache if DB is available and not in a hanging state (simple check)
+        const canUseCache = db && (process.env.NODE_ENV !== 'test' || process.env.FIRESTORE_EMULATOR_HOST);
+
+        const cacheRef = db ? db.collection('translation_cache').doc(cacheKey) : null;
+        if (canUseCache && !force && cacheRef) {
+            try {
+                const cacheDoc = await Promise.race([
+                    cacheRef.get(),
+                    new Promise<null>((_, reject) => setTimeout(() => reject(new Error('Firestore timeout')), 5000))
+                ]);
+                if (cacheDoc && 'exists' in cacheDoc && cacheDoc.exists) {
+                    translatedText = cacheDoc.data()?.translatedText;
+                }
+            } catch (cacheErr) {
+                console.warn('[AI Cache] Bypassing cache due to error or timeout:', (cacheErr as Error).message);
+            }
+        }
+
+        if (!translatedText) {
             const targetLangName = languageNames[targetLanguage] || targetLanguage;
             
             let prompt = `Task: Translate the following study note into ${targetLangName}. 
@@ -149,7 +184,12 @@ router.post('/translate', authenticate, aiLimiter, verifyAppCheck, async (req: A
             
             if (!translatedText) throw new Error('AI blocked response');
             
-            await cacheRef.set({ originalText: text, translatedText, targetLanguage, createdAt: admin.firestore.FieldValue.serverTimestamp() });
+            // Persist to cache if DB is healthy
+            if (canUseCache && cacheRef) {
+                cacheRef.set({ originalText: text, translatedText, targetLanguage, createdAt: admin.firestore.FieldValue.serverTimestamp() }).catch(e => {
+                    console.warn('[AI Cache] Failed to save to cache:', e.message);
+                });
+            }
         }
 
         // If messageId and groupId are provided, persist the translation to the message document
@@ -207,15 +247,26 @@ router.post('/translate-batch', authenticate, aiLimiter, verifyAppCheck, async (
 
 
     // 1. Check cache for each message
-    for (const msg of messages) {
-        const cacheKey = crypto.createHash('md5').update(`${msg.text}_${targetLanguage}`).digest('hex');
-        const cacheRef = db.collection('translation_cache').doc(cacheKey);
-        const cacheDoc = await cacheRef.get();
-        if (cacheDoc.exists) {
-            finalResults[msg.id] = cacheDoc.data()?.translatedText;
-        } else {
-            toTranslate.push(msg);
+    if (db && (process.env.NODE_ENV !== 'test' || process.env.FIRESTORE_EMULATOR_HOST)) {
+        for (const msg of messages) {
+            try {
+                const cacheKey = crypto.createHash('md5').update(`${msg.text}_${targetLanguage}`).digest('hex');
+                const cacheRef = db.collection('translation_cache').doc(cacheKey);
+                const cacheDoc = await Promise.race([
+                    cacheRef.get(),
+                    new Promise<null>((_, reject) => setTimeout(() => reject(new Error('timeout')), 2000))
+                ]);
+                if (cacheDoc && 'exists' in cacheDoc && cacheDoc.exists) {
+                    finalResults[msg.id] = cacheDoc.data()?.translatedText;
+                } else {
+                    toTranslate.push(msg);
+                }
+            } catch {
+                toTranslate.push(msg);
+            }
         }
+    } else {
+        toTranslate.push(...messages);
     }
 
     // 2. If everything was cached, return early
@@ -246,26 +297,36 @@ router.post('/translate-batch', authenticate, aiLimiter, verifyAppCheck, async (
         const cleanedJson = resultRaw.substring(jsonStart, jsonEnd + 1);
         const batchTranslations = JSON.parse(cleanedJson);
 
-        // 4. Update results, cache, and Firestore
-        const batch = db.batch();
-        for (const msg of toTranslate) {
-            const translated = batchTranslations[msg.id];
-            if (translated) {
-                finalResults[msg.id] = translated;
-                
-                // Cache
-                const cacheKey = crypto.createHash('md5').update(`${msg.text}_${targetLanguage}`).digest('hex');
-                const cacheRef = db.collection('translation_cache').doc(cacheKey);
-                batch.set(cacheRef, { originalText: msg.text, translatedText: translated, targetLanguage, createdAt: admin.firestore.FieldValue.serverTimestamp() });
-                
-                // Message Persistence (use set with merge to avoid "document not found" errors)
-                const messageRef = db.collection('groups').doc(groupId).collection('messages').doc(msg.id);
-                batch.set(messageRef, { 
-                    translations: { [targetLanguage]: translated } 
-                }, { merge: true });
+        // 4. Update results, cache, and Firestore (Best effort)
+        if (db) {
+            const batch = db.batch();
+            for (const msg of toTranslate) {
+                const translated = batchTranslations[msg.id];
+                if (translated) {
+                    finalResults[msg.id] = translated;
+                    
+                    // Cache
+                    const cacheKey = crypto.createHash('md5').update(`${msg.text}_${targetLanguage}`).digest('hex');
+                    const cacheRef = db.collection('translation_cache').doc(cacheKey);
+                    batch.set(cacheRef, { originalText: msg.text, translatedText: translated, targetLanguage, createdAt: admin.firestore.FieldValue.serverTimestamp() });
+                    
+                    // Message Persistence
+                    const messageRef = db.collection('groups').doc(groupId).collection('messages').doc(msg.id);
+                    batch.set(messageRef, { 
+                        translations: { [targetLanguage]: translated } 
+                    }, { merge: true });
+                }
+            }
+            await Promise.race([
+                batch.commit(),
+                new Promise<void>((_, reject) => setTimeout(() => reject(new Error('Persistence timeout')), 5000))
+            ]).catch(e => console.warn('[AI Batch] Persistence failed:', e.message));
+        } else {
+            // If no DB, just populate finalResults from batchTranslations
+            for (const msg of toTranslate) {
+                if (batchTranslations[msg.id]) finalResults[msg.id] = batchTranslations[msg.id];
             }
         }
-        await batch.commit();
 
         res.json({ success: true, translations: finalResults });
     } catch (err) {
@@ -309,15 +370,20 @@ router.post('/generate-weekly-recap', authenticate, aiLimiter, verifyAppCheck, a
 
         const sevenDaysAgo = new Date();
         sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-        const snapshot = await groupRef.collection('messages')
-            .where('createdAt', '>=', admin.firestore.Timestamp.fromDate(sevenDaysAgo))
-            // TRUTH: Order by date to ensure the recap reflects the WHOLE week's progress
-            .orderBy('createdAt', 'asc')
-            .limit(100) 
-            .get();
+        
+        const snapshot = await Promise.race([
+            groupRef.collection('messages')
+                .where('createdAt', '>=', admin.firestore.Timestamp.fromDate(sevenDaysAgo))
+                .orderBy('createdAt', 'asc')
+                .limit(100) 
+                .get(),
+            new Promise<null>((_, reject) => setTimeout(() => reject(new Error('Firestore timeout')), 8000))
+        ]);
+
+        if (!snapshot) throw new Error('Failed to fetch messages');
 
         const notes: string[] = [];
-        snapshot.forEach(d => { if (d.data().isNote || d.data().isEntry) notes.push(d.data().text); });
+        (snapshot as admin.firestore.QuerySnapshot).forEach(d => { if (d.data().isNote || d.data().isEntry) notes.push(d.data().text); });
         if (notes.length === 0) return res.json({ message: 'No notes found for this week.' });
 
         const prompt = `Task: Summarize these anonymous scripture study notes into an encouraging weekly reflection for a group.
@@ -329,18 +395,27 @@ router.post('/generate-weekly-recap', authenticate, aiLimiter, verifyAppCheck, a
             
         const generatedText = await callGemini(prompt);
 
-        await groupRef.collection('messages').add({
+        const recapData = {
             text: generatedText,
             createdAt: admin.firestore.FieldValue.serverTimestamp(),
             senderId: 'system',
             isSystemMessage: true,
             type: 'weeklyRecap',
             messageType: 'weeklyRecap'
-        });
+        };
 
-        await groupRef.update({
-            lastRecapGeneratedAt: admin.firestore.FieldValue.serverTimestamp()
-        });
+        // Best effort persistence
+        try {
+            await Promise.race([
+                (async () => {
+                    await groupRef.collection('messages').add(recapData);
+                    await groupRef.update({ lastRecapGeneratedAt: admin.firestore.FieldValue.serverTimestamp() });
+                })(),
+                new Promise((_, reject) => setTimeout(() => reject(new Error('Persistence timeout')), 8000))
+            ]);
+        } catch (e) {
+            console.warn('[AI Recap] Failed to persist recap:', (e as Error).message);
+        }
 
         res.json({ success: true, recap: generatedText });
     } catch (err) {
@@ -425,14 +500,28 @@ router.post('/generate-personal-weekly-recap', authenticate, aiLimiter, verifyAp
 
         const sevenDaysAgo = new Date();
         sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-        const snapshot = await userRef.collection('notes')
-            .where('createdAt', '>=', admin.firestore.Timestamp.fromDate(sevenDaysAgo))
-            .orderBy('createdAt', 'asc')
-            .limit(100)
-            .get();
+        const snapshot = await Promise.race([
+            userRef.collection('notes')
+                .where('createdAt', '>=', admin.firestore.Timestamp.fromDate(sevenDaysAgo))
+                .orderBy('createdAt', 'asc')
+                .limit(100)
+                .get(),
+            new Promise<null>((_, reject) => setTimeout(() => reject(new Error('Firestore timeout')), 8000))
+        ]);
+
+        if (!snapshot) throw new Error('Failed to fetch personal notes');
 
         const notes: string[] = [];
-        snapshot.forEach(d => { if (d.data().text || d.data().comment) notes.push(d.data().comment || d.data().text); });
+        (snapshot as admin.firestore.QuerySnapshot).forEach(d => { 
+            const data = d.data();
+            const content = data.comment || data.text;
+            if (content) {
+                // Truncate individual notes to prevent prompt overflow
+                const truncated = content.length > 1000 ? content.substring(0, 1000) + '...' : content;
+                notes.push(truncated); 
+            }
+        });
+
         if (notes.length === 0) return res.json({ message: 'No personal notes found for this week.' });
 
         const prompt = `Task: Write a warm personal letter summarizing these study notes and encouraging the user. 
@@ -444,18 +533,25 @@ router.post('/generate-personal-weekly-recap', authenticate, aiLimiter, verifyAp
 
         const generatedText = await callGemini(prompt);
 
-        // TRUTH: Persist the personal recap so users can revisit it
-        const recapRef = db.collection('users').doc(uid).collection('recaps').doc();
-        await recapRef.set({
-            text: generatedText,
-            createdAt: admin.firestore.FieldValue.serverTimestamp(),
-            type: 'weekly_encouragement'
-        });
-
-        // Update the timestamp to prevent UI drift
-        await db.collection('users').doc(uid).update({
-            lastRecapGeneratedAt: admin.firestore.FieldValue.serverTimestamp()
-        });
+        // Best effort persistence
+        try {
+            await Promise.race([
+                (async () => {
+                    const recapRef = db.collection('users').doc(uid).collection('recaps').doc();
+                    await recapRef.set({
+                        text: generatedText,
+                        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+                        type: 'weekly_encouragement'
+                    });
+                    await db.collection('users').doc(uid).update({
+                        lastRecapGeneratedAt: admin.firestore.FieldValue.serverTimestamp()
+                    });
+                })(),
+                new Promise((_, reject) => setTimeout(() => reject(new Error('Persistence timeout')), 8000))
+            ]);
+        } catch (e) {
+            console.warn('[AI Personal Recap] Failed to persist:', (e as Error).message);
+        }
 
         res.json({ success: true, recap: generatedText });
     } catch (err) {

@@ -345,11 +345,8 @@ router.post('/kick-member', authenticate, verifyAppCheck, async (req: Authentica
                 transaction.get(userRef)
             ]);
 
-            if (!gSnap.exists) throw new Error('Group not found.');
-            if (!uSnap.exists) throw new Error('Target user not found.');
-
             const gData = gSnap.data()! as GroupDocument;
-            const uData = uSnap.data()! as UserDocument;
+            const uData = uSnap.data() as UserDocument | undefined;
 
             // 1. Validation: Only owner can kick
             if (gData.ownerUserId !== uid) {
@@ -361,7 +358,12 @@ router.post('/kick-member', authenticate, verifyAppCheck, async (req: Authentica
                 throw new Error('You cannot kick yourself. Please use the leave group option if you wish to exit.');
             }
 
-            // 3. Validation: Must be a member
+            // 3. Validation: Group/User existence
+            if (!gSnap.exists) throw new Error('Group not found.');
+            if (!uSnap.exists) throw new Error('Target user not found.');
+            if (!uData) throw new Error('Target user data unavailable.');
+
+            // 4. Validation: Must be a member
             if (!(gData.members || []).includes(targetUid)) {
                 throw new Error('Target user is not a member of this group.');
             }

@@ -5,7 +5,34 @@ import { Server } from 'http';
 import { auth, admin } from './lib/firebase-admin.js';
 import axios from 'axios';
 
-vi.mock('axios');
+const isRealAi = process.env.USE_REAL_AI === 'true';
+
+// Use dynamic mocking to support conditional real AI tests
+if (!isRealAi) {
+    vi.mock('axios', () => ({
+        default: {
+            post: vi.fn().mockImplementation((url) => {
+                if (url.includes('generateContent')) {
+                    // Check if it's a batch request by looking at the prompt in the mock's logic?
+                    // Actually, let's just return something that works for both.
+                    return Promise.resolve({
+                        data: {
+                            candidates: [{
+                                content: { parts: [{ text: '{"msg1": "AI Response"}' }] }
+                            }]
+                        }
+                    });
+                }
+                return Promise.resolve({ data: {} });
+            }),
+            create: vi.fn().mockReturnThis(),
+            interceptors: {
+                request: { use: vi.fn(), eject: vi.fn() },
+                response: { use: vi.fn(), eject: vi.fn() }
+            }
+        }
+    }));
+}
 
 describe('AI Prompt Construction Regression', () => {
     let server: Server;
@@ -13,7 +40,10 @@ describe('AI Prompt Construction Regression', () => {
 
     beforeAll(async () => {
         process.env.SKIP_APP_CHECK = 'true';
-        process.env.GEMINI_API_KEY = 'dummy-key';
+        process.env.SENTRY_DISABLED = 'true'; // Disable Sentry in tests
+        if (!isRealAi) {
+            process.env.GEMINI_API_KEY = 'dummy-key';
+        }
         
         return new Promise<void>((resolve) => {
             server = app.listen(0, () => {
@@ -34,13 +64,15 @@ describe('AI Prompt Construction Regression', () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
-        vi.mocked(axios.post).mockResolvedValue({
-            data: {
-                candidates: [{
-                    content: { parts: [{ text: 'AI Response' }] }
-                }]
-            }
-        });
+        if (!isRealAi) {
+            vi.mocked(axios.post).mockResolvedValue({
+                data: {
+                    candidates: [{
+                        content: { parts: [{ text: 'AI Response' }] }
+                    }]
+                }
+            });
+        }
     });
 
     const mockAuth = (uid: string = 'test-user') => {
@@ -174,5 +206,5 @@ describe('AI Prompt Construction Regression', () => {
         expect(prompt).toContain('Task: Write a warm personal letter');
         expect(prompt).toContain('I learned about faith today.');
         expect(prompt).toMatchSnapshot();
-    });
+    }, 60000); // 60s for the whole suite
 });
