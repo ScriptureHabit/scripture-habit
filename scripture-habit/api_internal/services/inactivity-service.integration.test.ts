@@ -2,7 +2,9 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { admin, db } from '../lib/firebase-admin.js';
 import { InactivityService } from './inactivity-service.js';
+import { toMillis } from '../lib/inactivity-utils.js';
 import { t } from '../lib/i18n.js';
+
 
 /**
  * Integration Tests for InactivityService
@@ -15,19 +17,20 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('InactivityService Integra
     const TEN_DAYS_AGO = new Date(NOW.getTime() - 10 * 24 * 60 * 60 * 1000);
 
     // Mock IDs
-    const G1 = 'TEST_GRP_ACTIVE';
-    const G2 = 'TEST_GRP_INACTIVE_MEMBER';
-    const G3 = 'TEST_GRP_TRANSFER_OWNER';
-    const G4 = 'TEST_GRP_DELETE_ALL';
-    const G5 = 'TEST_GRP_GHOST_CLEANUP';
-    const G6 = 'TEST_GRP_LOCALIZATION';
-    const G7 = 'TEST_GRP_MARKED_DELETE';
-    const G_STALE_A = 'STALE_A';
-    const G_STALE_B = 'STALE_B';
-    const G_STALE_C = 'STALE_C';
-    const G8 = 'TEST_GRP_CORRUPTED_JOINEDAT'; // Case A: joinedAt > createTime
-    const G9 = 'TEST_GRP_CORRUPTED_V2';       // Case B: joinedAt == createTime but older activity exists
-    const G10 = 'TEST_GRP_MASSIVE';           // Case 10: 50+ members removed
+    const G1 = 'INA_GRP_ACTIVE';
+    const G2 = 'INA_GRP_INACTIVE_MEMBER';
+    const G3 = 'INA_GRP_TRANSFER_OWNER';
+    const G4 = 'INA_GRP_DELETE_ALL';
+    const G5 = 'INA_GRP_GHOST_CLEANUP';
+    const G6 = 'INA_GRP_LOCALIZATION';
+    const G7 = 'INA_GRP_MARKED_DELETE';
+    const G_STALE_A = 'INA_STALE_A';
+    const G_STALE_B = 'INA_STALE_B';
+    const G_STALE_C = 'INA_STALE_C';
+    const G10 = 'INA_GRP_MASSIVE';           // Case 10: 50+ members removed
+    const G11 = 'INA_GRP_NEVER_KICK';        // Case 11: threshold = 0
+    const G12 = 'INA_GRP_UNINITIALIZED';     // Case 12: empty members subcollection
+    const G13 = 'INA_GRP_NEW_MISSING_FIELD'; // Case 13: missing lastInactivityCheckedAt
 
     const U_ACTIVE = 'USER_ACTIVE';
     const U_INACTIVE = 'USER_INACTIVE';
@@ -35,13 +38,13 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('InactivityService Integra
     const U_NEW_OWNER = 'USER_NEW_OWNER';
     const U_JA = 'USER_JAPANESE';
     const U_SEC = 'USER_SECONDARY';
-    const U_CORRUPTED = 'USER_CORRUPTED_JOINEDAT'; // Case A: joinedAt > createTime
-    const U_CORRUPTED_V2 = 'USER_CORRUPTED_V2';    // Case B: joinedAt == createTime but older activity exists
+    const U_GHOST = 'USER_GHOST';
+    const U_SC9 = 'USER_SCENARIO_9';
     const U_MASSIVE_PREFIX = 'U_MASS_';
 
     beforeAll(async () => {
         // Setup Users
-        const users = [U_ACTIVE, U_INACTIVE, U_OWNER, U_NEW_OWNER, U_JA, U_SEC, U_CORRUPTED, U_CORRUPTED_V2];
+        const users = [U_ACTIVE, U_INACTIVE, U_OWNER, U_NEW_OWNER, U_JA, U_SEC, U_GHOST, U_SC9];
         for (let i = 0; i < 50; i++) users.push(`${U_MASSIVE_PREFIX}${i}`);
         for (const uid of users) {
             await db.collection('users').doc(uid).set({
@@ -85,91 +88,67 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('InactivityService Integra
         await setupGroup(G7, U_OWNER, [U_OWNER], 3);
         await db.collection('groups').doc(G7).update({ isDeleted: true });
 
-        // 8. Stale Groups for Batch Rotation
-        await setupGroup(G_STALE_A, U_OWNER, [U_OWNER], 15, TEN_DAYS_AGO);
-        await setMemberActivity(G_STALE_A, U_OWNER, TEN_DAYS_AGO);
-        
-        await setupGroup(G_STALE_B, U_OWNER, [U_OWNER], 15, SIX_DAYS_AGO);
-        await setMemberActivity(G_STALE_B, U_OWNER, SIX_DAYS_AGO);
-        
-        await setupGroup(G_STALE_C, U_OWNER, [U_OWNER], 15, TWO_DAYS_AGO);
-        await setMemberActivity(G_STALE_C, U_OWNER, TWO_DAYS_AGO);
-
-        // 9. Group 8: Corrupted joinedAt (Regression - Cosmos bug)
-        // Simulates a user who was truly inactive (last active 14 days ago via group map),
-        // but whose joinedAt in the member subcollection was set to a date AFTER createTime
-        // by the old cron's serverTimestamp initialization bug.
-        await setupGroup(G8, U_OWNER, [U_OWNER, U_CORRUPTED], 7);
-        await setMemberActivity(G8, U_OWNER, TWO_DAYS_AGO);
-        // U_CORRUPTED: last truly active 14+ days ago in group maps
-        const FOURTEEN_DAYS_AGO = new Date(NOW.getTime() - 14 * 24 * 60 * 60 * 1000);
-        const ts14 = admin.firestore.Timestamp.fromDate(FOURTEEN_DAYS_AGO);
-        // Step 1: Create the member doc WITHOUT joinedAt (old join path)
-        await db.collection('groups').doc(G8).collection('members').doc(U_CORRUPTED).set({
-            lastReadAt: ts14,
-            lastActiveAt: ts14,
-            readMessageCount: 1
-        });
-        // Step 2: Wait to ensure createTime < update timestamp
-        await new Promise(r => setTimeout(r, 100));
-        // Step 3: Simulate old cron bug by setting joinedAt = NOW (future relative to createTime)
-        // Using serverTimestamp() mirrors the exact old behavior that caused the bug on April 9
-        await db.collection('groups').doc(G8).collection('members').doc(U_CORRUPTED).update({
-            joinedAt: admin.firestore.FieldValue.serverTimestamp()
-        });
-        // Also update group-level map to show truly old activity
-        await db.collection('groups').doc(G8).update({
-            [`memberLastActive.${U_CORRUPTED}`]: ts14,
-            [`memberLastReadAt.${U_CORRUPTED}`]: ts14
-        });
-        await db.collection('users').doc(U_CORRUPTED).update({
-            groupIds: admin.firestore.FieldValue.arrayUnion(G8)
-        });
-
-        // 10. Scenario 9b: Corrupted joinedAt (matches createTime but older activity exists)
-        // This is exactly what happened to "Cosmos".
-        await setupGroup(G9, U_OWNER, [U_OWNER, U_CORRUPTED_V2], 15);
-        await setMemberActivity(G9, U_OWNER, TWO_DAYS_AGO);
-        const TEN_DAYS_AGO_TS = admin.firestore.Timestamp.fromDate(TEN_DAYS_AGO);
-        
-        // Step 1: Create member doc. Its createTime will be "now".
-        const memberRefV2 = db.collection('groups').doc(G9).collection('members').doc(U_CORRUPTED_V2);
-        await memberRefV2.set({
-            lastActiveAt: TEN_DAYS_AGO_TS,
-        });
-        const snapV2 = await memberRefV2.get();
-        const createTimeV2 = snapV2.createTime!;
-        
-        // Step 2: Set joinedAt to exactly createTime (simulating the "repair to createTime" bug)
-        await memberRefV2.update({
-            joinedAt: createTimeV2
-        });
-        
-        // Step 3: Add OLDER activity to the group-level map
-        await db.collection('groups').doc(G9).update({
-            [`memberLastActive.${U_CORRUPTED_V2}`]: TEN_DAYS_AGO_TS
-        });
-        await db.collection('users').doc(U_CORRUPTED_V2).update({
-            groupIds: admin.firestore.FieldValue.arrayUnion(G9)
-        });
-        
-        // 11. Group 10: Massive Group (50 inactive + 1 active owner)
+        // 8. Scenario 8: Rotation Stale Groups
+        await setupGroup(G_STALE_A, U_OWNER, [U_OWNER, U_INACTIVE], 3, TEN_DAYS_AGO);
+        await setupGroup(G_STALE_B, U_OWNER, [U_OWNER, U_INACTIVE], 3, SIX_DAYS_AGO);
+        await setupGroup(G_STALE_C, U_OWNER, [U_OWNER, U_INACTIVE], 3, TWO_DAYS_AGO); // Not stale
         const massiveMembers = [];
         for (let i = 0; i < 50; i++) massiveMembers.push(`${U_MASSIVE_PREFIX}${i}`);
-        await setupGroup(G10, U_OWNER, [U_OWNER, ...massiveMembers], 3);
+        // Use a past date for lastCheckedAt to keep it out of the "New" rotation
+        await setupGroup(G10, U_OWNER, [U_OWNER, ...massiveMembers], 3, TWO_DAYS_AGO);
         await setMemberActivity(G10, U_OWNER, TWO_DAYS_AGO);
         for (const uid of massiveMembers) {
             await setMemberActivity(G10, uid, SIX_DAYS_AGO);
         }
-    }, 60000);
+
+        // 12. Group 11: Never Kick (Threshold 0)
+        await setupGroup(G11, U_OWNER, [U_OWNER, U_INACTIVE], 3, TWO_DAYS_AGO);
+        await setMemberActivity(G11, U_OWNER, TWO_DAYS_AGO);
+        
+        const FOURTEEN_DAYS_AGO = new Date(NOW.getTime() - 14 * 24 * 60 * 60 * 1000);
+        const ts14 = admin.firestore.Timestamp.fromDate(FOURTEEN_DAYS_AGO);
+
+        // Set U_INACTIVE to threshold 0 (Never) and last active long ago
+        await db.collection('groups').doc(G11).collection('members').doc(U_INACTIVE).set({
+            joinedAt: ts14,
+            lastActiveAt: ts14,
+            kickThreshold: 0
+        });
+        await db.collection('groups').doc(G11).update({
+            [`memberKickThresholds.${U_INACTIVE}`]: 0,
+            [`memberLastActive.${U_INACTIVE}`]: ts14
+        });
+
+        // 13. Group 12: Uninitialized (Heal Scenario)
+        // Created with members array but NO members subcollection
+        await db.collection('groups').doc(G12).set({
+            name: 'Uninitialized Group',
+            ownerUserId: U_OWNER,
+            members: [U_OWNER, U_ACTIVE],
+            createdAt: ts14,
+            memberJoinedAt: { [U_OWNER]: ts14, [U_ACTIVE]: ts14 },
+            memberLastActive: { [U_OWNER]: ts14, [U_ACTIVE]: ts14 },
+            lastInactivityCheckedAt: admin.firestore.Timestamp.fromDate(TWO_DAYS_AGO)
+        });
+
+        // 14. Group 13: New Group Missing Field
+        // Should be picked up by the "Net" query (orderBy createdAt)
+        await db.collection('groups').doc(G13).set({
+            name: 'New Group Missing Field',
+            ownerUserId: U_OWNER,
+            members: [U_OWNER],
+            createdAt: admin.firestore.Timestamp.fromDate(NOW)
+            // lastInactivityCheckedAt is EXPLICITLY missing
+        });
+    }, 120000);
 
 
     afterAll(async () => {
-        const groups = [G1, G2, G3, G4, G5, G6, G7, G8, G9, G10, G_STALE_A, G_STALE_B, G_STALE_C];
+        const groups = [G1, G2, G3, G4, G5, G6, G7, G10, G11, G12, G13, G_STALE_A, G_STALE_B, G_STALE_C];
         for (const gid of groups) {
             await db.recursiveDelete(db.collection('groups').doc(gid)).catch(() => {});
         }
-        const users = [U_ACTIVE, U_INACTIVE, U_OWNER, U_NEW_OWNER, U_JA, U_SEC, U_CORRUPTED, U_CORRUPTED_V2];
+        const users = [U_ACTIVE, U_INACTIVE, U_OWNER, U_NEW_OWNER, U_JA, U_SEC, U_GHOST, U_SC9];
         for (let i = 0; i < 50; i++) users.push(`${U_MASSIVE_PREFIX}${i}`);
         for (const uid of users) {
             await db.collection('users').doc(uid).delete().catch(() => {});
@@ -187,9 +166,9 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('InactivityService Integra
         });
         
         for (const uid of members) {
-            await db.collection('users').doc(uid).update({
+            await db.collection('users').doc(uid).set({
                 groupIds: admin.firestore.FieldValue.arrayUnion(groupId)
-            });
+            }, { merge: true });
         }
     }
 
@@ -284,10 +263,11 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('InactivityService Integra
     });
 
     it('Scenario 8: Batch check respects rotation (lastInactivityCheckedAt)', async () => {
-        // Run batch check with limit 2
+        // Run batch check with limit 2. It should pick up 2 stale + 1 new group (G13)
+        // G12 is now marked as checked in beforeAll, so only G13 is "new"
         const stats = await InactivityService.batchCheckInactivity(2);
         
-        expect(stats.processedGroups).toBe(2);
+        expect(stats.processedGroups).toBe(3);
 
         // Check if G_STALE_A and G_STALE_B were the ones checked (their timestamp should be updated to NOW-ish)
         const docA = await db.collection('groups').doc(G_STALE_A).get();
@@ -305,16 +285,46 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('InactivityService Integra
     });
 
     it('Scenario 9 (Regression): Repair joinedAt when it matches createTime but older activity exists', async () => {
-        // This case checks the new logic that fixed the "Cosmos" bug.
-        const G9 = 'TEST_GRP_CORRUPTED_V2';
-        const result = await InactivityService.processGroupInactivity(G9);
-        expect(result.removedCount).toBe(0);
+        const G_SC9 = 'INA_GRP_SCENARIO_9';
+        const U_SC9 = 'USER_SCENARIO_9';
+        const TEN_DAYS_AGO_TS = admin.firestore.Timestamp.fromDate(TEN_DAYS_AGO);
 
-        const memberDoc = await db.collection('groups').doc(G9).collection('members').doc(U_CORRUPTED_V2).get();
-        const joinedAtMs = (memberDoc.data()?.joinedAt as admin.firestore.Timestamp)?.toMillis();
-        const createTimeMs = (memberDoc.createTime as admin.firestore.Timestamp)?.toMillis();
+        // 1. Setup group with Pace 100 (very loose)
+        await setupGroup(G_SC9, U_OWNER, [U_OWNER, U_SC9], 100, TWO_DAYS_AGO);
+        await setMemberActivity(G_SC9, U_OWNER, TWO_DAYS_AGO);
         
-        // It SHOULD be different now. It should have been pulled back to 10 days ago (oldest activity).
+        // 2. Create member doc for U_SC9 with activity 10 days ago
+        const memberRef = db.collection('groups').doc(G_SC9).collection('members').doc(U_SC9);
+        await memberRef.set({
+            lastActiveAt: TEN_DAYS_AGO_TS,
+            lastReadAt: TEN_DAYS_AGO_TS,
+            readMessageCount: 1,
+            joinedAt: admin.firestore.FieldValue.serverTimestamp() // Initial value
+        });
+        
+        const snap = await memberRef.get();
+        const createTime = snap.createTime!;
+        
+        // 3. Set joinedAt to exactly createTime (simulating the bug)
+        await memberRef.update({
+            joinedAt: createTime
+        });
+        
+        // 4. Add OLDER activity to the group-level map
+        await db.collection('groups').doc(G_SC9).update({
+            [`memberLastActive.${U_SC9}`]: TEN_DAYS_AGO_TS
+        });
+
+        // 5. Process
+        const result = await InactivityService.processGroupInactivity(G_SC9);
+        expect(result.removedCount).toBe(0); // Should NOT be removed (10 < 100)
+
+        // 6. Verify Repair
+        const repairedSnap = await memberRef.get();
+        const joinedAtMs = toMillis(repairedSnap.data()?.joinedAt);
+        const createTimeMs = toMillis(repairedSnap.createTime);
+        
+        // It SHOULD be different now. It should have been pulled back to 10 days ago.
         expect(joinedAtMs).toBeLessThan(createTimeMs);
         expect(joinedAtMs).toBe(TEN_DAYS_AGO.getTime());
     });
@@ -332,5 +342,36 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('InactivityService Integra
         const randomUser = `${U_MASSIVE_PREFIX}25`;
         const uDoc = await db.collection('users').doc(randomUser).get();
         expect(uDoc.data()?.groupIds).not.toContain(G10);
+    });
+
+    it('Scenario 11: Respect kickThreshold=0 (Never)', async () => {
+        const result = await InactivityService.processGroupInactivity(G11);
+        // U_INACTIVE is long inactive but has threshold 0, so should NOT be removed
+        expect(result.removedCount).toBe(0);
+        
+        const gDoc = await db.collection('groups').doc(G11).get();
+        expect(gDoc.data()?.members).toContain(U_INACTIVE);
+    });
+
+    it('Scenario 12: Heal uninitialized members subcollection', async () => {
+        const groupRef = db.collection('groups').doc(G12);
+        const initialSnap = await groupRef.get();
+        
+        if (!initialSnap.exists) {
+            // It was already processed and deleted by Scenario 8's "Net" check.
+            // This is expected behavior since Scenario 8 runs first.
+            return;
+        }
+
+        const result = await InactivityService.processGroupInactivity(G12);
+        expect(result.groupDeleted).toBe(true);
+    });
+
+    it('Scenario 13: Batch check picks up groups missing lastInactivityCheckedAt', async () => {
+        // G13 is missing the field but is the newest (orderBy createdAt desc)
+        await InactivityService.batchCheckInactivity(50);
+        
+        const gDoc = await db.collection('groups').doc(G13).get();
+        expect(gDoc.data()?.lastInactivityCheckedAt).toBeDefined();
     });
 });

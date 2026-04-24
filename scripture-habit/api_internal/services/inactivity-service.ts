@@ -19,21 +19,24 @@ export class InactivityService {
             .limit(limit)
             .get();
 
-        // 2. "The Net" - Catch new groups that don't have the field yet.
+        // 2. "The Net" - Catch new groups by looking at recently created ones.
+        // This ensures groups missing lastInactivityCheckedAt eventually get into the rotation.
         const newGroupsSnap = await groupsRef
-            .where('lastInactivityCheckedAt', '==', null)
-            .limit(50)
+            .orderBy('createdAt', 'desc')
+            .limit(20)
             .get();
 
         const list = [...staleGroupsSnap.docs];
-        const seenIds = new Set(list.map(d => d.id));
         
-        newGroupsSnap.docs.forEach(doc => {
-            if (!seenIds.has(doc.id)) {
+        // Add new groups, but avoid duplicates and only if they haven't been checked yet
+        const existingIds = new Set(list.map(d => d.id));
+        for (const doc of newGroupsSnap.docs) {
+            if (list.length >= limit + 10) break; // Allow a small buffer for new groups
+            const data = doc.data() as GroupDocument;
+            if (!existingIds.has(doc.id) && !data.lastInactivityCheckedAt) {
                 list.push(doc);
-                seenIds.add(doc.id);
             }
-        });
+        }
 
         const stats = {
             processedGroups: 0,
@@ -65,7 +68,7 @@ export class InactivityService {
         if (!groupSnap.exists) return { removedCount: 0, initializedCount: 0, transferCount: 0, groupDeleted: false };
 
         const groupData = groupSnap.data() as GroupDocument;
-        const membersSnap = await groupRef.collection('members').get();
+        let membersSnap = await groupRef.collection('members').get();
 
         // 1. Ghost Buster: Safe cleanup of groups explicitly marked for deletion.
         if (groupData.isDeleted === true) {
@@ -84,13 +87,42 @@ export class InactivityService {
         let initializedCount = 0;
         const processedMemberIds = new Set<string>();
 
+        // 2. Self-Healing: If subcollection is empty but members array is not, initialize it.
+        // This fixes groups created by the old frontend that didn't initialize the subcollection.
+        if (membersSnap.empty && (groupData.members || []).length > 0) {
+            console.log(`[InactivityService] Healing uninitialized members subcollection for group: ${groupId}`);
+            const healBatch = db.batch();
+            const members = groupData.members || [];
+            
+            for (const uid of members) {
+                const memberRef = groupRef.collection('members').doc(uid);
+                const joinedAt = groupData.memberJoinedAt?.[uid] || groupData.createdAt || admin.firestore.FieldValue.serverTimestamp();
+                const lastActiveAt = groupData.memberLastActive?.[uid] || joinedAt;
+                const lastReadAt = groupData.memberLastReadAt?.[uid] || lastActiveAt;
+                
+                healBatch.set(memberRef, {
+                    uid,
+                    joinedAt,
+                    lastActiveAt,
+                    lastReadAt,
+                    kickThreshold: groupData.memberKickThresholds?.[uid] || 3,
+                    readMessageCount: 0
+                });
+            }
+            await healBatch.commit();
+            // Re-fetch to continue processing normally
+            membersSnap = await groupRef.collection('members').get();
+        }
+
+        const membersToProcess = membersSnap.docs;
+
         // 2. Prepare Updates
         const groupUpdates: admin.firestore.UpdateData<GroupDocument> = {
             lastInactivityCheckedAt: admin.firestore.FieldValue.serverTimestamp()
         };
 
         // 3. Identify Status for each member in subcollection
-        membersSnap.forEach(memberDoc => {
+        for (const memberDoc of membersToProcess) {
             const memberId = memberDoc.id;
             const memberData = memberDoc.data() as InactivityMemberData;
             memberData.createTime = memberDoc.createTime;
@@ -163,7 +195,7 @@ export class InactivityService {
             } else {
                 activeMembers.push(memberId);
             }
-        });
+        }
 
         // 3. Ghost Cleanup: Identify UIDs in maps/arrays missing from subcollection
         const groupMemberIds = groupData.members || [];

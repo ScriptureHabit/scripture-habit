@@ -57,7 +57,9 @@ export default function GroupForm() {
         ownerUserId: user.uid,
         members: [user.uid],
         memberJoinedAt: { [user.uid]: now },
+        memberKickThresholds: { [user.uid]: userData?.kickThreshold || 3 },
         timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Tokyo',
+        lastInactivityCheckedAt: now,
       };
 
 
@@ -75,7 +77,21 @@ export default function GroupForm() {
       const groupStateRef = doc(db, 'users', user.uid, 'groupStates', newGroupId);
       await setDoc(groupStateRef, {
         readMessageCount: 0,
-        lastReadAt: now
+        lastReadAt: now,
+        lastActiveAt: now
+      });
+
+      // Initialize member subcollection document for owner
+      const memberRef = doc(db, 'groups', newGroupId, 'members', user.uid);
+      await setDoc(memberRef, {
+        uid: user.uid,
+        nickname: userNick,
+        photoURL: userData?.photoURL || '',
+        joinedAt: now,
+        lastActiveAt: now,
+        lastReadAt: now,
+        kickThreshold: userData?.kickThreshold || 3,
+        readMessageCount: 0
       });
 
       toast.success(`🎉 ${t('groupForm.successCreated')}`);

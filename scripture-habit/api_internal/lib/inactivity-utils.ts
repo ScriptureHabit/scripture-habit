@@ -82,9 +82,27 @@ export function calculateMemberStatus(
 
     // 2. Determine Most Recent Activity
     const lastActiveTime = Math.max(...timestamps);
-
     // 3. Threshold Calculation
-    const thresholdDays = memberData.kickThreshold || (groupData ? (groupData.memberKickThresholds?.[memberId] || groupData.pace) : 0) || 3;
+    let thresholdDays = 3;
+    if (memberData.kickThreshold !== undefined) {
+        thresholdDays = memberData.kickThreshold;
+    } else if (groupData?.memberKickThresholds?.[memberId] !== undefined) {
+        thresholdDays = groupData.memberKickThresholds[memberId];
+    } else if (groupData?.pace !== undefined) {
+        thresholdDays = groupData.pace;
+    }
+
+    // 0 threshold means "Never Kick" - always active
+    if (thresholdDays === 0) {
+        return {
+            status: 'active',
+            lastActiveAt: lastActiveTime,
+            thresholdMs: 0,
+            diffMs: 0,
+            reason: 'Auto-kick is disabled (Never).'
+        };
+    }
+
     const thresholdMs = thresholdDays * 24 * 60 * 60 * 1000;
 
     if (lastActiveTime === 0) {

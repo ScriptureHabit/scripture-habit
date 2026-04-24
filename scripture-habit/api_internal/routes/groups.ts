@@ -100,7 +100,8 @@ router.post('/join-group', authenticate, requireEmailVerified, verifyAppCheck, a
                 [`memberJoinedAt.${uid}`]: admin.firestore.FieldValue.serverTimestamp(),
                 lastMessageAt: admin.firestore.FieldValue.serverTimestamp(),
                 lastMessageByNickname: userData.nickname || 'Member',
-                lastMessageByUid: uid
+                lastMessageByUid: uid,
+                lastInactivityCheckedAt: admin.firestore.FieldValue.serverTimestamp()
             });
 
             const memberRef = groupRef.collection('members').doc(uid);
