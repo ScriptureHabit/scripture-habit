@@ -1,9 +1,15 @@
-.Profile {
+.profile {
     --text-color: var(--black, #242d49);
     color: var(--text-color);
     padding-top: 2rem;
     padding-bottom: 2rem;
     width: 100%;
+}
+
+@media screen and (min-width: 769px) {
+    .profile {
+        padding-top: 3.5rem;
+    }
 }
 
 .profile-section {
