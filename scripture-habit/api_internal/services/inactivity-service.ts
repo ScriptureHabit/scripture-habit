@@ -1,7 +1,9 @@
 import { admin, db } from '../lib/firebase-admin.js';
-import { calculateMemberStatus, InactivityMemberData, toMillis } from '../lib/inactivity-utils.js';
+import { decideGroupInactivity, InactivityMemberData } from '../lib/inactivity-utils.js';
 import { getGroupUpdatesForMultipleRemovals } from '../lib/membership-utils.js';
 import { UserDocument, GroupDocument } from '../../types/firestore.js';
+import { Group } from '../../src/types/chat.js';
+import { calculateUnityPercentage } from '../../src/utils/unity-utils.js';
 import { t } from '../lib/i18n.js';
 import { getUserFcmTokens, sendPushNotification, cleanupTokens } from '../lib/notifications.js';
 
@@ -47,12 +49,17 @@ export class InactivityService {
         };
 
         for (const docSnapshot of list) {
-            const result = await this.processGroupInactivity(docSnapshot.id);
-            stats.processedGroups++;
-            stats.removedUsers += result.removedCount;
-            stats.initializedTracking += result.initializedCount;
-            stats.transferredOwnerships += result.transferCount;
-            if (result.groupDeleted) stats.deletedGroups++;
+            try {
+                const result = await this.processGroupInactivity(docSnapshot.id);
+                stats.processedGroups++;
+                stats.removedUsers += result.removedCount;
+                stats.initializedTracking += result.initializedCount;
+                stats.transferredOwnerships += result.transferCount;
+                if (result.groupDeleted) stats.deletedGroups++;
+            } catch (err) {
+                console.error(`[InactivityService] Failed to process group ${docSnapshot.id}:`, err);
+                // Continue to next group instead of crashing the whole batch
+            }
         }
 
         return stats;
@@ -60,7 +67,6 @@ export class InactivityService {
 
     /**
      * Processes inactivity for a single group.
-     * Contains the core logic for identification and response.
      */
     static async processGroupInactivity(groupId: string) {
         const groupRef = db.collection('groups').doc(groupId);
@@ -70,246 +76,169 @@ export class InactivityService {
         const groupData = groupSnap.data() as GroupDocument;
         let membersSnap = await groupRef.collection('members').get();
 
-        // 1. Ghost Buster: Safe cleanup of groups explicitly marked for deletion.
-        if (groupData.isDeleted === true) {
-            console.log(`[InactivityService] Purging group marked for deletion: ${groupId}`);
-            await db.recursiveDelete(groupRef);
-            return { removedCount: 0, initializedCount: 0, transferCount: 0, groupDeleted: true };
-        }
-
-        let ownerUserId = groupData.ownerUserId;
-        const now = new Date();
-        const batch = db.batch();
-
-
-        const activeMembers: string[] = [];
-        const inactiveMembers: string[] = [];
-        let initializedCount = 0;
-        const processedMemberIds = new Set<string>();
-
-        // 2. Self-Healing: If subcollection is empty but members array is not, initialize it.
-        // This fixes groups created by the old frontend that didn't initialize the subcollection.
+        // 1. Self-Healing: If subcollection is empty but members array is not, initialize it.
         if (membersSnap.empty && (groupData.members || []).length > 0) {
             console.log(`[InactivityService] Healing uninitialized members subcollection for group: ${groupId}`);
             const healBatch = db.batch();
-            const members = groupData.members || [];
-            
-            for (const uid of members) {
+            for (const uid of groupData.members || []) {
                 const memberRef = groupRef.collection('members').doc(uid);
                 const joinedAt = groupData.memberJoinedAt?.[uid] || groupData.createdAt || admin.firestore.FieldValue.serverTimestamp();
-                const lastActiveAt = groupData.memberLastActive?.[uid] || joinedAt;
-                const lastReadAt = groupData.memberLastReadAt?.[uid] || lastActiveAt;
-                
                 healBatch.set(memberRef, {
-                    uid,
-                    joinedAt,
-                    lastActiveAt,
-                    lastReadAt,
+                    uid, joinedAt,
+                    lastActiveAt: groupData.memberLastActive?.[uid] || joinedAt,
+                    lastReadAt: groupData.memberLastReadAt?.[uid] || joinedAt,
                     kickThreshold: groupData.memberKickThresholds?.[uid] || 3,
                     readMessageCount: 0
                 });
             }
             await healBatch.commit();
-            // Re-fetch to continue processing normally
             membersSnap = await groupRef.collection('members').get();
         }
 
-        const membersToProcess = membersSnap.docs;
+        // 2. Prepare Data for Decision
+        const now = new Date();
+        const processedUids = new Set<string>();
+        const memberList: { uid: string; data: InactivityMemberData; createTime?: admin.firestore.Timestamp }[] = membersSnap.docs.map(doc => {
+            processedUids.add(doc.id);
+            return {
+                uid: doc.id,
+                data: doc.data() as InactivityMemberData,
+                createTime: doc.createTime
+            };
+        });
 
-        // 2. Prepare Updates
+        // Add "Ghosts": Members present in group document but missing from subcollection
+        const allPossibleUids = new Set([
+            ...(groupData.members || []),
+            ...Object.keys(groupData.memberLastActive || {}),
+            ...Object.keys(groupData.memberJoinedAt || {})
+        ]);
+
+        for (const uid of allPossibleUids) {
+            if (!processedUids.has(uid)) {
+                // Ghost member found - pass with empty data to trigger inactivity/removal logic
+                memberList.push({
+                    uid,
+                    data: {} as InactivityMemberData
+                });
+            }
+        }
+
+        // 3. Get Decision from Pure Logic
+        const decision = decideGroupInactivity(groupData, memberList, now);
+
+        // 4. Execute Decision
+        if (decision.shouldDeleteGroup) {
+            // Cleanup user refs first
+            const batch = db.batch();
+            for (const member of memberList) {
+                const userRef = db.collection('users').doc(member.uid);
+                batch.set(userRef, {
+                    groupIds: admin.firestore.FieldValue.arrayRemove(groupId),
+                    groupId: admin.firestore.FieldValue.delete()
+                }, { merge: true });
+                batch.delete(userRef.collection('groupStates').doc(groupId));
+            }
+            await batch.commit();
+            await db.recursiveDelete(groupRef);
+            return { removedCount: 0, initializedCount: 0, transferCount: 0, groupDeleted: true };
+        }
+
+        const batch = db.batch();
         const groupUpdates: admin.firestore.UpdateData<GroupDocument> = {
             lastInactivityCheckedAt: admin.firestore.FieldValue.serverTimestamp()
         };
 
-        // 3. Identify Status for each member in subcollection
-        for (const memberDoc of membersToProcess) {
-            const memberId = memberDoc.id;
-            const memberData = memberDoc.data() as InactivityMemberData;
-            memberData.createTime = memberDoc.createTime;
-            processedMemberIds.add(memberId);
-
-            // Guard: Detect joinedAt corrupted by old cron initialization (serverTimestamp bug).
-            // Logic:
-            // 1. If joinedAt is strictly in the future relative to createTime, it's definitely corrupted.
-            // 2. If joinedAt is identical to createTime, it MIGHT be corrupted if we have older activity recorded
-            //    in the group maps (proving they were already in the group before this document was created).
-            if (memberData.joinedAt && memberDoc.createTime) {
-                const joinedMs = (memberDoc.createTime as admin.firestore.Timestamp)?.toMillis?.() || 0;
-                const storedJoinedMs = (memberData.joinedAt as admin.firestore.Timestamp)?.toMillis?.() || 0;
-                
-                let isCorrupted = (storedJoinedMs > joinedMs && joinedMs > 0);
-
-                // Check for "Reset-to-CreateTime" corruption:
-                // If they have activity OLDER than the creation time, then createTime is not the real join date.
-                if (!isCorrupted && Math.abs(storedJoinedMs - joinedMs) < 10 && joinedMs > 0) {
-                    const otherActivityMs = [
-                        toMillis(groupData.memberLastActive?.[memberId]),
-                        toMillis(groupData.memberLastReadAt?.[memberId]),
-                        toMillis(memberData.lastActiveAt),
-                        toMillis(memberData.lastPostAt)
-                    ].filter(t => t > 0);
-
-                    if (otherActivityMs.length > 0) {
-                        const oldestActivity = Math.min(...otherActivityMs);
-                        if (oldestActivity < storedJoinedMs - 1000) { // Solidly older
-                            isCorrupted = true;
-                            console.warn(`[InactivityService] Suspect joinedAt detected for ${memberId} (matches createTime but older activity exists). Repairing.`);
-                        }
-                    }
-                }
-
-                if (isCorrupted) {
-                    console.warn(`[InactivityService] Repairing joinedAt for ${memberId} in ${groupId}.`);
-                    // Fallback to the oldest recorded activity we found, or at least document creation
-                    const fallbackMs = Math.min(...[
-                        joinedMs, 
-                        ...[toMillis(groupData.memberLastActive?.[memberId]), toMillis(groupData.memberLastReadAt?.[memberId])].filter(t => t > 0)
-                    ]);
-                    
-                    const repairTimestamp = admin.firestore.Timestamp.fromMillis(fallbackMs);
-                    memberData.joinedAt = repairTimestamp;
-                    batch.update(memberDoc.ref, { joinedAt: repairTimestamp });
-                    groupUpdates[`memberJoinedAt.${memberId}`] = repairTimestamp; // Sync repair
-                }
-            }
-
-            const result = calculateMemberStatus(memberId, memberData, groupData, now);
-
-            if (result.status === 'needs_initialization') {
-                // Fix: Use createTime for initialization instead of "now" to avoid clock reset
-                const initTime = memberDoc.createTime || admin.firestore.FieldValue.serverTimestamp();
-                batch.update(memberDoc.ref, { joinedAt: initTime });
-                groupUpdates[`memberJoinedAt.${memberId}`] = initTime; // Fortification: Sync map
-
-                
-                // Recalculate with the new initTime to see if they are actually inactive
-                const secondLook = calculateMemberStatus(memberId, { ...memberData, joinedAt: initTime }, groupData, now);
-                if (secondLook.status === 'inactive') {
-                    inactiveMembers.push(memberId);
-                } else {
-                    activeMembers.push(memberId);
-                }
-                initializedCount++;
-            } else if (result.status === 'inactive') {
-                inactiveMembers.push(memberId);
-            } else {
-                activeMembers.push(memberId);
-            }
+        // Handle Repairs
+        for (const repair of decision.membersToRepair) {
+            console.warn(`[InactivityService] Repairing joinedAt for ${repair.uid} in ${groupId}.`);
+            const repairTS = admin.firestore.Timestamp.fromMillis(repair.joinedAt);
+            batch.update(groupRef.collection('members').doc(repair.uid), { joinedAt: repairTS });
+            groupUpdates[`memberJoinedAt.${repair.uid}`] = repairTS;
         }
 
-        // 3. Ghost Cleanup: Identify UIDs in maps/arrays missing from subcollection
-        const groupMemberIds = groupData.members || [];
-        const mapsToCheck = [
-            groupData.memberLastActive,
-            groupData.memberLastReadAt,
-            groupData.memberKickThresholds,
-            groupData.memberJoinedAt
-        ];
-
-        for (const map of mapsToCheck) {
-            if (!map) continue;
-            for (const uid in map) {
-                if (!processedMemberIds.has(uid) && !inactiveMembers.includes(uid)) {
-                    inactiveMembers.push(uid);
-                }
-            }
+        // Handle Initializations
+        for (const uid of decision.membersToInitialize) {
+            const memberDoc = membersSnap.docs.find(d => d.id === uid);
+            const initTime = memberDoc?.createTime || admin.firestore.FieldValue.serverTimestamp();
+            batch.update(groupRef.collection('members').doc(uid), { joinedAt: initTime });
+            groupUpdates[`memberJoinedAt.${uid}`] = initTime;
         }
 
-        for (const uid of groupMemberIds) {
-            if (!processedMemberIds.has(uid) && !inactiveMembers.includes(uid)) {
-                inactiveMembers.push(uid);
-            }
-        }
-
-        // 4. Handle Owner Inactivity
-        let transferCount = 0;
-        const groupDeleted = false;
-        // groupUpdates already declared and partially populated
-
-        if (ownerUserId && inactiveMembers.includes(ownerUserId)) {
-            if (activeMembers.length > 0) {
-                // Transfer ownership
-                const newOwnerId = activeMembers[0];
-                groupUpdates.ownerUserId = newOwnerId;
-                ownerUserId = newOwnerId;
-                transferCount++;
-
-                // Post transfer message (localization)
-                const newOwnerUserSnap = await db.collection('users').doc(newOwnerId).get();
-                const transferLang = (newOwnerUserSnap.data() as UserDocument)?.language || 'en';
-                
-                const transferMsgRef = groupRef.collection('messages').doc();
-                batch.set(transferMsgRef, {
-                    text: t(transferLang, 'notifications.ownership_transferred'),
-                    createdAt: admin.firestore.FieldValue.serverTimestamp(),
-                    senderId: 'system',
-                    isSystemMessage: true,
-                    type: 'system',
-                    messageType: 'system'
-                });
-
-            } else {
-                // NO ACTIVE MEMBERS: Delete group safely
-                // Cleanup user refs first
-                const allMemberIdsInSub = membersSnap.docs.map(d => d.id);
-                for (const uid of allMemberIdsInSub) {
-                    const userRef = db.collection('users').doc(uid);
-                    batch.update(userRef, {
-                        groupIds: admin.firestore.FieldValue.arrayRemove(groupId),
-                        groupId: admin.firestore.FieldValue.delete()
-                    });
-                    batch.delete(userRef.collection('groupStates').doc(groupId));
-                }
-                
-                await batch.commit();
-                await db.recursiveDelete(groupRef);
-                return { removedCount: 0, initializedCount, transferCount: 0, groupDeleted: true };
-            }
-        }
-
-        // 5. Final Removals
-        const finalMembersToRemove = inactiveMembers.filter(uid => uid !== ownerUserId);
-        if (finalMembersToRemove.length > 0 && ownerUserId) {
-            const bulkRemovalUpdates = getGroupUpdatesForMultipleRemovals(groupData, finalMembersToRemove);
-            Object.assign(groupUpdates, bulkRemovalUpdates);
+        // Handle Ownership Transfer
+        if (decision.newOwnerId) {
+            groupUpdates.ownerUserId = decision.newOwnerId;
             
-            // Removal message
-            const ownerUserSnap = await db.collection('users').doc(ownerUserId).get();
-            const removalLang = (ownerUserSnap.data() as UserDocument)?.language || 'en';
-            
-            const removalMsgRef = groupRef.collection('messages').doc();
-            batch.set(removalMsgRef, {
-                text: t(removalLang, 'notifications.members_removed', { count: finalMembersToRemove.length }),
+            // Post transfer message
+            const newOwnerUserSnap = await db.collection('users').doc(decision.newOwnerId).get();
+            const lang = (newOwnerUserSnap.data() as UserDocument)?.language || 'en';
+            batch.set(groupRef.collection('messages').doc(), {
+                text: t(lang, 'notifications.ownership_transferred'),
                 createdAt: admin.firestore.FieldValue.serverTimestamp(),
-                senderId: 'system',
-                isSystemMessage: true,
-                type: 'leave',
-                messageType: 'leave'
+                senderId: 'system', isSystemMessage: true, type: 'system', messageType: 'system'
             });
+        }
 
-            for (const uid of finalMembersToRemove) {
+        // Handle Removals
+        if (decision.membersToRemove.length > 0) {
+            // Update group-level array and count
+            const bulkRemovalUpdates = getGroupUpdatesForMultipleRemovals(groupData, decision.membersToRemove);
+            Object.assign(groupUpdates, bulkRemovalUpdates);
+
+            // Recalculate Unity Percentage
+            const nextMembers = ((groupData.members || []) as string[]).filter(uid => !decision.membersToRemove.includes(uid));
+            const remainingActive = ((groupData.dailyActivity?.activeMembers || []) as string[]).filter(uid => !decision.membersToRemove.includes(uid));
+            
+            const simulatedGroup = {
+                ...groupData,
+                members: nextMembers,
+                dailyActivity: {
+                    ...groupData.dailyActivity,
+                    activeMembers: remainingActive
+                }
+            };
+            groupUpdates.unityPercentage = calculateUnityPercentage(simulatedGroup as unknown as Group, [], now);
+
+            // Removal message (sent to the remaining owner)
+            const ownerId = decision.newOwnerId || groupData.ownerUserId;
+            if (ownerId) {
+                const ownerSnap = await db.collection('users').doc(ownerId).get();
+                const lang = (ownerSnap.data() as UserDocument)?.language || 'en';
+                batch.set(groupRef.collection('messages').doc(), {
+                    text: t(lang, 'notifications.members_removed', { count: decision.membersToRemove.length }),
+                    createdAt: admin.firestore.FieldValue.serverTimestamp(),
+                    senderId: 'system', isSystemMessage: true, type: 'leave', messageType: 'leave'
+                });
+            }
+
+            for (const uid of decision.membersToRemove) {
                 const userRef = db.collection('users').doc(uid);
-                batch.update(userRef, { 
+                // Use set with merge for robustness against missing fields/docs
+                batch.set(userRef, { 
                     groupIds: admin.firestore.FieldValue.arrayRemove(groupId),
                     groupId: admin.firestore.FieldValue.delete() 
-                });
+                }, { merge: true });
                 batch.delete(userRef.collection('groupStates').doc(groupId));
                 batch.delete(groupRef.collection('members').doc(uid));
-
-                // Fire-and-forget push notification
+                
                 this.sendKickNotification(uid, groupId, groupData.name || 'Group').catch(() => {});
             }
         }
 
-        // 6. Commit Updates
         batch.update(groupRef, groupUpdates);
-        await batch.commit();
+        
+        try {
+            await batch.commit();
+        } catch (err) {
+            console.error(`[InactivityService] Batch commit failed for group ${groupId}. Decision:`, JSON.stringify(decision));
+            throw err;
+        }
 
         return {
-            removedCount: finalMembersToRemove.length,
-            initializedCount,
-            transferCount,
-            groupDeleted
+            removedCount: decision.membersToRemove.length,
+            initializedCount: decision.membersToInitialize.length,
+            transferCount: decision.newOwnerId ? 1 : 0,
+            groupDeleted: false
         };
     }
 

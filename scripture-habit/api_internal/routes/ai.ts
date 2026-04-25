@@ -47,12 +47,13 @@ const callGemini = async (prompt: string): Promise<string> => {
     return generatedText.trim();
 };
 
-const handleAiError = (res: Response, err: any, contextMessage: string) => {
+const handleAiError = (res: Response, err: unknown, contextMessage: string) => {
     // Safely extract error body without circular references
-    const errorBody = err.response?.data || err.message || String(err);
+    const axiosErr = err as { response?: { data?: unknown, status?: number }, message?: string };
+    const errorBody = axiosErr.response?.data || axiosErr.message || String(err);
     console.error(`[AI Error] ${contextMessage}:`, errorBody);
     
-    const status = err.response?.status || 500;
+    const status = axiosErr.response?.status || 500;
 
     // Capture specific AI error details in Sentry
     Sentry.captureException(err, {
@@ -62,7 +63,7 @@ const handleAiError = (res: Response, err: any, contextMessage: string) => {
 
     res.status(status).json({
         error: `AI ${contextMessage} failed`,
-        details: typeof errorBody === 'string' ? errorBody : (err.message || 'Unknown error')
+        details: typeof errorBody === 'string' ? errorBody : (axiosErr.message || 'Unknown error')
     });
 };
 

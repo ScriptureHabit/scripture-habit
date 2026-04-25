@@ -180,9 +180,11 @@ export class NoteService {
                         groupUpdate['dailyActivity.activeMembers'] = admin.firestore.FieldValue.arrayUnion(uid);
                         if (normCurrent === '') groupUpdate['dailyActivity.date'] = groupToday;
                     } else {
-                        // Clock drift case: stored date is in the "future". 
-                        // We keep the future date but still add this user to activeMembers.
-                        groupUpdate['dailyActivity.activeMembers'] = admin.firestore.FieldValue.arrayUnion(uid);
+                        // Clock drift / Future Date recovery: 
+                        // If the stored date is in the "future" (normCurrent > normToday),
+                        // we force-reset it to today to prevent the group from being stuck in a non-resetting state.
+                        console.warn(`[NoteService] Future date detected for group ${gid}: ${normCurrent}. Resetting to ${normToday}.`);
+                        groupUpdate.dailyActivity = { date: groupToday, activeMembers: [uid] };
                     }
 
                     // Calculate and update unityPercentage for real-time sidebar sync.

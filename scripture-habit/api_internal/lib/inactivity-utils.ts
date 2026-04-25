@@ -20,11 +20,15 @@ export interface InactivityMemberData {
 }
 
 export interface InactivityGroupData {
+    ownerUserId?: string;
+    isDeleted?: boolean;
     memberLastActive?: Record<string, FirestoreTimestamp>;
     memberLastReadAt?: Record<string, FirestoreTimestamp>;
     memberKickThresholds?: Record<string, number>;
     memberJoinedAt?: Record<string, FirestoreTimestamp>;
     pace?: number;
+    createdAt?: FirestoreTimestamp;
+    name?: string;
 }
 
 export type InactivityStatus = 'active' | 'inactive' | 'needs_initialization';
@@ -96,7 +100,7 @@ export function calculateMemberStatus(
     if (thresholdDays === 0) {
         return {
             status: 'active',
-            lastActiveAt: lastActiveTime,
+            lastActiveTime: lastActiveTime,
             thresholdMs: 0,
             diffMs: 0,
             reason: 'Auto-kick is disabled (Never).'
@@ -104,6 +108,15 @@ export function calculateMemberStatus(
     }
 
     const thresholdMs = thresholdDays * 24 * 60 * 60 * 1000;
+
+    // 1. Ghost/New Member Detection
+    if (!memberData.joinedAt) {
+        if (!memberData.createTime && !memberData.lastActiveAt) {
+            // This is a "Ghost": member in group list but no subcollection doc
+            return { status: 'inactive', lastActiveTime: 0, thresholdMs, diffMs: 0, reason: 'ghost' };
+        }
+        return { status: 'needs_initialization', lastActiveTime: 0, thresholdMs, diffMs: 0, reason: 'Needs initialization.' };
+    }
 
     if (lastActiveTime === 0) {
         return {
@@ -132,4 +145,113 @@ export function calculateMemberStatus(
         diffMs,
         reason: description
     };
+}
+
+/**
+ * Results of the group-level inactivity decision.
+ */
+export interface GroupInactivityDecision {
+    shouldDeleteGroup: boolean;         // Whether to delete the entire group
+    newOwnerId?: string;                // UID of the new owner if ownership is transferred
+    membersToRemove: string[];          // List of UIDs to be removed from the group
+    membersToInitialize: string[];      // List of UIDs whose joinedAt needs to be initialized
+    membersToRepair: { uid: string, joinedAt: number }[]; // List of UIDs with corrupted joinedAt
+}
+
+/**
+ * Pure logic function that decides what actions to take for a group based on inactivity.
+ * This function does NOT perform any I/O and can be easily unit tested.
+ */
+export function decideGroupInactivity(
+    groupData: InactivityGroupData,
+    members: { uid: string, data: InactivityMemberData, createTime?: FirestoreTimestamp }[],
+    now: Date = new Date()
+): GroupInactivityDecision {
+    const decision: GroupInactivityDecision = {
+        shouldDeleteGroup: false,
+        membersToRemove: [],
+        membersToInitialize: [],
+        membersToRepair: []
+    };
+
+    // 1. Ghost Buster: Check for explicit deletion flag
+    if (groupData.isDeleted === true) {
+        decision.shouldDeleteGroup = true;
+        return decision;
+    }
+
+    const activeMemberIds: string[] = [];
+    const inactiveMemberIds: string[] = [];
+    const ownerUserId = groupData.ownerUserId;
+
+    // 2. Identify Status for each member
+    for (const member of members) {
+        const memberId = member.uid;
+        const memberData = member.data;
+
+        // Guard: Detect joinedAt corrupted by serverTimestamp bug or reset-to-createTime.
+        if (memberData.joinedAt && member.createTime) {
+            const joinedMs = toMillis(member.createTime);
+            const storedJoinedMs = toMillis(memberData.joinedAt);
+            
+            let isCorrupted = (storedJoinedMs > joinedMs && joinedMs > 0);
+
+            // Check for "Reset-to-CreateTime" corruption:
+            // If they have activity OLDER than the creation time, then createTime is not the real join date.
+            if (!isCorrupted && Math.abs(storedJoinedMs - joinedMs) < 10 && joinedMs > 0) {
+                const otherActivityMs = [
+                    toMillis(groupData.memberLastActive?.[memberId]),
+                    toMillis(groupData.memberLastReadAt?.[memberId]),
+                    toMillis(memberData.lastActiveAt),
+                    toMillis(memberData.lastPostAt)
+                ].filter(t => t > 0);
+
+                if (otherActivityMs.length > 0) {
+                    const oldestActivity = Math.min(...otherActivityMs);
+                    if (oldestActivity < storedJoinedMs - 1000) { // Solidly older
+                        isCorrupted = true;
+                    }
+                }
+            }
+
+            if (isCorrupted) {
+                const fallbackMs = Math.min(...[
+                    joinedMs, 
+                    ...[toMillis(groupData.memberLastActive?.[memberId]), toMillis(groupData.memberLastReadAt?.[memberId])].filter(t => t > 0)
+                ]);
+                decision.membersToRepair.push({ uid: memberId, joinedAt: fallbackMs });
+                // Use the repaired value for calculation
+                memberData.joinedAt = fallbackMs;
+            }
+        }
+
+        const result = calculateMemberStatus(memberId, memberData, groupData, now);
+
+        if (result.status === 'needs_initialization') {
+            decision.membersToInitialize.push(memberId);
+            activeMemberIds.push(memberId);
+        } else if (result.status === 'inactive') {
+            inactiveMemberIds.push(memberId);
+        } else {
+            activeMemberIds.push(memberId);
+        }
+    }
+
+    // 3. Handle Owner Inactivity
+    if (ownerUserId && inactiveMemberIds.includes(ownerUserId)) {
+        const otherActiveMembers = activeMemberIds.filter(id => id !== ownerUserId);
+
+        if (otherActiveMembers.length > 0) {
+            decision.newOwnerId = otherActiveMembers[0];
+        } else {
+            decision.shouldDeleteGroup = true;
+            return decision;
+        }
+    }
+
+    // 4. Finalize Removals
+    const finalOwnerId = decision.newOwnerId || ownerUserId;
+    decision.membersToRemove = inactiveMemberIds.filter(uid => uid !== finalOwnerId);
+
+    return decision;
 }

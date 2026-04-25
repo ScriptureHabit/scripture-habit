@@ -1,7 +1,7 @@
 // @vitest-environment node
 import { describe, it, expect } from 'vitest';
 import fc from 'fast-check';
-import { calculateMemberStatus } from './inactivity-utils.js';
+import { calculateMemberStatus, InactivityMemberData } from './inactivity-utils.js';
 
 describe('InactivityUtils Property-Based Tests', () => {
     
@@ -48,7 +48,11 @@ describe('InactivityUtils Property-Based Tests', () => {
                     expect(result.thresholdMs).toBe(expectedThresholdMs);
 
                     const diff = now.getTime() - result.lastActiveTime;
-                    if (diff > expectedThresholdMs) {
+                    
+                    if (result.status === 'needs_initialization') {
+                        // This happens if joinedAt is missing but some subcollection doc or activity exists
+                        expect(memberData.joinedAt).toBeUndefined();
+                    } else if (diff > expectedThresholdMs) {
                         expect(result.status).toBe('inactive');
                     } else {
                         expect(result.status).toBe('active');
@@ -59,8 +63,14 @@ describe('InactivityUtils Property-Based Tests', () => {
         );
     });
 
-    it('should return needs_initialization if no timestamps are present anywhere', () => {
+    it('should return inactive (ghost) if no timestamps are present anywhere', () => {
         const result = calculateMemberStatus('any', {}, { pace: 3 }, new Date());
+        expect(result.status).toBe('inactive');
+        expect(result.reason).toBe('ghost');
+    });
+
+    it('should return needs_initialization if subcollection doc exists but no joinedAt', () => {
+        const result = calculateMemberStatus('any', { createTime: new Date() } as unknown as InactivityMemberData, { pace: 3 }, new Date());
         expect(result.status).toBe('needs_initialization');
     });
 
