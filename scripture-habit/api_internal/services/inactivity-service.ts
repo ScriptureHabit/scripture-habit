@@ -1,5 +1,5 @@
 import { admin, db } from '../lib/firebase-admin.js';
-import { decideGroupInactivity, InactivityMemberData } from '../lib/inactivity-utils.js';
+import { decideGroupInactivity, calculateMemberStatus, InactivityMemberData } from '../lib/inactivity-utils.js';
 import { getGroupUpdatesForMultipleRemovals } from '../lib/membership-utils.js';
 import { UserDocument, GroupDocument } from '../../types/firestore.js';
 import { Group } from '../../src/types/chat.js';
@@ -58,7 +58,7 @@ export class InactivityService {
                 if (result.groupDeleted) stats.deletedGroups++;
             } catch (err) {
                 console.error(`[InactivityService] Failed to process group ${docSnapshot.id}:`, err);
-                // Continue to next group instead of crashing the whole batch
+                throw err;
             }
         }
 
@@ -74,53 +74,101 @@ export class InactivityService {
         if (!groupSnap.exists) return { removedCount: 0, initializedCount: 0, transferCount: 0, groupDeleted: false };
 
         const groupData = groupSnap.data() as GroupDocument;
-        let membersSnap = await groupRef.collection('members').get();
+        const membersArray = groupData.members || [];
+        const now = new Date();
 
-        // 1. Self-Healing: If subcollection is empty but members array is not, initialize it.
-        if (membersSnap.empty && (groupData.members || []).length > 0) {
-            console.log(`[InactivityService] Healing uninitialized members subcollection for group: ${groupId}`);
-            const healBatch = db.batch();
-            for (const uid of groupData.members || []) {
-                const memberRef = groupRef.collection('members').doc(uid);
-                const joinedAt = groupData.memberJoinedAt?.[uid] || groupData.createdAt || admin.firestore.FieldValue.serverTimestamp();
-                healBatch.set(memberRef, {
-                    uid, joinedAt,
-                    lastActiveAt: groupData.memberLastActive?.[uid] || joinedAt,
-                    lastReadAt: groupData.memberLastReadAt?.[uid] || joinedAt,
-                    kickThreshold: groupData.memberKickThresholds?.[uid] || 3,
-                    readMessageCount: 0
-                });
+        // 1. Self-Healing: Check if subcollection is empty using limit(1) to save reads
+        if (membersArray.length > 0) {
+            const oneMemberSnap = await groupRef.collection('members').limit(1).get();
+            if (oneMemberSnap.empty) {
+                console.log(`[InactivityService] Healing uninitialized members subcollection for group: ${groupId}`);
+                const healBatch = db.batch();
+                for (const uid of membersArray) {
+                    const memberRef = groupRef.collection('members').doc(uid);
+                    const joinedAt = groupData.memberJoinedAt?.[uid] || groupData.createdAt || admin.firestore.FieldValue.serverTimestamp();
+                    healBatch.set(memberRef, {
+                        uid, joinedAt,
+                        lastActiveAt: groupData.memberLastActive?.[uid] || joinedAt,
+                        lastReadAt: groupData.memberLastReadAt?.[uid] || joinedAt,
+                        kickThreshold: groupData.memberKickThresholds?.[uid] || 3,
+                        readMessageCount: 0
+                    });
+                }
+                await healBatch.commit();
+                // After healing, maps are still what they were, but subcollection is populated.
             }
-            await healBatch.commit();
-            membersSnap = await groupRef.collection('members').get();
         }
 
-        // 2. Prepare Data for Decision
-        const now = new Date();
-        const processedUids = new Set<string>();
-        const memberList: { uid: string; data: InactivityMemberData; createTime?: admin.firestore.Timestamp }[] = membersSnap.docs.map(doc => {
-            processedUids.add(doc.id);
-            return {
-                uid: doc.id,
-                data: doc.data() as InactivityMemberData,
-                createTime: doc.createTime
-            };
-        });
-
-        // Add "Ghosts": Members present in group document but missing from subcollection
+        // 2. Prepare Data for Decision using group maps to save reads
         const allPossibleUids = new Set([
-            ...(groupData.members || []),
+            ...membersArray,
             ...Object.keys(groupData.memberLastActive || {}),
             ...Object.keys(groupData.memberJoinedAt || {})
         ]);
 
+        const activeMemberIds = new Set<string>();
+        const potentiallyInactiveUids = new Set<string>();
+
         for (const uid of allPossibleUids) {
-            if (!processedUids.has(uid)) {
-                // Ghost member found - pass with empty data to trigger inactivity/removal logic
-                memberList.push({
-                    uid,
-                    data: {} as InactivityMemberData
-                });
+            const joinedAt = groupData.memberJoinedAt?.[uid];
+            const lastActive = groupData.memberLastActive?.[uid];
+            const lastRead = groupData.memberLastReadAt?.[uid];
+            
+            // If we lack map data, or they seem inactive based on map data, mark for deep check
+            if (!joinedAt && !lastActive && !lastRead) {
+                potentiallyInactiveUids.add(uid);
+            } else {
+                const mockMemberData: InactivityMemberData = {
+                    joinedAt: joinedAt,
+                    lastActiveAt: lastActive,
+                    lastReadAt: lastRead,
+                    kickThreshold: groupData.memberKickThresholds?.[uid]
+                };
+                const result = calculateMemberStatus(uid, mockMemberData, groupData, now);
+                if (result.status === 'active') {
+                    activeMemberIds.add(uid);
+                } else {
+                    potentiallyInactiveUids.add(uid);
+                }
+            }
+        }
+
+        const memberList: { uid: string; data: InactivityMemberData; createTime?: admin.firestore.Timestamp }[] = [];
+
+        // Fill firmly active members with mock data
+        for (const uid of activeMemberIds) {
+            memberList.push({
+                uid,
+                data: {
+                    joinedAt: groupData.memberJoinedAt?.[uid],
+                    lastActiveAt: groupData.memberLastActive?.[uid],
+                    lastReadAt: groupData.memberLastReadAt?.[uid],
+                    kickThreshold: groupData.memberKickThresholds?.[uid]
+                } as InactivityMemberData
+            });
+        }
+
+        // Fetch subcollection docs ONLY for potentially inactive members
+        const uidsToFetch = Array.from(potentiallyInactiveUids);
+        if (uidsToFetch.length > 0) {
+            for (let i = 0; i < uidsToFetch.length; i += 100) {
+                const chunk = uidsToFetch.slice(i, i + 100);
+                const refs = chunk.map(uid => groupRef.collection('members').doc(uid));
+                const docs = await db.getAll(...refs);
+                for (let j = 0; j < docs.length; j++) {
+                    const doc = docs[j];
+                    const uid = chunk[j];
+                    if (doc.exists) {
+                        memberList.push({
+                            uid,
+                            data: doc.data() as InactivityMemberData,
+                            createTime: doc.createTime
+                        });
+                    } else {
+                        // Ghost!
+                        memberList.push({ uid, data: {} as InactivityMemberData });
+                    }
+                }
             }
         }
 
@@ -159,8 +207,8 @@ export class InactivityService {
 
         // Handle Initializations
         for (const uid of decision.membersToInitialize) {
-            const memberDoc = membersSnap.docs.find(d => d.id === uid);
-            const initTime = memberDoc?.createTime || admin.firestore.FieldValue.serverTimestamp();
+            const memberObj = memberList.find(m => m.uid === uid);
+            const initTime = memberObj?.createTime || admin.firestore.FieldValue.serverTimestamp();
             batch.update(groupRef.collection('members').doc(uid), { joinedAt: initTime });
             groupUpdates[`memberJoinedAt.${uid}`] = initTime;
         }

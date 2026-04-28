@@ -258,12 +258,12 @@ router.all('/sync-user-stats', verifyCronSecret, async (_req: Request, res: Resp
         for (const userDoc of activeUsersSnap.docs) {
             const userId = userDoc.id;
             const [notesSnap, cheersSnap] = await Promise.all([
-                userDoc.ref.collection('notes').get(),
-                db.collection('cheers').where('targetUid', '==', userId).get()
+                userDoc.ref.collection('notes').count().get(),
+                db.collection('cheers').where('targetUid', '==', userId).count().get()
             ]);
             
-            const actualCount = notesSnap.size;
-            const actualCheers = cheersSnap.size;
+            const actualCount = notesSnap.data().count;
+            const actualCheers = cheersSnap.data().count;
 
             const userData = userDoc.data();
             const groupIds: string[] = userData.groupIds || [];

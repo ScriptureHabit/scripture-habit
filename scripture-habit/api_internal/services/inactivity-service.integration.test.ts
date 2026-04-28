@@ -153,7 +153,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('InactivityService Integra
         for (const uid of users) {
             await db.collection('users').doc(uid).delete().catch(() => {});
         }
-    });
+    }, 120000);
 
     async function setupGroup(groupId: string, ownerId: string, members: string[], pace: number, lastCheckedAt?: Date) {
         await db.collection('groups').doc(groupId).set({
