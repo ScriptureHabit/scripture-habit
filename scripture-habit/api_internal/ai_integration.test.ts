@@ -68,7 +68,7 @@ describe('AI Prompt Construction Regression', () => {
             vi.mocked(axios.post).mockResolvedValue({
                 data: {
                     candidates: [{
-                        content: { parts: [{ text: 'AI Response' }] }
+                        content: { parts: [{ text: '{"msg1": "AI Response"}' }] }
                     }]
                 }
             });
@@ -116,7 +116,8 @@ describe('AI Prompt Construction Regression', () => {
             },
             body: JSON.stringify({
                 text: 'Hello world',
-                targetLanguage: 'es'
+                targetLanguage: 'es',
+                force: true
             })
         });
 
@@ -139,7 +140,8 @@ describe('AI Prompt Construction Regression', () => {
             body: JSON.stringify({
                 text: 'My Awesome Group',
                 targetLanguage: 'ja',
-                updateType: 'group_name'
+                updateType: 'group_name',
+                force: true
             })
         });
 
@@ -173,6 +175,84 @@ describe('AI Prompt Construction Regression', () => {
         expect(prompt).toContain('Note 1');
         expect(prompt).toMatchSnapshot();
     });
+
+    it('should handle hallucinated missing IDs in translate-batch gracefully', async () => {
+        mockAuth();
+        if (!isRealAi) {
+            // Mock AI to only return msg1, completely ignoring msg2
+            vi.mocked(axios.post).mockResolvedValue({
+                data: {
+                    candidates: [{
+                        content: { parts: [{ text: '```json\n{"hallu1": "Translated 1"}\n```' }] }
+                    }]
+                }
+            });
+        }
+
+        const res = await fetch(`${baseUrl}/api/translate-batch`, {
+            method: 'POST',
+            headers: {
+                'Authorization': 'Bearer valid-token',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                messages: [{ id: 'hallu1', text: 'Hallucination Note 1' }, { id: 'hallu2', text: 'Hallucination Note 2' }],
+                targetLanguage: 'pt',
+                groupId: 'group1'
+            })
+        });
+
+        const data = await res.json();
+        expect(res.status).toBe(200);
+        expect(data.success).toBe(true);
+        if (!isRealAi) {
+            expect(data.translations).toHaveProperty('hallu1');
+            expect(data.translations.hallu1).toBe('Translated 1');
+            // hallu2 was hallucinated/dropped by AI, it should just be missing, not crash the server
+            expect(data.translations).not.toHaveProperty('hallu2');
+        }
+    }, 15000);
+
+    it('should separate cache keys based on updateType to prevent cache poisoning', async () => {
+        const testText = 'Category:';
+        mockAuth();
+        
+        // Ensure cache is empty for this text
+        const crypto = await import('crypto');
+        const cacheKeyNormal = crypto.createHash('md5').update(`${testText}_ja_normal`).digest('hex');
+        const cacheKeyGroup = crypto.createHash('md5').update(`${testText}_ja_group_name`).digest('hex');
+        
+        const { db } = await import('./lib/firebase-admin.js');
+        await db.collection('translation_cache').doc(cacheKeyNormal).delete();
+        await db.collection('translation_cache').doc(cacheKeyGroup).delete();
+
+        if (!isRealAi) {
+            vi.mocked(axios.post).mockResolvedValue({
+                data: { candidates: [{ content: { parts: [{ text: 'Mocked Translation' }] } }] }
+            });
+        }
+
+        // Request 1: Normal
+        await fetch(`${baseUrl}/api/translate`, {
+            method: 'POST',
+            headers: { 'Authorization': 'Bearer valid-token', 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: testText, targetLanguage: 'ja' })
+        });
+
+        // Request 2: Group Name
+        await fetch(`${baseUrl}/api/translate`, {
+            method: 'POST',
+            headers: { 'Authorization': 'Bearer valid-token', 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: testText, targetLanguage: 'ja', updateType: 'group_name' })
+        });
+
+        // Verify both documents exist separately
+        const docNormal = await db.collection('translation_cache').doc(cacheKeyNormal).get();
+        const docGroup = await db.collection('translation_cache').doc(cacheKeyGroup).get();
+
+        expect(docNormal.exists).toBe(true);
+        expect(docGroup.exists).toBe(true);
+    }, 15000);
 
     it('should construct correct prompt for /api/generate-personal-weekly-recap', async () => {
         const testUid = `ai-user-${Date.now()}`;
