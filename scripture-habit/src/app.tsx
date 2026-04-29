@@ -1,5 +1,5 @@
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./app.css";
 import { lazy, Suspense, useEffect, useState } from 'react';
@@ -17,6 +17,7 @@ import { useAuth } from './hooks/use-auth';
 import { MAINTENANCE_MODE } from './config';
 import * as Sentry from "@sentry/react";
 import { handleInAppBrowserRedirect, isInAppBrowser } from './utils/browser-detection';
+import { setupMessageListener } from './utils/notification-helper';
 
 import { LanguageProvider } from './context/language-provider';
 import { SUPPORTED_LANGUAGES } from './config/languages';
@@ -62,6 +63,23 @@ const App: React.FC = () => {
     if (!isRedirecting && isInAppBrowser()) {
       setShowBrowserWarning(true);
     }
+
+    // Setup foreground notifications
+    const unsubscribe = setupMessageListener((payload) => {
+      const title = payload.data?.title || payload.notification?.title || 'Notification';
+      const body = payload.data?.body || payload.notification?.body || '';
+      if (body) {
+        toast.info(`${title}: ${body}`, { autoClose: 5000 });
+      } else {
+        toast.info(title, { autoClose: 5000 });
+      }
+    });
+
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
   }, []);
 
   const { data: systemStatus, error: systemStatusError } = useQuery<SystemStatus>({

@@ -28,7 +28,8 @@ messaging.onBackgroundMessage((payload) => {
         data: payload.data || payload.notification,
     };
 
-    self.registration.showNotification(notificationTitle, notificationOptions);
+    // self.registration.showNotification(notificationTitle, notificationOptions);
+    return self.registration.showNotification(notificationTitle, notificationOptions);
 });
 
 // Handle notification click
@@ -72,7 +73,7 @@ self.addEventListener('message', (event) => {
     }
 });
 
-const CACHE_NAME = 'scripture-habit-v2'; // Bumped version
+const CACHE_NAME = 'scripture-habit-v3'; // Bumped version
 const OFFLINE_URL = '/offline.html';
 
 const ASSETS_TO_CACHE = [

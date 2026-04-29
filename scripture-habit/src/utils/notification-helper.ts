@@ -141,17 +141,10 @@ export const requestNotificationPermission = async (
 };
 
 
-// Handle foreground messages
-export const onMessageListener = (): Promise<MessagePayload | undefined> =>
-    new Promise((resolve) => {
-        if (!messaging) {
-            resolve(undefined);
-            return;
-        }
-        onMessage(messaging, (payload) => {
-            resolve(payload);
-        });
-    });
+export const setupMessageListener = (callback: (payload: MessagePayload) => void): (() => void) | undefined => {
+    if (!messaging) return undefined;
+    return onMessage(messaging, callback);
+};
 
 export const disableNotifications = async (userId: string | null | undefined): Promise<boolean> => {
     try {
