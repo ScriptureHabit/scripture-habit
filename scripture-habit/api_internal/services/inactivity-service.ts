@@ -166,7 +166,8 @@ export class InactivityService {
                         });
                     } else {
                         // Ghost!
-                        memberList.push({ uid, data: {} as InactivityMemberData });
+                        const emptyData: InactivityMemberData = {};
+                        memberList.push({ uid, data: emptyData });
                     }
                 }
             }
