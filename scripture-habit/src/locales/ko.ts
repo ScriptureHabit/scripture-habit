@@ -174,7 +174,8 @@ export default {
                 "title": "Install App",
                 "description": "Add to home screen for a better app experience.",
                 "iosInstruction": "Tap the Share button at the bottom of Safari, then select 'Add to Home Screen'.",
-                "androidButton": "Add to Home Screen"
+                "androidButton": "홈 화면에 추가",
+                "androidInstruction": "브라우저 메뉴(⋮)를 열고 '앱 설치' 또는 '홈 화면에 추가'를 선택하세요."
             },
             you: "나",
             title: "프로필",
@@ -364,6 +365,10 @@ export default {
             errorDeleteMessage: "메시지 삭제 실패",
             groupStatusUpdated: "그룹이 이제 {status} 상태입니다",
             errorUpdateGroupStatus: "그룹 상태 업데이트 실패",
+            markedPublic: "그룹이 공개로 설정되었습니다",
+            markedPrivate: "그룹이 비공개로 설정되었습니다",
+            reportError: "신고를 제출하는 중 오류가 발생했습니다. 다시 시도해 주세요.",
+            linkCopiedForInstagram: "초대 링크가 복사되었습니다! 이제 Instagram 프로필이나 스토리에 붙여넣을 수 있습니다.",
             inactivityRemoval: "👋 **{count}명의 회원**이 3일 이상 활동하지 않아 제거되었습니다.",
             report: "신고",
             reportUser: "부적절한 콘텐츠 신고",
@@ -406,8 +411,18 @@ export default {
             lastRecap: "마지막 요약",
             daysAgo: "{count}일 전",
             viewMembers: "멤버 보기",
-            makePrivate: "공개로 설정",
-            newMessages: "여기부터 읽지 않은 메시지입니다"
+            makePublic: "공개로 설정",
+            makePrivate: "비공개로 설정",
+            newMessages: "여기부터 읽지 않은 메시지입니다",
+            autoKickInitTitle: "나의 습관 주기 설정",
+            autoKickInitDesc: "꾸준한 습관 형성을 돕기 위해 Scripture Habit에는 자동 일시 중지 규칙이 있습니다. 며칠 동안 게시하지 않으면 그룹의 활기를 유지하기 위해 자동으로 삭제됩니다. 어떤 주기를 선호하시나요?",
+            next: "다음",
+            autoKickWarning: "※ 이 설정은 모든 그룹에 적용됩니다.",
+            autoKickConfirmText: "최종 확인: {days}일 동안 노트를 게시하지 않으면 자동으로 그룹에서 삭제된다는 점을 이해하셨나요? 확인을 위해 '{days}'를 입력해 주세요.",
+            markedPublic: "그룹이 공개로 변경되었습니다",
+            markedPrivate: "그룹이 비공개로 변경되었습니다",
+            reportError: "신고 전송에 실패했습니다. 다시 시도해 주세요.",
+            linkCopiedForInstagram: "초대 링크가 복사되었습니다! 인스타그램 프로필이나 스토리에 붙여넣으세요."
         },
         myNotes: {
             description: "노트 컬렉션",
@@ -569,6 +584,10 @@ export default {
             createGroupDesc: "자신만의 그룹을 시작하고 친구를 초대하세요.",
             backToDashboard: "대시보드로 돌아가기"
         },
+        groupListDetail: {
+            title: "공개 그룹 탐색",
+            empty: "그룹을 찾을 수 없습니다. 첫 번째 그룹을 만들어 보세요!"
+        },
         joinGroup: {
             publicGroupsTitle: "공개 그룹 탐색",
             publicGroupsDesc: "학습 목표에 맞는 커뮤니티를 찾으세요.",
@@ -687,7 +706,9 @@ export default {
             comment: "코멘트",
             newStudyNote: "새 학습 노트",
             talk: "말씀",
-            speech: "연설"
+            speech: "연설",
+            fetchingInfo: "정보를 가져오는 중...",
+            url: "링크"
         },
         signOut: {
             title: "로그아웃",

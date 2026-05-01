@@ -160,7 +160,8 @@ export default {
                 "title": "Install App",
                 "description": "Add to home screen for a better app experience.",
                 "iosInstruction": "Tap the Share button at the bottom of Safari, then select 'Add to Home Screen'.",
-                "androidButton": "Add to Home Screen"
+                "androidButton": "Add to Home Screen",
+                "androidInstruction": "Makatanggap ng mga notification at maiwasan ang mga problema sa pag-log in sa pamamagitan ng pagbubukas sa Google Chrome at pagpili sa 'I-install ang App'."
             },
             you: "Ikaw",
             title: "profile",
@@ -393,7 +394,16 @@ export default {
             daysAgo: "{count} araw ang nakalipas",
             viewMembers: "Tingnan ang mga Miyembro",
             makePublic: "Gawing Pampubliko",
-            makePrivate: "Gawing Pribado"
+            makePrivate: "Gawing Pribado",
+            autoKickInitTitle: "Setting ng Auto-Kick",
+            autoKickInitDesc: "Piliin ang iyong bilis ng pag-aaral. Kung hindi ka mag-post sa loob ng itinakdang mga araw, awtomatiko kang aalisin sa grupo upang mapanatiling aktibo ang komunidad.",
+            next: "Susunod",
+            autoKickWarning: "⚠️ Awtomatikong pag-kick: {days} araw",
+            autoKickConfirmText: "Pakitype ang numero {days} upang kumpirmahin ang iyong setting.",
+            markedPublic: "Ginamit na pampubliko ang grupo",
+            markedPrivate: "Ginamit na pribado ang grupo",
+            reportError: "Nabigong ipadala ang ulat",
+            linkCopiedForInstagram: "Nakopya ang link para sa Instagram!"
         },
         myNotes: {
             description: "Koleksyon ng mga Tala",
@@ -673,7 +683,9 @@ export default {
             comment: "Komento",
             newStudyNote: "Bagong Tala sa Pag-aaral",
             talk: "Mensahe",
-            speech: "Talumpati"
+            speech: "Talumpati",
+            fetchingInfo: "Kinukuha ang impormasyon...",
+            url: "URL"
         },
         signOut: {
             title: "Mag-sign Out",

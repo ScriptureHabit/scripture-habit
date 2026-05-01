@@ -245,13 +245,13 @@ router.post('/send-cheer', authenticate, verifyAppCheck, async (req: Authenticat
                 try {
                     const tokens = await getUserFcmTokens(targetUid);
                     if (tokens.length > 0) {
-                        const targetLang = (result.targetData?.language as string) || 'en';
-                        const lang = (language as string) || targetLang || 'en';
+                        const targetLang = ((result.targetData?.language as string) || 'en').split('-')[0].toLowerCase();
+                        const lang = ((language as string) || targetLang || 'en').split('-')[0].toLowerCase();
 
                         const resultNotification = await sendPushNotification(tokens, {
                             title: result.senderNickname || 'Member',
                             body: t(lang, 'notifications.cheer_body'),
-                            data: { type: 'cheer', groupId }
+                            data: { type: 'cheer', groupId, lang }
                         });
 
                         if (resultNotification.failedTokens.length > 0) {

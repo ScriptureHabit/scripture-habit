@@ -8,50 +8,50 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 if (!admin.apps.length) {
-    let serviceAccount: admin.ServiceAccount | undefined;
-
-
-    if (process.env.FIREBASE_SERVICE_ACCOUNT) {
-        serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT) as admin.ServiceAccount;
-    } else if (process.env.FIREBASE_PROJECT_ID && process.env.FIREBASE_PRIVATE_KEY) {
-        serviceAccount = {
-            projectId: process.env.FIREBASE_PROJECT_ID,
-            privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
-            clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-        };
-    } else {
-        // Fallback for local development using a JSON file
-        const jsonPath = path.join(__dirname, '../../backend/serviceAccountKey.json');
-        if (fs.existsSync(jsonPath)) {
-            serviceAccount = JSON.parse(fs.readFileSync(jsonPath, 'utf8')) as admin.ServiceAccount;
-        }
-    }
-
-
-    if (serviceAccount) {
-        try {
-            admin.initializeApp({
-                credential: admin.credential.cert(serviceAccount)
-            });
-            console.log('Firebase Admin initialized successfully');
-        } catch (error) {
-            console.error('Firebase Admin initialization error:', error);
-        }
-    } else if (process.env.FIRESTORE_EMULATOR_HOST) {
+    if (process.env.FIRESTORE_EMULATOR_HOST) {
         // Initialize for Emulator
         try {
             admin.initializeApp({
-                projectId: process.env.GCLOUD_PROJECT || 'scripture-habit-auth',
+                projectId: process.env.FIREBASE_PROJECT_ID || process.env.GCLOUD_PROJECT || 'scripture-habit-auth',
                 credential: admin.credential.applicationDefault() 
             });
             console.log('Firebase Admin initialized for Emulator mode');
         } catch (error) {
             console.error('Firebase Admin Emulator initialization error:', error);
         }
-    } else if (process.env.NODE_ENV === 'test') {
-        console.warn('Firebase Admin: Running in test mode without FIRESTORE_EMULATOR_HOST. Firestore operations will be skipped.');
     } else {
-        console.warn('Firebase Admin NOT initialized: Missing credentials. API routes requiring Auth or Firestore will fail.');
+        let serviceAccount: admin.ServiceAccount | undefined;
+
+        if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+            serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT) as admin.ServiceAccount;
+        } else if (process.env.FIREBASE_PROJECT_ID && process.env.FIREBASE_PRIVATE_KEY) {
+            serviceAccount = {
+                projectId: process.env.FIREBASE_PROJECT_ID,
+                privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+                clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+            };
+        } else {
+            // Fallback for local development using a JSON file
+            const jsonPath = path.join(__dirname, '../../backend/serviceAccountKey.json');
+            if (fs.existsSync(jsonPath)) {
+                serviceAccount = JSON.parse(fs.readFileSync(jsonPath, 'utf8')) as admin.ServiceAccount;
+            }
+        }
+
+        if (serviceAccount) {
+            try {
+                admin.initializeApp({
+                    credential: admin.credential.cert(serviceAccount)
+                });
+                console.log('Firebase Admin initialized successfully');
+            } catch (error) {
+                console.error('Firebase Admin initialization error:', error);
+            }
+        } else if (process.env.NODE_ENV === 'test') {
+            console.warn('Firebase Admin: Running in test mode without FIRESTORE_EMULATOR_HOST. Firestore operations will be skipped.');
+        } else {
+            console.warn('Firebase Admin NOT initialized: Missing credentials. API routes requiring Auth or Firestore will fail.');
+        }
     }
 }
 

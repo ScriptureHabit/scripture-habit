@@ -112,16 +112,21 @@ export async function notifyGroupMembers(groupId: string, senderUid: string, pay
         const memberDocs = allDocs.slice(0, memberRefs.length);
         const privateDocs = allDocs.slice(memberRefs.length);
 
-        const tokens: string[] = [];
+        const tokensByLang = new Map<string, string[]>();
         const tokenToUserMap = new Map<string, string>();
         const tokenSourceMap = new Map<string, 'public' | 'private'>();
 
         memberDocs.forEach((uDoc, idx) => {
             const uid = membersToNotifyIds[idx];
             const userData = uDoc.data();
+            const lang = (userData?.language || 'en').split('-')[0].toLowerCase();
+            
+            if (!tokensByLang.has(lang)) tokensByLang.set(lang, []);
+            const langTokens = tokensByLang.get(lang)!;
+
             if (uDoc.exists && userData) {
                 ((userData.fcmTokens as string[]) || []).forEach(t => {
-                    tokens.push(t);
+                    langTokens.push(t);
                     tokenToUserMap.set(t, uid);
                     tokenSourceMap.set(t, 'public');
                 });
@@ -131,7 +136,7 @@ export async function notifyGroupMembers(groupId: string, senderUid: string, pay
             if (pDoc.exists && privateData) {
                 ((privateData.fcmTokens as string[]) || []).forEach(t => {
                     if (!tokenToUserMap.has(t)) {
-                        tokens.push(t);
+                        langTokens.push(t);
                         tokenToUserMap.set(t, uid);
                         tokenSourceMap.set(t, 'private');
                     }
@@ -139,14 +144,33 @@ export async function notifyGroupMembers(groupId: string, senderUid: string, pay
             }
         });
 
-        console.log(`[PushService] Group ${groupId}: Collected ${tokens.length} total tokens from ${membersToNotifyIds.length} members.`);
+        const allTokensCount = Array.from(tokensByLang.values()).reduce((sum, t) => sum + t.length, 0);
+        console.log(`[PushService] Group ${groupId}: Collected ${allTokensCount} total tokens in ${tokensByLang.size} languages.`);
 
-        if (tokens.length > 0) {
-            const result = await sendPushNotification(tokens, payload);
-            console.log(`[PushService] FCMSend Success: ${result.successCount}, Failure: ${result.failureCount}. Tokens: ${tokens.map(t => t.substring(0, 10) + '...').join(', ')}`);
-            if (result.failedTokens && result.failedTokens.length > 0) {
+        if (allTokensCount > 0) {
+            const failedTokens: string[] = [];
+            let totalSuccess = 0;
+            let totalFailure = 0;
+
+            for (const [lang, langTokens] of tokensByLang.entries()) {
+                if (langTokens.length === 0) continue;
+
+                const payloadWithLang = {
+                    ...payload,
+                    data: { ...(payload.data || {}), lang }
+                };
+
+                const result = await sendPushNotification(langTokens, payloadWithLang);
+                totalSuccess += result.successCount;
+                totalFailure += result.failureCount;
+                if (result.failedTokens) failedTokens.push(...result.failedTokens);
+            }
+
+            console.log(`[PushService] FCMSend Success: ${totalSuccess}, Failure: ${totalFailure}.`);
+            
+            if (failedTokens.length > 0) {
                 const batch = db.batch();
-                result.failedTokens.forEach(t => {
+                failedTokens.forEach(t => {
                     const uid = tokenToUserMap.get(t);
                     const source = tokenSourceMap.get(t);
                     if (uid) {

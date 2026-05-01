@@ -160,7 +160,8 @@ export default {
                 "title": "Install App",
                 "description": "Add to home screen for a better app experience.",
                 "iosInstruction": "Tap the Share button at the bottom of Safari, then select 'Add to Home Screen'.",
-                "androidButton": "Add to Home Screen"
+                "androidButton": "加入主畫面",
+                "androidInstruction": "打開瀏覽器選單 (⋮)，然後選擇「安裝應用程式」或「加入主畫面」。"
             },
             you: "您",
             title: "個人檔案",
@@ -324,6 +325,10 @@ export default {
             errorDeleteMessage: "刪除訊息失敗",
             groupStatusUpdated: "群組現在為 {status}",
             errorUpdateGroupStatus: "更新群組狀態失敗",
+            markedPublic: "群組現在已設為公開",
+            markedPrivate: "群組現在已設為私人",
+            reportError: "舉報發送失敗。請重試.",
+            linkCopiedForInstagram: "邀請連結已複製！現在您可以將其貼到您的 Instagram 個人簡介或限時動態中。",
             inactivityRemoval: "👋 **{count}名成員**因超過3天未活躍而被移除。",
             report: "舉報",
             reportUser: "舉報不當內容",
@@ -368,7 +373,12 @@ export default {
             viewMembers: "查看成員",
             makePublic: "設為公開",
             makePrivate: "設為私人",
-            newMessages: "新訊息"
+            newMessages: "新訊息",
+            autoKickInitTitle: "您的個人習慣節奏",
+            autoKickInitDesc: "為了幫助您建立一致的習慣，Scripture Habit 設有自動暫停規則。如果您幾天沒有發文，系統將自動將您移出以保持群組活躍。您偏好哪種節奏？",
+            next: "下一步",
+            autoKickWarning: "※ 此設定適用於您的所有群組。",
+            autoKickConfirmText: "最後確認：您是否理解如果您在 {days} 天內未發布筆記，將被自動移除？請輸入「{days}」以確認。"
         },
         myNotes: {
             description: "筆記收藏",
@@ -634,7 +644,8 @@ export default {
             newStudyNote: "新研讀筆記",
             talk: "演講",
             speech: "演講",
-            fetchingInfo: "正在載入資訊..."
+            fetchingInfo: "正在載入資訊...",
+            url: "連結"
         },
         signOut: {
             title: "登出",

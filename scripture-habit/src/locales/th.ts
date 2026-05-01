@@ -174,7 +174,8 @@ export default {
                 "title": "Install App",
                 "description": "Add to home screen for a better app experience.",
                 "iosInstruction": "Tap the Share button at the bottom of Safari, then select 'Add to Home Screen'.",
-                "androidButton": "Add to Home Screen"
+                "androidButton": "เพิ่มลงในหน้าจอหลัก",
+                "androidInstruction": "เปิดเมนูเบราว์เซอร์ (⋮) แล้วเลือก 'ติดตั้งแอป' หรือ 'เพิ่มลงในหน้าจอหลัก'"
             },
             you: "คุณ",
             title: "โปรไฟล์",
@@ -410,7 +411,16 @@ export default {
             daysAgo: "{count} วันที่แล้ว",
             viewMembers: "ดูสมาชิก",
             makePublic: "ตั้งเป็นสาธารณะ",
-            makePrivate: "ตั้งเป็นส่วนตัว"
+            makePrivate: "ตั้งเป็นส่วนตัว",
+            autoKickInitTitle: "กำหนดเป้าหมายความสม่ำเสมอของคุณ",
+            autoKickInitDesc: "เพื่อช่วยสร้างนิสัย Scripture Habit มี 'กฎการออกจากกลุ่มอัตโนมัติ' หากไม่มีการโพสต์ในช่วงเวลาที่กำหนด คุณจะออกจากกลุ่มชั่วคราวเพื่อให้กลุ่มยังคงมีความเคลื่อนไหว คุณต้องการโพสต์ทุกๆ กี่วัน?",
+            next: "ถัดไป",
+            autoKickWarning: "*การตั้งค่านี้จะมีผลกับทุกกลุ่ม",
+            autoKickConfirmText: "ยืนยันครั้งสุดท้าย: หากคุณไม่โพสต์โน้ตภายใน {days} วัน คุณยอมรับการออกจากกลุ่มอัตโนมัติหรือไม่? กรุณาพิมพ์ \"{days}\" เพื่อยืนยัน",
+            markedPublic: "เปลี่ยนกลุ่มเป็นสาธารณะแล้ว",
+            markedPrivate: "เปลี่ยนกลุ่มเป็นส่วนตัวแล้ว",
+            reportError: "ไม่สามารถส่งรายงานได้ กรุณาลองใหม่อีกครั้ง",
+            linkCopiedForInstagram: "คัดลอกลิงก์คำเชิญแล้ว! คุณสามารถนำไปวางในโปรไฟล์หรือสตอรี่ Instagram ได้เลย"
         },
         myNotes: {
             description: "คลังบันทึก",
@@ -690,7 +700,9 @@ export default {
             comment: "ความคิดเห็น",
             newStudyNote: "โน้ตการศึกษาใหม่",
             talk: "คำปราศรัย",
-            speech: "สุนทรพจน์"
+            speech: "สุนทรพจน์",
+            fetchingInfo: "กำลังดึงข้อมูล...",
+            url: "ลิงก์"
         },
         signOut: {
             title: "ออกจากระบบ",

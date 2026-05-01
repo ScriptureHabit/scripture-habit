@@ -39,10 +39,17 @@ self.addEventListener('notificationclick', (event) => {
     const data = event.notification.data;
     const groupId = data?.groupId;
     const openNewNote = data?.openNewNote;
+    const lang = data?.lang;
+    
     let targetPath = groupId ? `/dashboard?groupId=${groupId}&view=2` : '/dashboard';
     
     if (openNewNote === 'true') {
         targetPath += (targetPath.includes('?') ? '&' : '?') + 'openNewNote=true';
+    }
+    
+    // Prefix with language if provided
+    if (lang && lang.length >= 2 && lang.length <= 3) {
+        targetPath = `/${lang}${targetPath}`;
     }
     
     const urlToOpen = new URL(targetPath, self.location.origin).href;

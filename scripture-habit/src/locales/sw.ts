@@ -174,7 +174,8 @@ export default {
                 "title": "Install App",
                 "description": "Add to home screen for a better app experience.",
                 "iosInstruction": "Tap the Share button at the bottom of Safari, then select 'Add to Home Screen'.",
-                "androidButton": "Add to Home Screen"
+                "androidButton": "Ongeza kwenye Skrini ya Nyumbani",
+                "androidInstruction": "Fungua menyu ya kivinjari (⋮) na uchague 'Sakinisha Programu' au 'Ongeza kwenye Skrini ya Nyumbani'."
             },
             you: "Wewe",
             title: "Wasifu",
@@ -407,7 +408,16 @@ export default {
             daysAgo: "Siku {count} zilizopita",
             viewMembers: "Ona Wanachama",
             makePublic: "Weka kuwa ya Umma",
-            makePrivate: "Weka kuwa ya Binafsi"
+            makePrivate: "Weka kuwa ya Binafsi",
+            autoKickInitTitle: "Weka Lengo Lako la Mwendelezo",
+            autoKickInitDesc: "Ili kusaidia kujenga tabia, Scripture Habit ina 'sheria ya kuondoka kiotomatiki'. Ikiwa hakuna machapisho kwa muda uliowekwa, utaondoka kwenye kikundi kwa muda ili kuweka kikundi kikiwa hai. Ungependa kuchapisha kila baada ya siku ngapi?",
+            next: "Inayofuata",
+            autoKickWarning: "※ Mpangilio huu utatumika kwa vikundi vyote.",
+            autoKickConfirmText: "Uthibitisho wa mwisho: Ikiwa hutachapisha dokezo ndani ya siku {days}, unakubali kuondolewa kiotomatiki? Tafadhali andika \"{days}\" ili kuthibitisha.",
+            markedPublic: "Kikundi kimebadilishwa kuwa cha Umma",
+            markedPrivate: "Kikundi kimebadilishwa kuwa cha Binafsi",
+            reportError: "Imeshindwa kutuma ripoti. Tafadhali jaribu tena.",
+            linkCopiedForInstagram: "Kiungo cha mwaliko kimenakiliwa! Kibandike kwenye wasifu au hadithi yako ya Instagram."
         },
         myNotes: {
             description: "Mkusanyiko wa Maelezo",
@@ -687,7 +697,9 @@ export default {
             comment: "Maoni",
             newStudyNote: "Dokezo Jipya la Kujifunza",
             talk: "Hotuba",
-            speech: "Hotuba"
+            speech: "Hotuba",
+            fetchingInfo: "Inapata maelezo...",
+            url: "URL"
         },
         signOut: {
             title: "Ondoka",

@@ -160,7 +160,8 @@ export default {
                 "title": "Instalar Aplicativo",
                 "description": "Adicione à tela inicial para uma melhor experiência do aplicativo.",
                 "iosInstruction": "Toque no botão Compartilhar na parte inferior do Safari e selecione 'Adicionar à Tela de Início'.",
-                "androidButton": "Adicionar à Tela de Início"
+                "androidButton": "Adicionar à Tela de Início",
+                "androidInstruction": "Abra o menu do seu navegador (⋮) e selecione 'Instalar aplicativo' ou 'Adicionar à Tela de Início'."
             },
             you: "Você",
             title: "Perfil",
@@ -285,6 +286,8 @@ export default {
             translate: "Traduzir",
             translating: "Traduzindo...",
             translated: "Traduzido",
+            showOriginal: "Ver original",
+            showTranslation: "Ver tradução",
             reply: "Responder",
             like: "Curtir",
             unlike: "Descurtir",
@@ -393,7 +396,17 @@ export default {
             daysAgo: "{count} dias atrás",
             viewMembers: "Ver Membros",
             makePublic: "Tornar Público",
-            makePrivate: "Tornar Privado"
+            makePrivate: "Tornar Privado",
+            newMessages: "Novas mensagens",
+            autoKickInitTitle: "Seu Ritmo de Hábito Pessoal",
+            autoKickInitDesc: "Para ajudá-lo a construir um hábito consistente, o Scripture Habit tem uma regra de pausa automática. Se você não postar por alguns dias, será removido automaticamente para manter as coisas ativas. Qual ritmo você prefere?",
+            next: "Próximo",
+            autoKickWarning: "※ Esta configuração se aplica a TODOS os seus grupos.",
+            autoKickConfirmText: "Confirmação final: Você entende que se não postar uma nota por {days} dias, será removido automaticamente? Por favor, digite '{days}' para confirmar.",
+            markedPublic: "O grupo agora é público",
+            markedPrivate: "O grupo agora é privado",
+            reportError: "Erro ao enviar denúncia. Tente novamente.",
+            linkCopiedForInstagram: "Link de convite copiado! Agora você pode colá-lo em seu perfil ou story do Instagram."
         },
         myNotes: {
             description: "Coleção de Notas",
@@ -658,7 +671,9 @@ export default {
             comment: "Comentário",
             newStudyNote: "Nova Nota de Estudo",
             talk: "Discurso",
-            speech: "Discurso"
+            speech: "Discurso",
+            fetchingInfo: "Carregando info...",
+            url: "Link"
         },
         signOut: {
             title: "Sair",

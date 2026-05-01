@@ -160,7 +160,8 @@ export default {
                 "title": "Instalar Aplicación",
                 "description": "Agregar a la pantalla de inicio para una mejor experiencia de la aplicación.",
                 "iosInstruction": "Toca el botón Compartir en la parte inferior de Safari y selecciona 'Agregar a Inicio'.",
-                "androidButton": "Agregar a Inicio"
+                "androidButton": "Agregar a Inicio",
+                "androidInstruction": "Abra el menú de su navegador (⋮) y seleccione 'Instalar aplicación' o 'Agregar a la pantalla de inicio'."
             },
             you: "Tú",
             title: "Perfil",
@@ -285,6 +286,8 @@ export default {
             translate: "Traducir",
             translating: "Traduciendo...",
             translated: "Traducido",
+            showOriginal: "Ver original",
+            showTranslation: "Ver traducción",
             reply: "Responder",
             like: "Me gusta",
             unlike: "Ya no me gusta",
@@ -394,7 +397,16 @@ export default {
             viewMembers: "Ver miembros",
             makePublic: "Hacer público",
             makePrivate: "Hacer privado",
-            newMessages: "Nuevos mensajes"
+            newMessages: "Nuevos mensajes",
+            autoKickInitTitle: "Tu ritmo de hábito personal",
+            autoKickInitDesc: "Para ayudarte a crear un hábito constante, Scripture Habit tiene una regla de salida automática. Si no publicas durante unos días, serás eliminado automáticamente para mantener el grupo activo. ¿Qué ritmo prefieres?",
+            next: "Siguiente",
+            autoKickWarning: "※ Esta configuración se aplica a todos tus grupos.",
+            autoKickConfirmText: "Confirmación final: ¿Entiendes que si no publicas una nota durante {days} días, serás eliminado automáticamente? Por favor escribe '{days}' para confirmar.",
+            markedPublic: "El grupo ahora es público",
+            markedPrivate: "El grupo ahora es privado",
+            reportError: "Error al enviar el informe. Por favor, inténtalo de nuevo.",
+            linkCopiedForInstagram: "¡Enlace de invitación copiado! Ahora puedes pegarlo en tu perfil o historia de Instagram."
         },
         myNotes: {
             description: "Colección de Notas",
@@ -635,7 +647,8 @@ export default {
             newStudyNote: "Nueva Nota de Estudio",
             talk: "Discurso",
             speech: "Discurso",
-            fetchingInfo: "Cargando info..."
+            fetchingInfo: "Cargando info...",
+            url: "Enlace"
         },
         signOut: {
             title: "Cerrar Sesión",

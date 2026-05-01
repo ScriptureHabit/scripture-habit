@@ -297,7 +297,7 @@ export class InactivityService {
             if (tokens.length === 0) return;
 
             const uSnap = await db.collection('users').doc(uid).get();
-            const lang = (uSnap.data() as UserDocument)?.language || 'en';
+            const lang = ((uSnap.data() as UserDocument)?.language || 'en').split('-')[0].toLowerCase();
 
             const title = t(lang, 'notifications.kick_title');
             const body = t(lang, 'notifications.kick_body', { groupName });
@@ -305,7 +305,7 @@ export class InactivityService {
             const result = await sendPushNotification(tokens, {
                 title,
                 body,
-                data: { type: 'kick', groupId }
+                data: { type: 'kick', groupId, lang }
             });
 
             if (result.failedTokens.length > 0) {

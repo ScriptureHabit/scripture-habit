@@ -174,7 +174,8 @@ export default {
                 "title": "Install App",
                 "description": "Add to home screen for a better app experience.",
                 "iosInstruction": "Tap the Share button at the bottom of Safari, then select 'Add to Home Screen'.",
-                "androidButton": "Add to Home Screen"
+                "androidButton": "Thêm vào màn hình chính",
+                "androidInstruction": "Mở menu trình duyệt (⋮) và chọn 'Cài đặt ứng dụng' hoặc 'Thêm vào màn hình chính'."
             },
             you: "Bạn",
             title: "Hồ sơ",
@@ -339,6 +340,10 @@ export default {
             groupStatusUpdated: "Nhóm hiện đang là {status}",
             errorUpdateGroupStatus: "Không thể cập nhật trạng thái nhóm",
             inactivityRemoval: "👋 **{count} thành viên** đã bị xóa do không hoạt động (hơn 3 ngày).",
+            markedPublic: "Nhóm hiện đã được đặt thành công khai",
+            markedPrivate: "Nhóm hiện đã được đặt thành riêng tư",
+            reportError: "Gửi báo cáo thất bại. Vui lòng thử lại.",
+            linkCopiedForInstagram: "Đã sao chép liên kết mời! Bây giờ bạn có thể dán nó vào tiểu sử hoặc tin (story) Instagram của mình.",
             report: "Báo cáo",
             reportUser: "Báo cáo nội dung không phù hợp",
             reportReason: "Lý do báo cáo",
@@ -381,7 +386,12 @@ export default {
             daysAgo: "{count} ngày trước",
             viewMembers: "Xem thành viên",
             makePublic: "Đặt công khai",
-            makePrivate: "Đặt riêng tư"
+            makePrivate: "Đặt riêng tư",
+            autoKickInitTitle: "Nhịp độ thói quen cá nhân của bạn",
+            autoKickInitDesc: "Để giúp bạn xây dựng thói quen nhất quán, Scripture Habit có quy tắc tạm dừng tự động. Nếu bạn không đăng bài trong vài ngày, hệ thống sẽ tự động mời bạn rời nhóm để giữ cho nhóm luôn hoạt động. Bạn thích nhịp độ nào?",
+            next: "Tiếp theo",
+            autoKickWarning: "※ Cài đặt này áp dụng cho tất cả các nhóm của bạn。",
+            autoKickConfirmText: "Xác nhận cuối cùng: Bạn có hiểu rằng nếu bạn không đăng ghi chép trong {days} ngày, bạn sẽ tự động bị xóa không? Vui lòng nhập '{days}' để xác nhận。"
         },
         myNotes: {
             description: "Bộ Sưu Tập Ghi Chép",
@@ -661,7 +671,9 @@ export default {
             comment: "Bình luận",
             newStudyNote: "Ghi Chú Nghiên Cứu Mới",
             talk: "Bài nói chuyện",
-            speech: "Bài phát biểu"
+            speech: "Bài phát biểu",
+            fetchingInfo: "Đang tải thông tin...",
+            url: "URL"
         },
         signOut: {
             title: "Đăng xuất",
