@@ -37,7 +37,8 @@
         "types",
         "vite.config.ts",
         "playwright.config.ts",
-        "tests"
+        "tests",
+        "scratch"
     ],
     "exclude": [
         "node_modules"

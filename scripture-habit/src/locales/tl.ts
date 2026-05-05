@@ -286,6 +286,8 @@ export default {
             translation: "Translation",
             translating: "Isinasalin...",
             translated: "Naisalin na",
+            showOriginal: "Ipakita ang Orihinal",
+            showTranslation: "Ipakita ang Translation",
             reply: "Sumagot",
             like: "Like",
             unlike: "Unlike",
@@ -403,7 +405,8 @@ export default {
             markedPublic: "Ginamit na pampubliko ang grupo",
             markedPrivate: "Ginamit na pribado ang grupo",
             reportError: "Nabigong ipadala ang ulat",
-            linkCopiedForInstagram: "Nakopya ang link para sa Instagram!"
+            linkCopiedForInstagram: "Nakopya ang link para sa Instagram!",
+            newMessages: "Mga bagong mensahe mula rito"
         },
         myNotes: {
             description: "Koleksyon ng mga Tala",
@@ -565,6 +568,10 @@ export default {
             createGroupDesc: "Simulan ang iyong sariling grupo at mag-imbita ng mga kaibigan.",
             backToDashboard: "Bumalik sa Dashboard"
         },
+        groupListDetail: {
+            title: "Maghanap ng mga Pampublikong Grupo",
+            empty: "Walang nahanap na grupo. Likhain natin ang iyong unang grupo!"
+        },
         joinGroup: {
             publicGroupsTitle: "Tuklasin ang mga Pampublikong Grupo",
             publicGroupsDesc: "Humanap ng komunidad na tumutugma sa iyong mga layunin sa pag-aaral.",
@@ -715,6 +722,7 @@ export default {
             nextButton: "Susunod",
             skipButton: "Laktawan"
         },
+        welcomeGuideButton: "Naintindihan!",
         mascot: {
             streakCelebration: "Kamangha-mangha! {streak} na araw na streak!",
             doneToday: "Magaling ang ginawa mo ngayong araw!\nKita-kits bukas!",

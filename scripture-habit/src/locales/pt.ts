@@ -420,13 +420,8 @@ export default {
             delete: "Excluir Anotação",
             searchPlaceholder: "Pesquisar anotações...",
             readInGospelLibrary: "Ler na Biblioteca do Evangelho",
-            inspirationQuote: "\"Portanto, aquele que prega e aquele que recebe se compreendem um ao outro e ambos são edificados e juntos se regozijam\"",
-            inspirationSource: "— Jesus Cristo (Doutrina e Convênios 50:22)",
-            shareLearningCall: "Gostaria de compartilhar o que aprendeu hoje?",
             goToByuSpeech: "Ir para o Discurso da BYU",
             readStudyMaterial: "Ler o Material de Estudo",
-            todaysComeFollowMe: "'Vem, e Segue-Me' de Hoje",
-            noReadingPlan: "Nenhum plano para hoje.",
             generateRecap: "✨ Gerar Resumo Semanal",
             generatingRecap: "Gerando resumo semanal... Isso pode levar um momento.",
             recapSuccess: "Resumo semanal gerado! Revise e salve-o.",
@@ -552,6 +547,10 @@ export default {
             createGroupTitle: "Criar um Grupo",
             createGroupDesc: "Comece seu próprio grupo e convide amigos.",
             backToDashboard: "Voltar ao Painel"
+        },
+        groupListDetail: {
+            title: "Encontrar Grupos Públicos",
+            empty: "Nenhum grupo encontrado. Vamos criar o primeiro grupo!"
         },
         joinGroup: {
             publicGroupsTitle: "Explorar Grupos Públicos",
@@ -703,6 +702,7 @@ export default {
             nextButton: "Próximo",
             skipButton: "Pular"
         },
+        welcomeGuideButton: "Entendi!",
         mascot: {
             streakCelebration: "Incrível! Sequência de {streak} dias!",
             doneToday: "Bom trabalho hoje!\nAté amanhã!",

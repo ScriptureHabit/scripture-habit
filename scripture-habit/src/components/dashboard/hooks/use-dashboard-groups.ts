@@ -20,7 +20,7 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
 
     // Fetch user groups details
     useEffect(() => {
-        if (!userData?.uid || groupIds.length === 0) {
+        if (!userData?.uid) {
             setRawUserGroups([]);
             return;
         }
@@ -34,24 +34,30 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
         );
 
         const unsubGroups = onSnapshot(groupsQuery, (snapshot) => {
-            const groupsMap: Record<string, Group> = {};
-            snapshot.docs.forEach(docSnap => {
-                groupsMap[docSnap.id] = { id: docSnap.id, ...docSnap.data() } as Group;
-            });
+            const fetchedGroups = snapshot.docs.map(docSnap => ({ 
+                id: docSnap.id, 
+                ...docSnap.data() 
+            } as Group));
 
             setRawUserGroups(prev => {
-                return groupIds
-                    .map(id => {
-                        const newGroup = groupsMap[id];
-                        if (!newGroup) return prev.find(g => g.id === id);
+                // If we have groupIds in userData, use them for ordering
+                if (groupIds.length > 0) {
+                    const ordered = groupIds.map(id => {
+                        const newGroup = fetchedGroups.find(g => g.id === id);
+                        if (newGroup) return newGroup;
                         
+                        // If not in current snapshot, try to find in previous state
                         const oldGroup = prev.find(g => g.id === id);
-                        return {
-                            ...newGroup,
-                            myMemberStatus: oldGroup?.myMemberStatus || newGroup.myMemberStatus
-                        } as Group;
-                    })
-                    .filter(Boolean) as Group[];
+                        return oldGroup;
+                    }).filter(Boolean) as Group[];
+
+                    // Add any groups found by query that weren't in groupIds (safety fallback)
+                    const extra = fetchedGroups.filter(g => !groupIds.includes(g.id));
+                    return [...ordered, ...extra];
+                }
+                
+                // Fallback: If groupIds is empty/missing, just use whatever groups the query found
+                return fetchedGroups;
             });
         }, (err) => {
             if (err.code !== 'permission-denied') console.error("Dashboard groups query listener error:", err);
@@ -107,14 +113,6 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
         return () => unsubscribers.forEach(unsub => unsub());
     }, [userData?.uid, groupIds, groupIdsKey]);
 
-    // Initialize active group
-    useEffect(() => {
-        if (!userData?.uid) return;
-        if (!activeGroupId && groupIds.length > 0) {
-            setActiveGroupId(groupIds[0]);
-        }
-    }, [activeGroupId, groupIds, userData?.uid]);
-
     // Construct userGroups (Force unreadCount to 0)
     const [userGroups, setUserGroups] = useState<Group[]>([]);
 
@@ -125,6 +123,19 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
         })) as Group[];
         setUserGroups(combined);
     }, [rawUserGroups]);
+
+    // Initialize active group
+    useEffect(() => {
+        if (!userData?.uid) return;
+        if (!activeGroupId) {
+            if (groupIds.length > 0) {
+                setActiveGroupId(groupIds[0]);
+            } else if (userGroups.length > 0) {
+                setActiveGroupId(userGroups[0].id);
+            }
+        }
+    }, [activeGroupId, groupIds, userGroups, userData?.uid]);
+
 
     // Sync active group
     useEffect(() => {

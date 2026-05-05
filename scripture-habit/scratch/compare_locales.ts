@@ -1,14 +1,14 @@
-
-import ja from '../src/locales/ja';
-import en from '../src/locales/en';
-import es from '../src/locales/es';
-import ko from '../src/locales/ko';
-import pt from '../src/locales/pt';
-import sw from '../src/locales/sw';
-import th from '../src/locales/th';
-import tl from '../src/locales/tl';
-import vi from '../src/locales/vi';
-import zho from '../src/locales/zho';
+import fs from 'fs';
+import ja from '../src/locales/ja.ts';
+import en from '../src/locales/en.ts';
+import es from '../src/locales/es.ts';
+import ko from '../src/locales/ko.ts';
+import pt from '../src/locales/pt.ts';
+import sw from '../src/locales/sw.ts';
+import th from '../src/locales/th.ts';
+import tl from '../src/locales/tl.ts';
+import vi from '../src/locales/vi.ts';
+import zho from '../src/locales/zho.ts';
 
 
 function getKeys(obj: any, prefix = ''): string[] {
@@ -32,10 +32,10 @@ console.log('| Language | Key Count | Diff from JA | Missing Keys (from JA) | Ex
 console.log('|----------|-----------|--------------|------------------------|------------------------|');
 
 
-const results = {};
+const results: Record<string, any> = {};
 
 for (const [lang, data] of Object.entries(locales)) {
-    const langKeyList = getKeys(data);
+    const langKeyList = getKeys(data as any);
     const langKeySet = new Set(langKeyList);
     
     const missing = jaKeyList.filter(k => !langKeySet.has(k));
@@ -49,8 +49,5 @@ for (const [lang, data] of Object.entries(locales)) {
     };
 }
 
-import fs from 'fs';
 fs.writeFileSync('scratch/locale_comparison.json', JSON.stringify(results, null, 2));
 console.log('Results saved to scratch/locale_comparison.json');
-
-

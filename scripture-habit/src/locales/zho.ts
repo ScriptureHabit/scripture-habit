@@ -260,6 +260,8 @@ export default {
             translation: "Translation",
             translating: "翻譯中...",
             translated: "已翻譯",
+            showOriginal: "顯示原文",
+            showTranslation: "顯示翻譯",
             reply: "回覆",
             like: "讚",
             unlike: "收回讚",
