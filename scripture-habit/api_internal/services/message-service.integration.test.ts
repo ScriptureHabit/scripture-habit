@@ -23,8 +23,9 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('MessageService Integratio
             name: 'Test Group',
             members: [TEST_UID],
             messageCount: 0,
-            timeZone: 'Asia/Tokyo'
-        }, { merge: true });
+            timeZone: 'Asia/Tokyo',
+            lastInactivityCheckedAt: admin.firestore.Timestamp.now()
+        });
         
         // Also setup member subcollection
         await groupRef.collection('members').doc(TEST_UID).set({

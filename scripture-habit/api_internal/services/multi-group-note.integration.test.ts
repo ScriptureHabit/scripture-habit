@@ -31,7 +31,8 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('NoteService Multi-Group I
                     members: [TEST_UID],
                     messageCount: 0,
                     noteCount: 0,
-                    createdAt: admin.firestore.Timestamp.now()
+                    createdAt: admin.firestore.Timestamp.now(),
+                    lastInactivityCheckedAt: admin.firestore.Timestamp.now()
                 } as GroupDocument);
             } else {
                 await groupRef.update({

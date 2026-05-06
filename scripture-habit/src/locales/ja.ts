@@ -489,7 +489,7 @@ export default {
             createGroupCta: "自分のコミュニティを始めたいですか？",
             createGroupLink: "グループを作成",
             errorLoggedIn: "グループに参加するにはログインが必要です。",
-            errorMaxGroups: "参加できるグループは最大7つまでです。",
+            errorMaxGroups: "参加できるグループは最大4つまでです。",
             errorAlreadyMember: "すでにこのグループのメンバーです。",
             errorFull: "このグループは満員です。",
             successJoined: "グループに参加しました:",

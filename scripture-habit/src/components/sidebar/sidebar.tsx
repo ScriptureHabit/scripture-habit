@@ -12,6 +12,7 @@ import { auth, appCheck } from '../../firebase';
 // Removed unused Firestore imports
 import { getToken } from "firebase/app-check";
 import { useLanguage } from '../../hooks/use-language';
+import { MAX_GROUPS_PER_USER } from '../../config';
 import { Group } from '../../types/chat';
 
 interface SidebarGroupItemProps {
@@ -220,7 +221,7 @@ const Sidebar: React.FC<SidebarProps> = ({ selected, setSelected, userGroups = [
           {/* Desktop Groups Section */}
           <div className="groups-section desktop-groups">
             <div className="menu-header">
-              {t('sidebar.myGroups')} <span>({userGroups.length}/4)</span>
+              {t('sidebar.myGroups')} <span>({userGroups.length}/{MAX_GROUPS_PER_USER})</span>
             </div>
             <div className="sidebar-group-list-container">
               {userGroups.map((group) => (
@@ -236,7 +237,7 @@ const Sidebar: React.FC<SidebarProps> = ({ selected, setSelected, userGroups = [
               ))}
             </div>
 
-            {userGroups.length < 4 && (
+            {userGroups.length < MAX_GROUPS_PER_USER && (
               <div className="menuItem create-group-item" onClick={() => navigate(`/${language}/group-options`)} data-testid="sidebar-join-create-group">
                 <UilPlusCircle />
                 <span>{t('sidebar.joinCreateGroup')}</span>

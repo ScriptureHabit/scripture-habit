@@ -582,7 +582,7 @@ export default {
             createGroupCta: "ต้องการเริ่มชุมชนของคุณเองหรือไม่?",
             createGroupLink: "สร้างกลุ่ม",
             errorLoggedIn: "คุณต้องเข้าสู่ระบบเพื่อเข้าร่วมกลุ่ม",
-            errorMaxGroups: "คุณสามารถเข้าร่วมได้สูงสุด 12 กลุ่ม",
+            errorMaxGroups: "คุณสามารถเข้าร่วมได้สูงสุด 4 กลุ่ม",
             errorAlreadyMember: "คุณเป็นสมาชิกของกลุ่มนี้แล้ว",
             errorFull: "กลุ่มนี้เต็มแล้ว",
             successJoined: "เข้าร่วมกลุ่มสำเร็จ:",

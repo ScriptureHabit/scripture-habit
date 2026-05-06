@@ -7,6 +7,8 @@ import { auth, db, admin } from './lib/firebase-admin.js';
 describe('Groups API Error Handling & Validation', () => {
     let server: Server;
     let baseUrl: string;
+    const createdGroupIds: string[] = [];
+    const createdUserUids: string[] = [];
 
     beforeAll(async () => {
         // Force skipping App Check for integration tests
@@ -25,6 +27,14 @@ describe('Groups API Error Handling & Validation', () => {
     });
 
     afterAll(async () => {
+        // Cleanup created documents
+        for (const gid of createdGroupIds) {
+            await db.recursiveDelete(db.collection('groups').doc(gid)).catch(() => {});
+        }
+        for (const uid of createdUserUids) {
+            await db.collection('users').doc(uid).delete().catch(() => {});
+        }
+
         return new Promise<void>((resolve) => {
             server.close(() => resolve());
         });
@@ -87,6 +97,43 @@ describe('Groups API Error Handling & Validation', () => {
             const data = await response.json();
             expect(data.code).toBe('auth/email-not-verified');
         });
+
+        it('should return 400 when user tries to join more than 4 groups', async () => {
+            const uid = 'heavy-user-' + Date.now();
+            const groupId = 'new-group-' + Date.now();
+
+            // Setup user with 4 groups
+            await db.collection('users').doc(uid).set({ 
+                uid, 
+                nickname: 'Heavy User',
+                groupIds: ['g1', 'g2', 'g3', 'g4']
+            });
+            createdUserUids.push(uid);
+
+            // Setup the group to join
+            await db.collection('groups').doc(groupId).set({
+                id: groupId,
+                name: 'New Group',
+                members: [],
+                isPublic: true,
+                lastInactivityCheckedAt: admin.firestore.Timestamp.now()
+            });
+            createdGroupIds.push(groupId);
+
+            mockAuth(uid);
+            const response = await fetch(`${baseUrl}/api/join-group`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer valid-token',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ groupId })
+            });
+
+            const data = await response.json();
+            expect(response.status).toBe(400);
+            expect(data.error).toContain('only join up to 4 groups');
+        });
     });
 
     describe('POST /api/kick-member', () => {
@@ -100,13 +147,16 @@ describe('Groups API Error Handling & Validation', () => {
             await db.collection('users').doc(ownerUid).set({ uid: ownerUid, nickname: 'Owner' });
             await db.collection('users').doc(victimUid).set({ uid: victimUid, nickname: 'Victim' });
             await db.collection('users').doc(maliciousUid).set({ uid: maliciousUid, nickname: 'Malicious' });
+            createdUserUids.push(ownerUid, victimUid, maliciousUid);
 
             await db.collection('groups').doc(groupId).set({
                 id: groupId,
                 name: 'Kick Test Group',
                 ownerUserId: ownerUid,
-                members: [ownerUid, victimUid, maliciousUid]
+                members: [ownerUid, victimUid, maliciousUid],
+                lastInactivityCheckedAt: admin.firestore.Timestamp.now()
             });
+            createdGroupIds.push(groupId);
 
             mockAuth(maliciousUid);
             const response = await fetch(`${baseUrl}/api/kick-member`, {
@@ -128,13 +178,16 @@ describe('Groups API Error Handling & Validation', () => {
             const groupId = 'test-group-kick-self-' + Date.now();
 
             await db.collection('users').doc(ownerUid).set({ uid: ownerUid, nickname: 'Owner' });
+            createdUserUids.push(ownerUid);
 
             await db.collection('groups').doc(groupId).set({
                 id: groupId,
                 name: 'Kick Self Group',
                 ownerUserId: ownerUid,
-                members: [ownerUid]
+                members: [ownerUid],
+                lastInactivityCheckedAt: admin.firestore.Timestamp.now()
             });
+            createdGroupIds.push(groupId);
 
             mockAuth(ownerUid);
             const response = await fetch(`${baseUrl}/api/kick-member`, {
@@ -175,8 +228,11 @@ describe('Groups API Error Handling & Validation', () => {
             await db.collection('groups').doc(groupId).set({
                 id: groupId,
                 ownerUserId: uid,
-                members: [uid]
+                members: [uid],
+                lastInactivityCheckedAt: admin.firestore.Timestamp.now()
             });
+            createdGroupIds.push(groupId);
+            createdUserUids.push(uid);
 
             mockAuth(uid);
             const response = await fetch(`${baseUrl}/api/update-group`, {

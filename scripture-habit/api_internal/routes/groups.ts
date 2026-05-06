@@ -3,6 +3,7 @@ import { admin, db } from '../lib/firebase-admin.js';
 import { verifyAppCheck, authenticate, requireEmailVerified, AuthenticatedRequest } from '../lib/middleware.js';
 import { joinGroupSchema, updateKickThresholdSchema, leaveGroupSchema, deleteGroupSchema, updateReadStatusSchema, announceUnitySchema, updateGroupSchema, regenerateInviteCodeSchema, kickMemberSchema } from '../lib/schemas.js';
 import { GroupDocument, UserDocument, MemberPreview as PreviewItem, GroupMemberDocument } from '../../types/firestore.js';
+import { MAX_GROUPS_PER_USER } from '../lib/constants.js';
 import { CounterService } from '../services/counter-service.js';
 import { removeMemberFromGroup } from '../lib/membership-utils.js';
 
@@ -75,6 +76,11 @@ router.post('/join-group', authenticate, requireEmailVerified, verifyAppCheck, a
             const members = gData.members || [];
             if (members.includes(uid)) throw new Error('You are already a member of this group.');
             if (members.length >= (gData.maxMembers || 500)) throw new Error('This group is full.');
+
+            const userGroupIds = userData.groupIds || [];
+            if (userGroupIds.length >= MAX_GROUPS_PER_USER) {
+                throw new Error(`You can only join up to ${MAX_GROUPS_PER_USER} groups. Please leave one before joining another.`);
+            }
 
             // 2. Prepare Data
             const newMemberPreview = { uid, nickname: userData.nickname || 'Member' };

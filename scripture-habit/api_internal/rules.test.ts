@@ -122,6 +122,28 @@ describe('Firestore Security Rules', () => {
             });
             await assertFails(getDoc(doc(alice.firestore(), 'groups/private_grp')));
         });
+
+        it('should allow creating a group if user has less than 4 groups', async () => {
+            const alice = testEnv.authenticatedContext('alice', { email_verified: true });
+            await testEnv.withSecurityRulesDisabled(async (context) => {
+                await setDoc(doc(context.firestore(), 'users/alice'), { groupIds: ['g1', 'g2', 'g3'] });
+            });
+            await assertSucceeds(setDoc(doc(alice.firestore(), 'groups/g4'), { 
+                ownerUserId: 'alice',
+                name: 'Group 4'
+            }));
+        });
+
+        it('should deny creating a group if user has 4 groups', async () => {
+            const alice = testEnv.authenticatedContext('alice', { email_verified: true });
+            await testEnv.withSecurityRulesDisabled(async (context) => {
+                await setDoc(doc(context.firestore(), 'users/alice'), { groupIds: ['g1', 'g2', 'g3', 'g4'] });
+            });
+            await assertFails(setDoc(doc(alice.firestore(), 'groups/g5'), { 
+                ownerUserId: 'alice',
+                name: 'Group 5'
+            }));
+        });
     });
 
     describe('Group Messages', () => {

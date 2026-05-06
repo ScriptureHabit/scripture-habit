@@ -65,7 +65,11 @@ service cloud.firestore {
         request.auth.uid in resource.data.get('members', [])
       );
       
-      allow create, update, delete: if false; // All group mutation via API
+      // Group creation limit: max 4 groups per user
+      allow create: if isAuthenticated() && 
+        request.resource.data.ownerUserId == request.auth.uid &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('groupIds', []).size() < 4;
+      allow update, delete: if false; // All other mutations via API
       
       // 3. Subcollections under groups
       match /messages/{messageId} {

@@ -554,7 +554,7 @@ export default {
             createGroupCta: "Muốn bắt đầu cộng đồng riêng của bạn?",
             createGroupLink: "Tạo nhóm",
             errorLoggedIn: "Bạn phải đăng nhập để tham gia nhóm.",
-            errorMaxGroups: "Bạn chỉ có thể tham gia tối đa 12 nhóm.",
+            errorMaxGroups: "Bạn chỉ có thể tham gia tối đa 4 nhóm.",
             errorAlreadyMember: "Bạn đã là thành viên của nhóm này.",
             errorFull: "Nhóm này đã đầy.",
             successJoined: "Đã tham gia nhóm thành công:",

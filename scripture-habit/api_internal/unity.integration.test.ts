@@ -34,6 +34,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Unity Percentage Integrat
             members: [TEST_UID],
             memberJoinedAt: { [TEST_UID]: now },
             timeZone: 'UTC',
+            lastInactivityCheckedAt: admin.firestore.Timestamp.now(),
             dailyActivity: {
                 date: '',
                 activeMembers: []

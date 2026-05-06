@@ -23,7 +23,8 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('ProfileService Integratio
                 members: [UID],
                 memberPreviews: [{ uid: UID, nickname: 'OldName', photoURL: 'old-url' }],
                 lastNoteByUid: UID,
-                lastNoteByNickname: 'OldName'
+                lastNoteByNickname: 'OldName',
+                lastInactivityCheckedAt: admin.firestore.Timestamp.now()
             });
             await db.collection('groups').doc(gid).collection('members').doc(UID).set({
                 nickname: 'OldName',

@@ -534,7 +534,7 @@ export default {
             createGroupCta: "想建立自己的社群嗎？",
             createGroupLink: "建立群組",
             errorLoggedIn: "您必須登入才能加入群組。",
-            errorMaxGroups: "您最多只能加入 12 個群組。",
+            errorMaxGroups: "您最多只能加入 4 個群組。",
             errorAlreadyMember: "您已經是此群組的成員。",
             errorFull: "此群組已滿。",
             successJoined: "成功加入群組：",

@@ -535,7 +535,7 @@ export default {
             createGroupCta: "¿Quieres iniciar tu propia comunidad?",
             createGroupLink: "Crear un Grupo",
             errorLoggedIn: "Debes iniciar sesión para unirte a un grupo.",
-            errorMaxGroups: "Solo puedes unirte a hasta 12 grupos.",
+            errorMaxGroups: "Solo puedes unirte a hasta 4 grupos.",
             errorAlreadyMember: "Ya eres miembro de este grupo.",
             errorFull: "Este grupo ya está lleno.",
             successJoined: "Te has unido al grupo con éxito:",

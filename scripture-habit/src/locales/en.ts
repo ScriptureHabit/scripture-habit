@@ -481,7 +481,7 @@ export default {
             createGroupCta: "Want to start your own community?",
             createGroupLink: "Create a Group",
             errorLoggedIn: "You must be logged in to join a group.",
-            errorMaxGroups: "You can only join up to 12 groups.",
+            errorMaxGroups: "You can only join up to 4 groups.",
             errorAlreadyMember: "You are already a member of this group.",
             errorFull: "This group is already full.",
             successJoined: "Successfully joined group:",

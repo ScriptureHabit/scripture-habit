@@ -9,6 +9,7 @@ import Button from '../button/button';
 import Toggle from '../input/toggle';
 import { toast } from "react-toastify";
 import { useLanguage } from '../../hooks/use-language';
+import { MAX_GROUPS_PER_USER } from '../../config';
 import Mascot from '../mascot/mascot';
 import { generateInviteCode } from '../../utils/invite-utils';
 
@@ -34,6 +35,14 @@ export default function GroupForm() {
       const creatorRef = doc(db, 'users', user.uid);
       const userSnap = await getDoc(creatorRef);
       const userData = userSnap.exists() ? userSnap.data() : null;
+
+      // Enforce group limit
+      const currentGroupIds = userData?.groupIds || [];
+      if (currentGroupIds.length >= MAX_GROUPS_PER_USER) {
+        setError(t('joinGroup.errorMaxGroups'));
+        return;
+      }
+
       const userNick = (userData && userData.nickname) ? userData.nickname : (user.displayName || 'Owner');
 
       const now = Timestamp.now();

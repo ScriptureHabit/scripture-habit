@@ -28,7 +28,8 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('NoteService Deletion Inte
                 noteCount: 0,
                 messageCount: 0,
                 timeZone: 'UTC',
-                createdAt: admin.firestore.Timestamp.now()
+                createdAt: admin.firestore.Timestamp.now(),
+                lastInactivityCheckedAt: admin.firestore.Timestamp.now()
             } as GroupDocument);
         }
     });

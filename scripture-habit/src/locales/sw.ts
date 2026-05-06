@@ -580,7 +580,7 @@ export default {
             createGroupCta: "Unataka kuanzisha jumuiya yako mwenyewe?",
             createGroupLink: "Unda Kikundi",
             errorLoggedIn: "Lazima uingie ili kujiunga na kikundi.",
-            errorMaxGroups: "Unaweza kujiunga na vikundi hadi 12 pekee.",
+            errorMaxGroups: "Unaweza kujiunga na vikundi hadi 4 pekee.",
             errorAlreadyMember: "Wewe tayari ni mwanachama wa kikundi hiki.",
             errorFull: "Kikundi hiki kimejaa tayari.",
             successJoined: "Umejiunga na kikundi kikamilifu:",

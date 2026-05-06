@@ -9,3 +9,5 @@ export const SCRIPTURE_CATEGORIES = [
     'BYU Speeches',
     'Other'
 ];
+
+export const MAX_GROUPS_PER_USER = 4;

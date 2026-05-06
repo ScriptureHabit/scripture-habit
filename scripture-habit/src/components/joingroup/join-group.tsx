@@ -9,6 +9,7 @@ import { onAuthStateChanged, User } from "firebase/auth";
 import '../groupform/group-form.css';
 import GroupCard from '../../groups/group-card';
 import { useLanguage } from '../../hooks/use-language';
+import { MAX_GROUPS_PER_USER } from '../../config';
 import UserProfileModal from '../userprofilemodal/user-profile-modal';
 import Mascot from '../mascot/mascot';
 import { toast } from 'react-toastify';
@@ -168,7 +169,7 @@ export default function JoinGroup() {
 
     const currentGroupIds = userData?.groupIds || (userData?.groupId ? [userData.groupId] : []);
 
-    if (currentGroupIds.length >= 12) {
+    if (currentGroupIds.length >= MAX_GROUPS_PER_USER) {
       setError(t('joinGroup.errorMaxGroups'));
       return;
     }

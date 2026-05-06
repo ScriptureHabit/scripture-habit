@@ -102,6 +102,7 @@ router.post('/test/setup-test-group', authenticate, async (req: AuthenticatedReq
                 memberJoinedAt: memberJoinedAt,
                 memberLastActive: { [uid]: memberJoinedTime },
                 memberLastReadAt: { [uid]: memberJoinedTime },
+                lastInactivityCheckedAt: now,
                 dailyActivity: { 
                     date: dailyActivityDate, 
                     activeMembers: unityPercentage === 100 ? allMembers : [] 

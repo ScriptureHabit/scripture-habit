@@ -144,7 +144,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('InactivityService Integra
 
 
     afterAll(async () => {
-        const groups = [G1, G2, G3, G4, G5, G6, G7, G10, G11, G12, G13, G_STALE_A, G_STALE_B, G_STALE_C];
+        const groups = [G1, G2, G3, G4, G5, G6, G7, G10, G11, G12, G13, G_STALE_A, G_STALE_B, G_STALE_C, 'INA_GRP_SCENARIO_9'];
         for (const gid of groups) {
             await db.recursiveDelete(db.collection('groups').doc(gid)).catch(() => {});
         }

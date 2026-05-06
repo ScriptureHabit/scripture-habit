@@ -581,7 +581,7 @@ export default {
             createGroupCta: "자신만의 커뮤니티를 시작하고 싶으신가요?",
             createGroupLink: "그룹 생성",
             errorLoggedIn: "그룹에 가입하려면 로그인해야 합니다.",
-            errorMaxGroups: "최대 12개의 그룹까지만 가입할 수 있습니다.",
+            errorMaxGroups: "최대 4개의 그룹까지만 가입할 수 있습니다.",
             errorAlreadyMember: "이미 이 그룹의 멤버입니다.",
             errorFull: "이 그룹은 이미 가득 찼습니다.",
             successJoined: "그룹 가입 성공:",

@@ -579,7 +579,7 @@ export default {
             createGroupCta: "Gusto mo bang simulan ang iyong sariling komunidad?",
             createGroupLink: "Lumikha ng Grupo",
             errorLoggedIn: "Kailangan mong mag-log in para sumali sa isang grupo.",
-            errorMaxGroups: "Maaari ka lamang sumali sa hanggang 12 grupo.",
+            errorMaxGroups: "Maaari ka lamang sumali sa hanggang 4 grupo.",
             errorAlreadyMember: "Miyembro ka na ng grupong ito.",
             errorFull: "Puno na ang grupong ito.",
             successJoined: "Matagumpay na nakasali sa grupo:",

@@ -559,7 +559,7 @@ export default {
             createGroupCta: "Quer começar sua própria comunidade?",
             createGroupLink: "Criar um Grupo",
             errorLoggedIn: "Você deve estar logado para entrar em um grupo.",
-            errorMaxGroups: "Você só pode entrar em até 12 grupos.",
+            errorMaxGroups: "Você só pode entrar em até 4 grupos.",
             errorAlreadyMember: "Você já é membro deste grupo.",
             errorFull: "Este grupo já está cheio.",
             successJoined: "Entrou com sucesso no grupo:",
