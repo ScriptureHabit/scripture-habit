@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import JoinGroup from '../join-group';
 import { useLanguage } from '../../../hooks/use-language';
-import { doc, collection, query, onSnapshot, getDocs, QuerySnapshot, DocumentData } from 'firebase/firestore';
+import { doc, collection, query, onSnapshot, getDocs, QuerySnapshot, DocumentData, QueryDocumentSnapshot } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
 import { MemoryRouter } from 'react-router-dom';
 import { act } from 'react';
@@ -79,13 +79,16 @@ describe('JoinGroup Component Logic', () => {
     });
 
     // Default getDocs mock
-    vi.mocked(getDocs).mockResolvedValue({
+    const mockSnapshot = {
       docs: [
         { id: 'group-1', data: () => ({ name: 'Group 1', isPublic: true, members: ['test-user'] }) },
         { id: 'group-2', data: () => ({ name: 'Group 2', isPublic: true, members: ['other-user'] }) }
       ],
-      forEach(cb: any) { this.docs.forEach(cb); }
-    } as unknown as QuerySnapshot<DocumentData, DocumentData>);
+      forEach(cb: (doc: QueryDocumentSnapshot<DocumentData, DocumentData>) => void) {
+        mockSnapshot.docs.forEach(cb as any);
+      }
+    };
+    vi.mocked(getDocs).mockResolvedValue(mockSnapshot as unknown as QuerySnapshot<DocumentData, DocumentData>);
   });
 
   it('filters out groups the user is already a member of', async () => {
