@@ -83,7 +83,8 @@ describe('JoinGroup Component Logic', () => {
       docs: [
         { id: 'group-1', data: () => ({ name: 'Group 1', isPublic: true, members: ['test-user'] }) },
         { id: 'group-2', data: () => ({ name: 'Group 2', isPublic: true, members: ['other-user'] }) }
-      ]
+      ],
+      forEach(cb: any) { this.docs.forEach(cb); }
     } as unknown as QuerySnapshot<DocumentData, DocumentData>);
   });
 
