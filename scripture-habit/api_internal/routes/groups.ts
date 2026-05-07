@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
 import { admin, db } from '../lib/firebase-admin.js';
 import { verifyAppCheck, authenticate, requireEmailVerified, AuthenticatedRequest } from '../lib/middleware.js';
-import { joinGroupSchema, updateKickThresholdSchema, leaveGroupSchema, deleteGroupSchema, updateReadStatusSchema, announceUnitySchema, updateGroupSchema, regenerateInviteCodeSchema, kickMemberSchema } from '../lib/schemas.js';
+import { joinGroupSchema, updateKickThresholdSchema, leaveGroupSchema, deleteGroupSchema, updateReadStatusSchema, announceUnitySchema, updateGroupSchema, regenerateInviteCodeSchema, kickMemberSchema, createGroupSchema } from '../lib/schemas.js';
 import { GroupDocument, UserDocument, MemberPreview as PreviewItem, GroupMemberDocument } from '../../types/firestore.js';
 import { MAX_GROUPS_PER_USER } from '../lib/constants.js';
 import { CounterService } from '../services/counter-service.js';
@@ -9,6 +9,118 @@ import { removeMemberFromGroup } from '../lib/membership-utils.js';
 
 
 const router = express.Router();
+
+/**
+ * Create Group
+ * Enforces MAX_GROUPS_PER_USER on the server to prevent bypasses.
+ */
+router.post('/create-group', authenticate, requireEmailVerified, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
+    const validation = createGroupSchema.safeParse(req.body);
+    if (!validation.success) {
+        return res.status(400).json({ error: 'Invalid input', details: validation.error.format() });
+    }
+
+    const { name, description, isPublic, timeZone } = validation.data;
+    const uid = req.user?.uid;
+    if (!uid) return res.status(401).json({ error: 'Unauthorized' });
+
+    try {
+        const result = await db.runTransaction(async (transaction) => {
+            const userRef = db.collection('users').doc(uid);
+            const userDoc = await transaction.get(userRef);
+
+            if (!userDoc.exists) throw new Error('User not found.');
+            const userData = userDoc.data()! as UserDocument;
+
+            // 1. Enforce group limit
+            const currentGroupIds = userData.groupIds || [];
+            if (currentGroupIds.length >= MAX_GROUPS_PER_USER) {
+                throw new Error(`You have reached the maximum limit of ${MAX_GROUPS_PER_USER} groups. Please leave or delete an existing group before creating a new one.`);
+            }
+
+            // 2. Prepare Data
+            const now = admin.firestore.Timestamp.now();
+            const expiresAt = admin.firestore.Timestamp.fromMillis(now.toMillis() + 7 * 24 * 60 * 60 * 1000); // 7 days default
+            const inviteCode = await generateUniqueInviteCode();
+
+            const userNick = userData.nickname || 'Owner';
+            const groupRef = db.collection('groups').doc();
+            const newGroupId = groupRef.id;
+
+            const newGroupData: GroupDocument = {
+                name,
+                description: description || '',
+                createdAt: now,
+                groupStreak: 0,
+                inviteCode,
+                inviteCodeExpiresAt: expiresAt,
+                isPublic: isPublic || false,
+                isPrivate: !isPublic, // Legacy field
+                maxMembers: 100000,
+                membersCount: 1,
+                memberPreviews: [{ uid, nickname: userNick }],
+                messageCount: 0,
+                noteCount: 0,
+                ownerUserId: uid,
+                members: [uid],
+                memberJoinedAt: { [uid]: now },
+                memberKickThresholds: { [uid]: userData.kickThreshold || 3 },
+                timeZone: timeZone || 'Asia/Tokyo',
+                lastInactivityCheckedAt: now,
+                lastMessageAt: now,
+                lastMessageByNickname: userNick,
+                lastMessageByUid: uid
+            };
+
+            const memberData: admin.firestore.WithFieldValue<GroupMemberDocument> = {
+                uid,
+                nickname: userNick,
+                photoURL: userData.photoURL || '',
+                joinedAt: now,
+                lastActiveAt: now,
+                lastReadAt: now,
+                kickThreshold: userData.kickThreshold || 3,
+                readMessageCount: 0
+            };
+
+            // 3. Execution Phase
+            transaction.set(groupRef, newGroupData);
+            transaction.set(groupRef.collection('members').doc(uid), memberData);
+            
+            transaction.set(userRef.collection('groupStates').doc(newGroupId), {
+                readMessageCount: 0,
+                lastReadAt: now,
+                lastActiveAt: now
+            });
+
+            transaction.update(userRef, {
+                groupIds: admin.firestore.FieldValue.arrayUnion(newGroupId),
+                groupId: newGroupId
+            });
+
+            const msgRef = groupRef.collection('messages').doc();
+            transaction.set(msgRef, {
+                text: `🎨 **${userNick}** created the group! Welcome!`,
+                createdAt: now,
+                senderId: 'system',
+                isSystemMessage: true,
+                type: 'system',
+                messageType: 'system'
+            });
+
+            return { groupId: newGroupId, inviteCode };
+        });
+
+        res.status(200).json({ message: 'Success', ...result });
+    } catch (error) {
+        let message = 'Internal Server Error';
+        if (error instanceof Error) {
+            message = error.message;
+            console.error('Error creating group:', error.message);
+        }
+        res.status(400).json({ error: message });
+    }
+});
 
 
 // Join Group
@@ -655,13 +767,31 @@ router.post('/regenerate-invite-code', authenticate, verifyAppCheck, async (req:
 });
 
 // Fetch Public Groups
-router.get('/groups', async (_req: Request, res: Response) => {
+router.get('/groups', async (req: Request, res: Response) => {
     try {
-        const snapshot = await db.collection('groups')
+        const limitAmount = Math.min(parseInt(req.query.limit as string) || 20, 100);
+        const lastId = req.query.lastId as string;
+        const lastValue = req.query.lastValue as string;
+
+        let query = db.collection('groups')
             .where('isPublic', '==', true)
             .orderBy('lastMessageAt', 'desc')
-            .limit(100)
-            .get();
+            .orderBy(admin.firestore.FieldPath.documentId(), 'desc');
+
+        if (lastId && lastValue) {
+            // Use both value and ID for reliable pagination
+            // lastValue should be the ISO string or timestamp
+            const lastMessageAt = admin.firestore.Timestamp.fromDate(new Date(lastValue));
+            query = query.startAfter(lastMessageAt, lastId);
+        } else if (lastId) {
+            // Fallback to fetching the doc if only ID is provided (costs 1 extra read)
+            const lastDoc = await db.collection('groups').doc(lastId).get();
+            if (lastDoc.exists) {
+                query = query.startAfter(lastDoc);
+            }
+        }
+
+        const snapshot = await query.limit(limitAmount).get();
 
         const groups = snapshot.docs.map(doc => {
             const data = doc.data() as GroupDocument;
@@ -673,10 +803,10 @@ router.get('/groups', async (_req: Request, res: Response) => {
                 noteCount: data.noteCount || 0,
                 memberPreviews: data.memberPreviews || [],
                 lastNoteByNickname: data.lastNoteByNickname || '',
-                lastNoteAt: data.lastNoteAt || null,
-                lastMessageAt: data.lastMessageAt || null,
+                lastNoteAt: data.lastNoteAt ? (data.lastNoteAt as admin.firestore.Timestamp).toDate().toISOString() : null,
+                lastMessageAt: data.lastMessageAt ? (data.lastMessageAt as admin.firestore.Timestamp).toDate().toISOString() : null,
                 isPublic: true,
-                createdAt: data.createdAt,
+                createdAt: data.createdAt ? (data.createdAt as admin.firestore.Timestamp).toDate().toISOString() : null,
                 translations: data.translations
             };
         });

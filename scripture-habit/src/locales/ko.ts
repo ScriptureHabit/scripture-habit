@@ -158,9 +158,9 @@ export default {
         },
         profile: {
             installApp: {
-                "title": "Install App",
-                "description": "Add to home screen for a better app experience.",
-                "iosInstruction": "Tap the Share button at the bottom of Safari, then select 'Add to Home Screen'.",
+                "title": "앱 설치",
+                "description": "더 나은 앱 환경을 위해 홈 화면에 추가하세요.",
+                "iosInstruction": "Safari 하단의 공유 버튼을 누른 다음 '홈 화면에 추가'를 선택하세요.",
                 "androidButton": "홈 화면에 추가",
                 "androidInstruction": "브라우저 메뉴(⋮)를 열고 '앱 설치' 또는 '홈 화면에 추가'를 선택하세요."
             },
@@ -577,6 +577,7 @@ export default {
         joinGroup: {
             publicGroupsTitle: "공개 그룹 탐색",
             publicGroupsDesc: "학습 목표에 맞는 커뮤니티를 찾으세요.",
+            fetchingGroups: "그룹 채팅 정보를 불러오는 중...",
             noPublicGroups: "가입할 수 있는 공개 그룹이 없습니다.",
             createGroupCta: "자신만의 커뮤니티를 시작하고 싶으신가요?",
             createGroupLink: "그룹 생성",

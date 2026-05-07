@@ -531,6 +531,7 @@ export default {
         joinGroup: {
             publicGroupsTitle: "Explorar Grupos Públicos",
             publicGroupsDesc: "Encuentra una comunidad que coincida con tus objetivos.",
+            fetchingGroups: "Obteniendo grupos...",
             noPublicGroups: "No hay grupos públicos disponibles.",
             createGroupCta: "¿Quieres iniciar tu propia comunidad?",
             createGroupLink: "Crear un Grupo",
@@ -777,7 +778,7 @@ export default {
             privacyPolicy: "Política de Privacidad"
         },
         legalDisclosure: {
-            title: "Divulgação Legal",
+            title: "Aviso Legal",
             provider: "Proveedor de Servicios",
             representative: "Representante",
             address: "Dirección",

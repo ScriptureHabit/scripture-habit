@@ -47,27 +47,27 @@ describe('useDashboardGroups', () => {
 
     it('should initialize without crashing (verifies state initialization order)', () => {
         // Setup mock for onSnapshot to return a dummy unsubscriber
-        (firestore.onSnapshot as any).mockReturnValue(() => {});
+        vi.mocked(firestore.onSnapshot).mockReturnValue(() => {});
 
         // Rendering the hook will execute the function body.
         // If any hook or effect accesses a state variable before its declaration (TDZ),
         // it will throw a ReferenceError here.
-        const { result } = renderHook(() => useDashboardGroups(mockUserData as any, null));
+        const { result } = renderHook(() => useDashboardGroups(mockUserData as unknown as { uid: string; groupIds: string[] }, null));
         
         expect(result.current.userGroups).toBeDefined();
         expect(result.current.activeGroupId).toBe('group1');
     });
 
     it('should populate userGroups and setActiveGroupId when data is fetched', async () => {
-        let groupsCallback: any;
-        (firestore.onSnapshot as any).mockImplementation((_q: any, callback: any) => {
+        let groupsCallback: (snapshot: { docs: Array<{ id: string; data: () => Record<string, unknown> }> }) => void;
+        vi.mocked(firestore.onSnapshot).mockImplementation((( _q: unknown, callback: (snap: unknown) => void) => {
             // In the hook, the first call is to groupsQuery (collection query)
             // Subsequent calls are to individual doc refs
-            if (!groupsCallback) groupsCallback = callback;
+            if (!groupsCallback) groupsCallback = callback as never;
             return () => {};
-        });
+        }) as unknown as never);
 
-        const { result } = renderHook(() => useDashboardGroups(mockUserData as any, null));
+        const { result } = renderHook(() => useDashboardGroups(mockUserData as unknown as { uid: string; groupIds: string[] }, null));
 
         // Initial state
         expect(result.current.userGroups).toEqual([]);

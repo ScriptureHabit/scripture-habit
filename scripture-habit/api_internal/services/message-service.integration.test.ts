@@ -1,14 +1,19 @@
 // @vitest-environment node
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { admin, db } from '../lib/firebase-admin.js';
 import { MessageService } from './message-service.js';
 import { GroupDocument, MessageDocument, UserDocument } from '../../types/firestore.js';
 
 describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('MessageService Integration Test', () => {
+    vi.setConfig({ testTimeout: 15000 });
     const TEST_UID = 'cFg1i9IybmfV1la4OekO2jDWE9h1'; // test1
-    const TEST_GROUP_ID = 'MSG_SRV_TEST_GRP_001'; // Isolating group ID to prevent parallel test conflicts
+    const TEST_GROUP_ID = `MSG_SRV_TEST_GRP_${Math.random().toString(36).substring(7)}`;
 
     beforeEach(async () => {
+        const groupRef = db.collection('groups').doc(TEST_GROUP_ID);
+        // Clear existing messages to prevent cross-test contamination
+        await db.recursiveDelete(groupRef.collection('messages')).catch(() => {});
+
         const userRef = db.collection('users').doc(TEST_UID);
         // Ensure user exists
         await userRef.set({
@@ -18,7 +23,6 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('MessageService Integratio
         }, { merge: true });
 
         // Ensure group exists and user is in the group
-        const groupRef = db.collection('groups').doc(TEST_GROUP_ID);
         await groupRef.set({
             name: 'Test Group',
             members: [TEST_UID],

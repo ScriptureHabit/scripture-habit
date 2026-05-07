@@ -94,7 +94,7 @@ export default {
             story: "Hadithi ya Maendeleo"
         },
         story: {
-            title: "Tusaidie",
+            title: "Hadithi ya Maendeleo",
             description: "Mawazo ya msanidi programu na hadithi ya asili",
             vision: "Tunaamini kwamba, kama maandiko na historia yanavyoonyesha, kupitia 'ufunuo binafsi' unaotoka kwa kusoma maandiko kwa kuendelea, tunaweza kuzuia kuanguka kwa utamaduni, mgawanyiko wa kijamii, vita, na migogoro, na kuunda amani.",
             appBackground: "Historia ya Maendeleo ya Programu",
@@ -157,9 +157,9 @@ export default {
         },
         profile: {
             installApp: {
-                "title": "Install App",
-                "description": "Add to home screen for a better app experience.",
-                "iosInstruction": "Tap the Share button at the bottom of Safari, then select 'Add to Home Screen'.",
+                "title": "Sakinisha Programu",
+                "description": "Ongeza kwenye skrini ya nyumbani kwa uzoefu bora wa programu.",
+                "iosInstruction": "Gusa kitufe cha Kushiriki (Share) chini ya Safari, kisha uchague 'Ongeza kwenye Skrini ya Nyumbani' (Add to Home Screen).",
                 "androidButton": "Ongeza kwenye Skrini ya Nyumbani",
                 "androidInstruction": "Fungua menyu ya kivinjari (⋮) na uchague 'Sakinisha Programu' au 'Ongeza kwenye Skrini ya Nyumbani'."
             },
@@ -576,6 +576,7 @@ export default {
         joinGroup: {
             publicGroupsTitle: "Gundua Vikundi vya Umma",
             publicGroupsDesc: "Tafuta jumuiya inayolingana na malengo yako ya kujifunza.",
+            fetchingGroups: "Inapata maelezo ya kikundi...",
             noPublicGroups: "Hakuna vikundi vya umma vinavyopatikana kujiunga.",
             createGroupCta: "Unataka kuanzisha jumuiya yako mwenyewe?",
             createGroupLink: "Unda Kikundi",

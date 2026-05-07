@@ -158,9 +158,9 @@ export default {
         },
         profile: {
             installApp: {
-                "title": "Install App",
-                "description": "Add to home screen for a better app experience.",
-                "iosInstruction": "Tap the Share button at the bottom of Safari, then select 'Add to Home Screen'.",
+                "title": "Cài đặt ứng dụng",
+                "description": "Thêm vào màn hình chính để có trải nghiệm ứng dụng tốt hơn.",
+                "iosInstruction": "Nhấn nút Chia sẻ ở cuối Safari, sau đó chọn 'Thêm vào màn hình chính' (Add to Home Screen).",
                 "androidButton": "Thêm vào màn hình chính",
                 "androidInstruction": "Mở menu trình duyệt (⋮) và chọn 'Cài đặt ứng dụng' hoặc 'Thêm vào màn hình chính'."
             },
@@ -550,6 +550,7 @@ export default {
         joinGroup: {
             publicGroupsTitle: "Khám phá nhóm công khai",
             publicGroupsDesc: "Tìm một cộng đồng phù hợp với mục tiêu của bạn.",
+            fetchingGroups: "Đang tải thông tin nhóm...",
             noPublicGroups: "Không có nhóm công khai nào.",
             createGroupCta: "Muốn bắt đầu cộng đồng riêng của bạn?",
             createGroupLink: "Tạo nhóm",

@@ -1,9 +1,9 @@
 
 import './join-group.css';
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { getToken } from "firebase/app-check";
 import { auth, db, appCheck } from '../../firebase';
-import { doc, onSnapshot, collection, query, where, getDocs, limit } from 'firebase/firestore';
+import { doc, onSnapshot, collection, query, where, getDocs, limit, orderBy } from 'firebase/firestore';
 import { useNavigate, Link } from 'react-router-dom';
 import { onAuthStateChanged, User } from "firebase/auth";
 import '../groupform/group-form.css';
@@ -13,6 +13,7 @@ import { MAX_GROUPS_PER_USER } from '../../config';
 import UserProfileModal from '../userprofilemodal/user-profile-modal';
 import Mascot from '../mascot/mascot';
 import { toast } from 'react-toastify';
+import { PublicGroupsSkeleton } from '../skeleton/skeleton';
 import { Group } from '../../types/chat';
 import { UserData } from '../../types/user';
 import { parseTimestampToDate } from '../../utils/time-utils';
@@ -30,6 +31,9 @@ export default function JoinGroup() {
   const [translatedNames, setTranslatedNames] = useState<Record<string, string>>({});
   const [translatedDescs, setTranslatedDescs] = useState<Record<string, string>>({});
   const [translatingIds, setTranslatingIds] = useState<Set<string>>(new Set());
+  const [loadingGroups, setLoadingGroups] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const groupsPerPage = 5;
   const navigate = useNavigate();
 
   const handleTranslateGroup = useCallback(async (groupId: string, name: string, description?: string, translations?: Record<string, {name: string, description?: string}>) => {
@@ -96,8 +100,8 @@ export default function JoinGroup() {
       if (newName) setTranslatedNames(prev => ({ ...prev, [groupId]: newName }));
       if (newDesc) setTranslatedDescs(prev => ({ ...prev, [groupId]: newDesc }));
 
-    } catch (error) {
-      console.error("Error translating group info:", error);
+    } catch (e: unknown) {
+      console.error("Error translating group info:", e);
       toast.error(t('groupChat.errorTranslation') || "Failed to translate");
     } finally {
       setTranslatingIds(prev => {
@@ -126,7 +130,7 @@ export default function JoinGroup() {
 
     const fetchPublicGroups = async () => {
       try {
-        const resp = await fetch(`${API_BASE}/api/groups`);
+        const resp = await fetch(`${API_BASE}/api/groups?limit=20`);
         if (resp.ok) {
           const groups = await resp.json();
           setPublicGroups(groups || []);
@@ -139,27 +143,46 @@ export default function JoinGroup() {
 
       try {
         // Fallback to client-side query if backend fails
-        // Simple query with 'isPublic' filter to match security rules
         const q = query(
           collection(db, 'groups'), 
           where('isPublic', '==', true),
-          limit(100)
+          orderBy('lastMessageAt', 'desc'),
+          limit(20)
         );
         const querySnapshot = await getDocs(q);
         const groups: Group[] = [];
         querySnapshot.forEach((doc) => {
           groups.push({ id: doc.id, ...doc.data() } as Group);
         });
-        setPublicGroups(groups.sort((a,b) => (b.membersCount || 0) - (a.membersCount || 0)).slice(0, 50));
+        setPublicGroups(groups);
       } catch (e) {
         console.error('Error fetching public groups (client fallback):', e);
         setPublicGroups([]);
       }
     };
-    fetchPublicGroups();
+
+    setLoadingGroups(true);
+    fetchPublicGroups().finally(() => setLoadingGroups(false));
 
     return () => { authUnsubscribe(); userDocUnsubscribe(); };
   }, [API_BASE]);
+
+  // Dynamically filter groups whenever publicGroups or userData changes
+  const filteredGroups = useMemo(() => {
+    const userGroupIds = userData?.groupIds || (userData?.groupId ? [userData.groupId] : []);
+    return publicGroups.filter((g: Group) => !userGroupIds.includes(g.id));
+  }, [publicGroups, userData]);
+
+  const totalPages = Math.ceil(filteredGroups.length / groupsPerPage);
+  const currentGroups = useMemo(() => {
+    const startIndex = (currentPage - 1) * groupsPerPage;
+    return filteredGroups.slice(startIndex, startIndex + groupsPerPage);
+  }, [filteredGroups, currentPage, groupsPerPage]);
+
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const joinGroup = async (groupId: string, groupData: Group) => {
     if (!user) {
@@ -284,20 +307,51 @@ export default function JoinGroup() {
             <p>{t('joinGroup.publicGroupsDesc')}</p>
           </div>
 
-          {publicGroups.length === 0 ? (
+          {loadingGroups ? (
+            <div className="loading-state-container">
+              <PublicGroupsSkeleton />
+              <p className="loading-text" style={{ textAlign: 'center', marginTop: '1rem', color: 'rgba(255,255,255,0.7)' }}>
+                {t('joinGroup.fetchingGroups')}
+              </p>
+            </div>
+          ) : filteredGroups.length === 0 ? (
             <p className="no-groups-message">{t('joinGroup.noPublicGroups')}</p>
           ) : (
-            <div className="groups-grid">
-              {publicGroups.map((group) => (
-                <GroupCard
-                  key={group.id}
-                  group={group}
-                  currentUser={user}
-                  onJoin={() => handleJoinClick(group.id, group)}
-                  onOpen={() => handleJoinClick(group.id, group)}
-                />
-              ))}
-            </div>
+            <>
+              <div className="groups-grid">
+                {currentGroups.map((group: Group) => (
+                  <GroupCard
+                    key={group.id}
+                    group={group}
+                    currentUser={user}
+                    onJoin={() => handleJoinClick(group.id, group)}
+                    onOpen={() => handleJoinClick(group.id, group)}
+                  />
+                ))}
+              </div>
+
+              {totalPages > 1 && (
+                <div className="pagination-container">
+                  <button 
+                    className="pagination-btn" 
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                  >
+                    ←
+                  </button>
+                  <span className="page-indicator">
+                    {currentPage} / {totalPages}
+                  </span>
+                  <button 
+                    className="pagination-btn" 
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                  >
+                    →
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
 

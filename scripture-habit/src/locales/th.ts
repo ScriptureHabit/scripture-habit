@@ -158,9 +158,9 @@ export default {
         },
         profile: {
             installApp: {
-                "title": "Install App",
-                "description": "Add to home screen for a better app experience.",
-                "iosInstruction": "Tap the Share button at the bottom of Safari, then select 'Add to Home Screen'.",
+                "title": "ติดตั้งแอป",
+                "description": "เพิ่มลงในหน้าจอหลักเพื่อประสบการณ์การใช้งานที่ดียิ่งขึ้น",
+                "iosInstruction": "แตะปุ่มแชร์ที่ด้านล่างของ Safari จากนั้นเลือก 'เพิ่มลงในหน้าจอหลัก' (Add to Home Screen).",
                 "androidButton": "เพิ่มลงในหน้าจอหลัก",
                 "androidInstruction": "เปิดเมนูเบราว์เซอร์ (⋮) แล้วเลือก 'ติดตั้งแอป' หรือ 'เพิ่มลงในหน้าจอหลัก'"
             },
@@ -578,6 +578,7 @@ export default {
         joinGroup: {
             publicGroupsTitle: "สำรวจกลุ่มสาธารณะ",
             publicGroupsDesc: "ค้นหาชุมชนที่ตรงกับเป้าหมายการศึกษาของคุณ",
+            fetchingGroups: "กำลังดึงข้อมูลกลุ่ม...",
             noPublicGroups: "ไม่มีกลุ่มสาธารณะให้เข้าร่วม",
             createGroupCta: "ต้องการเริ่มชุมชนของคุณเองหรือไม่?",
             createGroupLink: "สร้างกลุ่ม",

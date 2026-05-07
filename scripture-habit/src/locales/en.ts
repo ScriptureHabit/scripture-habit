@@ -477,6 +477,7 @@ export default {
         joinGroup: {
             publicGroupsTitle: "Explore Public Groups",
             publicGroupsDesc: "Find a community that matches your study goals.",
+            fetchingGroups: "Loading group chat information...",
             noPublicGroups: "No public groups available to join.",
             createGroupCta: "Want to start your own community?",
             createGroupLink: "Create a Group",

@@ -555,6 +555,7 @@ export default {
         joinGroup: {
             publicGroupsTitle: "Explorar Grupos Públicos",
             publicGroupsDesc: "Encontre uma comunidade que corresponda aos seus objetivos.",
+            fetchingGroups: "Buscando grupos...",
             noPublicGroups: "Nenhum grupo público disponível.",
             createGroupCta: "Quer começar sua própria comunidade?",
             createGroupLink: "Criar um Grupo",

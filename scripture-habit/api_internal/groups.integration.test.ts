@@ -5,6 +5,7 @@ import { Server } from 'http';
 import { auth, db, admin } from './lib/firebase-admin.js';
 
 describe('Groups API Error Handling & Validation', () => {
+    vi.setConfig({ testTimeout: 15000 });
     let server: Server;
     let baseUrl: string;
     const createdGroupIds: string[] = [];

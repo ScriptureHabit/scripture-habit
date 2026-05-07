@@ -157,9 +157,9 @@ export default {
         },
         profile: {
             installApp: {
-                "title": "Install App",
-                "description": "Add to home screen for a better app experience.",
-                "iosInstruction": "Tap the Share button at the bottom of Safari, then select 'Add to Home Screen'.",
+                "title": "安裝應用程式",
+                "description": "將其添加到主畫面以獲得更好的應用體驗。",
+                "iosInstruction": "點擊 Safari 底部的「分享」按鈕，然後選擇「添加到主畫面」 (Add to Home Screen)。",
                 "androidButton": "加入主畫面",
                 "androidInstruction": "打開瀏覽器選單 (⋮)，然後選擇「安裝應用程式」或「加入主畫面」。"
             },
@@ -530,6 +530,7 @@ export default {
         joinGroup: {
             publicGroupsTitle: "探索公開群組",
             publicGroupsDesc: "尋找符合您研讀目標的社群。",
+            fetchingGroups: "正在取得群組資訊...",
             noPublicGroups: "沒有可加入的公開群組。",
             createGroupCta: "想建立自己的社群嗎？",
             createGroupLink: "建立群組",

@@ -485,6 +485,7 @@ export default {
         joinGroup: {
             publicGroupsTitle: "パブリックグループを探す",
             publicGroupsDesc: "あなたの学習目標に合ったコミュニティを見つけましょう。",
+            fetchingGroups: "グループチャットの情報を取得中...",
             noPublicGroups: "参加可能なパブリックグループはありません。",
             createGroupCta: "自分のコミュニティを始めたいですか？",
             createGroupLink: "グループを作成",

@@ -72,6 +72,7 @@ export interface GroupDocument {
     // Metadata
     createdAt?: FirestoreTimestamp;
     lastInactivityCheckedAt?: FirestoreTimestamp;
+    groupStreak?: number;
     
     // Localization
     timeZone?: string;

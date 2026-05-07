@@ -19,6 +19,13 @@ export const joinGroupSchema = z.object({
     inviteCode: z.string().optional()
 });
 
+export const createGroupSchema = z.object({
+    name: z.string().min(1).max(100),
+    description: z.string().max(1000).optional(),
+    isPublic: z.boolean().optional(),
+    timeZone: z.string().optional()
+});
+
 export const leaveGroupSchema = z.object({
     token: z.string().min(1).optional(),
     groupId: z.string().optional()

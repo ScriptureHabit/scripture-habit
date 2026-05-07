@@ -1,17 +1,15 @@
 
 import './group-form.css';
 import React, { useState } from "react";
-import { auth, db } from '../../firebase';
-import { collection, addDoc, doc, updateDoc, arrayUnion, Timestamp, setDoc, getDoc } from 'firebase/firestore';
+import { auth, appCheck } from '../../firebase';
+import { getToken } from 'firebase/app-check';
 import { useNavigate, Link } from 'react-router-dom';
 import Input from '../input/input';
 import Button from '../button/button';
 import Toggle from '../input/toggle';
 import { toast } from "react-toastify";
 import { useLanguage } from '../../hooks/use-language';
-import { MAX_GROUPS_PER_USER } from '../../config';
 import Mascot from '../mascot/mascot';
-import { generateInviteCode } from '../../utils/invite-utils';
 
 export default function GroupForm() {
   const { t, language } = useLanguage();
@@ -19,6 +17,7 @@ export default function GroupForm() {
   const [description, setDescription] = useState("");
   const [isPublic, setIsPublic] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   async function handleSubmit(e: React.FormEvent) {
@@ -31,84 +30,52 @@ export default function GroupForm() {
       return;
     }
 
+    setLoading(true);
     try {
-      const creatorRef = doc(db, 'users', user.uid);
-      const userSnap = await getDoc(creatorRef);
-      const userData = userSnap.exists() ? userSnap.data() : null;
-
-      // Enforce group limit
-      const currentGroupIds = userData?.groupIds || [];
-      if (currentGroupIds.length >= MAX_GROUPS_PER_USER) {
-        setError(t('joinGroup.errorMaxGroups'));
-        return;
+      const idToken = await user.getIdToken();
+      let appCheckToken;
+      try {
+        if (appCheck) {
+          appCheckToken = (await getToken(appCheck)).token;
+        }
+      } catch (err) {
+        console.warn("AppCheck token fetch failed:", err);
       }
 
-      const userNick = (userData && userData.nickname) ? userData.nickname : (user.displayName || 'Owner');
-
-      const now = Timestamp.now();
-      const expiresAt = new Timestamp(now.seconds + 24 * 60 * 60, now.nanoseconds);
-
-      const inviteCode = generateInviteCode(10);
-
-      const newGroupData = {
-        name: groupName,
-        description: description,
-        createdAt: now,
-        groupStreak: 0,
-        inviteCode: inviteCode,
-        inviteCodeExpiresAt: expiresAt,
-        isPublic: isPublic,
-        maxMembers: 100000,
-        membersCount: 1,
-        memberPreviews: [{ uid: user.uid, nickname: userNick }],
-        messageCount: 0,
-        noteCount: 0,
-        ownerUserId: user.uid,
-        members: [user.uid],
-        memberJoinedAt: { [user.uid]: now },
-        memberKickThresholds: { [user.uid]: userData?.kickThreshold || 3 },
-        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Tokyo',
-        lastInactivityCheckedAt: now,
-      };
-
-
-      const docRef = await addDoc(collection(db, 'groups'), newGroupData);
-      const newGroupId = docRef.id;
-
-
-      const userRef = doc(db, 'users', user.uid);
-      await updateDoc(userRef, {
-        groupIds: arrayUnion(newGroupId),
-        groupId: newGroupId, // Set as active
+      const API_BASE = window.location.hostname === 'localhost' ? '' : 'https://scripturehabit.app';
+      
+      const response = await fetch(`${API_BASE}/api/groups/create-group`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${idToken}`,
+          'X-Firebase-AppCheck': appCheckToken || ''
+        },
+        body: JSON.stringify({
+          name: groupName,
+          description: description,
+          isPublic: isPublic,
+          timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Tokyo'
+        })
       });
 
-      // Initialize group state
-      const groupStateRef = doc(db, 'users', user.uid, 'groupStates', newGroupId);
-      await setDoc(groupStateRef, {
-        readMessageCount: 0,
-        lastReadAt: now,
-        lastActiveAt: now
-      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || t('groupForm.errorCreateFailed'));
+      }
 
-      // Initialize member subcollection document for owner
-      const memberRef = doc(db, 'groups', newGroupId, 'members', user.uid);
-      await setDoc(memberRef, {
-        uid: user.uid,
-        nickname: userNick,
-        photoURL: userData?.photoURL || '',
-        joinedAt: now,
-        lastActiveAt: now,
-        lastReadAt: now,
-        kickThreshold: userData?.kickThreshold || 3,
-        readMessageCount: 0
-      });
+      const result = await response.json();
+      const newGroupId = result.groupId;
 
       toast.success(`🎉 ${t('groupForm.successCreated')}`);
       navigate(`/${language}/dashboard`, { state: { initialGroupId: newGroupId, initialView: 2, showInviteModal: true } });
 
     } catch (e: unknown) {
-      console.error("Error creating group or updating user:", e);
-      setError(t('groupForm.errorCreateFailed'));
+      console.error("Error creating group:", e);
+      const errorMessage = e instanceof Error ? e.message : t('groupForm.errorCreateFailed');
+      setError(errorMessage);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -154,8 +121,13 @@ export default function GroupForm() {
             </div>
           </div>
 
-          <Button type="submit" className="create-group-submit-btn" data-testid="create-group-submit">
-            {t('groupForm.createButton')}
+          <Button 
+            type="submit" 
+            className="create-group-submit-btn" 
+            data-testid="create-group-submit" 
+            disabled={loading}
+          >
+            {loading ? t('groupForm.createButton') + '...' : t('groupForm.createButton')}
           </Button>
         </form>
         {error && <p className="error-message">{error}</p>}

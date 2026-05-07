@@ -119,4 +119,18 @@ export const NoteGridSkeleton: React.FC = () => {
     );
 };
 
+export const PublicGroupsSkeleton: React.FC = () => {
+    return (
+        <div className="skeleton-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
+            {[1, 2, 3, 4, 5, 6].map(i => (
+                <div key={i} className="skeleton-card" style={{ height: '180px', borderRadius: '16px', padding: '1.5rem' }}>
+                    <Skeleton width="60%" height="24px" style={{ marginBottom: '1rem' }} />
+                    <Skeleton width="40%" height="16px" style={{ marginBottom: '1.5rem' }} />
+                    <Skeleton width="100%" height="40px" style={{ borderRadius: '12px' }} />
+                </div>
+            ))}
+        </div>
+    );
+};
+
 export default Skeleton;

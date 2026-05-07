@@ -63,20 +63,20 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('NotificationService Integ
 
         // 日本語ユーザーへの呼び出し内容を確認
         const jaCall = sendSpy.mock.calls.find(call => 
-            (call[0] as any).tokens.includes('token_ja_public')
+            (call[0] as { tokens: string[] }).tokens.includes('token_ja_public')
         );
         expect(jaCall).toBeDefined();
         // dataに lang: 'ja' が追加されていること
-        expect((jaCall![0] as any).data.lang).toBe('ja');
-        expect((jaCall![0] as any).data.originalKey).toBe('value');
+        expect((jaCall![0] as { data: Record<string, string> }).data.lang).toBe('ja');
+        expect((jaCall![0] as { data: Record<string, string> }).data.originalKey).toBe('value');
 
         // 英語ユーザーへの呼び出し内容を確認
         const enCall = sendSpy.mock.calls.find(call => 
-            (call[0] as any).tokens.includes('token_en_public')
+            (call[0] as { tokens: string[] }).tokens.includes('token_en_public')
         );
         expect(enCall).toBeDefined();
         // dataに lang: 'en' が追加されていること
-        expect((enCall![0] as any).data.lang).toBe('en');
+        expect((enCall![0] as { data?: Record<string, string> }).data?.lang).toBe('en');
     });
 
     it('should handle token cleanup across different language groups', async () => {
@@ -87,9 +87,9 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('NotificationService Integ
             failureCount: 1,
             responses: [{ 
                 success: false, 
-                error: { code: 'messaging/registration-token-not-registered' } as any 
+                error: { code: 'messaging/registration-token-not-registered' }
             }]
-        });
+        } as unknown as import('firebase-admin/messaging').BatchResponse);
 
         await NotificationsLib.notifyGroupMembers(GID, SENDER_UID, {
             title: 'Cleanup Test',

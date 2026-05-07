@@ -157,9 +157,9 @@ export default {
         },
         profile: {
             installApp: {
-                "title": "Install App",
-                "description": "Add to home screen for a better app experience.",
-                "iosInstruction": "Tap the Share button at the bottom of Safari, then select 'Add to Home Screen'.",
+                "title": "I-install ang App",
+                "description": "Idagdag sa home screen para sa mas magandang karanasan sa app.",
+                "iosInstruction": "I-tap ang button na Share sa ibaba ng Safari, pagkatapos ay piliin ang 'Add to Home Screen'.",
                 "androidButton": "Add to Home Screen",
                 "androidInstruction": "Makatanggap ng mga notification at maiwasan ang mga problema sa pag-log in sa pamamagitan ng pagbubukas sa Google Chrome at pagpili sa 'I-install ang App'."
             },
@@ -575,6 +575,7 @@ export default {
         joinGroup: {
             publicGroupsTitle: "Tuklasin ang mga Pampublikong Grupo",
             publicGroupsDesc: "Humanap ng komunidad na tumutugma sa iyong mga layunin sa pag-aaral.",
+            fetchingGroups: "Kinukuha ang mga grupo...",
             noPublicGroups: "Walang pampublikong grupo na maaaring salihan.",
             createGroupCta: "Gusto mo bang simulan ang iyong sariling komunidad?",
             createGroupLink: "Lumikha ng Grupo",
