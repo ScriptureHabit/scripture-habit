@@ -126,6 +126,7 @@ export interface UserDocument {
     daysStudiedCount?: number;
     lastPostDate?: string | null;
     highestStreak?: number;
+    studiedDates?: string[];
 
     // Recap Metadata
     lastRecapPrompt?: string | null;

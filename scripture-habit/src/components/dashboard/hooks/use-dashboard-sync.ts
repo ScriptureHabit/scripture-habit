@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { User } from 'firebase/auth';
-import { doc, collection, getDocs, updateDoc, Timestamp, getCountFromServer } from 'firebase/firestore';
+import { doc, collection, getDocs, updateDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../../../firebase';
 import { UserData } from '../../../types/user';
 import { useAuth } from '../../../hooks/use-auth';
@@ -42,41 +42,26 @@ export const useDashboardSync = () => {
             
             const { user, userData } = state;
 
-            // PREVENT REPEAT RUNS: Only run if not already migrated AND data seems broken
-            const needsMigration = userData && !userData.isLevelMigrated && (
+            // PREVENT REPEAT RUNS: Only run if not already migrated OR studiedDates is missing
+            const needsLevelMigration = userData && !userData.isLevelMigrated && (
                 userData.daysStudiedCount === undefined ||
                 (userData.daysStudiedCount < (userData.streakCount || 0))
             );
+            const needsCalendarMigration = userData && !userData.studiedDates;
 
-            if (!needsMigration) return;
+            if (!needsLevelMigration && !needsCalendarMigration) return;
             
             migrationInProgress.current = true;
-            console.log("Migration triggered: fixing level stats once...");
+            console.log("Migration triggered: fixing level/calendar stats once...");
             try {
-                console.log("[Migration] Fetching notes count...");
+                const userRef = doc(db, 'users', user.uid);
                 const notesRef = collection(db, 'users', user.uid, 'notes').withConverter(noteConverter);
                 
-                // 1. Efficiency: Use server-side count if available (low cost)
-                const countSnap = await getCountFromServer(notesRef);
-                const totalNotesCount = countSnap.data().count;
-                console.log(`[Migration] Total notes count: ${totalNotesCount}`);
-
-                if (totalNotesCount === 0) {
-                    console.log("[Migration] No notes found, updating metadata...");
-                    await updateDoc(doc(db, 'users', user.uid), {
-                        daysStudiedCount: 0,
-                        totalNotes: 0,
-                        isLevelMigrated: true
-                    });
-                    console.log("[Migration] Finished (Zero notes).");
-                    return;
-                }
-
-                // 2. Perform one-time aggregation for unique study days
-                console.log("[Migration] Fetching all notes for date aggregation...");
+                // 1. Fetch all notes to rebuild history
                 const notesSnapshot = await getDocs(notesRef);
-                console.log(`[Migration] Fetched ${notesSnapshot.size} notes.`);
+                const totalNotesCount = notesSnapshot.size;
                 const studyDays = new Set<string>();
+
                 notesSnapshot.forEach(docSnap => {
                     const data = docSnap.data();
                     if (data.createdAt) {
@@ -88,17 +73,18 @@ export const useDashboardSync = () => {
                     }
                 });
 
+                const sortedDates = Array.from(studyDays).sort();
                 const finalDaysCount = Math.max(studyDays.size, userData.streakCount || 0);
-                console.log(`[Migration] Final days count calculated: ${finalDaysCount}. Updating user document...`);
 
-                await updateDoc(doc(db, 'users', user.uid), {
+                await updateDoc(userRef, {
                     daysStudiedCount: finalDaysCount,
                     totalNotes: totalNotesCount,
+                    studiedDates: sortedDates,
                     isLevelMigrated: true // LOCK THE MIGRATION SUCCESS
                 });
-                console.log(`Level data corrected: ${finalDaysCount} days studied.`);
+                console.log(`Migration finished: ${finalDaysCount} days, ${sortedDates.length} dates recorded.`);
             } catch (err) {
-                console.error("Error during level data migration:", err);
+                console.error("Error during data migration:", err);
             }
         };
 

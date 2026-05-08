@@ -22,6 +22,7 @@ export interface UserData {
   xp?: number;
   daysStudiedCount?: number;
   totalNotes?: number;
+  studiedDates?: string[];
   
   // Preferences
   timeZone?: string;

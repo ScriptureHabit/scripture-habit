@@ -114,6 +114,7 @@ export class NoteService {
                     userUpdate.daysStudiedCount = admin.firestore.FieldValue.increment(1);
                     userUpdate.streakCount = newStreak;
                     userUpdate.lastPostDate = today;
+                    userUpdate.studiedDates = admin.firestore.FieldValue.arrayUnion(today);
                     if (newStreak > currentHighest) userUpdate.highestStreak = newStreak;
                     if (clientTimeZone && (!userData.timeZone || userData.timeZone === 'UTC')) {
                         userUpdate.timeZone = clientTimeZone;

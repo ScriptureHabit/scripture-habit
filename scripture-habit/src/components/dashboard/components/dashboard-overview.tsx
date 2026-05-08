@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { UilPlus, UilPen } from '@iconscout/react-unicons';
 import Mascot from '../../mascot/mascot';
 import { UserData } from '../../../types/user';
+import StreakCalendar from './streak-calendar';
 
 interface DashboardOverviewProps {
   t: (key: string, replacements?: Record<string, string | number>) => string;
@@ -166,6 +167,11 @@ const DashboardOverview: FC<DashboardOverviewProps> = ({
           </button>
         </div>
       </div>
+
+      <StreakCalendar 
+        studiedDates={userData.studiedDates} 
+        t={t} 
+      />
     </div>
   );
 };
