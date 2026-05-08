@@ -7,6 +7,9 @@
     border: 1px solid rgba(255, 255, 255, 0.2);
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
     color: var(--text-color, #2c3e50);
+    max-width: 320px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .calendar-header {
@@ -154,6 +157,7 @@
 @media (max-width: 480px) {
     .streak-calendar-container {
         padding: 1rem;
+        max-width: 100%;
     }
     
     .calendar-grid {
