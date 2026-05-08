@@ -56,6 +56,7 @@ describe('useDashboardGroups', () => {
         
         expect(result.current.userGroups).toBeDefined();
         expect(result.current.activeGroupId).toBe('group1');
+        expect(result.current.isLoading).toBe(true);
     });
 
     it('should populate userGroups and setActiveGroupId when data is fetched', async () => {
@@ -71,6 +72,7 @@ describe('useDashboardGroups', () => {
 
         // Initial state
         expect(result.current.userGroups).toEqual([]);
+        expect(result.current.isLoading).toBe(true);
 
         // Simulate snapshot update for groups
         // We use act to ensure the state updates are processed
@@ -98,11 +100,13 @@ describe('useDashboardGroups', () => {
         expect(result.current.userGroups[0].name).toBe('Test Group');
         expect(result.current.userGroups[0].unreadCount).toBe(0);
         expect(result.current.activeGroupId).toBe('group1');
+        expect(result.current.isLoading).toBe(false);
     });
 
     it('should handle missing userData gracefully', () => {
         const { result } = renderHook(() => useDashboardGroups(null, null));
         expect(result.current.userGroups).toEqual([]);
         expect(result.current.activeGroupId).toBeNull();
+        expect(result.current.isLoading).toBe(false);
     });
 });

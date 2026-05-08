@@ -9,6 +9,7 @@ import { useUnityMidnightReset } from '../../../hooks/use-unity-midnight-reset';
 export const useDashboardGroups = (userData: UserData | null, initialGroupId: string | null) => {
     const [rawUserGroups, setRawUserGroups] = useState<Group[]>([]);
     const [activeGroupId, setActiveGroupId] = useState<string | null>(initialGroupId);
+    const [isLoading, setIsLoading] = useState(true);
 
     const groupIds = useMemo(() => {
         return userData?.groupIds || (userData?.groupId ? [userData.groupId] : []);
@@ -18,10 +19,18 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
         return JSON.stringify([...groupIds].sort());
     }, [groupIds]);
 
+    // Reset loading state when user changes
+    useEffect(() => {
+        if (userData?.uid) {
+            setIsLoading(true);
+        }
+    }, [userData?.uid]);
+
     // Fetch user groups details
     useEffect(() => {
         if (!userData?.uid) {
             setRawUserGroups([]);
+            setIsLoading(false);
             return;
         }
 
@@ -40,10 +49,24 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
             } as Group));
 
             setRawUserGroups(prev => {
+                // TRUTH: Merge fresh Firestore data with existing "decorations" 
+                // (myMemberStatus, recentMessages) to prevent intermittent UI disappearance
+                const mergeWithDecorations = (newG: Group) => {
+                    const existing = prev.find(p => p.id === newG.id);
+                    if (!existing) return newG;
+                    return {
+                        ...newG,
+                        myMemberStatus: existing.myMemberStatus,
+                        recentMessages: existing.recentMessages
+                    };
+                };
+
+                const mergedFetched = fetchedGroups.map(mergeWithDecorations);
+
                 // If we have groupIds in userData, use them for ordering
                 if (groupIds.length > 0) {
                     const ordered = groupIds.map(id => {
-                        const newGroup = fetchedGroups.find(g => g.id === id);
+                        const newGroup = mergedFetched.find(g => g.id === id);
                         if (newGroup) return newGroup;
                         
                         // If not in current snapshot, try to find in previous state
@@ -52,15 +75,17 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
                     }).filter(Boolean) as Group[];
 
                     // Add any groups found by query that weren't in groupIds (safety fallback)
-                    const extra = fetchedGroups.filter(g => !groupIds.includes(g.id));
+                    const extra = mergedFetched.filter(g => !groupIds.includes(g.id));
                     return [...ordered, ...extra];
                 }
                 
                 // Fallback: If groupIds is empty/missing, just use whatever groups the query found
-                return fetchedGroups;
+                return mergedFetched;
             });
+            setIsLoading(false);
         }, (err) => {
             if (err.code !== 'permission-denied') console.error("Dashboard groups query listener error:", err);
+            setIsLoading(false);
         });
         unsubscribers.push(unsubGroups);
 
@@ -160,5 +185,6 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
         }
     });
 
-    return { userGroups, activeGroupId, setActiveGroupId };
+    return { userGroups, activeGroupId, setActiveGroupId, isLoading };
 };
+

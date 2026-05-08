@@ -79,9 +79,8 @@ const Dashboard: FC = () => {
   const syncState = useDashboardSync();
   const { user, userData, status } = syncState;
   const errorMessage = syncState.status === 'error' ? syncState.message : null;
-  const loading = status === 'loading';
-
-  const { userGroups, activeGroupId, setActiveGroupId } = useDashboardGroups(userData, initialState.activeGroupId);
+  const { userGroups, activeGroupId, setActiveGroupId, isLoading: groupsLoading } = useDashboardGroups(userData, initialState.activeGroupId);
+  const loading = status === 'loading' || groupsLoading;
   const { 
     showAutoKickModal, setShowAutoKickModal, autoKickStep, setAutoKickStep,
     selectedKickDays, setSelectedKickDays, kickConfirmInput, setKickConfirmInput,
