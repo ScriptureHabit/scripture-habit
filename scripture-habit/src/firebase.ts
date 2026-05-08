@@ -131,20 +131,40 @@ if (import.meta.env.DEV) {
 
 let appCheck: AppCheck | null = null;
 if (!isEmulator) {
+  const siteKey = import.meta.env.VITE_APPCHECK_SITE_KEY;
+  if (!import.meta.env.DEV && !siteKey) {
+    console.error("[AppCheck] CRITICAL: VITE_APPCHECK_SITE_KEY is missing in production! App Check will fail.");
+  }
+
   try {
     appCheck = initializeAppCheck(app, {
         provider: import.meta.env.DEV ? new CustomProvider({
             getToken: () => {
-                // This is a minimal implementation for local dev.
-                // Firebase script handles the debug tokens when they are provided in globals.
                 return Promise.resolve({
                     token: 'debug-token-placeholder',
                     expireTimeMillis: Date.now() + 3600000
                 });
             }
-        }) : new ReCaptchaEnterpriseProvider(import.meta.env.VITE_APPCHECK_SITE_KEY || ""),
+        }) : new ReCaptchaEnterpriseProvider(siteKey || ""),
         isTokenAutoRefreshEnabled: true
     });
+
+    // Diagnostic helper for debugging App Check issues in production/mobile
+    if (typeof window !== 'undefined') {
+        (window as any).debugAppCheck = async () => {
+            if (!appCheck) return "App Check not initialized";
+            try {
+                // @ts-ignore - reaching into internal for debugging
+                const { getToken } = await import('firebase/app-check');
+                const token = await getToken(appCheck);
+                console.log("[AppCheck] Current Token:", token);
+                return token;
+            } catch (err) {
+                console.error("[AppCheck] Failed to get token:", err);
+                return err;
+            }
+        };
+    }
   } catch (e) {
     console.error("App Check failed to initialize:", e);
   }
