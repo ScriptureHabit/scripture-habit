@@ -4,6 +4,14 @@ import app from '../api/api.js';
 import { Server } from 'http';
 import { db, admin } from './lib/firebase-admin.js';
 
+interface GroupResponse {
+    id: string;
+    name: string;
+    lastMessageAt: string;
+    description: string;
+    membersCount: number;
+}
+
 describe('Groups Pagination & Optimization Integration', () => {
     vi.setConfig({ testTimeout: 30000 });
     let server: Server;
@@ -55,7 +63,7 @@ describe('Groups Pagination & Optimization Integration', () => {
         // 2. Fetch Page 1 (limit 10)
         // Should be Group 24, 23, ..., 15
         const res1 = await fetch(`${baseUrl}/api/groups?limit=10`);
-        const groups1 = await res1.json() as any[];
+        const groups1 = await res1.json() as GroupResponse[];
         expect(res1.ok).toBe(true);
         expect(groups1).toHaveLength(10);
         expect(groups1[0].name).toBe('Pagination Group 24');
@@ -68,7 +76,7 @@ describe('Groups Pagination & Optimization Integration', () => {
 
         const res2 = await fetch(`${baseUrl}/api/groups?limit=10&lastId=${lastId}&lastValue=${lastValue}`);
         expect(res2.ok).toBe(true);
-        const groups2 = await res2.json() as any[];
+        const groups2 = await res2.json() as GroupResponse[];
         expect(groups2).toHaveLength(10);
         expect(groups2[0].name).toBe('Pagination Group 14');
         expect(groups2[9].name).toBe('Pagination Group 05');
@@ -77,7 +85,7 @@ describe('Groups Pagination & Optimization Integration', () => {
         const lastGroup2 = groups2[9];
         const res3 = await fetch(`${baseUrl}/api/groups?limit=10&lastId=${lastGroup2.id}&lastValue=${lastGroup2.lastMessageAt}`);
         expect(res3.ok).toBe(true);
-        const groups3 = await res3.json() as any[];
+        const groups3 = await res3.json() as GroupResponse[];
         expect(groups3).toHaveLength(5);
         expect(groups3[0].name).toBe('Pagination Group 04');
         expect(groups3[4].name).toBe('Pagination Group 00');
@@ -85,18 +93,18 @@ describe('Groups Pagination & Optimization Integration', () => {
 
     it('should respect the limit parameter', async () => {
         const res = await fetch(`${baseUrl}/api/groups?limit=3`);
-        const groups = await res.json() as any[];
+        const groups = await res.json() as GroupResponse[];
         expect(groups).toHaveLength(3);
     });
 
     it('should fallback to document-based cursor if lastValue is missing', async () => {
         const res1 = await fetch(`${baseUrl}/api/groups?limit=5`);
-        const groups1 = await res1.json() as any[];
+        const groups1 = await res1.json() as GroupResponse[];
         const lastGroup = groups1[4];
 
         // Fetch using only lastId (costs 1 extra read on server but should work)
         const res2 = await fetch(`${baseUrl}/api/groups?limit=5&lastId=${lastGroup.id}`);
-        const groups2 = await res2.json() as any[];
+        const groups2 = await res2.json() as GroupResponse[];
         expect(groups2).toHaveLength(5);
         // Page 1 ends at 20. Page 2 starts at 19.
         expect(groups2[0].name).toBe('Pagination Group 19');

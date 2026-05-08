@@ -85,7 +85,7 @@ describe('JoinGroup Component Logic', () => {
         { id: 'group-2', data: () => ({ name: 'Group 2', isPublic: true, members: ['other-user'] }) }
       ],
       forEach(cb: (doc: QueryDocumentSnapshot<DocumentData, DocumentData>) => void) {
-        mockSnapshot.docs.forEach(cb as any);
+        mockSnapshot.docs.forEach((d) => cb(d as unknown as QueryDocumentSnapshot<DocumentData, DocumentData>));
       }
     };
     vi.mocked(getDocs).mockResolvedValue(mockSnapshot as unknown as QuerySnapshot<DocumentData, DocumentData>);

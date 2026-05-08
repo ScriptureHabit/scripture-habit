@@ -4,7 +4,7 @@ import { getAuth, Auth, connectAuthEmulator, setPersistence, browserLocalPersist
 import { getMessaging, Messaging, isSupported } from "firebase/messaging";
 import { getStorage, FirebaseStorage } from "firebase/storage";
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, Firestore, getFirestore, connectFirestoreEmulator } from "firebase/firestore";
-import { initializeAppCheck, ReCaptchaEnterpriseProvider, CustomProvider, AppCheck } from "firebase/app-check";
+import { initializeAppCheck, ReCaptchaEnterpriseProvider, CustomProvider, AppCheck, getToken } from "firebase/app-check";
 
 const isEmulator = import.meta.env.VITE_USE_FIREBASE_EMULATOR === 'true';
 
@@ -60,6 +60,7 @@ if (typeof window !== 'undefined') {
 declare global {
   interface Window {
     firebaseAuth?: Auth;
+    debugAppCheck?: () => Promise<unknown>;
   }
 }
 
@@ -151,11 +152,9 @@ if (!isEmulator) {
 
     // Diagnostic helper for debugging App Check issues in production/mobile
     if (typeof window !== 'undefined') {
-        (window as any).debugAppCheck = async () => {
+        window.debugAppCheck = async () => {
             if (!appCheck) return "App Check not initialized";
             try {
-                // @ts-ignore - reaching into internal for debugging
-                const { getToken } = await import('firebase/app-check');
                 const token = await getToken(appCheck);
                 console.log("[AppCheck] Current Token:", token);
                 return token;
