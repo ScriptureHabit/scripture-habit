@@ -60,8 +60,6 @@ if (typeof window !== 'undefined') {
 declare global {
   interface Window {
     firebaseAuth?: Auth;
-    auth?: Auth | null;
-    db?: Firestore;
     debugAppCheck?: () => Promise<unknown>;
   }
 }
@@ -132,12 +130,7 @@ if (import.meta.env.DEV) {
     (self as unknown as { FIREBASE_APPCHECK_DEBUG_TOKEN: boolean }).FIREBASE_APPCHECK_DEBUG_TOKEN = true;
 }
 
-// Global exports for debugging
-if (typeof window !== 'undefined') {
-    window.auth = auth;
-    window.db = db;
-}
-
+// App Check initialization logic
 let appCheck: AppCheck | null = null;
 if (!isEmulator) {
   const siteKey = import.meta.env.VITE_APPCHECK_SITE_KEY;
@@ -164,11 +157,9 @@ if (!isEmulator) {
             if (!appCheck) return "App Check not initialized";
             try {
                 const token = await getToken(appCheck);
-                const result = {
+                return {
                     token: token.token.slice(0, 10) + "...",
                 };
-                console.log("[AppCheck] Token Info:", result);
-                return result;
             } catch (err) {
                 console.error("[AppCheck] Failed to get token:", err);
                 return err;
