@@ -35,6 +35,15 @@ vi.mock('../../../hooks/use-unity-midnight-reset', () => ({
     useUnityMidnightReset: vi.fn()
 }));
 
+// Mock react-toastify
+vi.mock('react-toastify', () => ({
+    toast: {
+        error: vi.fn(),
+        success: vi.fn(),
+        info: vi.fn()
+    }
+}));
+
 describe('useDashboardGroups', () => {
     const mockUserData = {
         uid: 'user123',

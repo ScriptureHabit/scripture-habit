@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { doc, onSnapshot, collection, query, where, Timestamp } from 'firebase/firestore';
+import { toast } from 'react-toastify';
 import { db } from '../../../firebase';
 import { UserData } from '../../../types/user';
 import { Group, Message } from '../../../types/chat';
@@ -78,7 +79,8 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
             });
             setIsLoading(false);
         }, (err) => {
-            if (err.code !== 'permission-denied') console.error("Dashboard groups query listener error:", err);
+            console.error("Dashboard groups query listener error:", err);
+            toast.error(`Groups Error: ${err.code} - ${err.message}`);
             setIsLoading(false);
         });
         unsubscribers.push(unsubGroups);
@@ -96,7 +98,10 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
                     });
                 }
             }, (err) => {
-                if (err.code !== 'permission-denied') console.log(`Member fetch error ${gid}:`, err);
+                if (err.code !== 'permission-denied') {
+                    console.log(`Member fetch error ${gid}:`, err);
+                    toast.error(`Member Status Error (${gid.slice(0,5)}): ${err.code}`);
+                }
             });
             unsubscribers.push(unsubMember);
         });
