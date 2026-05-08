@@ -129,7 +129,9 @@ export default {
                 description: "Makatanggap ng notification kapag nag-share ng notes ang members o kapag may study reminders ka.",
                 enable: "I-enable ang Notifications",
                 later: "Mamaya na"
-            }
+            },
+            studied: "Nag-aral",
+            notStudied: "Hindi nag-aral"
         },
         languages: {
             title: "Mga Wika",

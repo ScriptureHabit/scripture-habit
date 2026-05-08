@@ -129,7 +129,9 @@ export default {
                 enable: "Ativar Notificações",
                 later: "Talvez Depois"
             },
-            inactivityWarning: "⚠️ {name}: Nenhum aprendizado confirmado. Você será removido automaticamente em {hours} horas se não postar uma nota!"
+            inactivityWarning: "⚠️ {name}: Nenhum aprendizado confirmado. Você será removido automaticamente em {hours} horas se não postar uma nota!",
+            studied: "Estudado",
+            notStudied: "Não estudado"
         },
         languages: {
             title: "Idiomas",

@@ -61,7 +61,6 @@ const StreakCalendar: React.FC<StreakCalendarProps> = ({ studiedDates = [], t })
   return (
     <div className="streak-calendar-container">
       <div className="calendar-header">
-        <h3 className="calendar-title">{t('dashboard.streakStatus')}</h3>
         <div className="calendar-nav">
           <button onClick={prevMonth} className="nav-btn"><UilAngleLeft /></button>
           <span className="current-month-label">{monthYearLabel}</span>

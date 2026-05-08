@@ -130,7 +130,9 @@ export default {
                 description: "Nhận thông báo khi các thành viên trong nhóm chia sẻ ghi chú hoặc lời nhắc học tập.",
                 enable: "Bật Thông báo",
                 later: "Để Sau"
-            }
+            },
+            studied: "Đã học",
+            notStudied: "Chưa học"
         },
         languages: {
             title: "Ngôn ngữ",

@@ -52,7 +52,6 @@ export default {
                 later: "また今度"
             },
             inactivityWarning: "⚠️ 【警告】{name} で学習が確認できません。あと {hours} 時間以内にノートを投稿しないと自動退出になります！",
-            streakStatus: "継続状況（ストリーク）",
             studied: "学習済み",
             notStudied: "未学習"
         },

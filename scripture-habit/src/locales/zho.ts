@@ -129,7 +129,9 @@ export default {
                 description: "當群組成員分享筆記或有研讀提醒時接收通知。",
                 enable: "啟用通知轉到",
                 later: "稍後再說"
-            }
+            },
+            studied: "已學習",
+            notStudied: "未學習"
         },
         languages: {
             title: "語言",

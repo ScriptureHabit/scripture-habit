@@ -124,6 +124,8 @@ export default {
             joinGroupStudy: "Je, ungependa kujifunza maandiko na kila mtu?",
             joinCreateGroup: "Jiunge/Unda Kikundi",
             inactivityWarning: "⚠️ {name}: Hakuna shughuli iliyothibitishwa. Utaondolewa kiotomatiki baada ya saa {hours} ikiwa hutatuma dokezo!",
+            studied: "Imesomwa",
+            notStudied: "Haijasomwa",
             notificationPrompt: {
                 title: "Endelea Kuunganishwa!",
                 description: "Pata arifa wakati washiriki wa kikundi wanaposhiriki maelezo au unapokuwa na vikumbusho vya funzo.",

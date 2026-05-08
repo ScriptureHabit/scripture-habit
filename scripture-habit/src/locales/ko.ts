@@ -121,6 +121,8 @@ export default {
             todaysComeFollowMe: "오늘의 '와서 나를 따르라'",
             noReadingPlan: "오늘의 계획이 없습니다.",
             inactivityWarning: "⚠️ {name}: 학습이 확인되지 않았습니다. 노트를 게시하지 않으면 {hours}시간 후에 자동으로 퇴장 처리됩니다!",
+            studied: "학습 완료",
+            notStudied: "학습 미완료",
             postedANote: "{nickname}님이 노트를 게시했습니다! ✨",
             sentAMessage: "{nickname}님이 메시지를 보냈습니다! ✨",
             joinGroupStudy: "모두와 함께 경전 공부를 하시겠습니까?",

@@ -52,7 +52,6 @@ export default {
                 later: "Maybe Later"
             },
             inactivityWarning: "⚠️ {name}: No activity confirmed. You will be automatically removed in {hours} hour(s) if you do not post a note!",
-            streakStatus: "Streak Status",
             studied: "Studied",
             notStudied: "Not Studied"
         },
