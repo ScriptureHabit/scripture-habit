@@ -186,10 +186,12 @@ self.addEventListener('fetch', (event) => {
                                      event.request.destination === 'font' ||
                                      event.request.url.startsWith('https://fonts.');
 
-                if (isStaticAsset) {
+                if (isStaticAsset && event.request.url.startsWith('http')) {
                     const responseToCache = networkResponse.clone();
                     caches.open(CACHE_NAME).then((cache) => {
                         cache.put(event.request, responseToCache);
+                    }).catch(err => {
+                        console.warn('[sw.js] Cache put failed:', err);
                     });
                 }
                 return networkResponse;
