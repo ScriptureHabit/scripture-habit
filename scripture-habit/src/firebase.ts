@@ -60,6 +60,8 @@ if (typeof window !== 'undefined') {
 declare global {
   interface Window {
     firebaseAuth?: Auth;
+    auth?: Auth | null;
+    db?: Firestore;
     debugAppCheck?: () => Promise<unknown>;
   }
 }
@@ -152,6 +154,8 @@ if (!isEmulator) {
 
     // Diagnostic helper for debugging App Check issues in production/mobile
     if (typeof window !== 'undefined') {
+        window.auth = auth;
+        window.db = db;
         window.debugAppCheck = async () => {
             if (!appCheck) return "App Check not initialized";
             try {
