@@ -64,15 +64,13 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
 
                 const mergedFetched = fetchedGroups.map(mergeWithDecorations);
 
-                // If we have groupIds in userData, use them for ordering
+                // If we have groupIds in userData, strictly use them for filtering and ordering
                 if (groupIds.length > 0) {
                     const ordered = groupIds.map(id => {
                         return mergedFetched.find(g => g.id === id);
                     }).filter(Boolean) as Group[];
 
-                    // Add any groups found by query that weren't in groupIds (safety fallback)
-                    const extra = mergedFetched.filter(g => !groupIds.includes(g.id));
-                    return [...ordered, ...extra];
+                    return ordered;
                 }
                 
                 // Fallback: If groupIds is empty/missing, just use whatever groups the query found

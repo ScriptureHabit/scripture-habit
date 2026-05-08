@@ -162,4 +162,36 @@ describe('useDashboardGroups', () => {
             expect(result.current.userGroups.length).toBe(1);
         });
     });
+
+    it('should ONLY show groups that are in groupIds (strict filtering)', async () => {
+        let groupsCallback: (snapshot: { docs: Array<{ id: string; data: () => Record<string, unknown> }> }) => void;
+        vi.mocked(firestore.onSnapshot).mockImplementation((( _q: unknown, callback: (snap: unknown) => void) => {
+            if (!groupsCallback) groupsCallback = callback as never;
+            return () => {};
+        }) as unknown as never);
+
+        // User is member of group1 and group2, but groupIds only has group1
+        const strictUserData = {
+            uid: 'user123',
+            groupIds: ['group1']
+        };
+
+        const { result } = renderHook(() => useDashboardGroups(strictUserData as unknown as { uid: string; groupIds: string[] }, null));
+
+        await waitFor(() => {
+            if (!groupsCallback) throw new Error('Groups callback not captured');
+            groupsCallback({
+                docs: [
+                    { id: 'group1', data: () => ({ id: 'group1', name: 'Group 1' }) },
+                    { id: 'group2', data: () => ({ id: 'group2', name: 'Ghost Group' }) }
+                ]
+            });
+        });
+
+        // Should only show group1
+        await waitFor(() => {
+            expect(result.current.userGroups.length).toBe(1);
+            expect(result.current.userGroups[0].id).toBe('group1');
+        });
+    });
 });
