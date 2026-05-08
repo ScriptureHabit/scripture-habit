@@ -12,7 +12,8 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
     const [isLoading, setIsLoading] = useState(true);
 
     const groupIds = useMemo(() => {
-        return userData?.groupIds || (userData?.groupId ? [userData.groupId] : []);
+        const ids = userData?.groupIds || (userData?.groupId ? [userData.groupId] : []);
+        return Array.from(new Set(ids));
     }, [userData?.groupIds, userData?.groupId]);
 
     const groupIdsKey = useMemo(() => {
@@ -66,12 +67,7 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
                 // If we have groupIds in userData, use them for ordering
                 if (groupIds.length > 0) {
                     const ordered = groupIds.map(id => {
-                        const newGroup = mergedFetched.find(g => g.id === id);
-                        if (newGroup) return newGroup;
-                        
-                        // If not in current snapshot, try to find in previous state
-                        const oldGroup = prev.find(g => g.id === id);
-                        return oldGroup;
+                        return mergedFetched.find(g => g.id === id);
                     }).filter(Boolean) as Group[];
 
                     // Add any groups found by query that weren't in groupIds (safety fallback)

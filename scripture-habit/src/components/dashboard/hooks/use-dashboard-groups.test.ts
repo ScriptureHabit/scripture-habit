@@ -109,4 +109,57 @@ describe('useDashboardGroups', () => {
         expect(result.current.activeGroupId).toBeNull();
         expect(result.current.isLoading).toBe(false);
     });
+
+    it('should NOT keep zombie groups if removed from Firestore membership', async () => {
+        let groupsCallback: (snapshot: { docs: Array<{ id: string; data: () => Record<string, unknown> }> }) => void;
+        vi.mocked(firestore.onSnapshot).mockImplementation((( _q: unknown, callback: (snap: unknown) => void) => {
+            if (!groupsCallback) groupsCallback = callback as never;
+            return () => {};
+        }) as unknown as never);
+
+        const { result } = renderHook(() => useDashboardGroups(mockUserData as unknown as { uid: string; groupIds: string[] }, null));
+
+        // 1. Initial Load
+        await waitFor(() => {
+            if (!groupsCallback) throw new Error('Groups callback not captured');
+            groupsCallback({
+                docs: [{ id: 'group1', data: () => ({ id: 'group1', name: 'Test Group' }) }]
+            });
+        });
+        await waitFor(() => expect(result.current.userGroups.length).toBe(1));
+
+        // 2. Simulate group deletion/removal from membership (empty docs)
+        await waitFor(() => {
+            groupsCallback({ docs: [] });
+        });
+
+        // 3. Ensure group is removed despite being in mockUserData.groupIds
+        await waitFor(() => expect(result.current.userGroups.length).toBe(0));
+    });
+
+    it('should deduplicate groupIds from userData', async () => {
+        let groupsCallback: (snapshot: { docs: Array<{ id: string; data: () => Record<string, unknown> }> }) => void;
+        vi.mocked(firestore.onSnapshot).mockImplementation((( _q: unknown, callback: (snap: unknown) => void) => {
+            if (!groupsCallback) groupsCallback = callback as never;
+            return () => {};
+        }) as unknown as never);
+
+        const duplicatedUserData = {
+            uid: 'user123',
+            groupIds: ['group1', 'group1', 'group1']
+        };
+
+        const { result } = renderHook(() => useDashboardGroups(duplicatedUserData as unknown as { uid: string; groupIds: string[] }, null));
+
+        await waitFor(() => {
+            if (!groupsCallback) throw new Error('Groups callback not captured');
+            groupsCallback({
+                docs: [{ id: 'group1', data: () => ({ id: 'group1', name: 'Test Group' }) }]
+            });
+        });
+
+        await waitFor(() => {
+            expect(result.current.userGroups.length).toBe(1);
+        });
+    });
 });
