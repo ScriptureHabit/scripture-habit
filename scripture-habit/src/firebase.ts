@@ -132,6 +132,12 @@ if (import.meta.env.DEV) {
     (self as unknown as { FIREBASE_APPCHECK_DEBUG_TOKEN: boolean }).FIREBASE_APPCHECK_DEBUG_TOKEN = true;
 }
 
+// Global exports for debugging
+if (typeof window !== 'undefined') {
+    window.auth = auth;
+    window.db = db;
+}
+
 let appCheck: AppCheck | null = null;
 if (!isEmulator) {
   const siteKey = import.meta.env.VITE_APPCHECK_SITE_KEY;
@@ -154,14 +160,15 @@ if (!isEmulator) {
 
     // Diagnostic helper for debugging App Check issues in production/mobile
     if (typeof window !== 'undefined') {
-        window.auth = auth;
-        window.db = db;
         window.debugAppCheck = async () => {
             if (!appCheck) return "App Check not initialized";
             try {
                 const token = await getToken(appCheck);
-                console.log("[AppCheck] Current Token:", token);
-                return token;
+                const result = {
+                    token: token.token.slice(0, 10) + "...",
+                };
+                console.log("[AppCheck] Token Info:", result);
+                return result;
             } catch (err) {
                 console.error("[AppCheck] Failed to get token:", err);
                 return err;
