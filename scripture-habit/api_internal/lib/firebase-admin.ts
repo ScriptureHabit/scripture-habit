@@ -7,15 +7,26 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Force fail metadata server lookup to avoid long timeouts in emulator environment
+if (process.env.FIRESTORE_EMULATOR_HOST) {
+    process.env.GCP_METADATA_HOST = '127.0.0.1:9999';
+    process.env.NO_GCE_CHECK = 'true';
+}
+
 if (!admin.apps.length) {
     if (process.env.FIRESTORE_EMULATOR_HOST) {
-        // Initialize for Emulator
+        // Initialize for Emulator with a dummy service account file to avoid ANY network lookup
+        // but still satisfy the Firestore client's requirement for a valid credential type.
         try {
+            const dummyKeyPath = path.join(__dirname, 'dummy-service-account.json');
+            process.env.GOOGLE_APPLICATION_CREDENTIALS = dummyKeyPath;
+            
+            const projectId = process.env.FIREBASE_PROJECT_ID || 'scripture-habit-auth';
             admin.initializeApp({
-                projectId: process.env.FIREBASE_PROJECT_ID || process.env.GCLOUD_PROJECT || 'scripture-habit-auth',
-                credential: admin.credential.applicationDefault() 
+                projectId: projectId,
+                credential: admin.credential.applicationDefault()
             });
-            console.log('Firebase Admin initialized for Emulator mode');
+            console.log(`Firebase Admin initialized for Emulator mode (Project: ${projectId})`);
         } catch (error) {
             console.error('Firebase Admin Emulator initialization error:', error);
         }
@@ -58,9 +69,21 @@ if (!admin.apps.length) {
 const db = (admin.apps.length ? admin.firestore() : null) as admin.firestore.Firestore;
 if (db) {
     try {
-        db.settings({ ignoreUndefinedProperties: true });
-    } catch {
-        // Settings already applied or failed
+        let emulatorHost = process.env.FIRESTORE_EMULATOR_HOST;
+        if (emulatorHost) {
+            // Ensure we use IPv4 to avoid localhost resolution issues on Windows
+            emulatorHost = emulatorHost.replace('localhost', '127.0.0.1');
+            console.log(`[Firebase Admin] Forcing Firestore Emulator host to: ${emulatorHost}`);
+            db.settings({
+                host: emulatorHost,
+                ssl: false,
+                ignoreUndefinedProperties: true
+            });
+        } else {
+            db.settings({ ignoreUndefinedProperties: true });
+        }
+    } catch (e) {
+        console.error('[Firebase Admin] Error setting Firestore settings:', e);
     }
 }
 
