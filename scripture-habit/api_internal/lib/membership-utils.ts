@@ -89,15 +89,20 @@ export async function removeMemberFromGroup(
     const memberDocRef = groupRef.collection('members').doc(userId);
     const userRef = db.collection('users').doc(userId);
 
-    // 1. Get current group data
-    const groupSnap = await transaction.get(groupRef);
+    // 1. Get current data (Reads must come BEFORE any writes)
+    const [groupSnap, userSnap] = await Promise.all([
+        transaction.get(groupRef),
+        transaction.get(userRef)
+    ]);
+
     if (!groupSnap.exists) return;
     const groupData = groupSnap.data() as GroupDocument || {};
 
-    // 2. Apply group updates using the shared logic
+    // 2. Prepare group updates
     const groupUpdate = getGroupUpdateForRemoval(groupData, userId);
 
-    // 3. Handle Ownership Transfer
+    // 3. Handle Ownership Transfer (Read next owner if needed)
+    let newOwnerSnap: admin.firestore.DocumentSnapshot | null = null;
     if (groupData.ownerUserId === userId && options.transferOwnership) {
         const members = (groupData.members || []) as string[];
         const remainingMembers = members.filter(m => m !== userId);
@@ -105,29 +110,15 @@ export async function removeMemberFromGroup(
         if (remainingMembers.length > 0) {
             const newOwnerId = remainingMembers[0];
             groupUpdate.ownerUserId = newOwnerId;
-
-            // Optional: Post ownership transfer message
-            const newOwnerSnap = await transaction.get(db.collection('users').doc(newOwnerId));
-            const ownerLang = (newOwnerSnap.data() as UserDocument)?.language || options.preferredLanguage || 'en';
-            
-            const transferMsgRef = groupRef.collection('messages').doc();
-            transaction.set(transferMsgRef, {
-                text: t(ownerLang, 'notifications.ownership_transferred'),
-                createdAt: admin.firestore.FieldValue.serverTimestamp(),
-                senderId: 'system',
-                isSystemMessage: true,
-                type: 'system',
-                messageType: 'system'
-            });
+            // READ: Must happen before any writes below
+            newOwnerSnap = await transaction.get(db.collection('users').doc(newOwnerId));
         }
     }
 
+    // 4. Execution Phase (WRITES ONLY from here on)
     transaction.update(groupRef, groupUpdate);
-
-    // 4. Delete individual member document from subcollection
     transaction.delete(memberDocRef);
 
-    // 5. Update User document if requested
     if (options.removeFromUserDoc) {
         transaction.update(userRef, {
             groupIds: admin.firestore.FieldValue.arrayRemove(groupId)
@@ -135,7 +126,6 @@ export async function removeMemberFromGroup(
     }
 
     if (options.clearUserGroupId) {
-        const userSnap = await transaction.get(userRef);
         if (userSnap.exists && (userSnap.data() as UserDocument)?.groupId === groupId) {
             transaction.update(userRef, {
                 groupId: admin.firestore.FieldValue.delete()
@@ -146,6 +136,20 @@ export async function removeMemberFromGroup(
     if (options.removeGroupState) {
         const gsRef = userRef.collection('groupStates').doc(groupId);
         transaction.delete(gsRef);
+    }
+
+    // Handle transfer message
+    if (newOwnerSnap && groupUpdate.ownerUserId) {
+        const ownerLang = (newOwnerSnap.data() as UserDocument)?.language || options.preferredLanguage || 'en';
+        const transferMsgRef = groupRef.collection('messages').doc();
+        transaction.set(transferMsgRef, {
+            text: t(ownerLang, 'notifications.ownership_transferred'),
+            createdAt: admin.firestore.FieldValue.serverTimestamp(),
+            senderId: 'system',
+            isSystemMessage: true,
+            type: 'system',
+            messageType: 'system'
+        });
     }
 
     // 6. Post System Message if requested
