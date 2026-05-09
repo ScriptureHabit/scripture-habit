@@ -71,6 +71,7 @@
 
 .dashboard-inner-wrapper {
   flex-direction: column;
+  gap: 1rem;
   width: 100%;
 }
 
