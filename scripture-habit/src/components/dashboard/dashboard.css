@@ -70,6 +70,7 @@
 }
 
 .dashboard-inner-wrapper {
+  display: flex;
   flex-direction: column;
   gap: 1rem;
   width: 100%;
@@ -383,8 +384,6 @@
   width: 100%;
   align-items: stretch;
   /* Make items full height */
-  margin-bottom: 2rem;
-  /* Add spacing below the row */
 }
 
 .dashboard-split-row>* {

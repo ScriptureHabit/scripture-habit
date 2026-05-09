@@ -1,5 +1,4 @@
 .streak-calendar-container {
-    margin-top: 2rem;
     padding: 1.5rem;
     background: rgba(255, 255, 255, 0.45);
     backdrop-filter: blur(10px);
@@ -7,6 +6,7 @@
     border: 1px solid rgba(255, 255, 255, 0.2);
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
     color: var(--text-color, #2c3e50);
+    width: 100%;
     max-width: 320px;
     margin-left: auto;
     margin-right: auto;
