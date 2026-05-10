@@ -615,11 +615,11 @@ router.post('/delete-group', authenticate, verifyAppCheck, async (req: Authentic
         const groupRef = db.collection('groups').doc(groupId);
         const groupDoc = await groupRef.get();
 
-        if (!groupDoc.exists) return res.status(404).send('Group not found');
+        if (!groupDoc.exists) return res.status(404).json({ error: 'Group not found' });
         const groupData = groupDoc.data()! as GroupDocument;
 
         if (groupData.ownerUserId !== uid) {
-            return res.status(403).send('Forbidden: Only owner can delete group');
+            return res.status(403).json({ error: 'Forbidden: Only owner can delete group' });
         }
 
         const members = groupData.members || [];

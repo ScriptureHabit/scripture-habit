@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import apiClient from '../../../../utils/api-client';
 import { toast } from 'react-toastify';
@@ -18,12 +18,14 @@ export const useGroupActions = (
 
   const [isLeaving, setIsLeaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const actionInProgress = useRef(false);
 
   const navigate = useNavigate();
 
   const handleLeaveGroup = async () => {
-    if (!userData || isLeaving) return;
+    if (!userData || actionInProgress.current) return;
     
+    actionInProgress.current = true;
     setIsLeaving(true);
     try {
       await apiClient.post('/api/groups/leave-group', { groupId });
@@ -44,11 +46,13 @@ export const useGroupActions = (
       toast.error(errorMessage);
     } finally {
       setIsLeaving(false);
+      actionInProgress.current = false;
     }
   };
 
   const handleDeleteGroup = async () => {
-    if (isDeleting) return;
+    if (actionInProgress.current) return;
+    actionInProgress.current = true;
     setIsDeleting(true);
     try {
       await apiClient.post('/api/groups/delete-group', { groupId });
@@ -69,6 +73,7 @@ export const useGroupActions = (
       toast.error(errorMessage);
     } finally {
       setIsDeleting(false);
+      actionInProgress.current = false;
     }
   };
 
