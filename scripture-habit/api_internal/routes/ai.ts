@@ -249,7 +249,7 @@ router.post('/translate-batch', authenticate, aiLimiter, verifyAppCheck, async (
     const validation = translateBatchSchema.safeParse(req.body);
     if (!validation.success) return res.status(400).json({ error: 'Invalid input', details: validation.error.format() });
     
-    const { messages, targetLanguage, groupId } = validation.data;
+    const { messages, targetLanguage, groupId, force } = validation.data;
     const finalResults: Record<string, string> = {};
     const toTranslate: Array<{ id: string; text: string }> = [];
 
@@ -259,8 +259,8 @@ router.post('/translate-batch', authenticate, aiLimiter, verifyAppCheck, async (
     }
 
 
-    // 1. Check cache for each message in parallel
-    if (db && (process.env.NODE_ENV !== 'test' || process.env.FIRESTORE_EMULATOR_HOST)) {
+    // 1. Check cache for each message in parallel (Skip if force=true)
+    if (!force && db && (process.env.NODE_ENV !== 'test' || process.env.FIRESTORE_EMULATOR_HOST)) {
         try {
             const cachePromises = messages.map(async (msg) => {
                 const cacheKey = crypto.createHash('md5').update(`${msg.text}_${targetLanguage}_normal`).digest('hex');

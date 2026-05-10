@@ -164,7 +164,8 @@ describe('AI Prompt Construction Regression', () => {
             body: JSON.stringify({
                 messages: [{ id: 'msg1', text: 'Note 1' }],
                 targetLanguage: 'pt',
-                groupId: 'group1'
+                groupId: 'group1',
+                force: true
             })
         });
 
@@ -198,7 +199,8 @@ describe('AI Prompt Construction Regression', () => {
             body: JSON.stringify({
                 messages: [{ id: 'hallu1', text: 'Hallucination Note 1' }, { id: 'hallu2', text: 'Hallucination Note 2' }],
                 targetLanguage: 'pt',
-                groupId: 'group1'
+                groupId: 'group1',
+                force: true
             })
         });
 

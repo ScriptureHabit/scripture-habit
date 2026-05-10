@@ -6,7 +6,7 @@ import { GroupDocument, MessageDocument, UserDocument } from '../../types/firest
 
 describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('MessageService Integration Test', () => {
     vi.setConfig({ testTimeout: 15000 });
-    const TEST_UID = 'cFg1i9IybmfV1la4OekO2jDWE9h1'; // test1
+    const TEST_UID = `MSG_SRV_USER_${Math.random().toString(36).substring(7)}`;
     const TEST_GROUP_ID = `MSG_SRV_TEST_GRP_${Math.random().toString(36).substring(7)}`;
 
     beforeEach(async () => {

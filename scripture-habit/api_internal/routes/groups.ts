@@ -86,7 +86,7 @@ router.post('/create-group', authenticate, requireEmailVerified, verifyAppCheck,
             // 3. Execution Phase
             transaction.set(groupRef, newGroupData);
             transaction.set(groupRef.collection('members').doc(uid), memberData);
-            
+
             transaction.set(userRef.collection('groupStates').doc(newGroupId), {
                 readMessageCount: 0,
                 lastReadAt: now,
@@ -151,11 +151,9 @@ router.post('/join-group', authenticate, requireEmailVerified, verifyAppCheck, a
             const userRef = db.collection('users').doc(uid);
 
             // TRUTH: Execute all READS before any WRITES
-            const [groupDoc, userDoc, totalMessages] = await Promise.all([
-                transaction.get(groupRef),
-                transaction.get(userRef),
-                CounterService.getCountInTransaction(transaction, groupRef, 'messageCount')
-            ]);
+            const groupDoc = await transaction.get(groupRef);
+            const userDoc = await transaction.get(userRef);
+            const totalMessages = await CounterService.getCountInTransaction(transaction, groupRef, 'messageCount');
 
             if (!groupDoc.exists) throw new Error('Group not found.');
             if (!userDoc.exists) throw new Error('User not found.');
@@ -163,6 +161,9 @@ router.post('/join-group', authenticate, requireEmailVerified, verifyAppCheck, a
             const gid = groupDoc.id;
             const gData = groupDoc.data()! as GroupDocument;
             const userData = userDoc.data()! as UserDocument;
+
+            const members = gData.members || [];
+            const maxMembers = gData.maxMembers || 500;
 
             // 1. Validation Phase
             if (gData.isPrivate === true || gData.isPublic === false) {
@@ -172,10 +173,10 @@ router.post('/join-group', authenticate, requireEmailVerified, verifyAppCheck, a
                     }
                     if (gData.inviteCodeExpiresAt) {
                         const ts = gData.inviteCodeExpiresAt;
-                        const expiresAt = (ts && typeof ts === 'object' && 'toDate' in ts && typeof ts.toDate === 'function') 
-                            ? ts.toDate() 
+                        const expiresAt = (ts && typeof ts === 'object' && 'toDate' in ts && typeof ts.toDate === 'function')
+                            ? ts.toDate()
                             : new Date(ts as string | number | Date);
-                        
+
                         if (expiresAt < new Date()) {
                             throw new Error('This invite link has expired. Please ask the group owner for a new one.');
                         }
@@ -185,9 +186,10 @@ router.post('/join-group', authenticate, requireEmailVerified, verifyAppCheck, a
                 }
             }
 
-            const members = gData.members || [];
             if (members.includes(uid)) throw new Error('You are already a member of this group.');
-            if (members.length >= (gData.maxMembers || 500)) throw new Error('This group is full.');
+            if (members.length >= maxMembers) {
+                throw new Error('This group is full.');
+            }
 
             const userGroupIds = userData.groupIds || [];
             if (userGroupIds.length >= MAX_GROUPS_PER_USER) {
@@ -195,6 +197,7 @@ router.post('/join-group', authenticate, requireEmailVerified, verifyAppCheck, a
             }
 
             // 2. Prepare Data
+            const updatedMembers = [...members, uid];
             const newMemberPreview = { uid, nickname: userData.nickname || 'Member' };
             const existingPreviews = (gData.memberPreviews || []) as PreviewItem[];
             const updatedPreviews = [newMemberPreview, ...existingPreviews.filter((p) => p.uid !== uid)].slice(0, 15);
@@ -212,8 +215,8 @@ router.post('/join-group', authenticate, requireEmailVerified, verifyAppCheck, a
 
             // 3. START WRITES (Execution Phase)
             transaction.update(groupRef, {
-                members: admin.firestore.FieldValue.arrayUnion(uid),
-                membersCount: members.length + 1,
+                members: updatedMembers,
+                membersCount: updatedMembers.length,
                 memberPreviews: updatedPreviews,
                 [`memberJoinedAt.${uid}`]: admin.firestore.FieldValue.serverTimestamp(),
                 lastMessageAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -247,6 +250,9 @@ router.post('/join-group', authenticate, requireEmailVerified, verifyAppCheck, a
                 messageType: 'join'
             });
 
+            // IMPORTANT: Increment message counter for the join message
+            CounterService.increment(transaction, groupRef, 'messageCount', 1);
+
             return { gid, groupName: gData.name };
         });
 
@@ -267,7 +273,7 @@ router.post('/join-group', authenticate, requireEmailVerified, verifyAppCheck, a
 router.post('/leave-group', authenticate, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
     const validation = leaveGroupSchema.safeParse(req.body);
     if (!validation.success) return res.status(400).json({ error: 'Invalid input' });
-    
+
     const { groupId } = validation.data;
     if (!groupId) return res.status(400).json({ error: 'groupId is required' });
     const uid = req.user?.uid;
@@ -289,10 +295,10 @@ router.post('/leave-group', authenticate, verifyAppCheck, async (req: Authentica
 
             const uData = uSnap.data()! as UserDocument;
             if (!uData) throw new Error('User data unavailable.');
-            
+
             // Use centralized utility for the heavy lifting
-            await removeMemberFromGroup(transaction, groupId, uid, { 
-                removeFromUserDoc: true, 
+            await removeMemberFromGroup(transaction, groupId, uid, {
+                removeFromUserDoc: true,
                 clearUserGroupId: true,
                 removeGroupState: true,
                 transferOwnership: true,
@@ -350,7 +356,7 @@ router.post('/update-read-status', authenticate, verifyAppCheck, async (req: Aut
 
         const batch = db.batch();
         batch.set(userRef.collection('groupStates').doc(groupId), {
-            readMessageCount: totalMessages, 
+            readMessageCount: totalMessages,
             lastReadAt: admin.firestore.FieldValue.serverTimestamp()
         }, { merge: true });
 
@@ -538,7 +544,7 @@ router.post('/update-kick-threshold', authenticate, verifyAppCheck, async (req: 
         if (groupIds.length > 0) {
             const groupRefs = groupIds.map(gid => db.collection('groups').doc(gid));
             const groupSnaps = await db.getAll(...groupRefs);
-            
+
             groupSnaps.forEach((snap, index) => {
                 if (snap.exists) {
                     existingGroupIds.push(groupIds[index]);
@@ -549,7 +555,7 @@ router.post('/update-kick-threshold', authenticate, verifyAppCheck, async (req: 
             });
         }
 
-        const userUpdate: admin.firestore.UpdateData<UserDocument> = { 
+        const userUpdate: admin.firestore.UpdateData<UserDocument> = {
             kickThreshold: threshold,
             hasSetKickThreshold: true
         };
@@ -568,12 +574,12 @@ router.post('/update-kick-threshold', authenticate, verifyAppCheck, async (req: 
             const batch = db.batch();
             existingGroupIds.forEach((gid: string) => {
                 const gRef = db.collection('groups').doc(gid);
-                
+
                 // Update the new scalable subcollection
                 batch.set(gRef.collection('members').doc(uid), {
                     kickThreshold: threshold
                 }, { merge: true });
-                
+
                 // Also update the legacy map for backward compatibility in dashboards
                 // This is safe because existingGroupIds only contains IDs that actually exist.
                 batch.update(gRef, {
@@ -600,7 +606,7 @@ router.post('/update-kick-threshold', authenticate, verifyAppCheck, async (req: 
 router.post('/delete-group', authenticate, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
     const validation = deleteGroupSchema.safeParse(req.body);
     if (!validation.success) return res.status(400).json({ error: 'Invalid input' });
-    
+
     const { groupId } = validation.data;
     const uid = req.user?.uid;
     if (!uid) return res.status(401).json({ error: 'Unauthorized' });
@@ -618,7 +624,7 @@ router.post('/delete-group', authenticate, verifyAppCheck, async (req: Authentic
 
         const members = groupData.members || [];
         const userRefs = members.map((mUid: string) => db.collection('users').doc(mUid));
-        
+
         // TRUTH: Process user updates in chunks of 200 to stay within Firestore's 500-write limit.
         // Each user needs 2 writes (UserDoc update + groupState delete).
         const CHUNK_SIZE = 200;
@@ -753,9 +759,9 @@ router.post('/regenerate-invite-code', authenticate, verifyAppCheck, async (req:
 
         const inviteCode = await generateUniqueInviteCode();
         const inviteCodeExpiresAt = admin.firestore.Timestamp.fromDate(new Date(Date.now() + expiryDays * 24 * 60 * 60 * 1000));
-        
-        await groupRef.update({ 
-            inviteCode, 
+
+        await groupRef.update({
+            inviteCode,
             inviteCodeExpiresAt
         });
 
@@ -771,22 +777,18 @@ router.get('/', async (req: Request, res: Response) => {
     try {
         const limitAmount = Math.min(parseInt(req.query.limit as string) || 20, 100);
         const lastId = req.query.lastId as string;
-        const lastValue = req.query.lastValue as string;
 
         let query = db.collection('groups')
             .where('isPublic', '==', true)
             .orderBy('lastMessageAt', 'desc')
+            .orderBy('name', 'desc')
             .orderBy(admin.firestore.FieldPath.documentId(), 'desc');
 
-        if (lastId && lastValue) {
-            // Use both value and ID for reliable pagination
-            // lastValue should be the ISO string or timestamp
-            const lastMessageAt = admin.firestore.Timestamp.fromDate(new Date(lastValue));
-            query = query.startAfter(lastMessageAt, lastId);
-        } else if (lastId) {
-            // Fallback to fetching the doc if only ID is provided (costs 1 extra read)
+        if (lastId) {
+            // ALWAYS fetch the doc if lastId is provided for 100% reliable pagination
             const lastDoc = await db.collection('groups').doc(lastId).get();
             if (lastDoc.exists) {
+                // Using the document snapshot directly is the most reliable way to handle composite cursors
                 query = query.startAfter(lastDoc);
             }
         }

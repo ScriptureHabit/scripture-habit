@@ -109,7 +109,8 @@ export const translateBatchSchema = z.object({
         text: z.string().min(1).max(5000)
     })).min(1).max(20),
     targetLanguage: z.enum(supportedLanguages),
-    groupId: z.string().min(1)
+    groupId: z.string().min(1),
+    force: z.boolean().optional()
 });
 
 export const postNoteSchema = z.object({

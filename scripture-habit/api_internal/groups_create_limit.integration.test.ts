@@ -60,7 +60,7 @@ describe('Group Creation Limit Enforcement', () => {
         createdUserUids.push(uid);
 
         mockAuth(uid);
-        const response = await fetch(`${baseUrl}/api/create-group`, {
+        const response = await fetch(`${baseUrl}/api/groups/create-group`, {
             method: 'POST',
             headers: {
                 'Authorization': 'Bearer valid-token',
@@ -92,7 +92,7 @@ describe('Group Creation Limit Enforcement', () => {
         createdUserUids.push(uid);
 
         mockAuth(uid);
-        const response = await fetch(`${baseUrl}/api/create-group`, {
+        const response = await fetch(`${baseUrl}/api/groups/create-group`, {
             method: 'POST',
             headers: {
                 'Authorization': 'Bearer valid-token',
