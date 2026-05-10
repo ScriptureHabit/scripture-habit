@@ -39,7 +39,7 @@ export const useInviteManager = (
         }
       }
 
-      const response = await fetch('/api/regenerate-invite-code', {
+      const response = await fetch('/api/groups/regenerate-invite-code', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

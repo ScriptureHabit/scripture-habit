@@ -95,7 +95,7 @@ export const useMessageActions = (
         // 📡 FORCE READ SYNC: Mark this new message as read for the sender immediately
         // We use a background fire-and-forget call to keep UX snappy
         try {
-          apiClient.post('/api/update-read-status', {
+          apiClient.post('/api/groups/update-read-status', {
             groupId,
             readMessageCount: response.data.totalCount || 0 // Assuming backend returns the new total
           });

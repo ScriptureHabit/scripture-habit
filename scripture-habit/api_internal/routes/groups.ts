@@ -767,7 +767,7 @@ router.post('/regenerate-invite-code', authenticate, verifyAppCheck, async (req:
 });
 
 // Fetch Public Groups
-router.get('/groups', async (req: Request, res: Response) => {
+router.get('/', async (req: Request, res: Response) => {
     try {
         const limitAmount = Math.min(parseInt(req.query.limit as string) || 20, 100);
         const lastId = req.query.lastId as string;

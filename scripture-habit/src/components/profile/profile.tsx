@@ -503,7 +503,7 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
                             onClick={async () => {
                                 if (userData?.kickThreshold === days) return;
                                 try {
-                                    await apiClient.post('/api/update-kick-threshold', { threshold: days });
+                                    await apiClient.post('/api/groups/update-kick-threshold', { threshold: days });
                                     toast.success(t('groupChat.autoKickSuccess'));
                                 } catch (err: unknown) {
                                     console.error("Error updating pace:", err);

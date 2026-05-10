@@ -35,7 +35,7 @@ export default function DeleteGroupButton({ groupId, ownerUserId }: DeleteGroupB
         }
       }
 
-      const response = await fetch('/api/delete-group', {
+      const response = await fetch('/api/groups/delete-group', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

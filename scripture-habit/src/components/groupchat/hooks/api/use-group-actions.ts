@@ -26,7 +26,7 @@ export const useGroupActions = (
     
     setIsLeaving(true);
     try {
-      await apiClient.post('/api/leave-group', { groupId });
+      await apiClient.post('/api/groups/leave-group', { groupId });
 
       toast.success(t('groupChat.leftGroupSuccess') || 'You have left the group.');
       if (onLeaveSuccess) {
@@ -51,7 +51,7 @@ export const useGroupActions = (
     if (isDeleting) return;
     setIsDeleting(true);
     try {
-      await apiClient.post('/api/delete-group', { groupId });
+      await apiClient.post('/api/groups/delete-group', { groupId });
 
       toast.success(t('groupChat.groupDeletedSuccess') || 'Group deleted successfully.');
       if (onDeleteSuccess) {
@@ -75,7 +75,7 @@ export const useGroupActions = (
   const togglePublicStatus = async () => {
     if (!groupData) return;
     try {
-      await apiClient.post('/api/update-group', { 
+      await apiClient.post('/api/groups/update-group', { 
         groupId, 
         isPublic: !groupData.isPublic 
       });
@@ -112,7 +112,7 @@ export const useGroupActions = (
         };
       }
 
-      await apiClient.post('/api/update-group', payload);
+      await apiClient.post('/api/groups/update-group', payload);
 
       toast.success(t('groupChat.groupNameChanged') || "Group info updated!");
       return true;

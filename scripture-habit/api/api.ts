@@ -81,7 +81,7 @@ app.get(['/api/health', '/api/health/'], (_req, res) => {
 
 // --- Route Mounting ---
 app.use('/api', authRoutes);
-app.use('/api', groupRoutes);
+app.use('/api/groups', groupRoutes);
 app.use('/api', messageRoutes);
 app.use('/api', aiRoutes);
 app.use('/api', previewRoutes);

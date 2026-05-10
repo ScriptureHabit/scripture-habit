@@ -93,7 +93,7 @@ describe('Advanced Groups API Tests (Data Integrity & Concurrency)', () => {
 
             // 2. Action
             mockAuth(joinerUid);
-            const response = await fetch(`${baseUrl}/api/join-group`, {
+            const response = await fetch(`${baseUrl}/api/groups/join-group`, {
                 method: 'POST',
                 headers: {
                     'Authorization': 'Bearer valid-token',
@@ -159,7 +159,7 @@ describe('Advanced Groups API Tests (Data Integrity & Concurrency)', () => {
             createdGroupIds.push(groupId);
 
             mockAuth(uid);
-            const response = await fetch(`${baseUrl}/api/join-group`, {
+            const response = await fetch(`${baseUrl}/api/groups/join-group`, {
                 method: 'POST',
                 headers: {
                     'Authorization': 'Bearer valid-token',
@@ -214,7 +214,7 @@ describe('Advanced Groups API Tests (Data Integrity & Concurrency)', () => {
 
             // 4. Execute simultaneous requests
             const requests = joiners.map(j => {
-                return fetch(`${baseUrl}/api/join-group`, {
+                return fetch(`${baseUrl}/api/groups/join-group`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer token-${j.uid}`,
@@ -263,7 +263,7 @@ describe('Advanced Groups API Tests (Data Integrity & Concurrency)', () => {
 
             // Action: Owner leaves
             mockAuth(ownerUid);
-            const response = await fetch(`${baseUrl}/api/leave-group`, {
+            const response = await fetch(`${baseUrl}/api/groups/leave-group`, {
                 method: 'POST',
                 headers: {
                     'Authorization': 'Bearer valid-token',
@@ -318,7 +318,7 @@ describe('Advanced Groups API Tests (Data Integrity & Concurrency)', () => {
 
             // 2. Action: Call update-read-status which triggers recountMessageCountWithArchive
             mockAuth(uid);
-            const response = await fetch(`${baseUrl}/api/update-read-status`, {
+            const response = await fetch(`${baseUrl}/api/groups/update-read-status`, {
                 method: 'POST',
                 headers: {
                     'Authorization': 'Bearer valid-token',

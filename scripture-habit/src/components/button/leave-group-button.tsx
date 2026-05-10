@@ -38,7 +38,7 @@ export default function LeaveGroupButton({ groupId }: LeaveGroupButtonProps) {
         headers['X-Firebase-AppCheck'] = appCheckToken;
       }
 
-      const response = await fetch(`${API_BASE}/api/leave-group`, {
+      const response = await fetch(`${API_BASE}/api/groups/leave-group`, {
         method: 'POST',
         headers,
         body: JSON.stringify({ groupId })

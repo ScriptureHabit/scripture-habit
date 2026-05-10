@@ -228,7 +228,7 @@ export default function JoinGroup() {
         headers['X-Firebase-AppCheck'] = appCheckToken;
       }
 
-      const resp = await fetch(`${API_BASE}/api/join-group`, {
+      const resp = await fetch(`${API_BASE}/api/groups/join-group`, {
         method: 'POST',
         headers,
         body: JSON.stringify({ groupId })

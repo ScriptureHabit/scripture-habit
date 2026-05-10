@@ -56,7 +56,7 @@ describe('Groups API Error Handling & Validation', () => {
     describe('POST /api/join-group', () => {
         it('should return 400 when missing inviteCode and groupId', async () => {
             mockAuth();
-            const response = await fetch(`${baseUrl}/api/join-group`, {
+            const response = await fetch(`${baseUrl}/api/groups/join-group`, {
                 method: 'POST',
                 headers: {
                     'Authorization': 'Bearer valid-token',
@@ -72,7 +72,7 @@ describe('Groups API Error Handling & Validation', () => {
         });
 
         it('should return 401 when Authorization header is missing', async () => {
-            const response = await fetch(`${baseUrl}/api/join-group`, {
+            const response = await fetch(`${baseUrl}/api/groups/join-group`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ inviteCode: 'ABCDEF' })
@@ -85,7 +85,7 @@ describe('Groups API Error Handling & Validation', () => {
 
         it('should return 403 when email is not verified', async () => {
             mockAuth('unverified-user', false);
-            const response = await fetch(`${baseUrl}/api/join-group`, {
+            const response = await fetch(`${baseUrl}/api/groups/join-group`, {
                 method: 'POST',
                 headers: {
                     'Authorization': 'Bearer valid-token',
@@ -122,7 +122,7 @@ describe('Groups API Error Handling & Validation', () => {
             createdGroupIds.push(groupId);
 
             mockAuth(uid);
-            const response = await fetch(`${baseUrl}/api/join-group`, {
+            const response = await fetch(`${baseUrl}/api/groups/join-group`, {
                 method: 'POST',
                 headers: {
                     'Authorization': 'Bearer valid-token',
@@ -160,7 +160,7 @@ describe('Groups API Error Handling & Validation', () => {
             createdGroupIds.push(groupId);
 
             mockAuth(maliciousUid);
-            const response = await fetch(`${baseUrl}/api/kick-member`, {
+            const response = await fetch(`${baseUrl}/api/groups/kick-member`, {
                 method: 'POST',
                 headers: {
                     'Authorization': 'Bearer valid-token',
@@ -191,7 +191,7 @@ describe('Groups API Error Handling & Validation', () => {
             createdGroupIds.push(groupId);
 
             mockAuth(ownerUid);
-            const response = await fetch(`${baseUrl}/api/kick-member`, {
+            const response = await fetch(`${baseUrl}/api/groups/kick-member`, {
                 method: 'POST',
                 headers: {
                     'Authorization': 'Bearer valid-token',
@@ -209,7 +209,7 @@ describe('Groups API Error Handling & Validation', () => {
     describe('POST /api/update-group', () => {
         it('should return 404 when group does not exist', async () => {
             mockAuth();
-            const response = await fetch(`${baseUrl}/api/update-group`, {
+            const response = await fetch(`${baseUrl}/api/groups/update-group`, {
                 method: 'POST',
                 headers: {
                     'Authorization': 'Bearer valid-token',
@@ -236,7 +236,7 @@ describe('Groups API Error Handling & Validation', () => {
             createdUserUids.push(uid);
 
             mockAuth(uid);
-            const response = await fetch(`${baseUrl}/api/update-group`, {
+            const response = await fetch(`${baseUrl}/api/groups/update-group`, {
                 method: 'POST',
                 headers: {
                     'Authorization': 'Bearer valid-token',
