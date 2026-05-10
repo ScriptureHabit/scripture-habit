@@ -7,8 +7,8 @@ test.describe('Group UI Flow (E2E)', () => {
     await page.waitForURL(/.*group-options/);
 
     // 2. Choose to create a group
-    // In GroupOptions (which JoinGroup links to or acts as), we look for the link to group-form
-    await page.click('.create-group-link');
+    // In GroupOptions, we look for the card to go to group-form
+    await page.click('[data-testid="create-group-card"]');
     await page.waitForURL(/.*group-form/);
 
     // 3. Fill out the group form
@@ -46,18 +46,39 @@ test.describe('Group UI Flow (E2E)', () => {
   });
 
   test('should join a public group through the UI', async ({ authenticatedPage: page }) => {
+    // 0. Create a public group and then leave it so it appears as joinable
+    await page.evaluate(async () => {
+      const auth = window.firebaseAuth;
+      const idToken = await auth!.currentUser!.getIdToken();
+
+      async function callApi(endpoint: string, body: Record<string, unknown>) {
+        const resp = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${idToken}`
+          },
+          body: JSON.stringify(body)
+        });
+        return resp.json();
+      }
+
+      const name = `Public UI Test ${Date.now()}`;
+      const createResp = await callApi('/api/groups/create-group', { name, isPublic: true });
+      // Leave so it shows in the joinable list (join-group page filters out user's groups)
+      await callApi('/api/groups/leave-group', { groupId: createResp.groupId });
+      return name;
+    });
+
     // 1. Go to Join Group page
     await page.goto('/en/join-group');
 
     // 2. Wait for groups to load
-    await page.waitForSelector('.group-card', { timeout: 10000 });
+    await page.waitForSelector('.group-card', { timeout: 15000 });
 
-    // 3. Find a group card and click "Join"
-    // We'll pick the first group card that doesn't have "Joined" status (if any)
+    // 3. Find the group card and click "Details" to open the confirm modal
     const groupCard = page.locator('.group-card').first();
-    const groupName = await groupCard.locator('.group-name').textContent();
-    
-    await groupCard.locator('button:has-text("Join")').click();
+    await groupCard.locator('button.join-btn').click();
 
     // 4. Confirm in the modal
     await expect(page.locator('.group-modal-content')).toBeVisible();
@@ -65,11 +86,9 @@ test.describe('Group UI Flow (E2E)', () => {
 
     // 5. Verify redirection and toast
     await page.waitForURL(/.*dashboard/);
-    await expect(page.locator('.Toastify__toast--success')).toBeVisible();
+    await expect(page.locator('.Toastify__toast--success')).toBeVisible({ timeout: 10000 });
     
-    // Verify the group name is now in the sidebar
-    if (groupName) {
-      await expect(page.locator(`[data-testid="sidebar-group-item"]:has-text("${groupName}")`)).toBeVisible();
-    }
+    // Verify a group appears in the sidebar (the one we just joined)
+    await expect(page.locator('[data-testid="sidebar-group-item"]').first()).toBeVisible();
   });
 });

@@ -82,7 +82,7 @@ export default function JoinGroup() {
 
       const translate = async (text: string, type: 'group_name' | 'group_description') => {
         if (!text) return null;
-        const res = await fetch(`${API_BASE}/api/translate`, {
+        const res = await fetch(`${API_BASE}/api/ai/translate`, {
           method: 'POST',
           headers,
           body: JSON.stringify({ text, targetLanguage: language, updateType: type })

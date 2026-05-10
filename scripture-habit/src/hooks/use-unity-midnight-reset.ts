@@ -77,7 +77,7 @@ export const useUnityMidnightReset = ({
                     headers['X-Firebase-AppCheck'] = appCheckToken;
                 }
 
-                const response = await fetch(`${API_BASE}/api/reset-unity-if-midnight`, {
+                const response = await fetch(`${API_BASE}/api/groups/reset-unity-if-midnight`, {
                     method: 'POST',
                     headers,
                     body: JSON.stringify({ groupId })

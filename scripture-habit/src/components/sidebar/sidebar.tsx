@@ -78,7 +78,7 @@ const SidebarGroupItem: React.FC<SidebarGroupItemProps> = ({ group, language, is
           headers['X-Firebase-AppCheck'] = appCheckToken;
         }
 
-        const res = await fetch(`${API_BASE}/api/translate`, {
+        const res = await fetch(`${API_BASE}/api/ai/translate`, {
           method: 'POST',
           headers,
 

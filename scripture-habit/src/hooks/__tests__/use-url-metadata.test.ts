@@ -52,7 +52,7 @@ describe('useUrlMetadata', () => {
         await waitFor(() => expect(result.current.loading).toBe(false));
 
         expect(globalFetch).toHaveBeenCalledWith(
-            expect.stringContaining('/api/fetch-church-metadata'),
+            expect.stringContaining('/api/preview/fetch-church-metadata'),
             expect.any(Object)
         );
         expect(result.current.data).toEqual({ title: 'Test Title', speaker: 'Test Speaker' });
@@ -88,7 +88,7 @@ describe('useUrlMetadata', () => {
         await waitFor(() => expect(result.current.loading).toBe(false));
 
         expect(globalFetch).toHaveBeenCalledWith(
-            expect.stringContaining('/api/url-preview'),
+            expect.stringContaining('/api/preview/url-preview'),
             expect.any(Object)
         );
     });

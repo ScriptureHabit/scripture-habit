@@ -138,7 +138,7 @@ test.describe('Unity Midnight Reset API', () => {
             const user = await waitForAuth() as { getIdToken: () => Promise<string> };
             const idToken = await user.getIdToken();
             
-            const response = await fetch('/api/reset-unity-if-midnight', {
+            const response = await fetch('/api/groups/reset-unity-if-midnight', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${idToken}`,

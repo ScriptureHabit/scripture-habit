@@ -80,17 +80,17 @@ app.get(['/api/health', '/api/health/'], (_req, res) => {
 });
 
 // --- Route Mounting ---
-app.use('/api', authRoutes);
+app.use('/api/auth', authRoutes);
 app.use('/api/groups', groupRoutes);
-app.use('/api', messageRoutes);
-app.use('/api', aiRoutes);
-app.use('/api', previewRoutes);
+app.use('/api/groups', messageRoutes);
+app.use('/api/ai', aiRoutes);
+app.use('/api/preview', previewRoutes);
 
-app.use('/api', cronRoutes);
-app.use('/api', reportRoutes);
-app.use('/api', adminRoutes);
-app.use('/api', testUtilsRoutes);
-app.use('/api', resetUnityRoutes);
+app.use('/api/cron', cronRoutes);
+app.use('/api/report', reportRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/test', testUtilsRoutes);
+app.use('/api/groups', resetUnityRoutes);
 
 // The Sentry error handler must be before any other error middleware and after all controllers
 if (process.env.SENTRY_DISABLED !== 'true') {

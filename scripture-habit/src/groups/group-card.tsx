@@ -126,7 +126,7 @@ export default function GroupCard({ group, currentUser, onJoin, onOpen }: Props)
           headers['x-firebase-appcheck'] = appCheckToken;
         }
 
-        const res = await fetch(`${API_BASE}/api/translate`, {
+        const res = await fetch(`${API_BASE}/api/ai/translate`, {
           method: 'POST',
           headers,
           body: JSON.stringify({

@@ -29,7 +29,7 @@ const LinkPreview: FC<LinkPreviewProps> = ({ url, isSent, language }) => {
                 setError(false);
 
                 const langParam = language ? `&lang=${language}` : '';
-                const response = await apiClient.get<PreviewData>(`/api/url-preview?url=${encodeURIComponent(url)}${langParam}`);
+                const response = await apiClient.get<PreviewData>(`/api/preview/url-preview?url=${encodeURIComponent(url)}${langParam}`);
 
                 setPreview(response.data);
             } catch (err) {

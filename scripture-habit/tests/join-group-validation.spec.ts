@@ -19,20 +19,20 @@ test.describe('Group Joining Validation', () => {
       }
 
       // 1. Create a group
-      const createResp = await callApi('/api/create-group', { 
+      const createResp = await callApi('/api/groups/create-group', { 
         name: 'Success Join Test', 
         isPublic: true 
       });
       const gid = createResp.groupId;
 
       // 2. Leave the group so we can join it
-      await callApi('/api/leave-group', { groupId: gid });
+      await callApi('/api/groups/leave-group', { groupId: gid });
 
       // 3. Join the group
-      const joinResp = await callApi('/api/join-group', { groupId: gid });
+      const joinResp = await callApi('/api/groups/join-group', { groupId: gid });
       
       // Cleanup
-      await callApi('/api/leave-group', { groupId: gid });
+      await callApi('/api/groups/leave-group', { groupId: gid });
       
       return joinResp;
     });
@@ -48,7 +48,7 @@ test.describe('Group Joining Validation', () => {
       if (!auth?.currentUser) throw new Error('Not authenticated in browser');
       const idToken = await auth.currentUser.getIdToken();
       
-      const resp = await fetch('/api/create-group', {
+      const resp = await fetch('/api/groups/create-group', {
         method: 'POST',
         headers: { 
             'Content-Type': 'application/json',
@@ -73,7 +73,7 @@ test.describe('Group Joining Validation', () => {
       if (!auth?.currentUser) throw new Error('Not authenticated in browser');
       const idToken = await auth.currentUser.getIdToken();
       
-      const resp = await fetch('/api/join-group', {
+      const resp = await fetch('/api/groups/join-group', {
         method: 'POST',
         headers: { 
             'Content-Type': 'application/json',
@@ -92,7 +92,7 @@ test.describe('Group Joining Validation', () => {
     await page.evaluate(async (gid) => {
       const auth = window.firebaseAuth;
       const idToken = await auth!.currentUser!.getIdToken();
-      await fetch('/api/leave-group', {
+      await fetch('/api/groups/leave-group', {
         method: 'POST',
         headers: { 
             'Content-Type': 'application/json',
@@ -122,21 +122,30 @@ test.describe('Group Joining Validation', () => {
             return { status: resp.status, ...data };
         }
 
+        // 0. Clean up: Leave ALL existing groups to start from a known state
+        await fetch('/api/test/leave-all-groups', {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${idToken}`
+            }
+        });
+
         // 1. Create a group to join later
-        const firstGroup = await callApi('/api/create-group', { 
+        const firstGroup = await callApi('/api/groups/create-group', { 
             name: 'Join Target', 
             isPublic: true 
         });
-        if (firstGroup.status !== 200) throw new Error('Failed to create target group');
+        if (firstGroup.status !== 200) throw new Error(`Failed to create target group: ${JSON.stringify(firstGroup)}`);
         const targetGroupId = firstGroup.groupId;
 
         // 2. Leave it so we are not a member
-        await callApi('/api/leave-group', { groupId: targetGroupId });
+        await callApi('/api/groups/leave-group', { groupId: targetGroupId });
 
         // 3. Create 4 groups to reach the limit (MAX_GROUPS_PER_USER = 4)
         const createdGroupIds = [];
         for (let i = 0; i < 4; i++) {
-            const createResp = await callApi('/api/create-group', { 
+            const createResp = await callApi('/api/groups/create-group', { 
                 name: `FillGroup${i}`, 
                 isPublic: true 
             });
@@ -147,11 +156,11 @@ test.describe('Group Joining Validation', () => {
         }
 
         // 4. Try to join the target group (should fail)
-        const joinResp = await callApi('/api/join-group', { groupId: targetGroupId });
+        const joinResp = await callApi('/api/groups/join-group', { groupId: targetGroupId });
         
         // Cleanup: Leave all created groups
         for (const gid of createdGroupIds) {
-            await callApi('/api/leave-group', { groupId: gid });
+            await callApi('/api/groups/leave-group', { groupId: gid });
         }
 
         return joinResp;
@@ -167,7 +176,7 @@ test.describe('Group Joining Validation', () => {
       if (!auth?.currentUser) throw new Error('Not authenticated in browser');
       const idToken = await auth.currentUser.getIdToken();
       
-      const resp = await fetch('/api/join-group', {
+      const resp = await fetch('/api/groups/join-group', {
         method: 'POST',
         headers: { 
             'Content-Type': 'application/json',

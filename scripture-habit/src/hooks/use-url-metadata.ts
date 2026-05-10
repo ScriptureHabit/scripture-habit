@@ -88,7 +88,7 @@ export const useUrlMetadata = (
                 const API_BASE = window.location.hostname === 'localhost' ? '' : 'https://scripturehabit.app';
                 const apiLang = LANGUAGE_MAP[language] || 'eng';
                 
-                const endpoint = isChurchUrl ? '/api/fetch-church-metadata' : '/api/url-preview';
+                const endpoint = isChurchUrl ? '/api/preview/fetch-church-metadata' : '/api/preview/url-preview';
                 
                 // Ensure no double slashes or unintentional trailing slash before query
                 const baseUrl = API_BASE.endsWith('/') ? API_BASE.slice(0, -1) : API_BASE;

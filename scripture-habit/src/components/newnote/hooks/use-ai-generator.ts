@@ -32,7 +32,7 @@ export const useAIGenerator = (language: string | null) => {
                 headers['X-Firebase-AppCheck'] = appCheckToken;
             }
 
-            const response = await axios.post(`${API_BASE}/api/generate-ponder-questions`, {
+            const response = await axios.post(`${API_BASE}/api/ai/generate-ponder-questions`, {
                 scripture,
                 chapter,
                 language: language || 'en'

@@ -43,7 +43,7 @@ export const useCheerSystem = (
     if (!cheerTarget || isSendingCheer) return;
     setIsSendingCheer(true);
     try {
-      await apiClient.post('/api/send-cheer', {
+      await apiClient.post('/api/groups/send-cheer', {
         targetUid: cheerTarget.id,
         groupId,
         senderNickname: userData.nickname

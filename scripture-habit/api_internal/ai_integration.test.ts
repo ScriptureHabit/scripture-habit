@@ -83,9 +83,9 @@ describe('AI Prompt Construction Regression', () => {
         } as unknown as admin.auth.DecodedIdToken);
     };
 
-    it('should construct correct prompt for /api/generate-ponder-questions', async () => {
+    it('should construct correct prompt for /api/ai/generate-ponder-questions', async () => {
         mockAuth();
-        await fetch(`${baseUrl}/api/generate-ponder-questions`, {
+        await fetch(`${baseUrl}/api/ai/generate-ponder-questions`, {
             method: 'POST',
             headers: {
                 'Authorization': 'Bearer valid-token',
@@ -106,9 +106,9 @@ describe('AI Prompt Construction Regression', () => {
         expect(prompt).toMatchSnapshot();
     });
 
-    it('should construct correct prompt for /api/translate (standard)', async () => {
+    it('should construct correct prompt for /api/ai/translate (standard)', async () => {
         mockAuth();
-        await fetch(`${baseUrl}/api/translate`, {
+        await fetch(`${baseUrl}/api/ai/translate`, {
             method: 'POST',
             headers: {
                 'Authorization': 'Bearer valid-token',
@@ -129,9 +129,9 @@ describe('AI Prompt Construction Regression', () => {
         expect(prompt).toMatchSnapshot();
     });
 
-    it('should construct correct prompt for /api/translate (group metadata)', async () => {
+    it('should construct correct prompt for /api/ai/translate (group metadata)', async () => {
         mockAuth();
-        await fetch(`${baseUrl}/api/translate`, {
+        await fetch(`${baseUrl}/api/ai/translate`, {
             method: 'POST',
             headers: {
                 'Authorization': 'Bearer valid-token',
@@ -153,9 +153,9 @@ describe('AI Prompt Construction Regression', () => {
         expect(prompt).toMatchSnapshot();
     });
 
-    it('should construct correct prompt for /api/translate-batch', async () => {
+    it('should construct correct prompt for /api/ai/translate-batch', async () => {
         mockAuth();
-        await fetch(`${baseUrl}/api/translate-batch`, {
+        await fetch(`${baseUrl}/api/ai/translate-batch`, {
             method: 'POST',
             headers: {
                 'Authorization': 'Bearer valid-token',
@@ -190,7 +190,7 @@ describe('AI Prompt Construction Regression', () => {
             });
         }
 
-        const res = await fetch(`${baseUrl}/api/translate-batch`, {
+        const res = await fetch(`${baseUrl}/api/ai/translate-batch`, {
             method: 'POST',
             headers: {
                 'Authorization': 'Bearer valid-token',
@@ -235,14 +235,14 @@ describe('AI Prompt Construction Regression', () => {
         }
 
         // Request 1: Normal
-        await fetch(`${baseUrl}/api/translate`, {
+        await fetch(`${baseUrl}/api/ai/translate`, {
             method: 'POST',
             headers: { 'Authorization': 'Bearer valid-token', 'Content-Type': 'application/json' },
             body: JSON.stringify({ text: testText, targetLanguage: 'ja' })
         });
 
         // Request 2: Group Name
-        await fetch(`${baseUrl}/api/translate`, {
+        await fetch(`${baseUrl}/api/ai/translate`, {
             method: 'POST',
             headers: { 'Authorization': 'Bearer valid-token', 'Content-Type': 'application/json' },
             body: JSON.stringify({ text: testText, targetLanguage: 'ja', updateType: 'group_name' })
@@ -256,7 +256,7 @@ describe('AI Prompt Construction Regression', () => {
         expect(docGroup.exists).toBe(true);
     }, 15000);
 
-    it('should construct correct prompt for /api/generate-personal-weekly-recap', async () => {
+    it('should construct correct prompt for /api/ai/generate-personal-weekly-recap', async () => {
         const testUid = `ai-user-${Date.now()}`;
         mockAuth(testUid);
 
@@ -270,7 +270,7 @@ describe('AI Prompt Construction Regression', () => {
             createdAt: new Date()
         });
 
-        await fetch(`${baseUrl}/api/generate-personal-weekly-recap`, {
+        await fetch(`${baseUrl}/api/ai/generate-personal-weekly-recap`, {
             method: 'POST',
             headers: {
                 'Authorization': 'Bearer valid-token',

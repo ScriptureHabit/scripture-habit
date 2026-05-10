@@ -77,7 +77,7 @@ describe('use-note-submission', () => {
             );
         });
 
-        expect(apiClient.post).toHaveBeenCalledWith('/api/post-note', expect.objectContaining({
+        expect(apiClient.post).toHaveBeenCalledWith('/api/groups/post-note', expect.objectContaining({
             scripture: 'Book of Mormon',
             chapter: '1 Nephi 1',
             comment: 'Faith',

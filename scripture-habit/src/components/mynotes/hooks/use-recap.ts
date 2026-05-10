@@ -37,7 +37,7 @@ export const useRecapOperations = (userData: UserData, language: string, t: (k: 
     setLoading(true);
     toast.info(t('myNotes.generatingRecap'));
     try {
-      const response = await apiClient.post('/api/generate-personal-weekly-recap', {
+      const response = await apiClient.post('/api/ai/generate-personal-weekly-recap', {
         uid: userData.uid,
         language: language
       });

@@ -171,7 +171,7 @@ const useMessageStreamSync = (groupId: string | null, userData: UserData | null,
         try {
           const bundlePromise = (async () => {
             try {
-              const bundleResponse = await apiClient.get(`/api/bundle/${groupId}`, { 
+              const bundleResponse = await apiClient.get(`/api/groups/bundle/${groupId}`, { 
                 responseType: 'arraybuffer',
                 timeout: 6000 
               });

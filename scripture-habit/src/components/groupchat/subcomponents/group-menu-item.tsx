@@ -61,7 +61,7 @@ const GroupMenuItem: FC<GroupMenuItemProps> = ({ group, currentGroupId, language
                     headers['X-Firebase-AppCheck'] = appCheckToken;
                 }
 
-                const response = await fetch(`${API_BASE}/api/translate`, {
+                const response = await fetch(`${API_BASE}/api/ai/translate`, {
                     method: 'POST',
                     headers,
 

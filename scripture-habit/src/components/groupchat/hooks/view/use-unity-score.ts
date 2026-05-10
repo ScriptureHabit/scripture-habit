@@ -83,7 +83,7 @@ export const useUnityScore = (
           }
 
           const API_BASE = Capacitor.isNativePlatform() ? 'https://scripturehabit.app' : '';
-          const response = await fetch(`${API_BASE}/api/announce-unity`, {
+          const response = await fetch(`${API_BASE}/api/groups/announce-unity`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

@@ -16,7 +16,7 @@ export const useRecapManager = (
     if (isRecapLoading) return;
     setIsRecapLoading(true);
     try {
-      await apiClient.post('/api/generate-weekly-recap', { groupId, language });
+      await apiClient.post('/api/ai/generate-weekly-recap', { groupId, language });
 
       toast.success(t('groupChat.recapGenerated') || "Weekly recap generated!");
     } catch (error: unknown) {

@@ -114,7 +114,7 @@ export const useNoteSubmission = (
                 onSuccess();
             } else {
                 // CREATE FLOW (Backend API)
-                const response = await apiClient.post('/api/post-note', {
+                const response = await apiClient.post('/api/groups/post-note', {
                     chapter,
                     comment,
                     scripture,

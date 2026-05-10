@@ -2,6 +2,9 @@ import { auth, appCheck } from '../../../firebase';
 import { getToken } from 'firebase/app-check';
 import { Note } from '../../../types/note';
 import { UserData } from '../../../types/user';
+import { Capacitor } from '@capacitor/core';
+
+const API_BASE = Capacitor.isNativePlatform() ? 'https://scripturehabit.app' : '';
 
 export const useNoteActions = (userData: UserData | null) => {
   const deleteNote = async (note: Note): Promise<boolean> => {
@@ -22,7 +25,7 @@ export const useNoteActions = (userData: UserData | null) => {
         }
       }
 
-      const response = await fetch('/api/delete-note', {
+      const response = await fetch(`${API_BASE}/api/groups/delete-note`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

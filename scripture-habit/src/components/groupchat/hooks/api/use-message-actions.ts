@@ -77,7 +77,7 @@ export const useMessageActions = (
         dispatch({ type: 'ADD_NEW_MESSAGES', newMessages: [optimisticMessage] });
       }
 
-      const response = await apiClient.post('/api/post-message', {
+      const response = await apiClient.post('/api/groups/post-message', {
         groupId,
         text: text.trim(),
         replyTo,
@@ -134,7 +134,7 @@ export const useMessageActions = (
         });
       }
 
-      await apiClient.post('/api/edit-message', {
+      await apiClient.post('/api/groups/edit-message', {
         groupId,
         messageId: message.id,
         text: newText
@@ -163,7 +163,7 @@ export const useMessageActions = (
         dispatch({ type: 'REMOVE_MESSAGE', messageId: message.id });
       }
 
-      await apiClient.post('/api/delete-message', { groupId, messageId: message.id });
+      await apiClient.post('/api/groups/delete-message', { groupId, messageId: message.id });
       return true;
     } catch (error: unknown) {
       console.error("Error deleting message:", error);
@@ -212,7 +212,7 @@ export const useMessageActions = (
         });
       }
 
-      await apiClient.post('/api/toggle-reaction', {
+      await apiClient.post('/api/groups/toggle-reaction', {
         groupId,
         messageId: message.id,
         emoji
@@ -252,7 +252,7 @@ export const useMessageActions = (
     setTranslatingIdsState(new Set(translatingIdsRef.current));
 
     try {
-      const response = await apiClient.post('/api/translate-batch', {
+      const response = await apiClient.post('/api/ai/translate-batch', {
         messages: toProcess.map(m => ({ id: m.id, text: m.text })),
         targetLanguage: language,
         groupId: groupId
@@ -288,7 +288,7 @@ export const useMessageActions = (
     translatingIdsRef.current.add(message.id);
     setTranslatingIdsState(new Set(translatingIdsRef.current));
     try {
-      const response = await apiClient.post('/api/translate', {
+      const response = await apiClient.post('/api/ai/translate', {
         text: message.text,
         targetLanguage: language,
         messageId: message.id,

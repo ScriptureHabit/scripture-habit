@@ -225,7 +225,7 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
             const url = await getDownloadURL(storageRef);
 
             // Use Backend API for update and sync with apiClient (handles auth and app check)
-            await apiClient.post('/api/update-profile', { photoURL: url });
+            await apiClient.post('/api/auth/update-profile', { photoURL: url });
 
             setPhotoURL(url);
             toast.success(t('profile.imageUploadSuccess') || "Profile picture updated!");
@@ -249,7 +249,7 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
 
         setIsSaving(true);
         try {
-            await apiClient.post('/api/update-profile', {
+            await apiClient.post('/api/auth/update-profile', {
                 nickname: newNickname,
                 stake: newStake,
                 ward: newWard,
@@ -281,7 +281,7 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
 
         setIsDeleting(true);
         try {
-            const response = await apiClient.post('/api/delete-account');
+            const response = await apiClient.post('/api/auth/delete-account');
 
             if (response.status === 200) {
                 toast.success(t('profile.deleteAccountSuccess'));

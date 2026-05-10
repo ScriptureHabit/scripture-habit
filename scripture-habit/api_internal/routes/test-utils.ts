@@ -9,7 +9,7 @@ const router = express.Router();
  * [TEST ONLY] Seeding endpoint to ensure a group exists for the test user.
  * This removes the need for UI-based group creation in E2E tests.
  */
-router.post('/test/setup-test-group', authenticate, async (req: AuthenticatedRequest, res: Response) => {
+router.post('/setup-test-group', authenticate, async (req: AuthenticatedRequest, res: Response) => {
     // PROTECT: Strictly disable in production
     if (process.env.NODE_ENV === 'production' && process.env.VITE_DEV_MODE !== 'true') {
         return res.status(403).json({ error: 'Test utilities are disabled in production' });
@@ -164,6 +164,63 @@ router.post('/test/setup-test-group', authenticate, async (req: AuthenticatedReq
     } catch (error) {
         console.error('[TestSetup] Error:', error);
         res.status(500).json({ error: (error as Error).message });
+    }
+});
+
+/**
+ * [TEST ONLY] Leave ALL groups for the current user.
+ * Used to clean up state between E2E tests to prevent group-limit pollution.
+ */
+router.post('/leave-all-groups', authenticate, async (req: AuthenticatedRequest, res: Response) => {
+    if (process.env.NODE_ENV === 'production' && process.env.VITE_DEV_MODE !== 'true') {
+        return res.status(403).json({ error: 'Test utilities are disabled in production' });
+    }
+
+    const uid = req.user?.uid;
+    if (!uid) return res.status(401).json({ error: 'Unauthorized' });
+
+    try {
+        const userRef = db.collection('users').doc(uid);
+        const userDoc = await userRef.get();
+        if (!userDoc.exists) return res.status(404).json({ error: 'User not found' });
+
+        const userData = userDoc.data()!;
+        const groupIds: string[] = userData.groupIds || (userData.groupId ? [userData.groupId] : []);
+
+        if (groupIds.length === 0) {
+            return res.status(200).json({ message: 'No groups to leave', left: 0 });
+        }
+
+        console.log(`[TestCleanup] Leaving ${groupIds.length} groups for user ${uid}`);
+
+        for (const gid of groupIds) {
+            try {
+                // Remove user from group members array and subcollection
+                const groupRef = db.collection('groups').doc(gid);
+                const groupDoc = await groupRef.get();
+                if (groupDoc.exists) {
+                    await groupRef.update({
+                        members: admin.firestore.FieldValue.arrayRemove(uid),
+                        membersCount: admin.firestore.FieldValue.increment(-1),
+                    });
+                    // Remove member subcollection doc
+                    await groupRef.collection('members').doc(uid).delete().catch(() => {});
+                }
+            } catch (e) {
+                console.warn(`[TestCleanup] Failed to leave group ${gid}:`, e);
+            }
+        }
+
+        // Clear all group references from user doc
+        await userRef.update({
+            groupIds: [],
+            groupId: admin.firestore.FieldValue.delete(),
+        });
+
+        return res.status(200).json({ message: `Left ${groupIds.length} groups`, left: groupIds.length });
+    } catch (error) {
+        console.error('[TestCleanup] Error:', error);
+        return res.status(500).json({ error: (error as Error).message });
     }
 });
 

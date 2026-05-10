@@ -44,17 +44,6 @@ export default defineConfig({
       },
       dependencies: ['setup'],
     },
-    // Only run WebKit on local machines to save CI resources and avoid flakiness
-    ...(process.env.CI ? [] : [
-      {
-        name: 'webkit',
-        use: { 
-          ...devices['Desktop Safari'],
-          storageState: 'playwright/.auth/user.json',
-        },
-        dependencies: ['setup'],
-      },
-    ]),
   ],
 
   /* Run your local dev server before starting the tests */

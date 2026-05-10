@@ -157,7 +157,7 @@ test.describe('Unity Percentage Synchronization (Local Timezone: Asia/Tokyo)', (
 
             const idToken = (await waitForAuthToken()) as string;
             
-            const response = await fetch('/api/reset-unity-if-midnight', {
+            const response = await fetch('/api/groups/reset-unity-if-midnight', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${idToken}`,

@@ -71,7 +71,7 @@ export const useDashboardActions = (user: User | null, userData: UserData | null
           }
 
           const API_BASE = Capacitor.isNativePlatform() ? 'https://scripturehabit.app' : '';
-          const response = await fetch(`${API_BASE}/api/update-read-status`, {
+          const response = await fetch(`${API_BASE}/api/groups/update-read-status`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
