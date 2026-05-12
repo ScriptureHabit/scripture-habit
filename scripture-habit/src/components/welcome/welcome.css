@@ -59,7 +59,7 @@
 
 .lang-btn.active {
     background: var(--pink);
-    color: var(--black);
+    color: white;
     border-color: var(--pink);
 }
 
