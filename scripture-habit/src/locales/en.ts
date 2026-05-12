@@ -53,7 +53,8 @@ export default {
             },
             inactivityWarning: "⚠️ {name}: No activity confirmed. You will be automatically removed in {hours} hour(s) if you do not post a note!",
             studied: "Studied",
-            notStudied: "Not Studied"
+            notStudied: "Not Studied",
+            kickLimit: "Exit Limit"
         },
         languages: {
             title: "languages",

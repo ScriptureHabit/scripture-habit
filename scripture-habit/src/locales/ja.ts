@@ -53,7 +53,8 @@ export default {
             },
             inactivityWarning: "⚠️ 【警告】{name} で学習が確認できません。あと {hours} 時間以内にノートを投稿しないと自動退出になります！",
             studied: "学習済み",
-            notStudied: "未学習"
+            notStudied: "未学習",
+            kickLimit: "退出リミット"
         },
         languages: {
             title: "言語設定",

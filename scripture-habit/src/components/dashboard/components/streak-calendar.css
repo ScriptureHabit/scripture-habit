@@ -108,7 +108,15 @@
     animation: popIn 0.5s ease-out forwards;
 }
 
-.studied-indicator {
+.calendar-cell.kick-deadline {
+    background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
+    color: #9b2c2c;
+    box-shadow: 0 4px 15px rgba(255, 154, 158, 0.4);
+    border: 1px solid rgba(255, 107, 107, 0.3);
+    animation: popIn 0.5s ease-out forwards;
+}
+
+.studied-indicator, .kick-indicator {
     position: absolute;
     bottom: 4px;
     width: 4px;
@@ -147,6 +155,11 @@
 .cell-preview.studied {
     background: linear-gradient(135deg, #a8ff78 0%, #78ffd6 100%);
 }
+
+.cell-preview.kick-deadline {
+    background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+}
+
 
 @keyframes popIn {
     0% { transform: scale(0.8); opacity: 0; }

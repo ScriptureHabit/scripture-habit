@@ -126,12 +126,13 @@ export default {
             inactivityWarning: "⚠️ {name}: Hakuna shughuli iliyothibitishwa. Utaondolewa kiotomatiki baada ya saa {hours} ikiwa hutatuma dokezo!",
             studied: "Imesomwa",
             notStudied: "Haijasomwa",
-            notificationPrompt: {
-                title: "Endelea Kuunganishwa!",
-                description: "Pata arifa wakati washiriki wa kikundi wanaposhiriki maelezo au unapokuwa na vikumbusho vya funzo.",
-                enable: "Wezesha Arifa",
-                later: "Baadaye"
-            }
+            kickLimit: "Ukomo wa Kuondoka"
+        },
+        notificationPrompt: {
+            title: "Endelea Kuunganishwa!",
+            description: "Pata arifa wakati washiriki wa kikundi wanaposhiriki maelezo au unapokuwa na vikumbusho vya funzo.",
+            enable: "Wezesha Arifa",
+            later: "Baadaye"
         },
         languages: {
             title: "Lugha",

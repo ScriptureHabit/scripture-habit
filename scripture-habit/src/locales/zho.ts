@@ -131,7 +131,8 @@ export default {
                 later: "稍後再說"
             },
             studied: "已學習",
-            notStudied: "未學習"
+            notStudied: "未學習",
+            kickLimit: "退出期限"
         },
         languages: {
             title: "語言",

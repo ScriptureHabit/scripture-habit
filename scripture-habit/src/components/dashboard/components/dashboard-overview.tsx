@@ -19,6 +19,7 @@ interface DashboardOverviewProps {
   setShowEditProfileModal: (show: boolean) => void;
   setNewNickname: (name: string) => void;
   progressRef: RefObject<HTMLDivElement | null>;
+  kickDate?: string | null;
 }
 
 const DashboardOverview: FC<DashboardOverviewProps> = ({
@@ -34,7 +35,8 @@ const DashboardOverview: FC<DashboardOverviewProps> = ({
   setShowWelcomeStory,
   setShowEditProfileModal,
   setNewNickname,
-  progressRef
+  progressRef,
+  kickDate
 }) => {
   return (
     <div className="dashboard-inner-wrapper">
@@ -170,6 +172,7 @@ const DashboardOverview: FC<DashboardOverviewProps> = ({
 
       <StreakCalendar 
         studiedDates={userData.studiedDates} 
+        kickDate={kickDate}
         t={t} 
       />
     </div>

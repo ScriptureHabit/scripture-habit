@@ -131,7 +131,8 @@ export default {
                 later: "Mamaya na"
             },
             studied: "Nag-aral",
-            notStudied: "Hindi nag-aral"
+            notStudied: "Hindi nag-aral",
+            kickLimit: "Limitasyon sa Pag-alis"
         },
         languages: {
             title: "Mga Wika",

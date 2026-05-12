@@ -4,10 +4,11 @@ import './streak-calendar.css';
 
 interface StreakCalendarProps {
   studiedDates?: string[]; // Array of 'YYYY-MM-DD'
+  kickDate?: string | null; // 'YYYY-MM-DD'
   t: (key: string) => string;
 }
 
-const StreakCalendar: React.FC<StreakCalendarProps> = ({ studiedDates = [], t }) => {
+const StreakCalendar: React.FC<StreakCalendarProps> = ({ studiedDates = [], kickDate, t }) => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
   const calendarData = useMemo(() => {
@@ -39,13 +40,14 @@ const StreakCalendar: React.FC<StreakCalendarProps> = ({ studiedDates = [], t })
         day: i,
         dateStr,
         isStudied: studiedDates.includes(dateStr),
+        isKickDate: kickDate === dateStr,
         isToday: new Date().toLocaleDateString('sv-SE') === dateStr,
         key: dateStr
       });
     }
     
     return days;
-  }, [currentMonth, studiedDates]);
+  }, [currentMonth, studiedDates, kickDate]);
 
   const nextMonth = () => {
     setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1));
@@ -75,13 +77,16 @@ const StreakCalendar: React.FC<StreakCalendarProps> = ({ studiedDates = [], t })
         {calendarData.map((item) => (
           <div 
             key={item.key} 
-            className={`calendar-cell ${item.type === 'padding' ? 'padding' : ''} ${item.type === 'day' && item.isStudied ? 'studied' : ''} ${item.type === 'day' && item.isToday ? 'today' : ''}`}
+            className={`calendar-cell ${item.type === 'padding' ? 'padding' : ''} ${item.type === 'day' && item.isStudied ? 'studied' : ''} ${item.type === 'day' && item.isKickDate ? 'kick-deadline' : ''} ${item.type === 'day' && item.isToday ? 'today' : ''}`}
           >
             {item.type === 'day' && (
               <span className="day-number">{item.day}</span>
             )}
             {item.type === 'day' && item.isStudied && (
               <div className="studied-indicator" />
+            )}
+            {item.type === 'day' && item.isKickDate && (
+              <div className="kick-indicator" />
             )}
           </div>
         ))}
@@ -95,6 +100,10 @@ const StreakCalendar: React.FC<StreakCalendarProps> = ({ studiedDates = [], t })
         <div className="legend-item">
           <div className="cell-preview" />
           <span>{t('dashboard.notStudied')}</span>
+        </div>
+        <div className="legend-item">
+          <div className="cell-preview kick-deadline" />
+          <span>{t('dashboard.kickLimit')}</span>
         </div>
       </div>
     </div>

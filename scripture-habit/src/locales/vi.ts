@@ -132,7 +132,8 @@ export default {
                 later: "Để Sau"
             },
             studied: "Đã học",
-            notStudied: "Chưa học"
+            notStudied: "Chưa học",
+            kickLimit: "Hạn chót rời nhóm"
         },
         languages: {
             title: "Ngôn ngữ",

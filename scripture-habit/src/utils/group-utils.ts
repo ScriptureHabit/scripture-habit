@@ -1,4 +1,5 @@
 import { Group, Message } from '../types/chat';
+import { UserData } from '../types/user';
 import { calculateUnityPercentage } from './unity-utils';
 import { formatDateInTimeZone, normalizeDateString, parseTimestampToDate } from './time-utils';
 
@@ -50,3 +51,46 @@ export const enrichGroupUnity = (
     unityPercentage: finalPercentage
   };
 };
+
+/**
+ * Calculates the date string (YYYY-MM-DD) for the auto-kick deadline.
+ * If multiple groups have different thresholds, returns the earliest one.
+ */
+export const calculateNearestKickDate = (userData: UserData | null, userGroups: Group[]): string | null => {
+  if (!userData || !userGroups || userGroups.length === 0) return null;
+
+  const kickDates: number[] = [];
+  
+  userGroups.forEach(group => {
+    const myStatus = group.myMemberStatus;
+    // Priority: Group-specific member threshold > Group global member threshold > User default threshold > Fallback 3
+    const threshold = myStatus?.kickThreshold || 
+                     (group.memberKickThresholds && group.memberKickThresholds[userData.uid]) || 
+                     userData.kickThreshold || 3;
+    
+    const candidateTimestamps = [
+      userData.lastPostAt,
+      myStatus?.lastNoteAt,
+      (group.lastNoteByUid === userData.uid ? group.lastNoteAt : null),
+      (group.lastMessageByUid === userData.uid ? group.lastMessageAt : null)
+    ];
+
+    const dates = candidateTimestamps
+      .map(t => t ? parseTimestampToDate(t) : null)
+      .filter((d): d is Date => d !== null && !isNaN(d.getTime()));
+
+    if (dates.length > 0) {
+      const lastActiveDate = new Date(Math.max(...dates.map(d => d.getTime())));
+      const kickDeadline = new Date(lastActiveDate);
+      kickDeadline.setDate(kickDeadline.getDate() + threshold);
+      kickDates.push(kickDeadline.getTime());
+    }
+  });
+
+  if (kickDates.length === 0) return null;
+  
+  const earliestKickDate = new Date(Math.min(...kickDates));
+  // Use YYYY-MM-DD format consistent with studiedDates
+  return earliestKickDate.toLocaleDateString('sv-SE');
+};
+

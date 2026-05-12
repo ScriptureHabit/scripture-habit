@@ -25,7 +25,8 @@ import { useModalStore } from '../../store/use-modal-store';
 import { getGospelLibraryUrl } from '../../utils/gospel-library-mapper';
 import { useLanguage } from '../../hooks/use-language';
 import { getTodayReadingPlan } from '../../data/daily-reading-plan';
-import { enrichGroupUnity } from '../../utils/group-utils';
+import { enrichGroupUnity, calculateNearestKickDate } from '../../utils/group-utils';
+
 
 // Hooks
 import { useDashboardSync } from './hooks/use-dashboard-sync';
@@ -104,6 +105,11 @@ const Dashboard: FC = () => {
       };
     });
   }, [userGroups, unityOverrides, today, referenceDate]);
+
+  const kickDate = useMemo(() => {
+    return calculateNearestKickDate(userData, enrichedUserGroups);
+  }, [userData, enrichedUserGroups]);
+
   const { showNotifPrompt, handleEnableNotifications, handleCloseNotifPrompt } = useDashboardNotifications(userData, t);
   const { markWelcomeStorySeen, updateNickname } = useDashboardActions(user, userData);
 
@@ -224,6 +230,7 @@ const Dashboard: FC = () => {
             translateChapterField={translateChapterField} isJoiningInvite={isJoiningInvite} hasGroups={enrichedUserGroups.length > 0} 
             setIsModalOpen={setIsModalOpen} setShowWelcomeStory={setShowWelcomeStory} 
             setShowEditProfileModal={setShowEditProfileModal} setNewNickname={setNewNickname} progressRef={progressRef}
+            kickDate={kickDate}
           />
         )}
         {selectedView === 1 && <MyNotes userData={userData} isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} userGroups={enrichedUserGroups} />}
