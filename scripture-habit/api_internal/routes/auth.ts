@@ -45,6 +45,63 @@ router.post('/update-profile', authenticate, verifyAppCheck, async (req: Authent
     }
 });
 
+/**
+ * Initialize User Profile (for Google/Social Signup)
+ */
+router.post('/initialize-profile', authenticate, verifyAppCheck, async (req: AuthenticatedRequest, res: Response, next) => {
+    const { nickname, timeZone } = req.body;
+    const uid = req.user!.uid;
+    const email = req.user!.email;
+
+    try {
+        const userRef = db.collection('users').doc(uid);
+        const userDoc = await userRef.get();
+
+        if (userDoc.exists) {
+            // Document already exists, which is fine (idempotent)
+            return res.status(200).json({ 
+                success: true, 
+                message: 'Profile already exists.',
+                userData: userDoc.data()
+            });
+        }
+
+        const now = admin.firestore.Timestamp.now();
+        const isTestUser = email?.endsWith('@example.com');
+        
+        const userData: UserDocument = {
+            uid,
+            email: email || '',
+            nickname: nickname || 'New User',
+            timeZone: timeZone || 'UTC',
+            createdAt: now,
+            joinedAt: now,
+            groupId: "",
+            groupIds: [],
+            lastPostDate: "",
+            preferredCheckInTime: "00:00",
+            streakCount: 0,
+            totalNotes: 0,
+            kickThreshold: 3,
+            hasSetKickThreshold: isTestUser ? true : false,
+            ...(isTestUser ? { hasSeenWelcomeStory: true } : {})
+        };
+
+        await userRef.set(userData);
+        
+        console.log('[Auth] Initialized profile for new user:', { uid, email });
+        
+        res.status(201).json({ 
+            success: true, 
+            message: 'Profile initialized successfully.',
+            userData
+        });
+    } catch (err) {
+        console.error('[Auth] Error initializing profile:', err);
+        next(err);
+    }
+});
+
 
 /**
  * Verify Login

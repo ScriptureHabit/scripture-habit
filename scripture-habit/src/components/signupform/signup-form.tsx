@@ -5,7 +5,7 @@ import { auth, db } from '../../firebase';
 import { createUserWithEmailAndPassword, GoogleAuthProvider, GithubAuthProvider, signInWithPopup, sendEmailVerification, signOut, signInWithCredential, AuthProvider, User, AuthError, UserCredential } from 'firebase/auth';
 import { Capacitor } from '@capacitor/core';
 import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
-import { doc, setDoc, getDoc, Timestamp } from 'firebase/firestore';
+import { doc, getDoc } from 'firebase/firestore';
 import { useNavigate, Link } from 'react-router-dom';
 import Input from '../input/input';
 import './signup-form.css'
@@ -13,6 +13,8 @@ import { useLanguage } from '../../hooks/use-language';
 import { UilGoogle, UilGithub } from '@iconscout/react-unicons';
 import { toast } from 'react-toastify';
 import Footer from '../footer/footer';
+import apiClient from '../../utils/api-client';
+import axios from 'axios';
 
 export default function SignupForm() {
   const { t, language } = useLanguage();
@@ -86,34 +88,23 @@ export default function SignupForm() {
     if (!pendingGoogleUser) return;
 
     try {
-      const now = Timestamp.now();
       const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-      const isTestUser = pendingGoogleUser.email?.endsWith('@example.com');
-      const userData = {
-        createdAt: now,
-        email: pendingGoogleUser.email,
-        groupId: "",
-        joinedAt: now,
-        lastPostDate: "",
+      await apiClient.post('/api/auth/initialize-profile', {
         nickname: nickname || 'New User',
-        preferredCheckInTime: "00:00",
-        streakCount: 0,
-        totalNotes: 0,
-        timeZone: timeZone,
-        kickThreshold: 3,
-        hasSetKickThreshold: isTestUser ? true : false,
-        ...(isTestUser ? { hasSeenWelcomeStory: true } : {})
-      };
-
-      await setDoc(doc(db, 'users', pendingGoogleUser.uid), userData);
+        timeZone: timeZone
+      });
 
       // Profile complete, redirect to dashboard
       navigate(`/${language}/dashboard`);
 
-    } catch (firestoreError) {
-      console.error("Error writing user data to Firestore:", firestoreError);
-      setError(t('signup.errorSaveProfile'));
+    } catch (apiError: unknown) {
+      console.error("Error initializing profile via API:", apiError);
+      let message = t('signup.errorSaveProfile');
+      if (axios.isAxiosError(apiError) && apiError.response?.data?.error) {
+        message = apiError.response.data.error;
+      }
+      setError(message);
     }
   };
 
@@ -127,31 +118,19 @@ export default function SignupForm() {
 
       // Send verification email
       await sendEmailVerification(user);
-      const now = Timestamp.now();
-      const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-      const isTestUser = user.email?.endsWith('@example.com');
-      const userData = {
-        createdAt: now,
-        email: user.email,
-        groupId: "",
-        joinedAt: now,
-        lastPostDate: "",
-        nickname: nickname,
-        preferredCheckInTime: "00:00",
-        streakCount: 0,
-        totalNotes: 0,
-        timeZone: timeZone,
-        kickThreshold: 3,
-        hasSetKickThreshold: isTestUser ? true : false,
-        ...(isTestUser ? { hasSeenWelcomeStory: true } : {})
-      };
-
       try {
-        await setDoc(doc(db, 'users', user.uid), userData);
-      } catch (firestoreError) {
-        console.error("Error writing user data to Firestore:", firestoreError);
-        setError(t('signup.errorSaveProfile'));
+        const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        await apiClient.post('/api/auth/initialize-profile', {
+          nickname: nickname,
+          timeZone: timeZone
+        });
+      } catch (apiError: unknown) {
+        console.error("Error initializing profile via API:", apiError);
+        let message = t('signup.errorSaveProfile');
+        if (axios.isAxiosError(apiError) && apiError.response?.data?.error) {
+          message = apiError.response.data.error;
+        }
+        setError(message);
         return;
       }
 
@@ -179,13 +158,14 @@ export default function SignupForm() {
           <h2>{t('signup.completeProfile')}</h2>
           <form onSubmit={handleCompleteGoogleSignup}>
             <Input
+              data-testid="complete-nickname"
               label={t('signup.nicknameLabel')}
               type="text"
               value={nickname}
               onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setNickname(e.target.value)}
               required
             />
-            <Button type="submit">
+            <Button type="submit" data-testid="complete-submit">
               {t('signup.finishSignup')}
             </Button>
           </form>

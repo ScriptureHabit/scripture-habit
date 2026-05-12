@@ -7,12 +7,14 @@ import { auth, db } from '../../firebase';
 import { signInWithEmailAndPassword, GoogleAuthProvider, GithubAuthProvider, signInWithPopup, sendEmailVerification, signInWithCredential, signOut, User, AuthProvider, AuthError, UserCredential } from 'firebase/auth';
 import { Capacitor } from '@capacitor/core';
 import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
-import { doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
+import { doc, getDoc } from 'firebase/firestore';
 import { useNavigate, Link } from 'react-router-dom';
 import { useLanguage } from '../../hooks/use-language';
 import { UilGoogle, UilGithub } from '@iconscout/react-unicons';
 import { toast } from 'react-toastify';
 import Footer from '../footer/footer';
+import apiClient from '../../utils/api-client';
+import axios from 'axios';
 
 const LoginForm: FC = () => {
   const { t, language } = useLanguage();
@@ -89,31 +91,23 @@ const LoginForm: FC = () => {
     if (!pendingGoogleUser) return;
 
     try {
-      const now = Timestamp.now();
       const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-      const userData = {
-        createdAt: now,
-        email: pendingGoogleUser.email,
-        groupId: "",
-        joinedAt: now,
-        lastPostDate: "",
+      await apiClient.post('/api/auth/initialize-profile', {
         nickname: nickname || 'New User',
-        preferredCheckInTime: "00:00",
-        streakCount: 0,
-        totalNotes: 0,
-        timeZone: timeZone,
-
-      };
-
-      await setDoc(doc(db, 'users', pendingGoogleUser.uid), userData);
+        timeZone: timeZone
+      });
 
       // Profile complete, redirect to dashboard
       navigate(`/${language}/dashboard`);
 
-    } catch (firestoreError) {
-      console.error("Error writing user data to Firestore:", firestoreError);
-      setError(t('signup.errorSaveProfile'));
+    } catch (apiError: unknown) {
+      console.error("Error initializing profile via API:", apiError);
+      let message = t('signup.errorSaveProfile');
+      if (axios.isAxiosError(apiError) && apiError.response?.data?.error) {
+        message = apiError.response.data.error;
+      }
+      setError(message);
     }
   };
 
@@ -169,13 +163,14 @@ const LoginForm: FC = () => {
           <h2>{t('signup.completeProfile')}</h2>
           <form onSubmit={handleCompleteGoogleSignup}>
             <Input
+              data-testid="complete-nickname"
               label={t('signup.nicknameLabel')}
               type="text"
               value={nickname}
               onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setNickname(e.target.value)}
               required
             />
-            <Button type="submit">
+            <Button type="submit" data-testid="complete-submit">
               {t('signup.finishSignup')}
             </Button>
           </form>

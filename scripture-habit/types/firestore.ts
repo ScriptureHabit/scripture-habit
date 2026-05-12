@@ -99,6 +99,7 @@ export interface GroupMemberDocument {
  */
 export interface UserDocument {
     uid?: string;
+    email?: string;
     nickname?: string;
     photoURL?: string;
     bio?: string;
@@ -127,6 +128,14 @@ export interface UserDocument {
     lastPostDate?: string | null;
     highestStreak?: number;
     studiedDates?: string[];
+
+    // Onboarding/Metadata
+    createdAt?: FirestoreTimestamp;
+    joinedAt?: FirestoreTimestamp;
+    lastLoginAt?: FirestoreTimestamp;
+    hasSeenWelcomeStory?: boolean;
+    preferredCheckInTime?: string;
+    isLevelMigrated?: boolean;
 
     // Recap Metadata
     lastRecapPrompt?: string | null;
