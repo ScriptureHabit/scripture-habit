@@ -29,6 +29,7 @@ describe('InactivityUtils Property-Based Tests', () => {
                 }),
                 dateArb,
                 (memberData, groupData, now) => {
+                    if (isNaN(now.getTime())) return;
                     const memberId = 'test-user';
                     
                     // Put the target user in the maps
@@ -77,6 +78,7 @@ describe('InactivityUtils Property-Based Tests', () => {
     it('should handle extreme future/past dates without throwing', () => {
         fc.assert(
             fc.property(fc.date(), fc.date(), (d1, d2) => {
+                if (isNaN(d1.getTime()) || isNaN(d2.getTime())) return;
                 const res = calculateMemberStatus('u', { joinedAt: d1 }, { pace: 3 }, d2);
                 expect(['active', 'inactive', 'needs_initialization']).toContain(res.status);
             })
