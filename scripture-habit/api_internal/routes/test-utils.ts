@@ -224,4 +224,26 @@ router.post('/leave-all-groups', authenticate, async (req: AuthenticatedRequest,
     }
 });
 
+/**
+ * [TEST ONLY] Reset the hasSetKickThreshold flag for the user.
+ */
+router.post('/reset-kick-threshold', authenticate, async (req: AuthenticatedRequest, res: Response) => {
+    if (process.env.NODE_ENV === 'production' && process.env.VITE_DEV_MODE !== 'true') {
+        return res.status(403).json({ error: 'Test utilities are disabled in production' });
+    }
+
+    const uid = req.user?.uid;
+    if (!uid) return res.status(401).json({ error: 'Unauthorized' });
+
+    try {
+        await db.collection('users').doc(uid).update({
+            hasSetKickThreshold: admin.firestore.FieldValue.delete(),
+            kickThreshold: admin.firestore.FieldValue.delete()
+        });
+        return res.status(200).json({ message: 'Kick threshold reset successfully' });
+    } catch (error) {
+        return res.status(500).json({ error: (error as Error).message });
+    }
+});
+
 export default router;

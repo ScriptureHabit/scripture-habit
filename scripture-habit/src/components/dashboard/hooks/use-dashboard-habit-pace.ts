@@ -36,10 +36,9 @@ export const useDashboardHabitPace = (
         }
 
         setAutoKickError('');
-        if (autoKickStep === 1) {
-            setAutoKickStep(2);
-            setKickConfirmInput('');
-        }
+        // Removed premature step increment and clear
+        // setAutoKickStep(2);
+        // setKickConfirmInput('');
 
         try {
             const idToken = await auth?.currentUser?.getIdToken();
@@ -66,7 +65,7 @@ export const useDashboardHabitPace = (
                 headers['X-Firebase-AppCheck'] = appCheckToken;
             }
 
-            const response = await fetch(`${API_BASE_URL}/api/update-kick-threshold`, {
+            const response = await fetch(`${API_BASE_URL}/api/groups/update-kick-threshold`, {
                 method: 'POST',
                 headers: headers,
                 body: JSON.stringify({
@@ -76,7 +75,10 @@ export const useDashboardHabitPace = (
 
             if (response.ok) {
                 toast.success(t('groupChat.autoKickSuccess'));
-                setShowAutoKickModal(false);
+                setAutoKickStep(2);
+                setKickConfirmInput('');
+                // Note: We don't close immediately so they can see the success state
+                setTimeout(() => setShowAutoKickModal(false), 2000);
             } else {
                 const errorData = await response.json();
                 toast.error(`Failed to update pace: ${errorData.error || response.statusText}`);

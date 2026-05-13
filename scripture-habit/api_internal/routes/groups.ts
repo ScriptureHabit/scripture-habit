@@ -219,6 +219,7 @@ router.post('/join-group', authenticate, requireEmailVerified, verifyAppCheck, a
                 membersCount: updatedMembers.length,
                 memberPreviews: updatedPreviews,
                 [`memberJoinedAt.${uid}`]: admin.firestore.FieldValue.serverTimestamp(),
+                [`memberKickThresholds.${uid}`]: userData.kickThreshold || 3,
                 lastMessageAt: admin.firestore.FieldValue.serverTimestamp(),
                 lastMessageByNickname: userData.nickname || 'Member',
                 lastMessageByUid: uid,
@@ -582,9 +583,11 @@ router.post('/update-kick-threshold', authenticate, verifyAppCheck, async (req: 
 
                 // Also update the legacy map for backward compatibility in dashboards
                 // This is safe because existingGroupIds only contains IDs that actually exist.
-                batch.update(gRef, {
-                    [`memberKickThresholds.${uid}`]: threshold
-                });
+                batch.set(gRef, {
+                    memberKickThresholds: {
+                        [uid]: threshold
+                    }
+                }, { merge: true });
             });
             await batch.commit();
         }

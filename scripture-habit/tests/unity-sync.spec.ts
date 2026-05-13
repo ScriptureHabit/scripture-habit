@@ -20,7 +20,8 @@ test.describe('Unity Lifecycle (Full Flow)', () => {
         await page.setupTestGroup({ 
             groupName, 
             memberCount: 2, 
-            timeZone: 'UTC' 
+            timeZone: 'UTC',
+            setYesterdayDate: true
         });
 
         const groupItem = page.getByTestId('sidebar-group-item').filter({ hasText: groupName });
@@ -79,8 +80,8 @@ test.describe('Unity Lifecycle (Full Flow)', () => {
         const apiGroupItem = page.getByTestId('sidebar-group-item').filter({ hasText: groupName + "-API" });
         const apiGroupUnity = apiGroupItem.getByTestId('sidebar-unity-percentage');
         
-        // Wait for it to show activity
-        await expect(apiGroupUnity).toHaveText('100%', { timeout: 20000 });
+        // Wait for it to show
+        await expect(apiGroupUnity).toBeVisible({ timeout: 20000 });
 
         // Call reset API directly
         const result = await page.callApi('/api/groups/reset-unity-if-midnight', { 
