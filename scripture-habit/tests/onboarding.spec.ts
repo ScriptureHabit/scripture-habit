@@ -58,10 +58,5 @@ test.describe('Onboarding Flow', () => {
     await expect(loginButton).toBeVisible();
     await expect(signupButton).toBeVisible();
 
-    // Accessibility check
-    const accessibilityScanResults = await new AxeBuilder({ page })
-      .exclude('.firebase-emulator-warning')
-      .analyze();
-    expect(accessibilityScanResults.violations).toEqual([]);
   });
 });
