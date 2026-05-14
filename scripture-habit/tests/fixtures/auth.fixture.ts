@@ -4,7 +4,7 @@ import { test as base, Page } from '@playwright/test';
 
 type TestHelpers = {
   setupTestGroup: (params: { groupName: string; memberCount?: number; timeZone?: string; setYesterdayDate?: boolean; unityPercentage?: number }) => Promise<{ groupId: string }>;
-  callApi: (endpoint: string, body: Record<string, unknown>) => Promise<unknown>;
+  callApi: (endpoint: string, body: Record<string, unknown>) => Promise<any>;
 };
 
 type AuthFixtures = {
