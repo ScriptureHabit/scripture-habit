@@ -14,6 +14,7 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
 
     const groupIds = useMemo(() => {
         const ids = userData?.groupIds || (userData?.groupId ? [userData.groupId] : []);
+        // Strict deduplication of groupIds
         return Array.from(new Set(ids));
     }, [userData?.groupIds, userData?.groupId]);
 
@@ -52,7 +53,6 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
 
             setRawUserGroups(prev => {
                 // TRUTH: Merge fresh Firestore data with existing "decorations" 
-                // (myMemberStatus, recentMessages) to prevent intermittent UI disappearance
                 const mergeWithDecorations = (newG: Group) => {
                     const existing = prev.find(p => p.id === newG.id);
                     if (!existing) return newG;
@@ -64,18 +64,11 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
                 };
 
                 const mergedFetched = fetchedGroups.map(mergeWithDecorations);
-
-                // If we have groupIds in userData, strictly use them for filtering and ordering
-                if (groupIds.length > 0) {
-                    const ordered = groupIds.map(id => {
-                        return mergedFetched.find(g => g.id === id);
-                    }).filter(Boolean) as Group[];
-
-                    return ordered;
-                }
                 
-                // Fallback: If groupIds is empty/missing, just use whatever groups the query found
-                return mergedFetched;
+                // We'll deduplicate in the useMemo result, but let's keep raw unique too
+                const uniqueMap = new Map<string, Group>();
+                mergedFetched.forEach(g => uniqueMap.set(g.id, g));
+                return Array.from(uniqueMap.values());
             });
             setIsLoading(false);
         }, (err) => {
@@ -106,7 +99,7 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
             unsubscribers.push(unsubMember);
         });
 
-        // 3. Recent messages listeners (last 24h) for accurate sidebar unity
+        // 3. Recent messages listeners (last 24h)
         const dayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
         groupIds.forEach(gid => {
             const msgsQuery = query(
@@ -120,7 +113,6 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
                     const existing = prev.find(g => g.id === gid);
                     if (!existing) return prev;
                     
-                    // Simple optimization: only update if message count or IDs changed
                     const oldMsgs = existing.recentMessages || [];
                     if (oldMsgs.length === msgs.length && oldMsgs.every((m, i) => m.id === msgs[i].id)) {
                         return prev;
@@ -137,16 +129,33 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
         return () => unsubscribers.forEach(unsub => unsub());
     }, [userData?.uid, groupIds, groupIdsKey]);
 
-    // Construct userGroups (Force unreadCount to 0)
-    const [userGroups, setUserGroups] = useState<Group[]>([]);
-
-    useEffect(() => {
-        const combined = rawUserGroups.map(group => ({
+    // Construct userGroups (Force unreadCount to 0 and ensure uniqueness)
+    const userGroups = useMemo(() => {
+        // 1. Deduplicate raw data
+        const uniqueRawMap = new Map<string, Group>();
+        rawUserGroups.forEach(g => {
+            if (g.id) uniqueRawMap.set(g.id, g);
+        });
+        const uniqueRaw = Array.from(uniqueRawMap.values());
+        
+        const combined = uniqueRaw.map(group => ({
             ...group,
             unreadCount: 0
         })) as Group[];
-        setUserGroups(combined);
-    }, [rawUserGroups]);
+
+        // 2. Final sort/filter by groupIds (which is already deduplicated)
+        const finalOrdered = groupIds.length > 0 
+            ? groupIds.map(id => combined.find(g => g.id === id)).filter(Boolean) as Group[]
+            : combined;
+
+        // 3. Final safety deduplication
+        const finalMap = new Map<string, Group>();
+        finalOrdered.forEach(g => {
+            if (g.id) finalMap.set(g.id, g);
+        });
+        
+        return Array.from(finalMap.values());
+    }, [rawUserGroups, groupIds]);
 
     // Initialize active group
     useEffect(() => {
@@ -166,12 +175,11 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
         if (!userData || userGroups.length === 0) return;
         const isActiveGroupLoaded = userGroups.find(g => g.id === activeGroupId);
         if (!isActiveGroupLoaded) {
-            const userGroupIds = userData?.groupIds || (userData?.groupId ? [userData.groupId] : []);
-            if (activeGroupId && !userGroupIds.includes(activeGroupId)) {
+            if (activeGroupId && !groupIds.includes(activeGroupId)) {
                 setActiveGroupId(userGroups[0].id);
             }
         }
-    }, [userGroups, userData, activeGroupId, setActiveGroupId]);
+    }, [userGroups, userData, activeGroupId, groupIds]);
 
     // Midnight reset for active group
     const activeGroup = userGroups.find(g => g.id === activeGroupId);
@@ -186,4 +194,3 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
 
     return { userGroups, activeGroupId, setActiveGroupId, isLoading };
 };
-

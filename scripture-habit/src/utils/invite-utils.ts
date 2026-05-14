@@ -25,8 +25,8 @@ export const generateInviteCode = (length = 10): string => {
  * @param language The current language code (optional)
  * @returns A full URL string
  */
-export const formatInviteLink = (code: string, language?: string): string => {
+export const formatInviteLink = (code: string, _language?: string): string => {
   const base = window.location.origin;
-  const prefix = language ? `/${language}` : '';
-  return `${base}${prefix}/invite/${code}`;
+  // We no longer prefix with language to allow auto-detection for the recipient
+  return `${base}/join/${code.trim().toUpperCase()}?openExternalBrowser=1`;
 };

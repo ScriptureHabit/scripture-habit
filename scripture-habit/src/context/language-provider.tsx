@@ -1,5 +1,6 @@
 import React, { useState, useEffect, ReactNode, useCallback, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../hooks/use-auth';
 import { safeStorage } from '../utils/storage';
 import { loadTranslations, loadBookTranslations } from '../locales/i18n';
 import { identifyBookKey } from '../utils/book-ref-mapper';
@@ -45,19 +46,32 @@ interface LanguageProviderProps {
 export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) => {
     const navigate = useNavigate();
     const location = useLocation();
+    const { userData, loading: authLoading } = useAuth();
 
     const [language, setLanguageInternal] = useState<Language>(detectInitialLanguage);
     const [translations, setTranslations] = useState<NestedTranslations>(enTranslations as NestedTranslations);
     const [bookTranslations, setBookTranslations] = useState<Record<string, string>>(enBooks);
     const [isLoaded, setIsLoaded] = useState(false);
 
-    // Sync state with URL changes (e.g., back button)
+    // 1. Sync state with URL changes (e.g., back button)
     useEffect(() => {
         const pathLang = getLanguageFromPath(location.pathname);
         if (pathLang && pathLang !== language) {
             setLanguageInternal(pathLang);
         }
     }, [location.pathname, language]);
+
+    // 2. Sync with User Profile language
+    useEffect(() => {
+        if (!authLoading && userData?.language) {
+            const userLang = userData.language as Language;
+            if (SUPPORTED_LANGUAGES.includes(userLang) && userLang !== language) {
+                // Only sync if the user has a stored language and it differs from URL/State
+                // This handles cases where a user clicks an invite link of a different language
+                setLanguage(userLang);
+            }
+        }
+    }, [userData?.language, authLoading, language]);
 
     useEffect(() => {
         const load = async () => {
@@ -202,6 +216,14 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
         safeStorage.set('language', newLanguage);
         setLanguageInternal(newLanguage);
 
+        // Sync to Firestore if logged in
+        if (userData?.uid && userData.language !== newLanguage) {
+            import('../utils/api-client').then(m => {
+                m.default.post('/api/auth/update-profile', { language: newLanguage })
+                    .catch(err => console.warn('[LanguageProvider] Failed to sync language to profile:', err));
+            });
+        }
+
         // Update URL
         const pathParts = location.pathname.split('/');
         const currentPrefix = getLanguageFromPath(location.pathname);
@@ -220,7 +242,7 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
             search: location.search,
             hash: location.hash
         }, { replace: true });
-    }, [language, location, navigate]);
+    }, [language, location, navigate, userData?.uid, userData?.language]);
 
     const getValueFromPath = useCallback((key: string): TranslationValue | null => {
         const keys = key.split('.');
@@ -282,4 +304,3 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
         </LanguageContext.Provider>
     );
 };
-

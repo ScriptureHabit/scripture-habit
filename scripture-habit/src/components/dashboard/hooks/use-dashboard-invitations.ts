@@ -42,7 +42,7 @@ export const useDashboardInvitations = (
                     headers['X-Firebase-AppCheck'] = appCheckToken;
                 }
 
-                const resp = await fetch(`${API_BASE}/api/join-group`, {
+                const resp = await fetch(`${API_BASE}/api/groups/join-group`, {
                     method: 'POST',
                     headers,
                     body: JSON.stringify({ inviteCode })
@@ -50,22 +50,26 @@ export const useDashboardInvitations = (
 
                 if (resp.ok) {
                     const result = await resp.json();
-                    const joinedGroupId = result.groupId;
+                    const joinedGroupId = result.gid || result.groupId; // Fallback just in case
+                    console.log("[DashboardInvite] Join successful, gid:", joinedGroupId);
                     safeStorage.remove('pendingInviteCode');
                     
+                    // Use a slightly shorter delay and ensure we set states correctly
                     setTimeout(() => {
-                        if (joinedGroupId) setActiveGroupId(joinedGroupId);
+                        if (joinedGroupId) {
+                            console.log("[DashboardInvite] Setting active group:", joinedGroupId);
+                            setActiveGroupId(joinedGroupId);
+                        }
                         setSelectedView(2);
                         setIsJoiningInvite(false);
                         toast.success(`🎉 ${t('joinGroup.joiningFromInviteSuccess')}`);
-                    }, 1000);
+                    }, 500);
                 } else {
                     const errText = await resp.text();
+                    console.error("[DashboardInvite] Join failed with status:", resp.status, errText);
                     
                     if (errText.includes('already in this group')) {
-                        console.log("User already in this group");
-                    } else {
-                        console.error("Failed to join via invite link:", errText);
+                        console.log("[DashboardInvite] User already in this group");
                     }
                     safeStorage.remove('pendingInviteCode');
                     setIsJoiningInvite(false);

@@ -67,38 +67,54 @@ export const chatReducer = (state: ChatState, action: ChatAction): ChatState => 
     case 'SET_MESSAGES':
       return { ...state, messages: action.messages, status: 'active' };
     case 'ADD_NEW_MESSAGES': {
-      // TRUTH: Identify which optimistic IDs are being resolved by ANY incoming message
+      // 1. Identify which optimistic IDs are being resolved
       const optimisticIdsToResolve = new Set(
         action.newMessages.map(m => m.optimisticId).filter(Boolean) as string[]
       );
 
-      // TRUTH: Solid deduplication strategy
-      const incoming = action.newMessages.filter(n => !state.messages.some(p => p.id === n.id));
-      
+      // 2. Filter existing messages to remove resolved optimistic ones
       const existingMessages = state.messages.filter(m => {
         const isResolvedOptimistic = optimisticIdsToResolve.has(m.id);
         const matchesServerOptimisticId = m.optimisticId && optimisticIdsToResolve.has(m.optimisticId);
         return !isResolvedOptimistic && !matchesServerOptimisticId;
       });
 
-      if (incoming.length === 0 && existingMessages.length === state.messages.length) return state;
+      // 3. Combine and Deduplicate by ID
+      const allMessagesMap = new Map<string, Message>();
+      existingMessages.forEach(m => allMessagesMap.set(m.id, m));
+      action.newMessages.forEach(m => allMessagesMap.set(m.id, m));
 
-      const newMessages = [...existingMessages, ...incoming].sort((a, b) => {
+      const newMessages = Array.from(allMessagesMap.values()).sort((a, b) => {
         const timeA = parseTimestampToMillis(a.createdAt);
         const timeB = parseTimestampToMillis(b.createdAt);
-        return timeA - timeB; // No more sorting to 0 (top of chat)
+        return timeA - timeB;
       });
+
+      if (newMessages.length === state.messages.length) return state;
+
       return { ...state, messages: newMessages, status: 'active' };
     }
     case 'SET_LOADING_OLDER':
       return { ...state, isLoadingOlder: action.isLoading };
-    case 'ADD_OLDER_MESSAGES':
+    case 'ADD_OLDER_MESSAGES': {
+      const allMessagesMap = new Map<string, Message>();
+      // Older messages first, then existing (so existing/newer overwrites if IDs match)
+      action.olderMessages.forEach(m => allMessagesMap.set(m.id, m));
+      state.messages.forEach(m => allMessagesMap.set(m.id, m));
+
+      const newMessages = Array.from(allMessagesMap.values()).sort((a, b) => {
+        const timeA = parseTimestampToMillis(a.createdAt);
+        const timeB = parseTimestampToMillis(b.createdAt);
+        return timeA - timeB;
+      });
+
       return {
         ...state,
-        messages: [...action.olderMessages, ...state.messages],
+        messages: newMessages,
         hasMoreOlder: action.hasMore,
         isLoadingOlder: false
       };
+    }
     case 'SET_READ_COUNT':
       return { ...state, userReadCount: Math.max(state.userReadCount || 0, action.count) };
     case 'SET_SCROLL_DONE':

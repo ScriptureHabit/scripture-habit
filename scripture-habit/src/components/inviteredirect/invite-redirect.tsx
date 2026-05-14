@@ -26,7 +26,7 @@ const InviteRedirect: FC = () => {
             // Fetch group info to show the user where they are going
             const fetchGroupInfo = async () => {
                 try {
-                    const API_BASE = window.location.hostname === 'localhost' ? '' : 'https://scripturehabit.app';
+                    const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? '' : 'https://scripturehabit.app';
                     const res = await fetch(`${API_BASE}/api/groups/group-preview/${encodeURIComponent(inviteCode.trim().toUpperCase())}`);
                     if (res.ok) {
                         const data = await res.json();

@@ -5,6 +5,7 @@ import ConfirmModal from '../../confirmmodal/confirm-modal';
 import { Group } from '../../../types/chat';
 import { UserData } from '../../../types/user';
 import { parseTimestampToDate } from '../../../utils/time-utils';
+import { formatInviteLink } from '../../../utils/invite-utils';
 
 interface InviteModalProps {
     t: (key: string, replacements?: Record<string, string | number>) => string;
@@ -29,7 +30,7 @@ const InviteModal: FC<InviteModalProps> = ({
 }) => {
     const [showRegenerateConfirm, setShowRegenerateConfirm] = useState(false);
 
-    const inviteLink = `${window.location.origin}/join/${groupData?.inviteCode}`;
+    const inviteLink = formatInviteLink(groupData?.inviteCode || '', language || 'en');
     const formattedExpiry = groupData?.inviteCodeExpiresAt
         ? parseTimestampToDate(groupData.inviteCodeExpiresAt).toLocaleString(
             language === 'ja' ? 'ja-JP' : 'en-US',

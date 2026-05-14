@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { safeStorage } from '../../../utils/storage';
 import { auth, appCheck } from '../../../firebase';
 import { getToken } from 'firebase/app-check';
 import { Capacitor } from '@capacitor/core';
@@ -19,10 +18,9 @@ export const useDashboardHabitPace = (
     const [autoKickError, setAutoKickError] = useState<string>('');
 
     useEffect(() => {
-        const inviteCode = safeStorage.get('pendingInviteCode');
         if (!loading && userData && userData.uid && 
             userData.hasSetKickThreshold !== true && 
-            !inviteCode && !isJoiningInvite) {
+            !isJoiningInvite) {
             setShowAutoKickModal(true);
         }
     }, [userData, loading, isJoiningInvite]);

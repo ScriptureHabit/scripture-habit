@@ -20,8 +20,19 @@ export class NotificationService {
                 nickname: senderNickname || 'Member' 
             });
 
-            const groupsToNotifyMap = new Map<string, string[]>();
+            // Deduplicate members across all targeted groups to prevent multiple notifications.
+            // If a member is in multiple targeted groups, we only notify them once, 
+            // pointing them to the first group encountered in the share list.
+            const memberToGroupIdMap = new Map<string, string>();
             userToGroupMapEntries.forEach(([memberUid, gid]) => {
+                if (!memberToGroupIdMap.has(memberUid)) {
+                    memberToGroupIdMap.set(memberUid, gid);
+                }
+            });
+
+            // Reconstruct the mapping of groupId to its unique set of members to notify
+            const groupsToNotifyMap = new Map<string, string[]>();
+            memberToGroupIdMap.forEach((gid, memberUid) => {
                 if (!groupsToNotifyMap.has(gid)) groupsToNotifyMap.set(gid, []);
                 groupsToNotifyMap.get(gid)!.push(memberUid);
             });
