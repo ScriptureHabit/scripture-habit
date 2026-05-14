@@ -54,9 +54,10 @@ const Dashboard: FC = () => {
     const openNewNote = searchParams.get('openNewNote');
     
     // Default to Chat (2) if groupId is provided but view is missing
+    const isProfile = location.pathname.includes('/profile');
     const initialView = viewParam 
       ? parseInt(viewParam) 
-      : (gid ? 2 : (location.state?.initialView ?? 0));
+      : (isProfile ? 3 : (gid ? 2 : (location.state?.initialView ?? 0)));
     
     return {
       activeGroupId: gid || location.state?.initialGroupId || null as string | null,
@@ -134,6 +135,14 @@ const Dashboard: FC = () => {
     if (location.state?.initialView !== undefined) setSelectedView(location.state.initialView);
     if (location.state?.initialGroupId) setActiveGroupId(location.state.initialGroupId);
 
+    // Sync view state with localized URL paths
+    const path = location.pathname;
+    if (path.includes('/profile')) {
+      if (selectedView !== 3) setSelectedView(3);
+    } else if (path.includes('/dashboard')) {
+      if (selectedView !== 0) setSelectedView(0);
+    }
+
     if (searchParams.has('groupId') || searchParams.has('openNewNote') || searchParams.has('view')) {
       const gid = searchParams.get('groupId');
       const v = searchParams.get('view');
@@ -148,7 +157,7 @@ const Dashboard: FC = () => {
       
       navigate(location.pathname, { replace: true });
     }
-  }, [searchParams, location.pathname, location.state, navigate, setActiveGroupId, setActiveModal]);
+  }, [searchParams, location.pathname, location.state, navigate, setActiveGroupId, setActiveModal, selectedView]);
 
   useEffect(() => {
     if (!loading && userData && userData.uid && userData.hasSeenWelcomeStory === undefined && userData.hasSetKickThreshold === true) {

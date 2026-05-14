@@ -1,7 +1,7 @@
-import { test, expect } from './fixtures/auth.fixture';
+import { test, expect, Page } from './fixtures/auth.fixture';
 
 test.describe('Invitation Join Flow Stability', () => {
-  const listMembers = async (page: any, label: string) => {
+  const listMembers = async (page: Page, label: string) => {
       const nicknames = await page.getByTestId('member-nickname').all();
       console.log(`--- Members List (${label}) ---`);
       for (const n of nicknames) {
@@ -140,7 +140,7 @@ test.describe('Invitation Join Flow Stability', () => {
         // Try to find it, if not visible after 10s, try one reload
         try {
             await expect(groupItemA.first()).toBeVisible({ timeout: 10000 });
-        } catch (e) {
+        } catch {
             console.log('Group not found after 10s, attempting fallback reload...');
             await pageA.reload();
             await pageA.waitForLoadState('load');
@@ -171,7 +171,7 @@ test.describe('Invitation Join Flow Stability', () => {
 
         try {
             await expect(userBLocator.first()).toBeVisible({ timeout: 10000 });
-        } catch (e) {
+        } catch {
             console.log('User B not found in members list after 10s. Attempting fallback reload and re-navigating...');
             await pageA.reload();
             await pageA.waitForLoadState('load');
@@ -286,7 +286,7 @@ test.describe('Invitation Join Flow Stability', () => {
         // Fallback reload if not found
         try {
             await expect(groupItemA.first()).toBeVisible({ timeout: 10000 });
-        } catch (e) {
+        } catch {
             console.log('Group not found in User A sidebar. Reloading...');
             await pageA.reload();
             await pageA.waitForLoadState('load');

@@ -4,7 +4,7 @@ import { test as base, Page } from '@playwright/test';
 
 type TestHelpers = {
   setupTestGroup: (params: { groupName: string; memberCount?: number; timeZone?: string; setYesterdayDate?: boolean; unityPercentage?: number }) => Promise<{ groupId: string }>;
-  callApi: (endpoint: string, body: Record<string, any>) => Promise<any>;
+  callApi: (endpoint: string, body: Record<string, unknown>) => Promise<unknown>;
 };
 
 type AuthFixtures = {
@@ -42,7 +42,7 @@ export const test = base.extend<AuthFixtures>({
 
     // --- HELPER METHODS ---
 
-    const callApi = async (endpoint: string, body: Record<string, any>) => {
+    const callApi = async (endpoint: string, body: Record<string, unknown>) => {
       return await page.evaluate(async ({ endpoint, body }) => {
         const waitForAuth = () => {
           return new Promise((resolve, reject) => {
@@ -88,8 +88,18 @@ export const test = base.extend<AuthFixtures>({
     // Attach helpers to page object for convenience
     const pageWithHelpers = Object.assign(page, { setupTestGroup, callApi });
 
-    await use(pageWithHelpers as any);
+    await use(pageWithHelpers as Page & TestHelpers);
+
+    // 4. Cleanup: Leave all groups after each test
+    // This ensures User A (Shared Tester) starts each test with a clean slate
+    try {
+      await pageWithHelpers.callApi('/api/test/leave-all-groups', {});
+      // console.log('[AuthFixture] Automatic post-test cleanup successful.');
+    } catch (e) {
+      console.warn('[AuthFixture] Automatic post-test cleanup failed (best effort):', e);
+    }
   },
 });
 
 export { expect } from '@playwright/test';
+export type { Page } from '@playwright/test';

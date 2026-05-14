@@ -118,16 +118,54 @@ setup('authenticate', async ({ page }) => {
     await page.waitForURL(/.*dashboard/, { timeout: 60000 });
   }
 
-  console.log('Authentication setup complete. Cleaning up existing groups for shared tester...');
-  
-  // 4. Cleanup: Ensure shared tester has 0 groups before any tests start
-  // This prevents hitting the 4-group limit in CI environments
-  try {
-    await page.request.post('/api/test-utils/leave-all-groups');
-    console.log('Cleanup successful: All groups left.');
-  } catch (e) {
-    console.warn('Group cleanup failed (best effort):', e);
-  }
+    // 4. Cleanup: Ensure shared tester has 0 groups and English language before any tests start
+    // This prevents hitting the 4-group limit and ensures consistent language starting state
+    try {
+      // We use evaluate to ensure we have the auth token from the browser context
+      const cleanupResult = await page.evaluate(async () => {
+        const auth = (window as unknown as { firebaseAuth?: { currentUser?: { getIdToken: () => Promise<string> } } }).firebaseAuth;
+        if (!auth?.currentUser) return { success: false, error: 'Not logged in' };
+        
+        try {
+          const token = await auth.currentUser.getIdToken();
+          
+          // Reset groups
+          const groupRes = await fetch('/api/test/leave-all-groups', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          });
+
+          // Reset language to English
+          await fetch('/api/auth/update-profile', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ language: 'en' })
+          });
+          
+          if (!groupRes.ok) {
+            const text = await groupRes.text();
+            return { success: false, status: groupRes.status, error: text };
+          }
+          return await groupRes.json();
+        } catch (e) {
+          return { success: false, error: (e as Error).message };
+        }
+      });
+
+      if (cleanupResult.success !== false) {
+        console.log('Cleanup successful (Groups reset, Language set to EN):', cleanupResult.message || 'Complete.');
+      } else {
+        console.warn('Cleanup partial failure:', cleanupResult.error);
+      }
+    } catch (e) {
+      console.warn('Cleanup execution failed (best effort):', e);
+    }
 
   // 5. State save
   await page.context().storageState({ path: authFile });

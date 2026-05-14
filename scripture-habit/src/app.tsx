@@ -186,6 +186,7 @@ const App: React.FC = () => {
                 <Route path="login" element={<LoginForm />} />
                 <Route path="signup" element={<SignupForm />} />
                 <Route path="dashboard" element={<Dashboard />} />
+                <Route path="profile" element={<Dashboard />} />
                 <Route path="group-form" element={<GroupForm />} />
                 <Route path="join-group" element={<JoinGroup />} />
 

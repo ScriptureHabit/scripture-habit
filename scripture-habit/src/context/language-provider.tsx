@@ -4,6 +4,7 @@ import { useAuth } from '../hooks/use-auth';
 import { safeStorage } from '../utils/storage';
 import { loadTranslations, loadBookTranslations } from '../locales/i18n';
 import { identifyBookKey } from '../utils/book-ref-mapper';
+import apiClient from '../utils/api-client';
 
 // Static en for initial load/fallback
 import enTranslations from '../locales/en';
@@ -23,6 +24,11 @@ const getLanguageFromPath = (pathname: string): Language | null => {
 };
 
 const detectInitialLanguage = (): Language => {
+    // 0. Query Param (Highest priority for notification deep-linking)
+    const urlParams = new URLSearchParams(window.location.search);
+    const queryLang = urlParams.get('lang') as Language;
+    if (queryLang && SUPPORTED_LANGUAGES.includes(queryLang)) return queryLang;
+
     // 1. Path
     const pathLang = getLanguageFromPath(window.location.pathname);
     if (pathLang) return pathLang;
@@ -53,31 +59,37 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
     const [bookTranslations, setBookTranslations] = useState<Record<string, string>>(enBooks);
     const [isLoaded, setIsLoaded] = useState(false);
 
+    const lastManualChangeTime = React.useRef<number>(0);
+
     const setLanguage = useCallback((newLanguage: Language) => {
         if (!SUPPORTED_LANGUAGES.includes(newLanguage) || newLanguage === language) return;
-
+        
+        lastManualChangeTime.current = Date.now();
         safeStorage.set('language', newLanguage);
         setLanguageInternal(newLanguage);
 
         // Sync to Firestore if logged in
         if (userData?.uid && userData.language !== newLanguage) {
-            import('../utils/api-client').then(m => {
-                m.default.post('/api/auth/update-profile', { language: newLanguage })
-                    .catch(err => console.warn('[LanguageProvider] Failed to sync language to profile:', err));
-            });
+            apiClient.post('/api/auth/update-profile', { language: newLanguage })
+                .then(() => {
+                    // Success
+                })
+                .catch(err => {
+                    console.warn('[LanguageProvider] Failed to sync language to profile:', err);
+                });
         }
 
         // Update URL
-        const pathParts = location.pathname.split('/');
+        const pathParts = location.pathname.split('/').filter(Boolean);
         const currentPrefix = getLanguageFromPath(location.pathname);
 
         if (currentPrefix) {
-            pathParts[1] = newLanguage;
+            pathParts[0] = newLanguage;
         } else {
-            pathParts.splice(1, 0, newLanguage);
+            pathParts.unshift(newLanguage);
         }
 
-        const newPath = pathParts.join('/') || '/';
+        const newPath = '/' + pathParts.join('/');
         const finalPath = newPath.endsWith('/') ? newPath : `${newPath}/`;
 
         navigate({
@@ -91,6 +103,7 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
     useEffect(() => {
         const pathLang = getLanguageFromPath(location.pathname);
         if (pathLang && pathLang !== language) {
+            console.log(`[LanguageProvider] URL Sync: ${pathLang}`);
             setLanguageInternal(pathLang);
         }
     }, [location.pathname, language]);
@@ -99,9 +112,18 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
     useEffect(() => {
         if (!authLoading && userData?.language) {
             const userLang = userData.language as Language;
+            
+            // Only sync from profile if we haven't manually changed it in the last 10 seconds
+            const timeSinceManualChange = Date.now() - lastManualChangeTime.current;
+            if (timeSinceManualChange < 10000) {
+                if (userLang !== language) {
+                    console.log(`[LanguageProvider] Ignoring Profile Sync (${userLang}) - Recently changed manually.`);
+                }
+                return;
+            }
+
             if (SUPPORTED_LANGUAGES.includes(userLang) && userLang !== language) {
-                // Only sync if the user has a stored language and it differs from URL/State
-                // This handles cases where a user clicks an invite link of a different language
+                console.log(`[LanguageProvider] Syncing from Profile: ${userLang}`);
                 setLanguage(userLang);
             }
         }

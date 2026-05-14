@@ -193,7 +193,7 @@ const Sidebar: React.FC<SidebarProps> = ({ selected, setSelected, userGroups = [
         <div className="menu">
           {/* Dashboard */}
           <div className={selected === 0 ? 'menuItem active' : 'menuItem'}
-            onClick={() => setSelected(0)}
+            onClick={() => navigate(`/${language}/dashboard`)}
             data-testid="sidebar-dashboard"
           >
             <DashboardIcon />
@@ -211,7 +211,7 @@ const Sidebar: React.FC<SidebarProps> = ({ selected, setSelected, userGroups = [
 
           {/* Languages */}
           <div className={selected === 3 ? 'menuItem active' : 'menuItem'} 
-            onClick={() => setSelected(3)}
+            onClick={() => navigate(`/${language}/profile`)}
             data-testid="sidebar-profile"
           >
             <ProfileIcon />

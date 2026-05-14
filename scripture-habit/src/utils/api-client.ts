@@ -21,6 +21,7 @@ const API_BASE = Capacitor.isNativePlatform() ? 'https://scripturehabit.app' : '
  */
 const apiClient = axios.create({
     baseURL: API_BASE,
+    timeout: 15000, // 15 seconds timeout to prevent infinite hangs
     headers: {
         'Content-Type': 'application/json',
     },
