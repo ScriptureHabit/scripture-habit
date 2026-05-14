@@ -113,12 +113,22 @@ setup('authenticate', async ({ page }) => {
       }
     }
 
-    // Final wait for dashboard
+    // Final wait for dashboard to ensure we are logged in
     console.log('Waiting for final dashboard navigation...');
     await page.waitForURL(/.*dashboard/, { timeout: 60000 });
   }
 
-  console.log('Authentication setup complete. Saving state.');
-  // 4. State save
+  console.log('Authentication setup complete. Cleaning up existing groups for shared tester...');
+  
+  // 4. Cleanup: Ensure shared tester has 0 groups before any tests start
+  // This prevents hitting the 4-group limit in CI environments
+  try {
+    await page.request.post('/api/test-utils/leave-all-groups');
+    console.log('Cleanup successful: All groups left.');
+  } catch (e) {
+    console.warn('Group cleanup failed (best effort):', e);
+  }
+
+  // 5. State save
   await page.context().storageState({ path: authFile });
 });
