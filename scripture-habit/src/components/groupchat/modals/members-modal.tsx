@@ -68,7 +68,7 @@ const MembersModal: FC<MembersModalProps> = ({
                                     )}
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                    <span style={{ fontWeight: '500', color: 'var(--black)' }}>
+                                    <span style={{ fontWeight: '500', color: 'var(--black)' }} data-testid="member-nickname" data-member-id={member.id}>
                                         {member.nickname || 'Unknown User'}
                                         {member.id === groupData?.ownerUserId && <span style={{ marginLeft: '0.5rem', fontSize: '0.75rem', background: '#ffe0e3', color: 'var(--pink)', padding: '2px 6px', borderRadius: '4px' }}>Owner</span>}
                                         {member.id === userData?.uid && <span style={{ marginLeft: '0.5rem', fontSize: '0.75rem', background: '#e0e0e0', color: 'var(--gray)', padding: '2px 6px', borderRadius: '4px' }}>You</span>}

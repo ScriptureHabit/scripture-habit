@@ -53,6 +53,40 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
     const [bookTranslations, setBookTranslations] = useState<Record<string, string>>(enBooks);
     const [isLoaded, setIsLoaded] = useState(false);
 
+    const setLanguage = useCallback((newLanguage: Language) => {
+        if (!SUPPORTED_LANGUAGES.includes(newLanguage) || newLanguage === language) return;
+
+        safeStorage.set('language', newLanguage);
+        setLanguageInternal(newLanguage);
+
+        // Sync to Firestore if logged in
+        if (userData?.uid && userData.language !== newLanguage) {
+            import('../utils/api-client').then(m => {
+                m.default.post('/api/auth/update-profile', { language: newLanguage })
+                    .catch(err => console.warn('[LanguageProvider] Failed to sync language to profile:', err));
+            });
+        }
+
+        // Update URL
+        const pathParts = location.pathname.split('/');
+        const currentPrefix = getLanguageFromPath(location.pathname);
+
+        if (currentPrefix) {
+            pathParts[1] = newLanguage;
+        } else {
+            pathParts.splice(1, 0, newLanguage);
+        }
+
+        const newPath = pathParts.join('/') || '/';
+        const finalPath = newPath.endsWith('/') ? newPath : `${newPath}/`;
+
+        navigate({
+            pathname: finalPath,
+            search: location.search,
+            hash: location.hash
+        }, { replace: true });
+    }, [language, location, navigate, userData?.uid, userData?.language]);
+
     // 1. Sync state with URL changes (e.g., back button)
     useEffect(() => {
         const pathLang = getLanguageFromPath(location.pathname);
@@ -71,7 +105,7 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
                 setLanguage(userLang);
             }
         }
-    }, [userData?.language, authLoading, language]);
+    }, [userData?.language, authLoading, language, setLanguage]);
 
     useEffect(() => {
         const load = async () => {
@@ -210,39 +244,7 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
         return translateBookName(normalized.trim());
     }, [translateBookName]);
 
-    const setLanguage = useCallback((newLanguage: Language) => {
-        if (!SUPPORTED_LANGUAGES.includes(newLanguage) || newLanguage === language) return;
 
-        safeStorage.set('language', newLanguage);
-        setLanguageInternal(newLanguage);
-
-        // Sync to Firestore if logged in
-        if (userData?.uid && userData.language !== newLanguage) {
-            import('../utils/api-client').then(m => {
-                m.default.post('/api/auth/update-profile', { language: newLanguage })
-                    .catch(err => console.warn('[LanguageProvider] Failed to sync language to profile:', err));
-            });
-        }
-
-        // Update URL
-        const pathParts = location.pathname.split('/');
-        const currentPrefix = getLanguageFromPath(location.pathname);
-
-        if (currentPrefix) {
-            pathParts[1] = newLanguage;
-        } else {
-            pathParts.splice(1, 0, newLanguage);
-        }
-
-        const newPath = pathParts.join('/') || '/';
-        const finalPath = newPath.endsWith('/') ? newPath : `${newPath}/`;
-
-        navigate({
-            pathname: finalPath,
-            search: location.search,
-            hash: location.hash
-        }, { replace: true });
-    }, [language, location, navigate, userData?.uid, userData?.language]);
 
     const getValueFromPath = useCallback((key: string): TranslationValue | null => {
         const keys = key.split('.');

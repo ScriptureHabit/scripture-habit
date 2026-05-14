@@ -68,6 +68,7 @@ router.post('/initialize-profile', authenticate, verifyAppCheck, async (req: Aut
 
         const now = admin.firestore.Timestamp.now();
         const isTestUser = email?.endsWith('@example.com');
+        const isE2EUser = email?.endsWith('@test.local');
         
         const userData: UserDocument = {
             uid,
@@ -84,10 +85,16 @@ router.post('/initialize-profile', authenticate, verifyAppCheck, async (req: Aut
             totalNotes: 0,
             kickThreshold: 3,
             hasSetKickThreshold: isTestUser ? true : false,
-            ...(isTestUser ? { hasSeenWelcomeStory: true } : {})
+            ...(isTestUser || isE2EUser ? { hasSeenWelcomeStory: true } : {})
         };
 
         await userRef.set(userData);
+        
+        // AUTO-VERIFY: For E2E tests using @test.local domain
+        if (email?.endsWith('@test.local')) {
+            await admin.auth().updateUser(uid, { emailVerified: true });
+            console.log('[Auth] Auto-verified test user email:', email);
+        }
         
         console.log('[Auth] Initialized profile for new user:', { uid, email });
         

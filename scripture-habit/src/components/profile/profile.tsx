@@ -559,6 +559,7 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
                     <div
                         className={`language-option ${language === 'en' ? 'active' : ''}`}
                         onClick={() => setLanguage('en')}
+                        data-testid="language-option-en"
                     >
                         <span className="lang-flag">🇺🇸</span>
                         <span className="lang-name">{t('languages.english')}</span>
@@ -566,6 +567,7 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
                     <div
                         className={`language-option ${language === 'ja' ? 'active' : ''}`}
                         onClick={() => setLanguage('ja')}
+                        data-testid="language-option-ja"
                     >
                         <span className="lang-flag">🇯🇵</span>
                         <span className="lang-name">{t('languages.japanese')}</span>
@@ -573,6 +575,7 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
                     <div
                         className={`language-option ${language === 'pt' ? 'active' : ''}`}
                         onClick={() => setLanguage('pt')}
+                        data-testid="language-option-pt"
                     >
                         <span className="lang-flag">🇧🇷</span>
                         <span className="lang-name">{t('languages.portuguese')}</span>
@@ -580,6 +583,7 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
                     <div
                         className={`language-option ${language === 'zho' ? 'active' : ''}`}
                         onClick={() => setLanguage('zho')}
+                        data-testid="language-option-zho"
                     >
                         <span className="lang-flag">🇹🇼</span>
                         <span className="lang-name">{t('languages.chinese')}</span>
@@ -587,6 +591,7 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
                     <div
                         className={`language-option ${language === 'es' ? 'active' : ''}`}
                         onClick={() => setLanguage('es')}
+                        data-testid="language-option-es"
                     >
                         <span className="lang-flag">🇪🇸</span>
                         <span className="lang-name">{t('languages.spanish')}</span>
@@ -594,6 +599,7 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
                     <div
                         className={`language-option ${language === 'vi' ? 'active' : ''}`}
                         onClick={() => setLanguage('vi')}
+                        data-testid="language-option-vi"
                     >
                         <span className="lang-flag">🇻🇳</span>
                         <span className="lang-name">{t('languages.vietnamese')}</span>
@@ -601,6 +607,7 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
                     <div
                         className={`language-option ${language === 'th' ? 'active' : ''}`}
                         onClick={() => setLanguage('th')}
+                        data-testid="language-option-th"
                     >
                         <span className="lang-flag">🇹🇭</span>
                         <span className="lang-name">{t('languages.thai')}</span>
@@ -608,6 +615,7 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
                     <div
                         className={`language-option ${language === 'ko' ? 'active' : ''}`}
                         onClick={() => setLanguage('ko')}
+                        data-testid="language-option-ko"
                     >
                         <span className="lang-flag">🇰🇷</span>
                         <span className="lang-name">{t('languages.korean')}</span>
@@ -615,6 +623,7 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
                     <div
                         className={`language-option ${language === 'tl' ? 'active' : ''}`}
                         onClick={() => setLanguage('tl')}
+                        data-testid="language-option-tl"
                     >
                         <span className="lang-flag">🇵🇭</span>
                         <span className="lang-name">{t('languages.tagalog')}</span>
@@ -622,6 +631,7 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
                     <div
                         className={`language-option ${language === 'sw' ? 'active' : ''}`}
                         onClick={() => setLanguage('sw')}
+                        data-testid="language-option-sw"
                     >
                         <span className="lang-flag">🇰🇪</span>
                         <span className="lang-name">{t('languages.swahili')}</span>

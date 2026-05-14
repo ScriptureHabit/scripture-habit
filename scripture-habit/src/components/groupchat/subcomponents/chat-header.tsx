@@ -46,7 +46,7 @@ const ChatHeader: FC = () => {
               <UilArrowLeft size="24" />
             </div>
           )}
-          <h2>
+          <h2 data-testid="group-name-title">
             <span className="group-name-text" title={groupData ? groupData.name : t('groupChat.groupName')}>
               {groupData ? (translatedGroupName || groupData.name) : t('groupChat.groupName')}
             </span>
@@ -95,7 +95,7 @@ const ChatHeader: FC = () => {
                   <UilCopy size="16" className="copy-icon" />
                 </div>
               </div>
-              <div className="invite-code-display members-btn-desktop" onClick={handleShowMembers} title={t('groupChat.members')}>
+              <div className="invite-code-display members-btn-desktop" onClick={handleShowMembers} title={t('groupChat.members')} data-testid="members-button">
                 <UilCommentAlt size="16" className="copy-icon" />
                 <span className="desktop-members-label">{t('groupChat.members')}</span>
               </div>

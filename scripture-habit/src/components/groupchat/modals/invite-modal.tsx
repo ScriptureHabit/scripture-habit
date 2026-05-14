@@ -30,7 +30,7 @@ const InviteModal: FC<InviteModalProps> = ({
 }) => {
     const [showRegenerateConfirm, setShowRegenerateConfirm] = useState(false);
 
-    const inviteLink = formatInviteLink(groupData?.inviteCode || '', language || 'en');
+    const inviteLink = formatInviteLink(groupData?.inviteCode || '');
     const formattedExpiry = groupData?.inviteCodeExpiresAt
         ? parseTimestampToDate(groupData.inviteCodeExpiresAt).toLocaleString(
             language === 'ja' ? 'ja-JP' : 'en-US',

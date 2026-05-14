@@ -54,6 +54,7 @@ export default defineConfig({
       reuseExistingServer: !process.env.CI,
       stdout: 'pipe',
       stderr: 'pipe',
+      timeout: 120000,
     },
     {
       command: 'cross-env SKIP_AI=true SKIP_APP_CHECK=true FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 FIREBASE_AUTH_EMULATOR_HOST=127.0.0.1:9099 GCLOUD_PROJECT=scripture-habit-auth npm run server',
@@ -61,6 +62,7 @@ export default defineConfig({
       reuseExistingServer: !process.env.CI,
       stdout: 'pipe',
       stderr: 'pipe',
+      timeout: 120000,
     },
     // Firebase Emulator - only for local development (CI already starts emulator)
     ...(process.env.CI ? [] : [{
