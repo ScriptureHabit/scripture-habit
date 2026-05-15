@@ -108,7 +108,7 @@ test.describe('Account Lifecycle', () => {
 
     // Should redirect to welcome or landing page
     console.log('[Lifecycle] Waiting for redirection after deletion');
-    await expect(page).toHaveURL(/.*\/(welcome|en\/?)$/);
+    await expect(page).toHaveURL(/.*\/(welcome|en)\/?$/);
     
     // Verify we are actually logged out (can't see dashboard)
     await page.goto('/en/dashboard');

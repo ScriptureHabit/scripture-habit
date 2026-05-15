@@ -41,15 +41,19 @@ const SidebarGroupItem: React.FC<SidebarGroupItemProps> = ({ group, language, is
       return;
     }
 
+    // 2. Skip translation if target is English (base language) or matches original
+    if (language === 'en') {
+      setTranslatedName(''); // Use group.name
+      return;
+    }
+
     // Check if we already attempted translation in this session
     if (translationAttemptedRef.current) return;
-
-    // Group metadata is now persisted by the backend directly
 
     const autoTranslate = async () => {
       if (!group.name || !language) return;
 
-      const cacheKey = `trans_name_${group.id}_${language}`;
+      const cacheKey = `trans_group_name_${group.id}_${language}`;
       const cached = sessionStorage.getItem(cacheKey);
 
       if (cached) {
@@ -58,6 +62,7 @@ const SidebarGroupItem: React.FC<SidebarGroupItemProps> = ({ group, language, is
         return;
       }
 
+      // Set ref immediately to prevent parallel duplicate calls
       translationAttemptedRef.current = true;
 
       try {
@@ -95,11 +100,9 @@ const SidebarGroupItem: React.FC<SidebarGroupItemProps> = ({ group, language, is
           if (data.translatedText) {
             setTranslatedName(data.translatedText);
             sessionStorage.setItem(cacheKey, data.translatedText);
-
-            // Backend handled the saving to Firestore
           }
         } else {
-          console.warn('Translation API returned error status:', res.status);
+          console.warn('Sidebar auto-translation returned error:', res.status);
         }
       } catch (err) {
         console.error('Sidebar auto-translation failed', err);

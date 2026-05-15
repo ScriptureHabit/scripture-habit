@@ -222,7 +222,7 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
 
             setPhotoURL(url);
             toast.success(t('profile.imageUploadSuccess') || "Profile picture updated!");
-        } catch (err: unknown) {
+        } catch {
             toast.error(t('profile.imageUploadError') || "Failed to update profile picture.");
         } finally {
             setIsUploading(false);
@@ -251,7 +251,7 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
             });
 
             toast.success(t('profile.successUpdate') || "Profile updated successfully!");
-        } catch (err: unknown) {
+        } catch {
             const errorMsg = t('profile.errorUpdate') || "Failed to update profile.";
             toast.error(errorMsg);
         } finally {

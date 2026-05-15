@@ -20,10 +20,15 @@ export const useGroupChatUI = (
 
   // Auto-translation logic
   useEffect(() => {
-    setTranslatedGroupName('');
-    setTranslatedGroupDesc('');
+    if (!groupId) {
+      setTranslatedGroupName('');
+      setTranslatedGroupDesc('');
+      return;
+    }
 
     if (groupNameTranslateRef.current.id !== groupId) {
+      setTranslatedGroupName('');
+      setTranslatedGroupDesc('');
       groupNameTranslateRef.current = { id: groupId, lang: null };
       groupDescTranslateRef.current = { id: groupId, lang: null };
     }
@@ -35,8 +40,8 @@ export const useGroupChatUI = (
       const nameToSet = savedTrans?.name;
       const descToSet = savedTrans?.description;
 
-      const needsName = !nameToSet;
-      const needsDesc = groupData.description && !descToSet;
+      const needsName = !nameToSet && language !== 'en';
+      const needsDesc = groupData.description && !descToSet && language !== 'en';
 
       if (nameToSet) setTranslatedGroupName(nameToSet);
       if (descToSet) setTranslatedGroupDesc(descToSet);
@@ -63,7 +68,7 @@ export const useGroupChatUI = (
           const idToken = await auth?.currentUser?.getIdToken();
           let appCheckToken = '';
           if (appCheck) {
-            const appCheckTokenResponse = await getToken(appCheck, false); // Get AppCheck token
+            const appCheckTokenResponse = await getToken(appCheck, false);
             appCheckToken = appCheckTokenResponse.token;
           }
 
@@ -80,7 +85,6 @@ export const useGroupChatUI = (
           const response = await fetch(`${API_BASE}/api/ai/translate`, {
             method: 'POST',
             headers,
-
             body: JSON.stringify({ 
               text, 
               targetLanguage: language,
@@ -103,15 +107,12 @@ export const useGroupChatUI = (
       };
 
       const namePromise = needsName ? translateText(groupData.name, 'group_name') : Promise.resolve(null);
-      const descPromise = needsDesc ? translateText(groupData.description || '', 'group_desc') : Promise.resolve(null);
+      const descPromise = needsDesc ? translateText(groupData.description || '', 'group_description') : Promise.resolve(null);
 
       const [newName, newDesc] = await Promise.all([namePromise, descPromise]);
 
       if (newName) setTranslatedGroupName(newName);
       if (newDesc) setTranslatedGroupDesc(newDesc);
-
-      // Group metadata is now persisted by the backend directly
-      // This avoids client-side permission issues for regular members
     };
 
     autoTranslate();

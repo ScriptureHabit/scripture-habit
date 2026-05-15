@@ -43,28 +43,44 @@ export const test = base.extend<AuthFixtures>({
     // --- HELPER METHODS ---
 
     const callApi = async (endpoint: string, body: Record<string, unknown>) => {
-      // 1. Get ID Token from browser context (fast)
-      const idToken = await page.evaluate(async () => {
-        const waitForAuth = () => {
-          return new Promise((resolve, reject) => {
-            let attempts = 0;
-            const checkAuth = () => {
-              const auth = (window as any).firebaseAuth;
-              if (auth && auth.currentUser) {
-                resolve(auth.currentUser);
-              } else if (attempts++ > 40) {
-                reject(new Error('Firebase auth timeout in helper'));
-              } else {
-                setTimeout(checkAuth, 500);
-              }
-            };
-            checkAuth();
-          });
-        };
+      const getIDToken = async () => {
+        return await page.evaluate(async () => {
+          const waitForAuth = () => {
+            return new Promise((resolve, reject) => {
+              let attempts = 0;
+              const checkAuth = () => {
+                const auth = (window as any).firebaseAuth;
+                if (auth && auth.currentUser) {
+                  resolve(auth.currentUser);
+                } else if (attempts++ > 40) {
+                  reject(new Error('Firebase auth timeout in helper'));
+                } else {
+                  if (attempts % 5 === 0) console.log(`[AuthFixture] Waiting for Firebase Auth... (attempt ${attempts})`);
+                  setTimeout(checkAuth, 500);
+                }
+              };
+              checkAuth();
+            });
+          };
 
-        const user = await waitForAuth() as { getIdToken: () => Promise<string> };
-        return await user.getIdToken();
-      });
+          const user = await waitForAuth() as { getIdToken: () => Promise<string> };
+          return await user.getIdToken();
+        });
+      };
+
+      // 1. Get ID Token from browser context (fast)
+      let idToken: string;
+      try {
+        idToken = await getIDToken();
+      } catch (err: any) {
+        if (err.message.includes('Execution context was destroyed')) {
+          console.log(`[AuthFixture] Context destroyed during API call to ${endpoint}, retrying once...`);
+          await page.waitForLoadState('load');
+          idToken = await getIDToken();
+        } else {
+          throw err;
+        }
+      }
 
       // 2. Perform API call from Node context (robust against page reloads)
       const response = await page.request.post(endpoint, {

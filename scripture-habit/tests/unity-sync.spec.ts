@@ -14,15 +14,19 @@ test.describe('Unity Lifecycle (Full Flow)', () => {
         almostMidnight.setUTCHours(23, 50, 0, 0);
         
         await page.clock.install({ time: almostMidnight });
-        await page.goto('/en/dashboard'); // Ensure clock is active from mount
+        console.log('[Test] Navigating to dashboard with mock clock...');
+        await page.goto('/en/dashboard'); 
+        await page.waitForLoadState('load');
+        await page.waitForTimeout(2000); // Wait for Firebase to stabilize
         
         console.log('--- Step 1: Seeding group ---');
-        await page.setupTestGroup({ 
+        const setupResult = await page.setupTestGroup({ 
             groupName, 
             memberCount: 2, 
             timeZone: 'UTC',
             setYesterdayDate: true
         });
+        console.log(`[Test] Group seeded: ${setupResult.groupId}`);
 
         const groupItem = page.getByTestId('sidebar-group-item').filter({ hasText: groupName });
         const sidebarUnity = groupItem.getByTestId('sidebar-unity-percentage');

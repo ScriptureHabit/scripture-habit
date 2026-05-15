@@ -1,23 +1,23 @@
-import '../api_internal/lib/load-env.js';
+import '../api_internal/lib/load-env.ts';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import * as Sentry from "@sentry/node";
 
 // Import Route Handlers
-import authRoutes from '../api_internal/routes/auth.js';
-import groupRoutes from '../api_internal/routes/groups.js';
-import messageRoutes from '../api_internal/routes/messages.js';
-import aiRoutes from '../api_internal/routes/ai.js';
-import previewRoutes from '../api_internal/routes/preview.js';
-import cronRoutes from '../api_internal/routes/cron.js';
-import reportRoutes from '../api_internal/routes/reports.js';
-import adminRoutes from '../api_internal/routes/admin.js';
-import testUtilsRoutes from '../api_internal/routes/test-utils.js';
-import resetUnityRoutes from '../api_internal/routes/reset-unity.js';
+import authRoutes from '../api_internal/routes/auth.ts';
+import groupRoutes from '../api_internal/routes/groups.ts';
+import messageRoutes from '../api_internal/routes/messages.ts';
+import aiRoutes from '../api_internal/routes/ai.ts';
+import previewRoutes from '../api_internal/routes/preview.ts';
+import cronRoutes from '../api_internal/routes/cron.ts';
+import reportRoutes from '../api_internal/routes/reports.ts';
+import adminRoutes from '../api_internal/routes/admin.ts';
+import testUtilsRoutes from '../api_internal/routes/test-utils.ts';
+import resetUnityRoutes from '../api_internal/routes/reset-unity.ts';
 
 // Middleware
-import { globalLimiter } from '../api_internal/lib/middleware.js';
+import { globalLimiter } from '../api_internal/lib/middleware.ts';
 
 const app = express();
 
@@ -103,7 +103,7 @@ app.use('/api', (_req, res) => {
 });
 
 // --- Error Handling ---
-import { AppError } from '../api_internal/lib/errors.js';
+import { AppError } from '../api_internal/lib/errors.ts';
 
 app.use((err: unknown, req: express.Request, res: express.Response, _next: express.NextFunction) => {
     // 1. Log the error (In production, this would go to Sentry/Datadog)
@@ -122,10 +122,11 @@ app.use((err: unknown, req: express.Request, res: express.Response, _next: expre
 
     // 2. Handle known application errors
     if (err instanceof AppError) {
-        return res.status(err.statusCode).json({
-            error: err.name,
-            message: err.message,
-            code: err.errorCode,
+        const appErr = err as AppError;
+        return res.status(appErr.statusCode).json({
+            error: appErr.name,
+            message: appErr.message,
+            code: appErr.errorCode,
             requestId
         });
     }
