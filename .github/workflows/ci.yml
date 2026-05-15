@@ -67,7 +67,7 @@ jobs:
 
       - name: Deploy to Vercel
         if: success() && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
-        working-directory: ./scripture-habit
+        working-directory: .
         run: |
           npm install --global vercel@latest
           vercel pull --yes --environment=production --token=$VERCEL_TOKEN
