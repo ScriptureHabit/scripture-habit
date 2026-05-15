@@ -34,7 +34,11 @@ if (!admin.apps.length) {
         let serviceAccount: admin.ServiceAccount | undefined;
 
         if (process.env.FIREBASE_SERVICE_ACCOUNT) {
-            serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT) as admin.ServiceAccount;
+            try {
+                serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT) as admin.ServiceAccount;
+            } catch (err) {
+                console.error('[FirebaseAdmin] Failed to parse FIREBASE_SERVICE_ACCOUNT:', (err as Error).message);
+            }
         } else if (process.env.FIREBASE_PROJECT_ID && process.env.FIREBASE_PRIVATE_KEY) {
             serviceAccount = {
                 projectId: process.env.FIREBASE_PROJECT_ID,
