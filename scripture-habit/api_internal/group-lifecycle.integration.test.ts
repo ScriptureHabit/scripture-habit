@@ -49,8 +49,10 @@ describe('Group Management & Lifecycle Integration', () => {
             });
 
             const data = await response.json();
+            if (response.status === 200) createdGroupIds.push(data.groupId);
+            
             expect(response.status).toBe(400);
-            expect(data.error).toContain('limit of 4 groups');
+            expect(data.error).toContain('maximum limit of 4 groups');
         });
 
         it('should return 403 when email is not verified', async () => {
@@ -141,7 +143,7 @@ describe('Group Management & Lifecycle Integration', () => {
                 batch.set(ref, {
                     name: `${prefix} ${i.toString().padStart(2, '0')}`,
                     isPublic: true,
-                    lastMessageAt: admin.firestore.Timestamp.fromDate(new Date(2024, 0, i + 1)),
+                    lastMessageAt: admin.firestore.Timestamp.fromDate(new Date(2030, 0, i + 1)),
                     membersCount: 1
                 });
                 createdGroupIds.push(ref.id);

@@ -10,4 +10,4 @@ export const SCRIPTURE_CATEGORIES = [
     'Other'
 ];
 
-export const MAX_GROUPS_PER_USER = 10;
+export const MAX_GROUPS_PER_USER = 4;

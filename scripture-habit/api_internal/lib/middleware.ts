@@ -123,9 +123,7 @@ export const requireEmailVerified = (req: AuthenticatedRequest, res: Response, n
 
     // Bypass verification for test accounts in non-production environments
     const isTestAccount = req.user.email?.endsWith('@example.com') || req.user.email?.endsWith('@test.local');
-    const isDevOrTest = process.env.NODE_ENV !== 'production' || process.env.VITE_DEV_MODE === 'true';
-
-    if (isTestAccount || isDevOrTest) {
+    if (isTestAccount) {
         return next();
     }
 
