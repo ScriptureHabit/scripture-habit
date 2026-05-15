@@ -115,12 +115,13 @@ const DashboardModals: FC<DashboardModalsProps> = ({
                       key={d} 
                       onClick={() => setSelectedKickDays(d)} 
                       className={`auto-kick-day-option-styled ${selectedKickDays === d ? 'selected' : 'unselected'}`}
+                      data-testid={`habit-pace-option-${d}`}
                     >
                       {d} {t('dashboard.days')}
                     </button>
                   ))}
                 </div>
-                <button className="modal-btn primary mt-2 w-100" onClick={() => setAutoKickStep(1)}>
+                <button className="modal-btn primary mt-2 w-100" onClick={() => setAutoKickStep(1)} data-testid="habit-pace-next-button">
                   {t('groupChat.next')}
                 </button>
               </>
@@ -136,9 +137,10 @@ const DashboardModals: FC<DashboardModalsProps> = ({
                   className="delete-confirmation-input auto-kick-confirm-input-styled" 
                   value={kickConfirmInput} 
                   onChange={(e) => setKickConfirmInput(e.target.value)} 
+                  data-testid="habit-pace-confirm-input"
                 />
                 {autoKickError && <p className="auto-kick-error-text-styled">{autoKickError}</p>}
-                <button className="modal-btn primary mt-1 w-100" onClick={handleAutoKickSubmit}>
+                <button className="modal-btn primary mt-1 w-100" onClick={handleAutoKickSubmit} data-testid="habit-pace-save-button">
                   {t('groupChat.save')}
                 </button>
               </>

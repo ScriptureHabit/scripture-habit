@@ -284,6 +284,7 @@ const Dashboard: FC = () => {
         )}
         {selectedView === 3 && <Profile userData={userData} stats={{ streak: userData.streakCount || 0, totalNotes: userData.totalNotes || 0, daysStudied: userData.daysStudiedCount || 0 }} />}
         {selectedView === 4 && <Donate userData={userData} />}
+        {selectedView !== 2 && <Footer />}
       </DashboardLayout>
 
       <NewNote isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} userData={userData} userGroups={enrichedUserGroups} />
@@ -299,8 +300,6 @@ const Dashboard: FC = () => {
         kickConfirmInput={kickConfirmInput} setKickConfirmInput={setKickConfirmInput}
         autoKickError={autoKickError} handleAutoKickSubmit={handleAutoKickSubmit} setShowAutoKickModal={setShowAutoKickModal}
       />
-
-      {selectedView !== 2 && <Footer />}
     </>
   );
 };

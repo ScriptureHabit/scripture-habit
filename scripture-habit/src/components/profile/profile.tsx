@@ -1,4 +1,3 @@
-
 import { useState, useEffect, FC, useRef, ChangeEvent } from 'react';
 import './profile.css';
 import { useLanguage } from '../../hooks/use-language';
@@ -29,6 +28,7 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
     const { language, setLanguage, t } = useLanguage();
     const { fontSize, setFontSize } = useSettings();
     const navigate = useNavigate();
+    const initializedRef = useRef(false);
     const [nickname, setNickname] = useState('');
     const [stake, setStake] = useState('');
     const [ward, setWard] = useState('');
@@ -129,20 +129,13 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
     };
 
     useEffect(() => {
-        if (userData?.nickname) {
-            setNickname(userData.nickname);
-        }
-        if (userData?.stake) {
-            setStake(userData.stake);
-        }
-        if (userData?.ward) {
-            setWard(userData.ward);
-        }
-        if (userData?.bio) {
-            setBio(userData.bio);
-        }
-        if (userData?.photoURL) {
-            setPhotoURL(userData.photoURL);
+        if (userData && !initializedRef.current) {
+            if (userData.nickname) setNickname(userData.nickname);
+            if (userData.stake) setStake(userData.stake);
+            if (userData.ward) setWard(userData.ward);
+            if (userData.bio) setBio(userData.bio);
+            if (userData.photoURL) setPhotoURL(userData.photoURL);
+            initializedRef.current = true;
         }
     }, [userData]);
 
@@ -230,7 +223,6 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
             setPhotoURL(url);
             toast.success(t('profile.imageUploadSuccess') || "Profile picture updated!");
         } catch (err: unknown) {
-            console.error("Error uploading image:", err);
             toast.error(t('profile.imageUploadError') || "Failed to update profile picture.");
         } finally {
             setIsUploading(false);
@@ -245,7 +237,9 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
         const newBio = bio.trim();
         const newNickname = nickname.trim();
 
-        if (newNickname === userData?.nickname && newStake === (userData?.stake || '') && newWard === (userData?.ward || '') && newBio === (userData?.bio || '')) return;
+        if (newNickname === userData?.nickname && newStake === (userData?.stake || '') && newWard === (userData?.ward || '') && newBio === (userData?.bio || '')) {
+            return;
+        }
 
         setIsSaving(true);
         try {
@@ -258,8 +252,8 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
 
             toast.success(t('profile.successUpdate') || "Profile updated successfully!");
         } catch (err: unknown) {
-            console.error("Error updating profile:", err);
-            toast.error(t('profile.errorUpdate') || "Failed to update profile.");
+            const errorMsg = t('profile.errorUpdate') || "Failed to update profile.";
+            toast.error(errorMsg);
         } finally {
             setIsSaving(false);
         }
@@ -405,6 +399,7 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
                         onChange={(e) => setNickname(e.target.value)}
                         placeholder={t('groupChat.enterNewNickname') || ''}
                         className="profile-input"
+                        data-testid="profile-nickname-input"
                     />
                 </div>
                 <div className="input-group">
@@ -444,6 +439,7 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
                     onClick={handleSaveProfile}
                     disabled={isSaving || !nickname.trim() || (nickname === userData?.nickname && stake === (userData?.stake || '') && ward === (userData?.ward || '') && bio === (userData?.bio || ''))}
                     className="save-btn"
+                    data-testid="profile-save-button"
                 >
                     {isSaving ? t('newNote.saving') : t('profile.save')}
                 </Button>
@@ -680,6 +676,7 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
                         setShowDeleteModal(true);
                     }}
                     className="delete-account-link"
+                    data-testid="delete-account-button"
                 >
                     {t('profile.deleteAccount')}
                 </button>
@@ -702,6 +699,7 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
                                 onChange={(e) => setConfirmNickname(e.target.value)}
                                 placeholder={userData.nickname}
                                 className="modal-confirm-input"
+                                data-testid="delete-confirm-nickname-input"
                             />
                         </div>
 
@@ -710,6 +708,7 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
                                 className={`close-modal-btn ${confirmNickname.trim() === (userData.nickname || '').trim() ? 'delete-btn-active' : 'delete-btn-disabled'}`}
                                 onClick={handleDeleteAccount}
                                 disabled={isDeleting || confirmNickname.trim() !== (userData.nickname || '').trim()}
+                                data-testid="confirm-delete-account-button"
                             >
                                 {isDeleting ? '...' : t('profile.confirmDeleteAccount')}
                             </button>

@@ -30,6 +30,7 @@ router.post('/update-profile', authenticate, verifyAppCheck, async (req: Authent
             return res.status(400).json({ error: 'No fields to update' });
         }
 
+        console.log(`[ProfileUpdate] Updating UID: ${uid} with:`, updates);
         await userRef.update(updates);
 
         // SYNC: Propagate identity changes to recent messages (no await required for response)
@@ -93,9 +94,8 @@ router.post('/initialize-profile', authenticate, verifyAppCheck, async (req: Aut
         // AUTO-VERIFY: For E2E tests using @test.local domain
         if (email?.endsWith('@test.local')) {
             await admin.auth().updateUser(uid, { emailVerified: true });
-            console.log('[Auth] Auto-verified test user email:', email);
         }
-        
+
         console.log('[Auth] Initialized profile for new user:', { uid, email });
         
         res.status(201).json({ 

@@ -149,7 +149,7 @@ const App: React.FC = () => {
     if (base === '/welcome') return 'App Welcome';
     if (base === '/login') return 'App LoginForm';
     if (base === '/signup') return 'App SignupForm';
-    if (base === '/dashboard') return 'App Dashboard';
+    if (base === '/dashboard' || base === '/profile') return 'App Dashboard';
     return 'App';
   };
 
