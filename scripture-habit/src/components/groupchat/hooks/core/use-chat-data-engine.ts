@@ -21,10 +21,20 @@ const useGroupMetadataSync = (groupId: string | null, dispatch: Dispatch<ChatAct
     const unsubscribe = onSnapshot(groupRef, (docSnap) => {
       if (docSnap.exists()) {
         const data = docSnap.data();
-        dispatch({ 
-          type: 'UPDATE_GROUP', 
-          groupData: GroupSchema.parse({ ...data, _groupId: groupId }) as GroupData 
-        });
+        try {
+          const parsedGroup = GroupSchema.parse({ ...data, id: groupId, _groupId: groupId }) as GroupData;
+          dispatch({ 
+            type: 'UPDATE_GROUP', 
+            groupData: parsedGroup
+          });
+        } catch (err) {
+          console.error(`[useGroupMetadataSync] Schema validation failed for group ${groupId}:`, err);
+          // Fallback to unvalidated data to prevent hanging
+          dispatch({ 
+            type: 'UPDATE_GROUP', 
+            groupData: { ...data, id: groupId, _groupId: groupId } as GroupData
+          });
+        }
       } else {
         dispatch({ type: 'SET_NOT_FOUND' });
       }
@@ -109,14 +119,22 @@ const useGroupMembersSync = (groupId: string | null, status: ChatStatus, members
   }, [groupId, members, messages, status, dispatch, membersMap]);
 };
 
-/**
- * Sub-hook for Message Stream (Bundle hydration & Real-time messages)
- */
-const useMessageStreamSync = (groupId: string | null, userData: UserData | null, dispatch: Dispatch<ChatAction>) => {
+const useMessageStreamSync = (groupId: string | null, userData: UserData | null, status: ChatStatus, dispatch: Dispatch<ChatAction>) => {
   const unsubMessagesRef = useRef<Unsubscribe | null>(null);
+  const activeSyncGroupIdRef = useRef<string | null>(null);
 
   useEffect(() => {
-    if (!groupId) return;
+    if (!groupId || !userData?.uid) return;
+    
+    console.log(`[useMessageStreamSync] Effect running for group: ${groupId}, user: ${userData.uid}`);
+    
+    // Prevent redundant syncs for the same group/user combo
+    const syncKey = `${groupId}-${userData.uid}`;
+    if (activeSyncGroupIdRef.current === syncKey) {
+      console.log(`[useMessageStreamSync] Already syncing ${syncKey}, skipping effect body.`);
+      return;
+    }
+    activeSyncGroupIdRef.current = syncKey;
 
     let isCancelled = false;
 
@@ -144,10 +162,11 @@ const useMessageStreamSync = (groupId: string | null, userData: UserData | null,
           }
         });
 
-
-        if (newIncoming.length > 0) {
+        // Always dispatch on first load to clear loading state, or if there are messages
+        if (newIncoming.length > 0 || status === 'loading') {
           dispatch({ type: 'ADD_NEW_MESSAGES', newMessages: newIncoming });
         }
+        
         updatedMessages.forEach(msg => {
           dispatch({ type: 'UPDATE_MESSAGE', messageId: msg.id, data: msg });
         });
@@ -159,37 +178,39 @@ const useMessageStreamSync = (groupId: string | null, userData: UserData | null,
         console.error("[useMessageStreamSync] Listener error:", err);
       });
 
-      if (isCancelled) {
-        unsubscribe();
-      } else {
-        unsubMessagesRef.current = unsubscribe;
-      }
+      unsubMessagesRef.current = unsubscribe;
     };
 
     const initializeMessageStream = async () => {
-      if (userData?.uid) {
-        try {
-          const bundlePromise = (async () => {
-            try {
-              const bundleResponse = await apiClient.get(`/api/groups/bundle/${groupId}`, { 
-                responseType: 'arraybuffer',
-                timeout: 6000 
-              });
-              if (bundleResponse.data && !isCancelled) {
-                await loadBundle(db, bundleResponse.data);
-              }
-            } catch (err) {
-              console.warn("[useMessageStreamSync] Bundle boost failed:", err);
+      try {
+        const fetchBundle = async (retry = false) => {
+          try {
+            const bundleResponse = await apiClient.get(`/api/groups/bundle/${groupId}`, { 
+              responseType: 'arraybuffer',
+              timeout: 6000 
+            });
+            if (bundleResponse.data && !isCancelled) {
+              await loadBundle(db, bundleResponse.data);
             }
-          })();
+          } catch (err: unknown) {
+            const axiosError = err as { response?: { status: number } };
+            if (!retry && axiosError.response?.status === 403 && !isCancelled) {
+              console.warn("[useMessageStreamSync] 403 on bundle boost, retrying once in 500ms...");
+              await new Promise(r => setTimeout(r, 500));
+              return fetchBundle(true);
+            }
+            console.warn("[useMessageStreamSync] Bundle boost failed:", err);
+          }
+        };
 
-          await Promise.race([
-            bundlePromise,
-            new Promise(resolve => setTimeout(resolve, 800))
-          ]);
-        } catch (err) {
-          console.warn("[useMessageStreamSync] Race error:", err);
-        }
+        const bundlePromise = fetchBundle();
+
+        await Promise.race([
+          bundlePromise,
+          new Promise(resolve => setTimeout(resolve, 1200))
+        ]);
+      } catch (err) {
+        console.warn("[useMessageStreamSync] Race error:", err);
       }
       
       if (!isCancelled) startListener();
@@ -199,12 +220,13 @@ const useMessageStreamSync = (groupId: string | null, userData: UserData | null,
 
     return () => {
       isCancelled = true;
+      activeSyncGroupIdRef.current = null;
       if (unsubMessagesRef.current) {
         unsubMessagesRef.current();
         unsubMessagesRef.current = null;
       }
     };
-  }, [groupId, userData?.uid, dispatch]);
+  }, [groupId, userData?.uid, status, dispatch]);
 };
 
 /**
@@ -216,6 +238,7 @@ export const useChatDataEngine = (groupId: string | null, userData: UserData | n
   
   useEffect(() => {
     if (groupId) {
+      console.log(`[useChatDataEngine] Resetting for groupId: ${groupId}`);
       dispatch({ type: 'RESET', groupId });
     }
   }, [groupId]);
@@ -223,7 +246,7 @@ export const useChatDataEngine = (groupId: string | null, userData: UserData | n
   // Sync Subscriptions
   useGroupMetadataSync(groupId, dispatch, t);
   useGroupMembersSync(groupId, state.status, state.groupData?.members, state.messages, state.membersMap, dispatch);
-  useMessageStreamSync(groupId, userData, dispatch);
+  useMessageStreamSync(groupId, userData, state.status, dispatch);
 
   return { state, dispatch };
 };

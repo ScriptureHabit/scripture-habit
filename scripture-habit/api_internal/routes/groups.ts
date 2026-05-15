@@ -41,7 +41,7 @@ router.post('/create-group', authenticate, requireEmailVerified, verifyAppCheck,
             // 2. Prepare Data
             const now = admin.firestore.Timestamp.now();
             const expiresAt = admin.firestore.Timestamp.fromMillis(now.toMillis() + 7 * 24 * 60 * 60 * 1000); // 7 days default
-            const inviteCode = await generateUniqueInviteCode();
+            const inviteCode = await generateUniqueInviteCode(transaction);
 
             const userNick = userData.nickname || 'Owner';
             const groupRef = db.collection('groups').doc();
@@ -84,6 +84,7 @@ router.post('/create-group', authenticate, requireEmailVerified, verifyAppCheck,
             };
 
             // 3. Execution Phase
+            console.error(`[Groups] Creating group ${newGroupId} with data: ${JSON.stringify(newGroupData)}`);
             transaction.set(groupRef, newGroupData);
             transaction.set(groupRef.collection('members').doc(uid), memberData);
 
@@ -721,7 +722,7 @@ router.post('/update-group', authenticate, verifyAppCheck, async (req: Authentic
 /**
  * Helper to generate a unique 6-character alphanumeric invite code.
  */
-async function generateUniqueInviteCode(): Promise<string> {
+async function generateUniqueInviteCode(transaction?: admin.firestore.Transaction): Promise<string> {
     const characters = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // Avoid ambiguous chars O, 0, I, 1
     const groupsRef = db.collection('groups');
     let code = '';
@@ -733,7 +734,15 @@ async function generateUniqueInviteCode(): Promise<string> {
         for (let i = 0; i < 6; i++) {
             code += characters.charAt(Math.floor(Math.random() * characters.length));
         }
-        const existing = await groupsRef.where('inviteCode', '==', code).get();
+        
+        // Use the provided transaction if available, otherwise use regular get()
+        let existing;
+        if (transaction) {
+            existing = await transaction.get(groupsRef.where('inviteCode', '==', code).limit(1));
+        } else {
+            existing = await groupsRef.where('inviteCode', '==', code).limit(1).get();
+        }
+        
         if (existing.empty) {
             isUnique = true;
         }
@@ -754,18 +763,21 @@ router.post('/regenerate-invite-code', authenticate, verifyAppCheck, async (req:
 
     try {
         const groupRef = db.collection('groups').doc(groupId);
-        const groupSnap = await groupRef.get();
+        const { inviteCode, inviteCodeExpiresAt } = await db.runTransaction(async (transaction) => {
+            const gSnap = await transaction.get(groupRef);
+            if (!gSnap.exists) throw new Error('Group not found');
+            const gData = gSnap.data()! as GroupDocument;
+            if (gData.ownerUserId !== uid) throw new Error('Only owner can regenerate codes');
 
-        if (!groupSnap.exists) return res.status(404).json({ error: 'Group not found' });
-        const gData = groupSnap.data()! as GroupDocument;
-        if (gData.ownerUserId !== uid) return res.status(403).json({ error: 'Only owner can regenerate codes' });
+            const code = await generateUniqueInviteCode(transaction);
+            const expires = admin.firestore.Timestamp.fromDate(new Date(Date.now() + expiryDays * 24 * 60 * 60 * 1000));
 
-        const inviteCode = await generateUniqueInviteCode();
-        const inviteCodeExpiresAt = admin.firestore.Timestamp.fromDate(new Date(Date.now() + expiryDays * 24 * 60 * 60 * 1000));
-
-        await groupRef.update({
-            inviteCode,
-            inviteCodeExpiresAt
+            transaction.update(groupRef, {
+                inviteCode: code,
+                inviteCodeExpiresAt: expires
+            });
+            
+            return { inviteCode: code, inviteCodeExpiresAt: expires };
         });
 
         res.status(200).json({ success: true, inviteCode, expiresAt: inviteCodeExpiresAt.toDate().toISOString() });

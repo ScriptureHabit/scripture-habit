@@ -193,21 +193,32 @@ router.post('/leave-all-groups', authenticate, async (req: AuthenticatedRequest,
 
         console.log(`[TestCleanup] Leaving ${groupIds.length} groups for user ${uid}`);
 
+        const { removeMemberFromGroup } = await import('../lib/membership-utils.js');
+
         for (const gid of groupIds) {
             try {
-                // Remove user from group members array and subcollection
                 const groupRef = db.collection('groups').doc(gid);
                 const groupDoc = await groupRef.get();
+                
                 if (groupDoc.exists) {
-                    await groupRef.update({
-                        members: admin.firestore.FieldValue.arrayRemove(uid),
-                        membersCount: admin.firestore.FieldValue.increment(-1),
+                    const data = groupDoc.data();
+                    const createdAt = data?.createdAt?.toMillis?.() || 0;
+                    if (Date.now() - createdAt < 10000) {
+                        console.log(`[TestCleanup] Skipping very new group ${gid}`);
+                        continue;
+                    }
+
+                    console.log(`[TestCleanup] Removing ${uid} from group ${gid}`);
+                    await db.runTransaction(async (transaction) => {
+                        await removeMemberFromGroup(transaction, gid, uid, {
+                            removeFromUserDoc: true,
+                            clearUserGroupId: true,
+                            removeGroupState: true
+                        });
                     });
-                    // Remove member subcollection doc
-                    await groupRef.collection('members').doc(uid).delete().catch(() => {});
                 }
-            } catch (e) {
-                console.warn(`[TestCleanup] Failed to leave group ${gid}:`, e);
+            } catch (err) {
+                console.error(`[TestCleanup] Failed to leave group ${gid}:`, err);
             }
         }
 

@@ -49,7 +49,7 @@ try {
 }
 
 let analytics: Analytics | null = null;
-if (typeof window !== 'undefined') {
+if (typeof window !== 'undefined' && !isEmulator) {
   try {
     analytics = getAnalytics(app);
   } catch (e) {

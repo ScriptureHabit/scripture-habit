@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useRef } from 'react';
 import { db } from '../../../../firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import { safeStorage } from '../../../../utils/storage';
@@ -22,22 +22,15 @@ export const useGroupChatHandlers = ({
   groupData,
   membersMap,
   membersList,
-  initialShowInviteModal,
-  loading,
   setMembersLoading,
   setMembersList,
 }: UseGroupChatHandlersParams) => {
   const { 
-    setShowInviteModal, setShowInactivityPolicyBanner, setShowMobileMenu 
+    setShowInactivityPolicyBanner, setShowMobileMenu 
   } = useChatStore();
   const { setActiveModal, setReactionsToShow } = useModalStore();
   const contextMenuRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (initialShowInviteModal && groupData && !loading) {
-      setShowInviteModal(true);
-    }
-  }, [initialShowInviteModal, groupData, loading, setShowInviteModal]);
 
   const handleShowMembers = useCallback(async () => {
     if (!groupData?.members) return;

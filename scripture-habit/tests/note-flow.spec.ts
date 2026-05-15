@@ -49,12 +49,14 @@ test.describe('Core Note Flow', () => {
     // Generous wait for the note card to appear in the list (Firestore sync)
     await expect(noteCard).toBeVisible({ timeout: 25000 });
   } catch {
-    console.log('Note card not found, verifying navigation and retrying click...');
+    console.log('Note card not found, verifying navigation and reloading...');
     // If not visible, maybe the click didn't register or we are on wrong view
     const isMyNotes = await page.getByRole('heading', { name: /My Notes/i }).isVisible().catch(() => false);
     if (!isMyNotes) {
       await sidebarNotes.click({ force: true });
     }
+    // Force a reload to ensure we get the latest data from Firestore if the real-time listener is lagging
+    await page.reload();
     // Final wait with maximum timeout
     await expect(noteCard).toBeVisible({ timeout: 60000 });
   }

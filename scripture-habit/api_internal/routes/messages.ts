@@ -1,5 +1,5 @@
 import express, { Response } from 'express';
-import { db } from '../lib/firebase-admin.js';
+import { admin, db } from '../lib/firebase-admin.js';
 import { verifyAppCheck, authenticate, requireEmailVerified, AuthenticatedRequest } from '../lib/middleware.js';
 import { postNoteSchema, postMessageSchema, sendCheerSchema, deleteNoteSchema, deleteMessageSchema } from '../lib/schemas.js';
 import { notifyGroupMembers, getUserFcmTokens, sendPushNotification, cleanupTokens } from '../lib/notifications.js';
@@ -25,13 +25,45 @@ router.get('/bundle/:groupId', authenticate, verifyAppCheck, async (req: Authent
     const uid = req.user!.uid;
 
     try {
-        // 1. Check permissions first
+        // 1. Check permissions first (with retry for emulator consistency)
         const groupRef = db.collection('groups').doc(groupId);
-        const gSnap = await groupRef.get();
+        let gSnap = await groupRef.get();
+        let gData = gSnap.data();
+        
+        if (!gSnap.exists || !(gData?.members || []).includes(uid)) {
+            // Retry once after a delay for eventual consistency in emulator
+            // especially for the 'members' array which might lag behind the doc creation
+            console.error(`[Bundle] Consistency check failed, retrying... exists=${gSnap.exists}, inMembers=${(gData?.members || []).includes(uid)}`);
+            await new Promise(resolve => setTimeout(resolve, 800));
+            gSnap = await groupRef.get();
+            gData = gSnap.data();
+        }
+
         if (!gSnap.exists) return res.status(404).json({ error: 'Group not found' });
         
-        const gData = gSnap.data()!;
-        if (!(gData.members || []).includes(uid)) return res.status(403).json({ error: 'Forbidden' });
+        const members = gData?.members || [];
+        const isOwner = gData?.ownerUserId === uid;
+        console.log(`[Bundle] Request: uid=${uid}, groupId=${groupId}, isOwner=${isOwner}`);
+        
+        if (!members.includes(uid) && !isOwner) {
+            console.error(`[Bundle] 403 Forbidden: uid=${uid} not in members and not owner. Members=[${members.join(', ')}]. Full Data: ${JSON.stringify(gData)}`);
+            return res.status(403).json({ error: 'Forbidden' });
+        }
+
+        // HEALING: If user is owner but not in members array (emulator race condition), heal it
+        if (isOwner && !members.includes(uid)) {
+            console.warn(`[Bundle] Healing stale membership for owner ${uid} in group ${groupId}`);
+            await groupRef.update({
+                members: admin.firestore.FieldValue.arrayUnion(uid),
+                membersCount: admin.firestore.FieldValue.increment(members.length === 0 ? 1 : 0)
+            }).catch(err => console.error('[Bundle] Failed to heal membership:', err));
+            // Ensure local copy is correct for bundle generation
+            if (!gData!.members) gData!.members = [];
+            if (!gData!.members.includes(uid)) {
+                gData!.members.push(uid);
+                gData!.membersCount = (gData!.membersCount || 0) + 1;
+            }
+        }
 
         // 3. Generate Bundle (Fresh from Truth)
         console.log(`[Bundle] Generating new bundle for ${groupId}`);

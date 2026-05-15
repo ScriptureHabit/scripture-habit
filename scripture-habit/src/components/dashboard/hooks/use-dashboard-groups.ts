@@ -12,11 +12,16 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
     const [activeGroupId, setActiveGroupId] = useState<string | null>(initialGroupId);
     const [isLoading, setIsLoading] = useState(true);
 
+    const userGroupIds = userData?.groupIds || (userData?.groupId ? [userData.groupId] : []);
+    const userGroupIdsKey = JSON.stringify(userGroupIds);
+
     const groupIds = useMemo(() => {
-        const ids = userData?.groupIds || (userData?.groupId ? [userData.groupId] : []);
-        // Strict deduplication of groupIds
-        return Array.from(new Set(ids));
-    }, [userData?.groupIds, userData?.groupId]);
+        const ids = JSON.parse(userGroupIdsKey) as string[];
+        if (activeGroupId && !ids.includes(activeGroupId)) {
+            return Array.from(new Set([...ids, activeGroupId]));
+        }
+        return ids;
+    }, [userGroupIdsKey, activeGroupId]);
 
     const groupIdsKey = useMemo(() => {
         return JSON.stringify([...groupIds].sort());
@@ -50,6 +55,8 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
                 id: docSnap.id, 
                 ...docSnap.data() 
             } as Group));
+            
+            console.error(`[useDashboardGroups] Snapshot received: ${fetchedGroups.length} groups. isLoading was ${isLoading}`);
 
             setRawUserGroups(prev => {
                 // TRUTH: Merge fresh Firestore data with existing "decorations" 
@@ -127,7 +134,7 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
         });
 
         return () => unsubscribers.forEach(unsub => unsub());
-    }, [userData?.uid, groupIds, groupIdsKey]);
+    }, [userData?.uid, groupIdsKey, groupIds, isLoading]);
 
     // Construct userGroups (Force unreadCount to 0 and ensure uniqueness)
     const userGroups = useMemo(() => {
@@ -170,16 +177,20 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
     }, [activeGroupId, groupIds, userGroups, userData?.uid]);
 
 
-    // Sync active group
+    // Sync active group - only reset if NOT loading and group is truly missing
     useEffect(() => {
-        if (!userData || userGroups.length === 0) return;
+        if (isLoading || !userData || userGroups.length === 0) return;
+        
         const isActiveGroupLoaded = userGroups.find(g => g.id === activeGroupId);
-        if (!isActiveGroupLoaded) {
-            if (activeGroupId && !groupIds.includes(activeGroupId)) {
+        if (!isActiveGroupLoaded && activeGroupId) {
+            // Only switch if the group is definitely not in our groupIds list anymore
+            // (meaning the user left or was kicked)
+            if (!groupIds.includes(activeGroupId)) {
+                console.log(`[useDashboardGroups] Active group ${activeGroupId} not in groupIds, resetting to ${userGroups[0].id}`);
                 setActiveGroupId(userGroups[0].id);
             }
         }
-    }, [userGroups, userData, activeGroupId, groupIds]);
+    }, [userGroups, userData, activeGroupId, groupIds, isLoading]);
 
     // Midnight reset for active group
     const activeGroup = userGroups.find(g => g.id === activeGroupId);

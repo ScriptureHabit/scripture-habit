@@ -21,15 +21,24 @@ test.describe('Invitation Join Flow Stability', () => {
     const userBEmail = `userb-${timestamp}@test.local`;
     const userBPassword = 'Password123!';
     
+    console.log('User A cleaning up old groups...');
+    await pageA.callApi('/api/test/leave-all-groups', {});
+
     console.log('User A creating group...');
     await pageA.goto('/en/group-form');
+
     await pageA.fill('[data-testid="group-name-input"]', groupName);
     await pageA.click('[data-testid="create-group-submit"]', { force: true });
     await pageA.waitForURL(/.*dashboard/);
     
     // Get the invite link from the modal
     await expect(pageA.locator('.invite-modal')).toBeVisible();
-    const inviteLink = await pageA.locator('.invite-link-url').innerText();
+    
+    // Wait for the invite link to actually contain a code (not just the base URL)
+    const inviteLinkLocator = pageA.locator('.invite-link-url');
+    await expect(inviteLinkLocator).not.toHaveText(/join\/\?/, { timeout: 10000 });
+    
+    const inviteLink = await inviteLinkLocator.innerText();
     console.log('Generated Invite Link:', inviteLink);
     
     // Force reload to clear modal and ensure clean state
@@ -215,7 +224,10 @@ test.describe('Invitation Join Flow Stability', () => {
     await pageA.click('[data-testid="create-group-submit"]');
     await pageA.waitForURL(/.*dashboard/);
     await expect(pageA.locator('.invite-modal')).toBeVisible();
-    const inviteLink = await pageA.locator('.invite-link-url').innerText();
+    const inviteLinkLocator = pageA.locator('.invite-link-url');
+    // Wait for the actual code to appear (prevents race where modal shows before code is hydrated)
+    await expect(inviteLinkLocator).not.toHaveText(/join\/\?/, { timeout: 15000 });
+    const inviteLink = await inviteLinkLocator.innerText();
     console.log('Generated Invite Link:', inviteLink);
     
     // Force reload to clear modal and ensure clean state

@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useEffect } from 'react';
 import './group-chat.css';
 import GroupChatMessageListContainer from './subcomponents/group-chat-message-list-container';
 import GroupChatFooter from './subcomponents/group-chat-footer';
@@ -50,6 +50,11 @@ const GroupChatContent: FC = () => {
 };
 
 const GroupChat: FC<GroupChatProps> = (props) => {
+  useEffect(() => {
+    console.log(`[GroupChat] Mounted for group: ${props.groupId}`);
+    return () => console.log(`[GroupChat] Unmounted for group: ${props.groupId}`);
+  }, [props.groupId]);
+
   return (
     <GroupChatProvider {...props} isActive={props.isActive ?? false}>
       <GroupChatContent />

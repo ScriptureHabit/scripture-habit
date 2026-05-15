@@ -110,24 +110,21 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
 
     // 2. Sync with User Profile language
     useEffect(() => {
-        if (!authLoading && userData?.language) {
+        if (!authLoading && userData?.uid) {
             const userLang = userData.language as Language;
-            
+            if (!userLang || !SUPPORTED_LANGUAGES.includes(userLang)) return;
+
             // Only sync from profile if we haven't manually changed it in the last 10 seconds
             const timeSinceManualChange = Date.now() - lastManualChangeTime.current;
-            if (timeSinceManualChange < 10000) {
-                if (userLang !== language) {
-                    console.log(`[LanguageProvider] Ignoring Profile Sync (${userLang}) - Recently changed manually.`);
-                }
-                return;
-            }
+            if (timeSinceManualChange < 10000) return;
 
-            if (SUPPORTED_LANGUAGES.includes(userLang) && userLang !== language) {
+            if (userLang !== language) {
                 console.log(`[LanguageProvider] Syncing from Profile: ${userLang}`);
-                setLanguage(userLang);
+                setLanguageInternal(userLang);
+                safeStorage.set('language', userLang);
             }
         }
-    }, [userData?.language, authLoading, language, setLanguage]);
+    }, [userData?.uid, userData?.language, authLoading, language]);
 
     useEffect(() => {
         const load = async () => {

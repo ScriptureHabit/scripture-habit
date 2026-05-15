@@ -58,8 +58,15 @@ export const chatReducer = (state: ChatState, action: ChatAction): ChatState => 
         groupData: action.groupData || state.groupData,
         userReadCount: action.readCount
       };
-    case 'UPDATE_GROUP':
-      return { ...state, groupData: action.groupData };
+    case 'UPDATE_GROUP': {
+      const isSame = state.groupData && JSON.stringify(state.groupData) === JSON.stringify(action.groupData);
+      if (isSame && state.status === 'active') return state;
+      return { 
+        ...state, 
+        groupData: action.groupData,
+        status: state.status === 'loading' ? 'active' : state.status 
+      };
+    }
     case 'SET_NOT_FOUND':
       return { ...state, status: 'notFound' };
     case 'SET_ERROR':
@@ -67,9 +74,16 @@ export const chatReducer = (state: ChatState, action: ChatAction): ChatState => 
     case 'SET_MESSAGES':
       return { ...state, messages: action.messages, status: 'active' };
     case 'ADD_NEW_MESSAGES': {
+      const { newMessages } = action;
+      
+      if (newMessages.length === 0) {
+        if (state.status === 'loading') return { ...state, status: 'active' };
+        return state;
+      }
+
       // 1. Identify which optimistic IDs are being resolved
       const optimisticIdsToResolve = new Set(
-        action.newMessages.map(m => m.optimisticId).filter(Boolean) as string[]
+        newMessages.map(m => m.optimisticId).filter(Boolean) as string[]
       );
 
       // 2. Filter existing messages to remove resolved optimistic ones
@@ -82,27 +96,30 @@ export const chatReducer = (state: ChatState, action: ChatAction): ChatState => 
       // 3. Combine and Deduplicate by ID
       const allMessagesMap = new Map<string, Message>();
       existingMessages.forEach(m => allMessagesMap.set(m.id, m));
-      action.newMessages.forEach(m => allMessagesMap.set(m.id, m));
+      newMessages.forEach(m => allMessagesMap.set(m.id, m));
 
-      const newMessages = Array.from(allMessagesMap.values()).sort((a, b) => {
+      const finalMessages = Array.from(allMessagesMap.values()).sort((a, b) => {
         const timeA = parseTimestampToMillis(a.createdAt);
         const timeB = parseTimestampToMillis(b.createdAt);
         return timeA - timeB;
       });
 
-      if (newMessages.length === state.messages.length) return state;
+      // Prevent redundant update if messages didn't change (only content/IDs)
+      const isSame = finalMessages.length === state.messages.length && 
+                     finalMessages.every((m, i) => m.id === state.messages[i]?.id && m.text === state.messages[i]?.text);
+      
+      if (isSame && state.status === 'active') return state;
 
-      return { ...state, messages: newMessages, status: 'active' };
+      return { ...state, messages: finalMessages, status: 'active' };
     }
     case 'SET_LOADING_OLDER':
       return { ...state, isLoadingOlder: action.isLoading };
     case 'ADD_OLDER_MESSAGES': {
       const allMessagesMap = new Map<string, Message>();
-      // Older messages first, then existing (so existing/newer overwrites if IDs match)
       action.olderMessages.forEach(m => allMessagesMap.set(m.id, m));
       state.messages.forEach(m => allMessagesMap.set(m.id, m));
 
-      const newMessages = Array.from(allMessagesMap.values()).sort((a, b) => {
+      const combined = Array.from(allMessagesMap.values()).sort((a, b) => {
         const timeA = parseTimestampToMillis(a.createdAt);
         const timeB = parseTimestampToMillis(b.createdAt);
         return timeA - timeB;
@@ -110,7 +127,7 @@ export const chatReducer = (state: ChatState, action: ChatAction): ChatState => 
 
       return {
         ...state,
-        messages: newMessages,
+        messages: combined,
         hasMoreOlder: action.hasMore,
         isLoadingOlder: false
       };
@@ -119,10 +136,28 @@ export const chatReducer = (state: ChatState, action: ChatAction): ChatState => 
       return { ...state, userReadCount: Math.max(state.userReadCount || 0, action.count) };
     case 'SET_SCROLL_DONE':
       return { ...state, initialScrollDone: true };
-    case 'UPDATE_MEMBERS':
-      return { ...state, membersMap: { ...state.membersMap, ...action.newMembers } };
-    case 'UPDATE_MESSAGE':
-      return { ...state, messages: state.messages.map(m => m.id === action.messageId ? { ...m, ...action.data } : m) };
+    case 'UPDATE_MEMBERS': {
+      const newKeys = Object.keys(action.newMembers);
+      if (newKeys.length === 0) return state;
+
+      let hasChanges = false;
+      const updatedMap = { ...state.membersMap };
+      
+      for (const key of newKeys) {
+        if (JSON.stringify(state.membersMap[key]) !== JSON.stringify(action.newMembers[key])) {
+          updatedMap[key] = action.newMembers[key];
+          hasChanges = true;
+        }
+      }
+
+      if (!hasChanges) return state;
+      return { ...state, membersMap: updatedMap };
+    }
+    case 'UPDATE_MESSAGE': {
+      const updatedMessages = state.messages.map(m => m.id === action.messageId ? { ...m, ...action.data } : m);
+      if (JSON.stringify(updatedMessages) === JSON.stringify(state.messages)) return state;
+      return { ...state, messages: updatedMessages };
+    }
     case 'REMOVE_MESSAGE':
       return { ...state, messages: state.messages.filter(m => m.id !== action.messageId) };
     default:

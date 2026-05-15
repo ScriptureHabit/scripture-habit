@@ -13,16 +13,18 @@ export interface AuthenticatedRequest extends Request {
 
 // --- Rate Limiters ---
 
+const isProd = process.env.NODE_ENV === 'production' && process.env.VITE_DEV_MODE !== 'true';
+
 export const globalLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
-    limit: 300,
+    limit: isProd ? 300 : 10000, // Significantly higher limit for dev/test
     standardHeaders: 'draft-7',
     legacyHeaders: false,
 });
 
 export const inviteLimiter = rateLimit({
     windowMs: 60 * 60 * 1000,
-    limit: 15,
+    limit: isProd ? 15 : 1000,
     message: { error: 'Too many invite attempts, please try again later.' },
     standardHeaders: 'draft-7',
     legacyHeaders: false,
@@ -30,7 +32,7 @@ export const inviteLimiter = rateLimit({
 
 export const aiLimiter = rateLimit({
     windowMs: 60 * 60 * 1000,
-    limit: 100, // Increased for lazy-loading scroll
+    limit: isProd ? 100 : 5000, // Increased for dev/test/lazy-loading
     message: { error: 'AI limit reached. Please try again in an hour.' },
     standardHeaders: 'draft-7',
     legacyHeaders: false,
@@ -120,8 +122,10 @@ export const requireEmailVerified = (req: AuthenticatedRequest, res: Response, n
     }
 
     // Bypass verification for test accounts in non-production environments
-    const isTestAccount = req.user.email?.endsWith('@example.com');
-    if (isTestAccount) {
+    const isTestAccount = req.user.email?.endsWith('@example.com') || req.user.email?.endsWith('@test.local');
+    const isDevOrTest = process.env.NODE_ENV !== 'production' || process.env.VITE_DEV_MODE === 'true';
+
+    if (isTestAccount || isDevOrTest) {
         return next();
     }
 

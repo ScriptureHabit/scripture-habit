@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, FC, useMemo } from 'react';
+import { useState, useEffect, useRef, FC, useMemo, useCallback } from 'react';
 import { Navigate, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
@@ -22,6 +22,7 @@ import './dashboard.css';
 
 // Utils & Stores
 import { useModalStore } from '../../store/use-modal-store';
+import { useChatStore } from '../../store/use-chat-store';
 import { getGospelLibraryUrl } from '../../utils/gospel-library-mapper';
 import { useLanguage } from '../../hooks/use-language';
 import { getTodayReadingPlan } from '../../data/daily-reading-plan';
@@ -40,6 +41,12 @@ import { useToday } from '../../hooks/use-today';
 
 const Dashboard: FC = () => {
   const location = useLocation();
+  // Capture these immediately to avoid unmount loops if location.state is cleared
+  const initialGroupIdRef = useRef<string | undefined>(location.state?.groupId || location.state?.initialGroupId);
+  const initialViewRef = useRef<number | undefined>(location.state?.initialView);
+  const initialShowInviteModalRef = useRef<boolean>(!!location.state?.showInviteModal);
+
+  
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { t, language, isLoaded, translateChapterField } = useLanguage();
@@ -48,25 +55,26 @@ const Dashboard: FC = () => {
   const progressRef = useRef<HTMLDivElement>(null);
 
   // Initialize state from URL or location
-  const getInitialState = () => {
+  const getInitialState = useCallback(() => {
     const gid = searchParams.get('groupId');
     const viewParam = searchParams.get('view');
     const openNewNote = searchParams.get('openNewNote');
     
-    // Default to Chat (2) if groupId is provided but view is missing
     const isProfile = location.pathname.includes('/profile');
-    const initialView = viewParam 
+    const selectedView = viewParam 
       ? parseInt(viewParam) 
-      : (isProfile ? 3 : (gid ? 2 : (location.state?.initialView ?? 0)));
+      : (isProfile ? 3 : (gid ? 2 : (initialViewRef.current ?? 0)));
+    
+    const activeGroupId = gid || initialGroupIdRef.current || null;
     
     return {
-      activeGroupId: gid || location.state?.initialGroupId || null as string | null,
-      selectedView: initialView,
+      activeGroupId,
+      selectedView,
       isModalOpen: openNewNote === 'true'
     };
-  };
+  }, [searchParams, location.pathname]);
 
-  const initialState = getInitialState();
+  const initialState = useMemo(() => getInitialState(), [getInitialState]); // Memoize to prevent re-calculation loops
   const [selectedView, setSelectedView] = useState<number>(initialState.selectedView);
   const [showWelcomeStory, setShowWelcomeStory] = useState<boolean>(false);
   const [isInputFocused, setIsInputFocused] = useState<boolean>(false);
@@ -74,15 +82,29 @@ const Dashboard: FC = () => {
   const [newNickname, setNewNickname] = useState<string>('');
   const [unityOverrides, setUnityOverrides] = useState<Record<string, number>>({});
   const today = useToday(); // Triggers re-render at midnight local time
-
-
-
+  // 0. Consumption of initial state
+  const { setShowInviteModal } = useChatStore();
+  
   // 1. Core Hooks
   const syncState = useDashboardSync();
   const { user, userData, status } = syncState;
   const errorMessage = syncState.status === 'error' ? syncState.message : null;
   const { userGroups, activeGroupId, setActiveGroupId, isLoading: groupsLoading } = useDashboardGroups(userData, initialState.activeGroupId);
   const loading = status === 'loading' || groupsLoading;
+
+  useEffect(() => {
+    // If we have initialShowInviteModalRef.current=true, we want to show it.
+    // We set it in the global store so it persists across re-renders/unmounts of GroupChat.
+    if (initialShowInviteModalRef.current && !loading) {
+      setShowInviteModal(true);
+      initialShowInviteModalRef.current = false; // Consumed
+    }
+    
+    // Consume navigation state so it doesn't re-trigger on reload
+    if ((initialGroupIdRef.current || initialViewRef.current) && location.state) {
+      window.history.replaceState({}, '');
+    }
+  }, [loading, setShowInviteModal, location.state]); // Only on mount/loading change
   const { 
     showAutoKickModal, setShowAutoKickModal, autoKickStep, setAutoKickStep,
     selectedKickDays, setSelectedKickDays, kickConfirmInput, setKickConfirmInput,
@@ -140,7 +162,9 @@ const Dashboard: FC = () => {
     if (path.includes('/profile')) {
       if (selectedView !== 3) setSelectedView(3);
     } else if (path.includes('/dashboard')) {
-      if (selectedView !== 0) setSelectedView(0);
+      // Only force back to default view (0) if we are coming from Profile (3)
+      // Views 1 (Stats) and 2 (Chat) are valid sub-views of /dashboard.
+      if (selectedView === 3) setSelectedView(0);
     }
 
     if (searchParams.has('groupId') || searchParams.has('openNewNote') || searchParams.has('view')) {
@@ -148,13 +172,19 @@ const Dashboard: FC = () => {
       const v = searchParams.get('view');
       const openNote = searchParams.get('openNewNote');
 
-
       if (gid) setActiveGroupId(gid);
-      if (v) setSelectedView(parseInt(v));
-      else if (gid) setSelectedView(2); // Switch to chat if only groupId is provided
+      
+      if (v) {
+        setSelectedView(parseInt(v));
+      } else if (gid) {
+        // Only force view 2 if we aren't already on a dashboard sub-view (1 or 2)
+        // or if we specifically want to switch to chat for a new groupId.
+        setSelectedView(2); 
+      }
 
       if (openNote === 'true') setActiveModal('newNote');
       
+      // Clear the search params after consumption
       navigate(location.pathname, { replace: true });
     }
   }, [searchParams, location.pathname, location.state, navigate, setActiveGroupId, setActiveModal, selectedView]);
@@ -248,7 +278,8 @@ const Dashboard: FC = () => {
             groupId={activeGroupId} userData={userData} userGroups={enrichedUserGroups} 
             onInputFocusChange={setIsInputFocused} isExternalModalOpen={isModalOpen} 
             onBack={() => setSelectedView(0)} onGroupSelect={setActiveGroupId} 
-            initialShowInviteModal={!!location.state?.showInviteModal} onUnityUpdate={handleUnityUpdate} isActive={selectedView === 2}
+             // initialShowInviteModal prop removed, using global store instead
+ onUnityUpdate={handleUnityUpdate} isActive={selectedView === 2}
           />
         )}
         {selectedView === 3 && <Profile userData={userData} stats={{ streak: userData.streakCount || 0, totalNotes: userData.totalNotes || 0, daysStudied: userData.daysStudiedCount || 0 }} />}

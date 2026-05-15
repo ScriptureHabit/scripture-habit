@@ -43,7 +43,8 @@ export const test = base.extend<AuthFixtures>({
     // --- HELPER METHODS ---
 
     const callApi = async (endpoint: string, body: Record<string, unknown>) => {
-      return await page.evaluate(async ({ endpoint, body }) => {
+      // 1. Get ID Token from browser context (fast)
+      const idToken = await page.evaluate(async () => {
         const waitForAuth = () => {
           return new Promise((resolve, reject) => {
             let attempts = 0;
@@ -62,23 +63,23 @@ export const test = base.extend<AuthFixtures>({
         };
 
         const user = await waitForAuth() as { getIdToken: () => Promise<string> };
-        const idToken = await user.getIdToken();
-        
-        const response = await fetch(endpoint, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${idToken}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(body)
-        });
+        return await user.getIdToken();
+      });
 
-        if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(`API Error (${endpoint}): ${response.status} ${errorText}`);
-        }
-        return await response.json();
-      }, { endpoint, body });
+      // 2. Perform API call from Node context (robust against page reloads)
+      const response = await page.request.post(endpoint, {
+        headers: {
+          'Authorization': `Bearer ${idToken}`,
+          'Content-Type': 'application/json'
+        },
+        data: body
+      });
+
+      if (!response.ok()) {
+        const errorText = await response.text();
+        throw new Error(`API Error (${endpoint}): ${response.status()} ${errorText}`);
+      }
+      return await response.json();
     };
 
     const setupTestGroup = async (params: { groupName: string; memberCount?: number; timeZone?: string; setYesterdayDate?: boolean; unityPercentage?: number }) => {
