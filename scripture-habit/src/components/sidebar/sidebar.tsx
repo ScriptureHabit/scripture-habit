@@ -73,7 +73,7 @@ const SidebarGroupItem: React.FC<SidebarGroupItemProps> = ({ group, language, is
           const appCheckTokenResponse = await getToken(appCheck, false);
           appCheckToken = appCheckTokenResponse.token;
         }
-        const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? '' : 'https://scripturehabit.app';
+        const API_BASE = '';
 
         const headers: Record<string, string> = {
           'Content-Type': 'application/json',

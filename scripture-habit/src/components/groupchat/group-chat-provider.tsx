@@ -48,7 +48,7 @@ const GroupChatProvider: FC<GroupChatProviderProps> = ({
   groupId, userData, userGroups = [], isActive = false, onBack, onGroupSelect, initialShowInviteModal = false, onInputFocusChange, onUnityUpdate, children 
 }) => {
   const { language, t, tArray, isLoaded } = useLanguage();
-  const API_BASE = Capacitor.isNativePlatform() ? 'https://scripturehabit.app' : '';
+  const API_BASE = (Capacitor.isNativePlatform() && !window.location.hostname.includes('localhost')) ? 'https://scripturehabit.app' : '';
 
   // Zustand Stores
   const chatUI = useChatStore();

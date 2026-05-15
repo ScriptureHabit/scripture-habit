@@ -10,7 +10,7 @@ import { Capacitor } from '@capacitor/core';
  * On web, we use relative paths which work with the Vite proxy in development
  * and same-origin in production.
  */
-const API_BASE = Capacitor.isNativePlatform() ? 'https://scripturehabit.app' : '';
+const API_BASE = (Capacitor.isNativePlatform() && !window.location.hostname.includes('localhost')) ? 'https://scripturehabit.app' : '';
 
 /**
  * Common Axios instance for internal API calls.

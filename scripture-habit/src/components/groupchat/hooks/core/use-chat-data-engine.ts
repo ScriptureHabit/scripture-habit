@@ -194,12 +194,13 @@ const useMessageStreamSync = (groupId: string | null, userData: UserData | null,
             }
           } catch (err: unknown) {
             const axiosError = err as { response?: { status: number } };
-            if (!retry && axiosError.response?.status === 403 && !isCancelled) {
-              console.warn("[useMessageStreamSync] 403 on bundle boost, retrying once in 500ms...");
-              await new Promise(r => setTimeout(r, 500));
+            if (!retry && !isCancelled && (axiosError.response?.status === 403 || axiosError.response?.status === 500)) {
+              const delay = axiosError.response?.status === 500 ? 1000 : 500;
+              console.warn(`[useMessageStreamSync] ${axiosError.response?.status} on bundle boost, retrying in ${delay}ms...`);
+              await new Promise(r => setTimeout(r, delay));
               return fetchBundle(true);
             }
-            console.warn("[useMessageStreamSync] Bundle boost failed:", err);
+            console.warn("[useMessageStreamSync] Bundle boost failed (or max retries reached):", err);
           }
         };
 

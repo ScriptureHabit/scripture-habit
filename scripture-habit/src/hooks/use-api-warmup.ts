@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-const API_BASE = import.meta.env.VITE_API_URL || '';
+const API_BASE = ''; // Always use relative paths on web to support proxy/emulator
 const WARMUP_INTERVAL_MS = 8 * 60 * 1000; // 8 minutes (Vercel idles after ~10 min)
 const IS_PROD = import.meta.env.PROD;
 

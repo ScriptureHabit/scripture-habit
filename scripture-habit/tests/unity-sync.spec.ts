@@ -13,11 +13,15 @@ test.describe('Unity Lifecycle (Full Flow)', () => {
         const almostMidnight = new Date(now);
         almostMidnight.setUTCHours(23, 50, 0, 0);
         
-        await page.clock.install({ time: almostMidnight });
-        console.log('[Test] Navigating to dashboard with mock clock...');
+        console.log('[Test] Navigating to dashboard...');
         await page.goto('/en/dashboard'); 
         await page.waitForLoadState('load');
-        await page.waitForTimeout(2000); // Wait for Firebase to stabilize
+        
+        console.log('[Test] Installing mock clock at 23:50...');
+        await page.clock.install({ time: almostMidnight });
+        
+        // Wait for dashboard to stabilize
+        await expect(page.getByTestId('sidebar-notes')).toBeVisible({ timeout: 20000 });
         
         console.log('--- Step 1: Seeding group ---');
         const setupResult = await page.setupTestGroup({ 

@@ -25,43 +25,67 @@ router.get('/bundle/:groupId', authenticate, verifyAppCheck, async (req: Authent
     const uid = req.user!.uid;
 
     try {
-        // 1. Check permissions first (with retry for emulator consistency)
+        // 1. Check permissions with robust polling for consistency
+        // This is critical for E2E tests where the bundle request might arrive 
+        // before the Firestore write from the 'setup-test-group' call has fully propagated.
         const groupRef = db.collection('groups').doc(groupId);
         let gSnap = await groupRef.get();
         let gData = gSnap.data();
         
-        if (!gSnap.exists || !(gData?.members || []).includes(uid)) {
-            // Retry once after a delay for eventual consistency in emulator
-            // especially for the 'members' array which might lag behind the doc creation
-            console.error(`[Bundle] Consistency check failed, retrying... exists=${gSnap.exists}, inMembers=${(gData?.members || []).includes(uid)}`);
-            await new Promise(resolve => setTimeout(resolve, 800));
+        let attempts = 0;
+        const maxAttempts = 3;
+        const delays = [800, 1500, 2500]; // Increasing backoff
+        
+        while (attempts < maxAttempts) {
+            const inMembers = (gData?.members || []).includes(uid);
+            const isOwner = gData?.ownerUserId === uid;
+            
+            if (gSnap.exists && (inMembers || isOwner)) {
+                // Success - document is found and user has access
+                break;
+            }
+            
+            attempts++;
+            if (attempts >= maxAttempts) break;
+            
+            console.warn(`[Bundle] Consistency check failed (Attempt ${attempts}/${maxAttempts}). exists=${gSnap.exists}, inMembers=${inMembers}, isOwner=${isOwner}. Retrying in ${delays[attempts-1]}ms...`);
+            await new Promise(resolve => setTimeout(resolve, delays[attempts-1]));
+            
             gSnap = await groupRef.get();
             gData = gSnap.data();
         }
 
-        if (!gSnap.exists) return res.status(404).json({ error: 'Group not found' });
+        if (!gSnap.exists) {
+            console.error(`[Bundle] 404: Group ${groupId} not found after ${attempts} attempts.`);
+            return res.status(404).json({ error: 'Group not found' });
+        }
         
         const members = gData?.members || [];
         const isOwner = gData?.ownerUserId === uid;
-        console.log(`[Bundle] Request: uid=${uid}, groupId=${groupId}, isOwner=${isOwner}`);
         
         if (!members.includes(uid) && !isOwner) {
-            console.error(`[Bundle] 403 Forbidden: uid=${uid} not in members and not owner. Members=[${members.join(', ')}]. Full Data: ${JSON.stringify(gData)}`);
+            console.error(`[Bundle] 403 Forbidden: uid=${uid} not in members and not owner. Members=[${members.join(', ')}].`);
             return res.status(403).json({ error: 'Forbidden' });
         }
 
         // HEALING: If user is owner but not in members array (emulator race condition), heal it
         if (isOwner && !members.includes(uid)) {
             console.warn(`[Bundle] Healing stale membership for owner ${uid} in group ${groupId}`);
-            await groupRef.update({
-                members: admin.firestore.FieldValue.arrayUnion(uid),
-                membersCount: admin.firestore.FieldValue.increment(members.length === 0 ? 1 : 0)
-            }).catch(err => console.error('[Bundle] Failed to heal membership:', err));
-            // Ensure local copy is correct for bundle generation
-            if (!gData!.members) gData!.members = [];
-            if (!gData!.members.includes(uid)) {
-                gData!.members.push(uid);
-                gData!.membersCount = (gData!.membersCount || 0) + 1;
+            try {
+                await groupRef.update({
+                    members: admin.firestore.FieldValue.arrayUnion(uid),
+                    membersCount: admin.firestore.FieldValue.increment(members.length === 0 ? 1 : 0)
+                });
+                
+                // Ensure local copy is correct for bundle generation
+                if (!gData!.members) gData!.members = [];
+                if (!gData!.members.includes(uid)) {
+                    gData!.members.push(uid);
+                    gData!.membersCount = (gData!.membersCount || 0) + 1;
+                }
+            } catch (err) {
+                console.error('[Bundle] Failed to heal membership:', err);
+                // We still continue as the user IS the owner, but the bundle might be slightly stale
             }
         }
 

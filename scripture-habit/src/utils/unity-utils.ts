@@ -32,7 +32,7 @@ export const getUnityParticipation = (
   referenceDate: Date = new Date(),
   membersMap?: MembersMap
 ): UnityParticipation => {
-  if (!group || !group.members || group.members.length === 0) {
+  if (!group || !group.members || !Array.isArray(group.members) || group.members.length === 0) {
     return { eligibleMembers: [], postedMembers: [], notPostedMembers: [], percentage: 0 };
   }
 

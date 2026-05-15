@@ -320,7 +320,13 @@ export class NoteService {
             };
 
         } catch (error) {
-            console.error('[NoteService] PostNote Transaction Error:', error);
+            console.error('[NoteService] PostNote Transaction Error Detail:', {
+                uid,
+                shareOption,
+                selectedGroupsCount: selectedShareGroups?.length || 0,
+                errorMessage: error instanceof Error ? error.message : String(error),
+                stack: error instanceof Error ? error.stack : undefined
+            });
             throw error;
         }
     }
