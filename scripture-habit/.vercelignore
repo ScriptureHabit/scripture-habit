@@ -18,5 +18,8 @@ count_keys.js
 dummy_key.txt
 scratch
 tmp_test_metadata.ts
-api_internal
+**/*.test.ts
+**/*.spec.ts
+**/__snapshots__
+**/__tests__
 
