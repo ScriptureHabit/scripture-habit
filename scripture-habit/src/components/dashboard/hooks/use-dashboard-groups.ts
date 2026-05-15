@@ -55,8 +55,6 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
                 id: docSnap.id, 
                 ...docSnap.data() 
             } as Group));
-            
-            console.error(`[useDashboardGroups] Snapshot received: ${fetchedGroups.length} groups. isLoading was ${isLoading}`);
 
             setRawUserGroups(prev => {
                 // TRUTH: Merge fresh Firestore data with existing "decorations" 
