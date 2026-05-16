@@ -2,6 +2,7 @@
 importScripts('https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/10.7.0/firebase-messaging-compat.js');
 
+// 本番環境のFirebase設定
 firebase.initializeApp({
     apiKey: "AIzaSyCBgfSff0SJ6Rg1tGmU2z4MBccGMrA2jbM",
     authDomain: "scripture-habit-auth.firebaseapp.com",
@@ -13,11 +14,10 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
-// Background message handler
+// バックグラウンド通知のハンドラ
 messaging.onBackgroundMessage((payload) => {
     console.log('[sw.js] Received background message ', payload);
 
-    // Prefer data block but fallback to notification if sent by other tools
     const notificationTitle = payload.data?.title || payload.notification?.title || 'Scripture Habit';
     const notificationBody = payload.data?.body || payload.notification?.body || '';
     
@@ -28,11 +28,10 @@ messaging.onBackgroundMessage((payload) => {
         data: payload.data || payload.notification,
     };
 
-    // self.registration.showNotification(notificationTitle, notificationOptions);
     return self.registration.showNotification(notificationTitle, notificationOptions);
 });
 
-// Handle notification click
+// 通知クリック時の動作
 self.addEventListener('notificationclick', (event) => {
     event.notification.close();
 
@@ -47,7 +46,6 @@ self.addEventListener('notificationclick', (event) => {
         targetPath += (targetPath.includes('?') ? '&' : '?') + 'openNewNote=true';
     }
     
-    // Prefix with language if provided
     if (lang && lang.length >= 2 && lang.length <= 3) {
         targetPath = `/${lang}${targetPath}`;
     }
@@ -73,14 +71,14 @@ self.addEventListener('notificationclick', (event) => {
     );
 });
 
-// Handle messages from the UI
+// UIからのメッセージ（アップデート用）
 self.addEventListener('message', (event) => {
     if (event.data && event.data.type === 'SKIP_WAITING') {
         self.skipWaiting();
     }
 });
 
-const CACHE_NAME = 'scripture-habit-v4'; // Bumped version
+const CACHE_NAME = 'scripture-habit-v5'; // バージョンを上げて更新を促す
 const OFFLINE_URL = '/offline.html';
 
 const ASSETS_TO_CACHE = [
@@ -91,19 +89,17 @@ const ASSETS_TO_CACHE = [
     '/favicon-192.png'
 ];
 
-// Install Event
 self.addEventListener('install', (event) => {
     self.skipWaiting();
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
             return cache.addAll(ASSETS_TO_CACHE).catch(err => {
-                console.warn('[sw.js] Pre-caching semi-failed, but proceeding:', err);
+                console.warn('[sw.js] Pre-caching failed:', err);
             });
         })
     );
 });
 
-// Activate Event
 self.addEventListener('activate', (event) => {
     event.waitUntil(
         caches.keys().then((cacheNames) => {
@@ -119,84 +115,60 @@ self.addEventListener('activate', (event) => {
     self.clients.claim();
 });
 
-// Fetch Event
+// Fetchイベント（リクエスト制御）
 self.addEventListener('fetch', (event) => {
-    if (event.request.method !== 'GET') return;
+    // 1. GET以外のリクエスト、またはHTTP(S)以外のリクエスト（chrome-extension等）は無視
+    if (event.request.method !== 'GET' || !event.request.url.startsWith('http')) return;
 
-    // Bypass cache for API calls
-    if (event.request.url.includes('/api/')) {
-        event.respondWith(fetch(event.request));
+    const url = new URL(event.request.url);
+
+    // 2. API、Firebase Auth、Viteのホットリロード(HMR)はキャッシュしない
+    if (url.pathname.includes('/api/') || 
+        url.hostname.includes('securetoken') || 
+        url.pathname.includes('@vite') || 
+        url.pathname.includes('__vite')) {
         return;
     }
 
-    // Navigation requests (Stale-While-Revalidate for App Shell)
+    // 3. ナビゲーションリクエスト（ページ遷移）
     if (event.request.mode === 'navigate') {
         event.respondWith(
-            caches.match('/').then((cachedResponse) => {
-                const fetchPromise = fetch('/').then((networkResponse) => {
-                    if (networkResponse && networkResponse.status === 200) {
-                        // "Clean" the response if it was redirected
-                        let cleanResponse = networkResponse;
-                        if (networkResponse.redirected) {
-                            cleanResponse = new Response(networkResponse.body, {
-                                status: networkResponse.status,
-                                statusText: networkResponse.statusText,
-                                headers: networkResponse.headers
-                            });
-                        }
-
-                        const responseToCache = cleanResponse.clone();
-                        caches.open(CACHE_NAME).then((cache) => {
-                            cache.put('/', responseToCache);
-                        });
-                        return cleanResponse;
-                    }
-                    return networkResponse;
-                }).catch(() => caches.match(OFFLINE_URL));
-
-                // Ensure cached response is also "clean" if it was somehow cached with redirected: true
-                if (cachedResponse && cachedResponse.redirected) {
-                    return new Response(cachedResponse.body, {
-                        status: cachedResponse.status,
-                        statusText: cachedResponse.statusText,
-                        headers: cachedResponse.headers
-                    });
-                }
-
-                return cachedResponse || fetchPromise;
+            fetch(event.request).then((networkResponse) => {
+                // 通信成功時はキャッシュを更新して返す
+                const responseToCache = networkResponse.clone();
+                caches.open(CACHE_NAME).then((cache) => {
+                    cache.put('/', responseToCache);
+                });
+                return networkResponse;
+            }).catch(() => {
+                // ネットワーク失敗時はキャッシュのTOPか、最悪オフラインページ
+                return caches.match('/').then(cached => cached || caches.match(OFFLINE_URL));
             })
         );
         return;
     }
 
-    // Custom strategies for assets
+    // 4. その他のアセット（画像、JS、CSS、フォントなど）
     event.respondWith(
         caches.match(event.request).then((response) => {
-            if (response) return response;
+            if (response) return response; // キャッシュがあればそれを返す
             
             return fetch(event.request).then((networkResponse) => {
-                if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
-                    return networkResponse;
-                }
+                // 成功した画像やフォントなどの静的ファイルのみ動的にキャッシュ
+                if (networkResponse && networkResponse.status === 200) {
+                    const isStaticAsset = event.request.destination === 'image' || 
+                                         event.request.destination === 'font' ||
+                                         url.hostname.includes('fonts.gstatic.com');
 
-                // Cache fonts, images, and other static assets on the fly
-                const isStaticAsset = event.request.destination === 'image' || 
-                                     event.request.destination === 'script' || 
-                                     event.request.destination === 'style' ||
-                                     event.request.destination === 'font' ||
-                                     event.request.url.startsWith('https://fonts.');
-
-                if (isStaticAsset && event.request.url.startsWith('http')) {
-                    const responseToCache = networkResponse.clone();
-                    caches.open(CACHE_NAME).then((cache) => {
-                        cache.put(event.request, responseToCache);
-                    }).catch(err => {
-                        console.warn('[sw.js] Cache put failed:', err);
-                    });
+                    if (isStaticAsset) {
+                        const responseToCache = networkResponse.clone();
+                        caches.open(CACHE_NAME).then((cache) => {
+                            cache.put(event.request, responseToCache);
+                        });
+                    }
                 }
                 return networkResponse;
             }).catch(() => {
-                // If network fails and it's an image, return logo
                 if (event.request.destination === 'image') {
                     return caches.match('/logo.svg');
                 }
