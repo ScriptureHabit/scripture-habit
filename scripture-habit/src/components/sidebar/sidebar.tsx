@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import './sidebar.css';
 import { SidebarData } from '../../data/data';
@@ -171,6 +170,7 @@ const Sidebar: React.FC<SidebarProps> = ({ selected, setSelected, userGroups = [
     setActiveGroupId(groupId);
     setSelected(2); // Switch to GroupChat view
     setShowGroupModal(false);
+    navigate(`/${language}/dashboard`);
   };
 
   const getUnityPercentageLocal = (group: Group): number => {
@@ -196,7 +196,10 @@ const Sidebar: React.FC<SidebarProps> = ({ selected, setSelected, userGroups = [
         <div className="menu">
           {/* Dashboard */}
           <div className={selected === 0 ? 'menuItem active' : 'menuItem'}
-            onClick={() => navigate(`/${language}/dashboard`)}
+            onClick={() => {
+              setSelected(0);
+              navigate(`/${language}/dashboard`);
+            }}
             data-testid="sidebar-dashboard"
           >
             <DashboardIcon />
@@ -205,7 +208,10 @@ const Sidebar: React.FC<SidebarProps> = ({ selected, setSelected, userGroups = [
 
           {/* My Notes */}
           <div className={selected === 1 ? 'menuItem active' : 'menuItem'}
-            onClick={() => setSelected(1)}
+            onClick={() => {
+              setSelected(1);
+              navigate(`/${language}/dashboard`);
+            }}
             data-testid="sidebar-notes"
           >
             <NotesIcon />
@@ -257,7 +263,10 @@ const Sidebar: React.FC<SidebarProps> = ({ selected, setSelected, userGroups = [
 
           <div 
             className={selected === 4 ? 'menuItem active' : 'menuItem'} 
-            onClick={() => setSelected(4)}
+            onClick={() => {
+              setSelected(4);
+              navigate(`/${language}/dashboard`);
+            }}
             data-testid="sidebar-story"
           >
             <UilBookOpen />
