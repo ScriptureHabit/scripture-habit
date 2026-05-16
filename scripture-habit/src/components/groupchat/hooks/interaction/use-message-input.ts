@@ -39,7 +39,12 @@ export const useMessageInput = (
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    // Prevent sending if the user is still composing (e.g. Japanese IME)
+    if (e.nativeEvent.isComposing) return;
+
+    // On desktop (width > 768px), Enter sends the message and Shift+Enter adds a new line.
+    // On mobile, Enter always adds a new line to avoid accidental sends with the virtual keyboard.
+    if (e.key === 'Enter' && !e.shiftKey && window.innerWidth > 768) {
       e.preventDefault();
       onSendMessage();
     }

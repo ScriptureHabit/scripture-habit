@@ -8,10 +8,6 @@ android
 ios
 .firebase
 .github
-*.png
-*.jpg
-*.jpeg
-*.gif
 test_output.txt
 reproduce_date.cjs
 count_keys.js
