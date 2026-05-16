@@ -80,7 +80,7 @@ self.addEventListener('message', (event) => {
     }
 });
 
-const CACHE_NAME = 'scripture-habit-v3'; // Bumped version
+const CACHE_NAME = 'scripture-habit-v4'; // Bumped version
 const OFFLINE_URL = '/offline.html';
 
 const ASSETS_TO_CACHE = [
