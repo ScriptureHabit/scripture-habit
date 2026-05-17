@@ -6,7 +6,9 @@ import { test, expect } from '@playwright/test';
  * and the end-to-end flow of user signup and login.
  */
 test.describe('Auth & Onboarding Flow', () => {
-  
+  // Use a completely unauthenticated context for auth flow tests
+  test.use({ storageState: { cookies: [], origins: [] } });
+
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
   });

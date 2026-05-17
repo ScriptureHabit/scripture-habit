@@ -111,6 +111,10 @@ export const test = base.extend<AuthFixtures>({
     // This ensures User A (Shared Tester) starts each test with a clean slate
     try {
       await pageWithHelpers.callApi('/api/test/leave-all-groups', {});
+      await pageWithHelpers.callApi('/api/auth/update-profile', { language: 'en' });
+      await page.evaluate(() => {
+        window.localStorage.setItem('language', 'en');
+      });
       // console.log('[AuthFixture] Automatic post-test cleanup successful.');
     } catch (e) {
       console.warn('[AuthFixture] Automatic post-test cleanup failed (best effort):', e);
