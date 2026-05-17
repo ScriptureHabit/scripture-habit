@@ -12,6 +12,8 @@ export default {
         kick_body: "⚠️ 由於不活躍，您已被從 '{groupName}' 中移除。隨時歡迎您回歸！💪",
         ownership_transferred: "👑 **所有權已轉移**\n前任所有者不活躍。所有權已轉移給經過驗證的活躍成員。",
         members_removed: "👋 **{count} 位成員**因不活躍而被移除。",
-        bot_name: "Scripture Habit Bot"
+        bot_name: "Scripture Habit Bot",
+        streak_warning_title: "📖 今天你有度过属灵的时间吗？",
+        streak_warning_body: "你的连续记录快要中断了！只需花几分钟让心静下来 ✨"
     }
 };

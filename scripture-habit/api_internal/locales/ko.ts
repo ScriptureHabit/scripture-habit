@@ -12,6 +12,8 @@ export default {
         kick_body: "⚠️ 활동이 없어서 '{groupName}'에서 퇴장되셨습니다. 준비가 되시면 언제든지 다시 돌아오세요! 💪",
         ownership_transferred: "👑 **소유권 이전됨**\n이전 소유자가 비활성 상태였습니다. 소유권이 확인된 활성 멤버에게 이전되었습니다.",
         members_removed: "👋 **{count}명**이 비활동으로 인해 퇴장되었습니다.",
-        bot_name: "Scripture Habit Bot"
+        bot_name: "Scripture Habit Bot",
+        streak_warning_title: "📖 오늘 영적인 시간을 보내셨나요?",
+        streak_warning_body: "연속 기록이 끊어질 위기입니다! 단 몇 분이라도 마음을 가라앉히는 시간을 가져보세요 ✨"
     }
 };

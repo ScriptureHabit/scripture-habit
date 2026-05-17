@@ -42,8 +42,11 @@ self.addEventListener('notificationclick', (event) => {
     
     let targetPath = groupId ? `/dashboard?groupId=${groupId}&view=2` : '/dashboard';
     
+    // アナリティクス計測用パラメータを付与
+    targetPath += (targetPath.includes('?') ? '&' : '?') + 'opened_from_push=1';
+    
     if (openNewNote === 'true') {
-        targetPath += (targetPath.includes('?') ? '&' : '?') + 'openNewNote=true';
+        targetPath += '&openNewNote=true';
     }
     
     if (lang && lang.length >= 2 && lang.length <= 3) {
@@ -53,10 +56,16 @@ self.addEventListener('notificationclick', (event) => {
     const urlToOpen = new URL(targetPath, self.location.origin).href;
 
     event.waitUntil(
-        clients.matchAll({ type: 'window', includeUncontrolled: true })
-            .then((windowClients) => {
-                for (let i = 0; i < windowClients.length; i++) {
-                    const client = windowClients[i];
+        self.registration.getNotifications().then((notifications) => {
+            // Close all existing notifications to avoid clutter
+            notifications.forEach((notification) => {
+                notification.close();
+            });
+        }).then(() => {
+            return clients.matchAll({ type: 'window', includeUncontrolled: true });
+        }).then((windowClients) => {
+            for (let i = 0; i < windowClients.length; i++) {
+                const client = windowClients[i];
                     if (client.url.startsWith(self.location.origin)) {
                         if ('focus' in client) {
                             client.navigate(urlToOpen);
@@ -78,7 +87,7 @@ self.addEventListener('message', (event) => {
     }
 });
 
-const CACHE_NAME = 'scripture-habit-v5'; // バージョンを上げて更新を促す
+const CACHE_NAME = 'scripture-habit-v7'; // バージョンを上げて更新を促す
 const OFFLINE_URL = '/offline.html';
 
 const ASSETS_TO_CACHE = [

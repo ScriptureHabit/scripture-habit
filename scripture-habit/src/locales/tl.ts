@@ -217,6 +217,7 @@ export default {
             }
         },
         groupChat: {
+            myGroups: "Aking mga Grupo",
             send: "Ipadala",
             public: "Pampubliko",
             private: "Pribado",

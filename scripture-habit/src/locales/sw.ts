@@ -217,6 +217,7 @@ export default {
             }
         },
         groupChat: {
+            myGroups: "Vikundi Vyangu",
             send: "Tuma",
             public: "Umma",
             private: "Binafsi",

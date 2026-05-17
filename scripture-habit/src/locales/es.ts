@@ -216,6 +216,7 @@ export default {
             }
         },
         groupChat: {
+            myGroups: "Mis Grupos",
             translation: "Traducción",
             send: "Enviar",
             public: "Público",

@@ -28,6 +28,7 @@ export interface UserData {
   timeZone?: string;
   language?: string;
   notificationEnabled?: boolean;
+  hasFcmToken?: boolean;
   
   // Onboarding/Metadata
   createdAt?: Timestamp | string | number | Date;

@@ -41,7 +41,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           userDocRef,
           (docSnap) => {
             if (docSnap.exists()) {
-              setUserData({ uid: currentUser.uid, ...docSnap.data() } as UserData);
+              const data = { uid: currentUser.uid, ...docSnap.data() } as UserData;
+              setUserData(data);
+              
+              // Ensure existing users with tokens have the hasFcmToken flag correctly set
+              import('../utils/notification-helper').then(({ syncFcmTokenFlag }) => {
+                syncFcmTokenFlag(currentUser.uid, data.hasFcmToken);
+              });
             } else {
               setUserData(null);
             }

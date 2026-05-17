@@ -12,6 +12,8 @@ export default {
         kick_body: "⚠️ Você foi removido de '{groupName}' por inatividade. Adoraríamos ter você de volta quando estiver pronto! 💪",
         ownership_transferred: "👑 **Propriedade Transferida**\nO proprietário anterior estava inativo. A propriedade foi transferida para um membro ativo verificado.",
         members_removed: "👋 **{count} membro(s)** foram removidos por inatividade.",
-        bot_name: "Scripture Habit Bot"
+        bot_name: "Scripture Habit Bot",
+        streak_warning_title: "📖 Você teve seu momento espiritual hoje?",
+        streak_warning_body: "Sua ofensiva está em risco! Tire apenas alguns minutos para aquietar seu coração ✨"
     }
 };

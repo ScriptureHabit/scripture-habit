@@ -91,11 +91,12 @@ export const requestNotificationPermission = async (
                             fcmTokens: arrayUnion(token)
                         }, { merge: true });
                         
-                        // Secure existing users by removing from public doc 
+                        // Secure existing users by removing from public doc, and set the query flag
                         try {
                            const userRef = doc(db, 'users', userId);
                            await updateDoc(userRef, {
-                               fcmTokens: arrayRemove(token)
+                               fcmTokens: arrayRemove(token),
+                               hasFcmToken: true
                            });
                         } catch {
                            // Ignore if field doesn't exist
@@ -163,7 +164,8 @@ export const disableNotifications = async (userId: string | null | undefined): P
                     
                     const userRef = doc(db, 'users', userId);
                     await updateDoc(userRef, {
-                        fcmTokens: arrayRemove(token)
+                        fcmTokens: arrayRemove(token),
+                        hasFcmToken: false
                     });
                 } catch {
                     // Ignore if field cleanup fails
@@ -178,5 +180,38 @@ export const disableNotifications = async (userId: string | null | undefined): P
     } catch (error: unknown) {
         console.error('Error disabling notifications:', error);
         return false;
+    }
+};
+
+/**
+ * Checks if the user has an FCM token and updates the hasFcmToken flag
+ * if it's currently missing or false. Used for backward compatibility/healing.
+ */
+export const syncFcmTokenFlag = async (userId: string | null | undefined, currentFlagStatus?: boolean): Promise<void> => {
+    if (!userId || currentFlagStatus === true) return;
+    if (!('serviceWorker' in navigator) || !('Notification' in window) || !('PushManager' in window)) return;
+    
+    // Only proceed if permission is already granted natively
+    if (Notification.permission === 'granted') {
+        try {
+            const registration = await navigator.serviceWorker.getRegistration();
+            if (registration && messaging) {
+                const token = await getToken(messaging, {
+                    vapidKey: VAPID_KEY,
+                    serviceWorkerRegistration: registration
+                });
+                
+                if (token) {
+                    // Update hasFcmToken to true if a token exists but the flag is false/undefined
+                    const userRef = doc(db, 'users', userId);
+                    await updateDoc(userRef, {
+                        hasFcmToken: true
+                    });
+                    console.log('[NotificationHelper] Successfully healed missing hasFcmToken flag for user.');
+                }
+            }
+        } catch (e) {
+            console.warn('[NotificationHelper] Failed to sync FCM token flag', e);
+        }
     }
 };

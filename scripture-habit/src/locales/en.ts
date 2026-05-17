@@ -181,6 +181,7 @@ export default {
             defaultTitle: "Weekly Recap"
         },
         groupChat: {
+            myGroups: "My Groups",
             send: "Send",
             public: "Public",
             private: "Private",

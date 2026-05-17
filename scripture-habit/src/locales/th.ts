@@ -218,6 +218,7 @@ export default {
 
         },
         groupChat: {
+            myGroups: "กลุ่มของฉัน",
             send: "ส่ง",
             public: "สาธารณะ",
             private: "ส่วนตัว",

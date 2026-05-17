@@ -218,6 +218,7 @@ export default {
             }
         },
         groupChat: {
+            myGroups: "Nhóm của tôi",
             send: "Gửi",
             public: "Công khai",
             private: "Riêng tư",

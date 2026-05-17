@@ -9,7 +9,8 @@ import { ErrorFallback } from './components/common/error-fallback';
 import { useQuery } from '@tanstack/react-query';
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
-import { db } from './firebase';
+import { db, analytics } from './firebase';
+import { logEvent } from 'firebase/analytics';
 import { doc, getDoc } from 'firebase/firestore';
 import { FirebaseError } from 'firebase/app';
 
@@ -117,6 +118,23 @@ const App: React.FC = () => {
   });
 
   const location = useLocation();
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    if (searchParams.get('opened_from_push') === '1') {
+      if (analytics) {
+        logEvent(analytics, 'notification_opened', {
+          source: 'pwa_push'
+        });
+        console.log('[Analytics] Logged notification_opened event');
+      }
+      
+      // Clean up the URL so it doesn't log again on refresh
+      searchParams.delete('opened_from_push');
+      const newUrl = window.location.pathname + (searchParams.toString() ? `?${searchParams.toString()}` : '') + window.location.hash;
+      window.history.replaceState({}, '', newUrl);
+    }
+  }, [location.search]);
 
   const isMaintenance = MAINTENANCE_MODE || (systemStatusError instanceof FirebaseError && systemStatusError.code === 'resource-exhausted') || systemStatus?.maintenance;
   if (isMaintenance) {

@@ -139,6 +139,7 @@ export default {
             }
         },
         groupChat: {
+            myGroups: "私のグループ",
             send: "送信",
             public: "パブリック",
             private: "プライベート",

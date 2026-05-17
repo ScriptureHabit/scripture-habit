@@ -217,6 +217,7 @@ export default {
             }
         },
         groupChat: {
+            myGroups: "我的群組",
             send: "發送",
             public: "公開",
             private: "私人",

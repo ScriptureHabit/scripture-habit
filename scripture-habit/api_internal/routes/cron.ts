@@ -1,9 +1,11 @@
 import express, { Request, Response, NextFunction } from 'express';
-import { admin, db } from '../lib/firebase-admin.js';
+import { admin, db, messaging } from '../lib/firebase-admin.js';
+import { StreakReminderEngine } from '../lib/streak-reminder.js';
 import { CounterService } from '../services/counter-service.js';
 import { ArchiveService } from '../services/archive-service.js';
 import { InactivityService } from '../services/inactivity-service.js';
 import { calculateMemberStatus, InactivityMemberData, InactivityGroupData } from '../lib/inactivity-utils.js';
+import { t } from '../lib/i18n.js';
 
 interface CronReport {
     groupId: string;
@@ -466,6 +468,146 @@ router.all('/reset-unity-at-midnight', verifyCronSecret, async (_req: Request, r
     } catch (err: unknown) {
         const error = err as Error;
         console.error('[Cron] Error in unity reset:', error);
+        res.status(500).send('Error: ' + error.message);
+    }
+});
+
+/**
+ * Daily Streak Reminder (Timezone-Aware)
+ * Runs hourly to send 20:30 local time notifications to uncompleted users.
+ */
+router.all('/streak-warning', verifyCronSecret, async (req: Request, res: Response) => {
+    console.log('[Cron] Starting timezone-aware streak warnings...');
+    try {
+        const now = (req.headers['x-test-time'] && process.env.FIRESTORE_EMULATOR_HOST)
+            ? new Date(req.headers['x-test-time'] as string)
+            : new Date();
+        const targetTimezones = StreakReminderEngine.getTargetTimezones(now, 20); // Targeting 20:XX local time
+
+        if (targetTimezones.length === 0) {
+            return res.json({ message: 'No timezones currently match 20:XX. Skipping.' });
+        }
+
+        // Query users in those timezones who have FCM tokens
+        const MAX_TIMEZONES_PER_QUERY = 10;
+        let eligibleUsers: { id: string, data: any }[] = [];
+
+        // Firestore 'in' queries support max 10 values, so we chunk timezones
+        for (let i = 0; i < targetTimezones.length; i += MAX_TIMEZONES_PER_QUERY) {
+            const tzChunk = targetTimezones.slice(i, i + MAX_TIMEZONES_PER_QUERY);
+            const snapshot = await db.collection('users')
+                .where('timeZone', 'in', tzChunk)
+                .get();
+
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                if (data.hasFcmToken === true) {
+                    eligibleUsers.push({ id: doc.id, data });
+                }
+            });
+        }
+
+        let sentCount = 0;
+        let failedTokens = 0;
+        let skippedCount = 0;
+        let batch = db.batch(); 
+        let batchOpCount = 0;
+
+        // Group tokens by language
+        const tokensByLang: Record<string, { token: string, uid: string }[]> = {};
+
+        for (const user of eligibleUsers) {
+            const { data } = user;
+            const needsReminder = StreakReminderEngine.needsReminder(data.lastPostDate, now, data.timeZone);
+            
+            if (needsReminder) {
+                // Fetch private/tokens for this user
+                const tokensDoc = await db.collection('users').doc(user.id).collection('private').doc('tokens').get();
+                const fcmTokens = tokensDoc.data()?.fcmTokens || [];
+
+                if (fcmTokens.length === 0) continue; // Skip if no tokens in subcollection
+
+                const lang = data.language || 'en';
+                if (!tokensByLang[lang]) tokensByLang[lang] = [];
+
+                for (const token of fcmTokens) {
+                    tokensByLang[lang].push({ token, uid: user.id });
+                }
+            } else {
+                skippedCount++;
+            }
+        }
+
+        // Send notifications per language
+        for (const [lang, allTokensToSend] of Object.entries(tokensByLang)) {
+            if (allTokensToSend.length === 0) continue;
+
+            const title = t(lang, 'notifications.streak_warning_title');
+            const body = t(lang, 'notifications.streak_warning_body');
+
+            // Chunk tokens just in case > 500 (FCM limit)
+            for (let i = 0; i < allTokensToSend.length; i += 500) {
+                const chunkMapping = allTokensToSend.slice(i, i + 500);
+                const chunk = chunkMapping.map(tk => tk.token);
+
+                const message = {
+                    notification: { title, body },
+                    data: {
+                        type: 'streak_reminder'
+                    },
+                    tokens: chunk
+                };
+
+                const response = await messaging.sendEachForMulticast(message);
+                sentCount += response.successCount;
+
+                if (response.failureCount > 0) {
+                    failedTokens += response.failureCount;
+                    // Clean up invalid tokens
+                    for (let idx = 0; idx < response.responses.length; idx++) {
+                        const resp = response.responses[idx];
+                        if (!resp.success) {
+                            const errorString = resp.error?.code;
+                            if (errorString === 'messaging/invalid-registration-token' ||
+                                errorString === 'messaging/registration-token-not-registered') {
+                                
+                                const invalidToken = chunk[idx];
+                                const uid = chunkMapping[idx].uid;
+                                
+                                batch.update(db.collection('users').doc(uid).collection('private').doc('tokens'), {
+                                    fcmTokens: admin.firestore.FieldValue.arrayRemove(invalidToken)
+                                });
+                                batchOpCount++;
+
+                                if (batchOpCount >= 400) {
+                                    await batch.commit();
+                                    batch = db.batch();
+                                    batchOpCount = 0;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if (batchOpCount > 0) {
+            await batch.commit();
+        }
+
+        res.json({
+            message: 'Streak warnings processed.',
+            stats: { 
+                targetTimezones: targetTimezones.length,
+                eligibleUsersWithTokens: eligibleUsers.length,
+                skippedCompletedUsers: skippedCount,
+                tokensSentTo: sentCount,
+                failedTokensCleanedUp: failedTokens
+            }
+        });
+    } catch (err: unknown) {
+        const error = err as Error;
+        console.error('[Cron] Error in streak warnings:', error);
         res.status(500).send('Error: ' + error.message);
     }
 });
