@@ -21,14 +21,27 @@ const PWAUpdateHandler: React.FC = () => {
         <div className="pwa-update-toast-container">
           <span className="pwa-update-message">{updateMessage}</span>
           <button
-            onClick={() => {
+            onClick={(e) => {
               console.log('Update button clicked. Registration:', registration);
+              
+              // Immediate visual feedback
+              const btn = e.currentTarget;
+              btn.disabled = true;
+              btn.innerHTML = '<span class="loading-spinner" style="display:inline-block; margin-right:8px; width:12px; height:12px; border:2px solid white; border-top-color:transparent; border-radius:50%; animation:spin 1s linear infinite;"></span> Updating...';
+              btn.style.opacity = '0.7';
+              btn.style.cursor = 'not-allowed';
 
               if (registration) {
                 const worker = registration.waiting || registration.installing;
                 if (worker) {
                   worker.postMessage({ type: 'SKIP_WAITING' });
+                  // Fallback reload if controllerchange doesn't fire within 3 seconds
+                  setTimeout(() => window.location.reload(), 3000);
+                } else {
+                  window.location.reload();
                 }
+              } else {
+                window.location.reload();
               }
             }}
             className="pwa-update-button"
