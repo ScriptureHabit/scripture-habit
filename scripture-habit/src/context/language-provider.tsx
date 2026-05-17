@@ -129,11 +129,10 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
 
             if (userLang !== language) {
                 console.log(`[LanguageProvider] Syncing from Profile: ${userLang}`);
-                setLanguageInternal(userLang);
-                safeStorage.set('language', userLang);
+                setLanguage(userLang);
             }
         }
-    }, [userData?.uid, userData?.language, authLoading, language]);
+    }, [userData?.uid, userData?.language, authLoading, language, setLanguage]);
 
     useEffect(() => {
         const load = async () => {

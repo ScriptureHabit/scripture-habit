@@ -159,7 +159,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Streak Warning Integratio
             failureCount: 1,
             responses: [
                 { success: true },
-                { success: false, error: { code: 'messaging/registration-token-not-registered' } as any }
+                { success: false, error: { code: 'messaging/registration-token-not-registered' } as unknown as import('firebase-admin/messaging').FirebaseMessagingError }
             ]
         });
 

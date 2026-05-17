@@ -490,7 +490,7 @@ router.all('/streak-warning', verifyCronSecret, async (req: Request, res: Respon
 
         // Query users in those timezones who have FCM tokens
         const MAX_TIMEZONES_PER_QUERY = 10;
-        let eligibleUsers: { id: string, data: any }[] = [];
+        const eligibleUsers: { id: string, data: admin.firestore.DocumentData }[] = [];
 
         // Firestore 'in' queries support max 10 values, so we chunk timezones
         for (let i = 0; i < targetTimezones.length; i += MAX_TIMEZONES_PER_QUERY) {
