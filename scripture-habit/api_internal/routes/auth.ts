@@ -13,7 +13,7 @@ const router = express.Router();
  * Update User Profile and Sync to Chats
  */
 router.post('/update-profile', authenticate, verifyAppCheck, async (req: AuthenticatedRequest, res: Response, next) => {
-    const { nickname, photoURL, stake, ward, bio } = req.body;
+    const { nickname, photoURL, stake, ward, bio, language } = req.body;
     const uid = req.user!.uid;
 
     try {
@@ -25,6 +25,7 @@ router.post('/update-profile', authenticate, verifyAppCheck, async (req: Authent
         if (stake !== undefined) updates.stake = stake;
         if (ward !== undefined) updates.ward = ward;
         if (bio !== undefined) updates.bio = bio;
+        if (language !== undefined) updates.language = language;
 
         if (Object.keys(updates).length === 0) {
             return res.status(400).json({ error: 'No fields to update' });
@@ -50,7 +51,7 @@ router.post('/update-profile', authenticate, verifyAppCheck, async (req: Authent
  * Initialize User Profile (for Google/Social Signup)
  */
 router.post('/initialize-profile', authenticate, verifyAppCheck, async (req: AuthenticatedRequest, res: Response, next) => {
-    const { nickname, timeZone } = req.body;
+    const { nickname, timeZone, language } = req.body;
     const uid = req.user!.uid;
     const email = req.user!.email;
 
@@ -76,6 +77,7 @@ router.post('/initialize-profile', authenticate, verifyAppCheck, async (req: Aut
             email: email || '',
             nickname: nickname || 'New User',
             timeZone: timeZone || 'UTC',
+            language: language || 'en',
             createdAt: now,
             joinedAt: now,
             groupId: "",

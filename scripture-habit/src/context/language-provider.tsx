@@ -112,7 +112,16 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
     useEffect(() => {
         if (!authLoading && userData?.uid) {
             const userLang = userData.language as Language;
-            if (!userLang || !SUPPORTED_LANGUAGES.includes(userLang)) return;
+            
+            if (!userLang || !SUPPORTED_LANGUAGES.includes(userLang)) {
+                // Backend doesn't have a valid language for this user yet. 
+                // Let's sync the currently active auto-detected language to the backend.
+                apiClient.post('/api/auth/update-profile', { language })
+                    .catch(err => {
+                        console.warn('[LanguageProvider] Failed to auto-sync language to profile:', err);
+                    });
+                return;
+            }
 
             // Only sync from profile if we haven't manually changed it in the last 10 seconds
             const timeSinceManualChange = Date.now() - lastManualChangeTime.current;
