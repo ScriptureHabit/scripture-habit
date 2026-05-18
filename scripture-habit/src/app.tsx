@@ -18,7 +18,7 @@ import { useAuth } from './hooks/use-auth';
 import { MAINTENANCE_MODE } from './config';
 import * as Sentry from "@sentry/react";
 import { handleInAppBrowserRedirect, isInAppBrowser } from './utils/browser-detection';
-import { setupMessageListener } from './utils/notification-helper';
+import { setupMessageListener, clearAllNotifications } from './utils/notification-helper';
 
 import { LanguageProvider } from './context/language-provider';
 import { SUPPORTED_LANGUAGES } from './config/languages';
@@ -65,6 +65,17 @@ const App: React.FC = () => {
       setShowBrowserWarning(true);
     }
 
+    // Clear notifications on initial load
+    clearAllNotifications();
+
+    // Clear notifications when app returns to foreground
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        clearAllNotifications();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
     // Setup foreground notifications
     const unsubscribe = setupMessageListener((payload) => {
       const title = payload.data?.title || payload.notification?.title || 'Notification';
@@ -77,6 +88,7 @@ const App: React.FC = () => {
     });
 
     return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       if (unsubscribe) {
         unsubscribe();
       }

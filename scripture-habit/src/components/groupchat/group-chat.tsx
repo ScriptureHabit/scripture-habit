@@ -9,6 +9,7 @@ import GroupChatProvider from './group-chat-provider';
 import { useModalStore } from '../../store/use-modal-store';
 import { UserData } from '../../types/user';
 import { Group } from '../../types/chat';
+import { clearGroupNotifications } from '../../utils/notification-helper';
 
 interface GroupChatProps {
   groupId: string;
@@ -52,8 +53,14 @@ const GroupChatContent: FC = () => {
 const GroupChat: FC<GroupChatProps> = (props) => {
   useEffect(() => {
     console.log(`[GroupChat] Mounted for group: ${props.groupId}`);
+    
+    // Clear any OS push notifications for this specific group when the user opens it
+    if (props.isActive) {
+       clearGroupNotifications(props.groupId);
+    }
+
     return () => console.log(`[GroupChat] Unmounted for group: ${props.groupId}`);
-  }, [props.groupId]);
+  }, [props.groupId, props.isActive]);
 
   return (
     <GroupChatProvider {...props} isActive={props.isActive ?? false}>

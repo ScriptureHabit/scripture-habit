@@ -215,3 +215,58 @@ export const syncFcmTokenFlag = async (userId: string | null | undefined, curren
         }
     }
 };
+
+/**
+ * Clears all existing push notifications displayed by the service worker.
+ */
+export const clearAllNotifications = async (): Promise<void> => {
+    if (!('serviceWorker' in navigator)) return;
+    try {
+        const registration = await navigator.serviceWorker.getRegistration();
+        if (registration) {
+            const notifications = await registration.getNotifications();
+            let clearedCount = 0;
+            notifications.forEach(notification => {
+                // Only clear streak reminders, leaving group messages and other important notifications intact
+                if (notification.data?.type === 'streak_reminder') {
+                    notification.close();
+                    clearedCount++;
+                }
+            });
+            if (clearedCount > 0) {
+                console.log(`[NotificationHelper] Cleared ${clearedCount} streak notifications upon app launch.`);
+            }
+        }
+    } catch (e) {
+        console.warn('[NotificationHelper] Failed to clear notifications', e);
+    }
+};
+
+/**
+ * Clears all existing push notifications for a specific group.
+ * Useful when the user opens the group manually.
+ */
+export const clearGroupNotifications = async (groupId: string): Promise<void> => {
+    if (!('serviceWorker' in navigator)) return;
+    if (!groupId) return;
+    try {
+        const registration = await navigator.serviceWorker.getRegistration();
+        if (registration) {
+            const notifications = await registration.getNotifications();
+            let clearedCount = 0;
+            notifications.forEach(notification => {
+                // Clear group messages that match the opened group
+                if (notification.data?.groupId === groupId) {
+                    notification.close();
+                    clearedCount++;
+                }
+            });
+            if (clearedCount > 0) {
+                console.log(`[NotificationHelper] Cleared ${clearedCount} notifications for group ${groupId}.`);
+            }
+        }
+    } catch (e) {
+        console.warn(`[NotificationHelper] Failed to clear notifications for group ${groupId}`, e);
+    }
+};
+
