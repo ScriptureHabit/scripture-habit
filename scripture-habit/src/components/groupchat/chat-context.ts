@@ -18,8 +18,7 @@ export interface ChatDataContextType {
   isOwner: boolean;
   language: string;
   userGroups: Group[];
-  isRecapLoading: boolean;
-  isRecapAvailable: boolean;
+
   unityModalData: {
     posted: { id: string; nickname: string }[];
     notPosted: { id: string; nickname: string }[];
@@ -50,7 +49,7 @@ export interface ChatGroupActionsContextType {
   togglePublicStatus: () => Promise<void>;
   handleCopyInviteLink: () => void;
   handleRegenerateInviteCode: () => Promise<void>;
-  handleGenerateWeeklyRecap: () => Promise<void>;
+
   handleUserProfileClick: (userId: string | null) => Promise<void>;
   handleShowMembers: () => void;
   handleShowUnityModal: () => void;

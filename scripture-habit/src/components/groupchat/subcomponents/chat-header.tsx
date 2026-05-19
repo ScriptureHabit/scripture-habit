@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { UilArrowLeft, UilPen, UilCopy, UilCommentAlt, UilTrashAlt, UilTimes, UilUsersAlt, UilAnalysis } from '@iconscout/react-unicons';
+import { UilArrowLeft, UilPen, UilCopy, UilCommentAlt, UilTrashAlt, UilTimes, UilUsersAlt } from '@iconscout/react-unicons';
 import GroupMenuItem from './group-menu-item';
 import { 
   useChatData, 
@@ -13,14 +13,13 @@ import { Group } from '../../../types/chat';
 const ChatHeader: FC = () => {
   // 1. Data
   const { 
-      groupData, unityPercentage, isOwner, language, groupId, userGroups,
-      isRecapAvailable, isRecapLoading
+      groupData, unityPercentage, isOwner, language, groupId, userGroups
   } = useChatData();
 
   // 2. Actions
   const { 
       togglePublicStatus, handleShowMembers, handleShowUnityModal,
-      handleGenerateWeeklyRecap, handleCopyInviteLink,
+      handleCopyInviteLink,
       translatedGroupName, translatedGroupDesc
   } = useChatGroupActions();
 
@@ -99,16 +98,7 @@ const ChatHeader: FC = () => {
                 <UilCommentAlt size="16" className="copy-icon" />
                 <span className="desktop-members-label">{t('groupChat.members')}</span>
               </div>
-              {isOwner && (
-                <div
-                  className={`invite-code-display members-btn-desktop recap-btn-desktop ${(!isRecapAvailable || isRecapLoading) ? 'disabled' : ''}`}
-                  onClick={() => isRecapAvailable && !isRecapLoading && handleGenerateWeeklyRecap()}
-                  title={!isRecapAvailable ? t('groupChat.recapRateLimit') : t('groupChat.generateWeeklyRecap')}
-                >
-                  <span className="emoji-icon-large">📊</span>
-                  {isRecapLoading && <div className="spinner-mini"></div>}
-                </div>
-              )}
+
               {isOwner ? (
                 <div
                   className="invite-code-display members-btn-desktop danger-action-btn"
@@ -202,14 +192,7 @@ const ChatHeader: FC = () => {
                 <span className="menu-item-label">{t('groupChat.members')}</span>
               </div>
 
-              {isOwner && (
-                <div className="mobile-menu-item-action" onClick={() => { if (isRecapAvailable && !isRecapLoading) { handleGenerateWeeklyRecap(); setShowMobileMenu(false); } }}>
-                  <div className="menu-item-icon-circle pink-bg">
-                    <UilAnalysis size="20" />
-                  </div>
-                  <span className="menu-item-label">{t('groupChat.generateWeeklyRecap')}</span>
-                </div>
-              )}
+
 
               <div className="mobile-menu-divider-thin" />
 

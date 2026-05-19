@@ -42,10 +42,6 @@ const SystemMessage: FC<SystemMessageProps> = ({ msg, t, kickThreshold = 3 }) =>
       return t('groupChat.unityAnnouncement');
     }
 
-    if (msg.messageType === 'weeklyRecap') {
-      return text;
-    }
-
     // Legacy format: parse from text
     const streakPatterns = [
       /\*\*(.+?) reached a (\d+) day streak/,           // English

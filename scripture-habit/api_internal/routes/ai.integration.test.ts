@@ -473,161 +473,6 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('AI Route Integration', ()
         });
     });
 
-    describe('POST /generate-weekly-recap', () => {
-        beforeEach(async () => {
-            await db.collection('groups').doc(GROUP_ID).delete();
-        });
-
-        it('should return 404 if group does not exist', async () => {
-            const res = await fetch(`${setup.baseUrl}/api/ai/generate-weekly-recap`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer token-${USER_ID}`
-                },
-                body: JSON.stringify({
-                    groupId: 'NON_EXISTENT',
-                    language: 'en'
-                })
-            });
-            expect(res.status).toBe(404);
-        });
-
-        it('should return 403 if user is not the owner of the group', async () => {
-            await db.collection('groups').doc(GROUP_ID).set({
-                ownerUserId: 'SOME_OTHER_OWNER'
-            });
-
-            const res = await fetch(`${setup.baseUrl}/api/ai/generate-weekly-recap`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer token-${USER_ID}`
-                },
-                body: JSON.stringify({
-                    groupId: GROUP_ID,
-                    language: 'en'
-                })
-            });
-            expect(res.status).toBe(403);
-        });
-
-        it('should return 429 if recap generated too recently (cooldown check)', async () => {
-            const recentDate = new Date();
-            recentDate.setDate(recentDate.getDate() - 2); // 2 days ago (less than 6)
-
-            await db.collection('groups').doc(GROUP_ID).set({
-                ownerUserId: USER_ID,
-                lastRecapGeneratedAt: admin.firestore.Timestamp.fromDate(recentDate)
-            });
-
-            const res = await fetch(`${setup.baseUrl}/api/ai/generate-weekly-recap`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer token-${USER_ID}`
-                },
-                body: JSON.stringify({
-                    groupId: GROUP_ID,
-                    language: 'en'
-                })
-            });
-            expect(res.status).toBe(429);
-            const data = await res.json();
-            expect(data.error).toContain('already generated recently');
-        });
-
-        it('should return 200 with no notes message if no study notes exist', async () => {
-            await db.collection('groups').doc(GROUP_ID).set({
-                ownerUserId: USER_ID
-            });
-
-            const res = await fetch(`${setup.baseUrl}/api/ai/generate-weekly-recap`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer token-${USER_ID}`
-                },
-                body: JSON.stringify({
-                    groupId: GROUP_ID,
-                    language: 'en'
-                })
-            });
-            expect(res.status).toBe(200);
-            const data = await res.json();
-            expect(data.message).toBe('No notes found for this week.');
-        });
-
-        it('should successfully generate weekly recap', async () => {
-            await db.collection('groups').doc(GROUP_ID).set({
-                ownerUserId: USER_ID
-            });
-
-            // Seed some messages with isNote
-            const groupRef = db.collection('groups').doc(GROUP_ID);
-            await groupRef.collection('messages').add({
-                text: 'We read about faith.',
-                isNote: true,
-                createdAt: admin.firestore.Timestamp.now()
-            });
-
-            mockGeminiResponse('This was an amazing week studying faith.');
-
-            const res = await fetch(`${setup.baseUrl}/api/ai/generate-weekly-recap`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer token-${USER_ID}`
-                },
-                body: JSON.stringify({
-                    groupId: GROUP_ID,
-                    language: 'en'
-                })
-            });
-
-            expect(res.status).toBe(200);
-            const data = await res.json();
-            expect(data.success).toBe(true);
-            expect(data.recap).toBe('This was an amazing week studying faith.');
-
-            // Check that group's lastRecapGeneratedAt was updated
-            const groupSnap = await db.collection('groups').doc(GROUP_ID).get();
-            expect(groupSnap.data()?.lastRecapGeneratedAt).toBeDefined();
-        });
-
-        it('should survive if weekly recap persistence fails', async () => {
-            await db.collection('groups').doc(GROUP_ID).set({
-                ownerUserId: USER_ID
-            });
-
-            await db.collection('groups').doc(GROUP_ID).collection('messages').add({
-                text: 'We read about faith.',
-                isNote: true,
-                createdAt: admin.firestore.Timestamp.now()
-            });
-
-            mockGeminiResponse('This was an amazing week studying faith.');
-
-            // Force persistence to fail
-            vi.spyOn(admin.firestore.CollectionReference.prototype, 'add').mockRejectedValue(new Error('Messages full'));
-
-            const res = await fetch(`${setup.baseUrl}/api/ai/generate-weekly-recap`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer token-${USER_ID}`
-                },
-                body: JSON.stringify({
-                    groupId: GROUP_ID,
-                    language: 'en'
-                })
-            });
-
-            expect(res.status).toBe(200); // Succeeds despite database write failure
-            const data = await res.json();
-            expect(data.recap).toBe('This was an amazing week studying faith.');
-        });
-    });
 
     describe('POST /generate-discussion-topic', () => {
         it('should generate starter topic without groupId context', async () => {
@@ -736,6 +581,40 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('AI Route Integration', ()
                 })
             });
             expect(res.status).toBe(429);
+        });
+
+        it('should return cached recap if generated too recently and recap exists in collection', async () => {
+            const recentDate = new Date();
+            recentDate.setDate(recentDate.getDate() - 3);
+
+            await db.collection('users').doc(USER_ID).set({
+                uid: USER_ID,
+                lastRecapGeneratedAt: admin.firestore.Timestamp.fromDate(recentDate)
+            });
+
+            const userRef = db.collection('users').doc(USER_ID);
+            await userRef.collection('recaps').add({
+                text: 'This is a cached recap from a few days ago.',
+                createdAt: admin.firestore.Timestamp.fromDate(recentDate)
+            });
+
+            const res = await fetch(`${setup.baseUrl}/api/ai/generate-personal-weekly-recap`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer token-${USER_ID}`
+                },
+                body: JSON.stringify({
+                    uid: USER_ID,
+                    language: 'en'
+                })
+            });
+
+            expect(res.status).toBe(200);
+            const data = await res.json();
+            expect(data.success).toBe(true);
+            expect(data.recap).toBe('This is a cached recap from a few days ago.');
+            expect(data.fromCache).toBe(true);
         });
 
         it('should return 200 with no notes message if no personal notes found', async () => {
@@ -889,20 +768,6 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('AI Route Integration', ()
             expect(data.translations['1']).toBe('Text One');
         });
 
-        it('should bypass and return mocked weekly recap', async () => {
-            await db.collection('groups').doc(GROUP_ID).set({ ownerUserId: USER_ID });
-            const res = await fetch(`${setup.baseUrl}/api/ai/generate-weekly-recap`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer token-${USER_ID}`
-                },
-                body: JSON.stringify({ groupId: GROUP_ID, language: 'en' })
-            });
-            expect(res.status).toBe(200);
-            const data = await res.json();
-            expect(data.recap).toBe('Mocked Weekly Recap');
-        });
 
         it('should bypass and return mocked discussion topic', async () => {
             const res = await fetch(`${setup.baseUrl}/api/ai/generate-discussion-topic`, {
@@ -935,25 +800,6 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('AI Route Integration', ()
     });
 
     describe('Failure and Timeout coverage', () => {
-        it('should handle timeout when fetching messages for weekly recap', async () => {
-            await db.collection('groups').doc(GROUP_ID).set({ ownerUserId: USER_ID });
-
-            // Force query get to reject to simulate timeout/error
-            vi.spyOn(admin.firestore.Query.prototype, 'get').mockRejectedValue(new Error('Firestore timeout'));
-
-            const res = await fetch(`${setup.baseUrl}/api/ai/generate-weekly-recap`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer token-${USER_ID}`
-                },
-                body: JSON.stringify({ groupId: GROUP_ID, language: 'en' })
-            });
-
-            expect(res.status).toBe(500);
-            const data = await res.json();
-            expect(data.error).toBe('AI weekly recap failed');
-        });
 
         it('should handle timeout when fetching notes for personal recap', async () => {
             await db.collection('users').doc(USER_ID).set({ uid: USER_ID });

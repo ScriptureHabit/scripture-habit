@@ -29,8 +29,7 @@ export type MessageType =
   | 'system' 
   | 'userJoined' 
   | 'userLeft' 
-  | 'unityAnnouncement' 
-  | 'weeklyRecap';
+  | 'unityAnnouncement';
 
 /**
  * Frontend Message interface

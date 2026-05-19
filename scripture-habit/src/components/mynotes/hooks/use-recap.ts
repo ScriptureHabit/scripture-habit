@@ -14,32 +14,29 @@ export const useRecapOperations = (userData: UserData, language: string, t: (k: 
   const [loading, setLoading] = useState(false);
 
   const generateRecap = async (notesCount: number) => {
-    // 1. Rate Limit Checks
-    if (userData?.lastRecapGeneratedAt) {
+    // 1. Rate Limit / Cached View Checks
+    const isWithinCooldown = userData?.lastRecapGeneratedAt && (() => {
       const lastGenerated = parseTimestampToDate(userData.lastRecapGeneratedAt);
       const now = new Date();
       const diffTime = Math.abs(now.getTime() - lastGenerated.getTime());
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      return diffDays < 6;
+    })();
 
-      if (diffDays < 6) {
-        const daysLeft = 6 - diffDays;
-        toast.info(t('groupChat.recapRateLimit') + " " + t('groupChat.daysLeft', { days: daysLeft }));
-        return null;
-      }
-    }
-
-    if (notesCount === 0) {
+    if (!isWithinCooldown && notesCount === 0) {
       toast.info(t('myNotes.noNotesForRecap'));
       return null;
     }
 
     // 2. API Call
     setLoading(true);
-    toast.info(t('myNotes.generatingRecap'));
+    toast.info(isWithinCooldown ? (t('myNotes.fetchingRecentRecap') || "Retrieving recent recap...") : t('myNotes.generatingRecap'));
     try {
       const response = await apiClient.post('/api/ai/generate-personal-weekly-recap', {
         uid: userData.uid,
         language: language
+      }, {
+        timeout: 45000 // 45s timeout for AI recap generation
       });
 
       if (response.data.recap) {

@@ -90,7 +90,6 @@ const MyNotes: FC<MyNotesProps> = ({ userData, isModalOpen, setIsModalOpen, user
 
   // Recap Logic
   let canGenerateRecap = true;
-  let recapDaysLeft = 0;
 
   if (userData?.lastRecapGeneratedAt) {
     const lastGenerated = parseTimestampToDate(userData.lastRecapGeneratedAt);
@@ -100,7 +99,6 @@ const MyNotes: FC<MyNotesProps> = ({ userData, isModalOpen, setIsModalOpen, user
 
     if (diffDays < 6) {
       canGenerateRecap = false;
-      recapDaysLeft = 6 - diffDays;
     }
   }
 
@@ -121,20 +119,20 @@ const MyNotes: FC<MyNotesProps> = ({ userData, isModalOpen, setIsModalOpen, user
 
       <div className="my-notes-action-center">
         <div className="action-card-container">
-          <div className={`action-card recap-card ${!canGenerateRecap || notes.length === 0 ? 'locked' : 'available'}`}>
+          <div className={`action-card recap-card ${(!canGenerateRecap || notes.length > 0) ? 'available' : 'locked'}`}>
             <button
               className="generate-recap-main-btn"
               onClick={() => handleGenerateRecap(notes.length)}
-              disabled={recapLoading || !canGenerateRecap || notes.length === 0}
+              disabled={recapLoading || (canGenerateRecap && notes.length === 0)}
             >
               <div className="btn-content">
                 <UilAnalysis size="24" className="recap-icon" />
                 <span>
-                  {recapLoading ? t('myNotes.loading') :
-                    !canGenerateRecap && notes.length > 0 ? t('groupChat.daysLeft', { days: recapDaysLeft }) :
+                  {recapLoading ? (canGenerateRecap ? t('myNotes.loading') : (t('myNotes.fetchingRecentRecap') || "Retrieving...")) :
+                    !canGenerateRecap ? (t('myNotes.viewRecentRecap') || "✨ View Recent Recap") :
                       t('myNotes.generateRecap')}
                 </span>
-                {canGenerateRecap && notes.length > 0 && !recapLoading && <div className="stars-decoration">✨</div>}
+                {!recapLoading && <div className="stars-decoration">✨</div>}
               </div>
               <div className="shimmer-effect"></div>
             </button>

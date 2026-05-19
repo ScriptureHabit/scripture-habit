@@ -1,7 +1,7 @@
 import express, { Response } from 'express';
 import { admin, db } from '../lib/firebase-admin.js';
 import { aiLimiter, verifyAppCheck, authenticate, AuthenticatedRequest } from '../lib/middleware.js';
-import { ponderQuestionsSchema, translateSchema, translateBatchSchema, weeklyRecapSchema, personalRecapSchema, languageNames } from '../lib/schemas.js';
+import { ponderQuestionsSchema, translateSchema, translateBatchSchema, personalRecapSchema, languageNames } from '../lib/schemas.js';
 import axios from 'axios';
 import crypto from 'crypto';
 import * as Sentry from "@sentry/node";
@@ -29,7 +29,7 @@ const callGemini = async (prompt: string): Promise<string> => {
                 thinkingLevel: "minimal"
             }
         }
-    }, { timeout: 15000 }); // 15s timeout
+    }, { timeout: 30000 }); // 30s timeout
 
     const candidate = response.data?.candidates?.[0];
     
@@ -357,90 +357,6 @@ router.post('/translate-batch', authenticate, aiLimiter, verifyAppCheck, async (
     }
 });
 
-/**
- * AI Weekly Recap
- */
-router.post('/generate-weekly-recap', authenticate, aiLimiter, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
-    const validation = weeklyRecapSchema.safeParse(req.body);
-    if (!validation.success) return res.status(400).json({ error: 'Invalid input' });
-
-    const { groupId, language } = validation.data;
-    const baseLanguage = language?.split('-')[0] || 'en';
-    const targetLangName = languageNames[baseLanguage] || 'English';
-    const uid = req.user?.uid;
-
-    if (process.env.SKIP_AI === 'true') {
-        return res.json({ success: true, recap: "Mocked Weekly Recap" });
-    }
-
-    try {
-        const groupRef = db.collection('groups').doc(groupId);
-        const gSnap = await groupRef.get();
-        if (!gSnap.exists) return res.status(404).send('Group not found');
-        const gData = gSnap.data() || {};
-        
-        if (gData.ownerUserId !== uid) return res.status(403).send('Access denied: Owner only');
-
-        // TRUTH: Prevent duplicate generations within the same week (6-day cooldown)
-        if (gData.lastRecapGeneratedAt) {
-            const lastDate = (gData.lastRecapGeneratedAt as admin.firestore.Timestamp).toDate();
-            const sixDaysAgo = new Date();
-            sixDaysAgo.setDate(sixDaysAgo.getDate() - 6);
-            if (lastDate > sixDaysAgo) {
-                return res.status(429).json({ error: 'Recap already generated recently. Please wait a week.' });
-            }
-        }
-
-        const sevenDaysAgo = new Date();
-        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-        
-        const messagesQuery = groupRef.collection('messages')
-            .where('createdAt', '>=', admin.firestore.Timestamp.fromDate(sevenDaysAgo))
-            .orderBy('createdAt', 'asc')
-            .limit(100) 
-            .get();
-        const snapshot = await withTimeout(messagesQuery, 8000, 'Firestore timeout');
-
-        if (!snapshot) throw new Error('Failed to fetch messages');
-
-        const notes: string[] = [];
-        (snapshot as admin.firestore.QuerySnapshot).forEach(d => { if (d.data().isNote || d.data().isEntry) notes.push(d.data().text); });
-        if (notes.length === 0) return res.json({ message: 'No notes found for this week.' });
-
-        const prompt = `Task: Summarize these anonymous scripture study notes into an encouraging weekly reflection for a group.
-            Notes: ${notes.join('\n\n')}
-            
-            【STRICT RULES】:
-            1. You MUST respond ONLY in ${targetLangName}.
-            2. Keep the tone encouraging, warm, and spiritually uplifting.`;
-            
-        const generatedText = await callGemini(prompt);
-
-        const recapData = {
-            text: generatedText,
-            createdAt: admin.firestore.FieldValue.serverTimestamp(),
-            senderId: 'system',
-            isSystemMessage: true,
-            type: 'weeklyRecap',
-            messageType: 'weeklyRecap'
-        };
-
-        // Best effort persistence
-        try {
-            const persistTask = (async () => {
-                await groupRef.collection('messages').add(recapData);
-                await groupRef.update({ lastRecapGeneratedAt: admin.firestore.FieldValue.serverTimestamp() });
-            })();
-            await withTimeout(persistTask, 8000, 'Persistence timeout');
-        } catch (e) {
-            console.warn('[AI Recap] Failed to persist recap:', (e as Error).message);
-        }
-
-        res.json({ success: true, recap: generatedText });
-    } catch (err) {
-        handleAiError(res, err, 'weekly recap');
-    }
-});
 
 /**
  * AI Discussion Starter
@@ -507,12 +423,35 @@ router.post('/generate-personal-weekly-recap', authenticate, aiLimiter, verifyAp
         if (!uSnap.exists) return res.status(404).send('User not found');
         const uData = uSnap.data() || {};
 
-        // TRUTH: Prevent duplicate generations (6-day cooldown) just like group recaps
+        // Prevent duplicate generations (6-day cooldown).
+        // If a recap was already generated recently, we return the cached recent recap
+        // instead of throwing a 429 error, which allows the user to recover in case of
+        // network timeouts or accidental closures.
         if (uData.lastRecapGeneratedAt) {
             const lastDate = (uData.lastRecapGeneratedAt as admin.firestore.Timestamp).toDate();
             const sixDaysAgo = new Date();
             sixDaysAgo.setDate(sixDaysAgo.getDate() - 6);
             if (lastDate > sixDaysAgo) {
+                try {
+                    const recentRecapSnap = await userRef.collection('recaps')
+                        .orderBy('createdAt', 'desc')
+                        .limit(1)
+                        .get();
+                    if (!recentRecapSnap.empty) {
+                        const recentRecapData = recentRecapSnap.docs[0].data();
+                        const recapDate = (recentRecapData.createdAt as admin.firestore.Timestamp).toDate();
+                        if (recapDate > sixDaysAgo && recentRecapData.text) {
+                            return res.json({
+                                success: true,
+                                recap: recentRecapData.text,
+                                message: 'Returned cached recent recap.',
+                                fromCache: true
+                            });
+                        }
+                    }
+                } catch (cacheErr) {
+                    console.warn('[AI Personal Recap] Failed to retrieve cached recap:', cacheErr);
+                }
                 return res.status(429).json({ error: 'Personal recap already generated recently. Please wait a week.' });
             }
         }

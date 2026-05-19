@@ -18,7 +18,7 @@ import { useGroupMessages } from './hooks/core/use-group-messages';
 import { useGroupChatState } from './hooks/core/use-group-chat-state';
 import { useGroupActions } from './hooks/api/use-group-actions';
 import { useMessageActions } from './hooks/api/use-message-actions';
-import { useRecapManager } from './hooks/api/use-recap-manager';
+
 import { useReportSystem } from './hooks/api/use-report-system';
 import { useInviteManager } from './hooks/api/use-invite-manager';
 import { useUserProfile } from './hooks/api/use-user-profile';
@@ -81,9 +81,7 @@ const GroupChatProvider: FC<GroupChatProviderProps> = ({
     handleConfirmDeleteMessage, handleToggleReaction, handleTranslateMessage, handleLazyTranslate, handleToggleReactionDirect
   } = useMessageActions(groupId, userData, language || 'en', t, dispatch);
 
-  const { 
-    isRecapLoading, isRecapAvailable, handleGenerateWeeklyRecap 
-  } = useRecapManager(groupId, groupData, language || 'en', t);
+
 
   const { 
     handleCopyInviteLink, handleRegenerateInviteCode
@@ -129,12 +127,12 @@ const GroupChatProvider: FC<GroupChatProviderProps> = ({
   const dataValue = useMemo<ChatDataContextType>(() => ({
     groupId, userData, groupData, messages, loading, membersLoading: localState.state.membersLoading, 
     membersMap, membersList: localState.state.membersList, userReadCount, unityPercentage, isOwner, 
-    language: language || 'en', userGroups, isRecapLoading, isRecapAvailable,
+    language: language || 'en', userGroups,
     unityModalData: {
       posted: unityModalData.posted,
       notPosted: unityModalData.notPosted
     }
-  }), [groupId, userData, groupData, messages, loading, localState.state.membersLoading, membersMap, localState.state.membersList, userReadCount, unityPercentage, isOwner, language, userGroups, isRecapLoading, isRecapAvailable, unityModalData]);
+  }), [groupId, userData, groupData, messages, loading, localState.state.membersLoading, membersMap, localState.state.membersList, userReadCount, unityPercentage, isOwner, language, userGroups, unityModalData]);
 
   const messageActionsValue = useMemo<ChatMessageActionsContextType>(() => ({
     handleSendMessage, handleSaveEdit, handleConfirmDeleteMessage, handleToggleReaction,
@@ -145,11 +143,11 @@ const GroupChatProvider: FC<GroupChatProviderProps> = ({
 
   const groupActionsValue = useMemo<ChatGroupActionsContextType>(() => ({
     handleLeaveGroup, handleDeleteGroup, handleUpdateGroupName, togglePublicStatus,
-    handleCopyInviteLink, handleRegenerateInviteCode, handleGenerateWeeklyRecap,
+    handleCopyInviteLink, handleRegenerateInviteCode,
     handleUserProfileClick, handleShowMembers, handleShowUnityModal, handleShowReactions,
     translatedGroupName, translatedGroupDesc, isLeaving, isDeleting,
     isSendingCheer, cheeredTodayUids, confirmReport, handleSendCheer, handleCheerClick
-  }), [handleLeaveGroup, handleDeleteGroup, handleUpdateGroupName, togglePublicStatus, handleCopyInviteLink, handleRegenerateInviteCode, handleGenerateWeeklyRecap, handleUserProfileClick, handleShowMembers, handleShowUnityModal, handleShowReactions, translatedGroupName, translatedGroupDesc, isLeaving, isDeleting, isSendingCheer, cheeredTodayUids, confirmReport, handleSendCheer, handleCheerClick]);
+  }), [handleLeaveGroup, handleDeleteGroup, handleUpdateGroupName, togglePublicStatus, handleCopyInviteLink, handleRegenerateInviteCode, handleUserProfileClick, handleShowMembers, handleShowUnityModal, handleShowReactions, translatedGroupName, translatedGroupDesc, isLeaving, isDeleting, isSendingCheer, cheeredTodayUids, confirmReport, handleSendCheer, handleCheerClick]);
 
   const uiActionsValue = useMemo<ChatUIActionsContextType>(() => ({
     t, tArray, scrollToBottom, handleScroll, dispatch, closeContextMenu,
