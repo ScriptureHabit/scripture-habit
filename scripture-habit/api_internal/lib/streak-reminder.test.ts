@@ -63,5 +63,11 @@ describe('StreakReminderEngine', () => {
             const needsJST_postedYesterday = StreakReminderEngine.needsReminder('2026-05-18', now, 'Asia/Tokyo');
             expect(needsJST_postedYesterday).toBe(true);
         });
+
+        it('should fallback to UTC when timezone is invalid (line 61)', () => {
+            const now = new Date('2026-05-18T11:30:00Z');
+            const needs = StreakReminderEngine.needsReminder('2026-05-18', now, 'Invalid/Timezone');
+            expect(needs).toBe(false); // 2026-05-18 in UTC is same day as lastPostDate
+        });
     });
 });

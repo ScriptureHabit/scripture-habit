@@ -278,7 +278,21 @@ export class InactivityService {
         
         try {
             await batch.commit();
-        } catch (err) {
+        } catch (err: any) {
+            const isNotFound = err.code === 5 || 
+                err.code === 'not-found' ||
+                err.message?.includes('NOT_FOUND') || 
+                err.message?.includes('no entity to update');
+                
+            if (isNotFound) {
+                console.warn(`[InactivityService] Group ${groupId} was deleted or not found during batch commit. Skipping gracefully.`);
+                return {
+                    removedCount: 0,
+                    initializedCount: 0,
+                    transferCount: 0,
+                    groupDeleted: true
+                };
+            }
             console.error(`[InactivityService] Batch commit failed for group ${groupId}. Decision:`, JSON.stringify(decision));
             throw err;
         }

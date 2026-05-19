@@ -13,6 +13,38 @@ if (process.env.FIRESTORE_EMULATOR_HOST) {
     process.env.NO_GCE_CHECK = 'true';
 }
 
+/**
+ * Resolves the Firebase service account from environment variables or a local JSON file.
+ * Exported for unit testing — does NOT call admin.initializeApp().
+ */
+export function resolveServiceAccount(
+    env: NodeJS.ProcessEnv,
+    fileExistsFn: (p: string) => boolean,
+    readFileFn: (p: string, enc: BufferEncoding) => string,
+    serviceAccountJsonDir: string
+): admin.ServiceAccount | undefined {
+    if (env.FIREBASE_SERVICE_ACCOUNT) {
+        try {
+            return JSON.parse(env.FIREBASE_SERVICE_ACCOUNT) as admin.ServiceAccount;
+        } catch (err) {
+            console.error('[FirebaseAdmin] Failed to parse FIREBASE_SERVICE_ACCOUNT:', (err as Error).message);
+            return undefined;
+        }
+    } else if (env.FIREBASE_PROJECT_ID && env.FIREBASE_PRIVATE_KEY) {
+        return {
+            projectId: env.FIREBASE_PROJECT_ID,
+            privateKey: env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+            clientEmail: env.FIREBASE_CLIENT_EMAIL,
+        };
+    } else {
+        const jsonPath = path.join(serviceAccountJsonDir, '../../backend/serviceAccountKey.json');
+        if (fileExistsFn(jsonPath)) {
+            return JSON.parse(readFileFn(jsonPath, 'utf8')) as admin.ServiceAccount;
+        }
+    }
+    return undefined;
+}
+
 if (!admin.apps.length) {
     if (process.env.FIRESTORE_EMULATOR_HOST) {
         // Initialize for Emulator with a dummy service account file to avoid ANY network lookup
@@ -31,27 +63,7 @@ if (!admin.apps.length) {
             console.error('Firebase Admin Emulator initialization error:', error);
         }
     } else {
-        let serviceAccount: admin.ServiceAccount | undefined;
-
-        if (process.env.FIREBASE_SERVICE_ACCOUNT) {
-            try {
-                serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT) as admin.ServiceAccount;
-            } catch (err) {
-                console.error('[FirebaseAdmin] Failed to parse FIREBASE_SERVICE_ACCOUNT:', (err as Error).message);
-            }
-        } else if (process.env.FIREBASE_PROJECT_ID && process.env.FIREBASE_PRIVATE_KEY) {
-            serviceAccount = {
-                projectId: process.env.FIREBASE_PROJECT_ID,
-                privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
-                clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-            };
-        } else {
-            // Fallback for local development using a JSON file
-            const jsonPath = path.join(__dirname, '../../backend/serviceAccountKey.json');
-            if (fs.existsSync(jsonPath)) {
-                serviceAccount = JSON.parse(fs.readFileSync(jsonPath, 'utf8')) as admin.ServiceAccount;
-            }
-        }
+        const serviceAccount = resolveServiceAccount(process.env, fs.existsSync, fs.readFileSync, __dirname);
 
         if (serviceAccount) {
             try {

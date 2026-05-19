@@ -106,4 +106,47 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('NotificationService Integ
         
         expect(sendSpy).toHaveBeenCalled();
     });
+
+    it('should notify group members when notifyNotePosted is called', async () => {
+        const { NotificationService } = await import('./notification-service.js');
+        const { messaging } = await import('../lib/firebase-admin.js');
+        
+        const sendSpy = vi.spyOn(messaging, 'sendEachForMulticast').mockResolvedValue({
+            successCount: 2,
+            failureCount: 0,
+            responses: [{ success: true }]
+        });
+
+        await NotificationService.notifyNotePosted({
+            groupIds: [GID],
+            senderUid: SENDER_UID,
+            senderNickname: '', // Triggers || 'Member'
+            language: 'en',
+            userToGroupMapEntries: [
+                [RECEIVER_JA, GID],
+                [RECEIVER_EN, GID],
+                [RECEIVER_JA, GID] // Duplicate to trigger .has() check
+            ]
+        });
+
+        expect(sendSpy).toHaveBeenCalled();
+    });
+
+    it('should handle errors gracefully inside notifyNotePosted', async () => {
+        const { NotificationService } = await import('./notification-service.js');
+        
+        // This should not throw, but log error to console
+        const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+        
+        await NotificationService.notifyNotePosted({
+            groupIds: [GID],
+            senderUid: SENDER_UID,
+            senderNickname: 'Sender User',
+            language: 'en',
+            userToGroupMapEntries: null as any
+        });
+
+        expect(consoleErrorSpy).toHaveBeenCalled();
+        consoleErrorSpy.mockRestore();
+    });
 });

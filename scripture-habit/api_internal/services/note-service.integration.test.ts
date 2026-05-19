@@ -28,8 +28,8 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('NoteService Integration T
         // Setup groups
         for (const gid of [GROUP_1, GROUP_2, ...MULTI_GROUPS]) {
             await db.collection('groups').doc(gid).set({
-                name: `Test Group ${gid}`,
-                members: [TEST_UID],
+                name: gid === GROUP_1 ? 'Unity Test Group 1' : `Test Group ${gid}`,
+                members: [TEST_UID, 'other-user'],
                 noteCount: 0,
                 messageCount: 0,
                 timeZone: 'UTC',
@@ -161,6 +161,144 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('NoteService Integration T
             expect(gSnap.data()?.noteCount).toBe(0);
 
             spy.mockRestore();
+        });
+
+        it('should handle non-existent group or message during deleteNote (covering line 372-373)', async () => {
+            const res = await NoteService.postNote({
+                uid: TEST_UID,
+                messageText: 'Note with missing msg',
+                scripture: 'Genesis 1:1',
+                comment: 'To be orphaned',
+                shareOption: 'all',
+                timeZone: 'UTC'
+            });
+
+            // Manually delete the shared message from GROUP_1 to make mSnap.exists false
+            const msgId = res.sharedMessageIds?.[GROUP_1];
+            expect(msgId).toBeDefined();
+            await db.collection('groups').doc(GROUP_1).collection('messages').doc(msgId!).delete();
+
+            // Now call deleteNote - it should continue and succeed
+            const deleteResult = await NoteService.deleteNote(TEST_UID, res.personalNoteId);
+            expect(deleteResult.success).toBe(true);
+
+            // Note doc should be deleted
+            const noteSnap = await db.collection('users').doc(TEST_UID).collection('notes').doc(res.personalNoteId).get();
+            expect(noteSnap.exists).toBe(false);
+        });
+
+        it('should log and throw error when deleteNote transaction fails (covering line 476-477)', async () => {
+            const { vi } = await import('vitest');
+            const deleteSpy = vi.spyOn(admin.firestore.Transaction.prototype, 'delete').mockImplementationOnce(() => {
+                throw new Error('SIMULATED_DELETE_FAILURE');
+            });
+            const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+            const res = await NoteService.postNote({
+                uid: TEST_UID,
+                messageText: 'To Delete',
+                scripture: 'Genesis 1:1',
+                comment: '',
+                shareOption: 'none',
+                timeZone: 'UTC'
+            });
+
+            await expect(NoteService.deleteNote(TEST_UID, res.personalNoteId)).rejects.toThrow('SIMULATED_DELETE_FAILURE');
+            expect(consoleErrorSpy).toHaveBeenCalled();
+
+            deleteSpy.mockRestore();
+            consoleErrorSpy.mockRestore();
+        });
+
+        it('should recover from future date / clock drift in group dailyActivity (covering lines 188 and 199)', async () => {
+            const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+            // Manually set a group's daily activity date to a future date
+            await db.collection('groups').doc(GROUP_2).update({
+                dailyActivity: {
+                    date: '2035-12-31',
+                    activeMembers: ['some-user']
+                }
+            });
+
+            // Post a note - it should reset the future date to today's date
+            const res = await NoteService.postNote({
+                uid: TEST_UID,
+                messageText: 'Note checking clock drift',
+                scripture: 'Genesis 1:1',
+                comment: 'Recover',
+                shareOption: 'specific',
+                selectedShareGroups: [GROUP_2],
+                timeZone: 'UTC'
+            });
+
+            expect(res.personalNoteId).toBeDefined();
+            expect(consoleWarnSpy).toHaveBeenCalled();
+
+            const gSnap = await db.collection('groups').doc(GROUP_2).get();
+            const groupData = gSnap.data()!;
+            
+            // The daily activity date should have been reset from the future date
+            expect(groupData.dailyActivity?.date).not.toBe('2035-12-31');
+            expect(groupData.dailyActivity?.activeMembers).toEqual([TEST_UID]);
+
+            consoleWarnSpy.mockRestore();
+        });
+
+        it('should handle legacy fields, raw lastPostAt formats, and daily activity date progression (covering remaining branches)', async () => {
+            // 1. Set legacy streak and string-based lastPostAt on user
+            await db.collection('users').doc(TEST_UID).update({
+                streak: 5,
+                lastPostAt: '2026-05-18T12:00:00Z' // triggers the string/Date-based raw format parse (line 86)
+            });
+
+            // Set an old daily activity date on GROUP_2 to trigger dailyActivity reset (today > stored)
+            await db.collection('groups').doc(GROUP_2).update({
+                dailyActivity: {
+                    date: '2020-01-01',
+                    activeMembers: ['some-user']
+                }
+            });
+
+            // Post first note
+            const res1 = await NoteService.postNote({
+                uid: TEST_UID,
+                messageText: 'Note with string date',
+                scripture: 'Genesis 1:1',
+                comment: 'Legacy check 1',
+                shareOption: 'specific',
+                selectedShareGroups: [GROUP_2],
+                timeZone: 'UTC'
+            });
+
+            expect(res1.personalNoteId).toBeDefined();
+
+            // Verify legacy streak field is deleted
+            const uSnap1 = await db.collection('users').doc(TEST_UID).get();
+            expect(uSnap1.data()?.streak).toBeUndefined();
+
+            // 2. Set seconds-based lastPostAt on user to test line 84
+            await db.collection('users').doc(TEST_UID).update({
+                lastPostAt: { seconds: 1779836400 } as any // triggers the seconds-based raw format parse (line 84)
+            });
+
+            // Post second note
+            const res2 = await NoteService.postNote({
+                uid: TEST_UID,
+                messageText: 'Note with seconds date',
+                scripture: 'Genesis 1:2',
+                comment: 'Legacy check 2',
+                shareOption: 'specific',
+                selectedShareGroups: [GROUP_2],
+                timeZone: 'UTC'
+            });
+
+            expect(res2.personalNoteId).toBeDefined();
+
+            // Verify dailyActivity is reset to today
+            const gSnap = await db.collection('groups').doc(GROUP_2).get();
+            expect(gSnap.data()?.dailyActivity?.date).not.toBe('2020-01-01');
+            expect(gSnap.data()?.dailyActivity?.activeMembers).toEqual([TEST_UID]);
         });
     });
 });

@@ -71,7 +71,7 @@ export class ArchiveService {
                 const seconds = asRecord.seconds;
                 
                 if (typeof toMillis === 'function') {
-                    timeMillis = (toMillis as () => number)();
+                    timeMillis = (toMillis as (this: unknown) => number).call(asRecord);
                 } else if (typeof seconds === 'number') {
                     timeMillis = seconds * 1000;
                 } else {
@@ -89,11 +89,13 @@ export class ArchiveService {
 
             // 4. Atomic transaction to create bucket and delete individual docs
             // Limit to 500 ops per transaction (Firestore limit)
+            let chunkSkipped = false;
             await db.runTransaction(async (transaction) => {
                 // TRUTH: Check if this bucket already exists to prevent duplication artifacts
                 const existingBucket = await transaction.get(bucketRef);
                 if (existingBucket.exists) {
                     console.log(`[ArchiveService] Bucket ${bucketId} already exists, skipping chunk.`);
+                    chunkSkipped = true;
                     return;
                 }
 
@@ -110,7 +112,9 @@ export class ArchiveService {
                 chunk.forEach(doc => transaction.delete(doc.ref));
             });
 
-            archivedCount += chunk.length;
+            if (!chunkSkipped) {
+                archivedCount += chunk.length;
+            }
         }
 
         return archivedCount;

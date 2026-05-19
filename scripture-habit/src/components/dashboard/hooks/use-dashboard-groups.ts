@@ -12,8 +12,10 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
     const [activeGroupId, setActiveGroupId] = useState<string | null>(initialGroupId);
     const [isLoading, setIsLoading] = useState(true);
 
-    const userGroupIds = userData?.groupIds || (userData?.groupId ? [userData.groupId] : []);
-    const userGroupIdsKey = JSON.stringify(userGroupIds);
+    const userGroupIds = useMemo(() => {
+        return userData?.groupIds || (userData?.groupId ? [userData.groupId] : []);
+    }, [userData?.groupIds, userData?.groupId]);
+    const userGroupIdsKey = useMemo(() => JSON.stringify(userGroupIds), [userGroupIds]);
 
     const groupIds = useMemo(() => {
         const ids = JSON.parse(userGroupIdsKey) as string[];
@@ -181,14 +183,14 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
         
         const isActiveGroupLoaded = userGroups.find(g => g.id === activeGroupId);
         if (!isActiveGroupLoaded && activeGroupId) {
-            // Only switch if the group is definitely not in our groupIds list anymore
+            // Only switch if the group is definitely not in our userGroupIds list anymore
             // (meaning the user left or was kicked)
-            if (!groupIds.includes(activeGroupId)) {
-                console.log(`[useDashboardGroups] Active group ${activeGroupId} not in groupIds, resetting to ${userGroups[0].id}`);
+            if (!userGroupIds.includes(activeGroupId)) {
+                console.log(`[useDashboardGroups] Active group ${activeGroupId} not in userGroupIds, resetting to ${userGroups[0].id}`);
                 setActiveGroupId(userGroups[0].id);
             }
         }
-    }, [userGroups, userData, activeGroupId, groupIds, isLoading]);
+    }, [userGroups, userData, activeGroupId, userGroupIds, isLoading]);
 
     // Midnight reset for active group
     const activeGroup = userGroups.find(g => g.id === activeGroupId);

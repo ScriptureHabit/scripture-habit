@@ -40,6 +40,22 @@ describe('StreakEngine', () => {
         expect(result.isConsecutive).toBe(true);
     });
 
+    it('should increment streak when last post date is not yesterday but lastPostAt is within grace period', () => {
+        const state: StreakState = {
+            streakCount: 5,
+            highestStreak: 10,
+            lastPostDate: '2026-04-09',
+            lastPostAt: { seconds: Math.floor(new Date('2026-04-10T12:00:00Z').getTime() / 1000) } as any,
+            timeZone: 'UTC'
+        };
+        const now = new Date('2026-04-11T22:00:00Z');
+        const result = StreakEngine.calculateNextStreak(state, { now });
+
+        expect(result.newStreak).toBe(6);
+        expect(result.isConsecutive).toBe(true);
+        expect(result.streakUpdated).toBe(true);
+    });
+
     it('should reset streak when missing more than 36 hours', () => {
         // Last post: 2026-04-10 10:00
         // Current: 2026-04-12T01:00:00Z (39 hours later)
@@ -66,6 +82,22 @@ describe('StreakEngine', () => {
         expect(result.currentHighest).toBe(11);
     });
 
+    it('should fall back to ISO dates when timezone is invalid', () => {
+        const state: StreakState = {
+            streakCount: 5,
+            highestStreak: 10,
+            lastPostDate: '2026-04-10',
+            lastPostAt: new Date('2026-04-10T10:00:00Z'),
+            timeZone: 'Invalid/Zone'
+        };
+        const now = new Date('2026-04-11T10:00:00Z');
+        const result = StreakEngine.calculateNextStreak(state, { now });
+
+        expect(result.today).toBe(now.toISOString().split('T')[0]);
+        expect(result.newStreak).toBe(6);
+        expect(result.isConsecutive).toBe(true);
+    });
+
     it('should handle first post correctly', () => {
         const state: StreakState = {
             streakCount: 0,
@@ -79,6 +111,37 @@ describe('StreakEngine', () => {
 
         expect(result.newStreak).toBe(1);
         expect(result.streakUpdated).toBe(true);
+    });
+
+    it('should handle lastPostAt as a number (line 102)', () => {
+        const lastPostAt = new Date('2026-04-10T10:00:00Z').getTime(); // number
+        const state: StreakState = {
+            streakCount: 5,
+            highestStreak: 10,
+            lastPostDate: '2026-04-10',
+            lastPostAt: lastPostAt as any,
+            timeZone: 'UTC'
+        };
+        const now = new Date('2026-04-11T10:00:00Z');
+        const result = StreakEngine.calculateNextStreak(state, { now });
+
+        expect(result.newStreak).toBe(6);
+        expect(result.isConsecutive).toBe(true);
+    });
+
+    it('should fallback to 0 when lastPostAt is an unsupported format (line 103)', () => {
+        const state: StreakState = {
+            streakCount: 5,
+            highestStreak: 10,
+            lastPostDate: '2026-04-09',
+            lastPostAt: 'unsupported-string-format' as any,
+            timeZone: 'UTC'
+        };
+        const now = new Date('2026-04-11T10:00:00Z');
+        const result = StreakEngine.calculateNextStreak(state, { now });
+
+        expect(result.newStreak).toBe(1);
+        expect(result.isConsecutive).toBe(false);
     });
 
     describe('Property-Based Tests', () => {

@@ -63,8 +63,15 @@ export default function JoinGroup() {
 
     if (alreadyTranslating) return;
 
+    if (!user) {
+      setTranslatedNames(prev => ({ ...prev, [groupId]: name }));
+      if (description) {
+        setTranslatedDescs(prev => ({ ...prev, [groupId]: description }));
+      }
+      return;
+    }
+
     try {
-      if (!user) return;
       const idToken = await user.getIdToken();
       let appCheckToken = '';
       if (appCheck) {
@@ -103,6 +110,11 @@ export default function JoinGroup() {
     } catch (e: unknown) {
       console.error("Error translating group info:", e);
       toast.error(t('groupChat.errorTranslation') || "Failed to translate");
+      // Fallback to original values to avoid infinite retry loop
+      setTranslatedNames(prev => ({ ...prev, [groupId]: name }));
+      if (description) {
+        setTranslatedDescs(prev => ({ ...prev, [groupId]: description }));
+      }
     } finally {
       setTranslatingIds(prev => {
         const next = new Set(prev);

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useChatStore } from './use-chat-store';
-import { Message } from '../types/chat';
+import { Message, UserProfileBrief } from '../types/chat';
 
 describe('useChatStore', () => {
   beforeEach(() => {
@@ -34,6 +34,56 @@ describe('useChatStore', () => {
 
     useChatStore.getState().setShowDeleteMessageModal(true);
     expect(useChatStore.getState().showDeleteMessageModal).toBe(true);
+  });
+
+  it('should update additional chat UI flags', () => {
+    const store = useChatStore.getState();
+
+    store.setShowInviteModal(true);
+    store.setShowReportModal(true);
+    store.setShowInactivityPolicyBanner(true);
+    store.setShowAddNoteTooltip(true);
+    store.setShowMobileMenu(true);
+
+    const state = useChatStore.getState();
+    expect(state.showInviteModal).toBe(true);
+    expect(state.showReportModal).toBe(true);
+    expect(state.showInactivityPolicyBanner).toBe(true);
+    expect(state.showAddNoteTooltip).toBe(true);
+    expect(state.showMobileMenu).toBe(true);
+  });
+
+  it('should update transient and selection state values', () => {
+    const store = useChatStore.getState();
+    const mockProfile: UserProfileBrief = { id: 'user2', uid: 'user2', nickname: 'Member', photoURL: '' };
+
+    store.setCheerTarget(mockProfile);
+    store.setReportReason('Spam content');
+    store.setSelectedMember(mockProfile);
+
+    const state = useChatStore.getState();
+    expect(state.cheerTarget).toEqual(mockProfile);
+    expect(state.reportReason).toBe('Spam content');
+    expect(state.selectedMember).toEqual(mockProfile);
+  });
+
+  it('should update editing and deletion state', () => {
+    const store = useChatStore.getState();
+    const mockMessage: Message = {
+      id: 'msg-edit',
+      text: 'Edit this',
+      senderId: 'user1',
+      createdAt: { seconds: 789, nanoseconds: 0 }
+    };
+
+    store.setEditingMessage(mockMessage);
+    store.setEditText('Edited text');
+    store.setMessageToDelete(mockMessage);
+
+    const state = useChatStore.getState();
+    expect(state.editingMessage).toEqual(mockMessage);
+    expect(state.editText).toBe('Edited text');
+    expect(state.messageToDelete).toEqual(mockMessage);
   });
 
   it('should update context menu state', () => {

@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { renderHook, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { useNoteSubmission } from './use-note-submission';
@@ -119,17 +120,110 @@ describe('use-note-submission', () => {
         expect(onSuccess).toHaveBeenCalled();
     });
 
-    it('should handle API errors gracefully', async () => {
-        vi.mocked(apiClient.post).mockRejectedValue(new Error('Network error'));
-        
+    it('should update standalone personal note via batch when noteToEdit is not a message', async () => {
+        const mockNote: any = {
+            id: 'personal-note-123'
+        };
+        const mockBatch = {
+            update: vi.fn(),
+            commit: vi.fn().mockResolvedValue(true),
+        };
+        vi.mocked(writeBatch).mockReturnValue(mockBatch as unknown as ReturnType<typeof writeBatch>);
+        const onSuccess = vi.fn();
+
         const { result } = renderHook(() => useNoteSubmission(mockUserData, 'en', mockT));
-        
+
+        await act(async () => {
+            await result.current.handleSubmit(
+                mockNote, 'Book of Mormon', '1 Nephi 2', 'Edited comment', 'all', [], 'group1', null, onSuccess
+            );
+        });
+
+        expect(writeBatch).toHaveBeenCalled();
+        expect(mockBatch.update).toHaveBeenCalledTimes(1);
+        expect(mockBatch.commit).toHaveBeenCalled();
+        expect(toast.success).toHaveBeenCalledWith('newNote.successUpdate');
+        expect(onSuccess).toHaveBeenCalled();
+    });
+
+    it('should handle axios server errors with proper toast prefix', async () => {
+        vi.mocked(apiClient.post).mockRejectedValue({
+            response: { data: { error: 'Server says no' } },
+            isAxiosError: true,
+            message: 'Request failed'
+        });
+
+        vi.spyOn(axios, 'isAxiosError').mockImplementation((err: unknown): err is any => true);
+
+        const { result } = renderHook(() => useNoteSubmission(mockUserData, 'en', mockT));
+
         await act(async () => {
             await result.current.handleSubmit(
                 null, 'Book of Mormon', '1 Nephi 1', 'Test', 'all', [], null, null, vi.fn()
             );
         });
 
-        expect(toast.error).toHaveBeenCalledWith(expect.stringContaining('Network error'));
+        expect(toast.error).toHaveBeenCalledWith('errors.prefix: Server says no');
+    });
+
+    it('should handle validation errors without hitting backend', async () => {
+        const { result } = renderHook(() => useNoteSubmission(mockUserData, 'en', mockT));
+
+        await act(async () => {
+            await result.current.handleSubmit(
+                null, '', '', 'Test', 'all', [], null, null, vi.fn()
+            );
+        });
+
+        expect(apiClient.post).not.toHaveBeenCalled();
+        expect(toast.error).toHaveBeenCalledWith('newNote.errorMissingFields');
+    });
+
+    it('should update group message and sync back to personal note when originalNoteId is present', async () => {
+        const mockNote: any = {
+            id: 'message-123',
+            isMessage: true,
+            originalNoteId: 'original-note-321',
+            groupId: 'group1'
+        };
+        const mockBatch = {
+            update: vi.fn(),
+            commit: vi.fn().mockResolvedValue(true),
+        };
+        vi.mocked(writeBatch).mockReturnValue(mockBatch as unknown as ReturnType<typeof writeBatch>);
+        const onSuccess = vi.fn();
+
+        const { result } = renderHook(() => useNoteSubmission(mockUserData, 'en', mockT));
+
+        await act(async () => {
+            await result.current.handleSubmit(
+                mockNote, 'Book of Mormon', '1 Nephi 3', 'Sync comment', 'all', [], 'group1', null, onSuccess
+            );
+        });
+
+        expect(writeBatch).toHaveBeenCalled();
+        expect(mockBatch.update).toHaveBeenCalledTimes(2);
+        expect(mockBatch.commit).toHaveBeenCalled();
+        expect(toast.success).toHaveBeenCalledWith('newNote.successUpdate');
+        expect(onSuccess).toHaveBeenCalled();
+    });
+
+    it('should handle API errors of auth/network-request-failed differently', async () => {
+        vi.mocked(apiClient.post).mockRejectedValue({
+            response: { data: { error: 'auth/network-request-failed' } },
+            isAxiosError: true,
+            message: 'auth/network-request-failed'
+        });
+        vi.spyOn(axios, 'isAxiosError').mockImplementation((err: unknown): err is any => true);
+
+        const { result } = renderHook(() => useNoteSubmission(mockUserData, 'en', mockT));
+
+        await act(async () => {
+            await result.current.handleSubmit(
+                null, 'Book of Mormon', '1 Nephi 1', 'Test', 'all', [], null, null, vi.fn()
+            );
+        });
+
+        expect(toast.error).toHaveBeenCalledWith('errors.prefix: errors.networkError');
     });
 });

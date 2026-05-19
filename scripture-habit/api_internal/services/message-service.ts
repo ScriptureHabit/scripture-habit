@@ -200,45 +200,48 @@ export class MessageService {
             const mData = mSnap.data() as MessageDocument;
             if (mData.senderId !== uid) throw new Error('Forbidden');
 
+            // --- 1. GATHER ALL READS ---
+            let noteSnap: admin.firestore.DocumentSnapshot | null = null;
+            const noteRef = db.collection('users').doc(uid).collection('notes').doc(mData.originalNoteId || 'dummy');
+            if (mData.isNote && mData.originalNoteId) {
+                noteSnap = await transaction.get(noteRef);
+            }
+
+            // --- 2. EXECUTE ALL WRITES ---
             transaction.update(messageRef, {
                 text,
                 isEdited: true,
                 editedAt: admin.firestore.FieldValue.serverTimestamp()
             });
 
-            if (mData.isNote && mData.originalNoteId) {
-                const noteRef = db.collection('users').doc(uid).collection('notes').doc(mData.originalNoteId);
-                const noteSnap = await transaction.get(noteRef);
+            if (noteSnap && noteSnap.exists) {
                 const noteData = noteSnap.data() as PersonalNoteDocument;
-                
-                if (noteSnap.exists) {
-                    const updatedTokens = buildNoteSearchTokens({
-                        scripture: noteData.scripture || '',
-                        chapter: noteData.chapter || '',
-                        comment: text,
-                        title: noteData.title || '',
-                        speaker: noteData.speaker || ''
-                    });
+                const updatedTokens = buildNoteSearchTokens({
+                    scripture: noteData.scripture || '',
+                    chapter: noteData.chapter || '',
+                    comment: text,
+                    title: noteData.title || '',
+                    speaker: noteData.speaker || ''
+                });
 
-                    transaction.update(noteRef, {
+                transaction.update(noteRef, {
+                    text,
+                    isEdited: true,
+                    editedAt: admin.firestore.FieldValue.serverTimestamp(),
+                    searchTokens: updatedTokens
+                });
+
+                const sharedMsgMap: Record<string, string> = noteData.sharedMessageIds || {};
+                const targetGids = Object.entries(sharedMsgMap).slice(0, 20);
+
+                for (const [gid, mid] of targetGids) {
+                    if (gid === groupId && mid === messageId) continue;
+                    const otherRef = db.collection('groups').doc(gid).collection('messages').doc(mid);
+                    transaction.update(otherRef, {
                         text,
                         isEdited: true,
-                        editedAt: admin.firestore.FieldValue.serverTimestamp(),
-                        searchTokens: updatedTokens
+                        editedAt: admin.firestore.FieldValue.serverTimestamp()
                     });
-
-                    const sharedMsgMap: Record<string, string> = noteData.sharedMessageIds || {};
-                    const targetGids = Object.entries(sharedMsgMap).slice(0, 20);
-
-                    for (const [gid, mid] of targetGids) {
-                        if (gid === groupId && mid === messageId) continue;
-                        const otherRef = db.collection('groups').doc(gid).collection('messages').doc(mid);
-                        transaction.update(otherRef, {
-                            text,
-                            isEdited: true,
-                            editedAt: admin.firestore.FieldValue.serverTimestamp()
-                        });
-                    }
                 }
             }
         });
@@ -267,6 +270,66 @@ export class MessageService {
             if (msgData.isSystemMessage === true) throw new Error('Cannot delete system messages');
             if (msgData.senderId !== uid) throw new Error('Forbidden: You can only delete your own messages');
 
+            // --- 1. GATHER ALL READS UPFRONT ---
+            let recentMemberNotesSnap: admin.firestore.QuerySnapshot | null = null;
+            if (msgData.isNote) {
+                recentMemberNotesSnap = await transaction.get(
+                    groupRef.collection('messages')
+                        .where('senderId', '==', uid)
+                        .where('isNote', '==', true)
+                        .orderBy('createdAt', 'desc')
+                        .limit(2)
+                );
+            }
+
+            const isLastMessage = gData.lastMessageByUid === uid;
+            const isLastNote = msgData.isNote && gData.lastNoteByUid === uid;
+
+            let recentMsgsSnap: admin.firestore.QuerySnapshot | null = null;
+            if (isLastMessage || isLastNote) {
+                recentMsgsSnap = await transaction.get(
+                    db.collection('groups').doc(groupId).collection('messages')
+                        .orderBy('createdAt', 'desc')
+                        .limit(50)
+                );
+            }
+
+            const now = new Date();
+            const groupToday = formatDateInTimeZone(now, gData.timeZone || 'UTC');
+            const normalizedToday = normalizeDateString(groupToday);
+
+            let todayNotesSnap: admin.firestore.QuerySnapshot | null = null;
+            const isDailyActive = normalizeDateString(gData.dailyActivity?.date || '') === normalizedToday && gData.dailyActivity?.activeMembers?.includes(uid);
+            if (isDailyActive) {
+                todayNotesSnap = await transaction.get(
+                    groupRef.collection('messages')
+                        .where('senderId', '==', uid)
+                        .where('isNote', '==', true)
+                        .where('createdAt', '>=', admin.firestore.Timestamp.fromDate(new Date(now.setHours(0,0,0,0))))
+                        .limit(2)
+                );
+            }
+
+            let streakAnnouncementSnap: admin.firestore.QuerySnapshot | null = null;
+            if (msgData.isNote) {
+                streakAnnouncementSnap = await transaction.get(
+                    groupRef.collection('messages')
+                        .where('senderId', '==', 'system')
+                        .where('isSystemMessage', '==', true)
+                        .where('type', '==', 'system')
+                        .where('messageType', '==', 'system') // Recents standard
+                        .orderBy('createdAt', 'desc')
+                        .limit(10)
+                );
+            }
+
+            let noteSnap: admin.firestore.DocumentSnapshot | null = null;
+            const noteRef = db.collection('users').doc(uid).collection('notes').doc(msgData.originalNoteId || 'dummy');
+            if (msgData.isNote && msgData.originalNoteId) {
+                noteSnap = await transaction.get(noteRef);
+            }
+
+            // --- 2. EXECUTE ALL WRITES ---
             const groupUpdate: admin.firestore.UpdateData<GroupDocument> = {
                 messageCount: admin.firestore.FieldValue.increment(-1)
             };
@@ -277,31 +340,18 @@ export class MessageService {
                     totalNotes: admin.firestore.FieldValue.increment(-1)
                 });
                 
-                const recentMemberNotes = await transaction.get(
-                    groupRef.collection('messages')
-                        .where('senderId', '==', uid)
-                        .where('isNote', '==', true)
-                        .orderBy('createdAt', 'desc')
-                        .limit(2)
-                );
-                const nextMemberNote = recentMemberNotes.docs.filter(d => d.id !== messageId)[0];
-                const memberRef = groupRef.collection('members').doc(uid);
-                if (nextMemberNote) {
-                    transaction.update(memberRef, { lastNoteAt: nextMemberNote.data().createdAt });
-                } else {
-                    transaction.update(memberRef, { lastNoteAt: admin.firestore.FieldValue.delete() });
+                if (recentMemberNotesSnap) {
+                    const nextMemberNote = recentMemberNotesSnap.docs.filter(d => d.id !== messageId)[0];
+                    const memberRef = groupRef.collection('members').doc(uid);
+                    if (nextMemberNote) {
+                        transaction.update(memberRef, { lastNoteAt: nextMemberNote.data().createdAt });
+                    } else {
+                        transaction.update(memberRef, { lastNoteAt: admin.firestore.FieldValue.delete() });
+                    }
                 }
             }
 
-            const isLastMessage = gData.lastMessageByUid === uid;
-            const isLastNote = msgData.isNote && gData.lastNoteByUid === uid;
-
-            if (isLastMessage || isLastNote) {
-                const recentMsgsSnap = await transaction.get(
-                    db.collection('groups').doc(groupId).collection('messages')
-                        .orderBy('createdAt', 'desc')
-                        .limit(50)
-                );
+            if (recentMsgsSnap) {
                 const candidates = recentMsgsSnap.docs
                     .map(d => ({ id: d.id, ...d.data() as MessageDocument }))
                     .filter(m => m.id !== messageId);
@@ -334,18 +384,7 @@ export class MessageService {
                 }
             }
 
-            const now = new Date();
-            const groupToday = formatDateInTimeZone(now, gData.timeZone || 'UTC');
-            const normalizedToday = normalizeDateString(groupToday);
-
-            if (normalizeDateString(gData.dailyActivity?.date || '') === normalizedToday && gData.dailyActivity?.activeMembers?.includes(uid)) {
-                const todayNotesSnap = await transaction.get(
-                    groupRef.collection('messages')
-                        .where('senderId', '==', uid)
-                        .where('isNote', '==', true)
-                        .where('createdAt', '>=', admin.firestore.Timestamp.fromDate(new Date(now.setHours(0,0,0,0))))
-                        .limit(2)
-                );
+            if (isDailyActive && todayNotesSnap) {
                 const otherTodayPosts = todayNotesSnap.docs.filter(d => d.id !== messageId);
                 if (otherTodayPosts.length === 0) {
                     groupUpdate['dailyActivity.activeMembers'] = admin.firestore.FieldValue.arrayRemove(uid);
@@ -354,23 +393,9 @@ export class MessageService {
 
             transaction.delete(msgRef);
 
-            // GHOST CLEANUP: If a note is deleted, check for related streak announcements
-            // (System messages about "X days in a row!" for this user)
-            if (msgData.isNote) {
-                const streakAnnouncementSnap = await transaction.get(
-                    groupRef.collection('messages')
-                        .where('senderId', '==', 'system')
-                        .where('isSystemMessage', '==', true)
-                        .where('type', '==', 'system')
-                        .where('messageType', '==', 'system') // Recents standard
-                        .orderBy('createdAt', 'desc')
-                        .limit(10)
-                );
-                
+            if (streakAnnouncementSnap) {
                 streakAnnouncementSnap.docs.forEach(doc => {
                     const data = doc.data();
-                    // Streak announcements usually mention the nickname or are posted around the same time
-                    // For safety, we check if the text contains the user's nickname and "streak" or "day"
                     const text = (data.text || '').toLowerCase();
                     const nickname = (msgData.senderNickname || '').toLowerCase();
                     if (text.includes(nickname) && (text.includes('streak') || text.includes('連続') || text.includes('日'))) {
@@ -384,20 +409,16 @@ export class MessageService {
                 transaction.update(groupRef, groupUpdate);
             }
 
-            if (msgData.isNote && msgData.originalNoteId) {
-                const noteRef = db.collection('users').doc(uid).collection('notes').doc(msgData.originalNoteId);
-                const noteSnap = await transaction.get(noteRef);
-                if (noteSnap.exists) {
-                    const noteData = noteSnap.data() as PersonalNoteDocument;
-                    const updatedSharedGroups = (noteData.sharedWithGroups || []).filter((id: string) => id !== groupId);
-                    const sharedMessageIds = { ...(noteData.sharedMessageIds || {}) };
-                    delete sharedMessageIds[groupId];
+            if (noteSnap && noteSnap.exists) {
+                const noteData = noteSnap.data() as PersonalNoteDocument;
+                const updatedSharedGroups = (noteData.sharedWithGroups || []).filter((id: string) => id !== groupId);
+                const sharedMessageIds = { ...(noteData.sharedMessageIds || {}) };
+                delete sharedMessageIds[groupId];
 
-                    transaction.update(noteRef, {
-                        sharedWithGroups: updatedSharedGroups,
-                        sharedMessageIds: sharedMessageIds
-                    });
-                }
+                transaction.update(noteRef, {
+                    sharedWithGroups: updatedSharedGroups,
+                    sharedMessageIds: sharedMessageIds
+                });
             }
         });
     }

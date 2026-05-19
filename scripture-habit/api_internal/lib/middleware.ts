@@ -3,6 +3,7 @@ import { rateLimit } from 'express-rate-limit';
 import { appCheck, auth } from './firebase-admin.js';
 import { Request, Response, NextFunction } from 'express';
 import { DecodedIdToken } from 'firebase-admin/auth';
+import { AppError } from './errors.js';
 
 /**
  * Extended Request interface for authenticated users
@@ -30,21 +31,23 @@ export const inviteLimiter = rateLimit({
     legacyHeaders: false,
 });
 
+export const aiLimiterKeyGenerator = (req: Request) => {
+    const authHeader = req.header('Authorization');
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+        return crypto.createHash('sha256').update(authHeader).digest('hex');
+    }
+    // Fallback to hashed IP for better privacy and consistency across proxies
+    const ip = (req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown').toString();
+    return crypto.createHash('sha256').update(ip).digest('hex');
+};
+
 export const aiLimiter = rateLimit({
     windowMs: 60 * 60 * 1000,
     limit: isProd ? 100 : 5000, // Increased for dev/test/lazy-loading
     message: { error: 'AI limit reached. Please try again in an hour.' },
     standardHeaders: 'draft-7',
     legacyHeaders: false,
-    keyGenerator: (req: Request) => {
-        const authHeader = req.header('Authorization');
-        if (authHeader && authHeader.startsWith('Bearer ')) {
-            return crypto.createHash('sha256').update(authHeader).digest('hex');
-        }
-        // Fallback to hashed IP for better privacy and consistency across proxies
-        const ip = (req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown').toString();
-        return crypto.createHash('sha256').update(ip).digest('hex');
-    },
+    keyGenerator: aiLimiterKeyGenerator,
     // Required to silence the IPv6 warning when using a custom keyGenerator for hashed IPs
     validate: { default: false } 
 });
@@ -66,7 +69,7 @@ export const verifyAppCheck = async (req: Request, res: Response, next: NextFunc
     const token = req.header('X-Firebase-AppCheck');
     if (!token) {
         console.warn('[AppCheck] Security context missing from:', req.ip);
-        return res.status(401).json({ error: 'Unauthorized: Security context missing' });
+        return next(new AppError('Unauthorized: Security context missing', 401, 'APP_CHECK_MISSING'));
     }
 
     try {
@@ -78,20 +81,17 @@ export const verifyAppCheck = async (req: Request, res: Response, next: NextFunc
     } catch (err: unknown) {
         const error = err as Error;
         console.warn('[AppCheck] Verification failed for token:', token.substring(0, 10) + '...', 'Error:', error.message);
-        return res.status(error.message.includes('unavailable') ? 503 : 401).json({ 
-            error: 'Unauthorized: Security check failed',
-            details: error.message
-        });
+        return next(new AppError('Unauthorized: Security check failed', error.message.includes('unavailable') ? 503 : 401, 'APP_CHECK_FAILED'));
     }
 };
 
 // --- Authentication Middleware ---
 
-export const authenticate = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+export const authenticate = async (req: AuthenticatedRequest, _res: Response, next: NextFunction) => {
     const authHeader = req.header('Authorization');
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
         console.warn('[Auth] Authentication required - Missing Bearer token');
-        return res.status(401).json({ error: 'Unauthorized: Authentication required' });
+        return next(new AppError('Unauthorized: Authentication required', 401, 'UNAUTHENTICATED'));
     }
 
     const token = authHeader.split('Bearer ')[1];
@@ -105,10 +105,7 @@ export const authenticate = async (req: AuthenticatedRequest, res: Response, nex
     } catch (err: unknown) {
         const error = err as Error;
         console.warn('[Auth] Verification failed:', error.message);
-        return res.status(error.message.includes('unavailable') ? 503 : 401).json({ 
-            error: 'Unauthorized: Invalid or expired token',
-            details: error.message
-        });
+        return next(new AppError('Unauthorized: Invalid or expired token', error.message.includes('unavailable') ? 503 : 401, 'INVALID_TOKEN'));
     }
 };
 
@@ -129,10 +126,7 @@ export const requireEmailVerified = (req: AuthenticatedRequest, res: Response, n
 
     // Force check email_verified for password login
     if (req.user.firebase.sign_in_provider === 'password' && !req.user.email_verified) {
-        return res.status(403).json({ 
-            error: 'Email not verified. Please verify your email.', 
-            code: 'auth/email-not-verified' 
-        });
+        return next(new AppError('Email not verified. Please verify your email.', 403, 'auth/email-not-verified'));
     }
 
     next();

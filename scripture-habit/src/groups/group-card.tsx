@@ -160,6 +160,11 @@ export default function GroupCard({ group, currentUser, onJoin, onOpen }: Props)
       return;
     }
 
+    if (onJoin) {
+      await onJoin(group.id, group);
+      return;
+    }
+
     if (!currentUser) {
       toast.info(t('groupCard.signInFirst'));
       return;
@@ -167,10 +172,6 @@ export default function GroupCard({ group, currentUser, onJoin, onOpen }: Props)
 
     setJoining(true);
     try {
-      if (onJoin) {
-        await onJoin(group.id, group);
-        return;
-      }
 
       const backend = import.meta.env.VITE_BACKEND_URL || '/api';
       const idToken = await auth?.currentUser?.getIdToken();

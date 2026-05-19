@@ -8,7 +8,10 @@ export function isSafeUrl(urlStr: string): boolean {
         const parsedUrl = new URL(urlStr);
         if (parsedUrl.protocol !== 'http:' && parsedUrl.protocol !== 'https:') return false;
 
-        const hostname = parsedUrl.hostname.toLowerCase();
+        let hostname = parsedUrl.hostname.toLowerCase();
+        if (hostname.startsWith('[') && hostname.endsWith(']')) {
+            hostname = hostname.slice(1, -1);
+        }
 
         // Blocklist: Private networks and metadata services
         const blockedPatterns: (string | RegExp)[] = [

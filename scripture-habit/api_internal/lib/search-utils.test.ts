@@ -56,5 +56,17 @@ describe('search-utils', () => {
       const tokens = buildNoteSearchTokens(note);
       expect(tokens).toEqual(['psalm', '23']);
     });
+
+    it('should handle all fields being null or empty (line 23 branch fallback)', () => {
+      const note = {
+        scripture: null,
+        chapter: undefined,
+        comment: '',
+        title: null,
+        speaker: undefined
+      };
+      const tokens = buildNoteSearchTokens(note);
+      expect(tokens).toEqual([]);
+    });
   });
 });

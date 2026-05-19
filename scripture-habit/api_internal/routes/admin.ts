@@ -18,12 +18,12 @@ export interface AdminRequest extends Request {
 const verifyAdmin = async (req: AdminRequest, res: Response, next: NextFunction) => {
     const authHeader = req.header('Authorization');
     
+    if (process.env.ADMIN_SECRET && authHeader === `Bearer ${process.env.ADMIN_SECRET}`) {
+        console.warn('Admin access granted via legacy ADMIN_SECRET');
+        return next();
+    }
+
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        // Fallback to legacy secret check for automation if needed, but warn
-        if (process.env.ADMIN_SECRET && authHeader === `Bearer ${process.env.ADMIN_SECRET}`) {
-            console.warn('Admin access granted via legacy ADMIN_SECRET');
-            return next();
-        }
         return res.status(401).send('Unauthorized: No token provided');
     }
 
@@ -166,8 +166,8 @@ router.post('/migrate-data', verifyAdmin, async (_req: AdminRequest, res: Respon
                         const scripture = normalizeScriptureCategory(noteData.scripture);
                         const title = typeof noteData.title === 'string' ? noteData.title : null;
                         const speaker = typeof noteData.speaker === 'string' ? noteData.speaker : null;
-                        const comment = typeof noteData.comment === 'string' ? noteData.comment : '';
-                        const chapter = typeof noteData.chapter === 'string' ? noteData.chapter : '';
+                        const comment = noteData.comment;
+                        const chapter = noteData.chapter;
                         const normalizedTokens = buildNoteSearchTokens({ scripture, chapter, comment, title, speaker });
 
                         const updatePayload: Record<string, unknown> = {};

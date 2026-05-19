@@ -36,7 +36,6 @@ test.describe('Unity Percentage Synchronization (Local Timezone: Asia/Tokyo)', (
                 return new Promise((resolve, reject) => {
                     let attempts = 0;
                     const check = async () => {
-                        /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
                         const auth = (window as any).firebaseAuth;
                         if (auth && auth.currentUser) {
                             try {
@@ -136,7 +135,6 @@ test.describe('Unity Percentage Synchronization (Local Timezone: Asia/Tokyo)', (
                 return new Promise((resolve, reject) => {
                     let attempts = 0;
                     const check = async () => {
-                        /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
                         const auth = (window as any).firebaseAuth;
                         if (auth && auth.currentUser) {
                             try {

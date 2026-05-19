@@ -93,6 +93,41 @@ describe('useUrlMetadata', () => {
         );
     });
 
+    it('should use memory cache for repeated requests', async () => {
+        const cacheUrl = 'https://www.churchofjesuschrist.org/study/general-conference/2024/04/11nelson?cacheTest=1';
+        const { result: firstResult } = renderHook(() => useUrlMetadata(cacheUrl, defaultLang));
+        await waitFor(() => expect(firstResult.current.loading).toBe(false));
+
+        expect(firstResult.current.data).toEqual({ title: 'Test Title', speaker: 'Test Speaker' });
+        expect(globalFetch).toHaveBeenCalledTimes(1);
+
+        globalFetch.mockReset();
+        const { result: secondResult } = renderHook(() => useUrlMetadata(cacheUrl, defaultLang));
+        await waitFor(() => expect(secondResult.current.data).toEqual({ title: 'Test Title', speaker: 'Test Speaker' }));
+
+        expect(globalFetch).not.toHaveBeenCalled();
+    });
+
+    it('should not fetch for unsupported urlOrSlug values', async () => {
+        renderHook(() => useUrlMetadata('not-a-url', defaultLang));
+        await new Promise((resolve) => setTimeout(resolve, 10));
+        expect(globalFetch).not.toHaveBeenCalled();
+    });
+
+    it('should handle auth token acquisition failures gracefully', async () => {
+        globalFetch.mockReset();
+        globalFetch.mockResolvedValue({ ok: true, json: async () => ({ title: 'Test Title', speaker: 'Test Speaker' }) });
+        vi.mocked(safeStorage.get).mockReturnValue(undefined);
+        const { auth } = await import('../../firebase');
+        vi.mocked(auth.currentUser.getIdToken).mockRejectedValueOnce(new Error('Token failed'));
+        const url = 'https://example.com/fail-auth';
+
+        const { result } = renderHook(() => useUrlMetadata(url, defaultLang));
+        await waitFor(() => expect(result.current.loading).toBe(false));
+
+        expect(globalFetch).toHaveBeenCalled();
+    });
+
     it('should handle API errors', async () => {
         globalFetch.mockResolvedValueOnce({
             ok: false,

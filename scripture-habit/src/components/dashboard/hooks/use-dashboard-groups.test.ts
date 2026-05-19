@@ -2,18 +2,30 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { useDashboardGroups } from './use-dashboard-groups';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import * as firestore from 'firebase/firestore';
+import { toast } from 'react-toastify';
+
+// Shared mock test state
+const mockTestState = {
+    listeners: [] as any[],
+    groupsCallback: null as any
+};
+
+// Helper to get the latest registered groups query listener
+const getLatestGroupsListener = () => {
+    const groupsListeners = mockTestState.listeners.filter(l => 
+        l.target && l.target.type === 'groups'
+    );
+    return groupsListeners[groupsListeners.length - 1];
+};
 
 // Mock firestore
 vi.mock('firebase/firestore', () => {
-    const mockRef = {
-        withConverter: vi.fn().mockReturnThis(),
-    };
     return {
-        doc: vi.fn(() => mockRef),
-        onSnapshot: vi.fn(),
+        doc: vi.fn(),
         collection: vi.fn(),
         query: vi.fn(),
         where: vi.fn(),
+        onSnapshot: vi.fn(),
         Timestamp: {
             fromDate: vi.fn((date) => ({ seconds: Math.floor(date.getTime() / 1000), nanoseconds: 0 }))
         }
@@ -51,7 +63,49 @@ describe('useDashboardGroups', () => {
     };
 
     beforeEach(() => {
+        vi.restoreAllMocks();
         vi.clearAllMocks();
+        mockTestState.listeners = [];
+        mockTestState.groupsCallback = null;
+
+        // Reset firestore mocked implementations explicitly to avoid leaks!
+        vi.mocked(firestore.doc).mockImplementation(((_db: any, col: any, ...paths: any[]) => {
+            const mockRef = {
+                type: 'doc',
+                col,
+                paths,
+                withConverter: vi.fn().mockReturnThis(),
+            };
+            if (col === 'groups' && paths.includes('members')) {
+                (mockRef as any).type = 'member';
+                (mockRef as any).gid = paths[0];
+            }
+            return mockRef as any;
+        }) as any);
+
+        vi.mocked(firestore.collection).mockImplementation(((_db: any, col: any, ...paths: any[]) => {
+            const mockCol = {
+                type: 'groups',
+                col,
+                paths,
+            };
+            if (col === 'groups' && paths.includes('messages')) {
+                (mockCol as any).type = 'messages';
+                (mockCol as any).gid = paths[0];
+            }
+            return mockCol as any;
+        }) as any);
+
+        vi.mocked(firestore.query).mockImplementation(((q: any) => q) as any);
+
+        vi.mocked(firestore.onSnapshot).mockImplementation(((target: any, callback: any, onError: any) => {
+            const listener = { target, callback, onError };
+            mockTestState.listeners.push(listener);
+            if (!mockTestState.groupsCallback && (!target || ((target as any).type !== 'member' && (target as any).type !== 'messages'))) {
+                mockTestState.groupsCallback = callback;
+            }
+            return () => {};
+        }) as any);
     });
 
     it('should initialize without crashing (verifies state initialization order)', () => {
@@ -201,6 +255,214 @@ describe('useDashboardGroups', () => {
         await waitFor(() => {
             expect(result.current.userGroups.length).toBe(1);
             expect(result.current.userGroups[0].id).toBe('group1');
+        });
+    });
+
+    it('should handle groups query error gracefully (lines 80-82)', async () => {
+        const toastSpy = vi.spyOn(toast, 'error');
+
+        const { result } = renderHook(() => useDashboardGroups(mockUserData as any, null));
+
+        await waitFor(() => {
+            expect(mockTestState.listeners.length).toBeGreaterThan(0);
+        });
+
+        const activeListener = getLatestGroupsListener();
+        activeListener.onError({ code: 'permission-denied', message: 'Denied' });
+
+        await waitFor(() => {
+            expect(toastSpy).toHaveBeenCalledWith('Groups Error: permission-denied - Denied');
+            expect(result.current.isLoading).toBe(false);
+        });
+    });
+
+    it('should handle member status and message updates and their errors (lines 90-101, 116-129)', async () => {
+        const listeners = {
+            member: {} as Record<string, any>,
+            messages: {} as Record<string, any>
+        };
+
+        vi.mocked(firestore.onSnapshot).mockImplementation(((target: any, callback: any, onError: any) => {
+            const listenerObj = { target, callback, onError };
+            const t = target as any;
+            if (t && t.type === 'member') {
+                listeners.member[t.gid] = listenerObj;
+            } else if (t && t.type === 'messages') {
+                listeners.messages[t.gid] = listenerObj;
+            } else {
+                mockTestState.listeners.push(listenerObj);
+            }
+            return () => {};
+        }) as any);
+
+        const toastSpy = vi.spyOn(toast, 'error');
+
+        const { result } = renderHook(() => useDashboardGroups(mockUserData as any, null));
+
+        await waitFor(() => {
+            expect(mockTestState.listeners.length).toBeGreaterThan(0);
+            expect(listeners.member['group1']).toBeDefined();
+            expect(listeners.messages['group1']).toBeDefined();
+        });
+
+        // 1. Trigger early callbacks before rawUserGroups is populated (covers line 93 and line 119)
+        listeners.member['group1'].callback({
+            exists: () => true,
+            data: () => ({ role: 'member' })
+        });
+        listeners.messages['group1'].callback({
+            docs: [{ id: 'msg1', data: () => ({ text: 'Early', isNote: true }) }]
+        });
+
+        const activeGroupsListener = getLatestGroupsListener();
+        activeGroupsListener.callback({
+            docs: [
+                {
+                    id: 'group1',
+                    data: () => ({
+                        id: 'group1',
+                        name: 'Test Group',
+                        members: ['user123']
+                    })
+                }
+            ]
+        });
+
+        // 2. Normal member callback
+        listeners.member['group1'].callback({
+            exists: () => true,
+            data: () => ({
+                role: 'admin'
+            })
+        });
+
+        await waitFor(() => {
+            expect(result.current.userGroups[0].myMemberStatus).toBeDefined();
+            expect((result.current.userGroups[0].myMemberStatus as any)?.role).toBe('admin');
+        });
+
+        listeners.member['group1'].onError({ code: 'unavailable' });
+        expect(toastSpy).toHaveBeenCalledWith('Member Status Error (group): unavailable');
+
+        // 3. Normal messages callback
+        listeners.messages['group1'].callback({
+            docs: [
+                {
+                    id: 'msg1',
+                    data: () => ({
+                        text: 'Hello note',
+                        isNote: true
+                    })
+                }
+            ]
+        });
+
+        await waitFor(() => {
+            expect(result.current.userGroups[0].recentMessages).toBeDefined();
+            expect(result.current.userGroups[0].recentMessages?.[0].id).toBe('msg1');
+        });
+
+        // 4. Duplicate messages callback to cover lines 122-124
+        listeners.messages['group1'].callback({
+            docs: [
+                {
+                    id: 'msg1',
+                    data: () => ({
+                        text: 'Hello note',
+                        isNote: true
+                    })
+                }
+            ]
+        });
+
+        await waitFor(() => {
+            expect(result.current.userGroups[0].recentMessages?.[0].id).toBe('msg1');
+        });
+
+        // 5. Test message listener errors (both logging and ignored permission-denied)
+        const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+        listeners.messages['group1'].onError({ code: 'unavailable' });
+        expect(consoleSpy).toHaveBeenCalledWith('Dashboard messages fetch error group1:', expect.anything());
+        consoleSpy.mockClear();
+
+        listeners.messages['group1'].onError({ code: 'permission-denied' });
+        expect(consoleSpy).not.toHaveBeenCalled();
+        consoleSpy.mockRestore();
+    });
+
+    it('should fallback to first userGroup when userData has no groupIds (lines 171-172)', async () => {
+        const userDataNoGroups = {
+            uid: 'user123',
+            groupIds: []
+        };
+
+        const { result } = renderHook(() => useDashboardGroups(userDataNoGroups as any, null));
+
+        await waitFor(() => {
+            expect(mockTestState.listeners.length).toBeGreaterThan(0);
+        });
+
+        const activeListener = getLatestGroupsListener();
+        activeListener.callback({
+            docs: [
+                {
+                    id: 'group_from_query',
+                    data: () => ({
+                        id: 'group_from_query',
+                        name: 'Query Group',
+                        members: ['user123']
+                    })
+                }
+            ]
+        });
+
+        await waitFor(() => {
+            expect(result.current.activeGroupId).toBe('group_from_query');
+        });
+    });
+
+    it('should reset activeGroupId if current active group is no longer in groupIds list (lines 186-188)', async () => {
+        const { result, rerender } = renderHook(
+            ({ uData }) => useDashboardGroups(uData, 'group2'),
+            { initialProps: { uData: { uid: 'user123', groupIds: ['group1', 'group2'] } as any } }
+        );
+
+        await waitFor(() => {
+            expect(mockTestState.listeners.length).toBeGreaterThan(0);
+        });
+
+        let activeListener = getLatestGroupsListener();
+        activeListener.callback({
+            docs: [
+                { id: 'group1', data: () => ({ id: 'group1', name: 'Group 1', members: ['user123'] }) },
+                { id: 'group2', data: () => ({ id: 'group2', name: 'Group 2', members: ['user123'] }) }
+            ]
+        });
+
+        await waitFor(() => {
+            expect(result.current.activeGroupId).toBe('group2');
+            expect(result.current.userGroups.length).toBe(2);
+        });
+
+        const updatedUserData = {
+            uid: 'user123',
+            groupIds: ['group1']
+        };
+        rerender({ uData: updatedUserData as any });
+
+        await waitFor(() => {
+            expect(mockTestState.listeners.length).toBeGreaterThan(0);
+        });
+        
+        activeListener = getLatestGroupsListener();
+        activeListener.callback({
+            docs: [
+                { id: 'group1', data: () => ({ id: 'group1', name: 'Group 1', members: ['user123'] }) }
+            ]
+        });
+
+        await waitFor(() => {
+            expect(result.current.activeGroupId).toBe('group1');
         });
     });
 });

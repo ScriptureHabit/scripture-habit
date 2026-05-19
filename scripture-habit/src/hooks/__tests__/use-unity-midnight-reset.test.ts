@@ -114,6 +114,16 @@ describe('useUnityMidnightReset', () => {
         expect(globalFetch).toHaveBeenCalled();
     });
 
+    it('should not reset when groupId is missing', async () => {
+        renderHook(() => useUnityMidnightReset({ ...defaultProps, groupId: null }));
+
+        await act(async () => {
+            await vi.runOnlyPendingTimersAsync();
+        });
+
+        expect(globalFetch).not.toHaveBeenCalled();
+    });
+
     it('should handle API errors gracefully (not calling onReset)', async () => {
         // Ensure ALL calls fail for this test
         globalFetch.mockResolvedValue({

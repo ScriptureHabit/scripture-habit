@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import JoinGroup from '../join-group';
 import { useLanguage } from '../../../hooks/use-language';
@@ -11,7 +11,9 @@ import { act } from 'react';
 vi.mock('../../../hooks/use-language');
 vi.mock('firebase/firestore');
 vi.mock('firebase/auth');
-vi.mock('firebase/app-check');
+vi.mock('firebase/app-check', () => ({
+  getToken: vi.fn().mockResolvedValue({ token: 'mock-app-check-token' })
+}));
 vi.mock('../../../firebase', () => ({
   auth: {},
   db: {},
@@ -42,6 +44,10 @@ describe('JoinGroup Component Logic', () => {
   const mockT = (key: string) => key;
   
   beforeEach(() => {
+    mockFetch.mockReset();
+    vi.mocked(onSnapshot).mockReset();
+    vi.mocked(onAuthStateChanged).mockReset();
+    vi.mocked(getDocs).mockReset();
     vi.clearAllMocks();
     vi.mocked(useLanguage).mockReturnValue({
       t: mockT,
@@ -55,7 +61,10 @@ describe('JoinGroup Component Logic', () => {
 
     // Mock auth state
     vi.mocked(onAuthStateChanged).mockImplementation(((...args: unknown[]) => {
-      (args[1] as (user: unknown) => void)({ uid: 'test-user' });
+      (args[1] as (user: unknown) => void)({
+        uid: 'test-user',
+        getIdToken: vi.fn(async () => 'mock-id-token')
+      });
       return () => {};
     }) as never);
 
@@ -72,10 +81,37 @@ describe('JoinGroup Component Logic', () => {
       return () => {};
     }) as never);
 
-    // Default fetch mock (fails to trigger fallback)
-    mockFetch.mockResolvedValue({
-      ok: false,
-      status: 404
+    // Default fetch mock supporting dynamic routes
+    mockFetch.mockImplementation(async (url) => {
+      const urlStr = String(url);
+      if (urlStr.includes('/api/groups/join-group')) {
+        return {
+          ok: true,
+          status: 200,
+          text: async () => 'OK'
+        };
+      }
+      if (urlStr.includes('/api/ai/translate')) {
+        return {
+          ok: true,
+          status: 200,
+          json: async () => ({ translatedText: 'Translated Text' })
+        };
+      }
+      if (urlStr.includes('/api/groups')) {
+        return {
+          ok: true,
+          status: 200,
+          json: async () => [
+            { id: 'group-1', name: 'Group 1', isPublic: true, members: ['test-user'] },
+            { id: 'group-2', name: 'Group 2', isPublic: true, members: ['other-user'] }
+          ]
+        };
+      }
+      return {
+        ok: false,
+        status: 404
+      };
     });
 
     // Default getDocs mock
@@ -151,5 +187,577 @@ describe('JoinGroup Component Logic', () => {
     // Both groups filtered out, should show no groups message
     expect(screen.getByText('joinGroup.noPublicGroups')).toBeInTheDocument();
     expect(screen.queryByText('Group 1')).not.toBeInTheDocument();
+  });
+
+  it('successfully fetches public groups from backend API', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: async () => [
+        { id: 'group-api-1', name: 'API Group 1', isPublic: true, members: ['other-user'] }
+      ]
+    });
+
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <JoinGroup />
+        </MemoryRouter>
+      );
+    });
+
+    expect(screen.getByText('API Group 1')).toBeInTheDocument();
+  });
+
+  it('handles pagination for public groups list', async () => {
+    vi.mocked(onSnapshot).mockImplementation(((ref: unknown, callback: unknown) => {
+      const r = ref as { path: string };
+      const cb = callback as (snap: unknown) => void;
+      if (r && r.path === 'users/test-user') {
+        cb({
+          exists: () => true,
+          data: () => ({ groupIds: [] })
+        });
+      }
+      return () => {};
+    }) as never);
+
+    mockFetch.mockImplementation(async (url) => {
+      const urlStr = String(url);
+      if (urlStr.includes('/api/groups')) {
+        return {
+          ok: false,
+          status: 500
+        };
+      }
+      return { ok: false, status: 404 };
+    });
+
+    const mockSnapshot = {
+      docs: Array.from({ length: 6 }, (_, i) => ({
+        id: `group-${i + 1}`,
+        data: () => ({ name: `Group ${i + 1}`, isPublic: true, members: ['other-user'] })
+      })),
+      forEach(cb: any) {
+        this.docs.forEach(cb);
+      }
+    };
+    vi.mocked(getDocs).mockResolvedValue(mockSnapshot as any);
+
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <JoinGroup />
+        </MemoryRouter>
+      );
+    });
+
+    expect(screen.getByText('Group 1')).toBeInTheDocument();
+    expect(screen.getByText('Group 5')).toBeInTheDocument();
+    expect(screen.queryByText('Group 6')).not.toBeInTheDocument();
+
+    const nextBtn = screen.getByText('→');
+    await act(async () => {
+      nextBtn.click();
+    });
+
+    expect(screen.getByText('Group 6')).toBeInTheDocument();
+    expect(screen.queryByText('Group 1')).not.toBeInTheDocument();
+
+    const prevBtn = screen.getByText('←');
+    await act(async () => {
+      prevBtn.click();
+    });
+    expect(screen.getByText('Group 1')).toBeInTheDocument();
+  });
+
+  it('handles translation of group details', async () => {
+    mockFetch.mockImplementation(async (url) => {
+      const urlStr = String(url);
+      if (urlStr.includes('/api/groups')) {
+        return {
+          ok: false,
+          status: 500
+        };
+      }
+      if (urlStr.includes('/api/ai/translate')) {
+        return {
+          ok: true,
+          status: 200,
+          json: async () => ({ translatedText: 'Translated Text' })
+        };
+      }
+      return { ok: false, status: 404 };
+    });
+
+    const mockSnapshot = {
+      docs: [
+        {
+          id: 'group-3',
+          data: () => ({
+            name: 'Original Name',
+            description: 'Original Description',
+            isPublic: true,
+            members: ['other-user'],
+            memberPreviews: [{ uid: 'm1', nickname: 'Member 1' }],
+            createdAt: { seconds: 1716076800, nanoseconds: 0 }
+          })
+        }
+      ],
+      forEach(cb: any) {
+        this.docs.forEach(cb);
+      }
+    };
+    vi.mocked(getDocs).mockResolvedValue(mockSnapshot as any);
+
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <JoinGroup />
+        </MemoryRouter>
+      );
+    });
+
+    const detailsBtn = screen.getByRole('button', { name: 'groupCard.details' });
+    await act(async () => {
+      detailsBtn.click();
+    });
+
+    expect(screen.getAllByText('Translated Text')[0]).toBeInTheDocument();
+    expect(screen.getByText('Member 1')).toBeInTheDocument();
+    expect(screen.getByText(/joinGroup.createdAt/)).toBeInTheDocument();
+  });
+
+  it('handles manual translation in Firestore', async () => {
+    mockFetch.mockImplementation(async (url) => {
+      const urlStr = String(url);
+      if (urlStr.includes('/api/groups')) {
+        return {
+          ok: false,
+          status: 500
+        };
+      }
+      return { ok: false, status: 404 };
+    });
+
+    const mockSnapshot = {
+      docs: [
+        {
+          id: 'group-3',
+          data: () => ({
+            name: 'Original Name',
+            description: 'Original Description',
+            isPublic: true,
+            members: ['other-user'],
+            translations: {
+              ja: { name: 'Manual JA Name', description: 'Manual JA Description' }
+            }
+          })
+        }
+      ],
+      forEach(cb: any) {
+        this.docs.forEach(cb);
+      }
+    };
+    vi.mocked(getDocs).mockResolvedValue(mockSnapshot as any);
+
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <JoinGroup />
+        </MemoryRouter>
+      );
+    });
+
+    const detailsBtn = screen.getByRole('button', { name: 'groupCard.details' });
+    await act(async () => {
+      detailsBtn.click();
+    });
+
+    expect(screen.getAllByText('Manual JA Name')[0]).toBeInTheDocument();
+    expect(screen.getByText('Manual JA Description')).toBeInTheDocument();
+  });
+
+  it('handles successful group join and navigates', async () => {
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <JoinGroup />
+        </MemoryRouter>
+      );
+    });
+
+    const detailsBtn = screen.getByRole('button', { name: 'groupCard.details' });
+    await act(async () => {
+      detailsBtn.click();
+    });
+
+    const confirmBtn = screen.getByRole('button', { name: 'joinGroup.confirmJoin' });
+    await act(async () => {
+      confirmBtn.click();
+    });
+
+    expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining('/api/groups/join-group'), expect.any(Object));
+    expect(mockNavigate).toHaveBeenCalledWith('/ja/dashboard', expect.any(Object));
+  });
+
+  it('handles cancelling group join modal', async () => {
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <JoinGroup />
+        </MemoryRouter>
+      );
+    });
+
+    const detailsBtn = screen.getByRole('button', { name: 'groupCard.details' });
+    await act(async () => {
+      detailsBtn.click();
+    });
+
+    expect(screen.getByText('joinGroup.joinConfirmMessage')).toBeInTheDocument();
+
+    const cancelBtn = screen.getByRole('button', { name: 'joinGroup.cancelJoin' });
+    await act(async () => {
+      cancelBtn.click();
+    });
+
+    expect(screen.queryByText('joinGroup.joinConfirmMessage')).not.toBeInTheDocument();
+  });
+
+  it('handles clicking overlay to close modal', async () => {
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <JoinGroup />
+        </MemoryRouter>
+      );
+    });
+
+    const detailsBtn = screen.getByRole('button', { name: 'groupCard.details' });
+    await act(async () => {
+      detailsBtn.click();
+    });
+
+    expect(screen.getByText('joinGroup.joinConfirmMessage')).toBeInTheDocument();
+
+    const overlay = screen.getByText('joinGroup.joinConfirmMessage').closest('.group-modal-overlay');
+    expect(overlay).toBeInTheDocument();
+    await act(async () => {
+      overlay?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    });
+
+    expect(screen.queryByText('joinGroup.joinConfirmMessage')).not.toBeInTheDocument();
+  });
+
+  it('shows error when user is not logged in', async () => {
+    vi.mocked(onAuthStateChanged).mockImplementation(((...args: unknown[]) => {
+      (args[1] as (user: unknown) => void)(null);
+      return () => {};
+    }) as never);
+
+    mockFetch.mockImplementation(async (url) => {
+      const urlStr = String(url);
+      if (urlStr.includes('/api/groups')) {
+        return {
+          ok: true,
+          status: 200,
+          json: async () => [
+            { id: 'group-2', name: 'Group 2', isPublic: true, members: ['other-user'] }
+          ]
+        };
+      }
+      return { ok: false, status: 404 };
+    });
+
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <JoinGroup />
+        </MemoryRouter>
+      );
+    });
+
+    const detailsBtn = screen.getByRole('button', { name: 'groupCard.details' });
+    await act(async () => {
+      detailsBtn.click();
+    });
+
+    const confirmBtn = screen.getByRole('button', { name: 'joinGroup.confirmJoin' });
+    await act(async () => {
+      confirmBtn.click();
+    });
+
+    expect(screen.getByText('joinGroup.errorLoggedIn')).toBeInTheDocument();
+  });
+
+  it('shows error when user reached max groups limit', async () => {
+    vi.mocked(onSnapshot).mockImplementation(((ref: unknown, callback: unknown) => {
+      const r = ref as { path: string };
+      const cb = callback as (snap: unknown) => void;
+      if (r && r.path === 'users/test-user') {
+        cb({
+          exists: () => true,
+          data: () => ({ groupIds: ['g1', 'g2', 'g3', 'g4'] })
+        });
+      }
+      return () => {};
+    }) as never);
+
+    mockFetch.mockImplementation(async (url) => {
+      const urlStr = String(url);
+      if (urlStr.includes('/api/groups')) {
+        return {
+          ok: true,
+          status: 200,
+          json: async () => [
+            { id: 'group-2', name: 'Group 2', isPublic: true, members: ['other-user'] }
+          ]
+        };
+      }
+      return { ok: false, status: 404 };
+    });
+
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <JoinGroup />
+        </MemoryRouter>
+      );
+    });
+
+    const detailsBtn = screen.getByRole('button', { name: 'groupCard.details' });
+    await act(async () => {
+      detailsBtn.click();
+    });
+
+    const confirmBtn = screen.getByRole('button', { name: 'joinGroup.confirmJoin' });
+    await act(async () => {
+      confirmBtn.click();
+    });
+
+    expect(screen.getByText('joinGroup.errorMaxGroups')).toBeInTheDocument();
+  });
+
+  it('shows error when group is full', async () => {
+    mockFetch.mockImplementation(async (url) => {
+      const urlStr = String(url);
+      if (urlStr.includes('/api/groups')) {
+        return {
+          ok: false,
+          status: 500
+        };
+      }
+      return { ok: false, status: 404 };
+    });
+
+    const mockSnapshot = {
+      docs: [
+        {
+          id: 'group-2',
+          data: () => ({
+            name: 'Group 2',
+            isPublic: true,
+            members: ['other-user'],
+            membersCount: 5,
+            maxMembers: 5
+          })
+        }
+      ],
+      forEach(cb: any) {
+        this.docs.forEach(cb);
+      }
+    };
+    vi.mocked(getDocs).mockResolvedValue(mockSnapshot as any);
+
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <JoinGroup />
+        </MemoryRouter>
+      );
+    });
+
+    const detailsBtn = screen.getByRole('button', { name: 'groupCard.details' });
+    await act(async () => {
+      detailsBtn.click();
+    });
+
+    const confirmBtn = screen.getByRole('button', { name: 'joinGroup.confirmJoin' });
+    await act(async () => {
+      confirmBtn.click();
+    });
+
+    expect(screen.getByText('joinGroup.errorFull')).toBeInTheDocument();
+  });
+
+  it('shows error when server join fails', async () => {
+    mockFetch.mockImplementation(async (url) => {
+      const urlStr = String(url);
+      if (urlStr.includes('/api/groups/join-group')) {
+        return {
+          ok: false,
+          status: 500,
+          text: async () => 'Internal Server Error'
+        };
+      }
+      if (urlStr.includes('/api/groups')) {
+        return {
+          ok: true,
+          status: 200,
+          json: async () => [
+            { id: 'group-2', name: 'Group 2', isPublic: true, members: ['other-user'] }
+          ]
+        };
+      }
+      return { ok: false, status: 404 };
+    });
+
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <JoinGroup />
+        </MemoryRouter>
+      );
+    });
+
+    const detailsBtn = screen.getByRole('button', { name: 'groupCard.details' });
+    await act(async () => {
+      detailsBtn.click();
+    });
+
+    const confirmBtn = screen.getByRole('button', { name: 'joinGroup.confirmJoin' });
+    await act(async () => {
+      confirmBtn.click();
+    });
+
+    expect(screen.getByText(new RegExp('joinGroup.errorJoinFailed.*Internal Server Error'))).toBeInTheDocument();
+  });
+
+  it('allows opening group if user becomes a member while modal is open', async () => {
+    let snapshotCallback: any;
+    vi.mocked(onSnapshot).mockImplementation(((ref: unknown, callback: unknown) => {
+      const r = ref as { path: string };
+      const cb = callback as (snap: unknown) => void;
+      if (r && r.path === 'users/test-user') {
+        snapshotCallback = cb;
+        cb({
+          exists: () => true,
+          data: () => ({ groupIds: ['group-1'] })
+        });
+      }
+      return () => {};
+    }) as never);
+
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <JoinGroup />
+        </MemoryRouter>
+      );
+    });
+
+    const detailsBtn = screen.getByRole('button', { name: 'groupCard.details' });
+    await act(async () => {
+      detailsBtn.click();
+    });
+
+    await act(async () => {
+      snapshotCallback({
+        exists: () => true,
+        data: () => ({ groupIds: ['group-1', 'group-2'] })
+      });
+    });
+
+    const openBtn = screen.getByRole('button', { name: 'groupCard.open' });
+    await act(async () => {
+      openBtn.click();
+    });
+
+    expect(mockNavigate).toHaveBeenCalledWith('/ja/dashboard', expect.any(Object));
+  });
+
+  it('handles translation api failure gracefully', async () => {
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    
+    mockFetch.mockImplementation(async (url) => {
+      const urlStr = String(url);
+      if (urlStr.includes('/api/ai/translate')) {
+        return {
+          ok: false,
+          status: 500
+        };
+      }
+      if (urlStr.includes('/api/groups')) {
+        return {
+          ok: true,
+          status: 200,
+          json: async () => [
+            { id: 'group-2', name: 'Group 2', isPublic: true, members: ['other-user'] }
+          ]
+        };
+      }
+      return { ok: false, status: 404 };
+    });
+
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <JoinGroup />
+        </MemoryRouter>
+      );
+    });
+
+    const detailsBtn = screen.getByRole('button', { name: 'groupCard.details' });
+    await act(async () => {
+      detailsBtn.click();
+    });
+
+    await waitFor(() => {
+      expect(consoleSpy).toHaveBeenCalled();
+    });
+    consoleSpy.mockRestore();
+  });
+
+  it('shows error when network join fails with exception', async () => {
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    mockFetch.mockImplementation(async (url) => {
+      const urlStr = String(url);
+      if (urlStr.includes('/api/groups/join-group')) {
+        throw new Error('Network Error');
+      }
+      if (urlStr.includes('/api/groups')) {
+        return {
+          ok: true,
+          status: 200,
+          json: async () => [
+            { id: 'group-2', name: 'Group 2', isPublic: true, members: ['other-user'] }
+          ]
+        };
+      }
+      return { ok: false, status: 404 };
+    });
+
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <JoinGroup />
+        </MemoryRouter>
+      );
+    });
+
+    const detailsBtn = screen.getByRole('button', { name: 'groupCard.details' });
+    await act(async () => {
+      detailsBtn.click();
+    });
+
+    const confirmBtn = screen.getByRole('button', { name: 'joinGroup.confirmJoin' });
+    await act(async () => {
+      confirmBtn.click();
+    });
+
+    expect(screen.getByText('joinGroup.errorJoinFailed')).toBeInTheDocument();
+    expect(consoleSpy).toHaveBeenCalled();
+    consoleSpy.mockRestore();
   });
 });

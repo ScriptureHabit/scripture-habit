@@ -230,12 +230,12 @@ export class ProfileService {
                             }
                         }
                         
-                        if (opsInBatch >= 450) {
+                        if (opsInBatch >= 90) {
                             await batch.commit();
                             // Reset batch if needed, but we typically commit one batch per query chunk for simplicity
                         }
                     }
-                    if (hasChanges && opsInBatch < 450) await batch.commit();
+                    if (hasChanges && opsInBatch < 90) await batch.commit();
                     
                     lastMsgDoc = recentMsgs.docs[recentMsgs.size - 1];
                 }

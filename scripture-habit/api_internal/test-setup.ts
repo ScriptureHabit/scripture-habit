@@ -1,6 +1,5 @@
 import { vi } from 'vitest';
 import { Server } from 'http';
-import app from '../api/api.js';
 import { auth, admin } from './lib/firebase-admin.js';
 
 /**
@@ -13,6 +12,7 @@ export class TestSetup {
 
     async start() {
         process.env.SKIP_APP_CHECK = 'true';
+        const app = (await import('../api/api.js')).default;
         return new Promise<void>((resolve) => {
             this.server = app.listen(0, () => {
                 const addr = this.server?.address();
