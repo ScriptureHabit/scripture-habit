@@ -199,9 +199,12 @@ router.post('/translate', authenticate, aiLimiter, verifyAppCheck, async (req: A
             
             // Persist to cache if DB is healthy
             if (canUseCache && cacheRef) {
-                cacheRef.set({ originalText: text, translatedText, targetLanguage, createdAt: admin.firestore.FieldValue.serverTimestamp() }).catch(e => {
+                const savePromise = cacheRef.set({ originalText: text, translatedText, targetLanguage, createdAt: admin.firestore.FieldValue.serverTimestamp() }).catch(e => {
                     console.warn('[AI Cache] Failed to save to cache:', e.message);
                 });
+                if (process.env.NODE_ENV === 'test') {
+                    await savePromise;
+                }
             }
         }
 
