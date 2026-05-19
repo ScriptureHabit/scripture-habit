@@ -153,7 +153,7 @@ describe('use-note-submission', () => {
             message: 'Request failed'
         });
 
-        vi.spyOn(axios, 'isAxiosError').mockImplementation((err: unknown): err is any => true);
+        vi.spyOn(axios, 'isAxiosError').mockImplementation((err: unknown): err is any => !!err);
 
         const { result } = renderHook(() => useNoteSubmission(mockUserData, 'en', mockT));
 
@@ -214,7 +214,7 @@ describe('use-note-submission', () => {
             isAxiosError: true,
             message: 'auth/network-request-failed'
         });
-        vi.spyOn(axios, 'isAxiosError').mockImplementation((err: unknown): err is any => true);
+        vi.spyOn(axios, 'isAxiosError').mockImplementation((err: unknown): err is any => !!err);
 
         const { result } = renderHook(() => useNoteSubmission(mockUserData, 'en', mockT));
 

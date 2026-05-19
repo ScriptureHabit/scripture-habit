@@ -27,7 +27,6 @@ vi.mock('react-toastify', () => ({
 
 import GroupCard from '../group-card';
 import { useLanguage } from '../../hooks/use-language';
-import { auth } from '../../firebase';
 import { getToken } from 'firebase/app-check';
 import { toast } from 'react-toastify';
 
@@ -52,7 +51,7 @@ describe('GroupCard', () => {
 
     beforeEach(() => {
         dateNowSpy = vi.spyOn(Date, 'now').mockReturnValue(new Date('2026-05-19T12:00:00Z').getTime());
-        mockUseLanguage.mockReturnValue(mockLanguageContext);
+        mockUseLanguage.mockReturnValue(mockLanguageContext as any);
         mockToast.info.mockReset();
         mockToast.error.mockReset();
         mockGetToken.mockResolvedValue({ token: 'app-check-token' });

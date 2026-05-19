@@ -119,7 +119,7 @@ describe('useUrlMetadata', () => {
         globalFetch.mockResolvedValue({ ok: true, json: async () => ({ title: 'Test Title', speaker: 'Test Speaker' }) });
         vi.mocked(safeStorage.get).mockReturnValue(undefined);
         const { auth } = await import('../../firebase');
-        vi.mocked(auth.currentUser.getIdToken).mockRejectedValueOnce(new Error('Token failed'));
+        vi.mocked(auth!.currentUser!.getIdToken).mockRejectedValueOnce(new Error('Token failed'));
         const url = 'https://example.com/fail-auth';
 
         const { result } = renderHook(() => useUrlMetadata(url, defaultLang));

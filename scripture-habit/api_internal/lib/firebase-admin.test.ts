@@ -9,8 +9,8 @@ import { resolveServiceAccount } from './firebase-admin.js';
  */
 describe('resolveServiceAccount', () => {
     // Stubs so tests don't touch the real filesystem
-    const noFile = (_p: string) => false;
-    const noRead = (_p: string, _enc: BufferEncoding) => '';
+    const noFile = (p: string) => !p && false;
+    const noRead = (p: string, enc: BufferEncoding) => !p && !enc ? '' : '';
 
     it('parses FIREBASE_SERVICE_ACCOUNT JSON when provided', () => {
         const account = { projectId: 'proj', privateKey: 'pk', clientEmail: 'ce@proj.iam.gserviceaccount.com' };
@@ -53,8 +53,8 @@ describe('resolveServiceAccount', () => {
 
     it('reads the service account JSON from the local file path as fallback', () => {
         const fakeAccount = { projectId: 'file-proj', privateKey: 'file-pk', clientEmail: 'file@proj.iam.gserviceaccount.com' };
-        const fileExists = (_p: string) => true;
-        const readFile = (_p: string, _enc: BufferEncoding) => JSON.stringify(fakeAccount);
+        const fileExists = (p: string) => !!p && true;
+        const readFile = (p: string, enc: BufferEncoding) => !p && !enc ? '' : JSON.stringify(fakeAccount);
 
         const result = resolveServiceAccount({} as NodeJS.ProcessEnv, fileExists, readFile, '/fake/dir');
 
