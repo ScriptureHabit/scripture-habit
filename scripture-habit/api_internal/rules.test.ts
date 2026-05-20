@@ -84,6 +84,23 @@ describe('Firestore Security Rules', () => {
         });
     });
 
+    describe('User Letters', () => {
+        it('should allow user to read/write their own letters', async () => {
+            const alice = testEnv.authenticatedContext('alice', { email_verified: true });
+            const letterRef = doc(alice.firestore(), 'users/alice/letters/letter1');
+            await assertSucceeds(setDoc(letterRef, { content: 'My recap letter', title: 'Week 1' }));
+            await assertSucceeds(getDoc(letterRef));
+        });
+
+        it('should deny reading another users letters', async () => {
+            const alice = testEnv.authenticatedContext('alice', { email_verified: true });
+            await testEnv.withSecurityRulesDisabled(async (context) => {
+                await setDoc(doc(context.firestore(), 'users/bob/letters/letter1'), { content: 'Secret recap' });
+            });
+            await assertFails(getDoc(doc(alice.firestore(), 'users/bob/letters/letter1')));
+        });
+    });
+
     describe('Groups Collection', () => {
         it('should allow verified user to read public group', async () => {
             const alice = testEnv.authenticatedContext('alice', { email_verified: true });
