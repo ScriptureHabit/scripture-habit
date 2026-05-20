@@ -47,10 +47,9 @@ const mockLanguageContext = {
 };
 
 describe('GroupCard', () => {
-    let dateNowSpy: ReturnType<typeof vi.spyOn>;
-
     beforeEach(() => {
-        dateNowSpy = vi.spyOn(Date, 'now').mockReturnValue(new Date('2026-05-19T12:00:00Z').getTime());
+        vi.useFakeTimers();
+        vi.setSystemTime(new Date('2026-05-19T12:00:00Z'));
         mockUseLanguage.mockReturnValue(mockLanguageContext as any);
         mockToast.info.mockReset();
         mockToast.error.mockReset();
@@ -60,7 +59,7 @@ describe('GroupCard', () => {
     });
 
     afterEach(() => {
-        dateNowSpy.mockRestore();
+        vi.useRealTimers();
     });
 
     const baseGroup: any = {
