@@ -9,7 +9,7 @@ The **Chat Dashboard** is the most complex UI component in **scripture-habit**. 
 We avoid traditional "Pull" (polling) or "Manual Fetch" patterns. Instead, the UI is a direct reflection of the Firestore database via persistent WebSocket listeners.
 
 ### Delta Handling
-The sync engine (primarily through `useChatDataSync.ts`) utilizes Firestore's ability to send only "Modified" or "Added" documents.
+The sync engine (primarily through `use-chat-sync-controller.ts` and `use-chat-data-engine.ts` in `src/components/groupchat/hooks/core/`) utilizes Firestore's ability to send only "Modified" or "Added" documents.
 - **Optimistic State**: When a user reads a message, the UI updates local state immediately while the API update processes in the background.
 - **Snapshot Merging**: New messages are appended to the local list, ensuring that deep tree re-renders are minimized by using stable React `key` properties based on Firestore `doc.id`.
 

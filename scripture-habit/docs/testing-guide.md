@@ -6,7 +6,11 @@ This document outlines the testing strategies and patterns used in the Scripture
 We use `@firebase/rules-unit-testing` to verify that our security rules correctly protect user data and enforce business logic.
 
 - **Location**: `api_internal/rules.test.ts`
-- **How to run**:
+- **How to run** (Recommended):
+  ```bash
+  npm run test:internal
+  ```
+  *(Or execute manually targeting a single file)*:
   ```bash
   firebase emulators:exec --project scripture-habit-auth "npx vitest api_internal/rules.test.ts"
   ```
@@ -32,7 +36,11 @@ Critical business logic in hooks (like date-based resets or metadata fetching) i
 Core API routes are tested against live Firebase Emulators to ensure authentication, validation, and database transactions work correctly.
 
 - **Location**: `api_internal/*.integration.test.ts`
-- **How to run**:
+- **How to run** (Recommended for all internal tests):
+  ```bash
+  npm run test:internal
+  ```
+  *(Or execute manually targeting a single file)*:
   ```bash
   firebase emulators:exec --project scripture-habit-auth "npx vitest api_internal/groups.integration.test.ts"
   ```
@@ -45,7 +53,11 @@ Core API routes are tested against live Firebase Emulators to ensure authenticat
 Since AI prompts are critical and easily broken by small changes, we use snapshot testing to verify the exact prompt text sent to Gemini.
 
 - **Location**: `api_internal/ai_integration.test.ts`
-- **How to run**:
+- **How to run** (Recommended):
+  ```bash
+  npm run test:internal
+  ```
+  *(Or execute manually)*:
   ```bash
   firebase emulators:exec --project scripture-habit-auth "npx vitest api_internal/ai_integration.test.ts"
   ```

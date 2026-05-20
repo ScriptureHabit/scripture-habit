@@ -9,22 +9,22 @@ This document provides a deep-dive into the technical foundations of the **scrip
 We utilize a modern, type-safe stack designed for rapid development and high performance on both web and mobile.
 
 ### Frontend
-- **Framework**: **React 19** (Concurrent Rendering, specialized Server Actions ready).
-- **Build Tool**: **Vite 7** (Lightning-fast HMR and optimized production bundles).
-- **Navigation**: **React Router 7** (Handling deep-linking and layout nesting).
-- **Data Fetching**: **TanStack Query 5** (Server state management, caching, and retry logic).
-- **State Management**: **Zustand** (Lightweight, non-context global UI state).
-- **Real-time**: **Firebase 12 Client SDK** (Firestore onSnapshot, Auth, Analytics).
+- **Framework**: **React 19** (Concurrent Rendering, React Server Components ready).
+- **Build Tool**: **Vite 8** (Ultra-fast Hot Module Replacement and highly optimized build bundles).
+- **Navigation**: **React Router 7** (Single-page app layouts and deep-linking).
+- **Data Fetching**: **TanStack Query 5** (Optimized query state management, automated refetch, and offline sync caching).
+- **State Management**: **Zustand 5** (Lightweight, non-context global UI and layout state).
+- **Real-time**: **Firebase 12 Client SDK** (Firestore real-time sync via persistent WebSocket listeners).
 
 ### Backend
-- **Platform**: **Node.js** with **Express** (Hosted as Vercel Functions).
-- **Database**: **Cloud Firestore** (NoSQL, document-based, real-time).
-- **Authentication**: **Firebase Admin SDK** (JWT verification, secure user management).
-- **AI Engine**: **Gemini 3.1 Flash-Lite** (Automated translations, recaps, and questions).
+- **Platform**: **Node 22** with **Express 5** (Hosted serverless on Vercel Functions).
+- **Database**: **Cloud Firestore** (Document-based real-time NoSQL database).
+- **Authentication**: **Firebase Admin SDK 13** (Secure server-side JWT verification and user management).
+- **AI Engine**: **Gemini 3.1 Flash-Lite Preview** (Stateless prompt facilitation, cached translation engine).
 
 ### Mobile Bridge
-- **Platform**: **Capacitor 8** (Native Webview bridge).
-- **Plugins**: Google Auth, Push Notifications, AppCheck, Local Storage.
+- **Platform**: **Capacitor 8** (Native WebView wrapper for Android and iOS builds).
+- **Plugins**: Google Social Authentication, Push Notifications, AppCheck native integrity, Local Storage.
 
 ---
 
@@ -36,7 +36,7 @@ We utilize a modern, type-safe stack designed for rapid development and high per
 ### 2. The Logic Layer (Custom Hooks)
 We follow a **"Logic-Component Split"** philosophy:
 - **Components**: Responsible for layout, styling (Vanilla CSS), and rendering.
-- **Hooks**: Responsible for API calls, data synchronization, and business logic (e.g., `useChatDataSync`, `useNoteSubmission`).
+- **Hooks**: Responsible for API calls, data synchronization, and business logic (e.g., `use-chat-sync-controller.ts`, `use-chat-data-engine.ts`, `useNoteSubmission`).
 - **Benefit**: Components remain readable and unit-testable, while logic is reusable across different views.
 
 ### 3. The Backend Service Layer (`api_internal/services`)

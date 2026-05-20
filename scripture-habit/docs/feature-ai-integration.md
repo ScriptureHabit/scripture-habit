@@ -30,13 +30,25 @@ This forces the model to prioritize speed and directness, which is ideal for sta
 AI tokens are expensive and latency is the enemy. We implement a persistent cache for all translations.
 
 ### 1. The Hash Key
-Each translation request is hashed using **MD5** based on:
-`key = md5(OriginalText + TargetLanguage)`
+Each translation request is hashed using **MD5** based on the content text, language, and context category (UpdateType):
+`key = md5(OriginalText + TargetLanguage + UpdateType)`
+
+*Note: Incorporating `UpdateType` ensures that special formats (like bold lists for notes) do not collide with raw text styles (like group descriptions).*
 
 ### 2. Cache Lookup
 - Before calling Gemini, the server checks the `translation_cache` collection for this key.
 - If it exists, the cached result is returned instantly (< 50ms).
 - If it doesn't exist, Gemini is invoked, and the result is stored with a `createdAt` timestamp for future hits.
+
+---
+
+## 💬 AI Discussion Starter (Facilitation)
+
+To maintain active conversations and build group connection, the backend provides a **Discussion Starter** endpoint (`/api/generate-discussion-topic`):
+
+*   **Context Injection**: The endpoint fetches the 3 most recent study notes posted in the group chat (`isNote == true`) to build local conversational relevance.
+*   **The Trigger**: It generates a custom, personal application question tailored to the topics currently being studied by the group.
+*   **Safety Guards**: Standard rate limits (`aiLimiter`) and AppCheck apply, preventing third-party script exploitation.
 
 ---
 

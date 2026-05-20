@@ -4,9 +4,9 @@
 
 ---
 
-## 🎨 Frontend Architecture: `LanguageContext`
+## 🎨 Frontend Architecture: Decoupled context & provider
 
-The heart of frontend localization is the `LanguageContext.tsx`.
+The heart of frontend localization is split into **`src/context/language-context.ts`** (declaring types and the context instance) and **`src/context/language-provider.tsx`** (housing state logic, translation bundles, and client-side caching).
 
 ### 1. The `t()` Hook
 We use a streamlined translation hook that provides:
@@ -65,5 +65,5 @@ The app detects if a note's language differs from the viewer's preferred languag
 ## 🚀 Adding a New Language
 
 1.  **Backend**: Add a new file in `api_internal/locales/` (e.g., `fr.ts`) and register it in `i18n.ts`.
-2.  **Frontend**: Update `LanguageContext.tsx` with the new translation bundle and flag icon.
+2.  **Frontend**: Update `src/context/language-provider.tsx` with the new translation bundle and flag icon.
 3.  **AI**: Add the language name to `languageNames` in `lib/schemas.ts` so the AI knows the target destination.

@@ -13,12 +13,16 @@ erDiagram
     USERS ||--o{ NOTES : "personal copies"
     USERS ||--o{ GROUP_STATES : "read markers"
     USERS ||--o{ PRIVATE_TOKENS : "sensitive fcm"
+    USERS ||--o{ LETTERS : "encouragement letters"
     
     GROUPS ||--o{ MESSAGES : "active chat"
     GROUPS ||--o{ MESSAGE_BUCKETS : "archived history"
     GROUPS ||--o{ MEMBERS_STATS : "individual progress"
     
     USERS }|--o{ GROUPS : "many-to-many (membership)"
+    
+    USERS ||--o{ CHEERS : "social cheers"
+    USERS ||--o{ REPORTS : "abuse reports"
     
     USERS {
         string uid PK
@@ -33,6 +37,7 @@ erDiagram
         string[] members
         int membersCount
         timestamp lastMessageAt
+        boolean isPublic
     }
     
     MESSAGES {
@@ -41,6 +46,28 @@ erDiagram
         string senderId FK
         timestamp createdAt
         boolean isNote
+    }
+
+    LETTERS {
+        string letterId PK
+        string text
+        timestamp createdAt
+        string type
+    }
+    
+    CHEERS {
+        string cheerId PK
+        string senderUid FK
+        string targetUid FK
+        timestamp createdAt
+    }
+    
+    REPORTS {
+        string reportId PK
+        string reporterId FK
+        string targetId
+        string reason
+        timestamp createdAt
     }
 ```
 
@@ -79,11 +106,14 @@ Our `firestore.rules` implements a "Swiss Cheese" model where multiple layers of
 
 ## 💎 Integrity & The "API-Only Write" Policy
 
-To prevent users from manually updating their own streaks, levels, or coins, the following architecture is enforced:
+To prevent users from manually updating their own streaks, levels, or coins, a strict frontend lockdown is enforced with explicit rules:
 
-1.  **Frontend Lockdown**: All core collections have `allow write: if false;`.
-2.  **Service Actions**: Updates must go through the **Backend API**.
-3.  **Atomic Transactions**: The API uses `db.runTransaction()` to ensure that if a note is created, the user's streak and group statistics are updated **simultaneously**. If any part fails, the entire action is rolled back.
+1.  **Strict Mutations Lockdown**: All core collections and subcollections (`messages`, `members`, `message_buckets`) have `allow write: if false;`. They cannot be modified from the client.
+2.  **Controlled Group Creation (Frontend Exception)**: To allow frictionless team creation, users can directly call `create` on the `groups` collection, but this is guarded in `firestore.rules` by:
+    - User must be authenticated (`isAuthenticated()`).
+    - The created group's `ownerUserId` must match the current user's UID.
+    - **Limit of Max 4 Groups**: `get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('groupIds', []).size() < 4`.
+3.  **Service Actions & Atomic Transactions**: All other modifications (adding members, updating counters, deleting groups) must go through the **Backend API** via secure vercel function endpoints. The backend uses `db.runTransaction()` to ensure that when a note is posted, user streaks, level ups, and group metrics are written **simultaneously or rolled back on failure**.
 
 ---
 

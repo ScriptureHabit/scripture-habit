@@ -11,6 +11,9 @@ Welcome to the **scripture-habit** technical documentation. This directory conta
 - **[Database & Security: The Foundation](database-security.md)**
   - Firestore structure and path-based permissions.
   - Email verification and AppCheck guards.
+- **[AI Context Guide & Development Charter](ai-context.md)**
+  - Essential LLM directives and repository-wide system design constraints.
+  - State boundaries, logic-component split principles, and transactional integrity rules.
 
 ---
 
@@ -41,6 +44,10 @@ Welcome to the **scripture-habit** technical documentation. This directory conta
 ## 🛠️ Operations & Development
 - **[Development & Environment Guide](development-guide.md)**
   - Local setup, mobile development (Capacitor), and deployment instructions.
+- **[Technical Troubleshooting & FAQ](troubleshooting.md)**
+  - Resolution paths for Capacitor loopback issues, Android clean-traffic configurations, AppCheck test bypasses, and keystore SHA-1 alignments.
+- **[Testing & Reliability Guide](testing-guide.md)**
+  - Unit and integration testing setup using Vitest, Firebase rule unit tests, and Playwright E2E automation.
 - **[Maintenance & Batch Jobs](maintenance-cron.md)**
   - Inactivity checks, owner transfers, and counter aggregation.
   - Archiving and self-healing mechanisms.
