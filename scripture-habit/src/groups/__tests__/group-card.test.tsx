@@ -48,7 +48,7 @@ const mockLanguageContext = {
 
 describe('GroupCard', () => {
     beforeEach(() => {
-        vi.useFakeTimers();
+        vi.useFakeTimers({ toFake: ['Date'] });
         vi.setSystemTime(new Date('2026-05-19T12:00:00Z'));
         mockUseLanguage.mockReturnValue(mockLanguageContext as any);
         mockToast.info.mockReset();
