@@ -433,6 +433,7 @@ export default {
             noteDeletedSuccess: "노트가 성공적으로 삭제되었습니다",
             noteDeletedError: "노트 삭제 실패",
             letterSaveError: "편지함에 편지를 저장하지 못했습니다.",
+            letterSaveSuccess: "편지함에 저장되었습니다!",
             prevPage: "이전",
             nextPage: "다음",
             pageInfo: "{total}페이지 중 {current}페이지"

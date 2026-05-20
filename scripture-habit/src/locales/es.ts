@@ -431,6 +431,7 @@ export default {
             noteDeletedSuccess: "Nota eliminada con éxito",
             noteDeletedError: "Error al eliminar la nota",
             letterSaveError: "Error al guardar la carta.",
+            letterSaveSuccess: "¡Guardado en el buzón de cartas!",
             prevPage: "Anterior",
             nextPage: "Siguiente",
             pageInfo: "Página {current} de {total}"

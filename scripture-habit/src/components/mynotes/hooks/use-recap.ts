@@ -79,11 +79,11 @@ export const useRecapOperations = (userData: UserData, language: string, t: (k: 
         lastRecapGeneratedAt: serverTimestamp()
       });
 
-      toast.success(t('newNote.successPost') || "Saved to Letter Box!");
+      toast.success(t('myNotes.letterSaveSuccess') || "Saved to Letter Box!");
       return true;
     } catch (error) {
       console.error("Error saving to letter box:", error);
-      toast.error(t('myNotes.letterSaveError'));
+      toast.error(t('myNotes.letterSaveError') || "Error saving to Letter Box");
       return false;
     }
   };

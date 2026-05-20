@@ -355,6 +355,7 @@ export default {
             noteDeletedSuccess: "ノートを削除しました",
             noteDeletedError: "ノートの削除に失敗しました",
             letterSaveError: "レターの保存に失敗しました",
+            letterSaveSuccess: "レターボックスに保存しました！",
             prevPage: "前へ",
             nextPage: "次へ",
             pageInfo: "{total} ページ中 {current} ページ目"

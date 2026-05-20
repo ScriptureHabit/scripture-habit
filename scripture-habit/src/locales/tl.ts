@@ -431,6 +431,7 @@ export default {
             noteDeletedSuccess: "Matagumpay na nabura ang tala",
             noteDeletedError: "Nabigong burahin ang tala",
             letterSaveError: "Nabigong i-save ang sulat sa Inbox.",
+            letterSaveSuccess: "Na-save sa Letter Box!",
             prevPage: "Nakaraan",
             nextPage: "Susunod",
             pageInfo: "Pahina {current} ng {total}"

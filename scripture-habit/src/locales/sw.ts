@@ -433,6 +433,7 @@ export default {
             noteDeletedSuccess: "Dokezo limefutwa kwa mafanikio",
             noteDeletedError: "Imeshindwa kufuta dokezo",
             letterSaveError: "Imeshindwa kuhifadhi barua kwenye Sanduku la Barua.",
+            letterSaveSuccess: "Imehifadhiwa kwenye Sanduku la Barua!",
             prevPage: "Iliyopita",
             nextPage: "Inayofuata",
             pageInfo: "Ukurasa {current} kati ya {total}"

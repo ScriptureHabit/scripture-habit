@@ -164,6 +164,7 @@ export default {
             noteDeletedSuccess: "Note deleted successfully",
             noteDeletedError: "Failed to delete note",
             letterSaveError: "Failed to save letter.",
+            letterSaveSuccess: "Saved to Letter Box!",
             prevPage: "Previous",
             nextPage: "Next",
             pageInfo: "Page {current} of {total}"

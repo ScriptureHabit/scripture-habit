@@ -433,6 +433,7 @@ export default {
             noteDeletedSuccess: "ลบบันทึกสำเร็จ",
             noteDeletedError: "ไม่สามารถลบบันทึกได้",
             letterSaveError: "ไม่สามารถบันทึกจดหมายลงในกล่องจดหมายได้",
+            letterSaveSuccess: "บันทึกในกล่องจดหมายเรียบร้อยแล้ว!",
             prevPage: "ก่อนหน้า",
             nextPage: "ถัดไป",
             pageInfo: "หน้า {current} จาก {total}"

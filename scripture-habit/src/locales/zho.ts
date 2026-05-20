@@ -406,6 +406,7 @@ export default {
             noteDeletedSuccess: "筆記刪除成功",
             noteDeletedError: "刪除筆記失敗",
             letterSaveError: "存入信箱失敗。",
+            letterSaveSuccess: "已存入信箱！",
             prevPage: "上一頁",
             nextPage: "下一頁",
             pageInfo: "第 {current} 頁，共 {total} 頁"

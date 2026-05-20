@@ -406,6 +406,7 @@ export default {
             noteDeletedSuccess: "Xóa ghi chú thành công",
             noteDeletedError: "Không thể xóa ghi chú",
             letterSaveError: "Không thể lưu thư vào hộp thư.",
+            letterSaveSuccess: "Đã lưu vào Hộp thư!",
             prevPage: "Trước",
             nextPage: "Tiếp",
             pageInfo: "Trang {current} / {total}"
