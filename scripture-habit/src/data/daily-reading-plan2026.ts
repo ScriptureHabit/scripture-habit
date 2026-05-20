@@ -154,7 +154,14 @@ export const DailyReadingPlan2026: ReadingPlanItem[] = [
     { day: 151, scripts: ["Judges 7:1-25", "Judges 8:1-17"], date: "2026-05-28" },
     { day: 152, scripts: ["Judges 8:18-35", "Judges 13:1-25"], date: "2026-05-29" },
     { day: 153, scripts: ["Judges 14:1-20", "Judges 15:1-20"], date: "2026-05-30" },
-    { day: 154, scripts: ["Judges 16:1-31"], date: "2026-05-31" }
+    { day: 154, scripts: ["Judges 16:1-31"], date: "2026-05-31" },
+    { day: 155, scripts: [" Ruth 1:1-22", "Ruth 2:1-23"], date: "2026-06-01" },
+    { day: 156, scripts: [" Ruth 3:1-22", "Ruth 4:1-22"], date: "2026-06-02" },
+    { day: 157, scripts: ["1 Samuel 1:1-28", "1 Samuel 2:1-11"], date: "2026-06-03" },
+    { day: 158, scripts: ["1 Samuel 2:12-36"], date: "2026-06-04" },
+    { day: 159, scripts: ["1 Samuel 3:1-21"], date: "2026-06-05" },
+    { day: 160, scripts: ["1 Samuel 4:1-22"], date: "2026-06-06" },
+    { day: 161, scripts: ["1 Samuel 5:1-12", "1 Samuel 6:1-21", "1 Samuel 7:1-17"], date: "2026-06-07" },
 ];
 
 export const getTodayReadingPlan = (): ReadingPlanItem | undefined => {
