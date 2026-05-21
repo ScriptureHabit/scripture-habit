@@ -762,7 +762,7 @@ describe('JoinGroup Component Logic', () => {
   });
   it('logs user data listener error when code is not permission-denied', async () => {
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-    vi.mocked(onSnapshot).mockImplementation(((ref: unknown, callback: unknown, errorCb: unknown) => {
+    vi.mocked(onSnapshot).mockImplementation(((_ref: unknown, _callback: unknown, errorCb: unknown) => {
       const errCb = errorCb as (err: any) => void;
       if (errCb) errCb({ code: 'unknown-error', message: 'test error' });
       return () => {};

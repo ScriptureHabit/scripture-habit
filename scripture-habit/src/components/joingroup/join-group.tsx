@@ -10,7 +10,6 @@ import '../groupform/group-form.css';
 import GroupCard from '../../groups/group-card';
 import { useLanguage } from '../../hooks/use-language';
 import { MAX_GROUPS_PER_USER } from '../../config';
-import UserProfileModal from '../userprofilemodal/user-profile-modal';
 import Mascot from '../mascot/mascot';
 import { toast } from 'react-toastify';
 import { PublicGroupsSkeleton } from '../skeleton/skeleton';
