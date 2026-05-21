@@ -7,12 +7,22 @@ import { StreakEngine } from '../lib/streak-engine.js';
 import { formatDateInTimeZone } from '../../src/utils/time-utils.js';
 
 describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('NoteService Integration Tests', () => {
-    const TEST_UID = 'note-srv-test-user';
-    const GROUP_1 = 'note-srv-group-1';
-    const GROUP_2 = 'note-srv-group-2';
-    const MULTI_GROUPS = ['multi-1', 'multi-2', 'multi-3'];
+    const TEST_UID = `note_srv_test_user_${Math.random().toString(36).substring(7)}`;
+    const GROUP_1 = `note_srv_test_grp1_${Math.random().toString(36).substring(7)}`;
+    const GROUP_2 = `note_srv_test_grp2_${Math.random().toString(36).substring(7)}`;
+    const MULTI_GROUPS = [
+        `note_srv_multi1_${Math.random().toString(36).substring(7)}`,
+        `note_srv_multi2_${Math.random().toString(36).substring(7)}`,
+        `note_srv_multi3_${Math.random().toString(36).substring(7)}`
+    ];
 
     beforeEach(async () => {
+        // Clean up any existing notes/messages for these IDs to ensure total isolation
+        await db.recursiveDelete(db.collection('users').doc(TEST_UID).collection('notes')).catch(() => {});
+        for (const gid of [GROUP_1, GROUP_2, ...MULTI_GROUPS]) {
+            await db.recursiveDelete(db.collection('groups').doc(gid).collection('messages')).catch(() => {});
+        }
+
         // Setup user
         await db.collection('users').doc(TEST_UID).set({
             uid: TEST_UID,

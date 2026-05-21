@@ -27,7 +27,7 @@ export default function JoinGroup() {
   const [publicGroups, setPublicGroups] = useState<Group[]>([]);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
-  const [selectedMemberForProfile, setSelectedMemberForProfile] = useState<UserData | null>(null);
+
   const [translatedNames, setTranslatedNames] = useState<Record<string, string>>({});
   const [translatedDescs, setTranslatedDescs] = useState<Record<string, string>>({});
   const [translatingIds, setTranslatingIds] = useState<Set<string>>(new Set());
@@ -453,15 +453,7 @@ export default function JoinGroup() {
               )}
             </div>
 
-            {/* Profile Modal inside Confirm Modal */}
-            {selectedMemberForProfile && (
-              <div className="user-profile-modal-wrapper">
-                <UserProfileModal
-                  user={selectedMemberForProfile}
-                  onClose={() => setSelectedMemberForProfile(null)}
-                />
-              </div>
-            )}
+
 
             <p className="modal-confirm-message">
               {userData?.groupIds?.includes(selectedGroup.id)

@@ -252,12 +252,16 @@ export class MessageService {
 
         return await db.runTransaction(async (transaction) => {
             const groupRef = db.collection('groups').doc(groupId);
-            const gSnap = await transaction.get(groupRef);
+            const msgRef = groupRef.collection('messages').doc(messageId);
+
+            const [gSnap, msgSnap] = await Promise.all([
+                transaction.get(groupRef),
+                transaction.get(msgRef)
+            ]);
+
             if (!gSnap.exists) throw new Error('Group not found');
             const gData = gSnap.data() as GroupDocument;
 
-            const msgRef = groupRef.collection('messages').doc(messageId);
-            const msgSnap = await transaction.get(msgRef);
             if (!msgSnap.exists) {
                 const bucketsSnap = await groupRef.collection('message_buckets').limit(1).get();
                 if (!bucketsSnap.empty) {
@@ -271,48 +275,46 @@ export class MessageService {
             if (msgData.senderId !== uid) throw new Error('Forbidden: You can only delete your own messages');
 
             // --- 1. GATHER ALL READS UPFRONT ---
-            let recentMemberNotesSnap: admin.firestore.QuerySnapshot | null = null;
-            if (msgData.isNote) {
-                recentMemberNotesSnap = await transaction.get(
+            const isLastMessage = gData.lastMessageByUid === uid;
+            const isLastNote = msgData.isNote && gData.lastNoteByUid === uid;
+            
+            const now = new Date();
+            const groupToday = formatDateInTimeZone(now, gData.timeZone || 'UTC');
+            const normalizedToday = normalizeDateString(groupToday);
+            const isDailyActive = normalizeDateString(gData.dailyActivity?.date || '') === normalizedToday && gData.dailyActivity?.activeMembers?.includes(uid);
+            
+            const noteRef = db.collection('users').doc(uid).collection('notes').doc(msgData.originalNoteId || 'dummy');
+
+            const [
+                recentMemberNotesSnap,
+                recentMsgsSnap,
+                todayNotesSnap,
+                streakAnnouncementSnap,
+                noteSnap
+            ] = await Promise.all([
+                msgData.isNote ? transaction.get(
                     groupRef.collection('messages')
                         .where('senderId', '==', uid)
                         .where('isNote', '==', true)
                         .orderBy('createdAt', 'desc')
                         .limit(2)
-                );
-            }
+                ) : Promise.resolve(null),
 
-            const isLastMessage = gData.lastMessageByUid === uid;
-            const isLastNote = msgData.isNote && gData.lastNoteByUid === uid;
-
-            let recentMsgsSnap: admin.firestore.QuerySnapshot | null = null;
-            if (isLastMessage || isLastNote) {
-                recentMsgsSnap = await transaction.get(
+                (isLastMessage || isLastNote) ? transaction.get(
                     db.collection('groups').doc(groupId).collection('messages')
                         .orderBy('createdAt', 'desc')
                         .limit(50)
-                );
-            }
+                ) : Promise.resolve(null),
 
-            const now = new Date();
-            const groupToday = formatDateInTimeZone(now, gData.timeZone || 'UTC');
-            const normalizedToday = normalizeDateString(groupToday);
-
-            let todayNotesSnap: admin.firestore.QuerySnapshot | null = null;
-            const isDailyActive = normalizeDateString(gData.dailyActivity?.date || '') === normalizedToday && gData.dailyActivity?.activeMembers?.includes(uid);
-            if (isDailyActive) {
-                todayNotesSnap = await transaction.get(
+                isDailyActive ? transaction.get(
                     groupRef.collection('messages')
                         .where('senderId', '==', uid)
                         .where('isNote', '==', true)
                         .where('createdAt', '>=', admin.firestore.Timestamp.fromDate(new Date(now.setHours(0,0,0,0))))
                         .limit(2)
-                );
-            }
+                ) : Promise.resolve(null),
 
-            let streakAnnouncementSnap: admin.firestore.QuerySnapshot | null = null;
-            if (msgData.isNote) {
-                streakAnnouncementSnap = await transaction.get(
+                msgData.isNote ? transaction.get(
                     groupRef.collection('messages')
                         .where('senderId', '==', 'system')
                         .where('isSystemMessage', '==', true)
@@ -320,14 +322,10 @@ export class MessageService {
                         .where('messageType', '==', 'system') // Recents standard
                         .orderBy('createdAt', 'desc')
                         .limit(10)
-                );
-            }
+                ) : Promise.resolve(null),
 
-            let noteSnap: admin.firestore.DocumentSnapshot | null = null;
-            const noteRef = db.collection('users').doc(uid).collection('notes').doc(msgData.originalNoteId || 'dummy');
-            if (msgData.isNote && msgData.originalNoteId) {
-                noteSnap = await transaction.get(noteRef);
-            }
+                (msgData.isNote && msgData.originalNoteId) ? transaction.get(noteRef) : Promise.resolve(null)
+            ]);
 
             // --- 2. EXECUTE ALL WRITES ---
             const groupUpdate: admin.firestore.UpdateData<GroupDocument> = {

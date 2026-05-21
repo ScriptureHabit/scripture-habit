@@ -760,4 +760,192 @@ describe('JoinGroup Component Logic', () => {
     expect(consoleSpy).toHaveBeenCalled();
     consoleSpy.mockRestore();
   });
+  it('logs user data listener error when code is not permission-denied', async () => {
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.mocked(onSnapshot).mockImplementation(((ref: unknown, callback: unknown, errorCb: unknown) => {
+      const errCb = errorCb as (err: any) => void;
+      if (errCb) errCb({ code: 'unknown-error', message: 'test error' });
+      return () => {};
+    }) as never);
+
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <JoinGroup />
+        </MemoryRouter>
+      );
+    });
+
+    expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('[JoinGroup] User data listener error:'), expect.anything());
+    consoleSpy.mockRestore();
+  });
+
+  it('logs warning when backend /groups fetch throws an error', async () => {
+    const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    mockFetch.mockImplementation(async (url) => {
+      if (String(url).includes('/api/groups')) {
+        throw new Error('Network error on fetch');
+      }
+      return { ok: false, status: 404 };
+    });
+
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <JoinGroup />
+        </MemoryRouter>
+      );
+    });
+
+    expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('Backend /groups fetch failed, falling back to client query:'), expect.anything());
+    consoleSpy.mockRestore();
+  });
+
+  it('logs error when client fallback getDocs throws an error', async () => {
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    mockFetch.mockImplementation(async (url) => {
+      if (String(url).includes('/api/groups')) {
+        return { ok: false, status: 500 };
+      }
+      return { ok: false, status: 404 };
+    });
+    vi.mocked(getDocs).mockRejectedValue(new Error('Firestore error'));
+
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <JoinGroup />
+        </MemoryRouter>
+      );
+    });
+
+    expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('Error fetching public groups (client fallback):'), expect.anything());
+    expect(screen.getByText('joinGroup.noPublicGroups')).toBeInTheDocument();
+    consoleSpy.mockRestore();
+  });
+
+  it('shows error when joining a group where user is already in groupData.members', async () => {
+    mockFetch.mockImplementation(async (url) => {
+      if (String(url).includes('/api/groups')) {
+        return {
+          ok: true,
+          status: 200,
+          json: async () => [
+            { id: 'group-2', name: 'Group 2', isPublic: true, members: ['test-user'] }
+          ]
+        };
+      }
+      return { ok: false, status: 404 };
+    });
+
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <JoinGroup />
+        </MemoryRouter>
+      );
+    });
+
+    const openBtn = screen.getByRole('button', { name: 'groupCard.details' });
+    await act(async () => {
+      openBtn.click();
+    });
+
+    const confirmBtn = screen.getByRole('button', { name: 'joinGroup.confirmJoin' });
+    await act(async () => {
+      confirmBtn.click();
+    });
+
+    expect(screen.getByText('joinGroup.errorAlreadyMember')).toBeInTheDocument();
+  });
+
+  it('triggers onOpen when clicking open on GroupCard', async () => {
+    mockFetch.mockImplementation(async (url) => {
+      if (String(url).includes('/api/groups')) {
+        return {
+          ok: true,
+          status: 200,
+          json: async () => [
+            { id: 'group-2', name: 'Group 2', isPublic: true, members: ['test-user'] }
+          ]
+        };
+      }
+      return { ok: false, status: 404 };
+    });
+
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <JoinGroup />
+        </MemoryRouter>
+      );
+    });
+
+    const openBtn = screen.getByRole('button', { name: 'groupCard.details' });
+    await act(async () => {
+      openBtn.click();
+    });
+
+    expect(screen.getByText('joinGroup.joinConfirmMessage')).toBeInTheDocument();
+  });
+
+  it('shows error when joining a group user is already in (via currentGroupIds race condition)', async () => {
+    let callTime = 0;
+    const fakeGroupIds = {
+      includes: () => {
+        // Return false during render (before click), return true when clicked
+        return callTime > 0;
+      },
+      length: 0
+    };
+
+    vi.mocked(onSnapshot).mockImplementation(((ref: unknown, callback: unknown) => {
+      const r = ref as { path: string };
+      const cb = callback as (snap: unknown) => void;
+      if (r && r.path === 'users/test-user') {
+        cb({
+          exists: () => true,
+          data: () => ({ groupIds: fakeGroupIds as any })
+        });
+      }
+      return () => {};
+    }) as never);
+    
+    mockFetch.mockImplementation(async (url) => {
+      if (String(url).includes('/api/groups')) {
+        return {
+          ok: true,
+          status: 200,
+          json: async () => [
+            { id: 'group-2', name: 'Group 2', isPublic: true, members: [] }
+          ]
+        };
+      }
+      return { ok: false, status: 404 };
+    });
+
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <JoinGroup />
+        </MemoryRouter>
+      );
+    });
+
+    const detailsBtn = screen.getByRole('button', { name: 'groupCard.details' });
+    await act(async () => {
+      detailsBtn.click();
+    });
+
+    const confirmBtn = screen.getByRole('button', { name: 'joinGroup.confirmJoin' });
+    
+    // Set callTime so that inside joinGroup, includes() returns true
+    callTime = 1;
+    
+    await act(async () => {
+      confirmBtn.click();
+    });
+
+    expect(screen.getByText('joinGroup.errorAlreadyMember')).toBeInTheDocument();
+  });
 });
