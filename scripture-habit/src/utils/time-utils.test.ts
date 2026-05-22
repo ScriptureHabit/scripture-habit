@@ -31,9 +31,11 @@ describe('time-utils', () => {
     describe('formatDateInTimeZone', () => {
         it('should fallback if parts are missing', () => {
             // Mock Intl.DateTimeFormat to return empty parts
-            const spy = vi.spyOn(Intl, 'DateTimeFormat').mockImplementation(() => ({
-                formatToParts: () => []
-            }) as any);
+            const spy = vi.spyOn(Intl, 'DateTimeFormat').mockImplementation(function (this: any) {
+                return {
+                    formatToParts: () => []
+                } as any;
+            });
 
             const date = new Date('2023-05-10T12:00:00Z');
             expect(formatDateInTimeZone(date, 'UTC')).toBe('2023-05-10');

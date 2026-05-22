@@ -197,9 +197,14 @@ export class NoteService {
 
                     if (normCurrent !== '' && normToday > normCurrent) {
                         simulatedActiveMembers = [uid];
-                    } else {
+                        simulatedDate = groupToday;
+                    } else if (normCurrent === '' || normToday === normCurrent) {
                         simulatedActiveMembers = Array.from(new Set([...(gData.dailyActivity?.activeMembers || []), uid]));
                         simulatedDate = currentActivityDate || groupToday;
+                    } else {
+                        // Clock drift / Future Date recovery simulation
+                        simulatedActiveMembers = [uid];
+                        simulatedDate = groupToday;
                     }
 
                     const simulatedGroup = {
