@@ -202,7 +202,7 @@ router.post('/translate', authenticate, aiLimiter, verifyAppCheck, async (req: A
                 const savePromise = cacheRef.set({ originalText: text, translatedText, targetLanguage, createdAt: admin.firestore.FieldValue.serverTimestamp() }).catch(e => {
                     console.warn('[AI Cache] Failed to save to cache:', e.message);
                 });
-                if (process.env.NODE_ENV === 'test') {
+                if (process.env.NODE_ENV === 'test' || process.env.VITEST === 'true') {
                     await savePromise;
                 }
             }
