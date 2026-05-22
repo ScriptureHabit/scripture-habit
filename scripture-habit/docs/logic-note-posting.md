@@ -6,22 +6,50 @@ The Note Posting mechanism is the heart of the "Habit" loop in **scripture-habit
 
 ## 🔥 The Streak Engine (`api_internal/lib/streak-engine.ts`)
 
-We use a unique **36-hour window** logic to calculate streaks, rather than a strict 24-hour calendar day.
+To protect users against timezone warp anomalies, timezone shifts during travel, and late-night habits, **scripture-habit** implements a highly generous and robust **Hybrid Streak Engine**. 
 
-### The Algorithm
-1.  **Timezone Normalization**: The system takes the user's `timeZone` and `lastPostAt` timestamp.
-2.  **Grace Period**: 
-    - A streak continues if a new note is posted within **36 hours** of the last note.
-    - This allows users to post late at night one day and early the next morning without losing progress, or miss a full calendar day due to travel/timezone shifts.
-3.  **Calculation**:
-    ```typescript
-    // Pseudocode
-    if (diffMs < 36 * 3600 * 1000) {
-       streak += 1; // Or stays the same if posted twice in 24h
-    } else {
-       streak = 1; // Reset
-    }
-    ```
+Rather than enforcing a simple 24-hour calendar grid or a strict physical hours cutoff, the engine combines **Calendar-Consecutive Day verification** with a **36-Hour Physical Grace Period** and incorporates a **Same-Day Double-Increment Guard**.
+
+### Core Evaluation Pipeline
+When a user posts a note, the system evaluates their streak based on their profile `timeZone` (falling back to `'UTC'`):
+
+1. **Timezone-Aware Local Date Resolution**:
+   The engine formats the current server timestamp (`now`) and the date exactly 24 hours prior (`now - 24 hours`) inside the user's localized timezone using the Swedish locale format (`'sv-SE'`) via Node's `Intl` API:
+   - **`today`**: Resolved local date string (e.g. `'2026-05-22'`).
+   - **`yesterday`**: Resolved local yesterday date string (e.g. `'2026-05-21'`).
+
+2. **Same-Day Double-Increment Guard**:
+   To prevent users from artificially bloating their streak counts by posting multiple study notes in a single calendar day:
+   - If the user's `lastPostDate` matches `today`, the note is successfully recorded, but the streak count is preserved as-is without incrementing (`streakUpdated = false`).
+
+3. **Hybrid Streak Continuation Check**:
+   If the post occurs on a new calendar date, the engine validates continuation using two cooperative checks. A streak is successfully **incremented by `1`** if **either** of these is true:
+   - **Consecutive Calendar Day**: The user's `lastPostDate` is exactly equal to `yesterday` (meaning they posted at some point yesterday, local timezone time).
+   - **36-Hour Physical Grace Period**: The time elapsed since the user's previous note (`lastPostAt`) is less than or equal to **36 hours** (`hoursSinceLastPost <= 36`).
+   
+   If *neither* condition is satisfied (e.g., they skipped a full calendar day and exceeded the 36-hour physical window), the streak **resets to `1`** to start a new streak.
+
+4. **Highest Streak Record**:
+   If the newly calculated streak exceeds the user's persisted `highestStreak`, `highestStreak` is atomically updated to match the new value.
+
+### Hybrid Evaluation Advantages
+This hybrid engine is exceptionally fair. For example:
+- **Late-Night to Next-Night Posting**: A user posts early on Monday morning at 8:00 AM, and then posts late on Tuesday night at 10:00 PM (38 hours later). Even though it exceeds the 36-hour physical window, they **do not lose their streak** because it is calendar-consecutive (Monday -> Tuesday).
+- **Timezone Shifts / Travel Protection**: A user travels across timezones, causing them to miss a calendar day on their local calendar. They are **protected by the 36-hour physical window**, maintaining their streak.
+
+### Concrete Algorithm Flow
+```typescript
+// Actual StreakEngine evaluation logic
+const isTargetDay = lastPostDate === yesterday;
+const withinGracePeriod = lastTimeMillis > 0 && hoursSinceLastPost <= 36;
+
+if (isTargetDay || withinGracePeriod) {
+    newStreak += 1;
+    isConsecutive = true;
+} else {
+    newStreak = 1; // Reset streak
+}
+```
 
 ---
 

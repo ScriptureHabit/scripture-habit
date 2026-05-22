@@ -1,10 +1,10 @@
-# Database & Security: The Technical Foundation
+# Database & Schema Architecture
 
-This document defines the data architecture, security logic, and integrity patterns used to maintain a secure and scalable environment for **scripture-habit**.
+This document defines the data architecture, entity-relationship models, schema roadmaps, and high-concurrency database patterns used to maintain a highly scalable backend for **scripture-habit**.
 
 ---
 
-## 📂 Entity-Relationship (ER) Diagram
+## 📂 Entity-Relationship (ER) Blueprint
 
 Our data model is hierarchical, balancing the need for real-time synchronization with long-term data persistence.
 
@@ -47,7 +47,7 @@ erDiagram
         timestamp createdAt
         boolean isNote
     }
-
+    
     LETTERS {
         string letterId PK
         string text
@@ -73,64 +73,52 @@ erDiagram
 
 ---
 
-## 🗺️ Schema Roadmap
+## 🗺️ Schema Roadmap & Denormalization
 
 ### 1. `groups` (The Center of Gravity)
-- **Denormalization**: We store `memberPreviews` (nickname/photo) and `lastMessageAt` directly on the group document to allow for high-performance dashboard rendering without multiple lookups.
-- **Activity Tracking**: `dailyActivity` stores a timestamped list of active UIDs to calculate group "Unity" without querying the entire message collection.
+* **Denormalization Strategy**: We store `memberPreviews` (nickname/photo) and `lastMessageAt` directly on the root group document. This allows the client dashboard to render active groups instantly without spawning sub-queries or secondary document fetches.
+* **Activity Tracking**: `dailyActivity` stores a timestamped list of active UIDs to calculate group "Unity" without querying the entire message collection.
 
 ### 2. `users` (The Profile & Personal Sync)
-- **Shared ID**: The document ID is the Firebase Auth UID.
-- **Redundancy**: `groupIds` (array) is maintained to allow for `array-contains` queries when a user needs to see all their groups.
+* **Shared ID**: The document ID matches the Firebase Auth UID to prevent synchronization loops.
+* **Redundancy**: `groupIds` (array) is maintained on the user document to allow fast index lookup queries when presenting the user's active groups.
 
-### 3. Subcollections (Granular Data)
-- **`messages`**: Optimized for real-time listeners. Kept small via archiving.
-- **`members`**: Stores per-group statistics (points, activity counts) that are too large to fit in the main group document.
-
----
-
-## 🛡️ The "Safety Chain" (Security Logic)
-
-Our `firestore.rules` implements a "Swiss Cheese" model where multiple layers of checks must pass.
-
-### 1. Verification Logic
-- **`isAuthenticated()`**: Checks `request.auth != null`. In production, it further validates `request.auth.token.email_verified == true`.
-- **`isAppCheckVerified()`**: **The Anti-Abuse Layer.** Every write request must include a valid AppCheck token issued by the Firebase SDK. This prevents direct `curl` or script-based attacks.
-
-### 2. Role-Based Access (RBAC)
-- **Member-Only Read**: To read messages, the system uses `isMemberOfGroup(groupId)`. 
-  - Implementation: `request.auth.uid in get(/databases/$(database)/documents/groups/$(groupId)).data.members`.
-  - This ensures users cannot "peek" into groups they haven't joined.
+### 3. Subcollections (Granular Data Isolation)
+* **`/messages`**: Optimized for lightweight, real-time message stream listeners.
+* **`/members`**: Stores per-group member statistics (study points, individual milestones) that are too large to fit in the main group document limits.
 
 ---
 
-## 💎 Integrity & The "API-Only Write" Policy
-
-To prevent users from manually updating their own streaks, levels, or coins, a strict frontend lockdown is enforced with explicit rules:
-
-1.  **Strict Mutations Lockdown**: All core collections and subcollections (`messages`, `members`, `message_buckets`) have `allow write: if false;`. They cannot be modified from the client.
-2.  **Controlled Group Creation (Frontend Exception)**: To allow frictionless team creation, users can directly call `create` on the `groups` collection, but this is guarded in `firestore.rules` by:
-    - User must be authenticated (`isAuthenticated()`).
-    - The created group's `ownerUserId` must match the current user's UID.
-    - **Limit of Max 4 Groups**: `get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('groupIds', []).size() < 4`.
-3.  **Service Actions & Atomic Transactions**: All other modifications (adding members, updating counters, deleting groups) must go through the **Backend API** via secure vercel function endpoints. The backend uses `db.runTransaction()` to ensure that when a note is posted, user streaks, level ups, and group metrics are written **simultaneously or rolled back on failure**.
+> [!IMPORTANT]
+> ### 🛡️ Security Rules & Write Permissions Lockdown
+> Detail specifications regarding gateway verification rules (`isAuthenticated()`, `isAppCheckVerified()`), dynamic membership lookups, and the backend-only write validation policies are documented inside **[Firebase Security Rules & Write Isolation](firebase-security-rules.md)**.
+> All client mutation controls and atomic transaction routines are described inside **[Firestore Transactions & Counter Service Design](firestore-transactions-counters.md)**.
 
 ---
 
-## 📦 Scalability: The Bucket Pattern
+## 📦 Scalability: The Bucket Pattern (Chat Archiving)
 
-To avoid Firestore's document limits and keep queries fast, we implement the **Bucket Pattern** for chat history.
+To avoid Firestore's document-size limits (1MB per document) and keep real-time client syncs extremely lightweight, the application implements the **Bucket Pattern** for chat history.
 
-- **Active Collection**: High-frequency messages are stored in `groups/{id}/messages`.
-- **Archiving**: An automated Cron job (`ArchiveService`) moves messages older than 30 days into `groups/{id}/message_buckets/{bucketId}`.
-- **Result**: The "active" chat remains lightweight, ensuring that `onSnapshot` listeners don't consume excessive bandwidth or memory on mobile devices.
+```
+       [ Client Chat Listener ] ─── Subscribed to ───► [ groups/{id}/messages ] (Active Space)
+                                                                 │
+                                                    (Automated Cron Sweeps)
+                                                                 ▼
+                                                [ groups/{id}/message_buckets/{bucketId} ]
+                                                        (Archived Cold Storage)
+```
+
+### Mechanisms:
+* **Active Collection**: High-frequency messages are stored in `/messages` and kept small.
+* **Archiving Cron**: An automated cron job (`ArchiveService` triggered daily) sweeps messages older than 30 days and moves them into a bucketed subcollection `/message_buckets/{bucketId}`.
+* **Bandwidth Savings**: The "active" chat listener remains lightweight, ensuring that `onSnapshot` listeners do not consume excessive cellular bandwidth or device memory on mobile apps.
 
 ---
 
 ## 🔐 Private Data Isolation
 
-Sensitive information like FCM tokens for push notifications are stored in:
+Sensitive user credentials and platform configuration tokens are completely isolated from general query pools:
 `users/{uid}/private/tokens`
 
-- **Rule**: `allow read, write: if request.auth.uid == userId;`
-- **Isolation**: Not even group members or group owners can see these tokens. Only the user and the **Service Account (Admin SDK)** have access.
+* **Isolation Policy**: Access to this subcollection is restricted at the database gateway. Neither group members nor group owners can peek into these documents. Only the Admin SDK and the owning user have credentials to read or write tokens.
