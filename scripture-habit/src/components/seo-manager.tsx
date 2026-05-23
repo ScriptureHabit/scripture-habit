@@ -68,27 +68,32 @@ const SEOManager: React.FC = () => {
             robotsTag.setAttribute('content', 'noindex, nofollow');
         }
 
+        // Helper function to safely update or create a meta tag in the document head
+        const setMetaTag = (selector: string, attrName: string, attrVal: string, contentVal: string) => {
+            let element = document.querySelector(selector);
+            if (!element) {
+                element = document.createElement('meta');
+                element.setAttribute(attrName, attrVal);
+                document.head.appendChild(element);
+            }
+            element.setAttribute('content', contentVal);
+        };
+
         // Update Meta Description
         const description = t('seo.description');
         if (description) {
-            document.querySelector('meta[name="description"]')?.setAttribute('content', description);
-            document.querySelector('meta[property="og:description"]')?.setAttribute('content', description);
-            document.querySelector('meta[property="twitter:description"]')?.setAttribute('content', description);
+            setMetaTag('meta[name="description"]', 'name', 'description', description);
+            setMetaTag('meta[property="og:description"]', 'property', 'og:description', description);
+            setMetaTag('meta[property="twitter:description"]', 'property', 'twitter:description', description);
         }
 
         // Update OG/Twitter Titles
         if (title) {
-            document.querySelector('meta[property="og:title"]')?.setAttribute('content', title);
-            document.querySelector('meta[property="twitter:title"]')?.setAttribute('content', title);
+            setMetaTag('meta[property="og:title"]', 'property', 'og:title', title);
+            setMetaTag('meta[property="twitter:title"]', 'property', 'twitter:title', title);
 
             // Explicitly set og:site_name to help with Google's Site Name recognition
-            let siteNameTag = document.querySelector('meta[property="og:site_name"]');
-            if (!siteNameTag) {
-                siteNameTag = document.createElement('meta');
-                siteNameTag.setAttribute('property', 'og:site_name');
-                document.head.appendChild(siteNameTag);
-            }
-            siteNameTag.setAttribute('content', 'Scripture Habit');
+            setMetaTag('meta[property="og:site_name"]', 'property', 'og:site_name', 'Scripture Habit');
         }
 
         // Update Canonical Tag
