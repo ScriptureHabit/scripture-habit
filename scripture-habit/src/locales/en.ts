@@ -815,7 +815,7 @@ export default {
             },
             finalCta: {
                 title: "Would you like to start a new habit with us?",
-                button: \"**Get Started Now**\"
+                button: "Get Started Now"
             },
             seoContent: {
                 why: {
