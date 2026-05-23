@@ -179,7 +179,8 @@ describe('Messages Route Integration', () => {
                 sharedMessageIds: {},
                 newStreak: 1,
                 streakUpdated: true,
-                nickname: 'Owner User'
+                nickname: 'Owner User',
+                backgroundPromise: Promise.resolve(null)
             });
 
             const res = await fetch(`${setup.baseUrl}/api/groups/post-note`, {
@@ -226,7 +227,7 @@ describe('Messages Route Integration', () => {
             const spyPostMessage = vi.spyOn(MessageService, 'postMessage').mockResolvedValue({
                 nickname: 'Owner User',
                 messageId: 'test-msg-id',
-                members: [OWNER_ID, MEMBER_ID]
+                members: null
             });
 
             const res = await fetch(`${setup.baseUrl}/api/groups/post-message`, {

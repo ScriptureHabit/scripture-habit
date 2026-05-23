@@ -2,7 +2,7 @@ import express, { Response } from 'express';
 import { admin, db } from '../lib/firebase-admin.js';
 import { verifyAppCheck, authenticate, requireEmailVerified, AuthenticatedRequest } from '../lib/middleware.js';
 import { postNoteSchema, postMessageSchema, sendCheerSchema, deleteNoteSchema, deleteMessageSchema } from '../lib/schemas.js';
-import { notifyGroupMembers, getUserFcmTokens, sendPushNotification, cleanupTokens, getUserFcmTokensAndLanguage } from '../lib/notifications.js';
+import { notifyGroupMembers, sendPushNotification, cleanupTokens, getUserFcmTokensAndLanguage } from '../lib/notifications.js';
 import { t } from '../lib/i18n.js';
 import { waitUntil } from '@vercel/functions';
 
