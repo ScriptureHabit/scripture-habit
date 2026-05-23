@@ -1,15 +1,15 @@
-# Firestore Offline Persistence & Multi-Tab Synchronization
+# Firestore Offline Persistence
 
-This document describes how the application implements high-performance offline capabilities, resolves offline transactional conflicts across multiple active browser tabs, handles restricted browser sandboxes, and optimizes sessions for automated testing.
+This document explains how the app handles offline data, synchronizes data across multiple browser tabs, provides fallbacks for restricted browsers, and configures authentication for automated testing.
 
 ---
 
-## 1. Offline Persistence & Multi-Tab Caching Strategy
+## 1. Offline Caching and Multi-Tab Sync
 
-For an application that encourages daily scripture study habits, the user experience must remain responsive even during unstable network connectivity (e.g., during transit).
+To support offline usage (such as when commuting), the app caches data locally so it remains responsive without network connection.
 
 ### Architecture Overview
-The application initializes Firestore using the native IndexedDB persistent local cache, configuring a dedicated tab manager:
+The application initializes Firestore using the IndexedDB persistent local cache and configures a multiple tab manager:
 
 ```typescript
 db = initializeFirestore(app, {
@@ -39,18 +39,18 @@ db = initializeFirestore(app, {
                    [ Remote Firestore Sync ]
 ```
 
-### How Multi-Tab Synchronization Works:
-1. **Shared Database Lock**: Under normal Single-Tab caches, opening a second browser window blocks access to IndexedDB, causing the second tab to fall back to a slower, non-cached memory store.
-2. **`persistentMultipleTabManager`**: Enables multiple browser tabs or web view windows to share a single IndexedDB local store. One tab acts as the primary coordinator, writing local changes to IndexedDB and synchronizing mutations instantly across all other active windows.
-3. **Offline Queue Sync**: If a user updates their notes while completely offline, mutations are placed in a localized queue inside IndexedDB. Once network connectivity is restored, the primary active tab synchronizes the queued changes with the cloud database.
+### 1.1 How Multi-Tab Sync Works
+1. **Avoid Database Locking**: Standard single-tab persistence blocks IndexedDB when a second tab is opened, forcing the new tab to use slow memory caching.
+2. **Shared Access**: The `persistentMultipleTabManager` allows multiple tabs or WebViews to share the same IndexedDB store. One tab coordinates writing changes to IndexedDB and updates the other tabs.
+3. **Offline Sync Queue**: When offline, any changes are stored in an offline queue. Once the network is restored, the active tab automatically uploads the changes to Firestore.
 
 ---
 
-## 2. Robust Sandbox Fallback Engine (Private Browsing Safeguard)
+## 2. Private Browsing Fallback
 
-In restrictive browser sandboxes—such as **iOS Safari Private Browsing** or environments where third-party IndexedDB storage is strictly blocked—attempting to open IndexedDB will throw a critical security exception, crashing the entire web application.
+In private browsing modes (like iOS Safari Private Browsing) or restricted environments, IndexedDB access might be blocked. Attempting to initialize it can throw an error and crash the app.
 
-To solve this, the initialization is guarded by a robust fallback structure in `src/firebase.ts`:
+To prevent crashes, we wrap the Firestore initialization in a try-catch block in `src/firebase.ts`:
 
 ```typescript
 let db: Firestore;
@@ -66,17 +66,17 @@ try {
 }
 ```
 
-### Behavior:
-* **Success**: If IndexedDB is allowed, the app gains high-performance, offline-resilient operations.
-* **Fallback**: If IndexedDB throws an access error, the catch block intercepts the exception, falling back gracefully to standard memory caching (`getFirestore(app)`). The application continues to function normally without crashing, though modifications are not persisted offline once the browser tab is closed.
+### 2.1 Fallback Behavior
+* **Normal Mode**: If IndexedDB is supported, the app enables offline caching.
+* **Fallback Mode**: If IndexedDB fails to initialize, the app falls back to standard memory caching (`getFirestore(app)`). The app still functions normally, but offline changes will not be saved after the tab is closed.
 
 ---
 
-## 3. E2E Playwright Automation Session Optimizations
+## 3. E2E Testing Optimizations
 
-During automated E2E testing (via Playwright or Vitest integration runners), headless browsers boot up inside blank environments. By default, Firebase Auth might utilize session-only memory persistence or face race conditions, requiring tests to log in repeatedly, which slows down testing pipelines.
+During automated E2E tests, headless browsers start with a blank state. By default, Firebase Auth might use session-only memory, requiring the tests to sign in repeatedly.
 
-To maximize stability and testing speeds, the initialization detects automated runner profiles:
+To speed up tests and maintain the login state, we detect automated test environments and enforce local persistence:
 
 ```typescript
 // E2E Test Optimization: Force LocalStorage persistence so Playwright can capture it
@@ -88,7 +88,7 @@ if (typeof window !== 'undefined' && navigator.webdriver && auth) {
 }
 ```
 
-### Mechanisms:
-1. **Automation Attestation Check**: Inspects `navigator.webdriver`. This standard browser property is only `true` when the browser is actively controlled by an automated testing framework (like Playwright).
-2. **Explicit Persistence Locking**: If detected, the client overrides default authentication settings to enforce `browserLocalPersistence` (`LocalStorage`). This guarantees that login credentials survive page reloads and cross-test execution steps.
-3. **Global Debug Binding**: Binds the active authenticated auth instance directly to `window.firebaseAuth`. This allows Playwright automation scripts to interactively check authentication tokens, inject test credentials, or verify session limits directly from the testing script.
+### 3.1 Key Settings
+1. **Detect Automation**: Checks if `navigator.webdriver` is true, which indicates the browser is controlled by a testing tool like Playwright.
+2. **Enforce Local Storage**: When automation is detected, the app forces authentication state persistence using `browserLocalPersistence` (`localStorage`). This keeps the user logged in across page reloads.
+3. **Global Debug Interface**: Binds the auth instance to `window.firebaseAuth` so Playwright scripts can access auth tokens or check session states directly.

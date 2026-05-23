@@ -1,14 +1,14 @@
-# App Check & API Protection Architecture: Technical Deep-Dive
+# App Check & API Protection Architecture
 
-To protect backend resources from bot spam, scraper nets, distributed denial-of-service (DDoS) requests, and unauthorized third-party API clients, **scripture-habit** integrates **Firebase App Check** as a fundamental gateway guard. 
+To protect backend resources from spam, scrapers, denial-of-service (DDoS) requests, and unauthorized API clients, **scripture-habit** integrates **Firebase App Check** as a gateway guard. 
 
-App Check verifies that incoming HTTP requests originate from legitimate, unmodified instances of our application (whether web-based or wrapped in Capacitor native mobile shells) before allowing execution of expensive operations like AI translations, group creations, or metadata parsing.
+App Check verifies that incoming HTTP requests come from real instances of our application (web or mobile) before running heavy operations like AI translations, group creations, or metadata parsing.
 
 ---
 
-## 🛡️ Defense-in-Depth: The Two-Tier Security Model
+## 🛡️ Security Model: Two-Tier Protection
 
-Our architecture utilizes a **Defense-in-Depth (多重防御)** strategy. Security protection is evaluated at two distinct boundaries: the **API Gateway Layer** (this document) and the **Database Security Rules Layer**.
+Our architecture uses a **Defense-in-Depth (多重防御)** strategy. Security is checked at two different boundaries: the **API Gateway Layer** (this document) and the **Database Security Rules Layer**.
 
 ```
 Incoming Request  ──►  [ Tier 1: API Middleware ]  ──►  [ Tier 2: Database Rules ]  ──► Data Commit
@@ -18,14 +18,14 @@ Incoming Request  ──►  [ Tier 1: API Middleware ]  ──►  [ Tier 2: Da
                        (This Document)                  (See firebase-security-rules.md)
 ```
 
-1.  **Tier 1 (API Gateway - This Document)**: Protects CPU/Memory-expensive endpoints and external system APIs (such as Gemini AI, push notifications, and webpage scrapers). This gateway filters invalid, un-attested, or spammy requests before they consume costly cloud server resource allocations.
-2.  **Tier 2 (Database Layer)**: Direct Firestore Security Rules act as a fallback firewall lock. If a hacker attempts to bypass our Express API by writing directly to Firestore using client-side SDKs, the database layer immediately halts and rejects the write. (See **[Firebase Security Rules & Write Isolation](firebase-security-rules.md)**).
+1.  **Tier 1 (API Gateway - This Document)**: Protects resource-heavy endpoints and external APIs (such as Gemini AI, push notifications, and webpage scrapers). This gateway blocks invalid or spammy requests before they consume cloud server resources.
+2.  **Tier 2 (Database Layer)**: Direct Firestore Security Rules act as a fallback. If a user tries to bypass our Express API by writing directly to Firestore using client SDKs, the database layer blocks the write. (See **[Firebase Security Rules & Write Isolation](firebase-security-rules.md)**).
 
 ---
 
 ## 🛡️ The App Check Gateway Flow
 
-App Check operates as an interceptor middleware sitting at the front of the backend router pipeline.
+App Check operates as an interceptor middleware at the front of the backend router pipeline.
 
 ```mermaid
 sequenceDiagram
@@ -69,7 +69,7 @@ sequenceDiagram
 
 ## 🔒 Security Gateways & Middleware Implementation
 
-The core logic resides in `api_internal/lib/middleware.ts` within the `verifyAppCheck` middleware function.
+The core logic is in `api_internal/lib/middleware.ts` inside the `verifyAppCheck` middleware function.
 
 ### 1. Verification Logic
 ```typescript
@@ -114,22 +114,22 @@ export const verifyAppCheck = async (req: Request, res: Response, next: NextFunc
 
 ## ⚙️ Environment Strategies & Test Bypasses
 
-Running security constraints during automated testing and local integration sweeps requires flexible but airtight configurations:
+Running security checks during automated testing and local development requires a flexible setup:
 
 ### 1. Local Development Bypasses
-To allow developers to code, test APIs, or use API clients like Postman/cURL locally without generating cryptographically signed app tokens:
+To allow developers to code and test APIs locally without generating signed app tokens:
 *   **Configuration**: Add `SKIP_APP_CHECK=true` in `.env.local`.
-*   **Security Guard**: The middleware enforces that if `NODE_ENV === 'production'`, any request to skip App Check throws a high-severity `[SECURITY ALERT]` log and blocks the request with a hard `HTTP 401`.
+*   **Security Guard**: The middleware enforces that if `NODE_ENV === 'production'`, any request to skip App Check throws a high-severity `[SECURITY ALERT]` log and blocks the request with `HTTP 401`.
 
 ### 2. Integration & End-to-End Testing (Vitest / Playwright)
-*   **Vitest**: During integration testing, backend tests (e.g., `api_internal/routes/groups.integration.test.ts`) are launched in an environment where `SKIP_APP_CHECK=true` is automatically set, allowing route-level validation to occur cleanly.
-*   **Playwright**: For true browser end-to-end tests, Firebase provides **App Check Debug Providers**. The E2E environment injects a pre-shared debug token into the browser context, which is verified by App Check as a legitimate test device, maintaining full end-to-end path testing.
+*   **Vitest**: During integration testing, backend tests (e.g., `api_internal/routes/groups.integration.test.ts`) run in an environment where `SKIP_APP_CHECK=true` is set automatically.
+*   **Playwright**: For browser end-to-end tests, Firebase provides **App Check Debug Providers**. The E2E environment injects a debug token into the browser context, which is verified by App Check as a test device.
 
 ---
 
 ## 🚦 Protected API Inventory
 
-Almost all state-mutating or resource-heavy routes are protected by the `verifyAppCheck` middleware. Below is an inventory of critical routes shielded by this gateway:
+Most state-mutating or resource-heavy routes are protected by the `verifyAppCheck` middleware. Below is an inventory of routes protected by this gateway:
 
 | Category | Endpoint | Protected Actions | Reason for Protection |
 | :--- | :--- | :--- | :--- |

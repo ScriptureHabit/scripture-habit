@@ -1,12 +1,12 @@
-# Development & Environment: Operational Excellence
+# Development & Environment Setup
 
-This guide provides the technical specifics required to set up, build, and deploy the **scripture-habit** platform across all environments (Local, Web, and Mobile).
+This guide explains how to set up, build, and deploy the **scripture-habit** platform for Local, Web, and Mobile environments.
 
 ---
 
-## 🛠️ Environmental Variables Reference
+## Environment Variables
 
-The project uses diverse environments. Ensure your `.env` contains:
+Ensure your `.env` file contains the following variables:
 
 | Variable | Scope | Purpose |
 | :--- | :--- | :--- |
@@ -17,17 +17,17 @@ The project uses diverse environments. Ensure your `.env` contains:
 
 ---
 
-## 💻 Local Development Workflow
+## Local Development Workflow
 
 ### 1. Frontend (Vite)
-Running the HMR dev server:
+To run the Vite development server:
 ```bash
 npm install
 npm run dev
 ```
 
 ### 2. Backend (Node/Express)
-The backend is located in the root for Vercel compatibility, but organized under `api_internal`.
+The backend code is located under `api_internal` (configured at the root level for Vercel).
 ```bash
 npm run server
 ```
@@ -35,12 +35,12 @@ npm run server
 
 ---
 
-## 📱 Mobile Development (Capacitor)
+## Mobile Development (Capacitor)
 
-The mobile experience is powered by **Capacitor 8**.
+The mobile app uses **Capacitor 8**.
 
-### Android "Save-and-See" Workflow
-The most efficient way to develop for mobile is using **Livereload**:
+### Android Development with Livereload
+To develop and test on Android with real-time updates, use **Livereload**:
 ```bash
 # 1. Sync native plugins
 npx cap sync android
@@ -49,32 +49,32 @@ npx cap sync android
 # Replace [LOCAL_IP] with your machine's IP (e.g. 192.168.1.10)
 npx cap run android --livereload --external
 ```
-This points the Android Webview to your Vite dev server, allowing you to debug native features (like Google Auth) with instant UI updates.
+This connects the Android WebView to your Vite development server, letting you test native features (like Google Auth) with live updates.
 
 ### Common Troubleshooting
-- **HTTPS/SSL**: Capacitor Webviews sometimes block non-HTTPS traffic to local IPs. Ensure your `android:usesCleartextTraffic` is set to `true` in `AndroidManifest.xml` during development.
+- **HTTPS/SSL**: Capacitor WebViews sometimes block HTTP traffic to local IPs. Ensure `android:usesCleartextTraffic` is set to `true` in `AndroidManifest.xml` for local development.
 - **Plugin Sync**: If you add a new `@capacitor` package, you MUST run `npx cap sync` to update the native project.
 
 ---
 
-## 🚢 Deployment & Infrastructure
+## Deployment & Infrastructure
 
 ### 1. Backend: Vercel Functions
-The project uses the "Function-as-a-Route" pattern.
+The backend runs as serverless functions on Vercel.
 - **Routing**: `vercel.json` maps all `/api/*` requests to the `api/api.ts` entry point.
-- **Cold Starts**: Since this is a serverless environment, we optimize start times by keeping the `api_internal/lib/firebase-admin.ts` initialization outside the main handler.
+- **Cold Starts**: To reduce cold start times, `api_internal/lib/firebase-admin.ts` is initialized outside the main request handler.
 
 ### 2. Frontend: Firebase Hosting
-Optimized for static assets and global CDN delivery.
+The frontend is deployed to Firebase Hosting.
 ```bash
 npm run build
 firebase deploy --only hosting
 ```
-- **Assets**: All JS/CSS is minified with Terser via Vite for maximum mobile performance.
-- **Cache Control**: The `firebase.json` is configured to ensure that `index.html` is never cached (allowing for instant updates), while static assets are cached for 1 year.
+- **Assets**: Vite minifies JS and CSS files during the build.
+- **Cache Control**: `firebase.json` is configured so that `index.html` is not cached (for instant updates), while static assets are cached for one year.
 
 ---
 
-## 🧪 Consistency & Code Style
-- **Type Checking**: Before every PR, run `tsc -b` to ensure all cross-layer types in `/types` are respected.
-- **Linting**: We use a strict ESLint configuration to catch potential React hooks dependencies issues (`useEffect` dependency array errors).
+## Code Style & Type Safety
+- **Type Checking**: Run `tsc -b` before submitting a pull request to ensure types in `/types` are correct.
+- **Linting**: ESLint is configured to check React hook dependencies (`useEffect` arrays).

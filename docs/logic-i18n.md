@@ -1,51 +1,53 @@
-# I18n & Localization: Global Foundation
+# I18n & Localization
 
-**scripture-habit** is a global-first application. Our localization strategy ensures that every user, regardless of their language (English, Japanese, Spanish, Tagalog, etc.), feels at home with both the interface and the content.
-
----
-
-## 🎨 Frontend Architecture: Decoupled context & provider
-
-The heart of frontend localization is split into **`src/context/language-context.ts`** (declaring types and the context instance) and **`src/context/language-provider.tsx`** (housing state logic, translation bundles, and client-side caching).
-
-### 1. The `t()` Hook
-We use a streamlined translation hook that provides:
-- **String Interpolation**: Supports dynamic values (e.g., `"{name} added a note"`).
-- **Graceful Fallback**: If a key is missing in the current language, it automatically returns the English (`en`) equivalent to avoid blank UI elements.
-
-### 2. Scripture Book Normalization
-Handling scripture titles across languages is difficult. We solve this with a **Mapping Strategy**:
-- All scripture data is stored internally with a standardized key.
-- The `UI` Layer uses a mapping function (e.g., `getBookTitle(standardKey, userLang)`) to display "Book of Mormon" as "モルモン書" or "Libro de Mormón" instantly.
+Scripture Habit is designed for global users. The localization system ensures that all users can use the app in their preferred language (English, Japanese, Spanish, Tagalog, etc.).
 
 ---
 
-## ⚙️ Backend Logic: Template System
+## 🎨 Frontend Architecture: Language Context & Provider
 
-The backend (`api_internal/lib/i18n.ts`) handles strings for system messages, push notifications, and AI prompts.
+Frontend localization is split into two files:
+- **`src/context/language-context.ts`**: Declares types and the context instance.
+- **`src/context/language-provider.tsx`**: Manages state, translation files, and browser caching.
 
-### Locale Bundles
-Translations are stored in modular `.ts` files under `api_internal/locales/`. 
-- **Type Safety**: The `SupportedLanguage` type ensures we only attempt to load valid bundles.
-- **Replacements**: A robust substitution engine handles placeholders like `{nickname}` or `{streak}` within notification templates.
+### 1. The `t()` Translation Helper
+A custom hook that provides:
+- **Variable Insertion**: Supports dynamic text like `"{name} added a note"`.
+- **English Fallback**: If a translation key is missing in the current language, it displays the English (`en`) translation instead of leaving the UI blank.
+
+### 2. Scripture Book Translations
+To display scripture book names correctly in multiple languages, we use a mapping function:
+- Book names are stored using a standard key.
+- The UI uses a function like `getBookTitle(standardKey, userLang)` to show "Book of Mormon" as "モルモン書" or "Libro de Mormón" based on the user's language setting.
+
+---
+
+## ⚙️ Backend Localization: Template System
+
+The backend (`api_internal/lib/i18n.ts`) manages translations for system messages, push notifications, and AI instructions.
+
+### Translation Bundles
+Translations are stored in TypeScript files under `api_internal/locales/`.
+- **Type Safety**: The `SupportedLanguage` type ensures only valid language codes are used.
+- **Dynamic Text**: Replaces placeholders like `{nickname}` or `{streak}` inside notification templates.
 
 ---
 
 ## 🤖 AI Localization: Content Translation
 
-Unlike static UI strings, user-generated study notes are localized dynamically.
+User-generated study notes are translated dynamically by AI rather than using static files.
 
-### 1. Auto-Detection
-The app detects if a note's language differs from the viewer's preferred language.
+### 1. Language Detection
+The app detects if a note's language is different from the viewer's preferred language.
 
-### 2. AI Translation (`/api/translate`)
-- The backend identifies the `targetLanguage`.
-- A specialized AI prompt ensures that the markdown structure is preserved while the religious terminology is translated accurately.
-- **Result Persistence**: The translation is saved to the message document, ensuring it only needs to be translated *once* per language.
+### 2. AI Translation Endpoint (`/api/translate`)
+- The backend identifies the target language (`targetLanguage`).
+- A specialized AI prompt translates religious terms accurately while keeping the markdown format intact.
+- **Caching**: The translation is saved directly to the message document, so it is only translated once per language.
 
 ---
 
-## 🌍 Supported Language Matrix
+## 🌍 Supported Languages
 
 | Code | Language | Region |
 | :--- | :--- | :--- |
@@ -64,6 +66,6 @@ The app detects if a note's language differs from the viewer's preferred languag
 
 ## 🚀 Adding a New Language
 
-1.  **Backend**: Add a new file in `api_internal/locales/` (e.g., `fr.ts`) and register it in `i18n.ts`.
+1.  **Backend**: Create a translation file in `api_internal/locales/` (e.g., `fr.ts`) and register it in `i18n.ts`.
 2.  **Frontend**: Update `src/context/language-provider.tsx` with the new translation bundle and flag icon.
-3.  **AI**: Add the language name to `languageNames` in `lib/schemas.ts` so the AI knows the target destination.
+3.  **AI**: Add the language name to the supported list in `lib/schemas.ts` so the AI can translate to it.

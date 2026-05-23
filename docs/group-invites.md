@@ -1,12 +1,12 @@
-# Group Invitation & Membership Join Pipeline: Technical Deep-Dive
+# Group Invitation & Membership Join Pipeline
 
-To allow users to form close-knit study groups securely and easily, **scripture-habit** utilizes a robust group invitation and atomic joining framework. This system ensures clean concurrency control during membership updates, prevents brute-force guessing of invite codes, supports localized previews, and automatically cleans up stale or expired invite tokens.
+This document explains the group invitation and joining process. It ensures database consistency, prevents brute-force attempts on invite codes, and supports localized previews.
 
 ---
 
-## 🏗️ Architecture & Flow Overview
+## 🏗️ Pipeline Overview
 
-The join pipeline coordinates secure verification across the rate-limiter, authentication headers, database validation, and transactional writes:
+The join pipeline validates requests using rate-limiting, authentication status, and Firestore transactional writes:
 
 ```mermaid
 sequenceDiagram
@@ -50,72 +50,65 @@ sequenceDiagram
 
 ---
 
-## 🔒 Invite Code Security & Defense-in-Depth
+## 🔒 Invite Code Security
 
-Invite codes act as capability tokens for private groups, demanding strong protective measures:
+Invite codes grant access to private groups, so we protect them using these rules:
 
-### 1. Ambiguity-Free Code Generation
-To prevent user transcription errors (such as confusing the letter `O` with `0` or `I` with `1`), invite codes are generated using a restricted 32-character alphabet:
+### 1. Easy-to-Read Codes
+To prevent user errors (like confusing `O` and `0` or `I` and `1`), invite codes use a 32-character alphabet:
 `ABCDEFGHJKLMNPQRSTUVWXYZ23456789`
 -   **Length**: 6 characters.
--   **Entropy**: $32^6 \approx 1,073,741,824$ unique combinations.
+-   **Combinations**: Over 1 billion unique codes.
 
-### 2. Transactional Uniqueness Check
-Alphanumeric collisions are prevented by running a query within a database transaction during group creation or link regeneration. The algorithm generates a random code and queries Firestore. If the code is already assigned to an active group, it drops the code and retries (up to 10 attempts).
+### 2. Uniqueness Checks
+When creating a group or regenerating a link, the system generates a random code and queries Firestore inside a transaction. If the code is already in use, it tries a new one (up to 10 attempts).
 
-### 3. Expiration Mechanism
-Invite codes are protected by temporary lifetimes:
--   **Default Lifetime**: 7 days (customizable upon generation).
--   **Storage**: Persisted as a Firestore timestamp in `inviteCodeExpiresAt`.
--   **Verification**: The join transaction fetches the group, parses the Firebase Timestamp, and rejects requests where `expiresAt < new Date()`.
+### 3. Expiration Dates
+-   **Default Expiration**: 7 days.
+-   **Storage**: Stored as a Firestore timestamp in `inviteCodeExpiresAt`.
+-   **Validation**: The join transaction rejects the request if `expiresAt < new Date()`.
 
-### 4. Brute-Force Rate Limiting (`inviteLimiter`)
-To block malicious scripts attempting to scan or brute-force code combinations:
+### 4. Rate Limiting (`inviteLimiter`)
+To prevent automated brute-force scans:
 -   **Window**: 60 Minutes.
--   **Production Limit**: Max 15 invite attempts per hour.
--   **Development Limit**: Raised to 1000 attempts per hour to support automated integration testing.
+-   **Production Limit**: Max 15 join attempts per hour.
+-   **Development Limit**: 1000 attempts per hour to support testing.
 
 ---
 
 ## 📡 Backend API Endpoints (`api_internal/routes/groups.ts`)
 
-### 1. Group Preview Endpoint (`GET /api/groups/group-preview/:inviteCode`)
-Allows the frontend to show a descriptive landing card (showing Group Name, Description, and Member count) before a user commits to joining.
+### 1. Group Preview (`GET /api/groups/group-preview/:inviteCode`)
+Shows the Group Name, Description, and Member count in a preview card before the user joins.
 
-*   **No Authentication Guard**: This endpoint is intentionally public (unauthenticated) so that anonymous web visitors can preview a group before logging in.
-*   **Safety Limits**: Validates that the invite code has not expired. If expired, it returns an `HTTP 410 Gone` error.
-*   **Localization Support**: Inspects `req.query.language` and pulls translated group metadata from `groupData.translations[lang]` before responding, ensuring the user sees the preview card in their native language.
+*   **Public Access**: This endpoint is public (unauthenticated) so users can preview a group before logging in.
+*   **Expiration Checks**: Returns `HTTP 410 Gone` if the invite code has expired.
+*   **Localization**: Reads `req.query.language` to return translated group descriptions from `groupData.translations[lang]`.
 
-### 2. Regenerate Code Endpoint (`POST /api/groups/regenerate-invite-code`)
-Allows the group owner to instantly revoke the active invite code and generate a fresh link with a new expiration date.
+### 2. Regenerate Code (`POST /api/groups/regenerate-invite-code`)
+Allows the group owner to invalidate the current code and generate a new one.
 
-*   **Authorization Guard**: Asserts that the calling UID matches `ownerUserId` on the group document within an isolated Firestore transaction.
-*   **Revocation Effect**: Overwriting `inviteCode` instantly invalidates the previous invite code, immediately blocking anyone attempting to use the old link.
+*   **Owner Guard**: Verifies that the caller's UID matches `ownerUserId` on the group document.
+*   **Immediate Effect**: Overwriting the old code instantly blocks anyone trying to use it.
 
 ---
 
-## 🤝 Concurrency-Safe Transaction Joining
+## 🤝 Concurrency-Safe Group Joining
 
-When a user joins a group, multiple database documents must be updated simultaneously. To prevent database race conditions (e.g. exceeding maximum membership limits during simultaneous joins), the entire operation is wrapped inside a Firestore transaction:
+To prevent database race conditions (like exceeding group capacity during simultaneous joins), joining a group runs inside a Firestore transaction:
 
-### 1. Rigid Strict Validation
--   **Capacity Checks**: Rejects if the group membership size exceeds `maxMembers` (default 500).
--   **User Group Ceiling**: Asserts the user is not exceeding `MAX_GROUPS_PER_USER` (preventing single users from bloating database references).
--   **Duplicate Guards**: Checks if the user is already present in the group's `members` array.
--   **Email Verification Guard**: Rejects the request if the user signed in with a password but has not verified their email address (`requireEmailVerified` middleware).
+### 1. Strict Validation
+-   **Capacity Limit**: Rejects if the group size exceeds `maxMembers` (default 500).
+-   **Group Limit**: Rejects if the user has reached `MAX_GROUPS_PER_USER`.
+-   **Duplicate Guard**: Checks if the user is already in the group's `members` list.
+-   **Email Check**: Rejects if the user has not verified their email address.
 
-### 2. Multi-Document Transactional Writes
-To keep the UI responsive and maintain total data consistency, the following writes occur atomically:
+### 2. Transaction Writes
+These writes occur atomically to ensure data consistency:
 
-1.  **Group OGP & Cache Updates**:
-    Appends the user UID to the group `members` list, increments `membersCount`, and appends the user to the `memberPreviews` list (capped to the 15 most recent members to keep index reads small).
-2.  **Member Metadata Document**:
-    Writes a new document `groups/{groupId}/members/{uid}` holding the member's specific joined timestamps, status tracking, and personal kick threshold settings.
-3.  **User State Document**:
-    Writes a document `users/{uid}/groupStates/{groupId}` recording the user's initial read message index, allowing immediate unread badges synchronization.
-4.  **User Profile Reference**:
-    Adds the `groupId` to the user's personal profile document, mapping active group memberships.
-5.  **Welcome Message**:
-    Creates a new system document `groups/{groupId}/messages/{msgId}` containing the welcome alert: `✨ **${nickname}** joined the group! Welcome!`.
-6.  **Atomic Counter Sync**:
-    Invokes `CounterService.increment` to increment the group's message count by `1`, capturing the welcome message and preserving synchronized unread badges.
+1.  **Group Updates**: Appends the user's UID to `members`, increments `membersCount`, and updates `memberPreviews` (limited to the 15 most recent members).
+2.  **Member Subcollection**: Creates `/groups/{groupId}/members/{uid}` to store joined timestamps and user settings.
+3.  **User State**: Creates `/users/{uid}/groupStates/{groupId}` to track the user's read message index for unread badges.
+4.  **User Profile**: Adds the `groupId` to the user's `groupIds` array.
+5.  **Welcome Message**: Creates a system message: `✨ **${nickname}** joined the group! Welcome!`.
+6.  **Message Counter**: Calls `CounterService.increment` to update the message count for unread badge tracking.

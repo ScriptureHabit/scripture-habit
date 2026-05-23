@@ -1,105 +1,96 @@
 # Scripture Habit 📖🔥
 
-Welcome to **Scripture Habit**, a premium React + TypeScript hybrid mobile and web application designed for social scripture study and habit-tracking. Built with React 19, Vite, Tailwind-free modern CSS, Cloud Firestore, and a Node.js/Express backend hosted on Vercel.
+Scripture Habit is a social scripture study and habit-tracking app. It is built with React, TypeScript, Express, and Firebase, and supports Android via Capacitor.
 
 ---
 
-## 📂 Repository Structure
+## 📂 Project Structure
 
-The project has been optimized to separate core documentation from application source code:
+This repository is divided into two main parts: the documentation (`docs/`) and the application source code (`scripture-habit/`).
 
 ```
-final-project/                     ← Repository Root
-├── docs/                          ← Technical Documentation (Deep-dives & Guides)
-├── scripture-habit/               ← Application Workspace
-│   ├── src/                       │── React 19 Frontend
-│   ├── backend/                   │── Express Server (Firebase Admin SDK)
-│   ├── api/ & api_internal/       │── API routes and services
-│   ├── android/                   │── Capacitor Android native project
-│   ├── public/                    │── Static assets & PWA Service Workers
-│   ├── package.json               │── Application scripts & dependencies
-│   └── ...                        └── Firebase/Vercel configuration files
-└── README.md                      ← You are here
+final-project/
+├── docs/                          # Technical documentation
+├── scripture-habit/               # Application workspace
+│   ├── src/                       # React frontend (Vite)
+│   ├── backend/                   # Express backend (Firebase Admin)
+│   ├── api/                       # API routes
+│   ├── android/                   # Capacitor Android project files
+│   ├── public/                    # Static assets & Service Worker
+│   └── package.json               # Package configuration
+└── README.md                      # This file
 ```
 
 ---
 
 ## 🚀 Getting Started
 
-All development and build scripts are managed within the `scripture-habit` workspace directory.
+All development and build scripts are run inside the `scripture-habit` directory.
 
-### 1. Installation
-From the repository root, change to the workspace directory and install dependencies:
-```powershell
+### 1. Setup
+From the repository root, go to the project directory and install dependencies:
+```bash
 cd scripture-habit
 npm install
 ```
 
-### 2. Running Local Development Servers
-To start the React frontend (Vite):
-```powershell
+### 2. Run Frontend (Vite)
+```bash
 npm run dev
 ```
 
-To start the Express API backend:
-```powershell
+### 3. Run Backend (Express API)
+```bash
 npm run server
 ```
 
 ---
 
-## 📚 Technical Documentation Index
+## 📚 Documentation Index
 
-We maintain a comprehensive suite of markdown-based technical guides in the root [docs/](docs/README.md) directory. Please refer to these for architectural details, deployment instructions, and local setup:
+Detailed technical documents are stored in the [docs/](docs/README.md) folder.
 
-### 🏛️ General Architecture
-*   **[Architecture & Structure](docs/architecture.md)**: Layered overview of API, Internal Services, Backend, and Frontend.
-*   **[AI Context & Dev Charter](docs/ai-context.md)**: Crucial LLM boundaries, component-logic split, and transaction integrity.
-*   **[Database Security Foundation](docs/database-security.md)**: Cloud Firestore structure and path-based security design.
-*   **[Security & App Check Gates](docs/security-architecture.md)**: Authentication shields, token validation, and emulator bypass.
-*   **[Firebase Security Rules & CQRS Write Isolation](docs/firebase-security-rules.md)**: Multi-tiered auth and backend-only write isolation.
-*   **[Middleware & Global Error Handling](docs/api-middleware-error-handling.md)**: Standardized CORS, AppError custom boundaries, and Sentry alerts.
-*   **[SEO & Dynamic Meta Management](docs/seo-and-meta-management.md)**: Multi-lingual canonical mapping and dynamic OG image scaling.
+### Architecture & Security
+*   **[Architecture & Structure](docs/architecture.md)**: Overview of directories and code layers (Frontend/Backend/API).
+*   **[AI Context & Dev Guide](docs/ai-context.md)**: Rules for development and coding standards.
+*   **[Database Security Foundation](docs/database-security.md)**: Firestore database structure and path-based permissions.
+*   **[Security & App Check](docs/security-architecture.md)**: User authentication and Firebase App Check settings.
+*   **[Firebase Security Rules](docs/firebase-security-rules.md)**: Firestore security rules and write permissions.
+*   **[Middleware & Error Handling](docs/api-middleware-error-handling.md)**: CORS settings, error classes, and Sentry tracking.
+*   **[SEO & Meta Management](docs/seo-and-meta-management.md)**: Search engine optimization and Open Graph tags.
 
-### 💬 Key Feature Deep-Dives
-*   **[Chat & Dashboard Sync](docs/feature-chat-dashboard.md)**: Low-latency Firestore snapshot listeners and unread badge math.
-*   **[AI Intelligence Integration](docs/feature-ai-integration.md)**: Gemini 3.1 Flash-Lite automation, Weekly Recaps, and translations.
-*   **[Notification Push Delivery](docs/feature-notifications.md)**: FCM background service workers and dynamic state synchronization.
+### Features
+*   **[Chat & Dashboard Sync](docs/feature-chat-dashboard.md)**: Real-time chat sync and unread counts using Firestore.
+*   **[AI Integration](docs/feature-ai-integration.md)**: Gemini integration for translation, weekly summaries, and automation.
+*   **[Notifications](docs/feature-notifications.md)**: Push notifications via FCM (Firebase Cloud Messaging).
 
-### ⚙️ Core Logic & Algorithms
-*   **[Note Posting Pipeline](docs/logic-note-posting.md)**: Multi-document streak validation and gamified level-ups.
-*   **[Gospel Library Scripture Parser](docs/gospel-library-mapper.md)**: Regular expression multi-lingual verse mapping.
-*   **[Concurrency-Safe Group Invites](docs/group-invites.md)**: Expiration timelines and rate-limited invite codes.
-*   **[Inactivity Scanner & Auto-Kick](docs/inactivity-and-autokick.md)**: Owner-rotation protocols and automated subcollection self-healing.
-*   **[URL Metadata & SSRF Prevention](docs/url-metadata-extraction.md)**: Multi-tiered caching and secure client-server parsing.
-*   **[I18n Localization Engine](docs/logic-i18n.md)**: Contextual language wrappers and AU translation fallbacks.
-*   **[Solidarity Mathematics (Unity)](docs/unity-participation.md)**: Real-time timezone resets and solidarity math for group study.
-*   **[Firestore Transactions](docs/firestore-transactions-counters.md)**: Read-before-write guarantees and counter sharding.
-*   **[Book Suggestion Sorting](docs/incremental-book-suggestions.md)**: Unicode mapping and Katakana-Hiragana sound-shifting priorities.
-*   **[User Profile Anonymization](docs/profile-sync-anonymization.md)**: Clean cascades and dummy replacement tags.
-*   **[Timezone-Aware Reminders](docs/timezone-streak-reminders.md)**: Multi-tenant batch querying via client Intl clocks.
+### Core Logic
+*   **[Note Posting](docs/logic-note-posting.md)**: How users post notes, and how study streaks and levels are updated.
+*   **[Gospel Library Mapper](docs/gospel-library-mapper.md)**: Parsing and linking scripture chapters/verses in different languages.
+*   **[Group Invites](docs/group-invites.md)**: Invite codes and joining process for groups.
+*   **[Inactivity & Auto-Kick](docs/inactivity-and-autokick.md)**: System to kick inactive users and transfer group ownership.
+*   **[URL Metadata](docs/url-metadata-extraction.md)**: Fetching web page titles securely with server-side caching.
+*   **[I18n Localization](docs/logic-i18n.md)**: Multi-language setup for both frontend and backend.
+*   **[Midnight Reset Hooks](docs/client-unity-midnight-reset.md)**: Hook to handle local midnight resets and keep user streaks accurate.
+*   **[Firestore Transactions](docs/firestore-transactions-counters.md)**: Firestore data updates and counter systems.
+*   **[Book Suggestions](docs/incremental-book-suggestions.md)**: Search suggestions and alphabetical sorting logic.
+*   **[User Profile Anonymization](docs/profile-sync-anonymization.md)**: Deleting user accounts and removing personal data.
+*   **[Timezone Reminders](docs/timezone-streak-reminders.md)**: Sending push notifications based on user's timezone.
 
-### 🛠️ Operations & Release Guides
-*   **[Development & Mobile Config](docs/development-guide.md)**: Local Capacitor Android settings and development guides.
-*   **[Vitest & Playwright E2E Testing](docs/testing-guide.md)**: Rules, mocks, and browser verification scripts.
-*   **[CI/CD Pipelines](docs/cicd-maintenance-automation.md)**: GitHub Actions continuous delivery, Vercel deployments, and daily Cron schedules.
-*   **[PWA & Webview Native Lifecycles](docs/hybrid-mobile-lifecycle.md)**: In-app WebView sandboxing, SW refresh prompts, and loopback escapes.
-*   **[Offline Persistence Design](docs/firestore-offline-persistence.md)**: IndexedDB multi-tab lock configurations and recovery strategies.
-*   **[Android App Signing & Releases](docs/hybrid-mobile-release-guide.md)**: Google Play console signatures, provisioning, and SHA mapping.
-*   **[Midnight Reset Hooks](docs/client-unity-midnight-reset.md)**: Sub-minute active polling hooks keeping user streaks dynamically fresh.
-*   **[Troubleshooting & FAQ](docs/troubleshooting.md)**: Quick-fixes for typical mobile builds, keystores, and network routing.
-
----
-
-## 🔧 Technology Stack
-
-*   **Frontend UI:** React 19 + TypeScript + Vite + Zustand (UI state) + React Query (Server sync)
-*   **Backend Services:** Node.js + Express + Firebase Admin SDK (Vercel serverless functions)
-*   **Mobile Core:** Capacitor 8 (native Android layer integration)
-*   **Database & Core Auth:** Cloud Firestore + Firebase Authentication (App Check & Rules enforced)
-*   **Styling Standards:** Premium modern CSS variables, glassmorphism, responsive grids, and subtle micro-animations.
+### Operations & Deploy
+*   **[Development Guide](docs/development-guide.md)**: Local development setup and mobile app settings.
+*   **[Testing Guide](docs/testing-guide.md)**: Writing and running tests (Vitest and Playwright).
+*   **[CI/CD Pipelines](docs/cicd-maintenance-automation.md)**: GitHub Actions for building, testing, and Vercel deployment.
+*   **[PWA & Hybrid Lifecycle](docs/hybrid-mobile-lifecycle.md)**: PWA updates and mobile WebView settings.
+*   **[Offline Support](docs/firestore-offline-persistence.md)**: Firestore offline caching and multi-tab synchronization.
+*   **[Android App Signing](docs/hybrid-mobile-release-guide.md)**: Keystore files and App Store deployment guides.
+*   **[Troubleshooting & FAQ](docs/troubleshooting.md)**: Common fixes for emulator, Android build, and setup issues.
 
 ---
 
-> [!TIP]
-> Each document in the `docs/` folder contains comprehensive diagrams and guides to keep development intuitive and structured. Open these files in markdown preview mode inside VS Code or GitHub for the best reading experience.
+## 🔧 Tech Stack
+
+*   **Frontend:** React 19, TypeScript, Vite, Zustand, React Query, CSS Variables
+*   **Backend:** Node.js, Express, Firebase Admin SDK (Vercel Serverless)
+*   **Mobile:** Capacitor 8 (Android)
+*   **Database & Auth:** Cloud Firestore, Firebase Authentication, Firebase App Check

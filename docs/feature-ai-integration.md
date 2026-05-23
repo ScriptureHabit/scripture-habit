@@ -1,66 +1,64 @@
-# AI Integration: Intelligence & Optimization
+# AI Integration
 
-The **scripture-habit** AI subsystem acts as a virtual "facilitator," bridging language gaps and summarizing study progress.
+The **scripture-habit** AI subsystem acts as a virtual facilitator, helping bridge language gaps and summarizing study progress.
 
 ---
 
 ## 🤖 The Persona: "Encouraging Facilitator"
 
-Rather than a generic LLM, our prompts are engineered to embody a specific persona:
-- **Tone**: Warm, encouraging, and simplified. 
-- **Rule**: Avoid complex theological terms. Output should be accessible to anyone, including children or those new to scripture study.
-- **Goal**: Personal application. The AI focuses on how the scripture applies to *daily life* today.
+Rather than a generic LLM, our prompts are engineered to use a specific persona:
+- **Tone**: Warm, encouraging, and simple. 
+- **Rule**: Avoid complex theological terms. Output should be accessible to anyone.
+- **Goal**: Personal application. The AI focuses on how the scripture applies to daily life today.
 
 ---
 
-## ⚡ API Optimization: Flash-Lite 3.1
+## ⚡ API Optimization: Gemini 3.1 Flash-Lite
 
-We use **Gemini 3.1 Flash-Lite Preview** globally. To ensure the fastest user experience, we apply a **"Minimal Thinking"** configuration:
+We use **Gemini 3.1 Flash-Lite Preview** globally. To ensure a fast experience, we apply a minimal thinking configuration:
 ```json
 thinkingConfig: {
     thinkingLevel: "minimal"
 }
 ```
-This forces the model to prioritize speed and directness, which is ideal for stateless tasks like translation and question generation.
+This forces the model to prioritize speed and directness for simple tasks like translation and question generation.
 
 ---
 
 ## 💾 Translation Cache Strategy
 
-AI tokens are expensive and latency is the enemy. We implement a persistent cache for all translations.
+We use a persistent cache for all translations to reduce API costs and latency.
 
 ### 1. The Hash Key
-Each translation request is hashed using **MD5** based on the content text, language, and context category (UpdateType):
+Each translation request is hashed using **MD5** based on the text, language, and context category (UpdateType):
 `key = md5(OriginalText + TargetLanguage + UpdateType)`
-
-*Note: Incorporating `UpdateType` ensures that special formats (like bold lists for notes) do not collide with raw text styles (like group descriptions).*
 
 ### 2. Cache Lookup
 - Before calling Gemini, the server checks the `translation_cache` collection for this key.
 - If it exists, the cached result is returned instantly (< 50ms).
-- If it doesn't exist, Gemini is invoked, and the result is stored with a `createdAt` timestamp for future hits.
+- If it doesn't exist, Gemini is called, and the result is stored with a `createdAt` timestamp.
 
-### 3. Test Synchronicity & Race-Condition Prevention
-To optimize production performance and response latency, cache writes (`cacheRef.set()`) are treated as fire-and-forget background operations. The API endpoint does not block the user response while waiting for the Firestore write to commit.
+### 3. Testing and Syncing
+To optimize production performance, cache writes (`cacheRef.set()`) run in the background. The API does not block the user response while waiting for the Firestore write to commit.
 
-However, during integration testing (e.g. `ai.integration.test.ts`), this non-blocking async write introduces **race conditions**, where the test assertion (e.g. `expect(cacheDoc.exists).toBe(true)`) runs before the Firestore write completes in the local emulator.
+However, during integration testing (e.g. `ai.integration.test.ts`), this non-blocking async write can cause race conditions where test assertions run before the database write completes.
 
-To prevent flaky or failing tests, the backend routing middleware checks the execution environment:
+To prevent failing tests, the backend checks the execution environment:
 ```typescript
 if (process.env.NODE_ENV === 'test' || process.env.VITEST === 'true') {
     await savePromise;
 }
 ```
-If a test environment is detected (such as Vitest setting `process.env.VITEST = 'true'`), the server **synchronously blocks and awaits** the cache write before returning the HTTP response. This guarantees stable, green integration test suites while preserving maximum performance in production.
+If a test environment is detected, the server awaits the cache write before returning the HTTP response, guaranteeing stable integration tests.
 
 ---
 
-## ⚡ Batch Translation Optimization (Cost & Latency Tuning)
+## ⚡ Batch Translation Optimization
 
-When a user loads a group chat with messages in multiple languages, sequential, individual translation requests block the client UI, consume unnecessary cell bandwidth, and increase roundtrip latency. To optimize this, the backend exposes `/api/ai/translate-batch`, which implements a **3-Tiered Batching Pipeline**:
+When a user loads a chat with messages in multiple languages, individual translation requests can slow down the UI and consume extra bandwidth. To optimize this, the backend exposes `/api/ai/translate-batch`, which uses a **3-stage batching process**:
 
-### 1. Parallelized Cache Sweep (Concurrent Verification)
-Rather than executing cache lookups sequentially, the server hashes each message concurrently and queries the `translation_cache` collection in parallel using JavaScript's `Promise.all()`:
+### 1. Parallel Cache Search
+The server hashes each message and queries the `translation_cache` collection in parallel using `Promise.all()`:
 ```typescript
 const cachePromises = messages.map(async (msg) => {
     const cacheKey = crypto.createHash('md5').update(`${msg.text}_${targetLanguage}_normal`).digest('hex');
@@ -68,12 +66,12 @@ const cachePromises = messages.map(async (msg) => {
 });
 const cacheResults = await Promise.all(cachePromises);
 ```
-- Highly active/common phrases or identical scripture notes are resolved **under 50ms** directly from the concurrent cache lookup.
-- Only messages that missed the cache are collected into the `toTranslate` array to be sent to Gemini.
-- If everything is cached, the API returns early, avoiding LLM invocations entirely.
+- Active or common phrases are resolved in under 50ms directly from the cache.
+- Only messages that missed the cache are added to the `toTranslate` array for Gemini.
+- If everything is cached, the API returns early without calling the LLM.
 
-### 2. Single-Turn Structured LLM Request (Token Slasher)
-All cache-missed messages are bundled into a single stringified JSON array and sent to Gemini 3.1 Flash-Lite in a **single API call**:
+### 2. Single Structured LLM Request
+All cache-missed messages are bundled into a single JSON array and sent to Gemini in one API call:
 ```typescript
 const prompt = `Task: Translate these message items into ${targetLangName}.
     【STRICT RULES】:
@@ -86,12 +84,12 @@ const prompt = `Task: Translate these message items into ${targetLangName}.
     Messages:
     ${JSON.stringify(toTranslate.map(m => ({ id: m.id, text: m.text })))}`;
 ```
-- **Prompt Token Savings**: The system instructions, rules, and examples are sent once instead of $N$ times, dramatically lowering input token costs.
-- **Latency Reduction**: Latency is compressed from $N \times 2.5\text{s}$ (sequential calls) to a single prompt-response cycle of approximately $1.8\text{s}$.
+- **Token Savings**: Instructions and rules are sent once instead of multiple times, lowering input token costs.
+- **Latency Reduction**: Latency is compressed to a single prompt-response cycle of approximately 1.8 seconds.
 
-### 3. Atomic Multi-Document commits (`db.batch`)
-Once the JSON response is parsed and validated, the server writes the translations back to Firestore.
-Instead of triggering multiple separate network writes, it builds a single **Firestore Batch Commit** (`db.batch()`):
+### 3. Batch Commits (`db.batch`)
+Once the JSON response is parsed, the server writes the translations to Firestore.
+Instead of triggering separate network writes, it builds a single **Firestore Batch Commit**:
 ```typescript
 const batch = db.batch();
 for (const msg of toTranslate) {
@@ -105,44 +103,41 @@ for (const msg of toTranslate) {
 }
 await batch.commit();
 ```
-- By writing the translation **directly inside the message document** (`translations.ja = "..."`), future client loads of this message fetch the translation inside the message itself.
-- Committing everything in a single batch ensures **transactional consistency** and cuts down database write roundtrips to a single transaction request.
+- Writing the translation directly inside the message document ensures future client loads fetch the translation within the message.
+- Committing in a single batch ensures consistency and reduces database write roundtrips.
 
 ---
 
-## 💬 AI Discussion Starter (Facilitation)
+## 💬 AI Discussion Starter
 
-To maintain active conversations and build group connection, the backend provides a **Discussion Starter** endpoint (`/api/generate-discussion-topic`):
+To encourage active conversations, the backend provides a discussion starter endpoint (`/api/generate-discussion-topic`):
 
-*   **Context Injection**: The endpoint fetches the 3 most recent study notes posted in the group chat (`isNote == true`) to build local conversational relevance.
-*   **The Trigger**: It generates a custom, personal application question tailored to the topics currently being studied by the group.
-*   **Safety Guards**: Standard rate limits (`aiLimiter`) and AppCheck apply, preventing third-party script exploitation.
+*   **Context**: The endpoint fetches the 3 most recent study notes in the chat (`isNote == true`) to build relevant discussion topics.
+*   **The Trigger**: It generates a personal application question tailored to the topics currently studied by the group.
+*   **Safety Guards**: Standard rate limits (`aiLimiter`) and AppCheck are applied to protect the route.
 
 ---
 
-## 📊 Automated Recaps & Cooldowns
+## 📊 Weekly Recaps and Cooldowns
 
-Weekly recaps (both Group and Personal) are computationally intensive and impact the "noise level" of the app.
-
-### The 6-Day Cooldown
-To prevent spamming and excessive API costs, we enforce a strict cooldown:
+Weekly recaps are resource-heavy, so we apply a cooldown to manage system load:
 - The `lastRecapGeneratedAt` field is stored on the Group or User document.
 - The API checks this field: `if (currentTime - lastRecapGeneratedAt < 6 days) throw CooldownError`.
-- This ensures recaps remain a special, weekly event.
+- This ensures recaps remain a weekly event.
 
 ---
 
-## 🧹 Robust JSON Sanitization
+## 🧹 JSON Sanitization
 
-For batch translations, Gemini outputs a JSON object. However, LLMs sometimes add extra text or markdown wrappers. 
-Our backend implements a **Robust JSON Finder**:
+Gemini outputs a JSON object for batch translations. However, LLMs sometimes include extra markdown or text wrappers. 
+Our backend cleans this output:
 1.  Locate the first `{` and the last `}` in the response.
 2.  Extract everything in between.
-3.  Attempt `JSON.parse()`. 
-This prevents the UI from crashing if the AI accidentally includes "Here is your JSON:" in the response.
+3.  Run `JSON.parse()`. 
+This prevents errors if the AI includes extra introductory text.
 
 ---
 
 ## 🛠️ Security & AI Middleware
-- **Rate Limiting**: `aiLimiter` restricts the number of AI requests any single UID can trigger per 15 minutes.
-- **AppCheck**: Mandatory for all AI routes. This prevents external scripts from using our backend as a free translation/LLM API.
+- **Rate Limiting**: `aiLimiter` restricts the number of AI requests any user can trigger per 15 minutes.
+- **AppCheck**: Required for all AI routes to prevent external scripts from abusing the endpoints.

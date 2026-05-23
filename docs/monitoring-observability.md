@@ -1,52 +1,50 @@
-# Monitoring & Observability: Health & Ops
+# Monitoring & Observability
 
-To maintain a "Premium" experience on both web and mobile, **scripture-habit** integrates several layers of monitoring to catch performance regressions and unexpected errors before users report them.
-
----
-
-## 🐞 Error Tracking: Advanced Sentry
-
-We use **Sentry** not just for crashes, but for total observability of the user experience.
-
-### 1. Performance Budgeting
-We optimize our Sentry quota while maintaining high visibility:
-- **`tracesSampleRate: 0.1`**: We only track 10% of performance traces to keep the noise low while identifying slow API endpoints or complex React renders.
-- **Replay Strategy**: We only record **Session Replays on failure** (`replaysOnErrorSampleRate: 1.0`). This captures exactly what the user was doing leading up to a crash without recording thousands of healthy sessions.
-
-### 2. React Router Integration
-Using the Sentry React Router V6/V7 integration, we can see exactly which screen transitions are slow or failing, distinguishing between "Dashboard" lag and "Note Submission" errors.
+To keep the platform running smoothly, **scripture-habit** uses multiple monitoring tools to catch performance issues and unexpected errors before users report them.
 
 ---
 
-## 🔇 Proactive Error Silencing
+## 1. Error Tracking with Sentry
 
-In a mobile-web hybrid environment (Capacitor), certain errors are expected and non-critical. We specifically "silence" these in `main.tsx` to keep our Sentry logs actionable:
+We use **Sentry** to monitor application performance and track crashes.
 
-- **`AbortError`**: Triggered when a mobile user closes the app or switches tabs during an async Firebase/Analytics request.
-- **`permission-denied` (Production)**: Silenced during production state transitions. If a user logs out while a Firestore listener is still active for a millisecond, a permission error is thrown. This is caught and suppressed to prevent false-positives in our monitoring.
+### 1.1 Performance Sampling
+To balance cost and visibility, we use these configurations:
+- **`tracesSampleRate: 0.1`**: We trace 10% of performance data to identify slow API endpoints or complex React renders.
+- **Session Replays**: We only record session replays when an error occurs (`replaysOnErrorSampleRate: 1.0`). This shows the user actions leading up to a crash without recording healthy sessions.
 
----
-
-## 📦 PWA Update Lifecycle
-
-As a Progressive Web App, managing "Freshness" is a core architectural requirement.
-
-1.  **State Detection**: The Service Worker (SW) installation process is monitored.
-2.  **Event Dispatch**: When a new SW is installed and waiting, the app dispatches a `pwa-update-available` custom event.
-3.  **User UI**: The UI listens for this event and shows a "New Version Available" banner.
-4.  **Atomic Refresh**: Once the user clicks "Refresh," the new SW takes control, and the app performs a hard reload to ensure no legacy logic is running in memory.
+### 1.2 React Router Integration
+Sentry's React Router integration helps us see which page transitions are slow or failing, so we can pinpoint issues like dashboard lag or note submission errors.
 
 ---
 
-## 📱 Mobile Debugging: vConsole & Logging
+## 2. Silencing Common Errors
 
-For production Android/iOS builds where Chrome DevTools is unavailable, we use **vConsole**.
+In a mobile hybrid app, some expected errors do not need action. We suppress these in `main.tsx` to keep Sentry logs clean:
+- **`AbortError`**: Occurs when a user closes the app or switches tabs during an active Firebase request.
+- **`permission-denied`**: Occurs briefly when a user logs out while a Firestore listener is still active. We suppress this to avoid false alarms.
+
+---
+
+## 3. PWA Update Lifecycle
+
+To ensure users always run the latest version of our Progressive Web App (PWA):
+1.  **State Detection**: The app monitors the Service Worker installation.
+2.  **Event Dispatch**: When a new Service Worker is ready, the app triggers a `pwa-update-available` custom event.
+3.  **User UI**: The user interface displays a "New Version Available" banner.
+4.  **Refresh**: When the user clicks "Refresh," the new Service Worker takes over and the page reloads.
+
+---
+
+## 4. Mobile Debugging (vConsole)
+
+To debug production Android and iOS builds where Chrome DevTools is unavailable, we use **vConsole**.
 - **Usage**: Access via `?vconsole=true` in the URL.
-- **Benefits**: Allows us to see network requests, console logs, and local storage state directly on the physical device.
+- **Features**: Shows console logs, network requests, and local storage data directly on the mobile device.
 
 ---
 
-## 🚦 Monitoring Architecture Diagram
+## 5. Monitoring Architecture Diagram
 
 ```mermaid
 graph TD

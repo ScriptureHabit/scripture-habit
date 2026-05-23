@@ -1,17 +1,17 @@
 # Firestore Transactions & Counter Service Design
 
-This document details the transactional integrity mechanisms, atomic multi-document updates, and the distributed caching/counter patterns used in the backend to ensure high data consistency and prevent write hot-spotting.
+This document details how the backend handles transactions, updates multiple documents atomically, and uses distributed counters to prevent write performance bottlenecks.
 
 ---
 
-## 1. The "READ-before-WRITE" Constraint Order
+## 1. The "READ-before-WRITE" Rule
 
-A fundamental limitation of Google Cloud Firestore transactions is that **all database read operations (queries, gets) must occur before any database write operations (sets, updates, deletes)**.
+In Google Cloud Firestore transactions, **all read operations (queries, gets) must happen before any write operations (sets, updates, deletes)**.
 
-If a developer attempts to call `transaction.get()` after triggering a `transaction.update()`, Firestore will abort the process and throw a runtime exception. This is because Firestore transactions use optimistic concurrency control, which requires locking the read set before applying changes.
+If you call `transaction.get()` after calling `transaction.update()`, Firestore will throw an error. This is because Firestore transactions use optimistic concurrency control, which requires locking the read data before applying changes.
 
-### Clean Code Implementation (`groups.ts`)
-During user actions like joining a group, the backend enforces a strict sequencing pipeline:
+### Code Example (`groups.ts`)
+When a user joins a group, the backend sequences the database operations as follows:
 
 ```typescript
 const result = await db.runTransaction(async (transaction) => {
@@ -40,11 +40,9 @@ const result = await db.runTransaction(async (transaction) => {
 
 ---
 
-## 2. Atomic Multi-Document State Synchronization
+## 2. Multi-Document Updates
 
-Because of Firestore's document-oriented architecture, related data is denormalized across collections to achieve sub-second read performance. 
-
-When a structural event occurs (e.g., joining or leaving a group), the backend must update multiple documents **atomically** within a single transaction to prevent half-joined or corrupted data states.
+To make reads fast, related data is stored across multiple collections. When an event occurs (like joining a group), the backend must update multiple documents **atomically** in a single transaction to prevent incomplete or corrupted data states.
 
 ```mermaid
 sequenceDiagram
@@ -64,35 +62,35 @@ sequenceDiagram
     Tx->>API: Commit Transaction (Atomic Update Success)
 ```
 
-### Affected Resources on Group Mutations:
-1. **The Parent Group Document**: Updates `members` (UID array), `memberPreviews` (nickname list), `membersCount`, and dynamic timezone mappings.
-2. **The Member Subcollection Document**: Creates a dedicated `/groups/{groupId}/members/{uid}` document to hold custom metadata like `joinedAt`, `photoURL`, and individual `kickThreshold` values.
-3. **The User Registry Document**: Appends the group ID to `/users/{uid}.groupIds`, satisfying the Firestore Security Rule validation check of `groupIds.size() < 4`.
+### Documents Updated When Joining a Group:
+1. **Parent Group Document**: Updates the `members` UID array, `memberPreviews` nickname list, and `membersCount`.
+2. **Member Subcollection Document**: Creates a `/groups/{groupId}/members/{uid}` document to store custom settings like `joinedAt` and `kickThreshold`.
+3. **User Registry Document**: Adds the group ID to `/users/{uid}.groupIds`. This is checked by Firestore Security Rules to limit memberships.
 
 ---
 
-## 3. Distributed Counters & Preventing Firestore "Hot-spotting"
+## 3. Distributed Counters & Preventing Hot-spotting
 
-A physical constraint of Firestore is that **a single document can only be updated approximately once per second** in production environments. 
+Firestore limits single-document updates to **approximately once per second** in production.
 
-If multiple users inside a large group post notes, react to messages, or chat at the exact same moment, updating a single counter field on a central group document will fail due to contention, resulting in high latency, timeouts, and transaction aborts (Hot-spotting).
+If many users in a group post study notes or send chat messages at the same time, updating a single counter field on a central group document will fail due to contention (hot-spotting).
 
 ### The Solution: `CounterService`
-To scale counters across high-concurrency situations, the application utilizes the **Distributed Counter design pattern** combined with client-side caches.
+To scale counters under high traffic, the app uses a **Distributed Counter** pattern with client-side caching.
 
 ```
-                  [ High Concurrency Writes ]
-                  │      │      │      │      │
-                  ▼      ▼      ▼      ▼      ▼
-            [ Randomly Shard into 0..N Counter Subdocs ]
-            (e.g., /groups/{id}/messageCount_shards/{shardId})
-                                │
-                                ▼
-         [ Periodic Backend Batch Aggregation / Reads ]
-          Loads and sums all shard documents into total
+                   [ High Concurrency Writes ]
+                   │      │      │      │      │
+                   ▼      ▼      ▼      ▼      ▼
+             [ Randomly Shard into 0..N Counter Subdocs ]
+             (e.g., /groups/{id}/messageCount_shards/{shardId})
+                                 │
+                                 ▼
+          [ Periodic Backend Batch Aggregation / Reads ]
+           Loads and sums all shard documents into total
 ```
 
-### Core Architecture:
-1. **Dynamic Sharding**: Instead of incrementing `group.messageCount` directly, write transactions randomly shard increments across a collection of private subdocuments (`/shards/{id}`).
-2. **Read Consolidation**: When the exact count is required (such as in a transaction check), the `CounterService` loads the individual shards, sums their values, and returns the total.
-3. **Write Scaling**: Because increments are distributed across multiple shards, the database can handle hundreds of concurrent count updates per second without bottlenecking.
+### How It Works:
+1. **Dynamic Sharding**: Instead of incrementing `group.messageCount` directly, writes are randomly distributed across a subcollection of shard documents (`/shards/{id}`).
+2. **Read Consolidation**: When the exact count is needed, the `CounterService` loads all shard documents, sums their values, and returns the total.
+3. **Write Scaling**: Because updates are spread across multiple shards, the database can handle many concurrent count updates per second without slowing down.

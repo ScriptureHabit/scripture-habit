@@ -1,6 +1,6 @@
 # Technical Documentation Index
 
-Welcome to the **scripture-habit** technical documentation. This directory contains deep-dives into the architecture, features, and core logic of the application.
+Welcome to the **scripture-habit** technical documentation. This directory contains details about the architecture, features, and core logic of the application.
 
 ---
 
@@ -8,7 +8,7 @@ Welcome to the **scripture-habit** technical documentation. This directory conta
 - **[Architecture & Structure](architecture.md)**
   - High-level directory overview.
   - Layer definitions (API, Internal, Backend, Frontend).
-- **[Database & Security: The Foundation](database-security.md)**
+- **[Database & Security](database-security.md)**
   - Firestore structure and path-based permissions.
   - Email verification and AppCheck guards.
 - **[App Check & API Protection](security-architecture.md)**
@@ -16,7 +16,7 @@ Welcome to the **scripture-habit** technical documentation. This directory conta
 - **[API Middleware Architecture & Standard Error Handling](api-middleware-error-handling.md)**
   - Express CORS validation, Vercel TrailingSlash fixes, rate limiting, custom AppError classes, and global Sentry tracking.
 - **[Firebase Security Rules & CQRS Write Isolation](firebase-security-rules.md)**
-  - Multi-tiered authentication shields, custom rules-bound validation limits, and backend-centric CQRS write restrictions.
+  - Multi-tiered authentication, custom validation limits, and backend-only CQRS write rules.
 - **[AI Context Guide & Development Charter](ai-context.md)**
   - Essential LLM directives and repository-wide system design constraints.
   - State boundaries, logic-component split principles, and transactional integrity rules.
@@ -28,14 +28,14 @@ Welcome to the **scripture-habit** technical documentation. This directory conta
 ## 💬 Feature Deep-Dives
 - **[Chat & Dashboard Synchronization](feature-chat-dashboard.md)**
   - Detailed explanation of real-time Firestore listeners.
-  - The architectural separation of "Pure Data" and "UI Representation".
-  - The mechanism behind unread status synchronization.
-- **[AI Integration: Intelligence Layer](feature-ai-integration.md)**
-  - Gemini 3.1 Flash-Lite integration details.
+  - The separation of data and UI.
+  - How unread status is synchronized.
+- **[AI Integration](feature-ai-integration.md)**
+  - How Gemini 3.1 Flash-Lite is integrated.
   - Translation, Weekly Recaps, and Automation.
-- **[Notification System: Push & Delivery](feature-notifications.md)**
-  - FCM token privacy vault separation, dynamic flag healing, and native SW installation.
-  - Contextual OS tray control (streak reminder startup clearing and group-specific message removals).
+- **[Notification System](feature-notifications.md)**
+  - FCM token storage, status recovery, and service worker installation.
+  - OS notification tray control (clearing streak reminders and group messages).
 
 ---
 
@@ -47,7 +47,7 @@ Welcome to the **scripture-habit** technical documentation. This directory conta
   - Multi-lingual scripture and volume mapping engine.
   - Character normalization, regex chapter parsing, and deep-link verse highlights.
 - **[Group Invites & Joining Pipeline](group-invites.md)**
-  - Concurrency-safe group membership registration and transactional unique code generation.
+  - Safe group membership registration and unique code generation.
   - Rate-limited join attempts, localized metadata preview cards, and expiration timelines.
 - **[Inactivity & Auto-Kick Engine](inactivity-and-autokick.md)**
   - Evaluation thresholds, rotational scheduler, self-healing subcollections, and ownership transfer logic.
@@ -59,14 +59,14 @@ Welcome to the **scripture-habit** technical documentation. This directory conta
   - Frontend context and backend template systems.
   - Automated AU translation strategies.
 - **[Unity Participation & Sync Architecture](unity-participation.md)**
-  - Core math for group solidarity, real-time message sync client overrides, and triple-fallback joined-at eligibility filtering.
+  - Group sync math, real-time message sync client overrides, and triple-fallback joined-at eligibility filtering.
 - **[Firestore Transactions & Counter Service Design](firestore-transactions-counters.md)**
   - Dynamic transaction read-before-write ordering, atomic multi-document updates, and distributed counter sharding.
 - **[Incremental Book Suggestion Engine](incremental-book-suggestions.md)**
   - Multi-lingual Unicode normalization, Japanese Hiragana-to-Katakana phonetic code-shifting, and 4-tier sorting priorities.
 - **[User Profile Sync & Reaction Anonymization](profile-sync-anonymization.md)**
-  - High-performance propagation of user details to group chats and search indices.
-  - Secure social identity anonymization replacing personal data with dummy values during account deletion.
+  - Syncing user details to group chats and search indices.
+  - Anonymizing personal data during account deletion.
 - **[Timezone-Aware Streak Reminders](timezone-streak-reminders.md)**
   - Dynamic timezone target resolution using Javascript `Intl` libraries.
   - Partitioned query chunking, multi-lingual multicast, and self-healing FCM token pruning.
@@ -102,8 +102,8 @@ Welcome to the **scripture-habit** technical documentation. This directory conta
 ---
 
 ## 🎨 Design & UX
-- **[UI/UX Design System: Premium Aesthetics](design-system.md)**
-  - Global CSS tokens, Glassmorphism, and mobile-first rules.
+- **[UI/UX Design System](design-system.md)**
+  - Global CSS tokens, visual design, and mobile-first rules.
   - Animation patterns and typography standards.
 
 ---

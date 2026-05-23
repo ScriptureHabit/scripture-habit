@@ -1,26 +1,30 @@
 # Testing Guide
 
-This document outlines the testing strategies and patterns used in the Scripture Habit project to ensure reliability across the stack.
+This document explains the testing strategies and patterns used in the scripture-habit project to ensure application reliability.
+
+---
 
 ## 1. Firestore Security Rules
-We use `@firebase/rules-unit-testing` to verify that our security rules correctly protect user data and enforce business logic.
+We use `@firebase/rules-unit-testing` to verify that our security rules protect user data and enforce business logic.
 
 - **Location**: `api_internal/rules.test.ts`
 - **How to run** (Recommended):
   ```bash
   npm run test:internal
   ```
-  *(Or execute manually targeting a single file)*:
+  *(Or run manually for a single file)*:
   ```bash
   firebase emulators:exec --project scripture-habit-auth "npx vitest api_internal/rules.test.ts"
   ```
 - **Key Patterns**:
   - Test both authorized and unauthorized access.
-  - Verify list queries with appropriate filters (security rules often require matching filters).
-  - Test nested collections and social features (Cheers/Reports).
+  - Verify list queries with appropriate filters (rules often require specific filters).
+  - Test nested collections and social features (Cheers and Reports).
+
+---
 
 ## 2. Frontend Hook Testing
-Critical business logic in hooks (like date-based resets or metadata fetching) is tested using Vitest and `@testing-library/react`.
+Core hook logic (such as date-based resets or metadata fetching) is tested using Vitest and `@testing-library/react`.
 
 - **Location**: `src/hooks/__tests__/*.test.ts`
 - **How to run**:
@@ -32,32 +36,36 @@ Critical business logic in hooks (like date-based resets or metadata fetching) i
   - Mock external dependencies (like `safeStorage` or `fetch`) to isolate hook logic.
   - Verify state transitions and side effects.
 
+---
+
 ## 3. API Integration Testing
-Core API routes are tested against live Firebase Emulators to ensure authentication, validation, and database transactions work correctly.
+API routes are tested against live Firebase Emulators to ensure authentication, validation, and database transactions work correctly.
 
 - **Location**: `api_internal/*.integration.test.ts`
 - **How to run** (Recommended for all internal tests):
   ```bash
   npm run test:internal
   ```
-  *(Or execute manually targeting a single file)*:
+  *(Or run manually for a single file)*:
   ```bash
   firebase emulators:exec --project scripture-habit-auth "npx vitest api_internal/groups.integration.test.ts"
   ```
 - **Key Patterns**:
   - Mock `verifyIdToken` to simulate different user states.
-  - Use the Admin SDK to setup initial state in Firestore.
+  - Use the Admin SDK to set up initial state in Firestore.
   - Test error cases (400 for validation, 403 for permissions, 404 for missing resources).
 
+---
+
 ## 4. AI Prompt Regression Testing
-Since AI prompts are critical and easily broken by small changes, we use snapshot testing to verify the exact prompt text sent to Gemini.
+We use snapshot testing to verify the exact prompt text sent to Gemini.
 
 - **Location**: `api_internal/ai_integration.test.ts`
 - **How to run** (Recommended):
   ```bash
   npm run test:internal
   ```
-  *(Or execute manually)*:
+  *(Or run manually)*:
   ```bash
   firebase emulators:exec --project scripture-habit-auth "npx vitest api_internal/ai_integration.test.ts"
   ```
@@ -66,30 +74,32 @@ Since AI prompts are critical and easily broken by small changes, we use snapsho
   - Use `expect(prompt).toMatchSnapshot()` to detect unexpected changes in prompt templates.
   - Verify that dynamic content (scripture references, languages) is correctly injected.
 
+---
+
 ## 5. E2E Testing (Playwright)
-The project utilizes **Playwright** to execute robust, browser-level end-to-end (E2E) integration tests across essential client-server user journeys.
+The project uses **Playwright** to run end-to-end (E2E) tests for core user workflows.
 
 - **Location**: `tests/*.spec.ts`
-- **How to run** (Local development with automated setup):
+- **How to run**:
   ```bash
   npm run test:e2e
   ```
-  *Note: This command runs the Vite dev server, Express backend, and the required Firebase Auth/Firestore emulator instances automatically using Playwright's `webServer` orchestra.*
+  *Note: This command automatically starts the Vite dev server, Express backend, and Firebase emulators using Playwright's `webServer` configuration.*
 
 ### 5.1 Global Authentication Setup (`auth.setup.ts`)
-To maximize test execution speed and avoid redundant auth forms, we implement Playwright **Global Setup** to capture and reuse browser cookies/storage:
-1. **Tester Account Isolation**: The setup script launches Chromium and targets `shared-tester@example.com` (password: `password123`).
-2. **Auto-heal / Sign-up Fallback**: It attempts a clean sign-in first. If the user doesn't exist (e.g., cold emulator memory), it navigates to `/en/signup`, registers the credentials, handles any dynamic Firebase Auth verification redirections, and forces navigation to the `/dashboard`.
-3. **State Anonymization & Integrity Prep**: Once logged in, the browser context invokes dynamic fetch hooks to the backend `/api/test/leave-all-groups` endpoint, leaving all joined active groups and resetting the profile interface locale to English (`en`). This ensures every E2E spec starts from a clean, consistent slate.
-4. **State Storage Export**: The final logged-in state is saved to `playwright/.auth/user.json`. Sub-test specs automatically read this local state to run as an authenticated user without repeating the signup flow.
+To speed up tests and avoid signing in repeatedly, we use Playwright **Global Setup** to save and reuse session state:
+1. **Tester Account Setup**: The setup script launches Chromium and targets `shared-tester@example.com` (password: `password123`).
+2. **Auto-signup Fallback**: The script attempts to sign in. If the user does not exist in the emulator, it creates a new account via `/en/signup` and navigates to the `/dashboard`.
+3. **State Cleanup**: After signing in, the script calls `/api/test/leave-all-groups` to leave any active groups and resets the language to English (`en`). This ensures every test starts with a clean account state.
+4. **Session Export**: The authenticated state is saved to `playwright/.auth/user.json`. Other tests use this file to start in a logged-in state, skipping the sign-in step.
 
 ### 5.2 Advanced E2E Debugging
-E2E tests can be tricky to debug. Playwright provides built-in visual instruments:
-* **Interactive UI Mode**: Launches a rich, visual desktop client to step through test code, inspect DOM snapshots, and review active network calls in real time:
+To debug E2E tests, you can use Playwright's built-in tools:
+* **Interactive UI Mode**: Opens a visual interface to step through tests, inspect the DOM, and view network activity:
   ```bash
   npx playwright test --ui
   ```
-* **HTML Trace Viewer**: If a test fails in headless mode (or on CI), Playwright exports an HTML report with trace steps. Open the generated report using:
+* **HTML Trace Viewer**: If a test fails on CI, Playwright generates a trace report. You can open it using:
   ```bash
   npx playwright show-report
   ```
@@ -97,6 +107,6 @@ E2E tests can be tricky to debug. Playwright provides built-in visual instrument
 ---
 
 ## 6. CI/CD Integration
-All tests are integrated into `.github/workflows/ci.yml`. Any push or pull request triggers the full test suite (Lint ➔ Vitest ➔ API Integration ➔ Playwright E2E ➔ Vercel CD).
+All tests run automatically on GitHub Actions via `.github/workflows/ci.yml` on every push and pull request (Lint, Vitest, API Integration, and Playwright E2E).
 
 Ensure that `SKIP_APP_CHECK=true` is set in the test environment to bypass App Check during automated tests.

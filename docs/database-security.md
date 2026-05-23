@@ -1,12 +1,12 @@
 # Database & Schema Architecture
 
-This document defines the data architecture, entity-relationship models, schema roadmaps, and high-concurrency database patterns used to maintain a highly scalable backend for **scripture-habit**.
+This document defines the data architecture, entity-relationship models, schema plans, and database patterns used to maintain a stable backend for **scripture-habit**.
 
 ---
 
-## 📂 Entity-Relationship (ER) Blueprint
+## 📂 Entity-Relationship (ER) Model
 
-Our data model is hierarchical, balancing the need for real-time synchronization with long-term data persistence.
+Our data model is hierarchical, balancing the need for real-time synchronization with long-term data storage.
 
 ```mermaid
 erDiagram
@@ -73,32 +73,32 @@ erDiagram
 
 ---
 
-## 🗺️ Schema Roadmap & Denormalization
+## 🗺️ Schema Plan & Denormalization
 
-### 1. `groups` (The Center of Gravity)
-* **Denormalization Strategy**: We store `memberPreviews` (nickname/photo) and `lastMessageAt` directly on the root group document. This allows the client dashboard to render active groups instantly without spawning sub-queries or secondary document fetches.
-* **Activity Tracking**: `dailyActivity` stores a timestamped list of active UIDs to calculate group "Unity" without querying the entire message collection.
+### 1. `groups`
+* **Denormalization Strategy**: We store `memberPreviews` (nickname/photo) and `lastMessageAt` directly on the root group document. This allows the client dashboard to show active groups instantly without secondary document requests.
+* **Activity Tracking**: `dailyActivity` stores a list of active user IDs to calculate group activity without querying the entire message collection.
 
-### 2. `users` (The Profile & Personal Sync)
-* **Shared ID**: The document ID matches the Firebase Auth UID to prevent synchronization loops.
-* **Redundancy**: `groupIds` (array) is maintained on the user document to allow fast index lookup queries when presenting the user's active groups.
+### 2. `users` (Profile Sync)
+* **Shared ID**: The document ID matches the Firebase Auth UID to prevent synchronization issues.
+* **Redundancy**: `groupIds` (array) is stored on the user document to allow fast searches when displaying the user's active groups.
 
-### 3. Subcollections (Granular Data Isolation)
-* **`/messages`**: Optimized for lightweight, real-time message stream listeners.
-* **`/members`**: Stores per-group member statistics (study points, individual milestones) that are too large to fit in the main group document limits.
+### 3. Subcollections (Data Isolation)
+* **`/messages`**: Optimized for lightweight, real-time message updates.
+* **`/members`**: Stores per-group member statistics (study points, individual progress) that are too large to fit in the main group document.
 
 ---
 
 > [!IMPORTANT]
-> ### 🛡️ Security Rules & Write Permissions Lockdown
-> Detail specifications regarding gateway verification rules (`isAuthenticated()`, `isAppCheckVerified()`), dynamic membership lookups, and the backend-only write validation policies are documented inside **[Firebase Security Rules & Write Isolation](firebase-security-rules.md)**.
-> All client mutation controls and atomic transaction routines are described inside **[Firestore Transactions & Counter Service Design](firestore-transactions-counters.md)**.
+> ### 🛡️ Security Rules & Write Permissions
+> Details about verification rules (`isAuthenticated()`, `isAppCheckVerified()`), membership lookups, and backend-only write validation policies are documented in **[Firebase Security Rules & Write Isolation](firebase-security-rules.md)**.
+> All client updates and transaction routines are described in **[Firestore Transactions & Counter Service Design](firestore-transactions-counters.md)**.
 
 ---
 
-## 📦 Scalability: The Bucket Pattern (Chat Archiving)
+## 📦 Chat Archiving (The Bucket Pattern)
 
-To avoid Firestore's document-size limits (1MB per document) and keep real-time client syncs extremely lightweight, the application implements the **Bucket Pattern** for chat history.
+To avoid Firestore's document-size limits (1MB per document) and keep real-time client syncs lightweight, the application uses the **Bucket Pattern** for chat history.
 
 ```
        [ Client Chat Listener ] ─── Subscribed to ───► [ groups/{id}/messages ] (Active Space)
@@ -110,15 +110,15 @@ To avoid Firestore's document-size limits (1MB per document) and keep real-time 
 ```
 
 ### Mechanisms:
-* **Active Collection**: High-frequency messages are stored in `/messages` and kept small.
-* **Archiving Cron**: An automated cron job (`ArchiveService` triggered daily) sweeps messages older than 30 days and moves them into a bucketed subcollection `/message_buckets/{bucketId}`.
-* **Bandwidth Savings**: The "active" chat listener remains lightweight, ensuring that `onSnapshot` listeners do not consume excessive cellular bandwidth or device memory on mobile apps.
+* **Active Collection**: Active messages are stored in `/messages` and kept small.
+* **Archiving Cron**: A cron job (`ArchiveService` triggered daily) moves messages older than 30 days into a bucketed subcollection `/message_buckets/{bucketId}`.
+* **Bandwidth Savings**: The active chat listener remains lightweight, ensuring that client sync does not consume excessive mobile data or memory.
 
 ---
 
 ## 🔐 Private Data Isolation
 
-Sensitive user credentials and platform configuration tokens are completely isolated from general query pools:
+Sensitive user credentials and setup tokens are kept separate from general queries:
 `users/{uid}/private/tokens`
 
-* **Isolation Policy**: Access to this subcollection is restricted at the database gateway. Neither group members nor group owners can peek into these documents. Only the Admin SDK and the owning user have credentials to read or write tokens.
+* **Access Rules**: Access to this subcollection is restricted at the database level. Neither group members nor group owners can view these documents. Only the Admin SDK and the owning user can read or write tokens.
