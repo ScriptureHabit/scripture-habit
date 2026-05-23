@@ -44,25 +44,27 @@ if (isTargetDay || withinGracePeriod) {
 
 ---
 
-## 💎 Post Transaction Steps
+## 💎 Deconstructed Post Transaction Steps (Read-Optimized)
 
-To keep data consistent, posting a note runs inside a Firestore `db.runTransaction()` with **6 atomic steps**:
+To maximize performance and prevent transaction lock contention, posting a note runs inside a Firestore `db.runTransaction()` with **0 transactional group document reads**:
 
-1.  **Validate**: Verify that the user belongs to the group.
-2.  **Calculate Stats**: Call `StreakEngine` to get the new `streakCount` and `level`.
+1.  **Validate Membership (Read-Free)**: Verify that the user belongs to the group by validating against the user's own `userData.groupIds` array, bypassing `groupRef.get()`.
+2.  **Calculate Stats**: Call `StreakEngine` to get the new `streakCount` and updates.
 3.  **Create Message**: Add a message document to `groups/{id}/messages`.
 4.  **Sync Personal Note**: Duplicate the note to `users/{uid}/notes` for personal archives.
-5.  **Update User Profile**: Increment `totalNotes` and update `lastPostAt`, `streakCount`, and `level` on the user document.
-6.  **Update Group Metadata**: Update fields like `lastMessageAt` and `lastNoteAt` on the group document to refresh the sidebar UI.
+5.  **Update User Profile**: Increment `totalNotes` and update `lastPostAt`, `streakCount`, etc. on the user document.
+6.  **Atomic Group Update (Write-Only)**: Perform a blind write to update metadata counters (`messageCount`, `noteCount`) and timestamp arrays via `FieldValue.increment` and `FieldValue.arrayUnion`.
 
 ---
 
-## 🤝 Group Unity (`dailyActivity`)
+## 🤝 Asynchronous Post-Transaction Sweeps
 
-The Group Unity bar shows the study completion status of the group for the current UTC day.
-- **Active Members**: When a user posts, their UID is added to the group's `dailyActivity.activeMembers` array.
-- **Deduplication**: The array only stores unique UIDs, so posting multiple times only counts once per member.
-- **Daily Reset**: A daily cron job (or the first post of a new UTC day) resets the `dailyActivity` object.
+All non-blocking calculations, push notification sweeps, and daily activity resets are deferred to **post-transaction background operations** outside the transaction context:
+
+1.  **Push Notification Member Sweeps**: The list of group members to notify is fetched outside the transaction context in a background task, avoiding transactional locking.
+2.  **Lazy Daily resets & Unity Calculations**:
+    - Instead of resetting all group stats via nightly CRON sweeps, the system resets the `dailyActivity` dates and sweeps **lazily** on the first note post of a new calendar day.
+    - The unity percentage (`unityPercentage`) is calculated dynamically outside the transaction and updated asynchronously, preventing expensive queries from stalling the chat post transaction.
 
 ---
 

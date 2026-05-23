@@ -20,8 +20,9 @@ const result = await db.runTransaction(async (transaction) => {
     // -------------------------------------------------------------
     const groupDoc = await transaction.get(groupRef);
     const userDoc = await transaction.get(userRef);
-    // Dynamic counter lookup must also execute in read phase
-    const totalMessages = await CounterService.getCountInTransaction(transaction, groupRef, 'messageCount');
+    // Bypasses sharded counter reads inside transactions to save 10 reads!
+    // Reads directly from the already-fetched groupDoc main snapshot.
+    const totalMessages = groupDoc.data()?.messageCount || 0;
 
     // -------------------------------------------------------------
     // STEP 2: VALIDATION PHASE (Local business checks)
@@ -94,3 +95,17 @@ To scale counters under high traffic, the app uses a **Distributed Counter** pat
 1. **Dynamic Sharding**: Instead of incrementing `group.messageCount` directly, writes are randomly distributed across a subcollection of shard documents (`/shards/{id}`).
 2. **Read Consolidation**: When the exact count is needed, the `CounterService` loads all shard documents, sums their values, and returns the total.
 3. **Write Scaling**: Because updates are spread across multiple shards, the database can handle many concurrent count updates per second without slowing down.
+
+---
+
+## 4. Read-Free & Low-Read High-Frequency Transactions
+
+To scale high-frequency operations such as chat messaging (`postMessage`) and reaction toggling (`toggleReaction`), the architecture completely avoids transactional document reads on `groupRef` in production:
+
+### Chat Posting (`postMessage`)
+- **0 Transactional Group Reads**: All updates on the group document (like `messageCount` increment, `lastMessageAt`, and `memberLastReadAt`) are performed using **atomic blind updates** (`admin.firestore.FieldValue.increment` and `admin.firestore.FieldValue.serverTimestamp`).
+- **Deferred Push Notifications**: Instead of fetching group members inside the transaction, the service returns `members: null` and delegates the query asynchronously to `notifyGroupMembers` inside a non-blocking `waitUntil` thread.
+- **Blind Unread Counts**: The user's read status counters (`readMessageCount`) are blindly incremented using `FieldValue.increment(1)` since they just wrote the message, preserving perfect unread badges without reading the absolute database totals.
+
+### Reaction Toggling (`toggleReaction`)
+- **Membership Check Bypassing**: When called from the production REST endpoint, the toggle reaction transaction accepts `skipGroupCheck: true` to bypass the `groupRef` read entirely, utilizing client-side context safety and authenticated sessions for authorization. This reduces transactional reads by **1 group document read** per reaction.

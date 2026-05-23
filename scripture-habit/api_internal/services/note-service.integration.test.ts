@@ -60,6 +60,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('NoteService Integration T
                 language: 'ja',
                 timeZone: 'UTC'
             });
+            if (res1.backgroundPromise) await res1.backgroundPromise;
 
             await new Promise(r => setTimeout(r, 100));
 
@@ -72,6 +73,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('NoteService Integration T
                 language: 'ja',
                 timeZone: 'UTC'
             });
+            if (res2.backgroundPromise) await res2.backgroundPromise;
 
             const uSnap = await db.collection('users').doc(TEST_UID).get();
             expect(uSnap.data()?.totalNotes).toBe(2);
@@ -105,6 +107,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('NoteService Integration T
                 language: 'ja',
                 timeZone: 'Asia/Tokyo'
             });
+            if (result.backgroundPromise) await result.backgroundPromise;
 
             expect(result.personalNoteId).toBeDefined();
 
@@ -124,7 +127,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('NoteService Integration T
         it('should update studiedDates and avoid duplicates on same day', async () => {
             const todayStr = formatDateInTimeZone(new Date(), 'UTC');
 
-            await NoteService.postNote({
+            const r1 = await NoteService.postNote({
                 uid: TEST_UID,
                 messageText: 'Note 1',
                 scripture: 'John 1:1',
@@ -132,8 +135,9 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('NoteService Integration T
                 shareOption: 'none',
                 timeZone: 'UTC'
             });
+            if (r1.backgroundPromise) await r1.backgroundPromise;
 
-            await NoteService.postNote({
+            const r2 = await NoteService.postNote({
                 uid: TEST_UID,
                 messageText: 'Note 2',
                 scripture: 'John 1:2',
@@ -141,6 +145,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('NoteService Integration T
                 shareOption: 'none',
                 timeZone: 'UTC'
             });
+            if (r2.backgroundPromise) await r2.backgroundPromise;
 
             const uSnap = await db.collection('users').doc(TEST_UID).get();
             const userData = uSnap.data() as UserDocument;
@@ -182,6 +187,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('NoteService Integration T
                 shareOption: 'all',
                 timeZone: 'UTC'
             });
+            if (res.backgroundPromise) await res.backgroundPromise;
 
             // Manually delete the shared message from GROUP_1 to make mSnap.exists false
             const msgId = res.sharedMessageIds?.[GROUP_1];
@@ -212,6 +218,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('NoteService Integration T
                 shareOption: 'none',
                 timeZone: 'UTC'
             });
+            if (res.backgroundPromise) await res.backgroundPromise;
 
             await expect(NoteService.deleteNote(TEST_UID, res.personalNoteId)).rejects.toThrow('SIMULATED_DELETE_FAILURE');
             expect(consoleErrorSpy).toHaveBeenCalled();
@@ -241,6 +248,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('NoteService Integration T
                 selectedShareGroups: [GROUP_2],
                 timeZone: 'UTC'
             });
+            if (res.backgroundPromise) await res.backgroundPromise;
 
             expect(res.personalNoteId).toBeDefined();
             expect(consoleWarnSpy).toHaveBeenCalled();
@@ -280,6 +288,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('NoteService Integration T
                 selectedShareGroups: [GROUP_2],
                 timeZone: 'UTC'
             });
+            if (res1.backgroundPromise) await res1.backgroundPromise;
 
             expect(res1.personalNoteId).toBeDefined();
 
@@ -302,6 +311,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('NoteService Integration T
                 selectedShareGroups: [GROUP_2],
                 timeZone: 'UTC'
             });
+            if (res2.backgroundPromise) await res2.backgroundPromise;
 
             expect(res2.personalNoteId).toBeDefined();
 

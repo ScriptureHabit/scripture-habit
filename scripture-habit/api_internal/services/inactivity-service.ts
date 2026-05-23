@@ -12,11 +12,17 @@ export class InactivityService {
      * Scans a batch of groups and processes inactive members.
      * Mimics the rotation logic from the original cron.
      */
-    static async batchCheckInactivity(limit: number = 100) {
+    static async batchCheckInactivity(limit: number = 100, onlyStale: boolean = false) {
         const groupsRef = db.collection('groups');
         
+        let query: admin.firestore.Query = groupsRef;
+        if (onlyStale) {
+            const twentyFourHoursAgo = admin.firestore.Timestamp.fromDate(new Date(Date.now() - 24 * 60 * 60 * 1000));
+            query = query.where('lastInactivityCheckedAt', '<', twentyFourHoursAgo);
+        }
+
         // 1. Rotation - Fetch groups that haven't been checked in the longest time.
-        const staleGroupsSnap = await groupsRef
+        const staleGroupsSnap = await query
             .orderBy('lastInactivityCheckedAt', 'asc')
             .limit(limit)
             .get();

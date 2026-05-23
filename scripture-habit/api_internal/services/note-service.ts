@@ -60,16 +60,6 @@ export class NoteService {
                 
                 groupsToPostTo = [...new Set(groupsToPostTo.filter(gid => !!gid))].slice(0, 20);
 
-                const allGroupIds = [...new Set([...userGroupIds, ...groupsToPostTo])].filter(gid => !!gid);
-                
-                // SECOND BATCH OF READS (must be before any write)
-                const groupDocs = allGroupIds.length > 0 
-                  ? await transaction.getAll(...allGroupIds.map(gid => db.collection('groups').doc(gid))) as admin.firestore.DocumentSnapshot<GroupDocument>[]
-                  : [];
-                const groupDocsMap = new Map<string, admin.firestore.DocumentSnapshot<GroupDocument>>(
-                    groupDocs.map(d => [d.id, d])
-                );
-
                 // --- 2. CALCULATIONS (Pure Logic) ---
                 const existingNote = existingNoteSnap.data();
                 const existingSharedIds = existingNote?.sharedMessageIds || {};
@@ -123,7 +113,6 @@ export class NoteService {
 
                 transaction.update(userRef, userUpdate);
 
-                const userToGroupEntries: [string, string][] = [];
                 const sharedMessageIds: Record<string, string> = { ...existingSharedIds };
 
                 // Group Writes
@@ -131,14 +120,11 @@ export class NoteService {
                 const serverTime = admin.firestore.Timestamp.fromDate(now);
 
                 for (const gid of groupsToPostTo) {
-                    const gDoc = groupDocsMap.get(gid);
-                    if (!gDoc || !gDoc.exists) continue;
-                    
-                    const gData = gDoc.data()!;
-                    const members: string[] = gData.members || [];
-                    if (!members.includes(uid) || existingSharedIds[gid]) continue;
+                    // Check membership via userGroupIds to avoid reading groupDoc in transaction
+                    if (!userGroupIds.includes(gid) || existingSharedIds[gid]) continue;
 
-                    const msgRef = db.collection('groups').doc(gid).collection('messages').doc();
+                    const gRef = db.collection('groups').doc(gid);
+                    const msgRef = gRef.collection('messages').doc();
                     sharedMessageIds[gid] = msgRef.id;
 
                     transaction.set(msgRef, {
@@ -153,15 +139,7 @@ export class NoteService {
                         chapter: chapter || ""
                     });
 
-                    // Calculate today's date for the group. Fallback to user's timezone if group has none.
-                    // This is more likely to match the user's perspective than UTC.
-                    const groupTimeZone = gData.timeZone || userData.timeZone || 'UTC';
-                    const groupToday = formatDateInTimeZone(now, groupTimeZone);
-                    
-                    const currentActivityDate = gData.dailyActivity?.date || '';
-                    const normCurrent = normalizeDateString(currentActivityDate);
-                    const normToday = normalizeDateString(groupToday);
-
+                    // Blind updates on group documents without fetching them first
                     const groupUpdate = {
                         lastMessageAt: serverTime,
                         lastNoteAt: serverTime,
@@ -170,78 +148,27 @@ export class NoteService {
                         [`memberLastActive.${uid}`]: serverTime,
                         [`memberLastReadAt.${uid}`]: serverTime,
                         messageCount: admin.firestore.FieldValue.increment(1),
-                        noteCount: admin.firestore.FieldValue.increment(1)
+                        noteCount: admin.firestore.FieldValue.increment(1),
+                        'dailyActivity.activeMembers': admin.firestore.FieldValue.arrayUnion(uid)
                     } as admin.firestore.UpdateData<GroupDocument>;
 
-                    // Only reset if today is strictly newer than the stored date.
-                    // If stored date is newer (future) or same, we just add the member.
-                    if (normCurrent !== '' && normToday > normCurrent) {
-                        groupUpdate.dailyActivity = { date: groupToday, activeMembers: [uid] };
-                    } else if (normCurrent === '' || normToday === normCurrent) {
-                        groupUpdate['dailyActivity.activeMembers'] = admin.firestore.FieldValue.arrayUnion(uid);
-                        if (normCurrent === '') groupUpdate['dailyActivity.date'] = groupToday;
-                    } else {
-                        // Clock drift / Future Date recovery: 
-                        // If the stored date is in the "future" (normCurrent > normToday),
-                        // we force-reset it to today to prevent the group from being stuck in a non-resetting state.
-                        console.warn(`[NoteService] Future date detected for group ${gid}: ${normCurrent}. Resetting to ${normToday}.`);
-                        groupUpdate.dailyActivity = { date: groupToday, activeMembers: [uid] };
-                    }
-
-                    // Calculate and update unityPercentage for real-time sidebar sync.
-                    // We simulate the updated group state to get the correct percentage.
-                    // If we just reset, simulated active members is just [uid].
-                    // Otherwise, we merge current active members with this uid.
-                    let simulatedActiveMembers: string[] = [];
-                    let simulatedDate = groupToday;
-
-                    if (normCurrent !== '' && normToday > normCurrent) {
-                        simulatedActiveMembers = [uid];
-                        simulatedDate = groupToday;
-                    } else if (normCurrent === '' || normToday === normCurrent) {
-                        simulatedActiveMembers = Array.from(new Set([...(gData.dailyActivity?.activeMembers || []), uid]));
-                        simulatedDate = currentActivityDate || groupToday;
-                    } else {
-                        // Clock drift / Future Date recovery simulation
-                        simulatedActiveMembers = [uid];
-                        simulatedDate = groupToday;
-                    }
-
-                    const simulatedGroup = {
-                        ...gData,
-                        dailyActivity: {
-                            date: simulatedDate,
-                            activeMembers: simulatedActiveMembers
-                        }
-                    };
+                    transaction.update(gRef, groupUpdate);
                     
-                    groupUpdate.unityPercentage = calculateUnityPercentage(simulatedGroup as unknown as Group, [], now);
-                    
-                    if (gData.name?.includes('Unity Test')) {
-                        console.log(`[NoteService] Group ${gid} (${gData.name}): Unity updated to ${groupUpdate.unityPercentage}% for ${uid}. Active: ${simulatedGroup.dailyActivity.activeMembers.length}/${simulatedGroup.members?.length}`);
-                    }
-                    
-                    transaction.update(gDoc.ref, groupUpdate);
-                    
-                    const memberRef = gDoc.ref.collection('members').doc(uid);
+                    const memberRef = gRef.collection('members').doc(uid);
                     transaction.set(memberRef, { 
                         lastNoteAt: serverTime,
                         lastActiveAt: serverTime,
                         lastPostAt: serverTime,
                         lastReadAt: serverTime,
-                        readMessageCount: (Number(gData.messageCount) || 0) + 1
+                        readMessageCount: admin.firestore.FieldValue.increment(1)
                     }, { merge: true });
 
                     const userGS = userRef.collection('groupStates').doc(gid);
                     transaction.set(userGS, { 
-                        readMessageCount: (Number(gData.messageCount) || 0) + 1, 
+                        readMessageCount: admin.firestore.FieldValue.increment(1), 
                         lastReadAt: serverTime,
                         lastActiveAt: serverTime
                     }, { merge: true });
-
-                    members.forEach(mUid => {
-                        if (mUid !== uid) userToGroupEntries.push([mUid, gid]);
-                    });
                 }
 
                 // Personal Note Write
@@ -267,10 +194,8 @@ export class NoteService {
                     const announceTime = admin.firestore.Timestamp.fromMillis(now.getTime() + 1000);
 
                     [...new Set(userGroupIds)].forEach(gid => {
-                        const gDoc = groupDocsMap.get(gid);
-                        if (!gDoc || !gDoc.exists) return;
-
-                        transaction.set(gDoc.ref.collection('messages').doc(), {
+                        const gRef = db.collection('groups').doc(gid);
+                        transaction.set(gRef.collection('messages').doc(), {
                             text: announceMsg,
                             senderId: 'system',
                             senderNickname: botName,
@@ -281,7 +206,7 @@ export class NoteService {
                             messageData: { nickname: userNickname, userId: uid, streakCount: newStreak }
                         });
                         
-                        transaction.update(gDoc.ref, {
+                        transaction.update(gRef, {
                             messageCount: admin.firestore.FieldValue.increment(1),
                             lastMessageAt: announceTime,
                             lastMessageByNickname: botName,
@@ -295,25 +220,97 @@ export class NoteService {
                     sharedMessageIds,
                     newStreak, 
                     streakUpdated, 
-                    nickname: userNickname, 
-                    userToGroupEntries 
+                    nickname: userNickname,
+                    timeZone
                 };
             }) as { 
                 personalNoteId: string, 
                 sharedMessageIds: Record<string, string>, 
                 newStreak: number, 
                 streakUpdated: boolean, 
-                nickname: string, 
-                userToGroupEntries: [string, string][] 
+                nickname: string,
+                timeZone: string
             };
+
+            // Post-transaction Async Operations (Reads outside transaction)
+            const userToGroupEntries: [string, string][] = [];
+            const groupsToSync = Object.keys(result.sharedMessageIds);
+            
+            try {
+                if (groupsToSync.length > 0) {
+                    const groupDocs = await db.getAll(...groupsToSync.map(gid => db.collection('groups').doc(gid))) as admin.firestore.DocumentSnapshot<GroupDocument>[];
+                    groupDocs.forEach(gSnap => {
+                        if (gSnap.exists) {
+                            const gData = gSnap.data()!;
+                            const members = gData.members || [];
+                            members.forEach((mUid: string) => {
+                                if (mUid !== uid) userToGroupEntries.push([mUid, gSnap.id]);
+                            });
+                        }
+                    });
+                }
+            } catch (err) {
+                console.error('[NoteService] Error fetching group members for notification:', err);
+            }
+
+            // Async Background Sync for Unity and Date Reset
+            const backgroundPromise = Promise.all(groupsToSync.map(async (gid) => {
+                try {
+                    const groupRef = db.collection('groups').doc(gid);
+                    const gSnap = await groupRef.get();
+                    if (!gSnap.exists) return;
+
+                    const gData = gSnap.data() as GroupDocument;
+                    const groupTimeZone = gData.timeZone || result.timeZone || 'UTC';
+                    const groupToday = formatDateInTimeZone(new Date(), groupTimeZone);
+                    
+                    const currentActivityDate = gData.dailyActivity?.date || '';
+                    const normCurrent = normalizeDateString(currentActivityDate);
+                    const normToday = normalizeDateString(groupToday);
+
+                    const groupUpdate: any = {};
+                    let activeMembers = gData.dailyActivity?.activeMembers || [];
+                    if (!activeMembers.includes(uid)) {
+                        activeMembers = [...activeMembers, uid];
+                    }
+
+                    if (normCurrent !== '' && normToday > normCurrent) {
+                        groupUpdate.dailyActivity = { date: groupToday, activeMembers: [uid] };
+                    } else if (normCurrent === '' || normToday === normCurrent) {
+                        groupUpdate['dailyActivity.activeMembers'] = admin.firestore.FieldValue.arrayUnion(uid);
+                        if (normCurrent === '') groupUpdate['dailyActivity.date'] = groupToday;
+                    } else {
+                        console.warn(`[NoteService] Future date detected for group ${gid}: ${normCurrent}. Resetting to ${normToday}.`);
+                        groupUpdate.dailyActivity = { date: groupToday, activeMembers: [uid] };
+                    }
+
+                    // Simulate updated group state for unity calculation
+                    const simulatedGroup = {
+                        ...gData,
+                        dailyActivity: {
+                            date: groupUpdate.dailyActivity?.date || gData.dailyActivity?.date || groupToday,
+                            activeMembers: groupUpdate.dailyActivity?.activeMembers || activeMembers
+                        }
+                    };
+                    
+                    groupUpdate.unityPercentage = calculateUnityPercentage(simulatedGroup as unknown as Group, [], new Date());
+                    
+                    await groupRef.update(groupUpdate);
+                } catch (err) {
+                    console.error(`[NoteService] Unity update failed for group ${gid}:`, err);
+                }
+            })).catch(err => {
+                console.error('[NoteService] Background group updates failed:', err);
+                return null;
+            });
 
             // Push Notifications
             NotificationService.notifyNotePosted({
-                groupIds: [...new Set(result.userToGroupEntries.map(e => e[1]))],
+                groupIds: [...new Set(userToGroupEntries.map(e => e[1]))],
                 senderUid: uid,
                 senderNickname: result.nickname,
                 language: language || 'en',
-                userToGroupMapEntries: result.userToGroupEntries
+                userToGroupMapEntries: userToGroupEntries
             });
 
             return {
@@ -321,7 +318,8 @@ export class NoteService {
                 sharedMessageIds: result.sharedMessageIds,
                 newStreak: result.newStreak,
                 streakUpdated: result.streakUpdated,
-                nickname: result.nickname
+                nickname: result.nickname,
+                backgroundPromise
             };
 
         } catch (error) {

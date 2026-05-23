@@ -50,7 +50,8 @@ export const deleteMessageSchema = z.object({
 export const updateReadStatusSchema = z.object({
     token: z.string().min(1).optional(),
     groupId: z.string().min(1),
-    readMessageCount: z.number().int().min(0)
+    readMessageCount: z.number().int().min(0),
+    forceRecount: z.boolean().optional()
 });
 
 export const announceUnitySchema = z.object({
@@ -134,13 +135,17 @@ export const postMessageSchema = z.object({
         text: z.string(),
         isNote: z.boolean().optional()
     }).optional().nullable(),
-    optimisticId: z.string().optional()
+    optimisticId: z.string().optional(),
+    nickname: z.string().optional(),
+    photoURL: z.string().optional().nullable()
 });
 
 export const sendCheerSchema = z.object({
     targetUid: z.string().min(1),
     groupId: z.string().min(1),
-    language: z.enum(supportedLanguages).optional()
+    language: z.enum(supportedLanguages).optional(),
+    senderNickname: z.string().optional(),
+    senderTimeZone: z.string().optional()
 });
 
 export const updateKickThresholdSchema = z.object({

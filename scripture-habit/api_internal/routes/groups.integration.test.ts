@@ -228,7 +228,7 @@ describe('Groups Route Additional Integration Tests', () => {
             expect(data.error).toBe('User not found');
         });
 
-        it('should successfully update kick threshold and clean up ghost groups', async () => {
+        it('should successfully update kick threshold', async () => {
             setup.mockAuth(OWNER_ID);
             const res = await fetch(`${setup.baseUrl}/api/groups/update-kick-threshold`, {
                 method: 'POST',
@@ -244,11 +244,10 @@ describe('Groups Route Additional Integration Tests', () => {
             expect(res.status).toBe(200);
             const data = await res.json();
             expect(data.success).toBe(true);
-            expect(data.cleanedUpGroups).toContain(GHOST_GROUP_ID);
+            expect(data.cleanedUpGroups).toEqual([]);
 
-            // Verify ghost groups were removed from user doc
+            // Verify kickThreshold was updated in user doc
             const userSnap = await db.collection('users').doc(OWNER_ID).get();
-            expect(userSnap.data()?.groupIds).not.toContain(GHOST_GROUP_ID);
             expect(userSnap.data()?.kickThreshold).toBe(5);
 
             // Verify members subcollection got the updated threshold

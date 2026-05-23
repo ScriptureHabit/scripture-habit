@@ -2,7 +2,7 @@ import express, { Response } from 'express';
 import { admin, db } from '../lib/firebase-admin.js';
 import { verifyAppCheck, authenticate, requireEmailVerified, AuthenticatedRequest } from '../lib/middleware.js';
 import { postNoteSchema, postMessageSchema, sendCheerSchema, deleteNoteSchema, deleteMessageSchema } from '../lib/schemas.js';
-import { notifyGroupMembers, getUserFcmTokens, sendPushNotification, cleanupTokens } from '../lib/notifications.js';
+import { notifyGroupMembers, getUserFcmTokens, sendPushNotification, cleanupTokens, getUserFcmTokensAndLanguage } from '../lib/notifications.js';
 import { t } from '../lib/i18n.js';
 import { waitUntil } from '@vercel/functions';
 
@@ -156,7 +156,7 @@ router.post('/post-message', authenticate, verifyAppCheck, async (req: Authentic
     const validation = postMessageSchema.safeParse(req.body);
     if (!validation.success) return res.status(400).json({ error: 'Invalid input' });
 
-    const { groupId, text, replyTo, optimisticId } = validation.data;
+    const { groupId, text, replyTo, optimisticId, nickname, photoURL } = validation.data;
     try {
         const uid = req.user!.uid;
         const result = await MessageService.postMessage({
@@ -169,7 +169,9 @@ router.post('/post-message', authenticate, verifyAppCheck, async (req: Authentic
                 text: replyTo.text,
                 isNote: !!replyTo.isNote
             } : undefined,
-            optimisticId
+            optimisticId,
+            nickname,
+            photoURL
         });
 
         // Notifications: waitUntil() keeps the function alive after response
@@ -191,7 +193,7 @@ router.post('/post-message', authenticate, verifyAppCheck, async (req: Authentic
 
 // Toggle Reaction (Atomic & Scalable)
 router.post('/toggle-reaction', authenticate, verifyAppCheck, async (req: AuthenticatedRequest, res: Response, next) => {
-    const { groupId, messageId, emoji = '👍' } = req.body;
+    const { groupId, messageId, emoji = '👍', nickname, photoURL } = req.body;
     const uid = req.user!.uid;
 
     if (!groupId || !messageId) return res.status(400).json({ error: 'Missing params' });
@@ -201,7 +203,10 @@ router.post('/toggle-reaction', authenticate, verifyAppCheck, async (req: Authen
             uid,
             groupId,
             messageId,
-            emoji
+            emoji,
+            nickname,
+            photoURL,
+            skipGroupCheck: true
         });
 
         res.json({ success: true, ...result });
@@ -281,7 +286,7 @@ router.post('/send-cheer', authenticate, verifyAppCheck, async (req: Authenticat
     if (!validation.success) return res.status(400).json({ error: 'Invalid input' });
 
     try {
-        const { targetUid, groupId, language } = validation.data;
+        const { targetUid, groupId, language, senderNickname, senderTimeZone } = validation.data;
         const senderUid = req.user!.uid;
 
         if (senderUid === targetUid) return res.status(400).json({ error: 'Self cheer' });
@@ -289,7 +294,11 @@ router.post('/send-cheer', authenticate, verifyAppCheck, async (req: Authenticat
         const result = await MessageService.sendCheer({
             senderUid,
             targetUid,
-            groupId
+            groupId,
+            senderNickname,
+            senderTimeZone,
+            skipGroupCheck: true,
+            skipTargetUserCheck: true
         });
 
         if (result.alreadySent) return res.status(429).json({ error: 'alreadySent' });
@@ -299,9 +308,9 @@ router.post('/send-cheer', authenticate, verifyAppCheck, async (req: Authenticat
         waitUntil(
             (async () => {
                 try {
-                    const tokens = await getUserFcmTokens(targetUid);
+                    const { tokens, language: targetLangVal } = await getUserFcmTokensAndLanguage(targetUid);
                     if (tokens.length > 0) {
-                        const targetLang = ((result.targetData?.language as string) || 'en').split('-')[0].toLowerCase();
+                        const targetLang = (targetLangVal || 'en').split('-')[0].toLowerCase();
                         const lang = ((language as string) || targetLang || 'en').split('-')[0].toLowerCase();
 
                         const resultNotification = await sendPushNotification(tokens, {

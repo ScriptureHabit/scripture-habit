@@ -220,7 +220,8 @@ describe('Group Management & Lifecycle Integration', () => {
             expect(calculateUnityPercentage(snap1.data() as Group)).toBe(0);
 
             // Post note
-            await NoteService.postNote({ uid, messageText: 'Post', scripture: 'S1', comment: '', shareOption: 'current' });
+            const postRes = await NoteService.postNote({ uid, messageText: 'Post', scripture: 'S1', comment: '', shareOption: 'current' });
+            if (postRes.backgroundPromise) await postRes.backgroundPromise;
 
             // After post: 100%
             const snap2 = await db.collection('groups').doc(gid).get();
@@ -244,7 +245,7 @@ describe('Group Management & Lifecycle Integration', () => {
             await fetch(`${setup.baseUrl}/api/groups/update-read-status`, {
                 method: 'POST',
                 headers: { 'Authorization': 'Bearer token', 'Content-Type': 'application/json' },
-                body: JSON.stringify({ groupId: gid, readMessageCount: 0 })
+                body: JSON.stringify({ groupId: gid, readMessageCount: 0, forceRecount: true })
             });
 
             const snap = await db.collection('groups').doc(gid).get();

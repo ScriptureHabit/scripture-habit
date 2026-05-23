@@ -46,7 +46,8 @@ export const useCheerSystem = (
       await apiClient.post('/api/groups/send-cheer', {
         targetUid: cheerTarget.id,
         groupId,
-        senderNickname: userData.nickname
+        senderNickname: userData.nickname,
+        senderTimeZone: userData.timeZone
       });
 
       toast.success(t('groupChat.cheerSent')?.replace('{nickname}', cheerTarget.nickname || ''));

@@ -154,7 +154,6 @@ router.post('/join-group', authenticate, requireEmailVerified, verifyAppCheck, a
             // TRUTH: Execute all READS before any WRITES
             const groupDoc = await transaction.get(groupRef);
             const userDoc = await transaction.get(userRef);
-            const totalMessages = await CounterService.getCountInTransaction(transaction, groupRef, 'messageCount');
 
             if (!groupDoc.exists) throw new Error('Group not found.');
             if (!userDoc.exists) throw new Error('User not found.');
@@ -162,6 +161,8 @@ router.post('/join-group', authenticate, requireEmailVerified, verifyAppCheck, a
             const gid = groupDoc.id;
             const gData = groupDoc.data()! as GroupDocument;
             const userData = userDoc.data()! as UserDocument;
+
+            const totalMessages = gData.messageCount || 0;
 
             const members = gData.members || [];
             const maxMembers = gData.maxMembers || 500;
@@ -283,20 +284,11 @@ router.post('/leave-group', authenticate, verifyAppCheck, async (req: Authentica
 
     try {
         await db.runTransaction(async (transaction) => {
-            const groupRef = db.collection('groups').doc(groupId);
             const userRef = db.collection('users').doc(uid);
-            const gSnap = await transaction.get(groupRef);
             const uSnap = await transaction.get(userRef);
 
-            if (!gSnap.exists) throw new Error('Group not found.');
-            const gData = gSnap.data()! as GroupDocument;
-            if (!gData) throw new Error('Group data unavailable.');
-            const members = gData.members || [];
-
-            if (!members.includes(uid)) throw new Error('Not a member.');
-
+            if (!uSnap.exists) throw new Error('User not found.');
             const uData = uSnap.data()! as UserDocument;
-            if (!uData) throw new Error('User data unavailable.');
 
             // Use centralized utility for the heavy lifting
             await removeMemberFromGroup(transaction, groupId, uid, {
@@ -338,10 +330,8 @@ router.post('/update-read-status', authenticate, verifyAppCheck, async (req: Aut
     try {
         const groupRef = db.collection('groups').doc(groupId);
         const userRef = db.collection('users').doc(uid);
-
-        const [groupSnap, userSnap] = await Promise.all([groupRef.get(), userRef.get()]);
+        const groupSnap = await groupRef.get();
         if (!groupSnap.exists) return res.status(404).json({ error: 'Group not found' });
-        if (!userSnap.exists) return res.status(404).json({ error: 'User not found' });
 
         const groupData = groupSnap.data()! as GroupDocument;
         if (!groupData) return res.status(404).json({ error: 'Group not found' });
@@ -351,9 +341,11 @@ router.post('/update-read-status', authenticate, verifyAppCheck, async (req: Aut
             return res.status(403).json({ error: 'Forbidden' });
         }
 
-        // TRUTH RECOVERY: Use the archive-aware recount method instead of simple aggregation.
-        // This heals the user's view if the counter was previously corrupted or reset by archive deletes.
-        const totalMessages = await CounterService.recountMessageCountWithArchive(groupRef);
+        // TRUTH RECOVERY: Use the archive-aware recount method only if forced.
+        // Otherwise, rely on the cached 'messageCount' on the group document.
+        const totalMessages = validation.data.forceRecount
+            ? await CounterService.recountMessageCountWithArchive(groupRef)
+            : (groupData.messageCount || 0);
 
 
         const batch = db.batch();
@@ -538,43 +530,16 @@ router.post('/update-kick-threshold', authenticate, verifyAppCheck, async (req: 
         const userData = userDoc.data()! as UserDocument;
         const groupIds = userData.groupIds || (userData.groupId ? [userData.groupId] : []);
 
-        // TRUTH: If the user is part of multiple groups, we need to handle the case where some might be deleted.
-        // We fetch all group documents to verify their existence before batch updating.
-        const existingGroupIds: string[] = [];
-        const missingGroupIds: string[] = [];
-
-        if (groupIds.length > 0) {
-            const groupRefs = groupIds.map(gid => db.collection('groups').doc(gid));
-            const groupSnaps = await db.getAll(...groupRefs);
-
-            groupSnaps.forEach((snap, index) => {
-                if (snap.exists) {
-                    existingGroupIds.push(groupIds[index]);
-                } else {
-                    missingGroupIds.push(groupIds[index]);
-                    console.warn(`[Cleanup] Found ghost group reference: ${groupIds[index]} for user ${uid}`);
-                }
-            });
-        }
-
         const userUpdate: admin.firestore.UpdateData<UserDocument> = {
             kickThreshold: threshold,
             hasSetKickThreshold: true
         };
 
-        // If we found ghost groups, clean them up from the user's record
-        if (missingGroupIds.length > 0) {
-            userUpdate.groupIds = admin.firestore.FieldValue.arrayRemove(...missingGroupIds);
-            if (userData.groupId && missingGroupIds.includes(userData.groupId)) {
-                userUpdate.groupId = admin.firestore.FieldValue.delete();
-            }
-        }
-
         await userRef.update(userUpdate);
 
-        if (existingGroupIds.length > 0) {
+        if (groupIds.length > 0) {
             const batch = db.batch();
-            existingGroupIds.forEach((gid: string) => {
+            groupIds.forEach((gid: string) => {
                 const gRef = db.collection('groups').doc(gid);
 
                 // Update the new scalable subcollection
@@ -583,7 +548,6 @@ router.post('/update-kick-threshold', authenticate, verifyAppCheck, async (req: 
                 }, { merge: true });
 
                 // Also update the legacy map for backward compatibility in dashboards
-                // This is safe because existingGroupIds only contains IDs that actually exist.
                 batch.set(gRef, {
                     memberKickThresholds: {
                         [uid]: threshold
@@ -593,7 +557,7 @@ router.post('/update-kick-threshold', authenticate, verifyAppCheck, async (req: 
             await batch.commit();
         }
 
-        res.json({ success: true, cleanedUpGroups: missingGroupIds });
+        res.json({ success: true, cleanedUpGroups: [] });
     } catch (error) {
         let message = 'Internal Server Error';
         if (error instanceof Error) {

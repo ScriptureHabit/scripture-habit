@@ -81,7 +81,9 @@ export const useMessageActions = (
         groupId,
         text: text.trim(),
         replyTo,
-        optimisticId
+        optimisticId,
+        nickname: userData?.nickname,
+        photoURL: userData?.photoURL
       });
 
       // 2. Resolve Optimistic Message with real ID
@@ -215,7 +217,9 @@ export const useMessageActions = (
       await apiClient.post('/api/groups/toggle-reaction', {
         groupId,
         messageId: message.id,
-        emoji
+        emoji,
+        nickname: userData?.nickname,
+        photoURL: userData?.photoURL
       });
 
     } catch (error) {

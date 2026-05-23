@@ -1,19 +1,28 @@
 import { db, messaging, admin } from './firebase-admin.js';
 // Using centralized i18n for templates now
 
-export async function getUserFcmTokens(uid: string): Promise<string[]> {
+export async function getUserFcmTokensAndLanguage(uid: string): Promise<{ tokens: string[], language?: string }> {
     const tokens: string[] = [];
     const userDoc = await db.collection('users').doc(uid).get();
     const userData = userDoc.data();
-    if (userDoc.exists && userData && userData.fcmTokens) {
-        tokens.push(...(userData.fcmTokens as string[]));
+    let language: string | undefined;
+    if (userDoc.exists && userData) {
+        language = userData.language;
+        if (userData.fcmTokens) {
+            tokens.push(...(userData.fcmTokens as string[]));
+        }
     }
     const privateDoc = await db.collection('users').doc(uid).collection('private').doc('tokens').get();
     const privateData = privateDoc.data();
     if (privateDoc.exists && privateData && privateData.fcmTokens) {
         tokens.push(...(privateData.fcmTokens as string[]));
     }
-    return [...new Set(tokens)];
+    return { tokens: [...new Set(tokens)], language };
+}
+
+export async function getUserFcmTokens(uid: string): Promise<string[]> {
+    const res = await getUserFcmTokensAndLanguage(uid);
+    return res.tokens;
 }
 
 interface PushPayload {

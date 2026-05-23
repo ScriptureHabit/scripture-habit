@@ -14,6 +14,8 @@ export interface PostMessageParams {
         isNote: boolean;
     } | string | null;
     optimisticId?: string;
+    nickname?: string;
+    photoURL?: string | null;
 }
 
 export interface ToggleReactionParams {
@@ -21,6 +23,9 @@ export interface ToggleReactionParams {
     groupId: string;
     messageId: string;
     emoji?: string;
+    nickname?: string;
+    photoURL?: string | null;
+    skipGroupCheck?: boolean;
 }
 
 export interface EditMessageParams {
@@ -40,6 +45,10 @@ export interface SendCheerParams {
     senderUid: string;
     targetUid: string;
     groupId: string;
+    senderNickname?: string;
+    senderTimeZone?: string;
+    skipGroupCheck?: boolean;
+    skipTargetUserCheck?: boolean;
 }
 
 export class MessageService {
@@ -50,24 +59,32 @@ export class MessageService {
             const userRef = db.collection('users').doc(uid);
             const groupRef = db.collection('groups').doc(groupId);
             
-            const [uSnap, gSnap] = await Promise.all([
-                transaction.get(userRef),
-                transaction.get(groupRef)
-            ]);
+            let nickname = params.nickname;
+            let photoURL = params.photoURL;
 
-            if (!uSnap.exists || !gSnap.exists) throw new Error('Not found.');
-            const gData = gSnap.data() as GroupDocument;
-            const currentTotalNum = Number(gData.messageCount || 0);
-            const newTotalCount = currentTotalNum + 1;
-            
+            let uSnap: admin.firestore.DocumentSnapshot | null = null;
+            const needsUserRead = !nickname || photoURL === undefined;
+            if (needsUserRead) {
+                uSnap = await transaction.get(userRef);
+                if (!uSnap.exists) throw new Error('Not found.');
+            }
+
             const msgRef = groupRef.collection('messages').doc();
-            const userData = uSnap.data() as UserDocument;
+            
+            if (needsUserRead && uSnap) {
+                const userData = uSnap.data() as UserDocument;
+                nickname = nickname || userData.nickname || 'Member';
+                photoURL = photoURL !== undefined ? photoURL : (userData.photoURL || '');
+            } else {
+                nickname = nickname || 'Member';
+                photoURL = photoURL !== undefined ? photoURL : '';
+            }
             
             const msgData: MessageDocument = {
                 text,
                 senderId: uid,
-                senderNickname: userData.nickname || 'Member',
-                senderPhotoURL: userData.photoURL || '',
+                senderNickname: nickname,
+                senderPhotoURL: photoURL,
                 createdAt: admin.firestore.FieldValue.serverTimestamp() as unknown as FirestoreTimestamp,
                 isNote: false,
                 isEntry: false,
@@ -87,7 +104,7 @@ export class MessageService {
             const updatePayload = {
                 messageCount: admin.firestore.FieldValue.increment(1),
                 lastMessageAt: admin.firestore.FieldValue.serverTimestamp(),
-                lastMessageByNickname: userData.nickname || 'Member',
+                lastMessageByNickname: nickname,
                 lastMessageByUid: uid,
                 [`memberLastReadAt.${uid}`]: admin.firestore.FieldValue.serverTimestamp(),
                 [`memberLastActive.${uid}`]: admin.firestore.FieldValue.serverTimestamp()
@@ -98,22 +115,22 @@ export class MessageService {
             const memberRef = groupRef.collection('members').doc(uid);
             transaction.set(memberRef, {
                 uid,
-                nickname: userData.nickname || 'Member',
-                photoURL: userData.photoURL || '',
+                nickname: nickname,
+                photoURL: photoURL,
                 lastActiveAt: admin.firestore.FieldValue.serverTimestamp(),
                 lastPostAt: admin.firestore.FieldValue.serverTimestamp(),
                 lastReadAt: admin.firestore.FieldValue.serverTimestamp(),
-                readMessageCount: newTotalCount
+                readMessageCount: admin.firestore.FieldValue.increment(1)
             }, { merge: true });
 
             const userGS = userRef.collection('groupStates').doc(groupId);
             transaction.set(userGS, { 
-                readMessageCount: newTotalCount, 
+                readMessageCount: admin.firestore.FieldValue.increment(1), 
                 lastReadAt: admin.firestore.FieldValue.serverTimestamp(), 
                 lastActiveAt: admin.firestore.FieldValue.serverTimestamp()
             }, { merge: true });
 
-            return { messageId: msgRef.id, nickname: userData.nickname, members: gData.members };
+            return { messageId: msgRef.id, nickname: nickname, members: null };
         });
     }
 
@@ -125,9 +142,27 @@ export class MessageService {
             const messageRef = db.collection('groups').doc(groupId).collection('messages').doc(messageId);
             const groupRef = db.collection('groups').doc(groupId);
 
-            const [uSnap, mSnap, gSnap] = await transaction.getAll(userRef, messageRef, groupRef);
+            let nickname = params.nickname;
+            let photoURL = params.photoURL;
 
-            if (!mSnap.exists || !gSnap.exists || !uSnap.exists) {
+            const refsToGet = [messageRef];
+            const needsUserRead = !nickname || photoURL === undefined;
+            const needsGroupRead = !params.skipGroupCheck;
+
+            if (needsGroupRead) {
+                refsToGet.push(groupRef);
+            }
+            if (needsUserRead) {
+                refsToGet.push(userRef);
+            }
+
+            const snaps = await transaction.getAll(...refsToGet);
+            const mSnap = snaps[0];
+            
+            let gSnap = needsGroupRead ? snaps[1] : null;
+            let uSnap = needsUserRead ? (needsGroupRead ? snaps[2] : snaps[1]) : null;
+
+            if (!mSnap.exists || (needsGroupRead && !gSnap?.exists) || (needsUserRead && !uSnap?.exists)) {
                 if (!mSnap.exists) {
                     // Check if archived
                     const bucketsSnap = await db.collection('groups').doc(groupId).collection('message_buckets')
@@ -138,17 +173,25 @@ export class MessageService {
                 }
                 throw new Error('Not found');
             }
-            const gData = gSnap.data() as GroupDocument;
-            if (!gData || !(gData.members || []).includes(uid)) throw new Error('Forbidden');
+
+            if (needsGroupRead && gSnap) {
+                const gData = gSnap.data() as GroupDocument;
+                if (!gData || !(gData.members || []).includes(uid)) throw new Error('Forbidden');
+            }
 
             const mData = mSnap.data() as MessageDocument;
             const reactions = mData.reactions || {};
             const uids: string[] = reactions[emoji] || [];
             const hasReacted = uids.includes(uid);
 
-            const uData = uSnap.data() as UserDocument;
-            const newUserNickname = uData?.nickname || 'Member';
-            const newUserPhotoURL = uData?.photoURL || null;
+            if (needsUserRead && uSnap) {
+                const uData = uSnap.data() as UserDocument;
+                nickname = nickname || uData?.nickname || 'Member';
+                photoURL = photoURL !== undefined ? photoURL : (uData?.photoURL || null);
+            } else {
+                nickname = nickname || 'Member';
+                photoURL = photoURL !== undefined ? photoURL : null;
+            }
 
             const newUids = hasReacted 
                 ? uids.filter(id => id !== uid) 
@@ -158,7 +201,7 @@ export class MessageService {
             if (hasReacted) {
                 newPreviews = newPreviews.filter((p: ReactionPreview) => p.uid !== uid);
             } else {
-                const myPreview = { uid, nickname: newUserNickname, photoURL: newUserPhotoURL };
+                const myPreview = { uid, nickname: nickname || 'Member', photoURL: photoURL || null };
                 newPreviews = [myPreview, ...newPreviews].slice(0, 50);
             }
 
@@ -424,11 +467,16 @@ export class MessageService {
     static async sendCheer(params: SendCheerParams) {
         const { senderUid, targetUid, groupId } = params;
 
-        const senderDoc = await db.collection('users').doc(senderUid).get();
-        const senderData = senderDoc.data() as UserDocument || {};
-        const senderNickname = senderData.nickname || 'Member';
+        let senderNickname = params.senderNickname;
+        let senderTimeZone = params.senderTimeZone;
 
-        const senderTimeZone = senderData.timeZone || 'UTC';
+        if (!senderNickname || !senderTimeZone) {
+            const senderDoc = await db.collection('users').doc(senderUid).get();
+            const senderData = senderDoc.data() as UserDocument || {};
+            senderNickname = senderNickname || senderData.nickname || 'Member';
+            senderTimeZone = senderTimeZone || senderData.timeZone || 'UTC';
+        }
+
         let today;
         try {
             today = new Date().toLocaleDateString('sv-SE', { timeZone: senderTimeZone });
@@ -441,18 +489,36 @@ export class MessageService {
 
         return await db.runTransaction(async (transaction) => {
             const groupRef = db.collection('groups').doc(groupId);
-            const gSnap = await transaction.get(groupRef);
-            if (!gSnap.exists) throw new Error('Group not found.');
-            const gData = gSnap.data() as GroupDocument;
-            const gMembers: string[] = gData.members || [];
+            const targetUserRef = db.collection('users').doc(targetUid);
+            
+            const refsToGet = [cheerRef];
+            const needsTargetUserRead = !params.skipTargetUserCheck;
+            if (needsTargetUserRead) {
+                refsToGet.push(targetUserRef);
+            }
+            const needsGroupRead = !params.skipGroupCheck;
+            if (needsGroupRead) {
+                refsToGet.push(groupRef);
+            }
 
-            if (!gMembers.includes(senderUid) || !gMembers.includes(targetUid)) throw new Error('Forbidden.');
+            const snaps = await transaction.getAll(...refsToGet);
+            const existing = snaps[0];
+            
+            let snapIdx = 1;
+            const targetUserDoc = needsTargetUserRead ? snaps[snapIdx++] : null;
+            const gSnap = needsGroupRead ? snaps[snapIdx++] : null;
 
-            const existing = await transaction.get(cheerRef);
+            if (needsGroupRead && gSnap) {
+                if (!gSnap.exists) throw new Error('Group not found.');
+                const gData = gSnap.data() as GroupDocument;
+                const gMembers: string[] = gData.members || [];
+                if (!gMembers.includes(senderUid) || !gMembers.includes(targetUid)) throw new Error('Forbidden.');
+            }
+
             if (existing.exists) return { alreadySent: true, targetData: null };
-
-            const targetUserDoc = await transaction.get(db.collection('users').doc(targetUid));
-            if (!targetUserDoc.exists) throw new Error('Target not found.');
+            if (needsTargetUserRead && targetUserDoc) {
+                if (!targetUserDoc.exists) throw new Error('Target not found.');
+            }
 
             transaction.set(cheerRef, { 
                 senderUid, 
@@ -462,11 +528,15 @@ export class MessageService {
                 timestamp: admin.firestore.FieldValue.serverTimestamp() 
             });
 
-            transaction.update(db.collection('users').doc(targetUid), {
+            transaction.update(targetUserRef, {
                 cheersReceived: admin.firestore.FieldValue.increment(1)
             });
 
-            return { alreadySent: false, targetData: targetUserDoc.data() as UserDocument, senderNickname };
+            return { 
+                alreadySent: false, 
+                targetData: targetUserDoc ? (targetUserDoc.data() as UserDocument) : null, 
+                senderNickname 
+            };
         });
     }
 }

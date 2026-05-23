@@ -49,7 +49,7 @@ const verifyCronSecret = (req: Request, res: Response, next: NextFunction) => {
 router.all('/check-inactive-users', verifyCronSecret, async (_req: Request, res: Response) => {
     console.log('[Cron] Starting inactivity check via InactivityService...');
     try {
-        const stats = await InactivityService.batchCheckInactivity(100);
+        const stats = await InactivityService.batchCheckInactivity(100, true);
         res.json({
             message: 'Inactivity check complete.',
             stats
@@ -412,11 +412,12 @@ router.all('/reset-unity-at-midnight', verifyCronSecret, async (_req: Request, r
     console.log('[Cron] Starting unity percentage midnight reset...');
     try {
         const now = new Date();
+        const utcTodayStr = now.toISOString().split('T')[0];
         
-        // Get all groups that need reset (where dailyActivity date is not today)
+        // Get all groups that need reset (where dailyActivity date is in the past compared to UTC today)
         // We process in batches to avoid timeout
         const groupsSnap = await db.collection('groups')
-            .where('dailyActivity.date', '!=', '')
+            .where('dailyActivity.date', '<', utcTodayStr)
             .limit(500)
             .get();
         
