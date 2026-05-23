@@ -13,9 +13,6 @@ interface LanguageOption {
     flag: string;
 }
 
-interface FeatureOption {
-    key: string;
-}
 
 const LandingPage: FC = () => {
     const { t, language, setLanguage } = useLanguage();
@@ -37,13 +34,6 @@ const LandingPage: FC = () => {
 
     const currentLang = languages.find(l => l.code === language) || languages[0];
 
-    const features: FeatureOption[] = [
-        { key: 'sharing' },
-        { key: 'rule' },
-        { key: 'ai' },
-        { key: 'link' },
-        { key: 'recommend' }
-    ];
 
     return (
         <div className="LandingPageRoot">
@@ -85,6 +75,13 @@ const LandingPage: FC = () => {
 
                 {/* Hero Section */}
                 <header className="hero-section">
+                    <div className="hero-mascot-container">
+                        <div className="mascot-bubble">
+                            <span className="mascot-bubble-text">{t('landing.hero.mascotBubble')}</span>
+                            <div className="mascot-bubble-tail"></div>
+                        </div>
+                        <img src="/images/mascot.png" alt="Welcome Bird" className="hero-mascot-img" />
+                    </div>
                     <div className="hero-content">
                         <h1 className="hero-title">{t('landing.hero.title')}</h1>
                         <p className="hero-subtitle">{t('landing.hero.subtitle')}</p>
@@ -97,90 +94,64 @@ const LandingPage: FC = () => {
                     </div>
                 </header>
 
-                {/* Features Section */}
-                <section className="features-section">
-                    <h2 className="section-title">{t('landing.features.title')}</h2>
-                    <div className="features-grid">
-                        {features.map((feature) => (
-                            <div key={feature.key} className="feature-card">
-                                <h3 className="feature-name">{t(`landing.features.${feature.key}.title`)}</h3>
-                                <p className="feature-desc">{t(`landing.features.${feature.key}.desc`)}</p>
+                {/* Concept Section (Minchalle Style) */}
+                <section className="concept-section">
+                    <h2 className="section-title">{t('landing.concept.title')}</h2>
+                    <p className="concept-subtitle">{t('landing.concept.subtitle')}</p>
+                    
+                    <div className="concept-comparison-grid">
+                        <div className="concept-card concept-problem">
+                            <div className="concept-card-badge problem-badge">{t('landing.concept.problemBadge')}</div>
+                            <h3 className="concept-card-title">{t('landing.concept.card1Title')}</h3>
+                            <div className="concept-card-img-wrapper">
+                                <img src="/images/concept_alone.png" alt="Studying alone" className="concept-card-img" />
                             </div>
-                        ))}
-                    </div>
-                </section>
-
-                {/* Use Cases Section */}
-                <section className="use-cases-section">
-                    <h2 className="section-title">{t('landing.useCases.title')}</h2>
-                    <div className="use-cases-grid">
-                        <div className="use-case-card">
-                            <h3 className="use-case-persona">{t('landing.useCases.teacher.title')}</h3>
-                            <div className="comparison-container">
-                                <div className="comparison-box problem">
-                                    <span className="comparison-label">{t('landing.useCases.status.problem')}</span>
-                                    <p className="comparison-text">{t('landing.useCases.teacher.problem')}</p>
-                                </div>
-                                <div className="comparison-arrow">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
-                                </div>
-                                <div className="comparison-box solution">
-                                    <span className="comparison-label solution-label">{t('landing.useCases.status.solution')}</span>
-                                    <p className="comparison-text">{t('landing.useCases.teacher.solution')}</p>
-                                </div>
-                            </div>
+                            <p className="concept-card-text">{t('landing.concept.card1Text')}</p>
                         </div>
-
-                        <div className="use-case-card">
-                            <h3 className="use-case-persona">{t('landing.useCases.student.title')}</h3>
-                            <div className="comparison-container">
-                                <div className="comparison-box problem">
-                                    <span className="comparison-label">{t('landing.useCases.status.problem')}</span>
-                                    <p className="comparison-text">{t('landing.useCases.student.problem')}</p>
-                                </div>
-                                <div className="comparison-arrow">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
-                                </div>
-                                <div className="comparison-box solution">
-                                    <span className="comparison-label solution-label">{t('landing.useCases.status.solution')}</span>
-                                    <p className="comparison-text">{t('landing.useCases.student.solution')}</p>
-                                </div>
+                        <div className="concept-arrow-divider">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                        </div>
+                        <div className="concept-card concept-solution">
+                            <div className="concept-card-badge solution-badge">{t('landing.concept.solutionBadge')}</div>
+                            <h3 className="concept-card-title">{t('landing.concept.card2Title')}</h3>
+                            <div className="concept-card-img-wrapper">
+                                <img src="/images/concept_together.png" alt="Studying together" className="concept-card-img" />
                             </div>
+                            <p className="concept-card-text">{t('landing.concept.card2Text')}</p>
                         </div>
                     </div>
                 </section>
 
-                {/* Unity Section */}
-                <section className="unity-section">
-                    <div className="unity-content">
-                        <div className="unity-visual">
-                            <div className="sun-glow"></div>
-                            <div className="unity-percentage">100%</div>
+                {/* Steps Section */}
+                <section className="steps-section">
+                    <h2 className="section-title">{t('landing.steps.title')}</h2>
+                    <div className="steps-container">
+                        <div className="step-card">
+                            <div className="step-number">1</div>
+                            <h3 className="step-title">{t('landing.steps.step1Title')}</h3>
+                            <p className="step-desc">{t('landing.steps.step1Desc')}</p>
+                            <img src="/images/concept_together.png" alt="Join a team" className="step-card-img step-img-together" />
                         </div>
-                        <div className="unity-text">
-                            <h2 className="section-title">{t('landing.unity.title')}</h2>
-                            <p className="section-desc">{t('landing.unity.desc')}</p>
+                        <div className="step-line"></div>
+                        <div className="step-card">
+                            <div className="step-number">2</div>
+                            <h3 className="step-title">{t('landing.steps.step2Title')}</h3>
+                            <p className="step-desc">{t('landing.steps.step2Desc')}</p>
+                            <img src="/images/mascot.png" alt="Share a thought" className="step-card-img step-img-mascot" />
                         </div>
                     </div>
                 </section>
 
-                {/* SEO Content Section */}
+
+
+
+
+
+                {/* FAQ Section */}
                 <section className="seo-explanation-section">
-                    <div className="seo-grid">
-                        <div className="seo-item">
-                            <h2 className="seo-h2">{t('landing.seoContent.why.title')}</h2>
-                            <p className="seo-p">{t('landing.seoContent.why.text')}</p>
-                        </div>
-                        <div className="seo-item">
-                            <h2 className="seo-h2">{t('landing.seoContent.community.title')}</h2>
-                            <p className="seo-p">{t('landing.seoContent.community.text')}</p>
-                        </div>
-                        <div className="seo-item">
-                            <h2 className="seo-h2">{t('landing.seoContent.comparison.title')}</h2>
-                            <p className="seo-p">{t('landing.seoContent.comparison.text')}</p>
-                        </div>
-                    </div>
-
                     <div className="faq-container">
                         <h2 className="section-title">{t('landing.seoContent.faq.title')}</h2>
                         <div className="faq-grid">
@@ -198,7 +169,7 @@ const LandingPage: FC = () => {
                 <section className="final-cta-section">
                     <h2 className="section-title">{t('landing.finalCta.title')}</h2>
                     <Button
-                        className="cta-button final-cta"
+                        className="cta-button primary-cta final-cta"
                         onClick={() => navigate(`/${language}/welcome`)}
                     >
                         {t('landing.finalCta.button')}

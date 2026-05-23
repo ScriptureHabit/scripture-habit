@@ -5,79 +5,97 @@ export default {
         },
         landing: {
             hero: {
-                title: "Nơi việc học Thánh thư LDS trở thành thói quen vui vẻ",
-                subtitle: "Công cụ cộng đồng dành cho các thành viên LDS để cùng nhau học tập, chia sẻ hiểu biết và biến việc học thánh thư hàng ngày thành nguồn vui.",
-                cta: "Bắt đầu ngay"
+                title: "Nơi việc học Thánh thư trở thành niềm vui mỗi ngày",
+                subtitle: "Cùng bạn bè đọc thánh thư và chia sẻ những cảm nhận chân thành để mỗi ngày học tập đều tràn đầy niềm vui.",
+                cta: "Bắt đầu ngay",
+                mascotBubble: "Xin chào! Chúng mình cùng nhau đọc thánh thư nhé! ✨"
+            },
+            concept: {
+                title: "Tự mình duy trì đọc thánh thư mỗi ngày đôi khi thật không dễ dàng.",
+                subtitle: "Đồng hành cùng những người bạn có chung mục tiêu là cách đơn giản nhất để tạo dựng một thói quen bền lâu.",
+                problemBadge: "Khó duy trì",
+                solutionBadge: "Vui vẻ & Dễ dàng!",
+                card1Title: "Khi học một mình",
+                card1Text: "Những ngày bận rộn dễ làm bạn quên đọc, và rồi thói quen dần biến mất lúc nào không hay.",
+                card2Title: "Cùng những người bạn đồng hành!",
+                card2Text: "Khi nhẹ nhàng khích lệ lẫn nhau và viết ra những suy nghĩ nhỏ mỗi ngày, việc học sẽ tự nhiên trở thành thói quen."
+            },
+            steps: {
+                title: "Cách sử dụng Scripture Habit vô cùng đơn giản",
+                step1Title: "1. Tham gia một nhóm",
+                step1Desc: "Tham gia một nhóm phù hợp với mục tiêu học thánh thư của bạn, như Sách Mặc Môn hoặc Tân Ước.",
+                step2Title: "2. Chia sẻ điều bạn nhận ra",
+                step2Desc: "Chia sẻ một ghi chú ngắn về điều chạm đến trái tim bạn hoặc điều bạn nhận ra khi học thánh thư."
             },
             features: {
-                title: "Các tính năng của\nScripture Habit",
+                title: "Điểm nổi bật của\nScripture Habit",
                 sharing: {
-                    title: "Thắt chặt tình cảm thông qua chia sẻ",
-                    desc: "Chia sẻ tiến trình của bạn với gia đình và bạn bè. Những hiểu biết của bạn (đầu ra) giúp gây dựng những người xung quanh bạn."
+                    title: "Gắn kết tình bạn qua sẻ chia",
+                    desc: "Chia sẻ tiến trình với gia đình và bạn bè để cùng nhau khích lệ và nâng đỡ tâm hồn."
                 },
                 rule: {
-                    title: "Quy tắc 3 ngày để nhất quán",
-                    desc: "Một thử thách để duy trì sự nhất quán: cùng với bạn bè vượt qua 'thử thách' duy trì hoạt động sau mỗi 3 ngày để xây dựng thói quen trọn đời."
+                    title: "Quy tắc Thói quen Nhẹ nhàng",
+                    desc: "Cùng nhau xây dựng thói quen trọn đời bằng cách vượt qua quy tắc tạm nghỉ nhóm nếu không có bài đăng nào trong một khoảng thời gian nhất định."
                 },
                 ai: {
-                    title: "Tóm tắt học tập hàng tuần",
-                    desc: "Mỗi tuần một lần, AI sẽ tóm tắt những hiểu biết của bạn thành một 'Lá thư hàng tuần', giúp bạn hình dung được sự phát triển tâm linh của mình."
+                    title: "Lá thư nhìn lại ấm áp",
+                    desc: "Nhận lá thư tổng kết mỗi tuần tóm tắt những gì bạn học được để trân trọng từng bước trưởng thành."
                 },
                 link: {
-                    title: "Tích hợp Thư viện Phúc âm",
-                    desc: "Liên kết trực tiếp đến Thư viện Phúc âm và BYU Speeches. Đi thẳng vào thánh thư mà không bị xao nhãng."
+                    title: "Kết nối Thư viện Phúc âm",
+                    desc: "Dễ dàng mở những câu thánh thư yêu thích với liên kết trực tiếp đến Thư viện Phúc âm và BYU Speeches."
                 },
                 recommend: {
-                    title: "Thánh thư gây bất ngờ",
-                    desc: "Nhận các gợi ý dựa trên 'Hãy Đi Theo Ta' hoặc cảm xúc hiện tại của bạn (Bình an, Nghịch cảnh, v.v.) khi bạn cần cảm hứng."
+                    title: "Gợi ý thánh thư ngẫu nhiên",
+                    desc: "Nhận những gợi ý thánh thư bình an dựa trên bài học 'Hãy Đi Theo Ta' hoặc cảm xúc của bạn bất cứ lúc nào."
                 }
             },
-            unity: {
-                title: "Cùng gây dựng lẫn nhau",
-                desc: "Ngắm nhìn bình minh rực rỡ khi mọi thành viên trong nhóm của bạn đạt được tỷ lệ đăng bài 100% trong ngày."
-            },
-            finalCta: {
-                title: "Sẵn sàng để bắt đầu một thói quen mới?",
-                button: "Bắt đầu mới ngay hôm nay"
-            },
             useCases: {
-                title: "Làm cho Lớp Học Chủ Nhật Tốt Hơn & Thú Vị Hơn",
+                title: "Giúp Lớp Học Chủ Nhật thêm ý nghĩa và vui vẻ",
                 status: {
-                    problem: "Thách Thức Hiện Tại",
+                    problem: "Khó khăn trước đây",
                     solution: "Với Scripture Habit"
                 },
                 teacher: {
-                    title: "Cho Giảng Viên",
-                    problem: "Không biết tiến trình học tập hoặc suy ngẫm hàng ngày của học viên. Rất khó để 'Giảng Dạy theo Cách của Đấng Cứu Rỗi' mà không biết nhu cầu của họ.",
-                    solution: "Hiểu được những điều học viên học được và các câu hỏi của họ. Chuẩn bị các bài học phù hợp cụ thể với nhu cầu tâm linh của họ."
+                    title: "Dành cho Giáo viên",
+                    problem: "Thật khó để biết học viên đọc thánh thư thế nào trong tuần để chuẩn bị một bài học thực sự chạm đến họ.",
+                    solution: "Hiểu được suy nghĩ và câu hỏi của học viên trước buổi học để chuẩn bị bài giảng phù hợp nhất với từng người."
                 },
                 student: {
-                    title: "Cho Học Viên",
-                    problem: "Công việc bận rộn hàng ngày khiến việc duy trì học tập cá nhân trở nên khó khăn. Khó duy trì động lực, dẫn đến bỏ cuộc.",
-                    solution: "Học sâu hơn thông qua sự khuyến khích và gây dựng lẫn nhau. Tăng cường động lực và tránh bị tụt lại phía sau."
+                    title: "Dành cho Học viên",
+                    problem: "Cuộc sống bận rộn dễ khiến việc tự học bị gác lại phía sau và thật khó để tự mình giữ vững động lực.",
+                    solution: "Cùng học và khích lệ lẫn nhau with những người bạn thân thiết giúp việc học mỗi ngày trở thành niềm mong đợi."
                 }
+            },
+            unity: {
+                title: "Gắn kết những trái tim",
+                desc: "Cùng ngắm nhìn bức tranh bình minh tuyệt đẹp khi tất cả các thành viên trong nhóm hoàn thành việc đọc trong ngày."
+            },
+            finalCta: {
+                title: "Bạn có muốn bắt đầu một thói quen mới cùng chúng mình không?",
+                button: "Bắt đầu ngay"
             },
             seoContent: {
                 why: {
-                    title: "Tại sao nên xây dựng Thói quen Học Thánh Thư?",
-                    text: "Thiết lập thói quen học thánh thư hàng ngày không chỉ là đọc; đó là việc tạo ra một không gian nhất quán cho sự mặc khải cá nhân và sự tăng trưởng tâm linh. Scripture Habit cung cấp các công cụ và sự hỗ trợ cộng đồng để giúp bạn duy trì cam kết học tập, cho dù bạn đang theo 'Hãy Đến Mà Theo Ta', học Kinh Thánh hay đi sâu vào Sách Mặc Môn."
+                    title: "Tại sao nên tạo thói quen học thánh thư?",
+                    text: "Chạm vào thánh thư mỗi ngày mở ra không gian tuyệt vời để nhận mặc khải cá nhân và phát triển tâm linh."
                 },
                 community: {
-                    title: "Sức mạnh của việc Học tập trong Cộng đồng",
-                    text: "Nghiên cứu cho thấy việc xây dựng thói quen với bạn bè sẽ tăng đáng kể tỷ lệ thành công của bạn. Scripture Habit cho phép bạn hình thành các nhóm nhỏ, thân mật nơi bạn có thể chia sẻ những hiểu biết hàng ngày. Kết quả hợp tác này (chia sẻ những gì bạn học được) củng cố sự hiểu biết của chính bạn và gây dựng cho người khác, thực hiện nguyên tắc cùng nhau vui mừng."
+                    title: "Sức mạnh của việc học cùng nhau",
+                    text: "Chia sẻ cảm nhận hàng ngày trong nhóm nhỏ với bạn bè hoặc gia đình giúp bạn luôn bước tiếp một cách vui vẻ."
                 },
                 comparison: {
-                    title: "Ứng dụng Thánh Hữu Ngày Sau Tốt Nhất cho Sự Nhất Quán",
-                    text: "So với các công cụ học tập khác, Scripture Habit tập trung cụ thể vào trách nhiệm hàng ngày và sự gây dựng cộng đồng. Quy tắc 3 ngày độc đáo của chúng tôi đảm bảo các nhóm luôn hoạt động, trong khi các thư hàng tuần do AI tạo ra giúp bạn hình dung sự tăng trưởng tâm linh theo cách mà các kế hoạch đọc tĩnh không thể làm được. Nó không chỉ là một trình theo dõi; đó là một công cụ cho sự mặc khải cá nhân."
+                    title: "Đọc thánh thư trong niềm vui",
+                    text: "Scripture Habit đồng hành cùng bạn với luật lệ nhẹ nhàng và những lời nhìn lại ấm áp để tạo thói quen cùng bạn bè."
                 },
                 faq: {
-                    title: "Câu hỏi Thường gặp",
-                    q1: "Làm thế nào để tôi bắt đầu thói quen học thánh thư?",
-                    a1: "Cách tốt nhất để bắt đầu thói quen thánh thư là bắt đầu từ những việc nhỏ và kiên trì. Quy tắc 3 ngày của Scripture Habit giúp bạn duy trì nhịp điệu ổn định mà không cảm thấy quá tải.",
-                    q2: "Scripture Habit có phải là ứng dụng chính thức của Giáo hội không?",
-                    a2: "Scripture Habit là một dự án cá nhân nhằm hỗ trợ các thành viên của Giáo Hội Các Thánh Hữu Ngày Sau của Chúa Giê Su Ky Tô và tất cả những người học thánh thư. Đây không phải là ứng dụng chính thức của Giáo hội, nhưng nó được thiết kế để hoạt động liền mạch với Thư viện Phúc âm.",
-                    q3: "Tôi có thể sử dụng nó để học Kinh Thánh không?",
-                    a3: "Chắc chắn rồi! Scripture Habit được thiết kế cho bất kỳ việc học thánh thư nào, bao gồm Kinh Thánh (Cựu Ước và Tân Ước), Sách Mặc Môn và các văn bản thiêng liêng khác."
+                    title: "Câu hỏi thường gặp",
+                    q1: "Làm sao tôi có thể tiếp tục học thánh thư?",
+                    a1: "Quan trọng là tiếp tục từng chút mỗi ngày với một nhịp độ dễ chịu, và quy tắc 3 ngày của app giúp tạo ra nhịp điệu nhẹ nhàng đó.",
+                    q2: "Đây có phải là ứng dụng chính thức của Giáo hội không?",
+                    a2: "Không, đây không phải ứng dụng chính thức, mà là công cụ phi lợi nhuận được xây dựng cá nhân để hỗ trợ thành viên và người học thánh thư.",
+                    q3: "Tôi có thể dùng nó để học Kinh Thánh không?",
+                    a3: "Có, app sẵn sàng cho bất kỳ nghiên cứu thánh thư nào bạn trân trọng, bao gồm Kinh Thánh và Sách Mặc Môn."
                 }
             }
         },

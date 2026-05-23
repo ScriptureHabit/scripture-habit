@@ -748,78 +748,96 @@ export default {
         landing: {
             hero: {
                 title: "Where LDS Scripture Study Becomes a Habit of Joy",
-                subtitle: "The community tool for LDS members to study together, share insights, and turn daily scripture study into a source of joy.",
-                cta: "Start Now"
+                subtitle: "Read the scriptures with friends and share your insights to make daily learning even more delightful.",
+                cta: "Start Now",
+                mascotBubble: "Hi there! Let's start reading the scriptures together! ✨"
+            },
+            concept: {
+                title: "Studying scripture alone can be a bit hard, can't it?",
+                subtitle: "Placing yourself in a group with people who share the same goal is the best shortcut to build a habit.",
+                problemBadge: "Hard to keep going",
+                solutionBadge: "Fun to keep going!",
+                card1Title: "Studying alone...",
+                card1Text: "Busy days push it aside, and it's easy to lose momentum before you notice.",
+                card2Title: "With friends!",
+                card2Text: "When everyone gently encourages each other and turns what they noticed into words, it becomes a natural habit."
+            },
+            steps: {
+                title: "How to use Scripture Habit is very simple",
+                step1Title: "1. Join a group",
+                step1Desc: "Join a group that matches your scripture goals, such as the Book of Mormon or the New Testament.",
+                step2Title: "2. Share what you noticed",
+                step2Desc: "Share a short note about what touched your heart or what you noticed during scripture study."
             },
             features: {
                 title: "Features of\nScripture Habit",
                 sharing: {
                     title: "Deepen Bonds through Sharing",
-                    desc: "Share your progress with family and friends. Your insights (output) help edify those around you."
+                    desc: "Share your progress with family and friends to encourage and lift each other up."
                 },
                 rule: {
-                    title: "3-Day Rule for Consistency",
-                    desc: "A challenge to stay consistent: overcome the 'trial' of staying active every 3 days together with your peers to build a lifelong habit."
+                    title: "Gentle Habit-Building Rule",
+                    desc: "Build a lifelong habit by supporting each other through a gentle rule of taking a temporary break when there are no posts for a certain period."
                 },
                 ai: {
-                    title: "Weekly Learning Recap",
-                    desc: "Once a week, AI summarizes your insights into a 'Weekly Letter', helping you visualize your spiritual growth."
+                    title: "A Warm Letter of Reflection",
+                    desc: "Receive a weekly reflection letter that gently summarizes your learnings to help you appreciate your progress."
                 },
                 link: {
                     title: "Gospel Library Integration",
-                    desc: "Direct links to Gospel Library and BYU Speeches. Jump straight into the scriptures without distraction."
+                    desc: "Easily open your favorite scriptures with direct links to the Gospel Library and BYU Speeches."
                 },
                 recommend: {
                     title: "Surprise Me Scripture",
-                    desc: "Get suggestions based on 'Come, Follow Me' or your current feelings (Peace, Adversity, etc.) when you need inspiration."
+                    desc: "Get peaceful scripture suggestions based on 'Come, Follow Me' or your current feelings whenever you need them."
                 }
             },
             useCases: {
-                title: "Make Sunday School Better & More Fun",
+                title: "Make Sunday School More Meaningful and Fun",
                 status: {
-                    problem: "Current Challenges",
+                    problem: "Past Challenges",
                     solution: "With Scripture Habit"
                 },
                 teacher: {
                     title: "For Teachers",
-                    problem: "Unaware of students' daily study progress or reflections. Hard to 'Teach in the Savior's Way' without knowing their needs.",
-                    solution: "Understand students' learnings and questions. Prepare lessons tailored specifically to their spiritual needs."
+                    problem: "It was difficult to know how students were reading during the week to prepare a lesson that truly matched their needs.",
+                    solution: "Understand students' thoughts and questions beforehand to prepare a lesson tailored to each person."
                 },
                 student: {
                     title: "For Students",
-                    problem: "Daily business makes personal study difficult to maintain. Hard to sustain motivation, leading to giving up.",
-                    solution: "Deepen learning through mutual encouragement and edification. Boost motivation and prevent falling behind."
+                    problem: "Daily busyness easily pushes personal study aside, making it hard to stay motivated on your own.",
+                    solution: "Learning together with friendly peers keeps you motivated and makes daily study something to look forward to."
                 }
             },
             unity: {
-                title: "Edifying One Another",
-                desc: "See the glorious rising sun when every member of your group achieves a 100% post rate for the day."
+                title: "Connect Our Hearts Together",
+                desc: "See a beautiful rising sun illustration when every member of your group finishes reading for the day."
             },
             finalCta: {
-                title: "Ready to start a new habit?",
-                button: "Start Fresh Today"
+                title: "Would you like to start a new habit with us?",
+                button: \"**Get Started Now**\"
             },
             seoContent: {
                 why: {
-                    title: "Why build a Scripture Habit?",
-                    text: "Establishing a daily scripture habit is more than just reading; it's about creating a consistent space for personal revelation and spiritual growth. Scripture Habit provides the tools and community support to help you stay committed to your studies, whether you are following 'Come, Follow Me', studying the Bible, or diving deep into the Book of Mormon."
+                    title: "Why make scripture study a habit?",
+                    text: "Touching the scriptures every day creates a wonderful space for personal revelation and spiritual growth."
                 },
                 community: {
-                    title: "The Power of Community Study",
-                    text: "Research shows that building habits with friends increases your success rate significantly. Scripture Habit allows you to form small, intimate groups where you can share insights daily. This collaborative output (sharing what you learn) reinforces your own understanding and edifies others, fulfilling the principle of rejoicing together."
+                    title: "The Power of Learning Together",
+                    text: "Sharing daily insights in small groups with friends or family helps you keep going happily without giving up."
                 },
                 comparison: {
-                    title: "The Best LDS App for Habit Consistency",
-                    text: "Compared to other study tools, Scripture Habit focuses specifically on daily accountability and community edification. Our unique 3-day rule ensures that groups remain active, while our AI-powered weekly letters help you visualize spiritual growth in a way that static reading plans cannot. It's more than a tracker; it's a tool for personal revelation."
+                    title: "Keep Reading with Joy",
+                    text: "Scripture Habit supports your journey with a gentle rule and warm reflections to help you build a habit with friends."
                 },
                 faq: {
                     title: "Frequently Asked Questions",
-                    q1: "How do I start a scripture study habit?",
-                    a1: "The best way to start a scripture habit is to start small and be consistent. Scripture Habit's 3-day rule helps you maintain a steady rhythm without feeling overwhelmed.",
-                    q2: "Is Scripture Habit an official LDS app?",
-                    a2: "Scripture Habit is a personal project intended to support members of The Church of Jesus Christ of Latter-day Saints and all scripture students. It is not an official app of the Church, but it is designed to work seamlessly with the Gospel Library.",
+                    q1: "How can I keep scripture study going?",
+                    a1: "It's important to continue small every day at an easy pace, and the app's 3-day rule helps create that gentle rhythm.",
+                    q2: "Is this app official Church software?",
+                    a2: "This app is not official, but it is a nonprofit tool developed personally to support members and all scripture learners.",
                     q3: "Can I use it for Bible study?",
-                    a3: "Absolutely! Scripture Habit is designed for any scripture study, including the Bible (Old and New Testament), Book of Mormon, and other sacred texts."
+                    a3: "Yes, it fully supports any scripture study you care about, including the Book of Mormon and the New Testament."
                 }
             }
         }

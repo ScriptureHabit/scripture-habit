@@ -137,90 +137,115 @@ section {
 /* Hero Section */
 .hero-section {
     display: flex;
-    flex-direction: column;
+    flex-direction: row-reverse;
     align-items: center;
-    padding: 100px 24px;
-    text-align: center;
+    justify-content: center;
+    padding: 120px 24px 80px 24px;
     width: 100%;
     min-height: 90vh;
-    justify-content: center;
-    gap: 48px;
+    gap: 60px;
     box-sizing: border-box;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.hero-mascot-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    width: 320px;
+    flex-shrink: 0;
+    animation: floating 4s ease-in-out infinite;
+}
+
+.hero-mascot-img {
+    width: 200px;
+    height: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 15px 15px rgba(0,0,0,0.1));
+}
+
+/* Mascot Bubble */
+.mascot-bubble {
+    position: relative;
+    background: #fff;
+    border-radius: 20px;
+    padding: 16px 20px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    border: 1px solid rgba(102, 126, 234, 0.15);
+    margin-bottom: 24px;
+    text-align: center;
+    max-width: 260px;
+}
+
+.mascot-bubble-text {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    line-height: 1.4;
+    white-space: pre-line;
+}
+
+.mascot-bubble-tail {
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 10px solid #fff;
+    filter: drop-shadow(0 4px 2px rgba(0,0,0,0.02));
 }
 
 .hero-content {
-    max-width: 800px;
+    max-width: 600px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .hero-title {
     font-size: 3.5rem;
     font-weight: 900;
-    line-height: 1.2;
+    line-height: 1.25;
     margin-bottom: 1.5rem;
     letter-spacing: -0.02em;
+    background: linear-gradient(135deg, var(--text-main), var(--secondary-color));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 .hero-subtitle {
     font-size: 1.25rem;
     color: var(--text-muted);
-    line-height: 1.6;
+    line-height: 1.7;
     margin-bottom: 2.5rem;
 }
 
 .primary-cta {
-    padding: 1.2rem 3rem !important;
-    font-size: 1.2rem !important;
+    padding: 1.2rem 3.5rem !important;
+    font-size: 1.25rem !important;
     border-radius: 50px !important;
-    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3) !important;
-    transition: transform 0.3s ease !important;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)) !important;
+    border: none !important;
+    color: white !important;
+    font-weight: 700 !important;
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4) !important;
+    transition: all 0.3s ease !important;
+    cursor: pointer;
 }
 
 .primary-cta:hover {
     transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 15px 35px rgba(102, 126, 234, 0.5) !important;
 }
 
-/* Features Section */
-.features-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 32px;
-}
 
-.feature-card {
-    background: rgba(255, 255, 255, 0.3);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    padding: 40px;
-    border-radius: 24px;
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    transition: all 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    text-align: left;
-}
-
-.feature-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.05);
-    border-color: var(--primary-color);
-}
-
-.feature-icon {
-    font-size: 2.5rem;
-    margin-bottom: 20px;
-}
-
-.feature-name {
-    font-size: 1.5rem;
-    margin-bottom: 12px;
-    font-weight: 700;
-}
-
-.feature-desc {
-    color: var(--text-muted);
-    line-height: 1.6;
-}
 
 /* Use Cases Section */
 .use-cases-section {
@@ -330,68 +355,7 @@ section {
     }
 }
 
-/* Unity Section */
-.unity-section {
-    background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
-    color: white;
-    padding: 100px 24px;
-    margin: 80px 0;
-    width: 100%;
-    max-width: none;
-    box-sizing: border-box;
-}
 
-.unity-content {
-    max-width: 1000px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    gap: 60px;
-    flex-direction: row;
-}
-
-.unity-visual {
-    position: relative;
-    width: 300px;
-    height: 300px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
-
-.sun-glow {
-    position: absolute;
-    width: 200px;
-    height: 200px;
-    background: radial-gradient(circle, #fff7ad 0%, #ffa12c 70%, transparent 100%);
-    border-radius: 50%;
-    filter: blur(20px);
-    animation: pulse 4s ease-in-out infinite;
-}
-
-.unity-percentage {
-    position: relative;
-    font-size: 5rem;
-    font-weight: 900;
-    color: white;
-    text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
-}
-
-.unity-text .section-title {
-    text-align: left;
-    background: linear-gradient(135deg, #fff7ad, #ffa12c);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin-bottom: 1.5rem;
-}
-
-.section-desc {
-    font-size: 1.2rem;
-    line-height: 1.8;
-    opacity: 0.9;
-}
 
 /* SEO content */
 .seo-explanation-section {
@@ -420,10 +384,11 @@ section {
 }
 
 .faq-container {
-    background: rgba(102, 126, 234, 0.05);
+    background: #ffffff;
     padding: 60px;
     border-radius: 40px;
     border: 1px solid rgba(102, 126, 234, 0.1);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
 }
 
 .faq-grid {
@@ -460,6 +425,7 @@ section {
 .final-cta {
     padding: 1.5rem 4rem !important;
     font-size: 1.3rem !important;
+    margin-top: 32px !important;
 }
 
 
@@ -491,6 +457,278 @@ section {
     }
 }
 
+/* Concept Section (Minchalle Style) */
+.concept-section {
+    padding: 100px 24px;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 40px;
+    margin: 60px auto;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    max-width: 1200px;
+    box-sizing: border-box;
+}
+
+.concept-subtitle {
+    font-size: 1.2rem;
+    color: var(--text-muted);
+    margin-top: -1.5rem;
+    margin-bottom: 7.5rem; /* Drastically increased to provide breathing room for the floating birds */
+    font-weight: 500;
+}
+
+.concept-comparison-grid {
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    gap: 30px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.concept-card {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-radius: 24px;
+    padding: 40px 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    transition: all 0.3s ease;
+    text-align: left;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.concept-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.06);
+}
+
+.concept-card-badge {
+    position: absolute;
+    top: -14px;
+    left: 30px;
+    padding: 6px 16px;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: white;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.problem-badge {
+    background: #ef4444;
+}
+
+.solution-badge {
+    background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.concept-problem {
+    border-left: 5px solid #ef4444;
+    padding-right: 110px; /* Graceful right padding to ensure text flows beautifully without touching the lonely bird */
+}
+
+.concept-solution {
+    border-left: 5px solid #10b981;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(102, 126, 234, 0.05));
+    border-color: rgba(102, 126, 234, 0.3);
+    padding-right: 150px; /* Graceful right padding to ensure text flows beautifully without touching the book/social birds */
+}
+
+.concept-problem,
+.concept-solution {
+    min-height: 240px; /* Keep height aligned nicely */
+}
+
+.concept-card-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin-top: 10px;
+    margin-bottom: 16px;
+    color: var(--text-main);
+    max-width: 95%;
+}
+
+/* Both cards feature the dramatic top-right popup overlap directly on top of the text */
+/* pointer-events: none ensures the floating image doesn't block text highlighting or clicks */
+.concept-problem .concept-card-img-wrapper,
+.concept-solution .concept-card-img-wrapper {
+    position: absolute;
+    height: auto;
+    background: transparent; /* No containing box - let the birds float naturally */
+    border: none;
+    box-shadow: none;
+    overflow: visible;
+    margin: 0;
+    z-index: 10;
+    pointer-events: none; /* Mouse clicks and selections pass right through the image to text below */
+    transition: all 0.3s ease;
+}
+
+/* Custom top/right offsets and widths to sit perfectly on their respective card corners */
+.concept-problem .concept-card-img-wrapper {
+    top: -75px; /* Sits nicely on the upper boundary */
+    right: -35px; /* Shifted outer-right to prevent overlap with title text */
+    width: 200px; /* Perfectly compact alone bird size */
+}
+
+.concept-solution .concept-card-img-wrapper {
+    top: -85px; /* Floats dramatically over the corner */
+    right: -30px; /* Shifted outer-right to prevent overlap with title text */
+    width: 245px; /* Prominent width for the group of birds */
+}
+
+.concept-problem .concept-card-img,
+.concept-solution .concept-card-img {
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+    max-height: none;
+    object-fit: contain;
+    filter: drop-shadow(0 15px 25px rgba(0,0,0,0.12)); /* Beautiful floating shadow */
+    transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.3s ease;
+}
+
+/* Custom micro-animations tailored to their moods */
+.concept-problem:hover .concept-card-img {
+    transform: scale(1.08) translate(-4px, -4px) rotate(-1deg); /* Soft floating popup */
+    filter: drop-shadow(0 20px 35px rgba(239, 68, 68, 0.15));
+}
+
+.concept-solution:hover .concept-card-img {
+    transform: scale(1.08) translate(-6px, -6px) rotate(2deg); /* Dynamic spring popup */
+    filter: drop-shadow(0 20px 35px rgba(102, 126, 234, 0.22));
+}
+
+/* Natural full-width text layouts for ultimate legibility without forced early wrapping */
+.concept-problem .concept-card-text,
+.concept-solution .concept-card-text {
+    max-width: 95%; /* Clean flow across both cards */
+}
+
+.concept-card-text {
+    font-size: 1rem;
+    line-height: 1.65;
+    color: var(--text-muted);
+}
+
+.concept-arrow-divider {
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: pulse 2s infinite;
+    flex-shrink: 0;
+}
+
+/* Steps Section */
+.steps-section {
+    padding: 100px 24px;
+    text-align: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+.steps-container {
+    display: flex;
+    align-items: stretch;
+    justify-content: space-between;
+    gap: 20px;
+    max-width: 1100px;
+    margin: 40px auto 0 auto;
+}
+
+.step-card {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 24px;
+    padding: 40px 30px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+    text-align: center;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.step-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary-color);
+    box-shadow: 0 15px 35px rgba(102, 126, 234, 0.08);
+}
+
+.step-number {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 900;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px auto;
+    box-shadow: 0 6px 15px rgba(102, 126, 234, 0.3);
+}
+
+.step-title {
+    font-size: 1.35rem;
+    font-weight: 800;
+    margin-bottom: 16px;
+    color: var(--text-main);
+}
+
+.step-card-img {
+    width: auto;
+    object-fit: contain;
+    display: block;
+    filter: drop-shadow(0 10px 20px rgba(0,0,0,0.06));
+    transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.3s ease;
+}
+
+/* Balance visually visible bird scales between single bird and the group */
+.step-img-together {
+    height: 150px; /* Expand height to 150px since the 3 birds are rendered smaller inside the image */
+    margin: 8px auto 0 auto;
+}
+
+.step-img-mascot {
+    height: 120px; /* Keep the single mascot at 120px */
+    margin: 16px auto 0 auto;
+}
+
+/* Hover effects */
+.step-card:hover .step-card-img {
+    transform: scale(1.08) translateY(-4px);
+    filter: drop-shadow(0 15px 25px rgba(102, 126, 234, 0.15));
+}
+
+.step-desc {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+}
+
+.step-line {
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    margin-top: 65px;
+    opacity: 0.5;
+    flex-shrink: 0;
+    align-self: flex-start;
+}
+
 /* Mobile Responsive */
 @media (max-width: 768px) {
     .LandingGlass {
@@ -498,12 +736,56 @@ section {
         /* Lower opacity for mobile */
     }
 
-    .hero-title {
-        font-size: 2.5rem;
+    .hero-section {
+        flex-direction: column-reverse; /* Places the mascot cleanly below the description & CTA button */
+        padding: 80px 24px 40px 24px;
+        text-align: center;
+        gap: 32px;
     }
 
-    .hero-section {
-        padding: 60px 24px;
+    .hero-mascot-container {
+        width: 100%;
+        margin-top: 32px; /* Hearty vertical gap below the CTA button */
+        margin-bottom: 0;
+    }
+
+    .hero-mascot-img {
+        width: 130px; /* Highly compact, beautiful mascot size on mobile */
+        height: auto;
+    }
+
+    .mascot-bubble {
+        padding: 10px 16px;
+        margin-bottom: 12px;
+        max-width: 200px;
+    }
+
+    .mascot-bubble-text {
+        font-size: 0.85rem;
+    }
+
+    .hero-content {
+        text-align: center;
+    }
+
+    .hero-title {
+        font-size: 2.3rem;
+        line-height: 1.3;
+    }
+
+    .hero-subtitle {
+        font-size: 1.1rem;
+        margin-bottom: 2rem;
+    }
+
+    .primary-cta {
+        padding: 1.1rem 2.8rem !important;
+        font-size: 1.1rem !important;
+    }
+
+    .section-title {
+        font-size: 2rem;
+        margin-bottom: 2rem;
     }
 
     .section-title,
@@ -511,27 +793,149 @@ section {
         white-space: pre-line;
     }
 
-    .unity-content {
+    .concept-section {
+        padding: 50px 20px;
+        margin: 30px auto;
+        border-radius: 24px;
+    }
+
+    .concept-subtitle {
+        font-size: 1rem;
+        margin-top: -1rem;
+        margin-bottom: 2.5rem;
+    }
+
+    .concept-comparison-grid {
         flex-direction: column;
-        text-align: center;
+        gap: 35px;
     }
 
-    .unity-text .section-title {
-        text-align: center;
+    .concept-card {
+        padding: 30px 20px;
     }
 
-    .unity-visual {
-        width: 250px;
-        height: 250px;
+    .concept-problem,
+    .concept-solution {
+        padding-right: 20px; /* Reset individual right paddings on mobile */
+        min-height: auto;
+    }
+
+    .concept-card-title {
+        font-size: 1.3rem;
+        max-width: 100% !important;
+    }
+
+    .concept-problem .concept-card-img-wrapper,
+    .concept-solution .concept-card-img-wrapper {
+        position: relative;
+        top: 0;
+        right: 0;
+        width: 100%;
+        height: 140px;
+        margin: 8px 0 16px 0;
+        background: rgba(255, 255, 255, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.02);
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    .concept-problem .concept-card-img,
+    .concept-solution .concept-card-img {
+        max-width: 90%;
+        max-height: 90%;
+        width: auto;
+        height: auto;
+        object-fit: contain;
+        filter: drop-shadow(0 8px 16px rgba(0,0,0,0.06));
+    }
+
+    .concept-card-text {
+        font-size: 0.95rem;
+        max-width: 100% !important;
+    }
+
+    .concept-arrow-divider {
+        margin: 20px 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .concept-arrow-divider svg {
+        transform: rotate(90deg) !important;
+    }
+
+    .steps-section {
+        padding: 50px 20px;
+    }
+
+    .steps-container {
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    .step-card {
+        padding: 30px 20px;
+    }
+
+    .step-img-together {
+        height: 110px;
+        margin-top: 8px;
+    }
+
+    .step-img-mascot {
+        height: 90px;
+        margin-top: 12px;
+    }
+
+    .step-line {
+        display: none;
+    }
+
+
+
+    .seo-explanation-section {
+        padding: 60px 20px;
+        gap: 40px;
     }
 
     .seo-grid {
         grid-template-columns: 1fr;
-        gap: 40px;
+        gap: 32px;
+    }
+
+    .seo-h2 {
+        font-size: 1.6rem;
+    }
+
+    .seo-p {
+        font-size: 1rem;
     }
 
     .faq-container {
-        padding: 30px;
+        padding: 24px;
+        border-radius: 24px;
+    }
+
+    .faq-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+
+    .faq-item {
+        gap: 8px;
+    }
+
+    .faq-q {
+        font-size: 1.1rem;
+    }
+
+    .faq-a {
+        font-size: 0.95rem;
     }
 
     .use-cases-grid {

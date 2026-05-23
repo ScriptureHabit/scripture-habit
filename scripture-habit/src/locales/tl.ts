@@ -5,79 +5,99 @@ export default {
         },
         landing: {
             hero: {
-                title: "Kung Saan ang Pag-aaral ng Banal na Kasulatan ng LDS ay Nagiging Ugali ng Kagalakan",
-                subtitle: "Ang tool sa komunidad para sa mga miyembro ng LDS upang mag-aral nang magkakasama, magbahagi ng mga insight, at gawing mapagkukunan ng kagalakan ang pang-araw-araw na pag-aaral ng banal na kasulatan.",
-                cta: "Simulan Na"
+                title: "Kung saan ang pag-aaral ng Banal na Kasulatan ay nagiging masayang ugali",
+                subtitle: "Basahin ang mga banal na kasulatan kasama ang mga kaibigan at ibahagi ang inyong mga pananaw upang maging mas masaya ang araw-araw na pag-aaral.",
+                cta: "Magsimula Na",
+                mascotBubble: "Kumusta! Magsimula na tayong magbasa ng banal na kasulatan nang magkasama! ✨"
+            },
+            concept: {
+                title: "Medyo mahirap magpatuloy sa pag-aaral ng mga banal na kasulatan nang mag-isa.",
+                subtitle: "Ang pagsali sa isang grupo na may parehong layunin ang pinakamadaling paraan upang bumuo ng isang ugali.",
+                problemBadge: "Mahirap Magpatuloy",
+                solutionBadge: "Madali at Masaya!",
+                card1Title: "Kapag nag-aaral nang mag-isa",
+                card1Text: "Madaling maisantabi ang pagbabasa dahil sa abalang araw, at bago mo malaman, humihinto ka na pala.",
+                card2Title: "Kasama ang mga supportive na kaibigan!",
+                card2Text: "Sa pamamagitan ng pagbibigay ng banayad na suporta sa isa't isa at pagsulat ng mga simpleng kaisipan araw-araw, natural na nagiging ugali ang pag-aaral."
+            },
+            steps: {
+                title: "Napakasimpleng gamitin ng Scripture Habit",
+                step1Title: "1. Sumali sa isang Grupo",
+                step1Desc: "Sumali sa isang grupo na tumutugma sa iyong mga layunin sa pag-aaral, tulad ng Aklat ni Mormon, Bagong Tipan, o Pumarito Ka, Sumunod Ka sa Akin.",
+                step2Title: "2. Ibahagi ang lyong Kaisipan",
+                step2Desc: "Mag-post ng maikling tala tungkol sa kung ano ang nakaantig sa iyong puso o sa iyong pang-araw-araw na pananaw upang ibahagi sa mga kaibigan.",
+                step3Title: "3. Magpalakasan at Magnilay",
+                step3Desc: "Suportahan ang iyong mga kasamahan at tanggapin ang isang lingguhang liham na puno ng init upang madama ang iyong paglago.",
             },
             features: {
                 title: "Mga Tampok ng\nScripture Habit",
                 sharing: {
-                    title: "Palalimin ang Bigkis sa Pamamagitan ng Pagbabahagi",
-                    desc: "Ibahagi ang iyong progreso sa pamilya at mga kaibigan. Ang iyong mga insight (output) ay tumutulong sa pag-edify ng mga nasa paligid mo."
+                    title: "Palalimin ang Relasyon sa Pamamagitan ng Pagbabahagi",
+                    desc: "Ibahagi the iyong progreso sa pamilya at mga kaibigan upang magtulungan at magpalakasan sa isa't isa."
                 },
                 rule: {
-                    title: "3-Day Rule para sa Consistency",
-                    desc: "Isang hamon na manatiling consistent: pagtagumpayan ang 'pagsubok' ng pananatiling aktibo tuwing 3 araw kasama ang iyong mga kasama upang bumuo ng panghabambuhay na ugali."
+                    title: "Gentle Habit Rule",
+                    desc: "Bumuo ng panghabambuhay na ugali sa pamamagitan ng pagtulong sa isa't isa na malampasan ang patakaran ng pansamantalang pahinga mula sa grupo kapag walang post sa loob ng partikular na panahon."
                 },
                 ai: {
-                    title: "Lingguhang Recap ng Pag-aaral",
-                    desc: "Minsan sa isang linggo, ibubuod ng AI ang iyong mga insight sa isang 'Lingguhang Liham', na tinutulungan kang makita ang iyong espirituwal na paglago."
+                    title: "Isang Mainit na Liham ng Pagninilay",
+                    desc: "Tumanggap ng lingguhang liham ng pagninilay na malumanay na nagbubuod ng iyong mga natutunan upang matulungan kang makita ang iyong paglago."
                 },
                 link: {
-                    title: "Gospel Library Integration",
-                    desc: "Direktang mga link sa Gospel Library at BYU Speeches. Tumungo agad sa mga banal na kasulatan nang walang abala."
+                    title: "Koneksyon sa Gospel Library",
+                    desc: "Madaling buksan ang iyong mga paboritong banal na kasulatan gamit ang mga direktang link sa Gospel Library at BYU Speeches."
                 },
                 recommend: {
-                    title: "Surprise Me Scripture",
-                    desc: "Kumuha ng mga mungkahi batay sa 'Halina, Sumunod Ka sa Akin' o sa iyong kasalukuyang nararamdaman (Kapayapaan, Kahirapan, atbp.) kapag kailangan mo ng inspirasyon."
+                    title: "Mungkahing Banal na Kasulatan",
+                    desc: "Kumuha ng mga payapang mungkahi ng banal na kasulatan batay sa 'Pumarito Ka, Sumunod Ka sa Akin' o sa iyong nararamdaman anumang oras."
                 }
             },
-            unity: {
-                title: "Pag-edify sa Isa't Isa",
-                desc: "Makita ang maluwalhating pagsikat ng araw kapag ang bawat miyembro ng iyong grupo ay nakamit ang 100% post rate para sa araw na iyon."
-            },
-            finalCta: {
-                title: "Handa ka na bang magsimula ng bagong ugali?",
-                button: "Magsimula Nang Bago Ngayon"
-            },
             useCases: {
-                title: "Gawing Mas Mabuti at Mas Masaya ang Sunday School",
+                title: "Gawing Mas Makabuluhan at Masaya ang Sunday School",
                 status: {
-                    problem: "Mga Kasalukuyang Hamon",
+                    problem: "Mga Hamon Noon",
                     solution: "Gamit ang Scripture Habit"
                 },
                 teacher: {
                     title: "Para sa mga Guro",
-                    problem: "Hindi alam ang araw-araw na progreso ng pag-aaral o pagninilay ng mga estudyante. Mahirap 'Magturo sa Paraan ng Tagapagligtas' nang hindi nalalaman ang kanilang mga pangangailangan.",
-                    solution: "Unawain ang mga natutunan at katanungan ng mga estudyante. Maghanda ng mga lesson na sadyang iniangkop sa kanilang espirituwal na pangangailangan."
+                    problem: "Mahirap malaman kung paano nagbasa ang mga estudyante sa loob ng linggo upang maghanda ng lesson na talagang tumutugma sa kanilang pangangailangan.",
+                    solution: "Unawain ang mga kaisipan at tanong ng mga estudyante bago ang klase upang maghanda ng araling iniangkop sa bawat isa."
                 },
                 student: {
                     title: "Para sa mga Estudyante",
-                    problem: "Ang pagiging abala sa araw-araw ay ginagawang mahirap panatilihin ang personal na pag-aaral. Mahirap mapanatili ang motibasyon, na humahantong sa pagsuko.",
-                    solution: "Palalimin ang pag-aaral sa pamamagitan ng paghihikayat at pagpapalakas sa isa't isa. Dagdagan ang motibasyon at iwasang mapag-iwanan."
+                    problem: "Madaling maisantabi ang personal na pag-aaral dahil sa abalang buhay, at mahirap panatilihin ang motibasyon nang mag-isa.",
+                    solution: "Ang sama-samang pag-aaral at pagpapalakas kasama ang mga kaibigan ay ginagawa ang pang-araw-araw na pag-aaral na isang bagay na kapana-panabik."
                 }
+            },
+            unity: {
+                title: "Pag-isahin ang Ating mga Puso",
+                desc: "Tingnan ang isang magandang guhit ng pagsikat ng araw kapag ang lahat ng miyembro ng iyong grupo ay nakatapos ng pagbabasa sa araw na iyon."
+            },
+            finalCta: {
+                title: "Gusto mo bang magsimula ng bagong ugali kasama namin?",
+                button: "Magsimula Na"
             },
             seoContent: {
                 why: {
                     title: "Bakit kailangang bumuo ng Scripture Habit?",
-                    text: "Ang pagtatatag ng araw-araw na gawi sa pag-aaral ng mga banal na kasulatan ay higit pa sa pagbabasa lamang; ito ay tungkol sa paglikha ng isang pare-parehong espasyo para sa personal na paghahayag at espirituwal na paglago. Ang Scripture Habit ay nagbibigay ng mga tool at suporta ng komunidad upang matulungan kang manatiling tapat sa iyong pag-aaral, sinusunod mo man ang 'Come, Follow Me', nag-aaral ng Biblia, o nagbabasa ng Aklat ni Mormon."
+                    text: "Ang paghawak sa banal na kasulatan araw-araw ay lumilikha ng isang magandang espasyo para sa personal na paghahayag at espirituwal na paglago."
                 },
                 community: {
-                    title: "Ang Kapangyarihan ng Pag-aaral sa Komunidad",
-                    text: "Ipinapakita ng pananaliksik na ang pagbuo ng mga gawi kasama ang mga kaibigan ay makabuluhang nagpapataas ng iyong rate ng tagumpay. Pinapayagan ka ng Scripture Habit na bumuo ng mga maliit at matalik na grupo kung saan maaari kang magbahagi ng mga pananaw araw-araw. Ang collaborative output na ito (pagbabahagi ng iyong natutunan) ay nagpapatibay sa iyong sariling pag-unawa at nagpapalakas sa iba, na tinutupad ang prinsipyo ng sama-samang kagalakan."
+                    title: "Ang Kapangyarihan ng Pag-aaral nang Magkasama",
+                    text: "Ang pagbabahagi ng mga pananaw araw-araw sa maliliit na grupo kasama ang mga kaibigan o pamilya ay tumutulong sa iyo na magpatuloy nang may kagalakan."
                 },
                 comparison: {
-                    title: "Ang Pinakamahusay na LDS App para sa Consistency ng Gawi",
-                    text: "Kumpara sa ibang mga tool sa pag-aaral, ang Scripture Habit ay partikular na nakatuon sa araw-araw na pananagutan at pagpapatibay sa komunidad. Ang aming natatanging 3-araw na panuntunan ay nagsisiguro na ang mga grupo ay mananatiling aktibo, habang ang aming mga lingguhang sulat na binuo ng AI ay tumutulong sa iyo na mailarawan ang espirituwal na paglago sa paraang hindi magagawa ng mga static reading plan. Ito ay higit pa sa isang tracker; ito ay isang tool para sa personal na paghahayag."
+                    title: "Magpatuloy sa Pagbabasa nang may Kagalakan",
+                    text: "Sinusuportahan ng Scripture Habit ang iyong paglalakbay gamit ang maluwag na panuntunan at mainit na pagninilay upang matulungan kang bumuo ng ugali kasama ang mga kaibigan."
                 },
                 faq: {
                     title: "Mga Madalas Itanong",
-                    q1: "Paano ako magsisimula ng gawi sa pag-aaral ng mga banal na kasulatan?",
-                    a1: "Ang pinakamahusay na paraan upang simulan ang isang gawi sa banal na kasulatan ay magsimula nang maliit at maging pare-pareho. Ang 3-araw na panuntunan ng Scripture Habit ay tumutulong sa iyo na mapanatili ang isang matatag na ritmo nang hindi nakakaramdam ng labis na pagkapagod.",
-                    q2: "Ang Scripture Habit ba ay isang opisyal na LDS app?",
-                    a2: "Ang Scripture Habit ay isang personal na proyekto na inilaan upang suportahan ang mga miyembro ng Ang Simbahan ni Jesucristo ng mga Banal sa mga Huling Araw at lahat ng mga estudyante ng banal na kasulatan. Hindi ito isang opisyal na app ng Simbahan, ngunit idinisenyo ito upang gumana nang maayos kasama ang Gospel Library.",
+                    q1: "Paano ako makakapagpatuloy sa pag-aaral ng banal na kasulatan?",
+                    a1: "Mahalagang magsimula nang maliit araw-araw sa isang komportableng ritmo, at ang aming maluwang na 3-araw na patakaran ay tumutulong sa iyo na mapanatili ang maayos na ritmo.",
+                    q2: "Opisyal bang app ng Simbahan ito?",
+                    a2: "Hindi ito opisyal, kundi personal na proyektong hindi pangkalakal na nilikha upang suportahan ang mga nagbabasa ng banal na kasulatan.",
                     q3: "Maaari ko ba itong gamitin para sa pag-aaral ng Biblia?",
-                    a3: "Tiyak! Ang Scripture Habit ay idinisenyo para sa anumang pag-aaral ng banal na kasulatan, kabilang ang Biblia (Lumang Tipan at Bagong Tipan), Aklat ni Mormon, at iba pang sagradong teksto."
+                    a3: "Oo, handa na ang app para sa anumang pag-aaral ng banal na kasulatan na pinahahalagahan mo, kasama ang Biblia at ang Aklat ni Mormon."
                 }
             }
         },

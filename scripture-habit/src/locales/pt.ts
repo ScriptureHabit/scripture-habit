@@ -6,78 +6,96 @@ export default {
         landing: {
             hero: {
                 title: "Onde o Estudo das Escrituras SUD se Torna um Hábito de Alegria",
-                subtitle: "A ferramenta comunitária para membros SUD estudarem juntos, compartilharem insights e transformarem o estudo diário das escrituras em uma fonte de alegria.",
-                cta: "Comece Agora"
+                subtitle: "Leia as escrituras com amigos e compartilhe seus insights para tornar o aprendizado diário ainda mais agradável.",
+                cta: "Comece Agora",
+                mascotBubble: "Olá! Vamos começar a ler as escrituras juntos! ✨"
+            },
+            concept: {
+                title: "Pode ser um pouco difícil continuar estudando as escrituras sozinho.",
+                subtitle: "Estar em um grupo com pessoas que compartilham o mesmo objetivo é o atalho mais fácil para formar um hábito.",
+                problemBadge: "Difícil de continuar",
+                solutionBadge: "Fácil e divertido!",
+                card1Title: "Estudar sozinho...",
+                card1Text: "Dias corridos facilmente deixam a leitura de lado, e é fácil perder o ritmo antes de perceber.",
+                card2Title: "Com amigos!",
+                card2Text: "Quando todos se incentivam com carinho e transformam o que notam em palavras, o estudo se torna um hábito natural."
+            },
+            steps: {
+                title: "Como usar o Scripture Habit é muito simples",
+                step1Title: "1. Entre em um grupo",
+                step1Desc: "Entre em um grupo que combine com suas metas de estudo das escrituras, como o Livro de Mórmon ou o Novo Testamento.",
+                step2Title: "2. Compartilhe o que você notou",
+                step2Desc: "Compartilhe uma nota curta sobre o que tocou seu coração ou o que você notou ao estudar as escrituras."
             },
             features: {
                 title: "Recursos do\nScripture Habit",
                 sharing: {
                     title: "Aprofunde Laços Através do Compartilhamento",
-                    desc: "Compartilhe seu progresso com familiares e amigos. Seus insights (output) ajudam a edificar aquelas ao seu redor."
+                    desc: "Compartilhe seu progresso com familiares e amigos para se incentivarem e se apoiarem mutuamente."
                 },
                 rule: {
-                    title: "Regra de 3 Dias para Consistência",
-                    desc: "Um desafio para manter a consistência: supere a 'provação' de permanecer ativo a cada 3 dias junto com seus companheiros para construir um hábito para a vida toda."
+                    title: "Regra de Hábito Gentil",
+                    desc: "Crie um hábito para a vida toda superando juntos a regra de fazer uma pausa temporária do grupo se não houver postagens por um período de tempo."
                 },
                 ai: {
-                    title: "Recapitulação Semanal do Aprendizado",
-                    desc: "Uma vez por semana, a IA resume seus aprendizados em uma 'Carta Semanal', ajudando você a visualizar seu crescimento espiritual."
+                    title: "Uma Carta Carinhosa de Reflexão",
+                    desc: "Receba uma carta semanal que resume seus aprendizados com carinho para ajudar você a valorizar seu progresso."
                 },
                 link: {
                     title: "Integração com a Biblioteca do Evangelho",
-                    desc: "Links diretos para a Biblioteca do Evangelho e BYU Speeches. Pule diretamente para as escrituras sem distrações."
+                    desc: "Abra facilmente suas escrituras favoritas com links diretos para a Biblioteca do Evangelho e BYU Speeches."
                 },
                 recommend: {
                     title: "Escritura Surpresa",
-                    desc: "Receba sugestões baseadas no 'Vem, e Segue-Me' ou em seus sentimentos atuais (Paz, Adversidade, etc.) quando precisar de inspiração."
+                    desc: "Receba sugestões inspiradoras baseadas no 'Vem, e Segue-Me' ou em seus sentimentos atuais sempre que precisar."
                 }
             },
-            unity: {
-                title: "Edificando uns aos Outros",
-                desc: "Veja o glorioso sol nascente quando cada membro do seu grupo atinge uma taxa de postagem de 100% no dia."
-            },
-            finalCta: {
-                title: "Pronto para começar um novo hábito?",
-                button: "Comece do Zero Hoje"
-            },
             useCases: {
-                title: "Tornar a Escola Dominical Melhor e Mais Divertida",
+                title: "Torne a Escola Dominical Mais Significativa e Divertida",
                 status: {
-                    problem: "Desafios Atuais",
+                    problem: "Desafios do passado",
                     solution: "Com o Scripture Habit"
                 },
                 teacher: {
                     title: "Para Professores",
-                    problem: "Não saber o progresso diário de estudo ou as reflexões dei alunos. É difícil 'Ensinar à Maneira do Salvador' sem conhecer suas necessidades.",
-                    solution: "Entender os aprendizados e as perguntas dos alunos. Preparar lições adaptadas especificamente às suas necessidades espirituais."
+                    problem: "Era difícil saber como os alunos estavam lendo durante a semana para preparar uma lição que realmente combinasse com eles.",
+                    solution: "Entenda os pensamentos e perguntas dos alunos com antecedência para preparar uma lição sob medida para cada um."
                 },
                 student: {
                     title: "Para Alunos",
-                    problem: "A correria diária torna difícil manter o estudo pessoal. É difícil sustentar a motivação, levando à desistência.",
-                    solution: "Aprofundar o aprendizado através do encorajamento mútuo e da edificação. Aumentar a motivação e evitar ficar para trás."
+                    problem: "A correria diária facilmente deixa o estudo pessoal de lado, tornando difícil manter a motivação sozinho.",
+                    solution: "Aprender junto com amigos amigáveis mantém você motivado e torna o estudo diário algo muito esperado."
                 }
+            },
+            unity: {
+                title: "Unamos Nossos Corações",
+                desc: "Veja uma linda ilustração do amanhecer quando todos os membros do seu grupo terminarem a leitura do dia."
+            },
+            finalCta: {
+                title: "Gostaria de começar um novo hábito conosco?",
+                button: "Começar agora"
             },
             seoContent: {
                 why: {
-                    title: "Por que construir um Hábito das Escrituras?",
-                    text: "Estabelecer um hábito diário de estudo das escrituras é mais do que apenas ler; trata-se de criar um espaço consistente para revelação pessoal e crescimento espiritual. O Scripture Habit fornece as ferramentas e o apoio comunitário para ajudá-lo a manter o compromisso com seus estudos, quer você esteja seguindo o 'Vem, e Segue-Me', estudando a Bíblia ou mergulhando no Livro de Mórmon."
+                    title: "Por que criar um hábito de estudo?",
+                    text: "Tocar as escrituras todos os dias cria um espaço maravilhoso para receber revelação pessoal e crescer espiritualmente."
                 },
                 community: {
-                    title: "O Poder do Estudo em Comunidade",
-                    text: "Pesquisas mostram que construir hábitos com amigos aumenta significativamente sua taxa de sucesso. O Scripture Habit permite que você forme grupos pequenos e íntimos onde pode compartilhar insights diariamente. Esse resultado colaborativo (compartilhar o que você aprende) reforça seu próprio entendimento e edifica os outros, cumprindo o princípio de se regozijarem juntos."
+                    title: "O Poder de Aprender Juntos",
+                    text: "Compartilhar insights diários em pequenos grupos com amigos ou familiares ajuda você a continuar feliz sem desistir."
                 },
                 comparison: {
-                    title: "O Melhor App SUD para Consistência de Hábito",
-                    text: "Comparado a outras ferramentas de estudo, o Scripture Habit foca especificamente na responsabilidade diária e na edificação comunitária. Nossa regra única de 3 dias garante que os grupos permaneçam ativos, enquanto nossas cartas semanais geradas por IA ajudam você a visualizar o crescimento espiritual de uma forma que os planos de leitura estática não conseguem. É más do que um rastreador; é uma ferramenta para revelação pessoal."
+                    title: "Continue Lendo com Alegria",
+                    text: "O Scripture Habit apoia sua jornada com uma regra suave e reflexões carinhosas para ajudar você a criar o hábito com amigos."
                 },
                 faq: {
-                    title: "Perguntas Frequentes",
-                    q1: "Como começo um hábito de estudo das escrituras?",
-                    a1: "A mejor maneira de começar um hábito das escrituras é começar aos poucos e ser consistente. A regra de 3 dias do Scripture Habit ajuda você a manter um ritmo constante sem se sentir sobrecarregado.",
-                    q2: "O Scripture Habit é um app oficial SUD?",
-                    a2: "O Scripture Habit é um projeto pessoal destinado a apoiar os membros de A Igreja de Jesus Cristo dos Santos dos Últimos Dias e todos os estudantes das escrituras. Não é um app oficial da Igreja, mas foi projetado para funcionar perfeitamente com a Biblioteca do Evangelho.",
-                    q3: "Posso usá-lo para estudo da Bíblia?",
-                    a3: "Com certeza! O Scripture Habit é projetado para qualquer estudo das escrituras, incluindo a Bíblia (Antigo e Novo Testamento), o Livro de Mórmon e outros textos sagrados."
+                    title: "Perguntas frequentes",
+                    q1: "Como posso continuar estudando as escrituras?",
+                    a1: "É importante continuar com pequenos passos todos os dias em um ritmo confortável, e a regra de 3 dias do aplicativo ajuda a criar esse ritmo suave.",
+                    q2: "Este aplicativo é oficial da Igreja?",
+                    a2: "Este aplicativo não é oficial, mas é uma ferramenta sem fins lucrativos desenvolvida pessoalmente para apoiar membros e todos os estudantes das escrituras.",
+                    q3: "Posso usá-lo para estudar a Bíblia?",
+                    a3: "Sim, ele dá suporte total a qualquer estudo das escrituras que você valorize, incluindo o Livro de Mórmon e o Novo Testamento."
                 }
             }
         },

@@ -5,79 +5,97 @@ export default {
         },
         landing: {
             hero: {
-                title: "Ambapo Mafunzo ya Maandiko ya LDS Yanakuwa Tabia ya Furaha",
-                subtitle: "Zana ya jumuiya kwa ajili ya washiriki wa LDS kujifunza pamoja, kushiriki maarifa, na kugeuza mafunzo ya kila siku ya maandiko kuwa chanzo cha furaha.",
-                cta: "Anza Sasa"
+                title: "Ambapo Mafunzo ya Maandiko Yanakuwa Tabia ya Furaha kila Siku",
+                subtitle: "Soma maandiko pamoja na marafiki na ushiriki tafakari zako ili kufanya mafunzo ya kila siku kuwa ya kufurahisha zaidi.",
+                cta: "Anza Sasa",
+                mascotBubble: "Habari! Tuanze kusoma maandiko pamoja! ✨"
+            },
+            concept: {
+                title: "Kusoma maandiko peke yako kila siku wakati mwingine inaweza kuwa vigumu sana.",
+                subtitle: "Kujiunga na kikundi chenye malengo sawa ndiyo njia rahisi zaidi ya kujenga tabia ya kudumu.",
+                problemBadge: "Vigumu Kuendelea",
+                solutionBadge: "Rahisi & Furaha!",
+                card1Title: "Unaposoma peke yako",
+                card1Text: "Siku zenye shughuli nyingi hufanya iwe rahisi kusahau kusoma, na kabla ya kujua, tabia hiyo hupotea.",
+                card2Title: "Pamoja na marafiki wanaounga mkono!",
+                card2Text: "Kwa kutiana moyo kwa upole na kuandika mawazo madogo kila siku, kujifunza kunakuwa tabia ya kawaida."
+            },
+            steps: {
+                title: "Jinsi ya kutumia Scripture Habit ni rahisi sana",
+                step1Title: "1. Jiunge na Kikundi",
+                step1Desc: "Jiunge na kikundi kinacholingana na malengo yako ya kusoma maandiko, kama Kitabu cha Mormoni au Agano Jipya.",
+                step2Title: "2. Shiriki ulichokiona",
+                step2Desc: "Shiriki dokezo fupi kuhusu kilichogusa moyo wako au ulichokiona wakati wa kusoma maandiko."
             },
             features: {
                 title: "Vipengele vya\nScripture Habit",
                 sharing: {
-                    title: "Kuimarisha Vifungo Kupitia Kushiriki",
-                    desc: "Shiriki maendeleo yako na familia na marafiki. Maarifa yako (output) yanasaidia kuwajenga wale wanaokuzunguka."
+                    title: "Imarisha Uhusiano kwa Kushiriki",
+                    desc: "Shiriki maendeleo yako na familia na marafiki ili kusaidiana na kutiana moyo."
                 },
                 rule: {
-                    title: "Sheria ya Siku 3 kwa Uthabiti",
-                    desc: "Changamoto ya kubaki thabiti: shinda 'jaribu' la kubaki mwenye bidii kila baada ya siku 3 pamoja na wenzio ili kujenga tabia ya maisha yote."
+                    title: "Sheria ya Tabia ya Upole",
+                    desc: "Kushirikiana kushinda sheria rahisi ya kupumzika kidogo ikiwa hakuna chapisho kwa muda fulani ili kujenga tabia ya maisha yote."
                 },
                 ai: {
-                    title: "Muhtasari wa Mafunzo wa Kila Wiki",
-                    desc: "Mara moja kwa wiki, AI inafupisha maarifa yako katika 'Barua ya Kila Wiki', ikikusaidia kuona ukuaji wako wa kiroho."
+                    title: "Barua ya Kila Wiki ya Kutafakari",
+                    desc: "Pokea barua ya kila wiki inayofupisha mafunzo yako kwa upole ili kukusaidia kuona maendeleo yako."
                 },
                 link: {
                     title: "Ushirikiano na Maktaba ya Injili",
-                    desc: "Viungo vya moja kwa moja vya Maktaba ya Injili na Hotuba za BYU. Ingia moja kwa moja kwenye maandiko bila usumbufu."
+                    desc: "Fungua maandiko yako unayopenda kwa urahisi kwa viungo vya moja kwa moja vya Maktaba ya Injili na Hotuba za BYU."
                 },
                 recommend: {
-                    title: "Andiko la Kunistajabisha",
-                    desc: "Pata mapendekezo kulingana na 'Njoo, Unifuate' au hisia zako za sasa (Amani, Shida, nk.) unapohitaji msukumo."
+                    title: "Mapendekezo ya Andiko",
+                    desc: "Pata mapendekezo ya andiko yenye amani kulingana na 'Njoo, Unifuate' au hisia zako wakati wowote."
                 }
             },
-            unity: {
-                title: "Kujengana Mmoja na Mwenzake",
-                desc: "Ona jua linavyochomoza kwa utukufu wakati kila mwanachama wa kikundi chako anapofikia kiwango cha 100% cha kuchapisha kwa siku."
-            },
-            finalCta: {
-                title: "Uko tayari kuanza tabia mpya?",
-                button: "Anza Upya Leo"
-            },
             useCases: {
-                title: "Fanya Shule ya Jumapili iwe Bora na Inayofurahisha Zaidi",
+                title: "Fanya Shule ya Jumapili iwe ya Kuelimisha na Kufurahisha Zaidi",
                 status: {
-                    problem: "Changamoto za Sasa",
+                    problem: "Changamoto za Zamani",
                     solution: "Ukiwa na Scripture Habit"
                 },
                 teacher: {
                     title: "Kwa Walimu",
-                    problem: "Kutofahamu maendeleo ya kila siku ya kujifunza au tafakari za wanafunzi. Ni vigumu 'Kufundisha kwa Njia ya Mwokozi' bila kujua mahitaji yao.",
-                    solution: "Elewa mafunzo na maswali ya wanafunzi. Andaa masomo yaliyoundwa mahususi kulingana na mahitaji yao ya kiroho."
+                    problem: "Ni vigumu kujua jinsi wanafunzi walivyosoma wakati wa wiki ili kuandaa somo linalolingana na mahitaji yao halisi.",
+                    solution: "Elewa mawazo na maswali ya wanafunzi kabla ya darasa ili kuandaa somo lililoundwa mahususi kwa kila mmoja wao."
                 },
                 student: {
                     title: "Kwa Wanafunzi",
-                    problem: "Shughuli nyingi za kila siku hufanya somo la kibinafsi kuwa vigumu kudumisha. Ni vigumu kudumisha motisha, na kupelekea kukata tamaa.",
-                    solution: "Ongeza uelewa wa kujifunza kupitia kuhimizana na kujengana. Ongeza motisha na uepuke kuachwa nyuma."
+                    problem: "Maisha ya kila siku yenye shughuli nyingi hufanya iwe rahisi kusahau masomo ya kibinafsi, na ni vigumu kudumisha motisha peke yako.",
+                    solution: "Kujifunza na kutiana moyo pamoja na marafiki wa karibu hufanya masomo ya kila siku kuwa kitu cha kutazamia kwa hamu."
                 }
+            },
+            unity: {
+                title: "Unganisha Mioyo Yetu Pamoja",
+                desc: "Ona picha nzuri ya jua likichomoza wakati kila mwanachama wa kikundi chako anapomaliza kusoma kwa siku hiyo."
+            },
+            finalCta: {
+                title: "Je, ungependa kuanza tabia mpya pamoja nasi?",
+                button: "Anza Sasa"
             },
             seoContent: {
                 why: {
-                    title: "Kwa nini ujenge Tabia ya Maandiko?",
-                    text: "Kuanzisha tabia ya kila siku ya kujifunza maandiko ni zaidi ya kusoma tu; ni kuunda nafasi thabiti ya ufunuo wa kibinafsi na ukuaji wa kiroho. Scripture Habit hutoa zana na usaidizi wa jamii ili kukusaidia kubaki mwaminifu kwa masomo yako, iwe unafuata 'Njoo, Unifuate', unajifunza Biblia, au unazama ndani ya Kitabu cha Mormoni."
+                    title: "Kwa nini ujenge tabia ya maandiko?",
+                    text: "Kugusa maandiko kila siku hufungua nafasi nzuri ya kupokea ufunuo wa kibinafsi na ukuaji wa kiroho."
                 },
                 community: {
-                    title: "Nguvu ya Kujifunza kwa Jamii",
-                    text: "Utafiti unaonyesha kuwa kujenga tabia na marafiki huongeza kiwango chako cha mafanikio kwa kiasi kipigo. Scripture Habit hukuruhusu kuunda vikundi vidogo, vya karibu ambapo unaweza kushiriki maarifa kila siku. Matokeo haya ya ushirikiano (kushiriki unachojifunza) huimarisha uelewa wako mwenyewe na kuwajenga wengine, ukitimiza kanuni ya kufurahi pamoja."
+                    title: "Nguvu ya Kujifunza Pamoja",
+                    text: "Kushiriki tafakari za kila siku katika vikundi vidogo na marafiki au familia hukusaidia kuendelea kwa furaha."
                 },
                 comparison: {
-                    title: "Programu Bora ya LDS kwa Uthabiti wa Tabia",
-                    text: "Ikilinganishwa na zana nyingine za kujifunza, Scripture Habit inazingatia hasa uwajibikaji wa kila siku na kujengana kwa jamii. Sheria yetu ya kipekee ya siku 3 inahakikisha kwamba vikundi vinabaki hai, wakati barua zetu za kila wiki zinazozalishwa na AI zinakusaidia kuona ukuaji wako wa kiroho kwa njia ambayo mipango ya kusoma isioweza badilika haiwezi. Ni zaidi ya kifuatiliaji; ni zana ya ufunuo wa kibinafsi."
+                    title: "Soma Maandiko kwa Furaha",
+                    text: "Scripture Habit inasaidia safari yako kwa sheria rahisi na tafakari za joto ili kukusaidia kujenga tabia na marafiki."
                 },
                 faq: {
                     title: "Maswali yanayoulizwa mara kwa mara",
-                    q1: "Ninaanzaje tabia ya kujifunza maandiko?",
-                    a1: "Njia bora ya kuanza tabia ya maandiko ni kuanza kwa udogo na kuwa thabiti. Sheria ya siku 3 ya Scripture Habit inakusaidia kudumisha mdundo thabiti bila kuhisi kulemewa.",
-                    q2: "Je, Scripture Habit ni programu rasmi ya LDS?",
-                    a2: "Scripture Habit ni mradi wa kibinafsi uliokusudiwa kusaidia washiriki wa Kanisa la Yesu Kristo la Watakatifu wa Siku za Mwisho na wanafunzi wote wa maandiko. Sio programu rasmi ya Kanisa, lakini imeundwa kufanya kazi vizuri na Maktaba ya Injili.",
-                    q3: "Je, ninaweza kuitumia kwa kujifunza Biblia?",
-                    a3: "Kabisa! Scripture Habit imeundwa kwa ajili ya somo lolote la maandiko, ikiwa ni pamoja na Biblia (Agano la Kale na Jipya), Kitabu cha Mormoni, na maandishi mengine matakatifu."
+                    q1: "Ninawezaje kuendelea kusoma maandiko?",
+                    a1: "Ni muhimu kuendelea kwa hatua ndogo kila siku kwa mwendo wa urahisi, na sheria ya siku 3 ya app inasaidia kuunda mdundo huo laini.",
+                    q2: "Je, hii ni programu rasmi ya Kanisa?",
+                    a2: "Hii si programu rasmi, bali ni chombo kisicho cha faida kilichotengenezwa kwa binafsi kusaidia wanachama na wote wanaosoma maandiko.",
+                    q3: "Naweza kuitumia kwa masomo ya Biblia?",
+                    a3: "Ndiyo, inasaidia kwa kamili masomo yoyote ya maandiko unayoyathamini, ikiwa ni pamoja na Kitabu cha Mormoni na Agano Jipya."
                 }
             }
         },
