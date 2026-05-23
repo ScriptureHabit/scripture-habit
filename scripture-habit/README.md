@@ -6,11 +6,11 @@ A powerful habit-tracking and social scripture study application built with Reac
 
 We maintain a comprehensive set of technical documents to help you understand the architecture and core logic of the project.
 
-### [See All Technical Documentation](docs/README.md)
+### [See All Technical Documentation](../docs/README.md)
 
-- **[Architecture & Structure](docs/architecture.md)**: High-level overview of the layers (API, Internal, Backend, Frontend).
-- **[Chat & Dashboard Sync](docs/feature-chat-dashboard.md)**: Deep-dive into real-time synchronization and Firestore listeners.
-- **[Note Posting Mechanism](docs/logic-note-posting.md)**: Detailed logic for streaks, levels, and transaction flow.
+- **[Architecture & Structure](../docs/architecture.md)**: High-level overview of the layers (API, Internal, Backend, Frontend).
+- **[Chat & Dashboard Sync](../docs/feature-chat-dashboard.md)**: Deep-dive into real-time synchronization and Firestore listeners.
+- **[Note Posting Mechanism](../docs/logic-note-posting.md)**: Detailed logic for streaks, levels, and transaction flow.
 
 ---
 
