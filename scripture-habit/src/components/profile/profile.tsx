@@ -40,6 +40,7 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
     const [confirmNickname, setConfirmNickname] = useState('');
     const [notifPermission, setNotifPermission] = useState(window.Notification ? window.Notification.permission : 'default');
     const [isNotifLoading, setIsNotifLoading] = useState(false);
+    const [localKickThreshold, setLocalKickThreshold] = useState<number | undefined>(userData?.kickThreshold);
     const [photoURL, setPhotoURL] = useState('');
     const [isUploading, setIsUploading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -108,12 +109,20 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
     const handleToggleNotifications = async () => {
         if (!window.Notification || !userData?.uid) return;
 
+        const prevPermission = notifPermission;
+        const isCurrentlyGranted = window.Notification.permission === 'granted' && notifPermission === 'granted';
+
+        // 楽観的UI：即座にトグルを反映する
+        setNotifPermission(isCurrentlyGranted ? 'default' : 'granted');
         setIsNotifLoading(true);
-        if (window.Notification.permission === 'granted' && notifPermission === 'granted') {
+
+        if (isCurrentlyGranted) {
             const success = await disableNotifications(userData.uid);
             if (success) {
-                setNotifPermission('default');
                 toast.success(t('profile.notificationToggle.disabledSuccess'));
+            } else {
+                // 失敗時は元に戻す
+                setNotifPermission(prevPermission);
             }
         } else {
             try {
@@ -122,6 +131,8 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
                 setNotifPermission(window.Notification.permission);
             } catch (err: unknown) {
                 console.error("Toggle error:", err);
+                // 失敗時は元に戻す
+                setNotifPermission(prevPermission);
                 toast.error(t('profile.notificationToggle.error') || "Failed to update notification settings.");
             }
         }
@@ -135,6 +146,7 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
             if (userData.ward) setWard(userData.ward);
             if (userData.bio) setBio(userData.bio);
             if (userData.photoURL) setPhotoURL(userData.photoURL);
+            if (userData.kickThreshold) setLocalKickThreshold(userData.kickThreshold);
             initializedRef.current = true;
         }
     }, [userData]);
@@ -495,14 +507,19 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
                     {[3, 4, 5, 6, 7].map(days => (
                         <div
                             key={days}
-                            className={`font-option habit-pace-option ${userData?.kickThreshold === days ? 'active' : ''}`}
+                            className={`font-option habit-pace-option ${localKickThreshold === days ? 'active' : ''}`}
                             onClick={async () => {
-                                if (userData?.kickThreshold === days) return;
+                                if (localKickThreshold === days) return;
+                                const prevThreshold = localKickThreshold;
+                                // 楽観的UI：即座にハイライトを更新する
+                                setLocalKickThreshold(days);
                                 try {
                                     await apiClient.post('/api/groups/update-kick-threshold', { threshold: days });
                                     toast.success(t('groupChat.autoKickSuccess'));
                                 } catch (err: unknown) {
                                     console.error("Error updating pace:", err);
+                                    // 失敗時は元の値に戻す
+                                    setLocalKickThreshold(prevThreshold);
                                     toast.error(t('profile.errorUpdate') || "Error updating pace");
                                 }
                             }}
