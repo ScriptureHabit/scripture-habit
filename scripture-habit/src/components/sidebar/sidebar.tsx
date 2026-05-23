@@ -210,7 +210,7 @@ const Sidebar: React.FC<SidebarProps> = ({ selected, setSelected, userGroups = [
           <div className={selected === 1 ? 'menuItem active' : 'menuItem'}
             onClick={() => {
               setSelected(1);
-              navigate(`/${language}/dashboard`);
+              navigate(`/${language}/dashboard?view=1`);
             }}
             data-testid="sidebar-notes"
           >
