@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { doc, onSnapshot, collection, query, where, Timestamp } from 'firebase/firestore';
+import { doc, onSnapshot, collection, query, where, Timestamp, getDocs } from 'firebase/firestore';
 import { toast } from 'react-toastify';
 import { db } from '../../../firebase';
 import { UserData } from '../../../types/user';
@@ -106,15 +106,19 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
             unsubscribers.push(unsubMember);
         });
 
-        // 3. Recent messages listeners (last 24h)
-        const dayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+        // 3. Recent messages fetches (last 24h) - Use getDocs instead of onSnapshot for list view to save read costs
+        // Round 'dayAgo' to the nearest 30 minutes to make the query cacheable.
+        const now = new Date();
+        now.setMinutes(Math.floor(now.getMinutes() / 30) * 30, 0, 0);
+        const dayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+
         groupIds.forEach(gid => {
             const msgsQuery = query(
                 collection(db, 'groups', gid, 'messages'),
                 where('isNote', '==', true),
                 where('createdAt', '>=', Timestamp.fromDate(dayAgo))
             );
-            const unsubMsgs = onSnapshot(msgsQuery, (snap) => {
+            getDocs(msgsQuery).then((snap) => {
                 const msgs = snap.docs.map(d => ({ id: d.id, ...d.data() } as Message));
                 setRawUserGroups(prev => {
                     const existing = prev.find(g => g.id === gid);
@@ -127,10 +131,9 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
                     
                     return prev.map(g => g.id === gid ? { ...g, recentMessages: msgs } : g);
                 });
-            }, (err) => {
+            }).catch((err) => {
                 if (err.code !== 'permission-denied') console.log(`Dashboard messages fetch error ${gid}:`, err);
             });
-            unsubscribers.push(unsubMsgs);
         });
 
         return () => unsubscribers.forEach(unsub => unsub());

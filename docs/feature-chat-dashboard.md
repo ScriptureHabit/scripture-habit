@@ -55,6 +55,17 @@ stateDiagram-v2
 ---
 
 ## 🚀 Performance Tips for Developers
+
+To keep Firestore reads highly optimized and prevent unexpected billing surges, we adhere to the following architecture rules:
+
+- **Firestore Bundle Boost (Initial Load)**:
+  - In `useMessageStreamSync`, we attempt to fetch a pre-built Firestore Bundle from `/api/groups/bundle/:groupId` first. This loads the initial chunk of messages (up to 50) using exactly **1 API Read** instead of 50 separate document reads, which are then stored in the local cache.
+- **Timestamp Rounding for Cache Hit Rate**:
+  - In queries that filter by moving time windows (e.g., "past 24 hours"), **never use precise timestamps** like `Date.now()`. This changes every millisecond, rendering the query uncacheable.
+  - Always **round the query timestamp** to the nearest 30 minutes (or 1 hour). This ensures the query signature is identical across multiple renders and page navigations, allowing the Firestore SDK's `persistentLocalCache` to serve the data instantly with **0 server reads**.
+- **getDocs (List Views) vs onSnapshot (Detail/Active Views)**:
+  - **getDocs**: Use for high-level lists (like the Dashboard group preview cards) where occasional manual refreshes or page-navigation updates are acceptable. This avoids keeping unnecessary WebSocket connections open in the background, keeping our read footprint flat.
+  - **onSnapshot**: Reserve exclusively for detail/active views (like the active Chat pane) where real-time sync is essential for user engagement.
 - **Limit Snapshots**: Always use `limit(N)` and `orderBy('createdAt', 'desc')` in chat queries to prevent loading too many historical messages.
 - **Stable References**: Use `useMemo` for derived chat data to prevent the sidebar from re-rendering on typing events.
 - **Background Suppression**: When the browser tab is inactive, listeners remain active but UI updates are throttled to save CPU.

@@ -26,6 +26,7 @@ vi.mock('firebase/firestore', () => {
         query: vi.fn(),
         where: vi.fn(),
         onSnapshot: vi.fn(),
+        getDocs: vi.fn(),
         Timestamp: {
             fromDate: vi.fn((date) => ({ seconds: Math.floor(date.getTime() / 1000), nanoseconds: 0 }))
         }
@@ -97,6 +98,8 @@ describe('useDashboardGroups', () => {
         }) as any);
 
         vi.mocked(firestore.query).mockImplementation(((q: any) => q) as any);
+
+        vi.mocked(firestore.getDocs).mockImplementation((() => Promise.resolve({ docs: [] })) as any);
 
         vi.mocked(firestore.onSnapshot).mockImplementation(((target: any, callback: any, onError: any) => {
             const listener = { target, callback, onError };
@@ -278,39 +281,52 @@ describe('useDashboardGroups', () => {
 
     it('should handle member status and message updates and their errors (lines 90-101, 116-129)', async () => {
         const listeners = {
-            member: {} as Record<string, any>,
-            messages: {} as Record<string, any>
+            member: {} as Record<string, any>
         };
+        const getDocsPromises: Record<string, Array<{ resolve: (snap: any) => void; reject: (err: any) => void }>> = {};
 
         vi.mocked(firestore.onSnapshot).mockImplementation(((target: any, callback: any, onError: any) => {
             const listenerObj = { target, callback, onError };
             const t = target as any;
             if (t && t.type === 'member') {
                 listeners.member[t.gid] = listenerObj;
-            } else if (t && t.type === 'messages') {
-                listeners.messages[t.gid] = listenerObj;
             } else {
                 mockTestState.listeners.push(listenerObj);
             }
             return () => {};
         }) as any);
 
+        vi.mocked(firestore.getDocs).mockImplementation(((target: any) => {
+            const t = target as any;
+            if (t && t.type === 'messages') {
+                return new Promise((resolve, reject) => {
+                    if (!getDocsPromises[t.gid]) getDocsPromises[t.gid] = [];
+                    getDocsPromises[t.gid].push({ resolve, reject });
+                });
+            }
+            return Promise.resolve({ docs: [] });
+        }) as any);
+
         const toastSpy = vi.spyOn(toast, 'error');
 
         const { result } = renderHook(() => useDashboardGroups(mockUserData as any, null));
 
+        // 1. Initial trigger of members/groups (messages will wait for Promise resolution)
         await waitFor(() => {
             expect(mockTestState.listeners.length).toBeGreaterThan(0);
             expect(listeners.member['group1']).toBeDefined();
-            expect(listeners.messages['group1']).toBeDefined();
+            expect(getDocsPromises['group1']).toBeDefined();
+            expect(getDocsPromises['group1'].length).toBeGreaterThan(0);
         });
 
-        // 1. Trigger early callbacks before rawUserGroups is populated (covers line 93 and line 119)
+        // Trigger member callback
         listeners.member['group1'].callback({
             exists: () => true,
             data: () => ({ role: 'member' })
         });
-        listeners.messages['group1'].callback({
+
+        // Resolve messages promise with early text
+        getDocsPromises['group1'][0].resolve({
             docs: [{ id: 'msg1', data: () => ({ text: 'Early', isNote: true }) }]
         });
 
@@ -344,49 +360,57 @@ describe('useDashboardGroups', () => {
         listeners.member['group1'].onError({ code: 'unavailable' });
         expect(toastSpy).toHaveBeenCalledWith('Member Status Error (group): unavailable');
 
-        // 3. Normal messages callback
-        listeners.messages['group1'].callback({
-            docs: [
-                {
-                    id: 'msg1',
-                    data: () => ({
-                        text: 'Hello note',
-                        isNote: true
-                    })
-                }
-            ]
-        });
-
+        // Verify loaded messages (from our resolved promise)
         await waitFor(() => {
             expect(result.current.userGroups[0].recentMessages).toBeDefined();
             expect(result.current.userGroups[0].recentMessages?.[0].id).toBe('msg1');
         });
 
-        // 4. Duplicate messages callback to cover lines 122-124
-        listeners.messages['group1'].callback({
-            docs: [
-                {
-                    id: 'msg1',
-                    data: () => ({
-                        text: 'Hello note',
-                        isNote: true
-                    })
-                }
-            ]
-        });
-
-        await waitFor(() => {
-            expect(result.current.userGroups[0].recentMessages?.[0].id).toBe('msg1');
-        });
-
-        // 5. Test message listener errors (both logging and ignored permission-denied)
+        // 3. Test message getDocs errors (both logging and ignored permission-denied)
         const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
-        listeners.messages['group1'].onError({ code: 'unavailable' });
-        expect(consoleSpy).toHaveBeenCalledWith('Dashboard messages fetch error group1:', expect.anything());
+
+        // Trigger a new render or simulate a mock getDocs fail
+        let rejectPromise: any;
+        vi.mocked(firestore.getDocs).mockImplementationOnce(() => {
+            return new Promise((_, reject) => {
+                rejectPromise = reject;
+            });
+        });
+
+        // Trigger useDashboardGroups effect again by changing activeGroupId to force re-render/re-fetch
+        renderHook(() => useDashboardGroups(mockUserData as any, null));
+        
+        await waitFor(() => {
+            expect(rejectPromise).toBeDefined();
+        });
+
+        // Reject with unavailable
+        rejectPromise({ code: 'unavailable' });
+        
+        await waitFor(() => {
+            expect(consoleSpy).toHaveBeenCalledWith('Dashboard messages fetch error group1:', expect.anything());
+        });
         consoleSpy.mockClear();
 
-        listeners.messages['group1'].onError({ code: 'permission-denied' });
-        expect(consoleSpy).not.toHaveBeenCalled();
+        // Reject with permission-denied (which should be silently ignored)
+        let rejectPromise2: any;
+        vi.mocked(firestore.getDocs).mockImplementationOnce(() => {
+            return new Promise((_, reject) => {
+                rejectPromise2 = reject;
+            });
+        });
+
+        renderHook(() => useDashboardGroups(mockUserData as any, null));
+        
+        await waitFor(() => {
+            expect(rejectPromise2).toBeDefined();
+        });
+
+        rejectPromise2({ code: 'permission-denied' });
+        
+        await waitFor(() => {
+            expect(consoleSpy).not.toHaveBeenCalled();
+        });
         consoleSpy.mockRestore();
     });
 
