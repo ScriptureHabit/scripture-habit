@@ -346,7 +346,7 @@ export class MessageService {
                 (isLastMessage || isLastNote) ? transaction.get(
                     db.collection('groups').doc(groupId).collection('messages')
                         .orderBy('createdAt', 'desc')
-                        .limit(50)
+                        .limit(25)
                 ) : Promise.resolve(null),
 
                 isDailyActive ? transaction.get(

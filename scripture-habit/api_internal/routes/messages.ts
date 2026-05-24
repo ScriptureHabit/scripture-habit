@@ -14,7 +14,12 @@ import { MessageService } from '../services/message-service.js';
 import { NoteService } from '../services/note-service.js';
 
 // TRUTH: We leverage Firestore's native caching and Edge CDN. 
-// In-memory caching in multi-instance environments led to stale data risks.
+// In-memory caching in multi-instance environments is used safely for read-only bundle boosts.
+interface BundleCacheEntry {
+    buffer: Buffer;
+    expiresAt: number;
+}
+const bundleCache = new Map<string, BundleCacheEntry>();
 
 /**
  * Get Firestore Bundle for group messages
@@ -89,10 +94,19 @@ router.get('/bundle/:groupId', authenticate, verifyAppCheck, async (req: Authent
             }
         }
 
-        // 3. Generate Bundle (Fresh from Truth)
+        // 3. Check authorized memory cache first
+        const cached = bundleCache.get(groupId);
+        if (cached && cached.expiresAt > Date.now()) {
+            console.log(`[Bundle] Serving authorized in-memory cache for group ${groupId}`);
+            res.setHeader('Content-Type', 'application/octet-stream');
+            res.setHeader('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=60');
+            return res.send(cached.buffer);
+        }
+
+        // 4. Generate Bundle (Fresh from Truth)
         console.log(`[Bundle] Generating new bundle for ${groupId}`);
         const messagesRef = groupRef.collection('messages');
-        const q = messagesRef.orderBy('createdAt', 'desc').limit(50);
+        const q = messagesRef.orderBy('createdAt', 'desc').limit(25);
         const querySnap = await q.get();
 
         const bundle = db.bundle(`group-messages-${groupId}`);
@@ -114,7 +128,13 @@ router.get('/bundle/:groupId', authenticate, verifyAppCheck, async (req: Authent
 
         const bundleBuffer = bundle.build();
 
-        // 4. Send with Edge Cache instructions (Fast & Consistent)
+        // Save to in-memory cache for 60 seconds
+        bundleCache.set(groupId, {
+            buffer: bundleBuffer,
+            expiresAt: Date.now() + 60000
+        });
+
+        // 5. Send with Edge Cache instructions (Fast & Consistent)
         const cacheHeader = 'public, s-maxage=30, stale-while-revalidate=60';
         
         res.setHeader('Content-Type', 'application/octet-stream');

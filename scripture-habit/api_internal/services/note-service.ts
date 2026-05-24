@@ -275,7 +275,12 @@ export class NoteService {
                     const normCurrent = normalizeDateString(currentActivityDate);
                     const normToday = normalizeDateString(groupToday);
 
-                    const groupUpdate: Record<string, unknown> = {};
+                    const groupUpdate: {
+                        dailyActivity?: { date: string; activeMembers: string[] };
+                        'dailyActivity.activeMembers'?: admin.firestore.FieldValue;
+                        'dailyActivity.date'?: string;
+                        unityPercentage?: number;
+                    } = {};
                     let activeMembers = gData.dailyActivity?.activeMembers || [];
                     if (!activeMembers.includes(uid)) {
                         activeMembers = [...activeMembers, uid];

@@ -142,7 +142,7 @@ const useMessageStreamSync = (groupId: string | null, userData: UserData | null,
       if (isCancelled) return;
       
       const messagesRef = collection(db, 'groups', groupId, 'messages').withConverter(messageConverter);
-      const q = query(messagesRef, orderBy('createdAt', 'desc'), limit(50));
+      const q = query(messagesRef, orderBy('createdAt', 'desc'), limit(25));
 
       const unsubscribe = onSnapshot(q, (snapshot) => {
         if (isCancelled) return;

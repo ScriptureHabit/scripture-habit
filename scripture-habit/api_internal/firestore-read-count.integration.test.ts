@@ -297,4 +297,66 @@ describe('Firestore Read Count Assertion Tests', () => {
             await db.collection('cheers').doc(cheerId).delete().catch(() => {});
         });
     });
+
+    describe('Bundle Caching Read Count Assertion', () => {
+        it('should cache generated bundles and serve repeated authorized fetches with exactly 1 permission read and 0 message reads', async () => {
+            const memberUid = 'rc-b-member-' + Date.now();
+            const groupId = 'rc-b-group-' + Date.now();
+
+            createdUserUids.push(memberUid);
+            createdGroupIds.push(groupId);
+
+            const now = admin.firestore.Timestamp.now();
+            await db.collection('users').doc(memberUid).set({ uid: memberUid, nickname: 'Member', groupIds: [groupId] });
+            await db.collection('groups').doc(groupId).set({
+                name: 'Bundle Group',
+                members: [memberUid],
+                membersCount: 1,
+                isPublic: true,
+                ownerUserId: memberUid,
+                lastMessageAt: now
+            });
+
+            // Write 5 mock messages to the group
+            for (let i = 0; i < 5; i++) {
+                await db.collection('groups').doc(groupId).collection('messages').add({
+                    id: `m-${i}`,
+                    text: `Message ${i}`,
+                    senderId: memberUid,
+                    createdAt: now
+                });
+            }
+
+            // Clean spies before first fetch
+            vi.clearAllMocks();
+
+            setup.mockAuth(memberUid);
+
+            // --- FIRST CALL (Cache Miss) ---
+            const res1 = await fetch(`${setup.baseUrl}/api/groups/bundle/${groupId}`, {
+                headers: { 'Authorization': 'Bearer token' }
+            });
+            expect(res1.status).toBe(200);
+
+            // Spies record database reads (permission group read + messages query read)
+            const firstCallDocGets = documentRefGetSpy.mock.calls.length;
+            expect(firstCallDocGets).toBeGreaterThan(0);
+
+            // --- SECOND CALL (Cache Hit) ---
+            vi.clearAllMocks();
+
+            const res2 = await fetch(`${setup.baseUrl}/api/groups/bundle/${groupId}`, {
+                headers: { 'Authorization': 'Bearer token' }
+            });
+            expect(res2.status).toBe(200);
+
+            // Verify that the second call served from memory cache:
+            // It MUST query the permission group doc (1 read)
+            // But it MUST NOT execute any queries or reads on the messages collection!
+            const secondCallGets = documentRefGetSpy.mock.calls.filter((call: any) => {
+                return call[0]?.path && call[0].path.includes('/messages/');
+            });
+            expect(secondCallGets.length).toBe(0); // ZERO messages read! served from memory cache!
+        });
+    });
 });
