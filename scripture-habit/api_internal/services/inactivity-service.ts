@@ -56,7 +56,7 @@ export class InactivityService {
 
         for (const docSnapshot of list) {
             try {
-                const result = await this.processGroupInactivity(docSnapshot.id);
+                const result = await this.processGroupInactivity(docSnapshot.id, docSnapshot);
                 stats.processedGroups++;
                 stats.removedUsers += result.removedCount;
                 stats.initializedTracking += result.initializedCount;
@@ -74,12 +74,12 @@ export class InactivityService {
     /**
      * Processes inactivity for a single group.
      */
-    static async processGroupInactivity(groupId: string) {
+    static async processGroupInactivity(groupId: string, groupSnap?: admin.firestore.DocumentSnapshot) {
         const groupRef = db.collection('groups').doc(groupId);
-        const groupSnap = await groupRef.get();
-        if (!groupSnap.exists) return { removedCount: 0, initializedCount: 0, transferCount: 0, groupDeleted: false };
+        const actualSnap = groupSnap || await groupRef.get();
+        if (!actualSnap.exists) return { removedCount: 0, initializedCount: 0, transferCount: 0, groupDeleted: false };
 
-        const groupData = groupSnap.data() as GroupDocument;
+        const groupData = actualSnap.data() as GroupDocument;
         const membersArray = groupData.members || [];
         const now = new Date();
 
@@ -220,13 +220,19 @@ export class InactivityService {
             groupUpdates[`memberJoinedAt.${uid}`] = initTime;
         }
 
+        // Load the owner doc once if needed for notifications
+        let ownerSnap: admin.firestore.DocumentSnapshot | null = null;
+        const ownerId = decision.newOwnerId || groupData.ownerUserId;
+        if (ownerId && (decision.newOwnerId || decision.membersToRemove.length > 0)) {
+            ownerSnap = await db.collection('users').doc(ownerId).get();
+        }
+
         // Handle Ownership Transfer
-        if (decision.newOwnerId) {
+        if (decision.newOwnerId && ownerSnap) {
             groupUpdates.ownerUserId = decision.newOwnerId;
             
             // Post transfer message
-            const newOwnerUserSnap = await db.collection('users').doc(decision.newOwnerId).get();
-            const lang = (newOwnerUserSnap.data() as UserDocument)?.language || 'en';
+            const lang = (ownerSnap.data() as UserDocument)?.language || 'en';
             batch.set(groupRef.collection('messages').doc(), {
                 text: t(lang, 'notifications.ownership_transferred'),
                 createdAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -255,9 +261,7 @@ export class InactivityService {
             groupUpdates.unityPercentage = calculateUnityPercentage(simulatedGroup as unknown as Group, [], now);
 
             // Removal message (sent to the remaining owner)
-            const ownerId = decision.newOwnerId || groupData.ownerUserId;
-            if (ownerId) {
-                const ownerSnap = await db.collection('users').doc(ownerId).get();
+            if (ownerId && ownerSnap) {
                 const lang = (ownerSnap.data() as UserDocument)?.language || 'en';
                 batch.set(groupRef.collection('messages').doc(), {
                     text: t(lang, 'notifications.members_removed', { count: decision.membersToRemove.length }),

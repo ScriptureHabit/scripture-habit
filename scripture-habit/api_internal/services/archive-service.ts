@@ -19,12 +19,16 @@ export class ArchiveService {
         // 1. Fetch small chunk of old messages (Oldest first)
         const messagesToArchiveSnap = await messagesRef.orderBy('createdAt', 'asc').limit(100).get();
 
+        if (messagesToArchiveSnap.empty) {
+            return 0;
+        }
+
         // 2. Only archive if we have a reasonable amount to bundle, 
         // AND we are strictly above the threshold to keep latest real-time messages
         const groupSnap = await db.collection('groups').doc(groupId).get();
         const totalCount = groupSnap.data()?.messageCount || 0;
 
-        if (totalCount <= this.KEEP_INDIVIDUAL_COUNT || messagesToArchiveSnap.empty) {
+        if (totalCount <= this.KEEP_INDIVIDUAL_COUNT) {
             return 0;
         }
 

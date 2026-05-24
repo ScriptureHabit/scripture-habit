@@ -257,6 +257,30 @@ router.all('/sync-user-stats', verifyCronSecret, async (_req: Request, res: Resp
         let batch = db.batch();
         let batchOpCount = 0;
 
+        // Gather all membership references across all active users
+        const allMemberRefs: admin.firestore.DocumentReference[] = [];
+        for (const userDoc of activeUsersSnap.docs) {
+            const userData = userDoc.data();
+            const groupIds: string[] = userData.groupIds || [];
+            const userId = userDoc.id;
+            for (const gid of groupIds) {
+                allMemberRefs.push(db.collection('groups').doc(gid).collection('members').doc(userId));
+            }
+        }
+
+        // Fetch all membership statuses in parallel using db.getAll in chunks of 500
+        const membershipMap = new Map<string, boolean>(); // key: `${groupId}_${userId}`, value: exists
+        const CHUNK_SIZE = 500;
+        for (let i = 0; i < allMemberRefs.length; i += CHUNK_SIZE) {
+            const chunk = allMemberRefs.slice(i, i + CHUNK_SIZE);
+            const snaps = await db.getAll(...chunk);
+            snaps.forEach(snap => {
+                const userId = snap.id;
+                const groupId = snap.ref.parent.parent!.id;
+                membershipMap.set(`${groupId}_${userId}`, snap.exists);
+            });
+        }
+
         for (const userDoc of activeUsersSnap.docs) {
             const userId = userDoc.id;
             const [notesSnap, cheersSnap] = await Promise.all([
@@ -284,8 +308,8 @@ router.all('/sync-user-stats', verifyCronSecret, async (_req: Request, res: Resp
 
             // 3. Verify Membership Truth (Prune Orphans)
             for (const gid of groupIds) {
-                const memberSnap = await db.collection('groups').doc(gid).collection('members').doc(userId).get();
-                if (memberSnap.exists) {
+                const exists = membershipMap.get(`${gid}_${userId}`) || false;
+                if (exists) {
                     validGroupIds.push(gid);
                 } else {
                     profileChanged = true;
@@ -344,9 +368,37 @@ router.all('/cleanup-orphaned-cheers', verifyCronSecret, async (_req: Request, r
         let checkedCount = 0;
         const batch = db.batch();
 
-        // existence cache to reduce redundant lookups
+        const uniqueGroupIds = new Set<string>();
+        const uniqueUserIds = new Set<string>();
+        for (const cheerDoc of cheersSnap.docs) {
+            const data = cheerDoc.data();
+            if (data.groupId) uniqueGroupIds.add(data.groupId);
+            if (data.senderUid) uniqueUserIds.add(data.senderUid);
+            if (data.targetUid) uniqueUserIds.add(data.targetUid);
+        }
+
+        const groupRefs = Array.from(uniqueGroupIds).map(id => db.collection('groups').doc(id));
+        const userRefs = Array.from(uniqueUserIds).map(id => db.collection('users').doc(id));
+        const allRefs = [...groupRefs, ...userRefs];
+
         const groupExists = new Map<string, boolean>();
         const userExists = new Map<string, boolean>();
+
+        if (allRefs.length > 0) {
+            const CHUNK_SIZE = 500;
+            for (let i = 0; i < allRefs.length; i += CHUNK_SIZE) {
+                const chunk = allRefs.slice(i, i + CHUNK_SIZE);
+                const snaps = await db.getAll(...chunk);
+                snaps.forEach(snap => {
+                    const isGroup = snap.ref.parent.id === 'groups';
+                    if (isGroup) {
+                        groupExists.set(snap.id, snap.exists);
+                    } else {
+                        userExists.set(snap.id, snap.exists);
+                    }
+                });
+            }
+        }
 
         for (const cheerDoc of cheersSnap.docs) {
             const data = cheerDoc.data();
@@ -356,10 +408,6 @@ router.all('/cleanup-orphaned-cheers', verifyCronSecret, async (_req: Request, r
 
             // 1. Check Group
             if (groupId) {
-                if (!groupExists.has(groupId)) {
-                    const gSnap = await db.collection('groups').doc(groupId).get();
-                    groupExists.set(groupId, gSnap.exists);
-                }
                 if (!groupExists.get(groupId)) isOrphan = true;
             } else {
                 isOrphan = true;
@@ -367,18 +415,10 @@ router.all('/cleanup-orphaned-cheers', verifyCronSecret, async (_req: Request, r
 
             // 2. Check Users
             if (!isOrphan && senderUid) {
-                if (!userExists.has(senderUid)) {
-                    const uSnap = await db.collection('users').doc(senderUid).get();
-                    userExists.set(senderUid, uSnap.exists);
-                }
                 if (!userExists.get(senderUid)) isOrphan = true;
             }
 
             if (!isOrphan && targetUid) {
-                if (!userExists.has(targetUid)) {
-                    const uSnap = await db.collection('users').doc(targetUid).get();
-                    userExists.set(targetUid, uSnap.exists);
-                }
                 if (!userExists.get(targetUid)) isOrphan = true;
             }
 

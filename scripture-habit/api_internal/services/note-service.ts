@@ -45,8 +45,8 @@ export class NoteService {
                 // --- 1. ALL READS FIRST ---
                 const [userSnap, existingNoteSnap] = await Promise.all([
                     transaction.get(userRef),
-                    transaction.get(noteRef)
-                ]) as [admin.firestore.DocumentSnapshot<UserDocument>, admin.firestore.DocumentSnapshot];
+                    optimisticId ? transaction.get(noteRef) : Promise.resolve(null)
+                ]) as [admin.firestore.DocumentSnapshot<UserDocument>, admin.firestore.DocumentSnapshot | null];
 
                 if (!userSnap.exists) throw new NotFoundError('User not found.');
                 const userData = userSnap.data()!;
@@ -61,7 +61,7 @@ export class NoteService {
                 groupsToPostTo = [...new Set(groupsToPostTo.filter(gid => !!gid))].slice(0, 20);
 
                 // --- 2. CALCULATIONS (Pure Logic) ---
-                const existingNote = existingNoteSnap.data();
+                const existingNote = existingNoteSnap ? existingNoteSnap.data() : undefined;
                 const existingSharedIds = existingNote?.sharedMessageIds || {};
                 const now = new Date();
                 const timeZone = userData.timeZone || 'UTC';
@@ -92,7 +92,7 @@ export class NoteService {
                     lastPostAt: admin.firestore.Timestamp.fromDate(now)
                 };
 
-                if (!existingNoteSnap.exists) {
+                if (!existingNoteSnap || !existingNoteSnap.exists) {
                     userUpdate.totalNotes = admin.firestore.FieldValue.increment(1);
                 }
 
@@ -236,9 +236,11 @@ export class NoteService {
             const userToGroupEntries: [string, string][] = [];
             const groupsToSync = Object.keys(result.sharedMessageIds);
             
+            let loadedGroupSnaps: admin.firestore.DocumentSnapshot<GroupDocument>[] = [];
             try {
                 if (groupsToSync.length > 0) {
                     const groupDocs = await db.getAll(...groupsToSync.map(gid => db.collection('groups').doc(gid))) as admin.firestore.DocumentSnapshot<GroupDocument>[];
+                    loadedGroupSnaps = groupDocs;
                     groupDocs.forEach(gSnap => {
                         if (gSnap.exists) {
                             const gData = gSnap.data()!;
@@ -257,7 +259,12 @@ export class NoteService {
             const backgroundPromise = Promise.all(groupsToSync.map(async (gid) => {
                 try {
                     const groupRef = db.collection('groups').doc(gid);
-                    const gSnap = await groupRef.get();
+                    
+                    // REUSE the already fetched snapshot if available
+                    let gSnap = loadedGroupSnaps.find(snap => snap.id === gid);
+                    if (!gSnap || !gSnap.exists) {
+                        gSnap = await groupRef.get();
+                    }
                     if (!gSnap.exists) return;
 
                     const gData = gSnap.data() as GroupDocument;
@@ -268,7 +275,7 @@ export class NoteService {
                     const normCurrent = normalizeDateString(currentActivityDate);
                     const normToday = normalizeDateString(groupToday);
 
-                    const groupUpdate: any = {};
+                    const groupUpdate: Record<string, unknown> = {};
                     let activeMembers = gData.dailyActivity?.activeMembers || [];
                     if (!activeMembers.includes(uid)) {
                         activeMembers = [...activeMembers, uid];
@@ -353,11 +360,15 @@ export class NoteService {
                 const groupRefs = sharedEntries.map(([gid]) => db.collection('groups').doc(gid));
                 const msgRefs = sharedEntries.map(([gid, mid]) => db.collection('groups').doc(gid).collection('messages').doc(String(mid)));
 
-                // --- 2. BATCH READ: User, Groups, and affected Messages ---
-                const snapshotResults = await transaction.getAll(userRef, ...groupRefs, ...msgRefs) as admin.firestore.DocumentSnapshot[];
-                const [, ...sharedDocs] = snapshotResults;
-                const groupDocs = sharedDocs.slice(0, sharedEntries.length) as admin.firestore.DocumentSnapshot<GroupDocument>[];
-                const msgDocs = sharedDocs.slice(sharedEntries.length) as admin.firestore.DocumentSnapshot[];
+                // --- 2. BATCH READ: Groups and affected Messages ---
+                let snapshotResults: admin.firestore.DocumentSnapshot[] = [];
+                if (sharedEntries.length > 0) {
+                    snapshotResults = typeof transaction.getAll === 'function'
+                        ? await transaction.getAll(...groupRefs, ...msgRefs) as admin.firestore.DocumentSnapshot[]
+                        : await Promise.all([...groupRefs, ...msgRefs].map(ref => transaction.get(ref)));
+                }
+                const groupDocs = snapshotResults.slice(0, sharedEntries.length) as admin.firestore.DocumentSnapshot<GroupDocument>[];
+                const msgDocs = snapshotResults.slice(sharedEntries.length) as admin.firestore.DocumentSnapshot[];
 
                 const now = new Date();
                 const todayStart = new Date(now);

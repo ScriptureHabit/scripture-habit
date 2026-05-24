@@ -159,8 +159,8 @@ export class MessageService {
             const snaps = await transaction.getAll(...refsToGet);
             const mSnap = snaps[0];
             
-            let gSnap = needsGroupRead ? snaps[1] : null;
-            let uSnap = needsUserRead ? (needsGroupRead ? snaps[2] : snaps[1]) : null;
+            const gSnap = needsGroupRead ? snaps[1] : null;
+            const uSnap = needsUserRead ? (needsGroupRead ? snaps[2] : snaps[1]) : null;
 
             if (!mSnap.exists || (needsGroupRead && !gSnap?.exists) || (needsUserRead && !uSnap?.exists)) {
                 if (!mSnap.exists) {

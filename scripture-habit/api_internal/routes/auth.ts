@@ -174,7 +174,8 @@ router.post('/delete-account', authenticate, verifyAppCheck, async (req: Authent
                             transferOwnership: true,
                             systemMessage: { type: 'leave', nickname: userData.nickname || 'Someone' },
                             preferredLanguage: userData.language || 'en',
-                            removeGroupState: true
+                            removeGroupState: true,
+                            userDoc
                         });
                     });
                 } catch (groupErr) {

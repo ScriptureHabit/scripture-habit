@@ -110,3 +110,20 @@ To debug E2E tests, you can use Playwright's built-in tools:
 All tests run automatically on GitHub Actions via `.github/workflows/ci.yml` on every push and pull request (Lint, Vitest, API Integration, and Playwright E2E).
 
 Ensure that `SKIP_APP_CHECK=true` is set in the test environment to bypass App Check during automated tests.
+
+---
+
+## 7. Firestore Read Count Regression Testing
+
+To mathematically enforce optimal Firestore read counts and lock optimization states forever, we run dedicated read count assertions.
+
+- **Location**: `api_internal/firestore-read-count.integration.test.ts`
+- **How to run**:
+  ```bash
+  npm run test:internal -- firestore-read-count.integration.test.ts
+  ```
+- **Key Patterns**:
+  - Uses Vitest spies to verify transaction and document reference read counts.
+  - Mathematically asserts exact expected reads (e.g. 0 re-reads inside transaction loops).
+  - Complemented by an automatic, transparent read budget tracker inside [TestSetup](file:///c:/Users/dazhi/code/final-project/scripture-habit/api_internal/test-setup.ts) that reports a collection-level breakdown of reads for every emulated test suite.
+

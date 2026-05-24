@@ -109,3 +109,65 @@ To scale high-frequency operations such as chat messaging (`postMessage`) and re
 
 ### Reaction Toggling (`toggleReaction`)
 - **Membership Check Bypassing**: When called from the production REST endpoint, the toggle reaction transaction accepts `skipGroupCheck: true` to bypass the `groupRef` read entirely, utilizing client-side context safety and authenticated sessions for authorization. This reduces transactional reads by **1 group document read** per reaction.
+
+---
+
+## 5. Firestore Read Optimization & Telemetry Audit System
+
+To maintain low database costs and high API response times as scripture-habit scales, the architecture enforces strict guidelines to minimize Firestore document read operations.
+
+### 5.1 Optimization Principles
+
+1. **Query Snapshot Reuse**
+   When looking up a document via a query (e.g., searching for a group by `inviteCode`), the resulting `QueryDocumentSnapshot` already contains the full document data. Bypasses secondary `transaction.get(docRef)` calls by directly reusing the snap:
+   ```typescript
+   // Efficient invite code join
+   const querySnap = await transaction.get(inviteCodeQuery);
+   const groupDoc = querySnap.docs[0]; // Reuse this directly! (Bypasses groupRef.get())
+   ```
+
+2. **Parallel Chunked Fetching (`db.getAll`)**
+   Avoid sequential gets inside loops (N+1 queries), which cause multiple network roundtrips. Gather all references and fetch them in parallel using chunked `db.getAll(...)` in batches of 500:
+   ```typescript
+   // Efficient batch sync
+   const allMemberRefs = groupIds.map(gid => db.collection('groups').doc(gid).collection('members').doc(userId));
+   const snaps = await db.getAll(...allMemberRefs); // Bypasses loop gets!
+   ```
+
+3. **Background Context Propagation**
+   When offloading operations to async background workers (e.g., push notifications in `postNote`), propagate pre-loaded snapshots into the worker context instead of re-fetching them.
+
+4. **Optimistic Read Elimination**
+   Bypasses optimistic fetches (such as fetching a learning note in `postNote` or `deleteNote`) when those fields or actions are not required for transaction validations.
+
+---
+
+## 6. Automatic Telemetry & Global Read Budgeting
+
+To ensure developers do not accidentally re-introduce N+1 queries or redundant fetches during future updates, the emulated integration test environment runs a transparent **Global Read Audit**.
+
+### 6.1 Transparent Prototype Wrapping
+During testing, the [TestSetup](file:///c:/Users/dazhi/code/final-project/scripture-habit/api_internal/test-setup.ts) harness intercepts and counts every execution of:
+- `admin.firestore.Transaction.prototype.get`
+- `admin.firestore.Transaction.prototype.getAll`
+- `admin.firestore.DocumentReference.prototype.get`
+
+This tracking is fully immune to standard mock restorations (`vi.restoreAllMocks()`).
+
+### 6.2 Test Output Report & Warning Budget
+At the end of each emulated test file, `TestSetup` logs a detailed collection-level breakdown of the database reads:
+
+```text
+📊 [Firestore Read Audit] -----------------------------
+   Transaction GETs:    18
+   Transaction GETALLs: 1
+   Document GETs:       10
+   👉 Total Reads:      29
+   Collection Breakdown:
+     - users: 11 reads
+     - groups: 16 reads
+-------------------------------------------------------
+```
+
+If a test file exceeds a generous budget of **300 Firestore reads**, `TestSetup` outputs a prominent compiler warning urging the developer to review the asynchronous chains for N+1 queries.
+

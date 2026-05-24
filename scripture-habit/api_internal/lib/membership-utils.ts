@@ -21,6 +21,10 @@ export interface RemoveMemberOptions {
         type: 'leave' | 'kick';
         nickname: string;
     };
+    /** Pre-loaded user document snapshot to avoid redundant reads */
+    userDoc?: admin.firestore.DocumentSnapshot;
+    /** Pre-loaded group document snapshot to avoid redundant reads */
+    groupDoc?: admin.firestore.DocumentSnapshot;
 }
 
 /**
@@ -90,10 +94,23 @@ export async function removeMemberFromGroup(
     const userRef = db.collection('users').doc(userId);
 
     // 1. Get current data (Reads must come BEFORE any writes)
-    const [groupSnap, userSnap] = await Promise.all([
-        transaction.get(groupRef),
-        transaction.get(userRef)
-    ]);
+    let groupSnap = options.groupDoc;
+    let userSnap = options.userDoc;
+
+    const refsToGet: admin.firestore.DocumentReference[] = [];
+    if (!groupSnap) refsToGet.push(groupRef);
+    if (!userSnap) refsToGet.push(userRef);
+
+    if (refsToGet.length > 0) {
+        const snaps = typeof transaction.getAll === 'function'
+            ? await transaction.getAll(...refsToGet)
+            : await Promise.all(refsToGet.map(ref => transaction.get(ref)));
+        let snapIdx = 0;
+        if (!groupSnap) groupSnap = snaps[snapIdx++];
+        if (!userSnap) userSnap = snaps[snapIdx++];
+    }
+
+    if (!groupSnap || !userSnap) return;
 
     if (!groupSnap.exists) return;
     const groupData = groupSnap.data() as GroupDocument || {};

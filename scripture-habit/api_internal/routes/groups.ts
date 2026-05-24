@@ -138,13 +138,16 @@ router.post('/join-group', authenticate, requireEmailVerified, verifyAppCheck, a
     try {
         const result = await db.runTransaction(async (transaction) => {
             let groupRef;
+            let groupDoc;
             if (groupId) {
                 groupRef = db.collection('groups').doc(groupId);
+                groupDoc = await transaction.get(groupRef);
             } else if (inviteCode) {
                 const groupQuery = db.collection('groups').where('inviteCode', '==', inviteCode).limit(1);
                 const querySnap = await transaction.get(groupQuery);
                 if (querySnap.empty) throw new Error('Invalid invite code.');
-                groupRef = querySnap.docs[0].ref;
+                groupDoc = querySnap.docs[0];
+                groupRef = groupDoc.ref;
             } else {
                 throw new Error('Group ID or Invite Code is required.');
             }
@@ -152,7 +155,6 @@ router.post('/join-group', authenticate, requireEmailVerified, verifyAppCheck, a
             const userRef = db.collection('users').doc(uid);
 
             // TRUTH: Execute all READS before any WRITES
-            const groupDoc = await transaction.get(groupRef);
             const userDoc = await transaction.get(userRef);
 
             if (!groupDoc.exists) throw new Error('Group not found.');
@@ -300,7 +302,8 @@ router.post('/leave-group', authenticate, verifyAppCheck, async (req: Authentica
                 systemMessage: {
                     type: 'leave',
                     nickname: uData.nickname || 'Someone'
-                }
+                },
+                userDoc: uSnap
             });
 
             return { success: true };
@@ -496,7 +499,9 @@ router.post('/kick-member', authenticate, verifyAppCheck, async (req: Authentica
                 systemMessage: {
                     type: 'kick',
                     nickname: uData.nickname || 'Someone'
-                }
+                },
+                groupDoc: gSnap,
+                userDoc: uSnap
             });
         });
 
