@@ -1,7 +1,7 @@
 export default {
         seo: {
-            title: "Scripture Habit | Công cụ Cộng đồng & Nghiên cứu Thánh thư LDS",
-            description: "Xây dựng thói quen học thánh thư hàng ngày cùng bạn bè. Được tối ưu hóa cho các thành viên LDS nghiên cứu Kinh Thánh, Sách Mặc Môn và Hãy Đi Theo Ta. Công cụ tốt nhất để biến việc học Phúc âm thành thói quen vui vẻ hàng ngày."
+            title: "Scripture Habit | Công cụ Cộng đồng & Nghiên cứu Thánh thư",
+            description: "Xây dựng thói quen học thánh thư hàng ngày cùng bạn bè. Được tối ưu hóa để nghiên cứu Kinh Thánh, Sách Mặc Môn và Hãy Đi Theo Ta. Công cụ tốt nhất để biến việc học Phúc âm thành thói quen vui vẻ hàng ngày."
         },
         landing: {
             hero: {
@@ -73,7 +73,8 @@ export default {
             },
             finalCta: {
                 title: "Bạn có muốn bắt đầu một thói quen mới cùng chúng mình không?",
-                button: "Bắt đầu ngay"
+                button: "Bắt đầu ngay",
+                mascotBubble: "Hãy bắt đầu bằng nút bên dưới! ✨"
             },
             seoContent: {
                 why: {
@@ -91,7 +92,7 @@ export default {
                 faq: {
                     title: "Câu hỏi thường gặp",
                     q1: "Làm sao tôi có thể tiếp tục học thánh thư?",
-                    a1: "Quan trọng là tiếp tục từng chút mỗi ngày với một nhịp độ dễ chịu, và quy tắc 3 ngày của app giúp tạo ra nhịp điệu nhẹ nhàng đó.",
+                    a1: "Việc dành thời gian nghiên cứu thánh thư mỗi ngày một lần và chia sẻ những gì bạn đã học được là rất quan trọng. Chúng ta hãy cùng nhau cố gắng từng chút một và khích lệ lẫn nhau trên Scripture Habit nhé!",
                     q2: "Đây có phải là ứng dụng chính thức của Giáo hội không?",
                     a2: "Không, đây không phải ứng dụng chính thức, mà là công cụ phi lợi nhuận được xây dựng cá nhân để hỗ trợ thành viên và người học thánh thư.",
                     q3: "Tôi có thể dùng nó để học Kinh Thánh không?",

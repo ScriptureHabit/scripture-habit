@@ -1,11 +1,11 @@
 export default {
         seo: {
-            title: "Scripture Habit | Herramienta de Comunidad y Estudio de las Escrituras SUD",
-            description: "Crea un hábito diario de estudio de las escrituras con amigos. Optimizado para miembros SUD que estudian la Biblia, el Libro de Mormón y Ven, sígueme. La mejor herramienta para convertir el estudio del Evangelio en una rutina diaria alegre."
+            title: "Scripture Habit | Herramienta de Comunidad y Estudio de las Escrituras",
+            description: "Crea un hábito diario de estudio de las escrituras con amigos. Optimizado para estudiar la Biblia, el Libro de Mormón y Ven, sígueme. La mejor herramienta para convertir el estudio del Evangelio en una rutina diaria alegre."
         },
         landing: {
             hero: {
-                title: "Donde el Estudio de las Escrituras SUD se Convierte en un Hábito de Alegría",
+                title: "Donde el Estudio de las Escrituras se Convierte en un Hábito de Alegría",
                 subtitle: "Lee las escrituras con amigos y comparte tus reflexiones para hacer del aprendizaje diario algo hermoso.",
                 cta: "Comenzar ahora",
                 mascotBubble: "¡Hola! ¡Comencemos a leer las escrituras juntos! ✨"
@@ -73,7 +73,8 @@ export default {
             },
             finalCta: {
                 title: "¿Te gustaría comenzar un nuevo hábito con nosotros?",
-                button: "Empezar ahora"
+                button: "Empezar ahora",
+                mascotBubble: "¡Comencemos con el botón de abajo! ✨"
             },
             seoContent: {
                 why: {
@@ -91,7 +92,7 @@ export default {
                 faq: {
                     title: "Preguntas frecuentes",
                     q1: "¿Cómo puedo seguir estudiando las escrituras?",
-                    a1: "Es importante continuar con pequeños pasos cada día a un ritmo cómodo, y la regla de 3 días de la app ayuda a crear ese ritmo suave.",
+                    a1: "Es importante hacer tiempo para estudiar las escrituras una vez al día y compartir lo que has aprendido. ¡Sigamos dando lo mejor de nosotros poco a poco mientras nos animamos mutuamente en Scripture Habit!",
                     q2: "¿Es esta una aplicación oficial de la Iglesia?",
                     a2: "Esta app no es oficial, pero es una herramienta sin fines de lucro desarrollada personalmente para apoyar a los miembros y a todos los estudiantes de las escrituras.",
                     q3: "¿Puedo usarla para estudiar la Biblia?",

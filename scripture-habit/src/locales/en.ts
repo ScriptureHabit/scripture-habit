@@ -1,7 +1,7 @@
 export default {
         seo: {
-            title: "Scripture Habit | Daily LDS Scripture Study & Community Tool",
-            description: "Build a daily scripture habit with friends. Optimized for LDS members studying the Bible, Book of Mormon, and Come, Follow Me. The best tool to turn Gospel study into a joyful daily routine."
+            title: "Scripture Habit | Daily Scripture Study & Community Tool",
+            description: "Build a daily scripture habit with friends. Optimized for studying the Bible, Book of Mormon, and more. The best tool to turn Gospel study into a joyful daily routine."
         },
         sidebar: {
             dashboard: "dashboard",
@@ -747,7 +747,7 @@ export default {
         },
         landing: {
             hero: {
-                title: "Where LDS Scripture Study Becomes a Habit of Joy",
+                title: "Where Scripture Study Becomes a Habit of Joy",
                 subtitle: "Read the scriptures with friends and share your insights to make daily learning even more delightful.",
                 cta: "Start Now",
                 mascotBubble: "Hi there! Let's start reading the scriptures together! ✨"
@@ -815,7 +815,8 @@ export default {
             },
             finalCta: {
                 title: "Would you like to start a new habit with us?",
-                button: "Get Started Now"
+                button: "Get Started Now",
+                mascotBubble: "Let's get started with the button below! ✨"
             },
             seoContent: {
                 why: {
@@ -833,7 +834,7 @@ export default {
                 faq: {
                     title: "Frequently Asked Questions",
                     q1: "How can I keep scripture study going?",
-                    a1: "It's important to continue small every day at an easy pace, and the app's 3-day rule helps create that gentle rhythm.",
+                    a1: "It is important to make time to study the scriptures once a day and to share what you have learned. Let's keep doing our best little by little while encouraging each other on Scripture Habit.",
                     q2: "Is this app official Church software?",
                     a2: "This app is not official, but it is a nonprofit tool developed personally to support members and all scripture learners.",
                     q3: "Can I use it for Bible study?",

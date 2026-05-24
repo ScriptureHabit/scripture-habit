@@ -168,6 +168,15 @@ const LandingPage: FC = () => {
                 {/* Final CTA Section */}
                 <section className="final-cta-section">
                     <h2 className="section-title">{t('landing.finalCta.title')}</h2>
+                    
+                    <div className="final-cta-mascot-container">
+                        <div className="mascot-bubble final-cta-bubble">
+                            <span className="mascot-bubble-text">{t('landing.finalCta.mascotBubble')}</span>
+                            <div className="mascot-bubble-tail"></div>
+                        </div>
+                        <img src="/images/mascot.png" alt="Mascot Bird" className="final-cta-mascot-img" />
+                    </div>
+
                     <Button
                         className="cta-button primary-cta final-cta"
                         onClick={() => navigate(`/${language}/welcome`)}

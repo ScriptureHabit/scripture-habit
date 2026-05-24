@@ -420,12 +420,36 @@ section {
 .final-cta-section {
     text-align: center;
     padding: 100px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.final-cta-mascot-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    width: 320px;
+    margin: 32px auto 16px auto;
+    animation: floating 4s ease-in-out infinite;
+}
+
+.final-cta-mascot-img {
+    width: 150px;
+    height: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 15px 15px rgba(0,0,0,0.1));
+}
+
+.final-cta-bubble {
+    margin-bottom: 16px !important;
 }
 
 .final-cta {
     padding: 1.5rem 4rem !important;
     font-size: 1.3rem !important;
-    margin-top: 32px !important;
+    margin-top: 16px !important;
 }
 
 
@@ -737,20 +761,47 @@ section {
     }
 
     .hero-section {
-        flex-direction: column-reverse; /* Places the mascot cleanly below the description & CTA button */
+        display: flex;
+        flex-direction: column;
         padding: 80px 24px 40px 24px;
         text-align: center;
-        gap: 32px;
+        gap: 24px;
+    }
+
+    .hero-content {
+        display: contents;
+    }
+
+    .hero-title {
+        order: 1;
+        font-size: 2.3rem;
+        line-height: 1.3;
+        margin-bottom: 0;
+        max-width: 600px;
+        width: 100%;
+    }
+
+    .hero-subtitle {
+        order: 2;
+        font-size: 1.1rem;
+        margin-bottom: 0;
+        max-width: 600px;
+        width: 100%;
+        line-height: 1.6;
     }
 
     .hero-mascot-container {
+        order: 3;
         width: 100%;
-        margin-top: 32px; /* Hearty vertical gap below the CTA button */
-        margin-bottom: 0;
+        margin-top: 16px;
+        margin-bottom: 8px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
 
     .hero-mascot-img {
-        width: 130px; /* Highly compact, beautiful mascot size on mobile */
+        width: 130px;
         height: auto;
     }
 
@@ -764,23 +815,27 @@ section {
         font-size: 0.85rem;
     }
 
-    .hero-content {
-        text-align: center;
-    }
-
-    .hero-title {
-        font-size: 2.3rem;
-        line-height: 1.3;
-    }
-
-    .hero-subtitle {
-        font-size: 1.1rem;
-        margin-bottom: 2rem;
-    }
-
     .primary-cta {
+        order: 4;
         padding: 1.1rem 2.8rem !important;
         font-size: 1.1rem !important;
+        margin-top: 8px;
+    }
+
+    .final-cta-mascot-container {
+        width: 100%;
+        margin-top: 16px;
+        margin-bottom: 8px;
+    }
+
+    .final-cta-mascot-img {
+        width: 110px;
+    }
+
+    .final-cta {
+        padding: 1.1rem 2.8rem !important;
+        font-size: 1.1rem !important;
+        margin-top: 8px !important;
     }
 
     .section-title {

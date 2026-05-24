@@ -1,7 +1,7 @@
 export default {
         seo: {
-            title: "Scripture Habit | Mafunzo ya Maandiko ya LDS ya Kila Siku na Zana ya Jumuiya",
-            description: "Jenga tabia ya kila siku ya kujifunza maandiko na marafiki. Imeboreshwa kwa washiriki wa LDS wanaojifunza Biblia, Kitabu cha Mormoni, na Njoo, Unifuate. Zana bora ya kugeuza mafunzo ya Injili kuwa utaratibu wa kufurahisha wa kila siku."
+            title: "Scripture Habit | Mafunzo ya Maandiko ya Kila Siku na Zana ya Jumuiya",
+            description: "Jenga tabia ya kila siku ya kujifunza maandiko na marafiki. Imeboreshwa kwa wanaojifunza Biblia, Kitabu cha Mormoni, na Njoo, Unifuate. Zana bora ya kugeuza mafunzo ya Injili kuwa utaratibu wa kufurahisha wa kila siku."
         },
         landing: {
             hero: {
@@ -73,7 +73,8 @@ export default {
             },
             finalCta: {
                 title: "Je, ungependa kuanza tabia mpya pamoja nasi?",
-                button: "Anza Sasa"
+                button: "Anza Sasa",
+                mascotBubble: "Tuanze kwa kitufe cha hapa chini! ✨"
             },
             seoContent: {
                 why: {
@@ -91,7 +92,7 @@ export default {
                 faq: {
                     title: "Maswali yanayoulizwa mara kwa mara",
                     q1: "Ninawezaje kuendelea kusoma maandiko?",
-                    a1: "Ni muhimu kuendelea kwa hatua ndogo kila siku kwa mwendo wa urahisi, na sheria ya siku 3 ya app inasaidia kuunda mdundo huo laini.",
+                    a1: "Ni muhimu kutenga muda wa kujifunza maandiko mara moja kwa siku na kushiriki yale uliyojifunza. Tuendelee kufanya uwezo wetu kidogo kidogo huku tukitiana moyo kwenye Scripture Habit!",
                     q2: "Je, hii ni programu rasmi ya Kanisa?",
                     a2: "Hii si programu rasmi, bali ni chombo kisicho cha faida kilichotengenezwa kwa binafsi kusaidia wanachama na wote wanaosoma maandiko.",
                     q3: "Naweza kuitumia kwa masomo ya Biblia?",

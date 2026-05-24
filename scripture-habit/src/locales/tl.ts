@@ -1,7 +1,7 @@
 export default {
         seo: {
-            title: "Scripture Habit | Daily LDS Scripture Study at Tool sa Komunidad",
-            description: "Bumuo ng pang-araw-araw na gawi sa pag-aaral ng banal na kasulatan kasama ang mga kaibigan. Na-optimize para sa mga miyembro ng LDS na nag-aaral ng Biblia, Aklat ni Mormon, at Pumarito Ka, Sumunod Ka sa Akin. Ang pinakamahusay na tool upang gawing masayang daily routine ang pag-aaral ng Ebanghelyo."
+            title: "Scripture Habit | Daily Scripture Study at Tool sa Komunidad",
+            description: "Bumuo ng pang-araw-araw na gawi sa pag-aaral ng banal na kasulatan kasama ang mga kaibigan. Na-optimize para sa pag-aaral ng Biblia, Aklat ni Mormon, at Pumarito Ka, Sumunod Ka sa Akin. Ang pinakamahusay na tool upang gawing masayang daily routine ang pag-aaral ng Ebanghelyo."
         },
         landing: {
             hero: {
@@ -75,7 +75,8 @@ export default {
             },
             finalCta: {
                 title: "Gusto mo bang magsimula ng bagong ugali kasama namin?",
-                button: "Magsimula Na"
+                button: "Magsimula Na",
+                mascotBubble: "Magsimula tayo gamit ang button sa ibaba! ✨"
             },
             seoContent: {
                 why: {
@@ -93,7 +94,7 @@ export default {
                 faq: {
                     title: "Mga Madalas Itanong",
                     q1: "Paano ako makakapagpatuloy sa pag-aaral ng banal na kasulatan?",
-                    a1: "Mahalagang magsimula nang maliit araw-araw sa isang komportableng ritmo, at ang aming maluwang na 3-araw na patakaran ay tumutulong sa iyo na mapanatili ang maayos na ritmo.",
+                    a1: "Mahalagang maglaan ng oras upang pag-aralan ang mga banal na kasulatan minsan sa isang araw at ibahagi ang iyong natutunan. Patuloy nating gawin ang ating makakaya nang paunti-unti habang hinihikayat ang isa't isa sa Scripture Habit!",
                     q2: "Opisyal bang app ng Simbahan ito?",
                     a2: "Hindi ito opisyal, kundi personal na proyektong hindi pangkalakal na nilikha upang suportahan ang mga nagbabasa ng banal na kasulatan.",
                     q3: "Maaari ko ba itong gamitin para sa pag-aaral ng Biblia?",
