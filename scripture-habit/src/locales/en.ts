@@ -1,4 +1,10 @@
 export default {
+        common: {
+            cancel: "Cancel",
+            delete: "Delete",
+            close: "Close",
+            dismiss: "Dismiss"
+        },
         seo: {
             title: "Scripture Habit | Daily Scripture Study & Community Tool",
             description: "Build a daily scripture habit with friends. Optimized for studying the Bible, Book of Mormon, and more. The best tool to turn Gospel study into a joyful daily routine."
@@ -167,7 +173,8 @@ export default {
             letterSaveSuccess: "Saved to Letter Box!",
             prevPage: "Previous",
             nextPage: "Next",
-            pageInfo: "Page {current} of {total}"
+            pageInfo: "Page {current} of {total}",
+            nextLetterInDays: "(Next letter in {days} days)"
         },
         recapModal: {
             title: "Your Weekly Letter",
@@ -177,6 +184,7 @@ export default {
         },
         letterBox: {
             title: "Letter Box",
+            deleteTitle: "Delete Letter",
             deleteConfirm: "Are you sure you want to discard this letter?",
             back: "Back to List",
             loading: "Loading letters...",

@@ -1,4 +1,10 @@
 export default {
+    common: {
+        cancel: "취소",
+        delete: "삭제",
+        close: "닫기",
+        dismiss: "닫기"
+    },
         seo: {
             title: "Scripture Habit | 일일 경전 공부 및 커뮤니티 도구",
             description: "친구들과 함께 매일 경전 공부 습관을 만들어 보세요. 성경, 몰몬경, '와서 나를 따르라'를 공부하기 위해 최적화되었습니다. 복음 공부를 즐거운 일과로 만들어주는 최고의 도구입니다."
@@ -455,7 +461,8 @@ export default {
             letterSaveSuccess: "편지함에 저장되었습니다!",
             prevPage: "이전",
             nextPage: "다음",
-            pageInfo: "{total}페이지 중 {current}페이지"
+            pageInfo: "{total}페이지 중 {current}페이지",
+            nextLetterInDays: "(새 편지까지 {days}일 남음)"
         },
         recapModal: {
             title: "당신의 주간 편지",
@@ -464,6 +471,7 @@ export default {
             saveToNotes: "편지함에 저장"
         },
         letterBox: {
+            deleteTitle: "편지 삭제",
             title: "편지함",
             deleteConfirm: "이 편지를 정말 버리시겠습니까?",
             back: "목록으로 돌아가기",

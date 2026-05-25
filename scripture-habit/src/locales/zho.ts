@@ -1,4 +1,10 @@
 export default {
+    common: {
+        cancel: "取消",
+        delete: "刪除",
+        close: "關閉",
+        dismiss: "關閉"
+    },
         seo: {
             title: "Scripture Habit | 每日經文研讀與社群工具",
             description: "與朋友一起建立每日研讀經文的習慣。為研究聖經、摩爾門經和「來跟從我」優化。將福音學習轉化為愉快日常習慣的最佳工具。"
@@ -428,7 +434,8 @@ export default {
             letterSaveSuccess: "已存入信箱！",
             prevPage: "上一頁",
             nextPage: "下一頁",
-            pageInfo: "第 {current} 頁，共 {total} 頁"
+            pageInfo: "第 {current} 頁，共 {total} 頁",
+            nextLetterInDays: "(距离新信件还有 {days} 天)"
         },
         recapModal: {
             title: "您的每週信件",
@@ -437,6 +444,7 @@ export default {
             saveToNotes: "儲存至信箱"
         },
         letterBox: {
+            deleteTitle: "刪除信件",
             title: "信箱",
             deleteConfirm: "您確定要丟棄這封信嗎？",
             back: "返回列表",

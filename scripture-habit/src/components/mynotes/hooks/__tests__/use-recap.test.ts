@@ -54,13 +54,13 @@ describe('useRecapOperations Cooldown Logic', () => {
     const lastGeneratedDate = new Date(Date.now() - 5.9 * 24 * 60 * 60 * 1000);
     const userData = createUserData(lastGeneratedDate);
 
-    vi.mocked(apiClient.post).mockResolvedValue({ data: { recap: 'Cached Recap' } });
+    vi.mocked(apiClient.post).mockResolvedValue({ data: { recap: 'Cached Recap', fromCache: true } });
 
     const { result } = renderHook(() => useRecapOperations(userData, 'en', mockT));
 
-    let recapText: string | null = null;
+    let recap: { text: string; fromCache: boolean } | null = null;
     await act(async () => {
-      recapText = await result.current.generateRecap(0);
+      recap = await result.current.generateRecap(0);
     });
 
     // It should invoke the API to fetch the cached recap (because isWithinCooldown is true)
@@ -69,7 +69,7 @@ describe('useRecapOperations Cooldown Logic', () => {
       uid: 'user123',
       language: 'en'
     }, expect.any(Object));
-    expect(recapText).toBe('Cached Recap');
+    expect(recap).toEqual({ text: 'Cached Recap', fromCache: true });
   });
 
   it('should trigger cooldown (isWithinCooldown = true) if recap was generated exactly 5.0 days ago', async () => {
@@ -77,18 +77,18 @@ describe('useRecapOperations Cooldown Logic', () => {
     const lastGeneratedDate = new Date(Date.now() - 5.0 * 24 * 60 * 60 * 1000);
     const userData = createUserData(lastGeneratedDate);
 
-    vi.mocked(apiClient.post).mockResolvedValue({ data: { recap: 'Cached Recap' } });
+    vi.mocked(apiClient.post).mockResolvedValue({ data: { recap: 'Cached Recap', fromCache: true } });
 
     const { result } = renderHook(() => useRecapOperations(userData, 'en', mockT));
 
-    let recapText: string | null = null;
+    let recap: { text: string; fromCache: boolean } | null = null;
     await act(async () => {
-      recapText = await result.current.generateRecap(0);
+      recap = await result.current.generateRecap(0);
     });
 
     expect(toast.info).toHaveBeenCalledWith('myNotes.fetchingRecentRecap');
     expect(apiClient.post).toHaveBeenCalled();
-    expect(recapText).toBe('Cached Recap');
+    expect(recap).toEqual({ text: 'Cached Recap', fromCache: true });
   });
 
   it('should NOT trigger cooldown (isWithinCooldown = false) if recap was generated exactly 6.0 days ago', async () => {
@@ -96,19 +96,19 @@ describe('useRecapOperations Cooldown Logic', () => {
     const lastGeneratedDate = new Date(Date.now() - 6.0 * 24 * 60 * 60 * 1000);
     const userData = createUserData(lastGeneratedDate);
 
-    vi.mocked(apiClient.post).mockResolvedValue({ data: { recap: 'New Recap Text' } });
+    vi.mocked(apiClient.post).mockResolvedValue({ data: { recap: 'New Recap Text', fromCache: false } });
 
     const { result } = renderHook(() => useRecapOperations(userData, 'en', mockT));
 
-    let recapText: string | null = null;
+    let recap: { text: string; fromCache: boolean } | null = null;
     await act(async () => {
-      recapText = await result.current.generateRecap(5); // 5 notes
+      recap = await result.current.generateRecap(5); // 5 notes
     });
 
     // Since cooldown is over, it should try to generate a NEW recap
     expect(toast.info).toHaveBeenCalledWith('myNotes.generatingRecap');
     expect(apiClient.post).toHaveBeenCalled();
-    expect(recapText).toBe('New Recap Text');
+    expect(recap).toEqual({ text: 'New Recap Text', fromCache: false });
   });
 
   it('should NOT trigger cooldown (isWithinCooldown = false) if recap was generated 6.1 days ago', async () => {
@@ -116,17 +116,17 @@ describe('useRecapOperations Cooldown Logic', () => {
     const lastGeneratedDate = new Date(Date.now() - 6.1 * 24 * 60 * 60 * 1000);
     const userData = createUserData(lastGeneratedDate);
 
-    vi.mocked(apiClient.post).mockResolvedValue({ data: { recap: 'New Recap Text' } });
+    vi.mocked(apiClient.post).mockResolvedValue({ data: { recap: 'New Recap Text', fromCache: false } });
 
     const { result } = renderHook(() => useRecapOperations(userData, 'en', mockT));
 
-    let recapText: string | null = null;
+    let recap: { text: string; fromCache: boolean } | null = null;
     await act(async () => {
-      recapText = await result.current.generateRecap(5); // 5 notes
+      recap = await result.current.generateRecap(5); // 5 notes
     });
 
     expect(toast.info).toHaveBeenCalledWith('myNotes.generatingRecap');
     expect(apiClient.post).toHaveBeenCalled();
-    expect(recapText).toBe('New Recap Text');
+    expect(recap).toEqual({ text: 'New Recap Text', fromCache: false });
   });
 });

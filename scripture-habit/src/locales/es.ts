@@ -1,4 +1,10 @@
 export default {
+    common: {
+        cancel: "Cancelar",
+        delete: "Eliminar",
+        close: "Cerrar",
+        dismiss: "Descartar"
+    },
         seo: {
             title: "Scripture Habit | Herramienta de Comunidad y Estudio de las Escrituras",
             description: "Crea un hábito diario de estudio de las escrituras con amigos. Optimizado para estudiar la Biblia, el Libro de Mormón y Ven, sígueme. La mejor herramienta para convertir el estudio del Evangelio en una rutina diaria alegre."
@@ -453,7 +459,8 @@ export default {
             letterSaveSuccess: "¡Guardado en el buzón de cartas!",
             prevPage: "Anterior",
             nextPage: "Siguiente",
-            pageInfo: "Página {current} de {total}"
+            pageInfo: "Página {current} de {total}",
+            nextLetterInDays: "(Próxima carta en {days} días)"
         },
         recapModal: {
             title: "Tu Carta Semanal",
@@ -462,6 +469,7 @@ export default {
             saveToNotes: "Guardar en el Buzón de Cartas"
         },
         letterBox: {
+            deleteTitle: "Eliminar Carta",
             title: "Buzón de Cartas",
             deleteConfirm: "¿Estás seguro de que quieres descartar esta carta?",
             back: "Volver a la Lista",

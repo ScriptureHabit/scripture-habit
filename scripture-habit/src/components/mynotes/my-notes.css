@@ -320,6 +320,39 @@
     cursor: not-allowed;
 }
 
+/* Sky blue pastel gradient for cached recap view */
+.generate-recap-main-btn.view-cached {
+    background: linear-gradient(135deg, #4fc3f7 0%, #81d4fa 100%);
+}
+
+.recap-card.view-cached {
+    background: linear-gradient(135deg, #ffffff 0%, #e1f5fe 100%);
+}
+
+.action-card.available.view-cached:hover {
+    box-shadow: 0 10px 25px rgba(79, 195, 247, 0.3);
+}
+
+.btn-content.flex-column {
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.btn-main-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.btn-sub-row {
+    font-size: 0.8rem;
+    font-weight: 600;
+    opacity: 0.95;
+    margin-top: 0.1rem;
+    color: rgba(255, 255, 255, 0.95);
+    letter-spacing: 0.05em;
+}
+
 .btn-content {
     display: flex;
     align-items: center;

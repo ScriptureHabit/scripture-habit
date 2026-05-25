@@ -1,4 +1,10 @@
 export default {
+    common: {
+        cancel: "Kanselahin",
+        delete: "I-delete",
+        close: "Isara",
+        dismiss: "I-dismiss"
+    },
         seo: {
             title: "Scripture Habit | Daily Scripture Study at Tool sa Komunidad",
             description: "Bumuo ng pang-araw-araw na gawi sa pag-aaral ng banal na kasulatan kasama ang mga kaibigan. Na-optimize para sa pag-aaral ng Biblia, Aklat ni Mormon, at Pumarito Ka, Sumunod Ka sa Akin. Ang pinakamahusay na tool upang gawing masayang daily routine ang pag-aaral ng Ebanghelyo."
@@ -455,7 +461,8 @@ export default {
             letterSaveSuccess: "Na-save sa Letter Box!",
             prevPage: "Nakaraan",
             nextPage: "Susunod",
-            pageInfo: "Pahina {current} ng {total}"
+            pageInfo: "Pahina {current} ng {total}",
+            nextLetterInDays: "(Susunod na sulat sa loob ng {days} araw)"
         },
         recapModal: {
             title: "Ang Iyong Lingguhang Sulat",
@@ -464,6 +471,7 @@ export default {
             saveToNotes: "I-save sa Letter Box"
         },
         letterBox: {
+            deleteTitle: "I-delete ang Sulat",
             title: "Letter Box",
             deleteConfirm: "Sigurado ka bang gusto mong itapon ang sulat na ito?",
             back: "Bumalik sa Listahan",

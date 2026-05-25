@@ -13,7 +13,7 @@ import { parseTimestampToDate } from '../../../utils/time-utils';
 export const useRecapOperations = (userData: UserData, language: string, t: (k: string, options?: Record<string, string | number>) => string) => {
   const [loading, setLoading] = useState(false);
 
-  const generateRecap = async (notesCount: number) => {
+  const generateRecap = async (notesCount: number): Promise<{ text: string; fromCache: boolean } | null> => {
     // 1. Rate Limit / Cached View Checks
     const isWithinCooldown = userData?.lastRecapGeneratedAt && (() => {
       const lastGenerated = parseTimestampToDate(userData.lastRecapGeneratedAt);
@@ -41,7 +41,10 @@ export const useRecapOperations = (userData: UserData, language: string, t: (k: 
 
       if (response.data.recap) {
         toast.success(t('myNotes.recapSuccess'));
-        return response.data.recap as string;
+        return {
+          text: response.data.recap as string,
+          fromCache: !!response.data.fromCache
+        };
       } else {
         toast.info(response.data.message || t('myNotes.noNotesForRecap'));
         return null;
@@ -97,13 +100,15 @@ export const useRecapOperations = (userData: UserData, language: string, t: (k: 
 export const useRecap = (userData: UserData, language: string, t: (k: string, options?: Record<string, string | number>) => string) => {
   const [isRecapModalOpen, setIsRecapModalOpen] = useState(false);
   const [generatedRecapText, setGeneratedRecapText] = useState('');
+  const [isFromCache, setIsFromCache] = useState(false);
   
   const { loading: recapLoading, generateRecap, saveRecapToLetterBox } = useRecapOperations(userData, language, t);
 
   const handleGenerateRecap = async (notesCount: number) => {
-    const recap = await generateRecap(notesCount);
-    if (recap) {
-      setGeneratedRecapText(recap);
+    const result = await generateRecap(notesCount);
+    if (result) {
+      setGeneratedRecapText(result.text);
+      setIsFromCache(result.fromCache);
       setIsRecapModalOpen(true);
     }
   };
@@ -120,6 +125,7 @@ export const useRecap = (userData: UserData, language: string, t: (k: string, op
     recapLoading,
     isRecapModalOpen,
     generatedRecapText,
+    isFromCache,
     setIsRecapModalOpen,
     handleGenerateRecap,
     handleSaveRecapToLetterBox

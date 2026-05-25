@@ -61,6 +61,7 @@ const MyNotes: FC<MyNotesProps> = ({ userData, isModalOpen, setIsModalOpen, user
     recapLoading,
     isRecapModalOpen,
     generatedRecapText,
+    isFromCache,
     setIsRecapModalOpen,
     handleGenerateRecap,
     handleSaveRecapToLetterBox
@@ -90,6 +91,7 @@ const MyNotes: FC<MyNotesProps> = ({ userData, isModalOpen, setIsModalOpen, user
 
   // Recap Logic
   let canGenerateRecap = true;
+  let daysRemaining = 0;
 
   if (userData?.lastRecapGeneratedAt) {
     const lastGenerated = parseTimestampToDate(userData.lastRecapGeneratedAt);
@@ -99,6 +101,8 @@ const MyNotes: FC<MyNotesProps> = ({ userData, isModalOpen, setIsModalOpen, user
 
     if (diffTime < cooldownMs) {
       canGenerateRecap = false;
+      const remainingMs = cooldownMs - diffTime;
+      daysRemaining = Math.max(1, Math.ceil(remainingMs / (24 * 60 * 60 * 1000)));
     }
   }
 
@@ -119,20 +123,27 @@ const MyNotes: FC<MyNotesProps> = ({ userData, isModalOpen, setIsModalOpen, user
 
       <div className="my-notes-action-center">
         <div className="action-card-container">
-          <div className={`action-card recap-card ${(!canGenerateRecap || notes.length > 0) ? 'available' : 'locked'}`}>
+          <div className={`action-card recap-card ${!canGenerateRecap ? 'view-cached available' : ((canGenerateRecap && notes.length > 0) ? 'available' : 'locked')}`}>
             <button
-              className="generate-recap-main-btn"
+              className={`generate-recap-main-btn ${!canGenerateRecap ? 'view-cached' : ''}`}
               onClick={() => handleGenerateRecap(notes.length)}
               disabled={recapLoading || (canGenerateRecap && notes.length === 0)}
             >
-              <div className="btn-content">
-                <UilAnalysis size="24" className="recap-icon" />
-                <span>
-                  {recapLoading ? (canGenerateRecap ? t('myNotes.loading') : (t('myNotes.fetchingRecentRecap') || "Retrieving...")) :
-                    !canGenerateRecap ? (t('myNotes.viewRecentRecap') || "✨ View Recent Recap") :
-                      t('myNotes.generateRecap')}
-                </span>
-                {!recapLoading && <div className="stars-decoration">✨</div>}
+              <div className="btn-content flex-column">
+                <div className="btn-main-row">
+                  <UilAnalysis size="24" className="recap-icon" />
+                  <span>
+                    {recapLoading ? (canGenerateRecap ? t('myNotes.loading') : (t('myNotes.fetchingRecentRecap') || "Retrieving...")) :
+                      !canGenerateRecap ? (t('myNotes.viewRecentRecap') || "✨ View Recent Recap") :
+                        t('myNotes.generateRecap')}
+                  </span>
+                  {!recapLoading && <div className="stars-decoration">✨</div>}
+                </div>
+                {!canGenerateRecap && !recapLoading && (
+                  <div className="btn-sub-row">
+                    {t('myNotes.nextLetterInDays', { days: daysRemaining }) || `(新しい手紙まであと ${daysRemaining} 日)`}
+                  </div>
+                )}
               </div>
               <div className="shimmer-effect"></div>
             </button>
@@ -263,6 +274,7 @@ const MyNotes: FC<MyNotesProps> = ({ userData, isModalOpen, setIsModalOpen, user
         onClose={() => setIsRecapModalOpen(false)}
         recapText={generatedRecapText}
         onSave={handleSaveRecapToLetterBox}
+        isFromCache={isFromCache}
       />
 
       <NewNote

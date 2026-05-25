@@ -1,4 +1,10 @@
 export default {
+    common: {
+        cancel: "Ghairi",
+        delete: "Futa",
+        close: "Funga",
+        dismiss: "Ondoa"
+    },
         seo: {
             title: "Scripture Habit | Mafunzo ya Maandiko ya Kila Siku na Zana ya Jumuiya",
             description: "Jenga tabia ya kila siku ya kujifunza maandiko na marafiki. Imeboreshwa kwa wanaojifunza Biblia, Kitabu cha Mormoni, na Njoo, Unifuate. Zana bora ya kugeuza mafunzo ya Injili kuwa utaratibu wa kufurahisha wa kila siku."
@@ -455,7 +461,8 @@ export default {
             letterSaveSuccess: "Imehifadhiwa kwenye Sanduku la Barua!",
             prevPage: "Iliyopita",
             nextPage: "Inayofuata",
-            pageInfo: "Ukurasa {current} kati ya {total}"
+            pageInfo: "Ukurasa {current} kati ya {total}",
+            nextLetterInDays: "(Barua inayofuata baada ya siku {days})"
         },
         recapModal: {
             title: "Barua Yako ya Wiki",
@@ -464,6 +471,7 @@ export default {
             saveToNotes: "Hifadhi kwenye Sanduku la Barua"
         },
         letterBox: {
+            deleteTitle: "Futa Barua",
             title: "Sanduku la Barua",
             deleteConfirm: "Je, una uhakika unataka kufuta barua hii?",
             back: "Rudi kwenye Orodha",

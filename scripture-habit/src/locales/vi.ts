@@ -1,4 +1,10 @@
 export default {
+    common: {
+        cancel: "Hủy",
+        delete: "Xóa",
+        close: "Đóng",
+        dismiss: "Bỏ qua"
+    },
         seo: {
             title: "Scripture Habit | Công cụ Cộng đồng & Nghiên cứu Thánh thư",
             description: "Xây dựng thói quen học thánh thư hàng ngày cùng bạn bè. Được tối ưu hóa để nghiên cứu Kinh Thánh, Sách Mặc Môn và Hãy Đi Theo Ta. Công cụ tốt nhất để biến việc học Phúc âm thành thói quen vui vẻ hàng ngày."
@@ -428,7 +434,8 @@ export default {
             letterSaveSuccess: "Đã lưu vào Hộp thư!",
             prevPage: "Trước",
             nextPage: "Tiếp",
-            pageInfo: "Trang {current} / {total}"
+            pageInfo: "Trang {current} / {total}",
+            nextLetterInDays: "(Thư tiếp theo sau {days} ngày)"
         },
         recapModal: {
             title: "Thư hàng tuần của bạn",
@@ -437,6 +444,7 @@ export default {
             saveToNotes: "Lưu vào Hộp thư"
         },
         letterBox: {
+            deleteTitle: "Xóa Thư",
             title: "Hộp thư",
             deleteConfirm: "Bạn có chắc chắn muốn hủy lá thư này không?",
             back: "Quay lại Danh sách",

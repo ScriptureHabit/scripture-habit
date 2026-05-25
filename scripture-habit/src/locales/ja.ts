@@ -1,4 +1,10 @@
 export default {
+        common: {
+            cancel: "キャンセル",
+            delete: "削除",
+            close: "閉じる",
+            dismiss: "閉じる"
+        },
         seo: {
             title: "Scripture Habit | 聖典学習を楽しく、仲間と一緒に習慣化",
             description: "仲間と一緒に聖典を学び、気づきを分かち合うコミュニティツールです。聖書やモルモン書の学習を楽しく継続し、日々の習慣に変えましょう。"
@@ -358,7 +364,8 @@ export default {
             letterSaveSuccess: "レターボックスに保存しました！",
             prevPage: "前へ",
             nextPage: "次へ",
-            pageInfo: "{total} ページ中 {current} ページ目"
+            pageInfo: "{total} ページ中 {current} ページ目",
+            nextLetterInDays: "(新しい手紙まであと {days} 日)"
         },
         recapModal: {
             title: "今週の振り返りレター",
@@ -368,6 +375,7 @@ export default {
         },
         letterBox: {
             title: "レターボックス",
+            deleteTitle: "手紙を削除",
             deleteConfirm: "本当にこの手紙を捨ててしまいますか？",
             back: "一覧に戻る",
             loading: "読み込み中...",

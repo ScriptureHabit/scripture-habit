@@ -10,9 +10,10 @@ interface RecapModalProps {
     onClose: () => void;
     recapText: string;
     onSave: () => void;
+    isFromCache?: boolean;
 }
 
-const RecapModal: FC<RecapModalProps> = ({ isOpen, onClose, recapText, onSave }) => {
+const RecapModal: FC<RecapModalProps> = ({ isOpen, onClose, recapText, onSave, isFromCache = false }) => {
     const { t } = useLanguage();
 
     if (!isOpen) return null;
@@ -42,10 +43,12 @@ const RecapModal: FC<RecapModalProps> = ({ isOpen, onClose, recapText, onSave })
                     <button className="recap-discard-btn" onClick={onClose}>
                         {t('recapModal.close') || "Close"}
                     </button>
-                    <button className="recap-save-btn" onClick={onSave}>
-                        <UilSave size="20" />
-                        {t('recapModal.saveToNotes') || "Save to Notes"}
-                    </button>
+                    {!isFromCache && (
+                        <button className="recap-save-btn" onClick={onSave}>
+                            <UilSave size="20" />
+                            {t('recapModal.saveToNotes') || "Save to Notes"}
+                        </button>
+                    )}
                 </div>
             </div>
         </div>

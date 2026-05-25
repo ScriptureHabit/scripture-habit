@@ -1,4 +1,10 @@
 export default {
+    common: {
+        cancel: "ยกเลิก",
+        delete: "ลบ",
+        close: "ปิด",
+        dismiss: "ยกเลิก"
+    },
         seo: {
             title: "Scripture Habit | เครื่องมือศึกษาพระคัมภีร์และชุมชน",
             description: "สร้างนิสัยการศึกษาพระคัมภีร์ทุกวันกับเพื่อนๆ เหมาะสำหรับการศึกษาพระคัมภีร์ไบเบิล พระคัมภีร์มอรมอน และ จงตามเรามา เครื่องมือที่ดีที่สุดในการเปลี่ยนการศึกษาพระกิตติคุณให้เป็นกิจวัตรที่สนุกสนาน"
@@ -455,7 +461,8 @@ export default {
             letterSaveSuccess: "บันทึกในกล่องจดหมายเรียบร้อยแล้ว!",
             prevPage: "ก่อนหน้า",
             nextPage: "ถัดไป",
-            pageInfo: "หน้า {current} จาก {total}"
+            pageInfo: "หน้า {current} จาก {total}",
+            nextLetterInDays: "(จดหมายฉบับถัดไปในอีก {days} วัน)"
         },
         recapModal: {
             title: "จดหมายรายสัปดาห์ของคุณ",
@@ -464,6 +471,7 @@ export default {
             saveToNotes: "บันทึกลงในกล่องจดหมาย"
         },
         letterBox: {
+            deleteTitle: "ลบจดหมาย",
             title: "กล่องจดหมาย",
             deleteConfirm: "คุณแน่ใจหรือไม่ว่าต้องการทิ้งจดหมายฉบับนี้?",
             back: "กลับไปที่รายการ",
