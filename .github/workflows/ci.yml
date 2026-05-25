@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [ "main", "master", "develop" ]
 
+env:
+  CRON_SECRET: ci-dummy-cron-secret-key-12345
+
 defaults:
   run:
     working-directory: ./scripture-habit
