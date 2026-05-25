@@ -432,7 +432,9 @@ router.post('/generate-personal-weekly-recap', authenticate, aiLimiter, verifyAp
             const sixDaysAgo = new Date();
             sixDaysAgo.setDate(sixDaysAgo.getDate() - 6);
             if (lastDate > sixDaysAgo) {
+                let cachedRecapText: string | null = null;
                 try {
+                    // 1. Try 'recaps' subcollection
                     const recentRecapSnap = await userRef.collection('recaps')
                         .orderBy('createdAt', 'desc')
                         .limit(1)
@@ -441,13 +443,33 @@ router.post('/generate-personal-weekly-recap', authenticate, aiLimiter, verifyAp
                         const recentRecapData = recentRecapSnap.docs[0].data();
                         const recapDate = (recentRecapData.createdAt as admin.firestore.Timestamp).toDate();
                         if (recapDate > sixDaysAgo && recentRecapData.text) {
-                            return res.json({
-                                success: true,
-                                recap: recentRecapData.text,
-                                message: 'Returned cached recent recap.',
-                                fromCache: true
-                            });
+                            cachedRecapText = recentRecapData.text;
                         }
+                    }
+
+                    // 2. Fallback to 'letters' subcollection programmatically (avoids composite index requirements)
+                    if (!cachedRecapText) {
+                        const recentLettersSnap = await userRef.collection('letters')
+                            .orderBy('createdAt', 'desc')
+                            .limit(5)
+                            .get();
+                        const recentLetterDoc = recentLettersSnap.docs.find(d => d.data().type === 'weekly_recap');
+                        if (recentLetterDoc) {
+                            const letterData = recentLetterDoc.data();
+                            const letterDate = (letterData.createdAt as admin.firestore.Timestamp).toDate();
+                            if (letterDate > sixDaysAgo && letterData.content) {
+                                cachedRecapText = letterData.content;
+                            }
+                        }
+                    }
+
+                    if (cachedRecapText) {
+                        return res.json({
+                            success: true,
+                            recap: cachedRecapText,
+                            message: 'Returned cached recent recap.',
+                            fromCache: true
+                        });
                     }
                 } catch (cacheErr) {
                     console.warn('[AI Personal Recap] Failed to retrieve cached recap:', cacheErr);

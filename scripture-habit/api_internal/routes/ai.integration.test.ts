@@ -617,6 +617,41 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('AI Route Integration', ()
             expect(data.fromCache).toBe(true);
         });
 
+        it('should return cached recap from letters fallback if recaps collection is empty but letter exists', async () => {
+            const recentDate = new Date();
+            recentDate.setDate(recentDate.getDate() - 3);
+
+            await db.collection('users').doc(USER_ID).set({
+                uid: USER_ID,
+                lastRecapGeneratedAt: admin.firestore.Timestamp.fromDate(recentDate)
+            });
+
+            const userRef = db.collection('users').doc(USER_ID);
+            await userRef.collection('letters').add({
+                content: 'This is a cached recap from letters collection.',
+                type: 'weekly_recap',
+                createdAt: admin.firestore.Timestamp.fromDate(recentDate)
+            });
+
+            const res = await fetch(`${setup.baseUrl}/api/ai/generate-personal-weekly-recap`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer token-${USER_ID}`
+                },
+                body: JSON.stringify({
+                    uid: USER_ID,
+                    language: 'en'
+                })
+            });
+
+            expect(res.status).toBe(200);
+            const data = await res.json();
+            expect(data.success).toBe(true);
+            expect(data.recap).toBe('This is a cached recap from letters collection.');
+            expect(data.fromCache).toBe(true);
+        });
+
         it('should return 200 with no notes message if no personal notes found', async () => {
             await db.collection('users').doc(USER_ID).set({
                 uid: USER_ID

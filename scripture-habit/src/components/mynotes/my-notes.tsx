@@ -94,10 +94,10 @@ const MyNotes: FC<MyNotesProps> = ({ userData, isModalOpen, setIsModalOpen, user
   if (userData?.lastRecapGeneratedAt) {
     const lastGenerated = parseTimestampToDate(userData.lastRecapGeneratedAt);
     const now = new Date();
-    const diffTime = Math.abs(now.getTime() - lastGenerated.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const diffTime = now.getTime() - lastGenerated.getTime();
+    const cooldownMs = 6 * 24 * 60 * 60 * 1000; // 6 days in milliseconds
 
-    if (diffDays < 6) {
+    if (diffTime < cooldownMs) {
       canGenerateRecap = false;
     }
   }

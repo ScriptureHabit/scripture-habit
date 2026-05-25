@@ -18,9 +18,9 @@ export const useRecapOperations = (userData: UserData, language: string, t: (k: 
     const isWithinCooldown = userData?.lastRecapGeneratedAt && (() => {
       const lastGenerated = parseTimestampToDate(userData.lastRecapGeneratedAt);
       const now = new Date();
-      const diffTime = Math.abs(now.getTime() - lastGenerated.getTime());
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      return diffDays < 6;
+      const diffTime = now.getTime() - lastGenerated.getTime();
+      const cooldownMs = 6 * 24 * 60 * 60 * 1000; // 6 days in milliseconds
+      return diffTime < cooldownMs;
     })();
 
     if (!isWithinCooldown && notesCount === 0) {
