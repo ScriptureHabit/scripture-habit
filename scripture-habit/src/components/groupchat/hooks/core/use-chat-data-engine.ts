@@ -1,10 +1,10 @@
 import { useReducer, useEffect, useRef, Dispatch } from 'react';
-import { collection, onSnapshot, doc, Unsubscribe } from 'firebase/firestore';
+import { collection, onSnapshot, doc, Unsubscribe, query, orderBy, limit, getDocs } from 'firebase/firestore';
 import * as Sentry from "@sentry/react";
 import { Message, GroupData, MembersMap, UserProfileBrief } from '../../../../types/chat';
 import { db } from '../../../../firebase';
 import { UserData } from '../../../../types/user';
-import { groupConverter, groupMemberConverter } from '../../../../utils/firestore-converters';
+import { groupConverter, groupMemberConverter, messageConverter } from '../../../../utils/firestore-converters';
 import { UserProfileBriefSchema, GroupSchema } from '../../../../types/schemas';
 import { parseTimestampToMillis } from '../../../../utils/time-utils';
 import { chatReducer, initialState, ChatAction, ChatStatus } from './chat-reducer';
@@ -119,9 +119,15 @@ const useGroupMembersSync = (groupId: string | null, status: ChatStatus, members
   }, [groupId, members, messages, status, dispatch, membersMap]);
 };
 
-const useMessageStreamSync = (groupId: string | null, userData: UserData | null, status: ChatStatus, currentMessages: Message[], dispatch: Dispatch<ChatAction>) => {
+const useMessageStreamSync = (groupId: string | null, userData: UserData | null, currentMessages: Message[], dispatch: Dispatch<ChatAction>) => {
   const unsubMessagesRef = useRef<Unsubscribe | null>(null);
   const activeSyncGroupIdRef = useRef<string | null>(null);
+
+  // Keep a ref of the latest currentMessages so the listener can access it without re-triggering the subscription effect
+  const currentMessagesRef = useRef<Message[]>(currentMessages);
+  useEffect(() => {
+    currentMessagesRef.current = currentMessages;
+  }, [currentMessages]);
 
   useEffect(() => {
     if (!groupId || !userData?.uid) return;
@@ -155,7 +161,7 @@ const useMessageStreamSync = (groupId: string | null, userData: UserData | null,
             incomingMessages.map(m => m.optimisticId).filter(Boolean) as string[]
           );
           
-          const pendingOptimistic = currentMessages.filter(m => {
+          const pendingOptimistic = currentMessagesRef.current.filter(m => {
             const isOptimistic = m.id.startsWith('temp-');
             const isResolved = resolvedOptimisticIds.has(m.id) || (m.optimisticId && resolvedOptimisticIds.has(m.optimisticId));
             return isOptimistic && !isResolved;
@@ -169,8 +175,21 @@ const useMessageStreamSync = (groupId: string | null, userData: UserData | null,
           
           dispatch({ type: 'SET_MESSAGES', messages: finalMessages });
         } else {
-          // If no latest document exists yet, clear loading state and start with empty messages
-          dispatch({ type: 'SET_MESSAGES', messages: [] });
+          // Fallback: If no latest document exists yet, query the historical /messages subcollection directly
+          // to prevent showing a blank screen for groups that haven't been compiled yet.
+          const fallbackQuery = query(
+            collection(db, 'groups', groupId, 'messages').withConverter(messageConverter),
+            orderBy('createdAt', 'desc'),
+            limit(25)
+          );
+          getDocs(fallbackQuery).then((querySnapshot) => {
+            if (isCancelled) return;
+            const fetchedMessages = querySnapshot.docs.map(doc => doc.data()).reverse();
+            dispatch({ type: 'SET_MESSAGES', messages: fetchedMessages });
+          }).catch((err) => {
+            console.error("[useMessageStreamSync] Fallback query failed:", err);
+            dispatch({ type: 'SET_MESSAGES', messages: [] });
+          });
         }
       }, (err) => {
         if (isCancelled || err.code === 'permission-denied') return;
@@ -190,7 +209,7 @@ const useMessageStreamSync = (groupId: string | null, userData: UserData | null,
         unsubMessagesRef.current = null;
       }
     };
-  }, [groupId, userData?.uid, status, currentMessages, dispatch]);
+  }, [groupId, userData?.uid, dispatch]);
 };
 
 /**
@@ -210,7 +229,7 @@ export const useChatDataEngine = (groupId: string | null, userData: UserData | n
   // Sync Subscriptions
   useGroupMetadataSync(groupId, dispatch, t);
   useGroupMembersSync(groupId, state.status, state.groupData?.members, state.messages, state.membersMap, dispatch);
-  useMessageStreamSync(groupId, userData, state.status, state.messages, dispatch);
+  useMessageStreamSync(groupId, userData, state.messages, dispatch);
 
   return { state, dispatch };
 };
