@@ -28,17 +28,23 @@ const GroupChatMessageListContainer: FC = () => {
     const container = containerRef.current;
     if (!container) return;
 
-    if (isInitialLoad && messages.length > 0) {
-      container.scrollTop = container.scrollHeight;
-      setIsInitialLoad(false);
-      // Give the browser a frame to paint the scroll position before showing
-      requestAnimationFrame(() => {
+    if (isInitialLoad) {
+      if (messages.length > 0) {
+        container.scrollTop = container.scrollHeight;
+        setIsInitialLoad(false);
+        // Give the browser a frame to paint the scroll position before showing
+        requestAnimationFrame(() => {
+          setIsVisible(true);
+        });
+      } else if (!loading) {
+        // Even if there are no messages, show the empty chat placeholder once initial loading is done
+        setIsInitialLoad(false);
         setIsVisible(true);
-      });
+      }
     } else if (scrollAtBottomRef.current) {
       container.scrollTop = container.scrollHeight;
     }
-  }, [messages, isInitialLoad, containerRef]);
+  }, [messages, isInitialLoad, loading, containerRef]);
 
   // Handle loading older messages
   useEffect(() => {
