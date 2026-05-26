@@ -39,7 +39,10 @@ const useGroupMetadataSync = (groupId: string | null, dispatch: Dispatch<ChatAct
         dispatch({ type: 'SET_NOT_FOUND' });
       }
     }, (err) => {
-      if (err.code === 'permission-denied') return;
+      if (err.code === 'permission-denied') {
+        console.warn(`[useGroupMetadataSync] Permission denied for group ${groupId}`);
+        return;
+      }
       const isQuota = err.code === 'resource-exhausted' || err.message.toLowerCase().includes('quota exceeded');
       dispatch({ type: 'SET_ERROR', message: isQuota ? t('systemErrors.quotaExceededMessage') : err.message });
       if (!isQuota) Sentry.captureException(err);
@@ -192,8 +195,8 @@ const useMessageStreamSync = (groupId: string | null, userData: UserData | null,
           });
         }
       }, (err) => {
-        if (isCancelled || err.code === 'permission-denied') return;
-        console.error("[useMessageStreamSync] Listener error:", err);
+        if (isCancelled) return;
+        console.error("[useMessageStreamSync] Listener error:", err.code, err.message, err);
       });
 
       unsubMessagesRef.current = unsubscribe;

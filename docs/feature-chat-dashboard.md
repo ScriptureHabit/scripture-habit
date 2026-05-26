@@ -69,3 +69,48 @@ To keep Firestore reads highly optimized and prevent unexpected billing surges, 
 - **Limit Snapshots**: Always use `limit(N)` and `orderBy('createdAt', 'desc')` in chat queries to prevent loading too many historical messages.
 - **Stable References**: Use `useMemo` for derived chat data to prevent the sidebar from re-rendering on typing events.
 - **Background Suppression**: When the browser tab is inactive, listeners remain active but UI updates are throttled to save CPU.
+
+---
+
+## ⚠️ Real-time Sync Pitfalls & Anti-Patterns
+
+When building real-time synchronization hooks with the Firestore Client SDK, two major architectural pitfalls must be guarded against at all times. Both of these were historically resolved during the Strategy B chat optimization:
+
+### 1. The Infinite Subscription Loop (Stale/Mutable State Pitfall)
+*   **The Danger**: Placing the primary message state (`currentMessages`) in the dependency array of a `useEffect` that triggers `onSnapshot` subscriptions.
+*   **How it fails**:
+    1.  The hook subscribes to Firestore.
+    2.  Firestore returns data, triggering `dispatch({ type: 'SET_MESSAGES', messages })`.
+    3.  The parent component re-renders with a new array reference for `messages`.
+    4.  Because `messages` changed, the `useEffect` cleans up: it calls `unsubscribe()`.
+    5.  The effect immediately runs again and calls `onSnapshot()` to re-subscribe.
+    6.  This triggers a perpetual infinite loop, locking up the CPU and rendering the chat window completely blank.
+*   **The Resolution (Stable Ref Pattern)**: Keep `currentMessages` entirely out of the subscription `useEffect` dependency array. Instead, store it in a `useRef` that is updated on every render:
+    ```typescript
+    const currentMessagesRef = useRef<Message[]>(currentMessages);
+    useEffect(() => {
+      currentMessagesRef.current = currentMessages;
+    }, [currentMessages]);
+    ```
+    Inside the `onSnapshot` callback, read from `currentMessagesRef.current` to calculate optimistic resolution without ever re-triggering the subscription effect.
+
+### 2. Initialization Race Conditions (Asynchronous Reset Pitfall)
+*   **The Danger**: Resetting the chat state asynchronously via `useEffect` upon `groupId` changes while using Firestore's offline persistence/cache.
+*   **How it fails**:
+    1.  The user switches groups or re-enters a chat.
+    2.  An asynchronous `useEffect` is scheduled to dispatch `dispatch({ type: 'RESET' })` to clear previous messages.
+    3.  In the same render pass, the subscription `useEffect` runs and registers `onSnapshot`.
+    4.  Because Firestore's `persistentLocalCache` is enabled, the client-side SDK immediately and **synchronously** yields the cached messages for the group and dispatches `SET_MESSAGES`.
+    5.  A millisecond later, the asynchronous `RESET` dispatch finally fires, clearing the state back to `[]` and setting the status back to `'loading'`.
+    6.  The messages disappear instantly, leaving the chat window permanently blank.
+*   **The Resolution (Synchronous Render-Phase Reset)**: Eliminate the asynchronous `RESET` effect entirely. Instead, detect the `groupId` change and dispatch the reset **synchronously during the React render phase**:
+    ```typescript
+    const prevGroupIdRef = useRef<string | null>(null);
+    if (groupId !== prevGroupIdRef.current) {
+      prevGroupIdRef.current = groupId;
+      if (groupId) {
+        dispatch({ type: 'RESET', groupId });
+      }
+    }
+    ```
+    This causes React to immediately abort the current render pass and restart rendering with the fully-cleared state, guaranteeing that `onSnapshot` will never be overridden by a late-arriving reset event.
