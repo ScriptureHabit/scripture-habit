@@ -219,12 +219,14 @@ const useMessageStreamSync = (groupId: string | null, userData: UserData | null,
 export const useChatDataEngine = (groupId: string | null, userData: UserData | null, t: (key: string) => string) => {
   const [state, dispatch] = useReducer(chatReducer, initialState);
   
-  useEffect(() => {
+  // Synchronous render-phase state reset on groupId change to eliminate race conditions
+  const prevGroupIdRef = useRef<string | null>(null);
+  if (groupId !== prevGroupIdRef.current) {
+    prevGroupIdRef.current = groupId;
     if (groupId) {
-      console.log(`[useChatDataEngine] Resetting for groupId: ${groupId}`);
       dispatch({ type: 'RESET', groupId });
     }
-  }, [groupId]);
+  }
 
   // Sync Subscriptions
   useGroupMetadataSync(groupId, dispatch, t);
