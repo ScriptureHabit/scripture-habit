@@ -16,6 +16,7 @@ export interface PostMessageParams {
     optimisticId?: string;
     nickname?: string;
     photoURL?: string | null;
+    clientTimestamp?: number;
 }
 
 export interface ToggleReactionParams {
@@ -52,27 +53,82 @@ export interface SendCheerParams {
 }
 
 export class MessageService {
+    static async appendToLatest(transaction: admin.firestore.Transaction, groupId: string, messageData: Record<string, unknown>) {
+        const groupRef = db.collection('groups').doc(groupId);
+        const latestRef = groupRef.collection('messages_latest').doc('latest');
+        const latestSnap = await transaction.get(latestRef);
+
+        let currentMessages: Record<string, unknown>[] = [];
+        if (latestSnap.exists) {
+            currentMessages = latestSnap.data()?.messages || [];
+        } else {
+            // Self-healing bootstrap
+            const bootSnap = await transaction.get(
+                groupRef.collection('messages')
+                    .orderBy('createdAt', 'desc')
+                    .limit(24)
+            );
+            currentMessages = bootSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })).reverse();
+        }
+
+        const updatedMessages = [...currentMessages, messageData].slice(-25);
+
+        transaction.set(latestRef, {
+            groupId,
+            messages: updatedMessages,
+            lastUpdatedAt: admin.firestore.FieldValue.serverTimestamp()
+        }, { merge: true });
+    }
+
     static async postMessage(params: PostMessageParams) {
-        const { uid, groupId, text, replyTo, optimisticId } = params;
+        const { uid, groupId, text, replyTo, optimisticId, clientTimestamp } = params;
 
         return await db.runTransaction(async (transaction) => {
             const userRef = db.collection('users').doc(uid);
             const groupRef = db.collection('groups').doc(groupId);
+            const latestRef = groupRef.collection('messages_latest').doc('latest');
             
             let nickname = params.nickname;
             let photoURL = params.photoURL;
 
-            let uSnap: admin.firestore.DocumentSnapshot | null = null;
             const needsUserRead = !nickname || photoURL === undefined;
-            if (needsUserRead) {
-                uSnap = await transaction.get(userRef);
-                if (!uSnap.exists) throw new Error('Not found.');
-            }
+            
+            // --- PHASE 1: READ PHASE (Strict Read-before-Write) ---
+            const { userSnap, currentMessages } = await (async () => {
+                const promises = [transaction.get(latestRef)];
+                if (needsUserRead) {
+                    promises.push(transaction.get(userRef));
+                }
+                
+                const snaps = await Promise.all(promises);
+                const latestSnap = snaps[0];
+                const uSnapResult = needsUserRead ? snaps[1] : null;
 
+                if (needsUserRead && (!uSnapResult || !uSnapResult.exists)) throw new Error('Not found.');
+
+                let messagesList: Record<string, unknown>[] = [];
+                if (latestSnap && latestSnap.exists) {
+                    messagesList = latestSnap.data()?.messages || [];
+                } else {
+                    const bootSnap = await transaction.get(
+                        groupRef.collection('messages')
+                            .orderBy('createdAt', 'desc')
+                            .limit(24)
+                    );
+                    messagesList = bootSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })).reverse();
+                }
+
+                return {
+                    userSnap: uSnapResult,
+                    currentMessages: messagesList
+                };
+            })();
+
+            // --- PHASE 2: WRITE PHASE ---
             const msgRef = groupRef.collection('messages').doc();
             
-            if (needsUserRead && uSnap) {
-                const userData = uSnap.data() as UserDocument;
+            if (needsUserRead && userSnap) {
+                const userData = userSnap.data() as UserDocument;
                 nickname = nickname || userData.nickname || 'Member';
                 photoURL = photoURL !== undefined ? photoURL : (userData.photoURL || '');
             } else {
@@ -96,10 +152,25 @@ export class MessageService {
                         isNote: !!replyTo.isNote
                     }
                 } : {}),
-                ...(optimisticId ? { optimisticId } : {})
+                ...(optimisticId ? { optimisticId } : {}),
+                ...(clientTimestamp ? { clientTimestamp } : {})
             };
 
             transaction.set(msgRef, msgData);
+
+            // Create client-friendly message item for array
+            const arrayMsg = {
+                id: msgRef.id,
+                ...msgData,
+                createdAt: admin.firestore.Timestamp.now() // Use a resolved Timestamp for immediate client rendering
+            };
+
+            const updatedMessages = [...currentMessages, arrayMsg].slice(-25);
+            transaction.set(latestRef, {
+                groupId,
+                messages: updatedMessages,
+                lastUpdatedAt: admin.firestore.FieldValue.serverTimestamp()
+            }, { merge: true });
 
             const updatePayload = {
                 messageCount: admin.firestore.FieldValue.increment(1),
@@ -141,11 +212,12 @@ export class MessageService {
             const userRef = db.collection('users').doc(uid);
             const messageRef = db.collection('groups').doc(groupId).collection('messages').doc(messageId);
             const groupRef = db.collection('groups').doc(groupId);
+            const latestRef = groupRef.collection('messages_latest').doc('latest');
 
             let nickname = params.nickname;
             let photoURL = params.photoURL;
 
-            const refsToGet = [messageRef];
+            const refsToGet = [messageRef, latestRef];
             const needsUserRead = !nickname || photoURL === undefined;
             const needsGroupRead = !params.skipGroupCheck;
 
@@ -158,9 +230,11 @@ export class MessageService {
 
             const snaps = await transaction.getAll(...refsToGet);
             const mSnap = snaps[0];
+            const latestSnap = snaps[1];
             
-            const gSnap = needsGroupRead ? snaps[1] : null;
-            const uSnap = needsUserRead ? (needsGroupRead ? snaps[2] : snaps[1]) : null;
+            let snapIdx = 2;
+            const gSnap = needsGroupRead ? snaps[snapIdx++] : null;
+            const uSnap = needsUserRead ? snaps[snapIdx++] : null;
 
             if (!mSnap.exists || (needsGroupRead && !gSnap?.exists) || (needsUserRead && !uSnap?.exists)) {
                 if (!mSnap.exists) {
@@ -202,13 +276,32 @@ export class MessageService {
                 newPreviews = newPreviews.filter((p: ReactionPreview) => p.uid !== uid);
             } else {
                 const myPreview = { uid, nickname: nickname || 'Member', photoURL: photoURL || null };
-                newPreviews = [myPreview, ...newPreviews].slice(0, 50);
+                newPreviews = [myPreview, ...newPreviews].slice(0, 20);
             }
 
             transaction.update(mSnap.ref, {
                 [`reactions.${emoji}`]: newUids,
                 [`reactionPreviews.${emoji}`]: newPreviews
             });
+
+            // Update in latest aggregate document
+            if (latestSnap.exists) {
+                const messages = (latestSnap.data()?.messages || []) as Record<string, unknown>[];
+                const idx = messages.findIndex(m => m.id === messageId);
+                if (idx !== -1) {
+                    const msg = { ...messages[idx] };
+                    const reactions = (msg['reactions'] || {}) as Record<string, unknown>;
+                    reactions[emoji] = newUids;
+                    msg['reactions'] = reactions;
+
+                    const previews = (msg['reactionPreviews'] || {}) as Record<string, unknown>;
+                    previews[emoji] = newPreviews;
+                    msg['reactionPreviews'] = previews;
+
+                    messages[idx] = msg;
+                    transaction.update(latestRef, { messages });
+                }
+            }
 
             const now = admin.firestore.FieldValue.serverTimestamp();
             transaction.update(groupRef, {
@@ -229,8 +322,15 @@ export class MessageService {
         const { uid, groupId, messageId, text } = params;
 
         return await db.runTransaction(async (transaction) => {
-            const messageRef = db.collection('groups').doc(groupId).collection('messages').doc(messageId);
-            const mSnap = await transaction.get(messageRef);
+            const groupRef = db.collection('groups').doc(groupId);
+            const messageRef = groupRef.collection('messages').doc(messageId);
+            const latestRef = groupRef.collection('messages_latest').doc('latest');
+
+            const [mSnap, latestSnap] = await Promise.all([
+                transaction.get(messageRef),
+                transaction.get(latestRef)
+            ]);
+
             if (!mSnap.exists) {
                 const bucketsSnap = await db.collection('groups').doc(groupId).collection('message_buckets')
                     .limit(1).get();
@@ -256,6 +356,20 @@ export class MessageService {
                 isEdited: true,
                 editedAt: admin.firestore.FieldValue.serverTimestamp()
             });
+
+            // Update latest aggregate document
+            if (latestSnap.exists) {
+                const messages = (latestSnap.data()?.messages || []) as Record<string, unknown>[];
+                const idx = messages.findIndex(m => m.id === messageId);
+                if (idx !== -1) {
+                    const msg = { ...messages[idx] };
+                    msg.text = text;
+                    msg.isEdited = true;
+                    msg.editedAt = admin.firestore.Timestamp.now();
+                    messages[idx] = msg;
+                    transaction.update(latestRef, { messages });
+                }
+            }
 
             if (noteSnap && noteSnap.exists) {
                 const noteData = noteSnap.data() as PersonalNoteDocument;
@@ -296,10 +410,12 @@ export class MessageService {
         return await db.runTransaction(async (transaction) => {
             const groupRef = db.collection('groups').doc(groupId);
             const msgRef = groupRef.collection('messages').doc(messageId);
+            const latestRef = groupRef.collection('messages_latest').doc('latest');
 
-            const [gSnap, msgSnap] = await Promise.all([
+            const [gSnap, msgSnap, latestSnap] = await Promise.all([
                 transaction.get(groupRef),
-                transaction.get(msgRef)
+                transaction.get(msgRef),
+                transaction.get(latestRef)
             ]);
 
             if (!gSnap.exists) throw new Error('Group not found');
@@ -374,6 +490,13 @@ export class MessageService {
             const groupUpdate: admin.firestore.UpdateData<GroupDocument> = {
                 messageCount: admin.firestore.FieldValue.increment(-1)
             };
+
+            // Update latest aggregate document (recommended shrinkage method)
+            if (latestSnap.exists) {
+                const messages = (latestSnap.data()?.messages || []) as Record<string, unknown>[];
+                const updatedMessages = messages.filter(m => m.id !== messageId);
+                transaction.update(latestRef, { messages: updatedMessages });
+            }
 
             if (msgData.isNote) {
                 groupUpdate.noteCount = admin.firestore.FieldValue.increment(-1);
@@ -537,6 +660,57 @@ export class MessageService {
                 targetData: targetUserDoc ? (targetUserDoc.data() as UserDocument) : null, 
                 senderNickname 
             };
+        });
+    }
+
+    static async reconcileLatestMessages(groupId: string) {
+        const groupRef = db.collection('groups').doc(groupId);
+        const latestRef = groupRef.collection('messages_latest').doc('latest');
+
+        return await db.runTransaction(async (transaction) => {
+            const [latestSnap, actualMessagesSnap] = await Promise.all([
+                transaction.get(latestRef),
+                transaction.get(
+                    groupRef.collection('messages')
+                        .orderBy('createdAt', 'desc')
+                        .limit(25)
+                )
+            ]);
+
+            const actualMessages = actualMessagesSnap.docs
+                .map(doc => ({ id: doc.id, ...doc.data() }))
+                .reverse(); // Order chronologically
+
+            let needsHealing = false;
+
+            if (!latestSnap.exists) {
+                needsHealing = true;
+            } else {
+                const latestMessages = (latestSnap.data()?.messages || []) as Record<string, unknown>[];
+                
+                if (latestMessages.length !== actualMessages.length) {
+                    needsHealing = true;
+                } else {
+                    for (let i = 0; i < actualMessages.length; i++) {
+                        if (latestMessages[i].id !== actualMessages[i].id) {
+                            needsHealing = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (needsHealing) {
+                console.log(`[Self-Healing] Healing messages_latest/latest for group: ${groupId}`);
+                transaction.set(latestRef, {
+                    groupId,
+                    messages: actualMessages,
+                    lastUpdatedAt: admin.firestore.FieldValue.serverTimestamp()
+                }, { merge: true });
+                return { healed: true, count: actualMessages.length };
+            }
+
+            return { healed: false, count: actualMessages.length };
         });
     }
 }

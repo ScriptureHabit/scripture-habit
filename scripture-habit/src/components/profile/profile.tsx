@@ -412,6 +412,7 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
                         placeholder={t('groupChat.enterNewNickname') || ''}
                         className="profile-input"
                         data-testid="profile-nickname-input"
+                        maxLength={30}
                     />
                 </div>
                 <div className="input-group">

@@ -92,7 +92,7 @@ const MessageInput: FC<MessageInputProps> = ({
                     onBlur={() => onInputFocusChange && onInputFocusChange(false)}
                     placeholder={inputPlaceholder}
                     rows={1}
-                    maxLength={1000}
+                    maxLength={2000}
                 />
                 <div className="add-entry-btn-wrapper">
                     {showAddNoteTooltip && (
@@ -108,16 +108,16 @@ const MessageInput: FC<MessageInputProps> = ({
                     </div>
                 </div>
                 <button type="submit">{t('groupChat.send')}</button>
-                {newMessage.length > 800 && (
+                {newMessage.length > 1800 && (
                     <div className="char-counter" style={{
                         position: 'absolute',
                         bottom: '-20px',
                         right: '10px',
                         fontSize: '10px',
-                        color: newMessage.length >= 1000 ? '#ff4d4d' : '#888',
+                        color: newMessage.length >= 2000 ? '#ff4d4d' : '#888',
                         pointerEvents: 'none'
                     }}>
-                        {newMessage.length}/1000
+                        {newMessage.length}/2000
                     </div>
                 )}
             </div>

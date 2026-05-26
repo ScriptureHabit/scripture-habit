@@ -125,7 +125,8 @@ export const useNoteSubmission = (
                     language: language || 'en',
                     title: urlMeta?.title || null,
                     speaker: urlMeta?.speaker || null,
-                    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
+                    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                    clientTimestamp: Date.now()
                 });
 
                 if (response.data && response.data.success) {

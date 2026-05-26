@@ -85,6 +85,7 @@ const DashboardModals: FC<DashboardModalsProps> = ({
               value={newNickname} 
               onChange={(e) => setNewNickname(e.target.value)} 
               placeholder={t('groupChat.enterNewNickname')} 
+              maxLength={30}
             />
             <div className="leave-modal-actions">
               <button className="modal-btn cancel" onClick={() => setShowEditProfileModal(false)}>

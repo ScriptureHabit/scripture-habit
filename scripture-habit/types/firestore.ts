@@ -183,6 +183,7 @@ export interface MessageDocument {
     translations?: Record<string, string>;
     messageData?: Record<string, string | number>; // Dynamic metadata for system messages
     optimisticId?: string;
+    clientTimestamp?: number;
 }
 
 /**

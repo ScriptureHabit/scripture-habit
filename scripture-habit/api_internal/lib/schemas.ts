@@ -13,6 +13,21 @@ const noHtmlTags = (val: string | null | undefined) => !/<[^>]*>/g.test(val || "
 
 export const verifyLoginSchema = z.object({ token: z.string().min(1) });
 
+export const initializeProfileSchema = z.object({
+    nickname: z.string().min(1).max(30).optional(),
+    timeZone: z.string().optional(),
+    language: z.enum(supportedLanguages).optional()
+});
+
+export const updateProfileSchema = z.object({
+    nickname: z.string().min(1).max(30).optional(),
+    photoURL: z.string().max(1000).optional(),
+    stake: z.string().max(100).optional(),
+    ward: z.string().max(100).optional(),
+    bio: z.string().max(500).optional(),
+    language: z.enum(supportedLanguages).optional()
+});
+
 export const joinGroupSchema = z.object({
     token: z.string().min(1).optional(),
     groupId: z.string().optional(),
@@ -113,22 +128,23 @@ export const translateBatchSchema = z.object({
 export const postNoteSchema = z.object({
     chapter: z.string().min(1).max(500),
     scripture: z.string().min(1).max(100),
-    messageText: z.string().min(1).max(20000), // Added this
+    messageText: z.string().min(1).max(3000), 
     title: z.string().max(200).optional().nullable(),
     speaker: z.string().max(100).optional().nullable(),
-    comment: z.string().max(10000).refine(noHtmlTags, { message: "HTML tags are not allowed" }),
+    comment: z.string().max(2000).refine(noHtmlTags, { message: "HTML tags are not allowed" }),
     shareOption: z.enum(['all', 'current', 'specific', 'none']),
     selectedShareGroups: z.array(z.string()).optional().nullable(),
     isGroupContext: z.boolean().optional().nullable(),
     currentGroupId: z.string().optional().nullable(),
     language: z.enum(supportedLanguages).optional().nullable(),
     timeZone: z.string().optional().nullable(),
-    optimisticId: z.string().optional()
+    optimisticId: z.string().optional(),
+    clientTimestamp: z.number().int().optional()
 });
 
 export const postMessageSchema = z.object({
     groupId: z.string().min(1),
-    text: z.string().min(1).max(1000).refine(noHtmlTags, { message: "HTML tags are not allowed" }),
+    text: z.string().min(1).max(2000).refine(noHtmlTags, { message: "HTML tags are not allowed" }),
     replyTo: z.object({
         id: z.string(),
         senderNickname: z.string(),
@@ -137,7 +153,8 @@ export const postMessageSchema = z.object({
     }).optional().nullable(),
     optimisticId: z.string().optional(),
     nickname: z.string().optional(),
-    photoURL: z.string().optional().nullable()
+    photoURL: z.string().optional().nullable(),
+    clientTimestamp: z.number().int().optional()
 });
 
 export const sendCheerSchema = z.object({

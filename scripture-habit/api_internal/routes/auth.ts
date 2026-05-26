@@ -1,7 +1,7 @@
 import express, { Response } from 'express';
 import { admin, db } from '../lib/firebase-admin.js';
 import { verifyAppCheck, authenticate, AuthenticatedRequest } from '../lib/middleware.js';
-import { verifyLoginSchema } from '../lib/schemas.js';
+import { verifyLoginSchema, initializeProfileSchema, updateProfileSchema } from '../lib/schemas.js';
 import { AuthenticationError, ForbiddenError } from '../lib/errors.js';
 import { ProfileService } from '../services/profile-service.js';
 import { UserDocument } from '../../types/firestore.js';
@@ -13,7 +13,12 @@ const router = express.Router();
  * Update User Profile and Sync to Chats
  */
 router.post('/update-profile', authenticate, verifyAppCheck, async (req: AuthenticatedRequest, res: Response, next) => {
-    const { nickname, photoURL, stake, ward, bio, language } = req.body;
+    const validation = updateProfileSchema.safeParse(req.body);
+    if (!validation.success) {
+        return res.status(400).json({ error: 'Invalid input', details: validation.error.format() });
+    }
+    
+    const { nickname, photoURL, stake, ward, bio, language } = validation.data;
     const uid = req.user!.uid;
 
     try {
@@ -51,7 +56,12 @@ router.post('/update-profile', authenticate, verifyAppCheck, async (req: Authent
  * Initialize User Profile (for Google/Social Signup)
  */
 router.post('/initialize-profile', authenticate, verifyAppCheck, async (req: AuthenticatedRequest, res: Response, next) => {
-    const { nickname, timeZone, language } = req.body;
+    const validation = initializeProfileSchema.safeParse(req.body);
+    if (!validation.success) {
+        return res.status(400).json({ error: 'Invalid input', details: validation.error.format() });
+    }
+
+    const { nickname, timeZone, language } = validation.data;
     const uid = req.user!.uid;
     const email = req.user!.email;
 

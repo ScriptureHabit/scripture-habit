@@ -1,12 +1,12 @@
 import { useReducer, useEffect, useRef, Dispatch } from 'react';
-import { collection, query, orderBy, onSnapshot, doc, limit, loadBundle, Unsubscribe } from 'firebase/firestore';
+import { collection, onSnapshot, doc, Unsubscribe } from 'firebase/firestore';
 import * as Sentry from "@sentry/react";
 import { Message, GroupData, MembersMap, UserProfileBrief } from '../../../../types/chat';
 import { db } from '../../../../firebase';
 import { UserData } from '../../../../types/user';
-import { groupConverter, messageConverter, groupMemberConverter } from '../../../../utils/firestore-converters';
+import { groupConverter, groupMemberConverter } from '../../../../utils/firestore-converters';
 import { UserProfileBriefSchema, GroupSchema } from '../../../../types/schemas';
-import apiClient from '../../../../utils/api-client';
+import { parseTimestampToMillis } from '../../../../utils/time-utils';
 import { chatReducer, initialState, ChatAction, ChatStatus } from './chat-reducer';
 
 /**
@@ -119,7 +119,7 @@ const useGroupMembersSync = (groupId: string | null, status: ChatStatus, members
   }, [groupId, members, messages, status, dispatch, membersMap]);
 };
 
-const useMessageStreamSync = (groupId: string | null, userData: UserData | null, status: ChatStatus, dispatch: Dispatch<ChatAction>) => {
+const useMessageStreamSync = (groupId: string | null, userData: UserData | null, status: ChatStatus, currentMessages: Message[], dispatch: Dispatch<ChatAction>) => {
   const unsubMessagesRef = useRef<Unsubscribe | null>(null);
   const activeSyncGroupIdRef = useRef<string | null>(null);
 
@@ -141,38 +141,37 @@ const useMessageStreamSync = (groupId: string | null, userData: UserData | null,
     const startListener = () => {
       if (isCancelled) return;
       
-      const messagesRef = collection(db, 'groups', groupId, 'messages').withConverter(messageConverter);
-      const q = query(messagesRef, orderBy('createdAt', 'desc'), limit(25));
+      const latestDocRef = doc(db, 'groups', groupId, 'messages_latest', 'latest');
 
-      const unsubscribe = onSnapshot(q, (snapshot) => {
+      const unsubscribe = onSnapshot(latestDocRef, (snapshot) => {
         if (isCancelled) return;
         
-        const newIncoming: Message[] = [];
-        const updatedMessages: Message[] = [];
-        const removedIds: string[] = [];
-
-        snapshot.docChanges().forEach((change) => {
-          const data = change.doc.data() as Message;
-          if (change.type === "added") {
-            newIncoming.push(data);
-          } else if (change.type === "modified") {
-            updatedMessages.push(data);
-          } else if (change.type === "removed") {
-            removedIds.push(change.doc.id);
-          }
-        });
-
-        // Always dispatch on first load to clear loading state, or if there are messages
-        if (newIncoming.length > 0 || status === 'loading') {
-          dispatch({ type: 'ADD_NEW_MESSAGES', newMessages: newIncoming });
+        if (snapshot.exists()) {
+          const data = snapshot.data();
+          const incomingMessages = (data.messages || []) as Message[];
+          
+          // Clean up resolved optimistic messages and merge pending unresolved ones
+          const resolvedOptimisticIds = new Set(
+            incomingMessages.map(m => m.optimisticId).filter(Boolean) as string[]
+          );
+          
+          const pendingOptimistic = currentMessages.filter(m => {
+            const isOptimistic = m.id.startsWith('temp-');
+            const isResolved = resolvedOptimisticIds.has(m.id) || (m.optimisticId && resolvedOptimisticIds.has(m.optimisticId));
+            return isOptimistic && !isResolved;
+          });
+          
+          const finalMessages = [...incomingMessages, ...pendingOptimistic].sort((a, b) => {
+            const timeA = a.clientTimestamp || parseTimestampToMillis(a.createdAt);
+            const timeB = b.clientTimestamp || parseTimestampToMillis(b.createdAt);
+            return timeA - timeB;
+          });
+          
+          dispatch({ type: 'SET_MESSAGES', messages: finalMessages });
+        } else {
+          // If no latest document exists yet, clear loading state and start with empty messages
+          dispatch({ type: 'SET_MESSAGES', messages: [] });
         }
-        
-        updatedMessages.forEach(msg => {
-          dispatch({ type: 'UPDATE_MESSAGE', messageId: msg.id, data: msg });
-        });
-        removedIds.forEach(id => {
-          dispatch({ type: 'REMOVE_MESSAGE', messageId: id });
-        });
       }, (err) => {
         if (isCancelled || err.code === 'permission-denied') return;
         console.error("[useMessageStreamSync] Listener error:", err);
@@ -181,43 +180,7 @@ const useMessageStreamSync = (groupId: string | null, userData: UserData | null,
       unsubMessagesRef.current = unsubscribe;
     };
 
-    const initializeMessageStream = async () => {
-      try {
-        const fetchBundle = async (retry = false) => {
-          try {
-            const bundleResponse = await apiClient.get(`/api/groups/bundle/${groupId}`, { 
-              responseType: 'arraybuffer',
-              timeout: 6000 
-            });
-            if (bundleResponse.data && !isCancelled) {
-              await loadBundle(db, bundleResponse.data);
-            }
-          } catch (err: unknown) {
-            const axiosError = err as { response?: { status: number } };
-            if (!retry && !isCancelled && (axiosError.response?.status === 403 || axiosError.response?.status === 500)) {
-              const delay = axiosError.response?.status === 500 ? 1000 : 500;
-              console.warn(`[useMessageStreamSync] ${axiosError.response?.status} on bundle boost, retrying in ${delay}ms...`);
-              await new Promise(r => setTimeout(r, delay));
-              return fetchBundle(true);
-            }
-            console.warn("[useMessageStreamSync] Bundle boost failed (or max retries reached):", err);
-          }
-        };
-
-        const bundlePromise = fetchBundle();
-
-        await Promise.race([
-          bundlePromise,
-          new Promise(resolve => setTimeout(resolve, 1200))
-        ]);
-      } catch (err) {
-        console.warn("[useMessageStreamSync] Race error:", err);
-      }
-      
-      if (!isCancelled) startListener();
-    };
-
-    initializeMessageStream();
+    startListener();
 
     return () => {
       isCancelled = true;
@@ -227,7 +190,7 @@ const useMessageStreamSync = (groupId: string | null, userData: UserData | null,
         unsubMessagesRef.current = null;
       }
     };
-  }, [groupId, userData?.uid, status, dispatch]);
+  }, [groupId, userData?.uid, status, currentMessages, dispatch]);
 };
 
 /**
@@ -247,7 +210,7 @@ export const useChatDataEngine = (groupId: string | null, userData: UserData | n
   // Sync Subscriptions
   useGroupMetadataSync(groupId, dispatch, t);
   useGroupMembersSync(groupId, state.status, state.groupData?.members, state.messages, state.membersMap, dispatch);
-  useMessageStreamSync(groupId, userData, state.status, dispatch);
+  useMessageStreamSync(groupId, userData, state.status, state.messages, dispatch);
 
   return { state, dispatch };
 };

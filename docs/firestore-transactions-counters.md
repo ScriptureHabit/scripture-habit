@@ -39,6 +39,44 @@ const result = await db.runTransaction(async (transaction) => {
 });
 ```
 
+### 1.1 Compile-Safe Read/Write Phase Segregation (IIFE Pattern)
+
+To strictly enforce the Read-before-Write constraint by construction, highly complex transactions (such as `postMessage` in `MessageService` and `postNote` in `NoteService`) encapsulate the entire read sequence (including conditional bootstraps/snaps and dependent pure calculations) into an asynchronous Immediately Invoked Function Expression (IIFE) block representing **Phase 1: Read Phase**.
+
+Inside this block, absolutely no write mutations are allowed. All returned resolved states and computation variables are received in the outer scope, and then executed in **Phase 2: Write Phase** (which contains only `transaction.set` and `transaction.update` mutations).
+
+This physical phase segregation guarantees that it is impossible for a developer to accidentally insert a read query after a write mutation during future updates.
+
+#### Code Example (`MessageService.postMessage` / `NoteService.postNote`)
+```typescript
+const result = await db.runTransaction(async (transaction) => {
+    // -------------------------------------------------------------
+    // PHASE 1: READ & CALCULATION PHASE (Strict Read-before-Write)
+    // -------------------------------------------------------------
+    const { userData, currentMessages, allLatestGids, ... } = await (async () => {
+        const [userSnap, latestSnap] = await Promise.all([
+            transaction.get(userRef),
+            transaction.get(latestRef)
+        ]);
+
+        // ... Pure Calculations, validations and history bootstrapping queries ...
+
+        return {
+            userData: userSnap.data(),
+            currentMessages: latestSnap.data()?.messages || [],
+            allLatestGids
+        };
+    })();
+
+    // -------------------------------------------------------------
+    // PHASE 2: WRITE PHASE (Strictly mutations only)
+    // -------------------------------------------------------------
+    transaction.set(msgRef, msgData);
+    transaction.set(latestRef, { messages: updatedMessages }, { merge: true });
+    transaction.update(userRef, userUpdate);
+});
+```
+
 ---
 
 ## 2. Multi-Document Updates
@@ -98,17 +136,34 @@ To scale counters under high traffic, the app uses a **Distributed Counter** pat
 
 ---
 
-## 4. Read-Free & Low-Read High-Frequency Transactions
+## 4. Message Aggregation (Strategy B) & Low-Read High-Frequency Transactions
 
-To scale high-frequency operations such as chat messaging (`postMessage`) and reaction toggling (`toggleReaction`), the architecture completely avoids transactional document reads on `groupRef` in production:
+To scale high-frequency operations such as chat messaging (`postMessage`) and reaction toggling (`toggleReaction`), scripture-habit implements a **Message Aggregation pattern (Strategy B)** that collapses the active chat sync down to **exactly 1 Firestore read** per active stream:
 
-### Chat Posting (`postMessage`)
-- **0 Transactional Group Reads**: All updates on the group document (like `messageCount` increment, `lastMessageAt`, and `memberLastReadAt`) are performed using **atomic blind updates** (`admin.firestore.FieldValue.increment` and `admin.firestore.FieldValue.serverTimestamp`).
-- **Deferred Push Notifications**: Instead of fetching group members inside the transaction, the service returns `members: null` and delegates the query asynchronously to `notifyGroupMembers` inside a non-blocking `waitUntil` thread.
-- **Blind Unread Counts**: The user's read status counters (`readMessageCount`) are blindly incremented using `FieldValue.increment(1)` since they just wrote the message, preserving perfect unread badges without reading the absolute database totals.
+### 4.1 Materialized Chat Aggregate (`messages_latest/latest`)
+Instead of subscribing to the entire `/messages` subcollection (which incurs N reads on load and on any local changes), clients subscribe via `onSnapshot` to a single materialized view document: `/groups/{groupId}/messages_latest/latest`.
 
-### Reaction Toggling (`toggleReaction`)
-- **Membership Check Bypassing**: When called from the production REST endpoint, the toggle reaction transaction accepts `skipGroupCheck: true` to bypass the `groupRef` read entirely, utilizing client-side context safety and authenticated sessions for authorization. This reduces transactional reads by **1 group document read** per reaction.
+During a post, edit, reaction, or delete operation, the backend executes a transaction that:
+1. **Reads** the single `latest` document and User profile state (if missing in cache).
+2. **Mutates** the message array locally (appending, editing, slicing to 25 items, or shrinking on deletion).
+3. **Writes** the updated array back to `/messages_latest/latest` and writes the single message log to the `/messages` subcollection.
+
+This architecture ensures that all active listening clients receive real-time updates instantly through **0 database reads** (paying only for the single write performed by the poster).
+
+### 4.2 Zero-Jitter UI Sorting (`clientTimestamp`)
+During Firestore server-timestamp resolution, there is a small period where `createdAt` resolves as `null` locally (during optimistic updates). If client clocks are out of sync, this causes "UI jumps" when the server snapshot returns.
+
+To guarantee zero-jitter sorting:
+* Clients attach a client-generated Unix epoch millisecond timestamp (`clientTimestamp = Date.now()`) to the request body when posting messages or study notes.
+* The backend persists `clientTimestamp` to both the individual message doc and the `latest` aggregate array.
+* The frontend uses `clientTimestamp || parseTimestampToMillis(createdAt)` as the absolute sorting key. Since the sorting key is stable before and after server synchronization, UI jumps are entirely prevented.
+
+### 4.3 Self-Healing Data Reconciliation (`reconcileLatestMessages`)
+Since aggregate arrays represent a materialized view, manual database modifications or race conditions might cause them to drift from the actual history in the `/messages` subcollection.
+
+To guarantee eventual data integrity and absolute self-healing:
+* **`reconcileLatestMessages(groupId)`**: A transaction-safe method compares the `/messages_latest/latest` array against the actual physical latest 25 messages in the `/messages` subcollection. If any discrepancy (mismatched ID, length, or order) is detected, the aggregate document is automatically overwritten and self-healed.
+* **Cron Sync Loop**: This self-healing function is integrated into the hourly cron sync `/aggregate-message-counts` for both active priority groups and maintenance stale recalculations, ensuring background data auto-healing without user intervention.
 
 ---
 

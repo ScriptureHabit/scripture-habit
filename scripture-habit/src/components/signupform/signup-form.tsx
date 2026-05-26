@@ -164,6 +164,7 @@ export default function SignupForm() {
               value={nickname}
               onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setNickname(e.target.value)}
               required
+              maxLength={30}
             />
             <Button type="submit" data-testid="complete-submit">
               {t('signup.finishSignup')}
@@ -218,6 +219,7 @@ export default function SignupForm() {
             value={nickname}
             onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setNickname(e.target.value)}
             required
+            maxLength={30}
           />
           <Input
             data-testid="signup-email"

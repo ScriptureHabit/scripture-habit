@@ -99,8 +99,8 @@ export const chatReducer = (state: ChatState, action: ChatAction): ChatState => 
       newMessages.forEach(m => allMessagesMap.set(m.id, m));
 
       const finalMessages = Array.from(allMessagesMap.values()).sort((a, b) => {
-        const timeA = parseTimestampToMillis(a.createdAt);
-        const timeB = parseTimestampToMillis(b.createdAt);
+        const timeA = a.clientTimestamp || parseTimestampToMillis(a.createdAt);
+        const timeB = b.clientTimestamp || parseTimestampToMillis(b.createdAt);
         return timeA - timeB;
       });
 
@@ -120,8 +120,8 @@ export const chatReducer = (state: ChatState, action: ChatAction): ChatState => 
       state.messages.forEach(m => allMessagesMap.set(m.id, m));
 
       const combined = Array.from(allMessagesMap.values()).sort((a, b) => {
-        const timeA = parseTimestampToMillis(a.createdAt);
-        const timeB = parseTimestampToMillis(b.createdAt);
+        const timeA = a.clientTimestamp || parseTimestampToMillis(a.createdAt);
+        const timeB = b.clientTimestamp || parseTimestampToMillis(b.createdAt);
         return timeA - timeB;
       });
 

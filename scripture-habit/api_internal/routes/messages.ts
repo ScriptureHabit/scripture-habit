@@ -176,7 +176,7 @@ router.post('/post-message', authenticate, verifyAppCheck, async (req: Authentic
     const validation = postMessageSchema.safeParse(req.body);
     if (!validation.success) return res.status(400).json({ error: 'Invalid input' });
 
-    const { groupId, text, replyTo, optimisticId, nickname, photoURL } = validation.data;
+    const { groupId, text, replyTo, optimisticId, nickname, photoURL, clientTimestamp } = validation.data;
     try {
         const uid = req.user!.uid;
         const result = await MessageService.postMessage({
@@ -191,7 +191,8 @@ router.post('/post-message', authenticate, verifyAppCheck, async (req: Authentic
             } : undefined,
             optimisticId,
             nickname,
-            photoURL
+            photoURL,
+            clientTimestamp
         });
 
         // Notifications: waitUntil() keeps the function alive after response

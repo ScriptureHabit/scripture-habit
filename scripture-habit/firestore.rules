@@ -89,6 +89,11 @@ service cloud.firestore {
         allow write: if false; 
       }
 
+      match /messages_latest/{docId} {
+        allow read: if isAuthenticated() && isMemberOfGroup(groupId);
+        allow write: if false;
+      }
+
       match /members/{userId} {
         allow read: if isAuthenticated() && isMemberOfGroup(groupId);
         allow write: if false;

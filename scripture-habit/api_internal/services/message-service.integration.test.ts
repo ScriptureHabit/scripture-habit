@@ -14,6 +14,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('MessageService Integratio
         const groupRef = db.collection('groups').doc(TEST_GROUP_ID);
         // Clear existing messages to prevent cross-test contamination
         await db.recursiveDelete(groupRef.collection('messages')).catch(() => {});
+        await groupRef.collection('messages_latest').doc('latest').delete().catch(() => {});
 
         const userRef = db.collection('users').doc(TEST_UID);
         // Ensure user exists
@@ -61,6 +62,14 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('MessageService Integratio
         expect(gDataAfter.lastMessageByUid).toBe(TEST_UID);
         expect(gDataAfter.lastMessageAt).toBeDefined();
 
+        // Check Strategy B latest messages array
+        const latestSnap = await groupRef.collection('messages_latest').doc('latest').get();
+        expect(latestSnap.exists).toBe(true);
+        const latestMsgs = latestSnap.data()?.messages || [];
+        expect(latestMsgs.length).toBeGreaterThan(0);
+        expect(latestMsgs[latestMsgs.length - 1].id).toBe(result.messageId);
+        expect(latestMsgs[latestMsgs.length - 1].text).toBe(text);
+
         // Check member state
         const mSnap = await groupRef.collection('members').doc(TEST_UID).get();
         expect(mSnap.exists).toBe(true);
@@ -97,6 +106,13 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('MessageService Integratio
         const msgDataOn = msgSnapOn.data() as MessageDocument;
         expect(msgDataOn.reactions?.['🙏']).toContain(TEST_UID);
         expect(msgDataOn.reactionPreviews?.['🙏']?.[0].uid).toBe(TEST_UID);
+
+        // Check Strategy B latest reactions
+        const latestSnapOn = await db.collection('groups').doc(TEST_GROUP_ID).collection('messages_latest').doc('latest').get();
+        const arrayMsgOn = (latestSnapOn.data()?.messages || []).find((m: any) => m.id === messageId);
+        expect(arrayMsgOn).toBeDefined();
+        expect(arrayMsgOn.reactions?.['🙏']).toContain(TEST_UID);
+        expect(arrayMsgOn.reactionPreviews?.['🙏']?.[0].uid).toBe(TEST_UID);
 
         // 3. Toggle off
         const resOff = await MessageService.toggleReaction({
@@ -141,6 +157,12 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('MessageService Integratio
             groupId: TEST_GROUP_ID,
             messageId: res2.messageId
         });
+
+        // Check Strategy B deletion shrinkage
+        const latestSnapDel = await db.collection('groups').doc(TEST_GROUP_ID).collection('messages_latest').doc('latest').get();
+        const latestMsgsDel = latestSnapDel.data()?.messages || [];
+        expect(latestMsgsDel.find((m: any) => m.id === res2.messageId)).toBeUndefined();
+        expect(latestMsgsDel.find((m: any) => m.id === res1.messageId)).toBeDefined();
 
         // 3. Verify metadata recovered to the first message
         const groupSnapAfter = await db.collection('groups').doc(TEST_GROUP_ID).get();
@@ -331,19 +353,33 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('MessageService Integratio
         });
 
         const msg1Ref = db.collection('groups').doc(TEST_GROUP_ID).collection('messages').doc('msg-group-1');
-        await msg1Ref.set({
+        const msg1Data = {
+            id: 'msg-group-1',
             senderId: TEST_UID,
             text: 'Original comment',
             isNote: true,
-            originalNoteId: noteId
+            originalNoteId: noteId,
+            createdAt: admin.firestore.Timestamp.now()
+        };
+        await msg1Ref.set(msg1Data);
+        await db.collection('groups').doc(TEST_GROUP_ID).collection('messages_latest').doc('latest').set({
+            groupId: TEST_GROUP_ID,
+            messages: [msg1Data]
         });
 
         const msg2Ref = db.collection('groups').doc(OTHER_GROUP_ID).collection('messages').doc('msg-group-2');
-        await msg2Ref.set({
+        const msg2Data = {
+            id: 'msg-group-2',
             senderId: TEST_UID,
             text: 'Original comment',
             isNote: true,
-            originalNoteId: noteId
+            originalNoteId: noteId,
+            createdAt: admin.firestore.Timestamp.now()
+        };
+        await msg2Ref.set(msg2Data);
+        await db.collection('groups').doc(OTHER_GROUP_ID).collection('messages_latest').doc('latest').set({
+            groupId: OTHER_GROUP_ID,
+            messages: [msg2Data]
         });
 
         // Edit via TEST_GROUP_ID message
@@ -353,6 +389,13 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('MessageService Integratio
             messageId: 'msg-group-1',
             text: 'Super New Propagated Comment!'
         });
+
+        // Check Strategy B edit propagation
+        const latestSnapEdit = await db.collection('groups').doc(TEST_GROUP_ID).collection('messages_latest').doc('latest').get();
+        const arrayMsgEdit = (latestSnapEdit.data()?.messages || []).find((m: any) => m.id === 'msg-group-1');
+        expect(arrayMsgEdit).toBeDefined();
+        expect(arrayMsgEdit.text).toBe('Super New Propagated Comment!');
+        expect(arrayMsgEdit.isEdited).toBe(true);
 
         // Verify message 1 is edited
         const msg1Snap = await msg1Ref.get();
@@ -621,5 +664,58 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('MessageService Integratio
         await db.collection('groups').doc(TEST_GROUP_ID).update({
             members: [TEST_UID]
         });
+    });
+
+    it('should reconcile and heal corrupted messages_latest/latest document', async () => {
+        const groupRef = db.collection('groups').doc(TEST_GROUP_ID);
+        const latestRef = groupRef.collection('messages_latest').doc('latest');
+
+        // 1. Post two messages to build a valid state
+        const res1 = await MessageService.postMessage({
+            uid: TEST_UID,
+            groupId: TEST_GROUP_ID,
+            text: 'First Heal Test Message'
+        });
+        const res2 = await MessageService.postMessage({
+            uid: TEST_UID,
+            groupId: TEST_GROUP_ID,
+            text: 'Second Heal Test Message'
+        });
+
+        // Verify initial latest state is correct
+        const initialLatestSnap = await latestRef.get();
+        expect(initialLatestSnap.exists).toBe(true);
+        const latestMsgs = initialLatestSnap.data()?.messages || [];
+        expect(latestMsgs.length).toBe(2);
+        expect(latestMsgs[0].id).toBe(res1.messageId);
+        expect(latestMsgs[1].id).toBe(res2.messageId);
+
+        // 2. Corrupt the latest document (e.g. set it to a wrong or empty array)
+        // This simulates a manual Firestore console edit or out-of-sync aggregate document
+        await latestRef.set({
+            groupId: TEST_GROUP_ID,
+            messages: [{ id: 'corrupted-message-id', text: 'Corrupted' }]
+        });
+
+        // 3. Call reconcileLatestMessages and assert it returns healed = true
+        const healResult1 = await MessageService.reconcileLatestMessages(TEST_GROUP_ID);
+        expect(healResult1.healed).toBe(true);
+        expect(healResult1.count).toBe(2);
+
+        // 4. Verify that it was healed back to the actual messages from history
+        const healedLatestSnap = await latestRef.get();
+        const healedMsgs = healedLatestSnap.data()?.messages || [];
+        expect(healedMsgs.length).toBe(2);
+        expect(healedMsgs[0].id).toBe(res1.messageId);
+        expect(healedMsgs[1].id).toBe(res2.messageId);
+
+        // 5. Call reconcileLatestMessages again when healthy and assert it returns healed = false
+        const healResult2 = await MessageService.reconcileLatestMessages(TEST_GROUP_ID);
+        expect(healResult2.healed).toBe(false);
+        expect(healResult2.count).toBe(2);
+
+        // Cleanup
+        await MessageService.deleteMessage({ uid: TEST_UID, groupId: TEST_GROUP_ID, messageId: res1.messageId });
+        await MessageService.deleteMessage({ uid: TEST_UID, groupId: TEST_GROUP_ID, messageId: res2.messageId });
     });
 });

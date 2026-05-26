@@ -307,6 +307,7 @@ const NewNote: FC<NewNoteProps> = ({
                         onChange={(e) => setComment(e.target.value)}
                         required
                         placeholder={commentPlaceholder}
+                        maxLength={2000}
                     />
 
                     {!noteToEdit && (

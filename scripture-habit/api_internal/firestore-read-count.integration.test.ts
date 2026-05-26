@@ -124,6 +124,11 @@ describe('Firestore Read Count Assertion Tests', () => {
             await db.collection('groups').doc(g2).set({ name: 'Group 2', ...groupPayload });
             await db.collection('groups').doc(g3).set({ name: 'Group 3', ...groupPayload });
 
+            // Steady-state verification setup: Pre-initialize Strategy B latest aggregates
+            await db.collection('groups').doc(g1).collection('messages_latest').doc('latest').set({ groupId: g1, messages: [] });
+            await db.collection('groups').doc(g2).collection('messages_latest').doc('latest').set({ groupId: g2, messages: [] });
+            await db.collection('groups').doc(g3).collection('messages_latest').doc('latest').set({ groupId: g3, messages: [] });
+
             vi.clearAllMocks();
 
             const res = await NoteService.postNote({

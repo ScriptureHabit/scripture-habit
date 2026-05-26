@@ -169,6 +169,7 @@ const LoginForm: FC = () => {
               value={nickname}
               onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setNickname(e.target.value)}
               required
+              maxLength={30}
             />
             <Button type="submit" data-testid="complete-submit">
               {t('signup.finishSignup')}

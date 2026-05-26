@@ -22,6 +22,7 @@ export interface PostNoteInput {
     language?: string | null;
     timeZone?: string | null;
     optimisticId?: string | null;
+    clientTimestamp?: number;
 }
 
 export class NoteService {
@@ -30,7 +31,7 @@ export class NoteService {
     }
 
     static async postNote(input: PostNoteInput) {
-        const { uid, messageText, comment, title, speaker, shareOption, selectedShareGroups, language, timeZone: clientTimeZone, optimisticId } = input;
+        const { uid, messageText, comment, title, speaker, shareOption, selectedShareGroups, language, timeZone: clientTimeZone, optimisticId, clientTimestamp } = input;
         
         const scripture = input.scripture.trim();
         const chapter = input.chapter?.trim().replace(/^0+/, '') || "";
@@ -42,57 +43,106 @@ export class NoteService {
                     ? userRef.collection('notes').doc(optimisticId) 
                     : userRef.collection('notes').doc();
 
-                // --- 1. ALL READS FIRST ---
-                const [userSnap, existingNoteSnap] = await Promise.all([
-                    transaction.get(userRef),
-                    optimisticId ? transaction.get(noteRef) : Promise.resolve(null)
-                ]) as [admin.firestore.DocumentSnapshot<UserDocument>, admin.firestore.DocumentSnapshot | null];
+                // --- PHASE 1: READ & CALCULATION PHASE (Strict Read-before-Write) ---
+                const {
+                    userData,
+                    userGroupIds,
+                    groupsToPostTo,
+                    existingSharedIds,
+                    now,
+                    streakResult,
+                    messagesInGroup,
+                    existingNoteExists,
+                    allLatestGids
+                } = await (async () => {
+                    const [userSnap, existingNoteSnap] = await Promise.all([
+                        transaction.get(userRef),
+                        optimisticId ? transaction.get(noteRef) : Promise.resolve(null)
+                    ]) as [admin.firestore.DocumentSnapshot<UserDocument>, admin.firestore.DocumentSnapshot | null];
 
-                if (!userSnap.exists) throw new NotFoundError('User not found.');
-                const userData = userSnap.data()!;
-                const userGroupIds: string[] = userData.groupIds || (userData.groupId ? [userData.groupId] : []);
+                    if (!userSnap.exists) throw new NotFoundError('User not found.');
+                    const uData = userSnap.data()!;
+                    const uGroupIds: string[] = uData.groupIds || (uData.groupId ? [uData.groupId] : []);
 
-                // Target logic
-                let groupsToPostTo: string[] = [];
-                if (shareOption === 'all') groupsToPostTo = userGroupIds;
-                else if (shareOption === 'specific') groupsToPostTo = selectedShareGroups || [];
-                else if (shareOption === 'current' && userData.groupId) groupsToPostTo = [userData.groupId];
-                
-                groupsToPostTo = [...new Set(groupsToPostTo.filter(gid => !!gid))].slice(0, 20);
+                    let groupsToPost: string[] = [];
+                    if (shareOption === 'all') groupsToPost = uGroupIds;
+                    else if (shareOption === 'specific') groupsToPost = selectedShareGroups || [];
+                    else if (shareOption === 'current' && uData.groupId) groupsToPost = [uData.groupId];
+                    
+                    groupsToPost = [...new Set(groupsToPost.filter(gid => !!gid))].slice(0, 20);
 
-                // --- 2. CALCULATIONS (Pure Logic) ---
-                const existingNote = existingNoteSnap ? existingNoteSnap.data() : undefined;
-                const existingSharedIds = existingNote?.sharedMessageIds || {};
-                const now = new Date();
-                const timeZone = userData.timeZone || 'UTC';
-                let lastPostAtDate: Date | null = null;
-                const lastPostAtRaw = userData.lastPostAt;
-                if (lastPostAtRaw) {
-                    if (typeof lastPostAtRaw === 'object' && 'toDate' in lastPostAtRaw) {
-                        lastPostAtDate = (lastPostAtRaw as { toDate: () => Date }).toDate();
-                    } else if (typeof lastPostAtRaw === 'object' && 'seconds' in lastPostAtRaw) {
-                        lastPostAtDate = new Date(lastPostAtRaw.seconds * 1000);
-                    } else {
-                        lastPostAtDate = new Date(lastPostAtRaw as string | number | Date);
+                    const extNote = existingNoteSnap ? existingNoteSnap.data() : undefined;
+                    const extSharedIds = extNote?.sharedMessageIds || {};
+                    const currentNow = new Date();
+                    const tz = uData.timeZone || 'UTC';
+                    let lastPostAtDt: Date | null = null;
+                    const lastPostAtRw = uData.lastPostAt;
+                    if (lastPostAtRw) {
+                        if (typeof lastPostAtRw === 'object' && 'toDate' in lastPostAtRw) {
+                            lastPostAtDt = (lastPostAtRw as { toDate: () => Date }).toDate();
+                        } else if (typeof lastPostAtRw === 'object' && 'seconds' in lastPostAtRw) {
+                            lastPostAtDt = new Date(lastPostAtRw.seconds * 1000);
+                        } else {
+                            lastPostAtDt = new Date(lastPostAtRw as string | number | Date);
+                        }
                     }
-                }
 
-                const streakResult = StreakEngine.calculateNextStreak({
-                    streakCount: Number(userData.streakCount || userData.streak || 0),
-                    highestStreak: Number(userData.highestStreak || userData.streak || 0),
-                    lastPostDate: userData.lastPostDate || null,
-                    lastPostAt: lastPostAtDate,
-                    timeZone
-                }, { now, clientTimeZone });
+                    const streakRes = StreakEngine.calculateNextStreak({
+                        streakCount: Number(uData.streakCount || uData.streak || 0),
+                        highestStreak: Number(uData.highestStreak || uData.streak || 0),
+                        lastPostDate: uData.lastPostDate || null,
+                        lastPostAt: lastPostAtDt,
+                        timeZone: tz
+                    }, { now: currentNow, clientTimeZone });
+
+                    const { newStreak: streakCountNew, streakUpdated: hasStreakUpdated } = streakRes;
+
+                    const allLatestGids = [...new Set([...groupsToPost, ...(hasStreakUpdated && streakCountNew > 0 ? uGroupIds : [])])];
+                    const latRefs = allLatestGids.map(gid => db.collection('groups').doc(gid).collection('messages_latest').doc('latest'));
+                    
+                    let latSnaps: admin.firestore.DocumentSnapshot[] = [];
+                    if (latRefs.length > 0) {
+                        latSnaps = await transaction.getAll(...latRefs);
+                    }
+
+                    const bootStamps: Record<string, Record<string, unknown>[]> = {};
+                    for (let i = 0; i < allLatestGids.length; i++) {
+                        const gid = allLatestGids[i];
+                        const latestSnap = latSnaps[i];
+                        if (!latestSnap || !latestSnap.exists) {
+                            const bootSnap = await transaction.get(
+                                db.collection('groups').doc(gid).collection('messages')
+                                    .orderBy('createdAt', 'desc')
+                                    .limit(24)
+                            );
+                            bootStamps[gid] = bootSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })).reverse();
+                        } else {
+                            bootStamps[gid] = latestSnap.data()?.messages || [];
+                        }
+                    }
+
+                    return {
+                        userData: uData,
+                        userGroupIds: uGroupIds,
+                        groupsToPostTo: groupsToPost,
+                        existingSharedIds: extSharedIds,
+                        now: currentNow,
+                        streakResult: streakRes,
+                        messagesInGroup: bootStamps,
+                        existingNoteExists: !!(existingNoteSnap && existingNoteSnap.exists),
+                        allLatestGids
+                    };
+                })();
 
                 const { newStreak, currentHighest, today, streakUpdated } = streakResult;
+                const timeZone = userData.timeZone || 'UTC';
 
-                // --- 3. ALL WRITES START HERE ---
+                // --- PHASE 2: WRITE PHASE ---
                 const userUpdate: admin.firestore.UpdateData<UserDocument> = {
                     lastPostAt: admin.firestore.Timestamp.fromDate(now)
                 };
 
-                if (!existingNoteSnap || !existingNoteSnap.exists) {
+                if (!existingNoteExists) {
                     userUpdate.totalNotes = admin.firestore.FieldValue.increment(1);
                 }
 
@@ -120,14 +170,13 @@ export class NoteService {
                 const serverTime = admin.firestore.Timestamp.fromDate(now);
 
                 for (const gid of groupsToPostTo) {
-                    // Check membership via userGroupIds to avoid reading groupDoc in transaction
                     if (!userGroupIds.includes(gid) || existingSharedIds[gid]) continue;
 
                     const gRef = db.collection('groups').doc(gid);
                     const msgRef = gRef.collection('messages').doc();
                     sharedMessageIds[gid] = msgRef.id;
 
-                    transaction.set(msgRef, {
+                    const msgData = {
                         text: messageText,
                         senderId: uid,
                         senderNickname: userNickname,
@@ -136,10 +185,20 @@ export class NoteService {
                         isNote: true,
                         originalNoteId: noteRef.id,
                         scripture,
-                        chapter: chapter || ""
-                    });
+                        chapter: chapter || "",
+                        ...(clientTimestamp ? { clientTimestamp } : {})
+                    };
 
-                    // Blind updates on group documents without fetching them first
+                    transaction.set(msgRef, msgData);
+
+                    // Update local aggregate messages array
+                    const arrayMsg = {
+                        id: msgRef.id,
+                        ...msgData,
+                        createdAt: admin.firestore.Timestamp.now()
+                    };
+                    messagesInGroup[gid] = [...(messagesInGroup[gid] || []), arrayMsg].slice(-25);
+
                     const groupUpdate = {
                         lastMessageAt: serverTime,
                         lastNoteAt: serverTime,
@@ -195,7 +254,9 @@ export class NoteService {
 
                     [...new Set(userGroupIds)].forEach(gid => {
                         const gRef = db.collection('groups').doc(gid);
-                        transaction.set(gRef.collection('messages').doc(), {
+                        const msgRef = gRef.collection('messages').doc();
+
+                        const announceMsgData = {
                             text: announceMsg,
                             senderId: 'system',
                             senderNickname: botName,
@@ -204,7 +265,17 @@ export class NoteService {
                             type: 'streakAnnouncement',
                             messageType: 'streakAnnouncement',
                             messageData: { nickname: userNickname, userId: uid, streakCount: newStreak }
-                        });
+                        };
+
+                        transaction.set(msgRef, announceMsgData);
+
+                        // Update local aggregate array
+                        const arrayAnnounce = {
+                            id: msgRef.id,
+                            ...announceMsgData,
+                            createdAt: admin.firestore.Timestamp.now()
+                        };
+                        messagesInGroup[gid] = [...(messagesInGroup[gid] || []), arrayAnnounce].slice(-25);
                         
                         transaction.update(gRef, {
                             messageCount: admin.firestore.FieldValue.increment(1),
@@ -213,6 +284,16 @@ export class NoteService {
                             lastMessageByUid: 'system'
                         });
                     });
+                }
+
+                // Write final aggregated latest message arrays to Firestore
+                for (const gid of allLatestGids) {
+                    const latestRef = db.collection('groups').doc(gid).collection('messages_latest').doc('latest');
+                    transaction.set(latestRef, {
+                        groupId: gid,
+                        messages: messagesInGroup[gid] || [],
+                        lastUpdatedAt: admin.firestore.FieldValue.serverTimestamp()
+                    }, { merge: true });
                 }
 
                 return { 
@@ -364,16 +445,18 @@ export class NoteService {
                 const sharedEntries = Object.entries(sharedMessageIds);
                 const groupRefs = sharedEntries.map(([gid]) => db.collection('groups').doc(gid));
                 const msgRefs = sharedEntries.map(([gid, mid]) => db.collection('groups').doc(gid).collection('messages').doc(String(mid)));
+                const latestRefs = sharedEntries.map(([gid]) => db.collection('groups').doc(gid).collection('messages_latest').doc('latest'));
 
-                // --- 2. BATCH READ: Groups and affected Messages ---
+                // --- 2. BATCH READ: Groups, affected Messages, and latest message arrays ---
                 let snapshotResults: admin.firestore.DocumentSnapshot[] = [];
                 if (sharedEntries.length > 0) {
                     snapshotResults = typeof transaction.getAll === 'function'
-                        ? await transaction.getAll(...groupRefs, ...msgRefs) as admin.firestore.DocumentSnapshot[]
-                        : await Promise.all([...groupRefs, ...msgRefs].map(ref => transaction.get(ref)));
+                        ? await transaction.getAll(...groupRefs, ...msgRefs, ...latestRefs) as admin.firestore.DocumentSnapshot[]
+                        : await Promise.all([...groupRefs, ...msgRefs, ...latestRefs].map(ref => transaction.get(ref)));
                 }
                 const groupDocs = snapshotResults.slice(0, sharedEntries.length) as admin.firestore.DocumentSnapshot<GroupDocument>[];
-                const msgDocs = snapshotResults.slice(sharedEntries.length) as admin.firestore.DocumentSnapshot[];
+                const msgDocs = snapshotResults.slice(sharedEntries.length, sharedEntries.length * 2) as admin.firestore.DocumentSnapshot[];
+                const latestDocs = snapshotResults.slice(sharedEntries.length * 2) as admin.firestore.DocumentSnapshot[];
 
                 const now = new Date();
                 const todayStart = new Date(now);
@@ -434,13 +517,22 @@ export class NoteService {
                 });
 
                 for (let i = 0; i < sharedEntries.length; i++) {
-                    const [, messageId] = sharedEntries[i];
+                    const [groupId, messageId] = sharedEntries[i];
                     const gSnap = groupDocs[i];
                     const mSnap = msgDocs[i];
                     const meta = queryMetadata[i];
                     if (!gSnap.exists || !mSnap.exists) continue;
 
                     const updatePayload: admin.firestore.UpdateData<GroupDocument> = {};
+
+                    // Update latest aggregate document
+                    const latestSnap = latestDocs[i];
+                    if (latestSnap && latestSnap.exists) {
+                        const messages = (latestSnap.data()?.messages || []) as Record<string, unknown>[];
+                        const updatedMessages = messages.filter(m => m.id !== messageId);
+                        const latestRef = db.collection('groups').doc(groupId).collection('messages_latest').doc('latest');
+                        transaction.update(latestRef, { messages: updatedMessages });
+                    }
 
                     // Handle lastNote recovery
                     if (meta.needsNextNote) {

@@ -51,14 +51,16 @@ export const useMessageActions = (
   const handleSendMessage = useCallback(async (text: string, replyTo: Message | null) => {
     if (!text.trim() || !userData || !userData.uid) return false;
     
-    const optimisticId = `temp-${Date.now()}`;
+    const clientTimestamp = Date.now();
+    const optimisticId = `temp-${clientTimestamp}`;
     const optimisticMessage: Message = {
       id: optimisticId,
       text: text.trim(),
       senderId: userData.uid,
       senderNickname: userData.nickname || 'Member',
       senderPhotoURL: userData.photoURL || null,
-      createdAt: new Date(), // Local timestamp for immediate sorting
+      createdAt: new Date(clientTimestamp), // Local timestamp for immediate sorting
+      clientTimestamp,
       isOptimistic: true,
       optimisticId: optimisticId,
       ...(replyTo ? { 
@@ -83,7 +85,8 @@ export const useMessageActions = (
         replyTo,
         optimisticId,
         nickname: userData?.nickname,
-        photoURL: userData?.photoURL
+        photoURL: userData?.photoURL,
+        clientTimestamp
       });
 
       // 2. Resolve Optimistic Message with real ID

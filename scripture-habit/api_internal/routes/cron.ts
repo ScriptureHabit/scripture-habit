@@ -4,6 +4,7 @@ import { StreakReminderEngine } from '../lib/streak-reminder.js';
 import { CounterService } from '../services/counter-service.js';
 import { ArchiveService } from '../services/archive-service.js';
 import { InactivityService } from '../services/inactivity-service.js';
+import { MessageService } from '../services/message-service.js';
 import { calculateMemberStatus, InactivityMemberData, InactivityGroupData } from '../lib/inactivity-utils.js';
 import { t } from '../lib/i18n.js';
 
@@ -203,6 +204,7 @@ router.all('/aggregate-message-counts', verifyCronSecret, async (_req: Request, 
             try {
                 await CounterService.aggregateAndSync(groupDoc.ref, 'messageCount');
                 await CounterService.aggregateAndSync(groupDoc.ref, 'noteCount');
+                await MessageService.reconcileLatestMessages(groupDoc.id);
                 updatedCount++;
             } catch (err) {
                 console.error(`Priority aggregation failed for group ${groupDoc.id}:`, err);
@@ -218,6 +220,7 @@ router.all('/aggregate-message-counts', verifyCronSecret, async (_req: Request, 
                 // TRUTH: Physical recount for notes, and archive-aware recount for messages.
                 await CounterService.recountAndSync(groupDoc.ref, 'notes', 'noteCount');
                 await CounterService.recountMessageCountWithArchive(groupDoc.ref);
+                await MessageService.reconcileLatestMessages(groupDoc.id);
                 updatedCount++;
             } catch (err) {
                 console.error(`Maintenance sync failed for group ${groupDoc.id}:`, err);
