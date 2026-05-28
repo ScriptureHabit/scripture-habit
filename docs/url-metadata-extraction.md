@@ -63,10 +63,12 @@ Because fetching metadata requires the server to make HTTP requests on behalf of
 3.  **Server-Side Request Forgery (SSRF) Protection**:
     -   For `/fetch-church-metadata`, a strict whitelist is enforced: the hostname must be exactly `www.churchofjesuschrist.org` or `churchofjesuschrist.org`, and the protocol must be `https:`.
     -   For `/url-preview`, the input is checked via `isSafeUrl(url)` to prevent requests to local or private network ranges (like loopback or private subnets).
-4.  **Resource Limits & Timeouts**:
+4.  **Resource Limits, Timeouts & Redirect Routing**:
     -   **Content Size Limits**: Axios limits the downloaded payload to `512 KB` to block Denial of Service (DoS) attacks from loading large files.
     -   **Timeouts**: Requests timeout after `4000ms - 5000ms` to prevent server blocking.
-    -   **Redirect Limits**: Redirects are disabled (`maxRedirects: 0`) to prevent redirect-based SSRF loops.
+    -   **Context-Aware Redirect Limits (Multi-Tier SSRF Guard)**:
+        -   **Church Metadata (`/fetch-church-metadata`)**: Allows up to `maxRedirects: 5`. Since the domain is strictly whitelisted and verified as `churchofjesuschrist.org` prior to fetching, it is safe to permit standard redirects (e.g., routing to localized subdirectories or shortcode translations) without SSRF risk.
+        -   **General Previews (`/url-preview`)**: Enforces `maxRedirects: 0` strictly. Since this endpoint handles untrusted external URLs, any HTTP redirects are entirely blocked at the server boundary to prevent attacker-controlled redirect loops that bypass SSRF IP checks.
 
 ---
 

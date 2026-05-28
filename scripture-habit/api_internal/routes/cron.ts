@@ -559,6 +559,7 @@ router.all('/streak-warning', verifyCronSecret, async (req: Request, res: Respon
 
         // Group tokens by language
         const tokensByLang: Record<string, { token: string, uid: string }[]> = {};
+        const userActiveTokens = new Map<string, Set<string>>();
 
         for (const user of eligibleUsers) {
             const { data } = user;
@@ -570,6 +571,8 @@ router.all('/streak-warning', verifyCronSecret, async (req: Request, res: Respon
                 const fcmTokens = tokensDoc.data()?.fcmTokens || [];
 
                 if (fcmTokens.length === 0) continue; // Skip if no tokens in subcollection
+
+                userActiveTokens.set(user.id, new Set(fcmTokens));
 
                 const lang = data.language || 'en';
                 if (!tokensByLang[lang]) tokensByLang[lang] = [];
@@ -622,6 +625,19 @@ router.all('/streak-warning', verifyCronSecret, async (req: Request, res: Respon
                                     fcmTokens: admin.firestore.FieldValue.arrayRemove(invalidToken)
                                 });
                                 batchOpCount++;
+
+                                // Memory tracking to see if we cleared all active tokens for this user
+                                const activeTokensSet = userActiveTokens.get(uid);
+                                if (activeTokensSet) {
+                                    activeTokensSet.delete(invalidToken);
+                                    if (activeTokensSet.size === 0) {
+                                        // Self-healing: no tokens left, set public flag to false to prevent redundant queries
+                                        batch.update(db.collection('users').doc(uid), {
+                                            hasFcmToken: false
+                                        });
+                                        batchOpCount++;
+                                    }
+                                }
 
                                 if (batchOpCount >= 400) {
                                     await batch.commit();

@@ -1,5 +1,4 @@
 import { notifyGroupMembers } from '../lib/notifications.js';
-import { t } from '../lib/i18n.js';
 
 export class NotificationService {
     /**
@@ -12,14 +11,9 @@ export class NotificationService {
         language?: string | null,
         userToGroupMapEntries: [string, string][] 
     }) {
-        const { senderUid, senderNickname, language, userToGroupMapEntries } = options;
+        const { senderUid, senderNickname, userToGroupMapEntries } = options;
         
         try {
-            const notifTitle = t(language, 'notifications.note_posted_title');
-            const notifBody = t(language, 'notifications.note_posted_body', { 
-                nickname: senderNickname || 'Member' 
-            });
-
             // Deduplicate members across all targeted groups to prevent multiple notifications.
             // If a member is in multiple targeted groups, we only notify them once, 
             // pointing them to the first group encountered in the share list.
@@ -39,8 +33,11 @@ export class NotificationService {
 
             await Promise.all(Array.from(groupsToNotifyMap.entries()).map(([gid, membersList]) => 
                 notifyGroupMembers(gid, senderUid, { 
-                    title: notifTitle, 
-                    body: notifBody, 
+                    title: 'New note posted', 
+                    body: `${senderNickname || 'Member'} posted a new note`, 
+                    titleKey: 'notifications.note_posted_title',
+                    bodyKey: 'notifications.note_posted_body',
+                    bodyReplacements: { nickname: senderNickname || 'Member' },
                     data: { type: 'note', groupId: gid } 
                 }, membersList)
             ));

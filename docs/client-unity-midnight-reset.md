@@ -67,11 +67,11 @@ Since resetting data requires database write operations, the backend endpoint (`
 ```
 ┌────────────────────────────────────────────────────────┐
 │                   Secure HTTP Headers                  │
-├─────────────────┬──────────────────────────────────────┤
-│ Authorization   │ Bearer <Firebase ID Token (Auth)>    │
-├─────────────────┼──────────────────────────────────────┤
-│ X-AppCheck      │ <Firebase App Check JWT (Integrity)> │
-└─────────────────┴──────────────────────────────────────┘
+├──────────────────────┬─────────────────────────────────┤
+│ Authorization        │ Bearer <Firebase ID Token>      │
+├──────────────────────┼─────────────────────────────────┤
+│ X-Firebase-AppCheck  │ <Firebase App Check JWT>        │
+└──────────────────────┴─────────────────────────────────┘
 ```
 
 1. **User Authentication**: The hook gets a fresh ID token from Firebase Auth to verify the user is a member of the group:

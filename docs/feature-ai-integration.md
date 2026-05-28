@@ -118,12 +118,28 @@ To encourage active conversations, the backend provides a discussion starter end
 
 ---
 
-## 📊 Weekly Recaps and Cooldowns
+## 📊 Weekly Recaps, Cooldowns, & Smart Cache Recovery
 
-Weekly recaps are resource-heavy, so we apply a cooldown to manage system load:
-- The `lastRecapGeneratedAt` field is stored on the Group or User document.
-- The API checks this field: `if (currentTime - lastRecapGeneratedAt < 6 days) throw CooldownError`.
-- This ensures recaps remain a weekly event.
+Weekly recaps are resource-heavy AI operations. To prevent system overload and control API costs, the system applies a strict **6-day cooldown** while offering a smart recovery mechanism:
+
+### 1. The Cooldown and Cooldown Logic
+- When a personal recap is generated, the `lastRecapGeneratedAt` field (Firestore Timestamp) is set on the user's public profile document (`users/{uid}`).
+- When a new request arrives, the server checks if the elapsed time since `lastRecapGeneratedAt` is less than 6 days.
+
+### 2. Smart Cache & Fallback Recovery (Anti-Timeout)
+Instead of simply rejecting the request with a hard `429` error (which would cause a bad user experience in case of network timeouts or accidental screen closures), the API attempts to retrieve the recently generated recap from two fallback levels:
+
+1. **Level 1 Cache (`recaps` Subcollection)**:
+   - Queries `users/{uid}/recaps` sorted by `createdAt` in descending order (limit 1).
+   - If a document exists, is newer than 6 days, and contains `text`, the server returns it instantly with `fromCache: true`.
+2. **Level 2 Cache (`letters` Subcollection)**:
+   - If the `recaps` query misses, the server queries the 5 most recent documents in the `letters` subcollection sorted by `createdAt` in descending order.
+   - It programmatically filters for a document where `type === 'weekly_recap'` (avoiding the need for a strict composite index in Firestore).
+   - If found, is newer than 6 days, and contains `content`, it returns it as a fallback.
+
+### 3. Hard Cooldown Rejection
+- If both cache lookups fail to find the recently generated recap text, the API returns a `429` error: `Personal recap already generated recently. Please wait a week.`
+- This dual-tier caching guarantees that users can retrieve their weekly encouragement letter even if the client app state is lost or interrupted.
 
 ---
 

@@ -68,13 +68,16 @@ All non-blocking calculations, push notification sweeps, and daily activity rese
 
 ---
 
-## 🏆 Level Calculation
+## 🏆 Level Calculation & UI Optimization
 
-The user's level is calculated with this formula:
+The user's level is calculated using this formula:
 `Level = floor(daysStudiedCount / 7) + 1`
 
 - **Weekly Pace**: Studying for 7 unique days increases the user's level by 1.
-- **Performance**: The level is saved to the `users` document to make leaderboard sorting fast.
+- **On-the-Fly Calculation (Write Optimization)**:
+  To eliminate redundant database writes and minimize Firestore storage costs, the `level` field is **not persisted** directly in the `users` document.
+  Instead, the client application dynamically computes the level in the React render phase using the user's physical `daysStudiedCount` field (e.g., inside `DashboardOverview` or `UserProfileModal`).
+- **Leaderboard Performance**: Leaderboards and rankings can still be sorted efficiently since the underlying sorting key (`daysStudiedCount`) scales linearly and is indexed natively in Firestore, ensuring fast response times without requiring duplicate properties in the database.
 
 ---
 

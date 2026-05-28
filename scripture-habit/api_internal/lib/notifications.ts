@@ -1,5 +1,5 @@
 import { db, messaging, admin } from './firebase-admin.js';
-// Using centralized i18n for templates now
+import { t } from './i18n.js';
 
 export async function getUserFcmTokensAndLanguage(uid: string): Promise<{ tokens: string[], language?: string }> {
     const tokens: string[] = [];
@@ -28,6 +28,9 @@ export async function getUserFcmTokens(uid: string): Promise<string[]> {
 interface PushPayload {
     title: string;
     body: string;
+    titleKey?: string;
+    bodyKey?: string;
+    bodyReplacements?: Record<string, string | number>;
     data?: Record<string, string>;
 }
 
@@ -164,8 +167,16 @@ export async function notifyGroupMembers(groupId: string, senderUid: string, pay
             for (const [lang, langTokens] of tokensByLang.entries()) {
                 if (langTokens.length === 0) continue;
 
+                const resolvedTitle = payload.titleKey
+                    ? t(lang, payload.titleKey)
+                    : payload.title;
+                const resolvedBody = payload.bodyKey
+                    ? t(lang, payload.bodyKey, payload.bodyReplacements)
+                    : payload.body;
+
                 const payloadWithLang = {
-                    ...payload,
+                    title: resolvedTitle,
+                    body: resolvedBody,
                     data: { ...(payload.data || {}), lang }
                 };
 

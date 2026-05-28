@@ -182,4 +182,49 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Streak Warning Integratio
         expect(tokens).toContain('valid-token');
         expect(tokens).not.toContain('expired-token'); // Should have been cleaned up!
     });
+
+    it('should clean up invalid FCM tokens and update hasFcmToken to false when no tokens remain', async () => {
+        // Seed user with ONLY invalid tokens
+        const userRef = db.collection('users').doc('user-all-invalid-test');
+        await userRef.set({
+            isTestUser: true,
+            timeZone: 'Asia/Tokyo',
+            lastPostDate: '2026-05-17',
+            hasFcmToken: true
+        });
+        await userRef.collection('private').doc('tokens').set({
+            fcmTokens: ['expired-token-1', 'expired-token-2']
+        });
+
+        // Mock FCM to fail on both tokens
+        mockSendEachForMulticast.mockResolvedValue({
+            successCount: 0,
+            failureCount: 2,
+            responses: [
+                { success: false, error: { code: 'messaging/registration-token-not-registered' } as unknown as import('firebase-admin/messaging').FirebaseMessagingError },
+                { success: false, error: { code: 'messaging/invalid-registration-token' } as unknown as import('firebase-admin/messaging').FirebaseMessagingError }
+            ]
+        });
+
+        const testTime = '2026-05-18T11:30:00Z'; // 20:30 JST
+        
+        const response = await fetch(`${baseUrl}/api/cron/streak-warning`, {
+            method: 'POST',
+            headers: {
+                'Authorization': 'Bearer test-secret',
+                'x-test-time': testTime
+            }
+        });
+
+        expect(response.status).toBe(200);
+        
+        // 1. Check Firestore to see if tokens subcollection is empty
+        const updatedTokensDoc = await userRef.collection('private').doc('tokens').get();
+        const tokens = updatedTokensDoc.data()?.fcmTokens || [];
+        expect(tokens.length).toBe(0);
+
+        // 2. Check if the public user document was updated to hasFcmToken: false
+        const updatedUserDoc = await userRef.get();
+        expect(updatedUserDoc.data()?.hasFcmToken).toBe(false);
+    });
 });

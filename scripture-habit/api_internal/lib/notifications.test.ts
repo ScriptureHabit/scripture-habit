@@ -218,5 +218,51 @@ describe('notifications core lib tests', () => {
             expect(consoleErrorSpy).toHaveBeenCalledWith('Error in notifyGroupMembers:', expect.any(Error));
             consoleErrorSpy.mockRestore();
         });
+
+        it('should translate notifications with titleKey and bodyKey depending on target language', async () => {
+            const memberIdsOverride = ['receiver1', 'receiver2'];
+            
+            mockGetAll.mockResolvedValue([
+                makeSnap(true, { language: 'ja-JP', fcmTokens: ['token-ja'] }), // receiver1 public doc
+                makeSnap(true, { language: 'es-ES', fcmTokens: ['token-es'] }), // receiver2 public doc
+                makeSnap(true, { fcmTokens: [] }), // receiver1 private doc
+                makeSnap(true, { fcmTokens: [] })  // receiver2 private doc
+            ]);
+
+            mockSendEachForMulticast.mockResolvedValue({
+                successCount: 1,
+                failureCount: 0,
+                responses: [{ success: true }]
+            });
+
+            const consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+            
+            await notifyGroupMembers('g1', 'sender1', { 
+                title: 'Default Title', 
+                body: 'Default Body',
+                titleKey: 'notifications.note_posted_title',
+                bodyKey: 'notifications.note_posted_body',
+                bodyReplacements: { nickname: 'Alice' }
+            }, memberIdsOverride);
+
+            // Expect sendEachForMulticast to be called twice: once for 'ja', once for 'es'
+            expect(mockSendEachForMulticast).toHaveBeenCalledTimes(2);
+
+            const calls = mockSendEachForMulticast.mock.calls.map(c => c[0]);
+            
+            // Japanese check
+            const jaCall = calls.find(c => c.tokens.includes('token-ja'));
+            expect(jaCall).toBeDefined();
+            expect(jaCall!.data.title).toBe('📖 聖典学習'); // ja translation
+            expect(jaCall!.data.body).toBe('Aliceさんがノートを投稿しました！✨'); // ja body template
+
+            // Spanish check
+            const esCall = calls.find(c => c.tokens.includes('token-es'));
+            expect(esCall).toBeDefined();
+            expect(esCall!.data.title).toBe('📖 Estudio de las escrituras'); // es translation
+            expect(esCall!.data.body).toBe('¡Alice publicó una nota! ✨'); // es body template
+
+            consoleLogSpy.mockRestore();
+        });
     });
 });

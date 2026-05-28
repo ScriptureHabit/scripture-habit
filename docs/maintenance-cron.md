@@ -81,11 +81,45 @@ Since archived messages are removed from the active `messages` subcollection, co
 
 ## 5. Security & Secret Verification
 
-All cron endpoints require a `CRON_SECRET` token in the request header. This ensures only authorized services (like Vercel Cron or GitHub Actions) can run maintenance jobs.
+All cron endpoints require a `CRON_SECRET` token in the request header (`Authorization: Bearer <secret>`). This ensures only authorized services (like Vercel Cron or GitHub Actions) can run maintenance or administrative jobs.
 
 ---
 
-## 6. Data Pruning & Counter Recovery Flow
+## 6. Data Integrity & Self-Healing Sync Jobs
+
+To prevent long-term data degradation due to network errors, race conditions, or aborted clients, the backend includes self-healing background synchronization jobs.
+
+### 6.1 User Statistics and Membership Validation (`/api/cron/sync-user-stats`)
+This job targets active users (who posted in the last 24 hours) in batches of 100 to reconcile their stats with absolute physical database truth:
+- **Physical Count Verification**:
+  - Counts documents in the user's `notes` subcollection and updates `users/{uid}/totalNotes`.
+  - Counts documents in the `cheers` collection where `targetUid == uid` and updates `users/{uid}/cheersReceived`.
+- **Orphan Membership Pruning (Self-Healing)**:
+  - Fetches the user's `groupIds` array and uses `db.getAll` to check if their corresponding `groups/{groupId}/members/{uid}` document actually exists.
+  - If a group was deleted or the user was kicked but the user profile wasn't updated, the system **automatically removes** the group ID from the user's `groupIds` array and deletes the stale `users/{uid}/groupStates/{groupId}` state document.
+  - All operations are written using Firestore Batches committed in chunks of **400 operations**.
+
+### 6.2 Orphaned Cheers Cleanup (`/api/cron/cleanup-orphaned-cheers`)
+When accounts or groups are deleted, social interaction nodes (Cheers) can become orphaned.
+- **Orphan Sweeper**:
+  - Fetches a batch of 200 cheers sorted by `lastCheckedAt` (oldest checked first).
+  - Uses `db.getAll` to verify in parallel whether the associated `groupId`, `senderUid`, and `targetUid` still exist in Firestore.
+- **Auto-Deletion**:
+  - If any associated entity is missing, the cheer document is immediately deleted.
+  - If all entities are valid, the cheer's `lastCheckedAt` timestamp is updated to the current time, moving it to the back of the queue.
+
+---
+
+## 7. Diagnostics & Simulated Dry-Runs
+
+### 7.1 Inactivity Check Simulation (`/api/cron/test-inactive-check/:groupId`)
+Provides a safe, read-only diagnostic API for developers or administrators to review a group's inactivity state without modifying any databases.
+- **Simulated Actions**: Calculates the inactivity metrics for all members and reports what actions (repair, initialize, keep, or remove) the actual inactivity cron *would* take.
+- **Ghost Member Detection**: Explicitly identifies "Ghost Members" (users who are present in the root group's `members` array but lack a corresponding document in the `groups/{groupId}/members` subcollection), marking them for automatic repair.
+
+---
+
+## 8. Data Pruning & Self-Healing Maintenance Flow
 
 ```mermaid
 flowchart TD
@@ -108,5 +142,11 @@ flowchart TD
         FetchBuckets --> SumBuckets[Sum bucket.count properties]
         SumBuckets --> Total[Total = Active + Summed Buckets]
         Total --> UpdateGroup[Update group.messageCount denormalized state]
+    end
+
+    subgraph SelfHealing [Self-Healing: Data Sync]
+        TriggerSync[Sync Triggered: /api/cron/sync-user-stats] --> PhysicalCount[Verify & update notes/cheers count]
+        PhysicalCount --> ParallelCheck[Parallel check user group memberships]
+        ParallelCheck --> PruneOrphans[Prune orphan group IDs & groupStates]
     end
 ```

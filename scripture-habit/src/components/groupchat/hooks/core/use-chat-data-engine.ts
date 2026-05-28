@@ -2,7 +2,8 @@ import { useReducer, useEffect, useRef, Dispatch } from 'react';
 import { collection, onSnapshot, doc, Unsubscribe, query, orderBy, limit, getDocs } from 'firebase/firestore';
 import * as Sentry from "@sentry/react";
 import { Message, GroupData, MembersMap, UserProfileBrief } from '../../../../types/chat';
-import { db } from '../../../../firebase';
+import { db, auth, appCheck } from '../../../../firebase';
+import { getToken } from 'firebase/app-check';
 import { UserData } from '../../../../types/user';
 import { groupConverter, groupMemberConverter, messageConverter } from '../../../../utils/firestore-converters';
 import { UserProfileBriefSchema, GroupSchema } from '../../../../types/schemas';
@@ -202,7 +203,41 @@ const useMessageStreamSync = (groupId: string | null, userData: UserData | null,
       unsubMessagesRef.current = unsubscribe;
     };
 
-    startListener();
+    // Load Firestore Bundle asynchronously to optimize database reads
+    const loadAndStart = async () => {
+      try {
+        const idToken = auth ? await auth.currentUser?.getIdToken() : '';
+        let appCheckToken = '';
+        if (appCheck) {
+          try {
+            appCheckToken = (await getToken(appCheck)).token;
+          } catch {
+            // Silence App Check lookup errors during tests/emulator mode
+          }
+        }
+
+        const headers: Record<string, string> = {
+          'Authorization': idToken ? `Bearer ${idToken}` : ''
+        };
+        if (appCheckToken) {
+          headers['X-Firebase-AppCheck'] = appCheckToken;
+        }
+
+        const response = await fetch(`/api/groups/bundle/${groupId}`, { headers });
+        if (response.ok && !isCancelled) {
+          const bundleData = await response.text();
+          const { loadBundle } = await import('firebase/firestore');
+          await loadBundle(db, bundleData);
+          console.log(`[useMessageStreamSync] Successfully loaded Firestore Bundle for group ${groupId}`);
+        }
+      } catch (err) {
+        console.warn(`[useMessageStreamSync] Firestore Bundle fetch failed, falling back to direct stream:`, err);
+      } finally {
+        startListener();
+      }
+    };
+
+    loadAndStart();
 
     return () => {
       isCancelled = true;
