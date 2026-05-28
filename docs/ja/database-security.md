@@ -73,6 +73,50 @@ erDiagram
 
 ---
 
+## 🌳 Firestore の階層パス構造
+
+これらのコレクションとドキュメントが、Firestore の階層的なパスレイアウト（コレクション ➔ ドキュメント ➔ サブコレクション ➔ ドキュメント）内で物理的にどのように構成されているかをビジュアル化します。
+
+```mermaid
+graph TD
+    Root[Firestore ルート]
+    
+    %% Users Root Collection
+    Root --> Users[users / コレクション]
+    Users --> UserDoc["{uid} / ドキュメント"]
+    UserDoc --> UserPrivate[private / サブコレクション]
+    UserPrivate --> TokenDoc["tokens / ドキュメント (FCMトークンなど)"]
+    UserDoc --> UserNotes[notes / サブコレクション]
+    UserNotes --> NoteDoc["{noteId} / ドキュメント (勉強ノートのコピー)"]
+    UserDoc --> GroupStates[group_states / サブコレクション]
+    GroupStates --> GStateDoc["{groupId} / ドキュメント (既読マーカー)"]
+    UserDoc --> Letters[letters / サブコレクション]
+    Letters --> LetterDoc["{letterId} / ドキュメント (励まし)"]
+    
+    %% Groups Root Collection
+    Root --> Groups[groups / コレクション]
+    Groups --> GroupDoc["{groupId} / ドキュメント"]
+    GroupDoc --> Messages[messages / サブコレクション]
+    Messages --> MsgDoc["{messageId} / ドキュメント (アクティブチャット)"]
+    GroupDoc --> MessageBuckets[message_buckets / サブコレクション]
+    MessageBuckets --> BucketDoc["{bucketId} / ドキュメント (アーカイブ履歴)"]
+    GroupDoc --> Members[members / サブコレクション]
+    Members --> MemberDoc["{userId} / ドキュメント (進捗・統計)"]
+    
+    %% Cheers and Reports Root Collections
+    Root --> Cheers[cheers / コレクション]
+    Cheers --> CheerDoc["{cheerId} / ドキュメント (ソーシャルチア)"]
+    Root --> Reports[reports / コレクション]
+    Reports --> ReportDoc["{reportId} / Document (通報)"]
+    
+    classDef col fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
+    classDef doc fill:#fff9c4,stroke:#fbc02d,stroke-width:2px;
+    class Users,Groups,Cheers,Reports,UserPrivate,UserNotes,GroupStates,Letters,Messages,MessageBuckets,Members col;
+    class UserDoc,TokenDoc,NoteDoc,GStateDoc,LetterDoc,GroupDoc,MsgDoc,BucketDoc,MemberDoc,CheerDoc,ReportDoc doc;
+```
+
+---
+
 ## 🗺️ スキーマ計画と非正規化 (Denormalization)
 
 ### 1. `groups`

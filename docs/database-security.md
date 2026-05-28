@@ -73,6 +73,50 @@ erDiagram
 
 ---
 
+## 🌳 Firestore Hierarchical Path Structure
+
+To visualize how these collections and documents are physically structured in Firestore's hierarchical path layout (Collection ➔ Document ➔ Subcollection ➔ Document):
+
+```mermaid
+graph TD
+    Root[Firestore Root]
+    
+    %% Users Root Collection
+    Root --> Users[users / Collection]
+    Users --> UserDoc["{uid} / Document"]
+    UserDoc --> UserPrivate[private / Subcollection]
+    UserPrivate --> TokenDoc["tokens / Document (FCM Token, etc.)"]
+    UserDoc --> UserNotes[notes / Subcollection]
+    UserNotes --> NoteDoc["{noteId} / Document (Study note copies)"]
+    UserDoc --> GroupStates[group_states / Subcollection]
+    GroupStates --> GStateDoc["{groupId} / Document (Read markers)"]
+    UserDoc --> Letters[letters / Subcollection]
+    Letters --> LetterDoc["{letterId} / Document (Encouragement)"]
+    
+    %% Groups Root Collection
+    Root --> Groups[groups / Collection]
+    Groups --> GroupDoc["{groupId} / Document"]
+    GroupDoc --> Messages[messages / Subcollection]
+    Messages --> MsgDoc["{messageId} / Document (Active Chat)"]
+    GroupDoc --> MessageBuckets[message_buckets / Subcollection]
+    MessageBuckets --> BucketDoc["{bucketId} / Document (Archived History)"]
+    GroupDoc --> Members[members / Subcollection]
+    Members --> MemberDoc["{userId} / Document (Progress/Stats)"]
+    
+    %% Cheers and Reports Root Collections
+    Root --> Cheers[cheers / Collection]
+    Cheers --> CheerDoc["{cheerId} / Document (Social cheers)"]
+    Root --> Reports[reports / Collection]
+    Reports --> ReportDoc["{reportId} / Document (Abuse reports)"]
+    
+    classDef col fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
+    classDef doc fill:#fff9c4,stroke:#fbc02d,stroke-width:2px;
+    class Users,Groups,Cheers,Reports,UserPrivate,UserNotes,GroupStates,Letters,Messages,MessageBuckets,Members col;
+    class UserDoc,TokenDoc,NoteDoc,GStateDoc,LetterDoc,GroupDoc,MsgDoc,BucketDoc,MemberDoc,CheerDoc,ReportDoc doc;
+```
+
+---
+
 ## 🗺️ Schema Plan & Denormalization
 
 ### 1. `groups`
