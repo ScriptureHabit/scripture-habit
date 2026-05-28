@@ -64,7 +64,7 @@ async function seed() {
     for (const u of users) {
         try {
             await auth.deleteUser(u.uid);
-        } catch (e) {
+        } catch {
             // Ignore if user does not exist
         }
         await db.collection('users').doc(u.uid).delete();
@@ -74,7 +74,7 @@ async function seed() {
     try {
         await db.recursiveDelete(db.collection('groups').doc(groupId));
         console.log(`🧹 Purged existing seed group: ${groupId}`);
-    } catch (e) {
+    } catch {
         // Ignore
     }
 
@@ -222,7 +222,7 @@ async function seed() {
         }
     ];
 
-    const messageDocuments: any[] = [];
+    const messageDocuments: Record<string, unknown>[] = [];
     for (const m of messages) {
         await db.collection('groups').doc(groupId).collection('messages').doc(m.id).set(m);
         messageDocuments.push(m);

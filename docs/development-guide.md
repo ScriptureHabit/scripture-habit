@@ -19,6 +19,40 @@ Ensure your `.env` file contains the following variables:
 
 ## Local Development Workflow
 
+### 1. Local Sandbox & Firebase Emulators 🎮
+
+Connecting a fresh developer workspace to blank emulators makes UI testing tedious. Scripture Habit includes a full local emulator setup and an automated seeder script.
+
+#### Step A: Boot the Emulators
+To launch the Local Firebase Emulator Suite (Authentication, Firestore, Hosting, etc.):
+```bash
+# From the scripture-habit directory
+npx firebase emulators:start
+```
+- **Auth Emulator**: `127.0.0.1:9099`
+- **Firestore Emulator**: `127.0.0.1:8080`
+- **Emulator UI Dashboard**: `127.0.0.1:4000`
+
+#### Step B: Populate the Sandbox (Database Seeder)
+Open a new terminal window and run the idempotent database seeder to immediately populate a production-like database sandbox with users, study group states, active calendars, streaks, levels, and real-time chat histories:
+```bash
+# Runs the robust TypeScript seeding pipeline
+npm run db:seed
+```
+> [!TIP]
+> **Idempotency Guarantee**: The seeder script automatically cleans and deletes any matching test accounts/groups prior to seeding. You can run it repeatedly without database duplication.
+
+#### Emulator Troubleshooting & Tips:
+- **Port Conflict**: If port `8080`, `9099`, or `4000` is already in use, find and terminate the blocking process:
+  - *Windows*: `Stop-Process -Id (Get-NetTCPConnection -LocalPort 8080).OwningProcess -Force`
+  - *macOS/Linux*: `kill -9 $(lsof -t -i:8080)`
+- **Offline Persistence**: Local Firestore emulators do not persist data across reboots unless configured with `--import/--export` flags.
+- **Security Rules**: The local emulator evaluates the rules defined in `firestore.rules` in real-time. Ensure your Zod schema and query shapes align with these policies.
+
+---
+
+## Workspace Frontend & Backend Servers
+
 ### 1. Frontend (Vite)
 To run the Vite development server:
 ```bash

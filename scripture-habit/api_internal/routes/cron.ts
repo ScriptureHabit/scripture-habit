@@ -1,12 +1,12 @@
 import express, { Request, Response, NextFunction } from 'express';
-import { admin, db, messaging } from '../lib/firebase-admin.js';
-import { StreakReminderEngine } from '../lib/streak-reminder.js';
+import { admin, db } from '../lib/firebase-admin.js';
+// import { StreakReminderEngine } from '../lib/streak-reminder.js';
 import { CounterService } from '../services/counter-service.js';
 import { ArchiveService } from '../services/archive-service.js';
 import { InactivityService } from '../services/inactivity-service.js';
 import { MessageService } from '../services/message-service.js';
 import { calculateMemberStatus, InactivityMemberData, InactivityGroupData } from '../lib/inactivity-utils.js';
-import { t } from '../lib/i18n.js';
+// import { t } from '../lib/i18n.js';
 
 interface CronReport {
     groupId: string;
@@ -520,7 +520,7 @@ router.all('/reset-unity-at-midnight', verifyCronSecret, async (_req: Request, r
  * Daily Streak Reminder (Timezone-Aware)
  * Runs hourly to send 20:30 local time notifications to uncompleted users.
  */
-router.all('/streak-warning', verifyCronSecret, async (req: Request, res: Response) => {
+router.all('/streak-warning', verifyCronSecret, async (_req: Request, res: Response) => {
     console.log('[Cron] Timezone-aware streak warnings are TEMPORARILY DISABLED.');
     return res.json({
         message: 'Streak warnings are temporarily disabled (as of May 28, 2026).',
