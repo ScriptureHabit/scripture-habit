@@ -19,7 +19,7 @@ flowchart TD
     Start([1. ユーザーの入力文字列<br/>例: '第１ニーファイ 3章 13-17節']) --> DetectVol[2. 聖典ボリュームの検出<br/>detectVolume]
     DetectVol --> ConvertHalf[3. 全角文字・数字の半角標準化<br/>例: '１'➔'1', '：'➔':', '章'➔':', '節'➔'']
     
-    ConvertHalf --> RegexMatch{4. 章・節のパース<br/>正規表現マッチ<br/>/(.*?)\s*(\d+)(?::([\d\s,-]+))?\s*$/}
+    ConvertHalf --> RegexMatch{"4. 章・節のパース<br/>正規表現マッチ<br/>/(.*?)\s*(\d+)(?::([\d\s,-]+))?\s*$/"}
     RegexMatch -- マッチ失敗 --> ReturnNull([5. null を返却<br/>ハイパーリンクなし])
     
     RegexMatch -- マッチ成功 --> BookExtract[6. 書籍名、章番号、節番号の抽出]
@@ -62,7 +62,7 @@ flowchart TD
     Rank2 -- いいえ --> Rank3{優先度 3<br/>英語の原書名が入力した文字で始まるか？}
     Rank3 -- はい --> Pos3[優先度3グループに配置]
     
-    Rank3 -- いいえ --> Rank4[優先度 4: 文字列の長さが短い順<br/>(部分一致候補を短い順に配置)]
+    Rank3 -- いいえ --> Rank4["優先度 4: 文字列の長さが短い順<br/>(部分一致候補を短い順に配置)"]
     
     Pos1 --> Combine[各優先度グループをマージ]
     Pos2 --> Combine
