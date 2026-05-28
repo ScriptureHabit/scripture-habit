@@ -174,6 +174,7 @@ describe('Mascot Component', () => {
       lastPostDate: todayStr,
       timeZone: 'UTC',
       streakCount: 10,
+      daysStudiedCount: 10,
     };
 
     render(<Mascot userData={userData as UserData} />);

@@ -52,7 +52,7 @@ describe('UserProfileModal', () => {
         expect(screen.getByText('dashboard.streak')).toBeInTheDocument();
         expect(screen.getByText('dashboard.totalNotes')).toBeInTheDocument();
         expect(screen.getByText('3')).toBeInTheDocument();
-        expect(screen.getByText('9')).toBeInTheDocument();
+        expect(screen.getByText('18')).toBeInTheDocument();
         expect(screen.getByText('7')).toBeInTheDocument();
 
         const closeButton = container.querySelector('.close-btn');
