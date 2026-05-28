@@ -16,10 +16,13 @@ const SystemMessage: FC<SystemMessageProps> = ({ msg, t, kickThreshold = 3 }) =>
     // New format: has messageType and messageData
     if (msg.messageType === 'streakAnnouncement' && msg.messageData) {
       const data = msg.messageData;
-      return t('groupChat.streakAnnouncement', {
-        nickname: String(data.nickname || ''),
-        streak: data.streakCount || data.streak || 0
-      });
+      if (data.isCumulative) {
+        return t('groupChat.streakAnnouncement', {
+          nickname: String(data.nickname || ''),
+          streak: data.streakCount || data.streak || 0
+        });
+      }
+      return text;
     }
 
     if (msg.messageType === 'userJoined' && msg.messageData) {

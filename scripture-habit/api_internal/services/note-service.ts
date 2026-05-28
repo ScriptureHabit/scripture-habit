@@ -272,7 +272,7 @@ export class NoteService {
                             isSystemMessage: true,
                             type: 'streakAnnouncement',
                             messageType: 'streakAnnouncement',
-                            messageData: { nickname: userNickname, userId: uid, streakCount: newCumulative }
+                            messageData: { nickname: userNickname, userId: uid, streakCount: newCumulative, isCumulative: true }
                         };
 
                         transaction.set(msgRef, announceMsgData);
