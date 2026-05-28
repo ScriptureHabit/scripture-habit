@@ -1,5 +1,8 @@
 # Technical Documentation Index
 
+> [!NOTE]
+> 🇯🇵 **[日本語版の技術ドキュメントはこちら (Japanese Version Available)](ja/README.md)**
+
 Welcome to the **scripture-habit** technical documentation. This directory contains details about the architecture, features, and core logic of the application.
 
 ---

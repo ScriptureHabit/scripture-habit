@@ -50,6 +50,9 @@ npm run server
 
 Detailed technical documents are stored in the [docs/](docs/README.md) folder.
 
+> [!NOTE]
+> 🇯🇵 **[日本語の技術ドキュメント一覧はこちら (Japanese Version Available)](docs/ja/README.md)**
+
 ### Architecture & Security
 *   **[Architecture & Structure](docs/architecture.md)**: Overview of directories and code layers (Frontend/Backend/API).
 *   **[AI Context & Dev Guide](docs/ai-context.md)**: Rules for development and coding standards.
