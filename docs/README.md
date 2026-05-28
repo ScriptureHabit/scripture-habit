@@ -117,6 +117,20 @@ Welcome to the **scripture-habit** technical documentation. This directory conta
   - Batch sweep rotations (The Net + Rotation), 90% database read-savings queries, self-healing subcollection repairs, and automated owner transfers / recursive ghost group deletions with sequence/flowcharts and annotated code.
 - **[Group Chat Interaction Engine Deep-Dive](details/group-chat-interactions.md)**
   - Optimistic message pipeline (temp-ID → real-ID resolution + rollback), reaction toggle & 3-cap preview cache, 400ms debounce batch translation queue, timezone-aware cheer system, double-tap guard patterns, and SNS share handlers with sequence/flowcharts and annotated code.
+- **[Push Notification System Deep-Dive](details/push-notifications.md)**
+  - Device token registration, multi-layer secure Firestore vault, automatic self-healing dead token lifecycle, multi-lingual dynamic multicast splitting, and OS notification tray context-aware sanitation with sequence diagrams and annotated code.
+- **[User Profile Sync & Account Deletion Pipeline Deep-Dive](details/profile-sync-deletion.md)**
+  - Active Horizon sync boundaries, paginated cursor batch execution, multi-target entity synchronization, personal note prefix search index reconstruction, and GDPR-compliant social identity reaction anonymization with sequence diagrams and annotated code.
+- **[Firestore Transactions & Distributed Counter Sharding Deep-Dive](details/firestore-transactions-counters.md)**
+  - Read-before-write transaction sequencing (IIFE phase pattern), multi-document atomic sets, 10-shard distributed counter writes, transaction-safe parallel reads, server-side count() aggregation, archive-aware counts, and the global 300-read telemetry warning audit with sequence/flow diagrams and annotated code.
+- **[PWA & Capacitor Hybrid Mobile Lifecycle Deep-Dive](details/hybrid-mobile-lifecycle.md)**
+  - Service worker background update prompts (SKIP_WAITING + 3s fallback), adaptive OS install prompting triggers (iOS share tooltip), in-app WebView escape protocols (universal Android Intents + LINE overrides), and AppCheck protected timezone-aware midnight UI reset polling with sequence diagrams and annotated code.
+- **[Firestore Offline Persistence & Multi-Tab Synchronization Deep-Dive](details/firestore-offline-persistence.md)**
+  - Coordinated multi-tab access via persistentMultipleTabManager (Shared-Locks / Web Locks API), active Master Tab elections, background offline mutation queues with automatic communication channel flushes, incognito/private sandbox try-catch memory fallbacks, and E2E automated test runner (navigator.webdriver) LocalStorage session token telemetry with sequence diagrams.
+- **[URL Metadata Extraction & Speaker Auto-Analysis Deep-Dive](details/url-metadata-extraction.md)**
+  - Client-side two-tier caching pipeline (Memory Cache + LocalStorage safeStorage), Server-Side Request Forgery (SSRF) safety filters (loopback / private blocklist), Dual-Fetch localized fallback parameter stripping, cheerio-based server metadata scraping and author prefix cleansing, and Firebase Auth & AppCheck protected header handshakes with flowcharts and sequence diagrams.
+- **[Timezone-Aware Streak Reminder System Deep-Dive](details/timezone-streak-reminders.md)**
+  - Dynamic local hour mapping using Javascript Intl DateTimeFormat timezone APIs, 10-timezone query chunk partitions for Firestore compliance, timezone-aware sv-SE YYYY-MM-DD completion evaluations, language-localized multicast push notification pools, and self-healing dead token array removals with Firestore batch pruning with sequence diagrams.
 
 ---
 
