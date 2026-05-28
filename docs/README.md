@@ -104,6 +104,22 @@ Welcome to the **scripture-habit** technical documentation. This directory conta
 
 ---
 
+## 🔬 Deep-Dive Detail Guides
+- **[Note Posting & Streak Logic Deep-Dive](details/note-posting-streak.md)**
+  - Detailed transactional step-by-step sequences, localized timezone evaluations, and 36-hour grace period algorithms with Mermaid sequence/flowcharts and annotated code.
+- **[AI (Gemini) Translation & Weekly Recap Pipeline Deep-Dive](details/ai-integration.md)**
+  - Minimal thinking latency API settings, dynamic caching strategies, optimized single-call batch translations, and smart 6-day cooldown recovery flows with sequence/flowcharts and annotated code.
+- **[App Check & API Gateway Security Deep-Dive](details/api-gateway-security.md)**
+  - Multi-layered security topology, strict production bypass block safeguards, Playwright CI/CD test account exception rules, and hashed SHA-256 IP rate limiters with sequence/flowcharts and annotated code.
+- **[Gospel Library Mapper & Autocomplete Engine Deep-Dive](details/gospel-scripture-mapper.md)**
+  - Full-width character standardization, regex scripture parsing, dynamic verse scroll anchors, Unicode NFKC normalization, and phonetic Hiragana-to-Katakana shifting suggestion algorithms with flowcharts and annotated code.
+- **[Inactivity Sweep & Auto-Kick & Handoff Engine Deep-Dive](details/inactivity-autokick.md)**
+  - Batch sweep rotations (The Net + Rotation), 90% database read-savings queries, self-healing subcollection repairs, and automated owner transfers / recursive ghost group deletions with sequence/flowcharts and annotated code.
+- **[Group Chat Interaction Engine Deep-Dive](details/group-chat-interactions.md)**
+  - Optimistic message pipeline (temp-ID → real-ID resolution + rollback), reaction toggle & 3-cap preview cache, 400ms debounce batch translation queue, timezone-aware cheer system, double-tap guard patterns, and SNS share handlers with sequence/flowcharts and annotated code.
+
+---
+
 ## 🎨 Design & UX
 - **[UI/UX Design System](design-system.md)**
   - Global CSS tokens, visual design, and mobile-first rules.

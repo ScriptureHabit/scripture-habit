@@ -202,7 +202,7 @@ To maintain low database costs and high API response times as scripture-habit sc
 To ensure developers do not accidentally re-introduce N+1 queries or redundant fetches during future updates, the emulated integration test environment runs a transparent **Global Read Audit**.
 
 ### 6.1 Transparent Prototype Wrapping
-During testing, the [TestSetup](file:///c:/Users/dazhi/code/final-project/scripture-habit/api_internal/test-setup.ts) harness intercepts and counts every execution of:
+During testing, the [TestSetup](final-project/scripture-habit/api_internal/test-setup.ts) harness intercepts and counts every execution of:
 - `admin.firestore.Transaction.prototype.get`
 - `admin.firestore.Transaction.prototype.getAll`
 - `admin.firestore.DocumentReference.prototype.get`

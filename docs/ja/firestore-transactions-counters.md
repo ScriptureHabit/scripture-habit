@@ -202,7 +202,7 @@ scripture-habitがスケールする中で、データベースコストを低�
 開発者が将来の更新時に誤ってN+1クエリや冗長な取得処理を再導入してしまわないよう、エミュレートされた統合テスト環境では透明性の高い**グローバル読み込み監査（Global Read Audit）**が実行されます。
 
 ### 6.1 透明なプロトタイプラッピング
-テスト中、[TestSetup](file:///c:/Users/dazhi/code/final-project/scripture-habit/api_internal/test-setup.ts) ハーネスは以下のすべての実行をインターセプトしてカウントします。
+テスト中、[TestSetup](final-project/scripture-habit/api_internal/test-setup.ts) ハーネスは以下のすべての実行をインターセプトしてカウントします。
 - `admin.firestore.Transaction.prototype.get`
 - `admin.firestore.Transaction.prototype.getAll`
 - `admin.firestore.DocumentReference.prototype.get`
