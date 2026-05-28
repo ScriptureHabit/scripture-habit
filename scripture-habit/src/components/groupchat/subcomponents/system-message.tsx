@@ -42,26 +42,8 @@ const SystemMessage: FC<SystemMessageProps> = ({ msg, t, kickThreshold = 3 }) =>
       return t('groupChat.unityAnnouncement');
     }
 
-    // Legacy format: parse from text
-    const streakPatterns = [
-      /\*\*(.+?) reached a (\d+) day streak/,           // English
-      /\*\*(.+?)さんが(\d+)日連続/,                      // Japanese
-      /\*\*(.+?) alcançou uma ofensiva de (\d+) dias/, // Portuguese
-      /\*\*(.+?) 達成了 (\d+) 天連續紀錄/,              // Chinese
-      /\*\*¡?(.+?) alcanzó una racha de (\d+) días/,     // Spanish
-      /\*\*(.+?) đã đạt chuỗi (\d+) ngày/,             // Vietnamese
-      /\*\*(.+?) ทำต่อเนื่องได้ (\d+) วันแล้ว/,             // Thai
-      /\*\*(.+?)님이 (\d+)일 연속 기록/,                 // Korean
-      /\*\*Naabot ni (.+?) ang (\d+) araw/,             // Tagalog
-      /\*\*(.+?) amefikisha mfululizo wa siku (\d+)/,   // Swahili
-    ];
-
-    for (const pattern of streakPatterns) {
-      const match = text.match(pattern);
-      if (match) {
-        return t('groupChat.streakAnnouncement', { nickname: match[1], streak: match[2] });
-      }
-    }
+    // For legacy streak messages, we render their original stored text directly
+    // to preserve historical accuracy (e.g. showing "6日連続" for past events rather than mismapping to "累計6日目")
 
     const joinPatterns = [
       /\*\*(.+?)\*\* joined the group/,      // English
