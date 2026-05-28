@@ -80,7 +80,7 @@ const DashboardOverview: FC<DashboardOverviewProps> = ({
         <div className="stat-card streak-card">
           <h3>{t('dashboard.streak')}</h3>
           <div className="streak-value">
-            <span className="number">{userData.streakCount || 0}</span>
+            <span className="number">{userData.daysStudiedCount || 0}</span>
             <span className="label">{t('dashboard.days')}</span>
           </div>
         </div>

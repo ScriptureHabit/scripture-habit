@@ -128,7 +128,7 @@ export default {
         dashboard: {
             welcomeBack: "Karibu tena",
             newNote: "Ujumbe Mpya",
-            streak: "Mfululizo",
+            streak: "Siku za Jumla",
             days: "siku",
             totalNotes: "Jumla ya Maelezo",
             notes: "maelezo",
@@ -287,7 +287,7 @@ export default {
             replyTo: "jibu kwa",
             replyingTo: "Inajibu kwa",
             cancelReply: "Ghairi jibu",
-            streakAnnouncement: "🎉🎉🎉 **{nickname} amefikisha mfululizo wa siku {streak}!!** 🎉🎉🎉",
+            streakAnnouncement: "🎉🎉🎉 **{nickname} amefikia hatua muhimu ya siku {streak} za jumla za masomo! Tusherehekee!** 🎉🎉🎉",
             userJoined: "👋 **{nickname}** amejiunga na kikundi!",
             userLeft: "🚪 **{nickname}** ameondoka kwenye kikundi.",
             deleteConfirmMessage: "Hatua hii haiwezi kubatilishwa. Ujumbe na data zote zitapotea kabisa.",
@@ -753,7 +753,7 @@ export default {
             skipButton: "Ruka"
         },
         mascot: {
-            streakCelebration: "Inashangaza! Mfululizo wa siku {streak}!",
+            streakCelebration: "Inashangaza! Siku {streak} za jumla zimefikiwa!",
             doneToday: "Kazi nzuri leo!\nTuonane kesho!",
             promptToday: "Je, umesoma leo?\nTujifunze pamoja!",
             weeklyRecapPrompt: "Hebu tutafakari kuhusu\numachojifunza wiki hii!",

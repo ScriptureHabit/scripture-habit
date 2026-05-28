@@ -128,7 +128,7 @@ export default {
         dashboard: {
             welcomeBack: "歡迎回來",
             newNote: "新增筆記",
-            streak: "連續紀錄",
+            streak: "累計天數",
             days: "天",
             totalNotes: "筆記總數",
             notes: "則筆記",
@@ -261,7 +261,7 @@ export default {
             replyTo: "回覆給",
             replyingTo: "回覆中",
             cancelReply: "取消回覆",
-            streakAnnouncement: "🎉🎉🎉 **{nickname} 達成了 {streak} 天連續紀錄！！** 🎉🎉🎉",
+            streakAnnouncement: "🎉🎉🎉 **{nickname} 達成了累計 {streak} 天的學習里程碑！大家一起為他慶祝吧！** 🎉🎉🎉",
             userJoined: "👋 **{nickname}** 加入了群組！",
             userLeft: "🚪 **{nickname}** 離開了群組。",
             deleteConfirmMessage: "此動作無法復原。所有訊息和資料將永久遺失。",
@@ -708,7 +708,7 @@ export default {
         },
         welcomeGuideButton: "了解！",
         mascot: {
-            streakCelebration: "太棒了！連續 {streak} 天達成！",
+            streakCelebration: "太棒了！累計 {streak} 天達成！",
             doneToday: "今天辛苦了！\n明天見！",
             promptToday: "今天讀經文了嗎？\n我們一起學習吧！",
             weeklyRecapPrompt: "讓我們來回顧一下\n你這週的學習吧！",

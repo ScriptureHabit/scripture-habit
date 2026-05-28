@@ -245,10 +245,18 @@ export class NoteService {
                     searchTokens: buildNoteSearchTokens({ scripture, chapter, comment, title, speaker })
                 });
 
-                // Streak Announcements
-                if (streakUpdated && newStreak > 0) {
+                // Streak / Cumulative Milestone Announcements
+                const newCumulative = (userData.daysStudiedCount || 0) + 1;
+                const isMilestone = (days: number): boolean => {
+                    const fixedMilestones = [3, 7, 10, 21, 30, 50, 100];
+                    if (fixedMilestones.includes(days)) return true;
+                    if (days > 100 && days % 50 === 0) return true;
+                    return false;
+                };
+
+                if (streakUpdated && isMilestone(newCumulative)) {
                     const safeNickname = this.escapeMarkdown(userNickname);
-                    const announceMsg = t(language || 'en', 'notifications.streak_announcement', { nickname: safeNickname, streak: newStreak });
+                    const announceMsg = t(language || 'en', 'notifications.streak_announcement', { nickname: safeNickname, streak: newCumulative });
                     const botName = t(language || 'en', 'notifications.bot_name');
                     const announceTime = admin.firestore.Timestamp.fromMillis(now.getTime() + 1000);
 
@@ -264,7 +272,7 @@ export class NoteService {
                             isSystemMessage: true,
                             type: 'streakAnnouncement',
                             messageType: 'streakAnnouncement',
-                            messageData: { nickname: userNickname, userId: uid, streakCount: newStreak }
+                            messageData: { nickname: userNickname, userId: uid, streakCount: newCumulative }
                         };
 
                         transaction.set(msgRef, announceMsgData);

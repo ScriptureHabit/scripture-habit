@@ -129,7 +129,7 @@ export default {
         dashboard: {
             welcomeBack: "환영합니다",
             newNote: "새 노트",
-            streak: "연속",
+            streak: "누적 일수",
             days: "일",
             totalNotes: "총 노트",
             notes: "노트",
@@ -287,7 +287,7 @@ export default {
             replyTo: "답장",
             replyingTo: "답장 중",
             cancelReply: "답장 취소",
-            streakAnnouncement: "🎉🎉🎉 **{nickname}님이 {streak}일 연속 기록을 달성했습니다!!** 🎉🎉🎉",
+            streakAnnouncement: "🎉🎉🎉 **{nickname}님이 누적 학습 {streak}일의 마일스톤을 달성했습니다! 모두 함께 축하해주세요!** 🎉🎉🎉",
             userJoined: "👋 **{nickname}**님이 그룹에 참여했습니다!",
             userLeft: "🚪 **{nickname}**님이 그룹을 나갔습니다.",
             deleteConfirmMessage: "이 작업은 취소할 수 없습니다. 모든 메시지와 데이터가 영구적으로 손실됩니다.",
@@ -753,7 +753,7 @@ export default {
             skipButton: "건너뛰기"
         },
         mascot: {
-            streakCelebration: "대단해요! {streak}일 연속 달성!",
+            streakCelebration: "대단해요! 누적 {streak}일 달성!",
             doneToday: "오늘도 수고했어요!\n내일 또 만나요!",
             promptToday: "오늘 경전은 읽었나요?\n함께 공부해요!",
             weeklyRecapPrompt: "이번 주 배운 내용을\n함께 돌아볼까요?",

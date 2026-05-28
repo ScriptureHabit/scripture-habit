@@ -28,10 +28,10 @@ describe('i18n - translation utilities', () => {
 
         it('should handle replacements/placeholders', () => {
             const resultEn = t('en', 'notifications.streak_announcement', { nickname: 'John', streak: 5 });
-            expect(resultEn).toBe('🎉🎉🎉 **John reached a 5 day streak!!** 🎉🎉🎉');
+            expect(resultEn).toBe('🎉🎉🎉 **John achieved a milestone of 5 cumulative study days! Let\'s celebrate!** 🎉🎉🎉');
 
             const resultJa = t('ja', 'notifications.streak_announcement', { nickname: '田中', streak: 12 });
-            expect(resultJa).toBe('🎉🎉🎉 **田中さんが12日連続達成しました！！** 🎉🎉🎉');
+            expect(resultJa).toBe('🎉🎉🎉 **田中さんが累計12日目のノート投稿を達成しました！みんなでお祝いしましょう！** 🎉🎉🎉');
         });
 
         it('should fall back to en bundle when translating in non-en and key is missing', () => {

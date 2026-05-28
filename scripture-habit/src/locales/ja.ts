@@ -31,7 +31,7 @@ export default {
         dashboard: {
             welcomeBack: "おかえりなさい",
             newNote: "ノート作成",
-            streak: "連続達成",
+            streak: "累積日数",
             days: "日",
             totalNotes: "総ノート数",
             notes: "ノート",
@@ -191,7 +191,7 @@ export default {
             replyTo: "返信先",
             replyingTo: "返信中",
             cancelReply: "返信をキャンセル",
-            streakAnnouncement: "🎉🎉🎉 **{nickname}さんが{streak}日連続投稿達成しました！！** 🎉🎉🎉",
+            streakAnnouncement: "🎉🎉🎉 **{nickname}さんが累計{streak}日目のノート投稿を達成しました！みんなでお祝いしましょう！** 🎉🎉🎉",
             userJoined: "👋 **{nickname}**さんがグループに参加しました！",
             userLeft: "🚪 **{nickname}**さんがグループを退会しました。",
             deleteConfirmMessage: "この操作は取り消せません。すべてのメッセージとデータが完全に失われます。",
@@ -645,7 +645,7 @@ export default {
         },
         welcomeGuideButton: "了解しました！",
         mascot: {
-            streakCelebration: "すごい！{streak}日連続達成！",
+            streakCelebration: "すごい！累積{streak}日達成！",
             doneToday: "お疲れ様でした！\nまた明日もお会いしましょう！",
             promptToday: "今日はもう読みましたか？\n一緒に学習しましょう！",
             weeklyRecapPrompt: "今週の学習を\n振り返りましょう！",

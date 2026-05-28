@@ -128,7 +128,7 @@ export default {
         dashboard: {
             welcomeBack: "Bienvenido de nuevo",
             newNote: "Nueva Nota",
-            streak: "Racha",
+            streak: "Días Acumulados",
             days: "días",
             totalNotes: "Total de Notas",
             notes: "notas",
@@ -287,7 +287,7 @@ export default {
             replyTo: "responder a",
             replyingTo: "Respondiendo a",
             cancelReply: "Cancelar respuesta",
-            streakAnnouncement: "🎉🎉🎉 **¡{nickname} alcanzó una racha de {streak} días!** 🎉🎉🎉",
+            streakAnnouncement: "🎉🎉🎉 **¡{nickname} alcanzó un hito de {streak} días acumulados de estudio! ¡Celebrémoslo!** 🎉🎉🎉",
             userJoined: "👋 **{nickname}** se unió al grupo!",
             userLeft: "🚪 **{nickname}** salió del grupo.",
             deleteConfirmMessage: "Esta acción no se puede deshacer. Todos los mensajes y datos se perderán permanentemente.",
@@ -708,7 +708,7 @@ export default {
         },
         welcomeGuideButton: "¡Entendido!",
         mascot: {
-            streakCelebration: "¡Increíble! ¡Racha de {streak} días!",
+            streakCelebration: "¡Increíble! ¡{streak} días acumulados logrados!",
             doneToday: "¡Buen trabajo hoy!\n¡Nos vemos mañana!",
             promptToday: "¿Ya leíste hoy?\n¡Estudiemos juntos!",
             weeklyRecapPrompt: "¡Reflexionemos sobre\ntu aprendizaje de esta semana!",

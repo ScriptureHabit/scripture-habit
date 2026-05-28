@@ -282,7 +282,7 @@ const Dashboard: FC = () => {
  onUnityUpdate={handleUnityUpdate} isActive={selectedView === 2}
           />
         )}
-        {selectedView === 3 && <Profile userData={userData} stats={{ streak: userData.streakCount || 0, totalNotes: userData.totalNotes || 0, daysStudied: userData.daysStudiedCount || 0 }} />}
+        {selectedView === 3 && <Profile userData={userData} stats={{ streak: userData.daysStudiedCount || 0, totalNotes: userData.totalNotes || 0, daysStudied: userData.daysStudiedCount || 0 }} />}
         {selectedView === 4 && <Donate userData={userData} />}
         {selectedView !== 2 && <Footer />}
       </DashboardLayout>

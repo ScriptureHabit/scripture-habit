@@ -1,6 +1,6 @@
 export default {
     notifications: {
-        streak_announcement: "🎉🎉🎉 **{nickname} amefikisha mfululizo wa siku {streak}!!** 🎉🎉🎉",
+        streak_announcement: "🎉🎉🎉 **{nickname} amefikia hatua muhimu ya siku {streak} za jumla za masomo! Tusherehekee!** 🎉🎉🎉",
         note_posted_title: "📖 Mafunzo ya Maandiko",
         note_posted_body: "{nickname} amechapisha andiko! ✨",
         cheer_options: [

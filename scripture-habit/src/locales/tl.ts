@@ -130,7 +130,7 @@ export default {
         dashboard: {
             welcomeBack: "Maligayang pagbabalik",
             newNote: "Bagong Tala",
-            streak: "Sunod-sunod",
+            streak: "Pinagsama-samang Araw",
             days: "araw",
             totalNotes: "Kabuuang mga Tala",
             notes: "mga tala",
@@ -289,7 +289,7 @@ export default {
             replyTo: "tumugon sa",
             replyingTo: "Tumutugon sa",
             cancelReply: "Kanselahin ang tugon",
-            streakAnnouncement: "🎉🎉🎉 **Naabot ni {nickname} ang {streak} araw na sunod-sunod!!** 🎉🎉🎉",
+            streakAnnouncement: "🎉🎉🎉 **Naabot ni {nickname} ang milestone na {streak} pinagsama-samang araw ng pag-aaral! Ipagdiwang natin!** 🎉🎉🎉",
             userJoined: "👋 **{nickname}** sumali sa grupo!",
             userLeft: "🚪 **{nickname}** umalis sa grupo.",
             deleteConfirmMessage: "Hindi na mababawi ang aksyong ito. Ang lahat ng mensahe at data ay permanenteng mawawala.",
@@ -754,7 +754,7 @@ export default {
         },
         welcomeGuideButton: "Naintindihan!",
         mascot: {
-            streakCelebration: "Kamangha-mangha! {streak} na araw na streak!",
+            streakCelebration: "Kamangha-mangha! Naka-{streak} na pinagsama-samang araw!",
             doneToday: "Magaling ang ginawa mo ngayong araw!\nKita-kits bukas!",
             promptToday: "Nagbasa ka na ba ngayong araw?\nMag-aral tayo nang magkasama!",
             weeklyRecapPrompt: "Balikan natin ang iyong\npag-aaral ngayong linggo!",

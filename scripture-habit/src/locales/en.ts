@@ -31,7 +31,7 @@ export default {
         dashboard: {
             welcomeBack: "Welcome back",
             newNote: "New Note",
-            streak: "Streak",
+            streak: "Cumulative Days",
             days: "days",
             totalNotes: "Total Notes",
             notes: "notes",
@@ -238,7 +238,7 @@ export default {
             replyTo: "reply to",
             replyingTo: "Replying to",
             cancelReply: "Cancel reply",
-            streakAnnouncement: "🎉🎉🎉 **{nickname} reached a {streak} day streak!!** 🎉🎉🎉",
+            streakAnnouncement: "🎉🎉🎉 **{nickname} achieved a milestone of {streak} cumulative study days! Let's celebrate!** 🎉🎉🎉",
             userJoined: "👋 **{nickname}** joined the group!",
             userLeft: "🚪 **{nickname}** left the group.",
             deleteConfirmMessage: "This action cannot be undone. All messages and data will be permanently lost.",
@@ -637,7 +637,7 @@ export default {
         },
         welcomeGuideButton: "Got it!",
         mascot: {
-            streakCelebration: "Amazing! {streak} day streak!",
+            streakCelebration: "Amazing! Cumulative {streak} days achieved!",
             doneToday: "Great job today!\nSee you tomorrow!",
             promptToday: "Have you read today?\nLet's study together!",
             weeklyRecapPrompt: "Let's reflect on\nyour learning this week!",

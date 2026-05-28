@@ -1,6 +1,6 @@
 export default {
     notifications: {
-        streak_announcement: "🎉🎉🎉 **{nickname} 已連讀 {streak} 天！！** 🎉🎉🎉",
+        streak_announcement: "🎉🎉🎉 **{nickname} 達成了累計 {streak} 天的學習里程碑！大家一起為他慶祝吧！** 🎉🎉🎉",
         note_posted_title: "📖 聖典學習",
         note_posted_body: "{nickname} 發布了筆記！✨",
         cheer_options: [

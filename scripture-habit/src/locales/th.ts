@@ -129,7 +129,7 @@ export default {
         dashboard: {
             welcomeBack: "ยินดีต้อนรับกลับ",
             newNote: "บันทึกใหม่",
-            streak: "ต่อเนื่อง",
+            streak: "วันสะสม",
             days: "วัน",
             totalNotes: "บันทึกทั้งหมด",
             notes: "บันทึก",
@@ -288,7 +288,7 @@ export default {
             replyTo: "ตอบกลับ",
             replyingTo: "กำลังตอบกลับ",
             cancelReply: "ยกเลิกการตอบกลับ",
-            streakAnnouncement: "🎉🎉🎉 **{nickname} ทำต่อเนื่องได้ {streak} วันแล้ว!!** 🎉🎉🎉",
+            streakAnnouncement: "🎉🎉🎉 **{nickname} บรรลุหลักไมล์สะสมการเรียน {streak} วันแล้ว! มาร่วมยินดีกันเถอะ!** 🎉🎉🎉",
             userJoined: "👋 **{nickname}** เข้าร่วมกลุ่มแล้ว!",
             userLeft: "🚪 **{nickname}** ออกจากกลุ่มแล้ว",
             deleteConfirmMessage: "การดำเนินการนี้ไม่สามารถย้อนกลับได้ ข้อความและข้อมูลทั้งหมดจะสูญหายอย่างถาวร",
@@ -753,7 +753,7 @@ export default {
             skipButton: "ข้าม"
         },
         mascot: {
-            streakCelebration: "สุดยอด! ต่อเนื่อง {streak} วัน!",
+            streakCelebration: "สุดยอด! สะสมครบ {streak} วันแล้ว!",
             doneToday: "วันนี้ทำได้ดีมาก!\nเจอกันพรุ่งนี้!",
             promptToday: "วันนี้คุณอ่านหรือยัง?\nมาเรียนรู้ด้วยกันเถอะ!",
             weeklyRecapPrompt: "มาทบทวนการเรียนรู้\nของคุณในสัปดาห์นี้กัน!",

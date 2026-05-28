@@ -49,7 +49,7 @@ const Mascot: React.FC<MascotProps> = ({ userData, onClick, customMessage = null
     return todayStr === lastPostDateStr;
   }, [userData]);
 
-  const streak = userData?.streakCount || 0;
+  const streak = userData?.daysStudiedCount || 0;
 
   const getMessage = (): string => {
     if (customMessage) return customMessage;

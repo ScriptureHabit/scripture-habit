@@ -129,7 +129,7 @@ export default {
         dashboard: {
             welcomeBack: "Chào mừng trở lại",
             newNote: "Ghi chép mới",
-            streak: "Chuỗi",
+            streak: "Tổng số ngày",
             days: "ngày",
             totalNotes: "Tổng số ghi chép",
             notes: "ghi chép",
@@ -270,7 +270,7 @@ export default {
             replyTo: "trả lời",
             replyingTo: "Đang trả lời",
             cancelReply: "Hủy trả lời",
-            streakAnnouncement: "🎉🎉🎉 **{nickname} đã đạt chuỗi {streak} ngày!!** 🎉🎉🎉",
+            streakAnnouncement: "🎉🎉🎉 **{nickname} đã đạt cột mốc tích lũy {streak} ngày học tập! Hãy cùng chúc mừng nào!** 🎉🎉🎉",
             userJoined: "👋 **{nickname}** đã tham gia nhóm!",
             userLeft: "🚪 **{nickname}** đã rời nhóm.",
             deleteConfirmMessage: "Hành động này không thể hoàn tác. Tất cả tin nhắn và dữ liệu sẽ bị mất vĩnh viễn.",
@@ -727,7 +727,7 @@ export default {
         },
         welcomeGuideButton: "Đã hiểu!",
         mascot: {
-            streakCelebration: "Tuyệt vời! Chuỗi {streak} ngày!",
+            streakCelebration: "Tuyệt vời! Đã đạt {streak} ngày tích lũy!",
             doneToday: "Hôm nay làm tốt lắm!\nHẹn gặp lại ngày mai!",
             promptToday: "Bạn đã đọc hôm nay chưa?\nCùng nhau học nào!",
             weeklyRecapPrompt: "Hãy cùng nhìn lại\nviệc học của bạn tuần này nhé!",

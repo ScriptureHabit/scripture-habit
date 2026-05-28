@@ -1,6 +1,6 @@
 export default {
     notifications: {
-        streak_announcement: "🎉🎉🎉 **{nickname}さんが{streak}日連続達成しました！！** 🎉🎉🎉",
+        streak_announcement: "🎉🎉🎉 **{nickname}さんが累計{streak}日目のノート投稿を達成しました！みんなでお祝いしましょう！** 🎉🎉🎉",
         note_posted_title: "📖 聖典学習",
         note_posted_body: "{nickname}さんがノートを投稿しました！✨",
         cheer_options: [

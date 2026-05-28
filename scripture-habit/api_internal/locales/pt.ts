@@ -1,6 +1,6 @@
 export default {
     notifications: {
-        streak_announcement: "🎉🎉🎉 **{nickname} atingiu uma sequência de {streak} dias!!** 🎉🎉🎉",
+        streak_announcement: "🎉🎉🎉 **{nickname} atingiu um marco de {streak} dias cumulativos de estudo! Vamos comemorar!** 🎉🎉🎉",
         note_posted_title: "📖 Estudo das escrituras",
         note_posted_body: "{nickname} postou uma nota! ✨",
         cheer_options: [

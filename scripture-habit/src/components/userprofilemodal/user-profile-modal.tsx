@@ -80,7 +80,7 @@ const UserProfileModal: FC<UserProfileModalProps> = ({ user, onClose }) => {
                                 <UilFire />
                             </div>
                             <div className="stat-info">
-                                <span className="stat-value">{user.streakCount || 0}</span>
+                                <span className="stat-value">{user.daysStudiedCount || 0}</span>
                                 <span className="stat-label">{t('dashboard.streak')}</span>
                             </div>
                         </div>
