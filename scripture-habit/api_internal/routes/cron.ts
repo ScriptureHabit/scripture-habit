@@ -521,7 +521,20 @@ router.all('/reset-unity-at-midnight', verifyCronSecret, async (_req: Request, r
  * Runs hourly to send 20:30 local time notifications to uncompleted users.
  */
 router.all('/streak-warning', verifyCronSecret, async (req: Request, res: Response) => {
-    console.log('[Cron] Starting timezone-aware streak warnings...');
+    console.log('[Cron] Timezone-aware streak warnings are TEMPORARILY DISABLED.');
+    return res.json({
+        message: 'Streak warnings are temporarily disabled (as of May 28, 2026).',
+        stats: { 
+            targetTimezones: 0,
+            eligibleUsersWithTokens: 0,
+            skippedCompletedUsers: 0,
+            tokensSentTo: 0,
+            failedTokensCleanedUp: 0
+        }
+    });
+    
+    // Original disabled logic kept below for future restoration reference
+    /*
     try {
         const now = (req.headers['x-test-time'] && process.env.FIRESTORE_EMULATOR_HOST)
             ? new Date(req.headers['x-test-time'] as string)
@@ -670,6 +683,7 @@ router.all('/streak-warning', verifyCronSecret, async (req: Request, res: Respon
         console.error('[Cron] Error in streak warnings:', error);
         res.status(500).send('Error: ' + error.message);
     }
+    */
 });
 
 export default router;

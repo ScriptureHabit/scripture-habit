@@ -1,0 +1,26 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "19. Unified Multilingual Context & Dynamic Fallbacks",
+  "steps": [
+    {
+      "file": "scripture-habit/src/context/language-provider.tsx",
+      "description": "Welcome to the Unified Multilingual Context & Dynamic Fallbacks Tour! This provider coordinates localized assets across the React tree. It first attempts priority-based auto-detection, parsing query string params, pathprefixes, localStorage, and browser settings.",
+      "line": 26
+    },
+    {
+      "file": "scripture-habit/src/context/language-provider.tsx",
+      "description": "When manually changing languages, we immediately update LocalStorage, synchronize the preferences to the user's Firestore document profile, and rewrite the active browser router pathname prefix on the fly.",
+      "line": 64
+    },
+    {
+      "file": "scripture-habit/src/context/language-provider.tsx",
+      "description": "To prevent race conditions (e.g. dynamic state getting overwritten by obsolete firestore profile responses during fast manual toggles), we implement a 10-second manual change guard before allowing profiles to override state.",
+      "line": 127
+    },
+    {
+      "file": "scripture-habit/src/context/language-provider.tsx",
+      "description": "Finally, we utilize `Promise.all` to fetch both UI translation keys and scripture book naming indexes simultaneously, preventing mismatched localization visual artifacts.",
+      "line": 147
+    }
+  ]
+}

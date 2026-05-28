@@ -1,0 +1,31 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "16. Advanced Database Auditing & Streak Reliability Tests",
+  "steps": [
+    {
+      "file": "scripture-habit/api_internal/firestore-read-count.integration.test.ts",
+      "description": "Welcome to the Advanced Database Auditing & Streak Reliability Tests Tour! Here, we examine the most rigorous parts of our test suite. In this file, we set up Spies on the Firestore Admin SDK's `Transaction` and `DocumentReference` to count actual database Reads.",
+      "line": 39
+    },
+    {
+      "file": "scripture-habit/api_internal/firestore-read-count.integration.test.ts",
+      "description": "For joining groups, we verify that the transaction executes zero redundant `get` requests by completely reusing the query snapshots directly. This prevents Firestore bills from skyrocketing.",
+      "line": 80
+    },
+    {
+      "file": "scripture-habit/api_internal/firestore-read-count.integration.test.ts",
+      "description": "Here, we verify our memory cache hits for Firestore CDN Bundles. Authorized repeated reads must execute exactly 1 user privilege check, and absolute ZERO message queries on the messages subcollections.",
+      "line": 353
+    },
+    {
+      "file": "scripture-habit/api_internal/streak_reliability.test.ts",
+      "description": "Now, let's explore streak reliability tests. This file simulates boundary timezone cases, ensuring user streaks are calculated correctly across global shifts (e.g. changing locations from London to Tokyo) without sudden resets.",
+      "line": 64
+    },
+    {
+      "file": "scripture-habit/api_internal/streak_reliability.test.ts",
+      "description": "We also verify the standard 36-hour streak grace period. Even if a full calendar day is skipped, posting within 36 hours of the last study session keeps the streak alive.",
+      "line": 25
+    }
+  ]
+}

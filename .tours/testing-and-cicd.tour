@@ -1,0 +1,36 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "🧪 Tour 4: Testing & CI/CD Pipeline",
+  "steps": [
+    {
+      "file": "api_internal/rules.test.ts",
+      "line": 15,
+      "description": "### 🧪 Firestore Rules Integration Tests\n\nThis file holds the unit tests for our database security rules using `@firebase/rules-unit-testing`. It spins up a local Firebase Emulator to verify read/write access without making real cloud requests."
+    },
+    {
+      "file": "api_internal/rules.test.ts",
+      "line": 40,
+      "description": "### 👤 Testing Authentication & Profile Guards\n\nHere, we verify that an authenticated user `alice` can successfully read her own profile (`assertSucceeds`), whereas she is blocked from reading Bob's profile if her email is unverified (`assertFails`). This guarantees rules validation works as expected."
+    },
+    {
+      "file": "api_internal/rules.test.ts",
+      "line": 254,
+      "description": "### 🔍 Testing List Queries & Row-Level Security\n\nFirestore rules validate row-level queries. In this step, we ensure that querying all groups fails because it exposes private groups, but adding a `.where('members', 'array-contains', 'alice')` filter succeeds, as it guarantees row-level privacy!"
+    },
+    {
+      "file": "scripture-habit/playwright.config.ts",
+      "line": 1,
+      "description": "### 🌐 End-to-End E2E Browser Testing (Playwright)\n\nFor real user interaction flows, we use **Playwright**. It launches actual headless browsers (Chromium, Firefox, WebKit) to click, type, submit, and verify that the React client and Express backend integrate flawlessly."
+    },
+    {
+      "file": ".github/workflows/ci.yml",
+      "line": 1,
+      "description": "### 🚀 Automated CI/CD Workflow (GitHub Actions)\n\nEvery time a developer pushes code or creates a Pull Request, GitHub Actions automatically triggers our continuous integration pipeline (`ci.yml`) on `ubuntu-latest`."
+    },
+    {
+      "file": ".github/workflows/ci.yml",
+      "line": 43,
+      "description": "### 📦 Strict Build & Test Sequence\n\nThe runner installs clean dependencies (`npm ci`), runs the linter, executes Vitest unit tests, builds the production bundle, fires up the Firebase Emulator to run E2E/integration tests, and deploys directly to **Vercel** if all checks succeed!"
+    }
+  ]
+}

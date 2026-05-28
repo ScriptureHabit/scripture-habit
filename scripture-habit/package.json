@@ -16,7 +16,8 @@
     "test:coverage": "vitest run --coverage",
     "test:internal": "node scripts/test-emulated.js \"npx vitest api_internal --no-file-parallelism\"",
     "test:e2e": "node scripts/test-emulated.js \"npx playwright test\"",
-    "test:e2e:ui": "node scripts/test-emulated.js \"npx playwright test --ui\""
+    "test:e2e:ui": "node scripts/test-emulated.js \"npx playwright test --ui\"",
+    "db:seed": "cross-env FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 FIREBASE_AUTH_EMULATOR_HOST=127.0.0.1:9099 npx tsx scripts/seed.ts"
   },
   "dependencies": {
     "@capacitor/android": "^8.0.0",

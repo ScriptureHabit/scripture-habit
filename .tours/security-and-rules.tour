@@ -1,0 +1,36 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "🛡️ Tour 1: Security, Rules & API Protection",
+  "steps": [
+    {
+      "file": "scripture-habit/firestore.rules",
+      "line": 7,
+      "description": "### 🛡️ Helper: `isAuthenticated()`\n\nThis core rules function requires that the incoming request is authenticated and has a verified email address. In production, this protects Firestore collections from dummy or unverified spam accounts."
+    },
+    {
+      "file": "scripture-habit/firestore.rules",
+      "line": 16,
+      "description": "### 🔒 Helper: `isAppCheckVerified()`\n\nThis function ensures that requests arriving at the database have a valid Firebase App Check token. App Check proves the traffic comes from our legitimate web/mobile client, blocking raw API scripts."
+    },
+    {
+      "file": "scripture-habit/firestore.rules",
+      "line": 81,
+      "description": "### 🙅 CQRS Write Isolation (Firestore Subcollections)\n\nUnder `/groups/{groupId}/messages`, verified group members are allowed to read messages (`allow read`). However, writing directly from the client is explicitly forbidden (`allow write: if false`). All mutations MUST go through our secure Express API endpoints, ensuring centralized validation and logging!"
+    },
+    {
+      "file": "scripture-habit/api_internal/lib/middleware.ts",
+      "line": 55,
+      "description": "### 🛡️ Server-Side Middleware: `verifyAppCheck`\n\nOn the Express API server, the `verifyAppCheck` middleware intercepts incoming requests to check the `X-Firebase-AppCheck` header. It calls the App Check service to verify legitimacy. Skipping is strictly forbidden in production (line 61)."
+    },
+    {
+      "file": "scripture-habit/api_internal/lib/middleware.ts",
+      "line": 90,
+      "description": "### 🔑 Server-Side Authentication: `authenticate`\n\nThe `authenticate` middleware extracts the JWT bearer token from the `Authorization` header and decodes it using the Firebase Admin SDK (`auth.verifyIdToken`), establishing `req.user` securely."
+    },
+    {
+      "file": "scripture-habit/api_internal/lib/schemas.ts",
+      "line": 128,
+      "description": "### 📝 Input Sanitization & Validation (Zod)\n\nBefore processing any business logic, API inputs are parsed using **Zod Schemas**. For example, `postNoteSchema` checks types, lengths, and runs a custom validation filter `noHtmlTags` to strip any HTML injection attempts!"
+    }
+  ]
+}

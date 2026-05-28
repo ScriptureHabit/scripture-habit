@@ -1,0 +1,21 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "17. GDPR Profile Deletion & Anonymization Pipeline",
+  "steps": [
+    {
+      "file": "scripture-habit/api_internal/services/profile-service.ts",
+      "description": "Welcome to the GDPR Profile Deletion & Anonymization Pipeline Tour! In this service, when a user changes their profile details, we propagate updates to active member lists and last poster cached names inside active chat collections using efficient Firestore transactions.",
+      "line": 11
+    },
+    {
+      "file": "scripture-habit/api_internal/services/profile-service.ts",
+      "description": "Here is the exhaustive batch sync loop for personal notes. It updates the speaker identity on note archives, re-compiling search tokens to guarantee search truth is preserved perfectly.",
+      "line": 136
+    },
+    {
+      "file": "scripture-habit/api_internal/services/profile-service.ts",
+      "description": "For GDPR compliance, when a user purges their account, we execute `purgeSocialIdentity`. This wipes clean personal identifiers in reaction previews (changing nicknames to '...' and clearing photo URLs) across all historical chat logs.",
+      "line": 187
+    }
+  ]
+}

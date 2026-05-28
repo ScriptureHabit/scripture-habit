@@ -103,6 +103,68 @@ graph TD
 
 ---
 
+## 💾 データベース・スキーマ設計図
+
+Scripture Habit はリレーショナルでゲーム化されたデータ構造を Firestore に保存します。以下は簡略化されたコレクション階層です：
+
+```
+Firestore ルート
+├── users/ (コレクション)
+│   └── {uid}/ (ドキュメント)
+│       ├── nickname: string
+│       ├── timeZone: string
+│       ├── lastPostDate: string (YYYY-MM-DD)
+│       ├── level: number
+│       ├── streakDays: number
+│       ├── hasFcmToken: boolean
+│       └── private/ (サブコレクション)
+│           └── tokens/ (ドキュメント)
+│               └── fcmTokens: string[]
+│       └── groupStates/ (サブコレクション)
+│           └── {groupId}/ (ドキュメント)
+│               └── readMessageCount: number
+├── groups/ (コレクション)
+│   └── {groupId}/ (ドキュメント)
+│       ├── name: string
+│       ├── inviteCode: string
+│       ├── ownerId: string
+│       ├── messageCount: number
+│       ├── unityScore: number
+│       ├── members/ (サブコレクション)
+│       │   └── {uid}/ (ドキュメント)
+│       │       └── joinedAt: Timestamp
+│       ├── messages/ (サブコレクション)
+│       │   └── {messageId}/ (ドキュメント)
+│       │       └── content: string
+│       └── messages_latest/ (サブコレクション)
+│           └── latest/ (ドキュメント)
+│               └── messages: Message[] (バンドルされた高性能キャッシュ)
+```
+
+---
+
+## 🎮 ローカルエミュレータ・シードシステム
+
+クリーンな開発者ワークスペースを空のエミュレータに接続するとUIテストが非常に困難になります。このため、自動化されたシードパイプラインを用意しています：
+
+- **実行コマンド**: `npm run db:seed`
+- **実行スクリプト**: [`seed.ts`](../scripture-habit/scripts/seed.ts)
+- **処理ライフサイクル**:
+  1. **パージ（初期化）**: 冪等性（繰り返し実行しても状態が変わらないこと）を保証するため、一致する既存のテスト用ユーザーやアクティブなグループを事前に削除します。
+  2. **Auth アカウント生成**: ローカル Firebase Auth エミュレータ上にダミーアカウントを自動生成します。
+  3. **ユーザープロファイル構築**: ユーザープロファイル、ダミーの学習継続日数（ストリーク）、レベル情報、および FCM トークンフラグを設定します。
+  4. **グループとチャットの組み立て**: 共有学習グループを作成し、招待関係をマッピングし、模擬チャット履歴を生成し、キャッシュ用最新プレビューデータを注入します。
+
+---
+
+## 🗺️ CodeTours による実地ガイド
+
+新しい開発者をコードベース内で案内するため、ワークスペースには **22個のインタラクティブな CodeTour**（`.tours/` 内）が用意されています。VS Code のコマンドパレットから以下を実行して開始できます：
+1. `CodeTour: Start Tour`
+2. 実行したいツアーを選択（例：React フックの実装を学ぶには **Tour 1: Frontend Core Mechanics**、エミュレータ設定を学ぶには **Tour 13: Local Development & Setup** を選択）。
+
+---
+
 ## 🛡️ 信頼性とセキュリティ
 - **タイプガード**: `firestoreConverters.ts` は Zod を使用して、Firestore 内の不正な形式のデータがUI内でエラーを引き起こす前に検出され、クリーンアップされることを保証します。
 - **エラー境界 (Error Boundaries)**: コンポーネントレベルのバウンダリにより、チャットメッセージのエラーがダッシュボード全体をクラッシュさせるのを防ぎます。

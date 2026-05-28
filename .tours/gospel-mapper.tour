@@ -1,0 +1,21 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "📖 Tour 7: Multilingual Gospel Library Mapper & Parsing",
+  "steps": [
+    {
+      "file": "scripture-habit/src/utils/book-ref-mapper.ts",
+      "line": 1,
+      "description": "### 🌎 Multi-language Identity Map: `BOOK_IDENTITY_MAP`\n\nTo map scriptures accurately, we need to handle book names across 10 languages (English, Japanese, Spanish, Portuguese, Korean, Swahili, Tagalog, Vietnamese, Chinese, and Thai). This huge mapping dictionary resolves every localized book name to a single global English identity key."
+    },
+    {
+      "file": "scripture-habit/src/utils/gospel-library-mapper.ts",
+      "line": 41,
+      "description": "### 🔗 Deep-Linking Algorithm: `getGospelLibraryUrl`\n\nThis function compiles the final official URL directing the user straight into the Gospel Library app or site. It resolves the specific volumes (OT, NT, Book of Mormon, Doctrine & Covenants), configures localized language parameters (`jpn`, `spa`, `por`, etc.), and dynamically maps BYU Speeches or General Conference links."
+    },
+    {
+      "file": "scripture-habit/src/utils/gospel-library-mapper.ts",
+      "line": 93,
+      "description": "### 🧹 Text Normalization & Regex Parsing\n\nUsers type scripture references in many styles. To handle full-width digits, Japanese particles like '章' and '節', and varying dash characters, the algorithm cleans and normalizes the string (Line 93-96) before executing a robust RegExp match to extract book name, chapter number, and verse boundaries."
+    }
+  ]
+}

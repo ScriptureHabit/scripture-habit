@@ -1,0 +1,21 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "🔍 Tour 11: Incremental Book Suggestion Engine",
+  "steps": [
+    {
+      "file": "scripture-habit/src/utils/suggestion-utils.ts",
+      "line": 2,
+      "description": "### 📖 Static Volume Lists\n\nTo power autocomplete search suggestions for scriptures, `volumeBooks` defines the complete static list of books belonging to each volume (OT, NT, Book of Mormon, Doctrine & Covenants, PGP, etc.)."
+    },
+    {
+      "file": "scripture-habit/src/utils/suggestion-utils.ts",
+      "line": 51,
+      "description": "### 🇯🇵 Unicode NFKC & Japanese Hiragana-to-Katakana Shifter\n\nUnicode normalization (`NFKC`) cleans half/full-width chars. Crucially, if search language is Japanese (`ja`), we run a character shift (Line 54-57) converting Hiragana input to Katakana. This enables uniform Japanese book name search regardless of which script they type!"
+    },
+    {
+      "file": "scripture-habit/src/utils/suggestion-utils.ts",
+      "line": 79,
+      "description": "### 📊 4-Tier Sorting & Ranking Algorithm\n\nSuggestions are dynamically ranked using a **4-tier sorting cascade**:\n1. Exact Match (normalized)\n2. Starts with (translated language)\n3. Starts with (English)\n4. Shorter string length first (best match density)\n\nThis guarantees highly relevant autocomplete items are floated to the top!"
+    }
+  ]
+}

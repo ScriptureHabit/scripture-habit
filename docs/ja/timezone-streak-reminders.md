@@ -1,5 +1,8 @@
 # タイムゾーンを考慮したローカルストリーク通知システム
 
+> [!WARNING]
+> **一時的な無効化**: この機能は2026年5月28日時点で一時的に無効化（ロジックのコメントアウト）され、モック統計を返すバイパス状態になっています。再有効化するには、[`cron.ts`](../../scripture-habit/api_internal/routes/cron.ts) 内のバイパスブロックを削除し、[`cron.integration.test.ts`](../../scripture-habit/api_internal/routes/cron.integration.test.ts) と [`streak-warning.integration.test.ts`](../../scripture-habit/api_internal/streak-warning.integration.test.ts) 内のスキップされた統合テストを復元してください。
+
 世界中のユーザーをサポートするため、Scripture Habitにはタイムゾーンを考慮したストリークリマインダーエンジン（`api_internal/lib/streak-reminder.ts` および `cron.ts` 内の `/api/streak-warning`）が備わっています。
 
 単一のUTC時間ですべてのユーザーに一斉に通知を送信するのではなく、システムは毎時バックグラウンドチェックを実行して、**現地時間の午後8:00（20:00）**に達したタイムゾーンを検出し、その日の学習をまだ終えていないユーザーに対してローカライズされたプッシュ通知を送信します。

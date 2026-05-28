@@ -1,0 +1,26 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "🔢 Tour 8: Distributed Counter Sharding & Transactions",
+  "steps": [
+    {
+      "file": "scripture-habit/api_internal/services/counter-service.ts",
+      "line": 4,
+      "description": "### 🔢 Distributed Counters & High Throughput\n\nFirestore has a write limit of 1 write per second on a single document. To support thousands of concurrent users chatting or posting notes, we implement **Distributed Counter Sharding** with 10 shards (`NUM_SHARDS = 10`). This splits database write throughput across multiple sub-shards!"
+    },
+    {
+      "file": "scripture-habit/api_internal/services/counter-service.ts",
+      "line": 21,
+      "description": "### 🎲 Randomized Shard Writes (Atomic Increment)\n\nWhen incrementing, the `increment` service selects a random shard index between 0 and 9 (Line 22) and performs a `FieldValue.increment` on that shard doc within the transaction. This distributes the database write hot-spot perfectly."
+    },
+    {
+      "file": "scripture-habit/api_internal/services/counter-service.ts",
+      "line": 33,
+      "description": "### 📊 Summing Shards in a Transaction (`getAll` Optimization)\n\nTo fetch the true count transactionally, we read all 10 shard references in parallel using `transaction.getAll(...shardRefs)` (Line 39) to bypass sequential queries and sum them together. This guarantees strict atomic consistency while maximizing read performance."
+    },
+    {
+      "file": "scripture-habit/api_internal/services/counter-service.ts",
+      "line": 99,
+      "description": "### 📦 Archiving-Aware Count Recovery\n\nWhen counting messages, we must account for archived buckets so the counter doesn't reset after old messages are deleted. `recountMessageCountWithArchive` dynamically sums individual active messages with archived counts in `/message_buckets` (Line 105-111), restoring perfect historical metrics."
+    }
+  ]
+}

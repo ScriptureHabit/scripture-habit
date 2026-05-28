@@ -1,0 +1,36 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "⚙️ Tour 2: Back-end Automation & Maintenance",
+  "steps": [
+    {
+      "file": "scripture-habit/api_internal/services/inactivity-service.ts",
+      "line": 15,
+      "description": "### 🔄 Rotation-Based batch check\n\nTo prevent resource spikes on our serverless database, `batchCheckInactivity` implements a smart **rotation-based scanning strategy** (Line 20-35). It sorts groups by the longest time since they were last checked and pulls the oldest batch for processing."
+    },
+    {
+      "file": "scripture-habit/api_internal/services/inactivity-service.ts",
+      "line": 87,
+      "description": "### 🏥 Self-Healing Subcollections\n\nIf the members subcollection is found uninitialized for an existing group, the service triggers a **self-healing script** (Line 90-105). This dynamically populates subcollections from root-level metadata arrays, ensuring zero orphaned states."
+    },
+    {
+      "file": "scripture-habit/api_internal/services/inactivity-service.ts",
+      "line": 183,
+      "description": "### 🧠 Deciding Inactivity & Auto-Kick\n\nThe business logic of evaluation is outsourced to a pure utility function `decideGroupInactivity`. It calculates inactivity periods based on each member's personal threshold, deciding whether to auto-kick a member, transfer ownership, or dismantle an empty group."
+    },
+    {
+      "file": "scripture-habit/api_internal/services/inactivity-service.ts",
+      "line": 230,
+      "description": "### 👑 Automatic Ownership Transfer\n\nWhen a group owner becomes inactive, ownership is automatically transferred to the next most active member. The service triggers a bot announcement in the chat to seamlessly inform the remaining group members."
+    },
+    {
+      "file": "scripture-habit/api_internal/services/archive-service.ts",
+      "line": 15,
+      "description": "### 📦 Chat Archiving (The Bucket Pattern)\n\nFirestore documents have a 1MB size limit. To prevent the chat history from reaching this cap and to keep real-time listeners lightning fast, `ArchiveService.archiveOldMessages` bundles old messages into single compressed documents."
+    },
+    {
+      "file": "scripture-habit/api_internal/services/archive-service.ts",
+      "line": 97,
+      "description": "### 🔐 Atomic Bucket Set & Source Deletes\n\nThe archiving process uses an **atomic Firestore transaction** to write the compiled bundle into a new `/message_buckets` document and delete the individual source message documents. This avoids duplicate records or history gaps."
+    }
+  ]
+}

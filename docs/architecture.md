@@ -103,6 +103,68 @@ The mobile application is a WebView running our Vite build.
 
 ---
 
+## 💾 Database Schema Blueprint
+
+Scripture Habit stores relational and gamified data structures in Firestore. Below is the simplified collection hierarchy:
+
+```
+Firestore Root
+├── users/ (Collection)
+│   └── {uid}/ (Document)
+│       ├── nickname: string
+│       ├── timeZone: string
+│       ├── lastPostDate: string (YYYY-MM-DD)
+│       ├── level: number
+│       ├── streakDays: number
+│       ├── hasFcmToken: boolean
+│       └── private/ (Subcollection)
+│           └── tokens/ (Document)
+│               └── fcmTokens: string[]
+│       └── groupStates/ (Subcollection)
+│           └── {groupId}/ (Document)
+│               └── readMessageCount: number
+├── groups/ (Collection)
+│   └── {groupId}/ (Document)
+│       ├── name: string
+│       ├── inviteCode: string
+│       ├── ownerId: string
+│       ├── messageCount: number
+│       ├── unityScore: number
+│       ├── members/ (Subcollection)
+│       │   └── {uid}/ (Document)
+│       │       └── joinedAt: Timestamp
+│       ├── messages/ (Subcollection)
+│       │   └── {messageId}/ (Document)
+│       │       └── content: string
+│       └── messages_latest/ (Subcollection)
+│           └── latest/ (Document)
+│               └── messages: Message[] (Bundled high-performance cache)
+```
+
+---
+
+## 🎮 Local Emulator Seeding System
+
+Connecting a fresh developer workspace to blank emulators makes UI testing tedious. The local environment features an automated seeding pipeline:
+
+- **Command**: `npm run db:seed`
+- **Execution Script**: [`seed.ts`](../scripture-habit/scripts/seed.ts)
+- **Lifecycle Flow**:
+  1. **Purge**: Cleans out any matching test users and existing active groups to guarantee idempotency.
+  2. **Auth Generation**: Automatically generates dummy accounts on the Local Firebase Auth emulator.
+  3. **User Document Mocking**: Populates user profiles, mock daily streaks, level configurations, and FCM flags.
+  4. **Group Assembly**: Builds a shared study group, maps invite relationships, generates chat message history, and updates the aggregated cache previews.
+
+---
+
+## 🗺️ CodeTours (Developer Navigation)
+
+To guide new developers, the workspace contains **22 interactive CodeTours** (under `.tours/`). Developers can launch them in VS Code via the Command Palette:
+1. `CodeTour: Start Tour`
+2. Select desired tour (e.g., **Tour 1: Frontend Core Mechanics** to study live React hooks, or **Tour 13: Local Development & Setup** to review emulator and seeding configs).
+
+---
+
 ## 🛡️ Reliability & Security
 - **Type Guards**: `firestoreConverters.ts` uses Zod to ensure that malformed data in Firestore is caught and cleaned before it causes errors in the UI.
 - **Error Boundaries**: Component-level boundaries prevent errors in a chat message from breaking the entire Dashboard.

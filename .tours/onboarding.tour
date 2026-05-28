@@ -1,0 +1,56 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "Scripture Habit Developer Onboarding Tour 🚀",
+  "steps": [
+    {
+      "file": "scripture-habit/src/components/newnote/hooks/use-note-submission.ts",
+      "line": 25,
+      "description": "### 📖 Welcome to Scripture Habit!\n\nThis interactive tour walks you through the core flows of the project.\n\nLet's start with **`useNoteSubmission`**, the custom React hook responsible for handling the user's note-taking form submission. It splits logical submission from the visual UI component."
+    },
+    {
+      "file": "scripture-habit/src/components/newnote/hooks/use-note-submission.ts",
+      "line": 117,
+      "description": "### 🚀 Step 1: Note Creation Form Submission (Frontend)\n\nFor new notes, the client dispatches a POST request to `/api/groups/post-note` via our configured `apiClient` instance, providing the study note's content and sharing preferences."
+    },
+    {
+      "file": "scripture-habit/api_internal/routes/messages.ts",
+      "line": 150,
+      "description": "### 🌐 Step 2: Route Entry & Middleware Check (Backend)\n\nIn the Express backend, the POST request is caught by `/api/groups/post-note`. It is piped through multiple safety middlewares:\n1. `authenticate` (JWT Verification)\n2. `requireEmailVerified`\n3. `verifyAppCheck` (Anti-abuse protection)\n\nOnce authorized, the request delegates all logic to `NoteService.postNote`."
+    },
+    {
+      "file": "scripture-habit/api_internal/services/note-service.ts",
+      "line": 33,
+      "description": "### 💾 Step 3: Atomic Transaction Processing (Service)\n\nInside `NoteService.postNote(...)`, all write operations are wrapped in a **strict Firestore Transaction** (`db.runTransaction`). This prevents race conditions and guarantees that both personal and group states update atomically."
+    },
+    {
+      "file": "scripture-habit/api_internal/services/note-service.ts",
+      "line": 90,
+      "description": "### 🔥 Step 4: Study Streak Calculations\n\nThe `StreakEngine.calculateNextStreak(...)` is executed to evaluate the user's activity. If they posted within the 36-hour grace period, their study streak is incremented."
+    },
+    {
+      "file": "scripture-habit/api_internal/services/note-service.ts",
+      "line": 172,
+      "description": "### 🔄 Step 5: Multipost & Denormalization\n\nThe transaction loops through the groups specified by `groupsToPostTo`, writing a message copy to each group's `/messages` subcollection, updating the group's stats, and saving the original copy to the user's `/notes` subcollection."
+    },
+    {
+      "file": "scripture-habit/api_internal/services/note-service.ts",
+      "line": 401,
+      "description": "### 🔔 Step 6: Async Push Notifications\n\nOnce the database transaction succeeds, a push notification is queued to all group members using Firebase Cloud Messaging (FCM) to keep everyone motivated."
+    },
+    {
+      "file": "scripture-habit/src/components/groupchat/hooks/core/use-group-messages.ts",
+      "line": 14,
+      "description": "### 💬 Step 7: Chat Synchronization Orchestrator (Frontend)\n\nNow, how does the client receive these notes and chat messages in real time? \n\nMeet **`useGroupMessages`**, the master React hook orchestrator that connects the data subscription engine with user scrolls and UI side effects."
+    },
+    {
+      "file": "scripture-habit/src/components/groupchat/hooks/core/use-chat-data-engine.ts",
+      "line": 206,
+      "description": "### 📦 Step 8: Firestore CDN Bundle Boost (Performance)\n\nTo prevent wasting read quota, the hook requests a pre-compiled Firestore bundle `/api/groups/bundle/${groupId}` before starting the stream. It loads the latest 25 messages in 1 single physical read instead of 25!"
+    },
+    {
+      "file": "scripture-habit/src/components/groupchat/hooks/core/use-chat-data-engine.ts",
+      "line": 156,
+      "description": "### 🔄 Step 9: Real-time Message Stream (WebSocket)\n\nFinally, `onSnapshot` registers a WebSocket listener to the `/messages_latest/latest` document to stream any live inbound messages or cheers instantly without polling. If any temp/optimistic messages are pending, they are cleanly merged in!"
+    }
+  ]
+}

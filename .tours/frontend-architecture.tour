@@ -1,0 +1,26 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "🎨 Tour 3: Front-end Architecture, State & i18n",
+  "steps": [
+    {
+      "file": "scripture-habit/src/index.css",
+      "line": 7,
+      "description": "### 🎨 Root CSS Variables & Design System\n\nScripture Habit uses custom vanilla CSS variables for styling. Rather than using inline utilities or plain red/blue, we define theme colors (`--purple`, `--orange`), glassmorphism values (`--glass`), and shadows at the root. This guarantees visual consistency across all views!"
+    },
+    {
+      "file": "scripture-habit/src/context/language-provider.tsx",
+      "line": 52,
+      "description": "### 🌎 Multi-language Context: `LanguageProvider`\n\nTo power global users, our app wraps components in `LanguageProvider` (Line 52). It auto-detects user preference via URL query parameters, URL path prefixes, localStorage, or browser defaults (Line 26-46)."
+    },
+    {
+      "file": "scripture-habit/src/context/language-provider.tsx",
+      "line": 167,
+      "description": "### 📖 Gospel Library Mapper & Translator\n\nOne of the most complex frontend pieces is translating scripture chapter references dynamically. `translateBookName` maps physical book names (e.g. \"1 Ne\" or \"Alma\") using localized books files, keeping text fully synchronized with the user's active language."
+    },
+    {
+      "file": "scripture-habit/src/components/groupchat/hooks/core/use-chat-data-engine.ts",
+      "line": 257,
+      "description": "### 🧠 Pure Logic Separation: `useChatDataEngine`\n\nAligned with our \"Logic-Component Split\" principle, components focus only on layout and CSS class assignments. Pure synchronization with Firestore is managed by this React Reducer hook `useChatDataEngine`, completely isolating data streaming from rendering logic."
+    }
+  ]
+}

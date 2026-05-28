@@ -1,0 +1,31 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "🛡️ Tour 9: API Middleware, Error Handling & Sentry",
+  "steps": [
+    {
+      "file": "scripture-habit/api/api.ts",
+      "line": 43,
+      "description": "### 🌐 Strict CORS Origin Safeguard\n\nTo prevent cross-site request forgery, we define `ALLOWED_ORIGINS` (including web domains and Capacitor mobile schemes like `capacitor://localhost`). The middleware rejects any requests from outside this whitelist, allowing only trusted clients to query our endpoints."
+    },
+    {
+      "file": "scripture-habit/api/api.ts",
+      "line": 59,
+      "description": "### 🧹 Vercel TrailingSlash Path Normalization\n\nVercel's router option `trailingSlash: true` appends a slash to paths, which can break standard Express routing. This custom middleware (Line 60-69) automatically intercepts, strips the trailing slash internally, and updates `req.url` to match definitions without duplication!"
+    },
+    {
+      "file": "scripture-habit/api/api.ts",
+      "line": 97,
+      "description": "### 🚨 Sentry Error Bound Integration\n\nTo ensure production stability, we mount the Sentry Express error handler (`setupExpressErrorHandler`) after our routes (Line 97-99). This automatically intercepts and logs all unhandled exceptions directly into our centralized Sentry performance dashboard."
+    },
+    {
+      "file": "scripture-habit/api_internal/lib/errors.ts",
+      "line": 1,
+      "description": "### 📝 Custom AppError Hierarchies\n\nInstead of serving generic server errors, we extend the base `Error` class to create targeted types like `ValidationError`, `AuthenticationError`, `ForbiddenError`, and `NotFoundError`. This standardizes the custom error codes and HTTP status mapping."
+    },
+    {
+      "file": "scripture-habit/api/api.ts",
+      "line": 108,
+      "description": "### 🎯 Centralized Express Error Handler\n\nOur final catch-all middleware handles error mapping. If the exception is a known `AppError`, it extracts the code, name, and status for the client. Otherwise, it logs a secure `InternalServerError` (500) to keep stack traces safe in production (Line 134-141)."
+    }
+  ]
+}

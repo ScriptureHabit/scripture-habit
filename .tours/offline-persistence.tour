@@ -1,0 +1,26 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "💾 Tour 10: Firestore Offline Persistence & SDK Initialization",
+  "steps": [
+    {
+      "file": "scripture-habit/src/firebase.ts",
+      "line": 9,
+      "description": "### 🔌 Emulator vs Cloud Auto-Routing\n\nTo ensure local development is fast, we detect `isEmulator` at start (Line 9). The client automatically routes all traffic to the local emulator suite if the flag is enabled (Line 118-127), preventing accidental writes to production."
+    },
+    {
+      "file": "scripture-habit/src/firebase.ts",
+      "line": 72,
+      "description": "### 🧪 E2E Test Auth Bypass & Persistence\n\nIf we detect `navigator.webdriver` (which indicates Playwright/automation is running), we programmatically expose `window.firebaseAuth` and force `browserLocalPersistence`. This allows E2E automated test scripts to securely capture and sync sessions."
+    },
+    {
+      "file": "scripture-habit/src/firebase.ts",
+      "line": 105,
+      "description": "### 💾 Local Cache & Multi-Tab Synchronization\n\nTo keep the app extremely fast and responsive offline, we initialize Firestore with `persistentLocalCache` backing IndexedDB (Line 106). We mount `persistentMultipleTabManager` so multiple open browser tabs share the offline write-queue and cache without locking conflict."
+    },
+    {
+      "file": "scripture-habit/src/firebase.ts",
+      "line": 141,
+      "description": "### 🛡️ App Check Provider & Debug Gates\n\nIn production, we initialize App Check via `ReCaptchaEnterpriseProvider` to authenticate browser origins (Line 150). For local dev, we inject a mock `CustomProvider` yielding a debug token placeholder (Line 143), ensuring smooth emulator runs without reCAPTCHA prompt loops."
+    }
+  ]
+}

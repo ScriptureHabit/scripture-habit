@@ -7,7 +7,7 @@ import { db, messaging } from './lib/firebase-admin.js';
 // Mock FCM
 const mockSendEachForMulticast = vi.spyOn(messaging, 'sendEachForMulticast');
 
-describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Streak Warning Integration', () => {
+describe.skip('Streak Warning Integration', () => {
     let server: Server;
     let baseUrl: string;
 

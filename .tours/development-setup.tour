@@ -1,0 +1,36 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "12. Local Development & Setup",
+  "steps": [
+    {
+      "file": "scripture-habit/package.json",
+      "description": "Welcome to the Local Development & Setup Tour! Here you will learn how to boot the environment, run tests, and use scripts. Let's look at the defined npm scripts first.",
+      "line": 9
+    },
+    {
+      "file": "scripture-habit/package.json",
+      "description": "Here is the standard `dev` script which runs Vite locally, and `server` for the API/backend logic. For testing inside emulators, we have `test:internal` and `test:e2e` scripts.",
+      "line": 15
+    },
+    {
+      "file": "scripture-habit/firebase.json",
+      "description": "The Firebase configurations dictate which ports are used locally. Here, Firestore runs on port 8080 and Auth on port 9099. Warnings are disabled and email verification is set to false to ease local development flows.",
+      "line": 20
+    },
+    {
+      "file": "scripture-habit/package.json",
+      "description": "Here is our newly created `db:seed` utility! Running `npm run db:seed` executes the tsx compiler, instantly populating your local Auth and Firestore emulator with mock data.",
+      "line": 20
+    },
+    {
+      "file": "scripture-habit/scripts/seed.ts",
+      "description": "Inside `scripts/seed.ts`, we instantiate the Firebase Admin SDK and clear previous dummy data for idempotency, before creating multiple mock accounts (including our direct dev-user developer access).",
+      "line": 4
+    },
+    {
+      "file": "scripture-habit/scripts/seed.ts",
+      "description": "We then populate active study groups (like 'Daily Bread 📖'), join members, and record multiple mock scripture note posts and messages into Firestore subcollections to replicate a live production database environment.",
+      "line": 134
+    }
+  ]
+}
