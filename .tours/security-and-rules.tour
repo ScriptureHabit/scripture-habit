@@ -1,6 +1,6 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "🛡️ Tour 1: Security, Rules & API Protection",
+  "title": "Tour 1: Security, Rules & API Protection",
   "steps": [
     {
       "file": "scripture-habit/firestore.rules",

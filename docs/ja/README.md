@@ -5,28 +5,29 @@
 ---
 
 ## 🗺️ CodeTours (インタラクティブな開発者ガイド)開発者の関心に合わせて **21の専用ツアー** を用意しています：
-*   **🚀 Scripture Habit Developer Onboarding Tour (オンボーディング)**: 「勉強ノートの投稿プロセス ➔ ストリーク計算 ➔ Firestoreアトミックトランザクション ➔ FCMプッシュ通知送信 ➔ フロントエンドでのリアルタイムチャット同期（Firestore CDN Bundle 読み込み & onSnapshot ライブ配信）」といった、当プロジェクトで最も難解かつ核となる処理の流れをステップバイステップで巡回します。
-*   **🛡️ Tour 1: Security, Rules & API Protection (セキュリティ)**: `firestore.rules` や App Check 検証ミドルウェア、Zod バリデーションスキーマに焦点を当て、バックエンドの防御の仕組みを解説します。
-*   **⚙️ Tour 2: Back-end Automation & Maintenance (自動化とバッチ)**: 非アクティブユーザーの自動退会（auto-kick）処理や、メッセージ容量制限（1MB）回避のためのチャット履歴アーカイブ処理（Bucket Pattern）の裏側を巡ります。
-*   **🎨 Tour 3: Front-end Architecture, State & i18n (フロントエンド設計)**: CSSデザイン変数、Zustand/Auth によるグローバル状態管理、多言語対応の福音ライブラリマッパーロジックのポイントを解説します。
-*   **🧪 Tour 4: Testing & CI/CD Pipeline (テストとCI/CD)**: Firebase Emulator上でのデータベースセキュリティルールテスト、Vitest単体テスト、PlaywrightによるE2Eブラウザテスト、および GitHub Actions 連携を巡回します。
-*   **📱 Tour 5: Capacitor Hybrid Mobile Bridge (モバイルアプリ連携)**: Viteビルド成果物を Capacitor で WebView にパッケージングする仕組みや、ネイティブ Google 認証、Web/モバイル対応 of localStorage フォールバックロジックを解説します。
-*   **🤖 Tour 6: AI & Gemini Integration Pipeline (AIとGemini連携)**: バックエンドのGemini API連携による勉強問いかけ（Ponder Question）の自動生成、Firestoreを用いた2層キャッシュ（MD5）、チャットを一括処理するバッチ翻訳、週次振り返り生成 of クールダウン制限ロジックを解説します。
-*   **📖 Tour 7: Multilingual Gospel Library Mapper & Parsing (多言語聖典マッパー)**: 10ヶ国語に及ぶ膨大な書籍名マッピング定義表と、全角・半角変換や日本語特有 of 「章・節」表記を柔軟にクレンジングしてパースする正規表現アルゴリズムの現場を巡ります。
-*   **🔢 Tour 8: Distributed Counter Sharding & Transactions (分散カウンタシャード)**: Firestoreの秒間書込制限を克服する10個 of 分散カウンタシャード（`NUM_SHARDS`）、トランザクション内でのランダムシャードインクリメント、アーカイブメッセージも考慮したアトミック集計アルゴリズムを解説します。
-*   **🛡️ Tour 9: API Middleware, Error Handling & Sentry (ミドルウェアとエラーハンドリング)**: APIサーバーのCORS接続元制限や、Vercel特有のTrailingSlashパス自動調整、Sentryによるエラー収集、カスタム例外クラス設計（AppError）、安全な例外キャッチオールの設計を巡ります。
-*   **💾 Tour 10: Firestore Offline Persistence & SDK Initialization (オフライン永続化とSDK初期化)**: IndexedDBを活用した永続的ローカルキャッシュ（オフライン機能）、複数タブ間での競合を防ぐマルチタブ同期（`persistentMultipleTabManager`）、自動テスト時の認証バイパス、ReCAPTCHA Enterpriseを用いたApp Check初期化設定を解説します。
-*   **🔍 Tour 11: Incremental Book Suggestion Engine (インクリメンタル書籍提案エンジン)**: 聖典名オートコンプリート検索における Unicode NFKC 標準化、日本語の「ひらがな・カタカナ」統一検索用の発音コードシフト、および完全一致・前方一致などを考慮した4段階の優先度ソートアルゴリズムの動作を解説します。
-*   **⚙️ Tour 12: Local Development & Setup (開発環境と起動)**: ローカル Firebase エミュレータの起動方法、シードデータの流し込みスクリプト、および開発用 npm コマンドの全体像をガイドします。
-*   **🌐 Tour 13: Localization & i18n Content (多言語対応と翻訳)**: 動的な多言語ローダーの初期化機構、10ヶ国語に及ぶ翻訳リソース定義、および各言語別の書籍名メタデータの保守方法をガイドします。
-*   **⚙️ Tour 14: Serverless Endpoint & Router Architecture (サーバーレスAPIとルーティング)**: Vercel上の単一エントリーポイントにマウントされた Express ルーターの挙動、動的CORSフィルター、およびパス末尾スラッシュの正規化処理をガイドします。
-*   **📱 Tour 15: Mobile App Platform Bridge & Native Configs (モバイルプラットフォームブリッジとネイティブ設定)**: Viteビルド成果物とCapacitorネイティブレイヤーをバインドする設定や、ネイティブ Google 認証の構成パラメータ、Capacitorプラグイン設定をガイドします。
-*   **🧪 Tour 16: Advanced Database Auditing & Streak Reliability Tests (高度なDB監査とストリーク信頼性)**: Firestore Admin SDKのメソッドにスパイを仕掛けてアトミックなデータベース読み取り（Read）件数を厳密にアサートする監査テストインフラや、多国籍タイムゾーン移動時におけるストリーク更新・36時間猶予期間のリセットシミュレーションをガイドします。
-*   **🛡️ Tour 17: GDPR Profile Deletion & Anonymization Pipeline (GDPRプロフィール削除とインタラクション匿名化)**: ユーザー退会時のGDPR準拠プロフィール削除、アトミック一括書き込みバッチによる過去のチャット内ニックネーム・画像の一括匿名化・退避処理（`purgeSocialIdentity`）の流れをガイドします。
-*   **🔔 Tour 18: Push Notifications & Multicast Deduplication (プッシュ通知と重複排除マルチキャスト)**: 同期的に複数グループへ一括投稿する際、受信者の重複排除マップ（Map）によって無駄な通知アラートの多重送信を防ぐインテリジェントなマルチキャスト配信ロジックをガイドします。
-*   **🌐 Tour 19: Unified Multilingual Context & Race Guard Sync (統一多言語コンテキストと競合ガード同期)**: ブラウザ・URL・LocalStorage・User Profileから多言語を優先度付きで自動検出し、手動切り替え時の競合（Firestoreの非同期遅延上書き）を防ぐ10秒間のマニュアルガード同期システムをガイドします。
-*   **🏆 Tour 20: Gamified Group Unity & Member Eligibility (団結度ゲーミフィケーション同期と参加資格)**: グループの現地時間における日付反転境界処理、リアルタイムUIのためのFirestore dailyActivityデータとクライアント側メッセージメモリの動的マージ、および今日参加したばかりの新規メンバーを公平に分母から除外する「TRIPLE-FALLBACK」参加資格判定ロジックをガイドします。
-*   **🔍 Tour 21: Dynamic SEO, Meta Managers & OGP Cards (動的SEOとメタデータ管理)**: 各ルートページに応じたドキュメントタイトルの自動挿入、非公開のダッシュボードや登録パスに対するクローラー制限（noindex, nofollow）、多言語ごとの動的Canonical（正規パス）リンク自動生成、および検索エンジンでの認識を向上させるGoogle OGPカードの構成管理をガイドします。
+*   **Tour 0: Scripture Habit Developer Onboarding (オンボーディング)**: 「勉強ノートの投稿プロセス ➔ ストリーク計算 ➔ Firestoreアトミックトランザクション ➔ FCMプッシュ通知送信 ➔ フロントエンドでのリアルタイムチャット同期（Firestore CDN Bundle 読み込み & onSnapshot ライブ配信）」といった、当プロジェクトで最も難解かつ核となる処理の流れをステップバイステップで巡回します。
+*   **Tour 1: Security, Rules & API Protection (セキュリティ)**: `firestore.rules` や App Check 検証ミドルウェア、Zod バリデーションスキーマに焦点を当て、バックエンドの防御の仕組みを解説します。
+*   **Tour 2: Back-end Automation & Maintenance (自動化とバッチ)**: 非アクティブユーザーの自動退会（auto-kick）処理や、メッセージ容量制限（1MB）回避のためのチャット履歴アーカイブ処理（Bucket Pattern）の裏側を巡ります。
+*   **Tour 3: Front-end Architecture, State & i18n (フロントエンド設計)**: CSSデザイン変数、Zustand/Auth によるグローバル状態管理、多言語対応の福音ライブラリマッパーロジックのポイントを解説します。
+*   **Tour 4: Testing & CI/CD Pipeline (テストとCI/CD)**: Firebase Emulator上でのデータベースセキュリティルールテスト、Vitest単体テスト、PlaywrightによるE2Eブラウザテスト、および GitHub Actions 連携を巡回します。
+*   **Tour 5: Capacitor Hybrid Mobile Bridge (モバイルアプリ連携)**: Viteビルド成果物を Capacitor で WebView にパッケージングする仕組みや、ネイティブ Google 認証、Web/モバイル対応 of localStorage フォールバックロジックを解説します。
+*   **Tour 6: AI & Gemini Integration Pipeline (AIとGemini連携)**: バックエンドのGemini API連携による勉強問いかけ（Ponder Question）の自動生成、Firestoreを用いた2層キャッシュ（MD5）、チャットを一括処理するバッチ翻訳、週次振り返り生成 of クールダウン制限ロジックを解説します。
+*   **Tour 7: Multilingual Gospel Library Mapper & Parsing (多言語聖典マッパー)**: 10ヶ国語に及ぶ膨大な書籍名マッピング定義表と、全角・半角変換や日本語特有 of 「章・節」表記を柔軟にクレンジングしてパースする正規表現アルゴリズムの現場を巡ります。
+*   **Tour 8: Distributed Counter Sharding & Transactions (分散カウンタシャード)**: Firestoreの秒間書込制限を克服する10個 of 分散カウンタシャード（`NUM_SHARDS`）、トランザクション内でのランダムシャードインクリメント、アーカイブメッセージも考慮したアトミック集計アルゴリズムを解説します。
+*   **Tour 9: API Middleware, Error Handling & Sentry (ミドルウェアとエラーハンドリング)**: APIサーバーのCORS接続元制限や、Vercel特有のTrailingSlashパス自動調整、Sentryによるエラー収集、カスタム例外クラス設計（AppError）、安全な例外キャッチオールの設計を巡ります。
+*   **Tour 10: Firestore Offline Persistence & SDK Initialization (オフライン永続化とSDK初期化)**: IndexedDBを活用した永続的ローカルキャッシュ（オフライン機能）、複数タブ間での競合を防ぐマルチタブ同期（`persistentMultipleTabManager`）、自動テスト時の認証バイパス、ReCAPTCHA Enterpriseを用いたApp Check初期化設定を解説します。
+*   **Tour 11: Incremental Book Suggestion Engine (インクリメンタル書籍提案エンジン)**: 聖典名オートコンプリート検索における Unicode NFKC 標準化、日本語の「ひらがな・カタカナ」統一検索用の発音コードシフト、および完全一致・前方一致などを考慮した4段階の優先度ソートアルゴリズムの動作を解説します。
+*   **Tour 12: Local Development & Setup (開発環境と起動)**: ローカル Firebase エミュレータの起動方法、シードデータの流し込みスクリプト、および開発用 npm コマンドの全体像をガイドします。
+*   **Tour 13: Localization & i18n Content (多言語対応と翻訳)**: 動的な多言語ローダーの初期化機構、10ヶ国語に及ぶ翻訳リソース定義、および各言語別の書籍名メタデータの保守方法をガイドします。
+*   **Tour 14: Serverless Endpoint & Router Architecture (サーバーレスAPIとルーティング)**: Vercel上の単一エントリーポイントにマウントされた Express ルーターの挙動、動的CORSフィルター、およびパス末尾スラッシュの正規化処理をガイドします。
+*   **Tour 15: Mobile App Platform Bridge & Native Configs (モバイルプラットフォームブリッジとネイティブ設定)**: Viteビルド成果物とCapacitorネイティブレイヤーをバインドする設定や、ネイティブ Google 認証の構成パラメータ、Capacitorプラグイン設定をガイドします。
+*   **Tour 16: Advanced Database Auditing & Streak Reliability Tests (高度なDB監査とストリーク信頼性)**: Firestore Admin SDKのメソッドにスパイを仕掛けてアトミックなデータベース読み取り（Read）件数を厳密にアサートする監査テストインフラや、多国籍タイムゾーン移動時におけるストリーク更新・36時間猶予期間のリセットシミュレーションをガイドします。
+*   **Tour 17: GDPR Profile Deletion & Anonymization Pipeline (GDPRプロフィール削除とインタラクション匿名化)**: ユーザー退会時のGDPR準拠プロフィール削除、アトミック一括書き込みバッチによる過去のチャット内ニックネーム・画像の一括匿名化・退避処理（`purgeSocialIdentity`）の流れをガイドします。
+*   **Tour 18: Push Notifications & Multicast Deduplication (プッシュ通知と重複排除マルチキャスト)**: 同期的に複数グループへ一括投稿する際、受信者の重複排除マップ（Map）によって無駄な通知アラートの多重送信を防ぐインテリジェントなマルチキャスト配信ロジックをガイドします。
+*   **Tour 19: Unified Multilingual Context & Race Guard Sync (統一多言語コンテキストと競合ガード同期)**: ブラウザ・URL・LocalStorage・User Profileから多言語を優先度付きで自動検出し、手動切り替え時の競合（Firestoreの非同期遅延上書き）を防ぐ10秒間のマニュアルガード同期システムをガイドします。
+*   **Tour 20: Gamified Group Unity & Member Eligibility (団結度ゲーミフィケーション同期と参加資格)**: グループの現地時間における日付反転境界処理、リアルタイムUIのためのFirestore dailyActivityデータとクライアント側メッセージメモリの動的マージ、および今日参加したばかりの新規メンバーを公平に分母から除外する「TRIPLE-FALLBACK」参加資格判定ロジックをガイドします。
+*   **Tour 21: Dynamic SEO, Meta Managers & OGP Cards (動的SEOとメタデータ管理)**: 各ルートページに応じたドキュメントタイトルの自動挿入、非公開のダッシュボードや登録パスに対するクローラー制限（noindex, nofollow）、多言語ごとの動的Canonical（正規パス）リンク自動生成、および検索エンジンでの認識を向上させるGoogle OGPカードの構成管理をガイドします。
+*   **Tour 22: Frontend Core Mechanics & React Hooks (フロントエンド主要設計)**: リアルタイムチャット同期、既読数カウント、および継続学習日数（ストリーク）のフロントエンド算出制御ロジックを解説します。
 
 ### 開始方法:
 1. VS Code 上で **CodeTour** 拡張機能をインストールします。

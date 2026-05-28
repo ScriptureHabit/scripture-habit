@@ -1,6 +1,6 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "14. Serverless Endpoint & Router Architecture",
+  "title": "Tour 14: Serverless Endpoint & Router Architecture",
   "steps": [
     {
       "file": "scripture-habit/api/api.ts",

@@ -1,6 +1,6 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "17. GDPR Profile Deletion & Anonymization Pipeline",
+  "title": "Tour 17: GDPR Profile Deletion & Anonymization Pipeline",
   "steps": [
     {
       "file": "scripture-habit/api_internal/services/profile-service.ts",

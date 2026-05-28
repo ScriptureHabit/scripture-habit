@@ -1,6 +1,6 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "16. Advanced Database Auditing & Streak Reliability Tests",
+  "title": "Tour 16: Advanced Database Auditing & Streak Reliability Tests",
   "steps": [
     {
       "file": "scripture-habit/api_internal/firestore-read-count.integration.test.ts",

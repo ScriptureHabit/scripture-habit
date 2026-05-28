@@ -1,6 +1,6 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "🔍 Tour 11: Incremental Book Suggestion Engine",
+  "title": "Tour 11: Incremental Book Suggestion Engine",
   "steps": [
     {
       "file": "scripture-habit/src/utils/suggestion-utils.ts",

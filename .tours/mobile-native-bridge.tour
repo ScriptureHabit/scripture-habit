@@ -1,6 +1,6 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "15. Mobile App Platform Bridge & Native Configs",
+  "title": "Tour 15: Mobile App Platform Bridge & Native Configs",
   "steps": [
     {
       "file": "scripture-habit/capacitor.config.ts",

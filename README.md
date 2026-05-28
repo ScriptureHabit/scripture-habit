@@ -75,7 +75,7 @@ npm run server
 We include **22 interactive VS Code CodeTours** that serve as a live guide directly inside your code editor. 
 
 *   **🚀 Tour 0: Scripture Habit Onboarding Tour**: Walks through the step-by-step lifecycles of Study Note submission, Streak calculation, Firestore atomic transactions, FCM notifications, and real-time chat sync optimization.
-*   **💻 Tour 1: Frontend Core Mechanics & React Hooks**: Guides developers through the real-time group chat synchronization controller, unread messages calculation, and live daily streak computations.
+*   **Tour 22: Frontend Core Mechanics & React Hooks**: Guides developers through the real-time group chat synchronization controller, unread messages calculation, and live daily streak computations.
 *   **🛡️ Tour 2: Security, Rules & API Protection**: Focuses on `firestore.rules`, App Check verification middlewares, and Zod validator schemas.
 *   **⚙️ Tour 3: Back-end Automation & Maintenance**: Walks through the inactivity-service (auto-kick/ownership rotation) and the archive-service (bucket chat history sweeps).
 *   **🎨 Tour 4: Front-end Architecture, State & i18n**: Explores our CSS design tokens, global Zustand/Auth states, and localized Gospel Library mapper logic.

@@ -1,6 +1,6 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "🎨 Tour 3: Front-end Architecture, State & i18n",
+  "title": "Tour 3: Front-end Architecture, State & i18n",
   "steps": [
     {
       "file": "scripture-habit/src/index.css",

@@ -1,6 +1,6 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "19. Unified Multilingual Context & Dynamic Fallbacks",
+  "title": "Tour 19: Unified Multilingual Context & Dynamic Fallbacks",
   "steps": [
     {
       "file": "scripture-habit/src/context/language-provider.tsx",

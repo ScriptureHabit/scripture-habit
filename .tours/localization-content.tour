@@ -1,6 +1,6 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "13. Localization & i18n Content",
+  "title": "Tour 13: Localization & i18n Content",
   "steps": [
     {
       "file": "scripture-habit/src/locales/i18n.ts",

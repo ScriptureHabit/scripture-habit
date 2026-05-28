@@ -1,6 +1,6 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "💾 Tour 10: Firestore Offline Persistence & SDK Initialization",
+  "title": "Tour 10: Firestore Offline Persistence & SDK Initialization",
   "steps": [
     {
       "file": "scripture-habit/src/firebase.ts",

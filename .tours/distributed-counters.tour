@@ -1,6 +1,6 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "🔢 Tour 8: Distributed Counter Sharding & Transactions",
+  "title": "Tour 8: Distributed Counter Sharding & Transactions",
   "steps": [
     {
       "file": "scripture-habit/api_internal/services/counter-service.ts",

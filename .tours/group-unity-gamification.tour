@@ -1,6 +1,6 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "20. Gamified Group Unity & Member Eligibility",
+  "title": "Tour 20: Gamified Group Unity & Member Eligibility",
   "steps": [
     {
       "file": "scripture-habit/src/utils/unity-utils.ts",

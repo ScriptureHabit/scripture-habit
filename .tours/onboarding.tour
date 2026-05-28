@@ -1,6 +1,6 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "Scripture Habit Developer Onboarding Tour 🚀",
+  "title": "Tour 0: Scripture Habit Developer Onboarding",
   "steps": [
     {
       "file": "scripture-habit/src/components/newnote/hooks/use-note-submission.ts",

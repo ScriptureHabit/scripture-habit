@@ -1,6 +1,6 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "🛡️ Tour 9: API Middleware, Error Handling & Sentry",
+  "title": "Tour 9: API Middleware, Error Handling & Sentry",
   "steps": [
     {
       "file": "scripture-habit/api/api.ts",

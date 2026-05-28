@@ -1,6 +1,6 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "🤖 Tour 6: AI & Gemini Integration Pipeline",
+  "title": "Tour 6: AI & Gemini Integration Pipeline",
   "steps": [
     {
       "file": "scripture-habit/api_internal/routes/ai.ts",

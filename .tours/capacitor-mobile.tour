@@ -1,6 +1,6 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "📱 Tour 5: Capacitor Hybrid Mobile Bridge",
+  "title": "Tour 5: Capacitor Hybrid Mobile Bridge",
   "steps": [
     {
       "file": "scripture-habit/capacitor.config.ts",

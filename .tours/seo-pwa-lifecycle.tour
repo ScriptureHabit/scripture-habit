@@ -1,6 +1,6 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "21. Dynamic SEO, Meta Managers & OGP Cards",
+  "title": "Tour 21: Dynamic SEO, Meta Managers & OGP Cards",
   "steps": [
     {
       "file": "scripture-habit/src/components/seo-manager.tsx",

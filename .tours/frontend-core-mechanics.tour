@@ -1,6 +1,6 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "💻 Tour 1: Frontend Core Mechanics & React Hooks",
+  "title": "Tour 22: Frontend Core Mechanics & React Hooks",
   "steps": [
     {
       "file": "scripture-habit/src/components/groupchat/hooks/core/use-chat-sync-controller.ts",

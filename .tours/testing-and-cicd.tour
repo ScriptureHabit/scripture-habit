@@ -1,6 +1,6 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "🧪 Tour 4: Testing & CI/CD Pipeline",
+  "title": "Tour 4: Testing & CI/CD Pipeline",
   "steps": [
     {
       "file": "api_internal/rules.test.ts",

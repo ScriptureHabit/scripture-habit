@@ -1,6 +1,6 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "📖 Tour 7: Multilingual Gospel Library Mapper & Parsing",
+  "title": "Tour 7: Multilingual Gospel Library Mapper & Parsing",
   "steps": [
     {
       "file": "scripture-habit/src/utils/book-ref-mapper.ts",

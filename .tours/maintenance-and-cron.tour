@@ -1,6 +1,6 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "⚙️ Tour 2: Back-end Automation & Maintenance",
+  "title": "Tour 2: Back-end Automation & Maintenance",
   "steps": [
     {
       "file": "scripture-habit/api_internal/services/inactivity-service.ts",
