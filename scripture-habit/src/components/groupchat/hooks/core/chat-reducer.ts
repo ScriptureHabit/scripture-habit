@@ -13,6 +13,7 @@ export interface ChatState {
   hasMoreOlder: boolean;
   isLoadingOlder: boolean;
   membersMap: MembersMap;
+  messagesLoaded: boolean;
 }
 
 export type ChatAction =
@@ -40,7 +41,8 @@ export const initialState: ChatState = {
   initialScrollDone: false,
   hasMoreOlder: true,
   isLoadingOlder: false,
-  membersMap: {}
+  membersMap: {},
+  messagesLoaded: false
 };
 
 export const chatReducer = (state: ChatState, action: ChatAction): ChatState => {
@@ -49,6 +51,7 @@ export const chatReducer = (state: ChatState, action: ChatAction): ChatState => 
       return {
         ...initialState,
         status: 'loading',
+        messagesLoaded: false,
       };
     case 'SET_INITIAL_STATE':
       return {
@@ -56,7 +59,8 @@ export const chatReducer = (state: ChatState, action: ChatAction): ChatState => 
         status: 'active',
         messages: action.messages,
         groupData: action.groupData || state.groupData,
-        userReadCount: action.readCount
+        userReadCount: action.readCount,
+        messagesLoaded: true
       };
     case 'UPDATE_GROUP': {
       const isSame = state.groupData && JSON.stringify(state.groupData) === JSON.stringify(action.groupData);
@@ -72,12 +76,12 @@ export const chatReducer = (state: ChatState, action: ChatAction): ChatState => 
     case 'SET_ERROR':
       return { ...state, status: 'error', error: action.message };
     case 'SET_MESSAGES':
-      return { ...state, messages: action.messages, status: 'active' };
+      return { ...state, messages: action.messages, status: 'active', messagesLoaded: true };
     case 'ADD_NEW_MESSAGES': {
       const { newMessages } = action;
       
       if (newMessages.length === 0) {
-        if (state.status === 'loading') return { ...state, status: 'active' };
+        if (state.status === 'loading') return { ...state, status: 'active', messagesLoaded: true };
         return state;
       }
 
@@ -110,7 +114,7 @@ export const chatReducer = (state: ChatState, action: ChatAction): ChatState => 
       
       if (isSame && state.status === 'active') return state;
 
-      return { ...state, messages: finalMessages, status: 'active' };
+      return { ...state, messages: finalMessages, status: 'active', messagesLoaded: true };
     }
     case 'SET_LOADING_OLDER':
       return { ...state, isLoadingOlder: action.isLoading };

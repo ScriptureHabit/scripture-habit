@@ -57,7 +57,7 @@ const GroupChatProvider: FC<GroupChatProviderProps> = ({
   const {
     messages, groupData, loading, groupNotFound, userReadCount,
     initialScrollDone, setInitialScrollDone, hasMoreOlder, isLoadingOlder, loadMoreOlderMessages,
-    membersMap, latestMessageRef, prevMessageCountRef, dispatch
+    membersMap, latestMessageRef, prevMessageCountRef, dispatch, messagesLoaded
   } = useGroupMessages(groupId, userData, t, isActive);
 
   // 1. Feature Hooks (State & Scoring)
@@ -127,12 +127,12 @@ const GroupChatProvider: FC<GroupChatProviderProps> = ({
   const dataValue = useMemo<ChatDataContextType>(() => ({
     groupId, userData, groupData, messages, loading, membersLoading: localState.state.membersLoading, 
     membersMap, membersList: localState.state.membersList, userReadCount, unityPercentage, isOwner, 
-    language: language || 'en', userGroups,
+    language: language || 'en', userGroups, messagesLoaded,
     unityModalData: {
       posted: unityModalData.posted,
       notPosted: unityModalData.notPosted
     }
-  }), [groupId, userData, groupData, messages, loading, localState.state.membersLoading, membersMap, localState.state.membersList, userReadCount, unityPercentage, isOwner, language, userGroups, unityModalData]);
+  }), [groupId, userData, groupData, messages, loading, localState.state.membersLoading, membersMap, localState.state.membersList, userReadCount, unityPercentage, isOwner, language, userGroups, unityModalData, messagesLoaded]);
 
   const messageActionsValue = useMemo<ChatMessageActionsContextType>(() => ({
     handleSendMessage, handleSaveEdit, handleConfirmDeleteMessage, handleToggleReaction,

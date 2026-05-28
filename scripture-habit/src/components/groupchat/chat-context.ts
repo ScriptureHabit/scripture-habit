@@ -18,6 +18,7 @@ export interface ChatDataContextType {
   isOwner: boolean;
   language: string;
   userGroups: Group[];
+  messagesLoaded: boolean;
 
   unityModalData: {
     posted: { id: string; nickname: string }[];

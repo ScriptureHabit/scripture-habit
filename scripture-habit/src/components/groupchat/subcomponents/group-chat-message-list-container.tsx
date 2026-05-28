@@ -3,7 +3,7 @@ import GroupChatMessageList from './group-chat-message-list';
 import { useChatData, useChatUIActions } from '../hooks/use-chat-context';
 
 const GroupChatMessageListContainer: FC = () => {
-  const { messages, loading } = useChatData();
+  const { messages, groupId, messagesLoaded } = useChatData();
   const { 
     containerRef, previousScrollHeightRef, 
     previousScrollTopRef, loadMoreOlderMessages,
@@ -13,6 +13,12 @@ const GroupChatMessageListContainer: FC = () => {
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [isVisible, setIsVisible] = useState(false);
   const scrollAtBottomRef = useRef(true);
+
+  // Reset initial load and visibility state when the group ID changes
+  useEffect(() => {
+    setIsInitialLoad(true);
+    setIsVisible(false);
+  }, [groupId]);
 
   // Keep track if user was at bottom before messages update
   useLayoutEffect(() => {
@@ -36,7 +42,7 @@ const GroupChatMessageListContainer: FC = () => {
         requestAnimationFrame(() => {
           setIsVisible(true);
         });
-      } else if (!loading) {
+      } else if (messagesLoaded) {
         // Even if there are no messages, show the empty chat placeholder once initial loading is done
         setIsInitialLoad(false);
         setIsVisible(true);
@@ -44,7 +50,7 @@ const GroupChatMessageListContainer: FC = () => {
     } else if (scrollAtBottomRef.current) {
       container.scrollTop = container.scrollHeight;
     }
-  }, [messages, isInitialLoad, loading, containerRef]);
+  }, [messages, isInitialLoad, messagesLoaded, containerRef]);
 
   // Handle loading older messages
   useEffect(() => {
@@ -74,7 +80,7 @@ const GroupChatMessageListContainer: FC = () => {
           </div>
         )}
         
-        {messages.length === 0 && !loading && (
+        {messages.length === 0 && messagesLoaded && (
           <div className="empty-chat">
             <p>No messages yet. Start the conversation!</p>
           </div>
