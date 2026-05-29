@@ -15,7 +15,7 @@ test.describe('Auth & Onboarding Flow', () => {
 
   test('should navigate from landing to signup via welcome page', async ({ page }) => {
     // 1. Landing Page
-    await expect(page.getByText('Where Scripture Study Becomes a Habit of Joy')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Scripture Habit', level: 1 })).toBeVisible();
     const ctaButton = page.getByRole('button', { name: 'Start Now' });
     await ctaButton.click();
 
