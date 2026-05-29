@@ -93,29 +93,29 @@ sequenceDiagram
 
 ```mermaid
 flowchart TD
-    Start([1. ノート投稿リクエスト]) --> GetTZ[2. ユーザーの所属タイムゾーンを特定<br/>デフォルト: UTC]
-    GetTZ --> FormatDates[3. 現在のタイムスタンプ now を<br/>Intl.DateTimeFormat で今日・昨日の日付文字列に変換<br/>例: 'YYYY-MM-DD']
+    Start(["1. ノート投稿リクエスト"]) --> GetTZ["2. ユーザーの所属タイムゾーンを特定<br/>デフォルト: UTC"]
+    GetTZ --> FormatDates["3. 現在のタイムスタンプ now を<br/>Intl.DateTimeFormat で今日・昨日の日付文字列に変換<br/>例: 'YYYY-MM-DD'"]
     
-    FormatDates --> CheckSameDay{4. 最終投稿日付 lastPostDate<br/>は 今日 と一致するか？}
+    FormatDates --> CheckSameDay{"4. 最終投稿日付 lastPostDate<br/>は 今日 と一致するか？"}
     
-    CheckSameDay -- はい (同日の連投) --> ReturnNoChange([5. ストリーク数を維持<br/>streakUpdated: false])
+    CheckSameDay -- "はい (同日の連投)" --> ReturnNoChange(["5. ストリーク数を維持<br/>streakUpdated: false"])
     
-    CheckSameDay -- いいえ (新規の日) --> CheckFirstPost{6. 初めての投稿<br/>(lastPostDate が空) か？}
+    CheckSameDay -- "いいえ (新規の日)" --> CheckFirstPost{"6. 初めての投稿<br/>(lastPostDate が空) か？"}
     
-    CheckFirstPost -- はい (初回) --> ResetToOne([7. ストリーク数を 1 に設定<br/>streakUpdated: true])
+    CheckFirstPost -- "はい (初回)" --> ResetToOne(["7. ストリーク数を 1 に設定<br/>streakUpdated: true"])
     
-    CheckFirstPost -- いいえ (過去履歴あり) --> CalcHours[8. 最終投稿日時 lastPostAt から<br/>現在時刻までの経過時間 hoursSinceLastPost を算出]
+    CheckFirstPost -- "いいえ (過去履歴あり)" --> CalcHours["8. 最終投稿日時 lastPostAt から<br/>現在時刻までの経過時間 hoursSinceLastPost を算出"]
     
-    CalcHours --> EvalContinuity{9. 継続条件判定<br/>最終投稿が 昨日 であるか？<br/>または<br/>経過時間が 36時間以内 か？}
+    CalcHours --> EvalContinuity{"9. 継続条件判定<br/>最終投稿が 昨日 であるか？<br/>または<br/>経過時間が 36時間以内 か？"}
     
-    EvalContinuity -- はい (継続成功) --> IncrementStreak([10. ストリーク数 + 1<br/>isConsecutive: true])
-    EvalContinuity -- いいえ (継続途絶) --> ResetToOne
+    EvalContinuity -- "はい (継続成功)" --> IncrementStreak(["10. ストリーク数 + 1<br/>isConsecutive: true"])
+    EvalContinuity -- "いいえ (継続途絶)" --> ResetToOne
     
-    IncrementStreak --> EvalHighest{11. 新ストリークが<br/>過去最高 highestStreak を超えたか？}
+    IncrementStreak --> EvalHighest{"11. 新ストリークが<br/>過去最高 highestStreak を超えたか？"}
     ResetToOne --> EvalHighest
     
-    EvalHighest -- はい --> UpdateHighest[12. 過去最高最高記録を更新]
-    EvalHighest -- いいえ --> End[13. 新しいストリーク状態を出力]
+    EvalHighest -- "はい" --> UpdateHighest["12. 過去最高最高記録を更新"]
+    EvalHighest -- "いいえ" --> End["13. 新しいストリーク状態を出力"]
     UpdateHighest --> End
 ```
 
