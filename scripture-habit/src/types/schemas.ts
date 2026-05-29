@@ -33,6 +33,7 @@ export const ReactionSchema = z.object({
 export const MessageTypeSchema = z.enum([
   'text', 
   'streakAnnouncement', 
+  'notePostedAnnouncement',
   'studyNote', 
   'system', 
   'userJoined', 

@@ -31,7 +31,28 @@ describe('i18n - translation utilities', () => {
             expect(resultEn).toBe('🎉🎉🎉 **John achieved a milestone of 5 cumulative study days! Let\'s celebrate!** 🎉🎉🎉');
 
             const resultJa = t('ja', 'notifications.streak_announcement', { nickname: '田中', streak: 12 });
-            expect(resultJa).toBe('🎉🎉🎉 **田中さんが累計12日目のノート投稿を達成しました！みんなでお祝いしましょう！** 🎉🎉🎉');
+            expect(resultJa).toBe('🎉🎉🎉 **田中さんが合計12日目のノート投稿を達成しました！みんなでお祝いしましょう！** 🎉🎉🎉');
+        });
+
+        it('should translate note_posted_announcement correctly for all 10 supported languages', () => {
+            const testNickname = 'TestUser';
+            const expectedTranslations: Record<string, string> = {
+                en: '**TestUser posted a note!!**',
+                ja: '**TestUserさんがノートを投稿しました！！**',
+                es: '**¡TestUser publicó una nota!!**',
+                ko: '**TestUser님이 노트를 게시했습니다!!**',
+                pt: '**TestUser postou uma nota!!**',
+                sw: '**TestUser amechapisha dokezo!!**',
+                th: '**TestUser โพสต์บันทึกแล้ว!!**',
+                tl: '**Nag-post si TestUser ng isang tala!!**',
+                vi: '**TestUser đã đăng một ghi chú!!**',
+                zho: '**TestUser 發布了一則筆記！！**'
+            };
+
+            for (const [lang, expected] of Object.entries(expectedTranslations)) {
+                const result = t(lang, 'notifications.note_posted_announcement', { nickname: testNickname });
+                expect(result).toBe(expected);
+            }
         });
 
         it('should fall back to en bundle when translating in non-en and key is missing', () => {
@@ -89,6 +110,53 @@ describe('i18n - translation utilities', () => {
             const resultUnsupported = tArray('xyz', 'notifications.cheer_options');
             expect(resultUnsupported).toBeInstanceOf(Array);
             expect(resultUnsupported.length).toBe(3);
+        });
+    });
+
+    describe('Streak Announcement & Note Posted Announcement logic based on days', () => {
+        const isMilestone = (days: number): boolean => {
+            const fixedMilestones = [3, 7, 10, 21, 30, 50, 100];
+            if (fixedMilestones.includes(days)) return true;
+            if (days > 100 && days % 50 === 0) return true;
+            return false;
+        };
+
+        const getAnnounceMessage = (lang: string, nickname: string, days: number): string => {
+            const isMs = isMilestone(days);
+            return isMs
+                ? t(lang, 'notifications.streak_announcement', { nickname, streak: days })
+                : t(lang, 'notifications.note_posted_announcement', { nickname });
+        };
+
+        it('should correctly select streakAnnouncement for milestone days and notePostedAnnouncement for other days (Japanese)', () => {
+            const nickname = '山田';
+
+            // Milestone days: 3, 7, 10, 21, 30, 50, 100, 150, 200, 250
+            expect(getAnnounceMessage('ja', nickname, 3)).toContain('山田さんが合計3日目のノート投稿を達成しました！');
+            expect(getAnnounceMessage('ja', nickname, 7)).toContain('山田さんが合計7日目のノート投稿を達成しました！');
+            expect(getAnnounceMessage('ja', nickname, 100)).toContain('山田さんが合計100日目のノート投稿を達成しました！');
+            expect(getAnnounceMessage('ja', nickname, 150)).toContain('山田さんが合計150日目のノート投稿を達成しました！');
+            expect(getAnnounceMessage('ja', nickname, 200)).toContain('山田さんが合計200日目のノート投稿を達成しました！');
+
+            // Non-milestone days: 1, 2, 4, 5, 6, 8, 9, 101, 149
+            expect(getAnnounceMessage('ja', nickname, 1)).toBe('**山田さんがノートを投稿しました！！**');
+            expect(getAnnounceMessage('ja', nickname, 2)).toBe('**山田さんがノートを投稿しました！！**');
+            expect(getAnnounceMessage('ja', nickname, 4)).toBe('**山田さんがノートを投稿しました！！**');
+            expect(getAnnounceMessage('ja', nickname, 101)).toBe('**山田さんがノートを投稿しました！！**');
+            expect(getAnnounceMessage('ja', nickname, 149)).toBe('**山田さんがノートを投稿しました！！**');
+        });
+
+        it('should correctly select streakAnnouncement for milestone days and notePostedAnnouncement for other days (English)', () => {
+            const nickname = 'Alice';
+
+            // Milestone days
+            expect(getAnnounceMessage('en', nickname, 3)).toContain('Alice achieved a milestone of 3 cumulative study days!');
+            expect(getAnnounceMessage('en', nickname, 100)).toContain('Alice achieved a milestone of 100 cumulative study days!');
+            expect(getAnnounceMessage('en', nickname, 250)).toContain('Alice achieved a milestone of 250 cumulative study days!');
+
+            // Non-milestone days
+            expect(getAnnounceMessage('en', nickname, 2)).toBe('**Alice posted a note!!**');
+            expect(getAnnounceMessage('en', nickname, 101)).toBe('**Alice posted a note!!**');
         });
     });
 });

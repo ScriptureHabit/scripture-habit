@@ -25,6 +25,13 @@ const SystemMessage: FC<SystemMessageProps> = ({ msg, t, kickThreshold = 3 }) =>
       return text;
     }
 
+    if (msg.messageType === 'notePostedAnnouncement' && msg.messageData) {
+      const data = msg.messageData;
+      return t('groupChat.notePostedAnnouncement', {
+        nickname: String(data.nickname || '')
+      });
+    }
+
     if (msg.messageType === 'userJoined' && msg.messageData) {
       const data = msg.messageData;
       return t('groupChat.userJoined', {

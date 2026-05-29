@@ -25,6 +25,7 @@ export interface Reaction {
 export type MessageType = 
   | 'text' 
   | 'streakAnnouncement' 
+  | 'notePostedAnnouncement'
   | 'studyNote' 
   | 'system' 
   | 'userJoined' 

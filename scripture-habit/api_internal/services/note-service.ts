@@ -254,9 +254,12 @@ export class NoteService {
                     return false;
                 };
 
-                if (streakUpdated && isMilestone(newCumulative)) {
+                if (streakUpdated) {
                     const safeNickname = this.escapeMarkdown(userNickname);
-                    const announceMsg = t(language || 'en', 'notifications.streak_announcement', { nickname: safeNickname, streak: newCumulative });
+                    const isMs = isMilestone(newCumulative);
+                    const announceMsg = isMs
+                        ? t(language || 'en', 'notifications.streak_announcement', { nickname: safeNickname, streak: newCumulative })
+                        : t(language || 'en', 'notifications.note_posted_announcement', { nickname: safeNickname });
                     const botName = t(language || 'en', 'notifications.bot_name');
                     const announceTime = admin.firestore.Timestamp.fromMillis(now.getTime() + 1000);
 
@@ -270,9 +273,11 @@ export class NoteService {
                             senderNickname: botName,
                             createdAt: announceTime,
                             isSystemMessage: true,
-                            type: 'streakAnnouncement',
-                            messageType: 'streakAnnouncement',
-                            messageData: { nickname: userNickname, userId: uid, streakCount: newCumulative, isCumulative: true }
+                            type: isMs ? 'streakAnnouncement' : 'notePostedAnnouncement',
+                            messageType: isMs ? 'streakAnnouncement' : 'notePostedAnnouncement',
+                            messageData: isMs
+                                ? { nickname: userNickname, userId: uid, streakCount: newCumulative, isCumulative: true }
+                                : { nickname: userNickname, userId: uid }
                         };
 
                         transaction.set(msgRef, announceMsgData);
