@@ -68,6 +68,38 @@ All non-blocking calculations, push notification sweeps, and daily activity rese
 
 ---
 
+## 📊 Firestore Operation Cost Audit (Post Note)
+
+To maintain budget predictability and audit Firestore read/write patterns, here is the exact theoretical operation breakdown when a user posts a single study note to **one group** (assuming a group size of 5 members; 1 sender + 4 recipients):
+
+### 1. Writes (Total: 8 Operations)
+
+#### Transactional Writes (7 Writes)
+1.  **User Profile Update (`/users/{uid}`)**: Increments `totalNotes` and updates `lastPostAt` & streak info.
+2.  **Personal Note Creation (`/users/{uid}/notes/{noteId}`)**: Creates the master note archive.
+3.  **Chat Message Creation (`/groups/{gid}/messages/{messageId}`)**: Adds the chat display message.
+4.  **Group Stats Update (`/groups/{gid}`)**: Atomic increment of message/note counters.
+5.  **Member Subcollection Update (`/groups/{gid}/members/{uid}`)**: Updates active stats for the poster.
+6.  **User GroupState Update (`/users/{uid}/groupStates/{gid}`)**: Syncs user read-state counters.
+7.  **Latest Messages Cache (`/groups/{gid}/messages_latest/latest`)**: Materializes the latest 25 messages.
+
+#### Asynchronous Background Writes (1 Write)
+8.  **Group Unity Update (`/groups/{gid}`)**: Async write to update `dailyActivity` and `unityPercentage`.
+
+*(Note: Achieving a cumulative study milestone triggers 1 additional transactional write to insert a System Announcement message).*
+
+### 2. Reads (Total: 7 Operations)
+
+#### Transactional Reads (2 Reads)
+1.  **User Profile Lookup (`/users/{uid}`)**: Required for streak and level calculation.
+2.  **Latest Message Cache Lookup (`/groups/{gid}/messages_latest/latest`)**: Required to append the message to the cached view.
+
+#### Asynchronous Background Reads (5 Reads)
+3.  **Group Metadata Lookup (`/groups/{gid}`)**: Fetches members to determine notification recipients.
+4.  **Recipient FCM Tokens & Locale Lookup (`/users/{memberUid}`) × 4 Reads**: Fetches FCM tokens for the 4 other group members to deliver push notifications.
+
+---
+
 ## 🏆 Level Calculation & UI Optimization
 
 The user's level is calculated using this formula:

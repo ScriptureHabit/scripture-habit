@@ -165,6 +165,30 @@ To guarantee eventual data integrity and absolute self-healing:
 * **`reconcileLatestMessages(groupId)`**: A transaction-safe method compares the `/messages_latest/latest` array against the actual physical latest 25 messages in the `/messages` subcollection. If any discrepancy (mismatched ID, length, or order) is detected, the aggregate document is automatically overwritten and self-healed.
 * **Cron Sync Loop**: This self-healing function is integrated into the hourly cron sync `/aggregate-message-counts` for both active priority groups and maintenance stale recalculations, ensuring background data auto-healing without user intervention.
 
+### 4.4 Group Chat Read Count Operation Cost Audit
+
+To audit and optimize read cost when a user opens and interacts with a group chat, the system utilizes a hybrid model of **static bundles** and **materialized listeners**:
+
+#### Scenario A: Initial Chat Room Entry (History Loading)
+When a user opens a group chat, instead of performing multiple document reads for individual messages, the application requests an optimized Firestore Bundle via `/api/groups/bundle/:groupId`.
+
+*   **CDN/Server Cache Hit (Within 30–60s of another member opening the chat)**:
+    *   **Firestore Reads: 0 Reads** (Fully served from Edge CDN cache or in-memory server cache. 100% Free).
+*   **Cache Miss (First time loaded after expiration)**:
+    *   **Firestore Reads: ~26 Reads**
+        *   1 Read: `/groups/{groupId}` (to verify user membership).
+        *   25 Reads: `/groups/{groupId}/messages` (ordered by `createdAt` desc, limited to 25 items).
+        *   *(Note: Once fetched, this bundle is cached globally, saving reads for all other users entering the chat).*
+
+#### Scenario B: Active Chat Sync (Real-time Listening)
+Once the initial history is loaded, the client attaches an `onSnapshot` listener to the single materialized aggregate document: `/groups/{groupId}/messages_latest/latest`.
+
+*   **On Initial Listening Attachment**:
+    *   **Firestore Reads: 1 Read** (to fetch the aggregate messages array).
+*   **When any new message/note is posted or edited by anyone in the group**:
+    *   **Firestore Reads: 1 Read** per update (triggered by the modified `latest` snapshot).
+    *   *(Note: Listening to the chat stream has an O(1) operational cost. Even if a group has 50 active members posting notes simultaneously, clients pay only 1 read per update, bypassing expensive message collection queries).*
+
 ---
 
 ## 5. Firestore Read Optimization & Telemetry Audit System
