@@ -27,9 +27,9 @@ export default {
                 card2Text: "Sa pamamagitan ng pagbibigay ng banayad na suporta sa isa't isa at pagsulat ng mga simpleng kaisipan araw-araw, natural na nagiging ugali ang pag-aaral."
             },
             steps: {
-                title: "Napakasimpleng gamitin ng Scripture Habit",
-                step1Title: "1. Sumali sa isang Grupo",
-                step1Desc: "Sumali sa isang grupo na tumutugma sa iyong mga layunin sa pag-aaral, tulad ng Aklat ni Mormon, Bagong Tipan, o Pumarito Ka, Sumunod Ka sa Akin.",
+                title: "Paano Gamitin",
+                step1Title: "1. Gumawa ng Grupo",
+                step1Desc: "Subukang gumawa ng grupo kasama ang mga kaibigan, kapareha, pamilya, katrabaho, o sinumang nais mong makasama sa pag-aaral ng banal na kasulatan.",
                 step2Title: "2. Ibahagi ang lyong Kaisipan",
                 step2Desc: "Mag-post ng maikling tala tungkol sa kung ano ang nakaantig sa iyong puso o sa iyong pang-araw-araw na pananaw upang ibahagi sa mga kaibigan.",
                 step3Title: "3. Magpalakasan at Magnilay",
@@ -102,9 +102,9 @@ export default {
                     q1: "Paano ako makakapagpatuloy sa pag-aaral ng banal na kasulatan?",
                     a1: "Mahalagang maglaan ng oras upang pag-aralan ang mga banal na kasulatan minsan sa isang araw at ibahagi ang iyong natutunan. Patuloy nating gawin ang ating makakaya nang paunti-unti habang hinihikayat ang isa't isa sa Scripture Habit!",
                     q2: "Opisyal bang app ng Simbahan ito?",
-                    a2: "Hindi ito opisyal, kundi personal na proyektong hindi pangkalakal na nilikha upang suportahan ang mga nagbabasa ng banal na kasulatan.",
-                    q3: "Maaari ko ba itong gamitin para sa pag-aaral ng Biblia?",
-                    a3: "Oo, handa na ang app para sa anumang pag-aaral ng banal na kasulatan na pinahahalagahan mo, kasama ang Biblia at ang Aklat ni Mormon."
+                    a2: "Ang web app na ito ay hindi opisyal na software ng Ang Simbahan ni Jesucristo ng mga Banal sa mga Huling Araw, kundi isang non-profit na tool na personal na binuo upang suportahan ang pag-aaral ng banal na kasulatan. Hindi kami nagpapakita ng mga ad, nagbebenta ng data, o naniningil sa mga user—ganap itong libre para magamit ng sinuman.",
+                    q3: "Suportado ba nito ang Liahona at Pangkalahatang Kumperensya?",
+                    a3: "Oo. Bukod sa mga karaniwang akda (Standard Works), maaari mo ring ibahagi ang iyong mga pananaw at natutunan mula sa Liahona at Pangkalahatang Kumperensya."
                 }
             }
         },

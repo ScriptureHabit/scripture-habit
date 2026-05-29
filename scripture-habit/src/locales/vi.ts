@@ -6,18 +6,18 @@ export default {
         dismiss: "Bỏ qua"
     },
         seo: {
-            title: "Scripture Habit | Công cụ Cộng đồng & Nghiên cứu Thánh thư",
+            title: "Scripture Habit",
             description: "Xây dựng thói quen học thánh thư hàng ngày cùng bạn bè. Được tối ưu hóa để nghiên cứu Kinh Thánh, Sách Mặc Môn và Hãy Đi Theo Ta. Công cụ tốt nhất để biến việc học Phúc âm thành thói quen vui vẻ hàng ngày."
         },
         landing: {
             hero: {
-                title: "Nơi việc học Thánh thư trở thành niềm vui mỗi ngày",
-                subtitle: "Cùng bạn bè đọc thánh thư và chia sẻ những cảm nhận chân thành để mỗi ngày học tập đều tràn đầy niềm vui.",
+                title: "Scripture Habit",
+                subtitle: "Một công cụ hỗ trợ học thánh thư phi lợi nhuận do Anh Cả Daijiro Sagane, một thành viên Giáo hội tại Nhật Bản, tự mình phát triển. Chúng tôi không hiển thị quảng cáo, không bán dữ liệu hay thu bất kỳ khoản phí nào từ người dùng—hoàn toàn miễn phí cho mọi người sử dụng.",
                 cta: "Bắt đầu ngay",
                 mascotBubble: "Xin chào! Chúng mình cùng nhau đọc thánh thư nhé! ✨"
             },
             concept: {
-                title: "Tự mình duy trì đọc thánh thư mỗi ngày đôi khi thật không dễ dàng.",
+                title: "Thật khó để tiếp tục một mình, phải không?",
                 subtitle: "Đồng hành cùng những người bạn có chung mục tiêu là cách đơn giản nhất để tạo dựng một thói quen bền lâu.",
                 problemBadge: "Khó duy trì",
                 solutionBadge: "Vui vẻ & Dễ dàng!",
@@ -27,9 +27,9 @@ export default {
                 card2Text: "Khi nhẹ nhàng khích lệ lẫn nhau và viết ra những suy nghĩ nhỏ mỗi ngày, việc học sẽ tự nhiên trở thành thói quen."
             },
             steps: {
-                title: "Cách sử dụng Scripture Habit vô cùng đơn giản",
-                step1Title: "1. Tham gia một nhóm",
-                step1Desc: "Tham gia một nhóm phù hợp với mục tiêu học thánh thư của bạn, như Sách Mặc Môn hoặc Tân Ước.",
+                title: "Cách sử dụng",
+                step1Title: "1. Tạo một nhóm",
+                step1Desc: "Hãy thử tạo một nhóm với bạn bè, người yêu, gia đình, đồng nghiệp hoặc bất kỳ ai bạn muốn cùng học tập thánh thư.",
                 step2Title: "2. Chia sẻ điều bạn nhận ra",
                 step2Desc: "Chia sẻ một ghi chú ngắn về điều chạm đến trái tim bạn hoặc điều bạn nhận ra khi học thánh thư."
             },
@@ -100,9 +100,9 @@ export default {
                     q1: "Làm sao tôi có thể tiếp tục học thánh thư?",
                     a1: "Việc dành thời gian nghiên cứu thánh thư mỗi ngày một lần và chia sẻ những gì bạn đã học được là rất quan trọng. Chúng ta hãy cùng nhau cố gắng từng chút một và khích lệ lẫn nhau trên Scripture Habit nhé!",
                     q2: "Đây có phải là ứng dụng chính thức của Giáo hội không?",
-                    a2: "Không, đây không phải ứng dụng chính thức, mà là công cụ phi lợi nhuận được xây dựng cá nhân để hỗ trợ thành viên và người học thánh thư.",
-                    q3: "Tôi có thể dùng nó để học Kinh Thánh không?",
-                    a3: "Có, app sẵn sàng cho bất kỳ nghiên cứu thánh thư nào bạn trân trọng, bao gồm Kinh Thánh và Sách Mặc Môn."
+                    a2: "Ứng dụng web này không phải là ứng dụng chính thức của Giáo Hội Các Thánh Hữu Ngày Sau của Chúa Giê-su Ki-tô, mà là một công cụ phi lợi nhuận được phát triển cá nhân để hỗ trợ học thánh thư. Chúng tôi không hiển thị quảng cáo, không bán dữ liệu hay thu bất kỳ khoản phí nào từ người dùng—hoàn toàn miễn phí cho mọi người sử dụng.",
+                    q3: "Ứng dụng có hỗ trợ Liahona và Đại Hội Trung Ương không?",
+                    a3: "Có. Ngoài các tác phẩm tiêu chuẩn, bạn cũng có thể chia sẻ những suy nghĩ và điều học hỏi được từ Liahona và Đại Hội Trung Ương."
                 }
             }
         },

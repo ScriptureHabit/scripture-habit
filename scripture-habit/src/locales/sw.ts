@@ -11,13 +11,13 @@ export default {
         },
         landing: {
             hero: {
-                title: "Ambapo Mafunzo ya Maandiko Yanakuwa Tabia ya Furaha kila Siku",
-                subtitle: "Soma maandiko pamoja na marafiki na ushiriki tafakari zako ili kufanya mafunzo ya kila siku kuwa ya kufurahisha zaidi.",
+                title: "Scripture Habit",
+                subtitle: "Zana isiyo ya kibiashara ya kusaidia kujifunza maandiko iliyotengenezwa binafsi na Ndugu Daijiro Sagane, muumini wa Kanisa nchini Japani. Hatuonyeshi matangazo, hatuuzi data, wala kuwatoza watumiaji malipo yoyote—ni bure kabisa kwa kila mtu kuitumia.",
                 cta: "Anza Sasa",
                 mascotBubble: "Habari! Tuanze kusoma maandiko pamoja! ✨"
             },
             concept: {
-                title: "Kusoma maandiko peke yako kila siku wakati mwingine inaweza kuwa vigumu sana.",
+                title: "Ni vigumu kuendelea peke yako, sivyo?",
                 subtitle: "Kujiunga na kikundi chenye malengo sawa ndiyo njia rahisi zaidi ya kujenga tabia ya kudumu.",
                 problemBadge: "Vigumu Kuendelea",
                 solutionBadge: "Rahisi & Furaha!",
@@ -27,9 +27,9 @@ export default {
                 card2Text: "Kwa kutiana moyo kwa upole na kuandika mawazo madogo kila siku, kujifunza kunakuwa tabia ya kawaida."
             },
             steps: {
-                title: "Jinsi ya kutumia Scripture Habit ni rahisi sana",
-                step1Title: "1. Jiunge na Kikundi",
-                step1Desc: "Jiunge na kikundi kinacholingana na malengo yako ya kusoma maandiko, kama Kitabu cha Mormoni au Agano Jipya.",
+                title: "Jinsi ya kutumia",
+                step1Title: "1. Anzisha Kikundi",
+                step1Desc: "Jaribu kuanzisha kikundi na marafiki, wapenzi, familia, wafanyakazi wenzako, au mtu yeyote ambaye ungependa kusoma naye maandiko.",
                 step2Title: "2. Shiriki ulichokiona",
                 step2Desc: "Shiriki dokezo fupi kuhusu kilichogusa moyo wako au ulichokiona wakati wa kusoma maandiko."
             },
@@ -100,9 +100,9 @@ export default {
                     q1: "Ninawezaje kuendelea kusoma maandiko?",
                     a1: "Ni muhimu kutenga muda wa kujifunza maandiko mara moja kwa siku na kushiriki yale uliyojifunza. Tuendelee kufanya uwezo wetu kidogo kidogo huku tukitiana moyo kwenye Scripture Habit!",
                     q2: "Je, hii ni programu rasmi ya Kanisa?",
-                    a2: "Hii si programu rasmi, bali ni chombo kisicho cha faida kilichotengenezwa kwa binafsi kusaidia wanachama na wote wanaosoma maandiko.",
-                    q3: "Naweza kuitumia kwa masomo ya Biblia?",
-                    a3: "Ndiyo, inasaidia kwa kamili masomo yoyote ya maandiko unayoyathamini, ikiwa ni pamoja na Kitabu cha Mormoni na Agano Jipya."
+                    a2: "Programu hii ya wavuti si rasmi ya Kanisa la Yesu Kristo la Waumini wa Siku za Mwisho, bali ni zana isiyo ya kibiashara iliyotengenezwa binafsi kusaidia kujifunza maandiko. Hatuonyeshi matangazo, hatuuzi data, wala kuwatoza watumiaji malipo yoyote—ni bure kabisa kwa kila mtu kuitumia.",
+                    q3: "Je, inasaidia Liahona na Mkutano Mkuu?",
+                    a3: "Ndiyo. Kando na Vitabu Vya Kimsingi, unaweza pia kushiriki tafakari na yale uliyojifunza kutoka Liahona na Mkutano Mkuu."
                 }
             }
         },

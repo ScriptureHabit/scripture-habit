@@ -6,18 +6,18 @@ export default {
         dismiss: "Descartar"
     },
         seo: {
-            title: "Scripture Habit | Herramienta de Comunidad y Estudio de las Escrituras",
+            title: "Scripture Habit",
             description: "Crea un hábito diario de estudio de las escrituras con amigos. Optimizado para estudiar la Biblia, el Libro de Mormón y Ven, sígueme. La mejor herramienta para convertir el estudio del Evangelio en una rutina diaria alegre."
         },
         landing: {
             hero: {
-                title: "Donde el Estudio de las Escrituras se Convierte en un Hábito de Alegría",
-                subtitle: "Lee las escrituras con amigos y comparte tus reflexiones para hacer del aprendizaje diario algo hermoso.",
+                title: "Scripture Habit",
+                subtitle: "Una herramienta de apoyo para el estudio de las Escrituras, sin fines de lucro, desarrollada personalmente por el hermano Daijiro Sagane, un miembro de la Iglesia en Japón. No mostramos anuncios, no vendemos datos ni cobramos nada a los usuarios: es completamente gratuita para todos.",
                 cta: "Comenzar ahora",
                 mascotBubble: "¡Hola! ¡Comencemos a leer las escrituras juntos! ✨"
             },
             concept: {
-                title: "Puede ser un poco difícil seguir estudiando las escrituras tú solo.",
+                title: "Es difícil seguir adelante solo, ¿verdad?",
                 subtitle: "Estar en un grupo con personas que comparten el mismo objetivo es el camino más directo para formar un hábito.",
                 problemBadge: "Difícil de continuar",
                 solutionBadge: "¡Fácil y divertido!",
@@ -27,9 +27,9 @@ export default {
                 card2Text: "Cuando todos se alientan con cariño y convierten lo que notan en palabras, estudiar se convierte en un hábito natural."
             },
             steps: {
-                title: "Cómo usar Scripture Habit es muy sencillo",
-                step1Title: "1. Únete a un grupo",
-                step1Desc: "Únete a un grupo que coincida con tus metas de estudio de las escrituras, como el Libro de Mormón o el Nuevo Testamento.",
+                title: "Cómo usar",
+                step1Title: "1. Crear un grupo",
+                step1Desc: "Intenta crear un grupo con amigos, pareja, familia, compañeros de trabajo o cualquier otra persona con la que quieras estudiar las Escrituras.",
                 step2Title: "2. Comparte lo que notaste",
                 step2Desc: "Comparte una nota corta sobre lo que tocó tu corazón o lo que notaste durante el estudio de las escrituras."
             },
@@ -100,9 +100,9 @@ export default {
                     q1: "¿Cómo puedo seguir estudiando las escrituras?",
                     a1: "Es importante hacer tiempo para estudiar las escrituras una vez al día y compartir lo que has aprendido. ¡Sigamos dando lo mejor de nosotros poco a poco mientras nos animamos mutuamente en Scripture Habit!",
                     q2: "¿Es esta una aplicación oficial de la Iglesia?",
-                    a2: "Esta app no es oficial, pero es una herramienta sin fines de lucro desarrollada personalmente para apoyar a los miembros y a todos los estudiantes de las escrituras.",
-                    q3: "¿Puedo usarla para estudiar la Biblia?",
-                    a3: "Sí, es totalmente compatible con cualquier estudio de las escrituras que te importe, incluyendo el Libro de Mormón y el Nuevo Testamento."
+                    a2: "Esta aplicación web no es oficial de La Iglesia de Jesucristo de los Santos de los Últimos Días, sino una herramienta sin fines de lucro desarrollada personalmente para apoyar el estudio de las Escrituras. No mostramos anuncios, no vendemos datos ni cobramos nada a los usuarios: es completamente gratuita para todos.",
+                    q3: "¿Es compatible con la Liahona y la Conferencia General?",
+                    a3: "Sí. Además de los libros canónicos (obras normas), también puedes compartir lo que aprendas de la Liahona y de la Conferencia General."
                 }
             }
         },

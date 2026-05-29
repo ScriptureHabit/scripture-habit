@@ -27,9 +27,9 @@ export default {
                 card2Text: "Quando todos se incentivam com carinho e transformam o que notam em palavras, o estudo se torna um hábito natural."
             },
             steps: {
-                title: "Como usar o Scripture Habit é muito simples",
-                step1Title: "1. Entre em um grupo",
-                step1Desc: "Entre em um grupo que combine com suas metas de estudo das escrituras, como o Livro de Mórmon ou o Novo Testamento.",
+                title: "Como usar",
+                step1Title: "1. Criar um grupo",
+                step1Desc: "Tente criar um grupo com amigos, parceiros, familiares, colegas de trabalho ou qualquer pessoa com quem você queira estudar as escrituras.",
                 step2Title: "2. Compartilhe o que você notou",
                 step2Desc: "Compartilhe uma nota curta sobre o que tocou seu coração ou o que você notou ao estudar as escrituras."
             },
@@ -100,9 +100,9 @@ export default {
                     q1: "Como posso continuar estudando as escrituras?",
                     a1: "É importante reservar um tempo para estudar as escrituras uma vez por dia e compartilhar o que você aprendeu. Vamos continuar dando o nosso melhor pouco a pouco, incentivando uns aos outros no Scripture Habit!",
                     q2: "Este aplicativo é oficial da Igreja?",
-                    a2: "Este aplicativo não é oficial, mas é uma ferramenta sem fins lucrativos desenvolvida pessoalmente para apoiar membros e todos os estudantes das escrituras.",
-                    q3: "Posso usá-lo para estudar a Bíblia?",
-                    a3: "Sim, ele dá suporte total a qualquer estudo das escrituras que você valorize, incluindo o Livro de Mórmon e o Novo Testamento."
+                    a2: "Este aplicativo web não é oficial de A Igreja de Jesus Cristo dos Santos dos Últimos Dias, mas sim uma ferramenta sem fins lucrativos desenvolvida pessoalmente para apoiar o estudo das escrituras. Não exibimos anúncios, não vendemos dados nem cobramos nada dos usuários — é totalmente gratuita para todos.",
+                    q3: "É compatível com a Liahona e a Conferência Geral?",
+                    a3: "Sim. Além das obras padrão, você também pode compartilhar suas reflexões e o que aprendeu com A Liahona e a Conferência Geral."
                 }
             }
         },

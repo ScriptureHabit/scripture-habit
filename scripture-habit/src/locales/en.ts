@@ -6,7 +6,7 @@ export default {
             dismiss: "Dismiss"
         },
         seo: {
-            title: "Scripture Habit | Daily Scripture Study & Community Tool",
+            title: "Scripture Habit",
             description: "Build a daily scripture habit with friends. Optimized for studying the Bible, Book of Mormon, and more. The best tool to turn Gospel study into a joyful daily routine."
         },
         sidebar: {
@@ -755,13 +755,13 @@ export default {
         },
         landing: {
             hero: {
-                title: "Where Scripture Study Becomes a Habit of Joy",
-                subtitle: "Read the scriptures with friends and share your insights to make daily learning even more delightful.",
+                title: "Scripture Habit",
+                subtitle: "A non-profit scripture study support tool personally developed by Brother Daijiro Sagane, a church member in Japan. We do not display ads, sell data, or charge users anything—it is completely free for anyone to use.",
                 cta: "Start Now",
                 mascotBubble: "Hi there! Let's start reading the scriptures together! ✨"
             },
             concept: {
-                title: "Studying scripture alone can be a bit hard, can't it?",
+                title: "It's hard to keep going alone, isn't it?",
                 subtitle: "Placing yourself in a group with people who share the same goal is the best shortcut to build a habit.",
                 problemBadge: "Hard to keep going",
                 solutionBadge: "Fun to keep going!",
@@ -771,9 +771,9 @@ export default {
                 card2Text: "When everyone gently encourages each other and turns what they noticed into words, it becomes a natural habit."
             },
             steps: {
-                title: "How to use Scripture Habit is very simple",
-                step1Title: "1. Join a group",
-                step1Desc: "Join a group that matches your scripture goals, such as the Book of Mormon or the New Testament.",
+                title: "How to Use",
+                step1Title: "1. Create a Group",
+                step1Desc: "Try creating a group with friends, partners, family, coworkers, or anyone else you'd like to study the scriptures with.",
                 step2Title: "2. Share what you noticed",
                 step2Desc: "Share a short note about what touched your heart or what you noticed during scripture study."
             },
@@ -844,9 +844,9 @@ export default {
                     q1: "How can I keep scripture study going?",
                     a1: "It is important to make time to study the scriptures once a day and to share what you have learned. Let's keep doing our best little by little while encouraging each other on Scripture Habit.",
                     q2: "Is this app official Church software?",
-                    a2: "This app is not official, but it is a nonprofit tool developed personally to support members and all scripture learners.",
-                    q3: "Can I use it for Bible study?",
-                    a3: "Yes, it fully supports any scripture study you care about, including the Book of Mormon and the New Testament."
+                    a2: "This web application is not official software of The Church of Jesus Christ of Latter-day Saints, but it is a non-profit tool personally developed to support scripture study. We do not display ads, sell data, or charge users anything—it is completely free for anyone to use.",
+                    q3: "Does it support the Liahona and General Conference?",
+                    a3: "Yes. In addition to the Standard Works, you can also share your insights and learnings from the Liahona and General Conference."
                 }
             }
         }
