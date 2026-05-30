@@ -150,6 +150,10 @@ During a post, edit, reaction, or delete operation, the backend executes a trans
 
 This architecture ensures that all active listening clients receive real-time updates instantly through **0 database reads** (paying only for the single write performed by the poster).
 
+> [!TIP]
+> **New Group Creation Optimization (Cold Start Avoidance)**
+> When a group is newly created, the backend (`groups.ts`) pre-creates (seeds) the `messages_latest/latest` document containing the initial welcome system message. This guarantees that `messages_latest/latest` always exists when clients first access a new group, entirely eliminating historical `/messages` subcollection fallback queries (cold start) and keeping read efficiency at 100%.
+
 ### 4.2 Zero-Jitter UI Sorting (`clientTimestamp`)
 During Firestore server-timestamp resolution, there is a small period where `createdAt` resolves as `null` locally (during optimistic updates). If client clocks are out of sync, this causes "UI jumps" when the server snapshot returns.
 

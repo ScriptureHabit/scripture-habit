@@ -100,13 +100,22 @@ router.post('/create-group', authenticate, requireEmailVerified, verifyAppCheck,
             });
 
             const msgRef = groupRef.collection('messages').doc();
-            transaction.set(msgRef, {
+            const welcomeMsg = {
                 text: `🎨 **${userNick}** created the group! Welcome!`,
                 createdAt: now,
                 senderId: 'system',
                 isSystemMessage: true,
                 type: 'system',
                 messageType: 'system'
+            };
+            transaction.set(msgRef, welcomeMsg);
+
+            // Seed empty/initial latest messages aggregate to prevent frontend historical queries fallback
+            const latestRef = groupRef.collection('messages_latest').doc('latest');
+            transaction.set(latestRef, {
+                groupId: newGroupId,
+                messages: [{ id: msgRef.id, ...welcomeMsg }],
+                lastUpdatedAt: now
             });
 
             return { groupId: newGroupId, inviteCode };
