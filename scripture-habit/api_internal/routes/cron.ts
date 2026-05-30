@@ -686,4 +686,40 @@ router.all('/streak-warning', verifyCronSecret, async (_req: Request, res: Respo
     */
 });
 
+/**
+ * Get Daily Active Users for the past N days (Self-Healing Sync Endpoint)
+ */
+router.all('/daily-active-users', verifyCronSecret, async (req: Request, res: Response) => {
+    console.log('[Cron] Fetching daily active users...');
+    try {
+        const days = req.query.days ? parseInt(req.query.days as string, 10) : 180;
+        const now = new Date();
+        const cutoffDate = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
+        const cutoffStr = cutoffDate.toLocaleDateString('sv-SE', { timeZone: 'Asia/Tokyo' });
+
+        // Query dailyStats documents that are greater than or equal to the cutoff date string
+        const snapshot = await db.collection('dailyStats')
+            .where(admin.firestore.FieldPath.documentId(), '>=', cutoffStr)
+            .get();
+
+        const stats = snapshot.docs.map(doc => {
+            const data = doc.data();
+            const activeUsersArray = data.activeUsers || [];
+            return {
+                date: doc.id,
+                activeUsersCount: activeUsersArray.length
+            };
+        });
+
+        // Sort by date chronologically
+        stats.sort((a, b) => a.date.localeCompare(b.date));
+
+        res.json(stats);
+    } catch (err: unknown) {
+        const error = err as Error;
+        console.error('Error fetching daily active users:', error);
+        res.status(500).send('Error: ' + error.message);
+    }
+});
+
 export default router;

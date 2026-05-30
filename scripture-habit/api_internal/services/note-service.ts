@@ -245,6 +245,12 @@ export class NoteService {
                     searchTokens: buildNoteSearchTokens({ scripture, chapter, comment, title, speaker })
                 });
 
+                // Daily Active User Stats Write (Incremental Plan B)
+                const dailyStatsRef = db.collection('dailyStats').doc(today);
+                transaction.set(dailyStatsRef, {
+                    activeUsers: admin.firestore.FieldValue.arrayUnion(uid)
+                }, { merge: true });
+
                 // Streak / Cumulative Milestone Announcements
                 const newCumulative = (userData.daysStudiedCount || 0) + 1;
                 const isMilestone = (days: number): boolean => {
