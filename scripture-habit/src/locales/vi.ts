@@ -272,7 +272,7 @@ export default {
             replyingTo: "Đang trả lời",
             cancelReply: "Hủy trả lời",
             streakAnnouncement: "🎉🎉🎉 **{nickname} đã đạt cột mốc tích lũy {streak} ngày học tập! Hãy cùng chúc mừng nào!** 🎉🎉🎉",
-            notePostedAnnouncement: "**{nickname} đã đăng một ghi chú!!**",
+            notePostedAnnouncement: "🎉🎉🎉 **{nickname} đã đăng một ghi chú!!** 🎉🎉🎉",
             userJoined: "👋 **{nickname}** đã tham gia nhóm!",
             userLeft: "🚪 **{nickname}** đã rời nhóm.",
             deleteConfirmMessage: "Hành động này không thể hoàn tác. Tất cả tin nhắn và dữ liệu sẽ bị mất vĩnh viễn.",

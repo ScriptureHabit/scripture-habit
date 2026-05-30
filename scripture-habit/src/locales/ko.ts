@@ -289,7 +289,7 @@ export default {
             replyingTo: "답장 중",
             cancelReply: "답장 취소",
             streakAnnouncement: "🎉🎉🎉 **{nickname}님이 누적 학습 {streak}일의 마일스톤을 달성했습니다! 모두 함께 축하해주세요!** 🎉🎉🎉",
-            notePostedAnnouncement: "**{nickname}님이 노트를 게시했습니다!!**",
+            notePostedAnnouncement: "🎉🎉🎉 **{nickname}님이 노트를 게시했습니다!!** 🎉🎉🎉",
             userJoined: "👋 **{nickname}**님이 그룹에 참여했습니다!",
             userLeft: "🚪 **{nickname}**님이 그룹을 나갔습니다.",
             deleteConfirmMessage: "이 작업은 취소할 수 없습니다. 모든 메시지와 데이터가 영구적으로 손실됩니다.",

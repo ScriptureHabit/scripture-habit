@@ -1,7 +1,7 @@
 export default {
     notifications: {
         streak_announcement: "🎉🎉🎉 **¡{nickname} alcanzó un hito de {streak} días acumulados de estudio! ¡Celebrémoslo!** 🎉🎉🎉",
-        note_posted_announcement: "**¡{nickname} publicó una nota!!**",
+        note_posted_announcement: "🎉🎉🎉 **¡{nickname} publicó una nota!!** 🎉🎉🎉",
         note_posted_title: "📖 Estudio de las escrituras",
         note_posted_body: "¡{nickname} publicó una nota! ✨",
         cheer_options: [

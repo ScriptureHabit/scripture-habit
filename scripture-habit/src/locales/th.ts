@@ -290,7 +290,7 @@ export default {
             replyingTo: "กำลังตอบกลับ",
             cancelReply: "ยกเลิกการตอบกลับ",
             streakAnnouncement: "🎉🎉🎉 **{nickname} บรรลุหลักไมล์สะสมการเรียน {streak} วันแล้ว! มาร่วมยินดีกันเถอะ!** 🎉🎉🎉",
-            notePostedAnnouncement: "**{nickname} โพสต์บันทึกแล้ว!!**",
+            notePostedAnnouncement: "🎉🎉🎉 **{nickname} โพสต์บันทึกแล้ว!!** 🎉🎉🎉",
             userJoined: "👋 **{nickname}** เข้าร่วมกลุ่มแล้ว!",
             userLeft: "🚪 **{nickname}** ออกจากกลุ่มแล้ว",
             deleteConfirmMessage: "การดำเนินการนี้ไม่สามารถย้อนกลับได้ ข้อความและข้อมูลทั้งหมดจะสูญหายอย่างถาวร",

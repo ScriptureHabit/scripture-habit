@@ -289,7 +289,7 @@ export default {
             replyingTo: "Inajibu kwa",
             cancelReply: "Ghairi jibu",
             streakAnnouncement: "🎉🎉🎉 **{nickname} amefikia hatua muhimu ya siku {streak} za jumla za masomo! Tusherehekee!** 🎉🎉🎉",
-            notePostedAnnouncement: "**{nickname} amechapisha dokezo!!**",
+            notePostedAnnouncement: "🎉🎉🎉 **{nickname} amechapisha dokezo!!** 🎉🎉🎉",
             userJoined: "👋 **{nickname}** amejiunga na kikundi!",
             userLeft: "🚪 **{nickname}** ameondoka kwenye kikundi.",
             deleteConfirmMessage: "Hatua hii haiwezi kubatilishwa. Ujumbe na data zote zitapotea kabisa.",

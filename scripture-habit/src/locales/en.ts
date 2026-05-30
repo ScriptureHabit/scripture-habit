@@ -240,7 +240,7 @@ export default {
             replyingTo: "Replying to",
             cancelReply: "Cancel reply",
             streakAnnouncement: "🎉🎉🎉 **{nickname} achieved a milestone of {streak} cumulative study days! Let's celebrate!** 🎉🎉🎉",
-            notePostedAnnouncement: "**{nickname} posted a note!!**",
+            notePostedAnnouncement: "🎉🎉🎉 **{nickname} posted a note!!** 🎉🎉🎉",
             userJoined: "👋 **{nickname}** joined the group!",
             userLeft: "🚪 **{nickname}** left the group.",
             deleteConfirmMessage: "This action cannot be undone. All messages and data will be permanently lost.",

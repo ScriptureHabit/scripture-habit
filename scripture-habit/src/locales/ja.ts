@@ -193,7 +193,7 @@ export default {
             replyingTo: "返信中",
             cancelReply: "返信をキャンセル",
             streakAnnouncement: "🎉🎉🎉 **{nickname}さんが合計{streak}日目のノート投稿を達成しました！みんなでお祝いしましょう！** 🎉🎉🎉",
-            notePostedAnnouncement: "**{nickname}さんがノートを投稿しました！！**",
+            notePostedAnnouncement: "🎉🎉🎉 **{nickname}さんがノートを投稿しました！！** 🎉🎉🎉",
             userJoined: "👋 **{nickname}**さんがグループに参加しました！",
             userLeft: "🚪 **{nickname}**さんがグループを退会しました。",
             deleteConfirmMessage: "この操作は取り消せません。すべてのメッセージとデータが完全に失われます。",

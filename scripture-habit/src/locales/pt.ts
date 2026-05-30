@@ -289,7 +289,7 @@ export default {
             replyingTo: "Respondendo a",
             cancelReply: "Cancelar resposta",
             streakAnnouncement: "🎉🎉🎉 **{nickname} atingiu um marco de {streak} dias cumulativos de estudo! Vamos comemorar!** 🎉🎉🎉",
-            notePostedAnnouncement: "**{nickname} postou uma nota!!**",
+            notePostedAnnouncement: "🎉🎉🎉 **{nickname} postou uma nota!!** 🎉🎉🎉",
             userJoined: "👋 **{nickname}** entrou no grupo!",
             userLeft: "🚪 **{nickname}** saiu do grupo.",
             deleteConfirmMessage: "Esta ação não pode ser desfeita. Todas as mensagens e dados serão perdidos permanentemente.",
