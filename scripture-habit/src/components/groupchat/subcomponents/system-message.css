@@ -16,14 +16,15 @@
     text-align: center;
 }
 
-.message.system-message.streak-announcement p {
+.message.system-message.streak-announcement p,
+.message.system-message.note-posted-announcement p {
     background: rgba(255, 255, 255, 0.85);
     color: var(--gray);
     border: 1px solid rgba(0, 0, 0, 0.1);
     font-weight: 600;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     padding: 0.6rem 1.2rem;
-    animation: pulseCelebration 2s infinite ease-in-out;
+    animation: floatCelebration 3s infinite ease-in-out;
 }
 
 .message.system-message.unity-announcement p {
@@ -62,19 +63,19 @@
     }
 }
 
-@keyframes pulseCelebration {
+@keyframes floatCelebration {
     0% {
-        transform: scale(1);
+        transform: translateY(0) scale(1);
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     }
 
     50% {
-        transform: scale(1.02);
-        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+        transform: translateY(-4px) scale(1.015);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
     }
 
     100% {
-        transform: scale(1);
+        transform: translateY(0) scale(1);
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     }
 }

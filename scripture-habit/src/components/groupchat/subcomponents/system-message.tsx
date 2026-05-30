@@ -108,7 +108,7 @@ const SystemMessage: FC<SystemMessageProps> = ({ msg, t, kickThreshold = 3 }) =>
   };
 
   return (
-    <div id={`message-${msg.id}`} className={`message system-message ${msg.messageType === 'streakAnnouncement' ? 'streak-announcement' : ''} ${msg.messageType === 'unityAnnouncement' ? 'unity-announcement' : ''}`}>
+    <div id={`message-${msg.id}`} className={`message system-message ${msg.messageType === 'streakAnnouncement' ? 'streak-announcement' : ''} ${msg.messageType === 'notePostedAnnouncement' ? 'note-posted-announcement' : ''} ${msg.messageType === 'unityAnnouncement' ? 'unity-announcement' : ''}`}>
       <div className="message-content">
         {msg.messageType === 'unityAnnouncement' && (
           <div className="unity-announcement-body">
