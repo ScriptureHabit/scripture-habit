@@ -37,16 +37,16 @@ describe('i18n - translation utilities', () => {
         it('should translate note_posted_announcement correctly for all 10 supported languages', () => {
             const testNickname = 'TestUser';
             const expectedTranslations: Record<string, string> = {
-                en: '**TestUser posted a note!!**',
-                ja: '**TestUserさんがノートを投稿しました！！**',
-                es: '**¡TestUser publicó una nota!!**',
-                ko: '**TestUser님이 노트를 게시했습니다!!**',
-                pt: '**TestUser postou uma nota!!**',
-                sw: '**TestUser amechapisha dokezo!!**',
-                th: '**TestUser โพสต์บันทึกแล้ว!!**',
-                tl: '**Nag-post si TestUser ng isang tala!!**',
-                vi: '**TestUser đã đăng một ghi chú!!**',
-                zho: '**TestUser 發布了一則筆記！！**'
+                en: '🎉🎉🎉 **TestUser posted a note!!** 🎉🎉🎉',
+                ja: '🎉🎉🎉 **TestUserさんがノートを投稿しました！！** 🎉🎉🎉',
+                es: '🎉🎉🎉 **¡TestUser publicó una nota!!** 🎉🎉🎉',
+                ko: '🎉🎉🎉 **TestUser님이 노트를 게시했습니다!!** 🎉🎉🎉',
+                pt: '🎉🎉🎉 **TestUser postou uma nota!!** 🎉🎉🎉',
+                sw: '🎉🎉🎉 **TestUser amechapisha dokezo!!** 🎉🎉🎉',
+                th: '🎉🎉🎉 **TestUser โพสต์บันทึกแล้ว!!** 🎉🎉🎉',
+                tl: '🎉🎉🎉 **Nag-post si TestUser ng isang tala!!** 🎉🎉🎉',
+                vi: '🎉🎉🎉 **TestUser đã đăng một ghi chú!!** 🎉🎉🎉',
+                zho: '🎉🎉🎉 **TestUser 發布了一則筆記！！** 🎉🎉🎉'
             };
 
             for (const [lang, expected] of Object.entries(expectedTranslations)) {
@@ -139,11 +139,11 @@ describe('i18n - translation utilities', () => {
             expect(getAnnounceMessage('ja', nickname, 200)).toContain('山田さんが合計200日目のノート投稿を達成しました！');
 
             // Non-milestone days: 1, 2, 4, 5, 6, 8, 9, 101, 149
-            expect(getAnnounceMessage('ja', nickname, 1)).toBe('**山田さんがノートを投稿しました！！**');
-            expect(getAnnounceMessage('ja', nickname, 2)).toBe('**山田さんがノートを投稿しました！！**');
-            expect(getAnnounceMessage('ja', nickname, 4)).toBe('**山田さんがノートを投稿しました！！**');
-            expect(getAnnounceMessage('ja', nickname, 101)).toBe('**山田さんがノートを投稿しました！！**');
-            expect(getAnnounceMessage('ja', nickname, 149)).toBe('**山田さんがノートを投稿しました！！**');
+            expect(getAnnounceMessage('ja', nickname, 1)).toBe('🎉🎉🎉 **山田さんがノートを投稿しました！！** 🎉🎉🎉');
+            expect(getAnnounceMessage('ja', nickname, 2)).toBe('🎉🎉🎉 **山田さんがノートを投稿しました！！** 🎉🎉🎉');
+            expect(getAnnounceMessage('ja', nickname, 4)).toBe('🎉🎉🎉 **山田さんがノートを投稿しました！！** 🎉🎉🎉');
+            expect(getAnnounceMessage('ja', nickname, 101)).toBe('🎉🎉🎉 **山田さんがノートを投稿しました！！** 🎉🎉🎉');
+            expect(getAnnounceMessage('ja', nickname, 149)).toBe('🎉🎉🎉 **山田さんがノートを投稿しました！！** 🎉🎉🎉');
         });
 
         it('should correctly select streakAnnouncement for milestone days and notePostedAnnouncement for other days (English)', () => {
@@ -155,8 +155,8 @@ describe('i18n - translation utilities', () => {
             expect(getAnnounceMessage('en', nickname, 250)).toContain('Alice achieved a milestone of 250 cumulative study days!');
 
             // Non-milestone days
-            expect(getAnnounceMessage('en', nickname, 2)).toBe('**Alice posted a note!!**');
-            expect(getAnnounceMessage('en', nickname, 101)).toBe('**Alice posted a note!!**');
+            expect(getAnnounceMessage('en', nickname, 2)).toBe('🎉🎉🎉 **Alice posted a note!!** 🎉🎉🎉');
+            expect(getAnnounceMessage('en', nickname, 101)).toBe('🎉🎉🎉 **Alice posted a note!!** 🎉🎉🎉');
         });
     });
 });
