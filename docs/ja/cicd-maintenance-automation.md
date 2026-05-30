@@ -42,10 +42,10 @@ vercel deploy --prod --token=$VERCEL_TOKEN
 このワークフローは、GitHub Actions を介して毎日 **00:00 UTC（日本時間 午前 9:00）**に実行されます。サーバーレスエンドポイントをトリガーして、非アクティブなグループメンバーをスキャンし、グループ所有権の更新を処理します。
 
 *   **セキュリティプロトコル**: GitHub Secrets に安全に設定された共有ベアラシークレット（`CRON_SECRET`）を使用します。
-*   **ターゲット URI**: `https://scripturehabit.app/api/check-inactive-users/`
+*   **ターゲット URI**: `https://scripturehabit.app/api/cron/check-inactive-users`
 *   **実行コマンド**:
     ```bash
-    curl -L -X POST "https://scripturehabit.app/api/check-inactive-users/" \
+    curl -f -L -X POST "https://scripturehabit.app/api/cron/check-inactive-users" \
       -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
       -H "Content-Type: application/json"
     ```
@@ -63,7 +63,7 @@ sequenceDiagram
     participant Sentry as Sentry 観測プラットフォーム
 
     Note over GitHub: 毎日 00:00 UTC にトリガー
-    GitHub->>Gateway: POST /api/check-inactive-users (Bearer CRON_SECRET)
+    GitHub->>Gateway: POST /api/cron/check-inactive-users (Bearer CRON_SECRET)
     
     activate Gateway
     Gateway->>Gateway: CRON_SECRET の検証

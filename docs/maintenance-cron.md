@@ -6,7 +6,7 @@ The **scripture-habit** platform uses automated background jobs (cron) to manage
 
 ## 1. Inactivity Check
 
-The **Inactivity Check** job (`/api/check-inactive-users`) removes inactive users from groups to keep groups active.
+The **Inactivity Check** job (`/api/cron/check-inactive-users`) removes inactive users from groups to keep groups active.
 
 ### 1.1 Rotation-Based Scanning
 To minimize database load, the system scans groups in rotation:

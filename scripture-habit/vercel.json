@@ -4,7 +4,7 @@
     },
     "crons": [
         {
-            "path": "/api/check-inactive-users",
+            "path": "/api/cron/check-inactive-users",
             "schedule": "0 0 * * *"
         }
     ],

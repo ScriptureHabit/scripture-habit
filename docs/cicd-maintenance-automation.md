@@ -42,10 +42,10 @@ The platform runs scheduled daily background jobs to keep database records clean
 This workflow runs daily at **00:00 UTC (9:00 AM JST)** via GitHub Actions. It triggers a serverless endpoint to scan for inactive group members and handle group ownership updates.
 
 *   **Security Protocol**: Uses a shared Bearer secret (`CRON_SECRET`) configured securely in GitHub Secrets.
-*   **Target URI**: `https://scripturehabit.app/api/check-inactive-users/`
+*   **Target URI**: `https://scripturehabit.app/api/cron/check-inactive-users`
 *   **Execution Command**:
     ```bash
-    curl -L -X POST "https://scripturehabit.app/api/check-inactive-users/" \
+    curl -f -L -X POST "https://scripturehabit.app/api/cron/check-inactive-users" \
       -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
       -H "Content-Type: application/json"
     ```
@@ -63,7 +63,7 @@ sequenceDiagram
     participant Sentry as Sentry Observability
 
     Note over GitHub: Triggers daily at 00:00 UTC
-    GitHub->>Gateway: POST /api/check-inactive-users (Bearer CRON_SECRET)
+    GitHub->>Gateway: POST /api/cron/check-inactive-users (Bearer CRON_SECRET)
     
     activate Gateway
     Gateway->>Gateway: Validate CRON_SECRET
