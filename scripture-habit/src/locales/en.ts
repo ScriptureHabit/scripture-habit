@@ -475,6 +475,16 @@ export default {
             byuSpeeches: "BYU Speeches",
             other: "Other"
         },
+                groupOptionsTour: {
+            titleStep1: "Welcome to Study Groups!",
+            descStep1: "Here you can choose how you would like to connect and study with others.",
+            titleStep2: "Create a Group",
+            descStep2: "Launch your own group study and invite your friends, family, or ward members to join you!",
+            titleStep3: "Join a Group",
+            descStep3: "Explore public groups and connect with a community of fellow scripture learners.",
+            titleStep4: "Back to Dashboard",
+            descStep4: "If you prefer to study on your own today, you can always return to the main dashboard."
+        },
         groupOptions: {
             title: "Study Groups",
             subtitle: "Choose how you want to connect with others.",
@@ -517,6 +527,8 @@ export default {
             pwaInviteHint: "If you've already added this app to your Home Screen,\nopen it from there to automatically apply this invitation."
         },
         groupForm: {
+        invitePreviewTitle: "Invite Link Preview",
+        invitePreviewDesc: "*Active after group creation. Copy and share this link to invite your friends and family directly.",
             title: "Create a Study Group",
             subtitle: "Build a scripture study group and invite others to join.",
             groupNameLabel: "Group Name",

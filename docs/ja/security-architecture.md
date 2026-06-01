@@ -138,7 +138,7 @@ export const verifyAppCheck = async (req: Request, res: Response, next: NextFunc
 | **習慣ループ** | `POST /api/messages/post-note` | 聖句ノートを送信し、ストリークを更新し、レベルを増加させる。 | ストリークの偽造やノートのスパム送信を阻止する。 |
 | | `POST /api/messages/toggle-reaction` | メッセージの絵文字リアクションを切り替える。 | 自動化されたリアクションの大量送信を防止する。 |
 | **グループ管理** | `POST /api/groups/create-group` | 新しいスタディグループを設定する。 | 無駄なグループ作成によるリソースの枯渇や肥大化を防ぐ。 |
-| | `POST /api/groups/regenerate-invite` | 招待コードの無効化と更新を行う。 | トークンの枯渇をブロックする。 |
+| | `POST /api/groups/regenerate-invite` | 招待リンクの無効化と更新を行う。 | トークンの枯渇をブロックする。 |
 | **AI連携** | `POST /api/ai/translate` | LLM翻訳ジョブを実行する。 | LLMトークンの高額な利用コストから保護する。 |
 | | `POST /api/ai/generate-ponder-questions` | 振り返り用の質問の生成をLLMに要求する。 | LLMの請求額急増を防止する。 |
 | **スクレイパー** | `GET /api/preview/fetch-church-metadata` | 外部のWebページコンテンツを取得する。 | SSRFプロキシを悪用したサードパーティによるスクレイピングを阻止する。 |

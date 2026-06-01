@@ -546,6 +546,16 @@ export default {
             byuSpeeches: "BYU Speeches",
             other: "其他"
         },
+                groupOptionsTour: {
+            titleStep1: "歡迎來到學習群組！",
+            descStep1: "在這裡，您可以選擇想要與他人連結並一起研讀聖典的方式。",
+            titleStep2: "建立群組",
+            descStep2: "啟動您自己的群組研讀，並邀請您的朋友、家人或支會成員加入！",
+            titleStep3: "加入群組",
+            descStep3: "探索公開群組，並與其他聖典研讀夥伴的社群建立連結。",
+            titleStep4: "返回儀表板",
+            descStep4: "如果您今天想自己研讀，隨時可以返回主儀表板。"
+        },
         groupOptions: {
             title: "學習群組",
             subtitle: "選擇您想如何與他人連結。",
@@ -588,6 +598,8 @@ export default {
             pwaInviteHint: "如果您已將此應用程式添加到主螢幕，\n請從那裡開啟它以自動套用此邀請。"
         },
         groupForm: {
+        invitePreviewTitle: "邀請連結預覽",
+        invitePreviewDesc: "*將於群組建立後啟用。複製並分享此連結，即可直接邀請您的朋友和家人加入。",
             title: "建立研讀群組",
             subtitle: "建立經文研讀群組並邀請他人加入。",
             groupNameLabel: "群組名稱",

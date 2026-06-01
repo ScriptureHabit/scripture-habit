@@ -190,7 +190,7 @@ export default {
             confirmLeave: "グループを退会",
             leaveConfirmMessage: "本当にこのグループを退会しますか？",
             groupName: "グループチャット",
-            inviteCode: "招待コード",
+            inviteCode: "招待リンク",
             replyTo: "返信先",
             replyingTo: "返信中",
             cancelReply: "返信をキャンセル",
@@ -323,9 +323,9 @@ export default {
             habitPaceProfileDesc: "各グループで{days}日おきに1回以上投稿して継続しましょう。",
             confirm: "確定する",
             inviteExpiresAt: "有効期限",
-            regenerateInviteCode: "招待コードを再生成",
-            inviteCodeRegenerated: "招待コードを再生成しました！",
-            errorRegenerateInviteCode: "招待コードの再生成に失敗しました。",
+            regenerateInviteCode: "招待リンクを再生成",
+            inviteCodeRegenerated: "招待リンクを再生成しました！",
+            errorRegenerateInviteCode: "招待リンクの再生成に失敗しました。",
             errorOnlyOwnerInviteLink: "グループ作成者のみが招待リンクを更新できます。",
             loadPreviousMessages: "前のメッセージを読み込む",
             lastRecap: "前回の要約",
@@ -483,6 +483,16 @@ export default {
             byuSpeeches: "BYU Speeches",
             other: "その他"
         },
+                groupOptionsTour: {
+            titleStep1: "学習グループへようこそ！",
+            descStep1: "ここでは、仲間と一緒に聖典学習を進めるための方法を選択できます。",
+            titleStep2: "グループを作成する",
+            descStep2: "自分のグループを作成し、友達や家族、同僚を招待して一緒に勉強を始めましょう！",
+            titleStep3: "グループに参加する",
+            descStep3: "公開されている他のグループを探し、同じ目標を持つ新しい仲間と繋がることができます。",
+            titleStep4: "ダッシュボードへ戻る",
+            descStep4: "個人の学習を進めたい場合は、いつでもダッシュボードに戻ることができます。"
+        },
         groupOptions: {
             title: "学習グループ",
             subtitle: "他の人とどのようにつながりたいか選択してください。",
@@ -525,6 +535,8 @@ export default {
             pwaInviteHint: "すでにアプリをホーム画面に追加している場合は、\nホーム画面から「Scripture Habit」を開くと、この招待が自動的に適用されます。"
         },
         groupForm: {
+        invitePreviewTitle: "招待リンクのプレビュー",
+        invitePreviewDesc: "※グループ作成後に有効になります。このリンクを共有することで、友達や家族を直接招待することができます。",
             title: "学習グループを作成",
             subtitle: "聖典学習グループを作成し、他の人を招待しましょう。",
             groupNameLabel: "グループ名",
@@ -534,7 +546,7 @@ export default {
             publicLabel: "パブリック（公開）",
             privateLabel: "プライベート（非公開）",
             publicDescription: "誰でも検索して参加できます。新しい仲間と出会いたい時に！",
-            privateDescription: "招待コードを知っている人のみ参加できます。友人や家族との勉強に。",
+            privateDescription: "招待リンクを知っている人のみ参加できます。友人や家族との勉強に。",
             createButton: "グループを作成",
             joinGroupCta: "既存のグループをお探しですか？",
             joinGroupLink: "グループに参加",

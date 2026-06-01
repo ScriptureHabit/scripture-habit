@@ -564,6 +564,16 @@ export default {
             byuSpeeches: "BYU Speeches",
             other: "Khác"
         },
+                groupOptionsTour: {
+            titleStep1: "Chào mừng bạn đến với Nhóm Học Tập!",
+            descStep1: "Tại đây bạn có thể lựa chọn cách thức kết nối và học tập cùng với những người khác.",
+            titleStep2: "Tạo một Nhóm",
+            descStep2: "Bắt đầu nhóm học tập của riêng bạn và mời bạn bè, gia đình hoặc các thành viên trong tiểu giáo khu cùng tham gia!",
+            titleStep3: "Tham gia một Nhóm",
+            descStep3: "Khám phá các nhóm công khai và kết nối với cộng đồng những người cùng nghiên cứu thánh thư.",
+            titleStep4: "Quay lại Bảng điều khiển",
+            descStep4: "Nếu bạn muốn tự học một mình hôm nay, bạn luôn có thể quay lại bảng điều khiển chính."
+        },
         groupOptions: {
             title: "Nhóm học tập",
             subtitle: "Chọn cách bạn muốn kết nối với người khác.",
@@ -606,6 +616,8 @@ export default {
             pwaInviteHint: "Nếu bạn đã thêm ứng dụng này vào Màn hình chính,\nhãy mở ứng dụng từ đó để tự động áp dụng lời mời này."
         },
         groupForm: {
+        invitePreviewTitle: "Xem trước Liên kết Mời",
+        invitePreviewDesc: "*Hoạt động sau khi tạo nhóm. Sao chép và chia sẻ liên kết này để mời trực tiếp bạn bè và gia đình của bạn.",
             title: "Tạo nhóm học tập",
             subtitle: "Tạo một nhóm học thánh thư và mời người khác tham gia.",
             groupNameLabel: "Tên nhóm",

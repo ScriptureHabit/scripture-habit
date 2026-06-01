@@ -180,7 +180,7 @@ scripture-habitがスケールする中で、データベースコストを低�
 1. **クエリスナップショットの再利用**
    クエリを介してドキュメントを検索する場合（例: `inviteCode` でグループを検索するなど）、結果の `QueryDocumentSnapshot` にはすでにドキュメントデータ全体が含まれています。スナップショットを直接再利用することで、二重に `transaction.get(docRef)` を呼び出す無駄な処理をバイパスします：
    ```typescript
-   // 効率的な招待コードでの参加処理
+   // 効率的な招待リンクでの参加処理
    const querySnap = await transaction.get(inviteCodeQuery);
    const groupDoc = querySnap.docs[0]; // これを直接再利用します！（groupRef.get() をバイパス）
    ```

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import './tour-guide.css';
+import '../tourguide/tour-guide.css';
 
 interface TourStep {
     targetSelector: string;
@@ -8,7 +8,7 @@ interface TourStep {
     placement: 'top' | 'bottom' | 'left' | 'right';
 }
 
-interface TourGuideProps {
+interface GroupOptionsTourProps {
     isOpen: boolean;
     onClose: () => void;
     t: (key: string, replacements?: Record<string, string | number>) => string;
@@ -16,44 +16,32 @@ interface TourGuideProps {
 
 const TOUR_STEPS: TourStep[] = [
     {
-        targetSelector: '.Sidebar',
-        titleKey: 'tourGuide.titleStep1',
-        descKey: 'tourGuide.descStep1',
-        placement: 'right'
-    },
-    {
-        targetSelector: '.streak-card',
-        titleKey: 'tourGuide.titleStep2',
-        descKey: 'tourGuide.descStep2',
+        targetSelector: '.options-container',
+        titleKey: 'groupOptionsTour.titleStep1',
+        descKey: 'groupOptionsTour.descStep1',
         placement: 'bottom'
     },
     {
-        targetSelector: '.level-card',
-        titleKey: 'tourGuide.titleStep3',
-        descKey: 'tourGuide.descStep3',
+        targetSelector: '[data-testid="create-group-card"]',
+        titleKey: 'groupOptionsTour.titleStep2',
+        descKey: 'groupOptionsTour.descStep2',
         placement: 'bottom'
     },
     {
-        targetSelector: '.reading-plan-card',
-        titleKey: 'tourGuide.titleStep4',
-        descKey: 'tourGuide.descStep4',
+        targetSelector: '.join-card',
+        titleKey: 'groupOptionsTour.titleStep3',
+        descKey: 'groupOptionsTour.descStep3',
         placement: 'top'
     },
     {
-        targetSelector: '.share-learning-cta',
-        titleKey: 'tourGuide.titleStep5',
-        descKey: 'tourGuide.descStep5',
-        placement: 'top'
-    },
-    {
-        targetSelector: '.streak-calendar-container',
-        titleKey: 'tourGuide.titleStep6',
-        descKey: 'tourGuide.descStep6',
+        targetSelector: '.back-link',
+        titleKey: 'groupOptionsTour.titleStep4',
+        descKey: 'groupOptionsTour.descStep4',
         placement: 'top'
     }
 ];
 
-const TourGuide: React.FC<TourGuideProps> = ({ isOpen, onClose, t }) => {
+const GroupOptionsTour: React.FC<GroupOptionsTourProps> = ({ isOpen, onClose, t }) => {
     const [currentStep, setCurrentStep] = useState(0);
     const [highlightRect, setHighlightRect] = useState<{ top: number; left: number; width: number; height: number } | null>(null);
     const [popoverStyle, setPopoverStyle] = useState<React.CSSProperties>({});
@@ -67,7 +55,6 @@ const TourGuide: React.FC<TourGuideProps> = ({ isOpen, onClose, t }) => {
         const element = document.querySelector(step.targetSelector) as HTMLElement;
 
         if (!element) {
-            // Element not found (e.g. they scrolled or navigated away), let's clear highlight
             setHighlightRect(null);
             return;
         }
@@ -135,20 +122,17 @@ const TourGuide: React.FC<TourGuideProps> = ({ isOpen, onClose, t }) => {
         if (element) {
             const isMobile = window.innerWidth <= 768;
             if (isMobile) {
-                if (step.targetSelector !== '.Sidebar') {
-                    // Always scroll to top on mobile to prevent overlapping with bottom-fixed popover card
-                    element.scrollIntoView({ block: 'start' });
-                }
+                element.scrollIntoView({ block: 'start' });
             } else {
                 const rect = element.getBoundingClientRect();
                 const isOffScreen = rect.top < 0 || rect.bottom > window.innerHeight;
-                if (isOffScreen && step.targetSelector !== '.Sidebar') {
+                if (isOffScreen) {
                     element.scrollIntoView({ block: 'center' });
                 }
             }
         }
 
-        // Rapid polling to keep coordinates perfectly aligned as layout/scrolling settles
+        // Rapid polling to keep coordinates perfectly aligned as layout settles
         updatePosition();
         const intervalId = setInterval(updatePosition, 30);
         const timeoutId = setTimeout(() => {
@@ -250,4 +234,4 @@ const TourGuide: React.FC<TourGuideProps> = ({ isOpen, onClose, t }) => {
     );
 };
 
-export default TourGuide;
+export default GroupOptionsTour;

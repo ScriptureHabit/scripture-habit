@@ -592,6 +592,16 @@ export default {
             byuSpeeches: "Mga Talumpati sa BYU",
             other: "Iba pa"
         },
+                groupOptionsTour: {
+            titleStep1: "Maligayang pagdating sa mga Study Group!",
+            descStep1: "Dito maaari mong piliin kung paano mo gustong kumonekta at mag-aral kasama ang iba.",
+            titleStep2: "Gumawa ng Grupo",
+            descStep2: "Simulan ang sarili mong group study at imbitahan ang iyong mga kaibigan, pamilya, o mga ward member na sumali sa iyo!",
+            titleStep3: "Sumali sa Grupo",
+            descStep3: "Galugarin ang mga pampublikong grupo at kumonekta sa isang komunidad ng mga kapwa nag-aaral ng banal na kasulatan.",
+            titleStep4: "Bumalik sa Dashboard",
+            descStep4: "Kung mas gusto mong mag-aral nang mag-isa ngayon, maaari kang bumalik sa pangunahing dashboard kailan man."
+        },
         groupOptions: {
             title: "Mga Grupo ng Pag-aaral",
             subtitle: "Piliin kung paano mo gustong kumonekta sa iba.",
@@ -634,6 +644,8 @@ export default {
             pwaInviteHint: "Kung naidagdag mo na ang app na ito sa iyong Home Screen,\nbuksan ito doon para awtomatikong magamit ang imbitasyong ito."
         },
         groupForm: {
+        invitePreviewTitle: "Preview ng Link ng Imbitasyon",
+        invitePreviewDesc: "*Aktibo pagkatapos magawa ang grupo. Kopyahin at ibahagi ang link na ito para direktang maanyayahan ang iyong mga kaibigan at pamilya.",
             title: "Lumikha ng Study Group",
             subtitle: "Bumuo ng scripture study group at mag-imbita ng iba na sumali.",
             groupNameLabel: "Pangalan ng Grupo",

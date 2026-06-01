@@ -149,3 +149,50 @@
     background-color: transparent !important;
   }
 }
+
+.invite-link-preview-card {
+  width: 100%;
+  max-width: 300px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 1rem;
+  margin: 0.5rem 0 1.5rem;
+  border: 1px dashed rgba(255, 255, 255, 0.3);
+  text-align: left;
+  box-sizing: border-box;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.invite-link-preview-card .preview-header {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--black);
+  margin-bottom: 0.5rem;
+  opacity: 0.9;
+}
+
+.invite-link-preview-card .simulated-link-box {
+  background: rgba(255, 255, 255, 0.4);
+  padding: 0.6rem 0.8rem;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  margin-bottom: 0.5rem;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.invite-link-preview-card .simulated-link-box code {
+  font-family: monospace;
+  font-size: 0.8rem;
+  color: var(--pink);
+  opacity: 0.6;
+  font-weight: 600;
+}
+
+.invite-link-preview-card .preview-helper-text {
+  font-size: 0.75rem;
+  color: #64748b;
+  line-height: 1.4;
+  margin: 0;
+}

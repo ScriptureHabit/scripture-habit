@@ -592,6 +592,16 @@ export default {
             byuSpeeches: "BYU Speeches",
             other: "Nyingine"
         },
+                groupOptionsTour: {
+            titleStep1: "Karibu kwenye Vikundi vya Funzo!",
+            descStep1: "Hapa unaweza kuchagua jinsi ungependa kuungana na kujifunza na wengine.",
+            titleStep2: "Unda Kikundi",
+            descStep2: "Anzisha kikundi chako cha funzo na waalike marafiki, familia, au washiriki wa wadi wajiunge nawe!",
+            titleStep3: "Jiunge na Kikundi",
+            descStep3: "Gundua vikundi vya umma na uungane na jumuiya ya wanafunzi wenzako wa maandiko.",
+            titleStep4: "Rudi kwenye Dashibodi",
+            descStep4: "Ukipenda kujifunza peke yako leo, unaweza kurudi kwenye dashibodi kuu wakati wowote."
+        },
         groupOptions: {
             title: "Vikundi vya Mafunzo",
             subtitle: "Chagua jinsi unavyotaka kuungana na wengine.",
@@ -634,6 +644,8 @@ export default {
             pwaInviteHint: "Ikiwa tayari umeongeza programu hii kwenye Skrini yako ya Nyumbani,\nifungue kutoka hapo ili utumie mwaliko huu kiotomatiki."
         },
         groupForm: {
+        invitePreviewTitle: "Hakiki ya Kiungo cha Mwaliko",
+        invitePreviewDesc: "*Inatumika baada ya kuunda kikundi. Nakili na ushiriki kiungo hiki kualika marafiki na familia yako moja kwa moja.",
             title: "Unda Kikundi cha Kujifunza",
             subtitle: "Jenga kikundi cha kujifunza maandiko na ualike wengine kujiunga.",
             groupNameLabel: "Jina la Kikundi",

@@ -591,6 +591,16 @@ export default {
             byuSpeeches: "BYU Speeches",
             other: "기타"
         },
+                groupOptionsTour: {
+            titleStep1: "학습 그룹에 오신 것을 환영합니다!",
+            descStep1: "여기에서 다른 사람들과 연결하여 함께 경전을 공부할 방법을 선택할 수 있습니다.",
+            titleStep2: "그룹 만들기",
+            descStep2: "자신만의 그룹 학습을 시작하고 친구, 가족 또는 와드 회원들을 초대하여 함께 공부해보세요!",
+            titleStep3: "그룹 참가하기",
+            descStep3: "공개 그룹을 탐색하고 함께 경전을 배우는 동료들의 커뮤니티와 연결해보세요.",
+            titleStep4: "대시보드로 돌아가기",
+            descStep4: "오늘은 혼자서 공부하고 싶다면 언제든지 대시보드로 돌아갈 수 있습니다."
+        },
         groupOptions: {
             title: "학습 그룹",
             subtitle: "다른 사람들과 연결할 방법을 선택하세요.",
@@ -633,6 +643,8 @@ export default {
             pwaInviteHint: "이미 이 앱을 홈 화면에 추가했다면,\n거기에서 앱을 열어 이 초대를 자동으로 적용하세요."
         },
         groupForm: {
+        invitePreviewTitle: "초대 링크 미리보기",
+        invitePreviewDesc: "*그룹 생성 후 활성화됩니다. 이 링크를 복사하여 공유하면 친구와 가족을 직접 초대할 수 있습니다.",
             title: "학습 그룹 생성",
             subtitle: "경전 학습 그룹을 만들고 다른 사람들을 초대하세요.",
             groupNameLabel: "그룹 이름",

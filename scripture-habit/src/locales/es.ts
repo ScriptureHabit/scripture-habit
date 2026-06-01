@@ -546,6 +546,16 @@ export default {
             byuSpeeches: "BYU Speeches",
             other: "Otros"
         },
+                groupOptionsTour: {
+            titleStep1: "¡Bienvenido a los grupos de estudio!",
+            descStep1: "Aquí puedes elegir cómo te gustaría conectarte y estudiar con los demás.",
+            titleStep2: "Crear un grupo",
+            descStep2: "¡Inicia tu propio grupo de estudio e invita a tus amigos, familiares o miembros de tu barrio a unirse!",
+            titleStep3: "Unirse a un grupo",
+            descStep3: "Explora grupos públicos y conéctate con una comunidad de compañeros que estudian las escrituras.",
+            titleStep4: "Volver al panel",
+            descStep4: "Si prefieres estudiar solo hoy, siempre puedes volver al panel principal."
+        },
         groupOptions: {
             title: "Grupos de estudio",
             subtitle: "Elige cómo quieres conectarte con otros.",
@@ -588,6 +598,8 @@ export default {
             pwaInviteHint: "Si ya has añadido esta aplicación a tu pantalla de inicio,\nábrela desde allí para aplicar esta invitación automáticamente."
         },
         groupForm: {
+        invitePreviewTitle: "Vista previa del enlace de invitación",
+        invitePreviewDesc: "*Activo después de la creación del grupo. Copia y comparte este enlace para invitar a tus amigos y familiares directamente.",
             title: "Crear un Grupo de Estudio",
             subtitle: "Crea un grupo de estudio de las escrituras e invita a otros a unirse.",
             groupNameLabel: "Nombre del Grupo",

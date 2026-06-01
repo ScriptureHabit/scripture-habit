@@ -139,6 +139,12 @@
         max-width: 360px;
         box-shadow: 0 -10px 45px rgba(0, 0, 0, 0.2);
     }
+
+    .tour-popover-card.popover-on-top {
+        bottom: auto !important;
+        top: 24px !important;
+        box-shadow: 0 10px 45px rgba(0, 0, 0, 0.2);
+    }
     
     .tour-popover-arrow {
         display: none !important;

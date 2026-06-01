@@ -121,6 +121,18 @@ export default function GroupForm() {
             </div>
           </div>
 
+          <div className="invite-link-preview-card">
+            <div className="preview-header">
+              <span>🔗 {t('groupForm.invitePreviewTitle')}</span>
+            </div>
+            <div className="simulated-link-box">
+              <code>{window.location.origin}/join/XXXXXX</code>
+            </div>
+            <p className="preview-helper-text">
+              {t('groupForm.invitePreviewDesc')}
+            </p>
+          </div>
+
           <Button 
             type="submit" 
             className="create-group-submit-btn" 
