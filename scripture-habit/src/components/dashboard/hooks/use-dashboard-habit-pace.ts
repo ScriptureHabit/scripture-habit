@@ -20,6 +20,7 @@ export const useDashboardHabitPace = (
     useEffect(() => {
         if (!loading && userData && userData.uid && 
             userData.hasSetKickThreshold !== true && 
+            userData.hasSeenWelcomeStory !== undefined &&
             !isJoiningInvite) {
             setShowAutoKickModal(true);
         }

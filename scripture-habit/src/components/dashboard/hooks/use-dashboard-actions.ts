@@ -21,6 +21,20 @@ export const useDashboardActions = (user: User | null, userData: UserData | null
     }
   }, [user, userData]);
 
+  const markTourSeen = useCallback(async (seen: boolean = true): Promise<boolean> => {
+    if (!user?.uid || !userData) return false;
+
+    try {
+      await updateDoc(doc(db, 'users', user.uid), {
+        hasSeenTour: seen
+      });
+      return true;
+    } catch (error) {
+      console.error('Error marking tour as seen:', error);
+      return false;
+    }
+  }, [user, userData]);
+
   const updateNickname = useCallback(async (nickname: string): Promise<boolean> => {
     if (!user?.uid || !nickname.trim()) return false;
 
@@ -99,5 +113,5 @@ export const useDashboardActions = (user: User | null, userData: UserData | null
     }
   }, [user]);
 
-  return { markWelcomeStorySeen, updateNickname, updateGroupReadStatus };
+  return { markWelcomeStorySeen, markTourSeen, updateNickname, updateGroupReadStatus };
 };

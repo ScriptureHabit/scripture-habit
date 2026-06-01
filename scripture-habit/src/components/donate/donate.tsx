@@ -26,9 +26,19 @@ const Donate: React.FC<DonateProps> = ({ userData }) => {
             </div>
             <div className="donate-container">
                 <div className="donate-card story-card">
-                    <p className="donate-vision-statement">
-                        {t('story.vision')}
-                    </p>
+                    <div className="developer-profile-section">
+                        <div className="developer-avatar-container">
+                            <img 
+                                src="/images/profile.jpg" 
+                                alt="Developer Profile" 
+                                className="developer-avatar" 
+                            />
+                        </div>
+                        <div className="developer-info-container">
+                            <h3 className="developer-name">{t('story.developerName')}</h3>
+                            <p className="developer-role">{t('story.developerRole')}</p>
+                        </div>
+                    </div>
 
                     <div className="donate-separator"></div>
 

@@ -15,17 +15,18 @@ interface WelcomeStoryModalProps {
 const WelcomeStoryModal: FC<WelcomeStoryModalProps> = ({ isOpen, onClose, userData }) => {
     const { t } = useLanguage();
     const [page, setPage] = useState(0);
+    const [isNextVisible, setIsNextVisible] = useState(false);
 
+    // Reset next button visibility and start a 3-second timer on page or open state changes
     useEffect(() => {
-        if (page === 5) {
-            // Trigger confetti on the last page
-            confetti({
-                particleCount: 150,
-                spread: 70,
-                origin: { y: 0.6 }
-            });
+        if (isOpen) {
+            setIsNextVisible(false);
+            const timer = setTimeout(() => {
+                setIsNextVisible(true);
+            }, 3000);
+            return () => clearTimeout(timer);
         }
-    }, [page]);
+    }, [page, isOpen]);
 
     if (!isOpen) return null;
 
@@ -33,7 +34,19 @@ const WelcomeStoryModal: FC<WelcomeStoryModalProps> = ({ isOpen, onClose, userDa
         if (page < 5) {
             setPage(page + 1);
         } else {
+            // Trigger confetti on clicking 'はじめる' (on the last page)
+            confetti({
+                particleCount: 150,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
             onClose();
+        }
+    };
+
+    const handleBack = () => {
+        if (page > 0) {
+            setPage(page - 1);
         }
     };
 
@@ -128,9 +141,19 @@ const WelcomeStoryModal: FC<WelcomeStoryModalProps> = ({ isOpen, onClose, userDa
                 {pages[page]}
 
                 <div className="story-navigation">
-                    <button className="story-btn" onClick={handleNext}>
-                        {page === 5 ? t('welcomeStory.startButton') : t('welcomeStory.nextButton')}
-                    </button>
+                    <div className="story-buttons-container">
+                        {page > 0 && (
+                            <button className="story-btn secondary" onClick={handleBack}>
+                                {t('welcomeStory.backButton')}
+                            </button>
+                        )}
+                        <button 
+                            className={`story-btn ${!isNextVisible ? 'hidden' : ''}`} 
+                            onClick={handleNext}
+                        >
+                            {page === 5 ? t('welcomeStory.startButton') : t('welcomeStory.nextButton')}
+                        </button>
+                    </div>
 
                     <div className="story-indicator">
                         {pages.map((_, idx) => (

@@ -103,7 +103,9 @@ async function seed() {
             totalNotes: u.totalNotes,
             language: u.language,
             lastPostAt: now,
-            createdAt: now
+            createdAt: now,
+            hasSetKickThreshold: true,
+            kickThreshold: 3
         });
         console.log(`   Created User: ${u.nickname} (${u.email})`);
     }

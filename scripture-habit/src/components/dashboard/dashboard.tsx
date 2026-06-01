@@ -11,6 +11,7 @@ import Donate from '../donate/donate';
 import Footer from '../footer/footer';
 import { DashboardSkeleton } from '../skeleton/skeleton';
 import Sidebar from '../sidebar/sidebar';
+import TourGuide from '../tourguide/tour-guide';
 
 // Refactored Sub-components
 import DashboardLayout from './components/dashboard-layout';
@@ -77,6 +78,7 @@ const Dashboard: FC = () => {
   const initialState = useMemo(() => getInitialState(), [getInitialState]); // Memoize to prevent re-calculation loops
   const [selectedView, setSelectedView] = useState<number>(initialState.selectedView);
   const [showWelcomeStory, setShowWelcomeStory] = useState<boolean>(false);
+  const [showTourGuide, setShowTourGuide] = useState<boolean>(false);
   const [isInputFocused, setIsInputFocused] = useState<boolean>(false);
   const [showEditProfileModal, setShowEditProfileModal] = useState<boolean>(false);
   const [newNickname, setNewNickname] = useState<string>('');
@@ -134,7 +136,7 @@ const Dashboard: FC = () => {
   }, [userData, enrichedUserGroups]);
 
   const { showNotifPrompt, handleEnableNotifications, handleCloseNotifPrompt } = useDashboardNotifications(userData, t);
-  const { markWelcomeStorySeen, updateNickname } = useDashboardActions(user, userData);
+  const { markWelcomeStorySeen, markTourSeen, updateNickname } = useDashboardActions(user, userData);
 
   // 2. Effects
   useEffect(() => {
@@ -190,8 +192,18 @@ const Dashboard: FC = () => {
   }, [searchParams, location.pathname, location.state, navigate, setActiveGroupId, setActiveModal, selectedView]);
 
   useEffect(() => {
-    if (!loading && userData && userData.uid && userData.hasSeenWelcomeStory === undefined && userData.hasSetKickThreshold === true) {
+    if (!loading && userData && userData.uid && userData.hasSeenWelcomeStory === undefined) {
       const timer = setTimeout(() => setShowWelcomeStory(true), 500);
+      return () => clearTimeout(timer);
+    }
+  }, [userData, loading]);
+
+  useEffect(() => {
+    if (!loading && userData && userData.uid && 
+        userData.hasSeenWelcomeStory === true && 
+        userData.hasSetKickThreshold === true && 
+        userData.hasSeenTour !== true) {
+      const timer = setTimeout(() => setShowTourGuide(true), 800);
       return () => clearTimeout(timer);
     }
   }, [userData, loading]);
@@ -200,6 +212,11 @@ const Dashboard: FC = () => {
   const handleCloseWelcomeStory = async () => {
     setShowWelcomeStory(false);
     await markWelcomeStorySeen();
+  };
+
+  const handleCloseTourGuide = async () => {
+    setShowTourGuide(false);
+    await markTourSeen();
   };
 
   const handleUpdateProfile = async () => {
@@ -299,6 +316,12 @@ const Dashboard: FC = () => {
         selectedKickDays={selectedKickDays} setSelectedKickDays={setSelectedKickDays}
         kickConfirmInput={kickConfirmInput} setKickConfirmInput={setKickConfirmInput}
         autoKickError={autoKickError} handleAutoKickSubmit={handleAutoKickSubmit} setShowAutoKickModal={setShowAutoKickModal}
+      />
+
+      <TourGuide 
+        isOpen={showTourGuide} 
+        onClose={handleCloseTourGuide} 
+        t={t}
       />
     </>
   );

@@ -34,6 +34,7 @@ export interface UserData {
   createdAt?: Timestamp | string | number | Date;
   lastLoginAt?: Timestamp | string | number | Date;
   hasSeenWelcomeStory?: boolean;
+  hasSeenTour?: boolean;
   isLevelMigrated?: boolean;
 
   

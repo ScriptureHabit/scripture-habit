@@ -4,7 +4,7 @@ import { useLanguage } from '../../hooks/use-language';
 import { useSettings } from '../../context/settings-context';
 import { auth, storage } from '../../firebase';
 import { useNavigate } from 'react-router-dom';
-import { UilSignOutAlt, UilCamera, UilCalendarAlt } from '@iconscout/react-unicons';
+import { UilSignOutAlt, UilCamera, UilCalendarAlt, UilCompass } from '@iconscout/react-unicons';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { toast } from 'react-toastify';
 import Button from '../button/button';
@@ -565,6 +565,34 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
                         <span>{t('profile.fontSize.extraLarge')}</span>
                     </div>
                 </div>
+            </div>
+
+            <div className="profile-section">
+                <div className="habit-pace-header">
+                    <UilCompass size="20" color="var(--pink)" />
+                    <h2>{t('tourGuide.replayButton')}</h2>
+                </div>
+                <p className="section-desc-small">
+                    {language === 'ja'
+                        ? 'ダッシュボードの各機能について説明するチュートリアルツアーをもう一度見ることができます。'
+                        : 'Replay the interactive dashboard onboarding tour to learn about all the available features.'}
+                </p>
+                <Button
+                    onClick={async () => {
+                        try {
+                            await apiClient.post('/api/auth/update-profile', { hasSeenTour: false });
+                            toast.success(t('tourGuide.replayButton') || 'Replay Tour');
+                            navigate(`/${language}/dashboard`);
+                        } catch (err: unknown) {
+                            console.error("Error updating tour seen status:", err);
+                            toast.error(t('profile.errorUpdate') || "Error updating profile");
+                        }
+                    }}
+                    className="save-btn replay-tour-btn"
+                    data-testid="replay-tour-button"
+                >
+                    {t('tourGuide.replayButton')}
+                </Button>
             </div>
 
             <div className="profile-section">
