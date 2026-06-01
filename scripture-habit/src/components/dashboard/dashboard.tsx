@@ -199,6 +199,10 @@ const Dashboard: FC = () => {
   }, [userData, loading]);
 
   useEffect(() => {
+    // Skip tour guide during automated E2E testing to prevent overlays from blocking playwright clicks
+    const isE2E = typeof navigator !== 'undefined' && navigator.webdriver;
+    if (isE2E) return;
+
     if (!loading && userData && userData.uid && 
         userData.hasSeenWelcomeStory === true && 
         userData.hasSetKickThreshold === true && 
