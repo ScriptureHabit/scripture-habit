@@ -116,15 +116,15 @@ export default {
             signOut: "Cerrar Sesión",
             selectGroup: "Seleccionar Grupo",
             close: "Cerrar",
-            story: "Historia del Desarrollo"
+            story: "Presentación del Desarrollador"
         },
         story: {
-            title: "Historia del Desarrollo",
-            description: "Pensamientos del desarrollador y el trasfondo de la aplicación",
+            title: "Presentación del Desarrollador",
+            description: "Sobre el desarrollador y el trasfondo de la aplicación",
             vision: "Creemos que, como han demostrado las escrituras y la historia, a través de la 'revelación personal' que viene del estudio continuo de las escrituras, podemos prevenir la decadencia cultural, la división social, la guerra y el conflicto, y crear paz.",
             appBackground: "Antecedentes del Desarrollo de la Aplicación",
-            backgroundStory: "Hola, soy el hermano Sagane. Creé Scripture Habit como parte de un proyecto escolar. Al principio del desarrollo, pensé: 'Bueno, sería bueno si pudiera hacer algo para entregar en la escuela'. Sin embargo, resultó mucho mejor de lo que esperaba, por lo que finalmente decidí lanzarlo al público de verdad.\n\nAgradecidamente, a través de esta aplicación, hay personas que me dicen: 'El estudio de las escrituras se ha vuelto divertido' y 'Mi aprendizaje espiritual se ha profundizado'. Me gustaría aprovechar esta oportunidad para expresar mi gratitud también. Yo mismo he sido bendecido con oportunidades para la obra misional y la ministración a través de esta aplicación.\n\nYo mismo enfrento pruebas y tribulaciones todos los días, e imagino que todos los que leen esto también están enfrentando algún tipo de pruebas y tribulaciones. Aunque no puedo imaginar cómo son esas pruebas y tribulaciones, espero sinceramente que las escrituras y el aliento de los comentarios de quienes estudian juntos en Scripture Habit se conviertan en un apoyo para sus corazones y les brinden alimento espiritual.\n\nY en esos momentos, recordamos el pasaje de las Escrituras lema de Scripture Habit:\n\n\"Por tanto, el que predica y el que recibe se comprenden el uno al otro, y ambos son edificados y se regocijan juntamente\"\n\nEspero que esta aplicación ayude a encarnar el gozo que describe este pasaje de las Escrituras.\n\nFinalmente, me gustaría expresar mi más sincero agradecimiento a todos los que apoyaron el desarrollo de esta aplicación y a todos los que la utilizan. Que las ricas bendiciones del Señor estén sobre sus vidas.\n\n¡¡Esperamos sus opiniones y comentarios!!\n->dazhilangxianggen@gmail.com \n\nDaijiro Sagane",
-            developerName: "Daijiro Sagane (Hermano Sagane)",
+            backgroundStory: "Esta aplicación fue creada originalmente como un proyecto de graduación por mí, Daijiro Sagane, un estudiante de BYU Pathway Worldwide (el programa en línea de BYU-Idaho), el cual he mejorado y lanzado al público.\n\nSi tiene alguna pregunta, opinión o comentario, no dude en ponerse en contacto conmigo a la siguiente dirección. ↓\n\nEmail: dazhilangxianggen@gmail.com",
+            developerName: "Daijiro Sagane",
             developerRole: "Creador de Scripture Habit"
         },
         dashboard: {

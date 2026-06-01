@@ -116,15 +116,15 @@ export default {
             signOut: "Ondoka",
             selectGroup: "Chagua Kikundi",
             close: "Funga",
-            story: "Hadithi ya Maendeleo"
+            story: "Utambulisho wa Msanidi Programu"
         },
         story: {
-            title: "Hadithi ya Maendeleo",
-            description: "Mawazo ya msanidi programu na hadithi ya asili",
-            vision: "Tunaamini kwamba, kama maandiko na historia yanavyoonyesha, kupitia 'ufunuo binafsi' unaotoka kwa kusoma maandiko kwa kuendelea, tunaweza kuzuia kuanguka kwa utamaduni, mgawanyiko wa kijamii, vita, na migogoro, na kuunda amani.",
+            title: "Utambulisho wa Msanidi Programu",
+            description: "Kuhusu msanidi programu na historia ya programu",
+            vision: "Tunaamini kwamba, kama maandiko na historia zilivyoonyesha, kupitia 'ufunuo wa kibinafsi' unaotokana na kujifunza maandiko mara kwa mara, tunaweza kuzuia kupungua kwa maadili, mgawanyiko wa kijamii, vita na migogoro, na kuleta amani.",
             appBackground: "Historia ya Maendeleo ya Programu",
-            backgroundStory: "Jambo, mimi ni Kaka Sagane. Niliunda Scripture Habit kama sehemu ya mradi wa shule. Mwanzoni mwa maendeleo ya programu hii, nilifikiri, 'Naam, itakuwa vizuri ikiwa ningeweza tu kutengeneza kitu ambacho naweza kukikabidhi shuleni.' Hata hivyo, ilitokea kuwa nzuri zaidi kuliko nilivyotarajia, kwa hivyo niliishia kuitoa kwa umma.\n\nKwa shukrani, kupitia programu hii, kuna watu wanaoniambia, 'Kujifunza maandiko kumekuwa jambo la kufurahisha' na 'Kujifunza kwangu kiroho kumeongezeka.' Ningedariki kuchukua fursa hii kutoa shukrani zangu pia. Mimi mwenyewe nimebarikiwa na fursa za kazi ya umishenari na uhudumiaji kupitia programu hii.\n\nMimi mwenyewe hukabiliwa na majaribu na taabu kila siku, na ninaamini kwamba nyote mnaosoma ujumbe huu pia mnakabiliwa na aina fulani ya majaribu na taabu. Ingawa siwezi kufikiria jinsi majaribu na taabu hizo zilivyo, natumaini kwa dhati kwamba maandiko na maneno ya kutia moyo kutoka kwa maoni ya wale wanaojifunza pamoja kwenye Scripture Habit yatakuwa tegemeo kwa mioyo yenu na kuwapa lishe ya kiroho.\n\nNa katika nyakati ngumu, tunakumbuka andiko kuu la Scripture Habit:\n\n\"Kwa hiyo, yule ahubiriye na yule apokeaye, wanaelewana, na wote wawili hujenga na kufurahi pamoja.\"\n\nNatumai programu hii itasaidia kudhihirisha furaha iliyoelezewa katika andiko hili.\n\nMwishowe, ningependa kutoa shukrani zangu za dhati kwa kila mtu aliyesaidia maendeleo ya programu hii, na kwa kila mtu anayeitumia. Baraka tele za Bwana ziwe juu ya maisha yenu.\n\nTunasubiri maoni na mawazo yenu!!\n->dazhilangxianggen@gmail.com \n\nDaijiro Sagane",
-            developerName: "Daijiro Sagane (Kaka Sane)",
+            backgroundStory: "Programu hii ilitengenezwa mwanzoni kama mradi wa mahafali na mimi, Daijiro Sagane, mwanafunzi katika chuo cha BYU Pathway Worldwide (mpango wa mtandaoni wa BYU-Idaho), ambayo nimeiboresha na kuitoa kwa umma tangu wakati huo.\n\nKama una maswali, maoni, au mapendekezo yoyote, tafadhali jisikie huru kuwasiliana nami kupitia anwani iliyo hapa chini. ↓\n\nBarua pepe: dazhilangxianggen@gmail.com",
+            developerName: "Daijiro Sagane",
             developerRole: "Mwasisi wa Scripture Habit"
         },
         dashboard: {

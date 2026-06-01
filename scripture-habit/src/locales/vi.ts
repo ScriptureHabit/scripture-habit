@@ -116,16 +116,15 @@ export default {
             signOut: "Đăng xuất",
             selectGroup: "Chọn Nhóm",
             close: "Đóng",
-            story: "Câu chuyện phát triển"
+            story: "Giới thiệu nhà phát triển"
         },
         story: {
-            title: "Câu chuyện phát triển",
-            description: "Suy nghĩ của người phát triển và bối cảnh ứng dụng",
-            vision: "Chúng tôi tin rằng, như thánh thư và lịch sử đã chứng minh, thông qua 'mặc khải cá nhân' đến từ việc nghiên cứu thánh thư liên tục, chúng ta có thể ngăn chặn sự suy tàn văn hóa, chia rẽ xã hội, chiến tranh và xung đột, và tạo ra hòa bình.",
-
-            appBackground: "Bối Cảnh Phát Triển Ứng Dụng",
-            backgroundStory: "Xin chào, tôi là Anh Sagane. Tôi đã tạo ra Scripture Habit như một phần của dự án trường học. Khi mới bắt đầu phát triển, tôi đã nghĩ: 'À, nếu mình có thể tạo ra thứ gì đó để nộp ở trường là tốt rồi'. Tuy nhiên, nó đã diễn ra tốt hơn nhiều so với tôi tưởng tượng, vì vậy cuối cùng tôi đã thực sự phát hành công khai nó.\n\nThật biết ơn khi thông qua ứng dụng này, có những người đã nói với tôi rằng: 'Việc nghiên cứu thánh thư đã trở nên thú vị' và 'Sự học hỏi thuộc linh của tôi đã sâu sắc hơn'. Tôi cũng muốn nhân cơ hội này để bày tỏ lòng biết ơn của mình. Bản thân tôi cũng đã được ban phước với nhiều cơ hội truyền giáo và phục sự thông qua ứng dụng này.\n\nBản thân tôi cũng phải đối mặt với những thử thách và gian nan mỗi ngày, và tôi tin rằng tất cả các bạn đang đọc thông điệp này cũng đang đối mặt với những thử thách và gian nan nào đó. Mặc dù tôi không thể hình dung được những thử thách và gian nan đó như thế nào, tôi chân thành hy vọng rằng thánh thư và sự khuyến khích từ những bình luận của những người cùng học trên Scripture Habit sẽ trở thành điểm tựa cho tâm hồn các bạn và nuôi dưỡng thuộc linh cho các bạn.\n\nVài những lúc đó, chúng ta nhớ lại câu thánh thư chủ đề của Scripture Habit:\n\n\"Thế nên, người thuyết giảng và người tiếp nhận hiểu lẫn nhau, và cả hai đều được gây dựng và cùng nhau vui mừng.\"\n\nHy vọng ứng dụng này sẽ góp phần thể hiện niềm vui được mô tả trong câu thánh thư này.\n\nCuối cùng, tôi muốn gửi lời cảm ơn chân thành đến tất cả những ai đã hỗ trợ phát triển ứng dụng này, cũng như tất cả những ai đang sử dụng nó. Cầu xin những phước lành phong phú của Chúa sẽ ngập tràn trong cuộc sống của các bạn.\n\nChúng tôi rất mong nhận được những ý kiến đóng góp và phản hồi từ các bạn!!\n->dazhilangxianggen@gmail.com \n\nDaijiro Sagane",
-            developerName: "Daijiro Sagane (Anh Sagane)",
+            title: "Giới thiệu nhà phát triển",
+            description: "Giới thiệu về nhà phát triển và bối cảnh của ứng dụng",
+            vision: "Chúng tôi tin rằng, như những gì thánh thư và lịch sử đã chỉ ra, thông qua 'sự mặc khải cá nhân' đến từ việc học hỏi thánh thư liên tục, chúng ta có thể ngăn chặn sự suy thoái văn hóa, chia rẽ xã hội, chiến tranh, bất hòa và kiến tạo hòa bình.",
+            appBackground: "Bối cảnh phát triển ứng dụng",
+            backgroundStory: "Ứng dụng này ban đầu được tạo ra như một dự án tốt nghiệp của tôi, Daijiro Sagane, một sinh viên tại BYU Pathway Worldwide (chương trình trực tuyến của BYU-Idaho), sau đó tôi đã cải tiến và phát hành rộng rãi cho công chúng.\n\nNếu bạn có bất kỳ câu hỏi, ý kiến hoặc cảm nhận nào, vui lòng liên hệ với tôi qua địa chỉ bên dưới. ↓\n\nEmail: dazhilangxianggen@gmail.com",
+            developerName: "Daijiro Sagane",
             developerRole: "Người sáng lập Scripture Habit"
         },
         dashboard: {

@@ -116,15 +116,15 @@ export default {
             signOut: "Sair",
             selectGroup: "Selecionar Grupo",
             close: "Fechar",
-            story: "História do Desenvolvimento"
+            story: "Apresentação do Desenvolvedor"
         },
         story: {
-            title: "História do Desenvolvimento",
-            description: "Pensamentos do desenvolvedor e o contexto do app",
-            vision: "Acreditamos que, como as escrituras e a história têm mostrado, através da 'revelação pessoal' que vem do estudo contínuo das escrituras, podemos prevenir o declínio cultural, a division social, a guerra e o conflito, e criar paz.",
-            appBackground: "Contexto do Desenvolvimento do App",
-            backgroundStory: "Olá, eu sou o Irmão Sagane. Criei o Scripture Habit como parte de um projeto escolar. No início do desenvolvimento, pensei: 'Bem, seria bom se eu pudesse fazer algo para entregar na escola'. No entanto, acabou sendo muito melhor do que eu esperava, então acabei lançando-o publicamente de fato.\n\nAgradecidamente, por meio deste aplicativo, há pessoas que me dizem: 'O estudo das escrituras tornou-se divertido' e 'Meu aprendizado espiritual se aprofundou'. Gostaria de aproveitar esta oportunidade para expressar minha gratidão também. Eu mesmo fui abençoado com oportunidades para o trabalho missionário e de ministração por meio deste aplicativo.\n\nEu mesmo enfrento provações e tribulações todos os dias, e imagino que todos vocês que estão lendo isso também estejam enfrentando algum tipo de provações e tribulações. Embora eu não possa imaginar como são essas provações e tribulações, espero sinceramente que as escrituras e o incentivo dos comentários daqueles que estudam juntos no Scripture Habit se tornem um apoio para seus corações e forneçam nutrição espiritual.\n\nE, nesses momentos, recordamos a escritura tema do Scripture Habit:\n\n\"Portanto, o que prega e o que recebe se compreendem mutuamente, e ambos são edificados e se regozijam juntos.\"\n\nEspero que este aplicativo ajude a incorporar a alegria descrita nesta escritura.\n\nFinalmente, gostaria de expressar meus sinceros agradecimentos a todos que apoiaram o desenvolvimento deste aplicativo e a todos que o utilizam. Que as ricas bênçãos do Senhor estejam sobre suas vidas.\n\nEstamos aguardando suas opiniões e comentários!!\n->dazhilangxianggen@gmail.com \n\nDaijiro Sagane",
-            developerName: "Daijiro Sagane (Irmão Sagane)",
+            title: "Apresentação do Desenvolvedor",
+            description: "Sobre o desenvolvedor e o histórico do aplicativo",
+            vision: "Acreditamos que, como as escrituras e a história têm demonstrado, por meio da 'revelação pessoal' advinda do estudo contínuo das escrituras, podemos prevenir o declínio cultural, a divisão social, a guerra e o conflito, e criar a paz.",
+            appBackground: "Histórico de Desenvolvimento do Aplicativo",
+            backgroundStory: "Este aplicativo foi originalmente criado como um projeto de graduação por mim, Daijiro Sagane, estudante da BYU Pathway Worldwide (programa on-line da BYU-Idaho), o qual aprimorei e disponibilizei ao público.\n\nSe tiver dúvidas, opiniões ou comentários, sinta-se à vontade para entrar em contato comigo pelo endereço abaixo. ↓\n\nE-mail: dazhilangxianggen@gmail.com",
+            developerName: "Daijiro Sagane",
             developerRole: "Criador do Scripture Habit"
         },
         dashboard: {

@@ -19,15 +19,15 @@ export default {
             signOut: "Sign Out",
             selectGroup: "Select Group",
             close: "Close",
-            story: "Development Story"
+            story: "Developer Intro"
         },
         story: {
-            title: "Development Story",
-            description: "The developer's thoughts and a little backstory",
+            title: "Developer Introduction",
+            description: "About the developer and the background of the app",
             vision: "We believe that, as scriptures and history have shown, through 'personal revelation' that comes from continuous scripture study, we can prevent cultural decline, social division, war, and conflict, and create peace.",
             appBackground: "App Development Background",
-            backgroundStory: "Hello, I am Brother Sagane. I created Scripture Habit as part of a school project. At the beginning of development, I thought, 'Well, it would be nice if I could just make something I can turn in to school.' However, it turned out much better than I expected, so I actually ended up releasing it to the public.\n\nGratefully, through this app, there are people who tell me, 'Scripture study has become fun' and 'My spiritual learning has deepened.' I would like to take this opportunity to express my gratitude as well. I myself have been blessed with opportunities for missionary work and ministering through this app.\n\nI myself face trials and tribulations every day, and I imagine that all of you reading this are also facing some kind of trials and tribulations. Although I cannot possibly imagine what those trials and tribulations are like, I sincerely hope that the scriptures and the encouragement from comments of those studying together on Scripture Habit will become a support for your hearts and provide spiritual nourishment.\n\nAnd at those times, we recall the theme scripture of Scripture Habit:\n\n\"Wherefore, he that preacheth and he that receiveth, understand one another, and both are edified and rejoice together.\"\n\nI hope this app will help embody the joy described in this scripture.\n\nFinally, I would like to express my heartfelt gratitude to everyone who supported the development of this app, and to everyone who uses it. May the Lord's rich blessings be upon your lives.\n\nWe look forward to your thoughts and feedback!!\n->dazhilangxianggen@gmail.com \n\nDaijiro Sagane",
-            developerName: "Daijiro Sagane (Brother Sagane)",
+            backgroundStory: "This app was originally created as a graduation project by me, Daijiro Sagane, a student at BYU Pathway Worldwide (BYU-Idaho's online program), which I have since improved and released to the public.\n\nIf you have any questions, opinions, or feedback, please feel free to contact me at the address below. ↓\n\nEmail: dazhilangxianggen@gmail.com",
+            developerName: "Daijiro Sagane",
             developerRole: "Scripture Habit Developer"
         },
         dashboard: {

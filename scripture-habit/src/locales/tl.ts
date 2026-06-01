@@ -118,15 +118,15 @@ export default {
             signOut: "Mag-sign Out",
             selectGroup: "Pumili ng Grupo",
             close: "Isara",
-            story: "Kasaysayan ng Pagbuo"
+            story: "Pagpapakilala sa Tagalikha"
         },
         story: {
-            title: "Kasaysayan ng Pagbuo",
-            description: "Ang mga kaisipan ng developer at kaunting background story",
-            vision: "Naniniwala kami na, gaya ng ipinapakita ng mga kasulatan at kasaysayan, sa pamamagitan ng 'personal na paghahayag' na nagmumula sa patuloy na pag-aaral ng kasulatan, mapipigilan natin ang paghina ng kultura, pagkakahati-hati ng lipunan, digmaan, at hidwaan, at makakalikha ng kapayapaan.",
-            appBackground: "Kasaysayan ng Pagbuo ng App",
-            backgroundStory: "Kumusta, ako si Brother Sagane. Nilikha ko ang Scripture Habit bilang bahagi ng isang proyekto sa paaralan. Sa simula ng pagbuo nito, naisip ko, 'Sana makagawa lang ako ng isang bagay na maipapasa ko sa paaralan.' Gayunpaman, naging mas maganda ito kaysa sa inaasahan ko, kaya sa huli ay ipinublish ko talaga ito sa publiko.\n\nMay pasasalamat na sa pamamagitan ng app na ito, may mga taong nagsasabi sa akin na, 'Naging masaya ang pag-aaral ng banal na kasulatan' at 'Lumalim ang aking espirituwal na pag-aaral.' Nais ko ring samantalahin ang pagkakataong ito upang ipahayag ang aking pasasalamat. Ako mismo ay biniyayaan ng mga pagkakataon para sa gawaing missionary at ministering sa pamamagitan ng app na ito.\n\nAko mismo ay humaharap sa mga pagsubok at kapighatian araw-araw, at inaakala ko na kayong lahat na nagbabasa nito ay humaharap din sa ilang uri ng mga pagsubok at kapighatian. Bagama't hindi ko lubos na maisip kung ano ang mga pagsubok at kapighatiang iyon, taos-puso kong inaasam na ang mga banal na kasulatan at ang pagganyak mula sa mga komento ng mga kasamang nag-aaral sa Scripture Habit ay maging suporta sa inyong mga puso at magbigay ng espirituwal na pagkain.\n\nAt sa mga sandaling iyon, naaalala natin ang temang talata ng Scripture Habit:\n\n\"Anupa’t siya na nangangaral at siya na tumatanggap, ay nauunawaan ang isa’t isa, at kapwa sila pinag-iibayo at nagagalak nang magkasama.\"\n\nSana ay makatulong ang app na ito na maisakatuparan ang kagalakang inilalarawan sa talatang ito.\n\nSa huli, nais kong ipahayag ang aking taos-pusong pasasalamat sa lahat ng sumuporta sa pagbuo ng app na ito, pati na rin sa lahat ng gumagamit nito. Nawa'y mapuspos ng masaganang pagpapala ng Panginoon ang inyong buhay.\n\nHinihintay namin ang inyong mga opinyon at komento!!\n->dazhilangxianggen@gmail.com \n\nDaijiro Sagane",
-            developerName: "Daijiro Sagane (Brother Sane)",
+            title: "Pagpapakilala sa Tagalikha",
+            description: "Tungkol sa tagalikha at pinagmulan ng app",
+            vision: "Naniniwala kami na tulad ng ipinapakita ng mga banal na kasulatan at kasaysayan, sa pamamagitan ng 'personal na paghahayag' na nagmumula sa patuloy na pag-aaral ng banal na kasulatan, maiiwasan natin ang paghina ng kultura, pagkakahati-hati ng lipunan, digmaan, at hidwaan, at makalikha ng kapayapaan.",
+            appBackground: "Pinagmulan ng Pagbuo ng App",
+            backgroundStory: "Ang app na ito ay orihinal na nilikha bilang isang graduation project ko, si Daijiro Sagane, na isang mag-aaral sa BYU Pathway Worldwide (online na programa ng BYU-Idaho), na pinaganda ko pa at inilabas sa publiko.\n\nKung mayroon kayong mga katanungan, opinyon, o komento, huwag mag-atubiling makipag-ugnayan sa akin sa address sa ibaba. ↓\n\nEmail: dazhilangxianggen@gmail.com",
+            developerName: "Daijiro Sagane",
             developerRole: "Tagalikha ng Scripture Habit"
         },
         dashboard: {
