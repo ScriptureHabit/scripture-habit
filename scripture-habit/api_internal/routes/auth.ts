@@ -202,6 +202,22 @@ router.post('/delete-account', authenticate, verifyAppCheck, async (req: Authent
             // --- STEP 3: Recursive Delete All User Data ---
             // This handles notes, groupStates, letters, private collections etc. efficiently.
             await db.recursiveDelete(userRef);
+
+            // --- STEP 3.5: Delete Profile Picture from Firebase Storage ---
+            try {
+                // Get bucket name from environment variables or use default
+                const bucketName = process.env.FIREBASE_STORAGE_BUCKET || `${process.env.FIREBASE_PROJECT_ID}.firebasestorage.app`;
+                const bucket = admin.storage().bucket(bucketName);
+                const file = bucket.file(`profile_pictures/${uid}.jpg`);
+                const [exists] = await file.exists();
+                if (exists) {
+                    await file.delete();
+                    console.log(`[AccountDelete] Successfully deleted profile picture for UID: ${uid}`);
+                }
+            } catch (storageErr) {
+                // Log but do not block deletion if storage file delete fails
+                console.error(`[AccountDelete] Storage cleanup failed or bucket not found for UID ${uid}:`, (storageErr as Error).message);
+            }
         }
 
         // --- STEP 3: Delete from Firebase Auth ---

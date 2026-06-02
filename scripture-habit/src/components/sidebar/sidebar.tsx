@@ -265,7 +265,7 @@ const Sidebar: React.FC<SidebarProps> = ({ selected, setSelected, userGroups = [
             className={selected === 4 ? 'menuItem active' : 'menuItem'} 
             onClick={() => {
               setSelected(4);
-              navigate(`/${language}/dashboard`);
+              navigate(`/${language}/dashboard?view=4`);
             }}
             data-testid="sidebar-story"
           >
