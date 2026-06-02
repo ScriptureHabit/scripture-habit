@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import './tour-guide.css';
+import { UserData } from '../../types/user';
 
 interface TourStep {
     targetSelector: string;
@@ -12,58 +13,82 @@ interface TourGuideProps {
     isOpen: boolean;
     onClose: () => void;
     t: (key: string, replacements?: Record<string, string | number>) => string;
+    userData?: UserData;
 }
 
-const TOUR_STEPS: TourStep[] = [
-    {
-        targetSelector: '.Sidebar',
-        titleKey: 'tourGuide.titleStep1',
-        descKey: 'tourGuide.descStep1',
-        placement: 'right'
-    },
-    {
-        targetSelector: '.streak-card',
-        titleKey: 'tourGuide.titleStep2',
-        descKey: 'tourGuide.descStep2',
-        placement: 'bottom'
-    },
-    {
-        targetSelector: '.level-card',
-        titleKey: 'tourGuide.titleStep3',
-        descKey: 'tourGuide.descStep3',
-        placement: 'bottom'
-    },
-    {
-        targetSelector: '.reading-plan-card',
-        titleKey: 'tourGuide.titleStep4',
-        descKey: 'tourGuide.descStep4',
-        placement: 'top'
-    },
-    {
-        targetSelector: '.share-learning-cta',
-        titleKey: 'tourGuide.titleStep5',
-        descKey: 'tourGuide.descStep5',
-        placement: 'top'
-    },
-    {
-        targetSelector: '.streak-calendar-container',
-        titleKey: 'tourGuide.titleStep6',
-        descKey: 'tourGuide.descStep6',
-        placement: 'top'
-    }
-];
-
-const TourGuide: React.FC<TourGuideProps> = ({ isOpen, onClose, t }) => {
+const TourGuide: React.FC<TourGuideProps> = ({ isOpen, onClose, t, userData }) => {
     const [currentStep, setCurrentStep] = useState(0);
+    const [nextDisabled, setNextDisabled] = useState(true);
     const [highlightRect, setHighlightRect] = useState<{ top: number; left: number; width: number; height: number } | null>(null);
     const [popoverStyle, setPopoverStyle] = useState<React.CSSProperties>({});
     const [popoverOnTop, setPopoverOnTop] = useState(false);
     const popoverRef = useRef<HTMLDivElement | null>(null);
 
+    const steps = React.useMemo(() => {
+        const list: TourStep[] = [
+            {
+                targetSelector: '.Sidebar',
+                titleKey: 'tourGuide.titleStep1',
+                descKey: 'tourGuide.descStep1',
+                placement: 'right'
+            }
+        ];
+
+        // Insert Quest step as Step 2 if user has not completed onboarding
+        const hasCompletedOnboarding = userData?.hasCompletedOnboarding || 
+            (userData && (userData.totalNotes && userData.totalNotes > 0) && 
+            ((userData.groupIds && userData.groupIds.length > 0) || !!userData.groupId));
+
+        if (userData && !hasCompletedOnboarding) {
+            list.push({
+                targetSelector: '.onboarding-quest-card',
+                titleKey: 'tourGuide.titleQuest',
+                descKey: 'tourGuide.descQuest',
+                placement: 'bottom'
+            });
+        }
+
+        list.push(
+            {
+                targetSelector: '.streak-card',
+                titleKey: 'tourGuide.titleStep2',
+                descKey: 'tourGuide.descStep2',
+                placement: 'bottom'
+            },
+            {
+                targetSelector: '.level-card',
+                titleKey: 'tourGuide.titleStep3',
+                descKey: 'tourGuide.descStep3',
+                placement: 'bottom'
+            },
+            {
+                targetSelector: '.reading-plan-card',
+                titleKey: 'tourGuide.titleStep4',
+                descKey: 'tourGuide.descStep4',
+                placement: 'top'
+            },
+            {
+                targetSelector: '.share-learning-cta',
+                titleKey: 'tourGuide.titleStep5',
+                descKey: 'tourGuide.descStep5',
+                placement: 'top'
+            },
+            {
+                targetSelector: '.streak-calendar-container',
+                titleKey: 'tourGuide.titleStep6',
+                descKey: 'tourGuide.descStep6',
+                placement: 'top'
+            }
+        );
+
+        return list;
+    }, [userData]);
+
     const updatePosition = useCallback(() => {
         if (!isOpen) return;
 
-        const step = TOUR_STEPS[currentStep];
+        const step = steps[currentStep];
+        if (!step) return;
         const element = document.querySelector(step.targetSelector) as HTMLElement;
 
         if (!element) {
@@ -124,13 +149,14 @@ const TourGuide: React.FC<TourGuideProps> = ({ isOpen, onClose, t }) => {
         }
 
         setPopoverStyle(pStyle);
-    }, [isOpen, currentStep]);
+    }, [isOpen, currentStep, steps]);
 
     // Scroll element into view and update position when active step changes
     useEffect(() => {
         if (!isOpen) return;
 
-        const step = TOUR_STEPS[currentStep];
+        const step = steps[currentStep];
+        if (!step) return;
         const element = document.querySelector(step.targetSelector) as HTMLElement;
         if (element) {
             const isMobile = window.innerWidth <= 768;
@@ -159,7 +185,7 @@ const TourGuide: React.FC<TourGuideProps> = ({ isOpen, onClose, t }) => {
             clearInterval(intervalId);
             clearTimeout(timeoutId);
         };
-    }, [isOpen, currentStep, updatePosition]);
+    }, [isOpen, currentStep, updatePosition, steps]);
 
     // Handle resize and scroll events to keep position synced
     useEffect(() => {
@@ -174,10 +200,18 @@ const TourGuide: React.FC<TourGuideProps> = ({ isOpen, onClose, t }) => {
         }
     }, [isOpen, updatePosition]);
 
+    // Disable Next button for 1 second on each step change
+    useEffect(() => {
+        if (!isOpen) return;
+        setNextDisabled(true);
+        const timer = setTimeout(() => setNextDisabled(false), 1000);
+        return () => clearTimeout(timer);
+    }, [currentStep, isOpen]);
+
     if (!isOpen) return null;
 
     const handleNext = () => {
-        if (currentStep < TOUR_STEPS.length - 1) {
+        if (currentStep < steps.length - 1) {
             setCurrentStep(currentStep + 1);
         } else {
             onClose();
@@ -190,7 +224,8 @@ const TourGuide: React.FC<TourGuideProps> = ({ isOpen, onClose, t }) => {
         }
     };
 
-    const step = TOUR_STEPS[currentStep];
+    const step = steps[currentStep];
+    if (!step) return null;
 
     return (
         <div className="tour-guide-overlay">
@@ -229,14 +264,18 @@ const TourGuide: React.FC<TourGuideProps> = ({ isOpen, onClose, t }) => {
                                     {t('tourGuide.back')}
                                 </button>
                             )}
-                            <button className="tour-btn-action next" onClick={handleNext}>
-                                {currentStep === TOUR_STEPS.length - 1 ? t('tourGuide.finish') : t('tourGuide.next')}
+                            <button
+                                className={`tour-btn-action next${nextDisabled ? ' disabled' : ''}`}
+                                onClick={handleNext}
+                                disabled={nextDisabled}
+                            >
+                                {currentStep === steps.length - 1 ? t('tourGuide.finish') : t('tourGuide.next')}
                             </button>
                         </div>
                     </div>
 
                     <div className="tour-popover-indicator">
-                        {TOUR_STEPS.map((_, idx) => (
+                        {steps.map((_, idx) => (
                             <div 
                                 key={idx} 
                                 className={`tour-dot ${idx === currentStep ? 'active' : ''}`} 
@@ -251,3 +290,5 @@ const TourGuide: React.FC<TourGuideProps> = ({ isOpen, onClose, t }) => {
 };
 
 export default TourGuide;
+
+

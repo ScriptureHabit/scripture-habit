@@ -636,11 +636,33 @@ export default {
             createdAt: "생성일",
             joiningFromInvite: "초대로 참여 중...",
             joiningFromInviteSuccess: "환영합니다! 초대를 통해 그룹에 참여하셨습니다.",
+            joinedGroupWelcome: "그룹에 가입되었습니다! 모두에게 자기소개와 인사를 건네보세요!",
             invitedToJoin: "당신은 다음 그룹에 초대되었습니다:",
             invalidInvite: "유효하지 않거나 만료된 초대 링크입니다.",
             goBackHome: "홈으로 돌아가기",
             fetchingInvite: "초대 정보 가져오는 중...",
             pwaInviteHint: "이미 이 앱을 홈 화면에 추가했다면,\n거기에서 앱을 열어 이 초대를 자동으로 적용하세요."
+        },
+                onboardingQuest: {
+            title: "🌟 온보딩 퀘스트",
+            step1Title: "1. 그룹에 가입하기",
+            step1Desc: "직접 그룹을 만들거나 다른 그룹에 참여하세요.",
+            step1DescSuccess: "그룹 가입에 성공했습니다! 🎉",
+            step2Title: "2. 첫 번째 노트 게시하기",
+            step2Desc: "그룹에 첫 번째 학습 노트를 공유해 보세요.",
+            congratsTitle: "🎉 퀘스트 완료!",
+            congratsDesc: "모든 온보딩 퀘스트를 완료했습니다! 함께 매일 성경 공부를 즐겨봅시다! ✨",
+            congratsBtn: "닫기"
+        },
+        onboardingGuide: {
+            newNoteStep1: "먼저 오늘 읽을 성경의 카테고리를 선택해 봅시다!",
+            newNoteStep2: "완벽해요! 다음으로 읽은 장이나 URL을 입력하세요 (예: 니파이전서 3:7).",
+            newNoteStep3: "멋져요! 마지막으로 느낀 점이나 생각을 댓글창에 적어주세요!",
+            newNoteStep4: "준비 완료! 오른쪽 아래 [노트 게시] 버튼을 클릭해 첫 번째 노트를 공유하세요! 🎉",
+            paceSetSuccess: "목표 페이스가 설정되었습니다! 이제 그룹을 만들거나 기존 그룹에 참여해봅시다!",
+            paceSetBtnSearch: "그룹 찾으러 가기",
+            paceSetSuccessInvite: "{ownerName}님의 그룹에 참여했습니다! Scripture Habit 사용법을 배우고 첫 노트를 올릴 준비를 해볼까요!",
+            paceSetBtnLearn: "사용법 배우러 가기"
         },
         groupForm: {
         invitePreviewTitle: "초대 링크 미리보기",
@@ -769,6 +791,8 @@ export default {
             backButton: "이전"
         },
         tourGuide: {
+        titleQuest: "온보딩 퀘스트",
+        descQuest: "시작하기 위해 2가지 간단한 퀘스트를 완료하세요: 학습 그룹에 가입하고, 그룹원들과 공유할 첫 번째 학습 노트를 작성하세요!",
         titleStep1: "네비게이션 메뉴",
         descStep1: "대시보드, 내 노트, 그룹, 설정 등 핵심 메뉴를 자유롭게 이동합니다.",
         titleStep2: "누적 학습 일수",

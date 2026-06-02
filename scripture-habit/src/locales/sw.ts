@@ -637,11 +637,33 @@ export default {
             createdAt: "Imeundwa mnamo",
             joiningFromInvite: "Inajiunga kutoka kwa mwaliko...",
             joiningFromInviteSuccess: "Karibu! Umejiunga na kikundi kupitia mwaliko.",
+            joinedGroupWelcome: "Umejiunga na kikundi! Jianzilishe na salimia kila mtu!",
             invitedToJoin: "Umealikwa kujiunga na:",
             invalidInvite: "Kiungo cha mwaliko ni batili au kimeisha muda wake.",
             goBackHome: "Rudi Nyumbani",
             fetchingInvite: "Inachukua maelezo ya mwaliko...",
             pwaInviteHint: "Ikiwa tayari umeongeza programu hii kwenye Skrini yako ya Nyumbani,\nifungue kutoka hapo ili utumie mwaliko huu kiotomatiki."
+        },
+                onboardingQuest: {
+            title: "🌟 Jaribio la Kuanza",
+            step1Title: "1. Jiunge na Kikundi",
+            step1Desc: "Unda kikundi chako mwenyewe au ujiunge na kikundi kingine.",
+            step1DescSuccess: "Umefanikiwa kujiunga na kikundi! 🎉",
+            step2Title: "2. Tuma Nukuu ya Kwanza",
+            step2Desc: "Shiriki nukuu yako ya kwanza ya kujifunza katika kikundi.",
+            congratsTitle: "🎉 Majaribio Yamekamilika!",
+            congratsDesc: "Umefanikiwa kukamilisha majaribio yote ya kuanza! Wacha tufurahie masomo ya kila siku ya maandiko pamoja! ✨",
+            congratsBtn: "Funga"
+        },
+        onboardingGuide: {
+            newNoteStep1: "Kwanza, tuchague kategoria ya maandiko unayosoma leo!",
+            newNoteStep2: "Safi sana! Kisha, ingiza mlango au URL uliyosoma (mfano 1 Nefi 3:7).",
+            newNoteStep3: "Ajabu! Mwishowe, andika mawazo yako katika kisanduku cha maoni!",
+            newNoteStep4: "Tayari! Bonyeza kitufe cha [Post Note] chini kulia ili kushiriki nukuu yako ya kwanza! 🎉",
+            paceSetSuccess: "Kasi yako ya lengo imewekwa! Sasa, hebu tuunde kikundi au tujiunge na kimoja!",
+            paceSetBtnSearch: "Nenda Katafute Kikundi",
+            paceSetSuccessInvite: "Umejiunga na kikundi cha {ownerName} kwa mafanikio! Hebu tujifunze jinsi ya kutumia Scripture Habit na kujiandaa kutuma ujumbe wako wa kwanza!",
+            paceSetBtnLearn: "Jifunze Jinsi ya Kutumia"
         },
         groupForm: {
         invitePreviewTitle: "Hakiki ya Kiungo cha Mwaliko",
@@ -770,6 +792,8 @@ export default {
             backButton: "Nyuma"
         },
         tourGuide: {
+        titleQuest: "Jaribio la Kuanza",
+        descQuest: "Kamilisha majaribio haya 2 rahisi ili uanze: jiunge na kikundi cha kujifunza, na uandike maelezo yako ya kwanza ya kujifunza.",
         titleStep1: "Menyu ya Urambazaji",
         descStep1: "Nenda hapa kati ya Dashibodi yako, Maelezo Yangu, Vikundi, na Mipangilio.",
         titleStep2: "Siku Zilizokusanywa",

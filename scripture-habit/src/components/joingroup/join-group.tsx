@@ -245,8 +245,10 @@ export default function JoinGroup() {
         body: JSON.stringify({ groupId })
       });
       if (resp.ok) {
-        toast.success(`🎉 ${t('joinGroup.successJoined')} ${groupData.name}`);
-        navigate(`/${language}/dashboard`, { state: { initialGroupId: groupId, initialView: 2 } });
+        // Navigate to group chat immediately; the dashboard will show the welcome modal
+        navigate(`/${language}/dashboard`, {
+          state: { initialGroupId: groupId, initialView: 2, showJoinSuccessModal: true, joinedGroupName: groupData.name || '' }
+        });
         return;
       }
       const errText = await resp.text();

@@ -37,6 +37,9 @@ export interface UserData {
   hasSeenTour?: boolean;
   hasSeenGroupOptionsTour?: boolean;
   isLevelMigrated?: boolean;
+  questCreatedGroup?: boolean;
+  questPostedNote?: boolean;
+  hasCompletedOnboarding?: boolean;
 
   
   // Group/Kick features

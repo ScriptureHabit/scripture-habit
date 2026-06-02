@@ -13,7 +13,8 @@ export const useDashboardInvitations = (
     showWelcomeStory: boolean,
     setActiveGroupId: (id: string) => void,
     setSelectedView: (view: number) => void,
-    t: (key: string) => string
+    t: (key: string) => string,
+    onJoinSuccess?: (groupId: string, groupName: string) => void
 ) => {
     const [isJoiningInvite, setIsJoiningInvite] = useState<boolean>(false);
 
@@ -51,8 +52,12 @@ export const useDashboardInvitations = (
                 if (resp.ok) {
                     const result = await resp.json();
                     const joinedGroupId = result.gid || result.groupId; // Fallback just in case
-                    console.log("[DashboardInvite] Join successful, gid:", joinedGroupId);
+                    const joinedOwnerName = result.ownerName || 'Owner';
+                    const joinedGroupName = result.groupName || 'Group';
+                    console.log("[DashboardInvite] Join successful, gid:", joinedGroupId, "owner:", joinedOwnerName, "groupName:", joinedGroupName);
                     safeStorage.remove('pendingInviteCode');
+                    safeStorage.set('joinedFromInvite', 'true');
+                    safeStorage.set('joinedOwnerName', joinedOwnerName);
                     
                     // Use a slightly shorter delay and ensure we set states correctly
                     setTimeout(() => {
@@ -63,6 +68,9 @@ export const useDashboardInvitations = (
                         setSelectedView(2);
                         setIsJoiningInvite(false);
                         toast.success(`🎉 ${t('joinGroup.joiningFromInviteSuccess')}`);
+                        if (onJoinSuccess) {
+                            onJoinSuccess(joinedGroupId || '', joinedGroupName);
+                        }
                     }, 500);
                 } else {
                     const errText = await resp.text();
@@ -85,7 +93,7 @@ export const useDashboardInvitations = (
         if (!showWelcomeStory && userData && user) {
             processPendingInvite();
         }
-    }, [user, userData, showWelcomeStory, t, isJoiningInvite, setActiveGroupId, setSelectedView]);
+    }, [user, userData, showWelcomeStory, t, isJoiningInvite, setActiveGroupId, setSelectedView, onJoinSuccess]);
 
     return { isJoiningInvite };
 };

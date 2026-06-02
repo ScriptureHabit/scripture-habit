@@ -609,11 +609,33 @@ export default {
             createdAt: "Ngày tạo",
             joiningFromInvite: "Đang tham gia từ lời mời...",
             joiningFromInviteSuccess: "Chào mừng! Bạn đã tham gia nhóm thông qua lời mời.",
+            joinedGroupWelcome: "Đã tham gia nhóm! Hãy tự giới thiệu bản thân và chào hỏi mọi người!",
             invitedToJoin: "Bạn đã được mời tham gia:",
             invalidInvite: "Liên kết mời không hợp lệ hoặc đã hết hạn.",
             goBackHome: "Quay lại trang chủ",
             fetchingInvite: "Đang lấy chi tiết lời mời...",
             pwaInviteHint: "Nếu bạn đã thêm ứng dụng này vào Màn hình chính,\nhãy mở ứng dụng từ đó để tự động áp dụng lời mời này."
+        },
+                onboardingQuest: {
+            title: "🌟 Nhiệm vụ chào mừng",
+            step1Title: "1. Tham gia nhóm",
+            step1Desc: "Tạo nhóm riêng của bạn hoặc tham gia một nhóm khác.",
+            step1DescSuccess: "Đã tham gia nhóm thành công! 🎉",
+            step2Title: "2. Đăng ghi chú đầu tiên",
+            step2Desc: "Chia sẻ ghi chú học tập đầu tiên của bạn vào nhóm.",
+            congratsTitle: "🎉 Hoàn thành nhiệm vụ!",
+            congratsDesc: "Bạn đã hoàn thành xuất sắc tất cả nhiệm vụ chào mừng! Hãy cùng nhau tận hưởng việc học thánh thư mỗi ngày! ✨",
+            congratsBtn: "Đóng"
+        },
+        onboardingGuide: {
+            newNoteStep1: "Đầu tiên, hãy chọn danh mục kinh thánh bạn đang đọc hôm nay!",
+            newNoteStep2: "Hoàn hảo! Tiếp theo, nhập chương hoặc URL bạn đã đọc (ví dụ: 1 Nê Phi 3:7).",
+            newNoteStep3: "Tuyệt vời! Cuối cùng, hãy viết suy nghĩ hoặc cảm nhận của bạn vào hộp bình luận!",
+            newNoteStep4: "Sẵn sàng! Nhấp vào nút [Đăng ghi chú] ở dưới cùng bên phải để chia sẻ ghi chú đầu tiên của bạn! 🎉",
+            paceSetSuccess: "Mục tiêu học tập đã được thiết lập! Bây giờ, hãy tạo một nhóm hoặc tham gia vào nhóm sẵn có nhé!",
+            paceSetBtnSearch: "Đi tìm nhóm học",
+            paceSetSuccessInvite: "Đã tham gia nhóm của Anh {ownerName} thành công! Hãy cùng tìm hiểu cách sử dụng Scripture Habit và chuẩn bị đăng ghi chú đầu tiên nhé!",
+            paceSetBtnLearn: "Tìm hiểu cách sử dụng"
         },
         groupForm: {
         invitePreviewTitle: "Xem trước Liên kết Mời",
@@ -742,6 +764,8 @@ export default {
             backButton: "Quay lại"
         },
         tourGuide: {
+        titleQuest: "Nhiệm vụ chào mừng",
+        descQuest: "Hoàn thành 2 nhiệm vụ đơn giản để bắt đầu: tham gia nhóm học tập và viết ghi chú học tập đầu tiên để chia sẻ.",
         titleStep1: "Thực Đơn Điều Hướng",
         descStep1: "Di chuyển nhanh giữa Bảng điều khiển, Ghi chú, Nhóm và phần Cài đặt cá nhân.",
         titleStep2: "Số Ngày Tích Lũy",

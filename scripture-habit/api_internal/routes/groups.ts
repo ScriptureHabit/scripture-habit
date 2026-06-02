@@ -96,7 +96,8 @@ router.post('/create-group', authenticate, requireEmailVerified, verifyAppCheck,
 
             transaction.update(userRef, {
                 groupIds: admin.firestore.FieldValue.arrayUnion(newGroupId),
-                groupId: newGroupId
+                groupId: newGroupId,
+                questCreatedGroup: true
             });
 
             const msgRef = groupRef.collection('messages').doc();
@@ -251,7 +252,8 @@ router.post('/join-group', authenticate, requireEmailVerified, verifyAppCheck, a
 
             transaction.update(userRef, {
                 groupIds: admin.firestore.FieldValue.arrayUnion(gid),
-                groupId: gid
+                groupId: gid,
+                questCreatedGroup: true
             });
 
             const msgRef = groupRef.collection('messages').doc();
@@ -267,7 +269,10 @@ router.post('/join-group', authenticate, requireEmailVerified, verifyAppCheck, a
             // IMPORTANT: Increment message counter for the join message
             CounterService.increment(transaction, groupRef, 'messageCount', 1);
 
-            return { gid, groupName: gData.name };
+            const ownerPreview = (gData.memberPreviews || []).find((p: PreviewItem) => p.uid === gData.ownerUserId);
+            const ownerName = ownerPreview ? ownerPreview.nickname : 'Owner';
+
+            return { gid, groupName: gData.name, ownerName };
         });
 
         res.status(200).json({ message: 'Success', ...result });

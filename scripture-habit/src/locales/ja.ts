@@ -528,11 +528,33 @@ export default {
             createdAt: "作成日",
             joiningFromInvite: "招待から参加中...",
             joiningFromInviteSuccess: "ようこそ！友達の招待からグループに参加しました。",
+            joinedGroupWelcome: "グループに参加しました！皆さんに自己紹介とご挨拶をしましょう！",
             invitedToJoin: "以下のグループに招待されました：",
             invalidInvite: "無効な招待リンク、または期限が切れています。",
             goBackHome: "ホームに戻る",
             fetchingInvite: "招待情報を取得中...",
             pwaInviteHint: "すでにアプリをホーム画面に追加している場合は、\nホーム画面から「Scripture Habit」を開くと、この招待が自動的に適用されます。"
+        },
+                onboardingQuest: {
+            title: "🌟 最初の課題",
+            step1Title: "1. グループに入ろう",
+            step1Desc: "自分でグループを作成するか、他ののグループに参加します。",
+            step1DescSuccess: "グループへの所属が完了しました！🎉",
+            step2Title: "2. 最初の学習ノートを投稿しよう",
+            step2Desc: "グループに最初のノートを投稿してみましょう。",
+            congratsTitle: "🎉 課題達成！",
+            congratsDesc: "すべての課題をクリアしました！仲間と一緒に日々の聖典学習を楽しみましょう！✨",
+            congratsBtn: "閉じる"
+        },
+        onboardingGuide: {
+            newNoteStep1: "まずは、今日読む聖典のカテゴリを選んでみましょう！",
+            newNoteStep2: "バッチリです！次は、読んだ章やURLを入力しましょう。（例: ニーファイ第一書 3:7）",
+            newNoteStep3: "素晴らしい！最後に、心に残ったことや感じた感想をコメントに入力しましょう！",
+            newNoteStep4: "準備完了です！最後に右下の【投稿】ボタンを押して、最初のノートを共有しましょう！🎉",
+            paceSetSuccess: "目標のペースが決まりましたね！さあ、次はグループを作成するか、参加してみましょう！",
+            paceSetBtnSearch: "グループを探しに行く",
+            paceSetSuccessInvite: "{ownerName}さんのグループに参加できました！Scripture Habitの使い方を学び、ノートを投稿する準備をしよう！",
+            paceSetBtnLearn: "使い方を学びに行く"
         },
         groupForm: {
         invitePreviewTitle: "招待リンクのプレビュー",
@@ -661,6 +683,8 @@ export default {
             backButton: "前へ"
         },
         tourGuide: {
+        titleQuest: "最初の課題",
+        descQuest: "まずはこの2つの簡単な課題をクリアしましょう：学習グループに参加して、最初の学習ノートを投稿・共有します！",
         titleStep1: "ナビゲーションメニュー",
         descStep1: "ここからダッシュボード、私のノート、グループ、個人設定を切り替えます。",
         titleStep2: "合計達成日数",

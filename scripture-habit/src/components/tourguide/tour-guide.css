@@ -99,7 +99,14 @@
     box-shadow: 0 4px 10px rgba(255, 105, 180, 0.25);
 }
 
-.tour-btn-action.next:hover {
+.tour-btn-action.next.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+}
+
+.tour-btn-action.next:not(.disabled):hover {
     transform: translateY(-1px);
     box-shadow: 0 6px 14px rgba(255, 105, 180, 0.35);
 }

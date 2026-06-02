@@ -85,9 +85,26 @@ const NewNote: FC<NewNoteProps> = ({
         return placeholders[Math.floor(Math.random() * placeholders.length)] || '';
     }, [tArray]);
 
+    // Sync state for Edit Mode
+    const onboardingGuideStepText = useMemo(() => {
+        const step2Done = userData?.hasCompletedOnboarding || (userData?.totalNotes && userData.totalNotes > 0);
+        if (step2Done || noteToEdit) return null;
+        if (!scripture) {
+            return t('onboardingGuide.newNoteStep1') || 'First, choose a category for the scriptures you are reading today!';
+        }
+        if (!chapter) {
+            return t('onboardingGuide.newNoteStep2') || 'Perfect! Next, enter the chapter or URL you read (e.g. 1 Nephi 3:7).';
+        }
+        if (!comment.trim()) {
+            return t('onboardingGuide.newNoteStep3') || 'Wonderful! Finally, write down your thoughts or impressions in the comment box!';
+        }
+        return t('onboardingGuide.newNoteStep4') || 'All ready! Click the [Post Note] button at the bottom right to share your first note! 🎉';
+    }, [userData?.hasCompletedOnboarding, userData?.totalNotes, noteToEdit, scripture, chapter, comment, t]);
+
     // Computed Values
     const glUrl = useMemo(() => getGospelLibraryUrl(scripture, chapter, language), [scripture, chapter, language]);
     const isUrl = typeof chapter === 'string' && chapter.startsWith('http');
+
 
     // Sync state for Edit Mode
     useEffect(() => {
@@ -185,6 +202,16 @@ const NewNote: FC<NewNoteProps> = ({
                     <div className="modal-header">
                         <h1>{noteToEdit ? t('newNote.editTitle') : t('newNote.newTitle')}</h1>
                     </div>
+
+                    {onboardingGuideStepText && (
+                        <div className="mascot-helper-card" data-testid="mascot-onboarding-helper">
+                            <img src="/images/mascot.png" alt="Mascot" className="mascot-helper-icon" style={{ width: '48px', height: '48px', objectFit: 'contain' }} />
+                            <div className="mascot-helper-text-container">
+                                <p className="mascot-helper-bubble">{onboardingGuideStepText}</p>
+                            </div>
+                        </div>
+                    )}
+
 
                     <div className="form-group" data-testid="new-note-category">
                         <label className="input-label">{t('newNote.chooseScriptureLabel')}</label>

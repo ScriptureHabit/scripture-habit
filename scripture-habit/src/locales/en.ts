@@ -33,7 +33,7 @@ export default {
         dashboard: {
             welcomeBack: "Welcome back",
             newNote: "New Note",
-            streak: "Cumulative Days",
+            streak: "Total Days",
             days: "days",
             totalNotes: "Total Notes",
             notes: "notes",
@@ -520,11 +520,33 @@ export default {
             createdAt: "Created at",
             joiningFromInvite: "Joining from invitation...",
             joiningFromInviteSuccess: "Welcome! You've successfully joined the group via your friend's invitation.",
+            joinedGroupWelcome: "Joined the group! Let's introduce ourselves and say hello to everyone!",
             invitedToJoin: "You have been invited to join:",
             invalidInvite: "Invalid or expired invitation link.",
             goBackHome: "Go Back Home",
             fetchingInvite: "Fetching invitation details...",
             pwaInviteHint: "If you've already added this app to your Home Screen,\nopen it from there to automatically apply this invitation."
+        },
+                onboardingQuest: {
+            title: "🌟 Onboarding Quests",
+            step1Title: "1. Join a Group",
+            step1Desc: "Create your own group or join another group.",
+            step1DescSuccess: "Successfully joined a group! 🎉",
+            step2Title: "2. Post Your First Note",
+            step2Desc: "Share your first study note in the group.",
+            congratsTitle: "🎉 Quests Completed!",
+            congratsDesc: "You've successfully completed all onboarding quests! Let's enjoy daily scripture study together! ✨",
+            congratsBtn: "Close"
+        },
+        onboardingGuide: {
+            newNoteStep1: "First, let's choose the category of scripture you are reading today!",
+            newNoteStep2: "Perfect! Next, enter the chapter or URL you read (e.g. 1 Nephi 3:7).",
+            newNoteStep3: "Wonderful! Finally, write down your thoughts or impressions in the comment box!",
+            newNoteStep4: "All ready! Click the [Post Note] button at the bottom right to share your first note! 🎉",
+            paceSetSuccess: "Your target pace is set! Now, let's create a group or join one!",
+            paceSetBtnSearch: "Go Find a Group",
+            paceSetSuccessInvite: "Successfully joined {ownerName}'s group! Let's learn how to use Scripture Habit and get ready to post your first note!",
+            paceSetBtnLearn: "Learn How to Use"
         },
         groupForm: {
         invitePreviewTitle: "Invite Link Preview",
@@ -653,9 +675,11 @@ export default {
             backButton: "Back"
         },
         tourGuide: {
+        titleQuest: "Onboarding Quests",
+        descQuest: "Complete these 2 simple quests to get started: join a study group, and write your first study note to share with them!",
         titleStep1: "Navigation Menu",
         descStep1: "Navigate here between your Dashboard, My Notes, Groups, and Settings.",
-        titleStep2: "Cumulative Days",
+        titleStep2: "Total Days",
         descStep2: "Tracks your daily scripture study streak. Keep the habit alive!",
         titleStep3: "Level & Target",
         descStep3: "Level up every 7 days! See how close you are with the progress bar.",

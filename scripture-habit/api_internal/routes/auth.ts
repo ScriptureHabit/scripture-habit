@@ -79,8 +79,9 @@ router.post('/initialize-profile', authenticate, verifyAppCheck, async (req: Aut
         }
 
         const now = admin.firestore.Timestamp.now();
-        const isTestUser = email?.endsWith('@example.com');
-        const isE2EUser = email?.endsWith('@test.local');
+        const isProd = process.env.NODE_ENV === 'production' && process.env.VITE_DEV_MODE !== 'true';
+        const isTestUser = !isProd && email?.endsWith('@example.com');
+        const isE2EUser = !isProd && email?.endsWith('@test.local');
         
         const userData: UserDocument = {
             uid,
@@ -103,8 +104,8 @@ router.post('/initialize-profile', authenticate, verifyAppCheck, async (req: Aut
 
         await userRef.set(userData);
         
-        // AUTO-VERIFY: For E2E tests using @test.local domain
-        if (email?.endsWith('@test.local')) {
+        // AUTO-VERIFY: For E2E tests using @test.local domain (non-prod only)
+        if (!isProd && email?.endsWith('@test.local')) {
             await admin.auth().updateUser(uid, { emailVerified: true });
         }
 

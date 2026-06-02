@@ -139,7 +139,8 @@ export class NoteService {
 
                 // --- PHASE 2: WRITE PHASE ---
                 const userUpdate: admin.firestore.UpdateData<UserDocument> = {
-                    lastPostAt: admin.firestore.Timestamp.fromDate(now)
+                    lastPostAt: admin.firestore.Timestamp.fromDate(now),
+                    questPostedNote: true
                 };
 
                 if (!existingNoteExists) {

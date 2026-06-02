@@ -17,13 +17,13 @@ const WelcomeStoryModal: FC<WelcomeStoryModalProps> = ({ isOpen, onClose, userDa
     const [page, setPage] = useState(0);
     const [isNextVisible, setIsNextVisible] = useState(false);
 
-    // Reset next button visibility and start a 3-second timer on page or open state changes
+    // Reset next button visibility and start a 2-second timer on page or open state changes
     useEffect(() => {
         if (isOpen) {
             setIsNextVisible(false);
             const timer = setTimeout(() => {
                 setIsNextVisible(true);
-            }, 3000);
+            }, 2000);
             return () => clearTimeout(timer);
         }
     }, [page, isOpen]);
@@ -148,8 +148,9 @@ const WelcomeStoryModal: FC<WelcomeStoryModalProps> = ({ isOpen, onClose, userDa
                             </button>
                         )}
                         <button 
-                            className={`story-btn ${!isNextVisible ? 'hidden' : ''}`} 
+                            className={`story-btn${!isNextVisible ? ' waiting' : ''}`}
                             onClick={handleNext}
+                            disabled={!isNextVisible}
                         >
                             {page === 5 ? t('welcomeStory.startButton') : t('welcomeStory.nextButton')}
                         </button>

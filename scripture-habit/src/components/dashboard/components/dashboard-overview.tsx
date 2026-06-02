@@ -4,6 +4,8 @@ import { UilPlus, UilPen } from '@iconscout/react-unicons';
 import Mascot from '../../mascot/mascot';
 import { UserData } from '../../../types/user';
 import StreakCalendar from './streak-calendar';
+import { QuestCard } from './quest-card';
+import './quest-card.css';
 
 interface DashboardOverviewProps {
   t: (key: string, replacements?: Record<string, string | number>) => string;
@@ -100,6 +102,8 @@ const DashboardOverview: FC<DashboardOverviewProps> = ({
           </div>
         </div>
       </div>
+
+      <QuestCard userData={userData} t={t} />
 
       <div className="inspiration-section">
         <Mascot

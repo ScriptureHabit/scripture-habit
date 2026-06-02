@@ -45,6 +45,18 @@ const detectInitialLanguage = (): Language => {
     return DEFAULT_LANGUAGE;
 };
 
+const isAuthOrPublicPage = (pathname: string): boolean => {
+    const parts = pathname.split('/').filter(Boolean);
+    const pathWithoutLang = parts.slice(SUPPORTED_LANGUAGES.includes(parts[0] as Language) ? 1 : 0).join('/');
+    const base = '/' + pathWithoutLang;
+    return base === '/' || 
+           base === '/login' || 
+           base === '/signup' || 
+           base === '/forgot-password' || 
+           base === '/welcome' || 
+           base.startsWith('/join');
+};
+
 interface LanguageProviderProps {
     children: ReactNode;
 }
@@ -112,10 +124,10 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
     useEffect(() => {
         if (!authLoading && userData?.uid) {
             const userLang = userData.language as Language;
-            
+
             if (!userLang || !SUPPORTED_LANGUAGES.includes(userLang)) {
-                // Backend doesn't have a valid language for this user yet. 
-                // Let's sync the currently active auto-detected language to the backend.
+                // Backend doesn't have a valid language for this user yet.
+                // Sync the currently active auto-detected language to the backend.
                 apiClient.post('/api/auth/update-profile', { language })
                     .catch(err => {
                         console.warn('[LanguageProvider] Failed to auto-sync language to profile:', err);
@@ -128,11 +140,32 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
             if (timeSinceManualChange < 10000) return;
 
             if (userLang !== language) {
+                // Skip syncing the URL prefix on auth/public pages to avoid race conditions with redirects
+                if (isAuthOrPublicPage(location.pathname)) {
+                    return;
+                }
+
+                // If the URL already has a valid language prefix, it means the user
+                // intentionally navigated with that language (e.g., just logged in from /ja/login).
+                // In this case, trust the URL language over the profile language, and
+                // update the profile to match instead of overwriting the UI.
+                const urlLang = getLanguageFromPath(location.pathname);
+                if (urlLang && urlLang === language) {
+                    // URL and UI agree — the profile is stale. Silently update the profile.
+                    if (userLang !== language) {
+                        apiClient.post('/api/auth/update-profile', { language })
+                            .catch(err => {
+                                console.warn('[LanguageProvider] Failed to update profile language to match URL:', err);
+                            });
+                    }
+                    return;
+                }
+
                 console.log(`[LanguageProvider] Syncing from Profile: ${userLang}`);
                 setLanguage(userLang);
             }
         }
-    }, [userData?.uid, userData?.language, authLoading, language, setLanguage]);
+    }, [userData?.uid, userData?.language, authLoading, language, setLanguage, location.pathname]);
 
     useEffect(() => {
         const load = async () => {

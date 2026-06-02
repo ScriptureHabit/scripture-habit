@@ -172,10 +172,12 @@
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
 }
 
-.story-btn.hidden {
-    opacity: 0;
-    visibility: hidden;
+.story-btn.waiting {
+    opacity: 0.4;
+    cursor: not-allowed;
     pointer-events: none;
+    transform: none;
+    box-shadow: none;
 }
 
 .story-btn:hover {

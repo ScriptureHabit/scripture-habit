@@ -2,6 +2,7 @@ import { FC } from 'react';
 import WelcomeStoryModal from '../../welcomestorymodal/welcome-story-modal';
 import NotificationPromptModal from '../notification-prompt-modal';
 import { UserData } from '../../../types/user';
+import { safeStorage } from '../../../utils/storage';
 
 interface DashboardModalsProps {
   t: (key: string, replacements?: Record<string, string | number>) => string;
@@ -146,11 +147,46 @@ const DashboardModals: FC<DashboardModalsProps> = ({
                 </button>
               </>
             ) : (
-              <div className="text-center p-1">
-                <p className="font-bold-large">{t('groupChat.autoKickSuccess')}</p>
-                <button className="modal-btn primary mt-1" onClick={() => setShowAutoKickModal(false)}>
-                  OK
-                </button>
+              <div className="text-center p-1 auto-kick-success-onboarding">
+                {(() => {
+                  const joinedFromInvite = safeStorage.get('joinedFromInvite') === 'true';
+                  const ownerName = safeStorage.get('joinedOwnerName') || 'Owner';
+
+                  const handleOnboardingRedirect = () => {
+                    setShowAutoKickModal(false);
+                    if (joinedFromInvite) {
+                      // Clean up storage so it won't trigger next time they change pace
+                      safeStorage.remove('joinedFromInvite');
+                      safeStorage.remove('joinedOwnerName');
+                    } else {
+                      // Self-registered user -> redirect to group-options
+                      window.location.href = `/${userData.language || 'ja'}/group-options`;
+                    }
+                  };
+
+                  return (
+                    <div className="onboarding-guide-step-container" style={{ padding: '1rem 0' }}>
+                      <div className="mascot-dialog-icon" style={{ marginBottom: '1rem' }}>
+                        <img src="/images/mascot.png" alt="Mascot" style={{ width: '80px', height: '80px', objectFit: 'contain' }} />
+                      </div>
+                      <p className="onboarding-guide-text font-bold-medium" style={{ fontSize: '1.05rem', lineHeight: '1.5', marginBottom: '1.5rem', color: '#1e293b' }}>
+                        {joinedFromInvite 
+                          ? t('onboardingGuide.paceSetSuccessInvite', { ownerName })
+                          : t('onboardingGuide.paceSetSuccess')}
+                      </p>
+                      <button 
+                        className="modal-btn primary mt-1 onboarding-guide-btn" 
+                        onClick={handleOnboardingRedirect}
+                        data-testid="onboarding-guide-redirect-button"
+                        style={{ width: '100%', padding: '0.75rem', fontSize: '1rem', fontWeight: 'bold' }}
+                      >
+                        {joinedFromInvite 
+                          ? t('onboardingGuide.paceSetBtnLearn')
+                          : t('onboardingGuide.paceSetBtnSearch')}
+                      </button>
+                    </div>
+                  );
+                })()}
               </div>
             )}
           </div>

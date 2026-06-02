@@ -76,8 +76,6 @@ export const useDashboardHabitPace = (
                 toast.success(t('groupChat.autoKickSuccess'));
                 setAutoKickStep(2);
                 setKickConfirmInput('');
-                // Note: We don't close immediately so they can see the success state
-                setTimeout(() => setShowAutoKickModal(false), 2000);
             } else {
                 const errorData = await response.json();
                 toast.error(`Failed to update pace: ${errorData.error || response.statusText}`);

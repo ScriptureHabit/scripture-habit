@@ -637,11 +637,33 @@ export default {
             createdAt: "Nilikha noong",
             joiningFromInvite: "Sumasali mula sa imbita...",
             joiningFromInviteSuccess: "Maligayang pagdating! Nakasali ka sa grupo sa pamamagitan ng isang imbita.",
+            joinedGroupWelcome: "Nakasali ka sa grupo! Ipakilala ang iyong sarili at batiin ang lahat!",
             invitedToJoin: "Naimbitahan ka na sumali sa:",
             invalidInvite: "Inbalido o expired na ang invite link.",
             goBackHome: "Bumalik sa Home",
             fetchingInvite: "Kinukuha ang mga detalye ng invite...",
             pwaInviteHint: "Kung naidagdag mo na ang app na ito sa iyong Home Screen,\nbuksan ito doon para awtomatikong magamit ang imbitasyong ito."
+        },
+                onboardingQuest: {
+            title: "🌟 Mga Onboarding Quest",
+            step1Title: "1. Sumali sa Grupo",
+            step1Desc: "Gumawa ng sarili mong grupo o sumali sa ibang grupo.",
+            step1DescSuccess: "Matagumpay na sumali sa grupo! 🎉",
+            step2Title: "2. I-post ang Iyong Unang Tala",
+            step2Desc: "Ibahagi ang iyong unang tala sa pag-aaral sa grupo.",
+            congratsTitle: "🎉 Mga Quest Kumpleto na!",
+            congratsDesc: "Matagumpay mong nakumpleto ang lahat ng onboarding quest! Sama-sama nating enjoyin ang pang-araw-araw na pag-aaral ng banal na kasulatan! ✨",
+            congratsBtn: "Isara"
+        },
+        onboardingGuide: {
+            newNoteStep1: "Una, piliin ang kategorya ng banal na kasulatan na binabasa mo ngayon!",
+            newNoteStep2: "Perpekto! Susunod, ilagay ang kabanata o URL na binasa mo (hal. 1 Nephi 3:7).",
+            newNoteStep3: "Kahanga-hanga! Panghuli, isulat ang iyong mga iniisip o impresyon sa comment box!",
+            newNoteStep4: "Handa na! I-click ang button na [Post Note] sa kanang ibaba upang ibahagi ang iyong unang tala! 🎉",
+            paceSetSuccess: "Nakatakda na ang iyong target na takbo! Ngayon, gumawa tayo ng grupo o sumali sa isa!",
+            paceSetBtnSearch: "Maghanap ng Grupo",
+            paceSetSuccessInvite: "Matagumpay na sumali sa grupo ni {ownerName}! Alamin natin kung paano gamitin ang Scripture Habit at maghanda na i-post ang iyong unang note!",
+            paceSetBtnLearn: "Alamin Paano Gamitin"
         },
         groupForm: {
         invitePreviewTitle: "Preview ng Link ng Imbitasyon",
@@ -770,6 +792,8 @@ export default {
             backButton: "Bumalik"
         },
         tourGuide: {
+        titleQuest: "Mga Onboarding Quest",
+        descQuest: "Kumpletuhin ang 2 simpleng quest na ito para magsimula: sumali sa isang study group, at isulat ang iyong unang study note para ibahagi.",
         titleStep1: "Navigation Menu",
         descStep1: "Mag-navigate dito para sa iyong Dashboard, Aking Mga Tala, Mga Grupo, at Settings.",
         titleStep2: "Mga Naipong Araw",

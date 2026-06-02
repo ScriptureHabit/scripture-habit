@@ -591,11 +591,33 @@ export default {
             createdAt: "建立於",
             joiningFromInvite: "正在通過邀請加入...",
             joiningFromInviteSuccess: "歡迎！您已通過邀請加入群組。",
+            joinedGroupWelcome: "已加入小組！讓我們向大家自我介紹並打個招呼吧！",
             invitedToJoin: "您已被邀請加入：",
             invalidInvite: "無效或已過期的邀請連結。",
             goBackHome: "返回首頁",
             fetchingInvite: "正在取得邀請詳情...",
             pwaInviteHint: "如果您已將此應用程式添加到主螢幕，\n請從那裡開啟它以自動套用此邀請。"
+        },
+                onboardingQuest: {
+            title: "🌟 新手任務",
+            step1Title: "1. 加入小組",
+            step1Desc: "建立你自己的小組或加入其他小組。",
+            step1DescSuccess: "成功加入小組！🎉",
+            step2Title: "2. 發佈你的第一篇筆記",
+            step2Desc: "在小組中分享你的第一篇學習筆記。",
+            congratsTitle: "🎉 任務完成！",
+            congratsDesc: "你已成功完成所有新手任務！讓我們一起享受每日經文學習吧！✨",
+            congratsBtn: "關閉"
+        },
+        onboardingGuide: {
+            newNoteStep1: "首先，選擇你今天閱讀的經文類別！",
+            newNoteStep2: "太棒了！接下來，輸入你閱讀的章節或網址（例如：尼腓一書 3:7）。",
+            newNoteStep3: "非常好！最後，在評論框中寫下你的心得或感想！",
+            newNoteStep4: "準備就緒！點擊右下角的[發佈筆記]按鈕，分享你的第一篇筆記！ 🎉",
+            paceSetSuccess: "目標節奏已設定！現在，讓我們建立群組或加入一個群組吧！",
+            paceSetBtnSearch: "尋找學習群組",
+            paceSetSuccessInvite: "成功加入 {ownerName} 兄弟的群組！讓我們學習如何使用 Scripture Habit，並準備發表第一篇筆記吧！",
+            paceSetBtnLearn: "學習如何使用"
         },
         groupForm: {
         invitePreviewTitle: "邀請連結預覽",
@@ -724,6 +746,8 @@ export default {
             backButton: "上一步"
         },
         tourGuide: {
+        titleQuest: "新手任務",
+        descQuest: "完成以下兩個簡單任務即可開始：加入學習小組，並撰寫並分享你的第一篇學習筆記！",
         titleStep1: "導覽功能表",
         descStep1: "在這裡可以輕鬆切換儀表板、我的筆記、我的群組和個人設定。",
         titleStep2: "累計學習天數",

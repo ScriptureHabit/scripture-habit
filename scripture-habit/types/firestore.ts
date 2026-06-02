@@ -136,6 +136,9 @@ export interface UserDocument {
     hasSeenWelcomeStory?: boolean;
     preferredCheckInTime?: string;
     isLevelMigrated?: boolean;
+    questCreatedGroup?: boolean;
+    questPostedNote?: boolean;
+    hasCompletedOnboarding?: boolean;
 
     // Recap Metadata
     lastRecapPrompt?: string | null;

@@ -463,4 +463,68 @@
   }
 }
 
+/* Premium Inline Mascot Onboarding Helper Card */
+.mascot-helper-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: rgba(255, 255, 255, 0.45);
+  border: 1px solid rgba(255, 105, 180, 0.2);
+  border-radius: 16px;
+  padding: 1rem;
+  margin-bottom: 0.5rem;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(255, 145, 157, 0.08);
+  animation: slideInDown 0.3s ease-out;
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.mascot-helper-icon {
+  font-size: 2.2rem;
+  animation: helperPulse 2s infinite ease-in-out;
+  flex-shrink: 0;
+}
+
+@keyframes helperPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1) rotate(5deg);
+  }
+}
+
+.mascot-helper-text-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.mascot-helper-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--pink);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.mascot-helper-bubble {
+  font-size: 0.85rem;
+  color: #2d3748;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+
 

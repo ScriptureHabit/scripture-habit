@@ -63,6 +63,11 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('AI Route Integration', ()
         recapsSnap.docs.forEach(d => batchRecaps.delete(d.ref));
         await batchRecaps.commit();
 
+        const lettersSnap = await db.collection('users').doc(USER_ID).collection('letters').get();
+        const batchLetters = db.batch();
+        lettersSnap.docs.forEach(d => batchLetters.delete(d.ref));
+        await batchLetters.commit();
+
         await db.collection('users').doc(USER_ID).delete();
     });
 

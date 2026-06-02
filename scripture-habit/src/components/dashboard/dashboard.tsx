@@ -17,6 +17,7 @@ import TourGuide from '../tourguide/tour-guide';
 import DashboardLayout from './components/dashboard-layout';
 import DashboardOverview from './components/dashboard-overview';
 import DashboardModals from './components/dashboard-modals';
+import JoinSuccessModal from '../joingroup/join-success-modal';
 
 // Styles
 import './dashboard.css';
@@ -46,6 +47,7 @@ const Dashboard: FC = () => {
   const initialGroupIdRef = useRef<string | undefined>(location.state?.groupId || location.state?.initialGroupId);
   const initialViewRef = useRef<number | undefined>(location.state?.initialView);
   const initialShowInviteModalRef = useRef<boolean>(!!location.state?.showInviteModal);
+  const initialShowJoinSuccessRef = useRef<boolean>(!!location.state?.showJoinSuccessModal);
 
   
   const navigate = useNavigate();
@@ -86,6 +88,8 @@ const Dashboard: FC = () => {
   const today = useToday(); // Triggers re-render at midnight local time
   // 0. Consumption of initial state
   const { setShowInviteModal } = useChatStore();
+
+  const [showJoinSuccessModal, setShowJoinSuccessModal] = useState<boolean>(false);
   
   // 1. Core Hooks
   const syncState = useDashboardSync();
@@ -101,19 +105,40 @@ const Dashboard: FC = () => {
       setShowInviteModal(true);
       initialShowInviteModalRef.current = false; // Consumed
     }
-    
-    // Consume navigation state so it doesn't re-trigger on reload
+
+    // Consume navigation state so it doesn't re-trigger on reload/render loop
     if ((initialGroupIdRef.current || initialViewRef.current) && location.state) {
-      window.history.replaceState({}, '');
+      initialGroupIdRef.current = undefined;
+      initialViewRef.current = undefined;
+      navigate(location.pathname, { replace: true, state: {} });
     }
-  }, [loading, setShowInviteModal, location.state]); // Only on mount/loading change
+  }, [loading, setShowInviteModal, location.state, location.pathname, navigate]); // Only on mount/loading change
+
+  // Show join success modal after group chat view is active (from join-group page navigation)
+  useEffect(() => {
+    if (initialShowJoinSuccessRef.current && !loading && selectedView === 2) {
+      const timer = setTimeout(() => {
+        setShowJoinSuccessModal(true);
+        initialShowJoinSuccessRef.current = false;
+      }, 600);
+      return () => clearTimeout(timer);
+    }
+  }, [loading, selectedView]);
   const { 
     showAutoKickModal, setShowAutoKickModal, autoKickStep, setAutoKickStep,
     selectedKickDays, setSelectedKickDays, kickConfirmInput, setKickConfirmInput,
     autoKickError, handleAutoKickSubmit 
   } = useDashboardHabitPace(userData, loading, false, t);
 
-  const { isJoiningInvite } = useDashboardInvitations(user, userData, showWelcomeStory, setActiveGroupId, setSelectedView, t);
+  const { isJoiningInvite } = useDashboardInvitations(
+    user, userData, showWelcomeStory, setActiveGroupId, setSelectedView, t,
+    (_groupId, _groupName) => {
+      // Wait for group chat view to render before showing modal
+      setTimeout(() => {
+        setShowJoinSuccessModal(true);
+      }, 800);
+    }
+  );
   const { warnings } = useDashboardWarnings(userData, userGroups);
 
   const referenceDate = useMemo(() => {
@@ -206,11 +231,14 @@ const Dashboard: FC = () => {
     if (!loading && userData && userData.uid && 
         userData.hasSeenWelcomeStory === true && 
         userData.hasSetKickThreshold === true && 
-        userData.hasSeenTour !== true) {
+        userData.hasSeenTour !== true &&
+        !showAutoKickModal &&
+        selectedView === 0) {
       const timer = setTimeout(() => setShowTourGuide(true), 800);
       return () => clearTimeout(timer);
     }
-  }, [userData, loading]);
+  }, [userData, loading, showAutoKickModal, selectedView]);
+
 
   // 3. Handlers
   const handleCloseWelcomeStory = async () => {
@@ -298,7 +326,7 @@ const Dashboard: FC = () => {
           <GroupChat 
             groupId={activeGroupId} userData={userData} userGroups={enrichedUserGroups} 
             onInputFocusChange={setIsInputFocused} isExternalModalOpen={isModalOpen} 
-            onBack={() => setSelectedView(0)} onGroupSelect={setActiveGroupId} 
+            onBack={() => { setActiveGroupId(null); setSelectedView(0); }} onGroupSelect={setActiveGroupId} 
              // initialShowInviteModal prop removed, using global store instead
  onUnityUpdate={handleUnityUpdate} isActive={selectedView === 2}
           />
@@ -326,7 +354,16 @@ const Dashboard: FC = () => {
         isOpen={showTourGuide} 
         onClose={handleCloseTourGuide} 
         t={t}
+        userData={userData}
       />
+
+      {/* Join Success Welcome Modal (from invite link) */}
+      {showJoinSuccessModal && (
+        <JoinSuccessModal
+          onClose={() => setShowJoinSuccessModal(false)}
+        />
+      )}
+
     </>
   );
 };

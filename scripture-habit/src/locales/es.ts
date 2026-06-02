@@ -591,11 +591,33 @@ export default {
             createdAt: "Creado el",
             joiningFromInvite: "Uniéndose desde la invitación...",
             joiningFromInviteSuccess: "¡Bienvenido! Te has unido al grupo a través de una invitación.",
+            joinedGroupWelcome: "¡Te has unido al grupo! ¡Preséntate y saluda a todos!",
             invitedToJoin: "Has sido invitado a unirte a:",
             invalidInvite: "Enlace de invitación inválido o expirado.",
             goBackHome: "Volver al Inicio",
             fetchingInvite: "Obteniendo detalles de la invitación...",
             pwaInviteHint: "Si ya has añadido esta aplicación a tu pantalla de inicio,\nábrela desde allí para aplicar esta invitación automáticamente."
+        },
+                onboardingQuest: {
+            title: "🌟 Misiones de Onboarding",
+            step1Title: "1. Únete a un Grupo",
+            step1Desc: "Crea tu propio grupo o únete a otro grupo.",
+            step1DescSuccess: "¡Te has unido con éxito a un grupo! 🎉",
+            step2Title: "2. Publica tu Primera Nota",
+            step2Desc: "Comparte tu primera nota de estudio en el grupo.",
+            congratsTitle: "🎉 ¡Misiones Completadas!",
+            congratsDesc: "¡Has completado con éxito todas las misiones de onboarding! ¡Disfrutemos del estudio diario de las escrituras juntos! ✨",
+            congratsBtn: "Cerrar"
+        },
+        onboardingGuide: {
+            newNoteStep1: "¡Primero, elijamos la categoría de las escrituras que estás leyendo hoy!",
+            newNoteStep2: "¡Perfecto! A continuación, introduce el capítulo o la URL que leíste (ej. 1 Nefi 3:7).",
+            newNoteStep3: "¡Maravilloso! Finalmente, escribe tus pensamientos o impresiones en la sección de comentarios.",
+            newNoteStep4: "¡Todo listo! Haz clic en el botón [Publicar Nota] abajo a la derecha para compartir tu primera nota. 🎉",
+            paceSetSuccess: "¡Tu ritmo objetivo está establecido! ¡Ahora, creemos un grupo o unámonos a uno!",
+            paceSetBtnSearch: "Ir a buscar un grupo",
+            paceSetSuccessInvite: "¡Te has unido al grupo de {ownerName}! ¡Aprendamos a usar Scripture Habit y preparémonos para publicar tu primera nota!",
+            paceSetBtnLearn: "Aprender a usar"
         },
         groupForm: {
         invitePreviewTitle: "Vista previa del enlace de invitación",
@@ -724,6 +746,8 @@ export default {
             backButton: "Atrás"
         },
         tourGuide: {
+        titleQuest: "Misiones de Onboarding",
+        descQuest: "Completa estas 2 misiones sencillas para comenzar: únete a un grupo de estudio y escribe tu primera nota de estudio para compartir.",
         titleStep1: "Menú de Navegación",
         descStep1: "Navega aquí entre tu panel, mis notas, grupos y configuraciones.",
         titleStep2: "Días Acumulados",
