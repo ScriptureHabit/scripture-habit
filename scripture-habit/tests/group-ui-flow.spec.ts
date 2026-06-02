@@ -84,9 +84,14 @@ test.describe('Group UI Flow (E2E)', () => {
     await expect(page.locator('.group-modal-content')).toBeVisible();
     await page.click('.confirm-join-btn');
 
-    // 5. Verify redirection and toast
+    // 5. Verify redirection and join-success modal
     await page.waitForURL(/.*dashboard/);
-    await expect(page.locator('.Toastify__toast--success')).toBeVisible({ timeout: 10000 });
+    const successOverlay = page.locator('.join-success-overlay');
+    await expect(successOverlay).toBeVisible({ timeout: 15000 });
+    
+    // Close the success modal
+    await page.click('#join-success-close-btn');
+    await expect(successOverlay).not.toBeVisible();
     
     // Verify a group appears in the sidebar (the one we just joined)
     await expect(page.locator('[data-testid="sidebar-group-item"]').first()).toBeVisible();

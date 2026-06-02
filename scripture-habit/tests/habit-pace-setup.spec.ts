@@ -40,15 +40,15 @@ test.describe('Habit Pace Setup (E2E)', () => {
     await page.click('button:has-text("Save")');
 
     // 10. Verify Success Screen
-    await expect(page.locator('.leave-modal-content')).toContainText('Habit pace set');
+    await expect(page.locator('.leave-modal-content')).toContainText('Your target pace is set');
 
-    // 11. Verify the modal closes automatically (after delay)
-    await expect(modal).not.toBeVisible({ timeout: 10000 });
+    // 11. Click the button to go to Group Options and wait for redirection
+    await page.getByTestId('onboarding-guide-redirect-button').click();
+    await page.waitForURL(/.*group-options/);
 
-    // 12. Final Verification: should not reappear
-    await page.reload();
+    // 12. Navigate back to dashboard and verify the modal does not reappear
+    await page.goto('/en/dashboard');
     await page.waitForSelector('[data-testid="sidebar-notes"]', { timeout: 30000 });
-    await page.waitForTimeout(2000); 
     await expect(page.locator('.leave-modal-overlay')).not.toBeVisible();
   });
 });

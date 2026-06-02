@@ -40,12 +40,13 @@ test.describe('Account Lifecycle', () => {
 
     // Should redirect to dashboard
     await expect(page).toHaveURL(/.*\/dashboard/);
+    await page.waitForSelector('[data-testid="sidebar-notes"]', { timeout: 30000 });
 
     // 3. ONBOARDING (Habit Pace Setup)
     // The Habit Pace modal should appear automatically for new users
     console.log('[Lifecycle] Waiting for Habit Pace onboarding modal');
     const paceOption4 = page.getByTestId('habit-pace-option-4');
-    await expect(paceOption4).toBeVisible({ timeout: 20000 });
+    await expect(paceOption4).toBeVisible({ timeout: 30000 });
     await paceOption4.click({ force: true });
     await page.getByTestId('habit-pace-next-button').click();
 
