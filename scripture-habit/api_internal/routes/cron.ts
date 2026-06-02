@@ -204,7 +204,6 @@ router.all('/aggregate-message-counts', verifyCronSecret, async (_req: Request, 
             try {
                 await CounterService.aggregateAndSync(groupDoc.ref, 'messageCount');
                 await CounterService.aggregateAndSync(groupDoc.ref, 'noteCount');
-                await MessageService.reconcileLatestMessages(groupDoc.id);
                 updatedCount++;
             } catch (err) {
                 console.error(`Priority aggregation failed for group ${groupDoc.id}:`, err);
@@ -692,7 +691,7 @@ router.all('/streak-warning', verifyCronSecret, async (_req: Request, res: Respo
 router.all('/daily-active-users', verifyCronSecret, async (req: Request, res: Response) => {
     console.log('[Cron] Fetching daily active users...');
     try {
-        const days = req.query.days ? parseInt(req.query.days as string, 10) : 180;
+        const days = req.query.days ? parseInt(req.query.days as string, 10) : 2;
         const now = new Date();
         const cutoffDate = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
         const cutoffStr = cutoffDate.toLocaleDateString('sv-SE', { timeZone: 'Asia/Tokyo' });

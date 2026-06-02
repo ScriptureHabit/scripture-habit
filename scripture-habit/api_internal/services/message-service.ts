@@ -667,6 +667,42 @@ export class MessageService {
         const groupRef = db.collection('groups').doc(groupId);
         const latestRef = groupRef.collection('messages_latest').doc('latest');
 
+        // PRE-CHECK (to avoid reading all 25 messages if they are already in sync)
+        try {
+            const [latestSnap, countSnap] = await Promise.all([
+                latestRef.get(),
+                groupRef.collection('messages').limit(25).count().get()
+            ]);
+
+            if (latestSnap.exists) {
+                const latestMessages = (latestSnap.data()?.messages || []) as Record<string, unknown>[];
+                const actualCount = countSnap.data().count;
+
+                if (latestMessages.length === actualCount) {
+                    if (actualCount === 0) {
+                        return { healed: false, count: 0 };
+                    }
+
+                    // Compare the single newest message ID
+                    const newestMsgSnap = await groupRef.collection('messages')
+                        .orderBy('createdAt', 'desc')
+                        .limit(1)
+                        .get();
+
+                    if (!newestMsgSnap.empty) {
+                        const newestMsgId = newestMsgSnap.docs[0].id;
+                        const lastMsgInLatestDoc = latestMessages[latestMessages.length - 1];
+
+                        if (lastMsgInLatestDoc && lastMsgInLatestDoc.id === newestMsgId) {
+                            return { healed: false, count: actualCount };
+                        }
+                    }
+                }
+            }
+        } catch (err) {
+            console.warn(`[reconcileLatestMessages] Pre-check failed, falling back to full transaction:`, err);
+        }
+
         return await db.runTransaction(async (transaction) => {
             const [latestSnap, actualMessagesSnap] = await Promise.all([
                 transaction.get(latestRef),

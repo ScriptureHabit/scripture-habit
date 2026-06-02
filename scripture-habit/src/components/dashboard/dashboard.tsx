@@ -132,7 +132,7 @@ const Dashboard: FC = () => {
 
   const { isJoiningInvite } = useDashboardInvitations(
     user, userData, showWelcomeStory, setActiveGroupId, setSelectedView, t,
-    (_groupId, _groupName) => {
+    () => {
       // Wait for group chat view to render before showing modal
       setTimeout(() => {
         setShowJoinSuccessModal(true);
