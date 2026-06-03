@@ -246,11 +246,7 @@ export class NoteService {
                     searchTokens: buildNoteSearchTokens({ scripture, chapter, comment, title, speaker })
                 });
 
-                // Daily Active User Stats Write (Incremental Plan B)
-                const dailyStatsRef = db.collection('dailyStats').doc(today);
-                transaction.set(dailyStatsRef, {
-                    activeUsers: admin.firestore.FieldValue.arrayUnion(uid)
-                }, { merge: true });
+                // Daily Active User Stats (Moved outside transaction to avoid Read billing & contention)
 
                 // Streak / Cumulative Milestone Announcements
                 const newCumulative = (userData.daysStudiedCount || 0) + 1;
@@ -322,7 +318,8 @@ export class NoteService {
                     newStreak, 
                     streakUpdated, 
                     nickname: userNickname,
-                    timeZone
+                    timeZone,
+                    todayStr: today
                 };
             }) as { 
                 personalNoteId: string, 
@@ -330,7 +327,8 @@ export class NoteService {
                 newStreak: number, 
                 streakUpdated: boolean, 
                 nickname: string,
-                timeZone: string
+                timeZone: string,
+                todayStr: string
             };
 
             // Post-transaction Async Operations (Reads outside transaction)
@@ -356,64 +354,72 @@ export class NoteService {
                 console.error('[NoteService] Error fetching group members for notification:', err);
             }
 
-            // Async Background Sync for Unity and Date Reset
-            const backgroundPromise = Promise.all(groupsToSync.map(async (gid) => {
-                try {
-                    const groupRef = db.collection('groups').doc(gid);
-                    
-                    // REUSE the already fetched snapshot if available
-                    let gSnap = loadedGroupSnaps.find(snap => snap.id === gid);
-                    if (!gSnap || !gSnap.exists) {
-                        gSnap = await groupRef.get();
-                    }
-                    if (!gSnap.exists) return;
-
-                    const gData = gSnap.data() as GroupDocument;
-                    const groupTimeZone = gData.timeZone || result.timeZone || 'UTC';
-                    const groupToday = formatDateInTimeZone(new Date(), groupTimeZone);
-                    
-                    const currentActivityDate = gData.dailyActivity?.date || '';
-                    const normCurrent = normalizeDateString(currentActivityDate);
-                    const normToday = normalizeDateString(groupToday);
-
-                    const groupUpdate: {
-                        dailyActivity?: { date: string; activeMembers: string[] };
-                        'dailyActivity.activeMembers'?: admin.firestore.FieldValue;
-                        'dailyActivity.date'?: string;
-                        unityPercentage?: number;
-                    } = {};
-                    let activeMembers = gData.dailyActivity?.activeMembers || [];
-                    if (!activeMembers.includes(uid)) {
-                        activeMembers = [...activeMembers, uid];
-                    }
-
-                    if (normCurrent !== '' && normToday > normCurrent) {
-                        groupUpdate.dailyActivity = { date: groupToday, activeMembers: [uid] };
-                    } else if (normCurrent === '' || normToday === normCurrent) {
-                        groupUpdate['dailyActivity.activeMembers'] = admin.firestore.FieldValue.arrayUnion(uid);
-                        if (normCurrent === '') groupUpdate['dailyActivity.date'] = groupToday;
-                    } else {
-                        console.warn(`[NoteService] Future date detected for group ${gid}: ${normCurrent}. Resetting to ${normToday}.`);
-                        groupUpdate.dailyActivity = { date: groupToday, activeMembers: [uid] };
-                    }
-
-                    // Simulate updated group state for unity calculation
-                    const simulatedGroup = {
-                        ...gData,
-                        dailyActivity: {
-                            date: groupUpdate.dailyActivity?.date || gData.dailyActivity?.date || groupToday,
-                            activeMembers: groupUpdate.dailyActivity?.activeMembers || activeMembers
+            // Async Background Sync for Unity, Date Reset and Daily Active User Stats Write
+            const backgroundPromise = Promise.all([
+                ...groupsToSync.map(async (gid) => {
+                    try {
+                        const groupRef = db.collection('groups').doc(gid);
+                        
+                        // REUSE the already fetched snapshot if available
+                        let gSnap = loadedGroupSnaps.find(snap => snap.id === gid);
+                        if (!gSnap || !gSnap.exists) {
+                            gSnap = await groupRef.get();
                         }
-                    };
-                    
-                    groupUpdate.unityPercentage = calculateUnityPercentage(simulatedGroup as unknown as Group, [], new Date());
-                    
-                    await groupRef.update(groupUpdate);
-                } catch (err) {
-                    console.error(`[NoteService] Unity update failed for group ${gid}:`, err);
-                }
-            })).catch(err => {
-                console.error('[NoteService] Background group updates failed:', err);
+                        if (!gSnap.exists) return;
+
+                        const gData = gSnap.data() as GroupDocument;
+                        const groupTimeZone = gData.timeZone || result.timeZone || 'UTC';
+                        const groupToday = formatDateInTimeZone(new Date(), groupTimeZone);
+                        
+                        const currentActivityDate = gData.dailyActivity?.date || '';
+                        const normCurrent = normalizeDateString(currentActivityDate);
+                        const normToday = normalizeDateString(groupToday);
+
+                        const groupUpdate: {
+                            dailyActivity?: { date: string; activeMembers: string[] };
+                            'dailyActivity.activeMembers'?: admin.firestore.FieldValue;
+                            'dailyActivity.date'?: string;
+                            unityPercentage?: number;
+                        } = {};
+                        let activeMembers = gData.dailyActivity?.activeMembers || [];
+                        if (!activeMembers.includes(uid)) {
+                            activeMembers = [...activeMembers, uid];
+                        }
+
+                        if (normCurrent !== '' && normToday > normCurrent) {
+                            groupUpdate.dailyActivity = { date: groupToday, activeMembers: [uid] };
+                        } else if (normCurrent === '' || normToday === normCurrent) {
+                            groupUpdate['dailyActivity.activeMembers'] = admin.firestore.FieldValue.arrayUnion(uid);
+                            if (normCurrent === '') groupUpdate['dailyActivity.date'] = groupToday;
+                        } else {
+                            console.warn(`[NoteService] Future date detected for group ${gid}: ${normCurrent}. Resetting to ${normToday}.`);
+                            groupUpdate.dailyActivity = { date: groupToday, activeMembers: [uid] };
+                        }
+
+                        // Simulate updated group state for unity calculation
+                        const simulatedGroup = {
+                            ...gData,
+                            dailyActivity: {
+                                date: groupUpdate.dailyActivity?.date || gData.dailyActivity?.date || groupToday,
+                                activeMembers: groupUpdate.dailyActivity?.activeMembers || activeMembers
+                            }
+                        };
+                        
+                        groupUpdate.unityPercentage = calculateUnityPercentage(simulatedGroup as unknown as Group, [], new Date());
+                        
+                        await groupRef.update(groupUpdate);
+                    } catch (err) {
+                        console.error(`[NoteService] Unity update failed for group ${gid}:`, err);
+                    }
+                }),
+                // Daily Active User Stats Write (Outside transaction to avoid Read billing & contention)
+                db.collection('dailyStats').doc(result.todayStr).set({
+                    activeUsers: admin.firestore.FieldValue.arrayUnion(uid)
+                }, { merge: true }).catch(err => {
+                    console.error('[NoteService] Failed to write dailyStats in background:', err);
+                })
+            ]).catch(err => {
+                console.error('[NoteService] Background updates failed:', err);
                 return null;
             });
 
