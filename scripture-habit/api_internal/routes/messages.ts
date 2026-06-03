@@ -105,16 +105,39 @@ router.get('/bundle/:groupId', authenticate, verifyAppCheck, async (req: Authent
 
         // 4. Generate Bundle (Fresh from Truth)
         console.log(`[Bundle] Generating new bundle for ${groupId}`);
-        const messagesRef = groupRef.collection('messages');
-        const q = messagesRef.orderBy('createdAt', 'desc').limit(25);
-        const querySnap = await q.get();
-
         const bundle = db.bundle(`group-messages-${groupId}`);
-        bundle.add(`latest-messages-${groupId}`, querySnap);
 
-        // TRUTH: If we have fewer than 20 messages in individual docs, 
+        const latestRef = groupRef.collection('messages_latest').doc('latest');
+        const latestSnap = await latestRef.get();
+
+        let hasFewMessages = false;
+
+        if (latestSnap.exists) {
+            console.log(`[Bundle] Including messages_latest/latest document for ${groupId}`);
+            bundle.add(latestSnap);
+            const messages = (latestSnap.data()?.messages || []) as unknown[];
+            hasFewMessages = messages.length < 20;
+        } else {
+            // Fallback: If latest aggregate does not exist, query the messages subcollection directly
+            console.warn(`[Bundle] messages_latest/latest not found for ${groupId}. Querying messages collection directly...`);
+            const messagesRef = groupRef.collection('messages');
+            const q = messagesRef.orderBy('createdAt', 'desc').limit(25);
+            const querySnap = await q.get();
+
+            bundle.add(`latest-messages-${groupId}`, querySnap);
+            hasFewMessages = querySnap.size < 20;
+
+            // Trigger self-healing in the background
+            waitUntil(
+                MessageService.reconcileLatestMessages(groupId)
+                    .then(res => console.log(`[Bundle Self-Healing] Reconciled latest messages for ${groupId}: healed=${res.healed}, count=${res.count}`))
+                    .catch(err => console.error(`[Bundle Self-Healing] Failed to reconcile for ${groupId}:`, err))
+            );
+        }
+
+        // TRUTH: If we have fewer than 20 messages, 
         // include the latest Bucket to prevent a "History Gap" in the UI.
-        if (querySnap.size < 20) {
+        if (hasFewMessages) {
             const bucketsSnap = await groupRef.collection('message_buckets')
                 .orderBy('endTime', 'desc')
                 .limit(1)
