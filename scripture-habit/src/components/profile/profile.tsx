@@ -480,7 +480,7 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
                         <div className="stat-row">
                             <div className="stat-item">
                                 <span className="stat-value">{stats.streak}</span>
-                                <span className="stat-label">{t('profile.consecutiveDays')} ({t('dashboard.days')})</span>
+                                <span className="stat-label">{t('profile.consecutiveDays')}</span>
                             </div>
                             <div className="stat-item">
                                 <span className="stat-value">{stats.totalNotes}</span>
