@@ -1,4 +1,4 @@
-# Scripture Habit 📖🔥
+# Scripture Habit 
 
 [![Vite](https://img.shields.io/badge/vite-v8.0-blueviolet.svg)](https://vite.dev/)
 [![React](https://img.shields.io/badge/react-v19.0-blue.svg)](https://react.dev/)
