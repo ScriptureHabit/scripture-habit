@@ -95,6 +95,14 @@
             "destination": "/api/api"
         },
         {
+            "source": "/:lang(ja|es|pt|zho|vi|th|ko|tl|sw)",
+            "destination": "/index-:lang.html"
+        },
+        {
+            "source": "/:lang(ja|es|pt|zho|vi|th|ko|tl|sw)/:path*",
+            "destination": "/index-:lang.html"
+        },
+        {
             "source": "/(.*)",
             "destination": "/index.html"
         }
