@@ -1,9 +1,9 @@
 import { useState, useEffect, useMemo } from 'react';
-import { doc, onSnapshot, collection, query, where, Timestamp, getDocs } from 'firebase/firestore';
+import { doc, onSnapshot, collection, query, where } from 'firebase/firestore';
 import { toast } from 'react-toastify';
 import { db } from '../../../firebase';
 import { UserData } from '../../../types/user';
-import { Group, Message } from '../../../types/chat';
+import { Group } from '../../../types/chat';
 import { groupMemberConverter } from '../../../utils/firestore-converters';
 import { useUnityMidnightReset } from '../../../hooks/use-unity-midnight-reset';
 
@@ -65,8 +65,7 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
                     if (!existing) return newG;
                     return {
                         ...newG,
-                        myMemberStatus: existing.myMemberStatus,
-                        recentMessages: existing.recentMessages
+                        myMemberStatus: existing.myMemberStatus
                     };
                 };
 
@@ -104,36 +103,6 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
                 }
             });
             unsubscribers.push(unsubMember);
-        });
-
-        // 3. Recent messages fetches (last 24h) - Use getDocs instead of onSnapshot for list view to save read costs
-        // Round 'dayAgo' to the nearest 30 minutes to make the query cacheable.
-        const now = new Date();
-        now.setMinutes(Math.floor(now.getMinutes() / 30) * 30, 0, 0);
-        const dayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-
-        groupIds.forEach(gid => {
-            const msgsQuery = query(
-                collection(db, 'groups', gid, 'messages'),
-                where('isNote', '==', true),
-                where('createdAt', '>=', Timestamp.fromDate(dayAgo))
-            );
-            getDocs(msgsQuery).then((snap) => {
-                const msgs = snap.docs.map(d => ({ id: d.id, ...d.data() } as Message));
-                setRawUserGroups(prev => {
-                    const existing = prev.find(g => g.id === gid);
-                    if (!existing) return prev;
-                    
-                    const oldMsgs = existing.recentMessages || [];
-                    if (oldMsgs.length === msgs.length && oldMsgs.every((m, i) => m.id === msgs[i].id)) {
-                        return prev;
-                    }
-                    
-                    return prev.map(g => g.id === gid ? { ...g, recentMessages: msgs } : g);
-                });
-            }).catch((err) => {
-                if (err.code !== 'permission-denied') console.log(`Dashboard messages fetch error ${gid}:`, err);
-            });
         });
 
         return () => unsubscribers.forEach(unsub => unsub());

@@ -279,11 +279,10 @@ describe('useDashboardGroups', () => {
         });
     });
 
-    it('should handle member status and message updates and their errors (lines 90-101, 116-129)', async () => {
+    it('should handle member status updates and their errors (lines 90-101)', async () => {
         const listeners = {
             member: {} as Record<string, any>
         };
-        const getDocsPromises: Record<string, Array<{ resolve: (snap: any) => void; reject: (err: any) => void }>> = {};
 
         vi.mocked(firestore.onSnapshot).mockImplementation(((target: any, callback: any, onError: any) => {
             const listenerObj = { target, callback, onError };
@@ -296,38 +295,20 @@ describe('useDashboardGroups', () => {
             return () => {};
         }) as any);
 
-        vi.mocked(firestore.getDocs).mockImplementation(((target: any) => {
-            const t = target as any;
-            if (t && t.type === 'messages') {
-                return new Promise((resolve, reject) => {
-                    if (!getDocsPromises[t.gid]) getDocsPromises[t.gid] = [];
-                    getDocsPromises[t.gid].push({ resolve, reject });
-                });
-            }
-            return Promise.resolve({ docs: [] });
-        }) as any);
-
         const toastSpy = vi.spyOn(toast, 'error');
 
         const { result } = renderHook(() => useDashboardGroups(mockUserData as any, null));
 
-        // 1. Initial trigger of members/groups (messages will wait for Promise resolution)
+        // 1. Initial trigger of members/groups
         await waitFor(() => {
             expect(mockTestState.listeners.length).toBeGreaterThan(0);
             expect(listeners.member['group1']).toBeDefined();
-            expect(getDocsPromises['group1']).toBeDefined();
-            expect(getDocsPromises['group1'].length).toBeGreaterThan(0);
         });
 
         // Trigger member callback
         listeners.member['group1'].callback({
             exists: () => true,
             data: () => ({ role: 'member' })
-        });
-
-        // Resolve messages promise with early text
-        getDocsPromises['group1'][0].resolve({
-            docs: [{ id: 'msg1', data: () => ({ text: 'Early', isNote: true }) }]
         });
 
         const activeGroupsListener = getLatestGroupsListener();
@@ -359,59 +340,6 @@ describe('useDashboardGroups', () => {
 
         listeners.member['group1'].onError({ code: 'unavailable' });
         expect(toastSpy).toHaveBeenCalledWith('Member Status Error (group): unavailable');
-
-        // Verify loaded messages (from our resolved promise)
-        await waitFor(() => {
-            expect(result.current.userGroups[0].recentMessages).toBeDefined();
-            expect(result.current.userGroups[0].recentMessages?.[0].id).toBe('msg1');
-        });
-
-        // 3. Test message getDocs errors (both logging and ignored permission-denied)
-        const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
-
-        // Trigger a new render or simulate a mock getDocs fail
-        let rejectPromise: any;
-        vi.mocked(firestore.getDocs).mockImplementationOnce(() => {
-            return new Promise((_, reject) => {
-                rejectPromise = reject;
-            });
-        });
-
-        // Trigger useDashboardGroups effect again by changing activeGroupId to force re-render/re-fetch
-        renderHook(() => useDashboardGroups(mockUserData as any, null));
-        
-        await waitFor(() => {
-            expect(rejectPromise).toBeDefined();
-        });
-
-        // Reject with unavailable
-        rejectPromise({ code: 'unavailable' });
-        
-        await waitFor(() => {
-            expect(consoleSpy).toHaveBeenCalledWith('Dashboard messages fetch error group1:', expect.anything());
-        });
-        consoleSpy.mockClear();
-
-        // Reject with permission-denied (which should be silently ignored)
-        let rejectPromise2: any;
-        vi.mocked(firestore.getDocs).mockImplementationOnce(() => {
-            return new Promise((_, reject) => {
-                rejectPromise2 = reject;
-            });
-        });
-
-        renderHook(() => useDashboardGroups(mockUserData as any, null));
-        
-        await waitFor(() => {
-            expect(rejectPromise2).toBeDefined();
-        });
-
-        rejectPromise2({ code: 'permission-denied' });
-        
-        await waitFor(() => {
-            expect(consoleSpy).not.toHaveBeenCalled();
-        });
-        consoleSpy.mockRestore();
     });
 
     it('should fallback to first userGroup when userData has no groupIds (lines 171-172)', async () => {
