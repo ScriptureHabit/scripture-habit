@@ -227,7 +227,7 @@ describe('Messages Route Integration', () => {
             const spyPostMessage = vi.spyOn(MessageService, 'postMessage').mockResolvedValue({
                 nickname: 'Owner User',
                 messageId: 'test-msg-id',
-                members: null
+                members: [MEMBER_ID]
             });
 
             const res = await fetch(`${setup.baseUrl}/api/groups/post-message`, {

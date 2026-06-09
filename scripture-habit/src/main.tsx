@@ -6,11 +6,11 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import './index.css'
 import App from './app'
 import { AuthProvider } from './context/auth-provider';
-import VConsole from 'vconsole';
-
 // Only initialize vConsole if ?vconsole=true is in the URL
 if (window.location.search.includes('vconsole=true')) {
-  new VConsole();
+  import('vconsole').then(({ default: VConsole }) => {
+    new VConsole();
+  });
 }
 
 // Capture beforeinstallprompt event globally 

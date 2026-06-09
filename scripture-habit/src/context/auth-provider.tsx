@@ -4,6 +4,7 @@ import { User, onAuthStateChanged } from 'firebase/auth';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 import { UserData } from '../types/user';
+import { syncFcmTokenFlag } from '../utils/notification-helper';
 
 import { AuthContext } from './auth-context';
 
@@ -45,9 +46,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
               setUserData(data);
               
               // Ensure existing users with tokens have the hasFcmToken flag correctly set
-              import('../utils/notification-helper').then(({ syncFcmTokenFlag }) => {
-                syncFcmTokenFlag(currentUser.uid, data.hasFcmToken);
-              });
+              syncFcmTokenFlag(currentUser.uid, data.hasFcmToken);
             } else {
               setUserData(null);
             }

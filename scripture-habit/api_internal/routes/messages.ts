@@ -131,7 +131,7 @@ router.get('/bundle/:groupId', authenticate, verifyAppCheck, async (req: Authent
             waitUntil(
                 MessageService.reconcileLatestMessages(groupId)
                     .then(res => console.log(`[Bundle Self-Healing] Reconciled latest messages for ${groupId}: healed=${res.healed}, count=${res.count}`))
-                    .catch(err => console.error(`[Bundle Self-Healing] Failed to reconcile for ${groupId}:`, err))
+                    .catch(err => console.error(`[Bundle Self-Healing] Failed to reconcile for ${groupId}:`, err)) as Promise<unknown>
             );
         }
 
@@ -225,7 +225,7 @@ router.post('/post-message', authenticate, verifyAppCheck, async (req: Authentic
                 title: result.nickname || 'Member',
                 body: text.length > 100 ? text.substring(0, 97) + '...' : text,
                 data: { type: 'chat', groupId }
-            }, result.members).catch(err => console.error('Chat notification error:', err))
+            }, result.members).catch(err => console.error('Chat notification error:', err)) as Promise<unknown>
         );
 
         res.json({ success: true, messageId: result.messageId });
@@ -370,7 +370,7 @@ router.post('/send-cheer', authenticate, verifyAppCheck, async (req: Authenticat
                         }
                     }
                 } catch (err) { console.error('Cheer notification error:', err); }
-            })()
+            })() as Promise<unknown>
         );
 
         res.json({ success: true });

@@ -14,7 +14,15 @@ import tl from '../src/locales/tl';
 import vi from '../src/locales/vi';
 import zho from '../src/locales/zho';
 
-const locales: Record<string, any> = {
+interface LocaleData {
+  seo?: {
+    title?: string;
+    description?: string;
+  };
+  [key: string]: unknown;
+}
+
+const locales: Record<string, LocaleData> = {
   es,
   ja,
   ko,

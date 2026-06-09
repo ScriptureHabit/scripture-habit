@@ -40,11 +40,22 @@ export default defineConfig({
   },
   build: {
     sourcemap: true, // Sentryにソースマップをアップロードするために必須
+    chunkSizeWarningLimit: 1000,
     rollupOptions: {
+      onwarn(warning, warn) {
+        // Suppress eval warnings from vconsole
+        if (warning.code === 'EVAL' && warning.id?.includes('vconsole')) {
+          return;
+        }
+        warn(warning);
+      },
       output: {
         manualChunks(id) {
-          if (id.includes('react') || id.includes('firebase')) {
-            return 'vendor';
+          if (id.includes('node_modules')) {
+            if (id.includes('react')) return 'vendor-react';
+            if (id.includes('firebase')) return 'vendor-firebase';
+            if (id.includes('@sentry')) return 'vendor-sentry';
+            return 'vendor-others';
           }
         },
       },

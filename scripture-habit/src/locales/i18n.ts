@@ -1,7 +1,9 @@
 import { Language } from '../config/languages';
+import en from './en';
+import enBooks from './books/en';
 
 const loaders: Record<Language, () => Promise<{ default: Record<string, unknown> }>> = {
-  en: () => import('./en'),
+  en: async () => ({ default: en as unknown as Record<string, unknown> }),
   ja: () => import('./ja'),
   pt: () => import('./pt'),
   zho: () => import('./zho'),
@@ -14,7 +16,7 @@ const loaders: Record<Language, () => Promise<{ default: Record<string, unknown>
 };
 
 const bookLoaders: Record<Language, () => Promise<{ default: Record<string, unknown> }>> = {
-  en: () => import('./books/en'),
+  en: async () => ({ default: enBooks as unknown as Record<string, unknown> }),
   ja: () => import('./books/ja'),
   pt: () => import('./books/pt'),
   zho: () => import('./books/zho'),

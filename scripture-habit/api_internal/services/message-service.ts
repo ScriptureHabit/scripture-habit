@@ -94,15 +94,23 @@ export class MessageService {
             const needsUserRead = !nickname || photoURL === undefined;
             
             // --- PHASE 1: READ PHASE (Strict Read-before-Write) ---
-            const { userSnap, currentMessages } = await (async () => {
-                const promises = [transaction.get(latestRef)];
+            const { userSnap, groupSnap, currentMessages } = await (async () => {
+                const promises = [transaction.get(latestRef), transaction.get(groupRef)];
                 if (needsUserRead) {
                     promises.push(transaction.get(userRef));
                 }
                 
                 const snaps = await Promise.all(promises);
                 const latestSnap = snaps[0];
-                const uSnapResult = needsUserRead ? snaps[1] : null;
+                const groupSnap = snaps[1];
+                const uSnapResult = needsUserRead ? snaps[2] : null;
+
+                if (!groupSnap.exists) throw new Error('Group not found');
+                const gData = groupSnap.data() as GroupDocument;
+                const members = gData.members || [];
+                if (!members.includes(uid) && gData.ownerUserId !== uid) {
+                    throw new Error('Forbidden');
+                }
 
                 if (needsUserRead && (!uSnapResult || !uSnapResult.exists)) throw new Error('Not found.');
 
@@ -120,6 +128,7 @@ export class MessageService {
 
                 return {
                     userSnap: uSnapResult,
+                    groupSnap,
                     currentMessages: messagesList
                 };
             })();
@@ -201,7 +210,10 @@ export class MessageService {
                 lastActiveAt: admin.firestore.FieldValue.serverTimestamp()
             }, { merge: true });
 
-            return { messageId: msgRef.id, nickname: nickname, members: null };
+            const gData = groupSnap.data() as GroupDocument;
+            const members = gData.members || [];
+
+            return { messageId: msgRef.id, nickname: nickname, members };
         });
     }
 
