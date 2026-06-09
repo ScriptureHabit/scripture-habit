@@ -52,14 +52,20 @@ const GroupChatContent: FC = () => {
 
 const GroupChat: FC<GroupChatProps> = (props) => {
   useEffect(() => {
-    console.log(`[GroupChat] Mounted for group: ${props.groupId}`);
+    if (import.meta.env.DEV) {
+      console.log(`[GroupChat] Mounted for group: ${props.groupId}`);
+    }
     
     // Clear any OS push notifications for this specific group when the user opens it
     if (props.isActive) {
        clearGroupNotifications(props.groupId);
     }
 
-    return () => console.log(`[GroupChat] Unmounted for group: ${props.groupId}`);
+    return () => {
+      if (import.meta.env.DEV) {
+        console.log(`[GroupChat] Unmounted for group: ${props.groupId}`);
+      }
+    };
   }, [props.groupId, props.isActive]);
 
   return (

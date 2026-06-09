@@ -136,12 +136,16 @@ const useMessageStreamSync = (groupId: string | null, userData: UserData | null,
   useEffect(() => {
     if (!groupId || !userData?.uid) return;
     
-    console.log(`[useMessageStreamSync] Effect running for group: ${groupId}, user: ${userData.uid}`);
+    if (import.meta.env.DEV) {
+      console.log(`[useMessageStreamSync] Effect running for group: ${groupId}, user: ${userData.uid}`);
+    }
     
     // Prevent redundant syncs for the same group/user combo
     const syncKey = `${groupId}-${userData.uid}`;
     if (activeSyncGroupIdRef.current === syncKey) {
-      console.log(`[useMessageStreamSync] Already syncing ${syncKey}, skipping effect body.`);
+      if (import.meta.env.DEV) {
+        console.log(`[useMessageStreamSync] Already syncing ${syncKey}, skipping effect body.`);
+      }
       return;
     }
     activeSyncGroupIdRef.current = syncKey;
@@ -228,7 +232,9 @@ const useMessageStreamSync = (groupId: string | null, userData: UserData | null,
           const bundleData = await response.text();
           const { loadBundle } = await import('firebase/firestore');
           await loadBundle(db, bundleData);
-          console.log(`[useMessageStreamSync] Successfully loaded Firestore Bundle for group ${groupId}`);
+          if (import.meta.env.DEV) {
+            console.log(`[useMessageStreamSync] Successfully loaded Firestore Bundle for group ${groupId}`);
+          }
         }
       } catch (err) {
         console.warn(`[useMessageStreamSync] Firestore Bundle fetch failed, falling back to direct stream:`, err);
