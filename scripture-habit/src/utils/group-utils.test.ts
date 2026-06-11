@@ -106,11 +106,10 @@ describe('Group Utils - calculateNearestKickDate', () => {
     expect(result).toBe('2024-05-15');
   });
 
-  it('should respect myMemberStatus kickThreshold (highest priority)', () => {
+  it('should respect group-specific threshold for member (highest priority)', () => {
     const groups: Group[] = [{
       id: 'g1',
-      memberKickThresholds: { 'u1': 5 },
-      myMemberStatus: { kickThreshold: 7 }
+      memberKickThresholds: { 'u1': 7 }
     } as unknown as Group];
     
     const result = calculateNearestKickDate(mockUser, groups);
@@ -119,22 +118,20 @@ describe('Group Utils - calculateNearestKickDate', () => {
 
   it('should pick the EARLIEST kick date across multiple groups', () => {
     const groups: Group[] = [
-      { id: 'g1', myMemberStatus: { kickThreshold: 5 } },
-      { id: 'g2', myMemberStatus: { kickThreshold: 2 } }
+      { id: 'g1', memberKickThresholds: { 'u1': 5 } },
+      { id: 'g2', memberKickThresholds: { 'u1': 2 } }
     ] as unknown as Group[];
     
     const result = calculateNearestKickDate(mockUser, groups);
     expect(result).toBe('2024-05-12');
   });
 
-  it('should consider my lastNoteAt in member status if it is newer than lastPostAt', () => {
+  it('should consider my memberLastActive in group status if it is newer than lastPostAt', () => {
     const userWithOldPost = { ...mockUser, lastPostAt: '2024-05-01T10:00:00Z' };
     const groups: Group[] = [{
       id: 'g1',
-      myMemberStatus: { 
-        kickThreshold: 3,
-        lastNoteAt: '2024-05-10T10:00:00Z'
-      }
+      memberKickThresholds: { 'u1': 3 },
+      memberLastActive: { 'u1': '2024-05-10T10:00:00Z' }
     } as unknown as Group];
     
     const result = calculateNearestKickDate(userWithOldPost, groups);

@@ -1,10 +1,9 @@
 import { useState, useEffect, useMemo } from 'react';
-import { doc, onSnapshot, collection, query, where } from 'firebase/firestore';
+import { onSnapshot, collection, query, where } from 'firebase/firestore';
 import { toast } from 'react-toastify';
 import { db } from '../../../firebase';
 import { UserData } from '../../../types/user';
 import { Group } from '../../../types/chat';
-import { groupMemberConverter } from '../../../utils/firestore-converters';
 import { useUnityMidnightReset } from '../../../hooks/use-unity-midnight-reset';
 
 export const useDashboardGroups = (userData: UserData | null, initialGroupId: string | null) => {
@@ -84,26 +83,8 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
         });
         unsubscribers.push(unsubGroups);
 
-        // 2. Individual member status listeners
-        groupIds.forEach(gid => {
-            const memberRef = doc(db, 'groups', gid, 'members', userData.uid).withConverter(groupMemberConverter);
-            const unsubMember = onSnapshot(memberRef, (memberSnap) => {
-                if (memberSnap.exists()) {
-                    const mData = memberSnap.data();
-                    setRawUserGroups(prev => {
-                        const existing = prev.find(g => g.id === gid);
-                        if (!existing || JSON.stringify(existing.myMemberStatus) === JSON.stringify(mData)) return prev;
-                        return prev.map(g => g.id === gid ? { ...g, myMemberStatus: mData } : g);
-                    });
-                }
-            }, (err) => {
-                if (err.code !== 'permission-denied') {
-                    console.log(`Member fetch error ${gid}:`, err);
-                    toast.error(`Member Status Error (${gid.slice(0,5)}): ${err.code}`);
-                }
-            });
-            unsubscribers.push(unsubMember);
-        });
+        // 2. Individual member status listeners removed to save read costs.
+        // memberJoinedAt, memberLastActive, memberKickThresholds are already denormalized inside Group.
 
         return () => unsubscribers.forEach(unsub => unsub());
     }, [userData?.uid, groupIdsKey, groupIds, isLoading]);

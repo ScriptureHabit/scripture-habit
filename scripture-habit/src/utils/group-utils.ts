@@ -62,15 +62,13 @@ export const calculateNearestKickDate = (userData: UserData | null, userGroups: 
   const kickDates: number[] = [];
   
   userGroups.forEach(group => {
-    const myStatus = group.myMemberStatus;
     // Priority: Group-specific member threshold > Group global member threshold > User default threshold > Fallback 3
-    const threshold = myStatus?.kickThreshold || 
-                     (group.memberKickThresholds && group.memberKickThresholds[userData.uid]) || 
+    const threshold = (group.memberKickThresholds && group.memberKickThresholds[userData.uid]) || 
                      userData.kickThreshold || 3;
     
     const candidateTimestamps = [
       userData.lastPostAt,
-      myStatus?.lastNoteAt,
+      group.memberLastActive?.[userData.uid],
       (group.lastNoteByUid === userData.uid ? group.lastNoteAt : null),
       (group.lastMessageByUid === userData.uid ? group.lastMessageAt : null)
     ];

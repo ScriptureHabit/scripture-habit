@@ -279,69 +279,6 @@ describe('useDashboardGroups', () => {
         });
     });
 
-    it('should handle member status updates and their errors (lines 90-101)', async () => {
-        const listeners = {
-            member: {} as Record<string, any>
-        };
-
-        vi.mocked(firestore.onSnapshot).mockImplementation(((target: any, callback: any, onError: any) => {
-            const listenerObj = { target, callback, onError };
-            const t = target as any;
-            if (t && t.type === 'member') {
-                listeners.member[t.gid] = listenerObj;
-            } else {
-                mockTestState.listeners.push(listenerObj);
-            }
-            return () => {};
-        }) as any);
-
-        const toastSpy = vi.spyOn(toast, 'error');
-
-        const { result } = renderHook(() => useDashboardGroups(mockUserData as any, null));
-
-        // 1. Initial trigger of members/groups
-        await waitFor(() => {
-            expect(mockTestState.listeners.length).toBeGreaterThan(0);
-            expect(listeners.member['group1']).toBeDefined();
-        });
-
-        // Trigger member callback
-        listeners.member['group1'].callback({
-            exists: () => true,
-            data: () => ({ role: 'member' })
-        });
-
-        const activeGroupsListener = getLatestGroupsListener();
-        activeGroupsListener.callback({
-            docs: [
-                {
-                    id: 'group1',
-                    data: () => ({
-                        id: 'group1',
-                        name: 'Test Group',
-                        members: ['user123']
-                    })
-                }
-            ]
-        });
-
-        // 2. Normal member callback
-        listeners.member['group1'].callback({
-            exists: () => true,
-            data: () => ({
-                role: 'admin'
-            })
-        });
-
-        await waitFor(() => {
-            expect(result.current.userGroups[0].myMemberStatus).toBeDefined();
-            expect((result.current.userGroups[0].myMemberStatus as any)?.role).toBe('admin');
-        });
-
-        listeners.member['group1'].onError({ code: 'unavailable' });
-        expect(toastSpy).toHaveBeenCalledWith('Member Status Error (group): unavailable');
-    });
-
     it('should fallback to first userGroup when userData has no groupIds (lines 171-172)', async () => {
         const userDataNoGroups = {
             uid: 'user123',

@@ -18,13 +18,11 @@ export const useDashboardWarnings = (userData: UserData | null, userGroups: Grou
         const now = new Date();
 
         userGroups.forEach(group => {
-            const myStatus = group.myMemberStatus;
-            
             // TRUTH: Only consider WRITING activity (notes/posts) as valid participation.
             // ROM (Read-only) users who do not contribute are considered inactive here.
             const candidateTimestamps: (FirebaseTimestamp | null | undefined)[] = [
                 userData.lastPostAt,
-                myStatus?.lastNoteAt,
+                group.memberLastActive?.[userData.uid],
                 // Only count the group's last note if the user themselves was the poster
                 (group.lastMessageByUid === userData.uid ? (group.lastNoteAt || group.lastMessageAt) : null)
             ];
@@ -41,8 +39,8 @@ export const useDashboardWarnings = (userData: UserData | null, userGroups: Grou
                 const lastActiveDate = new Date(Math.max(...dates.map(d => d.getTime())));
                 const diffMs = now.getTime() - lastActiveDate.getTime();
                 
-                // Use the threshold from myStatus if available
-                const threshold = myStatus?.kickThreshold || (group.memberKickThresholds && group.memberKickThresholds[userData.uid]) || userData.kickThreshold || 3;
+                // Use the threshold from memberKickThresholds if available
+                const threshold = (group.memberKickThresholds && group.memberKickThresholds[userData.uid]) || userData.kickThreshold || 3;
                 const thresholdMs = threshold * 24 * 60 * 60 * 1000;
                 
                 const remainingMs = thresholdMs - diffMs;

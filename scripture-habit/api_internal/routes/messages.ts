@@ -99,7 +99,7 @@ router.get('/bundle/:groupId', authenticate, verifyAppCheck, async (req: Authent
         if (cached && cached.expiresAt > Date.now()) {
             console.log(`[Bundle] Serving authorized in-memory cache for group ${groupId}`);
             res.setHeader('Content-Type', 'application/octet-stream');
-            res.setHeader('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=60');
+            res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=120');
             return res.send(cached.buffer);
         }
 
@@ -151,14 +151,14 @@ router.get('/bundle/:groupId', authenticate, verifyAppCheck, async (req: Authent
 
         const bundleBuffer = bundle.build();
 
-        // Save to in-memory cache for 60 seconds
+        // Save to in-memory cache for 120 seconds (2 minutes)
         bundleCache.set(groupId, {
             buffer: bundleBuffer,
-            expiresAt: Date.now() + 60000
+            expiresAt: Date.now() + 120000
         });
 
         // 5. Send with Edge Cache instructions (Fast & Consistent)
-        const cacheHeader = 'public, s-maxage=30, stale-while-revalidate=60';
+        const cacheHeader = 'public, s-maxage=60, stale-while-revalidate=120';
         
         res.setHeader('Content-Type', 'application/octet-stream');
         res.setHeader('Cache-Control', cacheHeader);
