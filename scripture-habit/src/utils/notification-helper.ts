@@ -1,6 +1,6 @@
 import { messaging, db } from '../firebase';
 import { getToken, onMessage, deleteToken, MessagePayload } from 'firebase/messaging';
-import { doc, updateDoc, arrayUnion, arrayRemove, setDoc } from 'firebase/firestore';
+import { doc, updateDoc, arrayUnion, arrayRemove, setDoc, getDoc } from 'firebase/firestore';
 import { toast } from 'react-toastify';
 
 // VAPID Key from Firebase Console (Messaging -> Web Push certificates)
@@ -188,7 +188,7 @@ export const disableNotifications = async (userId: string | null | undefined): P
  * if it's currently missing or false. Used for backward compatibility/healing.
  */
 export const syncFcmTokenFlag = async (userId: string | null | undefined, currentFlagStatus?: boolean): Promise<void> => {
-    if (!userId || currentFlagStatus === true) return;
+    if (!userId) return;
     if (!('serviceWorker' in navigator) || !('Notification' in window) || !('PushManager' in window)) return;
     
     // Only proceed if permission is already granted natively
@@ -202,12 +202,26 @@ export const syncFcmTokenFlag = async (userId: string | null | undefined, curren
                 });
                 
                 if (token) {
-                    // Update hasFcmToken to true if a token exists but the flag is false/undefined
-                    const userRef = doc(db, 'users', userId);
-                    await updateDoc(userRef, {
-                        hasFcmToken: true
-                    });
-                    console.log('[NotificationHelper] Successfully healed missing hasFcmToken flag for user.');
+                    // Verify if this token is actually registered in the database
+                    const privateRef = doc(db, 'users', userId, 'private', 'tokens');
+                    const privateSnap = await getDoc(privateRef);
+                    const existingTokens: string[] = privateSnap.exists() ? (privateSnap.data()?.fcmTokens || []) : [];
+                    
+                    const isTokenRegistered = existingTokens.includes(token);
+                    
+                    if (!isTokenRegistered || currentFlagStatus !== true) {
+                        console.log('[NotificationHelper] Token not registered or flag mismatch. Syncing...');
+                        
+                        await setDoc(privateRef, {
+                            fcmTokens: arrayUnion(token)
+                        }, { merge: true });
+                        
+                        const userRef = doc(db, 'users', userId);
+                        await updateDoc(userRef, {
+                            hasFcmToken: true
+                        });
+                        console.log('[NotificationHelper] Successfully healed missing/expired FCM token flag and registered token for user.');
+                    }
                 }
             }
         } catch (e) {

@@ -92,10 +92,18 @@ export async function cleanupTokens(uid: string, failedTokens: string[]) {
     const userRef = db.collection('users').doc(uid);
     const privateRef = userRef.collection('private').doc('tokens');
 
+    // Get current tokens to check if any will remain after cleanup
+    const { tokens } = await getUserFcmTokensAndLanguage(uid);
+    const remainingTokens = tokens.filter(t => !failedTokens.includes(t));
+
     failedTokens.forEach(token => {
         batch.update(userRef, { fcmTokens: admin.firestore.FieldValue.arrayRemove(token) });
         batch.update(privateRef, { fcmTokens: admin.firestore.FieldValue.arrayRemove(token) });
     });
+
+    if (remainingTokens.length === 0) {
+        batch.update(userRef, { hasFcmToken: false });
+    }
 
     await batch.commit();
 }
@@ -131,6 +139,7 @@ export async function notifyGroupMembers(groupId: string, senderUid: string, pay
         const tokensByLang = new Map<string, string[]>();
         const tokenToUserMap = new Map<string, string>();
         const tokenSourceMap = new Map<string, 'public' | 'private'>();
+        const userActiveTokens = new Map<string, Set<string>>();
 
         memberDocs.forEach((uDoc, idx) => {
             const uid = membersToNotifyIds[idx];
@@ -140,11 +149,14 @@ export async function notifyGroupMembers(groupId: string, senderUid: string, pay
             if (!tokensByLang.has(lang)) tokensByLang.set(lang, []);
             const langTokens = tokensByLang.get(lang)!;
 
+            const userTokens = new Set<string>();
+
             if (uDoc.exists && userData) {
                 ((userData.fcmTokens as string[]) || []).forEach(t => {
                     langTokens.push(t);
                     tokenToUserMap.set(t, uid);
                     tokenSourceMap.set(t, 'public');
+                    userTokens.add(t);
                 });
             }
             const pDoc = privateDocs[idx];
@@ -155,8 +167,13 @@ export async function notifyGroupMembers(groupId: string, senderUid: string, pay
                         langTokens.push(t);
                         tokenToUserMap.set(t, uid);
                         tokenSourceMap.set(t, 'private');
+                        userTokens.add(t);
                     }
                 });
+            }
+
+            if (userTokens.size > 0) {
+                userActiveTokens.set(uid, userTokens);
             }
         });
 
@@ -202,6 +219,17 @@ export async function notifyGroupMembers(groupId: string, senderUid: string, pay
                             ? db.collection('users').doc(uid).collection('private').doc('tokens')
                             : db.collection('users').doc(uid);
                         batch.update(targetRef, { fcmTokens: admin.firestore.FieldValue.arrayRemove(t) });
+
+                        // Track remaining tokens for self-healing of hasFcmToken flag
+                        const activeTokensSet = userActiveTokens.get(uid);
+                        if (activeTokensSet) {
+                            activeTokensSet.delete(t);
+                            if (activeTokensSet.size === 0) {
+                                batch.update(db.collection('users').doc(uid), {
+                                    hasFcmToken: false
+                                });
+                            }
+                        }
                     }
                 });
                 await batch.commit();

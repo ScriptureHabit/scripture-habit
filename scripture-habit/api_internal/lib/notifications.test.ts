@@ -114,13 +114,34 @@ describe('notifications core lib tests', () => {
             expect(mockBatch).not.toHaveBeenCalled();
         });
 
-        it('should commit batch updates for failed tokens', async () => {
+        it('should commit batch updates for failed tokens and reset hasFcmToken if no tokens remain', async () => {
             const mockCommit = vi.fn();
             const mockUpdate = vi.fn();
             mockBatch.mockReturnValue({
                 update: mockUpdate,
                 commit: mockCommit
             });
+            mockGet.mockResolvedValueOnce(makeSnap(true, { fcmTokens: ['badToken'] })) // Public doc
+                   .mockResolvedValueOnce(makeSnap(true, { fcmTokens: [] }));           // Private doc
+
+            await cleanupTokens('u1', ['badToken']);
+            expect(mockUpdate).toHaveBeenCalledTimes(3);
+            expect(mockUpdate).toHaveBeenLastCalledWith(
+                expect.anything(),
+                { hasFcmToken: false }
+            );
+            expect(mockCommit).toHaveBeenCalled();
+        });
+
+        it('should commit updates but NOT reset hasFcmToken if other tokens remain', async () => {
+            const mockCommit = vi.fn();
+            const mockUpdate = vi.fn();
+            mockBatch.mockReturnValue({
+                update: mockUpdate,
+                commit: mockCommit
+            });
+            mockGet.mockResolvedValueOnce(makeSnap(true, { fcmTokens: ['badToken'] })) // Public doc
+                   .mockResolvedValueOnce(makeSnap(true, { fcmTokens: ['goodToken'] })); // Private doc
 
             await cleanupTokens('u1', ['badToken']);
             expect(mockUpdate).toHaveBeenCalledTimes(2);
@@ -205,7 +226,11 @@ describe('notifications core lib tests', () => {
             const consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
             await notifyGroupMembers('g1', 'sender1', { title: 'T', body: 'B' }, memberIdsOverride);
 
-            expect(mockUpdate).toHaveBeenCalledTimes(2);
+            expect(mockUpdate).toHaveBeenCalledTimes(3);
+            expect(mockUpdate).toHaveBeenLastCalledWith(
+                expect.anything(),
+                { hasFcmToken: false }
+            );
             expect(mockCommit).toHaveBeenCalled();
             consoleLogSpy.mockRestore();
         });
