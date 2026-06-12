@@ -9,14 +9,15 @@
   - ディレクトリ構成のハイレベルな概要。
   - レイヤー定義（API、内部、バックエンド、フロントエンド）。
 - **[データベース & セキュリティ](database-security.md)**
-  - Firestore の構造とパスベースの権限。
-  - メール確認と AppCheck 保護ガード。
+  - Firestore の ER モデル、階層パス構造、およびプライベートデータの隔離。
+  - チャットアーカイブ（バケットパターン）と非正規化戦略。
 - **[App Check & API 保護](security-architecture.md)**
   - ゲートウェイミドルウェアガード、トークン検証、および開発バイパス制御ポリシー。
 - **[API ミドルウェア アーキテクチャ & 標準エラーハンドリング](api-middleware-error-handling.md)**
   - Express CORS 検証、Vercel TrailingSlash 修正、レート制限、カスタム AppError クラス、およびグローバル Sentry トラッキング。
 - **[Firebase セキュリティルール & CQRS 書込分離](firebase-security-rules.md)**
-  - 多層認証、カスタム検証制限、およびバックエンド専用の CQRS 書き込みルール。
+  - データベースレベルでのメール確認（`isAuthenticated()`）と App Check 検証（`isAppCheckVerified()`）。
+  - カスタムグループ制限（サイズ制限）とバックエンド専用の CQRS 書き込みルール。
 - **[AI コンテキストガイド & 開発憲章](ai-context.md)**
   - LLM（開発用AI）向けの必須指示、およびリポジトリ全体のシステム設計制約。
   - 状態境界、ロジック・コンポーネント分離の原則、およびトランザクション整合性ルール。

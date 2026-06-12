@@ -97,7 +97,7 @@ flowchart TD
 
 ## 5. 実装リファレンス
 
-コアロジックは `src/utils/unity-utils.ts` に配置されています。
+コアロジックは [unity-utils.ts](../../scripture-habit/src/utils/unity-utils.ts) に配置されています。
 
 ```typescript
 export const getUnityParticipation = (

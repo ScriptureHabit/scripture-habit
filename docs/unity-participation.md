@@ -97,7 +97,7 @@ Because group members can reside in different countries, calculations are locked
 
 ## 5. Implementation Reference
 
-The core logic is located in `src/utils/unity-utils.ts`:
+The core logic is located in [unity-utils.ts](../scripture-habit/src/utils/unity-utils.ts):
 
 ```typescript
 export const getUnityParticipation = (

@@ -18,7 +18,7 @@ A custom hook that provides:
 ### 2. Scripture Book Translations
 To display scripture book names correctly in multiple languages, we use a mapping function:
 - Book names are stored using a standard key.
-- The UI uses a function like `getBookTitle(standardKey, userLang)` to show "Book of Mormon" as "モルモン書" or "Libro de Mormón" based on the user's language setting.
+- The UI uses `translateBookName(bookName)` to show "Book of Mormon" as "モルモン書" or "Libro de Mórmon" based on the user's language setting.
 
 ---
 

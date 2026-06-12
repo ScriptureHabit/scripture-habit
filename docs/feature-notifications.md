@@ -8,15 +8,15 @@ The **Notifications Subsystem** helps users stay engaged by delivering alerts wh
 
 To protect user privacy and improve performance, FCM registration tokens are stored using two main fields:
 
-1. **Private Token Vault (`users/{uid}/private/tokens/fcmTokens`)**:
+1. **Private Token Vault (`fcmTokens` array inside `users/{uid}/private/tokens`)**:
    - FCM registration tokens are stored strictly inside the user's private `tokens` document.
    - **Access Rules**: Firestore security rules restrict read and write access to the authenticated owner (`request.auth.uid == uid`). This prevents other group members from reading device tokens.
 2. **Public Status Flag (`users/{uid}/hasFcmToken`)**:
    - A public boolean property `hasFcmToken: boolean` is stored on the user's profile document.
-   - **Performance**: Daily reminders can search for eligible users using index reads without having to read private tokens or subcollections.
+   - **Performance**: Daily reminders can search for eligible users using index reads without having to read private `tokens` documents or subcollections.
 
 ### Compatibility and Merging
-During notification delivery, backend helpers safely collect tokens from both the old public `fcmTokens` array and the new private subcollection. Newly registered devices use the private subcollection.
+During notification delivery, backend helpers safely collect and deduplicate tokens from both the old public `fcmTokens` array (retained for migration) and the new private `tokens` document's `fcmTokens` array. Newly registered devices use the private `tokens` document.
 
 ---
 

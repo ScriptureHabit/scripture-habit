@@ -28,15 +28,18 @@ To prevent performance issues and data synchronization errors, always categorize
 
 ## 🔒 Write Policy & Data Integrity
 
-Our security strategy uses a multi-layered model: Firestore rules guard the database, and the **Backend API** is the main handler for writes.
+To balance production security with offline responsiveness (Firestore Offline Persistence), the application adopts a **hybrid write policy**.
 
 ### 1. Firestore Rules & Frontend Restrictions
-*   All critical collections (`users`, `messages`, `members`) have `allow write: if false;` in `firestore.rules`.
-*   *Frontend Limitation*: Frontend code must **never** directly call `setDoc()`, `updateDoc()`, or `addDoc()` on core entities.
-*   *Frontend Exception*: Creating a group is allowed directly via the frontend to enable instant group creation, but is strictly capped at **max 4 groups per user** (`groupIds.size() < 4`) in `firestore.rules`.
+*   **Collaborative Resources (`messages`, `members`, `cheers`)**:
+    To prevent tampering and identity spoofing, these have `allow write: if false;` in `firestore.rules`. Frontend code must **never** directly call `setDoc()`, `updateDoc()`, or `addDoc()` on them.
+*   **User-Specific Resources (`users`, `private/tokens`, `groupStates`, `letters`)**:
+    To allow local caching and instant responsiveness during offline states, direct document creation and updates are safely allowed by rules for the authenticated owner (`request.auth.uid == userId`).
+*   **Frontend Exceptions**:
+    Creating a group (`groups` create) is allowed directly via the frontend to enable instant creation, but is strictly capped at **max 4 groups per user** (`groupIds.size() < 4`) in `firestore.rules`. Sending reports (`reports` create) is also allowed directly.
 
 ### 2. Backend-First (API Mutations)
-*   All state updates (such as posting notes, cheering, marking messages as read, updating profile streaks, and group membership changes) must go through the Express backend via **Vercel Functions** (`api_internal/routes/*`).
+*   All collaborative state updates (such as posting notes, cheering, joining groups, and transferring ownership) must go through the Express backend via **Vercel Functions** (`api_internal/routes/*`).
 *   **Atomic Transactions**: All updates affecting multiple records must be wrapped in `db.runTransaction()` to guarantee rollback on failure.
 
 ---

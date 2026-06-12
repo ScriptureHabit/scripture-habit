@@ -76,7 +76,7 @@ test.describe('Invitation Join Flow Stability', () => {
         await pageB.getByTestId('signup-nickname').fill('User B');
         await pageB.getByTestId('signup-email').fill(userBEmail);
         await pageB.getByTestId('signup-password').fill(userBPassword);
-        await pageB.getByTestId('signup-submit').click({ force: true });
+        await pageB.getByTestId('signup-submit').click();
         
         // After signup, the app redirects to /login for email verification
         console.log('Waiting for login redirect after signup...');
@@ -86,7 +86,7 @@ test.describe('Invitation Join Flow Stability', () => {
         console.log('Logging in as User B...');
         await pageB.getByTestId('login-email').fill(userBEmail);
         await pageB.getByTestId('login-password').fill(userBPassword);
-        await pageB.getByTestId('login-submit').click({ force: true });
+        await pageB.getByTestId('login-submit').click();
 
         // Now wait for dashboard redirect
         console.log('Waiting for dashboard redirect for User B...');
@@ -101,15 +101,15 @@ test.describe('Invitation Join Flow Stability', () => {
         await expect(paceModalTitle).toBeVisible({ timeout: 30000 });
         
         // Step 1: Select pace (default 3 is fine)
-        await pageB.click('.modal-btn.primary:has-text("Next")', { force: true });
+        await pageB.click('[data-testid="habit-pace-next-button"]');
         
         // Step 2: Confirmation
-        const confirmInput = pageB.locator('.auto-kick-confirm-input-styled');
-        await expect(confirmInput).toBeVisible();
+        const confirmInput = pageB.locator('[data-testid="habit-pace-confirm-input"]');
+        await expect(confirmInput).toBeVisible({ timeout: 15000 });
         await confirmInput.fill('3');
         
         // Step 3: Save
-        await pageB.click('.modal-btn.primary:has-text("Save")', { force: true });
+        await pageB.click('[data-testid="habit-pace-save-button"]');
         
         // Modal should disappear
         await expect(paceModalTitle).not.toBeVisible({ timeout: 15000 });
@@ -257,9 +257,9 @@ test.describe('Invitation Join Flow Stability', () => {
         // Handle Habit Pace modal for new User B
         const paceModalTitle = pageB.locator('.auto-kick-init-title-styled');
         await expect(paceModalTitle).toBeVisible({ timeout: 20000 });
-        await pageB.click('.modal-btn.primary:has-text("Next")');
-        await pageB.locator('.auto-kick-confirm-input-styled').fill('3');
-        await pageB.click('.modal-btn.primary:has-text("Save")', { force: true });
+        await pageB.click('[data-testid="habit-pace-next-button"]');
+        await pageB.locator('[data-testid="habit-pace-confirm-input"]').fill('3');
+        await pageB.click('[data-testid="habit-pace-save-button"]');
         await expect(paceModalTitle).not.toBeVisible();
     });
 

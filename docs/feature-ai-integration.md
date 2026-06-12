@@ -155,5 +155,5 @@ This prevents errors if the AI includes extra introductory text.
 ---
 
 ## 🛠️ Security & AI Middleware
-- **Rate Limiting**: `aiLimiter` restricts the number of AI requests any user can trigger per 15 minutes.
+- **Rate Limiting**: `aiLimiter` restricts the number of AI requests any user can trigger per hour.
 - **AppCheck**: Required for all AI routes to prevent external scripts from abusing the endpoints.

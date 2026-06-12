@@ -119,12 +119,12 @@ flowchart TD
     AuthStep --> DecodedToken[Decode Token and Store in req.user]
     DecodedToken --> EmailStep{3. Email Verification Check}
     
-    EmailStep --> ProviderCheck{Is Sign-in Method 'password'<br/>(Email/Password)?}
-    ProviderCheck -- No (Google or Other Federated Identity) --> Allowed([Pass Processing to Controller])
-    
-    ProviderCheck -- Yes --> TestAccount{Is Test Domain Account<br/>(@example.com / @test.local)?}
+    EmailStep --> TestAccount{Is Test Domain Account<br/>(@example.com / @test.local)<br/>AND !isProd?}
     TestAccount -- Yes (Playwright Test) --> BypassEmail[Skip Email Verification]
-    TestAccount -- No --> CheckVerified{Is email_verified == true?}
+    TestAccount -- No --> ProviderCheck{Is Sign-in Method 'password'<br/>(Email/Password)?}
+    
+    ProviderCheck -- No (Google or Other Federated Identity) --> Allowed([Pass Processing to Controller])
+    ProviderCheck -- Yes --> CheckVerified{Is email_verified == true?}
     
     CheckVerified -- Yes --> Allowed
     CheckVerified -- No --> Block403([Return 403 Forbidden])
@@ -202,13 +202,13 @@ export const verifyAppCheck = async (req: Request, res: Response, next: NextFunc
     const token = req.header('X-Firebase-AppCheck');
     if (!token) {
         console.warn('[AppCheck] Security context missing from:', req.ip);
-        // エラーハンドラー経由で410 Unauthorizedとして処理を引き渡す
+        // エラーハンドラー経由で401 Unauthorizedとして処理を引き渡す
         return next(new AppError('Unauthorized: Security context missing', 401, 'APP_CHECK_MISSING'));
     }
 
     try {
         if (!appCheck) {
-            throw new Error('Firebase App Check service is unavailable.');
+            throw new Error('Firebase App Check service is unavailable. Please ensure FIREBASE_SERVICE_ACCOUNT or similar environment variables are set in production.');
         }
         // 3. Firebase Admin SDK による公式暗号署名検証
         await appCheck.verifyToken(token);
@@ -235,8 +235,8 @@ export const requireEmailVerified = (req: AuthenticatedRequest, res: Response, n
     }
 
     // 1. Playwright / CI パイプラインで使用されるテスト用アカウントの救済バイパス
-    // メールアドレスが特定のテストドメインで終わる場合、メール確認済みのフローを自動で通過させる
-    const isTestAccount = req.user.email?.endsWith('@example.com') || req.user.email?.endsWith('@test.local');
+    // 非本番環境かつメールアドレスが特定のテストドメインで終わる場合、メール確認済みのフローを自動で通過させる
+    const isTestAccount = !isProd && (req.user.email?.endsWith('@example.com') || req.user.email?.endsWith('@test.local'));
     if (isTestAccount) {
         return next();
     }

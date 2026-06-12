@@ -2,7 +2,7 @@
 
 ## 概要
 
-グループチャット機能は、**4つの専用カスタムフック**によって構成されています。それぞれが明確な責務を担い、UI層からビジネスロジックを切り離すことで、保守性と再利用性を高めています。
+グループチャット機能は、**5つの専用カスタムフック**によって構成されています。それぞれが明確な責務を担い、UI層からビジネスロジックを切り離すことで、保守性と再利用性を高めています。
 
 | フック | ファイルパス | 主な責務 |
 |--------|------------|---------|
@@ -204,13 +204,13 @@ flowchart TD
 // reactionPreviews 計算の概念コード
 const MAX_PREVIEWS = 3;
 
-// 新しい uid リストに対してプレビューを再構築
-const newPreviews: Record<string, string[]> = {};
+// ReactionPreview 型: { uid: string, nickname: string, photoURL: string | null }
+const newPreviews: Record<string, ReactionPreview[]> = {};
 for (const [emojiKey, uidList] of Object.entries(newReactions)) {
-  // uidList の先頭 MAX_PREVIEWS 件のニックネームを取得
+  // uidList の先頭 MAX_PREVIEWS 件のプレビューオブジェクトを生成
   newPreviews[emojiKey] = uidList
     .slice(0, MAX_PREVIEWS)
-    .map(uid => membersMap[uid]?.nickname ?? uid);
+    .map(uid => ({ uid, nickname: membersMap[uid]?.nickname ?? uid, photoURL: membersMap[uid]?.photoURL ?? null }));
 }
 ```
 
@@ -221,14 +221,16 @@ for (const [emojiKey, uidList] of Object.entries(newReactions)) {
 
 ```typescript
 // メッセージオブジェクト内のリアクション関連フィールド
+type ReactionPreview = { uid: string; nickname: string; photoURL: string | null };
+
 type Message = {
   id: string;
   reactions: Record<string, string[]>;
   // 例: { "😊": ["uid1", "uid2", "uid3"], "👍": ["uid2"] }
 
-  reactionPreviews: Record<string, string[]>;
-  // 例: { "😊": ["田中", "鈴木", "山田"], "👍": ["鈴木"] }
-  // ※ 各絵文字につき最大3件のニックネーム
+  reactionPreviews: Record<string, ReactionPreview[]>;
+  // 例: { "😊": [{ uid: "uid1", nickname: "田中", photoURL: "..." }, ...], "👍": [...] }
+  // ※ 各絵文字につき最大3件のオブジェクト
 };
 ```
 
@@ -663,11 +665,11 @@ previews  = { "😊": ["田中", "鈴木"],  "👍": ["鈴木"] }
 ```typescript
 // handleDismissInactivityBanner の動作
 function handleDismissInactivityBanner() {
-  // 1. Reduxストアのフラグを更新（即時UI反映）
-  dispatch(setHasDismissedInactivityPolicy(true));
+  // 1. Zustandストア (useChatStore) のフラグを更新（即時UI反映）
+  setShowInactivityPolicyBanner(false);
 
   // 2. safeStorage に永続化（ページリロード後も維持）
-  safeStorage.setItem('hasDismissedInactivityPolicy', 'true');
+  safeStorage.set('hasDismissedInactivityPolicy', 'true');
 }
 ```
 

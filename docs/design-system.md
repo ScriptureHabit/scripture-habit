@@ -33,7 +33,7 @@ The UI uses a translucent "Glass Card" effect to create layout depth.
 ### `.AppGlass`
 The primary container for all screens:
 - **Background**: `rgba(255, 255, 255, 0.54)`
-- **Blur**: `backdrop-filter: blur(20px)` (applied via containers).
+- **Blur**: (Note) `backdrop-filter: blur(20px)` was previously applied, but has been disabled to prevent fixed-positioning context bugs (where child elements with `position: fixed` behave like `position: absolute` inside filters).
 - **Shadow**: `--boxShadow` provides a soft, floating lift.
 
 ### Design Rule

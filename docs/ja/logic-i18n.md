@@ -18,7 +18,7 @@ Scripture Habitは、グローバルなユーザー向けに設計されてい�
 ### 2. 聖典の書の翻訳
 複数の言語で聖典の書の名前を正しく表示するために、マッピング関数を使用します。
 - 書の名前は標準キーを使用して保存されます。
-- UIは `getBookTitle(standardKey, userLang)` のような関数を使用して、ユーザーの言語設定に基づいて「Book of Mormon」を「モルモン書」や「Libro de Mormón」として表示します。
+- UIは `translateBookName(bookName)` を使用して、ユーザーの言語設定に基づいて「Book of Mormon」を「モルモン書」や「Libro de Mórmon」として表示します。
 
 ---
 

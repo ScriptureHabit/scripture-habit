@@ -88,7 +88,7 @@ graph TD
     UserPrivate --> TokenDoc["tokens / ドキュメント (FCMトークンなど)"]
     UserDoc --> UserNotes[notes / サブコレクション]
     UserNotes --> NoteDoc["{noteId} / ドキュメント (勉強ノートのコピー)"]
-    UserDoc --> GroupStates[group_states / サブコレクション]
+    UserDoc --> GroupStates[groupStates / サブコレクション]
     GroupStates --> GStateDoc["{groupId} / ドキュメント (既読マーカー)"]
     UserDoc --> Letters[letters / サブコレクション]
     Letters --> LetterDoc["{letterId} / ドキュメント (励まし)"]

@@ -8,10 +8,18 @@ The **Chat Dashboard** is an important UI component in **scripture-habit**. It h
 
 We avoid traditional polling or manual fetch patterns. Instead, the UI reflects the Firestore database using persistent WebSocket listeners.
 
-### Delta Handling
-The sync engine (in `src/components/groupchat/hooks/core/`) uses Firestore's ability to send only modified or added documents.
-- **Optimistic State**: When a user reads a message, the UI updates the local state immediately while the API update processes in the background.
-- **Snapshot Merging**: New messages are added to the local list, minimizing deep tree re-renders by using stable React `key` properties based on Firestore `doc.id`.
+### Sync Engine & Delta Handling
+
+The synchronization engine (in `src/components/groupchat/hooks/core/`) adopts a hybrid synchronization pattern to optimize reading efficiency and user experience.
+
+- **Materialized View Subscription (Messages)**:
+  Instead of listening to the entire `/messages` subcollection, which would incur massive Firestore document read costs whenever a new message is added or modified, the client subscribes to a single materialized aggregate document `/groups/{groupId}/messages_latest/latest` using `onSnapshot`. This allows the frontend to fetch and stream the latest chat window content using exactly **1 document read**.
+- **Delta Processing (Group Members)**:
+  For group members synchronization (`useGroupMembersSync`), the engine listens to the `/members` subcollection and utilizes Firestore's `snapshot.docChanges()` to process only the added or modified member documents incrementally, keeping data transfers to a minimum.
+- **Optimistic State**:
+  When a user reads a message or posts a new one, the UI updates its local state immediately (with latency compensation via direct client-side updates to `/users/{userId}/groupStates/{groupId}` in `useDashboardActions`), while processing the API sync in the background.
+- **Snapshot Merging**:
+  As new messages arrive, the local message list merges updates from the database snapshot and any local pending optimistic messages. By using stable React `key` properties based on message `doc.id` (or `id`), the application minimizes deep virtual DOM re-renders.
 
 ---
 

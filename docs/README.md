@@ -12,14 +12,15 @@ Welcome to the **scripture-habit** technical documentation. This directory conta
   - High-level directory overview.
   - Layer definitions (API, Internal, Backend, Frontend).
 - **[Database & Security](database-security.md)**
-  - Firestore structure and path-based permissions.
-  - Email verification and AppCheck guards.
+  - Firestore ER model, path hierarchy, and private data isolation.
+  - Chat archiving (Bucket pattern) and collection denormalization strategies.
 - **[App Check & API Protection](security-architecture.md)**
   - Gateway middleware guards, token validations, and development bypass policies.
 - **[API Middleware Architecture & Standard Error Handling](api-middleware-error-handling.md)**
   - Express CORS validation, Vercel TrailingSlash fixes, rate limiting, custom AppError classes, and global Sentry tracking.
 - **[Firebase Security Rules & CQRS Write Isolation](firebase-security-rules.md)**
-  - Multi-tiered authentication, custom validation limits, and backend-only CQRS write rules.
+  - Database-level email verification (`isAuthenticated()`) and App Check validation (`isAppCheckVerified()`).
+  - Custom group limits (lookup size restrictions) and backend-only CQRS write rules.
 - **[AI Context Guide & Development Charter](ai-context.md)**
   - Essential LLM directives and repository-wide system design constraints.
   - State boundaries, logic-component split principles, and transactional integrity rules.

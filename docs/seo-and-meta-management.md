@@ -77,3 +77,23 @@ Whenever a route changes or a translation is modified, the manager reads values 
    * `SEOManager` injects an `og:site_name` tag declaring `Scripture Habit` to ensure correct branding.
 4. **Canonical URL Alignment (`og:url`)**:
    * Synthesizes with the localized Canonical URL so social crawlers resolve shares back to the standard multi-lingual page.
+
+---
+
+## 4. Build-Time Pre-Localization and Server Routing (Crawler Optimization)
+
+Because simple search engine crawlers and social share scrapers (e.g., Slack, Twitter, LINE bots) often do not execute client-side JavaScript, they may fail to read meta tags updated dynamically by the `SEOManager` React component. To resolve this, **scripture-habit** uses a build-time pre-localization strategy:
+
+### Build-Time Pre-Localization (`scripts/localize-meta.ts`)
+During the production build flow (defined in `package.json`), Vite completes the client compilation, and then the [localize-meta.ts](../scripture-habit/scripts/localize-meta.ts) script runs:
+1. It reads the raw compiled template `dist/index.html`.
+2. For each supported locale (e.g. `ja`, `es`, `pt`, `zho`), it parses title and description strings directly from the language files under `src/locales/*`.
+3. It generates language-specific static HTML templates (e.g., `dist/index-ja.html`, `dist/index-es.html`), replacing fallback title and meta description properties inside the raw HTML head tags.
+
+### Vercel Server Rewrites (`vercel.json`)
+To serve the pre-localized template to crawlers and users dynamically, Vercel routing rules in [vercel.json](../scripture-habit/vercel.json) rewrite all incoming requests with localized path prefixes:
+* `/ja/:path*` rewrites to `/index-ja.html`
+* `/es/:path*` rewrites to `/index-es.html`
+* Prefix-less English paths or standard files fall back to `/index.html` (the default English template).
+
+This hybrid approach guarantees that social scraper bots immediately receive localized title and OGP details in the initial raw HTML payload, while the client-side SPA `SEOManager` handles subsequent dynamic page routing seamlessly.

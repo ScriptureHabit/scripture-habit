@@ -72,7 +72,7 @@ Because fetching metadata requires the server to make HTTP requests on behalf of
 
 ---
 
-## 📡 Backend API Endpoints (`api_internal/routes/preview.ts`)
+## 📡 Backend API Endpoints ([preview.ts](../scripture-habit/api_internal/routes/preview.ts))
 
 ### 1. Church Metadata (`/api/preview/fetch-church-metadata`)
 Optimized for parsing LDS content like General Conference talks and Liahona articles.
@@ -111,7 +111,7 @@ Extracts rich metadata previews for general website links.
 
 ## ⚡ Frontend Client Hooks
 
-### 1. `useUrlMetadata` Hook (`src/hooks/use-url-metadata.ts`)
+### 1. `useUrlMetadata` Hook ([use-url-metadata.ts](../scripture-habit/src/hooks/use-url-metadata.ts))
 A custom React hook to retrieve, manage, and cache metadata.
 
 *   **Two-Level Caching**:
@@ -123,7 +123,7 @@ A custom React hook to retrieve, manage, and cache metadata.
 *   **Token Retrieval**:
     Before sending requests, the hook fetches the Firebase User ID token and Firebase App Check token. If they fail, it logs a warning in development and proceeds gracefully.
 
-### 2. `useUrlMetaFetcher` Hook (`src/components/newnote/hooks/use-url-meta-fetcher.ts`)
+### 2. `useUrlMetaFetcher` Hook ([use-url-meta-fetcher.ts](../scripture-habit/src/components/newnote/hooks/use-url-meta-fetcher.ts))
 An integration hook for the note-creation modal (`NewNote`).
 
 *   **Debounced Input**:
@@ -135,7 +135,7 @@ An integration hook for the note-creation modal (`NewNote`).
 
 ## 🧪 Testing & Verification
 
-Integration tests in `api_internal/routes/preview.integration.test.ts` verify the behavior:
+Integration tests in [preview.integration.test.ts](../scripture-habit/api_internal/routes/preview.integration.test.ts) verify the behavior:
 -   **Authentication**: Asserts that requests without a token return `401 Unauthorized`.
 -   **Validation**: Confirms that invalid domains or empty parameters return `400 Bad Request`.
 -   **Mocks**: Uses `vitest` to mock `axios.get` and inject custom HTML pages for testing metadata parsing.

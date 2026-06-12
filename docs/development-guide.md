@@ -65,7 +65,7 @@ The backend code is located under `api_internal` (configured at the root level f
 ```bash
 npm run server
 ```
-- **Note**: Locally, the server runs on port 3001 (configurable). Ensure the frontend `API_BASE` is pointed correctly during local tests.
+- **Note**: Locally, the server runs on port 5000 (configurable). Ensure the frontend `API_BASE` is pointed correctly during local tests.
 
 ---
 

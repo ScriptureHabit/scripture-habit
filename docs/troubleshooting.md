@@ -7,7 +7,7 @@ This document explains how to fix common environment and platform issues when de
 ## Mobile & Emulator Connectivity
 
 ### 1. Connection Refused: `ERR_CONNECTION_REFUSED`
-*   **Symptom**: The Android Emulator or a physical device fails to load the Vite server on Livereload (`npx cap run android --livereload`) or fails to hit the local Express backend (port 3001).
+*   **Symptom**: The Android Emulator or a physical device fails to load the Vite server on Livereload (`npx cap run android --livereload`) or fails to hit the local Express backend (port 5000).
 *   **Cause**: `localhost` (or `127.0.0.1`) inside the Android emulator refers to the emulator itself, not your host development machine.
 *   **Solution**:
     1.  **Locate Host IP**: Find your machine's local IP address (e.g., `192.168.1.15`) using `ipconfig` (Windows) or `ifconfig` (Mac/Linux).
@@ -16,8 +16,8 @@ This document explains how to fix common environment and platform issues when de
         npm run dev -- --host
         ```
     3.  **Update API Endpoint**: In your mobile `.env` or `capacitor.config.ts`, make sure `API_BASE` points to your machine's IP address:
-        `http://192.168.1.15:3001/api`
-    4.  **Emulator Alternative**: Android emulators can access the host machine using the special IP `10.0.2.2`. For example, `http://10.0.2.2:3001/api` works when running on an emulator.
+        `http://192.168.1.15:5000/api`
+    4.  **Emulator Alternative**: Android emulators can access the host machine using the special IP `10.0.2.2`. For example, `http://10.0.2.2:5000/api` works when running on an emulator.
 
 ### 2. Cleartext/HTTP Blocked
 *   **Symptom**: Network calls to local development servers fail silently or show `net::ERR_CLEARTEXT_NOT_PERMITTED` in Android Studio logcat.

@@ -69,14 +69,18 @@ allow create: if isAuthenticated() &&
 
 ---
 
-## 3. CQRS とサーバーサイド書き込み分離パターン
+## 3. ハイブリッド書き込みモデルと CQRS サーバーサイド書き込み分離パターン
 
-**scripture-habit** の中心的な設計上の特徴は、**CQRS (Command Query Responsibility Segregation: コマンドクエリ責務分離) 書き込み分離パターン**の厳格な採用です。
+**scripture-habit** では、本番環境でのセキュリティ強化と、オフライン時の応答性（Firestore Offline Persistence）の維持を両立させるため、**ハイブリッド書き込みモデル**を採用しています。
 
-クライアントが共有コレクション上のレコードを直接書き込み、更新、または削除できるようにするのではなく、**すべての変更（ミューテーション）機能はバックエンド Express API（Firebase Admin SDK）によって処理されます**。
+- **共同作業用リソースのサーバーサイド分離 (CQRS/APIミューテーション)**:
+  グループ全体のメッセージ（`messages`）、メンバー情報（`members`）、応援（`cheers`）などの共同作業用リソースは、クライアントによる改ざんを防止し、トランザクションの整合性を保つため、`firestore.rules` で `allow write: if false;` として完全にロックダウンされています。これらの作成・更新・削除は、**バックエンドの Express API（Firebase Admin SDK）のみ**が行うことができます。
+- **個人用リソースの直接クライアント書き込み**:
+  ユーザー設定、通知用トークン（`private/tokens`）、ローカル既読状態（`groupStates`）など、個人に特化したデータについては、オフライン時の動作保証と即時反映（Latency Compensation）のために、認証された本人（`request.auth.uid == userId`）に限り、フロントエンドから Firestore Client SDK を使用した直接の作成・更新が許可されています。
 
 ```
-       [ クライアントアプリ ] ── 読み取り (直接リアルタイム同期) ──► [ Firestore データベース ]
+                              読み書き (個人用リソース: users, tokens, groupStates など)
+       [ クライアントアプリ ] ───────────────────────────────────────────────► [ Firestore データベース ]
               │                                                             ▲
               │                                                             │
          HTTPコマンド                                                 書き込み (Admin SDK)

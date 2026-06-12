@@ -69,20 +69,24 @@ allow create: if isAuthenticated() &&
 
 ---
 
-## 3. CQRS & Server-Side Write Isolation Pattern
+## 3. Hybrid Write Model & CQRS Server-Side Write Isolation Pattern
 
-A core design choice of **scripture-habit** is the strict use of the **CQRS (Command Query Responsibility Segregation) write isolation pattern**.
+**scripture-habit** adopts a **hybrid write model** to balance production security enforcement with offline responsiveness (Firestore Offline Persistence).
 
-Instead of allowing clients to write, update, or delete records directly on shared collections, **all mutation capability is handled by the Backend Express API (Firebase Admin SDK)**.
+- **Server-Side Isolation for Collaborative Resources (CQRS/API Mutations)**:
+  Shared group resources such as chat messages (`messages`), member rosters (`members`), and cheers (`cheers`) are completely locked down using `allow write: if false;` in `firestore.rules`. This protects against client-side tampering and ensures transactional integrity. Only the **Backend Express API (Firebase Admin SDK)** is permitted to create, update, or delete these records.
+- **Direct Client Writes for Owner-Centric Resources**:
+  For personal and owner-centric resources like user profile details, notification tokens (`private/tokens`), and local group read states (`groupStates`), direct client-side updates are permitted via the Firestore Client SDK. This is secured by requiring `request.auth.uid == userId` in `firestore.rules`, facilitating instant local synchronization (latency compensation) and full offline capabilities.
 
 ```
-       [ Client App ] ─── Read (Direct Real-time Sync) ───► [ Firestore Database ]
-             │                                                     ▲
-             │                                                     │
-        HTTP Command                                          Write (Admin SDK)
-             │                                                     │
-             ▼                                                     │
-     [ Express API ] ─── Transactions / Valids / Security ─────────┘
+                              Read/Write (Personal resources: users, tokens, groupStates, etc.)
+       [ Client App ] ──────────────────────────────────────────────────────► [ Firestore Database ]
+              │                                                                     ▲
+              │                                                                     │
+         HTTP Command                                                          Write (Admin SDK)
+              │                                                                     │
+              ▼                                                                     │
+       [ Express API ] ─── Transactions / Valids / Security ────────────────────────┘
 ```
 
 ### Direct Write Restrictions in `firestore.rules`

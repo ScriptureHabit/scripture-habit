@@ -6,7 +6,7 @@
 
 ## ⚡ Gemini API 共通呼び出し設計
 
-AI の呼び出し処理は `api_internal/routes/ai.ts` の `callGemini` 関数に集約されています。
+AI の呼び出し処理は [ai.ts](../../../scripture-habit/api_internal/routes/ai.ts) の `callGemini` 関数に集約されています。
 
 ```typescript
 const callGemini = async (prompt: string): Promise<string> => {
@@ -142,7 +142,7 @@ AI レターの生成にはトークン数が多くかかるため、本来は�
 
 ## 💻 コアコード解説
 
-以下は、`api_internal/routes/ai.ts` 内の一括（バッチ）翻訳と週次ふり返り処理の核心部分です。
+以下は、[ai.ts](../../../scripture-habit/api_internal/routes/ai.ts) 内の一括（バッチ）翻訳と週次ふり返り処理の核心部分です。
 
 ### 1. 一括翻訳と JSON クリーニングの実装
 

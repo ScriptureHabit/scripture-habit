@@ -6,7 +6,7 @@ This document provides a detailed explanation of the backend implementation and 
 
 ## ⚡ Common Gemini API Call Design
 
-AI calls are consolidated into the `callGemini` function in `api_internal/routes/ai.ts`.
+AI calls are consolidated into the `callGemini` function in [ai.ts](../../../scripture-habit/api_internal/routes/ai.ts).
 
 ```typescript
 const callGemini = async (prompt: string): Promise<string> => {
@@ -142,7 +142,7 @@ Therefore, Scripture Habit implements the following logic:
 
 ## 💻 Core Code Explanation
 
-Below are the core sections of batch translation and weekly recap processing within `api_internal/routes/ai.ts`.
+Below are the core sections of batch translation and weekly recap processing within [ai.ts](../../../scripture-habit/api_internal/routes/ai.ts).
 
 ### 1. Implementation of Batch Translation and JSON Cleaning
 

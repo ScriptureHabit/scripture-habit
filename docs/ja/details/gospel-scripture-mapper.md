@@ -149,7 +149,7 @@ export const getGospelLibraryUrl = (
     if (verses) {
         // 数値の前に "p" を付加する正規表現置換
         const idValue = verses.replace(/\d+/g, m => `p${m}`);
-        const firstVerse = verses.match(/\d+)?`.[0]; // 最初の開始節を取得してハッシュアンカーにする
+        const firstVerse = verses.match(/\d+/)?.[0]; // 最初の開始節を取得してハッシュアンカーにする
         if (idValue) {
             urlSuffix += `&id=${idValue}`;
             if (firstVerse) urlSuffix += `#p${firstVerse}`;

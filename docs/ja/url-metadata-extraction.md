@@ -72,7 +72,7 @@ sequenceDiagram
 
 ---
 
-## 📡 バックエンドAPIエンドポイント (`api_internal/routes/preview.ts`)
+## 📡 バックエンドAPIエンドポイント ([preview.ts](../../scripture-habit/api_internal/routes/preview.ts))
 
 ### 1. 教会メタデータ (`/api/preview/fetch-church-metadata`)
 総大会の説教やリアホナの記事などのLDSコンテンツの解析に最適化されています。
@@ -111,7 +111,7 @@ sequenceDiagram
 
 ## ⚡ フロントエンドクライアントフック
 
-### 1. `useUrlMetadata` フック (`src/hooks/use-url-metadata.ts`)
+### 1. `useUrlMetadata` フック ([use-url-metadata.ts](../../scripture-habit/src/hooks/use-url-metadata.ts))
 メタデータを取得、管理、およびキャッシュするためのカスタムReactフック。
 
 *   **2段階のキャッシュ**:
@@ -123,7 +123,7 @@ sequenceDiagram
 *   **トークンの取得**:
     リクエストを送信する前に、フックは Firebase ユーザー ID トークと Firebase App Check トークンを取得します。取得に失敗した場合、開発環境では警告をログに出力し、動作自体はエラーにせず正常に継続します。
 
-### 2. `useUrlMetaFetcher` フック (`src/components/newnote/hooks/use-url-meta-fetcher.ts`)
+### 2. `useUrlMetaFetcher` フック ([use-url-meta-fetcher.ts](../../scripture-habit/src/components/newnote/hooks/use-url-meta-fetcher.ts))
 ノート作成モーダル（`NewNote`）のためのインテグレーションフック。
 
 *   **デバウンスされた入力**:
@@ -135,7 +135,7 @@ sequenceDiagram
 
 ## 🧪 テストと検証
 
-`api_internal/routes/preview.integration.test.ts` での統合テストにより、以下の挙動が検証されています。
+[preview.integration.test.ts](../../scripture-habit/api_internal/routes/preview.integration.test.ts) での統合テストにより、以下の挙動が検証されています。
 -   **認証**: トークンなしのリクエストが `401 Unauthorized` を返すことを検証します。
 -   **バリデーション**: 無効なドメインや空のパラメータが `400 Bad Request` を返すことを確認します。
 -   **モック**: `vitest` を使用して `axios.get` をモックし、メタデータ解析のテスト用にカスタムHTMLページを挿入します。

@@ -28,6 +28,35 @@ We use a modern, type-safe stack designed for fast development and good performa
 
 ---
 
+## 📂 Directory Structure & Physical Layers
+
+The project is structured into the following key directories, each representing a physical layer:
+
+```
+scripture-habit/
+├── api/                  # 1. API Layer (Vercel Serverless Function entry points)
+├── api_internal/         # 2. Internal Layer (Business logic, routes, and services)
+├── backend/              # 3. Backend Layer (Local dev server Express wrapper)
+├── src/                  # 4. Frontend Layer (Vite + React 19 application)
+└── types/                # 5. Schema Layer (Shared TypeScript definitions)
+```
+
+### Physical Layer Responsibilities
+
+#### 1. API Layer (`api/`)
+Serves as the serverless execution entry points (e.g., `api.ts`) deployed on Vercel. It intercepts external client requests and forwards them to the Internal Layer's Express router.
+
+#### 2. Internal Layer (`api_internal/`)
+The core hub of backend operations. It contains Express route handlers, controllers, middlewares, domain services for database transactions, and dispatchers for emails or push notifications.
+
+#### 3. Backend Layer (`backend/`)
+A lightweight Express wrapper and dev server wrapper utilized solely to spin up and run the backend locally on port 5000.
+
+#### 4. Frontend Layer (`src/`)
+A client application built using React 19 and Vite 8. It contains UI components (styled with Vanilla CSS) and state management/data-fetching pipelines utilizing Zustand, TanStack Query, and the Firebase Client SDK.
+
+---
+
 ## 🏗️ Architectural Layers
 
 ### 1. The Schema Layer (`/types`)
