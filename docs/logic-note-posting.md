@@ -137,9 +137,9 @@ sequenceDiagram
 
 ---
 
-## 🎉 Cumulative Study Milestones & Dashboard Metric Migration
+## 🎉 Totalative Study Milestones & Dashboard Metric Migration
 
-To promote positive psychology and reduce user anxiety related to maintaining daily streaks (which could lead to demotivation if a single day is missed), the application has transitioned to celebrating **Cumulative Study Days (累積日数)** instead of continuous streaks:
+To promote positive psychology and reduce user anxiety related to maintaining daily streaks (which could lead to demotivation if a single day is missed), the application has transitioned to celebrating **Total Study Days (累積日数)** instead of continuous streaks:
 
 1. **Dashboard & Profile Metrics**: The primary dashboard overview card and user profile widgets now display **Total Days** (`daysStudiedCount`) rather than consecutive streaks (`streakCount`).
 2. **Mascot Celebrations**: The mascot speech bubble dynamically celebrates the user's total days achieved (`daysStudiedCount`) upon posting a note (e.g., "Amazing! Cumulative 10 days achieved!").
