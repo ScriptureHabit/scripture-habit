@@ -137,7 +137,7 @@ sequenceDiagram
 
 ---
 
-## 🎉 Totalative Study Milestones & Dashboard Metric Migration
+## 🎉 Total Study Milestones & Dashboard Metric Migration
 
 To promote positive psychology and reduce user anxiety related to maintaining daily streaks (which could lead to demotivation if a single day is missed), the application has transitioned to celebrating **Total Study Days (累積日数)** instead of continuous streaks:
 
