@@ -26,7 +26,7 @@ export default {
             description: "開発者の紹介とアプリの背景について",
             vision: "私たちはこれまで記されてきた聖典や歴史が示すように、継続的な聖典学習による「個人の啓示」を通して、文化の衰退、社会の分断、戦争、不和を防ぎ、平和を創りだせると信じてます。",
             appBackground: "アプリ開発の背景",
-            backgroundStory: "このアプリはBYU Pathway Worldwide(BYU Idahoのオンラインインプログラム)の学生である私、相根大治郎が卒業制作で作成したものを改善し、一般公開したものです。\n\n問い合わせやご意見、ご感想がある場合は、以下の連絡先からお気軽にご連絡ください。↓\n\nEmail: dazhilangxianggen@gmail.com",
+            backgroundStory: "このアプリはBYU Pathway Worldwide(BYU Idahoの通信課程)の学生である私、相根大治郎が卒業制作で作成したものを改善し、一般公開したものです。\n\n問い合わせやご意見、ご感想がある場合は、以下の連絡先からお気軽にご連絡ください。↓\n\nEmail: dazhilangxianggen@gmail.com",
             developerName: "相根 大治郎",
             developerRole: "Scripture Habit 開発者"        
         },
