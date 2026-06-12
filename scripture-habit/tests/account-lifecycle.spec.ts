@@ -11,6 +11,24 @@ test.describe('Account Lifecycle', () => {
     viewport: { width: 1280, height: 1200 }
   });
 
+  test.beforeEach(async ({ page }) => {
+    await page.addInitScript(() => {
+        window.localStorage.setItem('cookieConsent', 'true');
+        window.localStorage.setItem('lastNotifPrompt', Date.now().toString());
+
+        const style = document.createElement('style');
+        style.innerHTML = `
+          *, *::before, *::after {
+            transition-duration: 0.001s !important;
+            animation-duration: 0.001s !important;
+            transition-delay: 0s !important;
+            animation-delay: 0s !important;
+          }
+        `;
+        document.head.appendChild(style);
+    });
+  });
+
   test('should handle full user lifecycle: signup, onboarding, profile update, and deletion', async ({ page }) => {
     test.setTimeout(120000);
     const timestamp = Date.now();
