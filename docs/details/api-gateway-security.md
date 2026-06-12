@@ -104,7 +104,7 @@ To maintain high security while balancing "development efficiency" and "complete
 flowchart TD
     Request([API Request Received]) --> AppCheckStep{1. App Check Verification}
     
-    %% App Check 分岐
+    %% App Check branching
     AppCheckStep --> SkipRequested{Is SKIP_APP_CHECK == 'true'?}
     SkipRequested -- Yes --> CheckProd{Is NODE_ENV == 'production'?}
     CheckProd -- Yes (Prod Error) --> Block401([Return 401 Unauthorized])
@@ -115,7 +115,7 @@ flowchart TD
     VerifyToken -- Verification Succeeded --> AuthStep[2. JWT Authentication Step]
     BypassAppCheck --> AuthStep
 
-    %% JWT & メール認証分岐
+    %% JWT & Mail Verification branching
     AuthStep --> DecodedToken[Decode Token and Store in req.user]
     DecodedToken --> EmailStep{3. Email Verification Check}
     
@@ -155,26 +155,26 @@ Below is the core logic and detailed annotations of `api_internal/lib/middleware
 export const aiLimiterKeyGenerator = (req: Request) => {
     const authHeader = req.header('Authorization');
     
-    // 1. 認証済みユーザーの場合は Bearer トークンを SHA-256 ハッシュ化して一意キーにする
+    // 1. For authenticated users, hash the Bearer token using SHA-256 to create a unique key
     if (authHeader && authHeader.startsWith('Bearer ')) {
         return crypto.createHash('sha256').update(authHeader).digest('hex');
     }
     
-    // 2. 未認証またはトークンがない場合は IP アドレスを取得
+    // 2. For unauthenticated requests or when there is no token, retrieve the IP address
     const ip = (req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown').toString();
     
-    // 3. 生のIPをメモリに保持せず、ハッシュ化してプライバシーを保護しつつキー化
+    // 3. Hash the raw IP address to generate the key while protecting privacy instead of keeping the raw IP in memory
     return crypto.createHash('sha256').update(ip).digest('hex');
 };
 
 export const aiLimiter = rateLimit({
-    windowMs: 60 * 60 * 1000, // 1時間制限窓
-    limit: isProd ? 100 : 5000, // 本番は1時間100回、開発テスト時は5000回まで許可
+    windowMs: 60 * 60 * 1000, // 1-hour rate limit window
+    limit: isProd ? 100 : 5000, // Limit to 100 requests per hour in production, 5000 in development/test environments
     message: { error: 'AI limit reached. Please try again in an hour.' },
     standardHeaders: 'draft-7',
     legacyHeaders: false,
     keyGenerator: aiLimiterKeyGenerator,
-    validate: { default: false } // IPv6 の逆引きに関する警告を無効化する安全設定
+    validate: { default: false } // Safety config to disable warnings related to reverse DNS lookups on IPv6
 });
 ```
 
@@ -187,10 +187,10 @@ export const verifyAppCheck = async (req: Request, res: Response, next: NextFunc
     const isProduction = process.env.NODE_ENV === 'production';
     const skipRequested = process.env.SKIP_APP_CHECK === 'true';
 
-    // 1. 開発中のApp Checkスキップ処理と、本番での二重ガード
+    // 1. Handle App Check bypass in development, with a double-layered guard for production
     if (skipRequested) {
         if (isProduction) {
-            // 本番環境であるにもかかわらずSKIP環境変数が有効になっている場合、大至急ブロック
+            // If the skip environment variable is enabled in production, immediately block the request
             console.error('[SECURITY ALERT] SKIP_APP_CHECK is enabled in production! This is forbidden.');
             return res.status(401).json({ error: 'Unauthorized: Security check required' });
         }
@@ -198,11 +198,11 @@ export const verifyAppCheck = async (req: Request, res: Response, next: NextFunc
         return next();
     }
 
-    // 2. ヘッダーから App Check トークンを抽出
+    // 2. Extract App Check token from the request headers
     const token = req.header('X-Firebase-AppCheck');
     if (!token) {
         console.warn('[AppCheck] Security context missing from:', req.ip);
-        // エラーハンドラー経由で401 Unauthorizedとして処理を引き渡す
+        // Pass the error to next middleware to handle as 401 Unauthorized
         return next(new AppError('Unauthorized: Security context missing', 401, 'APP_CHECK_MISSING'));
     }
 
@@ -210,14 +210,14 @@ export const verifyAppCheck = async (req: Request, res: Response, next: NextFunc
         if (!appCheck) {
             throw new Error('Firebase App Check service is unavailable. Please ensure FIREBASE_SERVICE_ACCOUNT or similar environment variables are set in production.');
         }
-        // 3. Firebase Admin SDK による公式暗号署名検証
+        // 3. Official cryptographic signature verification via Firebase Admin SDK
         await appCheck.verifyToken(token);
         next();
     } catch (err: unknown) {
         const error = err as Error;
         console.warn('[AppCheck] Verification failed for token:', token.substring(0, 10) + '...', 'Error:', error.message);
         
-        // サービス一時停止（503）または トークン無効（401）を的確にハンドリングしてエラー返却
+        // Handle service temporary unavailable (503) or invalid token (401) appropriately and return errors
         return next(new AppError('Unauthorized: Security check failed', error.message.includes('unavailable') ? 503 : 401, 'APP_CHECK_FAILED'));
     }
 };
@@ -229,20 +229,20 @@ export const verifyAppCheck = async (req: Request, res: Response, next: NextFunc
 
 ```typescript
 export const requireEmailVerified = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-    // 前段の authenticate ミドルウェアを通過していることを保証
+    // Guarantee that the request has passed the authenticate middleware
     if (!req.user) {
         return res.status(401).json({ error: 'Unauthorized: Not authenticated' });
     }
 
-    // 1. Playwright / CI パイプラインで使用されるテスト用アカウントの救済バイパス
-    // 非本番環境かつメールアドレスが特定のテストドメインで終わる場合、メール確認済みのフローを自動で通過させる
+    // 1. Bypass check for test accounts used in Playwright / CI pipelines
+    // In non-production environments, auto-pass the flow if the email address ends with a test domain
     const isTestAccount = !isProd && (req.user.email?.endsWith('@example.com') || req.user.email?.endsWith('@test.local'));
     if (isTestAccount) {
         return next();
     }
 
-    // 2. パスワード認証アカウントの場合のみメール確認状況を強制
-    // （OAuth連携（Googleなど）のアカウントは、連携時点で確認されているためチェックをスルー）
+    // 2. Enforce email verification only for password-based authentication accounts
+    // (Accounts authenticated via federated identity like Google OAuth bypass this check because they are verified during linking)
     if (req.user.firebase.sign_in_provider === 'password' && !req.user.email_verified) {
         return next(new AppError('Email not verified. Please verify your email.', 403, 'auth/email-not-verified'));
     }

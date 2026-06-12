@@ -83,7 +83,7 @@ By utilizing this characteristic, when a user enters Hiragana, the system detect
 
 Below is the core logic and Japanese comments of `src/utils/gospel-library-mapper.ts` and `src/utils/suggestion-utils.ts`.
 
-### 1. 全角文字標準化と節ハイライト処理 (`gospel-library-mapper.ts`)
+### 1. Full-width Normalization and Verse Highlighting (`gospel-library-mapper.ts`)
 
 ```typescript
 export const getGospelLibraryUrl = (
@@ -95,35 +95,35 @@ export const getGospelLibraryUrl = (
 
     const baseUrl = "https://www.churchofjesuschrist.org/study/scriptures";
     
-    // 1. 各言語に応じた公式のクエリパラメータの設定 (日本語は jpn)
+    // 1. Configure official language-specific query parameters (Japanese is jpn)
     let langParam = "?lang=eng";
     if (language === 'ja') langParam = "?lang=jpn";
     else if (language === 'pt') langParam = "?lang=por";
     else if (language === 'es') langParam = "?lang=spa";
     else if (language === 'ko') langParam = "?lang=kor";
-    // ... (他言語の設定)
+    // ... (other languages)
 
-    // 2. 文字の全角・半角正規化処理（マルチバイト入力時の揺れを吸収）
+    // 2. Full-width and half-width normalization (absorbs variation in multibyte input)
     let cleanChapterInput = chapterInput;
     
-    // 全角英数字 [０-９] を半角 [0-9] に一括変換
+    // Convert full-width alphanumeric [０-９] to half-width [0-9]
     cleanChapterInput = cleanChapterInput.replace(/[０-９]/g, s => String.fromCharCode(s.charCodeAt(0) - 0xFEE0));
     
-    // 各種記号の標準化
+    // Standardize symbols
     cleanChapterInput = cleanChapterInput
         .replace(/：/g, ':')
         .replace(/[，、]/g, ',')
-        .replace(/\u3000/g, ' ') // 全角スペースを半角へ
-        .replace(/[－—―]/g, '-'); // 全角ハイフンを半角へ
+        .replace(/\u3000/g, ' ') // Full-width space to half-width
+        .replace(/[－—―]/g, '-'); // Full-width hyphen to half-width
 
-    // 日本語特有の「〇〇章〇〇節」という表記を「〇〇:〇〇」に置換
+    // Convert Japanese-style "chapter/verse" format (e.g. 〇〇章〇〇節) to "〇〇:〇〇"
     cleanChapterInput = cleanChapterInput
         .replace(/章\s*(?=\d)/g, ':')
         .replace(/章/g, '')
         .replace(/節/g, '');
 
-    // 3. 正規表現による書籍名、章番号、節範囲の抽出
-    // 例: "1 nephi 3:13-17" ➔ match[1]: "1 nephi", match[2]: "3", match[3]: "13-17"
+    // 3. Extract book name, chapter number, and verse ranges using regex
+    // e.g. "1 nephi 3:13-17" -> match[1]: "1 nephi", match[2]: "3", match[3]: "13-17"
     const match = cleanChapterInput.match(/(.*?)\s*(\d+)(?::([\d\s,-]+))?\s*$/);
     if (!match) return null;
 
@@ -131,34 +131,34 @@ export const getGospelLibraryUrl = (
     const chapterNum = match[2];
     const verses = match[3];
 
-    // 4. 多言語書籍マッピングから公式英語スラッグに変換 (10ヶ国語混在辞書)
+    // 4. Resolve official English slug from bookMappings (10-language mixed dictionary)
     const bookUrlPart = bookMappings[bookName];
     if (!bookUrlPart) return null;
 
-    // ボリューム（旧約、新約、モルモン書等）の解決
+    // Resolve volume (OT, NT, Book of Mormon, etc.)
     let volumeUrlPart = detectVolume(volume, chapterInput);
     if (!volumeUrlPart) {
-        // スラッグ名から所属ボリュームを推測するフォールバック
+        // Fallback to infer the volume based on the slug name
         volumeUrlPart = slugToVolume[bookUrlPart] || "";
     }
     if (!volumeUrlPart) return null;
 
-    // 5. 節（Verses）ハイライトアンカーの自動生成
-    // 公式サイトの仕様: 13節-17節のハイライトURL ➔ &id=p13-p17#p13
+    // 5. Auto-generate highlight anchors for verses
+    // Official website specification: highlight link for v13-17 -> &id=p13-p17#p13
     let urlSuffix = langParam;
     if (verses) {
-        // 数値の前に "p" を付加する正規表現置換
+        // Regex replace to prepend "p" before numbers
         const idValue = verses.replace(/\d+/g, m => `p${m}`);
-        const firstVerse = verses.match(/\d+/)?.[0]; // 最初の開始節を取得してハッシュアンカーにする
+        const firstVerse = verses.match(/\d+/)?.[0]; // Extract the start verse to use as hash anchor
         if (idValue) {
             urlSuffix += `&id=${idValue}`;
             if (firstVerse) urlSuffix += `#p${firstVerse}`;
         }
     }
 
-    // 6. 最終的なディープリンクURLの組み立て
+    // 6. Assemble the final deep link URL
     if (volumeUrlPart === "dc-testament" && bookUrlPart === "dc") {
-        return `${baseUrl}/dc-testament/dc/${chapterNum}${urlSuffix}`; // 教義と聖約専用のパスルール
+        return `${baseUrl}/dc-testament/dc/${chapterNum}${urlSuffix}`; // Specific path routing rules for Doctrine and Covenants
     }
     return `${baseUrl}/${volumeUrlPart}/${bookUrlPart}/${chapterNum}${urlSuffix}`;
 };
@@ -166,7 +166,7 @@ export const getGospelLibraryUrl = (
 
 ---
 
-### 2. ひらがなコードシフトと4段階ソート (`suggestion-utils.ts`)
+### 2. Hiragana Code Shift and 4-Stage Sorting (`suggestion-utils.ts`)
 
 ```typescript
 export const getBookSuggestions = (
@@ -180,14 +180,14 @@ export const getBookSuggestions = (
     const volumeList = volumeBooks[volume];
     if (!volumeList) return [];
 
-    // 1. 正規化ヘルパー関数
+    // 1. Normalization helper function
     const normalize = (str: string | null | undefined): string => {
         if (!str) return '';
-        // NFKC正規化で全角半角や合字の揺れを標準化
+        // Standardize full-width/half-width and ligature variations using NFKC normalization
         let res = str.toLowerCase().normalize('NFKC');
         
-        // 2. 【核心】日本語の「ひらがな ➔ カタカナ」コードシフト置換
-        // ひらがなの文字コード（\u3041〜\u3096）に 0x60 (96) を加算するとカタカナコードに変換される
+        // 2. [Core] Japanese "Hiragana-to-Katakana" code shift replacement
+        // Adding 0x60 (96 in decimal) to Hiragana code points (\u3041 to \u3096) converts them directly to Katakana
         if (language === 'ja') {
             res = res.replace(/[\u3041-\u3096]/g, m => String.fromCharCode(m.charCodeAt(0) + 0x60));
         }
@@ -197,7 +197,7 @@ export const getBookSuggestions = (
     const normalizedInput = normalize(input);
     if (!normalizedInput) return [];
 
-    // 各書籍オブジェクトの正規化名を準備
+    // Prepare normalized names for each book object
     const translatedList = volumeList.map(englishName => {
         const translatedName = currentLanguageBooks[englishName] || englishName;
         return {
@@ -208,32 +208,32 @@ export const getBookSuggestions = (
         };
     });
 
-    // 3. 部分一致フィルタリングと 4段階カスケードソート
+    // 3. Partial-match filtering and 4-stage cascade sorting
     return translatedList
         .filter(book =>
             book.normalizedTranslated.includes(normalizedInput) ||
             book.normalizedEnglish.includes(normalizedInput)
         )
         .sort((a, b) => {
-            // 優先度 1: 完全一致
+            // Priority 1: Exact match
             if (a.normalizedTranslated === normalizedInput) return -1;
             if (b.normalizedTranslated === normalizedInput) return 1;
 
-            // 優先度 2: 翻訳名が入力文字列で始まる（前方一致）
+            // Priority 2: Translated name starts with input (prefix match)
             const aStartsT = a.normalizedTranslated.startsWith(normalizedInput);
             const bStartsT = b.normalizedTranslated.startsWith(normalizedInput);
             if (aStartsT && !bStartsT) return -1;
             if (!aStartsT && bStartsT) return 1;
 
-            // 優先度 3: 英語名が入力文字列で始まる
+            // Priority 3: English name starts with input
             const aStartsE = a.normalizedEnglish.startsWith(normalizedInput);
             const bStartsE = b.normalizedEnglish.startsWith(normalizedInput);
             if (aStartsE && !bStartsE) return -1;
             if (!aStartsE && bStartsE) return 1;
 
-            // 優先度 4: 文字列長が短い順（「ニーファイ第一」と「ニーファイ第二」などのノイズ削減）
+            // Priority 4: Shortest string length first (reduces noise among similar prefixes)
             return a.translated.length - b.translated.length;
         })
-        .slice(0, 10); // 上位10件のみ表示
+        .slice(0, 10); // Return the top 10 suggestion candidates
 };
 ```

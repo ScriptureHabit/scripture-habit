@@ -156,6 +156,7 @@ try {
     response = await axios.get(targetUrl.toString(), {
         headers: { 'User-Agent': USER_AGENT },
         timeout: 5000,
+        maxRedirects: 5,
         maxContentLength: 512 * 1024 // Cap content length to prevent memory bloating (512 KB)
     });
 } catch (axiosError) {
@@ -166,6 +167,7 @@ try {
         response = await axios.get(targetUrl.toString(), {
             headers: { 'User-Agent': USER_AGENT },
             timeout: 5000,
+            maxRedirects: 5,
             maxContentLength: 512 * 1024
         });
      } else {
@@ -205,7 +207,7 @@ if (speaker) {
 
 ## 5. Secure Token Handshakes
 
-Since metadata requests utilize server resources, the endpoints `/fetch-church-metadata` and `/url-preview` are protected against scraping abuse. The client hook automatically attaches authentication and integrity tokens to outgoing headers:
+Since metadata requests utilize server resources, the endpoints `/api/preview/fetch-church-metadata` and `/api/preview/url-preview` are protected against scraping abuse. The client hook automatically attaches authentication and integrity tokens to outgoing headers:
 
 1. **Bearer Token Authentication**: Retrieves a fresh Firebase ID Token and injects it into the `Authorization` header.
 2. **App Check Verification**: Generates a verified App Check token using the global `appCheck` provider and injects it into the `X-Firebase-AppCheck` header, ensuring requests originate exclusively from genuine app instances.
@@ -215,15 +217,23 @@ const headers: Record<string, string> = { 'Accept': 'application/json' };
 
 // 1. App Authentication
 if (auth?.currentUser) {
-    const idToken = await auth.currentUser.getIdToken();
-    headers['Authorization'] = `Bearer ${idToken}`;
+    try {
+        const idToken = await auth.currentUser.getIdToken();
+        headers['Authorization'] = `Bearer ${idToken}`;
+    } catch (e) {
+        console.warn("[useUrlMetadata] Auth token acquisition failed:", e);
+    }
 }
 
 // 2. App Check Verification
 if (appCheck) {
-    const acToken = await getToken(appCheck, false);
-    if (acToken?.token) {
-        headers['X-Firebase-AppCheck'] = acToken.token;
+    try {
+        const acToken = await getToken(appCheck, false);
+        if (acToken?.token) {
+            headers['X-Firebase-AppCheck'] = acToken.token;
+        }
+    } catch (e) {
+        console.warn("[useUrlMetadata] AppCheck token acquisition failed:", e);
     }
 }
 ```

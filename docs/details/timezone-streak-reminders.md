@@ -1,10 +1,13 @@
 # Timezone-Aware Streak Reminder System — Deep-Dive
 
+> [!WARNING]
+> **Temporary Disabling**: This timezone-aware streak warning notification feature is temporarily disabled as of May 28, 2026 (the relevant logic inside `cron.ts` is commented out) and bypasses requests by returning mock statistics. To re-enable it, you must remove the bypass block in [`cron.ts`](../../scripture-habit/api_internal/routes/cron.ts) and restore the corresponding integration tests (such as [`cron.integration.test.ts`](../../scripture-habit/api_internal/routes/cron.integration.test.ts)).
+
 ## Overview
 
 The daily participation loop of **scripture-habit** is driven by streaks—consecutive days of scripture reading and note sharing. Because users are distributed globally, the system must deliver warnings at a consistent local time (exactly **8:00 PM / 20:00 local time**) rather than a single unified UTC hour.
 
-This system is managed by the serverless cron handler `/api/streak-warning` inside [`cron.ts`](../../scripture-habit/api_internal/routes/cron.ts) and the core timezone calculator **`StreakReminderEngine`** ([`streak-reminder.ts`](../../scripture-habit/api_internal/lib/streak-reminder.ts)). It leverages the native JavaScript Internationalization (Intl) API, partitioned queries to bypass Firestore's limitations, and an automated self-healing multicast feedback loop.
+This system is managed by the serverless cron handler `/api/cron/streak-warning` inside [`cron.ts`](../../scripture-habit/api_internal/routes/cron.ts) and the core timezone calculator **`StreakReminderEngine`** ([`streak-reminder.ts`](../../scripture-habit/api_internal/lib/streak-reminder.ts)). It leverages the native JavaScript Internationalization (Intl) API, partitioned queries to bypass Firestore's limitations, and an automated self-healing multicast feedback loop.
 
 ```mermaid
 flowchart TD

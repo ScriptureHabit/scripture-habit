@@ -232,9 +232,11 @@ useEffect(() => {
 }, [checkAndReset]);
 ```
 
-### 4.2 Group Timezone Resolution
+### 4.2 Timezone-Aware Evaluation & Secure API Reset Handshake
 
-The reset evaluator uses high-precision timezone conversion. It converts the client's current system clock to the group's specific timezone to check if a new day has started:
+Rather than relying on the client's local system time (e.g., JST), date evaluation is resolved by converting the current timestamp to the group's specific timezone (e.g., `America/New_York`) and comparing it against the last activity date recorded in Firestore.
+
+If a date transition (crossing midnight) is detected, the client triggers a secure API request to the endpoint `/api/groups/reset-unity-if-midnight`. To prevent forged requests, this call is protected by attaching both a **Firebase User ID Token (Authentication)** and a **Firebase App Check Integrity Token**, which are then verified on the server.
 
 ```typescript
 const checkAndReset = useCallback(async () => {
@@ -260,10 +262,50 @@ const checkAndReset = useCallback(async () => {
     // 4. Midnight Check: Has midnight passed in the group's timezone?
     if (normalizedActivityDate && normalizedActivityDate !== normalizedToday) {
         isResettingRef.current = true;
+        
         try {
-            // Trigger secure API handshake...
-            onReset?.(); // Reset UI total locally
+            if (!auth || !auth.currentUser) return;
+            const currentUser = auth.currentUser;
+            const idToken = await currentUser.getIdToken();
+            
+            // Retrieve App Check token
+            let appCheckToken = '';
+            if (appCheck) {
+                try {
+                    const tokenResponse = await getToken(appCheck, false);
+                    appCheckToken = tokenResponse.token;
+                } catch {
+                    // Fallback on errors in development environment, etc.
+                }
+            }
+
+            const API_BASE = window.location.hostname === 'localhost' ? '' : 'https://scripturehabit.app';
+            
+            const headers: Record<string, string> = {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${idToken}`,
+            };
+            if (appCheckToken) {
+                headers['X-Firebase-AppCheck'] = appCheckToken;
+            }
+
+            // 5. Trigger secure API call to reset
+            const response = await fetch(`${API_BASE}/api/groups/reset-unity-if-midnight`, {
+                method: 'POST',
+                headers,
+                body: JSON.stringify({ groupId })
+            });
+
+            if (!response.ok) return;
+            const result = await response.json();
+
+            if (result.reset) {
+                onReset?.(); // Reset client-side UI participation rate to 0%
+            }
+            
             lastCheckedDateRef.current = normalizedToday;
+        } catch (error) {
+            console.error('[UnityReset] Error:', error);
         } finally {
             isResettingRef.current = false;
         }
@@ -273,34 +315,4 @@ const checkAndReset = useCallback(async () => {
 }, [groupId, groupTimeZone, dailyActivityDate, onReset]);
 ```
 
-### 4.3 App Check Protected Handshake
-
-To prevent malicious users from resetting group statistics arbitrarily, the endpoint `/api/groups/reset-unity-if-midnight` requires two verification headers:
-1. **User Token**: A fresh Firebase ID token verifying the user's group membership.
-2. **App Integrity Token**: A Firebase App Check JWT verifying the request comes from an authentic, untampered PWA or Capacitor app:
-
-```typescript
-const currentUser = auth.currentUser;
-const idToken = await currentUser.getIdToken();
-
-let appCheckToken = '';
-if (appCheck) {
-    const tokenResponse = await getToken(appCheck, false);
-    appCheckToken = tokenResponse.token;
-}
-
-const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${idToken}`,
-};
-if (appCheckToken) {
-    headers['X-Firebase-AppCheck'] = appCheckToken;
-}
-
-await fetch('/api/groups/reset-unity-if-midnight', {
-    method: 'POST',
-    headers,
-    body: JSON.stringify({ groupId })
-});
-```
 This guarantees that resets occur securely, timezone-accurately, and with zero performance impact.

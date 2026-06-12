@@ -291,6 +291,22 @@ router.post('/generate-personal-weekly-recap', authenticate, aiLimiter, verifyAp
                         }
                     }
 
+                    // 2. letters サブコレクションへのフォールバック（複合インデックス要件を回避するため）
+                    if (!cachedRecapText) {
+                        const recentLettersSnap = await userRef.collection('letters')
+                            .orderBy('createdAt', 'desc')
+                            .limit(5)
+                            .get();
+                        const recentLetterDoc = recentLettersSnap.docs.find(d => d.data().type === 'weekly_recap');
+                        if (recentLetterDoc) {
+                            const letterData = recentLetterDoc.data();
+                            const letterDate = (letterData.createdAt as admin.firestore.Timestamp).toDate();
+                            if (letterDate > sixDaysAgo && letterData.content) {
+                                cachedRecapText = letterData.content;
+                            }
+                        }
+                    }
+
                     // キャッシュが見つかった場合は、429制限を回避して過去のレターを安全に再送する
                     if (cachedRecapText) {
                         return res.json({
@@ -305,26 +321,24 @@ router.post('/generate-personal-weekly-recap', authenticate, aiLimiter, verifyAp
                 }
 
                 // キャッシュが何らかの理由で取得できない場合のみ、429制限とする
-                return res.status(429).json({ error: 'Personal recap already generated recently.' });
+                return res.status(429).json({ error: 'Personal recap already generated recently. Please wait a week.' });
             }
         }
 
         // === 新規生成処理 ===
         const sevenDaysAgo = new Date();
         sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-        
-        // 過去7日間の学習ノートをクエリ
-        const snapshot = await withTimeout(
-            userRef.collection('notes')
-                .where('createdAt', '>=', admin.firestore.Timestamp.fromDate(sevenDaysAgo))
-                .orderBy('createdAt', 'asc')
-                .limit(100)
-                .get(),
-            8000
-        );
+        const notesQuery = userRef.collection('notes')
+            .where('createdAt', '>=', admin.firestore.Timestamp.fromDate(sevenDaysAgo))
+            .orderBy('createdAt', 'asc')
+            .limit(100)
+            .get();
+        const snapshot = await withTimeout(notesQuery, 8000, 'Firestore timeout');
+
+        if (!snapshot) throw new Error('Failed to fetch personal notes');
 
         const notes: string[] = [];
-        snapshot.forEach(d => { 
+        (snapshot as admin.firestore.QuerySnapshot).forEach(d => { 
             const data = d.data();
             const content = data.comment || data.text;
             if (content) {
@@ -334,9 +348,7 @@ router.post('/generate-personal-weekly-recap', authenticate, aiLimiter, verifyAp
             }
         });
 
-        if (notes.length === 0) {
-            return res.json({ message: 'No personal notes found for this week.' });
-        }
+        if (notes.length === 0) return res.json({ message: 'No personal notes found for this week.' });
 
         const prompt = `Task: Write a warm personal letter summarizing these study notes and encouraging the user. 
             Start with "Dear Friend" (or the equivalent in the output language).
@@ -347,16 +359,23 @@ router.post('/generate-personal-weekly-recap', authenticate, aiLimiter, verifyAp
 
         const generatedText = await callGemini(prompt);
 
-        // データベース保存処理（タイムスタンプの更新とサブコレクション登録）
-        const recapRef = userRef.collection('recaps').doc();
-        await recapRef.set({
-            text: generatedText,
-            createdAt: admin.firestore.FieldValue.serverTimestamp(),
-            type: 'weekly_encouragement'
-        });
-        await userRef.update({
-            lastRecapGeneratedAt: admin.firestore.FieldValue.serverTimestamp()
-        });
+        // ベストエフォートによるデータベース保存処理（タイムアウト付き）
+        try {
+            const persistTask = (async () => {
+                const recapRef = db.collection('users').doc(uid).collection('recaps').doc();
+                await recapRef.set({
+                    text: generatedText,
+                    createdAt: admin.firestore.FieldValue.serverTimestamp(),
+                    type: 'weekly_encouragement'
+                });
+                await db.collection('users').doc(uid).update({
+                    lastRecapGeneratedAt: admin.firestore.FieldValue.serverTimestamp()
+                });
+            })();
+            await withTimeout(persistTask, 8000, 'Persistence timeout');
+        } catch (e) {
+            console.warn('[AI Personal Recap] Failed to persist:', (e as Error).message);
+        }
 
         res.json({ success: true, recap: generatedText });
     } catch (err) {

@@ -127,9 +127,10 @@ If a user has already granted notification permissions natively but database fla
 
 ```typescript
 export const syncFcmTokenFlag = async (userId: string | null | undefined, currentFlagStatus?: boolean): Promise<void> => {
-    if (!userId || currentFlagStatus === true) return;
+    if (!userId) return;
     if (!('serviceWorker' in navigator) || !('Notification' in window) || !('PushManager' in window)) return;
     
+    // Only proceed if permission is already granted natively
     if (Notification.permission === 'granted') {
         try {
             const registration = await navigator.serviceWorker.getRegistration();
@@ -140,9 +141,26 @@ export const syncFcmTokenFlag = async (userId: string | null | undefined, curren
                 });
                 
                 if (token) {
-                    const userRef = doc(db, 'users', userId);
-                    await updateDoc(userRef, { hasFcmToken: true });
-                    console.log('[NotificationHelper] Healed missing hasFcmToken flag.');
+                    // Verify if this token is actually registered in the database
+                    const privateRef = doc(db, 'users', userId, 'private', 'tokens');
+                    const privateSnap = await getDoc(privateRef);
+                    const existingTokens: string[] = privateSnap.exists() ? (privateSnap.data()?.fcmTokens || []) : [];
+                    
+                    const isTokenRegistered = existingTokens.includes(token);
+                    
+                    if (!isTokenRegistered || currentFlagStatus !== true) {
+                        console.log('[NotificationHelper] Token not registered or flag mismatch. Syncing...');
+                        
+                        await setDoc(privateRef, {
+                            fcmTokens: arrayUnion(token)
+                        }, { merge: true });
+                        
+                        const userRef = doc(db, 'users', userId);
+                        await updateDoc(userRef, {
+                            hasFcmToken: true
+                        });
+                        console.log('[NotificationHelper] Successfully healed missing/expired FCM token flag and registered token for user.');
+                    }
                 }
             }
         } catch (e) {
@@ -248,6 +266,10 @@ const CHUNK_SIZE = 500;
 for (let i = 0; i < uniqueTokens.length; i += CHUNK_SIZE) {
     const chunk = uniqueTokens.slice(i, i + CHUNK_SIZE);
     const message = {
+        notification: {
+            title: payload.title,
+            body: payload.body,
+        },
         data: {
             title: payload.title,
             body: payload.body,
@@ -313,7 +335,10 @@ flowchart TD
     E -- "No" --> G["Ignore temporary network errors"]
     F --> H["Resolve token owner UID via tokenToUserMap"]
     H --> I["Firestore Batch: Remove from public and private locations"]
-    I --> J["Commit self-healing cleanup batch"]
+    I --> J["Did active tokens count for owner drop to 0?"]
+    J -- "Yes" --> K["Update hasFcmToken = false"]
+    J -- "No" --> L["Commit self-healing cleanup batch"]
+    K --> L
 ```
 
 During multicast validation:
@@ -322,6 +347,7 @@ During multicast validation:
    - `messaging/invalid-registration-token`
    - `messaging/registration-token-not-registered`
 3. **Database Pruning**: The failed tokens are resolved back to their original owners using `tokenToUserMap` and `tokenSourceMap`, and deleted from both `users/{uid}` and `users/{uid}/private/tokens` inside an atomic batch update:
+4. **Public Flag Self-Healing**: If all registration tokens fail for a user and their active token count drops to 0, their public profile document's `hasFcmToken` flag is updated to `false` to prevent future redundant distribution scans.
 
 ```typescript
 if (failedTokens.length > 0) {
@@ -334,8 +360,47 @@ if (failedTokens.length > 0) {
                 ? db.collection('users').doc(uid).collection('private').doc('tokens')
                 : db.collection('users').doc(uid);
             batch.update(targetRef, { fcmTokens: admin.firestore.FieldValue.arrayRemove(t) });
+
+            // Track user's remaining active tokens and update hasFcmToken to false when it hits 0
+            const activeTokensSet = userActiveTokens.get(uid);
+            if (activeTokensSet) {
+                activeTokensSet.delete(t);
+                if (activeTokensSet.size === 0) {
+                    batch.update(db.collection('users').doc(uid), {
+                        hasFcmToken: false
+                    });
+                }
+            }
         }
     });
+    await batch.commit();
+}
+```
+
+### 4.1 Independent Token Cleanup Helper (`cleanupTokens`)
+
+Apart from the delivery flow, the standalone utility function `cleanupTokens` is provided to clean up failed tokens from other API routes or batch jobs. This function also implements self-healing to toggle `hasFcmToken = false` when no tokens remain:
+
+```typescript
+export async function cleanupTokens(uid: string, failedTokens: string[]) {
+    if (!failedTokens.length) return;
+    const batch = db.batch();
+    const userRef = db.collection('users').doc(uid);
+    const privateRef = userRef.collection('private').doc('tokens');
+
+    // Retrieve current state to check remaining tokens
+    const { tokens } = await getUserFcmTokensAndLanguage(uid);
+    const remainingTokens = tokens.filter(t => !failedTokens.includes(t));
+
+    failedTokens.forEach(token => {
+        batch.update(userRef, { fcmTokens: admin.firestore.FieldValue.arrayRemove(token) });
+        batch.update(privateRef, { fcmTokens: admin.firestore.FieldValue.arrayRemove(token) });
+    });
+
+    if (remainingTokens.length === 0) {
+        batch.update(userRef, { hasFcmToken: false });
+    }
+
     await batch.commit();
 }
 ```

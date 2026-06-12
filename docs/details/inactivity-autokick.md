@@ -133,8 +133,8 @@ export class InactivityService {
         const membersArray = groupData.members || [];
         const now = new Date();
 
-        // 1. サブコレクションの自己修復機能（セルフヒーリング）
-        // ドキュメント同期エラー等でmembers配下が空になった場合、limit(1)で安価に検知し、バッチで自己修復
+        // 1. Subcollection Self-Healing Function
+        // If members subcollection is empty due to sync errors, detect it cheaply with limit(1) and self-heal in a batch
         if (membersArray.length > 0) {
             const oneMemberSnap = await groupRef.collection('members').limit(1).get();
             if (oneMemberSnap.empty) {
@@ -154,7 +154,7 @@ export class InactivityService {
             }
         }
 
-        // 2. 【第1段階：グループ親文書マップによるスクリーニング】
+        // 2. [Stage 1: Screening via Group Parent Document Map]
         const allPossibleUids = new Set([
             ...membersArray,
             ...Object.keys(groupData.memberLastActive || {}),
@@ -170,21 +170,21 @@ export class InactivityService {
             const lastRead = groupData.memberLastReadAt?.[uid];
             
             if (!joinedAt && !lastActive && !lastRead) {
-                potentiallyInactiveUids.add(uid); // マップ情報がない場合は詳細確認へ
+                potentiallyInactiveUids.add(uid); // Go to detailed check if map data is missing
             } else {
-                // グループ親文書のマップ情報を元に、モックデータで一旦アクティブ判定を試みる
+                // Perform a temporary active check with mock data based on maps in the parent document
                 const mockMemberData: InactivityMemberData = { joinedAt, lastActiveAt: lastActive, lastReadAt: lastRead };
                 const result = calculateMemberStatus(uid, mockMemberData, groupData, now);
                 if (result.status === 'active') {
-                    activeMemberIds.add(uid); // 親データだけで「確実にアクティブ」と分かれば終了
+                    activeMemberIds.add(uid); // Finish if parent data proves the member is definitely active
                 } else {
-                    potentiallyInactiveUids.add(uid); // 不活動の疑いがあれば詳細取得へ
+                    potentiallyInactiveUids.add(uid); // Go to detailed fetch if inactive status is suspected
                 }
             }
         }
 
         const memberList: any[] = [];
-        // 確実にアクティブなユーザーは親文書のデータで確定（ドキュメント読み込み回避！）
+        // Active users are confirmed via parent document map (prevents extra reads!)
         for (const uid of activeMemberIds) {
             memberList.push({
                 uid,
@@ -196,29 +196,29 @@ export class InactivityService {
             });
         }
 
-        // 【第2段階：不活動予備軍のみサブコレクションを db.getAll() でピンポイント取得】
+        // [Stage 2: Pinpoint fetch subcollections of only potential inactive candidates via db.getAll()]
         const uidsToFetch = Array.from(potentiallyInactiveUids);
         if (uidsToFetch.length > 0) {
             for (let i = 0; i < uidsToFetch.length; i += 100) {
                 const chunk = uidsToFetch.slice(i, i + 100);
                 const refs = chunk.map(uid => groupRef.collection('members').doc(uid));
-                const docs = await db.getAll(...refs); // FirestoreのgetAllで超高速バルク取得
+                const docs = await db.getAll(...refs); // Ultra-fast bulk fetch via Firestore's getAll
                 for (let j = 0; j < docs.length; j++) {
                     const doc = docs[j];
                     const uid = chunk[j];
                     if (doc.exists) {
                         memberList.push({ uid, data: doc.data(), createTime: doc.createTime });
                     } else {
-                        memberList.push({ uid, data: {} }); // ゴーストメンバー
+                        memberList.push({ uid, data: {} }); // Ghost member
                     }
                 }
             }
         }
 
-        // 3. 純粋関数による判定処理
+        // 3. Evaluate decision using pure function
         const decision = decideGroupInactivity(groupData, memberList, now);
 
-        // ... (判定結果に基づき、アトミックなバッチ書き込みを実行)
+        // ... (Execute atomic batch writes based on the decision results)
     }
 }
 ```
@@ -242,7 +242,7 @@ export function decideGroupInactivity(
         membersToRepair: []
     };
 
-    // グループ削除フラグがある場合は即解散
+    // Disband immediately if group isDeleted flag is true
     if (groupData.isDeleted === true) {
         decision.shouldDeleteGroup = true;
         return decision;
@@ -252,17 +252,17 @@ export function decideGroupInactivity(
     const inactiveMemberIds: string[] = [];
     const ownerUserId = groupData.ownerUserId;
 
-    // 各メンバーのステータスを集約
+    // Aggregate each member's status
     for (const member of members) {
         const memberId = member.uid;
         const memberData = member.data;
 
-        // 【自己修復】joinedAt がサーバー遅延等で破損している場合の自動補正
+        // [Self-healing] Auto-correct joinedAt if corrupted by server delay, etc.
         if (memberData.joinedAt && member.createTime) {
             const joinedMs = toMillis(member.createTime);
             const storedJoinedMs = toMillis(memberData.joinedAt);
             if (storedJoinedMs > joinedMs && joinedMs > 0) {
-                // 登録日時が作製日時より未来になっているバグを検知し、修復対象に指定
+                // Detect bug where joinedAt is in the future relative to document creation time, mark for repair
                 decision.membersToRepair.push({ uid: memberId, joinedAt: joinedMs });
                 memberData.joinedAt = joinedMs;
             }
@@ -272,7 +272,7 @@ export function decideGroupInactivity(
 
         if (result.status === 'needs_initialization') {
             decision.membersToInitialize.push(memberId);
-            activeMemberIds.push(memberId); // 未初期化者は猶予期間としてアクティブ扱い
+            activeMemberIds.push(memberId); // Uninitialized members are treated as active during their grace period
         } else if (result.status === 'inactive') {
             inactiveMemberIds.push(memberId);
         } else {
@@ -280,22 +280,22 @@ export function decideGroupInactivity(
         }
     }
 
-    // 【オーナーの不活動判定と移譲処理】
+    // [Owner inactivity check and transfer process]
     if (ownerUserId && inactiveMemberIds.includes(ownerUserId)) {
-        // 自分自身以外の「アクティブな残存メンバー」を抽出
+        // Extract other active remaining members excluding the owner
         const otherActiveMembers = activeMemberIds.filter(id => id !== ownerUserId);
 
         if (otherActiveMembers.length > 0) {
-            // アクティブなメンバーがいれば、最古参のユーザーへオーナー権限を自動移譲
+            // If active members exist, auto-transfer owner rights to the oldest remaining active member
             decision.newOwnerId = otherActiveMembers[0];
         } else {
-            // アクティブなメンバーが一人もいない場合、グループ自体を安全に自動消滅させる
+            // If no active members remain, safely dissolve the group automatically
             decision.shouldDeleteGroup = true;
             return decision;
         }
     }
 
-    // オーナー以外の不活動メンバーをキック対象に決定
+    // Inactive members excluding the owner are designated for kick
     const finalOwnerId = decision.newOwnerId || ownerUserId;
     decision.membersToRemove = inactiveMemberIds.filter(uid => uid !== finalOwnerId);
 

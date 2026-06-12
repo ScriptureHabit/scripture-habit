@@ -136,13 +136,13 @@ export class StreakEngine {
         const { now } = options;
         const { streakCount, highestStreak, lastPostDate, lastPostAt, timeZone } = currentState;
 
-        // 1. タイムゾーンの特定 (クライアントのものを優先し、なければDB、最悪はUTC)
+        // 1. Resolve timezone (prefer client's, fallback to database, last resort is UTC)
         const effectiveTimeZone = timeZone || 'UTC';
         
         let today: string;
         let yesterday: string;
 
-        // 2. Intl API を用いて、指定タイムゾーンにおける「今日」と「昨日」の 'YYYY-MM-DD' を安全に算出
+        // 2. Safely calculate 'YYYY-MM-DD' for 'today' and 'yesterday' in the resolved timezone using Intl API
         try {
             const formatter = new Intl.DateTimeFormat('sv-SE', { 
                 timeZone: effectiveTimeZone, 
@@ -152,11 +152,11 @@ export class StreakEngine {
             });
             today = formatter.format(now);
             
-            // 昨日の日付を得るため、ミリ秒から24時間をマイナスしてフォーマット
+            // Subtract 24 hours in milliseconds to format yesterday's date
             const yesterdayDate = new Date(now.getTime() - 24 * 60 * 60 * 1000);
             yesterday = formatter.format(yesterdayDate);
         } catch {
-            // 例外時のフォールバック (UTCベースの簡易抽出)
+            // Exception fallback (simple extraction based on UTC)
             today = now.toISOString().split('T')[0];
             const yesterdayDate = new Date(now.getTime() - 24 * 60 * 60 * 1000);
             yesterday = yesterdayDate.toISOString().split('T')[0];
@@ -167,7 +167,7 @@ export class StreakEngine {
         let streakUpdated = false;
         let isConsecutive = false;
 
-        // 3. 連投ガード: 最終投稿が「今日」すでに行われている場合、ストリークは増やさない
+        // 3. Double-post guard: do not increment streak if the last post was already made "today"
         if (lastPostDate === today) {
             return {
                 newStreak,
@@ -178,16 +178,16 @@ export class StreakEngine {
             };
         }
 
-        // 4. 初回投稿判定
+        // 4. Check if this is the first post ever
         if (!lastPostDate) {
             newStreak = 1;
             streakUpdated = true;
         } else {
-            // 5. 昨日の日付と一致するか
+            // 5. Check if the last post was yesterday
             const isTargetDay = lastPostDate === yesterday;
             
-            // 6. 36時間（1.5日）の猶予期間判定
-            // 時差の切り替わりや生活リズムの遅れによる「カレンダー日付のズレ」を救済する仕組み
+            // 6. 36-hour (1.5 days) grace period check
+            // A recovery mechanism for calendar date mismatches caused by timezone offsets or late study schedules
             const getMillisSafely = (ts: any): number => {
                 if (!ts) return 0;
                 if (ts instanceof Date) return ts.getTime();
@@ -200,19 +200,19 @@ export class StreakEngine {
             const hoursSinceLastPost = (now.getTime() - lastTimeMillis) / (1000 * 60 * 60);
             const withinGracePeriod = lastTimeMillis > 0 && hoursSinceLastPost <= 36;
 
-            // 昨日に投稿したか、または36時間以内の投稿であれば継続扱い
+            // If posted yesterday or within 36 hours, treat as streak continued
             if (isTargetDay || withinGracePeriod) {
                 newStreak += 1;
                 isConsecutive = true;
                 streakUpdated = true;
             } else {
-                // 期間が空きすぎた場合はストリークをリセット
+                // Reset streak if too much time has passed
                 newStreak = 1;
                 streakUpdated = true;
             }
         }
 
-        // 7. 最高記録の更新
+        // 7. Update all-time high record
         if (newStreak > currentHighest) {
             currentHighest = newStreak;
         }
@@ -244,22 +244,22 @@ export class NoteService {
                 const userRef = db.collection('users').doc(uid);
                 const noteRef = db.collection('users').doc(uid).collection('notes').doc();
 
-                // === PHASE 1: 厳密な読み取りと状態計算 ===
+                // === PHASE 1: Strict Reads and State Calculations ===
                 const userSnap = await transaction.get(userRef);
                 if (!userSnap.exists) throw new NotFoundError('User not found.');
                 const userData = userSnap.data()!;
 
                 const userGroupIds: string[] = userData.groupIds || [];
                 let groupsToPost: string[] = [];
-                // 共有設定に応じた宛先グループの解決
+                // Resolve destination groups based on sharing configuration
                 if (shareOption === 'all') groupsToPost = userGroupIds;
                 else if (shareOption === 'specific') groupsToPost = selectedShareGroups || [];
-                // (重複削除と最大20件制限)
+                // (Deduplicate and enforce a maximum limit of 20 groups)
                 groupsToPost = [...new Set(groupsToPost.filter(gid => !!gid))].slice(0, 20);
 
                 const currentNow = new Date();
                 
-                // ストリークの判定処理呼び出し
+                // Evaluate streak update
                 const streakResult = StreakEngine.calculateNextStreak({
                     streakCount: Number(userData.streakCount || 0),
                     highestStreak: Number(userData.highestStreak || 0),
@@ -270,7 +270,7 @@ export class NoteService {
 
                 const { newStreak, currentHighest, today, streakUpdated } = streakResult;
 
-                // === PHASE 2: アトミックな一括書き込み ===
+                // === PHASE 2: Atomic Bulk Writes ===
                 const userUpdate: any = {
                     lastPostAt: admin.firestore.Timestamp.fromDate(currentNow),
                     totalNotes: admin.firestore.FieldValue.increment(1)
@@ -284,10 +284,10 @@ export class NoteService {
                     if (newStreak > currentHighest) userUpdate.highestStreak = newStreak;
                 }
 
-                // ユーザー文書の更新
+                // Update user document
                 transaction.update(userRef, userUpdate);
 
-                // 各共有先グループへのノート書き込み処理
+                // Write note post messages to each shared group
                 for (const gid of groupsToPost) {
                     const gRef = db.collection('groups').doc(gid);
                     const msgRef = gRef.collection('messages').doc();
@@ -303,7 +303,7 @@ export class NoteService {
 
                     transaction.set(msgRef, msgData);
                     
-                    // グループの最終更新日時やカウンタの更新
+                    // Update last updated timestamps and message/note counters on the group document
                     transaction.update(gRef, {
                         lastMessageAt: admin.firestore.Timestamp.fromDate(currentNow),
                         lastNoteAt: admin.firestore.Timestamp.fromDate(currentNow),
@@ -313,7 +313,7 @@ export class NoteService {
                     });
                 }
 
-                // 個人ノートの保存
+                // Save personal note document
                 transaction.set(noteRef, {
                     text: messageText,
                     createdAt: admin.firestore.Timestamp.fromDate(currentNow),
@@ -322,7 +322,7 @@ export class NoteService {
                     sharedWithGroups: groupsToPost,
                 });
 
-                // ストリークお祝いシステムメッセージの追加
+                // Add celebratory system messages for streak accomplishments
                 if (streakUpdated && newStreak > 0) {
                     for (const gid of userGroupIds) {
                         const msgRef = db.collection('groups').doc(gid).collection('messages').doc();

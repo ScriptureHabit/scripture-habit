@@ -127,9 +127,10 @@ const token = await getToken(messaging, {
 
 ```typescript
 export const syncFcmTokenFlag = async (userId: string | null | undefined, currentFlagStatus?: boolean): Promise<void> => {
-    if (!userId || currentFlagStatus === true) return;
+    if (!userId) return;
     if (!('serviceWorker' in navigator) || !('Notification' in window) || !('PushManager' in window)) return;
     
+    // Only proceed if permission is already granted natively
     if (Notification.permission === 'granted') {
         try {
             const registration = await navigator.serviceWorker.getRegistration();
@@ -140,13 +141,30 @@ export const syncFcmTokenFlag = async (userId: string | null | undefined, curren
                 });
                 
                 if (token) {
-                    const userRef = doc(db, 'users', userId);
-                    await updateDoc(userRef, { hasFcmToken: true });
-                    console.log('[NotificationHelper] 欠落していた hasFcmToken フラグを自動修復しました。');
+                    // Verify if this token is actually registered in the database
+                    const privateRef = doc(db, 'users', userId, 'private', 'tokens');
+                    const privateSnap = await getDoc(privateRef);
+                    const existingTokens: string[] = privateSnap.exists() ? (privateSnap.data()?.fcmTokens || []) : [];
+                    
+                    const isTokenRegistered = existingTokens.includes(token);
+                    
+                    if (!isTokenRegistered || currentFlagStatus !== true) {
+                        console.log('[NotificationHelper] Token not registered or flag mismatch. Syncing...');
+                        
+                        await setDoc(privateRef, {
+                            fcmTokens: arrayUnion(token)
+                        }, { merge: true });
+                        
+                        const userRef = doc(db, 'users', userId);
+                        await updateDoc(userRef, {
+                            hasFcmToken: true
+                        });
+                        console.log('[NotificationHelper] Successfully healed missing/expired FCM token flag and registered token for user.');
+                    }
                 }
             }
         } catch (e) {
-            console.warn('[NotificationHelper] FCM トークンフラグの同期に失敗しました', e);
+            console.warn('[NotificationHelper] Failed to sync FCM token flag', e);
         }
     }
 };
@@ -248,6 +266,10 @@ const CHUNK_SIZE = 500;
 for (let i = 0; i < uniqueTokens.length; i += CHUNK_SIZE) {
     const chunk = uniqueTokens.slice(i, i + CHUNK_SIZE);
     const message = {
+        notification: {
+            title: payload.title,
+            body: payload.body,
+        },
         data: {
             title: payload.title,
             body: payload.body,
@@ -313,13 +335,17 @@ flowchart TD
     E -- "いいえ" --> G["一時的な通信エラーとして無視"]
     F --> H["tokenToUserMap を用いてトークンの所有ユーザー(UID)を割り出す"]
     H --> I["Firestore Batch: 公開・非公開コレクションの両方から削除を予約"]
-    I --> J["クリーンアップバッチを実行 (commit)"]
+    I --> J["所有ユーザーのアクティブトークン数が0になったか？"]
+    J -- "はい" --> K["hasFcmToken = false に更新"]
+    J -- "いいえ" --> L["バッチ実行 (commit)"]
+    K --> L
 ```
 
 マルチキャスト送信の結果判定時に以下のクリーンアップ処理が行われます。
 1. **エラーコードの判別**: `response.failureCount > 0` の場合、返ってきた個別の送信結果をスキャンします。
 2. **無効デバイスの特定**: エラー理由が「無効なトークン（`messaging/invalid-registration-token`）」や「未登録トークン（`messaging/registration-token-not-registered`）」である場合、該当デバイスからアプリが消去されたと判断します。
 3. **Firestore バッチ削除**: `tokenToUserMap` と `tokenSourceMap` を参照してトークンの所有者を割り出し、公開コレクション `users/{uid}` と非公開のトークン保管用ドキュメントの両方から、そのトークンをアトミックに削除（`FieldValue.arrayRemove`）します。
+4. **公開ステータスフラグの自動修復**: ユーザーに紐づくすべてのデバイストークンが失敗し、有効なトークン数が0になった場合、公開プロフィールドキュメントの `hasFcmToken` フラグを `false` に更新して、無駄な配信スキャンを防止します。
 
 ```typescript
 if (failedTokens.length > 0) {
@@ -332,8 +358,47 @@ if (failedTokens.length > 0) {
                 ? db.collection('users').doc(uid).collection('private').doc('tokens')
                 : db.collection('users').doc(uid);
             batch.update(targetRef, { fcmTokens: admin.firestore.FieldValue.arrayRemove(t) });
+
+            // ユーザーのアクティブなトークン残数を追跡し、0になったら hasFcmToken を false に更新
+            const activeTokensSet = userActiveTokens.get(uid);
+            if (activeTokensSet) {
+                activeTokensSet.delete(t);
+                if (activeTokensSet.size === 0) {
+                    batch.update(db.collection('users').doc(uid), {
+                        hasFcmToken: false
+                    });
+                }
+            }
         }
     });
+    await batch.commit();
+}
+```
+
+### 4.1 独立したトークンクリーンアップ関数 (`cleanupTokens`)
+
+配信プロセス以外（他のAPIルートやバッチ処理など）で失敗トークンを個別にクリーンアップするための独立したユーティリティ関数 `cleanupTokens` も提供されています。この関数でも、残トークンが0になった場合に `hasFcmToken = false` を設定する自己修復が行われます。
+
+```typescript
+export async function cleanupTokens(uid: string, failedTokens: string[]) {
+    if (!failedTokens.length) return;
+    const batch = db.batch();
+    const userRef = db.collection('users').doc(uid);
+    const privateRef = userRef.collection('private').doc('tokens');
+
+    // クリーンアップ後の残存トークンをチェック
+    const { tokens } = await getUserFcmTokensAndLanguage(uid);
+    const remainingTokens = tokens.filter(t => !failedTokens.includes(t));
+
+    failedTokens.forEach(token => {
+        batch.update(userRef, { fcmTokens: admin.firestore.FieldValue.arrayRemove(token) });
+        batch.update(privateRef, { fcmTokens: admin.firestore.FieldValue.arrayRemove(token) });
+    });
+
+    if (remainingTokens.length === 0) {
+        batch.update(userRef, { hasFcmToken: false });
+    }
+
     await batch.commit();
 }
 ```

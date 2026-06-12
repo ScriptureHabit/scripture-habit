@@ -375,27 +375,33 @@ const cheeredUids = new Set(snapshot.docs.map(doc => doc.data().targetUid));
 ```mermaid
 sequenceDiagram
     actor ユーザー
+    participant UI as UI / モーダル
     participant Hook as use-cheer-system
     participant Guard as cheeredTodayUids (Set)
     participant API as POST /api/groups/send-cheer
     participant Firestore as cheers コレクション
 
-    ユーザー->>Hook: handleSendCheer(member)
-
-    Hook->>Hook: 自分自身へのチェック
-    alt member.id === userData.uid
-        Hook-->>ユーザー: 処理中断（自分にはエール不可）
+    ユーザー->>Hook: handleCheerClick(member)
+    Hook->>Hook: 自分自身へのチェック (member.id === userData.uid)
+    alt 自分自身の場合
+        Hook-->>ユーザー: 何もしない (早期リターン)
+    else 他人の場合
+        Hook->>UI: cheerTarget に member を設定
     end
 
-    Hook->>Guard: cheeredTodayUids.has(member.id) ?
+    ユーザー->>UI: 送信確認を承認
+    UI->>Hook: handleSendCheer()
+
+    Hook->>Hook: 送信中チェック (isSendingCheer)
+    Hook->>Guard: cheeredTodayUids.has(cheerTarget.id) ?
     alt 既にエール済み
-        Hook-->>ユーザー: 処理中断（本日分は使用済み）
+        Hook-->>ユーザー: 送信処理をスキップ
     else 未エール
-        Hook->>API: POST /api/groups/send-cheer\n{ targetUid, groupId, senderNickname, senderTimeZone }
+        Hook->>API: POST /api/groups/send-cheer\n{ targetUid: cheerTarget.id, groupId, senderNickname, senderTimeZone }
         API->>Firestore: cheers ドキュメントを追加\n{ senderUid, targetUid, date, groupId, ... }
         API-->>Hook: 成功
-        Hook->>Guard: cheeredTodayUids.add(member.id)
-        Note over Guard: ✅ 楽観的に追加（当日中は再送不可）
+        Hook->>Guard: cheeredTodayUids.add(cheerTarget.id)
+        Note over Guard: ✅ 当日中の再送不可セットに追加
     end
 ```
 
@@ -403,8 +409,8 @@ sequenceDiagram
 
 | 条件 | 結果 |
 |------|------|
-| `member.id === userData.uid` | ❌ 処理中断（自分へのエール不可） |
-| `cheeredTodayUids.has(member.id)` | ❌ 処理中断（本日分は使用済み） |
+| `member.id === userData.uid` | ❌ 処理中断（自分へのエール不可、`handleCheerClick` 内で制御） |
+| `cheeredTodayUids.has(member.id)` | ❌ 送信不可（本日分は使用済み、UIボタン無効化や `handleSendCheer` 内で制御） |
 | 上記のいずれでもない | ✅ API呼び出しを実行 |
 
 > [!WARNING]
@@ -530,7 +536,7 @@ function togglePublicStatus() {
 |-----|------|------|
 | **LINE** | `window.open` | `https://line.me/...` に招待メッセージをURLエンコードして開く |
 | **WhatsApp** | `window.open` | `https://wa.me/?text=...` に招待メッセージをURLエンコードして開く |
-| **Messenger** | `window.open` | Messenger共有URLを開く |
+| **Messenger** | `window.open` | MessengerのカスタムURLスキーム（`fb-messenger://share`）を開く |
 | **Instagram** | クリップボード + `window.open` | 招待リンクをクリップボードにコピー後、Instagram を開く |
 
 > [!NOTE]
@@ -541,7 +547,7 @@ flowchart LR
     Share["共有ボタン押下"]
     LINE["LINE\nwindow.open\nline.me/..."]
     WA["WhatsApp\nwindow.open\nwa.me/..."]
-    MSN["Messenger\nwindow.open"]
+    MSN["Messenger\nwindow.open\nfb-messenger://share"]
     IG["Instagram\n① クリップボードにコピー\n② instagram.com を開く"]
 
     Share --> LINE
@@ -615,31 +621,39 @@ async function handleShowMembers() {
 
 ```typescript
 // リアクション平坦化の概念コード
+type ReactionPreview = { uid: string; nickname: string; photoURL: string | null };
+
 type ReactionItem = {
   emoji: string;
-  uid: string;
+  userId: string;
   nickname: string;
 };
 
 function handleShowReactions(
   reactions: Record<string, string[]>,
-  previews: Record<string, string[]>
+  previews?: Record<string, ReactionPreview[]>
 ): ReactionItem[] {
   const items: ReactionItem[] = [];
 
-  for (const [emoji, uidList] of Object.entries(reactions)) {
-    for (const uid of uidList) {
+  Object.entries(reactions).forEach(([emoji, uids]) => {
+    if (!Array.isArray(uids)) return;
+    uids.forEach(uid => {
+      // previews 内の uid を検索してニックネームを特定
+      const preview = previews?.[emoji]?.find((p: ReactionPreview) => p.uid === uid);
+      
       // ニックネームの解決優先順位:
       // 1. membersMap（最新のメンバーデータ）
-      // 2. previews（フォールバック）
-      const nickname =
-        membersMap[uid]?.nickname ??
-        previews[emoji]?.[uidList.indexOf(uid)] ??
-        uid; // 最終フォールバック: UID をそのまま表示
+      // 2. preview（FCM経由で送られてきた一時プレビュー）
+      // 3. 'Unknown'（フォールバック）
+      const nickname = membersMap[uid]?.nickname || preview?.nickname || 'Unknown';
 
-      items.push({ emoji, uid, nickname });
-    }
-  }
+      items.push({
+        userId: uid,
+        emoji,
+        nickname
+      });
+    });
+  });
 
   return items;
 }

@@ -110,17 +110,19 @@ toast.info(
 ### 2.2 OSごとの適応戦略
 
 #### A. Android: beforeinstallprompt イベントのキャプチャ
-Android/Chrome等のブラウザでは、ブラウザの標準的な `beforeinstallprompt` イベントをリッスンしてキャプチャし、カスタムの「アプリをインストール」ボタンをダッシュボードに違和感なく配置します。
+Android/Chrome等のブラウザでは、ブラウザの標準的な `beforeinstallprompt` イベントを `main.tsx` 等のグローバルエントリーポイントでリッスンして `window.deferredPWAPrompt` に退避（キャプチャ）します。そして、ダッシュボード上の `InstallPrompt` コンポーネントがこのプロンプトを読み取り、カスタムの「アプリをインストール」ボタンを違和感なく配置します。
 
 ```typescript
+// main.tsx（グローバルでのキャプチャ）
+window.deferredPWAPrompt = null;
 window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
-    deferredPromptRef.current = e; // イベントオブジェクトを退避
-    setIsPromptReady(true);
+    window.deferredPWAPrompt = e as BeforeInstallPromptEvent;
 });
 
-const handleInstallApp = async () => {
-    const promptEvent = deferredPromptRef.current;
+// install-prompt.tsx（コンポーネント側での実行）
+const handleInstallClick = async () => {
+    const promptEvent = deferredPrompt; // window.deferredPWAPrompt から state に同期されたオブジェクト
     if (!promptEvent) return;
     
     // ブラウザのネイティブダイアログを起動
@@ -128,8 +130,9 @@ const handleInstallApp = async () => {
     const { outcome } = await promptEvent.userChoice;
     console.log(`User installation outcome: ${outcome}`);
     
-    deferredPromptRef.current = null;
-    setIsPromptReady(false);
+    setDeferredPrompt(null);
+    setShowPrompt(false);
+    localStorage.setItem('pwaInstallPromptDismissedAt', new Date().toISOString());
 };
 ```
 
@@ -233,9 +236,11 @@ useEffect(() => {
 }, [checkAndReset]);
 ```
 
-### 4.2 タイムゾーン指定の日付評価処理
+### 4.2 タイムゾーン指定の日付評価 & セキュアな API リセット処理
 
-日付判定はクライアントの端末時間（JST等）をそのまま使用するのではなく、グループが設定したタイムゾーン（例: `America/New_York`）に高精度変換し、Firestoreに記録されている最終更新日付と比較します。これにより、深夜リセットのずれが絶対に発生しないようにしています。
+日付判定はクライアントの端末時間（JST等）をそのまま使用するのではなく、グループが設定したタイムゾーン（例: `America/New_York`）に高精度変換し、Firestoreに記録されている最終更新日付と比較します。
+
+もし日付が切り替わっている（深夜を跨いだ）場合は、クライアント側からセキュアなエンドポイント `/api/groups/reset-unity-if-midnight` へリセット要求を送信します。リクエストの偽造や不正操作を防ぐため、**ユーザー ID トークン（認証）** と **App Check インテグリティトークン** を付与した状態で fetch を実行し、サーバー側で検証を行います。
 
 ```typescript
 const checkAndReset = useCallback(async () => {
@@ -261,10 +266,50 @@ const checkAndReset = useCallback(async () => {
     // 4. 深夜判定: グループのタイムゾーン上で日付が切り替わっているか確認
     if (normalizedActivityDate && normalizedActivityDate !== normalizedToday) {
         isResettingRef.current = true;
+        
         try {
-            // セキュアなAPI呼び出しとリセットのトリガーを実行
-            onReset?.(); // クライアント側のUI表示率を0%へクリア
+            if (!auth || !auth.currentUser) return;
+            const currentUser = auth.currentUser;
+            const idToken = await currentUser.getIdToken();
+            
+            // App Check トークンの取得
+            let appCheckToken = '';
+            if (appCheck) {
+                try {
+                    const tokenResponse = await getToken(appCheck, false);
+                    appCheckToken = tokenResponse.token;
+                } catch {
+                    // 開発環境等でのエラー時はフォールバック
+                }
+            }
+
+            const API_BASE = window.location.hostname === 'localhost' ? '' : 'https://scripturehabit.app';
+            
+            const headers: Record<string, string> = {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${idToken}`,
+            };
+            if (appCheckToken) {
+                headers['X-Firebase-AppCheck'] = appCheckToken;
+            }
+
+            // 5. セキュアなAPI呼び出しとリセットのトリガーを実行
+            const response = await fetch(`${API_BASE}/api/groups/reset-unity-if-midnight`, {
+                method: 'POST',
+                headers,
+                body: JSON.stringify({ groupId })
+            });
+
+            if (!response.ok) return;
+            const result = await response.json();
+
+            if (result.reset) {
+                onReset?.(); // クライアント側のUI表示率を0%へクリア
+            }
+            
             lastCheckedDateRef.current = normalizedToday;
+        } catch (error) {
+            console.error('[UnityReset] Error:', error);
         } finally {
             isResettingRef.current = false;
         }
@@ -274,34 +319,4 @@ const checkAndReset = useCallback(async () => {
 }, [groupId, groupTimeZone, dailyActivityDate, onReset]);
 ```
 
-### 4.3 App Check セキュア認証連携
-
-悪意ある第三者が直接APIエンドポイントを叩いてグループの達成率を意図的に破壊するのを防止するため、`/api/groups/reset-unity-if-midnight` に対するリクエストは厳格に保護されています。
-1.  **ユーザー認証 ID トークン**: リクエスト送信者が実際にグループの正当なメンバーであることを検証します。
-2.  **App Check インテグリティトークン**: Firebase App Check JWT が付与されていることを確認し、リクエストが本物の正規アプリ（PWAまたはCapacitor）から発信されたものであり、改ざんされたスクリプトではないことを保証します。
-
-```typescript
-const currentUser = auth.currentUser;
-const idToken = await currentUser.getIdToken();
-
-let appCheckToken = '';
-if (appCheck) {
-    const tokenResponse = await getToken(appCheck, false);
-    appCheckToken = tokenResponse.token;
-}
-
-const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${idToken}`,
-};
-if (appCheckToken) {
-    headers['X-Firebase-AppCheck'] = appCheckToken;
-}
-
-await fetch('/api/groups/reset-unity-if-midnight', {
-    method: 'POST',
-    headers,
-    body: JSON.stringify({ groupId })
-});
-```
 これにより、世界中どこからでも、アタックを防ぎながら、正確な深夜リセットをバックグラウンドで摩擦なく実現しています。

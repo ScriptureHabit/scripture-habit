@@ -156,6 +156,7 @@ try {
     response = await axios.get(targetUrl.toString(), {
         headers: { 'User-Agent': USER_AGENT },
         timeout: 5000,
+        maxRedirects: 5,
         maxContentLength: 512 * 1024 // メモリ肥大化を防ぐために受信容量の上限を512KBに制限
     });
 } catch (axiosError) {
@@ -166,6 +167,7 @@ try {
         response = await axios.get(targetUrl.toString(), {
             headers: { 'User-Agent': USER_AGENT },
             timeout: 5000,
+            maxRedirects: 5,
             maxContentLength: 512 * 1024
         });
      } else {
@@ -205,7 +207,7 @@ if (speaker) {
 
 ## 5. セキュアな API 認証ハンドシェイク
 
-スクレイピングAPIはサーバーのネットワーク帯域や計算リソースを消費するため、エンドポイントである `/fetch-church-metadata` および `/url-preview` を悪質な外部クローラーによるアタックから保護する必要があります。
+スクレイピングAPIはサーバーのネットワーク帯域や計算リソースを消費するため、エンドポイントである `/api/preview/fetch-church-metadata` および `/api/preview/url-preview` を悪質な外部クローラーによるアタックから保護する必要があります。
 クライアントのフックは、APIリクエストを送信する際、自動的に認証および整合性トークンをヘッダーに付与します。
 
 1.  **ユーザー ID トークン認証**: リクエスト送信者がアプリにサインインしている正規のユーザーであることを示す Firebase Bearer トークンを `Authorization` ヘッダーに付与します。
@@ -216,15 +218,23 @@ const headers: Record<string, string> = { 'Accept': 'application/json' };
 
 // 1. ユーザー認証トークンの付与
 if (auth?.currentUser) {
-    const idToken = await auth.currentUser.getIdToken();
-    headers['Authorization'] = `Bearer ${idToken}`;
+    try {
+        const idToken = await auth.currentUser.getIdToken();
+        headers['Authorization'] = `Bearer ${idToken}`;
+    } catch (e) {
+        console.warn("[useUrlMetadata] Auth token acquisition failed:", e);
+    }
 }
 
 // 2. App Check トークンの付与
 if (appCheck) {
-    const acToken = await getToken(appCheck, false);
-    if (acToken?.token) {
-        headers['X-Firebase-AppCheck'] = acToken.token;
+    try {
+        const acToken = await getToken(appCheck, false);
+        if (acToken?.token) {
+            headers['X-Firebase-AppCheck'] = acToken.token;
+        }
+    } catch (e) {
+        console.warn("[useUrlMetadata] AppCheck token acquisition failed:", e);
     }
 }
 ```

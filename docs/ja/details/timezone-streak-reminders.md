@@ -1,10 +1,13 @@
 # タイムゾーン対応ストリーク自動リマインダー設計 — 詳細設計ガイド
 
+> [!WARNING]
+> **一時的な無効化**: このタイムゾーン対応のストリーク警告通知機能は、2026年5月28日時点で一時的に無効化（`cron.ts`内の関連ロジックがコメントアウト）され、モックの統計結果を返すバイパス状態になっています。再有効化するには、[`cron.ts`](../../scripture-habit/api_internal/routes/cron.ts) 内のバイパスブロックを削除し、対応する統合テスト（[`cron.integration.test.ts`](../../scripture-habit/api_internal/routes/cron.integration.test.ts) 等）を復元する必要があります。
+
 ## 概要
 
 **scripture-habit** のデイリー学習ルーティンは、聖書を読んでノートを共有する「ストリーク（継続日数）」機能によって強力に維持されています。ユーザーが世界各地の異なるタイムゾーンに分散しているため、通知は単一の UTC 時刻で一斉送信するのではなく、ユーザーの現地時間で正確に **夜の8:00（20:00）** に届ける必要があります。
 
-このタイムゾーン対応リマインダーシステムは、[`cron.ts`](../../scripture-habit/api_internal/routes/cron.ts) 内の `/api/streak-warning` エンドポイントおよび時間計算ユーティリティ **`StreakReminderEngine`** ([`streak-reminder.ts`](../../scripture-habit/api_internal/lib/streak-reminder.ts)) によって制御されています。Node.js / ブラウザ標準の Internationalization (Intl) API、Firestore のインデックス上限を回避する分割クエリ、およびプッシュ通知の失敗結果から自動的にデッドトークンを排除する自己修復ループが活用されています。
+このタイムゾーン対応リマインダーシステムは、[`cron.ts`](../../scripture-habit/api_internal/routes/cron.ts) 内の `/api/cron/streak-warning` エンドポイントおよび時間計算ユーティリティ **`StreakReminderEngine`** ([`streak-reminder.ts`](../../scripture-habit/api_internal/lib/streak-reminder.ts)) によって制御されています。Node.js / ブラウザ標準の Internationalization (Intl) API、Firestore のインデックス上限を回避する分割クエリ、およびプッシュ通知の失敗結果から自動的にデッドトークンを排除する自己修復ループが活用されています。
 
 ```mermaid
 flowchart TD
