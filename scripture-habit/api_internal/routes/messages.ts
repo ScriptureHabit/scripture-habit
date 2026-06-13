@@ -183,6 +183,11 @@ router.post(['/post-note', '/post-note/'], authenticate, requireEmailVerified, v
             ...validation.data
         });
 
+        // Ensure background operations (notifications, stats, unity) are kept alive on serverless environments
+        if (result.backgroundPromise) {
+            waitUntil(result.backgroundPromise);
+        }
+
         res.status(200).json({ 
             success: true, 
             message: 'Note posted successfully.', 

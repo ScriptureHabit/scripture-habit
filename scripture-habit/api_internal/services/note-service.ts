@@ -417,19 +417,18 @@ export class NoteService {
                     activeUsers: admin.firestore.FieldValue.arrayUnion(uid)
                 }, { merge: true }).catch(err => {
                     console.error('[NoteService] Failed to write dailyStats in background:', err);
+                }),
+                // Push Notifications (Now part of the background promise)
+                NotificationService.notifyNotePosted({
+                    groupIds: [...new Set(userToGroupEntries.map(e => e[1]))],
+                    senderUid: uid,
+                    senderNickname: result.nickname,
+                    language: language || 'en',
+                    userToGroupMapEntries: userToGroupEntries
                 })
             ]).catch(err => {
                 console.error('[NoteService] Background updates failed:', err);
                 return null;
-            });
-
-            // Push Notifications
-            NotificationService.notifyNotePosted({
-                groupIds: [...new Set(userToGroupEntries.map(e => e[1]))],
-                senderUid: uid,
-                senderNickname: result.nickname,
-                language: language || 'en',
-                userToGroupMapEntries: userToGroupEntries
             });
 
             return {
