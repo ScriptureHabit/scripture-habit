@@ -54,6 +54,12 @@ export async function sendPushNotification(tokens: string[], payload: PushPayloa
                 body: payload.body,
                 ...(payload.data || {}),
             },
+            webpush: {
+                notification: {
+                    icon: '/favicon-192.png',
+                    badge: '/favicon-192.png',
+                }
+            },
             tokens: chunk,
         };
 

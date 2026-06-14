@@ -18,14 +18,21 @@ const messaging = firebase.messaging();
 messaging.onBackgroundMessage((payload) => {
     console.log('[sw.js] Received background message ', payload);
 
-    const notificationTitle = payload.data?.title || payload.notification?.title || 'Scripture Habit';
-    const notificationBody = payload.data?.body || payload.notification?.body || '';
+    // FCM SDK will automatically display notifications if 'notification' property is present.
+    // To prevent duplicate notifications, only show custom notification if 'notification' is missing.
+    if (payload.notification) {
+        console.log('[sw.js] Notification payload present, skipping manual showNotification to prevent duplicates.');
+        return;
+    }
+
+    const notificationTitle = payload.data?.title || 'Scripture Habit';
+    const notificationBody = payload.data?.body || '';
     
     const notificationOptions = {
         body: notificationBody,
         icon: '/favicon-192.png',
         badge: '/favicon-192.png', 
-        data: payload.data || payload.notification,
+        data: payload.data || {},
     };
 
     return self.registration.showNotification(notificationTitle, notificationOptions);
