@@ -17,25 +17,9 @@ const messaging = firebase.messaging();
 // バックグラウンド通知のハンドラ
 messaging.onBackgroundMessage((payload) => {
     console.log('[sw.js] Received background message ', payload);
-
-    // FCM SDK will automatically display notifications if 'notification' property is present.
-    // To prevent duplicate notifications, only show custom notification if 'notification' is missing.
-    if (payload.notification) {
-        console.log('[sw.js] Notification payload present, skipping manual showNotification to prevent duplicates.');
-        return;
-    }
-
-    const notificationTitle = payload.data?.title || 'Scripture Habit';
-    const notificationBody = payload.data?.body || '';
-    
-    const notificationOptions = {
-        body: notificationBody,
-        icon: '/favicon-192.png',
-        badge: '/favicon-192.png', 
-        data: payload.data || {},
-    };
-
-    return self.registration.showNotification(notificationTitle, notificationOptions);
+    // FCM SDK automatically handles displaying the notification because the server-side payload
+    // includes a 'notification' object. We do not need to call showNotification manually here,
+    // as doing so triggers a second, duplicate notification.
 });
 
 // 通知クリック時の動作
