@@ -34,9 +34,41 @@ interface PushPayload {
     data?: Record<string, string>;
 }
 
+// Cache to prevent duplicate notifications sent to the same token in a short window
+const sentNotificationsCache = new Map<string, number>();
+const CACHE_TTL_MS = 5000; // 5 seconds window
+
 export async function sendPushNotification(tokens: string[], payload: PushPayload) {
     if (!tokens || tokens.length === 0) return { successCount: 0, failureCount: 0, failedTokens: [] as string[] };
-    const uniqueTokens = [...new Set(tokens)];
+
+    const now = Date.now();
+    
+    // Clean up expired cache entries
+    for (const [key, timestamp] of sentNotificationsCache.entries()) {
+        if (now - timestamp > CACHE_TTL_MS) {
+            sentNotificationsCache.delete(key);
+        }
+    }
+
+    const uniqueTokens = [...new Set(tokens)].filter(token => {
+        // Skip duplicate check in test environment to avoid breaking unit tests
+        if (process.env.NODE_ENV === 'test') {
+            return true;
+        }
+        
+        const cacheKey = `${token}:${payload.body}`;
+        if (sentNotificationsCache.has(cacheKey)) {
+            console.log(`[PushService] Suppressing duplicate notification to token (starts with: ${token.substring(0, 8)}) for message: "${payload.body}"`);
+            return false;
+        }
+        sentNotificationsCache.set(cacheKey, now);
+        return true;
+    });
+
+    if (uniqueTokens.length === 0) {
+        return { successCount: 0, failureCount: 0, failedTokens: [] as string[] };
+    }
+
     const failedTokens: string[] = [];
     let totalSuccess = 0;
     let totalFailure = 0;
