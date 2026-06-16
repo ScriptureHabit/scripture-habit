@@ -59,7 +59,22 @@ self.addEventListener('notificationclick', (event) => {
                 const client = windowClients[i];
                     if (client.url.startsWith(self.location.origin)) {
                         if ('focus' in client) {
-                            client.navigate(urlToOpen);
+                            // Send message for smooth client-side transition
+                            client.postMessage({
+                                type: 'NAVIGATE',
+                                url: targetPath
+                            });
+                            
+                            // Safety check for WindowClient.navigate support (missing in iOS Safari)
+                            if ('navigate' in client) {
+                                try {
+                                    client.navigate(urlToOpen).catch((err) => {
+                                        console.warn('[sw.js] client.navigate failed:', err);
+                                    });
+                                } catch (err) {
+                                    console.warn('[sw.js] client.navigate threw:', err);
+                                }
+                            }
                             return client.focus();
                         }
                     }

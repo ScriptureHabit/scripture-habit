@@ -1,4 +1,4 @@
-import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
+import { Routes, Route, useLocation, Navigate, useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./app.css";
@@ -57,7 +57,25 @@ interface SystemStatus {
 const App: React.FC = () => {
   const { loading: authLoading } = useAuth();
   const [showBrowserWarning, setShowBrowserWarning] = useState(false);
+  const navigate = useNavigate();
   useApiWarmup();
+
+  useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      const handleServiceWorkerMessage = (event: MessageEvent) => {
+        if (event.data && event.data.type === 'NAVIGATE') {
+          const url = event.data.url;
+          console.log('[App] Received NAVIGATE message from Service Worker:', url);
+          navigate(url);
+        }
+      };
+
+      navigator.serviceWorker.addEventListener('message', handleServiceWorkerMessage);
+      return () => {
+        navigator.serviceWorker.removeEventListener('message', handleServiceWorkerMessage);
+      };
+    }
+  }, [navigate]);
 
   useEffect(() => {
     const isRedirecting = handleInAppBrowserRedirect();
