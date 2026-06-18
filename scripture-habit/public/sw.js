@@ -26,7 +26,11 @@ messaging.onBackgroundMessage((payload) => {
 self.addEventListener('notificationclick', (event) => {
     event.notification.close();
 
-    const data = event.notification.data;
+    const rawData = event.notification.data;
+    const data = (rawData && rawData.FCM_MSG && rawData.FCM_MSG.data)
+        ? rawData.FCM_MSG.data
+        : rawData;
+
     const groupId = data?.groupId;
     const openNewNote = data?.openNewNote;
     const lang = data?.lang;
@@ -93,7 +97,7 @@ self.addEventListener('message', (event) => {
     }
 });
 
-const CACHE_NAME = 'scripture-habit-v7'; // バージョンを上げて更新を促す
+const CACHE_NAME = 'scripture-habit-v8';
 const OFFLINE_URL = '/offline.html';
 
 const ASSETS_TO_CACHE = [
