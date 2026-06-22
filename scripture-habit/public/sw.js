@@ -22,6 +22,34 @@ messaging.onBackgroundMessage((payload) => {
     // as doing so triggers a second, duplicate notification.
 });
 
+// Helper to compare if two URLs are essentially pointing to the same page/group in our app
+function isSameRoute(urlA, urlB) {
+    try {
+        const a = new URL(urlA);
+        const b = new URL(urlB);
+        
+        // Remove trailing slashes and language prefixes for comparison
+        const normalizePath = (p) => {
+            let path = p.replace(/\/$/, '');
+            const parts = path.split('/');
+            if (parts.length > 1 && parts[1].length >= 2 && parts[1].length <= 3) {
+                parts.splice(1, 1);
+            }
+            return parts.join('/') || '/';
+        };
+
+        if (normalizePath(a.pathname) !== normalizePath(b.pathname)) {
+            return false;
+        }
+
+        // Compare critical query parameters (groupId)
+        const getGroupId = (urlObj) => urlObj.searchParams.get('groupId');
+        return getGroupId(a) === getGroupId(b);
+    } catch (e) {
+        return false;
+    }
+}
+
 // 通知クリック時の動作
 self.addEventListener('notificationclick', (event) => {
     event.notification.close();
@@ -51,42 +79,72 @@ self.addEventListener('notificationclick', (event) => {
     const urlToOpen = new URL(targetPath, self.location.origin).href;
 
     event.waitUntil(
-        self.registration.getNotifications().then((notifications) => {
-            // Close all existing notifications to avoid clutter
-            notifications.forEach((notification) => {
-                notification.close();
-            });
-        }).then(() => {
-            return clients.matchAll({ type: 'window', includeUncontrolled: true });
-        }).then((windowClients) => {
-            for (let i = 0; i < windowClients.length; i++) {
-                const client = windowClients[i];
+        Promise.all([
+            // 1. Close other notifications in the background (does not block window activation)
+            self.registration.getNotifications().then((notifications) => {
+                notifications.forEach((notification) => {
+                    notification.close();
+                });
+            }).catch((err) => {
+                console.warn('[sw.js] Failed to close notifications:', err);
+            }),
+            
+            // 2. Focus or open window immediately to keep user gesture active
+            clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
+                let focusPromise = Promise.resolve(null);
+                let fallbackToOpenWindow = true;
+
+                for (let i = 0; i < windowClients.length; i++) {
+                    const client = windowClients[i];
                     if (client.url.startsWith(self.location.origin)) {
-                        if ('focus' in client) {
-                            // Send message for smooth client-side transition
+                        // If navigate is supported (Android/Desktop), we navigate the client and focus it.
+                        if ('navigate' in client) {
                             client.postMessage({
                                 type: 'NAVIGATE',
                                 url: targetPath
                             });
                             
-                            // Safety check for WindowClient.navigate support (missing in iOS Safari)
-                            if ('navigate' in client) {
-                                try {
-                                    client.navigate(urlToOpen).catch((err) => {
-                                        console.warn('[sw.js] client.navigate failed:', err);
-                                    });
-                                } catch (err) {
-                                    console.warn('[sw.js] client.navigate threw:', err);
-                                }
+                            try {
+                                client.navigate(urlToOpen).catch((err) => {
+                                    console.warn('[sw.js] client.navigate failed:', err);
+                                });
+                            } catch (err) {
+                                console.warn('[sw.js] client.navigate threw:', err);
                             }
-                            return client.focus();
+                            
+                            focusPromise = client.focus().catch((err) => {
+                                console.warn('[sw.js] client.focus failed:', err);
+                                return null;
+                            });
+                            fallbackToOpenWindow = false;
+                            break;
+                        } else {
+                            // On iOS Safari (where 'navigate' is not supported):
+                            // If the client is already at the target route, we can just focus it.
+                            if (isSameRoute(client.url, urlToOpen) && 'focus' in client) {
+                                focusPromise = client.focus().catch((err) => {
+                                    console.warn('[sw.js] client.focus failed:', err);
+                                    return null;
+                                });
+                                fallbackToOpenWindow = false;
+                                break;
+                            }
                         }
                     }
                 }
-                if (clients.openWindow) {
-                    return clients.openWindow(urlToOpen);
-                }
+
+                return focusPromise.then((focusedClient) => {
+                    if (focusedClient) {
+                        return focusedClient;
+                    }
+                    // If focus failed, or we skipped it (iOS Safari with different URL),
+                    // we call clients.openWindow to force navigation/launch.
+                    if (fallbackToOpenWindow && clients.openWindow) {
+                        return clients.openWindow(urlToOpen);
+                    }
+                });
             })
+        ])
     );
 });
 
