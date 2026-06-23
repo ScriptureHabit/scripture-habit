@@ -97,20 +97,14 @@ self.addEventListener('notificationclick', (event) => {
                 for (let i = 0; i < windowClients.length; i++) {
                     const client = windowClients[i];
                     if (client.url.startsWith(self.location.origin)) {
-                        // If navigate is supported (Android/Desktop), we navigate the client and focus it.
-                        if ('navigate' in client) {
+                        // We always focus the existing client and navigate internally via postMessage.
+                        // This avoids hard reloads (which can abort focus on Android Chrome and lose state)
+                        // and ensures the app comes to the foreground on all platforms (Android/iOS/Desktop).
+                        if ('focus' in client) {
                             client.postMessage({
                                 type: 'NAVIGATE',
                                 url: targetPath
                             });
-                            
-                            try {
-                                client.navigate(urlToOpen).catch((err) => {
-                                    console.warn('[sw.js] client.navigate failed:', err);
-                                });
-                            } catch (err) {
-                                console.warn('[sw.js] client.navigate threw:', err);
-                            }
                             
                             focusPromise = client.focus().catch((err) => {
                                 console.warn('[sw.js] client.focus failed:', err);
@@ -118,17 +112,6 @@ self.addEventListener('notificationclick', (event) => {
                             });
                             fallbackToOpenWindow = false;
                             break;
-                        } else {
-                            // On iOS Safari (where 'navigate' is not supported):
-                            // If the client is already at the target route, we can just focus it.
-                            if (isSameRoute(client.url, urlToOpen) && 'focus' in client) {
-                                focusPromise = client.focus().catch((err) => {
-                                    console.warn('[sw.js] client.focus failed:', err);
-                                    return null;
-                                });
-                                fallbackToOpenWindow = false;
-                                break;
-                            }
                         }
                     }
                 }
