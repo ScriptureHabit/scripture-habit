@@ -37,7 +37,11 @@ const useGroupMetadataSync = (groupId: string | null, dispatch: Dispatch<ChatAct
           });
         }
       } else {
-        dispatch({ type: 'SET_NOT_FOUND' });
+        // Only assume the group does not exist if the server confirms it.
+        // During initial sync or bundle load, it may temporarily return not found from local cache.
+        if (!docSnap.metadata.fromCache) {
+          dispatch({ type: 'SET_NOT_FOUND' });
+        }
       }
     }, (err) => {
       if (err.code === 'permission-denied') {
