@@ -292,7 +292,7 @@ const Dashboard: FC = () => {
     );
   }
 
-  if (status === 'unauthenticated') return <Navigate to="/welcome" replace />;
+  if (status === 'unauthenticated') return <Navigate to="/welcome" replace state={{ from: location }} />;
   if (!userData) return null;
 
 

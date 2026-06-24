@@ -6,7 +6,7 @@ import { createUserWithEmailAndPassword, GoogleAuthProvider, GithubAuthProvider,
 import { Capacitor } from '@capacitor/core';
 import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
 import { doc, getDoc } from 'firebase/firestore';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import Input from '../input/input';
 import './signup-form.css'
 import { useLanguage } from '../../hooks/use-language';
@@ -24,6 +24,7 @@ export default function SignupForm() {
   const [error, setError] = useState<string | null>(null);
   const [pendingGoogleUser, setPendingGoogleUser] = useState<User | null>(null);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleSocialSignup = async (provider: AuthProvider) => {
     try {
@@ -67,7 +68,12 @@ export default function SignupForm() {
         setNickname(user.displayName || '');
       } else {
         // User exists, redirect to dashboard
-        navigate(`/${language}/dashboard`);
+        const from = location.state?.from;
+        if (from) {
+          navigate(from);
+        } else {
+          navigate(`/${language}/dashboard`);
+        }
       }
 
     } catch (err: unknown) {
@@ -96,7 +102,12 @@ export default function SignupForm() {
       });
 
       // Profile complete, redirect to dashboard
-      navigate(`/${language}/dashboard`);
+      const from = location.state?.from;
+      if (from) {
+        navigate(from);
+      } else {
+        navigate(`/${language}/dashboard`);
+      }
 
     } catch (apiError: unknown) {
       console.error("Error initializing profile via API:", apiError);
@@ -136,7 +147,7 @@ export default function SignupForm() {
 
       await signOut(auth!);
       toast.info(t('signup.verificationSent'));
-      navigate(`/${language}/login`);
+      navigate(`/${language}/login`, { state: location.state });
 
     } catch (err: unknown) {
       const authError = err as AuthError;

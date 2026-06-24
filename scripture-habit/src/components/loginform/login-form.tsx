@@ -8,7 +8,7 @@ import { signInWithEmailAndPassword, GoogleAuthProvider, GithubAuthProvider, sig
 import { Capacitor } from '@capacitor/core';
 import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
 import { doc, getDoc } from 'firebase/firestore';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useLanguage } from '../../hooks/use-language';
 import { UilGoogle, UilGithub } from '@iconscout/react-unicons';
 import { toast } from 'react-toastify';
@@ -25,6 +25,7 @@ const LoginForm: FC = () => {
   const [pendingGoogleUser, setPendingGoogleUser] = useState<User | null>(null);
   const [unverifiedUser, setUnverifiedUser] = useState<User | null>(null);
   const navigate = useNavigate();
+  const location = useLocation();
 
 
   const handleSocialLogin = async (provider: AuthProvider) => {
@@ -68,7 +69,12 @@ const LoginForm: FC = () => {
         setPendingGoogleUser(user);
         setNickname(user.displayName || '');
       } else {
-        navigate(`/${language}/dashboard`);
+        const from = location.state?.from;
+        if (from) {
+          navigate(from);
+        } else {
+          navigate(`/${language}/dashboard`);
+        }
       }
 
     } catch (err: unknown) {
@@ -99,7 +105,12 @@ const LoginForm: FC = () => {
       });
 
       // Profile complete, redirect to dashboard
-      navigate(`/${language}/dashboard`);
+      const from = location.state?.from;
+      if (from) {
+        navigate(from);
+      } else {
+        navigate(`/${language}/dashboard`);
+      }
 
     } catch (apiError: unknown) {
       console.error("Error initializing profile via API:", apiError);
@@ -127,7 +138,12 @@ const LoginForm: FC = () => {
         return;
       }
 
-      navigate(`/${language}/dashboard`);
+      const from = location.state?.from;
+      if (from) {
+        navigate(from);
+      } else {
+        navigate(`/${language}/dashboard`);
+      }
     } catch (err: unknown) {
       console.error("Error signing in with email/password:", err);
       const error = err as AuthError;

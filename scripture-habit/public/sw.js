@@ -2,6 +2,8 @@
 importScripts('https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/10.7.0/firebase-messaging-compat.js');
 
+self.pendingNotificationUrl = null;
+
 // 本番環境のFirebase設定
 firebase.initializeApp({
     apiKey: "AIzaSyCBgfSff0SJ6Rg1tGmU2z4MBccGMrA2jbM",
@@ -78,6 +80,9 @@ self.addEventListener('notificationclick', (event) => {
     
     const urlToOpen = new URL(targetPath, self.location.origin).href;
 
+    // Store pending URL in case the target client window needs to resume/reload
+    self.pendingNotificationUrl = targetPath;
+
     event.waitUntil(
         Promise.all([
             // 1. Close other notifications in the background (does not block window activation)
@@ -92,7 +97,6 @@ self.addEventListener('notificationclick', (event) => {
             // 2. Focus or open window immediately to keep user gesture active
             clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
                 let focusPromise = Promise.resolve(null);
-                let fallbackToOpenWindow = true;
 
                 for (let i = 0; i < windowClients.length; i++) {
                     const client = windowClients[i];
@@ -110,7 +114,6 @@ self.addEventListener('notificationclick', (event) => {
                                 console.warn('[sw.js] client.focus failed:', err);
                                 return null;
                             });
-                            fallbackToOpenWindow = false;
                             break;
                         }
                     }
@@ -120,9 +123,9 @@ self.addEventListener('notificationclick', (event) => {
                     if (focusedClient) {
                         return focusedClient;
                     }
-                    // If focus failed, or we skipped it (iOS Safari with different URL),
+                    // If focus failed, or we didn't find any matching window,
                     // we call clients.openWindow to force navigation/launch.
-                    if (fallbackToOpenWindow && clients.openWindow) {
+                    if (clients.openWindow) {
                         return clients.openWindow(urlToOpen);
                     }
                 });
@@ -131,10 +134,20 @@ self.addEventListener('notificationclick', (event) => {
     );
 });
 
-// UIからのメッセージ（アップデート用）
+// UIからのメッセージ
 self.addEventListener('message', (event) => {
     if (event.data && event.data.type === 'SKIP_WAITING') {
         self.skipWaiting();
+    } else if (event.data && event.data.type === 'CHECK_PENDING_NOTIFICATION') {
+        if (self.pendingNotificationUrl) {
+            if (event.ports && event.ports[0]) {
+                event.ports[0].postMessage({
+                    type: 'NAVIGATE',
+                    url: self.pendingNotificationUrl
+                });
+            }
+            self.pendingNotificationUrl = null;
+        }
     }
 });
 

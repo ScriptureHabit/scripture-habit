@@ -1,6 +1,6 @@
 
 import { useState, FC } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Button from '../button/button';
 import Mascot from '../mascot/mascot';
 import { useLanguage } from '../../hooks/use-language';
@@ -12,6 +12,7 @@ import Footer from '../footer/footer';
 const Welcome: FC = () => {
     const { t, setLanguage, language } = useLanguage();
     const navigate = useNavigate();
+    const location = useLocation();
     const [showWarning, setShowWarning] = useState(false);
     const [pendingPath, setPendingPath] = useState<string | null>(null);
 
@@ -21,14 +22,14 @@ const Welcome: FC = () => {
             setPendingPath(fullPath);
             setShowWarning(true);
         } else {
-            navigate(fullPath);
+            navigate(fullPath, { state: location.state });
         }
     };
 
     const handleContinue = () => {
         setShowWarning(false);
         if (pendingPath) {
-            navigate(pendingPath);
+            navigate(pendingPath, { state: location.state });
         }
     };
 
