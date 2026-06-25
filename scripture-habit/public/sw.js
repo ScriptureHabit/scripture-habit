@@ -56,80 +56,95 @@ function isSameRoute(urlA, urlB) {
 self.addEventListener('notificationclick', (event) => {
     event.notification.close();
 
-    const rawData = event.notification.data;
-    const data = (rawData && rawData.FCM_MSG && rawData.FCM_MSG.data)
-        ? rawData.FCM_MSG.data
-        : rawData;
+    let targetPath = '/dashboard';
+    let urlToOpen;
 
-    const groupId = data?.groupId;
-    const openNewNote = data?.openNewNote;
-    const lang = data?.lang;
-    
-    let targetPath = groupId ? `/dashboard?groupId=${groupId}&view=2` : '/dashboard';
-    
-    // アナリティクス計測用パラメータを付与
-    targetPath += (targetPath.includes('?') ? '&' : '?') + 'opened_from_push=1';
-    
-    if (openNewNote === 'true') {
-        targetPath += '&openNewNote=true';
+    try {
+        const rawData = event.notification.data;
+        const data = (rawData && rawData.FCM_MSG && rawData.FCM_MSG.data)
+            ? rawData.FCM_MSG.data
+            : rawData;
+
+        const groupId = data?.groupId;
+        const openNewNote = data?.openNewNote;
+        const lang = data?.lang;
+        
+        targetPath = groupId ? `/dashboard?groupId=${groupId}&view=2` : '/dashboard';
+        
+        // アナリティクス計測用パラメータを付与
+        targetPath += (targetPath.includes('?') ? '&' : '?') + 'opened_from_push=1';
+        
+        if (openNewNote === 'true') {
+            targetPath += '&openNewNote=true';
+        }
+        
+        if (lang && lang.length >= 2 && lang.length <= 3) {
+            targetPath = `/${lang}${targetPath}`;
+        }
+        
+        urlToOpen = new URL(targetPath, self.location.origin).href;
+    } catch (err) {
+        console.error('[sw.js] Failed to parse notification data, falling back to default:', err);
+        targetPath = '/dashboard';
+        urlToOpen = new URL(targetPath, self.location.origin).href;
     }
-    
-    if (lang && lang.length >= 2 && lang.length <= 3) {
-        targetPath = `/${lang}${targetPath}`;
-    }
-    
-    const urlToOpen = new URL(targetPath, self.location.origin).href;
 
     // Store pending URL in case the target client window needs to resume/reload
     self.pendingNotificationUrl = targetPath;
 
+    // 1. Focus or open window immediately to keep user gesture active
+    const windowActionPromise = clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
+        let focusPromise = Promise.resolve(null);
+
+        for (let i = 0; i < windowClients.length; i++) {
+            const client = windowClients[i];
+            if (client.url.startsWith(self.location.origin)) {
+                // We always focus the existing client and navigate internally via postMessage.
+                // This avoids hard reloads (which can abort focus on Android Chrome and lose state)
+                // and ensures the app comes to the foreground on all platforms (Android/iOS/Desktop).
+                if ('focus' in client) {
+                    client.postMessage({
+                        type: 'NAVIGATE',
+                        url: targetPath
+                    });
+                    
+                    focusPromise = client.focus().catch((err) => {
+                        console.warn('[sw.js] client.focus failed:', err);
+                        return null;
+                    });
+                    break;
+                }
+            }
+        }
+
+        return focusPromise.then((focusedClient) => {
+            if (focusedClient) {
+                return focusedClient;
+            }
+            // If focus failed, or we didn't find any matching window,
+            // we call clients.openWindow to force navigation/launch.
+            if (clients.openWindow) {
+                return clients.openWindow(urlToOpen);
+            }
+        });
+    });
+
+    // 2. Close other notifications in the background (runs in parallel, does not block window activation)
+    const closeNotificationsPromise = self.registration.getNotifications().then((notifications) => {
+        notifications.forEach((notification) => {
+            // Close other notifications to keep tray clean
+            if (notification !== event.notification) {
+                notification.close();
+            }
+        });
+    }).catch((err) => {
+        console.warn('[sw.js] Failed to close notifications:', err);
+    });
+
     event.waitUntil(
         Promise.all([
-            // 1. Close other notifications in the background (does not block window activation)
-            self.registration.getNotifications().then((notifications) => {
-                notifications.forEach((notification) => {
-                    notification.close();
-                });
-            }).catch((err) => {
-                console.warn('[sw.js] Failed to close notifications:', err);
-            }),
-            
-            // 2. Focus or open window immediately to keep user gesture active
-            clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
-                let focusPromise = Promise.resolve(null);
-
-                for (let i = 0; i < windowClients.length; i++) {
-                    const client = windowClients[i];
-                    if (client.url.startsWith(self.location.origin)) {
-                        // We always focus the existing client and navigate internally via postMessage.
-                        // This avoids hard reloads (which can abort focus on Android Chrome and lose state)
-                        // and ensures the app comes to the foreground on all platforms (Android/iOS/Desktop).
-                        if ('focus' in client) {
-                            client.postMessage({
-                                type: 'NAVIGATE',
-                                url: targetPath
-                            });
-                            
-                            focusPromise = client.focus().catch((err) => {
-                                console.warn('[sw.js] client.focus failed:', err);
-                                return null;
-                            });
-                            break;
-                        }
-                    }
-                }
-
-                return focusPromise.then((focusedClient) => {
-                    if (focusedClient) {
-                        return focusedClient;
-                    }
-                    // If focus failed, or we didn't find any matching window,
-                    // we call clients.openWindow to force navigation/launch.
-                    if (clients.openWindow) {
-                        return clients.openWindow(urlToOpen);
-                    }
-                });
-            })
+            windowActionPromise,
+            closeNotificationsPromise
         ])
     );
 });

@@ -73,7 +73,7 @@ const App: React.FC = () => {
       navigator.serviceWorker.addEventListener('message', handleServiceWorkerMessage);
 
       // Check if there is a pending navigation from a push notification click (e.g. on cold start/reload)
-      if (navigator.serviceWorker.controller) {
+      const checkPendingNotification = (controller: ServiceWorker) => {
         const messageChannel = new MessageChannel();
         messageChannel.port1.onmessage = (event) => {
           if (event.data && event.data.type === 'NAVIGATE') {
@@ -82,10 +82,21 @@ const App: React.FC = () => {
             navigate(url);
           }
         };
-        navigator.serviceWorker.controller.postMessage(
+        controller.postMessage(
           { type: 'CHECK_PENDING_NOTIFICATION' },
           [messageChannel.port2]
         );
+      };
+
+      if (navigator.serviceWorker.controller) {
+        checkPendingNotification(navigator.serviceWorker.controller);
+      } else {
+        const handleControllerChange = () => {
+          if (navigator.serviceWorker.controller) {
+            checkPendingNotification(navigator.serviceWorker.controller);
+          }
+        };
+        navigator.serviceWorker.addEventListener('controllerchange', handleControllerChange, { once: true });
       }
 
       return () => {
