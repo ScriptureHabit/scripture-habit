@@ -1,28 +1,5 @@
 // Firebase Messaging Service Worker
-importScripts('https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js');
-importScripts('https://www.gstatic.com/firebasejs/10.7.0/firebase-messaging-compat.js');
-
 self.pendingNotificationUrl = null;
-
-// 本番環境のFirebase設定
-firebase.initializeApp({
-    apiKey: "AIzaSyCBgfSff0SJ6Rg1tGmU2z4MBccGMrA2jbM",
-    authDomain: "scripture-habit-auth.firebaseapp.com",
-    projectId: "scripture-habit-auth",
-    storageBucket: "scripture-habit-auth.firebasestorage.app",
-    messagingSenderId: "346318604907",
-    appId: "1:346318604907:web:38afde63adfcdeaeb7bf2e"
-});
-
-const messaging = firebase.messaging();
-
-// バックグラウンド通知のハンドラ
-messaging.onBackgroundMessage((payload) => {
-    console.log('[sw.js] Received background message ', payload);
-    // FCM SDK automatically handles displaying the notification because the server-side payload
-    // includes a 'notification' object. We do not need to call showNotification manually here,
-    // as doing so triggers a second, duplicate notification.
-});
 
 // Helper to compare if two URLs are essentially pointing to the same page/group in our app
 function isSameRoute(urlA, urlB) {
@@ -52,7 +29,7 @@ function isSameRoute(urlA, urlB) {
     }
 }
 
-// 通知クリック時の動作
+// 通知クリック時の動作 (FCM SDKの競合を避けるため、最上部で登録)
 self.addEventListener('notificationclick', (event) => {
     event.notification.close();
 
@@ -94,10 +71,9 @@ self.addEventListener('notificationclick', (event) => {
 
     // 1. Focus or open window immediately to keep user gesture active
     const windowActionPromise = clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
-        let focusPromise = Promise.resolve(null);
-
         for (let i = 0; i < windowClients.length; i++) {
             const client = windowClients[i];
+            
             if (client.url.startsWith(self.location.origin)) {
                 // We always focus the existing client and navigate internally via postMessage.
                 // This avoids hard reloads (which can abort focus on Android Chrome and lose state)
@@ -108,25 +84,27 @@ self.addEventListener('notificationclick', (event) => {
                         url: targetPath
                     });
                     
-                    focusPromise = client.focus().catch((err) => {
-                        console.warn('[sw.js] client.focus failed:', err);
-                        return null;
+                    return client.focus().then((focusedClient) => {
+                        return focusedClient;
+                    }).catch((err) => {
+                        console.warn('[sw.js] client.focus failed. Falling back to openWindow:', err);
+                        if (clients.openWindow) {
+                            return clients.openWindow(urlToOpen);
+                        }
                     });
-                    break;
                 }
             }
         }
 
-        return focusPromise.then((focusedClient) => {
-            if (focusedClient) {
-                return focusedClient;
-            }
-            // If focus failed, or we didn't find any matching window,
-            // we call clients.openWindow to force navigation/launch.
-            if (clients.openWindow) {
-                return clients.openWindow(urlToOpen);
-            }
-        });
+        // If no matching window client was found, immediately call clients.openWindow
+        if (clients.openWindow) {
+            return clients.openWindow(urlToOpen).catch((err) => {
+                console.error('[sw.js] clients.openWindow failed:', err);
+                throw err;
+            });
+        } else {
+            console.error('[sw.js] clients.openWindow is not supported on this platform/browser.');
+        }
     });
 
     // 2. Close other notifications in the background (runs in parallel, does not block window activation)
@@ -145,7 +123,9 @@ self.addEventListener('notificationclick', (event) => {
         Promise.all([
             windowActionPromise,
             closeNotificationsPromise
-        ])
+        ]).catch((err) => {
+            console.error('[sw.js] Error during notificationclick waitUntil execution:', err);
+        })
     );
 });
 
@@ -166,6 +146,32 @@ self.addEventListener('message', (event) => {
     }
 });
 
+// ==========================================
+// Firebase SDK の読み込みと初期化 (リスナー登録の後に実行)
+// ==========================================
+importScripts('https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/10.7.0/firebase-messaging-compat.js');
+
+// 本番環境のFirebase設定
+firebase.initializeApp({
+    apiKey: "AIzaSyCBgfSff0SJ6Rg1tGmU2z4MBccGMrA2jbM",
+    authDomain: "scripture-habit-auth.firebaseapp.com",
+    projectId: "scripture-habit-auth",
+    storageBucket: "scripture-habit-auth.firebasestorage.app",
+    messagingSenderId: "346318604907",
+    appId: "1:346318604907:web:38afde63adfcdeaeb7bf2e"
+});
+
+const messaging = firebase.messaging();
+
+// バックグラウンド通知のハンドラ
+messaging.onBackgroundMessage((payload) => {
+    console.log('[sw.js] Received background message ', payload);
+});
+
+// ==========================================
+// キャッシュおよびフェッチ制御ロジック
+// ==========================================
 const CACHE_NAME = 'scripture-habit-v8';
 const OFFLINE_URL = '/offline.html';
 

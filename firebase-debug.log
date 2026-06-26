@@ -1,0 +1,25 @@
+[debug] [2026-06-26T09:48:49.731Z] ----------------------------------------------------------------------
+[debug] [2026-06-26T09:48:49.733Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\dazhi\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js emulators:start
+[debug] [2026-06-26T09:48:49.734Z] CLI Version:   15.9.1
+[debug] [2026-06-26T09:48:49.734Z] Platform:      win32
+[debug] [2026-06-26T09:48:49.734Z] Node Version:  v22.21.0
+[debug] [2026-06-26T09:48:49.734Z] Time:          Fri Jun 26 2026 18:48:49 GMT+0900 (Japan Standard Time)
+[debug] [2026-06-26T09:48:49.734Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-06-26T09:48:49.737Z] >>> [apiv2][query] GET https://firebase-public.firebaseio.com/cli.json [none]
+[debug] [2026-06-26T09:48:52.326Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-06-26T09:48:52.327Z] > authorizing via signed-in user (dazhilangxianggen@gmail.com)
+[error] 
+[error] Error: Not in a Firebase app directory (could not locate firebase.json)
+[debug] [2026-06-26T09:48:52.668Z] <<< [apiv2][status] GET https://firebase-public.firebaseio.com/cli.json 200
+[debug] [2026-06-26T09:48:52.668Z] <<< [apiv2][body] GET https://firebase-public.firebaseio.com/cli.json {"cloudBuildErrorAfter":1594252800000,"cloudBuildWarnAfter":1590019200000,"defaultNode10After":1594252800000,"minVersion":"3.0.5","node8DeploysDisabledAfter":1613390400000,"node8RuntimeDisabledAfter":1615809600000,"node8WarnAfter":1600128000000}
+[debug] [2026-06-26T09:48:52.683Z] Error: EBUSY: resource busy or locked, unlink 'C:\Users\dazhi\code\final-project\firebase-debug.log'
+    at Object.unlinkSync (node:fs:1952:11)
+    at process.<anonymous> (C:\Users\dazhi\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\cli.js:44:16)
+    at process.emit (node:events:531:35)
+    at process.exit (node:internal/process/per_thread:240:15)
+    at Timeout._onTimeout (C:\Users\dazhi\AppData\Roaming\npm\node_modules\firebase-tools\lib\errorOut.js:20:17)
+    at listOnTimeout (node:internal/timers:588:17)
+    at process.processTimers (node:internal/timers:523:7)
+[error] 
+[error] Error: An unexpected error has occurred.

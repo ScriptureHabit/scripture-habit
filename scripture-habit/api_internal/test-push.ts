@@ -1,4 +1,5 @@
-import { db, messaging } from './lib/firebase-admin.js';
+import { db } from './lib/firebase-admin.js';
+import { sendPushNotification } from './lib/notifications.js';
 
 async function testPush() {
     const uid = process.argv[2];
@@ -31,25 +32,20 @@ async function testPush() {
 
         console.log(`Found ${uniqueTokens.length} tokens. Sending test notification...`);
 
-        const message = {
+        const response = await sendPushNotification(uniqueTokens, {
+            title: 'Test PWA Notification',
+            body: 'Tap here to see if the PWA opens and routes correctly!',
             data: {
-                title: 'Test Notification',
-                body: 'This is a test to verify notifications are working on your device.',
-                groupId: 'test_group',
-            },
-            tokens: uniqueTokens,
-        };
+                groupId: 'test-group-123',
+                openNewNote: 'false',
+                lang: 'ja'
+            }
+        });
 
-        const response = await messaging.sendEachForMulticast(message);
         console.log(`Successfully sent ${response.successCount} messages.`);
         console.log(`Failed to send ${response.failureCount} messages.`);
-
-        if (response.failureCount > 0) {
-            response.responses.forEach((resp, idx) => {
-                if (!resp.success) {
-                    console.error(`Error for token [${uniqueTokens[idx]}]:`, resp.error);
-                }
-            });
+        if (response.failedTokens.length > 0) {
+            console.log('Failed tokens:', response.failedTokens);
         }
         process.exit(0);
     } catch (error) {

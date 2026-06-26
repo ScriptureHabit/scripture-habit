@@ -76,6 +76,29 @@ export async function sendPushNotification(tokens: string[], payload: PushPayloa
     const CHUNK_SIZE = 500;
     for (let i = 0; i < uniqueTokens.length; i += CHUNK_SIZE) {
         const chunk = uniqueTokens.slice(i, i + CHUNK_SIZE);
+        
+        // Construct dynamic PWA destination URL for Web Push fcmOptions.link
+        const groupId = payload.data?.groupId;
+        const openNewNote = payload.data?.openNewNote;
+        const lang = payload.data?.lang || 'ja';
+        
+        const baseUrl = process.env.APP_URL || process.env.NEXT_PUBLIC_APP_URL || 'https://scripture-habit.com';
+        let targetLink = `${baseUrl}/${lang}/dashboard`;
+        
+        const queryParams: string[] = [];
+        if (groupId) {
+            queryParams.push(`groupId=${groupId}`);
+            queryParams.push('view=2');
+        }
+        queryParams.push('opened_from_push=1');
+        if (openNewNote === 'true') {
+            queryParams.push('openNewNote=true');
+        }
+        
+        if (queryParams.length > 0) {
+            targetLink += `?${queryParams.join('&')}`;
+        }
+
         const message = {
             notification: {
                 title: payload.title,
@@ -90,6 +113,9 @@ export async function sendPushNotification(tokens: string[], payload: PushPayloa
                 notification: {
                     icon: '/favicon-192.png',
                     badge: '/favicon-192.png',
+                },
+                fcmOptions: {
+                    link: targetLink,
                 }
             },
             tokens: chunk,
