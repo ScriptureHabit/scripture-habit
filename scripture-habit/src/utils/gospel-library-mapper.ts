@@ -193,7 +193,10 @@ export const getGospelLibraryUrl = (volume: string | null | undefined, chapterIn
         "od": "od", "公式の宣言": "od", "official declarations": "od"
     };
 
-    const bookUrlPart = bookMappings[bookName];
+    let bookUrlPart = bookMappings[bookName];
+    if (!bookUrlPart && volumeUrlPart === "dc-testament" && !bookName) {
+        bookUrlPart = "dc";
+    }
     if (!bookUrlPart) return null;
 
     if (!volumeUrlPart) {

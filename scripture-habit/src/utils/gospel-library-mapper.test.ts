@@ -22,6 +22,8 @@ describe('gospel-library-mapper', () => {
             expect(getGospelLibraryUrl(null, 'Doctrine and Covenants 89:1')).toBe('https://www.churchofjesuschrist.org/study/scriptures/dc-testament/dc/89?lang=eng&id=p1#p1');
             expect(getGospelLibraryUrl(null, '教義と聖約 89:1', 'ja')).toBe('https://www.churchofjesuschrist.org/study/scriptures/dc-testament/dc/89?lang=jpn&id=p1#p1');
             expect(getGospelLibraryUrl(null, 'D&C 89:1')).toBe('https://www.churchofjesuschrist.org/study/scriptures/dc-testament/dc/89?lang=eng&id=p1#p1');
+            expect(getGospelLibraryUrl('教義と聖約', '78:18-19', 'ja')).toBe('https://www.churchofjesuschrist.org/study/scriptures/dc-testament/dc/78?lang=jpn&id=p18-p19#p18');
+            expect(getGospelLibraryUrl('Doctrine and Covenants', '78:18-19', 'en')).toBe('https://www.churchofjesuschrist.org/study/scriptures/dc-testament/dc/78?lang=eng&id=p18-p19#p18');
         });
 
         it('should detect volume from explicit volume argument', () => {
