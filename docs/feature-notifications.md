@@ -133,3 +133,73 @@ flowchart TD
     SetPublic -.->|Scanned by| QueryUsers
     TurnOff -.->|Excludes from| QueryUsers
 ```
+
+---
+
+## 🚦 App Launch & Deep Linking Flow
+
+When a user taps a push notification in the OS tray, the client coordinates window focus, application launching, and route redirection.
+
+### 1. High-Level Sequence
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as User
+    participant OS as OS / Browser
+    participant SW as Service Worker (sw.js)
+    participant Cache as Cache API (Pending Nav)
+    participant App as React App (app.tsx)
+
+    User->>OS: Tap Notification
+    OS->>SW: notificationclick
+    activate SW
+    SW->>Cache: storePendingUrl(targetPath) (Parallel execution)
+    activate Cache
+
+    alt Active Tab Exists (Hot Start)
+        SW->>OS: client.focus() (Triggers reload if tab was discarded)
+        SW-->>App: postMessage({ type: 'NAVIGATE', url })
+    else No Active Tab (Cold Start)
+        SW->>OS: clients.openWindow(urlToOpen) (Minimizes async delay to bypass Popup Blocker)
+    end
+    Cache-->>SW: Save completed
+    deactivate Cache
+    deactivate SW
+
+    Note over App: App mounts or returns to foreground
+    activate App
+
+    alt (Optimized) Navigation is already pending or handled recently (within 2s)
+        Note over App: Skip SW query (IPC) to reduce CPU overhead
+    else
+        App->>SW: postMessage({ type: 'CHECK_PENDING_NOTIFICATION' })
+        activate SW
+        SW->>Cache: consumePendingUrl() (Atomic isConsuming lock)
+        activate Cache
+        Cache-->>SW: Read & Delete URL
+        deactivate Cache
+        SW-->>App: postMessage({ type: 'NAVIGATE', url })
+        deactivate SW
+    end
+
+    Note over App: Wait for authLoading to settle
+    alt Public Route (wildcard matching) OR Authenticated
+        Note over App: In-flight query parameter cleanup & log analytics
+        App->>App: navigate(cleanTargetUrl)
+    else Unauthenticated & Protected Route
+        App->>App: Skip navigation safely
+    end
+    deactivate App
+```
+
+### 2. Advanced Launch Optimizations
+
+To ensure native-like performance and durability in PWA environments, several defensive techniques are implemented:
+
+* **Popup Blocker Bypass**: By parallelizing the Cache write (`storePendingUrl`) and `clients.openWindow` in `sw.js`, we minimize asynchronous boundaries inside user-interaction handlers, ensuring the browser permits the tab opening.
+* **Atomic Cache Read**: The Service Worker utilizes an `isConsuming` mutex lock during `consumePendingUrl`. This guarantees that if the client triggers multiple checks concurrently (e.g., fast tab switching during `visibilitychange`), the pending URL is only returned and deleted once, preventing duplicate navigations.
+* **IPC Messaging Reduction**: `app.tsx` uses `useRef` to track `pendingUrlRef` and `lastNavigatedTimeRef`. If a direct `NAVIGATE` message has just been processed, the client skips sending `CHECK_PENDING_NOTIFICATION` to the SW for the next 2 seconds, eliminating redundant MessageChannel overhead.
+* **In-Flight Query Cleanup**: Tracking parameters like `opened_from_push=1` are stripped *before* calling React Router's `navigate`, allowing a single navigation to the clean target URL. This prevents rendering and history conflicts caused by consecutive navigation replaces on mount.
+* **Wildcard Path Matching**: `isPublicRoute` supports wildcard definitions (e.g., `/join/*` matching any subpaths) to ensure newly added dynamic public routes resolve seamlessly without manual hardcoding updates.
+

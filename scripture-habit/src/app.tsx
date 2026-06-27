@@ -2,7 +2,7 @@ import { Routes, Route, useLocation, Navigate, useNavigate } from 'react-router-
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./app.css";
-import { lazy, Suspense, useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState, useRef } from 'react';
 import { useApiWarmup } from './hooks/use-api-warmup';
 
 import { ErrorFallback } from './components/common/error-fallback';
@@ -54,19 +54,81 @@ interface SystemStatus {
   maintenance?: boolean;
 }
 
+// Helper to determine if a route is public (does not require auth)
+const isPublicRoute = (urlStr: string) => {
+  try {
+    const url = new URL(urlStr, window.location.origin);
+    const path = url.pathname;
+
+    // Normalize path by removing language prefix if present (e.g. /ja/privacy -> /privacy)
+    const pathParts = path.split('/');
+    let cleanPath = path;
+    const firstPart = pathParts[1];
+
+    if (firstPart && (SUPPORTED_LANGUAGES as string[]).includes(firstPart)) {
+      cleanPath = '/' + pathParts.slice(2).join('/');
+    }
+
+    // Normalize trailing slash
+    if (cleanPath !== '/' && cleanPath.endsWith('/')) {
+      cleanPath = cleanPath.slice(0, -1);
+    }
+
+    // Define public path patterns (supports '*' wildcard for directories)
+    const publicPatterns = [
+      '/',
+      '/welcome',
+      '/login',
+      '/signup',
+      '/forgot-password',
+      '/privacy',
+      '/terms',
+      '/legal',
+      '/join/*', // dynamic public invite link
+    ];
+
+    const matchPath = (currentPath: string, pattern: string) => {
+      if (pattern.endsWith('/*')) {
+        const prefix = pattern.slice(0, -1); // e.g. '/join/'
+        return currentPath.startsWith(prefix);
+      }
+      return currentPath === pattern;
+    };
+
+    const isMatch = publicPatterns.some(pattern => matchPath(cleanPath, pattern)) || cleanPath === '';
+    return isMatch;
+  } catch (e) {
+    return true; // Fallback to safe routing
+  }
+};
+
 const App: React.FC = () => {
-  const { loading: authLoading } = useAuth();
+  const { loading: authLoading, user } = useAuth();
   const [showBrowserWarning, setShowBrowserWarning] = useState(false);
+  const [pendingNavigateUrl, setPendingNavigateUrlState] = useState<string | null>(null);
+  const pendingUrlRef = useRef<string | null>(null);
+  const lastNavigatedTimeRef = useRef<number>(0);
   const navigate = useNavigate();
   useApiWarmup();
 
+  // Helper to set state and ref simultaneously
+  const setPendingNavigateUrl = (url: string | null) => {
+    pendingUrlRef.current = url;
+    setPendingNavigateUrlState(url);
+  };
+
+  // 1. Listen for Service Worker navigation messages and buffer them in state
   useEffect(() => {
     if ('serviceWorker' in navigator) {
+      const handleNavigation = (url: string) => {
+        setPendingNavigateUrl(url);
+      };
+
       const handleServiceWorkerMessage = (event: MessageEvent) => {
         if (event.data && event.data.type === 'NAVIGATE') {
           const url = event.data.url;
           console.log('[App] Received NAVIGATE message from Service Worker:', url);
-          navigate(url);
+          handleNavigation(url);
         }
       };
 
@@ -79,7 +141,7 @@ const App: React.FC = () => {
           if (event.data && event.data.type === 'NAVIGATE') {
             const url = event.data.url;
             console.log('[App] Received pending NAVIGATE from Service Worker:', url);
-            navigate(url);
+            handleNavigation(url);
           }
         };
         controller.postMessage(
@@ -88,22 +150,114 @@ const App: React.FC = () => {
         );
       };
 
+      const triggerPendingCheck = () => {
+        // [Optimization] Avoid redundant IPC checks if navigation is already pending in state,
+        // or if a navigation was executed very recently (e.g., within the last 2 seconds).
+        // This mitigates the race condition where visibilitychange triggers immediately after focus.
+        const now = Date.now();
+        if (pendingUrlRef.current || (now - lastNavigatedTimeRef.current < 2000)) {
+          console.log('[App] Skip CHECK_PENDING_NOTIFICATION: Navigation already active or recently handled');
+          return;
+        }
+        if (navigator.serviceWorker.controller) {
+          checkPendingNotification(navigator.serviceWorker.controller);
+        }
+      };
+
       if (navigator.serviceWorker.controller) {
-        checkPendingNotification(navigator.serviceWorker.controller);
+        triggerPendingCheck();
       } else {
         const handleControllerChange = () => {
           if (navigator.serviceWorker.controller) {
-            checkPendingNotification(navigator.serviceWorker.controller);
+            triggerPendingCheck();
           }
         };
         navigator.serviceWorker.addEventListener('controllerchange', handleControllerChange, { once: true });
       }
 
+      // Check for pending notifications when returning to the foreground (avoids OS throttling issues)
+      const handleVisibilityChange = () => {
+        if (document.visibilityState === 'visible') {
+          triggerPendingCheck();
+        }
+      };
+      document.addEventListener('visibilitychange', handleVisibilityChange);
+
       return () => {
         navigator.serviceWorker.removeEventListener('message', handleServiceWorkerMessage);
+        document.removeEventListener('visibilitychange', handleVisibilityChange);
       };
     }
-  }, [navigate]);
+  }, []);
+
+  // 2. Reactively handle the buffered navigation target once Auth loading state settles
+  useEffect(() => {
+    if (!pendingNavigateUrl) return;
+
+    // Normalize and compare route URLs by stripping tracking parameters (e.g. opened_from_push)
+    const isSameRoute = (targetUrlStr: string) => {
+      try {
+        const currentUrl = new URL(window.location.href);
+        const targetUrl = new URL(targetUrlStr, window.location.origin);
+        
+        if (currentUrl.pathname !== targetUrl.pathname) return false;
+        
+        const ignoreParams = ['opened_from_push'];
+        const curParams = new URLSearchParams(currentUrl.search);
+        const tarParams = new URLSearchParams(targetUrl.search);
+        
+        ignoreParams.forEach(p => {
+          curParams.delete(p);
+          tarParams.delete(p);
+        });
+        
+        curParams.sort();
+        tarParams.sort();
+        return curParams.toString() === tarParams.toString();
+      } catch (e) {
+        return false;
+      }
+    };
+
+    if (authLoading) {
+      console.log('[App] Auth is loading, buffering navigation target:', pendingNavigateUrl);
+      return;
+    }
+
+    const targetUrl = pendingNavigateUrl;
+    setPendingNavigateUrl(null); // Consume the pending URL
+
+    if (isSameRoute(targetUrl)) {
+      console.log('[App] Already on target URL, skipping duplicate navigation:', targetUrl);
+      return;
+    }
+
+    // Only route to protected pages if authenticated; otherwise let public paths pass
+    if (user || isPublicRoute(targetUrl)) {
+      let cleanTargetUrl = targetUrl;
+      try {
+        const targetUrlObj = new URL(targetUrl, window.location.origin);
+        if (targetUrlObj.searchParams.get('opened_from_push') === '1') {
+          if (analytics) {
+            logEvent(analytics, 'notification_opened', {
+              source: 'pwa_push'
+            });
+            console.log('[Analytics] Logged notification_opened event in-flight');
+          }
+          targetUrlObj.searchParams.delete('opened_from_push');
+          cleanTargetUrl = targetUrlObj.pathname + targetUrlObj.search + targetUrlObj.hash;
+        }
+      } catch (e) {
+        console.warn('[App] Failed to parse targetUrl for analytics in-flight:', e);
+      }
+
+      console.log('[App] Navigating to notification target:', cleanTargetUrl);
+      lastNavigatedTimeRef.current = Date.now();
+      navigate(cleanTargetUrl);
+    } else {
+      console.log('[App] User is unauthenticated and target is protected. Skipping navigation:', targetUrl);
+    }
+  }, [pendingNavigateUrl, authLoading, user, navigate]);
 
   useEffect(() => {
     const isRedirecting = handleInAppBrowserRedirect();
@@ -189,10 +343,12 @@ const App: React.FC = () => {
       
       // Clean up the URL so it doesn't log again on refresh
       searchParams.delete('opened_from_push');
-      const newUrl = window.location.pathname + (searchParams.toString() ? `?${searchParams.toString()}` : '') + window.location.hash;
-      window.history.replaceState({}, '', newUrl);
+      const searchStr = searchParams.toString();
+      const newUrl = location.pathname + (searchStr ? `?${searchStr}` : '') + location.hash;
+      // Replace history using React Router to keep browser state synchronized
+      navigate(newUrl, { replace: true });
     }
-  }, [location.search]);
+  }, [location.search, location.pathname, location.hash, navigate]);
 
   const isMaintenance = MAINTENANCE_MODE || (systemStatusError instanceof FirebaseError && systemStatusError.code === 'resource-exhausted') || systemStatus?.maintenance;
   if (isMaintenance) {

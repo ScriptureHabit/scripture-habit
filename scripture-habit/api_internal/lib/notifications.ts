@@ -76,29 +76,11 @@ export async function sendPushNotification(tokens: string[], payload: PushPayloa
     const CHUNK_SIZE = 500;
     for (let i = 0; i < uniqueTokens.length; i += CHUNK_SIZE) {
         const chunk = uniqueTokens.slice(i, i + CHUNK_SIZE);
-        
-        // Construct dynamic PWA destination URL for Web Push fcmOptions.link
-        const groupId = payload.data?.groupId;
-        const openNewNote = payload.data?.openNewNote;
-        const lang = payload.data?.lang || 'ja';
-        
-        const baseUrl = process.env.APP_URL || process.env.NEXT_PUBLIC_APP_URL || 'https://scripture-habit.com';
-        let targetLink = `${baseUrl}/${lang}/dashboard`;
-        
-        const queryParams: string[] = [];
-        if (groupId) {
-            queryParams.push(`groupId=${groupId}`);
-            queryParams.push('view=2');
-        }
-        queryParams.push('opened_from_push=1');
-        if (openNewNote === 'true') {
-            queryParams.push('openNewNote=true');
-        }
-        
-        if (queryParams.length > 0) {
-            targetLink += `?${queryParams.join('&')}`;
-        }
 
+        // [Bug Fix #4] fcmOptions.link を削除。
+        // fcmOptions.link が設定されていると FCM SDK が独自の notificationclick を
+        // 処理しようとし、sw.js のカスタムハンドラと競合する。
+        // ナビゲーションロジックは sw.js の notificationclick に一元化する。
         const message = {
             notification: {
                 title: payload.title,
@@ -114,9 +96,6 @@ export async function sendPushNotification(tokens: string[], payload: PushPayloa
                     icon: '/favicon-192.png',
                     badge: '/favicon-192.png',
                 },
-                fcmOptions: {
-                    link: targetLink,
-                }
             },
             tokens: chunk,
         };
@@ -275,6 +254,8 @@ export async function notifyGroupMembers(groupId: string, senderUid: string, pay
             
             if (failedTokens.length > 0) {
                 const batch = db.batch();
+                const affectedUids = new Set<string>();
+
                 failedTokens.forEach(t => {
                     const uid = tokenToUserMap.get(t);
                     const source = tokenSourceMap.get(t);
@@ -284,18 +265,26 @@ export async function notifyGroupMembers(groupId: string, senderUid: string, pay
                             : db.collection('users').doc(uid);
                         batch.update(targetRef, { fcmTokens: admin.firestore.FieldValue.arrayRemove(t) });
 
-                        // Track remaining tokens for self-healing of hasFcmToken flag
+                        // 失敗トークンをアクティブセットから削除して残数を追跡
                         const activeTokensSet = userActiveTokens.get(uid);
                         if (activeTokensSet) {
                             activeTokensSet.delete(t);
-                            if (activeTokensSet.size === 0) {
-                                batch.update(db.collection('users').doc(uid), {
-                                    hasFcmToken: false
-                                });
-                            }
                         }
+                        affectedUids.add(uid);
                     }
                 });
+
+                // [Bug Fix #8] 全影響ユーザーに対して hasFcmToken フラグを確認・更新する。
+                // 旧実装は userActiveTokens にユーザーが存在しない場合（全トークンが
+                // private コレクション経由等）に hasFcmToken が更新されないバグがあった。
+                affectedUids.forEach(uid => {
+                    const activeTokensSet = userActiveTokens.get(uid);
+                    const hasRemainingTokens = activeTokensSet && activeTokensSet.size > 0;
+                    if (!hasRemainingTokens) {
+                        batch.update(db.collection('users').doc(uid), { hasFcmToken: false });
+                    }
+                });
+
                 await batch.commit();
             }
         }
