@@ -31,16 +31,30 @@
 本番環境のセキュリティとオフラインでの応答性（Firestore Offline Persistence）のバランスを取るため、アプリケーションは**ハイブリッドな書き込みポリシー**を採用しています。
 
 ### 1. Firestoreルールとフロントエンドの制限
-*   **共同作業用リソース (`messages`、`members`、`cheers`)**:
-    改ざんやなりすましを防止するため、`firestore.rules` において `allow write: if false;` に設定されています。これらに対して、フロントエンドのコードから直接 `setDoc()`、`updateDoc()`、または `addDoc()` を呼び出しては**いけません**。
-*   **個人用リソース (`users`、`private/tokens`、`groupStates`、`letters`)**:
+*   **共同作業用リソース (`messages`、`members`、`cheers`、`groups`)**:
+    改ざんや整合性の破綻を防ぐため、これら共同作業用リソースは `firestore.rules` において `allow write: if false;`（`groups` は `create` も制限）に設定されています。これらに対して、フロントエンドのコードから直接書き込みを呼び出しては**いけません**。
+*   **個人用リソース (`users`、`private/tokens` captains/groupStates`、`letters`)**:
     オフライン時のデータ永続化と即時反映を可能にするため、認証された本人（`request.auth.uid == userId`）からの直接の作成・更新がルールによって安全に許可されています。
 *   **フロントエンドの例外**:
-    即時のグループ作成を可能にするため、フロントエンドからの直接のグループ作成（`groups` の create）が許可されていますが、`firestore.rules` で**ユーザーあたり最大4グループまで**（`groupIds.size() < 4`）と厳格に制限されています。通報（`reports`）の作成もフロントエンドから直接行えます。
+    通報（`reports`）の作成はフロントエンドから直接行えます。※以前許可されていた直接のグループ作成（`groups` の `create`）は、セキュリティとデータ一貫性を担保するため廃止され、現在はバックエンドAPI（`/api/groups/create-group`）経由に一本化されています。
 
 ### 2. バックエンド優先（APIミューテーション）
-*   共有リソースの状態の更新（ノートの投稿、応援（チア）、グループへの参加、管理者権限の譲渡など）は、**Vercel Functions**（`api_internal/routes/*`）を介してExpressバックエンドを経由する必要があります。
-*   **アトミックトランザクション**: 複数のレコードに影響を与えるすべての更新は、失敗時にロールバックされることを保証するために `db.runTransaction()` でラップする必要があります。
+*   共有リソースの状態の更新（グループの作成、ノートの投稿、応援（チア）、グループへの参加、管理者権限の譲渡など）は、**Vercel Functions**（`api_internal/routes/*`）を介してExpressバックエンドを経由する必要があります。
+*   **アトミックトランザクション（Read-before-Writeの強制化）**:
+    複数のレコードに影響を与えるすべての更新は、失敗時にロールバックされることを保証するために、`runPhasedTransaction()` でラップする必要があります。
+    *   *制限と移行ロードマップ*: トランザクション内の「読み込み（Read）の後に書き込み（Write）を実行する」というFirestore Adminの制約を遵守させるため、生の `db.runTransaction()` の直接使用はESLintルール（`no-restricted-properties`）により制限（警告）されています。新規実装は必ず `runPhasedTransaction()` を使用してください。歴史的な残存トランザクション（`auth.ts` や `archive-service.ts`）の移行がすべて完了し次第、警告（warn）からエラー（error）へ引き上げられます。
+    *   *型レベルの防御*: `runPhasedTransaction` の `read` フェーズ callback が受け取る引数は `ReadOnlyTransaction` 型（`get` と `getAll` のみが許容される型）に制限されているため、読み込みフェーズで誤って書き込みメソッド（`set`, `update`, `delete`）を実行することはコンパイルエラーとして100%遮断されます。
+    *   *冪等性の保証（副作用の禁止）*: Firestore トランザクションは競合発生時に自動で複数回リトライされます。そのため、トランザクションブロック（特に `write` フェーズ）の中には**「データベースの冪等（Idempotent）な更新処理」のみを記述してください。** 外部API呼び出し、Discord/Slack等のメッセージ通知送信、非アトミックなID生成といった「副作用を伴う処理」は、トランザクションが正常にコミットされた後（トランザクションブロックの外）で実行してください。
+
+### 3. 統一された Express エラーハンドリング
+*   Express のルートハンドラ内で発生したビジネスロジックエラー（権限不足、リソースなし、入力値エラーなど）は、汎用の `Error` ではなく [api_internal/lib/errors.ts](file:///c:/Users/dazhi/code/final-project/scripture-habit/api_internal/lib/errors.ts) で定義されている `AppError` のサブクラス（`ForbiddenError`、`NotFoundError`、`ValidationError`）をスローしてください。
+*   `catch` ブロックでは個別にステータスコードを返さず、必ず `sendErrorResponse(res, error, 'Fallback message')` ヘルパーを使用してください。これにより、エラークラスに応じた正しい HTTP ステータスコード（403, 404, 400 等）とエラーコードが型安全にクライアントへ返却されます。
+
+### 4. 分散カウンタとダイナミックシャード
+*   グループの統計カウンタ（`messageCount`、`noteCount`）を増減させる処理は、絶対に `FieldValue.increment` を用いた直接更新をせず、必ず `CounterService.increment(transaction, groupRef, field, value, membersCount)` を使用してください。
+*   `CounterService` は、グループのメンバー数（`membersCount`）が 100人以下の小規模な場合はメインドキュメントを直接更新（競合回避とコスト削減）し、100人を超える大規模グループの場合は自動的に 3つ の分散シャードに書き込む「ダイナミックシャード」を行います。
+*   定期バッチ（CRON）やデータ recounts 処理もこの動的しきい値に基づいて集計をスキップ・最適化します。
+
 
 ---
 

@@ -1,4 +1,5 @@
 import { admin, db } from '../lib/firebase-admin.js';
+import { CounterService } from './counter-service.js';
 import { UserDocument, GroupDocument } from '../../types/firestore.js';
 import { NotFoundError } from '../lib/errors.js';
 import { buildNoteSearchTokens } from '../lib/search-utils.js';
@@ -53,7 +54,8 @@ export class NoteService {
                     streakResult,
                     messagesInGroup,
                     existingNoteExists,
-                    allLatestGids
+                    allLatestGids,
+                    groupMembersCountMap
                 } = await (async () => {
                     const [userSnap, existingNoteSnap] = await Promise.all([
                         transaction.get(userRef),
@@ -99,10 +101,27 @@ export class NoteService {
 
                     const allLatestGids = [...new Set([...groupsToPost, ...(hasStreakUpdated && streakCountNew > 0 ? uGroupIds : [])])];
                     const latRefs = allLatestGids.map(gid => db.collection('groups').doc(gid).collection('messages_latest').doc('latest'));
+                    const groupRefs = allLatestGids.map(gid => db.collection('groups').doc(gid));
                     
                     let latSnaps: admin.firestore.DocumentSnapshot[] = [];
-                    if (latRefs.length > 0) {
-                        latSnaps = await transaction.getAll(...latRefs);
+                    let groupSnaps: admin.firestore.DocumentSnapshot[] = [];
+                    if (allLatestGids.length > 0) {
+                        const allRefs = [...latRefs, ...groupRefs];
+                        const allSnaps = await transaction.getAll(...allRefs);
+                        latSnaps = allSnaps.slice(0, latRefs.length);
+                        groupSnaps = allSnaps.slice(latRefs.length);
+                    }
+
+                    const groupMembersCountMap: Record<string, number> = {};
+                    for (let i = 0; i < allLatestGids.length; i++) {
+                        const gid = allLatestGids[i];
+                        const gSnap = groupSnaps[i];
+                        if (gSnap && gSnap.exists) {
+                            const gData = gSnap.data() as GroupDocument;
+                            groupMembersCountMap[gid] = gData.membersCount || (gData.members ? gData.members.length : 0);
+                        } else {
+                            groupMembersCountMap[gid] = 0;
+                        }
                     }
 
                     const bootStamps: Record<string, Record<string, unknown>[]> = {};
@@ -130,7 +149,8 @@ export class NoteService {
                         streakResult: streakRes,
                         messagesInGroup: bootStamps,
                         existingNoteExists: !!(existingNoteSnap && existingNoteSnap.exists),
-                        allLatestGids
+                        allLatestGids,
+                        groupMembersCountMap
                     };
                 })();
 
@@ -200,6 +220,10 @@ export class NoteService {
                     };
                     messagesInGroup[gid] = [...(messagesInGroup[gid] || []), arrayMsg].slice(-25);
 
+                    const membersCount = groupMembersCountMap[gid] || 0;
+                    CounterService.increment(transaction, gRef, 'messageCount', 1, membersCount);
+                    CounterService.increment(transaction, gRef, 'noteCount', 1, membersCount);
+
                     const groupUpdate = {
                         lastMessageAt: serverTime,
                         lastNoteAt: serverTime,
@@ -207,8 +231,6 @@ export class NoteService {
                         lastNoteByUid: uid,
                         [`memberLastActive.${uid}`]: serverTime,
                         [`memberLastReadAt.${uid}`]: serverTime,
-                        messageCount: admin.firestore.FieldValue.increment(1),
-                        noteCount: admin.firestore.FieldValue.increment(1),
                         'dailyActivity.activeMembers': admin.firestore.FieldValue.arrayUnion(uid)
                     } as admin.firestore.UpdateData<GroupDocument>;
 
@@ -293,8 +315,10 @@ export class NoteService {
                         };
                         messagesInGroup[gid] = [...(messagesInGroup[gid] || []), arrayAnnounce].slice(-25);
                         
+                        const membersCount = groupMembersCountMap[gid] || 0;
+                        CounterService.increment(transaction, gRef, 'messageCount', 1, membersCount);
+
                         transaction.update(gRef, {
-                            messageCount: admin.firestore.FieldValue.increment(1),
                             lastMessageAt: announceTime,
                             lastMessageByNickname: botName,
                             lastMessageByUid: 'system'
@@ -600,8 +624,11 @@ export class NoteService {
                     
                     updatePayload.unityPercentage = calculateUnityPercentage(simulatedGroup as unknown as Group, [], now);
 
-                    updatePayload.noteCount = admin.firestore.FieldValue.increment(-1);
-                    updatePayload.messageCount = admin.firestore.FieldValue.increment(-1);
+                    const gData = gSnap.data()!;
+                    const membersCount = gData.membersCount || (gData.members ? gData.members.length : 0);
+
+                    CounterService.increment(transaction, gSnap.ref, 'noteCount', -1, membersCount);
+                    CounterService.increment(transaction, gSnap.ref, 'messageCount', -1, membersCount);
 
                     transaction.update(gSnap.ref, updatePayload);
                     transaction.delete(mSnap.ref);

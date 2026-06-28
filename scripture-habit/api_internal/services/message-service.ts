@@ -1,4 +1,5 @@
 import { admin, db } from '../lib/firebase-admin.js';
+import { CounterService } from './counter-service.js';
 import { GroupDocument, MessageDocument, UserDocument, ReactionPreview, PersonalNoteDocument, FirestoreTimestamp } from '../../types/firestore.js';
 import { formatDateInTimeZone, normalizeDateString } from '../../src/utils/time-utils.js';
 import { buildNoteSearchTokens } from '../lib/search-utils.js';
@@ -181,8 +182,12 @@ export class MessageService {
                 lastUpdatedAt: admin.firestore.FieldValue.serverTimestamp()
             }, { merge: true });
 
+            const gData = groupSnap.data() as GroupDocument;
+            const membersCount = gData.membersCount || (gData.members ? gData.members.length : 0);
+
+            CounterService.increment(transaction, groupRef, 'messageCount', 1, membersCount);
+
             const updatePayload = {
-                messageCount: admin.firestore.FieldValue.increment(1),
                 lastMessageAt: admin.firestore.FieldValue.serverTimestamp(),
                 lastMessageByNickname: nickname,
                 lastMessageByUid: uid,
@@ -210,7 +215,6 @@ export class MessageService {
                 lastActiveAt: admin.firestore.FieldValue.serverTimestamp()
             }, { merge: true });
 
-            const gData = groupSnap.data() as GroupDocument;
             const members = gData.members || [];
 
             return { messageId: msgRef.id, nickname: nickname, members };
@@ -499,9 +503,11 @@ export class MessageService {
             ]);
 
             // --- 2. EXECUTE ALL WRITES ---
-            const groupUpdate: admin.firestore.UpdateData<GroupDocument> = {
-                messageCount: admin.firestore.FieldValue.increment(-1)
-            };
+            const membersCount = gData.membersCount || (gData.members ? gData.members.length : 0);
+
+            CounterService.increment(transaction, groupRef, 'messageCount', -1, membersCount);
+
+            const groupUpdate: admin.firestore.UpdateData<GroupDocument> = {};
 
             // Update latest aggregate document (recommended shrinkage method)
             if (latestSnap.exists) {
@@ -511,7 +517,7 @@ export class MessageService {
             }
 
             if (msgData.isNote) {
-                groupUpdate.noteCount = admin.firestore.FieldValue.increment(-1);
+                CounterService.increment(transaction, groupRef, 'noteCount', -1, membersCount);
                 transaction.update(db.collection('users').doc(uid), {
                     totalNotes: admin.firestore.FieldValue.increment(-1)
                 });

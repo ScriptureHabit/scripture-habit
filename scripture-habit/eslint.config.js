@@ -26,6 +26,15 @@ export default tseslint.config(
       '@typescript-eslint/no-unused-vars': 'warn',
       '@typescript-eslint/no-unused-expressions': 'warn',
       'no-empty': 'warn',
+      // TODO (Roadmap): Upgrade severity to 'error' once all historical transactions 
+      // (in auth.ts, archive-service.ts etc.) are fully migrated to runPhasedTransaction.
+      'no-restricted-properties': [
+        'warn',
+        {
+          property: 'runTransaction',
+          message: 'Use runPhasedTransaction from api_internal/lib/phased-transaction instead of db.runTransaction to enforce Read-before-Write ordering.'
+        }
+      ],
     },
   },
   {

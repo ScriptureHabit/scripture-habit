@@ -1,7 +1,14 @@
 {
     "firestore": {
         "rules": "firestore.rules",
-        "indexes": "firestore.indexes.json"
+        "indexes": "firestore.indexes.json",
+        "ttl": [
+            {
+                "collectionGroup": "translation_cache",
+                "field": "createdAt",
+                "state": "ENABLED"
+            }
+        ]
     },
     "hosting": {
         "public": "dist",

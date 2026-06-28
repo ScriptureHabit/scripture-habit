@@ -1,7 +1,7 @@
 import { admin, db } from '../lib/firebase-admin.js';
 
 export class CounterService {
-    private static NUM_SHARDS = 10;
+    private static NUM_SHARDS = 3;
 
     /**
      * Get the total count by summing all shards for a specific field
@@ -16,15 +16,28 @@ export class CounterService {
     }
 
     /**
-     * Increment a random shard for a specific field within a transaction
+     * Increment a random shard for a specific field within a transaction.
+     * Dynamic sharding routing: small groups (<= 100 members) bypass shards and write directly to parent.
      */
-    static increment(transaction: admin.firestore.Transaction, ref: admin.firestore.DocumentReference, fieldName: string = 'count', value: number = 1) {
-        const shardId = Math.floor(Math.random() * this.NUM_SHARDS).toString();
-        const shardRef = ref.collection('shards').doc(shardId);
-        
-        transaction.set(shardRef, {
-            [fieldName]: admin.firestore.FieldValue.increment(value)
-        }, { merge: true });
+    static increment(
+        transaction: admin.firestore.Transaction, 
+        ref: admin.firestore.DocumentReference, 
+        fieldName: string = 'count', 
+        value: number = 1,
+        membersCount: number = 0
+    ) {
+        if (membersCount > 100) {
+            const shardId = Math.floor(Math.random() * this.NUM_SHARDS).toString();
+            const shardRef = ref.collection('shards').doc(shardId);
+            
+            transaction.set(shardRef, {
+                [fieldName]: admin.firestore.FieldValue.increment(value)
+            }, { merge: true });
+        } else {
+            transaction.update(ref, {
+                [fieldName]: admin.firestore.FieldValue.increment(value)
+            });
+        }
     }
 
     /**
@@ -55,9 +68,22 @@ export class CounterService {
     }
 
     /**
-     * Sync the sharded count back to the main document field
+     * Sync the sharded count back to the main document field.
+     * Small groups are dynamically updated directly, so we bypass sharding aggregation.
      */
     static async aggregateAndSync(ref: admin.firestore.DocumentReference, fieldName: string) {
+        const snap = await ref.get();
+        if (!snap.exists) return 0;
+        const data = snap.data();
+        const membersCount = data?.membersCount || (data?.members ? data.members.length : 0);
+        
+        if (membersCount <= 100) {
+            await ref.update({
+                [`${fieldName}_syncedAt`]: admin.firestore.FieldValue.serverTimestamp()
+            });
+            return (data?.[fieldName] || 0) as number;
+        }
+
         const total = await this.getCount(ref, fieldName);
         await ref.update({
             [fieldName]: total,

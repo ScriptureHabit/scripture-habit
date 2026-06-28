@@ -1,4 +1,24 @@
+import { ApiErrorCode } from '../types/errors';
+
 export default {
+        apiErrors: {
+            INVALID_INVITE_CODE: "招待コードが無効または期限切れです。",
+            EXPIRED_INVITE_LINK: "この招待リンクは期限切れです。グループのオーナーに新しいリンクを要求してください。",
+            FORBIDDEN: "アクセス権限がありません。",
+            NOT_FOUND: "リソースが見つかりませんでした。",
+            ALREADY_MEMBER: "すでにこのグループのメンバーです。",
+            GROUP_FULL: "このグループは満員です。",
+            MAX_GROUPS_LIMIT: "参加できるグループは最大4つまでです。別のグループから退会してください。",
+            NETWORK_ERROR: "ネットワーク接続に失敗しました。インターネット接続を確認してください。",
+            VALIDATION_ERROR: "入力値が無効です。",
+            CONFLICT: "競合が発生しました。",
+            UNAUTHENTICATED: "認証が必要です。",
+            SERVICE_UNAVAILABLE: "サービスが一時的に利用できません。",
+            APP_CHECK_MISSING: "アプリの検証トークンがありません。",
+            APP_CHECK_FAILED: "アプリの検証に失敗しました。",
+            INVALID_TOKEN: "セッションの有効期限が切れました。ログインし直してください。",
+            "auth/email-not-verified": "メールアドレスが未確認です。確認メールをチェックしてください。"
+        } as Record<ApiErrorCode, string>,
         common: {
             cancel: "キャンセル",
             delete: "削除",

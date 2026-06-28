@@ -8,10 +8,11 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('CounterService Integratio
     const TEST_COLL_NAME = 'subcollection';
 
     beforeAll(async () => {
-        // Setup base document
+        // Setup base document with membersCount > 100 to enable sharding tests
         await db.collection('groups').doc(TEST_DOC_ID).set({
             count: 0,
-            messageCount: 0
+            messageCount: 0,
+            membersCount: 200
         });
     });
 
@@ -32,9 +33,9 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('CounterService Integratio
         shards.forEach(doc => batch.delete(doc.ref));
         await batch.commit();
 
-        // Perform increment inside a transaction
+        // Perform increment inside a transaction with membersCount=200
         await db.runTransaction(async (transaction) => {
-            CounterService.increment(transaction, docRef, 'count', 5);
+            CounterService.increment(transaction, docRef, 'count', 5, 200);
         });
 
         // Retrieve count in transaction
@@ -85,7 +86,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('CounterService Integratio
         const docRef = db.collection('groups').doc(TEST_DOC_ID);
 
         // Reset main document count back to 0
-        await docRef.update({ count: 0 });
+        await docRef.update({ count: 0, membersCount: 200 });
 
         // Clear shards first to ensure a clean slate
         const shards = await docRef.collection('shards').get();
@@ -162,5 +163,35 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('CounterService Integratio
         // Verify main doc updated
         const docCount = await CounterService.getCountFromDoc(docRef, 'messageCount');
         expect(docCount).toBe(37);
+    });
+
+    it('should bypass sharding and increment main doc directly for small groups', async () => {
+        const docRef = db.collection('groups').doc(TEST_DOC_ID);
+        
+        // Setup small group (5 members)
+        await docRef.update({ count: 0, membersCount: 5 });
+
+        // Clear shards
+        const shards = await docRef.collection('shards').get();
+        const batch = db.batch();
+        shards.forEach(doc => batch.delete(doc.ref));
+        await batch.commit();
+
+        // Increment with membersCount=5
+        await db.runTransaction(async (transaction) => {
+            CounterService.increment(transaction, docRef, 'count', 3, 5);
+        });
+
+        // Verify shards subcollection is empty
+        const shardsAfter = await docRef.collection('shards').get();
+        expect(shardsAfter.empty).toBe(true);
+
+        // Verify main doc is updated directly
+        const mainCount = await CounterService.getCountFromDoc(docRef, 'count');
+        expect(mainCount).toBe(3);
+
+        // Verify aggregateAndSync bypasses shard summation
+        const synced = await CounterService.aggregateAndSync(docRef, 'count');
+        expect(synced).toBe(3);
     });
 });

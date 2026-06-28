@@ -1,9 +1,8 @@
 
-import React, { useState, useCallback, useMemo } from 'react';
-import { getFirestore, collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { app } from '../firebase';
+import React, { useState, useCallback } from 'react';
 import { toast } from 'react-toastify';
 import { useLanguage } from '../hooks/use-language';
+import apiClient from '../utils/api-client';
 import './group-create.css';
 
 interface UserInfo {
@@ -21,8 +20,6 @@ export default function GroupCreate({ currentUser, onCreated }: GroupCreateProps
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
-
-  const db = useMemo(() => getFirestore(app), []);
 
   const handleCreate = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,24 +42,15 @@ export default function GroupCreate({ currentUser, onCreated }: GroupCreateProps
 
     setLoading(true);
     try {
-      // 1. Create Group Doc
-      const docRef = await addDoc(collection(db, 'groups'), {
+      // 1. Create Group via API to maintain data integrity
+      const response = await apiClient.post('/api/groups/create-group', {
         name: trimmedName,
         description: description.trim() || null,
-        ownerUserId: currentUser.uid,
-        members: [currentUser.uid],
-        membersCount: 1,
-        memberPreviews: [{ uid: currentUser.uid, nickname: currentUser.displayName || 'Owner' }],
-        createdAt: serverTimestamp(),
-        lastMessageAt: serverTimestamp(),
-        lastMessageByNickname: currentUser.displayName || 'Owner',
-        lastMessageByUid: currentUser.uid,
-        isPrivate: false, // Default to public unless specified
-        inviteCode: Math.random().toString(36).substring(2, 8).toUpperCase(), // Basic invite code
-        messageCount: 0,
-        noteCount: 0,
+        isPublic: true, // Default to public
         timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
       });
+
+      const { groupId } = response.data;
 
       // 2. Clear Form
       setName('');
@@ -71,14 +59,14 @@ export default function GroupCreate({ currentUser, onCreated }: GroupCreateProps
       toast.success(t('groupForm.successCreated') || 'Group created successfully!');
       
       // 3. Callback
-      onCreated?.(docRef.id);
+      onCreated?.(groupId);
     } catch (err: unknown) {
       console.error('Failed to create group:', err);
       toast.error(t('groupForm.errorCreateFailed') || 'Failed to create group');
     } finally {
       setLoading(false);
     }
-  }, [currentUser, name, description, db, t, onCreated]);
+  }, [currentUser, name, description, t, onCreated]);
 
   return (
     <div className="group-create-container">

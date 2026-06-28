@@ -1,0 +1,17 @@
+export type ApiErrorCode = 
+  | 'INVALID_INVITE_CODE'
+  | 'EXPIRED_INVITE_LINK'
+  | 'FORBIDDEN'
+  | 'NOT_FOUND'
+  | 'ALREADY_MEMBER'
+  | 'GROUP_FULL'
+  | 'MAX_GROUPS_LIMIT'
+  | 'NETWORK_ERROR'
+  | 'VALIDATION_ERROR'
+  | 'CONFLICT'
+  | 'UNAUTHENTICATED'
+  | 'SERVICE_UNAVAILABLE'
+  | 'APP_CHECK_MISSING'
+  | 'APP_CHECK_FAILED'
+  | 'INVALID_TOKEN'
+  | 'auth/email-not-verified';

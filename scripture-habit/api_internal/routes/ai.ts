@@ -262,32 +262,27 @@ router.post('/translate-batch', authenticate, aiLimiter, verifyAppCheck, async (
     }
 
 
-    // 1. Check cache for each message in parallel (Skip if force=true)
+    // 1. Check cache for each message in batch (Skip if force=true)
     if (!force && db && (process.env.NODE_ENV !== 'test' || process.env.FIRESTORE_EMULATOR_HOST)) {
         try {
-            const cachePromises = messages.map(async (msg) => {
+            const cacheRefs = messages.map(msg => {
                 const cacheKey = crypto.createHash('md5').update(`${msg.text}_${targetLanguage}_normal`).digest('hex');
-                const cacheRef = db.collection('translation_cache').doc(cacheKey);
-                try {
-                    const cacheDoc = await withTimeout(cacheRef.get(), 2000, 'timeout');
-                    if (cacheDoc && cacheDoc.exists) {
-                        return { msg, translatedText: cacheDoc.data()?.translatedText };
-                    }
-                } catch {
-                    // Ignore individual cache errors
-                }
-                return { msg, translatedText: null };
+                return db.collection('translation_cache').doc(cacheKey);
             });
-            
-            const cacheResults = await Promise.all(cachePromises);
-            for (const result of cacheResults) {
-                if (result.translatedText) {
-                    finalResults[result.msg.id] = result.translatedText;
+
+            // Use high-performance db.getAll with timeout wrapper to fetch all cache entries in one request
+            const cacheDocs = await withTimeout(db.getAll(...cacheRefs), 4000, 'Cache fetch timeout');
+
+            cacheDocs.forEach((doc, index) => {
+                const msg = messages[index];
+                if (doc && 'exists' in doc && doc.exists) {
+                    finalResults[msg.id] = doc.data()?.translatedText;
                 } else {
-                    toTranslate.push(result.msg);
+                    toTranslate.push(msg);
                 }
-            }
-        } catch {
+            });
+        } catch (err) {
+            console.warn('[AI Batch Cache] Bypassing batch cache due to error or timeout:', (err as Error).message);
             toTranslate.push(...messages);
         }
     } else {

@@ -1,11 +1,13 @@
 import express, { Request, Response } from 'express';
 import { admin, db } from '../lib/firebase-admin.js';
 import { verifyAppCheck, authenticate, requireEmailVerified, AuthenticatedRequest } from '../lib/middleware.js';
+import { runPhasedTransaction } from '../lib/phased-transaction.js';
 import { joinGroupSchema, updateKickThresholdSchema, leaveGroupSchema, deleteGroupSchema, updateReadStatusSchema, announceUnitySchema, updateGroupSchema, regenerateInviteCodeSchema, kickMemberSchema, createGroupSchema } from '../lib/schemas.js';
 import { GroupDocument, UserDocument, MemberPreview as PreviewItem, GroupMemberDocument } from '../../types/firestore.js';
 import { MAX_GROUPS_PER_USER } from '../lib/constants.js';
 import { CounterService } from '../services/counter-service.js';
 import { removeMemberFromGroup } from '../lib/membership-utils.js';
+import { ForbiddenError, NotFoundError, ValidationError, sendErrorResponse } from '../lib/errors.js';
 
 
 const router = express.Router();
@@ -146,145 +148,142 @@ router.post('/join-group', authenticate, requireEmailVerified, verifyAppCheck, a
     if (!uid) return res.status(401).json({ error: 'Unauthorized' });
 
     try {
-        const result = await db.runTransaction(async (transaction) => {
-            let groupRef;
-            let groupDoc;
-            if (groupId) {
-                groupRef = db.collection('groups').doc(groupId);
-                groupDoc = await transaction.get(groupRef);
-            } else if (inviteCode) {
-                const groupQuery = db.collection('groups').where('inviteCode', '==', inviteCode).limit(1);
-                const querySnap = await transaction.get(groupQuery);
-                if (querySnap.empty) throw new Error('Invalid invite code.');
-                groupDoc = querySnap.docs[0];
-                groupRef = groupDoc.ref;
-            } else {
-                throw new Error('Group ID or Invite Code is required.');
-            }
-
-            const userRef = db.collection('users').doc(uid);
-
-            // TRUTH: Execute all READS before any WRITES
-            const userDoc = await transaction.get(userRef);
-
-            if (!groupDoc.exists) throw new Error('Group not found.');
-            if (!userDoc.exists) throw new Error('User not found.');
-
-            const gid = groupDoc.id;
-            const gData = groupDoc.data()! as GroupDocument;
-            const userData = userDoc.data()! as UserDocument;
-
-            const totalMessages = gData.messageCount || 0;
-
-            const members = gData.members || [];
-            const maxMembers = gData.maxMembers || 500;
-
-            // 1. Validation Phase
-            if (gData.isPrivate === true || gData.isPublic === false) {
-                if (inviteCode) {
-                    if (gData.inviteCode !== inviteCode) {
-                        throw new Error('Invalid or expired invite code.');
-                    }
-                    if (gData.inviteCodeExpiresAt) {
-                        const ts = gData.inviteCodeExpiresAt;
-                        const expiresAt = (ts && typeof ts === 'object' && 'toDate' in ts && typeof ts.toDate === 'function')
-                            ? ts.toDate()
-                            : new Date(ts as string | number | Date);
-
-                        if (expiresAt < new Date()) {
-                            throw new Error('This invite link has expired. Please ask the group owner for a new one.');
-                        }
-                    }
-                } else if (!gData.isPublic) {
-                    throw new Error('This is a private group. You need an invite code to join.');
+        const result = await runPhasedTransaction(db, {
+            read: async (transaction) => {
+                let groupRef;
+                let groupDoc;
+                if (groupId) {
+                    groupRef = db.collection('groups').doc(groupId);
+                    groupDoc = await transaction.get(groupRef);
+                } else if (inviteCode) {
+                    const groupQuery = db.collection('groups').where('inviteCode', '==', inviteCode).limit(1);
+                    const querySnap = await transaction.get(groupQuery);
+                    if (querySnap.empty) throw new ValidationError('Invalid invite code.', 'INVALID_INVITE_CODE');
+                    groupDoc = querySnap.docs[0];
+                    groupRef = groupDoc.ref;
+                } else {
+                    throw new ValidationError('Group ID or Invite Code is required.');
                 }
+
+                const userRef = db.collection('users').doc(uid);
+                const userDoc = await transaction.get(userRef);
+
+                return { groupDoc, userDoc, groupRef, userRef };
+            },
+            write: async (transaction, { groupDoc, userDoc, groupRef, userRef }) => {
+                if (!groupDoc.exists) throw new NotFoundError('Group not found.');
+                if (!userDoc.exists) throw new NotFoundError('User not found.');
+
+                const gid = groupDoc.id;
+                const gData = groupDoc.data()! as GroupDocument;
+                const userData = userDoc.data()! as UserDocument;
+
+                const totalMessages = gData.messageCount || 0;
+
+                const members = gData.members || [];
+                const maxMembers = gData.maxMembers || 500;
+
+                // 1. Validation Phase
+                if (gData.isPrivate === true || gData.isPublic === false) {
+                    if (inviteCode) {
+                        if (gData.inviteCode !== inviteCode) {
+                            throw new ValidationError('Invalid or expired invite code.', 'INVALID_INVITE_CODE');
+                        }
+                        if (gData.inviteCodeExpiresAt) {
+                            const ts = gData.inviteCodeExpiresAt;
+                            const expiresAt = (ts && typeof ts === 'object' && 'toDate' in ts && typeof ts.toDate === 'function')
+                                ? ts.toDate()
+                                : new Date(ts as string | number | Date);
+
+                            if (expiresAt < new Date()) {
+                                throw new ValidationError('This invite link has expired. Please ask the group owner for a new one.', 'EXPIRED_INVITE_LINK');
+                            }
+                        }
+                    } else if (!gData.isPublic) {
+                        throw new ForbiddenError('This is a private group. You need an invite code to join.');
+                    }
+                }
+
+                if (members.includes(uid)) throw new ValidationError('You are already a member of this group.', 'ALREADY_MEMBER');
+                if (members.length >= maxMembers) {
+                    throw new ValidationError('This group is full.', 'GROUP_FULL');
+                }
+
+                const userGroupIds = userData.groupIds || [];
+                if (userGroupIds.length >= MAX_GROUPS_PER_USER) {
+                    throw new ValidationError(`You can only join up to ${MAX_GROUPS_PER_USER} groups. Please leave one before joining another.`, 'MAX_GROUPS_LIMIT');
+                }
+
+                // 2. Prepare Data
+                const updatedMembers = [...members, uid];
+                const newMemberPreview = { uid, nickname: userData.nickname || 'Member' };
+                const existingPreviews = (gData.memberPreviews || []) as PreviewItem[];
+                const updatedPreviews = [newMemberPreview, ...existingPreviews.filter((p) => p.uid !== uid)].slice(0, 15);
+
+                const memberData: admin.firestore.WithFieldValue<GroupMemberDocument> = {
+                    uid,
+                    nickname: userData.nickname || 'Member',
+                    photoURL: userData.photoURL || '',
+                    joinedAt: admin.firestore.FieldValue.serverTimestamp(),
+                    lastActiveAt: admin.firestore.FieldValue.serverTimestamp(),
+                    kickThreshold: userData.kickThreshold || 3,
+                    lastReadAt: admin.firestore.FieldValue.serverTimestamp(),
+                    readMessageCount: totalMessages
+                };
+
+                // 3. START WRITES (Execution Phase)
+                transaction.update(groupRef, {
+                    members: updatedMembers,
+                    membersCount: updatedMembers.length,
+                    memberPreviews: updatedPreviews,
+                    [`memberJoinedAt.${uid}`]: admin.firestore.FieldValue.serverTimestamp(),
+                    [`memberKickThresholds.${uid}`]: userData.kickThreshold || 3,
+                    lastMessageAt: admin.firestore.FieldValue.serverTimestamp(),
+                    lastMessageByNickname: userData.nickname || 'Member',
+                    lastMessageByUid: uid,
+                    lastInactivityCheckedAt: admin.firestore.FieldValue.serverTimestamp()
+                });
+
+                const memberRef = groupRef.collection('members').doc(uid);
+                transaction.set(memberRef, memberData);
+
+                const userGS = userRef.collection('groupStates').doc(gid);
+                transaction.set(userGS, {
+                    readMessageCount: totalMessages,
+                    lastReadAt: admin.firestore.FieldValue.serverTimestamp(),
+                    lastActiveAt: admin.firestore.FieldValue.serverTimestamp()
+                });
+
+                transaction.update(userRef, {
+                    groupIds: admin.firestore.FieldValue.arrayUnion(gid),
+                    groupId: gid,
+                    questCreatedGroup: true
+                });
+
+                const msgRef = groupRef.collection('messages').doc();
+                transaction.set(msgRef, {
+                    text: `✨ **${userData.nickname || 'Someone'}** joined the group! Welcome!`,
+                    createdAt: admin.firestore.FieldValue.serverTimestamp(),
+                    senderId: 'system',
+                    isSystemMessage: true,
+                    type: 'join',
+                    messageType: 'join'
+                });
+
+                // IMPORTANT: Increment message counter for the join message
+                CounterService.increment(transaction, groupRef, 'messageCount', 1, updatedMembers.length);
+
+                const ownerPreview = (gData.memberPreviews || []).find((p: PreviewItem) => p.uid === gData.ownerUserId);
+                const ownerName = ownerPreview ? ownerPreview.nickname : 'Owner';
+
+                return { gid, groupName: gData.name, ownerName };
             }
-
-            if (members.includes(uid)) throw new Error('You are already a member of this group.');
-            if (members.length >= maxMembers) {
-                throw new Error('This group is full.');
-            }
-
-            const userGroupIds = userData.groupIds || [];
-            if (userGroupIds.length >= MAX_GROUPS_PER_USER) {
-                throw new Error(`You can only join up to ${MAX_GROUPS_PER_USER} groups. Please leave one before joining another.`);
-            }
-
-            // 2. Prepare Data
-            const updatedMembers = [...members, uid];
-            const newMemberPreview = { uid, nickname: userData.nickname || 'Member' };
-            const existingPreviews = (gData.memberPreviews || []) as PreviewItem[];
-            const updatedPreviews = [newMemberPreview, ...existingPreviews.filter((p) => p.uid !== uid)].slice(0, 15);
-
-            const memberData: admin.firestore.WithFieldValue<GroupMemberDocument> = {
-                uid,
-                nickname: userData.nickname || 'Member',
-                photoURL: userData.photoURL || '',
-                joinedAt: admin.firestore.FieldValue.serverTimestamp(),
-                lastActiveAt: admin.firestore.FieldValue.serverTimestamp(),
-                kickThreshold: userData.kickThreshold || 3,
-                lastReadAt: admin.firestore.FieldValue.serverTimestamp(),
-                readMessageCount: totalMessages
-            };
-
-            // 3. START WRITES (Execution Phase)
-            transaction.update(groupRef, {
-                members: updatedMembers,
-                membersCount: updatedMembers.length,
-                memberPreviews: updatedPreviews,
-                [`memberJoinedAt.${uid}`]: admin.firestore.FieldValue.serverTimestamp(),
-                [`memberKickThresholds.${uid}`]: userData.kickThreshold || 3,
-                lastMessageAt: admin.firestore.FieldValue.serverTimestamp(),
-                lastMessageByNickname: userData.nickname || 'Member',
-                lastMessageByUid: uid,
-                lastInactivityCheckedAt: admin.firestore.FieldValue.serverTimestamp()
-            });
-
-            const memberRef = groupRef.collection('members').doc(uid);
-            transaction.set(memberRef, memberData);
-
-            const userGS = userRef.collection('groupStates').doc(gid);
-            transaction.set(userGS, {
-                readMessageCount: totalMessages,
-                lastReadAt: admin.firestore.FieldValue.serverTimestamp(),
-                lastActiveAt: admin.firestore.FieldValue.serverTimestamp()
-            });
-
-            transaction.update(userRef, {
-                groupIds: admin.firestore.FieldValue.arrayUnion(gid),
-                groupId: gid,
-                questCreatedGroup: true
-            });
-
-            const msgRef = groupRef.collection('messages').doc();
-            transaction.set(msgRef, {
-                text: `✨ **${userData.nickname || 'Someone'}** joined the group! Welcome!`,
-                createdAt: admin.firestore.FieldValue.serverTimestamp(),
-                senderId: 'system',
-                isSystemMessage: true,
-                type: 'join',
-                messageType: 'join'
-            });
-
-            // IMPORTANT: Increment message counter for the join message
-            CounterService.increment(transaction, groupRef, 'messageCount', 1);
-
-            const ownerPreview = (gData.memberPreviews || []).find((p: PreviewItem) => p.uid === gData.ownerUserId);
-            const ownerName = ownerPreview ? ownerPreview.nickname : 'Owner';
-
-            return { gid, groupName: gData.name, ownerName };
         });
 
         res.status(200).json({ message: 'Success', ...result });
     } catch (error) {
-        let message = 'Internal Server Error';
-        if (error instanceof Error) {
-            message = error.message;
-            console.error('Error joining group:', error.message);
-        } else {
-            console.error('Error joining group:', error);
-        }
-        res.status(400).json({ error: message });
+        console.error('Error joining group:', error);
+        sendErrorResponse(res, error, 'Join group failed');
     }
 });
 
@@ -299,40 +298,36 @@ router.post('/leave-group', authenticate, verifyAppCheck, async (req: Authentica
     if (!uid) return res.status(401).json({ error: 'Unauthorized' });
 
     try {
-        await db.runTransaction(async (transaction) => {
-            const userRef = db.collection('users').doc(uid);
-            const uSnap = await transaction.get(userRef);
+        await runPhasedTransaction(db, {
+            read: async (transaction) => {
+                const userRef = db.collection('users').doc(uid);
+                const uSnap = await transaction.get(userRef);
+                return { uSnap };
+            },
+            write: async (transaction, { uSnap }) => {
+                if (!uSnap.exists) throw new NotFoundError('User not found.');
+                const uData = uSnap.data()! as UserDocument;
 
-            if (!uSnap.exists) throw new Error('User not found.');
-            const uData = uSnap.data()! as UserDocument;
-
-            // Use centralized utility for the heavy lifting
-            await removeMemberFromGroup(transaction, groupId, uid, {
-                removeFromUserDoc: true,
-                clearUserGroupId: true,
-                removeGroupState: true,
-                transferOwnership: true,
-                preferredLanguage: uData.language || 'en',
-                systemMessage: {
-                    type: 'leave',
-                    nickname: uData.nickname || 'Someone'
-                },
-                userDoc: uSnap
-            });
-
-            return { success: true };
+                // Use centralized utility for the heavy lifting
+                await removeMemberFromGroup(transaction, groupId, uid, {
+                    removeFromUserDoc: true,
+                    clearUserGroupId: true,
+                    removeGroupState: true,
+                    transferOwnership: true,
+                    preferredLanguage: uData.language || 'en',
+                    systemMessage: {
+                        type: 'leave',
+                        nickname: uData.nickname || 'Someone'
+                    },
+                    userDoc: uSnap
+                });
+            }
         });
 
         res.json({ success: true });
     } catch (error) {
-        let message = 'Internal Server Error';
-        if (error instanceof Error) {
-            message = error.message;
-            console.error('Leave group failed:', error.message);
-        } else {
-            console.error('Leave group failed:', error);
-        }
-        res.status(500).json({ error: message });
+        console.error('Leave group failed:', error);
+        sendErrorResponse(res, error, 'Leave group failed');
     }
 });
 
@@ -473,57 +468,60 @@ router.post('/kick-member', authenticate, verifyAppCheck, async (req: Authentica
     const uid = req.user!.uid;
 
     try {
-        await db.runTransaction(async (transaction) => {
-            const groupRef = db.collection('groups').doc(groupId);
-            const userRef = db.collection('users').doc(targetUid);
-            const [gSnap, uSnap] = await Promise.all([
-                transaction.get(groupRef),
-                transaction.get(userRef)
-            ]);
+        await runPhasedTransaction(db, {
+            read: async (transaction) => {
+                const groupRef = db.collection('groups').doc(groupId);
+                const userRef = db.collection('users').doc(targetUid);
+                const [gSnap, uSnap] = await Promise.all([
+                    transaction.get(groupRef),
+                    transaction.get(userRef)
+                ]);
+                return { gSnap, uSnap };
+            },
+            write: async (transaction, { gSnap, uSnap }) => {
+                const gData = gSnap.data()! as GroupDocument;
+                const uData = uSnap.data() as UserDocument | undefined;
 
-            const gData = gSnap.data()! as GroupDocument;
-            const uData = uSnap.data() as UserDocument | undefined;
+                // 1. Validation: Only owner can kick
+                if (gData.ownerUserId !== uid) {
+                    throw new ForbiddenError('Only the group owner can kick members.');
+                }
 
-            // 1. Validation: Only owner can kick
-            if (gData.ownerUserId !== uid) {
-                throw new Error('Forbidden: Only the group owner can kick members.');
+                // 2. Validation: Cannot kick yourself
+                if (targetUid === uid) {
+                    throw new ValidationError('You cannot kick yourself. Please use the leave group option if you wish to exit.');
+                }
+
+                // 3. Validation: Group/User existence
+                if (!gSnap.exists) throw new NotFoundError('Group not found.');
+                if (!uSnap.exists) throw new NotFoundError('Target user not found.');
+                if (!uData) throw new NotFoundError('Target user data unavailable.');
+
+                // 4. Validation: Must be a member
+                if (!(gData.members || []).includes(targetUid)) {
+                    throw new ValidationError('Target user is not a member of this group.');
+                }
+
+                // 5. USE CENTRALIZED UTILITY
+                await removeMemberFromGroup(transaction, groupId, targetUid, {
+                    removeFromUserDoc: true,
+                    clearUserGroupId: true,
+                    removeGroupState: true,
+                    preferredLanguage: uData.language || 'en',
+                    systemMessage: {
+                        type: 'kick',
+                        nickname: uData.nickname || 'Someone'
+                    },
+                    groupDoc: gSnap,
+                    userDoc: uSnap
+                });
             }
-
-            // 2. Validation: Cannot kick yourself
-            if (targetUid === uid) {
-                throw new Error('You cannot kick yourself. Please use the leave group option if you wish to exit.');
-            }
-
-            // 3. Validation: Group/User existence
-            if (!gSnap.exists) throw new Error('Group not found.');
-            if (!uSnap.exists) throw new Error('Target user not found.');
-            if (!uData) throw new Error('Target user data unavailable.');
-
-            // 4. Validation: Must be a member
-            if (!(gData.members || []).includes(targetUid)) {
-                throw new Error('Target user is not a member of this group.');
-            }
-
-            // 4. USE CENTRALIZED UTILITY
-            await removeMemberFromGroup(transaction, groupId, targetUid, {
-                removeFromUserDoc: true,
-                clearUserGroupId: true,
-                removeGroupState: true,
-                preferredLanguage: uData.language || 'en',
-                systemMessage: {
-                    type: 'kick',
-                    nickname: uData.nickname || 'Someone'
-                },
-                groupDoc: gSnap,
-                userDoc: uSnap
-            });
         });
 
         res.json({ success: true });
     } catch (err) {
-        let message = 'Kick failed';
-        if (err instanceof Error) message = err.message;
-        res.status(400).json({ error: message });
+        console.error('Kick member failed:', err);
+        sendErrorResponse(res, err, 'Kick failed');
     }
 });
 

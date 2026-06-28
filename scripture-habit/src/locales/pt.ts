@@ -1,4 +1,24 @@
+import { ApiErrorCode } from '../types/errors';
+
 export default {
+    apiErrors: {
+        INVALID_INVITE_CODE: "O código de convite é inválido ou expirou.",
+        EXPIRED_INVITE_LINK: "Este link de convite expirou. Por favor, peça um novo ao proprietário do grupo.",
+        FORBIDDEN: "Acesso negado.",
+        NOT_FOUND: "Recurso não encontrado.",
+        ALREADY_MEMBER: "Você já é membro deste grupo.",
+        GROUP_FULL: "Este grupo está cheio.",
+        MAX_GROUPS_LIMIT: "Você só pode participar de até 4 grupos. Por favor, saia de outro grupo primeiro.",
+        NETWORK_ERROR: "Erro de rede. Por favor, verifique a sua ligação à internet.",
+        VALIDATION_ERROR: "Entrada inválida.",
+        CONFLICT: "Ocorreu um conflito.",
+        UNAUTHENTICATED: "Autenticação requerida.",
+        SERVICE_UNAVAILABLE: "Serviço temporariamente indisponível.",
+        APP_CHECK_MISSING: "O token do App Check está em falta.",
+        APP_CHECK_FAILED: "Falha na verificação do App Check.",
+        INVALID_TOKEN: "Sessão expirada. Por favor, inicie sessão novamente.",
+        "auth/email-not-verified": "O e-mail não está verificado. Por favor, verifique a sua caixa de entrada."
+    } as Record<ApiErrorCode, string>,
     common: {
         cancel: "Cancelar",
         delete: "Excluir",

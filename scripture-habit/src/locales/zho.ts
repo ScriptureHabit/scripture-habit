@@ -1,4 +1,24 @@
+import { ApiErrorCode } from '../types/errors';
+
 export default {
+    apiErrors: {
+        INVALID_INVITE_CODE: "邀請碼無效或已過期。",
+        EXPIRED_INVITE_LINK: "此邀請連結已過期。請向群組擁有者索取新的連結。",
+        FORBIDDEN: "拒絕存取。",
+        NOT_FOUND: "找不到資源。",
+        ALREADY_MEMBER: "您已經是此群組的成員。",
+        GROUP_FULL: "此群組已滿。",
+        MAX_GROUPS_LIMIT: "您最多只能加入 4 個群組。請先退出其他群組。",
+        NETWORK_ERROR: "網路錯誤。請檢查您的網路連線。",
+        VALIDATION_ERROR: "無效的輸入。",
+        CONFLICT: "發生衝突。",
+        UNAUTHENTICATED: "需要身份驗證。",
+        SERVICE_UNAVAILABLE: "服務暫時不可用。",
+        APP_CHECK_MISSING: "缺少 App Check 權杖。",
+        APP_CHECK_FAILED: "App Check 驗證失敗。",
+        INVALID_TOKEN: "工作階段已過期。請重新登入。",
+        "auth/email-not-verified": "電子郵件未驗證。請檢查您的收件匣。"
+    } as Record<ApiErrorCode, string>,
     common: {
         cancel: "取消",
         delete: "刪除",

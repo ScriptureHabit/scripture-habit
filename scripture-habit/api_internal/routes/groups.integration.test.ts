@@ -115,7 +115,7 @@ describe('Groups Route Additional Integration Tests', () => {
             expect(data.error).toContain('cannot kick yourself');
         });
 
-        it('should return 400 if a non-owner tries to kick', async () => {
+        it('should return 403 if a non-owner tries to kick', async () => {
             setup.mockAuth(MEMBER_ID);
             const res = await fetch(`${setup.baseUrl}/api/groups/kick-member`, {
                 method: 'POST',
@@ -128,7 +128,7 @@ describe('Groups Route Additional Integration Tests', () => {
                     targetUid: OWNER_ID
                 })
             });
-            expect(res.status).toBe(400);
+            expect(res.status).toBe(403);
             const data = await res.json();
             expect(data.error).toContain('Only the group owner can kick members');
         });

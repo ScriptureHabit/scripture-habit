@@ -1,8 +1,7 @@
 
 import './join-group.css';
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { getToken } from "firebase/app-check";
-import { auth, db, appCheck } from '../../firebase';
+import { auth, db } from '../../firebase';
 import { doc, onSnapshot, collection, query, where, getDocs, limit, orderBy } from 'firebase/firestore';
 import { useNavigate, Link } from 'react-router-dom';
 import { onAuthStateChanged, User } from "firebase/auth";
@@ -16,10 +15,11 @@ import { PublicGroupsSkeleton } from '../skeleton/skeleton';
 import { Group } from '../../types/chat';
 import { UserData } from '../../types/user';
 import { parseTimestampToDate } from '../../utils/time-utils';
+import apiClient from '../../utils/api-client';
+import { getApiErrorMessage } from '../../utils/api-error-parser';
 
 export default function JoinGroup() {
   const { t, language } = useLanguage();
-  const API_BASE = window.location.hostname === 'localhost' ? '' : 'https://scripturehabit.app';
   const [error, setError] = useState("");
   const [user, setUser] = useState<User | null>(null);
   const [userData, setUserData] = useState<UserData | null>(null);
@@ -71,31 +71,14 @@ export default function JoinGroup() {
     }
 
     try {
-      const idToken = await user.getIdToken();
-      let appCheckToken = '';
-      if (appCheck) {
-        const appCheckTokenResponse = await getToken(appCheck, false);
-        appCheckToken = appCheckTokenResponse.token;
-      }
-
-      const headers: Record<string, string> = { 
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${idToken}`
-      };
-      if (appCheckToken) {
-        headers['X-Firebase-AppCheck'] = appCheckToken;
-      }
-
       const translate = async (text: string, type: 'group_name' | 'group_description') => {
         if (!text) return null;
-        const res = await fetch(`${API_BASE}/api/ai/translate`, {
-          method: 'POST',
-          headers,
-          body: JSON.stringify({ text, targetLanguage: language, updateType: type })
+        const res = await apiClient.post('/api/ai/translate', {
+          text,
+          targetLanguage: language,
+          updateType: type
         });
-        if (!res.ok) throw new Error('Translation failed');
-        const data = await res.json();
-        return data.translatedText;
+        return res.data.translatedText;
       };
 
       const [newName, newDesc] = await Promise.all([
@@ -121,7 +104,7 @@ export default function JoinGroup() {
         return next;
       });
     }
-  }, [language, t, user, API_BASE]);
+  }, [language, t, user]);
 
   useEffect(() => {
     let userDocUnsubscribe = () => { };
@@ -141,13 +124,9 @@ export default function JoinGroup() {
 
     const fetchPublicGroups = async () => {
       try {
-        const resp = await fetch(`${API_BASE}/api/groups?limit=20`);
-        if (resp.ok) {
-          const groups = await resp.json();
-          setPublicGroups(groups || []);
-          return;
-        }
-        console.warn('Backend /groups returned', resp.status);
+        const resp = await apiClient.get('/api/groups?limit=20');
+        setPublicGroups(resp.data || []);
+        return;
       } catch (e) {
         console.warn('Backend /groups fetch failed, falling back to client query:', e);
       }
@@ -176,7 +155,7 @@ export default function JoinGroup() {
     fetchPublicGroups().finally(() => setLoadingGroups(false));
 
     return () => { authUnsubscribe(); userDocUnsubscribe(); };
-  }, [API_BASE]);
+  }, []);
 
   // Dynamically filter groups whenever publicGroups or userData changes
   const filteredGroups = useMemo(() => {
@@ -224,39 +203,14 @@ export default function JoinGroup() {
     }
 
     try {
-      const idToken = await user.getIdToken();
-      let appCheckToken = '';
-      if (appCheck) {
-        const appCheckTokenResponse = await getToken(appCheck, false);
-        appCheckToken = appCheckTokenResponse.token;
-      }
-
-      const headers: Record<string, string> = {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${idToken}`
-      };
-      if (appCheckToken) {
-        headers['X-Firebase-AppCheck'] = appCheckToken;
-      }
-
-      const resp = await fetch(`${API_BASE}/api/groups/join-group`, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({ groupId })
+      await apiClient.post('/api/groups/join-group', { groupId });
+      // Navigate to group chat immediately; the dashboard will show the welcome modal
+      navigate(`/${language}/dashboard`, {
+        state: { initialGroupId: groupId, initialView: 2, showJoinSuccessModal: true, joinedGroupName: groupData.name || '' }
       });
-      if (resp.ok) {
-        // Navigate to group chat immediately; the dashboard will show the welcome modal
-        navigate(`/${language}/dashboard`, {
-          state: { initialGroupId: groupId, initialView: 2, showJoinSuccessModal: true, joinedGroupName: groupData.name || '' }
-        });
-        return;
-      }
-      const errText = await resp.text();
-      console.warn('Server join failed:', resp.status, errText);
-      setError(`${t('joinGroup.errorJoinFailed')} ${errText}`);
-    } catch (e) {
+    } catch (e: unknown) {
       console.error('Server join failed with error:', e);
-      setError(t('joinGroup.errorJoinFailed'));
+      setError(getApiErrorMessage(e, 'joinGroup.errorJoinFailed', t));
     }
   };
 

@@ -1,4 +1,24 @@
+import { ApiErrorCode } from '../types/errors';
+
 export default {
+    apiErrors: {
+        INVALID_INVITE_CODE: "초대 코드가 유효하지 않거나 만료되었습니다.",
+        EXPIRED_INVITE_LINK: "이 초대 링크는 만료되었습니다. 그룹 소유자에게 새 링크를 요청하세요.",
+        FORBIDDEN: "접근 권한이 없습니다.",
+        NOT_FOUND: "소스를 찾을 수 없습니다.",
+        ALREADY_MEMBER: "이미 이 그룹의 멤버입니다.",
+        GROUP_FULL: "이 그룹은 가득 찼습니다.",
+        MAX_GROUPS_LIMIT: "최대 4개의 그룹에만 가입할 수 있습니다. 다른 그룹에서 탈퇴한 후 다시 시도하세요.",
+        NETWORK_ERROR: "네트워크 오류가 발생했습니다. 인터넷 연결을 확인해 주세요.",
+        VALIDATION_ERROR: "유효하지 않은 입력입니다.",
+        CONFLICT: "충돌이 발생했습니다.",
+        UNAUTHENTICATED: "인증이 필요합니다.",
+        SERVICE_UNAVAILABLE: "서비스를 일시적으로 이용할 수 없습니다.",
+        APP_CHECK_MISSING: "App Check 토큰이 누락되었습니다.",
+        APP_CHECK_FAILED: "App Check 인증에 실패했습니다.",
+        INVALID_TOKEN: "세션이 만료되었습니다. 다시 로그인해 주세요.",
+        "auth/email-not-verified": "이메일이 인증되지 않았습니다. 수신함을 확인해 주세요."
+    } as Record<ApiErrorCode, string>,
     common: {
         cancel: "취소",
         delete: "삭제",
