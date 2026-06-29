@@ -1,8 +1,18 @@
 import '../api_internal/lib/load-env.js';
+import * as Sentry from "@sentry/node";
+
+// Initialize Sentry at the absolute top before importing Express/routers
+if (process.env.SENTRY_DISABLED !== 'true') {
+  Sentry.init({
+    dsn: process.env.VITE_SENTRY_DSN || "",
+    tracesSampleRate: 1.0,
+  });
+}
+
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
-import * as Sentry from "@sentry/node";
+import crypto from 'crypto';
 
 // Import Route Handlers
 import authRoutes from '../api_internal/routes/auth.js';
@@ -26,13 +36,12 @@ const app = express();
 app.use(helmet());
 app.set('trust proxy', 1);
 
-// Initialize Sentry
-if (process.env.SENTRY_DISABLED !== 'true') {
-  Sentry.init({
-    dsn: process.env.VITE_SENTRY_DSN || "",
-    tracesSampleRate: 1.0,
-  });
-}
+// Generate or propagate Request ID
+app.use((req, _res, next) => {
+    const reqId = req.header('x-request-id') || crypto.randomUUID();
+    req.headers['x-request-id'] = reqId;
+    next();
+});
 
 const ALLOWED_ORIGINS = [
     'https://scripturehabit.app',
@@ -48,7 +57,8 @@ app.use(cors({
         }
         if (/^https:\/\/scripture-habit-[\w-]+\.vercel\.app$/.test(origin)) return callback(null, true);
         
-        callback(new Error('CORS not allowed'), false);
+        // Return false without an Error object to avoid raising server-side 500 exceptions for CORS violations
+        callback(null, false);
     }
 }));
 

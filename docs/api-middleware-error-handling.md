@@ -8,7 +8,7 @@ It details the gateway validation chain, CORS policies, trailing slash normaliza
 
 ## 🛰️ 1. Express Gateway & Routing Middleware
 
-The backend uses a unified Express gateway (`api/api.ts`) acting as a lightweight API controller. To maximize performance and keep cold starts low in serverless environments, Sentry and Firebase SDKs are initialized eagerly, while routes and middlewares are mounted in a strict security-first hierarchy.
+The backend uses a unified Express gateway (`api/api.ts`) acting as a lightweight API controller. To maximize performance and keep cold starts low in serverless environments, Sentry and Firebase SDKs are initialized eagerly (Sentry is initialized at the absolute top of the file before importing Express or any routers to ensure automatic instrumentation hooks work correctly), while routes and middlewares are mounted in a strict security-first hierarchy.
 
 ### CORS & Origin Validation Matrix
 To allow standard Web clients, automated preview environments, and local development servers to query the API safely without permitting arbitrary cross-origin script executions, the CORS policy evaluates dynamic regexes:
@@ -62,16 +62,19 @@ The system manages three distinct rate-limiting zones, scaling thresholds dynami
 
 * **Global Limiter**: Restricts generic endpoints to `300` calls per 15 minutes in production (elevated to `10,000` in dev).
 * **Invite Limiter**: Restricts group join and code-generation to `15` attempts per hour (prevents brute-forcing codes).
-* **AI Limiter with Privacy Hashing**: Restricts Gemini-powered tasks (Weekly Recaps, chat translations) to `100` calls per hour. 
-  - **Hashed Keys**: To avoid exposing raw client IP addresses or Auth tokens inside server log dumps during rate breaches, the key generator hashes identifiers using SHA-256 before applying the bucket count:
+* **AI Limiter with Privacy Hashing**: Restricts Gemini-powered tasks (Weekly Recaps, chat translations) to `100` calls per hour.
+  - **Distributed Limiting (Redis Store)**: In production, if `REDIS_URL` environment variable is supplied, all rate limiters automatically connect to a centralized RedisStore (such as Upstash) to sync counts across multiple parallel serverless instances (falls back to MemoryStore if not provided).
+  - **Hashed Keys**: To avoid exposing raw client IP addresses or Auth tokens inside server log dumps during rate breaches, the key generator hashes identifiers using SHA-256 before applying the bucket count. It extracts the first client IP address in the `x-forwarded-for` chain to keep hashes stable behind reverse proxies.
     ```typescript
     export const aiLimiterKeyGenerator = (req: Request) => {
         const authHeader = req.header('Authorization');
         if (authHeader && authHeader.startsWith('Bearer ')) {
             return crypto.createHash('sha256').update(authHeader).digest('hex');
         }
-        const ip = (req.ip || req.headers['x-forwarded-for'] || 'unknown').toString();
-        return crypto.createHash('sha256').update(ip).digest('hex');
+        // Isolate the first IP in the forwarded-for chain for stability behind reverse proxies
+        const rawForward = req.headers['x-forwarded-for'];
+        const clientIp = (Array.isArray(rawForward) ? rawForward[0] : rawForward?.split(',')[0] || req.ip || req.socket.remoteAddress || 'unknown').trim();
+        return crypto.createHash('sha256').update(clientIp).digest('hex');
     };
     ```
 
@@ -131,7 +134,7 @@ If an unknown exception (e.g. database disconnect, runtime syntax error) occurs:
   ```
 
 ### 2. Request Tracking with `x-request-id`
-Every error response returns a correlation ID (`x-request-id` header or generated fallback). This ID links the customer support request directly to the corresponding server execution logs in Google Cloud Logging or Sentry.
+Every error response returns a correlation ID (`x-request-id` header or generated fallback). This ID links the customer support request directly to the corresponding server execution logs in Google Cloud Logging or Sentry. A custom middleware generates a UUID (`crypto.randomUUID()`) at the front of the gateway if no request ID is provided, guaranteeing tracing correlation for all requests.
 
 ### 3. Sentry Capture Pipeline
 The Express gateway mounts `Sentry.setupExpressErrorHandler(app)` ahead of standard routers. If an error is caught:

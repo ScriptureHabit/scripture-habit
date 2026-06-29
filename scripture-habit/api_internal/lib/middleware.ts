@@ -14,9 +14,40 @@ export interface AuthenticatedRequest extends Request {
 
 // --- Rate Limiters ---
 
+import { Redis } from 'ioredis';
+import RedisStore from 'rate-limit-redis';
+
 const isProd = process.env.NODE_ENV === 'production' && process.env.VITE_DEV_MODE !== 'true';
 
+let redisStore: any = undefined;
+
+if (process.env.REDIS_URL) {
+    try {
+        const redisClient = new Redis(process.env.REDIS_URL, {
+            connectTimeout: 2000,
+            maxRetriesPerRequest: 1
+        });
+        
+        redisClient.on('error', (err) => {
+            console.error('[Redis] Connection error:', err);
+        });
+
+        redisStore = new RedisStore({
+            sendCommand: async (...args: string[]) => {
+                return redisClient.call(args[0], ...args.slice(1)) as any;
+            },
+            prefix: 'rl:', // Rate limiting prefix
+        });
+        console.log('[RateLimit] Distributed RedisStore initialized successfully.');
+    } catch (e) {
+        console.error('[RateLimit] Failed to initialize RedisStore, falling back to memory:', e);
+    }
+} else {
+    console.log('[RateLimit] REDIS_URL not set. Using MemoryStore (default).');
+}
+
 export const globalLimiter = rateLimit({
+    store: redisStore,
     windowMs: 15 * 60 * 1000,
     limit: isProd ? 300 : 10000, // Significantly higher limit for dev/test
     standardHeaders: 'draft-7',
@@ -24,6 +55,7 @@ export const globalLimiter = rateLimit({
 });
 
 export const inviteLimiter = rateLimit({
+    store: redisStore,
     windowMs: 60 * 60 * 1000,
     limit: isProd ? 15 : 1000,
     message: { error: 'Too many invite attempts, please try again later.' },
@@ -36,12 +68,14 @@ export const aiLimiterKeyGenerator = (req: Request) => {
     if (authHeader && authHeader.startsWith('Bearer ')) {
         return crypto.createHash('sha256').update(authHeader).digest('hex');
     }
-    // Fallback to hashed IP for better privacy and consistency across proxies
-    const ip = (req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown').toString();
-    return crypto.createHash('sha256').update(ip).digest('hex');
+    // Isolate the first IP in the forwarded-for chain for stability behind reverse proxies
+    const rawForward = req.headers['x-forwarded-for'];
+    const clientIp = (Array.isArray(rawForward) ? rawForward[0] : rawForward?.split(',')[0] || req.ip || req.socket.remoteAddress || 'unknown').trim();
+    return crypto.createHash('sha256').update(clientIp).digest('hex');
 };
 
 export const aiLimiter = rateLimit({
+    store: redisStore,
     windowMs: 60 * 60 * 1000,
     limit: isProd ? 100 : 5000, // Increased for dev/test/lazy-loading
     message: { error: 'AI limit reached. Please try again in an hour.' },
@@ -113,9 +147,9 @@ export const authenticate = async (req: AuthenticatedRequest, _res: Response, ne
  * Enforces email verification for password-based accounts.
  * Should be used AFTER authenticate middleware.
  */
-export const requireEmailVerified = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+export const requireEmailVerified = (req: AuthenticatedRequest, _res: Response, next: NextFunction) => {
     if (!req.user) {
-        return res.status(401).json({ error: 'Unauthorized: Not authenticated' });
+        return next(new AppError('Unauthorized: Not authenticated', 401, 'UNAUTHENTICATED'));
     }
 
     // Bypass verification for test accounts in non-production environments

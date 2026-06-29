@@ -211,8 +211,10 @@ describe('middleware - express middlewares', () => {
         it('should return 401 if req.user is missing', () => {
             req.user = undefined;
             requireEmailVerified(req, res, next);
-            expect(res.status).toHaveBeenCalledWith(401);
-            expect(res.json).toHaveBeenCalledWith({ error: 'Unauthorized: Not authenticated' });
+            expect(next).toHaveBeenCalledWith(expect.any(AppError));
+            const error = next.mock.calls[0][0];
+            expect(error.statusCode).toBe(401);
+            expect(error.errorCode).toBe('UNAUTHENTICATED');
         });
 
         it('should skip email check for test accounts', () => {

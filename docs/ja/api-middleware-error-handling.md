@@ -8,7 +8,7 @@
 
 ## 🛰️ 1. Expressゲートウェイとルーティングミドルウェア
 
-バックエンドは、軽量なAPIコントローラーとして機能する統合Expressゲートウェイ（`api/api.ts`）を使用します。サーバーレス環境におけるパフォーマンスを最大化し、コールドスタート時間を低く抑えるため、SentryおよびFirebase SDKは即座に初期化（Eager Initialization）され、ルーターとミドルウェアは厳格なセキュリティ優先の階層でマウントされます。
+バックエンドは、軽量なAPIコントローラーとして機能する統合Expressゲートウェイ（`api/api.ts`）を使用します。サーバーレス環境におけるパフォーマンスを最大化し、コールドスタート時間を低く抑えるため、SentryおよびFirebase SDKは即座に初期化（Eager Initialization）されます（※Sentryの自動インストルメンテーションを有効にするため、Expressやルートのインポートより前の最上部で `Sentry.init` が実行されます）。ルーターとミドルウェアは厳格なセキュリティ優先の階層でマウントされます。
 
 ### CORSとオリジン検証マトリクス
 標準的なWebクライアント、自動化されたプレビュー環境、およびローカル開発サーバーが、任意のクロスオリジンスクリプトの実行を許可することなく安全にAPIをクエリできるように、CORSポリシーは動的な正規表現を評価します。
@@ -63,15 +63,18 @@ app.use((req, _res, next) => {
 * **グローバル制限 (Global Limiter)**: 本番環境では一般的なエンドポイントへのアクセスを15分あたり `300` 回に制限します（開発環境では `10,000` 回に引き上げられます）。
 * **招待制限 (Invite Limiter)**: グループへの参加や招待リンクの生成を1時間あたり `15` 回に制限します（コードの総当たり攻撃を防止します）。
 * **プライバシーハッシュ付き AI 制限**: Gemini を利用するタスク（週次振り返り、チャット翻訳）を1時間あたり `100` 回に制限します。
-  - **ハッシュ化されたキー**: レート制限違反時のサーバーログダンプに、生のクライアントIPアドレスや認証トークンが露出するのを防ぐため、キー生成器はバケットカウントを適用する前に SHA-256 を使用して識別子をハッシュ化します。
+  - **分散制限 (Redis 連携)**: 本番環境で環境変数 `REDIS_URL` が設定されている場合、すべてのレート制限器は自動的に RedisStore（Upstash 等）に接続され、サーバーレス関数の複数並列インスタンス間でカウントが同期されます（未設定時は自動でインメモリ制限にフォールバックします）。
+  - **ハッシュ化されたキー**: レート制限違反時のサーバーログダンプに、生のクライアントIPアドレスや認証トークンが露出するのを防ぐため、キー生成器はバケットカウントを適用する前に SHA-256 を使用して識別子をハッシュ化します。また、リバースプロキシ配下でのハッシュの一貫性を保つため、`x-forwarded-for` チェーンから最初のクライアントIPアドレスを正確に分離・抽出します。
     ```typescript
     export const aiLimiterKeyGenerator = (req: Request) => {
         const authHeader = req.header('Authorization');
         if (authHeader && authHeader.startsWith('Bearer ')) {
             return crypto.createHash('sha256').update(authHeader).digest('hex');
         }
-        const ip = (req.ip || req.headers['x-forwarded-for'] || 'unknown').toString();
-        return crypto.createHash('sha256').update(ip).digest('hex');
+        // プロキシ配下での安定性向上のため、x-forwarded-forチェーンから最初のクライアントIPを抽出
+        const rawForward = req.headers['x-forwarded-for'];
+        const clientIp = (Array.isArray(rawForward) ? rawForward[0] : rawForward?.split(',')[0] || req.ip || req.socket.remoteAddress || 'unknown').trim();
+        return crypto.createHash('sha256').update(clientIp).digest('hex');
     };
     ```
 
@@ -131,7 +134,7 @@ ValidationError AuthenticationError ForbiddenError NotFoundError
   ```
 
 ### 2. `x-request-id` によるリクエスト追跡
-すべてのエラーレスポンスは、相関ID（`x-request-id` ヘッダーまたは生成されたフォールバック）を返します。この ID は、カスタマーサポートへの問い合わせと、Google Cloud Logging や Sentry の対応するサーバー実行ログを直接結びつけます。
+すべてのエラーレスポンスは、相関ID（`x-request-id` ヘッダーまたは生成されたフォールバック）を返します。この ID は、カスタマーサポートへの問い合わせと、Google Cloud Logging や Sentry の対応するサーバー実行ログを直接結びつけます。ゲートウェイの最前段で `x-request-id` がない場合に UUID (`crypto.randomUUID()`) を自動生成してヘッダーおよびレスポンスに注入するカスタムミドルウェアが有効化されているため、すべてのリクエストで確実に一意な追跡が可能です。
 
 ### 3. Sentry キャプチャパイプライン
 Express ゲートウェイは、標準ルーターの前に `Sentry.setupExpressErrorHandler(app)` をマウントします。エラーが検出されると：
