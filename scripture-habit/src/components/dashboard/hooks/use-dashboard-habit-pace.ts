@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { auth, appCheck } from '../../../firebase';
 import { getToken } from 'firebase/app-check';
-import { Capacitor } from '@capacitor/core';
+
 import { toast } from 'react-toastify';
 import { UserData } from '../../../types/user';
 
@@ -54,7 +54,7 @@ export const useDashboardHabitPace = (
                 }
             }
 
-            const API_BASE_URL = Capacitor.isNativePlatform() ? 'https://scripturehabit.app' : '';
+            const API_BASE_URL = '';
             const headers: Record<string, string> = {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${idToken}`

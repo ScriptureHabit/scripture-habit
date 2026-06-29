@@ -2,15 +2,13 @@ import axios from 'axios';
 import * as Sentry from '@sentry/react';
 import { auth, appCheck } from '../firebase';
 import { getToken } from 'firebase/app-check';
-import { Capacitor } from '@capacitor/core';
 
 /**
  * Base URL configuration.
- * On native platforms (iOS/Android), we must point to the production server.
- * On web, we use relative paths which work with the Vite proxy in development
+ * Relative paths which work with the Vite proxy in development
  * and same-origin in production.
  */
-const API_BASE = (Capacitor.isNativePlatform() && !window.location.hostname.includes('localhost')) ? 'https://scripturehabit.app' : '';
+const API_BASE = '';
 
 /**
  * Common Axios instance for internal API calls.

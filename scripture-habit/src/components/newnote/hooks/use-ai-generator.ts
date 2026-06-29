@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { Capacitor } from '@capacitor/core';
+
 import { auth, appCheck } from '../../../firebase';
 import { getToken } from 'firebase/app-check';
 import { toast } from 'react-toastify';
@@ -23,7 +23,7 @@ export const useAIGenerator = (language: string | null) => {
                     appCheckToken = acTokenResponse.token;
                 }
             }
-            const API_BASE = Capacitor.isNativePlatform() ? 'https://scripturehabit.app' : '';
+            const API_BASE = '';
             
             const headers: Record<string, string> = {
                 'Authorization': `Bearer ${idToken}`

@@ -79,24 +79,19 @@ Welcome to the **scripture-habit** technical documentation. This directory conta
 
 ## 🛠️ Operations & Development
 - **[Development & Environment Guide](development-guide.md)**
-  - Local setup, mobile development (Capacitor), and deployment instructions.
+  - Local setup and deployment instructions.
 - **[Technical Troubleshooting & FAQ](troubleshooting.md)**
-  - Resolution paths for Capacitor loopback issues, Android clean-traffic configurations, AppCheck test bypasses, and keystore SHA-1 alignments.
+  - Resolution paths for AppCheck test bypasses.
 - **[Testing & Reliability Guide](testing-guide.md)**
   - Unit and integration testing setup using Vitest, Firebase rule unit tests, and Playwright E2E automation.
 - **[CI/CD & Maintenance Automation Guide](cicd-maintenance-automation.md)**
   - GitHub Actions continuous integration, local Java Firebase Emulators, Playwright pipeline runs, Vercel prod CD deployments, and daily inactivity scan Cron triggers.
-- **[Capacitor App Signing & Release Guide](hybrid-mobile-release-guide.md)**
-  - Mobile store release compilation, Android keystore bundle signatures, Google Auth SHA fingerprint registry, iOS provisioning profiles, and APNs certificate binds.
 - **[Maintenance & Batch Jobs](maintenance-cron.md)**
   - Inactivity checks, owner transfers, and counter aggregation.
   - Archiving and self-healing mechanisms.
 - **[Monitoring & Observability](monitoring-observability.md)**
   - Sentry integration, vConsole, and PWA lifecycle.
   - Error silencing and performance tracing.
-- **[PWA & Capacitor Hybrid Mobile Lifecycle](hybrid-mobile-lifecycle.md)**
-  - Service Worker background caching update prompts, iOS sharebar instruction overlays, and Capacitor emulator cleartext networking setup.
-  - In-app WebView sandboxed browser checks and dynamic OS escape protocols (LINE external overrides, Android Chrome intents).
 - **[Firestore Offline Persistence & Multi-Tab Sync](firestore-offline-persistence.md)**
   - IndexedDB cache configurations, multi-tab shared-locks, failover try-catch blocks, and automated runner webdriver optimizations.
 - **[Client-Side Unity Midnight Reset Hook](client-unity-midnight-reset.md)**
@@ -124,8 +119,6 @@ Welcome to the **scripture-habit** technical documentation. This directory conta
   - Active Horizon sync boundaries, paginated cursor batch execution, multi-target entity synchronization, personal note prefix search index reconstruction, and GDPR-compliant social identity reaction anonymization with sequence diagrams and annotated code.
 - **[Firestore Transactions & Distributed Counter Sharding Deep-Dive](details/firestore-transactions-counters.md)**
   - Read-before-write transaction sequencing (IIFE phase pattern), multi-document atomic sets, 10-shard distributed counter writes, transaction-safe parallel reads, server-side count() aggregation, archive-aware counts, and the global 300-read telemetry warning audit with sequence/flow diagrams and annotated code.
-- **[PWA & Capacitor Hybrid Mobile Lifecycle Deep-Dive](details/hybrid-mobile-lifecycle.md)**
-  - Service worker background update prompts (SKIP_WAITING + 3s fallback), adaptive OS install prompting triggers (iOS share tooltip), in-app WebView escape protocols (universal Android Intents + LINE overrides), and AppCheck protected timezone-aware midnight UI reset polling with sequence diagrams and annotated code.
 - **[Firestore Offline Persistence & Multi-Tab Synchronization Deep-Dive](details/firestore-offline-persistence.md)**
   - Coordinated multi-tab access via persistentMultipleTabManager (Shared-Locks / Web Locks API), active Master Tab elections, background offline mutation queues with automatic communication channel flushes, incognito/private sandbox try-catch memory fallbacks, and E2E automated test runner (navigator.webdriver) LocalStorage session token telemetry with sequence diagrams.
 - **[URL Metadata Extraction & Speaker Auto-Analysis Deep-Dive](details/url-metadata-extraction.md)**

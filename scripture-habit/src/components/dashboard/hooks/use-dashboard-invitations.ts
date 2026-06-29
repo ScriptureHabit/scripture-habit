@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { safeStorage } from '../../../utils/storage';
-import { Capacitor } from '@capacitor/core';
+
 import { User } from 'firebase/auth';
 import { getToken } from 'firebase/app-check'; // Added AppCheck getToken
 import { appCheck } from '../../../firebase'; // Removed unused auth
@@ -27,7 +27,7 @@ export const useDashboardInvitations = (
             console.log("Processing pending invite code:", inviteCode);
 
             try {
-                const API_BASE = Capacitor.isNativePlatform() ? 'https://scripturehabit.app' : '';
+                const API_BASE = '';
                 const idToken = await user.getIdToken();
                 let appCheckToken = '';
                 if (appCheck) {

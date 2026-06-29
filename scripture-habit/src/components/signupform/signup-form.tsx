@@ -2,9 +2,7 @@
 import React, { useState } from 'react';
 import Button from '../button/button';
 import { auth, db } from '../../firebase';
-import { createUserWithEmailAndPassword, GoogleAuthProvider, GithubAuthProvider, signInWithPopup, sendEmailVerification, signOut, signInWithCredential, AuthProvider, User, AuthError, UserCredential } from 'firebase/auth';
-import { Capacitor } from '@capacitor/core';
-import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
+import { createUserWithEmailAndPassword, GoogleAuthProvider, GithubAuthProvider, signInWithPopup, sendEmailVerification, signOut, AuthProvider, User, AuthError, UserCredential } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import Input from '../input/input';
@@ -31,26 +29,7 @@ export default function SignupForm() {
       let result: UserCredential;
       // Check if this is a Google login request
       if (provider instanceof GoogleAuthProvider) {
-        try {
-          // For native platforms (Android/iOS)
-          if (Capacitor.isNativePlatform()) {
-            await GoogleAuth.initialize({
-              clientId: '346318604907-7su40hveemp8e6vi0b9hnqrhvvtpsb9j.apps.googleusercontent.com',
-              scopes: ['profile', 'email'],
-              grantOfflineAccess: true,
-            });
-            const googleUser = await GoogleAuth.signIn();
-            const credential = GoogleAuthProvider.credential(googleUser.authentication.idToken);
-            result = await signInWithCredential(auth!, credential);
-          } else {
-            // For Web
-            result = await signInWithPopup(auth!, provider);
-          }
-        } catch (e) {
-          console.error("Native Google Auth failed, falling back to web popup:", e);
-          // Fallback to web popup if native fails
-          result = await signInWithPopup(auth!, provider);
-        }
+        result = await signInWithPopup(auth!, provider);
       } else {
         // Fallback for Github etc 
         result = await signInWithPopup(auth!, provider);

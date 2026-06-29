@@ -69,28 +69,6 @@ npm run server
 
 ---
 
-## モバイル開発 (Capacitor)
-
-モバイルアプリは **Capacitor 8** を使用しています。
-
-### Android 開発（ライブリロード）
-リアルタイム更新を反映しながら Android で開発およびテストを行うには、**ライブリロード（Livereload）**を使用します。
-```bash
-# 1. ネイティブプラグインの同期
-npx cap sync android
-
-# 2. ライブリロードで実行
-# [LOCAL_IP] をマシンの IP（例：192.168.1.10）に置き換えてください
-npx cap run android --livereload --external
-```
-これにより、Android の WebView が Vite 開発サーバーに接続され、ライブアップデートを適用しながらネイティブ機能（Google 認証など）をテストできます。
-
-### よくあるトラブルシューティング
-- **HTTPS/SSL**: Capacitor の WebView は、ローカル IP への HTTP トラフィックをブロックすることがあります。ローカル開発用には、`AndroidManifest.xml` で `android:usesCleartextTraffic` が `true` に設定されていることを確認してください。
-- **プラグインの同期**: 新しい `@capacitor` パッケージを追加した場合は、ネイティブプロジェクトを更新するために必ず `npx cap sync` を実行してください。
-
----
-
 ## デプロイおよびインフラストラクチャ
 
 ### 1. バックエンド: Vercel Functions

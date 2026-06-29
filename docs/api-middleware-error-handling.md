@@ -11,12 +11,11 @@ It details the gateway validation chain, CORS policies, trailing slash normaliza
 The backend uses a unified Express gateway (`api/api.ts`) acting as a lightweight API controller. To maximize performance and keep cold starts low in serverless environments, Sentry and Firebase SDKs are initialized eagerly, while routes and middlewares are mounted in a strict security-first hierarchy.
 
 ### CORS & Origin Validation Matrix
-To allow standard Web clients, automated preview environments, local development servers, and native mobile shells to query the API safely without permitting arbitrary cross-origin script executions, the CORS policy evaluates dynamic regexes:
+To allow standard Web clients, automated preview environments, and local development servers to query the API safely without permitting arbitrary cross-origin script executions, the CORS policy evaluates dynamic regexes:
 
 | Environment | Allowed Origin Format | Purpose |
 | :--- | :--- | :--- |
 | **Production Web** | `https://scripturehabit.app` / `...vercel.app` | Standard primary web domains. |
-| **Native Mobile** | `capacitor://localhost` | Capacitor Android/iOS WebView protocol. |
 | **Local Development** | `http://localhost:[port]` / `127.0.0.1:[port]` | HMR hot-reloads and local testing. |
 | **Vercel Previews** | `https://scripture-habit-[hash].vercel.app` | Automated GitHub Pull Request deploy previews. |
 

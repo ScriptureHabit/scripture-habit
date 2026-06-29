@@ -22,10 +22,6 @@ We use a modern, type-safe stack designed for fast development and good performa
 - **Authentication**: **Firebase Admin SDK 13** (Server-side JWT verification and user management).
 - **AI Engine**: **Gemini 3.1 Flash-Lite Preview** (Prompt handling, cached translation engine).
 
-### Mobile Bridge
-- **Platform**: **Capacitor 8** (WebView wrapper for Android and iOS builds).
-- **Plugins**: Google Social Authentication, Push Notifications, AppCheck native integrity, Local Storage.
-
 ---
 
 ## 📂 Directory Structure & Physical Layers
@@ -119,16 +115,6 @@ graph TD
     Hook --> Component
     Auth -- "JWT Token" --> API
 ```
-
----
-
-## 🌎 Cross-Platform Bridge (Capacitor)
-
-The mobile application is a WebView running our Vite build.
-
-- **Bridge Communication**: Standard JS `fetch` calls are handled by the Capacitor bridge for secure network access.
-- **Native Storage**: Using native storage for cached user preferences to speed up initial startup.
-- **LiveReload workflow**: During development, the Android/iOS app points directly to the Vite dev server (`http://[local-ip]:5173`), allowing updates to appear immediately on physical devices.
 
 ---
 

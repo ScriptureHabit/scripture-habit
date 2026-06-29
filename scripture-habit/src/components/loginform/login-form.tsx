@@ -4,9 +4,7 @@ import './login-form.css';
 import Button from '../button/button';
 import Input from '../input/input';
 import { auth, db } from '../../firebase';
-import { signInWithEmailAndPassword, GoogleAuthProvider, GithubAuthProvider, signInWithPopup, sendEmailVerification, signInWithCredential, signOut, User, AuthProvider, AuthError, UserCredential } from 'firebase/auth';
-import { Capacitor } from '@capacitor/core';
-import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
+import { signInWithEmailAndPassword, GoogleAuthProvider, GithubAuthProvider, signInWithPopup, sendEmailVerification, signOut, User, AuthProvider, AuthError, UserCredential } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useLanguage } from '../../hooks/use-language';
@@ -33,26 +31,7 @@ const LoginForm: FC = () => {
       let result: UserCredential;
       // Check if this is a Google login request
       if (provider instanceof GoogleAuthProvider) {
-        try {
-          // For native platforms (Android/iOS)
-          if (Capacitor.isNativePlatform()) {
-            await GoogleAuth.initialize({
-              clientId: '346318604907-7su40hveemp8e6vi0b9hnqrhvvtpsb9j.apps.googleusercontent.com',
-              scopes: ['profile', 'email'],
-              grantOfflineAccess: true,
-            });
-            const googleUser = await GoogleAuth.signIn();
-            const credential = GoogleAuthProvider.credential(googleUser.authentication.idToken);
-            result = await signInWithCredential(auth!, credential);
-          } else {
-            // For Web
-            result = await signInWithPopup(auth!, provider);
-          }
-        } catch (e) {
-          console.error("Native Google Auth failed, falling back to web popup:", e);
-          // Fallback to web popup if native fails
-          result = await signInWithPopup(auth!, provider);
-        }
+        result = await signInWithPopup(auth!, provider);
       } else {
         // Fallback for Github etc (which still might need special handling on native, but standard for now)
         result = await signInWithPopup(auth!, provider);

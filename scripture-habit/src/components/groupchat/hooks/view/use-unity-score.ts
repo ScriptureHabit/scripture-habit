@@ -1,5 +1,5 @@
 import { useMemo, useEffect } from 'react';
-import { Capacitor } from '@capacitor/core';
+
 import { auth, appCheck } from '../../../../firebase';
 import { getToken } from 'firebase/app-check';
 import { safeStorage } from '../../../../utils/storage';
@@ -86,7 +86,7 @@ export const useUnityScore = (
             console.warn('[useUnityScore] AppCheck token failed:', e);
           }
 
-          const API_BASE = Capacitor.isNativePlatform() ? 'https://scripturehabit.app' : '';
+          const API_BASE = '';
           const response = await fetch(`${API_BASE}/api/groups/announce-unity`, {
             method: 'POST',
             headers: {

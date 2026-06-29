@@ -1,8 +1,0 @@
-<?xml version='1.0' encoding='utf-8'?>
-<resources>
-    <string name="app_name">Scripture Habit</string>
-    <string name="title_activity_main">Scripture Habit</string>
-    <string name="package_name">com.scripturehabit.app</string>
-    <string name="custom_url_scheme">com.scripturehabit.app</string>
-    <string name="server_client_id">346318604907-7su40hveemp8e6vi0b9hnqrhvvtpsb9j.apps.googleusercontent.com</string>
-</resources>

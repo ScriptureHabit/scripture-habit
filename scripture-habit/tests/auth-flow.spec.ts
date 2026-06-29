@@ -55,6 +55,7 @@ test.describe('Auth & Onboarding Flow', () => {
 
     // Verify Dashboard landing
     await expect(page).toHaveURL(/.*\/dashboard/);
+    await expect(page.getByTestId('dashboard-skeleton')).not.toBeVisible({ timeout: 60000 });
     await expect(page.getByText(nickname)).toBeVisible();
     
     const streakCard = page.locator('.streak-card');

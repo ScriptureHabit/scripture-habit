@@ -38,6 +38,20 @@ export default defineConfig({
       },
     },
   },
+  optimizeDeps: {
+    include: [
+      'firebase/app',
+      'firebase/auth',
+      'firebase/firestore',
+      'firebase/storage',
+      'firebase/analytics',
+      'axios',
+      'react-toastify',
+      'react-router-dom',
+      'zustand',
+      '@sentry/react'
+    ]
+  },
   build: {
     sourcemap: true, // Sentryにソースマップをアップロードするために必須
     chunkSizeWarningLimit: 1000,

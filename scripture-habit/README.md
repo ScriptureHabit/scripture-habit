@@ -16,7 +16,7 @@ We maintain a comprehensive set of technical documents to help you understand th
 
 ## 🛠️ Technology Stack
 
-- **Frontend**: React + Vite + Capacitor (Android/Web)
+- **Frontend**: React + Vite
 - **Backend API**: Node.js (Express) on Vercel
 - **Database**: Google Cloud Firestore
 - **Auth**: Firebase Authentication

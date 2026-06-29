@@ -37,7 +37,6 @@ if (process.env.SENTRY_DISABLED !== 'true') {
 const ALLOWED_ORIGINS = [
     'https://scripturehabit.app',
     'https://scripture-habit.vercel.app',
-    'capacitor://localhost',
 ];
 
 app.use(cors({

@@ -2,9 +2,8 @@ import { auth, appCheck } from '../../../firebase';
 import { getToken } from 'firebase/app-check';
 import { Note } from '../../../types/note';
 import { UserData } from '../../../types/user';
-import { Capacitor } from '@capacitor/core';
 
-const API_BASE = Capacitor.isNativePlatform() ? 'https://scripturehabit.app' : '';
+const API_BASE = '';
 
 export const useNoteActions = (userData: UserData | null) => {
   const deleteNote = async (note: Note): Promise<boolean> => {

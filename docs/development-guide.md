@@ -69,28 +69,6 @@ npm run server
 
 ---
 
-## Mobile Development (Capacitor)
-
-The mobile app uses **Capacitor 8**.
-
-### Android Development with Livereload
-To develop and test on Android with real-time updates, use **Livereload**:
-```bash
-# 1. Sync native plugins
-npx cap sync android
-
-# 2. Run with Livereload
-# Replace [LOCAL_IP] with your machine's IP (e.g. 192.168.1.10)
-npx cap run android --livereload --external
-```
-This connects the Android WebView to your Vite development server, letting you test native features (like Google Auth) with live updates.
-
-### Common Troubleshooting
-- **HTTPS/SSL**: Capacitor WebViews sometimes block HTTP traffic to local IPs. Ensure `android:usesCleartextTraffic` is set to `true` in `AndroidManifest.xml` for local development.
-- **Plugin Sync**: If you add a new `@capacitor` package, you MUST run `npx cap sync` to update the native project.
-
----
-
 ## Deployment & Infrastructure
 
 ### 1. Backend: Vercel Functions

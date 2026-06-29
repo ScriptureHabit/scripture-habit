@@ -4,9 +4,8 @@
 [![React](https://img.shields.io/badge/react-v19.0-blue.svg)](https://react.dev/)
 [![Firebase](https://img.shields.io/badge/firebase-v12.0-orange.svg)](https://firebase.google.com/)
 [![Express](https://img.shields.io/badge/express-v5.0-green.svg)](https://expressjs.com/)
-[![Capacitor](https://img.shields.io/badge/capacitor-v8.0-lightgrey.svg)](https://capacitorjs.com/)
 
-Scripture Habit is a premium social scripture study and gamified habit-tracking application. Built with React 19, TypeScript, Express, and Firebase, it supports seamless cross-platform deployment to Android and iOS via Capacitor.
+Scripture Habit is a premium social scripture study and gamified habit-tracking application. Built with React 19, TypeScript, Express, and Firebase.
 
 ---
 
@@ -23,7 +22,6 @@ final-project/
 │   ├── backend/                   # Express 5 entrypoint for Vercel Functions
 │   ├── api/                       # API routing rules
 │   ├── api_internal/              # Server-side business logic, models, and service layer
-│   ├── android/                   # Capacitor Native Android integration assets
 │   ├── scripts/                   # Seeding & development operations utilities
 │   └── package.json               # Universal build & run scripts configuration
 └── README.md                      # This onboarding blueprint

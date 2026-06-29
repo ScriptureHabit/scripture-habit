@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { Capacitor } from '@capacitor/core';
+
 import { User } from 'firebase/auth';
 import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, appCheck, db } from '../../../firebase';
@@ -84,7 +84,7 @@ export const useDashboardActions = (user: User | null, userData: UserData | null
             console.warn('[useDashboardActions] AppCheck token failed:', e);
           }
 
-          const API_BASE = Capacitor.isNativePlatform() ? 'https://scripturehabit.app' : '';
+          const API_BASE = '';
           const response = await fetch(`${API_BASE}/api/groups/update-read-status`, {
             method: 'POST',
             headers: {

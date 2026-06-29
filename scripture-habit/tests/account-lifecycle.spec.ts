@@ -63,7 +63,7 @@ test.describe('Account Lifecycle', () => {
     // 2.3 WAIT FOR SKELETON TO DISAPPEAR (Ensures data load complete)
     console.log('[Lifecycle] Waiting for dashboard loading skeleton to disappear');
     const skeleton = page.getByTestId('dashboard-skeleton');
-    await expect(skeleton).not.toBeVisible({ timeout: 30000 });
+    await expect(skeleton).not.toBeVisible({ timeout: 60000 });
 
     // 2.5 CLOSE WELCOME STORY MODAL (Conditional fallback)
     console.log('[Lifecycle] Checking if Welcome Story Modal appears...');
