@@ -83,6 +83,10 @@ We categorize state by its source and persistence to avoid redundant renders.
 | **Global UI State** | Zustand | Managing modals, sidebar visibility, and theme settings. |
 | **Auth State** | AuthContext | Standardizing the `currentUser` object across all components. |
 
+> [!IMPORTANT]
+> **State Conflict Prevention & Single Source of Truth**:
+> To prevent race conditions and conflicts between TanStack Query and Firestore live subscriptions, TanStack Query is strictly restricted to static server states (such as `systemStatus`). All other collaborative data (chats, group details, streaks, profile data) are fetched and synchronized exclusively through Firestore's `onSnapshot` listener. This ensures that no overlapping cache updates flicker the UI.
+
 ---
 
 ## 🔄 Data Flow: The Synchronized Loop
@@ -153,7 +157,7 @@ Firestore Root
 │       │       └── content: string
 │       └── messages_latest/ (Subcollection)
 │           └── latest/ (Document)
-│               └── messages: Message[] (Bundled high-performance cache)
+│               └── messages: Message[] (High-performance cache strictly capped at the latest 25 messages. This ensures the document stays under the Firestore 1MB size limit and avoids write errors)
 ```
 
 ---
@@ -182,5 +186,7 @@ To guide new developers, the workspace contains **22 interactive CodeTours** (un
 
 ## 🛡️ Reliability & Security
 - **Type Guards**: `firestoreConverters.ts` uses Zod to ensure that malformed data in Firestore is caught and cleaned before it causes errors in the UI.
+- **Automated Profile Sync**: While member identity fields (e.g. nickname) are duplicated across group preview arrays, messages, and reactions to save read costs, the backend runs `ProfileService.syncProfileToChats` using atomic batches (`db.batch()`) to push updates immediately to all corresponding records, preventing unsynced states.
 - **Error Boundaries**: Component-level boundaries prevent errors in a chat message from breaking the entire Dashboard.
 - **Sentry Integration**: All layers report performance issues and unhandled exceptions to a centralized Sentry dashboard.
+- **Monorepo Boundaries (Future Roadmap)**: Although `/types` and `/api_internal` currently rely on relative path imports, the long-term plan is to migrate to a formal workspaces layout (using NPM or PNPM Workspaces) to decouple compile-time boundaries cleanly.
