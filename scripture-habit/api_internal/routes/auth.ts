@@ -6,6 +6,7 @@ import { AuthenticationError, ForbiddenError } from '../lib/errors.js';
 import { ProfileService } from '../services/profile-service.js';
 import { UserDocument } from '../../types/firestore.js';
 import { removeMemberFromGroup } from '../lib/membership-utils.js';
+import { runPhasedTransaction } from '../lib/phased-transaction.js';
 
 const router = express.Router();
 
@@ -180,14 +181,17 @@ router.post('/delete-account', authenticate, verifyAppCheck, async (req: Authent
             // --- STEP 1: Exit Groups Properly ---
             for (const gid of uniqueGroupIds) {
                 try {
-                    await db.runTransaction(async (transaction) => {
-                        await removeMemberFromGroup(transaction, gid, uid, {
-                            transferOwnership: true,
-                            systemMessage: { type: 'leave', nickname: userData.nickname || 'Someone' },
-                            preferredLanguage: userData.language || 'en',
-                            removeGroupState: true,
-                            userDoc
-                        });
+                    await runPhasedTransaction(db, {
+                        read: async () => ({}),
+                        write: async (transaction) => {
+                            await removeMemberFromGroup(transaction, gid, uid, {
+                                transferOwnership: true,
+                                systemMessage: { type: 'leave', nickname: userData.nickname || 'Someone' },
+                                preferredLanguage: userData.language || 'en',
+                                removeGroupState: true,
+                                userDoc
+                            });
+                        }
                     });
                 } catch (groupErr) {
                     console.error(`[AccountDelete] Group cleanup failed for ${gid}:`, groupErr);

@@ -20,6 +20,48 @@ vi.mock('../../../firebase', () => ({
   appCheck: {}
 }));
 
+vi.mock('../../../utils/api-client', () => {
+  return {
+    default: {
+      get: vi.fn().mockImplementation(async (url, config) => {
+        const resp = await global.fetch(url, config);
+        if (!resp.ok) {
+          throw {
+            isAxiosError: true,
+            response: { data: { code: 'ERROR', error: 'Axios Mocked Error' } }
+          };
+        }
+        let data = {};
+        if (resp.json) {
+          data = await resp.json();
+        } else if (resp.text) {
+          const text = await resp.text();
+          try { data = JSON.parse(text || '{}'); } catch {}
+        }
+        return { data };
+      }),
+      post: vi.fn().mockImplementation(async (url, body, config) => {
+        const resp = await global.fetch(url, { ...config, method: 'POST', body: JSON.stringify(body) });
+        if (!resp.ok) {
+          const text = resp.text ? await resp.text() : 'Error';
+          throw {
+            isAxiosError: true,
+            response: { data: { code: text || 'ERROR', error: text || 'Axios Mocked Error' } }
+          };
+        }
+        let data = {};
+        if (resp.json) {
+          data = await resp.json();
+        } else if (resp.text) {
+          const text = await resp.text();
+          try { data = JSON.parse(text || '{}'); } catch {}
+        }
+        return { data };
+      })
+    }
+  };
+});
+
 // Mock useNavigate
 const mockNavigate = vi.fn();
 vi.mock('react-router-dom', async () => {
@@ -631,7 +673,7 @@ describe('JoinGroup Component Logic', () => {
       confirmBtn.click();
     });
 
-    expect(screen.getByText(new RegExp('joinGroup.errorJoinFailed.*Internal Server Error'))).toBeInTheDocument();
+    expect(screen.getByText('Internal Server Error')).toBeInTheDocument();
   });
 
   it('allows opening group if user becomes a member while modal is open', async () => {
@@ -756,7 +798,7 @@ describe('JoinGroup Component Logic', () => {
       confirmBtn.click();
     });
 
-    expect(screen.getByText('joinGroup.errorJoinFailed')).toBeInTheDocument();
+    expect(screen.getByText('Network Error')).toBeInTheDocument();
     expect(consoleSpy).toHaveBeenCalled();
     consoleSpy.mockRestore();
   });

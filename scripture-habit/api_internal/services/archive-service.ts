@@ -1,5 +1,6 @@
 import { admin, db } from '../lib/firebase-admin.js';
 import { MessageDocument, FirestoreTimestamp } from '../../types/firestore.js';
+import { runPhasedTransaction, ReadOnlyTransaction } from '../lib/phased-transaction.js';
 
 /**
  * Archive Service for handling Bucket Pattern (Message Bundling)
@@ -94,26 +95,30 @@ export class ArchiveService {
             // 4. Atomic transaction to create bucket and delete individual docs
             // Limit to 500 ops per transaction (Firestore limit)
             let chunkSkipped = false;
-            await db.runTransaction(async (transaction) => {
-                // TRUTH: Check if this bucket already exists to prevent duplication artifacts
-                const existingBucket = await transaction.get(bucketRef);
-                if (existingBucket.exists) {
-                    console.log(`[ArchiveService] Bucket ${bucketId} already exists, skipping chunk.`);
-                    chunkSkipped = true;
-                    return;
+            await runPhasedTransaction(db, {
+                read: async (readTx: ReadOnlyTransaction) => {
+                    const existingBucket = await readTx.get(bucketRef);
+                    return { exists: existingBucket.exists };
+                },
+                write: async (writeTx: admin.firestore.Transaction, { exists }: { exists: boolean }) => {
+                    if (exists) {
+                        console.log(`[ArchiveService] Bucket ${bucketId} already exists, skipping chunk.`);
+                        chunkSkipped = true;
+                        return;
+                    }
+
+                    writeTx.set(bucketRef, {
+                        groupId,
+                        messages: messagesData,
+                        count: messagesData.length,
+                        startTime,
+                        endTime: messagesData[messagesData.length - 1].createdAt,
+                        archivedAt: admin.firestore.FieldValue.serverTimestamp()
+                    });
+
+                    // Delete source docs
+                    chunk.forEach(doc => writeTx.delete(doc.ref));
                 }
-
-                transaction.set(bucketRef, {
-                    groupId,
-                    messages: messagesData,
-                    count: messagesData.length,
-                    startTime,
-                    endTime: messagesData[messagesData.length - 1].createdAt,
-                    archivedAt: admin.firestore.FieldValue.serverTimestamp()
-                });
-
-                // Delete source docs
-                chunk.forEach(doc => transaction.delete(doc.ref));
             });
 
             if (!chunkSkipped) {

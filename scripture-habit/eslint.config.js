@@ -27,7 +27,8 @@ export default tseslint.config(
       '@typescript-eslint/no-unused-expressions': 'warn',
       'no-empty': 'warn',
       // TODO (Roadmap): Upgrade severity to 'error' once all historical transactions 
-      // (in auth.ts, archive-service.ts etc.) are fully migrated to runPhasedTransaction.
+      // (in groups.ts, message-service.ts, note-service.ts etc.) are fully migrated to runPhasedTransaction.
+      // Note: auth.ts and archive-service.ts have been successfully migrated.
       'no-restricted-properties': [
         'warn',
         {
@@ -41,6 +42,7 @@ export default tseslint.config(
     files: ['**/*.test.ts', '**/*.test.tsx', '**/*.spec.ts', '**/*.spec.tsx'],
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
+      'no-restricted-properties': 'off', // Allow raw transaction setups in test modules
     },
   },
 )

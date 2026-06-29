@@ -24,8 +24,9 @@ export function getApiErrorMessage(
   if (axios.isAxiosError(error) && error.response) {
     const data = error.response.data;
     if (data && typeof data === 'object') {
-      const code = (data as any).code;
-      if (code) {
+      const dataObj = data as Record<string, unknown>;
+      const code = dataObj.code;
+      if (code && typeof code === 'string') {
         const translationKey = `apiErrors.${code}`;
         const translated = t(translationKey);
         
@@ -34,8 +35,8 @@ export function getApiErrorMessage(
           return translated;
         }
       }
-      const rawError = (data as any).error;
-      if (rawError) {
+      const rawError = dataObj.error;
+      if (rawError && typeof rawError === 'string') {
         return rawError;
       }
     }
