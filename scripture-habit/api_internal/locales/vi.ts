@@ -1,6 +1,6 @@
 export default {
     notifications: {
-        streak_announcement: "🎉🎉🎉 **{nickname} đã đạt cột mốc tích lũy {streak} ngày học tập! Hãy cùng chúc mừng nào!** 🎉🎉🎉",
+        streak_announcement: "🎉🎉🎉 **{nickname} đã đạt cột mốc tổng cộng {streak} ngày học tập! Hãy cùng chúc mừng nào!** 🎉🎉🎉",
         note_posted_announcement: "🎉🎉🎉 **{nickname} đã đăng một ghi chú!!** 🎉🎉🎉",
         note_posted_title: "📖 Học hỏi thánh thư",
         note_posted_body: "{nickname} đã đăng một ghi chú! ✨",

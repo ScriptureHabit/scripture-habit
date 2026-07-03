@@ -28,7 +28,7 @@ describe('i18n - translation utilities', () => {
 
         it('should handle replacements/placeholders', () => {
             const resultEn = t('en', 'notifications.streak_announcement', { nickname: 'John', streak: 5 });
-            expect(resultEn).toBe('🎉🎉🎉 **John achieved a milestone of 5 cumulative study days! Let\'s celebrate!** 🎉🎉🎉');
+            expect(resultEn).toBe('🎉🎉🎉 **John achieved a milestone of 5 total study days! Let\'s celebrate!** 🎉🎉🎉');
 
             const resultJa = t('ja', 'notifications.streak_announcement', { nickname: '田中', streak: 12 });
             expect(resultJa).toBe('🎉🎉🎉 **田中さんが合計12日目のノート投稿を達成しました！みんなでお祝いしましょう！** 🎉🎉🎉');
@@ -150,9 +150,9 @@ describe('i18n - translation utilities', () => {
             const nickname = 'Alice';
 
             // Milestone days
-            expect(getAnnounceMessage('en', nickname, 3)).toContain('Alice achieved a milestone of 3 cumulative study days!');
-            expect(getAnnounceMessage('en', nickname, 100)).toContain('Alice achieved a milestone of 100 cumulative study days!');
-            expect(getAnnounceMessage('en', nickname, 250)).toContain('Alice achieved a milestone of 250 cumulative study days!');
+            expect(getAnnounceMessage('en', nickname, 3)).toContain('Alice achieved a milestone of 3 total study days!');
+            expect(getAnnounceMessage('en', nickname, 100)).toContain('Alice achieved a milestone of 100 total study days!');
+            expect(getAnnounceMessage('en', nickname, 250)).toContain('Alice achieved a milestone of 250 total study days!');
 
             // Non-milestone days
             expect(getAnnounceMessage('en', nickname, 2)).toBe('🎉🎉🎉 **Alice posted a note!!** 🎉🎉🎉');

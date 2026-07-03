@@ -1,6 +1,6 @@
 export default {
     notifications: {
-        streak_announcement: "🎉🎉🎉 **{nickname} บรรลุหลักไมล์สะสมการเรียน {streak} วันแล้ว! มาร่วมยินดีกันเถอะ!** 🎉🎉🎉",
+        streak_announcement: "🎉🎉🎉 **{nickname} บรรลุหลักไมล์เรียนรวมทั้งหมด {streak} วันแล้ว! มาร่วมยินดีกันเถอะ!** 🎉🎉🎉",
         note_posted_announcement: "🎉🎉🎉 **{nickname} โพสต์บันทึกแล้ว!!** 🎉🎉🎉",
         note_posted_title: "📖 การศึกษาพระคัมภีร์",
         note_posted_body: "{nickname} โพสต์บันทึกแล้ว! ✨",

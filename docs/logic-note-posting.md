@@ -86,7 +86,7 @@ To maintain budget predictability and audit Firestore read/write patterns, here 
 #### Asynchronous Background Writes (1 Write)
 8.  **Group Unity Update (`/groups/{gid}`)**: Async write to update `dailyActivity` and `unityPercentage`.
 
-*(Note: Achieving a cumulative study milestone triggers 1 additional transactional write to insert a System Announcement message).*
+*(Note: Achieving a total study milestone triggers 1 additional transactional write to insert a System Announcement message).*
 
 ### 2. Reads (Total: 7 Operations)
 
@@ -142,8 +142,8 @@ sequenceDiagram
 To promote positive psychology and reduce user anxiety related to maintaining daily streaks (which could lead to demotivation if a single day is missed), the application has transitioned to celebrating **Total Study Days (累積日数)** instead of continuous streaks:
 
 1. **Dashboard & Profile Metrics**: The primary dashboard overview card and user profile widgets now display **Total Days** (`daysStudiedCount`) rather than consecutive streaks (`streakCount`).
-2. **Mascot Celebrations**: The mascot speech bubble dynamically celebrates the user's total days achieved (`daysStudiedCount`) upon posting a note (e.g., "Amazing! Cumulative 10 days achieved!").
+2. **Mascot Celebrations**: The mascot speech bubble dynamically celebrates the user's total days achieved (`daysStudiedCount`) upon posting a note (e.g., "Amazing! total 10 days achieved!").
 3. **Group Chat Announcements**:
-   Instead of announcing every daily post to group chats (which causes chat clutter and social pressure), group-wide system announcements are only posted when a user achieves a significant cumulative study milestone:
+   Instead of announcing every daily post to group chats (which causes chat clutter and social pressure), group-wide system announcements are only posted when a user achieves a significant total study milestone:
    - **Fixed Milestones**: **3, 7, 10, 21, 30, 50, 100 days**
    - **Recurring Milestones**: Every **50 days** thereafter (e.g., 150, 200, 250...)

@@ -1,6 +1,6 @@
 export default {
     notifications: {
-        streak_announcement: "🎉🎉🎉 **{nickname}님이 누적 학습 {streak}일의 마일스톤을 달성했습니다! 모두 함께 축하해주세요!** 🎉🎉🎉",
+        streak_announcement: "🎉🎉🎉 **{nickname}님이 총 학습 {streak}일의 마일스톤을 달성했습니다! 모두 함께 축하해주세요!** 🎉🎉🎉",
         note_posted_announcement: "🎉🎉🎉 **{nickname}님이 노트를 게시했습니다!!** 🎉🎉🎉",
         note_posted_title: "📖 경전 공부",
         note_posted_body: "{nickname}님이 노트를 게시했습니다! ✨",

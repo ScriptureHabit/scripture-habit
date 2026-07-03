@@ -150,7 +150,7 @@ export default {
         dashboard: {
             welcomeBack: "환영합니다",
             newNote: "새 노트",
-            streak: "누적 일수",
+            streak: "총 일수",
             days: "일",
             totalNotes: "총 노트",
             notes: "노트",
@@ -309,7 +309,7 @@ export default {
             replyTo: "답장",
             replyingTo: "답장 중",
             cancelReply: "답장 취소",
-            streakAnnouncement: "🎉🎉🎉 **{nickname}님이 누적 학습 {streak}일의 마일스톤을 달성했습니다! 모두 함께 축하해주세요!** 🎉🎉🎉",
+            streakAnnouncement: "🎉🎉🎉 **{nickname}님이 총 학습 {streak}일의 마일스톤을 달성했습니다! 모두 함께 축하해주세요!** 🎉🎉🎉",
             notePostedAnnouncement: "🎉🎉🎉 **{nickname}님이 노트를 게시했습니다!!** 🎉🎉🎉",
             userJoined: "👋 **{nickname}**님이 그룹에 참여했습니다!",
             userLeft: "🚪 **{nickname}**님이 그룹을 나갔습니다.",
@@ -815,8 +815,8 @@ export default {
         descQuest: "시작하기 위해 2가지 간단한 퀘스트를 완료하세요: 학습 그룹에 가입하고, 그룹원들과 공유할 첫 번째 학습 노트를 작성하세요!",
         titleStep1: "네비게이션 메뉴",
         descStep1: "대시보드, 내 노트, 그룹, 설정 등 핵심 메뉴를 자유롭게 이동합니다.",
-        titleStep2: "누적 학습 일수",
-        descStep2: "매일 경전을 읽을 때마다 연속 학습 일수가 차오릅니다. 함께 습관을 이어가세요!",
+        titleStep2: "총 학습 일수",
+        descStep2: "매일 경전을 읽을 때마다 총 학습 일수가 쌓입니다. 함께 습관을 이어가세요!",
         titleStep3: "레벨 및 목표",
         descStep3: "7일 동안 경전을 읽으면 레벨업! 진척도 바를 통해 다음 레벨까지의 진행도를 확인할 수 있습니다.",
         titleStep4: "오늘의 와서 나를 따르라",
@@ -832,7 +832,7 @@ export default {
         replayButton: "앱 가이드 다시 보기"
         },
         mascot: {
-            streakCelebration: "대단해요! 누적 {streak}일 달성!",
+            streakCelebration: "대단해요! 총 {streak}일 달성!",
             doneToday: "오늘도 수고했어요!\n내일 또 만나요!",
             promptToday: "오늘 경전은 읽었나요?\n함께 공부해요!",
             weeklyRecapPrompt: "이번 주 배운 내용을\n함께 돌아볼까요?",

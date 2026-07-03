@@ -1,6 +1,6 @@
 export default {
     notifications: {
-        streak_announcement: "🎉🎉🎉 **Naabot ni {nickname} ang milestone na {streak} pinagsama-samang araw ng pag-aaral! Ipagdiwang natin!** 🎉🎉🎉",
+        streak_announcement: "🎉🎉🎉 **Naabot ni {nickname} ang milestone na {streak} kabuuang araw ng pag-aaral! Ipagdiwang natin!** 🎉🎉🎉",
         note_posted_announcement: "🎉🎉🎉 **Nag-post si {nickname} ng isang tala!!** 🎉🎉🎉",
         note_posted_title: "📖 Pag-aaral ng Kasulatan",
         note_posted_body: "Nag-post si {nickname} ng note! ✨",

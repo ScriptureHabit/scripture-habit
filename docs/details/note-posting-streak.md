@@ -358,7 +358,7 @@ To encourage motivation to continue learning, Scripture Habit introduces a syste
    - An additional bonus of `Streak × 10 XP` is granted.
    - Example: A post on a 10-day streak day yields `100 XP (Base) + 100 XP (Bonus) = 200 XP`.
 3. **Level-Up Formula**:
-   - The cumulative XP required to reach Level $L$ is defined by the following formula:
+   - The total XP required to reach Level $L$ is defined by the following formula:
      $$\text{Cumulative XP Required} = 500 \times (L - 1)$$
    - Progress to the next level is animated in the client-side UI (progress bar on the dashboard).
 

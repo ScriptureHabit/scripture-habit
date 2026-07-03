@@ -270,8 +270,8 @@ export class NoteService {
 
                 // Daily Active User Stats (Moved outside transaction to avoid Read billing & contention)
 
-                // Streak / Cumulative Milestone Announcements
-                const newCumulative = (userData.daysStudiedCount || 0) + 1;
+                // Streak / Total Milestone Announcements
+                const newTotal = (userData.daysStudiedCount || 0) + 1;
                 const isMilestone = (days: number): boolean => {
                     const fixedMilestones = [3, 7, 10, 21, 30, 50, 100];
                     if (fixedMilestones.includes(days)) return true;
@@ -281,9 +281,9 @@ export class NoteService {
 
                 if (streakUpdated) {
                     const safeNickname = this.escapeMarkdown(userNickname);
-                    const isMs = isMilestone(newCumulative);
+                    const isMs = isMilestone(newTotal);
                     const announceMsg = isMs
-                        ? t(language || 'en', 'notifications.streak_announcement', { nickname: safeNickname, streak: newCumulative })
+                        ? t(language || 'en', 'notifications.streak_announcement', { nickname: safeNickname, streak: newTotal })
                         : t(language || 'en', 'notifications.note_posted_announcement', { nickname: safeNickname });
                     const botName = t(language || 'en', 'notifications.bot_name');
                     const announceTime = admin.firestore.Timestamp.fromMillis(now.getTime() + 1000);
@@ -301,7 +301,7 @@ export class NoteService {
                             type: isMs ? 'streakAnnouncement' : 'notePostedAnnouncement',
                             messageType: isMs ? 'streakAnnouncement' : 'notePostedAnnouncement',
                             messageData: isMs
-                                ? { nickname: userNickname, userId: uid, streakCount: newCumulative, isCumulative: true }
+                                ? { nickname: userNickname, userId: uid, streakCount: newTotal, isCumulative: true }
                                 : { nickname: userNickname, userId: uid }
                         };
 
