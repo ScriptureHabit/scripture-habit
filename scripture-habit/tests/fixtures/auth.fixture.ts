@@ -1,6 +1,10 @@
-/* eslint-disable react-hooks/rules-of-hooks */
-/* eslint-disable @typescript-eslint/no-explicit-any */
+// Force Emulator environment variables before importing firebase-admin
+process.env.GCLOUD_PROJECT = 'scripture-habit-auth';
+process.env.FIRESTORE_EMULATOR_HOST = '127.0.0.1:8080';
+process.env.FIREBASE_AUTH_EMULATOR_HOST = '127.0.0.1:9099';
+
 import { test as base, Page } from '@playwright/test';
+import { db } from '../../api_internal/lib/firebase-admin.js';
 
 type TestHelpers = {
   setupTestGroup: (params: { groupName: string; memberCount?: number; timeZone?: string; setYesterdayDate?: boolean; unityPercentage?: number }) => Promise<{ groupId: string }>;
@@ -13,7 +17,69 @@ type AuthFixtures = {
 
 export const test = base.extend<AuthFixtures>({
   authenticatedPage: async ({ page }, use) => {
-    // 1. Set localStorage flags and DISABLE ANIMATIONS
+    // 1. Create a completely isolated random user via Firebase Auth Emulator API
+    const timestamp = `${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
+    const email = `e2e-user-${timestamp}@example.com`;
+    const password = 'Password123!';
+    const nickname = `E2E Tester ${timestamp}`;
+
+    const authHost = process.env.FIREBASE_AUTH_EMULATOR_HOST || '127.0.0.1:9099';
+    const apiKey = 'AIzaSyCBgfSff0SJ6Rg1tGmU2z4MBccGMrA2jbM';
+
+    // SignUp request
+    const authUrl = `http://${authHost}/identitytoolkit.googleapis.com/v1/accounts:signUp?key=${apiKey}`;
+    const signupRes = await fetch(authUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password, returnSecureToken: true })
+    });
+    if (!signupRes.ok) {
+      const errText = await signupRes.text();
+      throw new Error(`Failed to create emulator test user in fixture: ${errText}`);
+    }
+    const userData = await signupRes.json();
+    const uid = userData.localId;
+    const idToken = userData.idToken;
+    const refreshToken = userData.refreshToken;
+
+    // Create matching Firestore user document to satisfy "User not found" checks
+    try {
+      await db.collection('users').doc(uid).set({
+        email,
+        nickname,
+        hasFcmToken: false,
+        createdAt: new Date().toISOString(),
+        language: 'en',
+        groupIds: [],
+        hasSeenWelcomeStory: true,
+        hasSetKickThreshold: true,
+        kickThreshold: 3
+      });
+      await db.collection('users').doc(uid).collection('private').doc('tokens').set({
+        fcmTokens: []
+      });
+      console.log(`[AuthFixture] Successfully seeded Firestore document for: ${email}`);
+    } catch (dbErr) {
+      console.error(`[AuthFixture] Failed to seed user document in Firestore:`, dbErr);
+    }
+
+    // Set display name in Emulator Auth
+    const updateUrl = `http://${authHost}/identitytoolkit.googleapis.com/v1/accounts:update?key=${apiKey}`;
+    const updateRes = await fetch(updateUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        idToken,
+        displayName: nickname,
+        photoUrl: '',
+        returnSecureToken: true
+      })
+    });
+    if (!updateRes.ok) {
+      console.warn('[AuthFixture] Warning: Failed to set display name in Emulator Auth.');
+    }
+
+    // 2. Initialize browser state (Wipe cookie consent banners, disable animations)
     await page.addInitScript(() => {
         window.localStorage.setItem('cookieConsent', 'true');
         window.localStorage.setItem('lastNotifPrompt', Date.now().toString());
@@ -30,7 +96,76 @@ export const test = base.extend<AuthFixtures>({
         document.head.appendChild(style);
     });
 
-    // 2. Navigate to dashboard
+    // 3. Inject Firebase Auth State directly to browser's IndexedDB (bypassing UI login page)
+    console.log(`[AuthFixture] Injecting auth state for isolated user: ${email}`);
+    // Navigate to root domain first to ensure we are on the correct origin for IndexedDB access
+    await page.goto('/');
+
+    await page.evaluate(async (state) => {
+      return new Promise<void>((resolve, reject) => {
+        const request = indexedDB.open('firebaseLocalStorageDb', 1);
+        request.onupgradeneeded = (event: any) => {
+          const db = event.target.result;
+          if (!db.objectStoreNames.contains('firebaseLocalStorage')) {
+            db.createObjectStore('firebaseLocalStorage');
+          }
+        };
+        request.onsuccess = (event: any) => {
+          const db = event.target.result;
+          const tx = db.transaction('firebaseLocalStorage', 'readwrite');
+          const store = tx.objectStore('firebaseLocalStorage');
+          const record = {
+            fbase_key: state.keyName,
+            value: {
+              uid: state.uid,
+              email: state.email,
+              emailVerified: true,
+              displayName: state.nickname,
+              isAnonymous: false,
+              photoURL: "",
+              providerData: [
+                {
+                  providerId: "password",
+                  uid: state.uid,
+                  displayName: state.nickname,
+                  email: state.email,
+                  phoneNumber: null,
+                  photoURL: ""
+                }
+              ],
+              stsTokenManager: {
+                refreshToken: state.refreshToken,
+                accessToken: state.idToken,
+                expirationTime: Date.now() + 3600 * 1000
+              },
+              createdAt: Date.now().toString(),
+              lastLoginAt: Date.now().toString(),
+              apiKey: state.apiKey,
+              appName: "[DEFAULT]"
+            }
+          };
+          const putRequest = store.put(record);
+          putRequest.onerror = () => reject(new Error('Failed to write auth state to IndexedDB'));
+          
+          tx.oncomplete = () => {
+            db.close();
+            resolve();
+          };
+          tx.onerror = () => reject(new Error('IndexedDB Transaction failed'));
+        };
+        request.onerror = () => reject(new Error('Failed to open IndexedDB'));
+      });
+    }, {
+      apiKey,
+      keyName: `firebase:authUser:${apiKey}:[DEFAULT]`,
+      uid,
+      email,
+      nickname,
+      idToken,
+      refreshToken
+    });
+
+    // 4. Navigate to dashboard (Should mount directly as authenticated)
     await page.goto('/en/dashboard');
     await page.waitForURL(/.*dashboard/, { timeout: 30000 });
     
@@ -40,8 +175,7 @@ export const test = base.extend<AuthFixtures>({
 
     await page.waitForSelector('[data-testid="sidebar-notes"]', { timeout: 20000 });
 
-    // --- HELPER METHODS ---
-
+    // --- API CALLING HELPERS ---
     const callApi = async (endpoint: string, body: Record<string, unknown>) => {
       const getIDToken = async () => {
         return await page.evaluate(async () => {
@@ -55,26 +189,22 @@ export const test = base.extend<AuthFixtures>({
                 } else if (attempts++ > 40) {
                   reject(new Error('Firebase auth timeout in helper'));
                 } else {
-                  if (attempts % 5 === 0) console.log(`[AuthFixture] Waiting for Firebase Auth... (attempt ${attempts})`);
                   setTimeout(checkAuth, 500);
                 }
               };
               checkAuth();
             });
           };
-
           const user = await waitForAuth() as { getIdToken: () => Promise<string> };
           return await user.getIdToken();
         });
       };
 
-      // 1. Get ID Token from browser context (fast)
       let idToken: string;
       try {
         idToken = await getIDToken();
       } catch (err: any) {
         if (err.message.includes('Execution context was destroyed')) {
-          console.log(`[AuthFixture] Context destroyed during API call to ${endpoint}, retrying once...`);
           await page.waitForLoadState('load');
           idToken = await getIDToken();
         } else {
@@ -82,7 +212,6 @@ export const test = base.extend<AuthFixtures>({
         }
       }
 
-      // 2. Perform API call from Node context (robust against page reloads)
       const response = await page.request.post(endpoint, {
         headers: {
           'Authorization': `Bearer ${idToken}`,
@@ -102,23 +231,11 @@ export const test = base.extend<AuthFixtures>({
       return await callApi('/api/test/setup-test-group', params);
     };
 
-    // Attach helpers to page object for convenience
     const pageWithHelpers = Object.assign(page, { setupTestGroup, callApi });
 
     await use(pageWithHelpers as Page & TestHelpers);
 
-    // 4. Cleanup: Leave all groups after each test
-    // This ensures User A (Shared Tester) starts each test with a clean slate
-    try {
-      await pageWithHelpers.callApi('/api/test/leave-all-groups', {});
-      await pageWithHelpers.callApi('/api/auth/update-profile', { language: 'en' });
-      await page.evaluate(() => {
-        window.localStorage.setItem('language', 'en');
-      });
-      // console.log('[AuthFixture] Automatic post-test cleanup successful.');
-    } catch (e) {
-      console.warn('[AuthFixture] Automatic post-test cleanup failed (best effort):', e);
-    }
+    // Dynamic cleanups are not needed because each test uses a completely isolated temporary user.
   },
 });
 
