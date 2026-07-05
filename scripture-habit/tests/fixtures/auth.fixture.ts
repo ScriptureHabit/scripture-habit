@@ -139,7 +139,7 @@ export const test = base.extend<AuthFixtures>({
               stsTokenManager: {
                 refreshToken: state.refreshToken,
                 accessToken: state.idToken,
-                expirationTime: Date.now() + 3600 * 1000
+                expirationTime: 2524608000000 // Fixed future timestamp (Year 2050) to prevent clock mock skew issues
               },
               createdAt: Date.now().toString(),
               lastLoginAt: Date.now().toString(),
