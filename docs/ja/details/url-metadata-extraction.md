@@ -4,7 +4,7 @@
 
 ユーザーが聖書ノートにYouTube動画、教会の説教記事、ブログなどの外部リンクを添付した際、アプリケーションは自動的にそのURLを解析し、タイトル、概要、サムネイル画像、発言者名（Speaker）などのメタデータを抽出します。このプロセスを極めて高速かつセキュア、そして低負荷で実行するために、**scripture-habit** は強力なバックエンド・スクレイピング・サーバーと、フロントエンド側の **2階層キャッシュパイプライン** を備えています。
 
-この仕組みは、クライアント側の React フック **`useUrlMetadata`** ([`use-url-metadata.ts`](../../scripture-habit/src/hooks/use-url-metadata.ts)) と、サーバーサイドの Express ルーターである **`preview.ts`** ([`preview.ts`](../../scripture-habit/api_internal/routes/preview.ts)) によって共同制御されています。インフラへの踏み台攻撃を防ぐための SSRF（Server-Side Request Forgery）保護フィルターや、言語のローカライズ失敗時に備えたデュアルフェッチ（Dual-Fetch）フォールバック処理を搭載しています。
+この仕組みは、クライアント側の React フック **`useUrlMetadata`** ([`use-url-metadata.ts`](../../../scripture-habit/src/hooks/use-url-metadata.ts)) と、サーバーサイドの Express ルーターである **`preview.ts`** ([`preview.ts`](../../../scripture-habit/api_internal/routes/preview.ts)) によって共同制御されています。インフラへの踏み台攻撃を防ぐための SSRF（Server-Side Request Forgery）保護フィルターや、言語のローカライズ失敗時に備えたデュアルフェッチ（Dual-Fetch）フォールバック処理を搭載しています。
 
 ```mermaid
 flowchart TD
@@ -90,7 +90,7 @@ flowchart TD
 
 もしバックエンドのスクレイパーサーバーが、クライアントから送られてきた任意のURLを何も検証せずにそのままフェッチ（取得）しにいってしまうと、悪意あるユーザーによってサーバー自身の内部ネットワークの走査や、ローカルで動いている別サービス（例：`http://localhost:8080` や AWS のメタデータエンドポイント `http://169.254.169.254`）への不正リクエストに悪用される危険性があります。これを **SSRF（Server-Side Request Forgery）** 脆弱性と呼びます。
 
-サーバーインフラを保護するため、**scripture-habit** はすべての外部リクエストを事前に安全フィルター **`isSafeUrl`** ([`ssrf.ts`](../../scripture-habit/api_internal/lib/ssrf.ts)) に通して検証します。
+サーバーインフラを保護するため、**scripture-habit** はすべての外部リクエストを事前に安全フィルター **`isSafeUrl`** ([`ssrf.ts`](../../../scripture-habit/api_internal/lib/ssrf.ts)) に通して検証します。
 
 ```typescript
 export function isSafeUrl(urlStr: string): boolean {

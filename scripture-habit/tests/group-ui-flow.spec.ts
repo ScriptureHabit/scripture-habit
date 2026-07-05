@@ -12,7 +12,7 @@ test.describe('Group UI Flow (E2E)', () => {
     await page.waitForURL(/.*group-form/);
 
     // 3. Fill out the group form
-    const groupName = `UI Test Group ${Date.now()}`;
+    const groupName = `UI Test Group ${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
     await page.fill('[data-testid="group-name-input"]', groupName);
     await page.fill('textarea', 'This is a group created by an automated UI test.');
     
@@ -63,7 +63,7 @@ test.describe('Group UI Flow (E2E)', () => {
         return resp.json();
       }
 
-      const name = `Public UI Test ${Date.now()}`;
+      const name = `Public UI Test ${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
       const createResp = await callApi('/api/groups/create-group', { name, isPublic: true });
       // Leave so it shows in the joinable list (join-group page filters out user's groups)
       await callApi('/api/groups/leave-group', { groupId: createResp.groupId });

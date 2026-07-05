@@ -3,7 +3,7 @@
 /* eslint-disable prefer-rest-params */
 import { vi } from 'vitest';
 import { Server } from 'http';
-import { auth, admin } from './lib/firebase-admin.js';
+import { auth, admin, db, setDbInstance } from './lib/firebase-admin.js';
 
 /**
  * Shared setup for backend integration tests.
@@ -13,55 +13,158 @@ export class TestSetup {
     private server?: Server;
     public baseUrl: string = '';
 
-    private originalTransactionGet: any = admin.firestore.Transaction.prototype.get;
-    private originalTransactionGetAll: any = admin.firestore.Transaction.prototype.getAll;
-    private originalDocumentRefGet: any = admin.firestore.DocumentReference.prototype.get;
+    private originalDb: any = null;
 
     private txGets: number = 0;
     private txGetAlls: number = 0;
     private docGets: number = 0;
     private readPaths: string[] = [];
 
+    // Builds a Firestore Proxy wrapper to audit read count metrics locally.
+    // This replaces global prototype pollution hacks and ensures thread-safe parallel test execution.
+    private createProxyDb() {
+        const self = this;
+
+        function wrapTransaction(tx: any) {
+            return new Proxy(tx, {
+                get(target, prop, receiver) {
+                    if (prop === 'get') {
+                        return function(ref: any) {
+                            self.txGets++;
+                            if (ref && ref.path) {
+                                self.readPaths.push(`[Tx GET] ${ref.path}`);
+                            }
+                            return target.get(ref);
+                        };
+                    }
+                    if (prop === 'getAll') {
+                        return function(...refs: any[]) {
+                            self.txGetAlls++;
+                            for (const ref of refs) {
+                                if (ref && ref.path) {
+                                    self.readPaths.push(`[Tx GETALL] ${ref.path}`);
+                                }
+                            }
+                            return target.getAll(...refs);
+                        };
+                    }
+                    return Reflect.get(target, prop, receiver);
+                }
+            });
+        }
+
+        function wrapDocRef(ref: any): any {
+            return new Proxy(ref, {
+                get(target, prop, receiver) {
+                    if (prop === 'get') {
+                        return function(options?: any) {
+                            self.docGets++;
+                            if (target.path) {
+                                self.readPaths.push(`[Doc GET] ${target.path}`);
+                            }
+                            return target.get(options);
+                        };
+                    }
+                    if (prop === 'collection') {
+                        return function(...args: any[]) {
+                            return wrapCollectionRef((target as any).collection(...args));
+                        };
+                    }
+                    return Reflect.get(target, prop, receiver);
+                }
+            });
+        }
+
+        function wrapQueryRef(queryRef: any): any {
+            return new Proxy(queryRef, {
+                get(target, prop, receiver) {
+                    if (prop === 'get') {
+                        return function(options?: any) {
+                            self.docGets++;
+                            const path = target.path || (target as any)._query?.path?.formattedName || '(complex query)';
+                            self.readPaths.push(`[Query GET] ${path}`);
+                            return target.get(options);
+                        };
+                    }
+                    const chainMethods = ['where', 'limit', 'orderBy', 'startAfter', 'startAt', 'endBefore', 'endAt'];
+                    if (typeof prop === 'string' && chainMethods.includes(prop)) {
+                        return function(...args: any[]) {
+                            return wrapQueryRef((target as any)[prop](...args));
+                        };
+                    }
+                    return Reflect.get(target, prop, receiver);
+                }
+            });
+        }
+
+        function wrapCollectionRef(colRef: any): any {
+            return new Proxy(colRef, {
+                get(target, prop, receiver) {
+                    if (prop === 'doc') {
+                        return function(...args: any[]) {
+                            return wrapDocRef((target as any).doc(...args));
+                        };
+                    }
+                    if (prop === 'get') {
+                        return function(options?: any) {
+                            self.docGets++;
+                            if (target.path) {
+                                self.readPaths.push(`[Doc GET] ${target.path}`);
+                            }
+                            return target.get(options);
+                        };
+                    }
+                    const chainMethods = ['where', 'limit', 'orderBy', 'startAfter', 'startAt', 'endBefore', 'endAt'];
+                    if (typeof prop === 'string' && chainMethods.includes(prop)) {
+                        return function(...args: any[]) {
+                            return wrapQueryRef((target as any)[prop](...args));
+                        };
+                    }
+                    return Reflect.get(target, prop, receiver);
+                }
+            });
+        }
+
+        return new Proxy(db, {
+            get(target, prop, receiver) {
+                if (prop === 'doc') {
+                    return function(...args: any[]) {
+                        return wrapDocRef((target as any).doc(...args));
+                    };
+                }
+                if (prop === 'collection') {
+                    return function(...args: any[]) {
+                        return wrapCollectionRef((target as any).collection(...args));
+                    };
+                }
+                if (prop === 'runTransaction') {
+                    return async function(updateFunction: any, transactionOptions: any) {
+                        return target.runTransaction(async (transaction: any) => {
+                            const wrappedTx = wrapTransaction(transaction);
+                            return updateFunction(wrappedTx);
+                        }, transactionOptions);
+                    };
+                }
+                return Reflect.get(target, prop, receiver);
+            }
+        });
+    }
+
     async start() {
-        process.env.SKIP_APP_CHECK = 'true';
-        
         // Reset counters
         this.txGets = 0;
         this.txGetAlls = 0;
         this.docGets = 0;
         this.readPaths = [];
 
-        // Wrap methods for global read auditing (immune to vi.restoreAllMocks)
-        const self = this;
-        (admin.firestore.Transaction.prototype as any).get = function (this: any) {
-            self.txGets++;
-            const ref = arguments[0];
-            if (ref && ref.path) {
-                self.readPaths.push(`[Tx GET] ${ref.path}`);
-            }
-            return (self.originalTransactionGet as any).apply(this, arguments as any);
-        } as any;
-
-        (admin.firestore.Transaction.prototype as any).getAll = function (this: any) {
-            self.txGetAlls++;
-            for (let i = 0; i < arguments.length; i++) {
-                const ref = arguments[i];
-                if (ref && ref.path) {
-                    self.readPaths.push(`[Tx GETALL] ${ref.path}`);
-                }
-            }
-            return (self.originalTransactionGetAll as any).apply(this, arguments as any);
-        } as any;
-
-        (admin.firestore.DocumentReference.prototype as any).get = function (this: any) {
-            self.docGets++;
-            if (this && this.path) {
-                self.readPaths.push(`[Doc GET] ${this.path}`);
-            }
-            return (self.originalDocumentRefGet as any).apply(this, arguments as any);
-        } as any;
+        // Save original DB instance and inject the Proxy wrapper
+        this.originalDb = db;
+        const proxyDb = this.createProxyDb();
+        setDbInstance(proxyDb);
 
         const app = (await import('../api/api.js')).default;
+        app.locals.skipAppCheck = true;
+
         return new Promise<void>((resolve) => {
             this.server = app.listen(0, () => {
                 const addr = this.server?.address();
@@ -74,10 +177,10 @@ export class TestSetup {
     }
 
     async stop() {
-        // Restore original methods
-        (admin.firestore.Transaction.prototype as any).get = this.originalTransactionGet;
-        (admin.firestore.Transaction.prototype as any).getAll = this.originalTransactionGetAll;
-        (admin.firestore.DocumentReference.prototype as any).get = this.originalDocumentRefGet;
+        // Restore original DB instance to cleanup state cleanly
+        if (this.originalDb) {
+            setDbInstance(this.originalDb);
+        }
 
         const totalReads = this.txGets + this.txGetAlls + this.docGets;
 
@@ -107,6 +210,12 @@ export class TestSetup {
         if (totalReads > budget) {
             console.warn(`⚠️  [Firestore Read Audit] WARNING: High read count (${totalReads} > budget ${budget})! Please check for N+1 queries.`);
         }
+
+        // Reset counters and paths to prevent state leaks
+        this.txGets = 0;
+        this.txGetAlls = 0;
+        this.docGets = 0;
+        this.readPaths = [];
 
         return new Promise<void>((resolve) => {
             this.server?.close(() => resolve());

@@ -16,31 +16,35 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('InactivityService Integra
     const TWO_DAYS_AGO = new Date(NOW.getTime() - 2 * 24 * 60 * 60 * 1000);
     const TEN_DAYS_AGO = new Date(NOW.getTime() - 10 * 24 * 60 * 60 * 1000);
 
-    // Mock IDs
-    const G1 = 'INA_GRP_ACTIVE';
-    const G2 = 'INA_GRP_INACTIVE_MEMBER';
-    const G3 = 'INA_GRP_TRANSFER_OWNER';
-    const G4 = 'INA_GRP_DELETE_ALL';
-    const G5 = 'INA_GRP_GHOST_CLEANUP';
-    const G6 = 'INA_GRP_LOCALIZATION';
-    const G7 = 'INA_GRP_MARKED_DELETE';
-    const G_STALE_A = 'INA_STALE_A';
-    const G_STALE_B = 'INA_STALE_B';
-    const G_STALE_C = 'INA_STALE_C';
-    const G10 = 'INA_GRP_MASSIVE';           // Case 10: 50+ members removed
-    const G11 = 'INA_GRP_NEVER_KICK';        // Case 11: threshold = 0
-    const G12 = 'INA_GRP_UNINITIALIZED';     // Case 12: empty members subcollection
-    const G13 = 'INA_GRP_NEW_MISSING_FIELD'; // Case 13: missing lastInactivityCheckedAt
+    // Unique run ID to prevent state leaks between parallel test runs or reruns
+    const RUN_ID = Math.random().toString(36).substring(2, 7);
 
-    const U_ACTIVE = 'USER_ACTIVE';
-    const U_INACTIVE = 'USER_INACTIVE';
-    const U_OWNER = 'USER_OWNER';
-    const U_NEW_OWNER = 'USER_NEW_OWNER';
-    const U_JA = 'USER_JAPANESE';
-    const U_SEC = 'USER_SECONDARY';
-    const U_GHOST = 'USER_GHOST';
-    const U_SC9 = 'USER_SCENARIO_9';
-    const U_MASSIVE_PREFIX = 'U_MASS_';
+    // Mock IDs — all suffixed with RUN_ID to prevent cross-run contamination
+    const G1 = `INA_GRP_ACTIVE_${RUN_ID}`;
+    const G2 = `INA_GRP_INACTIVE_MEMBER_${RUN_ID}`;
+    const G3 = `INA_GRP_TRANSFER_OWNER_${RUN_ID}`;
+    const G4 = `INA_GRP_DELETE_ALL_${RUN_ID}`;
+    const G5 = `INA_GRP_GHOST_CLEANUP_${RUN_ID}`;
+    const G6 = `INA_GRP_LOCALIZATION_${RUN_ID}`;
+    const G7 = `INA_GRP_MARKED_DELETE_${RUN_ID}`;
+    const G_STALE_A = `INA_STALE_A_${RUN_ID}`;
+    const G_STALE_B = `INA_STALE_B_${RUN_ID}`;
+    const G_STALE_C = `INA_STALE_C_${RUN_ID}`;
+    const G10 = `INA_GRP_MASSIVE_${RUN_ID}`;           // Case 10: 50+ members removed
+    const G11 = `INA_GRP_NEVER_KICK_${RUN_ID}`;        // Case 11: threshold = 0
+    const G12 = `INA_GRP_UNINITIALIZED_${RUN_ID}`;     // Case 12: empty members subcollection
+    const G13 = `INA_GRP_NEW_MISSING_FIELD_${RUN_ID}`; // Case 13: missing lastInactivityCheckedAt
+
+    const U_ACTIVE = `USER_ACTIVE_${RUN_ID}`;
+    const U_INACTIVE = `USER_INACTIVE_${RUN_ID}`;
+    const U_OWNER = `USER_OWNER_${RUN_ID}`;
+    const U_NEW_OWNER = `USER_NEW_OWNER_${RUN_ID}`;
+    const U_JA = `USER_JAPANESE_${RUN_ID}`;
+    const U_SEC = `USER_SECONDARY_${RUN_ID}`;
+    const U_GHOST = `USER_GHOST_${RUN_ID}`;
+    const U_SC9 = `USER_SCENARIO_9_${RUN_ID}`;
+    const U_MASSIVE_PREFIX = `U_MASS_${RUN_ID}_`;
+
 
     beforeAll(async () => {
         // Setup Users
@@ -144,7 +148,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('InactivityService Integra
 
 
     afterAll(async () => {
-        const groups = [G1, G2, G3, G4, G5, G6, G7, G10, G11, G12, G13, G_STALE_A, G_STALE_B, G_STALE_C, 'INA_GRP_SCENARIO_9'];
+        const groups = [G1, G2, G3, G4, G5, G6, G7, G10, G11, G12, G13, G_STALE_A, G_STALE_B, G_STALE_C, `INA_GRP_SCENARIO_9_${RUN_ID}`];
         for (const gid of groups) {
             await db.recursiveDelete(db.collection('groups').doc(gid)).catch(() => {});
         }
@@ -286,16 +290,16 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('InactivityService Integra
     });
 
     it('Scenario 9 (Regression): Repair joinedAt when it matches createTime but older activity exists', async () => {
-        const G_SC9 = 'INA_GRP_SCENARIO_9';
-        const U_SC9 = 'USER_SCENARIO_9';
+        const G_SC9 = `INA_GRP_SCENARIO_9_${RUN_ID}`;
+        const U_SC9_local = `USER_SCENARIO_9_local_${RUN_ID}`;
         const TEN_DAYS_AGO_TS = admin.firestore.Timestamp.fromDate(TEN_DAYS_AGO);
 
         // 1. Setup group with Pace 100 (very loose)
-        await setupGroup(G_SC9, U_OWNER, [U_OWNER, U_SC9], 100, TWO_DAYS_AGO);
+        await setupGroup(G_SC9, U_OWNER, [U_OWNER, U_SC9_local], 100, TWO_DAYS_AGO);
         await setMemberActivity(G_SC9, U_OWNER, TWO_DAYS_AGO);
         
-        // 2. Create member doc for U_SC9 with activity 10 days ago
-        const memberRef = db.collection('groups').doc(G_SC9).collection('members').doc(U_SC9);
+        // 2. Create member doc for U_SC9_local with activity 10 days ago
+        const memberRef = db.collection('groups').doc(G_SC9).collection('members').doc(U_SC9_local);
         await memberRef.set({
             lastActiveAt: TEN_DAYS_AGO_TS,
             lastReadAt: TEN_DAYS_AGO_TS,
@@ -313,7 +317,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('InactivityService Integra
         
         // 4. Add OLDER activity to the group-level map
         await db.collection('groups').doc(G_SC9).update({
-            [`memberLastActive.${U_SC9}`]: TEN_DAYS_AGO_TS
+            [`memberLastActive.${U_SC9_local}`]: TEN_DAYS_AGO_TS
         });
 
         // 5. Process
@@ -409,7 +413,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('InactivityService Integra
             responses: [{ success: true }]
         });
 
-        const U_TEST_KICK = 'USER_TEST_KICK';
+        const U_TEST_KICK = `USER_TEST_KICK_${RUN_ID}`;
         await db.collection('users').doc(U_TEST_KICK).set({
             nickname: 'Kick User',
             language: 'ja-JP',
@@ -438,7 +442,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('InactivityService Integra
             }]
         });
 
-        const U_TEST_KICK_FAIL = 'USER_TEST_KICK_FAIL';
+        const U_TEST_KICK_FAIL = `USER_TEST_KICK_FAIL_${RUN_ID}`;
         await db.collection('users').doc(U_TEST_KICK_FAIL).set({
             nickname: 'Kick User Fail',
             language: 'en-US',
@@ -473,8 +477,8 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('InactivityService Integra
     });
 
     it('Scenario 19: initialize joinedAt for member missing joinedAt (covering line 211-214)', async () => {
-        const G_SC19 = 'INA_GRP_SCENARIO_19';
-        const U_SC19 = 'USER_SCENARIO_19';
+        const G_SC19 = `INA_GRP_SCENARIO_19_${RUN_ID}`;
+        const U_SC19 = `USER_SCENARIO_19_${RUN_ID}`;
         const NOW_TS = admin.firestore.Timestamp.fromDate(NOW);
 
         await setupGroup(G_SC19, U_OWNER, [U_OWNER, U_SC19], 3, TWO_DAYS_AGO);

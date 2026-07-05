@@ -12,10 +12,10 @@ test.describe('Invitation Join Flow Stability', () => {
   };
 
   test('should join a group after landing on invite link and logging in', async ({ authenticatedPage, browser }) => {
-    test.setTimeout(240000); // 4 minutes
+    test.setTimeout(120000); // 2 minutes
     
     // 1. Create a group as User A (Shared Tester) to get an invite code
-    const timestamp = Date.now();
+    const timestamp = `${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
     const groupName = `Join Flow Test ${timestamp}`;
     const pageA = authenticatedPage;
     const userBEmail = `userb-${timestamp}@test.local`;
@@ -28,7 +28,9 @@ test.describe('Invitation Join Flow Stability', () => {
     await pageA.goto('/en/group-form');
 
     await pageA.fill('[data-testid="group-name-input"]', groupName);
-    await pageA.click('[data-testid="create-group-submit"]', { force: true });
+    const submitBtn = pageA.locator('[data-testid="create-group-submit"]');
+    await submitBtn.waitFor({ state: 'visible' });
+    await submitBtn.click();
     await pageA.waitForURL(/.*dashboard/);
     
     // Get the invite link from the modal
@@ -50,6 +52,20 @@ test.describe('Invitation Join Flow Stability', () => {
     const contextB = await browser.newContext({ storageState: { cookies: [], origins: [] } });
     const pageB = await contextB.newPage();
     
+    // Disable animations for User B's context to prevent click flakiness
+    await pageB.addInitScript(() => {
+        const style = document.createElement('style');
+        style.innerHTML = `
+          *, *::before, *::after {
+            transition-duration: 0.001s !important;
+            animation-duration: 0.001s !important;
+            transition-delay: 0s !important;
+            animation-delay: 0s !important;
+          }
+        `;
+        document.head.appendChild(style);
+    });
+    
     await test.step('User B opens invite link and signs up', async () => {
         console.log('User B navigating to invite link:', inviteLink);
         await pageB.goto(inviteLink);
@@ -63,7 +79,7 @@ test.describe('Invitation Join Flow Stability', () => {
         const joinBtn = pageB.locator('.join-btn');
         await expect(joinBtn).toBeVisible();
         console.log('Clicking join button as guest...');
-        await joinBtn.click({ force: true });
+        await joinBtn.click();
         
         console.log('Waiting for redirect to welcome/signup...');
         // Should land on welcome page (since not logged in)
@@ -196,13 +212,13 @@ test.describe('Invitation Join Flow Stability', () => {
             const groupItemA = pageA.locator('[data-testid="sidebar-group-item"]').filter({ 
                 has: pageA.locator(`[data-group-name="${groupName}"]`) 
             }).or(pageA.locator('[data-testid="sidebar-group-item"]', { hasText: groupName }));
-            await groupItemA.first().locator('.group-name-sidebar').click({ force: true });
+            await groupItemA.first().locator('.group-name-sidebar').click();
             
             // Wait for ChatHeader to show the correct group name
             await expect(pageA.getByTestId('group-name-title')).toContainText(groupName, { timeout: 30000 });
             
             await expect(pageA.getByTestId('members-button')).toBeVisible({ timeout: 20000 });
-            await pageA.getByTestId('members-button').click({ force: true });
+            await pageA.getByTestId('members-button').click();
             
             await pageA.waitForTimeout(4000);
             await listMembers(pageA, 'After Reload and Re-navigation');
@@ -217,8 +233,8 @@ test.describe('Invitation Join Flow Stability', () => {
   });
 
   test('should join a group immediately when already logged in', async ({ authenticatedPage, browser }) => {
-    test.setTimeout(240000);
-    const timestamp = Date.now();
+    test.setTimeout(120000); // 2 minutes
+    const timestamp = `${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
     const groupName = `Auth Join Test ${timestamp}`;
     const pageA = authenticatedPage;
     const userBEmail = `userb-auth-${timestamp}@test.local`;
@@ -245,6 +261,20 @@ test.describe('Invitation Join Flow Stability', () => {
     // 2. User B (authenticated) visits invite link
     const contextB = await browser.newContext();
     const pageB = await contextB.newPage();
+    
+    // Disable animations for User B's context to prevent click flakiness
+    await pageB.addInitScript(() => {
+        const style = document.createElement('style');
+        style.innerHTML = `
+          *, *::before, *::after {
+            transition-duration: 0.001s !important;
+            animation-duration: 0.001s !important;
+            transition-delay: 0s !important;
+            animation-delay: 0s !important;
+          }
+        `;
+        document.head.appendChild(style);
+    });
     
     await test.step('User B signs up and logs in first', async () => {
         console.log('User B signing up...');
@@ -278,7 +308,7 @@ test.describe('Invitation Join Flow Stability', () => {
         await expect(inviteCard).toBeVisible({ timeout: 20000 });
         
         console.log('Clicking join button as authenticated user...');
-        await pageB.click('.join-btn', { force: true });
+        await pageB.click('.join-btn');
         
         // Should land on dashboard directly
         await expect(pageB).toHaveURL(/.*dashboard/, { timeout: 20000 });
@@ -318,13 +348,13 @@ test.describe('Invitation Join Flow Stability', () => {
             await pageA.waitForLoadState('load');
         }
 
-        await groupItemA.first().locator('.group-name-sidebar').click({ force: true });
+        await groupItemA.first().locator('.group-name-sidebar').click();
         
         // Wait for ChatHeader to show the correct group name
         await expect(pageA.getByTestId('group-name-title')).toContainText(groupName, { timeout: 30000 });
         
         await expect(pageA.getByTestId('members-button')).toBeVisible({ timeout: 20000 });
-        await pageA.getByTestId('members-button').click({ force: true });
+        await pageA.getByTestId('members-button').click();
         
         await pageA.waitForTimeout(5000);
         await listMembers(pageA, 'Second Test - Owner View');

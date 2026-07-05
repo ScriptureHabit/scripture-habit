@@ -1,9 +1,8 @@
 // @vitest-environment node
 import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
-import app from '../api/api.js';
-import { Server } from 'http';
 import { auth, db, admin } from './lib/firebase-admin.js';
 import { GroupDocument } from '../types/firestore.js';
+import { TestSetup } from './test-setup.js';
 
 /**
  * Infrastructure Integration Test
@@ -14,28 +13,16 @@ import { GroupDocument } from '../types/firestore.js';
  * in the test setup itself.
  */
 describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Test Infrastructure Validation', () => {
-    let server: Server;
-    let baseUrl: string;
+    const setup = new TestSetup();
     const TEST_UID = 'infra-test-user-' + Date.now();
 
     beforeAll(async () => {
-        process.env.SKIP_APP_CHECK = 'true';
-        return new Promise<void>((resolve) => {
-            server = app.listen(0, () => {
-                const addr = server.address();
-                if (addr && typeof addr !== 'string') {
-                    baseUrl = `http://localhost:${addr.port}`;
-                }
-                resolve();
-            });
-        });
+        await setup.start();
     });
 
     afterAll(async () => {
-        await db.collection('users').doc(TEST_UID).delete();
-        return new Promise<void>((resolve) => {
-            server.close(() => resolve());
-        });
+        await db.recursiveDelete(db.collection('users').doc(TEST_UID)).catch(() => {});
+        await setup.stop();
     });
 
     const mockAuth = (uid: string) => {
@@ -56,7 +43,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Test Infrastructure Valid
         mockAuth(TEST_UID);
         
         // 1. Create a group via the test utility endpoint
-        const setupResponse = await fetch(`${baseUrl}/api/test/setup-test-group`, {
+        const setupResponse = await fetch(`${setup.baseUrl}/api/test/setup-test-group`, {
             method: 'POST',
             headers: {
                 'Authorization': 'Bearer infra-token',
@@ -143,7 +130,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Test Infrastructure Valid
             delete process.env.VITE_DEV_MODE;
 
             mockAuth(TEST_UID);
-            const res = await fetch(`${baseUrl}/api/test/setup-test-group`, {
+            const res = await fetch(`${setup.baseUrl}/api/test/setup-test-group`, {
                 method: 'POST',
                 headers: {
                     'Authorization': 'Bearer infra-token',
@@ -162,7 +149,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Test Infrastructure Valid
             delete process.env.VITE_DEV_MODE;
 
             mockAuth(TEST_UID);
-            const res = await fetch(`${baseUrl}/api/test/leave-all-groups`, {
+            const res = await fetch(`${setup.baseUrl}/api/test/leave-all-groups`, {
                 method: 'POST',
                 headers: { 'Authorization': 'Bearer infra-token' }
             });
@@ -175,7 +162,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Test Infrastructure Valid
             delete process.env.VITE_DEV_MODE;
 
             mockAuth(TEST_UID);
-            const res = await fetch(`${baseUrl}/api/test/reset-kick-threshold`, {
+            const res = await fetch(`${setup.baseUrl}/api/test/reset-kick-threshold`, {
                 method: 'POST',
                 headers: { 'Authorization': 'Bearer infra-token' }
             });
@@ -189,7 +176,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Test Infrastructure Valid
             mockAuth(TEST_UID);
 
             // 1st call to create
-            const res1 = await fetch(`${baseUrl}/api/test/setup-test-group`, {
+            const res1 = await fetch(`${setup.baseUrl}/api/test/setup-test-group`, {
                 method: 'POST',
                 headers: {
                     'Authorization': 'Bearer infra-token',
@@ -201,7 +188,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Test Infrastructure Valid
             const { groupId } = await res1.json();
 
             // 2nd call with same name but different timezone
-            const res2 = await fetch(`${baseUrl}/api/test/setup-test-group`, {
+            const res2 = await fetch(`${setup.baseUrl}/api/test/setup-test-group`, {
                 method: 'POST',
                 headers: {
                     'Authorization': 'Bearer infra-token',
@@ -227,7 +214,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Test Infrastructure Valid
             // Mock runTransaction to fail
             const spy = vi.spyOn(db, 'runTransaction').mockRejectedValue(new Error('Transaction timeout'));
 
-            const res = await fetch(`${baseUrl}/api/test/setup-test-group`, {
+            const res = await fetch(`${setup.baseUrl}/api/test/setup-test-group`, {
                 method: 'POST',
                 headers: {
                     'Authorization': 'Bearer infra-token',
@@ -255,7 +242,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Test Infrastructure Valid
                 groupIds: []
             });
 
-            const res = await fetch(`${baseUrl}/api/test/leave-all-groups`, {
+            const res = await fetch(`${setup.baseUrl}/api/test/leave-all-groups`, {
                 method: 'POST',
                 headers: { 'Authorization': 'Bearer infra-token' }
             });
@@ -287,7 +274,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Test Infrastructure Valid
                 groupId: groupId
             });
 
-            const res = await fetch(`${baseUrl}/api/test/leave-all-groups`, {
+            const res = await fetch(`${setup.baseUrl}/api/test/leave-all-groups`, {
                 method: 'POST',
                 headers: { 'Authorization': 'Bearer infra-token' }
             });
@@ -326,7 +313,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Test Infrastructure Valid
                 groupId: groupId
             });
 
-            const res = await fetch(`${baseUrl}/api/test/leave-all-groups`, {
+            const res = await fetch(`${setup.baseUrl}/api/test/leave-all-groups`, {
                 method: 'POST',
                 headers: { 'Authorization': 'Bearer infra-token' }
             });
@@ -362,7 +349,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Test Infrastructure Valid
             // in test-utils.ts: `await db.runTransaction(async (transaction) => { ... })`
             const transactionSpy = vi.spyOn(db, 'runTransaction').mockRejectedValue(new Error('Transaction loop failure'));
 
-            const res = await fetch(`${baseUrl}/api/test/leave-all-groups`, {
+            const res = await fetch(`${setup.baseUrl}/api/test/leave-all-groups`, {
                 method: 'POST',
                 headers: { 'Authorization': 'Bearer infra-token' }
             });
@@ -379,7 +366,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Test Infrastructure Valid
                 throw new Error('Database disconnected');
             });
 
-            const res = await fetch(`${baseUrl}/api/test/leave-all-groups`, {
+            const res = await fetch(`${setup.baseUrl}/api/test/leave-all-groups`, {
                 method: 'POST',
                 headers: { 'Authorization': 'Bearer infra-token' }
             });
@@ -403,7 +390,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Test Infrastructure Valid
                 kickThreshold: 5
             });
 
-            const res = await fetch(`${baseUrl}/api/test/reset-kick-threshold`, {
+            const res = await fetch(`${setup.baseUrl}/api/test/reset-kick-threshold`, {
                 method: 'POST',
                 headers: { 'Authorization': 'Bearer infra-token' }
             });
@@ -422,7 +409,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Test Infrastructure Valid
                 throw new Error('Reset threshold DB failure');
             });
 
-            const res = await fetch(`${baseUrl}/api/test/reset-kick-threshold`, {
+            const res = await fetch(`${setup.baseUrl}/api/test/reset-kick-threshold`, {
                 method: 'POST',
                 headers: { 'Authorization': 'Bearer infra-token' }
             });

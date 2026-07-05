@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { StreakEngine, StreakState } from './lib/streak-engine.js';
+import fc from 'fast-check';
 
 describe('StreakEngine Reliability (Timezone & Boundary Tests)', () => {
     
@@ -100,5 +101,37 @@ describe('StreakEngine Reliability (Timezone & Boundary Tests)', () => {
         
         expect(result.newStreak).toBe(5); // No change
         expect(result.streakUpdated).toBe(false);
+    });
+
+    describe('StreakEngine Property-based Tests', () => {
+        it('should never decrease highestStreak below streakCount, and newStreak must be valid', () => {
+            fc.assert(
+                fc.property(
+                    fc.record({
+                        streakCount: fc.integer({ min: 0, max: 1000 }),
+                        highestStreak: fc.integer({ min: 0, max: 1000 }),
+                        lastPostDate: fc.string(),
+                        lastPostAt: fc.date({ min: new Date('2000-01-01'), max: new Date('2100-01-01') }),
+                        timeZone: fc.constantFrom('UTC', 'Asia/Tokyo', 'America/New_York')
+                    }),
+                    fc.date({ min: new Date('2000-01-01'), max: new Date('2100-01-01') }),
+                    (state, now) => {
+                        // Pre-condition setup: Ensure highestStreak is always >= streakCount for valid states
+                        const validState = {
+                            ...state,
+                            highestStreak: Math.max(state.streakCount, state.highestStreak)
+                        };
+                        
+                        const result = StreakEngine.calculateNextStreak(validState, { now });
+                        
+                        // Invariant assertions
+                        expect(result.newStreak).toBeGreaterThanOrEqual(0);
+                        expect(result.currentHighest).toBeGreaterThanOrEqual(result.newStreak);
+                        expect(result.currentHighest).toBeGreaterThanOrEqual(validState.highestStreak);
+                    }
+                ),
+                { numRuns: 100 }
+            );
+        });
     });
 });

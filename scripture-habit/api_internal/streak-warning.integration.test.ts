@@ -1,44 +1,46 @@
 // @vitest-environment node
 import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from 'vitest';
-import app from '../api/api.js';
-import { Server } from 'http';
 import { db, messaging } from './lib/firebase-admin.js';
+import { TestSetup } from './test-setup.js';
 
 // Mock FCM
 const mockSendEachForMulticast = vi.spyOn(messaging, 'sendEachForMulticast');
 
-describe.skip('Streak Warning Integration', () => {
-    let server: Server;
-    let baseUrl: string;
+describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Streak Warning Integration', () => {
+    const setup = new TestSetup();
+    const TEST_TODAY = '2026-05-18';
+    const TEST_YESTERDAY = '2026-05-17';
+    const TEST_TIME = `${TEST_TODAY}T11:30:00Z`; // 20:30 JST (Cron execution target time)
 
     beforeAll(async () => {
         process.env.CRON_SECRET = 'test-secret';
-        
-        return new Promise<void>((resolve) => {
-            // Start server on dynamic port
-            server = app.listen(0, () => {
-                const addr = server.address();
-                if (addr && typeof addr !== 'string') {
-                    baseUrl = `http://localhost:${addr.port}`;
-                }
-                resolve();
-            });
-        });
+        await setup.start();
     }, 120000);
 
     afterAll(async () => {
-        return new Promise<void>((resolve) => {
-            server.close(() => resolve());
-        });
+        await setup.stop();
     }, 120000);
 
     beforeEach(async () => {
         vi.clearAllMocks();
         
-        // Clean up test users collection
-        const snapshot = await db.collection('users').where('isTestUser', '==', true).get();
+        // Clean up only the specific users used in these tests
+        const targetUids = [
+            'user-A',
+            'user-B',
+            'user-C',
+            'user-D',
+            'user-E',
+            'user-invalid-test',
+            'user-all-invalid-test'
+        ];
+        
         const batch = db.batch();
-        snapshot.docs.forEach(doc => batch.delete(doc.ref));
+        for (const uid of targetUids) {
+            const userRef = db.collection('users').doc(uid);
+            batch.delete(userRef);
+            batch.delete(userRef.collection('private').doc('tokens'));
+        }
         await batch.commit();
     }, 120000);
 
@@ -51,7 +53,7 @@ describe.skip('Streak Warning Integration', () => {
         batch.set(userARef, {
             isTestUser: true,
             timeZone: 'Asia/Tokyo',
-            lastPostDate: '2026-05-17',
+            lastPostDate: TEST_YESTERDAY,
             language: 'en',
             hasFcmToken: true
         });
@@ -62,7 +64,7 @@ describe.skip('Streak Warning Integration', () => {
         batch.set(userBRef, {
             isTestUser: true,
             timeZone: 'Asia/Tokyo',
-            lastPostDate: '2026-05-18', // Today in JST
+            lastPostDate: TEST_TODAY, // Today in JST
             hasFcmToken: true
         });
         batch.set(userBRef.collection('private').doc('tokens'), { fcmTokens: ['token-b'] });
@@ -72,7 +74,7 @@ describe.skip('Streak Warning Integration', () => {
         batch.set(userCRef, {
             isTestUser: true,
             timeZone: 'America/New_York',
-            lastPostDate: '2026-05-17', 
+            lastPostDate: TEST_YESTERDAY, 
             hasFcmToken: true
         });
         batch.set(userCRef.collection('private').doc('tokens'), { fcmTokens: ['token-c'] });
@@ -82,7 +84,7 @@ describe.skip('Streak Warning Integration', () => {
         batch.set(userDRef, {
             isTestUser: true,
             timeZone: 'Asia/Tokyo',
-            lastPostDate: '2026-05-17',
+            lastPostDate: TEST_YESTERDAY,
             hasFcmToken: false
         });
         batch.set(userDRef.collection('private').doc('tokens'), { fcmTokens: [] });
@@ -92,7 +94,7 @@ describe.skip('Streak Warning Integration', () => {
         batch.set(userERef, {
             isTestUser: true,
             timeZone: 'Asia/Tokyo',
-            lastPostDate: '2026-05-17',
+            lastPostDate: TEST_YESTERDAY,
             language: 'ja',
             hasFcmToken: true
         });
@@ -107,14 +109,11 @@ describe.skip('Streak Warning Integration', () => {
             responses: [{ success: true }]
         });
 
-        // Execute CRON at exactly 20:30 JST (May 18) -> 11:30 UTC
-        const testTime = '2026-05-18T11:30:00Z';
-        
-        const response = await fetch(`${baseUrl}/api/cron/streak-warning`, {
+        const response = await fetch(`${setup.baseUrl}/api/cron/streak-warning`, {
             method: 'POST',
             headers: {
                 'Authorization': 'Bearer test-secret',
-                'x-test-time': testTime
+                'x-test-time': TEST_TIME
             }
         });
 
@@ -146,7 +145,7 @@ describe.skip('Streak Warning Integration', () => {
         await userRef.set({
             isTestUser: true,
             timeZone: 'Asia/Tokyo',
-            lastPostDate: '2026-05-17',
+            lastPostDate: TEST_YESTERDAY,
             hasFcmToken: true
         });
         await userRef.collection('private').doc('tokens').set({
@@ -163,13 +162,11 @@ describe.skip('Streak Warning Integration', () => {
             ]
         });
 
-        const testTime = '2026-05-18T11:30:00Z'; // 20:30 JST
-        
-        const response = await fetch(`${baseUrl}/api/cron/streak-warning`, {
+        const response = await fetch(`${setup.baseUrl}/api/cron/streak-warning`, {
             method: 'POST',
             headers: {
                 'Authorization': 'Bearer test-secret',
-                'x-test-time': testTime
+                'x-test-time': TEST_TIME
             }
         });
 
@@ -189,7 +186,7 @@ describe.skip('Streak Warning Integration', () => {
         await userRef.set({
             isTestUser: true,
             timeZone: 'Asia/Tokyo',
-            lastPostDate: '2026-05-17',
+            lastPostDate: TEST_YESTERDAY,
             hasFcmToken: true
         });
         await userRef.collection('private').doc('tokens').set({
@@ -206,13 +203,11 @@ describe.skip('Streak Warning Integration', () => {
             ]
         });
 
-        const testTime = '2026-05-18T11:30:00Z'; // 20:30 JST
-        
-        const response = await fetch(`${baseUrl}/api/cron/streak-warning`, {
+        const response = await fetch(`${setup.baseUrl}/api/cron/streak-warning`, {
             method: 'POST',
             headers: {
                 'Authorization': 'Bearer test-secret',
-                'x-test-time': testTime
+                'x-test-time': TEST_TIME
             }
         });
 

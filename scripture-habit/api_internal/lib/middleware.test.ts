@@ -29,6 +29,8 @@ describe('middleware - express middlewares', () => {
 
     beforeEach(() => {
         vi.restoreAllMocks();
+        mockVerifyIdToken.mockReset();
+        mockVerifyToken.mockReset();
         req = {
             header: vi.fn(),
             ip: '127.0.0.1',

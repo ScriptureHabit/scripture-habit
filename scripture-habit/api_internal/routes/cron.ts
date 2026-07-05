@@ -1,12 +1,12 @@
 import express, { Request, Response, NextFunction } from 'express';
-import { admin, db } from '../lib/firebase-admin.js';
-// import { StreakReminderEngine } from '../lib/streak-reminder.js';
+import { admin, db, messaging } from '../lib/firebase-admin.js';
+import { StreakReminderEngine } from '../lib/streak-reminder.js';
 import { CounterService } from '../services/counter-service.js';
 import { ArchiveService } from '../services/archive-service.js';
 import { InactivityService } from '../services/inactivity-service.js';
 import { MessageService } from '../services/message-service.js';
 import { calculateMemberStatus, InactivityMemberData, InactivityGroupData } from '../lib/inactivity-utils.js';
-// import { t } from '../lib/i18n.js';
+import { t } from '../lib/i18n.js';
 
 interface CronReport {
     groupId: string;
@@ -519,21 +519,7 @@ router.all('/reset-unity-at-midnight', verifyCronSecret, async (_req: Request, r
  * Daily Streak Reminder (Timezone-Aware)
  * Runs hourly to send 20:30 local time notifications to uncompleted users.
  */
-router.all('/streak-warning', verifyCronSecret, async (_req: Request, res: Response) => {
-    console.log('[Cron] Timezone-aware streak warnings are TEMPORARILY DISABLED.');
-    return res.json({
-        message: 'Streak warnings are temporarily disabled (as of May 28, 2026).',
-        stats: { 
-            targetTimezones: 0,
-            eligibleUsersWithTokens: 0,
-            skippedCompletedUsers: 0,
-            tokensSentTo: 0,
-            failedTokensCleanedUp: 0
-        }
-    });
-    
-    // Original disabled logic kept below for future restoration reference
-    /*
+router.all('/streak-warning', verifyCronSecret, async (req: Request, res: Response) => {
     try {
         const now = (req.headers['x-test-time'] && process.env.FIRESTORE_EMULATOR_HOST)
             ? new Date(req.headers['x-test-time'] as string)
@@ -573,27 +559,39 @@ router.all('/streak-warning', verifyCronSecret, async (_req: Request, res: Respo
         const tokensByLang: Record<string, { token: string, uid: string }[]> = {};
         const userActiveTokens = new Map<string, Set<string>>();
 
-        for (const user of eligibleUsers) {
-            const { data } = user;
-            const needsReminder = StreakReminderEngine.needsReminder(data.lastPostDate, now, data.timeZone);
-            
-            if (needsReminder) {
-                // Fetch private/tokens for this user
+        // Parallelize token fetching in chunks of 50 to avoid N+1 serialization timeouts
+        const CHUNK_SIZE = 50;
+        for (let i = 0; i < eligibleUsers.length; i += CHUNK_SIZE) {
+            const chunk = eligibleUsers.slice(i, i + CHUNK_SIZE);
+            const fetchPromises = chunk.map(async (user) => {
+                const { data } = user;
+                const needsReminder = StreakReminderEngine.needsReminder(data.lastPostDate, now, data.timeZone);
+                if (!needsReminder) {
+                    return { user, needsReminder: false, fcmTokens: [] };
+                }
                 const tokensDoc = await db.collection('users').doc(user.id).collection('private').doc('tokens').get();
                 const fcmTokens = tokensDoc.data()?.fcmTokens || [];
+                return { user, needsReminder: true, fcmTokens };
+            });
 
-                if (fcmTokens.length === 0) continue; // Skip if no tokens in subcollection
+            const chunkResults = await Promise.all(fetchPromises);
+
+            for (const res of chunkResults) {
+                if (!res.needsReminder) {
+                    skippedCount++;
+                    continue;
+                }
+                const { user, fcmTokens } = res;
+                if (fcmTokens.length === 0) continue;
 
                 userActiveTokens.set(user.id, new Set(fcmTokens));
 
-                const lang = data.language || 'en';
+                const lang = user.data.language || 'en';
                 if (!tokensByLang[lang]) tokensByLang[lang] = [];
 
                 for (const token of fcmTokens) {
                     tokensByLang[lang].push({ token, uid: user.id });
                 }
-            } else {
-                skippedCount++;
             }
         }
 
@@ -682,7 +680,6 @@ router.all('/streak-warning', verifyCronSecret, async (_req: Request, res: Respo
         console.error('[Cron] Error in streak warnings:', error);
         res.status(500).send('Error: ' + error.message);
     }
-    */
 });
 
 /**

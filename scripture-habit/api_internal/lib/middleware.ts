@@ -89,7 +89,7 @@ export const aiLimiter = rateLimit({
 export const verifyAppCheck = async (req: Request, res: Response, next: NextFunction) => {
     // SECURITY: SKIP_APP_CHECK should NEVER be true in production.
     const isProduction = process.env.NODE_ENV === 'production';
-    const skipRequested = process.env.SKIP_APP_CHECK === 'true';
+    const skipRequested = req.app?.locals?.skipAppCheck ?? (process.env.SKIP_APP_CHECK === 'true');
 
     if (skipRequested) {
         if (isProduction) {

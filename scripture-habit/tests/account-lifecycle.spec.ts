@@ -31,7 +31,7 @@ test.describe('Account Lifecycle', () => {
 
   test('should handle full user lifecycle: signup, onboarding, profile update, and deletion', async ({ page }) => {
     test.setTimeout(120000);
-    const timestamp = Date.now();
+    const timestamp = `${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
     const testEmail = `lifecycle-${timestamp}@test.local`;
     const initialNickname = `Newbie-${timestamp}`;
     const updatedNickname = `Hero-${timestamp}`;

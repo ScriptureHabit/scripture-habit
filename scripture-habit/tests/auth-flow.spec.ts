@@ -33,7 +33,7 @@ test.describe('Auth & Onboarding Flow', () => {
   });
 
   test('should complete full email signup and profile initialization flow', async ({ page }) => {
-    const timestamp = Date.now();
+    const timestamp = `${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
     const testEmail = `testuser-${timestamp}@example.com`;
     const nickname = `Tester-${timestamp}`;
     const password = 'Password123!';

@@ -30,6 +30,8 @@ export default defineConfig({
     
     /* Enforce English locale for consistent E2E testing */
     locale: 'en-US',
+    /* Enforce consistent timezone for test consistency */
+    timezoneId: 'Asia/Tokyo',
   },
 
   /* Configure projects for major browsers */

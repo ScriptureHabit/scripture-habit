@@ -29,7 +29,7 @@ test.describe('Unity Percentage Synchronization (Local Timezone: Asia/Tokyo)', (
         // --- PART 1: Setup test group with Asia/Tokyo timezone ---
         console.log('--- Step 1: Setting up test group in Asia/Tokyo ---');
         
-        const groupName = `JST Unity Test ${Date.now()}`;
+        const groupName = `JST Unity Test ${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
         
         const groupId = await page.evaluate(async ({ name, tz }) => {
             const waitForAuthToken = () => {

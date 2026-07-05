@@ -44,6 +44,12 @@ db = initializeFirestore(app, {
 2. **Shared Access**: The `persistentMultipleTabManager` allows multiple tabs or WebViews to share the same IndexedDB store. One tab coordinates writing changes to IndexedDB and updates the other tabs.
 3. **Offline Sync Queue**: When offline, any changes are stored in an offline queue. Once the network is restored, the active tab automatically uploads the changes to Firestore.
 
+### 1.2 Web Locks API Dependency and Fallback Behavior
+Firebase SDK's multiple tab manager internally leverages the browser's **Web Locks API** to manage reader/writer locks across tabs. In older browsers (e.g., Safari on iOS < 15.3) or restricted WebViews where this API is unavailable, the SDK automatically switches to:
+* **Read-Only Mode Fallback**: If Web Locks API is unsupported, secondary tabs (tabs opened after the primary one) will be restricted from writing to the IndexedDB cache and will function in read-only mode to prevent data corruption.
+* **Full Memory Cache Fallback**: In private browsing environments where IndexedDB itself is disabled, the initialization fails and safely triggers our try-catch block (Section 2) to fall back to the default memory-only cache (`getFirestore(app)`).
+
+
 ---
 
 ## 2. Private Browsing Fallback
@@ -92,3 +98,21 @@ if (typeof window !== 'undefined' && navigator.webdriver && auth) {
 1. **Detect Automation**: Checks if `navigator.webdriver` is true, which indicates the browser is controlled by a testing tool like Playwright.
 2. **Enforce Local Storage**: When automation is detected, the app forces authentication state persistence using `browserLocalPersistence` (`localStorage`). This keeps the user logged in across page reloads.
 3. **Global Debug Interface**: Binds the auth instance to `window.firebaseAuth` so Playwright scripts can access auth tokens or check session states directly.
+
+---
+
+## 4. Offline Conflict Resolution Policy
+
+When users edit data offline, changes are queued locally in IndexedDB and synchronized once the network is restored. To ensure data consistency across concurrent offline edits, we define these resolution policies:
+
+### 4.1 Last-Write-Wins (LWW) Policy
+*   **Direct Writes**: For standard document mutations (such as updating profile nicknames or toggling chat reactions), Firestore uses a **Last-Write-Wins** strategy based on the server-side arrival timestamp.
+*   **Isolated Scopes**: Because notes are created in user-specific subcollections (`users/{uid}/notes` or group message subcollections), multiple users are writing to distinct documents. This naturally eliminates editing conflict states.
+
+### 4.2 Transactional Offline Blocking
+*   **Client Aborts**: Firestore transactions (like joining groups to verify capacity limits, or `NoteService` updating daily streaks) **cannot execute offline**. 
+*   **Fail-Safe UI**: When offline, any action requiring transactional integrity will fail immediately at the API network layer, triggering a user toast: *"Internet connection required to join groups or save streaks."* This prevents corrupting distributed counter shards or daily statistics via offline spoofing.
+
+### 4.3 Optimistic UI Updates
+*   **Message Dispatch**: Real-time group chat messages display instantly using temporary client-side IDs (`tempId`). Once the connection is restored, the client resolves the `tempId` against the Firestore generated server ID, ensuring smooth user interactions during temporary drops.
+

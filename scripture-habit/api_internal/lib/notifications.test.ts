@@ -48,6 +48,14 @@ function makeSnap(exists: boolean, dataVal: any) {
 }
 
 describe('notifications core lib tests', () => {
+    beforeEach(() => {
+        vi.restoreAllMocks();
+        mockGet.mockReset();
+        mockGetAll.mockReset();
+        mockBatch.mockReset();
+        mockSendEachForMulticast.mockReset();
+    });
+
     describe('getUserFcmTokens', () => {
         it('should return unique tokens from public and private collections', async () => {
             mockGet.mockResolvedValueOnce(makeSnap(true, { fcmTokens: ['token1', 'token2'] })) // Public doc
@@ -96,7 +104,7 @@ describe('notifications core lib tests', () => {
             });
         });
 
-        it('should catch error when sendEachForMulticast fails (line 63)', async () => {
+        it('should catch error when sendEachForMulticast fails', async () => {
             mockSendEachForMulticast.mockRejectedValue(new Error('multicast error'));
             const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
@@ -154,7 +162,7 @@ describe('notifications core lib tests', () => {
             vi.clearAllMocks();
         });
 
-        it('should exit early if there are no other members to notify (lines 100-101)', async () => {
+        it('should exit early if there are no other members to notify', async () => {
             const consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
             await notifyGroupMembers('g1', 'sender1', { title: 'T', body: 'B' }, []);
             expect(consoleLogSpy).toHaveBeenCalledWith(expect.stringContaining('No other members to notify'));
@@ -165,7 +173,7 @@ describe('notifications core lib tests', () => {
             consoleLogSpy.mockRestore();
         });
 
-        it('should handle undefined group members and fallback to empty array (line 96)', async () => {
+        it('should handle undefined group members and fallback to empty array', async () => {
             mockGet.mockResolvedValueOnce(makeSnap(true, { members: null }));
             const consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
 
@@ -175,7 +183,7 @@ describe('notifications core lib tests', () => {
             consoleLogSpy.mockRestore();
         });
 
-        it('should collect public and private tokens, including filtering private duplicates (lines 137-141)', async () => {
+        it('should collect public and private tokens, including filtering private duplicates', async () => {
             const memberIdsOverride = ['receiver1'];
             mockGetAll.mockResolvedValue([
                 makeSnap(true, { language: 'ja-JP', fcmTokens: ['publicToken1'] }),
@@ -235,7 +243,7 @@ describe('notifications core lib tests', () => {
             consoleLogSpy.mockRestore();
         });
 
-        it('should catch generic errors in try-catch block (line 187)', async () => {
+        it('should catch generic errors in the try-catch block', async () => {
             mockGetAll.mockRejectedValue(new Error('getAll db connection failed'));
             const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 

@@ -47,7 +47,7 @@ flowchart TD
 
 ## 1. フロントエンドのトークン・ライフサイクル & サービスワーカー管理
 
-プッシュ通知 API に関連するクライアント側の処理はすべて、[`notification-helper.ts`](../../scripture-habit/src/utils/notification-helper.ts) で制御されています。
+プッシュ通知 API に関連するクライアント側の処理はすべて、[`notification-helper.ts`](../../../scripture-habit/src/utils/notification-helper.ts) で制御されています。
 
 ### 1.1 ブラウザサポートの検証とアプリ内ブラウザ（WebView）ガード
 
@@ -230,7 +230,7 @@ export const clearGroupNotifications = async (groupId: string): Promise<void> =>
 
 ## 3. バックエンドのマルチキャスト送信アーキテクチャ
 
-イベント（ノートの投稿など）が発生すると、バックエンドは [`notifications.ts`](../../scripture-habit/api_internal/lib/notifications.ts) を呼び出してターゲットユーザーを割り出し、言語をローカライズした上でプッシュ通知をマルチキャストします。
+イベント（ノートの投稿など）が発生すると、バックエンドは [`notifications.ts`](../../../scripture-habit/api_internal/lib/notifications.ts) を呼び出してターゲットユーザーを割り出し、言語をローカライズした上でプッシュ通知をマルチキャストします。
 
 ### 3.1 公開と非公開トークンプールの結合解決
 
@@ -404,3 +404,18 @@ export async function cleanupTokens(uid: string, failedTokens: string[]) {
 ```
 
 この処理のおかげで、余計なデータベースメンテナンスを行うことなく、常にアクティブで有効なデバイストークンだけが自動的に残り続け、プッシュ通知の高い到達率と高速な配信パフォーマンスが担保されています。
+
+---
+
+## 5. FCMトークン保存場所の移行計画 (Migration & Clean-up Plan)
+
+将来的なデータベース負荷の削減とコードの簡素化のため、移行完了後に古い公開 `fcmTokens` フィールドの参照を廃止（デプロゲート）するロードマップを策定しています。
+
+### 5.1 移行スケジュール
+* **移行フェーズ（現在）**: 新規登録デバイスはすべて非公開コレクション (`users/{uid}/private/tokens`) に保存。移行用として残されている古い公開 `fcmTokens` 配列もマージして配信。
+* **データ移行の実行（本番稼働から3ヶ月後）**:
+  - バックエンドの一括移行スクリプト（マイグレーションバッチ）を実行し、まだ公開 `fcmTokens` フィールドにデータが残っている古いユーザーのトークンを、非公開サブコレクションへ自動コピーします。
+* **クリーンアップ・完全廃止（本番稼働から6ヶ月後）**:
+  - 全ユーザーの移行が完了したとみなし、APIコード内の `getUserFcmTokensAndLanguage` から公開 `fcmTokens` フィールドを読み込んでマージする互換コードを削除します。
+  - Firestore のセキュリティルールから `users/{uid}` ドキュメント上の `fcmTokens` 書き込み・読み取り許可を完全に削除します。
+

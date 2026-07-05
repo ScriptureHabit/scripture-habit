@@ -4,15 +4,16 @@ import { db } from '../lib/firebase-admin.js';
 import { ArchiveService } from './archive-service.js';
 
 describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('ArchiveService Integration', () => {
-    const GID_NO_ARCHIVE = 'ARCHIVE_GRP_NO';
-    const GID_DO_ARCHIVE = 'ARCHIVE_GRP_YES';
-    const GID_LARGE = 'ARCHIVE_GRP_LARGE';
-    const GID_EDGE_CASE = 'ARCHIVE_GRP_EDGE';
-    const GID_TYPE_NUM = 'ARCHIVE_GRP_NUM';
-    const GID_TYPE_STR = 'ARCHIVE_GRP_STR';
-    const GID_TYPE_OBJ = 'ARCHIVE_GRP_OBJ';
-    const GID_TYPE_NULL = 'ARCHIVE_GRP_NULL';
-    const GID_EXISTING = 'ARCHIVE_GRP_EXISTING';
+    const RUN_ID = Math.random().toString(36).substring(2, 7);
+    const GID_NO_ARCHIVE = `ARCHIVE_GRP_NO_${RUN_ID}`;
+    const GID_DO_ARCHIVE = `ARCHIVE_GRP_YES_${RUN_ID}`;
+    const GID_LARGE = `ARCHIVE_GRP_LARGE_${RUN_ID}`;
+    const GID_EDGE_CASE = `ARCHIVE_GRP_EDGE_${RUN_ID}`;
+    const GID_TYPE_NUM = `ARCHIVE_GRP_NUM_${RUN_ID}`;
+    const GID_TYPE_STR = `ARCHIVE_GRP_STR_${RUN_ID}`;
+    const GID_TYPE_OBJ = `ARCHIVE_GRP_OBJ_${RUN_ID}`;
+    const GID_TYPE_NULL = `ARCHIVE_GRP_NULL_${RUN_ID}`;
+    const GID_EXISTING = `ARCHIVE_GRP_EXISTING_${RUN_ID}`;
 
     beforeAll(async () => {
         // Group that should NOT be archived (too few messages)

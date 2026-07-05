@@ -4,7 +4,7 @@
 
 **scripture-habit** のデータベースレイヤーは、高い並行性、低読み取りコスト、および厳密な結果整合性を実現するように設計されています。Google Cloud Firestore には、「同一ドキュメントへの書き込みは **秒間約1回** まで」という物理的な制限や、トランザクション内における「**Read-before-Write（書き込み前の読み取り）**」の徹底ルールといった構造的な制約があります。これらを克服するため、システムは高度な分散シャインディング（Counter Sharding）とトランザクション制御を採用しています。
 
-このカウンターシステムは、サーバーレスのクラス **`CounterService`** ([`counter-service.ts`](../../scripture-habit/api_internal/services/counter-service.ts)) および厳格なコンパイル安全性のトランザクション境界によって制御されています。これにより、ノートの共有、ストリークの更新、チャットメッセージ、メンバーシップ変更などの書き込み集中型のアクションが、データベースの競合やホットスポットを起こすことなく、数千の並行アクティブユーザーへ自動スケールします。
+このカウンターシステムは、サーバーレスのクラス **`CounterService`** ([`counter-service.ts`](../../../scripture-habit/api_internal/services/counter-service.ts)) および厳格なコンパイル安全性のトランザクション境界によって制御されています。これにより、ノートの共有、ストリークの更新、チャットメッセージ、メンバーシップ変更などの書き込み集中型のアクションが、データベースの競合やホットスポットを起こすことなく、数千の並行アクティブユーザーへ自動スケールします。
 
 ```mermaid
 flowchart TD
@@ -22,11 +22,11 @@ flowchart TD
 
     subgraph Firestore ["Firestore コレクション"]
         Group["groups/{groupId}\n(親文書 - 同期された総数)"]
-        shards["groups/{groupId}/shards/{0..9}\n(分散カウンタシャード)"]
+        shards["groups/{groupId}/shards/{0..2}\n(分散カウンタシャード)"]
     end
 
     C1 & C2 & C3 -->|並行書き込み| Inc
-    Inc -->|1. Math.random index| ShardID["シャード ID (0..9)"]
+    Inc -->|1. Math.random index| ShardID["シャード ID (0..2)"]
     ShardID -->|2. Transaction.set increment value| shards
     
     Recount -->|1. コレクションの count クエリ| dbCount["高性能サーバー集計カウント"]
@@ -42,31 +42,41 @@ flowchart TD
 
 この問題を解決するために、**`CounterService`** はカウントの加算処理を専用のサブコレクション内の「シャード（破片）」ドキュメントへ分散させます。
 
-### 1.1 動的シャードハッシュ & 書き込み処理
+### 1.1 動的シャードルーティング & 書き込み処理
 
-システムは、シャード対象のフィールドごとに **10個のシャード** (`NUM_SHARDS = 10`) を保持します。インクリメント処理が発生すると、サービスは `0` から `9` までのランダムなシャードIDを動的に選択し、Firestore トランザクションを利用してアトミックな加算操作（セット）を実行します。
+システムは、シャード対象のフィールドごとに **3個のシャード** (`NUM_SHARDS = 3`) を保持します。また、読み取りコスト（シャードを集計するために毎回複数のシャードドキュメントを読み込むコスト）を最小限に抑えるため、**「動的シャードルーティング」**を採用しています。
+
+- **小規模グループ（メンバー数100人以下）**: 同時書き込み競合が発生する確率が極めて低いため、シャード化をバイパスし、親のグループドキュメントのカウンターを直接インクリメントします。これにより無駄なシャードドキュメントの生成と読み込み料金を削減します。
+- **大規模グループ（メンバー数101人以上）**: 書き込み競合を防ぐため、`0` から `2` までのランダムなシャードIDを動的に選択し、Firestore トランザクションを利用してアトミックな加算操作（セット）を実行します。
 
 ```typescript
-private static NUM_SHARDS = 10;
+private static NUM_SHARDS = 3;
 
 static increment(
     transaction: admin.firestore.Transaction, 
     ref: admin.firestore.DocumentReference, 
     fieldName: string = 'count', 
-    value: number = 1
+    value: number = 1,
+    membersCount: number = 0
 ) {
-    // 1. 0〜9のランダムなシャードインデックスを生成
-    const shardId = Math.floor(Math.random() * this.NUM_SHARDS).toString();
-    const shardRef = ref.collection('shards').doc(shardId);
-    
-    // 2. アトミックなインクリメントオペレータを用いて merge: true でセット
-    transaction.set(shardRef, {
-        [fieldName]: admin.firestore.FieldValue.increment(value)
-    }, { merge: true });
+    if (membersCount > 100) {
+        // 大規模グループ: 0〜2のランダムなシャードインデックスに分散書き込み
+        const shardId = Math.floor(Math.random() * this.NUM_SHARDS).toString();
+        const shardRef = ref.collection('shards').doc(shardId);
+        
+        transaction.set(shardRef, {
+            [fieldName]: admin.firestore.FieldValue.increment(value)
+        }, { merge: true });
+    } else {
+        // 小規模グループ: 親ドキュメントに直接書き込み (シャード化バイパス)
+        transaction.update(ref, {
+            [fieldName]: admin.firestore.FieldValue.increment(value)
+        });
+    }
 }
 ```
 
-書き込み処理を10個の物理的なドキュメントへ分散させることで、データベース競合を起こすことなく、このカウンターの理論上の書き込みスループットを **10倍**（秒間約1回から秒間約10回まで）へとスケールさせることができます。Firestore は別々のドキュメントへの書き込みを並行してアトミックに実行するためです。
+書き込み処理を3個の物理的なドキュメントへ分散させることで、大規模グループにおける書き込み競合を起こすことなくスケールさせ、かつ小規模グループでは無駄な読み取りコストを完璧に排除します。
 
 ### 1.2 トランザクション内外での読み取り処理
 
@@ -87,7 +97,7 @@ static async getCount(ref: admin.firestore.DocumentReference, fieldName: string 
 
 #### B. トランザクション内での合算処理 (`getCountInTransaction`)
 バリデーションや別ステータスの算出のために、トランザクションの*内部*で現在の合計値を読み取る必要がある場合、ループの中で順番に `get()` を呼ぶと、複数回のネットワーク往復が発生し、トランザクションの「Read-before-Write」フェーズ規則にも抵触しやすくなります。
-これを防ぐため、サービスは全10シャードの参照を最初にすべて生成し、`transaction.getAll(...)` を用いて一回の並行リクエストで全シャードドキュメントを一括フェッチします。
+これを防ぐため、サービスは全3シャードの参照を最初にすべて生成し、`transaction.getAll(...)` を用いて一回の並行リクエストで全シャードドキュメントを一括フェッチします。
 
 ```typescript
 static async getCountInTransaction(
@@ -100,7 +110,7 @@ static async getCountInTransaction(
         shardRefs.push(ref.collection('shards').doc(i.toString()));
     }
     
-    // 並行フェッチ: 10個のシャード文書を1回のネットワークラウンドトリップで一括取得
+    // 並行フェッチ: 3個のシャード文書を1回のネットワークラウンドトリップで一括取得
     const snaps = await transaction.getAll(...shardRefs);
     let totalCount = 0;
     snaps.forEach((doc) => {
@@ -287,7 +297,7 @@ static async recountMessageCountWithArchive(groupRef: admin.firestore.DocumentRe
 
 コード変更の過程で、開発者が誤ってループ内でのドキュメント取得（N+1問題）や無駄な多重クエリを実装してしまわないように、テストの実行環境には自動的な **「読み取り監査（Read Audit）」** が張り巡らされています。
 
-これは [`test-setup.ts`](../../scripture-habit/api_internal/test-setup.ts) で制御されており、統合テストの実行時に Firestore ドライバーのプロトタイプを内部的にフックします。
+これは [`test-setup.ts`](../../../scripture-habit/api_internal/test-setup.ts) で制御されており、統合テストの実行時に Firestore ドライバーのプロトタイプを内部的にフックします。
 
 ### 5.1 プロトタイプのインターセプト（割り込み監視）
 

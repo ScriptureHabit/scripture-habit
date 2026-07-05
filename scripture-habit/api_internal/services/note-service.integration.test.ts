@@ -62,8 +62,6 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('NoteService Integration T
             });
             if (res1.backgroundPromise) await res1.backgroundPromise;
 
-            await new Promise(r => setTimeout(r, 100));
-
             const res2 = await NoteService.postNote({
                 uid: TEST_UID,
                 messageText: 'Second Note',

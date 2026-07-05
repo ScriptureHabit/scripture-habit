@@ -82,7 +82,7 @@ if (!admin.apps.length) {
     }
 }
 
-const db = (admin.apps.length ? admin.firestore() : null) as admin.firestore.Firestore;
+export let db = (admin.apps.length ? admin.firestore() : null) as admin.firestore.Firestore;
 if (db) {
     try {
         let emulatorHost = process.env.FIRESTORE_EMULATOR_HOST;
@@ -103,8 +103,12 @@ if (db) {
     }
 }
 
+export function setDbInstance(newDb: admin.firestore.Firestore) {
+    db = newDb;
+}
+
 export const messaging = (admin.apps.length ? admin.messaging() : null) as admin.messaging.Messaging;
 export const auth = (admin.apps.length ? admin.auth() : null) as admin.auth.Auth;
 export const appCheck = (admin.apps.length ? admin.appCheck() : null) as admin.appCheck.AppCheck;
-export { admin, db };
+export { admin };
 export default admin;

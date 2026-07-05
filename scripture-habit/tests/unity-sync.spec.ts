@@ -6,7 +6,7 @@ test.describe('Unity Lifecycle (Full Flow)', () => {
 
     test('should track unity through updates, reloads, and midnight reset', async ({ authenticatedPage: page }) => {
         const browserName = test.info().project.name;
-        const groupName = `UnityLifecycle-${browserName}-${Date.now()}`;
+        const groupName = `UnityLifecycle-${browserName}-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
         
         // --- 1. SETUP: 10 minutes before midnight ---
         const now = new Date();
@@ -44,11 +44,10 @@ test.describe('Unity Lifecycle (Full Flow)', () => {
         await page.getByTestId('new-note-button').click();
 
         const scriptureSelect = page.getByTestId('new-note-category').locator('input').first();
-        await scriptureSelect.click({ force: true });
-        await page.keyboard.type('Book of Mormon');
+        await scriptureSelect.fill('Book of Mormon');
         await page.locator('.react-select__option', { hasText: 'Book of Mormon' }).first().click();
         await page.getByTestId('new-note-chapter').fill('Alma 32');
-        await page.getByTestId('new-note-comment').fill(`Lifecycle Test ${Date.now()}`);
+        await page.getByTestId('new-note-comment').fill(`Lifecycle Test ${Date.now()}-${Math.random().toString(36).substring(2, 6)}`);
         
         await page.getByTestId('post-note-button').click();
         await expect(page.getByText('Note posted successfully!')).toBeVisible({ timeout: 15000 });

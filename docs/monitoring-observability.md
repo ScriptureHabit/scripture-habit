@@ -16,6 +16,17 @@ To balance cost and visibility, we use these configurations:
 ### 1.2 React Router Integration
 Sentry's React Router integration helps us see which page transitions are slow or failing, so we can pinpoint issues like dashboard lag or note submission errors.
 
+### 1.3 Observability & Tracing Guidelines
+To maintain alert reliability and cost control, developers must adhere to these tracing and error filtering guidelines:
+
+*   **Error Filtering Policy (`ignoreErrors`)**:
+    *   Trivial user-driven client errors such as standard authentication failures (`401 Unauthorized` during session expiry), permissions rule rejections on logouts (`403 Forbidden`), and failed external metadata lookups (`404 Not Found`) should be ignored or logged as warnings to prevent alert fatigue.
+    *   All unhandled exceptions, server-side database transaction aborts, and Sentry Express error handlers must remain active and register as high-priority issues.
+*   **Transaction Naming Conventions**:
+    *   All route handlers must trace parameterized paths (e.g., `/api/groups/:groupId` instead of resolving to physical IDs like `/api/groups/seed-group-daily-bread`). Parameterized routes allow Sentry to properly aggregate performance metrics under a single transaction type.
+*   **Firestore Transaction Custom Spans**:
+    *   When executing atomic Firestore transactions (e.g., in `NoteService`), wrap operations in custom Sentry spans using `Sentry.startSpan({ name: 'db.transaction.note-post' })`. Separating transactional Firestore read-before-write latency from general API HTTP response latency ensures clean performance bottlenecks analysis.
+
 ---
 
 ## 2. Silencing Common Errors

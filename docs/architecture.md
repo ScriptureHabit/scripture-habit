@@ -189,4 +189,8 @@ To guide new developers, the workspace contains **22 interactive CodeTours** (un
 - **Automated Profile Sync**: While member identity fields (e.g. nickname) are duplicated across group preview arrays, messages, and reactions to save read costs, the backend runs `ProfileService.syncProfileToChats` using atomic batches (`db.batch()`) to push updates immediately to all corresponding records, preventing unsynced states.
 - **Error Boundaries**: Component-level boundaries prevent errors in a chat message from breaking the entire Dashboard.
 - **Sentry Integration**: All layers report performance issues and unhandled exceptions to a centralized Sentry dashboard.
-- **Monorepo Boundaries (Future Roadmap)**: Although `/types` and `/api_internal` currently rely on relative path imports, the long-term plan is to migrate to a formal workspaces layout (using NPM or PNPM Workspaces) to decouple compile-time boundaries cleanly.
+- **Monorepo Workspaces Layout (Future Roadmap)**: To cleanly isolate packages and prevent compilation leakage between frontend and backend layers, the project will transition to a Monorepo using `pnpm workspaces`:
+  - `packages/types`: Shared Firestore database schemas, Zod validation engines, and DTO types.
+  - `packages/api-internal`: Backend business logic services and Firestore transactions.
+  - `apps/web`: React SPA frontend workspace (Vite).
+  - `apps/serverless`: Express handlers wrapped for Vercel Serverless Functions.

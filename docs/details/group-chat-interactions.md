@@ -14,7 +14,7 @@ The group chat interaction engine of the **scripture-habit** app is composed of 
 | `use-group-actions.ts` | `hooks/api/` | Leave / delete group, name & description updates, public toggle, social share |
 | `use-group-chat-handlers.ts` | `hooks/interaction/` | Members modal lazy-load, reactions detail modal, inactivity banner |
 
-All mutable chat state lives in a central `chatReducer` ([`chat-reducer.ts`](final-project/scripture-habit/src/components/groupchat/hooks/core/chat-reducer.ts)) which is driven by a `React.useReducer`. The hooks receive the `dispatch` function and call it to apply optimistic updates without waiting for the server.
+All mutable chat state lives in a central `chatReducer` ([`chat-reducer.ts`](../../scripture-habit/src/components/groupchat/hooks/core/chat-reducer.ts)) which is driven by a `React.useReducer`. The hooks receive the `dispatch` function and call it to apply optimistic updates without waiting for the server.
 
 ### Architecture Overview
 
@@ -93,7 +93,7 @@ sequenceDiagram
 
 #### The Optimistic Message Object
 
-The temporary message constructed before the API call ([`use-message-actions.ts:56–74`](final-project/scripture-habit/src/components/groupchat/hooks/api/use-message-actions.ts#L56-L74)):
+The temporary message constructed before the API call ([`use-message-actions.ts:56–74`](../../scripture-habit/src/components/groupchat/hooks/api/use-message-actions.ts#L56-L74)):
 
 ```typescript
 const clientTimestamp = Date.now();
@@ -126,7 +126,7 @@ const optimisticMessage: Message = {
 
 #### The `ADD_NEW_MESSAGES` Reducer Case
 
-The reducer ([`chat-reducer.ts:76–114`](final-project/scripture-habit/src/components/groupchat/hooks/core/chat-reducer.ts#L76-L114)) handles deduplication between the optimistic message and any server-pushed copy that might arrive via a real-time listener:
+The reducer ([`chat-reducer.ts:76–114`](../../scripture-habit/src/components/groupchat/hooks/core/chat-reducer.ts#L76-L114)) handles deduplication between the optimistic message and any server-pushed copy that might arrive via a real-time listener:
 
 ```typescript
 case 'ADD_NEW_MESSAGES': {
@@ -158,7 +158,7 @@ case 'ADD_NEW_MESSAGES': {
 
 #### The `UPDATE_MESSAGE` Resolution
 
-After the API returns a real `messageId` ([`use-message-actions.ts:93–98`](final-project/scripture-habit/src/components/groupchat/hooks/api/use-message-actions.ts#L93-L98)):
+After the API returns a real `messageId` ([`use-message-actions.ts:93–98`](../../scripture-habit/src/components/groupchat/hooks/api/use-message-actions.ts#L93-L98)):
 
 ```typescript
 dispatch({
@@ -171,11 +171,11 @@ dispatch({
 });
 ```
 
-The reducer's `UPDATE_MESSAGE` case ([`chat-reducer.ts:156–160`](final-project/scripture-habit/src/components/groupchat/hooks/core/chat-reducer.ts#L156-L160)) maps over all messages and returns a new array only when something actually changed (shallow equality guard).
+The reducer's `UPDATE_MESSAGE` case ([`chat-reducer.ts:156–160`](../../scripture-habit/src/components/groupchat/hooks/core/chat-reducer.ts#L156-L160)) maps over all messages and returns a new array only when something actually changed (shallow equality guard).
 
 #### Fire-and-Forget Read-Status Sync
 
-Immediately after resolving the optimistic message, the hook makes a second non-blocking call ([`use-message-actions.ts:102–109`](final-project/scripture-habit/src/components/groupchat/hooks/api/use-message-actions.ts#L102-L109)):
+Immediately after resolving the optimistic message, the hook makes a second non-blocking call ([`use-message-actions.ts:102–109`](../../scripture-habit/src/components/groupchat/hooks/api/use-message-actions.ts#L102-L109)):
 
 ```typescript
 // Fire-and-forget: errors are intentionally swallowed
@@ -196,13 +196,13 @@ dispatch({ type: 'REMOVE_MESSAGE', messageId: optimisticId });
 toast.error(errorMessage);
 ```
 
-The `REMOVE_MESSAGE` reducer case filters by `message.id`, removing the placeholder atomically ([`chat-reducer.ts:161–162`](final-project/scripture-habit/src/components/groupchat/hooks/core/chat-reducer.ts#L161-L162)).
+The `REMOVE_MESSAGE` reducer case filters by `message.id`, removing the placeholder atomically ([`chat-reducer.ts:161–162`](../../scripture-habit/src/components/groupchat/hooks/core/chat-reducer.ts#L161-L162)).
 
 ---
 
 ### 1.2 Editing a Message
 
-The edit flow is a simpler optimistic pattern ([`use-message-actions.ts:130–162`](final-project/scripture-habit/src/components/groupchat/hooks/api/use-message-actions.ts#L130-L162)):
+The edit flow is a simpler optimistic pattern ([`use-message-actions.ts:130–162`](../../scripture-habit/src/components/groupchat/hooks/api/use-message-actions.ts#L130-L162)):
 
 ```typescript
 const handleSaveEdit = async (message: Message, newText: string) => {
@@ -229,7 +229,7 @@ const handleSaveEdit = async (message: Message, newText: string) => {
 
 ### 1.3 Deleting a Message
 
-The delete flow inverts the add/remove pattern ([`use-message-actions.ts:164–187`](final-project/scripture-habit/src/components/groupchat/hooks/api/use-message-actions.ts#L164-L187)):
+The delete flow inverts the add/remove pattern ([`use-message-actions.ts:164–187`](../../scripture-habit/src/components/groupchat/hooks/api/use-message-actions.ts#L164-L187)):
 
 ```typescript
 const handleConfirmDeleteMessage = async (message: Message) => {
@@ -257,7 +257,7 @@ const handleConfirmDeleteMessage = async (message: Message) => {
 
 ### 2.1 Toggle Reaction Logic
 
-`handleToggleReactionDirect` ([`use-message-actions.ts:189–241`](final-project/scripture-habit/src/components/groupchat/hooks/api/use-message-actions.ts#L189-L241)) computes the new reaction state entirely on the client before dispatching:
+`handleToggleReactionDirect` ([`use-message-actions.ts:189–241`](../../scripture-habit/src/components/groupchat/hooks/api/use-message-actions.ts#L189-L241)) computes the new reaction state entirely on the client before dispatching:
 
 ```typescript
 const handleToggleReactionDirect = async (message: Message, emoji: string) => {
@@ -306,11 +306,11 @@ flowchart TD
 ```
 
 > [!NOTE]
-> `reactionPreviews` is a lightweight display cache: at most 3 `{ uid, nickname, photoURL }` objects per emoji. It allows the UI to render avatars/nicknames without re-fetching member documents. `handleToggleReaction` (no suffix) is a convenience wrapper that always passes `'👍'` as the emoji ([`use-message-actions.ts:243–245`](final-project/scripture-habit/src/components/groupchat/hooks/api/use-message-actions.ts#L243-L245)).
+> `reactionPreviews` is a lightweight display cache: at most 3 `{ uid, nickname, photoURL }` objects per emoji. It allows the UI to render avatars/nicknames without re-fetching member documents. `handleToggleReaction` (no suffix) is a convenience wrapper that always passes `'👍'` as the emoji ([`use-message-actions.ts:243–245`](../../scripture-habit/src/components/groupchat/hooks/api/use-message-actions.ts#L243-L245)).
 
 ### 2.2 Reply-To Structure
 
-When a user replies, `handleSendMessage` embeds a `replyTo` snapshot inside the outgoing message. The shape stored in the `Message` type ([`chat.ts:50–55`](final-project/scripture-habit/src/types/chat.ts#L50-L55)):
+When a user replies, `handleSendMessage` embeds a `replyTo` snapshot inside the outgoing message. The shape stored in the `Message` type ([`chat.ts:50–55`](../../scripture-habit/src/types/chat.ts#L50-L55)):
 
 ```typescript
 replyTo?: {
@@ -347,7 +347,7 @@ const prevGroupIdRef   = useRef<string>(groupId);         // Detects group switc
 
 ### 3.2 Language Detection Skip
 
-Before queuing a message, `handleLazyTranslate` checks whether translation is even needed ([`use-message-actions.ts:31–36`](final-project/scripture-habit/src/components/groupchat/hooks/api/use-message-actions.ts#L31-L36)):
+Before queuing a message, `handleLazyTranslate` checks whether translation is even needed ([`use-message-actions.ts:31–36`](../../scripture-habit/src/components/groupchat/hooks/api/use-message-actions.ts#L31-L36)):
 
 ```typescript
 const isLikelyAlreadyInLanguage = (text: string, targetLang: string) => {
@@ -359,7 +359,7 @@ const isLikelyAlreadyInLanguage = (text: string, targetLang: string) => {
 };
 ```
 
-A message is **skipped** from the queue if any of the following are true ([`use-message-actions.ts:280–285`](final-project/scripture-habit/src/components/groupchat/hooks/api/use-message-actions.ts#L280-L285)):
+A message is **skipped** from the queue if any of the following are true ([`use-message-actions.ts:280–285`](../../scripture-habit/src/components/groupchat/hooks/api/use-message-actions.ts#L280-L285)):
 
 | Condition | Reason |
 |---|---|
@@ -385,7 +385,7 @@ Each time a new message enters the viewport and calls `handleLazyTranslate`, the
 
 ### 3.4 Batch Processing & Deduplication
 
-[`use-message-actions.ts:247–277`](final-project/scripture-habit/src/components/groupchat/hooks/api/use-message-actions.ts#L247-L277):
+[`use-message-actions.ts:247–277`](../../scripture-habit/src/components/groupchat/hooks/api/use-message-actions.ts#L247-L277):
 
 ```typescript
 const processBatch = async () => {
@@ -426,7 +426,7 @@ const processBatch = async () => {
 
 ### 3.5 Cache Clear on Group Switch
 
-When the user navigates to a different group, the `groupId` prop changes and the effect clears all translation state ([`use-message-actions.ts:39–49`](final-project/scripture-habit/src/components/groupchat/hooks/api/use-message-actions.ts#L39-L49)):
+When the user navigates to a different group, the `groupId` prop changes and the effect clears all translation state ([`use-message-actions.ts:39–49`](../../scripture-habit/src/components/groupchat/hooks/api/use-message-actions.ts#L39-L49)):
 
 ```typescript
 useEffect(() => {
@@ -481,7 +481,7 @@ sequenceDiagram
 
 ## 4. Cheer System
 
-The cheer system ([`use-cheer-system.ts`](final-project/scripture-habit/src/components/groupchat/hooks/interaction/use-cheer-system.ts)) lets group members send a one-time daily encouragement to each other, enforced client-side via a Firestore query on mount.
+The cheer system ([`use-cheer-system.ts`](../../scripture-habit/src/components/groupchat/hooks/interaction/use-cheer-system.ts)) lets group members send a one-time daily encouragement to each other, enforced client-side via a Firestore query on mount.
 
 ### 4.1 Timezone-Aware Day Boundary
 
@@ -572,7 +572,7 @@ sequenceDiagram
 
 ## 5. Content Moderation: Report System
 
-The report system ([`use-report-system.ts`](final-project/scripture-habit/src/components/groupchat/hooks/api/use-report-system.ts)) writes directly to Firestore from the client. No REST endpoint is involved.
+The report system ([`use-report-system.ts`](../../scripture-habit/src/components/groupchat/hooks/api/use-report-system.ts)) writes directly to Firestore from the client. No REST endpoint is involved.
 
 ### 5.1 Report Flow
 
@@ -583,7 +583,7 @@ const handleReportClick = (message: Message) => {
 };
 ```
 
-When the user confirms in the modal ([`use-report-system.ts:17–38`](final-project/scripture-habit/src/components/groupchat/hooks/api/use-report-system.ts#L17-L38)):
+When the user confirms in the modal ([`use-report-system.ts:17–38`](../../scripture-habit/src/components/groupchat/hooks/api/use-report-system.ts#L17-L38)):
 
 ```typescript
 const confirmReport = async () => {
@@ -660,7 +660,7 @@ const handleLeaveGroup = async () => {
 
 ### 6.3 Name & Description Update with Translation Payload
 
-[`use-group-actions.ts:95–129`](final-project/scripture-habit/src/components/groupchat/hooks/api/use-group-actions.ts#L95-L129):
+[`use-group-actions.ts:95–129`](../../scripture-habit/src/components/groupchat/hooks/api/use-group-actions.ts#L95-L129):
 
 ```typescript
 const handleUpdateGroupName = async (newName, newDesc, newTransName, newTransDesc) => {
@@ -749,7 +749,7 @@ const handleShareInstagram = () => {
 
 ### 7.1 Lazy Member Loading
 
-`handleShowMembers` in [`use-group-chat-handlers.ts:35–52`](final-project/scripture-habit/src/components/groupchat/hooks/interaction/use-group-chat-handlers.ts#L35-L52) uses an additive fetch strategy: it only requests Firestore documents for UIDs that are **not already** in the local `membersList`:
+`handleShowMembers` in [`use-group-chat-handlers.ts:35–52`](../../scripture-habit/src/components/groupchat/hooks/interaction/use-group-chat-handlers.ts#L35-L52) uses an additive fetch strategy: it only requests Firestore documents for UIDs that are **not already** in the local `membersList`:
 
 ```typescript
 const handleShowMembers = async () => {
@@ -781,7 +781,7 @@ const handleShowMembers = async () => {
 
 ### 7.2 Reactions Detail Flattening
 
-`handleShowReactions` ([`use-group-chat-handlers.ts:54–69`](final-project/scripture-habit/src/components/groupchat/hooks/interaction/use-group-chat-handlers.ts#L54-L69)) transforms the compact storage format into a flat list suitable for display:
+`handleShowReactions` ([`use-group-chat-handlers.ts:54–69`](../../scripture-habit/src/components/groupchat/hooks/interaction/use-group-chat-handlers.ts#L54-L69)) transforms the compact storage format into a flat list suitable for display:
 
 **Input shape** (stored on the message document):
 ```typescript
@@ -843,7 +843,7 @@ The banner is stored in both Zustand (for the current session) and `safeStorage`
 
 ## Appendix: Reducer Action Reference
 
-The following `ChatAction` types are used by the interaction hooks above ([`chat-reducer.ts:18–32`](final-project/scripture-habit/src/components/groupchat/hooks/core/chat-reducer.ts#L18-L32)):
+The following `ChatAction` types are used by the interaction hooks above ([`chat-reducer.ts:18–32`](../../scripture-habit/src/components/groupchat/hooks/core/chat-reducer.ts#L18-L32)):
 
 | Action type | Payload | Effect |
 |---|---|---|

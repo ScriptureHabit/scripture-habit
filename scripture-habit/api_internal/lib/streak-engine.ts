@@ -31,6 +31,18 @@ export class StreakEngine {
         options: { now: Date; clientTimeZone?: string | null }
     ): StreakResult {
         const { now } = options;
+        
+        // Guard against invalid Date (NaN) or missing dates
+        if (!now || isNaN(now.getTime())) {
+            return {
+                newStreak: currentState.streakCount || 0,
+                currentHighest: currentState.highestStreak || 0,
+                today: new Date().toISOString().split('T')[0],
+                streakUpdated: false,
+                isConsecutive: false
+            };
+        }
+
         const { streakCount, highestStreak, lastPostDate, lastPostAt, timeZone } = currentState;
 
         // Use client timezone if user has none, else fallback to UTC

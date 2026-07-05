@@ -1,65 +1,59 @@
 // @vitest-environment node
 import { describe, it, expect, beforeAll, afterAll, vi, beforeEach } from 'vitest';
-import app from '../api/api.js';
-import { Server } from 'http';
-import { auth, admin } from './lib/firebase-admin.js';
+import { admin } from './lib/firebase-admin.js';
+import { TestSetup } from './test-setup.js';
 import axios from 'axios';
 
 const isRealAi = process.env.USE_REAL_AI === 'true';
 
+// Helper to abstract axios.post structure details from tests
+const getSentPrompt = (callIndex: number = 0): string => {
+    const calls = vi.mocked(axios.post).mock.calls;
+    if (calls.length <= callIndex) {
+        throw new Error(`Expected at least ${callIndex + 1} calls to axios.post, but found ${calls.length}`);
+    }
+    const callArgs = calls[callIndex];
+    const data = callArgs[1] as { contents: Array<{ parts: Array<{ text: string }> }> };
+    return data.contents[0].parts[0].text;
+};
+
+// Helper to mock Gemini responses cleanly
+const mockGeminiResponse = (text: string) => {
+    vi.spyOn(axios, 'post').mockResolvedValue({
+        data: {
+            candidates: [{
+                content: { parts: [{ text }] }
+            }]
+        }
+    } as any);
+};
+
 describe('AI Prompt Construction Regression', () => {
-    let server: Server;
-    let baseUrl: string;
+    const setup = new TestSetup();
 
     beforeAll(async () => {
-        process.env.SKIP_APP_CHECK = 'true';
         process.env.SENTRY_DISABLED = 'true'; // Disable Sentry in tests
         if (!isRealAi) {
             process.env.GEMINI_API_KEY = 'dummy-key';
         }
-        
-        return new Promise<void>((resolve) => {
-            server = app.listen(0, () => {
-                const addr = server.address();
-                if (addr && typeof addr !== 'string') {
-                    baseUrl = `http://localhost:${addr.port}`;
-                }
-                resolve();
-            });
-        });
+        await setup.start();
     });
 
     afterAll(async () => {
         vi.restoreAllMocks();
-        return new Promise<void>((resolve) => {
-            server.close(() => resolve());
-        });
+        await setup.stop();
     });
 
     beforeEach(() => {
         vi.restoreAllMocks();
         if (!isRealAi) {
-            vi.spyOn(axios, 'post').mockResolvedValue({
-                data: {
-                    candidates: [{
-                        content: { parts: [{ text: '{"msg1": "AI Response"}' }] }
-                    }]
-                }
-            } as any);
+            mockGeminiResponse('{"msg1": "AI Response"}');
         }
     });
 
-    const mockAuth = (uid: string = 'test-user') => {
-        vi.spyOn(auth, 'verifyIdToken').mockResolvedValue({
-            uid,
-            email_verified: true,
-            firebase: { sign_in_provider: 'password' }
-        } as unknown as admin.auth.DecodedIdToken);
-    };
-
     it('should construct correct prompt for /api/ai/generate-ponder-questions', async () => {
-        mockAuth();
-        await fetch(`${baseUrl}/api/ai/generate-ponder-questions`, {
+        setup.mockAuth();
+        await fetch(`${setup.baseUrl}/api/ai/generate-ponder-questions`, {
             method: 'POST',
             headers: {
                 'Authorization': 'Bearer valid-token',
@@ -72,8 +66,7 @@ describe('AI Prompt Construction Regression', () => {
             })
         });
 
-        const axiosCall = vi.mocked(axios.post).mock.calls[0];
-        const prompt = (axiosCall[1] as { contents: Array<{ parts: Array<{ text: string }> }> }).contents[0].parts[0].text;
+        const prompt = getSentPrompt(0);
 
         expect(prompt).toContain('John 3:16 1');
         expect(prompt).toContain('Japanese');
@@ -81,8 +74,8 @@ describe('AI Prompt Construction Regression', () => {
     });
 
     it('should construct correct prompt for /api/ai/translate (standard)', async () => {
-        mockAuth();
-        await fetch(`${baseUrl}/api/ai/translate`, {
+        setup.mockAuth();
+        await fetch(`${setup.baseUrl}/api/ai/translate`, {
             method: 'POST',
             headers: {
                 'Authorization': 'Bearer valid-token',
@@ -95,8 +88,7 @@ describe('AI Prompt Construction Regression', () => {
             })
         });
 
-        const axiosCall = vi.mocked(axios.post).mock.calls[0];
-        const prompt = (axiosCall[1] as { contents: Array<{ parts: Array<{ text: string }> }> }).contents[0].parts[0].text;
+        const prompt = getSentPrompt(0);
 
         expect(prompt).toContain('Translate the following study note into Spanish');
         expect(prompt).toContain('Hello world');
@@ -104,8 +96,8 @@ describe('AI Prompt Construction Regression', () => {
     });
 
     it('should construct correct prompt for /api/ai/translate (group metadata)', async () => {
-        mockAuth();
-        await fetch(`${baseUrl}/api/ai/translate`, {
+        setup.mockAuth();
+        await fetch(`${setup.baseUrl}/api/ai/translate`, {
             method: 'POST',
             headers: {
                 'Authorization': 'Bearer valid-token',
@@ -119,8 +111,7 @@ describe('AI Prompt Construction Regression', () => {
             })
         });
 
-        const axiosCall = vi.mocked(axios.post).mock.calls[0];
-        const prompt = (axiosCall[1] as { contents: Array<{ parts: Array<{ text: string }> }> }).contents[0].parts[0].text;
+        const prompt = getSentPrompt(0);
 
         expect(prompt).toContain('Translate the following group name into Japanese');
         expect(prompt).toContain('Output ONLY the translated plain text');
@@ -128,8 +119,8 @@ describe('AI Prompt Construction Regression', () => {
     });
 
     it('should construct correct prompt for /api/ai/translate-batch', async () => {
-        mockAuth();
-        await fetch(`${baseUrl}/api/ai/translate-batch`, {
+        setup.mockAuth();
+        await fetch(`${setup.baseUrl}/api/ai/translate-batch`, {
             method: 'POST',
             headers: {
                 'Authorization': 'Bearer valid-token',
@@ -143,8 +134,7 @@ describe('AI Prompt Construction Regression', () => {
             })
         });
 
-        const axiosCall = vi.mocked(axios.post).mock.calls[0];
-        const prompt = (axiosCall[1] as { contents: Array<{ parts: Array<{ text: string }> }> }).contents[0].parts[0].text;
+        const prompt = getSentPrompt(0);
 
         expect(prompt).toContain('Translate these message items into Portuguese');
         expect(prompt).toContain('Note 1');
@@ -152,7 +142,7 @@ describe('AI Prompt Construction Regression', () => {
     });
 
     it('should handle hallucinated missing IDs in translate-batch gracefully', async () => {
-        mockAuth();
+        setup.mockAuth();
         if (!isRealAi) {
             // Mock AI to only return msg1, completely ignoring msg2
             vi.mocked(axios.post).mockResolvedValue({
@@ -164,7 +154,7 @@ describe('AI Prompt Construction Regression', () => {
             });
         }
 
-        const res = await fetch(`${baseUrl}/api/ai/translate-batch`, {
+        const res = await fetch(`${setup.baseUrl}/api/ai/translate-batch`, {
             method: 'POST',
             headers: {
                 'Authorization': 'Bearer valid-token',
@@ -191,7 +181,7 @@ describe('AI Prompt Construction Regression', () => {
 
     it('should separate cache keys based on updateType to prevent cache poisoning', async () => {
         const testText = 'Category:';
-        mockAuth();
+        setup.mockAuth();
         
         // Ensure cache is empty for this text
         const crypto = await import('crypto');
@@ -209,14 +199,14 @@ describe('AI Prompt Construction Regression', () => {
         }
 
         // Request 1: Normal
-        await fetch(`${baseUrl}/api/ai/translate`, {
+        await fetch(`${setup.baseUrl}/api/ai/translate`, {
             method: 'POST',
             headers: { 'Authorization': 'Bearer valid-token', 'Content-Type': 'application/json' },
             body: JSON.stringify({ text: testText, targetLanguage: 'ja' })
         });
 
         // Request 2: Group Name
-        await fetch(`${baseUrl}/api/ai/translate`, {
+        await fetch(`${setup.baseUrl}/api/ai/translate`, {
             method: 'POST',
             headers: { 'Authorization': 'Bearer valid-token', 'Content-Type': 'application/json' },
             body: JSON.stringify({ text: testText, targetLanguage: 'ja', updateType: 'group_name' })
@@ -232,7 +222,7 @@ describe('AI Prompt Construction Regression', () => {
 
     it('should construct correct prompt for /api/ai/generate-personal-weekly-recap', async () => {
         const testUid = `ai-user-${Date.now()}`;
-        mockAuth(testUid);
+        setup.mockAuth(testUid);
 
         // Setup user and notes in emulator
         const { db } = await import('./lib/firebase-admin.js');
@@ -244,7 +234,7 @@ describe('AI Prompt Construction Regression', () => {
             createdAt: new Date()
         });
 
-        await fetch(`${baseUrl}/api/ai/generate-personal-weekly-recap`, {
+        await fetch(`${setup.baseUrl}/api/ai/generate-personal-weekly-recap`, {
             method: 'POST',
             headers: {
                 'Authorization': 'Bearer valid-token',
@@ -256,8 +246,7 @@ describe('AI Prompt Construction Regression', () => {
             })
         });
 
-        const axiosCall = vi.mocked(axios.post).mock.calls[0];
-        const prompt = (axiosCall[1] as { contents: Array<{ parts: Array<{ text: string }> }> }).contents[0].parts[0].text;
+        const prompt = getSentPrompt(0);
 
         expect(prompt).toContain('Task: Write a warm personal letter');
         expect(prompt).toContain('I learned about faith today.');
@@ -276,8 +265,8 @@ describe('AI Prompt Construction Regression', () => {
         });
 
         it('should return mocked study questions for /generate-ponder-questions', async () => {
-            mockAuth();
-            const res = await fetch(`${baseUrl}/api/ai/generate-ponder-questions`, {
+            setup.mockAuth();
+            const res = await fetch(`${setup.baseUrl}/api/ai/generate-ponder-questions`, {
                 method: 'POST',
                 headers: { 'Authorization': 'Bearer token', 'Content-Type': 'application/json' },
                 body: JSON.stringify({ scripture: 'Alma 32', chapter: '21', language: 'en' })
@@ -289,8 +278,8 @@ describe('AI Prompt Construction Regression', () => {
         });
 
         it('should return mocked translation for /translate', async () => {
-            mockAuth();
-            const res = await fetch(`${baseUrl}/api/ai/translate`, {
+            setup.mockAuth();
+            const res = await fetch(`${setup.baseUrl}/api/ai/translate`, {
                 method: 'POST',
                 headers: { 'Authorization': 'Bearer token', 'Content-Type': 'application/json' },
                 body: JSON.stringify({ text: 'Original text to translate', targetLanguage: 'ja' })
@@ -302,8 +291,8 @@ describe('AI Prompt Construction Regression', () => {
         });
 
         it('should return mocked batch translations for /translate-batch', async () => {
-            mockAuth();
-            const res = await fetch(`${baseUrl}/api/ai/translate-batch`, {
+            setup.mockAuth();
+            const res = await fetch(`${setup.baseUrl}/api/ai/translate-batch`, {
                 method: 'POST',
                 headers: { 'Authorization': 'Bearer token', 'Content-Type': 'application/json' },
                 body: JSON.stringify({ messages: [{ id: 'm1', text: 'Text 1' }], targetLanguage: 'es', groupId: 'g1' })
@@ -316,8 +305,8 @@ describe('AI Prompt Construction Regression', () => {
 
 
         it('should return mocked discussion topic for /generate-discussion-topic', async () => {
-            mockAuth();
-            const res = await fetch(`${baseUrl}/api/ai/generate-discussion-topic`, {
+            setup.mockAuth();
+            const res = await fetch(`${setup.baseUrl}/api/ai/generate-discussion-topic`, {
                 method: 'POST',
                 headers: { 'Authorization': 'Bearer token', 'Content-Type': 'application/json' },
                 body: JSON.stringify({ language: 'en' })
@@ -330,8 +319,8 @@ describe('AI Prompt Construction Regression', () => {
 
         it('should return mocked personal recap for /generate-personal-weekly-recap', async () => {
             const testUid = `recap-uid-${Date.now()}`;
-            mockAuth(testUid);
-            const res = await fetch(`${baseUrl}/api/ai/generate-personal-weekly-recap`, {
+            setup.mockAuth(testUid);
+            const res = await fetch(`${setup.baseUrl}/api/ai/generate-personal-weekly-recap`, {
                 method: 'POST',
                 headers: { 'Authorization': 'Bearer token', 'Content-Type': 'application/json' },
                 body: JSON.stringify({ uid: testUid, language: 'en' })
@@ -345,7 +334,7 @@ describe('AI Prompt Construction Regression', () => {
 
     describe('Validation and Authentication Failures', () => {
         it('should return 401 if unauthenticated on generating questions', async () => {
-            const res = await fetch(`${baseUrl}/api/ai/generate-ponder-questions`, {
+            const res = await fetch(`${setup.baseUrl}/api/ai/generate-ponder-questions`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ scripture: 'John 1', chapter: '1' })
@@ -354,8 +343,8 @@ describe('AI Prompt Construction Regression', () => {
         });
 
         it('should return 400 if invalid input for generate-ponder-questions', async () => {
-            mockAuth();
-            const res = await fetch(`${baseUrl}/api/ai/generate-ponder-questions`, {
+            setup.mockAuth();
+            const res = await fetch(`${setup.baseUrl}/api/ai/generate-ponder-questions`, {
                 method: 'POST',
                 headers: { 'Authorization': 'Bearer token', 'Content-Type': 'application/json' },
                 body: JSON.stringify({ scripture: 'John 1' }) // Missing chapter
@@ -364,8 +353,8 @@ describe('AI Prompt Construction Regression', () => {
         });
 
         it('should return 400 if invalid input for translate', async () => {
-            mockAuth();
-            const res = await fetch(`${baseUrl}/api/ai/translate`, {
+            setup.mockAuth();
+            const res = await fetch(`${setup.baseUrl}/api/ai/translate`, {
                 method: 'POST',
                 headers: { 'Authorization': 'Bearer token', 'Content-Type': 'application/json' },
                 body: JSON.stringify({ text: '' }) // Invalid text/targetLanguage
@@ -374,8 +363,8 @@ describe('AI Prompt Construction Regression', () => {
         });
 
         it('should return 403 Forbidden for generate-personal-weekly-recap if user requests another user\'s recap', async () => {
-            mockAuth('user-A');
-            const res = await fetch(`${baseUrl}/api/ai/generate-personal-weekly-recap`, {
+            setup.mockAuth('user-A');
+            const res = await fetch(`${setup.baseUrl}/api/ai/generate-personal-weekly-recap`, {
                 method: 'POST',
                 headers: { 'Authorization': 'Bearer token', 'Content-Type': 'application/json' },
                 body: JSON.stringify({ uid: 'user-B', language: 'en' })
@@ -399,8 +388,8 @@ describe('AI Prompt Construction Regression', () => {
 
         it('should return 404 if user not found', async () => {
             const nonExistentUid = 'non-existent-uid';
-            mockAuth(nonExistentUid);
-            const res = await fetch(`${baseUrl}/api/ai/generate-personal-weekly-recap`, {
+            setup.mockAuth(nonExistentUid);
+            const res = await fetch(`${setup.baseUrl}/api/ai/generate-personal-weekly-recap`, {
                 method: 'POST',
                 headers: { 'Authorization': 'Bearer token', 'Content-Type': 'application/json' },
                 body: JSON.stringify({ uid: nonExistentUid, language: 'en' })
@@ -411,8 +400,8 @@ describe('AI Prompt Construction Regression', () => {
         });
 
         it('should return message if no personal notes found', async () => {
-            mockAuth(testUserUid);
-            const res = await fetch(`${baseUrl}/api/ai/generate-personal-weekly-recap`, {
+            setup.mockAuth(testUserUid);
+            const res = await fetch(`${setup.baseUrl}/api/ai/generate-personal-weekly-recap`, {
                 method: 'POST',
                 headers: { 'Authorization': 'Bearer token', 'Content-Type': 'application/json' },
                 body: JSON.stringify({ uid: testUserUid, language: 'en' })
@@ -423,7 +412,7 @@ describe('AI Prompt Construction Regression', () => {
         });
 
         it('should enforce personal weekly recap cooldown rate limit (429)', async () => {
-            mockAuth(testUserUid);
+            setup.mockAuth(testUserUid);
             const { db } = await import('./lib/firebase-admin.js');
             
             // Set lastRecapGeneratedAt to yesterday
@@ -433,7 +422,7 @@ describe('AI Prompt Construction Regression', () => {
                 lastRecapGeneratedAt: admin.firestore.Timestamp.fromDate(yesterday)
             });
 
-            const res = await fetch(`${baseUrl}/api/ai/generate-personal-weekly-recap`, {
+            const res = await fetch(`${setup.baseUrl}/api/ai/generate-personal-weekly-recap`, {
                 method: 'POST',
                 headers: { 'Authorization': 'Bearer token', 'Content-Type': 'application/json' },
                 body: JSON.stringify({ uid: testUserUid, language: 'en' })
@@ -450,7 +439,7 @@ describe('AI Prompt Construction Regression', () => {
         });
 
         it('should generate personal recap and persist to Firestore', async () => {
-            mockAuth(testUserUid);
+            setup.mockAuth(testUserUid);
             const { db } = await import('./lib/firebase-admin.js');
 
             // Seed a note
@@ -460,12 +449,10 @@ describe('AI Prompt Construction Regression', () => {
             });
 
             if (!isRealAi) {
-                vi.mocked(axios.post).mockResolvedValue({
-                    data: { candidates: [{ content: { parts: [{ text: 'Dear Friend, I see you study daily.' }] } }] }
-                });
+                mockGeminiResponse('Dear Friend, I see you study daily.');
             }
 
-            const res = await fetch(`${baseUrl}/api/ai/generate-personal-weekly-recap`, {
+            const res = await fetch(`${setup.baseUrl}/api/ai/generate-personal-weekly-recap`, {
                 method: 'POST',
                 headers: { 'Authorization': 'Bearer token', 'Content-Type': 'application/json' },
                 body: JSON.stringify({ uid: testUserUid, language: 'en' })
@@ -491,7 +478,7 @@ describe('AI Prompt Construction Regression', () => {
 
     describe('Discussion Topic and Error Handling', () => {
         it('should generate discussion topic with group notes context', async () => {
-            mockAuth();
+            setup.mockAuth();
             const { db } = await import('./lib/firebase-admin.js');
             const groupId = `group-disc-${Date.now()}`;
             
@@ -503,12 +490,10 @@ describe('AI Prompt Construction Regression', () => {
             });
 
             if (!isRealAi) {
-                vi.mocked(axios.post).mockResolvedValue({
-                    data: { candidates: [{ content: { parts: [{ text: 'What is charity to you?' }] } }] }
-                });
+                mockGeminiResponse('What is charity to you?');
             }
 
-            const res = await fetch(`${baseUrl}/api/ai/generate-discussion-topic`, {
+            const res = await fetch(`${setup.baseUrl}/api/ai/generate-discussion-topic`, {
                 method: 'POST',
                 headers: { 'Authorization': 'Bearer token', 'Content-Type': 'application/json' },
                 body: JSON.stringify({ groupId, language: 'en' })
@@ -520,22 +505,21 @@ describe('AI Prompt Construction Regression', () => {
             expect(data.topic).toBe('What is charity to you?');
 
             if (!isRealAi) {
-                const axiosCall = vi.mocked(axios.post).mock.calls[0];
-                const prompt = (axiosCall[1] as { contents: Array<{ parts: Array<{ text: string }> }> }).contents[0].parts[0].text;
+                const prompt = getSentPrompt(0);
                 expect(prompt).toContain('Recent study context');
                 expect(prompt).toContain('We discussed charity.');
             }
         });
 
         it('should handle AI error flow gracefully (500)', async () => {
-            mockAuth();
+            setup.mockAuth();
             if (!isRealAi) {
                 vi.mocked(axios.post).mockRejectedValue({
                     response: { status: 400, data: 'API Key Blocked' }
                 });
             }
 
-            const res = await fetch(`${baseUrl}/api/ai/generate-ponder-questions`, {
+            const res = await fetch(`${setup.baseUrl}/api/ai/generate-ponder-questions`, {
                 method: 'POST',
                 headers: { 'Authorization': 'Bearer token', 'Content-Type': 'application/json' },
                 body: JSON.stringify({ scripture: 'Alma 32', chapter: '21', language: 'en' })
@@ -548,14 +532,14 @@ describe('AI Prompt Construction Regression', () => {
         });
 
         it('should handle AI error flow gracefully for generate-discussion-topic', async () => {
-            mockAuth();
+            setup.mockAuth();
             if (!isRealAi) {
                 vi.mocked(axios.post).mockRejectedValue({
                     response: { status: 403, data: 'API Key Blocked' }
                 });
             }
 
-            const res = await fetch(`${baseUrl}/api/ai/generate-discussion-topic`, {
+            const res = await fetch(`${setup.baseUrl}/api/ai/generate-discussion-topic`, {
                 method: 'POST',
                 headers: { 'Authorization': 'Bearer token', 'Content-Type': 'application/json' },
                 body: JSON.stringify({ language: 'en' })
@@ -570,7 +554,7 @@ describe('AI Prompt Construction Regression', () => {
 
         it('should handle personal recap query failure gracefully', async () => {
             const testUserUid = `user-personal-fail-${Date.now()}`;
-            mockAuth(testUserUid);
+            setup.mockAuth(testUserUid);
             const { db } = await import('./lib/firebase-admin.js');
 
             await db.collection('users').doc(testUserUid).set({
@@ -581,7 +565,7 @@ describe('AI Prompt Construction Regression', () => {
                 throw new Error('DB read error');
             });
 
-            const res = await fetch(`${baseUrl}/api/ai/generate-personal-weekly-recap`, {
+            const res = await fetch(`${setup.baseUrl}/api/ai/generate-personal-weekly-recap`, {
                 method: 'POST',
                 headers: { 'Authorization': 'Bearer token', 'Content-Type': 'application/json' },
                 body: JSON.stringify({ uid: testUserUid, language: 'en' })
@@ -596,7 +580,7 @@ describe('AI Prompt Construction Regression', () => {
 
         it('should handle personal recap persistence warning gracefully', async () => {
             const testUserUid = `user-personal-warn-${Date.now()}`;
-            mockAuth(testUserUid);
+            setup.mockAuth(testUserUid);
             const { db } = await import('./lib/firebase-admin.js');
 
             await db.collection('users').doc(testUserUid).set({
@@ -625,12 +609,10 @@ describe('AI Prompt Construction Regression', () => {
             });
 
             if (!isRealAi) {
-                vi.mocked(axios.post).mockResolvedValue({
-                    data: { candidates: [{ content: { parts: [{ text: 'Encouraging words' }] } }] }
-                });
+                mockGeminiResponse('Encouraging words');
             }
 
-            const res = await fetch(`${baseUrl}/api/ai/generate-personal-weekly-recap`, {
+            const res = await fetch(`${setup.baseUrl}/api/ai/generate-personal-weekly-recap`, {
                 method: 'POST',
                 headers: { 'Authorization': 'Bearer token', 'Content-Type': 'application/json' },
                 body: JSON.stringify({ uid: testUserUid, language: 'en' })

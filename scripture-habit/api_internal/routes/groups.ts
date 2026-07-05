@@ -526,7 +526,7 @@ router.post('/kick-member', authenticate, verifyAppCheck, async (req: Authentica
 });
 
 // Update Kick Threshold
-router.post('/update-kick-threshold', authenticate, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
+router.post('/update-kick-threshold', authenticate, requireEmailVerified, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
     const validation = updateKickThresholdSchema.safeParse(req.body);
     if (!validation.success) {
         return res.status(400).json({ error: 'Invalid input', details: validation.error.format() });

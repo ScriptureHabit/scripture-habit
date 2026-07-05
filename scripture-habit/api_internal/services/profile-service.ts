@@ -202,7 +202,7 @@ export class ProfileService {
                     const recentMsgs = await query.get();
                     if (recentMsgs.empty) break;
 
-                    const batch = db.batch();
+                    let batch = db.batch();
                     let hasChanges = false;
                     let opsInBatch = 0;
 
@@ -232,7 +232,8 @@ export class ProfileService {
                         
                         if (opsInBatch >= 90) {
                             await batch.commit();
-                            // Reset batch if needed, but we typically commit one batch per query chunk for simplicity
+                            batch = db.batch();
+                            opsInBatch = 0;
                         }
                     }
                     if (hasChanges && opsInBatch < 90) await batch.commit();

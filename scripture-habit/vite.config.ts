@@ -24,6 +24,8 @@ export default defineConfig({
     setupFiles: './src/setup-tests.ts',
     exclude: ['**/node_modules/**', '**/dist/**', 'tests/**'],
     fileParallelism: false,
+    testTimeout: 30000,
+    hookTimeout: 30000,
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html'],

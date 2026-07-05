@@ -22,11 +22,11 @@ flowchart TD
 
     subgraph Firestore ["Firestore Collections"]
         Group["groups/{groupId}\n(Main Document - Synced Total)"]
-        shards["groups/{groupId}/shards/{0..9}\n(Distributed Shards)"]
+        shards["groups/{groupId}/shards/{0..2}\n(Distributed Shards)"]
     end
 
     C1 & C2 & C3 -->|Concurrent Writes| Inc
-    Inc -->|1. Math.random index| ShardID["Shard ID (0..9)"]
+    Inc -->|1. Math.random index| ShardID["Shard ID (0..2)"]
     ShardID -->|2. Transaction.set increment value| shards
     
     Recount -->|1. Collection count query| dbCount["High-Performance Count"]
@@ -42,31 +42,41 @@ When hundreds of group members post study notes or send chat messages simultaneo
 
 To scale write operations, the **`CounterService`** distributes increments across a dedicated subcollection of shard documents.
 
-### 1.1 Dynamic Shard Hashing & Writes
+### 1.1 Dynamic Shard Routing & Writes
 
-The system uses **10 shards** (`NUM_SHARDS = 10`) per sharded field. When an increment occurs, the service selects a random shard ID from `0` to `9` and dispatches an atomic field increment using a Firestore transaction:
+The system maintains **3 shards** (`NUM_SHARDS = 3`) per sharded field. To optimize database costs (which scale with the number of shards read), the service implements **"Dynamic Shard Routing"**:
+
+- **Small groups (<= 100 members)**: Write concurrency is extremely low, so the service bypasses sharding entirely and increments the parent group document directly. This reduces read billing costs when aggregating the counter.
+- **Large groups (>= 101 members)**: To mitigate write contention, a random shard index between `0` and `2` is selected dynamically, and a merge-set utilizing Firestore's atomic increment operator is performed.
 
 ```typescript
-private static NUM_SHARDS = 10;
+private static NUM_SHARDS = 3;
 
 static increment(
     transaction: admin.firestore.Transaction, 
     ref: admin.firestore.DocumentReference, 
     fieldName: string = 'count', 
-    value: number = 1
+    value: number = 1,
+    membersCount: number = 0
 ) {
-    // 1. Generate a random shard index between 0 and 9
-    const shardId = Math.floor(Math.random() * this.NUM_SHARDS).toString();
-    const shardRef = ref.collection('shards').doc(shardId);
-    
-    // 2. Perform merge-set utilizing the atomic field value increment operator
-    transaction.set(shardRef, {
-        [fieldName]: admin.firestore.FieldValue.increment(value)
-    }, { merge: true });
+    if (membersCount > 100) {
+        // Large groups: Distribute writes to a random shard from 0 to 2
+        const shardId = Math.floor(Math.random() * this.NUM_SHARDS).toString();
+        const shardRef = ref.collection('shards').doc(shardId);
+        
+        transaction.set(shardRef, {
+            [fieldName]: admin.firestore.FieldValue.increment(value)
+        }, { merge: true });
+    } else {
+        // Small groups: Bypass sharding and write directly to parent document
+        transaction.update(ref, {
+            [fieldName]: admin.firestore.FieldValue.increment(value)
+        });
+    }
 }
 ```
 
-By spreading writes across 10 distinct physical documents, the theoretical write throughput for this counter scales **10x** (from 1 write/sec to 10 writes/sec) without contention, as Firestore handles updates to separate documents in parallel.
+By spreading writes across 3 distinct physical documents for large groups, the write throughput scales gracefully without contention, while small groups benefit from zero-sharding read overhead.
 
 ### 1.2 Transacted and Non-Transacted Reads
 
@@ -87,7 +97,7 @@ static async getCount(ref: admin.firestore.DocumentReference, fieldName: string 
 
 #### B. Transactional Read Consolidation (`getCountInTransaction`)
 When the total count must be read *inside* a transaction (to perform validation or compute secondary states), sequential reads inside a loop would trigger multiple network roundtrips and violate read-before-write phases. 
-Instead, the service builds references for all 10 shards and fetches them in a single parallel call using `transaction.getAll(...)`:
+Instead, the service builds references for all 3 shards and fetches them in a single parallel call using `transaction.getAll(...)`:
 
 ```typescript
 static async getCountInTransaction(
@@ -100,7 +110,7 @@ static async getCountInTransaction(
         shardRefs.push(ref.collection('shards').doc(i.toString()));
     }
     
-    // Parallel fetch: retrieves all 10 shard documents in a single roundtrip
+    // Parallel fetch: retrieves all 3 shard documents in a single roundtrip
     const snaps = await transaction.getAll(...shardRefs);
     let totalCount = 0;
     snaps.forEach((doc) => {

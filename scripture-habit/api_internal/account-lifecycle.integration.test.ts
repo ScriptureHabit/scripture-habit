@@ -30,13 +30,14 @@ describe('Account Lifecycle Integration', () => {
     });
 
     describe('Profile Management', () => {
-        const uid = 'lifecycle-user-' + Date.now();
-
-        it('should initialize a new profile with default values', async () => {
+        it('should initialize a new profile and allow subsequent updates', async () => {
+            // uid is declared inside the test so each run is fully independent
+            const uid = 'lifecycle-user-' + Date.now();
             setup.mockAuth(uid, false); // Not verified yet
             createdUserUids.push(uid);
 
-            const res = await fetch(`${setup.baseUrl}/api/auth/initialize-profile`, {
+            // --- Step 1: Initialize profile ---
+            const initRes = await fetch(`${setup.baseUrl}/api/auth/initialize-profile`, {
                 method: 'POST',
                 headers: { 
                     'Authorization': 'Bearer token',
@@ -48,10 +49,10 @@ describe('Account Lifecycle Integration', () => {
                 })
             });
 
-            expect(res.status).toBe(201);
-            const data = await res.json();
-            expect(data.userData.nickname).toBe('Newcomer');
-            expect(data.userData.kickThreshold).toBe(3);
+            expect(initRes.status).toBe(201);
+            const initData = await initRes.json();
+            expect(initData.userData.nickname).toBe('Newcomer');
+            expect(initData.userData.kickThreshold).toBe(3);
 
             // Verify Firestore
             const userSnap = await db.collection('users').doc(uid).get();
@@ -59,12 +60,11 @@ describe('Account Lifecycle Integration', () => {
             const userData = userSnap.data() as UserDocument;
             expect(userData.timeZone).toBe('Asia/Tokyo');
             expect(userData.streakCount).toBe(0);
-        });
 
-        it('should update profile and keep it synced', async () => {
+            // --- Step 2: Update profile (now email-verified) ---
             setup.mockAuth(uid, true);
 
-            const res = await fetch(`${setup.baseUrl}/api/auth/update-profile`, {
+            const updateRes = await fetch(`${setup.baseUrl}/api/auth/update-profile`, {
                 method: 'POST',
                 headers: { 
                     'Authorization': 'Bearer token',
@@ -76,19 +76,22 @@ describe('Account Lifecycle Integration', () => {
                 })
             });
 
-            expect(res.status).toBe(200);
+            expect(updateRes.status).toBe(200);
             
-            const userSnap = await db.collection('users').doc(uid).get();
-            expect(userSnap.data()?.nickname).toBe('Updated Name');
-            expect(userSnap.data()?.bio).toBe('I love scriptures');
+            const updatedSnap = await db.collection('users').doc(uid).get();
+            expect(updatedSnap.data()?.nickname).toBe('Updated Name');
+            expect(updatedSnap.data()?.bio).toBe('I love scriptures');
         });
     });
 
     describe('Account Deletion', () => {
-        const uid = 'delete-target-' + Date.now();
-        const gid = 'delete-group-' + Date.now();
-
         it('should completely purge user data and exit groups on deletion', async () => {
+            // uid/gid declared inside the test for full independence
+            const uid = 'delete-target-' + Date.now();
+            const gid = 'delete-group-' + Date.now();
+            createdUserUids.push(uid);
+            createdGroupIds.push(gid);
+
             // 1. Setup User in Auth & Firestore
             await admin.auth().createUser({
                 uid,
@@ -103,7 +106,6 @@ describe('Account Lifecycle Integration', () => {
                 groupIds: [gid],
                 createdAt: admin.firestore.Timestamp.now()
             });
-            createdUserUids.push(uid);
 
             await db.collection('groups').doc(gid).set({
                 name: 'Stay Group',
@@ -117,7 +119,6 @@ describe('Account Lifecycle Integration', () => {
                 lastNoteByUid: uid,
                 lastNoteByNickname: 'Bye User'
             });
-            createdGroupIds.push(gid);
 
             await db.collection('groups').doc(gid).collection('members').doc(uid).set({
                 nickname: 'Bye User',

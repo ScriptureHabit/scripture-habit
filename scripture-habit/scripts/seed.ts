@@ -3,9 +3,31 @@ import { db, auth, admin } from '../api_internal/lib/firebase-admin.js';
 async function seed() {
     console.log('🌱 Starting local database seeding sequence...');
 
-    if (!process.env.FIRESTORE_EMULATOR_HOST || !process.env.FIREBASE_AUTH_EMULATOR_HOST) {
-        console.error('❌ ERROR: Emulator hosts are not set in the environment!');
-        console.error('Please make sure FIRESTORE_EMULATOR_HOST and FIREBASE_AUTH_EMULATOR_HOST are defined.');
+    // 1. Strict verification of Emulator environment
+    const firestoreHost = process.env.FIRESTORE_EMULATOR_HOST;
+    const authHost = process.env.FIREBASE_AUTH_EMULATOR_HOST;
+
+    const isLocalHost = (host?: string) => {
+        if (!host) return false;
+        return host.includes('127.0.0.1') || host.includes('localhost') || host.includes('::1');
+    };
+
+    if (!firestoreHost || !authHost || !isLocalHost(firestoreHost) || !isLocalHost(authHost)) {
+        console.error('❌ CRITICAL SECURITY ERROR: Database seeding aborted.');
+        console.error('Seeding is only allowed against a local emulator loopback (127.0.0.1 or localhost).');
+        console.error(`Firestore Host: ${firestoreHost}`);
+        console.error(`Auth Host:      ${authHost}`);
+        process.exit(1);
+    }
+
+    // 2. Double safeguard check on resolved Project ID to prevent targeting production database
+    const resolvedProjectId = admin.app().options.projectId;
+    const isProdProject = resolvedProjectId === 'scripture-habit' || resolvedProjectId?.endsWith('-prod') || process.env.NODE_ENV === 'production';
+
+    if (isProdProject) {
+        console.error('❌ CRITICAL SECURITY ERROR: Seeding script blocked!');
+        console.error(`The resolved Project ID "${resolvedProjectId}" indicates a production or remote database.`);
+        console.error('To protect production data, database seeding is strictly forbidden on this project.');
         process.exit(1);
     }
 

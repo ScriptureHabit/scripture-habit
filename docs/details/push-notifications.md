@@ -406,3 +406,18 @@ export async function cleanupTokens(uid: string, failedTokens: string[]) {
 ```
 
 This guarantees the token database remains entirely free of dead weight, preserving notification delivery performance without manual database maintenance.
+
+---
+
+## 5. FCM Token Location Migration & Clean-up Plan
+
+To reduce long-term database query overhead and simplify the codebase, a deprecation roadmap for the legacy public `fcmTokens` field has been established.
+
+### 5.1 Migration Timeline
+* **Migration Phase (Current)**: All newly registered devices save tokens to the private collection (`users/{uid}/private/tokens`). Legacy public `fcmTokens` arrays are merged and deduplicated on-the-fly to support older app versions.
+* **Migration Execution (3rd Month from Launch)**:
+  - An automated backend migration script (migration batch) will run to copy any remaining public `fcmTokens` into the private subcollection for all legacy users.
+* **Cleanup & Deprecation (6th Month from Launch)**:
+  - Assuming all users are migrated, we will remove the legacy fallback code in `getUserFcmTokensAndLanguage` that queries and merges the public `fcmTokens` field.
+  - The Firestore security rules will be updated to completely remove write/read permissions for `fcmTokens` on the `users/{uid}` document.
+

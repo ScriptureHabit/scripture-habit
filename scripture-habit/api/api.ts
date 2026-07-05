@@ -31,6 +31,7 @@ import { globalLimiter } from '../api_internal/lib/middleware.js';
 import { AppError } from '../api_internal/lib/errors.js';
 
 const app = express();
+app.locals.skipAppCheck = process.env.SKIP_APP_CHECK === 'true';
 
 // --- Middleware & Configuration ---
 app.use(helmet());

@@ -4,9 +4,10 @@ import { admin, db } from '../lib/firebase-admin.js';
 import { ProfileService } from './profile-service.js';
 
 describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('ProfileService Integration', () => {
-    const UID = 'PROFILE_USER';
-    const G1 = 'PROFILE_GRP_1';
-    const G2 = 'PROFILE_GRP_2';
+    const RUN_ID = Math.random().toString(36).substring(2, 7);
+    const UID = `PROFILE_USER_${RUN_ID}`;
+    const G1 = `PROFILE_GRP_1_${RUN_ID}`;
+    const G2 = `PROFILE_GRP_2_${RUN_ID}`;
     
     beforeEach(async () => {
         // 1. Setup User
@@ -104,7 +105,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('ProfileService Integratio
         expect(msgData.senderNickname).toBe('OldName'); 
     });
 
-    it('should handle large batches in purgeSocialIdentity (covering line 234)', async () => {
+    it('should handle large batches in purgeSocialIdentity', async () => {
         // Create 451 bulk messages to trigger the batch limit of 450
         const bulkBatch = db.batch();
         for (let i = 0; i < 451; i++) {
@@ -127,7 +128,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('ProfileService Integratio
         expect(testMsgSnap.data()?.reactionPreviews['👍'][0].nickname).toBe('...');
     }, 45000);
 
-    it('should handle large batches in syncProfileToChats (covering line 121 and 168)', async () => {
+    it('should handle large batches in syncProfileToChats', async () => {
         // Create 451 notes to exceed the batch threshold of 450
         const noteBatch = db.batch();
         for (let i = 0; i < 451; i++) {
@@ -164,7 +165,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('ProfileService Integratio
         expect(msgSnap.data()?.senderNickname).toBe('SuperNewName');
     }, 60000);
 
-    it('should handle errors in syncProfileToChats (covering line 180)', async () => {
+    it('should handle errors in syncProfileToChats', async () => {
         const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
         
         // Pass undefined to cause a Firestore collection reference path error
@@ -174,7 +175,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('ProfileService Integratio
         consoleErrorSpy.mockRestore();
     });
 
-    it('should handle errors in purgeSocialIdentity (covering line 244)', async () => {
+    it('should handle errors in purgeSocialIdentity', async () => {
         const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
         
         // Pass undefined to cause a Firestore collection reference path error
