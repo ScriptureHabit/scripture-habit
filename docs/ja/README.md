@@ -76,23 +76,21 @@
 
 ## 🛠️ 運用 & 開発 (Operations & Development)
 - **[開発 & 環境構築ガイド](development-guide.md)**
-  - ローカルセットアップ、モバイル開発（Capacitor）、およびデプロイ手順。
+  - ローカルセットアップおよびデプロイ手順。
 - **[技術トラブルシューティング & FAQ](troubleshooting.md)**
-  - Capacitor ループバックエラー、Android のクリアテキスト通信（非SSL通信設定）、AppCheck テストバイパス、およびキーストア SHA-1 調整。
+  - App Check テストバイパスの調整。
 - **[テスト & 信頼性ガイド](testing-guide.md)**
   - Vitest を使用したユニットテストおよび統合テスト環境、Firebase セキュリティルール検証、Playwright を使用した E2E 自動テスト。
 - **[CI/CD & メンテナンス自動化ガイド](cicd-maintenance-automation.md)**
   - GitHub Actions 継続的インテグレーション、ローカル Java Firebase エミュレーター、Playwright パイプライン実行、Vercel 本番環境 CD デプロイ、および日次の非アクティブスキャン用 Cron トリガー。
-- **[Capacitor アプリ署名 & リリースガイド](hybrid-mobile-release-guide.md)**
-  - モバイルストアリリースのコンパイル、Android キーストアバンドル署名、Google 認証用 SHA フィンガープリント登録、iOS プロビジョニングプロファイル、および APNs 証明書バインド。
 - **[メンテナンス & バッチジョブ](maintenance-cron.md)**
   - 非アクティブチェック、オーナー権限譲渡、およびカウンター集計。
   - アーカイブおよび自己修復メカニズム。
 - **[監視 & オブザーバビリティ](monitoring-observability.md)**
   - Sentry 統合、vConsole、および PWA ライフサイクル。
   - エラーのサイレンス化とパフォーマンストレーシング。
-- **[PWA & Capacitor ハイブリッドモバイルライフサイクル](hybrid-mobile-lifecycle.md)**
-  - サービスワーカー背景キャッシュの更新プロンプト、iOS 共有バーの操作説明オーバーレイ、および Capacitor エミュレータ非暗号化ネットワーク設定。
+- **[PWA モバイルライフサイクル](hybrid-mobile-lifecycle.md)**
+  - サービスワーカー背景キャッシュの更新プロンプト、および iOS 共有バーの操作説明オーバーレイ。
   - アプリ内 WebView サンドボックスブラウザチェック、および動的な OS 脱出プロトコル（LINE 外部ブラウザオーバーライド、Android Chrome インテント）。
 - **[Firestore オフライン持続性 & 複数タブ同期](firestore-offline-persistence.md)**
   - IndexedDB キャッシュ設定、マルチタブ共有ロック、フェイルオーバー try-catch ブロック、および自動ランナー webdriver 最適化。
@@ -121,8 +119,6 @@
   - アクティブホライズン同期境界、ページネーションカーソルによる一括処理、複数エンティティの動的同時更新、個人ノート用検索プレフィックスインデックス自動再構築、およびGDPR準拠の退会時スタンプ匿名化クリーンアップのシーケンス図・決定木フロー図解・コード解説。
 - **[Firestore トランザクション & 分散カウンタシャード詳細設計](details/firestore-transactions-counters.md)**
   - Read-before-Write トランザクション制御（非同期 IIFE スコープ分離）、複数ドキュメントのアトミック同時更新、10シャード型分散カウンタ書き込み、トランザクション安全な並行一括読み取り（getAll）、超高速サーバーサイド集計（count）、退避済みアーカイブ考慮の合算、および統合テスト用 N+1 回避グローバル 300-Read 監査システムのシーケンス図・詳細フロー解説・コード解説。
-- **[PWA & Capacitor ハイブリッドモバイルライフサイクル詳細](details/hybrid-mobile-lifecycle.md)**
-  - サービスワーカーのバックグラウンド更新プロンプト（SKIP_WAITING + 3秒自動フォールバック）、OS適応型のPWAインストール誘導（iOS共有ポップアップ指示）、アプリ内 WebView サンドボックス脱出ゲート（ユニバーサル Android Intents + LINE 外部ブラウザオーバーライド）、および App Check 保護付きタイムゾーン動的深夜 UI リセット同期のシーケンス図・フロー詳細・コード解説。
 - **[Firestore オフライン永続化 & 複数タブ同期ロジック詳細](details/firestore-offline-persistence.md)**
   - `persistentMultipleTabManager` による複数タブ排他制御（共有ロック / Web Locks API）、アクティブ・マスタータブの自動選出とセカンダリタブへのブロードキャスト通信マージ、 IndexedDB に裏打ちされたオフライン書き込みキューと通信復帰時の自動フラッシュ、iOS Safari プライベートモード等のIndexedDB規制下における安全なメモリキャッシュ・フォールバック（try-catchガード）、および自動 E2E テスト（`navigator.webdriver`）における LocalStorage 高速認証セッション同期のシーケンス図・動作フロー詳細・コード解説。
 - **[URL メタデータ抽出 & 発表者自動解析システム詳細](details/url-metadata-extraction.md)**

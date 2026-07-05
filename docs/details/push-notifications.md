@@ -8,7 +8,7 @@ The system is split into a frontend manager that handles permissions, service wo
 
 ```mermaid
 flowchart TD
-    subgraph Client ["Client Device (Browser/Capacitor)"]
+    subgraph Client ["Client Device (Browser)"]
         UI["Dashboard / Settings UI"]
         NH["notification-helper.ts\n(SW Manager)"]
         SW["sw.js\n(Service Worker)"]

@@ -75,7 +75,7 @@ sequenceDiagram
 
 ## 🔒 Firebase App Check Verification and Production Guard
 
-Firebase **App Check** is a defense system that verifies whether requests are sent from officially registered applications (such as the Vite frontend or Capacitor mobile binaries).
+Firebase **App Check** is a defense system that verifies whether requests are sent from officially registered applications (such as the Vite frontend).
 
 ### Robust "Production Security Guard" Design
 During local development using mobile emulators, passing App Check can be challenging. Therefore, a `SKIP_APP_CHECK` environment variable is provided for development environments. However, **if this is accidentally enabled in the production environment (`NODE_ENV === 'production'`), it poses a major security risk by completely disabling backend defense.**

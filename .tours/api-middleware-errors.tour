@@ -5,7 +5,7 @@
     {
       "file": "scripture-habit/api/api.ts",
       "line": 43,
-      "description": "### 🌐 Strict CORS Origin Safeguard\n\nTo prevent cross-site request forgery, we define `ALLOWED_ORIGINS` (including web domains and Capacitor mobile schemes like `capacitor://localhost`). The middleware rejects any requests from outside this whitelist, allowing only trusted clients to query our endpoints."
+      "description": "### 🌐 Strict CORS Origin Safeguard\n\nTo prevent cross-site request forgery, we define `ALLOWED_ORIGINS` (including web domains). The middleware rejects any requests from outside this whitelist, allowing only trusted clients to query our endpoints."
     },
     {
       "file": "scripture-habit/api/api.ts",

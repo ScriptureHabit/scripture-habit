@@ -1,6 +1,6 @@
-# PWA & Capacitor モバイルのライフサイクル
+# PWA モバイルのライフサイクル
 
-このドキュメントでは、**scripture-habit** アプリが PWA の更新、プラットフォームごとのインストールプロンプト、Capacitor 設定、および WebView の設定をどのように処理するかについて説明します。
+このドキュメントでは、**scripture-habit** アプリが PWA の更新、プラットフォームごとのインストールプロンプト、および WebView の設定をどのように処理するかについて説明します。
 
 ---
 
@@ -83,52 +83,7 @@ iOS Safari はネイティブのインストールイベントをサポートし
 
 ---
 
-## 3. Capacitor Android の設定
-
-ネイティブモバイルの構成では、Capacitor が Android 上の設定や権限を制御します。
-
-### Capacitor 設定 (`capacitor.config.ts`)
-```typescript
-import type { CapacitorConfig } from '@capacitor/cli';
-
-const config: CapacitorConfig = {
-  appId: 'com.scripturehabit.app',
-  appName: 'Scripture Habit',
-  webDir: 'dist',
-  plugins: {
-    GoogleAuth: {
-      scopes: ['profile', 'email'],
-      serverClientId: '346318604907-7su40hveemp8e6vi0b9hnqrhvvtpsb9j.apps.googleusercontent.com',
-      forceCodeForRefreshToken: true,
-    },
-  },
-};
-export default config;
-```
-
-### 3.1 Android の要件
-アプリを正常にビルドして実行するには、`/android` ディレクトリ内で以下の手順を実行します：
-
-1. **Google 認証**:
-   - Firebase コンソールにデバッグ用および本番用の両方の SHA-1 フィンガープリントを登録する必要があります。
-   - `capacitor.config.ts` の `serverClientId` は、Google Cloud コンソールで生成された Web クライアント ID と一致する必要があります。
-
-2. **Localhost & エミュレータの HTTP アクセス**:
-   - ローカル開発用の API（例：`http://10.0.2.2:5001/`）に接続するには、`android/app/src/main/res/xml/` 配下にカスタムの `network_security_config.xml` を構成します：
-     ```xml
-     <?xml version="1.0" encoding="utf-8"?>
-     <network-security-config>
-         <domain-config cleartextTrafficPermitted="true">
-             <domain includeSubdomains="true">localhost</domain>
-             <domain includeSubdomains="true">10.0.2.2</domain>
-         </domain-config>
-     </network-security-config>
-     ```
-   - これにより、`ERR_CLEARTEXT_NOT_PERMITTED` ネットワークエラーを防ぐことができます。
-
----
-
-## 4. アプリ内 WebView の安全性
+## 3. アプリ内 WebView の安全性
 
 ソーシャルネットワークやメッセージングアプリの内部からアプリを開くユーザーをサポートするため、アプリにはアプリ内 WebView 用の安全性チェックが含まれています。
 
@@ -166,7 +121,7 @@ Facebook、Instagram、LINE、WhatsApp などのアプリ内ブラウザは、We
 
 ---
 
-## 5. WebView 回避（脱出）シーケンス
+## 4. WebView 回避（脱出）シーケンス
 
 ```mermaid
 sequenceDiagram

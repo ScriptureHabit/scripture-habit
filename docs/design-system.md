@@ -43,7 +43,7 @@ When adding a new card or modal, use `var(--glass)` and set the border-radius to
 
 ## Mobile-First Strategy
 
-The app is designed to be fully functional on both desktop and mobile (via Capacitor).
+The app is designed to be fully functional on both desktop and mobile.
 
 ### Breakpoint: 768px
 - **Desktop**: Sidebar is fixed, content is center-aligned.

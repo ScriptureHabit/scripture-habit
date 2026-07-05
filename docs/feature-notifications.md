@@ -89,7 +89,7 @@ Every push we send uses a hybrid payload to ensure compatibility across Android 
 | Key | Purpose | Logic |
 | :--- | :--- | :--- |
 | **`notification`** | **Visual** | Handled by the OS. Displays title and body even if the app is closed. |
-| **`data`** | **Programmatic** | Handled by Capacitor. Includes `groupId` and `type` for deep-linking. |
+| **`data`** | **Programmatic** | Handled by the client application. Includes `groupId` and `type` for deep-linking. |
 
 ### Foreground Suppression
 If the app is open (foreground), we suppress the visual notification banner because the **real-time `onSnapshot` listener** already shows the content in the chat. This prevents duplicate alerts.

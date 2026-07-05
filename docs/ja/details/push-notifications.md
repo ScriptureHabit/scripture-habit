@@ -8,7 +8,7 @@
 
 ```mermaid
 flowchart TD
-    subgraph Client ["クライアント端末 (ブラウザ/Capacitor)"]
+    subgraph Client ["クライアント端末 (ブラウザ)"]
         UI["ダッシュボード / 設定画面 UI"]
         NH["notification-helper.ts\n(SWマネージャー)"]
         SW["sw.js\n(サービスワーカー)"]

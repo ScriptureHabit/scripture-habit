@@ -28,7 +28,6 @@ assignees: ''
 - **Operating System / Browser**: (e.g., Windows 11, Chrome 124)
 - **Node.js Version**: (e.g., v22.2.0)
 - **Firebase Emulator Mode**: (Yes / No)
-- **Capacitor Android Target**: (e.g., Android API level 34)
 
 ## 📄 Logs / Stack Traces
 *Paste any relevant logs, terminal traces, console errors, or database rule diagnostics here:*
