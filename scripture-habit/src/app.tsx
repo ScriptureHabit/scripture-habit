@@ -97,7 +97,7 @@ const isPublicRoute = (urlStr: string) => {
 
     const isMatch = publicPatterns.some(pattern => matchPath(cleanPath, pattern)) || cleanPath === '';
     return isMatch;
-  } catch (e) {
+  } catch {
     return true; // Fallback to safe routing
   }
 };
@@ -214,7 +214,7 @@ const App: React.FC = () => {
         curParams.sort();
         tarParams.sort();
         return curParams.toString() === tarParams.toString();
-      } catch (e) {
+      } catch {
         return false;
       }
     };

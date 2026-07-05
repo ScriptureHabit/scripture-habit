@@ -102,7 +102,7 @@ export const test = base.extend<AuthFixtures>({
     console.log(`[AuthFixture] Injecting auth state for isolated user: ${email}`);
     // Navigate to welcome page first to ensure origin is stable and loaded
     await page.goto('/en/welcome');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
 
     await page.evaluate(async (state) => {
       return new Promise<void>((resolve, reject) => {

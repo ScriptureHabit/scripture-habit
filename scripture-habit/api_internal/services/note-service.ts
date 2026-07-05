@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-properties */
 import { admin, db } from '../lib/firebase-admin.js';
 import { CounterService } from './counter-service.js';
 import { UserDocument, GroupDocument } from '../../types/firestore.js';

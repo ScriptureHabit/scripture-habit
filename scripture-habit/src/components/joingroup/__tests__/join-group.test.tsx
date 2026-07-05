@@ -36,7 +36,7 @@ vi.mock('../../../utils/api-client', () => {
           data = await resp.json();
         } else if (resp.text) {
           const text = await resp.text();
-          try { data = JSON.parse(text || '{}'); } catch {}
+          try { data = JSON.parse(text || '{}'); } catch { /* empty */ }
         }
         return { data };
       }),
@@ -54,7 +54,7 @@ vi.mock('../../../utils/api-client', () => {
           data = await resp.json();
         } else if (resp.text) {
           const text = await resp.text();
-          try { data = JSON.parse(text || '{}'); } catch {}
+          try { data = JSON.parse(text || '{}'); } catch { /* empty */ }
         }
         return { data };
       })

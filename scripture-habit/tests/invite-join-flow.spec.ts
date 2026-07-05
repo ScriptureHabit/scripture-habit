@@ -313,7 +313,7 @@ test.describe('Invitation Join Flow Stability', () => {
                 try {
                     await joinBtn.waitFor({ state: 'visible', timeout: 5000 });
                     await joinBtn.click().catch(() => {});
-                } catch (e) {
+                } catch {
                     console.log('Join button not visible or already redirected');
                 }
             })()

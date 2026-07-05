@@ -18,7 +18,7 @@ function killZombieEmulatorProcesses(ports) {
       let pid = '';
       try {
         pid = execSync(`lsof -t -i:${port}`, { encoding: 'utf8' }).trim();
-      } catch (e) {
+      } catch {
         continue; // Port is free
       }
       if (pid) {
@@ -26,7 +26,7 @@ function killZombieEmulatorProcesses(ports) {
           console.log(`[test-emulated] Port ${port} is taken by PID ${pid}. Killing zombie process...`);
           execSync(`kill -9 ${pid}`);
         } catch (err) {
-          console.warn(`[test-emulated] WARNING: Failed to kill process ${pid} on port ${port}. You may need sudo/administrator privileges, or you should kill it manually.`);
+          console.warn(`[test-emulated] WARNING: Failed to kill process ${pid} on port ${port} (${err.message || err}). You may need sudo/administrator privileges, or you should kill it manually.`);
         }
       }
     }
@@ -38,7 +38,7 @@ function killZombieEmulatorProcesses(ports) {
     let output = '';
     try {
       output = execSync(`netstat -ano | findstr :${port}`, { encoding: 'utf8' }).trim();
-    } catch (e) {
+    } catch {
       continue; // Port is free
     }
     if (!output) continue;
@@ -53,7 +53,7 @@ function killZombieEmulatorProcesses(ports) {
             console.log(`[test-emulated] Port ${port} is taken by PID ${pid}. Killing zombie process...`);
             execSync(`taskkill /F /PID ${pid}`, { stdio: 'pipe' });
           } catch (err) {
-            console.warn(`[test-emulated] WARNING: Failed to kill process ${pid} on port ${port}. This usually happens due to lack of Administrator permissions. Please run the terminal as Administrator or kill it manually.`);
+            console.warn(`[test-emulated] WARNING: Failed to kill process ${pid} on port ${port} (${err.message || err}). This usually happens due to lack of Administrator permissions. Please run the terminal as Administrator or kill it manually.`);
           }
         }
       }

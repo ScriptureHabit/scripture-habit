@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-this-alias */
-/* eslint-disable prefer-rest-params */
+/* eslint-disable no-restricted-properties */
 import { vi } from 'vitest';
 import { Server } from 'http';
 import { auth, admin, db, setDbInstance } from './lib/firebase-admin.js';

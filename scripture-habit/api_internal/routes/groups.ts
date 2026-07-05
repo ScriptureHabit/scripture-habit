@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-properties */
 import express, { Request, Response } from 'express';
 import { admin, db } from '../lib/firebase-admin.js';
 import { verifyAppCheck, authenticate, requireEmailVerified, AuthenticatedRequest } from '../lib/middleware.js';

@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-properties */
 import { admin, db } from '../lib/firebase-admin.js';
 import { CounterService } from './counter-service.js';
 import { GroupDocument, MessageDocument, UserDocument, ReactionPreview, PersonalNoteDocument, FirestoreTimestamp } from '../../types/firestore.js';
