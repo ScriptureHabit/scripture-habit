@@ -107,7 +107,7 @@ export const test = base.extend<AuthFixtures>({
         request.onupgradeneeded = (event: any) => {
           const db = event.target.result;
           if (!db.objectStoreNames.contains('firebaseLocalStorage')) {
-            db.createObjectStore('firebaseLocalStorage');
+            db.createObjectStore('firebaseLocalStorage', { keyPath: 'fbase_key' });
           }
         };
         request.onsuccess = (event: any) => {
