@@ -106,7 +106,7 @@ export const test = base.extend<AuthFixtures>({
 
     await page.evaluate(async (state) => {
       return new Promise<void>((resolve, reject) => {
-        const request = indexedDB.open('firebaseLocalStorageDb', 1);
+        const request = indexedDB.open('firebaseLocalStorageDb');
         request.onupgradeneeded = (event: any) => {
           const db = event.target.result;
           if (!db.objectStoreNames.contains('firebaseLocalStorage')) {
