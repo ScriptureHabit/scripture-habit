@@ -26,7 +26,7 @@ export const test = base.extend<AuthFixtures>({
     const nickname = `E2E Tester ${timestamp}`;
 
     const authHost = process.env.FIREBASE_AUTH_EMULATOR_HOST || '127.0.0.1:9099';
-    const apiKey = process.env.VITE_FIREBASE_API_KEY || 'fake-api-key';
+    const apiKey = process.env.VITE_FIREBASE_API_KEY || 'demo-api-key';
 
     // SignUp request
     const authUrl = `http://${authHost}/identitytoolkit.googleapis.com/v1/accounts:signUp?key=${apiKey}`;
