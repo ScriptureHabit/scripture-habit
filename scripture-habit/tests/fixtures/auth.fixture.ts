@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/rules-of-hooks */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // Force Emulator environment variables before importing firebase-admin
 process.env.GCLOUD_PROJECT = 'scripture-habit-auth';
 process.env.FIRESTORE_EMULATOR_HOST = '127.0.0.1:8080';
@@ -98,8 +100,9 @@ export const test = base.extend<AuthFixtures>({
 
     // 3. Inject Firebase Auth State directly to browser's IndexedDB (bypassing UI login page)
     console.log(`[AuthFixture] Injecting auth state for isolated user: ${email}`);
-    // Navigate to root domain first to ensure we are on the correct origin for IndexedDB access
-    await page.goto('/');
+    // Navigate to welcome page first to ensure origin is stable and loaded
+    await page.goto('/en/welcome');
+    await page.waitForLoadState('networkidle');
 
     await page.evaluate(async (state) => {
       return new Promise<void>((resolve, reject) => {

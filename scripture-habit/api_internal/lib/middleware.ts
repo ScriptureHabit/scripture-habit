@@ -19,6 +19,7 @@ import RedisStore from 'rate-limit-redis';
 
 const isProd = process.env.NODE_ENV === 'production' && process.env.VITE_DEV_MODE !== 'true';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let redisStore: any = undefined;
 
 if (process.env.REDIS_URL) {
@@ -34,6 +35,7 @@ if (process.env.REDIS_URL) {
 
         redisStore = new RedisStore({
             sendCommand: async (...args: string[]) => {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 return redisClient.call(args[0], ...args.slice(1)) as any;
             },
             prefix: 'rl:', // Rate limiting prefix
