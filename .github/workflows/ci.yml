@@ -54,7 +54,7 @@ jobs:
           echo "FIREBASE_PROJECT_ID=scripture-habit-auth" >> .env.local
 
       - name: Install Linux utilities
-        run: sudo apt-get update && sudo apt-get install -y lsof
+        run: apt-get update && apt-get install -y lsof
 
       - name: Install dependencies
         run: npm ci # `npm install`よりも厳密で高速なクリーンインストールを行います
