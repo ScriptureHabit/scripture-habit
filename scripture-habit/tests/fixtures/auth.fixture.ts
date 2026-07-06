@@ -177,6 +177,31 @@ export const test = base.extend<AuthFixtures>({
     await page.waitForLoadState('domcontentloaded');
 
     await page.evaluate(async (state) => {
+      const getAuth = (): any => {
+        return (window as any).firebaseAuth;
+      };
+
+      const waitForAuthObj = () => {
+        return new Promise<any>((resolve, reject) => {
+          if (getAuth()) return resolve(getAuth());
+          let attempts = 0;
+          const interval = setInterval(() => {
+            if (getAuth() || attempts++ > 50) {
+              clearInterval(interval);
+              if (attempts > 50) {
+                reject(new Error('Firebase auth object not found on window (IndexedDB injector)'));
+              } else {
+                resolve(getAuth());
+              }
+            }
+          }, 100);
+        });
+      };
+
+      const auth = await waitForAuthObj();
+      const actualApiKey = auth.app.options.apiKey || state.apiKey;
+      const keyName = `firebase:authUser:${actualApiKey}:[DEFAULT]`;
+
       return new Promise<void>((resolve, reject) => {
         const request = indexedDB.open('firebaseLocalStorageDb');
         request.onupgradeneeded = (event: any) => {
@@ -190,7 +215,7 @@ export const test = base.extend<AuthFixtures>({
           const tx = db.transaction('firebaseLocalStorage', 'readwrite');
           const store = tx.objectStore('firebaseLocalStorage');
           const record = {
-            fbase_key: state.keyName,
+            fbase_key: keyName,
             value: {
               uid: state.uid,
               email: state.email,
@@ -215,7 +240,7 @@ export const test = base.extend<AuthFixtures>({
               },
               createdAt: Date.now().toString(),
               lastLoginAt: Date.now().toString(),
-              apiKey: state.apiKey,
+              apiKey: actualApiKey,
               appName: "[DEFAULT]"
             }
           };
@@ -232,7 +257,6 @@ export const test = base.extend<AuthFixtures>({
       });
     }, {
       apiKey,
-      keyName: `firebase:authUser:${apiKey}:[DEFAULT]`,
       uid,
       email,
       nickname,
