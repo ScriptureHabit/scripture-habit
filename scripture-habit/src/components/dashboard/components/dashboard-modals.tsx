@@ -131,7 +131,7 @@ const DashboardModals: FC<DashboardModalsProps> = ({
               <>
                 <h2 className="auto-kick-init-title-styled">{t('groupChat.autoKickConfirmTitle')}</h2>
                 <p className="auto-kick-confirm-warning-styled">{t('groupChat.autoKickWarning')}</p>
-                <p className="mt-1">{t('groupChat.autoKickConfirmText').replace('{days}', selectedKickDays.toString())}</p>
+                <p className="mt-1">{t('groupChat.autoKickConfirmText').replace(/{days}/g, selectedKickDays.toString())}</p>
                 <input 
                   type="number" 
                   title="Days Threshold" 
