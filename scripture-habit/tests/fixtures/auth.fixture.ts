@@ -202,7 +202,8 @@ export const test = base.extend<AuthFixtures>({
       const actualApiKey = auth.app.options.apiKey || state.apiKey;
       const keyName = `firebase:authUser:${actualApiKey}:[DEFAULT]`;
 
-      return new Promise<void>((resolve, reject) => {
+      // 1. Write the login record to IndexedDB
+      await new Promise<void>((resolve, reject) => {
         const request = indexedDB.open('firebaseLocalStorageDb');
         request.onupgradeneeded = (event: any) => {
           const db = event.target.result;
@@ -254,6 +255,21 @@ export const test = base.extend<AuthFixtures>({
           tx.onerror = () => reject(new Error('IndexedDB Transaction failed'));
         };
         request.onerror = () => reject(new Error('Failed to open IndexedDB'));
+      });
+
+      // 2. Ensure Firebase Auth SDK recognizes the logged-in state before we navigate away
+      await new Promise<void>((resolve, reject) => {
+        const unsubscribe = auth.onAuthStateChanged((user: any) => {
+          if (user && user.uid === state.uid) {
+            unsubscribe();
+            clearTimeout(timeoutId);
+            resolve();
+          }
+        });
+        const timeoutId = setTimeout(() => {
+          unsubscribe();
+          reject(new Error(`Timeout waiting for Firebase Auth to load seeded user ${state.uid}`));
+        }, 10000);
       });
     }, {
       apiKey,

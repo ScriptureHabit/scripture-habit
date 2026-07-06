@@ -48,7 +48,9 @@ export default defineConfig({
   /* Run your local dev server before starting the tests */
   webServer: [
     {
-      command: 'cross-env VITE_USE_FIREBASE_EMULATOR=true npm run dev -- --host 127.0.0.1',
+      command: process.env.CI 
+        ? 'cross-env VITE_USE_FIREBASE_EMULATOR=true npm run preview -- --host 127.0.0.1 --port 5173'
+        : 'cross-env VITE_USE_FIREBASE_EMULATOR=true npm run dev -- --host 127.0.0.1',
       url: 'http://127.0.0.1:5173',
       reuseExistingServer: !process.env.CI,
       stdout: 'pipe',
