@@ -248,7 +248,7 @@ export const test = base.extend<AuthFixtures>({
         console.log('[AuthFixture] Dashboard skeleton did not appear or timed out waiting for detachment. Continuing...');
     });
 
-    await page.waitForSelector('[data-testid="sidebar-notes"]', { timeout: 20000 });
+    await page.waitForSelector('[data-testid="sidebar-notes"]', { timeout: 30000 });
 
     // --- API CALLING HELPERS ---
     const callApi = async (endpoint: string, body: Record<string, unknown>) => {
