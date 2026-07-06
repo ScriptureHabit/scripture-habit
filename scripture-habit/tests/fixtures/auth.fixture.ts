@@ -42,7 +42,6 @@ export const test = base.extend<AuthFixtures>({
     const userData = await signupRes.json();
     const uid = userData.localId;
     const idToken = userData.idToken;
-    const refreshToken = userData.refreshToken;
 
     // Create matching Firestore user document to satisfy "User not found" checks
     try {

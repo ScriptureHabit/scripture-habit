@@ -17,9 +17,6 @@ test.describe('Unity Lifecycle (Full Flow)', () => {
         await page.goto('/en/dashboard'); 
         await page.waitForLoadState('load');
         
-        console.log('[Test] Installing mock clock at 23:50...');
-        await page.clock.install({ time: almostMidnight.getTime() });
-        
         // Wait for dashboard to stabilize
         await expect(page.getByTestId('sidebar-notes')).toBeVisible({ timeout: 20000 });
         
@@ -31,6 +28,9 @@ test.describe('Unity Lifecycle (Full Flow)', () => {
             setYesterdayDate: true
         });
         console.log(`[Test] Group seeded: ${setupResult.groupId}`);
+
+        console.log('[Test] Installing mock clock at 23:50...');
+        await page.clock.install({ time: almostMidnight.getTime() });
 
         const groupItem = page.getByTestId('sidebar-group-item').filter({ hasText: groupName });
         const sidebarUnity = groupItem.getByTestId('sidebar-unity-percentage');
