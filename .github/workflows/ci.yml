@@ -8,6 +8,7 @@ on:
 
 env:
   CRON_SECRET: ci-dummy-cron-secret-key-12345
+  FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
 
 defaults:
   run:
@@ -51,6 +52,9 @@ jobs:
           echo "VITE_USE_FIREBASE_EMULATOR=true" >> .env.local
           echo "CRON_SECRET=test-secret" >> .env.local
           echo "FIREBASE_PROJECT_ID=scripture-habit-auth" >> .env.local
+
+      - name: Install Linux utilities
+        run: sudo apt-get update && sudo apt-get install -y lsof
 
       - name: Install dependencies
         run: npm ci # `npm install`よりも厳密で高速なクリーンインストールを行います
