@@ -170,118 +170,16 @@ export const test = base.extend<AuthFixtures>({
         };
     });
 
-    // 3. Inject Firebase Auth State directly to browser's IndexedDB (bypassing UI login page)
-    console.log(`[AuthFixture] Injecting auth state for isolated user: ${email}`);
-    // Navigate to welcome page first to ensure origin is stable and loaded
-    await page.goto('/en/welcome');
-    await page.waitForLoadState('domcontentloaded');
+    // 3. Perform a standard UI login (highly robust, bypassing flaky IndexedDB injection)
+    console.log(`[AuthFixture] Logging in via UI for isolated user: ${email}`);
+    await page.goto('/en/login');
+    await page.waitForLoadState('load');
 
-    await page.evaluate(async (state) => {
-      const getAuth = (): any => {
-        return (window as any).firebaseAuth;
-      };
+    await page.fill('[data-testid="login-email"]', email);
+    await page.fill('[data-testid="login-password"]', password);
+    await page.click('[data-testid="login-submit"]');
 
-      const waitForAuthObj = () => {
-        return new Promise<any>((resolve, reject) => {
-          if (getAuth()) return resolve(getAuth());
-          let attempts = 0;
-          const interval = setInterval(() => {
-            if (getAuth() || attempts++ > 50) {
-              clearInterval(interval);
-              if (attempts > 50) {
-                reject(new Error('Firebase auth object not found on window (IndexedDB injector)'));
-              } else {
-                resolve(getAuth());
-              }
-            }
-          }, 100);
-        });
-      };
-
-      const auth = await waitForAuthObj();
-      const actualApiKey = auth.app.options.apiKey || state.apiKey;
-      const keyName = `firebase:authUser:${actualApiKey}:[DEFAULT]`;
-
-      // 1. Write the login record to IndexedDB
-      await new Promise<void>((resolve, reject) => {
-        const request = indexedDB.open('firebaseLocalStorageDb');
-        request.onupgradeneeded = (event: any) => {
-          const db = event.target.result;
-          if (!db.objectStoreNames.contains('firebaseLocalStorage')) {
-            db.createObjectStore('firebaseLocalStorage', { keyPath: 'fbase_key' });
-          }
-        };
-        request.onsuccess = (event: any) => {
-          const db = event.target.result;
-          const tx = db.transaction('firebaseLocalStorage', 'readwrite');
-          const store = tx.objectStore('firebaseLocalStorage');
-          const record = {
-            fbase_key: keyName,
-            value: {
-              uid: state.uid,
-              email: state.email,
-              emailVerified: true,
-              displayName: state.nickname,
-              isAnonymous: false,
-              photoURL: "",
-              providerData: [
-                {
-                  providerId: "password",
-                  uid: state.uid,
-                  displayName: state.nickname,
-                  email: state.email,
-                  phoneNumber: null,
-                  photoURL: ""
-                }
-              ],
-              stsTokenManager: {
-                refreshToken: state.refreshToken,
-                accessToken: state.idToken,
-                expirationTime: 2524608000000 // Fixed future timestamp (Year 2050) to prevent clock mock skew issues
-              },
-              createdAt: Date.now().toString(),
-              lastLoginAt: Date.now().toString(),
-              apiKey: actualApiKey,
-              appName: "[DEFAULT]"
-            }
-          };
-          const putRequest = store.put(record);
-          putRequest.onerror = () => reject(new Error('Failed to write auth state to IndexedDB'));
-          
-          tx.oncomplete = () => {
-            db.close();
-            resolve();
-          };
-          tx.onerror = () => reject(new Error('IndexedDB Transaction failed'));
-        };
-        request.onerror = () => reject(new Error('Failed to open IndexedDB'));
-      });
-
-      // 2. Ensure Firebase Auth SDK recognizes the logged-in state before we navigate away
-      await new Promise<void>((resolve, reject) => {
-        const unsubscribe = auth.onAuthStateChanged((user: any) => {
-          if (user && user.uid === state.uid) {
-            unsubscribe();
-            clearTimeout(timeoutId);
-            resolve();
-          }
-        });
-        const timeoutId = setTimeout(() => {
-          unsubscribe();
-          reject(new Error(`Timeout waiting for Firebase Auth to load seeded user ${state.uid}`));
-        }, 10000);
-      });
-    }, {
-      apiKey,
-      uid,
-      email,
-      nickname,
-      idToken,
-      refreshToken
-    });
-
-    // 4. Navigate to dashboard (Should mount directly as authenticated)
-    await page.goto('/en/dashboard');
+    // 4. Wait for dashboard redirect and stabilization
     await page.waitForURL(/.*dashboard/, { timeout: 30000 });
     
     await page.waitForSelector('.dashboard-skeleton', { state: 'detached', timeout: 30000 }).catch(() => {
