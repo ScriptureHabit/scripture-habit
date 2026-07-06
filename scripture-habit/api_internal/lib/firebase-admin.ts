@@ -1,4 +1,14 @@
 import './load-env.js';
+// Dynamic Firebase Project ID Isolation for Vitest Concurrent Workers
+import process from 'node:process';
+if (process.env.VITEST === 'true') {
+    if (!process.env.FIREBASE_PROJECT_ID || process.env.FIREBASE_PROJECT_ID === 'scripture-habit-auth') {
+        const randomId = `sh-test-${Math.random().toString(36).substring(2, 9)}`;
+        process.env.FIREBASE_PROJECT_ID = randomId;
+        process.env.GCLOUD_PROJECT = randomId;
+        process.env.VITE_FIREBASE_PROJECT_ID = randomId;
+    }
+}
 import admin from 'firebase-admin';
 import fs from 'fs';
 import path from 'path';
