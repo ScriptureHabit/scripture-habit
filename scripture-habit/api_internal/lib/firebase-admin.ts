@@ -108,7 +108,7 @@ if (rawDb) {
 }
 
 export const db = rawDb ? new Proxy(rawDb as admin.firestore.Firestore, {
-    get(_target, prop, _receiver) {
+    get(_target, prop) {
         const activeDb = dbStorage.getStore() || rawDb;
         if (!activeDb) {
             return undefined;
@@ -122,7 +122,7 @@ export const db = rawDb ? new Proxy(rawDb as admin.firestore.Firestore, {
         }
         return val;
     },
-    set(_target, prop, value, _receiver) {
+    set(_target, prop, value) {
         const activeDb = dbStorage.getStore() || rawDb;
         if (!activeDb) {
             return false;
@@ -131,7 +131,7 @@ export const db = rawDb ? new Proxy(rawDb as admin.firestore.Firestore, {
     }
 }) : null as unknown as admin.firestore.Firestore;
 
-export function setDbInstance(_newDb: admin.firestore.Firestore) {
+export function setDbInstance() {
     console.warn('[Firebase Admin] Warning: setDbInstance is deprecated. Use dbStorage.run() instead.');
 }
 
