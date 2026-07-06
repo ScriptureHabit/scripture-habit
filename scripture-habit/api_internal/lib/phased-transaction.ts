@@ -1,7 +1,7 @@
 /* eslint-disable no-restricted-properties */
-import * as admin from 'firebase-admin';
+import type { Firestore, Transaction } from 'firebase-admin/firestore';
 
-export type ReadOnlyTransaction = Pick<admin.firestore.Transaction, 'get' | 'getAll'>;
+export type ReadOnlyTransaction = Pick<Transaction, 'get' | 'getAll'>;
 
 export interface PhasedTransactionContext<TRead, TWrite = unknown> {
     /**
@@ -15,7 +15,7 @@ export interface PhasedTransactionContext<TRead, TWrite = unknown> {
      * The result of the read phase is passed as the second argument.
      * Do NOT execute reads (get, getAll) in this block.
      */
-    write: (transaction: admin.firestore.Transaction, readResult: TRead) => Promise<TWrite> | TWrite;
+    write: (transaction: Transaction, readResult: TRead) => Promise<TWrite> | TWrite;
 }
 
 /**
@@ -23,7 +23,7 @@ export interface PhasedTransactionContext<TRead, TWrite = unknown> {
  * Enforces the "Read before Write" pattern programmatically.
  */
 export async function runPhasedTransaction<TRead, TWrite = unknown>(
-    db: admin.firestore.Firestore,
+    db: Firestore,
     phases: PhasedTransactionContext<TRead, TWrite>
 ): Promise<TWrite> {
     return db.runTransaction(async (transaction) => {

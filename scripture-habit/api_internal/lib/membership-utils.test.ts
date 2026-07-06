@@ -1,7 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { getGroupUpdatesForMultipleRemovals, removeMemberFromGroup } from './membership-utils.js';
 import { GroupDocument } from '../../types/firestore.js';
-import { admin } from './firebase-admin.js';
 
 describe('MembershipUtils Unit Tests', () => {
     

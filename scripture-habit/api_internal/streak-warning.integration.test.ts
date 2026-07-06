@@ -124,7 +124,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Streak Warning Integratio
         expect(mockSendEachForMulticast).toHaveBeenCalledTimes(2);
 
         // We don't know the exact order due to object entry iteration, so we search
-        const calls = mockSendEachForMulticast.mock.calls.map(c => c[0]);
+        const calls = mockSendEachForMulticast.mock.calls.map(c => c[0] as unknown as { tokens: string[]; notification?: { title: string } });
         
         const enCall = calls.find(c => c.tokens.includes('token-a'));
         expect(enCall).toBeDefined();

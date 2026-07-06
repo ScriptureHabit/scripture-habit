@@ -956,7 +956,8 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('AI Route Integration', ()
         it('should handle global catch in batch translation cache check', async () => {
             const originalCollection = admin.firestore.Firestore.prototype.collection;
             let shouldThrow = true;
-            vi.spyOn(admin.firestore.Firestore.prototype, 'collection').mockImplementation(function(this: any, name: string) {
+            vi.spyOn(admin.firestore.Firestore.prototype, 'collection').mockImplementation(function(this: any, ...args: unknown[]) {
+                const name = args[0] as string;
                 if (shouldThrow && name === 'translation_cache') {
                     shouldThrow = false;
                     throw new Error('Global collection failure');

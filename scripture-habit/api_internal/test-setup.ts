@@ -4,7 +4,8 @@
 import { vi } from 'vitest';
 import { Server } from 'http';
 import net from 'net';
-import { auth, admin, db, dbStorage, dbRegistry, rawDb } from './lib/firebase-admin.js';
+import { auth, db, dbStorage, rawDb, dbRegistry } from './lib/firebase-admin.js';
+import type { DecodedIdToken } from 'firebase-admin/auth';
 
 /**
  * Shared setup for backend integration tests.
@@ -309,7 +310,7 @@ export class TestSetup {
             uid,
             email_verified: emailVerified,
             firebase: { sign_in_provider: 'password' }
-        } as unknown as admin.auth.DecodedIdToken);
+        } as unknown as DecodedIdToken);
     }
 
     mockAuthMultiple() {
@@ -319,7 +320,7 @@ export class TestSetup {
                 uid,
                 email_verified: true,
                 firebase: { sign_in_provider: 'password' }
-            } as unknown as admin.auth.DecodedIdToken;
+            } as unknown as DecodedIdToken;
         });
     }
 }

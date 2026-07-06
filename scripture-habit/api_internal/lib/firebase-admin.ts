@@ -9,11 +9,42 @@ if (process.env.VITEST === 'true') {
         process.env.VITE_FIREBASE_PROJECT_ID = randomId;
     }
 }
-import admin from 'firebase-admin';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { AsyncLocalStorage } from 'node:async_hooks';
+import {
+    initializeApp,
+    getApps,
+    applicationDefault,
+    cert,
+    type ServiceAccount
+} from 'firebase-admin';
+import type { App } from 'firebase-admin/app';
+import {
+    getAuth,
+    type Auth
+} from 'firebase-admin/auth';
+import { getAppCheck, type AppCheck } from 'firebase-admin/app-check';
+import { getMessaging, type Messaging } from 'firebase-admin/messaging';
+import {
+    getFirestore,
+    Timestamp,
+    FieldValue,
+    FieldPath,
+    DocumentReference,
+    DocumentSnapshot,
+    Transaction,
+    WriteBatch,
+    Firestore,
+    CollectionReference,
+    Query,
+    QuerySnapshot,
+    QueryDocumentSnapshot,
+    CollectionGroup,
+    AggregateQuery,
+    AggregateQuerySnapshot
+} from 'firebase-admin/firestore';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -24,19 +55,53 @@ if (process.env.FIRESTORE_EMULATOR_HOST) {
     process.env.NO_GCE_CHECK = 'true';
 }
 
-/**
- * Resolves the Firebase service account from environment variables or a local JSON file.
- * Exported for unit testing — does NOT call admin.initializeApp().
- */
+const hasFirebaseApp = () => getApps().length > 0;
+
+const firestoreCompat = Object.assign(
+    (app?: App) => (app ? getFirestore(app) : getFirestore()),
+    {
+        Firestore,
+        Query,
+        QuerySnapshot,
+        QueryDocumentSnapshot,
+        CollectionGroup,
+        AggregateQuery,
+        AggregateQuerySnapshot,
+        Timestamp,
+        FieldValue,
+        FieldPath,
+        DocumentReference,
+        DocumentSnapshot,
+        Transaction,
+        WriteBatch,
+        CollectionReference,
+    }
+) as any;
+
+const compatAdmin = {
+    initializeApp,
+    credential: {
+        applicationDefault,
+        cert
+    },
+    get apps() {
+        return getApps();
+    },
+    auth: (app?: App) => getAuth(app),
+    firestore: firestoreCompat,
+    messaging: (app?: App) => getMessaging(app),
+    appCheck: (app?: App) => getAppCheck(app),
+} as any;
+
 export function resolveServiceAccount(
     env: NodeJS.ProcessEnv,
     fileExistsFn: (p: string) => boolean,
     readFileFn: (p: string, enc: BufferEncoding) => string,
     serviceAccountJsonDir: string
-): admin.ServiceAccount | undefined {
+): ServiceAccount | undefined {
     if (env.FIREBASE_SERVICE_ACCOUNT) {
         try {
-            return JSON.parse(env.FIREBASE_SERVICE_ACCOUNT) as admin.ServiceAccount;
+            return JSON.parse(env.FIREBASE_SERVICE_ACCOUNT) as ServiceAccount;
         } catch (err) {
             console.error('[FirebaseAdmin] Failed to parse FIREBASE_SERVICE_ACCOUNT:', (err as Error).message);
             return undefined;
@@ -44,30 +109,30 @@ export function resolveServiceAccount(
     } else if (env.FIREBASE_PROJECT_ID && env.FIREBASE_PRIVATE_KEY) {
         return {
             projectId: env.FIREBASE_PROJECT_ID,
-            privateKey: env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+            privateKey: env.FIREBASE_PRIVATE_KEY.replace(/\n/g, '\n'),
             clientEmail: env.FIREBASE_CLIENT_EMAIL,
         };
     } else {
         const jsonPath = path.join(serviceAccountJsonDir, '../../backend/serviceAccountKey.json');
         if (fileExistsFn(jsonPath)) {
-            return JSON.parse(readFileFn(jsonPath, 'utf8')) as admin.ServiceAccount;
+            return JSON.parse(readFileFn(jsonPath, 'utf8')) as ServiceAccount;
         }
     }
     return undefined;
 }
 
-if (!admin.apps.length) {
+if (!hasFirebaseApp()) {
     if (process.env.FIRESTORE_EMULATOR_HOST) {
         // Initialize for Emulator with a dummy service account file to avoid ANY network lookup
         // but still satisfy the Firestore client's requirement for a valid credential type.
         try {
             const dummyKeyPath = path.join(__dirname, 'dummy-service-account.json');
             process.env.GOOGLE_APPLICATION_CREDENTIALS = dummyKeyPath;
-            
+
             const projectId = process.env.FIREBASE_PROJECT_ID || 'scripture-habit-auth';
-            admin.initializeApp({
-                projectId: projectId,
-                credential: admin.credential.applicationDefault()
+            initializeApp({
+                projectId,
+                credential: applicationDefault()
             });
             console.log(`Firebase Admin initialized for Emulator mode (Project: ${projectId})`);
         } catch (error) {
@@ -78,8 +143,8 @@ if (!admin.apps.length) {
 
         if (serviceAccount) {
             try {
-                admin.initializeApp({
-                    credential: admin.credential.cert(serviceAccount)
+                initializeApp({
+                    credential: cert(serviceAccount)
                 });
                 console.log('Firebase Admin initialized successfully');
             } catch (error) {
@@ -93,10 +158,10 @@ if (!admin.apps.length) {
     }
 }
 
-export const dbStorage = new AsyncLocalStorage<admin.firestore.Firestore>();
-export const dbRegistry = new Map<number, admin.firestore.Firestore>();
+export const dbStorage = new AsyncLocalStorage<Firestore>();
+export const dbRegistry = new Map<number, Firestore>();
 
-export const rawDb = (admin.apps.length ? admin.firestore() : null) as admin.firestore.Firestore;
+export const rawDb = (hasFirebaseApp() ? getFirestore() : null) as Firestore;
 if (rawDb) {
     try {
         let emulatorHost = process.env.FIRESTORE_EMULATOR_HOST;
@@ -117,7 +182,7 @@ if (rawDb) {
     }
 }
 
-export const db = rawDb ? new Proxy(rawDb as admin.firestore.Firestore, {
+export const db = rawDb ? new Proxy(rawDb as Firestore, {
     get(_target, prop) {
         const activeDb = dbStorage.getStore() || rawDb;
         if (!activeDb) {
@@ -139,14 +204,15 @@ export const db = rawDb ? new Proxy(rawDb as admin.firestore.Firestore, {
         }
         return Reflect.set(activeDb, prop, value);
     }
-}) : null as unknown as admin.firestore.Firestore;
+}) : null as unknown as Firestore;
 
 export function setDbInstance() {
     console.warn('[Firebase Admin] Warning: setDbInstance is deprecated. Use dbStorage.run() instead.');
 }
 
-export const messaging = (admin.apps.length ? admin.messaging() : null) as admin.messaging.Messaging;
-export const auth = (admin.apps.length ? admin.auth() : null) as admin.auth.Auth;
-export const appCheck = (admin.apps.length ? admin.appCheck() : null) as admin.appCheck.AppCheck;
-export { admin };
+export const messaging = (hasFirebaseApp() ? getMessaging() : null) as Messaging;
+export const auth = (hasFirebaseApp() ? getAuth() : null) as Auth;
+export const appCheck = (hasFirebaseApp() ? getAppCheck() : null) as AppCheck;
+
+export const admin = compatAdmin;
 export default admin;

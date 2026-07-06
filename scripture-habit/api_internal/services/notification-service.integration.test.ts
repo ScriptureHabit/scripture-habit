@@ -63,7 +63,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('NotificationService Integ
 
         // 日本語ユーザーへの呼び出し内容を確認
         const jaCall = sendSpy.mock.calls.find(call => 
-            (call[0] as { tokens: string[] }).tokens.includes('token_ja_public')
+            ((call[0] as unknown) as { tokens: string[] }).tokens.includes('token_ja_public')
         );
         expect(jaCall).toBeDefined();
         // dataに lang: 'ja' が追加されていること
@@ -72,7 +72,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('NotificationService Integ
 
         // 英語ユーザーへの呼び出し内容を確認
         const enCall = sendSpy.mock.calls.find(call => 
-            (call[0] as { tokens: string[] }).tokens.includes('token_en_public')
+            ((call[0] as unknown) as { tokens: string[] }).tokens.includes('token_en_public')
         );
         expect(enCall).toBeDefined();
         // dataに lang: 'en' が追加されていること
