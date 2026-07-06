@@ -24,7 +24,7 @@ export default defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: 'http://localhost:5173',
+    baseURL: 'http://127.0.0.1:5173',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
@@ -49,7 +49,7 @@ export default defineConfig({
   webServer: [
     {
       command: 'cross-env VITE_USE_FIREBASE_EMULATOR=true npm run dev',
-      url: 'http://localhost:5173',
+      url: 'http://127.0.0.1:5173',
       reuseExistingServer: !process.env.CI,
       stdout: 'pipe',
       stderr: 'pipe',
@@ -57,7 +57,7 @@ export default defineConfig({
     },
     {
       command: 'cross-env SKIP_AI=true SKIP_APP_CHECK=true FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 FIREBASE_AUTH_EMULATOR_HOST=127.0.0.1:9099 GCLOUD_PROJECT=scripture-habit-auth npm run server > backend_test.log 2>&1',
-      url: 'http://localhost:5000/api/health',
+      url: 'http://127.0.0.1:5000/api/health',
       reuseExistingServer: !process.env.CI,
       stdout: 'pipe',
       stderr: 'pipe',
