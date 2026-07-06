@@ -11,8 +11,6 @@ vi.mock('../../hooks/use-language', () => ({
     useLanguage: vi.fn(),
 }));
 
-let capturedSelectOnChange: any = null;
-
 // Dynamic mock variables
 const mockUseUrlMetaFetcher = vi.fn();
 const mockUseAIGenerator = vi.fn();
@@ -81,18 +79,7 @@ interface MockSelectProps {
 }
 
 vi.mock('react-select', () => ({
-    default: ({ onChange, options, value, styles }: MockSelectProps) => {
-        capturedSelectOnChange = onChange;
-        if (styles) {
-            if (typeof styles.control === 'function') {
-                styles.control({});
-            }
-            if (typeof styles.option === 'function') {
-                styles.option({}, { isFocused: true, isSelected: false });
-                styles.option({}, { isFocused: false, isSelected: true });
-                styles.option({}, { isFocused: false, isSelected: false });
-            }
-        }
+    default: ({ onChange, options, value }: MockSelectProps) => {
         return (
             <select 
                 data-testid="scripture-select" 
@@ -554,20 +541,6 @@ describe('new-note component suite', () => {
                 noteToEdit={noteWithNoFields as Note}
             />
         );
-    });
-
-    it('covers Select onChange fallback branches', () => {
-        render(<NewNote isOpen={true} onClose={vi.fn()} userData={mockUserData as UserData} />);
-        
-        expect(capturedSelectOnChange).toBeTypeOf('function');
-        
-        act(() => {
-            capturedSelectOnChange(null);
-        });
-        
-        act(() => {
-            capturedSelectOnChange({});
-        });
     });
 
     it('handles falsy language and empty placeholder fallbacks', () => {

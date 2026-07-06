@@ -3,9 +3,6 @@ import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from 'vites
 import { db, messaging } from './lib/firebase-admin.js';
 import { TestSetup } from './test-setup.js';
 
-// Mock FCM
-const mockSendEachForMulticast = vi.spyOn(messaging, 'sendEachForMulticast');
-
 describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Streak Warning Integration', () => {
     const setup = new TestSetup();
     const TEST_TODAY = '2026-05-18';
@@ -103,6 +100,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Streak Warning Integratio
         await batch.commit();
 
         // Setup FCM mock to return success
+        const mockSendEachForMulticast = vi.spyOn(messaging, 'sendEachForMulticast');
         mockSendEachForMulticast.mockResolvedValue({
             successCount: 1,
             failureCount: 0,
@@ -153,6 +151,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Streak Warning Integratio
         });
 
         // Mock FCM to fail on the second token
+        const mockSendEachForMulticast = vi.spyOn(messaging, 'sendEachForMulticast');
         mockSendEachForMulticast.mockResolvedValue({
             successCount: 1,
             failureCount: 1,
@@ -171,6 +170,11 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Streak Warning Integratio
         });
 
         expect(response.status).toBe(200);
+        const data = await response.json();
+        console.log('DEBUG: Streak warning cleanup stats:', data);
+        
+        // Wait for Firestore emulator to reflect updates
+        await new Promise(r => setTimeout(r, 500));
         
         // Check Firestore to see if 'expired-token' was removed
         const updatedDoc = await userRef.collection('private').doc('tokens').get();
@@ -194,6 +198,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Streak Warning Integratio
         });
 
         // Mock FCM to fail on both tokens
+        const mockSendEachForMulticast = vi.spyOn(messaging, 'sendEachForMulticast');
         mockSendEachForMulticast.mockResolvedValue({
             successCount: 0,
             failureCount: 2,
@@ -212,6 +217,11 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Streak Warning Integratio
         });
 
         expect(response.status).toBe(200);
+        const data = await response.json();
+        console.log('DEBUG: Streak warning all-invalid cleanup stats:', data);
+        
+        // Wait for Firestore emulator to reflect updates
+        await new Promise(r => setTimeout(r, 500));
         
         // 1. Check Firestore to see if tokens subcollection is empty
         const updatedTokensDoc = await userRef.collection('private').doc('tokens').get();

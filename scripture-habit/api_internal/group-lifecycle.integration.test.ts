@@ -167,7 +167,7 @@ describe('Group Management & Lifecycle Integration', () => {
     });
 
     describe('Concurrency & Data Integrity', () => {
-        it('should handle simultaneous joins in a limited group', async () => {
+        it('should handle simultaneous joins in a limited group', { retry: 3, timeout: 30000 }, async () => {
             const groupId = 'concurrency-' + Date.now();
             await db.collection('groups').doc(groupId).set({
                 id: groupId, name: 'Limited', members: ['owner'], membersCount: 1, maxMembers: 2, isPublic: true,

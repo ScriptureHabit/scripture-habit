@@ -49,7 +49,7 @@ const InviteModal: FC<InviteModalProps> = ({
     return (
         <>
             <div className="leave-modal-overlay" onClick={() => setShowInviteModal(false)}>
-                <div className="leave-modal-content invite-modal" onClick={(e) => e.stopPropagation()}>
+                <div className="leave-modal-content invite-modal" data-testid="invite-modal" onClick={(e) => e.stopPropagation()}>
                     <div className="modal-header">
                         <h3>{t('groupChat.inviteLink')}</h3>
                         <button className="close-menu-btn" onClick={() => setShowInviteModal(false)} aria-label={t('common.close') || 'Close'} data-testid="close-invite-modal">
@@ -60,7 +60,7 @@ const InviteModal: FC<InviteModalProps> = ({
                         <Mascot customMessage={t('groupChat.inviteFriendsPrompt')} userData={userData} />
                         <div className="invite-link-card" onClick={handleCopyInviteLink}>
                             <div className="invite-link-content">
-                                <span className="invite-link-url">{inviteLink}</span>
+                                <span className="invite-link-url" data-testid="invite-link-url">{inviteLink}</span>
                             </div>
                             <div className="copy-badge">
                                 <UilCopy size="18" />

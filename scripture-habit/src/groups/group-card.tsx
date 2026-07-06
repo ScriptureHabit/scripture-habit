@@ -1,7 +1,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { auth, appCheck } from '../firebase';
-import { getToken } from 'firebase/app-check';
+import { auth } from '../firebase';
+import apiClient from '../utils/api-client';
 import { Group, FirebaseTimestamp } from '../types/chat';
 import './group-card.css';
 import { useLanguage } from '../hooks/use-language';
@@ -119,35 +119,14 @@ export default function GroupCard({ group, currentUser, onJoin, onOpen }: Props)
           return;
         }
 
-        const idToken = await currentUser.getIdToken();
-        let appCheckToken = '';
-        if (appCheck) {
-          const appCheckTokenResponse = await getToken(appCheck, false);
-          appCheckToken = appCheckTokenResponse.token;
-        }
-
-        const API_BASE = import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' ? '' : 'https://scripturehabit.app');
-
-        const headers: Record<string, string> = {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${idToken}`,
-        };
-        if (appCheckToken) {
-          headers['x-firebase-appcheck'] = appCheckToken;
-        }
-
-        const res = await fetch(`${API_BASE}/api/ai/translate`, {
-          method: 'POST',
-          headers,
-          body: JSON.stringify({
-            text: group.name,
-            targetLanguage: language,
-            updateType: 'group_name',
-          }),
+        const res = await apiClient.post('/api/ai/translate', {
+          text: group.name,
+          targetLanguage: language,
+          updateType: 'group_name',
         });
 
-        if (res.ok && active) {
-          const data = await res.json();
+        if (active) {
+          const data = res.data;
           if (data.translatedText && data.translatedText !== group.name) {
             setTranslatedName(data.translatedText);
             sessionStorage.setItem(cacheKey, data.translatedText);
@@ -182,38 +161,7 @@ export default function GroupCard({ group, currentUser, onJoin, onOpen }: Props)
 
     setJoining(true);
     try {
-
-      const backend = import.meta.env.VITE_BACKEND_URL || '/api';
-      const idToken = await auth?.currentUser?.getIdToken();
-      
-      if (!idToken) {
-        throw new Error('Unable to retrieve authentication token');
-      }
-
-      let appCheckToken = '';
-      try {
-        if (appCheck) {
-          const appCheckTokenResponse = await getToken(appCheck, false);
-          appCheckToken = appCheckTokenResponse.token;
-        }
-      } catch (e) {
-        console.warn('[GroupCard] AppCheck token failed:', e);
-      }
-
-      const res = await fetch(`${backend}/join-group`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${idToken}`,
-          ...(appCheckToken ? { 'X-Firebase-AppCheck': appCheckToken } : {})
-        },
-        body: JSON.stringify({ groupId: group.id }),
-      });
-      
-      if (!res.ok) {
-         const err = await res.json().catch(() => ({}));
-         throw new Error(err?.error || 'Server join failed');
-      }
+      await apiClient.post('/api/join-group', { groupId: group.id });
     } catch (err: unknown) {
       console.error('Join failed:', err);
       toast.error(t('groupCard.unableToJoin'));

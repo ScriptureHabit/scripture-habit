@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { auth, appCheck } from '../../../firebase';
-import { getToken } from 'firebase/app-check';
+import apiClient from '../../../utils/api-client';
 
 import { toast } from 'react-toastify';
 import { UserData } from '../../../types/user';
+import { DEFAULT_KICK_THRESHOLD } from '../../../constants';
+import { UpdateKickThresholdRequest, UpdateKickThresholdResponse } from '../../../../api_internal/lib/schemas';
 
 export const useDashboardHabitPace = (
     userData: UserData | null,
@@ -13,7 +14,7 @@ export const useDashboardHabitPace = (
 ) => {
     const [showAutoKickModal, setShowAutoKickModal] = useState<boolean>(false);
     const [autoKickStep, setAutoKickStep] = useState<number>(0);
-    const [selectedKickDays, setSelectedKickDays] = useState<number>(3);
+    const [selectedKickDays, setSelectedKickDays] = useState<number>(DEFAULT_KICK_THRESHOLD);
     const [kickConfirmInput, setKickConfirmInput] = useState<string>('');
     const [autoKickError, setAutoKickError] = useState<string>('');
 
@@ -35,55 +36,42 @@ export const useDashboardHabitPace = (
         }
 
         setAutoKickError('');
-        // Removed premature step increment and clear
-        // setAutoKickStep(2);
-        // setKickConfirmInput('');
 
         try {
-            const idToken = await auth?.currentUser?.getIdToken();
-            if (!idToken) throw new Error("No idToken");
-
-            // Get App Check token
-            let appCheckToken: string | undefined;
-            if (appCheck) {
-                try {
-                    const result = await getToken(appCheck);
-                    appCheckToken = result.token;
-                } catch (err) {
-                    console.warn("Failed to get App Check token:", err);
-                }
-            }
-
-            const API_BASE_URL = '';
-            const headers: Record<string, string> = {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${idToken}`
+            const requestBody: UpdateKickThresholdRequest = {
+                threshold: selectedKickDays
             };
 
-            if (appCheckToken) {
-                headers['X-Firebase-AppCheck'] = appCheckToken;
-            }
+            const response = await apiClient.post('/api/groups/update-kick-threshold', requestBody);
 
-            const response = await fetch(`${API_BASE_URL}/api/groups/update-kick-threshold`, {
-                method: 'POST',
-                headers: headers,
-                body: JSON.stringify({
-                    threshold: selectedKickDays
-                })
-            });
-
-            if (response.ok) {
+            const result = response.data as UpdateKickThresholdResponse;
+            if (result.success) {
                 toast.success(t('groupChat.autoKickSuccess'));
                 setAutoKickStep(2);
                 setKickConfirmInput('');
             } else {
-                const errorData = await response.json();
-                toast.error(`Failed to update pace: ${errorData.error || response.statusText}`);
+                toast.error('Failed to update pace: Unknown error');
             }
         } catch (err: unknown) {
-            const error = err as Error;
-            console.error('Error updating threshold:', error);
-            toast.error(`An error occurred: ${error.message || String(error)}`);
+            console.error('Error updating threshold:', err);
+            let errorMessage = '';
+            let isResponseError = false;
+
+            if (err && typeof err === 'object' && 'response' in err) {
+                const axiosError = err as { response?: { data?: { error?: string } } };
+                errorMessage = axiosError.response?.data?.error || 'Failed to update pace';
+                isResponseError = true;
+            } else if (err instanceof Error) {
+                errorMessage = err.message;
+            } else {
+                errorMessage = String(err);
+            }
+
+            if (isResponseError) {
+                toast.error(`Failed to update pace: ${errorMessage}`);
+            } else {
+                toast.error(`An error occurred: ${errorMessage}`);
+            }
         }
     };
 

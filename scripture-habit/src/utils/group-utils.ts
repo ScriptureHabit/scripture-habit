@@ -2,6 +2,7 @@ import { Group, Message } from '../types/chat';
 import { UserData } from '../types/user';
 import { calculateUnityPercentage } from './unity-utils';
 import { formatDateInTimeZone, normalizeDateString, parseTimestampToDate } from './time-utils';
+import { DEFAULT_KICK_THRESHOLD } from '../constants';
 
 /**
  * Enriches a group object with the correct display unity percentage,
@@ -64,7 +65,7 @@ export const calculateNearestKickDate = (userData: UserData | null, userGroups: 
   userGroups.forEach(group => {
     // Priority: Group-specific member threshold > Group global member threshold > User default threshold > Fallback 3
     const threshold = (group.memberKickThresholds && group.memberKickThresholds[userData.uid]) || 
-                     userData.kickThreshold || 3;
+                     userData.kickThreshold || DEFAULT_KICK_THRESHOLD;
     
     const candidateTimestamps = [
       userData.lastPostAt,

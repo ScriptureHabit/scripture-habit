@@ -2,6 +2,8 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { useUrlMetadata } from '../use-url-metadata';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { safeStorage } from '../../utils/storage';
+import { http, HttpResponse } from 'msw';
+import { server } from '../../mocks/server';
 
 // Mock Firebase
 vi.mock('../../firebase', () => ({
@@ -26,19 +28,20 @@ vi.mock('../../utils/storage', () => ({
     },
 }));
 
-// Mock fetch
-const globalFetch = vi.fn();
-global.fetch = globalFetch;
+// Spy on API requests via MSW
+const requestSpy = vi.fn();
 
 describe('useUrlMetadata', () => {
     const defaultLang = 'en';
 
     beforeEach(() => {
-        globalFetch.mockReset();
-        globalFetch.mockResolvedValue({
-            ok: true,
-            json: async () => ({ title: 'Test Title', speaker: 'Test Speaker' }),
-        });
+        requestSpy.mockClear();
+        server.use(
+            http.get('*/api/preview/*', ({ request }) => {
+                requestSpy(request.url);
+                return HttpResponse.json({ title: 'Test Title', speaker: 'Test Speaker' });
+            })
+        );
         vi.mocked(safeStorage.get).mockReturnValue(undefined);
         vi.clearAllMocks();
     });
@@ -51,9 +54,8 @@ describe('useUrlMetadata', () => {
 
         await waitFor(() => expect(result.current.loading).toBe(false));
 
-        expect(globalFetch).toHaveBeenCalledWith(
-            expect.stringContaining('/api/preview/fetch-church-metadata'),
-            expect.any(Object)
+        expect(requestSpy).toHaveBeenCalledWith(
+            expect.stringContaining('/api/preview/fetch-church-metadata')
         );
         expect(result.current.data).toEqual({ title: 'Test Title', speaker: 'Test Speaker' });
     });
@@ -66,7 +68,7 @@ describe('useUrlMetadata', () => {
         const { result } = renderHook(() => useUrlMetadata(url, defaultLang));
 
         await waitFor(() => expect(result.current.data).toEqual(cachedData));
-        expect(globalFetch).not.toHaveBeenCalled();
+        expect(requestSpy).not.toHaveBeenCalled();
     });
 
     it('should handle Church shortcodes', async () => {
@@ -75,9 +77,8 @@ describe('useUrlMetadata', () => {
 
         await waitFor(() => expect(result.current.loading).toBe(false));
 
-        expect(globalFetch).toHaveBeenCalledWith(
-            expect.stringContaining('url=' + encodeURIComponent('https://www.churchofjesuschrist.org/2024/04/shortcode')),
-            expect.any(Object)
+        expect(requestSpy).toHaveBeenCalledWith(
+            expect.stringContaining('url=https:%2F%2Fwww.churchofjesuschrist.org%2F2024%2F04%2Fshortcode')
         );
     });
 
@@ -87,9 +88,8 @@ describe('useUrlMetadata', () => {
 
         await waitFor(() => expect(result.current.loading).toBe(false));
 
-        expect(globalFetch).toHaveBeenCalledWith(
-            expect.stringContaining('/api/preview/url-preview'),
-            expect.any(Object)
+        expect(requestSpy).toHaveBeenCalledWith(
+            expect.stringContaining('/api/preview/url-preview')
         );
     });
 
@@ -99,24 +99,23 @@ describe('useUrlMetadata', () => {
         await waitFor(() => expect(firstResult.current.loading).toBe(false));
 
         expect(firstResult.current.data).toEqual({ title: 'Test Title', speaker: 'Test Speaker' });
-        expect(globalFetch).toHaveBeenCalledTimes(1);
+        expect(requestSpy).toHaveBeenCalledTimes(1);
 
-        globalFetch.mockReset();
+        requestSpy.mockClear();
         const { result: secondResult } = renderHook(() => useUrlMetadata(cacheUrl, defaultLang));
         await waitFor(() => expect(secondResult.current.data).toEqual({ title: 'Test Title', speaker: 'Test Speaker' }));
 
-        expect(globalFetch).not.toHaveBeenCalled();
+        expect(requestSpy).not.toHaveBeenCalled();
     });
 
     it('should not fetch for unsupported urlOrSlug values', async () => {
         renderHook(() => useUrlMetadata('not-a-url', defaultLang));
         await new Promise((resolve) => setTimeout(resolve, 10));
-        expect(globalFetch).not.toHaveBeenCalled();
+        expect(requestSpy).not.toHaveBeenCalled();
     });
 
     it('should handle auth token acquisition failures gracefully', async () => {
-        globalFetch.mockReset();
-        globalFetch.mockResolvedValue({ ok: true, json: async () => ({ title: 'Test Title', speaker: 'Test Speaker' }) });
+        requestSpy.mockClear();
         vi.mocked(safeStorage.get).mockReturnValue(undefined);
         const { auth } = await import('../../firebase');
         vi.mocked(auth!.currentUser!.getIdToken).mockRejectedValueOnce(new Error('Token failed'));
@@ -125,15 +124,15 @@ describe('useUrlMetadata', () => {
         const { result } = renderHook(() => useUrlMetadata(url, defaultLang));
         await waitFor(() => expect(result.current.loading).toBe(false));
 
-        expect(globalFetch).toHaveBeenCalled();
+        expect(requestSpy).toHaveBeenCalled();
     });
 
     it('should handle API errors', async () => {
-        globalFetch.mockResolvedValueOnce({
-            ok: false,
-            status: 404,
-            text: async () => 'Not Found',
-        });
+        server.use(
+            http.get('*/api/preview/*', () => {
+                return new HttpResponse('Not Found', { status: 404 });
+            })
+        );
 
         const url = 'https://fail.com';
         const { result } = renderHook(() => useUrlMetadata(url, defaultLang));
@@ -141,12 +140,12 @@ describe('useUrlMetadata', () => {
         await waitFor(() => expect(result.current.loading).toBe(false));
 
         expect(result.current.error).toBeDefined();
-        expect(result.current.error?.message).toMatch(/HTTP 404/);
+        expect(result.current.error?.message).toMatch(/404/);
     });
 
     it('should not fetch if urlOrSlug is missing', async () => {
         renderHook(() => useUrlMetadata(null, defaultLang));
         await new Promise(r => setTimeout(r, 10)); // Tiny wait
-        expect(globalFetch).not.toHaveBeenCalled();
+        expect(requestSpy).not.toHaveBeenCalled();
     });
 });

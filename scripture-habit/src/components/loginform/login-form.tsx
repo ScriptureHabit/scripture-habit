@@ -1,155 +1,31 @@
 
-import React, { useState, FC } from 'react';
+import React, { FC } from 'react';
 import './login-form.css';
 import Button from '../button/button';
 import Input from '../input/input';
-import { auth, db } from '../../firebase';
-import { signInWithEmailAndPassword, GoogleAuthProvider, GithubAuthProvider, signInWithPopup, sendEmailVerification, signOut, User, AuthProvider, AuthError, UserCredential } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
-import { useNavigate, Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useLanguage } from '../../hooks/use-language';
 import { UilGoogle, UilGithub } from '@iconscout/react-unicons';
-import { toast } from 'react-toastify';
 import Footer from '../footer/footer';
-import apiClient from '../../utils/api-client';
-import axios from 'axios';
+import { useLoginForm } from './hooks/use-login-form';
 
 const LoginForm: FC = () => {
-  const { t, language } = useLanguage();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [nickname, setNickname] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const [pendingGoogleUser, setPendingGoogleUser] = useState<User | null>(null);
-  const [unverifiedUser, setUnverifiedUser] = useState<User | null>(null);
-  const navigate = useNavigate();
-  const location = useLocation();
-
-
-  const handleSocialLogin = async (provider: AuthProvider) => {
-    try {
-      let result: UserCredential;
-      // Check if this is a Google login request
-      if (provider instanceof GoogleAuthProvider) {
-        result = await signInWithPopup(auth!, provider);
-      } else {
-        // Fallback for Github etc (which still might need special handling on native, but standard for now)
-        result = await signInWithPopup(auth!, provider);
-      }
-
-      const user = result.user;
-
-      // Check if user doc exists
-      const userDocRef = doc(db, 'users', user.uid);
-      const userDoc = await getDoc(userDocRef);
-
-      if (!userDoc.exists()) {
-        // User needs to set nickname (Treat as signup)
-        setPendingGoogleUser(user);
-        setNickname(user.displayName || '');
-      } else {
-        const from = location.state?.from;
-        if (from) {
-          navigate(from);
-        } else {
-          navigate(`/${language}/dashboard`);
-        }
-      }
-
-    } catch (err: unknown) {
-      console.error("Error signing in with provider:", err);
-      const error = err as AuthError;
-      if (error.code === 'auth/account-exists-with-different-credential') {
-        setError(t('signup.errorAccountExistsWithDifferentCredential'));
-      } else if (error.code === 'auth/invalid-credential' ||
-        error.code === 'auth/user-not-found' ||
-        error.code === 'auth/wrong-password') {
-        setError(t('login.errorInvalidCredential'));
-      } else {
-        setError(error.message);
-      }
-    }
-  };
-
-  const handleCompleteGoogleSignup = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!pendingGoogleUser) return;
-
-    try {
-      const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-      await apiClient.post('/api/auth/initialize-profile', {
-        nickname: nickname || 'New User',
-        timeZone: timeZone
-      });
-
-      // Profile complete, redirect to dashboard
-      const from = location.state?.from;
-      if (from) {
-        navigate(from);
-      } else {
-        navigate(`/${language}/dashboard`);
-      }
-
-    } catch (apiError: unknown) {
-      console.error("Error initializing profile via API:", apiError);
-      let message = t('signup.errorSaveProfile');
-      if (axios.isAxiosError(apiError) && apiError.response?.data?.error) {
-        message = apiError.response.data.error;
-      }
-      setError(message);
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    setUnverifiedUser(null);
-
-    try {
-      const userCredential = await signInWithEmailAndPassword(auth!, email, password);
-
-      const isTestUser = !import.meta.env.PROD && userCredential.user.email?.endsWith('@example.com');
-      if (!userCredential.user.emailVerified && !isTestUser) {
-        setUnverifiedUser(userCredential.user);
-        await signOut(auth!); // Sign out so the session isn't persisted for unverified user
-        setError(t('login.emailNotVerified'));
-        return;
-      }
-
-      const from = location.state?.from;
-      if (from) {
-        navigate(from);
-      } else {
-        navigate(`/${language}/dashboard`);
-      }
-    } catch (err: unknown) {
-      console.error("Error signing in with email/password:", err);
-      const error = err as AuthError;
-      if (error.code === 'auth/invalid-credential' ||
-        error.code === 'auth/user-not-found' ||
-        error.code === 'auth/wrong-password') {
-        setError(t('login.errorInvalidCredential'));
-      } else if (error.code === 'resource-exhausted' || error.message?.toLowerCase().includes('quota exceeded')) {
-        setError(t('systemErrors.quotaExceededMessage'));
-      } else {
-        setError(error.message);
-      }
-    }
-  };
-
-  const handleResendVerification = async () => {
-    if (unverifiedUser) {
-      try {
-        await sendEmailVerification(unverifiedUser);
-        toast.info(t('login.verificationResent'));
-      } catch (err: unknown) {
-        console.error("Error resending verification email:", err);
-        const error = err as Error;
-        setError("Error: " + error.message);
-      }
-    }
-  };
+  const { t } = useLanguage();
+  const {
+    email,
+    setEmail,
+    password,
+    setPassword,
+    nickname,
+    setNickname,
+    error,
+    pendingGoogleUser,
+    unverifiedUser,
+    handleSocialLogin,
+    handleCompleteGoogleSignup,
+    handleSubmit,
+    handleResendVerification
+  } = useLoginForm();
 
   if (pendingGoogleUser) {
     return (
@@ -191,7 +67,7 @@ const LoginForm: FC = () => {
         </div>
 
         <button
-          onClick={() => handleSocialLogin(new GoogleAuthProvider())}
+          onClick={() => handleSocialLogin('google')}
           className="google-btn"
           type="button"
         >
@@ -200,7 +76,7 @@ const LoginForm: FC = () => {
         </button>
 
         <button
-          onClick={() => handleSocialLogin(new GithubAuthProvider())}
+          onClick={() => handleSocialLogin('github')}
           className="github-btn"
           type="button"
         >

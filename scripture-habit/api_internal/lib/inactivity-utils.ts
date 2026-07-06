@@ -8,6 +8,7 @@
  */
 
 import { FirestoreTimestamp } from '../../types/firestore';
+import { DEFAULT_KICK_THRESHOLD } from './constants';
 
 export interface InactivityMemberData {
     joinedAt?: FirestoreTimestamp;
@@ -87,7 +88,7 @@ export function calculateMemberStatus(
     // 2. Determine Most Recent Activity
     const lastActiveTime = Math.max(...timestamps);
     // 3. Threshold Calculation
-    let thresholdDays = 3;
+    let thresholdDays = DEFAULT_KICK_THRESHOLD;
     if (memberData.kickThreshold !== undefined) {
         thresholdDays = memberData.kickThreshold;
     } else if (groupData?.memberKickThresholds?.[memberId] !== undefined) {

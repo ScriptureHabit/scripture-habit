@@ -1,0 +1,1 @@
+export const DEFAULT_KICK_THRESHOLD = 7;

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { UserData } from '../../../types/user';
 import { FirebaseTimestamp, Group } from '../../../types/chat';
 import { parseTimestampToDate } from '../../../utils/time-utils';
+import { DEFAULT_KICK_THRESHOLD } from '../../../constants';
 
 interface WarningInfo {
   name: string;
@@ -40,7 +41,7 @@ export const useDashboardWarnings = (userData: UserData | null, userGroups: Grou
                 const diffMs = now.getTime() - lastActiveDate.getTime();
                 
                 // Use the threshold from memberKickThresholds if available
-                const threshold = (group.memberKickThresholds && group.memberKickThresholds[userData.uid]) || userData.kickThreshold || 3;
+                const threshold = (group.memberKickThresholds && group.memberKickThresholds[userData.uid]) || userData.kickThreshold || DEFAULT_KICK_THRESHOLD;
                 const thresholdMs = threshold * 24 * 60 * 60 * 1000;
                 
                 const remainingMs = thresholdMs - diffMs;

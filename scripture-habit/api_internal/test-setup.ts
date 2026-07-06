@@ -3,7 +3,8 @@
 /* eslint-disable no-restricted-properties */
 import { vi } from 'vitest';
 import { Server } from 'http';
-import { auth, admin, db, setDbInstance } from './lib/firebase-admin.js';
+import net from 'net';
+import { auth, admin, db, dbStorage, dbRegistry, rawDb } from './lib/firebase-admin.js';
 
 /**
  * Shared setup for backend integration tests.
@@ -12,13 +13,14 @@ import { auth, admin, db, setDbInstance } from './lib/firebase-admin.js';
 export class TestSetup {
     private server?: Server;
     public baseUrl: string = '';
-
-    private originalDb: any = null;
+    private proxyDb?: any;
+    private port?: number;
 
     private txGets: number = 0;
     private txGetAlls: number = 0;
     private docGets: number = 0;
     private readPaths: string[] = [];
+    private writePaths: string[] = [];
 
     // Builds a Firestore Proxy wrapper to audit read count metrics locally.
     // This replaces global prototype pollution hacks and ensures thread-safe parallel test execution.
@@ -34,18 +36,29 @@ export class TestSetup {
                             if (ref && ref.path) {
                                 self.readPaths.push(`[Tx GET] ${ref.path}`);
                             }
-                            return target.get(ref);
+                            const rawRef = ref && ref._rawRef ? ref._rawRef : ref;
+                            return target.get(rawRef);
                         };
                     }
                     if (prop === 'getAll') {
                         return function(...refs: any[]) {
                             self.txGetAlls++;
-                            for (const ref of refs) {
+                            const rawRefs = refs.map(ref => {
                                 if (ref && ref.path) {
                                     self.readPaths.push(`[Tx GETALL] ${ref.path}`);
                                 }
+                                return ref && ref._rawRef ? ref._rawRef : ref;
+                            });
+                            return target.getAll(...rawRefs);
+                        };
+                    }
+                    if (prop === 'update' || prop === 'set' || prop === 'delete') {
+                        return function(ref: any, ...args: any[]) {
+                            const rawRef = ref && ref._rawRef ? ref._rawRef : ref;
+                            if (ref && ref.path) {
+                                self.writePaths.push(`[Tx ${prop.toUpperCase()}] ${ref.path}`);
                             }
-                            return target.getAll(...refs);
+                            return target[prop](rawRef, ...args);
                         };
                     }
                     return Reflect.get(target, prop, receiver);
@@ -56,6 +69,9 @@ export class TestSetup {
         function wrapDocRef(ref: any): any {
             return new Proxy(ref, {
                 get(target, prop, receiver) {
+                    if (prop === '_rawRef') {
+                        return target;
+                    }
                     if (prop === 'get') {
                         return function(options?: any) {
                             self.docGets++;
@@ -125,7 +141,7 @@ export class TestSetup {
             });
         }
 
-        return new Proxy(db, {
+        return new Proxy(rawDb || db, {
             get(target, prop, receiver) {
                 if (prop === 'doc') {
                     return function(...args: any[]) {
@@ -135,6 +151,25 @@ export class TestSetup {
                 if (prop === 'collection') {
                     return function(...args: any[]) {
                         return wrapCollectionRef((target as any).collection(...args));
+                    };
+                }
+                if (prop === 'batch') {
+                    return function() {
+                        const rawBatch = target.batch();
+                        return new Proxy(rawBatch, {
+                            get(bTarget, bProp, bReceiver) {
+                                if (bProp === 'update' || bProp === 'set' || bProp === 'delete') {
+                                    return function(ref: any, ...args: any[]) {
+                                        const rawRef = ref && ref._rawRef ? ref._rawRef : ref;
+                                        if (ref && ref.path) {
+                                            self.writePaths.push(`[Batch ${bProp.toUpperCase()}] ${ref.path}`);
+                                        }
+                                        return (bTarget as any)[bProp](rawRef, ...args);
+                                    };
+                                }
+                                return Reflect.get(bTarget, bProp, bReceiver);
+                            }
+                        });
                     };
                 }
                 if (prop === 'runTransaction') {
@@ -150,17 +185,48 @@ export class TestSetup {
         });
     }
 
+    private async checkPort(port: number, host: string): Promise<boolean> {
+        return new Promise((resolve) => {
+            const socket = new net.Socket();
+            const onError = () => {
+                socket.destroy();
+                resolve(false);
+            };
+            socket.setTimeout(1000);
+            socket.once('error', onError);
+            socket.once('timeout', onError);
+            socket.connect(port, host, () => {
+                socket.end();
+                resolve(true);
+            });
+        });
+    }
+
     async start() {
+        // Fail-Fast: Check if Firebase Emulator (Firestore) is running
+        const firestoreHost = process.env.FIRESTORE_EMULATOR_HOST || '127.0.0.1:8080';
+        const [host, portStr] = firestoreHost.split(':');
+        const port = parseInt(portStr || '8080', 10);
+        
+        const isRunning = await this.checkPort(port, host);
+        if (!isRunning) {
+            throw new Error(
+                `\n❌ [TestSetup] Fatal: Firestore Emulator is NOT running at ${firestoreHost}.\n` +
+                `   Please start the Firebase Emulator Suite first (e.g. via 'firebase emulators:start')\n` +
+                `   before running backend integration tests to prevent timeout hanging.\n`
+            );
+        }
+
         // Reset counters
         this.txGets = 0;
         this.txGetAlls = 0;
         this.docGets = 0;
         this.readPaths = [];
+        this.writePaths = [];
 
-        // Save original DB instance and inject the Proxy wrapper
-        this.originalDb = db;
-        const proxyDb = this.createProxyDb();
-        setDbInstance(proxyDb);
+        // Save Proxy DB wrapper to bind to the thread context
+        this.proxyDb = this.createProxyDb();
+        dbStorage.enterWith(this.proxyDb);
 
         const app = (await import('../api/api.js')).default;
         app.locals.skipAppCheck = true;
@@ -169,7 +235,9 @@ export class TestSetup {
             this.server = app.listen(0, () => {
                 const addr = this.server?.address();
                 if (addr && typeof addr !== 'string') {
+                    this.port = addr.port;
                     this.baseUrl = `http://localhost:${addr.port}`;
+                    dbRegistry.set(addr.port, this.proxyDb);
                 }
                 resolve();
             });
@@ -177,10 +245,13 @@ export class TestSetup {
     }
 
     async stop() {
-        // Restore original DB instance to cleanup state cleanly
-        if (this.originalDb) {
-            setDbInstance(this.originalDb);
+        // Clean up from the dynamic port registry
+        if (this.port) {
+            dbRegistry.delete(this.port);
         }
+        
+        // Disable db context storage to avoid state leaks across tests
+        dbStorage.disable();
 
         const totalReads = this.txGets + this.txGetAlls + this.docGets;
 
@@ -189,6 +260,13 @@ export class TestSetup {
         console.log(`   Transaction GETALLs: ${this.txGetAlls}`);
         console.log(`   Document GETs:       ${this.docGets}`);
         console.log(`   👉 Total Reads:      ${totalReads}`);
+
+        if (this.writePaths.length > 0) {
+            console.log(`   👉 Total Writes:     ${this.writePaths.length}`);
+            this.writePaths.forEach(entry => {
+                console.log(`     - ${entry}`);
+            });
+        }
 
         if (totalReads > 0) {
             const collectionCounts: Record<string, number> = {};
@@ -218,7 +296,11 @@ export class TestSetup {
         this.readPaths = [];
 
         return new Promise<void>((resolve) => {
-            this.server?.close(() => resolve());
+            if (this.server) {
+                this.server.close(() => resolve());
+            } else {
+                resolve();
+            }
         });
     }
 

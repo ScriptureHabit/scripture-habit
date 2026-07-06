@@ -39,10 +39,57 @@ export default tseslint.config(
     },
   },
   {
-    files: ['**/*.test.ts', '**/*.test.tsx', '**/*.spec.ts', '**/*.spec.tsx'],
+    files: [
+      '**/*.test.ts',
+      '**/*.test.tsx',
+      '**/*.spec.ts',
+      '**/*.spec.tsx',
+      '**/*-test-helpers.ts',
+      '**/__mocks__/**/*.ts',
+      '**/__mocks__/**/*.tsx'
+    ],
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
       'no-restricted-properties': 'off', // Allow raw transaction setups in test modules
     },
   },
+  {
+    files: ['src/components/**/*.tsx', 'src/components/**/*.ts'],
+    ignores: [
+      'src/components/**/__tests__/**/*',
+      'src/components/**/hooks/**/*',
+      // Historical Firebase components debt (to be refactored gradually)
+      'src/components/button/delete-group-button.tsx',
+      'src/components/dashboard/components/quest-card.tsx',
+      'src/components/forgotpassword/forgot-password.tsx',
+      'src/components/mynotes/note-detail-modal.tsx',
+      'src/components/profile/profile.tsx',
+      'src/components/sidebar/sidebar.tsx'
+    ],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: 'firebase/auth',
+              message: 'Do not import Firebase directly in UI components. Encapsulate data access and auth checking inside custom hooks instead.'
+            },
+            {
+              name: 'firebase/firestore',
+              message: 'Do not import Firebase directly in UI components. Encapsulate data access and auth checking inside custom hooks instead.'
+            },
+            {
+              name: 'firebase/storage',
+              message: 'Do not import Firebase directly in UI components. Encapsulate data access and auth checking inside custom hooks instead.'
+            },
+            {
+              name: 'firebase/app-check',
+              message: 'Do not import Firebase directly in UI components. Encapsulate data access and auth checking inside custom hooks instead.'
+            }
+          ]
+        }
+      ]
+    }
+  }
 )

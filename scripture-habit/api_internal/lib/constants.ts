@@ -11,3 +11,4 @@ export const SCRIPTURE_CATEGORIES = [
 ];
 
 export const MAX_GROUPS_PER_USER = 4;
+export const DEFAULT_KICK_THRESHOLD = 7;

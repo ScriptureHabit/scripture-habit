@@ -109,7 +109,7 @@ const DashboardModals: FC<DashboardModalsProps> = ({
           <div className="leave-modal-content auto-kick-setup">
             {autoKickStep === 0 ? (
               <>
-                <h2 className="auto-kick-init-title-styled">{t('groupChat.autoKickInitTitle')}</h2>
+                <h2 className="auto-kick-init-title-styled" data-testid="habit-pace-modal-title">{t('groupChat.autoKickInitTitle')}</h2>
                 <p className="auto-kick-init-desc-styled">{t('groupChat.autoKickInitDesc')}</p>
                 <div className="auto-kick-grid-options-styled">
                   {[3, 4, 5, 6, 7].map(d => (

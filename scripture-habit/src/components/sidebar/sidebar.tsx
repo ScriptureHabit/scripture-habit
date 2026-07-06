@@ -143,7 +143,7 @@ const SidebarGroupItem: React.FC<SidebarGroupItemProps> = ({ group, language, is
       <span className={`unity-percentage-sidebar ${getUnityPercentage(group) === 100 ? 'celestial' : ''}`} data-testid="sidebar-unity-percentage">
         {getUnityPercentage(group)}%
       </span>
-      <span className="group-name-sidebar">{displayName}</span>
+      <span className="group-name-sidebar" data-testid="group-name-sidebar">{displayName}</span>
     </div>
   );
 };

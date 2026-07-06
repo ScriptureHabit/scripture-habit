@@ -15,6 +15,7 @@ test.describe('Account Lifecycle', () => {
     await page.addInitScript(() => {
         window.localStorage.setItem('cookieConsent', 'true');
         window.localStorage.setItem('lastNotifPrompt', Date.now().toString());
+        window.localStorage.setItem('hasSeenWelcomeStory', 'true');
 
         const style = document.createElement('style');
         style.innerHTML = `
@@ -65,18 +66,7 @@ test.describe('Account Lifecycle', () => {
     const skeleton = page.getByTestId('dashboard-skeleton');
     await expect(skeleton).not.toBeVisible({ timeout: 60000 });
 
-    // 2.5 CLOSE WELCOME STORY MODAL (Conditional fallback)
-    console.log('[Lifecycle] Checking if Welcome Story Modal appears...');
-    const welcomeStoryCloseBtn = page.locator('.welcome-story-close');
-    try {
-        // Wait up to 4s to see if welcome story appears (it has a 500ms delay in dashboard.tsx)
-        await expect(welcomeStoryCloseBtn).toBeVisible({ timeout: 4000 });
-        console.log('[Lifecycle] Welcome Story Modal is visible. Closing it...');
-        await welcomeStoryCloseBtn.click();
-        await expect(welcomeStoryCloseBtn).not.toBeVisible({ timeout: 10000 });
-    } catch {
-        console.log('[Lifecycle] Welcome Story Modal did not appear (expected for E2E test users).');
-    }
+
 
     // 3. ONBOARDING (Habit Pace Setup)
     // The Habit Pace modal should appear automatically for new users

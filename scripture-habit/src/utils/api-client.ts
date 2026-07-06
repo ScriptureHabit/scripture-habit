@@ -8,7 +8,7 @@ import { getToken } from 'firebase/app-check';
  * Relative paths which work with the Vite proxy in development
  * and same-origin in production.
  */
-const API_BASE = '';
+const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
 
 /**
  * Common Axios instance for internal API calls.

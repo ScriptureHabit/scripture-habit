@@ -8,6 +8,7 @@ import {
     useChatUIActions 
 } from '../hooks/use-chat-context';
 import { useChatStore } from '../../../store/use-chat-store';
+import { DEFAULT_KICK_THRESHOLD } from '../../../constants';
 import { useModalStore } from '../../../store/use-modal-store';
 
 const GroupChatFooter: FC = () => {
@@ -50,7 +51,7 @@ const GroupChatFooter: FC = () => {
         <>
         {showInactivityPolicyBanner && (
             <div className="inactivity-policy-banner">
-            <span>{t('groupChat.inactivityPolicyBanner', { days: userData?.kickThreshold || 3 })}</span>
+            <span>{t('groupChat.inactivityPolicyBanner', { days: userData?.kickThreshold || DEFAULT_KICK_THRESHOLD })}</span>
             <button className="inactivity-policy-dismiss" onClick={handleDismissInactivityBanner} aria-label={t('common.dismiss')}><UilTimes size="16" /></button>
             </div>
         )}

@@ -1,10 +1,9 @@
 import { useState, useEffect, useMemo } from 'react';
-import { onSnapshot, collection, query, where } from 'firebase/firestore';
 import { toast } from 'react-toastify';
-import { db } from '../../../firebase';
 import { UserData } from '../../../types/user';
 import { Group } from '../../../types/chat';
 import { useUnityMidnightReset } from '../../../hooks/use-unity-midnight-reset';
+import { GroupService } from '../../../services/group-service';
 
 export const useDashboardGroups = (userData: UserData | null, initialGroupId: string | null) => {
     const [rawUserGroups, setRawUserGroups] = useState<Group[]>([]);
@@ -43,50 +42,42 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
             return;
         }
 
-        const unsubscribers: (() => void)[] = [];
-
-        // 1. Unified Listener for all Groups
-        const groupsQuery = query(
-            collection(db, 'groups'),
-            where('members', 'array-contains', userData.uid)
-        );
-
-        const unsubGroups = onSnapshot(groupsQuery, (snapshot) => {
-            const fetchedGroups = snapshot.docs.map(docSnap => ({ 
-                id: docSnap.id, 
-                ...docSnap.data() 
-            } as Group));
-
-            setRawUserGroups(prev => {
-                // TRUTH: Merge fresh Firestore data with existing "decorations" 
-                const mergeWithDecorations = (newG: Group) => {
-                    const existing = prev.find(p => p.id === newG.id);
-                    if (!existing) return newG;
-                    return {
-                        ...newG,
-                        myMemberStatus: existing.myMemberStatus
+        // 1. Unified Listener for all Groups via GroupService
+        const unsubGroups = GroupService.subscribeUserGroups(
+            userData.uid,
+            (fetchedGroups) => {
+                setRawUserGroups(prev => {
+                    // TRUTH: Merge fresh Firestore data with existing "decorations" 
+                    const mergeWithDecorations = (newG: Group) => {
+                        const existing = prev.find(p => p.id === newG.id);
+                        if (!existing) return newG;
+                        return {
+                            ...newG,
+                            myMemberStatus: existing.myMemberStatus
+                        };
                     };
-                };
 
-                const mergedFetched = fetchedGroups.map(mergeWithDecorations);
-                
-                // We'll deduplicate in the useMemo result, but let's keep raw unique too
-                const uniqueMap = new Map<string, Group>();
-                mergedFetched.forEach(g => uniqueMap.set(g.id, g));
-                return Array.from(uniqueMap.values());
-            });
-            setIsLoading(false);
-        }, (err) => {
-            console.error("Dashboard groups query listener error:", err);
-            toast.error(`Groups Error: ${err.code} - ${err.message}`);
-            setIsLoading(false);
-        });
-        unsubscribers.push(unsubGroups);
+                    const mergedFetched = fetchedGroups.map(mergeWithDecorations);
+                    
+                    // We'll deduplicate in the useMemo result, but let's keep raw unique too
+                    const uniqueMap = new Map<string, Group>();
+                    mergedFetched.forEach(g => uniqueMap.set(g.id, g));
+                    return Array.from(uniqueMap.values());
+                });
+                setIsLoading(false);
+            },
+            (err) => {
+                console.error("Dashboard groups query listener error:", err);
+                const firestoreError = err as { code?: string; message?: string };
+                toast.error(`Groups Error: ${firestoreError.code || 'unknown'} - ${firestoreError.message}`);
+                setIsLoading(false);
+            }
+        );
 
         // 2. Individual member status listeners removed to save read costs.
         // memberJoinedAt, memberLastActive, memberKickThresholds are already denormalized inside Group.
 
-        return () => unsubscribers.forEach(unsub => unsub());
+        return unsubGroups;
     }, [userData?.uid, groupIdsKey, groupIds, isLoading]);
 
     // Construct userGroups (Force unreadCount to 0 and ensure uniqueness)

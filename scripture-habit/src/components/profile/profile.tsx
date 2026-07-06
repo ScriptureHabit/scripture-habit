@@ -8,6 +8,7 @@ import { UilSignOutAlt, UilCamera, UilCalendarAlt, UilCompass } from '@iconscout
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { toast } from 'react-toastify';
 import Button from '../button/button';
+import { DEFAULT_KICK_THRESHOLD } from '../../constants';
 import { requestNotificationPermission, disableNotifications } from '../../utils/notification-helper';
 import { UserData } from '../../types/user';
 import apiClient from '../../utils/api-client';
@@ -502,7 +503,7 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
                     <h2>{t('groupChat.habitPaceProfileTitle')}</h2>
                 </div>
                 <p className="section-desc-small">
-                    {t('groupChat.habitPaceProfileDesc', { days: userData?.kickThreshold || 3 })}
+                    {t('groupChat.habitPaceProfileDesc', { days: userData?.kickThreshold || DEFAULT_KICK_THRESHOLD })}
                 </p>
                 <div className="font-size-options habit-pace-grid">
                     {[3, 4, 5, 6, 7].map(days => (

@@ -1,46 +1,15 @@
-import { renderHook, waitFor } from '@testing-library/react';
+import { renderHook, waitFor, act } from '@testing-library/react';
 import { useDashboardGroups } from './use-dashboard-groups';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
-import * as firestore from 'firebase/firestore';
 import { toast } from 'react-toastify';
+import { GroupService } from '../../../services/group-service';
+import { Group } from '../../../types/chat';
 
-// Shared mock test state
-const mockTestState = {
-    listeners: [] as any[],
-    groupsCallback: null as any
-};
-
-// Helper to get the latest registered groups query listener
-const getLatestGroupsListener = () => {
-    const groupsListeners = mockTestState.listeners.filter(l => 
-        l.target && l.target.type === 'groups'
-    );
-    return groupsListeners[groupsListeners.length - 1];
-};
-
-// Mock firestore
-vi.mock('firebase/firestore', () => {
-    return {
-        doc: vi.fn(),
-        collection: vi.fn(),
-        query: vi.fn(),
-        where: vi.fn(),
-        onSnapshot: vi.fn(),
-        getDocs: vi.fn(),
-        Timestamp: {
-            fromDate: vi.fn((date) => ({ seconds: Math.floor(date.getTime() / 1000), nanoseconds: 0 }))
-        }
-    };
-});
-
-// Mock the db
-vi.mock('../../../firebase', () => ({
-    db: {}
-}));
-
-// Mock the converters
-vi.mock('../../../utils/firestore-converters', () => ({
-    groupMemberConverter: {}
+// Mock the services
+vi.mock('../../../services/group-service', () => ({
+    GroupService: {
+        subscribeUserGroups: vi.fn(() => () => {})
+    }
 }));
 
 // Mock the unity reset hook
@@ -66,59 +35,11 @@ describe('useDashboardGroups', () => {
     beforeEach(() => {
         vi.restoreAllMocks();
         vi.clearAllMocks();
-        mockTestState.listeners = [];
-        mockTestState.groupsCallback = null;
-
-        // Reset firestore mocked implementations explicitly to avoid leaks!
-        vi.mocked(firestore.doc).mockImplementation(((_db: any, col: any, ...paths: any[]) => {
-            const mockRef = {
-                type: 'doc',
-                col,
-                paths,
-                withConverter: vi.fn().mockReturnThis(),
-            };
-            if (col === 'groups' && paths.includes('members')) {
-                (mockRef as any).type = 'member';
-                (mockRef as any).gid = paths[0];
-            }
-            return mockRef as any;
-        }) as any);
-
-        vi.mocked(firestore.collection).mockImplementation(((_db: any, col: any, ...paths: any[]) => {
-            const mockCol = {
-                type: 'groups',
-                col,
-                paths,
-            };
-            if (col === 'groups' && paths.includes('messages')) {
-                (mockCol as any).type = 'messages';
-                (mockCol as any).gid = paths[0];
-            }
-            return mockCol as any;
-        }) as any);
-
-        vi.mocked(firestore.query).mockImplementation(((q: any) => q) as any);
-
-        vi.mocked(firestore.getDocs).mockImplementation((() => Promise.resolve({ docs: [] })) as any);
-
-        vi.mocked(firestore.onSnapshot).mockImplementation(((target: any, callback: any, onError: any) => {
-            const listener = { target, callback, onError };
-            mockTestState.listeners.push(listener);
-            if (!mockTestState.groupsCallback && (!target || ((target as any).type !== 'member' && (target as any).type !== 'messages'))) {
-                mockTestState.groupsCallback = callback;
-            }
-            return () => {};
-        }) as any);
+        vi.mocked(GroupService.subscribeUserGroups).mockReturnValue(() => {});
     });
 
     it('should initialize without crashing (verifies state initialization order)', () => {
-        // Setup mock for onSnapshot to return a dummy unsubscriber
-        vi.mocked(firestore.onSnapshot).mockReturnValue(() => { });
-
-        // Rendering the hook will execute the function body.
-        // If any hook or effect accesses a state variable before its declaration (TDZ),
-        // it will throw a ReferenceError here.
-        const { result } = renderHook(() => useDashboardGroups(mockUserData as unknown as { uid: string; groupIds: string[] }, null));
+        const { result } = renderHook(() => useDashboardGroups(mockUserData as any, null));
 
         expect(result.current.userGroups).toBeDefined();
         expect(result.current.activeGroupId).toBe('group1');
@@ -126,36 +47,28 @@ describe('useDashboardGroups', () => {
     });
 
     it('should populate userGroups and setActiveGroupId when data is fetched', async () => {
-        let groupsCallback: (snapshot: { docs: Array<{ id: string; data: () => Record<string, unknown> }> }) => void;
-        vi.mocked(firestore.onSnapshot).mockImplementation(((_q: unknown, callback: (snap: unknown) => void) => {
-            // In the hook, the first call is to groupsQuery (collection query)
-            // Subsequent calls are to individual doc refs
-            if (!groupsCallback) groupsCallback = callback as never;
-            return () => { };
-        }) as unknown as never);
+        let groupsCallback: ((groups: Group[]) => void) | undefined;
+        vi.mocked(GroupService.subscribeUserGroups).mockImplementation((_userId, onUpdate) => {
+            groupsCallback = onUpdate;
+            return () => {};
+        });
 
-        const { result } = renderHook(() => useDashboardGroups(mockUserData as unknown as { uid: string; groupIds: string[] }, null));
+        const { result } = renderHook(() => useDashboardGroups(mockUserData as any, null));
 
         // Initial state
         expect(result.current.userGroups).toEqual([]);
         expect(result.current.isLoading).toBe(true);
 
-        // Simulate snapshot update for groups
-        // We use act to ensure the state updates are processed
-        await waitFor(() => {
+        // Simulate callback update for groups
+        act(() => {
             if (!groupsCallback) throw new Error('Groups callback not captured');
-            groupsCallback({
-                docs: [
-                    {
-                        id: 'group1',
-                        data: () => ({
-                            id: 'group1',
-                            name: 'Test Group',
-                            members: ['user123']
-                        })
-                    }
-                ]
-            });
+            groupsCallback([
+                {
+                    id: 'group1',
+                    name: 'Test Group',
+                    members: ['user123']
+                } as Group
+            ]);
         });
 
         // Wait for the chain of useEffects to complete
@@ -174,29 +87,29 @@ describe('useDashboardGroups', () => {
         expect(result.current.userGroups).toEqual([]);
         expect(result.current.activeGroupId).toBeNull();
         expect(result.current.isLoading).toBe(false);
+        expect(GroupService.subscribeUserGroups).not.toHaveBeenCalled();
     });
 
     it('should NOT keep zombie groups if removed from Firestore membership', async () => {
-        let groupsCallback: (snapshot: { docs: Array<{ id: string; data: () => Record<string, unknown> }> }) => void;
-        vi.mocked(firestore.onSnapshot).mockImplementation(((_q: unknown, callback: (snap: unknown) => void) => {
-            if (!groupsCallback) groupsCallback = callback as never;
-            return () => { };
-        }) as unknown as never);
+        let groupsCallback: ((groups: Group[]) => void) | undefined;
+        vi.mocked(GroupService.subscribeUserGroups).mockImplementation((_userId, onUpdate) => {
+            groupsCallback = onUpdate;
+            return () => {};
+        });
 
-        const { result } = renderHook(() => useDashboardGroups(mockUserData as unknown as { uid: string; groupIds: string[] }, null));
+        const { result } = renderHook(() => useDashboardGroups(mockUserData as any, null));
 
         // 1. Initial Load
-        await waitFor(() => {
+        act(() => {
             if (!groupsCallback) throw new Error('Groups callback not captured');
-            groupsCallback({
-                docs: [{ id: 'group1', data: () => ({ id: 'group1', name: 'Test Group' }) }]
-            });
+            groupsCallback([{ id: 'group1', name: 'Test Group' } as Group]);
         });
         await waitFor(() => expect(result.current.userGroups.length).toBe(1));
 
         // 2. Simulate group deletion/removal from membership (empty docs)
-        await waitFor(() => {
-            groupsCallback({ docs: [] });
+        act(() => {
+            if (!groupsCallback) throw new Error('Groups callback not captured');
+            groupsCallback([]);
         });
 
         // 3. Ensure group is removed despite being in mockUserData.groupIds
@@ -204,24 +117,22 @@ describe('useDashboardGroups', () => {
     });
 
     it('should deduplicate groupIds from userData', async () => {
-        let groupsCallback: (snapshot: { docs: Array<{ id: string; data: () => Record<string, unknown> }> }) => void;
-        vi.mocked(firestore.onSnapshot).mockImplementation(((_q: unknown, callback: (snap: unknown) => void) => {
-            if (!groupsCallback) groupsCallback = callback as never;
-            return () => { };
-        }) as unknown as never);
+        let groupsCallback: ((groups: Group[]) => void) | undefined;
+        vi.mocked(GroupService.subscribeUserGroups).mockImplementation((_userId, onUpdate) => {
+            groupsCallback = onUpdate;
+            return () => {};
+        });
 
         const duplicatedUserData = {
             uid: 'user123',
             groupIds: ['group1', 'group1', 'group1']
         };
 
-        const { result } = renderHook(() => useDashboardGroups(duplicatedUserData as unknown as { uid: string; groupIds: string[] }, null));
+        const { result } = renderHook(() => useDashboardGroups(duplicatedUserData as any, null));
 
-        await waitFor(() => {
+        act(() => {
             if (!groupsCallback) throw new Error('Groups callback not captured');
-            groupsCallback({
-                docs: [{ id: 'group1', data: () => ({ id: 'group1', name: 'Test Group' }) }]
-            });
+            groupsCallback([{ id: 'group1', name: 'Test Group' } as Group]);
         });
 
         await waitFor(() => {
@@ -230,11 +141,11 @@ describe('useDashboardGroups', () => {
     });
 
     it('should ONLY show groups that are in groupIds (strict filtering)', async () => {
-        let groupsCallback: (snapshot: { docs: Array<{ id: string; data: () => Record<string, unknown> }> }) => void;
-        vi.mocked(firestore.onSnapshot).mockImplementation(((_q: unknown, callback: (snap: unknown) => void) => {
-            if (!groupsCallback) groupsCallback = callback as never;
-            return () => { };
-        }) as unknown as never);
+        let groupsCallback: ((groups: Group[]) => void) | undefined;
+        vi.mocked(GroupService.subscribeUserGroups).mockImplementation((_userId, onUpdate) => {
+            groupsCallback = onUpdate;
+            return () => {};
+        });
 
         // User is member of group1 and group2, but groupIds only has group1
         const strictUserData = {
@@ -242,16 +153,14 @@ describe('useDashboardGroups', () => {
             groupIds: ['group1']
         };
 
-        const { result } = renderHook(() => useDashboardGroups(strictUserData as unknown as { uid: string; groupIds: string[] }, null));
+        const { result } = renderHook(() => useDashboardGroups(strictUserData as any, null));
 
-        await waitFor(() => {
+        act(() => {
             if (!groupsCallback) throw new Error('Groups callback not captured');
-            groupsCallback({
-                docs: [
-                    { id: 'group1', data: () => ({ id: 'group1', name: 'Group 1' }) },
-                    { id: 'group2', data: () => ({ id: 'group2', name: 'Ghost Group' }) }
-                ]
-            });
+            groupsCallback([
+                { id: 'group1', name: 'Group 1' } as Group,
+                { id: 'group2', name: 'Ghost Group' } as Group
+            ]);
         });
 
         // Should only show group1
@@ -261,17 +170,24 @@ describe('useDashboardGroups', () => {
         });
     });
 
-    it('should handle groups query error gracefully (lines 80-82)', async () => {
+    it('should handle groups query error gracefully', async () => {
         const toastSpy = vi.spyOn(toast, 'error');
+        let groupsOnError: ((err: any) => void) | undefined;
+
+        vi.mocked(GroupService.subscribeUserGroups).mockImplementation((_userId, _onUpdate, onError) => {
+            groupsOnError = onError;
+            return () => {};
+        });
 
         const { result } = renderHook(() => useDashboardGroups(mockUserData as any, null));
 
         await waitFor(() => {
-            expect(mockTestState.listeners.length).toBeGreaterThan(0);
+            expect(groupsOnError).toBeDefined();
         });
 
-        const activeListener = getLatestGroupsListener();
-        activeListener.onError({ code: 'permission-denied', message: 'Denied' });
+        act(() => {
+            groupsOnError!({ code: 'permission-denied', message: 'Denied' });
+        });
 
         await waitFor(() => {
             expect(toastSpy).toHaveBeenCalledWith('Groups Error: permission-denied - Denied');
@@ -279,30 +195,32 @@ describe('useDashboardGroups', () => {
         });
     });
 
-    it('should fallback to first userGroup when userData has no groupIds (lines 171-172)', async () => {
+    it('should fallback to first userGroup when userData has no groupIds', async () => {
         const userDataNoGroups = {
             uid: 'user123',
             groupIds: []
         };
+        let groupsCallback: ((groups: Group[]) => void) | undefined;
+
+        vi.mocked(GroupService.subscribeUserGroups).mockImplementation((_userId, onUpdate) => {
+            groupsCallback = onUpdate;
+            return () => {};
+        });
 
         const { result } = renderHook(() => useDashboardGroups(userDataNoGroups as any, null));
 
         await waitFor(() => {
-            expect(mockTestState.listeners.length).toBeGreaterThan(0);
+            expect(groupsCallback).toBeDefined();
         });
 
-        const activeListener = getLatestGroupsListener();
-        activeListener.callback({
-            docs: [
+        act(() => {
+            groupsCallback!([
                 {
                     id: 'group_from_query',
-                    data: () => ({
-                        id: 'group_from_query',
-                        name: 'Query Group',
-                        members: ['user123']
-                    })
-                }
-            ]
+                    name: 'Query Group',
+                    members: ['user123']
+                } as Group
+            ]);
         });
 
         await waitFor(() => {
@@ -310,22 +228,28 @@ describe('useDashboardGroups', () => {
         });
     });
 
-    it('should reset activeGroupId if current active group is no longer in groupIds list (lines 186-188)', async () => {
+    it('should reset activeGroupId if current active group is no longer in groupIds list', async () => {
+        let groupsCallback: ((groups: Group[]) => void) | undefined;
+
+        vi.mocked(GroupService.subscribeUserGroups).mockImplementation((_userId, onUpdate) => {
+            groupsCallback = onUpdate;
+            return () => {};
+        });
+
         const { result, rerender } = renderHook(
             ({ uData }) => useDashboardGroups(uData, 'group2'),
             { initialProps: { uData: { uid: 'user123', groupIds: ['group1', 'group2'] } as any } }
         );
 
         await waitFor(() => {
-            expect(mockTestState.listeners.length).toBeGreaterThan(0);
+            expect(groupsCallback).toBeDefined();
         });
 
-        let activeListener = getLatestGroupsListener();
-        activeListener.callback({
-            docs: [
-                { id: 'group1', data: () => ({ id: 'group1', name: 'Group 1', members: ['user123'] }) },
-                { id: 'group2', data: () => ({ id: 'group2', name: 'Group 2', members: ['user123'] }) }
-            ]
+        act(() => {
+            groupsCallback!([
+                { id: 'group1', name: 'Group 1', members: ['user123'] } as Group,
+                { id: 'group2', name: 'Group 2', members: ['user123'] } as Group
+            ]);
         });
 
         await waitFor(() => {
@@ -338,16 +262,11 @@ describe('useDashboardGroups', () => {
             groupIds: ['group1']
         };
         rerender({ uData: updatedUserData as any });
-
-        await waitFor(() => {
-            expect(mockTestState.listeners.length).toBeGreaterThan(0);
-        });
         
-        activeListener = getLatestGroupsListener();
-        activeListener.callback({
-            docs: [
-                { id: 'group1', data: () => ({ id: 'group1', name: 'Group 1', members: ['user123'] }) }
-            ]
+        act(() => {
+            groupsCallback!([
+                { id: 'group1', name: 'Group 1', members: ['user123'] } as Group
+            ]);
         });
 
         await waitFor(() => {

@@ -22,6 +22,7 @@ export default function JoinSuccessModal({ onClose }: JoinSuccessModalProps) {
   return (
     <div
       className="join-success-overlay"
+      data-testid="join-success-overlay"
       onClick={onClose}
       role="dialog"
       aria-modal="true"

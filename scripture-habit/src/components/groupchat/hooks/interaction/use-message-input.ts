@@ -1,6 +1,7 @@
 import { useMemo, FormEvent, KeyboardEvent } from 'react';
 import { Message } from '../../../../types/chat';
 import { useChatStore } from '../../../../store/use-chat-store';
+import { DEFAULT_KICK_THRESHOLD } from '../../../../constants';
 
 /**
  * Hook for managing the chat message input state and logic.
@@ -19,7 +20,7 @@ export const useMessageInput = (
   const inputPlaceholder = useMemo(() => {
     const typeMessageRaw = tArray('groupChat.typeMessage');
     const candidates = Array.isArray(typeMessageRaw) ? [...typeMessageRaw] : [typeMessageRaw];
-    const inactivityThreshold = userData?.kickThreshold || 3;
+    const inactivityThreshold = userData?.kickThreshold || DEFAULT_KICK_THRESHOLD;
     candidates.push(t('groupChat.placeholderInactivity', { days: inactivityThreshold }));
     candidates.push(t('groupChat.placeholderShare'));
     candidates.push(t('groupChat.placeholderEncourage'));

@@ -1,6 +1,8 @@
 import { renderHook, act } from '@testing-library/react';
 import { useUnityMidnightReset } from '../use-unity-midnight-reset';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { http, HttpResponse } from 'msw';
+import { server } from '../../mocks/server';
 
 // Mock Firebase
 vi.mock('../../firebase', () => ({
@@ -17,9 +19,8 @@ vi.mock('firebase/app-check', () => ({
     getToken: vi.fn().mockResolvedValue({ token: 'app-check-token' }),
 }));
 
-// Mock fetch
-const globalFetch = vi.fn();
-global.fetch = globalFetch;
+// Spy on API requests via MSW
+const requestSpy = vi.fn();
 
 describe('useUnityMidnightReset', () => {
     const defaultProps = {
@@ -32,12 +33,14 @@ describe('useUnityMidnightReset', () => {
     beforeEach(() => {
         vi.useFakeTimers();
         vi.setSystemTime(new Date('2026-04-16T12:00:00Z'));
-        globalFetch.mockReset();
-        // Default mock implementation
-        globalFetch.mockResolvedValue({
-            ok: true,
-            json: async () => ({ reset: true }),
-        });
+        requestSpy.mockClear();
+        
+        server.use(
+            http.post('*/api/groups/reset-unity-if-midnight', () => {
+                requestSpy();
+                return HttpResponse.json({ reset: true });
+            })
+        );
         vi.clearAllMocks();
     });
 
@@ -52,7 +55,7 @@ describe('useUnityMidnightReset', () => {
             await vi.runOnlyPendingTimersAsync();
         });
 
-        expect(globalFetch).not.toHaveBeenCalled();
+        expect(requestSpy).not.toHaveBeenCalled();
     });
 
     it('should reset when date changes in group timezone', async () => {
@@ -64,7 +67,7 @@ describe('useUnityMidnightReset', () => {
             await vi.runOnlyPendingTimersAsync();
         });
 
-        expect(globalFetch).toHaveBeenCalled();
+        expect(requestSpy).toHaveBeenCalled();
         expect(props.onReset).toHaveBeenCalled();
     });
 
@@ -85,14 +88,14 @@ describe('useUnityMidnightReset', () => {
         });
 
         // Should NOT reset yet (it's 18:00 on April 16 in LA)
-        expect(globalFetch).not.toHaveBeenCalled();
+        expect(requestSpy).not.toHaveBeenCalled();
 
         // Advance 10 hours -> 11:00 UTC (LA: 04:00 AM on April 17)
         await act(async () => {
             vi.advanceTimersByTime(10 * 60 * 60 * 1000);
         });
 
-        expect(globalFetch).toHaveBeenCalled();
+        expect(requestSpy).toHaveBeenCalled();
     });
 
     it('should retry on focus', async () => {
@@ -111,7 +114,7 @@ describe('useUnityMidnightReset', () => {
             await vi.runOnlyPendingTimersAsync();
         });
 
-        expect(globalFetch).toHaveBeenCalled();
+        expect(requestSpy).toHaveBeenCalled();
     });
 
     it('should not reset when groupId is missing', async () => {
@@ -121,15 +124,17 @@ describe('useUnityMidnightReset', () => {
             await vi.runOnlyPendingTimersAsync();
         });
 
-        expect(globalFetch).not.toHaveBeenCalled();
+        expect(requestSpy).not.toHaveBeenCalled();
     });
 
     it('should handle API errors gracefully (not calling onReset)', async () => {
         // Ensure ALL calls fail for this test
-        globalFetch.mockResolvedValue({
-            ok: false,
-            text: async () => 'Internal Server Error',
-        });
+        server.use(
+            http.post('*/api/groups/reset-unity-if-midnight', () => {
+                requestSpy();
+                return new HttpResponse('Internal Server Error', { status: 500 });
+            })
+        );
 
         const props = { ...defaultProps, dailyActivityDate: '2026-04-15' };
         renderHook(() => useUnityMidnightReset(props));
@@ -138,7 +143,7 @@ describe('useUnityMidnightReset', () => {
             await vi.runOnlyPendingTimersAsync();
         });
 
-        expect(globalFetch).toHaveBeenCalled();
+        expect(requestSpy).toHaveBeenCalled();
         expect(props.onReset).not.toHaveBeenCalled();
     });
 });

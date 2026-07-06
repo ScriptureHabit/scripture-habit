@@ -34,10 +34,10 @@ test.describe('Invitation Join Flow Stability', () => {
     await pageA.waitForURL(/.*dashboard/);
     
     // Get the invite link from the modal
-    await expect(pageA.locator('.invite-modal')).toBeVisible();
+    await expect(pageA.getByTestId('invite-modal')).toBeVisible();
     
     // Wait for the invite link to actually contain a code (not just the base URL)
-    const inviteLinkLocator = pageA.locator('.invite-link-url');
+    const inviteLinkLocator = pageA.getByTestId('invite-link-url');
     await expect(inviteLinkLocator).not.toHaveText(/join\/\?/, { timeout: 10000 });
     
     const inviteLink = await inviteLinkLocator.innerText();
@@ -71,12 +71,12 @@ test.describe('Invitation Join Flow Stability', () => {
         await pageB.goto(inviteLink);
         
         // Wait for invite card
-        const inviteCard = pageB.locator('.invite-card');
+        const inviteCard = pageB.getByTestId('invite-card');
         await expect(inviteCard).toBeVisible({ timeout: 30000 });
-        await expect(pageB.locator('.group-name')).toHaveText(groupName, { timeout: 15000 });
+        await expect(pageB.getByTestId('invite-group-name')).toHaveText(groupName, { timeout: 15000 });
         
         // Click join button
-        const joinBtn = pageB.locator('.join-btn');
+        const joinBtn = pageB.getByTestId('invite-join-btn');
         await expect(joinBtn).toBeVisible();
         console.log('Clicking join button as guest...');
         await joinBtn.click();
@@ -112,18 +112,19 @@ test.describe('Invitation Join Flow Stability', () => {
     await test.step('User B handles Habit Pace modal', async () => {
         // First close the Join Success modal that overlay the screen
         console.log('Closing Join Success Modal for User B...');
-        const successOverlay = pageB.locator('.join-success-overlay');
+        const successOverlay = pageB.getByTestId('join-success-overlay');
         await expect(successOverlay).toBeVisible({ timeout: 25000 });
         await pageB.click('#join-success-close-btn');
         await expect(successOverlay).not.toBeVisible({ timeout: 15000 });
 
         console.log('Checking for Habit Pace modal for User B...');
-        const paceModalTitle = pageB.locator('.auto-kick-init-title-styled');
+        const paceModalTitle = pageB.getByTestId('habit-pace-modal-title');
         
         // Wait for modal to appear (might take a moment after dashboard load)
         await expect(paceModalTitle).toBeVisible({ timeout: 30000 });
         
         // Step 1: Select pace (default 3 is fine)
+        await pageB.click('[data-testid="habit-pace-option-3"]');
         await pageB.click('[data-testid="habit-pace-next-button"]');
         
         // Step 2: Confirmation
@@ -181,7 +182,7 @@ test.describe('Invitation Join Flow Stability', () => {
         }
         
         console.log('Group found in User A sidebar. Clicking specifically on the group name...');
-        await groupItemA.first().locator('.group-name-sidebar').click({ force: true });
+        await groupItemA.first().getByTestId('group-name-sidebar').click({ force: true });
         
         // Wait for ChatHeader to show the correct group name
         console.log(`Waiting for group title "${groupName}" in header...`);
@@ -212,7 +213,7 @@ test.describe('Invitation Join Flow Stability', () => {
             const groupItemA = pageA.locator('[data-testid="sidebar-group-item"]').filter({ 
                 has: pageA.locator(`[data-group-name="${groupName}"]`) 
             }).or(pageA.locator('[data-testid="sidebar-group-item"]', { hasText: groupName }));
-            await groupItemA.first().locator('.group-name-sidebar').click();
+            await groupItemA.first().getByTestId('group-name-sidebar').click();
             
             // Wait for ChatHeader to show the correct group name
             await expect(pageA.getByTestId('group-name-title')).toContainText(groupName, { timeout: 30000 });
@@ -246,8 +247,8 @@ test.describe('Invitation Join Flow Stability', () => {
     await pageA.fill('[data-testid="group-name-input"]', groupName);
     await pageA.click('[data-testid="create-group-submit"]');
     await pageA.waitForURL(/.*dashboard/);
-    await expect(pageA.locator('.invite-modal')).toBeVisible();
-    const inviteLinkLocator = pageA.locator('.invite-link-url');
+    await expect(pageA.getByTestId('invite-modal')).toBeVisible();
+    const inviteLinkLocator = pageA.getByTestId('invite-link-url');
     // Wait for the actual code to appear (prevents race where modal shows before code is hydrated)
     await expect(inviteLinkLocator).not.toHaveText(/join\/\?/, { timeout: 15000 });
     const inviteLink = await inviteLinkLocator.innerText();
@@ -292,8 +293,9 @@ test.describe('Invitation Join Flow Stability', () => {
         await expect(pageB).toHaveURL(/.*dashboard/, { timeout: 30000 });
 
         // Handle Habit Pace modal for new User B
-        const paceModalTitle = pageB.locator('.auto-kick-init-title-styled');
+        const paceModalTitle = pageB.getByTestId('habit-pace-modal-title');
         await expect(paceModalTitle).toBeVisible({ timeout: 20000 });
+        await pageB.click('[data-testid="habit-pace-option-3"]');
         await pageB.click('[data-testid="habit-pace-next-button"]');
         await pageB.locator('[data-testid="habit-pace-confirm-input"]').fill('3');
         await pageB.click('[data-testid="habit-pace-save-button"]');
@@ -309,7 +311,7 @@ test.describe('Invitation Join Flow Stability', () => {
         await Promise.race([
             pageB.waitForURL(/.*dashboard/, { timeout: 20000 }),
             (async () => {
-                const joinBtn = pageB.locator('.join-btn');
+                const joinBtn = pageB.getByTestId('invite-join-btn');
                 try {
                     await joinBtn.waitFor({ state: 'visible', timeout: 5000 });
                     await joinBtn.click().catch(() => {});
@@ -324,7 +326,7 @@ test.describe('Invitation Join Flow Stability', () => {
 
         // Close the Join Success Modal
         console.log('Closing Join Success Modal for User B...');
-        const successOverlay = pageB.locator('.join-success-overlay');
+        const successOverlay = pageB.getByTestId('join-success-overlay');
         await expect(successOverlay).toBeVisible({ timeout: 25000 });
         await pageB.click('#join-success-close-btn');
         await expect(successOverlay).not.toBeVisible({ timeout: 15000 });
@@ -357,7 +359,7 @@ test.describe('Invitation Join Flow Stability', () => {
             await pageA.waitForLoadState('load');
         }
 
-        await groupItemA.first().locator('.group-name-sidebar').click();
+        await groupItemA.first().getByTestId('group-name-sidebar').click();
         
         // Wait for ChatHeader to show the correct group name
         await expect(pageA.getByTestId('group-name-title')).toContainText(groupName, { timeout: 30000 });

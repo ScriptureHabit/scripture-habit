@@ -1,6 +1,6 @@
 import { useEffect, useRef, useCallback } from 'react';
-import { auth, appCheck } from '../firebase';
-import { getToken } from 'firebase/app-check';
+import { auth } from '../firebase';
+import apiClient from '../utils/api-client';
 import { formatDateInTimeZone, normalizeDateString, parseTimestampToDate } from '../utils/time-utils';
 
 interface UseUnityMidnightResetProps {
@@ -51,45 +51,9 @@ export const useUnityMidnightReset = ({
                     console.warn('[UnityReset] No authenticated user');
                     return;
                 }
-                const currentUser = auth.currentUser;
 
-                const idToken = await currentUser.getIdToken();
-                
-                // Get App Check token if available
-                let appCheckToken = '';
-                if (appCheck) {
-                    try {
-                        const tokenResponse = await getToken(appCheck, false);
-                        appCheckToken = tokenResponse.token;
-                    } catch {
-                        // App Check might fail in development, continue without it
-                    }
-                }
-
-                const API_BASE = window.location.hostname === 'localhost' ? '' : 'https://scripturehabit.app';
-                
-                const headers: Record<string, string> = {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${idToken}`,
-                };
-                
-                if (appCheckToken) {
-                    headers['X-Firebase-AppCheck'] = appCheckToken;
-                }
-
-                const response = await fetch(`${API_BASE}/api/groups/reset-unity-if-midnight`, {
-                    method: 'POST',
-                    headers,
-                    body: JSON.stringify({ groupId })
-                });
-
-                if (!response.ok) {
-                    const error = await response.text();
-                    console.error('[UnityReset] API error:', error);
-                    return;
-                }
-
-                const result = await response.json();
+                const response = await apiClient.post('/api/groups/reset-unity-if-midnight', { groupId });
+                const result = response.data;
 
                 if (result.reset) {
                     // Notify parent component to refresh data

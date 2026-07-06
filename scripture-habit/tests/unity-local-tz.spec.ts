@@ -3,8 +3,9 @@ import { test, expect } from './fixtures/auth.fixture';
 test.describe('Unity Percentage Synchronization (Local Timezone: Asia/Tokyo)', () => {
     test.slow();
     
-    // Skip this test in CI environments to focus on local dev verification as requested
-    test.skip(!!process.env.CI, 'This test is for local timezone verification only');
+    // Skip this test in CI environments unless the timezone is explicitly configured to Asia/Tokyo
+    const isTokyoTimezone = process.env.TZ === 'Asia/Tokyo' || Intl.DateTimeFormat().resolvedOptions().timeZone === 'Asia/Tokyo';
+    test.skip(!!process.env.CI && !isTokyoTimezone, 'Skipped on CI unless TZ=Asia/Tokyo env is present');
 
     test.use({ timezoneId: 'Asia/Tokyo' });
 
@@ -24,7 +25,7 @@ test.describe('Unity Percentage Synchronization (Local Timezone: Asia/Tokyo)', (
         const almostMidnightJST = new Date(`${todayJSTStr}T23:55:00+09:00`);
         
         console.log(`--- Pre-step: Installing mock clock at ${almostMidnightJST.toISOString()} (Local JST: ${todayJSTStr} 23:55:00) ---`);
-        await page.clock.install({ time: almostMidnightJST });
+        await page.clock.install({ time: almostMidnightJST.getTime() });
 
         // --- PART 1: Setup test group with Asia/Tokyo timezone ---
         console.log('--- Step 1: Setting up test group in Asia/Tokyo ---');

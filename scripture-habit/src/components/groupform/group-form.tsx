@@ -1,8 +1,8 @@
 
 import './group-form.css';
 import React, { useState } from "react";
-import { auth, appCheck } from '../../firebase';
-import { getToken } from 'firebase/app-check';
+import { auth } from '../../firebase';
+import apiClient from '../../utils/api-client';
 import { useNavigate, Link } from 'react-router-dom';
 import Input from '../input/input';
 import Button from '../button/button';
@@ -32,39 +32,14 @@ export default function GroupForm() {
 
     setLoading(true);
     try {
-      const idToken = await user.getIdToken();
-      let appCheckToken;
-      try {
-        if (appCheck) {
-          appCheckToken = (await getToken(appCheck)).token;
-        }
-      } catch (err) {
-        console.warn("AppCheck token fetch failed:", err);
-      }
-
-      const API_BASE = window.location.hostname === 'localhost' ? '' : 'https://scripturehabit.app';
-      
-      const response = await fetch(`${API_BASE}/api/groups/create-group`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${idToken}`,
-          'X-Firebase-AppCheck': appCheckToken || ''
-        },
-        body: JSON.stringify({
-          name: groupName,
-          description: description,
-          isPublic: isPublic,
-          timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Tokyo'
-        })
+      const response = await apiClient.post('/api/groups/create-group', {
+        name: groupName,
+        description: description,
+        isPublic: isPublic,
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Tokyo'
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || t('groupForm.errorCreateFailed'));
-      }
-
-      const result = await response.json();
+      const result = response.data;
       const newGroupId = result.groupId;
 
       toast.success(`🎉 ${t('groupForm.successCreated')}`);
@@ -72,7 +47,15 @@ export default function GroupForm() {
 
     } catch (e: unknown) {
       console.error("Error creating group:", e);
-      const errorMessage = e instanceof Error ? e.message : t('groupForm.errorCreateFailed');
+      let errorMessage = t('groupForm.errorCreateFailed');
+      if (e && typeof e === 'object' && 'response' in e) {
+        const axiosError = e as { response?: { data?: { error?: string } } };
+        if (axiosError.response?.data?.error) {
+          errorMessage = axiosError.response.data.error;
+        }
+      } else if (e instanceof Error) {
+        errorMessage = e.message;
+      }
       setError(errorMessage);
     } finally {
       setLoading(false);

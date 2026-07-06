@@ -29,9 +29,54 @@ import resetUnityRoutes from '../api_internal/routes/reset-unity.js';
 // Middleware & Utils
 import { globalLimiter } from '../api_internal/lib/middleware.js';
 import { AppError } from '../api_internal/lib/errors.js';
+import { AsyncLocalStorage } from 'node:async_hooks';
+import { dbStorage, dbRegistry } from '../api_internal/lib/firebase-admin.js';
+
+export const testTimeStorage = new AsyncLocalStorage<number>();
+
+if (process.env.NODE_ENV !== 'production') {
+    const OriginalDate = global.Date;
+    const FakeDate: any = function(...args: any[]) {
+        if (!new.target) {
+            const storedTime = testTimeStorage.getStore();
+            return storedTime !== undefined ? new OriginalDate(storedTime).toString() : OriginalDate();
+        }
+        if (args.length === 0) {
+            const storedTime = testTimeStorage.getStore();
+            if (storedTime !== undefined) {
+                return new OriginalDate(storedTime);
+            }
+            return new OriginalDate();
+        }
+        return new (OriginalDate as any)(...args);
+    };
+    FakeDate.prototype = OriginalDate.prototype;
+    FakeDate.now = () => {
+        const storedTime = testTimeStorage.getStore();
+        if (storedTime !== undefined) {
+            return storedTime;
+        }
+        return OriginalDate.now();
+    };
+    FakeDate.UTC = OriginalDate.UTC;
+    FakeDate.parse = OriginalDate.parse;
+
+    global.Date = FakeDate as any;
+}
 
 const app = express();
 app.locals.skipAppCheck = process.env.SKIP_APP_CHECK === 'true';
+
+// Dynamically bind the request's thread to the corresponding TestSetup's Proxy DB based on local port
+app.use((req, _res, next) => {
+    const port = req.socket.localPort;
+    const proxyDb = port ? dbRegistry.get(port) : undefined;
+    if (proxyDb) {
+        dbStorage.run(proxyDb, next);
+    } else {
+        next();
+    }
+});
 
 // --- Middleware & Configuration ---
 app.use(helmet());
@@ -41,6 +86,21 @@ app.set('trust proxy', 1);
 app.use((req, _res, next) => {
     const reqId = req.header('x-request-id') || crypto.randomUUID();
     req.headers['x-request-id'] = reqId;
+    next();
+});
+
+// Middleware to mock system time for E2E testing
+app.use((req, _res, next) => {
+    const testTimeHeader = req.header('x-test-system-time');
+    if (testTimeHeader && process.env.NODE_ENV !== 'production') {
+        const testTime = parseInt(testTimeHeader, 10);
+        if (!isNaN(testTime)) {
+            testTimeStorage.run(testTime, () => {
+                next();
+            });
+            return;
+        }
+    }
     next();
 });
 

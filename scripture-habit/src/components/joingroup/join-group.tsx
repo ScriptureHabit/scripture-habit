@@ -1,218 +1,39 @@
 
 import './join-group.css';
-import { useState, useEffect, useCallback, useMemo } from "react";
-import { auth, db } from '../../firebase';
-import { doc, onSnapshot, collection, query, where, getDocs, limit, orderBy } from 'firebase/firestore';
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from 'react-router-dom';
-import { onAuthStateChanged, User } from "firebase/auth";
 import '../groupform/group-form.css';
 import GroupCard from '../../groups/group-card';
 import { useLanguage } from '../../hooks/use-language';
-import { MAX_GROUPS_PER_USER } from '../../config';
 import Mascot from '../mascot/mascot';
-import { toast } from 'react-toastify';
 import { PublicGroupsSkeleton } from '../skeleton/skeleton';
 import { Group } from '../../types/chat';
-import { UserData } from '../../types/user';
+import { useJoinGroup } from './hooks/use-join-group';
 import { parseTimestampToDate } from '../../utils/time-utils';
-import apiClient from '../../utils/api-client';
-import { getApiErrorMessage } from '../../utils/api-error-parser';
 
 export default function JoinGroup() {
   const { t, language } = useLanguage();
-  const [error, setError] = useState("");
-  const [user, setUser] = useState<User | null>(null);
-  const [userData, setUserData] = useState<UserData | null>(null);
-  const [publicGroups, setPublicGroups] = useState<Group[]>([]);
-  const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
-
-  const [translatedNames, setTranslatedNames] = useState<Record<string, string>>({});
-  const [translatedDescs, setTranslatedDescs] = useState<Record<string, string>>({});
-  const [translatingIds, setTranslatingIds] = useState<Set<string>>(new Set());
-  const [loadingGroups, setLoadingGroups] = useState(true);
-  const [currentPage, setCurrentPage] = useState(1);
-  const groupsPerPage = 5;
   const navigate = useNavigate();
 
-  const handleTranslateGroup = useCallback(async (groupId: string, name: string, description?: string, translations?: Record<string, {name: string, description?: string}>) => {
-    // 1. Check for manual translation in Firestore (Prioritize this)
-    const manualTrans = translations?.[language];
-    if (manualTrans?.name || manualTrans?.description) {
-      if (manualTrans.name) {
-        setTranslatedNames(prev => ({ ...prev, [groupId]: manualTrans.name }));
-      }
-      if (manualTrans.description) {
-        setTranslatedDescs(prev => ({ ...prev, [groupId]: manualTrans.description! }));
-      }
-      return;
-    }
+  const {
+    user,
+    userData,
+    currentGroups,
+    loadingGroups,
+    filteredGroups,
+    error,
+    currentPage,
+    totalPages,
+    handlePageChange,
+    joinGroup,
+    translatedNames,
+    translatedDescs,
+    translatingIds,
+    handleTranslateGroup
+  } = useJoinGroup();
 
-    // 2. Performance: Avoid duplicate network calls
-    let alreadyTranslating = false;
-    setTranslatingIds(prev => {
-      if (prev.has(groupId)) {
-        alreadyTranslating = true;
-        return prev;
-      }
-      const next = new Set(prev);
-      next.add(groupId);
-      return next;
-    });
-
-    if (alreadyTranslating) return;
-
-    if (!user) {
-      setTranslatedNames(prev => ({ ...prev, [groupId]: name }));
-      if (description) {
-        setTranslatedDescs(prev => ({ ...prev, [groupId]: description }));
-      }
-      return;
-    }
-
-    try {
-      const translate = async (text: string, type: 'group_name' | 'group_description') => {
-        if (!text) return null;
-        const res = await apiClient.post('/api/ai/translate', {
-          text,
-          targetLanguage: language,
-          updateType: type
-        });
-        return res.data.translatedText;
-      };
-
-      const [newName, newDesc] = await Promise.all([
-        translate(name, 'group_name'),
-        description ? translate(description, 'group_description') : Promise.resolve(null)
-      ]);
-
-      if (newName) setTranslatedNames(prev => ({ ...prev, [groupId]: newName }));
-      if (newDesc) setTranslatedDescs(prev => ({ ...prev, [groupId]: newDesc }));
-
-    } catch (e: unknown) {
-      console.error("Error translating group info:", e);
-      toast.error(t('groupChat.errorTranslation') || "Failed to translate");
-      // Fallback to original values to avoid infinite retry loop
-      setTranslatedNames(prev => ({ ...prev, [groupId]: name }));
-      if (description) {
-        setTranslatedDescs(prev => ({ ...prev, [groupId]: description }));
-      }
-    } finally {
-      setTranslatingIds(prev => {
-        const next = new Set(prev);
-        next.delete(groupId);
-        return next;
-      });
-    }
-  }, [language, t, user]);
-
-  useEffect(() => {
-    let userDocUnsubscribe = () => { };
-    const authUnsubscribe = onAuthStateChanged(auth!, (currentUser) => {
-      setUser(currentUser);
-      if (currentUser) {
-        const userRef = doc(db, 'users', currentUser.uid);
-        userDocUnsubscribe = onSnapshot(userRef, (docSnap) => {
-          if (docSnap.exists()) {
-            setUserData(docSnap.data() as UserData);
-          }
-        }, (err) => {
-          if (err.code !== 'permission-denied') console.error("[JoinGroup] User data listener error:", err);
-        });
-      }
-    });
-
-    const fetchPublicGroups = async () => {
-      try {
-        const resp = await apiClient.get('/api/groups?limit=20');
-        setPublicGroups(resp.data || []);
-        return;
-      } catch (e) {
-        console.warn('Backend /groups fetch failed, falling back to client query:', e);
-      }
-
-      try {
-        // Fallback to client-side query if backend fails
-        const q = query(
-          collection(db, 'groups'), 
-          where('isPublic', '==', true),
-          orderBy('lastMessageAt', 'desc'),
-          limit(20)
-        );
-        const querySnapshot = await getDocs(q);
-        const groups: Group[] = [];
-        querySnapshot.forEach((doc) => {
-          groups.push({ id: doc.id, ...doc.data() } as Group);
-        });
-        setPublicGroups(groups);
-      } catch (e) {
-        console.error('Error fetching public groups (client fallback):', e);
-        setPublicGroups([]);
-      }
-    };
-
-    setLoadingGroups(true);
-    fetchPublicGroups().finally(() => setLoadingGroups(false));
-
-    return () => { authUnsubscribe(); userDocUnsubscribe(); };
-  }, []);
-
-  // Dynamically filter groups whenever publicGroups or userData changes
-  const filteredGroups = useMemo(() => {
-    const userGroupIds = userData?.groupIds || (userData?.groupId ? [userData.groupId] : []);
-    return publicGroups.filter((g: Group) => !userGroupIds.includes(g.id));
-  }, [publicGroups, userData]);
-
-  const totalPages = Math.ceil(filteredGroups.length / groupsPerPage);
-  const currentGroups = useMemo(() => {
-    const startIndex = (currentPage - 1) * groupsPerPage;
-    return filteredGroups.slice(startIndex, startIndex + groupsPerPage);
-  }, [filteredGroups, currentPage, groupsPerPage]);
-
-  const handlePageChange = (newPage: number) => {
-    setCurrentPage(newPage);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const joinGroup = async (groupId: string, groupData: Group) => {
-    if (!user) {
-      setError(t('joinGroup.errorLoggedIn'));
-      return;
-    }
-
-    const currentGroupIds = userData?.groupIds || (userData?.groupId ? [userData.groupId] : []);
-
-    if (currentGroupIds.length >= MAX_GROUPS_PER_USER) {
-      setError(t('joinGroup.errorMaxGroups'));
-      return;
-    }
-
-    if (currentGroupIds.includes(groupId)) {
-      setError(t('joinGroup.errorAlreadyMember'));
-      return;
-    }
-
-    if (groupData.members && groupData.members.includes(user.uid)) {
-      setError(t('joinGroup.errorAlreadyMember'));
-      return;
-    }
-
-    if (groupData.membersCount && groupData.maxMembers && groupData.membersCount >= groupData.maxMembers) {
-      setError(t('joinGroup.errorFull'));
-      return;
-    }
-
-    try {
-      await apiClient.post('/api/groups/join-group', { groupId });
-      // Navigate to group chat immediately; the dashboard will show the welcome modal
-      navigate(`/${language}/dashboard`, {
-        state: { initialGroupId: groupId, initialView: 2, showJoinSuccessModal: true, joinedGroupName: groupData.name || '' }
-      });
-    } catch (e: unknown) {
-      console.error('Server join failed with error:', e);
-      setError(getApiErrorMessage(e, 'joinGroup.errorJoinFailed', t));
-    }
-  };
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
 
   const [memberNames, setMemberNames] = useState<{uid: string, nickname: string}[]>([]);
   const [loadingMembers, setLoadingMembers] = useState(false);
@@ -230,7 +51,6 @@ export default function JoinGroup() {
         nickname: m.nickname || 'Member'
       })));
     } else {
-
       setMemberNames([]);
     }
     setLoadingMembers(false);
@@ -240,7 +60,7 @@ export default function JoinGroup() {
     if (selectedGroup && !translatedNames[selectedGroup.id] && !translatingIds.has(selectedGroup.id)) {
       handleTranslateGroup(selectedGroup.id, selectedGroup.name || "", selectedGroup.description, selectedGroup.translations);
     }
-  }, [selectedGroup, language, handleTranslateGroup, translatedNames, translatingIds]);
+  }, [selectedGroup, handleTranslateGroup, translatedNames, translatingIds]);
 
   if (!t) return null; // Wait for translations
 
@@ -275,7 +95,7 @@ export default function JoinGroup() {
           </div>
 
           {loadingGroups ? (
-            <div className="loading-state-container">
+            <div className="loading-state-container" data-testid="skeleton-loader">
               <PublicGroupsSkeleton />
               <p className="loading-text" style={{ textAlign: 'center', marginTop: '1rem', color: 'rgba(255,255,255,0.7)' }}>
                 {t('joinGroup.fetchingGroups')}

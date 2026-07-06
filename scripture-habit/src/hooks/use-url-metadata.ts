@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { safeStorage } from '../utils/storage';
 import type { Language } from '../context/language-context';
-import { auth, appCheck } from '../firebase';
-import { getToken } from 'firebase/app-check';
+import { auth } from '../firebase';
+import apiClient from '../utils/api-client';
 
 export interface UrlMetadata {
     title: string;
@@ -85,58 +85,23 @@ export const useUrlMetadata = (
                 }
 
                 const isChurchUrl = targetUrl.includes('churchofjesuschrist.org') || targetUrl.includes('general-conference');
-                const API_BASE = window.location.hostname === 'localhost' ? '' : 'https://scripturehabit.app';
                 const apiLang = LANGUAGE_MAP[language] || 'eng';
                 
                 const endpoint = isChurchUrl ? '/api/preview/fetch-church-metadata' : '/api/preview/url-preview';
                 
-                // Ensure no double slashes or unintentional trailing slash before query
-                const baseUrl = API_BASE.endsWith('/') ? API_BASE.slice(0, -1) : API_BASE;
-                const path = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
-                const finalUrl = `${baseUrl}${path}?url=${encodeURIComponent(targetUrl)}&lang=${apiLang}`;
-
-                // --- Security Headers (Auth & AppCheck) ---
-                const headers: Record<string, string> = {
-                    'Accept': 'application/json'
-                };
-
-                // 1. Add Firebase Auth Token
-                if (auth?.currentUser) {
-                    try {
-                        const idToken = await auth.currentUser.getIdToken();
-                        headers['Authorization'] = `Bearer ${idToken}`;
-                    } catch (e) {
-                        console.warn("[useUrlMetadata] Auth token acquisition failed:", e);
-                    }
-                }
-
-                // 2. Add Firebase App Check Token
-                if (appCheck) {
-                    try {
-                        const acToken = await getToken(appCheck, false);
-                        if (acToken?.token) {
-                            headers['X-Firebase-AppCheck'] = acToken.token;
-                        }
-                    } catch (e) {
-                        console.warn("[useUrlMetadata] AppCheck token acquisition failed:", e);
-                    }
-                }
-
                 // Debug log (only in dev/localhost)
                 if (window.location.hostname === 'localhost') {
-                    console.log(`[useUrlMetadata] Requesting: ${finalUrl}`, {
-                        hasAuth: !!headers['Authorization'],
-                        hasAppCheck: !!headers['X-Firebase-AppCheck']
-                    });
+                    console.log(`[useUrlMetadata] Requesting: ${endpoint}?url=${encodeURIComponent(targetUrl)}&lang=${apiLang}`);
                 }
 
-                const response = await fetch(finalUrl, { headers });
+                const response = await apiClient.get(endpoint, {
+                    params: {
+                        url: targetUrl,
+                        lang: apiLang
+                    }
+                });
                 
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: Failed to fetch metadata`);
-                }
-
-                const result = await response.json();
+                const result = response.data;
                 
                 if (active) {
                     const meta: UrlMetadata = {

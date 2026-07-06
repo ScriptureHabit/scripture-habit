@@ -631,7 +631,8 @@ router.all('/streak-warning', verifyCronSecret, async (req: Request, res: Respon
                                 const invalidToken = chunk[idx];
                                 const uid = chunkMapping[idx].uid;
                                 
-                                batch.update(db.collection('users').doc(uid).collection('private').doc('tokens'), {
+                                const docRef = db.collection('users').doc(uid).collection('private').doc('tokens');
+                                batch.update(docRef, {
                                     fcmTokens: admin.firestore.FieldValue.arrayRemove(invalidToken)
                                 });
                                 batchOpCount++;

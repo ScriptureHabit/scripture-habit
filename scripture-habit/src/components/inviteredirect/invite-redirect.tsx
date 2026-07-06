@@ -3,6 +3,7 @@ import { useEffect, useState, FC } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { safeStorage } from '../../utils/storage';
 import { auth } from '../../firebase';
+import apiClient from '../../utils/api-client';
 import { useLanguage } from '../../hooks/use-language';
 import Button from '../button/button';
 import './invite-redirect.css';
@@ -26,16 +27,11 @@ const InviteRedirect: FC = () => {
             // Fetch group info to show the user where they are going
             const fetchGroupInfo = async () => {
                 try {
-                    const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? '' : 'https://scripturehabit.app';
-                    const res = await fetch(`${API_BASE}/api/groups/group-preview/${encodeURIComponent(inviteCode.trim().toUpperCase())}`);
-                    if (res.ok) {
-                        const data = await res.json();
-                        setGroupInfo(data);
-                    } else {
-                        console.warn("Invite code invalid or group not found");
-                    }
+                    const res = await apiClient.get(`/api/groups/group-preview/${encodeURIComponent(inviteCode.trim().toUpperCase())}`);
+                    setGroupInfo(res.data);
                 } catch (error) {
                     console.error("Error fetching group info:", error);
+                    console.warn("Invite code invalid or group not found");
                 } finally {
                     setLoading(false);
                 }
@@ -76,7 +72,7 @@ const InviteRedirect: FC = () => {
 
     return (
         <div className="invite-redirect-container">
-            <div className="invite-card">
+            <div className="invite-card" data-testid="invite-card">
                 <div className="invite-icon">🤝</div>
                 <h1>{t('joinGroup.joinConfirmTitle')}</h1>
                 {groupInfo ? (
@@ -85,12 +81,12 @@ const InviteRedirect: FC = () => {
                             {t('joinGroup.invitedToJoin')}
                         </p>
                         <div className="group-preview">
-                            <h2 className="group-name">{groupInfo.name}</h2>
+                            <h2 className="group-name" data-testid="invite-group-name">{groupInfo.name}</h2>
                             {groupInfo.description && (
                                 <p className="group-desc">{groupInfo.description}</p>
                             )}
                         </div>
-                        <Button className="join-btn" onClick={handleJoin}>
+                        <Button className="join-btn" data-testid="invite-join-btn" onClick={handleJoin}>
                             {auth!.currentUser ? t('joinGroup.confirmJoin') : `${t('welcome.login')} / ${t('welcome.signup')}`}
                         </Button>
                         {!isStandalone() && /iPhone|iPad|iPod/.test(navigator.userAgent) && (

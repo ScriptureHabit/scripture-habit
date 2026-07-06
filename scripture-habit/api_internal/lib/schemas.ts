@@ -169,6 +169,12 @@ export const updateKickThresholdSchema = z.object({
     threshold: z.number().int().min(1).max(30)
 });
 
+export type UpdateKickThresholdRequest = z.infer<typeof updateKickThresholdSchema>;
+export interface UpdateKickThresholdResponse {
+    success: boolean;
+    cleanedUpGroups: string[];
+}
+
 export const reportSchema = z.object({
     messageId: z.string().min(1),
     groupId: z.string().optional().nullable(),
@@ -184,3 +190,19 @@ export const kickMemberSchema = z.object({
     targetUid: z.string().min(1),
     reason: z.string().max(200).optional()
 });
+
+// Explicit API Type definitions for MSW / client type safety
+export type JoinGroupRequest = z.infer<typeof joinGroupSchema>;
+export type CreateGroupRequest = z.infer<typeof createGroupSchema>;
+export type TranslateRequest = z.infer<typeof translateSchema>;
+
+export interface GroupListItem {
+    id: string;
+    name: string;
+    isPublic: boolean;
+    members: string[];
+}
+
+export interface TranslateResponse {
+    translatedText: string;
+}

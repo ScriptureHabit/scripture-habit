@@ -2,6 +2,7 @@ import { FC } from 'react';
 import ReactMarkdown from 'react-markdown';
 import './system-message.css';
 import { Message } from '../../../types/chat';
+import { DEFAULT_KICK_THRESHOLD } from '../../../constants';
 
 interface SystemMessageProps {
   msg: Message;
@@ -9,7 +10,7 @@ interface SystemMessageProps {
   kickThreshold?: number;
 }
 
-const SystemMessage: FC<SystemMessageProps> = ({ msg, t, kickThreshold = 3 }) => {
+const SystemMessage: FC<SystemMessageProps> = ({ msg, t, kickThreshold = DEFAULT_KICK_THRESHOLD }) => {
   const text = msg.text || '';
 
   const getSystemText = () => {

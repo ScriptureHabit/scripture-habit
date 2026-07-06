@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, FC } from 'react';
-import { getToken } from 'firebase/app-check';
-import { auth, appCheck } from '../../../firebase';
+import { auth } from '../../../firebase';
+import apiClient from '../../../utils/api-client';
 import { calculateUnityPercentage } from '../../../utils/unity-utils';
 import { Group } from '../../../types/chat';
 
@@ -45,40 +45,17 @@ const GroupMenuItem: FC<GroupMenuItemProps> = ({ group, currentGroupId, language
             try {
                 const user = auth?.currentUser;
                 if (!user) return;
-                const idToken = await user.getIdToken();
-                let appCheckToken = '';
-                if (appCheck) {
-                    const appCheckTokenResponse = await getToken(appCheck, false); // Get AppCheck token
-                    appCheckToken = appCheckTokenResponse.token;
-                }
-                const API_BASE = window.location.hostname === 'localhost' ? '' : 'https://scripturehabit.app';
 
-                const headers: Record<string, string> = {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${idToken}`,
-                };
-                if (appCheckToken) {
-                    headers['X-Firebase-AppCheck'] = appCheckToken;
-                }
-
-                const response = await fetch(`${API_BASE}/api/ai/translate`, {
-                    method: 'POST',
-                    headers,
-
-
-                    body: JSON.stringify({
-                        text: group.name,
-                        targetLanguage: language,
-                        updateType: 'group_name'
-                    }),
+                const response = await apiClient.post('/api/ai/translate', {
+                    text: group.name,
+                    targetLanguage: language,
+                    updateType: 'group_name'
                 });
 
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.translatedText) {
-                        setTranslatedName(data.translatedText);
-                        sessionStorage.setItem(cacheKey, data.translatedText);
-                    }
+                const data = response.data;
+                if (data.translatedText) {
+                    setTranslatedName(data.translatedText);
+                    sessionStorage.setItem(cacheKey, data.translatedText);
                 }
             } catch (error) {
                 console.error('Error translating group name:', error);

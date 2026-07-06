@@ -18,7 +18,7 @@ test.describe('Unity Lifecycle (Full Flow)', () => {
         await page.waitForLoadState('load');
         
         console.log('[Test] Installing mock clock at 23:50...');
-        await page.clock.install({ time: almostMidnight });
+        await page.clock.install({ time: almostMidnight.getTime() });
         
         // Wait for dashboard to stabilize
         await expect(page.getByTestId('sidebar-notes')).toBeVisible({ timeout: 20000 });

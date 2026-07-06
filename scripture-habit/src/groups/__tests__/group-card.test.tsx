@@ -1,5 +1,7 @@
 import { act, render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { http, HttpResponse } from 'msw';
+import { server } from '../../mocks/server';
 
 vi.mock('../../hooks/use-language', () => ({
     useLanguage: vi.fn(),
@@ -46,13 +48,25 @@ const mockLanguageContext = {
     bookTranslations: {},
 };
 
+const requestSpy = vi.fn();
+
 describe('GroupCard', () => {
     beforeEach(() => {
         mockUseLanguage.mockReturnValue(mockLanguageContext as any);
         mockToast.info.mockReset();
         mockToast.error.mockReset();
         mockGetToken.mockResolvedValue({ token: 'app-check-token' });
-        (global as any).fetch = vi.fn().mockResolvedValue({ ok: true, json: async () => ({ translatedText: 'Translated Group' }) });
+        requestSpy.mockClear();
+        server.use(
+            http.post('*/api/ai/translate', () => {
+                requestSpy('translate');
+                return HttpResponse.json({ translatedText: 'Translated Group' });
+            }),
+            http.post('*/api/join-group', () => {
+                requestSpy('join-group');
+                return HttpResponse.json({ success: true });
+            })
+        );
         window.sessionStorage.clear();
     });
 
@@ -130,7 +144,7 @@ describe('GroupCard', () => {
         });
 
         expect(screen.getByText('Manual Name')).toBeDefined();
-        expect((global as any).fetch).not.toHaveBeenCalled();
+        expect(requestSpy).not.toHaveBeenCalled();
     });
 
     it('uses cached translation from sessionStorage when available', async () => {
@@ -145,7 +159,7 @@ describe('GroupCard', () => {
         });
 
         expect(screen.getByText('Cached Name')).toBeDefined();
-        expect((global as any).fetch).not.toHaveBeenCalled();
+        expect(requestSpy).not.toHaveBeenCalled();
     });
 
     it('calls onOpen when current user is already a member', async () => {
@@ -193,7 +207,11 @@ describe('GroupCard', () => {
     });
 
     it('shows join failure toast when fetch returns a bad response', async () => {
-        (global as any).fetch = vi.fn().mockResolvedValue({ ok: false, json: async () => ({ error: 'Join failed' }) });
+        server.use(
+            http.post('*/api/join-group', () => {
+                return new HttpResponse(JSON.stringify({ error: 'Join failed' }), { status: 400 });
+            })
+        );
 
         await act(async () => {
             render(<GroupCard group={baseGroup} currentUser={{ uid: 'user1' }} />);

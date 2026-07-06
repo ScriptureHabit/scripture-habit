@@ -108,6 +108,14 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('NotificationService Integ
     });
 
     it('should notify group members when notifyNotePosted is called', async () => {
+        // Re-seed the users' FCM tokens to recover from the previous cleanup test
+        await db.collection('users').doc(RECEIVER_JA).update({
+            fcmTokens: ['token_ja_public']
+        });
+        await db.collection('users').doc(RECEIVER_EN).update({
+            fcmTokens: ['token_en_public']
+        });
+
         const { NotificationService } = await import('./notification-service.js');
         const { messaging } = await import('../lib/firebase-admin.js');
         

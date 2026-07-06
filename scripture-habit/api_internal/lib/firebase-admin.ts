@@ -3,6 +3,7 @@ import admin from 'firebase-admin';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { AsyncLocalStorage } from 'node:async_hooks';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -82,29 +83,56 @@ if (!admin.apps.length) {
     }
 }
 
-export let db = (admin.apps.length ? admin.firestore() : null) as admin.firestore.Firestore;
-if (db) {
+export const dbStorage = new AsyncLocalStorage<admin.firestore.Firestore>();
+export const dbRegistry = new Map<number, admin.firestore.Firestore>();
+
+export const rawDb = (admin.apps.length ? admin.firestore() : null) as admin.firestore.Firestore;
+if (rawDb) {
     try {
         let emulatorHost = process.env.FIRESTORE_EMULATOR_HOST;
         if (emulatorHost) {
             // Ensure we use IPv4 to avoid localhost resolution issues on Windows
             emulatorHost = emulatorHost.replace('localhost', '127.0.0.1');
             console.log(`[Firebase Admin] Forcing Firestore Emulator host to: ${emulatorHost}`);
-            db.settings({
+            rawDb.settings({
                 host: emulatorHost,
                 ssl: false,
                 ignoreUndefinedProperties: true
             });
         } else {
-            db.settings({ ignoreUndefinedProperties: true });
+            rawDb.settings({ ignoreUndefinedProperties: true });
         }
     } catch (e) {
         console.error('[Firebase Admin] Error setting Firestore settings:', e);
     }
 }
 
-export function setDbInstance(newDb: admin.firestore.Firestore) {
-    db = newDb;
+export const db = rawDb ? new Proxy(rawDb as admin.firestore.Firestore, {
+    get(_target, prop, _receiver) {
+        const activeDb = dbStorage.getStore() || rawDb;
+        if (!activeDb) {
+            return undefined;
+        }
+        const val = Reflect.get(activeDb, prop);
+        if (typeof val === 'function') {
+            if ('_isMockFunction' in val || 'mock' in val) {
+                return val;
+            }
+            return val.bind(activeDb);
+        }
+        return val;
+    },
+    set(_target, prop, value, _receiver) {
+        const activeDb = dbStorage.getStore() || rawDb;
+        if (!activeDb) {
+            return false;
+        }
+        return Reflect.set(activeDb, prop, value);
+    }
+}) : null as unknown as admin.firestore.Firestore;
+
+export function setDbInstance(_newDb: admin.firestore.Firestore) {
+    console.warn('[Firebase Admin] Warning: setDbInstance is deprecated. Use dbStorage.run() instead.');
 }
 
 export const messaging = (admin.apps.length ? admin.messaging() : null) as admin.messaging.Messaging;
