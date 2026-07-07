@@ -73,11 +73,13 @@ export const test = base.extend<AuthFixtures>({
         idToken,
         displayName: nickname,
         photoUrl: '',
+        emailVerified: true,
         returnSecureToken: true
       })
     });
     if (!updateRes.ok) {
-      console.warn('[AuthFixture] Warning: Failed to set display name in Emulator Auth.');
+      const updateErr = await updateRes.text().catch(() => 'unknown');
+      console.warn('[AuthFixture] Warning: Failed to update Emulator Auth profile.', { status: updateRes.status, body: updateErr });
     }
 
     // 2. Initialize browser state (Wipe cookie consent banners & disable animations)
@@ -116,6 +118,14 @@ export const test = base.extend<AuthFixtures>({
         };
         
         await route.continue({ headers });
+    });
+
+    page.on('console', (msg) => {
+      console.log(`[AuthFixture][browser console] ${msg.type()}: ${msg.text()}`);
+    });
+
+    page.on('pageerror', (error) => {
+      console.error('[AuthFixture][browser pageerror]', error);
     });
 
     // 3. Perform a standard UI login (highly robust)
