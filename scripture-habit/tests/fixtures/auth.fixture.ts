@@ -67,7 +67,6 @@ export const test = base.extend<AuthFixtures>({
     try {
       await admin.auth().updateUser(uid, {
         displayName: nickname,
-        photoURL: '',
         emailVerified: true
       });
       console.log(`[AuthFixture] Verified emulator auth user for ${email}`);
