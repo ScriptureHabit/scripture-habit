@@ -10,15 +10,14 @@ env:
   CRON_SECRET: ci-dummy-cron-secret-key-12345
   FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
 
-defaults:
-  run:
-    working-directory: ./scripture-habit
-
 jobs:
   build-and-test:
     name: Build & Test
     runs-on: ubuntu-latest
     container: mcr.microsoft.com/playwright:v1.59.1-noble
+    defaults:
+      run:
+        working-directory: ./scripture-habit
 
     strategy:
       matrix:
