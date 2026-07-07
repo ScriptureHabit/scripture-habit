@@ -16,11 +16,13 @@ import { AsyncLocalStorage } from 'node:async_hooks';
 import {
     initializeApp,
     getApps,
+    getApp,
     applicationDefault,
     cert,
     type ServiceAccount
 } from 'firebase-admin';
 import type { App } from 'firebase-admin/app';
+import { getStorage, type Storage } from 'firebase-admin/storage';
 import {
     getAuth,
     type Auth
@@ -57,7 +59,25 @@ if (process.env.FIRESTORE_EMULATOR_HOST) {
 
 const hasFirebaseApp = () => getApps().length > 0;
 
-const firestoreCompat = Object.assign(
+type FirestoreCompat = ((app?: App) => Firestore) & {
+    Firestore: typeof Firestore;
+    Query: typeof Query;
+    QuerySnapshot: typeof QuerySnapshot;
+    QueryDocumentSnapshot: typeof QueryDocumentSnapshot;
+    CollectionGroup: typeof CollectionGroup;
+    AggregateQuery: typeof AggregateQuery;
+    AggregateQuerySnapshot: typeof AggregateQuerySnapshot;
+    Timestamp: typeof Timestamp;
+    FieldValue: typeof FieldValue;
+    FieldPath: typeof FieldPath;
+    DocumentReference: typeof DocumentReference;
+    DocumentSnapshot: typeof DocumentSnapshot;
+    Transaction: typeof Transaction;
+    WriteBatch: typeof WriteBatch;
+    CollectionReference: typeof CollectionReference;
+};
+
+const firestoreCompat: FirestoreCompat = Object.assign(
     (app?: App) => (app ? getFirestore(app) : getFirestore()),
     {
         Firestore,
@@ -76,9 +96,22 @@ const firestoreCompat = Object.assign(
         WriteBatch,
         CollectionReference,
     }
-) as any;
+);
 
-const compatAdmin = {
+const compatAdmin: {
+    initializeApp: typeof initializeApp;
+    credential: {
+        applicationDefault: typeof applicationDefault;
+        cert: typeof cert;
+    };
+    get apps(): App[];
+    app: (name?: string) => App;
+    auth: (app?: App) => Auth;
+    firestore: FirestoreCompat;
+    messaging: (app?: App) => Messaging;
+    appCheck: (app?: App) => AppCheck;
+    storage: (app?: App) => Storage;
+} = {
     initializeApp,
     credential: {
         applicationDefault,
@@ -87,11 +120,13 @@ const compatAdmin = {
     get apps() {
         return getApps();
     },
+    app: (name?: string) => (name ? getApp(name) : getApp()),
     auth: (app?: App) => getAuth(app),
     firestore: firestoreCompat,
     messaging: (app?: App) => getMessaging(app),
     appCheck: (app?: App) => getAppCheck(app),
-} as any;
+    storage: (app?: App) => getStorage(app),
+};
 
 export function resolveServiceAccount(
     env: NodeJS.ProcessEnv,
@@ -109,7 +144,7 @@ export function resolveServiceAccount(
     } else if (env.FIREBASE_PROJECT_ID && env.FIREBASE_PRIVATE_KEY) {
         return {
             projectId: env.FIREBASE_PROJECT_ID,
-            privateKey: env.FIREBASE_PRIVATE_KEY.replace(/\n/g, '\n'),
+            privateKey: env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
             clientEmail: env.FIREBASE_CLIENT_EMAIL,
         };
     } else {

@@ -194,7 +194,7 @@ export class MessageService {
                 lastMessageByUid: uid,
                 [`memberLastReadAt.${uid}`]: admin.firestore.FieldValue.serverTimestamp(),
                 [`memberLastActive.${uid}`]: admin.firestore.FieldValue.serverTimestamp()
-            } as admin.firestore.UpdateData<GroupDocument>;
+            } as unknown as admin.firestore.UpdateData<GroupDocument>;
 
             transaction.update(groupRef, updatePayload);
             

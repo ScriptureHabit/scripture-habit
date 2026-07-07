@@ -146,6 +146,9 @@ export const authenticate = async (req: AuthenticatedRequest, _res: Response, ne
                     try {
                         const payloadJson = Buffer.from(payloadBase64, 'base64url').toString('utf8');
                         decodedToken = JSON.parse(payloadJson);
+                        if (decodedToken && !decodedToken.uid) {
+                            decodedToken.uid = decodedToken.sub || decodedToken.user_id;
+                        }
                         console.log(`[Auth] Warning: Bypassed ID token verification error (${authError.code || 'unknown'}) in test/emulator environment`);
                     } catch {
                         throw err;

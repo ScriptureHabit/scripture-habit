@@ -6,8 +6,51 @@ vi.mock('firebase-admin', () => ({
     __esModule: true,
     get default() {
         return adminMock;
+    },
+    get initializeApp() {
+        return (...args: any[]) => adminMock?.initializeApp(...args);
+    },
+    get getApps() {
+        return () => adminMock?.apps || [];
+    },
+    get getApp() {
+        return (...args: any[]) => adminMock?.app(...args);
+    },
+    get applicationDefault() {
+        return (...args: any[]) => adminMock?.credential?.applicationDefault(...args);
+    },
+    get cert() {
+        return (...args: any[]) => adminMock?.credential?.cert(...args);
     }
 }));
+vi.mock('firebase-admin/firestore', async (importOriginal) => {
+    const actual = await importOriginal() as any;
+    return {
+        ...actual,
+        getFirestore: () => adminMock?.firestore()
+    };
+});
+vi.mock('firebase-admin/auth', async (importOriginal) => {
+    const actual = await importOriginal() as any;
+    return {
+        ...actual,
+        getAuth: () => adminMock?.auth()
+    };
+});
+vi.mock('firebase-admin/app-check', async (importOriginal) => {
+    const actual = await importOriginal() as any;
+    return {
+        ...actual,
+        getAppCheck: () => adminMock?.appCheck()
+    };
+});
+vi.mock('firebase-admin/messaging', async (importOriginal) => {
+    const actual = await importOriginal() as any;
+    return {
+        ...actual,
+        getMessaging: () => adminMock?.messaging()
+    };
+});
 vi.mock('./load-env.js', () => ({ __esModule: true }));
 vi.mock('fs', () => ({
     __esModule: true,
@@ -31,6 +74,7 @@ const createAdminMock = () => {
     const messaging = vi.fn(() => ({ mock: true }));
     const auth = vi.fn(() => ({ mock: true }));
     const appCheck = vi.fn(() => ({ mock: true }));
+    const app = vi.fn(() => ({ options: { projectId: 'sh-test' } }));
 
     const adminMock = {
         apps,
@@ -39,10 +83,11 @@ const createAdminMock = () => {
         firestore,
         messaging,
         auth,
-        appCheck
+        appCheck,
+        app
     };
 
-    return { adminMock, initializeApp, credential, firestore, messaging, auth, appCheck, apps };
+    return { adminMock, initializeApp, credential, firestore, messaging, auth, appCheck, apps, app };
 };
 
 const cleanupEnv = () => {

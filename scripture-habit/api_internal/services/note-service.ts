@@ -233,7 +233,7 @@ export class NoteService {
                         [`memberLastActive.${uid}`]: serverTime,
                         [`memberLastReadAt.${uid}`]: serverTime,
                         'dailyActivity.activeMembers': admin.firestore.FieldValue.arrayUnion(uid)
-                    } as admin.firestore.UpdateData<GroupDocument>;
+                    } as unknown as admin.firestore.UpdateData<GroupDocument>;
 
                     transaction.update(gRef, groupUpdate);
                     
