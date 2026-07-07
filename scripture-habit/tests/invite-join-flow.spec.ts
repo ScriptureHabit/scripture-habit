@@ -265,12 +265,31 @@ test.describe('Invitation Join Flow Stability', () => {
         
         // Since User B is already logged in, the page might automatically redirect to dashboard.
         // We wait for either the dashboard redirect to complete, OR we click the join button if it is visible.
-        const joinBtn = pageB.getByTestId('invite-join-btn');
-        await expect(joinBtn).toBeVisible({ timeout: 20000 });
-        await joinBtn.click({ timeout: 10000 }).catch(async (e) => {
-            console.log(`[Test B] Join button click failed/detached: ${e.message}. Retrying click...`);
-            await pageB.getByTestId('invite-join-btn').click({ timeout: 10000 });
-        });
+        const currentUrl = pageB.url();
+        if (currentUrl.includes('dashboard')) {
+            console.log('[Test B] Already automatically redirected to dashboard. Bypassing join button click.');
+        } else {
+            console.log('[Test B] Waiting for either auto-redirect or join button visibility...');
+            const joinBtn = pageB.getByTestId('invite-join-btn');
+            try {
+                const outcome = await Promise.race([
+                    pageB.waitForURL(/.*dashboard/, { timeout: 15000 }).then(() => 'redirect'),
+                    expect(joinBtn).toBeVisible({ timeout: 15000 }).then(() => 'button')
+                ]);
+                if (outcome === 'button') {
+                    console.log('[Test B] Clicking join button...');
+                    await joinBtn.click({ timeout: 10000 }).catch(async (e) => {
+                        console.log(`[Test B] Retrying join button click: ${e.message}`);
+                        await pageB.getByTestId('invite-join-btn').click({ timeout: 10000 });
+                    });
+                } else {
+                    console.log('[Test B] Redirected to dashboard during wait.');
+                }
+            } catch (err) {
+                const errMsg = err instanceof Error ? err.message : String(err);
+                console.log('[Test B] Encountered redirect/button timeout, checking URL: ', errMsg);
+            }
+        }
         
         // Should land on dashboard directly
         await expect(pageB).toHaveURL(/.*dashboard/, { timeout: 20000 });

@@ -94,7 +94,7 @@ test.describe('Unity Percentage Synchronization (Local Timezone: Asia/Tokyo)', (
         // IMPORTANT: Trigger server-side reset after clock change
         // The mock clock only affects the client, so we need to tell the server to reset
         console.log('Triggering server-side midnight reset...');
-        const resetResult = await page.callApi('/api/groups/reset-unity-if-midnight', {});
+        const resetResult = await page.callApi('/api/groups/reset-unity-if-midnight', { groupId });
         console.log('Reset API result:', resetResult);
 
         // Re-locate the group item after clock change for final verification

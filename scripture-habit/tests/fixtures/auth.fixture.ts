@@ -120,15 +120,24 @@ export const test = base.extend<AuthFixtures>({
 
     // 3. Perform a standard UI login (highly robust)
     console.log(`[AuthFixture] Logging in via UI for isolated user: ${email}`);
+    console.log('[AuthFixture] navigating to login page', { target: '/en/login' });
     await page.goto('/en/login');
     await page.waitForLoadState('load');
 
     await page.fill('[data-testid="login-email"]', email);
     await page.fill('[data-testid="login-password"]', password);
+    console.log('[AuthFixture] submitting login form', { email });
     await page.click('[data-testid="login-submit"]');
 
     // 4. Wait for dashboard redirect and stabilization
-    await page.waitForURL(/.*dashboard/, { timeout: 30000 });
+    console.log('[AuthFixture] waiting for dashboard redirect from', await page.url());
+    try {
+      await page.waitForURL(/.*dashboard/, { timeout: 30000 });
+      console.log('[AuthFixture] dashboard redirect reached', await page.url());
+    } catch (err) {
+      console.error('[AuthFixture] waitForURL dashboard failed', err, { currentUrl: await page.url() });
+      throw err;
+    }
     
     await page.waitForSelector('.dashboard-skeleton', { state: 'detached', timeout: 30000 }).catch(() => {
         console.log('[AuthFixture] Dashboard skeleton did not appear or timed out waiting for detachment. Continuing...');

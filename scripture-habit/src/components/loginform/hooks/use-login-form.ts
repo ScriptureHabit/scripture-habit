@@ -21,6 +21,7 @@ export function useLoginForm() {
 
   const handleSocialLogin = async (providerType: 'google' | 'github') => {
     try {
+      console.log('[LoginForm] handleSocialLogin start', { providerType, language, state: location.state });
       const provider = providerType === 'google'
         ? new GoogleAuthProvider()
         : new GithubAuthProvider();
@@ -30,14 +31,18 @@ export function useLoginForm() {
       const userDocRef = doc(db, 'users', user.uid);
       const userDoc = await getDoc(userDocRef);
 
+      console.log('[LoginForm] social login success', { uid: user.uid, email: user.email, emailVerified: user.emailVerified });
+
       if (!userDoc.exists()) {
         setPendingGoogleUser(user);
         setNickname(user.displayName || '');
       } else {
         const from = location.state?.from;
         if (from) {
+          console.log('[LoginForm] navigate from location.state.from', { from });
           navigate(from);
         } else {
+          console.log('[LoginForm] navigate to dashboard via social login', { target: `/${language}/dashboard` });
           navigate(`/${language}/dashboard`);
         }
       }
@@ -88,8 +93,12 @@ export function useLoginForm() {
     setError(null);
     setUnverifiedUser(null);
 
+    console.log('[LoginForm] handleSubmit start', { email, language, state: location.state });
+
     try {
       const userCredential = await signInWithEmailAndPassword(auth!, email, password);
+      console.log('[LoginForm] email login success', { uid: userCredential.user.uid, emailVerified: userCredential.user.emailVerified });
+
       const isTestUser = !import.meta.env.PROD && userCredential.user.email?.endsWith('@example.com');
       if (!userCredential.user.emailVerified && !isTestUser) {
         setUnverifiedUser(userCredential.user);
@@ -100,8 +109,10 @@ export function useLoginForm() {
 
       const from = location.state?.from;
       if (from) {
+        console.log('[LoginForm] navigate from location.state.from', { from });
         navigate(from);
       } else {
+        console.log('[LoginForm] navigate to dashboard after email login', { target: `/${language}/dashboard` });
         navigate(`/${language}/dashboard`);
       }
     } catch (err: unknown) {
