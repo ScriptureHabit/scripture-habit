@@ -1,13 +1,8 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { useChatStore } from './use-chat-store';
 import { Message } from '../types/chat';
 
 describe('useChatStore', () => {
-  beforeEach(() => {
-    // Reset store before each test
-    useChatStore.getState().resetChatUI();
-  });
-
   it('should have initial state', () => {
     const state = useChatStore.getState();
     expect(state.replyTo).toBeNull();

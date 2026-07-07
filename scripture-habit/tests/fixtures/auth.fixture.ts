@@ -80,7 +80,7 @@ export const test = base.extend<AuthFixtures>({
       console.warn('[AuthFixture] Warning: Failed to set display name in Emulator Auth.');
     }
 
-    // 2. Initialize browser state (Wipe cookie consent banners, disable animations, and mock time propagation)
+    // 2. Initialize browser state (Wipe cookie consent banners & disable animations)
     await page.addInitScript(() => {
         window.localStorage.setItem('cookieConsent', 'true');
         window.localStorage.setItem('lastNotifPrompt', Date.now().toString());
@@ -95,78 +95,27 @@ export const test = base.extend<AuthFixtures>({
           }
         `;
         document.head.appendChild(style);
+    });
 
-        // Intercept window.fetch to propagate fake time from page.clock to backend
-        const originalFetch = window.fetch;
-        window.fetch = async function(input, init) {
-            let url = '';
-            if (typeof input === 'string') {
-                url = input;
-            } else if (input instanceof URL) {
-                url = input.href;
-            } else if (input && typeof input === 'object' && 'url' in input) {
-                url = (input as any).url;
-            }
-
-            if (url && url.includes('/api/')) {
-                init = init || {};
-                const fakeTimeStr = Date.now().toString();
-
-                if (init.headers) {
-                    if (init.headers instanceof Headers) {
-                        if (!init.headers.has('x-test-system-time')) {
-                            init.headers.set('x-test-system-time', fakeTimeStr);
-                        }
-                    } else if (Array.isArray(init.headers)) {
-                        const hasHeader = init.headers.some(h => h[0].toLowerCase() === 'x-test-system-time');
-                        if (!hasHeader) {
-                            init.headers.push(['x-test-system-time', fakeTimeStr]);
-                        }
-                    } else if (typeof init.headers === 'object') {
-                        const headersObj = init.headers as any;
-                        const hasHeader = Object.keys(headersObj).some(k => k.toLowerCase() === 'x-test-system-time');
-                        if (!hasHeader) {
-                            headersObj['x-test-system-time'] = fakeTimeStr;
-                        }
-                    }
-                } else {
-                    init.headers = { 'x-test-system-time': fakeTimeStr };
-                }
-
-                if (input && typeof input === 'object' && !(input instanceof URL) && 'headers' in input) {
-                    const req = input as any;
-                    try {
-                        if (req.headers && typeof req.headers.set === 'function') {
-                            if (!req.headers.has('x-test-system-time')) {
-                                req.headers.set('x-test-system-time', fakeTimeStr);
-                            }
-                        }
-                    } catch {
-                        // ignore if Request headers are read-only
-                    }
-                }
-            }
-            return originalFetch(input, init);
+    // Native network interception to propagate fake time from page.clock to backend API calls
+    await page.route('**/api/**', async (route) => {
+        const request = route.request();
+        
+        let browserTime: number;
+        try {
+            // Respect page.clock mock times by evaluating Date.now() inside browser context
+            browserTime = await page.evaluate(() => Date.now());
+        } catch {
+            // Context might be destroyed during navigation; fallback to Node time safely
+            browserTime = Date.now();
+        }
+        
+        const headers = {
+            ...request.headers(),
+            'x-test-system-time': browserTime.toString()
         };
-
-        // Intercept XMLHttpRequest to propagate fake time from page.clock to backend
-        const originalOpen = window.XMLHttpRequest.prototype.open;
-        window.XMLHttpRequest.prototype.open = function(method: string, url: string | URL, ...args: any[]) {
-            (this as any)._url = typeof url === 'string' ? url : url.href;
-            return originalOpen.apply(this, [method, url, ...args] as any);
-        };
-        const originalSend = window.XMLHttpRequest.prototype.send;
-        window.XMLHttpRequest.prototype.send = function(...args: any[]) {
-            const url = (this as any)._url;
-            if (url && url.includes('/api/')) {
-                try {
-                    this.setRequestHeader('x-test-system-time', Date.now().toString());
-                } catch {
-                    // Ignore DOMExceptions if headers cannot be set in this state
-                }
-            }
-            return originalSend.apply(this, args as any);
-        };
+        
+        await route.continue({ headers });
     });
 
     // 3. Perform a standard UI login (highly robust)

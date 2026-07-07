@@ -4,7 +4,7 @@ test.describe('Invitation Join Flow Stability', () => {
 
 
   test('should join a group after landing on invite link and logging in', async ({ authenticatedPage, browser }) => {
-    test.setTimeout(120000); // 2 minutes
+    test.setTimeout(45000); // 45 seconds
     
     // 1. Create a group as User A (Shared Tester) to get an invite code
     const timestamp = `${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
@@ -191,7 +191,7 @@ test.describe('Invitation Join Flow Stability', () => {
   });
 
   test('should join a group immediately when already logged in', async ({ authenticatedPage, browser }) => {
-    test.setTimeout(120000); // 2 minutes
+    test.setTimeout(45000); // 45 seconds
     const timestamp = `${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
     const groupName = `Auth Join Test ${timestamp}`;
     const pageA = authenticatedPage;
@@ -265,18 +265,12 @@ test.describe('Invitation Join Flow Stability', () => {
         
         // Since User B is already logged in, the page might automatically redirect to dashboard.
         // We wait for either the dashboard redirect to complete, OR we click the join button if it is visible.
-        await Promise.race([
-            pageB.waitForURL(/.*dashboard/, { timeout: 20000 }),
-            (async () => {
-                const joinBtn = pageB.getByTestId('invite-join-btn');
-                try {
-                    await joinBtn.waitFor({ state: 'visible', timeout: 5000 });
-                    await joinBtn.click().catch(() => {});
-                } catch {
-                    console.log('Join button not visible or already redirected');
-                }
-            })()
-        ]);
+        const joinBtn = pageB.getByTestId('invite-join-btn');
+        await expect(joinBtn).toBeVisible({ timeout: 20000 });
+        await joinBtn.click({ timeout: 10000 }).catch(async (e) => {
+            console.log(`[Test B] Join button click failed/detached: ${e.message}. Retrying click...`);
+            await pageB.getByTestId('invite-join-btn').click({ timeout: 10000 });
+        });
         
         // Should land on dashboard directly
         await expect(pageB).toHaveURL(/.*dashboard/, { timeout: 20000 });
@@ -299,8 +293,6 @@ test.describe('Invitation Join Flow Stability', () => {
 
     await test.step('Verify sync for Owner', async () => {
         console.log('Switching to User A (Owner) to verify member list...');
-        await pageA.bringToFront();
-        
         await pageA.bringToFront();
 
         const groupItemA = pageA.locator('[data-testid="sidebar-group-item"]').filter({ 

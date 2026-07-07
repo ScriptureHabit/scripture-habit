@@ -12,8 +12,8 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
   retries: process.env.CI ? 2 : 1,
-  /* Configure parallel workers dynamically */
-  workers: process.env.CI ? 2 : undefined,
+  /* Configure parallel workers dynamically to prevent emulator congestion */
+  workers: 2,
   
   timeout: 90000,
   expect: {
@@ -49,8 +49,8 @@ export default defineConfig({
   webServer: [
     {
       command: process.env.CI 
-        ? 'cross-env VITE_USE_FIREBASE_EMULATOR=true npm run preview -- --host 127.0.0.1 --port 5173'
-        : 'cross-env VITE_USE_FIREBASE_EMULATOR=true npm run dev -- --host 127.0.0.1',
+        ? 'npx cross-env VITE_USE_FIREBASE_EMULATOR=true npm run preview -- --host 127.0.0.1 --port 5173'
+        : 'npx cross-env VITE_USE_FIREBASE_EMULATOR=true npm run dev -- --host 127.0.0.1',
       url: 'http://127.0.0.1:5173',
       reuseExistingServer: !process.env.CI,
       stdout: 'pipe',
@@ -58,15 +58,15 @@ export default defineConfig({
       timeout: 120000,
     },
     {
-      command: 'cross-env SKIP_AI=true SKIP_APP_CHECK=true FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 FIREBASE_AUTH_EMULATOR_HOST=127.0.0.1:9099 GCLOUD_PROJECT=scripture-habit-auth npm run server > backend_test.log 2>&1',
+      command: 'npx cross-env SKIP_AI=true SKIP_APP_CHECK=true FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 FIREBASE_AUTH_EMULATOR_HOST=127.0.0.1:9099 GCLOUD_PROJECT=scripture-habit-auth npm run server',
       url: 'http://127.0.0.1:5000/api/health',
       reuseExistingServer: !process.env.CI,
       stdout: 'pipe',
       stderr: 'pipe',
       timeout: 120000,
     },
-    // Firebase Emulator - only for local development (CI already starts emulator)
-    ...(process.env.CI ? [] : [{
+    // Firebase Emulator - only for local development (CI or test-emulated.js already starts emulator)
+    ...(process.env.CI || process.env.FIREBASE_AUTH_EMULATOR_HOST ? [] : [{
       command: 'npx firebase emulators:start --only auth,firestore --project scripture-habit-auth',
       url: 'http://127.0.0.1:9099',
       reuseExistingServer: true,

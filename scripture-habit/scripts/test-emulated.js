@@ -23,13 +23,8 @@ function killZombieEmulatorProcesses(ports) {
       }
       if (pid) {
         try {
-          const processName = execSync(`ps -p ${pid} -o comm=`, { encoding: 'utf8' }).trim().toLowerCase();
-          if (processName.includes('java') || processName.includes('node')) {
-            console.log(`[test-emulated] Port ${port} is taken by PID ${pid} (${processName}). Killing zombie process...`);
-            execSync(`kill -9 ${pid}`);
-          } else {
-            console.log(`[test-emulated] Port ${port} is taken by PID ${pid} (${processName}), but it does not look like an emulator process. Skipping...`);
-          }
+          console.log(`[test-emulated] Port ${port} is taken by PID ${pid}. Killing zombie process...`);
+          execSync(`kill -9 ${pid}`);
         } catch (err) {
           console.warn(`[test-emulated] WARNING: Failed to inspect or kill process ${pid} on port ${port} (${err.message || err}).`);
         }
@@ -49,24 +44,18 @@ function killZombieEmulatorProcesses(ports) {
     if (!output) continue;
 
     const lines = output.split(/\r?\n/);
+    const killedPids = new Set();
     for (const line of lines) {
       if (line.includes('LISTENING')) {
         const parts = line.trim().split(/\s+/);
         const pid = parts[parts.length - 1];
-        if (pid && pid !== '0' && /^\d+$/.test(pid)) {
+        if (pid && pid !== '0' && /^\d+$/.test(pid) && !killedPids.has(pid)) {
           try {
-            const tasklistOutput = execSync(`tasklist /FI "PID eq ${pid}" /NH /FO CSV`, { encoding: 'utf8', stdio: 'pipe' }).trim();
-            const match = tasklistOutput.match(/^"([^"]+)"/);
-            const processName = match ? match[1].toLowerCase() : '';
-
-            if (processName.includes('java') || processName.includes('node')) {
-              console.log(`[test-emulated] Port ${port} is taken by PID ${pid} (${processName}). Killing zombie process...`);
-              execSync(`taskkill /F /PID ${pid}`, { stdio: 'pipe' });
-            } else {
-              console.log(`[test-emulated] Port ${port} is taken by PID ${pid} (${processName || 'unknown'}), but it does not look like an emulator process. Skipping...`);
-            }
+            console.log(`[test-emulated] Port ${port} is taken by PID ${pid}. Killing zombie process...`);
+            execSync(`taskkill /F /PID ${pid}`, { stdio: 'pipe' });
+            killedPids.add(pid);
           } catch (err) {
-            console.warn(`[test-emulated] WARNING: Failed to inspect or kill process ${pid} on port ${port} (${err.message || err}).`);
+            console.warn(`[test-emulated] WARNING: Failed to kill process ${pid} on port ${port} (${err.message || err}).`);
           }
         }
       }

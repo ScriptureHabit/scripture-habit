@@ -32,49 +32,12 @@ test.describe('Unity Percentage Synchronization (Local Timezone: Asia/Tokyo)', (
         
         const groupName = `JST Unity Test ${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
         
-        const groupId = await page.evaluate(async ({ name, tz }) => {
-            const waitForAuthToken = () => {
-                return new Promise((resolve, reject) => {
-                    let attempts = 0;
-                    const check = async () => {
-                        const auth = (window as any).firebaseAuth;
-                        if (auth && auth.currentUser) {
-                            try {
-                                const token = await auth.currentUser.getIdToken();
-                                resolve(token);
-                            } catch (e) {
-                                reject(e);
-                            }
-                        } else if (attempts++ > 40) {
-                            reject('Auth token not found after 20s');
-                        } else {
-                            setTimeout(check, 500);
-                        }
-                    };
-                    check();
-                });
-            };
-
-            const idToken = (await waitForAuthToken()) as string;
-            
-            const response = await fetch('/api/test/setup-test-group', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${idToken}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    memberCount: 1,
-                    groupName: name,
-                    timeZone: tz,
-                    setYesterdayDate: true
-                })
-            });
-            
-            if (!response.ok) throw new Error('Failed to seed JST test group');
-            const data = await response.json();
-            return data.groupId;
-        }, { name: groupName, tz: 'Asia/Tokyo' });
+        const { groupId } = await page.setupTestGroup({
+            groupName,
+            timeZone: 'Asia/Tokyo',
+            setYesterdayDate: true,
+            memberCount: 1
+        });
 
         console.log(`Created group ${groupId} with Asia/Tokyo timezone.`);
 
@@ -131,43 +94,7 @@ test.describe('Unity Percentage Synchronization (Local Timezone: Asia/Tokyo)', (
         // IMPORTANT: Trigger server-side reset after clock change
         // The mock clock only affects the client, so we need to tell the server to reset
         console.log('Triggering server-side midnight reset...');
-        const resetResult = await page.evaluate(async () => {
-            const waitForAuthToken = () => {
-                return new Promise((resolve, reject) => {
-                    let attempts = 0;
-                    const check = async () => {
-                        const auth = (window as any).firebaseAuth;
-                        if (auth && auth.currentUser) {
-                            try {
-                                const token = await auth.currentUser.getIdToken();
-                                resolve(token);
-                            } catch (e) {
-                                reject(e);
-                            }
-                        } else if (attempts++ > 40) {
-                            reject('Auth token not found after 20s');
-                        } else {
-                            setTimeout(check, 500);
-                        }
-                    };
-                    check();
-                });
-            };
-
-            const idToken = (await waitForAuthToken()) as string;
-            
-            const response = await fetch('/api/groups/reset-unity-if-midnight', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${idToken}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({})
-            });
-            
-            if (!response.ok) return { error: 'Reset API failed' };
-            return response.json();
-        });
+        const resetResult = await page.callApi('/api/groups/reset-unity-if-midnight', {});
         console.log('Reset API result:', resetResult);
 
         // Re-locate the group item after clock change for final verification
