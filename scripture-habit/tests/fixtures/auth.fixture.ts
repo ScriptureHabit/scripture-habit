@@ -6,7 +6,7 @@ process.env.FIRESTORE_EMULATOR_HOST = '127.0.0.1:8080';
 process.env.FIREBASE_AUTH_EMULATOR_HOST = '127.0.0.1:9099';
 
 import { test as base, Page } from '@playwright/test';
-import { db } from '../../api_internal/lib/firebase-admin.js';
+import { db, admin } from '../../api_internal/lib/firebase-admin.js';
 
 type TestHelpers = {
   setupTestGroup: (params: { groupName: string; memberCount?: number; timeZone?: string; setYesterdayDate?: boolean; unityPercentage?: number }) => Promise<{ groupId: string }>;
@@ -41,7 +41,6 @@ export const test = base.extend<AuthFixtures>({
     }
     const userData = await signupRes.json();
     const uid = userData.localId;
-    const idToken = userData.idToken;
 
     // Create matching Firestore user document to satisfy "User not found" checks
     try {
@@ -64,22 +63,16 @@ export const test = base.extend<AuthFixtures>({
       console.error(`[AuthFixture] Failed to seed user document in Firestore:`, dbErr);
     }
 
-    // Set display name in Emulator Auth
-    const updateUrl = `http://${authHost}/identitytoolkit.googleapis.com/v1/accounts:update?key=${apiKey}`;
-    const updateRes = await fetch(updateUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        idToken,
+    // Set display name and ensure emailVerified on the emulator user
+    try {
+      await admin.auth().updateUser(uid, {
         displayName: nickname,
-        photoUrl: '',
-        emailVerified: true,
-        returnSecureToken: true
-      })
-    });
-    if (!updateRes.ok) {
-      const updateErr = await updateRes.text().catch(() => 'unknown');
-      console.warn('[AuthFixture] Warning: Failed to update Emulator Auth profile.', { status: updateRes.status, body: updateErr });
+        photoURL: '',
+        emailVerified: true
+      });
+      console.log(`[AuthFixture] Verified emulator auth user for ${email}`);
+    } catch (authErr) {
+      console.warn('[AuthFixture] Warning: Failed to update emulator auth user via admin SDK.', authErr);
     }
 
     // 2. Initialize browser state (Wipe cookie consent banners & disable animations)
@@ -96,7 +89,11 @@ export const test = base.extend<AuthFixtures>({
             animation-delay: 0s !important;
           }
         `;
-        document.head.appendChild(style);
+        if (document.head) {
+          document.head.appendChild(style);
+        } else if (document.documentElement) {
+          document.documentElement.appendChild(style);
+        }
     });
 
     // Native network interception to propagate fake time from page.clock to backend API calls
