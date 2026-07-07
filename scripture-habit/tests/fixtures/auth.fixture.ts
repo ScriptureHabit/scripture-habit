@@ -169,7 +169,7 @@ export const test = base.extend<AuthFixtures>({
         };
     });
 
-    // 3. Perform a standard UI login (highly robust, bypassing flaky IndexedDB injection)
+    // 3. Perform a standard UI login (highly robust)
     console.log(`[AuthFixture] Logging in via UI for isolated user: ${email}`);
     await page.goto('/en/login');
     await page.waitForLoadState('load');

@@ -1,29 +1,21 @@
 import { useCallback, useRef } from 'react';
-import { db } from '../../../../firebase';
-import { doc, getDoc } from 'firebase/firestore';
-import { safeStorage } from '../../../../utils/storage';
-import { UserProfileBrief, GroupData, MembersMap } from '../../../../types/chat';
+import { GroupData, MembersMap } from '../../../../types/chat';
 import { ReactionPreview } from '../../../../../types/firestore';
 import { ReactionItem } from '../../../../store/use-modal-store';
 import { useChatStore } from '../../../../store/use-chat-store';
 import { useModalStore } from '../../../../store/use-modal-store';
+import { safeStorage } from '../../../../utils/storage';
 
 interface UseGroupChatHandlersParams {
   groupData: GroupData | null;
   membersMap: MembersMap;
-  membersList: UserProfileBrief[];
   initialShowInviteModal: boolean;
   loading: boolean;
-  setMembersLoading: (loading: boolean) => void;
-  setMembersList: (updater: (prev: UserProfileBrief[]) => UserProfileBrief[]) => void;
 }
 
 export const useGroupChatHandlers = ({
   groupData,
   membersMap,
-  membersList,
-  setMembersLoading,
-  setMembersList,
 }: UseGroupChatHandlersParams) => {
   const { 
     setShowInactivityPolicyBanner, setShowMobileMenu 
@@ -32,24 +24,11 @@ export const useGroupChatHandlers = ({
   const contextMenuRef = useRef<HTMLDivElement>(null);
 
 
-  const handleShowMembers = useCallback(async () => {
+  const handleShowMembers = useCallback(() => {
     if (!groupData?.members) return;
     setShowMobileMenu(false);
     setActiveModal('members');
-    setMembersLoading(true);
-    try {
-      const missingUids = groupData.members.filter(uid => !membersList.some(m => m.id === uid));
-      if (missingUids.length > 0) {
-        const snapshots = await Promise.all(missingUids.map(uid => getDoc(doc(db, 'users', uid))));
-        const newMembers = snapshots.map(snap => snap.exists() ? { id: snap.id, ...snap.data() } as UserProfileBrief : { id: snap.id, nickname: 'Unknown' } as UserProfileBrief);
-        setMembersList(prev => [...prev, ...newMembers]);
-      }
-    } catch (e) {
-      console.error('Error loading members:', e);
-    } finally {
-      setMembersLoading(false);
-    }
-  }, [groupData?.members, membersList, setActiveModal, setMembersLoading, setMembersList, setShowMobileMenu]);
+  }, [groupData?.members, setActiveModal, setShowMobileMenu]);
 
   const handleShowReactions = useCallback((reactions: Record<string, string[]>, previews?: Record<string, ReactionPreview[]>) => {
     const reactionsList: ReactionItem[] = [];

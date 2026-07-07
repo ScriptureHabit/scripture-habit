@@ -15,12 +15,8 @@ test.describe('Visual Regression Testing (VRT)', () => {
       maxDiffPixels: 5000, // Account for small browser antialiasing and GPU gradient differences
       mask: [
         page.locator('.welcome-text'),
-        page.locator('.dashboard-stats'),
-        page.locator('.quest-card'),
-        page.locator('.streak-calendar-container'),
-        page.locator('.groups-section'),
-        page.locator('[data-testid="sidebar-notes"]'),
-        page.locator('.reading-plan-section')
+        page.locator('.dashboard-stats .number'),
+        page.locator('[data-testid="sidebar-notes"]')
       ]
     });
   });

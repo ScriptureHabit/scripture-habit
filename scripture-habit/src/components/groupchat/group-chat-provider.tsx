@@ -10,12 +10,11 @@ import {
   ChatUIActionsContextType 
 } from './chat-context';
 import { UserData } from '../../types/user';
-import { Group } from '../../types/chat';
+import { Group, UserProfileBrief } from '../../types/chat';
 import { useChatStore } from '../../store/use-chat-store';
 
 // Hooks
 import { useGroupMessages } from './hooks/core/use-group-messages';
-import { useGroupChatState } from './hooks/core/use-group-chat-state';
 import { useGroupActions } from './hooks/api/use-group-actions';
 import { useMessageActions } from './hooks/api/use-message-actions';
 
@@ -108,16 +107,29 @@ const GroupChatProvider: FC<GroupChatProviderProps> = ({
     cheeredTodayUids, isSendingCheer, handleSendCheer, handleCheerClick
   } = useCheerSystem(groupId, userData, t);
 
-  const localState = useGroupChatState();
+
+  const membersList = useMemo<UserProfileBrief[]>(() => {
+    if (!groupData?.members) return [];
+    return groupData.members.map(uid => {
+      const profile = membersMap[uid];
+      return {
+        id: uid,
+        nickname: profile?.nickname || 'Unknown User',
+        photoURL: profile?.photoURL || ''
+      };
+    });
+  }, [groupData?.members, membersMap]);
 
   const {
     handleShowMembers, handleShowReactions, contextMenuRef
   } = useGroupChatHandlers({
-    groupData, membersMap, membersList: localState.state.membersList, initialShowInviteModal, loading,
-    setMembersLoading: localState.setMembersLoading, setMembersList: localState.setMembersList
+    groupData,
+    membersMap,
+    initialShowInviteModal,
+    loading
   });
 
-  const { handleUserProfileClick } = useUserProfile(membersMap, localState.state.membersList);
+  const { handleUserProfileClick } = useUserProfile(membersMap, membersList);
 
   const isOwner = groupData?.ownerUserId === userData?.uid;
   const textareaRef = chatUI.textareaRef;
@@ -125,14 +137,14 @@ const GroupChatProvider: FC<GroupChatProviderProps> = ({
   // --- SPLIT CONTEXT ASSEMBLY ---
 
   const dataValue = useMemo<ChatDataContextType>(() => ({
-    groupId, userData, groupData, messages, loading, membersLoading: localState.state.membersLoading, 
-    membersMap, membersList: localState.state.membersList, userReadCount, unityPercentage, isOwner, 
+    groupId, userData, groupData, messages, loading, membersLoading: false, 
+    membersMap, membersList, userReadCount, unityPercentage, isOwner, 
     language: language || 'en', userGroups, messagesLoaded,
     unityModalData: {
       posted: unityModalData.posted,
       notPosted: unityModalData.notPosted
     }
-  }), [groupId, userData, groupData, messages, loading, localState.state.membersLoading, membersMap, localState.state.membersList, userReadCount, unityPercentage, isOwner, language, userGroups, unityModalData, messagesLoaded]);
+  }), [groupId, userData, groupData, messages, loading, membersMap, membersList, userReadCount, unityPercentage, isOwner, language, userGroups, unityModalData, messagesLoaded]);
 
   const messageActionsValue = useMemo<ChatMessageActionsContextType>(() => ({
     handleSendMessage, handleSaveEdit, handleConfirmDeleteMessage, handleToggleReaction,

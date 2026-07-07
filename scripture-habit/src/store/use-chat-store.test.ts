@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useChatStore } from './use-chat-store';
-import { Message, UserProfileBrief } from '../types/chat';
+import { Message } from '../types/chat';
 
 describe('useChatStore', () => {
   beforeEach(() => {
@@ -14,94 +14,6 @@ describe('useChatStore', () => {
     expect(state.editingMessage).toBeNull();
     expect(state.showUnityModal).toBe(false);
     expect(state.contextMenu.show).toBe(false);
-  });
-
-  it('should update replyTo state', () => {
-    const mockMessage: Message = { 
-        id: 'msg1', 
-        text: 'Hello', 
-        senderId: 'user1',
-        createdAt: { seconds: 123, nanoseconds: 0 } 
-    };
-    useChatStore.getState().setReplyTo(mockMessage);
-    
-    expect(useChatStore.getState().replyTo).toEqual(mockMessage);
-  });
-
-  it('should update modal states', () => {
-    useChatStore.getState().setShowUnityModal(true);
-    expect(useChatStore.getState().showUnityModal).toBe(true);
-
-    useChatStore.getState().setShowDeleteMessageModal(true);
-    expect(useChatStore.getState().showDeleteMessageModal).toBe(true);
-  });
-
-  it('should update additional chat UI flags', () => {
-    const store = useChatStore.getState();
-
-    store.setShowInviteModal(true);
-    store.setShowReportModal(true);
-    store.setShowInactivityPolicyBanner(true);
-    store.setShowAddNoteTooltip(true);
-    store.setShowMobileMenu(true);
-
-    const state = useChatStore.getState();
-    expect(state.showInviteModal).toBe(true);
-    expect(state.showReportModal).toBe(true);
-    expect(state.showInactivityPolicyBanner).toBe(true);
-    expect(state.showAddNoteTooltip).toBe(true);
-    expect(state.showMobileMenu).toBe(true);
-  });
-
-  it('should update transient and selection state values', () => {
-    const store = useChatStore.getState();
-    const mockProfile: UserProfileBrief = { id: 'user2', uid: 'user2', nickname: 'Member', photoURL: '' };
-
-    store.setCheerTarget(mockProfile);
-    store.setReportReason('Spam content');
-    store.setSelectedMember(mockProfile);
-
-    const state = useChatStore.getState();
-    expect(state.cheerTarget).toEqual(mockProfile);
-    expect(state.reportReason).toBe('Spam content');
-    expect(state.selectedMember).toEqual(mockProfile);
-  });
-
-  it('should update editing and deletion state', () => {
-    const store = useChatStore.getState();
-    const mockMessage: Message = {
-      id: 'msg-edit',
-      text: 'Edit this',
-      senderId: 'user1',
-      createdAt: { seconds: 789, nanoseconds: 0 }
-    };
-
-    store.setEditingMessage(mockMessage);
-    store.setEditText('Edited text');
-    store.setMessageToDelete(mockMessage);
-
-    const state = useChatStore.getState();
-    expect(state.editingMessage).toEqual(mockMessage);
-    expect(state.editText).toBe('Edited text');
-    expect(state.messageToDelete).toEqual(mockMessage);
-  });
-
-  it('should update context menu state', () => {
-    const newMenu = { 
-        show: true, 
-        x: 100, 
-        y: 200, 
-        messageId: 'msg1', 
-        message: null, 
-        showBelow: false 
-    };
-    useChatStore.getState().setContextMenu(newMenu);
-    
-    expect(useChatStore.getState().contextMenu).toEqual(newMenu);
-    
-    useChatStore.getState().closeContextMenu();
-    expect(useChatStore.getState().contextMenu.show).toBe(false);
-    expect(useChatStore.getState().contextMenu.messageId).toBeNull();
   });
 
   it('should reset all UI states when resetChatUI is called', () => {

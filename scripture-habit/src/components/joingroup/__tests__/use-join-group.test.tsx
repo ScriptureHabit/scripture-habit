@@ -1,4 +1,4 @@
-import { renderHook, act } from '@testing-library/react';
+import { renderHook, act, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { useJoinGroup } from '../hooks/use-join-group';
 import { onSnapshot, getDocs } from 'firebase/firestore';
@@ -101,16 +101,14 @@ describe('useJoinGroup Custom Hook', () => {
 
     const { result } = renderHook(() => useJoinGroup(), { wrapper });
 
-    // Wait for async effect to resolve
-    await act(async () => {
-      await Promise.resolve();
+    await waitFor(() => {
+      expect(result.current.publicGroups).toEqual([
+        { id: 'g2', name: 'Firestore Group', isPublic: true }
+      ]);
     });
 
     expect(getSpy).toHaveBeenCalled();
     expect(getDocs).toHaveBeenCalled();
-    expect(result.current.publicGroups).toEqual([
-      { id: 'g2', name: 'Firestore Group', isPublic: true }
-    ]);
   });
 
   it('processes AI translation API correctly', async () => {

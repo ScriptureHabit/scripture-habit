@@ -59,7 +59,7 @@ jobs:
 
       - name: Run ESLint
         working-directory: ./scripture-habit
-        run: npm run lint || true # Lintを実行しますが、一時的に失敗してもCIを進めるようにします
+        run: npm run lint
 
       - name: Run Tests (Vitest)
         working-directory: ./scripture-habit

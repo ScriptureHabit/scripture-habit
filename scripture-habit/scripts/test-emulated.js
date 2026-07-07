@@ -23,10 +23,15 @@ function killZombieEmulatorProcesses(ports) {
       }
       if (pid) {
         try {
-          console.log(`[test-emulated] Port ${port} is taken by PID ${pid}. Killing zombie process...`);
-          execSync(`kill -9 ${pid}`);
+          const processName = execSync(`ps -p ${pid} -o comm=`, { encoding: 'utf8' }).trim().toLowerCase();
+          if (processName.includes('java') || processName.includes('node')) {
+            console.log(`[test-emulated] Port ${port} is taken by PID ${pid} (${processName}). Killing zombie process...`);
+            execSync(`kill -9 ${pid}`);
+          } else {
+            console.log(`[test-emulated] Port ${port} is taken by PID ${pid} (${processName}), but it does not look like an emulator process. Skipping...`);
+          }
         } catch (err) {
-          console.warn(`[test-emulated] WARNING: Failed to kill process ${pid} on port ${port} (${err.message || err}). You may need sudo/administrator privileges, or you should kill it manually.`);
+          console.warn(`[test-emulated] WARNING: Failed to inspect or kill process ${pid} on port ${port} (${err.message || err}).`);
         }
       }
     }
@@ -50,10 +55,18 @@ function killZombieEmulatorProcesses(ports) {
         const pid = parts[parts.length - 1];
         if (pid && pid !== '0' && /^\d+$/.test(pid)) {
           try {
-            console.log(`[test-emulated] Port ${port} is taken by PID ${pid}. Killing zombie process...`);
-            execSync(`taskkill /F /PID ${pid}`, { stdio: 'pipe' });
+            const tasklistOutput = execSync(`tasklist /FI "PID eq ${pid}" /NH /FO CSV`, { encoding: 'utf8', stdio: 'pipe' }).trim();
+            const match = tasklistOutput.match(/^"([^"]+)"/);
+            const processName = match ? match[1].toLowerCase() : '';
+
+            if (processName.includes('java') || processName.includes('node')) {
+              console.log(`[test-emulated] Port ${port} is taken by PID ${pid} (${processName}). Killing zombie process...`);
+              execSync(`taskkill /F /PID ${pid}`, { stdio: 'pipe' });
+            } else {
+              console.log(`[test-emulated] Port ${port} is taken by PID ${pid} (${processName || 'unknown'}), but it does not look like an emulator process. Skipping...`);
+            }
           } catch (err) {
-            console.warn(`[test-emulated] WARNING: Failed to kill process ${pid} on port ${port} (${err.message || err}). This usually happens due to lack of Administrator permissions. Please run the terminal as Administrator or kill it manually.`);
+            console.warn(`[test-emulated] WARNING: Failed to inspect or kill process ${pid} on port ${port} (${err.message || err}).`);
           }
         }
       }
