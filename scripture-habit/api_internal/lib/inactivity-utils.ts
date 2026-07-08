@@ -7,8 +7,8 @@
  * 3. Simplified: Removed the "new member" grace period. All activity counts equally.
  */
 
-import { FirestoreTimestamp } from '../../types/firestore';
-import { DEFAULT_KICK_THRESHOLD } from './constants';
+import { FirestoreTimestamp } from '../../types/firestore.js';
+import { DEFAULT_KICK_THRESHOLD } from './constants.js';
 
 export interface InactivityMemberData {
     joinedAt?: FirestoreTimestamp;
