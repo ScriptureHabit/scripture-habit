@@ -124,7 +124,7 @@ export const test = base.extend<AuthFixtures>({
       console.error('[AuthFixture][browser pageerror]', error);
     });
 
-    // 3. Sign in directly through the browser Firebase auth object to avoid UI login overhead.
+    // 3. Sign in directly and navigate to Dashboard
     console.log(`[AuthFixture] Signing in directly via Firebase auth for isolated user: ${email}`);
     await page.goto('/en/login');
     await page.waitForLoadState('load');
@@ -137,23 +137,36 @@ export const test = base.extend<AuthFixtures>({
         throw new Error('Firebase auth helpers are not available in browser context.');
       }
       await helpers.signInWithEmailAndPassword(auth, email, password);
+      // Also wait for the auth state to propagate before continuing
+      await new Promise(resolve => {
+        const unsubscribe = auth.onAuthStateChanged((user: any) => {
+            if (user) {
+                unsubscribe();
+                resolve(user);
+            }
+        });
+      });
     }, { email, password });
 
-    // 4. Wait for dashboard redirect and stabilization
-    console.log('[AuthFixture] waiting for dashboard redirect from', await page.url());
+    // 4. Manually navigate to dashboard and wait for stabilization
+    console.log('[AuthFixture] Sign-in successful, forcing navigation to dashboard.');
+    await page.goto('/en/dashboard', { waitUntil: 'load' });
+    
     try {
       await page.waitForURL(/.*dashboard/, { timeout: 30000 });
-      console.log('[AuthFixture] dashboard redirect reached', await page.url());
+      console.log('[AuthFixture] Successfully navigated to dashboard URL.');
     } catch (err) {
-      console.error('[AuthFixture] waitForURL dashboard failed', err, { currentUrl: await page.url() });
+      console.error('[AuthFixture] Failed to navigate to dashboard URL', err, { currentUrl: await page.url() });
       throw err;
     }
     
+    // 5. Wait for page to be stable
     await page.waitForSelector('.dashboard-skeleton', { state: 'detached', timeout: 30000 }).catch(() => {
-        console.log('[AuthFixture] Dashboard skeleton did not appear or timed out waiting for detachment. Continuing...');
+        console.log('[AuthFixture] Dashboard skeleton did not appear/detach. Continuing...');
     });
-
     await page.waitForSelector('[data-testid="sidebar-notes"]', { timeout: 30000 });
+    console.log('[AuthFixture] Fixture setup complete.');
+
 
     // --- API CALLING HELPERS ---
     const callApi = async (endpoint: string, body: Record<string, unknown>) => {
