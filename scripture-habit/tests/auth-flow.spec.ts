@@ -6,7 +6,29 @@ import { test, expect } from '@playwright/test';
  * and the end-to-end flow of user signup and login.
  */
 test.describe('Auth & Onboarding Flow', () => {
+  // Use clean storage state for auth flow tests
+  test.use({ 
+    storageState: { cookies: [], origins: [] },
+    viewport: { width: 1280, height: 1200 }
+  });
+
   test.beforeEach(async ({ page }) => {
+    await page.addInitScript(() => {
+        window.localStorage.setItem('cookieConsent', 'true');
+        window.localStorage.setItem('lastNotifPrompt', Date.now().toString());
+        window.localStorage.setItem('hasSeenWelcomeStory', 'true');
+
+        const style = document.createElement('style');
+        style.innerHTML = `
+          *, *::before, *::after {
+            transition-duration: 0.001s !important;
+            animation-duration: 0.001s !important;
+            transition-delay: 0s !important;
+            animation-delay: 0s !important;
+          }
+        `;
+        document.head.appendChild(style);
+    });
     await page.goto('/');
   });
 
@@ -31,7 +53,7 @@ test.describe('Auth & Onboarding Flow', () => {
 
   test('should complete full email signup and profile initialization flow', async ({ page }) => {
     const timestamp = `${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
-    const testEmail = `testuser-${timestamp}@example.com`;
+    const testEmail = `testuser-${timestamp}@test.local`;
     const nickname = `Tester-${timestamp}`;
     const password = 'Password123!';
 
