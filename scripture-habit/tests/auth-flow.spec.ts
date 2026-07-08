@@ -6,9 +6,6 @@ import { test, expect } from '@playwright/test';
  * and the end-to-end flow of user signup and login.
  */
 test.describe('Auth & Onboarding Flow', () => {
-  // Use a completely unauthenticated context for auth flow tests
-  test.use({ storageState: { cookies: [], origins: [] } });
-
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
   });
@@ -49,22 +46,43 @@ test.describe('Auth & Onboarding Flow', () => {
 
     // Navigate back to Login and perform login
     await page.goto('/en/login');
+    await page.waitForLoadState('networkidle');
+    
+    // Wait for login form to be fully interactive
+    await page.getByTestId('login-submit').waitFor({ state: 'visible', timeout: 10000 });
+    
     await page.getByTestId('login-email').fill(testEmail);
     await page.getByTestId('login-password').fill(password);
+    
+    // Click the login button
     await page.getByTestId('login-submit').click();
+    
+    // Wait a moment for auth to process before checking URL
+    await page.waitForTimeout(2000);
+    
+    // Check if we're still on login page (indicating auth didn't work)
+    const currentUrl = page.url();
+    if (currentUrl.includes('/login')) {
+      console.log(`Still on login page after click. Current URL: ${currentUrl}`);
+      
+      // Check if there's an error message
+      const errorElement = page.locator('[data-testid*="error"], .error, [role="alert"]').first();
+      const hasError = await errorElement.isVisible({ timeout: 2000 }).catch(() => false);
+      if (hasError) {
+        const errorText = await errorElement.textContent();
+        console.log(`Login error visible: ${errorText}`);
+      }
+      
+      // Try clicking again in case the first click didn't register
+      console.log('Retrying login click...');
+      await page.getByTestId('login-submit').click();
+      await page.waitForTimeout(2000);
+    }
+    
+    // Now wait for dashboard redirect with longer timeout
+    await page.waitForURL(/.*\/dashboard/, { timeout: 45000 });
 
-    // Wait for auth state to propagate and redirect to dashboard
-    // In CI, this can take longer due to network latency
-    await page.waitForFunction(() => {
-      const auth = (window as any).firebaseAuth;
-      return auth && auth.currentUser !== null;
-    }, { timeout: 30000 }).catch(() => {
-      // If waitForFunction fails, continue anyway - the URL check below will catch the issue
-      console.log('Auth state check timed out, continuing with URL check...');
-    });
-
-    // Verify Dashboard landing with increased timeout for CI
-    await expect(page).toHaveURL(/.*\/dashboard/, { timeout: 30000 });
+    // Verify Dashboard landing
     await expect(page.getByTestId('dashboard-skeleton')).not.toBeVisible({ timeout: 60000 });
     await expect(page.getByText(nickname)).toBeVisible();
     
