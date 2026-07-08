@@ -241,8 +241,16 @@ export const test = base.extend<AuthFixtures>({
       });
 
       if (!response.ok()) {
-        const errorText = await response.text();
-        throw new Error(`API Error (${endpoint}): ${response.status()} ${errorText}`);
+        let errorDetails: string;
+        try {
+          const errorJson = await response.json();
+          errorDetails = JSON.stringify(errorJson, null, 2);
+        } catch (e) {
+          // If response is not JSON, fall back to plain text
+          errorDetails = await response.text();
+        }
+        console.error(`[AuthFixture][API Error] ${endpoint} failed with status ${response.status()}:\n${errorDetails}`);
+        throw new Error(`API Error (${endpoint}): ${response.status()} - ${errorDetails.substring(0, 200)}...`); // Truncate for brevity in error message
       }
       return await response.json();
     };
