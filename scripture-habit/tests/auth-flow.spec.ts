@@ -53,8 +53,18 @@ test.describe('Auth & Onboarding Flow', () => {
     await page.getByTestId('login-password').fill(password);
     await page.getByTestId('login-submit').click();
 
-    // Verify Dashboard landing
-    await expect(page).toHaveURL(/.*\/dashboard/);
+    // Wait for auth state to propagate and redirect to dashboard
+    // In CI, this can take longer due to network latency
+    await page.waitForFunction(() => {
+      const auth = (window as any).firebaseAuth;
+      return auth && auth.currentUser !== null;
+    }, { timeout: 30000 }).catch(() => {
+      // If waitForFunction fails, continue anyway - the URL check below will catch the issue
+      console.log('Auth state check timed out, continuing with URL check...');
+    });
+
+    // Verify Dashboard landing with increased timeout for CI
+    await expect(page).toHaveURL(/.*\/dashboard/, { timeout: 30000 });
     await expect(page.getByTestId('dashboard-skeleton')).not.toBeVisible({ timeout: 60000 });
     await expect(page.getByText(nickname)).toBeVisible();
     

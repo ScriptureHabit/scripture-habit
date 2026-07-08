@@ -17,7 +17,8 @@ export default defineConfig({
   
   timeout: 90000,
   expect: {
-    timeout: 20000,
+    // Increase expect timeout in CI to handle slower network conditions
+    timeout: process.env.CI ? 30000 : 20000,
   },
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: 'html',
