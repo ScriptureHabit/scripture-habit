@@ -1,4 +1,11 @@
 import { test, expect } from '@playwright/test';
+import {
+  generateTestData,
+  disableAnimationsScript,
+  fillSignupForm,
+  performLogin,
+  waitForDashboardLoad,
+} from './helpers/test-helpers';
 
 /**
  * Authentication & Onboarding Flow Tests
@@ -13,22 +20,7 @@ test.describe('Auth & Onboarding Flow', () => {
   });
 
   test.beforeEach(async ({ page }) => {
-    await page.addInitScript(() => {
-        window.localStorage.setItem('cookieConsent', 'true');
-        window.localStorage.setItem('lastNotifPrompt', Date.now().toString());
-        window.localStorage.setItem('hasSeenWelcomeStory', 'true');
-
-        const style = document.createElement('style');
-        style.innerHTML = `
-          *, *::before, *::after {
-            transition-duration: 0.001s !important;
-            animation-duration: 0.001s !important;
-            transition-delay: 0s !important;
-            animation-delay: 0s !important;
-          }
-        `;
-        document.head.appendChild(style);
-    });
+    await page.addInitScript(disableAnimationsScript);
     await page.goto('/');
   });
 
@@ -52,61 +44,20 @@ test.describe('Auth & Onboarding Flow', () => {
   });
 
   test('should complete full email signup and profile initialization flow', async ({ page }) => {
-    const timestamp = `${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
-    const testEmail = `testuser-${timestamp}@test.local`;
-    const nickname = `Tester-${timestamp}`;
-    const password = 'Password123!';
+    const { email, nickname } = generateTestData();
 
+    // Signup
     await page.goto('/en/signup');
-    await page.getByTestId('signup-nickname').fill(nickname);
-    await page.getByTestId('signup-email').fill(testEmail);
-    await page.getByTestId('signup-password').fill(password);
-    await page.getByTestId('signup-submit').click();
+    await fillSignupForm(page, nickname, email);
 
     await expect(page).toHaveURL(/.*\/login/);
     await expect(page.getByText(/Verification email sent/i)).toBeVisible();
 
-    // Navigate back to Login and perform login
-    await page.goto('/en/login');
-    await page.waitForLoadState('networkidle');
-    
-    // Wait for login form to be fully interactive
-    await page.getByTestId('login-submit').waitFor({ state: 'visible', timeout: 10000 });
-    
-    await page.getByTestId('login-email').fill(testEmail);
-    await page.getByTestId('login-password').fill(password);
-    
-    // Click the login button
-    await page.getByTestId('login-submit').click();
-    
-    // Wait a moment for auth to process before checking URL
-    await page.waitForTimeout(2000);
-    
-    // Check if we're still on login page (indicating auth didn't work)
-    const currentUrl = page.url();
-    if (currentUrl.includes('/login')) {
-      console.log(`Still on login page after click. Current URL: ${currentUrl}`);
-      
-      // Check if there's an error message
-      const errorElement = page.locator('[data-testid*="error"], .error, [role="alert"]').first();
-      const hasError = await errorElement.isVisible({ timeout: 2000 }).catch(() => false);
-      if (hasError) {
-        const errorText = await errorElement.textContent();
-        console.log(`Login error visible: ${errorText}`);
-      }
-      
-      // Try clicking again in case the first click didn't register
-      console.log('Retrying login click...');
-      await page.getByTestId('login-submit').click();
-      await page.waitForTimeout(2000);
-    }
-    
-    // Now wait for dashboard redirect with longer timeout
-    await page.waitForURL(/.*\/dashboard/, { timeout: 45000 });
+    // Login
+    await performLogin(page, email);
 
-    // Verify Dashboard landing
-    await expect(page.getByTestId('dashboard-skeleton')).not.toBeVisible({ timeout: 60000 });
-    await expect(page.getByText(nickname)).toBeVisible();
+    // Verify dashboard
+    await waitForDashboardLoad(page, nickname);
     
     const streakCard = page.locator('.streak-card');
     await expect(streakCard.locator('.number')).toHaveText('0');
