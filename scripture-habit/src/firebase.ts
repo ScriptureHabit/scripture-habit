@@ -1,6 +1,6 @@
 import { initializeApp, FirebaseApp } from "firebase/app";
 import { getAnalytics, Analytics } from "firebase/analytics";
-import { getAuth, Auth, connectAuthEmulator, setPersistence, browserLocalPersistence } from "firebase/auth";
+import { getAuth, Auth, connectAuthEmulator, setPersistence, browserLocalPersistence, signInWithEmailAndPassword, signInWithCustomToken, signOut } from "firebase/auth";
 import { getMessaging, Messaging, isSupported } from "firebase/messaging";
 import { getStorage, FirebaseStorage } from "firebase/storage";
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, Firestore, getFirestore, connectFirestoreEmulator } from "firebase/firestore";
@@ -60,6 +60,11 @@ if (typeof window !== 'undefined' && !isEmulator) {
 declare global {
   interface Window {
     firebaseAuth?: Auth;
+    firebaseAuthHelpers?: {
+      signInWithEmailAndPassword: typeof signInWithEmailAndPassword;
+      signInWithCustomToken: typeof signInWithCustomToken;
+      signOut: typeof signOut;
+    };
     debugAppCheck?: () => Promise<unknown>;
   }
 }
@@ -67,10 +72,19 @@ declare global {
 let auth: Auth | null = null;
 try {
   auth = getAuth(app);
-  
-  // E2E Test Optimization: Force LocalStorage persistence so Playwright can capture it
-  if (typeof window !== 'undefined' && navigator.webdriver && auth) {
+
+  if (typeof window !== 'undefined' && auth) {
     window.firebaseAuth = auth;
+
+    // In emulator mode, expose browser-side auth helpers for Playwright tests.
+    if (isEmulator) {
+      window.firebaseAuthHelpers = {
+        signInWithEmailAndPassword,
+        signInWithCustomToken,
+        signOut
+      };
+    }
+
     setPersistence(auth, browserLocalPersistence).catch(err => {
       console.error("Failed to set auth persistence:", err);
     });

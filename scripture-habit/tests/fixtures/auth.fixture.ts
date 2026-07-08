@@ -124,16 +124,20 @@ export const test = base.extend<AuthFixtures>({
       console.error('[AuthFixture][browser pageerror]', error);
     });
 
-    // 3. Perform a standard UI login (highly robust)
-    console.log(`[AuthFixture] Logging in via UI for isolated user: ${email}`);
-    console.log('[AuthFixture] navigating to login page', { target: '/en/login' });
+    // 3. Sign in directly through the browser Firebase auth object to avoid UI login overhead.
+    console.log(`[AuthFixture] Signing in directly via Firebase auth for isolated user: ${email}`);
     await page.goto('/en/login');
     await page.waitForLoadState('load');
+    await page.waitForFunction(() => !!(window as any).firebaseAuthHelpers, null, { timeout: 30000 });
 
-    await page.fill('[data-testid="login-email"]', email);
-    await page.fill('[data-testid="login-password"]', password);
-    console.log('[AuthFixture] submitting login form', { email });
-    await page.click('[data-testid="login-submit"]');
+    await page.evaluate(async ({ email, password }) => {
+      const auth = (window as any).firebaseAuth;
+      const helpers = (window as any).firebaseAuthHelpers;
+      if (!auth || !helpers) {
+        throw new Error('Firebase auth helpers are not available in browser context.');
+      }
+      await helpers.signInWithEmailAndPassword(auth, email, password);
+    }, { email, password });
 
     // 4. Wait for dashboard redirect and stabilization
     console.log('[AuthFixture] waiting for dashboard redirect from', await page.url());
