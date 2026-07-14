@@ -52,68 +52,12 @@ export default {
             step2Title: "2. Chia sẻ điều bạn nhận ra",
             step2Desc: "Chia sẻ một ghi chú ngắn về điều chạm đến trái tim bạn hoặc điều bạn nhận ra khi học thánh thư."
         },
-        features: {
-            title: "Điểm nổi bật của\nScripture Habit",
-            sharing: {
-                title: "Gắn kết tình bạn qua sẻ chia",
-                desc: "Chia sẻ tiến trình với gia đình và bạn bè để cùng nhau khích lệ và nâng đỡ tâm hồn."
-            },
-            rule: {
-                title: "Quy tắc Thói quen Nhẹ nhàng",
-                desc: "Cùng nhau xây dựng thói quen trọn đời bằng cách vượt qua quy tắc tạm nghỉ nhóm nếu không có bài đăng nào trong một khoảng thời gian nhất định."
-            },
-            ai: {
-                title: "Lá thư nhìn lại ấm áp",
-                desc: "Nhận lá thư tổng kết mỗi tuần tóm tắt những gì bạn học được để trân trọng từng bước trưởng thành."
-            },
-            link: {
-                title: "Kết nối Thư viện Phúc âm",
-                desc: "Dễ dàng mở những câu thánh thư yêu thích với liên kết trực tiếp đến Thư viện Phúc âm và BYU Speeches."
-            },
-            recommend: {
-                title: "Gợi ý thánh thư ngẫu nhiên",
-                desc: "Nhận những gợi ý thánh thư bình an dựa trên bài học 'Hãy Đi Theo Ta' hoặc cảm xúc của bạn bất cứ lúc nào."
-            }
-        },
-        useCases: {
-            title: "Giúp Lớp Học Chủ Nhật thêm ý nghĩa và vui vẻ",
-            status: {
-                problem: "Khó khăn trước đây",
-                solution: "Với Scripture Habit"
-            },
-            teacher: {
-                title: "Dành cho Giáo viên",
-                problem: "Thật khó để biết học viên đọc thánh thư thế nào trong tuần để chuẩn bị một bài học thực sự chạm đến họ.",
-                solution: "Hiểu được suy nghĩ và câu hỏi của học viên trước buổi học để chuẩn bị bài giảng phù hợp nhất với từng người."
-            },
-            student: {
-                title: "Dành cho Học viên",
-                problem: "Cuộc sống bận rộn dễ khiến việc tự học bị gác lại phía sau và thật khó để tự mình giữ vững động lực.",
-                solution: "Cùng học và khích lệ lẫn nhau with những người bạn thân thiết giúp việc học mỗi ngày trở thành niềm mong đợi."
-            }
-        },
-        unity: {
-            title: "Gắn kết những trái tim",
-            desc: "Cùng ngắm nhìn bức tranh bình minh tuyệt đẹp khi tất cả các thành viên trong nhóm hoàn thành việc đọc trong ngày."
-        },
         finalCta: {
             title: "Bạn có muốn bắt đầu một thói quen mới cùng chúng mình không?",
             button: "Bắt đầu ngay",
             mascotBubble: "Hãy bắt đầu bằng nút bên dưới! ✨"
         },
         seoContent: {
-            why: {
-                title: "Tại sao nên tạo thói quen học thánh thư?",
-                text: "Chạm vào thánh thư mỗi ngày mở ra không gian tuyệt vời để nhận mặc khải cá nhân và phát triển tâm linh."
-            },
-            community: {
-                title: "Sức mạnh của việc học cùng nhau",
-                text: "Chia sẻ cảm nhận hàng ngày trong nhóm nhỏ với bạn bè hoặc gia đình giúp bạn luôn bước tiếp một cách vui vẻ."
-            },
-            comparison: {
-                title: "Đọc thánh thư trong niềm vui",
-                text: "Scripture Habit đồng hành cùng bạn với luật lệ nhẹ nhàng và những lời nhìn lại ấm áp để tạo thói quen cùng bạn bè."
-            },
             faq: {
                 title: "Câu hỏi thường gặp",
                 q1: "Làm thế nào để tôi bắt đầu thói quen học dã ký thánh thư?",

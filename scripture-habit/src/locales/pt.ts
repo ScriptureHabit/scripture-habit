@@ -52,68 +52,12 @@ export default {
             step2Title: "2. Compartilhe o que você notou",
             step2Desc: "Compartilhe uma nota curta sobre o que tocou seu coração ou o que você notou ao estudar as escrituras."
         },
-        features: {
-            title: "Recursos do\nScripture Habit",
-            sharing: {
-                title: "Aprofunde Laços Através do Compartilhamento",
-                desc: "Compartilhe seu progresso com familiares e amigos para se incentivarem e se apoiarem mutuamente."
-            },
-            rule: {
-                title: "Regra de Hábito Gentil",
-                desc: "Crie um hábito para a vida toda superando juntos a regra de fazer uma pausa temporária do grupo se não houver postagens por um período de tempo."
-            },
-            ai: {
-                title: "Uma Carta Carinhosa de Reflexão",
-                desc: "Receba uma carta semanal que resume seus aprendizados com carinho para ajudar você a valorizar seu progresso."
-            },
-            link: {
-                title: "Integração com a Biblioteca do Evangelho",
-                desc: "Abra facilmente suas escrituras favoritas com links diretos para a Biblioteca do Evangelho e BYU Speeches."
-            },
-            recommend: {
-                title: "Escritura Surpresa",
-                desc: "Receba sugestões inspiradoras baseadas no 'Vem, e Segue-Me' ou em seus sentimentos atuais sempre que precisar."
-            }
-        },
-        useCases: {
-            title: "Torne a Escola Dominical Mais Significativa e Divertida",
-            status: {
-                problem: "Desafios do passado",
-                solution: "Com o Scripture Habit"
-            },
-            teacher: {
-                title: "Para Professores",
-                problem: "Era difícil saber como os alunos estavam lendo durante a semana para preparar uma lição que realmente combinasse com eles.",
-                solution: "Entenda os pensamentos e perguntas dos alunos com antecedência para preparar uma lição sob medida para cada um."
-            },
-            student: {
-                title: "Para Alunos",
-                problem: "A correria diária facilmente deixa o estudo pessoal de lado, tornando difícil manter a motivação sozinho.",
-                solution: "Aprender junto com amigos amigáveis mantém você motivado e torna o estudo diário algo muito esperado."
-            }
-        },
-        unity: {
-            title: "Unamos Nossos Corações",
-            desc: "Veja uma linda ilustração do amanhecer quando todos os membros do seu grupo terminarem a leitura do dia."
-        },
         finalCta: {
             title: "Gostaria de começar um novo hábito conosco?",
             button: "Começar agora",
             mascotBubble: "Vamos começar pelo botão abaixo! ✨"
         },
         seoContent: {
-            why: {
-                title: "Por que criar um hábito de estudo?",
-                text: "Tocar as escrituras todos os dias cria um espaço maravilhoso para receber revelação pessoal e crescer espiritualmente."
-            },
-            community: {
-                title: "O Poder de Aprender Juntos",
-                text: "Compartilhar insights diários em pequenos grupos com amigos ou familiares ajuda você a continuar feliz sem desistir."
-            },
-            comparison: {
-                title: "Continue Lendo com Alegria",
-                text: "O Scripture Habit apoia sua jornada com uma regra suave e reflexões carinhosas para ajudar você a criar o hábito com amigos."
-            },
             faq: {
                 title: "Perguntas frequentes",
                 q1: "Como inicio um hábito de estudo das escrituras?",

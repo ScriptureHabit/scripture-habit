@@ -52,72 +52,16 @@ export default {
             step2Title: "2. Ibahagi ang lyong Kaisipan",
             step2Desc: "Mag-post ng maikling tala tungkol sa kung ano ang nakaantig sa iyong puso o sa iyong pang-araw-araw na pananaw upang ibahagi sa mga kaibigan."
         },
-        features: {
-            title: "Mga Tampok ng\nScripture Habit",
-            sharing: {
-                title: "Palalimin ang Relasyon sa Pamamagitan ng Pagbabahagi",
-                desc: "Ibahagi the iyong progreso sa pamilya at mga kaibigan upang magtulungan at magpalakasan sa isa't isa."
-            },
-            rule: {
-                title: "Gentle Habit Rule",
-                desc: "Bumuo ng panghabambuhay na ugali sa pamamagitan ng pagtulong sa isa't isa na malampasan ang patakaran ng pansamantalang pahinga mula sa grupo kapag walang post sa loob ng partikular na panahon."
-            },
-            ai: {
-                title: "Isang Mainit na Liham ng Pagninilay",
-                desc: "Tumanggap ng lingguhang liham ng pagninilay na malumanay na nagbubuod ng iyong mga natutunan upang matulungan kang makita ang iyong paglago."
-            },
-            link: {
-                title: "Koneksyon sa Gospel Library",
-                desc: "Madaling buksan ang iyong mga paboritong banal na kasulatan gamit ang mga direktang link sa Gospel Library at BYU Speeches."
-            },
-            recommend: {
-                title: "Mungkahing Banal na Kasulatan",
-                desc: "Kumuha ng mga payapang mungkahi ng banal na kasulatan batay sa 'Pumarito Ka, Sumunod Ka sa Akin' o sa iyong nararamdaman anumang oras."
-            }
-        },
-        useCases: {
-            title: "Gawing Mas Makabuluhan at Masaya ang Sunday School",
-            status: {
-                problem: "Mga Hamon Noon",
-                solution: "Gamit ang Scripture Habit"
-            },
-            teacher: {
-                title: "Para sa mga Guro",
-                problem: "Mahirap malaman kung paano nagbasa ang mga estudyante sa loob ng linggo upang maghanda ng lesson na talagang tumutugma sa kanilang pangangailangan.",
-                solution: "Unawain ang mga kaisipan at tanong ng mga estudyante bago ang klase upang maghanda ng araling iniangkop sa bawat isa."
-            },
-            student: {
-                title: "Para sa mga Estudyante",
-                problem: "Madaling maisantabi ang personal na pag-aaral dahil sa abalang buhay, at mahirap panatilihin ang motibasyon nang mag-isa.",
-                solution: "Ang sama-samang pag-aaral at pagpapalakas kasama ang mga kaibigan ay ginagawa ang pang-araw-araw na pag-aaral na isang bagay na kapana-panabik."
-            }
-        },
-        unity: {
-            title: "Pag-isahin ang Ating mga Puso",
-            desc: "Tingnan ang isang magandang guhit ng pagsikat ng araw kapag ang lahat ng miyembro ng iyong grupo ay nakatapos ng pagbabasa sa araw na iyon."
-        },
         finalCta: {
             title: "Gusto mo bang magsimula ng bagong ugali kasama namin?",
             button: "Magsimula Na",
             mascotBubble: "Magsimula tayo gamit ang button sa ibaba! ✨"
         },
         seoContent: {
-            why: {
-                title: "Bakit kailangang bumuo ng Scripture Habit?",
-                text: "Ang paghawak sa banal na kasulatan araw-araw ay lumilikha ng isang magandang espasyo para sa personal na paghahayag at espirituwal na paglago."
-            },
-            community: {
-                title: "Ang Kapangyarihan ng Pag-aaral nang Magkasama",
-                text: "Ang pagbabahagi ng mga pananaw araw-araw sa maliliit na grupo kasama ang mga kaibigan o pamilya ay tumutulong sa iyo na magpatuloy nang may kagalakan."
-            },
-            comparison: {
-                title: "Magpatuloy sa Pagbabasa nang may Kagalakan",
-                text: "Sinusuportahan ng Scripture Habit ang iyong paglalakbay gamit ang maluwag na panuntunan at mainit na pagninilay upang matulungan kang bumuo ng ugali kasama ang mga kaibigan."
-            },
             faq: {
                 title: "Mga Madalas Itanong",
                 q1: "Paano ko sisimulan ang gawi sa pag-aaral ng banal na kasulatan?",
-                a1: "Ang pinakamahusay na paraan upang simulan ang gawi sa banal na kasulatan ay magsimula sa maliit at maging pare-pareho. Ang 3-araw na tuntunin ng Scripture Habit ay tumutulong sa iyo na mapanatili ang isang pare-parehong ritmo nang hindi nakakaramdam ng labis na pasanin.",
+                a1: "Ang pinakamahusay na paraan upang simulan the gawi sa banal na kasulatan ay magsimula sa maliit at maging pare-pareho. Ang 3-araw na tuntunin ng Scripture Habit ay tumutulong sa iyo na mapanatili ang isang pare-parehong ritmo nang hindi nakakaramdam ng labis na pasanin.",
                 q2: "Ang Scripture Habit ba ay isang opisyal na app ng Simbahan?",
                 a2: "Ang Scripture Habit ay isang personal na proyekto na naglalayong suportahan ang mga miyembro ng Ang Simbahan ni Jesucristo ng mga Banal sa mga Huling Araw at ang lahat ng nag-aaral ng banal na kasulatan. Ito ay hindi isang opisyal na app ng Simbahan, ngunit ito ay idinisenyo upang gumana nang maayos kasama ang Gospel Library.",
                 q3: "Maaari ko ba itong gamitin para sa pag-aaral ng Biblia?",

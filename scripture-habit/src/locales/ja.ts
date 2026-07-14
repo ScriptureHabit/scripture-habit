@@ -809,63 +809,7 @@ export default {
                 a2: "本アプリは公式ではありませんが、会員や全ての聖典学習者を支えるために個人で開発された非営利のツールです。",
                 q3: "聖書の学習にも使えますか？",
                 a3: "モルモン書や新約聖書など、あなたが大切にしているあらゆる聖典の学習に完全対応しています。"
-            },
-            why: {
-                title: "Why make scripture study a habit?",
-                text: "Touching the scriptures every day creates a wonderful space for personal revelation and spiritual growth."
-            },
-            community: {
-                title: "The Power of Learning Together",
-                text: "Sharing daily insights in small groups with friends or family helps you keep going happily without giving up."
-            },
-            comparison: {
-                title: "Keep Reading with Joy",
-                text: "Scripture Habit supports your journey with a gentle rule and warm reflections to help you build a habit with friends."
             }
-        },
-        features: {
-            title: "Features of\nScripture Habit",
-            sharing: {
-                title: "Deepen Bonds through Sharing",
-                desc: "Share your progress with family and friends to encourage and lift each other up."
-            },
-            rule: {
-                title: "Gentle Habit-Building Rule",
-                desc: "Build a lifelong habit by supporting each other through a gentle rule of taking a temporary break when there are no posts for a certain period."
-            },
-            ai: {
-                title: "A Warm Letter of Reflection",
-                desc: "Receive a weekly reflection letter that gently summarizes your learnings to help you appreciate your progress."
-            },
-            link: {
-                title: "Gospel Library Integration",
-                desc: "Easily open your favorite scriptures with direct links to the Gospel Library and BYU Speeches."
-            },
-            recommend: {
-                title: "Surprise Me Scripture",
-                desc: "Get peaceful scripture suggestions based on 'Come, Follow Me' or your current feelings whenever you need them."
-            }
-        },
-        useCases: {
-            title: "Make Sunday School More Meaningful and Fun",
-            status: {
-                problem: "Past Challenges",
-                solution: "With Scripture Habit"
-            },
-            teacher: {
-                title: "For Teachers",
-                problem: "It was difficult to know how students were reading during the week to prepare a lesson that truly matched their needs.",
-                solution: "Understand students' thoughts and questions beforehand to prepare a lesson tailored to each person."
-            },
-            student: {
-                title: "For Students",
-                problem: "Daily busyness easily pushes personal study aside, making it hard to stay motivated on your own.",
-                solution: "Learning together with friendly peers keeps you motivated and makes daily study something to look forward to."
-            }
-        },
-        unity: {
-            title: "Connect Our Hearts Together",
-            desc: "See a beautiful rising sun illustration when every member of your group finishes reading for the day."
         }
     }
 };
