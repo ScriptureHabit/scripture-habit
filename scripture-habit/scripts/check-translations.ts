@@ -20,15 +20,23 @@ import tlBooks from '../src/locales/books/tl';
 import viBooks from '../src/locales/books/vi';
 import zhoBooks from '../src/locales/books/zho';
 
-const uiLocales: Record<string, any> = { en, ja, es, ko, pt, sw, th, tl, vi, zho };
-const bookLocales: Record<string, any> = { en: enBooks, ja: jaBooks, es: esBooks, ko: koBooks, pt: ptBooks, sw: swBooks, th: thBooks, tl: tlBooks, vi: viBooks, zho: zhoBooks };
+type TranslationValue = string | string[] | { [key: string]: TranslationValue };
+type TranslationBundle = { [key: string]: TranslationValue };
 
-function getKeys(obj: any, prefix = ''): string[] {
+const uiLocales: Record<string, TranslationBundle> = { en, ja, es, ko, pt, sw, th, tl, vi, zho };
+const bookLocales: Record<string, TranslationBundle> = { en: enBooks, ja: jaBooks, es: esBooks, ko: koBooks, pt: ptBooks, sw: swBooks, th: thBooks, tl: tlBooks, vi: viBooks, zho: zhoBooks };
+
+function getKeys(obj: TranslationValue, prefix = ''): string[] {
+  if (typeof obj !== 'object' || obj === null || Array.isArray(obj)) {
+    return prefix ? [prefix] : [];
+  }
+
   let keys: string[] = [];
   for (const key in obj) {
     const fullKey = prefix ? `${prefix}.${key}` : key;
-    if (typeof obj[key] === 'object' && obj[key] !== null && !Array.isArray(obj[key])) {
-      keys = keys.concat(getKeys(obj[key], fullKey));
+    const value = obj[key];
+    if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+      keys = keys.concat(getKeys(value, fullKey));
     } else {
       keys.push(fullKey);
     }
@@ -36,7 +44,7 @@ function getKeys(obj: any, prefix = ''): string[] {
   return keys;
 }
 
-function checkLocales(locales: Record<string, any>, label: string) {
+function checkLocales(locales: Record<string, TranslationBundle>, label: string) {
   console.log(`=== Checking ${label} ===`);
   
   // 1. Gather all keys from all locales

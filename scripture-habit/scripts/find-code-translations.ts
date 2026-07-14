@@ -7,13 +7,23 @@ import en from '../src/locales/en';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+type TranslationValue = string | string[] | { [key: string]: TranslationValue };
+
 // Helper to flatten translation keys
-function getKeys(obj: any, prefix = ''): Set<string> {
-  let keys = new Set<string>();
+function getKeys(obj: TranslationValue, prefix = ''): Set<string> {
+  const keys = new Set<string>();
+  if (typeof obj !== 'object' || obj === null || Array.isArray(obj)) {
+    if (prefix) {
+      keys.add(prefix);
+    }
+    return keys;
+  }
+
   for (const key in obj) {
     const fullKey = prefix ? `${prefix}.${key}` : key;
-    if (typeof obj[key] === 'object' && obj[key] !== null && !Array.isArray(obj[key])) {
-      const nested = getKeys(obj[key], fullKey);
+    const value = obj[key];
+    if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+      const nested = getKeys(value, fullKey);
       nested.forEach(k => keys.add(k));
     } else {
       keys.add(fullKey);
