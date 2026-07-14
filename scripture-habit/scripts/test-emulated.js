@@ -1,6 +1,7 @@
 import { spawnSync, execSync } from 'node:child_process';
 import process from 'node:process';
 import os from 'node:os';
+import path from 'node:path';
 
 /**
  * This script wraps a command to be executed within the Firebase Emulator environment.
@@ -91,24 +92,25 @@ killZombieEmulatorProcesses(PORTS_TO_FREE);
 console.log(`[test-emulated] Executing: firebase emulators:exec --project scripture-habit-auth "${fullCommand}"`);
 
 // Run with shell: false and array of arguments for maximum command validation safety
-const isWin = os.platform() === 'win32';
-const npxCmd = isWin ? 'npx.cmd' : 'npx';
-
-// Split fullCommand into individual arguments so shell: false doesn't treat the entire string as a single binary name
-const commandParts = fullCommand.split(/\s+/);
+const firebaseCliPath = path.resolve('node_modules/firebase-tools/lib/bin/firebase.js');
 
 const execArgs = [
-  'firebase',
+  firebaseCliPath,
   'emulators:exec',
   '--project',
   'scripture-habit-auth',
   '--',
-  ...commandParts
+  fullCommand
 ];
 
-const result = spawnSync(npxCmd, execArgs, {
+const result = spawnSync(process.execPath, execArgs, {
   stdio: 'inherit',
   shell: false,
 });
+
+if (result.error) {
+  console.error('[test-emulated] Spawn error:', result.error);
+  process.exit(1);
+}
 
 process.exit(result.status ?? 0);
