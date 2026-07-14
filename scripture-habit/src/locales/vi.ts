@@ -115,7 +115,13 @@ export default {
                 text: "Scripture Habit đồng hành cùng bạn với luật lệ nhẹ nhàng và những lời nhìn lại ấm áp để tạo thói quen cùng bạn bè."
             },
             faq: {
-                title: "Câu hỏi thường gặp"
+                title: "Câu hỏi thường gặp",
+                q1: "Làm thế nào để tôi bắt đầu thói quen học dã ký thánh thư?",
+                a1: "Cách tốt nhất để bắt đầu thói quen đọc thánh thư là bắt đầu từ việc nhỏ và kiên trì. Quy tắc 3 ngày của Scripture Habit giúp bạn duy trì nhịp độ ổn định mà không cảm thấy quá tải.",
+                q2: "Scripture Habit có phải là ứng dụng chính thức của Giáo hội không?",
+                a2: "Scripture Habit là một dự án cá nhân nhằm hỗ trợ các thành viên của Giáo Hội Các Thánh Hữu Ngày Sau của Chúa Giê-su Ky Tô và tất cả học viên thánh thư. Đây không phải là ứng dụng chính thức của Giáo hội, nhưng nó được thiết kế để hoạt động liền mạch với Thư viện Phúc âm.",
+                q3: "Tôi có thể sử dụng nó để học Kinh Thánh không?",
+                a3: "Hoàn toàn có thể! Scripture Habit được thiết kế cho bất kỳ việc học thánh thư nào, bao gồm Kinh Thánh (Cựu Ước và Tân Ước), Sách Mặc Môn và các văn bản thiêng liêng khác."
             }
         }
     },
@@ -476,6 +482,8 @@ export default {
         shareLabel: "Chia sẻ với:",
         shareToGroup: "Chia sẻ với nhóm",
         shareNone: "Không chia sẻ (Riêng tư)",
+        shareAll: "Chia sẻ với tất cả các nhóm",
+        shareSpecific: "Chia sẻ với các nhóm cụ thể",
         unnamedGroup: "Nhóm không tên",
         cancel: "Hủy",
         saving: "Đang lưu...",

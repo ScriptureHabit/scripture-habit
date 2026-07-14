@@ -115,7 +115,13 @@ export default {
                 text: "Scripture Habit 透過溫柔的規則與溫慢的回顧功能，支持您與朋友共同建立好習慣。"
             },
             faq: {
-                title: "常見問題"
+                title: "常見問題",
+                q1: "我該如何建立經文研讀的習慣？",
+                a1: "建立經文習慣的最佳方法是從小處開始並持之以恆。Scripture Habit 的 3 天規則可幫助您保持穩定的節奏，而不會感到負擔過重。",
+                q2: "Scripture Habit 是教會的官方應用程式嗎？",
+                a2: "Scripture Habit 是一個個人專案，旨在支持耶穌基督後期聖徒教會的成員以及所有經文研讀者。這不是教會的官方應用程式，但它的設計可以與福音圖書館無縫配合。",
+                q3: "我可以用它來研讀聖經嗎？",
+                a3: "當然可以！Scripture Habit 適用於任何經文研讀，包括聖經（舊約和新約）、摩爾門經以及其他神聖文本。"
             }
         }
     },
@@ -464,6 +470,8 @@ export default {
         shareLabel: "分享對象：",
         shareToGroup: "分享給群組",
         shareNone: "不分享 (私人)",
+        shareAll: "分享給所有群組",
+        shareSpecific: "分享給特定群組",
         unnamedGroup: "未命名群組",
         cancel: "取消",
         saving: "儲存中...",

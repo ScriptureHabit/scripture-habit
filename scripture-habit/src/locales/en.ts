@@ -400,6 +400,8 @@ export default {
         shareLabel: "Share with:",
         shareToGroup: "Share with Group",
         shareNone: "Do not share (Private)",
+        shareAll: "Share with all groups",
+        shareSpecific: "Share with specific groups",
         unnamedGroup: "Unnamed Group",
         cancel: "Cancel",
         saving: "Saving...",
@@ -850,7 +852,13 @@ export default {
                 text: "Scripture Habit supports your journey with a gentle rule and warm reflections to help you build a habit with friends."
             },
             faq: {
-                title: "Frequently Asked Questions"
+                title: "Frequently Asked Questions",
+                q1: "How do I start a scripture study habit?",
+                a1: "The best way to start a scripture habit is to start small and be consistent. Scripture Habit's 3-day rule helps you maintain a steady rhythm without feeling overwhelmed.",
+                q2: "Is Scripture Habit an official LDS app?",
+                a2: "Scripture Habit is a personal project intended to support members of The Church of Jesus Christ of Latter-day Saints and all scripture students. It is not an official app of the Church, but it is designed to work seamlessly with the Gospel Library.",
+                q3: "Can I use it for Bible study?",
+                a3: "Absolutely! Scripture Habit is designed for any scripture study, including the Bible (Old and New Testament), Book of Mormon, and other sacred texts."
             }
         }
     }
