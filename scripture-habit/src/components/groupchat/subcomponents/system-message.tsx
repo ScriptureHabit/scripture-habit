@@ -63,7 +63,7 @@ const SystemMessage: FC<SystemMessageProps> = ({ msg, t, kickThreshold = DEFAULT
       /\*\*(.+?)\*\* 加入了群組/,            // Chinese
       /\*\*(.+?)\*\* se unió al grupo/,      // Spanish
       /\*\*(.+?)\*\* đã tham gia nhóm/,      // Vietnamese
-      /\*\*(.+?)\*\* เข้าร่วมグループแล้ว/,         // Thai
+      /\*\*(.+?)\*\* เข้าร่วมกลุ่มแล้ว/,         // Thai
       /\*\*(.+?)\*\*님이 그룹에 참여/,        // Korean
       /\*\*(.+?)\*\* sumali sa grupo/,       // Tagalog
       /\*\*(.+?)\*\* amejiunga na kikundi/,  // Swahili
@@ -78,15 +78,15 @@ const SystemMessage: FC<SystemMessageProps> = ({ msg, t, kickThreshold = DEFAULT
 
     const leavePatterns = [
       /\*\*(.+?)\*\* left the group/,        // English
-      /\*\*(.+?)\*\*さんがグループを退会/,    // Japanese
+      /\*\*(.+?)\*\*さんがグループを退(会|室)/,    // Japanese
       /\*\*(.+?)\*\* saiu do grupo/,         // Portuguese
-      /\*\*(.+?)\*\* 離開了群組/,            // Chinese
-      /\*\*(.+?)\*\* salió del grupo/,       // Spanish
-      /\*\*(.+?)\*\* đã rời nhóm/,           // Vietnamese
-      /\*\*(.+?)\*\* ออกจากกลุ่มแล้ว/,          // Thai
-      /\*\*(.+?)\*\*님이 그룹을 나갔/,         // Korean
-      /\*\*(.+?)\*\* umalis sa grupo/,        // Tagalog
-      /\*\*(.+?)\*\* ameondoka kwenye kikundi/, // Swahili
+      /\*\*(.+?)\*\* (離開了群組|离开了小组)/,    // Chinese
+      /\*\*(.+?)\*\* (salió del|ha dejado el) grupo/,       // Spanish
+      /\*\*(.+?)\*\* đã rời (khỏi\s+)?nhóm/,           // Vietnamese
+      /\*\*(.+?)\*\* (ได้)?ออกจากกลุ่มแล้ว/,          // Thai
+      /\*\*(.+?)\*\*님이 그룹을 (나갔|떠났)/,         // Korean
+      /\*\*(.+?)\*\* (ay\s+)?umalis sa grupo/,        // Tagalog
+      /\*\*(.+?)\*\* (ame|ali)ondoka kwenye kikundi/, // Swahili
     ];
 
     for (const pattern of leavePatterns) {

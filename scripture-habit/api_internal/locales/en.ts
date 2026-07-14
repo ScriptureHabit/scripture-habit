@@ -18,6 +18,6 @@ export default {
         bot_name: "Scripture Habit Bot",
         streak_warning_title: "📖 Have you had your spiritual time today?",
         streak_warning_body: "Your streak is at risk! Take just a few minutes to quiet your heart ✨",
-        cheer_body: "Sent you a cheer! ✨"
+        cheer_body: "**{senderNickname}** sent you a cheer! ✨"
     }
 };

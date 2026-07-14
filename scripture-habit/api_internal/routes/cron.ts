@@ -538,14 +538,12 @@ router.all('/streak-warning', verifyCronSecret, async (req: Request, res: Respon
         for (let i = 0; i < targetTimezones.length; i += MAX_TIMEZONES_PER_QUERY) {
             const tzChunk = targetTimezones.slice(i, i + MAX_TIMEZONES_PER_QUERY);
             const snapshot = await db.collection('users')
+                .where('hasFcmToken', '==', true)
                 .where('timeZone', 'in', tzChunk)
                 .get();
 
             snapshot.forEach(doc => {
-                const data = doc.data();
-                if (data.hasFcmToken === true) {
-                    eligibleUsers.push({ id: doc.id, data });
-                }
+                eligibleUsers.push({ id: doc.id, data: doc.data() });
             });
         }
 

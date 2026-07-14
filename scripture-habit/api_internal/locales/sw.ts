@@ -16,8 +16,8 @@ export default {
         bot_name: "Scripture Habit Bot",
         streak_warning_title: "📖 Je, umekuwa na wakati wako wa kiroho leo?",
         streak_warning_body: "Mfululizo wako uko hatarini! Chukua dakika chache tu kutuliza moyo wako ✨",
-        member_leave_message: "👋 **{nickname}** left the group.",
-        member_kick_message: "🚫 **{nickname}** was removed from the group.",
-        cheer_body: "Sent you a cheer! ✨"
+        member_leave_message: "👋 **{nickname}** aliondoka kwenye kikundi.",
+        member_kick_message: "🚫 **{nickname}** aliondolewa kwenye kikundi.",
+        cheer_body: "**{senderNickname}** amekutumia nguvu! ✨"
     }
 };

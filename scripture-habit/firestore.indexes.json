@@ -58,6 +58,14 @@
         { "fieldPath": "scripture", "order": "ASCENDING" },
         { "fieldPath": "createdAt", "order": "DESCENDING" }
       ]
+    },
+    {
+      "collectionGroup": "users",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "hasFcmToken", "order": "ASCENDING" },
+        { "fieldPath": "timeZone", "order": "ASCENDING" }
+      ]
     }
   ],
   "fieldOverrides": []

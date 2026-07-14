@@ -16,8 +16,8 @@ export default {
         bot_name: "Scripture Habit Bot",
         streak_warning_title: "📖 Nagkaroon ka ba ng espirituwal na oras ngayon?",
         streak_warning_body: "Nanganganib ang iyong streak! Maglaan ng ilang minuto para patahimikin ang iyong puso ✨",
-        member_leave_message: "👋 **{nickname}** left the group.",
-        member_kick_message: "🚫 **{nickname}** was removed from the group.",
-        cheer_body: "Sent you a cheer! ✨"
+        member_leave_message: "👋 **{nickname}** ay umalis sa grupo.",
+        member_kick_message: "🚫 **{nickname}** ay tinanggal sa grupo.",
+        cheer_body: "**{senderNickname}** ay nagpadala sa iyo ng lakas! ✨"
     }
 };

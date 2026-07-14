@@ -18,6 +18,6 @@ export default {
         bot_name: "Scripture Habit Bot",
         streak_warning_title: "📖 今日、霊的な時間を過ごせましたか？",
         streak_warning_body: "連続記録が途切れそうです！ほんの数分、心を静める時間を持ちましょう✨",
-        cheer_body: "あなたに応援を送りました！ ✨"
+        cheer_body: "**{senderNickname}**さんがあなたに応援を送りました！ ✨"
     }
 };

@@ -16,8 +16,8 @@ export default {
         bot_name: "Scripture Habit Bot",
         streak_warning_title: "📖 Hôm nay bạn đã có thời gian tĩnh nguyện chưa?",
         streak_warning_body: "Chuỗi ngày của bạn sắp bị ngắt quãng! Hãy dành vài phút để lòng tĩnh lặng ✨",
-        member_leave_message: "👋 **{nickname}** left the group.",
-        member_kick_message: "🚫 **{nickname}** was removed from the group.",
-        cheer_body: "Sent you a cheer! ✨"
+        member_leave_message: "👋 **{nickname}** đã rời khỏi nhóm.",
+        member_kick_message: "🚫 **{nickname}** đã bị xóa khỏi nhóm.",
+        cheer_body: "**{senderNickname}** đã gửi lời động viên đến bạn! ✨"
     }
 };

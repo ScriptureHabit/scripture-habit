@@ -16,8 +16,8 @@ export default {
         bot_name: "Scripture Habit Bot",
         streak_warning_title: "📖 오늘 영적인 시간을 보내셨나요?",
         streak_warning_body: "연속 기록이 끊어질 위기입니다! 단 몇 분이라도 마음을 가라앉히는 시간을 가져보세요 ✨",
-        member_leave_message: "👋 **{nickname}** left the group.",
-        member_kick_message: "🚫 **{nickname}** was removed from the group.",
-        cheer_body: "Sent you a cheer! ✨"
+        member_leave_message: "👋 **{nickname}**님이 그룹을 떠났습니다.",
+        member_kick_message: "🚫 **{nickname}**님이 그룹에서 제거되었습니다.",
+        cheer_body: "**{senderNickname}**님이 당신에게 응원을 보냈습니다! ✨"
     }
 };

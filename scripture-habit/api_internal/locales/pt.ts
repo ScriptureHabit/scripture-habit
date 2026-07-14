@@ -16,8 +16,8 @@ export default {
         bot_name: "Scripture Habit Bot",
         streak_warning_title: "📖 Você teve seu momento espiritual hoje?",
         streak_warning_body: "Sua ofensiva está em risco! Tire apenas alguns minutos para aquietar seu coração ✨",
-        member_leave_message: "👋 **{nickname}** left the group.",
-        member_kick_message: "🚫 **{nickname}** was removed from the group.",
-        cheer_body: "Sent you a cheer! ✨"
+        member_leave_message: "👋 **{nickname}** saiu do grupo.",
+        member_kick_message: "🚫 **{nickname}** foi removido do grupo.",
+        cheer_body: "**{senderNickname}** enviou um cheers! ✨"
     }
 };
