@@ -10,14 +10,15 @@ const srcDir = path.join(import.meta.dirname, '../src');
 const LANGUAGES = ['en', 'ja', 'es', 'ko', 'pt', 'sw', 'th', 'tl', 'vi', 'zho'];
 
 // Helper to flatten nested translation objects
-function getFlatKeys(obj: any, prefix = ''): string[] {
+function getFlatKeys(obj: unknown, prefix = ''): string[] {
   let keys: string[] = [];
   if (!obj || typeof obj !== 'object') return keys;
   
-  for (const key in obj) {
+  const record = obj as Record<string, unknown>;
+  for (const key in record) {
     const fullKey = prefix ? `${prefix}.${key}` : key;
-    if (typeof obj[key] === 'object' && obj[key] !== null && !Array.isArray(obj[key])) {
-      keys = keys.concat(getFlatKeys(obj[key], fullKey));
+    if (typeof record[key] === 'object' && record[key] !== null && !Array.isArray(record[key])) {
+      keys = keys.concat(getFlatKeys(record[key], fullKey));
     } else {
       keys.push(fullKey);
     }
@@ -59,13 +60,13 @@ async function main() {
   console.log('==================================================\n');
 
   // 1. Load baseline (English)
-  let enLocale: any;
-  let enBooks: any;
+  let enLocale: Record<string, unknown>;
+  let enBooks: Record<string, unknown>;
   try {
     enLocale = (await import(pathToFileURL(path.join(localesDir, 'en.ts')).href)).default;
     enBooks = (await import(pathToFileURL(path.join(booksDir, 'en.ts')).href)).default;
-  } catch (err: any) {
-    console.error('❌ Failed to load baseline English locale files:', err.message);
+  } catch (err) {
+    console.error('❌ Failed to load baseline English locale files:', err instanceof Error ? err.message : String(err));
     process.exit(1);
   }
 
@@ -132,8 +133,8 @@ async function main() {
         console.log(`🌐 Language: [${lang.toUpperCase()}] - Perfect match!`);
       }
 
-    } catch (err: any) {
-      console.error(`❌ Failed to load locale files for [${lang}]:`, err.message);
+    } catch (err) {
+      console.error(`❌ Failed to load locale files for [${lang}]:`, err instanceof Error ? err.message : String(err));
     }
   }
 
@@ -145,7 +146,7 @@ async function main() {
 
   // Regular expression to catch t('key') or t("key") or t(`key`) without variables inside
   // Ensure the string ends with a closing paren or a comma to avoid catching dynamic concatenations like t('languages.' + lang)
-  const tPattern = /\bt\(\s*['"`]([a-zA-Z0-9_\-\.\?\!]+)['"`]\s*[\),]/g;
+  const tPattern = /\bt\(\s*['"`]([a-zA-Z0-9_\-?!.]+)['"`]\s*[),]/g;
 
   walkDir(srcDir, (filePath) => {
     checkedFilesCount++;
@@ -183,6 +184,7 @@ async function main() {
       // Check if full key is in code, or if the last segment is in code
       // We only match lastSegment if it is long enough (>= 4 chars) or uppercase (often error codes/constants) to prevent false hits
       const isWordInCode = (word: string) => {
+        // eslint-disable-next-line no-useless-escape
         const escaped = word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
         const regex = new RegExp(`\\b${escaped}\\b`);
         return regex.test(allCodeText);
