@@ -161,9 +161,7 @@ export const test = base.extend<AuthFixtures>({
     }
     
     // 5. Wait for page to be stable
-    await page.waitForSelector('.dashboard-skeleton', { state: 'detached', timeout: 30000 }).catch(() => {
-        console.log('[AuthFixture] Dashboard skeleton did not appear/detach. Continuing...');
-    });
+    await page.waitForSelector('.dashboard-skeleton', { state: 'detached', timeout: 30000 });
     await page.waitForSelector('[data-testid="sidebar-notes"]', { timeout: 30000 });
     console.log('[AuthFixture] Fixture setup complete.');
 

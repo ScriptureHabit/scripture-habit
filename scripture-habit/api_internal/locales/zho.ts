@@ -15,6 +15,9 @@ export default {
         members_removed: "👋 **{count} 位成員**因不活躍而被移除。",
         bot_name: "Scripture Habit Bot",
         streak_warning_title: "📖 今天你有度过属灵的时间吗？",
-        streak_warning_body: "你的连续记录快要中断了！只需花几分钟让心静下来 ✨"
+        streak_warning_body: "你的连续记录快要中断了！只需花几分钟让心静下来 ✨",
+        member_leave_message: "👋 **{nickname}** left the group.",
+        member_kick_message: "🚫 **{nickname}** was removed from the group.",
+        cheer_body: "Sent you a cheer! ✨"
     }
 };

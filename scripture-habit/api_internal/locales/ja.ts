@@ -15,9 +15,9 @@ export default {
         members_removed: "👋 **{count}名**が活動休止のため退室しました。",
         member_leave_message: "👋 **{nickname}**さんがグループを退室しました。",
         member_kick_message: "🚫 **{nickname}**さんがグループから削除されました。",
-        member_owner_removed_message: "👑 オーナー不在によりグループが閉鎖されました。",
         bot_name: "Scripture Habit Bot",
         streak_warning_title: "📖 今日、霊的な時間を過ごせましたか？",
-        streak_warning_body: "連続記録が途切れそうです！ほんの数分、心を静める時間を持ちましょう✨"
+        streak_warning_body: "連続記録が途切れそうです！ほんの数分、心を静める時間を持ちましょう✨",
+        cheer_body: "あなたに応援を送りました！ ✨"
     }
 };

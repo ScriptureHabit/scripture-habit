@@ -15,6 +15,9 @@ export default {
         members_removed: "👋 **{count} thành viên** đã bị xóa do không hoạt động.",
         bot_name: "Scripture Habit Bot",
         streak_warning_title: "📖 Hôm nay bạn đã có thời gian tĩnh nguyện chưa?",
-        streak_warning_body: "Chuỗi ngày của bạn sắp bị ngắt quãng! Hãy dành vài phút để lòng tĩnh lặng ✨"
+        streak_warning_body: "Chuỗi ngày của bạn sắp bị ngắt quãng! Hãy dành vài phút để lòng tĩnh lặng ✨",
+        member_leave_message: "👋 **{nickname}** left the group.",
+        member_kick_message: "🚫 **{nickname}** was removed from the group.",
+        cheer_body: "Sent you a cheer! ✨"
     }
 };

@@ -15,6 +15,9 @@ export default {
         members_removed: "👋 **{count} miembro(s)** fueron eliminados por inactividad.",
         bot_name: "Scripture Habit Bot",
         streak_warning_title: "📖 ¿Has tenido tu tiempo espiritual hoy?",
-        streak_warning_body: "¡Tu racha está en riesgo! Toma solo unos minutos para aquietar tu corazón ✨"
+        streak_warning_body: "¡Tu racha está en riesgo! Toma solo unos minutos para aquietar tu corazón ✨",
+        member_leave_message: "👋 **{nickname}** left the group.",
+        member_kick_message: "🚫 **{nickname}** was removed from the group.",
+        cheer_body: "Sent you a cheer! ✨"
     }
 };

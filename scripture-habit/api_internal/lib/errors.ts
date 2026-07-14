@@ -49,5 +49,5 @@ export function sendErrorResponse(res: Response, err: unknown, fallbackMessage =
         return res.status(err.statusCode).json({ error: err.message, code: err.errorCode });
     }
     const message = err instanceof Error ? err.message : fallbackMessage;
-    return res.status(500).json({ error: message });
+    return res.status(500).json({ error: message, code: 'INTERNAL_SERVER_ERROR' });
 }
