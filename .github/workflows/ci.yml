@@ -83,6 +83,10 @@ jobs:
         working-directory: ./scripture-habit
         run: npm run test:internal
 
+      - name: Build Project
+        working-directory: ./scripture-habit
+        run: npm run build
+
       - name: Run E2E Tests
         working-directory: ./scripture-habit
         run: npm run test:e2e:ci
