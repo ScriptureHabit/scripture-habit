@@ -5,13 +5,14 @@ import { collection, query, where, getDocs } from 'firebase/firestore';
 import { toast } from 'react-toastify';
 import { UserData } from '../../../../types/user';
 import { UserProfileBrief } from '../../../../types/chat';
+import { useChatStore } from '../../../../store/use-chat-store';
 
 export const useCheerSystem = (
   groupId: string,
   userData: UserData,
   t: (key: string) => string
 ) => {
-  const [cheerTarget, setCheerTarget] = useState<UserProfileBrief | null>(null);
+  const { cheerTarget, setCheerTarget } = useChatStore();
   const [isSendingCheer, setIsSendingCheer] = useState(false);
   const [cheeredTodayUids, setCheeredTodayUids] = useState<Set<string>>(new Set<string>());
 
