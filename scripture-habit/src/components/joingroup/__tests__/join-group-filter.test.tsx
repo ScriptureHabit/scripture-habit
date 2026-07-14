@@ -1,10 +1,20 @@
-import { setupCommonMocks } from './join-group-test-helpers';
+import { setupCommonMocks, mockNavigate } from './join-group-test-helpers';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import JoinGroup from '../join-group';
 import { MemoryRouter } from 'react-router-dom';
 import { useJoinGroup } from '../hooks/use-join-group';
+
+vi.mock('../hooks/use-join-group');
+vi.mock('../../../hooks/use-language');
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+  };
+});
 
 describe('JoinGroup Component - Pagination and Translation UI', () => {
   beforeEach(() => {

@@ -1,4 +1,5 @@
 import { test, expect } from './fixtures/auth.fixture';
+import { disableAnimationsScript } from './helpers/test-helpers';
 
 /**
  * Account Lifecycle E2E Test
@@ -12,22 +13,7 @@ test.describe('Account Lifecycle', () => {
   });
 
   test.beforeEach(async ({ page }) => {
-    await page.addInitScript(() => {
-        window.localStorage.setItem('cookieConsent', 'true');
-        window.localStorage.setItem('lastNotifPrompt', Date.now().toString());
-        window.localStorage.setItem('hasSeenWelcomeStory', 'true');
-
-        const style = document.createElement('style');
-        style.innerHTML = `
-          *, *::before, *::after {
-            transition-duration: 0.001s !important;
-            animation-duration: 0.001s !important;
-            transition-delay: 0s !important;
-            animation-delay: 0s !important;
-          }
-        `;
-        document.head.appendChild(style);
-    });
+    await page.addInitScript(disableAnimationsScript());
   });
 
   test('should handle full user lifecycle: signup, onboarding, profile update, and deletion', async ({ page }) => {
@@ -108,7 +94,6 @@ test.describe('Account Lifecycle', () => {
     await expect(saveButton).toBeEnabled();
     
     console.log('[Lifecycle] Clicking Save button');
-    await page.waitForTimeout(1000); // Wait for state to settle
     await saveButton.click();
     console.log('[Lifecycle] Save button clicked');
 

@@ -12,9 +12,6 @@ describe('Firestore Read Count Assertion Tests', () => {
     const createdUserUids: string[] = [];
     const createdCheerIds: string[] = [];
 
-    let transactionGetSpy: any;
-    let documentRefGetSpy: any;
-
     beforeAll(async () => {
         await setup.start();
     });
@@ -35,10 +32,7 @@ describe('Firestore Read Count Assertion Tests', () => {
 
     beforeEach(() => {
         vi.restoreAllMocks();
-        
-        // Spy on read methods of the Firestore Admin SDK
-        transactionGetSpy = vi.spyOn(admin.firestore.Transaction.prototype, 'get');
-        documentRefGetSpy = vi.spyOn(admin.firestore.DocumentReference.prototype, 'get');
+        setup.resetCounters();
     });
 
     describe('/join-group Read Count Assertion', () => {
@@ -66,7 +60,7 @@ describe('Firestore Read Count Assertion Tests', () => {
             await db.collection('users').doc(memberUid).set({ uid: memberUid, nickname: 'Member', groupIds: [] });
 
             // Spy on transaction.get inside /join-group
-            vi.clearAllMocks();
+            setup.resetCounters();
 
             setup.mockAuth(memberUid);
             const response = await fetch(`${setup.baseUrl}/api/groups/join-group`, {
@@ -82,12 +76,8 @@ describe('Firestore Read Count Assertion Tests', () => {
             // 3. ZERO transaction.get(groupRef) calls! (Since we reuse querySnap.docs[0] directly!)
             
             // Check get calls
-            const getCalls = transactionGetSpy.mock.calls;
-            
-            // Validate that we do NOT call transaction.get for the groups collection/reference again
-            const groupRefGets = getCalls.filter((call: any) => {
-                const ref = call[0];
-                return ref.path && ref.path.startsWith('groups/');
+            const groupRefGets = setup.getReadPaths().filter((path: string) => {
+                return path.includes('[Tx GET] groups/');
             });
 
             // Since we reused querySnap, groupRefGets should be 0!
@@ -129,7 +119,7 @@ describe('Firestore Read Count Assertion Tests', () => {
             await db.collection('groups').doc(g2).collection('messages_latest').doc('latest').set({ groupId: g2, messages: [] });
             await db.collection('groups').doc(g3).collection('messages_latest').doc('latest').set({ groupId: g3, messages: [] });
 
-            vi.clearAllMocks();
+            setup.resetCounters();
 
             const res = await NoteService.postNote({
                 uid,
@@ -147,16 +137,14 @@ describe('Firestore Read Count Assertion Tests', () => {
             // 1. We must read the userRef (1 read)
             // 2. We bypass transaction.get(noteRef) since optimisticId is not provided (0 reads)
             // 3. We bypass all transaction.get(groupRefs) (0 reads)
-            const transactionGetCalls = transactionGetSpy.mock.calls;
-            expect(transactionGetCalls.length).toBe(1); // ONLY userRef get!
-            expect(transactionGetCalls[0][0].path).toBe(`users/${uid}`);
+            expect(setup.getTxGets()).toBe(1); // ONLY userRef get!
+            expect(setup.getReadPaths().some(p => p.includes(`[Tx GET] users/${uid}`))).toBe(true);
 
             // --- Outside the transaction (background promise / notifications): ---
             // 1. Notification logic calls db.getAll(...) once for the 3 groups.
             // 2. backgroundPromise REUSES the loaded group snaps, executing ZERO individual groupRef.get() calls!
-            const individualGroupGets = documentRefGetSpy.mock.calls.filter((call: any) => {
-                const path = call[0]?.path || '';
-                return path.startsWith('groups/') && !path.includes('/members/') && !path.includes('/messages/');
+            const individualGroupGets = setup.getReadPaths().filter((path: string) => {
+                return path.includes('[Doc GET] groups/') && !path.includes('/members/') && !path.includes('/messages/');
             });
 
             expect(individualGroupGets.length).toBe(0); // Bypassed and reused perfectly!
@@ -198,7 +186,7 @@ describe('Firestore Read Count Assertion Tests', () => {
                 uid: memberUid, nickname: 'Member', joinedAt: now, lastActiveAt: lastCheck, lastReadAt: lastCheck, kickThreshold: 1
             });
 
-            vi.clearAllMocks();
+            setup.resetCounters();
 
             // Run batch inactivity check
             const stats = await InactivityService.batchCheckInactivity(1, true);
@@ -207,8 +195,8 @@ describe('Firestore Read Count Assertion Tests', () => {
             // Verify groupDoc read count during sweep:
             // 1. batchCheckInactivity loads the stale groups via query.
             // 2. processGroupInactivity REUSES the groupDoc snapshot, making ZERO individual groupRef.get() calls!
-            const groupRefGets = documentRefGetSpy.mock.calls.filter((call: any) => {
-                return call[0]?.path === `groups/${groupId}`;
+            const groupRefGets = setup.getReadPaths().filter((path: string) => {
+                return path.includes(`[Doc GET] groups/${groupId}`);
             });
             expect(groupRefGets.length).toBe(0); // ZERO gets! Snapshot reused!
 
@@ -216,8 +204,8 @@ describe('Firestore Read Count Assertion Tests', () => {
             // Since ownerUid is not kicked (only memberUid is kicked), ownerUid is owner.
             // When members are removed, a removal notification is sent, which reads the owner doc.
             // Since owner doc read is deduplicated, it should be read exactly 1 time.
-            const ownerGets = documentRefGetSpy.mock.calls.filter((call: any) => {
-                return call[0]?.path === `users/${ownerUid}`;
+            const ownerGets = setup.getReadPaths().filter((path: string) => {
+                return path.includes(`[Doc GET] users/${ownerUid}`);
             });
             expect(ownerGets.length).toBeLessThanOrEqual(1);
         });
@@ -334,7 +322,7 @@ describe('Firestore Read Count Assertion Tests', () => {
             }
 
             // Clean spies before first fetch
-            vi.clearAllMocks();
+            setup.resetCounters();
 
             setup.mockAuth(memberUid);
 
@@ -345,11 +333,11 @@ describe('Firestore Read Count Assertion Tests', () => {
             expect(res1.status).toBe(200);
 
             // Spies record database reads (permission group read + messages query read)
-            const firstCallDocGets = documentRefGetSpy.mock.calls.length;
+            const firstCallDocGets = setup.getDocGets();
             expect(firstCallDocGets).toBeGreaterThan(0);
 
             // --- SECOND CALL (Cache Hit) ---
-            vi.clearAllMocks();
+            setup.resetCounters();
 
             const res2 = await fetch(`${setup.baseUrl}/api/groups/bundle/${groupId}`, {
                 headers: { 'Authorization': 'Bearer token' }
@@ -359,8 +347,8 @@ describe('Firestore Read Count Assertion Tests', () => {
             // Verify that the second call served from memory cache:
             // It MUST query the permission group doc (1 read)
             // But it MUST NOT execute any queries or reads on the messages collection!
-            const secondCallGets = documentRefGetSpy.mock.calls.filter((call: any) => {
-                return call[0]?.path && call[0].path.includes('/messages/');
+            const secondCallGets = setup.getReadPaths().filter((path: string) => {
+                return path.includes('/messages/');
             });
             expect(secondCallGets.length).toBe(0); // ZERO messages read! served from memory cache!
         });

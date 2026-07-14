@@ -12,7 +12,7 @@ import { formatNoteText, getNoteValidationError } from '../../../utils/note-logi
 import { Message } from '../../../types/chat';
 import { Note } from '../../../types/note';
 
-type NoteToEdit = (Note | Message) & { 
+export type NoteToEdit = (Note | Message) & { 
     isMessage?: boolean; 
     isNote?: boolean; 
     isEntry?: boolean; 

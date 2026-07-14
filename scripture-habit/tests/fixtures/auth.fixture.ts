@@ -7,6 +7,7 @@ process.env.FIREBASE_AUTH_EMULATOR_HOST = '127.0.0.1:9099';
 
 import { test as base, Page } from '@playwright/test';
 import { db, admin } from '../../api_internal/lib/firebase-admin.js';
+import { disableAnimationsScript } from '../helpers/test-helpers';
 
 type TestHelpers = {
   setupTestGroup: (params: { groupName: string; memberCount?: number; timeZone?: string; setYesterdayDate?: boolean; unityPercentage?: number }) => Promise<{ groupId: string }>;
@@ -75,25 +76,7 @@ export const test = base.extend<AuthFixtures>({
     }
 
     // 2. Initialize browser state (Wipe cookie consent banners & disable animations)
-    await page.addInitScript(() => {
-        window.localStorage.setItem('cookieConsent', 'true');
-        window.localStorage.setItem('lastNotifPrompt', Date.now().toString());
-
-        const style = document.createElement('style');
-        style.innerHTML = `
-          *, *::before, *::after {
-            transition-duration: 0.001s !important;
-            animation-duration: 0.001s !important;
-            transition-delay: 0s !important;
-            animation-delay: 0s !important;
-          }
-        `;
-        if (document.head) {
-          document.head.appendChild(style);
-        } else if (document.documentElement) {
-          document.documentElement.appendChild(style);
-        }
-    });
+    await page.addInitScript(disableAnimationsScript());
 
     // Native network interception to propagate fake time from page.clock to backend API calls
     await page.route('**/api/**', async (route) => {

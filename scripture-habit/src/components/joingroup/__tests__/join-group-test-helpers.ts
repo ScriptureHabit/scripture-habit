@@ -19,16 +19,7 @@ export interface MockSetupOptions {
   joinGroupMock?: any;
 }
 
-// Centralized mock definitions for JoinGroup test suite
-vi.mock('../hooks/use-join-group');
-vi.mock('../../../hooks/use-language');
-vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual('react-router-dom');
-  return {
-    ...actual,
-    useNavigate: () => mockNavigate,
-  };
-});
+// Centralized mock helper functions for JoinGroup test suite (vi.mock calls must be made in the individual test files)
 
 export function setupCommonMocks(options: MockSetupOptions = {}) {
   vi.clearAllMocks();

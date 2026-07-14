@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { renderHook, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { useNoteSubmission } from './use-note-submission';
+import { useNoteSubmission, NoteToEdit } from './use-note-submission';
 import apiClient from '../../../utils/api-client';
 import { writeBatch } from 'firebase/firestore';
 import { toast } from 'react-toastify';
@@ -121,7 +121,7 @@ describe('use-note-submission', () => {
     });
 
     it('should update standalone personal note via batch when noteToEdit is not a message', async () => {
-        const mockNote: any = {
+        const mockNote: Partial<NoteToEdit> = {
             id: 'personal-note-123'
         };
         const mockBatch = {
@@ -135,7 +135,7 @@ describe('use-note-submission', () => {
 
         await act(async () => {
             await result.current.handleSubmit(
-                mockNote, 'Book of Mormon', '1 Nephi 2', 'Edited comment', 'all', [], 'group1', null, onSuccess
+                mockNote as NoteToEdit, 'Book of Mormon', '1 Nephi 2', 'Edited comment', 'all', [], 'group1', null, onSuccess
             );
         });
 
@@ -180,7 +180,7 @@ describe('use-note-submission', () => {
     });
 
     it('should update group message and sync back to personal note when originalNoteId is present', async () => {
-        const mockNote: any = {
+        const mockNote: Partial<NoteToEdit> = {
             id: 'message-123',
             isMessage: true,
             originalNoteId: 'original-note-321',
@@ -197,7 +197,7 @@ describe('use-note-submission', () => {
 
         await act(async () => {
             await result.current.handleSubmit(
-                mockNote, 'Book of Mormon', '1 Nephi 3', 'Sync comment', 'all', [], 'group1', null, onSuccess
+                mockNote as NoteToEdit, 'Book of Mormon', '1 Nephi 3', 'Sync comment', 'all', [], 'group1', null, onSuccess
             );
         });
 

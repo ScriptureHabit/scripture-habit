@@ -8,27 +8,52 @@ on:
 
 env:
   CRON_SECRET: ci-dummy-cron-secret-key-12345
-  FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
 
 jobs:
-  build-and-test:
-    name: Build & Test
+  validate:
+    name: Lint & Unit Test
     runs-on: ubuntu-latest
-    container: mcr.microsoft.com/playwright:v1.59.1-noble
-
-    strategy:
-      matrix:
-        node-version: [22.x]
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Node.js ${{ matrix.node-version }}
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm' # npmの依存関係のキャッシュを有効化して高速化します
+          node-version: 22.x
+          cache: 'npm'
+          cache-dependency-path: './scripture-habit/package-lock.json'
+
+      - name: Install dependencies
+        working-directory: ./scripture-habit
+        run: npm ci
+
+      - name: Run ESLint
+        working-directory: ./scripture-habit
+        run: npm run lint
+
+      - name: Run Unit Tests (Vitest)
+        working-directory: ./scripture-habit
+        run: npm test
+
+      - name: Build Project (Validation)
+        working-directory: ./scripture-habit
+        run: npm run build
+
+  integration-and-e2e:
+    name: Integration & E2E Tests
+    needs: validate
+    runs-on: ubuntu-latest
+    container: mcr.microsoft.com/playwright:v1.59.1-noble
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: 'npm'
           cache-dependency-path: './scripture-habit/package-lock.json'
 
       - name: Set up JDK 21
@@ -50,34 +75,17 @@ jobs:
           echo "CRON_SECRET=test-secret" >> .env.local
           echo "FIREBASE_PROJECT_ID=scripture-habit-auth" >> .env.local
 
-      - name: Install Linux utilities
-        run: apt-get update && apt-get install -y lsof
-
       - name: Install dependencies
         working-directory: ./scripture-habit
-        run: npm ci # `npm install`よりも厳密で高速なクリーンインストールを行います
-
-      - name: Run ESLint
-        working-directory: ./scripture-habit
-        run: npm run lint
-
-      - name: Run Tests (Vitest)
-        working-directory: ./scripture-habit
-        run: npm test
-
-      - name: Build Project
-        working-directory: ./scripture-habit
-        run: npm run build # 本番用のビルドが正常に通るかも確認します
+        run: npm ci
 
       - name: Run Integration Tests
         working-directory: ./scripture-habit
         run: npm run test:internal
 
-      # Playwright browsers are pre-installed in the container
-
       - name: Run E2E Tests
         working-directory: ./scripture-habit
-        run: node scripts/test-emulated.js "npx playwright test --grep-invert visual"
+        run: npm run test:e2e:ci
 
       - name: Upload Playwright Report
         uses: actions/upload-artifact@v4
@@ -88,13 +96,19 @@ jobs:
           path: scripture-habit/playwright-report/
           retention-days: 3
 
-      - name: Deploy to Vercel
-        if: success() && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
-        working-directory: .
+  deploy:
+    name: Deploy to Vercel
+    needs: [validate, integration-and-e2e]
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Pull and Deploy to Vercel
         run: |
-          npm install --global vercel@latest
-          vercel pull --yes --environment=production --token=$VERCEL_TOKEN
-          vercel deploy --prod --token=$VERCEL_TOKEN
+          npx vercel pull --yes --environment=production
+          npx vercel deploy --prod
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}

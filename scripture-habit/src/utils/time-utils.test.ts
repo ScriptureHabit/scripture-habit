@@ -1,30 +1,49 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { parseTimestampToDate, parseTimestampToMillis, formatDateInTimeZone, normalizeDateString } from './time-utils';
+import { FirebaseTimestamp } from '../types/chat';
 
 describe('time-utils', () => {
     describe('parseTimestampToDate', () => {
+        beforeEach(() => {
+            vi.useFakeTimers();
+            vi.setSystemTime(new Date('2026-07-14T07:00:00Z'));
+        });
+
+        afterEach(() => {
+            vi.useRealTimers();
+        });
+
         it('should handle seconds property', () => {
-            const date = parseTimestampToDate({ seconds: 1600000000, nanoseconds: 0 } as any);
+            const date = parseTimestampToDate({ seconds: 1600000000, nanoseconds: 0 });
             expect(date.getTime()).toBe(1600000000000);
         });
 
         it('should fallback to current date for unknown objects', () => {
-            const date = parseTimestampToDate({ foo: 'bar' } as any);
-            // Can't match exact time, but should be a valid Date object
+            const date = parseTimestampToDate({ foo: 'bar' } as unknown as FirebaseTimestamp);
             expect(date).toBeInstanceOf(Date);
+            expect(date.getTime()).toBe(new Date('2026-07-14T07:00:00Z').getTime());
         });
     });
 
     describe('parseTimestampToMillis', () => {
+        beforeEach(() => {
+            vi.useFakeTimers();
+            vi.setSystemTime(new Date('2026-07-14T07:00:00Z'));
+        });
+
+        afterEach(() => {
+            vi.useRealTimers();
+        });
+
         it('should handle seconds property', () => {
-            const millis = parseTimestampToMillis({ seconds: 1600000000, nanoseconds: 0 } as any);
+            const millis = parseTimestampToMillis({ seconds: 1600000000, nanoseconds: 0 });
             expect(millis).toBe(1600000000000);
         });
 
         it('should fallback to current time for unknown objects', () => {
-            const millis = parseTimestampToMillis({ foo: 'bar' } as any);
+            const millis = parseTimestampToMillis({ foo: 'bar' } as unknown as FirebaseTimestamp);
             expect(typeof millis).toBe('number');
-            expect(millis).toBeGreaterThan(0);
+            expect(millis).toBe(new Date('2026-07-14T07:00:00Z').getTime());
         });
     });
 
@@ -56,7 +75,7 @@ describe('time-utils', () => {
 
         it('should handle Firestore Timestamp objects', () => {
             const mockTimestamp = { toDate: () => new Date('2023-05-10T12:00:00Z') };
-            expect(normalizeDateString(mockTimestamp as any)).toBe('20230510');
+            expect(normalizeDateString(mockTimestamp)).toBe('20230510');
         });
 
         it('should return digits for short strings', () => {
@@ -68,7 +87,7 @@ describe('time-utils', () => {
             const badObject = {
                 toString: () => { throw new Error('Cannot convert'); }
             };
-            expect(normalizeDateString(badObject as any)).toBe('');
+            expect(normalizeDateString(badObject as unknown as string)).toBe('');
         });
     });
 });

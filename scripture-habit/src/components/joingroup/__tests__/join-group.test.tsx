@@ -1,8 +1,18 @@
-import { setupCommonMocks } from './join-group-test-helpers';
+import { setupCommonMocks, mockNavigate } from './join-group-test-helpers';
 import { render, screen } from '@testing-library/react';
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import JoinGroup from '../join-group';
 import { MemoryRouter } from 'react-router-dom';
+
+vi.mock('../hooks/use-join-group');
+vi.mock('../../../hooks/use-language');
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+  };
+});
 
 describe('JoinGroup Component Basic Logic', () => {
   beforeEach(() => {

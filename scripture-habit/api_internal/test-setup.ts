@@ -323,4 +323,32 @@ export class TestSetup {
             } as unknown as DecodedIdToken;
         });
     }
+
+    public getDocGets() {
+        return this.docGets;
+    }
+
+    public getTxGets() {
+        return this.txGets;
+    }
+
+    public getTxGetAlls() {
+        return this.txGetAlls;
+    }
+
+    public getReadPaths() {
+        return [...this.readPaths];
+    }
+
+    public getWritePaths() {
+        return [...this.writePaths];
+    }
+
+    public resetCounters() {
+        this.txGets = 0;
+        this.txGetAlls = 0;
+        this.docGets = 0;
+        this.readPaths = [];
+        this.writePaths = [];
+    }
 }
