@@ -18,6 +18,7 @@ export default {
         "auth/email-not-verified": "O e-mail não está verificado. Por favor, verifique a sua caixa de entrada."
     },
     common: {
+        loading: "Carregando...",
         cancel: "Cancelar",
         delete: "Excluir",
         close: "Fechar",
@@ -688,8 +689,7 @@ export default {
         newStudyNote: "Nova Nota de Estudo",
         talk: "Discurso",
         speech: "Discurso",
-        fetchingInfo: "Carregando info...",
-        url: "Link"
+        fetchingInfo: "Carregando info..."
     },
     signOut: {
         title: "Sair",
@@ -757,6 +757,7 @@ export default {
         modalDescription: "Para uma melhor experiência e segurança, recomendamos o uso de um navegador padrão como Chrome, Safari ou Edge. Alguns recursos, como o login do Google, podem ser restritos em navegadores internos de aplicativos (LINE, Instagram, Messenger, etc.).",
         continueButton: "Continuar para o aplicativo",
         copyLinkIos: "Copiar link e abrir no Safari",
+        openInSafari: "Abrir no Safari",
         copyLinkAndroid: "Copiar link e abrir no Chrome",
         copyLinkDefault: "Copiar link para a área de transferência",
         linkCopied: "Link copiado!",

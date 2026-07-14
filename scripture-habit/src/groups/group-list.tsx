@@ -64,7 +64,7 @@ export default function GroupList({ currentUser }: GroupListProps) {
   if (loading) {
     return (
       <div className="loading-state">
-        <p>{t('loading') || 'Loading groups...'}</p>
+        <p>{t('common.loading') || 'Loading...'}</p>
       </div>
     );
   }
@@ -80,13 +80,13 @@ export default function GroupList({ currentUser }: GroupListProps) {
   return (
     <div className="group-list-container">
       <div className="group-list-header">
-        <h3>{t('groupListDetail.title') || (t('groupList?.title') || 'Public Groups')}</h3>
+        <h3>{t('groupListDetail.title') || 'Public Groups'}</h3>
         <span className="count-badge">{groups.length}</span>
       </div>
 
       {groups.length === 0 ? (
         <div className="empty-state">
-          <p>{t('groupListDetail.empty') || (t('groupList?.empty') || 'No groups found. Be the first to create one!')}</p>
+          <p>{t('groupListDetail.empty') || 'No groups found. Be the first to create one!'}</p>
         </div>
       ) : (
         <div className="groups-grid">

@@ -18,6 +18,7 @@ export default {
         "auth/email-not-verified": "Email address is not verified. Please check your inbox."
     },
     common: {
+        loading: "กำลังโหลด...",
         cancel: "ยกเลิก",
         delete: "ลบ",
         close: "ปิด",
@@ -701,8 +702,7 @@ export default {
         newStudyNote: "โน้ตการศึกษาใหม่",
         talk: "คำปราศรัย",
         speech: "สุนทรพจน์",
-        fetchingInfo: "กำลังดึงข้อมูล...",
-        url: "ลิงก์"
+        fetchingInfo: "กำลังดึงข้อมูล..."
     },
     signOut: {
         title: "ออกจากระบบ",
@@ -769,6 +769,7 @@ export default {
         modalDescription: "เพื่อประสบการณ์และความปลอดภัยที่ดีที่สุด เราแนะนำให้ใช้เบราว์เซอร์มาตรฐาน เช่น Chrome, Safari หรือ Edge เบราว์เซอร์ภายในแอป (LINE, Instagram, Messenger ฯลฯ) อาจจำกัดฟีเจอร์บางอย่าง เช่น การเข้าสู่ระบบด้วย Google",
         continueButton: "เข้าสู่แอปพลิเคชัน",
         copyLinkIos: "คัดลอกลิงก์และเปิดใน Safari",
+        openInSafari: "เปิดใน Safari",
         copyLinkAndroid: "คัดลอกลิงก์และเปิดใน Chrome",
         copyLinkDefault: "คัดลอกลิงก์ไปยังคลิปบอร์ด",
         linkCopied: "คัดลอกลิงก์แล้ว!",

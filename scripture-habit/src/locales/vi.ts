@@ -18,6 +18,7 @@ export default {
         "auth/email-not-verified": "Email address is not verified. Please check your inbox."
     },
     common: {
+        loading: "Đang tải...",
         cancel: "Hủy",
         delete: "Xóa",
         close: "Đóng",
@@ -675,8 +676,7 @@ export default {
         newStudyNote: "Ghi Chú Nghiên Cứu Mới",
         talk: "Bài nói chuyện",
         speech: "Bài phát biểu",
-        fetchingInfo: "Đang tải thông tin...",
-        url: "URL"
+        fetchingInfo: "Đang tải thông tin..."
     },
     signOut: {
         title: "Đăng xuất",
@@ -744,6 +744,7 @@ export default {
         modalDescription: "Để có trải nghiệm và bảo mật tốt nhất, chúng tôi khuyên bạn nên sử dụng trình duyệt tiêu chuẩn như Chrome, Safari hoặc Edge. Trình duyệt nội bộ của ứng dụng (LINE, Instagram, Messenger, v.v.) có thể hạn chế một số tính năng như đăng nhập Google.",
         continueButton: "Tiếp tục vào ứng dụng",
         copyLinkIos: "Sao chép liên kết và mở trong Safari",
+        openInSafari: "Mở trong Safari",
         copyLinkAndroid: "Sao chép liên kết và mở trong Chrome",
         copyLinkDefault: "Sao chép liên kết vào bộ nhớ tạm",
         linkCopied: "Đã sao chép liên kết!",

@@ -243,7 +243,7 @@ export const test = base.extend<AuthFixtures>({
         try {
           const errorJson = await response.json();
           errorDetails = JSON.stringify(errorJson, null, 2);
-        } catch (e) {
+        } catch {
           // If response is not JSON, fall back to plain text
           errorDetails = await response.text();
         }

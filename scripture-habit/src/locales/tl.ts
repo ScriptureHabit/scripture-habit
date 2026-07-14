@@ -18,6 +18,7 @@ export default {
         "auth/email-not-verified": "Email address is not verified. Please check your inbox."
     },
     common: {
+        loading: "Naglo-load...",
         cancel: "Kanselahin",
         delete: "I-delete",
         close: "Isara",
@@ -49,9 +50,7 @@ export default {
             step1Title: "1. Gumawa ng Grupo",
             step1Desc: "Subukang gumawa ng grupo kasama ang mga kaibigan, kapareha, pamilya, katrabaho, o sinumang nais mong makasama sa pag-aaral ng banal na kasulatan.",
             step2Title: "2. Ibahagi ang lyong Kaisipan",
-            step2Desc: "Mag-post ng maikling tala tungkol sa kung ano ang nakaantig sa iyong puso o sa iyong pang-araw-araw na pananaw upang ibahagi sa mga kaibigan.",
-            step3Title: "3. Magpalakasan at Magnilay",
-            step3Desc: "Suportahan ang iyong mga kasamahan at tanggapin ang isang lingguhang liham na puno ng init upang madama ang iyong paglago."
+            step2Desc: "Mag-post ng maikling tala tungkol sa kung ano ang nakaantig sa iyong puso o sa iyong pang-araw-araw na pananaw upang ibahagi sa mga kaibigan."
         },
         features: {
             title: "Mga Tampok ng\nScripture Habit",
@@ -703,8 +702,7 @@ export default {
         newStudyNote: "Bagong Tala sa Pag-aaral",
         talk: "Mensahe",
         speech: "Talumpati",
-        fetchingInfo: "Kinukuha ang impormasyon...",
-        url: "URL"
+        fetchingInfo: "Kinukuha ang impormasyon..."
     },
     signOut: {
         title: "Mag-sign Out",
@@ -772,6 +770,7 @@ export default {
         modalDescription: "Para sa pinakamagandang karanasan at seguridad, inirerekomenda namin ang paggamit ng mga standard na browser tulad ng Chrome, Safari, o Edge. Ang mga in-app browser (LINE, Instagram, Messenger, atbp.) ay maaaring maglimita sa ilang feature tulad ng Google Login.",
         continueButton: "Magpatuloy sa App",
         copyLinkIos: "Kopyahin ang link at buksan sa Safari",
+        openInSafari: "Buksan sa Safari",
         copyLinkAndroid: "Kopyahin ang link at buksan sa Chrome",
         copyLinkDefault: "Kopyahin ang link sa clipboard",
         linkCopied: "Nakopya ang link!",

@@ -35,6 +35,7 @@ export default {
         "Esther": "Esther",
         "Job": "Job",
         "Psalms": "Psalms",
+        "Psalm": "Psalms",
         "Proverbs": "Proverbs",
         "Ecclesiastes": "Ecclesiastes",
         "Song of Solomon": "Song of Solomon",

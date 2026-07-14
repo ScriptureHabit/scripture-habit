@@ -35,6 +35,7 @@ export default {
         "Esther": "เอสเธอร์",
         "Job": "โยบ",
         "Psalms": "สดุดี",
+        "Psalm": "สดุดี",
         "Proverbs": "สุภาษิต",
         "Ecclesiastes": "ปัญญาจารย์",
         "Song of Solomon": "เพลงไพเราะ",
@@ -97,4 +98,5 @@ export default {
         "The Living Christ": "พระคริสต์ผู้ทรงพระชนม์",
         "The Family Proclamation": "ถ้อยแถลงเรื่องครอบครัว",
         "Restoration Proclamation": "ถ้อยแถลงเรื่องการฟื้นฟู",
+        "Baptism Ordinance": "พิธีบัพติศมา",
 };

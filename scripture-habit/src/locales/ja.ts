@@ -21,7 +21,8 @@ export default {
         cancel: "キャンセル",
         delete: "削除",
         close: "閉じる",
-        dismiss: "閉じる"
+        dismiss: "閉じる",
+        loading: "読み込み中..."
     },
     seo: {
         title: "Scripture Habit",
@@ -605,8 +606,7 @@ export default {
         newStudyNote: "新しい学習ノート",
         talk: "お話",
         speech: "スピーチ",
-        fetchingInfo: "情報を取得中...",
-        url: "リンク"
+        fetchingInfo: "情報を取得中..."
     },
     signOut: {
         title: "サインアウト",
@@ -674,6 +674,7 @@ export default {
         modalDescription: "Scripture Habitを安全かつ快適にご利用いただくため、ChromeやSafariなどの標準ブラウザでのご利用を強く推奨しております。LINEやInstagramなどのアプリ内ブラウザでは、Googleログインなどの重要な機能が制限される場合があります。",
         continueButton: "このままアプリを開く",
         copyLinkIos: "URLをコピーしてSafariで開く",
+        openInSafari: "Safariで開く",
         copyLinkAndroid: "URLをコピーしてChrome等で開く",
         copyLinkDefault: "URLをコピーする",
         linkCopied: "URLをコピーしました",

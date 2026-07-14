@@ -18,6 +18,7 @@ export default {
         "auth/email-not-verified": "이메일이 인증되지 않았습니다. 수신함을 확인해 주세요."
     },
     common: {
+        loading: "로딩 중...",
         cancel: "취소",
         delete: "삭제",
         close: "닫기",
@@ -702,8 +703,7 @@ export default {
         newStudyNote: "새 학습 노트",
         talk: "말씀",
         speech: "연설",
-        fetchingInfo: "정보를 가져오는 중...",
-        url: "링크"
+        fetchingInfo: "정보를 가져오는 중..."
     },
     signOut: {
         title: "로그아웃",
@@ -770,6 +770,7 @@ export default {
         modalDescription: "더 나은 환경과 보안을 위해 Chrome, Safari 또는 Edge와 같은 표준 브라우저를 사용하시기를 권장합니다. LINE, Instagram, Messenger 등 인앱 브라우저에서는 Google 로그인 등의 일부 기능이 제한될 수 있습니다.",
         continueButton: "앱으로 계속하기",
         copyLinkIos: "링크 복사 및 Safari에서 열기",
+        openInSafari: "Safari에서 열기",
         copyLinkAndroid: "링크 복사 및 Chrome에서 열기",
         copyLinkDefault: "클립보드에 링크 복사",
         linkCopied: "링크가 복사되었습니다!",

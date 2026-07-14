@@ -18,6 +18,7 @@ export default {
         "auth/email-not-verified": "電子郵件未驗證。請檢查您的收件匣。"
     },
     common: {
+        loading: "載入中...",
         cancel: "取消",
         delete: "刪除",
         close: "關閉",
@@ -663,8 +664,7 @@ export default {
         newStudyNote: "新研讀筆記",
         talk: "演講",
         speech: "演講",
-        fetchingInfo: "正在載入資訊...",
-        url: "連結"
+        fetchingInfo: "正在載入資訊..."
     },
     signOut: {
         title: "登出",
@@ -732,6 +732,7 @@ export default {
         modalDescription: "為了獲得最佳體驗和安全性，我們建議使用 Chrome、Safari 或 Edge 等標準瀏覽器。LINE、Instagram、Messenger 等應用程式內瀏覽器可能會限制某些功能（如 Google 登入）。",
         continueButton: "繼續前往應用程式",
         copyLinkIos: "複製連結並在 Safari 中開啟",
+        openInSafari: "在 Safari 中開啟",
         copyLinkAndroid: "複製連結並在 Chrome 中開啟",
         copyLinkDefault: "複製連結到剪貼簿",
         linkCopied: "連結已複製！",

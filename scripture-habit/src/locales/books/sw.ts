@@ -35,6 +35,7 @@ export default {
         "Esther": "Esta",
         "Job": "Ayubu",
         "Psalms": "Zaburi",
+        "Psalm": "Zaburi",
         "Proverbs": "Mithali",
         "Ecclesiastes": "Mhubiri",
         "Song of Solomon": "Wimbo Ulio Bora",

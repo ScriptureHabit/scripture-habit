@@ -35,6 +35,7 @@ export default {
         "Esther": "Ester",
         "Job": "Job",
         "Psalms": "Mga Awit",
+        "Psalm": "Mga Awit",
         "Proverbs": "Mga Kawikaan",
         "Ecclesiastes": "Eclesiastes",
         "Song of Solomon": "Ang Awit ni Solomon",
@@ -97,4 +98,5 @@ export default {
         "The Living Christ": "Ang Buhay na Cristo",
         "The Family Proclamation": "Ang Pagpapahayag sa Mag-anak",
         "Restoration Proclamation": "Ang Proklamasyon ng Pagpapanumbalik",
+        "Baptism Ordinance": "Ordinansa ng Binyag",
 };

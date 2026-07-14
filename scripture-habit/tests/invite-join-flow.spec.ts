@@ -111,7 +111,7 @@ test.describe('Invitation Join Flow Stability', () => {
             console.log('Join Success Modal found, closing it...');
             await pageB.click('#join-success-close-btn');
             await expect(successOverlay).not.toBeVisible({ timeout: 10000 });
-        } catch (e) {
+        } catch {
             console.log('Join Success Modal not visible (may have been auto-closed or skipped in CI). Continuing...');
         }
 
@@ -309,7 +309,7 @@ test.describe('Invitation Join Flow Stability', () => {
             console.log('Join Success Modal found, closing it...');
             await pageB.click('#join-success-close-btn');
             await expect(successOverlay).not.toBeVisible({ timeout: 10000 });
-        } catch (e) {
+        } catch {
             console.log('Join Success Modal not visible (may have been auto-closed or skipped in CI). Continuing...');
         }
         

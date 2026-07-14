@@ -35,6 +35,7 @@ export default {
         "Esther": "에스더",
         "Job": "욥기",
         "Psalms": "시편",
+        "Psalm": "시편",
         "Proverbs": "잠언",
         "Ecclesiastes": "전도서",
         "Song of Solomon": "아가",
@@ -97,4 +98,5 @@ export default {
         "The Living Christ": "살า 계신 그리스도",
         "The Family Proclamation": "가족 선언문",
         "Restoration Proclamation": "회복 선언문",
+        "Baptism Ordinance": "침례 의식",
 };

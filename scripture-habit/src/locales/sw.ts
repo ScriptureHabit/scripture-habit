@@ -18,6 +18,7 @@ export default {
         "auth/email-not-verified": "Email address is not verified. Please check your inbox."
     },
     common: {
+        loading: "Inapakia...",
         cancel: "Ghairi",
         delete: "Futa",
         close: "Funga",
@@ -163,17 +164,11 @@ export default {
         notStudied: "Haijasomwa",
         kickLimit: "Ukomo wa Kuondoka",
         notificationPrompt: {
-            title: "Stay Connected!",
-            description: "Get notified when group members share notes or when you have study reminders.",
-            enable: "Enable Notifications",
-            later: "Maybe Later"
+            title: "Endelea Kuunganishwa!",
+            description: "Pata arifa wakati washiriki wa kikundi wanaposhiriki maelezo au unapokuwa na vikumbusho vya funzo.",
+            enable: "Wezesha Arifa",
+            later: "Baadaye"
         }
-    },
-    notificationPrompt: {
-        title: "Endelea Kuunganishwa!",
-        description: "Pata arifa wakati washiriki wa kikundi wanaposhiriki maelezo au unapokuwa na vikumbusho vya funzo.",
-        enable: "Wezesha Arifa",
-        later: "Baadaye"
     },
     languages: {
         title: "Lugha",
@@ -707,8 +702,7 @@ export default {
         newStudyNote: "Dokezo Jipya la Kujifunza",
         talk: "Hotuba",
         speech: "Hotuba",
-        fetchingInfo: "Inapata maelezo...",
-        url: "URL"
+        fetchingInfo: "Inapata maelezo..."
     },
     signOut: {
         title: "Ondoka",
@@ -775,6 +769,7 @@ export default {
         modalDescription: "Kwa matumizi bora na usalama, tunapendekeza utumie kivinjari cha kawaida kama Chrome, Safari, au Edge. Vivinjari vya ndani ya programu (LINE, Instagram, Messenger, nk.) vinaweza kuzuia baadhi ya vipengele kama vile kuingia kupitia Google.",
         continueButton: "Endelea kwenye Programu",
         copyLinkIos: "Nakili kiungo na ufungue kwenye Safari",
+        openInSafari: "Fungua kwenye Safari",
         copyLinkAndroid: "Nakili kiungo na ufungue kwenye Chrome",
         copyLinkDefault: "Nakili kiungo kwenye ubao wa kunakili",
         linkCopied: "Kiungo kimenakiliwa!",

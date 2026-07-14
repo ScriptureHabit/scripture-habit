@@ -35,6 +35,7 @@ export default {
         "Esther": "以斯帖記",
         "Job": "約伯記",
         "Psalms": "詩篇",
+        "Psalm": "詩篇",
         "Proverbs": "箴言",
         "Ecclesiastes": "傳道書",
         "Song of Solomon": "雅歌",

@@ -23,7 +23,8 @@ export default {
         cancel: "Cancel",
         delete: "Delete",
         close: "Close",
-        dismiss: "Dismiss"
+        dismiss: "Dismiss",
+        loading: "Loading..."
     },
     seo: {
         title: "Scripture Habit",
@@ -599,8 +600,7 @@ export default {
         newStudyNote: "New Study Note",
         talk: "Talk",
         speech: "Speech",
-        fetchingInfo: "Loading info...",
-        url: "Url"
+        fetchingInfo: "Loading info..."
     },
     signOut: {
         title: "Sign Out",
@@ -668,6 +668,7 @@ export default {
         modalDescription: "For the best experience and security, we recommend using a standard browser like Chrome, Safari, or Edge. Some features, such as Google Sign-in, may be restricted within app-specific browsers (LINE, Instagram, Messenger, etc.).",
         continueButton: "Continue to App",
         copyLinkIos: "Copy Link & Open in Safari",
+        openInSafari: "Open in Safari",
         copyLinkAndroid: "Copy Link & Open in Chrome",
         copyLinkDefault: "Copy Link to Clipboard",
         linkCopied: "Link copied!",
