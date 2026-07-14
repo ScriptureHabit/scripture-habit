@@ -1,5 +1,5 @@
 
-import { useState, useEffect, FC } from 'react';
+import React, { useState, useEffect } from 'react';
 import './welcome-story-modal.css';
 import { useLanguage } from '../../hooks/use-language';
 import { UilTimes, UilCheck } from '@iconscout/react-unicons';
@@ -13,7 +13,7 @@ interface WelcomeStoryModalProps {
     userData: UserData | null;
 }
 
-const WelcomeStoryModal: FC<WelcomeStoryModalProps> = ({ isOpen, onClose, userData }) => {
+const WelcomeStoryModal = ({ isOpen, onClose, userData }: WelcomeStoryModalProps): React.ReactElement | null => {
     const { t } = useLanguage();
     const [page, setPage] = useState(0);
     const [isNextVisible, setIsNextVisible] = useState(false);
