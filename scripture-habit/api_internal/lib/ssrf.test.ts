@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { isSafeUrl } from './ssrf';
+import { isSafeUrl, isPrivateIp, ssrfSafeLookup } from './ssrf';
 
 describe('ssrf - isSafeUrl', () => {
     it('should return false for invalid URLs or unsupported protocols', () => {
@@ -50,3 +50,55 @@ describe('ssrf - isSafeUrl', () => {
         expect(isSafeUrl('https://github.com')).toBe(true);
     });
 });
+
+describe('ssrf - isPrivateIp', () => {
+    it('should return true for private and loopback IPs', () => {
+        expect(isPrivateIp('127.0.0.1')).toBe(true);
+        expect(isPrivateIp('10.0.0.1')).toBe(true);
+        expect(isPrivateIp('172.16.0.1')).toBe(true);
+        expect(isPrivateIp('192.168.1.1')).toBe(true);
+        expect(isPrivateIp('169.254.169.254')).toBe(true);
+        expect(isPrivateIp('::1')).toBe(true);
+        expect(isPrivateIp('fe80::1')).toBe(true);
+    });
+
+    it('should return false for public IPs', () => {
+        expect(isPrivateIp('8.8.8.8')).toBe(false);
+        expect(isPrivateIp('1.1.1.1')).toBe(false);
+        expect(isPrivateIp('2001:4860:4860::8888')).toBe(false);
+    });
+
+    it('should return true for invalid IP addresses', () => {
+        expect(isPrivateIp('not-an-ip')).toBe(true);
+    });
+});
+
+describe('ssrf - ssrfSafeLookup', () => {
+    it('should block local/private address resolution', () => {
+        return new Promise<void>((resolve, reject) => {
+            ssrfSafeLookup('localhost', {}, (err: any) => {
+                if (err && err.message.includes('SSRF Prevention')) {
+                    resolve();
+                } else {
+                    reject(new Error('Should have blocked localhost'));
+                }
+            });
+        });
+    });
+
+    it('should allow public address resolution', () => {
+        return new Promise<void>((resolve, reject) => {
+            ssrfSafeLookup('example.com', {}, (err: any, address: any) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    expect(address).toBeDefined();
+                    const addrStr = typeof address === 'string' ? address : address[0].address;
+                    expect(isPrivateIp(addrStr)).toBe(false);
+                    resolve();
+                }
+            });
+        });
+    });
+});
+

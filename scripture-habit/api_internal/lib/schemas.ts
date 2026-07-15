@@ -100,7 +100,6 @@ export const ponderQuestionsSchema = z.object({
     language: z.enum(supportedLanguages).optional()
 });
 
-
 export const personalRecapSchema = z.object({
     uid: z.string().min(1),
     language: z.enum(supportedLanguages).optional()

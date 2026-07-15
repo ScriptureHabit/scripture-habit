@@ -1,5 +1,5 @@
 import express, { Response } from 'express';
-import { isSafeUrl } from '../lib/ssrf.js';
+import { isSafeUrl, ssrfSafeHttpAgent, ssrfSafeHttpsAgent } from '../lib/ssrf.js';
 import { verifyAppCheck, authenticate, AuthenticatedRequest } from '../lib/middleware.js';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
@@ -31,7 +31,9 @@ router.get(['/fetch-church-metadata', '/fetch-church-metadata/'], authenticate, 
                 headers: { 'User-Agent': USER_AGENT },
                 timeout: 5000,
                 maxRedirects: 5,
-                maxContentLength: 512 * 1024
+                maxContentLength: 512 * 1024,
+                httpAgent: ssrfSafeHttpAgent,
+                httpsAgent: ssrfSafeHttpsAgent
             });
         } catch (axiosError) {
              // Fallback: If requested language fails, try without lang param
@@ -42,7 +44,9 @@ router.get(['/fetch-church-metadata', '/fetch-church-metadata/'], authenticate, 
                     headers: { 'User-Agent': USER_AGENT },
                     timeout: 5000,
                     maxRedirects: 5,
-                    maxContentLength: 512 * 1024
+                    maxContentLength: 512 * 1024,
+                    httpAgent: ssrfSafeHttpAgent,
+                    httpsAgent: ssrfSafeHttpsAgent
                 });
              } else {
                  throw axiosError;
@@ -109,7 +113,9 @@ router.get(['/url-preview', '/url-preview/'], authenticate, verifyAppCheck, asyn
             timeout: 4000,
             maxContentLength: 512 * 1024,
             maxRedirects: 0,
-            validateStatus: () => true
+            validateStatus: () => true,
+            httpAgent: ssrfSafeHttpAgent,
+            httpsAgent: ssrfSafeHttpsAgent
         });
 
         if (response && response.data && typeof response.data === 'string') {
