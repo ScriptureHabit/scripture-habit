@@ -1,3 +1,5 @@
+import { parseStructuredNoteText } from './note-parser-utils';
+
 // Helper to detect volume from input
 const detectVolume = (volume: string | null | undefined, chapterInput: string | null | undefined): string => {
     let volumeUrlPart = "";
@@ -259,8 +261,9 @@ export const getCategoryFromScripture = (scriptureText: string | null | undefine
 
 export const getScriptureInfoFromText = (text: string | null | undefined): string | null => {
     if (!text) return null;
-    const chapterMatch = text.match(/\*\*(?:Chapter|Title|Talk|Speech|章|タイトル|お話|スピーチ|Capítulo|Título|Discurso|장|제목|標題|Chương|Tiêu đề|Kabanata|Pamagat|Mensahe|Sura|บท)(?:[:：]\*\*|\*\*[:：])\s*(.*?)(?:\n|$)/i);
-    const scriptureMatch = text.match(/\*\*(?:Scripture|Category|聖句|カテゴリ|Escritura|성구|카테고리|經文|類別|Kinh Thánh|Thánh thư|Kasulatan|Andiko|พระคัมภีร์)(?:[:：]\*\*|\*\*[:：])\s*(.*?)(?:\n|$)/i);
-    if (chapterMatch && scriptureMatch) return getGospelLibraryUrl(scriptureMatch[1].trim(), chapterMatch[1].trim());
+    const parsed = parseStructuredNoteText(text);
+    if (parsed.scriptureValue && parsed.chapterValue) {
+        return getGospelLibraryUrl(parsed.scriptureValue, parsed.chapterValue);
+    }
     return null;
 };

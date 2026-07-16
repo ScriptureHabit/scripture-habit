@@ -1,5 +1,6 @@
 import { FC } from 'react';
 import { getGospelLibraryUrl } from '../../../utils/gospel-library-mapper';
+import { parseStructuredNoteText } from '../../../utils/note-parser-utils';
 
 interface GospelLinkProps {
   text: string;
@@ -11,16 +12,12 @@ interface GospelLinkProps {
 }
 
 const GospelLink: FC<GospelLinkProps> = ({ text, scripture, chapter, language, isSent, t }) => {
-  // 1. Better search for URL specifically (most important for GC/BYU/Other)
-  const urlMatch = text.match(/(?:\*\*|)(?:Url|リンク)(?:\*\*|)(?::|：)[\s\u3000]*(.*?)(?:\n|$)/i);
-  // 2. Generic label search (for scriptures)
-  const labelMatch = text.match(/(?:\*\*|)(?:Chapter|Talk|お話|Speech|スピーチ|Title|タイトル|章)(?:\*\*|)(?::|：)[\s\u3000]*(.*?)(?:\n|$)/i);
-  const scriptureMatch = text.match(/(?:\*\*|)(?:Scripture|Category|カテゴリ)(?:\*\*|)(?::|：)[\s\u3000]*(.*?)(?:\n|$)/i);
+  // Use the shared multi-language note parser
+  const parsed = parseStructuredNoteText(text);
 
   // Aggressively strip asterisks and trim
-  const finalScripture = (scripture || (scriptureMatch ? scriptureMatch[1].trim() : null))?.replace(/\*/g, '').trim();
-  // Prioritize urlMatch result over labelMatch
-  const finalChapter = (chapter || (urlMatch ? urlMatch[1].trim() : (labelMatch ? labelMatch[1].trim() : null)))?.replace(/\*/g, '').trim();
+  const finalScripture = (scripture || parsed.scriptureValue)?.replace(/\*/g, '').trim();
+  const finalChapter = (chapter || parsed.chapterValue)?.replace(/\*/g, '').trim();
 
   if (finalScripture && finalChapter) {
     const scripLower = finalScripture.toLowerCase();
