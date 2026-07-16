@@ -1,0 +1,28 @@
+name: Database Maintenance
+
+on:
+  schedule:
+    # Runs at 03:00 UTC (12:00 PM JST) on the 1st and 15th of every month (approximately every 2 weeks)
+    - cron: '0 3 1,15 * *'
+  workflow_dispatch: # Allows manual trigger from GitHub Actions UI
+
+jobs:
+  maintenance:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Sync User Stats
+        run: |
+          curl -f -L -X POST "https://scripturehabit.app/api/cron/sync-user-stats" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            -H "Content-Type: application/json" \
+            -w "\nHTTP Status: %{http_code}\n" \
+            -v
+
+      - name: Cleanup Orphaned Cheers
+        run: |
+          curl -f -L -X POST "https://scripturehabit.app/api/cron/cleanup-orphaned-cheers" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            -H "Content-Type: application/json" \
+            -w "\nHTTP Status: %{http_code}\n" \
+            -v
