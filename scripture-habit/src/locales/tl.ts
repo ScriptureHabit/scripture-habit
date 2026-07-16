@@ -32,7 +32,8 @@ export default {
         hero: {
             title: "Kung saan ang pag-aaral ng Banal na Kasulatan ay nagiging masayang ugali",
             subtitle: "Isang web app para sa pag-aaral ng banal na kasulatan na personal na binuo ni Brother Daijiro Sagane, isang miyembro ng Simbahan sa Hapon. Ito ay ganap na libre para gamitin ng sinuman.",
-            cta: "Magsimula Na",
+            downloadCta: "I-download ang App (PWA)",
+            browserCta: "Magsimula sa Browser",
             mascotBubble: "Kumusta! Magsimula na tayong magbasa ng banal na kasulatan nang magkasama! ✨"
         },
         concept: {
@@ -54,8 +55,15 @@ export default {
         },
         finalCta: {
             title: "Gusto mo bang magsimula ng bagong ugali kasama namin?",
-            button: "Magsimula Na",
             mascotBubble: "Magsimula tayo gamit ang button sa ibaba! ✨"
+        },
+        downloadModal: {
+            title: "I-install ang App",
+            iosInstruction1: "1. I-tap ang Share button sa ibaba ng screen (o sa itaas sa iPad).",
+            iosInstruction2: "2. Mag-scroll pababa at i-tap ang \"Idagdag sa Home Screen\".",
+            androidInstruction: "I-tap ang menu ng browser (tatlong tuldok) at piliin ang \"I-install ang app\" o \"Idagdag sa Home screen\".",
+            desktopInstruction: "I-click ang icon ng pag-install sa address bar o piliin ang \"I-install\" mula sa menu ng browser.",
+            close: "Isara"
         },
         seoContent: {
             faq: {

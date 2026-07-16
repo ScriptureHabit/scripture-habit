@@ -32,7 +32,8 @@ export default {
         hero: {
             title: "Onde o Estudo das Escrituras se Torna um Hábito de Alegria",
             subtitle: "Um aplicativo web de estudo das escrituras desenvolvido pessoalmente pelo irmão Daijiro Sagane, um membro da Igreja no Japão. É totalmente gratuito para qualquer pessoa usar.",
-            cta: "Comece Agora",
+            downloadCta: "Baixar aplicativo (PWA)",
+            browserCta: "Iniciar no navegador",
             mascotBubble: "Olá! Vamos começar a ler as escrituras juntos! ✨"
         },
         concept: {
@@ -54,8 +55,15 @@ export default {
         },
         finalCta: {
             title: "Gostaria de começar um novo hábito conosco?",
-            button: "Começar agora",
             mascotBubble: "Vamos começar pelo botão abaixo! ✨"
+        },
+        downloadModal: {
+            title: "Instalar aplicativo",
+            iosInstruction1: "1. Toque no botão Compartilhar na parte inferior da tela (ou na parte superior no iPad).",
+            iosInstruction2: "2. Role para baixo e toque em \"Adicionar à tela de início\".",
+            androidInstruction: "Toque no menu do navegador (três pontos) e selecione \"Instalar aplicativo\" ou \"Adicionar à tela inicial\".",
+            desktopInstruction: "Clique no ícone de instalação na barra de endereços ou selecione \"Instalar\" no menu do navegador.",
+            close: "Fechar"
         },
         seoContent: {
             faq: {

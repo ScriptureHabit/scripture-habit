@@ -32,7 +32,8 @@ export default {
         hero: {
             title: "讓經文研讀成為愉快的習慣",
             subtitle: "由日本教會成員相根大治郎兄弟個人開發的聖典研讀 Web 應用程式。任何人都可以完全免費使用。",
-            cta: "立即開始",
+            downloadCta: "下載應用程式 (PWA)",
+            browserCta: "在瀏覽器中開始",
             mascotBubble: "你好！讓我們一起開始研讀經文吧！✨"
         },
         concept: {
@@ -54,8 +55,15 @@ export default {
         },
         finalCta: {
             title: "您也想和我們一起開始新的習慣嗎？",
-            button: "立即開始",
             mascotBubble: "讓我們從下方的按鈕開始吧！✨"
+        },
+        downloadModal: {
+            title: "安裝應用程式",
+            iosInstruction1: "1. 點擊螢幕底部的分享按鈕（iPad請點擊螢幕頂部）。",
+            iosInstruction2: "2. 向下捲動並點擊「加入主畫面」。",
+            androidInstruction: "點擊瀏覽器選單（三個點），然後選擇「安裝應用程式」或「加到主畫面」。",
+            desktopInstruction: "點擊網址列右側的安裝圖示，或在瀏覽器選單中選擇「安裝」。",
+            close: "關閉"
         },
         seoContent: {
             faq: {

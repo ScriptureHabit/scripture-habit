@@ -769,7 +769,8 @@ export default {
         hero: {
             title: "Scripture Habit",
             subtitle: "A scripture study web app personally developed by Brother Daijiro Sagane, a church member in Japan. It is completely free for anyone to use.",
-            cta: "Start Now",
+            downloadCta: "Download App (PWA)",
+            browserCta: "Start in Browser",
             mascotBubble: "Hi there! Let's start reading the scriptures together! ✨"
         },
         concept: {
@@ -791,8 +792,15 @@ export default {
         },
         finalCta: {
             title: "Would you like to start a new habit with us?",
-            button: "Get Started Now",
             mascotBubble: "Let's get started with the button below! ✨"
+        },
+        downloadModal: {
+            title: "Install App",
+            iosInstruction1: "1. Tap the Share button at the bottom of the screen (or top on iPad).",
+            iosInstruction2: "2. Scroll down and tap \"Add to Home Screen\".",
+            androidInstruction: "Tap the browser menu (three dots) and select \"Install app\" or \"Add to Home screen\".",
+            desktopInstruction: "Click the install icon in the address bar or select \"Install\" from the browser menu.",
+            close: "Close"
         },
         seoContent: {
             faq: {

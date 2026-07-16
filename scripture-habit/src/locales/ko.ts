@@ -32,7 +32,8 @@ export default {
         hero: {
             title: "Scripture Habit",
             subtitle: "일본의 교회 회원인 상근 대지로(Daijiro Sagane) 형제가 개인적으로 개발한 경전 공부용 웹 앱입니다. 누구나 완전 무료로 이용하실 수 있습니다.",
-            cta: "지금 시작하기",
+            downloadCta: "앱(PWA) 다운로드",
+            browserCta: "브라우저에서 시작하기",
             mascotBubble: "안녕하세요! 우리 함께 경전 읽기를 시작해 봐요! ✨"
         },
         concept: {
@@ -54,8 +55,15 @@ export default {
         },
         finalCta: {
             title: "여러분도 우리와 함께 새로운 습관을 시작해 보실래요?",
-            button: "지금 시작하기",
             mascotBubble: "아래 버튼으로 시작해 보세요! ✨"
+        },
+        downloadModal: {
+            title: "앱 설치",
+            iosInstruction1: "1. 화면 하단(iPad의 경우 화면 상단)에 있는 공유 버튼을 누릅니다.",
+            iosInstruction2: "2. 메뉴를 아래로 스크롤하여 \"홈 화면에 추가\"를 누릅니다.",
+            androidInstruction: "브라우저 메뉴(점 3개)를 누르고 \"앱 설치\" 또는 \"홈 화면에 추가\"를 선택하십시오.",
+            desktopInstruction: "주소 표시줄 우측의 설치 아이콘을 클릭하거나 브라우저 메뉴에서 \"설치\"를 선택하십시오.",
+            close: "닫기"
         },
         seoContent: {
             faq: {

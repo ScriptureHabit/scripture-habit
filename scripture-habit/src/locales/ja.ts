@@ -775,7 +775,8 @@ export default {
         hero: {
             title: "Scripture Habit",
             subtitle: "日本の教会員、相根大治郎兄弟が個人で開発した、聖典学習用のWebアプリです。誰でも完全無料でご利用できます。",
-            cta: "今すぐはじめる",
+            downloadCta: "アプリ(PWA)をダウンロード",
+            browserCta: "ブラウザ版ではじめる",
             mascotBubble: "こんにちは！一緒に聖典を読み始めましょう！✨"
         },
         concept: {
@@ -797,8 +798,15 @@ export default {
         },
         finalCta: {
             title: "あなたも、新しい習慣を始めてみませんか？",
-            button: "今すぐはじめる",
             mascotBubble: "下のボタンから始めましょう！✨"
+        },
+        downloadModal: {
+            title: "アプリをインストール",
+            iosInstruction1: "1. 画面下部（iPadは画面上部）にある共有ボタンをタップします。",
+            iosInstruction2: "2. メニューをスクロールし、「ホーム画面に追加」を選択します。",
+            androidInstruction: "ブラウザのメニュー（3点リーダー）をタップし、「アプリをインストール」または「ホーム画面に追加」を選択してください。",
+            desktopInstruction: "ブラウザのアドレスバーの右側にあるインストールアイコン（または設定メニュー）から「インストール」を選択してください。",
+            close: "閉じる"
         },
         seoContent: {
             faq: {

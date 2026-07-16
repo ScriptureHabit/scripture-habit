@@ -245,6 +245,169 @@ section {
     box-shadow: 0 15px 35px rgba(102, 126, 234, 0.5) !important;
 }
 
+.hero-cta-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    width: 100%;
+    margin-top: 8px;
+}
+
+.secondary-cta {
+    padding: 1.2rem 3.5rem !important;
+    font-size: 1.25rem !important;
+    border-radius: 50px !important;
+    background: rgba(255, 255, 255, 0.4) !important;
+    border: 2px solid var(--primary-color) !important;
+    color: var(--primary-color) !important;
+    font-weight: 700 !important;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1) !important;
+    transition: all 0.3s ease !important;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.secondary-cta:hover {
+    background: rgba(102, 126, 234, 0.1) !important;
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2) !important;
+}
+
+/* Download Modal */
+.download-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1100;
+    padding: 20px;
+}
+
+.download-modal-content {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    border-radius: 32px;
+    width: 100%;
+    max-width: 480px;
+    padding: 32px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+    position: relative;
+    text-align: left;
+    box-sizing: border-box;
+    animation: modalFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.download-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.download-modal-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--text-main);
+    margin: 0;
+}
+
+.download-modal-close-btn {
+    background: rgba(0, 0, 0, 0.05);
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-main);
+    transition: all 0.2s;
+}
+
+.download-modal-close-btn:hover {
+    background: rgba(0, 0, 0, 0.1);
+    transform: scale(1.05);
+}
+
+.download-modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.download-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.download-step-icon {
+    color: var(--primary-color);
+    flex-shrink: 0;
+    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.download-step-text {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--text-main);
+    font-weight: 500;
+}
+
+.download-trigger-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 14px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    border-radius: 16px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+    transition: all 0.3s;
+}
+
+.download-trigger-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 25px rgba(102, 126, 234, 0.4);
+}
+
 
 
 /* Use Cases Section */
@@ -815,11 +978,29 @@ section {
         font-size: 0.85rem;
     }
 
-    .primary-cta {
+    .hero-cta-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+        max-width: 320px;
         order: 4;
-        padding: 1.1rem 2.8rem !important;
+        margin: 16px auto 0 auto;
+    }
+
+    .primary-cta {
+        width: 100%;
+        padding: 1.1rem 2.0rem !important;
         font-size: 1.1rem !important;
-        margin-top: 8px;
+        margin-top: 0;
+    }
+
+    .secondary-cta {
+        width: 100%;
+        padding: 1.1rem 2.0rem !important;
+        font-size: 1.1rem !important;
+        margin-top: 0;
     }
 
     .final-cta-mascot-container {
@@ -830,12 +1011,6 @@ section {
 
     .final-cta-mascot-img {
         width: 110px;
-    }
-
-    .final-cta {
-        padding: 1.1rem 2.8rem !important;
-        font-size: 1.1rem !important;
-        margin-top: 8px !important;
     }
 
     .section-title {

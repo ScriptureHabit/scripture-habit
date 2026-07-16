@@ -32,7 +32,8 @@ export default {
         hero: {
             title: "Scripture Habit",
             subtitle: "Una aplicación web para el estudio de las escrituras desarrollada personalmente por el hermano Daijiro Sagane, miembro de la Iglesia en Japón. Es completamente gratuita para el uso de cualquier persona.",
-            cta: "Comenzar ahora",
+            downloadCta: "Descargar aplicación (PWA)",
+            browserCta: "Iniciar en el navegador",
             mascotBubble: "¡Hola! ¡Comencemos a leer las escrituras juntos! ✨"
         },
         concept: {
@@ -54,8 +55,15 @@ export default {
         },
         finalCta: {
             title: "¿Te gustaría comenzar un nuevo hábito con nosotros?",
-            button: "Empezar ahora",
             mascotBubble: "¡Comencemos con el botón de abajo! ✨"
+        },
+        downloadModal: {
+            title: "Instalar aplicación",
+            iosInstruction1: "1. Toque el botón Compartir en la parte inferior de la pantalla (o arriba en iPad).",
+            iosInstruction2: "2. Desplácese hacia abajo y toque \"Agregar a la pantalla de inicio\".",
+            androidInstruction: "Toque el menú del navegador (tres puntos) y seleccione \"Instalar aplicación\" o \"Agregar a la pantalla de inicio\".",
+            desktopInstruction: "Haga clic en el icono de instalación en la barra de direcciones o seleccione \"Instalar\" en el menú del navegador.",
+            close: "Cerrar"
         },
         seoContent: {
             faq: {

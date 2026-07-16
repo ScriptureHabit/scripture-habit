@@ -32,7 +32,8 @@ export default {
         hero: {
             title: "Scripture Habit",
             subtitle: "Programu ya wavuti ya kujifunza maandiko iliyotengenezwa kibinafsi na Kaka Daijiro Sagane, muumini wa Kanisa nchini Japani. Ni bure kabisa kwa kila mtu kuitumia.",
-            cta: "Anza Sasa",
+            downloadCta: "Pakua Programu (PWA)",
+            browserCta: "Anza Kwenye Kivinjari",
             mascotBubble: "Habari! Tuanze kusoma maandiko pamoja! ✨"
         },
         concept: {
@@ -54,8 +55,15 @@ export default {
         },
         finalCta: {
             title: "Je, ungependa kuanza tabia mpya pamoja nasi?",
-            button: "Anza Sasa",
             mascotBubble: "Tuanze kwa kitufe cha hapa chini! ✨"
+        },
+        downloadModal: {
+            title: "Sakinisha Programu",
+            iosInstruction1: "1. Gonga kitufe cha Kushiriki chini ya skrini (au juu kwenye iPad).",
+            iosInstruction2: "2. Tembeza chini na ugonge \"Ongeza kwenye Skrini ya Nyumbani\".",
+            androidInstruction: "Gonga menyu ya kivinjari (nukta tatu) na uchague \"Sakinisha programu\" au \"Ongeza kwenye skrini ya kwanza\".",
+            desktopInstruction: "Bofya ikoni ya kusakinisha katika upau wa anwani au uchague \"Sakinisha\" kutoka kwa menyu ya kivinjari.",
+            close: "Funga"
         },
         seoContent: {
             faq: {

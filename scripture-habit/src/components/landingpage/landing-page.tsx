@@ -1,11 +1,11 @@
-import { useState, FC } from 'react';
+import { useState, useEffect, FC } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../hooks/use-language';
 import { Language } from '../../context/language-context';
 import Button from '../button/button';
 import './landing-page.css';
 import Footer from '../footer/footer';
-import { UilGlobe } from '@iconscout/react-unicons';
+import { UilGlobe, UilMultiply, UilShare, UilPlusSquare, UilApps } from '@iconscout/react-unicons';
 
 interface LanguageOption {
     code: Language;
@@ -18,6 +18,44 @@ const LandingPage: FC = () => {
     const { t, language, setLanguage } = useLanguage();
     const navigate = useNavigate();
     const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
+    const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
+    const [platform, setPlatform] = useState<'ios' | 'android' | 'desktop'>('desktop');
+    const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+
+    useEffect(() => {
+        // Platform detection
+        const ua = navigator.userAgent;
+        const isIOS = /iPad|iPhone|iPod/.test(ua) ||
+            (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        const isAndroid = /Android/i.test(ua);
+
+        if (isIOS) setPlatform('ios');
+        else if (isAndroid) setPlatform('android');
+        else setPlatform('desktop');
+
+        // Check for globally captured prompt
+        const checkPrompt = () => {
+            if (window.deferredPWAPrompt) {
+                setDeferredPrompt(window.deferredPWAPrompt);
+            }
+        };
+
+        checkPrompt();
+        const interval = setInterval(checkPrompt, 1000);
+        return () => clearInterval(interval);
+    }, []);
+
+    const handleDownloadClick = () => {
+        if ((platform === 'android' || platform === 'desktop') && deferredPrompt) {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then(() => {
+                setDeferredPrompt(null);
+                window.deferredPWAPrompt = null;
+            });
+        } else {
+            setIsDownloadModalOpen(true);
+        }
+    };
 
     const languages: LanguageOption[] = [
         { code: 'en', name: 'English', flag: '🇺🇸' },
@@ -85,12 +123,21 @@ const LandingPage: FC = () => {
                     <div className="hero-content">
                         <h1 className="hero-title">{t('landing.hero.title')}</h1>
                         <p className="hero-subtitle">{t('landing.hero.subtitle')}</p>
-                        <Button
-                            className="cta-button primary-cta"
-                            onClick={() => navigate(`/${language}/welcome`)}
-                        >
-                            {t('landing.hero.cta')}
-                        </Button>
+                        <div className="hero-cta-container">
+                            <Button
+                                className="cta-button primary-cta"
+                                onClick={handleDownloadClick}
+                            >
+                                <UilApps size="20" style={{ marginRight: '8px', verticalAlign: 'middle' }} />
+                                {t('landing.hero.downloadCta')}
+                            </Button>
+                            <Button
+                                className="cta-button secondary-cta"
+                                onClick={() => navigate(`/${language}/welcome`)}
+                            >
+                                {t('landing.hero.browserCta')}
+                            </Button>
+                        </div>
                     </div>
                 </header>
 
@@ -177,16 +224,84 @@ const LandingPage: FC = () => {
                         <img src="/images/mascot.png" alt="Mascot Bird" className="final-cta-mascot-img" />
                     </div>
 
-                    <Button
-                        className="cta-button primary-cta final-cta"
-                        onClick={() => navigate(`/${language}/welcome`)}
-                    >
-                        {t('landing.finalCta.button')}
-                    </Button>
+                    <div className="hero-cta-container">
+                        <Button
+                            className="cta-button primary-cta"
+                            onClick={handleDownloadClick}
+                        >
+                            <UilApps size="20" style={{ marginRight: '8px', verticalAlign: 'middle' }} />
+                            {t('landing.hero.downloadCta')}
+                        </Button>
+                        <Button
+                            className="cta-button secondary-cta"
+                            onClick={() => navigate(`/${language}/welcome`)}
+                        >
+                            {t('landing.hero.browserCta')}
+                        </Button>
+                    </div>
                 </section>
 
             </main>
             <Footer />
+
+            {isDownloadModalOpen && (
+                <div className="download-modal-overlay" onClick={() => setIsDownloadModalOpen(false)}>
+                    <div className="download-modal-content" onClick={(e) => e.stopPropagation()}>
+                        <div className="download-modal-header">
+                            <h3 className="download-modal-title">{t('landing.downloadModal.title')}</h3>
+                            <button className="download-modal-close-btn" onClick={() => setIsDownloadModalOpen(false)} aria-label={t('landing.downloadModal.close')}>
+                                <UilMultiply size="20" />
+                            </button>
+                        </div>
+                        <div className="download-modal-body">
+                            {platform === 'ios' ? (
+                                <>
+                                    <div className="download-step">
+                                        <UilShare size="24" className="download-step-icon" />
+                                        <span className="download-step-text">
+                                            {t('landing.downloadModal.iosInstruction1')}
+                                        </span>
+                                    </div>
+                                    <div className="download-step">
+                                        <UilPlusSquare size="24" className="download-step-icon" />
+                                        <span className="download-step-text">
+                                            {t('landing.downloadModal.iosInstruction2')}
+                                        </span>
+                                    </div>
+                                </>
+                            ) : platform === 'android' ? (
+                                <div className="download-step">
+                                    <UilApps size="24" className="download-step-icon" />
+                                    <span className="download-step-text">
+                                        {t('landing.downloadModal.androidInstruction')}
+                                    </span>
+                                </div>
+                            ) : (
+                                <div className="download-step">
+                                    <UilApps size="24" className="download-step-icon" />
+                                    <span className="download-step-text">
+                                        {t('landing.downloadModal.desktopInstruction')}
+                                    </span>
+                                </div>
+                            )}
+                            
+                            {(platform === 'android' || platform === 'desktop') && deferredPrompt && (
+                                <button className="download-trigger-btn" onClick={() => {
+                                    deferredPrompt.prompt();
+                                    deferredPrompt.userChoice.then(() => {
+                                        setDeferredPrompt(null);
+                                        window.deferredPWAPrompt = null;
+                                        setIsDownloadModalOpen(false);
+                                    });
+                                }}>
+                                    <UilApps size="20" />
+                                    {t('installPrompt.title')}
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

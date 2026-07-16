@@ -32,7 +32,8 @@ export default {
         hero: {
             title: "Scripture Habit",
             subtitle: "Một ứng dụng web nghiên cứu thánh thư do Anh Daijiro Sagane, một thành viên Giáo hội ở Nhật Bản, tự phát triển. Mọi người đều có thể sử dụng hoàn toàn miễn phí.",
-            cta: "Bắt đầu ngay",
+            downloadCta: "Tải ứng dụng (PWA)",
+            browserCta: "Bắt đầu trên trình duyệt",
             mascotBubble: "Xin chào! Chúng mình cùng nhau đọc thánh thư nhé! ✨"
         },
         concept: {
@@ -54,8 +55,15 @@ export default {
         },
         finalCta: {
             title: "Bạn có muốn bắt đầu một thói quen mới cùng chúng mình không?",
-            button: "Bắt đầu ngay",
             mascotBubble: "Hãy bắt đầu bằng nút bên dưới! ✨"
+        },
+        downloadModal: {
+            title: "Cài đặt ứng dụng",
+            iosInstruction1: "1. Nhấn vào nút Chia sẻ ở cuối màn hình (hoặc ở đầu trên iPad).",
+            iosInstruction2: "2. Cuộn xuống và nhấn \"Thêm vào màn hình chính\".",
+            androidInstruction: "Nhấn vào menu trình duyệt (ba dấu chấm) và chọn \"Cài đặt ứng dụng\" hoặc \"Thêm vào màn hình chính\".",
+            desktopInstruction: "Nhấp vào biểu tượng cài đặt trong thanh địa chỉ hoặc chọn \"Cài đặt\" từ menu trình duyệt.",
+            close: "Đóng"
         },
         seoContent: {
             faq: {

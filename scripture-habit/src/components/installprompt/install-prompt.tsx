@@ -4,6 +4,7 @@ import { UilMultiply, UilShare, UilPlusSquare, UilApps } from '@iconscout/react-
 import { useLanguage } from '../../hooks/use-language';
 import { Language } from '../../context/language-context';
 import { SUPPORTED_LANGUAGES } from '../../config/languages';
+import { safeStorage } from '../../utils/storage';
 import './install-prompt.css';
 
 
@@ -13,6 +14,18 @@ const InstallPrompt: FC = () => {
     const [showPrompt, setShowPrompt] = useState(false);
     const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
     const [platform, setPlatform] = useState<'ios' | 'android' | null>(null);
+    const [cookieConsentAccepted, setCookieConsentAccepted] = useState(() => {
+        return safeStorage.get('cookieConsent') === 'true';
+    });
+
+    // Listen to cookie consent acceptance
+    useEffect(() => {
+        const handleConsent = () => {
+            setCookieConsentAccepted(true);
+        };
+        window.addEventListener('cookieConsentAccepted', handleConsent);
+        return () => window.removeEventListener('cookieConsentAccepted', handleConsent);
+    }, []);
 
     // Detect platform and check for deferred prompt
     useEffect(() => {
@@ -62,6 +75,8 @@ const InstallPrompt: FC = () => {
         }
 
         const isDashboard = base === '/dashboard';
+        const isLandingPage = base === '/' || base === '';
+        const isAllowedPage = isDashboard || isLandingPage;
         const isStandalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
 
         // Check for 7-day cooldown in localStorage
@@ -82,7 +97,7 @@ const InstallPrompt: FC = () => {
         // Check for active modals on dashboard
         const isModalActive = document.body.getAttribute('data-dashboard-modal-open') === 'true';
 
-        if (!isDashboard || hasDismissed || isStandalone || isModalActive) {
+        if (!isAllowedPage || hasDismissed || isStandalone || isModalActive || !cookieConsentAccepted) {
             setShowPrompt(false);
             return;
         }
@@ -103,7 +118,7 @@ const InstallPrompt: FC = () => {
             }, 4000);
             return () => clearTimeout(timer);
         }
-    }, [location.pathname, platform, deferredPrompt]);
+    }, [location.pathname, platform, deferredPrompt, cookieConsentAccepted]);
 
     const handleInstallClick = async () => {
         if (!deferredPrompt) return;

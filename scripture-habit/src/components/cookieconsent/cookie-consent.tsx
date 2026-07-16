@@ -34,6 +34,7 @@ const CookieConsent: FC = () => {
     const handleAccept = () => {
         safeStorage.set('cookieConsent', 'true');
         setIsVisible(false);
+        window.dispatchEvent(new Event('cookieConsentAccepted'));
     };
 
     if (!isVisible) return null;
