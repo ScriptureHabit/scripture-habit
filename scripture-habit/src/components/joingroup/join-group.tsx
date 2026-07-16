@@ -223,8 +223,6 @@ export default function JoinGroup() {
               )}
             </div>
 
-
-
             <p className="modal-confirm-message">
               {userData?.groupIds?.includes(selectedGroup.id)
                 ? t('joinGroup.errorAlreadyMember')

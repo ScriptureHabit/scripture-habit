@@ -322,7 +322,7 @@ export default {
         errorEditMessage: "ไม่สามารถแก้ไขข้อความได้",
         errorDeleteMessage: "ไม่สามารถลบข้อความได้",
         errorUpdateGroupStatus: "ไม่สามารถอัปเดตสถานะกลุ่มได้",
-        inactivityRemoval: "👋 **{count} สมาชิก** ถูกลบออกเนื่องจากไม่มีการใช้งาน (มากกว่า 3 วัน)",
+        inactivityRemoval: "👋 **{count} สมาชิก** ถูกลบออกเนื่องจากไม่มีการใช้งาน (มากกว่า {days} วัน)",
         report: "รายงาน",
         reportUser: "รายงานเนื้อหาที่ไม่เหมาะสม",
         reportReason: "เหตุผลในการรายงาน",

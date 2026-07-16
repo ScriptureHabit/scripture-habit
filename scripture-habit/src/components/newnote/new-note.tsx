@@ -212,7 +212,6 @@ const NewNote: FC<NewNoteProps> = ({
                         </div>
                     )}
 
-
                     <div className="form-group" data-testid="new-note-category">
                         <label className="input-label">{t('newNote.chooseScriptureLabel')}</label>
                         <Select

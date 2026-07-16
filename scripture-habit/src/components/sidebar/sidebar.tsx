@@ -275,7 +275,6 @@ const Sidebar: React.FC<SidebarProps> = ({ selected, setSelected, userGroups = [
         </div>
       </div>
 
-
       {/* Mobile Group Selection Modal */}
       {showGroupModal && (
         <div className="group-modal-overlay" onClick={() => setShowGroupModal(false)}>

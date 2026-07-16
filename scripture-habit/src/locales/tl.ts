@@ -321,7 +321,7 @@ export default {
         errorEditMessage: "Nabigong i-edit ang mensahe",
         errorDeleteMessage: "Nabigong burahin ang mensahe",
         errorUpdateGroupStatus: "Nabigong i-update ang status ng grupo",
-        inactivityRemoval: "👋 Ang **{count} (mga) miyembro** ay naalis dahil sa kawalang-aktibidad (higit sa 3 araw).",
+        inactivityRemoval: "👋 Ang **{count} (mga) miyembro** ay naalis dahil sa kawalang-aktibidad (higit sa {days} araw).",
         report: "I-report",
         reportUser: "I-report ang hindi naaangkop na nilalaman",
         reportReason: "Dahilan ng pag-report",

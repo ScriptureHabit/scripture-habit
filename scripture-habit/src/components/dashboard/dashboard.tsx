@@ -321,7 +321,7 @@ const Dashboard: FC = () => {
             onInputFocusChange={setIsInputFocused} isExternalModalOpen={isModalOpen} 
             onBack={() => { setActiveGroupId(null); setSelectedView(0); }} onGroupSelect={setActiveGroupId} 
              // initialShowInviteModal prop removed, using global store instead
- onUnityUpdate={handleUnityUpdate} isActive={selectedView === 2}
+            onUnityUpdate={handleUnityUpdate} isActive={selectedView === 2}
           />
         )}
         {selectedView === 3 && <Profile userData={userData} stats={{ streak: userData.streakCount || 0, totalNotes: userData.totalNotes || 0, daysStudied: userData.daysStudiedCount || 0 }} />}

@@ -295,7 +295,7 @@ export default {
         errorEditMessage: "Không thể chỉnh sửa tin nhắn",
         errorDeleteMessage: "Không thể xóa tin nhắn",
         errorUpdateGroupStatus: "Không thể cập nhật trạng thái nhóm",
-        inactivityRemoval: "👋 **{count} thành viên** đã bị xóa do không hoạt động (hơn 3 ngày).",
+        inactivityRemoval: "👋 **{count} thành viên** đã bị xóa do không hoạt động (hơn {days} ngày).",
         markedPublic: "Nhóm hiện đã được đặt thành công khai",
         markedPrivate: "Nhóm hiện đã được đặt thành riêng tư",
         reportError: "Gửi báo cáo thất bại. Vui lòng thử lại.",

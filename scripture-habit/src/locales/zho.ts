@@ -299,7 +299,7 @@ export default {
         markedPrivate: "群組現在已設為私人",
         reportError: "舉報發送失敗。請重試.",
         linkCopiedForInstagram: "邀請連結已複製！現在您可以將其貼到您的 Instagram 個人簡介或限時動態中。",
-        inactivityRemoval: "👋 **{count}名成員**因超過3天未活躍而被移除。",
+        inactivityRemoval: "👋 **{count}名成員**因超過{days}天未活躍而被移除。",
         report: "舉報",
         reportUser: "舉報不當內容",
         reportReason: "舉報理由",

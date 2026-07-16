@@ -321,7 +321,7 @@ export default {
         errorEditMessage: "Error al editar el mensaje",
         errorDeleteMessage: "Error al eliminar el mensaje",
         errorUpdateGroupStatus: "Error al actualizar el estado del grupo",
-        inactivityRemoval: "👋 **{count} miembro(s)** fueron eliminados por inactividad (más de 3 días).",
+        inactivityRemoval: "👋 **{count} miembro(s)** fueron eliminados por inactividad (más de {days} días).",
         report: "Informar",
         reportUser: "Informar contenido inapropiado",
         reportReason: "Razón del informe",

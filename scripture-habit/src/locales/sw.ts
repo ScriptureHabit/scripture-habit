@@ -322,7 +322,7 @@ export default {
         errorEditMessage: "Imeshindwa kuhariri ujumbe",
         errorDeleteMessage: "Imeshindwa kufuta ujumbe",
         errorUpdateGroupStatus: "Imeshindwa kusasisha hali ya kikundi",
-        inactivityRemoval: "👋 **Wanachama {count}** wameondolewa kwa kutokuwa na shughuli (zaidi ya siku 3).",
+        inactivityRemoval: "👋 **Wanachama {count}** wameondolewa kwa kutokuwa na shughuli (zaidi ya siku {days}).",
         report: "Ripoti",
         reportUser: "Ripoti maudhui yasiyofaa",
         reportReason: "Sababu ya kuripoti",

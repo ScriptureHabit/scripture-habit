@@ -496,7 +496,6 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
                 )}
             </div>
 
-
             <div className="profile-section">
                 <div className="habit-pace-header">
                     <UilCalendarAlt size="20" color="var(--pink)" />
@@ -689,7 +688,6 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
                     <span className="sign-out-btn-text">{t('signOut.title')}</span>
                 </div>
             </div>
-
 
             {/* Sign Out Confirmation Modal */}
             {showSignOutModal && (

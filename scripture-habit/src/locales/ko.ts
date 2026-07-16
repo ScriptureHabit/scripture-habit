@@ -325,7 +325,7 @@ export default {
         markedPrivate: "그룹이 비공개로 설정되었습니다",
         reportError: "신고를 제출하는 중 오류가 발생했습니다. 다시 시도해 주세요.",
         linkCopiedForInstagram: "초대 링크가 복사되었습니다! 이제 Instagram 프로필이나 스토리에 붙여넣을 수 있습니다.",
-        inactivityRemoval: "👋 **{count}명의 회원**이 3일 이상 활동하지 않아 제거되었습니다.",
+        inactivityRemoval: "👋 **{count}명의 회원**이 {days}일 이상 활동하지 않아 제거되었습니다.",
         report: "신고",
         reportUser: "부적절한 콘텐츠 신고",
         reportReason: "신고 사유",

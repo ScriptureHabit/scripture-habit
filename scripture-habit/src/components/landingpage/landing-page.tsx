@@ -192,11 +192,6 @@ const LandingPage: FC = () => {
                     </div>
                 </section>
 
-
-
-
-
-
                 {/* FAQ Section */}
                 <section className="seo-explanation-section">
                     <div className="faq-container">
