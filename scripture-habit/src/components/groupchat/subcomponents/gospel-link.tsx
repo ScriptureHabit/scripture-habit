@@ -21,7 +21,18 @@ const GospelLink: FC<GospelLinkProps> = ({ text, scripture, chapter, language, i
 
   if (finalScripture && finalChapter) {
     const scripLower = finalScripture.toLowerCase();
-    const isOther = scripLower.includes('other') || scripLower.includes('その他') || finalScripture === '';
+    const isOther = 
+      scripLower.includes('other') || 
+      scripLower.includes('その他') || 
+      scripLower.includes('otros') || 
+      scripLower.includes('outros') || 
+      scripLower.includes('기타') || 
+      scripLower.includes('其他') || 
+      scripLower.includes('khác') || 
+      scripLower.includes('iba pa') || 
+      scripLower.includes('nyingine') || 
+      scripLower.includes('อื่นๆ') || 
+      finalScripture === '';
     const isBYU = scripLower.includes('byu');
 
     // CASE A: Direct URL (Other, GC, BYU with full URL)

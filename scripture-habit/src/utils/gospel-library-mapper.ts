@@ -1,42 +1,94 @@
 import { parseStructuredNoteText } from './note-parser-utils';
 
+const VOLUME_MAPPINGS: Record<string, string[]> = {
+    ot: [
+        "old testament", "ot", "旧約聖書", "velho testamento", "舊約", 
+        "antiguo testamento", "cựu ước", "พันธสัญญาเดิม", "구약전서", 
+        "lumang tipan", "agano la kale"
+    ],
+    nt: [
+        "new testament", "nt", "新約聖書", "novo testamento", "新約", 
+        "nuevo testamento", "tân ước", "พันธสัญญาใหม่", "신약전서", 
+        "bagong tipan", "agano jipya"
+    ],
+    bofm: [
+        "book of mormon", "bofm", "モルモン書", "o livro de mórmon", "摩爾門經", 
+        "el libro de mormón", "sách mặc môn", "พระคัมภีร์มอรมอน", "몰몬경", 
+        "aklat ni mormon", "kitabu cha mormoni"
+    ],
+    "dc-testament": [
+        "dc", "dc-testament", "教義と聖約", "doutrina e convênios", "教義和聖約", 
+        "doctrina y convenios", "giáo lý và giao ước", "หลักคำสอนและพันธสัญญา", 
+        "교리와 성약", "doktrina at mga tipan", "mafundisho na maagano"
+    ],
+    pgp: [
+        "pgp", "pearl of great price", "高価な真珠", "pérola de grande valor", "無價珍珠", 
+        "la perla de gran precio", "trân châu vô giá", "ไข่มุกอันล้ำค่า", 
+        "값진 진주", "mahalagang perlas", "lulu ya thamani kuu"
+    ],
+    "general-conference": [
+        "gc", "general conference", "総大会", "conferência geral", "總會大會", 
+        "conferencia general", "đại hội trung ương", "การประชุมใหญ่สามัญ", 
+        "연차 대회", "pangkalahatang kumperensya", "mkutano mkuu"
+    ],
+    "byu-speeches": [
+        "byu-speeches", "byu speeches"
+    ],
+    "ordinances-and-proclamations": [
+        "proclamations", "ordinances and proclamations", "儀式と宣言", "神権の儀式と宣言", 
+        "ordenanças e declarações", "聖職教儀和文告", "ordenanzas del sacerdocio y proclamaciones"
+    ]
+};
+
+const CHAPTER_FALLBACKS = [
+    {
+        key: "ordinances-and-proclamations",
+        keywords: [
+            "family", "家族", "família", "proclamación sobre la familia",
+            "living christ", "生けるキリスト", "cristo vivo", "cristo viviente",
+            "restoration", "回復", "restauração", "restauración",
+            "sacrament", "聖餐", "sacramental", "tiệc thánh",
+            "baptism", "バプテスマ", "batismo", "bautismo", "báp têm"
+        ]
+    },
+    {
+        key: "dc-testament",
+        keywords: [
+            "doctrine and covenants", "d&c", "教義と聖約", "official declarations"
+        ]
+    },
+    {
+        key: "pgp",
+        keywords: [
+            "joseph smith—history", "joseph smith-history", "faith", "信條", "moses", "abr", "信仰"
+        ]
+    }
+];
+
 // Helper to detect volume from input
 const detectVolume = (volume: string | null | undefined, chapterInput: string | null | undefined): string => {
+    const targetVolume = volume ? volume.trim().toLowerCase() : "";
     let volumeUrlPart = "";
-    const lowerVolume = volume ? volume.toLowerCase() : "";
 
-    if (lowerVolume === "old testament" || volume === "旧約聖書" || volume === "Velho Testamento" || volume === "舊約" || volume === "Antiguo Testamento" || volume === "Cựu Ước" || volume === "พันธสัญญาเดิม" || volume === "구약전서" || volume === "Lumang Tipan" || volume === "Agano la Kale" || lowerVolume === "ot") {
-        volumeUrlPart = "ot";
-    } else if (lowerVolume === "new testament" || volume === "新約聖書" || volume === "Novo Testamento" || volume === "新約" || volume === "Nuevo Testamento" || volume === "Tân Ước" || volume === "พันธสัญญาใหม่" || volume === "신약전서" || volume === "Bagong Tipan" || volume === "Agano Jipya" || lowerVolume === "nt") {
-        volumeUrlPart = "nt";
-    } else if (lowerVolume === "book of mormon" || volume === "モルモン書" || volume === "O Livro de Mórmon" || volume === "摩爾門經" || volume === "El Libro de Mormón" || volume === "Sách Mặc Môn" || volume === "พระคัมภีร์มอรมอน" || volume === "몰몬경" || volume === "Aklat ni Mormon" || volume === "Kitabu cha Mormoni" || lowerVolume === "bofm") {
-        volumeUrlPart = "bofm";
-    } else if (lowerVolume.includes("doctrine and") || volume === "教義と聖約" || volume === "Doutrina e Convênios" || volume === "教義和聖約" || volume === "Doctrina y Convenios" || volume === "Giáo Lý và Giao Ước" || volume === "หลักคำสอนและพันธสัญญา" || volume === "교리와 성약" || volume === "Doktrina at mga Tipan" || volume === "Mafundisho na Maagano" || lowerVolume === "dc-testament" || lowerVolume === "dc") {
-        volumeUrlPart = "dc-testament";
-    } else if (lowerVolume === "pearl of great price" || volume === "高価な真珠" || volume === "Pérola de Grande Valor" || volume === "無價珍珠" || volume === "La Perla de Gran Precio" || volume === "Trân Châu Vô Giá" || volume === "ไข่มุกอันล้ำค่า" || volume === "값진 진주" || volume === "Mahalagang Perlas" || volume === "Lulu ya Thamani Kuu" || lowerVolume === "pgp") {
-        volumeUrlPart = "pgp";
-    } else if (lowerVolume === "general conference" || volume === "総大会" || volume === "Conferência Geral" || volume === "總會大會" || volume === "Conferencia General" || volume === "Đại Hội Trung Ương" || volume === "การประชุมใหญ่สามัญ" || volume === "연차 대회" || volume === "Pangkalahatang Kumperensya" || volume === "Mkutano Mkuu" || lowerVolume === "gc") {
-        volumeUrlPart = "general-conference";
-    } else if (lowerVolume === "byu speeches" || volume === "BYU Speeches") {
-        volumeUrlPart = "byu-speeches";
-    } else if (lowerVolume === "ordinances and proclamations" || volume === "儀式と宣言" || volume === "神権の儀式と宣言" || volume === "Ordenanças e Declarações" || volume === "聖職教儀和文告" || volume === "Ordenanzas del sacerdocio y proclamaciones" || lowerVolume === "proclamations") {
-        volumeUrlPart = "ordinances-and-proclamations";
-    }
-
-    if (!volumeUrlPart && chapterInput) {
-        const lowerChap = chapterInput.toLowerCase();
-        if (lowerChap.includes("family") || lowerChap.includes("家族") || lowerChap.includes("família") || lowerChap.includes("proclamación sobre la familia") ||
-            lowerChap.includes("living christ") || lowerChap.includes("生けるキリスト") || lowerChap.includes("cristo vivo") || lowerChap.includes("cristo viviente") ||
-            lowerChap.includes("restoration") || lowerChap.includes("回復") || lowerChap.includes("restauração") || lowerChap.includes("restauración") ||
-            lowerChap.includes("sacrament") || lowerChap.includes("聖餐") || lowerChap.includes("sacramental") || lowerChap.includes("tiệc thánh") ||
-            lowerChap.includes("baptism") || lowerChap.includes("バプテスマ") || lowerChap.includes("batismo") || lowerChap.includes("bautismo") || lowerChap.includes("báp têm")) {
-            volumeUrlPart = "ordinances-and-proclamations";
-        } else if (lowerChap.includes("doctrine and covenants") || lowerChap.includes("d&c") || lowerChap.includes("教義と聖約") || lowerChap.includes("official declarations")) {
-            volumeUrlPart = "dc-testament";
-        } else if (lowerChap.includes("joseph smith—history") || lowerChap.includes("joseph smith-history") || lowerChap.includes("faith") || lowerChap.includes("信條") || lowerChap.includes("moses") || lowerChap.includes("abr") || lowerChap.includes("信仰")) {
-            volumeUrlPart = "pgp";
+    // 1. Check direct matches
+    for (const [key, aliases] of Object.entries(VOLUME_MAPPINGS)) {
+        if (aliases.includes(targetVolume) || (key === 'dc-testament' && targetVolume.includes('doctrine and'))) {
+            volumeUrlPart = key;
+            break;
         }
     }
+
+    // 2. Fallback check from chapterInput if volume didn't match
+    if (!volumeUrlPart && chapterInput) {
+        const lowerChap = chapterInput.toLowerCase();
+        for (const fallback of CHAPTER_FALLBACKS) {
+            if (fallback.keywords.some(keyword => lowerChap.includes(keyword))) {
+                volumeUrlPart = fallback.key;
+                break;
+            }
+        }
+    }
+
     return volumeUrlPart;
 };
 
