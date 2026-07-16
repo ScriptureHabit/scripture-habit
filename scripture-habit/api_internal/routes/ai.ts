@@ -352,49 +352,6 @@ router.post('/translate-batch', authenticate, aiLimiter, verifyAppCheck, async (
     }
 });
 
-
-/**
- * AI Discussion Starter
- */
-router.post('/generate-discussion-topic', authenticate, aiLimiter, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
-    const { language, groupId } = req.body;
-    const baseLanguage = language?.split('-')[0] || 'en';
-    const targetLangName = languageNames[baseLanguage] || 'English';
-
-    if (process.env.SKIP_AI === 'true') {
-        return res.json({ success: true, topic: "Mocked Discussion Topic" });
-    }
-
-    try {
-        let context = '';
-        if (groupId) {
-            const recentNotesSnap = await db.collection('groups').doc(groupId).collection('messages')
-                .where('isNote', '==', true)
-                .orderBy('createdAt', 'desc')
-                .limit(3)
-                .get();
-            
-            const noteTexts = recentNotesSnap.docs.map(d => d.data().text).filter(Boolean);
-            if (noteTexts.length > 0) {
-                context = `Recent study context: ${noteTexts.join('\n')}`;
-            }
-        }
-
-        const prompt = `You are a facilitator for a scripture study group. 
-            Suggest 1 discussion starter question that encourages members to share their experiences and testimonies. 
-            ${context ? `Base it loosely on this recent study: ${context}` : ''}
-            
-            【STRICT RULES】:
-            1. You MUST respond ONLY in ${targetLangName}.
-            2. Output ONLY the question text. No bullet points.`;
-
-        const generatedText = await callGemini(prompt);
-        res.json({ success: true, topic: generatedText });
-    } catch (err) {
-        handleAiError(res, err, 'discussion topic');
-    }
-});
-
 /**
  * AI Personal Weekly Recap
  */

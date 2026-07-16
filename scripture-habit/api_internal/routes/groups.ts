@@ -6,9 +6,9 @@ import { runPhasedTransaction } from '../lib/phased-transaction.js';
 import { joinGroupSchema, updateKickThresholdSchema, leaveGroupSchema, deleteGroupSchema, updateReadStatusSchema, announceUnitySchema, updateGroupSchema, regenerateInviteCodeSchema, kickMemberSchema, createGroupSchema } from '../lib/schemas.js';
 import { GroupDocument, UserDocument, MemberPreview as PreviewItem, GroupMemberDocument } from '../../types/firestore.js';
 import { MAX_GROUPS_PER_USER } from '../lib/constants.js';
-import { CounterService } from '../services/counter-service.js';
 import { removeMemberFromGroup } from '../lib/membership-utils.js';
 import { ForbiddenError, NotFoundError, ValidationError, sendErrorResponse } from '../lib/errors.js';
+import { getMessageExpireAt } from '../lib/ttl-utils.js';
 
 
 const router = express.Router();
@@ -62,8 +62,6 @@ router.post('/create-group', authenticate, requireEmailVerified, verifyAppCheck,
                 maxMembers: 100000,
                 membersCount: 1,
                 memberPreviews: [{ uid, nickname: userNick }],
-                messageCount: 0,
-                noteCount: 0,
                 ownerUserId: uid,
                 members: [uid],
                 memberJoinedAt: { [uid]: now },
@@ -110,7 +108,8 @@ router.post('/create-group', authenticate, requireEmailVerified, verifyAppCheck,
                 senderId: 'system',
                 isSystemMessage: true,
                 type: 'system',
-                messageType: 'system'
+                messageType: 'system',
+                expireAt: getMessageExpireAt()
             };
             transaction.set(msgRef, welcomeMsg);
 
@@ -179,8 +178,6 @@ router.post('/join-group', authenticate, requireEmailVerified, verifyAppCheck, a
                 const gData = groupDoc.data()! as GroupDocument;
                 const userData = userDoc.data()! as UserDocument;
 
-                const totalMessages = gData.messageCount || 0;
-
                 const members = gData.members || [];
                 const maxMembers = gData.maxMembers || 500;
 
@@ -229,7 +226,7 @@ router.post('/join-group', authenticate, requireEmailVerified, verifyAppCheck, a
                     lastActiveAt: admin.firestore.FieldValue.serverTimestamp(),
                     kickThreshold: userData.kickThreshold || 3,
                     lastReadAt: admin.firestore.FieldValue.serverTimestamp(),
-                    readMessageCount: totalMessages
+                    readMessageCount: 0
                 };
 
                 // 3. START WRITES (Execution Phase)
@@ -250,7 +247,7 @@ router.post('/join-group', authenticate, requireEmailVerified, verifyAppCheck, a
 
                 const userGS = userRef.collection('groupStates').doc(gid);
                 transaction.set(userGS, {
-                    readMessageCount: totalMessages,
+                    readMessageCount: 0,
                     lastReadAt: admin.firestore.FieldValue.serverTimestamp(),
                     lastActiveAt: admin.firestore.FieldValue.serverTimestamp()
                 });
@@ -268,11 +265,9 @@ router.post('/join-group', authenticate, requireEmailVerified, verifyAppCheck, a
                     senderId: 'system',
                     isSystemMessage: true,
                     type: 'join',
-                    messageType: 'join'
+                    messageType: 'join',
+                    expireAt: getMessageExpireAt()
                 });
-
-                // IMPORTANT: Increment message counter for the join message
-                CounterService.increment(transaction, groupRef, 'messageCount', 1, updatedMembers.length);
 
                 const ownerPreview = (gData.memberPreviews || []).find((p: PreviewItem) => p.uid === gData.ownerUserId);
                 const ownerName = ownerPreview ? ownerPreview.nickname : 'Owner';
@@ -354,12 +349,7 @@ router.post('/update-read-status', authenticate, verifyAppCheck, async (req: Aut
             return res.status(403).json({ error: 'Forbidden' });
         }
 
-        // TRUTH RECOVERY: Use the archive-aware recount method only if forced.
-        // Otherwise, rely on the cached 'messageCount' on the group document.
-        const totalMessages = validation.data.forceRecount
-            ? await CounterService.recountMessageCountWithArchive(groupRef)
-            : (groupData.messageCount || 0);
-
+        const totalMessages = validation.data.readMessageCount;
 
         const batch = db.batch();
         batch.set(userRef.collection('groupStates').doc(groupId), {
@@ -367,14 +357,12 @@ router.post('/update-read-status', authenticate, verifyAppCheck, async (req: Aut
             lastReadAt: admin.firestore.FieldValue.serverTimestamp()
         }, { merge: true });
 
-        // TRUTH: Restore updating the main 'groups' document map for immediate UI sync.
-        // For habit groups (<20 members), hotspots are rare, and immediate feedback is priority.
+        // Update memberLastReadAt for immediate UI sync.
         batch.update(groupRef, {
-            messageCount: totalMessages,
             [`memberLastReadAt.${uid}`]: admin.firestore.FieldValue.serverTimestamp()
         });
 
-        // Secondary TRUTH: Update the member's private document for deep history/archiving.
+        // Update the member's private document for deep history/archiving.
         batch.set(groupRef.collection('members').doc(uid), {
             lastReadAt: admin.firestore.FieldValue.serverTimestamp(),
             lastActiveAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -799,7 +787,6 @@ router.get('/', async (req: Request, res: Response) => {
                 name: data.name,
                 description: data.description,
                 membersCount: data.membersCount || 0,
-                noteCount: data.noteCount || 0,
                 memberPreviews: data.memberPreviews || [],
                 lastNoteByNickname: data.lastNoteByNickname || '',
                 lastNoteAt: data.lastNoteAt ? (data.lastNoteAt as admin.firestore.Timestamp).toDate().toISOString() : null,

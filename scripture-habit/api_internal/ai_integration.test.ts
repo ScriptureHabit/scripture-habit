@@ -304,19 +304,6 @@ describe('AI Prompt Construction Regression', () => {
         });
 
 
-        it('should return mocked discussion topic for /generate-discussion-topic', async () => {
-            setup.mockAuth();
-            const res = await fetch(`${setup.baseUrl}/api/ai/generate-discussion-topic`, {
-                method: 'POST',
-                headers: { 'Authorization': 'Bearer token', 'Content-Type': 'application/json' },
-                body: JSON.stringify({ language: 'en' })
-            });
-            expect(res.status).toBe(200);
-            const data = await res.json();
-            expect(data.success).toBe(true);
-            expect(data.topic).toBe('Mocked Discussion Topic');
-        });
-
         it('should return mocked personal recap for /generate-personal-weekly-recap', async () => {
             const testUid = `recap-uid-${Date.now()}`;
             setup.mockAuth(testUid);
@@ -476,40 +463,7 @@ describe('AI Prompt Construction Regression', () => {
         });
     });
 
-    describe('Discussion Topic and Error Handling', () => {
-        it('should generate discussion topic with group notes context', async () => {
-            setup.mockAuth();
-            const { db } = await import('./lib/firebase-admin.js');
-            const groupId = `group-disc-${Date.now()}`;
-            
-            await db.collection('groups').doc(groupId).set({ name: 'Discussion Group' });
-            await db.collection('groups').doc(groupId).collection('messages').add({
-                text: 'We discussed charity.',
-                isNote: true,
-                createdAt: admin.firestore.Timestamp.fromDate(new Date())
-            });
-
-            if (!isRealAi) {
-                mockGeminiResponse('What is charity to you?');
-            }
-
-            const res = await fetch(`${setup.baseUrl}/api/ai/generate-discussion-topic`, {
-                method: 'POST',
-                headers: { 'Authorization': 'Bearer token', 'Content-Type': 'application/json' },
-                body: JSON.stringify({ groupId, language: 'en' })
-            });
-
-            expect(res.status).toBe(200);
-            const data = await res.json();
-            expect(data.success).toBe(true);
-            expect(data.topic).toBe('What is charity to you?');
-
-            if (!isRealAi) {
-                const prompt = getSentPrompt(0);
-                expect(prompt).toContain('Recent study context');
-                expect(prompt).toContain('We discussed charity.');
-            }
-        });
+    describe('Error Handling', () => {
 
         it('should handle AI error flow gracefully (500)', async () => {
             setup.mockAuth();
@@ -530,27 +484,6 @@ describe('AI Prompt Construction Regression', () => {
             expect(data.error).toBe('AI ponder questions failed');
             expect(data.details).toBe('API Key Blocked');
         });
-
-        it('should handle AI error flow gracefully for generate-discussion-topic', async () => {
-            setup.mockAuth();
-            if (!isRealAi) {
-                vi.mocked(axios.post).mockRejectedValue({
-                    response: { status: 403, data: 'API Key Blocked' }
-                });
-            }
-
-            const res = await fetch(`${setup.baseUrl}/api/ai/generate-discussion-topic`, {
-                method: 'POST',
-                headers: { 'Authorization': 'Bearer token', 'Content-Type': 'application/json' },
-                body: JSON.stringify({ language: 'en' })
-            });
-
-            expect(res.status).toBe(403);
-            const data = await res.json();
-            expect(data.error).toBe('AI discussion topic failed');
-            expect(data.details).toBe('API Key Blocked');
-        });
-
 
         it('should handle personal recap query failure gracefully', async () => {
             const testUserUid = `user-personal-fail-${Date.now()}`;

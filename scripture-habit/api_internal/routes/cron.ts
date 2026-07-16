@@ -1,10 +1,7 @@
 import express, { Request, Response, NextFunction } from 'express';
 import { admin, db, messaging } from '../lib/firebase-admin.js';
 import { StreakReminderEngine } from '../lib/streak-reminder.js';
-import { CounterService } from '../services/counter-service.js';
-import { ArchiveService } from '../services/archive-service.js';
 import { InactivityService } from '../services/inactivity-service.js';
-import { MessageService } from '../services/message-service.js';
 import { calculateMemberStatus, InactivityMemberData, InactivityGroupData } from '../lib/inactivity-utils.js';
 import { t } from '../lib/i18n.js';
 
@@ -61,7 +58,6 @@ router.all('/check-inactive-users', verifyCronSecret, async (_req: Request, res:
         res.status(500).send('Error checking inactivity: ' + error.message);
     }
 });
-
 
 /**
  * Manual Test Endpoint (Dry Run Report)
@@ -129,114 +125,6 @@ router.get('/test-inactive-check/:groupId', verifyCronSecret, async (req: Reques
     } catch (err: unknown) {
         const error = err as Error;
         res.status(500).json({ error: error.message });
-    }
-});
-
-/**
- * Archive Old Messages (Bucket Pattern)
- */
-router.all('/archive-old-messages', verifyCronSecret, async (_req: Request, res: Response) => {
-    console.log('[Cron] Starting message archiving...');
-    try {
-        const groupsToArchive = await ArchiveService.getGroupsNeedingArchive(150);
-        let groupsProcessed = 0;
-        let totalMessagesArchived = 0;
-
-        for (const groupId of groupsToArchive) {
-            try {
-                const count = await ArchiveService.archiveOldMessages(groupId);
-                if (count > 0) {
-                    groupsProcessed++;
-                    totalMessagesArchived += count;
-                }
-            } catch (err) {
-                console.error(`Failed to archive group ${groupId}:`, err);
-            }
-        }
-
-        res.json({
-            message: 'Archiving complete.',
-            stats: {
-                targetGroupsFound: groupsToArchive.length,
-                groupsProcessed,
-                totalMessagesArchived
-            }
-        });
-    } catch (err: unknown) {
-        const error = err as Error;
-        console.error('Error during archiving:', error);
-        res.status(500).send('Error during archiving: ' + error.message);
-    }
-});
-
-/**
- * Aggregate Message Counts (Background Sync)
- */
-router.all('/aggregate-message-counts', verifyCronSecret, async (_req: Request, res: Response) => {
-    console.log('[Cron] Starting message count aggregation...');
-    try {
-        const now = new Date();
-        const tenMinutesAgo = new Date(now.getTime() - 10 * 60 * 1000);
-        const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-
-        // 1. Groups active in the last 10 minutes (priority)
-        const activeGroupsSnap = await db.collection('groups')
-            .where('lastMessageAt', '>=', tenMinutesAgo)
-            .get();
-
-        // 2. Groups that haven't been synced in > 24 hours (cleanup)
-        const staleGroupsSnap = await db.collection('groups')
-            .where('messageCount_syncedAt', '<', twentyFourHoursAgo)
-            .limit(50)
-            .get();
-
-        const allDocs = [...activeGroupsSnap.docs];
-        // Deduplicate
-        const seenIds = new Set(allDocs.map(d => d.id));
-        staleGroupsSnap.docs.forEach(doc => {
-            if (!seenIds.has(doc.id)) allDocs.push(doc);
-        });
-
-        let updatedCount = 0;
-
-        // 1. Priority Sync (Fast Shard Hum)
-        for (const groupDoc of activeGroupsSnap.docs) {
-            try {
-                await CounterService.aggregateAndSync(groupDoc.ref, 'messageCount');
-                await CounterService.aggregateAndSync(groupDoc.ref, 'noteCount');
-                updatedCount++;
-            } catch (err) {
-                console.error(`Priority aggregation failed for group ${groupDoc.id}:`, err);
-            }
-        }
-
-        // 2. SUPREME TRUTH Sync (Document counting for stale groups)
-        for (const groupDoc of staleGroupsSnap.docs) {
-            // Already handled if in activeGroups
-            if (seenIds.has(groupDoc.id)) continue;
-
-            try {
-                // TRUTH: Physical recount for notes, and archive-aware recount for messages.
-                await CounterService.recountAndSync(groupDoc.ref, 'notes', 'noteCount');
-                await CounterService.recountMessageCountWithArchive(groupDoc.ref);
-                await MessageService.reconcileLatestMessages(groupDoc.id);
-                updatedCount++;
-            } catch (err) {
-                console.error(`Maintenance sync failed for group ${groupDoc.id}:`, err);
-            }
-        }
-
-        res.json({
-            message: 'Aggregation complete.',
-            stats: {
-                totalGroupsHandled: activeGroupsSnap.size + staleGroupsSnap.size,
-                groupsUpdated: updatedCount
-            }
-        });
-    } catch (err: unknown) {
-        const error = err as Error;
-        console.error('Error in aggregation:', error);
-        res.status(500).send('Error during aggregation: ' + error.message);
     }
 });
 
@@ -442,75 +330,6 @@ router.all('/cleanup-orphaned-cheers', verifyCronSecret, async (_req: Request, r
     } catch (err: unknown) {
         const error = err as Error;
         console.error('Error in cheers cleanup:', error);
-        res.status(500).send('Error: ' + error.message);
-    }
-});
-
-/**
- * Reset Unity Percentage at Midnight
- * This should be called by a scheduled cron job at midnight for each timezone
- */
-router.all('/reset-unity-at-midnight', verifyCronSecret, async (_req: Request, res: Response) => {
-    console.log('[Cron] Starting unity percentage midnight reset...');
-    try {
-        const now = new Date();
-        const utcTodayStr = now.toISOString().split('T')[0];
-        
-        // Get all groups that need reset (where dailyActivity date is in the past compared to UTC today)
-        // We process in batches to avoid timeout
-        const groupsSnap = await db.collection('groups')
-            .where('dailyActivity.date', '<', utcTodayStr)
-            .limit(500)
-            .get();
-        
-        if (groupsSnap.empty) {
-            return res.json({ message: 'No groups need unity reset.' });
-        }
-
-        let resetCount = 0;
-        const batch = db.batch();
-        const MAX_BATCH_SIZE = 500;
-
-        for (const groupDoc of groupsSnap.docs) {
-            const groupData = groupDoc.data();
-            const groupTimeZone = groupData.timeZone || 'UTC';
-            
-            // Calculate "today" in the group's timezone
-            const todayInGroupTZ = new Date(now.toLocaleString('en-US', { timeZone: groupTimeZone }));
-            const todayStr = todayInGroupTZ.toISOString().split('T')[0];
-            
-            // Check if dailyActivity is from a different day
-            const activityDate = groupData.dailyActivity?.date;
-            if (activityDate && activityDate !== todayStr) {
-                // Reset dailyActivity and unityPercentage
-                batch.update(groupDoc.ref, {
-                    'dailyActivity.date': todayStr,
-                    'dailyActivity.activeMembers': [],
-                    'unityPercentage': 0
-                });
-                resetCount++;
-                
-                // Commit batch if it reaches the limit
-                if (resetCount % MAX_BATCH_SIZE === 0) {
-                    await batch.commit();
-                    console.log(`[Cron] Processed ${resetCount} groups for unity reset...`);
-                }
-            }
-        }
-
-        // Commit remaining updates
-        if (resetCount % MAX_BATCH_SIZE !== 0) {
-            await batch.commit();
-        }
-
-        console.log(`[Cron] Unity reset complete. Reset ${resetCount} groups.`);
-        res.json({
-            message: 'Unity percentage midnight reset complete.',
-            stats: { resetCount, processedAt: now.toISOString() }
-        });
-    } catch (err: unknown) {
-        const error = err as Error;
-        console.error('[Cron] Error in unity reset:', error);
         res.status(500).send('Error: ' + error.message);
     }
 });

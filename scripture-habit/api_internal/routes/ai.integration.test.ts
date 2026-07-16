@@ -478,58 +478,6 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('AI Route Integration', ()
         });
     });
 
-
-    describe('POST /generate-discussion-topic', () => {
-        it('should generate starter topic without groupId context', async () => {
-            const promptMock = mockGeminiResponse('Share a time when prayer helped you.');
-
-            const res = await fetch(`${setup.baseUrl}/api/ai/generate-discussion-topic`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer token-${USER_ID}`
-                },
-                body: JSON.stringify({
-                    language: 'en'
-                })
-            });
-
-            expect(res.status).toBe(200);
-            const data = await res.json();
-            expect(data.success).toBe(true);
-            expect(data.topic).toBe('Share a time when prayer helped you.');
-            expect(promptMock).toHaveBeenCalled();
-        });
-
-        it('should generate starter topic with groupId context if group has notes', async () => {
-            await db.collection('groups').doc(GROUP_ID).set({ name: 'Group' });
-            await db.collection('groups').doc(GROUP_ID).collection('messages').add({
-                text: 'Study note content about patience.',
-                isNote: true,
-                createdAt: admin.firestore.Timestamp.now()
-            });
-
-            const promptMock = mockGeminiResponse('Discuss the virtue of patience.');
-
-            const res = await fetch(`${setup.baseUrl}/api/ai/generate-discussion-topic`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer token-${USER_ID}`
-                },
-                body: JSON.stringify({
-                    language: 'en',
-                    groupId: GROUP_ID
-                })
-            });
-
-            expect(res.status).toBe(200);
-            const data = await res.json();
-            expect(data.topic).toBe('Discuss the virtue of patience.');
-            expect(promptMock).toHaveBeenCalled();
-        });
-    });
-
     describe('POST /generate-personal-weekly-recap', () => {
         beforeEach(async () => {
             await db.collection('users').doc(USER_ID).delete();
@@ -809,20 +757,6 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('AI Route Integration', ()
         });
 
 
-        it('should bypass and return mocked discussion topic', async () => {
-            const res = await fetch(`${setup.baseUrl}/api/ai/generate-discussion-topic`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer token-${USER_ID}`
-                },
-                body: JSON.stringify({ language: 'en' })
-            });
-            expect(res.status).toBe(200);
-            const data = await res.json();
-            expect(data.topic).toBe('Mocked Discussion Topic');
-        });
-
         it('should bypass and return mocked personal recap', async () => {
             await db.collection('users').doc(USER_ID).set({ uid: USER_ID });
             const res = await fetch(`${setup.baseUrl}/api/ai/generate-personal-weekly-recap`, {
@@ -1028,21 +962,6 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('AI Route Integration', ()
             expect(data.translations['1']).toBe('Offline Translation');
         });
 
-        it('should handle general error in generate-discussion-topic', async () => {
-            vi.spyOn(axios, 'post').mockRejectedValue(new Error('Discussion error'));
-
-            const res = await fetch(`${setup.baseUrl}/api/ai/generate-discussion-topic`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer token-${USER_ID}`
-                },
-                body: JSON.stringify({ language: 'en' })
-            });
-            expect(res.status).toBe(500);
-            const data = await res.json();
-            expect(data.error).toBe('AI discussion topic failed');
-        });
 
         it('should handle Axios-like error with non-string response data in handleAiError', async () => {
             const fakeAxiosErr = new Error('Axios error');

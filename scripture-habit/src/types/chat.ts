@@ -91,10 +91,7 @@ export interface Group extends Omit<SharedGroupDocument, 'id' | 'inviteCodeExpir
   memberLastReadAt?: Record<string, FirebaseTimestamp>;
   myMemberStatus?: GroupMemberDocument;
 
-  // Client-side UI state
   unreadCount?: number;
-  messageCount?: number;
-  noteCount?: number;
   lastMessageByUid?: string;
   lastNoteByUid?: string;
   dailyActivity?: {

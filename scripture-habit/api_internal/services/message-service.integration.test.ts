@@ -28,7 +28,6 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('MessageService Integratio
         await groupRef.set({
             name: 'Test Group',
             members: [TEST_UID],
-            messageCount: 0,
             timeZone: 'Asia/Tokyo',
             lastInactivityCheckedAt: admin.firestore.Timestamp.now()
         });
@@ -44,8 +43,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('MessageService Integratio
     it('should post a message and update group counters and member states', async () => {
         const groupRef = db.collection('groups').doc(TEST_GROUP_ID);
         
-        const gSnapInit = await groupRef.get();
-        const initialMsgCount = Number((gSnapInit.data() as GroupDocument).messageCount || 0);
+
 
         const text = 'Integration Test Message ' + Date.now();
         const result = await MessageService.postMessage({
@@ -58,7 +56,6 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('MessageService Integratio
 
         const gSnapAfter = await groupRef.get();
         const gDataAfter = gSnapAfter.data() as GroupDocument;
-        expect(Number(gDataAfter.messageCount)).toBe(initialMsgCount + 1);
         expect(gDataAfter.lastMessageByUid).toBe(TEST_UID);
         expect(gDataAfter.lastMessageAt).toBeDefined();
 
@@ -73,13 +70,9 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('MessageService Integratio
         // Check member state
         const mSnap = await groupRef.collection('members').doc(TEST_UID).get();
         expect(mSnap.exists).toBe(true);
-        expect(Number(mSnap.data()?.readMessageCount)).toBe(Number(gDataAfter.messageCount));
 
         // Cleanup
         await groupRef.collection('messages').doc(result.messageId).delete();
-        await groupRef.update({
-            messageCount: admin.firestore.FieldValue.increment(-1)
-        });
     });
 
     it('should toggle reaction and update previews', async () => {
@@ -269,16 +262,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('MessageService Integratio
             messageId: 'some-msg-id'
         })).rejects.toThrow();
 
-        // Check archived messages throwing correct error
-        await db.collection('groups').doc(TEST_GROUP_ID).collection('message_buckets').doc('bucket1').set({ dummy: true });
-        await expect(MessageService.toggleReaction({
-            uid: TEST_UID,
-            groupId: TEST_GROUP_ID,
-            messageId: 'non-existent-msg-id-when-archived-exists'
-        })).rejects.toThrow('Message not found or archived');
 
-        // Cleanup buckets doc
-        await db.collection('groups').doc(TEST_GROUP_ID).collection('message_buckets').doc('bucket1').delete();
 
         // Forbidden check: user not in group members
         const groupRef = db.collection('groups').doc(TEST_GROUP_ID);
@@ -305,16 +289,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('MessageService Integratio
             text: 'New Text'
         })).rejects.toThrow('Message not found');
 
-        // Message not found or archived when archived bucket exists
-        await db.collection('groups').doc(TEST_GROUP_ID).collection('message_buckets').doc('bucket1').set({ dummy: true });
-        await expect(MessageService.editMessage({
-            uid: TEST_UID,
-            groupId: TEST_GROUP_ID,
-            messageId: 'non-existent-msg-id-to-edit',
-            text: 'New Text'
-        })).rejects.toThrow('Message not found or archived');
-        
-        await db.collection('groups').doc(TEST_GROUP_ID).collection('message_buckets').doc('bucket1').delete();
+
 
         // Forbidden editing someone else's message
         const msgRef = db.collection('groups').doc(TEST_GROUP_ID).collection('messages').doc('some-msg-id-to-edit');
@@ -434,15 +409,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('MessageService Integratio
             messageId: 'non-existent-msg-id-del'
         })).rejects.toThrow('Message not found');
 
-        // Message not found or archived (archived bucket exists)
-        await db.collection('groups').doc(TEST_GROUP_ID).collection('message_buckets').doc('bucket1').set({ dummy: true });
-        await expect(MessageService.deleteMessage({
-            uid: TEST_UID,
-            groupId: TEST_GROUP_ID,
-            messageId: 'non-existent-msg-id-del'
-        })).rejects.toThrow('Message not found or archived');
 
-        await db.collection('groups').doc(TEST_GROUP_ID).collection('message_buckets').doc('bucket1').delete();
 
         // Cannot delete system messages
         const sysMsgRef = db.collection('groups').doc(TEST_GROUP_ID).collection('messages').doc('sys-msg-del');

@@ -1,6 +1,7 @@
 import { admin, db } from './firebase-admin.js';
 import { GroupDocument, MemberPreview, UserDocument } from '../../types/firestore.js';
 import { t } from './i18n.js';
+import { getMessageExpireAt } from './ttl-utils.js';
 
 /**
  * Options for member removal
@@ -184,7 +185,8 @@ export async function removeMemberFromGroup(
             senderId: 'system',
             isSystemMessage: true,
             type: options.systemMessage.type,
-            messageType: options.systemMessage.type
+            messageType: options.systemMessage.type,
+            expireAt: getMessageExpireAt()
         });
     }
 

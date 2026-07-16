@@ -40,8 +40,6 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('NoteService Integration T
             await db.collection('groups').doc(gid).set({
                 name: gid === GROUP_1 ? 'Unity Test Group 1' : `Test Group ${gid}`,
                 members: [TEST_UID, 'other-user'],
-                noteCount: 0,
-                messageCount: 0,
                 timeZone: 'UTC',
                 createdAt: admin.firestore.Timestamp.now(),
                 lastInactivityCheckedAt: admin.firestore.Timestamp.now()
@@ -76,19 +74,14 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('NoteService Integration T
             const uSnap = await db.collection('users').doc(TEST_UID).get();
             expect(uSnap.data()?.totalNotes).toBe(2);
 
-            const gSnap = await db.collection('groups').doc(GROUP_1).get();
-            expect(gSnap.data()?.noteCount).toBe(2);
-
             await NoteService.deleteNote(TEST_UID, res2.personalNoteId);
 
             const gSnapAfter = await db.collection('groups').doc(GROUP_1).get();
-            expect(gSnapAfter.data()?.noteCount).toBe(1);
             expect(gSnapAfter.data()?.lastNoteByNickname).toBe('Note Tester');
 
             await NoteService.deleteNote(TEST_UID, res1.personalNoteId);
 
             const gSnapFinal = await db.collection('groups').doc(GROUP_1).get();
-            expect(gSnapFinal.data()?.noteCount).toBe(0);
             expect(gSnapFinal.data()?.lastNoteAt).toBeFalsy();
         }, 30000);
     });
@@ -110,8 +103,6 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('NoteService Integration T
             expect(result.personalNoteId).toBeDefined();
 
             for (const gid of MULTI_GROUPS) {
-                const gSnap = await db.collection('groups').doc(gid).get();
-                expect(gSnap.data()?.noteCount).toBe(1);
                 
                 const msgId = result.sharedMessageIds?.[gid];
                 expect(msgId).toBeDefined();
@@ -169,9 +160,6 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('NoteService Integration T
 
             const uSnap = await db.collection('users').doc(TEST_UID).get();
             expect(uSnap.data()?.totalNotes).toBe(0);
-
-            const gSnap = await db.collection('groups').doc(GROUP_1).get();
-            expect(gSnap.data()?.noteCount).toBe(0);
 
             spy.mockRestore();
         });

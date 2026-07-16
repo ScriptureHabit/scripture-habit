@@ -44,8 +44,7 @@ export const useChatSyncController = (
   useEffect(() => {
     if (!isViewActive || !groupId || !groupData || userReadCount === null) return;
     
-    const actualMessageCount = messages.length;
-    const totalMsgs = Math.max(groupData.messageCount || 0, actualMessageCount);
+    const totalMsgs = messages.length;
     
     const isVisible = document.visibilityState === 'visible';
     const isAppActive = isVisible || document.hasFocus();
@@ -71,15 +70,20 @@ export const useChatSyncController = (
 
   // --- INFINITE SCROLL LOGIC ---
 
+  const messagesRef = useRef(messages);
+  useEffect(() => {
+    messagesRef.current = messages;
+  }, [messages]);
+
   const fetchOlderMessages = useCallback(async () => {
-    if (!groupId || loadingOlderRef.current || messages.length === 0) return;
+    if (!groupId || loadingOlderRef.current || messagesRef.current.length === 0) return;
     
     // We use a local ref for loadingOlder to avoid closure staleness and redundant trigger
     loadingOlderRef.current = true;
     dispatch({ type: 'SET_LOADING_OLDER', isLoading: true });
 
     try {
-      const oldestMsg = messages[0];
+      const oldestMsg = messagesRef.current[0];
       if (!oldestMsg.createdAt) {
         loadingOlderRef.current = false;
         dispatch({ type: 'SET_LOADING_OLDER', isLoading: false });
@@ -101,24 +105,14 @@ export const useChatSyncController = (
         return;
       }
 
-      // Check buckets if subcollection is exhausted
-      const bucketsRef = collection(db, 'groups', groupId, 'message_buckets');
-      const bq = query(bucketsRef, orderBy('startTime', 'desc'), startAfter(oldestMsg.createdAt), limit(1));
-      const bucketSnaps = await getDocs(bq);
-
-      if (bucketSnaps.empty) {
-        dispatch({ type: 'ADD_OLDER_MESSAGES', olderMessages: [], hasMore: false });
-      } else {
-        const bucketData = bucketSnaps.docs[0].data() as { messages: Message[] };
-        dispatch({ type: 'ADD_OLDER_MESSAGES', olderMessages: [...(bucketData.messages || [])], hasMore: true });
-      }
+      dispatch({ type: 'ADD_OLDER_MESSAGES', olderMessages: [], hasMore: false });
     } catch (e) {
       console.error("[useChatSyncController] Error loading older messages", e);
     } finally {
       loadingOlderRef.current = false;
       dispatch({ type: 'SET_LOADING_OLDER', isLoading: false });
     }
-  }, [groupId, messages, dispatch]);
+  }, [groupId, dispatch]);
 
   return useMemo(() => ({
     fetchOlderMessages,

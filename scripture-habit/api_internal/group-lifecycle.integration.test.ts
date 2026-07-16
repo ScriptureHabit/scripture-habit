@@ -228,28 +228,6 @@ describe('Group Management & Lifecycle Integration', () => {
             expect(snap2.data()?.unityPercentage).toBe(100);
         });
 
-        it('should recover messageCount using Supreme Truth recount', async () => {
-            const uid = 'recovery-user-' + Date.now();
-            const gid = 'recovery-group-' + Date.now();
-            await db.collection('users').doc(uid).set({ uid, nickname: 'R1', groupIds: [gid] });
-            createdUserUids.push(uid);
 
-            await db.collection('groups').doc(gid).set({
-                id: gid, name: 'Recovery', members: [uid], messageCount: 99, // Corrupt
-                lastInactivityCheckedAt: admin.firestore.Timestamp.now()
-            });
-            createdGroupIds.push(gid);
-            await db.collection('groups').doc(gid).collection('messages').add({ text: 'M1', senderId: uid });
-
-            setup.mockAuth(uid);
-            await fetch(`${setup.baseUrl}/api/groups/update-read-status`, {
-                method: 'POST',
-                headers: { 'Authorization': 'Bearer token', 'Content-Type': 'application/json' },
-                body: JSON.stringify({ groupId: gid, readMessageCount: 0, forceRecount: true })
-            });
-
-            const snap = await db.collection('groups').doc(gid).get();
-            expect(snap.data()?.messageCount).toBe(1); // Recovered
-        });
     });
 });

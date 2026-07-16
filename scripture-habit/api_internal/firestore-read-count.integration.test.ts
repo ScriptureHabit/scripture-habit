@@ -54,8 +54,7 @@ describe('Firestore Read Count Assertion Tests', () => {
                 members: [ownerUid],
                 membersCount: 1,
                 isPublic: true,
-                ownerUserId: ownerUid,
-                messageCount: 0
+                ownerUserId: ownerUid
             });
             await db.collection('users').doc(memberUid).set({ uid: memberUid, nickname: 'Member', groupIds: [] });
 

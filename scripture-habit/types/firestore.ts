@@ -57,8 +57,6 @@ export interface GroupDocument {
     lastNoteAt?: FirestoreTimestamp | null;
     lastNoteByNickname?: string | null;
     lastNoteByUid?: string | null;
-    messageCount?: number;
-    noteCount?: number;
     lastRecapGeneratedAt?: FirestoreTimestamp;
 
     lastUnityAnnouncementDate?: string;
@@ -187,6 +185,7 @@ export interface MessageDocument {
     messageData?: Record<string, string | number>; // Dynamic metadata for system messages
     optimisticId?: string;
     clientTimestamp?: number;
+    expireAt?: FirestoreTimestamp;
 }
 
 /**

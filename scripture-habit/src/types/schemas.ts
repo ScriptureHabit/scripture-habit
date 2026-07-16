@@ -69,8 +69,6 @@ export const MessageSchema = z.object({
 export const GroupSchema = z.object({
   id: z.string(),
   name: z.string().optional(),
-  messageCount: z.number().optional(),
-  noteCount: z.number().optional(),
   members: z.array(z.string()).optional(),
   lastMessageAt: FirebaseTimestampSchema.optional(),
   lastNoteAt: FirebaseTimestampSchema.optional(),

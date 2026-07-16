@@ -38,58 +38,27 @@ If a group owner becomes inactive:
 
 ---
 
-## 3. Message Archiving (Bucket Pattern)
+## 3. Message TTL (Time-To-Live)
 
-Having too many messages in a group chat slows down real-time queries and increases database costs. To prevent this, the `ArchiveService` runs a background task (`/api/archive-old-messages`) to archive old messages using a **Bucket Pattern**.
+Having too many messages in a group chat slows down real-time queries and increases database costs. To prevent this, Firestore TTL (Time-To-Live) is configured on the `messages` collection-group.
 
-### 3.1 The Archiving Pipeline (`ArchiveService.ts`)
-The cron job finds group messages older than **30 days** and archives them in chunks:
-- **Chunking**: Messages are grouped into chunks of 50 (`BUCKET_SIZE = 50`).
-- **Deterministic Bucket ID**: To prevent duplicate entries when multiple tasks run, each bucket gets a unique ID:
-  `bucket_${timeMillis}_${firstMsg.id.substring(0, 8)}`
-  - `timeMillis`: Timestamp of the oldest message in the chunk.
-  - `firstMsg.id`: ID of the first message in the chunk.
-
-### 3.2 Transaction-Based Migration
-To ensure data safety, each chunk is migrated using a Firestore transaction:
-1. **Check**: The transaction checks if `/groups/{groupId}/message_buckets/{bucketId}` already exists. If yes, it skips the chunk.
-2. **Write**: The transaction writes the messages, the `count` (up to 50), and the `groupId` to the bucket document.
-3. **Delete**: The transaction deletes the original 50 message documents from `/groups/{groupId}/messages/{messageId}`.
-4. **Commit**: The transaction commits. If any step fails, the entire transaction rolls back to keep data consistent.
-
-### 3.3 Loading Archived History
-When a user scrolls back in time to read older messages:
-- The backend `/api/history` endpoint fetches active messages.
-- If the user scrolls past the oldest active message, the app loads the latest archived bucket.
-- The server packages this data using Firestore Bundles and sends it to the client so the UI can display older messages.
+- **Auto-Deletion**: Every message document includes an `expireAt` field set to 30 days after creation.
+- **Background Deletion**: Firestore automatically deletes documents once the current time exceeds `expireAt`.
+- **Note Preservation**: Note sharing copies (`isNote: true` messages) in the group chat are deleted by TTL, but the user's original notes at `/users/{uid}/notes/{noteId}` are kept permanently.
 
 ---
 
-## 4. Counter Synchronization
-
-We use denormalized counters (`messageCount`, `noteCount`) to improve performance. These counters can occasionally drift from the actual counts.
-- **Recounting**: For groups that have not been active in 24 hours, the system recounts the documents to verify statistics.
-
-### 4.1 Recounting with Archived Buckets
-Since archived messages are removed from the active `messages` subcollection, counting active documents alone is not enough. The recount process sums active and archived messages:
-1. Count the active message documents in `/groups/{groupId}/messages`.
-2. Sum the `.count` values of all bucket documents in `/groups/{groupId}/message_buckets`.
-3. Calculate the total: `Total Messages = activeMessageCount + Sum(bucket.count)`.
-4. Update the group's `messageCount` property in Firestore.
-
----
-
-## 5. Security & Secret Verification
+## 4. Security & Secret Verification
 
 All cron endpoints require a `CRON_SECRET` token in the request header (`Authorization: Bearer <secret>`). This ensures only authorized services (like Vercel Cron or GitHub Actions) can run maintenance or administrative jobs.
 
 ---
 
-## 6. Data Integrity & Self-Healing Sync Jobs
+## 5. Data Integrity & Self-Healing Sync Jobs
 
 To prevent long-term data degradation due to network errors, race conditions, or aborted clients, the backend includes self-healing background synchronization jobs.
 
-### 6.1 User Statistics and Membership Validation (`/api/cron/sync-user-stats`)
+### 5.1 User Statistics and Membership Validation (`/api/cron/sync-user-stats`)
 This job targets active users (who posted in the last 24 hours) in batches of 100 to reconcile their stats with absolute physical database truth:
 - **Physical Count Verification**:
   - Counts documents in the user's `notes` subcollection and updates `users/{uid}/totalNotes`.
@@ -99,7 +68,7 @@ This job targets active users (who posted in the last 24 hours) in batches of 10
   - If a group was deleted or the user was kicked but the user profile wasn't updated, the system **automatically removes** the group ID from the user's `groupIds` array and deletes the stale `users/{uid}/groupStates/{groupId}` state document.
   - All operations are written using Firestore Batches committed in chunks of **400 operations**.
 
-### 6.2 Orphaned Cheers Cleanup (`/api/cron/cleanup-orphaned-cheers`)
+### 5.2 Orphaned Cheers Cleanup (`/api/cron/cleanup-orphaned-cheers`)
 When accounts or groups are deleted, social interaction nodes (Cheers) can become orphaned.
 - **Orphan Sweeper**:
   - Fetches a batch of 200 cheers sorted by `lastCheckedAt` (oldest checked first).
@@ -110,40 +79,19 @@ When accounts or groups are deleted, social interaction nodes (Cheers) can becom
 
 ---
 
-## 7. Diagnostics & Simulated Dry-Runs
+## 6. Diagnostics & Simulated Dry-Runs
 
-### 7.1 Inactivity Check Simulation (`/api/cron/test-inactive-check/:groupId`)
+### 6.1 Inactivity Check Simulation (`/api/cron/test-inactive-check/:groupId`)
 Provides a safe, read-only diagnostic API for developers or administrators to review a group's inactivity state without modifying any databases.
 - **Simulated Actions**: Calculates the inactivity metrics for all members and reports what actions (repair, initialize, keep, or remove) the actual inactivity cron *would* take.
 - **Ghost Member Detection**: Explicitly identifies "Ghost Members" (users who are present in the root group's `members` array but lack a corresponding document in the `groups/{groupId}/members` subcollection), marking them for automatic repair.
 
 ---
 
-## 8. Data Pruning & Self-Healing Maintenance Flow
+## 7. Data Pruning & Self-Healing Maintenance Flow
 
 ```mermaid
 flowchart TD
-    subgraph Archiving [ArchiveService: Daily Cron]
-        Cron[Cron Trigger: /api/archive-old-messages] --> FetchOld[Fetch messages older than 30 days]
-        FetchOld --> Partition[Partition into chunks of BUCKET_SIZE = 50]
-        Partition --> LoopChunks[For each chunk...]
-        LoopChunks --> GenId[Generate Unique Bucket ID: bucket_timestamp_msgPrefix]
-        GenId --> StartTx[Start Firestore Transaction]
-        StartTx --> CheckExist{Bucket exists in DB?}
-        CheckExist -->|Yes| Skip[Skip chunk / Prevent duplication]
-        CheckExist -->|No| SetBucket[transaction.set message_buckets/bucketId]
-        SetBucket --> DeleteOld[transaction.delete original messages]
-        DeleteOld --> CommitTx[Commit Transaction / Atomic Move]
-    end
-
-    subgraph Recount [CounterService: Recount Loop]
-        TriggerRecount[Recount Triggered] --> ActiveCount[Count documents in active messages subcollection]
-        ActiveCount --> FetchBuckets[Fetch all documents in message_buckets subcollection]
-        FetchBuckets --> SumBuckets[Sum bucket.count properties]
-        SumBuckets --> Total[Total = Active + Summed Buckets]
-        Total --> UpdateGroup[Update group.messageCount denormalized state]
-    end
-
     subgraph SelfHealing [Self-Healing: Data Sync]
         TriggerSync[Sync Triggered: /api/cron/sync-user-stats] --> PhysicalCount[Verify & update notes/cheers count]
         PhysicalCount --> ParallelCheck[Parallel check user group memberships]

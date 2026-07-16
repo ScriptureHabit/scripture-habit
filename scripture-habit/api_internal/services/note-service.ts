@@ -1,6 +1,5 @@
 /* eslint-disable no-restricted-properties */
 import { admin, db } from '../lib/firebase-admin.js';
-import { CounterService } from './counter-service.js';
 import { UserDocument, GroupDocument } from '../../types/firestore.js';
 import { NotFoundError } from '../lib/errors.js';
 import { buildNoteSearchTokens } from '../lib/search-utils.js';
@@ -10,6 +9,7 @@ import { NotificationService } from './notification-service.js';
 import { formatDateInTimeZone, normalizeDateString } from '../../src/utils/time-utils.js';
 import { calculateUnityPercentage } from '../../src/utils/unity-utils.js';
 import { Group } from '../../src/types/chat.js';
+import { getMessageExpireAt } from '../lib/ttl-utils.js';
 
 export interface PostNoteInput {
     uid: string;
@@ -55,8 +55,7 @@ export class NoteService {
                     streakResult,
                     messagesInGroup,
                     existingNoteExists,
-                    allLatestGids,
-                    groupMembersCountMap
+                    allLatestGids
                 } = await (async () => {
                     const [userSnap, existingNoteSnap] = await Promise.all([
                         transaction.get(userRef),
@@ -102,28 +101,12 @@ export class NoteService {
 
                     const allLatestGids = [...new Set([...groupsToPost, ...(hasStreakUpdated && streakCountNew > 0 ? uGroupIds : [])])];
                     const latRefs = allLatestGids.map(gid => db.collection('groups').doc(gid).collection('messages_latest').doc('latest'));
-                    const groupRefs = allLatestGids.map(gid => db.collection('groups').doc(gid));
                     
                     let latSnaps: admin.firestore.DocumentSnapshot[] = [];
-                    let groupSnaps: admin.firestore.DocumentSnapshot[] = [];
                     if (allLatestGids.length > 0) {
-                        const allRefs = [...latRefs, ...groupRefs];
-                        const allSnaps = await transaction.getAll(...allRefs);
-                        latSnaps = allSnaps.slice(0, latRefs.length);
-                        groupSnaps = allSnaps.slice(latRefs.length);
+                        latSnaps = await transaction.getAll(...latRefs);
                     }
 
-                    const groupMembersCountMap: Record<string, number> = {};
-                    for (let i = 0; i < allLatestGids.length; i++) {
-                        const gid = allLatestGids[i];
-                        const gSnap = groupSnaps[i];
-                        if (gSnap && gSnap.exists) {
-                            const gData = gSnap.data() as GroupDocument;
-                            groupMembersCountMap[gid] = gData.membersCount || (gData.members ? gData.members.length : 0);
-                        } else {
-                            groupMembersCountMap[gid] = 0;
-                        }
-                    }
 
                     const bootStamps: Record<string, Record<string, unknown>[]> = {};
                     for (let i = 0; i < allLatestGids.length; i++) {
@@ -150,8 +133,7 @@ export class NoteService {
                         streakResult: streakRes,
                         messagesInGroup: bootStamps,
                         existingNoteExists: !!(existingNoteSnap && existingNoteSnap.exists),
-                        allLatestGids,
-                        groupMembersCountMap
+                        allLatestGids
                     };
                 })();
 
@@ -208,7 +190,8 @@ export class NoteService {
                         originalNoteId: noteRef.id,
                         scripture,
                         chapter: chapter || "",
-                        ...(clientTimestamp ? { clientTimestamp } : {})
+                        ...(clientTimestamp ? { clientTimestamp } : {}),
+                        expireAt: getMessageExpireAt()
                     };
 
                     transaction.set(msgRef, msgData);
@@ -221,9 +204,7 @@ export class NoteService {
                     };
                     messagesInGroup[gid] = [...(messagesInGroup[gid] || []), arrayMsg].slice(-25);
 
-                    const membersCount = groupMembersCountMap[gid] || 0;
-                    CounterService.increment(transaction, gRef, 'messageCount', 1, membersCount);
-                    CounterService.increment(transaction, gRef, 'noteCount', 1, membersCount);
+
 
                     const groupUpdate = {
                         lastMessageAt: serverTime,
@@ -303,7 +284,8 @@ export class NoteService {
                             messageType: isMs ? 'streakAnnouncement' : 'notePostedAnnouncement',
                             messageData: isMs
                                 ? { nickname: userNickname, userId: uid, streakCount: newTotal, isCumulative: true }
-                                : { nickname: userNickname, userId: uid }
+                                : { nickname: userNickname, userId: uid },
+                            expireAt: getMessageExpireAt()
                         };
 
                         transaction.set(msgRef, announceMsgData);
@@ -315,9 +297,7 @@ export class NoteService {
                             createdAt: admin.firestore.Timestamp.now()
                         };
                         messagesInGroup[gid] = [...(messagesInGroup[gid] || []), arrayAnnounce].slice(-25);
-                        
-                        const membersCount = groupMembersCountMap[gid] || 0;
-                        CounterService.increment(transaction, gRef, 'messageCount', 1, membersCount);
+
 
                         transaction.update(gRef, {
                             lastMessageAt: announceTime,
@@ -625,11 +605,7 @@ export class NoteService {
                     
                     updatePayload.unityPercentage = calculateUnityPercentage(simulatedGroup as unknown as Group, [], now);
 
-                    const gData = gSnap.data()!;
-                    const membersCount = gData.membersCount || (gData.members ? gData.members.length : 0);
 
-                    CounterService.increment(transaction, gSnap.ref, 'noteCount', -1, membersCount);
-                    CounterService.increment(transaction, gSnap.ref, 'messageCount', -1, membersCount);
 
                     transaction.update(gSnap.ref, updatePayload);
                     transaction.delete(mSnap.ref);

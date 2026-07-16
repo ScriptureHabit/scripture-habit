@@ -110,13 +110,9 @@ router.get('/bundle/:groupId', authenticate, verifyAppCheck, async (req: Authent
         const latestRef = groupRef.collection('messages_latest').doc('latest');
         const latestSnap = await latestRef.get();
 
-        let hasFewMessages = false;
-
         if (latestSnap.exists) {
             console.log(`[Bundle] Including messages_latest/latest document for ${groupId}`);
             bundle.add(latestSnap);
-            const messages = (latestSnap.data()?.messages || []) as unknown[];
-            hasFewMessages = messages.length < 20;
         } else {
             // Fallback: If latest aggregate does not exist, query the messages subcollection directly
             console.warn(`[Bundle] messages_latest/latest not found for ${groupId}. Querying messages collection directly...`);
@@ -125,7 +121,6 @@ router.get('/bundle/:groupId', authenticate, verifyAppCheck, async (req: Authent
             const querySnap = await q.get();
 
             bundle.add(`latest-messages-${groupId}`, querySnap);
-            hasFewMessages = querySnap.size < 20;
 
             // Trigger self-healing in the background
             waitUntil(
@@ -135,19 +130,7 @@ router.get('/bundle/:groupId', authenticate, verifyAppCheck, async (req: Authent
             );
         }
 
-        // TRUTH: If we have fewer than 20 messages, 
-        // include the latest Bucket to prevent a "History Gap" in the UI.
-        if (hasFewMessages) {
-            const bucketsSnap = await groupRef.collection('message_buckets')
-                .orderBy('endTime', 'desc')
-                .limit(1)
-                .get();
-            
-            if (!bucketsSnap.empty) {
-                console.log(`[Bundle] Including latest bucket for ${groupId} to fill history gap`);
-                bundle.add(`previous-bucket-${groupId}`, bucketsSnap);
-            }
-        }
+
 
         const bundleBuffer = bundle.build();
 

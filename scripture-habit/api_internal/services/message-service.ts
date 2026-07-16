@@ -1,9 +1,9 @@
 /* eslint-disable no-restricted-properties */
 import { admin, db } from '../lib/firebase-admin.js';
-import { CounterService } from './counter-service.js';
 import { GroupDocument, MessageDocument, UserDocument, ReactionPreview, PersonalNoteDocument, FirestoreTimestamp } from '../../types/firestore.js';
 import { formatDateInTimeZone, normalizeDateString } from '../../src/utils/time-utils.js';
 import { buildNoteSearchTokens } from '../lib/search-utils.js';
+import { getMessageExpireAt } from '../lib/ttl-utils.js';
 
 export interface PostMessageParams {
     uid: string;
@@ -164,7 +164,8 @@ export class MessageService {
                     }
                 } : {}),
                 ...(optimisticId ? { optimisticId } : {}),
-                ...(clientTimestamp ? { clientTimestamp } : {})
+                ...(clientTimestamp ? { clientTimestamp } : {}),
+                expireAt: getMessageExpireAt()
             };
 
             transaction.set(msgRef, msgData);
@@ -183,10 +184,7 @@ export class MessageService {
                 lastUpdatedAt: admin.firestore.FieldValue.serverTimestamp()
             }, { merge: true });
 
-            const gData = groupSnap.data() as GroupDocument;
-            const membersCount = gData.membersCount || (gData.members ? gData.members.length : 0);
 
-            CounterService.increment(transaction, groupRef, 'messageCount', 1, membersCount);
 
             const updatePayload = {
                 lastMessageAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -216,7 +214,7 @@ export class MessageService {
                 lastActiveAt: admin.firestore.FieldValue.serverTimestamp()
             }, { merge: true });
 
-            const members = gData.members || [];
+            const members = (groupSnap.data() as GroupDocument)?.members || [];
 
             return { messageId: msgRef.id, nickname: nickname, members };
         });
@@ -255,12 +253,7 @@ export class MessageService {
 
             if (!mSnap.exists || (needsGroupRead && !gSnap?.exists) || (needsUserRead && !uSnap?.exists)) {
                 if (!mSnap.exists) {
-                    // Check if archived
-                    const bucketsSnap = await db.collection('groups').doc(groupId).collection('message_buckets')
-                        .limit(1).get();
-                    if (!bucketsSnap.empty) {
-                        throw new Error('Message not found or archived (Archived messages are read-only)');
-                    }
+                    throw new Error('Message not found');
                 }
                 throw new Error('Not found');
             }
@@ -349,11 +342,6 @@ export class MessageService {
             ]);
 
             if (!mSnap.exists) {
-                const bucketsSnap = await db.collection('groups').doc(groupId).collection('message_buckets')
-                    .limit(1).get();
-                if (!bucketsSnap.empty) {
-                    throw new Error('Message not found or archived (Archived messages are read-only)');
-                }
                 throw new Error('Message not found');
             }
 
@@ -439,10 +427,6 @@ export class MessageService {
             const gData = gSnap.data() as GroupDocument;
 
             if (!msgSnap.exists) {
-                const bucketsSnap = await groupRef.collection('message_buckets').limit(1).get();
-                if (!bucketsSnap.empty) {
-                    throw new Error('Message not found or archived (Archived messages are read-only)');
-                }
                 throw new Error('Message not found');
             }
             const msgData = msgSnap.data() as MessageDocument;
@@ -503,11 +487,6 @@ export class MessageService {
                 (msgData.isNote && msgData.originalNoteId) ? transaction.get(noteRef) : Promise.resolve(null)
             ]);
 
-            // --- 2. EXECUTE ALL WRITES ---
-            const membersCount = gData.membersCount || (gData.members ? gData.members.length : 0);
-
-            CounterService.increment(transaction, groupRef, 'messageCount', -1, membersCount);
-
             const groupUpdate: admin.firestore.UpdateData<GroupDocument> = {};
 
             // Update latest aggregate document (recommended shrinkage method)
@@ -518,7 +497,6 @@ export class MessageService {
             }
 
             if (msgData.isNote) {
-                CounterService.increment(transaction, groupRef, 'noteCount', -1, membersCount);
                 transaction.update(db.collection('users').doc(uid), {
                     totalNotes: admin.firestore.FieldValue.increment(-1)
                 });

@@ -37,12 +37,10 @@ export default function JoinGroup() {
 
   const [memberNames, setMemberNames] = useState<{uid: string, nickname: string}[]>([]);
   const [loadingMembers, setLoadingMembers] = useState(false);
-  const [groupNoteCount, setGroupNoteCount] = useState(0);
 
   const handleJoinClick = async (groupId: string, groupData: Group) => {
     setSelectedGroup({ ...groupData, id: groupId });
     setShowConfirmModal(true);
-    setGroupNoteCount(groupData.noteCount || 0);
 
     // Use memberPreviews already in the group data to avoid security-blocked user fetches
     if (groupData.memberPreviews && groupData.memberPreviews.length > 0) {
@@ -204,9 +202,6 @@ export default function JoinGroup() {
                 <h4>
                   {t('groupChat.members')} ({selectedGroup.membersCount || 0})
                 </h4>
-                <span className="modal-note-stats">
-                  <span className="emoji">📄</span> {groupNoteCount} {t('joinGroup.notes')}
-                </span>
               </div>
               {loadingMembers ? (
                 <p className="modal-loading-text">{t('letterBox.loading') || 'Loading members...'}</p>
