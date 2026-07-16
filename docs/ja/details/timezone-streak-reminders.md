@@ -7,12 +7,12 @@
 
 **scripture-habit** のデイリー学習ルーティンは、聖書を読んでノートを共有する「ストリーク（継続日数）」機能によって強力に維持されています。ユーザーが世界各地の異なるタイムゾーンに分散しているため、通知は単一の UTC 時刻で一斉送信するのではなく、ユーザーの現地時間で正確に **夜の8:00（20:00）** に届ける必要があります。
 
-このタイムゾーン対応リマインダーシステムは、[`cron.ts`](../../../scripture-habit/api_internal/routes/cron.ts) 内の `/api/cron/streak-warning` エンドポイントおよび時間計算ユーティリティ **`StreakReminderEngine`** ([`streak-reminder.ts`](../../../scripture-habit/api_internal/lib/streak-reminder.ts)) によって制御されています。Node.js / ブラウザ標準の Internationalization (Intl) API、Firestore のインデックス上限を回避する分割クエリ、およびプッシュ通知の失敗結果から自動的にデッドトークンを排除する自己修復ループが活用されています。
+このタイムゾーン対応リマインダーシステムは、[`cron.ts`](../../../scripture-habit/api_internal/routes/cron.ts) 内の `/api/cron/streak-reminder` エンドポイントおよび時間計算ユーティリティ **`StreakReminderEngine`** ([`streak-reminder.ts`](../../../scripture-habit/api_internal/lib/streak-reminder.ts)) によって制御されています。Node.js / ブラウザ標準 of Internationalization (Intl) API、Firestore のインデックス上限を回避する分割クエリ、およびプッシュ通知の失敗結果から自動的にデッドトークンを排除する自己修復ループが活用されています。
 
 ```mermaid
 flowchart TD
     subgraph Trigger ["Cron ジョブスケジューラ"]
-        Cron["毎時実行 Cron トリガー\n(GET /api/cron/streak-warning)"]
+        Cron["毎時実行 Cron トリガー\n(GET /api/cron/streak-reminder)"]
     end
 
     subgraph Engine ["StreakReminderEngine"]

@@ -3,6 +3,37 @@
  * Pure logic for calculating timezones and eligibility for streak warnings.
  */
 
+// Cache Intl.DateTimeFormat instances to avoid high creation overhead in loops.
+const hourFormatterCache = new Map<string, Intl.DateTimeFormat>();
+const dateFormatterCache = new Map<string, Intl.DateTimeFormat>();
+
+function getCachedHourFormatter(tz: string): Intl.DateTimeFormat {
+    let formatter = hourFormatterCache.get(tz);
+    if (!formatter) {
+        formatter = new Intl.DateTimeFormat('en-US', {
+            timeZone: tz,
+            hour: 'numeric',
+            hour12: false, // 24-hour format
+        });
+        hourFormatterCache.set(tz, formatter);
+    }
+    return formatter;
+}
+
+function getCachedDateFormatter(tz: string): Intl.DateTimeFormat {
+    let formatter = dateFormatterCache.get(tz);
+    if (!formatter) {
+        formatter = new Intl.DateTimeFormat('sv-SE', {
+            timeZone: tz,
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+        });
+        dateFormatterCache.set(tz, formatter);
+    }
+    return formatter;
+}
+
 export class StreakReminderEngine {
     /**
      * Returns a list of timezones where the current local hour matches the target hour.
@@ -16,12 +47,8 @@ export class StreakReminderEngine {
 
         for (const tz of allTimezones) {
             try {
-                // Get the hour in that timezone
-                const formatter = new Intl.DateTimeFormat('en-US', {
-                    timeZone: tz,
-                    hour: 'numeric',
-                    hour12: false, // 24-hour format
-                });
+                // Get the hour in that timezone using cached formatter
+                const formatter = getCachedHourFormatter(tz);
                 
                 const hourStr = formatter.format(now);
                 let hour = parseInt(hourStr, 10);
@@ -49,12 +76,8 @@ export class StreakReminderEngine {
     static needsReminder(lastPostDate: string | null | undefined, now: Date, timeZone: string): boolean {
         let today: string;
         try {
-            const formatter = new Intl.DateTimeFormat('sv-SE', { 
-                timeZone: timeZone, 
-                year: 'numeric', 
-                month: '2-digit', 
-                day: '2-digit' 
-            });
+            // Get the date formatter using cache to avoid recreation in loops
+            const formatter = getCachedDateFormatter(timeZone);
             today = formatter.format(now);
         } catch {
             // Fallback to UTC if timezone is invalid

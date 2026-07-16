@@ -517,9 +517,9 @@ router.all('/reset-unity-at-midnight', verifyCronSecret, async (_req: Request, r
 
 /**
  * Daily Streak Reminder (Timezone-Aware)
- * Runs hourly to send 20:30 local time notifications to uncompleted users.
+ * Runs hourly to send 20:XX local time notifications to uncompleted users.
  */
-router.all('/streak-warning', verifyCronSecret, async (req: Request, res: Response) => {
+router.all('/streak-reminder', verifyCronSecret, async (req: Request, res: Response) => {
     try {
         const now = (req.headers['x-test-time'] && process.env.FIRESTORE_EMULATOR_HOST)
             ? new Date(req.headers['x-test-time'] as string)
@@ -557,30 +557,37 @@ router.all('/streak-warning', verifyCronSecret, async (req: Request, res: Respon
         const tokensByLang: Record<string, { token: string, uid: string }[]> = {};
         const userActiveTokens = new Map<string, Set<string>>();
 
-        // Parallelize token fetching in chunks of 50 to avoid N+1 serialization timeouts
-        const CHUNK_SIZE = 50;
-        for (let i = 0; i < eligibleUsers.length; i += CHUNK_SIZE) {
-            const chunk = eligibleUsers.slice(i, i + CHUNK_SIZE);
-            const fetchPromises = chunk.map(async (user) => {
-                const { data } = user;
-                const needsReminder = StreakReminderEngine.needsReminder(data.lastPostDate, now, data.timeZone);
-                if (!needsReminder) {
-                    return { user, needsReminder: false, fcmTokens: [] };
-                }
-                const tokensDoc = await db.collection('users').doc(user.id).collection('private').doc('tokens').get();
-                const fcmTokens = tokensDoc.data()?.fcmTokens || [];
-                return { user, needsReminder: true, fcmTokens };
-            });
+        // Parallelize token fetching in chunks of 500 using db.getAll to avoid N+1 serialization timeouts
+        const targetUsers: { id: string, data: admin.firestore.DocumentData }[] = [];
+        for (const user of eligibleUsers) {
+            const { data } = user;
+            const needsReminder = StreakReminderEngine.needsReminder(data.lastPostDate, now, data.timeZone);
+            if (needsReminder) {
+                targetUsers.push(user);
+            } else {
+                skippedCount++;
+            }
+        }
 
-            const chunkResults = await Promise.all(fetchPromises);
+        if (targetUsers.length > 0) {
+            const tokenRefs = targetUsers.map(user =>
+                db.collection('users').doc(user.id).collection('private').doc('tokens')
+            );
 
-            for (const res of chunkResults) {
-                if (!res.needsReminder) {
-                    skippedCount++;
-                    continue;
-                }
-                const { user, fcmTokens } = res;
-                if (fcmTokens.length === 0) continue;
+            // Fetch tokens in batches of 500 using db.getAll
+            const CHUNK_SIZE = 500;
+            const tokenDocs: admin.firestore.DocumentSnapshot[] = [];
+
+            for (let i = 0; i < tokenRefs.length; i += CHUNK_SIZE) {
+                const chunkRefs = tokenRefs.slice(i, i + CHUNK_SIZE);
+                const snaps = await db.getAll(...chunkRefs);
+                tokenDocs.push(...snaps);
+            }
+
+            tokenDocs.forEach((docSnap, index) => {
+                const user = targetUsers[index];
+                const fcmTokens: string[] = docSnap.data()?.fcmTokens || [];
+                if (fcmTokens.length === 0) return;
 
                 userActiveTokens.set(user.id, new Set(fcmTokens));
 
@@ -590,7 +597,7 @@ router.all('/streak-warning', verifyCronSecret, async (req: Request, res: Respon
                 for (const token of fcmTokens) {
                     tokensByLang[lang].push({ token, uid: user.id });
                 }
-            }
+            });
         }
 
         // Send notifications per language

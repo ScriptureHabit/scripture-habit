@@ -72,7 +72,7 @@ Firestore messaging supports high-volume sending, but it has a 500-token limit p
 
 ## 🩹 Self-Healing Token Lifecycle
 
-Mobile app uninstalls or device token expirations leave invalid tokens in the database. The `/api/streak-warning` and `cleanupTokens` services use a self-healing feedback loop:
+Mobile app uninstalls or device token expirations leave invalid tokens in the database. The `/api/streak-reminder` and `cleanupTokens` services use a self-healing feedback loop:
 
 1. **Detection**: The Admin SDK reports `messaging/invalid-registration-token`.
 2. **Capture**: Failed tokens are extracted from the multicast response.

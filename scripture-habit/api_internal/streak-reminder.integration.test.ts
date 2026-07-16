@@ -3,7 +3,7 @@ import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from 'vites
 import { db, messaging } from './lib/firebase-admin.js';
 import { TestSetup } from './test-setup.js';
 
-describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Streak Warning Integration', () => {
+describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Streak Reminder Integration', () => {
     const setup = new TestSetup();
     const TEST_TODAY = '2026-05-18';
     const TEST_YESTERDAY = '2026-05-17';
@@ -107,7 +107,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Streak Warning Integratio
             responses: [{ success: true }]
         });
 
-        const response = await fetch(`${setup.baseUrl}/api/cron/streak-warning`, {
+        const response = await fetch(`${setup.baseUrl}/api/cron/streak-reminder`, {
             method: 'POST',
             headers: {
                 'Authorization': 'Bearer test-secret',
@@ -161,7 +161,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Streak Warning Integratio
             ]
         });
 
-        const response = await fetch(`${setup.baseUrl}/api/cron/streak-warning`, {
+        const response = await fetch(`${setup.baseUrl}/api/cron/streak-reminder`, {
             method: 'POST',
             headers: {
                 'Authorization': 'Bearer test-secret',
@@ -171,7 +171,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Streak Warning Integratio
 
         expect(response.status).toBe(200);
         const data = await response.json();
-        console.log('DEBUG: Streak warning cleanup stats:', data);
+        console.log('DEBUG: Streak reminder cleanup stats:', data);
         
         // Wait for Firestore emulator to reflect updates
         await new Promise(r => setTimeout(r, 500));
@@ -208,7 +208,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Streak Warning Integratio
             ]
         });
 
-        const response = await fetch(`${setup.baseUrl}/api/cron/streak-warning`, {
+        const response = await fetch(`${setup.baseUrl}/api/cron/streak-reminder`, {
             method: 'POST',
             headers: {
                 'Authorization': 'Bearer test-secret',
@@ -218,7 +218,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Streak Warning Integratio
 
         expect(response.status).toBe(200);
         const data = await response.json();
-        console.log('DEBUG: Streak warning all-invalid cleanup stats:', data);
+        console.log('DEBUG: Streak reminder all-invalid cleanup stats:', data);
         
         // Wait for Firestore emulator to reflect updates
         await new Promise(r => setTimeout(r, 500));

@@ -7,12 +7,12 @@
 
 The daily participation loop of **scripture-habit** is driven by streaks—consecutive days of scripture reading and note sharing. Because users are distributed globally, the system must deliver warnings at a consistent local time (exactly **8:00 PM / 20:00 local time**) rather than a single unified UTC hour.
 
-This system is managed by the serverless cron handler `/api/cron/streak-warning` inside [`cron.ts`](../../scripture-habit/api_internal/routes/cron.ts) and the core timezone calculator **`StreakReminderEngine`** ([`streak-reminder.ts`](../../scripture-habit/api_internal/lib/streak-reminder.ts)). It leverages the native JavaScript Internationalization (Intl) API, partitioned queries to bypass Firestore's limitations, and an automated self-healing multicast feedback loop.
+This system is managed by the serverless cron handler `/api/cron/streak-reminder` inside [`cron.ts`](../../scripture-habit/api_internal/routes/cron.ts) and the core timezone calculator **`StreakReminderEngine`** ([`streak-reminder.ts`](../../scripture-habit/api_internal/lib/streak-reminder.ts)). It leverages the native JavaScript Internationalization (Intl) API, partitioned queries to bypass Firestore's limitations, and an automated self-healing multicast feedback loop.
 
 ```mermaid
 flowchart TD
     subgraph Trigger ["Cron Job Scheduler"]
-        Cron["Hourly Cron Trigger\n(GET /api/cron/streak-warning)"]
+        Cron["Hourly Cron Trigger\n(GET /api/cron/streak-reminder)"]
     end
 
     subgraph Engine ["StreakReminderEngine"]

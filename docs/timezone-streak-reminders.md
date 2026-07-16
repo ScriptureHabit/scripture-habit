@@ -1,9 +1,9 @@
 # Timezone-Aware Local Streak Reminder System
 
 > [!WARNING]
-> **TEMPORARILY DISABLED**: As of May 28, 2026, the timezone-aware daily streak warning reminder notifications logic in `/api/cron/streak-warning` has been temporarily disabled (commented out) and bypassed to return mock stats. To re-enable, remove the bypass block from [`cron.ts`](../scripture-habit/api_internal/routes/cron.ts) and revert the skipped integration tests in [`cron.integration.test.ts`](../scripture-habit/api_internal/routes/cron.integration.test.ts) and [`streak-warning.integration.test.ts`](../scripture-habit/api_internal/streak-warning.integration.test.ts).
+> **TEMPORARILY DISABLED**: As of May 28, 2026, the timezone-aware daily streak warning reminder notifications logic in `/api/cron/streak-reminder` has been temporarily disabled (commented out) and bypassed to return mock stats. To re-enable, remove the bypass block from [`cron.ts`](../scripture-habit/api_internal/routes/cron.ts) and revert the skipped integration tests in [`cron.integration.test.ts`](../scripture-habit/api_internal/routes/cron.integration.test.ts) and [`streak-reminder.integration.test.ts`](../scripture-habit/api_internal/streak-reminder.integration.test.ts).
 
-To support users worldwide, Scripture Habit has a timezone-aware streak reminder engine (`api_internal/lib/streak-reminder.ts` & `/api/streak-warning` in `cron.ts`).
+To support users worldwide, Scripture Habit has a timezone-aware streak reminder engine (`api_internal/lib/streak-reminder.ts` & `/api/streak-reminder` in `cron.ts`).
 
 Instead of sending notifications to all users at a single UTC hour, the system runs hourly background checks, detects which timezones have reached **8:00 PM (20:00) local time**, and sends localized push notifications to users who have not finished their study for the day.
 
@@ -15,7 +15,7 @@ The reminder process uses an hourly Cron trigger, the `Intl` API for timezone ca
 
 ```mermaid
 flowchart TD
-    A[Hourly Cron Trigger / api/streak-warning] --> B[Step 1: Resolve Active Timezones]
+    A[Hourly Cron Trigger / api/streak-reminder] --> B[Step 1: Resolve Active Timezones]
     B -->|Filter 20:00 Local Time| C[Step 2: Firestore Chunked Querying]
     C -->|Chunked Timezones in array| D[Step 3: User Streak Evaluation]
     D -->|Check needsReminder| E[Step 4: Language Bundling & Localized FCM Payload]
@@ -87,7 +87,7 @@ Push notifications are sent using `messaging.sendEachForMulticast`, which accept
 
 When apps are uninstalled or tokens expire, "ghost tokens" remain in the database. Trying to send notifications to these tokens slows down the system.
 
-The `/api/streak-warning` endpoint automatically cleans these up using feedback:
+The `/api/streak-reminder` endpoint automatically cleans these up using feedback:
 
 1. **Status Checks**: The Firebase Admin SDK returns a detailed response array mapping each token to a success/failure status.
 2. **Error Detection**: If a push fails, the system checks for these error codes:

@@ -457,9 +457,9 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Cron Routes Integration',
         });
     });
 
-    // ─── /streak-warning ─────────────────────────────────────────────────────
+    // ─── /streak-reminder ────────────────────────────────────────────────────
 
-    describe.skip('GET /streak-warning', () => {
+    describe.skip('GET /streak-reminder', () => {
         it('should skip when no timezones match target hour (line 488)', async () => {
             // Inject a time guaranteed to match 0 timezones at hour 25 (invalid)
             // We use x-test-time header with a time where no tz has hour 20
@@ -468,7 +468,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Cron Routes Integration',
             const { StreakReminderEngine } = await import('../lib/streak-reminder.js');
             const spy = vi.spyOn(StreakReminderEngine, 'getTargetTimezones').mockReturnValue([]);
 
-            const res = await fetch(`${setup.baseUrl}/api/cron/streak-warning`, {
+            const res = await fetch(`${setup.baseUrl}/api/cron/streak-reminder`, {
                 headers: cronHeaders
             });
             expect(res.status).toBe(200);
@@ -507,7 +507,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Cron Routes Integration',
                 responses: [{ success: true }]
             } as any);
 
-            const res = await fetch(`${setup.baseUrl}/api/cron/streak-warning`, {
+            const res = await fetch(`${setup.baseUrl}/api/cron/streak-reminder`, {
                 headers: cronHeaders
             });
             expect(res.status).toBe(200);
@@ -549,7 +549,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Cron Routes Integration',
                 }]
             } as any);
 
-            const res = await fetch(`${setup.baseUrl}/api/cron/streak-warning`, {
+            const res = await fetch(`${setup.baseUrl}/api/cron/streak-reminder`, {
                 headers: cronHeaders
             });
             expect(res.status).toBe(200);
@@ -580,7 +580,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Cron Routes Integration',
             vi.spyOn(StreakReminderEngine, 'getTargetTimezones').mockReturnValue(['Asia/Tokyo']);
             vi.spyOn(StreakReminderEngine, 'needsReminder').mockReturnValue(false);
 
-            const res = await fetch(`${setup.baseUrl}/api/cron/streak-warning`, {
+            const res = await fetch(`${setup.baseUrl}/api/cron/streak-reminder`, {
                 headers: cronHeaders
             });
             expect(res.status).toBe(200);
@@ -598,7 +598,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Cron Routes Integration',
                 throw new Error('Streak DB error');
             });
 
-            const res = await fetch(`${setup.baseUrl}/api/cron/streak-warning`, {
+            const res = await fetch(`${setup.baseUrl}/api/cron/streak-reminder`, {
                 headers: cronHeaders
             });
             expect(res.status).toBe(500);

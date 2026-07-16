@@ -1,9 +1,9 @@
 # タイムゾーンを考慮したローカルストリーク通知システム
 
 > [!WARNING]
-> **一時的な無効化**: この機能は2026年5月28日時点で一時的に無効化（ロジックのコメントアウト）され、モック統計を返すバイパス状態になっています。再有効化するには、[`cron.ts`](../../scripture-habit/api_internal/routes/cron.ts) 内のバイパスブロックを削除し、[`cron.integration.test.ts`](../../scripture-habit/api_internal/routes/cron.integration.test.ts) と [`streak-warning.integration.test.ts`](../../scripture-habit/api_internal/streak-warning.integration.test.ts) 内のスキップされた統合テストを復元してください。
+> **一時的な無効化**: この機能は2026年5月28日時点で一時的に無効化（ロジックのコメントアウト）され、モック統計を返すバイパス状態になっています。再有効化するには、[`cron.ts`](../../scripture-habit/api_internal/routes/cron.ts) 内のバイパスブロックを削除し、[`cron.integration.test.ts`](../../scripture-habit/api_internal/routes/cron.integration.test.ts) と [`streak-reminder.integration.test.ts`](../../scripture-habit/api_internal/streak-reminder.integration.test.ts) 内のスキップされた統合テストを復元してください。
 
-世界中のユーザーをサポートするため、Scripture Habitにはタイムゾーンを考慮したストリークリマインダーエンジン（`api_internal/lib/streak-reminder.ts` および `cron.ts` 内の `/api/streak-warning`）が備わっています。
+世界中のユーザーをサポートするため、Scripture Habitにはタイムゾーンを考慮したストリークリマインダーエンジン（`api_internal/lib/streak-reminder.ts` および `cron.ts` 内の `/api/streak-reminder`）が備わっています。
 
 単一のUTC時間ですべてのユーザーに一斉に通知を送信するのではなく、システムは毎時バックグラウンドチェックを実行して、**現地時間の午後8:00（20:00）**に達したタイムゾーンを検出し、その日の学習をまだ終えていないユーザーに対してローカライズされたプッシュ通知を送信します。
 
@@ -15,7 +15,7 @@
 
 ```mermaid
 flowchart TD
-    A[毎時のクロン・トリガー / api/streak-warning] --> B[ステップ 1: アクティブなタイムゾーンの解決]
+    A[毎時のクロン・トリガー / api/streak-reminder] --> B[ステップ 1: アクティブなタイムゾーンの解決]
     B -->|現地時間 20:00 でフィルタ| C[ステップ 2: Firestoreのチャンク化クエリ]
     C -->|配列内のチャンク化されたタイムゾーン| D[ステップ 3: ユーザーストリークの評価]
     D -->|needsReminder をチェック| E[ステップ 4: 言語ごとのバンドル＆ローカライズされたFCMペイロード]
@@ -87,7 +87,7 @@ Firestoreは、`where(field, 'in', Array)` クエリを最大 **10個の配列�
 
 アプリがアンインストールされたり、トークンが期限切れになったりすると、データベースに「ゴーストトークン」が残ります。これらのトークンに通知を送信しようとすると、システム全体の速度が低下します。
 
-`/api/streak-warning` エンドポイントは、送信結果（フィードバック）を使用してこれらを自動的にクリーンアップします。
+`/api/streak-reminder` エンドポイントは、送信結果（フィードバック）を使用してこれらを自動的にクリーンアップします。
 
 1. **ステータスチェック**: Firebase Admin SDKは、各トークンを成功/失敗のステータスにマッピングする詳細なレスポンス配列を返します。
 2. **エラー検出**: プッシュ送信が失敗した場合、システムは以下のエラーコードをチェックします。
