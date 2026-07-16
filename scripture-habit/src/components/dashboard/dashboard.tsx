@@ -55,7 +55,6 @@ const Dashboard: FC = () => {
   const { t, language, isLoaded, translateChapterField } = useLanguage();
   
   const { activeModal, setActiveModal } = useModalStore();
-  const progressRef = useRef<HTMLDivElement>(null);
 
   // Initialize state from URL or location
   const getInitialState = useCallback(() => {
@@ -164,12 +163,6 @@ const Dashboard: FC = () => {
   const { markWelcomeStorySeen, markTourSeen, updateNickname } = useDashboardActions(user, userData);
 
   // 2. Effects
-  useEffect(() => {
-    if (progressRef.current && (userData?.daysStudiedCount !== undefined)) {
-      const percentage = ((userData.daysStudiedCount || 0) % 7) / 7 * 100;
-      progressRef.current.style.width = `${percentage}%`;
-    }
-  }, [userData?.daysStudiedCount]);
 
   // Clear unity overrides at midnight local time
   useEffect(() => {
@@ -317,7 +310,7 @@ const Dashboard: FC = () => {
             getReadingPlanUrl={(script) => getGospelLibraryUrl(null, script, language)}
             translateChapterField={translateChapterField} isJoiningInvite={isJoiningInvite} hasGroups={enrichedUserGroups.length > 0} 
             setIsModalOpen={setIsModalOpen} setShowWelcomeStory={setShowWelcomeStory} 
-            setShowEditProfileModal={setShowEditProfileModal} setNewNickname={setNewNickname} progressRef={progressRef}
+            setShowEditProfileModal={setShowEditProfileModal} setNewNickname={setNewNickname}
             kickDate={kickDate}
           />
         )}

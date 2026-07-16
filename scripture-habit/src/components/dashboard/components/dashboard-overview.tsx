@@ -1,4 +1,4 @@
-import { FC, RefObject } from 'react';
+import { FC } from 'react';
 import { Link } from 'react-router-dom';
 import { UilPlus, UilPen } from '@iconscout/react-unicons';
 import Mascot from '../../mascot/mascot';
@@ -20,7 +20,6 @@ interface DashboardOverviewProps {
   setShowWelcomeStory: (show: boolean) => void;
   setShowEditProfileModal: (show: boolean) => void;
   setNewNickname: (name: string) => void;
-  progressRef: RefObject<HTMLDivElement | null>;
   kickDate?: string | null;
 }
 
@@ -37,7 +36,6 @@ const DashboardOverview: FC<DashboardOverviewProps> = ({
   setShowWelcomeStory,
   setShowEditProfileModal,
   setNewNickname,
-  progressRef,
   kickDate
 }) => {
   return (
@@ -96,8 +94,8 @@ const DashboardOverview: FC<DashboardOverviewProps> = ({
           </div>
           <div className="mini-progress-bar">
             <div
-              ref={progressRef}
               className="mini-progress-fill mini-progress-fill-transition"
+              style={{ width: `${((userData.daysStudiedCount || 0) % 7) / 7 * 100}%` }}
             ></div>
           </div>
         </div>
