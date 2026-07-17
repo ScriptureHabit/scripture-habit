@@ -44,7 +44,7 @@ npm install
 To enable a complete local sandbox with high fidelity (Authentication, Firestore, and Hosting), run:
 ```bash
 # This automatically spins up emulators on local ports
-npx firebase emulators:start
+npx firebase emulators:start --project scripture-habit-auth
 ```
 
 ### 3. Seed Local Database 🎮
