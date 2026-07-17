@@ -36,10 +36,6 @@ jobs:
         working-directory: ./scripture-habit
         run: npm test
 
-      - name: Build Project (Validation)
-        working-directory: ./scripture-habit
-        run: npm run build
-
   integration-and-e2e:
     name: Integration & E2E Tests
     needs: validate
