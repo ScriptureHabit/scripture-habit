@@ -29,7 +29,7 @@ final-project/
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 All development, seeding, and execution commands should be run inside the `scripture-habit` directory.
 
@@ -44,10 +44,10 @@ npm install
 To enable a complete local sandbox with high fidelity (Authentication, Firestore, and Hosting), run:
 ```bash
 # This automatically spins up emulators on local ports
-npx firebase emulators:start
+npx firebase emulators:start --project scripture-habit-auth
 ```
 
-### 3. Seed Local Database 🎮
+### 3. Seed Local Database
 Connecting to an empty local emulator makes visual verification difficult. We provide a robust, idempotent database seeding utility.
 Run the following script to immediately populate a production-like workspace with test users, streaks, study history, and real-time chat sync data:
 ```bash
@@ -60,10 +60,10 @@ npm run db:seed
 Run the hot-reloading Dev server (Vite) and the serverless Express backend server:
 ```bash
 # Run Frontend (Vite)
-npm run dev
+cd scripture-habit && npm run dev
 
 # Run Backend (Express API)
-npm run server
+cd scripture-habit/backend && npm start
 ```
 
 ---
