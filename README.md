@@ -29,7 +29,7 @@ final-project/
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 All development, seeding, and execution commands should be run inside the `scripture-habit` directory.
 
@@ -60,10 +60,10 @@ npm run db:seed
 Run the hot-reloading Dev server (Vite) and the serverless Express backend server:
 ```bash
 # Run Frontend (Vite)
-npm run dev
+cd scripture-habit && npm run dev
 
 # Run Backend (Express API)
-npm run server
+cd scripture-habit/backend && npm start
 ```
 
 ---
