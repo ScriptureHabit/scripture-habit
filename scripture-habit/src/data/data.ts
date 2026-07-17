@@ -52,24 +52,14 @@ export type ScriptureValue =
     | "BYU Speeches" 
     | "Other";
 
-export interface ScriptureOption {
-    value: ScriptureValue;
-    label: string;
-}
-
-const SCRIPTURE_VALUES: ScriptureValue[] = [
-    "Old Testament",
-    "New Testament",
-    "Book of Mormon",
-    "Doctrine and Covenants",
-    "Pearl of Great Price",
-    "Ordinances and Proclamations",
-    "General Conference",
-    "BYU Speeches",
-    "Other"
-];
-
-export const ScripturesOptions: ScriptureOption[] = SCRIPTURE_VALUES.map(value => ({
-    value,
-    label: value
-}));
+export const SCRIPTURE_TRANSLATION_MAP: Record<ScriptureValue, string> = {
+    "Old Testament": "scriptures.oldTestament",
+    "New Testament": "scriptures.newTestament",
+    "Book of Mormon": "scriptures.bookOfMormon",
+    "Doctrine and Covenants": "scriptures.doctrineAndCovenants",
+    "Pearl of Great Price": "scriptures.pearlOfGreatPrice",
+    "Ordinances and Proclamations": "scriptures.ordinancesAndProclamations",
+    "General Conference": "scriptures.generalConference",
+    "BYU Speeches": "scriptures.byuSpeeches",
+    "Other": "scriptures.other"
+};

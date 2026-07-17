@@ -24,6 +24,7 @@ import { removeNoteHeader } from '../../utils/note-utils';
 import { UserData } from '../../types/user';
 import { Group, Message } from '../../types/chat';
 import { Note } from '../../types/note';
+import { SCRIPTURE_TRANSLATION_MAP, ScriptureValue } from '../../data/data';
 
 interface Suggestion {
     translated: string;
@@ -105,7 +106,6 @@ const NewNote: FC<NewNoteProps> = ({
     const glUrl = useMemo(() => getGospelLibraryUrl(scripture, chapter, language), [scripture, chapter, language]);
     const isUrl = typeof chapter === 'string' && chapter.startsWith('http');
 
-
     // Sync state for Edit Mode
     useEffect(() => {
         if (noteToEdit) {
@@ -141,17 +141,12 @@ const NewNote: FC<NewNoteProps> = ({
         );
     };
 
-    const translatedScripturesOptions = [
-        { value: 'Old Testament', label: t('scriptures.oldTestament') },
-        { value: 'New Testament', label: t('scriptures.newTestament') },
-        { value: 'Book of Mormon', label: t('scriptures.bookOfMormon') },
-        { value: 'Doctrine and Covenants', label: t('scriptures.doctrineAndCovenants') },
-        { value: 'Pearl of Great Price', label: t('scriptures.pearlOfGreatPrice') },
-        { value: 'General Conference', label: t('scriptures.generalConference') },
-        { value: 'BYU Speeches', label: t('scriptures.byuSpeeches') },
-        { value: 'Ordinances and Proclamations', label: t('scriptures.ordinancesAndProclamations') },
-        { value: 'Other', label: t('scriptures.other') },
-    ];
+    const translatedScripturesOptions = Object.entries(SCRIPTURE_TRANSLATION_MAP).map(
+        ([value, key]) => ({
+            value: value as ScriptureValue,
+            label: t(key)
+        })
+    );
 
     // Sub-modal views
     if (showRandomMenu) {

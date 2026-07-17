@@ -4,6 +4,8 @@
  * but this utility ensures they are present even if the main i18n is missing them.
  */
 
+import { SCRIPTURE_TRANSLATION_MAP } from '../../../data/data';
+
 export const getNoteLabelFallback = (key: string, lang: string, originalVal: string) => {
     // If the label is not just the key, it means i18n found a value
     const isEnglishKey = /Category|Chapter|Comment|Scripture|Talk|Speech|Title/.test(originalVal);
@@ -37,16 +39,8 @@ export const getNoteLabelFallback = (key: string, lang: string, originalVal: str
 export const translateScriptureName = (name: string, t: (key: string) => string): string => {
     if (!name) return '';
     const map: Record<string, string> = {
-        // English
-        'Old Testament': 'scriptures.oldTestament',
-        'New Testament': 'scriptures.newTestament',
-        'Book of Mormon': 'scriptures.bookOfMormon',
-        'Doctrine and Covenants': 'scriptures.doctrineAndCovenants',
-        'Pearl of Great Price': 'scriptures.pearlOfGreatPrice',
-        'Ordinances and Proclamations': 'scriptures.ordinancesAndProclamations',
-        'General Conference': 'scriptures.generalConference',
-        'BYU Speeches': 'scriptures.byuSpeeches',
-        'Other': 'scriptures.other',
+        // English (Shared config)
+        ...SCRIPTURE_TRANSLATION_MAP,
         // Japanese
         '旧約聖書': 'scriptures.oldTestament',
         '新約聖書': 'scriptures.newTestament',

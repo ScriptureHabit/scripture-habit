@@ -66,6 +66,17 @@ describe('gospel-library-mapper', () => {
             expect(getGospelLibraryUrl(null, '')).toBeNull();
             expect(getGospelLibraryUrl(null, 'Not a real book 1:1')).toBeNull();
         });
+
+        it('should detect volume from multi-lingual chapter names when volume is null', () => {
+            // Portuguese (Book of Mormon)
+            expect(getGospelLibraryUrl(null, '1 Néfi 3:7', 'pt')).toBe('https://www.churchofjesuschrist.org/study/scriptures/bofm/1-ne/3?lang=por&id=p7#p7');
+            // Korean (Book of Mormon)
+            expect(getGospelLibraryUrl(null, '니파이전서 3:7', 'ko')).toBe('https://www.churchofjesuschrist.org/study/scriptures/bofm/1-ne/3?lang=kor&id=p7#p7');
+            // Portuguese (Old Testament)
+            expect(getGospelLibraryUrl(null, 'Gênesis 1:1', 'pt')).toBe('https://www.churchofjesuschrist.org/study/scriptures/ot/gen/1?lang=por&id=p1#p1');
+            // Korean (Old Testament)
+            expect(getGospelLibraryUrl(null, '창세기 1:1', 'ko')).toBe('https://www.churchofjesuschrist.org/study/scriptures/ot/gen/1?lang=kor&id=p1#p1');
+        });
     });
 
     describe('getCategoryFromScripture', () => {

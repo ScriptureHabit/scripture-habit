@@ -304,8 +304,6 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
         return translateBookName(normalized.trim());
     }, [translateBookName]);
 
-
-
     const getValueFromPath = useCallback((key: string): TranslationValue | null => {
         const keys = key.split('.');
         let current: TranslationValue | undefined = translations;
