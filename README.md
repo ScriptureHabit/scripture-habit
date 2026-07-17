@@ -47,7 +47,7 @@ To enable a complete local sandbox with high fidelity (Authentication, Firestore
 npx firebase emulators:start --project scripture-habit-auth
 ```
 
-### 3. Seed Local Database 🎮
+### 3. Seed Local Database
 Connecting to an empty local emulator makes visual verification difficult. We provide a robust, idempotent database seeding utility.
 Run the following script to immediately populate a production-like workspace with test users, streaks, study history, and real-time chat sync data:
 ```bash
