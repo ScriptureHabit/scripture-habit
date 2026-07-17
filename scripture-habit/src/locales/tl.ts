@@ -69,11 +69,11 @@ export default {
             faq: {
                 title: "Mga Madalas Itanong",
                 q1: "Paano ko sisimulan ang gawi sa pag-aaral ng banal na kasulatan?",
-                a1: "Ang pinakamahusay na paraan upang simulan the gawi sa banal na kasulatan ay magsimula sa maliit at maging pare-pareho. Ang 3-araw na tuntunin ng Scripture Habit ay tumutulong sa iyo na mapanatili ang isang pare-parehong ritmo nang hindi nakakaramdam ng labis na pasanin.",
+                a1: "Mahalaga na mapatibay ang isa't isa. Sinusuportahan ng Scripture Habit ang paglikha ng angkop na kapaligiran para doon.",
                 q2: "Ang Scripture Habit ba ay isang opisyal na app ng Simbahan?",
                 a2: "Ang Scripture Habit ay isang personal na proyekto na naglalayong suportahan ang mga miyembro ng Ang Simbahan ni Jesucristo ng mga Banal sa mga Huling Araw at ang lahat ng nag-aaral ng banal na kasulatan. Ito ay hindi isang opisyal na app ng Simbahan, ngunit ito ay idinisenyo upang gumana nang maayos kasama ang Gospel Library.",
-                q3: "Maaari ko ba itong gamitin para sa pag-aaral ng Biblia?",
-                a3: "Tiyak! Ang Scripture Habit ay idinisenyo para sa anumang pag-aaral ng banal na kasulatan, kabilang ang Biblia (Lumang Tipan at Bagong Tipan), Aklat ni Mormon, at iba pang banal na teksto."
+                q3: "Maaari ko ba itong i-download mula sa mga app store (App Store / Google Play)?",
+                a3: "Ang app na ito ay ibinibigay bilang isang PWA (Progressive Web App). Maaari mo itong i-install sa pamamagitan ng direktang pagbubukas nito sa iyong browser at pagpili ng \"Idagdag sa Home Screen\" mula sa menu."
             }
         }
     },

@@ -69,11 +69,11 @@ export default {
             faq: {
                 title: "Câu hỏi thường gặp",
                 q1: "Làm thế nào để tôi bắt đầu thói quen học dã ký thánh thư?",
-                a1: "Cách tốt nhất để bắt đầu thói quen đọc thánh thư là bắt đầu từ việc nhỏ và kiên trì. Quy tắc 3 ngày của Scripture Habit giúp bạn duy trì nhịp độ ổn định mà không cảm thấy quá tải.",
+                a1: "Gây dựng đức tin lẫn nhau là rất quan trọng. Scripture Habit hỗ trợ tạo ra môi trường cho điều đó.",
                 q2: "Scripture Habit có phải là ứng dụng chính thức của Giáo hội không?",
                 a2: "Scripture Habit là một dự án cá nhân nhằm hỗ trợ các thành viên của Giáo Hội Các Thánh Hữu Ngày Sau của Chúa Giê-su Ky Tô và tất cả học viên thánh thư. Đây không phải là ứng dụng chính thức của Giáo hội, nhưng nó được thiết kế để hoạt động liền mạch với Thư viện Phúc âm.",
-                q3: "Tôi có thể sử dụng nó để học Kinh Thánh không?",
-                a3: "Hoàn toàn có thể! Scripture Habit được thiết kế cho bất kỳ việc học thánh thư nào, bao gồm Kinh Thánh (Cựu Ước và Tân Ước), Sách Mặc Môn và các văn bản thiêng liêng khác."
+                q3: "Tôi có thể tải ứng dụng này từ các cửa hàng ứng dụng (App Store / Google Play) không?",
+                a3: "Ứng dụng này được cung cấp dưới dạng PWA (Progressive Web App). Bạn có thể cài đặt bằng cách mở trực tiếp trong trình duyệt và chọn \"Thêm vào màn hình chính\" từ menu."
             }
         }
     },

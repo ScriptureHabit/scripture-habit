@@ -806,11 +806,11 @@ export default {
             faq: {
                 title: "Frequently Asked Questions",
                 q1: "How do I start a scripture study habit?",
-                a1: "The best way to start a scripture habit is to start small and be consistent. Scripture Habit's 3-day rule helps you maintain a steady rhythm without feeling overwhelmed.",
+                a1: "It is important to edify one another. Scripture Habit supports creating the right environment for doing just that.",
                 q2: "Is Scripture Habit an official LDS app?",
                 a2: "Scripture Habit is a personal project intended to support members of The Church of Jesus Christ of Latter-day Saints and all scripture students. It is not an official app of the Church, but it is designed to work seamlessly with the Gospel Library.",
-                q3: "Can I use it for Bible study?",
-                a3: "Absolutely! Scripture Habit is designed for any scripture study, including the Bible (Old and New Testament), Book of Mormon, and other sacred texts."
+                q3: "Can I download it from the app stores (App Store / Google Play)?",
+                a3: "This app is provided as a PWA (Progressive Web App). You can install it by opening it directly in your browser and selecting \"Add to Home Screen\" from the menu."
             }
         }
     }

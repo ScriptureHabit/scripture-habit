@@ -69,11 +69,11 @@ export default {
             faq: {
                 title: "Perguntas frequentes",
                 q1: "Como inicio um hábito de estudo das escrituras?",
-                a1: "A melhor maneira de começar um hábito com as escrituras é começar pequeno e ser consistente. A regra de 3 dias do Scripture Habit ajuda você a manter um ritmo constante sem se sentir sobrecarregado.",
+                a1: "É importante edificar-se uns aos outros. O Scripture Habit apoia a criação de um ambiente para isso.",
                 q2: "O Scripture Habit é um aplicativo oficial da Igreja?",
                 a2: "O Scripture Habit é um projeto pessoal destinado a apoiar os membros de A Igreja de Jesus Cristo dos Santos dos Últimos Dias e todos os estudantes das escrituras. Não é um aplicativo oficial da Igreja, mas foi projetado para funcionar perfeitamente com o aplicativo Biblioteca do Evangelho.",
-                q3: "Posso usá-lo para estudar a Bíblia?",
-                a3: "Com certeza! O Scripture Habit foi projetado para qualquer estudo das escrituras, incluindo a Bíblia (Velho e Novo Testamento), o Livro de Mórmon e outros textos sagrados."
+                q3: "Posso baixar o aplicativo nas lojas de aplicativos (App Store / Google Play)?",
+                a3: "Este aplicativo é fornecido como um PWA (Progressive Web App). Você pode instalá-lo abrindo-o diretamente no navegador e selecionando \"Adicionar à tela de início\" no menu."
             }
         }
     },

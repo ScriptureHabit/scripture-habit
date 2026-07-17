@@ -69,11 +69,11 @@ export default {
             faq: {
                 title: "Maswali yanayoulizwa mara kwa mara",
                 q1: "Ninawezaje kuanza tabia ya kujifunza maandiko?",
-                a1: "Njia bora ya kuanza tabia ya maandiko ni kuanza kidogo na kuwa thabiti. Sheria ya siku 3 ya Scripture Habit inakusaidia kudumisha mdundo thabiti bila kuhisi kulelemewa.",
+                a1: "Ni muhimu kujengana mmoja na mwenzake. Scripture Habit inasaidia kuunda mazingira ya kufanya hivyo.",
                 q2: "Je, Scripture Habit ni programu rasmi ya Kanisa?",
                 a2: "Scripture Habit ni mradi wa kibinafsi uliokusudiwa kusaida washiriki wa Kanisa la Yesu Kristo la Waumini wa Siku za Mwisho na wanafunzi wote wa maandiko. Si programu rasmi ya Kanisa, lakini imeundwa kufanya kazi vizuri na Gospel Library.",
-                q3: "Je, ninaweza kuitumia kwa kujifunza Biblia?",
-                a3: "Kabisa! Scripture Habit imeundwa kwa ajili ya mafunzo yoyote ya maandiko, ikiwa ni pamoja na Biblia (Agano la Kale na Jipya), Kitabu cha Mormoni, na maandiko mengine matakatifu."
+                q3: "Je, ninaweza kuipakua kutoka kwenye maduka ya programu (App Store / Google Play)?",
+                a3: "Programu hii inatolewa kama PWA (Progressive Web App). Unaweza kuipachika kwa kuifungua moja kwa moja kwenye kivinjari chako na kuchagua \"Ongeza kwenye Skrini ya Kwanza\" kutoka kwenye menyu."
             }
         }
     },
