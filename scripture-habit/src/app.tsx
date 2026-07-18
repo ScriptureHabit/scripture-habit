@@ -351,16 +351,7 @@ const App: React.FC = () => {
   }, [location.search, location.pathname, location.hash, navigate]);
 
   const isMaintenance = MAINTENANCE_MODE || (systemStatusError instanceof FirebaseError && systemStatusError.code === 'resource-exhausted') || systemStatus?.maintenance;
-  if (isMaintenance) {
-    return (
-      <SettingsProvider>
-        <LanguageProvider>
-          <SEOManager />
-          <Maintenance isQuota={systemStatusError instanceof FirebaseError && systemStatusError.code === 'resource-exhausted'} />
-        </LanguageProvider>
-      </SettingsProvider>
-    );
-  }
+
   const getAppClass = () => {
     const path = location.pathname;
     const pathParts = path.split('/');
@@ -392,17 +383,22 @@ const App: React.FC = () => {
     // This avoids the flicker of the landing page before redirecting to dashboard
     const MascotLoader = () => (
       <div className="App">
-        <div className="AppGlass" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'row' }}>
-          <img src="/images/mascot.png" alt="Loading..." className="loader-mascot" />
-          <div className="loader-bubble">
-            <p className="loader-text">Loading...</p>
-            <div className="loader-bubble-tail"></div>
-          </div>
+        <div className="AppGlass" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '15px' }}>
+          <div className="startup-spinner"></div>
+          <p className="loader-text" style={{ margin: 0, fontWeight: 500, color: 'var(--text-color, #333)', opacity: 0.8 }}>Loading...</p>
         </div>
       </div>
     );
 
     if (authLoading) return <MascotLoader />;
+
+    if (isMaintenance) {
+      return (
+        <Suspense fallback={<MascotLoader />}>
+          <Maintenance isQuota={systemStatusError instanceof FirebaseError && systemStatusError.code === 'resource-exhausted'} />
+        </Suspense>
+      );
+    }
 
     return (
       <div className={getAppClass()}>
