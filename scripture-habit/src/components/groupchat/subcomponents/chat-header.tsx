@@ -16,6 +16,8 @@ const ChatHeader: FC = () => {
       groupData, unityPercentage, isOwner, language, groupId, userGroups
   } = useChatData();
 
+  const isFull = groupData ? (groupData.members?.length || 0) >= (groupData.maxMembers || 5) : false;
+
   // 2. Actions
   const { 
       togglePublicStatus, handleShowMembers, handleShowUnityModal,
@@ -65,7 +67,7 @@ const ChatHeader: FC = () => {
                 <UilPen size="18" />
               </button>
             )}
-            {groupData?.members && <span className="member-count-badge">({groupData.members.length})</span>}
+            {groupData?.members && <span className="member-count-badge">({groupData.members.length}/{groupData.maxMembers || 5})</span>}
             {groupData && (
               <div className="unity-score-container">
                 <span className={`unity-score-badge ${unityPercentage === 100 ? 'celestial' : ''}`} onClick={handleShowUnityModal} title="Unity Score: members who posted notes today" data-testid="chat-header-unity">
@@ -89,10 +91,21 @@ const ChatHeader: FC = () => {
                 </div>
               )}
               <div className="invite-code-wrapper">
-                <div className="invite-code-display" onClick={() => setShowInviteModal(true)} title={t('groupChat.inviteLink')}>
+                <div
+                  className={`invite-code-display ${isFull ? 'disabled' : ''}`}
+                  onClick={() => {
+                    if (!isFull) setShowInviteModal(true);
+                  }}
+                  title={isFull ? t('groupChat.groupFullTooltip') : t('groupChat.inviteLink')}
+                >
                   <span>{t('groupChat.inviteLink')}</span>
                   <UilCopy size="16" className="copy-icon" />
                 </div>
+                {isFull && (
+                  <div className="group-capacity-warning">
+                    {t('groupChat.maxMembersReachedMessage')}
+                  </div>
+                )}
               </div>
               <div className="invite-code-display members-btn-desktop" onClick={handleShowMembers} title={t('groupChat.members')} data-testid="members-button">
                 <UilCommentAlt size="16" className="copy-icon" />
@@ -146,12 +159,18 @@ const ChatHeader: FC = () => {
             </div>
             <div className="mobile-menu-content">
               {/* Invite Code Section */}
-              <div className="mobile-menu-item-card invite-section-card" onClick={handleCopyInviteLink}>
+              <div 
+                className={`mobile-menu-item-card invite-section-card ${isFull ? 'disabled' : ''}`}
+                onClick={isFull ? undefined : handleCopyInviteLink}
+                title={isFull ? t('groupChat.groupFullTooltip') : undefined}
+              >
                 <div className="menu-item-icon-circle pink-bg">
                   <UilCopy size="22" />
                 </div>
                 <div className="menu-item-text-content">
-                  <span className="menu-item-label-top">{t('groupChat.inviteCode')}</span>
+                  <span className="menu-item-label-top">
+                    {isFull ? t('groupChat.maxMembersReachedMessage') : t('groupChat.inviteCode')}
+                  </span>
                   <span className="invite-code-text">{groupData.inviteCode}</span>
                 </div>
               </div>

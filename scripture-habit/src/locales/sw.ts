@@ -5,7 +5,7 @@ export default {
         FORBIDDEN: "Access denied.",
         NOT_FOUND: "Resource not found.",
         ALREADY_MEMBER: "You are already a member of this group.",
-        GROUP_FULL: "This group is full.",
+        GROUP_FULL: "Samahani! Kikundi hiki kimefikia kikomo cha wanachama 5 💦 Mbona usitafute kikundi kingine, au kuwa kiongozi na kuanzisha kikundi chako wenyewe? 🌱",
         MAX_GROUPS_LIMIT: "You can only join up to 4 groups. Please leave another group first.",
         NETWORK_ERROR: "Network error. Please check your internet connection.",
         VALIDATION_ERROR: "Invalid input.",
@@ -216,6 +216,8 @@ export default {
         private: "Binafsi",
         inviteLink: "Kiungo cha Mwaliko",
         inviteLinkCopied: "Kiungo cha mwaliko umenakiliwa!",
+        groupFullTooltip: "Kikundi hiki kimejaa sasa hivi kikiwa na wanachama 5! ✨ (Mialiko zaidi hairuhusiwi)",
+        maxMembersReachedMessage: "Kikundi hiki kimejaa kikiwa na wanachama 5 ✨ (Mialiko imelemazwa)",
         members: "Wanachama",
         groupMembers: "Wanachama wa Kikundi",
         typeMessage: [

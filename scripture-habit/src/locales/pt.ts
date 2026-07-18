@@ -5,7 +5,7 @@ export default {
         FORBIDDEN: "Acesso negado.",
         NOT_FOUND: "Recurso não encontrado.",
         ALREADY_MEMBER: "Você já é membro deste grupo.",
-        GROUP_FULL: "Este grupo está cheio.",
+        GROUP_FULL: "Desculpe! Este grupo já atingiu o limite de 5 membros 💦 Que tal procurar outro grupo ou tornar-se um líder e criar o seu próprio grupo? 🌱",
         MAX_GROUPS_LIMIT: "Você só pode participar de até 4 grupos. Por favor, saia de outro grupo primeiro.",
         NETWORK_ERROR: "Erro de rede. Por favor, verifique a sua ligação à internet.",
         VALIDATION_ERROR: "Entrada inválida.",
@@ -217,6 +217,8 @@ export default {
         private: "Privado",
         inviteLink: "Link de Convite",
         inviteLinkCopied: "Link de convite copiado!",
+        groupFullTooltip: "Este grupo está cheio com 5 membros! ✨ (Não são permitidos mais convites)",
+        maxMembersReachedMessage: "Este grupo está cheio com 5 membros ✨ (Convites desativados)",
         members: "Membros",
         groupMembers: "Membros do Grupo",
         typeMessage: [

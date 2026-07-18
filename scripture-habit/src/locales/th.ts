@@ -5,7 +5,7 @@ export default {
         FORBIDDEN: "Access denied.",
         NOT_FOUND: "Resource not found.",
         ALREADY_MEMBER: "You are already a member of this group.",
-        GROUP_FULL: "This group is full.",
+        GROUP_FULL: "ขออภัยด้วยค่ะ! กลุ่มนี้มีสมาชิกครบกำหนด 5 คนแล้ว 💦 ลองหากลุ่มอื่นดู หรือมาเป็นผู้นำแล้วสร้างกลุ่มใหม่ของตัวเองดีไหมคะ? 🌱",
         MAX_GROUPS_LIMIT: "You can only join up to 4 groups. Please leave another group first.",
         NETWORK_ERROR: "Network error. Please check your internet connection.",
         VALIDATION_ERROR: "Invalid input.",
@@ -216,6 +216,8 @@ export default {
         private: "ส่วนตัว",
         inviteLink: "ลิงก์เชิญ",
         inviteLinkCopied: "คัดลอกลิงก์เชิญแล้ว!",
+        groupFullTooltip: "ขณะนี้กลุ่มเต็มแล้วที่ 5 คน! ✨ (ไม่สามารถเชิญเพิ่มได้)",
+        maxMembersReachedMessage: "กลุ่มเต็มแล้วที่ 5 คน ✨ (ปิดการเชิญ)",
         members: "สมาชิก",
         groupMembers: "สมาชิกกลุ่ม",
         typeMessage: [

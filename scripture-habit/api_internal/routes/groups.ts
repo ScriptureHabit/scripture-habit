@@ -59,7 +59,7 @@ router.post('/create-group', authenticate, requireEmailVerified, verifyAppCheck,
                 inviteCodeExpiresAt: expiresAt,
                 isPublic: isPublic || false,
                 isPrivate: !isPublic, // Legacy field
-                maxMembers: 100000,
+                maxMembers: 5,
                 membersCount: 1,
                 memberPreviews: [{ uid, nickname: userNick }],
                 ownerUserId: uid,
@@ -179,7 +179,7 @@ router.post('/join-group', authenticate, requireEmailVerified, verifyAppCheck, a
                 const userData = userDoc.data()! as UserDocument;
 
                 const members = gData.members || [];
-                const maxMembers = gData.maxMembers || 500;
+                const maxMembers = gData.maxMembers || 5;
 
                 // 1. Validation Phase
                 if (gData.isPrivate === true || gData.isPublic === false) {

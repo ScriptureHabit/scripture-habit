@@ -5,7 +5,7 @@ export default {
         FORBIDDEN: "Access denied.",
         NOT_FOUND: "Resource not found.",
         ALREADY_MEMBER: "You are already a member of this group.",
-        GROUP_FULL: "This group is full.",
+        GROUP_FULL: "Pasensya na! Naabot na ng grupong ito ang limitasyong 5 miyembro 💦 Bakit hindi maghanap ng ibang grupo, o maging lider at gumawa ng sarili mong grupo? 🌱",
         MAX_GROUPS_LIMIT: "You can only join up to 4 groups. Please leave another group first.",
         NETWORK_ERROR: "Network error. Please check your internet connection.",
         VALIDATION_ERROR: "Invalid input.",
@@ -216,6 +216,8 @@ export default {
         private: "Pribado",
         inviteLink: "Invite Link",
         inviteLinkCopied: "Nakopya ang invite link!",
+        groupFullTooltip: "Puno na ang grupong ito sa 5 miyembro! ✨ (Hindi na pwede ang mga imbitasyon)",
+        maxMembersReachedMessage: "Puno na ang grupong ito sa 5 miyembro ✨ (Naka-disable ang mga imbitasyon)",
         members: "Mga Miyembro",
         groupMembers: "Mga Miyembro ng Grupo",
         typeMessage: [

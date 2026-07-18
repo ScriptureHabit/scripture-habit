@@ -181,6 +181,38 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
 }
 
+.invite-code-display.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #f0f0f0 !important;
+    box-shadow: none !important;
+    transform: none !important;
+}
+
+.invite-code-display.disabled:hover {
+    background: #f0f0f0 !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+.mobile-menu-item-card.invite-section-card.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.group-capacity-warning {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.7rem;
+    color: #e53e3e;
+    white-space: nowrap;
+    margin-top: 0.25rem;
+    font-weight: 500;
+}
+
 .invite-code-wrapper {
     position: relative;
     display: flex;

@@ -5,7 +5,7 @@ export default {
         FORBIDDEN: "접근 권한이 없습니다.",
         NOT_FOUND: "소스를 찾을 수 없습니다.",
         ALREADY_MEMBER: "이미 이 그룹의 멤버입니다.",
-        GROUP_FULL: "이 그룹은 가득 찼습니다.",
+        GROUP_FULL: "죄송합니다! 이 그룹은 이미 5명 제한에 도달했습니다 💦 다른 그룹을 찾아보거나, 스스로 리더가 되어 새로운 그룹을 만들어보는 것은 어떨까요? 🌱",
         MAX_GROUPS_LIMIT: "최대 4개의 그룹에만 가입할 수 있습니다. 다른 그룹에서 탈퇴한 후 다시 시도하세요.",
         NETWORK_ERROR: "네트워크 오류가 발생했습니다. 인터넷 연결을 확인해 주세요.",
         VALIDATION_ERROR: "유효하지 않은 입력입니다.",
@@ -216,6 +216,8 @@ export default {
         private: "비공개",
         inviteLink: "초대 링크",
         inviteLinkCopied: "초대 링크가 복사되었습니다!",
+        groupFullTooltip: "현재 5명의 멤버로 가득 찼습니다! ✨ (더 이상의 초대는 허용되지 않습니다)",
+        maxMembersReachedMessage: "이 그룹은 5명으로 가득 찼습니다 ✨ (초대 비활성화)",
         members: "멤버",
         groupMembers: "그룹 멤버",
         typeMessage: [

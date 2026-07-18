@@ -21,7 +21,8 @@
     "test:visual:update": "node scripts/test-emulated.js \"npx playwright test tests/visual.spec.ts --update-snapshots\"",
     "test:e2e:ui": "node scripts/test-emulated.js \"npx playwright test --ui\"",
     "db:seed": "cross-env FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 FIREBASE_AUTH_EMULATOR_HOST=127.0.0.1:9099 npx tsx scripts/seed.ts",
-    "db:migrate": "cross-env FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 FIREBASE_AUTH_EMULATOR_HOST=127.0.0.1:9099 npx tsx scripts/migrate-data.ts"
+    "db:migrate": "cross-env FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 FIREBASE_AUTH_EMULATOR_HOST=127.0.0.1:9099 npx tsx scripts/migrate-data.ts",
+    "db:migrate-max-members": "cross-env FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 FIREBASE_AUTH_EMULATOR_HOST=127.0.0.1:9099 npx tsx scripts/migrate-max-members.ts"
   },
   "dependencies": {
     "@iconscout/react-unicons": "^2.2.5",

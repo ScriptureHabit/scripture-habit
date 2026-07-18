@@ -7,7 +7,7 @@ export default {
         FORBIDDEN: "Access denied.",
         NOT_FOUND: "Resource not found.",
         ALREADY_MEMBER: "You are already a member of this group.",
-        GROUP_FULL: "This group is full.",
+        GROUP_FULL: "Sorry! This group has already reached its 5-member limit 💦 Why not look for another group, or become a leader and start your own group? 🌱",
         MAX_GROUPS_LIMIT: "You can only join up to 4 groups. Please leave another group first.",
         NETWORK_ERROR: "Network error. Please check your internet connection.",
         VALIDATION_ERROR: "Invalid input.",
@@ -215,6 +215,8 @@ export default {
         private: "Private",
         inviteLink: "Invite Link",
         inviteLinkCopied: "Invite link copied to clipboard!",
+        groupFullTooltip: "This group is currently full at 5 members! ✨ (No more invites allowed)",
+        maxMembersReachedMessage: "This group is full at 5 members ✨ (Invites disabled)",
         members: "Members",
         groupMembers: "Group Members",
         typeMessage: [

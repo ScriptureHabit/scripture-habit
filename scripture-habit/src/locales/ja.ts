@@ -5,7 +5,7 @@ export default {
         FORBIDDEN: "アクセス権限がありません。",
         NOT_FOUND: "リソースが見つかりませんでした。",
         ALREADY_MEMBER: "すでにこのグループのメンバーです。",
-        GROUP_FULL: "このグループは満員です。",
+        GROUP_FULL: "ごめんなさい！このグループはすでに5人に達してしまいました💦 他のグループを探してみるか、新しくグループを作ってみませんか？🌱",
         MAX_GROUPS_LIMIT: "参加できるグループは最大4つまでです。別のグループから退会してください。",
         NETWORK_ERROR: "ネットワーク接続に失敗しました。インターネット接続を確認してください。",
         VALIDATION_ERROR: "入力値が無効です。",
@@ -167,6 +167,8 @@ export default {
         private: "プライベート",
         inviteLink: "招待リンク",
         inviteLinkCopied: "招待リンクをコピーしました",
+        groupFullTooltip: "現在5人のメンバーで満員です！✨（これ以上の招待はできません）",
+        maxMembersReachedMessage: "グループは5人で満員です✨（招待リンク無効）",
         members: "メンバー",
         groupMembers: "グループメンバー",
         typeMessage: [
