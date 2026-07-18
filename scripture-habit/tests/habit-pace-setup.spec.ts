@@ -33,9 +33,6 @@ test.describe('Habit Pace Setup (E2E)', () => {
     // The button has text from groupChat.next
     await page.click('.leave-modal-content button:has-text("Next")');
 
-    // 8. Enter the confirmation number
-    await page.fill('input.auto-kick-confirm-input-styled', '5');
-
     // 9. Click "Save"
     await page.click('button:has-text("Save")');
 

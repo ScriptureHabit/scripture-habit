@@ -49,27 +49,31 @@ window.addEventListener('unhandledrejection', (event) => {
   }
 });
 
-Sentry.init({
-  dsn: import.meta.env.VITE_SENTRY_DSN || "",
-  integrations: [
-    Sentry.reactRouterV6BrowserTracingIntegration({
-      useEffect: React.useEffect,
-      useLocation,
-      useNavigationType,
-      createRoutesFromChildren,
-      matchRoutes,
-    }),
-    Sentry.replayIntegration({
-      maskAllText: false,
-      blockAllMedia: true,
-    }),
-  ],
-  // Performance Monitoring
-  tracesSampleRate: 0.1, // Only send 10% of performance traces to save bandwidth
-  // Session Replay
-  replaysSessionSampleRate: 0, // Disable full session recordings to prevent "Content Too Large"
-  replaysOnErrorSampleRate: 1.0, // Only record when an error occurs
-});
+const shouldInitializeSentry = !!import.meta.env.VITE_SENTRY_DSN && !navigator.webdriver;
+
+if (shouldInitializeSentry) {
+  Sentry.init({
+    dsn: import.meta.env.VITE_SENTRY_DSN,
+    integrations: [
+      Sentry.reactRouterV6BrowserTracingIntegration({
+        useEffect: React.useEffect,
+        useLocation,
+        useNavigationType,
+        createRoutesFromChildren,
+        matchRoutes,
+      }),
+      Sentry.replayIntegration({
+        maskAllText: false,
+        blockAllMedia: true,
+      }),
+    ],
+    // Performance Monitoring
+    tracesSampleRate: 0.1, // Only send 10% of performance traces to save bandwidth
+    // Session Replay
+    replaysSessionSampleRate: 0, // Disable full session recordings to prevent "Content Too Large"
+    replaysOnErrorSampleRate: 1.0, // Only record when an error occurs
+  });
+}
 
 const queryClient = new QueryClient({
   defaultOptions: {

@@ -63,9 +63,6 @@ test.describe('Account Lifecycle', () => {
     await page.getByTestId('habit-pace-next-button').click();
 
     // Confirm step
-    const confirmInput = page.getByTestId('habit-pace-confirm-input');
-    await expect(confirmInput).toBeVisible();
-    await confirmInput.fill('4');
     await page.getByTestId('habit-pace-save-button').click();
 
     // Modal should close (wait for it to detach or for dashboard content to be interactive)

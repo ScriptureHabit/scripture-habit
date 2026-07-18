@@ -38,7 +38,7 @@ export function disableAnimationsScript() {
         animation-delay: 0s !important;
       }
     \`;
-    document.head.appendChild(style);
+    (document.head || document.documentElement).appendChild(style);
   `;
 }
 

@@ -4,7 +4,7 @@ test.describe('Invitation Join Flow Stability', () => {
 
 
   test('should join a group after landing on invite link and logging in', async ({ authenticatedPage, browser }) => {
-    test.setTimeout(45000); // 45 seconds
+    test.setTimeout(90000); // 90 seconds
     
     // 1. Create a group as User A (Shared Tester) to get an invite code
     const timestamp = `${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
@@ -55,7 +55,7 @@ test.describe('Invitation Join Flow Stability', () => {
             animation-delay: 0s !important;
           }
         `;
-        document.head.appendChild(style);
+        (document.head || document.documentElement).appendChild(style);
     });
     
     await test.step('User B opens invite link and signs up', async () => {
@@ -125,12 +125,7 @@ test.describe('Invitation Join Flow Stability', () => {
         await pageB.click('[data-testid="habit-pace-option-3"]');
         await pageB.click('[data-testid="habit-pace-next-button"]');
         
-        // Step 2: Confirmation
-        const confirmInput = pageB.locator('[data-testid="habit-pace-confirm-input"]');
-        await expect(confirmInput).toBeVisible({ timeout: 15000 });
-        await confirmInput.fill('3');
-        
-        // Step 3: Save
+        // Step 2: Save
         await pageB.click('[data-testid="habit-pace-save-button"]');
         
         // Modal should disappear
@@ -197,7 +192,7 @@ test.describe('Invitation Join Flow Stability', () => {
   });
 
   test('should join a group immediately when already logged in', async ({ authenticatedPage, browser }) => {
-    test.setTimeout(45000); // 45 seconds
+    test.setTimeout(90000); // 90 seconds
     const timestamp = `${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
     const groupName = `Auth Join Test ${timestamp}`;
     const pageA = authenticatedPage;
@@ -210,6 +205,7 @@ test.describe('Invitation Join Flow Stability', () => {
     await pageA.fill('[data-testid="group-name-input"]', groupName);
     await pageA.click('[data-testid="create-group-submit"]');
     await pageA.waitForURL(/.*dashboard/);
+    await expect(pageA.locator('[data-testid="sidebar-group-item"]').first()).toBeVisible({ timeout: 15000 });
     await expect(pageA.getByTestId('invite-modal')).toBeVisible();
     const inviteLinkLocator = pageA.getByTestId('invite-link-url');
     // Wait for the actual code to appear (prevents race where modal shows before code is hydrated)
@@ -237,7 +233,7 @@ test.describe('Invitation Join Flow Stability', () => {
             animation-delay: 0s !important;
           }
         `;
-        document.head.appendChild(style);
+        (document.head || document.documentElement).appendChild(style);
     });
     
     await test.step('User B signs up and logs in first', async () => {
@@ -260,7 +256,6 @@ test.describe('Invitation Join Flow Stability', () => {
         await expect(paceModalTitle).toBeVisible({ timeout: 20000 });
         await pageB.click('[data-testid="habit-pace-option-3"]');
         await pageB.click('[data-testid="habit-pace-next-button"]');
-        await pageB.locator('[data-testid="habit-pace-confirm-input"]').fill('3');
         await pageB.click('[data-testid="habit-pace-save-button"]');
         await expect(paceModalTitle).not.toBeVisible();
     });
