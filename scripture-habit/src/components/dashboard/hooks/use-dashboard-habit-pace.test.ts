@@ -45,30 +45,11 @@ describe('useDashboardHabitPace', () => {
         expect(result.current.showAutoKickModal).toBe(false);
     });
 
-    it('should handle validation mismatch error', async () => {
-        const { result } = renderHook(() => useDashboardHabitPace(mockUserData as any, false, false, mockT));
-        
-        // Step 1: go to confirm step
-        act(() => {
-            result.current.setAutoKickStep(1);
-            result.current.setKickConfirmInput('5'); // mismatch default 7
-        });
-
-        // Submit
-        await act(async () => {
-            await result.current.handleAutoKickSubmit();
-        });
-
-        expect(result.current.autoKickError).toBe('groupChat.autoKickErrorMismatch');
-        expect(result.current.kickConfirmInput).toBe('');
-    });
-
     it('should submit successfully and progress to step 2', async () => {
         const { result } = renderHook(() => useDashboardHabitPace(mockUserData as any, false, false, mockT));
         
         act(() => {
             result.current.setAutoKickStep(1);
-            result.current.setKickConfirmInput('7'); // matches default 7
         });
 
         await act(async () => {
@@ -92,7 +73,6 @@ describe('useDashboardHabitPace', () => {
         
         act(() => {
             result.current.setAutoKickStep(1);
-            result.current.setKickConfirmInput('7');
         });
 
         await act(async () => {
@@ -115,7 +95,6 @@ describe('useDashboardHabitPace', () => {
         
         act(() => {
             result.current.setAutoKickStep(1);
-            result.current.setKickConfirmInput('7');
         });
 
         await act(async () => {

@@ -125,8 +125,7 @@ const Dashboard: FC = () => {
   }, [loading, selectedView]);
   const { 
     showAutoKickModal, setShowAutoKickModal, autoKickStep, setAutoKickStep,
-    selectedKickDays, setSelectedKickDays, kickConfirmInput, setKickConfirmInput,
-    autoKickError, handleAutoKickSubmit 
+    selectedKickDays, setSelectedKickDays, handleAutoKickSubmit 
   } = useDashboardHabitPace(userData, loading, false, t);
 
   const { isJoiningInvite } = useDashboardInvitations(
@@ -339,8 +338,7 @@ const Dashboard: FC = () => {
         newNickname={newNickname} setNewNickname={setNewNickname} handleUpdateProfile={handleUpdateProfile}
         showAutoKickModal={showAutoKickModal} autoKickStep={autoKickStep} setAutoKickStep={setAutoKickStep}
         selectedKickDays={selectedKickDays} setSelectedKickDays={setSelectedKickDays}
-        kickConfirmInput={kickConfirmInput} setKickConfirmInput={setKickConfirmInput}
-        autoKickError={autoKickError} handleAutoKickSubmit={handleAutoKickSubmit} setShowAutoKickModal={setShowAutoKickModal}
+        handleAutoKickSubmit={handleAutoKickSubmit} setShowAutoKickModal={setShowAutoKickModal}
       />
 
       <TourGuide 

@@ -30,9 +30,6 @@ interface DashboardModalsProps {
   setAutoKickStep: (step: number) => void;
   selectedKickDays: number;
   setSelectedKickDays: (days: number) => void;
-  kickConfirmInput: string;
-  setKickConfirmInput: (val: string) => void;
-  autoKickError: string | null;
   handleAutoKickSubmit: () => void;
   setShowAutoKickModal: (show: boolean) => void;
 }
@@ -55,9 +52,6 @@ const DashboardModals: FC<DashboardModalsProps> = ({
   setAutoKickStep,
   selectedKickDays,
   setSelectedKickDays,
-  kickConfirmInput,
-  setKickConfirmInput,
-  autoKickError,
   handleAutoKickSubmit,
   setShowAutoKickModal
 }) => {
@@ -129,22 +123,36 @@ const DashboardModals: FC<DashboardModalsProps> = ({
               </>
             ) : autoKickStep === 1 ? (
               <>
-                <h2 className="auto-kick-init-title-styled">{t('groupChat.autoKickConfirmTitle')}</h2>
-                <p className="auto-kick-confirm-warning-styled">{t('groupChat.autoKickWarning')}</p>
-                <p className="mt-1">{t('groupChat.autoKickConfirmText').replace(/{days}/g, selectedKickDays.toString())}</p>
-                <input 
-                  type="number" 
-                  title="Days Threshold" 
-                  placeholder={selectedKickDays.toString()}
-                  className="delete-confirmation-input auto-kick-confirm-input-styled" 
-                  value={kickConfirmInput} 
-                  onChange={(e) => setKickConfirmInput(e.target.value)} 
-                  data-testid="habit-pace-confirm-input"
-                />
-                {autoKickError && <p className="auto-kick-error-text-styled">{autoKickError}</p>}
-                <button className="modal-btn primary mt-1 w-100" onClick={handleAutoKickSubmit} data-testid="habit-pace-save-button">
-                  {t('groupChat.save')}
-                </button>
+                <h2 className="auto-kick-init-title-styled" style={{ textAlign: 'center' }}>{t('groupChat.autoKickConfirmTitle')}</h2>
+                
+                <div style={{ textAlign: 'center', margin: '1.5rem 0' }}>
+                  <p style={{ fontSize: '1rem', color: '#64748b', marginBottom: '0.25rem' }}>{t('groupChat.habitPaceProfileTitle') || 'Selected Pace'}</p>
+                  <p style={{ fontSize: '2.5rem', fontWeight: 'bold', color: 'var(--pink)', margin: '0' }}>
+                    {selectedKickDays} {t('dashboard.days')}
+                  </p>
+                </div>
+
+                <p className="auto-kick-confirm-warning-styled" style={{ textAlign: 'center', fontSize: '0.9rem', color: '#ef4444', marginBottom: '1.5rem', lineHeight: '1.4' }}>
+                  {t('groupChat.autoKickWarning')}
+                </p>
+
+                <div className="leave-modal-actions" style={{ display: 'flex', gap: '12px', marginTop: '1rem' }}>
+                  <button 
+                    className="modal-btn cancel" 
+                    style={{ flex: 1, padding: '0.75rem', borderRadius: '10px' }} 
+                    onClick={() => setAutoKickStep(0)}
+                  >
+                    {t('groupChat.cancel') || 'Back'}
+                  </button>
+                  <button 
+                    className="modal-btn primary" 
+                    style={{ flex: 1, padding: '0.75rem', borderRadius: '10px' }} 
+                    onClick={handleAutoKickSubmit} 
+                    data-testid="habit-pace-save-button"
+                  >
+                    {t('groupChat.save') || 'Confirm'}
+                  </button>
+                </div>
               </>
             ) : (
               <div className="text-center p-1 auto-kick-success-onboarding">

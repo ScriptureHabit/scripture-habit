@@ -28,13 +28,6 @@ export const useDashboardHabitPace = (
     }, [userData, loading, isJoiningInvite]);
 
     const handleAutoKickSubmit = async () => {
-        const inputNum = parseInt(kickConfirmInput, 10);
-        if (inputNum !== selectedKickDays) {
-            setAutoKickError(t('groupChat.autoKickErrorMismatch'));
-            setKickConfirmInput('');
-            return;
-        }
-
         setAutoKickError('');
 
         try {
