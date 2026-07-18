@@ -55,6 +55,38 @@ describe('suggestionUtils', () => {
                 expect(results.length).toBe(1);
                 expect(results[0].english).toBe('1 Nephi');
             });
+
+            it('should match Kanji book names by Hiragana reading', () => {
+                const results = getBookSuggestions('Old Testament', 'そうせいき', 'ja', mockJaBooks);
+                expect(results.length).toBe(1);
+                expect(results[0].translated).toBe('創世記');
+            });
+
+            it('should match Kanji book names by partial Katakana/Hiragana reading', () => {
+                const results = getBookSuggestions('Old Testament', 'しゅつえじ', 'ja', mockJaBooks);
+                expect(results.length).toBe(1);
+                expect(results[0].translated).toBe('出エジプト記');
+            });
+        });
+
+        describe('Spanish diacritics accent insensitivity', () => {
+            const mockEsBooks: Record<string, string> = {
+                "Genesis": "Génesis",
+                "Exodus": "Éxodo",
+                "Nehemiah": "Nehemías"
+            };
+
+            it('should match accented book names when user inputs without accents', () => {
+                const results = getBookSuggestions('Old Testament', 'nehemias', 'es', mockEsBooks);
+                expect(results.length).toBe(1);
+                expect(results[0].translated).toBe('Nehemías');
+            });
+
+            it('should match accented book names when user inputs with accents', () => {
+                const results = getBookSuggestions('Old Testament', 'nehemías', 'es', mockEsBooks);
+                expect(results.length).toBe(1);
+                expect(results[0].translated).toBe('Nehemías');
+            });
         });
 
         describe('Sorting Priority', () => {

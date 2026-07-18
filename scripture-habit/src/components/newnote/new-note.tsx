@@ -1,12 +1,11 @@
-
 import { useState, useEffect, FC, useMemo } from 'react';
 import Select from 'react-select';
 import { UilShuffle, UilRobot } from '@iconscout/react-unicons';
-import { useLanguage } from '../../hooks/use-language';
 import Input from '../input/input';
 import './new-note.css';
 
 // Hooks
+import { useLanguage } from '../../hooks/use-language';
 import { useUrlMetaFetcher } from './hooks/use-url-meta-fetcher';
 import { useAIGenerator } from './hooks/use-ai-generator';
 import { useNoteSubmission } from './hooks/use-note-submission';
@@ -18,9 +17,12 @@ import ScriptureSelectionModal from './subcomponents/scripture-selection-modal';
 import CloseConfirmModal from './subcomponents/close-confirm-modal';
 import NoteSharingOptions from './subcomponents/note-sharing-options';
 
+// utils
 import { getBookSuggestions } from '../../utils/suggestion-utils';
 import { getGospelLibraryUrl, getCategoryFromScripture } from '../../utils/gospel-library-mapper';
 import { removeNoteHeader } from '../../utils/note-utils';
+
+// types
 import { UserData } from '../../types/user';
 import { Group, Message } from '../../types/chat';
 import { Note } from '../../types/note';
