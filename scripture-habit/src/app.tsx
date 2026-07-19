@@ -383,9 +383,12 @@ const App: React.FC = () => {
     // This avoids the flicker of the landing page before redirecting to dashboard
     const MascotLoader = () => (
       <div className="App">
-        <div className="AppGlass" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '15px' }}>
-          <div className="startup-spinner"></div>
-          <p className="loader-text" style={{ margin: 0, fontWeight: 500, color: 'var(--text-color, #333)', opacity: 0.8 }}>Loading...</p>
+        <div className="AppGlass" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'row' }}>
+          <img src="/images/mascot.png" alt="Loading..." className="loader-mascot" width="80" height="80" />
+          <div className="loader-bubble">
+            <p className="loader-text">Loading...</p>
+            <div className="loader-bubble-tail"></div>
+          </div>
         </div>
       </div>
     );
