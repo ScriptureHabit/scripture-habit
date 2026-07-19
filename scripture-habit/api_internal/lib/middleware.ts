@@ -19,12 +19,11 @@ import RedisStore from 'rate-limit-redis';
 
 const isProd = process.env.NODE_ENV === 'production' && process.env.VITE_DEV_MODE !== 'true';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-let redisStore: any = undefined;
+let redisClient: Redis | undefined = undefined;
 
 if (process.env.REDIS_URL) {
     try {
-        const redisClient = new Redis(process.env.REDIS_URL, {
+        redisClient = new Redis(process.env.REDIS_URL, {
             connectTimeout: 2000,
             maxRetriesPerRequest: 1
         });
@@ -32,24 +31,27 @@ if (process.env.REDIS_URL) {
         redisClient.on('error', (err) => {
             console.error('[Redis] Connection error:', err);
         });
-
-        redisStore = new RedisStore({
-            sendCommand: async (...args: string[]) => {
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                return redisClient.call(args[0], ...args.slice(1)) as any;
-            },
-            prefix: 'rl:', // Rate limiting prefix
-        });
-        console.log('[RateLimit] Distributed RedisStore initialized successfully.');
+        console.log('[RateLimit] Distributed Redis client initialized successfully.');
     } catch (e) {
-        console.error('[RateLimit] Failed to initialize RedisStore, falling back to memory:', e);
+        console.error('[RateLimit] Failed to initialize Redis client:', e);
     }
 } else {
     console.log('[RateLimit] REDIS_URL not set. Using MemoryStore (default).');
 }
 
+const createRedisStore = (prefix: string) => {
+    if (!redisClient) return undefined;
+    return new RedisStore({
+        sendCommand: async (...args: string[]) => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            return redisClient!.call(args[0], ...args.slice(1)) as any;
+        },
+        prefix: prefix,
+    });
+};
+
 export const globalLimiter = rateLimit({
-    store: redisStore,
+    store: createRedisStore('rl:global:'),
     windowMs: 15 * 60 * 1000,
     limit: isProd ? 300 : 10000, // Significantly higher limit for dev/test
     standardHeaders: 'draft-7',
@@ -57,7 +59,7 @@ export const globalLimiter = rateLimit({
 });
 
 export const inviteLimiter = rateLimit({
-    store: redisStore,
+    store: createRedisStore('rl:invite:'),
     windowMs: 60 * 60 * 1000,
     limit: isProd ? 15 : 1000,
     message: { error: 'Too many invite attempts, please try again later.' },
@@ -77,7 +79,7 @@ export const aiLimiterKeyGenerator = (req: Request) => {
 };
 
 export const aiLimiter = rateLimit({
-    store: redisStore,
+    store: createRedisStore('rl:ai:'),
     windowMs: 60 * 60 * 1000,
     limit: isProd ? 100 : 5000, // Increased for dev/test/lazy-loading
     message: { error: 'AI limit reached. Please try again in an hour.' },
