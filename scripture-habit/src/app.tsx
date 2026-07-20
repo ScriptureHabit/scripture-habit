@@ -28,24 +28,45 @@ import PWAUpdateHandler from './components/pwaupdatehandler/pwa-update-handler';
 import LanguageRedirect from './components/languageredirect/language-redirect';
 import BrowserWarningWrapper from './components/browserwarningmodal/browser-warning-wrapper';
 
+// Resilient lazy load helper to automatically recover from ChunkLoadErrors / Failed Dynamic Imports
+// caused by new deployments by performing a hard page reload (with infinite loop prevention).
+const lazyWithRetry = (componentImport: () => Promise<any>) => {
+  return lazy(async () => {
+    const pageHasBeenReloaded = window.sessionStorage.getItem('page-has-been-reloaded');
+    try {
+      const component = await componentImport();
+      window.sessionStorage.removeItem('page-has-been-reloaded');
+      return component;
+    } catch (error) {
+      if (!pageHasBeenReloaded) {
+        window.sessionStorage.setItem('page-has-been-reloaded', 'true');
+        console.error("Failed to fetch dynamic module, reloading page to get fresh assets...", error);
+        window.location.reload();
+        return new Promise(() => {});
+      }
+      throw error;
+    }
+  });
+};
+
 // Lazy load components
-const SignupForm = lazy(() => import('./components/signupform/signup-form'));
-const LoginForm = lazy(() => import('./components/loginform/login-form'));
-const Dashboard = lazy(() => import('./components/dashboard/dashboard'));
-const GroupForm = lazy(() => import('./components/groupform/group-form'));
-const JoinGroup = lazy(() => import('./components/joingroup/join-group'));
-const GroupDetails = lazy(() => import('./components/groupdetails/group-details'));
-const GroupOptions = lazy(() => import('./components/groupoptions/group-options'));
-const LandingPage = lazy(() => import('./components/landingpage/landing-page'));
-const Welcome = lazy(() => import('./components/welcome/welcome'));
-const ForgotPassword = lazy(() => import('./components/forgotpassword/forgot-password'));
-const InviteRedirect = lazy(() => import('./components/inviteredirect/invite-redirect'));
-const Maintenance = lazy(() => import('./components/maintenance/maintenance'));
-const InstallPrompt = lazy(() => import('./components/installprompt/install-prompt'));
-const CookieConsent = lazy(() => import('./components/cookieconsent/cookie-consent'));
-const PrivacyPolicy = lazy(() => import('./components/privacypolicy/privacy-policy'));
-const TermsOfService = lazy(() => import('./components/termsofservice/terms-of-service'));
-const LegalDisclosure = lazy(() => import('./components/legaldisclosure/legal-disclosure'));
+const SignupForm = lazyWithRetry(() => import('./components/signupform/signup-form'));
+const LoginForm = lazyWithRetry(() => import('./components/loginform/login-form'));
+const Dashboard = lazyWithRetry(() => import('./components/dashboard/dashboard'));
+const GroupForm = lazyWithRetry(() => import('./components/groupform/group-form'));
+const JoinGroup = lazyWithRetry(() => import('./components/joingroup/join-group'));
+const GroupDetails = lazyWithRetry(() => import('./components/groupdetails/group-details'));
+const GroupOptions = lazyWithRetry(() => import('./components/groupoptions/group-options'));
+const LandingPage = lazyWithRetry(() => import('./components/landingpage/landing-page'));
+const Welcome = lazyWithRetry(() => import('./components/welcome/welcome'));
+const ForgotPassword = lazyWithRetry(() => import('./components/forgotpassword/forgot-password'));
+const InviteRedirect = lazyWithRetry(() => import('./components/inviteredirect/invite-redirect'));
+const Maintenance = lazyWithRetry(() => import('./components/maintenance/maintenance'));
+const InstallPrompt = lazyWithRetry(() => import('./components/installprompt/install-prompt'));
+const CookieConsent = lazyWithRetry(() => import('./components/cookieconsent/cookie-consent'));
+const PrivacyPolicy = lazyWithRetry(() => import('./components/privacypolicy/privacy-policy'));
+const TermsOfService = lazyWithRetry(() => import('./components/termsofservice/terms-of-service'));
+const LegalDisclosure = lazyWithRetry(() => import('./components/legaldisclosure/legal-disclosure'));
 
 
 interface SystemStatus {
