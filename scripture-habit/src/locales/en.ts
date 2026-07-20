@@ -129,7 +129,7 @@ export default {
         level: "Level",
         nextLevel: "Next Level",
         daysStudied: "Days Studied",
-        consecutiveDays: "Consecutive Days",
+        consecutiveDays: "Streak",
         successUpdate: "Profile updated successfully!",
         errorUpdate: "Failed to update profile. Please try again.",
         imageUploadSuccess: "Profile picture updated!",
