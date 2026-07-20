@@ -135,7 +135,6 @@ router.post('/create-group', authenticate, requireEmailVerified, verifyAppCheck,
     }
 });
 
-
 // Join Group
 router.post('/join-group', authenticate, requireEmailVerified, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
     const validation = joinGroupSchema.safeParse(req.body);
