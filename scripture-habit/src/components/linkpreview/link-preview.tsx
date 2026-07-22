@@ -1,6 +1,7 @@
 import { useState, useEffect, FC } from 'react';
 import './link-preview.css';
 import apiClient from '../../utils/api-client';
+import { auth } from '../../firebase';
 
 interface PreviewData {
     title?: string;
@@ -40,8 +41,10 @@ const LinkPreview: FC<LinkPreviewProps> = ({ url, isSent, language }) => {
             }
         };
 
-        if (url) {
+        if (url && auth?.currentUser) {
             fetchPreview();
+        } else {
+            setLoading(false);
         }
     }, [url, language]);
 

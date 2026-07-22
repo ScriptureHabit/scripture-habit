@@ -46,7 +46,7 @@ export const useUrlMetadata = (
     const currentUserUid = auth?.currentUser?.uid;
 
     useEffect(() => {
-        if (!urlOrSlug || !language) return;
+        if (!urlOrSlug || !language || !auth?.currentUser) return;
 
         // Support full URLs, internal paths, and Church shortcodes (e.g., 2024/04/...)
         const isUrl = urlOrSlug.startsWith('http') || urlOrSlug.startsWith('/');
