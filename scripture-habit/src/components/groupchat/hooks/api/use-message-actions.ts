@@ -30,8 +30,20 @@ export const useMessageActions = (
   // Helper to skip translation for messages already in the target language
   const isLikelyAlreadyInLanguage = (text: string, targetLang: string) => {
     const hasJapanese = /[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]/.test(text);
+    const hasKorean = /[\uAC00-\uD7A3\u3130-\u318F]/.test(text);
+    const hasThai = /[\u0E00-\u0E7F]/.test(text);
+    const hasChinese = /[\u4E00-\u9FFF]/.test(text);
+
     if (targetLang === 'ja' && hasJapanese) return true;
-    if (targetLang === 'en' && !hasJapanese && /[a-zA-Z]/.test(text)) return true;
+    if (targetLang === 'ko' && hasKorean) return true;
+    if (targetLang === 'th' && hasThai) return true;
+    if (targetLang === 'zho' && hasChinese && !hasJapanese) return true;
+
+    const isLatinBased = ['en', 'es', 'pt', 'tl', 'sw', 'vi'].includes(targetLang);
+    if (isLatinBased && !hasJapanese && !hasKorean && !hasThai && /[a-zA-Z]/.test(text)) {
+      return true;
+    }
+
     return false;
   };
 
