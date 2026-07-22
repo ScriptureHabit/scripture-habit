@@ -69,7 +69,6 @@ export const useChatSyncController = (
   }, [groupId, userData?.uid, dispatch]);
 
   // --- INFINITE SCROLL LOGIC ---
-
   const messagesRef = useRef(messages);
   useEffect(() => {
     messagesRef.current = messages;

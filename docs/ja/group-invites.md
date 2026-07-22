@@ -16,7 +16,6 @@ sequenceDiagram
     participant Auth as requireEmailVerified ミドルウェア
     participant API as バックエンド API (/join-group)
     participant DB as Firestore トランザクション
-    participant Counter as CounterService
 
     UI->>Rate: POST /api/groups/join-group (招待リンク / グループ ID)
     alt レート制限を超過
@@ -111,4 +110,3 @@ sequenceDiagram
 3.  **ユーザー状態**: 未読バッジ表示用に、ユーザーが読み取った最新のメッセージインデックスを追跡するための `/users/{uid}/groupStates/{groupId}` ドキュメントを作成します。
 4.  **ユーザープロフィール**: ユーザーの `groupIds` 配列に加入した `groupId` を追加します。
 5.  **歓迎メッセージ**: システムメッセージを作成します： `✨ **${nickname}** joined the group! Welcome!`。
-6.  **メッセージカウンター**: 未読バッジの追跡用に、メッセージ数を更新するため `CounterService.increment` を呼び出します。

@@ -68,7 +68,6 @@ We follow a **"Logic-Component Split"** philosophy:
 Routes are simple controllers. All main processes (transactions, streak calculations, notifications) are handled in **Services**:
 - **`NoteService`**: Handles the note-posting transaction.
 - **`StreakEngine`**: Internal logic for calculating 36-hour grace periods.
-- **`ArchiveService`**: Manages bucket-based message archiving.
 
 ---
 

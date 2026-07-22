@@ -16,7 +16,6 @@ sequenceDiagram
     participant Auth as requireEmailVerified Middleware
     participant API as Backend API (/join-group)
     participant DB as Firestore Transaction
-    participant Counter as CounterService
 
     UI->>Rate: POST /api/groups/join-group (Invite Code / Group ID)
     alt Rate Limit Exceeded
@@ -111,4 +110,3 @@ These writes occur atomically to ensure data consistency:
 3.  **User State**: Creates `/users/{uid}/groupStates/{groupId}` to track the user's read message index for unread badges.
 4.  **User Profile**: Adds the `groupId` to the user's `groupIds` array.
 5.  **Welcome Message**: Creates a system message: `✨ **${nickname}** joined the group! Welcome!`.
-6.  **Message Counter**: Calls `CounterService.increment` to update the message count for unread badge tracking.

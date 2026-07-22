@@ -42,7 +42,7 @@
 *   共有リソースの状態の更新（グループの作成、ノートの投稿、応援（チア）、グループへの参加、管理者権限の譲渡など）は、**Vercel Functions**（`api_internal/routes/*`）を介してExpressバックエンドを経由する必要があります。
 *   **アトミックトランザクション（Read-before-Writeの強制化）**:
     複数のレコードに影響を与えるすべての更新は、失敗時にロールバックされることを保証するために、`runPhasedTransaction()` でラップする必要があります。
-    *   *制限と移行ロードマップ*: トランザクション内の「読み込み（Read）の後に書き込み（Write）を実行する」というFirestore Adminの制約を遵守させるため、生の `db.runTransaction()` の直接使用はESLintルール（`no-restricted-properties`）により制限（警告）されています。新規実装は必ず `runPhasedTransaction()` を使用してください。歴史的な残存トランザクション（`auth.ts` や `archive-service.ts`）の移行がすべて完了し次第、警告（warn）からエラー（error）へ引き上げられます。
+    *   *制限と移行ロードマップ*: トランザクション内の「読み込み（Read）の後に書き込み（Write）を実行する」というFirestore Adminの制約を遵守させるため、生の `db.runTransaction()` の直接使用はESLintルール（`no-restricted-properties`）により制限（警告）されています。新規実装は必ず `runPhasedTransaction()` を使用してください。歴史的な残存トランザクション（`auth.ts`）の移行がすべて完了し次第、警告（warn）からエラー（error）へ引き上げられます。
     *   *型レベルの防御*: `runPhasedTransaction` の `read` フェーズ callback が受け取る引数は `ReadOnlyTransaction` 型（`get` と `getAll` のみが許容される型）に制限されているため、読み込みフェーズで誤って書き込みメソッド（`set`, `update`, `delete`）を実行することはコンパイルエラーとして100%遮断されます。
     *   *冪等性の保証（副作用の禁止）*: Firestore トランザクションは競合発生時に自動で複数回リトライされます。そのため、トランザクションブロック（特に `write` フェーズ）の中には**「データベースの冪等（Idempotent）な更新処理」のみを記述してください。** 外部API呼び出し、Discord/Slack等のメッセージ通知送信、非アトミックなID生成といった「副作用を伴う処理」は、トランザクションが正常にコミットされた後（トランザクションブロックの外）で実行してください。
 
@@ -50,10 +50,9 @@
 *   Express のルートハンドラ内で発生したビジネスロジックエラー（権限不足、リソースなし、入力値エラーなど）は、汎用の `Error` ではなく [api_internal/lib/errors.ts](file:///c:/Users/dazhi/code/final-project/scripture-habit/api_internal/lib/errors.ts) で定義されている `AppError` のサブクラス（`ForbiddenError`、`NotFoundError`、`ValidationError`）をスローしてください。
 *   `catch` ブロックでは個別にステータスコードを返さず、必ず `sendErrorResponse(res, error, 'Fallback message')` ヘルパーを使用してください。これにより、エラークラスに応じた正しい HTTP ステータスコード（403, 404, 400 等）とエラーコードが型安全にクライアントへ返却されます。
 
-### 4. 分散カウンタとダイナミックシャード
-*   グループの統計カウンタ（`messageCount`、`noteCount`）を増減させる処理は、絶対に `FieldValue.increment` を用いた直接更新をせず、必ず `CounterService.increment(transaction, groupRef, field, value, membersCount)` を使用してください。
-*   `CounterService` は、グループのメンバー数（`membersCount`）が 100人以下の小規模な場合はメインドキュメントを直接更新（競合回避とコスト削減）し、100人を超える大規模グループの場合は自動的に 3つ の分散シャードに書き込む「ダイナミックシャード」を行います。
-*   定期バッチ（CRON）やデータ recounts 処理もこの動的しきい値に基づいて集計をスキップ・最適化します。
+### 4. Firestore TTL とデータサイズ上限
+*   データベース操作を効率的に保ち、チャットのパフォーマンスをスケールさせるため、チャットメッセージは Firestore のネイティブ機能である Time-to-Live (TTL) 機能（`expireAt` フィールド）を使用して、30日後に自動的に削除されます。
+*   アクティブなチャット同期は最新の25件のみをロードするように最適化されており、クライアントを軽量に保ち、過剰な読み取り操作を防ぎます。
 
 
 ---

@@ -1,134 +1,18 @@
-# Firestore トランザクション & 分散カウンタシャード — 詳細設計ガイド
+# Firestore トランザクションとパフォーマンス最適化 — ディープダイブ
 
 ## 概要
 
-**scripture-habit** のデータベースレイヤーは、高い並行性、低読み取りコスト、および厳密な結果整合性を実現するように設計されています。Google Cloud Firestore には、「同一ドキュメントへの書き込みは **秒間約1回** まで」という物理的な制限や、トランザクション内における「**Read-before-Write（書き込み前の読み取り）**」の徹底ルールといった構造的な制約があります。これらを克服するため、システムは高度な分散シャインディング（Counter Sharding）とトランザクション制御を採用しています。
+**scripture-habit** のデータベース層は、高い並行性、低リードコスト、そして厳格な結果整合性を実現するように設計されています。Google Cloud Firestore は、トランザクションにおける厳格な **Read-before-Write（書き込み前の読み込み）** ルールなどの構造的なパフォーマンス制限を課しているため、アプリはコンパイル時に安全なトランザクション境界と最適化を採用しています。
 
-このカウンターシステムは、サーバーレスのクラス **`CounterService`** ([`counter-service.ts`](../../../scripture-habit/api_internal/services/counter-service.ts)) および厳格なコンパイル安全性のトランザクション境界によって制御されています。これにより、ノートの共有、ストリークの更新、チャットメッセージ、メンバーシップ変更などの書き込み集中型のアクションが、データベースの競合やホットスポットを起こすことなく、数千の並行アクティブユーザーへ自動スケールします。
-
-```mermaid
-flowchart TD
-    subgraph Client ["クライアント端末"]
-        C1["ユーザー A (ノート投稿)"]
-        C2["ユーザー B (メッセージ送信)"]
-        C3["ユーザー C (スタンプトグル)"]
-    end
-
-    subgraph Service ["CounterService エンジン"]
-        Inc["increment(transaction, ref, field, value)"]
-        Get["getCountInTransaction(transaction, ref, field)"]
-        Recount["recountAndSync(ref, collection, field)"]
-    end
-
-    subgraph Firestore ["Firestore コレクション"]
-        Group["groups/{groupId}\n(親文書 - 同期された総数)"]
-        shards["groups/{groupId}/shards/{0..2}\n(分散カウンタシャード)"]
-    end
-
-    C1 & C2 & C3 -->|並行書き込み| Inc
-    Inc -->|1. Math.random index| ShardID["シャード ID (0..2)"]
-    ShardID -->|2. Transaction.set increment value| shards
-    
-    Recount -->|1. コレクションの count クエリ| dbCount["高性能サーバー集計カウント"]
-    dbCount -->|2. シャード0に総数退避、他は0リセット| shards
-    dbCount -->|3. 同期 & 再計算時刻の更新| Group
-```
+このシステムは、ノートの共有、ストリークの更新、チャットメッセージ、メンバーシップ変更などの操作を、データベースの競合や不要な読み取りコストを発生させることなく、数千人の同時アクティブユーザーにスケールできるように設計されています。
 
 ---
 
-## 1. 分散カウンタシャード（Counter Sharding）パターン
+## 1. コンパイル時に安全な Read/Write フェーズの分離（IIFE パターン）
 
-数百人のグループメンバーが同時に学習ノートを投稿したり、チャットメッセージを送信したりする場合、中央のグループドキュメント上の単一の `messageCount` や `noteCount` フィールドを直接インクリメント（加算）しようとすると、書き込み競合（ホットスポット）により処理がエラーになります。
+Google Cloud Firestore のトランザクションは、楽観的並行性制御を使用します。これにより、**すべての読み取り操作（クエリ、get）は、書き込み操作（set、update、delete）がキューに登録される前に実行および解決される必要があります**。書き込みの後に読み取りを呼び出すと、ランタイムエラーが発生します。
 
-この問題を解決するために、**`CounterService`** はカウントの加算処理を専用のサブコレクション内の「シャード（破片）」ドキュメントへ分散させます。
-
-### 1.1 動的シャードルーティング & 書き込み処理
-
-システムは、シャード対象のフィールドごとに **3個のシャード** (`NUM_SHARDS = 3`) を保持します。また、読み取りコスト（シャードを集計するために毎回複数のシャードドキュメントを読み込むコスト）を最小限に抑えるため、**「動的シャードルーティング」**を採用しています。
-
-- **小規模グループ（メンバー数100人以下）**: 同時書き込み競合が発生する確率が極めて低いため、シャード化をバイパスし、親のグループドキュメントのカウンターを直接インクリメントします。これにより無駄なシャードドキュメントの生成と読み込み料金を削減します。
-- **大規模グループ（メンバー数101人以上）**: 書き込み競合を防ぐため、`0` から `2` までのランダムなシャードIDを動的に選択し、Firestore トランザクションを利用してアトミックな加算操作（セット）を実行します。
-
-```typescript
-private static NUM_SHARDS = 3;
-
-static increment(
-    transaction: admin.firestore.Transaction, 
-    ref: admin.firestore.DocumentReference, 
-    fieldName: string = 'count', 
-    value: number = 1,
-    membersCount: number = 0
-) {
-    if (membersCount > 100) {
-        // 大規模グループ: 0〜2のランダムなシャードインデックスに分散書き込み
-        const shardId = Math.floor(Math.random() * this.NUM_SHARDS).toString();
-        const shardRef = ref.collection('shards').doc(shardId);
-        
-        transaction.set(shardRef, {
-            [fieldName]: admin.firestore.FieldValue.increment(value)
-        }, { merge: true });
-    } else {
-        // 小規模グループ: 親ドキュメントに直接書き込み (シャード化バイパス)
-        transaction.update(ref, {
-            [fieldName]: admin.firestore.FieldValue.increment(value)
-        });
-    }
-}
-```
-
-書き込み処理を3個の物理的なドキュメントへ分散させることで、大規模グループにおける書き込み競合を起こすことなくスケールさせ、かつ小規模グループでは無駄な読み取りコストを完璧に排除します。
-
-### 1.2 トランザクション内外での読み取り処理
-
-シャード化されたカウンターの総数を取得するには、すべてのシャードドキュメントをロードしてその数値を合算する必要があります。システムはこれを用途に応じて2種類の方法で実行します。
-
-#### A. トランザクション外での合算処理 (`getCount`)
-バックグラウンド処理や定期集計ジョブで使用される、標準的な非同期読み取りです。
-```typescript
-static async getCount(ref: admin.firestore.DocumentReference, fieldName: string = 'count'): Promise<number> {
-    const shards = await ref.collection('shards').get();
-    let totalCount = 0;
-    shards.forEach((doc) => {
-        totalCount += doc.data()[fieldName] || 0;
-    });
-    return totalCount;
-}
-```
-
-#### B. トランザクション内での合算処理 (`getCountInTransaction`)
-バリデーションや別ステータスの算出のために、トランザクションの*内部*で現在の合計値を読み取る必要がある場合、ループの中で順番に `get()` を呼ぶと、複数回のネットワーク往復が発生し、トランザクションの「Read-before-Write」フェーズ規則にも抵触しやすくなります。
-これを防ぐため、サービスは全3シャードの参照を最初にすべて生成し、`transaction.getAll(...)` を用いて一回の並行リクエストで全シャードドキュメントを一括フェッチします。
-
-```typescript
-static async getCountInTransaction(
-    transaction: admin.firestore.Transaction, 
-    ref: admin.firestore.DocumentReference, 
-    fieldName: string = 'count'
-): Promise<number> {
-    const shardRefs = [];
-    for (let i = 0; i < this.NUM_SHARDS; i++) {
-        shardRefs.push(ref.collection('shards').doc(i.toString()));
-    }
-    
-    // 並行フェッチ: 3個のシャード文書を1回のネットワークラウンドトリップで一括取得
-    const snaps = await transaction.getAll(...shardRefs);
-    let totalCount = 0;
-    snaps.forEach((doc) => {
-        if (doc.exists) {
-            totalCount += doc.data()?.[fieldName] || 0;
-        }
-    });
-    return totalCount;
-}
-```
-
----
-
-## 2. コンパイル安全な Read/Write フェーズ分離（IIFE パターン）
-
-Google Cloud Firestore のトランザクションモデルでは、楽観的並行性制御を採用しています。これにより、**「すべてのデータベース読み取り操作（get, query）は、いかなる書き込み操作（set, update, delete）よりも先に完了しなければならない」** という厳格な制約があります。一度書き込みアクションをトランザクションに予約したあとに読み取りを行おうとすると、実行時エラーが発生します。
-
-この制約を「コードの構造自体」で強制し、将来のアップデート時における先祖返りバグを防ぐため、コードベースではトランザクション内の全処理を **「非同期 IIFE（即時実行関数）ブロック」** で包み、**フェーズ1: 読み取り専用フェーズ** として物理的に分離しています。
+この制約を構築段階で厳密に適用し、デグレードを防止するために、コードベースはトランザクション操作を **非同期即時実行関数式 (IIFE)** ブロックでラップし、**フェーズ1: 読み取りフェーズ** を表現しています。
 
 ```mermaid
 sequenceDiagram
@@ -139,22 +23,22 @@ sequenceDiagram
 
     Tx->>IIFE: トランザクションスコープの開始
     IIFE->>DB: Promise.all([ transaction.get(user), transaction.get(group) ])
-    DB-->>IIFE: ドキュメントスナップショット (データ解決)
-    IIFE->>IIFE: ビジネスロジック判定 & バリデーション
-    IIFE-->>Tx: 計算済みデータの返却 (userData, hasLimit 等)
-    Note over Tx: IIFEを脱出。読み取りフェーズはコンパイルレベルで完全終了。
+    DB-->>IIFE: snaps (解決されたデータ)
+    IIFE->>IIFE: ビジネスロジックとバリデーションの計算
+    IIFE-->>Tx: 計算されたデータ (userData, hasLimit など) を返却
+    Note over Tx: IIFE を抜ける。読み取りフェーズはコンパイル時にクローズされる。
     Tx->>Write: transaction.update / transaction.set の実行
-    Write->>DB: アトミックに変更をコミット
+    Write->>DB: アトミックな変更をコミット
 ```
 
-### コード設計の実例 (`NoteService` / `MessageService`):
+### コードアーキテクチャの例 (`NoteService` / `MessageService`):
 ```typescript
 const result = await db.runTransaction(async (transaction) => {
     // -----------------------------------------------------------------
-    // フェーズ 1: 読み取り & 計算専用フェーズ（書き込みは一切禁止）
+    // フェーズ 1: 読み取りおよび純粋な計算フェーズ (書き込みは厳格に禁止)
     // -----------------------------------------------------------------
     const { userData, groupData, activeMembers } = await (async () => {
-        // トランザクションの最上部で並行して一括読み取り
+        // シーケンスの最上部での並行読み取り
         const [userSnap, groupSnap] = await Promise.all([
             transaction.get(userRef),
             transaction.get(groupRef)
@@ -163,20 +47,20 @@ const result = await db.runTransaction(async (transaction) => {
         if (!userSnap.exists) throw new Error('User not found');
         if (!groupSnap.exists) throw new Error('Group not found');
 
-        // タイムゾーン解析や、アクティブ日付境界の算出などの「純粋な計算」を実行
+        // 純粋な数学的計算 (例: タイムゾーンオフセットやローカル日境界の評価)
         const timezone = userSnap.data()?.timeZone || 'UTC';
         const hasExceededLimit = (groupSnap.data()?.membersCount || 0) >= 100;
 
-        // 計算結果やスナップショットの中身を、外側のトランザクションスコープへ返却
+        // 外部のトランザクションスコープに解決されたペイロードを返す
         return {
             userData: userSnap.data(),
             groupData: groupSnap.data(),
             hasExceededLimit
         };
-    })(); // 即時実行！
+    })(); // 即座に実行されます！
 
     // -----------------------------------------------------------------
-    // フェーズ 2: 書き込み専用フェーズ（ミューテーションのみをアトミックに登録）
+    // フェーズ 2: 書き込みフェーズ (ミューテーションのみ)
     // -----------------------------------------------------------------
     if (userData.hasExceededLimit) {
         throw new Error('Group capacity reached.');
@@ -187,135 +71,34 @@ const result = await db.runTransaction(async (transaction) => {
 });
 ```
 
-IIFEブロックによって読み取りフェーズと書き込みフェーズを物理的に分離することで、将来別の開発者がコードを修正した際にも、書き込み処理のあとに誤って読み取りクエリを混入させてしまうバグを確実に防ぐことができます。
+読み取りと計算を専用の自己完結型スコープに分離することで、開発者が将来の更新時に書き込みミューテーションの後に誤ってデータベースクエリを挿入することが不可能になります。
 
 ---
 
-## 3. データ整合性の担保 & 自動自己修復（再計算）パイプライン
+## 2. トランザクション読み取りの最適化
 
-分散されたシャードによるカウンターは高い並行処理能力を持つ一方、極端なネットワーク障害や開発者による手動データ修正の際に、実データ数とカウント値に「ズレ（ドリフト）」が生じる可能性があります。また、高速化のためにメモリ上にキャッシュされた値を、検索用に定期的に親ドキュメントに同期させる必要もあります。
+データベースコストを低く抑えるために、トランザクションエンジンはドキュメントの読み取りを能動的に最小化します。
 
-これらを解決するため、エンジンには以下の2つの自己修復用再計算パイプラインが組み込まれています。
-
-### 3.1 同期 & 集計自動処理 (`aggregateAndSync`)
-
-定期実行されるバックグラウンド処理が分散されたシャードをスキャンし、合算した正しい総数を親グループドキュメントのフィールドへ書き戻します。これにより、クライアントはグループ一覧画面などでシャードを毎度フェッチすることなく、安価に総数を読み取ることができます。
-
-```typescript
-static async aggregateAndSync(ref: admin.firestore.DocumentReference, fieldName: string) {
-    const total = await this.getCount(ref, fieldName);
-    await ref.update({
-        [fieldName]: total,
-        [`${fieldName}_syncedAt`]: admin.firestore.FieldValue.serverTimestamp()
-    });
-    return total;
-}
-```
-
-### 3.2 サーバーサイド超高速再計算 (`recountAndSync`)
-
-実体ドキュメントの数とシャードの数値を完全に再キャリブレーション（再計算）する場合、数万件のドキュメントをすべて読み取ってループカウントするのは非常に非効率です。
-`CounterService` は、Firestore の超高速な **`count()` アグリゲーションクエリ** を使用します。これにより、すべての文書をクライアント側へロードすることなく、データベースサーバー内部で一瞬でドキュメント数をカウントし、Firestoreの読み取り料金を劇的に削減します。
-
-```typescript
-static async recountAndSync(docRef: admin.firestore.DocumentReference, collectionName: string, fieldName: string) {
-    // 1. 高性能サーバーサイド集計カウントの取得
-    const snapshot = await docRef.collection(collectionName).count().get();
-    const actualTotal = snapshot.data().count;
-
-    // 2. シャードの値を実際のカウントにリセット (簡単のため、総数をシャード0に格納し、他は0にする)
-    const batch = db.batch();
-    for (let i = 0; i < this.NUM_SHARDS; i++) {
-        batch.set(docRef.collection('shards').doc(i.toString()), {
-            [fieldName]: i === 0 ? actualTotal : 0
-        }, { merge: true });
-    }
-    
-    batch.update(docRef, {
-        [fieldName]: actualTotal,
-        [`${fieldName}_syncedAt`]: admin.firestore.FieldValue.serverTimestamp(),
-        [`${fieldName}_recountedAt`]: admin.firestore.FieldValue.serverTimestamp()
-    });
-    
-    await batch.commit();
-    return actualTotal;
-}
-```
-
-### 3.3 アーカイブを考慮したチャットログ再計算 (`recountMessageCountWithArchive`)
-
-チャット画面では、クライアント側のデータ読み込み量を最小限に抑えるため、古いメッセージを圧縮バケット（`message_buckets`）へ順次アーカイブ退避させるクリーンアップが走ります。
-
-もし単純にアクティブチャットコレクション（`/messages`）の件数だけをカウントすると、過去メッセージがアーカイブされたあとにカウンターの値が急減少してしまいます。これを防ぐため、再計算エンジンは **アーカイブ状況を認識（Archive-Aware）** できる設計になっています。アクティブなメッセージ件数と、退避済みバケット内のメタデータ数値を合算して真の総数を割り出します。
-
-```typescript
-static async recountMessageCountWithArchive(groupRef: admin.firestore.DocumentReference) {
-    // 1. コレクション内のアクティブメッセージ数を高速アグリゲーションカウント
-    const msgSnapshot = await groupRef.collection('messages').count().get();
-    const individualCount = msgSnapshot.data().count;
-
-    // 2. 退避済みアーカイブバケット群に記録されている件数を合算
-    const bucketSnapshot = await groupRef.collection('message_buckets').get();
-    let archivedCount = 0;
-    bucketSnapshot.forEach(doc => {
-        archivedCount += (doc.data().count || 0);
-    });
-
-    const trueTotal = individualCount + archivedCount;
-
-    // 3. 全シャードと親ドキュメントを真の総数で再同期
-    const batch = db.batch();
-    for (let i = 0; i < this.NUM_SHARDS; i++) {
-        batch.set(groupRef.collection('shards').doc(i.toString()), {
-            'messageCount': i === 0 ? trueTotal : 0
-        }, { merge: true });
-    }
-
-    batch.update(groupRef, {
-        'messageCount': trueTotal,
-        'messageCount_syncedAt': admin.firestore.FieldValue.serverTimestamp(),
-        'messageCount_recountedAt': admin.firestore.FieldValue.serverTimestamp()
-    });
-
-    await batch.commit();
-    return trueTotal;
-}
-```
+1. **配列長チェックによる読み取りの回避**: ユーザーがグループに参加する際、エンジンは現在のグループ容量を確認する必要があります。メンバーサブドキュメントをすべて読み取る代わりに、親グループドキュメントのメタデータフィールドである `members` UID配列の長さや `membersCount` を直接確認します（グループの存在確認のためにすでにフェッチされたスナップショットを再利用します）。これにより、参加試行時のデータベース操作数を節約できます。
+2. **スナップショットの再利用**: 招待コードを確認する際、エンジンは `inviteCodes` コレクションを照会します。返される `QueryDocumentSnapshot` にはすでにグループのメタデータがすべて含まれています。エンジンは、セカンダリの `transaction.get(groupRef)` 呼び出しを実行する代わりに、このスナップショットを直接再利用し、追加の読み取りを1回節約します。
 
 ---
 
-## 4. トランザクション内の読み取り最適化（Read削減）
+## 3. リードバジェット監査システム (`test-setup.ts`)
 
-システム運用コストを抑えレスポンス速度を最大化するため、トランザクション内の読み取り（Read）処理は極限まで排除されています。
+開発者がアップデート中に非効率なデータベース読み取りパターン（ループ内での N+1 クエリなど）を誤って導入しないように、テスト環境には自動化された **グローバルリード監査** が組み込まれています。
 
-1. **シャード読み取りのバイパス**: ユーザーがグループに参加する際、現在のメンバー数が定員（100人）を超えていないかバリデーションする必要がありますが、そのためにトランザクション内で 10個のシャードを毎度フェッチすると読み取りコストが激増します。代わりに、既にグループの存在チェックのために取得した親グループドキュメント上の `membersCount` フィールドを直接参照することで、**毎回の参加処理で10回のFirestore読み取りを削減**しています。
-2. **クエリドキュメントスナップショットの再利用**: グループの招待リンク（Invite Code）を照合する際、クエリによって取得した `QueryDocumentSnapshot` にはすでにグループの全データが含まれています。これを直接再利用することで、別途 `transaction.get(groupRef)` を呼ぶ無駄な重複処理を回避しています。
+[`test-setup.ts`](../../scripture-habit/api_internal/test-setup.ts) に配置されたこのモジュールは、統合テスト中に対象の Firestore ドライバプロトタイプをラップします。
 
----
+### 3.1 プロキシラッパーによるインターセプション
 
-## 5. テスト環境の読み取り監査システム (`test-setup.ts`)
+テスト実行時、テストハーネスは JavaScript の標準機能である `Proxy` を使用して Firestore クライアントメソッドをラップし、アプリケーションが行うすべてのドキュメント読み取り呼び出しを追跡し、グローバルなテレメトリカウンターをインクリメントします。
 
-コード変更の過程で、開発者が誤ってループ内でのドキュメント取得（N+1問題）や無駄な多重クエリを実装してしまわないように、テストの実行環境には自動的な **「読み取り監査（Read Audit）」** が張り巡らされています。
+この追跡は、標準のモック復元（`vi.restoreAllMocks()`）の影響を完全に受けないため、テストスイート実行中の絶対的な精度を保証します。
 
-これは [`test-setup.ts`](../../../scripture-habit/api_internal/test-setup.ts) で制御されており、統合テストの実行時に Firestore ドライバーのプロトタイプを内部的にフックします。
+### 3.2 300回リードバジェット警告
 
-### 5.1 プロトタイプのインターセプト（割り込み監視）
-
-テストスイートの実行中、アプリケーションが行うすべての読み取りメソッドがインターセプトされ、件数とコレクション名がロギングされます。
-
-```typescript
-const originalGet = admin.firestore.Transaction.prototype.get;
-admin.firestore.Transaction.prototype.get = function(ref) {
-    incrementReadTelemetry(ref);  // コレクション名ごとの集計をインクリメント
-    return originalGet.apply(this, arguments);
-};
-```
-
-この処理は、Vitest のテストモックリセット（`vi.restoreAllMocks()`）の影響を受けないため、テスト中の本物のデータベース読み取り数を完璧にトレースできます。
-
-### 5.2 300-Read 警告バジェットシステム
-
-各テストファイルの実行終了時、フックされた集計から以下のようなレポートが自動出力されます。
+テスト実行の最後に、ハーネスはデータベース操作を要約したテレメトリレポートを出力します。
 
 ```text
 📊 [Firestore Read Audit] -----------------------------
@@ -326,8 +109,7 @@ admin.firestore.Transaction.prototype.get = function(ref) {
    Collection Breakdown:
      - users: 8 reads
      - groups: 12 reads
-     - message_buckets: 3 reads
 -------------------------------------------------------
 ```
 
-もし1つのテストファイル内で、設定されたバジェットである **「300 Firestore Reads」** を超過した場合、監査ヘルパーはビルド警告メッセージを出力し、開発者にクエリループや結合処理の改善を促します。これにより、本番環境に非効率なクエリコードがデプロイされるのを未然に防いでいます。
+テストファイルが **300回の Firestore 読み取り** のバジェットを超えると、`test-setup.ts` は N+1 クエリの有無をクエリチェーンで確認するよう促すコンパイル警告を出力します。これにより、コードベースを高度に最適化し、コスト効率の高い状態に保ちます。

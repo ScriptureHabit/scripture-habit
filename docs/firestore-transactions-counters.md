@@ -1,6 +1,6 @@
-# Firestore Transactions & Counter Service Design
+# Firestore Transactions & Performance Optimizations
 
-This document details how the backend handles transactions, updates multiple documents atomically, and uses distributed counters to prevent write performance bottlenecks.
+This document details how the backend handles transactions, updates multiple documents atomically, and optimizes database reads and writes to prevent hot-spotting and reduce costs.
 
 ---
 
@@ -20,9 +20,6 @@ const result = await db.runTransaction(async (transaction) => {
     // -------------------------------------------------------------
     const groupDoc = await transaction.get(groupRef);
     const userDoc = await transaction.get(userRef);
-    // Bypasses sharded counter reads inside transactions to save 10 reads!
-    // Reads directly from the already-fetched groupDoc main snapshot.
-    const totalMessages = groupDoc.data()?.messageCount || 0;
 
     // -------------------------------------------------------------
     // STEP 2: VALIDATION PHASE (Local business checks)
@@ -53,7 +50,7 @@ const result = await db.runTransaction(async (transaction) => {
     // -------------------------------------------------------------
     // PHASE 1: READ & CALCULATION PHASE (Strict Read-before-Write)
     // -------------------------------------------------------------
-    const { userData, currentMessages, allLatestGids, ... } = await (async () => {
+    const { userData, currentMessages, ... } = await (async () => {
         const [userSnap, latestSnap] = await Promise.all([
             transaction.get(userRef),
             transaction.get(latestRef)
@@ -63,8 +60,7 @@ const result = await db.runTransaction(async (transaction) => {
 
         return {
             userData: userSnap.data(),
-            currentMessages: latestSnap.data()?.messages || [],
-            allLatestGids
+            currentMessages: latestSnap.data()?.messages || []
         };
     })();
 
@@ -108,39 +104,11 @@ sequenceDiagram
 
 ---
 
-## 3. Distributed Counters & Preventing Hot-spotting
+## 3. Message Aggregation & Low-Read High-Frequency Transactions
 
-Firestore limits single-document updates to **approximately once per second** in production.
+To scale high-frequency operations such as chat messaging (`postMessage`) and reaction toggling (`toggleReaction`), scripture-habit implements a **Message Aggregation pattern** that collapses the active chat sync down to **exactly 1 Firestore read** per active stream:
 
-If many users in a group post study notes or send chat messages at the same time, updating a single counter field on a central group document will fail due to contention (hot-spotting).
-
-### The Solution: `CounterService`
-To scale counters under high traffic, the app uses a **Distributed Counter** pattern with client-side caching.
-
-```
-                   [ High Concurrency Writes ]
-                   │      │      │      │      │
-                   ▼      ▼      ▼      ▼      ▼
-             [ Randomly Shard into 0..N Counter Subdocs ]
-             (e.g., /groups/{id}/messageCount_shards/{shardId})
-                                 │
-                                 ▼
-          [ Periodic Backend Batch Aggregation / Reads ]
-           Loads and sums all shard documents into total
-```
-
-### How It Works:
-1. **Dynamic Sharding**: Instead of incrementing `group.messageCount` directly, writes are randomly distributed across a subcollection of shard documents (`/shards/{id}`).
-2. **Read Consolidation**: When the exact count is needed, the `CounterService` loads all shard documents, sums their values, and returns the total.
-3. **Write Scaling**: Because updates are spread across multiple shards, the database can handle many concurrent count updates per second without slowing down.
-
----
-
-## 4. Message Aggregation (Strategy B) & Low-Read High-Frequency Transactions
-
-To scale high-frequency operations such as chat messaging (`postMessage`) and reaction toggling (`toggleReaction`), scripture-habit implements a **Message Aggregation pattern (Strategy B)** that collapses the active chat sync down to **exactly 1 Firestore read** per active stream:
-
-### 4.1 Materialized Chat Aggregate (`messages_latest/latest`)
+### 3.1 Materialized Chat Aggregate (`messages_latest/latest`)
 Instead of subscribing to the entire `/messages` subcollection (which incurs N reads on load and on any local changes), clients subscribe via `onSnapshot` to a single materialized view document: `/groups/{groupId}/messages_latest/latest`.
 
 During a post, edit, reaction, or delete operation, the backend executes a transaction that:
@@ -154,7 +122,7 @@ This architecture ensures that all active listening clients receive real-time up
 > **New Group Creation Optimization (Cold Start Avoidance)**
 > When a group is newly created, the backend (`groups.ts`) pre-creates (seeds) the `messages_latest/latest` document containing the initial welcome system message. This guarantees that `messages_latest/latest` always exists when clients first access a new group, entirely eliminating historical `/messages` subcollection fallback queries (cold start) and keeping read efficiency at 100%.
 
-### 4.2 Zero-Jitter UI Sorting (`clientTimestamp`)
+### 3.2 Zero-Jitter UI Sorting (`clientTimestamp`)
 During Firestore server-timestamp resolution, there is a small period where `createdAt` resolves as `null` locally (during optimistic updates). If client clocks are out of sync, this causes "UI jumps" when the server snapshot returns.
 
 To guarantee zero-jitter sorting:
@@ -162,14 +130,14 @@ To guarantee zero-jitter sorting:
 * The backend persists `clientTimestamp` to both the individual message doc and the `latest` aggregate array.
 * The frontend uses `clientTimestamp || parseTimestampToMillis(createdAt)` as the absolute sorting key. Since the sorting key is stable before and after server synchronization, UI jumps are entirely prevented.
 
-### 4.3 Self-Healing Data Reconciliation (`reconcileLatestMessages`)
+### 3.3 Self-Healing Data Reconciliation (`reconcileLatestMessages`)
 Since aggregate arrays represent a materialized view, manual database modifications or race conditions might cause them to drift from the actual history in the `/messages` subcollection.
 
 To guarantee eventual data integrity and absolute self-healing:
 * **`reconcileLatestMessages(groupId)`**: A transaction-safe method compares the `/messages_latest/latest` array against the actual physical latest 25 messages in the `/messages` subcollection. If any discrepancy (mismatched ID, length, or order) is detected, the aggregate document is automatically overwritten and self-healed.
-* **Cron Sync Loop**: This self-healing function is integrated into the hourly cron sync `/aggregate-message-counts` for both active priority groups and maintenance stale recalculations, ensuring background data auto-healing without user intervention.
+* **Cron Sync Loop**: This self-healing function is integrated into the hourly cron sync for both active priority groups and maintenance stale recalculations, ensuring background data auto-healing without user intervention.
 
-### 4.4 Group Chat Read Count Operation Cost Audit
+### 3.4 Group Chat Read Count Operation Cost Audit
 
 To audit and optimize read cost when a user opens and interacts with a group chat, the system utilizes a hybrid model of **static bundles** and **materialized listeners**:
 
@@ -191,15 +159,14 @@ Once the initial history is loaded, the client attaches an `onSnapshot` listener
     *   **Firestore Reads: 1 Read** (to fetch the aggregate messages array).
 *   **When any new message/note is posted or edited by anyone in the group**:
     *   **Firestore Reads: 1 Read** per update (triggered by the modified `latest` snapshot).
-    *   *(Note: Listening to the chat stream has an O(1) operational cost. Even if a group has 50 active members posting notes simultaneously, clients pay only 1 read per update, bypassing expensive message collection queries).*
 
 ---
 
-## 5. Firestore Read Optimization & Telemetry Audit System
+## 4. Firestore Read Optimization & Telemetry Audit System
 
 To maintain low database costs and high API response times as scripture-habit scales, the architecture enforces strict guidelines to minimize Firestore document read operations.
 
-### 5.1 Optimization Principles
+### 4.1 Optimization Principles
 
 1. **Query Snapshot Reuse**
    When looking up a document via a query (e.g., searching for a group by `inviteCode`), the resulting `QueryDocumentSnapshot` already contains the full document data. Bypasses secondary `transaction.get(docRef)` calls by directly reusing the snap:
@@ -225,11 +192,11 @@ To maintain low database costs and high API response times as scripture-habit sc
 
 ---
 
-## 6. Automatic Telemetry & Global Read Budgeting
+## 5. Automatic Telemetry & Global Read Budgeting
 
 To ensure developers do not accidentally re-introduce N+1 queries or redundant fetches during future updates, the emulated integration test environment runs a transparent **Global Read Audit**.
 
-### 6.1 Transparent Prototype Wrapping
+### 5.1 Transparent Prototype Wrapping
 During testing, the [TestSetup](../scripture-habit/api_internal/test-setup.ts) harness intercepts and counts every execution of:
 - `admin.firestore.Transaction.prototype.get`
 - `admin.firestore.Transaction.prototype.getAll`
@@ -237,7 +204,7 @@ During testing, the [TestSetup](../scripture-habit/api_internal/test-setup.ts) h
 
 This tracking is fully immune to standard mock restorations (`vi.restoreAllMocks()`).
 
-### 6.2 Test Output Report & Warning Budget
+### 5.2 Test Output Report & Warning Budget
 At the end of each emulated test file, `TestSetup` logs a detailed collection-level breakdown of the database reads:
 
 ```text
@@ -253,4 +220,3 @@ At the end of each emulated test file, `TestSetup` logs a detailed collection-le
 ```
 
 If a test file exceeds a generous budget of **300 Firestore reads**, `TestSetup` outputs a prominent compiler warning urging the developer to review the asynchronous chains for N+1 queries.
-

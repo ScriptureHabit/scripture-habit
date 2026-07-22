@@ -16,7 +16,6 @@ erDiagram
     USERS ||--o{ LETTERS : "encouragement letters"
     
     GROUPS ||--o{ MESSAGES : "active chat"
-    GROUPS ||--o{ MESSAGE_BUCKETS : "archived history"
     GROUPS ||--o{ MEMBERS_STATS : "individual progress"
     
     USERS }|--o{ GROUPS : "many-to-many (membership)"
@@ -46,6 +45,7 @@ erDiagram
         string senderId FK
         timestamp createdAt
         boolean isNote
+        timestamp expireAt
     }
     
     LETTERS {
@@ -97,9 +97,7 @@ graph TD
     Root --> Groups[groups / Collection]
     Groups --> GroupDoc["{groupId} / Document"]
     GroupDoc --> Messages[messages / Subcollection]
-    Messages --> MsgDoc["{messageId} / Document (Active Chat)"]
-    GroupDoc --> MessageBuckets[message_buckets / Subcollection]
-    MessageBuckets --> BucketDoc["{bucketId} / Document (Archived History)"]
+    Messages --> MsgDoc["{messageId} / Document (Active Chat / TTL 30d)"]
     GroupDoc --> Members[members / Subcollection]
     Members --> MemberDoc["{userId} / Document (Progress/Stats)"]
     
@@ -111,8 +109,8 @@ graph TD
     
     classDef col fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
     classDef doc fill:#fff9c4,stroke:#fbc02d,stroke-width:2px;
-    class Users,Groups,Cheers,Reports,UserPrivate,UserNotes,GroupStates,Letters,Messages,MessageBuckets,Members col;
-    class UserDoc,TokenDoc,NoteDoc,GStateDoc,LetterDoc,GroupDoc,MsgDoc,BucketDoc,MemberDoc,CheerDoc,ReportDoc doc;
+    class Users,Groups,Cheers,Reports,UserPrivate,UserNotes,GroupStates,Letters,Messages,Members col;
+    class UserDoc,TokenDoc,NoteDoc,GStateDoc,LetterDoc,GroupDoc,MsgDoc,MemberDoc,CheerDoc,ReportDoc doc;
 ```
 
 ---
@@ -140,23 +138,23 @@ graph TD
 
 ---
 
-## 📦 Chat Archiving (The Bucket Pattern)
+## 📦 Chat Cleanup (Firestore TTL)
 
-To avoid Firestore's document-size limits (1MB per document) and keep real-time client syncs lightweight, the application uses the **Bucket Pattern** for chat history.
+To avoid Firestore's document-size limits (1MB per document) and keep real-time client syncs lightweight, the application uses Firestore's native **Time-to-Live (TTL)** auto-deletion feature for chat history.
 
 ```
        [ Client Chat Listener ] ─── Subscribed to ───► [ groups/{id}/messages ] (Active Space)
                                                                  │
-                                                    (Automated Cron Sweeps)
+                                                       (Firestore Native TTL)
                                                                  ▼
-                                                [ groups/{id}/message_buckets/{bucketId} ]
-                                                        (Archived Cold Storage)
+                                                      Auto-deleted after 30 days
+                                                       (via `expireAt` field)
 ```
 
 ### Mechanisms:
-* **Active Collection**: Active messages are stored in `/messages` and kept small.
-* **Archiving Cron**: A cron job (`ArchiveService` triggered daily) moves messages older than 30 days into a bucketed subcollection `/message_buckets/{bucketId}`.
-* **Bandwidth Savings**: The active chat listener remains lightweight, ensuring that client sync does not consume excessive mobile data or memory.
+* **Active Collection**: Active messages are stored in `/messages` with an `expireAt` timestamp set to 30 days after creation.
+* **Firestore TTL Service**: Google Cloud Firestore automatically deletes expired message documents in the background based on the `expireAt` field, keeping the subcollection size bound.
+* **Bandwidth & Storage Savings**: The active chat listener remains lightweight, ensuring that client synchronization does not consume excessive mobile data or memory, without requiring a manual archiving sweeper script.
 
 ---
 

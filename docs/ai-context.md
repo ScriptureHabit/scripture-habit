@@ -42,7 +42,7 @@ To balance production security with offline responsiveness (Firestore Offline Pe
 *   All collaborative state updates (such as creating groups, posting notes, cheering, joining groups, and transferring ownership) must go through the Express backend via **Vercel Functions** (`api_internal/routes/*`).
 *   **Atomic Transactions (Read-before-Write Enforcement)**:
     All updates affecting multiple records must be wrapped in `runPhasedTransaction()` to guarantee rollback on failure.
-    *   *Constraint & Roadmap*: To ensure compliance with the "Read-before-Write" order constraint of Firestore Admin transactions, direct usage of `db.runTransaction()` is restricted (warn level) via ESLint (`no-restricted-properties`). Always use `runPhasedTransaction()`. Once historical transactions (e.g. in `auth.ts`, `archive-service.ts`) are fully migrated, this lint restriction will be upgraded from `warn` to `error`.
+    *   *Constraint & Roadmap*: To ensure compliance with the "Read-before-Write" order constraint of Firestore Admin transactions, direct usage of `db.runTransaction()` is restricted (warn level) via ESLint (`no-restricted-properties`). Always use `runPhasedTransaction()`. Once historical transactions (e.g. in `auth.ts`) are fully migrated, this lint restriction will be upgraded from `warn` to `error`.
     *   *Type-Level Protection*: The callback argument of the `read` phase in `runPhasedTransaction()` is typed as `ReadOnlyTransaction` (which only exposes `get` and `getAll`). Calling mutation methods (`set`, `update`, `delete`) in the read phase is strictly blocked at compile time.
     *   *Idempotency Guarantee (No Side Effects)*: Firestore transactions auto-retry multiple times on write contentions. Therefore, **only write idempotent database mutations inside the transaction blocks.** Do not execute side effects (such as sending push notifications, HTTP requests to external APIs, or non-atomic state mutations) inside the transaction. Run them only after the transaction successfully commits (outside the transaction block).
 
@@ -50,10 +50,9 @@ To balance production security with offline responsiveness (Firestore Offline Pe
 *   Business logic errors thrown in express controllers (e.g., unauthorized access, missing resources, validation failures) must throw custom `AppError` subclasses defined in [api_internal/lib/errors.ts](file:///c:/Users/dazhi/code/final-project/scripture-habit/api_internal/lib/errors.ts) (such as `ForbiddenError`, `NotFoundError`, `ValidationError`) instead of generic `Error` instances.
 *   In the controller `catch` block, delegate response formatting to `sendErrorResponse(res, error, 'Fallback message')`. This helper automatically sets the proper HTTP status code (403, 404, 400, etc.) and propagates structured error codes to the client.
 
-### 4. Dynamic Distributed Counters
-*   All statistical counters updates (`messageCount`, `noteCount`) must go through `CounterService.increment(transaction, groupRef, field, value, membersCount)` instead of using direct `FieldValue.increment` updates.
-*   `CounterService` dynamically decides between direct updates (to minimize latency and costs for small groups ≤ 100 members) and 3 distributed write-shards (to avoid hotspots in large groups > 100 members).
-*   Regular cleanup batch jobs (CRON) and recounts also skip aggregation tasks for small groups dynamically.
+### 4. Firestore TTL & Size Bounds
+*   To keep database operations efficient and scale chat performance, chat messages are automatically pruned after 30 days using Firestore's native Time-to-Live (TTL) feature (via the `expireAt` field).
+*   Active chat sync is optimized to load only the latest 25 messages, keeping clients lightweight and preventing excessive read operations.
 
 ---
 

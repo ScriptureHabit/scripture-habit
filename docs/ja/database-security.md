@@ -15,9 +15,8 @@ erDiagram
     USERS ||--o{ PRIVATE_TOKENS : "機密FCMトークン"
     USERS ||--o{ LETTERS : "励ましのお手紙"
     
-    GROUPS ||--o{ MESSAGES : "アクティブなチャット"
-    GROUPS ||--o{ MESSAGE_BUCKETS : "アーカイブされた履歴"
-    GROUPS ||--o{ MEMBERS_STATS : "個人の進捗"
+    GROUPS ||--o{ MESSAGES : "active chat"
+    GROUPS ||--o{ MEMBERS_STATS : "individual progress"
     
     USERS }|--o{ GROUPS : "多対多（メンバーシップ）"
     
@@ -46,6 +45,7 @@ erDiagram
         string senderId FK
         timestamp createdAt
         boolean isNote
+        timestamp expireAt
     }
     
     LETTERS {
@@ -97,9 +97,7 @@ graph TD
     Root --> Groups[groups / コレクション]
     Groups --> GroupDoc["{groupId} / ドキュメント"]
     GroupDoc --> Messages[messages / サブコレクション]
-    Messages --> MsgDoc["{messageId} / ドキュメント (アクティブチャット)"]
-    GroupDoc --> MessageBuckets[message_buckets / サブコレクション]
-    MessageBuckets --> BucketDoc["{bucketId} / ドキュメント (アーカイブ履歴)"]
+    Messages --> MsgDoc["{messageId} / ドキュメント (アクティブチャット / TTL 30日)"]
     GroupDoc --> Members[members / サブコレクション]
     Members --> MemberDoc["{userId} / ドキュメント (進捗・統計)"]
     
@@ -111,8 +109,8 @@ graph TD
     
     classDef col fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
     classDef doc fill:#fff9c4,stroke:#fbc02d,stroke-width:2px;
-    class Users,Groups,Cheers,Reports,UserPrivate,UserNotes,GroupStates,Letters,Messages,MessageBuckets,Members col;
-    class UserDoc,TokenDoc,NoteDoc,GStateDoc,LetterDoc,GroupDoc,MsgDoc,BucketDoc,MemberDoc,CheerDoc,ReportDoc doc;
+    class Users,Groups,Cheers,Reports,UserPrivate,UserNotes,GroupStates,Letters,Messages,Members col;
+    class UserDoc,TokenDoc,NoteDoc,GStateDoc,LetterDoc,GroupDoc,MsgDoc,MemberDoc,CheerDoc,ReportDoc doc;
 ```
 
 ---
@@ -140,23 +138,23 @@ graph TD
 
 ---
 
-## 📦 チャットのアーカイブ (バケットパターン)
+## 📦 チャットの自動クリーンアップ (Firestore TTL)
 
-Firestore のドキュメントサイズ制限（ドキュメントあたり 1MB）を回避し、クライアントのリアルタイム同期を軽量に保つため、アプリケーションはチャット履歴に対して **バケットパターン (Bucket Pattern)** を採用しています。
+Firestore のドキュメントサイズ制限（ドキュメントあたり 1MB）を回避し、クライアントのリアルタイム同期を軽量に保つため、アプリケーションはチャット履歴に対して Firestore のネイティブ機能である **Time-to-Live (TTL)** 自動削除を採用しています。
 
 ```
        [ クライアントチャットリスナー ] ─── 購読 (Subscribed) ───► [ groups/{id}/messages ] (アクティブ領域)
                                                                         │
-                                                            (自動クローンスイープ)
+                                                             (Firestore ネイティブ TTL)
                                                                         ▼
-                                                       [ groups/{id}/message_buckets/{bucketId} ]
-                                                                (アーカイブ・コールドストレージ)
+                                                                30日後に自動削除
+                                                              (expireAt フィールド)
 ```
 
 ### メカニズム:
-* **アクティブコレクション**: アクティブなメッセージは `/messages` に保存され、サイズを小さく保ちます。
-* **アーカイブのクローン**: 毎日実行されるクローンジョブ（`ArchiveService`）により、30日以上前の古いメッセージをバケット化されたサブコレクション `/message_buckets/{bucketId}` に移動します。
-* **帯域幅の節約**: アクティブなチャットリスナーは軽量なままであり、クライアント同期が過剰なモバイルデータ通信やメモリを消費しないよう保証します。
+* **アクティブコレクション**: メッセージは `/messages` に保存され、作成から30日後に失効する `expireAt` タイムスタンプが自動的に付与されます。
+* **Firestore TTL サービス**: Google Cloud Firestore がバックグラウンドで期限切れのメッセージドキュメントを自動的にスキャンし、削除します。
+* **帯域幅とストレージの節約**: 手動のアーカイブ処理（ArchiveService）やクローンジョブを必要とせず、アクティブなチャットリスナーが常に軽量に保たれ、クライアント同期によるモバイルデータ通信やメモリ消費が抑制されます。
 
 ---
 
