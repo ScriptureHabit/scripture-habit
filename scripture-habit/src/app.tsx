@@ -2,7 +2,7 @@ import { Routes, Route, useLocation, Navigate, useNavigate } from 'react-router-
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./app.css";
-import { lazy, Suspense, useEffect, useState, useRef } from 'react';
+import { lazy, Suspense, useEffect, useState, useRef, ComponentType } from 'react';
 import { useApiWarmup } from './hooks/use-api-warmup';
 
 import { ErrorFallback } from './components/common/error-fallback';
@@ -30,7 +30,8 @@ import BrowserWarningWrapper from './components/browserwarningmodal/browser-warn
 
 // Resilient lazy load helper to automatically recover from ChunkLoadErrors / Failed Dynamic Imports
 // caused by new deployments by performing a hard page reload (with infinite loop prevention).
-const lazyWithRetry = (componentImport: () => Promise<any>) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const lazyWithRetry = <T extends ComponentType<any>>(componentImport: () => Promise<{ default: T }>) => {
   return lazy(async () => {
     const pageHasBeenReloaded = window.sessionStorage.getItem('page-has-been-reloaded');
     try {
