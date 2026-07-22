@@ -106,7 +106,11 @@ export const useMessageActions = (
         dispatch({
           type: 'UPDATE_MESSAGE',
           messageId: optimisticId,
-          data: { id: response.data.messageId, isOptimistic: false }
+          data: { 
+            id: response.data.messageId, 
+            isOptimistic: false,
+            createdAt: new Date()
+          }
         });
 
         // 📡 FORCE READ SYNC: Mark this new message as read for the sender immediately
