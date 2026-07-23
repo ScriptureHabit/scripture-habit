@@ -1,7 +1,4 @@
 {
-    "github": {
-        "enabled": false
-    },
     "crons": [
         {
             "path": "/api/cron/check-inactive-users",
