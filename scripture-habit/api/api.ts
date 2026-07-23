@@ -2,7 +2,7 @@ import '../api_internal/lib/load-env.js';
 import * as Sentry from "@sentry/node";
 
 // Initialize Sentry at the absolute top before importing Express/routers
-if (process.env.SENTRY_DISABLED !== 'true') {
+if (process.env.SENTRY_DISABLED !== 'true' && process.env.NODE_ENV !== 'test') {
   Sentry.init({
     dsn: process.env.VITE_SENTRY_DSN || "",
     tracesSampleRate: 1.0,
@@ -162,7 +162,7 @@ app.use('/api/test', testUtilsRoutes);
 app.use('/api/groups', resetUnityRoutes);
 
 // The Sentry error handler must be before any other error middleware and after all controllers
-if (process.env.SENTRY_DISABLED !== 'true') {
+if (process.env.SENTRY_DISABLED !== 'true' && process.env.NODE_ENV !== 'test') {
   Sentry.setupExpressErrorHandler(app);
 }
 
@@ -181,11 +181,13 @@ app.use((err: unknown, req: express.Request, res: express.Response, _next: expre
         user: (req as { user?: { uid: string } }).user?.uid
     });
 
-    // Capture error in Sentry
-    Sentry.captureException(err, {
-        user: { id: (req as { user?: { uid: string } }).user?.uid },
-        tags: { requestId }
-    });
+    // Capture error in Sentry (Only report unexpected server-side errors, ignore 400/401/403/404)
+    if (!(err instanceof AppError) || err.statusCode >= 500) {
+        Sentry.captureException(err, {
+            user: { id: (req as { user?: { uid: string } }).user?.uid },
+            tags: { requestId }
+        });
+    }
 
 
     // 2. Handle known application errors

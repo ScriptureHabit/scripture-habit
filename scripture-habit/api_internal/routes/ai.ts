@@ -56,10 +56,12 @@ const handleAiError = (res: Response, err: unknown, contextMessage: string) => {
     const status = axiosErr.response?.status || 500;
 
     // Capture specific AI error details in Sentry
-    Sentry.captureException(err, {
-        tags: { context: contextMessage, ai_status: status },
-        extra: { errorBody }
-    });
+    if (process.env.SENTRY_DISABLED !== 'true' && process.env.NODE_ENV !== 'test') {
+        Sentry.captureException(err, {
+            tags: { context: contextMessage, ai_status: status },
+            extra: { errorBody }
+        });
+    }
 
     res.status(status).json({
         error: `AI ${contextMessage} failed`,
