@@ -476,10 +476,8 @@ export class MessageService {
 
                 msgData.isNote ? transaction.get(
                     groupRef.collection('messages')
-                        .where('senderId', '==', 'system')
                         .where('isSystemMessage', '==', true)
-                        .where('type', '==', 'system')
-                        .where('messageType', '==', 'system') // Recents standard
+                        .where('senderId', '==', 'system')
                         .orderBy('createdAt', 'desc')
                         .limit(10)
                 ) : Promise.resolve(null),

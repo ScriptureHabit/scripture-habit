@@ -765,7 +765,6 @@ router.get('/', async (req: Request, res: Response) => {
         let query = db.collection('groups')
             .where('isPublic', '==', true)
             .orderBy('lastMessageAt', 'desc')
-            .orderBy('name', 'desc')
             .orderBy(admin.firestore.FieldPath.documentId(), 'desc');
 
         if (lastId) {
