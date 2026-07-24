@@ -195,13 +195,18 @@ router.post('/translate', authenticate, aiLimiter, verifyAppCheck, async (req: A
             }
 
             // User profile nickname or bio translation prompt
-            if (updateType === 'user_nickname' || updateType === 'user_bio') {
-                const itemType = updateType === 'user_nickname' ? 'user nickname' : 'user biography (bio)';
+            if (updateType === 'user_nickname' || updateType === 'user_bio' || updateType === 'user_stake' || updateType === 'user_ward') {
+                let itemType = 'text';
+                if (updateType === 'user_nickname') itemType = 'user nickname';
+                else if (updateType === 'user_bio') itemType = 'user biography (bio)';
+                else if (updateType === 'user_stake') itemType = 'church stake name';
+                else if (updateType === 'user_ward') itemType = 'church ward name';
+
                 prompt = `Task: Translate the following ${itemType} into ${targetLangName}.
                 【STRICT RULES】:
                 1. Output ONLY the translated plain text.
                 2. DO NOT add any labels, bold markers, or decorative symbols.
-                3. If it is a user nickname and is a proper noun or name, provide a translation or phonetic transliteration (e.g. katakana for Japanese, transliteration for Swahili/etc.) that sounds natural in ${targetLangName}, or keep it as-is if that is more common.
+                3. If it is a user nickname or church stake/ward name (proper noun), provide a translation or phonetic transliteration (e.g. katakana for Japanese, English/transliterated form for others) that sounds natural in ${targetLangName}, or keep it as-is if that is more common.
                 4. Maintain the tone and line breaks of the original text.
                 
                 Text to translate:

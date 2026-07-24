@@ -134,6 +134,7 @@ export interface UserProfileBrief {
   lastActiveAt?: FirebaseTimestamp;
   lastReadAt?: FirebaseTimestamp;
   joinedAt?: FirebaseTimestamp;
+  language?: string;
 }
 
 export interface MembersMap {

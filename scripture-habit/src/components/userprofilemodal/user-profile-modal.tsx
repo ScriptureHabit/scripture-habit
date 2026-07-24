@@ -21,8 +21,11 @@ const UserProfileModal: FC<UserProfileModalProps> = ({ user, onClose }) => {
     // Translation states
     const [translatedNickname, setTranslatedNickname] = useState<string | null>(null);
     const [translatedBio, setTranslatedBio] = useState<string | null>(null);
+    const [translatedStake, setTranslatedStake] = useState<string | null>(null);
+    const [translatedWard, setTranslatedWard] = useState<string | null>(null);
     const [isNicknameTranslated, setIsNicknameTranslated] = useState(false);
     const [isBioTranslated, setIsBioTranslated] = useState(false);
+    const [isLocationTranslated, setIsLocationTranslated] = useState(false);
     const [loadingNickname, setLoadingNickname] = useState(false);
     const [loadingBio, setLoadingBio] = useState(false);
 
@@ -39,8 +42,13 @@ const UserProfileModal: FC<UserProfileModalProps> = ({ user, onClose }) => {
     const userId = user ? ((user as UserProfile).id || (user as UserData).uid) : '';
     const nickHash = getHash(user?.nickname || '');
     const bioHash = getHash(user?.bio || '');
+    const stakeHash = getHash(user?.stake || '');
+    const wardHash = getHash(user?.ward || '');
+    
     const nickCacheKey = `trans_user_nick_${userId}_${language}_${nickHash}`;
     const bioCacheKey = `trans_user_bio_${userId}_${language}_${bioHash}`;
+    const stakeCacheKey = `trans_user_stake_${userId}_${language}_${stakeHash}`;
+    const wardCacheKey = `trans_user_ward_${userId}_${language}_${wardHash}`;
 
     // Prefill from cache if available on mount, and auto-translate if languages differ
     useEffect(() => {
@@ -49,6 +57,8 @@ const UserProfileModal: FC<UserProfileModalProps> = ({ user, onClose }) => {
 
         const cachedNick = sessionStorage.getItem(nickCacheKey);
         const cachedBio = sessionStorage.getItem(bioCacheKey);
+        const cachedStake = sessionStorage.getItem(stakeCacheKey);
+        const cachedWard = sessionStorage.getItem(wardCacheKey);
         
         // Determine if we should auto-translate (if languages differ)
         const shouldAutoTranslate = user?.language && user.language !== language;
@@ -85,6 +95,64 @@ const UserProfileModal: FC<UserProfileModalProps> = ({ user, onClose }) => {
                     }
                 };
                 autoFetchNick();
+            }
+        }
+
+        if (cachedStake) {
+            setTranslatedStake(cachedStake);
+            if (shouldAutoTranslate) {
+                setIsLocationTranslated(true);
+            }
+        } else {
+            setTranslatedStake(null);
+            if (shouldAutoTranslate && user?.stake) {
+                const autoFetchStake = async () => {
+                    try {
+                        const res = await apiClient.post('/api/ai/translate', {
+                            text: user.stake,
+                            targetLanguage: language,
+                            updateType: 'user_stake'
+                        });
+                        if (active && res.data?.translatedText) {
+                            const result = res.data.translatedText;
+                            setTranslatedStake(result);
+                            sessionStorage.setItem(stakeCacheKey, result);
+                            setIsLocationTranslated(true);
+                        }
+                    } catch (err) {
+                        console.error('Auto-translate stake failed:', err);
+                    }
+                };
+                autoFetchStake();
+            }
+        }
+
+        if (cachedWard) {
+            setTranslatedWard(cachedWard);
+            if (shouldAutoTranslate) {
+                setIsLocationTranslated(true);
+            }
+        } else {
+            setTranslatedWard(null);
+            if (shouldAutoTranslate && user?.ward) {
+                const autoFetchWard = async () => {
+                    try {
+                        const res = await apiClient.post('/api/ai/translate', {
+                            text: user.ward,
+                            targetLanguage: language,
+                            updateType: 'user_ward'
+                        });
+                        if (active && res.data?.translatedText) {
+                            const result = res.data.translatedText;
+                            setTranslatedWard(result);
+                            sessionStorage.setItem(wardCacheKey, result);
+                            setIsLocationTranslated(true);
+                        }
+                    } catch (err) {
+                        console.error('Auto-translate ward failed:', err);
+                    }
+                };
+                autoFetchWard();
             }
         }
 
@@ -126,46 +194,83 @@ const UserProfileModal: FC<UserProfileModalProps> = ({ user, onClose }) => {
         return () => {
             active = false;
         };
-    }, [userId, language, nickCacheKey, bioCacheKey, user?.language, user?.nickname, user?.bio]);
+    }, [userId, language, nickCacheKey, bioCacheKey, stakeCacheKey, wardCacheKey, user?.language, user?.nickname, user?.bio, user?.stake, user?.ward]);
 
     const handleTranslateNickname = async () => {
         if (isNicknameTranslated) {
             setIsNicknameTranslated(false);
+            setIsLocationTranslated(false);
             return;
         }
+
+        // Translate Nickname
         if (translatedNickname) {
             setIsNicknameTranslated(true);
-            return;
-        }
-
-        const cached = sessionStorage.getItem(nickCacheKey);
-        if (cached) {
-            setTranslatedNickname(cached);
-            setIsNicknameTranslated(true);
-            return;
-        }
-
-        if (!user || !user.nickname) return;
-        setLoadingNickname(true);
-        try {
-            const res = await apiClient.post('/api/ai/translate', {
-                text: user.nickname,
-                targetLanguage: language,
-                updateType: 'user_nickname'
-            });
-            if (res.data?.translatedText) {
-                const result = res.data.translatedText;
-                setTranslatedNickname(result);
-                sessionStorage.setItem(nickCacheKey, result);
+        } else if (user?.nickname) {
+            const cached = sessionStorage.getItem(nickCacheKey);
+            if (cached) {
+                setTranslatedNickname(cached);
                 setIsNicknameTranslated(true);
             } else {
-                throw new Error('No translation returned');
+                setLoadingNickname(true);
+                try {
+                    const res = await apiClient.post('/api/ai/translate', {
+                        text: user.nickname,
+                        targetLanguage: language,
+                        updateType: 'user_nickname'
+                    });
+                    if (res.data?.translatedText) {
+                        const result = res.data.translatedText;
+                        setTranslatedNickname(result);
+                        sessionStorage.setItem(nickCacheKey, result);
+                        setIsNicknameTranslated(true);
+                    } else {
+                        throw new Error('No translation returned');
+                    }
+                } catch (err) {
+                    console.error('Failed to translate nickname:', err);
+                    toast.error(t('common.error') || 'Translation failed');
+                } finally {
+                    setLoadingNickname(false);
+                }
             }
-        } catch (err) {
-            console.error('Failed to translate nickname:', err);
-            toast.error(t('common.error') || 'Translation failed');
-        } finally {
-            setLoadingNickname(false);
+        }
+
+        // Translate Location tags (stake and ward)
+        setIsLocationTranslated(true);
+        if (!translatedStake && user?.stake) {
+            const cachedStake = sessionStorage.getItem(stakeCacheKey);
+            if (cachedStake) {
+                setTranslatedStake(cachedStake);
+            } else {
+                apiClient.post('/api/ai/translate', {
+                    text: user.stake,
+                    targetLanguage: language,
+                    updateType: 'user_stake'
+                }).then(res => {
+                    if (res.data?.translatedText) {
+                        setTranslatedStake(res.data.translatedText);
+                        sessionStorage.setItem(stakeCacheKey, res.data.translatedText);
+                    }
+                }).catch(e => console.error('Translate stake failed:', e));
+            }
+        }
+        if (!translatedWard && user?.ward) {
+            const cachedWard = sessionStorage.getItem(wardCacheKey);
+            if (cachedWard) {
+                setTranslatedWard(cachedWard);
+            } else {
+                apiClient.post('/api/ai/translate', {
+                    text: user.ward,
+                    targetLanguage: language,
+                    updateType: 'user_ward'
+                }).then(res => {
+                    if (res.data?.translatedText) {
+                        setTranslatedWard(res.data.translatedText);
+                        sessionStorage.setItem(wardCacheKey, res.data.translatedText);
+                    }
+                }).catch(e => console.error('Translate ward failed:', e));
+            }
         }
     };
 
@@ -262,8 +367,8 @@ const UserProfileModal: FC<UserProfileModalProps> = ({ user, onClose }) => {
 
                     {(user.stake || user.ward) && (
                         <div className="user-location">
-                            {user.stake && <span className="location-tag">{user.stake}</span>}
-                            {user.ward && <span className="location-tag">{user.ward}</span>}
+                            {user.stake && <span className="location-tag">{isLocationTranslated && translatedStake ? translatedStake : user.stake}</span>}
+                            {user.ward && <span className="location-tag">{isLocationTranslated && translatedWard ? translatedWard : user.ward}</span>}
                         </div>
                     )}
 

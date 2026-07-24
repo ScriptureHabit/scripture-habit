@@ -151,6 +151,7 @@ const GroupChatModals: FC = () => {
                 t={t}
                 userData={userData}
                 groupData={groupData}
+                language={language}
                 showMembersModal={activeModal === 'members'}
                 setShowMembersModal={(show) => setActiveModal(show ? 'members' : null)}
                 membersList={membersList}

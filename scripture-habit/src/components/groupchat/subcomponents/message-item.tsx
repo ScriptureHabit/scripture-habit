@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef, memo, useMemo } from 'react';
+import { FC, useState, useEffect, useRef, memo, useMemo } from 'react';
 import NoteDisplay from '../../notedisplay/note-display';
 import { Message } from '../../../types/chat';
 import { ReactionPreview } from '../../../../types/firestore';
@@ -12,6 +12,7 @@ import {
   useChatUIActions 
 } from '../hooks/use-chat-context';
 import './message-item.css';
+import apiClient from '../../../utils/api-client';
 
 interface MessageItemProps {
   msg: Message;
@@ -78,6 +79,51 @@ const MessageItem: FC<MessageItemProps> = memo(({
   const translatedText = translatedTexts[msg.id] || msg.translations?.[language];
   const isTranslating = translatingIds.has(msg.id);
 
+  // Auto nickname translation state & effect
+  const member = msg.senderId ? membersMap?.[msg.senderId] : null;
+  const originalNickname = member?.nickname || msg.senderNickname || '';
+  const shouldTranslateNick = member?.language && member.language !== language && originalNickname;
+
+  const [displayNickname, setDisplayNickname] = useState(originalNickname);
+
+  useEffect(() => {
+    if (!shouldTranslateNick) {
+      setDisplayNickname(originalNickname);
+      return;
+    }
+
+    const cachePrefix = `trans_user_nick_${msg.senderId}_${language}`;
+    let cached = null;
+    for (let i = 0; i < sessionStorage.length; i++) {
+      const key = sessionStorage.key(i);
+      if (key && key.startsWith(cachePrefix)) {
+        cached = sessionStorage.getItem(key);
+        break;
+      }
+    }
+
+    if (cached) {
+      setDisplayNickname(cached);
+    } else {
+      let active = true;
+      apiClient.post('/api/ai/translate', {
+        text: originalNickname,
+        targetLanguage: language,
+        updateType: 'user_nickname'
+      }).then(res => {
+        if (active && res.data?.translatedText) {
+          const result = res.data.translatedText;
+          setDisplayNickname(result);
+          sessionStorage.setItem(`${cachePrefix}_auto`, result);
+        }
+      }).catch(e => console.error('Failed to translate nickname in message item:', e));
+
+      return () => {
+        active = false;
+      };
+    }
+  }, [msg.senderId, originalNickname, shouldTranslateNick, language]);
+
   return (
     <div 
       ref={observerRef}
@@ -96,7 +142,7 @@ const MessageItem: FC<MessageItemProps> = memo(({
               className="profile-avatar-img"
             />
           ) : (
-            msg.senderNickname ? msg.senderNickname.substring(0, 1).toUpperCase() : '?'
+            displayNickname ? displayNickname.substring(0, 1).toUpperCase() : '?'
           )}
         </div>
       )}
@@ -130,7 +176,7 @@ const MessageItem: FC<MessageItemProps> = memo(({
             className="sender-name"
             onClick={(e) => { e.stopPropagation(); if (msg.senderId) handleUserProfileClick(msg.senderId); }}
           >
-            {membersMap?.[msg.senderId || '']?.nickname || msg.senderNickname}{msg.isEdited && <span className="edited-indicator"> ({t('groupChat.messageEdited')})</span>}
+            {displayNickname}{msg.isEdited && <span className="edited-indicator"> ({t('groupChat.messageEdited')})</span>}
           </span>
         )}
         <div className={`message-bubble-row ${isMe ? 'sent' : 'received'}`}>
