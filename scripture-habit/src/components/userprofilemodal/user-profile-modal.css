@@ -261,3 +261,62 @@
     font-size: 0.8rem;
     color: var(--gray);
 }
+
+.user-nickname {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.translate-inline-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    display: inline-flex;
+    align-items: center;
+    color: var(--gray);
+    transition: transform 0.2s ease, opacity 0.2s ease, color 0.2s ease;
+}
+
+.translate-inline-btn:hover {
+    transform: scale(1.1);
+    opacity: 0.8;
+}
+
+.translate-inline-btn.active {
+    color: var(--pink);
+}
+
+.translate-inline-btn.loading {
+    opacity: 0.5;
+}
+
+.user-bio {
+    position: relative;
+}
+
+.translate-bio-btn {
+    font-size: 0.75rem;
+    background: var(--glass);
+    border: 1px solid var(--pink);
+    color: var(--pink);
+    border-radius: 12px;
+    padding: 2px 8px;
+    cursor: pointer;
+    margin-top: 0.4rem;
+    transition: background-color 0.2s ease, transform 0.2s ease, color 0.2s ease, opacity 0.2s ease;
+}
+
+.translate-bio-btn:hover {
+    background-color: var(--pink);
+    color: white;
+    transform: translateY(-1px);
+}
+
+.translate-bio-btn:disabled {
+    opacity: 0.5;
+}
+
+

@@ -8,7 +8,6 @@ import {
 } from "@iconscout/react-unicons";
 import { useNavigate } from 'react-router-dom';
 import { auth, appCheck } from '../../firebase';
-// Removed unused Firestore imports
 import { getToken } from "firebase/app-check";
 import { useLanguage } from '../../hooks/use-language';
 import { MAX_GROUPS_PER_USER } from '../../config';

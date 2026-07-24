@@ -193,6 +193,22 @@ router.post('/translate', authenticate, aiLimiter, verifyAppCheck, async (req: A
                 ${text}
                 """`;
             }
+
+            // User profile nickname or bio translation prompt
+            if (updateType === 'user_nickname' || updateType === 'user_bio') {
+                const itemType = updateType === 'user_nickname' ? 'user nickname' : 'user biography (bio)';
+                prompt = `Task: Translate the following ${itemType} into ${targetLangName}.
+                【STRICT RULES】:
+                1. Output ONLY the translated plain text.
+                2. DO NOT add any labels, bold markers, or decorative symbols.
+                3. If it is a user nickname and is a proper noun or name, provide a translation or phonetic transliteration (e.g. katakana for Japanese, transliteration for Swahili/etc.) that sounds natural in ${targetLangName}, or keep it as-is if that is more common.
+                4. Maintain the tone and line breaks of the original text.
+                
+                Text to translate:
+                """
+                ${text}
+                """`;
+            }
             
             const resultText = await callGemini(prompt);
             translatedText = resultText.replace(/<translation>|<\/translation>/gi, '').replace(/^.*?translation.*?:/i, '').replace(/^["'](.*)["']$/g, '$1').trim();

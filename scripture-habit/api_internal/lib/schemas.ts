@@ -110,7 +110,7 @@ export const translateSchema = z.object({
     targetLanguage: z.enum(supportedLanguages),
     messageId: z.string().optional(),
     groupId: z.string().optional(),
-    updateType: z.enum(['group_name', 'group_description']).optional(),
+    updateType: z.enum(['group_name', 'group_description', 'user_nickname', 'user_bio']).optional(),
     force: z.boolean().optional()
 });
 

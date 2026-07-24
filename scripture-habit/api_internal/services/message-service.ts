@@ -190,8 +190,6 @@ export class MessageService {
                 lastUpdatedAt: admin.firestore.FieldValue.serverTimestamp()
             }, { merge: true });
 
-
-
             const updatePayload = {
                 lastMessageAt: admin.firestore.FieldValue.serverTimestamp(),
                 lastMessageByNickname: nickname,

@@ -38,7 +38,15 @@ export function disableAnimationsScript() {
         animation-delay: 0s !important;
       }
     \`;
-    (document.head || document.documentElement).appendChild(style);
+    const injectStyle = () => {
+      const parent = document.head || document.documentElement;
+      if (parent) {
+        parent.appendChild(style);
+      } else {
+        setTimeout(injectStyle, 10);
+      }
+    };
+    injectStyle();
   `;
 }
 

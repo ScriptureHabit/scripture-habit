@@ -55,7 +55,15 @@ test.describe('Invitation Join Flow Stability', () => {
             animation-delay: 0s !important;
           }
         `;
-        (document.head || document.documentElement).appendChild(style);
+        const injectStyle = () => {
+            const parent = document.head || document.documentElement;
+            if (parent) {
+                parent.appendChild(style);
+            } else {
+                setTimeout(injectStyle, 10);
+            }
+        };
+        injectStyle();
     });
     
     await test.step('User B opens invite link and signs up', async () => {
@@ -233,7 +241,15 @@ test.describe('Invitation Join Flow Stability', () => {
             animation-delay: 0s !important;
           }
         `;
-        (document.head || document.documentElement).appendChild(style);
+        const injectStyle = () => {
+            const parent = document.head || document.documentElement;
+            if (parent) {
+                parent.appendChild(style);
+            } else {
+                setTimeout(injectStyle, 10);
+            }
+        };
+        injectStyle();
     });
     
     await test.step('User B signs up and logs in first', async () => {
