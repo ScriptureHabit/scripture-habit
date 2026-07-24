@@ -126,6 +126,9 @@ const useGroupMembersSync = (groupId: string | null, status: ChatStatus, members
   }, [groupId, members, messages, status, dispatch, membersMap]);
 };
 
+/**
+ * Sync messages from Firestore
+ */
 const useMessageStreamSync = (groupId: string | null, userData: UserData | null, currentMessages: Message[], dispatch: Dispatch<ChatAction>) => {
   const unsubMessagesRef = useRef<Unsubscribe | null>(null);
   const activeSyncGroupIdRef = useRef<string | null>(null);

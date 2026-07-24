@@ -123,7 +123,6 @@ router.post('/initialize-profile', authenticate, verifyAppCheck, async (req: Aut
     }
 });
 
-
 /**
  * Verify Login
  */
