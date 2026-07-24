@@ -76,7 +76,8 @@ describe('Firestore Read Count Assertion Tests', () => {
             
             // Check get calls
             const groupRefGets = setup.getReadPaths().filter((path: string) => {
-                return path.includes('[Tx GET] groups/');
+                // Match exactly [Tx GET] groups/{groupId} and not subcollections under groups/
+                return /\[Tx GET\] groups\/[^/]+$/.test(path);
             });
 
             // Since we reused querySnap, groupRefGets should be 0!

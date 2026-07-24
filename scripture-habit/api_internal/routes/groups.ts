@@ -168,9 +168,12 @@ router.post('/join-group', authenticate, requireEmailVerified, verifyAppCheck, a
                 const userRef = db.collection('users').doc(uid);
                 const userDoc = await transaction.get(userRef);
 
-                return { groupDoc, userDoc, groupRef, userRef };
+                const latestRef = groupRef.collection('messages_latest').doc('latest');
+                const latestSnap = await transaction.get(latestRef);
+
+                return { groupDoc, userDoc, groupRef, userRef, latestSnap };
             },
-            write: async (transaction, { groupDoc, userDoc, groupRef, userRef }) => {
+            write: async (transaction, { groupDoc, userDoc, groupRef, userRef, latestSnap }) => {
                 if (!groupDoc.exists) throw new NotFoundError('Group not found.');
                 if (!userDoc.exists) throw new NotFoundError('User not found.');
 
@@ -269,7 +272,7 @@ router.post('/join-group', authenticate, requireEmailVerified, verifyAppCheck, a
                     expireAt: getMessageExpireAt()
                 };
                 transaction.set(msgRef, systemMsg);
-                await MessageService.appendToLatest(transaction, gid, { id: msgRef.id, ...systemMsg, createdAt: admin.firestore.Timestamp.now() });
+                await MessageService.appendToLatest(transaction, gid, { id: msgRef.id, ...systemMsg, createdAt: admin.firestore.Timestamp.now() }, latestSnap);
 
                 const ownerPreview = (gData.memberPreviews || []).find((p: PreviewItem) => p.uid === gData.ownerUserId);
                 const ownerName = ownerPreview ? ownerPreview.nickname : 'Owner';
@@ -402,6 +405,9 @@ router.post('/announce-unity', authenticate, verifyAppCheck, async (req: Authent
             const groupDoc = await transaction.get(groupRef);
             if (!groupDoc.exists) throw new Error('Group not found');
 
+            const latestRef = groupRef.collection('messages_latest').doc('latest');
+            const latestSnap = await transaction.get(latestRef);
+
             const groupData = groupDoc.data()! as GroupDocument;
             const members = groupData.members || [];
             const ownerUserId = groupData.ownerUserId || '';
@@ -434,7 +440,7 @@ router.post('/announce-unity', authenticate, verifyAppCheck, async (req: Authent
                 createdAt: admin.firestore.FieldValue.serverTimestamp()
             };
             transaction.set(messageRef, unityMsg);
-            await MessageService.appendToLatest(transaction, groupId, { id: messageRef.id, ...unityMsg, createdAt: admin.firestore.Timestamp.now() });
+            await MessageService.appendToLatest(transaction, groupId, { id: messageRef.id, ...unityMsg, createdAt: admin.firestore.Timestamp.now() }, latestSnap);
         });
 
         res.json({ success: true });

@@ -55,22 +55,28 @@ export interface SendCheerParams {
 }
 
 export class MessageService {
-    static async appendToLatest(transaction: admin.firestore.Transaction, groupId: string, messageData: Record<string, unknown>) {
+    static async appendToLatest(
+        transaction: admin.firestore.Transaction, 
+        groupId: string, 
+        messageData: Record<string, unknown>,
+        preReadLatestSnap?: admin.firestore.DocumentSnapshot
+    ) {
         const groupRef = db.collection('groups').doc(groupId);
         const latestRef = groupRef.collection('messages_latest').doc('latest');
-        const latestSnap = await transaction.get(latestRef);
+        
+        let latestSnap = preReadLatestSnap;
+        if (!latestSnap) {
+            latestSnap = await transaction.get(latestRef);
+        }
 
         let currentMessages: Record<string, unknown>[] = [];
         if (latestSnap.exists) {
             currentMessages = latestSnap.data()?.messages || [];
         } else {
-            // Self-healing bootstrap
-            const bootSnap = await transaction.get(
-                groupRef.collection('messages')
-                    .orderBy('createdAt', 'desc')
-                    .limit(24)
-            );
-            currentMessages = bootSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })).reverse();
+            // If the latest cache document does not exist, we cannot perform transaction.get()
+            // because this function is called inside the write phase of transactions, which would
+            // cause a Read-after-Write violation. We fallback to an empty array.
+            currentMessages = [];
         }
 
         const updatedMessages = [...currentMessages, messageData].slice(-25);

@@ -95,6 +95,8 @@ export async function removeMemberFromGroup(
     const memberDocRef = groupRef.collection('members').doc(userId);
     const userRef = db.collection('users').doc(userId);
 
+    const latestRef = groupRef.collection('messages_latest').doc('latest');
+
     // 1. Get current data (Reads must come BEFORE any writes)
     let groupSnap = options.groupDoc;
     let userSnap = options.userDoc;
@@ -122,16 +124,24 @@ export async function removeMemberFromGroup(
 
     // 3. Handle Ownership Transfer (Read next owner if needed)
     let newOwnerSnap: admin.firestore.DocumentSnapshot | null = null;
+    const members = (groupData.members || []) as string[];
+    const remainingMembers = members.filter(m => m !== userId);
+
     if (groupData.ownerUserId === userId && options.transferOwnership) {
-        const members = (groupData.members || []) as string[];
-        const remainingMembers = members.filter(m => m !== userId);
-        
         if (remainingMembers.length > 0) {
             const newOwnerId = remainingMembers[0];
             groupUpdate.ownerUserId = newOwnerId;
             // READ: Must happen before any writes below
             newOwnerSnap = await transaction.get(db.collection('users').doc(newOwnerId));
         }
+    }
+
+    // 3.5. Read latestSnap conditionally (must come before execution phase / writes start)
+    let latestSnap: admin.firestore.DocumentSnapshot | undefined;
+    const willPostSystemMessage = !!options.systemMessage;
+    const willPostTransferMessage = !!(newOwnerSnap && groupUpdate.ownerUserId);
+    if (willPostSystemMessage || willPostTransferMessage) {
+        latestSnap = await transaction.get(latestRef);
     }
 
     // 4. Execution Phase (WRITES ONLY from here on)
@@ -170,7 +180,7 @@ export async function removeMemberFromGroup(
             messageType: 'system'
         };
         transaction.set(transferMsgRef, transferMsg);
-        await MessageService.appendToLatest(transaction, groupId, { id: transferMsgRef.id, ...transferMsg, createdAt: admin.firestore.Timestamp.now() });
+        await MessageService.appendToLatest(transaction, groupId, { id: transferMsgRef.id, ...transferMsg, createdAt: admin.firestore.Timestamp.now() }, latestSnap);
     }
 
     // 6. Post System Message if requested
@@ -192,7 +202,7 @@ export async function removeMemberFromGroup(
             expireAt: getMessageExpireAt()
         };
         transaction.set(msgRef, leaveMsg);
-        await MessageService.appendToLatest(transaction, groupId, { id: msgRef.id, ...leaveMsg, createdAt: admin.firestore.Timestamp.now() });
+        await MessageService.appendToLatest(transaction, groupId, { id: msgRef.id, ...leaveMsg, createdAt: admin.firestore.Timestamp.now() }, latestSnap);
     }
 
     console.log(`[MembershipUtils] Successfully removed user ${userId} from group ${groupId}`);
