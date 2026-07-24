@@ -71,14 +71,6 @@ const MessageItem: FC<MessageItemProps> = memo(({
     return count;
   }, [isMe, msg.createdAt, msg.senderId, groupData?.members, groupData?.memberLastReadAt, membersMap, msg.reactions]);
 
-  if (msg.senderId === 'system' || msg.isSystemMessage) {
-    const kickThreshold = userData && 'kickThreshold' in userData ? userData.kickThreshold : undefined;
-    return <SystemMessage msg={msg} t={t} kickThreshold={kickThreshold as number | undefined} />;
-  }
-
-  const translatedText = translatedTexts[msg.id] || msg.translations?.[language];
-  const isTranslating = translatingIds.has(msg.id);
-
   // Auto nickname translation state & effect
   const member = msg.senderId ? membersMap?.[msg.senderId] : null;
   const originalNickname = member?.nickname || msg.senderNickname || '';
@@ -123,6 +115,14 @@ const MessageItem: FC<MessageItemProps> = memo(({
       };
     }
   }, [msg.senderId, originalNickname, shouldTranslateNick, language]);
+
+  if (msg.senderId === 'system' || msg.isSystemMessage) {
+    const kickThreshold = userData && 'kickThreshold' in userData ? userData.kickThreshold : undefined;
+    return <SystemMessage msg={msg} t={t} kickThreshold={kickThreshold as number | undefined} />;
+  }
+
+  const translatedText = translatedTexts[msg.id] || msg.translations?.[language];
+  const isTranslating = translatingIds.has(msg.id);
 
   return (
     <div 
