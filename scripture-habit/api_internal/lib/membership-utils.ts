@@ -2,6 +2,7 @@ import { admin, db } from './firebase-admin.js';
 import { GroupDocument, MemberPreview, UserDocument } from '../../types/firestore.js';
 import { t } from './i18n.js';
 import { getMessageExpireAt } from './ttl-utils.js';
+import { MessageService } from '../services/message-service.js';
 
 /**
  * Options for member removal
@@ -160,14 +161,16 @@ export async function removeMemberFromGroup(
     if (newOwnerSnap && groupUpdate.ownerUserId) {
         const ownerLang = (newOwnerSnap.data() as UserDocument)?.language || options.preferredLanguage || 'en';
         const transferMsgRef = groupRef.collection('messages').doc();
-        transaction.set(transferMsgRef, {
+        const transferMsg = {
             text: t(ownerLang, 'notifications.ownership_transferred'),
             createdAt: admin.firestore.FieldValue.serverTimestamp(),
             senderId: 'system',
             isSystemMessage: true,
             type: 'system',
             messageType: 'system'
-        });
+        };
+        transaction.set(transferMsgRef, transferMsg);
+        await MessageService.appendToLatest(transaction, groupId, { id: transferMsgRef.id, ...transferMsg, createdAt: admin.firestore.Timestamp.now() });
     }
 
     // 6. Post System Message if requested
@@ -179,7 +182,7 @@ export async function removeMemberFromGroup(
             ? t(lang, 'notifications.member_leave_message', { nickname: options.systemMessage.nickname })
             : t(lang, 'notifications.member_kick_message', { nickname: options.systemMessage.nickname });
         
-        transaction.set(msgRef, {
+        const leaveMsg = {
             text,
             createdAt: admin.firestore.FieldValue.serverTimestamp(),
             senderId: 'system',
@@ -187,7 +190,9 @@ export async function removeMemberFromGroup(
             type: options.systemMessage.type,
             messageType: options.systemMessage.type,
             expireAt: getMessageExpireAt()
-        });
+        };
+        transaction.set(msgRef, leaveMsg);
+        await MessageService.appendToLatest(transaction, groupId, { id: msgRef.id, ...leaveMsg, createdAt: admin.firestore.Timestamp.now() });
     }
 
     console.log(`[MembershipUtils] Successfully removed user ${userId} from group ${groupId}`);

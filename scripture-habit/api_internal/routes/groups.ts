@@ -9,6 +9,7 @@ import { MAX_GROUPS_PER_USER } from '../lib/constants.js';
 import { removeMemberFromGroup } from '../lib/membership-utils.js';
 import { ForbiddenError, NotFoundError, ValidationError, sendErrorResponse } from '../lib/errors.js';
 import { getMessageExpireAt } from '../lib/ttl-utils.js';
+import { MessageService } from '../services/message-service.js';
 
 
 const router = express.Router();
@@ -258,7 +259,7 @@ router.post('/join-group', authenticate, requireEmailVerified, verifyAppCheck, a
                 });
 
                 const msgRef = groupRef.collection('messages').doc();
-                transaction.set(msgRef, {
+                const systemMsg = {
                     text: `✨ **${userData.nickname || 'Someone'}** joined the group! Welcome!`,
                     createdAt: admin.firestore.FieldValue.serverTimestamp(),
                     senderId: 'system',
@@ -266,7 +267,9 @@ router.post('/join-group', authenticate, requireEmailVerified, verifyAppCheck, a
                     type: 'join',
                     messageType: 'join',
                     expireAt: getMessageExpireAt()
-                });
+                };
+                transaction.set(msgRef, systemMsg);
+                await MessageService.appendToLatest(transaction, gid, { id: msgRef.id, ...systemMsg, createdAt: admin.firestore.Timestamp.now() });
 
                 const ownerPreview = (gData.memberPreviews || []).find((p: PreviewItem) => p.uid === gData.ownerUserId);
                 const ownerName = ownerPreview ? ownerPreview.nickname : 'Owner';
@@ -424,12 +427,14 @@ router.post('/announce-unity', authenticate, verifyAppCheck, async (req: Authent
             });
 
             const messageRef = groupRef.collection('messages').doc();
-            transaction.set(messageRef, {
+            const unityMsg = {
                 senderId: 'system',
                 isSystemMessage: true,
                 messageType: 'unityAnnouncement',
                 createdAt: admin.firestore.FieldValue.serverTimestamp()
-            });
+            };
+            transaction.set(messageRef, unityMsg);
+            await MessageService.appendToLatest(transaction, groupId, { id: messageRef.id, ...unityMsg, createdAt: admin.firestore.Timestamp.now() });
         });
 
         res.json({ success: true });
