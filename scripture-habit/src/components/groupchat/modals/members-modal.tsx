@@ -4,6 +4,7 @@ import { Group, UserProfileBrief } from '../../../types/chat';
 import { UserData } from '../../../types/user';
 import { parseTimestampToDate } from '../../../utils/time-utils';
 import apiClient from '../../../utils/api-client';
+import { isLikelyAlreadyInLanguage, getCachedUserNickname, setCachedUserNickname } from '../../../utils/language-utils';
 
 interface MembersModalProps {
     t: (key: string) => string;
@@ -40,26 +41,6 @@ const MemberListItem: FC<MemberListItemProps> = ({
     const originalNickname = member.nickname || 'Unknown User';
     const memberStatus = membersMap?.[member.id] || member;
 
-    const isLikelyAlreadyInLanguage = (text: string, targetLang: string) => {
-        if (!text) return true;
-        const hasJapanese = /[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]/.test(text);
-        const hasKorean = /[\uAC00-\uD7A3\u3130-\u318F]/.test(text);
-        const hasThai = /[\u0E00-\u0E7F]/.test(text);
-        const hasChinese = /[\u4E00-\u9FFF]/.test(text);
-
-        if (targetLang === 'ja' && hasJapanese) return true;
-        if (targetLang === 'ko' && hasKorean) return true;
-        if (targetLang === 'th' && hasThai) return true;
-        if (targetLang === 'zho' && hasChinese && !hasJapanese) return true;
-
-        const isLatinBased = ['en', 'es', 'pt', 'tl', 'sw', 'vi'].includes(targetLang);
-        if (isLatinBased && !hasJapanese && !hasKorean && !hasThai && /[a-zA-Z]/.test(text)) {
-            return true;
-        }
-
-        return false;
-    };
-
     const shouldTranslateNick = originalNickname !== 'Unknown User' && !isLikelyAlreadyInLanguage(originalNickname, language);
 
     const [displayNickname, setDisplayNickname] = useState(originalNickname);
@@ -70,16 +51,7 @@ const MemberListItem: FC<MemberListItemProps> = ({
             return;
         }
 
-        const cachePrefix = `trans_user_nick_${member.id}_${language}`;
-        let cached = null;
-        for (let i = 0; i < sessionStorage.length; i++) {
-            const key = sessionStorage.key(i);
-            if (key && key.startsWith(cachePrefix)) {
-                cached = sessionStorage.getItem(key);
-                break;
-            }
-        }
-
+        const cached = getCachedUserNickname(member.id, language, originalNickname);
         if (cached) {
             setDisplayNickname(cached);
         } else {
@@ -92,7 +64,7 @@ const MemberListItem: FC<MemberListItemProps> = ({
                 if (active && res.data?.translatedText) {
                     const result = res.data.translatedText;
                     setDisplayNickname(result);
-                    sessionStorage.setItem(`${cachePrefix}_auto`, result);
+                    setCachedUserNickname(member.id, language, originalNickname, result);
                 }
             }).catch(e => console.error('Failed to translate member nickname:', e));
 

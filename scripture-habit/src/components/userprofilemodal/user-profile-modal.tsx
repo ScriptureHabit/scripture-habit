@@ -7,6 +7,7 @@ import { UserData } from '../../types/user';
 import { UserProfile } from '../../types/chat';
 import apiClient from '../../utils/api-client';
 import { toast } from 'react-toastify';
+import { getTranslationHash } from '../../utils/language-utils';
 
 interface UserProfileModalProps {
     user: UserData | UserProfile | null;
@@ -29,21 +30,11 @@ const UserProfileModal: FC<UserProfileModalProps> = ({ user, onClose }) => {
     const [loadingNickname, setLoadingNickname] = useState(false);
     const [loadingBio, setLoadingBio] = useState(false);
 
-    // Simple hash function to invalidate cache if the content changes
-    const getHash = (str: string) => {
-        let hash = 0;
-        for (let i = 0; i < str.length; i++) {
-            hash = (hash << 5) - hash + str.charCodeAt(i);
-            hash |= 0;
-        }
-        return Math.abs(hash).toString(36);
-    };
-
     const userId = user ? ((user as UserProfile).id || (user as UserData).uid) : '';
-    const nickHash = getHash(user?.nickname || '');
-    const bioHash = getHash(user?.bio || '');
-    const stakeHash = getHash(user?.stake || '');
-    const wardHash = getHash(user?.ward || '');
+    const nickHash = getTranslationHash(user?.nickname || '');
+    const bioHash = getTranslationHash(user?.bio || '');
+    const stakeHash = getTranslationHash(user?.stake || '');
+    const wardHash = getTranslationHash(user?.ward || '');
     
     const nickCacheKey = `trans_user_nick_${userId}_${language}_${nickHash}`;
     const bioCacheKey = `trans_user_bio_${userId}_${language}_${bioHash}`;

@@ -13,6 +13,7 @@ import {
 } from '../hooks/use-chat-context';
 import './message-item.css';
 import apiClient from '../../../utils/api-client';
+import { isLikelyAlreadyInLanguage, getCachedUserNickname, setCachedUserNickname } from '../../../utils/language-utils';
 
 interface MessageItemProps {
   msg: Message;
@@ -71,26 +72,7 @@ const MessageItem: FC<MessageItemProps> = memo(({
     return count;
   }, [isMe, msg.createdAt, msg.senderId, groupData?.members, groupData?.memberLastReadAt, membersMap, msg.reactions]);
 
-  // Helper to skip translation for nicknames already in the target language
-  const isLikelyAlreadyInLanguage = (text: string, targetLang: string) => {
-    if (!text) return true;
-    const hasJapanese = /[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]/.test(text);
-    const hasKorean = /[\uAC00-\uD7A3\u3130-\u318F]/.test(text);
-    const hasThai = /[\u0E00-\u0E7F]/.test(text);
-    const hasChinese = /[\u4E00-\u9FFF]/.test(text);
 
-    if (targetLang === 'ja' && hasJapanese) return true;
-    if (targetLang === 'ko' && hasKorean) return true;
-    if (targetLang === 'th' && hasThai) return true;
-    if (targetLang === 'zho' && hasChinese && !hasJapanese) return true;
-
-    const isLatinBased = ['en', 'es', 'pt', 'tl', 'sw', 'vi'].includes(targetLang);
-    if (isLatinBased && !hasJapanese && !hasKorean && !hasThai && /[a-zA-Z]/.test(text)) {
-      return true;
-    }
-
-    return false;
-  };
 
   // Auto nickname translation state & effect
   const member = msg.senderId ? membersMap?.[msg.senderId] : null;
@@ -105,16 +87,7 @@ const MessageItem: FC<MessageItemProps> = memo(({
       return;
     }
 
-    const cachePrefix = `trans_user_nick_${msg.senderId}_${language}`;
-    let cached = null;
-    for (let i = 0; i < sessionStorage.length; i++) {
-      const key = sessionStorage.key(i);
-      if (key && key.startsWith(cachePrefix)) {
-        cached = sessionStorage.getItem(key);
-        break;
-      }
-    }
-
+    const cached = getCachedUserNickname(msg.senderId || '', language, originalNickname);
     if (cached) {
       setDisplayNickname(cached);
     } else {
@@ -127,7 +100,7 @@ const MessageItem: FC<MessageItemProps> = memo(({
         if (active && res.data?.translatedText) {
           const result = res.data.translatedText;
           setDisplayNickname(result);
-          sessionStorage.setItem(`${cachePrefix}_auto`, result);
+          setCachedUserNickname(msg.senderId || '', language, originalNickname, result);
         }
       }).catch(e => console.error('Failed to translate nickname in message item:', e));
 
