@@ -131,7 +131,7 @@ const MessageItem: FC<MessageItemProps> = memo(({
         >
           {(msg.senderPhotoURL || (msg.senderId && membersMap?.[msg.senderId]?.photoURL)) ? (
             <img
-              src={msg.senderPhotoURL || (msg.senderId ? membersMap?.[msg.senderId]?.photoURL : undefined)}
+              src={(msg.senderPhotoURL || (msg.senderId ? membersMap?.[msg.senderId]?.photoURL : undefined)) || undefined}
               alt=""
               className="profile-avatar-img"
             />

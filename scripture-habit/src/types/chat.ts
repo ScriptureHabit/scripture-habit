@@ -1,54 +1,32 @@
 import {
-  MessageDocument,
-  GroupDocument as SharedGroupDocument,
   UserDocument as SharedUserDocument,
+  GroupDocument as SharedGroupDocument,
+  MessageDocument,
   GroupMemberDocument
 } from '../../types/firestore.js';
+import {
+  Reaction as SchemaReaction,
+  ReactionPreview as SchemaReactionPreview,
+  MessageType as SchemaMessageType,
+  UserProfileBrief as SchemaUserProfileBrief,
+  CompatibleTimestamp as SchemaCompatibleTimestamp,
+  FirebaseTimestamp as SchemaFirebaseTimestamp,
+} from './schemas';
 
-/**
- * Environment-agnostic Timestamp interface that matches both
- * firebase/firestore and firebase-admin/firestore.
- */
-export interface CompatibleTimestamp {
-  seconds: number;
-  nanoseconds: number;
-  toDate(): Date;
-}
+// Re-export core types from Zod schemas for SSOT compatibility
+export type CompatibleTimestamp = SchemaCompatibleTimestamp;
+export type FirebaseTimestamp = SchemaFirebaseTimestamp;
 
-/**
- * Common Firebase Timestamp type to handle both Firestore Timestamp
- * and plain JS objects from APIs or persistence.
- */
-export type FirebaseTimestamp = 
-  | CompatibleTimestamp 
-  | { seconds: number; nanoseconds: number } 
-  | { toDate: () => Date } 
-  | string 
-  | Date 
-  | number 
-  | { _methodName?: string };
-
-export interface Reaction {
-  userId: string; // Internal standard
-  nickname: string;
-  emoji: string;
-}
-
-export type MessageType = 
-  | 'text' 
-  | 'streakAnnouncement' 
-  | 'notePostedAnnouncement'
-  | 'studyNote' 
-  | 'system' 
-  | 'userJoined' 
-  | 'userLeft' 
-  | 'unityAnnouncement';
+export type Reaction = SchemaReaction;
+export type ReactionPreview = SchemaReactionPreview;
+export type MessageType = SchemaMessageType;
+export type UserProfileBrief = SchemaUserProfileBrief;
 
 /**
  * Frontend Message interface
  * Extends the shared MessageDocument schema with client-side flags and specific types.
  */
-export interface Message extends Omit<MessageDocument, 'id' | 'createdAt' | 'editedAt' | 'replyTo'> {
+export interface Message extends Omit<MessageDocument, 'id' | 'createdAt' | 'editedAt' | 'replyTo' | 'reactions' | 'reactionPreviews'> {
   id: string; // Required in frontend
   createdAt?: FirebaseTimestamp;
   editedAt?: FirebaseTimestamp;
@@ -58,6 +36,7 @@ export interface Message extends Omit<MessageDocument, 'id' | 'createdAt' | 'edi
   
   // Client-side Flags
   isOptimistic?: boolean;
+  optimisticId?: string;
   
   // Specific ReplyTo type for frontend
   replyTo?: {
@@ -68,6 +47,9 @@ export interface Message extends Omit<MessageDocument, 'id' | 'createdAt' | 'edi
   } | string | null;
   messageData?: Record<string, string | number>;
 
+  // Reactions & Previews
+  reactions?: Record<string, string[]>;
+  reactionPreviews?: Record<string, ReactionPreview[]>;
 }
 
 
@@ -84,7 +66,7 @@ export interface UserProfile extends SharedUserDocument {
 
 /**
  * Frontend Group interface
- * Extends SharedGroupDocument with client-side specific fields (like unreadCount).
+ * Extends GroupDb schema with client-side specific fields (like unreadCount).
  */
 export interface Group extends Omit<SharedGroupDocument, 'id' | 'inviteCodeExpiresAt' | 'lastNoteAt' | 'lastMessageAt' | 'lastRecapGeneratedAt' | 'createdAt' | 'memberJoinedAt' | 'memberLastActive' | 'memberLastReadAt'> {
   id: string; // Required in frontend
@@ -106,10 +88,6 @@ export interface Group extends Omit<SharedGroupDocument, 'id' | 'inviteCodeExpir
   unreadCount?: number;
   lastMessageByUid?: string;
   lastNoteByUid?: string;
-  dailyActivity?: {
-    date: string;
-    activeMembers: string[];
-  };
   myGroupState?: {
     lastReadAt?: FirebaseTimestamp;
     lastActiveAt?: FirebaseTimestamp;
@@ -122,18 +100,6 @@ export interface Group extends Omit<SharedGroupDocument, 'id' | 'inviteCodeExpir
 
 export interface GroupData extends Group {
   _groupId?: string;
-}
-
-export interface UserProfileBrief {
-  id: string;
-  uid?: string;
-  nickname?: string;
-  photoURL?: string;
-  lastPostDate?: FirebaseTimestamp;
-  lastActiveAt?: FirebaseTimestamp;
-  lastReadAt?: FirebaseTimestamp;
-  joinedAt?: FirebaseTimestamp;
-  language?: string;
 }
 
 export interface MembersMap {

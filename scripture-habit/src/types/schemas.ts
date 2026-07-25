@@ -1,27 +1,40 @@
 import { z } from 'zod';
 
 /**
- * Zod schemas for validating Firestore data at runtime.
- * Using .passthrough() for partial compatibility while allowing strict checks for core fields.
+ * Environment-agnostic Timestamp interface that matches both
+ * firebase/firestore and firebase-admin/firestore.
  */
+export interface CompatibleTimestamp {
+  seconds: number;
+  nanoseconds: number;
+  toDate(): Date;
+}
 
-// Helper to handle Firestore Timestamps which can be real Timestamp objects
-// or plain serialized objects after being passed through network or local storage.
-export const FirebaseTimestampSchema = z.union([
-  z.object({
-    seconds: z.number(),
-    nanoseconds: z.number(),
-  }),
-  z.string(),
-  z.instanceof(Date),
-  z.number(),
-  z.unknown() // Allow the proprietary Firestore Timestamp instance (typed correctly elsewhere)
-]);
+/**
+ * Common Firebase Timestamp type to handle both Firestore Timestamp
+ * and plain JS objects from APIs or persistence.
+ */
+export type FirebaseTimestamp = 
+  | CompatibleTimestamp 
+  | { seconds: number; nanoseconds: number } 
+  | { toDate: () => Date } 
+  | string 
+  | Date 
+  | number 
+  | { _methodName?: string };
 
-export const ReactionPreviewSchema = z.object({
-  uid: z.string(),
-  nickname: z.string().optional(),
+// Helper to handle Firestore Timestamps using a custom validator with correct static types
+export const FirebaseTimestampSchema = z.custom<FirebaseTimestamp>();
+
+// Base schema for user attributes to keep them DRY and consistent
+export const BaseUserSchema = z.object({
+  uid: z.string().optional(),
+  nickname: z.string().min(1).max(50).optional(),
   photoURL: z.string().nullable().optional(),
+});
+
+export const ReactionPreviewSchema = BaseUserSchema.extend({
+  uid: z.string(), // Override to make it required
 });
 
 export const ReactionSchema = z.object({
@@ -80,24 +93,31 @@ export const GroupSchema = z.object({
   }).optional(),
 }).passthrough();
 
-export const UserProfileBriefSchema = z.object({
+export const UserProfileBriefSchema = BaseUserSchema.extend({
   id: z.string(),
-  uid: z.string().optional(),
-  nickname: z.string().optional(),
-  photoURL: z.string().nullable().optional(),
+  lastPostDate: FirebaseTimestampSchema.optional(),
   lastActiveAt: FirebaseTimestampSchema.optional(),
+  lastReadAt: FirebaseTimestampSchema.optional(),
+  joinedAt: FirebaseTimestampSchema.optional(),
+  language: z.string().optional(),
 }).passthrough();
 
-export const GroupMemberSchema = z.object({
-  uid: z.string(),
-  nickname: z.string().optional(),
-  photoURL: z.string().nullable().optional(),
+export const GroupMemberSchema = BaseUserSchema.extend({
+  uid: z.string(), // Override to make it required
   joinedAt: FirebaseTimestampSchema.optional(),
 }).passthrough();
 
-export const UserDataSchema = z.object({
-  uid: z.string(),
-  nickname: z.string().optional(),
-  email: z.string().optional(),
-  photoURL: z.string().nullable().optional(),
+export const UserDataSchema = BaseUserSchema.extend({
+  uid: z.string(), // Override to make it required
+  email: z.string().email().optional(), // Enforce email format validation
 }).passthrough();
+
+// Export inferred types from Zod schemas for SSOT
+export type Reaction = z.infer<typeof ReactionSchema>;
+export type ReactionPreview = z.infer<typeof ReactionPreviewSchema>;
+export type MessageType = z.infer<typeof MessageTypeSchema>;
+export type MessageDb = z.infer<typeof MessageSchema>;
+export type GroupDb = z.infer<typeof GroupSchema>;
+export type UserProfileBrief = z.infer<typeof UserProfileBriefSchema>;
+export type GroupMemberDb = z.infer<typeof GroupMemberSchema>;
+export type UserDataDb = z.infer<typeof UserDataSchema>;
