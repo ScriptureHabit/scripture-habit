@@ -813,5 +813,11 @@ export default {
         message: "우리는 귀하의 경험을 개선하고 트래픽을 분석하기 위해 쿠키를 사용합니다. 이 사이트를 계속 사용하면 쿠키 사용에 동의하는 것으로 간주됩니다.",
         accept: "수락",
         privacyPolicy: "개인정보 처리방침"
+    },
+    validation: {
+        groupNameRequired: "그룹 이름은 필수입니다.",
+        groupNameTooLong: "그룹 이름은 50자 이하여야 합니다.",
+        messageRequired: "메시지 내용은 비워 둘 수 없습니다.",
+        emailInvalid: "올바른 이메일 주소를 입력해 주세요."
     }
 };

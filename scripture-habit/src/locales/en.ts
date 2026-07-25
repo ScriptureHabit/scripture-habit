@@ -814,6 +814,12 @@ export default {
                 q3: "Can I download it from the app stores (App Store / Google Play)?",
                 a3: "This app is provided as a PWA (Progressive Web App). You can install it by opening it directly in your browser and selecting \"Add to Home Screen\" from the menu."
             }
+        },
+        validation: {
+            groupNameRequired: "Group name is required.",
+            groupNameTooLong: "Group name must be 50 characters or less.",
+            messageRequired: "Message content cannot be empty.",
+            emailInvalid: "Please enter a valid email address."
         }
     }
 };

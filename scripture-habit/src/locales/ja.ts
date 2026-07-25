@@ -820,6 +820,12 @@ export default {
                 q3: "アプリストア（App Store / Google Play）からダウンロードできますか？",
                 a3: "このアプリはPWA（Progressive Web App）として提供されています。ブラウザから直接開き、メニューから『ホーム画面に追加』を選択することでダウンロードすることができます。"
             }
+        },
+        validation: {
+            groupNameRequired: "グループ名は必須です。",
+            groupNameTooLong: "グループ名は50文字以内で入力してください。",
+            messageRequired: "メッセージ内容を入力してください。",
+            emailInvalid: "有効なメールアドレスを入力してください。"
         }
     }
 };

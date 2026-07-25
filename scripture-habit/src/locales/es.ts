@@ -787,7 +787,12 @@ export default {
         price: "Precio",
         environment: "Entorno de Funcionamiento",
         environmentDetail: "Puede utilizarse en las versiones más recentes de diversos navegadores y sistemas operativos.",
-        requestDisclosure: "La información de contacto personal se proporcionará sin demora a petición por correo electrónico.",
         personalDisclaimer: "*Al tratarse de un desarrollo personal, la información sobre la dirección y el número de teléfono se facilitará sin demora previa solicitud por correo electrónico."
+    },
+    validation: {
+        groupNameRequired: "El nombre del grupo es obligatorio.",
+        groupNameTooLong: "El nombre del grupo debe tener 50 caracteres o menos.",
+        messageRequired: "El contenido del mensaje no puede estar vacío.",
+        emailInvalid: "Por favor, introduce una dirección de correo electrónico válida."
     }
 };

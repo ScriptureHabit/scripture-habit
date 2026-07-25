@@ -813,5 +813,11 @@ export default {
         message: "Gumagamit kami ng mga cookie para mapabuti ang iyong karanasan at suriin ang trapiko. Sa pagpapatuloy sa paggamit ng site na ito, sumasang-ayon ka sa aming paggamit ng mga cookie.",
         accept: "Tanggapin",
         privacyPolicy: "Patakaran sa Privacy"
+    },
+    validation: {
+        groupNameRequired: "Kailangan ang pangalan ng grupo.",
+        groupNameTooLong: "Ang pangalan ng grupo ay dapat may 50 o mas kaunting karakter.",
+        messageRequired: "Hindi maaaring walang laman ang mensahe.",
+        emailInvalid: "Mangyaring maglagay ng wastong email address."
     }
 };

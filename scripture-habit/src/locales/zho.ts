@@ -788,5 +788,11 @@ export default {
         environmentDetail: "可在各類瀏覽器及作業系統的最新版本上使用。",
         requestDisclosure: "個人聯絡資訊將在收到電子郵件請求後立即提供。",
         personalDisclaimer: "*由於此為個人開發，地址及電話號碼資訊將在收到電子郵件請求後立即提供。"
+    },
+    validation: {
+        groupNameRequired: "群組名稱是必填項。",
+        groupNameTooLong: "群組名稱必須在 50 個字元以內。",
+        messageRequired: "消息內容不能為空。",
+        emailInvalid: "請輸入有效的電子郵件地址。"
     }
 };

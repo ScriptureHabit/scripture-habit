@@ -787,5 +787,11 @@ export default {
         message: "Chúng tôi sử dụng cookie để cải thiện trải nghiệm của bạn và phân tích lưu lượng truy cập. Bằng cách tiếp tục sử dụng trang web này, bạn đồng ý với việc chúng tôi sử dụng cookie.",
         accept: "Chấp nhận",
         privacyPolicy: "Chính sách Bảo mật"
+    },
+    validation: {
+        groupNameRequired: "Tên nhóm là bắt buộc.",
+        groupNameTooLong: "Tên nhóm phải có từ 50 ký tự trở xuống.",
+        messageRequired: "Nội dung tin nhắn không thể để trống.",
+        emailInvalid: "Vui lòng nhập địa chỉ email hợp lệ."
     }
 };

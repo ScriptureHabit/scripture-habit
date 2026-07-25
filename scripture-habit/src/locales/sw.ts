@@ -813,5 +813,11 @@ export default {
         message: "Tunatumia biskuti (cookies) ili kuboresha hali yako ya matumizi na kuchanganua trafiki. Kwa kuendelea kutumia tovuti hii, unakubali matumizi yetu ya biskuti.",
         accept: "Kubali",
         privacyPolicy: "Sera ya Faragha"
+    },
+    validation: {
+        groupNameRequired: "Jina la kikundi linahitajika.",
+        groupNameTooLong: "Jina la kikundi lazima liwe na herufi 50 au chini.",
+        messageRequired: "Maudhui ya ujumbe hayawezi kuwa tupu.",
+        emailInvalid: "Tafadhali ingiza barua pepe halali."
     }
 };

@@ -37,10 +37,10 @@ export const ReactionPreviewSchema = BaseUserSchema.extend({
   uid: z.string(), // Override to make it required
 });
 
-export const ReactionSchema = z.object({
+export const ReactionSchema = BaseUserSchema.omit({ uid: true }).extend({
   userId: z.string(),
-  nickname: z.string().nullable().optional(),
-  emoji: z.string(),
+  nickname: BaseUserSchema.shape.nickname.unwrap().nullable().optional(),
+  emoji: z.string('👍'),
 });
 
 export const MessageTypeSchema = z.enum([
@@ -57,7 +57,7 @@ export const MessageTypeSchema = z.enum([
 export const MessageSchema = z.object({
   id: z.string(),
   uid: z.string().optional(),
-  text: z.string().optional(),
+  text: z.string().trim().min(1, "validation.messageRequired").optional(),
   senderNickname: z.string().optional(),
   senderPhotoURL: z.string().nullable().optional(),
   createdAt: FirebaseTimestampSchema.optional(),
@@ -81,7 +81,7 @@ export const MessageSchema = z.object({
 
 export const GroupSchema = z.object({
   id: z.string(),
-  name: z.string().optional(),
+  name: z.string().trim().min(1, "validation.groupNameRequired").max(50, "validation.groupNameTooLong").optional(),
   members: z.array(z.string()).optional(),
   lastMessageAt: FirebaseTimestampSchema.optional(),
   lastNoteAt: FirebaseTimestampSchema.optional(),
@@ -99,7 +99,7 @@ export const UserProfileBriefSchema = BaseUserSchema.extend({
   lastActiveAt: FirebaseTimestampSchema.optional(),
   lastReadAt: FirebaseTimestampSchema.optional(),
   joinedAt: FirebaseTimestampSchema.optional(),
-  language: z.string().optional(),
+  language: z.enum(['en', 'ja', 'ko', 'es', 'pt', 'vi', 'th', 'tl', 'zh']).optional(),
 }).passthrough();
 
 export const GroupMemberSchema = BaseUserSchema.extend({
@@ -109,7 +109,7 @@ export const GroupMemberSchema = BaseUserSchema.extend({
 
 export const UserDataSchema = BaseUserSchema.extend({
   uid: z.string(), // Override to make it required
-  email: z.string().email().optional(), // Enforce email format validation
+  email: z.string().email("validation.emailInvalid").optional(), // Enforce email format validation
 }).passthrough();
 
 // Export inferred types from Zod schemas for SSOT

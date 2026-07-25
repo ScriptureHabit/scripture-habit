@@ -813,5 +813,11 @@ export default {
         environmentDetail: "Pode ser usado nas versões mais recentes de vários navegadores e sistemas operacionais.",
         requestDisclosure: "As informações de contato pessoal serão fornecidas sem demora mediante solicitação por e-mail.",
         personalDisclaimer: "*Como este é um desenvolvimento pessoal, as informações sobre endereço e número de telefone serão fornecidas sem demora mediante solicitação por e-mail."
+    },
+    validation: {
+        groupNameRequired: "O nome do grupo é obrigatório.",
+        groupNameTooLong: "O nome do grupo deve ter 50 caracteres ou menos.",
+        messageRequired: "O conteúdo da mensagem não pode estar vazio.",
+        emailInvalid: "Por favor, insira um endereço de e-mail válido."
     }
 };
