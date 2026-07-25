@@ -16,6 +16,7 @@ export interface Note {
   
   // Mapping of group IDs to the message ID where this note was shared
   sharedMessageIds?: Record<string, string>;
+  sharedWithGroups?: string[];
   
   imageUrl?: string;
   recap?: string; // AI generated recap for the note

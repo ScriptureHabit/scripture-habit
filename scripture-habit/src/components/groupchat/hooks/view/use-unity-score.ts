@@ -24,9 +24,7 @@ export const useUnityScore = (
     if (!groupId || !groupData || groupData.id !== groupId || !today) return 0;
     const result = calculateUnityPercentage(groupData, messages, new Date(), membersMap);
     if (groupData.name?.includes('Persistence')) {
-      if (import.meta.env.DEV) {
-        console.log(`[useUnityScore] ${groupData.name}: calculated=${result}%, msgCount=${messages.length}`);
-      }
+      console.log(`[useUnityScore] ${groupData.name}: calculated=${result}%, msgCount=${messages.length}`);
     }
     return result;
   }, [messages, groupData, groupId, today, membersMap]);
@@ -39,9 +37,7 @@ export const useUnityScore = (
     onReset: () => {
       // Force refresh group data when reset occurs
       // This will be handled by the parent component's onSnapshot listener
-      if (import.meta.env.DEV) {
-        console.log('[useUnityScore] Midnight reset triggered, refreshing...');
-      }
+      console.log('[useUnityScore] Midnight reset triggered, refreshing...');
     }
   });
 

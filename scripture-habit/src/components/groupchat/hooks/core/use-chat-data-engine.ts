@@ -142,16 +142,12 @@ const useMessageStreamSync = (groupId: string | null, userData: UserData | null,
   useEffect(() => {
     if (!groupId || !userData?.uid) return;
     
-    if (import.meta.env.DEV) {
-      console.log(`[useMessageStreamSync] Effect running for group: ${groupId}, user: ${userData.uid}`);
-    }
+    console.log(`[useMessageStreamSync] Effect running for group: ${groupId}, user: ${userData.uid}`);
     
     // Prevent redundant syncs for the same group/user combo
     const syncKey = `${groupId}-${userData.uid}`;
     if (activeSyncGroupIdRef.current === syncKey) {
-      if (import.meta.env.DEV) {
-        console.log(`[useMessageStreamSync] Already syncing ${syncKey}, skipping effect body.`);
-      }
+      console.log(`[useMessageStreamSync] Already syncing ${syncKey}, skipping effect body.`);
       return;
     }
     activeSyncGroupIdRef.current = syncKey;

@@ -129,7 +129,6 @@ export interface UserProfileBrief {
   uid?: string;
   nickname?: string;
   photoURL?: string;
-  profilePicUrl?: string; // Potential legacy field
   lastPostDate?: FirebaseTimestamp;
   lastActiveAt?: FirebaseTimestamp;
   lastReadAt?: FirebaseTimestamp;

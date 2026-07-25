@@ -25,13 +25,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     let unsubUserData: (() => void) | null = null;
 
     const unsubAuth = onAuthStateChanged(auth, (currentUser) => {
-      if (import.meta.env.DEV) {
-        console.log('[AuthProvider] onAuthStateChanged', {
-          uid: currentUser?.uid || null,
-          email: currentUser?.email || null,
-          providerId: currentUser?.providerId || null,
-        });
-      }
+      console.log('[AuthProvider] onAuthStateChanged', {
+        uid: currentUser?.uid || null,
+        email: currentUser?.email || null,
+        providerId: currentUser?.providerId || null,
+      });
 
       // Clean up previous user data listener
       if (unsubUserData) {
@@ -41,9 +39,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       setUser(currentUser);
       setLoading(false); // Auth state is now determined
-      if (import.meta.env.DEV) {
-        console.log('[AuthProvider] auth loading finished', { user: !!currentUser });
-      }
+      console.log('[AuthProvider] auth loading finished', { user: !!currentUser });
 
       if (currentUser) {
         setDataLoading(true);
@@ -52,9 +48,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         unsubUserData = onSnapshot(
           userDocRef,
           (docSnap) => {
-            if (import.meta.env.DEV) {
-              console.log('[AuthProvider] userDoc snapshot received', { exists: docSnap.exists(), uid: currentUser.uid });
-            }
+            console.log('[AuthProvider] userDoc snapshot received', { exists: docSnap.exists(), uid: currentUser.uid });
             if (docSnap.exists()) {
               const data = { uid: currentUser.uid, ...docSnap.data() } as UserData;
               setUserData(data);
@@ -62,9 +56,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
               // Ensure existing users with tokens have the hasFcmToken flag correctly set
               syncFcmTokenFlag(currentUser.uid, data.hasFcmToken);
             } else {
-              if (import.meta.env.DEV) {
-                console.log('[AuthProvider] userDoc does not exist for uid', currentUser.uid);
-              }
+              console.log('[AuthProvider] userDoc does not exist for uid', currentUser.uid);
               setUserData(null);
             }
             setDataLoading(false);
@@ -79,9 +71,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           }
         );
       } else {
-        if (import.meta.env.DEV) {
-          console.log('[AuthProvider] no current user, clearing userData');
-        }
+        console.log('[AuthProvider] no current user, clearing userData');
         setUserData(null);
         setDataLoading(false);
       }

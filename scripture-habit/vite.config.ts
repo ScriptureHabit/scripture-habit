@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /// <reference types="vitest" />
 import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
@@ -18,6 +19,9 @@ export default defineConfig({
       telemetry: false, // 匿名の利用状況データの送信をオフにします
     }),
   ],
+  esbuild: {
+    drop: process.env.NODE_ENV === 'production' ? ['console', 'debugger'] : [],
+  } as any,
   test: {
     globals: true,
     environment: 'jsdom',

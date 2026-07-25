@@ -2,7 +2,7 @@
 import { useState, useEffect, FC } from 'react';
 import { UilTimes, UilPen, UilTrashAlt, UilComment, UilThumbsUp } from '@iconscout/react-unicons';
 import { db } from '../../firebase';
-import { doc, collection, query, where, onSnapshot, Timestamp } from 'firebase/firestore';
+import { doc, collection, query, where, onSnapshot, Timestamp, updateDoc } from 'firebase/firestore';
 import NoteDisplay from '../notedisplay/note-display';
 import { useLanguage } from '../../hooks/use-language';
 import './note-detail-modal.css';
@@ -28,7 +28,7 @@ interface SharedDetail {
     isMember: boolean;
 }
 
-const NoteDetailModal: FC<NoteDetailModalProps> = ({ isOpen, onClose, note, userGroups, onEdit, onDelete }) => {
+const NoteDetailModal: FC<NoteDetailModalProps> = ({ isOpen, onClose, note, userGroups, userData, onEdit, onDelete }) => {
     const { t, language } = useLanguage();
     const [sharedDetails, setSharedDetails] = useState<SharedDetail[]>([]);
     const [loadingDetails, setLoadingDetails] = useState(false);
@@ -47,6 +47,9 @@ const NoteDetailModal: FC<NoteDetailModalProps> = ({ isOpen, onClose, note, user
 
             setLoadingDetails(true);
             const details: SharedDetail[] = [];
+            let needsCleanup = false;
+            const cleanedSharedWithGroups: string[] = [];
+            const cleanedSharedMessageIds: Record<string, string> = {};
 
             // Iterate through each group where the note is shared
             for (const [groupId, messageId] of Object.entries(note.sharedMessageIds)) {
@@ -59,21 +62,38 @@ const NoteDetailModal: FC<NoteDetailModalProps> = ({ isOpen, onClose, note, user
                     if (group) {
                         groupName = group.name || '';
                         isMember = true;
+                        cleanedSharedWithGroups.push(groupId);
+                        cleanedSharedMessageIds[groupId] = messageId;
+                    } else {
+                        needsCleanup = true;
                     }
-
                 }
 
                 // If not found in userGroups, we assume user is NOT a member and cannot fetch details.
                 // We will still display the group "slot" but marked as unavailable.
-
                 details.push({ groupId, messageId, groupName, isMember });
             }
+
+            // Lazy Self-Healing: Clean up legacy sharing data in Firestore asynchronously
+            if (needsCleanup && userData?.uid && note.id) {
+                const noteRef = doc(db, 'users', userData.uid, 'notes', note.id);
+                updateDoc(noteRef, {
+                    sharedWithGroups: cleanedSharedWithGroups,
+                    sharedMessageIds: cleanedSharedMessageIds
+                }).then(() => {
+                    note.sharedWithGroups = cleanedSharedWithGroups;
+                    note.sharedMessageIds = cleanedSharedMessageIds;
+                }).catch(err => {
+                    console.error('[NoteDetailModal] Failed to auto-cleanup legacy note shares:', err);
+                });
+            }
+
             setSharedDetails(details);
             setLoadingDetails(false);
         };
 
         fetchSharedDetails();
-    }, [isOpen, note, userGroups, t]);
+    }, [isOpen, note, userGroups, userData?.uid, t]);
 
     if (!isOpen || !note) return null;
 
