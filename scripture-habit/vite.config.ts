@@ -6,7 +6,7 @@ import legacy from '@vitejs/plugin-legacy'
 import { sentryVitePlugin } from "@sentry/vite-plugin";
 
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [
     react(),
     legacy({
@@ -14,13 +14,13 @@ export default defineConfig({
     }),
     sentryVitePlugin({
       org: process.env.SENTRY_ORG || "",
-      project: process.env.SENTRY_PROJECT || "react", // デフォルトでReactプロジェクト名になることが多いです
+      project: process.env.SENTRY_PROJECT || "react", 
       authToken: process.env.SENTRY_AUTH_TOKEN || "",
-      telemetry: false, // 匿名の利用状況データの送信をオフにします
+      telemetry: false,
     }),
   ],
   esbuild: {
-    drop: process.env.NODE_ENV === 'production' ? ['console', 'debugger'] : [],
+    drop: mode === 'production' ? ['console', 'debugger'] : [],
   } as any,
   test: {
     globals: true,
@@ -89,4 +89,4 @@ export default defineConfig({
       },
     },
   },
-})
+}))

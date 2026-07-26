@@ -25,12 +25,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     let unsubUserData: (() => void) | null = null;
 
     const unsubAuth = onAuthStateChanged(auth, (currentUser) => {
-      console.log('[AuthProvider] onAuthStateChanged', {
-        uid: currentUser?.uid || null,
-        email: currentUser?.email || null,
-        providerId: currentUser?.providerId || null,
-      });
-
       // Clean up previous user data listener
       if (unsubUserData) {
         unsubUserData();
@@ -39,7 +33,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       setUser(currentUser);
       setLoading(false); // Auth state is now determined
-      console.log('[AuthProvider] auth loading finished', { user: !!currentUser });
 
       if (currentUser) {
         setDataLoading(true);
@@ -48,7 +41,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         unsubUserData = onSnapshot(
           userDocRef,
           (docSnap) => {
-            console.log('[AuthProvider] userDoc snapshot received', { exists: docSnap.exists(), uid: currentUser.uid });
             if (docSnap.exists()) {
               const data = { uid: currentUser.uid, ...docSnap.data() } as UserData;
               setUserData(data);
@@ -56,7 +48,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
               // Ensure existing users with tokens have the hasFcmToken flag correctly set
               syncFcmTokenFlag(currentUser.uid, data.hasFcmToken);
             } else {
-              console.log('[AuthProvider] userDoc does not exist for uid', currentUser.uid);
               setUserData(null);
             }
             setDataLoading(false);
