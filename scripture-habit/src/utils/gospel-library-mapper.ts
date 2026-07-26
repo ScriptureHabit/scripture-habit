@@ -17,19 +17,19 @@ const VOLUME_MAPPINGS: Record<string, string[]> = {
         "摩爾門經", "摩尔门经"
     ],
     "dc-testament": [
-        "dc", "dc-testament", "教義と聖約", "doutrina e convênios", "教義和聖約", 
-        "doctrina y convenios", "giáo lý và giao ước", "หลักคำสอนและพันธสัญญา", 
+        "dc", "dc-testament", "教義と聖約", "doutrina e convênios", "教義和聖約",
+        "doctrina y convenios", "giáo lý và giao ước", "หลักคำสอนและพันธสัญญา",
         "교리와 성약", "doktrina at mga tipan", "mafundisho na maagano",
         "教义和圣约"
     ],
     pgp: [
-        "pgp", "pearl of great price", "高価な真珠", "pérola de grande valor", "無價珍珠", 
-        "perla de gran precio", "trân châu vô giá", "ไข่มุกอันล้ำค่า", "값진 진주", 
+        "pgp", "pearl of great price", "高価な真珠", "pérola de grande valor", "無價珍珠",
+        "perla de gran precio", "trân châu vô giá", "ไข่มุกอันล้ำค่า", "값진 진주",
         "perlas na may dakilang halaga", "lulu ya thamani kuu",
         "无价珍珠"
     ],
     "general-conference": [
-        "general conference", "gc", "総大会", "conferência geral", "đại hội trung ương", 
+        "general conference", "gc", "総大会", "conferência geral", "đại hội trung ương",
         "การประชุมใหญ่สามัญ", "연차대회", "pangkalahatang kumperensya", "mkutano mkuu",
         "总大会", "總大會"
     ],
@@ -332,8 +332,8 @@ const BOOK_MAPPINGS: Record<string, string> = {
     "2 samuel": "2-sam", "サムエル記下": "2-sam", "撒母耳記下": "2-sam", "2 ซามูเอล": "2-sam", "사무엘하": "2-sam",
     "1 kings": "1-kgs", "1 reis": "1-kgs", "1 reyes": "1-kgs", "列王記上": "1-kgs", "列王紀上": "1-kgs", "1 พงศ์กษัตริย์": "1-kgs", "열왕기상": "1-kgs", "1 mga hari": "1-kgs",
     "2 kings": "2-kgs", "2 reis": "2-kgs", "2 reyes": "2-kgs", "列王記下": "2-kgs", "列王紀下": "2-kgs", "2 พงศ์กษัตริย์": "2-kgs", "열왕기하": "2-kgs", "2 mga hari": "2-kgs",
-    "1 chronicles": "1-chr", "1 crônicas": "1-chr", "1 crónicas": "1-chr", "歴代誌上": "1-chr", "歷代志上": "1-chr", "1 พงศาวดาร": "1-chr", "역대상": "1-chr", "1 mga cronica": "1-chr",
-    "2 chronicles": "2-chr", "2 crônicas": "2-chr", "2 crónicas": "2-chr", "歴代誌下": "2-chr", "歷代志下": "2-chr", "2 พงศาวดาร": "2-chr", "역대하": "2-chr", "2 mga cronica": "2-chr",
+    "1 chronicles": "1-chr", "1 crônicas": "1-chr", "1 crónicas": "1-chr", "歴代志上": "1-chr", "歷代志上": "1-chr", "1 พงศาวดาร": "1-chr", "역대상": "1-chr", "1 mga cronica": "1-chr",
+    "2 chronicles": "2-chr", "2 crônicas": "2-chr", "2 crónicas": "2-chr", "歴代志下": "2-chr", "歷代志下": "2-chr", "2 พงศาวดาร": "2-chr", "역대하": "2-chr", "2 mga cronica": "2-chr",
     "ezra": "ezra", "esdras": "ezra", "エズラ記": "ezra", "以斯拉記": "ezra", "เอสรา": "ezra", "에스라": "ezra",
     "nehemiah": "neh", "neemias": "neh", "nehemías": "neh", "ネヘミヤ記": "neh", "尼希米記": "neh", "เนหะมีย์": "neh", "느헤미야": "neh", "nehemias": "neh",
     "esther": "esth", "ester": "esth", "エステル記": "esth", "以斯帖記": "esth", "เอสเธอร์": "esth", "에스더": "esth",

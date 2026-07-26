@@ -600,8 +600,8 @@ export const BOOK_IDENTITY_MAP: Record<string, string> = {
     "教義と聖約": "Doctrine and Covenants",
     "教義和聖約": "Doctrine and Covenants",
     "歌羅西書": "Colossians",
-    "歴代誌上": "1 Chronicles",
-    "歴代誌下": "2 Chronicles",
+    "歴代志上": "1 Chronicles",
+    "歴代志下": "2 Chronicles",
     "歷代志上": "1 Chronicles",
     "歷代志下": "2 Chronicles",
     "民数記": "Numbers",
@@ -749,6 +749,6 @@ export const identifyBookKey = (bookName: string): string => {
     for (const [key, value] of Object.entries(BOOK_IDENTITY_MAP)) {
         if (key.toLowerCase() === lower) return value;
     }
-    
+
     return cleanName;
 };
