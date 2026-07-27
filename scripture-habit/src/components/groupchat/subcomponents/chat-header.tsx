@@ -112,21 +112,23 @@ const ChatHeader: FC = () => {
                 <span className="desktop-members-label">{t('groupChat.members')}</span>
               </div>
 
-              {isOwner ? (
+              <div
+                className="invite-code-display members-btn-desktop danger-action-btn"
+                onClick={() => setActiveModal('leave')}
+                title={t('groupChat.leaveGroup')}
+              >
+                <UilTrashAlt size="16" />
+                <span className="desktop-members-label">{t('groupChat.leaveGroup')}</span>
+              </div>
+
+              {isOwner && (
                 <div
                   className="invite-code-display members-btn-desktop danger-action-btn"
                   onClick={() => setActiveModal('delete')}
                   title={t('groupChat.deleteGroup')}
                 >
                   <UilTrashAlt size="16" />
-                </div>
-              ) : (
-                <div
-                  className="invite-code-display members-btn-desktop danger-action-btn"
-                  onClick={() => setActiveModal('leave')}
-                  title={t('groupChat.leaveGroup')}
-                >
-                  <UilTrashAlt size="16" />
+                  <span className="desktop-members-label">{t('groupChat.deleteGroup')}</span>
                 </div>
               )}
             </div>
@@ -216,19 +218,19 @@ const ChatHeader: FC = () => {
               <div className="mobile-menu-divider-thin" />
 
               {/* Danger Actions */}
-              {isOwner ? (
+              <div className="mobile-menu-item-action danger" onClick={() => { setActiveModal('leave'); setShowMobileMenu(false); }}>
+                <div className="menu-item-icon-circle danger-bg">
+                  <UilTrashAlt size="20" />
+                </div>
+                <span className="menu-item-label">{t('groupChat.leaveGroup')}</span>
+              </div>
+
+              {isOwner && (
                 <div className="mobile-menu-item-action danger" onClick={() => { setActiveModal('delete'); setShowMobileMenu(false); }}>
                   <div className="menu-item-icon-circle danger-bg">
                     <UilTrashAlt size="20" />
                   </div>
                   <span className="menu-item-label">{t('groupChat.deleteGroup')}</span>
-                </div>
-              ) : (
-                <div className="mobile-menu-item-action danger" onClick={() => { setActiveModal('leave'); setShowMobileMenu(false); }}>
-                  <div className="menu-item-icon-circle danger-bg">
-                    <UilTrashAlt size="20" />
-                  </div>
-                  <span className="menu-item-label">{t('groupChat.leaveGroup')}</span>
                 </div>
               )}
 

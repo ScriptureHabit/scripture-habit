@@ -155,7 +155,7 @@ async function seed() {
         members: uids,
         membersCount: uids.length,
         isPublic: true,
-        ownerUserId: 'seeder-alice',
+        ownerUserId: 'seeder-dev-user',
         messageCount: 0,
         lastMessageAt: now,
         lastMessageText: 'Seed database setup complete!',

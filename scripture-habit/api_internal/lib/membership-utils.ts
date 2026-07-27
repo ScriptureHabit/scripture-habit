@@ -122,25 +122,50 @@ export async function removeMemberFromGroup(
     // 2. Prepare group updates
     const groupUpdate = getGroupUpdateForRemoval(groupData, userId);
 
-    // 3. Handle Ownership Transfer (Read next owner if needed)
-    let newOwnerSnap: admin.firestore.DocumentSnapshot | null = null;
+    // 3. Handle Ownership Transfer
     const members = (groupData.members || []) as string[];
     const remainingMembers = members.filter(m => m !== userId);
 
     if (groupData.ownerUserId === userId && options.transferOwnership) {
         if (remainingMembers.length > 0) {
-            const newOwnerId = remainingMembers[0];
+            const joinedAtMap = groupData.memberJoinedAt || {};
+            let oldestUid = remainingMembers[0];
+            let oldestTime = Number.MAX_SAFE_INTEGER;
+
+            for (const mUid of remainingMembers) {
+                const rawTs = joinedAtMap[mUid];
+                let tsMillis = Number.MAX_SAFE_INTEGER;
+                if (rawTs) {
+                    if (typeof rawTs === 'object' && 'seconds' in rawTs && typeof (rawTs as { seconds: number }).seconds === 'number') {
+                        tsMillis = (rawTs as { seconds: number }).seconds * 1000;
+                    } else if (typeof rawTs === 'object' && 'toDate' in rawTs && typeof (rawTs as { toDate: () => Date }).toDate === 'function') {
+                        tsMillis = (rawTs as { toDate: () => Date }).toDate().getTime();
+                    } else if (typeof rawTs === 'number') {
+                        tsMillis = rawTs;
+                    } else if (typeof rawTs === 'string') {
+                        const parsed = Date.parse(rawTs);
+                        if (!isNaN(parsed)) tsMillis = parsed;
+                    }
+                }
+                if (tsMillis < oldestTime) {
+                    oldestTime = tsMillis;
+                    oldestUid = mUid;
+                } else if (tsMillis === oldestTime) {
+                    // Tie-breaker: Deterministic string comparison of UID if timestamps match or are missing
+                    if (mUid.localeCompare(oldestUid) < 0) {
+                        oldestUid = mUid;
+                    }
+                }
+            }
+
+            const newOwnerId = oldestUid;
             groupUpdate.ownerUserId = newOwnerId;
-            // READ: Must happen before any writes below
-            newOwnerSnap = await transaction.get(db.collection('users').doc(newOwnerId));
         }
     }
 
     // 3.5. Read latestSnap conditionally (must come before execution phase / writes start)
     let latestSnap: admin.firestore.DocumentSnapshot | undefined;
-    const willPostSystemMessage = !!options.systemMessage;
-    const willPostTransferMessage = !!(newOwnerSnap && groupUpdate.ownerUserId);
-    if (willPostSystemMessage || willPostTransferMessage) {
+    if (options.systemMessage) {
         latestSnap = await transaction.get(latestRef);
     }
 
@@ -165,22 +190,6 @@ export async function removeMemberFromGroup(
     if (options.removeGroupState) {
         const gsRef = userRef.collection('groupStates').doc(groupId);
         transaction.delete(gsRef);
-    }
-
-    // Handle transfer message
-    if (newOwnerSnap && groupUpdate.ownerUserId) {
-        const ownerLang = (newOwnerSnap.data() as UserDocument)?.language || options.preferredLanguage || 'en';
-        const transferMsgRef = groupRef.collection('messages').doc();
-        const transferMsg = {
-            text: t(ownerLang, 'notifications.ownership_transferred'),
-            createdAt: admin.firestore.FieldValue.serverTimestamp(),
-            senderId: 'system',
-            isSystemMessage: true,
-            type: 'system',
-            messageType: 'system'
-        };
-        transaction.set(transferMsgRef, transferMsg);
-        await MessageService.appendToLatest(transaction, groupId, { id: transferMsgRef.id, ...transferMsg, createdAt: admin.firestore.Timestamp.now() }, latestSnap);
     }
 
     // 6. Post System Message if requested

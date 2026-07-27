@@ -11,7 +11,6 @@ export default {
         ],
         kick_title: "Update sa Aktibidad",
         kick_body: "⚠️ Naalis ka sa '{groupName}' dahil sa hindi pagiging aktibo. Masaya kaming makita kang muli kapag handa ka na! 💪",
-        ownership_transferred: "👑 **Inilipat ang Pagmamay-ari**\nHindi aktibo ang nakaraang may-ari. Ang pagmamay-ari ay inilipat sa isang na-verify na aktibong miyembro.",
         members_removed: "👋 **{count} miyembro** ang inalis dahil sa hindi pagiging aktibo.",
         bot_name: "Scripture Habit Bot",
         streak_warning_title: "📖 Nagkaroon ka ba ng espirituwal na oras ngayon?",

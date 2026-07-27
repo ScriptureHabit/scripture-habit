@@ -11,7 +11,6 @@ export default {
         ],
         kick_title: "활동 업데이트",
         kick_body: "⚠️ 활동이 없어서 '{groupName}'에서 퇴장되셨습니다. 준비가 되시면 언제든지 다시 돌아오세요! 💪",
-        ownership_transferred: "👑 **소유권 이전됨**\n이전 소유자가 비활성 상태였습니다. 소유권이 확인된 활성 멤버에게 이전되었습니다.",
         members_removed: "👋 **{count}명**이 비활동으로 인해 퇴장되었습니다.",
         bot_name: "Scripture Habit Bot",
         streak_warning_title: "📖 오늘 영적인 시간을 보내셨나요?",

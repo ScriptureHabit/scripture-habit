@@ -133,35 +133,7 @@ describe('MembershipUtils Unit Tests', () => {
             expect(mockTransaction.set).not.toHaveBeenCalled();
         });
 
-        it('should transfer ownership to next member and fallback to en if no preferred language or user language exists (line 143)', async () => {
-            const mockTransaction = {
-                get: vi.fn().mockImplementation(async (ref) => {
-                    if (ref.path.startsWith('groups/g1')) {
-                        return makeSnap(true, { ownerUserId: 'u1', members: ['u1', 'u2'] });
-                    }
-                    if (ref.path.startsWith('users/u2')) {
-                        return makeSnap(true, {}); // No language property
-                    }
-                    return makeSnap(true, {});
-                }),
-                update: vi.fn(),
-                delete: vi.fn(),
-                set: vi.fn()
-            } as unknown as admin.firestore.Transaction;
-
-            await removeMemberFromGroup(mockTransaction, 'g1', 'u1', { transferOwnership: true });
-
-            expect(mockTransaction.set).toHaveBeenCalledWith(
-                expect.any(Object),
-                expect.objectContaining({
-                    text: expect.any(String), // ownership_transferred in English
-                    senderId: 'system',
-                    isSystemMessage: true
-                })
-            );
-        });
-
-        it('should transfer ownership with preferredLanguage option when user language is missing (line 143)', async () => {
+        it('should transfer ownership to next member silently without system message', async () => {
             const mockTransaction = {
                 get: vi.fn().mockImplementation(async (ref) => {
                     if (ref.path.startsWith('groups/g1')) {
@@ -182,7 +154,13 @@ describe('MembershipUtils Unit Tests', () => {
                 preferredLanguage: 'ja' 
             });
 
-            expect(mockTransaction.set).toHaveBeenCalled();
+            expect(mockTransaction.update).toHaveBeenCalledWith(
+                expect.any(Object),
+                expect.objectContaining({
+                    ownerUserId: 'u2'
+                })
+            );
+            expect(mockTransaction.set).not.toHaveBeenCalled();
         });
 
         it('should clear user groupId if it matches the group (lines 129-136)', async () => {
