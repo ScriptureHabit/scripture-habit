@@ -72,9 +72,10 @@ export const aiLimiterKeyGenerator = (req: Request) => {
     if (authHeader && authHeader.startsWith('Bearer ')) {
         return crypto.createHash('sha256').update(authHeader).digest('hex');
     }
-    // Isolate the first IP in the forwarded-for chain for stability behind reverse proxies
+    // Express req.ip is primary; fallback to x-forwarded-for if req.ip is missing
     const rawForward = req.headers['x-forwarded-for'];
-    const clientIp = (Array.isArray(rawForward) ? rawForward[0] : rawForward?.split(',')[0] || req.ip || req.socket.remoteAddress || 'unknown').trim();
+    const forwardedIp = Array.isArray(rawForward) ? rawForward[0] : rawForward?.split(',')[0];
+    const clientIp = (req.ip || forwardedIp || req.socket.remoteAddress || 'unknown').trim();
     return crypto.createHash('sha256').update(clientIp).digest('hex');
 };
 
@@ -141,8 +142,10 @@ export const authenticate = async (req: AuthenticatedRequest, _res: Response, ne
             decodedToken = await auth.verifyIdToken(token);
         } catch (err: unknown) {
             const authError = err as { code?: string; message?: string };
-            const isTest = process.env.NODE_ENV !== 'production' || process.env.VITEST === 'true' || !!process.env.FIREBASE_AUTH_EMULATOR_HOST;
-            if (isTest) {
+            // HARDENING: Only allow unverified Base64 decode fallback in explicit test/emulator environments.
+            // Never fallback in production or standard dev servers without active emulators.
+            const isTestEnvironment = process.env.VITEST === 'true' || !!process.env.FIREBASE_AUTH_EMULATOR_HOST;
+            if (isTestEnvironment) {
                 const payloadBase64 = token.split('.')[1];
                 if (payloadBase64) {
                     try {

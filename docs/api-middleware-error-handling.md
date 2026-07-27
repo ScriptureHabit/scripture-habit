@@ -64,16 +64,17 @@ The system manages three distinct rate-limiting zones, scaling thresholds dynami
 * **Invite Limiter**: Restricts group join and code-generation to `15` attempts per hour (prevents brute-forcing codes).
 * **AI Limiter with Privacy Hashing**: Restricts Gemini-powered tasks (Weekly Recaps, chat translations) to `100` calls per hour.
   - **Distributed Limiting (Redis Store)**: In production, if `REDIS_URL` environment variable is supplied, all rate limiters automatically connect to a centralized RedisStore (such as Upstash) to sync counts across multiple parallel serverless instances (falls back to MemoryStore if not provided).
-  - **Hashed Keys**: To avoid exposing raw client IP addresses or Auth tokens inside server log dumps during rate breaches, the key generator hashes identifiers using SHA-256 before applying the bucket count. It extracts the first client IP address in the `x-forwarded-for` chain to keep hashes stable behind reverse proxies.
+   - **Hashed Keys**: To avoid exposing raw client IP addresses or Auth tokens inside server log dumps during rate breaches, the key generator hashes identifiers using SHA-256 before applying the bucket count. It prioritizes `req.ip` (populated by trusted reverse proxies) and falls back safely to `x-forwarded-for` or socket remote addresses:
     ```typescript
     export const aiLimiterKeyGenerator = (req: Request) => {
         const authHeader = req.header('Authorization');
         if (authHeader && authHeader.startsWith('Bearer ')) {
             return crypto.createHash('sha256').update(authHeader).digest('hex');
         }
-        // Isolate the first IP in the forwarded-for chain for stability behind reverse proxies
+        // Express req.ip is primary; fallback to x-forwarded-for if req.ip is missing
         const rawForward = req.headers['x-forwarded-for'];
-        const clientIp = (Array.isArray(rawForward) ? rawForward[0] : rawForward?.split(',')[0] || req.ip || req.socket.remoteAddress || 'unknown').trim();
+        const forwardedIp = Array.isArray(rawForward) ? rawForward[0] : rawForward?.split(',')[0];
+        const clientIp = (req.ip || forwardedIp || req.socket.remoteAddress || 'unknown').trim();
         return crypto.createHash('sha256').update(clientIp).digest('hex');
     };
     ```
@@ -85,6 +86,7 @@ Protects backend APIs from scraping and replay attacks by enforcing App Check to
 
 ### 3. Firebase Auth Verification (`authenticate`)
 Intercepts the Bearer JWT token from the `Authorization` header, decodes it via the Firebase Admin SDK (`auth.verifyIdToken`), and populates `req.user` (of type `DecodedIdToken`) on the request context.
+- **Strict Verification Bypass Guard**: In-memory unverified Base64 token payload decoding is strictly restricted to active test and emulator environments (`VITEST === 'true'` or `FIREBASE_AUTH_EMULATOR_HOST`). Bypasses are forbidden on standard development servers or production environments to prevent forged JWT token attacks.
 
 ### 4. Custom Email Verification Guard (`requireEmailVerified`)
 Enforces that password-based logins complete activation loops before accessing group data:

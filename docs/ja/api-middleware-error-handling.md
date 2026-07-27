@@ -20,44 +20,29 @@
 | **Vercelプレビュー** | `https://scripture-habit-[hash].vercel.app` | GitHubプルリクエストによる自動デプロイプレビュー。 |
 
 ### パス正規化（Vercel末尾スラッシュ問題の修正）
-Vercelのホスティング設定では、末尾にスラッシュが追加されることが多く（例: `/api/auth` の代わりに `/api/auth/`）、これがルーティングの不一致を引き起こす原因になります。ルートの重複定義を防ぐため、カスタムゲートウェイフィルターが受信リクエストをインターセプトし、内部で末尾のスラッシュを削除します。
-```typescript
-app.use((req, _res, next) => {
-    if (req.path.length > 1 && req.path.endsWith('/')) {
-        const query = req.url.includes('?') ? '?' + req.url.split('?')[1] : '';
-        const newPath = req.path.slice(0, -1);
-        req.url = newPath + query;
-    }
-    next();
-});
-```
+Vercelのホスティング設定では、末尾にスラッシュが追加されることが多く（例: `/api/auth` の代わりに `/api/auth/`）、これがルーティングの不一致を引き起こす原因になります。ルートの重複定義を防ぐため、�  - **ハッシュ化されたキー**: レート制限違反時のサーバーログダンプに、生のクライアントIPアドレスや認証トークンが露出するのを防ぐため、キー生成器はバケットカウントを適用する前に SHA-256 を使用して識別子をハッシュ化します。信頼できるリバースプロキシで設定される `req.ip` を最優先とし、未設定時のみ `x-forwarded-for` やソケット通信アドレスへ安全にフォールバックします。
+    ```typescript
+    export const aiLimiterKeyGenerator = (req: Request) => {
+        const authHeader = req.header('Authorization');
+        if (authHeader && authHeader.startsWith('Bearer ')) {
+            return crypto.createHash('sha256').update(authHeader).digest('hex');
+        }
+        // Express req.ip を最優先とし、未設定時のみ x-forwarded-for へフォールバック
+        const rawForward = req.headers['x-forwarded-for'];
+        const forwardedIp = Array.isArray(rawForward) ? rawForward[0] : rawForward?.split(',')[0];
+        const clientIp = (req.ip || forwardedIp || req.socket.remoteAddress || 'unknown').trim();
+        return crypto.createHash('sha256').update(clientIp).digest('hex');
+    };
+    ```
 
----
+### 2. Firebase App Check セキュリティ (`verifyAppCheck`)
+App Check トークン（`X-Firebase-AppCheck` ヘッダー）を強制することで、スクレイピングやリプレイ攻撃からバックエンドAPIを保護します。
+- **開発用バイパス**: ローカル開発やユニットテストでは、開発者は `.env.local` 内に `SKIP_APP_CHECK=true` を設定できます。
+- **本番環境ガード**: 本番環境で `SKIP_APP_CHECK=true` が要求された場合、ミドルウェアは即座にこのバイパスを遮断してリクエストをブロックし、バックドアを防ぐための重大なセキュリティアラートをトリガーします。
 
-## ⚡ 2. 検証ミドルウェアパイプライン
-
-すべての機密性の高いエンドポイントは、コントローラーが起動される前に一連のミドルウェアシーケンスを実行します。
-
-```
-[ 受信したリクエスト ]
-          │
-          ▼
- 1. レート制限 ──────────► 制限超過？ ──► [ 429 Too Many Requests ]
-          │ いいえ
-          ▼
- 2. App Check ───────────► 無効なトークン？ ──► [ 401 Unauthorized ]
-          │ いいえ
-          ▼
- 3. 認証 (Auth) ─────────► 無効なJWT？ ──► [ 401 Unauthorized ]
-          │ いいえ
-          ▼
- 4. メールアドレス確認 ──► 未確認？ ────► [ 403 Forbidden ]
-          │ いいえ
-          ▼
-[ コントローラーの起動 ]
-```
-
-### 1. アダプティブなレート制限器 (`rateLimit`)
+### 3. Firebase Auth 検証 (`authenticate`)
+`Authorization` ヘッダーから Bearer JWT トークンをインターセプトし、Firebase Admin SDK (`auth.verifyIdToken`) を介してデコードし、リクエストコンテキスト上の `req.user`（型は `DecodedIdToken`）に入力します。
+- **厳格な署名検証バイパスガード**: 未検証トークンの Base64 デコードフォールバックは、明示的なテスト・エミュレータ環境（`VITEST === 'true'` または `FIREBASE_AUTH_EMULATOR_HOST`）でのみ許可されます。通常の開発サーバーや本番環境でのバイパスは禁止され、偽造 JWT トークンによる攻撃を防御します。imit`)
 システムは3つの異なるレート制限ゾーンを管理し、本番環境と開発環境の文脈に基づいて動的にしきい値をスケーリングします。
 
 * **グローバル制限 (Global Limiter)**: 本番環境では一般的なエンドポイントへのアクセスを15分あたり `300` 回に制限します（開発環境では `10,000` 回に引き上げられます）。
