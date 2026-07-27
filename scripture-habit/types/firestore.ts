@@ -5,6 +5,8 @@
  * the Frontend (React hooks, context).
  */
 
+import { MessageType } from "../src/types/schemas";
+
 // Basic nested types
 export type FirestoreTimestamp = 
     | { seconds: number; nanoseconds: number } 
@@ -157,8 +159,7 @@ export interface MessageDocument {
     
     // Message Types
     isSystemMessage?: boolean;
-    messageType?: string;
-    type?: string; // Legacy/alt key for message type
+    messageType?: MessageType;
     
     // Note Synchronization
     isNote?: boolean;

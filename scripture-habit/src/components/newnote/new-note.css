@@ -18,10 +18,10 @@
   backdrop-filter: blur(20px);
   border-radius: 2rem;
   border: 1px solid rgba(255, 255, 255, 0.8);
-  padding: 2rem;
+  padding: 2rem 2rem calc(2rem + env(safe-area-inset-bottom, 20px)) 2rem;
   max-width: 600px;
   width: 90%;
-  max-height: 90%;
+  max-height: 85vh;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
