@@ -1,24 +1,24 @@
-# 🔬 詳細解説：App Check と API ゲートウェイ保護セキュリティ
+# 🔬 詳細解説: App Check と API ゲートウェイ保護セキュリティ
 
-本ドキュメントでは、Scripture Habit のAPIサーバー（Vercelサーバーレス）を悪意のある攻撃やスパムアクセスから保護する**「APIゲートウェイセキュリティ」**、およびモバイル環境での開発・テストを両立させる**「例外バイパス設計」**について、詳細に解説します。
+本書では、Scripture Habit の API サーバー（Vercel Serverless）を悪質な攻撃やスパムアクセスから保護する**「API ゲートウェイセキュリティ」**と、モバイル環境での開発・テストを両立させる**「例外バイパス設計」**について詳しく解説します。
 
 ---
 
-## 🛡️ 多層防御セキュリティトポロジー
+## 🛡️ 多層防御（Defense-in-Depth）セキュリティトポロジ
 
-Scripture Habit のバックエンドAPIは、段階的にセキュリティレベルを引き上げる**多層防御（Defense in Depth）**を採用しています。リクエストがコントローラー（ビジネスロジック）に届くまでに、最大5層のフィルターを通過する必要があります。
+Scripture Habit のバックエンド API は、段階的にセキュリティレベルを引き上げる**多層防御（Defense in Depth）**を採用しています。リクエストがコントローラー（ビジネスロジック）に到達するまでに、最大 5 段階のフィルターを通過します。
 
-1. **CORS 検証**: 不正なオリジン（ドメイン）からのブラウザ経由のアクセスを排除。
-2. **Rate Limiting（レート制限）**: DDoS攻撃やAPIの過剰呼び出しを遮断。プライバシーを配慮したハッシュ型を採用。
-3. **Firebase App Check**: 非公式アプリや直接のAPIリクエスト（Curl、Postman等）を強力に排除。
-4. **Bearer JWT 認証（Firebase Auth）**: 有効なサインインを行った個別ユーザーを特定。
-5. **メール認証確認（Email Verified）**: パスワードベースのユーザーにのみメール確認を強制。
+1. **CORS 検証**: 許可されていないオリジン（ドメイン）からのブラウザ経由のアクセスを排除。
+2. **レートリミット（Rate Limiting）**: DDoS 攻撃や過剰な API 呼び出しをブロック。プライバシー対応のハッシュ化方式を採用。
+3. **Firebase App Check**: 非公式アプリや直接的な API リクエスト（Curl, Postman等）を強力にブロック。
+4. **Bearer JWT 認証（Firebase Auth）**: 正当な認証情報を持つ個別のユーザーを識別。
+5. **メール検証チェック（Email Verified）**: パスワードログインユーザーに対してのみ、メールアドレス確認状態を強制。
 
 ---
 
 ## 🔄 API リクエスト検証シーケンス
 
-以下は、リクエストがゲートウェイを通過してコントローラーに届くまでのアトミックな検証順序です（ダークモード等の背景色を考慮した高コントラスト表示となっています）。
+以下は、リクエストがゲートウェイを通過してコントローラーに到達するまでのアトミックな検証シーケンスです。
 
 ```mermaid
 sequenceDiagram
@@ -27,13 +27,13 @@ sequenceDiagram
     participant Limiter as レートリミッター
     participant AppCheck as App Check検証
     participant JWT as JWT認証 (Auth)
-    participant Email as メール認証確認
+    participant Email as メール検証チェック
     participant Controller as コントローラー (API)
 
-    Client->>Limiter: APIリクエストの送信
+    Client->>Limiter: API リクエスト送信
     
-    Note over Limiter: SHA-256 ハッシュキー生成<br/>(トークンまたはクライアントIP)
-    alt レート制限を超過している場合 (Limit Exceeded)
+    Note over Limiter: SHA-256 ハッシュキー生成<br/>(トークン または クライアントIP)
+    alt 制限超過
         Limiter-->>Client: 429 Too Many Requests
     else 制限内
         Limiter->>AppCheck: 次のミドルウェアへ
@@ -87,7 +87,7 @@ Firebase **App Check** は、公式に登録されたアプリケーション（
 if (skipRequested) {
     if (isProduction) {
         console.error('[SECURITY ALERT] SKIP_APP_CHECK is enabled in production! This is forbidden.');
-        return res.status(401).json({ error: 'Unauthorized: Security check required' });
+        return next(new AppError('Unauthorized: Security check required', 401, 'APP_CHECK_FAILED'));
     }
     console.warn('[AppCheck] Skipping verification (Development only)');
     return next();
@@ -183,7 +183,7 @@ export const aiLimiter = rateLimit({
 ### 2. 本番ガード機能付き App Check 検証ミドルウェア (`verifyAppCheck`)
 
 ```typescript
-export const verifyAppCheck = async (req: Request, res: Response, next: NextFunction) => {
+export const verifyAppCheck = async (req: Request, _res: Response, next: NextFunction) => {
     const isProduction = process.env.NODE_ENV === 'production';
     const skipRequested = process.env.SKIP_APP_CHECK === 'true';
 
@@ -192,7 +192,7 @@ export const verifyAppCheck = async (req: Request, res: Response, next: NextFunc
         if (isProduction) {
             // 本番環境であるにもかかわらずSKIP環境変数が有効になっている場合、大至急ブロック
             console.error('[SECURITY ALERT] SKIP_APP_CHECK is enabled in production! This is forbidden.');
-            return res.status(401).json({ error: 'Unauthorized: Security check required' });
+            return next(new AppError('Unauthorized: Security check required', 401, 'APP_CHECK_FAILED'));
         }
         console.warn('[AppCheck] Skipping verification (Development only)');
         return next();
@@ -203,7 +203,7 @@ export const verifyAppCheck = async (req: Request, res: Response, next: NextFunc
     if (!token) {
         console.warn('[AppCheck] Security context missing from:', req.ip);
         // エラーハンドラー経由で401 Unauthorizedとして処理を引き渡す
-        return next(new AppError('Unauthorized: Security context missing', 401, 'APP_CHECK_MISSING'));
+        return next(new AppError('Unauthorized: Security check missing', 401, 'APP_CHECK_MISSING'));
     }
 
     try {
@@ -228,10 +228,10 @@ export const verifyAppCheck = async (req: Request, res: Response, next: NextFunc
 ### 3. テストバイパス付きメール検証ミドルウェア (`requireEmailVerified`)
 
 ```typescript
-export const requireEmailVerified = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+export const requireEmailVerified = (req: AuthenticatedRequest, _res: Response, next: NextFunction) => {
     // 前段の authenticate ミドルウェアを通過していることを保証
     if (!req.user) {
-        return res.status(401).json({ error: 'Unauthorized: Not authenticated' });
+        return next(new AppError('Unauthorized: Not authenticated', 401, 'UNAUTHENTICATED'));
     }
 
     // 1. Playwright / CI パイプラインで使用されるテスト用アカウントの救済バイパス

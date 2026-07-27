@@ -3,6 +3,7 @@ import express, { Response } from 'express';
 import { admin, db } from '../lib/firebase-admin.js';
 import { authenticate, AuthenticatedRequest } from '../lib/middleware.js';
 import { formatDateInTimeZone } from '../../src/utils/time-utils.js';
+import { ForbiddenError, AuthenticationError, NotFoundError, sendErrorResponse } from '../lib/errors.js';
 
 const router = express.Router();
 
@@ -11,15 +12,15 @@ const router = express.Router();
  * This removes the need for UI-based group creation in E2E tests.
  */
 router.post('/setup-test-group', authenticate, async (req: AuthenticatedRequest, res: Response) => {
-    // PROTECT: Strictly disable in production
-    if (process.env.NODE_ENV === 'production' && process.env.VITE_DEV_MODE !== 'true') {
-        return res.status(403).json({ error: 'Test utilities are disabled in production' });
-    }
-
-    const uid = req.user?.uid;
-    if (!uid) return res.status(401).json({ error: 'Unauthorized' });
-
     try {
+        // PROTECT: Strictly disable in production
+        if (process.env.NODE_ENV === 'production' && process.env.VITE_DEV_MODE !== 'true') {
+            throw new ForbiddenError('Test utilities are disabled in production');
+        }
+
+        const uid = req.user?.uid;
+        if (!uid) throw new AuthenticationError('Unauthorized');
+
         const timeZone = req.body.timeZone || 'UTC';
         const groupName = req.body.groupName || 'E2E Test Group';
         const memberCount = req.body.memberCount || 1; // Number of members for unity percentage testing
@@ -163,7 +164,7 @@ router.post('/setup-test-group', authenticate, async (req: AuthenticatedRequest,
 
     } catch (error) {
         console.error('[TestSetup] Error:', error);
-        res.status(500).json({ error: (error as Error).message });
+        sendErrorResponse(res, error, 'Test setup failed');
     }
 });
 
@@ -172,17 +173,17 @@ router.post('/setup-test-group', authenticate, async (req: AuthenticatedRequest,
  * Used to clean up state between E2E tests to prevent group-limit pollution.
  */
 router.post('/leave-all-groups', authenticate, async (req: AuthenticatedRequest, res: Response) => {
-    if (process.env.NODE_ENV === 'production' && process.env.VITE_DEV_MODE !== 'true') {
-        return res.status(403).json({ error: 'Test utilities are disabled in production' });
-    }
-
-    const uid = req.user?.uid;
-    if (!uid) return res.status(401).json({ error: 'Unauthorized' });
-
     try {
+        if (process.env.NODE_ENV === 'production' && process.env.VITE_DEV_MODE !== 'true') {
+            throw new ForbiddenError('Test utilities are disabled in production');
+        }
+
+        const uid = req.user?.uid;
+        if (!uid) throw new AuthenticationError('Unauthorized');
+
         const userRef = db.collection('users').doc(uid);
         const userDoc = await userRef.get();
-        if (!userDoc.exists) return res.status(404).json({ error: 'User not found' });
+        if (!userDoc.exists) throw new NotFoundError('User not found');
 
         const userData = userDoc.data()!;
         const groupIds: string[] = userData.groupIds || (userData.groupId ? [userData.groupId] : []);
@@ -231,7 +232,7 @@ router.post('/leave-all-groups', authenticate, async (req: AuthenticatedRequest,
         return res.status(200).json({ message: `Left ${groupIds.length} groups`, left: groupIds.length });
     } catch (error) {
         console.error('[TestCleanup] Error:', error);
-        return res.status(500).json({ error: (error as Error).message });
+        sendErrorResponse(res, error, 'Leave all groups failed');
     }
 });
 
@@ -239,21 +240,21 @@ router.post('/leave-all-groups', authenticate, async (req: AuthenticatedRequest,
  * [TEST ONLY] Reset the hasSetKickThreshold flag for the user.
  */
 router.post('/reset-kick-threshold', authenticate, async (req: AuthenticatedRequest, res: Response) => {
-    if (process.env.NODE_ENV === 'production' && process.env.VITE_DEV_MODE !== 'true') {
-        return res.status(403).json({ error: 'Test utilities are disabled in production' });
-    }
-
-    const uid = req.user?.uid;
-    if (!uid) return res.status(401).json({ error: 'Unauthorized' });
-
     try {
+        if (process.env.NODE_ENV === 'production' && process.env.VITE_DEV_MODE !== 'true') {
+            throw new ForbiddenError('Test utilities are disabled in production');
+        }
+
+        const uid = req.user?.uid;
+        if (!uid) throw new AuthenticationError('Unauthorized');
+
         await db.collection('users').doc(uid).update({
             hasSetKickThreshold: admin.firestore.FieldValue.delete(),
             kickThreshold: admin.firestore.FieldValue.delete()
         });
         return res.status(200).json({ message: 'Kick threshold reset successfully' });
     } catch (error) {
-        return res.status(500).json({ error: (error as Error).message });
+        sendErrorResponse(res, error, 'Reset kick threshold failed');
     }
 });
 

@@ -4,6 +4,7 @@ import { StreakReminderEngine } from '../lib/streak-reminder.js';
 import { InactivityService } from '../services/inactivity-service.js';
 import { calculateMemberStatus, InactivityMemberData, InactivityGroupData } from '../lib/inactivity-utils.js';
 import { t } from '../lib/i18n.js';
+import { AuthenticationError, NotFoundError, sendErrorResponse } from '../lib/errors.js';
 
 interface CronReport {
     groupId: string;
@@ -36,7 +37,8 @@ const verifyCronSecret = (req: Request, res: Response, next: NextFunction) => {
 
     if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
         console.warn('Unauthorized access attempt to Cron endpoint');
-        return res.status(401).send('Unauthorized');
+        sendErrorResponse(res, new AuthenticationError('Unauthorized'));
+        return;
     }
     next();
 };
@@ -53,9 +55,8 @@ router.all('/check-inactive-users', verifyCronSecret, async (_req: Request, res:
             stats
         });
     } catch (err: unknown) {
-        const error = err as Error;
-        console.error('Error in inactivity check:', error);
-        res.status(500).send('Error checking inactivity: ' + error.message);
+        console.error('Error in inactivity check:', err);
+        sendErrorResponse(res, err, 'Error checking inactivity');
     }
 });
 
@@ -67,7 +68,7 @@ router.get('/test-inactive-check/:groupId', verifyCronSecret, async (req: Reques
     try {
         const groupRef = db.collection('groups').doc(groupId);
         const groupDoc = await groupRef.get();
-        if (!groupDoc.exists) return res.status(404).json({ error: 'Not Found' });
+        if (!groupDoc.exists) throw new NotFoundError('Not Found');
 
         const groupData = groupDoc.data() || {};
         const members: string[] = groupData.members || [];
@@ -123,8 +124,8 @@ router.get('/test-inactive-check/:groupId', verifyCronSecret, async (req: Reques
 
         res.json(report);
     } catch (err: unknown) {
-        const error = err as Error;
-        res.status(500).json({ error: error.message });
+        console.error('[Cron] Error in test-inactive-check:', err);
+        sendErrorResponse(res, err, 'Error in test inactive check');
     }
 });
 
@@ -232,9 +233,8 @@ router.all('/sync-user-stats', verifyCronSecret, async (_req: Request, res: Resp
             stats: { usersProcessed: activeUsersSnap.size, usersUpdated: updatedCount }
         });
     } catch (err: unknown) {
-        const error = err as Error;
-        console.error('Error in user stats sync:', error);
-        res.status(500).send('Error: ' + error.message);
+        console.error('Error in user stats sync:', err);
+        sendErrorResponse(res, err, 'Error syncing user stats');
     }
 });
 
@@ -328,9 +328,8 @@ router.all('/cleanup-orphaned-cheers', verifyCronSecret, async (_req: Request, r
             stats: { checked: checkedCount, deletedOrphans: deletedCount }
         });
     } catch (err: unknown) {
-        const error = err as Error;
-        console.error('Error in cheers cleanup:', error);
-        res.status(500).send('Error: ' + error.message);
+        console.error('Error in cheers cleanup:', err);
+        sendErrorResponse(res, err, 'Error cleaning up cheers');
     }
 });
 
@@ -501,9 +500,7 @@ router.all('/streak-reminder', verifyCronSecret, async (req: Request, res: Respo
             }
         });
     } catch (err: unknown) {
-        const error = err as Error;
-        console.error('[Cron] Error in streak warnings:', error);
-        res.status(500).send('Error: ' + error.message);
+        sendErrorResponse(res, err, 'Error in streak warnings');
     }
 });
 
@@ -537,9 +534,7 @@ router.all('/daily-active-users', verifyCronSecret, async (req: Request, res: Re
 
         res.json(stats);
     } catch (err: unknown) {
-        const error = err as Error;
-        console.error('Error fetching daily active users:', error);
-        res.status(500).send('Error: ' + error.message);
+        sendErrorResponse(res, err, 'Error fetching daily active users');
     }
 });
 

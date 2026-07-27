@@ -2,6 +2,7 @@ import express, { Response } from 'express';
 import { admin, db } from '../lib/firebase-admin.js';
 import { authenticate, verifyAppCheck, inviteLimiter, AuthenticatedRequest } from '../lib/middleware.js';
 import { reportSchema } from '../lib/schemas.js';
+import { ValidationError, sendErrorResponse } from '../lib/errors.js';
 
 const router = express.Router();
 
@@ -10,24 +11,24 @@ const router = express.Router();
  * Submits a report to Firestore and optionally alerts via Discord Webhook
  */
 router.post('/report', authenticate, inviteLimiter, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
-    const validation = reportSchema.safeParse(req.body);
-    if (!validation.success) {
-        return res.status(400).json({ error: 'Invalid input', details: validation.error.format() });
-    }
-
-    const {
-        messageId,
-        groupId,
-        reporterNickname,
-        reportedUserId,
-        reportedUserNickname,
-        messageText,
-        reason
-    } = validation.data;
-    
-    const uid = req.user!.uid;
-
     try {
+        const validation = reportSchema.safeParse(req.body);
+        if (!validation.success) {
+            throw new ValidationError('Invalid input');
+        }
+
+        const {
+            messageId,
+            groupId,
+            reporterNickname,
+            reportedUserId,
+            reportedUserNickname,
+            messageText,
+            reason
+        } = validation.data;
+        
+        const uid = req.user!.uid;
+
         // 1. Save report to Firestore
         const reportData = {
             messageId,
@@ -81,7 +82,7 @@ router.post('/report', authenticate, inviteLimiter, verifyAppCheck, async (req: 
         res.status(200).json({ message: 'Report submitted successfully' });
     } catch (error) {
         console.error('Error submitting report:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        sendErrorResponse(res, error, 'Internal Server Error');
     }
 });
 

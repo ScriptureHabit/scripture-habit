@@ -5,6 +5,7 @@ import { postNoteSchema, postMessageSchema, sendCheerSchema, deleteNoteSchema, d
 import { notifyGroupMembers, sendPushNotification, cleanupTokens, getUserFcmTokensAndLanguage } from '../lib/notifications.js';
 import { t } from '../lib/i18n.js';
 import { waitUntil } from '@vercel/functions';
+import { AppError, ValidationError, NotFoundError, ForbiddenError, sendErrorResponse } from '../lib/errors.js';
 
 const router = express.Router();
 
@@ -62,7 +63,7 @@ router.get('/bundle/:groupId', authenticate, verifyAppCheck, async (req: Authent
 
         if (!gSnap.exists) {
             console.error(`[Bundle] 404: Group ${groupId} not found after ${attempts} attempts.`);
-            return res.status(404).json({ error: 'Group not found' });
+            throw new NotFoundError('Group not found');
         }
         
         const members = gData?.members || [];
@@ -70,7 +71,7 @@ router.get('/bundle/:groupId', authenticate, verifyAppCheck, async (req: Authent
         
         if (!members.includes(uid) && !isOwner) {
             console.error(`[Bundle] 403 Forbidden: uid=${uid} not in members and not owner. Members=[${members.join(', ')}].`);
-            return res.status(403).json({ error: 'Forbidden' });
+            throw new ForbiddenError('Forbidden');
         }
 
         // HEALING: If user is owner but not in members array (emulator race condition), heal it
@@ -130,8 +131,6 @@ router.get('/bundle/:groupId', authenticate, verifyAppCheck, async (req: Authent
             );
         }
 
-
-
         const bundleBuffer = bundle.build();
 
         // Save to in-memory cache for 120 seconds (2 minutes)
@@ -148,18 +147,22 @@ router.get('/bundle/:groupId', authenticate, verifyAppCheck, async (req: Authent
         res.send(bundleBuffer);
 
     } catch (error) {
+        if (error instanceof NotFoundError || error instanceof ForbiddenError) {
+            sendErrorResponse(res, error);
+            return;
+        }
         next(error);
     }
 });
 
 // Post Note
 router.post(['/post-note', '/post-note/'], authenticate, requireEmailVerified, verifyAppCheck, async (req: AuthenticatedRequest, res: Response, next) => {
-    const validation = postNoteSchema.safeParse(req.body);
-    if (!validation.success) {
-        return res.status(400).json({ error: 'Invalid input', details: validation.error.format() });
-    }
-    
     try {
+        const validation = postNoteSchema.safeParse(req.body);
+        if (!validation.success) {
+            throw new ValidationError('Invalid input');
+        }
+
         const uid = req.user!.uid;
         const result = await NoteService.postNote({
             uid,
@@ -177,6 +180,10 @@ router.post(['/post-note', '/post-note/'], authenticate, requireEmailVerified, v
             ...result 
         });
     } catch (error) {
+        if (error instanceof ValidationError) {
+            sendErrorResponse(res, error);
+            return;
+        }
         // Now using global error handler via next()
         next(error);
     }
@@ -184,11 +191,11 @@ router.post(['/post-note', '/post-note/'], authenticate, requireEmailVerified, v
 
 // Post Message
 router.post('/post-message', authenticate, verifyAppCheck, async (req: AuthenticatedRequest, res: Response, next) => {
-    const validation = postMessageSchema.safeParse(req.body);
-    if (!validation.success) return res.status(400).json({ error: 'Invalid input' });
-
-    const { groupId, text, replyTo, optimisticId, nickname, photoURL, clientTimestamp } = validation.data;
     try {
+        const validation = postMessageSchema.safeParse(req.body);
+        if (!validation.success) throw new ValidationError('Invalid input');
+
+        const { groupId, text, replyTo, optimisticId, nickname, photoURL, clientTimestamp } = validation.data;
         const uid = req.user!.uid;
         const result = await MessageService.postMessage({
             uid,
@@ -219,6 +226,10 @@ router.post('/post-message', authenticate, verifyAppCheck, async (req: Authentic
         res.json({ success: true, messageId: result.messageId });
 
     } catch (error) {
+        if (error instanceof ValidationError) {
+            sendErrorResponse(res, error);
+            return;
+        }
         next(error);
     }
 });
@@ -228,9 +239,9 @@ router.post('/toggle-reaction', authenticate, verifyAppCheck, async (req: Authen
     const { groupId, messageId, emoji = '👍', nickname, photoURL } = req.body;
     const uid = req.user!.uid;
 
-    if (!groupId || !messageId) return res.status(400).json({ error: 'Missing params' });
-
     try {
+        if (!groupId || !messageId) throw new ValidationError('Missing params');
+
         const result = await MessageService.toggleReaction({
             uid,
             groupId,
@@ -243,27 +254,32 @@ router.post('/toggle-reaction', authenticate, verifyAppCheck, async (req: Authen
 
         res.json({ success: true, ...result });
     } catch (error) {
+        if (error instanceof ValidationError) {
+            sendErrorResponse(res, error);
+            return;
+        }
         next(error);
     }
 });
 
 router.post('/delete-note', authenticate, requireEmailVerified, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
-
-    const validation = deleteNoteSchema.safeParse(req.body);
-    if (!validation.success) return res.status(400).json({ error: 'Invalid input', details: validation.error.format() });
     try {
+        const validation = deleteNoteSchema.safeParse(req.body);
+        if (!validation.success) throw new ValidationError('Invalid input');
+
         const uid = req.user!.uid;
         const { noteId } = validation.data;
 
         await NoteService.deleteNote(uid, noteId);
         res.json({ success: true });
     } catch (error: unknown) {
+        if (error instanceof ValidationError) {
+            sendErrorResponse(res, error);
+            return;
+        }
         const err = error as Error;
         console.error('Error deleting note:', err);
-        res.status(500).json({ 
-            error: 'InternalServerError', 
-            message: err.message || 'An unexpected error occurred' 
-        });
+        sendErrorResponse(res, err, 'An unexpected error occurred');
     }
 });
 
@@ -272,9 +288,9 @@ router.post('/edit-message', authenticate, verifyAppCheck, async (req: Authentic
     const { groupId, messageId, text } = req.body;
     const uid = req.user!.uid;
 
-    if (!groupId || !messageId || !text) return res.status(400).json({ error: 'Missing params' });
-
     try {
+        if (!groupId || !messageId || !text) throw new ValidationError('Missing params');
+
         await MessageService.editMessage({
             uid,
             groupId,
@@ -284,15 +300,19 @@ router.post('/edit-message', authenticate, verifyAppCheck, async (req: Authentic
 
         res.json({ success: true });
     } catch (error) {
+        if (error instanceof ValidationError) {
+            sendErrorResponse(res, error);
+            return;
+        }
         next(error);
     }
 });
 
 router.post('/delete-message', authenticate, verifyAppCheck, async (req: AuthenticatedRequest, res: Response, next) => {
-    const validation = deleteMessageSchema.safeParse(req.body);
-    if (!validation.success) return res.status(400).json({ error: 'Invalid input', details: validation.error.format() });
-
     try {
+        const validation = deleteMessageSchema.safeParse(req.body);
+        if (!validation.success) throw new ValidationError('Invalid input');
+
         const { groupId, messageId } = validation.data;
         const uid = req.user!.uid;
 
@@ -304,9 +324,19 @@ router.post('/delete-message', authenticate, verifyAppCheck, async (req: Authent
 
         res.json({ success: true });
     } catch (error: unknown) {
+        if (error instanceof ValidationError) {
+            sendErrorResponse(res, error);
+            return;
+        }
         if (error instanceof Error) {
-            if (error.message === 'Forbidden' || error.message.includes('own messages')) return res.status(403).json({ error: error.message });
-            if (error.message === 'Group not found' || error.message === 'Message not found') return res.status(404).json({ error: error.message });
+            if (error.message === 'Forbidden' || error.message.includes('own messages')) {
+                sendErrorResponse(res, new ForbiddenError(error.message));
+                return;
+            }
+            if (error.message === 'Group not found' || error.message === 'Message not found') {
+                sendErrorResponse(res, new NotFoundError(error.message));
+                return;
+            }
         }
         next(error);
     }
@@ -314,14 +344,14 @@ router.post('/delete-message', authenticate, verifyAppCheck, async (req: Authent
 
 // Send Cheer
 router.post('/send-cheer', authenticate, verifyAppCheck, async (req: AuthenticatedRequest, res: Response, next) => {
-    const validation = sendCheerSchema.safeParse(req.body);
-    if (!validation.success) return res.status(400).json({ error: 'Invalid input' });
-
     try {
+        const validation = sendCheerSchema.safeParse(req.body);
+        if (!validation.success) throw new ValidationError('Invalid input');
+
         const { targetUid, groupId, language, senderNickname, senderTimeZone } = validation.data;
         const senderUid = req.user!.uid;
 
-        if (senderUid === targetUid) return res.status(400).json({ error: 'Self cheer' });
+        if (senderUid === targetUid) throw new ValidationError('Self cheer');
 
         const result = await MessageService.sendCheer({
             senderUid,
@@ -333,7 +363,7 @@ router.post('/send-cheer', authenticate, verifyAppCheck, async (req: Authenticat
             skipTargetUserCheck: true
         });
 
-        if (result.alreadySent) return res.status(429).json({ error: 'alreadySent' });
+        if (result.alreadySent) throw new AppError('alreadySent', 429);
 
         // Notification: waitUntil() ensures this runs after the response
         // without blocking the client and without being killed by Vercel.
@@ -363,9 +393,12 @@ router.post('/send-cheer', authenticate, verifyAppCheck, async (req: Authenticat
 
         res.json({ success: true });
     } catch (error: unknown) {
+        if (error instanceof ValidationError) {
+            sendErrorResponse(res, error);
+            return;
+        }
         next(error);
     }
-
 });
 
 export default router;

@@ -7,7 +7,7 @@ import { joinGroupSchema, updateKickThresholdSchema, leaveGroupSchema, deleteGro
 import { GroupDocument, UserDocument, MemberPreview as PreviewItem, GroupMemberDocument } from '../../types/firestore.js';
 import { MAX_GROUPS_PER_USER } from '../lib/constants.js';
 import { removeMemberFromGroup } from '../lib/membership-utils.js';
-import { ForbiddenError, NotFoundError, ValidationError, sendErrorResponse } from '../lib/errors.js';
+import { AppError, AuthenticationError, ForbiddenError, NotFoundError, ValidationError, sendErrorResponse } from '../lib/errors.js';
 import { getMessageExpireAt } from '../lib/ttl-utils.js';
 import { MessageService } from '../services/message-service.js';
 
@@ -19,27 +19,27 @@ const router = express.Router();
  * Enforces MAX_GROUPS_PER_USER on the server to prevent bypasses.
  */
 router.post('/create-group', authenticate, requireEmailVerified, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
-    const validation = createGroupSchema.safeParse(req.body);
-    if (!validation.success) {
-        return res.status(400).json({ error: 'Invalid input', details: validation.error.format() });
-    }
-
-    const { name, description, isPublic, timeZone } = validation.data;
-    const uid = req.user?.uid;
-    if (!uid) return res.status(401).json({ error: 'Unauthorized' });
-
     try {
+        const validation = createGroupSchema.safeParse(req.body);
+        if (!validation.success) {
+            throw new ValidationError('Invalid input');
+        }
+
+        const { name, description, isPublic, timeZone } = validation.data;
+        const uid = req.user?.uid;
+        if (!uid) throw new ValidationError('Unauthorized');
+
         const result = await db.runTransaction(async (transaction) => {
             const userRef = db.collection('users').doc(uid);
             const userDoc = await transaction.get(userRef);
 
-            if (!userDoc.exists) throw new Error('User not found.');
+            if (!userDoc.exists) throw new NotFoundError('User not found.');
             const userData = userDoc.data()! as UserDocument;
 
             // 1. Enforce group limit
             const currentGroupIds = userData.groupIds || [];
             if (currentGroupIds.length >= MAX_GROUPS_PER_USER) {
-                throw new Error(`You have reached the maximum limit of ${MAX_GROUPS_PER_USER} groups. Please leave or delete an existing group before creating a new one.`);
+                throw new ValidationError(`You have reached the maximum limit of ${MAX_GROUPS_PER_USER} groups. Please leave or delete an existing group before creating a new one.`);
             }
 
             // 2. Prepare Data
@@ -127,27 +127,23 @@ router.post('/create-group', authenticate, requireEmailVerified, verifyAppCheck,
 
         res.status(200).json({ message: 'Success', ...result });
     } catch (error) {
-        let message = 'Internal Server Error';
-        if (error instanceof Error) {
-            message = error.message;
-            console.error('Error creating group:', error.message);
-        }
-        res.status(400).json({ error: message });
+        console.error('Error creating group:', error);
+        sendErrorResponse(res, error, 'Create group failed');
     }
 });
 
 // Join Group
 router.post('/join-group', authenticate, requireEmailVerified, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
-    const validation = joinGroupSchema.safeParse(req.body);
-    if (!validation.success) {
-        return res.status(400).json({ error: 'Invalid input', details: validation.error.format() });
-    }
-
-    const { inviteCode, groupId } = validation.data;
-    const uid = req.user?.uid;
-    if (!uid) return res.status(401).json({ error: 'Unauthorized' });
-
     try {
+        const validation = joinGroupSchema.safeParse(req.body);
+        if (!validation.success) {
+            throw new ValidationError('Invalid input');
+        }
+
+        const { inviteCode, groupId } = validation.data;
+        const uid = req.user?.uid;
+        if (!uid) throw new AuthenticationError('Unauthorized');
+
         const result = await runPhasedTransaction(db, {
             read: async (transaction) => {
                 let groupRef;
@@ -290,15 +286,15 @@ router.post('/join-group', authenticate, requireEmailVerified, verifyAppCheck, a
 
 // Leave Group
 router.post('/leave-group', authenticate, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
-    const validation = leaveGroupSchema.safeParse(req.body);
-    if (!validation.success) return res.status(400).json({ error: 'Invalid input' });
-
-    const { groupId } = validation.data;
-    if (!groupId) return res.status(400).json({ error: 'groupId is required' });
-    const uid = req.user?.uid;
-    if (!uid) return res.status(401).json({ error: 'Unauthorized' });
-
     try {
+        const validation = leaveGroupSchema.safeParse(req.body);
+        if (!validation.success) throw new ValidationError('Invalid input');
+
+        const { groupId } = validation.data;
+        if (!groupId) throw new ValidationError('groupId is required');
+        const uid = req.user?.uid;
+        if (!uid) throw new AuthenticationError('Unauthorized');
+
         await runPhasedTransaction(db, {
             read: async (transaction) => {
                 const userRef = db.collection('users').doc(uid);
@@ -333,25 +329,25 @@ router.post('/leave-group', authenticate, verifyAppCheck, async (req: Authentica
 });
 
 router.post('/update-read-status', authenticate, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
-    const validation = updateReadStatusSchema.safeParse(req.body);
-    if (!validation.success) return res.status(400).json({ error: 'Invalid input', details: validation.error.format() });
-
-    const { groupId } = validation.data;
-    const uid = req.user?.uid;
-    if (!uid) return res.status(401).json({ error: 'Unauthorized' });
-
     try {
+        const validation = updateReadStatusSchema.safeParse(req.body);
+        if (!validation.success) throw new ValidationError('Invalid input');
+
+        const { groupId } = validation.data;
+        const uid = req.user?.uid;
+        if (!uid) throw new ValidationError('Unauthorized');
+
         const groupRef = db.collection('groups').doc(groupId);
         const userRef = db.collection('users').doc(uid);
         const groupSnap = await groupRef.get();
-        if (!groupSnap.exists) return res.status(404).json({ error: 'Group not found' });
+        if (!groupSnap.exists) throw new NotFoundError('Group not found');
 
         const groupData = groupSnap.data()! as GroupDocument;
-        if (!groupData) return res.status(404).json({ error: 'Group not found' });
+        if (!groupData) throw new NotFoundError('Group not found');
         const members = groupData.members || [];
         const ownerUserId = groupData.ownerUserId || '';
         if (!members.includes(uid) && ownerUserId !== uid) {
-            return res.status(403).json({ error: 'Forbidden' });
+            throw new ForbiddenError('Forbidden');
         }
 
         const totalMessages = validation.data.readMessageCount;
@@ -379,31 +375,25 @@ router.post('/update-read-status', authenticate, verifyAppCheck, async (req: Aut
 
         res.json({ success: true });
     } catch (error) {
-        let message = 'Internal Server Error';
-        if (error instanceof Error) {
-            message = error.message;
-            console.error('Update read status failed:', error.message);
-        } else {
-            console.error('Update read status failed:', error);
-        }
-        res.status(500).json({ error: message });
+        console.error('Update read status failed:', error);
+        sendErrorResponse(res, error, 'Update read status failed');
     }
 });
 
 router.post('/announce-unity', authenticate, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
-    const validation = announceUnitySchema.safeParse(req.body);
-    if (!validation.success) return res.status(400).json({ error: 'Invalid input', details: validation.error.format() });
-
-    const { groupId } = validation.data;
-    const uid = req.user?.uid;
-    if (!uid) return res.status(401).json({ error: 'Unauthorized' });
-
     try {
+        const validation = announceUnitySchema.safeParse(req.body);
+        if (!validation.success) throw new ValidationError('Invalid input');
+
+        const { groupId } = validation.data;
+        const uid = req.user?.uid;
+        if (!uid) throw new ValidationError('Unauthorized');
+
         const groupRef = db.collection('groups').doc(groupId);
 
         await db.runTransaction(async (transaction) => {
             const groupDoc = await transaction.get(groupRef);
-            if (!groupDoc.exists) throw new Error('Group not found');
+            if (!groupDoc.exists) throw new NotFoundError('Group not found');
 
             const latestRef = groupRef.collection('messages_latest').doc('latest');
             const latestSnap = await transaction.get(latestRef);
@@ -412,7 +402,7 @@ router.post('/announce-unity', authenticate, verifyAppCheck, async (req: Authent
             const members = groupData.members || [];
             const ownerUserId = groupData.ownerUserId || '';
             if (!members.includes(uid) && ownerUserId !== uid) {
-                throw new Error('Forbidden');
+                throw new ForbiddenError('Forbidden');
             }
 
             const effectiveTimeZone = groupData.timeZone || 'UTC';
@@ -445,28 +435,19 @@ router.post('/announce-unity', authenticate, verifyAppCheck, async (req: Authent
 
         res.json({ success: true });
     } catch (error) {
-        let message = 'Internal Server Error';
-        if (error instanceof Error) {
-            message = error.message;
-            console.error('Announce unity failed:', error.message);
-            if (message === 'Forbidden') {
-                return res.status(403).json({ error: 'Forbidden' });
-            }
-        } else {
-            console.error('Announce unity failed:', error);
-        }
-        res.status(500).json({ error: message });
+        console.error('Announce unity failed:', error);
+        sendErrorResponse(res, error, 'Announce unity failed');
     }
 });
 
 router.post('/kick-member', authenticate, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
-    const validation = kickMemberSchema.safeParse(req.body);
-    if (!validation.success) return res.status(400).json({ error: 'Invalid input' });
-
-    const { groupId, targetUid } = validation.data;
-    const uid = req.user!.uid;
-
     try {
+        const validation = kickMemberSchema.safeParse(req.body);
+        if (!validation.success) throw new ValidationError('Invalid input');
+
+        const { groupId, targetUid } = validation.data;
+        const uid = req.user!.uid;
+
         await runPhasedTransaction(db, {
             read: async (transaction) => {
                 const groupRef = db.collection('groups').doc(groupId);
@@ -526,21 +507,21 @@ router.post('/kick-member', authenticate, verifyAppCheck, async (req: Authentica
 
 // Update Kick Threshold
 router.post('/update-kick-threshold', authenticate, requireEmailVerified, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
-    const validation = updateKickThresholdSchema.safeParse(req.body);
-    if (!validation.success) {
-        return res.status(400).json({ error: 'Invalid input', details: validation.error.format() });
-    }
-
-    const { threshold } = validation.data;
-    const uid = req.user?.uid;
-    if (!uid) return res.status(401).json({ error: 'Unauthorized' });
-
     try {
+        const validation = updateKickThresholdSchema.safeParse(req.body);
+        if (!validation.success) {
+            throw new ValidationError('Invalid input');
+        }
+
+        const { threshold } = validation.data;
+        const uid = req.user?.uid;
+        if (!uid) throw new ValidationError('Unauthorized');
+
         const userRef = db.collection('users').doc(uid);
         const userDoc = await userRef.get();
         if (!userDoc.exists) {
             console.error(`UserDoc not found for UID: ${uid}`);
-            return res.status(404).json({ error: 'User not found' });
+            throw new NotFoundError('User not found');
         }
 
         const userData = userDoc.data()! as UserDocument;
@@ -575,35 +556,29 @@ router.post('/update-kick-threshold', authenticate, requireEmailVerified, verify
 
         res.json({ success: true, cleanedUpGroups: [] });
     } catch (error) {
-        let message = 'Internal Server Error';
-        if (error instanceof Error) {
-            message = error.message;
-            console.error('Update threshold failed:', error.message);
-        } else {
-            console.error('Update threshold failed:', error);
-        }
-        res.status(500).json({ error: message });
+        console.error('Update threshold failed:', error);
+        sendErrorResponse(res, error, 'Update threshold failed');
     }
 });
 
 // Delete Group
 router.post('/delete-group', authenticate, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
-    const validation = deleteGroupSchema.safeParse(req.body);
-    if (!validation.success) return res.status(400).json({ error: 'Invalid input' });
-
-    const { groupId } = validation.data;
-    const uid = req.user?.uid;
-    if (!uid) return res.status(401).json({ error: 'Unauthorized' });
-
     try {
+        const validation = deleteGroupSchema.safeParse(req.body);
+        if (!validation.success) throw new ValidationError('Invalid input');
+
+        const { groupId } = validation.data;
+        const uid = req.user?.uid;
+        if (!uid) throw new ValidationError('Unauthorized');
+
         const groupRef = db.collection('groups').doc(groupId);
         const groupDoc = await groupRef.get();
 
-        if (!groupDoc.exists) return res.status(404).json({ error: 'Group not found' });
+        if (!groupDoc.exists) throw new NotFoundError('Group not found');
         const groupData = groupDoc.data()! as GroupDocument;
 
         if (groupData.ownerUserId !== uid) {
-            return res.status(403).json({ error: 'Forbidden: Only owner can delete group' });
+            throw new ForbiddenError('Forbidden: Only owner can delete group');
         }
 
         const members = groupData.members || [];
@@ -641,36 +616,30 @@ router.post('/delete-group', authenticate, verifyAppCheck, async (req: Authentic
 
         res.json({ success: true });
     } catch (error) {
-        let message = 'Internal Server Error';
-        if (error instanceof Error) {
-            message = error.message;
-            console.error('Group deletion failed:', error.message);
-        } else {
-            console.error('Group deletion failed:', error);
-        }
-        res.status(500).send(message);
+        console.error('Group deletion failed:', error);
+        sendErrorResponse(res, error, 'Group deletion failed');
     }
 });
 
 router.post('/update-group', authenticate, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
-    const validation = updateGroupSchema.safeParse(req.body);
-    if (!validation.success) {
-        return res.status(400).json({ error: 'Invalid input', details: validation.error.format() });
-    }
-
-    const { groupId, name, description, isPublic, isPrivate, timeZone, translations } = validation.data;
-    const uid = req.user?.uid;
-    if (!uid) return res.status(401).json({ error: 'Unauthorized' });
-
     try {
+        const validation = updateGroupSchema.safeParse(req.body);
+        if (!validation.success) {
+            throw new ValidationError('Invalid input');
+        }
+
+        const { groupId, name, description, isPublic, isPrivate, timeZone, translations } = validation.data;
+        const uid = req.user?.uid;
+        if (!uid) throw new ValidationError('Unauthorized');
+
         const groupRef = db.collection('groups').doc(groupId);
         const groupDoc = await groupRef.get();
 
-        if (!groupDoc.exists) return res.status(404).json({ error: 'Group not found' });
+        if (!groupDoc.exists) throw new NotFoundError('Group not found');
         const groupData = groupDoc.data()! as GroupDocument;
 
         if (groupData.ownerUserId !== uid) {
-            return res.status(403).json({ error: 'Forbidden: Only owner can update group' });
+            throw new ForbiddenError('Forbidden: Only owner can update group');
         }
 
         const updatePayload: Partial<GroupDocument> = {};
@@ -682,20 +651,14 @@ router.post('/update-group', authenticate, verifyAppCheck, async (req: Authentic
         if (translations !== undefined) updatePayload.translations = translations as GroupDocument['translations'];
 
         if (Object.keys(updatePayload).length === 0) {
-            return res.status(400).json({ error: 'No updates provided' });
+            throw new ValidationError('No updates provided');
         }
 
         await groupRef.update(updatePayload as admin.firestore.UpdateData<GroupDocument>);
         res.json({ success: true });
     } catch (error) {
-        let message = 'Request failed.';
-        if (error instanceof Error) {
-            message = error.message;
-            console.error('Update group failed:', error.message);
-        } else {
-            console.error('Update group failed:', error);
-        }
-        res.status(500).json({ error: message });
+        console.error('Update group failed:', error);
+        sendErrorResponse(res, error, 'Update group failed');
     }
 });
 
@@ -735,19 +698,19 @@ async function generateUniqueInviteCode(transaction?: admin.firestore.Transactio
  * Generate/Refresh Invite Code
  */
 router.post('/regenerate-invite-code', authenticate, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
-    const validation = regenerateInviteCodeSchema.safeParse(req.body);
-    if (!validation.success) return res.status(400).json({ error: 'Invalid input', details: validation.error.format() });
-
-    const { groupId, expiryDays = 7 } = validation.data;
-    const uid = req.user!.uid;
-
     try {
+        const validation = regenerateInviteCodeSchema.safeParse(req.body);
+        if (!validation.success) throw new ValidationError('Invalid input');
+
+        const { groupId, expiryDays = 7 } = validation.data;
+        const uid = req.user!.uid;
+
         const groupRef = db.collection('groups').doc(groupId);
         const { inviteCode, inviteCodeExpiresAt } = await db.runTransaction(async (transaction) => {
             const gSnap = await transaction.get(groupRef);
-            if (!gSnap.exists) throw new Error('Group not found');
+            if (!gSnap.exists) throw new NotFoundError('Group not found');
             const gData = gSnap.data()! as GroupDocument;
-            if (gData.ownerUserId !== uid) throw new Error('Only owner can regenerate codes');
+            if (gData.ownerUserId !== uid) throw new ForbiddenError('Only owner can regenerate codes');
 
             const code = await generateUniqueInviteCode(transaction);
             const expires = admin.firestore.Timestamp.fromDate(new Date(Date.now() + expiryDays * 24 * 60 * 60 * 1000));
@@ -763,7 +726,7 @@ router.post('/regenerate-invite-code', authenticate, verifyAppCheck, async (req:
         res.status(200).json({ success: true, inviteCode, expiresAt: inviteCodeExpiresAt.toDate().toISOString() });
     } catch (err) {
         console.error('Error regenerating invite code:', err);
-        res.status(500).json({ error: 'Failed to generate invite code' });
+        sendErrorResponse(res, err, 'Failed to generate invite code');
     }
 });
 
@@ -808,10 +771,8 @@ router.get('/', async (req: Request, res: Response) => {
 
         res.json(groups);
     } catch (error: unknown) {
-        if (error instanceof Error) {
-            console.error('Error fetching groups:', error.message);
-        }
-        res.status(500).json({ error: 'Search failed' });
+        console.error('Error fetching groups:', error);
+        sendErrorResponse(res, error, 'Search failed');
     }
 });
 
@@ -821,14 +782,14 @@ router.get('/group-preview/:inviteCode', async (req: Request, res: Response) => 
 
     try {
         const snapshot = await db.collection('groups').where('inviteCode', '==', inviteCode).limit(1).get();
-        if (snapshot.empty) return res.status(404).json({ error: 'Group not found' });
+        if (snapshot.empty) throw new NotFoundError('Group not found');
 
         const groupData = snapshot.docs[0].data();
 
         if (groupData.inviteCodeExpiresAt) {
             const expiresAt = groupData.inviteCodeExpiresAt.toDate();
             if (expiresAt < new Date()) {
-                return res.status(410).json({ error: 'Invite link expired' });
+                throw new AppError('Invite link expired', 410, 'EXPIRED_INVITE_LINK');
             }
         }
 
@@ -842,10 +803,8 @@ router.get('/group-preview/:inviteCode', async (req: Request, res: Response) => 
             isPrivate: groupData.isPrivate || false
         });
     } catch (error: unknown) {
-        if (error instanceof Error) {
-            console.error('Group preview failed:', error.message);
-        }
-        res.status(500).send('Fetch failed');
+        console.error('Group preview failed:', error);
+        sendErrorResponse(res, error, 'Fetch failed');
     }
 });
 

@@ -91,7 +91,7 @@ export const aiLimiter = rateLimit({
     validate: { default: false } 
 });
 
-export const verifyAppCheck = async (req: Request, res: Response, next: NextFunction) => {
+export const verifyAppCheck = async (req: Request, _res: Response, next: NextFunction) => {
     // SECURITY: SKIP_APP_CHECK should NEVER be true in production.
     const isProduction = process.env.NODE_ENV === 'production';
     const skipRequested = req.app?.locals?.skipAppCheck ?? (process.env.SKIP_APP_CHECK === 'true');
@@ -99,7 +99,7 @@ export const verifyAppCheck = async (req: Request, res: Response, next: NextFunc
     if (skipRequested) {
         if (isProduction) {
             console.error('[SECURITY ALERT] SKIP_APP_CHECK is enabled in production! This is forbidden.');
-            return res.status(401).json({ error: 'Unauthorized: Security check required' });
+            return next(new AppError('Unauthorized: Security check required', 401, 'APP_CHECK_FAILED'));
         }
         console.warn('[AppCheck] Skipping verification (Development only)');
         return next();

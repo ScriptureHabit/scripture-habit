@@ -2,6 +2,7 @@ import express, { Response } from 'express';
 import { admin, db } from '../lib/firebase-admin.js';
 import { aiLimiter, verifyAppCheck, authenticate, AuthenticatedRequest } from '../lib/middleware.js';
 import { ponderQuestionsSchema, translateSchema, translateBatchSchema, personalRecapSchema, languageNames } from '../lib/schemas.js';
+import { AppError, ValidationError, ForbiddenError, NotFoundError, sendErrorResponse } from '../lib/errors.js';
 import axios from 'axios';
 import crypto from 'crypto';
 import * as Sentry from "@sentry/node";
@@ -90,48 +91,52 @@ const withTimeout = <T>(promise: Promise<T>, ms: number, errorMessage = 'Timeout
  * AI Ponder Questions
  */
 router.post('/generate-ponder-questions', authenticate, aiLimiter, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
-    const validation = ponderQuestionsSchema.safeParse(req.body);
-    if (!validation.success) return res.status(400).json({ error: 'Invalid input', details: validation.error.format() });
-    
-    const { scripture, chapter, language } = validation.data;
-    const baseLang = language?.split('-')[0] || 'en';
-    const targetLangName = languageNames[baseLang] || 'English';
-
-    if (process.env.SKIP_AI === 'true') {
-        return res.json({ success: true, questions: "Mocked Study Question" });
-    }
-
     try {
+        const validation = ponderQuestionsSchema.safeParse(req.body);
+        if (!validation.success) throw new ValidationError('Invalid input');
+        
+        const { scripture, chapter, language } = validation.data;
+        const baseLang = language?.split('-')[0] || 'en';
+        const targetLangName = languageNames[baseLang] || 'English';
+
+        if (process.env.SKIP_AI === 'true') {
+            return res.json({ success: true, questions: "Mocked Study Question" });
+        }
+
         const prompt = `You are a warm, encouraging scripture study facilitator who loves to help people apply the gospel to their daily lives.
             Based on the scripture: ${scripture} ${chapter}, provide ONE simple, clear, and easy-to-understand question.
             
             【STRICT RULES】:
             1. You MUST respond ONLY in ${targetLangName}.
             2. The question should be easy for everyone (including children and new students) to think about. NO academic or difficult theological terms.
-            3. Focus on "Personal Application" (How does this part apply to your life today?).
-            4. Output ONLY the question text as plain text. No bullet points or markers.`;
+            3. Keep the tone warm, welcoming, and uplifting.
+            4. Format as a single paragraph. Output ONLY the question itself.`;
 
-        const result = await callGemini(prompt);
-        res.json({ success: true, questions: result });
+        const questions = await withTimeout(callGemini(prompt), 15000, 'Generation timed out');
+        res.json({ success: true, questions });
     } catch (err) {
-        handleAiError(res, err, 'ponder questions');
+        if (err instanceof ValidationError) {
+            sendErrorResponse(res, err);
+            return;
+        }
+        handleAiError(res, err, 'question generation');
     }
 });
 
 /**
- * AI Translation
+ * AI Single Message/Metadata Translation
  */
 router.post('/translate', authenticate, aiLimiter, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
-    const validation = translateSchema.safeParse(req.body);
-    if (!validation.success) return res.status(400).json({ error: 'Invalid input' });
-    
-    const { text, targetLanguage, messageId, groupId, updateType, force } = validation.data;
-
-    if (process.env.SKIP_AI === 'true') {
-        return res.json({ success: true, translatedText: text });
-    }
-
     try {
+        const validation = translateSchema.safeParse(req.body);
+        if (!validation.success) throw new ValidationError('Invalid input');
+        
+        const { text, targetLanguage, messageId, groupId, updateType, force } = validation.data;
+
+        if (process.env.SKIP_AI === 'true') {
+            return res.json({ success: true, translatedText: text });
+        }
+
         const typeStr = updateType || 'normal';
         const cacheKey = crypto.createHash('md5').update(`${text}_${targetLanguage}_${typeStr}`).digest('hex');
         let translatedText: string | null = null;
@@ -264,6 +269,10 @@ router.post('/translate', authenticate, aiLimiter, verifyAppCheck, async (req: A
 
         res.json({ success: true, translatedText });
     } catch (err) {
+        if (err instanceof ValidationError) {
+            sendErrorResponse(res, err);
+            return;
+        }
         handleAiError(res, err, 'translation');
     }
 });
@@ -272,17 +281,18 @@ router.post('/translate', authenticate, aiLimiter, verifyAppCheck, async (req: A
  * AI Batch Translation
  */
 router.post('/translate-batch', authenticate, aiLimiter, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
-    const validation = translateBatchSchema.safeParse(req.body);
-    if (!validation.success) return res.status(400).json({ error: 'Invalid input', details: validation.error.format() });
-    
-    const { messages, targetLanguage, groupId, force } = validation.data;
-    const finalResults: Record<string, string> = {};
-    const toTranslate: Array<{ id: string; text: string }> = [];
+    try {
+        const validation = translateBatchSchema.safeParse(req.body);
+        if (!validation.success) throw new ValidationError('Invalid input');
+        
+        const { messages, targetLanguage, groupId, force } = validation.data;
+        const finalResults: Record<string, string> = {};
+        const toTranslate: Array<{ id: string; text: string }> = [];
 
-    if (process.env.SKIP_AI === 'true') {
-        messages.forEach(m => { finalResults[m.id] = m.text; });
-        return res.json({ success: true, translations: finalResults });
-    }
+        if (process.env.SKIP_AI === 'true') {
+            messages.forEach(m => { finalResults[m.id] = m.text; });
+            return res.json({ success: true, translations: finalResults });
+        }
 
 
     // 1. Check cache for each message in batch (Skip if force=true)
@@ -316,86 +326,89 @@ router.post('/translate-batch', authenticate, aiLimiter, verifyAppCheck, async (
     if (toTranslate.length === 0) return res.json({ success: true, translations: finalResults });
 
     // 3. Batch translate the rest
-    try {
-        const targetLangName = languageNames[targetLanguage] || targetLanguage;
-        const prompt = `Task: Translate these message items into ${targetLangName}.
-            【STRICT RULES】:
-            1. Preserve the exact markdown structure, especially bold labels like **Category:** or **Comment:**.
-            2. Translate the labels themselves into ${targetLangName}.
-            3. Output ONLY a valid JSON object mapping IDs to their translations. NO markdown backticks or extra text.
-            
-            Format: {"msg_id": "translated_text", ...}
-            
-            Messages:
-            ${JSON.stringify(toTranslate.map(m => ({ id: m.id, text: m.text })))} `;
+    const targetLangName = languageNames[targetLanguage] || targetLanguage;
+    const prompt = `Task: Translate these message items into ${targetLangName}.
+        【STRICT RULES】:
+        1. Preserve the exact markdown structure, especially bold labels like **Category:** or **Comment:**.
+        2. Translate the labels themselves into ${targetLangName}.
+        3. Output ONLY a valid JSON object mapping IDs to their translations. NO markdown backticks or extra text.
         
-        const resultRaw = await callGemini(prompt);
-        // Robust JSON cleaning: Find first { and last }
-        const jsonStart = resultRaw.indexOf('{');
-        const jsonEnd = resultRaw.lastIndexOf('}');
-        if (jsonStart === -1 || jsonEnd === -1) {
-            console.error('[AI Batch] Invalid JSON response:', resultRaw);
-            throw new Error('AI returned invalid JSON format');
-        }
-        const cleanedJson = resultRaw.substring(jsonStart, jsonEnd + 1);
-        const batchTranslations = JSON.parse(cleanedJson);
-
-        // 4. Update results, cache, and Firestore (Best effort)
-        if (db) {
-            const batch = db.batch();
-            for (const msg of toTranslate) {
-                const translated = batchTranslations[msg.id];
-                if (translated) {
-                    finalResults[msg.id] = translated;
-                    
-                    // Cache
-                    const cacheKey = crypto.createHash('md5').update(`${msg.text}_${targetLanguage}_normal`).digest('hex');
-                    const cacheRef = db.collection('translation_cache').doc(cacheKey);
-                    batch.set(cacheRef, { originalText: msg.text, translatedText: translated, targetLanguage, createdAt: admin.firestore.FieldValue.serverTimestamp() });
-                    
-                    // Message Persistence
-                    const messageRef = db.collection('groups').doc(groupId).collection('messages').doc(msg.id);
-                    batch.set(messageRef, { 
-                        translations: { [targetLanguage]: translated } 
-                    }, { merge: true });
-                }
-            }
-            await withTimeout(batch.commit(), 5000, 'Persistence timeout')
-                .catch(e => console.warn('[AI Batch] Persistence failed:', e.message));
-        } else {
-            // If no DB, just populate finalResults from batchTranslations
-            for (const msg of toTranslate) {
-                if (batchTranslations[msg.id]) finalResults[msg.id] = batchTranslations[msg.id];
-            }
-        }
-
-        res.json({ success: true, translations: finalResults });
-    } catch (err) {
-        handleAiError(res, err, 'batch translation');
+        Format: {"msg_id": "translated_text", ...}
+        
+        Messages:
+        ${JSON.stringify(toTranslate.map(m => ({ id: m.id, text: m.text })))} `;
+    
+    const resultRaw = await callGemini(prompt);
+    // Robust JSON cleaning: Find first { and last }
+    const jsonStart = resultRaw.indexOf('{');
+    const jsonEnd = resultRaw.lastIndexOf('}');
+    if (jsonStart === -1 || jsonEnd === -1) {
+        console.error('[AI Batch] Invalid JSON response:', resultRaw);
+        throw new Error('AI returned invalid JSON format');
     }
+    const cleanedJson = resultRaw.substring(jsonStart, jsonEnd + 1);
+    const batchTranslations = JSON.parse(cleanedJson);
+
+    // 4. Update results, cache, and Firestore (Best effort)
+    if (db) {
+        const batch = db.batch();
+        for (const msg of toTranslate) {
+            const translated = batchTranslations[msg.id];
+            if (translated) {
+                finalResults[msg.id] = translated;
+                
+                // Cache
+                const cacheKey = crypto.createHash('md5').update(`${msg.text}_${targetLanguage}_normal`).digest('hex');
+                const cacheRef = db.collection('translation_cache').doc(cacheKey);
+                batch.set(cacheRef, { originalText: msg.text, translatedText: translated, targetLanguage, createdAt: admin.firestore.FieldValue.serverTimestamp() });
+                
+                // Message Persistence
+                const messageRef = db.collection('groups').doc(groupId).collection('messages').doc(msg.id);
+                batch.set(messageRef, { 
+                    translations: { [targetLanguage]: translated } 
+                }, { merge: true });
+            }
+        }
+        await withTimeout(batch.commit(), 5000, 'Persistence timeout')
+            .catch(e => console.warn('[AI Batch] Persistence failed:', e.message));
+    } else {
+        // If no DB, just populate finalResults from batchTranslations
+        for (const msg of toTranslate) {
+            if (batchTranslations[msg.id]) finalResults[msg.id] = batchTranslations[msg.id];
+        }
+    }
+
+    res.json({ success: true, translations: finalResults });
+} catch (err) {
+    if (err instanceof ValidationError) {
+        sendErrorResponse(res, err);
+        return;
+    }
+    handleAiError(res, err, 'batch translation');
+}
 });
 
 /**
  * AI Personal Weekly Recap
  */
 router.post('/generate-personal-weekly-recap', authenticate, aiLimiter, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
-    const validation = personalRecapSchema.safeParse(req.body);
-    if (!validation.success) return res.status(400).json({ error: 'Invalid input' });
-
-    const { uid, language } = validation.data;
-    const baseLang = language?.split('-')[0] || 'en';
-    const targetLangName = languageNames[baseLang] || 'English';
-
-    if (process.env.SKIP_AI === 'true') {
-        return res.json({ success: true, recap: "Mocked Personal Recap" });
-    }
-
     try {
-        if (req.user?.uid !== uid) return res.status(403).send('Forbidden');
+        const validation = personalRecapSchema.safeParse(req.body);
+        if (!validation.success) throw new ValidationError('Invalid input');
+
+        const { uid, language } = validation.data;
+        const baseLang = language?.split('-')[0] || 'en';
+        const targetLangName = languageNames[baseLang] || 'English';
+
+        if (process.env.SKIP_AI === 'true') {
+            return res.json({ success: true, recap: "Mocked Personal Recap" });
+        }
+
+        if (req.user?.uid !== uid) throw new ForbiddenError('Forbidden');
 
         const userRef = db.collection('users').doc(uid);
         const uSnap = await userRef.get();
-        if (!uSnap.exists) return res.status(404).send('User not found');
+        if (!uSnap.exists) throw new NotFoundError('User not found');
         const uData = uSnap.data() || {};
 
         // Prevent duplicate generations (6-day cooldown).
@@ -449,7 +462,7 @@ router.post('/generate-personal-weekly-recap', authenticate, aiLimiter, verifyAp
                 } catch (cacheErr) {
                     console.warn('[AI Personal Recap] Failed to retrieve cached recap:', cacheErr);
                 }
-                return res.status(429).json({ error: 'Personal recap already generated recently. Please wait a week.' });
+                throw new AppError('Personal recap already generated recently. Please wait a week.', 429);
             }
         }
 
@@ -506,6 +519,10 @@ router.post('/generate-personal-weekly-recap', authenticate, aiLimiter, verifyAp
 
         res.json({ success: true, recap: generatedText });
     } catch (err) {
+        if (err instanceof AppError) {
+            sendErrorResponse(res, err);
+            return;
+        }
         handleAiError(res, err, 'personal recap');
     }
 });

@@ -1,7 +1,7 @@
 import express, { Response } from 'express';
 import { db } from '../lib/firebase-admin.js';
 import { authenticate, AuthenticatedRequest } from '../lib/middleware.js';
-
+import { AuthenticationError, ValidationError, NotFoundError, ForbiddenError, sendErrorResponse } from '../lib/errors.js';
 import { formatDateInTimeZone, normalizeDateString } from '../../src/utils/time-utils.js';
 
 const router = express.Router();
@@ -11,30 +11,30 @@ const router = express.Router();
  * This endpoint is called by frontend when it detects date change
  */
 router.post('/reset-unity-if-midnight', authenticate, async (req: AuthenticatedRequest, res: Response) => {
-    const uid = req.user?.uid;
-    const { groupId } = req.body;
-    
-    if (!uid) {
-        return res.status(401).json({ error: 'Unauthorized' });
-    }
-    
-    if (!groupId) {
-        return res.status(400).json({ error: 'groupId is required' });
-    }
-
     try {
+        const uid = req.user?.uid;
+        const { groupId } = req.body;
+        
+        if (!uid) {
+            throw new AuthenticationError('Unauthorized');
+        }
+        
+        if (!groupId) {
+            throw new ValidationError('groupId is required');
+        }
+
         const groupRef = db.collection('groups').doc(groupId);
         const groupSnap = await groupRef.get();
         
         if (!groupSnap.exists) {
-            return res.status(404).json({ error: 'Group not found' });
+            throw new NotFoundError('Group not found');
         }
         
         const groupData = groupSnap.data()!;
         
         // Check if user is a member of the group
         if (!groupData.members?.includes(uid)) {
-            return res.status(403).json({ error: 'Not a group member' });
+            throw new ForbiddenError('Not a group member');
         }
         
         const groupTimeZone = groupData.timeZone || 'UTC';
@@ -76,7 +76,7 @@ router.post('/reset-unity-if-midnight', authenticate, async (req: AuthenticatedR
         
     } catch (error) {
         console.error('[ResetUnity] Error:', error);
-        res.status(500).json({ error: (error as Error).message });
+        sendErrorResponse(res, error, 'Reset unity failed');
     }
 });
 

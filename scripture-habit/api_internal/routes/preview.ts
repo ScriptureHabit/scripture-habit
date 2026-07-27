@@ -1,6 +1,7 @@
 import express, { Response } from 'express';
 import { isSafeUrl, ssrfSafeHttpAgent, ssrfSafeHttpsAgent } from '../lib/ssrf.js';
 import { verifyAppCheck, authenticate, AuthenticatedRequest } from '../lib/middleware.js';
+import { ValidationError, sendErrorResponse } from '../lib/errors.js';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 
@@ -12,16 +13,17 @@ const USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
 router.get(['/fetch-church-metadata', '/fetch-church-metadata/'], authenticate, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
 
     const { url, language } = req.query as { url?: string, language?: string };
-    if (!url) return res.status(400).send({ error: 'URL is required' });
 
     try {
+        if (!url) throw new ValidationError('URL is required');
+
         const targetUrl = new URL(url);
         // SSRF Protection: White-list domain
         if (targetUrl.hostname !== 'www.churchofjesuschrist.org' && targetUrl.hostname !== 'churchofjesuschrist.org') {
             console.warn(`Blocked metadata fetch for invalid domain: ${targetUrl.hostname}`);
-            return res.status(400).json({ error: 'Invalid request' });
+            throw new ValidationError('Invalid request');
         }
-        if (targetUrl.protocol !== 'https:') return res.status(400).json({ error: 'HTTPS only' });
+        if (targetUrl.protocol !== 'https:') throw new ValidationError('HTTPS only');
 
         if (language) targetUrl.searchParams.set('lang', language);
 
@@ -70,6 +72,10 @@ router.get(['/fetch-church-metadata', '/fetch-church-metadata/'], authenticate, 
 
         res.json({ title: title || '', speaker: speaker || '' });
     } catch (error) {
+        if (error instanceof ValidationError) {
+            sendErrorResponse(res, error);
+            return;
+        }
         if (error instanceof Error) {
             console.error('Error in fetch-church-metadata:', error.message);
         } else {
@@ -84,11 +90,12 @@ router.get(['/fetch-church-metadata', '/fetch-church-metadata/'], authenticate, 
 router.get(['/url-preview', '/url-preview/'], authenticate, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
 
     const { url } = req.query as { url?: string };
-    if (!url || typeof url !== 'string') return res.status(400).json({ error: 'URL required' });
-
-    if (!isSafeUrl(url)) return res.status(400).json({ error: 'Invalid URL' });
 
     try {
+        if (!url || typeof url !== 'string') throw new ValidationError('URL required');
+
+        if (!isSafeUrl(url)) throw new ValidationError('Invalid URL');
+
         const parsedUrl = new URL(url);
         const previewData: {
             url: string;
@@ -160,12 +167,16 @@ router.get(['/url-preview', '/url-preview/'], authenticate, verifyAppCheck, asyn
 
         res.json(previewData);
     } catch (error) {
+        if (error instanceof ValidationError) {
+            sendErrorResponse(res, error);
+            return;
+        }
         if (error instanceof Error) {
             console.error('Error in url-preview:', error.message);
         } else {
             console.error('Error in url-preview:', error);
         }
-        res.status(500).json({ error: 'Failed' });
+        sendErrorResponse(res, error, 'Failed');
     }
 
 });

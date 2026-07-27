@@ -81,7 +81,7 @@ export const verifyAppCheck = async (req: Request, res: Response, next: NextFunc
     if (skipRequested) {
         if (isProduction) {
             console.error('[SECURITY ALERT] SKIP_APP_CHECK is enabled in production! This is forbidden.');
-            return res.status(401).json({ error: 'Unauthorized: Security check required' });
+            return next(new AppError('Unauthorized: Security check required', 401, 'APP_CHECK_FORBIDDEN'));
         }
         console.warn('[AppCheck] Skipping verification (Development only)');
         return next();

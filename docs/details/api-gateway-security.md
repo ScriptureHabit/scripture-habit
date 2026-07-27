@@ -87,7 +87,7 @@ To prevent this, the `verifyAppCheck` middleware has a double-layered **"Product
 if (skipRequested) {
     if (isProduction) {
         console.error('[SECURITY ALERT] SKIP_APP_CHECK is enabled in production! This is forbidden.');
-        return res.status(401).json({ error: 'Unauthorized: Security check required' });
+        return next(new AppError('Unauthorized: Security check required', 401, 'APP_CHECK_FORBIDDEN'));
     }
     console.warn('[AppCheck] Skipping verification (Development only)');
     return next();
@@ -192,7 +192,7 @@ export const verifyAppCheck = async (req: Request, res: Response, next: NextFunc
         if (isProduction) {
             // If the skip environment variable is enabled in production, immediately block the request
             console.error('[SECURITY ALERT] SKIP_APP_CHECK is enabled in production! This is forbidden.');
-            return res.status(401).json({ error: 'Unauthorized: Security check required' });
+            return next(new AppError('Unauthorized: Security check required', 401, 'APP_CHECK_FORBIDDEN'));
         }
         console.warn('[AppCheck] Skipping verification (Development only)');
         return next();
@@ -228,10 +228,10 @@ export const verifyAppCheck = async (req: Request, res: Response, next: NextFunc
 ### 3. Email Verification Middleware with Test Bypass (`requireEmailVerified`)
 
 ```typescript
-export const requireEmailVerified = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+export const requireEmailVerified = (req: AuthenticatedRequest, _res: Response, next: NextFunction) => {
     // Guarantee that the request has passed the authenticate middleware
     if (!req.user) {
-        return res.status(401).json({ error: 'Unauthorized: Not authenticated' });
+        return next(new AppError('Unauthorized: Not authenticated', 401, 'UNAUTHENTICATED'));
     }
 
     // 1. Bypass check for test accounts used in Playwright / CI pipelines

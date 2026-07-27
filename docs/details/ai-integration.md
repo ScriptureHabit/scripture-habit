@@ -148,47 +148,47 @@ Below are the core sections of batch translation and weekly recap processing wit
 
 ```typescript
 router.post('/translate-batch', authenticate, aiLimiter, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
-    const validation = translateBatchSchema.safeParse(req.body);
-    if (!validation.success) return res.status(400).json({ error: 'Invalid input' });
-    
-    const { messages, targetLanguage, groupId, force } = validation.data;
-    const finalResults: Record<string, string> = {};
-    const toTranslate: Array<{ id: string; text: string }> = [];
+    try {
+        const validation = translateBatchSchema.safeParse(req.body);
+        if (!validation.success) throw new ValidationError('Invalid input');
+        
+        const { messages, targetLanguage, groupId, force } = validation.data;
+        const finalResults: Record<string, string> = {};
+        const toTranslate: Array<{ id: string; text: string }> = [];
 
-    // 1. 各メッセージのキャッシュをFirestoreから並行チェック
-    if (!force && db) {
-        try {
-            const cachePromises = messages.map(async (msg) => {
-                const cacheKey = crypto.createHash('md5').update(`${msg.text}_${targetLanguage}_normal`).digest('hex');
-                const cacheRef = db.collection('translation_cache').doc(cacheKey);
-                try {
-                    const cacheDoc = await withTimeout(cacheRef.get(), 2000);
-                    if (cacheDoc && cacheDoc.exists) {
-                        return { msg, translatedText: cacheDoc.data()?.translatedText };
+        // 1. 各メッセージのキャッシュをFirestoreから並行チェック
+        if (!force && db) {
+            try {
+                const cachePromises = messages.map(async (msg) => {
+                    const cacheKey = crypto.createHash('md5').update(`${msg.text}_${targetLanguage}_normal`).digest('hex');
+                    const cacheRef = db.collection('translation_cache').doc(cacheKey);
+                    try {
+                        const cacheDoc = await withTimeout(cacheRef.get(), 2000);
+                        if (cacheDoc && cacheDoc.exists) {
+                            return { msg, translatedText: cacheDoc.data()?.translatedText };
+                        }
+                    } catch {}
+                    return { msg, translatedText: null };
+                });
+                
+                const cacheResults = await Promise.all(cachePromises);
+                for (const result of cacheResults) {
+                    if (result.translatedText) {
+                        finalResults[result.msg.id] = result.translatedText;
+                    } else {
+                        toTranslate.push(result.msg); // キャッシュがないものだけを翻訳リストに追加
                     }
-                } catch {}
-                return { msg, translatedText: null };
-            });
-            
-            const cacheResults = await Promise.all(cachePromises);
-            for (const result of cacheResults) {
-                if (result.translatedText) {
-                    finalResults[result.msg.id] = result.translatedText;
-                } else {
-                    toTranslate.push(result.msg); // キャッシュがないものだけを翻訳リストに追加
                 }
+            } catch {
+                toTranslate.push(...messages);
             }
-        } catch {
+        } else {
             toTranslate.push(...messages);
         }
-    } else {
-        toTranslate.push(...messages);
-    }
 
-    if (toTranslate.length === 0) return res.json({ success: true, translations: finalResults });
+        if (toTranslate.length === 0) return res.json({ success: true, translations: finalResults });
 
-    // 2. まとめてAIにリクエスト (JSON出力の強制)
-    try {
+        // 2. まとめてAIにリクエスト (JSON出力の強制)
         const targetLangName = languageNames[targetLanguage] || targetLanguage;
         const prompt = `Task: Translate these message items into ${targetLangName}.
             【STRICT RULES】:
@@ -243,6 +243,10 @@ router.post('/translate-batch', authenticate, aiLimiter, verifyAppCheck, async (
 
         res.json({ success: true, translations: finalResults });
     } catch (err) {
+        if (err instanceof ValidationError) {
+            sendErrorResponse(res, err);
+            return;
+        }
         handleAiError(res, err, 'batch translation');
     }
 });
@@ -254,19 +258,19 @@ router.post('/translate-batch', authenticate, aiLimiter, verifyAppCheck, async (
 
 ```typescript
 router.post('/generate-personal-weekly-recap', authenticate, aiLimiter, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
-    const validation = personalRecapSchema.safeParse(req.body);
-    if (!validation.success) return res.status(400).json({ error: 'Invalid input' });
-
-    const { uid, language } = validation.data;
-    const baseLang = language?.split('-')[0] || 'en';
-    const targetLangName = languageNames[baseLang] || 'English';
-
     try {
-        if (req.user?.uid !== uid) return res.status(403).send('Forbidden');
+        const validation = personalRecapSchema.safeParse(req.body);
+        if (!validation.success) throw new ValidationError('Invalid input');
+
+        const { uid, language } = validation.data;
+        const baseLang = language?.split('-')[0] || 'en';
+        const targetLangName = languageNames[baseLang] || 'English';
+
+        if (req.user?.uid !== uid) throw new ForbiddenError('Forbidden');
 
         const userRef = db.collection('users').doc(uid);
         const uSnap = await userRef.get();
-        if (!uSnap.exists) return res.status(404).send('User not found');
+        if (!uSnap.exists) throw new NotFoundError('User not found');
         const uData = uSnap.data() || {};
 
         // === クールダウンチェック（6日間制限） ===
@@ -321,7 +325,7 @@ router.post('/generate-personal-weekly-recap', authenticate, aiLimiter, verifyAp
                 }
 
                 // Only return a 429 restriction if the cache could not be retrieved for any reason
-                return res.status(429).json({ error: 'Personal recap already generated recently. Please wait a week.' });
+                throw new AppError('Personal recap already generated recently. Please wait a week.', 429);
             }
         }
 

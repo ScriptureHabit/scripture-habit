@@ -2,7 +2,7 @@ import express, { Response } from 'express';
 import { admin, db } from '../lib/firebase-admin.js';
 import { verifyAppCheck, authenticate, AuthenticatedRequest } from '../lib/middleware.js';
 import { verifyLoginSchema, initializeProfileSchema, updateProfileSchema } from '../lib/schemas.js';
-import { AuthenticationError, ForbiddenError } from '../lib/errors.js';
+import { AuthenticationError, ForbiddenError, ValidationError, sendErrorResponse } from '../lib/errors.js';
 import { ProfileService } from '../services/profile-service.js';
 import { UserDocument } from '../../types/firestore.js';
 import { removeMemberFromGroup } from '../lib/membership-utils.js';
@@ -14,15 +14,15 @@ const router = express.Router();
  * Update User Profile and Sync to Chats
  */
 router.post('/update-profile', authenticate, verifyAppCheck, async (req: AuthenticatedRequest, res: Response, next) => {
-    const validation = updateProfileSchema.safeParse(req.body);
-    if (!validation.success) {
-        return res.status(400).json({ error: 'Invalid input', details: validation.error.format() });
-    }
-    
-    const { nickname, photoURL, stake, ward, bio, language } = validation.data;
-    const uid = req.user!.uid;
-
     try {
+        const validation = updateProfileSchema.safeParse(req.body);
+        if (!validation.success) {
+            throw new ValidationError('Invalid input');
+        }
+        
+        const { nickname, photoURL, stake, ward, bio, language } = validation.data;
+        const uid = req.user!.uid;
+
         const userRef = db.collection('users').doc(uid);
         
         const updates: Partial<UserDocument> = {};
@@ -34,7 +34,7 @@ router.post('/update-profile', authenticate, verifyAppCheck, async (req: Authent
         if (language !== undefined) updates.language = language;
 
         if (Object.keys(updates).length === 0) {
-            return res.status(400).json({ error: 'No fields to update' });
+            throw new ValidationError('No fields to update');
         }
 
         console.log(`[ProfileUpdate] Updating UID: ${uid} with:`, updates);
@@ -49,6 +49,10 @@ router.post('/update-profile', authenticate, verifyAppCheck, async (req: Authent
 
         res.status(200).json({ success: true, message: 'Profile updated and synced.' });
     } catch (err) {
+        if (err instanceof ValidationError) {
+            sendErrorResponse(res, err);
+            return;
+        }
         next(err);
     }
 });
@@ -57,16 +61,16 @@ router.post('/update-profile', authenticate, verifyAppCheck, async (req: Authent
  * Initialize User Profile (for Google/Social Signup)
  */
 router.post('/initialize-profile', authenticate, verifyAppCheck, async (req: AuthenticatedRequest, res: Response, next) => {
-    const validation = initializeProfileSchema.safeParse(req.body);
-    if (!validation.success) {
-        return res.status(400).json({ error: 'Invalid input', details: validation.error.format() });
-    }
-
-    const { nickname, timeZone, language } = validation.data;
-    const uid = req.user!.uid;
-    const email = req.user!.email;
-
     try {
+        const validation = initializeProfileSchema.safeParse(req.body);
+        if (!validation.success) {
+            throw new ValidationError('Invalid input');
+        }
+
+        const { nickname, timeZone, language } = validation.data;
+        const uid = req.user!.uid;
+        const email = req.user!.email;
+
         const userRef = db.collection('users').doc(uid);
         const userDoc = await userRef.get();
 
@@ -118,6 +122,10 @@ router.post('/initialize-profile', authenticate, verifyAppCheck, async (req: Aut
             userData
         });
     } catch (err) {
+        if (err instanceof ValidationError) {
+            sendErrorResponse(res, err);
+            return;
+        }
         console.error('[Auth] Error initializing profile:', err);
         next(err);
     }
@@ -127,14 +135,14 @@ router.post('/initialize-profile', authenticate, verifyAppCheck, async (req: Aut
  * Verify Login
  */
 router.post('/verify-login', verifyAppCheck, async (req, res: Response, next) => {
-    const validation = verifyLoginSchema.safeParse(req.body);
-    if (!validation.success) {
-        return res.status(400).json({ error: 'Invalid input', details: validation.error.format() });
-    }
-
-    const { token } = validation.data;
-
     try {
+        const validation = verifyLoginSchema.safeParse(req.body);
+        if (!validation.success) {
+            throw new ValidationError('Invalid input');
+        }
+
+        const { token } = validation.data;
+
         // use token from body for verification
         const decodedToken = await admin.auth().verifyIdToken(token);
         const uid = decodedToken.uid;
@@ -153,6 +161,10 @@ router.post('/verify-login', verifyAppCheck, async (req, res: Response, next) =>
             email: decodedToken.email 
         });
     } catch (err: unknown) {
+        if (err instanceof ValidationError) {
+            sendErrorResponse(res, err);
+            return;
+        }
         if (err instanceof ForbiddenError) return next(err);
         next(new AuthenticationError('Authentication failed.'));
     }
@@ -162,10 +174,10 @@ router.post('/verify-login', verifyAppCheck, async (req, res: Response, next) =>
  * Delete account
  */
 router.post('/delete-account', authenticate, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
-    if (!req.user) return res.status(401).json({ error: 'Unauthorized' });
-    const uid = req.user.uid;
-    
     try {
+        if (!req.user) throw new AuthenticationError('Unauthorized');
+        const uid = req.user.uid;
+        
         console.log(`Starting account deletion for UID: ${uid}`);
 
         const userRef = db.collection('users').doc(uid);
@@ -231,8 +243,8 @@ router.post('/delete-account', authenticate, verifyAppCheck, async (req: Authent
 
     } catch (err: unknown) {
         const error = err as Error;
-        console.error(`Critical error in /api/delete-account for UID ${uid}:`, error.message);
-        res.status(500).json({ error: 'Failed to delete account.' });
+        console.error(`Critical error in /api/delete-account:`, error.message);
+        sendErrorResponse(res, err, 'Failed to delete account.');
     }
 });
 
