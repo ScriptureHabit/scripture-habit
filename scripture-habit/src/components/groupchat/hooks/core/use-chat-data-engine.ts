@@ -203,6 +203,8 @@ const useMessageStreamSync = (groupId: string | null, userData: UserData | null,
         }
       }, (err) => {
         if (isCancelled) return;
+        // Suppress expected permission-denied error when leaving a group before component unmounts
+        if (err.code === 'permission-denied') return;
         console.error("[useMessageStreamSync] Listener error:", err.code, err.message, err);
       });
 
