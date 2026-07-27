@@ -33,7 +33,16 @@ service cloud.firestore {
       // Allow self-lookup even if not verified yet
       allow get: if request.auth != null && (request.auth.uid == userId || isAuthenticated());
       allow list: if isAuthenticated(); 
-      allow update: if request.auth != null && request.auth.uid == userId; // Migration and profile updates
+      
+      // Harden profile updates: restrict directly editable keys and enforce nickname string constraints
+      allow update: if request.auth != null && request.auth.uid == userId
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+             'nickname', 'preferredLanguage', 'stake', 'ward', 'bio', 
+             'updatedAt', 'lastActiveAt', 'selectedGroupId', 'groupId', 
+             'readCountGoal', 'email', 'createdAt', 'language'
+           ])
+        && (!request.resource.data.keys().hasAny(['nickname']) || (request.resource.data.nickname is string && request.resource.data.nickname.size() <= 50));
+
       allow delete: if isAuthenticated() && request.auth.uid == userId;
 
       match /private/{docId} {
@@ -43,16 +52,23 @@ service cloud.firestore {
 
       match /notes/{noteId} {
         allow read: if isAuthenticated() && request.auth.uid == userId;
-        allow write: if isAuthenticated() && request.auth.uid == userId;
+        allow create, update: if isAuthenticated() && request.auth.uid == userId
+          && (!request.resource.data.keys().hasAny(['content']) || (request.resource.data.content is string && request.resource.data.content.size() <= 10000));
+        allow delete: if isAuthenticated() && request.auth.uid == userId;
       }
 
       match /letters/{letterId} {
         allow read: if isAuthenticated() && request.auth.uid == userId;
-        allow write: if isAuthenticated() && request.auth.uid == userId;
+        allow create, update: if isAuthenticated() && request.auth.uid == userId
+          && (!request.resource.data.keys().hasAny(['content']) || (request.resource.data.content is string && request.resource.data.content.size() <= 10000));
+        allow delete: if isAuthenticated() && request.auth.uid == userId;
       }
 
       match /groupStates/{groupId} {
-        allow read, write: if request.auth != null && request.auth.uid == userId;
+        allow read: if request.auth != null && request.auth.uid == userId;
+        allow write: if request.auth != null && request.auth.uid == userId
+          && request.resource.data.keys().hasOnly(['readMessageCount', 'lastReadAt', 'updatedAt'])
+          && (!request.resource.data.keys().hasAny(['readMessageCount']) || request.resource.data.readMessageCount is number);
       }
     }
     
@@ -103,7 +119,9 @@ service cloud.firestore {
     }
 
     match /reports/{reportId} {
-      allow create: if isAuthenticated() && request.resource.data.reporterId == request.auth.uid;
+      allow create: if isAuthenticated() 
+        && request.resource.data.reporterId == request.auth.uid
+        && (!request.resource.data.keys().hasAny(['reason']) || (request.resource.data.reason is string && request.resource.data.reason.size() <= 1000));
       allow read, update, delete: if false;
     }
   }
