@@ -6,6 +6,13 @@ if (process.env.SENTRY_DISABLED !== 'true' && process.env.NODE_ENV !== 'test') {
   Sentry.init({
     dsn: process.env.VITE_SENTRY_DSN || "",
     tracesSampleRate: 1.0,
+    beforeSend(event, hint) {
+      const err = hint?.originalException;
+      if (err instanceof AppError && err.statusCode < 500) {
+        return null; // Ignore 4xx client-side errors in Sentry
+      }
+      return event;
+    },
   });
 }
 
