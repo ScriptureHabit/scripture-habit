@@ -68,9 +68,9 @@ To keep Firestore reads highly optimized and prevent unexpected billing surges, 
 
 - **Firestore Bundle Boost (Initial Load)**:
   - In `useMessageStreamSync`, we attempt to fetch a pre-built Firestore Bundle from `/api/groups/bundle/:groupId` first. This loads the initial chunk of messages (up to 50) using exactly **1 API Read** instead of 50 separate document reads, which are then stored in the local cache.
-- **Timestamp Rounding for Cache Hit Rate**:
-  - In queries that filter by moving time windows (e.g., "past 24 hours"), **never use precise timestamps** like `Date.now()`. This changes every millisecond, rendering the query uncacheable.
-  - Always **round the query timestamp** to the nearest 30 minutes (or 1 hour). This ensures the query signature is identical across multiple renders and page navigations, allowing the Firestore SDK's `persistentLocalCache` to serve the data instantly with **0 server reads**.
+- **Multi-Layer Caching for Read Cost Reduction**:
+  - The bundle API uses a **two-tier caching strategy**. First, the bundle is held in the server's **in-memory cache (`bundleCache`) for 120 seconds**. Subsequent requests for the same group are served instantly from this cache without touching Firestore. Additionally, the response is cached on the **Vercel Edge CDN for 60 seconds** (`s-maxage=60, stale-while-revalidate=120`), serving requests from geographically nearby servers at ultra-low latency.
+  - For new groups where the aggregate document (`messages_latest/latest`) does not yet exist, a **fallback query** fetches the latest 25 messages directly from the `/messages` subcollection. Simultaneously, a background self-healing process (`reconcileLatestMessages`) runs to automatically generate the aggregate document so that future loads can use the bundle path.
 - **getDocs (List Views) vs onSnapshot (Detail/Active Views)**:
   - **getDocs**: Use for high-level lists (like the Dashboard group preview cards) where occasional manual refreshes or page-navigation updates are acceptable. This avoids keeping unnecessary WebSocket connections open in the background, keeping our read footprint flat.
   - **onSnapshot**: Reserve exclusively for detail/active views (like the active Chat pane) where real-time sync is essential for user engagement.
