@@ -19,7 +19,7 @@ const SystemMessage: FC<SystemMessageProps> = ({ msg, t, kickThreshold = DEFAULT
       const data = msg.messageData;
       if (data.isCumulative) {
         return t('groupChat.streakAnnouncement', {
-          nickname: String(data.nickname || ''),
+          nickname: String(data.nickname || '').trim(),
           streak: data.streakCount || data.streak || 0
         });
       }
@@ -29,21 +29,21 @@ const SystemMessage: FC<SystemMessageProps> = ({ msg, t, kickThreshold = DEFAULT
     if (msg.messageType === 'notePostedAnnouncement' && msg.messageData) {
       const data = msg.messageData;
       return t('groupChat.notePostedAnnouncement', {
-        nickname: String(data.nickname || '')
+        nickname: String(data.nickname || '').trim()
       });
     }
 
     if (msg.messageType === 'userJoined' && msg.messageData) {
       const data = msg.messageData;
       return t('groupChat.userJoined', {
-        nickname: String(data.nickname || '')
+        nickname: String(data.nickname || '').trim()
       });
     }
 
     if (msg.messageType === 'userLeft' && msg.messageData) {
       const data = msg.messageData;
       return t('groupChat.userLeft', {
-        nickname: String(data.nickname || '')
+        nickname: String(data.nickname || '').trim()
       });
     }
 
@@ -72,7 +72,7 @@ const SystemMessage: FC<SystemMessageProps> = ({ msg, t, kickThreshold = DEFAULT
     for (const pattern of joinPatterns) {
       const match = text.match(pattern);
       if (match) {
-        return t('groupChat.userJoined', { nickname: match[1] });
+        return t('groupChat.userJoined', { nickname: match[1].trim() });
       }
     }
 
@@ -92,7 +92,7 @@ const SystemMessage: FC<SystemMessageProps> = ({ msg, t, kickThreshold = DEFAULT
     for (const pattern of leavePatterns) {
       const match = text.match(pattern);
       if (match) {
-        return t('groupChat.userLeft', { nickname: match[1] });
+        return t('groupChat.userLeft', { nickname: match[1].trim() });
       }
     }
 

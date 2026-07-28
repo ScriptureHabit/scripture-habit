@@ -22,11 +22,7 @@ export const useUnityScore = (
   const unityPercentage = useMemo<number>(() => {
     // today is used as a dependency to trigger re-calculation at midnight
     if (!groupId || !groupData || groupData.id !== groupId || !today) return 0;
-    const result = calculateUnityPercentage(groupData, messages, new Date(), membersMap);
-    if (groupData.name?.includes('Persistence')) {
-      console.log(`[useUnityScore] ${groupData.name}: calculated=${result}%, msgCount=${messages.length}`);
-    }
-    return result;
+    return calculateUnityPercentage(groupData, messages, new Date(), membersMap);
   }, [messages, groupData, groupId, today, membersMap]);
 
   // Handle midnight reset for Unity Percentage
@@ -37,7 +33,6 @@ export const useUnityScore = (
     onReset: () => {
       // Force refresh group data when reset occurs
       // This will be handled by the parent component's onSnapshot listener
-      console.log('[useUnityScore] Midnight reset triggered, refreshing...');
     }
   });
 
