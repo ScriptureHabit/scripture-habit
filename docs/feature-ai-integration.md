@@ -108,16 +108,6 @@ await batch.commit();
 
 ---
 
-## 💬 AI Discussion Starter
-
-To encourage active conversations, the backend provides a discussion starter endpoint (`/api/generate-discussion-topic`):
-
-*   **Context**: The endpoint fetches the 3 most recent study notes in the chat (`isNote == true`) to build relevant discussion topics.
-*   **The Trigger**: It generates a personal application question tailored to the topics currently studied by the group.
-*   **Safety Guards**: Standard rate limits (`aiLimiter`) and AppCheck are applied to protect the route.
-
----
-
 ## 📊 Weekly Recaps, Cooldowns, & Smart Cache Recovery
 
 Weekly recaps are resource-heavy AI operations. To prevent system overload and control API costs, the system applies a strict **6-day cooldown** while offering a smart recovery mechanism:
