@@ -99,9 +99,9 @@ const SystemMessage: FC<SystemMessageProps> = ({ msg, t, kickThreshold = DEFAULT
     const inactivityPattern = /👋 \*\*(\d+) member\(s\)\*\* were removed due to inactivity(?:\s*\((\d+)\+ days\))?\./;
     const inactivityMatch = text.match(inactivityPattern);
     if (inactivityMatch) {
-      return t('groupChat.inactivityRemoval', { 
-        count: inactivityMatch[1], 
-        days: inactivityMatch[2] || kickThreshold 
+      return t('groupChat.inactivityRemoval', {
+        count: inactivityMatch[1],
+        days: inactivityMatch[2] || kickThreshold
       });
     }
 
