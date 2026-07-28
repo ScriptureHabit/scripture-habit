@@ -16,8 +16,8 @@ exports[`AI Prompt Construction Regression > should construct correct prompt for
             【STRICT RULES】:
             1. You MUST respond ONLY in Japanese.
             2. The question should be easy for everyone (including children and new students) to think about. NO academic or difficult theological terms.
-            3. Focus on "Personal Application" (How does this part apply to your life today?).
-            4. Output ONLY the question text as plain text. No bullet points or markers."
+            3. Keep the tone warm, welcoming, and uplifting.
+            4. Format as a single paragraph. Output ONLY the question itself."
 `;
 
 exports[`AI Prompt Construction Regression > should construct correct prompt for /api/ai/translate (group metadata) 1`] = `
@@ -62,13 +62,13 @@ exports[`AI Prompt Construction Regression > should construct correct prompt for
 
 exports[`AI Prompt Construction Regression > should construct correct prompt for /api/ai/translate-batch 1`] = `
 "Task: Translate these message items into Portuguese.
-            【STRICT RULES】:
-            1. Preserve the exact markdown structure, especially bold labels like **Category:** or **Comment:**.
-            2. Translate the labels themselves into Portuguese.
-            3. Output ONLY a valid JSON object mapping IDs to their translations. NO markdown backticks or extra text.
-            
-            Format: {"msg_id": "translated_text", ...}
-            
-            Messages:
-            [{"id":"msg1","text":"Note 1"}] "
+        【STRICT RULES】:
+        1. Preserve the exact markdown structure, especially bold labels like **Category:** or **Comment:**.
+        2. Translate the labels themselves into Portuguese.
+        3. Output ONLY a valid JSON object mapping IDs to their translations. NO markdown backticks or extra text.
+        
+        Format: {"msg_id": "translated_text", ...}
+        
+        Messages:
+        [{"id":"msg1","text":"Note 1"}] "
 `;

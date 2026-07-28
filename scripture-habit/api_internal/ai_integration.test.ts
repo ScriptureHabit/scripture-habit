@@ -357,8 +357,8 @@ describe('AI Prompt Construction Regression', () => {
                 body: JSON.stringify({ uid: 'user-B', language: 'en' })
             });
             expect(res.status).toBe(403);
-            const text = await res.text();
-            expect(text).toBe('Forbidden');
+            const data = await res.json();
+            expect(data.error).toBe('Forbidden');
         });
     });
 
@@ -382,8 +382,8 @@ describe('AI Prompt Construction Regression', () => {
                 body: JSON.stringify({ uid: nonExistentUid, language: 'en' })
             });
             expect(res.status).toBe(404);
-            const text = await res.text();
-            expect(text).toBe('User not found');
+            const data = await res.json();
+            expect(data.error).toBe('User not found');
         });
 
         it('should return message if no personal notes found', async () => {

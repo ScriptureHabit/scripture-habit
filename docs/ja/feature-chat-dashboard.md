@@ -76,7 +76,7 @@ Firestoreの読み取り（Read）を高度に最適化し、予期しない課�
   - **onSnapshot**: ユーザーエンゲージメントのためにリアルタイム同期が不可欠な、アクティブなチャットペインなどの詳細/アクティブビュー専用とします。
 - **スナップショットの制限**: チャットクエリでは常に `limit(N)` と `orderBy('createdAt', 'desc')` を使用し、大量の過去メッセージがロードされるのを防ぎます。
 - **安定した参照 (Stable References)**: 派生したチャットデータには `useMemo` を使用し、タイピングイベント時にサイドバーが再レンダリングされるのを防ぎます。
-- **バックグラウンド抑制**: ブラウザのタブが非アクティブな場合、リスナーはアクティブなままですが、CPUを節約するためにUIの更新がスロットリング（制限）されます。
+- **バックグラウンド復帰時の通知チェック**: ブラウザのタブが非アクティブな状態からフォアグラウンドに戻った時（`visibilitychange` イベント）、Service Worker に対して `CHECK_PENDING_NOTIFICATION` メッセージを送信し、バックグラウンド中に届いたプッシュ通知の取りこぼしがないか確認します。
 
 ---
 
@@ -100,7 +100,7 @@ Firestore Client SDKを使用してリアルタイム同期フックを構築す
       currentMessagesRef.current = currentMessages;
     }, [currentMessages]);
     ```
-    Inside the `onSnapshot` callback, read from `currentMessagesRef.current` to calculate optimistic resolution without ever re-triggering the subscription effect.
+    `onSnapshot` コールバックの内部では、`currentMessagesRef.current` を参照して楽観的メッセージの解決計算を行います。これにより、購読エフェクトが再トリガーされることは一切ありません。
 
 ### 2. 初期化時の競合状態（非同期リセットの落とし穴）
 *   **危険性**: Firestoreのオフライン永続化/キャッシュを使用しているときに、`groupId`の変更に伴い、`useEffect`を介して非同期にチャット状態をリセットしてしまうこと。

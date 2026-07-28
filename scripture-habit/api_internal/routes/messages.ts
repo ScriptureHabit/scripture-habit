@@ -393,7 +393,7 @@ router.post('/send-cheer', authenticate, verifyAppCheck, async (req: Authenticat
 
         res.json({ success: true });
     } catch (error: unknown) {
-        if (error instanceof ValidationError) {
+        if (error instanceof AppError) {
             sendErrorResponse(res, error);
             return;
         }

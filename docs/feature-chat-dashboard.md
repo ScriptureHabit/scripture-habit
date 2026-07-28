@@ -76,7 +76,7 @@ To keep Firestore reads highly optimized and prevent unexpected billing surges, 
   - **onSnapshot**: Reserve exclusively for detail/active views (like the active Chat pane) where real-time sync is essential for user engagement.
 - **Limit Snapshots**: Always use `limit(N)` and `orderBy('createdAt', 'desc')` in chat queries to prevent loading too many historical messages.
 - **Stable References**: Use `useMemo` for derived chat data to prevent the sidebar from re-rendering on typing events.
-- **Background Suppression**: When the browser tab is inactive, listeners remain active but UI updates are throttled to save CPU.
+- **Background Foreground Recovery Check**: When the browser tab returns to the foreground from an inactive state (via the `visibilitychange` event), the app sends a `CHECK_PENDING_NOTIFICATION` message to the Service Worker to check for any push notifications that may have been missed while the tab was in the background.
 
 ---
 

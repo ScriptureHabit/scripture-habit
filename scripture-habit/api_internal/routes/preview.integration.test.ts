@@ -235,7 +235,7 @@ describe('Preview Route Integration', () => {
 
             expect(res.status).toBe(500);
             const data = await res.json();
-            expect(data.error).toBe('Failed');
+            expect(data.error).toBe('DNS resolution failed');
         });
     });
 });

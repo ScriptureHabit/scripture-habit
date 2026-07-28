@@ -119,7 +119,7 @@ router.post('/generate-ponder-questions', authenticate, aiLimiter, verifyAppChec
             sendErrorResponse(res, err);
             return;
         }
-        handleAiError(res, err, 'question generation');
+        handleAiError(res, err, 'ponder questions');
     }
 });
 

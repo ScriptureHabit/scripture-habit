@@ -110,8 +110,10 @@ describe('middleware - express middlewares', () => {
             process.env.NODE_ENV = 'production';
             process.env.SKIP_APP_CHECK = 'true';
             await verifyAppCheck(req as Request, res as Response, next);
-            expect(res.status).toHaveBeenCalledWith(401);
-            expect(res.json).toHaveBeenCalledWith({ error: 'Unauthorized: Security check required' });
+            expect(next).toHaveBeenCalledWith(expect.any(AppError));
+            const error = next.mock.calls[0][0];
+            expect(error.statusCode).toBe(401);
+            expect(error.message).toBe('Unauthorized: Security check required');
         });
 
         it('should throw AppError if X-Firebase-AppCheck header is missing', async () => {
