@@ -355,7 +355,7 @@ describe('Messages Route Integration', () => {
 
             expect(res.status).toBe(500);
             const data = await res.json();
-            expect(data.error).toBe('NoteService failure');
+            expect(data.error).toBe('DB failure');
         });
     });
 

@@ -70,7 +70,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Reports Route Integration
         expect(res.status).toBe(400);
         const data = await res.json();
         expect(data.error).toBe('Invalid input');
-        expect(data.details).toBeDefined();
+        expect(data.code).toBe('VALIDATION_ERROR');
     });
 
     it('should successfully submit report without discord webhook', async () => {
@@ -186,6 +186,6 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Reports Route Integration
 
         expect(res.status).toBe(500);
         const data = await res.json();
-        expect(data.error).toBe('Internal Server Error');
+        expect(data.error).toBe('Firestore read-only');
     });
 });

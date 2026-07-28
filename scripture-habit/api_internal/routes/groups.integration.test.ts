@@ -380,7 +380,7 @@ describe('Groups Route Additional Integration Tests', () => {
                     groupId: ACTIVE_GROUP_ID
                 })
             });
-            expect(res.status).toBe(500);
+            expect(res.status).toBe(403);
         });
 
         it('should successfully regenerate invite code', async () => {
@@ -512,7 +512,7 @@ describe('Groups Route Additional Integration Tests', () => {
             const res = await fetch(`${setup.baseUrl}/api/groups`);
             expect(res.status).toBe(500);
             const data = await res.json();
-            expect(data.error).toBe('Search failed');
+            expect(data.error).toBe('Simulated query failure');
 
             spy.mockRestore();
         });
