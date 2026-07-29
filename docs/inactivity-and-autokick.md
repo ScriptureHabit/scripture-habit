@@ -35,7 +35,7 @@ sequenceDiagram
             Service->>DB: Recursively delete group document, subcollections, & user references
         else normal updates
             alt decision.newOwnerId (Owner Inactive)
-                Service->>DB: Transfer group owner & Write system announcement message
+                Service->>DB: Transfer group owner
             end
             alt decision.membersToRemove.length > 0
                 Service->>DB: Remove inactive members, recalculate Unity %, & write system notification
@@ -107,7 +107,7 @@ If a member's `joinedAt` date is set to the future or contains an error, the sys
 If the group owner becomes inactive:
 
 *   **Ownership Transfer**:
-    If the owner is inactive but other active members exist, the system transfers ownership to the **longest-standing active member** (`activeMemberIds[0]`). A notification message (`notifications.ownership_transferred`) is posted to the group.
+    If the owner is inactive but other active members exist, the system transfers ownership to the **longest-standing active member** (`activeMemberIds[0]`).
 *   **Group Deletion**:
     If the owner is inactive and **no other active members remain**, the group is deleted. The system deletes the group document, its subcollections, and removes group references from the users' documents.
 
