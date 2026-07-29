@@ -61,7 +61,7 @@ Welcome to the **scripture-habit** technical documentation. This directory conta
   - Optimized two-tier caching (Memory + LocalStorage) and front-end hooks.
 - **[I18n & Localization: Global Reach](logic-i18n.md)**
   - Frontend context and backend template systems.
-  - Automated AU translation strategies.
+  - Automated AI translation strategies.
 - **[Unity Participation & Sync Architecture](unity-participation.md)**
   - Group sync math, real-time message sync client overrides, and triple-fallback joined-at eligibility filtering.
 - **[Firestore Transactions & Counter Service Design](firestore-transactions-counters.md)**
