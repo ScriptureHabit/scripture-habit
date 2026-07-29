@@ -40,6 +40,9 @@ Welcome to the **scripture-habit** technical documentation. This directory conta
 - **[Note Creation & Edit Modal Construction Guide](newnote-construction-guide.md)**
   - Comprehensive step-by-step guide for constructing the note creation/editing modal (`NewNote`) from scratch.
   - Explains URL metadata extraction, AI reflection generator, random scripture picker, sharing scope selector, and submission engine.
+- **[Dashboard & MyNotes Construction Guide](dashboard-mynotes-construction-guide.md)**
+  - Comprehensive step-by-step guide for constructing the personal hub (`Dashboard`), `MyNotes`, and `NoteCard` modules from scratch.
+  - Explains streak calendar grid, habit pace algorithm, note search token engine, weekly AI recap generator, and Gospel Library deep links.
 - **[AI Integration](feature-ai-integration.md)**
   - How Gemini 3.1 Flash-Lite is integrated.
   - Translation, Weekly Recaps, and Automation.
