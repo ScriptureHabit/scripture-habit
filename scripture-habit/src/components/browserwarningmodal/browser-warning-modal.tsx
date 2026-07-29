@@ -31,28 +31,56 @@ const BrowserWarningModal: FC<BrowserWarningModalProps> = ({ isOpen, onClose, on
 
     const currentUrl = typeof window !== 'undefined' ? window.location.href : '';
 
-    const handleActionClick = () => {
+    const copyToClipboard = async (text: string) => {
+        try {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                await navigator.clipboard.writeText(text);
+                return true;
+            }
+        } catch (e) {
+            console.warn('[BrowserWarningModal] Clipboard API failed:', e);
+        }
+
+        try {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.opacity = '0';
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            return true;
+        } catch (e) {
+            console.error('[BrowserWarningModal] Fallback copy failed:', e);
+            return false;
+        }
+    };
+
+    const handleActionClick = async () => {
         if (!currentUrl) return;
 
         if (isAndroid) {
             // On Android, try to launch Chrome via Intent
             openExternalUrl(getAndroidIntentUrl(currentUrl));
-            navigator.clipboard.writeText(currentUrl);
+            await copyToClipboard(currentUrl);
         } else if (isIos && detectedApp === 'line') {
             // SPECIFIC FOR LINE ON IOS: Open in Safari
             openExternalUrl(getLineExternalUrl(currentUrl));
         } else {
             // On iOS/others, copy to clipboard
-            navigator.clipboard.writeText(currentUrl);
-            toast.info(t('browserWarning.linkCopied'), {
-                position: 'bottom-center',
-                autoClose: 2000,
-                hideProgressBar: true,
-                closeOnClick: true,
-                pauseOnHover: false,
-                draggable: true,
-                theme: 'colored',
-            });
+            const success = await copyToClipboard(currentUrl);
+            if (success) {
+                toast.info(t('browserWarning.linkCopied'), {
+                    position: 'bottom-center',
+                    autoClose: 2000,
+                    hideProgressBar: true,
+                    closeOnClick: true,
+                    pauseOnHover: false,
+                    draggable: true,
+                    theme: 'colored',
+                });
+            }
         }
     };
 
