@@ -1,7 +1,7 @@
 # Scripture Habit Dashboard & My Notes (`Dashboard` / `MyNotes` / `NoteCard`) Comprehensive Step-by-Step Construction Guide
 
 This document is an exhaustive engineering and architecture guide for building the core personal dashboard modules of Scripture Habit: `src/components/dashboard`, `src/components/mynotes`, and `src/components/notecard` from scratch.
-It covers real-time user state synchronization, the streak calendar grid, habit pace evaluation algorithms, group invitation handlers, note search token filtering engines, weekly AI recap generation, and responsive note card components with Gospel Library deep links.
+It covers real-time user state synchronization, the streak calendar grid, 3-7 day habit pace threshold configuration, 2-step onboarding quest cards for new users, note search token filtering engines, weekly AI recap generation, and responsive note card components with Gospel Library deep links.
 
 ---
 
@@ -18,7 +18,7 @@ The `Dashboard` module is the primary hub of the application, coordinating readi
         ┌──────────────────┬────────────────┼─────────────────┬──────────────────┐
         ▼                  ▼                ▼                 ▼                  ▼
 useDashboardSync   useDashboardGroups useHabitPace/Warnings  DashboardLayout      MyNotes
-(Auth & User Sync)  (Group Subscription)(Habit Pace Engine)  (Overview/Streak) (Search & Filter)
+(Auth & User Sync)  (Group Subscription)(3-7 Day Habit Pace) (Overview/Streak) (Search & Filter)
                                                                                   │
                                                                                   ▼
                                                                               NoteCard
@@ -26,12 +26,13 @@ useDashboardSync   useDashboardGroups useHabitPace/Warnings  DashboardLayout    
 ```
 
 ### Key Capabilities
-- **User & Auth Sync**: Real-time synchronization of Firebase Auth and Firestore `users/{uid}` document with local midnight timezone flips (`useToday`).
-- **Streak Calendar**: Monthly reading grid (`StreakCalendar`) displaying study completions and consecutive streak counts.
-- **Habit Pace Hook (`useDashboardHabitPace`)**: Manages the modal state and API request (`/api/groups/update-kick-threshold`) for setting and storing a new user's target study pace (3 to 7 days autokick threshold `selectedKickDays`).
-- **Note Search & Category Filter Engine (`useMyNotes`)**: Full-text note search via search tokens (`buildNoteSearchTokens`), scripture volume category filtering, and infinite pagination.
-- **Weekly AI Recap (`useRecap`)**: Automated generation of personalized study recaps and spiritual insights via Gemini API based on 7-day note logs.
-- **Scripture Deep Linking (`NoteCard`)**: Direct deep links to the Gospel Library app / web interface with modal detail views.
+- **User & Auth Sync (`useDashboardSync`)**: Real-time synchronization of Firebase Auth and Firestore `users/{uid}` document with local midnight timezone flips (`useToday`).
+- **Streak Calendar (`StreakCalendar`)**: Monthly reading grid displaying study completions (`isStudied`) and kick deadline warnings (`isKickDate`).
+- **3-7 Day Habit Pace Hook (`useDashboardHabitPace`)**: Manages the onboarding welcome modal for setting and persisting a user's autokick threshold (`selectedKickDays` between 3 and 7 days) via `/api/groups/update-kick-threshold`.
+- **2-Step Onboarding Quest Card (`QuestCard`)**: Guides new users through Step 1 (Join/Create Group) and Step 2 (Post First Note). Fires confetti (`canvas-confetti`) on completion and updates `hasCompletedOnboarding`.
+- **Note Search & Category Filter Engine (`useMyNotes`)**: Full-text note search via search tokens (`createSearchTokens`), `array-contains-any` Firestore queries, scripture category filtering, and cursor pagination (`startAfter`).
+- **Weekly AI Recap (`useRecap` / `useRecapOperations`)**: Automated generation of personalized study recaps via Gemini API (`/api/ai/generate-personal-weekly-recap`) with a 6-day cooldown check, saving recaps to the user's LetterBox (`users/{uid}/letters`).
+- **Scripture Deep Linking (`NoteCard`)**: Direct deep links to the Gospel Library app / web interface with full modal detail views (`NoteDetailModal`).
 
 ---
 
@@ -46,14 +47,14 @@ src/components/
 │   │   ├── dashboard-layout.tsx        # View switcher shell
 │   │   ├── dashboard-overview.tsx      # Overview section combining streak & quest cards
 │   │   ├── dashboard-modals.tsx        # Modal switch router for dashboard-specific dialogs
-│   │   ├── streak-calendar.tsx         # Monthly study streak grid component
+│   │   ├── streak-calendar.tsx         # Monthly study streak & kick deadline grid component
 │   │   ├── streak-calendar.css
-│   │   ├── quest-card.tsx              # Daily goal & reading plan quest card
+│   │   ├── quest-card.tsx              # 2-step onboarding quest card for new users
 │   │   └── quest-card.css
 │   └── hooks/
 │       ├── use-dashboard-sync.ts       # Auth state listener and user data sync hook
 │       ├── use-dashboard-groups.ts     # User group list & active group state hook
-│       ├── use-dashboard-habit-pace.ts # Habit pace evaluation algorithm hook
+│       ├── use-dashboard-habit-pace.ts # 3-7 day habit pace (autokick threshold) setup hook
 │       ├── use-dashboard-invitations.ts # Group invite acceptance hook
 │       ├── use-dashboard-notifications.ts # FCM notification prompt handler hook
 │       ├── use-dashboard-warnings.ts   # Inactivity autokick warning detector hook
@@ -64,9 +65,9 @@ src/components/
 │   ├── note-detail-modal.tsx           # Full note detail dialog
 │   ├── note-detail-modal.css
 │   └── hooks/
-│       ├── use-my-notes.ts             # Firestore note subscription & search filter hook
+│       ├── use-my-notes.ts             # Search token & category pagination subscription hook
 │       ├── use-note-actions.ts         # Note deletion & edit mutation hook
-│       └── use-recap.ts                # Weekly AI recap generator hook
+│       └── use-recap.ts                # Weekly AI recap generator & LetterBox saver hook
 └── notecard/
     ├── note-card.tsx                   # Individual note card component
     └── note-card.css
@@ -76,7 +77,7 @@ src/components/
 
 ## 3. Step-by-Step Construction Phases (Phase 1 to Phase 7)
 
-### Phase 1: User Sync & Habit Pace Calculation Engine
+### Phase 1: User Sync & Habit Pace Configuration Hooks
 
 #### 1. User Sync Hook (`hooks/use-dashboard-sync.ts`)
 Listens to Firebase Auth state changes and subscribes to the Firestore `users/{uid}` document in real-time.
@@ -117,7 +118,7 @@ export const useDashboardSync = () => {
 ```
 
 #### 2. Habit Pace Setup Hook (`hooks/use-dashboard-habit-pace.ts`)
-Automatically triggers the onboarding welcome modal for new users without a set threshold, enabling them to select and submit their target habit pace (3 to 7 days `selectedKickDays`) to `/api/groups/update-kick-threshold`.
+Triggers the welcome modal for new users without a set threshold, enabling them to select and submit their target habit pace (3 to 7 days `selectedKickDays`) to `/api/groups/update-kick-threshold`.
 
 ---
 
@@ -133,64 +134,88 @@ Automatically triggers the onboarding welcome modal for new users without a set 
 #### 1. Streak Calendar Grid (`components/streak-calendar.tsx`)
 
 ```tsx
-export const StreakCalendar: FC<{ completedDates: string[] }> = ({ completedDates }) => {
-  const datesInMonth = useMemo(() => getDatesForCurrentMonth(), []);
+export const StreakCalendar: FC<StreakCalendarProps> = ({ studiedDates = [], kickDate, t }) => {
+  const [currentMonth, setCurrentMonth] = useState(new Date());
+
+  const calendarData = useMemo(() => {
+    // Generate grid items for days of the current month
+    // ...
+  }, [currentMonth, studiedDates, kickDate]);
 
   return (
-    <div className="streak-calendar-grid">
-      {datesInMonth.map((dateStr) => {
-        const isDone = completedDates.includes(dateStr);
-        return (
-          <div key={dateStr} className={`calendar-day ${isDone ? 'completed' : ''}`}>
-            {getDayNumber(dateStr)}
+    <div className="streak-calendar-container">
+      <div className="calendar-grid">
+        {calendarData.map((item) => (
+          <div key={item.key} className={`calendar-cell ${item.isStudied ? 'studied' : ''} ${item.isKickDate ? 'kick-deadline' : ''}`}>
+            <span className="day-number">{item.day}</span>
           </div>
-        );
-      })}
+        ))}
+      </div>
     </div>
   );
 };
 ```
 
-#### 2. Quest Card (`components/quest-card.tsx`)
-Displays today's reading goal and provides a single-tap trigger to open `NewNote`.
+#### 2. Onboarding Quest Card (`components/quest-card.tsx`)
+Displays progress for new users across **Step 1 (Join/Create Group)** and **Step 2 (Post First Note)**. Once both steps are completed (`allDone`), it triggers confetti (`canvas-confetti`) and updates `hasCompletedOnboarding: true` when the user clicks the completion button.
+
+```tsx
+export const QuestCard: FC<QuestCardProps> = ({ userData, t }) => {
+  const step1Done = !!userData.questCreatedGroup || (userData.groupIds && userData.groupIds.length > 0) || !!userData.groupId;
+  const step2Done = !!userData.questPostedNote || (userData.totalNotes && userData.totalNotes > 0);
+  const allDone = step1Done && step2Done;
+
+  if (userData.hasCompletedOnboarding || isLegacyCompleted) return null;
+
+  return (
+    <div className="onboarding-quest-card glassmorphic-card">
+      {!allDone ? (
+        <div className="quest-steps">
+          {/* Step 1: Join Group / Step 2: Post Note */}
+        </div>
+      ) : (
+        <button onClick={handleComplete}>{t('onboardingQuest.congratsBtn')}</button>
+      )}
+    </div>
+  );
+};
+```
 
 ---
 
 ### Phase 4: MyNotes Search & Filter Engine (`mynotes/hooks/use-my-notes.ts`)
 
-Subscribes to `users/{uid}/notes` and performs client-side keyword and category filtering.
+Subscribes to `users/{uid}/notes` and performs search token (`createSearchTokens`) queries via `array-contains-any`, along with cursor pagination (`startAfter`).
 
 ```typescript
-export const useMyNotes = (userId: string | undefined) => {
-  const [notes, setNotes] = useState<Note[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+export const useMyNotes = (userData: UserData, selectedCategory: NoteCategory, searchTerm: string, notesPerPage: number) => {
+  const [dataState, setDataState] = useState<NoteFetchStatus>({ status: 'loading', notes: [] });
 
   useEffect(() => {
-    if (!userId) return;
-    const notesRef = collection(db, 'users', userId, 'notes');
-    const q = query(notesRef, orderBy('createdAt', 'desc'));
+    if (!userData?.uid) return;
 
+    const notesRef = collection(db, 'users', userData.uid, 'notes').withConverter(noteConverter);
+    const constraints: QueryConstraint[] = [orderBy('createdAt', 'desc')];
+
+    if (selectedCategory !== 'All') {
+      constraints.push(where('scripture', '==', selectedCategory));
+    }
+    if (searchTerm) {
+      const tokens = createSearchTokens(searchTerm).slice(0, 10);
+      if (tokens.length > 0) {
+        constraints.unshift(where('searchTokens', 'array-contains-any', tokens));
+      }
+    }
+
+    const q = query(notesRef, ...constraints, limit(notesPerPage));
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const fetchedNotes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Note));
-      setNotes(fetchedNotes);
+      setDataState({ status: 'success', notes: snapshot.docs.map(d => d.data()) });
     });
 
     return unsubscribe;
-  }, [userId]);
+  }, [userData?.uid, selectedCategory, searchTerm, notesPerPage]);
 
-  const filteredNotes = useMemo(() => {
-    return notes.filter(note => {
-      const matchesSearch = !searchQuery || 
-        note.scripture?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        note.comment?.toLowerCase().includes(searchQuery.toLowerCase());
-      
-      const matchesCategory = selectedCategory === 'all' || note.category === selectedCategory;
-      return matchesSearch && matchesCategory;
-    });
-  }, [notes, searchQuery, selectedCategory]);
-
-  return { notes: filteredNotes, searchQuery, setSearchQuery, selectedCategory, setSelectedCategory };
+  return { ...dataState };
 };
 ```
 
@@ -239,9 +264,8 @@ Vitest suites (`use-dashboard-groups.test.ts` & `use-dashboard-habit-pace.test.t
 
 ```typescript
 describe('useDashboardHabitPace', () => {
-  it('returns excellent habit status when reading 3+ days per week', () => {
-    const pace = calculateHabitPace(mockNotesCount);
-    expect(pace.status).toBe('excellent');
+  it('triggers auto kick threshold modal when user has not set preference', () => {
+    // ...
   });
 });
 ```
@@ -251,4 +275,4 @@ describe('useDashboardHabitPace', () => {
 ## 4. Summary
 
 The `Dashboard` and `MyNotes` modules serve as the central personal hub of Scripture Habit.
-By partitioning auth, group state, search filtering, and calendar rendering into dedicated custom hooks and modular components, the personal study experience remains highly performant and extensible.
+By partitioning auth, group state, search token filtering, onboarding quests, and calendar rendering into dedicated custom hooks and modular components, the personal study experience remains highly performant and extensible.

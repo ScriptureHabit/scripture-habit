@@ -1,7 +1,7 @@
 # Scripture Habit ダッシュボード & マイノート (`Dashboard` / `MyNotes` / `NoteCard`) ゼロから構築する完全ガイド
 
 本ドキュメントは、Scripture Habit アプリの個人向けメイン画面群である `src/components/dashboard`、`src/components/mynotes`、`src/components/notecard` をゼロから設計・構築するための包括的な開発ステップバイステップガイドです。
-ユーザー同期、通読ストリークカレンダー、習慣ペース判定アルゴリズム、グループ招待・警告通知、ノート検索・タグフィルタリングエンジン、週次AI振り返り生成、およびレスポンシブなノートカード表示の全容を解説します。
+ユーザー同期、通読ストリークカレンダー、3〜7日間の習慣ペース設定モーダル、新規ユーザー向けオンボーディングクエスト、ノート検索・トークンフィルタリングエンジン、週次AI振り返り生成、およびレスポンシブなノートカード表示の全容を解説します。
 
 ---
 
@@ -12,13 +12,13 @@
 ```
                                ┌─────────────────────────┐
                                │       Dashboard         │
-                               │   (Main Container)      │
+                               │   (メインコンテナ)       │
                                └────────────┬────────────┘
                                             │
         ┌──────────────────┬────────────────┼─────────────────┬──────────────────┐
         ▼                  ▼                ▼                 ▼                  ▼
 useDashboardSync   useDashboardGroups useHabitPace/Warnings  DashboardLayout      MyNotes
-(ユーザー同期)     (所属グループ同期)  (ペース判定/警告)   (Overview/Streak) (検索・ノートカード)
+(ユーザー同期)     (所属グループ同期)  (3-7日ペース設定/警告) (Overview/Streak) (検索・ノートカード)
                                                                                   │
                                                                                   ▼
                                                                               NoteCard
@@ -26,12 +26,13 @@ useDashboardSync   useDashboardGroups useHabitPace/Warnings  DashboardLayout    
 ```
 
 ### 主な機能
-- **ユーザー状態 & 権限同期**: Firebase Auth および Firestore ドキュメントとの同期、深夜0時のローカルタイムゾーン反転フック（`useToday`）。
-- **通読ストリークカレンダー**: 月ごとの読書記録グリッド（`StreakCalendar`）と連続読書日数（Streak）の可視化。
-- **習慣ペース設定フック (`useDashboardHabitPace`)**: 初回ユーザー向けに「3〜7日間」の目標通読ペース（キックしきい値 `kickThreshold`）を設定・保存するためのモーダル状態管理および `/api/groups/update-kick-threshold` 通信処理。
-- **ノート検索 & タグフィルタリングエンジン (`useMyNotes`)**: 全文検索トークン (`buildNoteSearchTokens`)、聖典巻別フィルタリング、および無限ロード。
-- **週次 AI ふり返り (`useRecap`)**: Gemini API を活用し、1週間分の読書ノートから個人に特化した要約と成長のフィードバックを自動生成。
-- **聖書ディープリンク構造 (`NoteCard`)**: LDS Gospel Library アプリ / Web へのダイレクトリンク生成と、モーダル詳細表示。
+- **ユーザー状態 & 権限同期 (`useDashboardSync`)**: Firebase Auth および Firestore ドキュメントとのリアルタイム同期、深夜0時のローカルタイムゾーン反転フック（`useToday`）。
+- **通読ストリークカレンダー (`StreakCalendar`)**: 当月の日付グリッドにおいて、ノート投稿日（`isStudied`）および次回キック警告日（`isKickDate`）を視覚化。
+- **3〜7日間 習慣ペース設定モーダル (`useDashboardHabitPace`)**: 初回ユーザー向けに自動キック猶予日数（3〜7日間の習慣化ペース `selectedKickDays`）を設定させるウェルカムモーダルの表示・管理、および `/api/groups/update-kick-threshold` 通信処理。
+- **新規ユーザー向けオンボーディングクエスト (`QuestCard`)**: 新規ユーザーが「① グループ作成・参加」「② 最初のノート投稿」の2つのミッションを達成するまでを表示。全完了で紙吹雪 (`canvas-confetti`) 演出と `hasCompletedOnboarding` 更新。
+- **ノート検索 & タグフィルタリングエンジン (`useMyNotes`)**: 検索トークン (`createSearchTokens`) による `array-contains-any` クエリ、聖典巻別フィルタリング、およびカーソルベースのページネーション（`startAfter`）。
+- **週次 AI ふり返り (`useRecap` / `useRecapOperations`)**: 6日間のクールダウン判定付きで Gemini API (`/api/ai/generate-personal-weekly-recap`) を呼び出し、生成された振り返りを LetterBox (`users/{uid}/letters`) へ保存。
+- **聖書ディープリンク構造 (`NoteCard`)**: LDS Gospel Library アプリ / Web へのダイレクトリンク生成と、モーダル詳細表示 (`NoteDetailModal`)。
 
 ---
 
@@ -46,16 +47,16 @@ src/components/
 │   │   ├── dashboard-layout.tsx        # 画面ビュー切り替えシェル
 │   │   ├── dashboard-overview.tsx      # ストリーク・クエストカード統合領域
 │   │   ├── dashboard-modals.tsx        # ダッシュボード固有モーダルのスイッチルーター
-│   │   ├── streak-calendar.tsx         # 通読実績カレンダーコンポーネント
+│   │   ├── streak-calendar.tsx         # 通読実績・キック警告カレンダー
 │   │   ├── streak-calendar.css
-│   │   ├── quest-card.tsx              # 日次クエスト・読書目標カード
+│   │   ├── quest-card.tsx              # 新規ユーザー用2ステップオンボーディングクエストカード
 │   │   └── quest-card.css
 │   └── hooks/
 │       ├── use-dashboard-sync.ts       # ユーザー認証・データ同期フック
 │       ├── use-dashboard-groups.ts     # グループ一覧取得・選択状態フック
-│       ├── use-dashboard-habit-pace.ts # 通読ペース計算アルゴリズムフック
+│       ├── use-dashboard-habit-pace.ts # 3〜7日間の習慣化ペース（キック閾値）設定フック
 │       ├── use-dashboard-invitations.ts # グループ招待承諾ハンドラー
-│       ├── use-dashboard-notifications.ts # 通知許可プロンプトフック
+│       ├── use-dashboard-notifications.ts # FCM通知プロンプトフック
 │       ├── use-dashboard-warnings.ts   # 非アクティブ警告検知フック
 │       └── use-dashboard-actions.ts    # プロフィール更新・ダイアログ操作フック
 ├── mynotes/
@@ -64,9 +65,9 @@ src/components/
 │   ├── note-detail-modal.tsx           # ノート詳細ダイアログ
 │   ├── note-detail-modal.css
 │   └── hooks/
-│       ├── use-my-notes.ts             # ノート一覧取得・検索フィルタリングフック
+│       ├── use-my-notes.ts             # 検索トークン・カテゴリ別ページネーション取得フック
 │       ├── use-note-actions.ts         # ノート削除・編集操作フック
-│       └── use-recap.ts                # 週次 AI ふり返り生成フック
+│       └── use-recap.ts                # クールダウン付き週次 AI ふり返り生成・LetterBox保存フック
 └── notecard/
     ├── note-card.tsx                   # 個別ノートカードコンポーネント
     └── note-card.css
@@ -76,9 +77,7 @@ src/components/
 
 ## 3. 段階別ビルドガイド (Phase 1 〜 Phase 7)
 
-### Phase 1: ユーザー同期と習慣ペース判定エンジン
-
-最初に、ユーザーデータと通読ペースを計算するコアフックを定義します。
+### Phase 1: ユーザー同期と習慣ペース設定フック
 
 #### 1. ユーザー同期フック (`hooks/use-dashboard-sync.ts`)
 Firebase Auth の認証状態を監視し、Firestore から `users/{uid}` ドキュメントをリアルタイム同期します。
@@ -118,8 +117,8 @@ export const useDashboardSync = () => {
 };
 ```
 
-#### 2. 習慣ペース設定フック (`hooks/use-dashboard-habit-pace.ts`)
-初回ログインユーザーが未設定の場合に自動的にウェルカムモーダルを開き、3〜7日間の習慣化ペース（キックしきい値 `selectedKickDays`）を選択・更新するフックです。`/api/groups/update-kick-threshold` へ送信し設定を保存します。
+#### 2. 3〜7日間の習慣ペース設定フック (`hooks/use-dashboard-habit-pace.ts`)
+初回ユーザー向けに自動キック猶予日数（3〜7日間の習慣化ペース `selectedKickDays`）を選択させるモーダルを起動し、`/api/groups/update-kick-threshold` へ POST 送信して設定を保存します。
 
 ---
 
@@ -133,67 +132,91 @@ export const useDashboardSync = () => {
 ### Phase 3: ダッシュボード UI サブコンポーネント
 
 #### 1. 通読実績カレンダー (`components/streak-calendar.tsx`)
-当月の各日付において、ユーザーがノートを投稿した日をハイライト表示するグリッドコンポーネントです。
+当月の各日付において、ユーザーがノートを投稿した日 (`isStudied`) および次回キック警告日 (`isKickDate`) をハイライト表示するグリッドコンポーネントです。
 
 ```tsx
-export const StreakCalendar: FC<{ completedDates: string[] }> = ({ completedDates }) => {
-  const datesInMonth = useMemo(() => getDatesForCurrentMonth(), []);
+export const StreakCalendar: FC<StreakCalendarProps> = ({ studiedDates = [], kickDate, t }) => {
+  const [currentMonth, setCurrentMonth] = useState(new Date());
+
+  const calendarData = useMemo(() => {
+    // 当月の1日〜最終日のグリッドセル配列を生成
+    // ...
+  }, [currentMonth, studiedDates, kickDate]);
 
   return (
-    <div className="streak-calendar-grid">
-      {datesInMonth.map((dateStr) => {
-        const isDone = completedDates.includes(dateStr);
-        return (
-          <div key={dateStr} className={`calendar-day ${isDone ? 'completed' : ''}`}>
-            {getDayNumber(dateStr)}
+    <div className="streak-calendar-container">
+      <div className="calendar-grid">
+        {calendarData.map((item) => (
+          <div key={item.key} className={`calendar-cell ${item.isStudied ? 'studied' : ''} ${item.isKickDate ? 'kick-deadline' : ''}`}>
+            <span className="day-number">{item.day}</span>
           </div>
-        );
-      })}
+        ))}
+      </div>
     </div>
   );
 };
 ```
 
-#### 2. クエストカード (`components/quest-card.tsx`)
-今日の読書目標（例: 「今日の読書計画: 1 Nephi 3」）を表示し、ワンタップでノート作成モーダルを開くカードです。
+#### 2. 新規ユーザー用オンボーディングクエストカード (`components/quest-card.tsx`)
+新規ユーザー向けに **Step 1（グループ作成・参加）** と **Step 2（最初のノート投稿）** の進捗を表示するカードです。両方完了すると紙吹雪 (`canvas-confetti`) が舞い、「クエストを完了する」ボタンを押すことで `hasCompletedOnboarding: true` を Firestore に更新し、以降は表示されなくなります。
+
+```tsx
+export const QuestCard: FC<QuestCardProps> = ({ userData, t }) => {
+  const step1Done = !!userData.questCreatedGroup || (userData.groupIds && userData.groupIds.length > 0) || !!userData.groupId;
+  const step2Done = !!userData.questPostedNote || (userData.totalNotes && userData.totalNotes > 0);
+  const allDone = step1Done && step2Done;
+
+  if (userData.hasCompletedOnboarding || isLegacyCompleted) return null;
+
+  return (
+    <div className="onboarding-quest-card glassmorphic-card">
+      {!allDone ? (
+        <div className="quest-steps">
+          {/* Step 1: グループ参加 / Step 2: ノート投稿 のチェック表示 */}
+        </div>
+      ) : (
+        <button onClick={handleComplete}>{t('onboardingQuest.congratsBtn')}</button>
+      )}
+    </div>
+  );
+};
+```
 
 ---
 
-### Phase 4: マイノート検索 ＆ フィルタリングエンジン
+### Phase 4: マイノート検索 ＆ フィルタリングエンジン (`mynotes/hooks/use-my-notes.ts`)
 
-`mynotes/hooks/use-my-notes.ts` は、Firestore の `users/{uid}/notes` サブコレクションを購読し、ユーザーが入力したキーワードや選択した聖典カテゴリでクライアントサイドフィルタリングを行います。
+Firestore の `users/{uid}/notes` サブコレクションを購読し、検索トークン (`createSearchTokens`) による `array-contains-any` 検索と、`startAfter` を用いたページネーションを行います。
 
 ```typescript
-export const useMyNotes = (userId: string | undefined) => {
-  const [notes, setNotes] = useState<Note[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+export const useMyNotes = (userData: UserData, selectedCategory: NoteCategory, searchTerm: string, notesPerPage: number) => {
+  const [dataState, setDataState] = useState<NoteFetchStatus>({ status: 'loading', notes: [] });
 
   useEffect(() => {
-    if (!userId) return;
-    const notesRef = collection(db, 'users', userId, 'notes');
-    const q = query(notesRef, orderBy('createdAt', 'desc'));
+    if (!userData?.uid) return;
 
+    const notesRef = collection(db, 'users', userData.uid, 'notes').withConverter(noteConverter);
+    const constraints: QueryConstraint[] = [orderBy('createdAt', 'desc')];
+
+    if (selectedCategory !== 'All') {
+      constraints.push(where('scripture', '==', selectedCategory));
+    }
+    if (searchTerm) {
+      const tokens = createSearchTokens(searchTerm).slice(0, 10);
+      if (tokens.length > 0) {
+        constraints.unshift(where('searchTokens', 'array-contains-any', tokens));
+      }
+    }
+
+    const q = query(notesRef, ...constraints, limit(notesPerPage));
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const fetchedNotes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Note));
-      setNotes(fetchedNotes);
+      setDataState({ status: 'success', notes: snapshot.docs.map(d => d.data()) });
     });
 
     return unsubscribe;
-  }, [userId]);
+  }, [userData?.uid, selectedCategory, searchTerm, notesPerPage]);
 
-  const filteredNotes = useMemo(() => {
-    return notes.filter(note => {
-      const matchesSearch = !searchQuery || 
-        note.scripture?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        note.comment?.toLowerCase().includes(searchQuery.toLowerCase());
-      
-      const matchesCategory = selectedCategory === 'all' || note.category === selectedCategory;
-      return matchesSearch && matchesCategory;
-    });
-  }, [notes, searchQuery, selectedCategory]);
-
-  return { notes: filteredNotes, searchQuery, setSearchQuery, selectedCategory, setSelectedCategory };
+  return { ...dataState };
 };
 ```
 
@@ -243,9 +266,8 @@ export const NoteCard: FC<{ note: Note; onClick: () => void }> = ({ note, onClic
 
 ```typescript
 describe('useDashboardHabitPace', () => {
-  it('週3回以上の投稿がある場合に良好ステータスを返す', () => {
-    const pace = calculateHabitPace(mockNotesCount);
-    expect(pace.status).toBe('excellent');
+  it('しきい値送信時に成功トーストを表示する', async () => {
+    // ...
   });
 });
 ```
@@ -255,4 +277,4 @@ describe('useDashboardHabitPace', () => {
 ## 4. まとめ
 
 `Dashboard` と `MyNotes` のモジュールは、個人の通読継続を支えるメインハブです。
-認証・グループ状態・検索フィルタリング・カレンダー表示を独立したカスタムフックとコンポーネントに分離することで、拡張性の高い個人学習ダッシュボードが実現されています。
+認証・グループ状態・検索トークンクエリ・オンボーディングクエスト・カレンダー表示を独立したカスタムフックとコンポーネントに分離することで、拡張性の高い個人学習ダッシュボードが実現されています。

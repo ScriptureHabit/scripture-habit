@@ -1,7 +1,7 @@
 # Scripture Habit Group Chat (`GroupChat`) Comprehensive Step-by-Step Construction Guide
 
 This document is an exhaustive engineering and architecture guide for building the entire `src/components/groupchat` module from scratch.
-It covers real-time Firestore synchronization, performance-optimized Context separation into 4 distinct contexts (Context Isolation Pattern), logic-component split using custom hooks, modular UI subcomponents, and an 11-modal management system with full code examples.
+It covers real-time Firestore synchronization, performance-optimized Context separation into 4 distinct contexts (Context Isolation Pattern), logic-component split using custom hooks, 100% Unity score fireworks & announcement API integration, modular UI subcomponents, and an 11-modal management system with full code examples.
 
 ---
 
@@ -32,11 +32,11 @@ ChatDataContext   ChatMessageActionsContext   ChatGroupActionsContext   ChatUIAc
 ```
 
 ### Key Capabilities
-- **Real-time Messaging**: Instant delta subscription via Firestore `onSnapshot` with Optimistic UI updates.
-- **Scroll & Pagination Optimization**: Dynamic backward scrolling pagination with seamless scroll anchor retention.
-- **Unity Score Engine**: Dynamic calculation and visualization of group daily scripture reading and posting completion rates.
-- **Cheer & Reactions**: Direct emoji reactions and encouragement notifications for group members.
-- **On-Demand Translation & Gospel Links**: Multilingual message translation via Gemini / Google Cloud Translate APIs and automated LDS Gospel Library verse detection & hyperlinking (`GospelLink`).
+- **Real-time Messaging**: Instant delta subscription via Firestore `onSnapshot` with Zod schema validation (`GroupSchema`, `UserProfileBriefSchema`).
+- **Scroll & Pagination Optimization**: Dynamic backward scrolling pagination with seamless scroll anchor retention using `useScrollManager`.
+- **Unity Score & 100% Celebration Engine (`useUnityScore`)**: Dynamically calculates group completion percentage. Upon reaching 100%, triggers 3-second celebration fireworks (`canvas-confetti`), persists local daily flag, and sends a POST request to `/api/groups/announce-unity` with AppCheck & ID Token authentication. Handles midnight resets via `useUnityMidnightReset`.
+- **Cheer & Reactions (`useCheerSystem`)**: Direct encouragement messages for unposted members and emoji reaction toggles.
+- **On-Demand Translation & Gospel Links (`GospelLink`)**: Multilingual message translation via Gemini / Google Cloud Translate APIs and automated LDS Gospel Library verse detection & hyperlinking.
 - **Group Management & Moderation**: Owner controls for group settings, invite codes, member management, and message reporting/deletion.
 
 ### 4-Tier Context Isolation Pattern
@@ -61,7 +61,7 @@ src/components/groupchat/
 │   ├── use-chat-context.ts            # Context retrieval helper
 │   ├── core/                           # State & Sync Core Engine
 │   │   ├── chat-reducer.ts            # Pure reducer state transitions
-│   │   ├── use-chat-data-engine.ts    # Firestore real-time listener & pagination
+│   │   ├── use-chat-data-engine.ts    # Firestore real-time listener & Zod schema validation
 │   │   ├── use-chat-sync-controller.ts# Data sync orchestration
 │   │   ├── use-group-chat-state.ts    # Group state hook
 │   │   └── use-group-messages.ts      # Message caching and fetch logic
@@ -81,7 +81,7 @@ src/components/groupchat/
 │       ├── use-group-chat-ui.ts       # Active modal & UI state manager
 │       ├── use-scroll-manager.ts      # Auto-scroll & scroll anchor calculation
 │       ├── use-unity-details.ts       # Unity modal member classification
-│       └── use-unity-score.ts         # Unity percentage calculation logic
+│       └── use-unity-score.ts         # Unity percentage calculation, 100% fireworks & /api/groups/announce-unity handler
 ├── subcomponents/                      # UI Component Parts
 │   ├── chat-header.tsx                # Chat top header bar
 │   ├── group-chat-footer.tsx          # Footer container with reply preview & input
@@ -115,8 +115,6 @@ src/components/groupchat/
 ## 3. Step-by-Step Construction Phases (Phase 1 to Phase 7)
 
 ### Phase 1: Data Models & Context Architecture
-
-Define partitioned interfaces and create Context objects.
 
 ```typescript
 // Implementation of chat-context.ts
@@ -190,149 +188,49 @@ export const ChatProvider: React.FC<{
 
 ---
 
-### Phase 2: State Engine & Firestore Sync Controller
+### Phase 2: Unity Score Engine & 100% Announcement Handler (`hooks/view/use-unity-score.ts`)
 
-#### 1. Pure State Reducer (`hooks/core/chat-reducer.ts`)
-
-```typescript
-export interface ChatState {
-  messages: Message[];
-  loading: boolean;
-  membersLoading: boolean;
-  groupData: GroupData | null;
-  membersMap: MembersMap;
-  activeModal: ModalType;
-}
-
-export type ChatAction =
-  | { type: 'SET_MESSAGES'; payload: Message[] }
-  | { type: 'ADD_MESSAGE'; payload: Message }
-  | { type: 'UPDATE_MESSAGE'; payload: Message }
-  | { type: 'UPDATE_GROUP'; groupData: GroupData }
-  | { type: 'UPDATE_MEMBERS'; newMembers: MembersMap };
-
-export function chatReducer(state: ChatState, action: ChatAction): ChatState {
-  switch (action.type) {
-    case 'SET_MESSAGES':
-      return { ...state, messages: action.payload, loading: false };
-    case 'ADD_MESSAGE':
-      return { ...state, messages: [...state.messages, action.payload] };
-    case 'UPDATE_GROUP':
-      return { ...state, groupData: action.groupData };
-    case 'UPDATE_MEMBERS':
-      return { ...state, membersMap: { ...state.membersMap, ...action.newMembers } };
-    default:
-      return state;
-  }
-}
-```
-
-#### 2. Firestore Real-Time Data Engine (`hooks/core/use-chat-data-engine.ts`)
-
-Uses Firestore `onSnapshot` partitioned into sub-hooks for metadata, members, and messages.
+Calculates the daily reading percentage for group members. Upon hitting 100%, triggers fireworks confetti (`canvas-confetti`) and dispatches a unity announcement request to `/api/groups/announce-unity`.
 
 ```typescript
-const useGroupMessagesSync = (groupId: string | null, dispatch: Dispatch<ChatAction>) => {
+export const useUnityScore = (
+  groupId: string, userData: UserData, groupData: GroupData | null,
+  messages: Message[], membersMap: MembersMap
+): number => {
+  const today = useToday();
+  const unityPercentage = useMemo<number>(() => {
+    if (!groupId || !groupData || groupData.id !== groupId || !today) return 0;
+    return calculateUnityPercentage(groupData, messages, new Date(), membersMap);
+  }, [messages, groupData, groupId, today, membersMap]);
+
+  useUnityMidnightReset({ groupId, groupTimeZone: groupData?.timeZone || 'UTC' });
+
   useEffect(() => {
-    if (!groupId) return;
-    const msgRef = collection(db, 'groups', groupId, 'messages');
-    const q = query(msgRef, orderBy('createdAt', 'desc'), limit(50));
+    if (!userData?.uid || !groupId || unityPercentage !== 100) return;
+    const todayStr = new Date().toLocaleDateString('sv-SE');
+    const storageKey = `unity_firework_${groupId}_${userData.uid}`;
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const messages: Message[] = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      } as Message)).reverse();
+    if (safeStorage.get(storageKey) !== todayStr) {
+      confetti({ particleCount: 50, origin: { x: 0.2, y: 0.8 } });
+      safeStorage.set(storageKey, todayStr);
 
-      dispatch({ type: 'SET_MESSAGES', payload: messages });
-    });
-
-    return unsubscribe;
-  }, [groupId, dispatch]);
-};
-```
-
----
-
-### Phase 3: Domain Custom Hooks Architecture
-
-#### Message Mutations Hook (`hooks/api/use-message-actions.ts`)
-
-```typescript
-export const useMessageActions = (groupId: string, userData: UserData) => {
-  const handleSendMessage = async (text: string, replyTo: Message | null) => {
-    if (!text.trim()) return false;
-
-    const messageRef = collection(db, 'groups', groupId, 'messages');
-    await addDoc(messageRef, {
-      text,
-      uid: userData.uid,
-      displayName: userData.displayName,
-      createdAt: serverTimestamp(),
-      replyTo: replyTo ? { id: replyTo.id, text: replyTo.text } : null
-    });
-    return true;
-  };
-
-  return { handleSendMessage, /* handleSaveEdit, handleConfirmDeleteMessage, etc. */ };
-};
-```
-
-#### Scroll Manager Hook (`hooks/view/use-scroll-manager.ts`)
-
-```typescript
-export const useScrollManager = (containerRef: RefObject<HTMLDivElement | null>) => {
-  const scrollToBottom = () => {
-    if (containerRef.current) {
-      containerRef.current.scrollTop = containerRef.current.scrollHeight;
+      fetch('/api/groups/announce-unity', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${idToken}` },
+        body: JSON.stringify({ groupId })
+      });
     }
-  };
+  }, [unityPercentage, groupId, userData?.uid]);
 
-  const loadMoreOlderMessages = async (containerRef: RefObject<HTMLDivElement | null>, heightRef: RefObject<number>) => {
-    if (!containerRef.current) return;
-    heightRef.current = containerRef.current.scrollHeight;
-    // ... Fetch older message page API
-  };
-
-  return { scrollToBottom, loadMoreOlderMessages };
+  return unityPercentage;
 };
 ```
 
 ---
 
-### Phase 4: UI Subcomponents Layer
+### Phase 3: Central Modal Switch Router (`group-chat-modals.tsx`)
 
-#### 1. Scripture Reference Link Parser (`subcomponents/gospel-link.tsx`)
-Regex parser for detecting scripture verse references (e.g. "Mosiah 3:7", "1 Nephi 3:7") in message bodies and converting them into Gospel Library links.
-
-```tsx
-export const GospelLink: FC<{ text: string }> = ({ text }) => {
-  const parsedElements = parseScriptureReferences(text);
-  return (
-    <span>
-      {parsedElements.map((el, i) => 
-        el.isLink ? (
-          <a key={i} href={el.url} target="_blank" rel="noopener noreferrer" className="gospel-link">
-            {el.text}
-          </a>
-        ) : (
-          el.text
-        )
-      )}
-    </span>
-  );
-};
-```
-
-#### 2. Message Bubble Component (`subcomponents/message-item.tsx`)
-
-Renders self vs peer message alignment, avatars, reactions, and translated text blocks.
-
----
-
-### Phase 5: Central Modal Router (`group-chat-modals.tsx`)
-
-Central switch router that renders 11 distinct modal dialogs based on `ModalStore`'s `activeModal`.
+Renders 11 distinct modal dialogs based on `ModalStore`'s `activeModal`.
 
 ```tsx
 export const GroupChatModals: FC = () => {
@@ -357,33 +255,7 @@ export const GroupChatModals: FC = () => {
 
 ---
 
-### Phase 6: Styling & Visual Design (`group-chat.css`)
-
-```css
-.GroupChat {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  background: rgba(18, 18, 24, 0.85);
-  backdrop-filter: blur(16px);
-}
-
-.message-item.self {
-  align-self: flex-end;
-  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-  border-radius: 18px 18px 4px 18px;
-}
-
-.message-item.peer {
-  align-self: flex-start;
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 18px 18px 18px 4px;
-}
-```
-
----
-
-### Phase 7: Main Component Assembly (`group-chat.tsx`)
+### Phase 4: Main Component Assembly (`group-chat.tsx`)
 
 ```tsx
 const GroupChatContent: FC = () => {
@@ -429,5 +301,5 @@ export default GroupChat;
 ## 4. Verification & Troubleshooting
 
 1. **Real-time Delta Sync Verification**: Confirm instant message propagation across multiple devices via `onSnapshot`.
-2. **Scroll Top Retention**: Verify that loading older message pages retains scroll position without layout shifts.
+2. **100% Unity Announcement Verification**: Confirm that 100% unity score triggers fireworks animation and POSTs to `/api/groups/announce-unity` with valid tokens.
 3. **Re-render Isolation Audit**: Use React DevTools Profiler to ensure message typing only triggers local input component re-renders.
