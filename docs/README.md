@@ -34,6 +34,9 @@ Welcome to the **scripture-habit** technical documentation. This directory conta
   - Detailed explanation of real-time Firestore listeners.
   - The separation of data and UI.
   - How unread status is synchronized.
+- **[Group Chat Construction Guide](groupchat-construction-guide.md)**
+  - Comprehensive step-by-step guide for constructing the real-time group chat system from scratch.
+  - Explains 4-tier Context isolation, custom state engine, 18 domain hooks, UI subcomponents, and 11 modal dialogs.
 - **[AI Integration](feature-ai-integration.md)**
   - How Gemini 3.1 Flash-Lite is integrated.
   - Translation, Weekly Recaps, and Automation.

@@ -31,6 +31,9 @@
   - リアルタイム Firestore リスナーの詳細な説明。
   - データと UI の分離。
   - 未読ステータスの同期方法。
+- **[グループチャット（GroupChat）ゼロから構築する完全ガイド](groupchat-construction-guide.md)**
+  - グループチャットシステムをゼロから構築・設計するための完全ガイド。
+  - 4系統のContext分離設計、カスタム状態管理エンジン、18種類の機能別フック、サブコンポーネント、および11種類のモーダル管理システムを解説。
 - **[AI 統合](feature-ai-integration.md)**
   - Gemini 3.1 Flash-Lite の統合方法。
   - 翻訳、週次ふり返り（Weekly Recaps）、および自動化。
