@@ -37,6 +37,9 @@ Welcome to the **scripture-habit** technical documentation. This directory conta
 - **[Group Chat Construction Guide](groupchat-construction-guide.md)**
   - Comprehensive step-by-step guide for constructing the real-time group chat system from scratch.
   - Explains 4-tier Context isolation, custom state engine, 18 domain hooks, UI subcomponents, and 11 modal dialogs.
+- **[Note Creation & Edit Modal Construction Guide](newnote-construction-guide.md)**
+  - Comprehensive step-by-step guide for constructing the note creation/editing modal (`NewNote`) from scratch.
+  - Explains URL metadata extraction, AI reflection generator, random scripture picker, sharing scope selector, and submission engine.
 - **[AI Integration](feature-ai-integration.md)**
   - How Gemini 3.1 Flash-Lite is integrated.
   - Translation, Weekly Recaps, and Automation.

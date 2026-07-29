@@ -1,24 +1,13 @@
-# Scripture Habit グループチャット (GroupChat) ゼロから構築する完全ガイド
+# Scripture Habit グループチャット (`GroupChat`) ゼロから構築する完全ガイド
 
 本ドキュメントは、`src/components/groupchat` モジュールをゼロから設計・構築するための包括的な開発ステップバイステップガイドです。
-Firestore によるリアルタイム通信、パフォーマンスを考慮した4系統の Context 分割、カスタムフックによるロジック分離（Logic-Component Split）、モジュール化されたサブコンポーネントおよび11種類のモーダル管理システムの全容を説明します。
+Firestore によるリアルタイム通信、パフォーマンスを考慮した 4 系統の Context 分割（Context Isolation Pattern）、カスタムフックによるロジック分離（Logic-Component Split）、モジュール化されたサブコンポーネントおよび 11 種類のモーダル管理システムの全容をコード付きで解説します。
 
 ---
 
 ## 1. 全体アーキテクチャ概要
 
 `GroupChat` モジュールは、Scripture Habit アプリにおけるグループ機能の核となるリアルタイムチャットコンポーネントです。
-
-### 主な機能
-- **リアルタイムメッセージング**: Firestore `onSnapshot` による差分受信と、快適なレスポンスを実現する楽観的UI更新（Optimistic Update）。
-- **データ読み込み最適化**: 無限スクロール pagination（過去メッセージの動的ロード）と自動スクロール制御。
-- **団結度 (Unity Score) システム**: グループメンバーの今日の聖書通読・投稿率を算出・可視化。
-- **応援 (Cheer) / リアクション機能**: スタンプ・絵文字リアクション、および通読未完了メンバーへの応援送信。
-- **自動翻訳 & 聖書リンク**: 多言語メッセージのオンデマンド翻訳、および聖書参照テキストの自動検出・リンク化。
-- **グループ管理 & 通報・モデレーション**: オーナー権限によるグループ名変更、招待コード再発行、メンバー管理、不適切コンテンツの通報・削除。
-
-### 設計思想: 4系統の Context 分割 (Context Isolation Pattern)
-単一の巨大な Context は、いずれかの状態変更で全コンポーネントを再レンダリングさせてしまいます。これを防ぐため、コンテクストを目的別に4つに分離しています。
 
 ```
                        ┌─────────────────────────┐
@@ -29,7 +18,31 @@ Firestore によるリアルタイム通信、パフォーマンスを考慮し�
     ▼                  ▼                          ▼                  ▼
 ChatDataContext   ChatMessageActionsContext   ChatGroupActionsContext   ChatUIActionsContext
 (状態データ)       (メッセージ操作)           (グループ・メンバー操作)   (UI・スクロール)
+    │                  │                          │                  │
+    └──────────────────┴────────────┬─────────────┴──────────────────┘
+                                    ▼
+                         ┌───────────────────────┐
+                         │   GroupChatContent    │
+                         └──────────┬────────────┘
+                                    │
+          ┌─────────────────────────┼─────────────────────────┐
+          ▼                         ▼                         ▼
+    ChatHeader             MessageListContainer           GroupChatFooter
+(ヘッダー・団結度メーター)  (スクロール・メッセージ一覧)  (返信表示・メッセージ入力)
 ```
+
+### 主な機能
+- **リアルタイムメッセージング**: Firestore `onSnapshot` による差分受信と、快適なレスポンスを実現する楽観的UI更新（Optimistic Update）。
+- **データ読み込み最適化**: 無限スクロール pagination（過去メッセージの動的ロード）とスクロール位置アンカー保持。
+- **団結度 (Unity Score) システム**: グループメンバーの今日の聖書通読・投稿率を算出・可視化。
+- **応援 (Cheer) / リアクション機能**: スタンプ・絵文字リアクション、および通読未完了メンバーへの応援送信。
+- **自動翻訳 & 聖書リンク**: 多言語メッセージのオンデマンド翻訳、および聖書参照テキストの自動検出・リンク化（`GospelLink`）。
+- **グループ管理 & 通報・モデレーション**: オーナー権限によるグループ名変更、招待コード再発行、メンバー管理、不適切コンテンツの通報・削除。
+
+### 4系統の Context 分割設計 (Context Isolation Pattern)
+単一の巨大な Context は、いずれかの状態変更で全コンポーネントを再レンダリングさせてしまいます。これを防ぐため、コンテクストを目的別に4つに分離しています。
+
+ネストの順序は **データ基盤 (`ChatDataContext`) ➔ ドメイン操作 (`ChatMessageActionsContext` / `ChatGroupActionsContext`) ➔ UI表示 (`ChatUIActionsContext`)** の単方向依存関係に従います。
 
 ---
 
@@ -103,25 +116,26 @@ src/components/groupchat/
 
 ### Phase 1: データモデルと Context 設計
 
-まず、チャット内で扱うデータ構造と Context を定義します。
-
-#### 1. Context の定義 (`chat-context.ts`)
-データを4つのインターフェースに分割し、`createContext` を行います。
+データの分割インターフェースと `createContext` を定義します。
 
 ```typescript
-// chat-context.ts の基本構成
+// chat-context.ts の実装
+import { createContext, Dispatch, RefObject, useContext } from 'react';
+import { Message, Group, MembersMap, UserProfileBrief, GroupData } from '../../types/chat';
+
 export interface ChatDataContextType {
   groupId: string;
   userData: UserData;
   groupData: GroupData | null;
   messages: Message[];
   loading: boolean;
-  membersLoading: boolean;
+  membersLoading: boolean; 
   membersMap: MembersMap;
   membersList: UserProfileBrief[];
   unityPercentage: number;
   isOwner: boolean;
-  // ...
+  language: string;
+  userGroups: Group[];
 }
 
 export interface ChatMessageActionsContextType {
@@ -130,11 +144,21 @@ export interface ChatMessageActionsContextType {
   handleConfirmDeleteMessage: (message: Message) => Promise<boolean>;
   handleToggleReaction: (msg: Message) => Promise<void>;
   handleTranslateMessage: (msg: Message, force?: boolean) => Promise<void>;
-  // ...
 }
 
-export interface ChatGroupActionsContextType { ... }
-export interface ChatUIActionsContextType { ... }
+export interface ChatGroupActionsContextType {
+  handleLeaveGroup: () => Promise<void>;
+  handleDeleteGroup: (confirmation: string) => Promise<void>;
+  handleUpdateGroupName: (name: string, desc: string) => Promise<boolean>;
+}
+
+export interface ChatUIActionsContextType {
+  t: (key: string) => string;
+  scrollToBottom: () => void;
+  hasMoreOlder: boolean;
+  isLoadingOlder: boolean;
+  loadMoreOlderMessages: (...) => Promise<void>;
+}
 
 export const ChatDataContext = createContext<ChatDataContextType | undefined>(undefined);
 export const ChatMessageActionsContext = createContext<ChatMessageActionsContextType | undefined>(undefined);
@@ -142,21 +166,20 @@ export const ChatGroupActionsContext = createContext<ChatGroupActionsContextType
 export const ChatUIActionsContext = createContext<ChatUIActionsContextType | undefined>(undefined);
 ```
 
-#### 2. Context Provider ラッパー (`chat-provider.tsx`)
-4つの Context をネストさせて提供する階層ラッパーを実装します。
+#### Context 階層ラッパー (`chat-provider.tsx`)
 
 ```tsx
-export const ChatProvider: FC<ChatProviderProps> = ({
-  dataValue,
-  messageActionsValue,
-  groupActionsValue,
-  uiActionsValue,
-  children
-}) => (
-  <ChatDataContext.Provider value={dataValue}>
-    <ChatMessageActionsContext.Provider value={messageActionsValue}>
-      <ChatGroupActionsContext.Provider value={groupActionsValue}>
-        <ChatUIActionsContext.Provider value={uiActionsValue}>
+export const ChatProvider: React.FC<{ 
+  data: ChatDataContextType; 
+  messageActions: ChatMessageActionsContextType;
+  groupActions: ChatGroupActionsContextType;
+  uiActions: ChatUIActionsContextType;
+  children: ReactNode;
+}> = ({ data, messageActions, groupActions, uiActions, children }) => (
+  <ChatDataContext.Provider value={data}>
+    <ChatMessageActionsContext.Provider value={messageActions}>
+      <ChatGroupActionsContext.Provider value={groupActions}>
+        <ChatUIActionsContext.Provider value={uiActions}>
           {children}
         </ChatUIActionsContext.Provider>
       </ChatGroupActionsContext.Provider>
@@ -170,7 +193,6 @@ export const ChatProvider: FC<ChatProviderProps> = ({
 ### Phase 2: ステート管理エンジンと同期レイヤー
 
 #### 1. Reducer の実装 (`hooks/core/chat-reducer.ts`)
-チャットの状態（メッセージ配列、ロード状態、モーダル状態、コンテキストメニュー状態など）を一元管理する Reducer を定義します。
 
 ```typescript
 export interface ChatState {
@@ -179,16 +201,15 @@ export interface ChatState {
   membersLoading: boolean;
   groupData: GroupData | null;
   membersMap: MembersMap;
-  membersList: UserProfileBrief[];
-  // ...
+  activeModal: ModalType;
 }
 
 export type ChatAction =
   | { type: 'SET_MESSAGES'; payload: Message[] }
   | { type: 'ADD_MESSAGE'; payload: Message }
   | { type: 'UPDATE_MESSAGE'; payload: Message }
-  | { type: 'SET_LOADING'; payload: boolean }
-  | { type: 'SET_ACTIVE_MODAL'; payload: ModalType };
+  | { type: 'UPDATE_GROUP'; groupData: GroupData }
+  | { type: 'UPDATE_MEMBERS'; newMembers: MembersMap };
 
 export function chatReducer(state: ChatState, action: ChatAction): ChatState {
   switch (action.type) {
@@ -196,59 +217,126 @@ export function chatReducer(state: ChatState, action: ChatAction): ChatState {
       return { ...state, messages: action.payload, loading: false };
     case 'ADD_MESSAGE':
       return { ...state, messages: [...state.messages, action.payload] };
-    // ...
+    case 'UPDATE_GROUP':
+      return { ...state, groupData: action.groupData };
+    case 'UPDATE_MEMBERS':
+      return { ...state, membersMap: { ...state.membersMap, ...action.newMembers } };
     default:
       return state;
   }
 }
 ```
 
-#### 2. Firestore データエンジンの構築 (`hooks/core/use-chat-data-engine.ts`)
-Firestore の `onSnapshot` を購読し、メッセージとグループ情報をリアルタイムで Dispatch します。過去ログのロード（pagination）ロジックもここに記述します。
+#### 2. Firestore リアルタイム同期エンジン (`hooks/core/use-chat-data-engine.ts`)
+
+Firestore の `onSnapshot` を使い、グループメタデータ、メンバー一覧、メッセージをサブフックとして分離購読します。
+
+```typescript
+// メッセージ購読サブフック
+const useGroupMessagesSync = (groupId: string | null, dispatch: Dispatch<ChatAction>) => {
+  useEffect(() => {
+    if (!groupId) return;
+    const msgRef = collection(db, 'groups', groupId, 'messages');
+    const q = query(msgRef, orderBy('createdAt', 'desc'), limit(50));
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const messages: Message[] = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      } as Message)).reverse();
+
+      dispatch({ type: 'SET_MESSAGES', payload: messages });
+    });
+
+    return unsubscribe;
+  }, [groupId, dispatch]);
+};
+```
 
 ---
 
 ### Phase 3: ドメイン固有カスタムフック群の実装
 
-役割に応じてカスタムフックをカテゴリ別に作成します。
+#### メッセージ操作フック (`hooks/api/use-message-actions.ts`)
 
-#### A. API 関連フック (`hooks/api/`)
-- `use-message-actions.ts`: メッセージ送信・編集・削除、Firebase Firestore への書込み、および Gemini API / Google Cloud Translation を用いた文字翻訳。
-- `use-group-actions.ts`: グループ名の変更、脱退処理、削除処理。
-- `use-invite-manager.ts`: 招待コード生成とクリップボードコピー。
-- `use-report-system.ts`: 通報モーダルの起動と通報データの保存。
+```typescript
+export const useMessageActions = (groupId: string, userData: UserData) => {
+  const handleSendMessage = async (text: string, replyTo: Message | null) => {
+    if (!text.trim()) return false;
 
-#### B. インタラクション関連フック (`hooks/interaction/`)
-- `use-message-input.ts`: テキストエリアの自動リサイズ（Auto-resize textarea）および Enter キー送信の制御。
-- `use-cheer-system.ts`: 聖書を読んだ仲間や未投稿メンバーへの「応援」送信処理。
-- `use-message-interaction.ts`: コンテキストメニュー（右クリック / 長押し）の表示位置と選択中メッセージの保持。
+    const messageRef = collection(db, 'groups', groupId, 'messages');
+    await addDoc(messageRef, {
+      text,
+      uid: userData.uid,
+      displayName: userData.displayName,
+      createdAt: serverTimestamp(),
+      replyTo: replyTo ? { id: replyTo.id, text: replyTo.text } : null
+    });
+    return true;
+  };
 
-#### C. 表示・ビュー関連フック (`hooks/view/`)
-- `use-scroll-manager.ts`: チャット最下部への自動スクロール、および過去ログ追加読み込み時のスクロール位置保持計算。
-- `use-unity-score.ts`: 当日のグループ通読達成率（%）の動的計算。
-- `use-group-chat-ui.ts`: ModalStore と連携した UI ダイアログ表示制御。
+  return { handleSendMessage, /* handleSaveEdit, handleConfirmDeleteMessage, etc. */ };
+};
+```
+
+#### スクロール位置制御フック (`hooks/view/use-scroll-manager.ts`)
+
+```typescript
+export const useScrollManager = (containerRef: RefObject<HTMLDivElement | null>) => {
+  const scrollToBottom = () => {
+    if (containerRef.current) {
+      containerRef.current.scrollTop = containerRef.current.scrollHeight;
+    }
+  };
+
+  const loadMoreOlderMessages = async (containerRef: RefObject<HTMLDivElement | null>, heightRef: RefObject<number>) => {
+    if (!containerRef.current) return;
+    // スクロール高さを記録し、ログ追加後に差分スクロールを適用してアンカーを維持
+    heightRef.current = containerRef.current.scrollHeight;
+    // ... 過去メッセージ取得 API 呼び出し
+  };
+
+  return { scrollToBottom, loadMoreOlderMessages };
+};
+```
 
 ---
 
 ### Phase 4: UIサブコンポーネント群の構築
 
-チャット画面の構成要素を切り出して構築します。
+#### 1. 聖書ディープリンク解析 (`subcomponents/gospel-link.tsx`)
+メッセージ本文内の「モーサヤ 3:7」や「1 Nephi 3:7」などのテキストを正規表現で自動検知し、Gospel Library アプリおよび Web へのハイパーリンクへ変換します。
 
-1. **`chat-header.tsx`**: グループ名、団結度インジケーター（Unity Meter）、メンバーボタン、ドロップダウンメニューを表示。
-2. **`group-chat-message-list-container.tsx`**: スクロール検出用コンテナ。上部スクロールで過去メッセージをロード。
-3. **`group-chat-message-list.tsx`**: メッセージ配列のマップレンダリング。
-4. **`message-item.tsx`**: 自分のメッセージ（右寄せ）と他人のメッセージ（左寄せ）、送信時刻、リアクション、訳文を表示。
-5. **`gospel-link.tsx`**: メッセージ内の聖書参照（例: 「1 Nephi 3:7」）を検知し、ハイパーリンク化。
-6. **`group-chat-footer.tsx` & `message-input.tsx`**: 送信入力フォームおよび返信プレビューを表示。
+```tsx
+export const GospelLink: FC<{ text: string }> = ({ text }) => {
+  const parsedElements = parseScriptureReferences(text);
+  return (
+    <span>
+      {parsedElements.map((el, i) => 
+        el.isLink ? (
+          <a key={i} href={el.url} target="_blank" rel="noopener noreferrer" className="gospel-link">
+            {el.text}
+          </a>
+        ) : (
+          el.text
+        )
+      )}
+    </span>
+  );
+};
+```
+
+#### 2. メッセージ吹き出し (`subcomponents/message-item.tsx`)
+
+自分の投稿（右寄せ・ブランド色）と他人の投稿（左寄せ・グラス背景）をレンダリングします。
 
 ---
 
-### Phase 5: モーダルダイアログシステムの実装
+### Phase 5: モーダルシステムの実装 (`group-chat-modals.tsx`)
 
-11種類のモーダルダイアログを実装し、`group-chat-modals.tsx` で一元管理します。
+`ModalStore` の `activeModal` に応じて 11 種類のモーダルを切り替える中央スイッチルーターです。
 
 ```tsx
-// group-chat-modals.tsx
 export const GroupChatModals: FC = () => {
   const { activeModal } = useModalStore();
 
@@ -271,22 +359,36 @@ export const GroupChatModals: FC = () => {
 
 ---
 
-### Phase 6: スタイリングとデザインシステム
+### Phase 6: スタイリングとデザインシステム (`group-chat.css`)
 
-CSS にてモダンなグラスモフィズム（Glassmorphic UI）、ダークモード対応、滑らかなアニメーションを設定します。
+```css
+/* グラスモフィズムチャットコンテナ */
+.GroupChat {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: rgba(18, 18, 24, 0.85);
+  backdrop-filter: blur(16px);
+}
 
-- `group-chat.css`: メインコンテナの Flexbox レイアウト、スクロールバーカスタム。
-- `message-item.css`: 吹き出しのグラデーション背景、ホバー時のクイックリアクションバー。
-- `group-chat-modals.css`: モーダルのバックドロップ（`backdrop-filter: blur(8px)`）およびアニメーション。
+.message-item.self {
+  align-self: flex-end;
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  border-radius: 18px 18px 4px 18px;
+}
+
+.message-item.peer {
+  align-self: flex-start;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 18px 18px 18px 4px;
+}
+```
 
 ---
 
-### Phase 7: メインコンポーネントの統合
-
-最後に `group-chat-provider.tsx` と `group-chat.tsx` を組み立てます。
+### Phase 7: メインコンポーネント統合 (`group-chat.tsx`)
 
 ```tsx
-// group-chat.tsx
 const GroupChatContent: FC = () => {
   const { activeModal, setActiveModal } = useModalStore();
 
@@ -329,15 +431,6 @@ export default GroupChat;
 
 ## 4. 動作検証とトラブルシューティング
 
-### 検証項目
-1. **Firestore リアルタイム受信**: 別端末またはブラウザタブからメッセージを投稿し、即座に画面へ反映されるか。
-2. **スクロール位置の維持**: 上部にスクロールして過去ログを取得した際、スクロールジャンプが発生せず位置が固定されるか。
-3. **Optimistic Update のフォールバック**: ネットワーク切断時に送信失敗アニメーションまたはリトライが表示されるか。
-4. **Context レンダリング頻度**: `React.memo` や DevTools Profiler を使用し、メッセージ入力時にヘッダーやモーダルが無駄に再レンダリングされていないか。
-
----
-
-## まとめ
-
-このガイドの手順に従うことで、巨大で複雑な `GroupChat` コンポーネントを保守性が高くパフォーマンスに優れた構造でゼロから再構築することができます。
-分離された Context とフックの構造を活かすことで、新機能の追加や単体テストの記述も容易になります。
+1. **リアルタイム受信の遅延なし検証**: 複数端末でメッセージが `onSnapshot` 経由で即座に描画されること。
+2. **スクロール位置の維持**: 過去ログを取得した際に `scrollHeight` の差分を計算して画面の跳ね（Jump）を防いでいること。
+3. **Context レンダリング頻度**: `React.memo` や DevTools Profiler で、テキスト入力時に画面全体が再描画されないことを確認。
