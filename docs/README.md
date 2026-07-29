@@ -65,7 +65,7 @@ Welcome to the **scripture-habit** technical documentation. This directory conta
 - **[Unity Participation & Sync Architecture](unity-participation.md)**
   - Group sync math, real-time message sync client overrides, and triple-fallback joined-at eligibility filtering.
 - **[Firestore Transactions & Counter Service Design](firestore-transactions-counters.md)**
-  - Dynamic transaction read-before-write ordering, atomic multi-document updates, and distributed counter sharding.
+  - Dynamic transaction read-before-write ordering, atomic multi-document updates, and read-cost audit.
 - **[Incremental Book Suggestion Engine](incremental-book-suggestions.md)**
   - Multi-lingual Unicode normalization, Japanese Hiragana-to-Katakana phonetic code-shifting, and 4-tier sorting priorities.
 - **[User Profile Sync & Reaction Anonymization](profile-sync-anonymization.md)**
