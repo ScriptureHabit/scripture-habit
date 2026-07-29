@@ -1,8 +1,5 @@
 # Timezone-Aware Local Streak Reminder System
 
-> [!WARNING]
-> **TEMPORARILY DISABLED**: As of May 28, 2026, the timezone-aware daily streak warning reminder notifications logic in `/api/cron/streak-reminder` has been temporarily disabled (commented out) and bypassed to return mock stats. To re-enable, remove the bypass block from [`cron.ts`](../scripture-habit/api_internal/routes/cron.ts) and revert the skipped integration tests in [`cron.integration.test.ts`](../scripture-habit/api_internal/routes/cron.integration.test.ts) and [`streak-reminder.integration.test.ts`](../scripture-habit/api_internal/streak-reminder.integration.test.ts).
-
 To support users worldwide, Scripture Habit has a timezone-aware streak reminder engine (`api_internal/lib/streak-reminder.ts` & `/api/streak-reminder` in `cron.ts`).
 
 Instead of sending notifications to all users at a single UTC hour, the system runs hourly background checks, detects which timezones have reached **8:00 PM (20:00) local time**, and sends localized push notifications to users who have not finished their study for the day.
