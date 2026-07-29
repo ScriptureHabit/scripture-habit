@@ -580,6 +580,9 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
                 <Button
                     onClick={async () => {
                         try {
+                            if (userData?.uid) {
+                                sessionStorage.removeItem(`tour_seen_${userData.uid}`);
+                            }
                             await apiClient.post('/api/auth/update-profile', { hasSeenTour: false });
                             toast.success(t('tourGuide.replayButton') || 'Replay Tour');
                             navigate(`/${language}/dashboard`);

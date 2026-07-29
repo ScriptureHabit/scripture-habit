@@ -208,24 +208,32 @@ const Dashboard: FC = () => {
     }
   }, [searchParams, location.pathname, location.state, navigate, setActiveGroupId, setActiveModal, selectedView]);
 
+  // 2. Onboarding Modal Flow Evaluator (State Machine Approach)
   useEffect(() => {
-    if (!loading && userData && userData.uid && userData.hasSeenWelcomeStory === undefined) {
+    if (loading || !userData || !userData.uid) return;
+
+    const sessionWelcomeSeen = sessionStorage.getItem(`welcome_seen_${userData.uid}`) === 'true';
+    const sessionTourSeen = sessionStorage.getItem(`tour_seen_${userData.uid}`) === 'true';
+
+    // Step 1: Check Welcome Story
+    const needsWelcomeStory = !sessionWelcomeSeen && (userData.hasSeenWelcomeStory === false || userData.hasSeenWelcomeStory === undefined);
+    if (needsWelcomeStory) {
       const timer = setTimeout(() => setShowWelcomeStory(true), 500);
       return () => clearTimeout(timer);
     }
-  }, [userData, loading]);
 
-  useEffect(() => {
-    // Skip tour guide during automated E2E testing to prevent overlays from blocking playwright clicks
+    // Step 2: Check Dashboard Tour (only after Welcome Story is complete)
     const isE2E = typeof navigator !== 'undefined' && navigator.webdriver;
-    if (isE2E) return;
+    const isWelcomeDone = sessionWelcomeSeen || userData.hasSeenWelcomeStory === true;
+    const needsTour = !isE2E && 
+                      !sessionTourSeen &&
+                      isWelcomeDone && 
+                      userData.hasSetKickThreshold === true && 
+                      userData.hasSeenTour !== true && 
+                      !showAutoKickModal && 
+                      selectedView === 0;
 
-    if (!loading && userData && userData.uid && 
-        userData.hasSeenWelcomeStory === true && 
-        userData.hasSetKickThreshold === true && 
-        userData.hasSeenTour !== true &&
-        !showAutoKickModal &&
-        selectedView === 0) {
+    if (needsTour) {
       const timer = setTimeout(() => setShowTourGuide(true), 800);
       return () => clearTimeout(timer);
     }
@@ -235,11 +243,17 @@ const Dashboard: FC = () => {
   // 3. Handlers
   const handleCloseWelcomeStory = async () => {
     setShowWelcomeStory(false);
+    if (userData?.uid) {
+      sessionStorage.setItem(`welcome_seen_${userData.uid}`, 'true');
+    }
     await markWelcomeStorySeen();
   };
 
   const handleCloseTourGuide = async () => {
     setShowTourGuide(false);
+    if (userData?.uid) {
+      sessionStorage.setItem(`tour_seen_${userData.uid}`, 'true');
+    }
     await markTourSeen();
   };
 

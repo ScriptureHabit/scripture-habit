@@ -1,17 +1,17 @@
 import { useCallback } from 'react';
-
 import { User } from 'firebase/auth';
 import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, appCheck, db } from '../../../firebase';
 import { getToken } from 'firebase/app-check';
+import apiClient from '../../../utils/api-client';
 import { UserData } from '../../../types/user';
 
 export const useDashboardActions = (user: User | null, userData: UserData | null) => {
   const markWelcomeStorySeen = useCallback(async (): Promise<boolean> => {
-    if (!user?.uid || !userData || userData.hasSeenWelcomeStory !== undefined) return false;
+    if (!user?.uid || !userData || userData.hasSeenWelcomeStory === true) return false;
 
     try {
-      await updateDoc(doc(db, 'users', user.uid), {
+      await apiClient.post('/api/auth/update-profile', {
         hasSeenWelcomeStory: true
       });
       return true;
@@ -25,7 +25,7 @@ export const useDashboardActions = (user: User | null, userData: UserData | null
     if (!user?.uid || !userData) return false;
 
     try {
-      await updateDoc(doc(db, 'users', user.uid), {
+      await apiClient.post('/api/auth/update-profile', {
         hasSeenTour: seen
       });
       return true;

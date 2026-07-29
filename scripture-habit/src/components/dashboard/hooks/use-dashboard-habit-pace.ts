@@ -19,11 +19,13 @@ export const useDashboardHabitPace = (
     const [autoKickError, setAutoKickError] = useState<string>('');
 
     useEffect(() => {
-        if (!loading && userData && userData.uid && 
-            userData.hasSetKickThreshold !== true && 
-            userData.hasSeenWelcomeStory !== undefined &&
-            !isJoiningInvite) {
-            setShowAutoKickModal(true);
+        if (!loading && userData && userData.uid) {
+            const sessionWelcomeSeen = sessionStorage.getItem(`welcome_seen_${userData.uid}`) === 'true';
+            const isWelcomeDone = sessionWelcomeSeen || userData.hasSeenWelcomeStory === true;
+
+            if (userData.hasSetKickThreshold !== true && isWelcomeDone && !isJoiningInvite) {
+                setShowAutoKickModal(true);
+            }
         }
     }, [userData, loading, isJoiningInvite]);
 

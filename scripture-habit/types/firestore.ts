@@ -134,6 +134,8 @@ export interface UserDocument {
     joinedAt?: FirestoreTimestamp;
     lastLoginAt?: FirestoreTimestamp;
     hasSeenWelcomeStory?: boolean;
+    hasSeenTour?: boolean;
+    hasSeenGroupOptionsTour?: boolean;
     preferredCheckInTime?: string;
     isLevelMigrated?: boolean;
     questCreatedGroup?: boolean;

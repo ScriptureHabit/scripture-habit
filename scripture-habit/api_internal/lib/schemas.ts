@@ -25,7 +25,10 @@ export const updateProfileSchema = z.object({
     stake: z.string().max(100).optional(),
     ward: z.string().max(100).optional(),
     bio: z.string().max(500).optional(),
-    language: z.enum(supportedLanguages).optional()
+    language: z.enum(supportedLanguages).optional(),
+    hasSeenWelcomeStory: z.boolean().optional(),
+    hasSeenTour: z.boolean().optional(),
+    hasSeenGroupOptionsTour: z.boolean().optional()
 });
 
 export const joinGroupSchema = z.object({

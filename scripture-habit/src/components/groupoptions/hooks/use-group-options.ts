@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { auth, db } from '../../../firebase';
-import { doc, onSnapshot, updateDoc } from 'firebase/firestore';
+import { doc, onSnapshot } from 'firebase/firestore';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { UserData } from '../../../types/user';
+import apiClient from '../../../utils/api-client';
 
 export function useGroupOptions() {
   const [user, setUser] = useState<User | null>(null);
@@ -20,11 +21,6 @@ export function useGroupOptions() {
           if (docSnap.exists()) {
             const data = docSnap.data();
             setUserData({ uid: currentUser.uid, ...data } as UserData);
-
-            // Show welcome story if not seen yet
-            if (data.hasSeenWelcomeStory === undefined) {
-              setTimeout(() => setShowWelcomeStory(true), 100);
-            }
           }
           setLoading(false);
         }, (err) => {
@@ -46,19 +42,34 @@ export function useGroupOptions() {
     const isE2E = typeof navigator !== 'undefined' && navigator.webdriver;
     if (isE2E) return;
 
-    if (!loading && userData && userData.uid && 
-        userData.hasSeenWelcomeStory === true && 
-        userData.hasSeenGroupOptionsTour !== true) {
-      const timer = setTimeout(() => setShowTour(true), 800);
-      return () => clearTimeout(timer);
+    if (!loading && userData && userData.uid) {
+      const sessionWelcomeSeen = sessionStorage.getItem(`welcome_seen_${userData.uid}`) === 'true';
+      const sessionGroupTourSeen = sessionStorage.getItem(`group_tour_seen_${userData.uid}`) === 'true';
+
+      // Step 1: Check Welcome Story
+      const needsWelcomeStory = !sessionWelcomeSeen && (userData.hasSeenWelcomeStory === false || userData.hasSeenWelcomeStory === undefined);
+      if (needsWelcomeStory) {
+        const timer = setTimeout(() => setShowWelcomeStory(true), 500);
+        return () => clearTimeout(timer);
+      }
+
+      // Step 2: Check Group Options Tour
+      const isWelcomeDone = sessionWelcomeSeen || userData.hasSeenWelcomeStory === true;
+      if (isWelcomeDone && !sessionGroupTourSeen && userData.hasSeenGroupOptionsTour !== true) {
+        const timer = setTimeout(() => setShowTour(true), 800);
+        return () => clearTimeout(timer);
+      }
     }
   }, [userData, loading]);
 
   const handleCloseWelcomeStory = async () => {
     setShowWelcomeStory(false);
-    if (user && userData && userData.hasSeenWelcomeStory === undefined) {
+    if (userData?.uid) {
+      sessionStorage.setItem(`welcome_seen_${userData.uid}`, 'true');
+    }
+    if (user && userData && userData.hasSeenWelcomeStory !== true) {
       try {
-        await updateDoc(doc(db, 'users', user.uid), {
+        await apiClient.post('/api/auth/update-profile', {
           hasSeenWelcomeStory: true
         });
       } catch (error) {
@@ -69,9 +80,12 @@ export function useGroupOptions() {
 
   const handleCloseTour = async () => {
     setShowTour(false);
+    if (userData?.uid) {
+      sessionStorage.setItem(`group_tour_seen_${userData.uid}`, 'true');
+    }
     if (user && userData && userData.hasSeenGroupOptionsTour !== true) {
       try {
-        await updateDoc(doc(db, 'users', user.uid), {
+        await apiClient.post('/api/auth/update-profile', {
           hasSeenGroupOptionsTour: true
         });
       } catch (error) {

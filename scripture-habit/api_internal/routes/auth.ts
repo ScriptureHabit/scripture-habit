@@ -20,7 +20,7 @@ router.post('/update-profile', authenticate, verifyAppCheck, async (req: Authent
             throw new ValidationError('Invalid input');
         }
         
-        const { nickname, photoURL, stake, ward, bio, language } = validation.data;
+        const { nickname, photoURL, stake, ward, bio, language, hasSeenWelcomeStory, hasSeenTour, hasSeenGroupOptionsTour } = validation.data;
         const uid = req.user!.uid;
 
         const userRef = db.collection('users').doc(uid);
@@ -32,6 +32,9 @@ router.post('/update-profile', authenticate, verifyAppCheck, async (req: Authent
         if (ward !== undefined) updates.ward = ward;
         if (bio !== undefined) updates.bio = bio;
         if (language !== undefined) updates.language = language;
+        if (hasSeenWelcomeStory !== undefined) updates.hasSeenWelcomeStory = hasSeenWelcomeStory;
+        if (hasSeenTour !== undefined) updates.hasSeenTour = hasSeenTour;
+        if (hasSeenGroupOptionsTour !== undefined) updates.hasSeenGroupOptionsTour = hasSeenGroupOptionsTour;
 
         if (Object.keys(updates).length === 0) {
             throw new ValidationError('No fields to update');
@@ -104,7 +107,9 @@ router.post('/initialize-profile', authenticate, verifyAppCheck, async (req: Aut
             totalNotes: 0,
             kickThreshold: 3,
             hasSetKickThreshold: isTestUser ? true : false,
-            ...(isTestUser || isE2EUser ? { hasSeenWelcomeStory: true } : {})
+            hasSeenWelcomeStory: (isTestUser || isE2EUser) ? true : false,
+            hasSeenTour: (isTestUser || isE2EUser) ? true : false,
+            hasSeenGroupOptionsTour: (isTestUser || isE2EUser) ? true : false
         };
 
         await userRef.set(userData);

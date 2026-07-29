@@ -259,7 +259,9 @@ describe('Auth Route Integration', () => {
             expect(userData.language).toBe('es');
             expect(userData.kickThreshold).toBe(3);
             expect(userData.hasSetKickThreshold).toBe(false);
-            expect(userData.hasSeenWelcomeStory).toBeUndefined();
+            expect(userData.hasSeenWelcomeStory).toBe(false);
+            expect(userData.hasSeenTour).toBe(false);
+            expect(userData.hasSeenGroupOptionsTour).toBe(false);
         });
 
         it('should default nickname and email when they are missing (covering nullish coalesce branches)', async () => {
