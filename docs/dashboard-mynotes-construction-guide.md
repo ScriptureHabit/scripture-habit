@@ -28,7 +28,7 @@ useDashboardSync   useDashboardGroups useHabitPace/Warnings  DashboardLayout    
 ### Key Capabilities
 - **User & Auth Sync**: Real-time synchronization of Firebase Auth and Firestore `users/{uid}` document with local midnight timezone flips (`useToday`).
 - **Streak Calendar**: Monthly reading grid (`StreakCalendar`) displaying study completions and consecutive streak counts.
-- **Habit Pace Engine (`useDashboardHabitPace`)**: Algorithmic evaluation comparing weekly study goals against historical study logs to compute dynamic achievement status.
+- **Habit Pace Hook (`useDashboardHabitPace`)**: Manages the modal state and API request (`/api/groups/update-kick-threshold`) for setting and storing a new user's target study pace (3 to 7 days autokick threshold `selectedKickDays`).
 - **Note Search & Category Filter Engine (`useMyNotes`)**: Full-text note search via search tokens (`buildNoteSearchTokens`), scripture volume category filtering, and infinite pagination.
 - **Weekly AI Recap (`useRecap`)**: Automated generation of personalized study recaps and spiritual insights via Gemini API based on 7-day note logs.
 - **Scripture Deep Linking (`NoteCard`)**: Direct deep links to the Gospel Library app / web interface with modal detail views.
@@ -116,8 +116,8 @@ export const useDashboardSync = () => {
 };
 ```
 
-#### 2. Habit Pace Engine (`hooks/use-dashboard-habit-pace.ts`)
-Analyzes the user's study logs over the last 30 days and calculates progress status.
+#### 2. Habit Pace Setup Hook (`hooks/use-dashboard-habit-pace.ts`)
+Automatically triggers the onboarding welcome modal for new users without a set threshold, enabling them to select and submit their target habit pace (3 to 7 days `selectedKickDays`) to `/api/groups/update-kick-threshold`.
 
 ---
 

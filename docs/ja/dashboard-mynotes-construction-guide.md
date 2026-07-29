@@ -28,7 +28,7 @@ useDashboardSync   useDashboardGroups useHabitPace/Warnings  DashboardLayout    
 ### 主な機能
 - **ユーザー状態 & 権限同期**: Firebase Auth および Firestore ドキュメントとの同期、深夜0時のローカルタイムゾーン反転フック（`useToday`）。
 - **通読ストリークカレンダー**: 月ごとの読書記録グリッド（`StreakCalendar`）と連続読書日数（Streak）の可視化。
-- **習慣ペース計算アルゴリズム (`useDashboardHabitPace`)**: ユーザーの週間通読目標と過去の読書ペースを比較計算し、アチーブメントメッセージを動的算出。
+- **習慣ペース設定フック (`useDashboardHabitPace`)**: 初回ユーザー向けに「3〜7日間」の目標通読ペース（キックしきい値 `kickThreshold`）を設定・保存するためのモーダル状態管理および `/api/groups/update-kick-threshold` 通信処理。
 - **ノート検索 & タグフィルタリングエンジン (`useMyNotes`)**: 全文検索トークン (`buildNoteSearchTokens`)、聖典巻別フィルタリング、および無限ロード。
 - **週次 AI ふり返り (`useRecap`)**: Gemini API を活用し、1週間分の読書ノートから個人に特化した要約と成長のフィードバックを自動生成。
 - **聖書ディープリンク構造 (`NoteCard`)**: LDS Gospel Library アプリ / Web へのダイレクトリンク生成と、モーダル詳細表示。
@@ -118,8 +118,8 @@ export const useDashboardSync = () => {
 };
 ```
 
-#### 2. 習慣ペース計算フック (`hooks/use-dashboard-habit-pace.ts`)
-過去30日間の読書ログを解析し、今週の達成率と「良好」「ペースアップ推奨」などのメッセージを算定します。
+#### 2. 習慣ペース設定フック (`hooks/use-dashboard-habit-pace.ts`)
+初回ログインユーザーが未設定の場合に自動的にウェルカムモーダルを開き、3〜7日間の習慣化ペース（キックしきい値 `selectedKickDays`）を選択・更新するフックです。`/api/groups/update-kick-threshold` へ送信し設定を保存します。
 
 ---
 
