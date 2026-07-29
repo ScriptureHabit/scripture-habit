@@ -63,6 +63,13 @@ if (language === 'ja') {
 ```
 * **Mechanism**: Hiragana characters (Unicode block `U+3041` to `U+3096`) are shifted in memory to map directly onto the Katakana Unicode block. This enables instant autocomplete matching.
 
+### Kanji Book Phonetic Mapping
+For Japanese books containing Kanji characters in their titles (e.g. `創世記` / Genesis, `第三ニーファイ` / 3 Nephi, `信仰箇条` / Articles of Faith), the engine maintains a `KANJI_BOOK_READINGS` dictionary so that searches typed in Hiragana or Katakana phonetics match instantly.
+
+1. Automatically converts user-typed Hiragana into Katakana.
+2. Matches against Katakana readings of Kanji titles (e.g., `"ダイサンニーファイ"`).
+3. Displays immediate autocomplete suggestions without requiring users to convert their input to Kanji.
+
 ---
 
 ## 3. Four-Tier Priority Sorting Algorithm
