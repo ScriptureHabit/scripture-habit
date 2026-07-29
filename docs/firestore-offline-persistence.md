@@ -110,8 +110,8 @@ When users edit data offline, changes are queued locally in IndexedDB and synchr
 *   **Isolated Scopes**: Because notes are created in user-specific subcollections (`users/{uid}/notes` or group message subcollections), multiple users are writing to distinct documents. This naturally eliminates editing conflict states.
 
 ### 4.2 Transactional Offline Blocking
-*   **Client Aborts**: Firestore transactions (like joining groups to verify capacity limits, or `NoteService` updating daily streaks) **cannot execute offline**. 
-*   **Fail-Safe UI**: When offline, any action requiring transactional integrity will fail immediately at the API network layer, triggering a user toast: *"Internet connection required to join groups or save streaks."* This prevents corrupting distributed counter shards or daily statistics via offline spoofing.
+*   **Client Aborts**: Firestore transactions (like joining groups to verify the 5-member capacity limit, or atomic `NoteService` operations) **cannot execute offline**. 
+*   **Fail-Safe UI**: When offline, any action requiring transactional integrity will fail immediately at the API network layer, triggering a user toast: *"Internet connection required to join groups or update data."* This prevents corrupting group member counts or daily aggregate statistics via offline spoofing.
 
 ### 4.3 Optimistic UI Updates
 *   **Message Dispatch**: Real-time group chat messages display instantly using temporary client-side IDs (`tempId`). Once the connection is restored, the client resolves the `tempId` against the Firestore generated server ID, ensuring smooth user interactions during temporary drops.

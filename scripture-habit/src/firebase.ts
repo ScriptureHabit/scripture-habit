@@ -40,6 +40,7 @@ if (isEmulator) {
   console.log("[Firebase] Initializing in Emulator mode with fallbacks enabled.");
 }
 
+// Initialize Firebase App with fallback options for emulator mode
 let app: FirebaseApp;
 try {
   app = initializeApp(firebaseConfig);
@@ -48,6 +49,7 @@ try {
   throw e;
 }
 
+// Initialize Firebase Analytics (only in non-emulator mode)
 let analytics: Analytics | null = null;
 if (typeof window !== 'undefined' && !isEmulator) {
   try {
@@ -57,6 +59,7 @@ if (typeof window !== 'undefined' && !isEmulator) {
   }
 }
 
+// Add Firebase Auth and App Check to global window object for Playwright tests
 declare global {
   interface Window {
     firebaseAuth?: Auth;
@@ -69,6 +72,7 @@ declare global {
   }
 }
 
+// Initialize Firebase Auth with browserLocalPersistence
 let auth: Auth | null = null;
 try {
   auth = getAuth(app);
@@ -95,6 +99,7 @@ try {
   throw e;
 }
 
+// Safely initialize Firebase Messaging if supported by the browser environment
 let messaging: Messaging | null = null;
 if (typeof window !== 'undefined') {
   isSupported()
