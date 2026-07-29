@@ -69,12 +69,8 @@ During the update scan, the service updates this cache:
 3. Updates the cached `nickname` and `photoURL` inside that specific reaction item.
 4. Saves the updated message document.
 
-### 3. Rebuilding Search Indexes
-Each personal note contains a `searchTokens` array of prefix strings for autocomplete. The user's nickname is saved under `speaker`.
-When a user updates their nickname:
-1. The engine scans the user's personal `notes` subcollection in chunks of 100.
-2. For each note, it calls the `buildNoteSearchTokens` helper to recreate the search prefixes.
-3. This keeps the "Search by Speaker" feature accurate.
+### 3. Syncing Message Search Tokens
+Shared messages within group chats contain a `searchTokens` array including the title, book advice, comments, and speaker (preacher name, etc.). When a user updates their profile details, the sender's display name (`senderNickname`) and search metadata in group messages are propagated to maintain consistency across group search features.
 
 ---
 
