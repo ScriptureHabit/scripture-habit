@@ -7,13 +7,14 @@ import { ProfileService } from '../services/profile-service.js';
 import { UserDocument } from '../../types/firestore.js';
 import { removeMemberFromGroup } from '../lib/membership-utils.js';
 import { runPhasedTransaction } from '../lib/phased-transaction.js';
+import * as Sentry from '@sentry/node';
 
 const router = express.Router();
 
 /**
  * Update User Profile and Sync to Chats
  */
-router.post('/update-profile', authenticate, verifyAppCheck, async (req: AuthenticatedRequest, res: Response, next) => {
+router.post('/update-profile', authenticate, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
     try {
         const validation = updateProfileSchema.safeParse(req.body);
         if (!validation.success) {
@@ -47,23 +48,20 @@ router.post('/update-profile', authenticate, verifyAppCheck, async (req: Authent
         if (nickname || photoURL) {
             ProfileService.syncProfileToChats(uid, { nickname, photoURL }).catch(err => {
                 console.error('[ProfileSync] Error in background sync:', err);
+                Sentry.captureException(err);
             });
         }
 
         res.status(200).json({ success: true, message: 'Profile updated and synced.' });
     } catch (err) {
-        if (err instanceof ValidationError) {
-            sendErrorResponse(res, err);
-            return;
-        }
-        next(err);
+        sendErrorResponse(res, err, 'Failed to update profile.');
     }
 });
 
 /**
  * Initialize User Profile (for Google/Social Signup)
  */
-router.post('/initialize-profile', authenticate, verifyAppCheck, async (req: AuthenticatedRequest, res: Response, next) => {
+router.post('/initialize-profile', authenticate, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
     try {
         const validation = initializeProfileSchema.safeParse(req.body);
         if (!validation.success) {
@@ -127,19 +125,15 @@ router.post('/initialize-profile', authenticate, verifyAppCheck, async (req: Aut
             userData
         });
     } catch (err) {
-        if (err instanceof ValidationError) {
-            sendErrorResponse(res, err);
-            return;
-        }
         console.error('[Auth] Error initializing profile:', err);
-        next(err);
+        sendErrorResponse(res, err, 'Failed to initialize profile.');
     }
 });
 
 /**
  * Verify Login
  */
-router.post('/verify-login', verifyAppCheck, async (req, res: Response, next) => {
+router.post('/verify-login', verifyAppCheck, async (req, res: Response) => {
     try {
         const validation = verifyLoginSchema.safeParse(req.body);
         if (!validation.success) {
@@ -175,12 +169,7 @@ router.post('/verify-login', verifyAppCheck, async (req, res: Response, next) =>
             email: decodedToken.email 
         });
     } catch (err: unknown) {
-        if (err instanceof ValidationError) {
-            sendErrorResponse(res, err);
-            return;
-        }
-        if (err instanceof ForbiddenError) return next(err);
-        next(new AuthenticationError('Authentication failed.'));
+        sendErrorResponse(res, err, 'Authentication failed.');
     }
 });
 
