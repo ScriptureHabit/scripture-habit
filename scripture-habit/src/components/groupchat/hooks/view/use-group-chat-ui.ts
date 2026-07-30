@@ -44,8 +44,8 @@ export const useGroupChatUI = (
       const nameToSet = savedTrans?.name;
       const descToSet = savedTrans?.description;
 
-      const needsName = !nameToSet && language !== 'en';
-      const needsDesc = groupData.description && !descToSet && language !== 'en';
+      const needsName = !nameToSet;
+      const needsDesc = groupData.description && !descToSet;
 
       if (nameToSet) {
         queueMicrotask(() => {

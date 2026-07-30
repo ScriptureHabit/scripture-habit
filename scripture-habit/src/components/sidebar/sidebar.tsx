@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import './sidebar.css';
 import { SidebarData } from '../../data/data';
 import {
@@ -7,9 +7,8 @@ import {
   UilPlusCircle,
 } from "@iconscout/react-unicons";
 import { useNavigate } from 'react-router-dom';
-import { auth, appCheck } from '../../firebase';
-import { getToken } from "firebase/app-check";
 import { useLanguage } from '../../hooks/use-language';
+import { useGroupTranslation } from '../../hooks/use-group-translation';
 import { MAX_GROUPS_PER_USER } from '../../config';
 import { Group } from '../../types/chat';
 
@@ -24,100 +23,12 @@ interface SidebarGroupItemProps {
 }
 
 const SidebarGroupItem: React.FC<SidebarGroupItemProps> = ({ group, language, isActive, onClick, getGroupStatusEmoji, getUnityPercentage, isModal = false }) => {
-  const [translatedName, setTranslatedName] = useState('');
-  const translationAttemptedRef = useRef(false);
+  const { displayName } = useGroupTranslation(group, language);
 
   // Debug log for Webkit unity percentage issue
   if (group.name?.includes('Persistence')) {
     console.log(`[SidebarGroupItem] Rendering ${group.name}: unity=${getUnityPercentage(group)}%, id=${group.id}`);
   }
-
-  useEffect(() => {
-    // 1. Check Firestore Data (Real-time sync makes this fast)
-    const targetTrans = group.translations?.[language];
-    if (targetTrans?.name) {
-      queueMicrotask(() => {
-        setTranslatedName(targetTrans.name);
-      });
-      return;
-    }
-
-    // 2. Skip translation if target is English (base language) or matches original
-    if (language === 'en') {
-      queueMicrotask(() => {
-        setTranslatedName(''); // Use group.name
-      });
-      return;
-    }
-
-    // Check if we already attempted translation in this session
-    if (translationAttemptedRef.current) return;
-
-    const autoTranslate = async () => {
-      if (!group.name || !language) return;
-
-      const cacheKey = `trans_group_name_${group.id}_${language}`;
-      const cached = sessionStorage.getItem(cacheKey);
-
-      if (cached) {
-        queueMicrotask(() => {
-          setTranslatedName(cached);
-        });
-        translationAttemptedRef.current = true;
-        return;
-      }
-
-      // Set ref immediately to prevent parallel duplicate calls
-      translationAttemptedRef.current = true;
-
-      try {
-        const idToken = await auth?.currentUser?.getIdToken();
-        if (!idToken) return;
-        let appCheckToken = '';
-        if (appCheck) {
-          const appCheckTokenResponse = await getToken(appCheck, false);
-          appCheckToken = appCheckTokenResponse.token;
-        }
-        const API_BASE = '';
-
-        const headers: Record<string, string> = {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${idToken}`,
-        };
-        if (appCheckToken) {
-          headers['X-Firebase-AppCheck'] = appCheckToken;
-        }
-
-        const res = await fetch(`${API_BASE}/api/ai/translate`, {
-          method: 'POST',
-          headers,
-
-          body: JSON.stringify({
-            text: group.name,
-            targetLanguage: language,
-            groupId: group.id,
-            updateType: 'group_name'
-          }),
-        });
-
-        if (res.ok) {
-          const data = await res.json();
-          if (data.translatedText) {
-            setTranslatedName(data.translatedText);
-            sessionStorage.setItem(cacheKey, data.translatedText);
-          }
-        } else {
-          console.warn('Sidebar auto-translation returned error:', res.status);
-        }
-      } catch (err) {
-        console.error('Sidebar auto-translation failed', err);
-      }
-    };
-
-    autoTranslate();
-  }, [group.id, group.name, group.translations, language]);
-
-  const displayName = translatedName || group.name;
 
   if (isModal) {
     return (
