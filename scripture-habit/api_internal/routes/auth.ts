@@ -2,7 +2,7 @@ import express, { Response } from 'express';
 import { admin, db } from '../lib/firebase-admin.js';
 import { verifyAppCheck, authenticate, AuthenticatedRequest } from '../lib/middleware.js';
 import { verifyLoginSchema, initializeProfileSchema, updateProfileSchema } from '../lib/schemas.js';
-import { AuthenticationError, ForbiddenError, ValidationError, sendErrorResponse } from '../lib/errors.js';
+import { AppError, AuthenticationError, ForbiddenError, ValidationError, sendErrorResponse } from '../lib/errors.js';
 import { ProfileService } from '../services/profile-service.js';
 import { UserDocument } from '../../types/firestore.js';
 import { removeMemberFromGroup } from '../lib/membership-utils.js';
@@ -169,7 +169,11 @@ router.post('/verify-login', verifyAppCheck, async (req, res: Response) => {
             email: decodedToken.email 
         });
     } catch (err: unknown) {
-        sendErrorResponse(res, err, 'Authentication failed.');
+        if (err instanceof AppError) {
+            sendErrorResponse(res, err);
+            return;
+        }
+        sendErrorResponse(res, new AuthenticationError('Authentication failed.'));
     }
 });
 
