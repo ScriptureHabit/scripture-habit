@@ -97,7 +97,6 @@
   "overrides": {
     "uuid": "11.1.1",
     "tar": "7.5.21",
-    "brace-expansion": "^2.0.1",
     "minimatch": "^10.0.3",
     "@opentelemetry/core": "$@opentelemetry/core",
     "jwks-rsa": {
