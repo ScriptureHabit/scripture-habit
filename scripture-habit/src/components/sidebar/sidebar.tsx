@@ -176,7 +176,7 @@ const Sidebar: React.FC<SidebarProps> = ({ selected, setSelected, userGroups = [
     setActiveGroupId(groupId);
     setSelected(2); // Switch to GroupChat view
     setShowGroupModal(false);
-    navigate(`/${language}/dashboard`);
+    navigate(`/${language}/dashboard?groupId=${encodeURIComponent(groupId)}`);
   };
 
   const getUnityPercentageLocal = (group: Group): number => {
