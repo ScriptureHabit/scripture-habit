@@ -267,13 +267,14 @@ test.describe('Invitation Join Flow Stability', () => {
         await pageB.getByTestId('login-submit').click();
         await expect(pageB).toHaveURL(/.*dashboard/, { timeout: 30000 });
 
-        // Handle Habit Pace modal for new User B
+        // Handle Habit Pace modal for new User B (if shown)
         const paceModalTitle = pageB.getByTestId('habit-pace-modal-title');
-        await expect(paceModalTitle).toBeVisible({ timeout: 20000 });
-        await pageB.click('[data-testid="habit-pace-option-3"]');
-        await pageB.click('[data-testid="habit-pace-next-button"]');
-        await pageB.click('[data-testid="habit-pace-save-button"]');
-        await expect(paceModalTitle).not.toBeVisible();
+        if (await paceModalTitle.isVisible({ timeout: 5000 }).catch(() => false)) {
+            await pageB.click('[data-testid="habit-pace-option-3"]');
+            await pageB.click('[data-testid="habit-pace-next-button"]');
+            await pageB.click('[data-testid="habit-pace-save-button"]');
+            await expect(paceModalTitle).not.toBeVisible();
+        }
     });
 
     await test.step('User B joins via invite link while logged in', async () => {

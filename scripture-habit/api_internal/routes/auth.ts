@@ -1,8 +1,8 @@
-import express, { Response } from 'express';
+import express, { Response, NextFunction } from 'express';
 import { admin, db } from '../lib/firebase-admin.js';
 import { verifyAppCheck, authenticate, AuthenticatedRequest } from '../lib/middleware.js';
 import { verifyLoginSchema, initializeProfileSchema, updateProfileSchema } from '../lib/schemas.js';
-import { AppError, AuthenticationError, ForbiddenError, ValidationError, sendErrorResponse } from '../lib/errors.js';
+import { AuthenticationError, ForbiddenError, ValidationError, sendErrorResponse } from '../lib/errors.js';
 import { ProfileService } from '../services/profile-service.js';
 import { UserDocument } from '../../types/firestore.js';
 import { removeMemberFromGroup } from '../lib/membership-utils.js';
@@ -104,7 +104,7 @@ router.post('/initialize-profile', authenticate, verifyAppCheck, async (req: Aut
             streakCount: 0,
             totalNotes: 0,
             kickThreshold: 3,
-            hasSetKickThreshold: isTestUser ? true : false,
+            hasSetKickThreshold: (isTestUser || isE2EUser) ? true : false,
             hasSeenWelcomeStory: (isTestUser || isE2EUser) ? true : false,
             hasSeenTour: (isTestUser || isE2EUser) ? true : false,
             hasSeenGroupOptionsTour: (isTestUser || isE2EUser) ? true : false
@@ -133,7 +133,7 @@ router.post('/initialize-profile', authenticate, verifyAppCheck, async (req: Aut
 /**
  * Verify Login
  */
-router.post('/verify-login', verifyAppCheck, async (req, res: Response) => {
+router.post('/verify-login', verifyAppCheck, async (req, res: Response, next: NextFunction) => {
     try {
         const validation = verifyLoginSchema.safeParse(req.body);
         if (!validation.success) {
@@ -169,11 +169,12 @@ router.post('/verify-login', verifyAppCheck, async (req, res: Response) => {
             email: decodedToken.email 
         });
     } catch (err: unknown) {
-        if (err instanceof AppError) {
+        if (err instanceof ValidationError) {
             sendErrorResponse(res, err);
             return;
         }
-        sendErrorResponse(res, new AuthenticationError('Authentication failed.'));
+        if (err instanceof ForbiddenError) return next(err);
+        next(new AuthenticationError('Authentication failed.'));
     }
 });
 
