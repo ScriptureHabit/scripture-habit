@@ -8,14 +8,12 @@ service cloud.firestore {
       // In production, we require email verification for social interaction
       return request.auth != null && (
         request.auth.token.email_verified == true || 
-        request.auth.token.get('email_verified', false) == true ||
-        request.auth.token.get('email', '').matches('.*@example[.]com$')
+        request.auth.token.get('email_verified', false) == true
       );
     }
 
     function isAppCheckVerified() {
-      return (request.auth != null && request.auth.token.get('email', '').matches('.*@example[.]com$')) || 
-             request.appCheck != null;
+      return request.appCheck != null;
     }
 
     // Helpers for Membership Logic

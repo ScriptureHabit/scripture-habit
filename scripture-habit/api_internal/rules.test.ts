@@ -234,10 +234,19 @@ describe('Firestore Security Rules', () => {
     });
 
     describe('Authentication Helpers', () => {
-        it('should allow @example.com users to bypass email verification', async () => {
+        it('should deny unverified users even with @example.com email', async () => {
             const tester = testEnv.authenticatedContext('tester', { 
                 email: 'test@example.com',
                 email_verified: false 
+            });
+            await seedGroup('public_grp', { isPublic: true });
+            await assertFails(getDoc(doc(tester.firestore(), 'groups/public_grp')));
+        });
+
+        it('should allow verified users to access public groups', async () => {
+            const tester = testEnv.authenticatedContext('tester', { 
+                email: 'test@example.com',
+                email_verified: true 
             });
             await seedGroup('public_grp', { isPublic: true });
             await assertSucceeds(getDoc(doc(tester.firestore(), 'groups/public_grp')));

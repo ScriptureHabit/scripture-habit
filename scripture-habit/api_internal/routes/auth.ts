@@ -151,6 +151,15 @@ router.post('/verify-login', verifyAppCheck, async (req, res: Response, next) =>
         // use token from body for verification
         const decodedToken = await admin.auth().verifyIdToken(token);
         const uid = decodedToken.uid;
+
+        const isProd = process.env.NODE_ENV === 'production' && process.env.VITE_DEV_MODE !== 'true';
+        const email = decodedToken.email || '';
+        const isTestDomain = email.endsWith('@example.com') || email.endsWith('@test.local');
+
+        if (isProd && isTestDomain) {
+            console.warn(`[Auth] Production login rejected for test domain email: ${email}`);
+            throw new ForbiddenError('Test domain accounts are forbidden in production.', 'FORBIDDEN');
+        }
         
         // Check if email is verified - use latest snapshot from Auth server for login check
         const userRecord = await admin.auth().getUser(uid);
