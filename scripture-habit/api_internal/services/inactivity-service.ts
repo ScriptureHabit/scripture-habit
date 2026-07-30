@@ -228,16 +228,8 @@ export class InactivityService {
         }
 
         // Handle Ownership Transfer
-        if (decision.newOwnerId && ownerSnap) {
+        if (decision.newOwnerId) {
             groupUpdates.ownerUserId = decision.newOwnerId;
-            
-            // Post transfer message
-            const lang = (ownerSnap.data() as UserDocument)?.language || 'en';
-            batch.set(groupRef.collection('messages').doc(), {
-                text: t(lang, 'notifications.ownership_transferred'),
-                createdAt: admin.firestore.FieldValue.serverTimestamp(),
-                senderId: 'system', isSystemMessage: true, type: 'system', messageType: 'system'
-            });
         }
 
         // Handle Removals

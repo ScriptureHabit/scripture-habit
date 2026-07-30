@@ -19,8 +19,8 @@
     },
     {
       "file": "scripture-habit/api_internal/services/inactivity-service.ts",
-      "line": 230,
-      "description": "### 👑 Automatic Ownership Transfer\n\nWhen a group owner becomes inactive, ownership is automatically transferred to the next most active member. The service triggers a bot announcement in the chat to seamlessly inform the remaining group members."
+      "line": 231,
+      "description": "### 👑 Automatic Ownership Transfer\n\nWhen a group owner becomes inactive, ownership is automatically transferred to the next most active member silently without spamming the chat with announcements."
     },
     {
       "file": "scripture-habit/api_internal/services/archive-service.ts",
