@@ -175,8 +175,7 @@ const Dashboard: FC = () => {
       if (path.includes('/profile')) {
         if (selectedView !== 3) setSelectedView(3);
       } else if (path.includes('/dashboard')) {
-        // Only force back to default view (0) if we are coming from Profile (3)
-        // Views 1 (Stats) and 2 (Chat) are valid sub-views of /dashboard.
+        // If current path is /dashboard (not /profile), reset view if currently on Profile (3)
         if (selectedView === 3) setSelectedView(0);
       }
     });
