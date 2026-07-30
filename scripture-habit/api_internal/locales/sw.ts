@@ -17,6 +17,8 @@ export default {
         streak_warning_body: "Mfululizo wako uko hatarini! Chukua dakika chache tu kutuliza moyo wako ✨",
         member_leave_message: "👋 **{nickname}** aliondoka kwenye kikundi.",
         member_kick_message: "🚫 **{nickname}** aliondolewa kwenye kikundi.",
+        group_created_welcome: "🎨 **{nickname}** ameunda kikundi! Karibu!",
+        member_joined_welcome: "✨ **{nickname}** amejiunga na kikundi! Karibu!",
         cheer_body: "**{senderNickname}** amekutumia nguvu! ✨"
     }
 };

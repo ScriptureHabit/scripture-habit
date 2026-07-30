@@ -197,7 +197,8 @@ export async function removeMemberFromGroup(
         const msgRef = groupRef.collection('messages').doc();
         const lang = options.preferredLanguage || 'en';
         
-        const text = options.systemMessage.type === 'leave' 
+        const isLeave = options.systemMessage.type === 'leave';
+        const text = isLeave 
             ? t(lang, 'notifications.member_leave_message', { nickname: options.systemMessage.nickname })
             : t(lang, 'notifications.member_kick_message', { nickname: options.systemMessage.nickname });
         
@@ -207,7 +208,8 @@ export async function removeMemberFromGroup(
             senderId: 'system',
             isSystemMessage: true,
             type: options.systemMessage.type,
-            messageType: options.systemMessage.type,
+            messageType: isLeave ? 'userLeft' : 'userKicked',
+            messageData: { nickname: options.systemMessage.nickname },
             expireAt: getMessageExpireAt()
         };
         transaction.set(msgRef, leaveMsg);

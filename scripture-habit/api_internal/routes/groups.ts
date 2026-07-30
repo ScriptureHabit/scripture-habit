@@ -10,6 +10,7 @@ import { removeMemberFromGroup } from '../lib/membership-utils.js';
 import { AppError, AuthenticationError, ForbiddenError, NotFoundError, ValidationError, sendErrorResponse } from '../lib/errors.js';
 import { getMessageExpireAt } from '../lib/ttl-utils.js';
 import { MessageService } from '../services/message-service.js';
+import { t } from '../lib/i18n.js';
 
 
 const router = express.Router();
@@ -103,13 +104,15 @@ router.post('/create-group', authenticate, requireEmailVerified, verifyAppCheck,
             });
 
             const msgRef = groupRef.collection('messages').doc();
+            const lang = userData.language || 'en';
             const welcomeMsg = {
-                text: `🎨 **${userNick}** created the group! Welcome!`,
+                text: t(lang, 'notifications.group_created_welcome', { nickname: userNick }),
                 createdAt: now,
                 senderId: 'system',
                 isSystemMessage: true,
                 type: 'system',
-                messageType: 'system',
+                messageType: 'userJoined',
+                messageData: { nickname: userNick },
                 expireAt: getMessageExpireAt()
             };
             transaction.set(msgRef, welcomeMsg);
@@ -258,13 +261,16 @@ router.post('/join-group', authenticate, requireEmailVerified, verifyAppCheck, a
                 });
 
                 const msgRef = groupRef.collection('messages').doc();
+                const joinLang = userData.language || 'en';
+                const nickname = userData.nickname || 'Someone';
                 const systemMsg = {
-                    text: `✨ **${userData.nickname || 'Someone'}** joined the group! Welcome!`,
+                    text: t(joinLang, 'notifications.member_joined_welcome', { nickname }),
                     createdAt: admin.firestore.FieldValue.serverTimestamp(),
                     senderId: 'system',
                     isSystemMessage: true,
                     type: 'join',
-                    messageType: 'join',
+                    messageType: 'userJoined',
+                    messageData: { nickname },
                     expireAt: getMessageExpireAt()
                 };
                 transaction.set(msgRef, systemMsg);

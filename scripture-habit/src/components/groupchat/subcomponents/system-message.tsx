@@ -47,6 +47,13 @@ const SystemMessage: FC<SystemMessageProps> = ({ msg, t, kickThreshold = DEFAULT
       });
     }
 
+    if (msg.messageType === 'userKicked' && msg.messageData) {
+      const data = msg.messageData;
+      return t('groupChat.userKicked', {
+        nickname: String(data.nickname || '').trim()
+      });
+    }
+
 
 
     if (msg.messageType === 'unityAnnouncement') {

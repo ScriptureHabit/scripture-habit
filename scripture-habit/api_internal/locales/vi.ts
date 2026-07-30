@@ -17,6 +17,8 @@ export default {
         streak_warning_body: "Chuỗi ngày của bạn sắp bị ngắt quãng! Hãy dành vài phút để lòng tĩnh lặng ✨",
         member_leave_message: "👋 **{nickname}** đã rời khỏi nhóm.",
         member_kick_message: "🚫 **{nickname}** đã bị xóa khỏi nhóm.",
+        group_created_welcome: "🎨 **{nickname}** đã tạo nhóm! Chào mừng!",
+        member_joined_welcome: "✨ **{nickname}** đã tham gia nhóm! Chào mừng!",
         cheer_body: "**{senderNickname}** đã gửi lời động viên đến bạn! ✨"
     }
 };

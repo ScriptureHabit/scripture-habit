@@ -1,0 +1,31 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "Tour 5: Group Lifecycle, Membership & GDPR Anonymization",
+  "steps": [
+    {
+      "file": "scripture-habit/api_internal/routes/groups.ts",
+      "line": 21,
+      "description": "### 🏠 Group Creation & Limit Guards\n\nWhen a user creates a new group, `POST /api/groups/create-group` enforces the `MAX_GROUPS_PER_USER` limit (Line 41) within an atomic transaction, preventing bypasses before generating a unique 7-day invite code."
+    },
+    {
+      "file": "scripture-habit/api_internal/routes/groups.ts",
+      "line": 172,
+      "description": "### 🎟️ Phased Transaction Join & Capacity Controls\n\nJoining a group via `POST /api/groups/join-group` uses `runPhasedTransaction` to validate invite code expiration, check group capacity (`maxMembers`), and safely populate both `/groups/{id}/members` subcollection and user group states."
+    },
+    {
+      "file": "scripture-habit/api_internal/lib/membership-utils.ts",
+      "line": 45,
+      "description": "### 🔄 Atomic Member Removal & Ownership Handoff\n\nThe central `removeMemberFromGroup` utility removes members from group arrays, recalculates unity score, and if the leaving member is the owner, automatically transfers ownership to the next member."
+    },
+    {
+      "file": "scripture-habit/api_internal/routes/auth.ts",
+      "line": 190,
+      "description": "### 🛡️ Account Deletion & GDPR Compliance\n\n`POST /api/auth/delete-account` handles total account deletion: it exits all joined groups safely and triggers `ProfileService.purgeSocialIdentity` to anonymize past chat activity according to GDPR standards."
+    },
+    {
+      "file": "scripture-habit/api_internal/services/profile-service.ts",
+      "line": 18,
+      "description": "### 👤 Profile Sync & Identity Anonymization\n\n`ProfileService` syncs profile updates (nickname, avatar) across recent messages asynchronously, or purges user identity when requested to ensure zero orphaned personal data in shared collections."
+    }
+  ]
+}

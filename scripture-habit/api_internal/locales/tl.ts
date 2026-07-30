@@ -17,6 +17,8 @@ export default {
         streak_warning_body: "Nanganganib ang iyong streak! Maglaan ng ilang minuto para patahimikin ang iyong puso ✨",
         member_leave_message: "👋 **{nickname}** ay umalis sa grupo.",
         member_kick_message: "🚫 **{nickname}** ay tinanggal sa grupo.",
+        group_created_welcome: "🎨 Nilikha ni **{nickname}** ang grupo! Maligayang pagdating!",
+        member_joined_welcome: "✨ Sumali si **{nickname}** sa grupo! Maligayang pagdating!",
         cheer_body: "**{senderNickname}** ay nagpadala sa iyo ng lakas! ✨"
     }
 };

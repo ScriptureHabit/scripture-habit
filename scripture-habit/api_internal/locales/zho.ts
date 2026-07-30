@@ -16,7 +16,9 @@ export default {
         streak_warning_title: "📖 今天你有度过属灵的时间吗？",
         streak_warning_body: "你的连续记录快要中断了！只需花几分钟让心静下来 ✨",
         member_leave_message: "👋 **{nickname}**离开了小组。",
-        member_kick_message: "🚫 **{nickname}**被踢出了小组。",
-        cheer_body: "**{senderNickname}**给你加油了！✨"
+        member_kick_message: "🚫 **{nickname}**被踢出了小組。",
+        group_created_welcome: "🎨 **{nickname}** 創建了小組！歡迎！",
+        member_joined_welcome: "✨ **{nickname}** 加入了小組！歡迎！",
+        cheer_body: "**{senderNickname}**給你加油了！✨"
     }
 };

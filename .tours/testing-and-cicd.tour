@@ -3,18 +3,18 @@
   "title": "Tour 4: Testing & CI/CD Pipeline",
   "steps": [
     {
-      "file": "api_internal/rules.test.ts",
+      "file": "scripture-habit/api_internal/rules.test.ts",
       "line": 15,
       "description": "### 🧪 Firestore Rules Integration Tests\n\nThis file holds the unit tests for our database security rules using `@firebase/rules-unit-testing`. It spins up a local Firebase Emulator to verify read/write access without making real cloud requests."
     },
     {
-      "file": "api_internal/rules.test.ts",
+      "file": "scripture-habit/api_internal/rules.test.ts",
       "line": 40,
       "description": "### 👤 Testing Authentication & Profile Guards\n\nHere, we verify that an authenticated user `alice` can successfully read her own profile (`assertSucceeds`), whereas she is blocked from reading Bob's profile if her email is unverified (`assertFails`). This guarantees rules validation works as expected."
     },
     {
-      "file": "api_internal/rules.test.ts",
-      "line": 254,
+      "file": "scripture-habit/api_internal/rules.test.ts",
+      "line": 256,
       "description": "### 🔍 Testing List Queries & Row-Level Security\n\nFirestore rules validate row-level queries. In this step, we ensure that querying all groups fails because it exposes private groups, but adding a `.where('members', 'array-contains', 'alice')` filter succeeds, as it guarantees row-level privacy!"
     },
     {

@@ -17,6 +17,8 @@ export default {
         streak_warning_body: "Sua ofensiva está em risco! Tire apenas alguns minutos para aquietar seu coração ✨",
         member_leave_message: "👋 **{nickname}** saiu do grupo.",
         member_kick_message: "🚫 **{nickname}** foi removido do grupo.",
+        group_created_welcome: "🎨 **{nickname}** criou o grupo! Bem-vindo!",
+        member_joined_welcome: "✨ **{nickname}** entrou no grupo! Bem-vindo!",
         cheer_body: "**{senderNickname}** enviou um cheers! ✨"
     }
 };

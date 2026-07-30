@@ -17,6 +17,8 @@ export default {
         streak_warning_body: "연속 기록이 끊어질 위기입니다! 단 몇 분이라도 마음을 가라앉히는 시간을 가져보세요 ✨",
         member_leave_message: "👋 **{nickname}**님이 그룹을 떠났습니다.",
         member_kick_message: "🚫 **{nickname}**님이 그룹에서 제거되었습니다.",
+        group_created_welcome: "🎨 **{nickname}**님이 그룹을 생성했습니다! 환영합니다!",
+        member_joined_welcome: "✨ **{nickname}**님이 그룹에 참여했습니다! 환영합니다!",
         cheer_body: "**{senderNickname}**님이 당신에게 응원을 보냈습니다! ✨"
     }
 };

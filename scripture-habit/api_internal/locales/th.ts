@@ -17,6 +17,8 @@ export default {
         streak_warning_body: "สถิติของคุณกำลังตกอยู่ในความเสี่ยง! ใช้เวลาเพียงไม่กี่นาทีเพื่อสงบจิตใจ ✨",
         member_leave_message: "👋 **{nickname}** ได้ออกจากกลุ่มแล้ว",
         member_kick_message: "🚫 **{nickname}** ถูกนำออกจากกลุ่มแล้ว",
+        group_created_welcome: "🎨 **{nickname}** สร้างกลุ่มแล้ว! ยินดีต้อนรับ!",
+        member_joined_welcome: "✨ **{nickname}** เข้าร่วมกลุ่มแล้ว! ยินดีต้อนรับ!",
         cheer_body: "**{senderNickname}** ส่งกำลังใจให้คุณ! ✨"
     }
 };

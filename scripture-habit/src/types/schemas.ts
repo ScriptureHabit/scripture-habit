@@ -51,6 +51,7 @@ export const MessageTypeSchema = z.enum([
   'system', 
   'userJoined', 
   'userLeft', 
+  'userKicked',
   'unityAnnouncement'
 ]).catch('text'); // Unknown types fall back to 'text' to prevent listener crashes
 
