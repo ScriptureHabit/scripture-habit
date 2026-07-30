@@ -167,9 +167,6 @@ const Dashboard: FC = () => {
 
   useEffect(() => {
     queueMicrotask(() => {
-      if (location.state?.initialView !== undefined) setSelectedView(location.state.initialView);
-      if (location.state?.initialGroupId) setActiveGroupId(location.state.initialGroupId);
-
       // Sync view state with localized URL paths
       const path = location.pathname;
       if (path.includes('/profile')) {
@@ -191,8 +188,6 @@ const Dashboard: FC = () => {
         if (v) {
           setSelectedView(parseInt(v));
         } else if (gid) {
-          // Only force view 2 if we aren't already on a dashboard sub-view (1 or 2)
-          // or if we specifically want to switch to chat for a new groupId.
           setSelectedView(2); 
         }
 
@@ -202,7 +197,7 @@ const Dashboard: FC = () => {
         navigate(location.pathname, { replace: true });
       });
     }
-  }, [searchParams, location.pathname, location.state, navigate, setActiveGroupId, setActiveModal, selectedView]);
+  }, [searchParams, location.pathname, navigate, setActiveGroupId, setActiveModal, selectedView]);
 
   // 2. Onboarding Modal Flow Evaluator (State Machine Approach)
   useEffect(() => {
