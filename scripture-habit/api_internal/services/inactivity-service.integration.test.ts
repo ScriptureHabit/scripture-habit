@@ -242,20 +242,20 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('InactivityService Integra
         expect(gDoc.data()?.members).not.toContain(U_INACTIVE);
     });
 
-    it('Scenario 6: Verify Japanese localization for ownership transfer', async () => {
+    it('Scenario 6: Verify silent ownership transfer (no chat announcement created)', async () => {
         const result = await InactivityService.processGroupInactivity(G6);
         expect(result.transferCount).toBe(1);
+
+        const gDoc = await db.collection('groups').doc(G6).get();
+        expect(gDoc.data()?.ownerUserId).toBe(U_JA);
 
         const messagesSnap = await db.collection('groups').doc(G6).collection('messages')
             .where('isSystemMessage', '==', true)
             .get();
         
-        const transferMsg = messagesSnap.docs.find(d => d.data().text.includes(t('ja', 'notifications.ownership_transferred').substring(0, 5)));
-        expect(transferMsg).toBeDefined();
-        
-        // Final check: exact match
-        const expectedText = t('ja', 'notifications.ownership_transferred');
-        expect(transferMsg?.data().text).toBe(expectedText);
+        // Ownership transfer should be silent now (no system message posted)
+        const transferMsg = messagesSnap.docs.find(d => d.data().text?.includes(t('ja', 'notifications.ownership_transferred').substring(0, 5)));
+        expect(transferMsg).toBeUndefined();
     });
 
     it('Scenario 7: Purge group marked with isDeleted=true', async () => {
