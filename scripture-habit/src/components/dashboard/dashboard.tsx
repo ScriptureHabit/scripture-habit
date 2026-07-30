@@ -327,7 +327,7 @@ const Dashboard: FC = () => {
           <GroupChat 
             groupId={activeGroupId} userData={userData} userGroups={enrichedUserGroups} 
             onInputFocusChange={setIsInputFocused} isExternalModalOpen={isModalOpen} 
-            onBack={() => { setActiveGroupId(null); setSelectedView(0); }} onGroupSelect={setActiveGroupId} 
+            onBack={() => { setActiveGroupId(null); setSelectedView(0); navigate(`/${language}/dashboard`); }} onGroupSelect={setActiveGroupId} 
              // initialShowInviteModal prop removed, using global store instead
             onUnityUpdate={handleUnityUpdate} isActive={selectedView === 2}
           />
