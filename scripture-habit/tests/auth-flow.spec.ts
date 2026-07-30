@@ -51,7 +51,7 @@ test.describe('Auth & Onboarding Flow', () => {
     await fillSignupForm(page, nickname, email);
 
     await expect(page).toHaveURL(/.*\/login/);
-    await expect(page.getByText(/Verification email sent/i)).toBeVisible();
+    await expect(page.locator('.Toastify__toast, [role="alert"]')).toContainText(/Verification email sent/i, { timeout: 15000 });
 
     // Login
     await performLogin(page, email);
