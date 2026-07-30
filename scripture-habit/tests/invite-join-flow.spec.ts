@@ -177,8 +177,9 @@ test.describe('Invitation Join Flow Stability', () => {
 
         await expect(groupItemA.first()).toBeVisible({ timeout: 20000 });
         
-        console.log('Group found in User A sidebar. Clicking specifically on the group name...');
-        await groupItemA.first().getByTestId('group-name-sidebar').click({ force: true });
+        console.log('Group found in User A sidebar. Clicking specifically on the group item...');
+        await groupItemA.first().scrollIntoViewIfNeeded();
+        await groupItemA.first().click({ force: true });
         
         // Wait for ChatHeader to show the correct group name
         console.log(`Waiting for group title "${groupName}" in header...`);
@@ -346,9 +347,8 @@ test.describe('Invitation Join Flow Stability', () => {
             has: pageA.locator(`[data-group-name="${groupName}"]`) 
         }).or(pageA.locator('[data-testid="sidebar-group-item"]', { hasText: groupName }));
 
-        await expect(groupItemA.first()).toBeVisible({ timeout: 20000 });
-
-        await groupItemA.first().getByTestId('group-name-sidebar').click();
+        await groupItemA.first().scrollIntoViewIfNeeded();
+        await groupItemA.first().click({ force: true });
         
         // Wait for ChatHeader to show the correct group name
         await expect(pageA.getByTestId('group-name-title')).toContainText(groupName, { timeout: 30000 });

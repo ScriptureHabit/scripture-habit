@@ -175,7 +175,9 @@ const TourGuide: React.FC<TourGuideProps> = ({ isOpen, onClose, t, userData }) =
         }
 
         // Rapid polling to keep coordinates perfectly aligned as layout/scrolling settles
-        updatePosition();
+        queueMicrotask(() => {
+            updatePosition();
+        });
         const intervalId = setInterval(updatePosition, 30);
         const timeoutId = setTimeout(() => {
             clearInterval(intervalId);
@@ -203,7 +205,9 @@ const TourGuide: React.FC<TourGuideProps> = ({ isOpen, onClose, t, userData }) =
     // Disable Next button for 1 second on each step change
     useEffect(() => {
         if (!isOpen) return;
-        setNextDisabled(true);
+        queueMicrotask(() => {
+            setNextDisabled(true);
+        });
         const timer = setTimeout(() => setNextDisabled(false), 1000);
         return () => clearTimeout(timer);
     }, [currentStep, isOpen]);

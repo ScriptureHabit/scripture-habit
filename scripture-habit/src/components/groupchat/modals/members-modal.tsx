@@ -47,13 +47,17 @@ const MemberListItem: FC<MemberListItemProps> = ({
 
     useEffect(() => {
         if (!shouldTranslateNick) {
-            setDisplayNickname(originalNickname);
+            queueMicrotask(() => {
+                setDisplayNickname(originalNickname);
+            });
             return;
         }
 
         const cached = getCachedUserNickname(member.id, language, originalNickname);
         if (cached) {
-            setDisplayNickname(cached);
+            queueMicrotask(() => {
+                setDisplayNickname(cached);
+            });
         } else {
             let active = true;
             apiClient.post('/api/ai/translate', {

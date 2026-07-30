@@ -133,10 +133,6 @@ describe('Firestore Read Count Assertion Tests', () => {
                 await res.backgroundPromise;
             }
 
-            // --- Inside the transaction: ---
-            // 1. We must read the userRef (1 read)
-            // 2. We bypass transaction.get(noteRef) since optimisticId is not provided (0 reads)
-            // 3. We bypass all transaction.get(groupRefs) (0 reads)
             expect(setup.getTxGets()).toBe(1); // ONLY userRef get!
             expect(setup.getReadPaths().some(p => p.includes(`[Tx GET] users/${uid}`))).toBe(true);
 

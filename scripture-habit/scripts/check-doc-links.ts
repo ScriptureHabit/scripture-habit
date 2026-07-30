@@ -48,7 +48,7 @@ function checkLink(mdFilePath: string, link: string): boolean {
     let cleanLink = link.split('#')[0]; // Remove anchors (e.g. #L123)
     cleanLink = decodeURIComponent(cleanLink); // Decode spaces/special chars
 
-    let resolvedPath = '';
+    let resolvedPath: string;
 
     if (cleanLink.startsWith('file:///')) {
         // Handle file:/// absolute paths

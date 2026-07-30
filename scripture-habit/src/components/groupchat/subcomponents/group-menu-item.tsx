@@ -20,8 +20,11 @@ const GroupMenuItem: FC<GroupMenuItemProps> = ({ group, currentGroupId, language
      */
     useEffect(() => {
         // 1. Check Firestore
-        if (group.translations && group.translations[language] && group.translations[language].name) {
-            setTranslatedName(group.translations[language].name || "");
+        const targetTrans = group.translations?.[language];
+        if (targetTrans?.name) {
+            queueMicrotask(() => {
+                setTranslatedName(targetTrans.name || "");
+            });
             return;
         }
 
@@ -35,7 +38,9 @@ const GroupMenuItem: FC<GroupMenuItemProps> = ({ group, currentGroupId, language
             const cached = sessionStorage.getItem(cacheKey);
 
             if (cached) {
-                setTranslatedName(cached);
+                queueMicrotask(() => {
+                    setTranslatedName(cached);
+                });
                 translationAttemptedRef.current = true;
                 return;
             }

@@ -65,7 +65,7 @@ service cloud.firestore {
       match /groupStates/{groupId} {
         allow read: if request.auth != null && request.auth.uid == userId;
         allow write: if request.auth != null && request.auth.uid == userId
-          && request.resource.data.keys().hasOnly(['readMessageCount', 'lastReadAt', 'updatedAt'])
+          && request.resource.data.keys().hasOnly(['readMessageCount', 'lastReadAt', 'lastActiveAt', 'updatedAt'])
           && (!request.resource.data.keys().hasAny(['readMessageCount']) || request.resource.data.readMessageCount is number);
       }
     }

@@ -46,15 +46,8 @@ export const useMyNotes = (userData: UserData, selectedCategory: NoteCategory, s
 
 
   useEffect(() => {
-    setCurrentPage(1);
-    setLastDocsStack([]);
-    setIsLastPage(false);
-  }, [normalizedSearchTerm, selectedCategory]);
-
-  useEffect(() => {
     if (!userData?.uid) return;
 
-    setDataState(prev => ({ ...prev, status: 'loading' }));
     const notesRef = collection(db, 'users', userData.uid, 'notes').withConverter(noteConverter);
     
     let q;

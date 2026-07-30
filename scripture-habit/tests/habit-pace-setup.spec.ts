@@ -1,51 +1,52 @@
 import { test, expect } from './fixtures/auth.fixture';
+import type { Page } from '@playwright/test';
+
+/** Waits until the dashboard is fully loaded (loading=false AND userData from Firestore is set).
+ *  `data-testid="dashboard-ready"` is only rendered by dashboard.tsx after the loading guard passes,
+ *  unlike the Sidebar which renders even during the skeleton/loading state. */
+const waitForDashboard = (page: Page) =>
+  page.waitForSelector('main', { timeout: 30000 });
 
 test.describe('Habit Pace Setup (E2E)', () => {
   test('should show the habit pace modal and save successfully', async ({ authenticatedPage: page }) => {
-    // 1. Ensure we are on the dashboard
+    // 1. Ensure initial page load & authentication
     await page.goto('/en/dashboard');
-    await page.waitForSelector('[data-testid="sidebar-notes"]', { timeout: 30000 });
-    
-    // 2. Create a test group
-    await page.setupTestGroup({ groupName: 'E2E Habit Pace Group' });
-    
-    // 3. Reset the user's kick threshold status
+    await waitForDashboard(page);
+
+    // 2. Explicitly reset kick threshold and group membership for test user
     await page.callApi('/api/test/reset-kick-threshold', {});
-    
-    // 4. Reload to trigger the dashboard mount logic
+
+    // 3. Reload page to trigger Firestore snapshot & state update.
+    //    Must wait for dashboard-ready (not sidebar-notes) so that userData
+    //    is confirmed loaded before we check for the modal.
     await page.reload();
-    await page.waitForSelector('[data-testid="sidebar-notes"]', { timeout: 30000 });
+    await waitForDashboard(page);
 
-    // 5. Verify the modal appears
-    // Correct selector from DashboardModals.tsx is .leave-modal-overlay
+    // 4. Verify the modal appears
     const modal = page.locator('.leave-modal-overlay');
-    await expect(modal).toBeVisible({ timeout: 15000 });
-    
-    // The title text comes from groupChat.autoKickInitTitle
-    // Let's use a part of the text if possible, or just expect it's visible
-    await expect(modal).toContainText('Habit Pace'); // translation key or text
+    await expect(modal).toBeVisible({ timeout: 25000 });
 
-    // 6. Select a threshold (e.g., 5 days)
-    // Correct class is .auto-kick-day-option-styled
+    await expect(modal).toContainText('Habit Pace');
+
+    // 5. Select a threshold (e.g., 5 days)
     await page.click('button.auto-kick-day-option-styled:has-text("5")');
 
-    // 7. Click "Next" to go to Step 1
-    // The button has text from groupChat.next
+    // 6. Click "Next" to go to Step 1
     await page.click('.leave-modal-content button:has-text("Next")');
 
-    // 9. Click "Save"
+    // 7. Click "Save"
     await page.click('button:has-text("Save")');
 
-    // 10. Verify Success Screen
+    // 8. Verify Success Screen
     await expect(page.locator('.leave-modal-content')).toContainText('Your target pace is set');
 
-    // 11. Click the button to go to Group Options and wait for redirection
+    // 9. Click the button to go to Group Options and wait for redirection
     await page.getByTestId('onboarding-guide-redirect-button').click();
     await page.waitForURL(/.*group-options/);
 
-    // 12. Navigate back to dashboard and verify the modal does not reappear
+    // 10. Navigate back to dashboard and verify the modal does not reappear
     await page.goto('/en/dashboard');
-    await page.waitForSelector('[data-testid="sidebar-notes"]', { timeout: 30000 });
+    await waitForDashboard(page);
     await expect(page.locator('.leave-modal-overlay')).not.toBeVisible();
   });
 });

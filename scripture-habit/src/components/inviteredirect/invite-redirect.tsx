@@ -18,7 +18,7 @@ const InviteRedirect: FC = () => {
     const navigate = useNavigate();
     const { t, language } = useLanguage();
     const [groupInfo, setGroupInfo] = useState<InviteGroupInfo | null>(null);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState<boolean>(() => !!inviteCode);
 
     useEffect(() => {
         if (inviteCode) {
@@ -37,8 +37,6 @@ const InviteRedirect: FC = () => {
                 }
             };
             fetchGroupInfo();
-        } else {
-            setLoading(false);
         }
 
         const unsubscribe = auth!.onAuthStateChanged((user) => {

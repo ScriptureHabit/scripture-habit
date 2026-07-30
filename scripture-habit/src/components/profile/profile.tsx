@@ -69,12 +69,15 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
         const standaloneCheck = window.matchMedia('(display-mode: standalone)').matches || 
                              navigator.standalone || 
                              document.referrer.includes('android-app://');
-        setIsStandalone(!!standaloneCheck);
+        
+        queueMicrotask(() => {
+            setIsStandalone(!!standaloneCheck);
 
-        if (!standaloneCheck) {
-            if (isIOS) setPlatform('ios');
-            else if (isAndroid) setPlatform('android');
-        }
+            if (!standaloneCheck) {
+                if (isIOS) setPlatform('ios');
+                else if (isAndroid) setPlatform('android');
+            }
+        });
 
         const checkPrompt = () => {
             if (window.deferredPWAPrompt) {
@@ -103,7 +106,9 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
 
     useEffect(() => {
         if (window.Notification) {
-            setNotifPermission(window.Notification.permission);
+            queueMicrotask(() => {
+                setNotifPermission(window.Notification.permission);
+            });
         }
     }, []);
 
@@ -142,12 +147,14 @@ const Profile: FC<ProfileProps> = ({ userData, stats }) => {
 
     useEffect(() => {
         if (userData && !initializedRef.current) {
-            if (userData.nickname) setNickname(userData.nickname);
-            if (userData.stake) setStake(userData.stake);
-            if (userData.ward) setWard(userData.ward);
-            if (userData.bio) setBio(userData.bio);
-            if (userData.photoURL) setPhotoURL(userData.photoURL);
-            if (userData.kickThreshold) setLocalKickThreshold(userData.kickThreshold);
+            queueMicrotask(() => {
+                if (userData.nickname) setNickname(userData.nickname);
+                if (userData.stake) setStake(userData.stake);
+                if (userData.ward) setWard(userData.ward);
+                if (userData.bio) setBio(userData.bio);
+                if (userData.photoURL) setPhotoURL(userData.photoURL);
+                if (userData.kickThreshold) setLocalKickThreshold(userData.kickThreshold);
+            });
             initializedRef.current = true;
         }
     }, [userData]);

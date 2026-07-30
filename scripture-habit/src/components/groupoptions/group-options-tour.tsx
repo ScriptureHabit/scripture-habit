@@ -133,7 +133,9 @@ const GroupOptionsTour: React.FC<GroupOptionsTourProps> = ({ isOpen, onClose, t 
         }
 
         // Rapid polling to keep coordinates perfectly aligned as layout settles
-        updatePosition();
+        queueMicrotask(() => {
+            updatePosition();
+        });
         const intervalId = setInterval(updatePosition, 30);
         const timeoutId = setTimeout(() => {
             clearInterval(intervalId);

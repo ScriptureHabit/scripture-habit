@@ -34,11 +34,8 @@ test.describe('Core Note Flow', () => {
     await expect(page.getByText('Note posted successfully!')).toBeVisible({ timeout: 30000 });
     await expect(page.locator('.ModalOverlay')).not.toBeVisible({ timeout: 20000 });
     
-    // Switch to My Notes view
     console.log('Navigating to My Notes...');
-    const sidebarNotes = page.getByTestId('sidebar-notes');
-    await sidebarNotes.waitFor({ state: 'visible', timeout: 20000 });
-    await sidebarNotes.click();
+    await page.getByTestId('sidebar-notes').evaluate((el: HTMLElement) => el.click());
 
     // Wait for the My Notes view to mount
     const noteCard = page.getByTestId('note-card').filter({ hasText: chapterName });

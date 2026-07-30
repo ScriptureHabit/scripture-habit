@@ -74,7 +74,7 @@ export class StreakEngine {
 
         let newStreak = Number(streakCount || 0);
         let currentHighest = Number(highestStreak || newStreak);
-        let streakUpdated = false;
+        let streakUpdated: boolean;
         let isConsecutive = false;
 
         // Future date guard: If last post was "today" or in the future, don't increment streak

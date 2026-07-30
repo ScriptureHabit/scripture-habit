@@ -16,8 +16,10 @@ const GroupChatMessageListContainer: FC = () => {
 
   // Reset initial load and visibility state when the group ID changes
   useEffect(() => {
-    setIsInitialLoad(true);
-    setIsVisible(false);
+    queueMicrotask(() => {
+      setIsInitialLoad(true);
+      setIsVisible(false);
+    });
   }, [groupId]);
 
   // Keep track if user was at bottom before messages update
@@ -37,15 +39,19 @@ const GroupChatMessageListContainer: FC = () => {
     if (isInitialLoad) {
       if (messages.length > 0) {
         container.scrollTop = container.scrollHeight;
-        setIsInitialLoad(false);
+        queueMicrotask(() => {
+          setIsInitialLoad(false);
+        });
         // Give the browser a frame to paint the scroll position before showing
         requestAnimationFrame(() => {
           setIsVisible(true);
         });
       } else if (messagesLoaded) {
         // Even if there are no messages, show the empty chat placeholder once initial loading is done
-        setIsInitialLoad(false);
-        setIsVisible(true);
+        queueMicrotask(() => {
+          setIsInitialLoad(false);
+          setIsVisible(true);
+        });
       }
     } else if (scrollAtBottomRef.current) {
       container.scrollTop = container.scrollHeight;

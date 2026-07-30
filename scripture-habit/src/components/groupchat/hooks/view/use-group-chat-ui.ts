@@ -21,14 +21,18 @@ export const useGroupChatUI = (
   // Auto-translation logic
   useEffect(() => {
     if (!groupId) {
-      setTranslatedGroupName('');
-      setTranslatedGroupDesc('');
+      queueMicrotask(() => {
+        setTranslatedGroupName('');
+        setTranslatedGroupDesc('');
+      });
       return;
     }
 
     if (groupNameTranslateRef.current.id !== groupId) {
-      setTranslatedGroupName('');
-      setTranslatedGroupDesc('');
+      queueMicrotask(() => {
+        setTranslatedGroupName('');
+        setTranslatedGroupDesc('');
+      });
       groupNameTranslateRef.current = { id: groupId, lang: null };
       groupDescTranslateRef.current = { id: groupId, lang: null };
     }
@@ -43,8 +47,16 @@ export const useGroupChatUI = (
       const needsName = !nameToSet && language !== 'en';
       const needsDesc = groupData.description && !descToSet && language !== 'en';
 
-      if (nameToSet) setTranslatedGroupName(nameToSet);
-      if (descToSet) setTranslatedGroupDesc(descToSet);
+      if (nameToSet) {
+        queueMicrotask(() => {
+          setTranslatedGroupName(nameToSet);
+        });
+      }
+      if (descToSet) {
+        queueMicrotask(() => {
+          setTranslatedGroupDesc(descToSet);
+        });
+      }
 
       if (!needsName && !needsDesc) return;
 
@@ -133,7 +145,9 @@ export const useGroupChatUI = (
 
     const hasDismissedBanner = safeStorage.get('hasDismissedInactivityPolicy');
     if (!hasDismissedBanner) {
-      setShowInactivityPolicyBanner(true);
+      queueMicrotask(() => {
+        setShowInactivityPolicyBanner(true);
+      });
     }
   }, [groupId]);
 

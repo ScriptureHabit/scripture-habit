@@ -25,7 +25,9 @@ export const QuestCard: FC<QuestCardProps> = ({ userData, t }) => {
   useEffect(() => {
     const isE2E = typeof navigator !== 'undefined' && navigator.webdriver;
     if (allDone && !celebrated && !userData.hasCompletedOnboarding && !isLegacyCompleted && !isE2E) {
-      setCelebrated(true);
+      queueMicrotask(() => {
+        setCelebrated(true);
+      });
       // Fire premium confetti burst!
       confetti({
         particleCount: 150,

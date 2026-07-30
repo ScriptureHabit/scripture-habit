@@ -28,7 +28,11 @@ const GCNoteRenderer: FC<GCNoteRendererProps> = ({
     const containerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        if (translatedText) setShowOriginal(false);
+        if (translatedText) {
+            queueMicrotask(() => {
+                setShowOriginal(false);
+            });
+        }
     }, [translatedText]);
 
     useEffect(() => {
@@ -37,12 +41,13 @@ const GCNoteRenderer: FC<GCNoteRendererProps> = ({
         }
     }, [linkColor, isSent]);
 
-    const scripLower = (scriptureValue || '').toLowerCase();
-    const isOther = scripLower.includes('other') || scripLower.includes('その他') || scriptureValue === '';
-    const isBYU = scripLower.includes('byu');
     const isTranslated = !!translatedText && !showOriginal;
 
     const constructedMd = useMemo(() => {
+        const scripLower = (scriptureValue || '').toLowerCase();
+        const isOther = scripLower.includes('other') || scripLower.includes('その他') || scriptureValue === '';
+        const isBYU = scripLower.includes('byu');
+
         const scriptureLabel = getNoteLabelFallback('noteLabels.scripture', language, t('noteLabels.scripture'));
         const scriptName = translateScriptureName(scriptureValue, t);
 
@@ -95,7 +100,7 @@ const GCNoteRenderer: FC<GCNoteRendererProps> = ({
             : null;
 
         return [scriptureLine, `**${fieldLabel}:** ${fieldValue}`].filter(Boolean).join('\n') + `\n\n**${commentLabel}:**\n${commentWithLinks}`;
-    }, [data, loading, scriptureValue, comment, t, url, isOther, isBYU, language, isTranslated, translatedText, translateChapterField]);
+    }, [data, loading, scriptureValue, comment, t, url, language, isTranslated, translatedText, translateChapterField]);
 
     return (
         <div className="note-display-container" ref={containerRef}>

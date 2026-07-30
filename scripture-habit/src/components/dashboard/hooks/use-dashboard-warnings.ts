@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useMemo } from 'react';
 import { UserData } from '../../../types/user';
 import { FirebaseTimestamp, Group } from '../../../types/chat';
 import { parseTimestampToDate } from '../../../utils/time-utils';
@@ -10,10 +10,8 @@ interface WarningInfo {
 }
 
 export const useDashboardWarnings = (userData: UserData | null, userGroups: Group[]) => {
-    const [warnings, setWarnings] = useState<WarningInfo[]>([]);
-
-    useEffect(() => {
-        if (!userData || userGroups.length === 0) return;
+    const warnings = useMemo<WarningInfo[]>(() => {
+        if (!userData || userGroups.length === 0) return [];
 
         const newWarnings: WarningInfo[] = [];
         const now = new Date();
@@ -55,7 +53,7 @@ export const useDashboardWarnings = (userData: UserData | null, userGroups: Grou
             }
         });
 
-        setWarnings(newWarnings);
+        return newWarnings;
     }, [userGroups, userData]);
 
     return { warnings };

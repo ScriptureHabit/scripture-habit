@@ -146,7 +146,6 @@ export function useJoinGroup() {
       }
     };
 
-    setLoadingGroups(true);
     fetchPublicGroups().finally(() => setLoadingGroups(false));
 
     return () => { authUnsubscribe(); userDocUnsubscribe(); };

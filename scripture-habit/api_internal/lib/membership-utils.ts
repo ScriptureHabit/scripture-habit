@@ -111,7 +111,7 @@ export async function removeMemberFromGroup(
             : await Promise.all(refsToGet.map(ref => transaction.get(ref)));
         let snapIdx = 0;
         if (!groupSnap) groupSnap = snaps[snapIdx++];
-        if (!userSnap) userSnap = snaps[snapIdx++];
+        if (!userSnap) userSnap = snaps[snapIdx];
     }
 
     if (!groupSnap || !userSnap) return;

@@ -12,13 +12,12 @@ import { AuthContext, AuthContextType } from './auth-context';
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [userData, setUserData] = useState<UserData | null>(null);
-  const [loading, setLoading] = useState(true); // Auth loading
+  const [loading, setLoading] = useState<boolean>(() => !auth || !db ? false : true); // Auth loading
   const [dataLoading, setDataLoading] = useState(false); // Data loading
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     if (!auth || !db) {
-      setLoading(false);
       return;
     }
 

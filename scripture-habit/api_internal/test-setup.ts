@@ -32,13 +32,14 @@ export class TestSetup {
             return new Proxy(tx, {
                 get(target, prop, receiver) {
                     if (prop === 'get') {
-                        return function(ref: any) {
+                        return (ref: any) => {
                             self.txGets++;
-                            if (ref && ref.path) {
-                                self.readPaths.push(`[Tx GET] ${ref.path}`);
+                            const path = ref?.path || ref?._rawRef?.path;
+                            if (path) {
+                                self.readPaths.push(`[Tx GET] ${path}`);
                             }
                             const rawRef = ref && ref._rawRef ? ref._rawRef : ref;
-                            return target.get(rawRef);
+                            return target.get.call(target, rawRef);
                         };
                     }
                     if (prop === 'getAll') {
@@ -344,11 +345,18 @@ export class TestSetup {
         return [...this.writePaths];
     }
 
+    public getProxyDb() {
+        return this.proxyDb;
+    }
+
     public resetCounters() {
         this.txGets = 0;
         this.txGetAlls = 0;
         this.docGets = 0;
         this.readPaths = [];
         this.writePaths = [];
+        if (this.proxyDb) {
+            dbStorage.enterWith(this.proxyDb);
+        }
     }
 }

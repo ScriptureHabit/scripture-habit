@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 export interface NoteState {
     note: string;
@@ -11,15 +11,25 @@ export interface NoteState {
 }
 
 export const useNoteState = (initialNoteData: Partial<NoteState> | null, currentGroupId: string | null) => {
-    const [note, setNote] = useState<string>('');
-    const [title, setTitle] = useState<string>('');
-    const [studyTime, setStudyTime] = useState<string>('15');
-    const [visibility, setVisibility] = useState<'public' | 'private' | 'group'>('public');
-    const [scriptureReference, setScriptureReference] = useState<string>('');
-    const [selectedGroups, setSelectedGroups] = useState<string[]>([]);
-    const [tags, setTags] = useState<string[]>([]);
+    const [note, setNote] = useState<string>(() => initialNoteData?.note || '');
+    const [title, setTitle] = useState<string>(() => initialNoteData?.title || '');
+    const [studyTime, setStudyTime] = useState<string>(() => initialNoteData?.studyTime || '15');
+    const [visibility, setVisibility] = useState<'public' | 'private' | 'group'>(() => {
+        if (initialNoteData?.visibility) return initialNoteData.visibility;
+        if (currentGroupId) return 'group';
+        return 'public';
+    });
+    const [scriptureReference, setScriptureReference] = useState<string>(() => initialNoteData?.scriptureReference || '');
+    const [selectedGroups, setSelectedGroups] = useState<string[]>(() => {
+        if (initialNoteData?.selectedGroups) return initialNoteData.selectedGroups;
+        if (currentGroupId) return [currentGroupId];
+        return [];
+    });
+    const [tags, setTags] = useState<string[]>(() => initialNoteData?.tags || []);
 
-    useEffect(() => {
+    const [prevInitialData, setPrevInitialData] = useState(initialNoteData);
+    if (initialNoteData !== prevInitialData) {
+        setPrevInitialData(initialNoteData);
         if (initialNoteData) {
             setNote(initialNoteData.note || '');
             setTitle(initialNoteData.title || '');
@@ -28,11 +38,8 @@ export const useNoteState = (initialNoteData: Partial<NoteState> | null, current
             setScriptureReference(initialNoteData.scriptureReference || '');
             setSelectedGroups(initialNoteData.selectedGroups || []);
             setTags(initialNoteData.tags || []);
-        } else if (currentGroupId) {
-            setSelectedGroups([currentGroupId]);
-            setVisibility('group');
         }
-    }, [initialNoteData, currentGroupId]);
+    }
 
     const resetState = () => {
         setNote('');

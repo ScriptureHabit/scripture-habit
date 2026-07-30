@@ -54,7 +54,9 @@ export const test = base.extend<AuthFixtures>({
         groupIds: [],
         hasSeenWelcomeStory: true,
         hasSetKickThreshold: true,
-        kickThreshold: 3
+        isLevelMigrated: true,
+        daysStudiedCount: 0,
+        studiedDates: []
       });
       await db.collection('users').doc(uid).collection('private').doc('tokens').set({
         fcmTokens: []
@@ -143,9 +145,8 @@ export const test = base.extend<AuthFixtures>({
       throw err;
     }
     
-    // 5. Wait for page to be stable
-    await page.waitForSelector('.dashboard-skeleton', { state: 'detached', timeout: 30000 });
-    await page.waitForSelector('[data-testid="sidebar-notes"]', { timeout: 30000 });
+    // 5. Wait for page to be stable (main only mounts when loading=false AND userData is set)
+    await page.waitForSelector('main', { timeout: 30000 });
     console.log('[AuthFixture] Fixture setup complete.');
 
 

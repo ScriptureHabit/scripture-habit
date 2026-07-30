@@ -20,14 +20,27 @@ export const useDashboardHabitPace = (
 
     useEffect(() => {
         if (!loading && userData && userData.uid) {
-            const sessionWelcomeSeen = sessionStorage.getItem(`welcome_seen_${userData.uid}`) === 'true';
-            const isWelcomeDone = sessionWelcomeSeen || userData.hasSeenWelcomeStory === true;
+            const sessionWelcomeSeen = typeof sessionStorage !== 'undefined' && sessionStorage.getItem(`welcome_seen_${userData.uid}`) === 'true';
+            const hasJoinedGroup = (userData.groupIds && userData.groupIds.length > 0) || !!userData.groupId;
+            const isWelcomeDone = sessionWelcomeSeen || userData.hasSeenWelcomeStory !== false || hasJoinedGroup;
 
-            if (userData.hasSetKickThreshold !== true && isWelcomeDone && !isJoiningInvite) {
+            const willShowModal = userData.hasSetKickThreshold !== true && isWelcomeDone && !isJoiningInvite;
+
+            if (willShowModal) {
+                // eslint-disable-next-line react-hooks/set-state-in-effect
                 setShowAutoKickModal(true);
+            } else if (userData.hasSetKickThreshold === true) {
+                // Don't auto-close if we're on the success screen (step 2) —
+                // the user must explicitly dismiss via the redirect button.
+                setShowAutoKickModal(prev => {
+                    if (prev && autoKickStep === 2) {
+                        return true;
+                    }
+                    return false;
+                });
             }
         }
-    }, [userData, loading, isJoiningInvite]);
+    }, [userData, loading, isJoiningInvite, autoKickStep]);
 
     const handleAutoKickSubmit = async () => {
         setAutoKickError('');
@@ -49,23 +62,15 @@ export const useDashboardHabitPace = (
             }
         } catch (err: unknown) {
             console.error('Error updating threshold:', err);
-            let errorMessage = '';
-            let isResponseError = false;
 
             if (err && typeof err === 'object' && 'response' in err) {
                 const axiosError = err as { response?: { data?: { error?: string } } };
-                errorMessage = axiosError.response?.data?.error || 'Failed to update pace';
-                isResponseError = true;
+                const msg = axiosError.response?.data?.error || 'Failed to update pace';
+                toast.error(`Failed to update pace: ${msg}`);
             } else if (err instanceof Error) {
-                errorMessage = err.message;
+                toast.error(`An error occurred: ${err.message}`);
             } else {
-                errorMessage = String(err);
-            }
-
-            if (isResponseError) {
-                toast.error(`Failed to update pace: ${errorMessage}`);
-            } else {
-                toast.error(`An error occurred: ${errorMessage}`);
+                toast.error(`An error occurred: ${String(err)}`);
             }
         }
     };

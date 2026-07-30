@@ -33,7 +33,11 @@ const NoteDisplay: FC<NoteDisplayProps> = ({
 
     // 2. Sync visual state with translation availability
     useEffect(() => {
-        if (translatedText) setShowOriginal(false);
+        if (translatedText) {
+            queueMicrotask(() => {
+                setShowOriginal(false);
+            });
+        }
     }, [translatedText]);
 
     // 3. Apply custom link colors via CSS variables

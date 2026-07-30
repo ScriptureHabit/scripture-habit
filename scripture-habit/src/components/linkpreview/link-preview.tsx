@@ -20,7 +20,7 @@ interface LinkPreviewProps {
 
 const LinkPreview: FC<LinkPreviewProps> = ({ url, isSent, language }) => {
     const [preview, setPreview] = useState<PreviewData | null>(null);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState<boolean>(() => !!(url && auth?.currentUser));
     const [error, setError] = useState(false);
 
     useEffect(() => {
@@ -43,8 +43,6 @@ const LinkPreview: FC<LinkPreviewProps> = ({ url, isSent, language }) => {
 
         if (url && auth?.currentUser) {
             fetchPreview();
-        } else {
-            setLoading(false);
         }
     }, [url, language]);
 

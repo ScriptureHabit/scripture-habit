@@ -114,7 +114,7 @@ const GroupChatProvider: FC<GroupChatProviderProps> = ({
         photoURL: profile?.photoURL || ''
       };
     });
-  }, [groupData?.members, membersMap]);
+  }, [groupData, membersMap]);
 
   const {
     handleShowMembers, handleShowReactions, contextMenuRef

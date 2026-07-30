@@ -247,7 +247,9 @@ const App: React.FC = () => {
     }
 
     const targetUrl = pendingNavigateUrl;
-    setPendingNavigateUrl(null); // Consume the pending URL
+    queueMicrotask(() => {
+      setPendingNavigateUrl(null); // Consume the pending URL
+    });
 
     if (isSameRoute(targetUrl)) {
       console.log('[App] Already on target URL, skipping duplicate navigation:', targetUrl);
@@ -284,7 +286,9 @@ const App: React.FC = () => {
   useEffect(() => {
     const isRedirecting = handleInAppBrowserRedirect();
     if (!isRedirecting && isInAppBrowser()) {
-      setShowBrowserWarning(true);
+      queueMicrotask(() => {
+        setShowBrowserWarning(true);
+      });
     }
 
     // Clear notifications on initial load

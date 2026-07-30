@@ -69,15 +69,9 @@ export class MessageService {
             latestSnap = await transaction.get(latestRef);
         }
 
-        let currentMessages: Record<string, unknown>[] = [];
-        if (latestSnap.exists) {
-            currentMessages = latestSnap.data()?.messages || [];
-        } else {
-            // If the latest cache document does not exist, we cannot perform transaction.get()
-            // because this function is called inside the write phase of transactions, which would
-            // cause a Read-after-Write violation. We fallback to an empty array.
-            currentMessages = [];
-        }
+        const currentMessages: Record<string, unknown>[] = (latestSnap && latestSnap.exists) 
+            ? (latestSnap.data()?.messages || []) 
+            : [];
 
         const updatedMessages = [...currentMessages, messageData].slice(-25);
 
@@ -122,7 +116,7 @@ export class MessageService {
 
                 if (needsUserRead && (!uSnapResult || !uSnapResult.exists)) throw new Error('Not found.');
 
-                let messagesList: Record<string, unknown>[] = [];
+                let messagesList: Record<string, unknown>[];
                 if (latestSnap && latestSnap.exists) {
                     messagesList = latestSnap.data()?.messages || [];
                 } else {
@@ -253,7 +247,7 @@ export class MessageService {
             
             let snapIdx = 2;
             const gSnap = needsGroupRead ? snaps[snapIdx++] : null;
-            const uSnap = needsUserRead ? snaps[snapIdx++] : null;
+            const uSnap = needsUserRead ? snaps[snapIdx] : null;
 
             if (!mSnap.exists || (needsGroupRead && !gSnap?.exists) || (needsUserRead && !uSnap?.exists)) {
                 if (!mSnap.exists) {
@@ -628,7 +622,7 @@ export class MessageService {
             
             let snapIdx = 1;
             const targetUserDoc = needsTargetUserRead ? snaps[snapIdx++] : null;
-            const gSnap = needsGroupRead ? snaps[snapIdx++] : null;
+            const gSnap = needsGroupRead ? snaps[snapIdx] : null;
 
             if (needsGroupRead && gSnap) {
                 if (!gSnap.exists) throw new Error('Group not found.');

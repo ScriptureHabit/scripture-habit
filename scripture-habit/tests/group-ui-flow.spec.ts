@@ -3,7 +3,7 @@ import { test, expect } from './fixtures/auth.fixture';
 test.describe('Group UI Flow (E2E)', () => {
   test('should navigate through the UI to create a group', async ({ authenticatedPage: page }) => {
     // 1. Start from Dashboard and go to Join/Create options
-    await page.click('[data-testid="sidebar-join-create-group"]');
+    await page.getByTestId('sidebar-join-create-group').evaluate((el: HTMLElement) => el.click());
     await page.waitForURL(/.*group-options/);
 
     // 2. Choose to create a group

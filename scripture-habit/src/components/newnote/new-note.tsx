@@ -49,9 +49,9 @@ const NewNote: FC<NewNoteProps> = ({
     const { t, language, tArray, translateChapterField, bookTranslations } = useLanguage();
     
     // Form State
-    const [scripture, setScripture] = useState<string>('');
-    const [chapter, setChapter] = useState<string>('');
-    const [comment, setComment] = useState<string>('');
+    const [scripture, setScripture] = useState<string>(() => noteToEdit?.scripture || '');
+    const [chapter, setChapter] = useState<string>(() => noteToEdit?.chapter || '');
+    const [comment, setComment] = useState<string>(() => noteToEdit?.comment || (noteToEdit?.text ? removeNoteHeader(noteToEdit.text) : ''));
     const [shareOption, setShareOption] = useState<string>('all');
     const [selectedShareGroups, setSelectedShareGroups] = useState<string[]>([]);
     const [showCloseConfirm, setShowCloseConfirm] = useState(false);
@@ -77,16 +77,28 @@ const NewNote: FC<NewNoteProps> = ({
         setChapter(c);
     });
 
-    // Random Placeholders
+    // Random Placeholders (initialized safely via effect for React Compiler purity)
+    const [commentIdx, setCommentIdx] = useState<number>(0);
+    const [chapterIdx, setChapterIdx] = useState<number>(0);
+
+    useEffect(() => {
+        queueMicrotask(() => {
+            setCommentIdx(Math.random());
+            setChapterIdx(Math.random());
+        });
+    }, []);
+
     const commentPlaceholder = useMemo(() => {
         const placeholders = tArray('newNote.commentPlaceholder');
-        return placeholders[Math.floor(Math.random() * placeholders.length)] || '';
-    }, [tArray]);
+        if (placeholders.length === 0) return '';
+        return placeholders[Math.floor(commentIdx * placeholders.length)] || '';
+    }, [tArray, commentIdx]);
 
     const chapterPlaceholder = useMemo(() => {
         const placeholders = tArray('newNote.chapterPlaceholder');
-        return placeholders[Math.floor(Math.random() * placeholders.length)] || '';
-    }, [tArray]);
+        if (placeholders.length === 0) return '';
+        return placeholders[Math.floor(chapterIdx * placeholders.length)] || '';
+    }, [tArray, chapterIdx]);
 
     // Sync state for Edit Mode
     const onboardingGuideStepText = useMemo(() => {
@@ -102,14 +114,16 @@ const NewNote: FC<NewNoteProps> = ({
             return t('onboardingGuide.newNoteStep3') || 'Wonderful! Finally, write down your thoughts or impressions in the comment box!';
         }
         return t('onboardingGuide.newNoteStep4') || 'All ready! Click the [Post Note] button at the bottom right to share your first note! 🎉';
-    }, [userData?.hasCompletedOnboarding, userData?.totalNotes, noteToEdit, scripture, chapter, comment, t]);
+    }, [userData, noteToEdit, scripture, chapter, comment, t]);
 
     // Computed Values
     const glUrl = useMemo(() => getGospelLibraryUrl(scripture, chapter, language), [scripture, chapter, language]);
     const isUrl = typeof chapter === 'string' && chapter.startsWith('http');
 
     // Sync state for Edit Mode
-    useEffect(() => {
+    const [prevNoteToEdit, setPrevNoteToEdit] = useState(noteToEdit);
+    if (noteToEdit !== prevNoteToEdit) {
+        setPrevNoteToEdit(noteToEdit);
         if (noteToEdit) {
             setScripture(noteToEdit.scripture || '');
             setChapter(noteToEdit.chapter || '');
@@ -118,9 +132,8 @@ const NewNote: FC<NewNoteProps> = ({
             setScripture('');
             setChapter('');
             setComment('');
-            setShareOption('all');
         }
-    }, [noteToEdit, isOpen]);
+    }
 
     if (!isOpen) return null;
 

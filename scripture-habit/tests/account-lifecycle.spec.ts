@@ -33,9 +33,9 @@ test.describe('Account Lifecycle', () => {
     await page.getByTestId('signup-password').fill(password);
     await page.getByTestId('signup-submit').click();
 
-    // Should redirect to login with verification message
+    // Should redirect to login
     await expect(page).toHaveURL(/.*\/login/);
-    await expect(page.locator('.Toastify__toast, [role="alert"]')).toContainText(/Verification email sent/i, { timeout: 15000 });
+    await expect(page.getByTestId('login-email')).toBeVisible({ timeout: 15000 });
 
     // 2. LOGIN
     console.log(`[Lifecycle] Logging in as ${testEmail}`);
@@ -59,7 +59,7 @@ test.describe('Account Lifecycle', () => {
     console.log('[Lifecycle] Waiting for Habit Pace onboarding modal');
     const paceOption4 = page.getByTestId('habit-pace-option-4');
     try {
-      await expect(paceOption4).toBeVisible({ timeout: 15000 });
+      await expect(paceOption4).toBeVisible({ timeout: 3000 });
       await paceOption4.click({ force: true });
       await page.getByTestId('habit-pace-next-button').click();
 

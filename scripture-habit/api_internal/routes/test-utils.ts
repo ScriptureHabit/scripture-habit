@@ -250,7 +250,9 @@ router.post('/reset-kick-threshold', authenticate, async (req: AuthenticatedRequ
 
         await db.collection('users').doc(uid).update({
             hasSetKickThreshold: admin.firestore.FieldValue.delete(),
-            kickThreshold: admin.firestore.FieldValue.delete()
+            kickThreshold: admin.firestore.FieldValue.delete(),
+            groupIds: [],
+            groupId: ""
         });
         return res.status(200).json({ message: 'Kick threshold reset successfully' });
     } catch (error) {

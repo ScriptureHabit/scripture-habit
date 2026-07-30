@@ -58,17 +58,14 @@ export const useUrlMetadata = (
 
         const cacheKey = `url_meta_${language}_${urlOrSlug}`;
 
-        // 1. Memory Cache
-        if (memoryCache[cacheKey]) {
-            setData(memoryCache[cacheKey]);
-            return;
-        }
-
-        // 2. LocalStorage (using refactored safeStorage that handles JSON)
-        const cached = safeStorage.get<UrlMetadata>(cacheKey);
+        // 1. Memory Cache & LocalStorage
+        const cached = memoryCache[cacheKey] || safeStorage.get<UrlMetadata>(cacheKey);
         if (cached) {
             memoryCache[cacheKey] = cached;
-            setData(cached);
+            // Use queueMicrotask to ensure state update doesn't trigger synchronous effect warning
+            queueMicrotask(() => {
+                setData(cached);
+            });
             return;
         }
 

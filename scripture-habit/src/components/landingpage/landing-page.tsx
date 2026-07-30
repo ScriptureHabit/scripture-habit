@@ -19,20 +19,20 @@ const LandingPage: FC = () => {
     const navigate = useNavigate();
     const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
     const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
-    const [platform, setPlatform] = useState<'ios' | 'android' | 'desktop'>('desktop');
-    const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
-
-    useEffect(() => {
-        // Platform detection
+    const [platform] = useState<'ios' | 'android' | 'desktop'>(() => {
+        if (typeof window === 'undefined') return 'desktop';
         const ua = navigator.userAgent;
         const isIOS = /iPad|iPhone|iPod/.test(ua) ||
             (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
         const isAndroid = /Android/i.test(ua);
 
-        if (isIOS) setPlatform('ios');
-        else if (isAndroid) setPlatform('android');
-        else setPlatform('desktop');
+        if (isIOS) return 'ios';
+        if (isAndroid) return 'android';
+        return 'desktop';
+    });
+    const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
 
+    useEffect(() => {
         // Check for globally captured prompt
         const checkPrompt = () => {
             if (window.deferredPWAPrompt) {

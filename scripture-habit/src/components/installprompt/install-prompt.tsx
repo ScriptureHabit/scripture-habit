@@ -13,7 +13,6 @@ const InstallPrompt: FC = () => {
     const location = useLocation();
     const [showPrompt, setShowPrompt] = useState(false);
     const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
-    const [platform, setPlatform] = useState<'ios' | 'android' | null>(null);
     const [cookieConsentAccepted, setCookieConsentAccepted] = useState(() => {
         return safeStorage.get('cookieConsent') === 'true';
     });
@@ -27,21 +26,23 @@ const InstallPrompt: FC = () => {
         return () => window.removeEventListener('cookieConsentAccepted', handleConsent);
     }, []);
 
-    // Detect platform and check for deferred prompt
-    useEffect(() => {
-        // Platform detection
+    const [platform, setPlatform] = useState<'ios' | 'android' | 'other'>(() => {
+        if (typeof window === 'undefined') return 'other';
         const ua = navigator.userAgent;
         const isIOS = /iPad|iPhone|iPod/.test(ua) ||
             (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
         const isAndroid = /Android/i.test(ua);
-
         const isStandalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
 
         if (!isStandalone) {
-            if (isIOS) setPlatform('ios');
-            else if (isAndroid) setPlatform('android');
+            if (isIOS) return 'ios';
+            if (isAndroid) return 'android';
         }
+        return 'other';
+    });
 
+    // Detect platform and check for deferred prompt
+    useEffect(() => {
         // Check for the event captured globally (in main.tsx)
         const checkPrompt = () => {
             if (window.deferredPWAPrompt) {
@@ -98,13 +99,17 @@ const InstallPrompt: FC = () => {
         const isModalActive = document.body.getAttribute('data-dashboard-modal-open') === 'true';
 
         if (!isAllowedPage || hasDismissed || isStandalone || isModalActive || !cookieConsentAccepted) {
-            setShowPrompt(false);
+            queueMicrotask(() => {
+                setShowPrompt(false);
+            });
             return;
         }
 
         // Android logic: Show if we have the deferred prompt
         if (platform === 'android' && deferredPrompt) {
-            setShowPrompt(true);
+            queueMicrotask(() => {
+                setShowPrompt(true);
+            });
         }
 
         // iOS logic: Show after a longer delay (4s instead of 2s) to avoid overlapping with Cookie Consent or initial loads

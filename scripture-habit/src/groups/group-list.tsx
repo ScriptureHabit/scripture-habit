@@ -30,8 +30,6 @@ export default function GroupList({ currentUser }: GroupListProps) {
   const db = useMemo(() => getFirestore(app), []);
 
   useEffect(() => {
-    setLoading(true);
-    
     // Query for last 50 created groups
     const q = query(
       collection(db, 'groups'), 

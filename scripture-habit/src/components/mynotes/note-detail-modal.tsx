@@ -35,7 +35,9 @@ const NoteDetailModal: FC<NoteDetailModalProps> = ({ isOpen, onClose, note, user
 
     useEffect(() => {
         if (!isOpen || !note) {
-            setSharedDetails([]);
+            queueMicrotask(() => {
+                setSharedDetails([]);
+            });
             return;
         }
 

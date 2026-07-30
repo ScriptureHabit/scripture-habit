@@ -21,7 +21,9 @@ const WelcomeStoryModal = ({ isOpen, onClose, userData }: WelcomeStoryModalProps
     // Reset next button visibility and start a 2-second timer on page or open state changes
     useEffect(() => {
         if (isOpen) {
-            setIsNextVisible(false);
+            queueMicrotask(() => {
+                setIsNextVisible(false);
+            });
             const timer = setTimeout(() => {
                 setIsNextVisible(true);
             }, 2000);

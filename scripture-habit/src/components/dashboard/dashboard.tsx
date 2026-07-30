@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, FC, useMemo, useCallback } from 'react';
+import { useState, useEffect, useRef, FC, useMemo } from 'react';
 import { Navigate, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
@@ -56,28 +56,15 @@ const Dashboard: FC = () => {
   
   const { activeModal, setActiveModal } = useModalStore();
 
-  // Initialize state from URL or location
-  const getInitialState = useCallback(() => {
+  const [selectedView, setSelectedView] = useState<number>(() => {
     const gid = searchParams.get('groupId');
     const viewParam = searchParams.get('view');
-    const openNewNote = searchParams.get('openNewNote');
-    
     const isProfile = location.pathname.includes('/profile');
-    const selectedView = viewParam 
-      ? parseInt(viewParam) 
-      : (isProfile ? 3 : (gid ? 2 : (initialViewRef.current ?? 0)));
-    
-    const activeGroupId = gid || initialGroupIdRef.current || null;
-    
-    return {
-      activeGroupId,
-      selectedView,
-      isModalOpen: openNewNote === 'true'
-    };
-  }, [searchParams, location.pathname]);
-
-  const initialState = useMemo(() => getInitialState(), [getInitialState]); // Memoize to prevent re-calculation loops
-  const [selectedView, setSelectedView] = useState<number>(initialState.selectedView);
+    if (viewParam) return parseInt(viewParam, 10);
+    if (isProfile) return 3;
+    if (gid) return 2;
+    return location.state?.initialView ?? 0;
+  });
   const [showWelcomeStory, setShowWelcomeStory] = useState<boolean>(false);
   const [showTourGuide, setShowTourGuide] = useState<boolean>(false);
   const [isInputFocused, setIsInputFocused] = useState<boolean>(false);
@@ -94,7 +81,11 @@ const Dashboard: FC = () => {
   const syncState = useDashboardSync();
   const { user, userData, status } = syncState;
   const errorMessage = syncState.status === 'error' ? syncState.message : null;
-  const { userGroups, activeGroupId, setActiveGroupId, isLoading: groupsLoading } = useDashboardGroups(userData, initialState.activeGroupId);
+  const [initialGid] = useState<string | null>(() => {
+    const gid = searchParams.get('groupId');
+    return gid || location.state?.initialGroupId || null;
+  });
+  const { userGroups, activeGroupId, setActiveGroupId, isLoading: groupsLoading } = useDashboardGroups(userData, initialGid);
   const loading = status === 'loading' || groupsLoading;
 
   useEffect(() => {
@@ -165,7 +156,9 @@ const Dashboard: FC = () => {
 
   // Clear unity overrides at midnight local time
   useEffect(() => {
-    setUnityOverrides({});
+    queueMicrotask(() => {
+      setUnityOverrides({});
+    });
   }, [today]);
 
   useEffect(() => {
@@ -173,38 +166,42 @@ const Dashboard: FC = () => {
   }, [activeGroupId, setActiveModal]);
 
   useEffect(() => {
-    if (location.state?.initialView !== undefined) setSelectedView(location.state.initialView);
-    if (location.state?.initialGroupId) setActiveGroupId(location.state.initialGroupId);
+    queueMicrotask(() => {
+      if (location.state?.initialView !== undefined) setSelectedView(location.state.initialView);
+      if (location.state?.initialGroupId) setActiveGroupId(location.state.initialGroupId);
 
-    // Sync view state with localized URL paths
-    const path = location.pathname;
-    if (path.includes('/profile')) {
-      if (selectedView !== 3) setSelectedView(3);
-    } else if (path.includes('/dashboard')) {
-      // Only force back to default view (0) if we are coming from Profile (3)
-      // Views 1 (Stats) and 2 (Chat) are valid sub-views of /dashboard.
-      if (selectedView === 3) setSelectedView(0);
-    }
+      // Sync view state with localized URL paths
+      const path = location.pathname;
+      if (path.includes('/profile')) {
+        if (selectedView !== 3) setSelectedView(3);
+      } else if (path.includes('/dashboard')) {
+        // Only force back to default view (0) if we are coming from Profile (3)
+        // Views 1 (Stats) and 2 (Chat) are valid sub-views of /dashboard.
+        if (selectedView === 3) setSelectedView(0);
+      }
+    });
 
     if (searchParams.has('groupId') || searchParams.has('openNewNote') || searchParams.has('view')) {
       const gid = searchParams.get('groupId');
       const v = searchParams.get('view');
       const openNote = searchParams.get('openNewNote');
 
-      if (gid) setActiveGroupId(gid);
-      
-      if (v) {
-        setSelectedView(parseInt(v));
-      } else if (gid) {
-        // Only force view 2 if we aren't already on a dashboard sub-view (1 or 2)
-        // or if we specifically want to switch to chat for a new groupId.
-        setSelectedView(2); 
-      }
+      queueMicrotask(() => {
+        if (gid) setActiveGroupId(gid);
+        
+        if (v) {
+          setSelectedView(parseInt(v));
+        } else if (gid) {
+          // Only force view 2 if we aren't already on a dashboard sub-view (1 or 2)
+          // or if we specifically want to switch to chat for a new groupId.
+          setSelectedView(2); 
+        }
 
-      if (openNote === 'true') setActiveModal('newNote');
-      
-      // Clear the search params after consumption
-      navigate(location.pathname, { replace: true });
+        if (openNote === 'true') setActiveModal('newNote');
+        
+        // Clear the search params after consumption
+        navigate(location.pathname, { replace: true });
+      });
     }
   }, [searchParams, location.pathname, location.state, navigate, setActiveGroupId, setActiveModal, selectedView]);
 
@@ -215,7 +212,6 @@ const Dashboard: FC = () => {
     const sessionWelcomeSeen = sessionStorage.getItem(`welcome_seen_${userData.uid}`) === 'true';
     const sessionTourSeen = sessionStorage.getItem(`tour_seen_${userData.uid}`) === 'true';
 
-    // Step 1: Check Welcome Story
     const needsWelcomeStory = !sessionWelcomeSeen && (userData.hasSeenWelcomeStory === false || userData.hasSeenWelcomeStory === undefined);
     if (needsWelcomeStory) {
       const timer = setTimeout(() => setShowWelcomeStory(true), 500);
@@ -307,7 +303,7 @@ const Dashboard: FC = () => {
   const setIsModalOpen = (open: boolean) => setActiveModal(open ? 'newNote' : null);
 
   return (
-    <>
+    <div data-testid="dashboard-ready">
       <DashboardLayout
         selectedView={selectedView}
         setSelectedView={setSelectedView}
@@ -369,7 +365,7 @@ const Dashboard: FC = () => {
         />
       )}
 
-    </>
+    </div>
   );
 };
 

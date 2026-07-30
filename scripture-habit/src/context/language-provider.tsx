@@ -109,14 +109,16 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
             search: location.search,
             hash: location.hash
         }, { replace: true });
-    }, [language, location, navigate, userData?.uid, userData?.language]);
+    }, [language, location, navigate, userData]);
 
     // 1. Sync state with URL changes (e.g., back button)
     useEffect(() => {
         const pathLang = getLanguageFromPath(location.pathname);
         if (pathLang && pathLang !== language) {
             console.log(`[LanguageProvider] URL Sync: ${pathLang}`);
-            setLanguageInternal(pathLang);
+            queueMicrotask(() => {
+                setLanguageInternal(pathLang);
+            });
         }
     }, [location.pathname, language]);
 
@@ -162,7 +164,9 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
                 }
 
                 console.log(`[LanguageProvider] Syncing from Profile: ${userLang}`);
-                setLanguage(userLang);
+                queueMicrotask(() => {
+                    setLanguage(userLang);
+                });
             }
         }
     }, [userData?.uid, userData?.language, authLoading, language, setLanguage, location.pathname]);

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useMemo, useEffect, useRef } from 'react';
 import { User } from 'firebase/auth';
 import { doc, collection, getDocs, updateDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../../../firebase';
@@ -15,22 +15,21 @@ export type DashboardSyncStatus =
 
 export const useDashboardSync = () => {
     const { user, userData, loading, error } = useAuth();
-    const [state, setState] = useState<DashboardSyncStatus>({ status: 'loading', user: null, userData: null });
     const migrationInProgress = useRef(false);
 
-    useEffect(() => {
+    const state = useMemo<DashboardSyncStatus>(() => {
         if (loading) {
-            setState({ status: 'loading', user: null, userData: null });
+            return { status: 'loading', user: null, userData: null };
         } else if (error) {
-            setState({ status: 'error', user, userData, message: error.message });
+            return { status: 'error', user, userData, message: error.message };
         } else if (user) {
             if (userData) {
-                setState({ status: 'authenticated', user, userData });
+                return { status: 'authenticated', user, userData };
             } else {
-                setState({ status: 'loading', user, userData: null });
+                return { status: 'loading', user, userData: null };
             }
         } else {
-            setState({ status: 'unauthenticated', user: null, userData: null });
+            return { status: 'unauthenticated', user: null, userData: null };
         }
     }, [user, userData, loading, error]);
 

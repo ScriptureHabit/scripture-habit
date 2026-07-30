@@ -7,13 +7,13 @@ import { GroupService } from '../../../services/group-service';
 
 export const useDashboardGroups = (userData: UserData | null, initialGroupId: string | null) => {
     const [rawUserGroups, setRawUserGroups] = useState<Group[]>([]);
-    const [activeGroupId, setActiveGroupId] = useState<string | null>(initialGroupId);
-    const [isLoading, setIsLoading] = useState(true);
-
     const userGroupIds = useMemo(() => {
         return userData?.groupIds || (userData?.groupId ? [userData.groupId] : []);
-    }, [userData?.groupIds, userData?.groupId]);
+    }, [userData]);
     const userGroupIdsKey = useMemo(() => JSON.stringify(userGroupIds), [userGroupIds]);
+
+    const [activeGroupId, setActiveGroupId] = useState<string | null>(() => initialGroupId ?? (userGroupIds[0] || null));
+    const [isLoading, setIsLoading] = useState<boolean>(() => !!userData?.uid);
 
     const groupIds = useMemo(() => {
         const ids = JSON.parse(userGroupIdsKey) as string[];
@@ -27,18 +27,9 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
         return JSON.stringify([...groupIds].sort());
     }, [groupIds]);
 
-    // Reset loading state when user changes
-    useEffect(() => {
-        if (userData?.uid) {
-            setIsLoading(true);
-        }
-    }, [userData?.uid]);
-
     // Fetch user groups details
     useEffect(() => {
         if (!userData?.uid) {
-            setRawUserGroups([]);
-            setIsLoading(false);
             return;
         }
 
@@ -78,7 +69,7 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
         // memberJoinedAt, memberLastActive, memberKickThresholds are already denormalized inside Group.
 
         return unsubGroups;
-    }, [userData?.uid, groupIdsKey, groupIds, isLoading]);
+    }, [userData?.uid, groupIdsKey, groupIds]);
 
     // Construct userGroups (Force unreadCount to 0 and ensure uniqueness)
     const userGroups = useMemo(() => {
@@ -112,11 +103,13 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
     useEffect(() => {
         if (!userData?.uid) return;
         if (!activeGroupId) {
-            if (groupIds.length > 0) {
-                setActiveGroupId(groupIds[0]);
-            } else if (userGroups.length > 0) {
-                setActiveGroupId(userGroups[0].id);
-            }
+            queueMicrotask(() => {
+                if (groupIds.length > 0) {
+                    setActiveGroupId(groupIds[0]);
+                } else if (userGroups.length > 0) {
+                    setActiveGroupId(userGroups[0].id);
+                }
+            });
         }
     }, [activeGroupId, groupIds, userGroups, userData?.uid]);
 
@@ -131,7 +124,9 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
             // (meaning the user left or was kicked)
             if (!userGroupIds.includes(activeGroupId)) {
                 console.log(`[useDashboardGroups] Active group ${activeGroupId} not in userGroupIds, resetting to ${userGroups[0].id}`);
-                setActiveGroupId(userGroups[0].id);
+                queueMicrotask(() => {
+                    setActiveGroupId(userGroups[0].id);
+                });
             }
         }
     }, [userGroups, userData, activeGroupId, userGroupIds, isLoading]);

@@ -1,4 +1,4 @@
-import { useReducer, useEffect, useRef, Dispatch } from 'react';
+import { useState, useReducer, useEffect, useRef, Dispatch } from 'react';
 import { collection, onSnapshot, doc, Unsubscribe, query, orderBy, limit, getDocs } from 'firebase/firestore';
 import * as Sentry from "@sentry/react";
 import { Message, GroupData, MembersMap, UserProfileBrief } from '../../../../types/chat';
@@ -230,9 +230,9 @@ export const useChatDataEngine = (groupId: string | null, userData: UserData | n
   const [state, dispatch] = useReducer(chatReducer, initialState);
   
   // Synchronous render-phase state reset on groupId change to eliminate race conditions
-  const prevGroupIdRef = useRef<string | null>(null);
-  if (groupId !== prevGroupIdRef.current) {
-    prevGroupIdRef.current = groupId;
+  const [prevGroupId, setPrevGroupId] = useState<string | null>(null);
+  if (groupId !== prevGroupId) {
+    setPrevGroupId(groupId);
     if (groupId) {
       dispatch({ type: 'RESET', groupId });
     }

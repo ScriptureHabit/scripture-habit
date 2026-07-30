@@ -34,14 +34,19 @@ const SidebarGroupItem: React.FC<SidebarGroupItemProps> = ({ group, language, is
 
   useEffect(() => {
     // 1. Check Firestore Data (Real-time sync makes this fast)
-    if (group.translations && group.translations[language] && group.translations[language].name) {
-      setTranslatedName(group.translations[language].name);
+    const targetTrans = group.translations?.[language];
+    if (targetTrans?.name) {
+      queueMicrotask(() => {
+        setTranslatedName(targetTrans.name);
+      });
       return;
     }
 
     // 2. Skip translation if target is English (base language) or matches original
     if (language === 'en') {
-      setTranslatedName(''); // Use group.name
+      queueMicrotask(() => {
+        setTranslatedName(''); // Use group.name
+      });
       return;
     }
 
@@ -55,7 +60,9 @@ const SidebarGroupItem: React.FC<SidebarGroupItemProps> = ({ group, language, is
       const cached = sessionStorage.getItem(cacheKey);
 
       if (cached) {
-        setTranslatedName(cached);
+        queueMicrotask(() => {
+          setTranslatedName(cached);
+        });
         translationAttemptedRef.current = true;
         return;
       }

@@ -55,13 +55,17 @@ const UserProfileModal: FC<UserProfileModalProps> = ({ user, onClose }) => {
         const shouldAutoTranslate = user?.language && user.language !== language;
 
         if (cachedNick) {
-            setTranslatedNickname(cachedNick);
-            if (shouldAutoTranslate) {
-                setIsNicknameTranslated(true);
-            }
+            queueMicrotask(() => {
+                setTranslatedNickname(cachedNick);
+                if (shouldAutoTranslate) {
+                    setIsNicknameTranslated(true);
+                }
+            });
         } else {
-            setTranslatedNickname(null);
-            setIsNicknameTranslated(false);
+            queueMicrotask(() => {
+                setTranslatedNickname(null);
+                setIsNicknameTranslated(false);
+            });
             
             // Auto fetch if languages differ
             if (shouldAutoTranslate && user?.nickname) {
@@ -90,12 +94,16 @@ const UserProfileModal: FC<UserProfileModalProps> = ({ user, onClose }) => {
         }
 
         if (cachedStake) {
-            setTranslatedStake(cachedStake);
-            if (shouldAutoTranslate) {
-                setIsLocationTranslated(true);
-            }
+            queueMicrotask(() => {
+                setTranslatedStake(cachedStake);
+                if (shouldAutoTranslate) {
+                    setIsLocationTranslated(true);
+                }
+            });
         } else {
-            setTranslatedStake(null);
+            queueMicrotask(() => {
+                setTranslatedStake(null);
+            });
             if (shouldAutoTranslate && user?.stake) {
                 const autoFetchStake = async () => {
                     try {
@@ -119,12 +127,16 @@ const UserProfileModal: FC<UserProfileModalProps> = ({ user, onClose }) => {
         }
 
         if (cachedWard) {
-            setTranslatedWard(cachedWard);
-            if (shouldAutoTranslate) {
-                setIsLocationTranslated(true);
-            }
+            queueMicrotask(() => {
+                setTranslatedWard(cachedWard);
+                if (shouldAutoTranslate) {
+                    setIsLocationTranslated(true);
+                }
+            });
         } else {
-            setTranslatedWard(null);
+            queueMicrotask(() => {
+                setTranslatedWard(null);
+            });
             if (shouldAutoTranslate && user?.ward) {
                 const autoFetchWard = async () => {
                     try {
@@ -148,13 +160,17 @@ const UserProfileModal: FC<UserProfileModalProps> = ({ user, onClose }) => {
         }
 
         if (cachedBio) {
-            setTranslatedBio(cachedBio);
-            if (shouldAutoTranslate) {
-                setIsBioTranslated(true);
-            }
+            queueMicrotask(() => {
+                setTranslatedBio(cachedBio);
+                if (shouldAutoTranslate) {
+                    setIsBioTranslated(true);
+                }
+            });
         } else {
-            setTranslatedBio(null);
-            setIsBioTranslated(false);
+            queueMicrotask(() => {
+                setTranslatedBio(null);
+                setIsBioTranslated(false);
+            });
 
             // Auto fetch if languages differ
             if (shouldAutoTranslate && user?.bio) {
