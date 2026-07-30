@@ -13,6 +13,7 @@ export type NoteFetchStatus =
   | { status: 'error'; notes: Note[]; error: Error };
 
 export const useMyNotes = (userData: UserData, selectedCategory: NoteCategory, searchTerm: string, notesPerPage: number) => {
+  const normalizedSearchTerm = searchTerm.trim().slice(0, 100);
   const [dataState, setDataState] = useState<NoteFetchStatus>({ status: 'loading', notes: [] });
   const [currentPage, setCurrentPage] = useState(1);
   const [lastDocsStack, setLastDocsStack] = useState<DocumentSnapshot[]>([]);
@@ -30,8 +31,8 @@ export const useMyNotes = (userData: UserData, selectedCategory: NoteCategory, s
     if (selectedCategory !== 'All') {
       constraints.push(where('scripture', '==', selectedCategory));
     }
-    if (searchTerm) {
-      const tokens = createSearchTokens(searchTerm).slice(0, 10);
+    if (normalizedSearchTerm) {
+      const tokens = createSearchTokens(normalizedSearchTerm).slice(0, 10);
       if (tokens.length > 0) {
         constraints.push(where('searchTokens', 'array-contains-any', tokens));
       }
@@ -41,14 +42,14 @@ export const useMyNotes = (userData: UserData, selectedCategory: NoteCategory, s
     getCountFromServer(q).then(snap => {
       setTotalCount(snap.data().count);
     }).catch(err => console.error("Error counting notes:", err));
-  }, [userData?.uid, selectedCategory, searchTerm]);
+  }, [userData?.uid, selectedCategory, normalizedSearchTerm]);
 
 
   useEffect(() => {
     setCurrentPage(1);
     setLastDocsStack([]);
     setIsLastPage(false);
-  }, [searchTerm, selectedCategory]);
+  }, [normalizedSearchTerm, selectedCategory]);
 
   useEffect(() => {
     if (!userData?.uid) return;
@@ -62,8 +63,8 @@ export const useMyNotes = (userData: UserData, selectedCategory: NoteCategory, s
       constraints.push(where('scripture', '==', selectedCategory));
     }
 
-    if (searchTerm) {
-      const tokens = createSearchTokens(searchTerm).slice(0, 10);
+    if (normalizedSearchTerm) {
+      const tokens = createSearchTokens(normalizedSearchTerm).slice(0, 10);
       if (tokens.length > 0) {
         constraints.unshift(where('searchTokens', 'array-contains-any', tokens));
       }
@@ -95,7 +96,7 @@ export const useMyNotes = (userData: UserData, selectedCategory: NoteCategory, s
     });
 
     return () => unsubscribe();
-  }, [userData?.uid, currentPage, selectedCategory, searchTerm, lastDocsStack, notesPerPage]);
+  }, [userData?.uid, currentPage, selectedCategory, normalizedSearchTerm, lastDocsStack, notesPerPage]);
 
   const handleNextPage = () => {
     if (!isLastPage && latestSnapshotDocs.length > 0) {
