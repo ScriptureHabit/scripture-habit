@@ -54,6 +54,7 @@ const shouldInitializeSentry = !!import.meta.env.VITE_SENTRY_DSN && !navigator.w
 if (shouldInitializeSentry) {
   Sentry.init({
     dsn: import.meta.env.VITE_SENTRY_DSN,
+    environment: import.meta.env.MODE || 'development',
     integrations: [
       Sentry.reactRouterV6BrowserTracingIntegration({
         useEffect: React.useEffect,

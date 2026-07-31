@@ -132,7 +132,7 @@ const Sidebar: React.FC<SidebarProps> = ({ selected, setSelected, userGroups = [
             <span>{t('sidebar.myNotes')}</span>
           </div>
 
-          {/* Languages */}
+          {/* Profile */}
           <div className={selected === 3 ? 'menuItem active' : 'menuItem'} 
             onClick={() => navigate(`/${language}/profile`)}
             data-testid="sidebar-profile"
