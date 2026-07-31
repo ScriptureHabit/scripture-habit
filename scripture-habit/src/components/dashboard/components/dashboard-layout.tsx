@@ -24,7 +24,7 @@ const DashboardLayout: FC<DashboardLayoutProps> = ({
   children
 }) => {
   return (
-    <div className={`AppGlass Grid ${selectedView === 2 ? 'view-fixed' : ''}`}>
+    <div className={`AppGlass Grid ${selectedView === 2 ? 'view-fixed' : ''}`} data-testid="dashboard-ready">
       <Sidebar
         selected={selectedView}
         setSelected={setSelectedView}

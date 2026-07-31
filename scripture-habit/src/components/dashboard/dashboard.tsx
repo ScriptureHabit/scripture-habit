@@ -297,7 +297,7 @@ const Dashboard: FC = () => {
   const setIsModalOpen = (open: boolean) => setActiveModal(open ? 'newNote' : null);
 
   return (
-    <div data-testid="dashboard-ready">
+    <>
       <DashboardLayout
         selectedView={selectedView}
         setSelectedView={setSelectedView}
@@ -323,7 +323,6 @@ const Dashboard: FC = () => {
             groupId={activeGroupId} userData={userData} userGroups={enrichedUserGroups} 
             onInputFocusChange={setIsInputFocused} isExternalModalOpen={isModalOpen} 
             onBack={() => { setActiveGroupId(null); setSelectedView(0); navigate(`/${language}/dashboard`); }} onGroupSelect={setActiveGroupId} 
-             // initialShowInviteModal prop removed, using global store instead
             onUnityUpdate={handleUnityUpdate} isActive={selectedView === 2}
           />
         )}
@@ -333,7 +332,7 @@ const Dashboard: FC = () => {
       </DashboardLayout>
 
       <NewNote isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} userData={userData} userGroups={enrichedUserGroups} />
-      
+
       <DashboardModals 
         t={t} userData={userData}
         showWelcomeStory={showWelcomeStory} onCloseWelcomeStory={handleCloseWelcomeStory}
@@ -358,8 +357,7 @@ const Dashboard: FC = () => {
           onClose={() => setShowJoinSuccessModal(false)}
         />
       )}
-
-    </div>
+    </>
   );
 };
 
