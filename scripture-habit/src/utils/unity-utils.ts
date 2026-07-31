@@ -18,6 +18,19 @@ export interface UnityParticipation {
 }
 
 /**
+ * Returns astronomical status emoji based on Unity percentage.
+ * 
+ * @param percentage Unity percentage (0-100)
+ * @returns Status emoji (☀️, 🌕, 🌠, 🌑)
+ */
+export const getUnityStatusEmoji = (percentage: number): string => {
+  if (percentage === 100) return '☀️';
+  if (percentage >= 66) return '🌕';
+  if (percentage >= 33) return '🌠';
+  return '🌑';
+};
+
+/**
  * Calculates current Unity participation details for a group.
  * Can be used in both Sidebar (metadata-only) and Group Chat (real-time messages).
  * 

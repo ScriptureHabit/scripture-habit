@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { calculateUnityPercentage } from '../../../utils/unity-utils';
+import { calculateUnityPercentage, getUnityStatusEmoji } from '../../../utils/unity-utils';
 import { Group } from '../../../types/chat';
 import { useGroupTranslation } from '../../../hooks/use-group-translation';
 
@@ -14,12 +14,7 @@ const GroupMenuItem: FC<GroupMenuItemProps> = ({ group, currentGroupId, language
     const { displayName } = useGroupTranslation(group, language);
 
     const getEmoji = (g: Group) => {
-        const percentage = calculateUnityPercentage(g);
-
-        if (percentage === 100) return '☀️';
-        if (percentage >= 66) return '🌕';
-        if (percentage >= 33) return '🌠';
-        return '🌑';
+        return getUnityStatusEmoji(calculateUnityPercentage(g));
     };
 
     const isActive = group.id === currentGroupId;

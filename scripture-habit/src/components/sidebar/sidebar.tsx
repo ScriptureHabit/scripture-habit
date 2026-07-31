@@ -12,6 +12,8 @@ import { useGroupTranslation } from '../../hooks/use-group-translation';
 import { MAX_GROUPS_PER_USER } from '../../config';
 import { Group } from '../../types/chat';
 
+import { getUnityStatusEmoji } from '../../utils/unity-utils';
+
 interface SidebarGroupItemProps {
   group: Group;
   language: string;
@@ -95,12 +97,7 @@ const Sidebar: React.FC<SidebarProps> = ({ selected, setSelected, userGroups = [
   };
 
   const getGroupStatusEmoji = (group: Group): string => {
-    const percentage = getUnityPercentageLocal(group);
-
-    if (percentage === 100) return '☀️';
-    if (percentage >= 66) return '🌕';
-    if (percentage >= 33) return '🌠';
-    return '🌑';
+    return getUnityStatusEmoji(getUnityPercentageLocal(group));
   };
 
 
