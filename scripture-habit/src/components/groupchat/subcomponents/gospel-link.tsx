@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { getGospelLibraryUrl } from '../../../utils/gospel-library-mapper';
-import { parseStructuredNoteText } from '../../../utils/note-parser-utils';
+import { parseStructuredNoteText, ParsedNote } from '../../../utils/note-parser-utils';
 
 interface GospelLinkProps {
   text: string;
@@ -13,7 +13,7 @@ interface GospelLinkProps {
 
 const GospelLink: FC<GospelLinkProps> = ({ text, scripture, chapter, language, isSent, t }) => {
   // Use the shared multi-language note parser
-  const parsed = parseStructuredNoteText(text);
+  const parsed: ParsedNote = parseStructuredNoteText(text);
 
   // Aggressively strip asterisks and trim
   const finalScripture = (scripture || parsed.scriptureValue)?.replace(/\*/g, '').trim();
