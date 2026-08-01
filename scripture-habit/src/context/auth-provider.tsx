@@ -73,6 +73,28 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
   }, []);
 
+  // Background visibility listener for automatic ID token renewal on mobile app resume (throttled to 5 mins)
+  useEffect(() => {
+    let lastRefreshedAt = 0;
+    const COOLDOWN_MS = 5 * 60 * 1000;
+
+    const handleVisibilityChange = async () => {
+      const now = Date.now();
+      if (document.visibilityState === 'visible' && auth?.currentUser && (now - lastRefreshedAt > COOLDOWN_MS)) {
+        try {
+          lastRefreshedAt = now;
+          await auth.currentUser.getIdToken(true);
+          console.log('[AuthProvider] ID token refreshed on app resume (throttled)');
+        } catch (e) {
+          console.warn('[AuthProvider] Failed to refresh ID token on app resume:', e);
+        }
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, []);
+
   const ContextProvider = AuthContext.Provider as (props: { value: AuthContextType | undefined; children?: ReactNode }) => ReactElement | null;
 
   return (

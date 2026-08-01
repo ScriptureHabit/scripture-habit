@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import apiClient from '../../../utils/api-client';
 import { db } from '../../../firebase';
-import { doc, updateDoc, serverTimestamp, collection, addDoc } from 'firebase/firestore';
+import { serverTimestamp, collection, addDoc } from 'firebase/firestore';
 import { toast } from 'react-toastify';
 import { UserData } from '../../../types/user';
 import { parseTimestampToDate } from '../../../utils/time-utils';
@@ -75,11 +75,6 @@ export const useRecapOperations = (userData: UserData, language: string, t: (k: 
         title: title,
         createdAt: serverTimestamp(),
         type: 'weekly_recap'
-      });
-
-      const userRef = doc(db, 'users', userData.uid);
-      await updateDoc(userRef, {
-        lastRecapGeneratedAt: serverTimestamp()
       });
 
       toast.success(t('myNotes.letterSaveSuccess') || "Saved to Letter Box!");

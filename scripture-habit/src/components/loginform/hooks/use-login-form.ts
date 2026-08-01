@@ -28,12 +28,25 @@ export function useLoginForm() {
 
       const result = await signInWithPopup(auth!, provider);
       const user = result.user;
-      const userDocRef = doc(db, 'users', user.uid);
-      const userDoc = await getDoc(userDocRef);
 
       console.log('[LoginForm] social login success', { uid: user.uid, email: user.email, emailVerified: user.emailVerified });
 
-      if (!userDoc.exists()) {
+      const creationTime = new Date(user.metadata.creationTime || 0).getTime();
+      const lastSignInTime = new Date(user.metadata.lastSignInTime || 0).getTime();
+      const isBrandNewAuthUser = Math.abs(creationTime - lastSignInTime) < 5000;
+
+      let userExists = false;
+      try {
+        await user.getIdToken(true);
+        const userDocRef = doc(db, 'users', user.uid);
+        const userDoc = await getDoc(userDocRef);
+        userExists = userDoc.exists();
+      } catch (docErr) {
+        console.warn('[LoginForm] Firestore getDoc failed:', docErr);
+        userExists = !isBrandNewAuthUser;
+      }
+
+      if (!userExists) {
         setPendingGoogleUser(user);
         setNickname(user.displayName || '');
       } else {

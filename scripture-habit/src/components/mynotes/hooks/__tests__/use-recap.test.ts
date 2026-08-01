@@ -218,7 +218,6 @@ describe('useRecapOperations saveRecapToLetterBox', () => {
       createdAt: 'mock-timestamp',
       type: 'weekly_recap'
     });
-    expect(updateDoc).toHaveBeenCalled();
     expect(toast.success).toHaveBeenCalledWith('myNotes.letterSaveSuccess');
     expect(success).toBe(true);
   });
