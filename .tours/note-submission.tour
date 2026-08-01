@@ -1,11 +1,11 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "Scripture Habit 究極フロー 01: ノート投稿からグループ共有・ストリーク計算・カレンダー反映までの全ライフサイクル",
+  "title": "ノート投稿からグループ共有・ストリーク計算・カレンダー反映までの全ライフサイクル",
   "tags": ["Full Lifecycle", "Note Submission", "Streak Engine", "Firestore Transaction", "Group Chat Sync"],
   "steps": [
     {
       "file": "scripture-habit/src/components/newnote/new-note.tsx",
-      "line": 45,
+      "line": 368,
       "description": "### Step 1. 📝 【UI層】ノート投稿フォームと「保存して共有」ボタンのトリガー\n\nユーザーが聖句・章・感想・共有グループを選択して「保存して共有」ボタンをタップすると、`handleSubmit` がトリガーされます。"
     },
     {
@@ -20,7 +20,7 @@
     },
     {
       "file": "scripture-habit/api_internal/lib/streak-engine.ts",
-      "line": 15,
+      "line": 29,
       "description": "### Step 4. 🧮 【計算エンジン層】ストリーク (Streak)・連続学習日数の判定\n\n`StreakEngine.calculateNextStreak` が発火します。ユーザーのローカルタイムゾーン (`timeZone`) に基づいて「今日すでに投稿済みか？」「昨日からの連続投稿（ストリーク継続）か？」「1日以上空いたか（ストリークリセット）？」を判定し、`streakCount` と `highestStreak` を算出します。"
     },
     {
