@@ -1,0 +1,22 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "Testing基礎 04: Playwright による E2E テスト (画面自動操作とユーザー体験の検証)",
+  "tags": ["Testing Fundamentals", "Playwright", "E2E Testing", "Browser Automation"],
+  "steps": [
+    {
+      "file": "scripture-habit/tests/auth-flow.spec.ts",
+      "line": 15,
+      "description": "### 1. 🌐 Playwright による E2E テスト構造 (`test.describe` & `page`)\n\n単体テストとは異なり、Playwright は実際に本物のブラウザ（Chromium/WebKit）を裏で起動します。各テスト関数に引き渡される `{ page }` オブジェクトを使って、ユーザーが実際に画面を操作する動きをシミュレートします。"
+    },
+    {
+      "file": "scripture-habit/tests/auth-flow.spec.ts",
+      "line": 30,
+      "description": "### 2. 🖱️ 宣言的な画面操作 (`page.goto` & `getByRole().click()`)\n\n`page.goto('/')` でトップページへ遷移し、アクセシビリティ標準に基づく `getByRole('button', { name: 'Start in Browser' })` でボタンを特定して `.click()` を実行します。人間がクリックする操作を完全に全自動化します。"
+    },
+    {
+      "file": "scripture-habit/tests/auth-flow.spec.ts",
+      "line": 34,
+      "description": "### 3. 🎯 画面遷移と表示の検証 (`expect(page).toHaveURL` & `toBeVisible`)\n\n`expect(page).toHaveURL(/\/welcome\/?$/)` を使って、ボタンクリック後に正しく目標の URL へ画面遷移したか、目的の要素が画面に表示されているか (`toBeVisible()`) を検証します。"
+    }
+  ]
+}

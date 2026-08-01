@@ -1,0 +1,37 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "GroupChat Master 03: プロ級スクロール制御とアニメーション描画同期",
+  "tags": ["GroupChat", "useLayoutEffect", "requestAnimationFrame", "queueMicrotask", "Smart Scroll"],
+  "steps": [
+    {
+      "file": "scripture-habit/src/components/groupchat/subcomponents/group-chat-message-list-container.tsx",
+      "line": 35,
+      "description": "### 1. ⚡ 同期実行フック (`useLayoutEffect`)\n\nブラウザが画紙に描画（ペイント）する『前』に同期的に割り込んで実行されるフックです。目に見える画面のガタつきを防ぐために使用します。"
+    },
+    {
+      "file": "scripture-habit/src/components/groupchat/subcomponents/group-chat-message-list-container.tsx",
+      "line": 41,
+      "description": "### 2. 🎯 一番下への瞬間移動 (`scrollTop = scrollHeight`)\n\nユーザーの目に画面が映る前に、最下部までスクロール位置をジャンプさせ、準備が整った後に表示を解禁します。"
+    },
+    {
+      "file": "scripture-habit/src/components/groupchat/subcomponents/group-chat-message-list-container.tsx",
+      "line": 42,
+      "description": "### 3. ⚡ 即時マイクロタスク予約 (`queueMicrotask`)\n\nJavaScript スタック終了直後に `setIsInitialLoad(false)` を予約し、React 18 の Cascading Render 警告を回避します。"
+    },
+    {
+      "file": "scripture-habit/src/components/groupchat/subcomponents/group-chat-message-list-container.tsx",
+      "line": 46,
+      "description": "### 4. 🎬 描画フレームの同期 (`requestAnimationFrame`)\n\nブラウザが画面にスクロール位置を書き塗り終わる『次のコマ（フレーム）』まで待機してから `setIsVisible(true)` で画面を表示します。"
+    },
+    {
+      "file": "scripture-habit/src/components/groupchat/subcomponents/group-chat-message-list-container.tsx",
+      "line": 29,
+      "description": "### 5. 📏 最下部判定メモ (`scrollAtBottomRef`)\n\nメッセージ更新直前のスクロール位置をチェックし、ユーザーが最下部（20px以内）に居たかどうかを記憶させます。"
+    },
+    {
+      "file": "scripture-habit/src/components/groupchat/subcomponents/group-chat-message-list-container.tsx",
+      "line": 56,
+      "description": "### 6. 🚫 読書中ユーザーへの配慮 (Smart Scroll)\n\n新着メッセージ受信時、最下部に居た場合のみ自動で下に追いかけ、過去ログをスクロール読書中の場合はスクロールを横取りしない優しいUXを提供します。"
+    }
+  ]
+}

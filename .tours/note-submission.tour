@@ -1,0 +1,47 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "Scripture Habit 究極フロー 01: ノート投稿からグループ共有・ストリーク計算・カレンダー反映までの全ライフサイクル",
+  "tags": ["Full Lifecycle", "Note Submission", "Streak Engine", "Firestore Transaction", "Group Chat Sync"],
+  "steps": [
+    {
+      "file": "scripture-habit/src/components/newnote/new-note.tsx",
+      "line": 45,
+      "description": "### Step 1. 📝 【UI層】ノート投稿フォームと「保存して共有」ボタンのトリガー\n\nユーザーが聖句・章・感想・共有グループを選択して「保存して共有」ボタンをタップすると、`handleSubmit` がトリガーされます。"
+    },
+    {
+      "file": "scripture-habit/src/components/newnote/hooks/use-note-submission.ts",
+      "line": 117,
+      "description": "### Step 2. 🚀 【クライアント層】API 通信とパラメーター構築\n\n`useNoteSubmission` フック内で入力バリデーション（`getNoteValidationError`）を通過後、検索トークンを構築し、`apiClient.post('/api/groups/post-note', ...)` 経由でバックエンド API へ送信用データを一括送信します。"
+    },
+    {
+      "file": "scripture-habit/api_internal/services/note-service.ts",
+      "line": 42,
+      "description": "### Step 3. 🔒 【バックエンド層】Firestore アトミック・トランザクション開始\n\n`NoteService.postNote` 内で `db.runTransaction` を開始します。データ不整合や重複書き込みを防ぐため、Strict Read-before-Write パターンでユーザーデータと関連グループを一括取得します。"
+    },
+    {
+      "file": "scripture-habit/api_internal/lib/streak-engine.ts",
+      "line": 15,
+      "description": "### Step 4. 🧮 【計算エンジン層】ストリーク (Streak)・連続学習日数の判定\n\n`StreakEngine.calculateNextStreak` が発火します。ユーザーのローカルタイムゾーン (`timeZone`) に基づいて「今日すでに投稿済みか？」「昨日からの連続投稿（ストリーク継続）か？」「1日以上空いたか（ストリークリセット）？」を判定し、`streakCount` と `highestStreak` を算出します。"
+    },
+    {
+      "file": "scripture-habit/api_internal/services/note-service.ts",
+      "line": 239,
+      "description": "### Step 5. 📖 【データベース層】My Note (個人ノート) への自動保管\n\nトランザクション内で `users/{uid}/notes` サブコレクションへ書き込み (`transaction.set(noteRef, ...)`) を行います。これにより「自分だけの学習ノート一覧（My Notes）」に即座に新しいノートが永続化されます。"
+    },
+    {
+      "file": "scripture-habit/api_internal/services/note-service.ts",
+      "line": 180,
+      "description": "### Step 6. 💬 【データベース層】選択された各グループチャットへメッセージを自動作成・既読同期\n\n共有先に指定されたグループの `groups/{groupId}/messages` サブコレクションへ、カード型チャットメッセージを一括作成します。同時に、投稿者本人の既読数 (`readMessageCount`) を自動的に `increment(1)` 補正します。"
+    },
+    {
+      "file": "scripture-habit/api_internal/services/note-service.ts",
+      "line": 157,
+      "description": "### Step 7. 📅 【データベース層】ユーザープロファイル・合計日数・カレンダー (`studiedDates`) のアトミック更新\n\n`if (streakUpdated)` ブロック内で `users/{uid}` ドキュメントを更新します。`streakCount`（連続日数）、`daysStudiedCount`（通算学習日数）、`totalNotes`（総ノート数）、そして `studiedDates`（カレンダーに草を生やすための日付文字列配列 `YYYY-MM-DD`）が一気にアトミック更新されます。"
+    },
+    {
+      "file": "scripture-habit/src/components/newnote/hooks/use-note-submission.ts",
+      "line": 133,
+      "description": "### Step 8. 🎉 【UIフィードバック層】紙吹雪 (Confetti) 演出と画面更新\n\nAPI レスポンス（`success: true`）を受け取ると、画面上に祝福の紙吹雪アニメーション (`confetti`) が舞い散り、成功トーストメッセージを表示して入力モーダルを自動的にクローズします。"
+    }
+  ]
+}

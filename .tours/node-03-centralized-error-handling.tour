@@ -10,8 +10,8 @@
     },
     {
       "file": "scripture-habit/api_internal/routes/messages.ts",
-      "line": 50,
-      "description": "### 2. 統一エラーフォーマットによるクライアントレスポンス\n\nエラーを呼び出し元の各処理でバラバラにレスポンス返却せず、中央のエラーミドルウェアへ集約して `{ error: string, code: string }` の統一フォーマットでクライアントへ返却します。"
+      "line": 66,
+      "description": "### 2. 統一エラーフォーマットによるクライアントレスポンス\n\nエラーを呼び出し元の各処理でバラバラに `res.status(404).send()` せず、`throw new NotFoundError('Group not found')` や `next(error)` を使って中央のエラーミドルウェアへ集約し、`{ error: string, code: string }` の統一フォーマットでクライアントへ返却します。"
     }
   ]
 }

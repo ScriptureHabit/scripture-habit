@@ -5,12 +5,12 @@
   "steps": [
     {
       "file": "scripture-habit/src/utils/group-utils.test.ts",
-      "line": 20,
+      "line": 6,
       "description": "### 1. 🧪 テストのグループ化 (`describe`) と 個別テスト (`it` / `test`)\n\n`describe('関数名', () => { ... })` でテスト対象のグループを作り、`it('期待する挙動', () => { ... })` 内に個々のテストケースを記述します。"
     },
     {
       "file": "scripture-habit/src/utils/group-utils.test.ts",
-      "line": 35,
+      "line": 23,
       "description": "### 2. 🎯 アサーション (検証文: `expect().toBe() / toEqual()`)\n\n`expect(actual).toBe(expected)` や `toEqual()` を使って、実行結果が期待通りであるかを検証（アサーション）します。"
     }
   ]

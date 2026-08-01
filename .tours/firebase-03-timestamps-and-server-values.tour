@@ -4,14 +4,14 @@
   "tags": ["Firebase Fundamentals", "GroupChat", "Firestore", "Timestamp"],
   "steps": [
     {
-      "file": "scripture-habit/src/components/groupchat/hooks/actions/use-user-actions.ts",
-      "line": 65,
-      "description": "### 1. 🕒 端末時刻に頼らない `serverTimestamp()`\n\n`new Date()` を使用するとユーザー端末の時計のズレや不正変更の影響を受けます。\nデータ追加時は `createdAt: serverTimestamp()` を使用し、Firestore サーバー側の正確な統一時刻を書き込みます。"
+      "file": "scripture-habit/src/components/dashboard/hooks/use-dashboard-actions.ts",
+      "line": 42,
+      "description": "### 1. 🕒 端末時刻に頼らない `serverTimestamp()`\n\n`new Date()` を使用するとユーザー端末の時計のズレや不正変更の影響を受けます。\nデータ更新時は `serverTimestamp()` を使用し、Firestore サーバー側の正確な統一時刻を書き込みます。"
     },
     {
-      "file": "scripture-habit/src/components/groupchat/hooks/core/chat-reducer.ts",
-      "line": 95,
-      "description": "### 2. 🔄 Firestore `Timestamp` オブジェクトの変換\n\nFirestore から取得した時刻フィールドは標準の `Date` ではなく `Timestamp` 型 (`toMillis()` や `toDate()` メソッドを持つ) になっています。\nReact 側で表示・判定を行う際にミリ秒や Date へ変換・正規化するパース処理を行います。"
+      "file": "scripture-habit/src/utils/time-utils.ts",
+      "line": 12,
+      "description": "### 2. 🔄 Firestore `Timestamp` オブジェクトの安全なパース\n\nFirestore から取得した時刻フィールドは標準の `Date` ではなく `Timestamp` 型 (`toMillis()` や `seconds` を持つ) になっています。\nReact 側で表示・判定を行う際にミリ秒や Date へ安全に変換・正規化するユーティリティ (`parseTimestampToMillis`) を用意します。"
     }
   ]
 }

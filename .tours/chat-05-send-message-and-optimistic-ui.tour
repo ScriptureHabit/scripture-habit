@@ -1,0 +1,27 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "GroupChat Master 05: メッセージ送信と楽観的UI更新",
+  "tags": ["GroupChat", "Optimistic UI", "Send Message", "Rollback", "UI State"],
+  "steps": [
+    {
+      "file": "scripture-habit/src/components/groupchat/hooks/api/use-message-actions.ts",
+      "line": 44,
+      "description": "### 1. 💌 メッセージ送信ハンドラー (`handleSendMessage`)\n\nユーザーが入力欄から送信ボタンを押した際に発火し、テキストのトリムチェックと送信準備を行います。"
+    },
+    {
+      "file": "scripture-habit/src/components/groupchat/hooks/api/use-message-actions.ts",
+      "line": 48,
+      "description": "### 2. ⚡ 楽観的UI (Optimistic UI) メッセージの即時追加\n\nサーバー通信の完了を待たずに `temp-` ID で仮メッセージを自分の画面に即時レンダリング (`dispatch({ type: 'ADD_NEW_MESSAGES' })`) し、通信ラグを感じさせない爆速な体験を提供します。"
+    },
+    {
+      "file": "scripture-habit/src/components/groupchat/hooks/api/use-message-actions.ts",
+      "line": 75,
+      "description": "### 3. 🌐 Firestore サーバーへの非同期保存 (`apiClient.post`)\n\n裏で API 経由で本物のメッセージデータを Firestore サーバーへ永続化します。"
+    },
+    {
+      "file": "scripture-habit/src/components/groupchat/hooks/api/use-message-actions.ts",
+      "line": 86,
+      "description": "### 4. 🔄 サーバー書き込み成功時の ID 差し替えとエラーロールバック\n\nFirestore への保存が成功すると `type: 'UPDATE_MESSAGE'` で本物の ID に差し替え、万が一通信失敗した場合は `REMOVE_MESSAGE` で仮メッセージを取り消すロールバック処理を実行します。"
+    }
+  ]
+}

@@ -4,14 +4,14 @@
   "tags": ["Testing Fundamentals", "Vitest", "Mocking"],
   "steps": [
     {
-      "file": "scripture-habit/src/store/use-chat-store.test.ts",
-      "line": 10,
-      "description": "### 1. 🎭 関数の偽装 (`vi.fn()`)\n\n`vi.fn()` を使うことで、実際の関数を呼び出さずに「何回呼ばれたか」「どんな引数で呼ばれたか」を追跡・検証するスパイ/モック関数を生成します。"
+      "file": "scripture-habit/src/components/newnote/hooks/use-note-submission.test.ts",
+      "line": 15,
+      "description": "### 1. 🎭 関数の偽装とモック化 (`vi.fn()` / `vi.mock()`)\n\n`vi.mock(...)` と `vi.fn()` を使うことで、実際の API 通信や外部ライブラリ（`confetti` や `toast`）を呼び出さずに、「関数が何回呼ばれたか」「どんな引数で呼ばれたか」を安全に検証する偽装関数（モック）を作成します。"
     },
     {
-      "file": "scripture-habit/src/store/use-chat-store.test.ts",
-      "line": 20,
-      "description": "### 2. 🧹 テスト間のモックリセット (`beforeEach` / `afterEach`)\n\n`beforeEach(() => { vi.clearAllMocks(); })` を使用し、各テストケース実行前にモックの状態やカウントをクリアして、テスト同士の干渉を防ぎます。"
+      "file": "scripture-habit/src/components/newnote/hooks/use-note-submission.test.ts",
+      "line": 54,
+      "description": "### 2. 🧹 テスト間のモックリセット (`beforeEach` / `vi.clearAllMocks`)\n\n`beforeEach(() => { vi.clearAllMocks(); })` を使用し、各テストケース実行前にモックの呼び出しカウントや状態を完全にクリアして、テスト同士の干渉（誤判定）を防ぎます。"
     }
   ]
 }

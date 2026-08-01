@@ -1,0 +1,37 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "GroupChat Master 08: ネットワーク・セキュリティ・完全自動テスト",
+  "tags": ["GroupChat", "Security Rules", "Exponential Backoff", "Unity Calculation", "Integration Test", "E2E Test"],
+  "steps": [
+    {
+      "file": "scripture-habit/firestore.rules",
+      "line": 20,
+      "description": "### 1. 🔑 グループ参加チェック関数 (`isMemberOfGroup`)\n\nリクエスト送信者の UID (`request.auth.uid`) が該当グループの `members` 配列または `ownerUserId` に含まれているかを判定するヘルパー関数です。"
+    },
+    {
+      "file": "scripture-habit/firestore.rules",
+      "line": 50,
+      "description": "### 2. 🛡️ 部外者からのメッセージ閲覧・書き込み遮断\n\n`allow read, write: if isMemberOfGroup(groupId)` ルールにより、未参加ユーザーによるメッセージ盗み見や不正書き込みをサーバーレベルで 100% 拒否します。"
+    },
+    {
+      "file": "scripture-habit/api_internal/routes/messages.ts",
+      "line": 43,
+      "description": "### 3. 🔄 エクスポネンシャル・バックオフによるエラー再試行戦略\n\nネットワーク瞬断時に `delays = [800, 1500, 2500]` と段階的に時間を延ばして再試行を行い、サーバーパンクを防ぐ分散回復力を実装します。"
+    },
+    {
+      "file": "scripture-habit/src/utils/unity-utils.ts",
+      "line": 15,
+      "description": "### 4. 🧮 団結度 (`unityPercentage`) リアルタイム計算\n\n「メンバー全体の何％が今日すでにノートを投稿したか」をパーセンテージで計算し、ヘッダーにプログレスバーを動的描画します。"
+    },
+    {
+      "file": "scripture-habit/api_internal/firestore-read-count.integration.test.ts",
+      "line": 38,
+      "description": "### 5. 🧪 単一グループチャットの結合テスト (`/join-group Read Count Assertion`)\n\nエミュレータ環境でグループ参加・メッセージ送信・既読数インクリメントが予期通りの最小読取回数で動くかを自動検証します。"
+    },
+    {
+      "file": "scripture-habit/tests/auth-flow.spec.ts",
+      "line": 27,
+      "description": "### 6. 🌐 Playwright による全ユーザー体験の E2E 自動検証\n\nブラウザを起動し、ログインからグループ選択・チャット表示までの全一連フローがユーザーの画面上で崩れずに動作することを最終保証します。"
+    }
+  ]
+}

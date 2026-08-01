@@ -4,14 +4,14 @@
   "tags": ["CSS Fundamentals", "UI", "CSS Variables", "Theming"],
   "steps": [
     {
-      "file": "scripture-habit/src/components/groupchat/group-chat.css",
-      "line": 10,
-      "description": "### 1. 🎨 CSS カスタムプロパティ (CSS Variables: `--var-name`)\n\n`:root` や親要素で `--chat-bg-color: #ffffff` や `--primary-color: #3b82f6` のように変数として定義し、アプリ全体のテーマカラーや間隔を一元管理します。"
+      "file": "scripture-habit/src/index.css",
+      "line": 7,
+      "description": "### 1. 🎨 CSS カスタムプロパティ (CSS Variables: `--var-name`)\n\n`:root` で `--yellow`, `--orange`, `--purple`, `--glass` のようにデザインシステム共通の変数（カスタムプロパティ）を定義し、アプリ全体のテーマカラーを一元管理します。"
     },
     {
-      "file": "scripture-habit/src/components/groupchat/group-chat.css",
-      "line": 25,
-      "description": "### 2. 🌙 テーマの切り替えと `var()` による参照\n\n`background-color: var(--chat-bg-color);` のように `var()` 関数で参照することで、ダークモードやカスタムテーマへの切替がクラス付与だけで一発で反映されるデザインシステムを構築します。"
+      "file": "scripture-habit/src/index.css",
+      "line": 19,
+      "description": "### 2. 🌙 テーマカラーの宣言とグラデーション変数\n\n`--yellow: linear-gradient(...)` のようにグラデーションや透過色 (`--glass`) を変数化しておくことで、一箇所を修正するだけで全コンポーネントのデザインが一括更新される堅牢な基盤を作ります。"
     }
   ]
 }

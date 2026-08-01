@@ -5,18 +5,18 @@
   "steps": [
     {
       "file": "scripture-habit/src/components/groupchat/hooks/core/use-chat-data-engine.ts",
-      "line": 155,
+      "line": 159,
       "description": "### 1. 📡 一発取得 (`getDocs`) と リアルタイム受信 (`onSnapshot`) の違い\n\n`getDocs` は呼び出した瞬間のスナップショットだけを取得しますが、`onSnapshot` はサーバー上でデータが変更・追加・削除された際に**プッシュ通知形式で自動的に最新データが配信**されます。"
     },
     {
       "file": "scripture-habit/src/components/groupchat/hooks/core/use-chat-data-engine.ts",
-      "line": 175,
-      "description": "### 2. 📄 QuerySnapshot と DocumentSnapshot のデータ抽出\n\n`onSnapshot(query, (snapshot) => { ... })` コールバックの `snapshot.docs` から、`doc.id` や `doc.data()` を使って生の JavaScript オブジェクトを取り出します。"
+      "line": 163,
+      "description": "### 2. 📄 QuerySnapshot と DocumentSnapshot のデータ抽出\n\n`onSnapshot(ref, (snapshot) => { ... })` コールバックの `snapshot.data()` を使って、Firestore の文書データから生の JavaScript オブジェクトを取り出します。"
     },
     {
       "file": "scripture-habit/src/components/groupchat/hooks/core/use-chat-data-engine.ts",
-      "line": 190,
-      "description": "### 3. 🔌 Unsubscribe 関数による接続解除\n\n`onSnapshot` を呼び出すと解約用の関数 (`Unsubscribe`) が返されます。\nReact の `useEffect` のクリーンアップ処理（`return () => unsubscribe()`）でこれを呼び出すことで、バックグラウンドでの不要なデータ通信と課金を防ぎます。"
+      "line": 217,
+      "description": "### 3. 🔌 Unsubscribe 関数による接続解除\n\n`onSnapshot` を呼び出すと解約用の関数 (`Unsubscribe`) が返されます。\nReact の `useEffect` のクリーンアップ処理（`return () => { unsub(); }`）でこれを呼び出すことで、バックグラウンドでの不要なデータ通信と課金を防ぎます。"
     }
   ]
 }

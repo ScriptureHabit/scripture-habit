@@ -1,0 +1,37 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "GroupChat Master 02: リアルタイム通信・背景同期・メモリ管理",
+  "tags": ["GroupChat", "Firestore Stream", "Cleanup", "Memory Leak", "Visibility API"],
+  "steps": [
+    {
+      "file": "scripture-habit/src/components/groupchat/hooks/core/use-chat-data-engine.ts",
+      "line": 159,
+      "description": "### 1. 📡 リアルタイムストリーム受信 (`onSnapshot`)\n\nFirestore の `onSnapshot` を設定し、新しいメッセージの投稿やリアクションの追加をリアルタイムで自動受信します。"
+    },
+    {
+      "file": "scripture-habit/src/components/groupchat/hooks/core/use-chat-data-engine.ts",
+      "line": 163,
+      "description": "### 2. 📄 Firestore スナップショットデータの抽出\n\n`snapshot.data()` から配列やプロパティを取り出し、必要に応じて既存のメッセージリストとマージします。"
+    },
+    {
+      "file": "scripture-habit/src/components/groupchat/hooks/core/use-chat-data-engine.ts",
+      "line": 214,
+      "description": "### 3. 🧹 解約処理 (Cleanup) と メモリリーク防止 (★シニア必須知識)\n\n`useEffect` のクリーンアップ関数で `unsubMessagesRef.current()` を呼び出し、リスナーを確実に解除します。これを行わないと画面移動後に裏で無駄な通信と課金が発生し続ける原因になります。"
+    },
+    {
+      "file": "scripture-habit/src/components/groupchat/hooks/core/use-chat-sync-controller.ts",
+      "line": 49,
+      "description": "### 4. 👁️ ブラウザのタブ可視性チェック (`document.visibilityState`)\n\nユーザーがタブを裏に隠したか、アプリ画面をフォアグラウンドに表示しているかを `visibilityState` で監視します。"
+    },
+    {
+      "file": "scripture-habit/src/components/groupchat/hooks/core/use-chat-sync-controller.ts",
+      "line": 54,
+      "description": "### 5. 🔄 背景同期とアクティブ状態の自動更新\n\n画面がアクティブになった瞬間に `updateReadStatus(groupId, totalMsgs)` を呼び出し、最新の既読カウントを Firestore に自動同期します。"
+    },
+    {
+      "file": "scripture-habit/src/components/groupchat/hooks/core/use-chat-sync-controller.ts",
+      "line": 61,
+      "description": "### 6. 👂 Firestore 既読ソース・オブ・トゥルースの監視\n\n`users/{uid}/groupStates/{groupId}` の既読カウント変化をバックグラウンドリスナーで常に最新化します。"
+    }
+  ]
+}

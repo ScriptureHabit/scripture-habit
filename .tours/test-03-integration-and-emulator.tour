@@ -4,14 +4,14 @@
   "tags": ["Testing Fundamentals", "Integration Test", "Firebase Emulator"],
   "steps": [
     {
-      "file": "scripture-habit/api_internal/routes/messages.integration.test.ts",
-      "line": 25,
-      "description": "### 1. 🏢 エミュレータ（擬似本番環境）を使った統合テスト\n\n本物のサーバーやデータベースを傷つけずに、ローカルで起動した Firebase エミュレータに対して実際に HTTP リクエストを送り、データベースへの書き込みとレスポンスを結合テスト（Integration Test）します。"
+      "file": "scripture-habit/api_internal/firestore-read-count.integration.test.ts",
+      "line": 8,
+      "description": "### 1. 🏢 エミュレータ（擬似本番環境）を使った統合テスト (`TestSetup`)\n\n本物のサーバーやデータベースを傷つけずに、ローカルで起動した Firebase エミュレータ（`setup.start()`）に対して実際のデータベース操作や API 処理を行い、読取回数や書き込み結果を結合テスト（Integration Test）します。"
     },
     {
-      "file": "scripture-habit/api_internal/routes/messages.integration.test.ts",
-      "line": 50,
-      "description": "### 2. 🔄 テストデータのクリーンアップとフィクスチャ\n\nテスト実行前後にデータベースを初期化・クリーンアップし、常に同一の既知の状態（フィクスチャ）からテストが開始できるように設計します。"
+      "file": "scripture-habit/api_internal/firestore-read-count.integration.test.ts",
+      "line": 21,
+      "description": "### 2. 🔄 テストデータのクリーンアップとフィクスチャ (`recursiveDelete`)\n\n`afterAll` フック内で `db.recursiveDelete` を実行してテスト中に作成したグループやユーザーデータを自動削除し、常にクリーンな状態を保つ安全設計です。"
     }
   ]
 }

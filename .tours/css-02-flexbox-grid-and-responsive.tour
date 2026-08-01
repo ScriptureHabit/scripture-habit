@@ -4,14 +4,14 @@
   "tags": ["CSS Fundamentals", "UI", "Flexbox", "Responsive Design"],
   "steps": [
     {
-      "file": "scripture-habit/src/components/groupchat/subcomponents/message-item.css",
-      "line": 15,
-      "description": "### 1. 📐 Flexbox (`display: flex`) による柔軟な要素配置\n\n`display: flex`, `flex-direction`, `align-items`, `justify-content` を組み合わせて、アバター・メッセージ吹き出し・時刻などの横並び/縦並びレイアウトを直感的に組む現代Webの基本レイアウト手法です。"
+      "file": "scripture-habit/src/components/groupchat/group-chat.css",
+      "line": 2,
+      "description": "### 1. 📐 Flexbox (`display: flex`) による柔軟な縦並びレイアウト\n\n`display: flex` と `flex-direction: column` を組み合わせて、ヘッダー・メッセージリスト・入力フッターの縦並び構造を直感的にレイアウトします。"
     },
     {
-      "file": "scripture-habit/src/components/groupchat/subcomponents/message-item.css",
-      "line": 80,
-      "description": "### 2. 📱 Media Queries (`@media`) によるスマホ/PC レスポンシブ切り替え\n\n`@media (max-width: 768px)` を使用して、画面幅がスマホサイズになった際に入力欄やフォントサイズ、余白を自動調整し、マルチデバイスに対応させます。"
+      "file": "scripture-habit/src/components/groupchat/group-chat.css",
+      "line": 14,
+      "description": "### 2. 📱 Media Queries (`@media`) によるスマホ/PC レスポンシブ切り替え\n\n`@media screen and (max-width: 768px)` を使用して、画面幅がスマホサイズになった際（768px以下）に角丸 (`border-radius: 0`) や背景を最適化し、マルチデバイスに対応させます。"
     }
   ]
 }
