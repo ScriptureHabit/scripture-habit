@@ -11,7 +11,7 @@ interface GroupChatMessageListProps {
 const GroupChatMessageList: FC<GroupChatMessageListProps> = ({
   messages
 }) => {
-  const { language, userReadCount } = useChatData();
+  const { language, unreadAnchorIndex } = useChatData();
   const { t } = useChatUIActions();
 
   return (
@@ -30,7 +30,7 @@ const GroupChatMessageList: FC<GroupChatMessageListProps> = ({
               </div>
             )}
             <MessageItem msg={msg} />
-            {userReadCount !== null && index === Math.max(0, userReadCount - 1) && index < messages.length - 1 && msg.senderId !== 'system' && (
+            {unreadAnchorIndex !== null && index === unreadAnchorIndex && msg.senderId !== 'system' && (
               <div className="unread-divider"><span>{t('groupChat.newMessages')}</span></div>
             )}
           </Fragment>

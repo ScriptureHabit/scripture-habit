@@ -4,19 +4,19 @@
   "tags": ["React Fundamentals", "GroupChat", "Optimistic UI", "UX"],
   "steps": [
     {
-      "file": "scripture-habit/src/components/groupchat/hooks/actions/use-user-actions.ts",
-      "line": 60,
-      "description": "### 1. ⚡ 楽観的更新 (Optimistic Update) の概念\n\nネットワーク通信（Firestoreへの書き込み）の完了を待ってからUIを更新すると、ユーザーはタイムラグ（遅延）を感じます。\n「サーバー処理は成功するはずだ」と予測（楽観）して、**APIリクエストを投げる直前にローカル状態（UI）を即座に更新**します。"
+      "file": "scripture-habit/src/components/groupchat/hooks/api/use-message-actions.ts",
+      "line": 49,
+      "description": "### 1. ⚡ 楽観的更新 (Optimistic Update) の概念\n\nネットワーク通信（API書き込み）の完了を待ってから UI を更新すると、ユーザーはタイムラグ（遅延）を感じます。\n「サーバー処理は成功するはずだ」と予測（楽観）して、**API リクエストを投げる直前に仮メッセージ (`optimisticMessage`) を生成**します。"
     },
     {
-      "file": "scripture-habit/src/components/groupchat/hooks/core/chat-reducer.ts",
-      "line": 85,
-      "description": "### 2. 📝 Pendingメッセージのローカル挿入 (`ADD_PENDING_MESSAGE`)\n\n`dispatch({ type: 'ADD_PENDING_MESSAGE', message: optimisticMsg })` を呼ぶことで、仮のIDと `status: 'sending'` を持ったメッセージを即座に画面へ反映させます。"
+      "file": "scripture-habit/src/components/groupchat/hooks/api/use-message-actions.ts",
+      "line": 72,
+      "description": "### 2. 📝 Pending メッセージのローカル即時挿入\n\n`dispatch({ type: 'ADD_NEW_MESSAGES', newMessages: [optimisticMessage] })` を即座に呼ぶことで、仮の ID と `isOptimistic: true` を持ったメッセージを0ミリ秒で画面へ反映させます。"
     },
     {
-      "file": "scripture-habit/src/components/groupchat/hooks/actions/use-user-actions.ts",
-      "line": 80,
-      "description": "### 3. 🔄 サーバー応答時の差替・またはロールバック (Reconciliation / Rollback)\n\nサーバーへの送信が成功したら、仮メッセージを本物の確定データに差し替えます。\nもし失敗（ネットワークエラーなど）した場合は、送信失敗ステータス（`status: 'error'`）に変更するか、または元の状態に戻す（ロールバック）処理を行ってデータ整合性を保ちます。"
+      "file": "scripture-habit/src/components/groupchat/hooks/api/use-message-actions.ts",
+      "line": 115,
+      "description": "### 3. 🔄 サーバー応答時の確定処理とエラー時のロールバック\n\nサーバーへの送信が成功したら仮メッセージを本物の確定データに差し替えます。\nもし失敗（`catch` ブロック）した場合は、`dispatch({ type: 'REMOVE_MESSAGE', messageId: optimisticId })` を呼んで仮メッセージを画面から取り消す（ロールバック）ことで、データ整合性を完全に保ちます。"
     }
   ]
 }

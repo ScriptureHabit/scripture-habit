@@ -4,19 +4,19 @@
   "tags": ["React Fundamentals", "GroupChat", "useRef", "DOM"],
   "steps": [
     {
-      "file": "scripture-habit/src/components/groupchat/hooks/interaction/use-chat-scroll.ts",
-      "line": 25,
-      "description": "### 1. 🔍 DOM 要素への参照保持 (`useRef`)\n\n`const scrollRef = useRef<HTMLDivElement>(null)` を定義し、JSX 側の `ref={scrollRef}` にバインドします。\nこれにより `scrollRef.current` 経由で実際の DOM ノード (`scrollTop`, `scrollHeight` 等) へアクセスできます。"
+      "file": "scripture-habit/src/components/groupchat/hooks/view/use-scroll-manager.ts",
+      "line": 20,
+      "description": "### 1. 🔍 DOM 要素への参照保持 (`useRef`)\n\n`const containerRef = useRef<HTMLDivElement>(null)` を定義し、JSX 側の `ref={containerRef}` にバインドします。\nこれにより `containerRef.current` 経由で実際の DOM ノード (`scrollTop`, `scrollHeight` 等) へ直接アクセスできます。"
     },
     {
       "file": "scripture-habit/src/components/groupchat/hooks/core/use-chat-data-engine.ts",
-      "line": 95,
-      "description": "### 2. 🤫 レンダリングを起こさない変数の保持 (Instance Variables)\n\n`useRef` の値 (`ref.current`) を書き換えても、React はコンポーネントを再レンダリングしません。\n「画面には描画しないが、フックの内部状態として保持・比較したい値」（例: 直前のスクロール位置、タイマーID、フラグ）の保存に最適です。"
+      "line": 134,
+      "description": "### 2. 🤫 レンダリングを起こさない変数の保持 (Instance Variables)\n\n`useRef` の値 (`ref.current`) を書き換えても、React はコンポーネントを再レンダリングしません。\n「画面には描画しないが、フックの内部状態として保持・比較したい値」（例: `activeSyncGroupIdRef` などの二重同期防止フラグやタイマーID）の保存に最適です。"
     },
     {
       "file": "scripture-habit/src/components/groupchat/subcomponents/message-input.tsx",
-      "line": 40,
-      "description": "### 3. 🎯 フォーカス制御と命令型 API 操作\n\nメッセージ送信後に入力欄へ即座にフォーカスを戻す（`inputRef.current?.focus()`）など、宣言的UIでは表現しにくい直接的な命令型操作を実行する際に `useRef` が威力を発揮します。"
+      "line": 31,
+      "description": "### 3. 🎯 フォーカス制御と命令型 API 操作 (`textareaRef`)\n\nメッセージ送信後に入力欄へ即座にフォーカスを戻す（`textareaRef.current?.focus()`）など、宣言的 UI では表現しにくい直接的な命令型 DOM 操作を実行する際に `useRef` が威力を発揮します。"
     }
   ]
 }

@@ -14,6 +14,7 @@ export interface ChatDataContextType {
   membersMap: MembersMap;
   membersList: UserProfileBrief[];
   userReadCount: number | null;
+  unreadAnchorIndex: number | null;
   unityPercentage: number;
   isOwner: boolean;
   language: string;
