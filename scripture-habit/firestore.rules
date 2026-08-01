@@ -37,7 +37,10 @@ service cloud.firestore {
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
              'nickname', 'preferredLanguage', 'stake', 'ward', 'bio', 
              'updatedAt', 'lastActiveAt', 'selectedGroupId', 'groupId', 
-             'readCountGoal', 'email', 'createdAt', 'language'
+             'readCountGoal', 'email', 'createdAt', 'language', 'hasCompletedOnboarding',
+             'hasSeenWelcomeStory', 'hasSeenTour', 'daysStudiedCount', 'totalNotes', 
+             'studiedDates', 'isLevelMigrated', 'fcmTokens', 'hasFcmToken',
+             'questCreatedGroup', 'questPostedNote'
            ])
         && (!request.resource.data.keys().hasAny(['nickname']) || (request.resource.data.nickname is string && request.resource.data.nickname.size() <= 50));
 
