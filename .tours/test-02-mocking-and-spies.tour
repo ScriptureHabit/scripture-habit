@@ -1,0 +1,17 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "Testing基礎 02: モック (Mocking) と スパイ (vi.fn / vi.mock)",
+  "tags": ["Testing Fundamentals", "Vitest", "Mocking"],
+  "steps": [
+    {
+      "file": "scripture-habit/src/store/use-chat-store.test.ts",
+      "line": 10,
+      "description": "### 1. 🎭 関数の偽装 (`vi.fn()`)\n\n`vi.fn()` を使うことで、実際の関数を呼び出さずに「何回呼ばれたか」「どんな引数で呼ばれたか」を追跡・検証するスパイ/モック関数を生成します。"
+    },
+    {
+      "file": "scripture-habit/src/store/use-chat-store.test.ts",
+      "line": 20,
+      "description": "### 2. 🧹 テスト間のモックリセット (`beforeEach` / `afterEach`)\n\n`beforeEach(() => { vi.clearAllMocks(); })` を使用し、各テストケース実行前にモックの状態やカウントをクリアして、テスト同士の干渉を防ぎます。"
+    }
+  ]
+}

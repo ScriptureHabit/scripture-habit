@@ -1,0 +1,22 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "React基礎 03: Custom Hooks による関心事の分離 (Separation of Concerns)",
+  "tags": ["React Fundamentals", "GroupChat", "Custom Hooks"],
+  "steps": [
+    {
+      "file": "scripture-habit/src/components/groupchat/hooks/core/use-group-chat-state.ts",
+      "line": 35,
+      "description": "### 1. 🎼 Hook のオーケストレーション（親Custom Hook）\n\n`useGroupChatState` は、チャットに必要な複数の機能（リアルタイム同期・メッセージ取得・操作ハンドラー）を統合する最上位の Custom Hook です。\nコンポーネント側に複雑なロジックを一切書かせず、1行のフック呼び出しで済むようにカプセル化します。"
+    },
+    {
+      "file": "scripture-habit/src/components/groupchat/hooks/core/use-chat-data-engine.ts",
+      "line": 45,
+      "description": "### 2. 🧱 単一責任原則 (Single Responsibility Principle)\n\nデータエンジン (`useChatDataEngine`) は、Firestoreからのデータ受信と Reducer への投入だけに専念します。\nUIのプレゼンテーションやユーザー操作などの関心事を混ぜないことで、再利用性とテスト容易性が著しく高まります。"
+    },
+    {
+      "file": "scripture-habit/src/components/groupchat/hooks/interaction/use-chat-scroll.ts",
+      "line": 20,
+      "description": "### 3. 🎯 UIインタラクションの独立フック (`useChatScroll`)\n\n「スクロールを一番下まで持っていく」「未読位置を保持する」といったDOM/UI特有の計算・ロジックも独立したフックに切り出します。\nこれにより、データ層のコードを変更せずにスクロール挙動だけを修正・拡張できるようになります。"
+    }
+  ]
+}

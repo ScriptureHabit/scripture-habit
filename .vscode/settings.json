@@ -1,0 +1,7 @@
+{
+    "dependencyDependent.entryPoints": [
+        "src/**/*.{ts,js,tsx,jsx,vue}",
+        "app/**/*.{ts,js,tsx,jsx,vue}",
+        "scripture-habit/src/**/*.{ts,js,tsx,jsx,vue}"
+    ]
+}

@@ -1,0 +1,22 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "React基礎 07: コンポーネントアーキテクチャ (Container / Presentational & Composition)",
+  "tags": ["React Fundamentals", "GroupChat", "Architecture", "Component Design"],
+  "steps": [
+    {
+      "file": "scripture-habit/src/components/groupchat/subcomponents/group-chat-message-list-container.tsx",
+      "line": 25,
+      "description": "### 1. 🎛️ Container Component (ロジック層)\n\n`GroupChatMessageListContainer` はデータの取得、スクロールロジック、Context との接続（状態管理）を担当します。\n自ら複雑な DOM やスタイリングの構造を抱え込まず、下位コンポーネントをオーケストレートします。"
+    },
+    {
+      "file": "scripture-habit/src/components/groupchat/subcomponents/group-chat-message-list.tsx",
+      "line": 15,
+      "description": "### 2. 🎨 Presentational Component (見た目・表示層)\n\n`GroupChatMessageList` はデータやイベントハンドラーを props として受け取り、それらをどう表示・配置するかだけに専念します（Stateless / Pure）。\nビジネスロジックと描画が分離されているため、見た目の修正や単体テストが極めて容易になります。"
+    },
+    {
+      "file": "scripture-habit/src/components/groupchat/group-chat.tsx",
+      "line": 35,
+      "description": "### 3. 🧩 Component Composition (合成パターン)\n\n巨大な1つのファイルを作るのではなく、`ChatHeader` `MessageListContainer` `GroupChatFooter` のように小さなコンポーネントを組み合わせて画面（`GroupChat`）を組み立てます。"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "Testing基礎 03: 統合テスト (Integration Test) と Firebase エミュレータ",
+  "tags": ["Testing Fundamentals", "Integration Test", "Firebase Emulator"],
+  "steps": [
+    {
+      "file": "scripture-habit/api_internal/routes/messages.integration.test.ts",
+      "line": 25,
+      "description": "### 1. 🏢 エミュレータ（擬似本番環境）を使った統合テスト\n\n本物のサーバーやデータベースを傷つけずに、ローカルで起動した Firebase エミュレータに対して実際に HTTP リクエストを送り、データベースへの書き込みとレスポンスを結合テスト（Integration Test）します。"
+    },
+    {
+      "file": "scripture-habit/api_internal/routes/messages.integration.test.ts",
+      "line": 50,
+      "description": "### 2. 🔄 テストデータのクリーンアップとフィクスチャ\n\nテスト実行前後にデータベースを初期化・クリーンアップし、常に同一の既知の状態（フィクスチャ）からテストが開始できるように設計します。"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "React基礎 02: Context API による状態配信とProps Drilling回避",
+  "tags": [
+    "React Fundamentals",
+    "GroupChat",
+    "Context API"
+  ],
+  "steps": [
+    {
+      "file": "scripture-habit/src/components/groupchat/chat-context.ts",
+      "line": 89,
+      "description": "### 1. 🌐 Context の定義 (`createContext`)\n\n`createContext<ChatDataContextType | undefined>(undefined)` で Context オブジェクトを生成します。\nContext はコンポーネントツリーの階層を無視して、親から遠く離れた子コンポーネントへデータを直接配給するためのグローバルパイプラインです。"
+    },
+    {
+      "file": "scripture-habit/src/components/groupchat/group-chat-provider.tsx",
+      "line": 172,
+      "description": "### 2. 🎁 Provider コンポーネントによるデータの提供 (`GroupChatProvider`)\n\n`<GroupChatContext.Provider value={contextValue}>` で配下のコンポーネントツリーをラップします。\n`value` プロパティに渡したデータが、ツリー内のすべての配下コンポーネントから参照可能になります。"
+    },
+    {
+      "file": "scripture-habit/src/components/groupchat/hooks/use-chat-context.ts",
+      "line": 9,
+      "description": "### 3. 🔒 ガード付きカスタムフック (`useChatContext`)\n\n`useContext(ChatDataContext)` をそのまま使わず、専用のカスタムフックに包みます。\nもし Provider の外側で消費されそうになった場合に `throw new Error(...)` で早期にエラーを投げるガード処理を施すのがReactの実践的パターンです。"
+    },
+    {
+      "file": "scripture-habit/src/components/groupchat/subcomponents/chat-header.tsx",
+      "line": 18,
+      "description": "### 4. 🧩 子コンポーネントでの値の消費 (Consumption)\n\nバケツリレー（Props Drilling）で何階層も props をバケツリレーすることなく、`useChatData()` などを呼ぶだけで必要なデータだけをピンポイントで取得・レンダリングできます。"
+    }
+  ]
+}

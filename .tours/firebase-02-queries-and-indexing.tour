@@ -1,0 +1,22 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "Firebase基礎 02: Firestore クエリ構築 (query / where / orderBy / limit)",
+  "tags": ["Firebase Fundamentals", "GroupChat", "Firestore", "Queries"],
+  "steps": [
+    {
+      "file": "scripture-habit/src/components/groupchat/hooks/core/use-chat-data-engine.ts",
+      "line": 145,
+      "description": "### 1. 🔍 `query()` 関数による複合クエリの組み立て\n\nFirestore では `query(collectionRef, where(...), orderBy(...), limit(...))` のようにビルダーパターンでクエリを構築します。"
+    },
+    {
+      "file": "scripture-habit/src/components/groupchat/hooks/core/use-chat-data-engine.ts",
+      "line": 148,
+      "description": "### 2. 🎯 フィルタリングと並取り (`where` / `orderBy`)\n\n`where('groupId', '==', targetGroupId)` で特定のグループのデータだけに絞り込み、`orderBy('createdAt', 'desc')` で時系列にソートします。\nNoSQL データベースにおける複合インデックス (Composite Index) の重要性を理解するポイントです。"
+    },
+    {
+      "file": "scripture-habit/src/components/groupchat/hooks/core/use-chat-data-engine.ts",
+      "line": 150,
+      "description": "### 3. 💰 コストと速度の最適化 (`limit`)\n\n全件取得を行うと転送量・読み取りコストが肥大化します。\n`limit(50)` のように件数制限を設けることで、初期表示速度の高速化と読取費用の削減を両立します。"
+    }
+  ]
+}

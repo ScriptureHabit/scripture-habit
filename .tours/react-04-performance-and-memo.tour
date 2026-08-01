@@ -1,0 +1,22 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "React基礎 04: レンダリング最適化 (useMemo / useCallback / React.memo)",
+  "tags": ["React Fundamentals", "GroupChat", "Performance", "Optimization"],
+  "steps": [
+    {
+      "file": "scripture-habit/src/components/groupchat/group-chat-provider.tsx",
+      "line": 40,
+      "description": "### 1. 💎 `useMemo` による参照の同一性 (Referential Equality) の保持\n\nContext の `value` オブジェクトを `useMemo` なしで渡すと、親がレンダリングされるたびに「新しいオブジェクト参照」が作成され、全配下コンポーネントが不要に再レンダリングされてしまいます。\n依存値が変わった時だけ参照を新しく生成することで、この無駄を防ぎます。"
+    },
+    {
+      "file": "scripture-habit/src/components/groupchat/hooks/actions/use-user-actions.ts",
+      "line": 45,
+      "description": "### 2. ⚓ `useCallback` による関数参照の固定\n\n子コンポーネントに props としてコールバック関数を渡す場合、`useCallback` で関数をメモ化します。\nこれにより、レンダリング毎に新しい関数インスタンスが作られるのを防止します。"
+    },
+    {
+      "file": "scripture-habit/src/components/groupchat/subcomponents/message-item.tsx",
+      "line": 80,
+      "description": "### 3. 🛡️ `React.memo` によるコンポーネントの再レンダリング抑制\n\nチャットメッセージのようにリスト内で多数並ぶコンポーネントには `memo(MessageItem)` を適用します。\n渡された `props` が前回のレンダリング時と浅い比較（Shallow Compare）で変化していない場合、React はそのコンポーネントの再描画をスキップします。"
+    }
+  ]
+}

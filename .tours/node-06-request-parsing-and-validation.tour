@@ -1,0 +1,17 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "Node.js/Express基礎 06: リクエストパース (req.body) と バリデーション",
+  "tags": ["Node.js Fundamentals", "Express", "Validation", "Request Parsing"],
+  "steps": [
+    {
+      "file": "scripture-habit/api_internal/routes/messages.ts",
+      "line": 40,
+      "description": "### 1. 📥 `req.body` による POST データの受信\n\nクライアントから送られてきた JSON パイロードは `req.body` 経由で取得します。"
+    },
+    {
+      "file": "scripture-habit/api_internal/routes/messages.ts",
+      "line": 45,
+      "description": "### 2. 🛡️ サーバーサイドバリデーション (Validation)\n\n受け取った `req.body` をそのまま信用してデータベースや処理へ流さず、必用フィールドの存在チェックや型チェックを行って不正なリクエストを早期に弾きます。"
+    }
+  ]
+}

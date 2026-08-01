@@ -1,0 +1,22 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "TypeScript基礎 03: React Component Props と Event ハンドラーの型定義",
+  "tags": ["TypeScript Fundamentals", "GroupChat", "React Props", "Event Handling"],
+  "steps": [
+    {
+      "file": "scripture-habit/src/components/groupchat/subcomponents/message-item.tsx",
+      "line": 18,
+      "description": "### 1. 📦 Component Props インターフェースの設計\n\n`interface MessageItemProps { msg: Message; }` のように、コンポーネントが親から受け取る入力データ（props）を明示的に型付けします。"
+    },
+    {
+      "file": "scripture-habit/src/components/groupchat/subcomponents/message-input.tsx",
+      "line": 80,
+      "description": "### 2. ⚡ DOM イベントの型付け (`React.ChangeEvent`, `React.FormEvent`)\n\n`onChange={(e) => ...}` や `onSubmit={(e) => ...}` のようにイベントハンドラーを書く際、`e`（イベントオブジェクト）には `React.ChangeEvent<HTMLTextAreaElement>` などの型が自動推論（または明示型付け）され、`e.target.value` や `e.preventDefault()` が補完・安全に利用できます。"
+    },
+    {
+      "file": "scripture-habit/src/components/groupchat/chat-provider.tsx",
+      "line": 18,
+      "description": "### 3. 👶 `React.ReactNode` と Children の型指定\n\n`children: ReactNode;` のように、コンポーネントが配下の子要素（children）を受け取る場合は `ReactNode` 型で型定義します。（JSX、文字列、数値、null など画面に表示可能なすべての要素を受け入れられます。）"
+    }
+  ]
+}

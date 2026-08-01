@@ -1,0 +1,22 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "React基礎 08: 宣言的UIとエラー/ローディング状態管理",
+  "tags": ["React Fundamentals", "GroupChat", "Declarative UI", "Error Handling"],
+  "steps": [
+    {
+      "file": "scripture-habit/src/components/groupchat/hooks/core/chat-reducer.ts",
+      "line": 15,
+      "description": "### 1. 🚦 State によるステータス表現 (`status: 'idle' | 'loading' | 'success' | 'error'`)\n\n「現在読み込み中か？」「エラーが起きたか？」といった画面の状態を boolean フラグの乱立（`isLoading`, `isError`）で管理せず、列挙型（Union type）として単一の `status` フィールドで表現します。\nこれにより「読み込み中かつエラー」のような矛盾した状態を防ぐことができます。"
+    },
+    {
+      "file": "scripture-habit/src/components/groupchat/subcomponents/group-chat-message-list-container.tsx",
+      "line": 45,
+      "description": "### 2. 🎭 宣言的 UI スイッチング (Declarative UI Pattern)\n\n手続き的な IF 条件文を何重にもネストする代わりに、`status` やデータ状態に応じて `<SkeletonLoader />` や `<ErrorMessage />` をスッキリと返す設計を行います。"
+    },
+    {
+      "file": "scripture-habit/src/components/groupchat/group-chat-modals.tsx",
+      "line": 30,
+      "description": "### 3. 🛡️ モーダルやフォールバックの宣言的制御\n\nダイアログやモーダルの表示・非表示も DOM を直接操作（`display: block/none`）するのではなく、`activeModal === 'member_list'` という state に基づいて宣言的に要素のレンダリング・アンマウントを制御します。"
+    }
+  ]
+}

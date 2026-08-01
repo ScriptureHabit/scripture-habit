@@ -1,0 +1,22 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "TypeScript基礎 02: ジェネリクス (Generics) と ユーティリティ型",
+  "tags": ["TypeScript Fundamentals", "GroupChat", "Generics", "Utility Types"],
+  "steps": [
+    {
+      "file": "scripture-habit/src/components/groupchat/chat-context.ts",
+      "line": 89,
+      "description": "### 1. 🧬 ジェネリクス (Generics) による型のパラメータ化\n\n`createContext<ChatDataContextType | undefined>(undefined)` のように `<T>` を指定して型を渡すことで、関数やクラスに型を動的に流し込む（パラメータ化する）ことができます。"
+    },
+    {
+      "file": "scripture-habit/src/types/chat.ts",
+      "line": 29,
+      "description": "### 2. ✂️ 既存型からの抽出と除外 (`Pick` / `Omit`)\n\n`interface Message extends Omit<MessageDocument, 'id' | 'createdAt' ...>` を活用することで、既存の Firestore スキーマ型から一部のプロパティを除外 (`Omit`) してクライアント用に最適化し、型定義の重複（二重管理）を防ぎます。"
+    },
+    {
+      "file": "scripture-habit/src/components/groupchat/hooks/core/chat-reducer.ts",
+      "line": 32,
+      "description": "### 3. 🧩 部分変更やキーマップ型 (`Partial` / `Record`)\n\n`Partial<Message>`（全プロパティのオプショナル化）や `Record<string, string>`（辞書・マップ型の定義）を活用することで、一部のフィールドだけ更新したい場合などに柔軟で安全な型を作成します。"
+    }
+  ]
+}

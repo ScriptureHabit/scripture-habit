@@ -1,0 +1,22 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "TypeScript基礎 01: 判別可能なユニオン型 (Discriminated Unions) と型絞り込み",
+  "tags": ["TypeScript Fundamentals", "GroupChat", "Discriminated Unions", "Types"],
+  "steps": [
+    {
+      "file": "scripture-habit/src/components/groupchat/hooks/core/chat-reducer.ts",
+      "line": 19,
+      "description": "### 1. 🏷️ リテラル型による判別キー (`type` / `status`)\n\nユニオン型を構成するすべての型に、共通の識別子プロパティ（例: `type: 'SET_MESSAGES'` や `type: 'ADD_NEW_MESSAGES'`）を持たせます。\n文字列ではなく「特定のリテラル文字列型」として宣言するのがポイントです。"
+    },
+    {
+      "file": "scripture-habit/src/components/groupchat/hooks/core/chat-reducer.ts",
+      "line": 80,
+      "description": "### 2. 🔍 `switch` / `if` 文による自動型絞り込み (Type Narrowing)\n\n`switch (action.type)` の分岐の中で、TypeScript コンパイラは自動的に `action` の型を特定の Action（例: `SetMessagesAction`）に絞り込みます。\nこれにより、`action.messages` などその型特有のプロパティへ安全にアクセスできるようになります。"
+    },
+    {
+      "file": "scripture-habit/src/components/groupchat/hooks/core/chat-reducer.ts",
+      "line": 4,
+      "description": "### 3. 🛡️ 矛盾した状態を表現させない State 設計\n\n`ChatStatus = 'loading' | 'active' | 'error' | 'notFound'` のようにステータスをユニオン型にすることで、`isLoading: true` かつ `isError: true` のような不正な状態の発生を型レベルで防止します。"
+    }
+  ]
+}

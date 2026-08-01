@@ -1,0 +1,22 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "Node.js/Express基礎 01: ミドルウェアパイプライン (req, res, next)",
+  "tags": ["Node.js Fundamentals", "Express", "Middleware"],
+  "steps": [
+    {
+      "file": "scripture-habit/api_internal/lib/middleware.ts",
+      "line": 94,
+      "description": "### 1. ⚙️ ミドルウェア関数の基本シグネチャ `(req, res, next)`\n\nExpress のミドルウェアは `(req: Request, res: Response, next: NextFunction)` という統一された関数シグネチャを持ちます。\nクライアントからの要求（`req`）と応答（`res`）を処理します。"
+    },
+    {
+      "file": "scripture-habit/api_internal/lib/middleware.ts",
+      "line": 105,
+      "description": "### 2. 🔗 パイプラインを次に進める `next()`\n\nミドルウェアでチェックが合格した場合、`next()` を呼び出すことで次のミドルウェアやルーティング処理へバトンタッチします。\n`next()` を呼び出し忘れると、リクエストが途中で止まってブラウザが応答待ち（タイムアウト）になります。"
+    },
+    {
+      "file": "scripture-habit/api_internal/lib/middleware.ts",
+      "line": 102,
+      "description": "### 3. 🚨 エラー発生時の `next(error)` 発火\n\n処理中にエラーが発生した場合は、`next(new AppError(...))` のように引数にエラーオブジェクトを渡して `next()` を呼び出すことで、後続のエラーハンドリングミドルウェアへ処理をジャンプさせます。"
+    }
+  ]
+}

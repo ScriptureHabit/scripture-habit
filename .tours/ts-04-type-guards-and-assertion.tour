@@ -1,0 +1,22 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "TypeScript基礎 04: 型ガード (Type Guard) と Null 安全 (Null Safety)",
+  "tags": ["TypeScript Fundamentals", "GroupChat", "Type Guard", "Null Safety"],
+  "steps": [
+    {
+      "file": "scripture-habit/src/components/groupchat/hooks/use-chat-context.ts",
+      "line": 15,
+      "description": "### 1. 🛡️ `null` / `undefined` のアサーションガード\n\n`if (!context) throw new Error(...)` を挟むことで、それ以降の処理において TypeScript コンパイラは `context` が `undefined` でないことを確信できます (Type Narrowing)。"
+    },
+    {
+      "file": "scripture-habit/src/components/groupchat/hooks/core/use-chat-data-engine.ts",
+      "line": 222,
+      "description": "### 2. 🔗 Optional Chaining (`?.`) と Nullish Coalescing (`??`)\n\n`userData?.uid` や `data?.user?.name ?? 'ゲスト'` を使うことで、プロパティが存在しない (`null` / `undefined`) 場合の `TypeError` クラッシュを防ぎ、安全なデフォルト値を設定します。"
+    },
+    {
+      "file": "scripture-habit/src/utils/group-utils.ts",
+      "line": 79,
+      "description": "### 3. 🔍 述語付きカスタム型ガード関数 (`is` キーワード)\n\n`.filter((d): d is Date => d !== null)` のように `d is Date`（ユーザー定義型ガード）を指定することで、配列の `filter` 処理後に `null` や `undefined` が除外された正確な型（`Date[]`）へ絞り込むことができます。"
+    }
+  ]
+}

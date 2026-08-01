@@ -1,0 +1,401 @@
+{
+  "../../../types/firestore.ts": [
+    "../../types/schemas.ts"
+  ],
+  "../../config/languages.ts": [],
+  "../../constants.ts": [],
+  "../../context/language-context.ts": [
+    "../../config/languages.ts"
+  ],
+  "../../data/data.ts": [],
+  "../../firebase.ts": [],
+  "../../hooks/use-group-translation.ts": [
+    "../../types/chat.ts",
+    "../../utils/api-client.ts"
+  ],
+  "../../hooks/use-language.ts": [
+    "../../context/language-context.ts"
+  ],
+  "../../hooks/use-today.ts": [],
+  "../../hooks/use-unity-midnight-reset.ts": [
+    "../../firebase.ts",
+    "../../utils/api-client.ts",
+    "../../utils/time-utils.ts"
+  ],
+  "../../hooks/use-url-metadata.ts": [
+    "../../context/language-context.ts",
+    "../../firebase.ts",
+    "../../utils/api-client.ts",
+    "../../utils/storage.ts"
+  ],
+  "../../store/use-chat-store.ts": [
+    "../../types/chat.ts"
+  ],
+  "../../store/use-modal-store.ts": [
+    "../../types/note.ts"
+  ],
+  "../../types/chat.ts": [
+    "../../../types/firestore.ts",
+    "../../types/schemas.ts"
+  ],
+  "../../types/note.ts": [
+    "../../types/scripture.ts"
+  ],
+  "../../types/schemas.ts": [],
+  "../../types/scripture.ts": [],
+  "../../types/user.ts": [],
+  "../../utils/api-client.ts": [
+    "../../firebase.ts"
+  ],
+  "../../utils/firestore-converters.ts": [
+    "../../../types/firestore.ts",
+    "../../types/chat.ts",
+    "../../types/note.ts",
+    "../../types/schemas.ts",
+    "../../types/user.ts",
+    "../../utils/search-token-utils.ts"
+  ],
+  "../../utils/gospel-library-mapper.ts": [
+    "../../utils/note-parser-utils.ts"
+  ],
+  "../../utils/invite-utils.ts": [],
+  "../../utils/language-utils.ts": [],
+  "../../utils/note-parser-utils.ts": [
+    "../../utils/note-utils.ts"
+  ],
+  "../../utils/note-utils.ts": [],
+  "../../utils/notification-helper.ts": [
+    "../../firebase.ts"
+  ],
+  "../../utils/search-token-utils.ts": [
+    "../../types/scripture.ts"
+  ],
+  "../../utils/storage.ts": [],
+  "../../utils/time-utils.ts": [
+    "../../types/chat.ts"
+  ],
+  "../../utils/unity-utils.ts": [
+    "../../types/chat.ts",
+    "../../utils/time-utils.ts"
+  ],
+  "../confirmmodal/confirm-modal.tsx": [],
+  "../dashboard/hooks/use-dashboard-actions.ts": [
+    "../../firebase.ts",
+    "../../types/user.ts",
+    "../../utils/api-client.ts"
+  ],
+  "../linkpreview/link-preview.css": [],
+  "../linkpreview/link-preview.tsx": [
+    "../../firebase.ts",
+    "../../utils/api-client.ts",
+    "../linkpreview/link-preview.css"
+  ],
+  "../mascot/mascot.css": [],
+  "../mascot/mascot.tsx": [
+    "../../hooks/use-language.ts",
+    "../../types/user.ts",
+    "../mascot/mascot.css"
+  ],
+  "../notedisplay/components/gc-note-renderer.tsx": [
+    "../../hooks/use-url-metadata.ts",
+    "../../utils/note-utils.ts",
+    "../notedisplay/note-display.css",
+    "../notedisplay/utils/note-translations.ts"
+  ],
+  "../notedisplay/hooks/use-note-parser.ts": [
+    "../../utils/note-parser-utils.ts"
+  ],
+  "../notedisplay/note-display.css": [],
+  "../notedisplay/note-display.tsx": [
+    "../../hooks/use-language.ts",
+    "../linkpreview/link-preview.tsx",
+    "../notedisplay/components/gc-note-renderer.tsx",
+    "../notedisplay/hooks/use-note-parser.ts",
+    "../notedisplay/note-display.css",
+    "../notedisplay/utils/note-translations.ts"
+  ],
+  "../notedisplay/utils/note-translations.ts": [
+    "../../data/data.ts"
+  ],
+  "../userprofilemodal/user-profile-modal.css": [],
+  "../userprofilemodal/user-profile-modal.tsx": [
+    "../../hooks/use-language.ts",
+    "../../types/chat.ts",
+    "../../types/user.ts",
+    "../../utils/api-client.ts",
+    "../../utils/language-utils.ts",
+    "../userprofilemodal/user-profile-modal.css"
+  ],
+  "chat-context.ts": [
+    "../../../types/firestore.ts",
+    "../../types/chat.ts",
+    "../../types/user.ts",
+    "hooks/core/chat-reducer.ts"
+  ],
+  "chat-provider.tsx": [
+    "chat-context.ts"
+  ],
+  "group-chat-modals.css": [],
+  "group-chat-modals.tsx": [
+    "../../store/use-chat-store.ts",
+    "../../store/use-modal-store.ts",
+    "../../types/chat.ts",
+    "../userprofilemodal/user-profile-modal.tsx",
+    "chat-context.ts",
+    "group-chat-modals.css",
+    "modals/cheer-confirm-modal.tsx",
+    "modals/delete-group-modal.tsx",
+    "modals/delete-message-modal.tsx",
+    "modals/edit-group-name-modal.tsx",
+    "modals/edit-message-modal.tsx",
+    "modals/invite-modal.tsx",
+    "modals/leave-group-modal.tsx",
+    "modals/members-modal.tsx",
+    "modals/reactions-modal.tsx",
+    "modals/report-modal.tsx",
+    "modals/unity-modal.tsx"
+  ],
+  "group-chat-provider.tsx": [
+    "../../hooks/use-language.ts",
+    "../../store/use-chat-store.ts",
+    "../../types/chat.ts",
+    "../../types/user.ts",
+    "chat-context.ts",
+    "chat-provider.tsx",
+    "hooks/api/use-group-actions.ts",
+    "hooks/api/use-invite-manager.ts",
+    "hooks/api/use-message-actions.ts",
+    "hooks/api/use-report-system.ts",
+    "hooks/api/use-user-profile.ts",
+    "hooks/core/use-group-messages.ts",
+    "hooks/interaction/use-cheer-system.ts",
+    "hooks/interaction/use-group-chat-handlers.ts",
+    "hooks/interaction/use-message-interaction.ts",
+    "hooks/view/use-group-chat-ui.ts",
+    "hooks/view/use-scroll-manager.ts",
+    "hooks/view/use-unity-details.ts",
+    "hooks/view/use-unity-score.ts"
+  ],
+  "group-chat.css": [],
+  "group-chat.tsx": [
+    "../../store/use-modal-store.ts",
+    "../../types/chat.ts",
+    "../../types/user.ts",
+    "../../utils/notification-helper.ts",
+    "group-chat-modals.tsx",
+    "group-chat-provider.tsx",
+    "group-chat.css",
+    "subcomponents/chat-header.tsx",
+    "subcomponents/group-chat-context-menu.tsx",
+    "subcomponents/group-chat-footer.tsx",
+    "subcomponents/group-chat-message-list-container.tsx"
+  ],
+  "hooks/api/use-group-actions.ts": [
+    "../../types/chat.ts",
+    "../../types/user.ts",
+    "../../utils/api-client.ts"
+  ],
+  "hooks/api/use-invite-manager.ts": [
+    "../../firebase.ts",
+    "../../types/chat.ts"
+  ],
+  "hooks/api/use-message-actions.ts": [
+    "../../../types/firestore.ts",
+    "../../types/chat.ts",
+    "../../utils/api-client.ts",
+    "../../utils/language-utils.ts",
+    "hooks/core/chat-reducer.ts"
+  ],
+  "hooks/api/use-report-system.ts": [
+    "../../firebase.ts",
+    "../../types/chat.ts",
+    "../../types/user.ts"
+  ],
+  "hooks/api/use-user-profile.ts": [
+    "../../firebase.ts",
+    "../../store/use-chat-store.ts",
+    "../../types/chat.ts"
+  ],
+  "hooks/core/chat-reducer.ts": [
+    "../../types/chat.ts",
+    "../../utils/time-utils.ts"
+  ],
+  "hooks/core/use-chat-data-engine.ts": [
+    "../../firebase.ts",
+    "../../types/chat.ts",
+    "../../types/schemas.ts",
+    "../../types/user.ts",
+    "../../utils/firestore-converters.ts",
+    "../../utils/time-utils.ts",
+    "hooks/core/chat-reducer.ts"
+  ],
+  "hooks/core/use-chat-sync-controller.ts": [
+    "../../firebase.ts",
+    "../../types/chat.ts",
+    "../../types/user.ts",
+    "../../utils/firestore-converters.ts",
+    "../dashboard/hooks/use-dashboard-actions.ts",
+    "hooks/core/chat-reducer.ts"
+  ],
+  "hooks/core/use-group-messages.ts": [
+    "../../types/user.ts",
+    "hooks/core/use-chat-data-engine.ts",
+    "hooks/core/use-chat-sync-controller.ts",
+    "hooks/view/use-chat-visual-effects.ts"
+  ],
+  "hooks/interaction/use-cheer-system.ts": [
+    "../../firebase.ts",
+    "../../store/use-chat-store.ts",
+    "../../types/chat.ts",
+    "../../types/user.ts",
+    "../../utils/api-client.ts"
+  ],
+  "hooks/interaction/use-group-chat-handlers.ts": [
+    "../../../types/firestore.ts",
+    "../../store/use-chat-store.ts",
+    "../../store/use-modal-store.ts",
+    "../../types/chat.ts",
+    "../../utils/storage.ts"
+  ],
+  "hooks/interaction/use-message-input.ts": [
+    "../../constants.ts",
+    "../../store/use-chat-store.ts",
+    "../../types/chat.ts"
+  ],
+  "hooks/interaction/use-message-interaction.ts": [
+    "../../store/use-chat-store.ts",
+    "../../types/chat.ts"
+  ],
+  "hooks/use-chat-context.ts": [
+    "chat-context.ts"
+  ],
+  "hooks/view/use-chat-visual-effects.ts": [
+    "../../types/chat.ts",
+    "../../types/user.ts",
+    "../../utils/time-utils.ts"
+  ],
+  "hooks/view/use-group-chat-ui.ts": [
+    "../../firebase.ts",
+    "../../types/chat.ts",
+    "../../utils/storage.ts"
+  ],
+  "hooks/view/use-scroll-manager.ts": [
+    "../../types/chat.ts",
+    "../../utils/storage.ts"
+  ],
+  "hooks/view/use-unity-details.ts": [
+    "../../firebase.ts",
+    "../../store/use-chat-store.ts",
+    "../../types/chat.ts",
+    "../../utils/unity-utils.ts"
+  ],
+  "hooks/view/use-unity-score.ts": [
+    "../../firebase.ts",
+    "../../hooks/use-today.ts",
+    "../../hooks/use-unity-midnight-reset.ts",
+    "../../types/chat.ts",
+    "../../types/user.ts",
+    "../../utils/storage.ts",
+    "../../utils/unity-utils.ts"
+  ],
+  "modals/cheer-confirm-modal.tsx": [
+    "../../types/chat.ts"
+  ],
+  "modals/delete-group-modal.tsx": [
+    "../../types/chat.ts"
+  ],
+  "modals/delete-message-modal.tsx": [
+    "../../types/chat.ts"
+  ],
+  "modals/edit-group-name-modal.tsx": [
+    "../../types/chat.ts"
+  ],
+  "modals/edit-message-modal.tsx": [
+    "../../types/chat.ts"
+  ],
+  "modals/invite-modal.tsx": [
+    "../../types/chat.ts",
+    "../../types/user.ts",
+    "../../utils/invite-utils.ts",
+    "../../utils/time-utils.ts",
+    "../confirmmodal/confirm-modal.tsx",
+    "../mascot/mascot.tsx"
+  ],
+  "modals/leave-group-modal.tsx": [],
+  "modals/members-modal.tsx": [
+    "../../types/chat.ts",
+    "../../types/user.ts",
+    "../../utils/api-client.ts",
+    "../../utils/language-utils.ts",
+    "../../utils/time-utils.ts"
+  ],
+  "modals/reactions-modal.tsx": [],
+  "modals/report-modal.tsx": [],
+  "modals/unity-modal.tsx": [
+    "../../types/chat.ts",
+    "../../types/user.ts"
+  ],
+  "subcomponents/chat-header.tsx": [
+    "../../store/use-chat-store.ts",
+    "../../store/use-modal-store.ts",
+    "../../types/chat.ts",
+    "../../utils/unity-utils.ts",
+    "hooks/use-chat-context.ts",
+    "subcomponents/group-menu-item.tsx"
+  ],
+  "subcomponents/gospel-link.tsx": [
+    "../../utils/gospel-library-mapper.ts",
+    "../../utils/note-parser-utils.ts"
+  ],
+  "subcomponents/group-chat-context-menu.tsx": [
+    "../../store/use-chat-store.ts",
+    "hooks/use-chat-context.ts"
+  ],
+  "subcomponents/group-chat-footer.tsx": [
+    "../../constants.ts",
+    "../../store/use-chat-store.ts",
+    "../../store/use-modal-store.ts",
+    "hooks/interaction/use-message-input.ts",
+    "hooks/use-chat-context.ts",
+    "subcomponents/message-input.tsx"
+  ],
+  "subcomponents/group-chat-message-list-container.tsx": [
+    "hooks/use-chat-context.ts",
+    "subcomponents/group-chat-message-list.tsx"
+  ],
+  "subcomponents/group-chat-message-list.tsx": [
+    "../../types/chat.ts",
+    "../../utils/time-utils.ts",
+    "hooks/use-chat-context.ts",
+    "subcomponents/message-item.tsx"
+  ],
+  "subcomponents/group-menu-item.tsx": [
+    "../../hooks/use-group-translation.ts",
+    "../../types/chat.ts",
+    "../../utils/unity-utils.ts"
+  ],
+  "subcomponents/message-input.css": [],
+  "subcomponents/message-input.tsx": [
+    "../../types/chat.ts",
+    "subcomponents/message-input.css"
+  ],
+  "subcomponents/message-item.css": [],
+  "subcomponents/message-item.tsx": [
+    "../../../types/firestore.ts",
+    "../../types/chat.ts",
+    "../../utils/api-client.ts",
+    "../../utils/language-utils.ts",
+    "../../utils/time-utils.ts",
+    "../notedisplay/note-display.tsx",
+    "hooks/use-chat-context.ts",
+    "subcomponents/gospel-link.tsx",
+    "subcomponents/message-item.css",
+    "subcomponents/system-message.tsx"
+  ],
+  "subcomponents/system-message.css": [],
+  "subcomponents/system-message.tsx": [
+    "../../constants.ts",
+    "../../types/chat.ts",
+    "subcomponents/system-message.css"
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "Node.js/Express基礎 05: REST API ルーティング (Router) と HTTP ステータス",
+  "tags": ["Node.js Fundamentals", "Express", "Routing", "REST API"],
+  "steps": [
+    {
+      "file": "scripture-habit/api_internal/routes/messages.ts",
+      "line": 15,
+      "description": "### 1. 🔀 `Router()` によるエンドポイントのモジュール化\n\n`const router = Router();` を生成し、機能単位（メッセージ関連、グループ関連など）でファイルを分割してルーティングを整理します。"
+    },
+    {
+      "file": "scripture-habit/api_internal/routes/messages.ts",
+      "line": 35,
+      "description": "### 2. 📡 HTTP メソッド (GET, POST, DELETE) と ステータスコード\n\n`router.post(...)` や `router.get(...)` で意図に沿った HTTP メソッドを定義し、レスポンス時には `res.status(200).json(...)` や `res.status(400)` で適切なステータスコードを返却します。"
+    }
+  ]
+}

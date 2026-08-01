@@ -76,8 +76,6 @@ const GroupChatProvider: FC<GroupChatProviderProps> = ({
     handleConfirmDeleteMessage, handleToggleReaction, handleTranslateMessage, handleLazyTranslate, handleToggleReactionDirect
   } = useMessageActions(groupId, userData, language || 'en', t, dispatch);
 
-
-
   const { 
     handleCopyInviteLink, handleRegenerateInviteCode
   } = useInviteManager(groupId, groupData, t);

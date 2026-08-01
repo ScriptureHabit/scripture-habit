@@ -1,0 +1,17 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "Firebase基礎 04: Security Rules (セキュリティルール) と Firebase Auth 連携",
+  "tags": ["Firebase Fundamentals", "GroupChat", "Security Rules", "Auth"],
+  "steps": [
+    {
+      "file": "scripture-habit/src/components/groupchat/hooks/actions/use-user-actions.ts",
+      "line": 40,
+      "description": "### 1. 🔑 Firebase Auth とクライアントリクエスト\n\nクライアントから Firestore へデータを書き込む際、リクエストには自動的に現在ログインしているユーザーの認証トークン（`request.auth`）が添付されます。"
+    },
+    {
+      "file": "scripture-habit/src/components/groupchat/hooks/actions/use-user-actions.ts",
+      "line": 50,
+      "description": "### 2. 🛡️ サーバーサイドでのアクセス拒否 (Security Rules)\n\nクライアント側でどんなコードが実行されても、Firestore 側の Security Rules（例: 「そのグループのメンバーでなければ書き込み・読み込み不可」）によって無権限なアクセスはサーバーレベルで安全にブロックされます。"
+    }
+  ]
+}

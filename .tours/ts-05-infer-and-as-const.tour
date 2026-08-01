@@ -1,0 +1,17 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "TypeScript基礎 05: as const リテラル固定と keyof typeof 型抽出",
+  "tags": ["TypeScript Fundamentals", "GroupChat", "as const", "Type Inference"],
+  "steps": [
+    {
+      "file": "scripture-habit/src/types/scripture.ts",
+      "line": 11,
+      "description": "### 1. 🔒 `as const` アサーションによるリテラル型固定\n\n`const SCRIPTURE_CATEGORIES = [...] as const` と宣言することで、配列やオブジェクトが変更不可 (readonly) になり、単なる `string[]` ではなく固有名（リテラル文字列）の配列として正確に型推論されます。"
+    },
+    {
+      "file": "scripture-habit/src/types/scripture.ts",
+      "line": 13,
+      "description": "### 2. 🔑 `typeof` を組み合わせた型の自動抽出\n\n`type ScriptureCategory = (typeof SCRIPTURE_CATEGORIES)[number];` と書くことで、`as const` で固定した配列要素から `'Old Testament' | 'New Testament' | ...` というユニオン型を自動で抽出できます。\n配列要素を1箇所変更するだけで型も自動で同期する最高のパターンです。"
+    }
+  ]
+}

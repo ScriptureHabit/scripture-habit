@@ -12,6 +12,7 @@ interface QuestCardProps {
 
 export const QuestCard: FC<QuestCardProps> = ({ userData, t }) => {
   const [celebrated, setCelebrated] = useState(false);
+  const [isDismissed, setIsDismissed] = useState(false);
 
   const step1Done = !!userData.questCreatedGroup || (userData.groupIds && userData.groupIds.length > 0) || !!userData.groupId;
   const step2Done = !!userData.questPostedNote || (userData.totalNotes && userData.totalNotes > 0);
@@ -37,11 +38,12 @@ export const QuestCard: FC<QuestCardProps> = ({ userData, t }) => {
     }
   }, [allDone, celebrated, userData.hasCompletedOnboarding, isLegacyCompleted]);
 
-  if (userData.hasCompletedOnboarding || isLegacyCompleted) {
+  if (isDismissed || userData.hasCompletedOnboarding || isLegacyCompleted) {
     return null;
   }
 
   const handleComplete = async () => {
+    setIsDismissed(true);
     if (!userData.uid) return;
     try {
       await updateDoc(doc(db, 'users', userData.uid), {
@@ -49,6 +51,7 @@ export const QuestCard: FC<QuestCardProps> = ({ userData, t }) => {
       });
     } catch (err) {
       console.error('Error completing onboarding:', err);
+      setIsDismissed(false); // Rollback optimistic update if network/server write fails
     }
   };
 

@@ -1,0 +1,17 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "Node.js/Express基礎 02: 環境変数 (process.env) と環境分岐",
+  "tags": ["Node.js Fundamentals", "Express", "Environment Variables"],
+  "steps": [
+    {
+      "file": "scripture-habit/api_internal/lib/middleware.ts",
+      "line": 96,
+      "description": "### 1. 🌐 `process.env` による環境変数の参照\n\n`process.env.NODE_ENV` や `process.env.SKIP_APP_CHECK` を参照することで、本番環境 (Production)・開発環境 (Development)・ローカルテストなどの実行環境に応じた設定を切り替えます。"
+    },
+    {
+      "file": "scripture-habit/api_internal/lib/middleware.ts",
+      "line": 100,
+      "description": "### 2. 🛡️ 本番環境 (Production) ガード\n\n`if (isProduction)` による条件分岐を設け、開発用フラグ（セキュリティスキップなど）が本番環境で誤って有効化された場合にエラーを発行して即座に遮断する安全設計を施します。"
+    }
+  ]
+}

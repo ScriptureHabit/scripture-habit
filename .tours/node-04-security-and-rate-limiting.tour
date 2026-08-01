@@ -1,0 +1,17 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "Node.js/Express基礎 04: セキュリティミドルウェア (Rate Limit & AppCheck)",
+  "tags": ["Node.js Fundamentals", "Express", "Security", "Rate Limiting"],
+  "steps": [
+    {
+      "file": "scripture-habit/api_internal/lib/middleware.ts",
+      "line": 82,
+      "description": "### 1. 🛑 アクセス制限 (`rateLimit`)\n\n`express-rate-limit` を使用して、特定 IP またはユーザーからの過剰なリクエスト（DDoS攻撃やAPIの乱用）を時間単位 (`windowMs`) で制限・制御します。"
+    },
+    {
+      "file": "scripture-habit/api_internal/lib/middleware.ts",
+      "line": 108,
+      "description": "### 2. 🔐 ヘッダー検証と App Check トークン\n\n`req.header('X-Firebase-AppCheck')` を検証し、正規のアプリ（クライアント）以外からの不正な直叩きリクエストを未然に遮断します。"
+    }
+  ]
+}

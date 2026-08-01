@@ -39,10 +39,46 @@ ChatDataContext   ChatMessageActionsContext   ChatGroupActionsContext   ChatUIAc
 - **自動翻訳 & 聖書ディープリンク (`GospelLink`)**: メッセージ本文内の聖句参照（例: モーサヤ 3:7, 1 Nephi 3:7）を正規表現で自動検知し、Gospel Library アプリ / Web へのディープリンクに変換。
 - **グループ管理 & 通報・モデレーション**: オーナー権限によるグループ名変更、招待コード再発行、メンバー管理、不適切コンテンツの通報・削除。
 
-### 4系統の Context 分割設計 (Context Isolation Pattern)
-単一の巨大な Context は、いずれかの状態変更で全コンポーネントを再レンダリングさせてしまいます。これを防ぐため、コンテクストを目的別に4つに分離しています。
-
 ネストの順序は **データ基盤 (`ChatDataContext`) ➔ ドメイン操作 (`ChatMessageActionsContext` / `ChatGroupActionsContext`) ➔ UI表示 (`ChatUIActionsContext`)** の単方向依存関係に従います。
+
+### コアフック階層とデータフロー構造 (Core Hooks Architecture)
+
+`src/components/groupchat/hooks/core` 配下のカスタムフック群は、単方向に依存関係を分離し、責務に応じたオーケストレーションが行われています。
+
+```
+                     ┌─────────────────────────────────────────┐
+                     │     useGroupMessages (司令塔フック)      │
+                     └────────────────────┬────────────────────┘
+                                          │
+                  ┌───────────────────────┴───────────────────────┐
+                  │ 1. 呼び出し                            │ 2. state & dispatch を渡す
+                  ▼                                               ▼
+┌──────────────────────────────────┐            ┌──────────────────────────────────┐
+│        useChatDataEngine         │            │      useChatSyncController       │
+│    (状態保持 ＆ リアルタイム同期)  │            │    (既読同期 ＆ 無限スクロール)   │
+└────────────────┬─────────────────┘            └────────────────┬─────────────────┘
+                 │                                               │
+                 │ 3. Firestore受信時                            │ 3. 過去ログ取得時
+                 │    dispatch(action)                           │    dispatch(action)
+                 ▼                                               ▼
+┌──────────────────────────────────────────────────────────────────────────────────┐
+│                            chatReducer (状態更新の職人)                          │
+└──────────────────────────────────────────────────────────────────────────────────┘
+                                          │
+                                          │ 4. 更新された state をまとめて返却
+                                          ▼
+                     ┌─────────────────────────────────────────┐
+                     │   GroupChatProvider (Context) ➔ UIへ    │
+                     └─────────────────────────────────────────┘
+```
+
+#### 各フックの役割と責務
+1. **`useGroupMessages`（司令塔 / オーケストレーター）**:
+   - `useChatDataEngine` と `useChatSyncController` を呼び出して連結し、メッセージ関連の全体状態と操作関数をまとめて `GroupChatProvider` へ供給します。
+2. **`useChatDataEngine`（リアルタイム同期 ＆ 状態保管庫）**:
+   - `useReducer(chatReducer, initialState)` を保持し、Firestore の `onSnapshot` によるリアルタイム通信を受信して `chatReducer` へ `dispatch` します。
+3. **`useChatSyncController`（機能・制御コントローラー）**:
+   - `useGroupMessages` から共有された `dispatch` 関数を利用し、単発クエリ（`getDocs`）による「過去ログの無限スクロール」や「既読カウントの同期（Read Status Sync）」の実行制御を行います。
 
 ---
 

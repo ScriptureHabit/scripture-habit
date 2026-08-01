@@ -1,0 +1,22 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "TypeScript基礎 06: 非同期 Promise<T> と 外部SDK/DB の型境界設計",
+  "tags": ["TypeScript Fundamentals", "GroupChat", "Async", "Promises", "Type Boundaries"],
+  "steps": [
+    {
+      "file": "scripture-habit/src/components/groupchat/hooks/api/use-message-actions.ts",
+      "line": 44,
+      "description": "### 1. ⏳ 非同期処理関数の型付け (`Promise<T>`)\n\n`async` 関数の戻り値は自動的に `Promise<T>` で包まれます。\n`handleSendMessage` のように `async (text: string, ...)` と定義することで、呼び出し側（React コンポーネント）が `await` 完了時に何が得られるかを型安全に把握できます。"
+    },
+    {
+      "file": "scripture-habit/src/components/groupchat/hooks/core/use-chat-data-engine.ts",
+      "line": 160,
+      "description": "### 2. 🌉 外部データ（Firestore / API）とドメイン型の境界マッピング\n\nFirestore などの SDK から返ってくる raw データ（`DocumentData`）をそのまま React に流さず、インターフェース（`GroupMessage` 型）へキャスト・変換するアンカー（型境界）を設けます。"
+    },
+    {
+      "file": "scripture-habit/src/components/groupchat/hooks/core/use-chat-data-engine.ts",
+      "line": 210,
+      "description": "### 3. 🎯 関数の戻り値型推論と `ReturnType<T>` の活用\n\nHook の戻り値オブジェクトを明示的インターフェースにするか、または TypeScript の戻り値推論に任せることで、呼び出し側の使い勝手と型安全性のバランスを取ります。"
+    }
+  ]
+}

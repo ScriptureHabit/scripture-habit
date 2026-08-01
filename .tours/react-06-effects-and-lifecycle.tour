@@ -1,0 +1,22 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "React基礎 06: useEffect のライフサイクルとクリーンアップ処理",
+  "tags": ["React Fundamentals", "GroupChat", "useEffect", "Lifecycle"],
+  "steps": [
+    {
+      "file": "scripture-habit/src/components/groupchat/hooks/core/use-chat-data-engine.ts",
+      "line": 150,
+      "description": "### 1. 🔄 外部システムとの同期 (`useEffect`)\n\n`useEffect` は「React のレンダリング結果を外部システム（Firestore、WebSocket、DOMイベント等）と同期させる」ためのフックです。\n第2引数の依存配列 (`[groupId]`) に渡した値が変化した際、またはマウント時に副作用が発火します。"
+    },
+    {
+      "file": "scripture-habit/src/components/groupchat/hooks/core/use-chat-data-engine.ts",
+      "line": 165,
+      "description": "### 2. 🧹 クリーンアップ関数 (Cleanup Function) の徹底\n\n`useEffect` 内で `return () => unsubscribe()` のように関数を返すと、コンポーネントのアンマウント時や依存値 (`groupId`) の変更直前に実行されます。\nメモリリークや重複リスナーの登録を防ぐためにクリーンアップは必須の作法です。"
+    },
+    {
+      "file": "scripture-habit/src/components/groupchat/hooks/core/use-chat-data-engine.ts",
+      "line": 140,
+      "description": "### 3. ⚠️ 依存配列 (Dependency Array) の正しい設計\n\nエフェクト内で使用している外部変数や関数は原則としてすべて依存配列に含める必要があります。\n依存配列の指定を誤ると、古い状態を参照し続ける「Stale Closure」のバグが発生します。"
+    }
+  ]
+}

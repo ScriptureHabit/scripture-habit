@@ -1,0 +1,17 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "Node.js/Express基礎 03: 一元管理型エラーハンドリング (AppError)",
+  "tags": ["Node.js Fundamentals", "Express", "Error Handling"],
+  "steps": [
+    {
+      "file": "scripture-habit/api_internal/lib/middleware.ts",
+      "line": 102,
+      "description": "### 1. 🏗️ カスタムエラー型 (`AppError`) の構築\n\n`new AppError(message, statusCode, errorCode)` を使うことで、HTTP ステータスコード (401, 404, 500) やエラー識別コードを安全に保持したエラーオブジェクトを生成します。"
+    },
+    {
+      "file": "scripture-habit/api_internal/routes/messages.ts",
+      "line": 50,
+      "description": "### 2. 統一エラーフォーマットによるクライアントレスポンス\n\nエラーを呼び出し元の各処理でバラバラにレスポンス返却せず、中央のエラーミドルウェアへ集約して `{ error: string, code: string }` の統一フォーマットでクライアントへ返却します。"
+    }
+  ]
+}

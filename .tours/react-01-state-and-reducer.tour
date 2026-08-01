@@ -1,0 +1,32 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "React基礎 01: useReducer による状態管理一元化",
+  "tags": ["React Fundamentals", "GroupChat", "State Management"],
+  "steps": [
+    {
+      "file": "scripture-habit/src/components/groupchat/hooks/core/chat-reducer.ts",
+      "line": 35,
+      "description": "### 1. 🎯 State型とAction型の厳密な定義\n\n`useReducer` を使用する最初の一歩は、**状態 (State)** と **発生し得るすべての変更 (Action)** を TypeScript の判別可能なユニオン型 (Discriminated Unions) で定義することです。\n`ChatAction` を定義することで、どのような操作が可能かが型レベルで自己文書化されます。"
+    },
+    {
+      "file": "scripture-habit/src/components/groupchat/hooks/core/chat-reducer.ts",
+      "line": 48,
+      "description": "### 2. 🧠 純粋関数としての Reducer (`chatReducer`)\n\n`chatReducer` は `(state, action) => newState` という単一の純粋関数です。\n外部APIの呼び出しや副作用を含めず、**現在の state と送られてきた action だけから次の新しい state を作成して返す**ことで、予測可能でバグの少ない状態遷移を実現します。"
+    },
+    {
+      "file": "scripture-habit/src/components/groupchat/hooks/core/chat-reducer.ts",
+      "line": 79,
+      "description": "### 3. 🛡️ イミュータビリティ (不変性) の維持\n\n`state.messages.push(...)` のように既存のオブジェクトを直接変更（Mutation）してはいけません。\n`{ ...state, messages: [...] }` のようにスプレッド構文を使用して**常に新しいオブジェクトを生成して返す**ことが React の再検知・再レンダリングにおける絶対ルールです。"
+    },
+    {
+      "file": "scripture-habit/src/components/groupchat/hooks/core/use-chat-data-engine.ts",
+      "line": 230,
+      "description": "### 4. ⚙️ `useReducer` フックの呼び出し\n\n`useChatDataEngine` フック内で `useReducer(chatReducer, initialState)` を実行します。\n戻り値として **現在の状態 `state`** と **変更を要求する関数 `dispatch`** のペアが返されます。"
+    },
+    {
+      "file": "scripture-habit/src/components/groupchat/hooks/core/use-chat-data-engine.ts",
+      "line": 183,
+      "description": "### 5. 🚚 `dispatch` による Action の発火\n\nデータが読み込まれた際、`dispatch({ type: 'SET_MESSAGES', messages: finalMessages })` を呼び出します。\nコンポーネントやフックは「状態をどう書き換えるか」を知る必要はなく、「何が起きたか（Action）」を `dispatch` に伝えるだけで済みます。"
+    }
+  ]
+}
