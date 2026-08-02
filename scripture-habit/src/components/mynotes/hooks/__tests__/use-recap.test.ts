@@ -4,7 +4,7 @@ import { useRecapOperations, useRecap } from '../use-recap';
 import apiClient from '../../../../utils/api-client';
 import { toast } from 'react-toastify';
 import { UserData } from '../../../../types/user';
-import { addDoc, updateDoc } from 'firebase/firestore';
+import { addDoc } from 'firebase/firestore';
 
 // Mock dependencies
 vi.mock('../../../../utils/api-client', () => ({
