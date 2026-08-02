@@ -335,7 +335,7 @@ const BOOK_MAPPINGS: Record<string, string> = {
     "1 chronicles": "1-chr", "1 crônicas": "1-chr", "1 crónicas": "1-chr", "歴代志上": "1-chr", "歷代志上": "1-chr", "1 พงศาวดาร": "1-chr", "역대상": "1-chr", "1 mga cronica": "1-chr",
     "2 chronicles": "2-chr", "2 crônicas": "2-chr", "2 crónicas": "2-chr", "歴代志下": "2-chr", "歷代志下": "2-chr", "2 พงศาวดาร": "2-chr", "역대하": "2-chr", "2 mga cronica": "2-chr",
     "ezra": "ezra", "esdras": "ezra", "エズラ記": "ezra", "以斯拉記": "ezra", "เอสรา": "ezra", "에스라": "ezra",
-    "nehemiah": "neh", "neemias": "neh", "nehemías": "neh", "ネヘミヤ記": "neh", "尼希米記": "neh", "เนหะมีย์": "neh", "느헤미야": "neh", "nehemias": "neh",
+    "nehemiah": "neh", "neemias": "neh", "nehemías": "neh", "ネヘミヤ書": "neh", "尼希米記": "neh", "เนหะมีย์": "neh", "느헤미야": "neh", "nehemias": "neh",
     "esther": "esth", "ester": "esth", "エステル記": "esth", "以斯帖記": "esth", "เอสเธอร์": "esth", "에스더": "esth",
     "job": "job", "jó": "job", "ヨブ記": "job", "約伯記": "job", "โยบ": "job", "욥기": "job",
     "psalms": "ps", "psalm": "ps", "salmos": "ps", "詩篇": "ps", "สดุดี": "ps", "시편": "ps", "mga awit": "ps",

@@ -31,7 +31,7 @@ export default {
         "1 Chronicles": "歴代志上",
         "2 Chronicles": "歴代志下",
         "Ezra": "エズラ記",
-        "Nehemiah": "ネヘミヤ記",
+        "Nehemiah": "ネヘミヤ書",
         "Esther": "エステル記",
         "Job": "ヨブ記",
         "Psalms": "詩篇",
