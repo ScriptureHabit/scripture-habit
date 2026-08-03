@@ -5,7 +5,7 @@ import {
   useChatMessageActions, 
   useChatGroupActions, 
   useChatUIActions 
-} from './chat-context';
+} from './hooks/use-chat-context';
 import { useChatStore } from '../../store/use-chat-store';
 import { useModalStore } from '../../store/use-modal-store';
 import { UserProfile } from '../../types/chat';

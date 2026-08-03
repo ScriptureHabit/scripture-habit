@@ -1,4 +1,4 @@
-import { createContext, Dispatch, RefObject, useContext } from 'react';
+import { createContext, Dispatch, RefObject } from 'react';
 import { Message, Group, MembersMap, UserProfileBrief, GroupData } from '../../types/chat';
 import { ReactionPreview } from '../../../types/firestore';
 import { UserData } from '../../types/user';
@@ -14,7 +14,7 @@ export interface ChatDataContextType {
   membersMap: MembersMap;
   membersList: UserProfileBrief[];
   userReadCount: number | null;
-  unreadAnchorIndex: number | null;
+  unreadAnchorMessageId: string | null;
   unityPercentage: number;
   isOwner: boolean;
   language: string;
@@ -92,26 +92,3 @@ export const ChatMessageActionsContext = createContext<ChatMessageActionsContext
 export const ChatGroupActionsContext = createContext<ChatGroupActionsContextType | undefined>(undefined);
 export const ChatUIActionsContext = createContext<ChatUIActionsContextType | undefined>(undefined);
 
-export const useChatData = () => {
-    const context = useContext(ChatDataContext);
-    if (!context) throw new Error('useChatData must be used within ChatProvider');
-    return context;
-};
-
-export const useChatMessageActions = () => {
-    const context = useContext(ChatMessageActionsContext);
-    if (!context) throw new Error('useChatMessageActions must be used within ChatProvider');
-    return context;
-};
-
-export const useChatGroupActions = () => {
-    const context = useContext(ChatGroupActionsContext);
-    if (!context) throw new Error('useChatGroupActions must be used within ChatProvider');
-    return context;
-};
-
-export const useChatUIActions = () => {
-    const context = useContext(ChatUIActionsContext);
-    if (!context) throw new Error('useChatUIActions must be used within ChatProvider');
-    return context;
-};

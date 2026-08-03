@@ -50,7 +50,7 @@ const GroupChatProvider: FC<GroupChatProviderProps> = ({
 
   // Primary Data Hooks
   const {
-    messages, groupData, loading, groupNotFound, userReadCount,
+    messages, groupData, loading, groupNotFound, userReadCount, unreadAnchorMessageId,
     initialScrollDone, setInitialScrollDone, hasMoreOlder, isLoadingOlder, loadMoreOlderMessages,
     membersMap, latestMessageRef, prevMessageCountRef, dispatch, messagesLoaded
   } = useGroupMessages(groupId, userData, t, isActive);
@@ -128,25 +128,19 @@ const GroupChatProvider: FC<GroupChatProviderProps> = ({
   const isOwner = groupData?.ownerUserId === userData?.uid;
   const textareaRef = chatUI.textareaRef;
 
-  // Freeze initial unread anchor index per groupId so real-time read syncs don't hide the unread divider
-  const unreadAnchorIndex = useMemo(() => {
-    if (userReadCount === null || userReadCount <= 0 || !messages.length || userReadCount >= messages.length) {
-      return null;
-    }
-    return userReadCount - 1;
-  }, [groupId]); // Intentionally freeze per groupId on mount
+
 
   // --- SPLIT CONTEXT ASSEMBLY ---
 
   const dataValue = useMemo<ChatDataContextType>(() => ({
     groupId, userData, groupData, messages, loading, membersLoading: false, 
-    membersMap, membersList, userReadCount, unreadAnchorIndex, unityPercentage, isOwner, 
+    membersMap, membersList, userReadCount, unreadAnchorMessageId, unityPercentage, isOwner, 
     language: language || 'en', userGroups, messagesLoaded,
     unityModalData: {
       posted: unityModalData.posted,
       notPosted: unityModalData.notPosted
     }
-  }), [groupId, userData, groupData, messages, loading, membersMap, membersList, userReadCount, unreadAnchorIndex, unityPercentage, isOwner, language, userGroups, unityModalData, messagesLoaded]);
+  }), [groupId, userData, groupData, messages, loading, membersMap, membersList, userReadCount, unreadAnchorMessageId, unityPercentage, isOwner, language, userGroups, unityModalData, messagesLoaded]);
 
   const messageActionsValue = useMemo<ChatMessageActionsContextType>(() => ({
     handleSendMessage, handleSaveEdit, handleConfirmDeleteMessage, handleToggleReaction,

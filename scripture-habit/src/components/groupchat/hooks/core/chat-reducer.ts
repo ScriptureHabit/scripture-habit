@@ -9,6 +9,7 @@ export interface ChatState {
   groupData: GroupData | null;
   error: string | null;
   userReadCount: number | null;
+  unreadAnchorMessageId: string | null;
   initialScrollDone: boolean;
   hasMoreOlder: boolean;
   isLoadingOlder: boolean;
@@ -38,11 +39,47 @@ export const initialState: ChatState = {
   groupData: null,
   error: null,
   userReadCount: null,
+  unreadAnchorMessageId: null,
   initialScrollDone: false,
   hasMoreOlder: true,
   isLoadingOlder: false,
   membersMap: {},
   messagesLoaded: false
+};
+
+/**
+ * Pure helper function to compute initial unread anchor message ID safely.
+ * Frozen once set. Handles fallback if the anchor message happens to be a system message.
+ * Includes defensive sorting to guarantee strict ascending order.
+ */
+export const computeUnreadAnchorId = (
+  messages: Message[], 
+  userReadCount: number | null, 
+  existingAnchorId: string | null
+): string | null => {
+  if (existingAnchorId !== null) return existingAnchorId;
+  if (userReadCount === null || userReadCount <= 0 || !messages.length || userReadCount >= messages.length) {
+    return null;
+  }
+
+  // Defensive sorting to guarantee strict ascending order by timestamp
+  const sorted = [...messages].sort((a, b) => {
+    const timeA = a.clientTimestamp || parseTimestampToMillis(a.createdAt);
+    const timeB = b.clientTimestamp || parseTimestampToMillis(b.createdAt);
+    return timeA - timeB;
+  });
+
+  const targetMsg = sorted[userReadCount - 1];
+  if (!targetMsg) return null;
+
+  // Fallback: If target is a system message, find the last preceding non-system message
+  if (targetMsg.senderId === 'system') {
+    for (let i = userReadCount - 1; i >= 0; i--) {
+      if (sorted[i].senderId !== 'system') return sorted[i].id;
+    }
+  }
+
+  return targetMsg.id;
 };
 
 export const chatReducer = (state: ChatState, action: ChatAction): ChatState => {
@@ -51,17 +88,24 @@ export const chatReducer = (state: ChatState, action: ChatAction): ChatState => 
       return {
         ...initialState,
         status: 'loading',
+        unreadAnchorMessageId: null,
         messagesLoaded: false,
       };
-    case 'SET_INITIAL_STATE':
+    case 'SET_INITIAL_STATE': {
+      const msgs = action.messages;
+      const readCount = action.readCount;
+      const anchorId = computeUnreadAnchorId(msgs, readCount, null);
+
       return {
         ...state,
         status: 'active',
-        messages: action.messages,
+        messages: msgs,
         groupData: action.groupData || state.groupData,
-        userReadCount: action.readCount,
+        userReadCount: readCount,
+        unreadAnchorMessageId: anchorId,
         messagesLoaded: true
       };
+    }
     case 'UPDATE_GROUP': {
       const isSame = state.groupData && JSON.stringify(state.groupData) === JSON.stringify(action.groupData);
       if (isSame && state.status === 'active') return state;
@@ -75,8 +119,11 @@ export const chatReducer = (state: ChatState, action: ChatAction): ChatState => 
       return { ...state, status: 'notFound' };
     case 'SET_ERROR':
       return { ...state, status: 'error', error: action.message };
-    case 'SET_MESSAGES':
-      return { ...state, messages: action.messages, status: 'active', messagesLoaded: true };
+    case 'SET_MESSAGES': {
+      const msgs = action.messages;
+      const anchorId = computeUnreadAnchorId(msgs, state.userReadCount, state.unreadAnchorMessageId);
+      return { ...state, messages: msgs, status: 'active', unreadAnchorMessageId: anchorId, messagesLoaded: true };
+    }
     case 'ADD_NEW_MESSAGES': {
       const { newMessages } = action;
       
@@ -136,8 +183,11 @@ export const chatReducer = (state: ChatState, action: ChatAction): ChatState => 
         isLoadingOlder: false
       };
     }
-    case 'SET_READ_COUNT':
-      return { ...state, userReadCount: Math.max(state.userReadCount || 0, action.count) };
+    case 'SET_READ_COUNT': {
+      const newReadCount = Math.max(state.userReadCount || 0, action.count);
+      const anchorId = computeUnreadAnchorId(state.messages, newReadCount, state.unreadAnchorMessageId);
+      return { ...state, userReadCount: newReadCount, unreadAnchorMessageId: anchorId };
+    }
     case 'SET_SCROLL_DONE':
       return { ...state, initialScrollDone: true };
     case 'UPDATE_MEMBERS': {

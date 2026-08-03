@@ -5,13 +5,13 @@
   "steps": [
     {
       "file": "scripture-habit/src/components/groupchat/group-chat.tsx",
-      "line": 30,
+      "line": 62,
       "description": "### 1. 🏁 【データリレー 1】チャット画面の起動 (`GroupChat`)\n\nユーザーがグループを選択すると `GroupChat` が起動し、全子コンポーネントへデータを供給する「データパイプライン (`ChatProvider`)」を設置します。"
     },
     {
       "file": "scripture-habit/src/components/groupchat/group-chat-provider.tsx",
-      "line": 45,
-      "description": "### 2. 📡 【データリレー 2】データエンジンの発動 (`useChatDataEngine`)\n\n`GroupChatProvider` 内で `useChatDataEngine` が動き出し、Firestore サーバーとのリアルタイム接続を開通させてメッセージ生データを取得します。"
+      "line": 56,
+      "description": "### 2. 📡 【データリレー 2】データエンジンの発動 (`useGroupMessages`)\n\n`GroupChatProvider` 内で `useGroupMessages` が動き出し、Firestore サーバーとのリアルタイム接続を開通させてメッセージ生データを取得します。"
     },
     {
       "file": "scripture-habit/src/components/groupchat/hooks/core/chat-reducer.ts",
@@ -20,7 +20,7 @@
     },
     {
       "file": "scripture-habit/src/components/groupchat/group-chat-provider.tsx",
-      "line": 133,
+      "line": 141,
       "description": "### 4. 🧠 【データリレー 4】コンテキスト値へのバインドとメモ化\n\n正規化されたチャット状態は `useMemo` で包まれ、再描画の無駄をカットした状態で全子要素へ配給（Provider）されます。"
     },
     {
@@ -30,7 +30,7 @@
     },
     {
       "file": "scripture-habit/src/components/groupchat/subcomponents/group-chat-message-list.tsx",
-      "line": 11,
+      "line": 19,
       "description": "### 6. 🎨 【データリレー 6】最終描画 (`GroupChatMessageList`)\n\nバトンを受け取った Presentational が、メッセージ配列を `map` で回し、日付区切り線やカードを画面上にレンダリングして完結します！"
     }
   ]
