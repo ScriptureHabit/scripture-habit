@@ -21,7 +21,6 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import crypto from 'crypto';
-import path from 'path';
 
 // Import Route Handlers
 import authRoutes from '../api_internal/routes/auth.js';
@@ -33,6 +32,8 @@ import cronRoutes from '../api_internal/routes/cron.js';
 import reportRoutes from '../api_internal/routes/reports.js';
 import testUtilsRoutes from '../api_internal/routes/test-utils.js';
 import resetUnityRoutes from '../api_internal/routes/reset-unity.js';
+
+import openapiSpec from '../api_internal/openapi.json';
 
 // Middleware & Utils
 import { globalLimiter } from '../api_internal/lib/middleware.js';
@@ -158,12 +159,11 @@ app.get(['/api/health', '/api/health/'], (_req, res) => {
     });
 });
 
-app.get('/api/openapi.json', (_req, res) => {
-    const specPath = path.resolve(process.cwd(), 'api_internal/openapi.json');
-    res.sendFile(specPath);
+app.get(['/api/openapi.json', '/openapi.json'], (_req, res) => {
+    res.json(openapiSpec);
 });
 
-app.get(['/api-docs', '/api-docs/'], (_req, res) => {
+app.get(['/api/docs', '/api/docs/', '/docs', '/docs/', '/api-docs', '/api-docs/'], (_req, res) => {
     res.send(`
         <!DOCTYPE html>
         <html lang="en">

@@ -88,6 +88,22 @@
     ],
     "rewrites": [
         {
+            "source": "/:lang(en|ja|pt|zho|es|vi|th|ko|tl|sw)/api-docs(.*)",
+            "destination": "/api/api"
+        },
+        {
+            "source": "/:lang(en|ja|pt|zho|es|vi|th|ko|tl|sw)/api/docs(.*)",
+            "destination": "/api/api"
+        },
+        {
+            "source": "/api-docs(.*)",
+            "destination": "/api/api"
+        },
+        {
+            "source": "/api/docs(.*)",
+            "destination": "/api/api"
+        },
+        {
             "source": "/api/(.*)",
             "destination": "/api/api"
         },
