@@ -78,39 +78,39 @@ erDiagram
 これらのコレクションとドキュメントが、Firestore の階層的なパスレイアウト（コレクション ➔ ドキュメント ➔ サブコレクション ➔ ドキュメント）内で物理的にどのように構成されているかをビジュアル化します。
 
 ```mermaid
+%%{init: {'theme': 'neutral'}}%%
 graph TD
-    Root[Firestore ルート]
-    
-    %% Users Root Collection
-    Root --> Users[users / コレクション]
-    Users --> UserDoc["{uid} / ドキュメント"]
-    UserDoc --> UserPrivate[private / サブコレクション]
-    UserPrivate --> TokenDoc["tokens / ドキュメント (FCMトークンなど)"]
-    UserDoc --> UserNotes[notes / サブコレクション]
-    UserNotes --> NoteDoc["{noteId} / ドキュメント (勉強ノートのコピー)"]
-    UserDoc --> GroupStates[groupStates / サブコレクション]
-    GroupStates --> GStateDoc["{groupId} / ドキュメント (既読マーカー)"]
-    UserDoc --> Letters[letters / サブコレクション]
-    Letters --> LetterDoc["{letterId} / ドキュメント (励まし)"]
-    
-    %% Groups Root Collection
-    Root --> Groups[groups / コレクション]
-    Groups --> GroupDoc["{groupId} / ドキュメント"]
-    GroupDoc --> Messages[messages / サブコレクション]
-    Messages --> MsgDoc["{messageId} / ドキュメント (アクティブチャット / TTL 30日)"]
-    GroupDoc --> Members[members / サブコレクション]
-    Members --> MemberDoc["{userId} / ドキュメント (進捗・統計)"]
-    
-    %% Cheers and Reports Root Collections
-    Root --> Cheers[cheers / コレクション]
-    Cheers --> CheerDoc["{cheerId} / ドキュメント (ソーシャルチア)"]
-    Root --> Reports[reports / コレクション]
-    Reports --> ReportDoc["{reportId} / Document (通報)"]
-    
-    classDef col fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
-    classDef doc fill:#fff9c4,stroke:#fbc02d,stroke-width:2px;
-    class Users,Groups,Cheers,Reports,UserPrivate,UserNotes,GroupStates,Letters,Messages,Members col;
-    class UserDoc,TokenDoc,NoteDoc,GStateDoc,LetterDoc,GroupDoc,MsgDoc,MemberDoc,CheerDoc,ReportDoc doc;
+    classDef root fill:#334155,stroke:#0f172a,color:#ffffff,font-weight:bold,font-size:14px;
+    classDef collection fill:#e0f2fe,stroke:#0284c7,color:#0369a1,font-weight:bold,font-size:13px;
+    classDef document fill:#fef3c7,stroke:#d97706,color:#92400e,font-weight:bold,font-size:13px;
+
+    Root["Firestore ルート"]:::root
+
+    Root --> Users["users / コレクション"]:::collection
+    Root --> Groups["groups / コレクション"]:::collection
+    Root --> Cheers["cheers / コレクション"]:::collection
+    Root --> Reports["reports / コレクション"]:::collection
+
+    Users --> UserDoc["{uid} / ドキュメント"]:::document
+    Groups --> GroupDoc["{groupId} / ドキュメント"]:::document
+    Cheers --> CheerDoc["{cheerId} / ドキュメント (ソーシャルチア)"]:::document
+    Reports --> ReportDoc["{reportId} / ドキュメント (通報)"]:::document
+
+    UserDoc --> Private["private / サブコレクション"]:::collection
+    UserDoc --> Notes["notes / サブコレクション"]:::collection
+    UserDoc --> GroupStates["groupStates / サブコレクション"]:::collection
+    UserDoc --> Letters["letters / サブコレクション"]:::collection
+
+    Private --> TokensDoc["tokens / ドキュメント (FCMトークンなど)"]:::document
+    Notes --> NoteDoc["{noteId} / ドキュメント (勉強ノートのコピー)"]:::document
+    GroupStates --> GStateDoc["{groupId} / ドキュメント (既読マーカー)"]:::document
+    Letters --> LetterDoc["{letterId} / ドキュメント (励まし)"]:::document
+
+    GroupDoc --> Messages["messages / サブコレクション"]:::collection
+    GroupDoc --> Members["members / サブコレクション"]:::collection
+
+    Messages --> MsgDoc["{messageId} / ドキュメント (アクティブチャット / TTL 30日)"]:::document
+    Members --> MemberDoc["{userId} / ドキュメント (進捗・統計)"]:::document
 ```
 
 ---
