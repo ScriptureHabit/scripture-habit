@@ -4,7 +4,7 @@ import { isLikelyAlreadyInLanguage, getCachedUserNickname, setCachedUserNickname
 
 /**
  * Custom hook for automatically translating member nicknames asynchronously
- * with local caching support.
+ * with local caching support. Follows React 19 best practices.
  */
 export const useTranslatedNickname = (
   senderId: string | undefined,
@@ -12,36 +12,32 @@ export const useTranslatedNickname = (
   language: string
 ) => {
   const shouldTranslateNick = originalNickname && !isLikelyAlreadyInLanguage(originalNickname, language);
-  const [displayNickname, setDisplayNickname] = useState(originalNickname);
+  const cached = shouldTranslateNick ? getCachedUserNickname(senderId || '', language, originalNickname) : null;
+
+  const [asyncNickname, setAsyncNickname] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!shouldTranslateNick) {
-      setDisplayNickname(originalNickname);
-      return;
-    }
+    if (!shouldTranslateNick || cached) return;
 
-    const cached = getCachedUserNickname(senderId || '', language, originalNickname);
-    if (cached) {
-      setDisplayNickname(cached);
-    } else {
-      let active = true;
-      apiClient.post('/api/ai/translate', {
-        text: originalNickname,
-        targetLanguage: language,
-        updateType: 'user_nickname'
-      }).then(res => {
-        if (active && res.data?.translatedText) {
-          const result = res.data.translatedText;
-          setDisplayNickname(result);
-          setCachedUserNickname(senderId || '', language, originalNickname, result);
-        }
-      }).catch(e => console.error('Failed to translate nickname in message item:', e));
+    let active = true;
+    apiClient.post('/api/ai/translate', {
+      text: originalNickname,
+      targetLanguage: language,
+      updateType: 'user_nickname'
+    }).then(res => {
+      if (active && res.data?.translatedText) {
+        const result = res.data.translatedText;
+        setAsyncNickname(result);
+        setCachedUserNickname(senderId || '', language, originalNickname, result);
+      }
+    }).catch(e => console.error('Failed to translate nickname in message item:', e));
 
-      return () => {
-        active = false;
-      };
-    }
-  }, [senderId, originalNickname, shouldTranslateNick, language]);
+    return () => {
+      active = false;
+    };
+  }, [senderId, originalNickname, shouldTranslateNick, cached, language]);
 
-  return displayNickname;
+  if (!shouldTranslateNick) return originalNickname;
+  if (cached) return cached;
+  return asyncNickname || originalNickname;
 };
