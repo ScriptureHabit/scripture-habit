@@ -1,24 +1,20 @@
 import { useState, useEffect, useRef } from 'react';
-import { getToken } from 'firebase/app-check'; // Added AppCheck getToken
-import { auth, appCheck } from '../../../../firebase'; // Added appCheck
-import { safeStorage } from '../../../../utils/storage';
+import { getToken } from 'firebase/app-check';
+import { auth, appCheck } from '../../../../firebase';
 import { GroupData } from '../../../../types/chat';
 
 export const useGroupChatUI = (
   groupId: string,
   groupData: GroupData | null,
-  language: string,
-  API_BASE: string
+  language: string
 ) => {
   const [translatedGroupName, setTranslatedGroupName] = useState('');
   const [translatedGroupDesc, setTranslatedGroupDesc] = useState('');
-  const [showAddNoteTooltip, setShowAddNoteTooltip] = useState(false);
-  const [showInactivityPolicyBanner, setShowInactivityPolicyBanner] = useState(false);
 
   const groupNameTranslateRef = useRef<{ id: string | null; lang: string | null; textHash?: number }>({ id: null, lang: null });
   const groupDescTranslateRef = useRef<{ id: string | null; lang: string | null; textHash?: number }>({ id: null, lang: null });
 
-  // Auto-translation logic
+  // Auto-translation logic for group name & description
   useEffect(() => {
     if (!groupId) {
       queueMicrotask(() => {
@@ -94,7 +90,7 @@ export const useGroupChatUI = (
             headers['X-Firebase-AppCheck'] = appCheckToken;
           }
 
-          const response = await fetch(`${API_BASE}/api/ai/translate`, {
+          const response = await fetch('/api/ai/translate', {
             method: 'POST',
             headers,
             body: JSON.stringify({ 
@@ -128,35 +124,10 @@ export const useGroupChatUI = (
     };
 
     autoTranslate();
-  }, [groupId, groupData?.name, groupData?.description, groupData?.translations, language, API_BASE]);
-
-  // Tooltip & Inactivity Banner
-  useEffect(() => {
-    if (!groupId) return;
-    const visitCountStr = safeStorage.get('groupChatVisitCount');
-    const visitCount = visitCountStr ? parseInt(visitCountStr, 10) : 0;
-    const newVisitCount = visitCount + 1;
-    safeStorage.set('groupChatVisitCount', newVisitCount.toString());
-
-    if (newVisitCount % 2 === 1) {
-      const timer = setTimeout(() => setShowAddNoteTooltip(true), 1000);
-      return () => clearTimeout(timer);
-    }
-
-    const hasDismissedBanner = safeStorage.get('hasDismissedInactivityPolicy');
-    if (!hasDismissedBanner) {
-      queueMicrotask(() => {
-        setShowInactivityPolicyBanner(true);
-      });
-    }
-  }, [groupId]);
+  }, [groupId, groupData?.name, groupData?.description, groupData?.translations, language]);
 
   return {
     translatedGroupName,
-    translatedGroupDesc,
-    showAddNoteTooltip,
-    setShowAddNoteTooltip,
-    showInactivityPolicyBanner,
-    setShowInactivityPolicyBanner
+    translatedGroupDesc
   };
 };

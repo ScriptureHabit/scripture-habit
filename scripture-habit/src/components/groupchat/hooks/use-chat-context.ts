@@ -29,13 +29,3 @@ export const useChatUIActions = () => {
   if (!context) throw new Error('useChatUIActions must be used within ChatProvider');
   return context;
 };
-
-// Legacy shim for easier migration
-export const useChat = () => {
-  return {
-    ...useChatData(),
-    ...useChatMessageActions(),
-    ...useChatGroupActions(),
-    ...useChatUIActions()
-  };
-};

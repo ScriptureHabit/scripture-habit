@@ -43,7 +43,6 @@ const GroupChatProvider: FC<GroupChatProviderProps> = ({
   groupId, userData, userGroups = [], isActive = false, onBack, onGroupSelect, initialShowInviteModal = false, onInputFocusChange, onUnityUpdate, children 
 }) => {
   const { language, t, tArray, isLoaded } = useLanguage();
-  const API_BASE = '';
 
   // Zustand Stores
   const chatUI = useChatStore();
@@ -58,7 +57,7 @@ const GroupChatProvider: FC<GroupChatProviderProps> = ({
   // 1. Feature Hooks (State & Scoring)
   const { 
     translatedGroupName, translatedGroupDesc 
-  } = useGroupChatUI(groupId, groupData, language || 'en', API_BASE);
+  } = useGroupChatUI(groupId, groupData, language || 'en');
 
   const unityPercentage = useUnityScore(groupId, userData, groupData, messages, membersMap);
 
@@ -69,7 +68,7 @@ const GroupChatProvider: FC<GroupChatProviderProps> = ({
   // 2. API Actions
   const { 
     isLeaving, isDeleting, handleLeaveGroup, handleDeleteGroup, togglePublicStatus, handleUpdateGroupName
-  } = useGroupActions(groupId, userData, groupData, language || 'en', t, onBack, onBack);
+  } = useGroupActions(groupId, userData, groupData, language || 'en', t, /* onLeaveSuccess */ onBack, /* onDeleteSuccess */ onBack);
 
   const { 
     translatingIds, translatedTexts, handleSendMessage, handleSaveEdit, 

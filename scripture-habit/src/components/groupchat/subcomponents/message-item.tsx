@@ -1,19 +1,20 @@
-import { FC, useState, useEffect, useRef, memo, useMemo } from 'react';
+import { FC, memo } from 'react';
 import NoteDisplay from '../../notedisplay/note-display';
 import { Message } from '../../../types/chat';
 import { ReactionPreview } from '../../../../types/firestore';
 import SystemMessage from './system-message';
 import GospelLink from './gospel-link';
-import { parseTimestampToMillis } from '../../../utils/time-utils';
 import { 
   useChatData, 
   useChatMessageActions, 
   useChatGroupActions, 
   useChatUIActions 
 } from '../hooks/use-chat-context';
+import { useAutoTranslateMessage } from '../hooks/view/use-auto-translate-message';
+import { useTranslatedNickname } from '../hooks/view/use-translated-nickname';
+import { useMessageReadCount } from '../hooks/view/use-message-read-count';
+import { parseTimestampToMillis } from '../../../utils/time-utils';
 import './message-item.css';
-import apiClient from '../../../utils/api-client';
-import { isLikelyAlreadyInLanguage, getCachedUserNickname, setCachedUserNickname } from '../../../utils/language-utils';
 
 interface MessageItemProps {
   msg: Message;
@@ -34,81 +35,13 @@ const MessageItem: FC<MessageItemProps> = memo(({
   const userUid = userData?.uid || '';
   const isMe = msg.senderId === userUid;
 
-  const observerRef = useRef<HTMLDivElement>(null);
+  // Extracted Custom Hooks for View Side-Effects & Calculations
+  const observerRef = useAutoTranslateMessage(msg, isMe, handleLazyTranslate);
+  const readCount = useMessageReadCount(msg, isMe, groupData, membersMap);
 
-  useEffect(() => {
-    if (!observerRef.current || isMe || msg.senderId === 'system' || msg.isSystemMessage) return;
-    
-    const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) {
-        handleLazyTranslate(msg);
-        observer.disconnect();
-      }
-    }, { threshold: 0.1 });
-
-    observer.observe(observerRef.current);
-    return () => observer.disconnect();
-  }, [msg.id, isMe, msg.senderId, msg.isSystemMessage, handleLazyTranslate, msg]);
-
-  const readCount = useMemo(() => {
-    if (!isMe || !msg.createdAt || !groupData?.members) return 0;
-    const msgTime = parseTimestampToMillis(msg.createdAt);
-    const legacyLastReadAt = groupData.memberLastReadAt;
-    let count = 0;
-
-    for (const uid of groupData.members) {
-      if (uid === msg.senderId) continue;
-      
-      const memberStatus = membersMap?.[uid];
-      const readAt = memberStatus?.lastReadAt || legacyLastReadAt?.[uid];
-      
-      const didReadByTime = readAt && parseTimestampToMillis(readAt) >= msgTime;
-      const didReact = msg.reactions && Object.values(msg.reactions).some(uids => uids.includes(uid));
-
-      if (didReadByTime || didReact) {
-        count++;
-      }
-    }
-    return count;
-  }, [isMe, msg.createdAt, msg.senderId, groupData?.members, groupData?.memberLastReadAt, membersMap, msg.reactions]);
-
-
-
-  // Auto nickname translation state & effect
   const member = msg.senderId ? membersMap?.[msg.senderId] : null;
   const originalNickname = member?.nickname || msg.senderNickname || '';
-  const shouldTranslateNick = originalNickname && !isLikelyAlreadyInLanguage(originalNickname, language);
-
-  const [displayNickname, setDisplayNickname] = useState(originalNickname);
-
-  useEffect(() => {
-    if (!shouldTranslateNick) {
-      setDisplayNickname(originalNickname);
-      return;
-    }
-
-    const cached = getCachedUserNickname(msg.senderId || '', language, originalNickname);
-    if (cached) {
-      setDisplayNickname(cached);
-    } else {
-      let active = true;
-      apiClient.post('/api/ai/translate', {
-        text: originalNickname,
-        targetLanguage: language,
-        updateType: 'user_nickname'
-      }).then(res => {
-        if (active && res.data?.translatedText) {
-          const result = res.data.translatedText;
-          setDisplayNickname(result);
-          setCachedUserNickname(msg.senderId || '', language, originalNickname, result);
-        }
-      }).catch(e => console.error('Failed to translate nickname in message item:', e));
-
-      return () => {
-        active = false;
-      };
-    }
-  }, [msg.senderId, originalNickname, shouldTranslateNick, language]);
+  const displayNickname = useTranslatedNickname(msg.senderId, originalNickname, language);
 
   if (msg.senderId === 'system' || msg.isSystemMessage) {
     const kickThreshold = userData && 'kickThreshold' in userData ? userData.kickThreshold : undefined;
