@@ -21,6 +21,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import crypto from 'crypto';
+import path from 'path';
 
 // Import Route Handlers
 import authRoutes from '../api_internal/routes/auth.js';
@@ -148,13 +149,60 @@ app.use((req, _res, next) => {
 // Explicitly allow both slash and non-slash paths
 app.set('strict routing', false);
 
-// --- Diagnostics ---
+// --- Diagnostics & API Docs ---
 app.get(['/api/health', '/api/health/'], (_req, res) => {
     res.json({
         status: 'ok',
         time: new Date().toISOString(),
         env: process.env.NODE_ENV
     });
+});
+
+app.get('/api/openapi.json', (_req, res) => {
+    const specPath = path.resolve(process.cwd(), 'api_internal/openapi.json');
+    res.sendFile(specPath);
+});
+
+app.get(['/api-docs', '/api-docs/'], (_req, res) => {
+    res.send(`
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <title>Scripture Habit API Specs (Swagger UI)</title>
+            <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css" />
+            <link rel="icon" type="image/png" href="https://unpkg.com/swagger-ui-dist@5/favicon-32x32.png" />
+            <style>
+                html { box-sizing: border-box; overflow: -moz-scrollbars-vertical; overflow-y: scroll; }
+                *, *:before, *:after { box-sizing: inherit; }
+                body { margin:0; background: #fafafa; }
+                .swagger-ui .topbar { display: none; }
+            </style>
+        </head>
+        <body>
+            <div id="swagger-ui"></div>
+            <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js" charset="UTF-8"></script>
+            <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-standalone-preset.js" charset="UTF-8"></script>
+            <script>
+                window.onload = function() {
+                    window.ui = SwaggerUIBundle({
+                        url: "/api/openapi.json",
+                        dom_id: '#swagger-ui',
+                        deepLinking: true,
+                        presets: [
+                            SwaggerUIBundle.presets.apis,
+                            SwaggerUIStandalonePreset
+                        ],
+                        plugins: [
+                            SwaggerUIBundle.plugins.DownloadUrl
+                        ],
+                        layout: "StandaloneLayout"
+                    });
+                };
+            </script>
+        </body>
+        </html>
+    `);
 });
 
 // --- Route Mounting ---

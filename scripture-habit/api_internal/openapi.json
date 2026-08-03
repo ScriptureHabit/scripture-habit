@@ -1,0 +1,210 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Scripture Habit API",
+    "version": "1.0.0",
+    "description": "Scripture Habit internal backend APIs for User Profiles, Group Chat, AI Translation, and Reporting."
+  },
+  "servers": [
+    {
+      "url": "/",
+      "description": "Current Environment Server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Firebase ID Token in Authorization header: Bearer <token>"
+      },
+      "appCheck": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Firebase-AppCheck",
+        "description": "Firebase AppCheck Token"
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": [],
+      "appCheck": []
+    }
+  ],
+  "paths": {
+    "/api/auth/update-profile": {
+      "post": {
+        "tags": ["Auth & Profile"],
+        "summary": "Update User Profile",
+        "description": "Updates nickname, photoURL, stake/ward, bio, or user language.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nickname": { "type": "string", "example": "だいじろう" },
+                  "photoURL": { "type": "string", "example": "https://example.com/avatar.jpg" },
+                  "stake": { "type": "string", "example": "Tokyo Stake" },
+                  "ward": { "type": "string", "example": "Shinjuku Ward" },
+                  "language": { "type": "string", "example": "ja" },
+                  "bio": { "type": "string", "example": "Daily scripture reader" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Profile successfully updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Invalid input / Validation Error" },
+          "401": { "description": "Unauthorized (Missing or invalid Firebase Token)" }
+        }
+      }
+    },
+    "/api/ai/translate": {
+      "post": {
+        "tags": ["AI & Translation"],
+        "summary": "Translate Text via AI",
+        "description": "Asynchronously translates text or user nicknames using Gemini AI with caching.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["text", "targetLanguage"],
+                "properties": {
+                  "text": { "type": "string", "example": "こんにちは！一緒に聖句を読みましょう。" },
+                  "targetLanguage": { "type": "string", "example": "en" },
+                  "updateType": { "type": "string", "example": "user_nickname" },
+                  "groupId": { "type": "string", "example": "group_123" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Translation successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "translatedText": { "type": "string", "example": "Hello! Let's read scriptures together." }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "description": "Unauthorized" }
+        }
+      }
+    },
+    "/api/groups/announce-unity": {
+      "post": {
+        "tags": ["Groups & Chat"],
+        "summary": "Announce Group Unity",
+        "description": "Triggers unity announcement system message when all eligible members have shared study notes.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["groupId"],
+                "properties": {
+                  "groupId": { "type": "string", "example": "group_123" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Unity announcement sent",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true }
+                  }
+                }
+              }
+            }
+          },
+          "403": { "description": "Forbidden (User is not a member of the group)" }
+        }
+      }
+    },
+    "/api/groups/kick-member": {
+      "post": {
+        "tags": ["Groups & Chat"],
+        "summary": "Kick Member from Group",
+        "description": "Kicks a member from a group (Owner only).",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["groupId", "targetUid"],
+                "properties": {
+                  "groupId": { "type": "string", "example": "group_123" },
+                  "targetUid": { "type": "string", "example": "user_456" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Member successfully kicked" },
+          "403": { "description": "Forbidden (Only owner can kick members)" }
+        }
+      }
+    },
+    "/api/reports/submit-report": {
+      "post": {
+        "tags": ["Reports & Safety"],
+        "summary": "Submit User or Message Report",
+        "description": "Submits a report for inappropriate messages or member behavior.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["groupId", "reason"],
+                "properties": {
+                  "groupId": { "type": "string", "example": "group_123" },
+                  "reportedUserId": { "type": "string", "example": "user_789" },
+                  "messageId": { "type": "string", "example": "msg_456" },
+                  "reason": { "type": "string", "example": "Inappropriate language" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Report successfully submitted" }
+        }
+      }
+    }
+  }
+}
