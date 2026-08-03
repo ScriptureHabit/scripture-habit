@@ -7,7 +7,7 @@ import confetti from 'canvas-confetti';
 import { Message, GroupData, MembersMap } from '../../../../types/chat';
 import { UserData } from '../../../../types/user';
 
-import { calculateUnityPercentage } from '../../../../utils/unity-utils';
+import { calculateUnityPercentage, getUnityParticipation } from '../../../../utils/unity-utils';
 import { useToday } from '../../../../hooks/use-today';
 import { useUnityMidnightReset } from '../../../../hooks/use-unity-midnight-reset';
 
@@ -40,6 +40,10 @@ export const useUnityScore = (
     // Only proceed if unity is reached AND user is still a member of this specific group
     if (!userData?.uid || !groupId || unityPercentage !== 100) return;
     if (!groupData?.members?.includes(userData.uid)) return;
+
+    // Guard: Ensure at least one member has actually posted today
+    const postedCount = getUnityParticipation(groupData, messages, new Date(), membersMap).postedMembers.length;
+    if (postedCount === 0) return;
 
     const todayStr = new Date().toLocaleDateString('sv-SE');
     const storageKey = `unity_firework_${groupId}_${userData.uid}`;

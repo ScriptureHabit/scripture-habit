@@ -130,12 +130,11 @@ export const getUnityParticipation = (
   const postedMembers = eligibleMembers.filter(uid => uniquePosters.has(uid));
   const notPostedMembers = eligibleMembers.filter(uid => !uniquePosters.has(uid));
 
-  // TRUTH: If no one is required to post (e.g. all new joins), unity is 100%
+  // TRUTH: If no one is required to post (e.g. all new joins)
   if (eligibleMembers.length === 0) {
-    if (group.name?.includes('Unity Test')) {
-      console.log(`[getUnityParticipation] ${group.name}: No eligible members (all joined today), returning 100%`);
-    }
-    return { eligibleMembers: [], postedMembers: [], notPostedMembers: [], percentage: 100 };
+    const isAnyPoster = uniquePosters.size > 0;
+    const percentage = isAnyPoster ? 100 : 0;
+    return { eligibleMembers: [], postedMembers: Array.from(uniquePosters), notPostedMembers: [], percentage };
   }
 
   const percentage = Math.round((postedMembers.length / eligibleMembers.length) * 100);
