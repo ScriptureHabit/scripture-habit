@@ -101,7 +101,7 @@ export const useUnityScore = (
       };
       checkAndSendAnnouncement();
     }
-  }, [unityPercentage, groupId, userData?.uid, groupData?.members, groupData?.timeZone]);
+  }, [unityPercentage, groupId, userData?.uid, groupData, membersMap, messages]);
 
   return unityPercentage;
 };
