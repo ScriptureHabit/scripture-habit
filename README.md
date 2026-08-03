@@ -37,7 +37,7 @@
 
 ### 1. ダッシュボード
 <p align="center">
-  <img src="../docs/images/dashboard.png" width="340" alt="ダッシュボード" />
+  <img src="./docs/images/dashboard.png" width="340" alt="ダッシュボード" />
 </p>
 
 - **レベル & 合計日数カウンター**: 毎日のノート作成で合計日数やレベル (`Lv`) がアップし、成長を実感できます。
@@ -47,7 +47,7 @@
 
 ### 2. ノート作成
 <p align="center">
-  <img src="../docs/images/create-note.png" width="320" alt="ノート作成" />
+  <img src="./docs/images/create-note.png" width="320" alt="ノート作成" />
 </p>
 
 - **ノートエディタ**: 今日の気づきや感想を書き留めて保存します。
@@ -57,8 +57,8 @@
 
 ### 3. マイノート・コレクション
 <p align="center">
-  <img src="../docs/images/my-notes.png" width="250" alt="マイノート" />
-  <img src="../docs/images/weekly-letter.png" width="250" alt="ウィークリーレター" />
+  <img src="./docs/images/my-notes.png" width="250" alt="マイノート" />
+  <img src="./docs/images/weekly-letter.png" width="250" alt="ウィークリーレター" />
 </p>
 
 - **リアルタイムカテゴリ検索**: タグフィルターやキーワードで過去のノートを絞り込めます。
@@ -68,8 +68,8 @@
 
 ### 4. グループチャット & 多言語対応
 <p align="center">
-  <img src="../docs/images/group-chat.png" width="250" alt="グループチャット" />
-  <img src="../docs/images/languages.png" width="250" alt="多言語設定" />
+  <img src="./docs/images/group-chat.png" width="250" alt="グループチャット" />
+  <img src="./docs/images/languages.png" width="250" alt="多言語設定" />
 </p>
 
 - **聖句リンク自動生成機能、グループ団結機能**: 共有した聖句を元にアプリが適切なURLを生成します。
@@ -79,9 +79,9 @@
 
 ### 5. 習慣化ルール & プロフィール・設定
 <p align="center">
-  <img src="../docs/images/habit-rule.png" width="230" alt="習慣化ルール" />
-  <img src="../docs/images/profile.png" width="230" alt="プロフィール" />
-  <img src="../docs/images/setting.png" width="230" alt="設定画面" />
+  <img src="./docs/images/habit-rule.png" width="230" alt="習慣化ルール" />
+  <img src="./docs/images/profile.png" width="230" alt="プロフィール" />
+  <img src="./docs/images/setting.png" width="230" alt="設定画面" />
 </p>
 
 - **習慣化ルール**: マンネリ化を防ぐためにユーザーがルールを設定できます。
@@ -134,14 +134,14 @@
 
 ### データベース設計 (ER Diagram)
 <p align="center">
-  <img src="../docs/images/ER-diagram.png" width="600" alt="ER Diagram" />
+  <img src="./docs/images/ER-diagram.png" width="600" alt="ER Diagram" />
 </p>
 
 - **Firestore スキーマ構造**: `users`, `groups`, `cheers`, `reports` などの正規化されたデータ構造とサブコレクション設計。
 
 ### ディレクトリ構造 & アーキテクチャ (Directory Architecture)
 <p align="center">
-  <img src="../docs/images/directory-path-architecture.png" width="600" alt="Directory Architecture" />
+  <img src="./docs/images/directory-path-architecture.png" width="600" alt="Directory Architecture" />
 </p>
 
 - **レイヤー分離アーキテクチャ**: API・Internal・Backend・Frontend の明確な依存分離設計。
@@ -162,13 +162,13 @@
 詳細なアーキテクチャや技術設計ドキュメントは以下をご覧ください。
 
 ### 日本語版 (Japanese)
-- **[ドキュメント全体の目次](../docs/README.md)**: 全技術ドキュメントのインデックスと概要。
-- **[アーキテクチャ設計書](../docs/architecture.md)**: 全体レイヤー (API, Internal, Backend, Frontend) の構造と設計概要。
-- **[チャット & ダッシュボード同期設計](../docs/feature-chat-dashboard.md)**: リアルタイム同期と Firestore リスナーの詳細仕様。
-- **[ノート投稿 & ストリーク計算ロジック](../docs/logic-note-posting.md)**: 連続学習記録 (Streak)、レベルアップ、トランザクションフローの詳細。
+- **[ドキュメント全体の目次](./docs/README.md)**: 全技術ドキュメントのインデックスと概要。
+- **[アーキテクチャ設計書](./docs/architecture.md)**: 全体レイヤー (API, Internal, Backend, Frontend) の構造と設計概要。
+- **[チャット & ダッシュボード同期設計](./docs/feature-chat-dashboard.md)**: リアルタイム同期と Firestore リスナーの詳細仕様。
+- **[ノート投稿 & ストリーク計算ロジック](./docs/logic-note-posting.md)**: 連続学習記録 (Streak)、レベルアップ、トランザクションフローの詳細。
 
 ### English Version
-- **[Technical Documentation Index](../docs/en/README.md)**: Full index and overview of all technical documents.
-- **[Architecture & Structure](../docs/en/architecture.md)**: High-level overview of the layers (API, Internal, Backend, Frontend).
-- **[Chat & Dashboard Sync](../docs/en/feature-chat-dashboard.md)**: Deep-dive into real-time synchronization and Firestore listeners.
-- **[Note Posting Mechanism](../docs/en/logic-note-posting.md)**: Detailed logic for streaks, levels, and transaction flow.
+- **[Technical Documentation Index](./docs/en/README.md)**: Full index and overview of all technical documents.
+- **[Architecture & Structure](./docs/en/architecture.md)**: High-level overview of the layers (API, Internal, Backend, Frontend).
+- **[Chat & Dashboard Sync](./docs/en/feature-chat-dashboard.md)**: Deep-dive into real-time synchronization and Firestore listeners.
+- **[Note Posting Mechanism](./docs/en/logic-note-posting.md)**: Detailed logic for streaks, levels, and transaction flow.
