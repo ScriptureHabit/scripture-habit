@@ -649,34 +649,7 @@
     font-style: italic;
 }
 
-.unread-divider {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 1rem 0;
-    position: relative;
-}
 
-.unread-divider::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: var(--pink);
-    opacity: 0.3;
-}
-
-.unread-divider span {
-    background: #fff5f6;
-    color: var(--pink);
-    padding: 4px 12px;
-    border-radius: 12px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    position: relative;
-    z-index: 1;
-}
 
 .message {
     display: flex;
@@ -1219,9 +1192,11 @@ input:checked+.slider:before {
 .unread-divider {
     display: flex;
     align-items: center;
+    justify-content: center;
     text-align: center;
-    margin: 1.5rem 0 1rem;
+    margin: 1.5rem auto 1rem;
     width: 100%;
+    box-sizing: border-box;
 }
 
 .unread-divider::before,
@@ -1229,7 +1204,14 @@ input:checked+.slider:before {
     content: '';
     flex: 1;
     height: 1px;
-    background: linear-gradient(to right, transparent, rgba(255, 145, 157, 0.4), transparent);
+}
+
+.unread-divider::before {
+    background: linear-gradient(to right, transparent, rgba(255, 145, 157, 0.5));
+}
+
+.unread-divider::after {
+    background: linear-gradient(to right, rgba(255, 145, 157, 0.5), transparent);
 }
 
 .unread-divider span {
@@ -1240,7 +1222,9 @@ input:checked+.slider:before {
     font-size: 0.75rem;
     font-weight: 700;
     border: 1px solid rgba(255, 145, 157, 0.2);
-    margin: 0 0.5rem;
+    margin: 0 0.75rem;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 /* Reply Feature Styles */
