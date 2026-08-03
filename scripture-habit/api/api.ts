@@ -33,7 +33,9 @@ import reportRoutes from '../api_internal/routes/reports.js';
 import testUtilsRoutes from '../api_internal/routes/test-utils.js';
 import resetUnityRoutes from '../api_internal/routes/reset-unity.js';
 
-import openapiSpec from '../api_internal/openapi.json';
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const openapiSpec = require('../api_internal/openapi.json');
 
 // Middleware & Utils
 import { globalLimiter } from '../api_internal/lib/middleware.js';
