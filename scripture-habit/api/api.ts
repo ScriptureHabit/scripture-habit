@@ -172,7 +172,7 @@ app.get(['/api/docs', '/api/docs/', '/docs', '/docs/', '/api-docs', '/api-docs/'
         "default-src 'self'; " +
         "script-src 'self' https://unpkg.com 'unsafe-inline'; " +
         "style-src 'self' https://unpkg.com 'unsafe-inline'; " +
-        "img-src 'self' data: https://unpkg.com; " +
+        "img-src 'self' data: https://unpkg.com https://validator.swagger.io; " +
         "connect-src 'self' https://unpkg.com"
     );
     res.send(`

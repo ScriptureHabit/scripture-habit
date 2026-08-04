@@ -146,8 +146,8 @@
 
 OpenAPI 3.0 に準拠した Swagger UI を公開しています。
 
-- **Swagger UI 画面**: `https://scripturehabit.app/api/docs`
-- **OpenAPI JSON**: `https://scripturehabit.app/api/openapi.json`
+- **[Swagger UI 画面](https://scripturehabit.app/api/docs)**: `https://scripturehabit.app/api/docs`
+- **[OpenAPI JSON](https://scripturehabit.app/api/openapi.json)**: `https://scripturehabit.app/api/openapi.json`
 
 ---
 
