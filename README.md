@@ -6,9 +6,9 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react" alt="React 19" />
-  <img src="https://img.shields.io/badge/TypeScript-5.x-3178C6?style=for-the-badge&logo=typescript" alt="TypeScript" />
-  <img src="https://img.shields.io/badge/Node.js-20.x-5FA04E?style=for-the-badge&logo=nodedotjs" alt="Node.js" />
-  <img src="https://img.shields.io/badge/Express-4.x-000000?style=for-the-badge&logo=express" alt="Express" />
+  <img src="https://img.shields.io/badge/TypeScript-7.0%20(Native)-3178C6?style=for-the-badge&logo=typescript" alt="TypeScript 7.0" />
+  <img src="https://img.shields.io/badge/Node.js-26.0-5FA04E?style=for-the-badge&logo=nodedotjs" alt="Node.js" />
+  <img src="https://img.shields.io/badge/Express-5.0-000000?style=for-the-badge&logo=express" alt="Express 5.0" />
   <img src="https://img.shields.io/badge/Firebase-Firestore%2FAuth-FFCA28?style=for-the-badge&logo=firebase" alt="Firebase" />
 </p>
 
@@ -122,9 +122,9 @@
 
 | カテゴリ | 使用技術 |
 | :--- | :--- |
-| **フロントエンド** | React 19, TypeScript 7, Vite, Vanilla CSS |
+| **フロントエンド** | React 19, TypeScript 7.0 (Native), Vite 8.1, Vanilla CSS |
 | **状態管理** | React Context (Split Context), `useReducer`, Zustand |
-| **バックエンド API** | Node.js, Express, Vercel Serverless Functions |
+| **バックエンド API** | Node.js 26.0, Express 5.0, Vercel Serverless Functions |
 | **データベース / 認証** | Google Cloud Firestore, Firebase Authentication, Firebase AppCheck |
 | **AI** | Google Gemini API (自動翻訳・ウィークリーレター生成) |
 | **API ドキュメント** | OpenAPI 3.0, Swagger UI (`/api/docs`) |
