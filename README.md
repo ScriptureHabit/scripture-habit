@@ -132,12 +132,12 @@
 
 ### データベース設計 (ER図)
 <p align="center">
-  <img src="./docs/images/ER-diagram.png" width="600" alt="ER Diagram" />
+  <img src="./docs/images/ER-diagram.png" width="850" alt="ER Diagram" />
 </p>
 
 ### ディレクトリ構造
 <p align="center">
-  <img src="./docs/images/directory-path-architecture.png" width="600" alt="Directory Architecture" />
+  <img src="./docs/images/directory-path-architecture.png" width="850" alt="Directory Architecture" />
 </p>
 
 ---
