@@ -166,6 +166,15 @@ app.get(['/api/openapi.json', '/openapi.json'], (_req, res) => {
 });
 
 app.get(['/api/docs', '/api/docs/', '/docs', '/docs/', '/api-docs', '/api-docs/'], (_req, res) => {
+    // Override CSP for Swagger UI: helmet()'s strict defaults block unpkg.com CDN scripts/styles/images.
+    // We set a permissive CSP only for this documentation page.
+    res.set('Content-Security-Policy',
+        "default-src 'self'; " +
+        "script-src 'self' https://unpkg.com 'unsafe-inline'; " +
+        "style-src 'self' https://unpkg.com 'unsafe-inline'; " +
+        "img-src 'self' data: https://unpkg.com; " +
+        "connect-src 'self' https://unpkg.com"
+    );
     res.send(`
         <!DOCTYPE html>
         <html lang="en">
