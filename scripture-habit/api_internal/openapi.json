@@ -3,7 +3,7 @@
   "info": {
     "title": "Scripture Habit API",
     "version": "1.0.0",
-    "description": "Scripture Habit internal backend APIs for User Profiles, Group Chat, AI Translation, and Reporting."
+    "description": "Scripture Habit internal backend APIs for User Profiles, Group Chat, AI Translation & Recaps, Cron Jobs, Safety Reporting, and Link Previews."
   },
   "servers": [
     {
@@ -24,6 +24,11 @@
         "in": "header",
         "name": "X-Firebase-AppCheck",
         "description": "Firebase AppCheck Token"
+      },
+      "cronSecret": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Cron Secret in Authorization header: Bearer <CRON_SECRET>"
       }
     }
   },
@@ -116,6 +121,243 @@
         }
       }
     },
+    "/api/ai/translate-batch": {
+      "post": {
+        "tags": ["AI & Translation"],
+        "summary": "Batch Translate Messages via AI",
+        "description": "Translates multiple chat messages in a single batch request for efficiency.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["messages", "targetLanguage"],
+                "properties": {
+                  "targetLanguage": { "type": "string", "example": "en" },
+                  "messages": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": ["id", "text"],
+                      "properties": {
+                        "id": { "type": "string", "example": "msg_001" },
+                        "text": { "type": "string", "example": "ニーファイ第一部3章を読みました。" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Batch translation successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "translations": {
+                      "type": "object",
+                      "additionalProperties": { "type": "string" },
+                      "example": { "msg_001": "I read 1 Nephi Chapter 3." }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Invalid input / Validation Error" },
+          "401": { "description": "Unauthorized" }
+        }
+      }
+    },
+    "/api/ai/generate-personal-weekly-recap": {
+      "post": {
+        "tags": ["AI & Translation"],
+        "summary": "Generate Personal Weekly Recap",
+        "description": "Generates AI-powered weekly study recap and encouragement for the user based on recent notes.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "language": { "type": "string", "example": "ja" },
+                  "forceRefresh": { "type": "boolean", "example": false }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Weekly recap generated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "recapText": { "type": "string", "example": "今週はニーファイの信仰について素晴らしい学びがありましたね！" }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "description": "Unauthorized" }
+        }
+      }
+    },
+    "/api/ai/generate-ponder-questions": {
+      "post": {
+        "tags": ["AI & Translation"],
+        "summary": "Generate Ponder Questions",
+        "description": "Generates 2-3 thought-provoking study questions for a given scripture passage.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["scripture"],
+                "properties": {
+                  "scripture": { "type": "string", "example": "1 Nephi 3:7" },
+                  "chapter": { "type": "string", "example": "1 Nephi 3" },
+                  "language": { "type": "string", "example": "ja" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ponder questions generated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "questions": {
+                      "type": "array",
+                      "items": { "type": "string" },
+                      "example": ["主が命じられたことを行うとき、どんな助けを感じますか？"]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "description": "Unauthorized" }
+        }
+      }
+    },
+    "/api/groups/create-group": {
+      "post": {
+        "tags": ["Groups & Chat"],
+        "summary": "Create New Group",
+        "description": "Creates a new habit study group (Owner receives owner permissions). Enforces group limits.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name"],
+                "properties": {
+                  "name": { "type": "string", "example": "Tokyo Scripture Group" },
+                  "description": { "type": "string", "example": "Let's read daily at 7 AM" },
+                  "isPublic": { "type": "boolean", "example": true },
+                  "timeZone": { "type": "string", "example": "Asia/Tokyo" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Group created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "groupId": { "type": "string", "example": "grp_abc123" },
+                    "inviteCode": { "type": "string", "example": "XYZ789" }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Group limit reached or invalid input" },
+          "401": { "description": "Unauthorized" }
+        }
+      }
+    },
+    "/api/groups/join": {
+      "post": {
+        "tags": ["Groups & Chat"],
+        "summary": "Join Group by Invite Code",
+        "description": "Adds current user to a group using a valid invite code.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["inviteCode"],
+                "properties": {
+                  "inviteCode": { "type": "string", "example": "XYZ789" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully joined group",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "groupId": { "type": "string", "example": "grp_abc123" }
+                  }
+                }
+              }
+            }
+          },
+          "404": { "description": "Group or Invite Code not found" }
+        }
+      }
+    },
+    "/api/groups/leave": {
+      "post": {
+        "tags": ["Groups & Chat"],
+        "summary": "Leave Group",
+        "description": "Removes current user from the specified group.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["groupId"],
+                "properties": {
+                  "groupId": { "type": "string", "example": "grp_abc123" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Successfully left the group" },
+          "403": { "description": "Forbidden (Owner cannot leave without transferring ownership)" }
+        }
+      }
+    },
     "/api/groups/announce-unity": {
       "post": {
         "tags": ["Groups & Chat"],
@@ -129,7 +371,7 @@
                 "type": "object",
                 "required": ["groupId"],
                 "properties": {
-                  "groupId": { "type": "string", "example": "group_123" }
+                  "groupId": { "type": "string", "example": "grp_abc123" }
                 }
               }
             }
@@ -166,7 +408,7 @@
                 "type": "object",
                 "required": ["groupId", "targetUid"],
                 "properties": {
-                  "groupId": { "type": "string", "example": "group_123" },
+                  "groupId": { "type": "string", "example": "grp_abc123" },
                   "targetUid": { "type": "string", "example": "user_456" }
                 }
               }
@@ -176,6 +418,122 @@
         "responses": {
           "200": { "description": "Member successfully kicked" },
           "403": { "description": "Forbidden (Only owner can kick members)" }
+        }
+      }
+    },
+    "/api/groups/post-message": {
+      "post": {
+        "tags": ["Groups & Chat"],
+        "summary": "Post Message to Group",
+        "description": "Posts a chat message or reply to a group. Broadcasts push notifications to group members.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["groupId", "text"],
+                "properties": {
+                  "groupId": { "type": "string", "example": "grp_abc123" },
+                  "text": { "type": "string", "example": "今日も学びがありました！" },
+                  "optimisticId": { "type": "string", "example": "temp-1700000000" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Message posted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "messageId": { "type": "string", "example": "msg_789" }
+                  }
+                }
+              }
+            }
+          },
+          "403": { "description": "Forbidden (User is not a member)" }
+        }
+      }
+    },
+    "/api/groups/bundle/{groupId}": {
+      "get": {
+        "tags": ["Groups & Chat"],
+        "summary": "Get Firestore Bundle for Group Messages",
+        "description": "Fetches pre-packaged Firestore Bundle containing recent group messages for fast single-Read initial load.",
+        "parameters": [
+          {
+            "name": "groupId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "example": "grp_abc123"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Binary Firestore Bundle stream",
+            "content": {
+              "application/octet-stream": {}
+            }
+          },
+          "403": { "description": "Forbidden (Not a group member)" }
+        }
+      }
+    },
+    "/api/cron/streak-reminder": {
+      "post": {
+        "tags": ["Cron & Maintenance"],
+        "summary": "Trigger Streak Reminders",
+        "description": "Scans users nearing streak expiration and dispatches FCM push notifications.",
+        "security": [
+          { "cronSecret": [] }
+        ],
+        "responses": {
+          "200": {
+            "description": "Streak reminders processed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "sent": { "type": "integer", "example": 15 },
+                    "skipped": { "type": "integer", "example": 120 }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "description": "Unauthorized (Invalid CRON_SECRET)" }
+        }
+      }
+    },
+    "/api/cron/check-inactive-users": {
+      "all": {
+        "tags": ["Cron & Maintenance"],
+        "summary": "Check Inactive Users",
+        "description": "Evaluates member inactivity thresholds and automatically removes inactive members if threshold is breached.",
+        "security": [
+          { "cronSecret": [] }
+        ],
+        "responses": {
+          "200": { "description": "Inactivity check complete" },
+          "401": { "description": "Unauthorized" }
+        }
+      }
+    },
+    "/api/reset-unity/reset-unity-if-midnight": {
+      "post": {
+        "tags": ["Cron & Maintenance"],
+        "summary": "Reset Group Unity on Midnight",
+        "description": "Resets the daily unity percentage for a group if midnight in the group's time zone has passed.",
+        "responses": {
+          "200": { "description": "Unity reset status checked" },
+          "403": { "description": "Not a group member" }
         }
       }
     },
@@ -192,7 +550,7 @@
                 "type": "object",
                 "required": ["groupId", "reason"],
                 "properties": {
-                  "groupId": { "type": "string", "example": "group_123" },
+                  "groupId": { "type": "string", "example": "grp_abc123" },
                   "reportedUserId": { "type": "string", "example": "user_789" },
                   "messageId": { "type": "string", "example": "msg_456" },
                   "reason": { "type": "string", "example": "Inappropriate language" }
@@ -203,6 +561,47 @@
         },
         "responses": {
           "200": { "description": "Report successfully submitted" }
+        }
+      }
+    },
+    "/api/preview/fetch-church-metadata": {
+      "get": {
+        "tags": ["Link Preview"],
+        "summary": "Fetch Church Article Metadata",
+        "description": "Fetches OGP metadata for official Church of Jesus Christ of Latter-day Saints article links with SSRF protection.",
+        "parameters": [
+          {
+            "name": "url",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" },
+            "example": "https://www.churchofjesuschrist.org/study/scriptures/bofm/1-ne/3?lang=jpn"
+          },
+          {
+            "name": "language",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string" },
+            "example": "jpn"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Metadata retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "title": { "type": "string", "example": "1 Nephi 3" },
+                    "description": { "type": "string", "example": "Nephi and his brothers return to Jerusalem..." },
+                    "image": { "type": "string", "example": "https://example.com/ogp.jpg" }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Invalid URL or blocked non-allowed domain" }
         }
       }
     }
