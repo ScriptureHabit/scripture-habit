@@ -1,4 +1,4 @@
-import { FC, FormEvent } from 'react';
+import { FormEvent } from 'react';
 import { UilTimes } from '@iconscout/react-unicons';
 import MessageInput from './message-input';
 import { useMessageInput } from '../hooks/interaction/use-message-input';
@@ -11,7 +11,7 @@ import { useChatStore } from '../../../store/use-chat-store';
 import { DEFAULT_KICK_THRESHOLD } from '../../../constants';
 import { useModalStore } from '../../../store/use-modal-store';
 
-const GroupChatFooter: FC = () => {
+const GroupChatFooter = () => {
     const { userData } = useChatData();
     const { handleSendMessage } = useChatMessageActions();
     const { 

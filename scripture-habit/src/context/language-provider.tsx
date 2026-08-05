@@ -61,7 +61,7 @@ interface LanguageProviderProps {
     children: ReactNode;
 }
 
-export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) => {
+export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     const navigate = useNavigate();
     const location = useLocation();
     const { userData, loading: authLoading } = useAuth();

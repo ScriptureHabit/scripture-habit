@@ -1,10 +1,9 @@
 
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../hooks/use-language';
 import './footer.css';
 
-const Footer: React.FC = () => {
+const Footer = () => {
     const navigate = useNavigate();
     const { t, language } = useLanguage();
 

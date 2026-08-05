@@ -1,5 +1,5 @@
 
-import { useState, useEffect, FC } from 'react';
+import { useState, useEffect } from 'react';
 import { UilTimes, UilPen, UilTrashAlt, UilComment, UilThumbsUp } from '@iconscout/react-unicons';
 import { db } from '../../firebase';
 import { doc, collection, query, where, onSnapshot, Timestamp, updateDoc } from 'firebase/firestore';
@@ -28,7 +28,7 @@ interface SharedDetail {
     isMember: boolean;
 }
 
-const NoteDetailModal: FC<NoteDetailModalProps> = ({ isOpen, onClose, note, userGroups, userData, onEdit, onDelete }) => {
+const NoteDetailModal = ({ isOpen, onClose, note, userGroups, userData, onEdit, onDelete }: NoteDetailModalProps) => {
     const { t, language } = useLanguage();
     const [sharedDetails, setSharedDetails] = useState<SharedDetail[]>([]);
     const [loadingDetails, setLoadingDetails] = useState(false);
@@ -172,7 +172,7 @@ interface SharedGroupSectionProps {
     language: string;
 }
 
-const SharedGroupSection: FC<SharedGroupSectionProps> = ({ groupId, messageId, groupName, t, isMember, language }) => {
+const SharedGroupSection = ({ groupId, messageId, groupName, t, isMember, language }: SharedGroupSectionProps) => {
     const [reactions, setReactions] = useState<Record<string, string[]>>({});
     const [replies, setReplies] = useState<Message[]>([]);
     const [error, setError] = useState<boolean | null>(null);

@@ -1,4 +1,3 @@
-import { FC } from 'react';
 import './notification-prompt-modal.css';
 
 interface NotificationPromptModalProps {
@@ -8,7 +7,7 @@ interface NotificationPromptModalProps {
     t: (key: string) => string;
 }
 
-const NotificationPromptModal: FC<NotificationPromptModalProps> = ({ isOpen, onClose, onConfirm, t }) => {
+const NotificationPromptModal = ({ isOpen, onClose, onConfirm, t }: NotificationPromptModalProps) => {
     if (!isOpen) return null;
 
     return (

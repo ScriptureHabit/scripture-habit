@@ -1,5 +1,4 @@
 
-import { FC } from 'react';
 import { UilEnvelope, UilTrashAlt, UilTimes } from '@iconscout/react-unicons';
 import ReactMarkdown from 'react-markdown';
 import './letter-box.css';
@@ -15,7 +14,7 @@ interface LetterBoxProps {
     userData: UserData | null;
 }
 
-const LetterBox: FC<LetterBoxProps> = ({ isOpen, onClose, userData }) => {
+const LetterBox = ({ isOpen, onClose, userData }: LetterBoxProps) => {
     const { t } = useLanguage();
     const {
         letters,

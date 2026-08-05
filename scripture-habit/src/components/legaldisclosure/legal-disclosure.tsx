@@ -1,5 +1,4 @@
 
-import { FC } from 'react';
 import { useLanguage } from '../../hooks/use-language';
 import { UilArrowLeft } from '@iconscout/react-unicons';
 import { useNavigate } from 'react-router-dom';
@@ -10,7 +9,7 @@ interface LegalInfoItem {
     value: string;
 }
 
-const LegalDisclosure: FC = () => {
+const LegalDisclosure = () => {
     const { t } = useLanguage();
     const navigate = useNavigate();
 

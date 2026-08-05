@@ -16,7 +16,7 @@ interface TourGuideProps {
     userData?: UserData;
 }
 
-const TourGuide: React.FC<TourGuideProps> = ({ isOpen, onClose, t, userData }) => {
+const TourGuide = ({ isOpen, onClose, t, userData }: TourGuideProps) => {
     const [currentStep, setCurrentStep] = useState(0);
     const [nextDisabled, setNextDisabled] = useState(true);
     const [highlightRect, setHighlightRect] = useState<{ top: number; left: number; width: number; height: number } | null>(null);

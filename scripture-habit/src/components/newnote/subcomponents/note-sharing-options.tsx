@@ -1,4 +1,3 @@
-import { FC } from 'react';
 import { Group } from '../../../types/chat';
 
 interface NoteSharingOptionsProps {
@@ -10,14 +9,14 @@ interface NoteSharingOptionsProps {
     t: (key: string) => string;
 }
 
-const NoteSharingOptions: FC<NoteSharingOptionsProps> = ({
+const NoteSharingOptions = ({
     userGroups,
     shareOption,
     setShareOption,
     selectedShareGroups,
     handleGroupSelection,
     t
-}) => {
+}: NoteSharingOptionsProps) => {
     const options = userGroups.length === 1 ? ['all', 'none'] : ['all', 'specific', 'none'];
 
     return (

@@ -1,10 +1,10 @@
 
-import { useEffect, FC } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../hooks/use-language';
 import './terms-of-service.css';
 
-const TermsOfService: FC = () => {
+const TermsOfService = () => {
     const { t } = useLanguage();
     const navigate = useNavigate();
 

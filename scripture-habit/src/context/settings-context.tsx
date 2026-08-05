@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-import React, { createContext, useState, useContext, useEffect, ReactNode, useCallback, useMemo } from 'react';
+import { createContext, useState, useContext, useEffect, ReactNode, useCallback, useMemo } from 'react';
 import { safeStorage } from '../utils/storage';
 
 export type FontSize = 'small' | 'medium' | 'large' | 'extraLarge';
@@ -34,7 +34,7 @@ interface SettingsProviderProps {
     children: ReactNode;
 }
 
-export const SettingsProvider: React.FC<SettingsProviderProps> = ({ children }) => {
+export const SettingsProvider = ({ children }: SettingsProviderProps) => {
     const [fontSize, setFontSizeInternal] = useState<FontSize>(detectInitialFontSize);
 
     // Apply font size change to the document root and persist

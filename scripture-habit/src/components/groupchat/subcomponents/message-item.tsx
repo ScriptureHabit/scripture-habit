@@ -1,4 +1,4 @@
-import { FC, memo } from 'react';
+import { memo } from 'react';
 import NoteDisplay from '../../notedisplay/note-display';
 import { Message } from '../../../types/chat';
 import { ReactionPreview } from '../../../../types/firestore';
@@ -20,9 +20,9 @@ interface MessageItemProps {
   msg: Message;
 }
 
-const MessageItem: FC<MessageItemProps> = memo(({
+const MessageItem = memo(({
   msg
-}) => {
+}: MessageItemProps) => {
   const { userData, groupData, language, membersMap } = useChatData();
   const { 
     handleToggleReaction, handleTranslateMessage, handleLazyTranslate, 

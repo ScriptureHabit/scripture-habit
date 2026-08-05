@@ -1,6 +1,6 @@
 
 import './join-group.css';
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import '../groupform/group-form.css';
 import GroupCard from '../../groups/group-card';

@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '../../../firebase';
 import { UserData } from '../../../types/user';
@@ -10,7 +10,7 @@ interface QuestCardProps {
   t: (key: string, replacements?: Record<string, string | number>) => string;
 }
 
-export const QuestCard: FC<QuestCardProps> = ({ userData, t }) => {
+export const QuestCard = ({ userData, t }: QuestCardProps) => {
   const [celebrated, setCelebrated] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
 

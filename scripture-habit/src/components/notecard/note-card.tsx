@@ -1,5 +1,5 @@
 
-import { FC, MouseEvent } from 'react';
+import { MouseEvent } from 'react';
 import NoteDisplay from '../notedisplay/note-display';
 import { getGospelLibraryUrl } from '../../utils/gospel-library-mapper';
 import { useLanguage } from '../../hooks/use-language';
@@ -14,12 +14,12 @@ interface NoteCardProps {
     className?: string;
 }
 
-const NoteCard: FC<NoteCardProps> = ({
+const NoteCard = ({
     note,
     isEditable = false,
     onClick,
     className = ''
-}) => {
+}: NoteCardProps) => {
     const { language, t } = useLanguage();
 
     const handleLinkClick = (e: MouseEvent<HTMLAnchorElement>) => {

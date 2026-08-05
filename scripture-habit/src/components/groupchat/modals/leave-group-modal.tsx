@@ -1,4 +1,3 @@
-import { FC } from 'react';
 
 interface LeaveGroupModalProps {
     t: (key: string) => string;
@@ -8,13 +7,13 @@ interface LeaveGroupModalProps {
     handleLeaveGroup: () => Promise<void>;
 }
 
-const LeaveGroupModal: FC<LeaveGroupModalProps> = ({
+const LeaveGroupModal = ({
     t,
     showLeaveModal,
     setShowLeaveModal,
     isLeaving,
     handleLeaveGroup,
-}) => {
+}: LeaveGroupModalProps) => {
     if (!showLeaveModal) return null;
 
     return (

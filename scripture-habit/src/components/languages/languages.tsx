@@ -1,9 +1,8 @@
 
-import { FC } from 'react';
 import './languages.css';
 import { useLanguage } from '../../hooks/use-language';
 
-const Languages: FC = () => {
+const Languages = () => {
     const { language, setLanguage, t } = useLanguage();
 
     return (

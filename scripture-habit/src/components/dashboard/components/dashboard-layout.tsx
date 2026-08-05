@@ -1,4 +1,4 @@
-import { FC, ReactNode } from 'react';
+import { ReactNode } from 'react';
 import Sidebar from '../../sidebar/sidebar';
 import { Group } from '../../../types/chat';
 
@@ -13,7 +13,7 @@ interface DashboardLayoutProps {
   children: ReactNode;
 }
 
-const DashboardLayout: FC<DashboardLayoutProps> = ({
+const DashboardLayout = ({
   selectedView,
   setSelectedView,
   userGroups,
@@ -22,7 +22,7 @@ const DashboardLayout: FC<DashboardLayoutProps> = ({
   isInputFocused,
   isJoiningInvite,
   children
-}) => {
+}: DashboardLayoutProps) => {
   return (
     <div className={`AppGlass Grid ${selectedView === 2 ? 'view-fixed' : ''}`} data-testid="dashboard-ready">
       <Sidebar

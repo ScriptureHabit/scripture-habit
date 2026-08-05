@@ -1,4 +1,3 @@
-import { FC } from 'react';
 import UserProfileModal from '../userprofilemodal/user-profile-modal';
 import { 
   useChatData, 
@@ -24,7 +23,7 @@ import ReportModal from './modals/report-modal';
 import InviteModal from './modals/invite-modal';
 import './group-chat-modals.css';
 
-const GroupChatModals: FC = () => {
+const GroupChatModals = () => {
     // 1. Data
     const { 
         userData, groupData, unityPercentage, language, 

@@ -1,5 +1,4 @@
 
-import { FC } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { UilEnvelopeAlt, UilSave, UilTimes } from '@iconscout/react-unicons';
 import './recap-modal.css';
@@ -13,7 +12,7 @@ interface RecapModalProps {
     isFromCache?: boolean;
 }
 
-const RecapModal: FC<RecapModalProps> = ({ isOpen, onClose, recapText, onSave, isFromCache = false }) => {
+const RecapModal = ({ isOpen, onClose, recapText, onSave, isFromCache = false }: RecapModalProps) => {
     const { t } = useLanguage();
 
     if (!isOpen) return null;

@@ -1,4 +1,4 @@
-import { useState, useEffect, FC } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { UilMultiply, UilShare, UilPlusSquare, UilApps } from '@iconscout/react-unicons';
 import { useLanguage } from '../../hooks/use-language';
@@ -8,7 +8,7 @@ import { safeStorage } from '../../utils/storage';
 import './install-prompt.css';
 
 
-const InstallPrompt: FC = () => {
+const InstallPrompt = () => {
     const { t } = useLanguage();
     const location = useLocation();
     const [showPrompt, setShowPrompt] = useState(false);

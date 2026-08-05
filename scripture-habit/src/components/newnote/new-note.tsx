@@ -1,4 +1,4 @@
-import { useState, useEffect, FC, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Select from 'react-select';
 import { UilShuffle, UilRobot } from '@iconscout/react-unicons';
 import Input from '../input/input';
@@ -42,10 +42,10 @@ interface NewNoteProps {
     noteToEdit?: Message | Note | null;
 }
 
-const NewNote: FC<NewNoteProps> = ({
+const NewNote = ({
     isOpen, onClose, userData,
     userGroups = [], currentGroupId = null, noteToEdit = null
-}) => {
+}: NewNoteProps) => {
     const { t, language, tArray, translateChapterField, bookTranslations } = useLanguage();
     
     // Form State

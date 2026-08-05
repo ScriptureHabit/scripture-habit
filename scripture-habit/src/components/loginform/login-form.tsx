@@ -1,5 +1,4 @@
 
-import React, { FC } from 'react';
 import './login-form.css';
 import Button from '../button/button';
 import Input from '../input/input';
@@ -9,7 +8,7 @@ import { UilGoogle, UilGithub } from '@iconscout/react-unicons';
 import Footer from '../footer/footer';
 import { useLoginForm } from './hooks/use-login-form';
 
-const LoginForm: FC = () => {
+const LoginForm = () => {
   const { t } = useLanguage();
   const {
     email,

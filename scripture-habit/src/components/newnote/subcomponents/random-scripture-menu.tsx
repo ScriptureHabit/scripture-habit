@@ -1,4 +1,3 @@
-import { FC } from 'react';
 
 interface RandomScriptureMenuProps {
     t: (key: string) => string;
@@ -12,7 +11,7 @@ interface RandomScriptureMenuProps {
     handlePickRandomJoy: () => void;
 }
 
-const RandomScriptureMenu: FC<RandomScriptureMenuProps> = ({
+const RandomScriptureMenu = ({
     t,
     setShowRandomMenu,
     availableReadingPlanScripts,
@@ -22,7 +21,7 @@ const RandomScriptureMenu: FC<RandomScriptureMenuProps> = ({
     handlePickRandomAdversity,
     handlePickRandomRelationship,
     handlePickRandomJoy
-}) => {
+}: RandomScriptureMenuProps) => {
     return (
         <div className="ModalOverlay" onClick={() => setShowRandomMenu(false)}>
             <div className="ModalContent" onClick={(e) => e.stopPropagation()} style={{ 

@@ -1,4 +1,3 @@
-import { FC } from 'react';
 import { Message } from '../../../types/chat';
 
 interface EditMessageModalProps {
@@ -10,14 +9,14 @@ interface EditMessageModalProps {
     handleSaveEdit: () => Promise<void>;
 }
 
-const EditMessageModal: FC<EditMessageModalProps> = ({
+const EditMessageModal = ({
     t,
     editingMessage,
     editText,
     setEditText,
     handleCancelEdit,
     handleSaveEdit,
-}) => {
+}: EditMessageModalProps) => {
     if (!editingMessage) return null;
 
     return (

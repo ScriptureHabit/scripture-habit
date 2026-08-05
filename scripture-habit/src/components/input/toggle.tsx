@@ -9,7 +9,7 @@ interface ToggleProps {
     className?: string;
 }
 
-const Toggle: React.FC<ToggleProps> = ({ label, id, checked, onChange, className = '' }) => {
+const Toggle = ({ label, id, checked, onChange, className = '' }: ToggleProps) => {
     return (
         <div className={`toggle-container ${className}`}>
             {label && <label className="toggle-label" htmlFor={id}>{label}</label>}

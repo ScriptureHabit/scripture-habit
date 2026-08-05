@@ -1,4 +1,4 @@
-import { FC, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { UilTimes } from '@iconscout/react-unicons';
 import { Group, UserProfileBrief } from '../../../types/chat';
 import { UserData } from '../../../types/user';
@@ -29,7 +29,7 @@ interface MemberListItemProps {
     t: (key: string) => string;
 }
 
-const MemberListItem: FC<MemberListItemProps> = ({
+const MemberListItem = ({
     member,
     groupData,
     userData,
@@ -37,7 +37,7 @@ const MemberListItem: FC<MemberListItemProps> = ({
     language,
     setSelectedMember,
     t
-}) => {
+}: MemberListItemProps) => {
     const originalNickname = member.nickname || 'Unknown User';
     const memberStatus = membersMap?.[member.id] || member;
 
@@ -122,7 +122,7 @@ const MemberListItem: FC<MemberListItemProps> = ({
     );
 };
 
-const MembersModal: FC<MembersModalProps> = ({
+const MembersModal = ({
     t,
     userData,
     groupData,
@@ -133,7 +133,7 @@ const MembersModal: FC<MembersModalProps> = ({
     membersMap,
     membersLoading,
     setSelectedMember,
-}) => {
+}: MembersModalProps) => {
     if (!showMembersModal) return null;
 
     return (

@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { useState } from 'react';
 import { UilTimes, UilCopy } from '@iconscout/react-unicons';
 import Mascot from '../../mascot/mascot';
 import ConfirmModal from '../../confirmmodal/confirm-modal';
@@ -18,7 +18,7 @@ interface InviteModalProps {
     handleRegenerateInviteCode: () => Promise<void>;
 }
 
-const InviteModal: FC<InviteModalProps> = ({
+const InviteModal = ({
     t,
     language,
     userData,
@@ -27,7 +27,7 @@ const InviteModal: FC<InviteModalProps> = ({
     setShowInviteModal,
     handleCopyInviteLink,
     handleRegenerateInviteCode
-}) => {
+}: InviteModalProps) => {
     const [showRegenerateConfirm, setShowRegenerateConfirm] = useState(false);
 
     const inviteLink = formatInviteLink(groupData?.inviteCode || '');

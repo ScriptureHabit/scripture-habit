@@ -1,4 +1,4 @@
-import { useState, useEffect, FC } from 'react';
+import { useState, useEffect } from 'react';
 import './link-preview.css';
 import apiClient from '../../utils/api-client';
 import { auth } from '../../firebase';
@@ -18,7 +18,7 @@ interface LinkPreviewProps {
     t?: (key: string) => string;
 }
 
-const LinkPreview: FC<LinkPreviewProps> = ({ url, isSent, language }) => {
+const LinkPreview = ({ url, isSent, language }: LinkPreviewProps) => {
     const [preview, setPreview] = useState<PreviewData | null>(null);
     const [loading, setLoading] = useState<boolean>(() => !!(url && auth?.currentUser));
     const [error, setError] = useState(false);

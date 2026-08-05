@@ -1,4 +1,3 @@
-import { FC } from 'react';
 import { UserProfileBrief } from '../../../types/chat';
 
 interface CheerConfirmModalProps {
@@ -9,13 +8,13 @@ interface CheerConfirmModalProps {
     handleSendCheer: () => Promise<void>;
 }
 
-const CheerConfirmModal: FC<CheerConfirmModalProps> = ({
+const CheerConfirmModal = ({
     t,
     cheerTarget,
     setCheerTarget,
     isSendingCheer,
     handleSendCheer,
-}) => {
+}: CheerConfirmModalProps) => {
     if (!cheerTarget) return null;
 
     return (

@@ -1,5 +1,5 @@
 
-import { FC, useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { useLanguage } from '../../hooks/use-language';
 import { useNoteParser } from './hooks/use-note-parser';
@@ -19,9 +19,9 @@ interface NoteDisplayProps {
     onRetranslate?: () => void;
 }
 
-const NoteDisplay: FC<NoteDisplayProps> = ({ 
+const NoteDisplay = ({ 
     text, isSent, linkColor, translatedText, scripture, chapter, isTranslating, onRetranslate 
-}) => {
+}: NoteDisplayProps) => {
     const { language, t, translateChapterField } = useLanguage();
     const [showOriginal, setShowOriginal] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);

@@ -1,5 +1,4 @@
 
-import React from 'react';
 import './donate.css';
 import { useLanguage } from '../../hooks/use-language';
 import Mascot from '../mascot/mascot';
@@ -10,7 +9,7 @@ interface DonateProps {
     userData: UserData | null;
 }
 
-const Donate: React.FC<DonateProps> = ({ userData }) => {
+const Donate = ({ userData }: DonateProps) => {
     const { t } = useLanguage();
 
     return (

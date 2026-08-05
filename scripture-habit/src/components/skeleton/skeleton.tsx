@@ -9,14 +9,14 @@ interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {
     style?: React.CSSProperties;
 }
 
-export const Skeleton: React.FC<SkeletonProps> = ({
+export const Skeleton = ({
     width,
     height,
     variant = 'rectangle',
     className = '',
     style,
     ...props
-}) => {
+}: SkeletonProps) => {
     const combinedStyle: React.CSSProperties = {
         width: width,
         height: height,
@@ -32,7 +32,7 @@ export const Skeleton: React.FC<SkeletonProps> = ({
     );
 };
 
-export const DashboardSkeleton: React.FC = () => {
+export const DashboardSkeleton = () => {
     return (
         <div className="dashboard-skeleton" data-testid="dashboard-skeleton">
             <div className="skeleton-header">
@@ -62,7 +62,7 @@ export const DashboardSkeleton: React.FC = () => {
     );
 };
 
-export const OptionsSkeleton: React.FC = () => {
+export const OptionsSkeleton = () => {
     return (
         <div className="options-skeleton" style={{ padding: '2rem', textAlign: 'center' }}>
             <Skeleton width="60%" height="40px" style={{ margin: '0 auto 2rem auto' }} />
@@ -74,7 +74,7 @@ export const OptionsSkeleton: React.FC = () => {
     );
 };
 
-export const ChatSkeleton: React.FC = () => {
+export const ChatSkeleton = () => {
     return (
         <div className="chat-skeleton" style={{ padding: '1rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <div style={{ alignSelf: 'flex-start', display: 'flex', gap: '8px' }}>
@@ -95,7 +95,7 @@ export const ChatSkeleton: React.FC = () => {
     );
 };
 
-export const NoteCardSkeleton: React.FC = () => {
+export const NoteCardSkeleton = () => {
     return (
         <div className="skeleton-note-card" style={{ padding: '1rem', background: '#fff', border: '1px solid #eee' }}>
             <Skeleton width="40px" height="40px" variant="circle" style={{ marginBottom: '1rem' }} />
@@ -106,7 +106,7 @@ export const NoteCardSkeleton: React.FC = () => {
     );
 };
 
-export const NoteGridSkeleton: React.FC = () => {
+export const NoteGridSkeleton = () => {
     return (
         <div className="skeleton-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))' }}>
             <NoteCardSkeleton />
@@ -119,7 +119,7 @@ export const NoteGridSkeleton: React.FC = () => {
     );
 };
 
-export const PublicGroupsSkeleton: React.FC = () => {
+export const PublicGroupsSkeleton = () => {
     return (
         <div className="skeleton-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
             {[1, 2, 3, 4, 5, 6].map(i => (

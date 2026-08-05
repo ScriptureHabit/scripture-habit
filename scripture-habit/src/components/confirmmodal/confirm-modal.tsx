@@ -1,4 +1,4 @@
-import type { FC, CSSProperties } from 'react';
+import type { CSSProperties } from 'react';
 
 interface ConfirmModalProps {
   isOpen: boolean;
@@ -56,7 +56,7 @@ const primaryButtonStyle: CSSProperties = {
   borderColor: '#2563eb'
 };
 
-const ConfirmModal: FC<ConfirmModalProps> = ({
+const ConfirmModal = ({
   isOpen,
   title,
   description,
@@ -64,7 +64,7 @@ const ConfirmModal: FC<ConfirmModalProps> = ({
   cancelLabel = 'Cancel',
   onConfirm,
   onCancel
-}) => {
+}: ConfirmModalProps) => {
   if (!isOpen) return null;
 
   return (

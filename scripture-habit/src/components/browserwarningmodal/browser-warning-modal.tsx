@@ -1,4 +1,4 @@
-import { useMemo, FC } from 'react';
+import { useMemo } from 'react';
 import { detectInAppBrowser, getAndroidIntentUrl, getLineExternalUrl, openExternalUrl } from '../../utils/browser-detection';
 import './browser-warning-modal.css';
 import { UilCheckCircle, UilInfoCircle, UilCopyAlt, UilExternalLinkAlt, UilTimes } from '@iconscout/react-unicons';
@@ -11,7 +11,7 @@ interface BrowserWarningModalProps {
     t: (key: string, options?: Record<string, string | number>) => string;
 }
 
-const BrowserWarningModal: FC<BrowserWarningModalProps> = ({ isOpen, onClose, onContinue, t }) => {
+const BrowserWarningModal = ({ isOpen, onClose, onContinue, t }: BrowserWarningModalProps) => {
     const { detectedApp, isAndroid, isIos } = useMemo(() => {
         const ua = typeof navigator !== 'undefined' ? (navigator.userAgent || navigator.vendor || '') : '';
         const isOpera = typeof window !== 'undefined' && 'opera' in window;

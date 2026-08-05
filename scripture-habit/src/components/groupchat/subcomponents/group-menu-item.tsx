@@ -1,4 +1,3 @@
-import { FC } from 'react';
 import { calculateUnityPercentage, getUnityStatusEmoji } from '../../../utils/unity-utils';
 import { Group } from '../../../types/chat';
 import { useGroupTranslation } from '../../../hooks/use-group-translation';
@@ -10,7 +9,7 @@ interface GroupMenuItemProps {
     onSelect: () => void;
 }
 
-const GroupMenuItem: FC<GroupMenuItemProps> = ({ group, currentGroupId, language, onSelect }) => {
+const GroupMenuItem = ({ group, currentGroupId, language, onSelect }: GroupMenuItemProps) => {
     const { displayName } = useGroupTranslation(group, language);
 
     const getEmoji = (g: Group) => {

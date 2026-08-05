@@ -1,5 +1,5 @@
 
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import './mascot.css';
 import { useLanguage } from '../../hooks/use-language';
 import { UserData } from '../../types/user';
@@ -11,7 +11,7 @@ interface MascotProps {
   reversed?: boolean;
 }
 
-const Mascot: React.FC<MascotProps> = ({ userData, onClick, customMessage = null, reversed = false }) => {
+const Mascot = ({ userData, onClick, customMessage = null, reversed = false }: MascotProps) => {
   const { t } = useLanguage();
   const mascotImg = '/images/mascot.png';
 

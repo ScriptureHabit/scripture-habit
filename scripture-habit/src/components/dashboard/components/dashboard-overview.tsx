@@ -1,4 +1,3 @@
-import { FC } from 'react';
 import { Link } from 'react-router-dom';
 import { UilPlus, UilPen } from '@iconscout/react-unicons';
 import Mascot from '../../mascot/mascot';
@@ -23,7 +22,7 @@ interface DashboardOverviewProps {
   kickDate?: string | null;
 }
 
-const DashboardOverview: FC<DashboardOverviewProps> = ({
+const DashboardOverview = ({
   t,
   userData,
   warnings,
@@ -37,7 +36,7 @@ const DashboardOverview: FC<DashboardOverviewProps> = ({
   setShowEditProfileModal,
   setNewNickname,
   kickDate
-}) => {
+}: DashboardOverviewProps) => {
   return (
     <div className="dashboard-inner-wrapper">
       {isJoiningInvite && (

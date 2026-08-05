@@ -12,7 +12,7 @@ type InputProps = InputBaseProps &
   React.InputHTMLAttributes<HTMLInputElement> & 
   React.TextareaHTMLAttributes<HTMLTextAreaElement>;
 
-const Input: React.FC<InputProps> = ({
+const Input = ({
   id,
   label,
   type = 'text',
@@ -24,7 +24,7 @@ const Input: React.FC<InputProps> = ({
   min,
   className = '',
   ...rest
-}) => {
+}: InputProps) => {
   const generatedId = React.useId();
   const inputId = id || generatedId;
 

@@ -1,4 +1,4 @@
-import { FC, Fragment } from 'react';
+import { Fragment } from 'react';
 import MessageItem from './message-item';
 import { Message } from '../../../types/chat';
 import { parseTimestampToDate } from '../../../utils/time-utils';
@@ -8,9 +8,9 @@ interface GroupChatMessageListProps {
   messages: Message[];
 }
 
-const GroupChatMessageList: FC<GroupChatMessageListProps> = ({
+const GroupChatMessageList = ({
   messages
-}) => {
+}: GroupChatMessageListProps) => {
   const { language, unreadAnchorMessageId } = useChatData();
   const { t } = useChatUIActions();
 

@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { toast } from "react-toastify";
 import { useLanguage } from '../../hooks/use-language';
 
@@ -7,7 +7,7 @@ interface PWAUpdateEvent extends CustomEvent {
   detail: ServiceWorkerRegistration;
 }
 
-const PWAUpdateHandler: React.FC = () => {
+const PWAUpdateHandler = () => {
   const { t } = useLanguage();
 
   useEffect(() => {

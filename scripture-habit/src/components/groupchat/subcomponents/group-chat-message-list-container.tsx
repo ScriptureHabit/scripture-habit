@@ -1,8 +1,8 @@
-import { FC, useRef, useLayoutEffect, useState, useEffect } from 'react';
+import { useRef, useLayoutEffect, useState, useEffect } from 'react';
 import GroupChatMessageList from './group-chat-message-list';
 import { useChatData, useChatUIActions } from '../hooks/use-chat-context';
 
-const GroupChatMessageListContainer: FC = () => {
+const GroupChatMessageListContainer = () => {
   const { messages, groupId, messagesLoaded } = useChatData();
   const { 
     containerRef, previousScrollHeightRef, 

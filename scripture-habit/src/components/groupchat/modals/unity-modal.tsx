@@ -1,4 +1,3 @@
-import { FC } from 'react';
 import { UilTimes } from '@iconscout/react-unicons';
 import { UserProfileBrief } from '../../../types/chat';
 import { UserData } from '../../../types/user';
@@ -19,7 +18,7 @@ interface UnityModalProps {
     membersLoading: boolean;
 }
 
-const UnityModal: FC<UnityModalProps> = ({
+const UnityModal = ({
     t,
     userData,
     showUnityModal,
@@ -30,7 +29,7 @@ const UnityModal: FC<UnityModalProps> = ({
     handleCheerClick,
     handleUserProfileClick,
     membersLoading,
-}) => {
+}: UnityModalProps) => {
     if (!showUnityModal) return null;
 
     return (

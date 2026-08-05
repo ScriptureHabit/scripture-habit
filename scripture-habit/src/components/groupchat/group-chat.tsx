@@ -1,4 +1,4 @@
-import { FC, useEffect } from 'react';
+import { useEffect } from 'react';
 import './group-chat.css';
 import GroupChatMessageListContainer from './subcomponents/group-chat-message-list-container';
 import GroupChatFooter from './subcomponents/group-chat-footer';
@@ -24,7 +24,7 @@ interface GroupChatProps {
   isActive?: boolean;
 }
 
-const GroupChatContent: FC = () => {
+const GroupChatContent = () => {
     const { activeModal, setActiveModal } = useModalStore();
 
     return (
@@ -50,7 +50,7 @@ const GroupChatContent: FC = () => {
     );
 };
 
-const GroupChat: FC<GroupChatProps> = (props) => {
+const GroupChat = (props: GroupChatProps) => {
   useEffect(() => {
     // Clear any OS push notifications for this specific group when the user opens it
     if (props.isActive) {

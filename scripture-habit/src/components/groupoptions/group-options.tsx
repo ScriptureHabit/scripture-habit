@@ -1,5 +1,4 @@
 
-import { FC } from 'react';
 import { Link } from 'react-router-dom';
 import './group-options.css';
 import { useLanguage } from '../../hooks/use-language';
@@ -9,7 +8,7 @@ import Mascot from '../mascot/mascot';
 import { OptionsSkeleton } from '../skeleton/skeleton';
 import { useGroupOptions } from './hooks/use-group-options';
 
-const GroupOptions: FC = () => {
+const GroupOptions = () => {
     const { t } = useLanguage();
     const {
         userData,

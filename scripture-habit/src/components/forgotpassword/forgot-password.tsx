@@ -1,4 +1,4 @@
-import { useState, FormEvent } from "react";
+import { useState, FormEvent } from 'react';
 import "./forgot-password.css";
 import Button from "../button/button";
 import Input from "../input/input";

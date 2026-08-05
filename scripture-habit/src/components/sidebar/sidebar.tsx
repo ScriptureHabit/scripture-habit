@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import './sidebar.css';
 import { SidebarData } from '../../data/data';
 import {
@@ -24,7 +24,7 @@ interface SidebarGroupItemProps {
   isModal?: boolean;
 }
 
-const SidebarGroupItem: React.FC<SidebarGroupItemProps> = ({ group, language, isActive, onClick, getGroupStatusEmoji, getUnityPercentage, isModal = false }) => {
+const SidebarGroupItem = ({ group, language, isActive, onClick, getGroupStatusEmoji, getUnityPercentage, isModal = false }: SidebarGroupItemProps) => {
   const { displayName } = useGroupTranslation(group, language);
 
   // Debug log for Webkit unity percentage issue
@@ -76,7 +76,7 @@ interface SidebarProps {
   hideMobile?: boolean;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ selected, setSelected, userGroups = [], activeGroupId, setActiveGroupId, hideMobile = false }) => {
+const Sidebar = ({ selected, setSelected, userGroups = [], activeGroupId, setActiveGroupId, hideMobile = false }: SidebarProps) => {
   const navigate = useNavigate();
   const { t, language } = useLanguage();
   const [showGroupModal, setShowGroupModal] = useState(false);

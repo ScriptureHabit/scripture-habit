@@ -1,4 +1,3 @@
-import { FC } from 'react';
 import { Group } from '../../../types/chat';
 
 interface EditGroupNameModalProps {
@@ -20,7 +19,7 @@ interface EditGroupNameModalProps {
     translatedGroupDesc: string | null;
 }
 
-const EditGroupNameModal: FC<EditGroupNameModalProps> = ({
+const EditGroupNameModal = ({
     t,
     language,
     groupData,
@@ -37,7 +36,7 @@ const EditGroupNameModal: FC<EditGroupNameModalProps> = ({
     handleUpdateGroupName,
     translatedGroupName,
     translatedGroupDesc,
-}) => {
+}: EditGroupNameModalProps) => {
     if (!showEditNameModal) return null;
 
     return (

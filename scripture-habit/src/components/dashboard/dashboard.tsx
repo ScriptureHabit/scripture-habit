@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, FC, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { Navigate, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
@@ -41,7 +41,7 @@ import { useDashboardInvitations } from './hooks/use-dashboard-invitations';
 import { useDashboardActions } from './hooks/use-dashboard-actions';
 import { useToday } from '../../hooks/use-today';
 
-const Dashboard: FC = () => {
+const Dashboard = () => {
   const location = useLocation();
   // Capture these immediately to avoid unmount loops if location.state is cleared
   const initialGroupIdRef = useRef<string | undefined>(location.state?.groupId || location.state?.initialGroupId);

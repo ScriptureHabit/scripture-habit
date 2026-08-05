@@ -1,5 +1,5 @@
 
-import { useState, FC } from 'react';
+import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Button from '../button/button';
 import Mascot from '../mascot/mascot';
@@ -9,7 +9,7 @@ import { isInAppBrowser } from '../../utils/browser-detection';
 import './welcome.css';
 import Footer from '../footer/footer';
 
-const Welcome: FC = () => {
+const Welcome = () => {
     const { t, setLanguage, language } = useLanguage();
     const navigate = useNavigate();
     const location = useLocation();

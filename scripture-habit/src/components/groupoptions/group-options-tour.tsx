@@ -41,7 +41,7 @@ const TOUR_STEPS: TourStep[] = [
     }
 ];
 
-const GroupOptionsTour: React.FC<GroupOptionsTourProps> = ({ isOpen, onClose, t }) => {
+const GroupOptionsTour = ({ isOpen, onClose, t }: GroupOptionsTourProps) => {
     const [currentStep, setCurrentStep] = useState(0);
     const [highlightRect, setHighlightRect] = useState<{ top: number; left: number; width: number; height: number } | null>(null);
     const [popoverStyle, setPopoverStyle] = useState<React.CSSProperties>({});

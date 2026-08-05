@@ -1,4 +1,4 @@
-import { FC, useMemo, useEffect, useRef, useState } from 'react';
+import { useMemo, useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { useUrlMetadata } from '../../../hooks/use-url-metadata';
 import { getNoteLabelFallback, translateScriptureName, isPlaceholderValue } from '../utils/note-translations';
@@ -19,10 +19,10 @@ interface GCNoteRendererProps {
     onRetranslate?: () => void;
 }
 
-const GCNoteRenderer: FC<GCNoteRendererProps> = ({ 
+const GCNoteRenderer = ({ 
     scriptureValue, comment, url, language, t, isSent, linkColor, 
     translatedText, translateChapterField, isTranslating, onRetranslate 
-}) => {
+}: GCNoteRendererProps) => {
     const { data, loading } = useUrlMetadata(url, language);
     const [showOriginal, setShowOriginal] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);

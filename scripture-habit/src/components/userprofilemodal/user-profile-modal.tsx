@@ -1,5 +1,5 @@
 
-import { FC, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import './user-profile-modal.css';
 import { UilTimes, UilFire, UilFileAlt, UilGlobe } from '@iconscout/react-unicons';
 import { useLanguage } from '../../hooks/use-language';
@@ -14,7 +14,7 @@ interface UserProfileModalProps {
     onClose: () => void;
 }
 
-const UserProfileModal: FC<UserProfileModalProps> = ({ user, onClose }) => {
+const UserProfileModal = ({ user, onClose }: UserProfileModalProps) => {
     const { t, language } = useLanguage();
 
     const [showFullImage, setShowFullImage] = useState(false);

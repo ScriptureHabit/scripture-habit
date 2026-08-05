@@ -1,4 +1,3 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
 interface ErrorFallbackProps {
@@ -6,7 +5,7 @@ interface ErrorFallbackProps {
   resetError: () => void;
 }
 
-export const ErrorFallback: React.FC<ErrorFallbackProps> = ({ error, resetError }) => {
+export const ErrorFallback = ({ error, resetError }: ErrorFallbackProps) => {
   const navigate = useNavigate();
 
   return (

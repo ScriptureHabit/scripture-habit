@@ -1,4 +1,3 @@
-import { FC } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { Group } from '../../../types/chat';
 
@@ -13,7 +12,7 @@ interface DeleteGroupModalProps {
     handleDeleteGroup: () => Promise<void>;
 }
 
-const DeleteGroupModal: FC<DeleteGroupModalProps> = ({
+const DeleteGroupModal = ({
     t,
     groupData,
     showDeleteModal,
@@ -22,7 +21,7 @@ const DeleteGroupModal: FC<DeleteGroupModalProps> = ({
     setDeleteConfirmationName,
     isDeleting,
     handleDeleteGroup,
-}) => {
+}: DeleteGroupModalProps) => {
     if (!showDeleteModal) return null;
 
     return (

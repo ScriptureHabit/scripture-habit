@@ -1,4 +1,4 @@
-import { FC, RefObject, KeyboardEvent, FormEvent, useEffect } from 'react';
+import { RefObject, KeyboardEvent, FormEvent, useEffect } from 'react';
 import { UilPlus, UilTimes } from '@iconscout/react-unicons';
 import { Message } from '../../../types/chat';
 
@@ -22,7 +22,7 @@ interface MessageInputProps {
     setIsNewNoteOpen: (open: boolean) => void;
 }
 
-const MessageInput: FC<MessageInputProps> = ({
+const MessageInput = ({
     handleSendMessage,
     isAnyModalOpen,
     replyTo,
@@ -38,7 +38,7 @@ const MessageInput: FC<MessageInputProps> = ({
     showAddNoteTooltip,
     handleDismissTooltip,
     setIsNewNoteOpen
-}) => {
+}: MessageInputProps) => {
     useEffect(() => {
         const textarea = textareaRef.current;
         if (textarea) {

@@ -1,4 +1,3 @@
-import { FC } from 'react';
 
 interface ScriptureSelectionModalProps {
     t: (key: string) => string;
@@ -9,14 +8,14 @@ interface ScriptureSelectionModalProps {
     translateChapterField: (field: string) => string;
 }
 
-const ScriptureSelectionModal: FC<ScriptureSelectionModalProps> = ({
+const ScriptureSelectionModal = ({
     t,
     onClose,
     availableReadingPlanScripts,
     fillScriptureData,
     setShowScriptureSelectionModal,
     translateChapterField
-}) => {
+}: ScriptureSelectionModalProps) => {
     return (
         <div className="ModalOverlay" onClick={onClose}>
             <div className="ModalContent" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '500px', textAlign: 'center' }}>

@@ -1,4 +1,4 @@
-import { useState, useEffect, FC } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../hooks/use-language';
 import { Language } from '../../context/language-context';
@@ -14,7 +14,7 @@ interface LanguageOption {
 }
 
 
-const LandingPage: FC = () => {
+const LandingPage = () => {
     const { t, language, setLanguage } = useLanguage();
     const navigate = useNavigate();
     const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);

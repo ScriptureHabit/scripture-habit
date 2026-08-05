@@ -1,4 +1,4 @@
-import { useState, useEffect, FC, useRef, ChangeEvent } from 'react';
+import { useState, useEffect, useRef, ChangeEvent } from 'react';
 import './profile.css';
 import { useLanguage } from '../../hooks/use-language';
 import { useSettings } from '../../context/settings-context';
@@ -25,7 +25,7 @@ interface ProfileProps {
 }
 
 
-const Profile: FC<ProfileProps> = ({ userData, stats }) => {
+const Profile = ({ userData, stats }: ProfileProps) => {
     const { language, setLanguage, t } = useLanguage();
     const { fontSize, setFontSize } = useSettings();
     const navigate = useNavigate();

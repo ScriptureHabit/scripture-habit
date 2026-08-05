@@ -1,5 +1,5 @@
 
-import { useState, FC } from 'react';
+import { useState } from 'react';
 import { UilBookOpen, UilSearchAlt, UilAnalysis, UilEnvelope, UilAngleLeft, UilAngleRight } from '@iconscout/react-unicons';
 import NewNote from '../newnote/new-note';
 import NoteCard from '../notecard/note-card';
@@ -33,7 +33,7 @@ interface MyNotesProps {
   userGroups: Group[];
 }
 
-const MyNotes: FC<MyNotesProps> = ({ userData, isModalOpen, setIsModalOpen, userGroups }) => {
+const MyNotes = ({ userData, isModalOpen, setIsModalOpen, userGroups }: MyNotesProps) => {
   const { language, t } = useLanguage();
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
   type ActiveModalType = 'detail' | 'delete' | 'edit' | 'letterbox' | null;

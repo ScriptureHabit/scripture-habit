@@ -1,4 +1,3 @@
-import { FC } from 'react';
 import { useParams } from 'react-router-dom';
 import LeaveGroupButton from "../button/leave-group-button";
 import DeleteGroupButton from "../button/delete-group-button";
@@ -8,7 +7,7 @@ interface GroupDetailsProps {
     group: Group | null;
 }
 
-const GroupDetails: FC<GroupDetailsProps> = ({ group }) => {
+const GroupDetails = ({ group }: GroupDetailsProps) => {
     const { id } = useParams<{ id: string }>();
 
     if (!group) return <p>Loading...</p>;

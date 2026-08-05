@@ -1,5 +1,5 @@
 
-import { useEffect, useState, FC } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { safeStorage } from '../../utils/storage';
 import { auth } from '../../firebase';
@@ -13,7 +13,7 @@ interface InviteGroupInfo {
     description?: string;
 }
 
-const InviteRedirect: FC = () => {
+const InviteRedirect = () => {
     const { inviteCode } = useParams<{ inviteCode: string }>();
     const navigate = useNavigate();
     const { t, language } = useLanguage();

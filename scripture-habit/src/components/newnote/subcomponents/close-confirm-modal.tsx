@@ -1,4 +1,3 @@
-import { FC } from 'react';
 
 interface CloseConfirmModalProps {
     t: (key: string) => string;
@@ -7,12 +6,12 @@ interface CloseConfirmModalProps {
     handleSubmit: () => Promise<void>;
 }
 
-const CloseConfirmModal: FC<CloseConfirmModalProps> = ({
+const CloseConfirmModal = ({
     t,
     onClose,
     setShowCloseConfirm,
     handleSubmit
-}) => {
+}: CloseConfirmModalProps) => {
     return (
         <div className="ModalOverlay" style={{ zIndex: 1100, backgroundColor: 'rgba(0,0,0,0.5)' }} onClick={() => setShowCloseConfirm(false)}>
             <div className="ModalContent" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '400px', height: 'auto', padding: '2rem' }}>

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { UilAngleLeft, UilAngleRight } from '@iconscout/react-unicons';
 import './streak-calendar.css';
 
@@ -8,7 +8,7 @@ interface StreakCalendarProps {
   t: (key: string) => string;
 }
 
-const StreakCalendar: React.FC<StreakCalendarProps> = ({ studiedDates = [], kickDate, t }) => {
+const StreakCalendar = ({ studiedDates = [], kickDate, t }: StreakCalendarProps) => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
   const calendarData = useMemo(() => {

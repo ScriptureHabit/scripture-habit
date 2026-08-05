@@ -1,4 +1,4 @@
-import { FC, ReactNode, useMemo, useEffect } from 'react';
+import { ReactNode, useMemo, useEffect } from 'react';
 
 import { useLanguage } from '../../hooks/use-language';
 import { ChatProvider } from './chat-provider';
@@ -39,9 +39,9 @@ interface GroupChatProviderProps {
   children: ReactNode;
 }
 
-const GroupChatProvider: FC<GroupChatProviderProps> = ({ 
+const GroupChatProvider = ({ 
   groupId, userData, userGroups = [], isActive = false, onBack, onGroupSelect, initialShowInviteModal = false, onInputFocusChange, onUnityUpdate, children 
-}) => {
+}: GroupChatProviderProps) => {
   const { language, t, tArray, isLoaded } = useLanguage();
 
   // Zustand Stores

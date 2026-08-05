@@ -1,4 +1,3 @@
-import { FC } from 'react';
 
 interface Reaction {
     userId: string;
@@ -13,13 +12,13 @@ interface ReactionsModalProps {
     handleUserProfileClick: (userId: string | null) => Promise<void>;
 }
 
-const ReactionsModal: FC<ReactionsModalProps> = ({
+const ReactionsModal = ({
     t,
     showReactionsModal,
     setShowReactionsModal,
     reactionsToShow,
     handleUserProfileClick,
-}) => {
+}: ReactionsModalProps) => {
     if (!showReactionsModal) return null;
 
     return (

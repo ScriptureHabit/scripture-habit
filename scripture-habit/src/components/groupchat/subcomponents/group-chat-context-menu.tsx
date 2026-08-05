@@ -1,4 +1,3 @@
-import { FC } from 'react';
 import { UilTrashAlt, UilPen, UilCommentAlt } from '@iconscout/react-unicons';
 import { 
   useChatData, 
@@ -7,7 +6,7 @@ import {
 } from '../hooks/use-chat-context';
 import { useChatStore } from '../../../store/use-chat-store';
 
-const GroupChatContextMenu: FC = () => {
+const GroupChatContextMenu = () => {
     const { userData } = useChatData();
     const { 
         handleReply, handleToggleReaction, handleEditMessage, 

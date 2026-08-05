@@ -1,4 +1,3 @@
-import { FC } from 'react';
 import { Message } from '../../../types/chat';
 
 interface DeleteMessageModalProps {
@@ -10,14 +9,14 @@ interface DeleteMessageModalProps {
     handleConfirmDeleteMessage: () => Promise<void>;
 }
 
-const DeleteMessageModal: FC<DeleteMessageModalProps> = ({
+const DeleteMessageModal = ({
     t,
     showDeleteMessageModal,
     setShowDeleteMessageModal,
     messageToDelete,
     setMessageToDelete,
     handleConfirmDeleteMessage,
-}) => {
+}: DeleteMessageModalProps) => {
     if (!showDeleteMessageModal) return null;
 
     return (

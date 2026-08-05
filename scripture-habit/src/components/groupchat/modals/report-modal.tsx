@@ -1,4 +1,3 @@
-import { FC } from 'react';
 import { UilExclamationTriangle, UilTimes } from '@iconscout/react-unicons';
 
 interface ReportModalProps {
@@ -10,14 +9,14 @@ interface ReportModalProps {
     confirmReport: () => Promise<void>;
 }
 
-const ReportModal: FC<ReportModalProps> = ({
+const ReportModal = ({
     t,
     showReportModal,
     setShowReportModal,
     reportReason,
     setReportReason,
     confirmReport,
-}) => {
+}: ReportModalProps) => {
     if (!showReportModal) return null;
 
     return (

@@ -1,4 +1,3 @@
-import { FC } from 'react';
 import WelcomeStoryModal from '../../welcomestorymodal/welcome-story-modal';
 import NotificationPromptModal from '../notification-prompt-modal';
 import { UserData } from '../../../types/user';
@@ -34,7 +33,7 @@ interface DashboardModalsProps {
   setShowAutoKickModal: (show: boolean) => void;
 }
 
-const DashboardModals: FC<DashboardModalsProps> = ({
+const DashboardModals = ({
   t,
   userData,
   showWelcomeStory,
@@ -54,7 +53,7 @@ const DashboardModals: FC<DashboardModalsProps> = ({
   setSelectedKickDays,
   handleAutoKickSubmit,
   setShowAutoKickModal
-}) => {
+}: DashboardModalsProps) => {
   return (
     <>
       <WelcomeStoryModal 

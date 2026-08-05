@@ -124,7 +124,7 @@ const isPublicRoute = (urlStr: string) => {
   }
 };
 
-const App: React.FC = () => {
+const App = () => {
   const { loading: authLoading, user } = useAuth();
   const [showBrowserWarning, setShowBrowserWarning] = useState(false);
   const [pendingNavigateUrl, setPendingNavigateUrlState] = useState<string | null>(null);

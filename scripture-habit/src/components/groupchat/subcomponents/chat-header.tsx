@@ -1,4 +1,3 @@
-import { FC } from 'react';
 import { UilArrowLeft, UilPen, UilCopy, UilCommentAlt, UilTrashAlt, UilTimes, UilUsersAlt } from '@iconscout/react-unicons';
 import GroupMenuItem from './group-menu-item';
 import { 
@@ -11,7 +10,7 @@ import { useModalStore } from '../../../store/use-modal-store';
 import { Group } from '../../../types/chat';
 import { getUnityStatusEmoji } from '../../../utils/unity-utils';
 
-const ChatHeader: FC = () => {
+const ChatHeader = () => {
   // 1. Data
   const { 
       groupData, unityPercentage, isOwner, language, groupId, userGroups

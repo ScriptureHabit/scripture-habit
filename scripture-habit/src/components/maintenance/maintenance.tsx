@@ -1,5 +1,4 @@
 
-import { FC } from 'react';
 import { useLanguage } from '../../hooks/use-language';
 import './maintenance.css';
 
@@ -7,7 +6,7 @@ interface MaintenanceProps {
     isQuota: boolean;
 }
 
-const Maintenance: FC<MaintenanceProps> = ({ isQuota }) => {
+const Maintenance = ({ isQuota }: MaintenanceProps) => {
     const { t } = useLanguage();
 
     return (
