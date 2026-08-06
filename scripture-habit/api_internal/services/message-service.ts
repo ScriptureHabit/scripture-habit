@@ -200,7 +200,6 @@ export class MessageService {
                 nickname: nickname,
                 photoURL: photoURL,
                 lastActiveAt: admin.firestore.FieldValue.serverTimestamp(),
-                lastPostAt: admin.firestore.FieldValue.serverTimestamp(),
                 lastReadAt: admin.firestore.FieldValue.serverTimestamp(),
                 readMessageCount: admin.firestore.FieldValue.increment(1)
             }, { merge: true });

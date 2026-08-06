@@ -70,19 +70,15 @@ export function calculateMemberStatus(
 ): InactivityResult {
     const nowTime = now.getTime();
 
-    // 1. Collect All Timestamps
+    // 1. Collect All Timestamps (Only note/study postings & join date baseline count for kick determination)
     const timestamps = [
         toMillis(memberData.joinedAt),
         toMillis(memberData.lastNoteAt),
-        toMillis(memberData.lastPostAt),
-        toMillis(memberData.lastReadAt),
-        toMillis(memberData.lastActiveAt)
+        toMillis(memberData.lastPostAt)
     ];
 
     if (groupData) {
         if (groupData.memberJoinedAt?.[memberId]) timestamps.push(toMillis(groupData.memberJoinedAt[memberId]));
-        if (groupData.memberLastActive?.[memberId]) timestamps.push(toMillis(groupData.memberLastActive[memberId]));
-        if (groupData.memberLastReadAt?.[memberId]) timestamps.push(toMillis(groupData.memberLastReadAt[memberId]));
     }
 
     // 2. Determine Most Recent Activity

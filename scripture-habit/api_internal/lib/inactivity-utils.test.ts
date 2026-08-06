@@ -179,6 +179,18 @@ describe('inactivity-utils - calculateMemberStatus', () => {
         const result = calculateMemberStatus('user1', memberData, undefined as any, now);
         expect(result.status).toBe('active');
     });
+
+    it('should evaluate member as inactive if last note/post is old, even if memberLastActive is recent', () => {
+        const now = new Date('2024-04-25T00:00:00Z');
+        const fourDaysAgo = new Date('2024-04-21T00:00:00Z');
+        const memberData: InactivityMemberData = { joinedAt: fourDaysAgo, lastNoteAt: fourDaysAgo, kickThreshold: 3 };
+        const groupData: InactivityGroupData = {
+            memberLastActive: { 'user1': now }, // recent message activity
+            memberLastReadAt: { 'user1': now }
+        };
+        const result = calculateMemberStatus('user1', memberData, groupData, now);
+        expect(result.status).toBe('inactive');
+    });
 });
 
 describe('inactivity-utils - toMillis', () => {

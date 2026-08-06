@@ -21,9 +21,8 @@ export const useDashboardWarnings = (userData: UserData | null, userGroups: Grou
             // ROM (Read-only) users who do not contribute are considered inactive here.
             const candidateTimestamps: (FirebaseTimestamp | null | undefined)[] = [
                 userData.lastPostAt,
-                group.memberLastActive?.[userData.uid],
-                // Only count the group's last note if the user themselves was the poster
-                (group.lastMessageByUid === userData.uid ? (group.lastNoteAt || group.lastMessageAt) : null)
+                (group.lastNoteByUid === userData.uid ? group.lastNoteAt : null),
+                group.memberJoinedAt?.[userData.uid]
             ];
 
             if (candidateTimestamps.length > 0) {

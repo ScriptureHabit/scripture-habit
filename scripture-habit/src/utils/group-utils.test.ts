@@ -126,7 +126,7 @@ describe('Group Utils - calculateNearestKickDate', () => {
     expect(result).toBe('2024-05-12');
   });
 
-  it('should consider my memberLastActive in group status if it is newer than lastPostAt', () => {
+  it('should ignore memberLastActive in kick date calculation (only note/study activity and join date count)', () => {
     const userWithOldPost = { ...mockUser, lastPostAt: '2024-05-01T10:00:00Z' };
     const groups: Group[] = [{
       id: 'g1',
@@ -135,7 +135,7 @@ describe('Group Utils - calculateNearestKickDate', () => {
     } as unknown as Group];
     
     const result = calculateNearestKickDate(userWithOldPost, groups);
-    expect(result).toBe('2024-05-13');
+    expect(result).toBe('2024-05-04');
   });
 
   it('should return null if user has no activity timestamps', () => {

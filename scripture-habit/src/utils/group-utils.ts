@@ -69,9 +69,8 @@ export const calculateNearestKickDate = (userData: UserData | null, userGroups: 
     
     const candidateTimestamps = [
       userData.lastPostAt,
-      group.memberLastActive?.[userData.uid],
       (group.lastNoteByUid === userData.uid ? group.lastNoteAt : null),
-      (group.lastMessageByUid === userData.uid ? group.lastMessageAt : null)
+      group.memberJoinedAt?.[userData.uid]
     ];
 
     const dates = candidateTimestamps
