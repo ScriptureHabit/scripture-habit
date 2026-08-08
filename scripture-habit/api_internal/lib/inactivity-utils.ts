@@ -2,7 +2,7 @@
  * Utility for determining user inactivity in group chats.
  * 
  * Logic Summary:
- * 1. Activity is determined by ANY interaction: Posting, Reading, or Joining.
+ * 1. Activity is determined by note/study postings or join date baseline.
  * 2. A member is INACTIVE if the most recent activity is older than their threshold (default 3 days).
  * 3. Simplified: Removed the "new member" grace period. All activity counts equally.
  */
