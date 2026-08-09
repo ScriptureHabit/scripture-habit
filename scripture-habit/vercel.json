@@ -6,7 +6,7 @@
         },
         {
             "path": "/api/cron/post-ai-daily-notes",
-            "schedule": "0 * * * *"
+            "schedule": "0 0 * * *"
         }
     ],
     "trailingSlash": false,
