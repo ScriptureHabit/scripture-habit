@@ -80,6 +80,28 @@
   border-color: rgba(255, 255, 255, 0.4);
 }
 
+.quest-step-item.pending {
+  cursor: pointer;
+}
+
+.quest-step-item.pending:hover {
+  background: rgba(255, 255, 255, 0.38);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
+}
+
+.quest-step-item.pending:active {
+  transform: translateY(0px);
+}
+
+.quest-step-item.locked {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+  filter: grayscale(0.3);
+}
+
 .step-checkbox {
   font-size: 1.2rem;
   display: flex;

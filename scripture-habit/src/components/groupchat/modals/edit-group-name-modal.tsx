@@ -39,6 +39,9 @@ const EditGroupNameModal = ({
 }: EditGroupNameModalProps) => {
     if (!showEditNameModal) return null;
 
+    const displayGroupName = newGroupName?.startsWith('groupChat.') ? t(newGroupName) : newGroupName;
+    const displayGroupDesc = newGroupDescription?.startsWith('groupChat.') ? t(newGroupDescription) : newGroupDescription;
+
     return (
         <div className="leave-modal-overlay">
             <div className="leave-modal-content edit-group-modal">
@@ -51,7 +54,7 @@ const EditGroupNameModal = ({
                     <input
                         type="text"
                         className="delete-confirmation-input"
-                        value={newGroupName}
+                        value={displayGroupName}
                         onChange={(e) => setNewGroupName(e.target.value)}
                         placeholder={t('groupChat.enterNewGroupName')}
                         style={{ marginBottom: '1rem' }}
@@ -64,7 +67,7 @@ const EditGroupNameModal = ({
                     </label>
                     <textarea
                         className="delete-confirmation-input"
-                        value={newGroupDescription}
+                        value={displayGroupDesc}
                         onChange={(e) => setNewGroupDescription(e.target.value)}
                         placeholder={t('groupForm.descriptionLabel')}
                         style={{ minHeight: '80px', resize: 'vertical', padding: '10px' }}

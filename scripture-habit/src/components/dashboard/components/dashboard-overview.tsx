@@ -100,7 +100,7 @@ const DashboardOverview = ({
         </div>
       </div>
 
-      <QuestCard userData={userData} t={t} />
+      <QuestCard userData={userData} t={t} setIsModalOpen={setIsModalOpen} />
 
       <div className="inspiration-section">
         <Mascot

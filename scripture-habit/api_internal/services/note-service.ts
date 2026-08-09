@@ -38,6 +38,8 @@ export class NoteService {
         const scripture = input.scripture.trim();
         const chapter = input.chapter?.trim().replace(/^0+/, '') || "";
 
+        console.log(`[NoteService] postNote called by uid=${uid}, shareOption=${shareOption}, selectedShareGroups=${JSON.stringify(selectedShareGroups)}`);
+
         try {
             const result = await db.runTransaction(async (transaction) => {
                 const userRef = db.collection('users').doc(uid);
@@ -55,7 +57,8 @@ export class NoteService {
                     streakResult,
                     messagesInGroup,
                     existingNoteExists,
-                    allLatestGids
+                    allLatestGids,
+                    groupDocsMap
                 } = await (async () => {
                     const [userSnap, existingNoteSnap] = await Promise.all([
                         transaction.get(userRef),
@@ -72,6 +75,7 @@ export class NoteService {
                     else if (shareOption === 'current' && uData.groupId) groupsToPost = [uData.groupId];
                     
                     groupsToPost = [...new Set(groupsToPost.filter(gid => !!gid))].slice(0, 20);
+                    console.log(`[NoteService] User uGroupIds=${JSON.stringify(uGroupIds)}, activeGroupId=${uData.groupId}, calculated groupsToPost=${JSON.stringify(groupsToPost)}`);
 
                     const extNote = existingNoteSnap ? existingNoteSnap.data() : undefined;
                     const extSharedIds = extNote?.sharedMessageIds || {};
@@ -124,6 +128,16 @@ export class NoteService {
                         }
                     }
 
+                    const groupDocSnaps = groupsToPost.length > 0 
+                        ? await transaction.getAll(...groupsToPost.map(gid => db.collection('groups').doc(gid)))
+                        : [];
+                    const groupDocsMap: Record<string, GroupDocument> = {};
+                    groupDocSnaps.forEach(gsnap => {
+                        if (gsnap.exists) {
+                            groupDocsMap[gsnap.id] = gsnap.data() as GroupDocument;
+                        }
+                    });
+
                     return {
                         userData: uData,
                         userGroupIds: uGroupIds,
@@ -133,7 +147,8 @@ export class NoteService {
                         streakResult: streakRes,
                         messagesInGroup: bootStamps,
                         existingNoteExists: !!(existingNoteSnap && existingNoteSnap.exists),
-                        allLatestGids
+                        allLatestGids,
+                        groupDocsMap
                     };
                 })();
 
@@ -233,6 +248,56 @@ export class NoteService {
                         lastReadAt: serverTime,
                         lastActiveAt: serverTime
                     }, { merge: true });
+
+                    // --- AI Partner Group Response: Auto-congratulate user on note posting ---
+                    const gData = groupDocsMap[gid];
+                    const isAiGroup = Boolean(gData?.isAiGroup || gData?.aiCompanionUid === 'ai-partner-bot');
+                    console.log(`[NoteService AI Check] Group ID: ${gid}, gDataExists: ${!!gData}, isAiGroup: ${isAiGroup}, aiCompanionUid: ${gData?.aiCompanionUid}`);
+                    
+                    if (isAiGroup) {
+                        const userLang = userData.language || 'ja';
+                        const gTz = gData?.timeZone || userData.timeZone || 'Asia/Tokyo';
+                        const todayStr = formatDateInTimeZone(now, gTz);
+
+                        const botNickname = t(userLang, 'groupChat.aiGroupBotNickname') || (userLang === 'ja' ? 'スクハビAI' : 'Scripture Habit AI');
+                        const congratText = t(userLang, 'groupChat.aiGroupUserNoteCongratulation') || 'よくできました！🎉🎉 明日もお会いしましょう✨';
+                        
+                        const congratDocId = `ai_congrat_${todayStr}`;
+                        const aiCongratMsgRef = gRef.collection('messages').doc(congratDocId);
+                        const congratTime = admin.firestore.Timestamp.fromMillis(now.getTime() + 500);
+
+                        console.log(`[NoteService AI Congratulation] Posting AI response to group ${gid}: "${congratText}" (Doc ID: ${congratDocId})`);
+
+                        const aiMsgData = {
+                            id: congratDocId,
+                            text: congratText,
+                            senderId: 'ai-partner-bot',
+                            senderNickname: botNickname,
+                            senderPhotoURL: '/images/mascot.png',
+                            createdAt: congratTime,
+                            isSystemMessage: false,
+                            isNote: false,
+                            expireAt: getMessageExpireAt()
+                        };
+
+                        transaction.set(aiCongratMsgRef, aiMsgData, { merge: true });
+
+                        // Update local aggregate messages array with AI response as well
+                        messagesInGroup[gid] = [...(messagesInGroup[gid] || []), aiMsgData].slice(-25);
+
+                        // Update group last message & add AI bot to daily active members
+                        transaction.update(gRef, {
+                            lastMessageAt: congratTime,
+                            lastMessageByNickname: botNickname,
+                            lastMessageByUid: 'ai-partner-bot',
+                            'dailyActivity.date': todayStr,
+                            'dailyActivity.activeMembers': admin.firestore.FieldValue.arrayUnion(uid, 'ai-partner-bot')
+                        });
+                    }
+
+                    // Write updated latest messages cache for this group
+                    const latestRef = gRef.collection('messages_latest').doc('latest');
+                    transaction.set(latestRef, { messages: messagesInGroup[gid] || [] }, { merge: true });
                 }
 
                 // Personal Note Write

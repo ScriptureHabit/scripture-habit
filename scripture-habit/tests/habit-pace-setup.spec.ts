@@ -26,7 +26,7 @@ test.describe('Habit Pace Setup (E2E)', () => {
     const modal = page.locator('.leave-modal-overlay');
     await expect(modal).toBeVisible({ timeout: 25000 });
 
-    await expect(modal).toContainText('Habit Pace');
+    await expect(modal).toContainText('Set Your Goal!');
 
     // 5. Select a threshold (e.g., 5 days)
     await page.click('button.auto-kick-day-option-styled:has-text("5")');
@@ -40,9 +40,9 @@ test.describe('Habit Pace Setup (E2E)', () => {
     // 8. Verify Success Screen
     await expect(page.locator('.leave-modal-content')).toContainText('Your target pace is set');
 
-    // 9. Click the button to go to Group Options and wait for redirection
-    await page.getByTestId('onboarding-guide-redirect-button').click();
-    await page.waitForURL(/.*group-options/);
+    // 9. Click button to proceed (start with AI partner button or redirect button)
+    const redirectBtn = page.getByTestId('start-with-ai-button').or(page.getByTestId('onboarding-guide-redirect-button'));
+    await redirectBtn.click();
 
     // 10. Navigate back to dashboard and verify the modal does not reappear
     await page.goto('/en/dashboard');

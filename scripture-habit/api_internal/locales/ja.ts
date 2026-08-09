@@ -1,4 +1,12 @@
 export default {
+    groupChat: {
+        aiGroupUserNoteCongratulation: "よくできました！🎉🎉 明日もお会いしましょう✨",
+        aiGroupDefaultGroupName: "スクハビAI",
+        aiGroupDefaultGroupDesc: "スクハビAIと1対1で聖典を学ぶ専用グループ",
+        aiGroupWelcomeMessage: "スクハビAIグループへようこそ！毎日一緒に聖典を学び、気づきをシェアしましょう。応援しています！📖✨\n※AIは毎日ノートを投稿しますが、{nickname}さんへの直接返信は現段階ではできません。ご了承ください。",
+        aiGroupBotNickname: "スクハビAI",
+        aiGroupDailyNoteText: "【今日の学習インスピレーション】毎日コツコツと聖典を開くことが、大きな祝福につながります。今日も一緒に学びを深めましょう！📖✨"
+    },
     notifications: {
         streak_announcement: "🎉🎉🎉 **{nickname}さんが合計{streak}日目のノート投稿を達成しました！みんなでお祝いしましょう！** 🎉🎉🎉",
         note_posted_announcement: "🎉🎉🎉 **{nickname}さんがノートを投稿しました！！** 🎉🎉🎉",

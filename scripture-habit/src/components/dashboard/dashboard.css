@@ -823,6 +823,7 @@
 .auto-kick-init-desc-styled {
   color: var(--gray);
   line-height: 1.6;
+  white-space: pre-line;
 }
 
 .auto-kick-grid-options-styled {
@@ -848,7 +849,15 @@
 
 .auto-kick-day-option-styled.unselected {
   border: 1px solid #ddd;
-  background: white;
+  background: #fff0f3;
+}
+
+.auto-kick-selected-subtext-styled {
+  margin-top: 1.25rem;
+  font-size: 0.98rem;
+  font-weight: 600;
+  color: #334155;
+  text-align: center;
 }
 
 .auto-kick-confirm-warning-styled {

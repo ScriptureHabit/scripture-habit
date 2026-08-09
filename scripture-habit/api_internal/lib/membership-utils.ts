@@ -126,6 +126,10 @@ export async function removeMemberFromGroup(
     const members = (groupData.members || []) as string[];
     const remainingMembers = members.filter(m => m !== userId);
 
+    if (groupData.isAiGroup && remainingMembers.filter(m => m !== 'ai-partner-bot').length === 0) {
+        groupUpdate.isDeleted = true;
+    }
+
     if (groupData.ownerUserId === userId && options.transferOwnership) {
         if (remainingMembers.length > 0) {
             const joinedAtMap = groupData.memberJoinedAt || {};

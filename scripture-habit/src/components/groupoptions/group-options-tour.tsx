@@ -34,6 +34,12 @@ const TOUR_STEPS: TourStep[] = [
         placement: 'top'
     },
     {
+        targetSelector: '[data-testid="create-ai-group-card"]',
+        titleKey: 'groupOptionsTour.titleStepAi',
+        descKey: 'groupOptionsTour.descStepAi',
+        placement: 'bottom'
+    },
+    {
         targetSelector: '.back-link',
         titleKey: 'groupOptionsTour.titleStep4',
         descKey: 'groupOptionsTour.descStep4',

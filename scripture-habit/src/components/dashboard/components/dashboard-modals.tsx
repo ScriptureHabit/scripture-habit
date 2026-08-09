@@ -1,7 +1,12 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import apiClient from '../../../utils/api-client';
 import WelcomeStoryModal from '../../welcomestorymodal/welcome-story-modal';
 import NotificationPromptModal from '../notification-prompt-modal';
 import { UserData } from '../../../types/user';
 import { safeStorage } from '../../../utils/storage';
+import '../../mascot/mascot.css';
 
 interface DashboardModalsProps {
   t: (key: string, replacements?: Record<string, string | number>) => string;
@@ -54,6 +59,31 @@ const DashboardModals = ({
   handleAutoKickSubmit,
   setShowAutoKickModal
 }: DashboardModalsProps) => {
+  const navigate = useNavigate();
+  const [creatingAiGroup, setCreatingAiGroup] = useState(false);
+
+  const handleCreateAiGroup = async () => {
+    setCreatingAiGroup(true);
+    try {
+      const res = await apiClient.post('/api/groups/create-ai-group', {});
+      if (res.data && res.data.groupId) {
+        setShowAutoKickModal(false);
+        // Skip the tour so it doesn't interrupt the group chat
+        if (userData?.uid) {
+          sessionStorage.setItem(`tour_seen_${userData.uid}`, 'true');
+          sessionStorage.setItem(`ai_group_tour_pending_${userData.uid}`, 'true');
+        }
+        sessionStorage.setItem('ai_group_tour_pending', 'true');
+        navigate(`/${userData?.language || 'ja'}/dashboard?groupId=${res.data.groupId}&view=2`);
+      }
+    } catch (err) {
+      console.error('Failed to create AI group:', err);
+      toast.error(t('groupChat.reportError') || 'Failed to create AI Partner group');
+    } finally {
+      setCreatingAiGroup(false);
+    }
+  };
+
   return (
     <>
       <WelcomeStoryModal 
@@ -102,7 +132,19 @@ const DashboardModals = ({
           <div className="leave-modal-content auto-kick-setup">
             {autoKickStep === 0 ? (
               <>
-                <h2 className="auto-kick-init-title-styled" data-testid="habit-pace-modal-title">{t('groupChat.autoKickInitTitle')}</h2>
+                <div className="mascot-container" style={{ margin: '0.75rem 0 0.25rem', cursor: 'default' }}>
+                  <div className="mascot-image-wrapper">
+                    <img
+                      src="/images/mascot.png"
+                      alt="Mascot"
+                      className="mascot-image"
+                    />
+                  </div>
+                  <div className="mascot-bubble">
+                    <div className="mascot-bubble-tail" />
+                    <p className="mascot-text">{t('groupChat.autoKickInitTitle')}</p>
+                  </div>
+                </div>
                 <p className="auto-kick-init-desc-styled">{t('groupChat.autoKickInitDesc')}</p>
                 <div className="auto-kick-grid-options-styled">
                   {[3, 4, 5, 6, 7].map(d => (
@@ -116,6 +158,9 @@ const DashboardModals = ({
                     </button>
                   ))}
                 </div>
+                <p className="auto-kick-selected-subtext-styled" data-testid="habit-pace-selected-subtext">
+                  {t('groupChat.autoKickSelectedSubtext', { days: selectedKickDays })}
+                </p>
                 <button className="modal-btn primary mt-2 w-100" onClick={() => setAutoKickStep(1)} data-testid="habit-pace-next-button">
                   {t('groupChat.next')}
                 </button>
@@ -125,15 +170,24 @@ const DashboardModals = ({
                 <h2 className="auto-kick-init-title-styled" style={{ textAlign: 'center' }}>{t('groupChat.autoKickConfirmTitle')}</h2>
                 
                 <div style={{ textAlign: 'center', margin: '1.5rem 0' }}>
-                  <p style={{ fontSize: '1rem', color: '#64748b', marginBottom: '0.25rem' }}>{t('groupChat.habitPaceProfileTitle') || 'Selected Pace'}</p>
-                  <p style={{ fontSize: '2.5rem', fontWeight: 'bold', color: 'var(--pink)', margin: '0' }}>
-                    {selectedKickDays} {t('dashboard.days')}
+                  <div className="mascot-container" style={{ margin: '0 0 0.75rem', cursor: 'default' }}>
+                    <div className="mascot-image-wrapper">
+                      <img
+                        src="/images/mascot.png"
+                        alt="Mascot"
+                        className="mascot-image"
+                      />
+                    </div>
+                    <div className="mascot-bubble">
+                      <div className="mascot-bubble-tail" />
+                      <p className="mascot-text">{t('groupChat.habitPaceLetsTryTogether')}</p>
+                    </div>
+                  </div>
+                  <p style={{ fontSize: '1rem', color: '#64748b', marginBottom: '0.25rem' }}>{userData.nickname}{t('groupChat.habitPaceProfileTitle') || 'の目標'}</p>
+                  <p style={{ fontSize: '1.3rem', color: '#c0436b', margin: '0.5rem 0 0' }} data-testid="habit-pace-confirm-subtext">
+                    {t('groupChat.autoKickSelectedSubtext', { days: selectedKickDays })}
                   </p>
                 </div>
-
-                <p className="auto-kick-confirm-warning-styled" style={{ textAlign: 'center', fontSize: '0.9rem', color: '#ef4444', marginBottom: '1.5rem', lineHeight: '1.4' }}>
-                  {t('groupChat.autoKickWarning')}
-                </p>
 
                 <div className="leave-modal-actions" style={{ display: 'flex', gap: '12px', marginTop: '1rem' }}>
                   <button 
@@ -174,23 +228,72 @@ const DashboardModals = ({
                   return (
                     <div className="onboarding-guide-step-container" style={{ padding: '1rem 0' }}>
                       <div className="mascot-dialog-icon" style={{ marginBottom: '1rem' }}>
-                        <img src="/images/mascot.png" alt="Mascot" style={{ width: '80px', height: '80px', objectFit: 'contain' }} />
+                        <img src="/images/mascot.png" alt="Mascot" className="mascot-image" style={{ width: '80px', height: '80px', objectFit: 'contain' }} />
                       </div>
                       <p className="onboarding-guide-text font-bold-medium" style={{ fontSize: '1.05rem', lineHeight: '1.5', marginBottom: '1.5rem', color: '#1e293b' }}>
                         {joinedFromInvite 
                           ? t('onboardingGuide.paceSetSuccessInvite', { ownerName })
                           : t('onboardingGuide.paceSetSuccess')}
                       </p>
-                      <button 
-                        className="modal-btn primary mt-1 onboarding-guide-btn" 
-                        onClick={handleOnboardingRedirect}
-                        data-testid="onboarding-guide-redirect-button"
-                        style={{ width: '100%', padding: '0.75rem', fontSize: '1rem', fontWeight: 'bold' }}
-                      >
-                        {joinedFromInvite 
-                          ? t('onboardingGuide.paceSetBtnLearn')
-                          : t('onboardingGuide.paceSetBtnSearch')}
-                      </button>
+                      {joinedFromInvite ? (
+                        <button 
+                          className="modal-btn primary mt-1 onboarding-guide-btn" 
+                          onClick={handleOnboardingRedirect}
+                          data-testid="onboarding-guide-redirect-button"
+                          style={{ width: '100%', padding: '0.75rem', fontSize: '1rem', fontWeight: 'bold' }}
+                        >
+                          {t('onboardingGuide.paceSetBtnLearn')}
+                        </button>
+                      ) : (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', width: '100%' }}>
+                          <button
+                            className="ai-mode-option-card"
+                            onClick={handleCreateAiGroup}
+                            disabled={creatingAiGroup}
+                            data-testid="start-with-ai-button"
+                            style={{
+                              padding: '1rem',
+                              borderRadius: '12px',
+                              border: '2px solid #8b5cf6',
+                              backgroundColor: '#f5f3ff',
+                              textAlign: 'left',
+                              cursor: creatingAiGroup ? 'wait' : 'pointer',
+                              transition: 'all 0.2s',
+                              boxShadow: '0 2px 8px rgba(139, 92, 246, 0.15)'
+                            }}
+                          >
+                            <div style={{ fontWeight: 'bold', fontSize: '1.05rem', color: '#6d28d9', marginBottom: '0.25rem' }}>
+                              {t('groupChat.aiGroupStartWithAiOption')}
+                            </div>
+                            <div style={{ fontSize: '0.85rem', color: '#4c1d95', lineHeight: '1.4' }}>
+                              {t('groupChat.aiGroupStartWithAiDesc')}
+                            </div>
+                          </button>
+
+                          <button
+                            className="friends-mode-option-card"
+                            onClick={handleOnboardingRedirect}
+                            data-testid="start-with-friends-button"
+                            style={{
+                              padding: '1rem',
+                              borderRadius: '12px',
+                              border: '2px solid var(--pink)',
+                              backgroundColor: '#fff0f4',
+                              textAlign: 'left',
+                              cursor: 'pointer',
+                              transition: 'all 0.2s',
+                              boxShadow: '0 2px 8px rgba(255, 94, 126, 0.15)'
+                            }}
+                          >
+                            <div style={{ fontWeight: 'bold', fontSize: '1.05rem', color: '#c0436b', marginBottom: '0.25rem' }}>
+                              {t('groupChat.aiGroupStartWithFriendsOption')}
+                            </div>
+                            <div style={{ fontSize: '0.85rem', color: '#c0436b', lineHeight: '1.4' }}>
+                              {t('groupChat.aiGroupStartWithFriendsDesc')}
+                            </div>
+                          </button>
+                        </div>
+                      )}
                     </div>
                   );
                 })()}

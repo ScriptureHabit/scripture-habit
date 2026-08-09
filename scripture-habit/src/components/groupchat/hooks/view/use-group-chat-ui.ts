@@ -2,12 +2,14 @@ import { useState, useEffect, useRef } from 'react';
 import { getToken } from 'firebase/app-check';
 import { auth, appCheck } from '../../../../firebase';
 import { GroupData } from '../../../../types/chat';
+import { useLanguage } from '../../../../hooks/use-language';
 
 export const useGroupChatUI = (
   groupId: string,
   groupData: GroupData | null,
   language: string
 ) => {
+  const { t } = useLanguage();
   const [translatedGroupName, setTranslatedGroupName] = useState('');
   const [translatedGroupDesc, setTranslatedGroupDesc] = useState('');
 
@@ -35,6 +37,18 @@ export const useGroupChatUI = (
 
     const autoTranslate = async () => {
       if (!groupData?.name || !language) return;
+
+      const isAiGroup = Boolean(groupData.isAiGroup || groupData.aiCompanionUid === 'ai-partner-bot');
+      if (isAiGroup) {
+        const savedTrans = groupData.translations?.[language];
+        const defaultAiName = t('groupChat.aiGroupDefaultGroupName');
+        const defaultAiDesc = t('groupChat.aiGroupDefaultGroupDesc');
+        queueMicrotask(() => {
+          setTranslatedGroupName(savedTrans?.name || defaultAiName);
+          setTranslatedGroupDesc(savedTrans?.description || defaultAiDesc);
+        });
+        return;
+      }
 
       const savedTrans = groupData.translations?.[language];
       const nameToSet = savedTrans?.name;
@@ -124,7 +138,7 @@ export const useGroupChatUI = (
     };
 
     autoTranslate();
-  }, [groupId, groupData?.name, groupData?.description, groupData?.translations, language]);
+  }, [groupId, groupData?.name, groupData?.description, groupData?.translations, groupData?.isAiGroup, groupData?.aiCompanionUid, language, t]);
 
   return {
     translatedGroupName,

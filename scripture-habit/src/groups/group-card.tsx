@@ -97,6 +97,14 @@ export default function GroupCard({ group, currentUser, onJoin, onOpen }: Props)
     const autoTranslate = async () => {
       if (!group.name || !language) return;
 
+      const isAiGroup = Boolean(group.isAiGroup || group.aiCompanionUid === 'ai-partner-bot');
+      if (isAiGroup) {
+        const defaultAiName = t('groupChat.aiGroupDefaultGroupName');
+        const manualName = group.translations?.[language]?.name || defaultAiName;
+        setTranslatedName(manualName);
+        return;
+      }
+
       const manualName = group.translations?.[language]?.name;
       if (manualName) {
         setTranslatedName(manualName);
@@ -141,7 +149,7 @@ export default function GroupCard({ group, currentUser, onJoin, onOpen }: Props)
 
     autoTranslate();
     return () => { active = false; };
-  }, [group.id, group.name, language, group.translations]);
+  }, [group.id, group.name, group.isAiGroup, group.aiCompanionUid, language, group.translations, t]);
 
   const handleAction = useCallback(async () => {
     if (isMember) {

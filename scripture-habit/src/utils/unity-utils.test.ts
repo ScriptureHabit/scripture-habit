@@ -59,6 +59,36 @@ describe('Unity Utils - getUnityParticipation', () => {
     expect(result.percentage).toBe(100); // 2/2 = 100%
   });
 
+  it('should calculate 50% unity percentage when AI partner bot posts a daily note in 2-member AI group', () => {
+    const aiGroup: Group = {
+      id: 'ai-group',
+      name: 'AI Partner Group',
+      isAiGroup: true,
+      aiCompanionUid: 'ai-partner-bot',
+      members: ['user1', 'ai-partner-bot'],
+      memberJoinedAt: {
+        'user1': '2024-04-10T00:00:00Z',
+        'ai-partner-bot': '2024-04-10T00:00:00Z'
+      },
+      timeZone: 'Asia/Tokyo'
+    } as unknown as Group;
+
+    const aiNoteMessages: Message[] = [
+      {
+        senderId: 'ai-partner-bot',
+        isNote: true,
+        text: 'カテゴリ: 旧約聖書\n章: エステル記 8:1-17\nComment: Test',
+        createdAt: '2024-04-18T00:05:00Z'
+      } as unknown as Message
+    ];
+
+    const result = getUnityParticipation(aiGroup, aiNoteMessages, referenceDate);
+
+    expect(result.postedMembers).toContain('ai-partner-bot');
+    expect(result.postedMembers).not.toContain('user1');
+    expect(result.percentage).toBe(50); // 1/2 = 50%
+  });
+
   it('should return 0% if no one is eligible', () => {
     const emptyGroup = { ...mockGroup, members: [] };
     const result = getUnityParticipation(emptyGroup as unknown as Group, [], referenceDate);

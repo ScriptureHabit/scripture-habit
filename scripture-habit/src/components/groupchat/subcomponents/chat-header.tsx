@@ -81,7 +81,7 @@ const ChatHeader = () => {
         {groupData && (
           <>
             <div className="header-right desktop-only">
-              {isOwner && (
+              {isOwner && !groupData.isAiGroup && (
                 <div className="group-status-toggle">
                   <span className="status-label">{groupData.isPublic ? t('groupChat.public') : t('groupChat.private')}</span>
                   <label className="switch">
@@ -90,23 +90,25 @@ const ChatHeader = () => {
                   </label>
                 </div>
               )}
-              <div className="invite-code-wrapper">
-                <div
-                  className={`invite-code-display ${isFull ? 'disabled' : ''}`}
-                  onClick={() => {
-                    if (!isFull) setShowInviteModal(true);
-                  }}
-                  title={isFull ? t('groupChat.groupFullTooltip') : t('groupChat.inviteLink')}
-                >
-                  <span>{t('groupChat.inviteLink')}</span>
-                  <UilCopy size="16" className="copy-icon" />
-                </div>
-                {isFull && (
-                  <div className="group-capacity-warning">
-                    {t('groupChat.maxMembersReachedMessage')}
+              {!groupData.isAiGroup && (
+                <div className="invite-code-wrapper">
+                  <div
+                    className={`invite-code-display ${isFull ? 'disabled' : ''}`}
+                    onClick={() => {
+                      if (!isFull) setShowInviteModal(true);
+                    }}
+                    title={isFull ? t('groupChat.groupFullTooltip') : t('groupChat.inviteLink')}
+                  >
+                    <span>{t('groupChat.inviteLink')}</span>
+                    <UilCopy size="16" className="copy-icon" />
                   </div>
-                )}
-              </div>
+                  {isFull && (
+                    <div className="group-capacity-warning">
+                      {t('groupChat.maxMembersReachedMessage')}
+                    </div>
+                  )}
+                </div>
+              )}
               <div className="invite-code-display members-btn-desktop" onClick={handleShowMembers} title={t('groupChat.members')} data-testid="members-button">
                 <UilCommentAlt size="16" className="copy-icon" />
                 <span className="desktop-members-label">{t('groupChat.members')}</span>
@@ -120,20 +122,9 @@ const ChatHeader = () => {
                 <UilTrashAlt size="16" />
                 <span className="desktop-members-label">{t('groupChat.leaveGroup')}</span>
               </div>
-
-              {isOwner && (
-                <div
-                  className="invite-code-display members-btn-desktop danger-action-btn"
-                  onClick={() => setActiveModal('delete')}
-                  title={t('groupChat.deleteGroup')}
-                >
-                  <UilTrashAlt size="16" />
-                  <span className="desktop-members-label">{t('groupChat.deleteGroup')}</span>
-                </div>
-              )}
             </div>
             <div className="hamburger-container mobile-only">
-              {groupData?.members?.length === 1 && (
+              {!groupData?.isAiGroup && groupData?.members?.length === 1 && (
                 <button 
                   className="invite-present-btn" 
                   onClick={() => setShowInviteModal(true)}
@@ -161,24 +152,26 @@ const ChatHeader = () => {
             </div>
             <div className="mobile-menu-content">
               {/* Invite Code Section */}
-              <div 
-                className={`mobile-menu-item-card invite-section-card ${isFull ? 'disabled' : ''}`}
-                onClick={isFull ? undefined : handleCopyInviteLink}
-                title={isFull ? t('groupChat.groupFullTooltip') : undefined}
-              >
-                <div className="menu-item-icon-circle pink-bg">
-                  <UilCopy size="22" />
+              {!groupData.isAiGroup && (
+                <div 
+                  className={`mobile-menu-item-card invite-section-card ${isFull ? 'disabled' : ''}`}
+                  onClick={isFull ? undefined : handleCopyInviteLink}
+                  title={isFull ? t('groupChat.groupFullTooltip') : undefined}
+                >
+                  <div className="menu-item-icon-circle pink-bg">
+                    <UilCopy size="22" />
+                  </div>
+                  <div className="menu-item-text-content">
+                    <span className="menu-item-label-top">
+                      {isFull ? t('groupChat.maxMembersReachedMessage') : t('groupChat.inviteCode')}
+                    </span>
+                    <span className="invite-code-text">{groupData.inviteCode}</span>
+                  </div>
                 </div>
-                <div className="menu-item-text-content">
-                  <span className="menu-item-label-top">
-                    {isFull ? t('groupChat.maxMembersReachedMessage') : t('groupChat.inviteCode')}
-                  </span>
-                  <span className="invite-code-text">{groupData.inviteCode}</span>
-                </div>
-              </div>
+              )}
 
               {/* Private Toggle */}
-              {isOwner && (
+              {isOwner && !groupData.isAiGroup && (
                 <div className="mobile-menu-item-row toggle-row" onClick={(e) => { e.stopPropagation(); togglePublicStatus(); }}>
                   <span className="menu-item-label">{t('groupChat.private')}</span>
                   <div className={`custom-toggle ${!groupData.isPublic ? 'active' : ''}`}>
@@ -213,8 +206,6 @@ const ChatHeader = () => {
                 <span className="menu-item-label">{t('groupChat.members')}</span>
               </div>
 
-
-
               <div className="mobile-menu-divider-thin" />
 
               {/* Danger Actions */}
@@ -224,15 +215,6 @@ const ChatHeader = () => {
                 </div>
                 <span className="menu-item-label">{t('groupChat.leaveGroup')}</span>
               </div>
-
-              {isOwner && (
-                <div className="mobile-menu-item-action danger" onClick={() => { setActiveModal('delete'); setShowMobileMenu(false); }}>
-                  <div className="menu-item-icon-circle danger-bg">
-                    <UilTrashAlt size="20" />
-                  </div>
-                  <span className="menu-item-label">{t('groupChat.deleteGroup')}</span>
-                </div>
-              )}
 
               {/* My Groups Section */}
               {userGroups && userGroups.length > 0 && (

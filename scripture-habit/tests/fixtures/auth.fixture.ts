@@ -112,8 +112,16 @@ export const test = base.extend<AuthFixtures>({
     // 3. Sign in directly and navigate to Dashboard
     console.log(`[AuthFixture] Signing in directly via Firebase auth for isolated user: ${email}`);
     await page.goto('/en/login');
-    await page.waitForLoadState('load');
-    await page.waitForFunction(() => !!(window as any).firebaseAuthHelpers, null, { timeout: 30000 });
+    await page.waitForLoadState('domcontentloaded');
+
+    // Robust wait for firebaseAuthHelpers with fallback reload if necessary
+    try {
+      await page.waitForFunction(() => !!(window as any).firebaseAuthHelpers, null, { timeout: 15000 });
+    } catch {
+      console.warn('[AuthFixture] firebaseAuthHelpers slow to load. Reloading login page...');
+      await page.reload();
+      await page.waitForFunction(() => !!(window as any).firebaseAuthHelpers, null, { timeout: 30000 });
+    }
 
     await page.evaluate(async ({ email, password }) => {
       const auth = (window as any).firebaseAuth;
@@ -245,7 +253,12 @@ export const test = base.extend<AuthFixtures>({
 
     await use(pageWithHelpers as Page & TestHelpers);
 
-    // Dynamic cleanups are not needed because each test uses a completely isolated temporary user.
+    // Teardown / Cleanup phase to prevent background async hang
+    try {
+      await page.unrouteAll({ behavior: 'ignoreErrors' });
+    } catch {
+      // Ignore cleanup errors if page context is already closed
+    }
   },
 });
 

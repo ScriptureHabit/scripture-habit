@@ -42,6 +42,8 @@ export interface GroupDocument {
     // Visibility & Invitations
     isPrivate?: boolean;
     isPublic?: boolean;
+    isAiGroup?: boolean;
+    aiCompanionUid?: string;
     inviteCode?: string;
     inviteCodeExpiresAt?: FirestoreTimestamp; // Represents Firestore Timestamp
     

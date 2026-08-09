@@ -1,4 +1,4 @@
-export default {
+﻿export default {
     notifications: {
         streak_announcement: "🎉🎉🎉 **{nickname} đã đạt cột mốc tổng cộng {streak} ngày học tập! Hãy cùng chúc mừng nào!** 🎉🎉🎉",
         note_posted_announcement: "🎉🎉🎉 **{nickname} đã đăng một ghi chú!!** 🎉🎉🎉",

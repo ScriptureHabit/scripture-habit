@@ -210,6 +210,7 @@ export default {
         }
     },
     groupChat: {
+        aiGroupUserNoteCongratulation: "¡Excelente trabajo! 🎉🎉 ¡Nos vemos mañana! ✨",
         myGroups: "Mis Grupos",
         translation: "Traducción",
         send: "Enviar",
@@ -343,17 +344,33 @@ export default {
         autoKickConfirmTitle: "Confirma tu objetivo",
         autoKickErrorMismatch: "El número no coincide con tu elección. Intentémoslo una vez más.",
         autoKickSuccess: "¡Ritmo de hábito establecido! Construyamos este hábito juntos.",
-        habitPaceProfileTitle: "Mi ritmo de hábito",
+        autoKickSelectedSubtext: "Estudiar las escrituras al menos una vez cada {days} días",
+        habitPaceProfileTitle: " Meta",
+        habitPaceLetsTryTogether: "¡Vamos a lograrlo juntos!",
         habitPaceProfileDesc: "Publica una vez cada {days} días para mantenerte activo en los grupos.",
         confirm: "Confirmar",
+        aiGroupDefaultGroupName: "Scripture Habit AI",
+        aiGroupDefaultGroupDesc: "Grupo 1-a-1 de estudio de las escrituras con Scripture Habit AI",
+        aiGroupWelcomeMessage: "¡Bienvenido al Grupo Scripture Habit AI! Estudiemos las escrituras y compartamos reflexiones todos los días. ¡Te apoyamos! 📖✨\n*Nota: Scripture Habit AI publica notas diarias, pero no puede responder directamente a {nickname} en esta etapa.",
+        aiGroupBotNickname: "Scripture Habit AI",
+        aiGroupStartWithAiOption: "🤖 Empezar con Scripture Habit AI",
+        aiGroupStartWithAiDesc: "No necesitas amigos. Crea un grupo con Scripture Habit AI.",
+        aiGroupStartWithFriendsOption: "👥 Empezar con Amigos / Familia",
+        aiGroupStartWithFriendsDesc: "Crea un grupo con amigos o familia.",
+        aiGroupDailyNoteText: "[Inspiración de estudio diario] Abrir las escrituras constantemente todos los días trae grandes bendiciones. ¡Profundicemos nuestro aprendizaje hoy! 📖✨",
+        groupChatTour: {
+            step1Title: "¡Publica Notas Aquí!",
+            step1Desc: "Toca el botón + para registrar tus notas de estudio de hoy.",
+            step2Title: "Volver al Panel",
+            step2Desc: "Toca ← para volver al panel principal.",
+        },
         inviteExpiresAt: "Expira el",
         regenerateInviteCode: "Regenerar código de invitación",
         inviteCodeRegenerated: "¡El código de invitación ha sido regenerado!",
         newMessages: "Nuevos mensajes",
-        autoKickInitTitle: "Tu ritmo de hábito personal",
-        autoKickInitDesc: "Para ayudarte a crear un hábito constante, Scripture Habit tiene una regla de salida automática. Si no publicas durante unos días, serás eliminado automáticamente para mantener el grupo activo. ¿Qué ritmo prefieres?",
+        autoKickInitTitle: "¡Establece tu Objetivo!",
+        autoKickInitDesc: "Scripture Habit tiene una 'regla de salida automática' para ayudar a prevenir dejar el hábito.\nElige tu objetivo personal a continuación. (Si no estás seguro, te recomendamos empezar con una vez cada 7 días.)",
         next: "Siguiente",
-        autoKickWarning: "※ Esta configuración se aplica a todos tus grupos.",
         autoKickConfirmText: "Confirmación final: ¿Entiendes que si no publicas una nota durante {days} días, serás eliminado automáticamente? Por favor escribe '{days}' para confirmar.",
         markedPublic: "El grupo ahora es público",
         markedPrivate: "El grupo ahora es privado",
@@ -466,6 +483,8 @@ export default {
         other: "Otros"
     },
     groupOptionsTour: {
+        titleStepAi: "🤖 Empezar con Scripture Habit AI",
+        descStepAi: "¡Estudia a tu propio ritmo! Crea un grupo dedicado al instante donde Scripture Habit AI publica notas diarias y te acompaña en tu estudio.",
         titleStep1: "¡Bienvenido a los grupos de estudio!",
         descStep1: "Aquí puedes elegir cómo te gustaría conectarte y estudiar con los demás.",
         titleStep2: "Crear un grupo",
@@ -478,11 +497,13 @@ export default {
     groupOptions: {
         title: "Grupos de estudio",
         subtitle: "Elige cómo quieres conectarte con otros.",
-        joinGroupTitle: "Unirse a un Grupo",
+        joinGroupTitle: "Unirse a un grupo",
         joinGroupDesc: "Encuentra un grupo existente para estudiar juntos.",
-        createGroupTitle: "Crear un Grupo",
-        createGroupDesc: "Inicia tu propio grupo e invita a amigos.",
-        backToDashboard: "Volver al Tablero"
+        createGroupTitle: "Crear un grupo",
+        createGroupDesc: "Inicia tu propio grupo e invita a tus amigos.",
+        aiGroupTitle: "Empezar con Scripture Habit AI",
+        aiGroupDesc: "Crea un grupo de estudio 1 a 1 con Scripture Habit AI.",
+        backToDashboard: "Volver al panel"
     },
     groupListDetail: {
         title: "Explorar Grupos Públicos",
@@ -637,7 +658,7 @@ export default {
     },
     welcomeStory: {
         page1Title: "¡Bienvenido a Scripture Habit!",
-        page1Content: "Esta aplicación fue creada para ayudarte a construir un hábito diario de estudio de las escrituras aprendiendo y edificándose unos a otros dentro de un grupo.",
+        page1Content: "Esta aplicación fue creada para ayudarte a construir un hábito diario de estudio de las escrituras aprendiendo y edificándose unos a otros dentro de un grupo. (También puedes usarla de forma individual.)",
         page2Title: "¿Sabías qué?",
         page2Content: "Según un estudio de la Universidad Dominicana de California, ¡tienes <strong style='color: #E53E3E; font-size: 1.2em;'>aproximadamente el doble</strong> de probabilidades de éxito al construir un nuevo gawi cuando cooperas con un amigo en comparación con hacerlo solo!",
         page3Title: "Cómo funciona para {username}",
@@ -646,7 +667,7 @@ export default {
         page3Step3: "3. Informes semanales de IA (Reflexión)",
         page3ContentSuffix: " apoyamos el mejor hábito de estudio de las escrituras de {username}.",
         page3RuleTitle: "Para Crear Hábitos",
-        page3RuleContent1: "Para crear un hábito grupal, existe el compromiso de <strong style='color: #E53E3E;'>compartir tu aprendizaje al menos una vez cada 3〜7 días.</strong>",
+        page3RuleContent1: "Para crear un hábito, existe el compromiso de <strong style='color: #E53E3E;'>compartir tu aprendizaje al menos una vez cada 3〜7 días.</strong>",
         page3RuleContent2: "Si no hay publicaciones durante 3〜7 días, automáticamente te tomarás un descanso (saliendo), pero puedes volver a unirte al mismo grupo en cualquier momento.",
         page4Title: "Doctrina y Convenios 50:22",
         page4Quote: "\"De manera que, el que la predica y el que la recibe se comprenden el uno al otro, y ambos son edificados y se regocijan juntamente.\" - Jesucristo",
@@ -688,6 +709,7 @@ export default {
         createGroupPrompt: "¡Crea un nuevo grupo e\ninvita a tus amigos!",
         joinGroupPrompt: "¡Quiero estudiar con varias personas!",
         createGroupPrompt2: "¡Quiero estudiar con amigos!",
+        aiGroupPrompt: "¡Quiero estudiar a mi propio ritmo!",
         welcomeMessage: "¡Bienvenido a\nScripture Habit!"
     },
     browserWarning: {

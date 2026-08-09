@@ -44,7 +44,7 @@ const InviteModal = ({
           )
         : null;
 
-    if (!showInviteModal) return null;
+    if (!showInviteModal || groupData?.isAiGroup) return null;
 
     return (
         <>

@@ -53,15 +53,17 @@ const NoteDisplay = ({
 
     // Memoized standard Markdown construction
     const standardMd = useMemo(() => {
-        if (!parsed.isOriginalStructured) return parsed.finalSimpleContent;
-
-        const showScripture = scripture || parsed.scriptureValue;
+        const effectivePropScripture = (!scripture || isPlaceholderValue(scripture)) ? undefined : scripture;
+        const showScripture = effectivePropScripture || parsed.scriptureValue;
+        const isPlaceholder = isPlaceholderValue(showScripture);
         const scriptureLabel = getNoteLabelFallback('noteLabels.scripture', language, t('noteLabels.scripture') || 'Scripture');
         const chapterLabel = getNoteLabelFallback('noteLabels.chapter', language, t('noteLabels.chapter') || 'Chapter');
         
-        const scriptureLine = !isPlaceholderValue(showScripture) 
+        const scriptureLine = !isPlaceholder 
             ? `**${scriptureLabel}:** ${translateScriptureName(showScripture, t)}`
             : null;
+
+        if (!parsed.isOriginalStructured) return parsed.finalSimpleContent;
         
         const showChapter = chapter || parsed.chapterValue;
         const chapterLine = (showChapter && !isPlaceholderValue(showChapter)) 

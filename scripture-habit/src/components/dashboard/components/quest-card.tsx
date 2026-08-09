@@ -1,16 +1,23 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '../../../firebase';
 import { UserData } from '../../../types/user';
+import { useLanguage } from '../../../hooks/use-language';
 import confetti from 'canvas-confetti';
 import './quest-card.css';
 
 interface QuestCardProps {
   userData: UserData;
   t: (key: string, replacements?: Record<string, string | number>) => string;
+  setIsModalOpen?: (open: boolean) => void;
+  onStep1Click?: () => void;
+  onStep2Click?: () => void;
 }
 
-export const QuestCard = ({ userData, t }: QuestCardProps) => {
+export const QuestCard = ({ userData, t, setIsModalOpen, onStep1Click, onStep2Click }: QuestCardProps) => {
+  const navigate = useNavigate();
+  const { language } = useLanguage();
   const [celebrated, setCelebrated] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
 
@@ -55,6 +62,26 @@ export const QuestCard = ({ userData, t }: QuestCardProps) => {
     }
   };
 
+  const handleStep1Click = () => {
+    if (!step1Done) {
+      if (onStep1Click) {
+        onStep1Click();
+      } else {
+        navigate(`/${language || 'ja'}/group-options`);
+      }
+    }
+  };
+
+  const handleStep2Click = () => {
+    if (!step2Done) {
+      if (onStep2Click) {
+        onStep2Click();
+      } else if (setIsModalOpen) {
+        setIsModalOpen(true);
+      }
+    }
+  };
+
   const progressPercent = (step1Done ? 50 : 0) + (step2Done ? 50 : 0);
 
   return (
@@ -71,7 +98,12 @@ export const QuestCard = ({ userData, t }: QuestCardProps) => {
           </div>
 
           <div className="quest-steps">
-            <div className={`quest-step-item ${step1Done ? 'completed' : 'pending'}`}>
+            <div 
+              className={`quest-step-item ${step1Done ? 'completed' : 'pending'}`}
+              onClick={handleStep1Click}
+              role={step1Done ? undefined : 'button'}
+              tabIndex={step1Done ? undefined : 0}
+            >
               <div className="step-checkbox">
                 {step1Done ? '✅' : '🌟'}
               </div>
@@ -83,9 +115,14 @@ export const QuestCard = ({ userData, t }: QuestCardProps) => {
               </div>
             </div>
 
-            <div className={`quest-step-item ${step2Done ? 'completed' : 'pending'}`}>
+            <div 
+              className={`quest-step-item ${step2Done ? 'completed' : !step1Done ? 'locked' : 'pending'}`}
+              onClick={!step1Done ? undefined : handleStep2Click}
+              role={step2Done || !step1Done ? undefined : 'button'}
+              tabIndex={step2Done || !step1Done ? undefined : 0}
+            >
               <div className="step-checkbox">
-                {step2Done ? '✅' : '🌟'}
+                {step2Done ? '✅' : !step1Done ? '🔒' : '🌟'}
               </div>
               <div className="step-content">
                 <span className="step-title">{t('onboardingQuest.step2Title')}</span>

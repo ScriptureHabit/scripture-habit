@@ -196,16 +196,18 @@ const GroupChatModals = () => {
                 />
             )}
 
-            <InviteModal
-                t={t}
-                language={language}
-                userData={userData}
-                groupData={groupData}
-                showInviteModal={showInviteModal}
-                setShowInviteModal={setShowInviteModal}
-                handleCopyInviteLink={handleCopyInviteLink}
-                handleRegenerateInviteCode={handleRegenerateInviteCode}
-            />
+            {!groupData?.isAiGroup && (
+                <InviteModal
+                    t={t}
+                    language={language}
+                    userData={userData}
+                    groupData={groupData}
+                    showInviteModal={showInviteModal}
+                    setShowInviteModal={setShowInviteModal}
+                    handleCopyInviteLink={handleCopyInviteLink}
+                    handleRegenerateInviteCode={handleRegenerateInviteCode}
+                />
+            )}
         </>
     );
 };

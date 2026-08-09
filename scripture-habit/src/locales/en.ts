@@ -209,6 +209,7 @@ export default {
         defaultTitle: "Weekly Recap"
     },
     groupChat: {
+        aiGroupUserNoteCongratulation: "Great job! 🎉🎉 See you tomorrow! ✨",
         myGroups: "My Groups",
         send: "Send",
         public: "Public",
@@ -342,14 +343,30 @@ export default {
         autoKickConfirmTitle: "Confirm Your Goal",
         autoKickErrorMismatch: "The number doesn't match your choice. Let's try once more.",
         autoKickSuccess: "Habit pace set! Let's build this habit together.",
-        autoKickInitTitle: "Your Personal Habit Pace",
-        autoKickInitDesc: "To help you build a consistent habit, Scripture Habit has an auto-pause rule. If you don't post for a few days, you'll be automatically removed to keep things active. Choose your personal pace below:",
+        autoKickInitTitle: "Set Your Goal!",
+        autoKickInitDesc: "Scripture Habit has an 'auto-leave rule' to help prevent quitting.\nChoose your personal goal below. (If you're not sure, we recommend starting with once every 7 days.)",
+        autoKickSelectedSubtext: "Study scripture at least once every {days} days",
         next: "Next",
-        autoKickWarning: "This setting applies to ALL your groups.",
         autoKickConfirmText: "Final check: You understand that if you don't post a note for {days} days, you'll be automatically removed? Please type '{days}' to confirm.",
-        habitPaceProfileTitle: "My Habit Pace",
+        habitPaceProfileTitle: "'s Goal",
+        habitPaceLetsTryTogether: "Let's do this together!",
         habitPaceProfileDesc: "Post once every {days} days to stay active in groups.",
         confirm: "Confirm",
+        aiGroupDefaultGroupName: "Scripture Habit AI",
+        aiGroupDefaultGroupDesc: "1-on-1 Scripture Study Group with Scripture Habit AI",
+        aiGroupWelcomeMessage: "Welcome to the Scripture Habit AI Group! Let's study scriptures and share insights together every day. Rooting for you! 📖✨\n*Note: AI posts daily notes, but direct replies to {nickname} are not supported at this stage.",
+        aiGroupBotNickname: "Scripture Habit AI",
+        aiGroupStartWithAiOption: "🤖 Start with Scripture Habit AI",
+        aiGroupStartWithAiDesc: "No friends needed. Create a group with Scripture Habit AI.",
+        aiGroupStartWithFriendsOption: "👥 Start with Friends / Family",
+        aiGroupStartWithFriendsDesc: "Create a group with friends or family.",
+        aiGroupDailyNoteText: "[Daily Study Inspiration] Consistently opening scriptures every day leads to great blessings. Let's deepen our learning today! 📖✨",
+        groupChatTour: {
+            step1Title: "Post Notes Here!",
+            step1Desc: "Tap the + button to record your daily scripture study notes and insights.",
+            step2Title: "Back to Dashboard",
+            step2Desc: "Tap ← to return to the dashboard, where you can check other groups and settings.",
+        },
         inviteExpiresAt: "Expires at",
         regenerateInviteCode: "Regenerate Invite Code",
         inviteCodeRegenerated: "Invite code has been regenerated!",
@@ -443,6 +460,8 @@ export default {
         other: "Other"
     },
     groupOptionsTour: {
+        titleStepAi: "🤖 Start with Scripture Habit AI",
+        descStepAi: "Study at your own pace! Create a dedicated group instantly where Scripture Habit AI posts daily study notes and supports your journey.",
         titleStep1: "Welcome to Study Groups!",
         descStep1: "Here you can choose how you would like to connect and study with others.",
         titleStep2: "Create a Group",
@@ -459,6 +478,8 @@ export default {
         joinGroupDesc: "Find an existing group to study with.",
         createGroupTitle: "Create a Group",
         createGroupDesc: "Start your own group and invite friends.",
+        aiGroupTitle: "Start with Scripture Habit AI",
+        aiGroupDesc: "Create a 1-on-1 scripture study group with Scripture Habit AI.",
         backToDashboard: "Back to Dashboard"
     },
     groupListDetail: {
@@ -614,7 +635,7 @@ export default {
     },
     welcomeStory: {
         page1Title: "Welcome to Scripture Habit!",
-        page1Content: "This app was created to help you build a daily scripture study habit by learning from and edifying one another within a group.",
+        page1Content: "This app was created to help you build a daily scripture study habit by learning from and edifying one another within a group. (You can also use it on your own.)",
         page2Title: "Did you know?",
         page2Content: "According to a study by Dominican University of California, you are <strong style='color: #E53E3E; font-size: 1.2em;'>about twice</strong> as likely to succeed in building a new habit when you cooperate with a friend compared to doing it alone!",
         page3Title: "How it works for {username}",
@@ -623,7 +644,7 @@ export default {
         page3Step3: "3. Weekly AI reports (Reflection)",
         page3ContentSuffix: " we support {username}'s better habit of scripture study.",
         page3RuleTitle: "For Building Habits",
-        page3RuleContent1: "To build a group habit, there is a promise to <strong style='color: #E53E3E;'>share your learning at least once every 3〜7 days.</strong>",
+        page3RuleContent1: "To build a habit, there is a promise to <strong style='color: #E53E3E;'>share your learning at least once every 3〜7 days.</strong>",
         page3RuleContent2: "If there is no post for 3〜7 days, you will automatically take a break (exit), but you can always rejoin the same group again.",
         page4Title: "Doctrine and Covenants 50:22",
         page4Quote: "\"Wherefore, he that preacheth and he that receiveth, understand one another, and both are edified and rejoice together.\" - Jesus Christ",
@@ -665,6 +686,7 @@ export default {
         createGroupPrompt: "Create a new group and\ninvite your friends!",
         joinGroupPrompt: "I want to study with various people!",
         createGroupPrompt2: "I want to study with friends!",
+        aiGroupPrompt: "I want to study at my own pace!",
         welcomeMessage: "Welcome to\nScripture Habit!"
     },
     browserWarning: {

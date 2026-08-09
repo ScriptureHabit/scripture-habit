@@ -166,7 +166,7 @@ describe('Firestore Security Rules', () => {
 
         it('should deny creating a group directly from the client under any circumstances', async () => {
             const alice = testEnv.authenticatedContext('alice', { email_verified: true });
-            await assertFails(setDoc(doc(alice.firestore(), 'groups/g4'), { 
+            await assertFails(setDoc(doc(alice.firestore(), 'groups/g4'), {
                 ownerUserId: 'alice',
                 name: 'Group 4'
             }));
@@ -235,18 +235,18 @@ describe('Firestore Security Rules', () => {
 
     describe('Authentication Helpers', () => {
         it('should deny unverified users even with @example.com email', async () => {
-            const tester = testEnv.authenticatedContext('tester', { 
+            const tester = testEnv.authenticatedContext('tester', {
                 email: 'test@example.com',
-                email_verified: false 
+                email_verified: false
             });
             await seedGroup('public_grp', { isPublic: true });
             await assertFails(getDoc(doc(tester.firestore(), 'groups/public_grp')));
         });
 
         it('should allow verified users to access public groups', async () => {
-            const tester = testEnv.authenticatedContext('tester', { 
+            const tester = testEnv.authenticatedContext('tester', {
                 email: 'test@example.com',
-                email_verified: true 
+                email_verified: true
             });
             await seedGroup('public_grp', { isPublic: true });
             await assertSucceeds(getDoc(doc(tester.firestore(), 'groups/public_grp')));
@@ -265,7 +265,7 @@ describe('Firestore Security Rules', () => {
             // Note: In rules-unit-testing, getDocs(q) will fail if ANY document in the collection 
             // would be denied by the list rule, UNLESS the query filters them out.
             // Our rule says: allow list if isPublic == true || uid in members.
-            
+
             // This query should FAIL because it attempts to list ALL groups including grp2.
             await assertFails(getDocs(q));
 

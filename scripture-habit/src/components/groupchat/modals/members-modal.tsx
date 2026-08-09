@@ -89,8 +89,10 @@ const MemberListItem = ({
                 display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold', fontSize: '1.2rem',
                 overflow: 'hidden'
             }}>
-                {member.photoURL ? (
-                    <img src={member.photoURL} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                {member.id === 'ai-partner-bot' ? (
+                    <div style={{ width: '100%', height: '100%', borderRadius: '50%', background: 'linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.4rem' }}>🤖</div>
+                ) : member.photoURL ? (
+                    <img src={member.photoURL} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => { (e.target as HTMLImageElement).src = '/images/mascot.png'; }} />
                 ) : (
                     displayNickname ? displayNickname.substring(0, 1).toUpperCase() : '?'
                 )}

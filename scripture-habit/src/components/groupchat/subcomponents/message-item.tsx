@@ -48,7 +48,11 @@ const MessageItem = memo(({
     return <SystemMessage msg={msg} t={t} kickThreshold={kickThreshold as number | undefined} />;
   }
 
-  const translatedText = translatedTexts[msg.id] || msg.translations?.[language];
+  const isAiBot = msg.senderId === 'ai-partner-bot';
+  const isKeyText = msg.text?.startsWith('groupChat.');
+
+  const rawText = isKeyText ? t(msg.text) : msg.text;
+  const translatedText = (isAiBot || isKeyText) ? undefined : (translatedTexts[msg.id] || msg.translations?.[language]);
   const isTranslating = translatingIds.has(msg.id);
 
   return (
@@ -62,11 +66,16 @@ const MessageItem = memo(({
           className="message-avatar"
           onClick={(e) => { e.stopPropagation(); if (msg.senderId) handleUserProfileClick(msg.senderId); }}
         >
-          {(msg.senderPhotoURL || (msg.senderId && membersMap?.[msg.senderId]?.photoURL)) ? (
+          {isAiBot ? (
+            <div className="ai-bot-avatar">🤖</div>
+          ) : (msg.senderPhotoURL || (msg.senderId && membersMap?.[msg.senderId]?.photoURL)) ? (
             <img
               src={(msg.senderPhotoURL || (msg.senderId ? membersMap?.[msg.senderId]?.photoURL : undefined)) || undefined}
               alt=""
               className="profile-avatar-img"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = '/images/mascot.png';
+              }}
             />
           ) : (
             displayNickname ? displayNickname.substring(0, 1).toUpperCase() : '?'
@@ -137,7 +146,7 @@ const MessageItem = memo(({
               {msg.text && (
                 <div className="entry-message-content">
                   <NoteDisplay
-                    text={msg.text}
+                    text={rawText}
                     isSent={isMe}
                     translatedText={translatedText}
                     scripture={msg.scripture}

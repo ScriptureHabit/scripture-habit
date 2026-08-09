@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import apiClient from '../utils/api-client';
 import { Group } from '../types/chat';
+import { useLanguage } from './use-language';
 
 export interface UseGroupTranslationResult {
   displayName: string;
@@ -12,6 +13,7 @@ export function useGroupTranslation(
   group: Group | null | undefined,
   language: string
 ): UseGroupTranslationResult {
+  const { t } = useLanguage();
   const [translatedName, setTranslatedName] = useState<string>('');
   const [translatedDesc, setTranslatedDesc] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -26,6 +28,18 @@ export function useGroupTranslation(
       queueMicrotask(() => {
         setTranslatedName('');
         setTranslatedDesc('');
+      });
+      return;
+    }
+
+    const isAiGroup = Boolean(group?.isAiGroup || group?.aiCompanionUid === 'ai-partner-bot');
+    if (isAiGroup) {
+      const targetTrans = groupTranslations?.[language];
+      const defaultAiName = t('groupChat.aiGroupDefaultGroupName');
+      const defaultAiDesc = t('groupChat.aiGroupDefaultGroupDesc');
+      queueMicrotask(() => {
+        setTranslatedName(targetTrans?.name || defaultAiName);
+        setTranslatedDesc(targetTrans?.description || defaultAiDesc);
       });
       return;
     }
@@ -121,7 +135,7 @@ export function useGroupTranslation(
     };
 
     translateGroup();
-  }, [groupId, groupName, groupDescription, groupTranslations, language]);
+  }, [groupId, groupName, groupDescription, groupTranslations, group?.isAiGroup, group?.aiCompanionUid, language, t]);
 
   return {
     displayName: translatedName || groupName || '',

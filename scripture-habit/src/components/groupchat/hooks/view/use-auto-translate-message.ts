@@ -13,7 +13,7 @@ export const useAutoTranslateMessage = (
   const observerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!observerRef.current || isMe || msg.senderId === 'system' || msg.isSystemMessage) return;
+    if (!observerRef.current || isMe || msg.senderId === 'system' || msg.isSystemMessage || msg.senderId === 'ai-partner-bot' || msg.text?.startsWith('groupChat.')) return;
 
     const observer = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting) {

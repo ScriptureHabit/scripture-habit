@@ -28,7 +28,8 @@ export const updateProfileSchema = z.object({
     language: z.enum(supportedLanguages).optional(),
     hasSeenWelcomeStory: z.boolean().optional(),
     hasSeenTour: z.boolean().optional(),
-    hasSeenGroupOptionsTour: z.boolean().optional()
+    hasSeenGroupOptionsTour: z.boolean().optional(),
+    hasSeenGroupChatTour: z.boolean().optional()
 });
 
 export const joinGroupSchema = z.object({
@@ -41,6 +42,11 @@ export const createGroupSchema = z.object({
     name: z.string().min(1).max(100),
     description: z.string().max(1000).optional(),
     isPublic: z.boolean().optional(),
+    timeZone: z.string().optional()
+});
+
+export const createAiGroupSchema = z.object({
+    name: z.string().min(1).max(100).optional(),
     timeZone: z.string().optional()
 });
 

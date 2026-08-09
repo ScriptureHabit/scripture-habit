@@ -15,7 +15,9 @@ const GospelLink = ({ text, scripture, chapter, language, isSent, t }: GospelLin
   const parsed: ParsedNote = parseStructuredNoteText(text);
 
   // Aggressively strip asterisks and trim
-  const finalScripture = (scripture || parsed.scriptureValue)?.replace(/\*/g, '').trim();
+  const rawPropScripture = scripture?.replace(/\*/g, '').trim();
+  const isPropOther = !rawPropScripture || /other|その他|otros|outros|기타|其他|khác|iba pa|nyingine|อื่นๆ/i.test(rawPropScripture);
+  const finalScripture = (!isPropOther ? rawPropScripture : parsed.scriptureValue)?.replace(/\*/g, '').trim();
   const finalChapter = (chapter || parsed.chapterValue)?.replace(/\*/g, '').trim();
 
   if (finalScripture && finalChapter) {

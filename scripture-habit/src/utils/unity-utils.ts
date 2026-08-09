@@ -72,14 +72,18 @@ export const getUnityParticipation = (
     }
     
     if (normActivityDate === normalizedToday) {
-      activity.activeMembers.forEach(uid => uniquePosters.add(uid));
+      activity.activeMembers.forEach(uid => {
+        uniquePosters.add(uid);
+      });
     }
   }
 
   // SOURCE B: Client-side real-time Messages (Augment if messages are provided)
   if (messages.length > 0) {
     messages.forEach(msg => {
-      if (!msg.createdAt || msg.senderId === 'system' || msg.isSystemMessage || !msg.isNote) return;
+      // Only count notes (or messages from AI partner if it is a note message)
+      if (msg.isSystemMessage) return;
+      if (msg.senderId === 'ai-partner-bot' && !msg.isNote && !msg.text?.includes('カテゴリ') && !msg.text?.includes('Category') && !msg.text?.includes('Scripture')) return;
       
       const msgTime = parseTimestampToMillis(msg.createdAt);
       if (isNaN(msgTime)) return;
@@ -88,7 +92,7 @@ export const getUnityParticipation = (
       const normMsgDate = normalizeDateString(msgDateStr);
       
       if (normMsgDate === normalizedToday) {
-        uniquePosters.add(msg.senderId!);
+        if (msg.senderId) uniquePosters.add(msg.senderId);
       }
     });
   }
@@ -96,10 +100,13 @@ export const getUnityParticipation = (
   // ELIGIBILITY LOGIC
   // Members who joined today are excluded from the denominator UNLESS they already posted.
   const memberJoinedAt = group.memberJoinedAt || {};
-  // Ensure we only count unique member IDs
+  // Count unique member IDs
   const uniqueMemberIds = Array.from(new Set(group.members));
   
   const eligibleMembers = uniqueMemberIds.filter(uid => {
+    // In AI companion groups, always count all members in denominator so percentage is strictly 50% when AI posts
+    if (group.isAiGroup || group.aiCompanionUid) return true;
+
     const isPoster = uniquePosters.has(uid);
     if (isPoster) return true; // Posted today -> count
 

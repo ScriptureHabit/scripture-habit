@@ -5,6 +5,7 @@ import { InactivityService } from '../services/inactivity-service.js';
 import { calculateMemberStatus, InactivityMemberData, InactivityGroupData } from '../lib/inactivity-utils.js';
 import { t } from '../lib/i18n.js';
 import { AuthenticationError, NotFoundError, sendErrorResponse } from '../lib/errors.js';
+import { getAiDailyComment } from '../data/ai-daily-comments-2026.js';
 
 interface CronReport {
     groupId: string;
@@ -484,7 +485,6 @@ router.all('/streak-reminder', verifyCronSecret, async (req: Request, res: Respo
                 }
             }
         }
-
         if (batchOpCount > 0) {
             await batch.commit();
         }
@@ -535,6 +535,132 @@ router.all('/daily-active-users', verifyCronSecret, async (req: Request, res: Re
         res.json(stats);
     } catch (err: unknown) {
         sendErrorResponse(res, err, 'Error fetching daily active users');
+    }
+});
+
+/**
+ * Post Daily Notes for AI Partner Groups
+ */
+router.all('/post-ai-daily-notes', verifyCronSecret, async (req: Request, res: Response) => {
+    console.log('[Cron] Posting daily notes for AI Partner Groups...');
+    try {
+        const snapshot = await db.collection('groups').where('isAiGroup', '==', true).get();
+        const now = admin.firestore.Timestamp.now();
+        const force = req.query.force === 'true';
+        let processedCount = 0;
+        let skippedCount = 0;
+
+        for (const doc of snapshot.docs) {
+            const groupRef = doc.ref;
+            const gData = doc.data();
+
+            // Skip deleted groups
+            if (gData.isDeleted) continue;
+
+            // Calculate timezone-specific local date and hour
+            const groupTz = gData.timeZone || 'Asia/Tokyo';
+            let todayStr: string;
+            let currentLocalHour: number;
+
+            try {
+                const nowInTz = new Date(new Date().toLocaleString('en-US', { timeZone: groupTz }));
+                todayStr = new Date().toLocaleDateString('sv-SE', { timeZone: groupTz });
+                currentLocalHour = nowInTz.getHours();
+            } catch {
+                const nowInTz = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Tokyo' }));
+                todayStr = new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Tokyo' });
+                currentLocalHour = nowInTz.getHours();
+            }
+
+            // Only post at 7 AM local time for that timezone (unless force parameter is provided)
+            if (currentLocalHour !== 7 && !force) {
+                skippedCount++;
+                continue;
+            }
+
+            // Deterministic Document ID for 100% Idempotency (prevent duplicate posts per day)
+            const msgRef = groupRef.collection('messages').doc(`ai_note_${todayStr}`);
+            const msgSnap = await msgRef.get();
+
+            if (!msgSnap.exists) {
+                // Fetch group owner to get preferred language
+                let lang = 'en';
+                let ownerFcmTokens: string[] = [];
+                if (gData.ownerUserId) {
+                    const ownerDoc = await db.collection('users').doc(gData.ownerUserId).get();
+                    if (ownerDoc.exists) {
+                        const oData = ownerDoc.data();
+                        lang = oData?.language || 'en';
+                        if (oData?.fcmToken) {
+                            ownerFcmTokens = Array.isArray(oData.fcmToken) ? oData.fcmToken : [oData.fcmToken];
+                        }
+                    }
+                }
+
+                const botName = t(lang, 'groupChat.aiGroupBotNickname') || (lang === 'ja' ? 'スクハビAI' : 'Scripture Habit AI');
+                const dailyComment = getAiDailyComment(todayStr, lang);
+                const scriptureVal = dailyComment.scripture || (lang === 'ja' ? '旧約聖書' : 'Old Testament');
+                const chapterVal = dailyComment.chapter || 'Genesis 1:1';
+                const categoryLabel = lang === 'ja' ? 'カテゴリ' : 'Category';
+                const chapterLabel = lang === 'ja' ? '章' : 'Chapter';
+                const commentLabel = lang === 'ja' ? 'コメント' : 'Comment';
+                const structuredText = `${categoryLabel}: ${scriptureVal}\n${chapterLabel}: ${chapterVal}\n\n${commentLabel}:\n${dailyComment.comment}`;
+
+                await msgRef.set({
+                    text: structuredText,
+                    scripture: scriptureVal,
+                    chapter: chapterVal,
+                    comment: dailyComment.comment,
+                    createdAt: now,
+                    senderId: 'ai-partner-bot',
+                    senderNickname: botName,
+                    isSystemMessage: false,
+                    isNote: true,
+                    expireAt: admin.firestore.Timestamp.fromMillis(now.toMillis() + 90 * 24 * 60 * 60 * 1000)
+                });
+
+                await groupRef.update({
+                    lastMessageAt: now,
+                    lastMessageByNickname: botName,
+                    lastMessageByUid: 'ai-partner-bot',
+                    lastNoteAt: now,
+                    lastNoteByNickname: botName,
+                    lastNoteByUid: 'ai-partner-bot',
+                    [`memberLastActive.ai-partner-bot`]: now
+                });
+
+                // Send FCM push notification to group owner
+                if (ownerFcmTokens.length > 0 && messaging) {
+                    try {
+                        await messaging.sendEachForMulticast({
+                            tokens: ownerFcmTokens,
+                            notification: {
+                                title: `${botName}`,
+                                body: dailyComment.comment
+                            },
+                            data: {
+                                groupId: groupRef.id,
+                                type: 'ai_daily_note'
+                            }
+                        });
+                    } catch (pushErr) {
+                        console.warn(`[Cron] FCM Push failed for AI note in group ${groupRef.id}:`, pushErr);
+                    }
+                }
+
+                processedCount++;
+            }
+        }
+
+        res.json({
+            message: 'AI daily notes processed successfully.',
+            totalAiGroups: snapshot.size,
+            postedTodayCount: processedCount,
+            skippedWrongHourCount: skippedCount
+        });
+    } catch (err: unknown) {
+        console.error('Error posting AI daily notes:', err);
+        sendErrorResponse(res, err, 'Error posting AI daily notes');
     }
 });
 

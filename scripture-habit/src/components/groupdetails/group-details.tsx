@@ -1,14 +1,19 @@
-import { useParams } from 'react-router-dom';
+import { useParams, Navigate } from 'react-router-dom';
 import LeaveGroupButton from "../button/leave-group-button";
-import DeleteGroupButton from "../button/delete-group-button";
 import { Group } from '../../types/chat';
+import { useLanguage } from '../../hooks/use-language';
 
 interface GroupDetailsProps {
-    group: Group | null;
+    group?: Group | null;
 }
 
 const GroupDetails = ({ group }: GroupDetailsProps) => {
     const { id } = useParams<{ id: string }>();
+    const { language } = useLanguage();
+
+    if (!group && id) {
+        return <Navigate to={`/${language}/dashboard?groupId=${id}&view=2`} replace />;
+    }
 
     if (!group) return <p>Loading...</p>;
 
@@ -19,7 +24,6 @@ const GroupDetails = ({ group }: GroupDetailsProps) => {
             <p>Members: {group.members?.length || 0}</p>
 
             <LeaveGroupButton groupId={id || ""} />
-            <DeleteGroupButton groupId={id || ""} ownerUserId={group.ownerUserId || ""} />
         </div>
     );
 };

@@ -137,6 +137,12 @@ app.use(cors({
 app.use(express.json({ limit: '50kb' }));
 app.use(globalLimiter);
 
+// --- Request Logger for Local Debugging ---
+app.use((req, _res, next) => {
+    console.log(`[API Request] ${req.method} ${req.originalUrl || req.url}`);
+    next();
+});
+
 // --- Path Normalization for Vercel trailingSlash: true ---
 app.use((req, _res, next) => {
     // If path ends with / and is longer than 1 char, strip it internally
@@ -227,6 +233,7 @@ app.use('/api/cron', cronRoutes);
 app.use('/api/report', reportRoutes);
 app.use('/api/test', testUtilsRoutes);
 app.use('/api/groups', resetUnityRoutes);
+app.use('/api/reset-unity', resetUnityRoutes);
 
 // The Sentry error handler must be before any other error middleware and after all controllers
 if (process.env.SENTRY_DISABLED !== 'true' && process.env.NODE_ENV !== 'test') {

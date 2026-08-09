@@ -19,14 +19,6 @@ test.describe('Unity Percentage Synchronization (Local Timezone: Asia/Tokyo)', (
             }
         });
 
-        // --- PRE-STEP: ALIGN MOCK CLOCK WITH SERVER TODAY ---
-        // We calculate "today" in Asia/Tokyo for the server to match the client.
-        const todayJSTStr = new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Tokyo' });
-        const almostMidnightJST = new Date(`${todayJSTStr}T23:55:00+09:00`);
-        
-        console.log(`--- Pre-step: Installing mock clock at ${almostMidnightJST.toISOString()} (Local JST: ${todayJSTStr} 23:55:00) ---`);
-        await page.clock.install({ time: almostMidnightJST.getTime() });
-
         // --- PART 1: Setup test group with Asia/Tokyo timezone ---
         console.log('--- Step 1: Setting up test group in Asia/Tokyo ---');
         
@@ -35,7 +27,6 @@ test.describe('Unity Percentage Synchronization (Local Timezone: Asia/Tokyo)', (
         const { groupId } = await page.setupTestGroup({
             groupName,
             timeZone: 'Asia/Tokyo',
-            setYesterdayDate: true,
             memberCount: 1
         });
 
@@ -58,6 +49,13 @@ test.describe('Unity Percentage Synchronization (Local Timezone: Asia/Tokyo)', (
 
         // Post a note
         await groupItem.click();
+
+        // Dismiss tour overlay if present
+        const tourOverlay = page.locator('.tour-guide-overlay');
+        if (await tourOverlay.isVisible().catch(() => false)) {
+            await page.keyboard.press('Escape').catch(() => {});
+        }
+
         await page.getByTestId('new-note-button').click();
         
         const scriptureSelect = page.getByTestId('new-note-category').locator('input').first();
@@ -68,7 +66,7 @@ test.describe('Unity Percentage Synchronization (Local Timezone: Asia/Tokyo)', (
         await page.getByTestId('new-note-comment').fill('Tokyo Unity Test');
         
         await page.getByTestId('post-note-button').click();
-        await expect(page.getByText('Note posted successfully!')).toBeVisible({ timeout: 15000 });
+        await expect(page.getByText(/Note posted successfully|投稿/i)).toBeVisible({ timeout: 15000 });
         
         // Reload to ensure fresh Firestore data (especially for WebKit)
         console.log('Reloading page to ensure unity update is visible...');

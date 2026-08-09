@@ -36,6 +36,7 @@ export interface UserData {
   hasSeenWelcomeStory?: boolean;
   hasSeenTour?: boolean;
   hasSeenGroupOptionsTour?: boolean;
+  hasSeenGroupChatTour?: boolean;
   isLevelMigrated?: boolean;
   questCreatedGroup?: boolean;
   questPostedNote?: boolean;

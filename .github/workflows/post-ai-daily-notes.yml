@@ -1,0 +1,22 @@
+name: Post AI Daily Notes
+
+on:
+  schedule:
+    # Runs every hour at minute 0 to check which timezones are currently at 7:00 AM
+    - cron: '0 * * * *'
+  workflow_dispatch: # Allows manual trigger from GitHub Actions tab
+
+jobs:
+  post-ai-notes:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Trigger AI Daily Notes Cron
+        run: |
+          curl -f -L -X POST "https://scripturehabit.app/api/cron/post-ai-daily-notes" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            -H "Content-Type: application/json" \
+            --connect-timeout 10 \
+            --max-time 60 \
+            -w "\nHTTP Status: %{http_code}\n" \
+            -v

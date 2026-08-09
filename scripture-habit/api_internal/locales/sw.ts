@@ -1,4 +1,4 @@
-export default {
+﻿export default {
     notifications: {
         streak_announcement: "🎉🎉🎉 **{nickname} amefikia hatua muhimu ya siku {streak} za jumla za masomo! Tusherehekee!** 🎉🎉🎉",
         note_posted_announcement: "🎉🎉🎉 **{nickname} amechapisha dokezo!!** 🎉🎉🎉",

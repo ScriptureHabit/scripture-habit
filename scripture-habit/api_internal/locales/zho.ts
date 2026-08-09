@@ -1,4 +1,4 @@
-export default {
+﻿export default {
     notifications: {
         streak_announcement: "🎉🎉🎉 **{nickname} 達成了總計 {streak} 天的學習里程碑！大家一起為他慶祝吧！** 🎉🎉🎉",
         note_posted_announcement: "🎉🎉🎉 **{nickname} 發布了一則筆記！！** 🎉🎉🎉",

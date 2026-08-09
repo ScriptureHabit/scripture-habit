@@ -3,7 +3,7 @@ import express, { Request, Response } from 'express';
 import { admin, db } from '../lib/firebase-admin.js';
 import { verifyAppCheck, authenticate, requireEmailVerified, AuthenticatedRequest } from '../lib/middleware.js';
 import { runPhasedTransaction } from '../lib/phased-transaction.js';
-import { joinGroupSchema, updateKickThresholdSchema, leaveGroupSchema, deleteGroupSchema, updateReadStatusSchema, announceUnitySchema, updateGroupSchema, regenerateInviteCodeSchema, kickMemberSchema, createGroupSchema } from '../lib/schemas.js';
+import { joinGroupSchema, updateKickThresholdSchema, leaveGroupSchema, deleteGroupSchema, updateReadStatusSchema, announceUnitySchema, updateGroupSchema, regenerateInviteCodeSchema, kickMemberSchema, createGroupSchema, createAiGroupSchema } from '../lib/schemas.js';
 import { GroupDocument, UserDocument, MemberPreview as PreviewItem, GroupMemberDocument } from '../../types/firestore.js';
 import { MAX_GROUPS_PER_USER } from '../lib/constants.js';
 import { removeMemberFromGroup } from '../lib/membership-utils.js';
@@ -11,6 +11,7 @@ import { AppError, AuthenticationError, ForbiddenError, NotFoundError, Validatio
 import { getMessageExpireAt } from '../lib/ttl-utils.js';
 import { MessageService } from '../services/message-service.js';
 import { t } from '../lib/i18n.js';
+import { getAiDailyComment } from '../data/ai-daily-comments-2026.js';
 
 
 const router = express.Router();
@@ -132,6 +133,216 @@ router.post('/create-group', authenticate, requireEmailVerified, verifyAppCheck,
     } catch (error) {
         console.error('Error creating group:', error);
         sendErrorResponse(res, error, 'Create group failed');
+    }
+});
+
+/**
+ * Create AI Partner Group
+ */
+router.post('/create-ai-group', authenticate, requireEmailVerified, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+        const validation = createAiGroupSchema.safeParse(req.body);
+        if (!validation.success) {
+            throw new ValidationError('Invalid input');
+        }
+
+        const { name, timeZone } = validation.data;
+        const uid = req.user?.uid;
+        if (!uid) throw new ValidationError('Unauthorized');
+
+        const result = await db.runTransaction(async (transaction) => {
+            const userRef = db.collection('users').doc(uid);
+            const userDoc = await transaction.get(userRef);
+
+            if (!userDoc.exists) throw new NotFoundError('User not found.');
+            const userData = userDoc.data()! as UserDocument;
+
+            const currentGroupIds = userData.groupIds || [];
+            if (currentGroupIds.length >= MAX_GROUPS_PER_USER) {
+                throw new ValidationError(`You have reached the maximum limit of ${MAX_GROUPS_PER_USER} groups.`);
+            }
+
+            const now = admin.firestore.Timestamp.now();
+            const expiresAt = admin.firestore.Timestamp.fromMillis(now.toMillis() + 365 * 24 * 60 * 60 * 1000);
+            const inviteCode = await generateUniqueInviteCode(transaction);
+
+            const userNick = userData.nickname || 'Member';
+            const groupRef = db.collection('groups').doc();
+            const newGroupId = groupRef.id;
+            const lang = userData.language || 'en';
+
+            const botNickname = t(lang, 'groupChat.aiGroupBotNickname') || (lang === 'ja' ? 'スクハビAI' : 'Scripture Habit AI');
+            const defaultGroupName = name || t(lang, 'groupChat.aiGroupDefaultGroupName') || (lang === 'ja' ? 'スクハビAI' : 'Scripture Habit AI');
+
+            const groupTz = timeZone || 'Asia/Tokyo';
+            let todayStr: string;
+            try {
+                todayStr = new Date().toLocaleDateString('sv-SE', { timeZone: groupTz });
+            } catch {
+                todayStr = new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Tokyo' });
+            }
+
+            const userAlreadyPostedToday = userData.lastPostDate === todayStr;
+            const activeMembers = userAlreadyPostedToday ? ['ai-partner-bot', uid] : ['ai-partner-bot'];
+
+            const AI_GROUP_PRE_TRANSLATIONS: Record<string, { name: string; description: string }> = {
+                ja: { name: 'スクハビAI', description: 'スクハビAIと1対1で聖典を学ぶ専用グループ' },
+                en: { name: 'Scripture Habit AI', description: '1-on-1 Scripture Study Group with Scripture Habit AI' },
+                es: { name: 'Scripture Habit AI', description: 'Grupo 1-a-1 de estudio de las escrituras con Scripture Habit AI' },
+                pt: { name: 'Scripture Habit AI', description: 'Grupo 1-a-1 de estudo das escrituras com Scripture Habit AI' },
+                zho: { name: 'Scripture Habit AI', description: '與 Scripture Habit AI 一對一研讀經文的專屬群組' },
+                ko: { name: 'Scripture Habit AI', description: 'Scripture Habit AI와 1대1로 성경을 공부하는 전용 그룹' },
+                vi: { name: 'Scripture Habit AI', description: 'Nhóm học tập kinh thánh 1-on-1 với Scripture Habit AI' },
+                th: { name: 'Scripture Habit AI', description: 'กลุ่มศึกษาพระคัมภีร์แบบตัวต่อตัวกับ Scripture Habit AI' },
+                tl: { name: 'Scripture Habit AI', description: '1-on-1 Group para sa pag-aaral ng kasulatan kasama ang Scripture Habit AI' },
+                sw: { name: 'Scripture Habit AI', description: 'Kikundi cha kujifunza maandiko 1-kwa-1 na Scripture Habit AI' }
+            };
+
+            const newGroupData: GroupDocument = {
+                name: defaultGroupName,
+                description: t(lang, 'groupChat.aiGroupDefaultGroupDesc') || '1-on-1 Scripture Study Group with Scripture Habit AI',
+                translations: AI_GROUP_PRE_TRANSLATIONS,
+                createdAt: now,
+                groupStreak: 0,
+                inviteCode,
+                inviteCodeExpiresAt: expiresAt,
+                isPublic: false,
+                isPrivate: true,
+                isAiGroup: true,
+                aiCompanionUid: 'ai-partner-bot',
+                maxMembers: 2,
+                membersCount: 2,
+                memberPreviews: [
+                    { uid, nickname: userNick },
+                    { uid: 'ai-partner-bot', nickname: botNickname }
+                ],
+                ownerUserId: uid,
+                members: [uid, 'ai-partner-bot'],
+                memberJoinedAt: { [uid]: now, 'ai-partner-bot': now },
+                memberKickThresholds: { [uid]: userData.kickThreshold || 7, 'ai-partner-bot': 999 },
+                timeZone: groupTz,
+                dailyActivity: {
+                    date: todayStr,
+                    activeMembers
+                },
+                lastInactivityCheckedAt: now,
+                lastMessageAt: now,
+                lastMessageByNickname: botNickname,
+                lastMessageByUid: 'ai-partner-bot'
+            };
+
+            transaction.set(groupRef, newGroupData);
+            transaction.set(groupRef.collection('members').doc(uid), {
+                uid,
+                nickname: userNick,
+                photoURL: userData.photoURL || '',
+                joinedAt: now,
+                lastActiveAt: now,
+                lastReadAt: now,
+                kickThreshold: userData.kickThreshold || 7,
+                readMessageCount: 0
+            });
+
+            transaction.set(groupRef.collection('members').doc('ai-partner-bot'), {
+                uid: 'ai-partner-bot',
+                nickname: botNickname,
+                photoURL: '/images/mascot.png',
+                joinedAt: now,
+                lastActiveAt: now,
+                lastReadAt: now,
+                kickThreshold: 999,
+                readMessageCount: 0
+            });
+
+            // Upsert Bot User Profile Document so user lookup queries do not fail
+            transaction.set(db.collection('users').doc('ai-partner-bot'), {
+                uid: 'ai-partner-bot',
+                nickname: botNickname,
+                photoURL: '/images/mascot.png',
+                isBot: true,
+                createdAt: now
+            }, { merge: true });
+
+            transaction.set(userRef.collection('groupStates').doc(newGroupId), {
+                readMessageCount: 0,
+                lastReadAt: now,
+                lastActiveAt: now
+            });
+
+            transaction.update(userRef, {
+                groupIds: admin.firestore.FieldValue.arrayUnion(newGroupId),
+                groupId: newGroupId,
+                hasSetKickThreshold: true,
+                questCreatedGroup: true
+            });
+
+            const welcomeMsgRef = groupRef.collection('messages').doc();
+            const rawWelcome = t(lang, 'groupChat.aiGroupWelcomeMessage', { nickname: userNick });
+            const welcomeMsgText = (rawWelcome && rawWelcome !== 'groupChat.aiGroupWelcomeMessage')
+                ? rawWelcome.replace('{nickname}', userNick)
+                : (lang === 'ja'
+                    ? `スクハビAIグループへようこそ！毎日一緒に聖典を学び、気づきをシェアしましょう。応援しています！📖✨\n※AIは毎日ノートを投稿しますが、${userNick}さんへの直接返信は現段階ではできません。ご了承ください。`
+                    : `Welcome to your Scripture Habit AI Group! I will study scriptures with you every day and share notes. Let's do our best together! 📖✨\n*Please note: While I post daily notes, I cannot directly reply to messages from ${userNick} at this time.`).replace('{nickname}', userNick);
+
+            transaction.set(welcomeMsgRef, {
+                text: welcomeMsgText,
+                createdAt: now,
+                senderId: 'ai-partner-bot',
+                senderNickname: botNickname,
+                senderPhotoURL: '/images/mascot.png',
+                isSystemMessage: false,
+                isNote: false,
+                expireAt: getMessageExpireAt()
+            });
+
+            // Simultaneously post today's AI daily note upon group creation
+            const dailyComment = getAiDailyComment(todayStr, lang);
+            const scriptureVal = dailyComment.scripture || (lang === 'ja' ? '旧約聖書' : 'Old Testament');
+            const chapterVal = dailyComment.chapter || 'Genesis 1:1';
+            const botName = botNickname;
+            const aiNoteMsgRef = groupRef.collection('messages').doc(`ai_note_${todayStr}`);
+            const categoryLabel = lang === 'ja' ? 'カテゴリ' : 'Category';
+            const chapterLabel = lang === 'ja' ? '章' : 'Chapter';
+            const commentLabel = lang === 'ja' ? 'コメント' : 'Comment';
+            const structuredText = `${categoryLabel}: ${scriptureVal}\n${chapterLabel}: ${chapterVal}\n\n${commentLabel}:\n${dailyComment.comment}`;
+
+            transaction.set(aiNoteMsgRef, {
+                text: structuredText,
+                scripture: scriptureVal,
+                chapter: chapterVal,
+                comment: dailyComment.comment,
+                createdAt: admin.firestore.Timestamp.fromMillis(now.toMillis() + 1000), // Slightly after welcome message
+                senderId: 'ai-partner-bot',
+                senderNickname: botName,
+                senderPhotoURL: '/images/mascot.png',
+                isSystemMessage: false,
+                isNote: true,
+                expireAt: getMessageExpireAt()
+            });
+
+            // If user already posted a note today before creating the AI group, auto-post AI congratulation response!
+            if (userAlreadyPostedToday) {
+                const congratText = t(lang, 'groupChat.aiGroupUserNoteCongratulation') || 'よくできました！🎉🎉 明日もお会いしましょう✨';
+                const congratMsgRef = groupRef.collection('messages').doc(`ai_congrat_${todayStr}`);
+                transaction.set(congratMsgRef, {
+                    text: congratText,
+                    senderId: 'ai-partner-bot',
+                    senderNickname: botName,
+                    senderPhotoURL: '/images/mascot.png',
+                    createdAt: admin.firestore.Timestamp.fromMillis(now.toMillis() + 2000),
+                    isSystemMessage: false,
+                    isNote: false,
+                    expireAt: getMessageExpireAt()
+                }, { merge: true });
+            }
+
+            return { groupId: newGroupId, groupName: defaultGroupName, inviteCode };
+        });
+
+        res.status(200).json({ message: 'Success', ...result });
+    } catch (error) {
+        console.error('Error creating AI group:', error);
+        sendErrorResponse(res, error, 'Create AI group failed');
     }
 });
 

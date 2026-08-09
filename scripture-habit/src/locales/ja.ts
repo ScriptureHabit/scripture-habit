@@ -161,6 +161,7 @@ export default {
         }
     },
     groupChat: {
+        aiGroupUserNoteCongratulation: "よくできました！🎉🎉 明日もお会いしましょう✨",
         myGroups: "私のグループ",
         send: "送信",
         public: "パブリック",
@@ -293,15 +294,31 @@ export default {
         cheerSent: "エールを送りました！",
         autoKickConfirmTitle: "目標の確認",
         autoKickErrorMismatch: "入力された日数が選択したものと一致しません。もう一度入力してください。",
-        autoKickSuccess: "習慣化ペースを設定しました！一緒に頑張りましょう。",
-        autoKickInitTitle: "あなたの習慣化ペースを決めましょう",
-        autoKickInitDesc: "習慣化をサポートするため、Scripture Habitには「自動退出ルール」があります。一定期間投稿がない場合、グループが活発でなくなるのを防ぐため、一度自動退出となります。あなたは何日おきに投稿したいですか？",
+        autoKickSuccess: "目標を設定しました！一緒に頑張りましょう。",
+        autoKickInitTitle: "目標を決めよう！",
+        autoKickInitDesc: "Scripture Habitには三日坊主を避けるための「自動退出ルール」があります。\n自分の目標を決めましょう！（最初は7日に一度を目標にすることを勧めます）",
+        autoKickSelectedSubtext: "{days}日に一度は聖典学習をする",
         next: "次へ",
-        autoKickWarning: "※この設定はすべてのグループに適用されます。",
         autoKickConfirmText: "最終確認です。{days}日間ノートを投稿しなかった場合、自動退出になることを了解しましたか？確認のため「{days}」と入力してください。",
-        habitPaceProfileTitle: "習慣化の目標ペース",
+        habitPaceProfileTitle: "の目標",
+        habitPaceLetsTryTogether: "一緒にがんばろう！",
         habitPaceProfileDesc: "各グループで{days}日おきに1回以上投稿して継続しましょう。",
         confirm: "確定する",
+        aiGroupDefaultGroupName: "スクハビAI",
+        aiGroupDefaultGroupDesc: "スクハビAIと1対1で聖典を学ぶ専用グループ",
+        aiGroupWelcomeMessage: "スクハビAIグループへようこそ！毎日一緒に聖典を学び、気づきをシェアしましょう。応援しています！📖✨\n※AIは毎日ノートを投稿しますが、{nickname}さんへの直接返信は現段階ではできません。ご了承ください。",
+        aiGroupBotNickname: "スクハビAI",
+        aiGroupStartWithAiOption: "🤖 スクハビAIと始める",
+        aiGroupStartWithAiDesc: "友達がいなくても安心。スクハビAIとのグループを作ります。",
+        aiGroupStartWithFriendsOption: "👥 友達・家族と始める",
+        aiGroupStartWithFriendsDesc: "友達や家族とのグループを作ります。",
+        aiGroupDailyNoteText: "【今日の学習インスピレーション】毎日コツコツと聖典を開くことが、大きな祝福につながります。今日も一緒に学びを深めましょう！📖✨",
+        groupChatTour: {
+            step1Title: "ここでノートを投稿！",
+            step1Desc: "＋ボタンを押して、今日の学びや気づきをノートに記録しましょう。",
+            step2Title: "ダッシュボードに戻る",
+            step2Desc: "← ボタンでダッシュボードに戻ることができます。他のグループの確認や設定はここから。",
+        },
         inviteExpiresAt: "有効期限",
         regenerateInviteCode: "招待リンクを再生成",
         inviteCodeRegenerated: "招待リンクを再生成しました！",
@@ -449,6 +466,8 @@ export default {
         other: "その他"
     },
     groupOptionsTour: {
+        titleStepAi: "🤖 スクハビAIと始める",
+        descStepAi: "一人でも安心！スクハビAIが毎日の読書ノートを自動投稿し、一緒に学習を応援してくれる専用グループをワンタップで作れます。",
         titleStep1: "学習グループへようこそ！",
         descStep1: "ここでは、仲間と一緒に聖典学習を進めるための方法を選択できます。",
         titleStep2: "グループを作成する",
@@ -465,6 +484,8 @@ export default {
         joinGroupDesc: "既存のグループを見つけて一緒に学習しましょう。",
         createGroupTitle: "グループを作成",
         createGroupDesc: "自分のグループを立ち上げて友達を招待しましょう。",
+        aiGroupTitle: "スクハビAIと始める",
+        aiGroupDesc: "スクハビAIと1対1で毎日聖典を学ぶ専用グループを作成します。",
         backToDashboard: "ダッシュボードに戻る"
     },
     groupListDetail: {
@@ -620,7 +641,7 @@ export default {
     },
     welcomeStory: {
         page1Title: "Scripture Habitへようこそ！",
-        page1Content: "このアプリはグループ内でお互いに聖典から学び、教化し合うことで日々の聖典学習を習慣づけることを目的に作成しました。",
+        page1Content: "このアプリはグループ内でお互いに聖典から学び、教化し合うことで日々の聖典学習を習慣づけることを目的に作成しました。(一人で利用することもできます。)",
         page2Title: "知っていましたか？",
         page2Content: "カリフォルニア州ドミニカン大学の研究によると、新しいことの習慣化において一人でやるより友人とお互いに協力してやった方が<strong style='color: #E53E3E; font-size: 1.2em;'>約２倍</strong>の習慣化達成率があることがわかったんです！",
         page3Title: "このアプリは...",
@@ -629,7 +650,7 @@ export default {
         page3Step3: "3. AIによる一週間のレポート作成(振り返り)",
         page3ContentSuffix: "をすることで、{username}さんにとってよりよい聖典学習の習慣化をサポートします。",
         page3RuleTitle: "習慣化のために",
-        page3RuleContent1: "グループの習慣化のために、<strong style='color: #E53E3E;'>3〜7日に1度は学びをシェアする</strong>という約束があります。",
+        page3RuleContent1: "習慣化のために、<strong style='color: #E53E3E;'>3〜7日に1度は学びをシェアする</strong>という約束があります。",
         page3RuleContent2: "3〜7日間投稿がないと自動的にお休み（退出）となりますが、再び同じグループに入り直すことも可能です。",
         page4Title: "教義と聖約50:22",
         page4Quote: "\"それ故、説く者と受ける者は互いに理解し合い、両者ともに教化されて、共に喜ぶのである。\" - イエス・キリスト",
@@ -671,6 +692,7 @@ export default {
         createGroupPrompt: "新しいグループを作って\n友達を招待しましょう！",
         joinGroupPrompt: "いろんな人と勉強したい",
         createGroupPrompt2: "友達を誘って勉強したい",
+        aiGroupPrompt: "一人でマイペースに勉強したい",
         welcomeMessage: "Scripture Habitへ\nようこそ！"
     },
     browserWarning: {
