@@ -462,4 +462,62 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Cron Routes Integration',
             spy.mockRestore();
         });
     });
+
+    describe('POST /api/cron/post-ai-daily-notes', () => {
+        const AI_TEST_GROUP = 'ai_cron_test_group_123';
+
+        beforeEach(async () => {
+            await db.recursiveDelete(db.collection('groups').doc(AI_TEST_GROUP)).catch(() => {});
+            await db.collection('groups').doc(AI_TEST_GROUP).set({
+                name: 'AI Test Group',
+                isAiGroup: true,
+                aiCompanionUid: 'ai-partner-bot',
+                timeZone: 'Asia/Tokyo',
+                members: ['test-user-1', 'ai-partner-bot'],
+                ownerUserId: 'test-user-1'
+            });
+        });
+
+        afterEach(async () => {
+            await db.recursiveDelete(db.collection('groups').doc(AI_TEST_GROUP)).catch(() => {});
+        });
+
+        it('should post daily note for AI group and update messages_latest/latest cache', async () => {
+            const res = await fetch(`${setup.baseUrl}/api/cron/post-ai-daily-notes`, {
+                method: 'POST',
+                headers: cronHeaders
+            });
+            expect(res.status).toBe(200);
+            const data = await res.json();
+            expect(data.totalAiGroups).toBeGreaterThanOrEqual(1);
+            expect(data.postedTodayCount).toBeGreaterThanOrEqual(1);
+
+            // Verify messages_latest/latest was created and reconciled
+            const latestSnap = await db.collection('groups').doc(AI_TEST_GROUP).collection('messages_latest').doc('latest').get();
+            expect(latestSnap.exists).toBe(true);
+            const latestMsgs = latestSnap.data()?.messages || [];
+            expect(latestMsgs.length).toBeGreaterThanOrEqual(1);
+            expect(latestMsgs[latestMsgs.length - 1].senderId).toBe('ai-partner-bot');
+        });
+
+        it('should handle already posted note idempotently and maintain messages_latest/latest', async () => {
+            // First run
+            await fetch(`${setup.baseUrl}/api/cron/post-ai-daily-notes`, {
+                method: 'POST',
+                headers: cronHeaders
+            });
+
+            // Second run
+            const res = await fetch(`${setup.baseUrl}/api/cron/post-ai-daily-notes`, {
+                method: 'POST',
+                headers: cronHeaders
+            });
+            expect(res.status).toBe(200);
+            const data = await res.json();
+            expect(data.alreadyPostedCount).toBeGreaterThanOrEqual(1);
+
+            const latestSnap = await db.collection('groups').doc(AI_TEST_GROUP).collection('messages_latest').doc('latest').get();
+            expect(latestSnap.exists).toBe(true);
+        });
+    });
 });

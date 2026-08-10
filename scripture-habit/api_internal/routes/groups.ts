@@ -339,6 +339,12 @@ router.post('/create-ai-group', authenticate, requireEmailVerified, verifyAppChe
             return { groupId: newGroupId, groupName: defaultGroupName, inviteCode };
         });
 
+        try {
+            await MessageService.reconcileLatestMessages(result.groupId);
+        } catch (reconcileErr) {
+            console.warn(`[Groups] Failed to reconcile latest messages for new AI group ${result.groupId}:`, reconcileErr);
+        }
+
         res.status(200).json({ message: 'Success', ...result });
     } catch (error) {
         console.error('Error creating AI group:', error);

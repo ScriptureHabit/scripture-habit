@@ -6,6 +6,7 @@ import { calculateMemberStatus, InactivityMemberData, InactivityGroupData } from
 import { t } from '../lib/i18n.js';
 import { AuthenticationError, NotFoundError, sendErrorResponse } from '../lib/errors.js';
 import { getAiDailyComment } from '../data/ai-daily-comments-2026.js';
+import { MessageService } from '../services/message-service.js';
 
 interface CronReport {
     groupId: string;
@@ -639,6 +640,13 @@ router.all('/post-ai-daily-notes', verifyCronSecret, async (_req: Request, res: 
                 processedCount++;
             } else {
                 skippedCount++;
+            }
+
+            // Always reconcile latest messages for the AI group to ensure messages_latest/latest cache is up-to-date
+            try {
+                await MessageService.reconcileLatestMessages(doc.id);
+            } catch (reconcileErr) {
+                console.warn(`[Cron] Failed to reconcile latest messages for AI group ${doc.id}:`, reconcileErr);
             }
         }
 
