@@ -467,6 +467,9 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Cron Routes Integration',
         const AI_TEST_GROUP = 'ai_cron_test_group_123';
 
         beforeEach(async () => {
+            const { StreakReminderEngine } = await import('../lib/streak-reminder.js');
+            vi.spyOn(StreakReminderEngine, 'getTargetTimezones').mockReturnValue(['Asia/Tokyo']);
+
             await db.recursiveDelete(db.collection('groups').doc(AI_TEST_GROUP)).catch(() => {});
             await db.collection('groups').doc(AI_TEST_GROUP).set({
                 name: 'AI Test Group',
@@ -483,7 +486,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Cron Routes Integration',
         });
 
         it('should post daily note for AI group and update messages_latest/latest cache', async () => {
-            const res = await fetch(`${setup.baseUrl}/api/cron/post-ai-daily-notes`, {
+            const res = await fetch(`${setup.baseUrl}/api/cron/post-ai-daily-notes?force=true`, {
                 method: 'POST',
                 headers: cronHeaders
             });
@@ -502,13 +505,13 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Cron Routes Integration',
 
         it('should handle already posted note idempotently and maintain messages_latest/latest', async () => {
             // First run
-            await fetch(`${setup.baseUrl}/api/cron/post-ai-daily-notes`, {
+            await fetch(`${setup.baseUrl}/api/cron/post-ai-daily-notes?force=true`, {
                 method: 'POST',
                 headers: cronHeaders
             });
 
             // Second run
-            const res = await fetch(`${setup.baseUrl}/api/cron/post-ai-daily-notes`, {
+            const res = await fetch(`${setup.baseUrl}/api/cron/post-ai-daily-notes?force=true`, {
                 method: 'POST',
                 headers: cronHeaders
             });
