@@ -473,6 +473,7 @@ export default {
         saving: "Salvando...",
         update: "Atualizar Anotação",
         post: "Postar Anotação",
+        saveNote: "✨ Salvar Anotação",
         successUpdate: "Anotação atualizada com sucesso!",
         successPost: "Anotação postada com sucesso!",
         urlLabel: "URL / Sessão",

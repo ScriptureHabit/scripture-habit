@@ -426,6 +426,7 @@ export default {
         saving: "Saving...",
         update: "Update Note",
         post: "Post Note",
+        saveNote: "✨ Save Note",
         successUpdate: "Note updated successfully!",
         successPost: "Note posted successfully!",
         urlLabel: "URL / Session",

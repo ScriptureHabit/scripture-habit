@@ -486,6 +486,7 @@ export default {
         saving: "Nagsesave...",
         update: "I-update ang Tala",
         post: "I-post ang Tala",
+        saveNote: "✨ I-save ang Tala",
         successUpdate: "Matagumpay na na-update ang tala!",
         successPost: "Matagumpay na nai-post ang tala!",
         urlLabel: "URL / Sesyon",

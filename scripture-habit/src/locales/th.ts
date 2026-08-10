@@ -486,6 +486,7 @@ export default {
         saving: "กำลังบันทึก...",
         update: "อัปเดตบันทึก",
         post: "โพสต์บันทึก",
+        saveNote: "✨ บันทึกโน้ต",
         successUpdate: "อัปเดตบันทึกสำเร็จ!",
         successPost: "โพสต์บันทึกสำเร็จ!",
         urlLabel: "URL / เซสชัน",

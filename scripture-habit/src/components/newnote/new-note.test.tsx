@@ -258,7 +258,7 @@ describe('new-note component suite', () => {
     });
 
     it('toggles share group selection arrays', () => {
-        render(<NewNote isOpen={true} onClose={vi.fn()} userData={mockUserData as UserData} />);
+        render(<NewNote isOpen={true} onClose={vi.fn()} userData={mockUserData as UserData} userGroups={[{ id: 'group1', name: 'Group 1' } as any]} />);
 
         const toggleBtn = screen.getByTestId('toggle-group-1');
         // click once to add

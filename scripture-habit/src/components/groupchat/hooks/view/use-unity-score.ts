@@ -40,6 +40,8 @@ export const useUnityScore = (
     // Only proceed if unity is reached AND user is still a member of this specific group
     if (!userData?.uid || !groupId || unityPercentage !== 100) return;
     if (!groupData?.members?.includes(userData.uid)) return;
+    // AI groups handle celebrations via direct bot messages, skip unity announcement system messages
+    if (groupData?.isAiGroup || groupData?.aiCompanionUid === 'ai-partner-bot') return;
 
     // Guard: Ensure at least one member has actually posted today
     const postedCount = getUnityParticipation(groupData, messages, new Date(), membersMap).postedMembers.length;

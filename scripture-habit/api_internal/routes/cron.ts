@@ -541,12 +541,11 @@ router.all('/daily-active-users', verifyCronSecret, async (req: Request, res: Re
 /**
  * Post Daily Notes for AI Partner Groups
  */
-router.all('/post-ai-daily-notes', verifyCronSecret, async (req: Request, res: Response) => {
+router.all('/post-ai-daily-notes', verifyCronSecret, async (_req: Request, res: Response) => {
     console.log('[Cron] Posting daily notes for AI Partner Groups...');
     try {
         const snapshot = await db.collection('groups').where('isAiGroup', '==', true).get();
         const now = admin.firestore.Timestamp.now();
-        const force = req.query.force === 'true';
         let processedCount = 0;
         let skippedCount = 0;
 
@@ -557,25 +556,14 @@ router.all('/post-ai-daily-notes', verifyCronSecret, async (req: Request, res: R
             // Skip deleted groups
             if (gData.isDeleted) continue;
 
-            // Calculate timezone-specific local date and hour
+            // Calculate timezone-specific local date
             const groupTz = gData.timeZone || 'Asia/Tokyo';
             let todayStr: string;
-            let currentLocalHour: number;
 
             try {
-                const nowInTz = new Date(new Date().toLocaleString('en-US', { timeZone: groupTz }));
                 todayStr = new Date().toLocaleDateString('sv-SE', { timeZone: groupTz });
-                currentLocalHour = nowInTz.getHours();
             } catch {
-                const nowInTz = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Tokyo' }));
                 todayStr = new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Tokyo' });
-                currentLocalHour = nowInTz.getHours();
-            }
-
-            // Only post at 7 AM local time for that timezone (unless force parameter is provided)
-            if (currentLocalHour !== 7 && !force) {
-                skippedCount++;
-                continue;
             }
 
             // Deterministic Document ID for 100% Idempotency (prevent duplicate posts per day)
@@ -649,6 +637,8 @@ router.all('/post-ai-daily-notes', verifyCronSecret, async (req: Request, res: R
                 }
 
                 processedCount++;
+            } else {
+                skippedCount++;
             }
         }
 
@@ -656,7 +646,7 @@ router.all('/post-ai-daily-notes', verifyCronSecret, async (req: Request, res: R
             message: 'AI daily notes processed successfully.',
             totalAiGroups: snapshot.size,
             postedTodayCount: processedCount,
-            skippedWrongHourCount: skippedCount
+            alreadyPostedCount: skippedCount
         });
     } catch (err: unknown) {
         console.error('Error posting AI daily notes:', err);

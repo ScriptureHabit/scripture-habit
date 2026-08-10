@@ -432,6 +432,7 @@ export default {
         saving: "保存中...",
         update: "ノートを更新",
         post: "✨ノートを投稿",
+        saveNote: "✨ノートを保存",
         successUpdate: "ノートが更新されました！",
         successPost: "ノートが投稿されました！",
         urlLabel: "URL / 部会",

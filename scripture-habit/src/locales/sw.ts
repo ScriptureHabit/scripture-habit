@@ -469,6 +469,7 @@ export default {
         saving: "Inahifadhi...",
         update: "Sasisha Ujumbe",
         post: "Chapisha Ujumbe",
+        saveNote: "✨ Hifadhi Ujumbe",
         successUpdate: "Ujumbe umesasishwa kikamilifu!",
         successPost: "Ujumbe umechapishwa kikamilifu!",
         urlLabel: "URL / Kikao",

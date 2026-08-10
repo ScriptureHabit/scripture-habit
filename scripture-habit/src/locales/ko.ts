@@ -487,6 +487,7 @@ export default {
         saving: "저장 중...",
         update: "노트 업데이트",
         post: "노트 게시",
+        saveNote: "✨ 노트 저장",
         successUpdate: "노트가 업데이트되었습니다!",
         successPost: "노트가 게시되었습니다!",
         urlLabel: "URL / 세션",

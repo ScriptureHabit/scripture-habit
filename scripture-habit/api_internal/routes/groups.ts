@@ -622,6 +622,10 @@ router.post('/announce-unity', authenticate, verifyAppCheck, async (req: Authent
                 throw new ForbiddenError('Forbidden');
             }
 
+            if (groupData.isAiGroup || groupData.aiCompanionUid === 'ai-partner-bot') {
+                return;
+            }
+
             const effectiveTimeZone = groupData.timeZone || 'UTC';
             let todayStr;
             try {

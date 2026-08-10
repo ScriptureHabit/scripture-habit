@@ -448,6 +448,7 @@ export default {
         saving: "儲存中...",
         update: "更新筆記",
         post: "發佈筆記",
+        saveNote: "✨ 儲存筆記",
         successUpdate: "筆記更新成功！",
         successPost: "筆記發佈成功！",
         urlLabel: "URL / 場次",

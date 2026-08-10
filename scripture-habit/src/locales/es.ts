@@ -449,6 +449,7 @@ export default {
         saving: "Guardando...",
         update: "Actualizar Nota",
         post: "Publicar Nota",
+        saveNote: "✨ Guardar Nota",
         successUpdate: "¡Nota actualizada con éxito!",
         successPost: "¡Nota publicada con éxito!",
         urlLabel: "URL / Sesión",

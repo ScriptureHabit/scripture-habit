@@ -346,7 +346,7 @@ const NewNote = ({
                         maxLength={2000}
                     />
 
-                    {!noteToEdit && (
+                    {!noteToEdit && userGroups.length > 0 && (
                         <NoteSharingOptions
                             userGroups={userGroups}
                             shareOption={shareOption}
@@ -365,7 +365,7 @@ const NewNote = ({
                             className="submit-btn"
                             data-testid={noteToEdit ? "update-note-button" : "post-note-button"}
                         >
-                            {loading ? t('newNote.saving') : (noteToEdit ? t('newNote.update') : t('newNote.post'))}
+                            {loading ? t('newNote.saving') : (noteToEdit ? t('newNote.update') : (userGroups.length > 0 ? t('newNote.post') : t('newNote.saveNote')))}
                         </button>
                     </div>
                 </div>

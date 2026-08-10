@@ -67,14 +67,16 @@ const ChatHeader = () => {
                 <UilPen size="18" />
               </button>
             )}
-            {groupData?.members && <span className="member-count-badge">({groupData.members.length}/{groupData.maxMembers || 5})</span>}
-            {groupData && (
-              <div className="unity-score-container">
-                <span className={`unity-score-badge ${unityPercentage === 100 ? 'celestial' : ''}`} onClick={handleShowUnityModal} title="Unity Score: members who posted notes today" data-testid="chat-header-unity">
-                  <span className="unity-icon">{getUnityStatusEmoji(unityPercentage)}</span>
-                  <span className="unity-percent-text">{unityPercentage}%</span>
-                </span>
-              </div>
+            {!groupData?.isAiGroup && (
+              <>
+                {groupData?.members && <span className="member-count-badge">({groupData.members.length}/{groupData.maxMembers || 5})</span>}
+                <div className="unity-score-container">
+                  <span className={`unity-score-badge ${unityPercentage === 100 ? 'celestial' : ''}`} onClick={handleShowUnityModal} title="Unity Score: members who posted notes today" data-testid="chat-header-unity">
+                    <span className="unity-icon">{getUnityStatusEmoji(unityPercentage)}</span>
+                    <span className="unity-percent-text">{unityPercentage}%</span>
+                  </span>
+                </div>
+              </>
             )}
           </h2>
         </div>

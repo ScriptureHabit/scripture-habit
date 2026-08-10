@@ -460,6 +460,7 @@ export default {
         saving: "Đang lưu...",
         update: "Cập nhật ghi chép",
         post: "Đăng ghi chép",
+        saveNote: "✨ Lưu ghi chép",
         successUpdate: "Cập nhật ghi chép thành công!",
         successPost: "Đăng ghi chép thành công!",
         urlLabel: "URL / Buổi",
