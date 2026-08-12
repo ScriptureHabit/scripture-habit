@@ -151,7 +151,8 @@ router.post('/setup-test-group', authenticate, async (req: AuthenticatedRequest,
                 senderId: 'system',
                 isSystemMessage: true,
                 type: 'join',
-                messageType: 'join'
+                messageType: 'userJoined',
+                messageData: { nickname, userId: uid }
             });
         });
 

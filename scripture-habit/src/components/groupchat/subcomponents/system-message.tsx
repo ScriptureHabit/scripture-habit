@@ -107,6 +107,13 @@ const SystemMessage = ({ msg, t, kickThreshold = DEFAULT_KICK_THRESHOLD }: Syste
       });
     }
 
+    if (msg.messageType === 'inactivityRemoval' && msg.messageData) {
+      return t('groupChat.inactivityRemoval', {
+        count: Number(msg.messageData.count || 1),
+        days: kickThreshold
+      });
+    }
+
     if (msg.messageType === 'unityAnnouncement') {
       return t('groupChat.unityAnnouncement');
     }
@@ -128,13 +135,20 @@ const SystemMessage = ({ msg, t, kickThreshold = DEFAULT_KICK_THRESHOLD }: Syste
       }
     }
 
-    const inactivityPattern = /👋 \*\*(\d+) member\(s\)\*\* were removed due to inactivity(?:\s*\((\d+)\+ days\))?\./;
-    const inactivityMatch = text.match(inactivityPattern);
-    if (inactivityMatch) {
-      return t('groupChat.inactivityRemoval', {
-        count: inactivityMatch[1],
-        days: inactivityMatch[2] || kickThreshold
-      });
+    const inactivityPatterns = [
+      /👋 \*\*(\d+) member\(s\)\*\* were removed due to inactivity(?:\s*\((\d+)\+ days\))?\./,
+      /👋 \*\*(\d+)名.*?\*\*.*?(?:自動的|退出|削除)/,
+      /👋 \*\*(\d+)\s*(?:名|位|名成員|thành viên|miyembro|สมาชิก|Wanachama|membro\(s\))\*\*/
+    ];
+
+    for (const pattern of inactivityPatterns) {
+      const inactivityMatch = text.match(pattern);
+      if (inactivityMatch) {
+        return t('groupChat.inactivityRemoval', {
+          count: inactivityMatch[1],
+          days: inactivityMatch[2] || kickThreshold
+        });
+      }
     }
 
     return text;

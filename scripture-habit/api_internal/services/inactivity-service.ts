@@ -252,13 +252,17 @@ export class InactivityService {
             };
             groupUpdates.unityPercentage = calculateUnityPercentage(simulatedGroup as unknown as Group, [], now);
 
-            // Removal message (sent to the remaining owner)
+            // Removal message (sent to the remaining owner/members)
             if (ownerId && ownerSnap) {
                 const lang = (ownerSnap.data() as UserDocument)?.language || 'en';
                 batch.set(groupRef.collection('messages').doc(), {
                     text: t(lang, 'notifications.members_removed', { count: decision.membersToRemove.length }),
                     createdAt: admin.firestore.FieldValue.serverTimestamp(),
-                    senderId: 'system', isSystemMessage: true, type: 'leave', messageType: 'leave'
+                    senderId: 'system',
+                    isSystemMessage: true,
+                    type: 'inactivityRemoval',
+                    messageType: 'inactivityRemoval',
+                    messageData: { count: decision.membersToRemove.length }
                 });
             }
 

@@ -43,7 +43,7 @@ export const ReactionSchema = BaseUserSchema.omit({ uid: true }).extend({
   emoji: z.string('👍'),
 });
 
-export const MessageTypeSchema = z.enum([
+export const MessageTypeEnumValues = [
   'text', 
   'streakAnnouncement', 
   'notePostedAnnouncement',
@@ -52,8 +52,11 @@ export const MessageTypeSchema = z.enum([
   'userJoined', 
   'userLeft', 
   'userKicked',
-  'unityAnnouncement'
-]).catch('text'); // Unknown types fall back to 'text' to prevent listener crashes
+  'unityAnnouncement',
+  'inactivityRemoval'
+] as const;
+
+export const MessageTypeSchema = z.enum(MessageTypeEnumValues).catch('text'); // Unknown types fall back to 'text' to prevent listener crashes
 
 export const MessageSchema = z.object({
   id: z.string(),
