@@ -54,6 +54,10 @@ export const test = base.extend<AuthFixtures>({
         groupIds: [],
         hasSeenWelcomeStory: true,
         hasSetKickThreshold: true,
+        hasSeenTour: true,
+        hasSeenGroupOptionsTour: true,
+        hasSeenGroupChatTour: true,
+        hasCompletedOnboarding: true,
         isLevelMigrated: true,
         daysStudiedCount: 0,
         studiedDates: []

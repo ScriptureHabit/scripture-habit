@@ -346,7 +346,7 @@ export default {
         autoKickSuccess: "Ritmo de hábito definido! Vamos construir este hábito juntos.",
         habitPaceProfileTitle: " Meta",
         habitPaceLetsTryTogether: "Vamos conseguir juntos!",
-        habitPaceProfileDesc: "Poste uma vez a cada {days} dias para permanecer ativo nos grupos.",
+        habitPaceProfileDesc: "Poste uma vez a cada {days} dias para permanecer ativo.",
         confirm: "Confirmar",
         inviteExpiresAt: "Expira em",
         regenerateInviteCode: "Regerar Código de Convite",

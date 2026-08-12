@@ -346,7 +346,7 @@ export default {
         autoKickSuccess: "Naka-set na ang habit pace! Sabay tayong bumuo ng gawi na ito.",
         habitPaceProfileTitle: " ang Layunin",
         habitPaceLetsTryTogether: "Sama-sama nating gawin ito!",
-        habitPaceProfileDesc: "Mag-post tuwing {days} araw upang manatiling aktibo sa mga grupo.",
+        habitPaceProfileDesc: "Mag-post tuwing {days} araw upang manatiling aktibo.",
         confirm: "Kumpirmahin",
         inviteExpiresAt: "Mag-e-expire sa",
         regenerateInviteCode: "I-regenerate ang Invite Code",

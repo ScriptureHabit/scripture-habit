@@ -347,7 +347,7 @@ export default {
         autoKickSuccess: "ตั้งค่าจังหวะนิสัยแล้ว! มาสร้างนิสัยนี้ไปด้วยกัน",
         habitPaceProfileTitle: "เป้าหมาย",
         habitPaceLetsTryTogether: "มาลุยด้วยกันเลย!",
-        habitPaceProfileDesc: "โพสต์ทุกๆ {days} วันเพื่อใช้งานในกลุ่มต่อไป",
+        habitPaceProfileDesc: "โพสต์ทุกๆ {days} วันเพื่อใช้งานต่อไป",
         confirm: "ยืนยัน",
         inviteExpiresAt: "หมดอายุเมื่อ",
         regenerateInviteCode: "สร้างรหัสเชิญใหม่",

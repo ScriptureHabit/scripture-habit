@@ -347,7 +347,7 @@ export default {
         autoKickSelectedSubtext: "Estudiar las escrituras al menos una vez cada {days} días",
         habitPaceProfileTitle: " Meta",
         habitPaceLetsTryTogether: "¡Vamos a lograrlo juntos!",
-        habitPaceProfileDesc: "Publica una vez cada {days} días para mantenerte activo en los grupos.",
+        habitPaceProfileDesc: "Publica una vez cada {days} días para mantenerte activo.",
         confirm: "Confirmar",
         aiGroupDefaultGroupName: "Scripture Habit AI",
         aiGroupDefaultGroupDesc: "Grupo 1-a-1 de estudio de las escrituras con Scripture Habit AI",

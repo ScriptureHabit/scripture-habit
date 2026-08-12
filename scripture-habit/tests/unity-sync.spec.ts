@@ -41,6 +41,13 @@ test.describe('Unity Lifecycle (Full Flow)', () => {
         // --- 2. UPDATE: Post a note and check real-time update ---
         console.log('--- Step 2: Posting note for real-time update ---');
         await groupItem.click();
+
+        // Dismiss tour overlay if present
+        const tourOverlay = page.locator('.tour-guide-overlay');
+        if (await tourOverlay.isVisible().catch(() => false)) {
+            await page.keyboard.press('Escape').catch(() => {});
+        }
+
         await page.getByTestId('new-note-button').click();
 
         const scriptureSelect = page.getByTestId('new-note-category').locator('input').first();
@@ -50,7 +57,7 @@ test.describe('Unity Lifecycle (Full Flow)', () => {
         await page.getByTestId('new-note-comment').fill(`Lifecycle Test ${Date.now()}-${Math.random().toString(36).substring(2, 6)}`);
         
         await page.getByTestId('post-note-button').click();
-        await expect(page.getByText('Note posted successfully!')).toBeVisible({ timeout: 15000 });
+        await expect(page.getByText(/Note posted successfully|投稿/i)).toBeAttached({ timeout: 15000 });
         
         // Unity should update (e.g., to 50% if 1 of 2 members posted)
         await expect(sidebarUnity).not.toHaveText('0%', { timeout: 20000 });

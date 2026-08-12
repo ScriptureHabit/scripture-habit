@@ -351,7 +351,7 @@ export default {
         autoKickSelectedSubtext: "최소 {days}일에 한 번은 성구 공부하기",
         habitPaceProfileTitle: "의 목표",
         habitPaceLetsTryTogether: "함께 힘내자!",
-        habitPaceProfileDesc: "그룹에서 활동을 유지하려면 {days}일마다 게시하세요.",
+        habitPaceProfileDesc: "활동을 유지하려면 {days}일마다 게시하세요.",
         confirm: "확인",
         inviteExpiresAt: "만료일:",
         regenerateInviteCode: "초대 코드 재생성",

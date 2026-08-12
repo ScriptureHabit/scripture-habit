@@ -30,10 +30,10 @@ export const useDashboardHabitPace = (
                 // eslint-disable-next-line react-hooks/set-state-in-effect
                 setShowAutoKickModal(true);
             } else if (userData.hasSetKickThreshold === true) {
-                // Don't auto-close if we're on the success screen (step 2) —
+                // Don't auto-close if we're on the setup flow (step 1 or step 2) —
                 // the user must explicitly dismiss via the redirect button.
                 setShowAutoKickModal(prev => {
-                    if (prev && autoKickStep === 2) {
+                    if (prev && autoKickStep > 0) {
                         return true;
                     }
                     return false;

@@ -350,7 +350,7 @@ export default {
         autoKickConfirmText: "Final check: You understand that if you don't post a note for {days} days, you'll be automatically removed? Please type '{days}' to confirm.",
         habitPaceProfileTitle: "'s Goal",
         habitPaceLetsTryTogether: "Let's do this together!",
-        habitPaceProfileDesc: "Post once every {days} days to stay active in groups.",
+        habitPaceProfileDesc: "Post once every {days} days to stay active.",
         confirm: "Confirm",
         aiGroupDefaultGroupName: "Scripture Habit AI",
         aiGroupDefaultGroupDesc: "1-on-1 Scripture Study Group with Scripture Habit AI",

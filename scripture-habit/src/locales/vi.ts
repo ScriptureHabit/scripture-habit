@@ -325,7 +325,7 @@ export default {
         autoKickSuccess: "Đã thiết lập nhịp độ thói quen! Hãy cùng nhau xây dựng thói quen này.",
         habitPaceProfileTitle: " Mục tiêu",
         habitPaceLetsTryTogether: "Cùng nhau cố lên!",
-        habitPaceProfileDesc: "Đăng bài một lần mỗi {days} ngày để duy trì hoạt động trong các nhóm.",
+        habitPaceProfileDesc: "Đăng bài một lần mỗi {days} ngày để duy trì hoạt động.",
         confirm: "Xác nhận",
         inviteExpiresAt: "Hết hạn lúc",
         regenerateInviteCode: "Tạo lại mã mời",
