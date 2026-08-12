@@ -11,7 +11,8 @@ import { AppError, AuthenticationError, ForbiddenError, NotFoundError, Validatio
 import { getMessageExpireAt } from '../lib/ttl-utils.js';
 import { MessageService } from '../services/message-service.js';
 import { t } from '../lib/i18n.js';
-import { getAiDailyComment } from '../data/ai-daily-comments-2026.js';
+import { AiDailyNoteService } from '../services/ai-daily-note-service.js';
+
 
 
 const router = express.Router();
@@ -295,31 +296,6 @@ router.post('/create-ai-group', authenticate, requireEmailVerified, verifyAppChe
                 expireAt: getMessageExpireAt()
             });
 
-            // Simultaneously post today's AI daily note upon group creation
-            const dailyComment = getAiDailyComment(todayStr, lang);
-            const scriptureVal = dailyComment.scripture || (lang === 'ja' ? '旧約聖書' : 'Old Testament');
-            const chapterVal = dailyComment.chapter || 'Genesis 1:1';
-            const botName = botNickname;
-            const aiNoteMsgRef = groupRef.collection('messages').doc(`ai_note_${todayStr}`);
-            const categoryLabel = lang === 'ja' ? 'カテゴリ' : 'Category';
-            const chapterLabel = lang === 'ja' ? '章' : 'Chapter';
-            const commentLabel = lang === 'ja' ? 'コメント' : 'Comment';
-            const structuredText = `${categoryLabel}: ${scriptureVal}\n${chapterLabel}: ${chapterVal}\n\n${commentLabel}:\n${dailyComment.comment}`;
-
-            transaction.set(aiNoteMsgRef, {
-                text: structuredText,
-                scripture: scriptureVal,
-                chapter: chapterVal,
-                comment: dailyComment.comment,
-                createdAt: admin.firestore.Timestamp.fromMillis(now.toMillis() + 1000), // Slightly after welcome message
-                senderId: 'ai-partner-bot',
-                senderNickname: botName,
-                senderPhotoURL: '/images/mascot.png',
-                isSystemMessage: false,
-                isNote: true,
-                expireAt: getMessageExpireAt()
-            });
-
             // If user already posted a note today before creating the AI group, auto-post AI congratulation response!
             if (userAlreadyPostedToday) {
                 const congratText = t(lang, 'groupChat.aiGroupUserNoteCongratulation') || 'よくできました！🎉🎉 明日もお会いしましょう✨';
@@ -327,7 +303,7 @@ router.post('/create-ai-group', authenticate, requireEmailVerified, verifyAppChe
                 transaction.set(congratMsgRef, {
                     text: congratText,
                     senderId: 'ai-partner-bot',
-                    senderNickname: botName,
+                    senderNickname: botNickname,
                     senderPhotoURL: '/images/mascot.png',
                     createdAt: admin.firestore.Timestamp.fromMillis(now.toMillis() + 2000),
                     isSystemMessage: false,
@@ -336,8 +312,19 @@ router.post('/create-ai-group', authenticate, requireEmailVerified, verifyAppChe
                 }, { merge: true });
             }
 
-            return { groupId: newGroupId, groupName: defaultGroupName, inviteCode };
+            return { groupId: newGroupId, groupName: defaultGroupName, inviteCode, ownerUserId: uid, timeZone, lang };
         });
+
+        // Simultaneously post today's AI daily note and send FCM push notification
+        try {
+            await AiDailyNoteService.postDailyNoteForGroup(
+                result.groupId,
+                { timeZone: result.timeZone, ownerUserId: result.ownerUserId },
+                { isGroupCreation: true, langOverride: result.lang }
+            );
+        } catch (noteErr) {
+            console.warn(`[Groups] Failed to post initial AI daily note for group ${result.groupId}:`, noteErr);
+        }
 
         try {
             await MessageService.reconcileLatestMessages(result.groupId);
@@ -345,7 +332,12 @@ router.post('/create-ai-group', authenticate, requireEmailVerified, verifyAppChe
             console.warn(`[Groups] Failed to reconcile latest messages for new AI group ${result.groupId}:`, reconcileErr);
         }
 
-        res.status(200).json({ message: 'Success', ...result });
+        res.status(200).json({
+            message: 'Success',
+            groupId: result.groupId,
+            groupName: result.groupName,
+            inviteCode: result.inviteCode
+        });
     } catch (error) {
         console.error('Error creating AI group:', error);
         sendErrorResponse(res, error, 'Create AI group failed');

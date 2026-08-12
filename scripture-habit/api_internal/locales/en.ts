@@ -5,7 +5,11 @@ export default {
         aiGroupDefaultGroupDesc: "1-on-1 Scripture Study Group with Scripture Habit AI",
         aiGroupWelcomeMessage: "Welcome to the Scripture Habit AI Group! Let's study scriptures and share insights together every day. Rooting for you! 📖✨\n*Note: AI posts daily notes, but direct replies to {nickname} are not supported at this stage.",
         aiGroupBotNickname: "Scripture Habit AI",
-        aiGroupDailyNoteText: "[Daily Study Inspiration] Consistently opening scriptures every day leads to great blessings. Let's deepen our learning today! 📖✨"
+        aiGroupDailyNoteText: "[Daily Study Inspiration] Consistently opening scriptures every day leads to great blessings. Let's deepen our learning today! 📖✨",
+        category: "Category",
+        chapter: "Chapter",
+        comment: "Comment",
+        defaultScripture: "Old Testament"
     },
     notifications: {
         streak_announcement: "🎉🎉🎉 **{nickname} achieved a milestone of {streak} total study days! Let's celebrate!** 🎉🎉🎉",

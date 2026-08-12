@@ -1,4 +1,16 @@
-﻿export default {
+export default {
+    groupChat: {
+        aiGroupUserNoteCongratulation: "做得好！🎉🎉 明天見！✨",
+        aiGroupDefaultGroupName: "Scripture Habit AI",
+        aiGroupDefaultGroupDesc: "與 Scripture Habit AI 進行 1 對 1 經文研讀的小組",
+        aiGroupWelcomeMessage: "歡迎來到 Scripture Habit AI 小組！讓我們每天一起研讀經文並分享心得。為你加油！📖✨\n※請注意：AI 每天會發布筆記，但目前尚無法直接回覆 {nickname} 的訊息。",
+        aiGroupBotNickname: "Scripture Habit AI",
+        aiGroupDailyNoteText: "【每日研讀靈感】每天堅持打開經文會帶來巨大的祝福。今天也讓我們一起深入學習吧！📖✨",
+        category: "分類",
+        chapter: "章節",
+        comment: "評論",
+        defaultScripture: "舊約聖經"
+    },
     notifications: {
         streak_announcement: "🎉🎉🎉 **{nickname} 達成了總計 {streak} 天的學習里程碑！大家一起為他慶祝吧！** 🎉🎉🎉",
         note_posted_announcement: "🎉🎉🎉 **{nickname} 發布了一則筆記！！** 🎉🎉🎉",

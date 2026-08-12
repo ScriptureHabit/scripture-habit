@@ -5,7 +5,7 @@ import { InactivityService } from '../services/inactivity-service.js';
 import { calculateMemberStatus, InactivityMemberData, InactivityGroupData } from '../lib/inactivity-utils.js';
 import { t } from '../lib/i18n.js';
 import { AuthenticationError, NotFoundError, sendErrorResponse } from '../lib/errors.js';
-import { getAiDailyComment } from '../data/ai-daily-comments-2026.js';
+import { AiDailyNoteService } from '../services/ai-daily-note-service.js';
 import { MessageService } from '../services/message-service.js';
 
 interface CronReport {
@@ -546,8 +546,6 @@ router.all('/post-ai-daily-notes', verifyCronSecret, async (req: Request, res: R
     console.log('[Cron] Posting daily notes for AI Partner Groups...');
     try {
         const snapshot = await db.collection('groups').where('isAiGroup', '==', true).get();
-        const now = admin.firestore.Timestamp.now();
-        const nowDate = new Date();
         const force = req.query?.force === 'true' || req.body?.force === true;
         let processedCount = 0;
         let skippedCount = 0;
@@ -556,109 +554,15 @@ router.all('/post-ai-daily-notes', verifyCronSecret, async (req: Request, res: R
         for (let i = 0; i < snapshot.docs.length; i += CHUNK_SIZE) {
             const chunk = snapshot.docs.slice(i, i + CHUNK_SIZE);
             await Promise.all(chunk.map(async (doc) => {
-                const groupRef = doc.ref;
                 const gData = doc.data();
 
-                // Skip deleted groups
-                if (gData.isDeleted) return;
+                const result = await AiDailyNoteService.postDailyNoteForGroup(
+                    doc.id,
+                    gData,
+                    { force }
+                );
 
-                // Calculate timezone-specific local date and hour
-                const groupTz = gData.timeZone || 'Asia/Tokyo';
-                let todayStr: string;
-                let currentLocalHour: number;
-
-                try {
-                    todayStr = nowDate.toLocaleDateString('sv-SE', { timeZone: groupTz });
-                    const hourStr = new Intl.DateTimeFormat('en-US', {
-                        timeZone: groupTz,
-                        hour: 'numeric',
-                        hour12: false
-                    }).format(nowDate);
-                    currentLocalHour = parseInt(hourStr, 10);
-                    if (currentLocalHour === 24) currentLocalHour = 0;
-                } catch {
-                    todayStr = nowDate.toLocaleDateString('sv-SE', { timeZone: 'Asia/Tokyo' });
-                    currentLocalHour = (nowDate.getUTCHours() + 9) % 24;
-                }
-
-                // Target 7:00 AM or later local time for posting daily notes (unless forced).
-                // Defensive design: Ensures that even if GitHub Actions triggers with hours of delay,
-                // the note will still be posted on the same day once 7:00 AM local time has passed.
-                if (!force && currentLocalHour < 7) {
-                    skippedCount++;
-                    return;
-                }
-
-                // Deterministic Document ID for 100% Idempotency (prevent duplicate posts per day)
-                const msgRef = groupRef.collection('messages').doc(`ai_note_${todayStr}`);
-                const msgSnap = await msgRef.get();
-
-                if (!msgSnap.exists) {
-                    // Fetch group owner to get preferred language
-                    let lang = 'en';
-                    let ownerFcmTokens: string[] = [];
-                    if (gData.ownerUserId) {
-                        const ownerDoc = await db.collection('users').doc(gData.ownerUserId).get();
-                        if (ownerDoc.exists) {
-                            const oData = ownerDoc.data();
-                            lang = oData?.language || 'en';
-                            if (oData?.fcmToken) {
-                                ownerFcmTokens = Array.isArray(oData.fcmToken) ? oData.fcmToken : [oData.fcmToken];
-                            }
-                        }
-                    }
-
-                    const botName = t(lang, 'groupChat.aiGroupBotNickname') || (lang === 'ja' ? 'スクハビAI' : 'Scripture Habit AI');
-                    const dailyComment = getAiDailyComment(todayStr, lang);
-                    const scriptureVal = dailyComment.scripture || (lang === 'ja' ? '旧約聖書' : 'Old Testament');
-                    const chapterVal = dailyComment.chapter || 'Genesis 1:1';
-                    const categoryLabel = lang === 'ja' ? 'カテゴリ' : 'Category';
-                    const chapterLabel = lang === 'ja' ? '章' : 'Chapter';
-                    const commentLabel = lang === 'ja' ? 'コメント' : 'Comment';
-                    const structuredText = `${categoryLabel}: ${scriptureVal}\n${chapterLabel}: ${chapterVal}\n\n${commentLabel}:\n${dailyComment.comment}`;
-
-                    await msgRef.set({
-                        text: structuredText,
-                        scripture: scriptureVal,
-                        chapter: chapterVal,
-                        comment: dailyComment.comment,
-                        createdAt: now,
-                        senderId: 'ai-partner-bot',
-                        senderNickname: botName,
-                        isSystemMessage: false,
-                        isNote: true,
-                        expireAt: admin.firestore.Timestamp.fromMillis(now.toMillis() + 90 * 24 * 60 * 60 * 1000)
-                    });
-
-                    await groupRef.update({
-                        lastMessageAt: now,
-                        lastMessageByNickname: botName,
-                        lastMessageByUid: 'ai-partner-bot',
-                        lastNoteAt: now,
-                        lastNoteByNickname: botName,
-                        lastNoteByUid: 'ai-partner-bot',
-                        [`memberLastActive.ai-partner-bot`]: now
-                    });
-
-                    // Send FCM push notification to group owner
-                    if (ownerFcmTokens.length > 0 && messaging) {
-                        try {
-                            await messaging.sendEachForMulticast({
-                                tokens: ownerFcmTokens,
-                                notification: {
-                                    title: `${botName}`,
-                                    body: dailyComment.comment
-                                },
-                                data: {
-                                    groupId: groupRef.id,
-                                    type: 'ai_daily_note'
-                                }
-                            });
-                        } catch (pushErr) {
-                            console.warn(`[Cron] FCM Push failed for AI note in group ${groupRef.id}:`, pushErr);
-                        }
-                    }
-
+                if (result.posted) {
                     processedCount++;
                 } else {
                     skippedCount++;

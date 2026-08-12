@@ -1,4 +1,16 @@
-﻿export default {
+export default {
+    groupChat: {
+        aiGroupUserNoteCongratulation: "เก่งมาก! 🎉🎉 เจอกันพรุ่งนี้นะ! ✨",
+        aiGroupDefaultGroupName: "Scripture Habit AI",
+        aiGroupDefaultGroupDesc: "กลุ่มศึกษาพระคัมภีร์แบบตัวต่อตัวกับ Scripture Habit AI",
+        aiGroupWelcomeMessage: "ยินดีต้อนรับสู่กลุ่ม Scripture Habit AI! มาศึกษาพระคัมภีร์และแบ่งปันข้อคิดด้วยกันทุกวัน เป็นกำลังใจให้นะ! 📖✨\n*หมายเหตุ: AI จะโพสต์โน้ตทุกวัน แต่ยังไม่สามารถตอบกลับข้อความของ {nickname} โดยตรงได้ในขณะนี้",
+        aiGroupBotNickname: "Scripture Habit AI",
+        aiGroupDailyNoteText: "[แรงบันดาลใจในการศึกษาประจำวัน] การเปิดพระคัมภีร์อย่างสม่ำเสมอทุกวันนำมาซึ่งพรยิ่งใหญ่ วันนี้มาเรียนรู้ให้ลึกซึ้งยิ่งขึ้นด้วยกันนะ! 📖✨",
+        category: "หมวดหมู่",
+        chapter: "บท",
+        comment: "ความคิดเห็น",
+        defaultScripture: "พันธสัญญาเดิม"
+    },
     notifications: {
         streak_announcement: "🎉🎉🎉 **{nickname} บรรลุหลักไมล์เรียนรวมทั้งหมด {streak} วันแล้ว! มาร่วมยินดีกันเถอะ!** 🎉🎉🎉",
         note_posted_announcement: "🎉🎉🎉 **{nickname} โพสต์บันทึกแล้ว!!** 🎉🎉🎉",

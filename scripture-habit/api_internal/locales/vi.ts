@@ -1,4 +1,16 @@
-﻿export default {
+export default {
+    groupChat: {
+        aiGroupUserNoteCongratulation: "Làm tốt lắm! 🎉🎉 Hẹn gặp lại bạn vào ngày mai! ✨",
+        aiGroupDefaultGroupName: "Scripture Habit AI",
+        aiGroupDefaultGroupDesc: "Nhóm học Thánh Thư 1-trên-1 với Scripture Habit AI",
+        aiGroupWelcomeMessage: "Chào mừng bạn đến với Nhóm Scripture Habit AI! Hãy cùng nhau học Thánh Thư và chia sẻ cảm nhận mỗi ngày. Cố lên nhé! 📖✨\n*Lưu ý: AI đăng ghi chú hàng ngày, nhưng chưa hỗ trợ trả lời trực tiếp cho {nickname} ở giai đoạn này.",
+        aiGroupBotNickname: "Scripture Habit AI",
+        aiGroupDailyNoteText: "[Cảm hứng học tập hàng ngày] Việc kiên trì mở Thánh Thư mỗi ngày sẽ mang lại nhiều phước lành lớn lao. Hôm nay hãy cùng học sâu hơn nhé! 📖✨",
+        category: "Danh mục",
+        chapter: "Chương",
+        comment: "Bình luận",
+        defaultScripture: "Cựu Ước"
+    },
     notifications: {
         streak_announcement: "🎉🎉🎉 **{nickname} đã đạt cột mốc tổng cộng {streak} ngày học tập! Hãy cùng chúc mừng nào!** 🎉🎉🎉",
         note_posted_announcement: "🎉🎉🎉 **{nickname} đã đăng một ghi chú!!** 🎉🎉🎉",

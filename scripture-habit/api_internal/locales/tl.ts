@@ -1,4 +1,16 @@
-﻿export default {
+export default {
+    groupChat: {
+        aiGroupUserNoteCongratulation: "Magaling! 🎉🎉 Magkita tayo bukas! ✨",
+        aiGroupDefaultGroupName: "Scripture Habit AI",
+        aiGroupDefaultGroupDesc: "1-on-1 Scripture Study Group kasama ang Scripture Habit AI",
+        aiGroupWelcomeMessage: "Maligayang pagdating sa Scripture Habit AI Group! Mag-aral tayo ng mga banal na kasulatan at magbahagi ng mga natutunan araw-araw. Sumusuporta kami sa iyo! 📖✨\n*Tandaan: Nagpo-post ang AI ng mga pang-araw-araw na tala, ngunit hindi pa kayang sumagot nang direkta kay {nickname} sa ngayon.",
+        aiGroupBotNickname: "Scripture Habit AI",
+        aiGroupDailyNoteText: "[Inspirasyon sa Pang-araw-araw na Pag-aaral] Ang patuloy na pagbubukas ng mga banal na kasulatan araw-araw ay nagdadala ng malalaking pagpapala. Palalimin natin ang ating pag-aaral ngayon! 📖✨",
+        category: "Kategorya",
+        chapter: "Kabanata",
+        comment: "Komentaryo",
+        defaultScripture: "Luma Tipan"
+    },
     notifications: {
         streak_announcement: "🎉🎉🎉 **Naabot ni {nickname} ang milestone na {streak} kabuuang araw ng pag-aaral! Ipagdiwang natin!** 🎉🎉🎉",
         note_posted_announcement: "🎉🎉🎉 **Nag-post si {nickname} ng isang tala!!** 🎉🎉🎉",

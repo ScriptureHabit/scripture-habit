@@ -1,4 +1,16 @@
-﻿export default {
+export default {
+    groupChat: {
+        aiGroupUserNoteCongratulation: "Muito bem! 🎉🎉 Até amanhã! ✨",
+        aiGroupDefaultGroupName: "Scripture Habit AI",
+        aiGroupDefaultGroupDesc: "Grupo de estudo das escrituras 1 a 1 com Scripture Habit AI",
+        aiGroupWelcomeMessage: "Bem-vindo ao Grupo Scripture Habit AI! Vamos estudar as escrituras e compartilhar aprendizados juntos todos os dias. Estamos torcendo por você! 📖✨\n*Nota: O AI publica notas diárias, mas respostas diretas a {nickname} não são suportadas nesta fase.",
+        aiGroupBotNickname: "Scripture Habit AI",
+        aiGroupDailyNoteText: "[Inspiração diária de estudo] Abrir as escrituras consistentemente todos os dias traz grandes bênçãos. Vamos aprofundar nosso aprendizado hoje! 📖✨",
+        category: "Categoria",
+        chapter: "Capítulo",
+        comment: "Comentário",
+        defaultScripture: "Velho Testamento"
+    },
     notifications: {
         streak_announcement: "🎉🎉🎉 **{nickname} atingiu um marco de {streak} dias totais de estudo! Vamos comemorar!** 🎉🎉🎉",
         note_posted_announcement: "🎉🎉🎉 **{nickname} postou uma nota!!** 🎉🎉🎉",

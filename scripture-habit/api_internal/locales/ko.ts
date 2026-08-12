@@ -1,4 +1,16 @@
-﻿export default {
+export default {
+    groupChat: {
+        aiGroupUserNoteCongratulation: "잘하셨어요! 🎉🎉 내일 또 만나요! ✨",
+        aiGroupDefaultGroupName: "스크하비 AI",
+        aiGroupDefaultGroupDesc: "스크하비 AI와 1대1로 성경을 공부하는 전용 그룹",
+        aiGroupWelcomeMessage: "스크하비 AI 그룹에 오신 것을 환영합니다! 매일 함께 성경을 읽고 느낀 점을 공유해요. 응원합니다! 📖✨\n※AI는 매일 노트를 작성하지만, 현재 단계에서는 {nickname}님께 직접 답장을 드릴 수 없습니다.",
+        aiGroupBotNickname: "스크하비 AI",
+        aiGroupDailyNoteText: "【오늘의 학습 영상】매일 꾸준히 경전을 펼치는 것이 큰 축복으로 이어집니다. 오늘도 함께 깊은 배움을 가져봐요! 📖✨",
+        category: "카테고리",
+        chapter: "장",
+        comment: "코멘트",
+        defaultScripture: "구약성경"
+    },
     notifications: {
         streak_announcement: "🎉🎉🎉 **{nickname}님이 총 학습 {streak}일의 마일스톤을 달성했습니다! 모두 함께 축하해주세요!** 🎉🎉🎉",
         note_posted_announcement: "🎉🎉🎉 **{nickname}님이 노트를 게시했습니다!!** 🎉🎉🎉",

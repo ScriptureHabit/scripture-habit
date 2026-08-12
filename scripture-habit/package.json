@@ -11,6 +11,7 @@
     "server": "npm start --prefix backend",
     "build": "tsc -b && vite build && npx tsx scripts/localize-meta.ts",
     "lint": "eslint .",
+    "check:i18n": "npx tsx api_internal/scripts/check-i18n.ts",
     "preview": "vite preview",
     "test": "vitest src",
     "test:coverage": "vitest run --coverage",

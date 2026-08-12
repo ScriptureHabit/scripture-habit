@@ -1,4 +1,16 @@
-﻿export default {
+export default {
+    groupChat: {
+        aiGroupUserNoteCongratulation: "Kazi nzuri! 🎉🎉 Tutaonana kesho! ✨",
+        aiGroupDefaultGroupName: "Scripture Habit AI",
+        aiGroupDefaultGroupDesc: "Kundi la kujifunza maandiko la 1-kwa-1 na Scripture Habit AI",
+        aiGroupWelcomeMessage: "Karibu kwenye Kundi la Scripture Habit AI! Tuwe tukijifunza maandiko na kushiriki mafundisho kila siku. Tunakuunga mkono! 📖✨\n*Kumbuka: AI inachapisha maelezo kila siku, lakini majibu ya moja kwa moja kwa {nickname} hayatumiki kwa sasa.",
+        aiGroupBotNickname: "Scripture Habit AI",
+        aiGroupDailyNoteText: "[Ushawishi wa Kujifunza Kila Siku] Kufungua maandiko mara kwa mara kila siku huleta baraka kubwa. Hebu tuzidishe ujuzi wetu leo! 📖✨",
+        category: "Kipengele",
+        chapter: "Sura",
+        comment: "Maoni",
+        defaultScripture: "Agano la Kale"
+    },
     notifications: {
         streak_announcement: "🎉🎉🎉 **{nickname} amefikia hatua muhimu ya siku {streak} za jumla za masomo! Tusherehekee!** 🎉🎉🎉",
         note_posted_announcement: "🎉🎉🎉 **{nickname} amechapisha dokezo!!** 🎉🎉🎉",
