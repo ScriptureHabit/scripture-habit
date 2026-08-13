@@ -499,8 +499,9 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Cron Routes Integration',
             const latestSnap = await db.collection('groups').doc(AI_TEST_GROUP).collection('messages_latest').doc('latest').get();
             expect(latestSnap.exists).toBe(true);
             const latestMsgs = latestSnap.data()?.messages || [];
-            expect(latestMsgs.length).toBeGreaterThanOrEqual(1);
-            expect(latestMsgs[latestMsgs.length - 1].senderId).toBe('ai-partner-bot');
+            expect(latestMsgs.length).toBeGreaterThanOrEqual(2);
+            expect(latestMsgs[latestMsgs.length - 1].senderId).toBe('system');
+            expect(latestMsgs[latestMsgs.length - 2].senderId).toBe('ai-partner-bot');
         });
 
         it('should handle already posted note idempotently and maintain messages_latest/latest', async () => {

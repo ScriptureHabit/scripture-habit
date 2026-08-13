@@ -233,6 +233,7 @@ export default {
         replyingTo: "回覆中",
         streakAnnouncement: "🎉🎉🎉 **{nickname} 達成了總計 {streak} 天的學習里程碑！大家一起為他慶祝吧！** 🎉🎉🎉",
         notePostedAnnouncement: "🎉🎉🎉 **{nickname} 發布了一則筆記！！** 🎉🎉🎉",
+        aiNotePostedAnnouncement: "🎉🎉🎉 **{nickname} 發布了一則筆記！！** 🎉🎉🎉",
         userJoined: "👋 **{nickname}** 加入了群組！",
         userLeft: "🚪 **{nickname}** 離開了群組。",
         deleteConfirmMessage: "此動作無法復原。所有訊息和資料將永久遺失。",

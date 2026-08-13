@@ -258,6 +258,7 @@ export default {
         replyingTo: "Inajibu kwa",
         streakAnnouncement: "🎉🎉🎉 **{nickname} amefikia hatua muhimu ya siku {streak} za jumla za masomo! Tusherehekee!** 🎉🎉🎉",
         notePostedAnnouncement: "🎉🎉🎉 **{nickname} amechapisha dokezo!!** 🎉🎉🎉",
+        aiNotePostedAnnouncement: "🎉🎉🎉 **{nickname} amechapisha dokezo!!** 🎉🎉🎉",
         userJoined: "👋 **{nickname}** amejiunga na kikundi!",
         userLeft: "🚪 **{nickname}** ameondoka kwenye kikundi.",
         deleteConfirmMessage: "Hatua hii haiwezi kubatilishwa. Ujumbe na data zote zitapotea kabisa.",

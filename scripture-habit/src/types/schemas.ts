@@ -47,6 +47,7 @@ export const MessageTypeEnumValues = [
   'text', 
   'streakAnnouncement', 
   'notePostedAnnouncement',
+  'aiNotePostedAnnouncement',
   'studyNote', 
   'system', 
   'userJoined', 

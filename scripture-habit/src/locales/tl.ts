@@ -259,6 +259,7 @@ export default {
         replyingTo: "Tumutugon sa",
         streakAnnouncement: "🎉🎉🎉 **Naabot ni {nickname} ang milestone na {streak} kabuuang araw ng pag-aaral! Ipagdiwang natin!** 🎉🎉🎉",
         notePostedAnnouncement: "🎉🎉🎉 **Nag-post si {nickname} ng isang tala!!** 🎉🎉🎉",
+        aiNotePostedAnnouncement: "🎉🎉🎉 **Nag-post si {nickname} ng isang tala!!** 🎉🎉🎉",
         userJoined: "👋 **{nickname}** sumali sa grupo!",
         userLeft: "🚪 **{nickname}** umalis sa grupo.",
         deleteConfirmMessage: "Hindi na mababawi ang aksyong ito. Ang lahat ng mensahe at data ay permanenteng mawawala.",

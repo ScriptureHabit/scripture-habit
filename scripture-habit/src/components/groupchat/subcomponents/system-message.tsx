@@ -89,6 +89,12 @@ const SystemMessage = ({ msg, t, kickThreshold = DEFAULT_KICK_THRESHOLD }: Syste
       });
     }
 
+    if (msg.messageType === 'aiNotePostedAnnouncement' && msg.messageData) {
+      return t('groupChat.aiNotePostedAnnouncement', {
+        nickname: displayNickname || String(msg.messageData.nickname || '').trim()
+      });
+    }
+
     if (msg.messageType === 'userJoined' && msg.messageData) {
       return t('groupChat.userJoined', {
         nickname: displayNickname || String(msg.messageData.nickname || '').trim()
@@ -155,7 +161,7 @@ const SystemMessage = ({ msg, t, kickThreshold = DEFAULT_KICK_THRESHOLD }: Syste
   };
 
   return (
-    <div id={`message-${msg.id}`} className={`message system-message ${msg.messageType === 'streakAnnouncement' ? 'streak-announcement' : ''} ${msg.messageType === 'notePostedAnnouncement' ? 'note-posted-announcement' : ''} ${msg.messageType === 'unityAnnouncement' ? 'unity-announcement' : ''}`}>
+    <div id={`message-${msg.id}`} className={`message system-message ${msg.messageType === 'streakAnnouncement' ? 'streak-announcement' : ''} ${msg.messageType === 'notePostedAnnouncement' || msg.messageType === 'aiNotePostedAnnouncement' ? 'note-posted-announcement' : ''} ${msg.messageType === 'unityAnnouncement' ? 'unity-announcement' : ''}`}>
       <div className="message-content">
         {msg.messageType === 'unityAnnouncement' && (
           <div className="unity-announcement-body">

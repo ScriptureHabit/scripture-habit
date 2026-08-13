@@ -259,6 +259,7 @@ export default {
         replyingTo: "Replying to",
         streakAnnouncement: "🎉🎉🎉 **{nickname} achieved a milestone of {streak} total study days! Let's celebrate!** 🎉🎉🎉",
         notePostedAnnouncement: "🎉🎉🎉 **{nickname} posted a note!!** 🎉🎉🎉",
+        aiNotePostedAnnouncement: "🎉🎉🎉 **{nickname} posted a note!!** 🎉🎉🎉",
         userJoined: "👋 **{nickname}** joined the group!",
         userLeft: "🚪 **{nickname}** left the group.",
         deleteConfirmMessage: "This action cannot be undone. All messages and data will be permanently lost.",

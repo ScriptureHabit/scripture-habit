@@ -260,6 +260,7 @@ export default {
         replyingTo: "Respondiendo a",
         streakAnnouncement: "🎉🎉🎉 **¡{nickname} alcanzó un hito de {streak} días totales de estudio! ¡Celebrémoslo!** 🎉🎉🎉",
         notePostedAnnouncement: "🎉🎉🎉 **¡{nickname} publicó una nota!!** 🎉🎉🎉",
+        aiNotePostedAnnouncement: "🎉🎉🎉 **¡{nickname} publicó una nota!!** 🎉🎉🎉",
         userJoined: "👋 **{nickname}** se unió al grupo!",
         userLeft: "🚪 **{nickname}** salió del grupo.",
         deleteConfirmMessage: "Esta acción no se puede deshacer. Todos los mensajes y datos se perderán permanentemente.",

@@ -14,6 +14,7 @@ export default {
     notifications: {
         streak_announcement: "🎉🎉🎉 **{nickname}さんが合計{streak}日目のノート投稿を達成しました！みんなでお祝いしましょう！** 🎉🎉🎉",
         note_posted_announcement: "🎉🎉🎉 **{nickname}さんがノートを投稿しました！！** 🎉🎉🎉",
+        ai_note_posted_announcement: "🎉🎉🎉 **{nickname}がノートを投稿しました！！** 🎉🎉🎉",
         note_posted_title: "📖 聖典学習",
         note_posted_body: "{nickname}さんがノートを投稿しました！✨",
         cheer_options: [

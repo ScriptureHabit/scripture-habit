@@ -14,6 +14,7 @@ export default {
     notifications: {
         streak_announcement: "🎉🎉🎉 **{nickname} achieved a milestone of {streak} total study days! Let's celebrate!** 🎉🎉🎉",
         note_posted_announcement: "🎉🎉🎉 **{nickname} posted a note!!** 🎉🎉🎉",
+        ai_note_posted_announcement: "🎉🎉🎉 **{nickname} posted a note!!** 🎉🎉🎉",
         note_posted_title: "📖 Scripture Study",
         note_posted_body: "{nickname} posted a note! ✨",
         cheer_options: [

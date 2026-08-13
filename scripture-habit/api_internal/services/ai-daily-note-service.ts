@@ -2,6 +2,7 @@ import { admin, db } from '../lib/firebase-admin.js';
 import { t } from '../lib/i18n.js';
 import { getAiDailyComment } from '../data/ai-daily-comments-2026.js';
 import { getUserFcmTokensAndLanguage, sendPushNotification } from '../lib/notifications.js';
+import { getMessageExpireAt } from '../lib/ttl-utils.js';
 
 export interface PostAiDailyNoteOptions {
     force?: boolean;
@@ -106,10 +107,29 @@ export class AiDailyNoteService {
             expireAt: admin.firestore.Timestamp.fromMillis(now.toMillis() + 90 * 24 * 60 * 60 * 1000)
         });
 
+        // System message announcement when AI posts a note
+        const announceTime = admin.firestore.Timestamp.fromMillis(now.toMillis() + 1000);
+        const announceMsgRef = groupRef.collection('messages').doc(`ai_note_announcement_${todayStr}`);
+        const announceMsg = t(lang, 'notifications.ai_note_posted_announcement', { nickname: botName })
+            || `🎉🎉🎉 **${botName}がノートを投稿しました！！** 🎉🎉🎉`;
+        const botAnnouncementName = t(lang, 'notifications.bot_name') || 'Scripture Habit Bot';
+
+        await announceMsgRef.set({
+            text: announceMsg,
+            senderId: 'system',
+            senderNickname: botAnnouncementName,
+            createdAt: announceTime,
+            isSystemMessage: true,
+            type: 'aiNotePostedAnnouncement',
+            messageType: 'aiNotePostedAnnouncement',
+            messageData: { nickname: botName, userId: 'ai-partner-bot' },
+            expireAt: getMessageExpireAt()
+        });
+
         await groupRef.update({
-            lastMessageAt: now,
-            lastMessageByNickname: botName,
-            lastMessageByUid: 'ai-partner-bot',
+            lastMessageAt: announceTime,
+            lastMessageByNickname: botAnnouncementName,
+            lastMessageByUid: 'system',
             lastNoteAt: now,
             lastNoteByNickname: botName,
             lastNoteByUid: 'ai-partner-bot',

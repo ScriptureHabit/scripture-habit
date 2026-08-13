@@ -259,6 +259,7 @@ export default {
         replyingTo: "กำลังตอบกลับ",
         streakAnnouncement: "🎉🎉🎉 **{nickname} บรรลุหลักไมล์เรียนรวมทั้งหมด {streak} วันแล้ว! มาร่วมยินดีกันเถอะ!** 🎉🎉🎉",
         notePostedAnnouncement: "🎉🎉🎉 **{nickname} โพสต์บันทึกแล้ว!!** 🎉🎉🎉",
+        aiNotePostedAnnouncement: "🎉🎉🎉 **{nickname} โพสต์บันทึกแล้ว!!** 🎉🎉🎉",
         userJoined: "👋 **{nickname}** เข้าร่วมกลุ่มแล้ว!",
         userLeft: "🚪 **{nickname}** ออกจากกลุ่มแล้ว",
         deleteConfirmMessage: "การดำเนินการนี้ไม่สามารถย้อนกลับได้ ข้อความและข้อมูลทั้งหมดจะสูญหายอย่างถาวร",
