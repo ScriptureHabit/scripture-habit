@@ -345,7 +345,7 @@ export default {
         autoKickErrorMismatch: "El número no coincide con tu elección. Intentémoslo una vez más.",
         autoKickSuccess: "¡Ritmo de hábito establecido! Construyamos este hábito juntos.",
         autoKickSelectedSubtext: "Estudiar las escrituras al menos una vez cada {days} días",
-        habitPaceProfileTitle: " Meta",
+        habitPaceProfileTitle: "Meta de {nickname}",
         habitPaceLetsTryTogether: "¡Vamos a lograrlo juntos!",
         habitPaceProfileDesc: "Publica una vez cada {days} días para mantenerte activo.",
         confirm: "Confirmar",

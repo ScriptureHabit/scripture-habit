@@ -345,7 +345,7 @@ export default {
         autoKickConfirmTitle: "ยืนยันเป้าหมายของคุณ",
         autoKickErrorMismatch: "ตัวเลขไม่ตรงกับการเลือกของคุณ โปรดลองอีกครั้ง",
         autoKickSuccess: "ตั้งค่าจังหวะนิสัยแล้ว! มาสร้างนิสัยนี้ไปด้วยกัน",
-        habitPaceProfileTitle: "เป้าหมาย",
+        habitPaceProfileTitle: "เป้าหมายของ {nickname}",
         habitPaceLetsTryTogether: "มาลุยด้วยกันเลย!",
         habitPaceProfileDesc: "โพสต์ทุกๆ {days} วันเพื่อใช้งานต่อไป",
         confirm: "ยืนยัน",

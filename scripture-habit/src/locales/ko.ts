@@ -349,7 +349,7 @@ export default {
         autoKickErrorMismatch: "입력한 숫자가 선택한 내용과 일치하지 않습니다. 다시 시도해 주세요.",
         autoKickSuccess: "학습 주기가 설정되었습니다! 함께 습관을 만들어 봅시다.",
         autoKickSelectedSubtext: "최소 {days}일에 한 번은 성구 공부하기",
-        habitPaceProfileTitle: "의 목표",
+        habitPaceProfileTitle: "{nickname}의 목표",
         habitPaceLetsTryTogether: "함께 힘내자!",
         habitPaceProfileDesc: "활동을 유지하려면 {days}일마다 게시하세요.",
         confirm: "확인",

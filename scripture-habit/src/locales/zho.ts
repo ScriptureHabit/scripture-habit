@@ -322,7 +322,7 @@ export default {
         autoKickConfirmTitle: "確認您的目標",
         autoKickErrorMismatch: "天數與您的選擇不符。請再試一次。",
         autoKickSuccess: "習慣節奏設定成功！讓我們一起建立這個習慣。",
-        habitPaceProfileTitle: "的目標",
+        habitPaceProfileTitle: "{nickname}的目標",
         habitPaceLetsTryTogether: "一起加油吧！",
         habitPaceProfileDesc: "每 {days} 天發布一次筆記以保持活躍。",
         confirm: "確認",

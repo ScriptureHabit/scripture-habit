@@ -1,6 +1,8 @@
-# Scripture Habit (スクハビ)
+# Scripture Habit
 
-毎日の聖書学習を仲間と一緒に習慣化する、AIリアルタイム翻訳＆グループ機能付きコミュニティWebアプリ
+English | [日本語](README.ja.md)
+
+A community web application featuring AI real-time translation & group features to make daily scripture study a habit together with friends.
 
  **Web Application**: [https://scripturehabit.app](https://scripturehabit.app)
 
@@ -14,155 +16,153 @@
 
 ---
 
-## 概要
+## Overview
 
-**Scripture Habit** は、一人だと挫折しがちな聖書学習を、仲間と一緒に楽しく継続するためのWebアプリです。レベルや連続学習日数（ストリーク）の仕組みに加えて、AIによる自動翻訳を備えており、国や言語を超えてグループで学習ノートを共有できます。
+**Scripture Habit** is a web application designed to help people consistently and enjoyably study scriptures together with friends, overcoming the common tendency to give up when studying alone. In addition to levels and consecutive study streak mechanisms, it features AI-powered automatic translation, enabling members to share study notes in groups across different countries and languages.
 
-### 開発背景
-- **課題**: 毎日の個人学習は継続が難しく、海外の友人と一緒に学びたくても言語の壁がある。
-- **解決策**: グループ機能とストリーク管理で学習を習慣化し、Gemini AI の自動翻訳で言語の異なるメンバーとも交流できる環境を作りました。
-
----
-
-## 運用データ
-
-実際に公開・運用を行っており、日々の学習アクティブユーザー数を記録しています。現在、1日平均10人以上のユーザーがこのアプリで継続的にノートを投稿しています。
-
-- 📈 **[日別ノート投稿ユーザー数 (Google スプレッドシート)](https://docs.google.com/spreadsheets/d/YOUR_SPREADSHEET_ID/edit?usp=sharing)**
+### Background & Motivation
+- **Problem**: Daily solo study is difficult to maintain continuously, and language barriers make studying with friends overseas challenging.
+- **Solution**: Built an environment where study habits are formed through group features and streak management, and members speaking different languages can interact seamlessly via Gemini AI real-time translation.
 
 ---
 
-## 主な機能
+## Operational Data
 
-### 1. ダッシュボード
+The application is actively deployed and in operation, tracking daily active users studying scriptures. Currently, an average of 10+ users post study notes daily on a continuous basis.
+
+- 📈 **[Daily Note-Posting Active Users (Google Sheet)](https://docs.google.com/spreadsheets/d/YOUR_SPREADSHEET_ID/edit?usp=sharing)**
+
+---
+
+## Key Features
+
+### 1. Dashboard
 <p align="center">
-  <img src="./docs/images/dashboard.png" width="340" alt="ダッシュボード" />
+  <img src="./docs/images/en-dashboard.png" width="340" alt="Dashboard" />
 </p>
 
-- **レベル & ストリーク表示**: 毎日のノート作成で連続学習日数やレベルが上がり、成長を実感できます。
-- **今日の学習箇所ガイド**: その日読むべき範囲が自動表示され、ワンタップで対象ページを開けます。
+- **Level & Streak Display**: Experience visible growth as continuous study days (streaks) and levels increase with daily note creation.
+- **Today's Reading Guide**: Automatically displays the recommended reading passage for the day, allowing users to open the target page with a single tap.
 
 ---
 
-### 2. ノート作成
+### 2. Note Creation
 <p align="center">
-  <img src="./docs/images/create-note.png" width="320" alt="ノート作成" />
+  <img src="./docs/images/en-create-note.png" width="320" alt="Note Creation" />
 </p>
 
-- **ノートエディタ**: 日々の気づきや感想を記録して保存します。
-- **アトミック更新処理**: ノート保存時に Firestore トランザクションを実行し、ストリーク計算・チャット同期・データ更新をまとめて行います。
+- **Note Editor**: Record and save daily insights and reflection notes.
+- **Atomic Update Processing**: Executes a Firestore transaction upon saving a note to atomically handle streak calculation, chat synchronization, and user data updates.
 
 ---
 
-### 3. マイノート・振り返り
+### 3. My Notes & Reflection
 <p align="center">
-  <img src="./docs/images/my-notes.png" width="250" alt="マイノート" />
-  <img src="./docs/images/weekly-letter.png" width="250" alt="ウィークリーレター" />
+  <img src="./docs/images/en-my-notes.png" width="250" alt="My Notes" />
+  <img src="./docs/images/en-weekly-letter.png" width="250" alt="Weekly Letter" />
 </p>
 
-- **検索 & フィルタリング**: タグやキーワードで過去の学習ノートをすぐに検索できます。
-- **AI ウィークリーレター**: 1週間のノート内容をAIが読み取り、振り返りのフィードバックを届けてくれます。
+- **Search & Filtering**: Instantly search past study notes by tags or keywords.
+- **AI Weekly Letter**: Gemini AI analyzes a week's worth of note entries to deliver personalized reflection feedback.
 
 ---
 
-### 4. グループチャット & 多言語対応
+### 4. Group Chat & Multi-language Support
 <p align="center">
-  <img src="./docs/images/group-chat.png" width="250" alt="グループチャット" />
-  <img src="./docs/images/languages.png" width="250" alt="多言語設定" />
+  <img src="./docs/images/en-group-chat.png" width="250" alt="Group Chat" />
+  <img src="./docs/images/en-languages.png" width="250" alt="Language Settings" />
 </p>
 
-- **聖句リンク自動変換**: メッセージ内の聖句参照を自動的に読みやすいリンクに変換します。
-- **AI リアルタイム自動翻訳**: 海外メンバーのメッセージや名前を即座に自動翻訳します。
+- **Automatic Scripture Link Conversion**: Automatically converts scripture references in chat messages into easy-to-read interactive links.
+- **AI Real-Time Translation**: Instantly and automatically translates messages and user names from international group members.
 
 ---
 
-### 5. 習慣化ルール & 設定
+### 5. Habit Rules & Settings
 <p align="center">
-  <img src="./docs/images/habit-rule.png" width="230" alt="習慣化ルール" />
-  <img src="./docs/images/profile.png" width="230" alt="プロフィール" />
-  <img src="./docs/images/setting.png" width="230" alt="設定画面" />
+  <img src="./docs/images/en-habit-rule.png" width="230" alt="Habit Rules" />
+  <img src="./docs/images/en-profile.png" width="230" alt="Profile" />
+  <img src="./docs/images/en-setting.png" width="230" alt="Settings" />
 </p>
 
-- **マイ習慣ルール**: マンネリを防ぐため、自分なりの学習ルールを設定できます。
-- **プロフィール設定**: アバター、言語、通知などを柔軟にカスタマイズ可能です。
+- **Personal Habit Rules**: Set custom study rules to maintain motivation and prevent routines from becoming monotonous.
+- **Profile Settings**: Flexibly customize avatar, language, notification preferences, and more.
 
 ---
 
-## 技術的な工夫と解決した課題
+## Technical Highlights & Solved Challenges
 
-### 1. チャットを開かずにノート投稿した際の新着位置（アンカー）ズレの修正
+### 1. Fixing Unread Anchor Misalignment When Posting Notes Without Opening Chat
 
-- **課題**:  
-  一般的なチャットアプリは「チャットを開いて既読にする」挙動を前提としていますが、本アプリでは「チャットを開かず、ダッシュボードからノート投稿だけを毎日続けるユーザー」という利用パターンが発生しました。
-  この場合、既読位置が昔のまま残ってしまうため、久しぶりにチャットを開いた際に「どこからが新着メッセージか」の位置（アンカー）が大きくずれる問題がありました。
+- **Problem**:  
+  Standard chat applications assume users "open the chat to mark messages as read." However, in Scripture Habit, a specific user behavior pattern emerged where users "post study notes daily directly from the dashboard without opening the chat room."  
+  In this scenario, the last-read position remained stuck at an old timestamp. When the user eventually opened the chat after several days, the unread message anchor was misplaced significantly.
 
-- **解決策**:  
-  ・ **ノート投稿時の既読タイムスタンプ更新**:  
-     ノート保存の Firestore トランザクション内で、`lastReadTimestamp`（最終既読時刻）も自動更新。「ノート投稿＝アプリで活動した」とみなすロジックに変更しました。
-  
-  ・ **新着アンカー計算のロジック化 (`computeUnreadAnchorId`)**:  
-     取得したメッセージ配列をタイムスタンプ順に並べ、「直近のノート投稿時刻より後に届いた最初のメッセージ」を新着位置として特定する純粋関数を作成しました。
-  
-  ・ **Vitest によるテスト作成**:   
-     「チャットを開かずノートだけ投稿」「未読と既読が混ざる」など 6 パターンの表示シナリオを書き、単体テストで動作を検証しました。
+- **Solution**:  
+  - **Read Timestamp Update on Note Submission**:  
+    Modified the Firestore transaction during note saving to automatically update `lastReadTimestamp`, treating "posting a note" as active application engagement.
+  - **Pure Function for Unread Anchor Calculation (`computeUnreadAnchorId`)**:  
+    Created a pure helper function that sorts fetched messages chronologically and identifies the first message received after the most recent note submission timestamp as the unread anchor.
+  - **Unit Testing with Vitest**:  
+    Wrote 6 display scenario tests (e.g., posting notes without opening chat, mixed read/unread states) to verify correct behavior.
 
-### 2. Split Context による不要な再描画の削減
-- **課題**: 1つの React Context に状態をまとめると、チャットメッセージを受信するたびに画面全体が再描画され、入力パフォーマンスが低下する懸念がありました。
-- **解決策**: 状態と操作を `DataContext`, `MessageActionsContext`, `GroupActionsContext`, `UIActionsContext` の 4 つに分割（Split Context）。不要なコンポーネントの再描画を抑えました。
+### 2. Reducing Unnecessary Re-renders via Split Context
+- **Problem**: Storing all global state in a single React Context caused full component tree re-renders whenever a new chat message was received, threatening input performance.
+- **Solution**: Separated state and actions into 4 distinct contexts (`DataContext`, `MessageActionsContext`, `GroupActionsContext`, `UIActionsContext`), preventing unnecessary re-renders of unrelated components.
 
 ---
 
-## セキュリティ & テスト
+## Security & Testing
 
-- **セキュリティ**: Firebase AppCheck と Zod による入力値バリデーション
-- **エラー監視**: Sentry を導入し、本番環境でのエラーログを追跡
-- **テスト**: Vitest（単体テスト）と Playwright（E2Eテスト）によるリグレッション防止
+- **Security**: Firebase AppCheck and Zod input validation
+- **Error Monitoring**: Sentry integration for real-time production error logging
+- **Testing**: Vitest (Unit testing) and Playwright (E2E testing) to prevent regressions
 
 ---
 
-## 技術スタック
+## Tech Stack
 
-| カテゴリ | 使用技術 |
+| Category | Technologies |
 | :--- | :--- |
-| **フロントエンド** | React 19, TypeScript 7.0 (Native), Vite 8.1, Vanilla CSS |
-| **状態管理** | React Context (Split Context), `useReducer`, Zustand |
-| **バックエンド API** | Node.js 26.0, Express 5.0, Vercel Serverless Functions |
-| **データベース / 認証** | Google Cloud Firestore, Firebase Authentication, Firebase AppCheck |
-| **AI** | Google Gemini API (自動翻訳・ウィークリーレター生成) |
-| **API ドキュメント** | OpenAPI 3.0, Swagger UI (`/api/docs`) |
-| **テスト** | Vitest (単体テスト), Playwright (E2E テスト) |
+| **Frontend** | React 19, TypeScript 7.0 (Native), Vite 8.1, Vanilla CSS |
+| **State Management** | React Context (Split Context), `useReducer`, Zustand |
+| **Backend API** | Node.js 26.0, Express 5.0, Vercel Serverless Functions |
+| **Database / Auth** | Google Cloud Firestore, Firebase Authentication, Firebase AppCheck |
+| **AI** | Google Gemini API (Automatic Translation & Weekly Letter Generation) |
+| **API Documentation** | OpenAPI 3.0, Swagger UI (`/api/docs`) |
+| **Testing** | Vitest (Unit), Playwright (E2E) |
 
-### データベース設計 (ER図)
+### Database Schema (ER Diagram)
 <p align="center">
   <img src="./docs/images/ER-diagram.png" width="850" alt="ER Diagram" />
 </p>
 
-### ディレクトリ構造
+### Directory Architecture
 <p align="center">
   <img src="./docs/images/directory-path-architecture.png" width="850" alt="Directory Architecture" />
 </p>
 
 ---
 
-## API 仕様書 (Swagger UI)
+## API Documentation (Swagger UI)
 
-OpenAPI 3.0 に準拠した Swagger UI を公開しています。
+Public Swagger UI conforming to OpenAPI 3.0 specification is available:
 
-- **[Swagger UI 画面](https://scripturehabit.app/api/docs)**: `https://scripturehabit.app/api/docs`
+- **[Swagger UI Screen](https://scripturehabit.app/api/docs)**: `https://scripturehabit.app/api/docs`
 - **[OpenAPI JSON](https://scripturehabit.app/api/openapi.json)**: `https://scripturehabit.app/api/openapi.json`
 
 ---
 
-## ドキュメント
-
-### 日本語版
-- **[ドキュメント目次](./docs/README.md)**: 各技術ドキュメントのインデックス。
-- **[アーキテクチャ設計書](./docs/architecture.md)**: ディレクトリ構造と全体レイヤーの解説。
-- **[チャット & ダッシュボード同期設計](./docs/feature-chat-dashboard.md)**: リアルタイム同期と Firestore リスナーの仕様。
-- **[ノート投稿 & ストリーク計算ロジック](./docs/logic-note-posting.md)**: 連続学習記録、レベルアップ、トランザクションの詳細。
+## Documentation
 
 ### English Version
 - **[Technical Documentation Index](./docs/en/README.md)**
 - **[Architecture & Structure](./docs/en/architecture.md)**
 - **[Chat & Dashboard Sync](./docs/en/feature-chat-dashboard.md)**
 - **[Note Posting Mechanism](./docs/en/logic-note-posting.md)**
+
+### 日本語版 (Japanese Version)
+- **[ドキュメント目次](./docs/README.md)**
+- **[アーキテクチャ設計書](./docs/architecture.md)**
+- **[チャット & ダッシュボード同期設計](./docs/feature-chat-dashboard.md)**
+- **[ノート投稿 & ストリーク計算ロジック](./docs/logic-note-posting.md)**

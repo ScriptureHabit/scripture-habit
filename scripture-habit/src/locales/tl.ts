@@ -344,7 +344,7 @@ export default {
         autoKickConfirmTitle: "Kumpirmahin ang lyong Layunin",
         autoKickErrorMismatch: "Ang numero ay hindi tumutugma sa iyong pinili. Pakisubukang muli.",
         autoKickSuccess: "Naka-set na ang habit pace! Sabay tayong bumuo ng gawi na ito.",
-        habitPaceProfileTitle: " ang Layunin",
+        habitPaceProfileTitle: "Layunin ni {nickname}",
         habitPaceLetsTryTogether: "Sama-sama nating gawin ito!",
         habitPaceProfileDesc: "Mag-post tuwing {days} araw upang manatiling aktibo.",
         confirm: "Kumpirmahin",

@@ -506,7 +506,7 @@ const Profile = ({ userData, stats }: ProfileProps) => {
             <div className="profile-section">
                 <div className="habit-pace-header">
                     <UilCalendarAlt size="20" color="var(--pink)" />
-                    <h2>{t('groupChat.habitPaceProfileTitle')}</h2>
+                    <h2>{t('groupChat.habitPaceProfileTitle', { nickname: userData?.nickname || '' })}</h2>
                 </div>
                 <p className="section-desc-small">
                     {t('groupChat.habitPaceProfileDesc', { days: userData?.kickThreshold || DEFAULT_KICK_THRESHOLD })}

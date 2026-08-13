@@ -344,7 +344,7 @@ export default {
         autoKickConfirmTitle: "Confirme seu Objetivo",
         autoKickErrorMismatch: "O número não corresponde à sua escolha. Vamos tentar mais uma vez.",
         autoKickSuccess: "Ritmo de hábito definido! Vamos construir este hábito juntos.",
-        habitPaceProfileTitle: " Meta",
+        habitPaceProfileTitle: "Meta de {nickname}",
         habitPaceLetsTryTogether: "Vamos conseguir juntos!",
         habitPaceProfileDesc: "Poste uma vez a cada {days} dias para permanecer ativo.",
         confirm: "Confirmar",

@@ -300,7 +300,7 @@ export default {
         autoKickSelectedSubtext: "{days}日に一度は聖典学習をする",
         next: "次へ",
         autoKickConfirmText: "最終確認です。{days}日間ノートを投稿しなかった場合、自動退出になることを了解しましたか？確認のため「{days}」と入力してください。",
-        habitPaceProfileTitle: "の目標",
+        habitPaceProfileTitle: "{nickname}の目標",
         habitPaceLetsTryTogether: "一緒にがんばろう！",
         habitPaceProfileDesc: "{days}日に1回以上投稿して継続しましょう。",
         confirm: "確定する",

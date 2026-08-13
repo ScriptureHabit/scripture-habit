@@ -183,7 +183,7 @@ const DashboardModals = ({
                       <p className="mascot-text">{t('groupChat.habitPaceLetsTryTogether')}</p>
                     </div>
                   </div>
-                  <p style={{ fontSize: '1rem', color: '#64748b', marginBottom: '0.25rem' }}>{userData.nickname}{t('groupChat.habitPaceProfileTitle') || 'の目標'}</p>
+                  <p style={{ fontSize: '1rem', color: '#64748b', marginBottom: '0.25rem' }}>{t('groupChat.habitPaceProfileTitle', { nickname: userData.nickname || '' })}</p>
                   <p style={{ fontSize: '1.3rem', color: '#c0436b', margin: '0.5rem 0 0' }} data-testid="habit-pace-confirm-subtext">
                     {t('groupChat.autoKickSelectedSubtext', { days: selectedKickDays })}
                   </p>

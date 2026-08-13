@@ -348,7 +348,7 @@ export default {
         autoKickSelectedSubtext: "Study scripture at least once every {days} days",
         next: "Next",
         autoKickConfirmText: "Final check: You understand that if you don't post a note for {days} days, you'll be automatically removed? Please type '{days}' to confirm.",
-        habitPaceProfileTitle: "'s Goal",
+        habitPaceProfileTitle: "{nickname}'s Goal",
         habitPaceLetsTryTogether: "Let's do this together!",
         habitPaceProfileDesc: "Post once every {days} days to stay active.",
         confirm: "Confirm",

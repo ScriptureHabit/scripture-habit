@@ -323,7 +323,7 @@ export default {
         autoKickConfirmTitle: "Xác nhận mục tiêu của bạn",
         autoKickErrorMismatch: "Số không khớp với lựa chọn của bạn. Hãy thử lại một lần nữa.",
         autoKickSuccess: "Đã thiết lập nhịp độ thói quen! Hãy cùng nhau xây dựng thói quen này.",
-        habitPaceProfileTitle: " Mục tiêu",
+        habitPaceProfileTitle: "Mục tiêu của {nickname}",
         habitPaceLetsTryTogether: "Cùng nhau cố lên!",
         habitPaceProfileDesc: "Đăng bài một lần mỗi {days} ngày để duy trì hoạt động.",
         confirm: "Xác nhận",

@@ -344,7 +344,7 @@ export default {
         autoKickConfirmTitle: "Thibitisha Lengo Lako",
         autoKickErrorMismatch: "Nambari hailingani na chaguo lako. Tafadhali jaribu tena.",
         autoKickSuccess: "Kasi ya tabia imewekwa! Hebu tujenge tabia hii pamoja.",
-        habitPaceProfileTitle: "Kasi Yangu ya Tabia",
+        habitPaceProfileTitle: "Lengo la {nickname}",
         habitPaceProfileDesc: "Chapisha kila baada ya siku {days} ili kubaki hai.",
         confirm: "Thibitisha",
         inviteExpiresAt: "Inaisha mnamo",
