@@ -252,10 +252,14 @@ export class InactivityService {
             };
             groupUpdates.unityPercentage = calculateUnityPercentage(simulatedGroup as unknown as Group, [], now);
 
+            const latestRef = groupRef.collection('messages_latest').doc('latest');
+            const latestSnap = await latestRef.get();
+
             // Removal message (sent to the remaining owner/members)
             if (ownerId && ownerSnap) {
                 const lang = (ownerSnap.data() as UserDocument)?.language || 'en';
-                batch.set(groupRef.collection('messages').doc(), {
+                const msgRef = groupRef.collection('messages').doc();
+                const dbMsg = {
                     text: t(lang, 'notifications.members_removed', { count: decision.membersToRemove.length }),
                     createdAt: admin.firestore.FieldValue.serverTimestamp(),
                     senderId: 'system',
@@ -263,7 +267,25 @@ export class InactivityService {
                     type: 'inactivityRemoval',
                     messageType: 'inactivityRemoval',
                     messageData: { count: decision.membersToRemove.length }
-                });
+                };
+                batch.set(msgRef, dbMsg);
+
+                const currentMessages: Record<string, unknown>[] = (latestSnap && latestSnap.exists)
+                    ? (latestSnap.data()?.messages || [])
+                    : [];
+
+                const cacheMsg = {
+                    id: msgRef.id,
+                    ...dbMsg,
+                    createdAt: admin.firestore.Timestamp.now()
+                };
+
+                const updatedMessages = [...currentMessages, cacheMsg].slice(-25);
+                batch.set(latestRef, {
+                    groupId,
+                    messages: updatedMessages,
+                    lastUpdatedAt: admin.firestore.FieldValue.serverTimestamp()
+                }, { merge: true });
             }
 
             for (const uid of decision.membersToRemove) {

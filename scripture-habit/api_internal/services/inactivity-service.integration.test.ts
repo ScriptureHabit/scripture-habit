@@ -206,6 +206,15 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('InactivityService Integra
 
         const uDoc = await db.collection('users').doc(U_INACTIVE).get();
         expect(uDoc.data()?.groupIds).not.toContain(G2);
+
+        // Verify that the inactivity removal message is added to messages_latest/latest cache
+        const latestSnap = await db.collection('groups').doc(G2).collection('messages_latest').doc('latest').get();
+        expect(latestSnap.exists).toBe(true);
+        const messages = latestSnap.data()?.messages || [];
+        expect(messages.length).toBeGreaterThan(0);
+        const removalMsg = messages.find((m: any) => m.messageType === 'inactivityRemoval');
+        expect(removalMsg).toBeDefined();
+        expect(removalMsg.messageData?.count).toBe(1);
     });
 
     it('Scenario 3: Transfer ownership when owner is inactive', async () => {
