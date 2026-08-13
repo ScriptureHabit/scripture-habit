@@ -158,13 +158,13 @@ OpenAPI 3.0 に準拠した Swagger UI を公開しています。
 ## ドキュメント
 
 ### 日本語版
-- **[ドキュメント目次](./docs/README.md)**: 各技術ドキュメントのインデックス。
-- **[アーキテクチャ設計書](./docs/architecture.md)**: ディレクトリ構造と全体レイヤーの解説。
-- **[チャット & ダッシュボード同期設計](./docs/feature-chat-dashboard.md)**: リアルタイム同期と Firestore リスナーの仕様。
-- **[ノート投稿 & ストリーク計算ロジック](./docs/logic-note-posting.md)**: 連続学習記録、レベルアップ、トランザクションの詳細。
+- **[ドキュメント目次](./docs/ja/README.md)**: 各技術ドキュメントのインデックス。
+- **[アーキテクチャ設計書](./docs/ja/architecture.md)**: ディレクトリ構造と全体レイヤーの解説。
+- **[チャット & ダッシュボード同期設計](./docs/ja/feature-chat-dashboard.md)**: リアルタイム同期と Firestore リスナーの仕様。
+- **[ノート投稿 & ストリーク計算ロジック](./docs/ja/logic-note-posting.md)**: 連続学習記録、レベルアップ、トランザクションの詳細。
 
 ### English Version
-- **[Technical Documentation Index](./docs/en/README.md)**
-- **[Architecture & Structure](./docs/en/architecture.md)**
-- **[Chat & Dashboard Sync](./docs/en/feature-chat-dashboard.md)**
-- **[Note Posting Mechanism](./docs/en/logic-note-posting.md)**
+- **[Technical Documentation Index](./docs/README.md)**
+- **[Architecture & Structure](./docs/architecture.md)**
+- **[Chat & Dashboard Sync](./docs/feature-chat-dashboard.md)**
+- **[Note Posting Mechanism](./docs/logic-note-posting.md)**
