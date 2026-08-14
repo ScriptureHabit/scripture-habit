@@ -94,14 +94,19 @@ We follow Conventional Commits:
 
 ## Adding or Updating Translations
 
-Translations are located under `scripture-habit/src/locales/`:
-- `en.ts` (Master translation file)
-- `es.ts`, `ja.ts`, `ko.ts`, `pt.ts`, `sw.ts`, `th.ts`, `tl.ts`, `vi.ts`, `zho.ts`
-- Book name translations: `scripture-habit/src/locales/books/`
+Translations are centralized and modular:
+- **UI Translations**: `scripture-habit/src/locales/<lang>.ts` (`en.ts` is the master translation file)
+- **Scripture Book Names**: `scripture-habit/src/locales/books/<lang>.ts`
+- **Language Metadata**: `scripture-habit/src/config/languages.ts`
 
-When adding or updating translations:
-1. Ensure all keys present in `en.ts` exist in the target language file.
-2. Run `npm run check:i18n` to verify full translation key coverage.
+### 1. Improving Existing Translations
+Edit the relevant `src/locales/<lang>.ts` or `src/locales/books/<lang>.ts` file and submit a pull request.
+
+### 2. Adding a New Language
+Adding a new language is straightforward:
+1. Create `src/locales/<lang>.ts` and `src/locales/books/<lang>.ts` using `en.ts` as a template.
+2. Add the new language configuration to `scripture-habit/src/config/languages.ts` (language code, native name, translation key, flag emoji, and Gospel Library language code).
+3. Run `npm run check:i18n` to verify full translation key coverage.
 
 ---
 
@@ -205,16 +210,21 @@ Conventional Commits に準拠しています：
 
 ---
 
-## 翻訳の追加・更新について
+## 翻訳の追加・修正について
 
-翻訳ファイルは `scripture-habit/src/locales/` 配下に配置されています：
-* `en.ts`（マスター翻訳ファイル）
-* `es.ts`, `ja.ts`, `ko.ts`, `pt.ts`, `sw.ts`, `th.ts`, `tl.ts`, `vi.ts`, `zho.ts`
-* 聖典の書名翻訳: `scripture-habit/src/locales/books/`
+本プロジェクトの翻訳システムは一元化され、モジュール化されています：
+* **UI翻訳ファイル**: `scripture-habit/src/locales/<言語コード>.ts`（`en.ts` がマスターファイル）
+* **聖典の書名翻訳ファイル**: `scripture-habit/src/locales/books/<言語コード>.ts`
+* **言語メタデータ設定**: `scripture-habit/src/config/languages.ts`
 
-翻訳を追加・更新する際のポイント：
-1. `en.ts` に存在するすべてのキーが対象の言語ファイルにも含まれていることを確認してください。
-2. `npm run check:i18n` を実行して、翻訳キーの漏れがないかを検証できます。
+### 1. 既存言語の修正・改善
+該当する `src/locales/<lang>.ts` や `src/locales/books/<lang>.ts` を直接修正し、Pull Request を送信してください。
+
+### 2. 新しい言語の追加
+新しい言語の追加は以下の簡単な手順で行えます：
+1. `en.ts` をテンプレートとして、`src/locales/<lang>.ts` と `src/locales/books/<lang>.ts` を作成します。
+2. `src/config/languages.ts` に新しい言語の設定（コード、ネイティブ言語名、翻訳キー、国旗絵文字、福音ライブラリ言語コード）を1行追加します。
+3. `npm run check:i18n` を実行して、翻訳キーの漏れがないかを確認します。
 
 ---
 

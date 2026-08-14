@@ -1,17 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../hooks/use-language';
-import { Language } from '../../context/language-context';
+import { LANGUAGES } from '../../config/languages';
 import Button from '../button/button';
 import './landing-page.css';
 import Footer from '../footer/footer';
 import { UilGlobe, UilMultiply, UilShare, UilPlusSquare, UilApps } from '@iconscout/react-unicons';
-
-interface LanguageOption {
-    code: Language;
-    name: string;
-    flag: string;
-}
 
 
 const LandingPage = () => {
@@ -57,20 +51,7 @@ const LandingPage = () => {
         }
     };
 
-    const languages: LanguageOption[] = [
-        { code: 'en', name: 'English', flag: '🇺🇸' },
-        { code: 'ja', name: '日本語', flag: '🇯🇵' },
-        { code: 'pt', name: 'Português', flag: '🇧🇷' },
-        { code: 'es', name: 'Español', flag: '🇪🇸' },
-        { code: 'zho', name: '繁體中文', flag: '🇹🇼' },
-        { code: 'ko', name: '한국어', flag: '🇰🇷' },
-        { code: 'vi', name: 'Tiếng Việt', flag: '🇻🇳' },
-        { code: 'th', name: 'ไทย', flag: '🇹🇭' },
-        { code: 'tl', name: 'Tagalog', flag: '🇵🇭' },
-        { code: 'sw', name: 'Kiswahili', flag: '🇰🇪' },
-    ];
-
-    const currentLang = languages.find(l => l.code === language) || languages[0];
+    const currentLang = LANGUAGES.find(l => l.code === language) || LANGUAGES[0];
 
 
     return (
@@ -93,7 +74,7 @@ const LandingPage = () => {
 
                     {isLangMenuOpen && (
                         <div className="lang-dropdown" role="menu">
-                            {languages.map((lang) => (
+                            {LANGUAGES.map((lang) => (
                                 <div
                                     key={lang.code}
                                     className={`lang-option ${language === lang.code ? 'active' : ''}`}

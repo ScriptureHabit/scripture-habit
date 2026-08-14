@@ -1,20 +1,4 @@
-/**
- * LDS.org (ChurchofJesusChrist.org) URL localizer.
- * Synchronizes the 'lang' parameter with the app's current language setting.
- */
-
-const LDS_LANG_MAP: Record<string, string> = {
-  'ja': 'jpn',
-  'en': 'eng',
-  'es': 'spa',
-  'pt': 'por',
-  'ko': 'kor',
-  'zho': 'zho',
-  'vi': 'vie',
-  'th': 'tha',
-  'tl': 'tgl',
-  'sw': 'swa'
-};
+import { getLdsLanguageCode } from '../config/languages';
 
 /**
  * Replaces or adds the language parameter in a Church URL.
@@ -28,7 +12,7 @@ export const localizeLdsUrl = (url: string | null | undefined, langCode: string)
   if (!url) return url;
 
   // Map app lang code to LDS lang parameter
-  const targetLang = LDS_LANG_MAP[langCode] || 'eng';
+  const targetLang = getLdsLanguageCode(langCode);
 
   try {
     const urlObj = new URL(url);

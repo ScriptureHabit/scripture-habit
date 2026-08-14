@@ -1,18 +1,8 @@
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
+import { fileURLToPath, pathToFileURL } from 'url';
 import { dirname } from 'path';
-
-// Import locales
-import es from '../src/locales/es';
-import ja from '../src/locales/ja';
-import ko from '../src/locales/ko';
-import pt from '../src/locales/pt';
-import sw from '../src/locales/sw';
-import th from '../src/locales/th';
-import tl from '../src/locales/tl';
-import vi from '../src/locales/vi';
-import zho from '../src/locales/zho';
+import { LANGUAGES } from '../src/config/languages';
 
 interface LocaleData {
   seo?: {
@@ -22,29 +12,18 @@ interface LocaleData {
   [key: string]: unknown;
 }
 
-const locales: Record<string, LocaleData> = {
-  es,
-  ja,
-  ko,
-  pt,
-  sw,
-  th,
-  tl,
-  vi,
-  zho,
-};
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const DIST_DIR = path.resolve(__dirname, '../dist');
+const LOCALES_DIR = path.resolve(__dirname, '../src/locales');
 const INDEX_HTML_PATH = path.join(DIST_DIR, 'index.html');
 
 function escapeHtmlAttr(str: string): string {
   return str.replace(/"/g, '&quot;');
 }
 
-function localizeMeta() {
+async function localizeMeta() {
   if (!fs.existsSync(INDEX_HTML_PATH)) {
     console.error(`Error: index.html not found at ${INDEX_HTML_PATH}. Make sure to run 'vite build' first.`);
     process.exit(1);
@@ -52,7 +31,16 @@ function localizeMeta() {
 
   const originalHtml = fs.readFileSync(INDEX_HTML_PATH, 'utf-8');
 
-  for (const [lang, localeData] of Object.entries(locales)) {
+  for (const langConfig of LANGUAGES) {
+    if (langConfig.code === 'en') continue;
+
+    const lang = langConfig.code;
+    const localeFilePath = path.join(LOCALES_DIR, `${lang}.ts`);
+    if (!fs.existsSync(localeFilePath)) continue;
+
+    const module = await import(pathToFileURL(localeFilePath).href);
+    const localeData: LocaleData = module.default || {};
+
     const rawTitle = localeData.seo?.title || 'Scripture Habit';
     const rawDescription = localeData.seo?.description || '';
 
@@ -105,4 +93,7 @@ function localizeMeta() {
   }
 }
 
-localizeMeta();
+localizeMeta().catch((err) => {
+  console.error('Error running localizeMeta:', err);
+  process.exit(1);
+});

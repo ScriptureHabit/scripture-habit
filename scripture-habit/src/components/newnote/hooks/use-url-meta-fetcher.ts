@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import apiClient from '../../../utils/api-client';
 import { auth } from '../../../firebase';
+import { getLdsLanguageCode } from '../../../config/languages';
 
 /**
  * Hook to fetch metadata for Church URLs (GC, Liahona, etc.) during note creation.
@@ -18,9 +19,7 @@ export const useUrlMetaFetcher = (chapter: string, scripture: string, language: 
             if ((isUrl || isShortcode) && (scripture === 'General Conference' || scripture === 'BYU Speeches' || scripture === 'Other')) {
                 setUrlLoading(true);
                 try {
-                    // Map app language to API lang
-                    const LAN_MAP: Record<string, string> = { 'ja': 'jpn', 'en': 'eng', 'pt': 'por', 'es': 'spa', 'zho': 'zho', 'ko': 'kor', 'vi': 'vie', 'th': 'tha', 'tl': 'tgl', 'sw': 'swa' };
-                    const apiLang = LAN_MAP[language] || 'eng';
+                    const apiLang = getLdsLanguageCode(language);
 
                     let targetUrl = chapter;
                     if (!targetUrl.startsWith('http')) {

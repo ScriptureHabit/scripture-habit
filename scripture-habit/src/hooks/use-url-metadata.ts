@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { safeStorage } from '../utils/storage';
 import type { Language } from '../context/language-context';
+import { getLdsLanguageCode } from '../config/languages';
 import { auth } from '../firebase';
 import apiClient from '../utils/api-client';
 
@@ -14,20 +15,6 @@ interface UseUrlMetadataResult {
     loading: boolean;
     error: Error | null;
 }
-
-// Map app language codes to Church API language parameters
-const LANGUAGE_MAP: Record<string, string> = {
-  'en': 'eng',
-  'ja': 'jpn',
-  'pt': 'por',
-  'es': 'spa',
-  'zho': 'zho',
-  'vi': 'vie',
-  'th': 'tha',
-  'ko': 'kor',
-  'tl': 'tgl',
-  'sw': 'swa'
-};
 
 // Internal memory cache to avoid unnecessary I/O
 const memoryCache: Record<string, UrlMetadata> = {};
@@ -82,7 +69,7 @@ export const useUrlMetadata = (
                 }
 
                 const isChurchUrl = targetUrl.includes('churchofjesuschrist.org') || targetUrl.includes('general-conference');
-                const apiLang = LANGUAGE_MAP[language] || 'eng';
+                const apiLang = getLdsLanguageCode(language);
                 
                 const endpoint = isChurchUrl ? '/api/preview/fetch-church-metadata' : '/api/preview/url-preview';
                 

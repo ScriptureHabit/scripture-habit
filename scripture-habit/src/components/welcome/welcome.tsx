@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import Button from '../button/button';
 import Mascot from '../mascot/mascot';
 import { useLanguage } from '../../hooks/use-language';
+import { LANGUAGES } from '../../config/languages';
 import BrowserWarningModal from '../browserwarningmodal/browser-warning-modal';
 import { isInAppBrowser } from '../../utils/browser-detection';
 import './welcome.css';
@@ -45,66 +46,16 @@ const Welcome = () => {
                         {t('welcome.chooseLanguage')}
                     </p>
                     <div className="language-buttons">
-                        <button
-                            className={`lang-btn ${language === 'en' ? 'active' : ''}`}
-                            onClick={() => setLanguage('en')}
-                        >
-                            English
-                        </button>
-                        <button
-                            className={`lang-btn ${language === 'ja' ? 'active' : ''}`}
-                            onClick={() => setLanguage('ja')}
-                        >
-                            日本語
-                        </button>
-                        <button
-                            className={`lang-btn ${language === 'pt' ? 'active' : ''}`}
-                            onClick={() => setLanguage('pt')}
-                        >
-                            Português
-                        </button>
-                        <button
-                            className={`lang-btn ${language === 'zho' ? 'active' : ''}`}
-                            onClick={() => setLanguage('zho')}
-                        >
-                            繁體中文
-                        </button>
-                        <button
-                            className={`lang-btn ${language === 'es' ? 'active' : ''}`}
-                            onClick={() => setLanguage('es')}
-                        >
-                            Español
-                        </button>
-                        <button
-                            className={`lang-btn ${language === 'vi' ? 'active' : ''}`}
-                            onClick={() => setLanguage('vi')}
-                        >
-                            Tiếng Việt
-                        </button>
-                        <button
-                            className={`lang-btn ${language === 'th' ? 'active' : ''}`}
-                            onClick={() => setLanguage('th')}
-                        >
-                            ไทย
-                        </button>
-                        <button
-                            className={`lang-btn ${language === 'ko' ? 'active' : ''}`}
-                            onClick={() => setLanguage('ko')}
-                        >
-                            한국어
-                        </button>
-                        <button
-                            className={`lang-btn ${language === 'tl' ? 'active' : ''}`}
-                            onClick={() => setLanguage('tl')}
-                        >
-                            Tagalog
-                        </button>
-                        <button
-                            className={`lang-btn ${language === 'sw' ? 'active' : ''}`}
-                            onClick={() => setLanguage('sw')}
-                        >
-                            Swahili
-                        </button>
+                        {LANGUAGES.map((lang) => (
+                            <button
+                                key={lang.code}
+                                className={`lang-btn ${language === lang.code ? 'active' : ''}`}
+                                onClick={() => setLanguage(lang.code)}
+                                data-testid={`welcome-lang-${lang.code}`}
+                            >
+                                {lang.name}
+                            </button>
+                        ))}
                     </div>
                 </div>
 

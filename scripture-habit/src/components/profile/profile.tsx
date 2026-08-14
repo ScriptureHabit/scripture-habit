@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, ChangeEvent } from 'react';
 import './profile.css';
 import { useLanguage } from '../../hooks/use-language';
+import { LANGUAGES } from '../../config/languages';
 import { useSettings } from '../../context/settings-context';
 import { auth, storage } from '../../firebase';
 import { useNavigate } from 'react-router-dom';
@@ -608,86 +609,17 @@ const Profile = ({ userData, stats }: ProfileProps) => {
             <div className="profile-section">
                 <h2>{t('profile.language')}</h2>
                 <div className="language-options">
-                    <div
-                        className={`language-option ${language === 'en' ? 'active' : ''}`}
-                        onClick={() => setLanguage('en')}
-                        data-testid="language-option-en"
-                    >
-                        <span className="lang-flag">🇺🇸</span>
-                        <span className="lang-name">{t('languages.english')}</span>
-                    </div>
-                    <div
-                        className={`language-option ${language === 'ja' ? 'active' : ''}`}
-                        onClick={() => setLanguage('ja')}
-                        data-testid="language-option-ja"
-                    >
-                        <span className="lang-flag">🇯🇵</span>
-                        <span className="lang-name">{t('languages.japanese')}</span>
-                    </div>
-                    <div
-                        className={`language-option ${language === 'pt' ? 'active' : ''}`}
-                        onClick={() => setLanguage('pt')}
-                        data-testid="language-option-pt"
-                    >
-                        <span className="lang-flag">🇧🇷</span>
-                        <span className="lang-name">{t('languages.portuguese')}</span>
-                    </div>
-                    <div
-                        className={`language-option ${language === 'zho' ? 'active' : ''}`}
-                        onClick={() => setLanguage('zho')}
-                        data-testid="language-option-zho"
-                    >
-                        <span className="lang-flag">🇹🇼</span>
-                        <span className="lang-name">{t('languages.chinese')}</span>
-                    </div>
-                    <div
-                        className={`language-option ${language === 'es' ? 'active' : ''}`}
-                        onClick={() => setLanguage('es')}
-                        data-testid="language-option-es"
-                    >
-                        <span className="lang-flag">🇪🇸</span>
-                        <span className="lang-name">{t('languages.spanish')}</span>
-                    </div>
-                    <div
-                        className={`language-option ${language === 'vi' ? 'active' : ''}`}
-                        onClick={() => setLanguage('vi')}
-                        data-testid="language-option-vi"
-                    >
-                        <span className="lang-flag">🇻🇳</span>
-                        <span className="lang-name">{t('languages.vietnamese')}</span>
-                    </div>
-                    <div
-                        className={`language-option ${language === 'th' ? 'active' : ''}`}
-                        onClick={() => setLanguage('th')}
-                        data-testid="language-option-th"
-                    >
-                        <span className="lang-flag">🇹🇭</span>
-                        <span className="lang-name">{t('languages.thai')}</span>
-                    </div>
-                    <div
-                        className={`language-option ${language === 'ko' ? 'active' : ''}`}
-                        onClick={() => setLanguage('ko')}
-                        data-testid="language-option-ko"
-                    >
-                        <span className="lang-flag">🇰🇷</span>
-                        <span className="lang-name">{t('languages.korean')}</span>
-                    </div>
-                    <div
-                        className={`language-option ${language === 'tl' ? 'active' : ''}`}
-                        onClick={() => setLanguage('tl')}
-                        data-testid="language-option-tl"
-                    >
-                        <span className="lang-flag">🇵🇭</span>
-                        <span className="lang-name">{t('languages.tagalog')}</span>
-                    </div>
-                    <div
-                        className={`language-option ${language === 'sw' ? 'active' : ''}`}
-                        onClick={() => setLanguage('sw')}
-                        data-testid="language-option-sw"
-                    >
-                        <span className="lang-flag">🇰🇪</span>
-                        <span className="lang-name">{t('languages.swahili')}</span>
-                    </div>
+                    {LANGUAGES.map((lang) => (
+                        <div
+                            key={lang.code}
+                            className={`language-option ${language === lang.code ? 'active' : ''}`}
+                            onClick={() => setLanguage(lang.code)}
+                            data-testid={`language-option-${lang.code}`}
+                        >
+                            <span className="lang-flag">{lang.flag}</span>
+                            <span className="lang-name">{t(lang.translationKey)}</span>
+                        </div>
+                    ))}
                 </div>
 
             </div>

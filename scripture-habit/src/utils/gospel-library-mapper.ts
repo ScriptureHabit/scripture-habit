@@ -1,4 +1,5 @@
 import { parseStructuredNoteText } from './note-parser-utils';
+import { LANGUAGES } from '../config/languages';
 
 const VOLUME_MAPPINGS: Record<string, string[]> = {
     ot: [
@@ -43,17 +44,9 @@ const VOLUME_MAPPINGS: Record<string, string[]> = {
     ]
 };
 
-const LANGUAGE_PARAMS: Record<string, string> = {
-    ja: "?lang=jpn",
-    pt: "?lang=por",
-    zho: "?lang=zho",
-    es: "?lang=spa",
-    vi: "?lang=vie",
-    th: "?lang=tha",
-    ko: "?lang=kor",
-    tl: "?lang=tgl",
-    sw: "?lang=swa",
-};
+const LANGUAGE_PARAMS: Record<string, string> = Object.fromEntries(
+    LANGUAGES.filter(l => l.code !== 'en').map(l => [l.code, `?lang=${l.ldsCode}`])
+);
 
 const SLUG_TO_VOLUME: Record<string, string> = {
     'gen': 'ot', 'ex': 'ot', 'lev': 'ot', 'num': 'ot', 'deut': 'ot', 'josh': 'ot', 'judg': 'ot', 'ruth': 'ot',

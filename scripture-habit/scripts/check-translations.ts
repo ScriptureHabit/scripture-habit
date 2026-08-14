@@ -1,30 +1,17 @@
-import en from '../src/locales/en';
-import ja from '../src/locales/ja';
-import es from '../src/locales/es';
-import ko from '../src/locales/ko';
-import pt from '../src/locales/pt';
-import sw from '../src/locales/sw';
-import th from '../src/locales/th';
-import tl from '../src/locales/tl';
-import vi from '../src/locales/vi';
-import zho from '../src/locales/zho';
-
-import enBooks from '../src/locales/books/en';
-import jaBooks from '../src/locales/books/ja';
-import esBooks from '../src/locales/books/es';
-import koBooks from '../src/locales/books/ko';
-import ptBooks from '../src/locales/books/pt';
-import swBooks from '../src/locales/books/sw';
-import thBooks from '../src/locales/books/th';
-import tlBooks from '../src/locales/books/tl';
-import viBooks from '../src/locales/books/vi';
-import zhoBooks from '../src/locales/books/zho';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath, pathToFileURL } from 'url';
+import { dirname } from 'path';
+import { LANGUAGES } from '../src/config/languages';
 
 type TranslationValue = string | string[] | { [key: string]: TranslationValue };
 type TranslationBundle = { [key: string]: TranslationValue };
 
-const uiLocales: Record<string, TranslationBundle> = { en, ja, es, ko, pt, sw, th, tl, vi, zho };
-const bookLocales: Record<string, TranslationBundle> = { en: enBooks, ja: jaBooks, es: esBooks, ko: koBooks, pt: ptBooks, sw: swBooks, th: thBooks, tl: tlBooks, vi: viBooks, zho: zhoBooks };
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const LOCALES_DIR = path.resolve(__dirname, '../src/locales');
+const BOOKS_DIR = path.resolve(__dirname, '../src/locales/books');
 
 function getKeys(obj: TranslationValue, prefix = ''): string[] {
   if (typeof obj !== 'object' || obj === null || Array.isArray(obj)) {
@@ -77,7 +64,38 @@ function checkLocales(locales: Record<string, TranslationBundle>, label: string)
     console.log("No missing keys found across all locales!");
   }
   console.log("\n");
+  return !hasMissing;
 }
 
-checkLocales(uiLocales, "UI Locales");
-checkLocales(bookLocales, "Book Locales");
+async function run() {
+  const uiLocales: Record<string, TranslationBundle> = {};
+  const bookLocales: Record<string, TranslationBundle> = {};
+
+  for (const langConfig of LANGUAGES) {
+    const lang = langConfig.code;
+    const uiPath = path.join(LOCALES_DIR, `${lang}.ts`);
+    const bookPath = path.join(BOOKS_DIR, `${lang}.ts`);
+
+    if (fs.existsSync(uiPath)) {
+      const mod = await import(pathToFileURL(uiPath).href);
+      uiLocales[lang] = mod.default;
+    }
+
+    if (fs.existsSync(bookPath)) {
+      const mod = await import(pathToFileURL(bookPath).href);
+      bookLocales[lang] = mod.default;
+    }
+  }
+
+  const uiOk = checkLocales(uiLocales, "UI Locales");
+  const bookOk = checkLocales(bookLocales, "Book Locales");
+
+  if (!uiOk || !bookOk) {
+    process.exit(1);
+  }
+}
+
+run().catch((err) => {
+  console.error("Error checking translations:", err);
+  process.exit(1);
+});
