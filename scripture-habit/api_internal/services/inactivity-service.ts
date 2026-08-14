@@ -187,6 +187,7 @@ export class InactivityService {
             // Cleanup user refs first
             const batch = db.batch();
             for (const member of memberList) {
+                if (member.uid === 'ai-partner-bot' || member.uid === groupData.aiCompanionUid) continue;
                 const userRef = db.collection('users').doc(member.uid);
                 batch.set(userRef, {
                     groupIds: admin.firestore.FieldValue.arrayRemove(groupId),

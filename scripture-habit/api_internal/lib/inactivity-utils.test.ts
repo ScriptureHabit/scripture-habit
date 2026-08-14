@@ -45,6 +45,39 @@ describe('inactivity-utils', () => {
 
                 expect(result.shouldDeleteGroup).toBe(true);
             });
+
+            it('should delete an AI group if the human owner is inactive, even if ai-partner-bot is present/active', () => {
+                const group: InactivityGroupData = { 
+                    ownerUserId: 'human_owner',
+                    isAiGroup: true,
+                    aiCompanionUid: 'ai-partner-bot'
+                };
+                const members = [
+                    createMember('human_owner', { joinedAt: threeDaysAnd1sAgo, kickThreshold: 3 }),
+                    createMember('ai-partner-bot', { joinedAt: oneDayAgo, kickThreshold: 999 })
+                ];
+
+                const result = decideGroupInactivity(group, members, now);
+
+                expect(result.shouldDeleteGroup).toBe(true);
+                expect(result.newOwnerId).toBeUndefined();
+            });
+
+            it('should not transfer ownership to ai-partner-bot in an AI group', () => {
+                const group: InactivityGroupData = { 
+                    ownerUserId: 'human_owner',
+                    isAiGroup: true
+                };
+                const members = [
+                    createMember('human_owner', { joinedAt: threeDaysAnd1sAgo, kickThreshold: 3 }),
+                    createMember('ai-partner-bot', { joinedAt: oneDayAgo, kickThreshold: 999 })
+                ];
+
+                const result = decideGroupInactivity(group, members, now);
+
+                expect(result.newOwnerId).not.toBe('ai-partner-bot');
+                expect(result.shouldDeleteGroup).toBe(true);
+            });
         });
 
         describe('Member Status & Thresholds', () => {

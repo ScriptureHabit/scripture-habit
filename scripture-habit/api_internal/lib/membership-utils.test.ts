@@ -59,6 +59,19 @@ describe('MembershipUtils Unit Tests', () => {
         expect(updates.isDeleted).toBe(true);
     });
 
+    it('should set isDeleted: true for AI group when all human members are removed even if bot remains', () => {
+        const aiGroup: GroupDocument = {
+            isAiGroup: true,
+            aiCompanionUid: 'ai-partner-bot',
+            members: ['u1', 'ai-partner-bot'],
+            membersCount: 2
+        };
+        const updates = getGroupUpdatesForMultipleRemovals(aiGroup, ['u1']);
+        
+        expect(updates.membersCount).toBe(1);
+        expect(updates.isDeleted).toBe(true);
+    });
+
     it('should handle missing fields gracefully', () => {
         const minimalGroup: GroupDocument = {
             members: ['u1'],
@@ -272,6 +285,38 @@ describe('MembershipUtils Unit Tests', () => {
                     type: 'leave'
                 })
             );
+        });
+
+        it('should set isDeleted: true when last human member leaves an AI group', async () => {
+            const mockUpdate = vi.fn();
+            const mockTransaction = {
+                get: vi.fn().mockImplementation(async (ref) => {
+                    if (ref.path.startsWith('groups/g1')) {
+                        return makeSnap(true, { 
+                            isAiGroup: true, 
+                            aiCompanionUid: 'ai-partner-bot',
+                            ownerUserId: 'u1', 
+                            members: ['u1', 'ai-partner-bot'] 
+                        });
+                    }
+                    return makeSnap(true, {});
+                }),
+                update: mockUpdate,
+                delete: vi.fn(),
+                set: vi.fn()
+            } as unknown as admin.firestore.Transaction;
+
+            await removeMemberFromGroup(mockTransaction, 'g1', 'u1', { transferOwnership: true });
+
+            expect(mockUpdate).toHaveBeenCalledWith(
+                expect.any(Object),
+                expect.objectContaining({
+                    isDeleted: true
+                })
+            );
+            // Should not transfer ownership to ai-partner-bot
+            const updateCall = mockUpdate.mock.calls[0][1];
+            expect(updateCall.ownerUserId).toBeUndefined();
         });
     });
 });

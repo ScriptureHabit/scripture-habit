@@ -51,7 +51,12 @@ export function getGroupUpdatesForMultipleRemovals(
     const nextMembers = members.filter(uid => !userIds.includes(uid));
     groupUpdate.membersCount = nextMembers.length;
 
-    if (nextMembers.length === 0) {
+    const isAiGroup = Boolean(groupData.isAiGroup || groupData.aiCompanionUid === 'ai-partner-bot');
+    const remainingHumanMembers = isAiGroup
+        ? nextMembers.filter(m => m !== 'ai-partner-bot' && m !== groupData.aiCompanionUid)
+        : nextMembers;
+
+    if (remainingHumanMembers.length === 0) {
         // TRUTH: Mark as deleted so cron can safely recursiveDelete subcollections outside a transaction
         groupUpdate.isDeleted = true;
     }
@@ -126,17 +131,23 @@ export async function removeMemberFromGroup(
     const members = (groupData.members || []) as string[];
     const remainingMembers = members.filter(m => m !== userId);
 
-    if (groupData.isAiGroup && remainingMembers.filter(m => m !== 'ai-partner-bot').length === 0) {
+    const isAiGroup = Boolean(groupData.isAiGroup || groupData.aiCompanionUid === 'ai-partner-bot');
+    const remainingHumanMembers = isAiGroup
+        ? remainingMembers.filter(m => m !== 'ai-partner-bot' && m !== groupData.aiCompanionUid)
+        : remainingMembers;
+
+    if (remainingHumanMembers.length === 0) {
         groupUpdate.isDeleted = true;
     }
 
     if (groupData.ownerUserId === userId && options.transferOwnership) {
-        if (remainingMembers.length > 0) {
+        const candidateMembers = remainingHumanMembers.filter(m => m !== 'ai-partner-bot' && m !== groupData.aiCompanionUid);
+        if (candidateMembers.length > 0) {
             const joinedAtMap = groupData.memberJoinedAt || {};
-            let oldestUid = remainingMembers[0];
+            let oldestUid = candidateMembers[0];
             let oldestTime = Number.MAX_SAFE_INTEGER;
 
-            for (const mUid of remainingMembers) {
+            for (const mUid of candidateMembers) {
                 const rawTs = joinedAtMap[mUid];
                 let tsMillis = Number.MAX_SAFE_INTEGER;
                 if (rawTs) {

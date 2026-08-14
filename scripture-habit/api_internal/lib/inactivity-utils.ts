@@ -23,6 +23,8 @@ export interface InactivityMemberData {
 export interface InactivityGroupData {
     ownerUserId?: string;
     isDeleted?: boolean;
+    isAiGroup?: boolean;
+    aiCompanionUid?: string;
     memberLastActive?: Record<string, FirestoreTimestamp>;
     memberLastReadAt?: Record<string, FirestoreTimestamp>;
     memberKickThresholds?: Record<string, number>;
@@ -235,8 +237,19 @@ export function decideGroupInactivity(
     }
 
     // 3. Handle Owner Inactivity
+    const botUids = new Set(['ai-partner-bot']);
+    if (groupData.aiCompanionUid) botUids.add(groupData.aiCompanionUid);
+
+    const isAiGroup = Boolean(groupData.isAiGroup || groupData.aiCompanionUid === 'ai-partner-bot');
+    const humanActiveMembers = activeMemberIds.filter(id => !botUids.has(id));
+
+    if (isAiGroup && humanActiveMembers.length === 0) {
+        decision.shouldDeleteGroup = true;
+        return decision;
+    }
+
     if (ownerUserId && inactiveMemberIds.includes(ownerUserId)) {
-        const otherActiveMembers = activeMemberIds.filter(id => id !== ownerUserId);
+        const otherActiveMembers = humanActiveMembers.filter(id => id !== ownerUserId);
 
         if (otherActiveMembers.length > 0) {
             decision.newOwnerId = otherActiveMembers[0];
