@@ -171,6 +171,21 @@ Public Swagger UI conforming to OpenAPI 3.0 specification is available:
 
 ---
 
+## Contributing
+
+Scripture Habit is an open-source project, and contributions are welcome. Whether you write code, design, translate, or just use the app, any help is appreciated.
+
+Areas where we could use help:
+
+- **Translations**: Reviewing existing translations for natural phrasing, or adding support for new languages.
+- **Dashboard & UI**: Improving dashboard usability, layouts, and mobile interface design.
+- **User Experience & Testing**: Reporting bugs, testing features, and suggesting workflow improvements.
+- **Feature Ideas**: Suggesting ideas that could make daily study habits more effective.
+
+Feel free to open an issue or submit a pull request on GitHub.
+
+---
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
