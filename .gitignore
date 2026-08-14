@@ -1,8 +1,39 @@
+# Dependency & build outputs
+node_modules
 .vercel
+dist
+dist-ssr
+
+# Environment variables & secrets
 .env
 .env.*
 .env*.local
 *.local
-node_modules
 serviceAccountKey.json
+dummy_key.txt
 
+# Editor & AI tool caches
+.cursor/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Logs & test result artifacts
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+results.txt
+test-results/
+playwright-report/
+blob-report/
+coverage/

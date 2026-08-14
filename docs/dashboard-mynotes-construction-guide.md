@@ -1,7 +1,7 @@
-# Scripture Habit Dashboard & My Notes (`Dashboard` / `MyNotes` / `NoteCard`) Comprehensive Step-by-Step Construction Guide
+# Dashboard & My Notes (`Dashboard` / `MyNotes` / `NoteCard`) Architecture & Implementation
 
-This document is an exhaustive engineering and architecture guide for building the core personal dashboard modules of Scripture Habit: `src/components/dashboard`, `src/components/mynotes`, and `src/components/notecard` from scratch.
-It covers real-time user state synchronization, the streak calendar grid, 3-7 day habit pace threshold configuration, 2-step onboarding quest cards for new users, note search token filtering engines, weekly AI recap generation, and responsive note card components with Gospel Library deep links.
+This document provides an overview of the architecture and implementation details for the core personal dashboard modules of Scripture Habit: `src/components/dashboard`, `src/components/mynotes`, and `src/components/notecard`.
+It covers real-time user state synchronization, the streak calendar grid, habit pace threshold configuration, onboarding quest cards, note search token filtering engines, and weekly AI recap generation.
 
 ---
 

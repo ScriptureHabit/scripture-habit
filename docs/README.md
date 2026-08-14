@@ -34,14 +34,14 @@ Welcome to the **scripture-habit** technical documentation. This directory conta
   - Detailed explanation of real-time Firestore listeners.
   - The separation of data and UI.
   - How unread status is synchronized.
-- **[Group Chat Construction Guide](groupchat-construction-guide.md)**
-  - Comprehensive step-by-step guide for constructing the real-time group chat system from scratch.
+- **[Group Chat Architecture & Implementation](groupchat-construction-guide.md)**
+  - Overview and architecture of the real-time group chat system.
   - Explains 4-tier Context isolation, custom state engine, 18 domain hooks, UI subcomponents, and 11 modal dialogs.
-- **[Note Creation & Edit Modal Construction Guide](newnote-construction-guide.md)**
-  - Comprehensive step-by-step guide for constructing the note creation/editing modal (`NewNote`) from scratch.
+- **[Note Creation & Edit Modal Architecture](newnote-construction-guide.md)**
+  - Overview and architecture of the note creation/editing modal (`NewNote`).
   - Explains URL metadata extraction, AI reflection generator, random scripture picker, sharing scope selector, and submission engine.
-- **[Dashboard & MyNotes Construction Guide](dashboard-mynotes-construction-guide.md)**
-  - Comprehensive step-by-step guide for constructing the personal hub (`Dashboard`), `MyNotes`, and `NoteCard` modules from scratch.
+- **[Dashboard & MyNotes Architecture](dashboard-mynotes-construction-guide.md)**
+  - Overview and architecture of the personal hub (`Dashboard`), `MyNotes`, and `NoteCard` modules.
   - Explains streak calendar grid, habit pace algorithm, note search token engine, weekly AI recap generator, and Gospel Library deep links.
 - **[AI Integration](feature-ai-integration.md)**
   - How Gemini 3.1 Flash-Lite is integrated.

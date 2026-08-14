@@ -171,3 +171,10 @@ OpenAPI 3.0 に準拠した Swagger UI を公開しています。
 - **[Chat & Dashboard Sync](./docs/feature-chat-dashboard.md)**
 - **[Note Posting Mechanism](./docs/logic-note-posting.md)**
 
+---
+
+## ライセンス
+
+本プロジェクトは **MIT ライセンス** のもとで公開されています。詳細は [LICENSE](LICENSE) ファイルをご確認ください。
+
+

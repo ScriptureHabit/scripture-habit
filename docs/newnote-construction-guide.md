@@ -1,7 +1,7 @@
-# Scripture Habit Note Creation & Editing Modal (`NewNote`) Comprehensive Step-by-Step Construction Guide
+# Note Creation & Editing Modal (`NewNote`) Architecture & Implementation
 
-This document is an exhaustive engineering and architecture guide for building the entire `src/components/newnote` module from scratch.
-It covers form state management, 500ms debounced URL metadata extraction, AI reflection question generation via Gemini, 5 thematic plus reading plan random scripture engines with URL localization, sharing scope control, note submission & WriteBatch edit transactions, and unit testing.
+This document provides an overview of the architecture and implementation details for the `src/components/newnote` module.
+It covers form state management, URL metadata extraction, AI reflection question generation via Gemini, thematic & reading plan scripture suggestion engines, sharing scope control, and note submission transactions.
 
 ---
 

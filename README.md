@@ -169,3 +169,10 @@ Public Swagger UI conforming to OpenAPI 3.0 specification is available:
 - **[チャット & ダッシュボード同期設計](./docs/ja/feature-chat-dashboard.md)**
 - **[ノート投稿 & ストリーク計算ロジック](./docs/ja/logic-note-posting.md)**
 
+---
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+

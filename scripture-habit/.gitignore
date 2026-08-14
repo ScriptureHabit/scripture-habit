@@ -27,8 +27,10 @@ dist-ssr
 *.sln
 *.sw?
 
-# Ignore the service account key
+# Ignore the service account key & test artifacts
 serviceAccountKey.json
+dummy_key.txt
+results.txt
 
 .vercel
 .env*.local

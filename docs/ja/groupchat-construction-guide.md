@@ -1,7 +1,7 @@
-# Scripture Habit グループチャット (`GroupChat`) ゼロから構築する完全ガイド
+# グループチャット (`GroupChat`) の設計と実装
 
-本ドキュメントは、`src/components/groupchat` モジュールをゼロから設計・構築するための包括的な開発ステップバイステップガイドです。
-Firestore によるリアルタイム通信、パフォーマンスを考慮した 4 系統の Context 分割（Context Isolation Pattern）、カスタムフックによるロジック分離（Logic-Component Split）、100% 達成時の祝賀花火 & 団結アナウンス API、モジュール化されたサブコンポーネントおよび 11 種類のモーダル管理システムの全容をコード付きで解説します。
+本ドキュメントでは、`src/components/groupchat` モジュールの構成と概要について解説します。
+Firestore によるリアルタイム通信、パフォーマンスを考慮した 4 系統の Context 分割（Context Isolation Pattern）、カスタムフックによるロジック分離（Logic-Component Split）、100% 達成時の祝賀花火 & 団結アナウンス API、モジュール化されたサブコンポーネントおよび 11 種類のモーダル管理システムの全容を解説します。
 
 ---
 

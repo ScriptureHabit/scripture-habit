@@ -1,7 +1,7 @@
-# Scripture Habit ダッシュボード & マイノート (`Dashboard` / `MyNotes` / `NoteCard`) ゼロから構築する完全ガイド
+# ダッシュボード & マイノート (`Dashboard` / `MyNotes` / `NoteCard`) の設計と実装
 
-本ドキュメントは、Scripture Habit アプリの個人向けメイン画面群である `src/components/dashboard`、`src/components/mynotes`、`src/components/notecard` をゼロから設計・構築するための包括的な開発ステップバイステップガイドです。
-ユーザー同期、通読ストリークカレンダー、3〜7日間の習慣ペース設定モーダル、新規ユーザー向けオンボーディングクエスト、ノート検索・トークンフィルタリングエンジン、週次AI振り返り生成、およびレスポンシブなノートカード表示の全容を解説します。
+本ドキュメントでは、Scripture Habit アプリの個人向けメイン画面群である `src/components/dashboard`、`src/components/mynotes`、`src/components/notecard` の構成と概要について解説します。
+ユーザー同期、通読ストリークカレンダー、習慣ペース設定モーダル、新規ユーザー向けオンボーディングクエスト、ノート検索・トークンフィルタリングエンジン、週次AI振り返り生成、およびレスポンシブなノートカード表示の全容を解説します。
 
 ---
 
