@@ -92,7 +92,7 @@ The application is actively deployed and in operation, tracking daily active use
 
 ## Security & Testing
 
-- **Security**: Firebase AppCheck and Zod input validation
+- **Security**: Firebase AppCheck and Zod input validation (see [Security Policy](SECURITY.md))
 - **Error Monitoring**: Sentry integration for real-time production error logging
 - **Testing**: Vitest (Unit testing) and Playwright (E2E testing) to prevent regressions
 
@@ -152,6 +152,8 @@ Public Swagger UI conforming to OpenAPI 3.0 specification is available:
 ## Contributing
 
 Scripture Habit is an open-source project, and contributions are welcome. Whether you write code, design, translate, or just use the app, any help is appreciated.
+
+Please see our [Contributing Guide](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md) for details on development setup, guidelines, and community standards.
 
 Areas where we could use help:
 
