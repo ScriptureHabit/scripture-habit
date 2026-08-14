@@ -90,28 +90,6 @@ The application is actively deployed and in operation, tracking daily active use
 
 ---
 
-## Technical Highlights & Solved Challenges
-
-### 1. Fixing Unread Anchor Misalignment When Posting Notes Without Opening Chat
-
-- **Problem**:  
-  Standard chat applications assume users "open the chat to mark messages as read." However, in Scripture Habit, a specific user behavior pattern emerged where users "post study notes daily directly from the dashboard without opening the chat room."  
-  In this scenario, the last-read position remained stuck at an old timestamp. When the user eventually opened the chat after several days, the unread message anchor was misplaced significantly.
-
-- **Solution**:  
-  - **Read Timestamp Update on Note Submission**:  
-    Modified the Firestore transaction during note saving to automatically update `lastReadTimestamp`, treating "posting a note" as active application engagement.
-  - **Pure Function for Unread Anchor Calculation (`computeUnreadAnchorId`)**:  
-    Created a pure helper function that sorts fetched messages chronologically and identifies the first message received after the most recent note submission timestamp as the unread anchor.
-  - **Unit Testing with Vitest**:  
-    Wrote 6 display scenario tests (e.g., posting notes without opening chat, mixed read/unread states) to verify correct behavior.
-
-### 2. Reducing Unnecessary Re-renders via Split Context
-- **Problem**: Storing all global state in a single React Context caused full component tree re-renders whenever a new chat message was received, threatening input performance.
-- **Solution**: Separated state and actions into 4 distinct contexts (`DataContext`, `MessageActionsContext`, `GroupActionsContext`, `UIActionsContext`), preventing unnecessary re-renders of unrelated components.
-
----
-
 ## Security & Testing
 
 - **Security**: Firebase AppCheck and Zod input validation
