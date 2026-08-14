@@ -38,14 +38,16 @@ export const useMessageInput = (
 
   const onSendMessage = async (e?: FormEvent) => {
     if (e) e.preventDefault();
-    if (!newMessage.trim()) return;
+    const textToSend = newMessage.trim();
+    if (!textToSend) return;
 
-    const success = await handleSendMessage(newMessage, replyTo);
-    if (success) {
-      setNewMessage('');
-      setReplyTo(null);
-      setTimeout(scrollToBottom, 50);
-    }
+    // Immediately clear input & reply target and scroll to bottom (0ms instantaneous response)
+    const currentReplyTo = replyTo;
+    setNewMessage('');
+    setReplyTo(null);
+    scrollToBottom();
+
+    await handleSendMessage(textToSend, currentReplyTo);
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
