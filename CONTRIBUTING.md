@@ -105,8 +105,12 @@ Edit the relevant `src/locales/<lang>.ts` or `src/locales/books/<lang>.ts` file 
 ### 2. Adding a New Language
 Adding a new language is straightforward:
 1. Create `src/locales/<lang>.ts` and `src/locales/books/<lang>.ts` using `en.ts` as a template.
-2. Add the new language configuration to `scripture-habit/src/config/languages.ts` (language code, native name, translation key, flag emoji, and Gospel Library language code).
+2. Add the new language configuration to `scripture-habit/src/config/languages.ts` (language code, native name, translation key, flag emoji, and Gospel Library 3-letter code).
 3. Run `npm run check:i18n` to verify full translation key coverage.
+
+> **Important Notes for Translators:**
+> - **Preserve Placeholders:** Keep variables inside curly braces (e.g. `{nickname}`, `{streak}`, `{count}`, `{days}`) unchanged in your translations.
+> - **Gospel Library Code (`ldsCode`):** Church websites use 3-letter language codes for `ldsCode` (e.g. `fra` for French, `deu` for German, `ita` for Italian).
 
 ---
 
@@ -223,8 +227,12 @@ Conventional Commits に準拠しています：
 ### 2. 新しい言語の追加
 新しい言語の追加は以下の簡単な手順で行えます：
 1. `en.ts` をテンプレートとして、`src/locales/<lang>.ts` と `src/locales/books/<lang>.ts` を作成します。
-2. `src/config/languages.ts` に新しい言語の設定（コード、ネイティブ言語名、翻訳キー、国旗絵文字、福音ライブラリ言語コード）を1行追加します。
+2. `src/config/languages.ts` に新しい言語の設定（コード、ネイティブ言語名、翻訳キー、国旗絵文字、福音ライブラリの3文字コード）を1行追加します。
 3. `npm run check:i18n` を実行して、翻訳キーの漏れがないかを確認します。
+
+> **翻訳時の注意点:**
+> - **変数のプレースホルダー:** `{nickname}`, `{streak}`, `{count}`, `{days}` などの波括弧で囲まれた変数名は翻訳せず、そのまま残してください。
+> - **福音ライブラリ言語コード (`ldsCode`):** 教会公式 URL で使われる 3 文字の言語コード（例: フランス語は `fra`、ドイツ語は `deu`、イタリア語は `ita`）を指定してください。
 
 ---
 
