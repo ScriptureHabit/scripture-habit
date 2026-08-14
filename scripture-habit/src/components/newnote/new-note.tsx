@@ -359,14 +359,31 @@ const NewNote = ({
 
                     <div className="modal-actions">
                         <button onClick={handleClose} className="cancel-btn">{t('newNote.cancel')}</button>
-                        <button
-                            onClick={() => handleSubmit(noteToEdit, scripture, chapter, comment, shareOption, selectedShareGroups, currentGroupId, urlMeta, onClose)}
-                            disabled={loading || !scripture || !chapter || !comment}
-                            className="submit-btn"
-                            data-testid={noteToEdit ? "update-note-button" : "post-note-button"}
-                        >
-                            {loading ? t('newNote.saving') : (noteToEdit ? t('newNote.update') : (userGroups.length > 0 ? t('newNote.post') : t('newNote.saveNote')))}
-                        </button>
+                        {(() => {
+                            const isSharing = userGroups.length > 0 && (
+                                shareOption === 'all' || 
+                                (shareOption === 'specific' && selectedShareGroups.length > 0)
+                            );
+                            
+                            const getButtonLabel = (): string => {
+                                if (loading) return t('newNote.saving');
+                                if (noteToEdit) {
+                                    return isSharing ? t('newNote.btnUpdate') : t('newNote.btnUpdatePrivate');
+                                }
+                                return isSharing ? t('newNote.btnPost') : t('newNote.btnSave');
+                            };
+
+                            return (
+                                <button
+                                    onClick={() => handleSubmit(noteToEdit, scripture, chapter, comment, shareOption, selectedShareGroups, currentGroupId, urlMeta, onClose)}
+                                    disabled={loading || !scripture || !chapter || !comment}
+                                    className={`submit-btn ${!isSharing ? 'is-private' : ''}`}
+                                    data-testid={noteToEdit ? "update-note-button" : "post-note-button"}
+                                >
+                                    {getButtonLabel()}
+                                </button>
+                            );
+                        })()}
                     </div>
                 </div>
             </div>

@@ -19,28 +19,62 @@ const NoteSharingOptions = ({
 }: NoteSharingOptionsProps) => {
     const options = userGroups.length === 1 ? ['all', 'none'] : ['all', 'specific', 'none'];
 
+    const getOptionInfo = (opt: string) => {
+        if (opt === 'all') {
+            return {
+                icon: '🌐',
+                label: userGroups.length === 1 ? t('newNote.shareToGroupShort') : t('newNote.shareAllShort')
+            };
+        }
+        if (opt === 'specific') {
+            return {
+                icon: '👥',
+                label: t('newNote.shareSpecificShort')
+            };
+        }
+        if (opt === 'none') {
+            return {
+                icon: '🔒',
+                label: t('newNote.shareNoneShort')
+            };
+        }
+        return { icon: '', label: opt };
+    };
+
     return (
         <div className="sharing-options">
-            <label className="sharing-label">{t('newNote.shareLabel')}</label>
-            <div className="radio-group">
+            <div className="sharing-header">
+                <label className="sharing-label">{t('newNote.shareLabel')}</label>
+                {shareOption === 'specific' && (
+                    <span className="sharing-badge">
+                        {t('newNote.selectedGroupCount')
+                            .replace('{count}', String(selectedShareGroups.length))
+                            .replace('{total}', String(userGroups.length))}
+                    </span>
+                )}
+            </div>
+
+            <div className="share-segmented-control" role="radiogroup" aria-label={t('newNote.shareLabel')}>
                 {options.map(opt => {
+                    const isActive = shareOption === opt;
                     const isDisabled = (opt === 'all' || opt === 'specific') && userGroups.length === 0;
+                    const isPrivate = opt === 'none';
+                    const { icon, label } = getOptionInfo(opt);
+
                     return (
-                        <label key={opt} className={`radio-option ${isDisabled ? 'disabled' : ''}`}>
-                            <input
-                                type="radio" 
-                                value={opt}
-                                checked={shareOption === opt}
-                                onChange={(e) => setShareOption(e.target.value)}
-                                disabled={isDisabled}
-                            />
-                            <span>
-                                {userGroups.length === 1 && opt === 'all'
-                                    ? t('newNote.shareToGroup')
-                                    : t(`newNote.share${opt.charAt(0).toUpperCase() + opt.slice(1)}`)
-                                }
-                            </span>
-                        </label>
+                        <button
+                            key={opt}
+                            type="button"
+                            role="radio"
+                            aria-checked={isActive}
+                            data-testid={`share-option-${opt}`}
+                            className={`share-segment-btn ${isActive ? 'active' : ''} ${isPrivate ? 'btn-private' : ''} ${isDisabled ? 'disabled' : ''}`}
+                            onClick={() => !isDisabled && setShareOption(opt)}
+                            disabled={isDisabled}
+                        >
+                            {icon && <span className="share-segment-icon">{icon}</span>}
+                            <span className="share-segment-text">{label}</span>
+                        </button>
                     );
                 })}
             </div>
