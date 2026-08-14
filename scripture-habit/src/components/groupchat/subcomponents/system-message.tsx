@@ -11,32 +11,6 @@ interface SystemMessageProps {
   kickThreshold?: number;
 }
 
-const joinPatterns = [
-  /\*\*(.+?)\*\* joined the group/,      // English
-  /\*\*(.+?)\*\*さんがグループに参加/,    // Japanese
-  /\*\*(.+?)\*\* entrou no grupo/,       // Portuguese
-  /\*\*(.+?)\*\* 加入了群組/,            // Chinese
-  /\*\*(.+?)\*\* se unió al grupo/,      // Spanish
-  /\*\*(.+?)\*\* đã tham gia nhóm/,      // Vietnamese
-  /\*\*(.+?)\*\* เข้าร่วมกลุ่มแล้ว/,         // Thai
-  /\*\*(.+?)\*\*님이 그룹에 참여/,        // Korean
-  /\*\*(.+?)\*\* sumali sa grupo/,       // Tagalog
-  /\*\*(.+?)\*\* amejiunga na kikundi/,  // Swahili
-];
-
-const leavePatterns = [
-  /\*\*(.+?)\*\* left the group/,        // English
-  /\*\*(.+?)\*\*さんがグループを退(会|室)/,    // Japanese
-  /\*\*(.+?)\*\* saiu do grupo/,         // Portuguese
-  /\*\*(.+?)\*\* (離開了群組|离开了小组)/,    // Chinese
-  /\*\*(.+?)\*\* (salió del|ha dejado el) grupo/,       // Spanish
-  /\*\*(.+?)\*\* đã rời (khỏi\s+)?nhóm/,           // Vietnamese
-  /\*\*(.+?)\*\* (ได้)?ออกจากกลุ่มแล้ว/,          // Thai
-  /\*\*(.+?)\*\*님이 그룹を (나갔|떠났)/,         // Korean
-  /\*\*(.+?)\*\* (ay\s+)?umalis sa grupo/,        // Tagalog
-  /\*\*(.+?)\*\* (ame|ali)ondoka kwenye kikundi/, // Swahili
-];
-
 const getSystemMessageNicknameInfo = (msg: Message): { rawNickname: string; userId?: string } => {
   if (msg.messageData) {
     const data = msg.messageData;
@@ -45,22 +19,9 @@ const getSystemMessageNicknameInfo = (msg: Message): { rawNickname: string; user
     return { rawNickname, userId };
   }
 
-  const text = msg.text || '';
-  for (const pattern of joinPatterns) {
-    const match = text.match(pattern);
-    if (match) {
-      return { rawNickname: match[1].trim() };
-    }
-  }
-
-  for (const pattern of leavePatterns) {
-    const match = text.match(pattern);
-    if (match) {
-      return { rawNickname: match[1].trim() };
-    }
-  }
-
-  return { rawNickname: '' };
+  // Fallback for legacy text messages: extract nickname from **bold**
+  const match = (msg.text || '').match(/\*\*(.+?)\*\*/);
+  return { rawNickname: match ? match[1].trim() : '' };
 };
 
 const SystemMessage = ({ msg, t, kickThreshold = DEFAULT_KICK_THRESHOLD }: SystemMessageProps) => {
@@ -71,7 +32,7 @@ const SystemMessage = ({ msg, t, kickThreshold = DEFAULT_KICK_THRESHOLD }: Syste
   const displayNickname = useTranslatedNickname(userId, rawNickname, language);
 
   const getSystemText = () => {
-    // New format: has messageType and messageData
+    // 1. Structured modern messages (messageType + messageData)
     if (msg.messageType === 'streakAnnouncement' && msg.messageData) {
       const data = msg.messageData;
       if (data.isCumulative) {
@@ -124,36 +85,20 @@ const SystemMessage = ({ msg, t, kickThreshold = DEFAULT_KICK_THRESHOLD }: Syste
       return t('groupChat.unityAnnouncement');
     }
 
-    // For legacy streak messages, we render their original stored text directly
-    // to preserve historical accuracy (e.g. showing "6日連続" for past events rather than mismapping to "累計6日目")
+    // 2. Legacy fallback for old unstructured messages in history
+    const legacyBoldMatch = text.match(/\*\*(.+?)\*\*/);
+    if (legacyBoldMatch && !msg.messageType) {
+      const rawName = legacyBoldMatch[1].trim();
+      const nickname = displayNickname || rawName;
 
-    for (const pattern of joinPatterns) {
-      const match = text.match(pattern);
-      if (match) {
-        return t('groupChat.userJoined', { nickname: displayNickname || match[1].trim() });
+      if (/join|参加|entrou|加入|unió|tham gia|เข้า|참여|sumali|amejiunga/i.test(text)) {
+        return t('groupChat.userJoined', { nickname });
       }
-    }
-
-    for (const pattern of leavePatterns) {
-      const match = text.match(pattern);
-      if (match) {
-        return t('groupChat.userLeft', { nickname: displayNickname || match[1].trim() });
+      if (/left|退|saiu|離開|离开|salió|ha dejado|rời|ออก|떠났|나갔|umalis|ondoka/i.test(text)) {
+        return t('groupChat.userLeft', { nickname });
       }
-    }
-
-    const inactivityPatterns = [
-      /👋 \*\*(\d+) member\(s\)\*\* were removed due to inactivity(?:\s*\((\d+)\+ days\))?\./,
-      /👋 \*\*(\d+)名.*?\*\*.*?(?:自動的|退出|削除)/,
-      /👋 \*\*(\d+)\s*(?:名|位|名成員|thành viên|miyembro|สมาชิก|Wanachama|membro\(s\))\*\*/
-    ];
-
-    for (const pattern of inactivityPatterns) {
-      const inactivityMatch = text.match(pattern);
-      if (inactivityMatch) {
-        return t('groupChat.inactivityRemoval', {
-          count: inactivityMatch[1],
-          days: inactivityMatch[2] || kickThreshold
-        });
+      if (/inactivity|名|thành viên|miyembro|สมาชิก|Wanachama|membro/i.test(text) && /^\d+$/.test(rawName)) {
+        return t('groupChat.inactivityRemoval', { count: rawName, days: kickThreshold });
       }
     }
 
@@ -177,4 +122,3 @@ const SystemMessage = ({ msg, t, kickThreshold = DEFAULT_KICK_THRESHOLD }: Syste
 };
 
 export default SystemMessage;
-

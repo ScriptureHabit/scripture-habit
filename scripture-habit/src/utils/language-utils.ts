@@ -13,8 +13,8 @@ export const isLikelyAlreadyInLanguage = (text: string, targetLang: string): boo
   if (targetLang === 'th' && hasThai) return true;
   if (targetLang === 'zho' && hasChinese && !hasJapanese) return true;
 
-  const isLatinBased = ['en', 'es', 'pt', 'tl', 'sw', 'vi'].includes(targetLang);
-  if (isLatinBased && !hasJapanese && !hasKorean && !hasThai && /[a-zA-Z]/.test(text)) {
+  const isNonLatin = ['ja', 'ko', 'th', 'zho', 'zh'].includes(targetLang);
+  if (!isNonLatin && !hasJapanese && !hasKorean && !hasThai && /[a-zA-Z]/.test(text)) {
     return true;
   }
 
