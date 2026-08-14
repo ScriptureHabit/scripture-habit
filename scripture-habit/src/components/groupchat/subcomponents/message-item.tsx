@@ -27,7 +27,7 @@ const MessageItem = memo(({
   const {
     handleToggleReaction, handleTranslateMessage, handleLazyTranslate,
     handleReply, handleMessageClick, handleEditMessage, handleDeleteMessageClick,
-    handleReportClick, translatingIds, translatedTexts
+    handleReportClick, handleRetryMessage, translatingIds, translatedTexts
   } = useChatMessageActions();
   const { handleUserProfileClick, handleShowReactions } = useChatGroupActions();
   const { t } = useChatUIActions();
@@ -58,8 +58,9 @@ const MessageItem = memo(({
   return (
     <div
       ref={observerRef}
-      id={`message-${msg.id}`}
+      id={`message-${msg.optimisticId || msg.id}`}
       className={`message-wrapper ${isMe ? 'sent' : 'received'}`}
+      data-testid={isMe ? 'chat-message-item' : 'chat-message-item-received'}
     >
       {!isMe && (
         <div
@@ -83,9 +84,9 @@ const MessageItem = memo(({
         </div>
       )}
       <div
-        className={`message ${isMe ? 'sent' : 'received'} ${msg.isOptimistic ? 'is-optimistic' : ''}`}
+        className={`message ${isMe ? 'sent' : 'received'} ${msg.isOptimistic ? 'is-optimistic' : ''} ${msg.isFailed ? 'is-failed' : ''}`}
         onClick={(e) => {
-          if (msg.isOptimistic) return;
+          if (msg.isOptimistic || msg.isFailed) return;
           if ((e.target as HTMLElement).tagName !== 'A') {
             e.stopPropagation();
             handleMessageClick(msg, e);
@@ -95,9 +96,13 @@ const MessageItem = memo(({
         <div className={`message-hover-actions ${isMe ? 'sent' : 'received'}`}>
           {isMe ? (
             <>
-              <button className="hover-action-btn" onClick={(e) => { e.stopPropagation(); handleEditMessage(msg); }} title={t('groupChat.editMessage')}>✏️</button>
+              {!msg.isFailed && !msg.isOptimistic && (
+                <button className="hover-action-btn" onClick={(e) => { e.stopPropagation(); handleEditMessage(msg); }} title={t('groupChat.editMessage')}>✏️</button>
+              )}
               <button className="hover-action-btn delete" onClick={(e) => { e.stopPropagation(); handleDeleteMessageClick(msg); }} title={t('groupChat.deleteMessage')}>🗑️</button>
-              <button className="hover-action-btn" onClick={(e) => { e.stopPropagation(); handleReply(msg); }} title={t('groupChat.reply')}>↩️</button>
+              {!msg.isFailed && !msg.isOptimistic && (
+                <button className="hover-action-btn" onClick={(e) => { e.stopPropagation(); handleReply(msg); }} title={t('groupChat.reply')}>↩️</button>
+              )}
             </>
           ) : (
             <>
@@ -118,12 +123,31 @@ const MessageItem = memo(({
         <div className={`message-bubble-row ${isMe ? 'sent' : 'received'}`}>
           {isMe && (
             <div className="message-status-column">
-              {readCount > 0 && (
+              {readCount > 0 && !msg.isOptimistic && !msg.isFailed && (
                 <span className="read-status">{t('groupChat.readStatus', { count: readCount })}</span>
               )}
-              <span className="message-time">
-                {msg.createdAt ? new Date(parseTimestampToMillis(msg.createdAt)).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
-              </span>
+              {msg.isFailed ? (
+                <button
+                  className="message-retry-btn"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleRetryMessage(msg);
+                  }}
+                  title={t('groupChat.retrySend')}
+                  type="button"
+                >
+                  <span className="retry-icon">⚠️</span>
+                  <span className="retry-text">{t('groupChat.retry')}</span>
+                </button>
+              ) : msg.isOptimistic ? (
+                <span className="message-sending-indicator" title={t('groupChat.sending')}>
+                  <span className="sending-spinner" />
+                </span>
+              ) : (
+                <span className="message-time">
+                  {msg.createdAt ? new Date(parseTimestampToMillis(msg.createdAt)).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
+                </span>
+              )}
             </div>
           )}
           <div className="message-bubble-column">

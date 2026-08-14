@@ -23,7 +23,7 @@ const GroupChatMessageList = ({
         const messageDate = currDate;
 
         return (
-          <Fragment key={msg.id}>
+          <Fragment key={msg.optimisticId || msg.id}>
             {showDateDivider && (
               <div className="date-separator">
                 <span>{messageDate.toLocaleDateString(language, { month: 'long', day: 'numeric' })}</span>

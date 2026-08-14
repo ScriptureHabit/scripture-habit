@@ -29,6 +29,7 @@ export interface ChatDataContextType {
 
 export interface ChatMessageActionsContextType {
   handleSendMessage: (text: string, replyTo: Message | null) => Promise<boolean>;
+  handleRetryMessage: (message: Message) => Promise<boolean>;
   handleSaveEdit: (message: Message, text: string) => Promise<boolean>;
   handleConfirmDeleteMessage: (message: Message) => Promise<boolean>;
   handleToggleReaction: (msg: Message) => Promise<void>;

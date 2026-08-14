@@ -154,11 +154,11 @@ const GroupChatProvider = ({
   }), [groupId, userData, groupData, messages, loading, membersMap, membersList, userReadCount, unreadAnchorMessageId, unityPercentage, isOwner, language, userGroups, unityModalData, messagesLoaded]);
 
   const messageActionsValue = useMemo<ChatMessageActionsContextType>(() => ({
-    handleSendMessage, handleSaveEdit, handleConfirmDeleteMessage, handleToggleReaction,
+    handleSendMessage, handleRetryMessage, handleSaveEdit, handleConfirmDeleteMessage, handleToggleReaction,
     handleTranslateMessage, handleLazyTranslate, handleReply, handleMessageClick,
     handleEditMessage, handleDeleteMessageClick, handleReportClick, handleToggleReactionDirect,
     translatingIds, translatedTexts
-  }), [handleSendMessage, handleSaveEdit, handleConfirmDeleteMessage, handleToggleReaction, handleTranslateMessage, handleLazyTranslate, handleReply, handleMessageClick, handleEditMessage, handleDeleteMessageClick, handleReportClick, handleToggleReactionDirect, translatingIds, translatedTexts]);
+  }), [handleSendMessage, handleRetryMessage, handleSaveEdit, handleConfirmDeleteMessage, handleToggleReaction, handleTranslateMessage, handleLazyTranslate, handleReply, handleMessageClick, handleEditMessage, handleDeleteMessageClick, handleReportClick, handleToggleReactionDirect, translatingIds, translatedTexts]);
 
   const groupActionsValue = useMemo<ChatGroupActionsContextType>(() => ({
     handleLeaveGroup, handleDeleteGroup, handleUpdateGroupName, togglePublicStatus,

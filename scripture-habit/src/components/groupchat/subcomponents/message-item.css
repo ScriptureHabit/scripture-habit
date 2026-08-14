@@ -66,7 +66,79 @@
 
 .message.is-optimistic {
     cursor: default;
-    opacity: 0.7;
+}
+
+.message.is-failed {
+    cursor: default;
+}
+
+.message.is-failed .message-content {
+    background: #fff1f0 !important;
+    color: #cf1322 !important;
+    border: 1.5px solid #ff4d4f;
+    box-shadow: 0 2px 8px rgba(255, 77, 79, 0.15);
+}
+
+.message-sending-indicator {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    font-size: 0.7rem;
+    color: var(--gray, #8c8c8c);
+    height: 14px;
+    line-height: 1;
+    margin-bottom: 2px;
+}
+
+.sending-spinner {
+    width: 11px;
+    height: 11px;
+    border: 1.5px solid rgba(255, 145, 157, 0.3);
+    border-top-color: var(--pink, #FF919D);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    display: inline-block;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.message-retry-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    background: #fff1f0;
+    border: 1px solid #ffccc7;
+    color: #cf1322;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    white-space: nowrap;
+    box-shadow: 0 1px 4px rgba(255, 77, 79, 0.1);
+}
+
+.message-retry-btn:hover {
+    background: #ff4d4f;
+    color: white;
+    border-color: #ff4d4f;
+    transform: scale(1.05);
+    box-shadow: 0 2px 6px rgba(255, 77, 79, 0.3);
+}
+
+.message-retry-btn:active {
+    transform: scale(0.95);
+}
+
+.message-retry-btn .retry-icon {
+    font-size: 0.7rem;
+}
+
+.message-retry-btn .retry-text {
+    line-height: 1;
 }
 
 .message.sent {
@@ -136,6 +208,12 @@
     font-size: 0.7rem;
     color: var(--gray);
     flex-shrink: 0;
+    line-height: 1;
+    height: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-bottom: 2px;
 }
 
 .message-time.received {
@@ -353,6 +431,7 @@
     display: flex;
     flex-direction: column;
     align-items: flex-end;
+    justify-content: flex-end;
     gap: 2px;
     flex-shrink: 0;
 }
