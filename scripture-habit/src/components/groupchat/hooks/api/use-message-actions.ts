@@ -6,6 +6,7 @@ import { Message } from '../../../../types/chat';
 import { ChatAction } from '../core/chat-reducer';
 import { ReactionPreview } from '../../../../../types/firestore';
 import { isLikelyAlreadyInLanguage } from '../../../../utils/language-utils';
+import { savePendingMessage, removePendingMessage } from '../../../../utils/offline-chat-queue';
 
 interface SenderData {
   uid: string;
@@ -22,7 +23,7 @@ export const useMessageActions = (
 ) => {
   const [translatingIds, setTranslatingIdsState] = useState<Set<string>>(new Set());
   const [translatedTexts, setTranslatedTexts] = useState<Record<string, string>>({});
-  
+
   const translatingIdsRef = useRef<Set<string>>(new Set());
   const batchQueueRef = useRef<Message[]>([]);
   const batchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -43,7 +44,7 @@ export const useMessageActions = (
 
   const handleSendMessage = useCallback(async (text: string, replyTo: Message | null) => {
     if (!text.trim() || !userData || !userData.uid) return false;
-    
+
     const clientTimestamp = Date.now();
     const optimisticId = `temp-${clientTimestamp}`;
     const optimisticMessage: Message = {
@@ -56,7 +57,7 @@ export const useMessageActions = (
       clientTimestamp,
       isOptimistic: true,
       optimisticId: optimisticId,
-      ...(replyTo ? { 
+      ...(replyTo ? {
         replyTo: {
           id: replyTo.id,
           senderNickname: replyTo.senderNickname || 'Member',
@@ -87,8 +88,8 @@ export const useMessageActions = (
         dispatch({
           type: 'UPDATE_MESSAGE',
           messageId: optimisticId,
-          data: { 
-            id: response.data.messageId, 
+          data: {
+            id: response.data.messageId,
             isOptimistic: false,
             createdAt: new Date()
           }
@@ -106,13 +107,115 @@ export const useMessageActions = (
         }
       }
 
+      if (groupId) {
+        removePendingMessage(groupId, optimisticId);
+      }
+
       return true;
     } catch (error: unknown) {
       console.error("Error sending message:", error);
-      
-      // 3. Rollback on failure
+
+      // Persist failed message to offline queue
+      if (groupId) {
+        savePendingMessage(groupId, optimisticMessage);
+      }
+
+      // Update message with isFailed: true instead of removing it
       if (dispatch) {
-        dispatch({ type: 'REMOVE_MESSAGE', messageId: optimisticId });
+        dispatch({ 
+          type: 'UPDATE_MESSAGE', 
+          messageId: optimisticId, 
+          data: { 
+            isOptimistic: false, 
+            isFailed: true 
+          } 
+        });
+      }
+
+      let errorMessage = t('groupChat.errorSendMessage');
+      if (axios.isAxiosError(error)) {
+        errorMessage = error.response?.data?.error || errorMessage;
+      }
+      toast.error(errorMessage);
+      return false;
+    }
+  }, [groupId, userData, dispatch, t]);
+
+  const handleRetryMessage = useCallback(async (failedMessage: Message) => {
+    if (!failedMessage.text || !userData || !userData.uid) return false;
+
+    // Set status back to sending (isOptimistic: true, isFailed: false)
+    if (dispatch) {
+      dispatch({
+        type: 'UPDATE_MESSAGE',
+        messageId: failedMessage.id,
+        data: {
+          isOptimistic: true,
+          isFailed: false
+        }
+      });
+    }
+
+    const optimisticId = failedMessage.optimisticId || failedMessage.id;
+    const clientTimestamp = failedMessage.clientTimestamp || Date.now();
+
+    try {
+      const response = await apiClient.post('/api/groups/post-message', {
+        groupId,
+        text: failedMessage.text.trim(),
+        replyTo: failedMessage.replyTo,
+        optimisticId,
+        nickname: userData?.nickname,
+        photoURL: userData?.photoURL,
+        clientTimestamp
+      });
+
+      if (response.data?.messageId && dispatch) {
+        dispatch({
+          type: 'UPDATE_MESSAGE',
+          messageId: failedMessage.id,
+          data: { 
+            id: response.data.messageId, 
+            isOptimistic: false,
+            isFailed: false,
+            createdAt: new Date()
+          }
+        });
+
+        try {
+          apiClient.post('/api/groups/update-read-status', {
+            groupId,
+            readMessageCount: response.data.totalCount || 0
+          });
+        } catch {
+          // Ignore
+        }
+      }
+
+      if (groupId) {
+        removePendingMessage(groupId, failedMessage.id);
+        if (failedMessage.optimisticId) {
+          removePendingMessage(groupId, failedMessage.optimisticId);
+        }
+      }
+
+      return true;
+    } catch (error: unknown) {
+      console.error("Error retrying message:", error);
+
+      if (groupId) {
+        savePendingMessage(groupId, failedMessage);
+      }
+
+      if (dispatch) {
+        dispatch({
+          type: 'UPDATE_MESSAGE',
+          messageId: failedMessage.id,
+          data: {
+            isOptimistic: false,
+            isFailed: true
+          }
+        });
       }
 
       let errorMessage = t('groupChat.errorSendMessage');
@@ -159,6 +262,21 @@ export const useMessageActions = (
   }, [groupId, dispatch, t]);
 
   const handleConfirmDeleteMessage = useCallback(async (message: Message) => {
+    // If it's a failed message that was never persisted to the server, clean up locally
+    if (groupId) {
+      removePendingMessage(groupId, message.id);
+      if (message.optimisticId) {
+        removePendingMessage(groupId, message.optimisticId);
+      }
+    }
+
+    if (message.isFailed) {
+      if (dispatch) {
+        dispatch({ type: 'REMOVE_MESSAGE', messageId: message.id });
+      }
+      return true;
+    }
+
     try {
       // Optimistic delete
       if (dispatch) {
@@ -192,15 +310,15 @@ export const useMessageActions = (
       const hasReacted = uids.includes(userData.uid);
 
       // Prepare new state
-      const newUids = hasReacted 
+      const newUids = hasReacted
         ? uids.filter(uid => uid !== userData.uid)
         : [...uids, userData.uid];
 
       const newPreviews = hasReacted
         ? currentPreviews.filter((p: ReactionPreview) => p.uid !== userData.uid)
-        : (currentPreviews.length < 3 
-            ? [{ uid: userData.uid, nickname: userData.nickname, photoURL: userData.photoURL }, ...currentPreviews].slice(0, 3)
-            : currentPreviews);
+        : (currentPreviews.length < 3
+          ? [{ uid: userData.uid, nickname: userData.nickname, photoURL: userData.photoURL }, ...currentPreviews].slice(0, 3)
+          : currentPreviews);
 
       // Optimistic update
       if (dispatch) {
@@ -225,7 +343,7 @@ export const useMessageActions = (
     } catch (error) {
       console.error("Error toggling reaction:", error);
       toast.error(t('groupChat.errorToggleReaction'));
-      
+
       // Rollback on failure
       if (dispatch) {
         dispatch({
@@ -246,7 +364,7 @@ export const useMessageActions = (
     batchQueueRef.current = [];
     if (queue.length === 0) return;
 
-    const toProcess = queue.filter((m, index, self) => 
+    const toProcess = queue.filter((m, index, self) =>
       self.findIndex(t => t.id === m.id) === index && !translatingIdsRef.current.has(m.id)
     );
     if (toProcess.length === 0) return;
@@ -274,13 +392,13 @@ export const useMessageActions = (
   }, [language, groupId]);
 
   const handleLazyTranslate = useCallback((message: Message) => {
-    if (!message.text || 
-        message.translations?.[language] || 
-        translatedTexts[message.id] || 
-        translatingIdsRef.current.has(message.id) ||
-        isLikelyAlreadyInLanguage(message.text, language)
+    if (!message.text ||
+      message.translations?.[language] ||
+      translatedTexts[message.id] ||
+      translatingIdsRef.current.has(message.id) ||
+      isLikelyAlreadyInLanguage(message.text, language)
     ) return;
-    
+
     batchQueueRef.current.push(message);
     if (batchTimerRef.current) clearTimeout(batchTimerRef.current);
     batchTimerRef.current = setTimeout(processBatch, 400);
@@ -316,6 +434,7 @@ export const useMessageActions = (
     translatingIds,
     translatedTexts,
     handleSendMessage,
+    handleRetryMessage,
     handleSaveEdit,
     handleConfirmDeleteMessage,
     handleToggleReaction,

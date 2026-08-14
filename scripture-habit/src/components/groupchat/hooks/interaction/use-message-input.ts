@@ -13,8 +13,8 @@ export const useMessageInput = (
   handleSendMessage: (text: string, replyTo: Message | null) => Promise<boolean>,
   scrollToBottom: () => void
 ) => {
-  const { 
-    replyTo, setReplyTo, editText: newMessage, setEditText: setNewMessage 
+  const {
+    replyTo, setReplyTo, editText: newMessage, setEditText: setNewMessage
   } = useChatStore();
 
   const [randomIdx, setRandomIdx] = useState<number>(0);
@@ -39,7 +39,7 @@ export const useMessageInput = (
   const onSendMessage = async (e?: FormEvent) => {
     if (e) e.preventDefault();
     if (!newMessage.trim()) return;
-    
+
     const success = await handleSendMessage(newMessage, replyTo);
     if (success) {
       setNewMessage('');

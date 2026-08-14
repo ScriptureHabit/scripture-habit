@@ -10,7 +10,7 @@ export interface ChatDataContextType {
   groupData: GroupData | null;
   messages: Message[];
   loading: boolean;
-  membersLoading: boolean; 
+  membersLoading: boolean;
   membersMap: MembersMap;
   membersList: UserProfileBrief[];
   userReadCount: number | null;

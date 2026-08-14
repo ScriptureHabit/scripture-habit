@@ -2,10 +2,12 @@ import { ReactNode, useMemo, useEffect } from 'react';
 
 import { useLanguage } from '../../hooks/use-language';
 import { ChatProvider } from './chat-provider';
-import { ChatDataContextType, 
-  ChatMessageActionsContextType, 
-  ChatGroupActionsContextType, 
-  ChatUIActionsContextType } from './chat-context';
+import {
+  ChatDataContextType,
+  ChatMessageActionsContextType,
+  ChatGroupActionsContextType,
+  ChatUIActionsContextType
+} from './chat-context';
 import { UserData } from '../../types/user';
 import { Group, UserProfileBrief } from '../../types/chat';
 import { useChatStore } from '../../store/use-chat-store';
@@ -20,6 +22,7 @@ import { useUserProfile } from './hooks/api/use-user-profile';
 import { useGroupChatHandlers } from './hooks/interaction/use-group-chat-handlers';
 import { useMessageInteraction } from './hooks/interaction/use-message-interaction';
 import { useCheerSystem } from './hooks/interaction/use-cheer-system';
+import { useAutoRetry } from './hooks/interaction/use-auto-retry';
 import { useUnityScore } from './hooks/view/use-unity-score';
 import { useGroupChatUI } from './hooks/view/use-group-chat-ui';
 import { useScrollManager } from './hooks/view/use-scroll-manager';
@@ -39,8 +42,8 @@ interface GroupChatProviderProps {
   children: ReactNode;
 }
 
-const GroupChatProvider = ({ 
-  groupId, userData, userGroups = [], isActive = false, onBack, onGroupSelect, initialShowInviteModal = false, onInputFocusChange, onUnityUpdate, children 
+const GroupChatProvider = ({
+  groupId, userData, userGroups = [], isActive = false, onBack, onGroupSelect, initialShowInviteModal = false, onInputFocusChange, onUnityUpdate, children
 }: GroupChatProviderProps) => {
   const { language, t, tArray, isLoaded } = useLanguage();
 
@@ -55,8 +58,8 @@ const GroupChatProvider = ({
   } = useGroupMessages(groupId, userData, t, isActive);
 
   // 1. Feature Hooks (State & Scoring)
-  const { 
-    translatedGroupName, translatedGroupDesc 
+  const {
+    translatedGroupName, translatedGroupDesc
   } = useGroupChatUI(groupId, groupData, language || 'en');
 
   const unityPercentage = useUnityScore(groupId, userData, groupData, messages, membersMap);
@@ -66,26 +69,35 @@ const GroupChatProvider = ({
   }, [unityPercentage, onUnityUpdate, groupId]);
 
   // 2. API Actions
-  const { 
+  const {
     isLeaving, isDeleting, handleLeaveGroup, handleDeleteGroup, togglePublicStatus, handleUpdateGroupName
   } = useGroupActions(groupId, userData, groupData, language || 'en', t, /* onLeaveSuccess */ onBack, /* onDeleteSuccess */ onBack);
 
-  const { 
-    translatingIds, translatedTexts, handleSendMessage, handleSaveEdit, 
+  const {
+    translatingIds, translatedTexts, handleSendMessage, handleRetryMessage, handleSaveEdit,
     handleConfirmDeleteMessage, handleToggleReaction, handleTranslateMessage, handleLazyTranslate, handleToggleReactionDirect
   } = useMessageActions(groupId, userData, language || 'en', t, dispatch);
 
-  const { 
+  const {
     handleCopyInviteLink, handleRegenerateInviteCode
   } = useInviteManager(groupId, groupData, t);
 
+  // Offline pending message hydration & automatic online retry
+  useAutoRetry({
+    groupId,
+    messages,
+    messagesLoaded,
+    dispatch,
+    handleRetryMessage
+  });
+
   // 3. UI/Interaction Logic
-  const { 
-    containerRef, handleScroll, previousScrollHeightRef, previousScrollTopRef, scrollToBottom 
+  const {
+    containerRef, handleScroll, previousScrollHeightRef, previousScrollTopRef, scrollToBottom
   } = useScrollManager(groupId, userData, messages, userReadCount, loading, initialScrollDone, setInitialScrollDone, latestMessageRef, prevMessageCountRef);
 
-  const { 
-    unityModalData, handleShowUnityModal 
+  const {
+    unityModalData, handleShowUnityModal
   } = useUnityDetails(groupData, messages, membersMap);
 
   const {
@@ -132,8 +144,8 @@ const GroupChatProvider = ({
   // --- SPLIT CONTEXT ASSEMBLY ---
 
   const dataValue = useMemo<ChatDataContextType>(() => ({
-    groupId, userData, groupData, messages, loading, membersLoading: false, 
-    membersMap, membersList, userReadCount, unreadAnchorMessageId, unityPercentage, isOwner, 
+    groupId, userData, groupData, messages, loading, membersLoading: false,
+    membersMap, membersList, userReadCount, unreadAnchorMessageId, unityPercentage, isOwner,
     language: language || 'en', userGroups, messagesLoaded,
     unityModalData: {
       posted: unityModalData.posted,
@@ -170,10 +182,10 @@ const GroupChatProvider = ({
   if (!isLoaded) return null;
 
   return (
-    <ChatProvider 
-      data={dataValue} 
-      messageActions={messageActionsValue} 
-      groupActions={groupActionsValue} 
+    <ChatProvider
+      data={dataValue}
+      messageActions={messageActionsValue}
+      groupActions={groupActionsValue}
       uiActions={uiActionsValue}
     >
       {children}

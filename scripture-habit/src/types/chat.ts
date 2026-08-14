@@ -33,11 +33,12 @@ export interface Message extends Omit<MessageDocument, 'id' | 'createdAt' | 'edi
   messageType?: MessageType;
   senderNickname?: string;
   senderPhotoURL?: string | null;
-  
+
   // Client-side Flags
   isOptimistic?: boolean;
   optimisticId?: string;
-  
+  isFailed?: boolean;
+
   // Specific ReplyTo type for frontend
   replyTo?: {
     id: string;
@@ -71,7 +72,7 @@ export interface UserProfile extends SharedUserDocument {
 export interface Group extends Omit<SharedGroupDocument, 'id' | 'inviteCodeExpiresAt' | 'lastNoteAt' | 'lastMessageAt' | 'lastRecapGeneratedAt' | 'createdAt' | 'memberJoinedAt' | 'memberLastActive' | 'memberLastReadAt'> {
   id: string; // Required in frontend
   ownerId?: string; // Legacy field for compatibility
-  
+
   // Timestamps mapped to FirebaseTimestamp
   inviteCodeExpiresAt?: FirebaseTimestamp;
   lastMessageAt?: FirebaseTimestamp;
@@ -79,7 +80,7 @@ export interface Group extends Omit<SharedGroupDocument, 'id' | 'inviteCodeExpir
   lastNoteAtByNickname?: string;
   lastRecapGeneratedAt?: FirebaseTimestamp;
   createdAt?: FirebaseTimestamp;
-  
+
   memberJoinedAt?: Record<string, FirebaseTimestamp>;
   memberLastActive?: Record<string, FirebaseTimestamp>;
   memberLastReadAt?: Record<string, FirebaseTimestamp>;

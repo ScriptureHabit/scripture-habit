@@ -4,11 +4,11 @@ import { Message } from '../../../types/chat';
 import { ReactionPreview } from '../../../../types/firestore';
 import SystemMessage from './system-message';
 import GospelLink from './gospel-link';
-import { 
-  useChatData, 
-  useChatMessageActions, 
-  useChatGroupActions, 
-  useChatUIActions 
+import {
+  useChatData,
+  useChatMessageActions,
+  useChatGroupActions,
+  useChatUIActions
 } from '../hooks/use-chat-context';
 import { useAutoTranslateMessage } from '../hooks/view/use-auto-translate-message';
 import { useTranslatedNickname } from '../hooks/view/use-translated-nickname';
@@ -24,10 +24,10 @@ const MessageItem = memo(({
   msg
 }: MessageItemProps) => {
   const { userData, groupData, language, membersMap } = useChatData();
-  const { 
-    handleToggleReaction, handleTranslateMessage, handleLazyTranslate, 
+  const {
+    handleToggleReaction, handleTranslateMessage, handleLazyTranslate,
     handleReply, handleMessageClick, handleEditMessage, handleDeleteMessageClick,
-    handleReportClick, translatingIds, translatedTexts 
+    handleReportClick, translatingIds, translatedTexts
   } = useChatMessageActions();
   const { handleUserProfileClick, handleShowReactions } = useChatGroupActions();
   const { t } = useChatUIActions();
@@ -56,9 +56,9 @@ const MessageItem = memo(({
   const isTranslating = translatingIds.has(msg.id);
 
   return (
-    <div 
+    <div
       ref={observerRef}
-      id={`message-${msg.id}`} 
+      id={`message-${msg.id}`}
       className={`message-wrapper ${isMe ? 'sent' : 'received'}`}
     >
       {!isMe && (
@@ -128,7 +128,7 @@ const MessageItem = memo(({
           )}
           <div className="message-bubble-column">
             {msg.replyTo && typeof msg.replyTo === 'object' && 'senderNickname' in msg.replyTo && (
-              <div 
+              <div
                 className={`reply-context-label ${isMe ? 'sent' : 'received'}`}
               >
                 <span className="reply-context-prefix">{t('groupChat.replyTo')} </span>
