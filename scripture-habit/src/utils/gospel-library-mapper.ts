@@ -23,7 +23,13 @@ export const SLUG_TO_VOLUME: Record<string, string> = {
     'moro': 'bofm',
     // Pearl of Great Price & D&C
     'moses': 'pgp', 'abr': 'pgp', 'js-m': 'pgp', 'js-h': 'pgp', 'a-of-f': 'pgp',
-    'dc': 'dc-testament', 'od': 'dc-testament'
+    'dc': 'dc-testament', 'od': 'dc-testament',
+    // Ordinances and Proclamations
+    'sacrament': 'ordinances-and-proclamations',
+    'baptism': 'ordinances-and-proclamations',
+    'the-family-a-proclamation-to-the-world': 'ordinances-and-proclamations',
+    'the-living-christ-the-testimony-of-the-apostles': 'ordinances-and-proclamations',
+    'the-restoration-of-the-fulness-of-the-gospel-of-jesus-christ': 'ordinances-and-proclamations'
 };
 
 const CANONICAL_BOOK_TO_SLUG: Record<string, string> = {
@@ -32,7 +38,7 @@ const CANONICAL_BOOK_TO_SLUG: Record<string, string> = {
     "Words of Mormon": "w-of-m", "Mosiah": "mosiah", "Alma": "alma", "Helaman": "hel", "3 Nephi": "3-ne",
     "4 Nephi": "4-ne", "Mormon": "morm", "Ether": "eth", "Moroni": "moro",
     // Old Testament
-    "Genesis": "gen", "Exodus": "ex", "Levicitus": "lev", "Numbers": "num", "Deuteronomy": "deut",
+    "Genesis": "gen", "Exodus": "ex", "Leviticus": "lev", "Numbers": "num", "Deuteronomy": "deut",
     "Joshua": "josh", "Judges": "judg", "Ruth": "ruth", "1 Samuel": "1-sam", "2 Samuel": "2-sam",
     "1 Kings": "1-kgs", "2 Kings": "2-kgs", "1 Chronicles": "1-chr", "2 Chronicles": "2-chr",
     "Ezra": "ezra", "Nehemiah": "neh", "Esther": "esth", "Job": "job", "Psalms": "ps", "Psalm": "ps",
@@ -51,7 +57,14 @@ const CANONICAL_BOOK_TO_SLUG: Record<string, string> = {
     // Doctrine and Covenants & Pearl of Great Price
     "Doctrine and Covenants": "dc", "D&C": "dc", "Official Declaration": "od", "Official Declarations": "od",
     "Moses": "moses", "Abraham": "abr", "Joseph Smith-Matthew": "js-m", "Joseph Smith-History": "js-h",
-    "Articles of Faith": "a-of-f"
+    "Articles of Faith": "a-of-f",
+    // Ordinances and Proclamations
+    "Sacrament Prayers": "sacrament",
+    "Baptism Ordinance": "baptism",
+    "The Living Christ": "the-living-christ-the-testimony-of-the-apostles",
+    "The Family Proclamation": "the-family-a-proclamation-to-the-world",
+    "The Family: A Proclamation to the World": "the-family-a-proclamation-to-the-world",
+    "Restoration Proclamation": "the-restoration-of-the-fulness-of-the-gospel-of-jesus-christ"
 };
 
 const VOLUME_ALIASES: Record<string, string[]> = {
@@ -74,7 +87,7 @@ const NON_SCRIPTURE_FALLBACKS = [
             "proclama", "declaracion", "familia", "cristo viviente", "restauración", "bautismo", "ordenanzas del sacerdocio y proclamaciones",
             "declaração", "família", "cristo vivo", "restauração", "sacramento", "batismo", "ordenanças e declarações",
             "家庭", "活著的基督", "復興", "洗禮", "聖職教儀和文告", "教仪和宣告", "mga ordinansa at mga pagpapahayag",
-            "선언문", "살あ 계신 그리스도", "살아 계신 그리스도", "회복", "침례", "tangazo", "kristo aliye hai", "urejesho", "sakramenti", "ubatizo"
+            "선언문", "살아 계신 그리스도", "회복", "침례", "tangazo", "kristo aliye hai", "urejesho", "sakramenti", "ubatizo"
         ]
     },
     {
@@ -113,7 +126,16 @@ const COMMON_BOOK_ALIASES: Record<string, string> = {
 
 const BOOK_MAPPINGS: Record<string, string> = { ...COMMON_BOOK_ALIASES };
 
-// Dynamically populate book name mappings from all book locale files
+// Ordinance slugs keyword dictionary
+const ORDINANCE_KEYWORDS: Record<string, Set<string>> = {
+    "sacrament": new Set(["sacrament", "聖餐", "sacramental", "tiệc thánh", "sacrament prayers", "prières de sainte-cène"]),
+    "baptism": new Set(["baptism", "バプテスマ", "batismo", "bautismo", "báp têm", "baptism ordinance", "ordonnance du baptême"]),
+    "the-family-a-proclamation-to-the-world": new Set(["family", "家族", "família", "familia", "proclamation to the world", "the family proclamation", "la famille"]),
+    "the-living-christ-the-testimony-of-the-apostles": new Set(["living christ", "生けるキリスト", "cristo vivo", "cristo viviente", "le christ vivant"]),
+    "the-restoration-of-the-fulness-of-the-gospel-of-jesus-christ": new Set(["restoration", "回復", "restauração", "restauración", "rétablissement", "restoration proclamation"])
+};
+
+// Dynamically populate book name mappings and ordinance keywords from all book locale files
 const bookFiles = import.meta.glob<Record<string, string>>('../locales/books/*.ts', { eager: true, import: 'default' });
 
 for (const bundle of Object.values(bookFiles)) {
@@ -135,6 +157,12 @@ for (const bundle of Object.values(bookFiles)) {
         BOOK_MAPPINGS[normalizedLoc.replace(/^第(?=\d)/, '')] = slug;
         BOOK_MAPPINGS[normalizedLoc.replace(/書$/, '')] = slug;
         BOOK_MAPPINGS[normalizedLoc.replace(/による福音書$/, '')] = slug;
+
+        // If it's an ordinance or proclamation, add to ordinance keywords
+        if (ORDINANCE_KEYWORDS[slug]) {
+            ORDINANCE_KEYWORDS[slug].add(normalizedLoc);
+            ORDINANCE_KEYWORDS[slug].add(normalizedEng);
+        }
     }
 }
 
@@ -195,29 +223,6 @@ const detectVolume = (volume: string | null | undefined, chapterInput: string | 
     return "";
 };
 
-const ORDINANCE_SLUGS = [
-    {
-        slug: "sacrament",
-        keywords: ["sacrament", "聖餐", "sacramental", "tiệc thánh"]
-    },
-    {
-        slug: "baptism",
-        keywords: ["baptism", "バプテスマ", "batismo", "bautismo", "báp têm"]
-    },
-    {
-        slug: "the-family-a-proclamation-to-the-world",
-        keywords: ["family", "家族", "família", "proclamación sobre la family"]
-    },
-    {
-        slug: "the-living-christ-the-testimony-of-the-apostles",
-        keywords: ["living christ", "生けるキリスト", "cristo vivo", "cristo viviente"]
-    },
-    {
-        slug: "the-restoration-of-the-fulness-of-the-gospel-of-jesus-christ",
-        keywords: ["restoration", "回復", "restauração", "restauración"]
-    }
-];
-
 // 節のパラメータ (&id=p1#p1) を構築
 const buildVerseSuffix = (verses: string | undefined, langParam: string): string => {
     if (!verses) return langParam;
@@ -260,10 +265,12 @@ export const getGospelLibraryUrl = (volume: string | null | undefined, chapterIn
 
     // 3. 宣言と儀式 (Ordinances and Proclamations)
     if (volumeUrlPart === "ordinances-and-proclamations") {
-        const lowerChap = chapterInput.toLowerCase();
-        for (const item of ORDINANCE_SLUGS) {
-            if (item.keywords.some(kw => lowerChap.includes(kw))) {
-                return `${baseUrl}/${item.slug}${langParam}`;
+        const lowerChap = chapterInput.toLowerCase().trim();
+        for (const [slug, keywords] of Object.entries(ORDINANCE_KEYWORDS)) {
+            for (const kw of keywords) {
+                if (lowerChap.includes(kw)) {
+                    return `${baseUrl}/${slug}${langParam}`;
+                }
             }
         }
         return `${baseUrl}/ordinances-and-proclamations${langParam}`;
