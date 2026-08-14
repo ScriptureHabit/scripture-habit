@@ -1,92 +1,144 @@
-# 開発および環境セットアップ
+# 開発および環境セットアップガイド
 
-このガイドでは、ローカル、Web、およびモバイル環境向けに **scripture-habit** プラットフォームをセットアップ、ビルド、デプロイする方法について説明します。
-
----
-
-## 環境変数
-
-`.env` ファイルに以下の変数が含まれていることを確認してください。
-
-| 変数 | スコープ | 用途 |
-| :--- | :--- | :--- |
-| `VITE_FIREBASE_...` | フロントエンド | React アプリ用の公開 Firebase 設定。 |
-| `GEMINI_API_KEY` | バックエンド | Gemini 3.1 AI 機能にアクセスするための API キー。 |
-| `CRON_SECRET` | バックエンド | メンテナンス/cron リクエストの認証用共有シークレット。 |
-| `VITE_SENTRY_DSN` | フロントエンド | Sentry のエラーおよびパフォーマンスレポート用エンドポイント。 |
+**Scripture Habit** の開発ガイドです。このドキュメントでは、ローカル開発環境の構築、テストの実行、およびプロジェクトへのコントリビューション手順を説明します。
 
 ---
 
-## ローカル開発ワークフロー
+## クイックスタート（ローカル環境の立ち上げ）
 
-### 1. ローカルサンドボックスと Firebase エミュレータ 🎮
+ローカル開発のために、有料の Firebase アカウントや本番用 API キーを用意する必要は**ありません**。Scripture Habit は、ローカルの Firebase エミュレータ上で完全に動作します。
 
-まっさらなエミュレータ上でUIの動作確認をするのは手間がかかります。Scripture Habit には、充実したローカルエミュレータ環境と自動シードスクリプトが用意されています。
+### 前提条件
+- **Node.js**: `>= 22.0.0`（`node -v` で確認）
+- **npm**: `>= 10.0.0`
+- **Java JRE / JDK**: Firebase エミュレータの実行に必要（`java -version` で確認）
 
-#### ステップ A: エミュレータの起動
-ローカル Firebase エミュレータ（認証、Firestore、Hosting など）を起動するには：
+---
+
+### ステップバイステップの手順
+
+#### 1. リポジトリのクローン
 ```bash
-# scripture-habit ディレクトリで実行
-npx firebase emulators:start
+git clone https://github.com/your-username/scripture-habit.git
+cd scripture-habit/scripture-habit
 ```
-- **認証エミュレータ**: `127.0.0.1:9099`
-- **Firestore エミュレータ**: `127.0.0.1:8080`
-- **エミュレータ UI ダッシュボード**: `127.0.0.1:4000`
 
-#### ステップ B: データベースのシード（データ自動挿入）
-新しいターミナルウィンドウを開き、シードスクリプトを実行して、テスト用のユーザー、学習グループ、カレンダー、ストリーク、チャット履歴などの本番に近いデータを一括でローカルデータベースに書き込みます：
+#### 2. 依存パッケージのインストール
 ```bash
-# TypeScript ベースのシードスクリプトを実行
+npm install
+```
+
+#### 3. 環境変数ファイルの準備
+テンプレートファイルをコピーして `.env.local` を作成します：
+```bash
+# Linux / macOS / Git Bash の場合:
+cp .env.example .env.local
+
+# Windows (PowerShell) の場合:
+Copy-Item .env.example .env.local
+```
+> [!NOTE]
+> `.env.example` の初期値（プレースホルダー）は、ローカルエミュレータですぐに動くように設定されています。
+
+#### 4. Firebase エミュレータの起動
+ターミナルでエミュレータを起動します：
+```bash
+npm run emulators
+# または: npx firebase emulators:start --project scripture-habit-auth
+```
+起動すると、以下のローカルエンドポイントが利用可能になります：
+- **エミュレータ UI ダッシュボード**: [http://127.0.0.1:4000](http://127.0.0.1:4000)
+- **Firestore エミュレータ**: `127.0.0.1:8080`
+- **Auth エミュレータ**: `127.0.0.1:9099`
+
+#### 5. テスト用データの投入（シード）
+**新しいターミナルタブ/ウィンドウ**を開き、シードスクリプトを実行してテスト用のユーザー、学習グループ、カレンダー、ストリーク、チャット履歴を一括で作成します：
+```bash
 npm run db:seed
 ```
 > [!TIP]
-> **冪等性の保証**: このシードスクリプトは実行時に自動で既存のテストアカウントやグループをクリーンアップするため、データが重複することなく何度でも繰り返し安全に実行できます。
+> **何度でも実行可能（冪等性）**: データベースを初期状態にリセットしたいときは、いつでも `npm run db:seed` を再実行できます。
 
-#### エミュレータのトラブルシューティングとTips：
-- **ポート競合**: ポート `8080`、`9099`、または `4000` がすでに使用中の場合は、以下のコマンドでプロセスを終了させてください：
-  - *Windows (PowerShell)*: `Stop-Process -Id (Get-NetTCPConnection -LocalPort 8080).OwningProcess -Force`
-  - *macOS/Linux*: `kill -9 $(lsof -t -i:8080)`
-- **データの永続化**: ローカルの Firestore エミュレータは、起動時にインポート/エクスポートの設定（`--import/--export`）を行わない限り、再起動後にデータは保持されません。
-- **セキュリティルールの検証**: エミュレータは `firestore.rules` のセキュリティルールをリアルタイムで検証します。Zod スキーマやクエリの形式がルールに適合していることを確認してください。
-
----
-
-## フロントエンド＆バックエンドサーバーの起動
-
-### 1. フロントエンド (Vite)
-Vite 開発サーバーを実行するには：
+#### 6. 開発サーバーの起動
+ターミナルで以下を実行します：
 ```bash
-npm install
 npm run dev
 ```
-
-### 2. バックエンド (Node/Express)
-バックエンドコードは `api_internal` に配置されています（Vercel 用にルートレベルで設定されています）。
-```bash
-npm run server
-```
-- **ノート**: ローカルでは、サーバーはポート 5000（設定可能）で動作します。ローカルテスト中は、フロントエンドの `API_BASE` が正しく設定されていることを確認してください。
+ブラウザで **[http://localhost:5173](http://localhost:5173)** を開いて動作を確認します。
 
 ---
 
-## デプロイおよびインフラストラクチャ
+## 環境変数リファレンス
 
-### 1. バックエンド: Vercel Functions
-バックエンドは Vercel 上でサーバーレス関数として動作します。
-- **ルーティング**: `vercel.json` はすべての `/api/*` リクエストを `api/api.ts` エントリーポイントにマッピングします。
-- **コールドスタート**: コールドスタート時間を短縮するため、`api_internal/lib/firebase-admin.ts` はメインのリクエストハンドラーの外部で初期化されます。
-
-### 2. フロントエンド: Firebase Hosting
-フロントエンドは Firebase Hosting にデプロイされます。
-```bash
-npm run build
-firebase deploy --only hosting
-```
-- **アセット**: Vite はビルド中に JS および CSS ファイルを最小化（minify）します。
-- **キャッシュ制御**: `firebase.json` は、即時アップデートのために `index.html` がキャッシュされないように設定されている一方、静的アセットは 1 年間キャッシュされます。
+| 変数名 | スコープ | ローカル開発で必須？ | 説明 |
+| :--- | :--- | :---: | :--- |
+| `VITE_FIREBASE_API_KEY` | フロントエンド | 不要（初期値のままでOK） | Firebase Web API キー |
+| `VITE_FIREBASE_AUTH_DOMAIN` | フロントエンド | 不要（初期値のままでOK） | Firebase Auth ドメイン |
+| `VITE_FIREBASE_PROJECT_ID` | フロントエンド | 不要（初期値のままでOK） | Firebase プロジェクト ID |
+| `VITE_FIREBASE_STORAGE_BUCKET` | フロントエンド | 不要（初期値のままでOK） | Firebase Storage バケット |
+| `VITE_FIREBASE_MESSAGING_SENDER_ID` | フロントエンド | 不要（初期値のままでOK） | FCM 送信者 ID |
+| `VITE_FIREBASE_APP_ID` | フロントエンド | 不要（初期値のままでOK） | Firebase アプリ ID |
+| `VITE_APPCHECK_SITE_KEY` | フロントエンド | 不要（空欄でOK） | reCAPTCHA v3 キー（ローカルでは無効化） |
+| `VITE_SENTRY_DSN` | フロントエンド | 不要（空欄でOK） | Sentry エラーログ送信先 |
+| `GEMINI_API_KEY` | バックエンド | 任意 | AI 自動翻訳 / 週間レター生成用の Google Gemini API キー |
+| `CRON_SECRET` | バックエンド | 任意 | 定期実行 / メンテナンス用共有シークレット |
+| `DISCORD_WEBHOOK_URL` | バックエンド | 任意 | 内部監視アラート用 Discord Webhook |
 
 ---
 
-## コードスタイルと型安全性
-- **型チェック**: プルリクエストを送信する前に `tsc -b` を実行し、`/types` 内の型が正しいことを確認してください。
-- **リンター**: React フックの依存関係（`useEffect` 配列）をチェックするように ESLint が設定されています。
+## 主な npm スクリプト
+
+| コマンド | 説明 |
+| :--- | :--- |
+| `npm run dev` | Vite 開発サーバーを起動（`localhost:5173`） |
+| `npm run server` | バックエンド Express サーバーを起動（`localhost:5000`） |
+| `npm run build` | プロダクションビルドおよびメタタグの多言語化を実行 |
+| `npm run lint` | ESLint によるコード静的解析 |
+| `npm run check:all` | 型チェック、多言語翻訳チェック、FCM 型検証を一括実行 |
+| `npm run test` | Vitest による単体・統合テストを実行 |
+| `npm run test:e2e` | Playwright による E2E テストを実行 |
+| `npm run db:seed` | エミュレータにテスト用ユーザー・グループ・履歴データを投入 |
+
+---
+
+## テストと品質検証
+
+プルリクエスト（PR）を作成する前に、以下のチェックが通過することを確認してください：
+
+```bash
+# 1. 型チェックおよび静的解析
+npm run check:all
+
+# 2. 単体テストの実行
+npm run test
+
+# 3. （任意）E2E テストの実行
+npm run test:e2e
+```
+
+---
+
+## トラブルシューティング
+
+### ポート競合エラー（8080, 9099, 4000）
+以前起動したプロセスがポートを掴んでいる場合：
+- **Windows (PowerShell)**:
+  ```powershell
+  Stop-Process -Id (Get-NetTCPConnection -LocalPort 8080).OwningProcess -Force
+  ```
+- **macOS / Linux**:
+  ```bash
+  kill -9 $(lsof -t -i:8080)
+  ```
+
+### Java が見つからないエラー
+Firebase エミュレータの動作には Java が必要です。`Java not found` と表示される場合は、OpenJDK（例: Windowsなら `winget install Microsoft.OpenJDK.21`、Macなら `brew install openjdk`）をインストールしてください。
+
+---
+
+## コントリビューションの流れ
+
+1. **フォーク＆ブランチ作成**: `main` から作業用ブランチを作成（`git checkout -b feature/your-feature-name`）。
+2. **コミット**: 変更内容が分かりやすいコミットメッセージを作成。
+3. **コーディング規約**: React フックのルールを遵守し、`/types` の型定義を活用。
+4. **プルリクエストの作成**: 変更内容の説明や、UI変更がある場合はスクリーンショット/GIFを添付してPRを作成してください。

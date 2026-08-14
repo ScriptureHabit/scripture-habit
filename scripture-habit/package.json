@@ -8,6 +8,7 @@
   },
   "scripts": {
     "dev": "vite",
+    "emulators": "firebase emulators:start --project scripture-habit-auth",
     "server": "npm start --prefix backend",
     "build": "tsc -b && vite build && npx tsx scripts/localize-meta.ts",
     "lint": "eslint .",
