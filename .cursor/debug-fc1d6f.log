@@ -1,4 +1,0 @@
-{"sessionId":"fc1d6f","location":"load-env.ts:36","message":"load-env complete, about to load firebase-admin","data":{"nodeEnv":"development","vercel":false},"timestamp":1784007673629,"hypothesisId":"H2","runId":"pre-fix"}
-{"sessionId":"fc1d6f","location":"firebase-admin.ts:54","message":"firebase-admin static imports succeeded","data":{"hasApps":0,"joseVersion":"unknown"},"timestamp":1784007675195,"hypothesisId":"H1","runId":"pre-fix"}
-{"sessionId":"fc1d6f","location":"load-env.ts:36","message":"load-env complete, about to load firebase-admin","data":{"nodeEnv":"development","vercel":false},"timestamp":1784007781296,"hypothesisId":"H2","runId":"pre-fix"}
-{"sessionId":"fc1d6f","location":"firebase-admin.ts:54","message":"firebase-admin static imports succeeded","data":{"hasApps":0,"joseVersion":"unknown"},"timestamp":1784007787814,"hypothesisId":"H1","runId":"pre-fix"}
