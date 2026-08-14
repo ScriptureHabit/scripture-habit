@@ -1,12 +1,12 @@
 import { z } from 'zod';
+import { SUPPORTED_LANGUAGES, LANGUAGES, Language } from '../../src/config/languages.js';
 
-export const supportedLanguages = ['en', 'ja', 'es', 'pt', 'zh', 'zho', 'vi', 'th', 'ko', 'tl', 'sw'] as const;
-export type SupportedLanguage = (typeof supportedLanguages)[number];
+export const supportedLanguages = [...SUPPORTED_LANGUAGES, 'zh'] as const;
+export type SupportedLanguage = Language | 'zh';
 
 export const languageNames: Record<string, string> = {
-    'ja': 'Japanese', 'en': 'English', 'es': 'Spanish', 'pt': 'Portuguese',
-    'ko': 'Korean', 'zho': 'Chinese (Traditional)', 'vi': 'Vietnamese',
-    'th': 'Thai', 'tl': 'Tagalog', 'sw': 'Swahili'
+    ...Object.fromEntries(LANGUAGES.map(l => [l.code, l.englishName])),
+    'zh': 'Chinese (Traditional)'
 };
 
 const noHtmlTags = (val: string | null | undefined) => !/<[^>]*>/g.test(val || "");
