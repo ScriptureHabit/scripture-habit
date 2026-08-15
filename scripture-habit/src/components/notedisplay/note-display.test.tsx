@@ -69,18 +69,20 @@ describe('note-display', () => {
         mockUseLanguage.mockReturnValue({
             ...mockLanguageContext,
             t: (key: string) => {
-                if (key === 'noteLabels.scripture') return 'Scripture';
+                if (key === 'noteLabels.scripture') return 'Category';
+                if (key === 'noteLabels.chapter') return 'Chapter';
                 if (key === 'noteLabels.comment') return 'Comment';
                 return key;
             },
         });
 
-        const structuredText = `Scripture: Genesis 1:1\nComment: In the beginning`;
+        const structuredText = `Category: Genesis\nChapter: 1:1\nComment: In the beginning`;
         render(<NoteDisplay text={structuredText} isSent={false} />);
         
         const markdown = screen.getByTestId('markdown').textContent || '';
-        expect(markdown).toContain('Scripture:');
-        expect(markdown).toContain('Genesis 1:1');
+        expect(markdown).toContain('Category:');
+        expect(markdown).toContain('Genesis');
+        expect(markdown).toContain('1:1');
         expect(markdown).toContain('Comment:');
         expect(markdown).toContain('In the beginning');
     });
@@ -89,13 +91,14 @@ describe('note-display', () => {
         mockUseLanguage.mockReturnValue({
             ...mockLanguageContext,
             t: (key: string) => {
-                if (key === 'noteLabels.scripture') return 'Scripture';
+                if (key === 'noteLabels.scripture') return 'Category';
+                if (key === 'noteLabels.chapter') return 'Chapter';
                 if (key === 'noteLabels.comment') return 'Comment';
                 return key;
             },
         });
 
-        const structuredText = `Scripture: Genesis 1:1\nComment: See https://example.com.`;
+        const structuredText = `Category: Genesis\nChapter: 1:1\nComment: See https://example.com.`;
         render(<NoteDisplay text={structuredText} isSent={false} />);
 
         const link = screen.getByRole('link', { name: 'https://example.com' });
@@ -120,8 +123,8 @@ describe('note-display', () => {
 
         render(
             <NoteDisplay
-                text="Original"
-                translatedText="Translated"
+                text="Great scripture reading today!"
+                translatedText="今日の聖典学習はとても素晴らしかったです！"
                 isSent={false}
                 isTranslating={false}
                 onRetranslate={onRetranslate}
@@ -141,20 +144,20 @@ describe('note-display', () => {
 
         render(
             <NoteDisplay 
-                text="Original" 
-                translatedText="Translated" 
+                text="Daily scripture study brings peace to my heart." 
+                translatedText="毎日の聖典学習は私の心に平安をもたらします。" 
                 isSent={false} 
             />
         );
 
         expect(screen.getByText(/AI 翻訳済み/)).toBeDefined();
-        expect(screen.getByText('Translated')).toBeDefined();
+        expect(screen.getByText('毎日の聖典学習は私の心に平安をもたらします。')).toBeDefined();
     });
 
     it('uses GCNoteRenderer for General Conference notes', () => {
         mockUseLanguage.mockReturnValue(mockLanguageContext);
 
-        const gcNote = `Scripture: General Conference\nChapter: https://www.churchofjesuschrist.org/study/general-conference/2024/04/11nelson\nComment: Great talk`;
+        const gcNote = `Category: General Conference\nTitle: https://www.churchofjesuschrist.org/study/general-conference/2024/04/11nelson\nComment: Great talk`;
         render(<NoteDisplay text={gcNote} isSent={false} />);
 
         expect(screen.getByTestId('gc-renderer')).toBeDefined();
@@ -176,7 +179,7 @@ describe('note-display', () => {
         render(
             <NoteDisplay
                 text="Check this out https://example.com"
-                translatedText="チェック this out"
+                translatedText="これを見てみてください https://example.com"
                 isSent={false}
                 isTranslating={false}
                 onRetranslate={vi.fn()}

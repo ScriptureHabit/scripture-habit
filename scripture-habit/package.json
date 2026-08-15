@@ -14,6 +14,7 @@
     "build": "tsc -b && vite build && npx tsx scripts/localize-meta.ts",
     "lint": "eslint .",
     "check:i18n": "npx tsx api_internal/scripts/check-i18n.ts",
+    "sort:locales": "npx tsx api_internal/scripts/sort-locales.ts",
     "check:messages": "npx tsx api_internal/scripts/check-message-types.ts",
     "check:fcm": "npx tsx api_internal/scripts/check-fcm-usage.ts",
     "check:all": "npm run check:i18n && npm run check:messages && npm run check:fcm && npx tsc --noEmit",

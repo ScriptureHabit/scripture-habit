@@ -1,5 +1,5 @@
-// Dynamically build book identity mapping from all book locale files
-const bookFiles = import.meta.glob<Record<string, string>>('../locales/books/*.ts', { eager: true, import: 'default' });
+// Dynamically build book identity mapping from all locale files
+const localeFiles = import.meta.glob<Record<string, unknown>>('../locales/*.ts', { eager: true, import: 'default' });
 
 const CANONICAL_KEYS: Record<string, string> = {
     "D&C": "Doctrine and Covenants",
@@ -19,7 +19,8 @@ const CANONICAL_KEYS: Record<string, string> = {
 
 export const BOOK_IDENTITY_MAP: Record<string, string> = { ...CANONICAL_KEYS };
 
-for (const bundle of Object.values(bookFiles)) {
+for (const locale of Object.values(localeFiles)) {
+    const bundle = locale?.books as Record<string, string> | undefined;
     if (!bundle || typeof bundle !== 'object') continue;
     for (const [englishKey, localizedName] of Object.entries(bundle)) {
         if (typeof localizedName !== 'string') continue;

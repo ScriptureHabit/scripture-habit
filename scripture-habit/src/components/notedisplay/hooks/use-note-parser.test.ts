@@ -12,8 +12,20 @@ describe('useNoteParser', () => {
         expect(result.current.primaryUrl).toBe('https://example.com');
     });
 
-    it('parses structured notes and extracts scripture, chapter, and comments', () => {
-        const structuredText = `Scripture: Book of Mormon\nChapter: Alma 32\nComment: Seek and ye shall find.`;
+    it('parses realistic Japanese AI/Structured notes (カテゴリ / 章 / コメント)', () => {
+        const structuredText = `カテゴリ: 旧約聖書\n章: ヨブ記 39:1-30\n\nコメント:\nヨブ記 1-30\n神様がヨブに問いかけた自然界の精緻な仕組みは、私たちの理解を超えた神の広大な摂理と愛を示しています。`;
+        const { result } = renderHook(() => useNoteParser(structuredText, undefined, false));
+
+        expect(result.current.isOriginalStructured).toBe(true);
+        expect(result.current.scriptureValue).toBe('旧約聖書');
+        expect(result.current.chapterValue).toBe('ヨブ記 39:1-30');
+        expect(result.current.comment).toContain('ヨブ記 1-30');
+        expect(result.current.comment).toContain('神様がヨブに問いかけた自然界の精緻な仕組み');
+        expect(result.current.primaryUrl).toBeNull();
+    });
+
+    it('parses realistic English Structured notes (Category / Chapter / Comment)', () => {
+        const structuredText = `Category: Book of Mormon\nChapter: Alma 32\n\nComment:\nSeek and ye shall find.`;
         const { result } = renderHook(() => useNoteParser(structuredText, undefined, false));
 
         expect(result.current.isOriginalStructured).toBe(true);
@@ -23,12 +35,20 @@ describe('useNoteParser', () => {
         expect(result.current.primaryUrl).toBeNull();
     });
 
+    it('parses standard user markdown notes (**Header** + Comment)', () => {
+        const markdownNote = `**モルモン書 1ニーファイ 3:7**\n\n私は行って、主が命じられたことを行います。`;
+        const { result } = renderHook(() => useNoteParser(markdownNote, undefined, false));
+
+        expect(result.current.isOriginalStructured).toBe(true);
+        expect(result.current.comment).toBe('私は行って、主が命じられたことを行います。');
+    });
+
     it('handles translated structured notes using translatedText when isTranslated is true', () => {
-        const originalText = `Scripture: Old Testament\nChapter: Genesis 1\nComment: Original comment.`;
-        const translatedText = `Scripture: Old Testament\nChapter: Genesis 1\nComment: Translated comment.`;
+        const originalText = `カテゴリ: 旧約聖書\n章: 創世記 1:1\n\nコメント:\n初めに神は天と地を創造された。`;
+        const translatedText = `Category: Old Testament\nChapter: Genesis 1:1\n\nComment:\nIn the beginning God created the heavens and the earth.`;
         const { result } = renderHook(() => useNoteParser(originalText, translatedText, true));
 
         expect(result.current.isOriginalStructured).toBe(true);
-        expect(result.current.comment).toBe('Translated comment.');
+        expect(result.current.comment).toBe('In the beginning God created the heavens and the earth.');
     });
 });

@@ -1,20 +1,13 @@
-import en from '../locales/en.js';
-import ja from '../locales/ja.js';
-import es from '../locales/es.js';
-import pt from '../locales/pt.js';
-import zho from '../locales/zho.js';
-import vi from '../locales/vi.js';
-import th from '../locales/th.js';
-import ko from '../locales/ko.js';
-import tl from '../locales/tl.js';
-import sw from '../locales/sw.js';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath, pathToFileURL } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const LOCALES_DIR = path.resolve(__dirname, '../../src/locales');
 
 type TranslationValue = string | string[] | { [key: string]: TranslationValue };
 type TranslationBundle = { [key: string]: TranslationValue };
-
-const locales: Record<string, TranslationBundle> = {
-    en, ja, es, pt, zho, vi, th, ko, tl, sw
-};
 
 /**
  * Flattens a nested object into dot-notation keys.
@@ -33,13 +26,35 @@ function getFlatKeys(obj: TranslationBundle, prefix = ''): string[] {
     return keys;
 }
 
-function checkTranslations() {
-    console.log('🔍 Checking i18n translation coverage across all locales...\n');
+async function loadLocales(): Promise<Record<string, TranslationBundle>> {
+    const files = fs.readdirSync(LOCALES_DIR).filter(f => (f.endsWith('.ts') || f.endsWith('.js')) && !f.includes('i18n'));
+    const locales: Record<string, TranslationBundle> = {};
 
+    for (const file of files) {
+        const lang = path.basename(file, path.extname(file));
+        const filePath = path.join(LOCALES_DIR, file);
+        const module = await import(pathToFileURL(filePath).href);
+        locales[lang] = module.default || module;
+    }
+
+    return locales;
+}
+
+async function checkTranslations() {
+    console.log('🔍 Checking i18n translation coverage across all locales (src/locales)...\n');
+
+    const locales = await loadLocales();
     const masterLang = 'en';
     const masterObj = locales[masterLang];
+
+    if (!masterObj) {
+        console.error(`❌ Master locale (${masterLang}.ts) not found in ${LOCALES_DIR}`);
+        process.exit(1);
+    }
+
     const masterKeys = getFlatKeys(masterObj);
-    console.log(`📋 Master locale (${masterLang}.ts) has ${masterKeys.length} translation keys.\n`);
+    console.log(`📋 Master locale (${masterLang}.ts) has ${masterKeys.length} translation keys.`);
+    console.log(`🌐 Found ${Object.keys(locales).length} locales: ${Object.keys(locales).join(', ')}\n`);
 
     let totalErrors = 0;
     const report: Record<string, string[]> = {};
@@ -70,4 +85,7 @@ function checkTranslations() {
     }
 }
 
-checkTranslations();
+checkTranslations().catch(err => {
+    console.error('Failed to run check-i18n:', err);
+    process.exit(1);
+});

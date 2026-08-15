@@ -103,10 +103,11 @@ const ORDINANCE_KEYWORDS: Record<string, Set<string>> = {
     "the-restoration-of-the-fulness-of-the-gospel-of-jesus-christ": new Set(["restoration", "回復", "restauração", "restauración", "rétablissement", "restoration proclamation"])
 };
 
-// Dynamically populate book name mappings and ordinance keywords from all book locale files
-const bookFiles = import.meta.glob<Record<string, string>>('../locales/books/*.ts', { eager: true, import: 'default' });
+// Dynamically populate book name mappings and ordinance keywords from all locale files
+const localeFiles = import.meta.glob<Record<string, unknown>>('../locales/*.ts', { eager: true, import: 'default' });
 
-for (const bundle of Object.values(bookFiles)) {
+for (const locale of Object.values(localeFiles)) {
+    const bundle = locale?.books as Record<string, string> | undefined;
     if (!bundle || typeof bundle !== 'object') continue;
     for (const [englishBook, localizedBook] of Object.entries(bundle)) {
         if (typeof localizedBook !== 'string') continue;

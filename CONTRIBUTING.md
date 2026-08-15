@@ -216,19 +216,19 @@ Conventional Commits に準拠しています：
 
 ## 翻訳の追加・修正について
 
-本プロジェクトの翻訳システムは一元化され、モジュール化されています：
-* **UI翻訳ファイル**: `scripture-habit/src/locales/<言語コード>.ts`（`en.ts` がマスターファイル）
-* **聖典の書名翻訳ファイル**: `scripture-habit/src/locales/books/<言語コード>.ts`
-* **言語メタデータ設定**: `scripture-habit/src/config/languages.ts`
+本プロジェクトの翻訳システムは **完全な 1 ファイル完結型（Single Source of Truth & Zero-Config）** です。UI文言、プッシュ通知、AI投稿、聖典の書名、言語メタデータがすべて 1 つのファイルにまとまっています：
+
+* **翻訳マスターファイル**: `scripture-habit/src/locales/en.ts`
+* **各言語ファイル**: `scripture-habit/src/locales/<言語コード>.ts`
 
 ### 1. 既存言語の修正・改善
-該当する `src/locales/<lang>.ts` や `src/locales/books/<lang>.ts` を直接修正し、Pull Request を送信してください。
+該当する `src/locales/<lang>.ts` を直接修正し、Pull Request を送信してください。
 
-### 2. 新しい言語の追加
-新しい言語の追加は以下の簡単な手順で行えます：
-1. `en.ts` をテンプレートとして、`src/locales/<lang>.ts` と `src/locales/books/<lang>.ts` を作成します。
-2. `src/config/languages.ts` に新しい言語の設定（コード、ネイティブ言語名、翻訳キー、国旗絵文字、福音ライブラリの3文字コード）を1行追加します。
-3. `npm run check:i18n` を実行して、翻訳キーの漏れがないかを確認します。
+### 2. 新しい言語の追加（たったの 2 ステップ）
+1. `src/locales/en.ts` をコピーして、新しい言語ファイル `src/locales/<lang>.ts`（例: `fra.ts`）を作成・翻訳します。
+   * ファイル先頭の `_meta`（言語名、国旗絵文字、LDSコード）も設定します。
+2. `npm run check:i18n` を実行して、未翻訳のキー漏れがないか確認します。
+   * 他のパーサーやサーバー設定ファイルへの import 追記は **完全不要（自動ディスカバリー）** です！
 
 > **翻訳時の注意点:**
 > - **変数のプレースホルダー:** `{nickname}`, `{streak}`, `{count}`, `{days}` などの波括弧で囲まれた変数名は翻訳せず、そのまま残してください。

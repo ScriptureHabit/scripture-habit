@@ -1,26 +1,30 @@
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath, pathToFileURL } from 'url';
 import { SupportedLanguage } from './schemas.js';
-
-// Import translation files
-import en from '../locales/en.js';
-import ja from '../locales/ja.js';
-import es from '../locales/es.js';
-import pt from '../locales/pt.js';
-import zho from '../locales/zho.js';
-import vi from '../locales/vi.js';
-import th from '../locales/th.js';
-import ko from '../locales/ko.js';
-import tl from '../locales/tl.js';
-import sw from '../locales/sw.js';
 
 type TranslationValue = string | string[] | { [key: string]: TranslationValue };
 type TranslationBundle = { [key: string]: TranslationValue };
 
-const translations: Record<string, TranslationBundle> = {
-    en, ja, es, pt, zho, vi, th, ko, tl, sw
-};
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const LOCALES_DIR = path.resolve(__dirname, '../../src/locales');
+
+// Auto-discover and dynamically load all locales from single source of truth (src/locales)
+const files = fs.readdirSync(LOCALES_DIR).filter(f => (f.endsWith('.ts') || f.endsWith('.js')) && !f.includes('i18n'));
+const translations: Record<string, TranslationBundle> = {};
+
+for (const file of files) {
+    const lang = path.basename(file, path.extname(file));
+    const filePath = path.join(LOCALES_DIR, file);
+    const mod = await import(pathToFileURL(filePath).href);
+    translations[lang] = mod.default || mod;
+}
 
 // Handle 'zh' vs 'zho' alias
-translations.zh = translations.zho;
+if (translations.zho) {
+    translations.zh = translations.zho;
+}
 
 /**
  * Simple translate function for backend

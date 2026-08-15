@@ -2,7 +2,6 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { dirname } from 'path';
-import { LANGUAGES } from '../src/config/languages';
 
 type TranslationValue = string | string[] | { [key: string]: TranslationValue };
 type TranslationBundle = { [key: string]: TranslationValue };
@@ -11,7 +10,6 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const LOCALES_DIR = path.resolve(__dirname, '../src/locales');
-const BOOKS_DIR = path.resolve(__dirname, '../src/locales/books');
 
 function getKeys(obj: TranslationValue, prefix = ''): string[] {
   if (typeof obj !== 'object' || obj === null || Array.isArray(obj)) {
@@ -34,7 +32,6 @@ function getKeys(obj: TranslationValue, prefix = ''): string[] {
 function checkLocales(locales: Record<string, TranslationBundle>, label: string) {
   console.log(`=== Checking ${label} ===`);
   
-  // 1. Gather all keys from all locales
   const localeKeysMap: Record<string, string[]> = {};
   const allKeysSet = new Set<string>();
   
@@ -47,7 +44,6 @@ function checkLocales(locales: Record<string, TranslationBundle>, label: string)
   const allKeys = Array.from(allKeysSet).sort();
   console.log(`Total unique keys in union: ${allKeys.length}`);
   
-  // 2. Find missing keys in each locale
   let hasMissing = false;
   for (const [lang, keys] of Object.entries(localeKeysMap)) {
     const definedKeys = new Set(keys);
@@ -61,36 +57,25 @@ function checkLocales(locales: Record<string, TranslationBundle>, label: string)
   }
   
   if (!hasMissing) {
-    console.log("No missing keys found across all locales!");
+    console.log("✅ No missing keys found across all locales!");
   }
   console.log("\n");
   return !hasMissing;
 }
 
 async function run() {
-  const uiLocales: Record<string, TranslationBundle> = {};
-  const bookLocales: Record<string, TranslationBundle> = {};
+  const files = fs.readdirSync(LOCALES_DIR).filter(f => (f.endsWith('.ts') || f.endsWith('.js')) && !f.includes('i18n'));
+  const locales: Record<string, TranslationBundle> = {};
 
-  for (const langConfig of LANGUAGES) {
-    const lang = langConfig.code;
-    const uiPath = path.join(LOCALES_DIR, `${lang}.ts`);
-    const bookPath = path.join(BOOKS_DIR, `${lang}.ts`);
-
-    if (fs.existsSync(uiPath)) {
-      const mod = await import(pathToFileURL(uiPath).href);
-      uiLocales[lang] = mod.default;
-    }
-
-    if (fs.existsSync(bookPath)) {
-      const mod = await import(pathToFileURL(bookPath).href);
-      bookLocales[lang] = mod.default;
-    }
+  for (const file of files) {
+    const lang = path.basename(file, path.extname(file));
+    const filePath = path.join(LOCALES_DIR, file);
+    const mod = await import(pathToFileURL(filePath).href);
+    locales[lang] = mod.default || mod;
   }
 
-  const uiOk = checkLocales(uiLocales, "UI Locales");
-  const bookOk = checkLocales(bookLocales, "Book Locales");
-
-  if (!uiOk || !bookOk) {
+  const ok = checkLocales(locales, "All Locales");
+  if (!ok) {
     process.exit(1);
   }
 }

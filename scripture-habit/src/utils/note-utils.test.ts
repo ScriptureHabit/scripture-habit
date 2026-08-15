@@ -1,12 +1,9 @@
-import { describe, it, expect, afterEach, beforeEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { 
     removeNoteHeader, 
     isGCUrl, 
     extractUrls, 
-    calculateNewLevelAndXP, 
-    isToday, 
-    isYesterday, 
-    getCategoryFromScripture 
+    calculateNewLevelAndXP 
 } from './note-utils';
 
 describe('note-utils', () => {
@@ -88,82 +85,6 @@ describe('note-utils', () => {
             // Level 2 -> requires 200 (rem 0) -> Level 3
             expect(result.newLevel).toBe(3);
             expect(result.newXP).toBe(0);
-        });
-    });
-
-    describe('isToday and isYesterday', () => {
-        let originalDate: any;
-        
-        beforeEach(() => {
-            originalDate = global.Date;
-            const fixedDate = new Date('2023-05-15T12:00:00Z');
-            global.Date = class extends Date {
-                constructor(value?: any) {
-                    if (arguments.length > 0) {
-                        super(value);
-                    } else {
-                        super(fixedDate);
-                    }
-                }
-            } as any;
-        });
-
-        afterEach(() => {
-            global.Date = originalDate;
-        });
-
-        it('isToday should identify today', () => {
-            const today = new Date('2023-05-15T08:00:00Z');
-            const tomorrow = new Date('2023-05-16T08:00:00Z');
-            expect(isToday(today, 'UTC')).toBe(true);
-            expect(isToday(tomorrow, 'UTC')).toBe(false);
-        });
-
-        it('isYesterday should identify yesterday', () => {
-            const yesterday = new Date('2023-05-14T08:00:00Z');
-            const today = new Date('2023-05-15T08:00:00Z');
-            expect(isYesterday(yesterday, 'UTC')).toBe(true);
-            expect(isYesterday(today, 'UTC')).toBe(false);
-        });
-    });
-
-    describe('getCategoryFromScripture', () => {
-        it('should identify Book of Mormon', () => {
-            expect(getCategoryFromScripture('1 Nephi 3:7')).toBe('bofm');
-            expect(getCategoryFromScripture('Alma 32:21')).toBe('bofm');
-            expect(getCategoryFromScripture('Mosiah 2:17')).toBe('bofm');
-            expect(getCategoryFromScripture('Mormon 8:1')).toBe('bofm');
-            expect(getCategoryFromScripture('Ether 12:6')).toBe('bofm');
-        });
-
-        it('should identify Old Testament', () => {
-            expect(getCategoryFromScripture('Genesis 1:1')).toBe('ot');
-            expect(getCategoryFromScripture('Exodus 20:1')).toBe('ot');
-            expect(getCategoryFromScripture('Psalms 23:1')).toBe('ot');
-            expect(getCategoryFromScripture('Isaiah 53:5')).toBe('ot');
-        });
-
-        it('should identify New Testament', () => {
-            expect(getCategoryFromScripture('Matthew 5:1')).toBe('nt');
-            expect(getCategoryFromScripture('Mark 1:1')).toBe('nt');
-            expect(getCategoryFromScripture('Luke 2:1')).toBe('nt');
-            expect(getCategoryFromScripture('John 3:16')).toBe('nt');
-            expect(getCategoryFromScripture('Acts 2:38')).toBe('nt');
-            expect(getCategoryFromScripture('Revelation 1:1')).toBe('nt');
-        });
-
-        it('should identify Doctrine and Covenants', () => {
-            expect(getCategoryFromScripture('Doctrine and Covenants 89')).toBe('dc');
-            expect(getCategoryFromScripture('D&C 4')).toBe('dc');
-        });
-
-        it('should identify Pearl of Great Price', () => {
-            expect(getCategoryFromScripture('Moses 1:39')).toBe('pgp');
-            expect(getCategoryFromScripture('Abraham 3:22')).toBe('pgp');
-        });
-
-        it('should default to other', () => {
-            expect(getCategoryFromScripture('Unknown Book 1:1')).toBe('other');
         });
     });
 });

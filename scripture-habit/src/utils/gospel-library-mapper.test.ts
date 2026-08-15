@@ -96,18 +96,18 @@ describe('gospel-library-mapper', () => {
 
     describe('getScriptureInfoFromText', () => {
         it('should extract url from markdown formatted text', () => {
-            const text = `**Scripture:** Book of Mormon\n**Chapter:** 1 Nephi 3:7`;
+            const text = `**Category:** Book of Mormon\n**Chapter:** 1 Nephi 3:7`;
             expect(getScriptureInfoFromText(text)).toBe('https://www.churchofjesuschrist.org/study/scriptures/bofm/1-ne/3?lang=eng&id=p7#p7');
         });
 
         it('should support multi-lingual labels and flexible colon placement', () => {
-            const jaText1 = `**聖句:** モルモン書\n**章:** 1ニーファイ 3:7`;
+            const jaText1 = `**カテゴリ:** モルモン書\n**章:** 1ニーファイ 3:7`;
             expect(getScriptureInfoFromText(jaText1)).toBe('https://www.churchofjesuschrist.org/study/scriptures/bofm/1-ne/3?lang=eng&id=p7#p7');
 
-            const jaText2 = `**聖句**： モルモン書\n**章**： 1ニーファイ 3:7`;
+            const jaText2 = `**カテゴリ**： モルモン書\n**章**： 1ニーファイ 3:7`;
             expect(getScriptureInfoFromText(jaText2)).toBe('https://www.churchofjesuschrist.org/study/scriptures/bofm/1-ne/3?lang=eng&id=p7#p7');
 
-            const esText = `**Escritura:** Book of Mormon\n**Capítulo:** Alma 32:21`;
+            const esText = `**Categoría:** Book of Mormon\n**Capítulo:** Alma 32:21`;
             expect(getScriptureInfoFromText(esText)).toBe('https://www.churchofjesuschrist.org/study/scriptures/bofm/alma/32?lang=eng&id=p21#p21');
         });
 

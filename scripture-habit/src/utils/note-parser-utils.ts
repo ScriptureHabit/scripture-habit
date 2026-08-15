@@ -11,25 +11,23 @@ export interface ParsedNote {
     finalSimpleContent: string;
 }
 
-const LABEL_MARKERS = [
-    'Category:', 'Chapter:', 'Scripture:', 'Title:', 'Talk:', 'Speech:', 'Comment:', 'Url:',
-    'カテゴリ:', 'カテゴリ：', '章:', '章：', '聖句:', '聖句：', 'タイトル:', 'タイトル：', 'お話:', 'お話：', 'スピーチ:', 'スピーチ：', 'コメント:', 'コメント：', 'Url：',
-    'Categoría:', 'Categoria:', 'Escritura:', 'Capítulo:', 'Título:', 'Comentario:', 'Comentário:', 'Discurso:',
-    '카테고리:', '성구:', '장:', '제목:', '코멘트:', '댓글:',
-    '類別:', '分類:', '經文:', '章節:', '標題:', '評論:',
-    'Kinh Thánh:', 'Thánh thư:', 'Chương:', 'Tiêu đề:', 'Bình luận:',
-    'Kasulatan:', 'Banal na Kasulatan:', 'Kabanata:', 'Pamagat:', 'Mensahe:', 'Komento:',
-    'Andiko:', 'Sura:', 'Jamii:', 'Kundi:', 'Maoni:',
-    'พระคัมภีร์:', 'บท:', 'หมวดหมู่:', 'ความคิดเห็น:',
-];
+// Language-independent structural Key-Value detector (e.g. "**Label:** Value" or "Label: Value")
+const KV_LINE_REGEX = /^(?:\*\*|)[^\n:：]{1,40}(?:\*\*|)\s*[:：](?!\/\/)\s*.+/m;
 
-export const parseStructuredNoteText = (text: string, translatedText?: string, isTranslated: boolean = false): ParsedNote => {
-    // 1. Initial Structural Detection
+/**
+ * Parses note text into structured components based purely on document structure and layout.
+ * Completely language-agnostic: zero dictionaries, zero maintenance for new languages!
+ */
+export const parseStructuredNoteText = (
+    text: string,
+    translatedText?: string,
+    isTranslated: boolean = false
+): ParsedNote => {
+    // 1. Structural Detection
     const hm = text.match(NOTE_HEADER_REGEX);
-    const hasFixedLabel = /^(?:\*\*|)\s*(Category|Categoría|Scripture|カテゴリ|聖句|성구|經文|Thánh thư|Kinh Thánh|Kasulatan|Andiko|พระคัมภีร์|章|Chapter|Capítulo|장|章節|Chương|Kabanata|Sura|บท|Title|Talk|Speech|Discurso|Discurso|제목|標題|Tiêu đề|Pamagat|Mensahe|リンク|Url)\s*(?:\*\*|)\s*[:：]/mi.test(text);
-    const isStructured = !!hm || hasFixedLabel;
+    const isStructured = !!hm || KV_LINE_REGEX.test(text);
 
-    // 2. Simple View Logic
+    // 2. Simple View (Non-structured plain notes or chat messages)
     if (!isStructured) {
         const sourceContent = isTranslated ? (translatedText || '') : text;
         const urls = extractUrls(isTranslated ? `${text} ${translatedText}` : text);
@@ -51,59 +49,45 @@ export const parseStructuredNoteText = (text: string, translatedText?: string, i
         };
     }
 
-    // 3. Structured Parsing Flow
+    // 3. Structured Note Parsing (Positional & Layout-driven)
     const sourceText = isTranslated ? (translatedText || '') : text;
     const contentBody = hm ? removeNoteHeader(sourceText) : sourceText;
-    const initialLines = contentBody.split('\n');
-    const lines: string[] = [];
-
-    initialLines.forEach((line: string) => {
-        const foundPos: { pos: number; marker: string }[] = [];
-        LABEL_MARKERS.forEach(marker => {
-            const pos = line.indexOf(marker);
-            if (pos > 5) foundPos.push({ pos, marker });
-        });
-
-        if (foundPos.length > 0) {
-            foundPos.sort((a, b) => a.pos - b.pos);
-            let lastIdx = 0;
-            foundPos.forEach(fp => {
-                lines.push(line.substring(lastIdx, fp.pos).trim());
-                lastIdx = fp.pos;
-            });
-            lines.push(line.substring(lastIdx).trim());
-        } else {
-            lines.push(line);
-        }
-    });
+    const lines = contentBody.split('\n');
 
     let sVal = '';
     let cVal = '';
     const cLines: string[] = [];
+    let kvCount = 0;
 
     lines.forEach(line => {
         const trimmed = line.trim();
         if (!trimmed) return;
+
         const idxColon = trimmed.indexOf(':');
         const idxFullColon = trimmed.indexOf('：');
         const dividerIndex = (idxColon !== -1 && idxFullColon !== -1)
             ? Math.min(idxColon, idxFullColon)
             : (idxColon !== -1 ? idxColon : idxFullColon);
 
-        if (dividerIndex !== -1 && dividerIndex < 60) {
-            const labelRaw = trimmed.substring(0, dividerIndex).replace(/\*/g, '').trim().toLowerCase();
+        const isUrlProtocol = idxColon !== -1 && trimmed.substring(idxColon, idxColon + 3) === '://';
+
+        if (dividerIndex !== -1 && dividerIndex < 40 && !isUrlProtocol) {
             const value = trimmed.substring(dividerIndex + 1).replace(/\*\*/g, '').trim();
 
-            if (/category|scripture|カテゴリ|聖句|categoría|categoria|jamii|kundi|หมวดหมู่|escritura|성구|카테고리|經文|類別|kinh thánh|thánh thư|kasulatan|andiko|พระคัมภีร์/i.test(labelRaw)) {
+            if (kvCount === 0 && !sVal) {
+                // 1st Key-Value pair -> Scripture / Category
                 sVal = value;
-            } else if (/chapter|url|title|章|リンク|speech|talk|capítulo|título|discurso|제목|장|章節|標題|tiêu đề|pamagat|kabanata|chương|章節|sura|บท|mensahe/i.test(labelRaw)) {
-                if (!cVal || isGCUrl(value)) cVal = value;
-            } else if (/comment|コメント|comentario|comentário|코メント|評論|bình luận|komento|maoni|ความคิดเห็น/i.test(labelRaw)) {
-                if (value) cLines.push(value);
+                kvCount++;
+            } else if ((kvCount === 1 && !cVal) || isGCUrl(value)) {
+                // 2nd Key-Value pair -> Chapter / Reference / URL
+                cVal = value;
+                kvCount++;
             } else {
-                cLines.push(trimmed);
+                // 3rd+ Key-Value pair -> Comment / Body
+                if (value) cLines.push(value);
             }
         } else {
+            // Unlabeled content lines belong to the comment body
             cLines.push(trimmed);
         }
     });
