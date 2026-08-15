@@ -31,7 +31,7 @@ export const volumeBooks: Record<string, string[]> = {
 };
 
 const KANJI_BOOK_READINGS: Record<string, string> = {
-    // 旧約聖書 (Old Testament)
+    // Old Testament
     "創世記": "ソウセイキ",
     "出エジプト記": "シュツエジプトキ",
     "レビ記": "レビキ",
@@ -72,7 +72,7 @@ const KANJI_BOOK_READINGS: Record<string, string> = {
     "ゼカリヤ書": "ゼカリヤショ",
     "マラキ書": "マラキショ",
 
-    // 新約聖書 (New Testament)
+    // New Testament
     "マタイによる福音書": "マタイニヨルフクインショ",
     "マルコによる福音書": "マルコニヨルフクインショ",
     "ルカによる福音書": "ルカニヨルフクインショ",
@@ -101,7 +101,7 @@ const KANJI_BOOK_READINGS: Record<string, string> = {
     "ユダの手紙": "ユダノテガミ",
     "ヨハネの黙示録": "ヨハネノモクシロク",
 
-    // モルモン書 (Book of Mormon)
+    // Book of Mormon
     "ニーファイ第一書": "ニーファイダイイチショ",
     "ニーファイ第二書": "ニーファイダイニショ",
     "ヤコブ書": "ヤコブショ",
@@ -118,17 +118,17 @@ const KANJI_BOOK_READINGS: Record<string, string> = {
     "エテル書": "エテルショ",
     "モロナイ書": "モロナイショ",
 
-    // 高価な真珠 (Pearl of Great Price)
+    // Pearl of Great Price
     "モーセ書": "モーセショ",
     "アブラハム書": "アブラハムショ",
     "ジョセフ・スミス—マタイ": "ジョセフスミスマタイ",
     "ジョセフ・スミス—歴史": "ジョセフスミスレキシ",
     "信仰箇条": "シンコウカジョウ",
 
-    // 教義と聖約 (D&C)
+    // Doctrine and Covenants
     "教義と聖約": "キョウギトセイヤク",
 
-    // その他
+    // Ordinances and Proclamations
     "聖餐の祈り": "セイサンノイノリ",
     "バプテスマの儀式": "バプテスマノギシキ",
     "生けるキリスト": "イケルキリスト",

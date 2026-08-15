@@ -30,14 +30,14 @@ for (const bundle of Object.values(bookFiles)) {
         BOOK_IDENTITY_MAP[trimmedLoc] = canonicalEng;
         BOOK_IDENTITY_MAP[trimmedEng] = canonicalEng;
 
-        // Auto-generate aliases (e.g. "ヨブ記" -> "ヨブ", "マタイによる福音書" -> "マタイ")
+        // Auto-generate aliases (e.g. "Job" from localized book names)
         BOOK_IDENTITY_MAP[trimmedLoc.replace(/記$/, '')] = canonicalEng;
         BOOK_IDENTITY_MAP[trimmedLoc.replace(/書$/, '')] = canonicalEng;
         BOOK_IDENTITY_MAP[trimmedLoc.replace(/による福音書$/, '')] = canonicalEng;
         BOOK_IDENTITY_MAP[trimmedLoc.replace(/の手紙$/, '')] = canonicalEng;
         BOOK_IDENTITY_MAP[trimmedLoc.replace(/^第(?=\d)/, '')] = canonicalEng;
 
-        // Numbered books variations (e.g. "1 Nephi", "1ニーファイ", "第1ニーファイ")
+        // Numbered books variations (e.g. "1 Nephi", "1 <BookName>")
         const numMatch = canonicalEng.match(/^(\d)\s+(.+)$/);
         if (numMatch) {
             const digit = numMatch[1];

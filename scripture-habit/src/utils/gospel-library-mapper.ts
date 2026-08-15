@@ -144,7 +144,7 @@ for (const bundle of Object.values(bookFiles)) {
     }
 }
 
-// 全角文字や記号の正規化
+// Normalize full-width characters and Japanese punctuation
 const normalizeChapterInput = (input: string): string => {
     return input
         .replace(/[０-９]/g, s => String.fromCharCode(s.charCodeAt(0) - 0xFEE0))
@@ -203,7 +203,7 @@ const detectVolume = (volume: string | null | undefined, chapterInput: string | 
     return "";
 };
 
-// 節のパラメータ (&id=p1#p1) を構築
+// Build verse anchor/range URL suffix (&id=p1#p1)
 const buildVerseSuffix = (verses: string | undefined, langParam: string): string => {
     if (!verses) return langParam;
     const idValue = verses.replace(/\d+/g, m => `p${m}`);
@@ -222,7 +222,7 @@ export const getGospelLibraryUrl = (volume: string | null | undefined, chapterIn
         langParam = "?lang=eng";
     }
 
-    // 1. 総大会 (General Conference)
+    // 1. General Conference
     if (volumeUrlPart === "general-conference") {
         if (chapterInput.includes("churchofjesuschrist.org")) {
             try {
@@ -243,7 +243,7 @@ export const getGospelLibraryUrl = (volume: string | null | undefined, chapterIn
     // 2. BYU Speeches
     if (volumeUrlPart === "byu-speeches") return chapterInput;
 
-    // 3. 宣言と儀式 (Ordinances and Proclamations)
+    // 3. Ordinances and Proclamations
     if (volumeUrlPart === "ordinances-and-proclamations") {
         const lowerChap = chapterInput.toLowerCase().trim();
         for (const [slug, keywords] of Object.entries(ORDINANCE_KEYWORDS)) {
@@ -256,7 +256,7 @@ export const getGospelLibraryUrl = (volume: string | null | undefined, chapterIn
         return `${baseUrl}/ordinances-and-proclamations${langParam}`;
     }
 
-    // 4. 通常の聖典書籍の解析
+    // 4. Standard scripture book and chapter resolution
     const cleanChapterInput = normalizeChapterInput(chapterInput);
     const match = cleanChapterInput.match(/(.*?)\s*(\d+)(?::([\d\s,-]+))?\s*$/);
     if (!match) return null;
