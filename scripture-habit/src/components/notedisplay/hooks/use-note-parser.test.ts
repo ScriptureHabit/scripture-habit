@@ -43,6 +43,14 @@ describe('useNoteParser', () => {
         expect(result.current.comment).toBe('私は行って、主が命じられたことを行います。');
     });
 
+    it('preserves comments with colons (e.g. ID: 1234, Note: etc.) in standard markdown notes', () => {
+        const markdownNote = `**Book of Mormon 1 Nephi 1 (Test 12345)**\n\nLearning about faith and obedience. ID: 12345-abcd`;
+        const { result } = renderHook(() => useNoteParser(markdownNote, undefined, false));
+
+        expect(result.current.isOriginalStructured).toBe(true);
+        expect(result.current.comment).toBe('Learning about faith and obedience. ID: 12345-abcd');
+    });
+
     it('handles translated structured notes using translatedText when isTranslated is true', () => {
         const originalText = `カテゴリ: 旧約聖書\n章: 創世記 1:1\n\nコメント:\n初めに神は天と地を創造された。`;
         const translatedText = `Category: Old Testament\nChapter: Genesis 1:1\n\nComment:\nIn the beginning God created the heavens and the earth.`;
