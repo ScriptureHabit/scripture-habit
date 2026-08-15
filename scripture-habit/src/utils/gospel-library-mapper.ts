@@ -73,58 +73,26 @@ const VOLUME_ALIASES: Record<string, string[]> = {
     bofm: ["book of mormon", "bofm", "bom", "mormon", "モルモン書", "モルモン", "livro de mórmon", "libro de mormón", "sách mặc môn", "พระคัมภีร์มอรมอน", "몰몬경", "aklat ni mormon", "kitabu cha mormoni", "摩爾門經", "摩尔门经"],
     "dc-testament": ["dc", "d&c", "d.&c.", "d. & c.", "dc-testament", "doctrine and covenants", "教義と聖約", "doutrina e convênios", "教義和聖約", "doctrina y convenios", "giáo lý và giao ước", "หลักคำสอนและพันธสัญญา", "교리와 성약", "doktrina at mga tipan", "mafundisho na maagano", "教义和圣约"],
     pgp: ["pgp", "pearl of great price", "高価な真珠", "pérola de grande valor", "無價珍珠", "perla de gran precio", "trân châu vô giá", "ไข่มุกอันล้ำค่า", "값진 진주", "perlas na may dakilang halaga", "lulu ya thamani kuu", "无价珍珠"],
-    "general-conference": ["general conference", "gc", "総大会", "conferência geral", "đại hội trung ương", "การประชุมใหญ่สามัญ", "연차대회", "pangkalahatang kumperensya", "mkutano mkuu", "总大会", "總大會"],
-    "byu-speeches": ["byu-speeches", "byu speeches", "byu"],
-    "ordinances-and-proclamations": ["ordinances and proclamations", "proclamations", "priesthood ordinances and proclamations", "儀式と宣言", "ordenanças e declarações", "聖職教儀和文告", "ordenanzas del sacerdocio y proclamaciones", "教仪和宣告", "mga ordinansa at mga pagpapahayag"]
+    "general-conference": ["general conference", "gc", "conference", "churchofjesuschrist.org", "総大会", "大会", "conferência geral", "conferência", "conferencia general", "conferencia", "đại hội trung ương", "đại hội", "การประชุมใหญ่สามัญ", "การประชุมใหญ่", "연차대회", "대회", "pangkalahatang kumperensya", "kumperensya", "mkutano mkuu", "mkutano", "总大会", "總大會", "大會"],
+    "byu-speeches": ["byu-speeches", "byu speeches", "byu", "speeches.byu.edu"],
+    "ordinances-and-proclamations": [
+        "ordinances and proclamations", "proclamations", "proclamation", "priesthood ordinances and proclamations", "family", "living christ", "restoration", "sacrament", "baptism",
+        "儀式と宣言", "家族", "生けるキリスト", "回復", "聖餐", "バプテスマ",
+        "proclama", "declaracion", "familia", "cristo viviente", "restauración", "bautismo", "ordenanzas del sacerdocio y proclamaciones",
+        "declaração", "família", "cristo vivo", "restauração", "sacramento", "batismo", "ordenanças e declarações",
+        "家庭", "活著的基督", "復興", "洗禮", "聖職教儀和文告", "教仪和宣告", "mga ordinansa at mga pagpapahayag",
+        "선언문", "살아 계신 그리스도", "회복", "침례", "tangazo", "kristo aliye hai", "urejesho", "sakramenti", "ubatizo"
+    ]
 };
 
-const NON_SCRIPTURE_FALLBACKS = [
-    {
-        key: "ordinances-and-proclamations",
-        keywords: [
-            "proclamation", "proclamations", "ordinances and proclamations", "priesthood ordinances and proclamations", "family", "living christ", "restoration", "sacrament", "baptism",
-            "儀式と宣言", "家族", "生けるキリスト", "回復", "聖餐", "バプテスマ",
-            "proclama", "declaracion", "familia", "cristo viviente", "restauración", "bautismo", "ordenanzas del sacerdocio y proclamaciones",
-            "declaração", "família", "cristo vivo", "restauração", "sacramento", "batismo", "ordenanças e declarações",
-            "家庭", "活著的基督", "復興", "洗禮", "聖職教儀和文告", "教仪和宣告", "mga ordinansa at mga pagpapahayag",
-            "선언문", "살아 계신 그리스도", "회복", "침례", "tangazo", "kristo aliye hai", "urejesho", "sakramenti", "ubatizo"
-        ]
-    },
-    {
-        key: "general-conference",
-        keywords: [
-            "general conference", "gc", "conference", "churchofjesuschrist.org", "総大会", "大会", "conferência geral", "conferência",
-            "conferencia general", "conferencia", "đại hội trung ương", "đại hội", "การประชุมใหญ่สามัญ", "การประชุมใหญ่",
-            "연차대회", "대회", "pangkalahatang kumperensya", "kumperensya", "mkutano mkuu", "mkutano", "总大会", "總大會", "大會"
-        ]
-    },
-    {
-        key: "byu-speeches",
-        keywords: ["byu-speeches", "byu speeches", "byu", "speeches.byu.edu"]
-    }
-];
-
-const COMMON_BOOK_ALIASES: Record<string, string> = {
-    // English & generic shorthands
+const BASE_BOOK_ALIASES: Record<string, string> = {
     "1ne": "1-ne", "2ne": "2-ne", "3ne": "3-ne", "4ne": "4-ne",
     "1-ne": "1-ne", "2-ne": "2-ne", "3-ne": "3-ne", "4-ne": "4-ne",
     "bom": "bofm", "dc": "dc", "d&c": "dc", "od": "od",
-    "d and c": "dc", "doctrine and covenants": "dc",
-    // Japanese numeric & colloquial variants
-    "1ニーファイ": "1-ne", "第1ニーファイ": "1-ne", "第１ニーファイ": "1-ne", "第一ニーファイ": "1-ne", "ニーファイ第一書": "1-ne", "ニーファイ第一の書": "1-ne",
-    "2ニーファイ": "2-ne", "第2ニーファイ": "2-ne", "第２ニーファイ": "2-ne", "第二ニーファイ": "2-ne", "ニーファイ第二書": "2-ne", "ニーファイ第二の書": "2-ne",
-    "3ニーファイ": "3-ne", "第3ニーファイ": "3-ne", "第３ニーファイ": "3-ne", "第三ニーファイ": "3-ne", "ニーファイ第三書": "3-ne", "ニーファイ第三の書": "3-ne",
-    "4ニーファイ": "4-ne", "第4ニーファイ": "4-ne", "第４ニーファイ": "4-ne", "第四ニーファイ": "4-ne", "ニーファイ第四書": "4-ne", "ニーファイ第四の書": "4-ne",
-    "モルモンの言葉": "w-of-m", "モルモン書": "morm", "信仰箇条": "a-of-f",
-    // Chinese numeric variants
-    "尼腓一書": "1-ne", "尼腓二書": "2-ne", "尼腓三書": "3-ne", "尼腓四書": "4-ne",
-    // Korean numeric variants
-    "니파이전서": "1-ne", "니파이후서": "2-ne", "제3니파이": "3-ne", "제4니파이": "4-ne",
-    // Thai numeric variants
-    "1 นีไฟ": "1-ne", "2 นีไฟ": "2-ne", "3 นีไฟ": "3-ne", "4 นีไฟ": "4-ne"
+    "d and c": "dc", "doctrine and covenants": "dc"
 };
 
-const BOOK_MAPPINGS: Record<string, string> = { ...COMMON_BOOK_ALIASES };
+const BOOK_MAPPINGS: Record<string, string> = { ...BASE_BOOK_ALIASES };
 
 // Ordinance slugs keyword dictionary
 const ORDINANCE_KEYWORDS: Record<string, Set<string>> = {
@@ -157,6 +125,16 @@ for (const bundle of Object.values(bookFiles)) {
         BOOK_MAPPINGS[normalizedLoc.replace(/^第(?=\d)/, '')] = slug;
         BOOK_MAPPINGS[normalizedLoc.replace(/書$/, '')] = slug;
         BOOK_MAPPINGS[normalizedLoc.replace(/による福音書$/, '')] = slug;
+
+        // Auto-generate numbered book variants (e.g. "1ニーファイ", "第1ニーファイ")
+        const numMatch = englishBook.match(/^(\d)\s+(.+)$/);
+        if (numMatch) {
+            const digit = numMatch[1];
+            const localizedBase = normalizedLoc.replace(/^(第一|第二|第三|第四|第1|第2|第3|第4|1|2|3|4)\s*/, '').replace(/(第一書|第二書|第三書|第四書|第一の書|第二の書|第三の書|第四の書|の書|書)$/, '');
+            BOOK_MAPPINGS[`${digit}${localizedBase}`] = slug;
+            BOOK_MAPPINGS[`${digit} ${localizedBase}`] = slug;
+            BOOK_MAPPINGS[`第${digit}${localizedBase}`] = slug;
+        }
 
         // If it's an ordinance or proclamation, add to ordinance keywords
         if (ORDINANCE_KEYWORDS[slug]) {
@@ -194,10 +172,12 @@ const detectVolume = (volume: string | null | undefined, chapterInput: string | 
 
     const lowerChap = chapterInput.toLowerCase().trim();
 
-    // 2. Check non-scripture volumes (General Conference, BYU Speeches, Proclamations)
-    for (const item of NON_SCRIPTURE_FALLBACKS) {
-        if (item.keywords.some(kw => lowerChap.includes(kw))) {
-            return item.key;
+    // 2. Check ordinance/proclamation keywords directly
+    for (const keywords of Object.values(ORDINANCE_KEYWORDS)) {
+        for (const kw of keywords) {
+            if (lowerChap.includes(kw)) {
+                return "ordinances-and-proclamations";
+            }
         }
     }
 
@@ -305,6 +285,22 @@ export const getGospelLibraryUrl = (volume: string | null | undefined, chapterIn
     return `${baseUrl}/${volumeUrlPart}/${bookUrlPart}/${chapterNum}${urlSuffix}`;
 };
 
+const VOLUME_TO_CATEGORY: Record<string, string> = {
+    'ot': 'Old Testament',
+    'nt': 'New Testament',
+    'bofm': 'Book of Mormon',
+    'dc-testament': 'Doctrine and Covenants',
+    'pgp': 'Pearl of Great Price',
+    'ordinances-and-proclamations': 'Ordinances and Proclamations',
+    'sacrament': 'Ordinances and Proclamations',
+    'baptism': 'Ordinances and Proclamations',
+    'the-family-a-proclamation-to-the-world': 'Ordinances and Proclamations',
+    'the-living-christ-the-testimony-of-the-apostles': 'Ordinances and Proclamations',
+    'the-restoration-of-the-fulness-of-the-gospel-of-jesus-christ': 'Ordinances and Proclamations',
+    'general-conference': 'General Conference',
+    'byu-speeches': 'BYU Speeches'
+};
+
 export const getCategoryFromScripture = (scriptureText: string | null | undefined): string => {
     const url = getGospelLibraryUrl(null, scriptureText);
     let volumeUrlPart = "";
@@ -316,13 +312,7 @@ export const getCategoryFromScripture = (scriptureText: string | null | undefine
     }
     if (!volumeUrlPart) volumeUrlPart = detectVolume(null, scriptureText);
 
-    const mapping: Record<string, string> = {
-        'ot': 'Old Testament', 'nt': 'New Testament', 'bofm': 'Book of Mormon', 'dc-testament': 'Doctrine and Covenants', 'pgp': 'Pearl of Great Price',
-        'ordinances-and-proclamations': 'Ordinances and Proclamations', 'sacrament': 'Ordinances and Proclamations', 'baptism': 'Ordinances and Proclamations',
-        'the-family-a-proclamation-to-the-world': 'Ordinances and Proclamations', 'the-living-christ-the-testimony-of-the-apostles': 'Ordinances and Proclamations',
-        'the-restoration-of-the-fulness-of-the-gospel-of-jesus-christ': 'Ordinances and Proclamations', 'general-conference': 'General Conference', 'byu-speeches': 'BYU Speeches'
-    };
-    return mapping[volumeUrlPart] || 'Other';
+    return VOLUME_TO_CATEGORY[volumeUrlPart] || 'Other';
 };
 
 export const getScriptureInfoFromText = (text: string | null | undefined): string | null => {
