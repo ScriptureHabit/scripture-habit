@@ -1,7 +1,7 @@
 import { Language } from '../config/languages';
 import en from './en';
 
-const uiModules = import.meta.glob<{ default: Record<string, unknown> }>('./*.ts');
+const uiModules = import.meta.glob<{ default: Record<string, unknown> }>(['./*.ts', '!./i18n.ts']);
 
 export const loadTranslations = async (lang: Language): Promise<Record<string, unknown>> => {
   if (lang === 'en') {
@@ -19,3 +19,5 @@ export const loadBookTranslations = async (lang: Language): Promise<Record<strin
   const trans = await loadTranslations(lang);
   return (trans.books as Record<string, unknown>) || (en.books as unknown as Record<string, unknown>);
 };
+
+export default {};

@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { identifyBookKey } from '../book-ref-mapper';
 import enLocale from '../../locales/en';
 
-const localeModules = import.meta.glob<Record<string, unknown>>('../../locales/*.ts', { eager: true, import: 'default' });
+const localeModules = import.meta.glob<Record<string, unknown>>(['../../locales/*.ts', '!../../locales/i18n.ts'], { eager: true, import: 'default' });
 
 const validEnglishKeys = new Set(Object.keys(enLocale.books || {}));
 

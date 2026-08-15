@@ -1,5 +1,5 @@
 // Dynamically build book identity mapping from all locale files
-const localeFiles = import.meta.glob<Record<string, unknown>>('../locales/*.ts', { eager: true, import: 'default' });
+const localeFiles = import.meta.glob<Record<string, unknown>>(['../locales/*.ts', '!../locales/i18n.ts'], { eager: true, import: 'default' });
 
 const CANONICAL_KEYS: Record<string, string> = {
     "D&C": "Doctrine and Covenants",

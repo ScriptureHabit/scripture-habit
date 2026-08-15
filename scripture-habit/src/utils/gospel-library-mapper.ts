@@ -104,7 +104,7 @@ const ORDINANCE_KEYWORDS: Record<string, Set<string>> = {
 };
 
 // Dynamically populate book name mappings and ordinance keywords from all locale files
-const localeFiles = import.meta.glob<Record<string, unknown>>('../locales/*.ts', { eager: true, import: 'default' });
+const localeFiles = import.meta.glob<Record<string, unknown>>(['../locales/*.ts', '!../locales/i18n.ts'], { eager: true, import: 'default' });
 
 for (const locale of Object.values(localeFiles)) {
     const bundle = locale?.books as Record<string, string> | undefined;
