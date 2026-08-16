@@ -323,7 +323,7 @@ export default {
         "maxMembersReachedMessage": "Nhóm đã đủ 5 thành viên ✨ (Đã tắt tính năng mời)",
         "members": "Thành viên",
         "groupMembers": "Thành viên Nhóm",
-        "typeMessage": "Nhấn nút + để tạo ghi chép hoặc nhập tin nhắn...",
+        "typeMessage": "Nhập tin nhắn hoặc chia sẻ cảm nhận...",
         "leaveGroup": "Rời nhóm",
         "deleteGroup": "Xóa nhóm",
         "cancel": "Hủy",
@@ -390,7 +390,6 @@ export default {
         "unityModalLegendEmpty": "Bắt đầu (0%~)",
         "unityModalNoPostsYet": "Chưa có bài đăng nào hôm nay",
         "unityModalAllPosted": "Mọi người đã chia sẻ hôm nay! Sự thống nhất tuyệt vời!",
-        "addNoteTooltip": "Nhấp vào + để đăng ghi chú!",
         "inviteFriendsPrompt": "Mời bạn bè của bạn!",
         "inviteMessage": "Hãy tham gia nhóm học thánh thư của tôi trên Scripture Habit! Chúng ta hãy cùng nhau học tập và tạo thói quen hàng ngày.\n\nNhóm: {groupName}\nTham gia tại đây: {inviteLink}",
         "readStatus": "Đã đọc {count}",
@@ -434,17 +433,7 @@ export default {
         "aiGroupDefaultGroupDesc": "Nhóm học tập kinh thánh 1-on-1 với AI",
         "aiGroupWelcomeMessage": "Chào mừng bạn đến với Nhóm AI! Hãy cùng nhau học kinh thánh và chia sẻ cảm nhận mỗi ngày nhé. Úng hộ bạn! 📖✨\n*Lưu ý: AI sẽ đăng ghi chú hàng ngày, nhưng chưa thể phản hồi trực tiếp cho {nickname} ở giai đoạn này.",
         "aiGroupBotNickname": "Scripture Habit AI",
-        "aiGroupStartWithAiOption": "🤖 Bắt đầu với Đối Tác AI",
-        "aiGroupStartWithAiDesc": "Không cần bạn bè. Tạo nhóm cùng đối tác AI.",
-        "aiGroupStartWithFriendsOption": "👥 Bắt đầu với Bạn Bè / Gia Đình",
-        "aiGroupStartWithFriendsDesc": "Tạo nhóm với bạn bè hoặc gia đình.",
         "aiGroupDailyNoteText": "[Cảm Hứng Học Tập Hàng Ngày] Việc kiên trì mở kinh thánh mỗi ngày mang lại những phước lành to lớn. Cùng nâng cao hiểu biết hôm nay nhé! 📖✨",
-        "groupChatTour": {
-            "step1Title": "Đăng ghi chú tại đây!",
-            "step1Desc": "Nhấn nút + để ghi lại bài học và cảm nhận hôm nay.",
-            "step2Title": "Quay lại trang chủ",
-            "step2Desc": "Nhấn ← để quay lại trang tổng quan."
-        },
         "inviteExpiresAt": "Hết hạn lúc",
         "regenerateInviteCode": "Tạo lại mã mời",
         "inviteCodeRegenerated": "Mã mời đã được tạo lại!",
@@ -520,6 +509,9 @@ export default {
         "byuUrlPlaceholder": "https://speeches.byu.edu/talks/...",
         "otherUrlPlaceholder": "https://example.com/study-material",
         "askAiQuestion": "✨ Yêu cầu AI đặt câu hỏi",
+        "fillSample": "✨ Điền ghi chú mẫu",
+        "sampleScripture": "1 Nê Phi 3:7",
+        "sampleThoughts": "\"Tôi sẽ đi và làm những điều Chúa truyền lệnh.\" Câu thánh thư này tiếp thêm cho tôi lòng can đảm để đối mặt với những thử thách hôm nay.",
         "surpriseMe": "✨ Làm tôi ngạc nhiên",
         "masteryScriptures": "✨ Thông Thạo Giáo Lý",
         "peaceScriptures": "✨ Bình An",
@@ -546,18 +538,6 @@ export default {
         "generalConference": "Đại Hội Trung Ương",
         "byuSpeeches": "BYU Speeches",
         "other": "Khác"
-    },
-    "groupOptionsTour": {
-        "titleStepAi": "🤖 Bắt Đầu Với Đối Tác AI",
-        "descStepAi": "Yên tâm học tập một mình! Tạo nhóm riêng ngay lập tức nơi AI tự động đăng ghi chú hàng ngày và đồng hành cùng bạn.",
-        "titleStep1": "Chào mừng bạn đến với Nhóm Học Tập!",
-        "descStep1": "Tại đây bạn có thể lựa chọn cách thức kết nối và học tập cùng với những người khác.",
-        "titleStep2": "Tạo một Nhóm",
-        "descStep2": "Bắt đầu nhóm học tập của riêng bạn và mời bạn bè, gia đình hoặc các thành viên trong tiểu giáo khu cùng tham gia!",
-        "titleStep3": "Tham gia một Nhóm",
-        "descStep3": "Khám phá các nhóm công khai và kết nối với cộng đồng những người cùng nghiên cứu thánh thư.",
-        "titleStep4": "Quay lại Bảng điều khiển",
-        "descStep4": "Nếu bạn muốn tự học một mình hôm nay, bạn luôn có thể quay lại bảng điều khiển chính."
     },
     "groupOptions": {
         "title": "Nhóm học tập",
@@ -602,25 +582,39 @@ export default {
         "pwaInviteHint": "Nếu bạn đã thêm ứng dụng này vào Màn hình chính,\nhãy mở ứng dụng từ đó để tự động áp dụng lời mời này."
     },
     "onboardingQuest": {
-        "title": "🌟 Nhiệm vụ chào mừng",
-        "step1Title": "1. Tham gia nhóm",
-        "step1Desc": "Tạo nhóm riêng của bạn hoặc tham gia một nhóm khác.",
+        "title": "🌟 Nhiệm Vụ Đầu Tiên",
+        "step1Title": "1. Tham Gia Nhóm",
+        "step1Desc": "Tạo nhóm của riêng bạn hoặc tham gia nhóm khác.",
         "step1DescSuccess": "Đã tham gia nhóm thành công! 🎉",
-        "step2Title": "2. Đăng ghi chú đầu tiên",
-        "step2Desc": "Chia sẻ ghi chú học tập đầu tiên của bạn vào nhóm.",
-        "congratsTitle": "🎉 Hoàn thành nhiệm vụ!",
-        "congratsDesc": "Bạn đã hoàn thành xuất sắc tất cả nhiệm vụ chào mừng! Hãy cùng nhau tận hưởng việc học thánh thư mỗi ngày! ✨",
-        "congratsBtn": "Đóng"
+        "step1Action": "Tìm / Tạo Nhóm",
+        "step2Title": "2. Đăng Ghi Chép Đầu Tiên",
+        "step2Desc": "Chia sẻ ghi chép học tập đầu tiên của bạn vào nhóm.",
+        "step2DescSuccess": "Đã đăng ghi chép đầu tiên! 🎉",
+        "step2Action": "Viết Ghi Chép",
+        "chatHeaderBackPrompt": "Bạn đã tham gia nhóm! Hãy quay lại bảng điều khiển và đăng ghi chú đầu tiên!",
+        "groupOptionsBannerDesc": "Chọn cách bạn muốn bắt đầu: Bắt đầu 1-1 với AI, tạo nhóm riêng hoặc tham gia nhóm công khai.",
+        "congratsTitle": "🎉 Đã Hoàn Thành Nhiệm Vụ Đầu Tiên!",
+        "congratsDesc": "Bạn đã tham gia nhóm và đăng ghi chú đầu tiên! Hãy cùng các bạn đồng hành tận hưởng việc học thánh thư mỗi ngày nhé! ✨",
+        "congratsGoChatBtn": "Đến trò chuyện nhóm",
+        "congratsBtn": "Đóng",
+        "demoGroupName": "Lương Thực Hàng Ngày 📖",
+        "demoGroupDesc": "Nhóm học tập ấm áp cùng nhau đọc và chia sẻ thánh thư mỗi ngày! ✨",
+        "demoWelcomeAlice": "Chào mừng {nickname}! ✨ Khoan đã, mình vừa xem hồ sơ của bạn—hôm nay là ngày thứ 999 liên tiếp rồi sao?! Thật phi thường...!",
+        "demoWelcomeBob": "Oaaa! Chỉ cần đăng thêm 1 ghi chú nữa thôi là bạn sẽ đạt mốc kỷ lục 【1.000 ngày】 rồi!! 🔥 Mọi người đang rất háo hức chờ ghi chú hôm nay của bạn!",
+        "demoWelcomeCharlie": "1.000 ngày thì đúng là huyền thoại rồi...! Mọi người đều đang rất mong chờ ghi chú của bạn từ bảng điều khiển đấy🎉",
+        "demoCelebrateAlice": "Chúc mừng {nickname} đã đạt cột mốc 1.000 ngày!!! 🎉🎉🎉 Thật sự quá xuất sắc!!",
+        "demoCelebrateBob": "Tuyệt vời quá!! Cuối cùng cũng hoàn thành ước mơ 1.000 ngày!! 🔥 Chúc mừng bạn thật nhiều! Tự hào khi được học cùng bạn!",
+        "demoCelebrateCharlie": "1.000 ngày...! Một kỳ tích thực sự huyền thoại! 🎉 Xin chúc mừng bạn từ tận đáy lòng! Người bạn đồng hành tuyệt vời nhất✨",
+        "demo1000ModalTitle": "🎉 Chúc mừng bạn đã đạt cột mốc 1.000 ngày!",
+        "demo1000ModalDesc": "Bạn đã chính thức chinh phục cột mốc 1.000 ngày! Hãy vào trò chuyện nhóm để xem bài đăng và phản ứng của mọi người nhé! ✨",
+        "demo1000ModalGoChatBtn": "Đến trò chuyện nhóm",
+        "demo1000ModalCloseBtn": "Để sau"
     },
     "onboardingGuide": {
         "newNoteStep1": "Đầu tiên, hãy chọn danh mục kinh thánh bạn đang đọc hôm nay!",
         "newNoteStep2": "Hoàn hảo! Tiếp theo, nhập chương hoặc URL bạn đã đọc (ví dụ: 1 Nê Phi 3:7).",
         "newNoteStep3": "Tuyệt vời! Cuối cùng, hãy viết suy nghĩ hoặc cảm nhận của bạn vào hộp bình luận!",
-        "newNoteStep4": "Sẵn sàng! Nhấp vào nút [Đăng ghi chú] ở dưới cùng bên phải để chia sẻ ghi chú đầu tiên của bạn! 🎉",
-        "paceSetSuccess": "Mục tiêu học tập đã được thiết lập! Bây giờ, hãy tạo một nhóm hoặc tham gia vào nhóm sẵn có nhé!",
-        "paceSetBtnSearch": "Đi tìm nhóm học",
-        "paceSetSuccessInvite": "Đã tham gia nhóm của Anh {ownerName} thành công! Hãy cùng tìm hiểu cách sử dụng Scripture Habit và chuẩn bị đăng ghi chú đầu tiên nhé!",
-        "paceSetBtnLearn": "Tìm hiểu cách sử dụng"
+        "newNoteStep4": "Sẵn sàng! Nhấp vào nút [Đăng ghi chú] ở dưới cùng bên phải để chia sẻ ghi chú đầu tiên của bạn! 🎉"
     },
     "groupForm": {
         "invitePreviewTitle": "Xem trước Liên kết Mời",
@@ -766,27 +760,6 @@ export default {
         "nextButton": "Tiếp theo",
         "backButton": "Quay lại"
     },
-    "tourGuide": {
-        "titleQuest": "Nhiệm vụ chào mừng",
-        "descQuest": "Hoàn thành 2 nhiệm vụ đơn giản để bắt đầu: tham gia nhóm học tập và viết ghi chú học tập đầu tiên để chia sẻ.",
-        "titleStep1": "Thực Đơn Điều Hướng",
-        "descStep1": "Di chuyển nhanh giữa Bảng điều khiển, Ghi chú, Nhóm và phần Cài đặt cá nhân.",
-        "titleStep2": "Tổng Số Ngày",
-        "descStep2": "Theo dõi tổng số ngày đọc thánh thư của bạn. Hãy duy trì thói quen nhé!",
-        "titleStep3": "Cấp Độ & Mục Tiêu",
-        "descStep3": "Thăng cấp sau mỗi 7 ngày đọc! Xem thanh tiến trình để biết bạn đã gần mục tiêu thế nào.",
-        "titleStep4": "Hãy Đi Theo Ta Hôm Nay",
-        "descStep4": "Cập nhật chương trình Hãy Đi Theo Ta mỗi ngày và liên kết trực tiếp với Thư Viện Phúc Âm.",
-        "titleStep5": "Tạo Ghi Chú Mới",
-        "descStep5": "Ghi lại những cảm nhận thuộc linh và bài học hôm nay để chia sẻ với nhóm của bạn.",
-        "titleStep6": "Lịch Thói Quen",
-        "descStep6": "Xem lại lịch sử đọc và theo dõi mốc tự động rời nhóm để giữ vững động lực học tập!",
-        "next": "Tiếp theo",
-        "back": "Quay lại",
-        "skip": "Bỏ qua",
-        "finish": "Hoàn tất",
-        "replayButton": "Xem lại hướng dẫn sử dụng"
-    },
     "welcomeGuideButton": "Đã hiểu!",
     "mascot": {
         "streakCelebration": "Tuyệt vời! Đã đạt tổng cộng {streak} ngày!",
@@ -904,8 +877,9 @@ export default {
         "hero": {
             "title": "Scripture Habit",
             "subtitle": "Một ứng dụng web nghiên cứu thánh thư do Anh Daijiro Sagane, một thành viên Giáo hội ở Nhật Bản, tự phát triển. Mọi người đều có thể sử dụng hoàn toàn miễn phí.",
-            "downloadCta": "Tải ứng dụng (PWA)",
-            "browserCta": "Bắt đầu trên trình duyệt",
+            "downloadCta": "Ứng dụng",
+            "browserCta": "Trình duyệt",
+            "demoCta": "Bản demo 1 phút",
             "mascotBubble": "Xin chào! Chúng mình cùng nhau đọc thánh thư nhé! ✨"
         },
         "concept": {
@@ -927,6 +901,7 @@ export default {
         },
         "finalCta": {
             "title": "Bạn có muốn bắt đầu một thói quen mới cùng chúng mình không?",
+            "demoCta": "Bản demo 1 phút",
             "mascotBubble": "Hãy bắt đầu bằng nút bên dưới! ✨"
         },
         "downloadModal": {
@@ -954,5 +929,11 @@ export default {
             "messageRequired": "Nội dung tin nhắn không thể để trống.",
             "emailInvalid": "Vui lòng nhập địa chỉ email hợp lệ."
         }
+    },
+    "demo": {
+        "loadingTitle": "Đang chuẩn bị môi trường demo...",
+        "loadingSubtitle": "Đang tải dữ liệu. Vui lòng đợi trong giây lát.",
+        "loginSuccess": "Đã đăng nhập bằng tài khoản demo!",
+        "loginError": "Không thể kết nối đến môi trường demo. Đang chuyển hướng về trang đăng nhập..."
     }
 };

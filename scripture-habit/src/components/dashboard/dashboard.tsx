@@ -11,7 +11,6 @@ import Donate from '../donate/donate';
 import Footer from '../footer/footer';
 import { DashboardSkeleton } from '../skeleton/skeleton';
 import Sidebar from '../sidebar/sidebar';
-import TourGuide from '../tourguide/tour-guide';
 
 // Refactored Sub-components
 import DashboardLayout from './components/dashboard-layout';
@@ -66,7 +65,6 @@ const Dashboard = () => {
     return location.state?.initialView ?? 0;
   });
   const [showWelcomeStory, setShowWelcomeStory] = useState<boolean>(false);
-  const [showTourGuide, setShowTourGuide] = useState<boolean>(false);
   const [isInputFocused, setIsInputFocused] = useState<boolean>(false);
   const [showEditProfileModal, setShowEditProfileModal] = useState<boolean>(false);
   const [newNickname, setNewNickname] = useState<string>('');
@@ -115,7 +113,7 @@ const Dashboard = () => {
     }
   }, [loading, selectedView]);
   const { 
-    showAutoKickModal, setShowAutoKickModal, autoKickStep, setAutoKickStep,
+    showAutoKickModal, autoKickStep, setAutoKickStep,
     selectedKickDays, setSelectedKickDays, handleAutoKickSubmit 
   } = useDashboardHabitPace(userData, loading, false, t);
 
@@ -150,7 +148,7 @@ const Dashboard = () => {
   }, [userData, enrichedUserGroups]);
 
   const { showNotifPrompt, handleEnableNotifications, handleCloseNotifPrompt } = useDashboardNotifications(userData, t);
-  const { markWelcomeStorySeen, markTourSeen, updateNickname } = useDashboardActions(user, userData);
+  const { markWelcomeStorySeen, updateNickname } = useDashboardActions(user, userData);
 
   // 2. Effects
 
@@ -204,31 +202,12 @@ const Dashboard = () => {
     if (loading || !userData || !userData.uid) return;
 
     const sessionWelcomeSeen = sessionStorage.getItem(`welcome_seen_${userData.uid}`) === 'true';
-    const sessionTourSeen = sessionStorage.getItem(`tour_seen_${userData.uid}`) === 'true';
-
     const needsWelcomeStory = !sessionWelcomeSeen && (userData.hasSeenWelcomeStory === false || userData.hasSeenWelcomeStory === undefined);
     if (needsWelcomeStory) {
       const timer = setTimeout(() => setShowWelcomeStory(true), 500);
       return () => clearTimeout(timer);
     }
-
-    // Step 2: Check Dashboard Tour (only after Welcome Story is complete)
-    const isE2E = typeof navigator !== 'undefined' && navigator.webdriver;
-    const isWelcomeDone = sessionWelcomeSeen || userData.hasSeenWelcomeStory === true;
-    const needsTour = !isE2E && 
-                      !sessionTourSeen &&
-                      isWelcomeDone && 
-                      userData.hasSetKickThreshold === true && 
-                      userData.hasSeenTour !== true && 
-                      !showAutoKickModal && 
-                      selectedView === 0;
-
-    if (needsTour) {
-      const timer = setTimeout(() => setShowTourGuide(true), 800);
-      return () => clearTimeout(timer);
-    }
   }, [userData, loading, showAutoKickModal, selectedView]);
-
 
   // 3. Handlers
   const handleCloseWelcomeStory = async () => {
@@ -237,14 +216,6 @@ const Dashboard = () => {
       sessionStorage.setItem(`welcome_seen_${userData.uid}`, 'true');
     }
     await markWelcomeStorySeen();
-  };
-
-  const handleCloseTourGuide = async () => {
-    setShowTourGuide(false);
-    if (userData?.uid) {
-      sessionStorage.setItem(`tour_seen_${userData.uid}`, 'true');
-    }
-    await markTourSeen();
   };
 
   const handleUpdateProfile = async () => {
@@ -267,7 +238,7 @@ const Dashboard = () => {
     return (
       <div className='App Dashboard'>
         <div className='AppGlass Grid'>
-          <Sidebar selected={selectedView} setSelected={setSelectedView} userGroups={[]} activeGroupId={activeGroupId} setActiveGroupId={setActiveGroupId} />
+          <Sidebar selected={selectedView} setSelected={setSelectedView} userGroups={[]} activeGroupId={activeGroupId} setActiveGroupId={setActiveGroupId} currentUserId={userData?.uid} />
           <DashboardSkeleton />
         </div>
       </div>
@@ -295,6 +266,7 @@ const Dashboard = () => {
 
   const isModalOpen = activeModal === 'newNote';
   const setIsModalOpen = (open: boolean) => setActiveModal(open ? 'newNote' : null);
+  const hasActiveModal = showWelcomeStory || showEditProfileModal || showAutoKickModal || showJoinSuccessModal || isModalOpen || !!activeModal;
 
   return (
     <>
@@ -306,6 +278,7 @@ const Dashboard = () => {
         setActiveGroupId={setActiveGroupId}
         isInputFocused={isInputFocused}
         isJoiningInvite={isJoiningInvite}
+        currentUserId={userData?.uid}
       >
         {selectedView === 0 && (
           <DashboardOverview 
@@ -314,7 +287,15 @@ const Dashboard = () => {
             translateChapterField={translateChapterField} isJoiningInvite={isJoiningInvite} hasGroups={enrichedUserGroups.length > 0} 
             setIsModalOpen={setIsModalOpen} setShowWelcomeStory={setShowWelcomeStory} 
             setShowEditProfileModal={setShowEditProfileModal} setNewNickname={setNewNickname}
-            kickDate={kickDate}
+            kickDate={kickDate} hasActiveModal={hasActiveModal}
+            onGoToGroupChat={() => {
+              // Always open the very first group when multiple groups exist
+              const targetGid = enrichedUserGroups[0]?.id || (userData.groupIds && userData.groupIds[0]) || userData.groupId || activeGroupId;
+              if (targetGid) {
+                setActiveGroupId(targetGid);
+                setSelectedView(2);
+              }
+            }}
           />
         )}
         {selectedView === 1 && <MyNotes userData={userData} isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} userGroups={enrichedUserGroups} />}
@@ -341,14 +322,7 @@ const Dashboard = () => {
         newNickname={newNickname} setNewNickname={setNewNickname} handleUpdateProfile={handleUpdateProfile}
         showAutoKickModal={showAutoKickModal} autoKickStep={autoKickStep} setAutoKickStep={setAutoKickStep}
         selectedKickDays={selectedKickDays} setSelectedKickDays={setSelectedKickDays}
-        handleAutoKickSubmit={handleAutoKickSubmit} setShowAutoKickModal={setShowAutoKickModal}
-      />
-
-      <TourGuide 
-        isOpen={showTourGuide} 
-        onClose={handleCloseTourGuide} 
-        t={t}
-        userData={userData}
+        handleAutoKickSubmit={handleAutoKickSubmit}
       />
 
       {/* Join Success Welcome Modal (from invite link) */}

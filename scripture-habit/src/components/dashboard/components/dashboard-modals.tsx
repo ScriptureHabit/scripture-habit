@@ -1,11 +1,6 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import apiClient from '../../../utils/api-client';
 import WelcomeStoryModal from '../../welcomestorymodal/welcome-story-modal';
 import NotificationPromptModal from '../notification-prompt-modal';
 import { UserData } from '../../../types/user';
-import { safeStorage } from '../../../utils/storage';
 import '../../mascot/mascot.css';
 
 interface DashboardModalsProps {
@@ -35,7 +30,6 @@ interface DashboardModalsProps {
   selectedKickDays: number;
   setSelectedKickDays: (days: number) => void;
   handleAutoKickSubmit: () => void;
-  setShowAutoKickModal: (show: boolean) => void;
 }
 
 const DashboardModals = ({
@@ -56,34 +50,8 @@ const DashboardModals = ({
   setAutoKickStep,
   selectedKickDays,
   setSelectedKickDays,
-  handleAutoKickSubmit,
-  setShowAutoKickModal
+  handleAutoKickSubmit
 }: DashboardModalsProps) => {
-  const navigate = useNavigate();
-  const [creatingAiGroup, setCreatingAiGroup] = useState(false);
-
-  const handleCreateAiGroup = async () => {
-    setCreatingAiGroup(true);
-    try {
-      const res = await apiClient.post('/api/groups/create-ai-group', {});
-      if (res.data && res.data.groupId) {
-        setShowAutoKickModal(false);
-        // Skip the tour so it doesn't interrupt the group chat
-        if (userData?.uid) {
-          sessionStorage.setItem(`tour_seen_${userData.uid}`, 'true');
-          sessionStorage.setItem(`ai_group_tour_pending_${userData.uid}`, 'true');
-        }
-        sessionStorage.setItem('ai_group_tour_pending', 'true');
-        navigate(`/${userData?.language || 'ja'}/dashboard?groupId=${res.data.groupId}&view=2`);
-      }
-    } catch (err) {
-      console.error('Failed to create AI group:', err);
-      toast.error(t('groupChat.reportError') || 'Failed to create AI Partner group');
-    } finally {
-      setCreatingAiGroup(false);
-    }
-  };
-
   return (
     <>
       <WelcomeStoryModal 
@@ -165,7 +133,7 @@ const DashboardModals = ({
                   {t('groupChat.next')}
                 </button>
               </>
-            ) : autoKickStep === 1 ? (
+            ) : (
               <>
                 <h2 className="auto-kick-init-title-styled" style={{ textAlign: 'center' }}>{t('groupChat.autoKickConfirmTitle')}</h2>
                 
@@ -207,97 +175,6 @@ const DashboardModals = ({
                   </button>
                 </div>
               </>
-            ) : (
-              <div className="text-center p-1 auto-kick-success-onboarding">
-                {(() => {
-                  const joinedFromInvite = safeStorage.get('joinedFromInvite') === 'true';
-                  const ownerName = safeStorage.get('joinedOwnerName') || 'Owner';
-
-                  const handleOnboardingRedirect = () => {
-                    setShowAutoKickModal(false);
-                    if (joinedFromInvite) {
-                      // Clean up storage so it won't trigger next time they change pace
-                      safeStorage.remove('joinedFromInvite');
-                      safeStorage.remove('joinedOwnerName');
-                    } else {
-                      // Self-registered user -> redirect to group-options
-                      window.location.href = `/${userData.language || 'ja'}/group-options`;
-                    }
-                  };
-
-                  return (
-                    <div className="onboarding-guide-step-container" style={{ padding: '1rem 0' }}>
-                      <div className="mascot-dialog-icon" style={{ marginBottom: '1rem' }}>
-                        <img src="/images/mascot.png" alt="Mascot" className="mascot-image" style={{ width: '80px', height: '80px', objectFit: 'contain' }} />
-                      </div>
-                      <p className="onboarding-guide-text font-bold-medium" style={{ fontSize: '1.05rem', lineHeight: '1.5', marginBottom: '1.5rem', color: '#1e293b' }}>
-                        {joinedFromInvite 
-                          ? t('onboardingGuide.paceSetSuccessInvite', { ownerName })
-                          : t('onboardingGuide.paceSetSuccess')}
-                      </p>
-                      {joinedFromInvite ? (
-                        <button 
-                          className="modal-btn primary mt-1 onboarding-guide-btn" 
-                          onClick={handleOnboardingRedirect}
-                          data-testid="onboarding-guide-redirect-button"
-                          style={{ width: '100%', padding: '0.75rem', fontSize: '1rem', fontWeight: 'bold' }}
-                        >
-                          {t('onboardingGuide.paceSetBtnLearn')}
-                        </button>
-                      ) : (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', width: '100%' }}>
-                          <button
-                            className="ai-mode-option-card"
-                            onClick={handleCreateAiGroup}
-                            disabled={creatingAiGroup}
-                            data-testid="start-with-ai-button"
-                            style={{
-                              padding: '1rem',
-                              borderRadius: '12px',
-                              border: '2px solid #8b5cf6',
-                              backgroundColor: '#f5f3ff',
-                              textAlign: 'left',
-                              cursor: creatingAiGroup ? 'wait' : 'pointer',
-                              transition: 'all 0.2s',
-                              boxShadow: '0 2px 8px rgba(139, 92, 246, 0.15)'
-                            }}
-                          >
-                            <div style={{ fontWeight: 'bold', fontSize: '1.05rem', color: '#6d28d9', marginBottom: '0.25rem' }}>
-                              {t('groupChat.aiGroupStartWithAiOption')}
-                            </div>
-                            <div style={{ fontSize: '0.85rem', color: '#4c1d95', lineHeight: '1.4' }}>
-                              {t('groupChat.aiGroupStartWithAiDesc')}
-                            </div>
-                          </button>
-
-                          <button
-                            className="friends-mode-option-card"
-                            onClick={handleOnboardingRedirect}
-                            data-testid="start-with-friends-button"
-                            style={{
-                              padding: '1rem',
-                              borderRadius: '12px',
-                              border: '2px solid var(--pink)',
-                              backgroundColor: '#fff0f4',
-                              textAlign: 'left',
-                              cursor: 'pointer',
-                              transition: 'all 0.2s',
-                              boxShadow: '0 2px 8px rgba(255, 94, 126, 0.15)'
-                            }}
-                          >
-                            <div style={{ fontWeight: 'bold', fontSize: '1.05rem', color: '#c0436b', marginBottom: '0.25rem' }}>
-                              {t('groupChat.aiGroupStartWithFriendsOption')}
-                            </div>
-                            <div style={{ fontSize: '0.85rem', color: '#c0436b', lineHeight: '1.4' }}>
-                              {t('groupChat.aiGroupStartWithFriendsDesc')}
-                            </div>
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })()}
-              </div>
             )}
           </div>
         </div>

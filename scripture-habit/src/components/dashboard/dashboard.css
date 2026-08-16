@@ -373,6 +373,50 @@
   box-shadow: 0 8px 20px rgba(255, 105, 180, 0.4) !important;
 }
 
+/* Quest Stage 2 Directives */
+.new-note-btn-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.new-note-btn.glow-active {
+  animation: quest-button-glow 2.5s infinite ease-in-out !important;
+}
+
+.new-note-btn.pulse-focus-attention {
+  animation: pulseFocusAttention 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) 2 !important;
+}
+
+@keyframes pulseFocusAttention {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 94, 126, 0.7);
+  }
+  50% {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 12px rgba(255, 94, 126, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 94, 126, 0);
+  }
+}
+
+@keyframes quest-button-glow {
+  0% {
+    box-shadow: 0 4px 15px rgba(255, 105, 180, 0.3) !important;
+  }
+  50% {
+    box-shadow: 0 6px 25px rgba(255, 94, 126, 0.7) !important;
+    transform: scale(1.03);
+  }
+  100% {
+    box-shadow: 0 4px 15px rgba(255, 105, 180, 0.3) !important;
+  }
+}
+
 
 
 
@@ -413,6 +457,24 @@
   /* Override conflicting styles if any */
   min-height: 150px;
   /* Ensure minimum height matching the card */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.share-learning-cta.spotlight-elevated {
+  position: relative;
+  z-index: 1001 !important;
+  background: rgba(255, 255, 255, 0.98) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: 0 8px 32px rgba(255, 94, 126, 0.35), 0 0 0 2px rgba(255, 145, 157, 0.8) !important;
+  border-radius: 18px;
+  pointer-events: auto !important;
+}
+
+.share-learning-cta.spotlight-elevated .new-note-btn {
+  position: relative;
+  z-index: 1002 !important;
+  pointer-events: auto !important;
 }
 
 
@@ -858,29 +920,6 @@
   font-weight: 600;
   color: #334155;
   text-align: center;
-}
-
-.auto-kick-confirm-warning-styled {
-  color: #e53e3e;
-  font-weight: bold;
-}
-
-.auto-kick-confirm-input-styled {
-  width: 80px; 
-  text-align: center;
-  margin: 1rem auto;
-  display: block;
-  font-size: 1.5rem;
-}
-
-.auto-kick-confirm-input-styled::placeholder {
-  color: var(--gray);
-  opacity: 0.6;
-}
-
-.auto-kick-error-text-styled {
-  color: #e53e3e;
-  font-size: 0.8rem;
 }
 
 /* Utility Classes */

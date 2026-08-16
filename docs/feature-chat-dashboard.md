@@ -4,7 +4,7 @@ The **Chat Dashboard** is an important UI component in **scripture-habit**. It h
 
 ---
 
-## 🛰️ Real-time Core: `onSnapshot` Architecture
+## Real-time Core: `onSnapshot` Architecture
 
 We avoid traditional polling or manual fetch patterns. Instead, the UI reflects the Firestore database using persistent WebSocket listeners.
 
@@ -23,7 +23,7 @@ The synchronization engine (in `src/components/groupchat/hooks/core/`) adopts a 
 
 ---
 
-## 🏁 Read Markers
+## Read Markers
 
 Synchronizing unread counts is managed using a **"Server Truth"** model:
 
@@ -33,7 +33,7 @@ Synchronizing unread counts is managed using a **"Server Truth"** model:
 
 ---
 
-## 🖼️ Media & Image Handling
+## Media & Image Handling
 
 Images in the chat follow a multi-stage process to ensure the UI feels responsive:
 - **Optimization**: Images are resized or compressed on the client before upload to save user bandwidth.
@@ -42,7 +42,7 @@ Images in the chat follow a multi-stage process to ensure the UI feels responsiv
 
 ---
 
-## 🚦 Synchronization State Diagram
+## Synchronization State Diagram
 
 ```mermaid
 stateDiagram-v2
@@ -62,7 +62,7 @@ stateDiagram-v2
 
 ---
 
-## 🚀 Performance Tips for Developers
+## Performance Tips for Developers
 
 To keep Firestore reads highly optimized and prevent unexpected billing surges, we adhere to the following architecture rules:
 
@@ -80,7 +80,7 @@ To keep Firestore reads highly optimized and prevent unexpected billing surges, 
 
 ---
 
-## ⚠️ Real-time Sync Pitfalls & Anti-Patterns
+## Real-time Sync Pitfalls & Anti-Patterns
 
 When building real-time synchronization hooks with the Firestore Client SDK, two major architectural pitfalls must be guarded against at all times. Both of these were historically resolved during the Strategy B chat optimization:
 

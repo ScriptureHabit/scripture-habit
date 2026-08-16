@@ -53,6 +53,7 @@ const isAuthOrPublicPage = (pathname: string): boolean => {
            base === '/signup' || 
            base === '/forgot-password' || 
            base === '/welcome' || 
+           base === '/demo' || 
            base.startsWith('/join');
 };
 

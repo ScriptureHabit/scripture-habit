@@ -1,5 +1,5 @@
 import { RefObject, KeyboardEvent, FormEvent, useEffect } from 'react';
-import { UilPlus, UilTimes } from '@iconscout/react-unicons';
+import { UilTimes } from '@iconscout/react-unicons';
 import { Message } from '../../../types/chat';
 
 import './message-input.css';
@@ -17,9 +17,6 @@ interface MessageInputProps {
     onInputFocusChange?: (focused: boolean) => void;
     containerRef: RefObject<HTMLElement | null>;
     inputPlaceholder: string;
-    showAddNoteTooltip: boolean;
-    handleDismissTooltip: () => void;
-    setIsNewNoteOpen: (open: boolean) => void;
 }
 
 const MessageInput = ({
@@ -34,18 +31,14 @@ const MessageInput = ({
     handleKeyDown,
     onInputFocusChange,
     containerRef,
-    inputPlaceholder,
-    showAddNoteTooltip,
-    handleDismissTooltip,
-    setIsNewNoteOpen
+    inputPlaceholder
 }: MessageInputProps) => {
     useEffect(() => {
         const textarea = textareaRef.current;
         if (textarea) {
             textarea.style.height = 'auto';
-            // If message is empty, use a base height to avoid placeholder wrapping affecting height
-            const scrollHeight = newMessage ? textarea.scrollHeight : 0;
-            const newHeight = newMessage ? Math.min(scrollHeight, 250) : 40; 
+            const scrollHeight = textarea.scrollHeight;
+            const newHeight = Math.min(Math.max(scrollHeight, 40), 250); 
             textarea.style.height = `${newHeight}px`;
         }
 
@@ -94,19 +87,6 @@ const MessageInput = ({
                     rows={1}
                     maxLength={2000}
                 />
-                <div className="add-entry-btn-wrapper">
-                    {showAddNoteTooltip && (
-                        <div className="add-note-tooltip" onClick={(e) => { e.stopPropagation(); handleDismissTooltip(); }}>
-                            <div className="tooltip-content">
-                                {t('groupChat.addNoteTooltip')}
-                            </div>
-                            <div className="tooltip-arrow"></div>
-                        </div>
-                    )}
-                    <div className="add-entry-btn" onClick={() => { setIsNewNoteOpen(true); handleDismissTooltip(); }} data-testid="new-note-button">
-                        <UilPlus />
-                    </div>
-                </div>
                 <button type="submit">{t('groupChat.send')}</button>
                 {newMessage.length > 1800 && (
                     <div className="char-counter" style={{

@@ -66,11 +66,6 @@ export const getUnityParticipation = (
       
     const normActivityDate = normalizeDateString(activityDateStr);
     
-    // Debug logging for Unity Test groups
-    if (group.name?.includes('Unity Test')) {
-      console.log(`[getUnityParticipation] ${group.name}: activityDate=${normActivityDate}, today=${normalizedToday}, match=${normActivityDate === normalizedToday}`);
-    }
-    
     if (normActivityDate === normalizedToday) {
       activity.activeMembers.forEach(uid => {
         uniquePosters.add(uid);
@@ -104,8 +99,8 @@ export const getUnityParticipation = (
   const uniqueMemberIds = Array.from(new Set(group.members));
   
   const eligibleMembers = uniqueMemberIds.filter(uid => {
-    // In AI companion groups, always count all members in denominator so percentage is strictly 50% when AI posts
-    if (group.isAiGroup || group.aiCompanionUid) return true;
+    // In AI companion groups or demo groups, always count all members in denominator so percentage is strictly less than 100% until the user posts
+    if (group.isAiGroup || group.aiCompanionUid || group.isDemoGroup) return true;
 
     const isPoster = uniquePosters.has(uid);
     if (isPoster) return true; // Posted today -> count
@@ -145,9 +140,6 @@ export const getUnityParticipation = (
   }
 
   const percentage = Math.round((postedMembers.length / eligibleMembers.length) * 100);
-  if (group.name?.includes('Unity Test')) {
-    console.log(`[getUnityParticipation] ${group.name}: posters=${postedMembers.length}, eligible=${eligibleMembers.length}, percentage=${percentage}%`);
-  }
   return { eligibleMembers, postedMembers, notPostedMembers, percentage };
 };
 

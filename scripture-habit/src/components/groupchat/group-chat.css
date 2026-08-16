@@ -82,6 +82,13 @@
     flex-shrink: 0;
 }
 
+.back-button-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
 .back-button {
     display: none;
     cursor: pointer;
@@ -91,11 +98,150 @@
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    transition: background 0.2s;
+    transition: background 0.2s, transform 0.2s;
 }
 
 .back-button:active {
     background: rgba(0, 0, 0, 0.05);
+}
+
+.chat-spotlight-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.55);
+    z-index: 90;
+    cursor: pointer;
+    animation: fadeInOverlay 0.3s ease-out forwards;
+}
+
+@keyframes fadeInOverlay {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.chat-header.has-spotlight,
+.chat-header:has(.onboarding-back-spotlight) {
+    z-index: 1001 !important;
+}
+
+.back-button-container.spotlight-active,
+.back-button-container:has(.onboarding-back-spotlight) {
+    z-index: 1002 !important;
+}
+
+.back-button.onboarding-back-spotlight,
+.chat-header .back-button.onboarding-back-spotlight {
+    display: flex !important;
+    background: white !important;
+    color: var(--pink) !important;
+    border: 2.5px solid var(--pink) !important;
+    box-shadow: 0 0 0 4px rgba(255, 145, 157, 0.6), 0 4px 20px rgba(255, 94, 126, 0.8) !important;
+    animation: backButtonPulse 2s infinite ease-in-out;
+    z-index: 1002 !important;
+    position: relative;
+}
+
+.back-button.onboarding-back-spotlight svg,
+.chat-header .back-button.onboarding-back-spotlight svg {
+    fill: var(--pink) !important;
+    color: var(--pink) !important;
+}
+
+@keyframes backButtonPulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 4px rgba(255, 145, 157, 0.5), 0 4px 15px rgba(255, 94, 126, 0.6) !important;
+    }
+    50% {
+        transform: scale(1.15);
+        box-shadow: 0 0 0 8px rgba(255, 145, 157, 0.85), 0 6px 25px rgba(255, 94, 126, 1) !important;
+    }
+}
+
+.chat-back-guide-tooltip {
+    position: absolute;
+    top: calc(100% + 14px);
+    left: 0;
+    background: #ffffff !important;
+    color: #222222 !important;
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+    border: 2px solid var(--pink) !important;
+    border-radius: 14px;
+    padding: 0.75rem 1rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35), 0 4px 15px rgba(255, 94, 126, 0.4);
+    display: flex;
+    align-items: center;
+    min-width: 220px;
+    max-width: 290px;
+    z-index: 1003 !important;
+    cursor: pointer;
+    animation: tooltipBounceIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, tooltipFloat 3s ease-in-out infinite 0.4s;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.chat-back-guide-tooltip:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 28px rgba(255, 94, 126, 0.35);
+}
+
+.chat-back-guide-tooltip:active {
+    transform: translateY(0);
+}
+
+.chat-back-guide-arrow {
+    position: absolute;
+    top: -6px;
+    left: 10px;
+    width: 10px;
+    height: 10px;
+    background: rgba(255, 255, 255, 0.97);
+    border-left: 1.5px solid rgba(255, 145, 157, 0.75);
+    border-top: 1.5px solid rgba(255, 145, 157, 0.75);
+    transform: rotate(45deg);
+}
+
+.chat-back-guide-content {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.chat-back-guide-badge {
+    font-size: 1.3rem;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+.chat-back-guide-text {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--black);
+    line-height: 1.35;
+    text-align: left;
+}
+
+@keyframes tooltipBounceIn {
+    0% {
+        opacity: 0;
+        transform: translateY(-8px) scale(0.9);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes tooltipFloat {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-3px);
+    }
 }
 
 .hamburger-container {
@@ -348,7 +494,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1000;
+    z-index: 3000;
     animation: fadeIn 0.2s ease;
 }
 
@@ -978,6 +1124,11 @@
         border-bottom-right-radius: 1rem;
     }
 
+    .chat-header.has-spotlight,
+    .chat-header:has(.onboarding-back-spotlight) {
+        z-index: 1001 !important;
+    }
+
     .edit-group-name-btn {
         display: none !important;
     }
@@ -1082,11 +1233,6 @@
     .input-wrapper button[type="submit"] {
         padding: 0.5rem 1rem;
         font-size: 0.9rem;
-    }
-
-    .add-entry-btn {
-        width: 32px;
-        height: 32px;
     }
 
     .message-list-container {
@@ -2191,104 +2337,6 @@ input:checked+.slider:before {
 .sidebar-percentage.celestial {
     color: #B8860B;
     font-weight: bold;
-}
-
-/* Add Note Tooltip Styles */
-.add-entry-btn-wrapper {
-    position: relative;
-    display: flex;
-    align-items: center;
-}
-
-.add-note-tooltip {
-    position: absolute;
-    bottom: calc(100% + 12px);
-    left: 50%;
-    transform: translateX(-50%);
-    background: white;
-    color: #fc6777;
-    padding: 0.7rem 1.2rem;
-    border-radius: 1rem;
-    font-size: 0.9rem;
-    font-weight: 800;
-    white-space: nowrap;
-    box-shadow: 0 4px 15px rgba(255, 145, 157, 0.3);
-    border: 2px solid #FF919D;
-    z-index: 1000;
-    animation: tooltipBounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), magneticBreathing 4s ease-in-out infinite;
-    cursor: pointer;
-    -webkit-user-select: none;
-    user-select: none;
-}
-
-.tooltip-content {
-    position: relative;
-    z-index: 2;
-}
-
-.tooltip-arrow {
-    position: absolute;
-    bottom: -8px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 0;
-    height: 0;
-    border-left: 8px solid transparent;
-    border-right: 8px solid transparent;
-    border-top: 8px solid #FF919D;
-}
-
-@keyframes tooltipBounce {
-    0% {
-        opacity: 0;
-        transform: translateX(-50%) translateY(10px) scale(0.8);
-    }
-
-    50% {
-        transform: translateX(-50%) translateY(-5px) scale(1.05);
-    }
-
-    100% {
-        opacity: 1;
-        transform: translateX(-50%) translateY(0) scale(1);
-    }
-}
-
-@keyframes magneticBreathing {
-
-    0%,
-    100% {
-        transform: translateX(-50%) translateY(0) scale(1) rotate(0deg);
-        box-shadow: 0 4px 15px rgba(255, 145, 157, 0.3);
-    }
-
-    25% {
-        transform: translateX(-50%) translateY(-4px) scale(1.02) rotate(1deg);
-    }
-
-    50% {
-        transform: translateX(-50%) translateY(-10px) scale(1.05) rotate(0deg);
-        box-shadow: 0 12px 30px rgba(255, 145, 157, 0.4);
-    }
-
-    75% {
-        transform: translateX(-50%) translateY(-4px) scale(1.02) rotate(-1deg);
-    }
-}
-
-.add-note-tooltip:hover {
-    background: linear-gradient(135deg, #fc6777 0%, #FF919D 100%);
-    transform: translateX(-50%) scale(1.05);
-    box-shadow: 0 6px 20px rgba(255, 145, 157, 0.5);
-}
-
-@media screen and (max-width: 768px) {
-    .add-note-tooltip {
-        font-size: 0.85rem;
-        padding: 0.6rem 1rem;
-        white-space: nowrap;
-        text-align: center;
-    }
 }
 
 

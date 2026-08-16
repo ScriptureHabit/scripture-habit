@@ -509,7 +509,10 @@ describe('Groups Route Additional Integration Tests', () => {
                 throw new Error('Simulated query failure');
             });
 
-            const res = await fetch(`${setup.baseUrl}/api/groups`);
+            setup.mockAuth('test-user-error');
+            const res = await fetch(`${setup.baseUrl}/api/groups`, {
+                headers: { 'Authorization': 'Bearer token' }
+            });
             expect(res.status).toBe(500);
             const data = await res.json();
             expect(data.error).toBe('Simulated query failure');

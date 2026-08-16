@@ -41,6 +41,7 @@ export interface UserData {
   questCreatedGroup?: boolean;
   questPostedNote?: boolean;
   hasCompletedOnboarding?: boolean;
+  isAnonymousDemo?: boolean;
 
   
   // Group/Kick features

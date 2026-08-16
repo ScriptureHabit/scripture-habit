@@ -2,9 +2,12 @@
 
 English | [日本語](README.ja.md)
 
-A community web application featuring AI real-time translation & group features to make daily scripture study a habit together with friends.
+> **Making daily scripture study more fun and meaningful.**
 
- **Web Application**: [https://scripturehabit.app](https://scripturehabit.app)
+An open-source community web application featuring AI real-time translation & group features to make daily scripture study a joyful habit together with friends.
+
+ 🌐 **Web Application**: [https://scripturehabit.app](https://scripturehabit.app)  
+ 🚀 **Live Demo (No Signup Required)**: [https://scripturehabit.app/en/demo](https://scripturehabit.app/en/demo)
 
 <p align="center">
   <img src="https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react" alt="React 19" />
@@ -16,13 +19,17 @@ A community web application featuring AI real-time translation & group features 
 
 ---
 
-## Overview
+## 💡 A Note from the Creator (Why I Built This)
 
-**Scripture Habit** is a web application designed to help people consistently and enjoyably study scriptures together with friends, overcoming the common tendency to give up when studying alone. In addition to levels and consecutive study streak mechanisms, it features AI-powered automatic translation, enabling members to share study notes in groups across different countries and languages.
+> **"Can we make daily scripture study more fun, meaningful, and connected?"**
 
-### Background & Motivation
-- **Problem**: Daily solo study is difficult to maintain continuously, and language barriers make studying with friends overseas challenging.
-- **Solution**: Built an environment where study habits are formed through group features and streak management, and members speaking different languages can interact seamlessly via Gemini AI real-time translation.
+To be completely honest, I was never great at reading scriptures consistently on my own. I kept dropping the habit after just a few days.  
+
+I realized I didn't need another strict checklist. What I really wanted was **joy and connection**, a simple place to share small daily thoughts with friends and family, even if we speak different languages. On a bit of a whim and pure excitement, I started writing code, and Scripture Habit was born.
+
+There is no single "right answer" when it comes to software for building a scripture habit. That’s why I made this project open-source: so we can experiment, build, and shape the best experience together as a community.
+
+Daijiro Sagane
 
 ---
 

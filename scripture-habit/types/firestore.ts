@@ -43,6 +43,7 @@ export interface GroupDocument {
     isPrivate?: boolean;
     isPublic?: boolean;
     isAiGroup?: boolean;
+    isDemoGroup?: boolean;
     aiCompanionUid?: string;
     inviteCode?: string;
     inviteCodeExpiresAt?: FirestoreTimestamp; // Represents Firestore Timestamp
@@ -116,6 +117,7 @@ export interface UserDocument {
     
     // Activity & System
     lastInteractionAt?: FirestoreTimestamp;
+    lastActiveAt?: FirestoreTimestamp;
     language?: string;
     timeZone?: string;
     totalNotes?: number; // Standardized from totalNotesCount to match active logic
@@ -138,11 +140,13 @@ export interface UserDocument {
     hasSeenWelcomeStory?: boolean;
     hasSeenTour?: boolean;
     hasSeenGroupOptionsTour?: boolean;
-    preferredCheckInTime?: string;
+    hasSeenGroupChatTour?: boolean;
+    hasCompletedOnboarding?: boolean;
+    isAnonymousDemo?: boolean;
     isLevelMigrated?: boolean;
     questCreatedGroup?: boolean;
     questPostedNote?: boolean;
-    hasCompletedOnboarding?: boolean;
+    preferredCheckInTime?: string;
 
     // Recap Metadata
     lastRecapPrompt?: string | null;

@@ -37,14 +37,10 @@ test.describe('Habit Pace Setup (E2E)', () => {
     // 7. Click "Save"
     await page.click('button:has-text("Save")');
 
-    // 8. Verify Success Screen
-    await expect(page.locator('.leave-modal-content')).toContainText('Your target pace is set');
+    // 8. Verify modal closes and does not reappear
+    await expect(page.locator('.leave-modal-overlay')).not.toBeVisible();
 
-    // 9. Click button to proceed (start with AI partner button or redirect button)
-    const redirectBtn = page.getByTestId('start-with-ai-button').or(page.getByTestId('onboarding-guide-redirect-button'));
-    await redirectBtn.click();
-
-    // 10. Navigate back to dashboard and verify the modal does not reappear
+    // 9. Navigate back to dashboard and verify the modal does not reappear
     await page.goto('/en/dashboard');
     await waitForDashboard(page);
     await expect(page.locator('.leave-modal-overlay')).not.toBeVisible();

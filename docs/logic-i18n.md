@@ -64,7 +64,7 @@ The app detects if a note's language is different from the viewer's preferred la
 
 ---
 
-## 🚀 Adding a New Language
+## Adding a New Language
 
 1.  **Backend**: Create a translation file in `api_internal/locales/` (e.g., `fr.ts`) and register it in `i18n.ts`.
 2.  **Frontend**: Update `src/context/language-provider.tsx` with the new translation bundle and flag icon.

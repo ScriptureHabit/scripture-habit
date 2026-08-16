@@ -40,14 +40,6 @@ test.describe('Unity Lifecycle (Full Flow)', () => {
 
         // --- 2. UPDATE: Post a note and check real-time update ---
         console.log('--- Step 2: Posting note for real-time update ---');
-        await groupItem.click();
-
-        // Dismiss tour overlay if present
-        const tourOverlay = page.locator('.tour-guide-overlay');
-        if (await tourOverlay.isVisible().catch(() => false)) {
-            await page.keyboard.press('Escape').catch(() => {});
-        }
-
         await page.getByTestId('new-note-button').click();
 
         const scriptureSelect = page.getByTestId('new-note-category').locator('input').first();

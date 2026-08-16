@@ -43,6 +43,12 @@ export const useUnityScore = (
     // AI groups handle celebrations via direct bot messages, skip unity announcement system messages
     if (groupData?.isAiGroup || groupData?.aiCompanionUid === 'ai-partner-bot') return;
 
+    // For demo group, only fire unity announcement celebration when current user has posted today!
+    if (groupData?.isDemoGroup) {
+      const participation = getUnityParticipation(groupData, messages, new Date(), membersMap);
+      if (!participation.postedMembers.includes(userData.uid)) return;
+    }
+
     // Guard: Ensure at least one member has actually posted today
     const postedCount = getUnityParticipation(groupData, messages, new Date(), membersMap).postedMembers.length;
     if (postedCount === 0) return;

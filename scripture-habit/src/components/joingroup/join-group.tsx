@@ -163,11 +163,6 @@ export default function JoinGroup() {
                   {translatingIds.has(selectedGroup.id) ? '...' : (translatedNames[selectedGroup.id] || selectedGroup.name)}
                 </h3>
               </div>
-              {translatedNames[selectedGroup.id] && translatedNames[selectedGroup.id] !== selectedGroup.name && (
-                <p className="original-text-hint">
-                  {t('groupChat.original')}: {selectedGroup.name}
-                </p>
-              )}
             </div>
 
             {selectedGroup.description && (
@@ -175,11 +170,6 @@ export default function JoinGroup() {
                 <p className="modal-description-text">
                   {translatingIds.has(selectedGroup.id) ? '...' : (translatedDescs[selectedGroup.id] || selectedGroup.description)}
                 </p>
-                {translatedDescs[selectedGroup.id] && translatedDescs[selectedGroup.id] !== selectedGroup.description && (
-                  <p className="original-text-hint">
-                    {t('groupChat.original')}: {selectedGroup.description}
-                  </p>
-                )}
               </div>
             )}
 

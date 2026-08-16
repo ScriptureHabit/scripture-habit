@@ -1,7 +1,7 @@
 import { db } from '../api_internal/lib/firebase-admin.js';
 
 async function migrateMaxMembers() {
-    console.log('🚀 既存グループの maxMembers の5人制限移行を開始します...');
+    console.log('既存グループの maxMembers の5人制限移行を開始します...');
     
     try {
         // 1. Fetch all groups

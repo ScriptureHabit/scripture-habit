@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { UilArrowLeft, UilPen, UilCopy, UilCommentAlt, UilTrashAlt, UilTimes, UilUsersAlt } from '@iconscout/react-unicons';
 import GroupMenuItem from './group-menu-item';
 import { 
@@ -13,10 +14,32 @@ import { getUnityStatusEmoji } from '../../../utils/unity-utils';
 const ChatHeader = () => {
   // 1. Data
   const { 
-      groupData, unityPercentage, isOwner, language, groupId, userGroups
+      groupData, unityPercentage, isOwner, language, groupId, userGroups, userData
   } = useChatData();
 
   const isFull = groupData ? (groupData.members?.length || 0) >= (groupData.maxMembers || 5) : false;
+
+  // Onboarding back-to-dashboard guide state
+  const isDemo = !!userData?.isAnonymousDemo;
+  const step1Done = !!userData?.questCreatedGroup || (userData?.groupIds && userData?.groupIds.length > 0) || !!userData?.groupId;
+  const step2Done = !isDemo && (!!userData?.questPostedNote || (userData?.totalNotes && userData?.totalNotes > 0));
+  const isLegacyCompleted = !isDemo && !userData?.questCreatedGroup && !userData?.questPostedNote &&
+    (userData?.totalNotes && userData?.totalNotes > 0) &&
+    ((userData?.groupIds && userData?.groupIds.length > 0) || !!userData?.groupId);
+
+  const shouldShowBackGuide = !userData?.hasCompletedOnboarding && !isLegacyCompleted && step1Done && !step2Done;
+  const [showBackGuide, setShowBackGuide] = useState(false);
+
+  useEffect(() => {
+    if (!shouldShowBackGuide) return;
+
+    const timer = setTimeout(() => {
+      setShowBackGuide(true);
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, [shouldShowBackGuide]);
+
+  const isBackGuideActive = shouldShowBackGuide && showBackGuide;
 
   // 2. Actions
   const { 
@@ -40,11 +63,41 @@ const ChatHeader = () => {
 
   return (
     <>
-      <div className="chat-header">
+      {isBackGuideActive && (
+        <div 
+          className="chat-spotlight-overlay" 
+          onClick={onBack}
+          data-testid="chat-header-spotlight-overlay"
+        />
+      )}
+      <div className={`chat-header ${isBackGuideActive ? 'has-spotlight' : ''}`}>
         <div className="header-left">
           {onBack && (
-            <div className="back-button" onClick={onBack}>
-              <UilArrowLeft size="24" />
+            <div className={`back-button-container ${isBackGuideActive ? 'spotlight-active' : ''}`}>
+              <div 
+                className={`back-button ${isBackGuideActive ? 'onboarding-back-spotlight active-guide' : ''}`} 
+                onClick={onBack}
+                data-testid="chat-header-back-button"
+                role="button"
+                tabIndex={0}
+              >
+                <UilArrowLeft size="24" />
+              </div>
+              {isBackGuideActive && (
+                <div 
+                  className="chat-back-guide-tooltip"
+                  onClick={onBack}
+                  data-testid="chat-back-guide-tooltip"
+                  role="button"
+                  tabIndex={0}
+                >
+                  <div className="chat-back-guide-arrow" />
+                  <div className="chat-back-guide-content">
+                    <span className="chat-back-guide-badge">🌟</span>
+                    <span className="chat-back-guide-text">{t('onboardingQuest.chatHeaderBackPrompt')}</span>
+                  </div>
+                </div>
+              )}
             </div>
           )}
           <h2 data-testid="group-name-title">

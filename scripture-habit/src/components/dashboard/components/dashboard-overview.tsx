@@ -4,6 +4,7 @@ import Mascot from '../../mascot/mascot';
 import { UserData } from '../../../types/user';
 import StreakCalendar from './streak-calendar';
 import { QuestCard } from './quest-card';
+import { useModalStore } from '../../../store/use-modal-store';
 import './quest-card.css';
 
 interface DashboardOverviewProps {
@@ -20,6 +21,8 @@ interface DashboardOverviewProps {
   setShowEditProfileModal: (show: boolean) => void;
   setNewNickname: (name: string) => void;
   kickDate?: string | null;
+  hasActiveModal?: boolean;
+  onGoToGroupChat?: () => void;
 }
 
 const DashboardOverview = ({
@@ -35,8 +38,13 @@ const DashboardOverview = ({
   setShowWelcomeStory,
   setShowEditProfileModal,
   setNewNickname,
-  kickDate
+  kickDate,
+  hasActiveModal = false,
+  onGoToGroupChat
 }: DashboardOverviewProps) => {
+  const { activeModal } = useModalStore();
+  const isAnyModalOpen = hasActiveModal || !!activeModal;
+
   return (
     <div className="dashboard-inner-wrapper">
       {isJoiningInvite && (
@@ -100,7 +108,13 @@ const DashboardOverview = ({
         </div>
       </div>
 
-      <QuestCard userData={userData} t={t} setIsModalOpen={setIsModalOpen} />
+      <QuestCard 
+        userData={userData} 
+        t={t} 
+        setIsModalOpen={setIsModalOpen} 
+        hasActiveModal={isAnyModalOpen} 
+        onGoToGroupChat={onGoToGroupChat}
+      />
 
       <div className="inspiration-section">
         <Mascot
@@ -131,45 +145,63 @@ const DashboardOverview = ({
         </div>
       </div>
 
-      <div className="dashboard-split-row">
-        <div className="reading-plan-section">
-          <div className="reading-plan-card reading-plan-card-inner-box">
-            <h3 className="reading-plan-title-styled">{t('dashboard.todaysComeFollowMe')}</h3>
-            {todayPlan ? (
-              <div>
-                <p className="reading-plan-date-detail">{todayPlan.date}</p>
-                <div className="reading-plan-links-container">
-                  {todayPlan.scripts.map((script, idx) => {
-                    const url = getReadingPlanUrl(script);
-                    const displayScript = translateChapterField(script);
+      {/* Compute active onboarding state */}
+      {(() => {
+        const step1Done = !!userData?.questCreatedGroup || (userData?.groupIds && userData?.groupIds.length > 0) || !!userData?.groupId;
+        const step2Done = !!userData?.questPostedNote || (!userData?.isAnonymousDemo && !!(userData?.totalNotes && userData?.totalNotes > 0));
+        const isLegacyCompleted = !userData?.isAnonymousDemo && !userData?.questCreatedGroup && !userData?.questPostedNote &&
+          (userData?.totalNotes && userData?.totalNotes > 0) &&
+          ((userData?.groupIds && userData?.groupIds.length > 0) || !!userData?.groupId);
+        const isStep2Active = !userData?.hasCompletedOnboarding && !isLegacyCompleted && step1Done && !step2Done && !isAnyModalOpen;
 
-                    return (
-                      <a
-                        key={idx}
-                        href={url || '#'}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="reading-plan-link-item"
-                      >
-                        {displayScript}
-                      </a>
-                    );
-                  })}
-                </div>
+        return (
+          <div className="dashboard-split-row">
+            <div className="reading-plan-section">
+              <div className="reading-plan-card reading-plan-card-inner-box">
+                <h3 className="reading-plan-title-styled">{t('dashboard.todaysComeFollowMe')}</h3>
+                {todayPlan ? (
+                  <div>
+                    <p className="reading-plan-date-detail">{todayPlan.date}</p>
+                    <div className="reading-plan-links-container">
+                      {todayPlan.scripts.map((script, idx) => {
+                        const url = getReadingPlanUrl(script);
+                        const displayScript = translateChapterField(script);
+
+                        return (
+                          <a
+                            key={idx}
+                            href={url || '#'}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="reading-plan-link-item"
+                          >
+                            {displayScript}
+                          </a>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ) : (
+                  <p>{t('dashboard.noReadingPlan')}</p>
+                )}
               </div>
-            ) : (
-              <p>{t('dashboard.noReadingPlan')}</p>
-            )}
-          </div>
-        </div>
+            </div>
 
-        <div className="share-learning-cta">
-          <p>{t('dashboard.shareLearningCall')}</p>
-          <button className="new-note-btn cta-btn" onClick={() => setIsModalOpen(true)} data-testid="new-note-button">
-            <UilPlus /> {t('dashboard.newNote')}
-          </button>
-        </div>
-      </div>
+            <div className={`share-learning-cta ${isStep2Active ? 'spotlight-elevated' : ''}`}>
+              <p>{t('dashboard.shareLearningCall')}</p>
+              <div className="new-note-btn-wrapper">
+                <button 
+                  className={`new-note-btn cta-btn ${isStep2Active ? 'glow-active' : ''}`} 
+                  onClick={() => setIsModalOpen(true)} 
+                  data-testid="new-note-button"
+                >
+                  <UilPlus /> {t('dashboard.newNote')}
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
 
       <StreakCalendar 
         studiedDates={userData.studiedDates} 

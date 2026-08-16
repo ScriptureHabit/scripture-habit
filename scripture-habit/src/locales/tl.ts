@@ -324,7 +324,7 @@ export default {
         "members": "Mga Miyembro",
         "groupMembers": "Mga Miyembro ng Grupo",
         "typeMessage": [
-            "I-click ang + button para gumawa ng tala o mag-type ng mensahe...",
+            "Mag-type ng mensahe o magbahagi ng natutunan...",
             "Mahirap... Ano ang ibig sabihin nito? May nakakaunawa ba sa banal na kasulatang ito?",
             "Ang kabanatang ito ay kasinghaba ng diskurso ng isang High Councilor...",
             "Sa totoo lang, nakatulog ako sa mga bahagi tungkol sa digmaan sa kabanatang ito.",
@@ -416,7 +416,6 @@ export default {
         "unityModalLegendEmpty": "Simula (0%~)",
         "unityModalNoPostsYet": "Wala pang post ngayong araw",
         "unityModalAllPosted": "Lahat ay nakapag-share na ngayon! Kamangha-manghang pagkakaisa!",
-        "addNoteTooltip": "I-click ang + para mag-post ng tala!",
         "inviteFriendsPrompt": "Imbitahan ang iyong mga kaibigan!",
         "inviteMessage": "Sumali sa aking grupo sa pag-aaral ng mga banal na kasulatan sa Scripture Habit! Mag-aral tayo nang sama-sama at bumuo ng pang-araw-araw na gawi.\n\nGrupo: {groupName}\nSumali rito: {inviteLink}",
         "readStatus": "Nabasa na {count}",
@@ -460,17 +459,7 @@ export default {
         "aiGroupDefaultGroupDesc": "1-on-1 Group para sa pag-aaral ng kasulatan kasama ang AI",
         "aiGroupWelcomeMessage": "Maligayang pagdating sa AI Group! Mag-aral tayo ng mga kasulatan at magbahagi ng natutunan araw-araw. Sumusuporta kami sa iyo! 📖✨\n*Tandaan: Nagpo-post ang AI ng araw-araw na note, ngunit ang direktang pagtugon kay {nickname} ay hindi pa suportado sa yugtong ito.",
         "aiGroupBotNickname": "Scripture Habit AI",
-        "aiGroupStartWithAiOption": "🤖 Magsimula kasama ang AI Partner",
-        "aiGroupStartWithAiDesc": "Hindi kailangan ng kaibigan. Gumawa ng grupo kasama ang AI partner.",
-        "aiGroupStartWithFriendsOption": "👥 Magsimula kasama ang mga Kaibigan / Pamilya",
-        "aiGroupStartWithFriendsDesc": "Gumawa ng grupo kasama ang mga kaibigan o pamilya.",
         "aiGroupDailyNoteText": "[Inspirasyon sa Araw-araw na Pag-aaral] Ang patuloy na pagbubukas ng kasulatan araw-araw ay nagdadala ng malalaking pagpapala. Magpakalalim tayo sa pag-aaral ngayon! 📖✨",
-        "groupChatTour": {
-            "step1Title": "Mag-post ng Tala Dito!",
-            "step1Desc": "I-tap ang + button para i-record ang iyong pag-aaral ngayon.",
-            "step2Title": "Bumalik sa Dashboard",
-            "step2Desc": "I-tap ang ← para bumalik sa dashboard."
-        },
         "inviteExpiresAt": "Mag-e-expire sa",
         "regenerateInviteCode": "I-regenerate ang Invite Code",
         "inviteCodeRegenerated": "Na-regenerate na ang Invite Code!",
@@ -546,6 +535,9 @@ export default {
         "byuUrlPlaceholder": "https://speeches.byu.edu/talks/...",
         "otherUrlPlaceholder": "https://example.com/study-material",
         "askAiQuestion": "✨ Magtanong sa AI para sa Tanong",
+        "fillSample": "✨ Punan ng sample note",
+        "sampleScripture": "1 Nephi 3:7",
+        "sampleThoughts": "\"Hahayo ako at gagawin ang mga bagay na iniutos ng Panginoon.\" Ang talatang ito ay nagbibigay sa akin ng lakas ng loob upang harapin ang mga hamon ngayon.",
         "surpriseMe": "✨ Sorpresahin Ako",
         "masteryScriptures": "✨ Mastery Scriptures",
         "peaceScriptures": "✨ Kapayapaan",
@@ -572,18 +564,6 @@ export default {
         "generalConference": "Pangkalahatang Kumperensya",
         "byuSpeeches": "Mga Talumpati sa BYU",
         "other": "Iba pa"
-    },
-    "groupOptionsTour": {
-        "titleStepAi": "🤖 Magsimula kasama ang AI Partner",
-        "descStepAi": "Mag-aral nang mag-isa nang walang alalahanin! Gumawa ng nakatutok na grupo kung saan nagpo-post ang AI ng mga tala araw-araw.",
-        "titleStep1": "Maligayang pagdating sa mga Study Group!",
-        "descStep1": "Dito maaari mong piliin kung paano mo gustong kumonekta at mag-aral kasama ang iba.",
-        "titleStep2": "Gumawa ng Grupo",
-        "descStep2": "Simulan ang sarili mong group study at imbitahan ang iyong mga kaibigan, pamilya, o mga ward member na sumali sa iyo!",
-        "titleStep3": "Sumali sa Grupo",
-        "descStep3": "Galugarin ang mga pampublikong grupo at kumonekta sa isang komunidad ng mga kapwa nag-aaral ng banal na kasulatan.",
-        "titleStep4": "Bumalik sa Dashboard",
-        "descStep4": "Kung mas gusto mong mag-aral nang mag-isa ngayon, maaari kang bumalik sa pangunahing dashboard kailan man."
     },
     "groupOptions": {
         "title": "Mga Grupo ng Pag-aaral",
@@ -628,25 +608,39 @@ export default {
         "pwaInviteHint": "Kung naidagdag mo na ang app na ito sa iyong Home Screen,\nbuksan ito doon para awtomatikong magamit ang imbitasyong ito."
     },
     "onboardingQuest": {
-        "title": "🌟 Mga Onboarding Quest",
-        "step1Title": "1. Sumali sa Grupo",
+        "title": "🌟 Mga Unang Misyon",
+        "step1Title": "1. Sumali sa isang Grupo",
         "step1Desc": "Gumawa ng sarili mong grupo o sumali sa ibang grupo.",
         "step1DescSuccess": "Matagumpay na sumali sa grupo! 🎉",
+        "step1Action": "Maghanap / Gumawa ng Grupo",
         "step2Title": "2. I-post ang Iyong Unang Tala",
         "step2Desc": "Ibahagi ang iyong unang tala sa pag-aaral sa grupo.",
-        "congratsTitle": "🎉 Mga Quest Kumpleto na!",
-        "congratsDesc": "Matagumpay mong nakumpleto ang lahat ng onboarding quest! Sama-sama nating enjoyin ang pang-araw-araw na pag-aaral ng banal na kasulatan! ✨",
-        "congratsBtn": "Isara"
+        "step2DescSuccess": "Na-post na ang unang tala! 🎉",
+        "step2Action": "Sumulat ng Tala",
+        "chatHeaderBackPrompt": "Nakapasok ka na sa grupo! Bumalik tayo sa dashboard at mag-post ng unang tala!",
+        "groupOptionsBannerDesc": "Piliin kung paano magsisimula: Magsimula 1-on-1 sa AI, gumawa ng pribadong grupo, o sumali sa pampublikong grupo.",
+        "congratsTitle": "🎉 Nakumpleto ang mga Unang Misyon!",
+        "congratsDesc": "Sumali ka na sa grupo at nag-post ng iyong unang tala! Magsaya tayo sa araw-araw na pag-aaral ng banal na kasulatan kasama ang iyong mga kasama! ✨",
+        "congratsGoChatBtn": "Pumunta sa Group Chat",
+        "congratsBtn": "Isara",
+        "demoGroupName": "Pang-araw-araw na Tinapay 📖",
+        "demoGroupDesc": "Isang masayang grupo ng pag-aaral na sama-samang nagbabasa ng banal na kasulatan araw-araw! ✨",
+        "demoWelcomeAlice": "Maligayang pagdating {nickname}! ✨ Teka, tiningnan ko ang profile mo—999 na magkakasunod na araw ka na ngayon?! Ang galing...!",
+        "demoWelcomeBob": "Wooww! Isang post na lang ng tala at maabot mo na ang maalamat na 1,000-araw na milestone!! 🔥 Sabik na kaming makita ang tala mo ngayon!",
+        "demoWelcomeCharlie": "Ang 1,000 araw ay maalamat na...! Sabik na kaming lahat na maghintay para sa iyong tala mula sa dashboard 🎉",
+        "demoCelebrateAlice": "Maligayang pagbati sa pag-abot ng 1,000 araw, {nickname}!!! 🎉🎉🎉 Talagang kamangha-mangha!!",
+        "demoCelebrateBob": "WOOO!! Sa wakas ay naabot mo na ang 1,000 araw!! 🔥 Maligayang pagbati! Ipinagmamalaki kitang kasamang mag-aral!",
+        "demoCelebrateCharlie": "1,000 araw...! Isang maalamat na tagumpay! 🎉 Taos-pusong pagbati! Ikaw ang pinakamagandang kasama✨",
+        "demo1000ModalTitle": "🎉 Maligayang pagbati sa pag-abot ng 1,000 araw!",
+        "demo1000ModalDesc": "Sa wakas ay naabot mo na ang 1,000 araw! Tingnan natin ang iyong post at ang mga reaksyon ng lahat sa group chat! ✨",
+        "demo1000ModalGoChatBtn": "Pumunta sa Group Chat",
+        "demo1000ModalCloseBtn": "Tingnan mamaya"
     },
     "onboardingGuide": {
         "newNoteStep1": "Una, piliin ang kategorya ng banal na kasulatan na binabasa mo ngayon!",
         "newNoteStep2": "Perpekto! Susunod, ilagay ang kabanata o URL na binasa mo (hal. 1 Nephi 3:7).",
         "newNoteStep3": "Kahanga-hanga! Panghuli, isulat ang iyong mga iniisip o impresyon sa comment box!",
-        "newNoteStep4": "Handa na! I-click ang button na [Post Note] sa kanang ibaba upang ibahagi ang iyong unang tala! 🎉",
-        "paceSetSuccess": "Nakatakda na ang iyong target na takbo! Ngayon, gumawa tayo ng grupo o sumali sa isa!",
-        "paceSetBtnSearch": "Maghanap ng Grupo",
-        "paceSetSuccessInvite": "Matagumpay na sumali sa grupo ni {ownerName}! Alamin natin kung paano gamitin ang Scripture Habit at maghanda na i-post ang iyong unang note!",
-        "paceSetBtnLearn": "Alamin Paano Gamitin"
+        "newNoteStep4": "Handa na! I-click ang button na [Post Note] sa kanang ibaba upang ibahagi ang iyong unang tala! 🎉"
     },
     "groupForm": {
         "invitePreviewTitle": "Preview ng Link ng Imbitasyon",
@@ -792,27 +786,6 @@ export default {
         "nextButton": "Susunod",
         "backButton": "Bumalik"
     },
-    "tourGuide": {
-        "titleQuest": "Mga Onboarding Quest",
-        "descQuest": "Kumpletuhin ang 2 simpleng quest na ito para magsimula: sumali sa isang study group, at isulat ang iyong unang study note para ibahagi.",
-        "titleStep1": "Navigation Menu",
-        "descStep1": "Mag-navigate dito para sa iyong Dashboard, Aking Mga Tala, Mga Grupo, at Settings.",
-        "titleStep2": "Kabuuang Araw",
-        "descStep2": "Sinusubaybayan ang iyong kabuuang araw ng pagbabasa ng banal na kasulatan. Manatiling aktibo!",
-        "titleStep3": "Antas at Layunin",
-        "descStep3": "Umakyat sa susunod na antas kada 7 araw! Alamin ang iyong pag-unlad gamit ang bar.",
-        "titleStep4": "Ngayon Pumarito Ka, Sumunod Ka sa Akin",
-        "descStep4": "Kunin ang pang-araw-araw na plano sa pagbasa na nakadirekta mismo sa Gospel Library.",
-        "titleStep5": "Gumawa ng Tala",
-        "descStep5": "Isulat ang iyong mga espirituwal na impresyon ngayon para ibahagi sa grupo.",
-        "titleStep6": "Habit Calendar",
-        "descStep6": "Tingnan ang iyong kasaysayan ng pagbasa at subaybayan ang auto-kick deadline para ma-motivate!",
-        "next": "Susunod",
-        "back": "Bumalik",
-        "skip": "Laktawan",
-        "finish": "Tapusin",
-        "replayButton": "Ulitin ang Gabay sa Tour"
-    },
     "welcomeGuideButton": "Naintindihan!",
     "mascot": {
         "streakCelebration": "Kamangha-mangha! Naka-{streak} na kabuuang araw!",
@@ -930,8 +903,9 @@ export default {
         "hero": {
             "title": "Kung saan ang pag-aaral ng Banal na Kasulatan ay nagiging masayang ugali",
             "subtitle": "Isang web app para sa pag-aaral ng banal na kasulatan na personal na binuo ni Brother Daijiro Sagane, isang miyembro ng Simbahan sa Hapon. Ito ay ganap na libre para gamitin ng sinuman.",
-            "downloadCta": "I-download ang App (PWA)",
-            "browserCta": "Magsimula sa Browser",
+            "downloadCta": "App (PWA)",
+            "browserCta": "Browser",
+            "demoCta": "1-Minutong Demo",
             "mascotBubble": "Kumusta! Magsimula na tayong magbasa ng banal na kasulatan nang magkasama! ✨"
         },
         "concept": {
@@ -953,6 +927,7 @@ export default {
         },
         "finalCta": {
             "title": "Gusto mo bang magsimula ng bagong ugali kasama namin?",
+            "demoCta": "1-Minutong Demo",
             "mascotBubble": "Magsimula tayo gamit ang button sa ibaba! ✨"
         },
         "downloadModal": {
@@ -980,5 +955,11 @@ export default {
             "messageRequired": "Hindi maaaring walang laman ang mensahe.",
             "emailInvalid": "Mangyaring maglagay ng wastong email address."
         }
+    },
+    "demo": {
+        "loadingTitle": "Inihahanda ang demo environment...",
+        "loadingSubtitle": "Kinakarga ang data. Mangyaring maghintay.",
+        "loginSuccess": "Naka-sign in gamit ang demo account!",
+        "loginError": "Bigo sa pagkonekta sa demo. Nire-redirect sa login..."
     }
 };

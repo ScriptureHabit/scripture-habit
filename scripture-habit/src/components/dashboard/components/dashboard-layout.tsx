@@ -10,6 +10,7 @@ interface DashboardLayoutProps {
   setActiveGroupId: (gid: string | null) => void;
   isInputFocused: boolean;
   isJoiningInvite: boolean;
+  currentUserId?: string | null;
   children: ReactNode;
 }
 
@@ -21,6 +22,7 @@ const DashboardLayout = ({
   setActiveGroupId,
   isInputFocused,
   isJoiningInvite,
+  currentUserId,
   children
 }: DashboardLayoutProps) => {
   return (
@@ -32,6 +34,7 @@ const DashboardLayout = ({
         activeGroupId={activeGroupId}
         setActiveGroupId={setActiveGroupId}
         hideMobile={isInputFocused || isJoiningInvite}
+        currentUserId={currentUserId}
       />
       <main className={`DashboardContent ${selectedView === 2 ? 'group-chat-view' : ''}`}>
         {children}

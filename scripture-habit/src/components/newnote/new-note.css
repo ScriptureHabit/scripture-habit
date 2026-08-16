@@ -8,7 +8,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 3000;
 }
 
 .ModalContent {
@@ -427,6 +427,11 @@
   font-weight: bold;
   box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 5px;
   transition: all 0.2s ease;
+}
+
+.modern-action-btn.fill-sample-btn {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.25);
 }
 
 .modern-action-btn:hover:not(:disabled) {

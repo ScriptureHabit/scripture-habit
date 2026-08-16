@@ -44,9 +44,6 @@ interface ChatUIState {
   showInactivityPolicyBanner: boolean;
   setShowInactivityPolicyBanner: (show: boolean) => void;
   
-  showAddNoteTooltip: boolean;
-  setShowAddNoteTooltip: (show: boolean) => void;
-  
   showMobileMenu: boolean;
   setShowMobileMenu: (show: boolean) => void;
 
@@ -103,9 +100,6 @@ export const useChatStore = create<ChatUIState>((set) => ({
   showInactivityPolicyBanner: false,
   setShowInactivityPolicyBanner: (show) => set({ showInactivityPolicyBanner: show }),
   
-  showAddNoteTooltip: false,
-  setShowAddNoteTooltip: (show) => set({ showAddNoteTooltip: show }),
-  
   showMobileMenu: false,
   setShowMobileMenu: (show) => set({ showMobileMenu: show }),
 
@@ -133,7 +127,6 @@ export const useChatStore = create<ChatUIState>((set) => ({
     showInviteModal: false,
     showReportModal: false,
     showInactivityPolicyBanner: false,
-    showAddNoteTooltip: false,
     showMobileMenu: false,
     cheerTarget: null,
     reportReason: '',

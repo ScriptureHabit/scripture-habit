@@ -101,28 +101,13 @@ export function useJoinGroup() {
   }, [language, t, user]);
 
   useEffect(() => {
-    let userDocUnsubscribe = () => { };
-    const authUnsubscribe = onAuthStateChanged(auth!, (currentUser) => {
-      setUser(currentUser);
-      if (currentUser) {
-        const userRef = doc(db, 'users', currentUser.uid);
-        userDocUnsubscribe = onSnapshot(userRef, (docSnap) => {
-          if (docSnap.exists()) {
-            setUserData(docSnap.data() as UserData);
-          }
-        }, (err) => {
-          if (err.code !== 'permission-denied') {
-            console.error("[JoinGroup] User data listener error:", err);
-          }
-        });
-      }
-    });
-
     const fetchPublicGroups = async () => {
       try {
         const resp = await apiClient.get('/api/groups?limit=20');
-        setPublicGroups(resp.data || []);
-        return;
+        if (resp.data && Array.isArray(resp.data)) {
+          setPublicGroups(resp.data);
+          return;
+        }
       } catch (e) {
         console.warn('Backend /groups fetch failed, falling back to client query:', e);
       }
@@ -148,12 +133,35 @@ export function useJoinGroup() {
 
     fetchPublicGroups().finally(() => setLoadingGroups(false));
 
+    let userDocUnsubscribe = () => { };
+    const authUnsubscribe = onAuthStateChanged(auth!, (currentUser) => {
+      setUser(currentUser);
+      if (currentUser) {
+        const userRef = doc(db, 'users', currentUser.uid);
+        userDocUnsubscribe = onSnapshot(userRef, (docSnap) => {
+          if (docSnap.exists()) {
+            setUserData(docSnap.data() as UserData);
+          }
+        }, (err) => {
+          if (err.code !== 'permission-denied') {
+            console.error("[JoinGroup] User data listener error:", err);
+          }
+        });
+      }
+    });
+
     return () => { authUnsubscribe(); userDocUnsubscribe(); };
   }, []);
 
   const filteredGroups = useMemo(() => {
     const userGroupIds = userData?.groupIds || (userData?.groupId ? [userData.groupId] : []);
-    return publicGroups.filter((g: Group) => !userGroupIds.includes(g.id));
+    const available = publicGroups.filter((g: Group) => !userGroupIds.includes(g.id));
+    return [...available].sort((a, b) => {
+      // Prioritize demo group (Daily Bread) at the top of the list
+      if (a.isDemoGroup && !b.isDemoGroup) return -1;
+      if (!a.isDemoGroup && b.isDemoGroup) return 1;
+      return 0;
+    });
   }, [publicGroups, userData]);
 
   const totalPages = Math.ceil(filteredGroups.length / groupsPerPage);

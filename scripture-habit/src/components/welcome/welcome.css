@@ -76,6 +76,20 @@
     cursor: pointer;
 }
 
+/* Demo Button */
+.welcome-container .auth-buttons .demo-btn {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+    color: white !important;
+    border: none !important;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.25) !important;
+}
+
+.welcome-container .auth-buttons .demo-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35) !important;
+    filter: brightness(1.05);
+}
+
 /* Login Button (Primary) */
 .welcome-container .auth-buttons .login-btn {
     background: linear-gradient(135deg, #8E9EFA 0%, #B088D9 100%) !important;

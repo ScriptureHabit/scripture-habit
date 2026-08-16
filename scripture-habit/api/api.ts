@@ -32,6 +32,7 @@ import cronRoutes from '../api_internal/routes/cron.js';
 import reportRoutes from '../api_internal/routes/reports.js';
 import testUtilsRoutes from '../api_internal/routes/test-utils.js';
 import resetUnityRoutes from '../api_internal/routes/reset-unity.js';
+import demoRoutes from '../api_internal/routes/demo.js';
 
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
@@ -232,6 +233,7 @@ app.use('/api/preview', previewRoutes);
 app.use('/api/cron', cronRoutes);
 app.use('/api/report', reportRoutes);
 app.use('/api/test', testUtilsRoutes);
+app.use('/api/demo', demoRoutes);
 app.use('/api/groups', resetUnityRoutes);
 app.use('/api/reset-unity', resetUnityRoutes);
 

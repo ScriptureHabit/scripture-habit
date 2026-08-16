@@ -324,7 +324,7 @@ export default {
         "members": "멤버",
         "groupMembers": "그룹 멤버",
         "typeMessage": [
-            "+ 버튼을 클릭하여 노트를 작성하거나 메시지를 입력하세요...",
+            "메시지를 입력하거나 깨달음을 나눠보세요...",
             "어렵네요... 무슨 뜻일까요? 이 성구에 대해 아시는 분 계신가요?",
             "이 장은 고등 평의원 말씀만큼이나 길었네요...",
             "솔직히 말해서, 이 장의 전쟁 묘사 부분에서 잠들고 말았습니다.",
@@ -416,7 +416,6 @@ export default {
         "unityModalLegendEmpty": "시작 (0%~)",
         "unityModalNoPostsYet": "오늘 게시글이 없습니다",
         "unityModalAllPosted": "오늘 모두가 공유했습니다! 놀라운 단합력입니다!",
-        "addNoteTooltip": "+를 눌러 노트를 게시하세요!",
         "inviteFriendsPrompt": "친구를 초대하세요!",
         "inviteMessage": "Scripture Habit에서 저와 함께 성전 공부 모임에 참여하세요! 함께 공부하며 매일의 습관을 만들어봅시다.\n\n그룹: {groupName}\n여기에서 참여: {inviteLink}",
         "readStatus": "{count}명 읽음",
@@ -460,17 +459,7 @@ export default {
         "aiGroupDefaultGroupDesc": "Scripture Habit AI와 1대1로 성경을 공부하는 전용 그룹",
         "aiGroupWelcomeMessage": "Scripture Habit AI 그룹에 오신 것을 환영합니다! 매일 함께 성경을 공부하고 깨달음을 나눠봐요. 응원합니다! 📖✨\n※Scripture Habit AI는 매일 노트를 게시하지만, {nickname}님께 직접 답장은 현재 지원되지 않습니다. 양해 부탁드립니다.",
         "aiGroupBotNickname": "Scripture Habit AI",
-        "aiGroupStartWithAiOption": "🤖 Scripture Habit AI와 시작하기",
-        "aiGroupStartWithAiDesc": "친구가 없어도 괜찮아요. Scripture Habit AI와 그룹을 만들어요.",
-        "aiGroupStartWithFriendsOption": "👥 친구·가족과 시작하기",
-        "aiGroupStartWithFriendsDesc": "친구나 가족과 함께 그룹을 만들어요.",
         "aiGroupDailyNoteText": "【오늘의 학습 영감】매일 차근차근 성경을 펴는 것이 큰 축복으로 이어집니다. 오늘도 함께 배움을 넓혀가요! 📖✨",
-        "groupChatTour": {
-            "step1Title": "여기서 노트 게시!",
-            "step1Desc": "+ 버튼을 눌러 오늘의 학습 내용을 노트에 기록해 보세요.",
-            "step2Title": "대시보드로 돌아가기",
-            "step2Desc": "← 버튼으로 대시보드로 돌아갈 수 있어요."
-        },
         "inviteExpiresAt": "만료일:",
         "regenerateInviteCode": "초대 코드 재생성",
         "inviteCodeRegenerated": "초대 코드가 재생성되었습니다!",
@@ -546,6 +535,9 @@ export default {
         "byuUrlPlaceholder": "https://speeches.byu.edu/talks/...",
         "otherUrlPlaceholder": "https://example.com/study-material",
         "askAiQuestion": "✨ AI에게 질문 요청하기",
+        "fillSample": "✨ 샘플 입력",
+        "sampleScripture": "니파이전서 3:7",
+        "sampleThoughts": "\"내가 가서 주께서 명하신 일들을 행하겠나이다.\" 이 말씀이 오늘의 도전을 마주할 용기를 줍니다.",
         "surpriseMe": "✨ 나를 놀라게 해주세요",
         "masteryScriptures": "✨ 성구 익히기",
         "peaceScriptures": "✨ 평안",
@@ -572,18 +564,6 @@ export default {
         "generalConference": "연차 대회",
         "byuSpeeches": "BYU Speeches",
         "other": "기타"
-    },
-    "groupOptionsTour": {
-        "titleStepAi": "🤖 Scripture Habit AI와 시작하기",
-        "descStepAi": "혼자서도 안심! Scripture Habit AI가 매일 성경 노트를 자동으로 게시하며 공부를 응원해주는 전용 그룹을 바로 만들 수 있습니다.",
-        "titleStep1": "학습 그룹에 오신 것을 환영합니다!",
-        "descStep1": "여기에서 다른 사람들과 연결하여 함께 경전을 공부할 방법을 선택할 수 있습니다.",
-        "titleStep2": "그룹 만들기",
-        "descStep2": "자신만의 그룹 학습을 시작하고 친구, 가족 또는 와드 회원들을 초대하여 함께 공부해보세요!",
-        "titleStep3": "그룹 참가하기",
-        "descStep3": "공개 그룹을 탐색하고 함께 경전을 배우는 동료들의 커뮤니티와 연결해보세요.",
-        "titleStep4": "대시보드로 돌아가기",
-        "descStep4": "오늘은 혼자서 공부하고 싶다면 언제든지 대시보드로 돌아갈 수 있습니다."
     },
     "groupOptions": {
         "title": "학습 그룹",
@@ -628,25 +608,39 @@ export default {
         "pwaInviteHint": "이미 이 앱을 홈 화면에 추가했다면,\n거기에서 앱을 열어 이 초대를 자동으로 적용하세요."
     },
     "onboardingQuest": {
-        "title": "🌟 온보딩 퀘스트",
-        "step1Title": "1. 그룹에 가입하기",
-        "step1Desc": "직접 그룹을 만들거나 다른 그룹에 참여하세요.",
-        "step1DescSuccess": "그룹 가입에 성공했습니다! 🎉",
-        "step2Title": "2. 첫 번째 노트 게시하기",
-        "step2Desc": "그룹에 첫 번째 학습 노트를 공유해 보세요.",
-        "congratsTitle": "🎉 퀘스트 완료!",
-        "congratsDesc": "모든 온보딩 퀘스트를 완료했습니다! 함께 매일 성경 공부를 즐겨봅시다! ✨",
-        "congratsBtn": "닫기"
+        "title": "🌟 첫 번째 과제",
+        "step1Title": "1. 그룹에 참여하기",
+        "step1Desc": "새 그룹을 만들거나 다른 그룹에 참여해 보세요.",
+        "step1DescSuccess": "그룹 참여가 완료되었습니다! 🎉",
+        "step1Action": "그룹 찾기 / 만들기",
+        "step2Title": "2. 첫 학습 노트 작성하기",
+        "step2Desc": "그룹에 첫 학습 노트를 작성해 공유해 보세요.",
+        "step2DescSuccess": "첫 노트를 게시했습니다! 🎉",
+        "step2Action": "노트 작성",
+        "chatHeaderBackPrompt": "그룹에 참여했습니다! 대시보드로 돌아가서 첫 노트를 작성해 보세요!",
+        "groupOptionsBannerDesc": "원하는 방법으로 시작해 보세요: AI와 1:1로 시작, 친구와 그룹 생성 또는 공개 그룹 참여.",
+        "congratsTitle": "🎉 첫 번째 과제 완료!",
+        "congratsDesc": "그룹 참여와 첫 번째 노트 작성을 완료했습니다! 동료들과 함께 매일 즐겁게 성전을 공부해 봐요! ✨",
+        "congratsGoChatBtn": "그룹 채팅으로 이동",
+        "congratsBtn": "닫기",
+        "demoGroupName": "일용할 양식 📖",
+        "demoGroupDesc": "매일 함께 성경을 읽고 격려하는 따뜻한 스터디 그룹입니다! ✨",
+        "demoWelcomeAlice": "{nickname}님, 환영합니다! ✨ 어, 프로필을 보니 오늘로 연속 999일째이신가요?! 대단해요...!",
+        "demoWelcomeBob": "우와아아! 노트 1개만 더 작성하면 드디어 꿈의 【1,000일 달성】이에요!! 🔥 오늘 올리실 노트 엄청 기대하고 있어요!",
+        "demoWelcomeCharlie": "1,000일이라니 그야말로 전설의 영역...! 대시보드로 돌아가셔서 노트 작성해 주시길 모두 기대하며 기다릴게요🎉",
+        "demoCelebrateAlice": "{nickname}님, 드디어 1,000일 달성을 축하합니다!!! 🎉🎉🎉 정말 대단해요!!",
+        "demoCelebrateBob": "우와아아! 드디어 꿈의 【1,000일 달성】이다ーー!! 🔥 진심으로 축하해요! 함께 공부할 수 있어서 자랑스러워요!",
+        "demoCelebrateCharlie": "1,000일...! 전설적인 위업을 달성하셨네요! 🎉 진심으로 축하드립니다! 최고의 동료예요✨",
+        "demo1000ModalTitle": "🎉 1,000일 달성을 축하합니다!",
+        "demo1000ModalDesc": "드디어 꿈의 1,000일을 달성하셨습니다! 그룹 채팅에서 게시물과 동료들의 반응을 확인해 보세요! ✨",
+        "demo1000ModalGoChatBtn": "그룹 채팅으로 이동",
+        "demo1000ModalCloseBtn": "나중에 확인"
     },
     "onboardingGuide": {
         "newNoteStep1": "먼저 오늘 읽을 성경의 카테고리를 선택해 봅시다!",
         "newNoteStep2": "완벽해요! 다음으로 읽은 장이나 URL을 입력하세요 (예: 니파이전서 3:7).",
         "newNoteStep3": "멋져요! 마지막으로 느낀 점이나 생각을 댓글창에 적어주세요!",
-        "newNoteStep4": "준비 완료! 오른쪽 아래 [노트 게시] 버튼을 클릭해 첫 번째 노트를 공유하세요! 🎉",
-        "paceSetSuccess": "목표 페이스가 설정되었습니다! 이제 그룹을 만들거나 기존 그룹에 참여해봅시다!",
-        "paceSetBtnSearch": "그룹 찾으러 가기",
-        "paceSetSuccessInvite": "{ownerName}님의 그룹에 참여했습니다! Scripture Habit 사용법을 배우고 첫 노트를 올릴 준비를 해볼까요!",
-        "paceSetBtnLearn": "사용법 배우러 가기"
+        "newNoteStep4": "준비 완료! 오른쪽 아래 [노트 게시] 버튼을 클릭해 첫 번째 노트를 공유하세요! 🎉"
     },
     "groupForm": {
         "invitePreviewTitle": "초대 링크 미리보기",
@@ -792,27 +786,6 @@ export default {
         "nextButton": "다음",
         "backButton": "이전"
     },
-    "tourGuide": {
-        "titleQuest": "온보딩 퀘스트",
-        "descQuest": "시작하기 위해 2가지 간단한 퀘스트를 완료하세요: 학습 그룹에 가입하고, 그룹원들과 공유할 첫 번째 학습 노트를 작성하세요!",
-        "titleStep1": "네비게이션 메뉴",
-        "descStep1": "대시보드, 내 노트, 그룹, 설정 등 핵심 메뉴를 자유롭게 이동합니다.",
-        "titleStep2": "총 학습 일수",
-        "descStep2": "매일 경전을 읽을 때마다 총 학습 일수가 쌓입니다. 함께 습관을 이어가세요!",
-        "titleStep3": "레벨 및 목표",
-        "descStep3": "7일 동안 경전을 읽으면 레벨업! 진척도 바를 통해 다음 레벨까지의 진행도를 확인할 수 있습니다.",
-        "titleStep4": "오늘의 와서 나를 따르라",
-        "descStep4": "매일 와서 나를 따르라 진도가 업데이트되며, 복음 라이브러리 링크를 통해 바로 학습할 수 있습니다.",
-        "titleStep5": "새 노트 작성",
-        "descStep5": "오늘 읽으며 느낀 영적인 느낌과 깨달음을 적어 그룹 멤버들과 공유해 보세요.",
-        "titleStep6": "습관 캘린더",
-        "descStep6": "나의 지난 경전 읽기 기록과 그룹 자동 퇴출 기준일을 직관적으로 모니터링할 수 있습니다.",
-        "next": "다음",
-        "back": "이전",
-        "skip": "건너뛰기",
-        "finish": "완료",
-        "replayButton": "앱 가이드 다시 보기"
-    },
     "welcomeGuideButton": "알겠습니다!",
     "mascot": {
         "streakCelebration": "대단해요! 총 {streak}일 달성!",
@@ -930,8 +903,9 @@ export default {
         "hero": {
             "title": "Scripture Habit",
             "subtitle": "일본의 교회 회원인 상근 대지로(Daijiro Sagane) 형제가 개인적으로 개발한 경전 공부용 웹 앱입니다. 누구나 완전 무료로 이용하실 수 있습니다.",
-            "downloadCta": "앱(PWA) 다운로드",
-            "browserCta": "브라우저에서 시작하기",
+            "downloadCta": "앱 (PWA)",
+            "browserCta": "브라우저",
+            "demoCta": "1분 데모",
             "mascotBubble": "안녕하세요! 우리 함께 경전 읽기를 시작해 봐요! ✨"
         },
         "concept": {
@@ -953,6 +927,7 @@ export default {
         },
         "finalCta": {
             "title": "여러분도 우리와 함께 새로운 습관을 시작해 보실래요?",
+            "demoCta": "1분 데모",
             "mascotBubble": "아래 버튼으로 시작해 보세요! ✨"
         },
         "downloadModal": {
@@ -980,5 +955,11 @@ export default {
             "messageRequired": "메시지 내용은 비워 둘 수 없습니다.",
             "emailInvalid": "올바른 이메일 주소를 입력해 주세요."
         }
+    },
+    "demo": {
+        "loadingTitle": "데모 환경을 준비 중입니다...",
+        "loadingSubtitle": "데이터를 불러오고 있습니다. 잠시만 기다려 주세요.",
+        "loginSuccess": "데모 계정으로 로그인되었습니다!",
+        "loginError": "데모 환경 연결에 실패했습니다. 로그인 화면으로 이동합니다."
     }
 };

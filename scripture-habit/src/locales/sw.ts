@@ -324,7 +324,7 @@ export default {
         "members": "Wanachama",
         "groupMembers": "Wanachama wa Kikundi",
         "typeMessage": [
-            "Bofya kitufe cha + ili kuunda dokezo au andika ujumbe...",
+            "Andika ujumbe au shiriki mafundisho...",
             "Ni ngumu... Hii ina maana gani? Je, kuna mtu yeyote anaelewa andiko hili?",
             "Sura hii imekuwa ndefu kama hotuba ya Mshauri Mkuu...",
             "Kusema kweli, nililala wakati wa masimulizi ya vita katika sura hii.",
@@ -416,7 +416,6 @@ export default {
         "unityModalLegendEmpty": "Kuanza (0%~)",
         "unityModalNoPostsYet": "Hakuna machapisho bado leo",
         "unityModalAllPosted": "Kila mtu ameshiriki leo! Umoja wa ajabu!",
-        "addNoteTooltip": "Bofya + ili kuchapisha dokezo!",
         "inviteFriendsPrompt": "Alika marafiki zako!",
         "inviteMessage": "Jiunge na kikundi changu cha kujifunza maandiko kwenye Scripture Habit! Hebu tujifunze pamoja na kujenga tabia ya kila siku.\n\nKikundi: {groupName}\nJiunge hapa: {inviteLink}",
         "readStatus": "Imesomwa {count}",
@@ -460,17 +459,7 @@ export default {
         "aiGroupDefaultGroupDesc": "Kundi la kujifunza maandiko la 1-kwa-1 na Scripture Habit AI",
         "aiGroupWelcomeMessage": "Karibu kwenye Kundi la Scripture Habit AI! Tuwe tukijifunza maandiko na kushiriki mafundisho kila siku. Tunakuunga mkono! 📖✨\n*Kumbuka: AI inachapisha maelezo kila siku, lakini majibu ya moja kwa moja kwa {nickname} hayatumiki kwa sasa.",
         "aiGroupBotNickname": "Scripture Habit AI",
-        "aiGroupStartWithAiOption": "🤖 Anza na Scripture Habit AI",
-        "aiGroupStartWithAiDesc": "Hakuna haja ya marafiki, jenga kikundi na Scripture Habit AI.",
-        "aiGroupStartWithFriendsOption": "👥 Anza na Marafiki na Familia",
-        "aiGroupStartWithFriendsDesc": "Jenga kikundi cha kujifunzia na marafiki au familia yako.",
         "aiGroupDailyNoteText": "[Ushawishi wa Kujifunza Kila Siku] Kufungua maandiko mara kwa mara kila siku huleta baraka kubwa. Hebu tuzidishe ujuzi wetu leo! 📖✨",
-        "groupChatTour": {
-            "step1Title": "Chapisha Dokezo Hapa!",
-            "step1Desc": "Bofya kitufe cha + kurekodi mafunzo yako ya leo au maarifa kwenye dokezo.",
-            "step2Title": "Rudi kwenye Dashibodi",
-            "step2Desc": "Unaweza kurudi kwenye dashibodi kwa kitufe cha ←. Angalia vikundi vingine na mipangilio kutoka hapa."
-        },
         "inviteExpiresAt": "Inaisha mnamo",
         "regenerateInviteCode": "Tengeneza msimbo mpya wa mwaliko",
         "inviteCodeRegenerated": "Msimbo wa mwaliko umetengenezwa upya!",
@@ -482,8 +471,7 @@ export default {
         "errorToggleReaction": "Failed to update reaction.",
         "regenerateInviteConfirm": "Regenerate invite code? The old link will no longer work.",
         "inviteFriends": "Invite Friends",
-        "reTranslate": "Refresh translation",
-        "autoKickWarning": "※ Mpangilio huu utatumika kwa vikundi vyote."
+        "reTranslate": "Refresh translation"
     },
     "newNote": {
         "editTitle": "Hariri Ujumbe",
@@ -547,6 +535,9 @@ export default {
         "byuUrlPlaceholder": "https://speeches.byu.edu/talks/...",
         "otherUrlPlaceholder": "https://example.com/study-material",
         "askAiQuestion": "✨ Uliza AI Swali",
+        "fillSample": "✨ Jaza dokezo la mfano",
+        "sampleScripture": "1 Nefi 3:7",
+        "sampleThoughts": "\"Nitakwenda na kufanya mambo ambayo Bwana ameamuru.\" Mstari huu unanipa ujasiri wa kukabiliana na changamoto za leo.",
         "surpriseMe": "✨ Nishangaze",
         "masteryScriptures": "✨ Maandiko ya Ustadi",
         "peaceScriptures": "✨ Amani",
@@ -573,18 +564,6 @@ export default {
         "generalConference": "Mkutano Mkuu",
         "byuSpeeches": "BYU Speeches",
         "other": "Nyingine"
-    },
-    "groupOptionsTour": {
-        "titleStepAi": "🤖 Anza na Scripture Habit AI",
-        "descStepAi": "Jifunze kwa kasi yako mwenyewe! Unda kikundi maalum ambapo Scripture Habit AI itatuma madokezo ya kila siku na kuongoza safari yako.",
-        "titleStep1": "Karibu kwenye Vikundi vya Funzo!",
-        "descStep1": "Hapa unaweza kuchagua jinsi ungependa kuungana na kujifunza na wengine.",
-        "titleStep2": "Unda Kikundi",
-        "descStep2": "Anzisha kikundi chako cha funzo na waalike marafiki, familia, au washiriki wa wadi wajiunge nawe!",
-        "titleStep3": "Jiunge na Kikundi",
-        "descStep3": "Gundua vikundi vya umma na uungane na jumuiya ya wanafunzi wenzako wa maandiko.",
-        "titleStep4": "Rudi kwenye Dashibodi",
-        "descStep4": "Ukipenda kujifunza peke yako leo, unaweza kurudi kwenye dashibodi kuu wakati wowote."
     },
     "groupOptions": {
         "title": "Vikundi vya Mafunzo",
@@ -629,25 +608,39 @@ export default {
         "pwaInviteHint": "Ikiwa tayari umeongeza programu hii kwenye Skrini yako ya Nyumbani,\nifungue kutoka hapo ili utumie mwaliko huu kiotomatiki."
     },
     "onboardingQuest": {
-        "title": "🌟 Jaribio la Kuanza",
+        "title": "🌟 Majukumu ya Kwanza",
         "step1Title": "1. Jiunge na Kikundi",
-        "step1Desc": "Unda kikundi chako mwenyewe au ujiunge na kikundi kingine.",
-        "step1DescSuccess": "Umefanikiwa kujiunga na kikundi! 🎉",
-        "step2Title": "2. Tuma Nukuu ya Kwanza",
-        "step2Desc": "Shiriki nukuu yako ya kwanza ya kujifunza katika kikundi.",
-        "congratsTitle": "🎉 Majaribio Yamekamilika!",
-        "congratsDesc": "Umefanikiwa kukamilisha majaribio yote ya kuanza! Wacha tufurahie masomo ya kila siku ya maandiko pamoja! ✨",
-        "congratsBtn": "Funga"
+        "step1Desc": "Unda kikundi chako au ujiunge na kikundi kingine.",
+        "step1DescSuccess": "Umejiunga na kikundi kwa mafanikio! 🎉",
+        "step1Action": "Tafuta / Unda Kikundi",
+        "step2Title": "2. Chapisha Dokezo lako la Kwanza",
+        "step2Desc": "Shiriki dokezo lako la kwanza la kujifunza katika kikundi.",
+        "step2DescSuccess": "Dokezo la kwanza limechapishwa! 🎉",
+        "step2Action": "Andika Dokezo",
+        "chatHeaderBackPrompt": "Umejiunga na kikundi! Turudi kwenye dashibodi na uchapishe dokezo lako la kwanza!",
+        "groupOptionsBannerDesc": "Chagua njia unayopendelea: Anza 1-kwa-1 na AI, unda kikundi cha faragha, au jiunge na kikundi cha umma.",
+        "congratsTitle": "🎉 Majukumu ya Kwanza Yamekamilika!",
+        "congratsDesc": "Umejiunga na kikundi na kuchapisha dokezo lako la kwanza! Tufurahie kujifunza maandiko kila siku pamoja na wenzako! ✨",
+        "congratsGoChatBtn": "Nenda kwenye Gumzo la Kikundi",
+        "congratsBtn": "Funga",
+        "demoGroupName": "Mkate wa Kila Siku 📖",
+        "demoGroupDesc": "Kikundi cha kupendeza kinachosoma maandiko pamoja kila siku! ✨",
+        "demoWelcomeAlice": "Karibu {nickname}! ✨ Subiri, nimetazama wasifu wako—leo ni siku yako ya 999 mfululizo?! Ajabu sana...!",
+        "demoWelcomeBob": "Waooo! Chapisho moja tu zaidi la kumbukumbu na utafikia lengo kuu la siku 1,000!! 🔥 Tunasubiri kwa hamu kumbukumbu yako ya leo!",
+        "demoWelcomeCharlie": "Siku 1,000 ni kiwango cha hadithi...! Sote tunasubiri kwa hamu kumbukumbu yako kutoka kwenye dashibodi 🎉",
+        "demoCelebrateAlice": "Hongera sana kwa kufikisha siku 1,000, {nickname}!!! 🎉🎉🎉 Kwa kweli ni jambo la ajabu sana!!",
+        "demoCelebrateBob": "WOOO!! Hatimaye umetimiza siku 1,000!! 🔥 Hongera sana sana! Ninajivunia kujifunza pamoja nawe!",
+        "demoCelebrateCharlie": "Siku 1,000...! Ni mafanikio ya kipekee na ya kihistoria! 🎉 Hongera za dhati kabisa! Wewe ni rafiki bora sana✨",
+        "demo1000ModalTitle": "🎉 Hongera sana kwa kufikisha siku 1,000!",
+        "demo1000ModalDesc": "Hatimaye umefikisha lengo kubwa la siku 1,000! Hebu tukatazame chapisho lako na maoni ya wengine kwenye mazungumzo ya kikundi! ✨",
+        "demo1000ModalGoChatBtn": "Nenda kwenye Gumzo la Kikundi",
+        "demo1000ModalCloseBtn": "Tazama baadaye"
     },
     "onboardingGuide": {
         "newNoteStep1": "Kwanza, tuchague kategoria ya maandiko unayosoma leo!",
         "newNoteStep2": "Safi sana! Kisha, ingiza mlango au URL uliyosoma (mfano 1 Nefi 3:7).",
         "newNoteStep3": "Ajabu! Mwishowe, andika mawazo yako katika kisanduku cha maoni!",
-        "newNoteStep4": "Tayari! Bonyeza kitufe cha [Post Note] chini kulia ili kushiriki nukuu yako ya kwanza! 🎉",
-        "paceSetSuccess": "Kasi yako ya lengo imewekwa! Sasa, hebu tuunde kikundi au tujiunge na kimoja!",
-        "paceSetBtnSearch": "Nenda Katafute Kikundi",
-        "paceSetSuccessInvite": "Umejiunga na kikundi cha {ownerName} kwa mafanikio! Hebu tujifunze jinsi ya kutumia Scripture Habit na kujiandaa kutuma ujumbe wako wa kwanza!",
-        "paceSetBtnLearn": "Jifunze Jinsi ya Kutumia"
+        "newNoteStep4": "Tayari! Bonyeza kitufe cha [Post Note] chini kulia ili kushiriki nukuu yako ya kwanza! 🎉"
     },
     "groupForm": {
         "invitePreviewTitle": "Hakiki ya Kiungo cha Mwaliko",
@@ -793,27 +786,6 @@ export default {
         "nextButton": "Inayofuata",
         "backButton": "Nyuma"
     },
-    "tourGuide": {
-        "titleQuest": "Jaribio la Kuanza",
-        "descQuest": "Kamilisha majaribio haya 2 rahisi ili uanze: jiunge na kikundi cha kujifunza, na uandike maelezo yako ya kwanza ya kujifunza.",
-        "titleStep1": "Menyu ya Urambazaji",
-        "descStep1": "Nenda hapa kati ya Dashibodi yako, Maelezo Yangu, Vikundi, na Mipangilio.",
-        "titleStep2": "Siku za Jumla",
-        "descStep2": "Hufuatilia siku zako za jumla za kujifunza maandiko. Endeleza tabia nzuri!",
-        "titleStep3": "Kiwango & Lengo",
-        "descStep3": "Pandisha kiwango kila baada ya siku 7! Tazama bar ya maendeleo ili kuona jinsi ulivyo karibu.",
-        "titleStep4": "Njoo, Unifuatie Leo",
-        "descStep4": "Pata mipango ya usomaji wa kila siku iliyounganishwa moja kwa moja na Gospel Library.",
-        "titleStep5": "Andika Note",
-        "descStep5": "Andika hisia na mawazo yako ya kiroho ya leo ili ushiriki na kikundi.",
-        "titleStep6": "Kalenda ya Tabia",
-        "descStep6": "Fuatilia historia yako ya usomaji na uangalie miongozo ya kuondolewa ili ubaki na ari!",
-        "next": "Mbele",
-        "back": "Nyuma",
-        "skip": "Ruka",
-        "finish": "Maliza",
-        "replayButton": "Rudia Mwongozo wa Ziara"
-    },
     "welcomeGuideButton": "Nimeelewa!",
     "mascot": {
         "streakCelebration": "Inashangaza! Siku {streak} za jumla zimefikiwa!",
@@ -931,8 +903,9 @@ export default {
         "hero": {
             "title": "Scripture Habit",
             "subtitle": "Programu ya wavuti ya kujifunza maandiko iliyotengenezwa kibinafsi na Kaka Daijiro Sagane, muumini wa Kanisa nchini Japani. Ni bure kabisa kwa kila mtu kuitumia.",
-            "downloadCta": "Pakua Programu (PWA)",
-            "browserCta": "Anza Kwenye Kivinjari",
+            "downloadCta": "Programu",
+            "browserCta": "Kivinjari",
+            "demoCta": "Onyesho la Dakika 1",
             "mascotBubble": "Habari! Tuanze kusoma maandiko pamoja! ✨"
         },
         "concept": {
@@ -954,6 +927,7 @@ export default {
         },
         "finalCta": {
             "title": "Je, ungependa kuanza tabia mpya pamoja nasi?",
+            "demoCta": "Onyesho la Dakika 1",
             "mascotBubble": "Tuanze kwa kitufe cha hapa chini! ✨"
         },
         "downloadModal": {
@@ -981,5 +955,11 @@ export default {
             "messageRequired": "Maudhui ya ujumbe hayawezi kuwa tupu.",
             "emailInvalid": "Tafadhali ingiza barua pepe halali."
         }
+    },
+    "demo": {
+        "loadingTitle": "Inatayarisha mazingira ya majaribio...",
+        "loadingSubtitle": "Inapakia data. Tafadhali subiri kidogo.",
+        "loginSuccess": "Umeingia kwa kutumia akaunti ya majaribio!",
+        "loginError": "Imeshindwa kuunganisha kwenye mazingira ya majaribio. Inaelekeza kwenye ukurasa wa kuingia..."
     }
 };

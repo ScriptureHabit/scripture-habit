@@ -4,18 +4,314 @@ import { admin, db } from '../lib/firebase-admin.js';
 import { verifyAppCheck, authenticate, requireEmailVerified, AuthenticatedRequest } from '../lib/middleware.js';
 import { runPhasedTransaction } from '../lib/phased-transaction.js';
 import { joinGroupSchema, updateKickThresholdSchema, leaveGroupSchema, deleteGroupSchema, updateReadStatusSchema, announceUnitySchema, updateGroupSchema, regenerateInviteCodeSchema, kickMemberSchema, createGroupSchema, createAiGroupSchema } from '../lib/schemas.js';
-import { GroupDocument, UserDocument, MemberPreview as PreviewItem, GroupMemberDocument } from '../../types/firestore.js';
+import { GroupDocument, UserDocument, MemberPreview as PreviewItem, GroupMemberDocument, FirestoreTimestamp } from '../../types/firestore.js';
 import { MAX_GROUPS_PER_USER } from '../lib/constants.js';
 import { removeMemberFromGroup } from '../lib/membership-utils.js';
 import { AppError, AuthenticationError, ForbiddenError, NotFoundError, ValidationError, sendErrorResponse } from '../lib/errors.js';
 import { getMessageExpireAt } from '../lib/ttl-utils.js';
 import { MessageService } from '../services/message-service.js';
-import { t } from '../lib/i18n.js';
+import { t, getDemoGroupTranslations } from '../lib/i18n.js';
 import { AiDailyNoteService } from '../services/ai-daily-note-service.js';
 
-
-
 const router = express.Router();
+
+function getTimestampMillis(ts?: FirestoreTimestamp | null): number {
+    if (!ts) return 0;
+    if (typeof ts === 'number') return ts;
+    if (typeof ts === 'string') {
+        const parsed = Date.parse(ts);
+        return isNaN(parsed) ? 0 : parsed;
+    }
+    if (ts instanceof Date) return ts.getTime();
+    if (typeof (ts as { toDate?: () => Date }).toDate === 'function') {
+        return (ts as { toDate: () => Date }).toDate().getTime();
+    }
+    if (typeof (ts as { seconds?: number }).seconds === 'number') {
+        return (ts as { seconds: number }).seconds * 1000;
+    }
+    if (typeof (ts as { _seconds?: number })._seconds === 'number') {
+        return (ts as { _seconds: number })._seconds * 1000;
+    }
+    return 0;
+}
+
+/**
+ * GET /api/groups
+ * Retrieves public groups for the join group screen.
+ * For demo users, automatically ensures their isolated Daily Bread group is available.
+ */
+router.get('/', authenticate, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+        const uid = req.user?.uid;
+        const limitCount = Math.min(Number(req.query.limit) || 20, 50);
+
+        let userDoc: UserDocument | null = null;
+        if (uid) {
+            const userSnap = await db.collection('users').doc(uid).get();
+            if (userSnap.exists) {
+                userDoc = userSnap.data() as UserDocument;
+            }
+        }
+
+        const isDemo = userDoc?.isAnonymousDemo || req.user?.firebase?.sign_in_provider === 'anonymous';
+
+        // Auto-seed demo group if demo user doesn't have it yet
+        if (isDemo && uid) {
+            // Ensure demo user has all 999 days of studiedDates filled
+            const now = Date.now();
+            const existingDates = userDoc?.studiedDates || [];
+            if (existingDates.length < 100) {
+                const getDateStr = (daysAgo: number) => {
+                    const d = new Date(now - daysAgo * 24 * 60 * 60 * 1000);
+                    return d.toLocaleDateString('sv-SE');
+                };
+                const fullDates: string[] = [];
+                for (let i = 999; i >= 1; i--) {
+                    fullDates.push(getDateStr(i));
+                }
+                // If user posted today, preserve today as well
+                const todayStr = new Date(now).toLocaleDateString('sv-SE');
+                if (existingDates.includes(todayStr)) {
+                    fullDates.push(todayStr);
+                }
+                await db.collection('users').doc(uid).update({
+                    studiedDates: fullDates,
+                    daysStudiedCount: Math.max(userDoc?.daysStudiedCount || 999, fullDates.length)
+                });
+            }
+
+            const demoGroupId = `demo-group-${uid}`;
+            const demoGroupDoc = await db.collection('groups').doc(demoGroupId).get();
+            if (!demoGroupDoc.exists) {
+                const language = userDoc?.language || 'ja';
+                const getDateStr = (daysAgo: number) => {
+                    const d = new Date(now - daysAgo * 24 * 60 * 60 * 1000);
+                    return d.toLocaleDateString('sv-SE');
+                };
+
+                const groupData: GroupDocument = {
+                    name: t(language, 'onboardingQuest.demoGroupName') || '日々の糧 📖',
+                    description: t(language, 'onboardingQuest.demoGroupDesc') || '毎日一緒に聖典を読み合う、温かい学習グループです！✨',
+                    translations: getDemoGroupTranslations(),
+                    members: ['bot-alice', 'bot-bob', 'bot-charlie'],
+                    membersCount: 3,
+                    ownerUserId: 'bot-alice',
+                    maxMembers: 5,
+                    isPrivate: false,
+                    isPublic: true,
+                    isDemoGroup: true,
+                    groupStreak: 7,
+                    unityPercentage: 67,
+                    inviteCode: `DEMO${uid.slice(0, 4).toUpperCase()}`,
+                    memberPreviews: [
+                        { uid: 'bot-alice', nickname: 'Alice 📖' },
+                        { uid: 'bot-bob', nickname: 'Bob 🔥' },
+                        { uid: 'bot-charlie', nickname: 'Charlie 💤' }
+                    ],
+                    memberJoinedAt: {
+                        'bot-alice': admin.firestore.Timestamp.fromMillis(now - 14 * 24 * 60 * 60 * 1000),
+                        'bot-bob': admin.firestore.Timestamp.fromMillis(now - 20 * 24 * 60 * 60 * 1000),
+                        'bot-charlie': admin.firestore.Timestamp.fromMillis(now - 5 * 24 * 60 * 60 * 1000)
+                    },
+                    memberLastActive: {
+                        'bot-alice': admin.firestore.Timestamp.fromMillis(now - 4 * 60 * 60 * 1000),
+                        'bot-bob': admin.firestore.Timestamp.fromMillis(now - 2 * 60 * 60 * 1000),
+                        'bot-charlie': admin.firestore.Timestamp.fromMillis(now - 2 * 24 * 60 * 60 * 1000)
+                    },
+                    memberLastReadAt: {
+                        'bot-alice': admin.firestore.Timestamp.fromMillis(now - 4 * 60 * 60 * 1000),
+                        'bot-bob': admin.firestore.Timestamp.fromMillis(now - 2 * 60 * 60 * 1000),
+                        'bot-charlie': admin.firestore.Timestamp.fromMillis(now - 2 * 24 * 60 * 60 * 1000)
+                    },
+                    dailyActivity: {
+                        date: getDateStr(0),
+                        activeMembers: ['bot-alice', 'bot-bob']
+                    },
+                    lastMessageAt: admin.firestore.Timestamp.fromMillis(now - 2 * 60 * 60 * 1000),
+                    lastMessageByUid: 'bot-bob',
+                    lastMessageByNickname: 'Bob 🔥',
+                    lastNoteAt: admin.firestore.Timestamp.fromMillis(now - 2 * 60 * 60 * 1000),
+                    lastNoteByUid: 'bot-bob',
+                    lastNoteByNickname: 'Bob 🔥',
+                    createdAt: admin.firestore.Timestamp.fromMillis(now - 14 * 24 * 60 * 60 * 1000),
+                    timeZone: 'Asia/Tokyo'
+                };
+
+                const batch = db.batch();
+                const demoGroupRef = db.collection('groups').doc(demoGroupId);
+                batch.set(demoGroupRef, groupData, { merge: true });
+
+                const seedMessages = [
+                    {
+                        id: `demo-msg-1-${uid}`,
+                        text: language === 'ja'
+                            ? '日々の糧へようこそ！みんなで毎日聖典を学んで励まし合いましょう🎉'
+                            : 'Welcome to Daily Bread! Let us support each other in our daily scripture habit 🎉',
+                        senderId: 'bot-alice',
+                        senderNickname: 'Alice 📖',
+                        userPhotoURL: 'https://api.dicebear.com/7.x/bottts/svg?seed=Alice',
+                        createdAt: admin.firestore.Timestamp.fromMillis(now - 24 * 60 * 60 * 1000)
+                    },
+                    {
+                        id: `demo-msg-2-${uid}`,
+                        text: '**Book of Mormon 1 Nephi 1**\n\nStarting 1 Nephi today! Loved the reflection on God\'s tender mercies.',
+                        senderId: 'bot-bob',
+                        senderNickname: 'Bob 🔥',
+                        userPhotoURL: 'https://api.dicebear.com/7.x/bottts/svg?seed=Bob',
+                        createdAt: admin.firestore.Timestamp.fromMillis(now - 20 * 60 * 60 * 1000),
+                        isNote: true,
+                        scripture: 'Book of Mormon',
+                        chapter: '1 Nephi 1',
+                        comment: 'Starting 1 Nephi today! Loved the reflection on God\'s tender mercies.'
+                    },
+                    {
+                        id: `demo-msg-3-${uid}`,
+                        text: '**Book of Mormon 1 Nephi 3:7**\n\n"I will go and do the things which the Lord hath commanded." Let us move forward with faith.',
+                        senderId: 'bot-bob',
+                        senderNickname: 'Bob 🔥',
+                        userPhotoURL: 'https://api.dicebear.com/7.x/bottts/svg?seed=Bob',
+                        createdAt: admin.firestore.Timestamp.fromMillis(now - 2 * 60 * 60 * 1000),
+                        isNote: true,
+                        scripture: 'Book of Mormon',
+                        chapter: '1 Nephi 3:7',
+                        comment: '"I will go and do the things which the Lord hath commanded." Let us move forward with faith.'
+                    }
+                ];
+
+                for (const msg of seedMessages) {
+                    batch.set(demoGroupRef.collection('messages').doc(msg.id), msg, { merge: true });
+                }
+
+                // Also initialize messages_latest/latest
+                const latestDocRef = demoGroupRef.collection('messages_latest').doc('latest');
+                batch.set(latestDocRef, {
+                    groupId: demoGroupId,
+                    messages: seedMessages,
+                    lastUpdatedAt: admin.firestore.FieldValue.serverTimestamp()
+                }, { merge: true });
+
+                await batch.commit();
+            } else {
+                const demoData = demoGroupDoc.data() as GroupDocument;
+                const updateFields: Partial<GroupDocument> = {};
+                if (demoData?.maxMembers !== 5) {
+                    updateFields.maxMembers = 5;
+                }
+                if (!demoData?.translations || Object.keys(demoData.translations).length < 10) {
+                    updateFields.translations = getDemoGroupTranslations();
+                }
+                if (Object.keys(updateFields).length > 0) {
+                    await db.collection('groups').doc(demoGroupId).update(updateFields);
+                }
+
+                // If demo user has joined the group, ensure messages_latest/latest has the bot welcome messages
+                const latestDocRef = db.collection('groups').doc(demoGroupId).collection('messages_latest').doc('latest');
+                const latestSnap = await latestDocRef.get();
+                const latestMsgs = (latestSnap.data()?.messages || []) as Record<string, unknown>[];
+                
+                const hasBotWelcome = latestMsgs.some(m => typeof m.id === 'string' && m.id.startsWith('demo-welcome-'));
+                const isMember = (demoData?.members || []).includes(uid);
+
+                if (isMember && !hasBotWelcome) {
+                    // Fetch recent messages from subcollection and sync to messages_latest
+                    const msgsSnap = await db.collection('groups').doc(demoGroupId).collection('messages')
+                        .orderBy('createdAt', 'asc')
+                        .limit(25)
+                        .get();
+
+                    let allMsgs = msgsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+                    // If bot celebrations don't exist yet in subcollection, generate and insert them
+                    const hasBotCelebrationInSub = allMsgs.some(m => typeof m.id === 'string' && m.id.startsWith('demo-welcome-'));
+                    if (!hasBotCelebrationInSub) {
+                        const nickname = userDoc?.nickname || 'Demo User';
+                        const userLang = userDoc?.language || 'ja';
+                        const nowMs = Date.now();
+                        const botCelebrations = [
+                            {
+                                id: `demo-welcome-alice-${nowMs}`,
+                                senderId: 'bot-alice',
+                                senderNickname: 'Alice 📖',
+                                userPhotoURL: 'https://api.dicebear.com/7.x/bottts/svg?seed=Alice',
+                                text: t(userLang, 'onboardingQuest.demoWelcomeAlice', { nickname }),
+                                createdAt: admin.firestore.Timestamp.fromMillis(nowMs + 100),
+                                expireAt: getMessageExpireAt()
+                            },
+                            {
+                                id: `demo-welcome-bob-${nowMs}`,
+                                senderId: 'bot-bob',
+                                senderNickname: 'Bob 🔥',
+                                userPhotoURL: 'https://api.dicebear.com/7.x/bottts/svg?seed=Bob',
+                                text: t(userLang, 'onboardingQuest.demoWelcomeBob', { nickname }),
+                                createdAt: admin.firestore.Timestamp.fromMillis(nowMs + 200),
+                                expireAt: getMessageExpireAt()
+                            },
+                            {
+                                id: `demo-welcome-charlie-${nowMs}`,
+                                senderId: 'bot-charlie',
+                                senderNickname: 'Charlie 💤',
+                                userPhotoURL: 'https://api.dicebear.com/7.x/bottts/svg?seed=Charlie',
+                                text: t(userLang, 'onboardingQuest.demoWelcomeCharlie', { nickname }),
+                                createdAt: admin.firestore.Timestamp.fromMillis(nowMs + 300),
+                                expireAt: getMessageExpireAt()
+                            }
+                        ];
+
+                        const repairBatch = db.batch();
+                        for (const bMsg of botCelebrations) {
+                            repairBatch.set(db.collection('groups').doc(demoGroupId).collection('messages').doc(bMsg.id), bMsg, { merge: true });
+                        }
+                        await repairBatch.commit();
+                        allMsgs = [...allMsgs, ...botCelebrations];
+                    }
+
+                    // Filter out any premature unityAnnouncement messages before demo user has posted
+                    const isUserActive = (demoData?.dailyActivity?.activeMembers || []).includes(uid);
+                    if (!isUserActive) {
+                        allMsgs = allMsgs.filter(m => (m as Record<string, unknown>).messageType !== 'unityAnnouncement');
+                    }
+
+                    await latestDocRef.set({
+                        groupId: demoGroupId,
+                        messages: allMsgs.slice(-25),
+                        lastUpdatedAt: admin.firestore.FieldValue.serverTimestamp()
+                    }, { merge: true });
+                } else if (isMember) {
+                    // Also clean up unityAnnouncement if present before user posted
+                    const isUserActive = (demoData?.dailyActivity?.activeMembers || []).includes(uid);
+                    if (!isUserActive && latestMsgs.some(m => (m as Record<string, unknown>).messageType === 'unityAnnouncement')) {
+                        const cleanedMsgs = latestMsgs.filter(m => (m as Record<string, unknown>).messageType !== 'unityAnnouncement');
+                        await latestDocRef.update({ messages: cleanedMsgs });
+                    }
+                }
+            }
+        }
+
+        const groupsSnap = await db.collection('groups')
+            .where('isPublic', '==', true)
+            .limit(limitCount)
+            .get();
+
+        const groups = groupsSnap.docs.map(doc => ({
+            id: doc.id,
+            ...(doc.data() as GroupDocument)
+        }));
+
+        // Sort by isDemoGroup first, then lastMessageAt / createdAt
+        groups.sort((a: Partial<GroupDocument>, b: Partial<GroupDocument>) => {
+            if (a.isDemoGroup && !b.isDemoGroup) return -1;
+            if (!a.isDemoGroup && b.isDemoGroup) return 1;
+            const timeA = getTimestampMillis(a.lastMessageAt || a.createdAt);
+            const timeB = getTimestampMillis(b.lastMessageAt || b.createdAt);
+            return timeB - timeA;
+        });
+
+        res.json(groups);
+    } catch (err) {
+        console.error('[GetPublicGroups] Error fetching public groups:', err);
+        sendErrorResponse(res, err, 'Failed to fetch public groups.');
+    }
+});
 
 /**
  * Create Group
@@ -483,7 +779,63 @@ router.post('/join-group', authenticate, requireEmailVerified, verifyAppCheck, a
                     expireAt: getMessageExpireAt()
                 };
                 transaction.set(msgRef, systemMsg);
-                await MessageService.appendToLatest(transaction, gid, { id: msgRef.id, ...systemMsg, createdAt: admin.firestore.Timestamp.now() }, latestSnap);
+
+                const messagesToAppend: Record<string, unknown>[] = [
+                    { id: msgRef.id, ...systemMsg, createdAt: admin.firestore.Timestamp.now() }
+                ];
+
+                // For demo groups, add enthusiastic welcome messages from bot members anticipating the 1,000-day milestone!
+                if (gData.isDemoGroup) {
+                    const nowMs = Date.now();
+                    const botCelebrations = [
+                        {
+                            id: `demo-welcome-alice-${nowMs}`,
+                            senderId: 'bot-alice',
+                            senderNickname: 'Alice 📖',
+                            userPhotoURL: 'https://api.dicebear.com/7.x/bottts/svg?seed=Alice',
+                            text: t(joinLang, 'onboardingQuest.demoWelcomeAlice', { nickname }),
+                            createdAt: admin.firestore.Timestamp.fromMillis(nowMs + 100),
+                            expireAt: getMessageExpireAt()
+                        },
+                        {
+                            id: `demo-welcome-bob-${nowMs}`,
+                            senderId: 'bot-bob',
+                            senderNickname: 'Bob 🔥',
+                            userPhotoURL: 'https://api.dicebear.com/7.x/bottts/svg?seed=Bob',
+                            text: t(joinLang, 'onboardingQuest.demoWelcomeBob', { nickname }),
+                            createdAt: admin.firestore.Timestamp.fromMillis(nowMs + 200),
+                            expireAt: getMessageExpireAt()
+                        },
+                        {
+                            id: `demo-welcome-charlie-${nowMs}`,
+                            senderId: 'bot-charlie',
+                            senderNickname: 'Charlie 💤',
+                            userPhotoURL: 'https://api.dicebear.com/7.x/bottts/svg?seed=Charlie',
+                            text: t(joinLang, 'onboardingQuest.demoWelcomeCharlie', { nickname }),
+                            createdAt: admin.firestore.Timestamp.fromMillis(nowMs + 300),
+                            expireAt: getMessageExpireAt()
+                        }
+                    ];
+
+                    for (const bMsg of botCelebrations) {
+                        const bRef = groupRef.collection('messages').doc(bMsg.id);
+                        transaction.set(bRef, bMsg);
+                        messagesToAppend.push({ ...bMsg });
+                    }
+                }
+
+                // Update messages_latest/latest so real-time listener displays them immediately
+                const currentMessages: Record<string, unknown>[] = (latestSnap && latestSnap.exists) 
+                    ? (latestSnap.data()?.messages || []) 
+                    : [];
+                const updatedMessages = [...currentMessages, ...messagesToAppend].slice(-25);
+
+                const latestRef = groupRef.collection('messages_latest').doc('latest');
+                transaction.set(latestRef, {
+                    groupId: gid,
+                    messages: updatedMessages,
+                    lastUpdatedAt: admin.firestore.FieldValue.serverTimestamp()
+                }, { merge: true });
 
                 const ownerPreview = (gData.memberPreviews || []).find((p: PreviewItem) => p.uid === gData.ownerUserId);
                 const ownerName = ownerPreview ? ownerPreview.nickname : 'Owner';
@@ -622,6 +974,13 @@ router.post('/announce-unity', authenticate, verifyAppCheck, async (req: Authent
 
             if (groupData.isAiGroup || groupData.aiCompanionUid === 'ai-partner-bot') {
                 return;
+            }
+
+            if (groupData.isDemoGroup) {
+                const active = groupData.dailyActivity?.activeMembers || [];
+                if (!active.includes(uid)) {
+                    return;
+                }
             }
 
             const effectiveTimeZone = groupData.timeZone || 'UTC';

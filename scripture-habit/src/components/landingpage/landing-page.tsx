@@ -5,7 +5,7 @@ import { LANGUAGES } from '../../config/languages';
 import Button from '../button/button';
 import './landing-page.css';
 import Footer from '../footer/footer';
-import { UilGlobe, UilMultiply, UilShare, UilPlusSquare, UilApps } from '@iconscout/react-unicons';
+import { UilGlobe, UilMultiply, UilShare, UilPlusSquare, UilApps, UilRocket } from '@iconscout/react-unicons';
 
 
 const LandingPage = () => {
@@ -113,6 +113,13 @@ const LandingPage = () => {
                                 {t('landing.hero.downloadCta')}
                             </Button>
                             <Button
+                                className="cta-button demo-cta"
+                                onClick={() => navigate(`/${language}/demo`)}
+                            >
+                                <UilRocket size="20" style={{ marginRight: '8px', verticalAlign: 'middle' }} />
+                                {t('landing.hero.demoCta')}
+                            </Button>
+                            <Button
                                 className="cta-button secondary-cta"
                                 onClick={() => navigate(`/${language}/welcome`)}
                             >
@@ -207,6 +214,13 @@ const LandingPage = () => {
                         >
                             <UilApps size="20" style={{ marginRight: '8px', verticalAlign: 'middle' }} />
                             {t('landing.hero.downloadCta')}
+                        </Button>
+                        <Button
+                            className="cta-button demo-cta"
+                            onClick={() => navigate(`/${language}/demo`)}
+                        >
+                            <UilRocket size="20" style={{ marginRight: '8px', verticalAlign: 'middle' }} />
+                            {t('landing.finalCta.demoCta')}
                         </Button>
                         <Button
                             className="cta-button secondary-cta"

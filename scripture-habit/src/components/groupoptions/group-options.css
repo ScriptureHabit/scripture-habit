@@ -16,6 +16,40 @@
     width: 90%;
 }
 
+.group-options-quest-banner {
+    background: linear-gradient(135deg, rgba(255, 243, 205, 0.9) 0%, rgba(255, 226, 230, 0.9) 100%);
+    border: 1px solid rgba(255, 145, 157, 0.4);
+    border-radius: 1rem;
+    padding: 0.85rem 1.5rem;
+    margin-bottom: 1.5rem;
+    width: 100%;
+    max-width: 800px;
+    box-shadow: 0 4px 15px rgba(255, 145, 157, 0.15);
+    animation: banner-float 3s ease-in-out infinite alternate;
+}
+
+.quest-banner-header {
+    margin-bottom: 0.25rem;
+}
+
+.quest-banner-badge {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #e04368;
+}
+
+.quest-banner-text {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #4a4a4a;
+    line-height: 1.4;
+}
+
+@keyframes banner-float {
+    0% { transform: translateY(0px); }
+    100% { transform: translateY(-3px); }
+}
+
 .options-container h2 {
     margin-top: 0.5rem;
     margin-bottom: 0.5rem;
@@ -98,6 +132,29 @@
 
 .create-card:hover h3 {
     color: #8e44ad;
+}
+
+.option-wrapper.demo-spotlight-active {
+    position: relative;
+    z-index: 1001;
+}
+
+.option-wrapper.demo-spotlight-active .join-card {
+    background: rgba(255, 255, 255, 0.98) !important;
+    border: 2.5px solid var(--pink) !important;
+    box-shadow: 0 0 0 6px rgba(255, 145, 157, 0.38), 0 16px 36px rgba(255, 145, 157, 0.45) !important;
+    animation: demoCardPulse 2s infinite ease-in-out;
+}
+
+@keyframes demoCardPulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 5px rgba(255, 145, 157, 0.35), 0 14px 30px rgba(255, 145, 157, 0.4);
+    }
+    50% {
+        transform: scale(1.03);
+        box-shadow: 0 0 0 9px rgba(255, 145, 157, 0.55), 0 20px 42px rgba(255, 145, 157, 0.6);
+    }
 }
 
 

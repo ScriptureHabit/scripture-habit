@@ -324,7 +324,7 @@ export default {
         "members": "メンバー",
         "groupMembers": "グループメンバー",
         "typeMessage": [
-            "＋ボタンでノートを作成、またはメッセージを入力...",
+            "メッセージを入力、または学びをシェア...",
             "難しい...どういうことなんだろう？皆この聖句についてわかりますか？",
             "高等評議員のお話と同じくらい長い章でした...。",
             "正直、この章の戦争の記述で寝落ちしてしまいました。",
@@ -416,7 +416,6 @@ export default {
         "unityModalLegendEmpty": "これから！ (0%〜)",
         "unityModalNoPostsYet": "今日の投稿はまだありません",
         "unityModalAllPosted": "全員が投稿しました！素晴らしい一体感です！",
-        "addNoteTooltip": "＋を押してノート投稿！",
         "inviteFriendsPrompt": "友人を誘いましょう！",
         "inviteMessage": "Scripture Habitで一緒に聖典学習を始めませんか？仲間と一緒に学ぶことで、日々の習慣がもっと楽しくなりますよ！\n\nグループ名: {groupName}\n参加はこちら: {inviteLink}",
         "readStatus": "既読 {count}",
@@ -460,17 +459,7 @@ export default {
         "aiGroupDefaultGroupDesc": "スクハビAIと1対1で聖典を学ぶ専用グループ",
         "aiGroupWelcomeMessage": "スクハビAIグループへようこそ！毎日一緒に聖典を学び、気づきをシェアしましょう。応援しています！📖✨\n※AIは毎日ノートを投稿しますが、{nickname}さんへの直接返信は現段階ではできません。ご了承ください。",
         "aiGroupBotNickname": "スクハビAI",
-        "aiGroupStartWithAiOption": "🤖 スクハビAIと始める",
-        "aiGroupStartWithAiDesc": "友達がいなくても安心。スクハビAIとのグループを作ります。",
-        "aiGroupStartWithFriendsOption": "👥 友達・家族と始める",
-        "aiGroupStartWithFriendsDesc": "友達や家族とのグループを作ります。",
         "aiGroupDailyNoteText": "【今日の学習インスピレーション】毎日コツコツと聖典を開くことが、大きな祝福につながります。今日も一緒に学びを深めましょう！📖✨",
-        "groupChatTour": {
-            "step1Title": "ここでノートを投稿！",
-            "step1Desc": "＋ボタンを押して、今日の学びや気づきをノートに記録しましょう。",
-            "step2Title": "ダッシュボードに戻る",
-            "step2Desc": "← ボタンでダッシュボードに戻ることができます。他のグループの確認や設定はここから。"
-        },
         "inviteExpiresAt": "有効期限",
         "regenerateInviteCode": "招待リンクを再生成",
         "inviteCodeRegenerated": "招待リンクを再生成しました！",
@@ -554,6 +543,9 @@ export default {
         "byuUrlPlaceholder": "https://speeches.byu.edu/talks/john-a-mccune/the-gift-of-revelation/",
         "otherUrlPlaceholder": "https://example.com/study-material",
         "askAiQuestion": "✨ AIに質問してもらう",
+        "fillSample": "✨ サンプルを入力",
+        "sampleScripture": "ニーファイ第一書 3:7",
+        "sampleThoughts": "「主が命じられることには、それを成し遂げる道を備えてくださる」という言葉に勇気をもらいました。今日も一歩踏み出してみます！",
         "surpriseMe": "✨ おまかせ聖句",
         "masteryScriptures": "✨ マスター聖句",
         "peaceScriptures": "✨ 平安",
@@ -580,18 +572,6 @@ export default {
         "generalConference": "総大会",
         "byuSpeeches": "BYU Speeches",
         "other": "その他"
-    },
-    "groupOptionsTour": {
-        "titleStepAi": "🤖 スクハビAIと始める",
-        "descStepAi": "一人でも安心！スクハビAIが毎日の読書ノートを自動投稿し、一緒に学習を応援してくれる専用グループをワンタップで作れます。",
-        "titleStep1": "学習グループへようこそ！",
-        "descStep1": "ここでは、仲間と一緒に聖典学習を進めるための方法を選択できます。",
-        "titleStep2": "グループを作成する",
-        "descStep2": "自分のグループを作成し、友達や家族、同僚を招待して一緒に勉強を始めましょう！",
-        "titleStep3": "グループに参加する",
-        "descStep3": "公開されている他のグループを探し、同じ目標を持つ新しい仲間と繋がることができます。",
-        "titleStep4": "ダッシュボードへ戻る",
-        "descStep4": "個人の学習を進めたい場合は、いつでもダッシュボードに戻ることができます。"
     },
     "groupOptions": {
         "title": "学習グループ",
@@ -638,23 +618,37 @@ export default {
     "onboardingQuest": {
         "title": "🌟 最初の課題",
         "step1Title": "1. グループに入ろう",
-        "step1Desc": "自分でグループを作成するか、他ののグループに参加します。",
+        "step1Desc": "グループを作成するか、他のグループに参加しましょう。",
         "step1DescSuccess": "グループへの所属が完了しました！🎉",
+        "step1Action": "グループを探す / 作成",
         "step2Title": "2. 最初の学習ノートを投稿しよう",
         "step2Desc": "グループに最初のノートを投稿してみましょう。",
-        "congratsTitle": "🎉 課題達成！",
-        "congratsDesc": "すべての課題をクリアしました！仲間と一緒に日々の聖典学習を楽しみましょう！✨",
-        "congratsBtn": "閉じる"
+        "step2DescSuccess": "最初のノートを投稿しました！🎉",
+        "step2Action": "ノートを書く",
+        "chatHeaderBackPrompt": "グループに入れました！ダッシュボードに戻ってノートを投稿しましょう！",
+        "groupOptionsBannerDesc": "お好きな方法で始めましょう：AIと1対1で今すぐ始める、友達とのグループを作成、または公開グループに参加できます。",
+        "congratsTitle": "🎉 最初の課題をクリアしました！",
+        "congratsDesc": "グループ参加と最初のノート投稿が完了しました！仲間たちと一緒に毎日の聖典学習を楽しみましょう！✨",
+        "congratsGoChatBtn": "グループチャットに行く",
+        "congratsBtn": "とじる",
+        "demoGroupName": "日々の糧 📖",
+        "demoGroupDesc": "毎日一緒に聖典を読み合う、温かい学習グループです！✨",
+        "demoWelcomeAlice": "{nickname}さん、ようこそ！✨ え、プロフィールを見たら今日で連続999日目じゃないですか！？すごすぎる…！",
+        "demoWelcomeBob": "うおおお！あと1回ノートを投稿すれば、ついに夢の【1,000日達成】だ！！🔥 今日のノート投稿めちゃくちゃ楽しみにしてるよ！",
+        "demoWelcomeCharlie": "1,000日とかもはや伝説の領域…！ダッシュボードに戻ってノート投稿されるのをみんなで楽しみに待ってますね🎉",
+        "demoCelebrateAlice": "{nickname}さん、ついに1,000日達成おめでとうございます！！！🎉🎉🎉 本当にすごすぎます！！",
+        "demoCelebrateBob": "うおおお！ついに夢の【1,000日達成】だーー！！🔥 本当におめでとう！一緒に学べて誇りに思うよ！",
+        "demoCelebrateCharlie": "1,000日…！伝説の偉業達成ですね！🎉 本当におめでとうございます！最高の仲間です✨",
+        "demo1000ModalTitle": "🎉 1,000日目達成おめでとうございます！",
+        "demo1000ModalDesc": "ついに大台の1,000日目を達成しました！グループチャットで投稿とみんなの反応を確認しましょう！✨",
+        "demo1000ModalGoChatBtn": "グループチャットに行く",
+        "demo1000ModalCloseBtn": "あとで確認する"
     },
     "onboardingGuide": {
         "newNoteStep1": "まずは、今日読む聖典のカテゴリを選んでみましょう！",
         "newNoteStep2": "バッチリです！次は、読んだ章やURLを入力しましょう。（例: ニーファイ第一書 3:7）",
         "newNoteStep3": "素晴らしい！最後に、心に残ったことや感じた感想をコメントに入力しましょう！",
-        "newNoteStep4": "準備完了です！最後に右下の【投稿】ボタンを押して、最初のノートを共有しましょう！🎉",
-        "paceSetSuccess": "目標のペースが決まりましたね！さあ、次はグループを作成するか、参加してみましょう！",
-        "paceSetBtnSearch": "グループを探しに行く",
-        "paceSetSuccessInvite": "{ownerName}さんのグループに参加できました！Scripture Habitの使い方を学び、ノートを投稿する準備をしよう！",
-        "paceSetBtnLearn": "使い方を学びに行く"
+        "newNoteStep4": "準備完了です！最後に右下の【投稿】ボタンを押して、最初のノートを共有しましょう！🎉"
     },
     "groupForm": {
         "invitePreviewTitle": "招待リンクのプレビュー",
@@ -800,27 +794,6 @@ export default {
         "nextButton": "次へ",
         "backButton": "前へ"
     },
-    "tourGuide": {
-        "titleQuest": "最初の課題",
-        "descQuest": "まずはこの2つの簡単な課題をクリアしましょう：学習グループに参加して、最初の学習ノートを投稿・共有します！",
-        "titleStep1": "ナビゲーションメニュー",
-        "descStep1": "ここからダッシュボード、私のノート、グループ、個人設定を切り替えます。",
-        "titleStep2": "合計達成日数",
-        "descStep2": "毎日勉強を継続することで、勉強を継続した合計日数がカウントされます。",
-        "titleStep3": "レベルと進捗",
-        "descStep3": "7日間学習するごとにレベルアップ！進捗バーで次のレベルへの目標が分かります。",
-        "titleStep4": "今日の「わたしに従ってきなさい」",
-        "descStep4": "今日の「わたしに従ってきなさい」の対象箇所が毎日自動的に更新され、リンクから福音ライブラリーにアクセスできます。",
-        "titleStep5": "新規ノート作成",
-        "descStep5": "ここから今日の学習で感じたことや疑問を簡単に書き出し、グループに共有します。",
-        "titleStep6": "習慣化カレンダー",
-        "descStep6": "あなたの学習履歴をカレンダーで確認できます。グループ自動退出期限も視覚的に一目で分かります！",
-        "next": "次へ",
-        "back": "前へ",
-        "skip": "スキップ",
-        "finish": "おわる",
-        "replayButton": "ツアーガイドをもう一度見る"
-    },
     "welcomeGuideButton": "了解しました！",
     "mascot": {
         "streakCelebration": "すごい！合計{streak}日達成！",
@@ -938,8 +911,9 @@ export default {
         "hero": {
             "title": "Scripture Habit",
             "subtitle": "日本の教会員、相根大治郎兄弟が個人で開発した、聖典学習用のWebアプリです。誰でも完全無料でご利用できます。",
-            "downloadCta": "アプリ(PWA)をダウンロード",
-            "browserCta": "ブラウザ版ではじめる",
+            "downloadCta": "アプリ版",
+            "browserCta": "ブラウザ版",
+            "demoCta": "1分デモ版",
             "mascotBubble": "こんにちは！一緒に聖典を読み始めましょう！✨"
         },
         "concept": {
@@ -961,6 +935,7 @@ export default {
         },
         "finalCta": {
             "title": "あなたも、新しい習慣を始めてみませんか？",
+            "demoCta": "1分デモ版",
             "mascotBubble": "下のボタンから始めましょう！✨"
         },
         "downloadModal": {
@@ -988,5 +963,11 @@ export default {
             "messageRequired": "メッセージ内容を入力してください。",
             "emailInvalid": "有効なメールアドレスを入力してください。"
         }
+    },
+    "demo": {
+        "loadingTitle": "デモ環境を準備しています...",
+        "loadingSubtitle": "データを読み込んでいます。少々お待ちください。",
+        "loginSuccess": "デモアカウントでログインしました！",
+        "loginError": "デモ環境への接続に失敗しました。ログイン画面へ移動します。"
     }
 };

@@ -589,4 +589,57 @@ router.all('/post-ai-daily-notes', verifyCronSecret, async (req: Request, res: R
     }
 });
 
+/**
+ * Cleanup Stale Demo Sandbox Data (TTL: > 24 hours)
+ */
+router.all('/cleanup-demo-sandboxes', verifyCronSecret, async (_req: Request, res: Response) => {
+    console.log('[Cron] Starting cleanup for stale demo sandbox environments...');
+    try {
+        const cutoff = admin.firestore.Timestamp.fromMillis(Date.now() - 24 * 60 * 60 * 1000);
+        const staleDemoUsersSnap = await db.collection('users')
+            .where('isAnonymousDemo', '==', true)
+            .where('createdAt', '<', cutoff)
+            .limit(50)
+            .get();
+
+        let cleanedUsersCount = 0;
+        for (const doc of staleDemoUsersSnap.docs) {
+            const uid = doc.id;
+            const groupId = `demo-group-${uid}`;
+
+            // Clean group
+            try {
+                await db.recursiveDelete(db.collection('groups').doc(groupId));
+            } catch {
+                // Ignore if group already deleted
+            }
+
+            // Clean user document and subcollections
+            try {
+                await db.recursiveDelete(db.collection('users').doc(uid));
+            } catch {
+                // Ignore
+            }
+
+            // Clean Auth account
+            try {
+                await admin.auth().deleteUser(uid);
+            } catch {
+                // Ignore
+            }
+
+            cleanedUsersCount++;
+        }
+
+        res.json({
+            message: 'Demo sandboxes cleanup complete.',
+            cleanedUsersCount
+        });
+    } catch (err: unknown) {
+        console.error('Error cleaning up demo sandboxes:', err);
+        sendErrorResponse(res, err, 'Error cleaning up demo sandboxes');
+    }
+});
+
 export default router;
+

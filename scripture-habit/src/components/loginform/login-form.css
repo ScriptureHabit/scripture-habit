@@ -75,6 +75,33 @@
   text-decoration: underline;
 }
 
+.demo-auth-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20rem;
+  max-width: 90%;
+  padding: 0.85rem 1.5rem;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  margin: 0 auto 1rem auto;
+  font-weight: 700;
+  color: white;
+  gap: 10px;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  font-size: 1rem;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.25);
+}
+
+.demo-auth-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35);
+  filter: brightness(1.05);
+}
+
 .google-btn {
   display: flex;
   align-items: center;

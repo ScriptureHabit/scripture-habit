@@ -44,16 +44,6 @@ const getStatus = (group: Group, t: (key: string) => string): ActivityStatus => 
     ? (lastActiveMsg > lastActiveNote ? lastActiveMsg : lastActiveNote)
     : (lastActiveMsg || lastActiveNote);
 
-  console.log('[DEBUG getStatus]', {
-    now: now.toISOString(),
-    nowTime: now.getTime(),
-    lastActiveMsg: lastActiveMsg?.toISOString(),
-    lastActiveNote: lastActiveNote?.toISOString(),
-    lastActive: lastActive?.toISOString(),
-    lastActiveTime: lastActive?.getTime(),
-    diffHours: lastActive ? (now.getTime() - lastActive.getTime()) / ONE_HOUR : null
-  });
-
   if (lastActive) {
     const diffHours = (now.getTime() - lastActive.getTime()) / ONE_HOUR;
     if (diffHours <= 24) {

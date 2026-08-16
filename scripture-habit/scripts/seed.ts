@@ -36,10 +36,10 @@ async function seed() {
 
     const users = [
         {
-            uid: 'seeder-dev-user',
-            email: 'dev-user@example.com',
-            nickname: 'Developer',
-            photoURL: 'https://api.dicebear.com/7.x/bottts/svg?seed=Developer',
+            uid: 'seeder-demo-user',
+            email: 'demo-user@example.com',
+            nickname: 'demo-user',
+            photoURL: 'https://api.dicebear.com/7.x/bottts/svg?seed=demo-user',
             streakCount: 3,
             highestStreak: 5,
             totalNotes: 8,
@@ -83,13 +83,18 @@ async function seed() {
 
     // 1. Delete existing seed users from Auth and Firestore to keep seeding idempotent
     console.log('🧹 Purging old seed users for idempotency...');
-    for (const u of users) {
+    const usersToClean = [...users.map(u => u.uid), 'seeder-dev-user'];
+    for (const uid of usersToClean) {
         try {
-            await auth.deleteUser(u.uid);
+            await auth.deleteUser(uid);
         } catch {
             // Ignore if user does not exist
         }
-        await db.collection('users').doc(u.uid).delete();
+        try {
+            await db.recursiveDelete(db.collection('users').doc(uid));
+        } catch {
+            await db.collection('users').doc(uid).delete();
+        }
     }
 
     // Delete group if exists
@@ -104,6 +109,12 @@ async function seed() {
     console.log('👥 Creating Auth accounts and Firestore user documents...');
     const uids = users.map(u => u.uid);
     const now = admin.firestore.Timestamp.now();
+    const threeDaysAgo = admin.firestore.Timestamp.fromMillis(Date.now() - 3 * 24 * 60 * 60 * 1000);
+
+    const getDateStr = (daysAgo: number) => {
+        const d = new Date(Date.now() - daysAgo * 24 * 60 * 60 * 1000);
+        return d.toLocaleDateString('sv-SE'); // YYYY-MM-DD
+    };
 
     for (const u of users) {
         await auth.createUser({
@@ -114,6 +125,14 @@ async function seed() {
             emailVerified: true
         });
 
+        const studiedDates = u.uid === 'seeder-demo-user'
+            ? [getDateStr(3), getDateStr(2), getDateStr(1)]
+            : u.uid === 'seeder-alice'
+                ? [getDateStr(5), getDateStr(4), getDateStr(3), getDateStr(2), getDateStr(1)]
+                : u.uid === 'seeder-bob'
+                    ? [getDateStr(3), getDateStr(2), getDateStr(1)]
+                    : [];
+
         await db.collection('users').doc(u.uid).set({
             uid: u.uid,
             nickname: u.nickname,
@@ -122,19 +141,55 @@ async function seed() {
             groupId: groupId,
             streakCount: u.streakCount,
             highestStreak: u.highestStreak,
+            daysStudiedCount: u.streakCount,
+            studiedDates: studiedDates,
             totalNotes: u.totalNotes,
             language: u.language,
-            lastPostAt: now,
-            createdAt: now,
+            lastPostAt: admin.firestore.Timestamp.fromMillis(Date.now() - 1 * 24 * 60 * 60 * 1000),
+            createdAt: threeDaysAgo,
             hasSetKickThreshold: true,
             kickThreshold: 3
         });
-        console.log(`   Created User: ${u.nickname} (${u.email})`);
+
+        // Seed demo notes for demo-user so "My Notes" and calendar feel rich and alive
+        if (u.uid === 'seeder-demo-user') {
+            const demoNotes = [
+                {
+                    id: 'seed-demo-note-1',
+                    scripture: 'Book of Mormon',
+                    chapter: 'ニーファイ第一書 1:1',
+                    comment: '「わたし、ニーファイは、善良な両親から生まれたので...」聖典学習の第一歩を踏み出しました！',
+                    createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 3 * 24 * 60 * 60 * 1000),
+                    sharedWithGroups: [groupId]
+                },
+                {
+                    id: 'seed-demo-note-2',
+                    scripture: 'Book of Mormon',
+                    chapter: 'ニーファイ第一書 2:16',
+                    comment: '「わたしは神の奥義を知りたいと強く望んだので、主に叫び求めた」祈りの大切さを感じました。',
+                    createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 2 * 24 * 60 * 60 * 1000),
+                    sharedWithGroups: [groupId]
+                },
+                {
+                    id: 'seed-demo-note-3',
+                    scripture: 'Book of Mormon',
+                    chapter: 'ニーファイ第一書 3:7',
+                    comment: '「主が命じられることには、それを成し遂げる道を備えてくださる」勇気をもらいました。',
+                    createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 1 * 24 * 60 * 60 * 1000),
+                    sharedWithGroups: [groupId]
+                }
+            ];
+
+            for (const note of demoNotes) {
+                await db.collection('users').doc(u.uid).collection('notes').doc(note.id).set(note);
+            }
+        }
+
+        console.log(`   Created User: ${u.nickname} (${u.email}) with ${studiedDates.length} studied dates`);
     }
 
     // 3. Create Group Document
     console.log(`📦 Seeding group: "${groupName}"...`);
-    const threeDaysAgo = admin.firestore.Timestamp.fromMillis(Date.now() - 3 * 24 * 60 * 60 * 1000);
     const joinedAtMap: Record<string, admin.firestore.Timestamp> = {};
     const memberLastActiveMap: Record<string, admin.firestore.Timestamp> = {};
     const memberKickThresholds: Record<string, number> = {};
@@ -155,14 +210,14 @@ async function seed() {
         members: uids,
         membersCount: uids.length,
         isPublic: true,
-        ownerUserId: 'seeder-dev-user',
+        ownerUserId: 'seeder-demo-user',
         messageCount: 0,
         lastMessageAt: now,
         lastMessageText: 'Seed database setup complete!',
         lastMessageByNickname: 'System',
         lastMessageByUid: 'system',
         dailyActivity: {
-            activeMembers: ['seeder-dev-user', 'seeder-alice', 'seeder-bob'],
+            activeMembers: ['seeder-demo-user', 'seeder-alice', 'seeder-bob'],
             date: new Date().toLocaleDateString('sv-SE') // Sweden format YYYY-MM-DD
         },
         memberJoinedAt: joinedAtMap,
@@ -179,70 +234,125 @@ async function seed() {
         await db.collection('groups').doc(groupId).collection('members').doc(u.uid).set({
             uid: u.uid,
             nickname: u.nickname,
-            joinedAt: threeDaysAgo,
-            lastActiveAt: memberLastActiveMap[u.uid],
-            lastReadAt: now,
-            kickThreshold: memberKickThresholds[u.uid]
+            photoURL: u.photoURL,
+            joinedAt: joinedAtMap[u.uid] || now,
+            lastActive: memberLastActiveMap[u.uid] || now,
+            kickThreshold: memberKickThresholds[u.uid] || 3,
+            status: u.streakCount > 0 ? 'active' : 'idle'
         });
     }
 
-    // Seed Messages subcollection
+    // Seed Messages subcollection with authentic study note postings and system announcements
     const messages = [
         {
             id: 'msg-seed-1',
             text: 'Hello everyone! Welcome to our study habit group! Let’s keep up the daily readings. 📖🔥',
             senderId: 'seeder-alice',
             senderNickname: 'Alice 📖',
+            userPhotoURL: 'https://api.dicebear.com/7.x/bottts/svg?seed=Alice',
             createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 2 * 24 * 60 * 60 * 1000),
             isNote: false
         },
         {
             id: 'msg-seed-2',
-            text: 'Amen! I just finished my reading for today. Genesis chapter 1. The creation account is so magnificent.',
+            text: '**Old Testament Genesis 1:1**\n\nAmen! I just finished my reading for today. The creation account is truly magnificent and uplifting.',
             senderId: 'seeder-bob',
             senderNickname: 'Bob 🔥',
+            userPhotoURL: 'https://api.dicebear.com/7.x/bottts/svg?seed=Bob',
             createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 2 * 24 * 60 * 60 * 1000),
             isNote: true,
-            scripture: 'Genesis 1:1',
-            comment: 'In the beginning God created the heaven and the earth. Power of creation!'
+            scripture: 'Old Testament',
+            chapter: 'Genesis 1:1',
+            comment: 'Amen! I just finished my reading for today. The creation account is truly magnificent and uplifting.'
+        },
+        {
+            id: 'msg-seed-2-ann',
+            senderId: 'system',
+            senderNickname: 'System',
+            messageType: 'notePostedAnnouncement',
+            messageData: {
+                nickname: 'Bob 🔥',
+                userId: 'seeder-bob'
+            },
+            createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 2 * 24 * 60 * 60 * 1000 + 1000)
         },
         {
             id: 'msg-seed-3',
-            text: 'Great post, Bob! Keep it up!',
+            text: 'Great post, Bob! Keep it up! 👏',
             senderId: 'seeder-charlie',
             senderNickname: 'Charlie 💤',
-            createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 2 * 24 * 60 * 60 * 1000),
+            userPhotoURL: 'https://api.dicebear.com/7.x/bottts/svg?seed=Charlie',
+            createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 2 * 24 * 60 * 60 * 1000 + 2000),
             isNote: false
         },
         {
             id: 'msg-seed-4',
-            text: 'Day 2 for me! Read John chapter 3 today.',
+            text: '**New Testament John 3:16**\n\nDay 2 for me! "For God so loved the world, that he gave his only begotten Son." Grateful for His endless love.',
             senderId: 'seeder-bob',
             senderNickname: 'Bob 🔥',
+            userPhotoURL: 'https://api.dicebear.com/7.x/bottts/svg?seed=Bob',
             createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 1 * 24 * 60 * 60 * 1000),
             isNote: true,
-            scripture: 'John 3:16',
-            comment: 'For God so loved the world, that he gave his only begotten Son.'
+            scripture: 'New Testament',
+            chapter: 'John 3:16',
+            comment: 'Day 2 for me! "For God so loved the world, that he gave his only begotten Son." Grateful for His endless love.'
+        },
+        {
+            id: 'msg-seed-4-ann',
+            senderId: 'system',
+            senderNickname: 'System',
+            messageType: 'notePostedAnnouncement',
+            messageData: {
+                nickname: 'Bob 🔥',
+                userId: 'seeder-bob'
+            },
+            createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 1 * 24 * 60 * 60 * 1000 + 1000)
         },
         {
             id: 'msg-seed-5',
-            text: 'Read Matthew 5 today. Loved the Beatitudes.',
+            text: '**New Testament Matthew 5:3**\n\n"Blessed are the poor in spirit: for theirs is the kingdom of heaven." Loved reflecting on the Beatitudes today!',
             senderId: 'seeder-alice',
             senderNickname: 'Alice 📖',
+            userPhotoURL: 'https://api.dicebear.com/7.x/bottts/svg?seed=Alice',
             createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 4 * 60 * 60 * 1000), // 4 hours ago
             isNote: true,
-            scripture: 'Matthew 5:3',
-            comment: 'Blessed are the poor in spirit: for theirs is the kingdom of heaven.'
+            scripture: 'New Testament',
+            chapter: 'Matthew 5:3',
+            comment: '"Blessed are the poor in spirit: for theirs is the kingdom of heaven." Loved reflecting on the Beatitudes today!'
+        },
+        {
+            id: 'msg-seed-5-ann',
+            senderId: 'system',
+            senderNickname: 'System',
+            messageType: 'notePostedAnnouncement',
+            messageData: {
+                nickname: 'Alice 📖',
+                userId: 'seeder-alice'
+            },
+            createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 4 * 60 * 60 * 1000 + 1000)
         },
         {
             id: 'msg-seed-6',
-            text: 'Today is day 3 consecutive for me. Read Genesis 3. Challenging but wonderful study.',
+            text: '**Book of Mormon 1 Nephi 3:7**\n\nDay 3 consecutive! "I will go and do the things which the Lord hath commanded." Let us move forward with faith.',
             senderId: 'seeder-bob',
             senderNickname: 'Bob 🔥',
+            userPhotoURL: 'https://api.dicebear.com/7.x/bottts/svg?seed=Bob',
             createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
             isNote: true,
-            scripture: 'Genesis 3:15',
-            comment: 'A prophetic verse about the Savior overcoming sin.'
+            scripture: 'Book of Mormon',
+            chapter: '1 Nephi 3:7',
+            comment: 'Day 3 consecutive! "I will go and do the things which the Lord hath commanded." Let us move forward with faith.'
+        },
+        {
+            id: 'msg-seed-6-ann',
+            senderId: 'system',
+            senderNickname: 'System',
+            messageType: 'notePostedAnnouncement',
+            messageData: {
+                nickname: 'Bob 🔥',
+                userId: 'seeder-bob'
+            },
+            createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 2 * 60 * 60 * 1000 + 1000)
         }
     ];
 
@@ -261,9 +371,10 @@ async function seed() {
 
     console.log('🎉 Seeding successfully completed!');
     console.log('--------------------------------------------------');
-    console.log('🔐 Developer login credentials:');
-    console.log('   Email:    dev-user@example.com');
+    console.log('🔐 Demo login credentials:');
+    console.log('   Email:    demo-user@example.com');
     console.log('   Password: password123');
+    console.log('   Nickname: demo-user');
     console.log('--------------------------------------------------');
 }
 

@@ -324,7 +324,7 @@ export default {
         "members": "Membros",
         "groupMembers": "Membros do Grupo",
         "typeMessage": [
-            "Clique no botão + para criar uma nota ou digite uma mensagem...",
+            "Digite uma mensagem ou compartilhe um aprendizado...",
             "Difícil... O que será que isso significa? Alguém entende esta escritura?",
             "Este capítulo foi tão longo quanto o discurso de um Sumo Conselheiro...",
             "Sinceramente, peguei no sono na parte das guerras deste capítulo.",
@@ -416,7 +416,6 @@ export default {
         "unityModalLegendEmpty": "Iniciando (0%~)",
         "unityModalNoPostsYet": "Nenhuma postagem ainda hoje",
         "unityModalAllPosted": "Todos que postaram hoje! Unidade incrível!",
-        "addNoteTooltip": "Clique em + para postar uma nota!",
         "inviteFriendsPrompt": "Convide seus amigos!",
         "inviteMessage": "Junte-se ao meu grupo de estudo das escrituras no Scripture Habit! Vamos estudar juntos e criar um hábito diário.\n\nGrupo: {groupName}\nParticipe aqui: {inviteLink}",
         "readStatus": "Visualizado {count}",
@@ -460,17 +459,7 @@ export default {
         "aiGroupDefaultGroupDesc": "Grupo 1-a-1 de estudo das escrituras com Scripture Habit AI",
         "aiGroupWelcomeMessage": "Bem-vindo ao Grupo Scripture Habit AI! Vamos estudar as escrituras e compartilhar aprendizados todos os dias. Torcendo por você! 📖✨\n*Nota: Scripture Habit AI publica notas diárias, mas respostas diretas para {nickname} não são suportadas nesta fase.",
         "aiGroupBotNickname": "Scripture Habit AI",
-        "aiGroupStartWithAiOption": "🤖 Começar com Scripture Habit AI",
-        "aiGroupStartWithAiDesc": "Não precisa de amigos. Crie um grupo com Scripture Habit AI.",
-        "aiGroupStartWithFriendsOption": "👥 Começar com Amigos / Família",
-        "aiGroupStartWithFriendsDesc": "Crie um grupo com amigos ou família.",
         "aiGroupDailyNoteText": "[Inspiração Diária de Estudo] Abrir as escrituras com consistência todos os dias traz grandes bênçãos. Vamos aprofundar nosso aprendizado hoje! 📖✨",
-        "groupChatTour": {
-            "step1Title": "Publique Notas Aqui!",
-            "step1Desc": "Toque no botão + para registrar suas anotações de estudo de hoje.",
-            "step2Title": "Voltar ao Painel",
-            "step2Desc": "Toque em ← para voltar ao painel."
-        },
         "inviteExpiresAt": "Expira em",
         "regenerateInviteCode": "Regerar Código de Convite",
         "inviteCodeRegenerated": "O código de convite foi regerado!",
@@ -546,6 +535,9 @@ export default {
         "byuUrlPlaceholder": "https://speeches.byu.edu/talks/...",
         "otherUrlPlaceholder": "https://example.com/study-material",
         "askAiQuestion": "✨ Pedir uma pergunta à IA",
+        "fillSample": "✨ Preencher nota de exemplo",
+        "sampleScripture": "1 Néfi 3:7",
+        "sampleThoughts": "\"Eu irei e farei as coisas que o Senhor ordenou.\" Este versículo me dá coragem para enfrentar os desafios de hoje.",
         "surpriseMe": "✨ Surpreenda-me",
         "masteryScriptures": "✨ Escrituras de Domínio",
         "peaceScriptures": "✨ Paz",
@@ -572,18 +564,6 @@ export default {
         "generalConference": "Conferência Geral",
         "byuSpeeches": "BYU Speeches",
         "other": "Outros"
-    },
-    "groupOptionsTour": {
-        "titleStepAi": "🤖 Começar com Scripture Habit AI",
-        "descStepAi": "Estude no seu próprio ritmo! Crie um grupo dedicado instantaneamente onde o Scripture Habit AI publica notas diárias e apoia sua jornada.",
-        "titleStep1": "Bem-vindo aos Grupos de Estudo!",
-        "descStep1": "Aqui você pode escolher como gostaria de se conectar e estudar com outras pessoas.",
-        "titleStep2": "Criar um Grupo",
-        "descStep2": "Inicie seu próprio grupo de estudo e convide seus amigos, familiares ou membros da ala para participar!",
-        "titleStep3": "Participar de um Grupo",
-        "descStep3": "Explore grupos públicos e conecte-se com uma comunidade de outros estudantes das escrituras.",
-        "titleStep4": "Voltar ao Painel",
-        "descStep4": "Se preferir estudar sozinho hoje, você sempre pode voltar ao painel principal."
     },
     "groupOptions": {
         "title": "Grupos de Estudo",
@@ -628,25 +608,39 @@ export default {
         "pwaInviteHint": "Se você já adicionou este aplicativo à sua Tela de Início,\nabra-o por lá para aplicar este convite automaticamente."
     },
     "onboardingQuest": {
-        "title": "🌟 Missões de Integração",
-        "step1Title": "1. Junte-se a um Grupo",
-        "step1Desc": "Crie seu próprio grupo ou junte-se a outro grupo.",
-        "step1DescSuccess": "Você se juntou a um grupo com sucesso! 🎉",
-        "step2Title": "2. Poste sua Primeira Nota",
+        "title": "🌟 Primeiras Missões",
+        "step1Title": "1. Entrar em um Grupo",
+        "step1Desc": "Crie seu próprio grupo ou participe de outro grupo.",
+        "step1DescSuccess": "Entrou no grupo com sucesso! 🎉",
+        "step1Action": "Buscar / Criar Grupo",
+        "step2Title": "2. Publicar sua Primeira Nota",
         "step2Desc": "Compartilhe sua primeira nota de estudo no grupo.",
-        "congratsTitle": "🎉 Missões Concluídas!",
-        "congratsDesc": "Você concluiu com sucesso todas as missões de integração! Vamos desfrutar do estudo diário das escrituras juntos! ✨",
-        "congratsBtn": "Fechar"
+        "step2DescSuccess": "Primeira nota publicada! 🎉",
+        "step2Action": "Escrever Nota",
+        "chatHeaderBackPrompt": "Você entrou no grupo! Vamos voltar ao painel e postar sua primeira anotação!",
+        "groupOptionsBannerDesc": "Escolha sua forma preferida: Comece 1 a 1 com IA, crie um grupo privado ou participe de um público.",
+        "congratsTitle": "🎉 Primeiras Missões Concluídas!",
+        "congratsDesc": "Você entrou em um grupo e publicou sua primeira anotação! Vamos desfrutar do estudo diário das escrituras com seus companheiros! ✨",
+        "congratsGoChatBtn": "Ir para o Chat do Grupo",
+        "congratsBtn": "Fechar",
+        "demoGroupName": "Pão Diário 📖",
+        "demoGroupDesc": "Um grupo caloroso de estudo lendo as escrituras juntos todos os dias! ✨",
+        "demoWelcomeAlice": "Boas-vindas, {nickname}! ✨ Espera, acabei de ver seu perfil... você está em 999 dias consecutivos hoje?! Incrível...!",
+        "demoWelcomeBob": "Uauuu! Só mais uma publicação de notas e você alcançará o marco lendário de 1.000 dias!! 🔥 Mal podemos esperar pela sua nota hoje!",
+        "demoWelcomeCharlie": "1.000 dias é lendário...! Estamos todos esperando ansiosamente pela sua nota no painel 🎉",
+        "demoCelebrateAlice": "Parabéns por alcançar 1.000 dias, {nickname}!!! 🎉🎉🎉 É realmente incrível!!",
+        "demoCelebrateBob": "UHUUL!! Finalmente 1.000 dias conquistados!! 🔥 Meus sinceros parabéns! Que honra estudar com você!",
+        "demoCelebrateCharlie": "1.000 dias... Uma conquista lendária! 🎉 Meus sinceros parabéns! O/A melhor companheiro(a) de todos✨",
+        "demo1000ModalTitle": "🎉 Parabéns por alcançar 1.000 dias!",
+        "demo1000ModalDesc": "Você finalmente alcançou o grande marco de 1.000 dias! Vamos ver sua publicação e a reação de todos no chat do grupo! ✨",
+        "demo1000ModalGoChatBtn": "Ir para o Chat do Grupo",
+        "demo1000ModalCloseBtn": "Ver mais tarde"
     },
     "onboardingGuide": {
         "newNoteStep1": "Primeiro, vamos escolher a categoria das escrituras que você está lendo hoje!",
         "newNoteStep2": "Perfeito! A seguir, insira o capítulo ou URL que você leu (ex. 1 Néfi 3:7).",
         "newNoteStep3": "Maravilhoso! Por fim, escreva seus pensamentos ou impressões na caixa de comentários!",
-        "newNoteStep4": "Tudo pronto! Clique no botão [Postar Nota] no canto inferior direito para compartilhar sua primeira nota! 🎉",
-        "paceSetSuccess": "Seu ritmo ideal está definido! Agora, vamos criar um grupo ou entrar em um!",
-        "paceSetBtnSearch": "Ir Procurar um Grupo",
-        "paceSetSuccessInvite": "Entrou com sucesso no grupo de {ownerName}! Vamos aprender a usar o Scripture Habit e se preparar para postar sua primeira nota!",
-        "paceSetBtnLearn": "Aprender a Usar"
+        "newNoteStep4": "Tudo pronto! Clique no botão [Postar Nota] no canto inferior direito para compartilhar sua primeira nota! 🎉"
     },
     "groupForm": {
         "invitePreviewTitle": "Visualização do Link de Convite",
@@ -792,27 +786,6 @@ export default {
         "nextButton": "Próximo",
         "backButton": "Voltar"
     },
-    "tourGuide": {
-        "titleQuest": "Missões de Integração",
-        "descQuest": "Conclua estas 2 missões simples para começar: junte-se a um grupo de estudo e escreva sua primeira nota de estudo para compartilhar.",
-        "titleStep1": "Menu de Navegação",
-        "descStep1": "Navegue aqui entre o seu Painel, Minhas Notas, Grupos e Configurações.",
-        "titleStep2": "Dias Totais",
-        "descStep2": "Acompanha o seu total de dias de estudo das escrituras. Mantenha o hábito vivo!",
-        "titleStep3": "Nível e Meta",
-        "descStep3": "Suba de nível a cada 7 dias! Veja o quão perto você está com a barra de progresso.",
-        "titleStep4": "Vem, E Segue-me Hoje",
-        "descStep4": "Receba planos de leitura diários do Vem, E Segue-me vinculados diretamente à Biblioteca do Evangelho.",
-        "titleStep5": "Criar Nota",
-        "descStep5": "Escreva suas reflexões espirituais diárias para compartilhar com seu grupo.",
-        "titleStep6": "Calendário de Hábitos",
-        "descStep6": "Acompanhe seu histórico de leitura e veja os limites de exclusão automática do grupo!",
-        "next": "Avançar",
-        "back": "Voltar",
-        "skip": "Pular",
-        "finish": "Concluir",
-        "replayButton": "Repetir Guia do Tour"
-    },
     "welcomeGuideButton": "Entendi!",
     "mascot": {
         "streakCelebration": "Incrível! {streak} total de dias alcançados!",
@@ -930,8 +903,9 @@ export default {
         "hero": {
             "title": "Onde o Estudo das Escrituras se Torna um Hábito de Alegria",
             "subtitle": "Um aplicativo web de estudo das escrituras desenvolvido pessoalmente pelo irmão Daijiro Sagane, um membro da Igreja no Japão. É totalmente gratuito para qualquer pessoa usar.",
-            "downloadCta": "Baixar aplicativo (PWA)",
-            "browserCta": "Iniciar no navegador",
+            "downloadCta": "App (PWA)",
+            "browserCta": "Navegador",
+            "demoCta": "Demo de 1 min",
             "mascotBubble": "Olá! Vamos começar a ler as escrituras juntos! ✨"
         },
         "concept": {
@@ -953,6 +927,7 @@ export default {
         },
         "finalCta": {
             "title": "Gostaria de começar um novo hábito conosco?",
+            "demoCta": "Demo de 1 min",
             "mascotBubble": "Vamos começar pelo botão abaixo! ✨"
         },
         "downloadModal": {
@@ -980,5 +955,11 @@ export default {
             "messageRequired": "O conteúdo da mensagem não pode estar vazio.",
             "emailInvalid": "Por favor, insira um endereço de e-mail válido."
         }
+    },
+    "demo": {
+        "loadingTitle": "Preparando ambiente de demonstração...",
+        "loadingSubtitle": "Carregando dados. Aguarde um momento.",
+        "loginSuccess": "Conectado com a conta de demonstração!",
+        "loginError": "Falha ao conectar ao ambiente demo. Redirecionando para o login..."
     }
 };

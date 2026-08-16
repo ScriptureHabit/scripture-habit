@@ -21,7 +21,7 @@ router.post('/update-profile', authenticate, verifyAppCheck, async (req: Authent
             throw new ValidationError('Invalid input');
         }
         
-        const { nickname, photoURL, stake, ward, bio, language, hasSeenWelcomeStory, hasSeenTour, hasSeenGroupOptionsTour } = validation.data;
+        const { nickname, photoURL, stake, ward, bio, language, hasSeenWelcomeStory, hasSeenTour, hasSeenGroupOptionsTour, hasSeenGroupChatTour } = validation.data;
         const uid = req.user!.uid;
 
         const userRef = db.collection('users').doc(uid);
@@ -36,6 +36,7 @@ router.post('/update-profile', authenticate, verifyAppCheck, async (req: Authent
         if (hasSeenWelcomeStory !== undefined) updates.hasSeenWelcomeStory = hasSeenWelcomeStory;
         if (hasSeenTour !== undefined) updates.hasSeenTour = hasSeenTour;
         if (hasSeenGroupOptionsTour !== undefined) updates.hasSeenGroupOptionsTour = hasSeenGroupOptionsTour;
+        if (hasSeenGroupChatTour !== undefined) updates.hasSeenGroupChatTour = hasSeenGroupChatTour;
 
         if (Object.keys(updates).length === 0) {
             throw new ValidationError('No fields to update');

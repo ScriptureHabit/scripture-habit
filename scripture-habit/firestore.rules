@@ -3,12 +3,14 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Helper: Valid Auth with Email Verification (Guard against fakes)
+    // Helper: Valid Auth with Email Verification or Anonymous Demo Account
     function isAuthenticated() {
-      // In production, we require email verification for social interaction
+      // In production, we require email verification for social interaction,
+      // or anonymous authentication for isolated demo sandbox sessions.
       return request.auth != null && (
         request.auth.token.email_verified == true || 
-        request.auth.token.get('email_verified', false) == true
+        request.auth.token.get('email_verified', false) == true ||
+        request.auth.token.firebase.sign_in_provider == 'anonymous'
       );
     }
 

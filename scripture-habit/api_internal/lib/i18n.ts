@@ -79,5 +79,28 @@ export function tArray(language: string | undefined | null, key: string): string
         }
     }
     
-    return Array.isArray(value) ? value : [String(value)];
+    if (Array.isArray(value)) {
+        return value.map(v => String(v));
+    }
+    
+    if (typeof value === 'string') {
+        return [value];
+    }
+
+    return [];
+}
+
+/**
+ * Generates pre-baked translations dictionary for the Demo Group from single source of truth (locales)
+ */
+export function getDemoGroupTranslations(): Record<string, { name: string; description: string }> {
+    const supportedLangs = ['ja', 'en', 'es', 'ko', 'pt', 'sw', 'th', 'tl', 'vi', 'zho'];
+    const result: Record<string, { name: string; description: string }> = {};
+    for (const lang of supportedLangs) {
+        result[lang] = {
+            name: t(lang, 'onboardingQuest.demoGroupName'),
+            description: t(lang, 'onboardingQuest.demoGroupDesc')
+        };
+    }
+    return result;
 }

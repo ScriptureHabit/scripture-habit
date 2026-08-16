@@ -21,11 +21,11 @@ const GroupChatFooter = () => {
     
     // Zustand States
     const { 
-        replyTo, setReplyTo, showInactivityPolicyBanner, showAddNoteTooltip,
+        replyTo, setReplyTo, showInactivityPolicyBanner,
         editingMessage, showDeleteMessageModal, showUnityModal, showInviteModal, showReportModal,
-        setShowAddNoteTooltip, setShowInactivityPolicyBanner
+        setShowInactivityPolicyBanner
     } = useChatStore();
-    const { activeModal, setActiveModal } = useModalStore();
+    const { activeModal } = useModalStore();
 
     const isAnyModalOpen = activeModal !== null || showDeleteMessageModal || !!editingMessage || showUnityModal || showInviteModal || showReportModal;
 
@@ -41,10 +41,6 @@ const GroupChatFooter = () => {
 
     const handleDismissInactivityBanner = () => {
         setShowInactivityPolicyBanner(false);
-    };
-
-    const handleDismissTooltip = () => {
-        setShowAddNoteTooltip(false);
     };
 
     return (
@@ -68,9 +64,6 @@ const GroupChatFooter = () => {
             onInputFocusChange={onInputFocusChange}
             containerRef={containerRef}
             inputPlaceholder={inputPlaceholder}
-            showAddNoteTooltip={showAddNoteTooltip}
-            handleDismissTooltip={handleDismissTooltip}
-            setIsNewNoteOpen={() => setActiveModal('newNote')}
         />
         </>
     );

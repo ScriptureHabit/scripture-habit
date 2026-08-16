@@ -28,6 +28,7 @@ export interface PostNoteInput {
 }
 
 interface PostNoteReadContext {
+    uid: string;
     userData: UserDocument;
     userNickname: string;
     userGroupIds: string[];
@@ -145,9 +146,11 @@ export class NoteService {
                     context.now
                 );
 
-                this.applyStreakAnnouncements(transaction, context, language);
+                this.applyStreakAnnouncements(transaction, userRef, context, language);
 
                 this.applyAiPartnerCongratulation(transaction, context);
+
+                this.applyDemoGroupBotCongratulations(transaction, context);
 
                 this.applyLatestMessagesCache(transaction, context);
 
@@ -261,6 +264,7 @@ export class NoteService {
         });
 
         return {
+            uid: input.uid,
             userData: uData,
             userNickname: uData.nickname || 'Member',
             userGroupIds: uGroupIds,
@@ -415,12 +419,12 @@ export class NoteService {
 
     private static applyStreakAnnouncements(
         transaction: admin.firestore.Transaction,
+        userRef: admin.firestore.DocumentReference,
         context: PostNoteReadContext,
         language?: string | null
     ): void {
-        const { streakResult, userData, userNickname, now, userGroupIds, messagesInGroup } = context;
+        const { streakResult, userData, userNickname, now, userGroupIds, messagesInGroup, uid } = context;
         const { streakUpdated } = streakResult;
-        const uid = userData.uid;
 
         if (!streakUpdated) return;
 
@@ -463,8 +467,14 @@ export class NoteService {
             transaction.update(gRef, {
                 lastMessageAt: announceTime,
                 lastMessageByNickname: botName,
-                lastMessageByUid: 'system'
+                lastMessageByUid: 'system',
+                [`memberLastReadAt.${uid}`]: announceTime
             });
+
+            const userGS = userRef.collection('groupStates').doc(gid);
+            transaction.set(userGS, {
+                lastReadAt: announceTime
+            }, { merge: true });
         });
     }
 
@@ -519,6 +529,75 @@ export class NoteService {
                     lastMessageByUid: 'ai-partner-bot',
                     'dailyActivity.date': todayStr,
                     'dailyActivity.activeMembers': admin.firestore.FieldValue.arrayUnion(uid, 'ai-partner-bot')
+                });
+            }
+        }
+    }
+
+    private static applyDemoGroupBotCongratulations(
+        transaction: admin.firestore.Transaction,
+        context: PostNoteReadContext
+    ): void {
+        const { groupsToPostTo, userGroupIds, existingSharedIds, groupDocsMap, userData, userNickname, now, messagesInGroup } = context;
+
+        for (const gid of groupsToPostTo) {
+            if (!userGroupIds.includes(gid) || existingSharedIds[gid]) continue;
+
+            const gData = groupDocsMap[gid];
+            const isDemoGroup = Boolean(gData?.isDemoGroup);
+
+            if (isDemoGroup) {
+                const userLang = userData.language || 'ja';
+                const baseTimeMs = now.getTime() + 1500;
+                const safeNickname = userNickname || (userLang === 'ja' ? 'デモユーザー' : 'Demo User');
+
+                const botCelebrations = [
+                    {
+                        id: `demo-celeb-alice-${now.getTime()}`,
+                        senderId: 'bot-alice',
+                        senderNickname: 'Alice 📖',
+                        userPhotoURL: 'https://api.dicebear.com/7.x/bottts/svg?seed=Alice',
+                        text: t(userLang, 'onboardingQuest.demoCelebrateAlice', { nickname: safeNickname }),
+                        createdAt: admin.firestore.Timestamp.fromMillis(baseTimeMs + 200),
+                        isSystemMessage: false,
+                        isNote: false,
+                        expireAt: getMessageExpireAt()
+                    },
+                    {
+                        id: `demo-celeb-bob-${now.getTime()}`,
+                        senderId: 'bot-bob',
+                        senderNickname: 'Bob 🔥',
+                        userPhotoURL: 'https://api.dicebear.com/7.x/bottts/svg?seed=Bob',
+                        text: t(userLang, 'onboardingQuest.demoCelebrateBob', { nickname: safeNickname }),
+                        createdAt: admin.firestore.Timestamp.fromMillis(baseTimeMs + 400),
+                        isSystemMessage: false,
+                        isNote: false,
+                        expireAt: getMessageExpireAt()
+                    },
+                    {
+                        id: `demo-celeb-charlie-${now.getTime()}`,
+                        senderId: 'bot-charlie',
+                        senderNickname: 'Charlie 💤',
+                        userPhotoURL: 'https://api.dicebear.com/7.x/bottts/svg?seed=Charlie',
+                        text: t(userLang, 'onboardingQuest.demoCelebrateCharlie', { nickname: safeNickname }),
+                        createdAt: admin.firestore.Timestamp.fromMillis(baseTimeMs + 600),
+                        isSystemMessage: false,
+                        isNote: false,
+                        expireAt: getMessageExpireAt()
+                    }
+                ];
+
+                const gRef = db.collection('groups').doc(gid);
+                for (const bMsg of botCelebrations) {
+                    const msgRef = gRef.collection('messages').doc(bMsg.id);
+                    transaction.set(msgRef, bMsg, { merge: true });
+                    appendLatestMessage(messagesInGroup, gid, bMsg);
+                }
+
+                transaction.update(gRef, {
+                    lastMessageAt: admin.firestore.Timestamp.fromMillis(baseTimeMs + 600),
+                    lastMessageByNickname: 'Charlie 💤',
+                    lastMessageByUid: 'bot-charlie'
                 });
             }
         }

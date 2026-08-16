@@ -64,7 +64,7 @@ Scripture Habitは、グローバルなユーザー向けに設計されてい�
 
 ---
 
-## 🚀 新しい言語の追加
+## 新しい言語の追加
 
 1.  **バックエンド**: `api_internal/locales/` に翻訳ファイル（例：`fr.ts`）を作成し、`i18n.ts` に登録します。
 2.  **フロントエンド**: 新しい翻訳バンドルと国旗アイコンで `src/context/language-provider.tsx` を更新します。

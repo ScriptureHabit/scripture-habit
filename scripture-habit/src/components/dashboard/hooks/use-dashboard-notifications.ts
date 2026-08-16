@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { safeStorage } from '../../../utils/storage';
 import { requestNotificationPermission } from '../../../utils/notification-helper';
 import { UserData } from '../../../types/user';
+import { auth } from '../../../firebase';
 
 export const useDashboardNotifications = (
     userData: UserData | null, 
@@ -12,6 +13,20 @@ export const useDashboardNotifications = (
     useEffect(() => {
         if (!userData || !userData.uid) return;
 
+        // Skip notification prompt for demo sandbox users
+        const isDemo = userData.isAnonymousDemo || (auth && auth.currentUser?.isAnonymous);
+        if (isDemo) return;
+
+        // Only show notification prompt AFTER onboarding quest is completed
+        const isLegacyCompleted = !userData.questCreatedGroup && !userData.questPostedNote && 
+            (userData.totalNotes && userData.totalNotes > 0) && 
+            ((userData.groupIds && userData.groupIds.length > 0) || !!userData.groupId);
+        const isOnboardingCompleted = !!userData.hasCompletedOnboarding || isLegacyCompleted;
+
+        if (!isOnboardingCompleted) {
+            return;
+        }
+
         const timer = setTimeout(() => {
             const isPermissionDefault = 'Notification' in window && window.Notification.permission === 'default';
             const lastPrompt = safeStorage.get('lastNotifPrompt');
@@ -21,7 +36,7 @@ export const useDashboardNotifications = (
             if (isPermissionDefault && (!lastPrompt || now - parseInt(lastPrompt) > oneWeek)) {
                 setShowNotifPrompt(true);
             }
-        }, 5000);
+        }, 3000);
         return () => clearTimeout(timer);
     }, [userData]);
 

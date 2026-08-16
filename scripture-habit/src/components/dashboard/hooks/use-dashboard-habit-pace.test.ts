@@ -45,7 +45,7 @@ describe('useDashboardHabitPace', () => {
         expect(result.current.showAutoKickModal).toBe(false);
     });
 
-    it('should submit successfully and progress to step 2', async () => {
+    it('should submit successfully and close modal', async () => {
         const { result } = renderHook(() => useDashboardHabitPace(mockUserData as any, false, false, mockT));
         
         act(() => {
@@ -58,7 +58,8 @@ describe('useDashboardHabitPace', () => {
 
         expect(result.current.autoKickError).toBe('');
         expect(toast.success).toHaveBeenCalledWith('groupChat.autoKickSuccess');
-        expect(result.current.autoKickStep).toBe(2);
+        expect(result.current.showAutoKickModal).toBe(false);
+        expect(result.current.autoKickStep).toBe(0);
     });
 
     it('should handle API failure with error toast (4xx/5xx)', async () => {

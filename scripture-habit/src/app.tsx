@@ -68,6 +68,7 @@ const CookieConsent = lazyWithRetry(() => import('./components/cookieconsent/coo
 const PrivacyPolicy = lazyWithRetry(() => import('./components/privacypolicy/privacy-policy'));
 const TermsOfService = lazyWithRetry(() => import('./components/termsofservice/terms-of-service'));
 const LegalDisclosure = lazyWithRetry(() => import('./components/legaldisclosure/legal-disclosure'));
+const DemoLogin = lazyWithRetry(() => import('./components/demo/demo-login'));
 
 
 interface SystemStatus {
@@ -100,6 +101,7 @@ const isPublicRoute = (urlStr: string) => {
     const publicPatterns = [
       '/',
       '/welcome',
+      '/demo',
       '/login',
       '/signup',
       '/forgot-password',
@@ -396,6 +398,7 @@ const App = () => {
 
     if (base === '' || base === '/') return 'App LandingPage';
     if (base === '/welcome') return 'App Welcome';
+    if (base === '/demo') return 'App DemoLogin';
     if (base === '/login') return 'App LoginForm';
     if (base === '/signup') return 'App SignupForm';
     if (base === '/dashboard' || base === '/profile') return 'App Dashboard';
@@ -440,6 +443,7 @@ const App = () => {
                   element={isStandalone ? <Navigate to="dashboard" replace /> : <LandingPage />}
                 />
                 <Route path="welcome" element={<Welcome />} />
+                <Route path="demo" element={<DemoLogin />} />
                 <Route path="login" element={<LoginForm />} />
                 <Route path="signup" element={<SignupForm />} />
                 <Route path="dashboard" element={<Dashboard />} />

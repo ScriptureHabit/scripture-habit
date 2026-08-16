@@ -56,8 +56,6 @@ export const useDashboardInvitations = (
                     const joinedGroupName = result.groupName || 'Group';
                     console.log("[DashboardInvite] Join successful, gid:", joinedGroupId, "owner:", joinedOwnerName, "groupName:", joinedGroupName);
                     safeStorage.remove('pendingInviteCode');
-                    safeStorage.set('joinedFromInvite', 'true');
-                    safeStorage.set('joinedOwnerName', joinedOwnerName);
                     
                     // Use a slightly shorter delay and ensure we set states correctly
                     setTimeout(() => {

@@ -53,23 +53,6 @@
     box-shadow: 0 4px 10px rgba(255, 145, 157, 0.4);
 }
 
-.add-entry-btn {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    color: var(--gray);
-    transition: all 0.2s;
-}
-
-.add-entry-btn:hover {
-    background: #f0f0f0;
-    color: var(--pink);
-}
-
 .reply-preview {
     background: white;
     padding: 0.8rem 1rem;
@@ -117,34 +100,13 @@
     justify-content: center;
 }
 
-.add-note-tooltip {
-    position: absolute;
-    bottom: calc(100% + 12px);
-    left: 50%;
-    transform: translateX(-50%);
-    background: white;
-    color: #fc6777;
-    padding: 0.7rem 1.2rem;
-    border-radius: 1rem;
-    font-size: 0.9rem;
-    font-weight: 800;
-    white-space: nowrap;
-    box-shadow: 0 4px 15px rgba(255, 145, 157, 0.3);
-    border: 2px solid #FF919D;
-    z-index: 1000;
-    animation: tooltipBounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), magneticBreathing 4s ease-in-out infinite;
-    cursor: pointer;
-    -webkit-user-select: none;
-    user-select: none;
-}
-
 @media screen and (max-width: 768px) {
   .send-message-form {
     padding: 0.6rem 0.8rem;
     border-radius: 1.5rem 1.5rem 0 0;
     background: white;
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
-    z-index: 1001;
+    z-index: 20;
     background-color: #f0f2f5;
   }
   

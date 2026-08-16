@@ -416,7 +416,6 @@ export default {
         "unityModalLegendEmpty": "Starting (0%~)",
         "unityModalNoPostsYet": "No posts yet today",
         "unityModalAllPosted": "Everyone has shared today! Amazing unity!",
-        "addNoteTooltip": "Click + to post a note!",
         "inviteFriendsPrompt": "Invite your friends!",
         "inviteMessage": "Join my scripture study group on Scripture Habit! Let's study together and build a daily habit.\n\nGroup: {groupName}\nJoin here: {inviteLink}",
         "readStatus": "Read {count}",
@@ -460,17 +459,7 @@ export default {
         "aiGroupDefaultGroupDesc": "1-on-1 Scripture Study Group with Scripture Habit AI",
         "aiGroupWelcomeMessage": "Welcome to the Scripture Habit AI Group! Let's study scriptures and share insights together every day. Rooting for you! 📖✨\n*Note: AI posts daily notes, but direct replies to {nickname} are not supported at this stage.",
         "aiGroupBotNickname": "Scripture Habit AI",
-        "aiGroupStartWithAiOption": "🤖 Start with Scripture Habit AI",
-        "aiGroupStartWithAiDesc": "No friends needed. Create a group with Scripture Habit AI.",
-        "aiGroupStartWithFriendsOption": "👥 Start with Friends / Family",
-        "aiGroupStartWithFriendsDesc": "Create a group with friends or family.",
         "aiGroupDailyNoteText": "[Daily Study Inspiration] Consistently opening scriptures every day leads to great blessings. Let's deepen our learning today! 📖✨",
-        "groupChatTour": {
-            "step1Title": "Post Notes Here!",
-            "step1Desc": "Tap the + button to record your daily scripture study notes and insights.",
-            "step2Title": "Back to Dashboard",
-            "step2Desc": "Tap ← to return to the dashboard, where you can check other groups and settings."
-        },
         "inviteExpiresAt": "Expires at",
         "regenerateInviteCode": "Regenerate Invite Code",
         "inviteCodeRegenerated": "Invite code has been regenerated!",
@@ -546,6 +535,9 @@ export default {
         "byuUrlPlaceholder": "https://speeches.byu.edu/talks/john-a-mccune/the-gift-of-revelation/",
         "otherUrlPlaceholder": "https://example.com/study-material",
         "askAiQuestion": "✨ Ask AI for a Question",
+        "fillSample": "✨ Fill Sample Note",
+        "sampleScripture": "1 Nephi 3:7",
+        "sampleThoughts": "\"I will go and do the things which the Lord hath commanded.\" This verse gives me courage to face difficult challenges today.",
         "surpriseMe": "✨ Surprise Me",
         "masteryScriptures": "✨ Mastery Scriptures",
         "peaceScriptures": "✨ Peace",
@@ -572,18 +564,6 @@ export default {
         "generalConference": "General Conference",
         "byuSpeeches": "BYU Speeches",
         "other": "Other"
-    },
-    "groupOptionsTour": {
-        "titleStepAi": "🤖 Start with Scripture Habit AI",
-        "descStepAi": "Study at your own pace! Create a dedicated group instantly where Scripture Habit AI posts daily study notes and supports your journey.",
-        "titleStep1": "Welcome to Study Groups!",
-        "descStep1": "Here you can choose how you would like to connect and study with others.",
-        "titleStep2": "Create a Group",
-        "descStep2": "Launch your own group study and invite your friends, family, or ward members to join you!",
-        "titleStep3": "Join a Group",
-        "descStep3": "Explore public groups and connect with a community of fellow scripture learners.",
-        "titleStep4": "Back to Dashboard",
-        "descStep4": "If you prefer to study on your own today, you can always return to the main dashboard."
     },
     "groupOptions": {
         "title": "Study Groups",
@@ -632,21 +612,35 @@ export default {
         "step1Title": "1. Join a Group",
         "step1Desc": "Create your own group or join another group.",
         "step1DescSuccess": "Successfully joined a group! 🎉",
+        "step1Action": "Find / Create Group",
         "step2Title": "2. Post Your First Note",
         "step2Desc": "Share your first study note in the group.",
+        "step2DescSuccess": "First note posted! 🎉",
+        "step2Action": "Write Note",
+        "chatHeaderBackPrompt": "You're in the group! Let's go back to the dashboard and post your first note!",
+        "groupOptionsBannerDesc": "Choose your preferred way to start: Start 1-on-1 with AI, create a private group, or join a public group.",
         "congratsTitle": "🎉 Quests Completed!",
-        "congratsDesc": "You've successfully completed all onboarding quests! Let's enjoy daily scripture study together! ✨",
-        "congratsBtn": "Close"
+        "congratsDesc": "You've joined a group and shared your first note! Let's enjoy daily scripture study together with your companions! ✨",
+        "congratsGoChatBtn": "Go to Group Chat",
+        "congratsBtn": "Close",
+        "demoGroupName": "Daily Bread 📖",
+        "demoGroupDesc": "A cozy study group reading the scriptures daily together! ✨",
+        "demoWelcomeAlice": "Welcome {nickname}! ✨ Wait, I just looked at your profile—you're at 999 consecutive days today?! Incredible...!",
+        "demoWelcomeBob": "WOOO!! Just one more note to reach the dream 【1,000 days milestone】!! 🔥 I'm so excited to see your note today!",
+        "demoWelcomeCharlie": "1,000 days is legendary status...! We're all eagerly waiting on the dashboard for your note post 🎉",
+        "demoCelebrateAlice": "Congratulations on reaching 1,000 days, {nickname}!!! 🎉🎉🎉 You are truly incredible!!",
+        "demoCelebrateBob": "WOOO!! 1,000 days achieved at last!! 🔥 Huge congratulations! So proud to study scriptures with you!",
+        "demoCelebrateCharlie": "1,000 days...! A truly legendary milestone! 🎉 Massive congratulations! You're the best companion✨",
+        "demo1000ModalTitle": "🎉 Congratulations on reaching 1,000 days!",
+        "demo1000ModalDesc": "You've finally reached the 1,000-day milestone! Let's check your post and see everyone's reactions in the group chat! ✨",
+        "demo1000ModalGoChatBtn": "Go to Group Chat",
+        "demo1000ModalCloseBtn": "Check Later"
     },
     "onboardingGuide": {
         "newNoteStep1": "First, let's choose the category of scripture you are reading today!",
         "newNoteStep2": "Perfect! Next, enter the chapter or URL you read (e.g. 1 Nephi 3:7).",
         "newNoteStep3": "Wonderful! Finally, write down your thoughts or impressions in the comment box!",
-        "newNoteStep4": "All ready! Click the [Post Note] button at the bottom right to share your first note! 🎉",
-        "paceSetSuccess": "Your target pace is set! Now, let's create a group or join one!",
-        "paceSetBtnSearch": "Go Find a Group",
-        "paceSetSuccessInvite": "Successfully joined {ownerName}'s group! Let's learn how to use Scripture Habit and get ready to post your first note!",
-        "paceSetBtnLearn": "Learn How to Use"
+        "newNoteStep4": "All ready! Click the [Post Note] button at the bottom right to share your first note! 🎉"
     },
     "groupForm": {
         "invitePreviewTitle": "Invite Link Preview",
@@ -792,27 +786,6 @@ export default {
         "nextButton": "Next",
         "backButton": "Back"
     },
-    "tourGuide": {
-        "titleQuest": "Onboarding Quests",
-        "descQuest": "Complete these 2 simple quests to get started: join a study group, and write your first study note to share with them!",
-        "titleStep1": "Navigation Menu",
-        "descStep1": "Navigate here between your Dashboard, My Notes, Groups, and Settings.",
-        "titleStep2": "Total Days",
-        "descStep2": "Tracks your total scripture study days. Keep the habit alive!",
-        "titleStep3": "Level & Target",
-        "descStep3": "Level up every 7 days! See how close you are with the progress bar.",
-        "titleStep4": "Today's Come Follow Me",
-        "descStep4": "Get daily Come, Follow Me reading plans linked directly to Gospel Library.",
-        "titleStep5": "Create Note",
-        "descStep5": "Write down your daily spiritual thoughts and insights to share with your group.",
-        "titleStep6": "Habit Calendar",
-        "descStep6": "Track your reading history and view group auto-kick thresholds to stay consistently motivated!",
-        "next": "Next",
-        "back": "Back",
-        "skip": "Skip",
-        "finish": "Finish",
-        "replayButton": "Replay Tour Guide"
-    },
     "welcomeGuideButton": "Got it!",
     "mascot": {
         "streakCelebration": "Amazing! Total of {streak} days achieved!",
@@ -930,8 +903,9 @@ export default {
         "hero": {
             "title": "Scripture Habit",
             "subtitle": "A scripture study web app personally developed by Brother Daijiro Sagane, a church member in Japan. It is completely free for anyone to use.",
-            "downloadCta": "Download App (PWA)",
-            "browserCta": "Start in Browser",
+            "downloadCta": "App (PWA)",
+            "browserCta": "Browser",
+            "demoCta": "1-Min Demo",
             "mascotBubble": "Hi there! Let's start reading the scriptures together! ✨"
         },
         "concept": {
@@ -953,6 +927,7 @@ export default {
         },
         "finalCta": {
             "title": "Would you like to start a new habit with us?",
+            "demoCta": "1-Min Demo",
             "mascotBubble": "Let's get started with the button below! ✨"
         },
         "downloadModal": {
@@ -980,5 +955,11 @@ export default {
             "messageRequired": "Message content cannot be empty.",
             "emailInvalid": "Please enter a valid email address."
         }
+    },
+    "demo": {
+        "loadingTitle": "Setting up Demo Environment...",
+        "loadingSubtitle": "Loading data. Please wait a moment.",
+        "loginSuccess": "Logged in as Demo User!",
+        "loginError": "Failed to enter demo environment. Redirecting to login."
     }
 };

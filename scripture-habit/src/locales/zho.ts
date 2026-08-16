@@ -323,7 +323,7 @@ export default {
         "maxMembersReachedMessage": "此群組已滿 5 人 ✨（已停用邀請）",
         "members": "成員",
         "groupMembers": "群組成員",
-        "typeMessage": "點擊 + 按鈕新增筆記或輸入訊息...",
+        "typeMessage": "輸入訊息或分享心得...",
         "leaveGroup": "退出群組",
         "deleteGroup": "刪除群組",
         "cancel": "取消",
@@ -390,7 +390,6 @@ export default {
         "unityModalLegendEmpty": "開始 (0%~)",
         "unityModalNoPostsYet": "今天尚未有發文",
         "unityModalAllPosted": "全員已分享！驚人的團結！",
-        "addNoteTooltip": "點擊 + 發布筆記！",
         "inviteFriendsPrompt": "邀請您的朋友！",
         "inviteMessage": "加入我在 Scripture Habit 上的聖典學習小組！讓我們一起學習並養成每日習慣。\n\n小組名稱：{groupName}\n點擊加入：{inviteLink}",
         "readStatus": "已讀 {count}",
@@ -434,17 +433,7 @@ export default {
         "aiGroupDefaultGroupDesc": "與 Scripture Habit AI 一對一研讀經文的專屬群組",
         "aiGroupWelcomeMessage": "歡迎來到 Scripture Habit AI 群組！每天一起研讀經文並分享心得吧。為你加油！📖✨\n※Scripture Habit AI 每天會發布筆記，但現階段無法直接回覆 {nickname}，敬請諒解。",
         "aiGroupBotNickname": "Scripture Habit AI",
-        "aiGroupStartWithAiOption": "🤖 與 Scripture Habit AI 一起開始",
-        "aiGroupStartWithAiDesc": "不需要朋友，與 Scripture Habit AI 建立群組。",
-        "aiGroupStartWithFriendsOption": "👥 與朋友 / 家人一起開始",
-        "aiGroupStartWithFriendsDesc": "與朋友或家人建立群組。",
         "aiGroupDailyNoteText": "【每日研讀靈感】每天持之以恆打開經文會帶來廣大的祝福。今天也讓我們一起深化學習吧！📖✨",
-        "groupChatTour": {
-            "step1Title": "在這裡發佈筆記！",
-            "step1Desc": "點擊 + 按鈕記錄今日的經文學習筆記與心得。",
-            "step2Title": "返回儀表板",
-            "step2Desc": "點擊 ← 可返回儀表板，查看其他群組和設定。"
-        },
         "inviteExpiresAt": "到期時間",
         "regenerateInviteCode": "重新生成邀請碼",
         "inviteCodeRegenerated": "邀請碼已重新生成！",
@@ -521,6 +510,9 @@ export default {
         "byuUrlPlaceholder": "https://speeches.byu.edu/talks/...",
         "otherUrlPlaceholder": "https://example.com/study-material",
         "askAiQuestion": "✨ 向 AI 提問",
+        "fillSample": "✨ 填入範例筆記",
+        "sampleScripture": "尼腓一書 3:7",
+        "sampleThoughts": "「我會去照著主所吩咐的去做。」這段經文給了我面對今日挑戰的勇氣。",
         "surpriseMe": "✨ 給我驚喜",
         "masteryScriptures": "✨ 精通經文",
         "peaceScriptures": "✨ 平安",
@@ -547,18 +539,6 @@ export default {
         "generalConference": "總會大會",
         "byuSpeeches": "BYU Speeches",
         "other": "其他"
-    },
-    "groupOptionsTour": {
-        "titleStepAi": "🤖 與 Scripture Habit AI 開始",
-        "descStepAi": "一個人也能安心研讀！Scripture Habit AI 將每天自動發佈經文筆記，為您建立專屬的陪伴學習群組。",
-        "titleStep1": "歡迎來到學習群組！",
-        "descStep1": "在這裡，您可以選擇想要與他人連結並一起研讀聖典的方式。",
-        "titleStep2": "建立群組",
-        "descStep2": "啟動您自己的群組研讀，並邀請您的朋友、家人或支會成員加入！",
-        "titleStep3": "加入群組",
-        "descStep3": "探索公開群組，並與其他聖典研讀夥伴的社群建立連結。",
-        "titleStep4": "返回儀表板",
-        "descStep4": "如果您今天想自己研讀，隨時可以返回主儀表板。"
     },
     "groupOptions": {
         "title": "學習群組",
@@ -603,25 +583,39 @@ export default {
         "pwaInviteHint": "如果您已將此應用程式添加到主螢幕，\n請從那裡開啟它以自動套用此邀請。"
     },
     "onboardingQuest": {
-        "title": "🌟 新手任務",
-        "step1Title": "1. 加入小組",
-        "step1Desc": "建立你自己的小組或加入其他小組。",
-        "step1DescSuccess": "成功加入小組！🎉",
-        "step2Title": "2. 發佈你的第一篇筆記",
-        "step2Desc": "在小組中分享你的第一篇學習筆記。",
-        "congratsTitle": "🎉 任務完成！",
-        "congratsDesc": "你已成功完成所有新手任務！讓我們一起享受每日經文學習吧！✨",
-        "congratsBtn": "關閉"
+        "title": "🌟 最初的任務",
+        "step1Title": "1. 加入群組",
+        "step1Desc": "建立自己的群組或加入其他群組。",
+        "step1DescSuccess": "已成功加入群組！🎉",
+        "step1Action": "尋找 / 建立群組",
+        "step2Title": "2. 發布第一篇筆記",
+        "step2Desc": "在群組中分享你的第一篇研讀筆記。",
+        "step2DescSuccess": "已發布第一篇筆記！🎉",
+        "step2Action": "撰寫筆記",
+        "chatHeaderBackPrompt": "你已成功加入群組！返回儀表板發布你的第一篇筆記吧！",
+        "groupOptionsBannerDesc": "選擇你喜歡的方式開始：與 AI 進行 1 對 1 研讀、建立專屬群組，或加入公開群組。",
+        "congratsTitle": "🎉 最初的任務完成！",
+        "congratsDesc": "你已成功加入群組並發布了第一篇筆記！與夥伴們一起享受每日經文研讀的樂趣吧！✨",
+        "congratsGoChatBtn": "前往群組聊天室",
+        "congratsBtn": "關閉",
+        "demoGroupName": "每日靈糧 📖",
+        "demoGroupDesc": "一個溫馨的研讀群組，每天一起閱讀經文互相勉勵！✨",
+        "demoWelcomeAlice": "歡迎 {nickname}！✨ 等等，我看了一下你的個人資料——今天居然是連續第 999 天研讀？！太厲害了…！",
+        "demoWelcomeBob": "哇啊啊！只要再發布 1 篇筆記，就能達成夢寐以求的【1,000 天里程碑】了！！🔥 超級期待你今天的筆記分享！",
+        "demoWelcomeCharlie": "1,000 天簡直是傳說級別…！大家都在滿心期待你回到儀表板發布筆記喔🎉",
+        "demoCelebrateAlice": "恭喜 {nickname} 達成連續研讀 1,000 天！！！🎉🎉🎉 真的太了不起了！！",
+        "demoCelebrateBob": "太棒啦！！終於達成夢寐以求的【1,000 天】啦！！🔥 衷心恭喜你！能一起研讀經文真的太榮幸了！",
+        "demoCelebrateCharlie": "1,000 天…！這真的是傳奇般的壯舉！🎉 衷心恭喜你！有你這個夥伴真是太棒了✨",
+        "demo1000ModalTitle": "🎉 恭喜達成連續研讀 1,000 天！",
+        "demo1000ModalDesc": "終於達成壯舉般的 1,000 天！快到群組聊天室查看你的筆記以及大家的祝賀吧！✨",
+        "demo1000ModalGoChatBtn": "前往群組聊天室",
+        "demo1000ModalCloseBtn": "稍後查看"
     },
     "onboardingGuide": {
         "newNoteStep1": "首先，選擇你今天閱讀的經文類別！",
         "newNoteStep2": "太棒了！接下來，輸入你閱讀的章節或網址（例如：尼腓一書 3:7）。",
         "newNoteStep3": "非常好！最後，在評論框中寫下你的心得或感想！",
-        "newNoteStep4": "準備就緒！點擊右下角的[發佈筆記]按鈕，分享你的第一篇筆記！ 🎉",
-        "paceSetSuccess": "目標節奏已設定！現在，讓我們建立群組或加入一個群組吧！",
-        "paceSetBtnSearch": "尋找學習群組",
-        "paceSetSuccessInvite": "成功加入 {ownerName} 兄弟的群組！讓我們學習如何使用 Scripture Habit，並準備發表第一篇筆記吧！",
-        "paceSetBtnLearn": "學習如何使用"
+        "newNoteStep4": "準備就緒！點擊右下角的[發佈筆記]按鈕，分享你的第一篇筆記！ 🎉"
     },
     "groupForm": {
         "invitePreviewTitle": "邀請連結預覽",
@@ -767,27 +761,6 @@ export default {
         "nextButton": "下一步",
         "backButton": "上一步"
     },
-    "tourGuide": {
-        "titleQuest": "新手任務",
-        "descQuest": "完成以下兩個簡單任務即可開始：加入學習小組，並撰寫並分享你的第一篇學習筆記！",
-        "titleStep1": "導覽功能表",
-        "descStep1": "在這裡可以輕鬆切換儀表板、我的筆記、我的群組和個人設定。",
-        "titleStep2": "總計學習天數",
-        "descStep2": "追蹤您的每日經文研讀總天數，讓良好的習慣持續下去！",
-        "titleStep3": "等級與進度",
-        "descStep3": "每學習滿 7 天即可提升等級！透過進度條隨時掌握距離下一等級的進度。",
-        "titleStep4": "今日《來跟從我》",
-        "descStep4": "每日更新《來跟從我》的研讀進度，點擊即可直接前往福音圖書館進行研讀。",
-        "titleStep5": "新增研讀筆記",
-        "descStep5": "在此記錄您每日研讀的心得與靈感，與群組成員分享。",
-        "titleStep6": "習慣化日曆",
-        "descStep6": "檢視您的歷史研讀記錄，並清楚顯示群組自動退出倒數，陪伴您保持學習動力！",
-        "next": "下一步",
-        "back": "上一步",
-        "skip": "跳過",
-        "finish": "完成",
-        "replayButton": "再次查看引導功能"
-    },
     "welcomeGuideButton": "了解！",
     "mascot": {
         "streakCelebration": "太棒了！總計 {streak} 天達成！",
@@ -907,6 +880,7 @@ export default {
             "subtitle": "由日本教會成員相根大治郎兄弟個人開發的聖典研讀 Web 應用程式。任何人都可以完全免費使用。",
             "downloadCta": "下載應用程式 (PWA)",
             "browserCta": "在瀏覽器中開始",
+            "demoCta": "1分鐘示範版",
             "mascotBubble": "你好！讓我們一起開始研讀經文吧！✨"
         },
         "concept": {
@@ -928,6 +902,7 @@ export default {
         },
         "finalCta": {
             "title": "您也想和我們一起開始新的習慣嗎？",
+            "demoCta": "1分鐘示範版",
             "mascotBubble": "讓我們從下方的按鈕開始吧！✨"
         },
         "downloadModal": {
@@ -955,5 +930,11 @@ export default {
             "messageRequired": "消息內容不能為空。",
             "emailInvalid": "請輸入有效的電子郵件地址。"
         }
+    },
+    "demo": {
+        "loadingTitle": "正在準備即時示範...",
+        "loadingSubtitle": "正在載入資料，請稍候。",
+        "loginSuccess": "已使用示範帳號登入！",
+        "loginError": "連接示範環境失敗。正在重新導向至登入頁面..."
     }
 };

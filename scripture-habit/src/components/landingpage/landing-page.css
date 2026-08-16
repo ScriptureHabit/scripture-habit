@@ -228,8 +228,8 @@ section {
 }
 
 .primary-cta {
-    padding: 1.2rem 3.5rem !important;
-    font-size: 1.25rem !important;
+    padding: 0.9rem 2.2rem !important;
+    font-size: 1.15rem !important;
     border-radius: 50px !important;
     background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)) !important;
     border: none !important;
@@ -238,6 +238,7 @@ section {
     box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4) !important;
     transition: all 0.3s ease !important;
     cursor: pointer;
+    white-space: nowrap !important;
 }
 
 .primary-cta:hover {
@@ -253,11 +254,12 @@ section {
     gap: 16px;
     width: 100%;
     margin-top: 8px;
+    flex-wrap: wrap;
 }
 
 .secondary-cta {
-    padding: 1.2rem 3.5rem !important;
-    font-size: 1.25rem !important;
+    padding: 0.9rem 2.2rem !important;
+    font-size: 1.15rem !important;
     border-radius: 50px !important;
     background: rgba(255, 255, 255, 0.4) !important;
     border: 2px solid var(--primary-color) !important;
@@ -268,12 +270,32 @@ section {
     cursor: pointer;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
+    white-space: nowrap !important;
 }
 
 .secondary-cta:hover {
     background: rgba(102, 126, 234, 0.1) !important;
     transform: translateY(-3px) scale(1.02);
     box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2) !important;
+}
+
+.demo-cta {
+    padding: 0.9rem 2.2rem !important;
+    font-size: 1.15rem !important;
+    border-radius: 50px !important;
+    background: linear-gradient(135deg, #10b981, #059669) !important;
+    border: none !important;
+    color: white !important;
+    font-weight: 700 !important;
+    box-shadow: 0 10px 25px rgba(16, 185, 129, 0.35) !important;
+    transition: all 0.3s ease !important;
+    cursor: pointer;
+    white-space: nowrap !important;
+}
+
+.demo-cta:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 15px 30px rgba(16, 185, 129, 0.45) !important;
 }
 
 /* Download Modal */
@@ -989,14 +1011,9 @@ section {
         margin: 16px auto 0 auto;
     }
 
-    .primary-cta {
-        width: 100%;
-        padding: 1.1rem 2.0rem !important;
-        font-size: 1.1rem !important;
-        margin-top: 0;
-    }
-
-    .secondary-cta {
+    .primary-cta,
+    .secondary-cta,
+    .demo-cta {
         width: 100%;
         padding: 1.1rem 2.0rem !important;
         font-size: 1.1rem !important;

@@ -2,9 +2,13 @@
 
 [English](README.md) | **日本語**
 
-毎日の聖書学習を仲間と一緒に習慣化する、AIリアルタイム翻訳＆グループ機能付きコミュニティWebアプリ
+> **日々の聖典学習をもっと楽しく、有意義に**  
+> *Making daily scripture study more fun and meaningful.*
 
- **Web Application**: [https://scripturehabit.app](https://scripturehabit.app)
+毎日の聖書学習を仲間と一緒に楽しく習慣化する、AIリアルタイム翻訳＆グループ機能付きのオープンソースWebアプリです。
+
+ 🌐 **Web Application**: [https://scripturehabit.app](https://scripturehabit.app)  
+ 🚀 **Live Demo (登録不要で今すぐ体験)**: [https://scripturehabit.app/ja/demo](https://scripturehabit.app/ja/demo)
 
 <p align="center">
   <img src="https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react" alt="React 19" />
@@ -16,13 +20,17 @@
 
 ---
 
-## 概要
+## 💡 このプロジェクトでみんなとやりたいこと
 
-**Scripture Habit** は、一人だと挫折しがちな聖書学習を、仲間と一緒に楽しく継続するためのWebアプリです。レベルや連続学習日数（ストリーク）の仕組みに加えて、AIによる自動翻訳を備えており、国や言語を超えてグループで学習ノートを共有できます。
+> **「聖典学習って、もっと楽しくて心に残るものにできるんじゃないか？」**
 
-### 開発背景
-- **課題**: 毎日の個人学習は継続が難しく、海外の友人と一緒に学びたくても言語の壁がある。
-- **解決策**: グループ機能とストリーク管理で学習を習慣化し、Gemini AI の自動翻訳で言語の異なるメンバーとも交流できる環境を作りました。
+正直に言うと、僕自身ずっとひとりで毎日聖典を読むのが苦手で、三日坊主を繰り返していました。  
+チェックリストを埋めるような「義務」にするんじゃなくて、遠くの友達や家族と「今日ここ読んでこう思ったよ」って気軽に言い合える場所があったら、きっと楽しく続けられるはず。そう思って、勢いとノリでコードを書き始めたのが Scripture Habit の始まりです。
+
+聖典学習の習慣化を助けるソフトウェアに、決まった「正解」なんてまだどこにもありません。  
+だからこそオープンソースにして、世界中の仲間と一緒に実験しながら、最高の形を作っていけたら最高に面白いなと思っています。
+
+相根大治郎
 
 ---
 

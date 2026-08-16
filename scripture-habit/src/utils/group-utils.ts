@@ -1,7 +1,7 @@
 import { Group, Message } from '../types/chat';
 import { UserData } from '../types/user';
 import { calculateUnityPercentage } from './unity-utils';
-import { formatDateInTimeZone, normalizeDateString, parseTimestampToDate } from './time-utils';
+import { formatDateInTimeZone, normalizeDateString, parseTimestampToDate, parseTimestampToMillis } from './time-utils';
 import { DEFAULT_KICK_THRESHOLD } from '../constants';
 
 /**
@@ -91,4 +91,71 @@ export const calculateNearestKickDate = (userData: UserData | null, userGroups: 
   // Use YYYY-MM-DD format consistent with studiedDates
   return earliestKickDate.toLocaleDateString('sv-SE');
 };
+
+/**
+ * Determines whether a group has unread messages for a specific user.
+ * 
+ * Rules:
+ * 1. If no current user or group has no lastMessageAt, no unread.
+ * 2. If the user is currently actively viewing this group's chat, no unread.
+ * 3. If the last message was sent by the user themselves, never mark as unread (prevents self-trigger bug).
+ * 4. If the user has a memberLastReadAt timestamp, compare it with lastMessageAt.
+ * 5. If no memberLastReadAt exists (first time), check if lastMessageAt is after their joinedAt timestamp.
+ */
+export const hasGroupUnread = (
+  group: Group,
+  currentUserId?: string | null,
+  isCurrentlyViewing: boolean = false
+): boolean => {
+  if (!currentUserId || !group.lastMessageAt) return false;
+  
+  if (isCurrentlyViewing) {
+    return false;
+  }
+
+  // Self-message guard: User's own messages never trigger an unread badge
+  if (group.lastMessageByUid === currentUserId) {
+    return false;
+  }
+
+  // System announcement guard: If the last message is a system announcement for user's own note, never trigger unread
+  if (group.lastMessageByUid === 'system' && group.lastNoteByUid === currentUserId) {
+    return false;
+  }
+
+  const lastMessageMillis = parseTimestampToMillis(group.lastMessageAt);
+  const myLastRead = group.memberLastReadAt?.[currentUserId];
+
+  if (myLastRead) {
+    const lastReadMillis = parseTimestampToMillis(myLastRead);
+    // Allow a small 500ms jitter buffer for simultaneous writes within transactions
+    return (lastMessageMillis - lastReadMillis) > 500;
+  }
+
+  // If user hasn't opened the group yet, only consider messages posted after joining
+  const myJoinedAt = group.memberJoinedAt?.[currentUserId];
+  if (myJoinedAt) {
+    const joinedMillis = parseTimestampToMillis(myJoinedAt);
+    return (lastMessageMillis - joinedMillis) > 500;
+  }
+
+  return true;
+};
+
+/**
+ * Checks if any of the given groups contain unread messages.
+ */
+export const hasAnyGroupUnread = (
+  groups: Group[],
+  currentUserId?: string | null,
+  activeGroupId?: string | null,
+  isChatViewActive: boolean = false
+): boolean => {
+  if (!currentUserId || !groups || groups.length === 0) return false;
+  return groups.some(group => {
+    const isViewingThisGroup = isChatViewActive && activeGroupId === group.id;
+    return hasGroupUnread(group, currentUserId, isViewingThisGroup);
+  });
+};
+
 

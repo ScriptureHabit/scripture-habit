@@ -48,14 +48,6 @@ test.describe('Unity Percentage Synchronization (Local Timezone: Asia/Tokyo)', (
         await expect(sidebarUnity).toHaveText('0%', { timeout: 10000 });
 
         // Post a note
-        await groupItem.click();
-
-        // Dismiss tour overlay if present
-        const tourOverlay = page.locator('.tour-guide-overlay');
-        if (await tourOverlay.isVisible().catch(() => false)) {
-            await page.keyboard.press('Escape').catch(() => {});
-        }
-
         await page.getByTestId('new-note-button').click();
         
         const scriptureSelect = page.getByTestId('new-note-category').locator('input').first();

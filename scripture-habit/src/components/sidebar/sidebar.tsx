@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import './sidebar.css';
 import { SidebarData } from '../../data/data';
 import {
@@ -13,6 +13,7 @@ import { MAX_GROUPS_PER_USER } from '../../config';
 import { Group } from '../../types/chat';
 
 import { getUnityStatusEmoji } from '../../utils/unity-utils';
+import { hasGroupUnread, hasAnyGroupUnread } from '../../utils/group-utils';
 
 interface SidebarGroupItemProps {
   group: Group;
@@ -22,15 +23,20 @@ interface SidebarGroupItemProps {
   getGroupStatusEmoji: (group: Group) => string;
   getUnityPercentage: (group: Group) => number;
   isModal?: boolean;
+  hasUnread?: boolean;
 }
 
-const SidebarGroupItem = ({ group, language, isActive, onClick, getGroupStatusEmoji, getUnityPercentage, isModal = false }: SidebarGroupItemProps) => {
+const SidebarGroupItem = ({
+  group,
+  language,
+  isActive,
+  onClick,
+  getGroupStatusEmoji,
+  getUnityPercentage,
+  isModal = false,
+  hasUnread = false
+}: SidebarGroupItemProps) => {
   const { displayName } = useGroupTranslation(group, language);
-
-  // Debug log for Webkit unity percentage issue
-  if (group.name?.includes('Persistence')) {
-    console.log(`[SidebarGroupItem] Rendering ${group.name}: unity=${getUnityPercentage(group)}%, id=${group.id}`);
-  }
 
   if (isModal) {
     return (
@@ -46,6 +52,7 @@ const SidebarGroupItem = ({ group, language, isActive, onClick, getGroupStatusEm
         <span className="group-name-sidebar-modal">
           {displayName}
         </span>
+        {hasUnread && <span className="group-unread-dot" title="Unread messages" data-testid="modal-group-unread-dot" />}
       </div>
     );
   }
@@ -63,6 +70,7 @@ const SidebarGroupItem = ({ group, language, isActive, onClick, getGroupStatusEm
         {getUnityPercentage(group)}%
       </span>
       <span className="group-name-sidebar" data-testid="group-name-sidebar">{displayName}</span>
+      {hasUnread && <span className="group-unread-dot" title="Unread messages" data-testid="sidebar-group-unread-dot" />}
     </div>
   );
 };
@@ -74,9 +82,18 @@ interface SidebarProps {
   activeGroupId: string | null;
   setActiveGroupId: (id: string | null) => void;
   hideMobile?: boolean;
+  currentUserId?: string | null;
 }
 
-const Sidebar = ({ selected, setSelected, userGroups = [], activeGroupId, setActiveGroupId, hideMobile = false }: SidebarProps) => {
+const Sidebar = ({
+  selected,
+  setSelected,
+  userGroups = [],
+  activeGroupId,
+  setActiveGroupId,
+  hideMobile = false,
+  currentUserId
+}: SidebarProps) => {
   const navigate = useNavigate();
   const { t, language } = useLanguage();
   const [showGroupModal, setShowGroupModal] = useState(false);
@@ -84,6 +101,11 @@ const Sidebar = ({ selected, setSelected, userGroups = [], activeGroupId, setAct
   const DashboardIcon = SidebarData[0].icon;
   const NotesIcon = SidebarData[1].icon;
   const ProfileIcon = SidebarData[2].icon;
+
+  const hasAnyUnread = useMemo(() => {
+    const isChatActive = selected === 2;
+    return hasAnyGroupUnread(userGroups, currentUserId, activeGroupId, isChatActive);
+  }, [userGroups, currentUserId, activeGroupId, selected]);
 
   const handleGroupClick = (groupId: string) => {
     setActiveGroupId(groupId);
@@ -99,7 +121,6 @@ const Sidebar = ({ selected, setSelected, userGroups = [], activeGroupId, setAct
   const getGroupStatusEmoji = (group: Group): string => {
     return getUnityStatusEmoji(getUnityPercentageLocal(group));
   };
-
 
   return (
     <>
@@ -147,17 +168,22 @@ const Sidebar = ({ selected, setSelected, userGroups = [], activeGroupId, setAct
               {t('sidebar.myGroups')} <span>({userGroups.length}/{MAX_GROUPS_PER_USER})</span>
             </div>
             <div className="sidebar-group-list-container">
-              {userGroups.map((group) => (
-                <SidebarGroupItem
-                  key={group.id}
-                  group={group}
-                  language={language}
-                  isActive={selected === 2 && activeGroupId === group.id}
-                  onClick={() => handleGroupClick(group.id)}
-                  getGroupStatusEmoji={getGroupStatusEmoji}
-                  getUnityPercentage={getUnityPercentageLocal}
-                />
-              ))}
+              {userGroups.map((group) => {
+                const isViewingThisGroup = selected === 2 && activeGroupId === group.id;
+                const isGroupUnread = hasGroupUnread(group, currentUserId, isViewingThisGroup);
+                return (
+                  <SidebarGroupItem
+                    key={group.id}
+                    group={group}
+                    language={language}
+                    isActive={isViewingThisGroup}
+                    onClick={() => handleGroupClick(group.id)}
+                    getGroupStatusEmoji={getGroupStatusEmoji}
+                    getUnityPercentage={getUnityPercentageLocal}
+                    hasUnread={isGroupUnread}
+                  />
+                );
+              })}
             </div>
 
             {userGroups.length < MAX_GROUPS_PER_USER && (
@@ -169,10 +195,13 @@ const Sidebar = ({ selected, setSelected, userGroups = [], activeGroupId, setAct
           </div>
 
           {/* Mobile Groups Trigger */}
-          <div className={`menuItem mobile-groups-trigger ${selected === 2 ? 'active' : ''}`}
+          <div 
+            className={`menuItem mobile-groups-trigger ${selected === 2 ? 'active' : ''}`}
             onClick={() => setShowGroupModal(true)}
+            data-testid="sidebar-mobile-groups"
           >
             <UilUsersAlt />
+            {hasAnyUnread && <span className="unread-dot" data-testid="mobile-unread-dot" />}
           </div>
 
           <div 
@@ -195,18 +224,23 @@ const Sidebar = ({ selected, setSelected, userGroups = [], activeGroupId, setAct
           <div className="group-modal-content" onClick={(e) => e.stopPropagation()}>
             <h3>{t('sidebar.selectGroup')} <span>({userGroups.length}/4)</span></h3>
             <div className="modal-group-list">
-              {userGroups.map((group) => (
-                <SidebarGroupItem
-                  key={group.id}
-                  group={group}
-                  language={language}
-                  isActive={activeGroupId === group.id}
-                  onClick={() => handleGroupClick(group.id)}
-                  getGroupStatusEmoji={getGroupStatusEmoji}
-                  getUnityPercentage={getUnityPercentageLocal}
-                  isModal={true}
-                />
-              ))}
+              {userGroups.map((group) => {
+                const isViewingThisGroup = selected === 2 && activeGroupId === group.id;
+                const isGroupUnread = hasGroupUnread(group, currentUserId, isViewingThisGroup);
+                return (
+                  <SidebarGroupItem
+                    key={group.id}
+                    group={group}
+                    language={language}
+                    isActive={activeGroupId === group.id}
+                    onClick={() => handleGroupClick(group.id)}
+                    getGroupStatusEmoji={getGroupStatusEmoji}
+                    getUnityPercentage={getUnityPercentageLocal}
+                    isModal={true}
+                    hasUnread={isGroupUnread}
+                  />
+                );
+              })}
             </div>
             {userGroups.length < 4 && (
               <div className="modal-create-group" onClick={() => { navigate(`/${language}/group-options`); setShowGroupModal(false); }} data-testid="mobile-join-create-group">
@@ -218,13 +252,8 @@ const Sidebar = ({ selected, setSelected, userGroups = [], activeGroupId, setAct
           </div>
         </div>
       )}
-
-      {/* Sign Out Confirmation Modal */}
-
     </>
   );
 };
 
 export default Sidebar;
-
-

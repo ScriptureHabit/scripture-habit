@@ -102,6 +102,11 @@
         box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.05);
     }
 
+    .view-fixed .Sidebar,
+    .AppGlass:has(.GroupChat) .Sidebar {
+        display: none !important;
+    }
+
     .logo {
         display: none;
     }
@@ -128,8 +133,8 @@
         /* Stop items from stretching */
     }
 
-    /* Target only the text label span, not badges or emojis */
-    .menuItem > span:not(.unread-badge-sidebar):not(.status-emoji-sidebar) {
+    /* Target only the text label span, not badges, emojis, or unread dots */
+    .menuItem > span:not(.unread-badge-sidebar):not(.status-emoji-sidebar):not(.unread-dot):not(.group-unread-dot) {
         display: none !important;
     }
 
@@ -156,16 +161,36 @@
 
     .mobile-groups-trigger .unread-dot {
         position: absolute;
-        top: 5px;
-        right: 5px;
-        width: 12px;
-        height: 12px;
-        background-color: var(--pink);
+        top: 6px;
+        right: 8px;
+        width: 10px;
+        height: 10px;
+        background-color: #ec4899;
         border-radius: 50%;
-        border: 2px solid white;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        border: 2px solid #ffffff;
+        box-shadow: 0 0 6px rgba(236, 72, 153, 0.7);
         z-index: 100;
-        display: block;
+        display: block !important;
+        animation: unread-dot-pulse 2s infinite;
+    }
+
+    .group-unread-dot {
+        width: 8px;
+        height: 8px;
+        background-color: #ec4899;
+        border-radius: 50%;
+        margin-left: auto;
+        margin-right: 6px;
+        box-shadow: 0 0 6px rgba(236, 72, 153, 0.6);
+        flex-shrink: 0;
+        display: inline-block !important;
+        animation: unread-dot-pulse 2s infinite;
+    }
+
+    @keyframes unread-dot-pulse {
+        0% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.25); opacity: 0.85; }
+        100% { transform: scale(1); opacity: 1; }
     }
 
     .Sidebar.hide-mobile {
