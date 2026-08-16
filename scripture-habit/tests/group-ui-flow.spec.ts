@@ -96,4 +96,44 @@ test.describe('Group UI Flow (E2E)', () => {
     // Verify a group appears in the sidebar (the one we just joined)
     await expect(page.locator('[data-testid="sidebar-group-item"]').first()).toBeVisible();
   });
+
+  test('should display pink unread dot on new messages and dismiss it after opening chat', async ({ authenticatedPage: page }) => {
+    // 1. Setup a test group
+    const groupName = `Unread Dot ${Date.now()}`;
+    const { groupId } = await page.setupTestGroup({ groupName, memberCount: 2 });
+
+    // 2. Go to dashboard and ensure group item is loaded in desktop sidebar
+    await page.goto('/en/dashboard');
+    const desktopGroupItem = page.locator('.desktop-groups [data-testid="sidebar-group-item"]').filter({ hasText: groupName });
+    await expect(desktopGroupItem).toBeVisible({ timeout: 15000 });
+
+    const unreadDot = desktopGroupItem.locator('[data-testid="sidebar-group-unread-dot"]');
+
+    // 3. Post a message to this group from another user in Firestore (with past lastRead record)
+    const { db, admin } = await import('../api_internal/lib/firebase-admin.js');
+    const currentUid = await page.evaluate(() => (window as any).firebaseAuth?.currentUser?.uid);
+    const pastReadTime = admin.firestore.Timestamp.fromMillis(Date.now() - 10000);
+    const messageTime = admin.firestore.Timestamp.fromMillis(Date.now() - 2000);
+
+    await db.collection('groups').doc(groupId).update({
+      [`memberLastReadAt.${currentUid}`]: pastReadTime,
+      lastMessageAt: messageTime,
+      lastMessageByUid: 'other-user-mock',
+      lastMessageText: 'New unread message from peer'
+    });
+
+    // 4. Verify the pink unread dot appears in the desktop sidebar
+    await expect(unreadDot).toBeVisible({ timeout: 15000 });
+
+    // 5. Open the group chat
+    await desktopGroupItem.click();
+    await expect(page.locator('.GroupChat')).toBeVisible({ timeout: 15000 });
+
+    // 6. Return to Dashboard Overview
+    await page.getByTestId('sidebar-dashboard').click();
+    await expect(page.locator('.dashboard-inner-wrapper')).toBeVisible({ timeout: 15000 });
+
+    // 7. Verify the pink unread dot is now dismissed
+    await expect(unreadDot).not.toBeVisible({ timeout: 15000 });
+  });
 });

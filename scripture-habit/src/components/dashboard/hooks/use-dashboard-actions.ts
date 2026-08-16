@@ -1,8 +1,7 @@
 import { useCallback } from 'react';
 import { User } from 'firebase/auth';
-import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
-import { auth, appCheck, db } from '../../../firebase';
-import { getToken } from 'firebase/app-check';
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { db } from '../../../firebase';
 import apiClient from '../../../utils/api-client';
 import { UserData } from '../../../types/user';
 
@@ -39,9 +38,9 @@ export const useDashboardActions = (user: User | null, userData: UserData | null
     if (!user?.uid || !nickname.trim()) return false;
 
     try {
-      await updateDoc(doc(db, 'users', user.uid), {
+      await setDoc(doc(db, 'users', user.uid), {
         nickname: nickname.trim()
-      });
+      }, { merge: true });
       return true;
     } catch (error) {
       console.error('Error updating nickname:', error);
@@ -51,59 +50,33 @@ export const useDashboardActions = (user: User | null, userData: UserData | null
 
   /**
    * TRUTH: Synchronizes message read status with the backend. 
-   * This ensures that "Read by X" logic works accurately for other members.
+   * This ensures that "Read by X" logic and unread badge dismissal works accurately.
    */
   const updateGroupReadStatus = useCallback(async (groupId: string, totalMessages: number): Promise<boolean> => {
     if (!user?.uid || !groupId || totalMessages < 0) return false;
 
     try {
-      // 1. Latency Compensation (Direct Write)
-      // This ensures the UI (unread count badge) updates immediately even if offline.
-      // Firestore will sync this field automatically when back online.
-      await updateDoc(doc(db, 'users', user.uid, 'groupStates', groupId), {
+      // 1. Latency Compensation (Direct Write via setDoc with merge)
+      // Must use setDoc with merge: true because the groupStates subcollection doc might not exist yet!
+      await setDoc(doc(db, 'users', user.uid, 'groupStates', groupId), {
         readMessageCount: totalMessages,
         lastReadAt: serverTimestamp()
-      });
+      }, { merge: true });
 
-      // 2. Background Sync (API)
-      // The API performs additional "Truth Recovery" (counter healing) and updates
-      // global member/group metadata for other users.
-      // We run this in the background and don't block the UI result on its success.
+      // 2. Background Sync (API via centralized apiClient)
+      // The API updates group.memberLastReadAt[uid] so the unread badge is accurately cleared across devices.
       const performApiSync = async () => {
         try {
-          const idToken = await auth?.currentUser?.getIdToken();
-          if (!idToken) return;
-
-          let appCheckToken = '';
-          try {
-            if (appCheck) {
-              const appCheckTokenResponse = await getToken(appCheck!, false);
-              appCheckToken = appCheckTokenResponse.token;
-            }
-          } catch (e) {
-            console.warn('[useDashboardActions] AppCheck token failed:', e);
-          }
-
-          const API_BASE = '';
-          const response = await fetch(`${API_BASE}/api/groups/update-read-status`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${idToken}`,
-              ...(appCheckToken ? { 'X-Firebase-AppCheck': appCheckToken } : {})
-            },
-            body: JSON.stringify({ groupId, readMessageCount: totalMessages })
+          await apiClient.post('/api/groups/update-read-status', {
+            groupId,
+            readMessageCount: totalMessages
           });
-
-          if (!response.ok) {
-            console.warn('Background read status API sync failed:', await response.text());
-          }
         } catch (error) {
-          console.error('Background read status API sync failed:', error);
+          console.warn('[updateGroupReadStatus] API sync failed:', error);
         }
       };
 
-      // Fire and forget (or handle errors silently in production)
+      // Fire and forget
       performApiSync();
 
       return true;

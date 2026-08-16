@@ -482,8 +482,7 @@ export class NoteService {
         transaction: admin.firestore.Transaction,
         context: PostNoteReadContext
     ): void {
-        const { groupsToPostTo, userGroupIds, existingSharedIds, groupDocsMap, userData, now, messagesInGroup } = context;
-        const uid = userData.uid;
+        const { uid, groupsToPostTo, userGroupIds, existingSharedIds, groupDocsMap, userData, now, messagesInGroup } = context;
 
         for (const gid of groupsToPostTo) {
             if (!userGroupIds.includes(gid) || existingSharedIds[gid]) continue;

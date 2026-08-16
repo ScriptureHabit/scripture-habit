@@ -139,7 +139,13 @@ export const hasGroupUnread = (
     return (lastMessageMillis - joinedMillis) > 500;
   }
 
-  return true;
+  // Fallback if joinedAt is absent: compare against group creation timestamp
+  if (group.createdAt) {
+    const createdMillis = parseTimestampToMillis(group.createdAt);
+    return (lastMessageMillis - createdMillis) > 500;
+  }
+
+  return false;
 };
 
 /**

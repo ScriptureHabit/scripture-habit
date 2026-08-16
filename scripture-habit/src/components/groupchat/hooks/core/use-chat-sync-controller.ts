@@ -15,9 +15,9 @@ import { ChatAction } from './chat-reducer';
 export const useChatSyncController = (
   groupId: string | null,
   userData: UserData | null,
-  groupData: GroupData | null,
+  _groupData: GroupData | null,
   messages: Message[],
-  userReadCount: number | null,
+  _userReadCount: number | null,
   dispatch: Dispatch<ChatAction>,
   isViewActive: boolean = false
 ) => {
@@ -40,20 +40,31 @@ export const useChatSyncController = (
     }
   }, [userData?.uid, updateGroupReadStatus, dispatch]);
 
-  // Handle visibility changes for read sync
+  // Handle active view mount and visibility changes for read sync
   useEffect(() => {
-    if (!isViewActive || !groupId || !groupData || userReadCount === null) return;
+    if (!isViewActive || !groupId) return;
     
     const totalMsgs = messages.length;
-    
-    const isVisible = document.visibilityState === 'visible';
-    const isAppActive = isVisible || document.hasFocus();
-    const hasNewContent = totalMsgs > (userReadCount || 0);
+    const isVisible = typeof document === 'undefined' || document.visibilityState === 'visible' || document.hasFocus();
 
-    if (hasNewContent && isAppActive) {
+    if (isVisible) {
       updateReadStatus(groupId, totalMsgs);
     }
-  }, [groupId, groupData, messages.length, userReadCount, updateReadStatus, isViewActive]);
+
+    const handleVisibilityOrFocus = () => {
+      if (document.visibilityState === 'visible' || document.hasFocus()) {
+        updateReadStatus(groupId, messages.length);
+      }
+    };
+
+    window.addEventListener('focus', handleVisibilityOrFocus);
+    document.addEventListener('visibilitychange', handleVisibilityOrFocus);
+
+    return () => {
+      window.removeEventListener('focus', handleVisibilityOrFocus);
+      document.removeEventListener('visibilitychange', handleVisibilityOrFocus);
+    };
+  }, [groupId, messages.length, updateReadStatus, isViewActive]);
 
   // Background listener for the source-of-truth read count from Firestore
   useEffect(() => {
