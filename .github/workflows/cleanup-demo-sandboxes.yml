@@ -1,0 +1,20 @@
+name: Cleanup Demo Sandboxes
+
+on:
+  schedule:
+    # Runs every 6 hours to clean up expired demo sandbox sessions (> 1 hour old)
+    - cron: '0 */6 * * *'
+  workflow_dispatch: # Allows manual trigger from GitHub Actions tab
+
+jobs:
+  cleanup-demo:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Cleanup Stale Demo Sandboxes
+        run: |
+          curl -f -L -X POST "https://scripturehabit.app/api/cron/cleanup-demo-sandboxes" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            -H "Content-Type: application/json" \
+            -w "\nHTTP Status: %{http_code}\n" \
+            -v

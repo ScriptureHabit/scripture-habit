@@ -9,7 +9,7 @@ import { NotificationService } from './notification-service.js';
 import { formatDateInTimeZone, normalizeDateString } from '../../src/utils/time-utils.js';
 import { calculateUnityPercentage } from '../../src/utils/unity-utils.js';
 import { Group } from '../../src/types/chat.js';
-import { getMessageExpireAt } from '../lib/ttl-utils.js';
+import { getMessageExpireAt, getDemoExpireAt } from '../lib/ttl-utils.js';
 
 export interface PostNoteInput {
     uid: string;
@@ -560,7 +560,7 @@ export class NoteService {
                         createdAt: admin.firestore.Timestamp.fromMillis(baseTimeMs + 200),
                         isSystemMessage: false,
                         isNote: false,
-                        expireAt: getMessageExpireAt()
+                        expireAt: getDemoExpireAt()
                     },
                     {
                         id: `demo-celeb-bob-${now.getTime()}`,
@@ -571,7 +571,7 @@ export class NoteService {
                         createdAt: admin.firestore.Timestamp.fromMillis(baseTimeMs + 400),
                         isSystemMessage: false,
                         isNote: false,
-                        expireAt: getMessageExpireAt()
+                        expireAt: getDemoExpireAt()
                     },
                     {
                         id: `demo-celeb-charlie-${now.getTime()}`,
@@ -582,7 +582,7 @@ export class NoteService {
                         createdAt: admin.firestore.Timestamp.fromMillis(baseTimeMs + 600),
                         isSystemMessage: false,
                         isNote: false,
-                        expireAt: getMessageExpireAt()
+                        expireAt: getDemoExpireAt()
                     }
                 ];
 

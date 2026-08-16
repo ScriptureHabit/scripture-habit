@@ -155,14 +155,22 @@ export function useJoinGroup() {
 
   const filteredGroups = useMemo(() => {
     const userGroupIds = userData?.groupIds || (userData?.groupId ? [userData.groupId] : []);
-    const available = publicGroups.filter((g: Group) => !userGroupIds.includes(g.id));
+    const isAnonymous = user?.isAnonymous || userData?.isAnonymousDemo;
+
+    let available = publicGroups.filter((g: Group) => !userGroupIds.includes(g.id));
+    if (isAnonymous && user?.uid) {
+      const demoGroupId = `demo-group-${user.uid}`;
+      available = available.filter(g => g.id === demoGroupId);
+    } else if (!isAnonymous) {
+      available = available.filter(g => !g.isDemoGroup && !g.id.startsWith('demo-group-'));
+    }
+
     return [...available].sort((a, b) => {
-      // Prioritize demo group (Daily Bread) at the top of the list
       if (a.isDemoGroup && !b.isDemoGroup) return -1;
       if (!a.isDemoGroup && b.isDemoGroup) return 1;
       return 0;
     });
-  }, [publicGroups, userData]);
+  }, [publicGroups, userData, user]);
 
   const totalPages = Math.ceil(filteredGroups.length / groupsPerPage);
 

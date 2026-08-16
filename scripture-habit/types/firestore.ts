@@ -80,6 +80,7 @@ export interface GroupDocument {
     // Localization
     timeZone?: string;
     translations?: Record<string, { name: string; description?: string }>;
+    expireAt?: FirestoreTimestamp;
 }
 
 /**
@@ -152,6 +153,7 @@ export interface UserDocument {
     lastRecapPrompt?: string | null;
     lastRecapSummary?: string | null;
     lastRecapAudioURL?: string | null;
+    expireAt?: FirestoreTimestamp;
 }
 
 /**

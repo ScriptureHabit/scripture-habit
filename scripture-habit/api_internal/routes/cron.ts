@@ -7,6 +7,7 @@ import { t } from '../lib/i18n.js';
 import { AuthenticationError, NotFoundError, sendErrorResponse } from '../lib/errors.js';
 import { AiDailyNoteService } from '../services/ai-daily-note-service.js';
 import { MessageService } from '../services/message-service.js';
+import { DEMO_TTL_MS } from '../lib/ttl-utils.js';
 
 interface CronReport {
     groupId: string;
@@ -590,12 +591,12 @@ router.all('/post-ai-daily-notes', verifyCronSecret, async (req: Request, res: R
 });
 
 /**
- * Cleanup Stale Demo Sandbox Data (TTL: > 24 hours)
+ * Cleanup Stale Demo Sandbox Data (TTL: > 1 hour)
  */
 router.all('/cleanup-demo-sandboxes', verifyCronSecret, async (_req: Request, res: Response) => {
     console.log('[Cron] Starting cleanup for stale demo sandbox environments...');
     try {
-        const cutoff = admin.firestore.Timestamp.fromMillis(Date.now() - 24 * 60 * 60 * 1000);
+        const cutoff = admin.firestore.Timestamp.fromMillis(Date.now() - DEMO_TTL_MS);
         const staleDemoUsersSnap = await db.collection('users')
             .where('isAnonymousDemo', '==', true)
             .where('createdAt', '<', cutoff)

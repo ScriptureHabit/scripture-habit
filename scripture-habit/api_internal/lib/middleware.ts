@@ -91,6 +91,17 @@ export const aiLimiter = rateLimit({
     validate: { default: false } 
 });
 
+export const demoInitLimiter = rateLimit({
+    store: createRedisStore('rl:demo:'),
+    windowMs: 60 * 60 * 1000, // 1 hour window
+    limit: isProd ? 10 : 1000, // Max 10 demo creations per IP per hour in prod
+    message: { error: 'Too many demo creation attempts. Please try again later.' },
+    standardHeaders: 'draft-7',
+    legacyHeaders: false,
+    keyGenerator: aiLimiterKeyGenerator,
+    validate: { default: false }
+});
+
 export const verifyAppCheck = async (req: Request, _res: Response, next: NextFunction) => {
     // SECURITY: SKIP_APP_CHECK should NEVER be true in production.
     const isProduction = process.env.NODE_ENV === 'production';

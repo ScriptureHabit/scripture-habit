@@ -1,10 +1,11 @@
 import express, { Response } from 'express';
 import { admin, db } from '../lib/firebase-admin.js';
-import { verifyAppCheck, authenticate, AuthenticatedRequest } from '../lib/middleware.js';
+import { verifyAppCheck, authenticate, demoInitLimiter, AuthenticatedRequest } from '../lib/middleware.js';
 import { sendErrorResponse, ValidationError } from '../lib/errors.js';
 import { z } from 'zod';
 import { GroupDocument, UserDocument } from '../../types/firestore.js';
 import { t, getDemoGroupTranslations } from '../lib/i18n.js';
+import { getDemoExpireAt } from '../lib/ttl-utils.js';
 
 const router = express.Router();
 
@@ -16,7 +17,7 @@ const initializeDemoSchema = z.object({
  * POST /api/demo/initialize
  * Initializes an isolated sandbox environment for an anonymous user.
  */
-router.post('/initialize', authenticate, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
+router.post('/initialize', demoInitLimiter, authenticate, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
     try {
         const validation = initializeDemoSchema.safeParse(req.body);
         if (!validation.success) {
@@ -66,7 +67,8 @@ router.post('/initialize', authenticate, verifyAppCheck, async (req: Authenticat
             lastActiveAt: currentTimestamp,
             lastPostAt: oneDayAgoTimestamp,
             kickThreshold: 7,
-            hasSetKickThreshold: true
+            hasSetKickThreshold: true,
+            expireAt: getDemoExpireAt()
         };
         batch.set(userRef, userData, { merge: true });
 
@@ -127,7 +129,8 @@ router.post('/initialize', authenticate, verifyAppCheck, async (req: Authenticat
             lastNoteByUid: 'bot-bob',
             lastNoteByNickname: 'Bob 🔥',
             createdAt: admin.firestore.Timestamp.fromMillis(now - 14 * 24 * 60 * 60 * 1000),
-            timeZone: 'Asia/Tokyo'
+            timeZone: 'Asia/Tokyo',
+            expireAt: getDemoExpireAt()
         };
         batch.set(groupRef, groupData, { merge: true });
 
@@ -141,7 +144,8 @@ router.post('/initialize', authenticate, verifyAppCheck, async (req: Authenticat
                 senderId: 'bot-alice',
                 senderNickname: 'Alice 📖',
                 userPhotoURL: 'https://api.dicebear.com/7.x/bottts/svg?seed=Alice',
-                createdAt: admin.firestore.Timestamp.fromMillis(now - 24 * 60 * 60 * 1000)
+                createdAt: admin.firestore.Timestamp.fromMillis(now - 24 * 60 * 60 * 1000),
+                expireAt: getDemoExpireAt()
             },
             {
                 id: `demo-msg-2-${uid}`,
@@ -153,7 +157,8 @@ router.post('/initialize', authenticate, verifyAppCheck, async (req: Authenticat
                 isNote: true,
                 scripture: 'Book of Mormon',
                 chapter: '1 Nephi 1',
-                comment: 'Starting 1 Nephi today! Loved the reflection on God\'s tender mercies.'
+                comment: 'Starting 1 Nephi today! Loved the reflection on God\'s tender mercies.',
+                expireAt: getDemoExpireAt()
             },
             {
                 id: `demo-msg-3-${uid}`,
@@ -165,7 +170,8 @@ router.post('/initialize', authenticate, verifyAppCheck, async (req: Authenticat
                 isNote: true,
                 scripture: 'Book of Mormon',
                 chapter: '1 Nephi 3:7',
-                comment: '"I will go and do the things which the Lord hath commanded." Let us move forward with faith.'
+                comment: '"I will go and do the things which the Lord hath commanded." Let us move forward with faith.',
+                expireAt: getDemoExpireAt()
             }
         ];
 

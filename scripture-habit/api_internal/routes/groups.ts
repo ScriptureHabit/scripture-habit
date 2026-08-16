@@ -8,7 +8,7 @@ import { GroupDocument, UserDocument, MemberPreview as PreviewItem, GroupMemberD
 import { MAX_GROUPS_PER_USER } from '../lib/constants.js';
 import { removeMemberFromGroup } from '../lib/membership-utils.js';
 import { AppError, AuthenticationError, ForbiddenError, NotFoundError, ValidationError, sendErrorResponse } from '../lib/errors.js';
-import { getMessageExpireAt } from '../lib/ttl-utils.js';
+import { getMessageExpireAt, getDemoExpireAt } from '../lib/ttl-utils.js';
 import { MessageService } from '../services/message-service.js';
 import { t, getDemoGroupTranslations } from '../lib/i18n.js';
 import { AiDailyNoteService } from '../services/ai-daily-note-service.js';
@@ -134,7 +134,8 @@ router.get('/', authenticate, verifyAppCheck, async (req: AuthenticatedRequest, 
                     lastNoteByUid: 'bot-bob',
                     lastNoteByNickname: 'Bob 🔥',
                     createdAt: admin.firestore.Timestamp.fromMillis(now - 14 * 24 * 60 * 60 * 1000),
-                    timeZone: 'Asia/Tokyo'
+                    timeZone: 'Asia/Tokyo',
+                    expireAt: getDemoExpireAt()
                 };
 
                 const batch = db.batch();
@@ -150,7 +151,8 @@ router.get('/', authenticate, verifyAppCheck, async (req: AuthenticatedRequest, 
                         senderId: 'bot-alice',
                         senderNickname: 'Alice 📖',
                         userPhotoURL: 'https://api.dicebear.com/7.x/bottts/svg?seed=Alice',
-                        createdAt: admin.firestore.Timestamp.fromMillis(now - 24 * 60 * 60 * 1000)
+                        createdAt: admin.firestore.Timestamp.fromMillis(now - 24 * 60 * 60 * 1000),
+                        expireAt: getDemoExpireAt()
                     },
                     {
                         id: `demo-msg-2-${uid}`,
@@ -162,7 +164,8 @@ router.get('/', authenticate, verifyAppCheck, async (req: AuthenticatedRequest, 
                         isNote: true,
                         scripture: 'Book of Mormon',
                         chapter: '1 Nephi 1',
-                        comment: 'Starting 1 Nephi today! Loved the reflection on God\'s tender mercies.'
+                        comment: 'Starting 1 Nephi today! Loved the reflection on God\'s tender mercies.',
+                        expireAt: getDemoExpireAt()
                     },
                     {
                         id: `demo-msg-3-${uid}`,
@@ -174,7 +177,8 @@ router.get('/', authenticate, verifyAppCheck, async (req: AuthenticatedRequest, 
                         isNote: true,
                         scripture: 'Book of Mormon',
                         chapter: '1 Nephi 3:7',
-                        comment: '"I will go and do the things which the Lord hath commanded." Let us move forward with faith.'
+                        comment: '"I will go and do the things which the Lord hath commanded." Let us move forward with faith.',
+                        expireAt: getDemoExpireAt()
                     }
                 ];
 
@@ -235,7 +239,7 @@ router.get('/', authenticate, verifyAppCheck, async (req: AuthenticatedRequest, 
                                 userPhotoURL: 'https://api.dicebear.com/7.x/bottts/svg?seed=Alice',
                                 text: t(userLang, 'onboardingQuest.demoWelcomeAlice', { nickname }),
                                 createdAt: admin.firestore.Timestamp.fromMillis(nowMs + 100),
-                                expireAt: getMessageExpireAt()
+                                expireAt: getDemoExpireAt()
                             },
                             {
                                 id: `demo-welcome-bob-${nowMs}`,
@@ -244,7 +248,7 @@ router.get('/', authenticate, verifyAppCheck, async (req: AuthenticatedRequest, 
                                 userPhotoURL: 'https://api.dicebear.com/7.x/bottts/svg?seed=Bob',
                                 text: t(userLang, 'onboardingQuest.demoWelcomeBob', { nickname }),
                                 createdAt: admin.firestore.Timestamp.fromMillis(nowMs + 200),
-                                expireAt: getMessageExpireAt()
+                                expireAt: getDemoExpireAt()
                             },
                             {
                                 id: `demo-welcome-charlie-${nowMs}`,
@@ -253,7 +257,7 @@ router.get('/', authenticate, verifyAppCheck, async (req: AuthenticatedRequest, 
                                 userPhotoURL: 'https://api.dicebear.com/7.x/bottts/svg?seed=Charlie',
                                 text: t(userLang, 'onboardingQuest.demoWelcomeCharlie', { nickname }),
                                 createdAt: admin.firestore.Timestamp.fromMillis(nowMs + 300),
-                                expireAt: getMessageExpireAt()
+                                expireAt: getDemoExpireAt()
                             }
                         ];
 
@@ -287,20 +291,33 @@ router.get('/', authenticate, verifyAppCheck, async (req: AuthenticatedRequest, 
             }
         }
 
+        if (isDemo && uid) {
+            const demoGroupId = `demo-group-${uid}`;
+            const demoGroupDoc = await db.collection('groups').doc(demoGroupId).get();
+            if (demoGroupDoc.exists) {
+                return res.json([{
+                    id: demoGroupDoc.id,
+                    ...(demoGroupDoc.data() as GroupDocument)
+                }]);
+            }
+            return res.json([]);
+        }
+
         const groupsSnap = await db.collection('groups')
             .where('isPublic', '==', true)
-            .limit(limitCount)
+            .limit(limitCount + 30)
             .get();
 
-        const groups = groupsSnap.docs.map(doc => ({
-            id: doc.id,
-            ...(doc.data() as GroupDocument)
-        }));
+        const groups = groupsSnap.docs
+            .map(doc => ({
+                id: doc.id,
+                ...(doc.data() as GroupDocument)
+            }))
+            .filter(g => !g.isDemoGroup && !g.id.startsWith('demo-group-'))
+            .slice(0, limitCount);
 
-        // Sort by isDemoGroup first, then lastMessageAt / createdAt
+        // Sort by lastMessageAt / createdAt
         groups.sort((a: Partial<GroupDocument>, b: Partial<GroupDocument>) => {
-            if (a.isDemoGroup && !b.isDemoGroup) return -1;
-            if (!a.isDemoGroup && b.isDemoGroup) return 1;
             const timeA = getTimestampMillis(a.lastMessageAt || a.createdAt);
             const timeB = getTimestampMillis(b.lastMessageAt || b.createdAt);
             return timeB - timeA;
@@ -709,6 +726,14 @@ router.post('/join-group', authenticate, requireEmailVerified, verifyAppCheck, a
                     }
                 }
 
+                const isUserDemo = userData.isAnonymousDemo || req.user?.firebase?.sign_in_provider === 'anonymous';
+                if (isUserDemo && (!gData.isDemoGroup || gid !== `demo-group-${uid}`)) {
+                    throw new ForbiddenError('Demo accounts can only join their dedicated demo group.');
+                }
+                if (!isUserDemo && gData.isDemoGroup) {
+                    throw new ForbiddenError('Real accounts cannot join demo sandbox groups.');
+                }
+
                 if (members.includes(uid)) throw new ValidationError('You are already a member of this group.', 'ALREADY_MEMBER');
                 if (members.length >= maxMembers) {
                     throw new ValidationError('This group is full.', 'GROUP_FULL');
@@ -795,7 +820,7 @@ router.post('/join-group', authenticate, requireEmailVerified, verifyAppCheck, a
                             userPhotoURL: 'https://api.dicebear.com/7.x/bottts/svg?seed=Alice',
                             text: t(joinLang, 'onboardingQuest.demoWelcomeAlice', { nickname }),
                             createdAt: admin.firestore.Timestamp.fromMillis(nowMs + 100),
-                            expireAt: getMessageExpireAt()
+                            expireAt: getDemoExpireAt()
                         },
                         {
                             id: `demo-welcome-bob-${nowMs}`,
@@ -804,7 +829,7 @@ router.post('/join-group', authenticate, requireEmailVerified, verifyAppCheck, a
                             userPhotoURL: 'https://api.dicebear.com/7.x/bottts/svg?seed=Bob',
                             text: t(joinLang, 'onboardingQuest.demoWelcomeBob', { nickname }),
                             createdAt: admin.firestore.Timestamp.fromMillis(nowMs + 200),
-                            expireAt: getMessageExpireAt()
+                            expireAt: getDemoExpireAt()
                         },
                         {
                             id: `demo-welcome-charlie-${nowMs}`,
@@ -813,7 +838,7 @@ router.post('/join-group', authenticate, requireEmailVerified, verifyAppCheck, a
                             userPhotoURL: 'https://api.dicebear.com/7.x/bottts/svg?seed=Charlie',
                             text: t(joinLang, 'onboardingQuest.demoWelcomeCharlie', { nickname }),
                             createdAt: admin.firestore.Timestamp.fromMillis(nowMs + 300),
-                            expireAt: getMessageExpireAt()
+                            expireAt: getDemoExpireAt()
                         }
                     ];
 
