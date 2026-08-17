@@ -61,9 +61,11 @@
 .action-btn {
     display: flex;
     align-items: center;
-    gap: 0.3rem;
-    padding: 0.4rem 0.8rem;
-    border-radius: 6px;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border-radius: 8px;
     border: none;
     font-size: 0.85rem;
     cursor: pointer;

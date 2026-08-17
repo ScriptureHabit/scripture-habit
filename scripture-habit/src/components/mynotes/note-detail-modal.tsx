@@ -122,11 +122,23 @@ const NoteDetailModal = ({ isOpen, onClose, note, userGroups, userData, onEdit, 
                                 : 'Unknown Date'}
                         </span>
                         <div className="detail-actions">
-                            <button className="action-btn edit" onClick={handleEdit}>
-                                <UilPen size="18" /> {t('groupChat.editMessage') || 'Edit'}
+                            <button 
+                                className="action-btn edit" 
+                                onClick={handleEdit}
+                                title={t('groupChat.editMessage') || 'Edit'}
+                                aria-label={t('groupChat.editMessage') || 'Edit'}
+                                data-testid="edit-note-btn"
+                            >
+                                <UilPen size="18" />
                             </button>
-                            <button className="action-btn delete" onClick={handleDelete}>
-                                <UilTrashAlt size="18" /> {t('groupChat.deleteMessage') || 'Delete'}
+                            <button 
+                                className="action-btn delete" 
+                                onClick={handleDelete}
+                                title={t('groupChat.deleteMessage') || 'Delete'}
+                                aria-label={t('groupChat.deleteMessage') || 'Delete'}
+                                data-testid="delete-note-btn"
+                            >
+                                <UilTrashAlt size="18" />
                             </button>
                         </div>
                     </div>

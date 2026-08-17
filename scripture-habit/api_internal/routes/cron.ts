@@ -596,15 +596,21 @@ router.all('/post-ai-daily-notes', verifyCronSecret, async (req: Request, res: R
 router.all('/cleanup-demo-sandboxes', verifyCronSecret, async (_req: Request, res: Response) => {
     console.log('[Cron] Starting cleanup for stale demo sandbox environments...');
     try {
-        const cutoff = admin.firestore.Timestamp.fromMillis(Date.now() - DEMO_TTL_MS);
-        const staleDemoUsersSnap = await db.collection('users')
+        const cutoffMillis = Date.now() - DEMO_TTL_MS;
+        const demoUsersSnap = await db.collection('users')
             .where('isAnonymousDemo', '==', true)
-            .where('createdAt', '<', cutoff)
-            .limit(50)
+            .limit(100)
             .get();
 
+        const staleDocs = demoUsersSnap.docs.filter(doc => {
+            const data = doc.data();
+            const createdAtMillis = data.createdAt?.toMillis ? data.createdAt.toMillis() : (data.createdAt ? new Date(data.createdAt).getTime() : 0);
+            const expireAtMillis = data.expireAt?.toMillis ? data.expireAt.toMillis() : (data.expireAt ? new Date(data.expireAt).getTime() : 0);
+            return (expireAtMillis > 0 && expireAtMillis <= Date.now()) || (createdAtMillis > 0 && createdAtMillis <= cutoffMillis);
+        });
+
         let cleanedUsersCount = 0;
-        for (const doc of staleDemoUsersSnap.docs) {
+        for (const doc of staleDocs) {
             const uid = doc.id;
             const groupId = `demo-group-${uid}`;
 
