@@ -124,7 +124,7 @@ The application is actively deployed and in operation, tracking daily active use
 
 ### Directory Architecture
 <p align="center">
-  <img src="./docs/images/directory-path-architecture.png" width="850" alt="Directory Architecture" />
+  <img src="./docs/images/en-directory-path-architecture.png" width="850" alt="Directory Architecture" />
 </p>
 
 ---
