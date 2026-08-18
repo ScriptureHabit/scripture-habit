@@ -1,4 +1,5 @@
 import { NOTE_HEADER_REGEX, removeNoteHeader, isGCUrl, extractUrls } from './note-utils';
+import { ALL_LOCALES } from '../locales/registry';
 
 export interface ParsedNote {
     isOriginalStructured: boolean;
@@ -11,21 +12,34 @@ export interface ParsedNote {
     finalSimpleContent: string;
 }
 
-const KNOWN_SCRIPTURES = [
-    'Doctrine and Covenants', 'Ordinances and Proclamations', 'Pearl of Great Price', 'General Conference',
-    'Book of Mormon', 'Old Testament', 'New Testament', 'BYU Speeches', 'Other',
-    '教義と聖約', '儀式と宣言', '高価な真珠', '総大会', 'モルモン書', '旧約聖書', '新約聖書', 'その他',
-    'Doctrina y Convenios', 'Ordenanzas y Declaraciones', 'La Perla de Gran Precio', 'Conferencia General',
-    'El Libro de Mormón', 'Antiguo Testamento', 'Nuevo Testamento', 'Otros',
-    'Doutrina e Convênios', 'Ordenanças e Declarações', 'Pérola de Grande Valor', 'Conferência Geral',
-    'O Livro de Mórmon', 'Velho Testamento', 'Novo Testamento', 'Outros',
-    '교리와 성약', '의식 및 선언', '값진 진주', '연차 대회', '몰몬경', '구약전書', '구약전서', '신약전서', '기타',
-    '教義和聖約', '儀式與宣言', '無價珍珠', '總會大會', '摩爾門經', '舊約', '新約', '其他',
-    'Giáo Lý và Giao Ước', 'Các Giáo Lễ và Tuyên Ngôn', 'Trân Châu Vô Giá', 'Đại Hội Trung Ương', 'Sách Mặc Môn', 'Cựu Ước', 'Tân Ước', 'Khác',
-    'หลักคำสอนและพันธสัญญา', 'พิธีการและถ้อยแถลง', 'ไข่มุกอันล้ำค่า', 'การประชุมใหญ่สามัญ', 'พระคัมภีร์มอรมอน', 'พันธสัญญาเดิม', 'พันธสัญญาใหม่', 'อื่นๆ',
-    'Doktrina at mga Tipan', 'Mga Ordenansa at Pagpapahayag', 'Mahalagang Perlas', 'Pangkalahatang Kumperensya', 'Mga Talumpati sa BYU', 'Aklat ni Mormon', 'Lumang Tipan', 'Bagong Tipan', 'Iba pa',
-    'Mafundisho na Maagano', 'Ibada na Matangazo', 'Lulu ya Thamani Kuu', 'Mkutano Mkuu', 'Kitabu cha Mormoni', 'Agano la Kale', 'Agano Jipya', 'Nyingine'
-];
+function escapeRegex(str: string): string {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, '\\s+');
+}
+
+function collectUniqueStrings(...arrays: (string | undefined | null)[][]): string[] {
+    const set = new Set<string>();
+    for (const arr of arrays) {
+        for (const item of arr) {
+            if (typeof item === 'string') {
+                const trimmed = item.trim();
+                if (trimmed.length > 0) set.add(trimmed);
+            }
+        }
+    }
+    return Array.from(set);
+}
+
+// 1. Automatically collect all scripture category names across all locales (SSOT)
+export const KNOWN_SCRIPTURES = collectUniqueStrings(
+    ALL_LOCALES.flatMap(l => Object.values(l.scriptures || {})),
+    ALL_LOCALES.flatMap(l => [
+        l.books?.['Doctrine and Covenants'],
+        l.books?.['D&C'],
+        l.books?.['The Living Christ'],
+        l.books?.['The Family Proclamation']
+    ]),
+    ['Doctrine and Covenants', 'D&C', 'BYU Speeches', 'General Conference', 'Book of Mormon', 'Old Testament', 'New Testament', 'Pearl of Great Price', 'Ordinances and Proclamations']
+).sort((a, b) => b.length - a.length);
 
 export const splitHeaderScriptureAndChapter = (headerText: string): { scriptureValue: string; chapterValue: string } => {
     const trimmed = headerText.trim();
@@ -44,14 +58,57 @@ export const splitHeaderScriptureAndChapter = (headerText: string): { scriptureV
     };
 };
 
-const SCRIPTURE_LABEL_REGEX = /^(?:\*\*|)\s*(?:groupChat\.|noteLabels\.|)(?:Category|Scripture|カテゴリ|聖句|Categoría|Escritura|성구|經文|经文|Banal\s+na\s+Kasulatan|Thánh\s+thư|Andiko|พระคัมภีร์)\s*(?:\*\*|)\s*[:：]/i;
-const CHAPTER_LABEL_REGEX = /^(?:\*\*|)\s*(?:groupChat\.|noteLabels\.|)(?:Chapter|章|Capítulo|장|章節|章节|Kabanata|Chương|Sura|บท)\s*(?:\*\*|)\s*[:：]/i;
-const COMMENT_LABEL_REGEX = /^(?:\*\*|)\s*(?:groupChat\.|noteLabels\.|)(?:Comment|コメント|Comentario|Comentário|코멘트|評論|评论|Komento|Nhận\s+xét|Maoni|ความคิดเห็น)\s*(?:\*\*|)\s*[:：]/i;
-const GENERAL_LABEL_REGEX = /^(?:\*\*|)\s*(?:groupChat\.|noteLabels\.|)(?:Talk|Speech|Title|お話|スピーチ|タイトル|Discurso|Título|Mga\s+Talumpati)\s*(?:\*\*|)\s*[:：]/i;
+// 2. Automatically collect label tokens across all locales (SSOT)
+const scriptureLabels = collectUniqueStrings(
+    ALL_LOCALES.map(l => l.noteLabels?.scripture),
+    ALL_LOCALES.map(l => typeof l.groupChat?.category === 'string' ? l.groupChat.category : undefined),
+    ['Category', 'Scripture', 'カテゴリ', '聖句', 'Categoría', 'Escritura']
+);
 
-const KV_LINE_REGEX = /^(?:\*\*|)\s*(?:groupChat\.|noteLabels\.|)(?:Category|Scripture|Chapter|Comment|Talk|Speech|Title|カテゴリ|聖句|章|コメント|お話|スピーチ|タイトル|Categoría|Capítulo|Comentario|Discurso|Título|Escritura|Comentário|성구|장|코멘트|經文|章節|評論|经文|章节|评论|Banal\s+na\s+Kasulatan|Kabanata|Komento|Thánh\s+thư|Chương|Nhận\s+xét|Andiko|Sura|Maoni|พระคัมภีร์|บท|ความคิดเห็น)\s*(?:\*\*|)\s*[:：]/im;
+const chapterLabels = collectUniqueStrings(
+    ALL_LOCALES.map(l => l.noteLabels?.chapter),
+    ALL_LOCALES.map(l => typeof l.groupChat?.chapter === 'string' ? l.groupChat.chapter : undefined),
+    ['Chapter', '章', 'Capítulo', '장', '章節', '章节', 'Kabanata', 'Chương', 'Sura', 'บท']
+);
 
-const IS_LABEL_HEADER_REGEX = /^(?:groupChat\.|noteLabels\.|)(?:Category|Scripture|Chapter|Comment|Talk|Speech|Title|カテゴリ|聖句|章|コメント|お話|スピーチ|タイトル|Categoría|Capítulo|Comentario|Discurso|Título|Escritura|Comentário|성구|장|코멘特?|코멘트|經文|章節|評論|经文|章节|评论|Banal\s+na\s+Kasulatan|Kabanata|Komento|Thánh\s+thư|Chương|Nhận\s+xét|Andiko|Sura|Maoni|พระคัมภีร์|บท|ความคิดเห็น)\s*[:：]?$/i;
+const commentLabels = collectUniqueStrings(
+    ALL_LOCALES.map(l => l.noteLabels?.comment),
+    ALL_LOCALES.map(l => typeof l.groupChat?.comment === 'string' ? l.groupChat.comment : undefined),
+    ['Comment', 'コメント', 'Comentario', 'Comentário', '코멘트', '評論', '评论', 'Komento', 'Nhận xét', 'Maoni', 'ความคิดเห็น']
+);
+
+const generalLabels = collectUniqueStrings(
+    ALL_LOCALES.map(l => l.noteLabels?.talk),
+    ALL_LOCALES.map(l => l.noteLabels?.speech),
+    ALL_LOCALES.map(l => l.noteLabels?.title),
+    ['Talk', 'Speech', 'Title', 'お話', 'スピーチ', 'タイトル', 'Discurso', 'Título']
+);
+
+const allLabels = collectUniqueStrings(
+    scriptureLabels,
+    chapterLabels,
+    commentLabels,
+    generalLabels
+);
+
+function buildPrefixRegex(words: string[], flags = 'i'): RegExp {
+    const pattern = words.sort((a, b) => b.length - a.length).map(escapeRegex).join('|');
+    return new RegExp(`^(?:\\*\\*|)\\s*(?:groupChat\\.|noteLabels\\.|)(?:${pattern})\\s*(?:\\*\\*|)\\s*[:：]`, flags);
+}
+
+function buildExactLabelRegex(words: string[], flags = 'i'): RegExp {
+    const pattern = words.sort((a, b) => b.length - a.length).map(escapeRegex).join('|');
+    return new RegExp(`^(?:groupChat\\.|noteLabels\\.|)(?:${pattern})\\s*[:：]?$`, flags);
+}
+
+// Dynamically generated Regexes adhering to DRY principles
+export const SCRIPTURE_LABEL_REGEX = buildPrefixRegex(scriptureLabels);
+export const CHAPTER_LABEL_REGEX   = buildPrefixRegex(chapterLabels);
+export const COMMENT_LABEL_REGEX   = buildPrefixRegex(commentLabels);
+export const GENERAL_LABEL_REGEX   = buildPrefixRegex(generalLabels);
+
+export const KV_LINE_REGEX         = buildPrefixRegex(allLabels, 'im');
+export const IS_LABEL_HEADER_REGEX = buildExactLabelRegex(allLabels);
 
 const getDividerIndex = (line: string): number => {
     const idxColon = line.indexOf(':');
