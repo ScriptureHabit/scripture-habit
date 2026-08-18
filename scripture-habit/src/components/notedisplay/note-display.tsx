@@ -77,7 +77,12 @@ const NoteDisplay = ({
             return `[${cleanUrl}](${cleanUrl})${trailing}`;
         });
 
+        const fallbackHeaderLine = (!scriptureLine && !chapterLine && parsed.headerMatch)
+            ? `**${parsed.headerMatch[1]}**`
+            : null;
+
         return [
+            fallbackHeaderLine,
             scriptureLine,
             chapterLine,
             `\n**${commentLabel}:**\n${commentWithLinks}`

@@ -1,4 +1,4 @@
-export const NOTE_HEADER_REGEX = /^\*\*(.*?)\*\*\n\n/;
+export const NOTE_HEADER_REGEX = /^\*\*(.*?)\*\*(?:\n\n|\n|\s+|$)/;
 export const removeNoteHeader = (text: string) => text.replace(NOTE_HEADER_REGEX, '');
 
 /**

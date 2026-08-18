@@ -59,4 +59,32 @@ describe('useNoteParser', () => {
         expect(result.current.isOriginalStructured).toBe(true);
         expect(result.current.comment).toBe('In the beginning God created the heavens and the earth.');
     });
+
+    it('parses space-separated markdown header without newlines correctly', () => {
+        const spaceHeaderText = `**Old Testament ヨブ記 16：5** 良い友人とはどんな人でしょう。 同じ境遇にいない人からの助言は逆に苦しめることにもなることがあります。`;
+        const { result } = renderHook(() => useNoteParser(spaceHeaderText, undefined, false));
+
+        expect(result.current.isOriginalStructured).toBe(true);
+        expect(result.current.scriptureValue).toBe('Old Testament');
+        expect(result.current.chapterValue).toBe('ヨブ記 16：5');
+        expect(result.current.comment).toBe('良い友人とはどんな人でしょう。 同じ境遇にいない人からの助言は逆に苦しめることにもなることがあります。');
+    });
+
+    it('parses single newline markdown header containing colons in chapter correctly without misinterpreting as category', () => {
+        const singleNewlineText = `**Old Testament ヨブ記 13:13)**\nヨブの人生は私達の人生にどう当てはめられるでしょう。ヨブのように罪悪を犯さない正しい人でも苦難にあいます。`;
+        const { result } = renderHook(() => useNoteParser(singleNewlineText, undefined, false));
+
+        expect(result.current.isOriginalStructured).toBe(true);
+        expect(result.current.scriptureValue).toBe('Old Testament');
+        expect(result.current.chapterValue).toBe('ヨブ記 13:13)');
+        expect(result.current.comment).toBe('ヨブの人生は私達の人生にどう当てはめられるでしょう。ヨブのように罪悪を犯さない正しい人でも苦難にあいます。');
+    });
+
+    it('does NOT misclassify normal chat messages with colons as structured notes', () => {
+        const normalChatText = `明日の予定: 10:00に教会集合です。よろしくお願いします！`;
+        const { result } = renderHook(() => useNoteParser(normalChatText, undefined, false));
+
+        expect(result.current.isOriginalStructured).toBe(false);
+        expect(result.current.finalSimpleContent).toBe('明日の予定: 10:00に教会集合です。よろしくお願いします！');
+    });
 });
