@@ -312,6 +312,8 @@ export default {
     "groupChat": {
         "defaultScripture": "พันธสัญญาเดิม",
         "category": "หมวดหมู่",
+        "chapter": "บท",
+        "comment": "ความคิดเห็น",
         "aiGroupUserNoteCongratulation": "เก่งมากเลย! 🎉🎉 แล้วพบกันใหม่พรุ่งนี้นะ✨",
         "myGroups": "กลุ่มของฉัน",
         "send": "ส่ง",

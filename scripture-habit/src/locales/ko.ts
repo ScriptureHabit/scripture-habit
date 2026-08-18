@@ -312,6 +312,8 @@ export default {
     "groupChat": {
         "defaultScripture": "구약성경",
         "category": "카테고리",
+        "chapter": "장",
+        "comment": "코멘트",
         "aiGroupUserNoteCongratulation": "참 잘했어요! 🎉🎉 내일 또 만나요✨",
         "myGroups": "내 그룹",
         "send": "전송",

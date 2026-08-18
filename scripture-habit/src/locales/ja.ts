@@ -312,6 +312,8 @@ export default {
     "groupChat": {
         "defaultScripture": "旧約聖書",
         "category": "カテゴリ",
+        "chapter": "章",
+        "comment": "コメント",
         "aiGroupUserNoteCongratulation": "よくできました！🎉🎉 明日もお会いしましょう✨",
         "myGroups": "私のグループ",
         "send": "送信",

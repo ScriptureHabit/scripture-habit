@@ -87,4 +87,16 @@ describe('useNoteParser', () => {
         expect(result.current.isOriginalStructured).toBe(false);
         expect(result.current.finalSimpleContent).toBe('明日の予定: 10:00に教会集合です。よろしくお願いします！');
     });
+
+    it('cleans up and correctly parses legacy AI structured notes with groupChat. key prefixes', () => {
+        const legacyAiText = `カテゴリ: 旧約聖書\ngroupChat.chapter: 詩篇 19:1-14\n\ngroupChat.comment:\n詩篇19篇は、天の壮大な証しから神の完全な律法へと視点を移し、主の言葉が私たちの内面をいかに浄化するかを教えてくれます。`;
+        const { result } = renderHook(() => useNoteParser(legacyAiText, undefined, false));
+
+        expect(result.current.isOriginalStructured).toBe(true);
+        expect(result.current.scriptureValue).toBe('旧約聖書');
+        expect(result.current.chapterValue).toBe('詩篇 19:1-14');
+        expect(result.current.comment).toBe('詩篇19篇は、天の壮大な証しから神の完全な律法へと視点を移し、主の言葉が私たちの内面をいかに浄化するかを教えてくれます。');
+        expect(result.current.comment).not.toContain('groupChat.chapter');
+        expect(result.current.comment).not.toContain('groupChat.comment');
+    });
 });

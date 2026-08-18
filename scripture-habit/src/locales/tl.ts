@@ -312,6 +312,8 @@ export default {
     "groupChat": {
         "defaultScripture": "Luma Tipan",
         "category": "Kategorya",
+        "chapter": "Kabanata",
+        "comment": "Komento",
         "aiGroupUserNoteCongratulation": "Napakagaling! 🎉🎉 Magkita tayo bukas✨",
         "myGroups": "Aking mga Grupo",
         "send": "Ipadala",

@@ -59,9 +59,9 @@ function buildAiNotePayload(todayStr: string, lang: string): AiDailyNoteContent 
     const dailyComment = getAiDailyComment(todayStr, lang);
     const scripture = dailyComment.scripture || t(lang, 'groupChat.defaultScripture');
     const chapter = dailyComment.chapter || 'Genesis 1:1';
-    const categoryLabel = t(lang, 'groupChat.category');
-    const chapterLabel = t(lang, 'groupChat.chapter');
-    const commentLabel = t(lang, 'groupChat.comment');
+    const categoryLabel = t(lang, 'noteLabels.scripture') || t(lang, 'noteLabels.category') || (lang === 'ja' ? 'カテゴリ' : 'Category');
+    const chapterLabel = t(lang, 'noteLabels.chapter') || (lang === 'ja' ? '章' : 'Chapter');
+    const commentLabel = t(lang, 'noteLabels.comment') || (lang === 'ja' ? 'コメント' : 'Comment');
     const structuredText = `${categoryLabel}: ${scripture}\n${chapterLabel}: ${chapter}\n\n${commentLabel}:\n${dailyComment.comment}`;
 
     return {

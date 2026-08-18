@@ -311,7 +311,9 @@ export default {
     },
     "groupChat": {
         "defaultScripture": "舊約聖經",
-        "category": "分類",
+        "category": "類別",
+        "chapter": "章節",
+        "comment": "評論",
         "aiGroupUserNoteCongratulation": "太棒了！🎉🎉 明天見✨",
         "myGroups": "我的群組",
         "send": "發送",

@@ -311,7 +311,9 @@ export default {
     },
     "groupChat": {
         "defaultScripture": "Cựu Ước",
-        "category": "Danh mục",
+        "category": "Thể loại",
+        "chapter": "Chương",
+        "comment": "Nhận xét",
         "aiGroupUserNoteCongratulation": "Làm tốt lắm! 🎉🎉 Hẹn gặp lại bạn vào ngày mai nhé✨",
         "myGroups": "Nhóm của tôi",
         "send": "Gửi",

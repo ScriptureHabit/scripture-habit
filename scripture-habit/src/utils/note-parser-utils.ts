@@ -44,14 +44,14 @@ export const splitHeaderScriptureAndChapter = (headerText: string): { scriptureV
     };
 };
 
-const SCRIPTURE_LABEL_REGEX = /^(?:\*\*|)\s*(?:Category|Scripture|カテゴリ|聖句|Categoría|Escritura|성구|經文|经文|Banal\s+na\s+Kasulatan|Thánh\s+thư|Andiko|พระคัมภีร์)\s*(?:\*\*|)\s*[:：]/i;
-const CHAPTER_LABEL_REGEX = /^(?:\*\*|)\s*(?:Chapter|章|Capítulo|장|章節|章节|Kabanata|Chương|Sura|บท)\s*(?:\*\*|)\s*[:：]/i;
-const COMMENT_LABEL_REGEX = /^(?:\*\*|)\s*(?:Comment|コメント|Comentario|Comentário|코멘트|評論|评论|Komento|Nhận\s+xét|Maoni|ความคิดเห็น)\s*(?:\*\*|)\s*[:：]/i;
-const GENERAL_LABEL_REGEX = /^(?:\*\*|)\s*(?:Talk|Speech|Title|お話|スピーチ|タイトル|Discurso|Título|Mga\s+Talumpati)\s*(?:\*\*|)\s*[:：]/i;
+const SCRIPTURE_LABEL_REGEX = /^(?:\*\*|)\s*(?:groupChat\.|noteLabels\.|)(?:Category|Scripture|カテゴリ|聖句|Categoría|Escritura|성구|經文|经文|Banal\s+na\s+Kasulatan|Thánh\s+thư|Andiko|พระคัมภีร์)\s*(?:\*\*|)\s*[:：]/i;
+const CHAPTER_LABEL_REGEX = /^(?:\*\*|)\s*(?:groupChat\.|noteLabels\.|)(?:Chapter|章|Capítulo|장|章節|章节|Kabanata|Chương|Sura|บท)\s*(?:\*\*|)\s*[:：]/i;
+const COMMENT_LABEL_REGEX = /^(?:\*\*|)\s*(?:groupChat\.|noteLabels\.|)(?:Comment|コメント|Comentario|Comentário|코멘트|評論|评论|Komento|Nhận\s+xét|Maoni|ความคิดเห็น)\s*(?:\*\*|)\s*[:：]/i;
+const GENERAL_LABEL_REGEX = /^(?:\*\*|)\s*(?:groupChat\.|noteLabels\.|)(?:Talk|Speech|Title|お話|スピーチ|タイトル|Discurso|Título|Mga\s+Talumpati)\s*(?:\*\*|)\s*[:：]/i;
 
-const KV_LINE_REGEX = /^(?:\*\*|)\s*(?:Category|Scripture|Chapter|Comment|Talk|Speech|Title|カテゴリ|聖句|章|コメント|お話|スピーチ|タイトル|Categoría|Capítulo|Comentario|Discurso|Título|Escritura|Comentário|성구|장|코멘트|經文|章節|評論|经文|章节|评论|Banal\s+na\s+Kasulatan|Kabanata|Komento|Thánh\s+thư|Chương|Nhận\s+xét|Andiko|Sura|Maoni|พระคัมภีร์|บท|ความคิดเห็น)\s*(?:\*\*|)\s*[:：]/im;
+const KV_LINE_REGEX = /^(?:\*\*|)\s*(?:groupChat\.|noteLabels\.|)(?:Category|Scripture|Chapter|Comment|Talk|Speech|Title|カテゴリ|聖句|章|コメント|お話|スピーチ|タイトル|Categoría|Capítulo|Comentario|Discurso|Título|Escritura|Comentário|성구|장|코멘트|經文|章節|評論|经文|章节|评论|Banal\s+na\s+Kasulatan|Kabanata|Komento|Thánh\s+thư|Chương|Nhận\s+xét|Andiko|Sura|Maoni|พระคัมภีร์|บท|ความคิดเห็น)\s*(?:\*\*|)\s*[:：]/im;
 
-const IS_LABEL_HEADER_REGEX = /^(?:Category|Scripture|Chapter|Comment|Talk|Speech|Title|カテゴリ|聖句|章|コメント|お話|スピーチ|タイトル|Categoría|Capítulo|Comentario|Discurso|Título|Escritura|Comentário|성구|장|코멘트|經文|章節|評論|经文|章节|评论|Banal\s+na\s+Kasulatan|Kabanata|Komento|Thánh\s+thư|Chương|Nhận\s+xét|Andiko|Sura|Maoni|พระคัมภีร์|บท|ความคิดเห็น)\s*[:：]?$/i;
+const IS_LABEL_HEADER_REGEX = /^(?:groupChat\.|noteLabels\.|)(?:Category|Scripture|Chapter|Comment|Talk|Speech|Title|カテゴリ|聖句|章|コメント|お話|スピーチ|タイトル|Categoría|Capítulo|Comentario|Discurso|Título|Escritura|Comentário|성구|장|코멘特?|코멘트|經文|章節|評論|经文|章节|评论|Banal\s+na\s+Kasulatan|Kabanata|Komento|Thánh\s+thư|Chương|Nhận\s+xét|Andiko|Sura|Maoni|พระคัมภีร์|บท|ความคิดเห็น)\s*[:：]?$/i;
 
 const getDividerIndex = (line: string): number => {
     const idxColon = line.indexOf(':');

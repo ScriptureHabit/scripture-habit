@@ -312,6 +312,8 @@ export default {
     "groupChat": {
         "defaultScripture": "Old Testament",
         "category": "Category",
+        "chapter": "Chapter",
+        "comment": "Comment",
         "aiGroupUserNoteCongratulation": "Great job! 🎉🎉 See you tomorrow! ✨",
         "myGroups": "My Groups",
         "send": "Send",

@@ -311,7 +311,9 @@ export default {
     },
     "groupChat": {
         "defaultScripture": "Agano la Kale",
-        "category": "Kipengele",
+        "category": "Kategoria",
+        "chapter": "Sura",
+        "comment": "Maoni",
         "aiGroupUserNoteCongratulation": "Kazi nzuri! 🎉🎉 Tutaonana kesho! ✨",
         "myGroups": "Vikundi Vyangu",
         "send": "Tuma",
