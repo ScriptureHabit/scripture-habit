@@ -108,6 +108,14 @@
             "destination": "/api/api"
         },
         {
+            "source": "/api/health",
+            "destination": "/health.json"
+        },
+        {
+            "source": "/api/health/",
+            "destination": "/health.json"
+        },
+        {
             "source": "/api/(.*)",
             "destination": "/api/api"
         },
