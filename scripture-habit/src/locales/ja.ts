@@ -145,9 +145,26 @@ export default {
         "title": "開発者紹介",
         "description": "開発者の紹介とアプリの背景について",
         "appBackground": "アプリ開発の背景",
-        "backgroundStory": "このアプリはBYU Pathway Worldwide(BYU Idahoの通信課程)の学生である私、相根大治郎が卒業制作で作成したものを改善し、一般公開したものです。\n\n問い合わせやご意見、ご感想がある場合は、以下の連絡先からお気軽にご連絡ください。↓\n\nEmail: dazhilangxianggen@gmail.com",
+        "backgroundStory": "このアプリは、BYU Pathway Worldwide (BYU-Idahoの通信課程) の学生である私、相根大治郎が卒業制作として開発したものを改善し、一般公開したものです。\n\n日々の聖典学習を習慣化し、仲間と継続できる環境を目指して個人で開発・運営を続けています。",
         "developerName": "相根 大治郎",
-        "developerRole": "Scripture Habit 開発者"
+        "developerRole": "Scripture Habit 開発者",
+        "openSourceTitle": "オープンソースについて",
+        "openSourceDesc": "Scripture Habit はオープンソースプロジェクトとして公開しています。ソースコードは誰でも確認でき、透明性とセキュリティを大切にしています。",
+        "githubRepo": "GitHubリポジトリ",
+        "githubSponsorsComingSoon": "GitHub Sponsors (準備中)",
+        "feedbackTitle": "ご意見・ご感想・フィードバック",
+        "feedbackDesc": "アプリの改善案、不具合の報告、日々の感想などがあれば、以下のフォームから気軽に送信してください。すべて目を通しています。",
+        "feedbackCategoryIdea": "アイデア・要望",
+        "feedbackCategoryBug": "不具合報告",
+        "feedbackCategoryCheer": "ご感想・応援",
+        "feedbackPlaceholder": "メッセージを入力してください...",
+        "feedbackSender": "送信者: {nickname}",
+        "feedbackReplyNote": "返信が必要な内容につきましては、アカウントに登録されているメールアドレス宛にご連絡いたします。",
+        "feedbackSubmit": "送信する",
+        "feedbackSubmitting": "送信中...",
+        "feedbackSuccess": "ありがとうございます！励みになります✨",
+        "feedbackError": "送信に失敗しました。時間をおいて再度お試しください。",
+        "directContact": "直接のお問い合わせ: dazhilangxianggen@gmail.com"
     },
     "dashboard": {
         "welcomeBack": "おかえりなさい",
@@ -911,6 +928,16 @@ export default {
             "androidInstruction": "ブラウザのメニュー（3点リーダー）をタップし、「アプリをインストール」または「ホーム画面に追加」を選択してください。",
             "desktopInstruction": "ブラウザのアドレスバーの右側にあるインストールアイコン（または設定メニュー）から「インストール」を選択してください。",
             "close": "閉じる"
+        },
+        "openSource": {
+            "title": "オープンソースの試み",
+            "subtitle": "Scripture Habit は、日々の聖典学習を安心して記録・継続できるよう、すべてのソースコードを GitHub 上で公開しています。個人のプライバシーを尊重し、透明性のある開発を大切にしています。",
+            "card1Title": "透明性とセキュリティ",
+            "card1Desc": "データの扱いやアプリの仕組みを誰でも自由に確認できます。",
+            "card2Title": "コミュニティと共に",
+            "card2Desc": "バグ報告や機能の提案など、誰でも改善に参加できます。",
+            "githubBtn": "GitHubリポジトリを見る",
+            "sponsorsComingSoon": "GitHub Sponsors (準備中)"
         },
         "seoContent": {
             "faq": {

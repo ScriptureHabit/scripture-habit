@@ -145,9 +145,26 @@ export default {
         "title": "Developer Introduction",
         "description": "About the developer and the background of the app",
         "appBackground": "App Development Background",
-        "backgroundStory": "This app was originally created as a graduation project by me, Daijiro Sagane, a student at BYU Pathway Worldwide (BYU-Idaho's online program), which I have since improved and released to the public.\n\nIf you have any questions, opinions, or feedback, please feel free to contact me at the address below. ↓\n\nEmail: dazhilangxianggen@gmail.com",
+        "backgroundStory": "This app was originally created as a capstone project during my studies at BYU Pathway Worldwide (BYU-Idaho online program). I have continued to improve and maintain it independently to help people build and sustain a daily scripture study habit with others.",
         "developerName": "Daijiro Sagane",
-        "developerRole": "Scripture Habit Developer"
+        "developerRole": "Scripture Habit Developer",
+        "openSourceTitle": "Open Source",
+        "openSourceDesc": "Scripture Habit is fully open source. The codebase is publicly available to ensure transparency, security, and community-driven development.",
+        "githubRepo": "GitHub Repository",
+        "githubSponsorsComingSoon": "GitHub Sponsors (Coming Soon)",
+        "feedbackTitle": "Feedback & Contact",
+        "feedbackDesc": "If you have feature suggestions, bug reports, or general thoughts, please feel free to send them using the form below. I read every message.",
+        "feedbackCategoryIdea": "Feature Request / Idea",
+        "feedbackCategoryBug": "Bug Report",
+        "feedbackCategoryCheer": "Feedback / Encouragement",
+        "feedbackPlaceholder": "Enter your message here...",
+        "feedbackSender": "Sender: {nickname}",
+        "feedbackReplyNote": "If a reply is needed, I will reach out to the email address associated with your account.",
+        "feedbackSubmit": "Send Message",
+        "feedbackSubmitting": "Sending...",
+        "feedbackSuccess": "Thank you so much! Your feedback means a lot ✨",
+        "feedbackError": "Failed to send message. Please try again later.",
+        "directContact": "Direct Contact: dazhilangxianggen@gmail.com"
     },
     "dashboard": {
         "welcomeBack": "Welcome back",
@@ -903,6 +920,16 @@ export default {
             "androidInstruction": "Tap the browser menu (three dots) and select \"Install app\" or \"Add to Home screen\".",
             "desktopInstruction": "Click the install icon in the address bar or select \"Install\" from the browser menu.",
             "close": "Close"
+        },
+        "openSource": {
+            "title": "An Open Source Initiative",
+            "subtitle": "Scripture Habit is fully open source so that you can record and maintain your daily scripture study with confidence. We value personal privacy and transparent development.",
+            "card1Title": "Transparency & Security",
+            "card1Desc": "Anyone can freely inspect how the application works and handles data.",
+            "card2Title": "Built with Community",
+            "card2Desc": "Anyone can suggest features, report bugs, and help improve the app.",
+            "githubBtn": "View on GitHub",
+            "sponsorsComingSoon": "GitHub Sponsors (Coming Soon)"
         },
         "seoContent": {
             "faq": {

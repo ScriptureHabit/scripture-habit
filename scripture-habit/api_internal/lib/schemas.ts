@@ -199,6 +199,15 @@ export const kickMemberSchema = z.object({
     reason: z.string().max(200).optional()
 });
 
+export const feedbackSchema = z.object({
+    category: z.enum(['idea', 'bug', 'cheer']),
+    message: z.string().min(1).max(2000),
+    userNickname: z.string().max(100).optional().nullable(),
+    userEmail: z.string().max(200).optional().nullable()
+});
+
+export type FeedbackRequest = z.infer<typeof feedbackSchema>;
+
 // Explicit API Type definitions for MSW / client type safety
 export type JoinGroupRequest = z.infer<typeof joinGroupSchema>;
 export type CreateGroupRequest = z.infer<typeof createGroupSchema>;

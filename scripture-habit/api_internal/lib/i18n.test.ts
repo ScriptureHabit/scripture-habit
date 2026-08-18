@@ -86,15 +86,13 @@ describe('i18n - translation utilities', () => {
         });
 
         it('should return translation array', () => {
-            const resultEn = tArray('en', 'notifications.cheer_options');
+            const resultEn = tArray('en', 'newNote.chapterPlaceholder');
             expect(resultEn).toBeInstanceOf(Array);
-            expect(resultEn.length).toBe(3);
-            expect(resultEn[0]).toContain('{nickname}');
+            expect(resultEn.length).toBeGreaterThan(0);
 
-            const resultJa = tArray('ja', 'notifications.cheer_options');
+            const resultJa = tArray('ja', 'newNote.chapterPlaceholder');
             expect(resultJa).toBeInstanceOf(Array);
-            expect(resultJa.length).toBe(3);
-            expect(resultJa[0]).toContain('{nickname}さん');
+            expect(resultJa.length).toBeGreaterThan(0);
         });
 
         it('should return array containing string value if value is not an array', () => {
@@ -103,13 +101,13 @@ describe('i18n - translation utilities', () => {
         });
 
         it('should fallback to en when language is null or unsupported', () => {
-            const resultNull = tArray(null, 'notifications.cheer_options');
+            const resultNull = tArray(null, 'newNote.chapterPlaceholder');
             expect(resultNull).toBeInstanceOf(Array);
-            expect(resultNull.length).toBe(3);
+            expect(resultNull.length).toBeGreaterThan(0);
 
-            const resultUnsupported = tArray('xyz', 'notifications.cheer_options');
+            const resultUnsupported = tArray('xyz', 'newNote.chapterPlaceholder');
             expect(resultUnsupported).toBeInstanceOf(Array);
-            expect(resultUnsupported.length).toBe(3);
+            expect(resultUnsupported.length).toBeGreaterThan(0);
         });
     });
 

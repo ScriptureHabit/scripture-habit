@@ -144,10 +144,27 @@ export default {
     "story": {
         "title": "Apresentação do Desenvolvedor",
         "description": "Sobre o desenvolvedor e o histórico do aplicativo",
-        "appBackground": "Histórico de Desenvolvimento do Aplicativo",
-        "backgroundStory": "Este aplicativo foi originalmente criado como um projeto de graduação por mim, Daijiro Sagane, estudante da BYU Pathway Worldwide (programa on-line da BYU-Idaho), o qual aprimorei e disponibilizei ao público.\n\nSe tiver dúvidas, opiniões ou comentários, sinta-se à vontade para entrar em contato comigo pelo endereço abaixo. ↓\n\nE-mail: dazhilangxianggen@gmail.com",
+        "appBackground": "Histórico do Desenvolvimento",
+        "backgroundStory": "Este aplicativo foi criado originalmente como um projeto de formatura durante meus estudos na BYU Pathway Worldwide (programa online da BYU-Idaho). Continuei aprimorando e mantendo o projeto de forma independente para ajudar as pessoas a criarem e manterem um hábito diário de estudo das escrituras juntos.",
         "developerName": "Daijiro Sagane",
-        "developerRole": "Criador do Scripture Habit"
+        "developerRole": "Desenvolvedor do Scripture Habit",
+        "openSourceTitle": "Código Aberto",
+        "openSourceDesc": "O Scripture Habit é totalmente de código aberto. O código-fonte está disponível publicamente para garantir transparência, segurança e desenvolvimento colaborativo.",
+        "githubRepo": "Repositório GitHub",
+        "githubSponsorsComingSoon": "GitHub Sponsors (Em breve)",
+        "feedbackTitle": "Comentários e Contato",
+        "feedbackDesc": "Se você tiver sugestões de recursos, relatos de problemas ou comentários gerais, sinta-se à vontade para enviá-los através do formulário abaixo. Leio todas as mensagens.",
+        "feedbackCategoryIdea": "Sugestão / Ideia",
+        "feedbackCategoryBug": "Relatar Problema",
+        "feedbackCategoryCheer": "Comentário / Apoio",
+        "feedbackPlaceholder": "Digite sua mensagem aqui...",
+        "feedbackSender": "Remetente: {nickname}",
+        "feedbackReplyNote": "Caso seja necessária uma resposta, entraremos em contato pelo e-mail associado à sua conta.",
+        "feedbackSubmit": "Enviar Mensagem",
+        "feedbackSubmitting": "Enviando...",
+        "feedbackSuccess": "Muito obrigado! Isso é muito motivador ✨",
+        "feedbackError": "Falha ao enviar a mensagem. Por favor, tente novamente mais tarde.",
+        "directContact": "Contato Direto: dazhilangxianggen@gmail.com"
     },
     "dashboard": {
         "welcomeBack": "Bem-vindo de volta",
@@ -903,6 +920,16 @@ export default {
             "androidInstruction": "Toque no menu do navegador (três pontos) e selecione \"Instalar aplicativo\" ou \"Adicionar à tela inicial\".",
             "desktopInstruction": "Clique no ícone de instalação na barra de endereços ou selecione \"Instalar\" no menu do navegador.",
             "close": "Fechar"
+        },
+        "openSource": {
+            "title": "Uma Iniciativa de Código Aberto",
+            "subtitle": "O Scripture Habit é totalmente de código aberto para que você possa registrar e manter seu estudo diário das escrituras com confiança. Valorizamos a privacidade e o desenvolvimento transparente.",
+            "card1Title": "Transparência e Segurança",
+            "card1Desc": "Qualquer pessoa pode inspecionar livremente o funcionamento do aplicativo e o tratamento dos dados.",
+            "card2Title": "Construído com a Comunidade",
+            "card2Desc": "Qualquer pessoa pode sugerir recursos, relatar problemas e ajudar a melhorar o aplicativo.",
+            "githubBtn": "Ver no GitHub",
+            "sponsorsComingSoon": "GitHub Sponsors (Em breve)"
         },
         "seoContent": {
             "faq": {

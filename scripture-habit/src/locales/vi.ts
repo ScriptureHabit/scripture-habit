@@ -143,11 +143,28 @@ export default {
     },
     "story": {
         "title": "Giới thiệu nhà phát triển",
-        "description": "Giới thiệu về nhà phát triển và bối cảnh của ứng dụng",
-        "appBackground": "Bối cảnh phát triển ứng dụng",
-        "backgroundStory": "Ứng dụng này ban đầu được tạo ra như một dự án tốt nghiệp của tôi, Daijiro Sagane, một sinh viên tại BYU Pathway Worldwide (chương trình trực tuyến của BYU-Idaho), sau đó tôi đã cải tiến và phát hành rộng rãi cho công chúng.\n\nNếu bạn có bất kỳ câu hỏi, ý kiến hoặc cảm nhận nào, vui lòng liên hệ với tôi qua địa chỉ bên dưới. ↓\n\nEmail: dazhilangxianggen@gmail.com",
+        "description": "Giới thiệu về nhà phát triển và bối cảnh ứng dụng",
+        "appBackground": "Bối cảnh phát triển",
+        "backgroundStory": "Ứng dụng này ban đầu được tôi, Daijiro Sagane, tạo ra như một dự án tốt nghiệp trong thời gian học tại BYU Pathway Worldwide (chương trình trực tuyến của BYU-Idaho). Tôi tiếp tục hoàn thiện và duy trì độc lập nhằm giúp mọi người xây dựng và duy trì thói quen học thánh thư mỗi ngày cùng nhau.",
         "developerName": "Daijiro Sagane",
-        "developerRole": "Người sáng lập Scripture Habit"
+        "developerRole": "Nhà phát triển Scripture Habit",
+        "openSourceTitle": "Mã nguồn mở",
+        "openSourceDesc": "Scripture Habit hoàn toàn là mã nguồn mở. Mã nguồn được công khai để đảm bảo tính minh bạch, bảo mật và cùng phát triển.",
+        "githubRepo": "Kho lưu trữ GitHub",
+        "githubSponsorsComingSoon": "GitHub Sponsors (Sắp ra mắt)",
+        "feedbackTitle": "Ý kiến đóng góp & Liên hệ",
+        "feedbackDesc": "Nếu bạn có đề xuất tính năng, báo cáo lỗi hoặc chia sẻ cảm nghĩ, vui lòng gửi qua biểu mẫu bên dưới. Tôi đọc tất cả các tin nhắn.",
+        "feedbackCategoryIdea": "Ý tưởng / Đề xuất",
+        "feedbackCategoryBug": "Báo cáo lỗi",
+        "feedbackCategoryCheer": "Cảm nghĩ / Động viên",
+        "feedbackPlaceholder": "Nhập tin nhắn của bạn tại đây...",
+        "feedbackSender": "Người gửi: {nickname}",
+        "feedbackReplyNote": "Nếu cần phản hồi, chúng tôi sẽ liên hệ qua địa chỉ email liên kết với tài khoản của bạn.",
+        "feedbackSubmit": "Gửi tin nhắn",
+        "feedbackSubmitting": "Đang gửi...",
+        "feedbackSuccess": "Cảm ơn bạn rất nhiều! Đây là nguồn động viên rất lớn ✨",
+        "feedbackError": "Gửi tin nhắn thất bại. Vui lòng thử lại sau.",
+        "directContact": "Liên hệ trực tiếp: dazhilangxianggen@gmail.com"
     },
     "dashboard": {
         "welcomeBack": "Chào mừng trở lại",
@@ -877,6 +894,16 @@ export default {
             "androidInstruction": "Nhấn vào menu trình duyệt (ba dấu chấm) và chọn \"Cài đặt ứng dụng\" hoặc \"Thêm vào màn hình chính\".",
             "desktopInstruction": "Nhấp vào biểu tượng cài đặt trong thanh địa chỉ hoặc chọn \"Cài đặt\" từ menu trình duyệt.",
             "close": "Đóng"
+        },
+        "openSource": {
+            "title": "Sáng kiến Mã nguồn Mở",
+            "subtitle": "Scripture Habit hoàn toàn là mã nguồn mở để bạn có thể yên tâm ghi chép và duy trì thói quen học thánh thư mỗi ngày. Chúng tôi luôn coi trọng quyền riêng tư và sự minh bạch.",
+            "card1Title": "Minh bạch & Bảo mật",
+            "card1Desc": "Bất kỳ ai cũng có thể tự do kiểm tra cách ứng dụng hoạt động và xử lý dữ liệu.",
+            "card2Title": "Phát triển cùng Cộng đồng",
+            "card2Desc": "Bất kỳ ai cũng có thể đề xuất tính năng, báo cáo lỗi và cùng nhau cải thiện ứng dụng.",
+            "githubBtn": "Xem trên GitHub",
+            "sponsorsComingSoon": "GitHub Sponsors (Sắp ra mắt)"
         },
         "seoContent": {
             "faq": {

@@ -144,10 +144,27 @@ export default {
     "story": {
         "title": "開發者介紹",
         "description": "關於開發者與應用程式的背景",
-        "appBackground": "應用程式開發背景",
-        "backgroundStory": "此應用程式最初是由我——相根大治郎（BYU Pathway Worldwide，即 BYU Idaho 線上課程的學生）作為畢業設計而製作的，隨後進行了改良並向大眾公開。\n\n如果您有任何問題、意見或感想，歡迎隨時透過以下聯絡方式與我聯絡。↓\n\nEmail: dazhilangxianggen@gmail.com",
-        "developerName": "相根 大治郎",
-        "developerRole": "Scripture Habit 開發者"
+        "appBackground": "開發背景",
+        "backgroundStory": "此應用程式最初是我在 BYU Pathway Worldwide (BYU-Idaho 線上課程) 就讀時的畢業專案，之後經過持續改善並向大眾公開。為了幫助大家建立並維持每日研讀經文的習慣，我一直以個人身分持續進行開發與維護。",
+        "developerName": "相根 大治郎 (Daijiro Sagane)",
+        "developerRole": "Scripture Habit 開發者",
+        "openSourceTitle": "關於開源專案",
+        "openSourceDesc": "Scripture Habit 是完全開源的專案。任何人都可以檢視原始碼，我們非常重視透明度與安全性。",
+        "githubRepo": "GitHub 儲存庫",
+        "githubSponsorsComingSoon": "GitHub Sponsors (準備中)",
+        "feedbackTitle": "意見回饋與聯絡",
+        "feedbackDesc": "如果您有功能建議、問題回報或任何想法，歡迎隨時透過下方表單發送。我會閱讀每一則留言。",
+        "feedbackCategoryIdea": "功能建議 / 想法",
+        "feedbackCategoryBug": "問題回報",
+        "feedbackCategoryCheer": "心得 / 鼓勵",
+        "feedbackPlaceholder": "請在此輸入您的訊息...",
+        "feedbackSender": "發送者: {nickname}",
+        "feedbackReplyNote": "若需要回覆，我們將會聯絡您帳號所綁定的電子郵件地址。",
+        "feedbackSubmit": "發送訊息",
+        "feedbackSubmitting": "發送中...",
+        "feedbackSuccess": "非常感謝！這對我來說是很大的鼓勵 ✨",
+        "feedbackError": "發送失敗，請稍後再試。",
+        "directContact": "直接聯絡: dazhilangxianggen@gmail.com"
     },
     "dashboard": {
         "welcomeBack": "歡迎回來",
@@ -878,6 +895,16 @@ export default {
             "androidInstruction": "點擊瀏覽器選單（三個點），然後選擇「安裝應用程式」或「加到主畫面」。",
             "desktopInstruction": "點擊網址列右側的安裝圖示，或在瀏覽器選單中選擇「安裝」。",
             "close": "關閉"
+        },
+        "openSource": {
+            "title": "開源專案的嘗試",
+            "subtitle": "Scripture Habit 是完全開源的，讓您可以安心記錄並維持每日研讀經文的習慣。我們重視個人隱私與透明的開發過程。",
+            "card1Title": "透明度與安全性",
+            "card1Desc": "任何人都可以自由檢視應用程式的運作方式與資料處理機制。",
+            "card2Title": "與社群攜手共創",
+            "card2Desc": "任何人都可以提出功能建議、回報問題，共同協助改進應用程式。",
+            "githubBtn": "在 GitHub 上檢視",
+            "sponsorsComingSoon": "GitHub Sponsors (準備中)"
         },
         "seoContent": {
             "faq": {

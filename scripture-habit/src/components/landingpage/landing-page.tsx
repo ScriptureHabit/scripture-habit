@@ -5,7 +5,7 @@ import { LANGUAGES } from '../../config/languages';
 import Button from '../button/button';
 import './landing-page.css';
 import Footer from '../footer/footer';
-import { UilGlobe, UilMultiply, UilShare, UilPlusSquare, UilApps, UilRocket } from '@iconscout/react-unicons';
+import { UilGlobe, UilMultiply, UilShare, UilPlusSquare, UilApps, UilRocket, UilGithub, UilShieldCheck, UilUsersAlt } from '@iconscout/react-unicons';
 
 
 const LandingPage = () => {
@@ -191,6 +191,46 @@ const LandingPage = () => {
                                     <p className="faq-a">{t(`landing.seoContent.faq.a${id}`)}</p>
                                 </div>
                             ))}
+                        </div>
+                    </div>
+                </section>
+
+                {/* Open Source Initiative Section */}
+                <section className="landing-opensource-section">
+                    <div className="landing-opensource-container">
+                        <h2 className="section-title">{t('landing.openSource.title')}</h2>
+                        <p className="landing-opensource-subtitle">{t('landing.openSource.subtitle')}</p>
+
+                        <div className="landing-opensource-grid">
+                            <div className="landing-opensource-card">
+                                <div className="landing-opensource-card-icon">
+                                    <UilShieldCheck size="28" />
+                                </div>
+                                <h3 className="landing-opensource-card-title">{t('landing.openSource.card1Title')}</h3>
+                                <p className="landing-opensource-card-desc">{t('landing.openSource.card1Desc')}</p>
+                            </div>
+                            <div className="landing-opensource-card">
+                                <div className="landing-opensource-card-icon">
+                                    <UilUsersAlt size="28" />
+                                </div>
+                                <h3 className="landing-opensource-card-title">{t('landing.openSource.card2Title')}</h3>
+                                <p className="landing-opensource-card-desc">{t('landing.openSource.card2Desc')}</p>
+                            </div>
+                        </div>
+
+                        <div className="landing-opensource-cta-wrapper">
+                            <a
+                                href="https://github.com/ScriptureHabit/scripture-habit"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="landing-github-btn"
+                            >
+                                <UilGithub size="22" />
+                                <span>{t('landing.openSource.githubBtn')}</span>
+                            </a>
+                            <div className="landing-sponsors-badge">
+                                <span>{t('landing.openSource.sponsorsComingSoon')}</span>
+                            </div>
                         </div>
                     </div>
                 </section>

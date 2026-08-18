@@ -145,9 +145,26 @@ export default {
         "title": "개발자 소개",
         "description": "개발자 소개와 앱 개발 배경에 대하여",
         "appBackground": "앱 개발 배경",
-        "backgroundStory": "이 앱은 BYU Pathway Worldwide(BYU-Idaho의 온라인 프로그램)의 학생인 저(상근 대지로/Daijiro Sagane)가 졸업 제작으로 만든 것을 개선하여 일반에 공개한 것입니다.\n\n문의사항이나 의견, 피드백이 있으신 분은 아래의 연락처로 언제든지 편하게 연락해 주시기 바랍니다. ↓\n\nEmail: dazhilangxianggen@gmail.com",
+        "backgroundStory": "이 앱은 BYU Pathway Worldwide(BYU-Idaho 온라인 프로그램) 재학 중 졸업 프로젝트로 개발한 것을 개선하여 공개한 것입니다. 매일의 경전 공부를 습관화하고 함께 지속할 수 있는 환경을 만들고자 개인적으로 개발 및 운영을 이어가고 있습니다.",
         "developerName": "사가네 다이지로",
-        "developerRole": "Scripture Habit 개발자"
+        "developerRole": "Scripture Habit 개발자",
+        "openSourceTitle": "오픈 소스 안내",
+        "openSourceDesc": "Scripture Habit은 오픈 소스 프로젝트로 공개되어 있습니다. 소스 코드는 누구나 확인할 수 있으며 투명성과 보안을 소중히 여깁니다.",
+        "githubRepo": "GitHub 저장소",
+        "githubSponsorsComingSoon": "GitHub Sponsors (준비 중)",
+        "feedbackTitle": "의견 및 피드백",
+        "feedbackDesc": "기능 제안, 오류 제보, 응원 메시지 등 나누고 싶은 의견이 있으시다면 아래 양식을 통해 편하게 보내주세요. 모든 메시지를 확인하고 있습니다.",
+        "feedbackCategoryIdea": "아이디어 / 기능 제안",
+        "feedbackCategoryBug": "오류 제보",
+        "feedbackCategoryCheer": "소감 / 응원",
+        "feedbackPlaceholder": "메시지를 입력해 주세요...",
+        "feedbackSender": "보낸 사람: {nickname}",
+        "feedbackReplyNote": "답변이 필요한 경우 계정에 등록된 이메일 주소로 연락드립니다.",
+        "feedbackSubmit": "보내기",
+        "feedbackSubmitting": "전송 중...",
+        "feedbackSuccess": "감사합니다! 큰 힘이 됩니다 ✨",
+        "feedbackError": "전송에 실패했습니다. 잠시 후 다시 시도해 주세요.",
+        "directContact": "직접 문의: dazhilangxianggen@gmail.com"
     },
     "dashboard": {
         "welcomeBack": "환영합니다",
@@ -903,6 +920,16 @@ export default {
             "androidInstruction": "브라우저 메뉴(점 3개)를 누르고 \"앱 설치\" 또는 \"홈 화면에 추가\"를 선택하십시오.",
             "desktopInstruction": "주소 표시줄 우측의 설치 아이콘을 클릭하거나 브라우저 메뉴에서 \"설치\"를 선택하십시오.",
             "close": "닫기"
+        },
+        "openSource": {
+            "title": "오픈 소스의 시도",
+            "subtitle": "Scripture Habit은 안심하고 매일의 경전 공부를 기록하고 이어갈 수 있도록 모든 소스 코드를 GitHub에 공개하고 있습니다. 개인의 프라이버시를 존중하며 투명한 개발을 중요하게 생각합니다.",
+            "card1Title": "투명성과 보안",
+            "card1Desc": "누구나 데이터 처리 방식과 앱의 동작 원리를 자유롭게 확인할 수 있습니다.",
+            "card2Title": "커뮤니티와 함께",
+            "card2Desc": "누구나 기능 제안, 오류 제보를 통해 앱 개선에 참여할 수 있습니다.",
+            "githubBtn": "GitHub 저장소 보기",
+            "sponsorsComingSoon": "GitHub Sponsors (준비 중)"
         },
         "seoContent": {
             "faq": {

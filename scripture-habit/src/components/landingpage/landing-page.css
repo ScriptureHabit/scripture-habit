@@ -601,6 +601,165 @@ section {
 }
 
 
+/* Open Source Initiative Section */
+.landing-opensource-section {
+    padding: 60px 24px 80px 24px;
+    max-width: 960px;
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.landing-opensource-container {
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 28px;
+    padding: 48px 40px;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.04);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.landing-opensource-subtitle {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: var(--text-muted);
+    max-width: 680px;
+    margin: 0 auto 36px auto;
+}
+
+.landing-opensource-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    width: 100%;
+    margin-bottom: 36px;
+}
+
+.landing-opensource-card {
+    background: #FFFFFF;
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    border-radius: 20px;
+    padding: 28px 24px;
+    text-align: left;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.landing-opensource-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+.landing-opensource-card-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: #EEF2FF;
+    color: #4F46E5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+}
+
+.landing-opensource-card-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 8px;
+}
+
+.landing-opensource-card-desc {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+.landing-opensource-cta-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+}
+
+.landing-github-btn,
+.landing-sponsors-badge {
+    width: 280px;
+    max-width: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.landing-github-btn {
+    gap: 0.7rem;
+    padding: 0.85rem 1.6rem;
+    background: #0F172A;
+    color: white;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.98rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.18);
+}
+
+.landing-github-btn:hover {
+    background: #1E293B;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(15, 23, 42, 0.28);
+    color: white;
+    text-decoration: none;
+}
+
+.landing-sponsors-badge {
+    padding: 0.75rem 1.4rem;
+    background: #FFFFFF;
+    color: #475569;
+    border-radius: 12px;
+    font-size: 0.92rem;
+    font-weight: 600;
+    border: 1px dashed #CBD5E1;
+}
+
+@media (max-width: 768px) {
+    .landing-opensource-section {
+        padding: 40px 16px 60px 16px;
+    }
+
+    .landing-opensource-container {
+        padding: 32px 18px;
+        border-radius: 22px;
+    }
+
+    .landing-opensource-grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+        margin-bottom: 28px;
+    }
+
+    .landing-opensource-card {
+        padding: 22px 18px;
+    }
+
+    .landing-github-btn,
+    .landing-sponsors-badge {
+        width: 100%;
+    }
+}
+
+
 /* Final CTA */
 .final-cta-section {
     text-align: center;

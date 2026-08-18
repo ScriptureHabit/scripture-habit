@@ -145,9 +145,26 @@ export default {
         "title": "Utambulisho wa Msanidi Programu",
         "description": "Kuhusu msanidi programu na historia ya programu",
         "appBackground": "Historia ya Maendeleo ya Programu",
-        "backgroundStory": "Programu hii ilitengenezwa mwanzoni kama mradi wa mahafali na mimi, Daijiro Sagane, mwanafunzi katika chuo cha BYU Pathway Worldwide (mpango wa mtandaoni wa BYU-Idaho), ambayo nimeiboresha na kuitoa kwa umma tangu wakati huo.\n\nKama una maswali, maoni, au mapendekezo yoyote, tafadhali jisikie huru kuwasiliana nami kupitia anwani iliyo hapa chini. ↓\n\nBarua pepe: dazhilangxianggen@gmail.com",
+        "backgroundStory": "Programu hii ilitengenezwa mwanzoni kama mradi wa mahafali wakati nikisoma katika chuo cha BYU Pathway Worldwide (mpango wa mtandaoni wa BYU-Idaho). Nimeendelea kuiboresha na kuiendesha peke yangu ili kuwasaidia watu kujenga na kudumisha tabia ya kila siku ya kujifunza maandiko kwa pamoja.",
         "developerName": "Daijiro Sagane",
-        "developerRole": "Mwasisi wa Scripture Habit"
+        "developerRole": "Msanidi wa Scripture Habit",
+        "openSourceTitle": "Kuhusu Chanzo Huria (Open Source)",
+        "openSourceDesc": "Scripture Habit ni mradi wa chanzo huria kabisa. Msimbo unapatikana hadharani ili kuhakikisha uwazi, usalama, na maendeleo shirikishi.",
+        "githubRepo": "Hifadhi ya GitHub",
+        "githubSponsorsComingSoon": "GitHub Sponsors (Inakuja Hivi Karibuni)",
+        "feedbackTitle": "Maoni na Mawasiliano",
+        "feedbackDesc": "Kama una mapendekezo ya vipengele, ripoti za hitilafu, au mawazo ya jumla, tafadhali jisikie huru kuyatuma kupitia fomu iliyo hapa chini. Ninasoma kila ujumbe.",
+        "feedbackCategoryIdea": "Wazo / Pendekezo",
+        "feedbackCategoryBug": "Ripoti ya Hitilafu",
+        "feedbackCategoryCheer": "Uzoefu / Usaidizi",
+        "feedbackPlaceholder": "Andika ujumbe wako hapa...",
+        "feedbackSender": "Mtumaji: {nickname}",
+        "feedbackReplyNote": "Iwapo jibu linahitajika, nitawasiliana kupitia anwani ya barua pepe iliyounganishwa na akaunti yako.",
+        "feedbackSubmit": "Tuma Ujumbe",
+        "feedbackSubmitting": "Inatuma...",
+        "feedbackSuccess": "Asante sana! Hili ni jambo la kutia moyo sana ✨",
+        "feedbackError": "Imeshindwa kutuma ujumbe. Tafadhali jaribu tena baadaye.",
+        "directContact": "Mawasiliano ya Moja kwa Moja: dazhilangxianggen@gmail.com"
     },
     "dashboard": {
         "welcomeBack": "Karibu tena",
@@ -903,6 +920,16 @@ export default {
             "androidInstruction": "Gonga menyu ya kivinjari (nukta tatu) na uchague \"Sakinisha programu\" au \"Ongeza kwenye skrini ya kwanza\".",
             "desktopInstruction": "Bofya ikoni ya kusakinisha katika upau wa anwani au uchague \"Sakinisha\" kutoka kwa menyu ya kivinjari.",
             "close": "Funga"
+        },
+        "openSource": {
+            "title": "Mpango wa Chanzo Huria (Open Source)",
+            "subtitle": "Scripture Habit ni chanzo huria kabisa ili uweze kurekodi na kuendeleza tabia ya kila siku ya kusoma maandiko kwa ujasiri. Tunathamini faragha ya kibinafsi na maendeleo ya wazi.",
+            "card1Title": "Uwazi na Usalama",
+            "card1Desc": "Mtu yeyote anaweza kuangalia jinsi programu inavyofanya kazi na inavyoshughulikia data.",
+            "card2Title": "Pamoja na Jamii",
+            "card2Desc": "Mtu yeyote anaweza kupendekeza vipengele, kuripoti hitilafu, na kusaidia kuboresha programu.",
+            "githubBtn": "Tazama kwenye GitHub",
+            "sponsorsComingSoon": "GitHub Sponsors (Inakuja Hivi Karibuni)"
         },
         "seoContent": {
             "faq": {

@@ -145,9 +145,26 @@ export default {
         "title": "Pagpapakilala sa Tagalikha",
         "description": "Tungkol sa tagalikha at pinagmulan ng app",
         "appBackground": "Pinagmulan ng Pagbuo ng App",
-        "backgroundStory": "Ang app na ito ay orihinal na nilikha bilang isang graduation project ko, si Daijiro Sagane, na isang mag-aaral sa BYU Pathway Worldwide (online na programa ng BYU-Idaho), na pinaganda ko pa at inilabas sa publiko.\n\nKung mayroon kayong mga katanungan, opinyon, o komento, huwag mag-atubiling makipag-ugnayan sa akin sa address sa ibaba. ↓\n\nEmail: dazhilangxianggen@gmail.com",
+        "backgroundStory": "Ang app na ito ay orihinal na nilikha bilang isang graduation project habang ako ay nag-aaral sa BYU Pathway Worldwide (online na programa ng BYU-Idaho). Patuloy ko itong pinagbubuti at pinapanatili nang mag-isa upang matulungan ang lahat na magkaroon ng pang-araw-araw na gawi sa pag-aaral ng banal na kasulatan nang sama-sama.",
         "developerName": "Daijiro Sagane",
-        "developerRole": "Tagalikha ng Scripture Habit"
+        "developerRole": "Tagalikha ng Scripture Habit",
+        "openSourceTitle": "Tungkol sa Open Source",
+        "openSourceDesc": "Ang Scripture Habit ay ganap na open source. Ang source code ay bukas para sa lahat upang matiyak ang transparency, seguridad, at sama-samang pagpapaunlad.",
+        "githubRepo": "GitHub Repository",
+        "githubSponsorsComingSoon": "GitHub Sponsors (Malapit Na)",
+        "feedbackTitle": "Feedback at Pakikipag-ugnayan",
+        "feedbackDesc": "Kung mayroon kayong mga mungkahi sa feature, ulat ng error, o pangkalahatang mensahe, huwag mag-atubiling ipadala ito gamit ang form sa ibaba. Binabasa ko ang bawat mensahe.",
+        "feedbackCategoryIdea": "Mungkahi / Ideya",
+        "feedbackCategoryBug": "Ulat ng Error",
+        "feedbackCategoryCheer": "Karanasan / Suporta",
+        "feedbackPlaceholder": "Ilagay ang iyong mensahe dito...",
+        "feedbackSender": "Nagpadala: {nickname}",
+        "feedbackReplyNote": "Kung kailangan ng tugon, makikipag-ugnayan kami sa email address na nakarehistro sa iyong account.",
+        "feedbackSubmit": "Ipadala ang Mensahe",
+        "feedbackSubmitting": "Ipinapadala...",
+        "feedbackSuccess": "Maraming salamat! Isa itong malaking pampatibay-loob ✨",
+        "feedbackError": "Nabigong ipadala ang mensahe. Pakisubukan muli mamaya.",
+        "directContact": "Direktang Pakikipag-ugnayan: dazhilangxianggen@gmail.com"
     },
     "dashboard": {
         "welcomeBack": "Maligayang pagbabalik",
@@ -903,6 +920,16 @@ export default {
             "androidInstruction": "I-tap ang menu ng browser (tatlong tuldok) at piliin ang \"I-install ang app\" o \"Idagdag sa Home screen\".",
             "desktopInstruction": "I-click ang icon ng pag-install sa address bar o piliin ang \"I-install\" mula sa menu ng browser.",
             "close": "Isara"
+        },
+        "openSource": {
+            "title": "Inisyatiba sa Open Source",
+            "subtitle": "Ang Scripture Habit ay ganap na open source upang makapag-aral at makapagtala ka ng mga banal na kasulatan araw-araw nang may tiwala. Pinahahalagahan namin ang privacy at bukas na pagpapaunlad.",
+            "card1Title": "Transparency at Seguridad",
+            "card1Desc": "Maaaring suriin ng sinuman kung paano gumagana ang app at pinangangasiwaan ang data.",
+            "card2Title": "Kasama ang Komunidad",
+            "card2Desc": "Maaaring magmungkahi ng mga feature, mag-ulat ng mga error, at tumulong sa pagpapabuti ng app.",
+            "githubBtn": "Tingnan sa GitHub",
+            "sponsorsComingSoon": "GitHub Sponsors (Malapit Na)"
         },
         "seoContent": {
             "faq": {

@@ -30,6 +30,7 @@ import aiRoutes from '../api_internal/routes/ai.js';
 import previewRoutes from '../api_internal/routes/preview.js';
 import cronRoutes from '../api_internal/routes/cron.js';
 import reportRoutes from '../api_internal/routes/reports.js';
+import feedbackRoutes from '../api_internal/routes/feedback.js';
 import testUtilsRoutes from '../api_internal/routes/test-utils.js';
 import resetUnityRoutes from '../api_internal/routes/reset-unity.js';
 import demoRoutes from '../api_internal/routes/demo.js';
@@ -232,6 +233,7 @@ app.use('/api/preview', previewRoutes);
 
 app.use('/api/cron', cronRoutes);
 app.use('/api/report', reportRoutes);
+app.use('/api', feedbackRoutes);
 app.use('/api/test', testUtilsRoutes);
 app.use('/api/demo', demoRoutes);
 app.use('/api/groups', resetUnityRoutes);
