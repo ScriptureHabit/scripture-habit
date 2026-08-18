@@ -3,7 +3,6 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./app.css";
 import { lazy, Suspense, useEffect, useState, useRef, ComponentType } from 'react';
-import { useApiWarmup } from './hooks/use-api-warmup';
 
 import { ErrorFallback } from './components/common/error-fallback';
 import { useQuery } from '@tanstack/react-query';
@@ -133,7 +132,6 @@ const App = () => {
   const pendingUrlRef = useRef<string | null>(null);
   const lastNavigatedTimeRef = useRef<number>(0);
   const navigate = useNavigate();
-  useApiWarmup();
 
   // Helper to set state and ref simultaneously
   const setPendingNavigateUrl = (url: string | null) => {
