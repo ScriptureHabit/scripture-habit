@@ -128,12 +128,12 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Streak Reminder Integrati
         
         const enCall = calls.find(c => c.tokens.includes('token-a'));
         expect(enCall).toBeDefined();
-        expect(enCall!.notification!.title).toBe('📖 Have you had your spiritual time today?');
+        expect(enCall!.notification!.title).toBe("📖 Have you completed today's study?");
         expect(enCall!.tokens).toEqual(['token-a']);
 
         const jaCall = calls.find(c => c.tokens.includes('token-e'));
         expect(jaCall).toBeDefined();
-        expect(jaCall!.notification!.title).toBe('📖 今日、霊的な時間を過ごせましたか？');
+        expect(jaCall!.notification!.title).toBe('📖 今日の記録はお済みですか？');
         expect(jaCall!.tokens).toEqual(['token-e']);
     });
 

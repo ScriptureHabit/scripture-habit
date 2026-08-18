@@ -149,6 +149,9 @@ export interface UserDocument {
     questPostedNote?: boolean;
     preferredCheckInTime?: string;
 
+    // Push Notifications
+    hasFcmToken?: boolean; // Denormalized flag: true when at least one valid FCM token exists
+
     // Recap Metadata
     lastRecapPrompt?: string | null;
     lastRecapSummary?: string | null;

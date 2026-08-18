@@ -727,6 +727,12 @@ export default {
         "bot_name": "Scripture Habit Bot",
         "streak_warning_title": "📖 Nagkaroon ka ba ng espirituwal na oras ngayon?",
         "streak_warning_body": "Nanganganib ang iyong streak! Maglaan ng ilang minuto para patahimikin ang iyong puso ✨",
+        "daily_reminder_title": "📖 Nakumpleto mo na ba ang iyong pag-aaral ngayon?",
+        "daily_reminder_body": "Basahin ang kabanata ngayon at abutin ang kabuuang {totalDays} araw! ✨",
+        "comeback_3day_title": "🕊️ May sandali ka ba?",
+        "comeback_3day_body": "Gusto mo bang buksan ang mga banal na kasulatan pagkatapos ng 3 araw? Kahit ilang talata lang ay napakaganda na ✨",
+        "fadeout_4day_title": "🌱 Pansamantalang ihinto ang mga paalala",
+        "fadeout_4day_body": "Ihihinto muna namin ang mga paalala sa ngayon. Kapag handa ka na, hihintayin ka namin sa app! ✨",
         "cheer_body": "**{senderNickname}** ay nagpadala sa iyo ng lakas! ✨"
     },
     "noteLabels": {

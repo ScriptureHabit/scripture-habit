@@ -727,6 +727,12 @@ export default {
         "bot_name": "Scripture Habit Bot",
         "streak_warning_title": "📖 Você teve seu momento espiritual hoje?",
         "streak_warning_body": "Sua ofensiva está em risco! Tire apenas alguns minutos para aquietar seu coração ✨",
+        "daily_reminder_title": "📖 Você completou seu estudo de hoje?",
+        "daily_reminder_body": "Leia o capítulo de hoje e alcance {totalDays} dias no total! ✨",
+        "comeback_3day_title": "🕊️ Tem alguns minutinhos?",
+        "comeback_3day_body": "Que tal abrir as escrituras após 3 dias? Mesmo alguns versículos já é maravilhoso ✨",
+        "fadeout_4day_title": "🌱 Pausando seus lembretes",
+        "fadeout_4day_body": "Vamos pausar os lembretes por enquanto. Sempre que estiver pronto, estaremos esperando por você no app! ✨",
         "cheer_body": "**{senderNickname}** enviou um cheers! ✨"
     },
     "noteLabels": {

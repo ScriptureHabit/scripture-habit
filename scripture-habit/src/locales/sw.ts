@@ -727,6 +727,12 @@ export default {
         "bot_name": "Scripture Habit Bot",
         "streak_warning_title": "📖 Je, umekuwa na wakati wako wa kiroho leo?",
         "streak_warning_body": "Mfululizo wako uko hatarini! Chukua dakika chache tu kutuliza moyo wako ✨",
+        "daily_reminder_title": "📖 Je, umekamilisha usomaji wako wa leo?",
+        "daily_reminder_body": "Soma sura ya leo na ufikishe jumla ya siku {totalDays}! ✨",
+        "comeback_3day_title": "🕊️ Una muda mfupi?",
+        "comeback_3day_body": "Je, ungependa kufungua maandiko baada ya siku 3? Hata mistari michache inatosha ✨",
+        "fadeout_4day_title": "🌱 Kusimamisha vikumbusho kwa muda",
+        "fadeout_4day_body": "Tutasitisha vikumbusho kwa sasa. Utakapokuwa tayari, tutakuwa tukikungoja kwenye programu! ✨",
         "cheer_body": "**{senderNickname}** amekutumia nguvu! ✨"
     },
     "noteLabels": {

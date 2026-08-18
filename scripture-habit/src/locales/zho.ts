@@ -702,6 +702,12 @@ export default {
         "bot_name": "Scripture Habit Bot",
         "streak_warning_title": "📖 今天你有度过属灵的时间吗？",
         "streak_warning_body": "你的连续记录快要中断了！只需花几分钟让心静下来 ✨",
+        "daily_reminder_title": "📖 今天的学习完成了吗？",
+        "daily_reminder_body": "阅读今天的第1章，达成累计 {totalDays} 天吧！✨",
+        "comeback_3day_title": "🕊️ 现在有空吗？",
+        "comeback_3day_body": "要不要时隔3天打开圣典看看？即使读几节也很棒 ✨",
+        "fadeout_4day_title": "🌱 暂时暂停提醒",
+        "fadeout_4day_body": "我们将暂时停止发送提醒。当您准备好时，随时在应用中等您！✨",
         "cheer_body": "**{senderNickname}**給你加油了！✨"
     },
     "noteLabels": {

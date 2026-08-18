@@ -701,6 +701,12 @@ export default {
         "bot_name": "Scripture Habit Bot",
         "streak_warning_title": "📖 Hôm nay bạn đã có thời gian tĩnh nguyện chưa?",
         "streak_warning_body": "Chuỗi ngày của bạn sắp bị ngắt quãng! Hãy dành vài phút để lòng tĩnh lặng ✨",
+        "daily_reminder_title": "📖 Hôm nay bạn đã hoàn thành bài học chưa?",
+        "daily_reminder_body": "Hãy đọc 1 chương hôm nay và đạt tổng cộng {totalDays} ngày nhé! ✨",
+        "comeback_3day_title": "🕊️ Bạn có chút thời gian không?",
+        "comeback_3day_body": "Bạn có muốn mở Kinh Thánh sau 3 ngày không? Dù chỉ vài câu thôi cũng thật tuyệt vời ✨",
+        "fadeout_4day_title": "🌱 Tạm dừng gửi nhắc nhở",
+        "fadeout_4day_body": "Chúng mình sẽ tạm dừng gửi nhắc nhở nhé. Bất cứ khi nào bạn sẵn sàng, chúng mình luôn đợi bạn trong ứng dụng! ✨",
         "cheer_body": "**{senderNickname}** đã gửi lời động viên đến bạn! ✨"
     },
     "noteLabels": {

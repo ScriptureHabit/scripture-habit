@@ -334,7 +334,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Cron Routes Integration',
             spy.mockRestore();
         });
 
-        it('should process eligible users with FCM tokens and send notifications', async () => {
+        it('should send a daily notification to a user who posted yesterday', async () => {
             const STREAK_USER = 'CRON_STREAK_USR_' + Date.now();
             const FAKE_TOKEN = 'fake-fcm-token-' + Date.now();
             const YESTERDAY = new Date(Date.now() - 24 * 60 * 60 * 1000)
@@ -345,7 +345,8 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Cron Routes Integration',
                 language: 'en',
                 timeZone: 'Asia/Tokyo',
                 hasFcmToken: true,
-                lastPostDate: YESTERDAY
+                lastPostDate: YESTERDAY,
+                daysStudiedCount: 5
             });
             await db.collection('users').doc(STREAK_USER)
                 .collection('private').doc('tokens').set({
@@ -354,11 +355,15 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Cron Routes Integration',
 
             const { StreakReminderEngine } = await import('../lib/streak-reminder.js');
             vi.spyOn(StreakReminderEngine, 'getTargetTimezones').mockReturnValue(['Asia/Tokyo']);
-            vi.spyOn(StreakReminderEngine, 'needsReminder').mockReturnValue(true);
+            // NOTE: We mock getReminderDecision, NOT the deprecated needsReminder
+            vi.spyOn(StreakReminderEngine, 'getReminderDecision').mockReturnValue({
+                type: 'daily',
+                totalDaysToReach: 6
+            });
 
             // Mock FCM messaging to avoid real network calls
             const { messaging } = await import('../lib/firebase-admin.js');
-            vi.spyOn(messaging, 'sendEachForMulticast').mockResolvedValue({
+            const fcmSpy = vi.spyOn(messaging, 'sendEachForMulticast').mockResolvedValue({
                 successCount: 1,
                 failureCount: 0,
                 responses: [{ success: true }]
@@ -369,7 +374,13 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Cron Routes Integration',
             });
             expect(res.status).toBe(200);
             const data = await res.json();
-            expect(data.stats.tokensSentTo).toBeGreaterThanOrEqual(0);
+            expect(data.stats.tokensSentTo).toBeGreaterThanOrEqual(1);
+
+            // Assert the notification carried the correct type and totalDays
+            const sentMessage = fcmSpy.mock.calls[0]?.[0] as any;
+            expect(sentMessage?.data?.type).toBe('daily');
+            expect(sentMessage?.data?.totalDays).toBe('6');
+            expect(sentMessage?.tokens).toContain(FAKE_TOKEN);
 
             await db.recursiveDelete(db.collection('users').doc(STREAK_USER)).catch(() => {});
         });
@@ -385,7 +396,8 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Cron Routes Integration',
                 language: 'ja',
                 timeZone: 'Asia/Tokyo',
                 hasFcmToken: true,
-                lastPostDate: YESTERDAY
+                lastPostDate: YESTERDAY,
+                daysStudiedCount: 10
             });
             await db.collection('users').doc(STREAK_USER2)
                 .collection('private').doc('tokens').set({
@@ -394,7 +406,10 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Cron Routes Integration',
 
             const { StreakReminderEngine } = await import('../lib/streak-reminder.js');
             vi.spyOn(StreakReminderEngine, 'getTargetTimezones').mockReturnValue(['Asia/Tokyo']);
-            vi.spyOn(StreakReminderEngine, 'needsReminder').mockReturnValue(true);
+            vi.spyOn(StreakReminderEngine, 'getReminderDecision').mockReturnValue({
+                type: 'daily',
+                totalDaysToReach: 11
+            });
 
             const { messaging } = await import('../lib/firebase-admin.js');
             vi.spyOn(messaging, 'sendEachForMulticast').mockResolvedValue({
@@ -435,7 +450,11 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Cron Routes Integration',
 
             const { StreakReminderEngine } = await import('../lib/streak-reminder.js');
             vi.spyOn(StreakReminderEngine, 'getTargetTimezones').mockReturnValue(['Asia/Tokyo']);
-            vi.spyOn(StreakReminderEngine, 'needsReminder').mockReturnValue(false);
+            // getReminderDecision returns null when user posted today
+            vi.spyOn(StreakReminderEngine, 'getReminderDecision').mockReturnValue({
+                type: null,
+                totalDaysToReach: 1
+            });
 
             const res = await fetch(`${setup.baseUrl}/api/cron/streak-reminder`, {
                 headers: cronHeaders

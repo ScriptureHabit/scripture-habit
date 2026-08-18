@@ -735,6 +735,12 @@ export default {
         "bot_name": "Scripture Habit Bot",
         "streak_warning_title": "📖 今日、霊的な時間を過ごせましたか？",
         "streak_warning_body": "連続記録が途切れそうです！ほんの数分、心を静める時間を持ちましょう✨",
+        "daily_reminder_title": "📖 今日の記録はお済みですか？",
+        "daily_reminder_body": "今日の1章を読んで、合計{totalDays}日目を達成しましょう！✨",
+        "comeback_3day_title": "🕊️ 少しお時間ができましたか？",
+        "comeback_3day_body": "3日ぶりに聖典を開いてみませんか？短い数節だけでも大丈夫ですよ✨",
+        "fadeout_4day_title": "🌱 リマインダーを一時停止します",
+        "fadeout_4day_body": "通知はひとまず停止しますね。また読みたくなった時は、いつでもアプリでお待ちしています！✨",
         "cheer_body": "**{senderNickname}**さんがあなたに応援を送りました！ ✨"
     },
     "noteLabels": {

@@ -727,6 +727,12 @@ export default {
         "bot_name": "Scripture Habit Bot",
         "streak_warning_title": "📖 오늘 영적인 시간을 보내셨나요?",
         "streak_warning_body": "연속 기록이 끊어질 위기입니다! 단 몇 분이라도 마음을 가라앉히는 시간을 가져보세요 ✨",
+        "daily_reminder_title": "📖 오늘의 학습을 완료하셨나요?",
+        "daily_reminder_body": "오늘의 1장을 읽고 총 {totalDays}일 차를 달성해보세요! ✨",
+        "comeback_3day_title": "🕊️ 잠시 시간 있으신가요?",
+        "comeback_3day_body": "3일 만에 성경을 열어보시는 건 어떨까요? 짧은 몇 구절이라도 충분해요 ✨",
+        "fadeout_4day_title": "🌱 알림을 잠시 중단합니다",
+        "fadeout_4day_body": "알림은 우선 중단할게요. 다시 읽고 싶으실 때 언제든 앱에서 기다리고 있겠습니다! ✨",
         "cheer_body": "**{senderNickname}**님이 당신에게 응원을 보냈습니다! ✨"
     },
     "noteLabels": {

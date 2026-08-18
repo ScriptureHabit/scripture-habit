@@ -1,6 +1,6 @@
 import express, { Request, Response, NextFunction } from 'express';
 import { admin, db, messaging } from '../lib/firebase-admin.js';
-import { StreakReminderEngine } from '../lib/streak-reminder.js';
+import { StreakReminderEngine, UserReminderData, ReminderType } from '../lib/streak-reminder.js';
 import { InactivityService } from '../services/inactivity-service.js';
 import { calculateMemberStatus, InactivityMemberData, InactivityGroupData } from '../lib/inactivity-utils.js';
 import { t } from '../lib/i18n.js';
@@ -27,6 +27,20 @@ interface CronMemberInfo {
     lastActive?: string;
     daysSinceActive?: number;
     reason?: string;
+}
+
+interface NotificationBatchGroup {
+    type: Exclude<ReminderType, null>;
+    lang: string;
+    totalDays: number;
+    tokens: { token: string; uid: string }[];
+}
+
+interface StreakTargetUser {
+    id: string;
+    data: admin.firestore.DocumentData;
+    type: Exclude<ReminderType, null>;
+    totalDays: number;
 }
 
 const router = express.Router();
@@ -374,17 +388,24 @@ router.all('/streak-reminder', verifyCronSecret, async (req: Request, res: Respo
         let batch = db.batch(); 
         let batchOpCount = 0;
 
-        // Group tokens by language
-        const tokensByLang: Record<string, { token: string, uid: string }[]> = {};
+        // Group tokens by notification type, language, and totalDays
+        const notificationGroups: Record<string, NotificationBatchGroup> = {};
         const userActiveTokens = new Map<string, Set<string>>();
 
         // Parallelize token fetching in chunks of 500 using db.getAll to avoid N+1 serialization timeouts
-        const targetUsers: { id: string, data: admin.firestore.DocumentData }[] = [];
+        const targetUsers: StreakTargetUser[] = [];
+
         for (const user of eligibleUsers) {
             const { data } = user;
-            const needsReminder = StreakReminderEngine.needsReminder(data.lastPostDate, now, data.timeZone);
-            if (needsReminder) {
-                targetUsers.push(user);
+            const decision = StreakReminderEngine.getReminderDecision(data as UserReminderData, now, data.timeZone);
+            if (decision.type !== null) {
+                const streakUser: StreakTargetUser = {
+                    id: user.id,
+                    data,
+                    type: decision.type,
+                    totalDays: decision.totalDaysToReach
+                };
+                targetUsers.push(streakUser);
             } else {
                 skippedCount++;
             }
@@ -413,30 +434,53 @@ router.all('/streak-reminder', verifyCronSecret, async (req: Request, res: Respo
                 userActiveTokens.set(user.id, new Set(fcmTokens));
 
                 const lang = user.data.language || 'en';
-                if (!tokensByLang[lang]) tokensByLang[lang] = [];
+                const groupKey = user.type === 'daily'
+                    ? `daily:${lang}:${user.totalDays}`
+                    : `${user.type}:${lang}`;
+
+                if (!notificationGroups[groupKey]) {
+                    notificationGroups[groupKey] = {
+                        type: user.type,
+                        lang,
+                        totalDays: user.totalDays,
+                        tokens: []
+                    };
+                }
 
                 for (const token of fcmTokens) {
-                    tokensByLang[lang].push({ token, uid: user.id });
+                    notificationGroups[groupKey].tokens.push({ token, uid: user.id });
                 }
             });
         }
 
-        // Send notifications per language
-        for (const [lang, allTokensToSend] of Object.entries(tokensByLang)) {
-            if (allTokensToSend.length === 0) continue;
+        // Send notifications per group
+        for (const group of Object.values(notificationGroups)) {
+            if (group.tokens.length === 0) continue;
 
-            const title = t(lang, 'notifications.streak_warning_title');
-            const body = t(lang, 'notifications.streak_warning_body');
+            let title: string;
+            let body: string;
+
+            if (group.type === 'daily') {
+                title = t(group.lang, 'notifications.daily_reminder_title');
+                body = t(group.lang, 'notifications.daily_reminder_body', { totalDays: group.totalDays });
+            } else if (group.type === 'comeback_3day') {
+                title = t(group.lang, 'notifications.comeback_3day_title');
+                body = t(group.lang, 'notifications.comeback_3day_body');
+            } else {
+                title = t(group.lang, 'notifications.fadeout_4day_title');
+                body = t(group.lang, 'notifications.fadeout_4day_body');
+            }
 
             // Chunk tokens just in case > 500 (FCM limit)
-            for (let i = 0; i < allTokensToSend.length; i += 500) {
-                const chunkMapping = allTokensToSend.slice(i, i + 500);
+            for (let i = 0; i < group.tokens.length; i += 500) {
+                const chunkMapping = group.tokens.slice(i, i + 500);
                 const chunk = chunkMapping.map(tk => tk.token);
 
                 const message = {
                     notification: { title, body },
                     data: {
-                        type: 'streak_reminder'
+                        type: group.type,
+                        totalDays: String(group.totalDays)
                     },
                     tokens: chunk
                 };
