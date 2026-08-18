@@ -1,6 +1,6 @@
-import { parseStructuredNoteText } from './note-parser-utils';
-import { LANGUAGES } from '../config/languages';
-import { ALL_LOCALES } from '../locales/registry';
+import { parseStructuredNoteText } from './note-parser-utils.js';
+import { LANGUAGES } from '../config/languages.js';
+import { ALL_LOCALES } from '../locales/registry.js';
 
 export const LANGUAGE_PARAMS: Record<string, string> = Object.fromEntries(
     LANGUAGES.filter(l => l.code !== 'en').map(l => [l.code, `?lang=${l.ldsCode}`])

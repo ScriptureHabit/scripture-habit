@@ -1,4 +1,4 @@
-import { ALL_LOCALES } from '../locales/registry';
+import { ALL_LOCALES } from '../locales/registry.js';
 
 const CANONICAL_KEYS: Record<string, string> = {
     "D&C": "Doctrine and Covenants",

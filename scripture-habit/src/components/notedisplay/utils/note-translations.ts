@@ -3,8 +3,8 @@
  * Dynamically constructed from locale definitions (SSOT) adhering to DRY principles.
  */
 
-import { SCRIPTURE_TRANSLATION_MAP } from '../../../data/data';
-import { ALL_LOCALES, LOCALES_BY_CODE } from '../../../locales/registry';
+import { SCRIPTURE_TRANSLATION_MAP } from '../../../data/data.js';
+import { ALL_LOCALES, LOCALES_BY_CODE } from '../../../locales/registry.js';
 
 /**
  * Returns localized label fallback from the locale registry if missing or defaulted.

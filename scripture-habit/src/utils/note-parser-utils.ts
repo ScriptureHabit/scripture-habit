@@ -1,5 +1,5 @@
-import { NOTE_HEADER_REGEX, removeNoteHeader, isGCUrl, extractUrls } from './note-utils';
-import { ALL_LOCALES } from '../locales/registry';
+import { NOTE_HEADER_REGEX, removeNoteHeader, isGCUrl, extractUrls } from './note-utils.js';
+import { ALL_LOCALES } from '../locales/registry.js';
 
 export interface ParsedNote {
     isOriginalStructured: boolean;
