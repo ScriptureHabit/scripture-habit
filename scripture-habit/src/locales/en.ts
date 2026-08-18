@@ -1,4 +1,17 @@
 export default {
+    "milestone": {
+        "title": "{days} Days Completed!",
+        "label": "Study Record",
+        "daysUnit": "DAYS",
+        "achievementMessage": "Completed {days} days of scripture study.",
+        "saveImage": "Save Image",
+        "saving": "Saving...",
+        "imageSaved": "Image saved successfully",
+        "imageSaveError": "Failed to save image",
+        "share": "Share",
+        "shareText": "Completed {days} days of scripture study on Scripture Habit.",
+        "viewCard": "View Study Record"
+    },
     "_meta": {
         "code": "en",
         "name": "English",
@@ -220,6 +233,12 @@ export default {
         "sw": "Swahili"
     },
     "profile": {
+        "sound": {
+            "title": "Sound Effects",
+            "description": "Plays sound effects when posting notes and achieving milestones.",
+            "on": "ON",
+            "off": "OFF"
+        },
         "installApp": {
             "title": "Install App",
             "description": "Add to home screen for a better app experience.",

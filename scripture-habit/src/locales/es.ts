@@ -1,4 +1,17 @@
 export default {
+    "milestone": {
+        "title": "¡{days} días completados!",
+        "label": "Registro de estudio",
+        "daysUnit": "DÍAS",
+        "achievementMessage": "Has completado {days} días de estudio de las escrituras.",
+        "saveImage": "Guardar imagen",
+        "saving": "Guardando...",
+        "imageSaved": "Imagen guardada con éxito",
+        "imageSaveError": "Error al guardar la imagen",
+        "share": "Compartir",
+        "shareText": "He completado {days} días de estudio de las escrituras en Scripture Habit.",
+        "viewCard": "Ver registro de estudio"
+    },
     "_meta": {
         "code": "es",
         "name": "Español",
@@ -220,6 +233,12 @@ export default {
         "sw": "Suajili"
     },
     "profile": {
+        "sound": {
+            "title": "Efectos de sonido",
+            "description": "Reproduce efectos de sonido al publicar notas y alcanzar metas.",
+            "on": "ON",
+            "off": "OFF"
+        },
         "installApp": {
             "title": "Instalar Aplicación",
             "description": "Agregar a la pantalla de inicio para una mejor experiencia de la aplicación.",

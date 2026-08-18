@@ -1,4 +1,17 @@
 export default {
+    "milestone": {
+        "title": "Siku {days} Zimekamilika!",
+        "label": "Kumbukumbu ya Masomo",
+        "daysUnit": "SIKU",
+        "achievementMessage": "Imekamilisha siku {days} za kujifunza maandiko.",
+        "saveImage": "Hifadhi Picha",
+        "saving": "Inahifadhi...",
+        "imageSaved": "Picha imehifadhiwa vizuri",
+        "imageSaveError": "Imeshindwa kuhifadhi picha",
+        "share": "Shiriki",
+        "shareText": "Nimekamilisha siku {days} za kusoma maandiko kwenye Scripture Habit.",
+        "viewCard": "Tazama Kumbukumbu ya Masomo"
+    },
     "_meta": {
         "code": "sw",
         "name": "Kiswahili",
@@ -220,6 +233,12 @@ export default {
         "sw": "Kiswahili"
     },
     "profile": {
+        "sound": {
+            "title": "Athari za Sauti",
+            "description": "Huimba sauti wakati wa kuchapisha maelezo na kufikia hatua muhimu.",
+            "on": "WASHA",
+            "off": "ZIMA"
+        },
         "installApp": {
             "title": "Sakinisha Programu",
             "description": "Ongeza kwenye skrini ya nyumbani kwa uzoefu bora wa programu.",

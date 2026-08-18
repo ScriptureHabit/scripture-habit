@@ -1,0 +1,160 @@
+.milestone-card {
+    width: 320px;
+    max-width: 100%;
+    aspect-ratio: 4 / 5;
+    background: linear-gradient(135deg, #feac5e 0%, #c779d0 50%, #4bc0c8 100%);
+    border-radius: 24px;
+    padding: 10px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 40px -10px rgba(199, 121, 208, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.3);
+    position: relative;
+    overflow: hidden;
+    margin: 0 auto;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.milestone-card-inner {
+    background: rgba(255, 255, 255, 0.9);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.95);
+    border-radius: 18px;
+    padding: 16px 16px 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    box-sizing: border-box;
+    position: relative;
+    z-index: 1;
+}
+
+/* Header */
+.milestone-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(36, 45, 73, 0.08);
+    padding-bottom: 10px;
+}
+
+.milestone-brand {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #242d49;
+}
+
+.milestone-brand-icon {
+    display: flex;
+    align-items: center;
+    color: #FF919D;
+}
+
+.milestone-brand-text {
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    color: #242d49;
+}
+
+.milestone-label {
+    font-size: 0.7rem;
+    color: #788097;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+}
+
+/* Body */
+.milestone-card-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 6px 0;
+}
+
+.milestone-mascot-wrapper {
+    margin-bottom: 4px;
+}
+
+.milestone-mascot-img {
+    width: 68px;
+    height: 68px;
+    object-fit: contain;
+    filter: drop-shadow(0 6px 12px rgba(36, 45, 73, 0.12));
+    display: block;
+}
+
+.milestone-number-container {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 6px;
+}
+
+.milestone-number {
+    font-size: 3.8rem;
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: #242d49;
+}
+
+.milestone-days-text {
+    font-size: 1.15rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: #FF919D;
+}
+
+.milestone-divider {
+    width: 32px;
+    height: 3px;
+    background: linear-gradient(90deg, #feac5e, #FF919D);
+    margin: 8px 0 10px;
+    border-radius: 99px;
+}
+
+.milestone-message {
+    font-size: 0.92rem;
+    line-height: 1.45;
+    color: #242d49;
+    margin: 0;
+    font-weight: 600;
+    max-width: 250px;
+}
+
+/* Footer */
+.milestone-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    border-top: 1px solid rgba(36, 45, 73, 0.08);
+    padding-top: 10px;
+    font-size: 0.75rem;
+    color: #788097;
+}
+
+.milestone-user-info {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.milestone-info-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: 500;
+}
+
+.milestone-app-url {
+    font-size: 0.75rem;
+    color: #788097;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}

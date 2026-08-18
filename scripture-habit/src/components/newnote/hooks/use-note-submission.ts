@@ -8,6 +8,9 @@ import confetti from 'canvas-confetti';
 import { UserData } from '../../../types/user';
 import { buildNoteSearchTokens } from '../../../utils/search-token-utils';
 import { formatNoteText, getNoteValidationError } from '../../../utils/note-logic';
+import { playNoteSubmitSound, playMilestoneSound } from '../../../utils/audio-feedback';
+import { isStudyMilestone } from '../../../utils/milestone';
+import { useMilestoneStore } from '../../../store/use-milestone-store';
 
 import { Message } from '../../../types/chat';
 import { Note } from '../../../types/note';
@@ -110,6 +113,7 @@ export const useNoteSubmission = (
                 }
 
                 await batch.commit();
+                playNoteSubmitSound();
                 toast.success(t('newNote.successUpdate'));
                 onSuccess();
             } else {
@@ -130,12 +134,26 @@ export const useNoteSubmission = (
                 });
 
                 if (response.data && response.data.success) {
-                    confetti({
-                        particleCount: 150,
-                        spread: 70,
-                        origin: { y: 0.6 },
-                        zIndex: 10000
-                    });
+                    const prevDays = userData?.daysStudiedCount || 0;
+                    const streakUpdated = response.data?.streakUpdated;
+                    const newDays = streakUpdated ? prevDays + 1 : prevDays;
+
+                    if (streakUpdated && isStudyMilestone(newDays)) {
+                        playMilestoneSound();
+                        useMilestoneStore.getState().openMilestone({
+                            days: newDays,
+                            nickname: userData?.nickname || ''
+                        });
+                    } else {
+                        playNoteSubmitSound();
+                        confetti({
+                            particleCount: 150,
+                            spread: 70,
+                            origin: { y: 0.6 },
+                            zIndex: 10000
+                        });
+                    }
+
                     toast.success(t('newNote.successPost'));
                     onSuccess();
                 } else {

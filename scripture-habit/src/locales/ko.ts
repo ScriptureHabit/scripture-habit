@@ -1,4 +1,17 @@
 export default {
+    "milestone": {
+        "title": "{days}일 달성!",
+        "label": "학습 기록",
+        "daysUnit": "DAYS",
+        "achievementMessage": "{days}일간의 경전 학습을 달성했습니다.",
+        "saveImage": "이미지 저장",
+        "saving": "저장 중...",
+        "imageSaved": "이미지가 저장되었습니다",
+        "imageSaveError": "이미지 저장に失敗했습니다",
+        "share": "공유",
+        "shareText": "Scripture Habit에서 경전 학습 {days}일을 달성했습니다.",
+        "viewCard": "학습 기록 보기"
+    },
     "_meta": {
         "code": "ko",
         "name": "한국어",
@@ -220,6 +233,12 @@ export default {
         "sw": "스와힐리어"
     },
     "profile": {
+        "sound": {
+            "title": "효과음",
+            "description": "노트 작성 및 목표 달성 시 효과음을 재생합니다.",
+            "on": "ON",
+            "off": "OFF"
+        },
         "installApp": {
             "title": "앱 설치",
             "description": "더 나은 앱 환경을 위해 홈 화면에 추가하세요.",

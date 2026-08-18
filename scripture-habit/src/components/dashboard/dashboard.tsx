@@ -17,6 +17,7 @@ import DashboardLayout from './components/dashboard-layout';
 import DashboardOverview from './components/dashboard-overview';
 import DashboardModals from './components/dashboard-modals';
 import JoinSuccessModal from '../joingroup/join-success-modal';
+import MilestoneModal from '../milestone/milestone-modal';
 
 // Styles
 import './dashboard.css';
@@ -331,6 +332,9 @@ const Dashboard = () => {
           onClose={() => setShowJoinSuccessModal(false)}
         />
       )}
+
+      {/* Study Days Milestone Celebration Modal */}
+      <MilestoneModal />
     </>
   );
 };

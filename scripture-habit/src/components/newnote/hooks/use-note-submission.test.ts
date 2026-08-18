@@ -40,6 +40,13 @@ vi.mock('canvas-confetti', () => ({
     default: vi.fn(),
 }));
 
+vi.mock('../../../utils/audio-feedback', () => ({
+    playNoteSubmitSound: vi.fn(),
+    playMilestoneSound: vi.fn(),
+    isSoundEnabled: vi.fn(() => true),
+    setSoundEnabled: vi.fn(),
+}));
+
 describe('use-note-submission', () => {
     const mockUserData: UserData = { 
         uid: 'user1', 
@@ -225,5 +232,34 @@ describe('use-note-submission', () => {
         });
 
         expect(toast.error).toHaveBeenCalledWith('errors.prefix: errors.networkError');
+    });
+
+    it('should trigger milestone sound and modal when reaching a milestone day', async () => {
+        const { playMilestoneSound } = await import('../../../utils/audio-feedback');
+        const { useMilestoneStore } = await import('../../../store/use-milestone-store');
+        const openMilestoneSpy = vi.spyOn(useMilestoneStore.getState(), 'openMilestone');
+
+        vi.mocked(apiClient.post).mockResolvedValue({ 
+            data: { success: true, streakUpdated: true } 
+        });
+        const onSuccess = vi.fn();
+
+        const userWith9Days: UserData = {
+            ...mockUserData,
+            daysStudiedCount: 9
+        };
+
+        const { result } = renderHook(() => useNoteSubmission(userWith9Days, 'en', mockT));
+
+        await act(async () => {
+            await result.current.handleSubmit(
+                null, 'Book of Mormon', '1 Nephi 1', 'Test', 'all', [], null, null, onSuccess
+            );
+        });
+
+        expect(playMilestoneSound).toHaveBeenCalled();
+        expect(openMilestoneSpy).toHaveBeenCalledWith(expect.objectContaining({
+            days: 10
+        }));
     });
 });

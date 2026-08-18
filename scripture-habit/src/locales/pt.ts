@@ -1,4 +1,17 @@
 export default {
+    "milestone": {
+        "title": "{days} dias completados!",
+        "label": "Registro de estudo",
+        "daysUnit": "DIAS",
+        "achievementMessage": "Completou {days} dias de estudo das escrituras.",
+        "saveImage": "Salvar imagem",
+        "saving": "Salvando...",
+        "imageSaved": "Imagem salva com sucesso",
+        "imageSaveError": "Falha ao salvar imagem",
+        "share": "Compartilhar",
+        "shareText": "Completei {days} dias de estudo das escrituras no Scripture Habit.",
+        "viewCard": "Ver registro de estudo"
+    },
     "_meta": {
         "code": "pt",
         "name": "Português",
@@ -220,6 +233,12 @@ export default {
         "sw": "Suaíli"
     },
     "profile": {
+        "sound": {
+            "title": "Efeitos sonoros",
+            "description": "Reproduz efeitos sonoros ao postar notas e atingir metas.",
+            "on": "ON",
+            "off": "OFF"
+        },
         "installApp": {
             "title": "Instalar Aplicativo",
             "description": "Adicione à tela inicial para uma melhor experiência do aplicativo.",

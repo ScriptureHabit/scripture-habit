@@ -40,7 +40,7 @@ async function seed() {
             email: 'demo-user@example.com',
             nickname: 'demo-user',
             photoURL: 'https://api.dicebear.com/7.x/bottts/svg?seed=demo-user',
-            streakCount: 3,
+            streakCount: 9,
             highestStreak: 5,
             totalNotes: 8,
             language: 'ja'

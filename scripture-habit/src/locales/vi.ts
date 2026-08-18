@@ -1,4 +1,17 @@
 export default {
+    "milestone": {
+        "title": "Đạt {days} ngày!",
+        "label": "Nhật ký học tập",
+        "daysUnit": "NGÀY",
+        "achievementMessage": "Đã hoàn thành {days} ngày học thánh thư.",
+        "saveImage": "Lưu hình ảnh",
+        "saving": "Đang lưu...",
+        "imageSaved": "Đã lưu hình ảnh thành công",
+        "imageSaveError": "Không thể lưu hình ảnh",
+        "share": "Chia sẻ",
+        "shareText": "Đã hoàn thành {days} ngày học thánh thư trên Scripture Habit.",
+        "viewCard": "Xem nhật ký học tập"
+    },
     "_meta": {
         "code": "vi",
         "name": "Tiếng Việt",
@@ -220,6 +233,12 @@ export default {
         "sw": "Tiếng Swahili"
     },
     "profile": {
+        "sound": {
+            "title": "Hiệu ứng âm thanh",
+            "description": "Phát âm thanh khi đăng ghi chép và đạt cột mốc.",
+            "on": "BẬT",
+            "off": "TẮT"
+        },
         "installApp": {
             "title": "Cài đặt ứng dụng",
             "description": "Thêm vào màn hình chính để có trải nghiệm ứng dụng tốt hơn.",

@@ -41,7 +41,7 @@ async function sortAllLocales() {
     const enModule = await import(pathToFileURL(enPath).href);
     const en = enModule.default || enModule;
 
-    const files = fs.readdirSync(LOCALES_DIR).filter(f => (f.endsWith('.ts') || f.endsWith('.js')) && !f.includes('i18n'));
+    const files = fs.readdirSync(LOCALES_DIR).filter(f => (f.endsWith('.ts') || f.endsWith('.js')) && !f.includes('i18n') && !f.includes('registry'));
 
     for (const file of files) {
         const filePath = path.join(LOCALES_DIR, file);

@@ -1,4 +1,17 @@
 export default {
+    "milestone": {
+        "title": "ครบ {days} วันแล้ว!",
+        "label": "บันทึกการเรียนรู้",
+        "daysUnit": "DAYS",
+        "achievementMessage": "ศึกษาพระคัมภีร์ครบ {days} วันแล้ว",
+        "saveImage": "บันทึกรูปภาพ",
+        "saving": "กำลังบันทึก...",
+        "imageSaved": "บันทึกรูปภาพสำเร็จแล้ว",
+        "imageSaveError": "บันทึกรูปภาพไม่สำเร็จ",
+        "share": "แชร์",
+        "shareText": "ศึกษาพระคัมภีร์ครบ {days} วันบน Scripture Habit",
+        "viewCard": "ดูบันทึกการเรียนรู้"
+    },
     "_meta": {
         "code": "th",
         "name": "ไทย",
@@ -220,6 +233,12 @@ export default {
         "sw": "สวาฮีลี"
     },
     "profile": {
+        "sound": {
+            "title": "เอฟเฟกต์เสียง",
+            "description": "เล่นเสียงเมื่อโพสต์บันทึกและบรรลุเป้าหมาย",
+            "on": "เปิด",
+            "off": "ปิด"
+        },
         "installApp": {
             "title": "ติดตั้งแอป",
             "description": "เพิ่มลงในหน้าจอหลักเพื่อประสบการณ์การใช้งานที่ดียิ่งขึ้น",

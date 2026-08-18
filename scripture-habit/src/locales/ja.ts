@@ -1,4 +1,17 @@
 export default {
+    "milestone": {
+        "title": "{days}日達成！",
+        "label": "学びの記録",
+        "daysUnit": "DAYS",
+        "achievementMessage": "{days}日間の聖典学習を達成しました。",
+        "saveImage": "画像を保存",
+        "saving": "保存中...",
+        "imageSaved": "画像を保存しました",
+        "imageSaveError": "画像の保存に失敗しました",
+        "share": "シェア",
+        "shareText": "聖典学習 {days} 日目を達成しました。",
+        "viewCard": "学びの記録を表示"
+    },
     "_meta": {
         "code": "ja",
         "name": "日本語",
@@ -220,6 +233,12 @@ export default {
         "sw": "スワヒリ語"
     },
     "profile": {
+        "sound": {
+            "title": "効果音",
+            "description": "ノート投稿時や達成時のサウンドを再生します。",
+            "on": "ON",
+            "off": "OFF"
+        },
         "installApp": {
             "title": "アプリをインストール",
             "description": "ホーム画面に追加してアプリとしてご利用いただけます。",

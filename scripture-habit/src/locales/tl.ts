@@ -1,4 +1,17 @@
 export default {
+    "milestone": {
+        "title": "{days} Araw na Nakamit!",
+        "label": "Tala ng Pag-aaral",
+        "daysUnit": "DAYS",
+        "achievementMessage": "Nakumpleto ang {days} araw ng pag-aaral ng banal na kasulatan.",
+        "saveImage": "I-save ang Larawan",
+        "saving": "Nagse-save...",
+        "imageSaved": "Matagumpay na na-save ang larawan",
+        "imageSaveError": "Nabigong i-save ang larawan",
+        "share": "Ibahagi",
+        "shareText": "Nakumpleto ang {days} araw ng pag-aaral ng banal na kasulatan sa Scripture Habit.",
+        "viewCard": "Tingnan ang Tala ng Pag-aaral"
+    },
     "_meta": {
         "code": "tl",
         "name": "Tagalog",
@@ -220,6 +233,12 @@ export default {
         "sw": "Swahili"
     },
     "profile": {
+        "sound": {
+            "title": "Mga Sound Effect",
+            "description": "Nagpapatugtog ng mga tunog kapag nagpo-post ng mga tala at nakakamit ang mga milestone.",
+            "on": "ON",
+            "off": "OFF"
+        },
         "installApp": {
             "title": "I-install ang App",
             "description": "Idagdag sa home screen para sa mas magandang karanasan sa app.",

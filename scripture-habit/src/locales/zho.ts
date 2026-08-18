@@ -1,4 +1,17 @@
 export default {
+    "milestone": {
+        "title": "達成 {days} 天！",
+        "label": "研讀記錄",
+        "daysUnit": "DAYS",
+        "achievementMessage": "已完成 {days} 天的經文研讀。",
+        "saveImage": "儲存圖片",
+        "saving": "儲存中...",
+        "imageSaved": "圖片已成功儲存",
+        "imageSaveError": "儲存圖片失敗",
+        "share": "分享",
+        "shareText": "在 Scripture Habit 上達成了經文研讀 {days} 天。",
+        "viewCard": "查看研讀記錄"
+    },
     "_meta": {
         "code": "zho",
         "name": "繁體中文",
@@ -220,6 +233,12 @@ export default {
         "sw": "斯瓦希里文"
     },
     "profile": {
+        "sound": {
+            "title": "音效",
+            "description": "在發布筆記和達成里程碑時播放音效。",
+            "on": "開啟",
+            "off": "關閉"
+        },
         "installApp": {
             "title": "安裝應用程式",
             "description": "將其添加到主畫面以獲得更好的應用體驗。",

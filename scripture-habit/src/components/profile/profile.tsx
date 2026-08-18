@@ -5,7 +5,7 @@ import { LANGUAGES } from '../../config/languages';
 import { useSettings } from '../../context/settings-context';
 import { auth, storage } from '../../firebase';
 import { useNavigate } from 'react-router-dom';
-import { UilSignOutAlt, UilCamera, UilCalendarAlt } from '@iconscout/react-unicons';
+import { UilSignOutAlt, UilCamera, UilCalendarAlt, UilVolumeUp } from '@iconscout/react-unicons';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { toast } from 'react-toastify';
 import Button from '../button/button';
@@ -13,6 +13,8 @@ import { DEFAULT_KICK_THRESHOLD } from '../../constants';
 import { requestNotificationPermission, disableNotifications } from '../../utils/notification-helper';
 import { UserData } from '../../types/user';
 import apiClient from '../../utils/api-client';
+import { isSoundEnabled, setSoundEnabled, playNoteSubmitSound } from '../../utils/audio-feedback';
+import { useMilestoneStore } from '../../store/use-milestone-store';
 
 interface ProfileStats {
     streak: number;
@@ -38,6 +40,7 @@ const Profile = ({ userData, stats }: ProfileProps) => {
     const [isSaving, setIsSaving] = useState(false);
     const [showSignOutModal, setShowSignOutModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [soundEnabled, setSoundEnabledState] = useState<boolean>(() => isSoundEnabled());
     const [isDeleting, setIsDeleting] = useState(false);
     const [confirmNickname, setConfirmNickname] = useState('');
     const [notifPermission, setNotifPermission] = useState(window.Notification ? window.Notification.permission : 'default');
@@ -495,13 +498,55 @@ const Profile = ({ userData, stats }: ProfileProps) => {
                                 <span className="stat-value">{stats.totalNotes}</span>
                                 <span className="stat-label">{t('dashboard.totalNotes')}</span>
                             </div>
-                            <div className="stat-item">
+                            <div 
+                                className="stat-item" 
+                                style={{ cursor: (stats.daysStudied || 0) > 0 ? 'pointer' : 'default' }}
+                                onClick={() => {
+                                    const days = stats.daysStudied || 0;
+                                    if (days > 0) {
+                                        useMilestoneStore.getState().openMilestone({
+                                            days,
+                                            nickname: userData?.nickname || ''
+                                        });
+                                    }
+                                }}
+                                title={t('milestone.viewCard')}
+                            >
                                 <span className="stat-value">{stats.daysStudied || 0}</span>
                                 <span className="stat-label">{t('profile.daysStudied')}</span>
                             </div>
                         </div>
                     </div>
                 )}
+            </div>
+
+            <div className="profile-section">
+                <div className="habit-pace-header">
+                    <UilVolumeUp size="20" color="var(--pink)" />
+                    <h2>{t('profile.sound.title')}</h2>
+                </div>
+                <p className="section-desc-small">{t('profile.sound.description')}</p>
+                <div className="font-size-options">
+                    <div
+                        className={`font-option ${soundEnabled ? 'active' : ''}`}
+                        onClick={() => {
+                            setSoundEnabledState(true);
+                            setSoundEnabled(true);
+                            playNoteSubmitSound();
+                        }}
+                    >
+                        <span>{t('profile.sound.on')}</span>
+                    </div>
+                    <div
+                        className={`font-option ${!soundEnabled ? 'active' : ''}`}
+                        onClick={() => {
+                            setSoundEnabledState(false);
+                            setSoundEnabled(false);
+                        }}
+                    >
+                        <span>{t('profile.sound.off')}</span>
+                    </div>
+                </div>
             </div>
 
             <div className="profile-section">
