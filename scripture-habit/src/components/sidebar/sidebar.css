@@ -171,7 +171,8 @@
         box-shadow: 0 0 6px rgba(236, 72, 153, 0.7);
         z-index: 100;
         display: block !important;
-        animation: unread-dot-pulse 2s infinite;
+        transform-origin: center center;
+        animation: badge-pop-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards, unread-dot-pulse 2s infinite 0.5s;
     }
 
     .Sidebar.hide-mobile {
@@ -197,7 +198,15 @@
     box-shadow: 0 0 6px rgba(236, 72, 153, 0.6);
     flex-shrink: 0;
     display: inline-block !important;
-    animation: unread-dot-pulse 2s infinite;
+    transform-origin: center center;
+    animation: badge-pop-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards, unread-dot-pulse 2s infinite 0.5s;
+}
+
+@keyframes badge-pop-in {
+    0% { transform: scale(0); opacity: 0; }
+    60% { transform: scale(1.45); opacity: 1; }
+    80% { transform: scale(0.9); }
+    100% { transform: scale(1); opacity: 1; }
 }
 
 @keyframes unread-dot-pulse {

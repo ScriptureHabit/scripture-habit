@@ -8,7 +8,7 @@ import confetti from 'canvas-confetti';
 import { UserData } from '../../../types/user';
 import { buildNoteSearchTokens } from '../../../utils/search-token-utils';
 import { formatNoteText, getNoteValidationError } from '../../../utils/note-logic';
-import { playNoteSubmitSound, playMilestoneSound } from '../../../utils/audio-feedback';
+import { playNoteSubmitSound } from '../../../utils/audio-feedback';
 import { isStudyMilestone } from '../../../utils/milestone';
 import { useMilestoneStore } from '../../../store/use-milestone-store';
 
@@ -139,7 +139,7 @@ export const useNoteSubmission = (
                     const newDays = streakUpdated ? prevDays + 1 : prevDays;
 
                     if (streakUpdated && isStudyMilestone(newDays)) {
-                        playMilestoneSound();
+                        // Open milestone modal; milestone sound removed per request
                         useMilestoneStore.getState().openMilestone({
                             days: newDays,
                             nickname: userData?.nickname || ''

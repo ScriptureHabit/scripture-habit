@@ -42,7 +42,6 @@ vi.mock('canvas-confetti', () => ({
 
 vi.mock('../../../utils/audio-feedback', () => ({
     playNoteSubmitSound: vi.fn(),
-    playMilestoneSound: vi.fn(),
     isSoundEnabled: vi.fn(() => true),
     setSoundEnabled: vi.fn(),
 }));
@@ -234,8 +233,7 @@ describe('use-note-submission', () => {
         expect(toast.error).toHaveBeenCalledWith('errors.prefix: errors.networkError');
     });
 
-    it('should trigger milestone sound and modal when reaching a milestone day', async () => {
-        const { playMilestoneSound } = await import('../../../utils/audio-feedback');
+    it('should open milestone modal when reaching a milestone day', async () => {
         const { useMilestoneStore } = await import('../../../store/use-milestone-store');
         const openMilestoneSpy = vi.spyOn(useMilestoneStore.getState(), 'openMilestone');
 
@@ -257,7 +255,6 @@ describe('use-note-submission', () => {
             );
         });
 
-        expect(playMilestoneSound).toHaveBeenCalled();
         expect(openMilestoneSpy).toHaveBeenCalledWith(expect.objectContaining({
             days: 10
         }));

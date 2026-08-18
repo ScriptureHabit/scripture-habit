@@ -40,6 +40,7 @@ import { useDashboardWarnings } from './hooks/use-dashboard-warnings';
 import { useDashboardInvitations } from './hooks/use-dashboard-invitations';
 import { useDashboardActions } from './hooks/use-dashboard-actions';
 import { useToday } from '../../hooks/use-today';
+import { useUnreadAudioAlert } from '../../hooks/use-unread-audio-alert';
 
 const Dashboard = () => {
   const location = useLocation();
@@ -150,6 +151,9 @@ const Dashboard = () => {
 
   const { showNotifPrompt, handleEnableNotifications, handleCloseNotifPrompt } = useDashboardNotifications(userData, t);
   const { markWelcomeStorySeen, updateNickname } = useDashboardActions(user, userData);
+
+  // Play unread sound alert on app start (session-capped) and new messages
+  useUnreadAudioAlert(enrichedUserGroups, userData?.uid, selectedView === 2, activeGroupId);
 
   // 2. Effects
 
