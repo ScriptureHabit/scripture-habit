@@ -134,11 +134,9 @@ export default {
     "sidebar": {
         "dashboard": "dashboard",
         "myNotes": "My Notes",
-        "languages": "languages",
         "profile": "profile",
         "myGroups": "My Groups",
         "joinCreateGroup": "Join/Create Group",
-        "signOut": "Sign Out",
         "selectGroup": "Select Group",
         "close": "Close",
         "story": "Developer Intro"
@@ -146,7 +144,6 @@ export default {
     "story": {
         "title": "Developer Introduction",
         "description": "About the developer and the background of the app",
-        "vision": "We believe that, as scriptures and history have shown, through 'personal revelation' that comes from continuous scripture study, we can prevent cultural decline, social division, war, and conflict, and create peace.",
         "appBackground": "App Development Background",
         "backgroundStory": "This app was originally created as a graduation project by me, Daijiro Sagane, a student at BYU Pathway Worldwide (BYU-Idaho's online program), which I have since improved and released to the public.\n\nIf you have any questions, opinions, or feedback, please feel free to contact me at the address below. ↓\n\nEmail: dazhilangxianggen@gmail.com",
         "developerName": "Daijiro Sagane",
@@ -158,7 +155,6 @@ export default {
         "streak": "Total Days",
         "days": "days",
         "totalNotes": "Total Notes",
-        "notes": "notes",
         "seeAll": "See All",
         "noRecentNotes": "No recent notes.",
         "readInGospelLibrary": "Read in Gospel Library",
@@ -237,13 +233,10 @@ export default {
         "imageUploadError": "Failed to update profile picture.",
         "photoHint": "Tap to change profile picture",
         "imageTooLarge": "Image is too large. Please pick a smaller one.",
-        "notifications": "Notifications",
         "notificationToggle": {
             "title": "Push Notifications",
             "description": "Receive updates about group activity and study reminders.",
             "statusBlocked": "Blocked (Check Settings)",
-            "enable": "Enable",
-            "disable": "Disable",
             "disabledSuccess": "Notifications disabled",
             "error": "Failed to update notification settings."
         },
@@ -265,7 +258,6 @@ export default {
     },
     "myNotes": {
         "description": "Note Collection",
-        "newNote": "New Note",
         "loading": "Loading notes...",
         "noNotesTitle": "No notes yet",
         "noNotesDesc": "Start your journey by creating your first study note.",
@@ -292,7 +284,8 @@ export default {
         "prevPage": "Previous",
         "nextPage": "Next",
         "pageInfo": "Page {current} of {total}",
-        "nextLetterInDays": "(Next letter in {days} days)"
+        "nextLetterInDays": "(New letter in {days} days)",
+        "notMember": "You are not a member of this group"
     },
     "recapModal": {
         "title": "Your Weekly Letter",
@@ -311,9 +304,6 @@ export default {
     },
     "groupChat": {
         "defaultScripture": "Old Testament",
-        "category": "Category",
-        "chapter": "Chapter",
-        "comment": "Comment",
         "aiGroupUserNoteCongratulation": "Great job! 🎉🎉 See you tomorrow! ✨",
         "myGroups": "My Groups",
         "send": "Send",
@@ -388,7 +378,6 @@ export default {
         "deleteMessageWarning": "This will also delete the note from My Notes.",
         "errorTranslation": "Failed to translate message",
         "translate": "Translate",
-        "translating": "Translating...",
         "translation": "Translation",
         "translated": "Translated",
         "showOriginal": "See original",
@@ -396,7 +385,6 @@ export default {
         "reply": "Reply",
         "like": "Like",
         "unlike": "Unlike",
-        "original": "Original",
         "activeToday": "Active today",
         "activeYesterday": "Active yesterday",
         "activeDaysAgo": "Active {days} days ago",
@@ -446,22 +434,18 @@ export default {
         "cheerConfirmButton": "Send Cheer",
         "cheerSent": "Cheer sent!",
         "autoKickConfirmTitle": "Confirm Your Goal",
-        "autoKickErrorMismatch": "The number doesn't match your choice. Let's try once more.",
         "autoKickSuccess": "Habit pace set! Let's build this habit together.",
         "autoKickInitTitle": "Set Your Goal!",
         "autoKickInitDesc": "Scripture Habit has an 'auto-leave rule' to help prevent quitting.\nChoose your personal goal below. (If you're not sure, we recommend starting with once every 7 days.)",
         "autoKickSelectedSubtext": "Study scripture at least once every {days} days",
         "next": "Next",
-        "autoKickConfirmText": "Final check: You understand that if you don't post a note for {days} days, you'll be automatically removed? Please type '{days}' to confirm.",
         "habitPaceProfileTitle": "{nickname}'s Goal",
         "habitPaceLetsTryTogether": "Let's do this together!",
         "habitPaceProfileDesc": "Post once every {days} days to stay active.",
-        "confirm": "Confirm",
         "aiGroupDefaultGroupName": "Scripture Habit AI",
         "aiGroupDefaultGroupDesc": "1-on-1 Scripture Study Group with Scripture Habit AI",
         "aiGroupWelcomeMessage": "Welcome to the Scripture Habit AI Group! Let's study scriptures and share insights together every day. Rooting for you! 📖✨\n*Note: AI posts daily notes, but direct replies to {nickname} are not supported at this stage.",
         "aiGroupBotNickname": "Scripture Habit AI",
-        "aiGroupDailyNoteText": "[Daily Study Inspiration] Consistently opening scriptures every day leads to great blessings. Let's deepen our learning today! 📖✨",
         "inviteExpiresAt": "Expires at",
         "regenerateInviteCode": "Regenerate Invite Code",
         "inviteCodeRegenerated": "Invite code has been regenerated!",
@@ -478,7 +462,6 @@ export default {
     "newNote": {
         "editTitle": "Edit Note",
         "newTitle": "New Note",
-        "deleteTitle": "Delete Note",
         "errorMissingFields": "Please fill in the chapter and select a scripture.",
         "chooseScriptureLabel": "Choose the category",
         "chooseScripturePlaceholder": "Please choose a category option",
@@ -512,10 +495,7 @@ export default {
             "e.g. Corianton is really having his past exposed to all of posterity here."
         ],
         "shareLabel": "Share with:",
-        "shareToGroup": "Share with Group",
         "shareNone": "Do not share (Private)",
-        "shareAll": "Share with all groups",
-        "shareSpecific": "Share with specific groups",
         "shareToGroupShort": "Share",
         "shareNoneShort": "Private",
         "shareAllShort": "All",
@@ -524,9 +504,6 @@ export default {
         "unnamedGroup": "Unnamed Group",
         "cancel": "Cancel",
         "saving": "Saving...",
-        "update": "Update Note",
-        "post": "Post Note",
-        "saveNote": "✨ Save Note",
         "btnPost": "✨ Post",
         "btnSave": "🔒 Save",
         "btnUpdate": "✨ Update",
@@ -569,7 +546,6 @@ export default {
     },
     "groupOptions": {
         "title": "Study Groups",
-        "subtitle": "Choose how you want to connect with others.",
         "joinGroupTitle": "Join a Group",
         "joinGroupDesc": "Find an existing group to study with.",
         "createGroupTitle": "Create a Group",
@@ -598,7 +574,6 @@ export default {
         "joinConfirmMessage": "Are you sure you want to join this group?",
         "confirmJoin": "Join",
         "cancelJoin": "Cancel",
-        "notes": "Notes",
         "createdAt": "Created at",
         "joiningFromInvite": "Joining from invitation...",
         "joiningFromInviteSuccess": "Welcome! You've successfully joined the group via your friend's invitation.",
@@ -612,12 +587,8 @@ export default {
     "onboardingQuest": {
         "title": "🌟 Onboarding Quests",
         "step1Title": "1. Join a Group",
-        "step1Desc": "Create your own group or join another group.",
-        "step1DescSuccess": "Successfully joined a group! 🎉",
         "step1Action": "Find / Create Group",
         "step2Title": "2. Post Your First Note",
-        "step2Desc": "Share your first study note in the group.",
-        "step2DescSuccess": "First note posted! 🎉",
         "step2Action": "Write Note",
         "chatHeaderBackPrompt": "You're in the group! Let's go back to the dashboard and post your first note!",
         "groupOptionsBannerDesc": "Choose your preferred way to start: Start 1-on-1 with AI, create a private group, or join a public group.",
@@ -648,7 +619,6 @@ export default {
         "invitePreviewTitle": "Invite Link Preview",
         "invitePreviewDesc": "*Active after group creation. Copy and share this link to invite your friends and family directly.",
         "title": "Create a Study Group",
-        "subtitle": "Build a scripture study group and invite others to join.",
         "groupNameLabel": "Group Name",
         "groupNamePlaceholder": "Enter group name",
         "descriptionLabel": "Description (optional)",
@@ -681,7 +651,6 @@ export default {
         "googleButton": "Log in with Google",
         "githubButton": "Log in with GitHub",
         "browserWarning": "Please log in or sign up using your default browser (Chrome, Safari, etc.). In-app browsers like LINE, Messenger, or Instagram may prevent login due to security restrictions.",
-        "inAppBrowserWarning": "Google Login is not supported in this in-app browser. Please open in Chrome or Safari.",
         "emailNotVerified": "Please verify your email address before logging in.",
         "resendVerification": "Send Verification Email",
         "verificationResent": "Verification email sent.",
@@ -717,9 +686,7 @@ export default {
         "members": "members",
         "open": "Open",
         "joining": "Joining...",
-        "join": "Join",
         "details": "Details",
-        "close": "Close",
         "noDescription": "No description.",
         "signInFirst": "Sign in first to join groups",
         "unableToJoin": "Unable to join group",
@@ -733,11 +700,6 @@ export default {
         "ai_note_posted_announcement": "🎉🎉🎉 **{nickname} posted a note!!** 🎉🎉🎉",
         "note_posted_title": "📖 Scripture Study",
         "note_posted_body": "{nickname} posted a note! ✨",
-        "cheer_options": [
-            "{nickname} is waiting for your post! ✨",
-            "{nickname} is looking forward to your study note! 📖",
-            "Let's aim for 100% unity! {nickname} sent you an energy boost! 💪"
-        ],
         "kick_title": "Activity Update",
         "kick_body": "⚠️ You've been removed from '{groupName}' due to inactivity. We'd love to have you back whenever you're ready! 💪",
         "members_removed": "👋 **{count} member(s)** were removed due to inactivity.",
@@ -759,6 +721,10 @@ export default {
         "talk": "Talk",
         "speech": "Speech",
         "fetchingInfo": "Loading info..."
+    },
+    "placeholders": {
+        "unclassified": "unclassified",
+        "none": "none"
     },
     "signOut": {
         "title": "Sign Out",
@@ -838,7 +804,6 @@ export default {
         "description": "Install this app on your device for a better experience.",
         "instruction1": "Tap the Share button",
         "instruction2": "Select 'Add to Home Screen'",
-        "close": "Close",
         "updateAvailable": "A new version is available.",
         "updateButton": "Refresh to Update"
     },
@@ -895,7 +860,6 @@ export default {
         "address": "Address",
         "phone": "Phone Number",
         "email": "Email Address",
-        "price": "Price",
         "environment": "Operating Environment",
         "environmentDetail": "Can be used on the latest versions of various browsers and operating systems.",
         "requestDisclosure": "Personal contact information will be provided without delay upon request via email.",
@@ -950,12 +914,6 @@ export default {
                 "q3": "Can I download it from the app stores (App Store / Google Play)?",
                 "a3": "This app is provided as a PWA (Progressive Web App). You can install it by opening it directly in your browser and selecting \"Add to Home Screen\" from the menu."
             }
-        },
-        "validation": {
-            "groupNameRequired": "Group name is required.",
-            "groupNameTooLong": "Group name must be 50 characters or less.",
-            "messageRequired": "Message content cannot be empty.",
-            "emailInvalid": "Please enter a valid email address."
         }
     },
     "demo": {

@@ -1,5 +1,6 @@
 import { parseStructuredNoteText } from './note-parser-utils';
 import { LANGUAGES } from '../config/languages';
+import { ALL_LOCALES } from '../locales/registry';
 
 export const LANGUAGE_PARAMS: Record<string, string> = Object.fromEntries(
     LANGUAGES.filter(l => l.code !== 'en').map(l => [l.code, `?lang=${l.ldsCode}`])
@@ -103,10 +104,19 @@ const ORDINANCE_KEYWORDS: Record<string, Set<string>> = {
     "the-restoration-of-the-fulness-of-the-gospel-of-jesus-christ": new Set(["restoration", "回復", "restauração", "restauración", "rétablissement", "restoration proclamation"])
 };
 
-// Dynamically populate book name mappings and ordinance keywords from all locale files
-const localeFiles = import.meta.glob<Record<string, unknown>>(['../locales/*.ts', '!../locales/i18n.ts'], { eager: true, import: 'default' });
+// Dynamically populate book name mappings, volume aliases, and ordinance keywords from all locale files
+for (const locale of ALL_LOCALES) {
+    if (locale.scriptures) {
+        if (locale.scriptures.oldTestament) VOLUME_ALIASES.ot.push(locale.scriptures.oldTestament.toLowerCase());
+        if (locale.scriptures.newTestament) VOLUME_ALIASES.nt.push(locale.scriptures.newTestament.toLowerCase());
+        if (locale.scriptures.bookOfMormon) VOLUME_ALIASES.bofm.push(locale.scriptures.bookOfMormon.toLowerCase());
+        if (locale.scriptures.doctrineAndCovenants) VOLUME_ALIASES['dc-testament'].push(locale.scriptures.doctrineAndCovenants.toLowerCase());
+        if (locale.scriptures.pearlOfGreatPrice) VOLUME_ALIASES.pgp.push(locale.scriptures.pearlOfGreatPrice.toLowerCase());
+        if (locale.scriptures.generalConference) VOLUME_ALIASES['general-conference'].push(locale.scriptures.generalConference.toLowerCase());
+        if (locale.scriptures.byuSpeeches) VOLUME_ALIASES['byu-speeches'].push(locale.scriptures.byuSpeeches.toLowerCase());
+        if (locale.scriptures.ordinancesAndProclamations) VOLUME_ALIASES['ordinances-and-proclamations'].push(locale.scriptures.ordinancesAndProclamations.toLowerCase());
+    }
 
-for (const locale of Object.values(localeFiles)) {
     const bundle = locale?.books as Record<string, string> | undefined;
     if (!bundle || typeof bundle !== 'object') continue;
     for (const [englishBook, localizedBook] of Object.entries(bundle)) {

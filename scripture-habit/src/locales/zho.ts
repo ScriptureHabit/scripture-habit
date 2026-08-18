@@ -134,11 +134,9 @@ export default {
     "sidebar": {
         "dashboard": "儀表板",
         "myNotes": "我的筆記",
-        "languages": "語言",
         "profile": "個人檔案",
         "myGroups": "我的群組",
         "joinCreateGroup": "加入/建立群組",
-        "signOut": "登出",
         "selectGroup": "選擇群組",
         "close": "關閉",
         "story": "開發者介紹"
@@ -146,7 +144,6 @@ export default {
     "story": {
         "title": "開發者介紹",
         "description": "關於開發者與應用程式的背景",
-        "vision": "如同過去記載的聖典與歷史所顯示的，我們相信透過持續學習聖典所獲得的「個人啟示」，能夠防止文化衰退、社會分裂、戰爭與不和，並創造和平。",
         "appBackground": "應用程式開發背景",
         "backgroundStory": "此應用程式最初是由我——相根大治郎（BYU Pathway Worldwide，即 BYU Idaho 線上課程的學生）作為畢業設計而製作的，隨後進行了改良並向大眾公開。\n\n如果您有任何問題、意見或感想，歡迎隨時透過以下聯絡方式與我聯絡。↓\n\nEmail: dazhilangxianggen@gmail.com",
         "developerName": "相根 大治郎",
@@ -158,7 +155,6 @@ export default {
         "streak": "總計天數",
         "days": "天",
         "totalNotes": "筆記總數",
-        "notes": "則筆記",
         "seeAll": "查看全部",
         "noRecentNotes": "最近沒有筆記。",
         "readInGospelLibrary": "在福音圖書館閱讀",
@@ -237,13 +233,10 @@ export default {
         "imageUploadError": "更新個人檔案照片失敗。",
         "photoHint": "點擊以更改個人檔案照片",
         "imageTooLarge": "圖片太大了。請選擇較小的圖片。",
-        "notifications": "通知",
         "notificationToggle": {
             "title": "推送通知",
             "description": "接收有關群組活動和研讀提醒的更新。",
             "statusBlocked": "已阻止（請檢查設置）",
-            "enable": "啟用",
-            "disable": "禁用",
             "disabledSuccess": "通知已禁用",
             "error": "無法更新通知設置。"
         },
@@ -265,7 +258,6 @@ export default {
     },
     "myNotes": {
         "description": "筆記收藏",
-        "newNote": "新增筆記",
         "loading": "載入筆記中...",
         "noNotesTitle": "尚無筆記",
         "noNotesDesc": "建立您的第一則研讀筆記，開始您的旅程。",
@@ -292,7 +284,8 @@ export default {
         "prevPage": "上一頁",
         "nextPage": "下一頁",
         "pageInfo": "第 {current} 頁，共 {total} 頁",
-        "nextLetterInDays": "(距离新信件还有 {days} 天)"
+        "nextLetterInDays": "(距離新信件還有 {days} 天)",
+        "notMember": "您不是此小組的成員"
     },
     "recapModal": {
         "title": "您的每週信件",
@@ -311,9 +304,6 @@ export default {
     },
     "groupChat": {
         "defaultScripture": "舊約聖經",
-        "category": "類別",
-        "chapter": "章節",
-        "comment": "評論",
         "aiGroupUserNoteCongratulation": "太棒了！🎉🎉 明天見✨",
         "myGroups": "我的群組",
         "send": "發送",
@@ -362,7 +352,6 @@ export default {
         "deleteMessageWarning": "此操作也會從「我的筆記」中刪除此筆記。",
         "errorTranslation": "翻譯訊息失敗",
         "translate": "翻譯",
-        "translating": "翻譯中...",
         "translation": "Translation",
         "translated": "已翻譯",
         "showOriginal": "顯示原文",
@@ -370,7 +359,6 @@ export default {
         "reply": "回覆",
         "like": "讚",
         "unlike": "收回讚",
-        "original": "原文",
         "activeToday": "今日活躍",
         "activeYesterday": "昨日活躍",
         "activeDaysAgo": "{days} 天前活躍",
@@ -420,22 +408,18 @@ export default {
         "cheerConfirmButton": "發送鼓勵",
         "cheerSent": "鼓勵已發送！",
         "autoKickConfirmTitle": "確認您的目標",
-        "autoKickErrorMismatch": "天數與您的選擇不符。請再試一次。",
         "autoKickSuccess": "習慣節奏設定成功！讓我們一起建立這個習慣。",
         "autoKickInitTitle": "設定你的目標！",
         "autoKickInitDesc": "Scripture Habit 設有「自動退出規則」以防止半途而廢。\n在下方設定您的個人目標。（若不確定，建議先從每 7 天發布一次開始。）",
         "autoKickSelectedSubtext": "至少每 {days} 天進行一次經文學習",
         "next": "下一步",
-        "autoKickConfirmText": "最後確認：您是否理解如果您在 {days} 天內未發布筆記，將被自動移除？請輸入「{days}」以確認。",
         "habitPaceProfileTitle": "{nickname}的目標",
         "habitPaceLetsTryTogether": "一起加油吧！",
         "habitPaceProfileDesc": "每 {days} 天發布一次筆記以保持活躍。",
-        "confirm": "確認",
         "aiGroupDefaultGroupName": "Scripture Habit AI",
         "aiGroupDefaultGroupDesc": "與 Scripture Habit AI 一對一研讀經文的專屬群組",
         "aiGroupWelcomeMessage": "歡迎來到 Scripture Habit AI 群組！每天一起研讀經文並分享心得吧。為你加油！📖✨\n※Scripture Habit AI 每天會發布筆記，但現階段無法直接回覆 {nickname}，敬請諒解。",
         "aiGroupBotNickname": "Scripture Habit AI",
-        "aiGroupDailyNoteText": "【每日研讀靈感】每天持之以恆打開經文會帶來廣大的祝福。今天也讓我們一起深化學習吧！📖✨",
         "inviteExpiresAt": "到期時間",
         "regenerateInviteCode": "重新生成邀請碼",
         "inviteCodeRegenerated": "邀請碼已重新生成！",
@@ -452,7 +436,6 @@ export default {
     "newNote": {
         "editTitle": "編輯筆記",
         "newTitle": "新增筆記",
-        "deleteTitle": "刪除筆記",
         "errorMissingFields": "請填寫章節並選擇經文。",
         "chooseScriptureLabel": "選擇經文",
         "chooseScripturePlaceholder": "請選擇經文選項",
@@ -487,10 +470,7 @@ export default {
             "例：咦，我讀到哪了...？...嗯...（翻頁...）...「我，尼腓，出生自良好的父母...」"
         ],
         "shareLabel": "分享對象：",
-        "shareToGroup": "分享給群組",
         "shareNone": "不分享 (私人)",
-        "shareAll": "分享給所有群組",
-        "shareSpecific": "分享給特定群組",
         "shareToGroupShort": "分享",
         "shareNoneShort": "私人",
         "shareAllShort": "全部",
@@ -499,9 +479,6 @@ export default {
         "unnamedGroup": "未命名群組",
         "cancel": "取消",
         "saving": "儲存中...",
-        "update": "更新筆記",
-        "post": "發佈筆記",
-        "saveNote": "✨ 儲存筆記",
         "btnPost": "✨ 發布",
         "btnSave": "🔒 儲存",
         "btnUpdate": "✨ 更新",
@@ -544,7 +521,6 @@ export default {
     },
     "groupOptions": {
         "title": "學習群組",
-        "subtitle": "選擇您想如何與他人連結。",
         "joinGroupTitle": "加入群組",
         "joinGroupDesc": "尋找現有的群組一起研讀。",
         "createGroupTitle": "建立群組",
@@ -573,7 +549,6 @@ export default {
         "joinConfirmMessage": "您確定要加入此群組嗎？",
         "confirmJoin": "加入",
         "cancelJoin": "取消",
-        "notes": "筆記",
         "createdAt": "建立於",
         "joiningFromInvite": "正在通過邀請加入...",
         "joiningFromInviteSuccess": "歡迎！您已通過邀請加入群組。",
@@ -587,12 +562,8 @@ export default {
     "onboardingQuest": {
         "title": "🌟 最初的任務",
         "step1Title": "1. 加入群組",
-        "step1Desc": "建立自己的群組或加入其他群組。",
-        "step1DescSuccess": "已成功加入群組！🎉",
         "step1Action": "尋找 / 建立群組",
         "step2Title": "2. 發布第一篇筆記",
-        "step2Desc": "在群組中分享你的第一篇研讀筆記。",
-        "step2DescSuccess": "已發布第一篇筆記！🎉",
         "step2Action": "撰寫筆記",
         "chatHeaderBackPrompt": "你已成功加入群組！返回儀表板發布你的第一篇筆記吧！",
         "groupOptionsBannerDesc": "選擇你喜歡的方式開始：與 AI 進行 1 對 1 研讀、建立專屬群組，或加入公開群組。",
@@ -623,7 +594,6 @@ export default {
         "invitePreviewTitle": "邀請連結預覽",
         "invitePreviewDesc": "*將於群組建立後啟用。複製並分享此連結，即可直接邀請您的朋友和家人加入。",
         "title": "建立研讀群組",
-        "subtitle": "建立經文研讀群組並邀請他人加入。",
         "groupNameLabel": "群組名稱",
         "groupNamePlaceholder": "輸入群組名稱",
         "descriptionLabel": "描述 (選填)",
@@ -656,7 +626,6 @@ export default {
         "googleButton": "使用 Google 登入",
         "githubButton": "使用 GitHub 登入",
         "browserWarning": "請使用您的預設瀏覽器（Chrome、Safari 等）進行登入或註冊。LINE、Messenger 或 Instagram 等應用程式內瀏覽器可能會因安全性限制而導致登入失敗。",
-        "inAppBrowserWarning": "此應用程式內瀏覽器不支援 Google 登入。請在 Chrome 或 Safari 中開啟。",
         "emailNotVerified": "請在登錄前驗證您的電子郵件地址。",
         "resendVerification": "發送驗證郵件",
         "verificationResent": "驗證郵件已發送。",
@@ -692,9 +661,7 @@ export default {
         "members": "成員",
         "open": "開啟",
         "joining": "加入中...",
-        "join": "加入",
         "details": "詳細",
-        "close": "關閉",
         "noDescription": "沒有描述。",
         "signInFirst": "請先登入以加入群組",
         "unableToJoin": "無法加入群組",
@@ -708,11 +675,6 @@ export default {
         "ai_note_posted_announcement": "🎉🎉🎉 **{nickname} 發布了一則筆記！！** 🎉🎉🎉",
         "note_posted_title": "📖 聖典學習",
         "note_posted_body": "{nickname} 發布了筆記！✨",
-        "cheer_options": [
-            "{nickname} 正在等待您的貼文！✨",
-            "{nickname} 期待看到您的學習筆記！📖",
-            "讓我們以 100% 團結為目標！ {nickname} 給你加了一把勁！ 💪"
-        ],
         "kick_title": "活动更新",
         "kick_body": "⚠️ 由於不活躍，您已被從 '{groupName}' 中移除。隨時歡迎您回歸！💪",
         "members_removed": "👋 **{count} 位成員**因不活躍而被移除。",
@@ -734,6 +696,10 @@ export default {
         "talk": "演講",
         "speech": "演講",
         "fetchingInfo": "正在載入資訊..."
+    },
+    "placeholders": {
+        "unclassified": "未分類",
+        "none": "無"
     },
     "signOut": {
         "title": "登出",
@@ -813,7 +779,6 @@ export default {
         "description": "為了獲得更好的體驗，請將此應用程式安裝到您的主畫面。",
         "instruction1": "點擊選單並選擇「加入主畫面」。",
         "instruction2": "按照說明操作。",
-        "close": "關閉",
         "updateAvailable": "有新版本可用。",
         "updateButton": "立即更新"
     },
@@ -870,7 +835,6 @@ export default {
         "address": "地址",
         "phone": "電話號碼",
         "email": "電子郵件地址",
-        "price": "價格",
         "environment": "運行環境",
         "environmentDetail": "可在各類瀏覽器及作業系統的最新版本上使用。",
         "requestDisclosure": "個人聯絡資訊將在收到電子郵件請求後立即提供。",
@@ -925,12 +889,6 @@ export default {
                 "q3": "可以從應用程式商店（App Store / Google Play）下載嗎？",
                 "a3": "本應用程式以 PWA（Progressive Web App）形式提供。您可以直接在瀏覽器中開啟它，然後從選單中選擇「新增至主畫面」來進行安裝。"
             }
-        },
-        "validation": {
-            "groupNameRequired": "群組名稱是必填項。",
-            "groupNameTooLong": "群組名稱必須在 50 個字元以內。",
-            "messageRequired": "消息內容不能為空。",
-            "emailInvalid": "請輸入有效的電子郵件地址。"
         }
     },
     "demo": {

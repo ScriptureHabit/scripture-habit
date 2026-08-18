@@ -134,11 +134,9 @@ export default {
     "sidebar": {
         "dashboard": "ダッシュボード",
         "myNotes": "私のノート",
-        "languages": "言語設定",
         "profile": "プロフィール",
         "myGroups": "私のグループ",
         "joinCreateGroup": "グループに参加/作成",
-        "signOut": "サインアウト",
         "selectGroup": "グループを選択",
         "close": "閉じる",
         "story": "開発者紹介"
@@ -146,7 +144,6 @@ export default {
     "story": {
         "title": "開発者紹介",
         "description": "開発者の紹介とアプリの背景について",
-        "vision": "私たちはこれまで記されてきた聖典や歴史が示すように、継続的な聖典学習による「個人の啓示」を通して、文化の衰退、社会の分断、戦争、不和を防ぎ、平和を創りだせると信じてます。",
         "appBackground": "アプリ開発の背景",
         "backgroundStory": "このアプリはBYU Pathway Worldwide(BYU Idahoの通信課程)の学生である私、相根大治郎が卒業制作で作成したものを改善し、一般公開したものです。\n\n問い合わせやご意見、ご感想がある場合は、以下の連絡先からお気軽にご連絡ください。↓\n\nEmail: dazhilangxianggen@gmail.com",
         "developerName": "相根 大治郎",
@@ -158,7 +155,6 @@ export default {
         "streak": "合計日数",
         "days": "日",
         "totalNotes": "総ノート数",
-        "notes": "ノート",
         "seeAll": "すべて見る",
         "noRecentNotes": "最近のノートはありません。",
         "readInGospelLibrary": "福音ライブラリーで読む",
@@ -237,13 +233,10 @@ export default {
         "imageUploadError": "画像のアップロードに失敗しました。",
         "photoHint": "タップしてプロフィール画像を変更",
         "imageTooLarge": "画像サイズが大きすぎます。5MB以下の画像を選択してください。",
-        "notifications": "通知",
         "notificationToggle": {
             "title": "プッシュ通知",
             "description": "グループの活動状況や学習のリマインダーを受け取ります。",
             "statusBlocked": "ブロック中（設定を確認してください）",
-            "enable": "有効にする",
-            "disable": "無効にする",
             "disabledSuccess": "通知を無効にしました",
             "error": "通知設定の更新に失敗しました。"
         },
@@ -265,7 +258,6 @@ export default {
     },
     "myNotes": {
         "description": "ノートコレクション",
-        "newNote": "ノート作成",
         "loading": "ノートを読み込み中...",
         "noNotesTitle": "まだノートがありません",
         "noNotesDesc": "最初の学習ノートを作成して、探求を始めましょう。",
@@ -284,7 +276,7 @@ export default {
         "recapSuccess": "作成完了！お手紙が届いています。",
         "noNotesForRecap": "今週のノートが見つかりませんでした。",
         "recapError": "作成に失敗しました。",
-        "sharedActivity": "Shared Activity",
+        "sharedActivity": "共有グループのアクティビティ",
         "noteDeletedSuccess": "ノートを削除しました",
         "noteDeletedError": "ノートの削除に失敗しました",
         "letterSaveError": "レターの保存に失敗しました",
@@ -292,7 +284,8 @@ export default {
         "prevPage": "前へ",
         "nextPage": "次へ",
         "pageInfo": "{total} ページ中 {current} ページ目",
-        "nextLetterInDays": "(新しい手紙まであと {days} 日)"
+        "nextLetterInDays": "(新しい手紙まであと {days} 日)",
+        "notMember": "グループに参加していません"
     },
     "recapModal": {
         "title": "今週の振り返りレター",
@@ -311,9 +304,6 @@ export default {
     },
     "groupChat": {
         "defaultScripture": "旧約聖書",
-        "category": "カテゴリ",
-        "chapter": "章",
-        "comment": "コメント",
         "aiGroupUserNoteCongratulation": "よくできました！🎉🎉 明日もお会いしましょう✨",
         "myGroups": "私のグループ",
         "send": "送信",
@@ -388,7 +378,6 @@ export default {
         "deleteMessageWarning": "このノートは「私のノート」からも削除されます。",
         "errorTranslation": "メッセージの翻訳に失敗しました",
         "translate": "翻訳",
-        "translating": "翻訳中...",
         "translation": "翻訳",
         "translated": "翻訳済み",
         "showOriginal": "原文を表示",
@@ -396,7 +385,6 @@ export default {
         "reply": "返信",
         "like": "いいね",
         "unlike": "いいね解除",
-        "original": "原文",
         "activeToday": "今日活動",
         "activeYesterday": "昨日活動",
         "activeDaysAgo": "{days}日前に活動",
@@ -446,22 +434,18 @@ export default {
         "cheerConfirmButton": "エールを送る",
         "cheerSent": "エールを送りました！",
         "autoKickConfirmTitle": "目標の確認",
-        "autoKickErrorMismatch": "入力された日数が選択したものと一致しません。もう一度入力してください。",
         "autoKickSuccess": "目標を設定しました！一緒に頑張りましょう。",
         "autoKickInitTitle": "目標を決めよう！",
         "autoKickInitDesc": "Scripture Habitには三日坊主を避けるための「自動退出ルール」があります。\n自分の目標を決めましょう！（最初は7日に一度を目標にすることを勧めます）",
         "autoKickSelectedSubtext": "{days}日に一度は聖典学習をする",
         "next": "次へ",
-        "autoKickConfirmText": "最終確認です。{days}日間ノートを投稿しなかった場合、自動退出になることを了解しましたか？確認のため「{days}」と入力してください。",
         "habitPaceProfileTitle": "{nickname}の目標",
         "habitPaceLetsTryTogether": "一緒にがんばろう！",
         "habitPaceProfileDesc": "{days}日に1回以上投稿して継続しましょう。",
-        "confirm": "確定する",
         "aiGroupDefaultGroupName": "スクハビAI",
         "aiGroupDefaultGroupDesc": "スクハビAIと1対1で聖典を学ぶ専用グループ",
         "aiGroupWelcomeMessage": "スクハビAIグループへようこそ！毎日一緒に聖典を学び、気づきをシェアしましょう。応援しています！📖✨\n※AIは毎日ノートを投稿しますが、{nickname}さんへの直接返信は現段階ではできません。ご了承ください。",
         "aiGroupBotNickname": "スクハビAI",
-        "aiGroupDailyNoteText": "【今日の学習インスピレーション】毎日コツコツと聖典を開くことが、大きな祝福につながります。今日も一緒に学びを深めましょう！📖✨",
         "inviteExpiresAt": "有効期限",
         "regenerateInviteCode": "招待リンクを再生成",
         "inviteCodeRegenerated": "招待リンクを再生成しました！",
@@ -478,7 +462,6 @@ export default {
     "newNote": {
         "editTitle": "ノートを編集",
         "newTitle": "ノート作成",
-        "deleteTitle": "ノートを削除",
         "errorMissingFields": "章を入力し、聖典を選択してください。",
         "chooseScriptureLabel": "カテゴリを選択",
         "chooseScripturePlaceholder": "カテゴリオプションを選択してください",
@@ -520,10 +503,7 @@ export default {
             "例: コリアントン後世にめちゃくちゃ黒歴史さらされてますやん。"
         ],
         "shareLabel": "共有範囲:",
-        "shareToGroup": "グループに共有する",
         "shareNone": "共有しない (プライベート)",
-        "shareAll": "すべてのグループに共有する",
-        "shareSpecific": "特定のグループに共有する",
         "shareToGroupShort": "共有する",
         "shareNoneShort": "非公開",
         "shareAllShort": "すべて",
@@ -532,9 +512,6 @@ export default {
         "unnamedGroup": "名称未設定グループ",
         "cancel": "キャンセル",
         "saving": "保存中...",
-        "update": "ノートを更新",
-        "post": "✨ノートを投稿",
-        "saveNote": "✨ノートを保存",
         "btnPost": "✨ 投稿",
         "btnSave": "🔒 保存",
         "btnUpdate": "✨ 更新",
@@ -577,7 +554,6 @@ export default {
     },
     "groupOptions": {
         "title": "学習グループ",
-        "subtitle": "他の人とどのようにつながりたいか選択してください。",
         "joinGroupTitle": "グループに参加",
         "joinGroupDesc": "既存のグループを見つけて一緒に学習しましょう。",
         "createGroupTitle": "グループを作成",
@@ -606,7 +582,6 @@ export default {
         "joinConfirmMessage": "本当にこのグループに参加しますか？",
         "confirmJoin": "参加",
         "cancelJoin": "キャンセル",
-        "notes": "ノート",
         "createdAt": "作成日",
         "joiningFromInvite": "招待から参加中...",
         "joiningFromInviteSuccess": "ようこそ！友達の招待からグループに参加しました。",
@@ -620,12 +595,8 @@ export default {
     "onboardingQuest": {
         "title": "🌟 最初の課題",
         "step1Title": "1. グループに入ろう",
-        "step1Desc": "グループを作成するか、他のグループに参加しましょう。",
-        "step1DescSuccess": "グループへの所属が完了しました！🎉",
         "step1Action": "グループを探す / 作成",
         "step2Title": "2. 最初の学習ノートを投稿しよう",
-        "step2Desc": "グループに最初のノートを投稿してみましょう。",
-        "step2DescSuccess": "最初のノートを投稿しました！🎉",
         "step2Action": "ノートを書く",
         "chatHeaderBackPrompt": "グループに入れました！ダッシュボードに戻ってノートを投稿しましょう！",
         "groupOptionsBannerDesc": "お好きな方法で始めましょう：AIと1対1で今すぐ始める、友達とのグループを作成、または公開グループに参加できます。",
@@ -656,7 +627,6 @@ export default {
         "invitePreviewTitle": "招待リンクのプレビュー",
         "invitePreviewDesc": "※グループ作成後に有効になります。このリンクを共有することで、友達や家族を直接招待することができます。",
         "title": "学習グループを作成",
-        "subtitle": "聖典学習グループを作成し、他の人を招待しましょう。",
         "groupNameLabel": "グループ名",
         "groupNamePlaceholder": "グループ名を入力",
         "descriptionLabel": "説明 (任意)",
@@ -689,7 +659,6 @@ export default {
         "googleButton": "Googleでログイン",
         "githubButton": "GitHubでログイン",
         "browserWarning": "必ずお使いのデフォルトブラウザ（Chrome, Safari, Edgeなど）からログイン・サインアップしてください。LINE, メッセンジャー, インスタグラムなどのアプリ内ブラウザでは、セキュリティの関係でログインできないことがございます。",
-        "inAppBrowserWarning": "このアプリ内ブラウザではGoogleログインが利用できません。右上のメニュー等からChromeやSafariで開いてください。",
         "emailNotVerified": "ログインする前にメールアドレスの確認を行ってください。",
         "resendVerification": "確認メールを送信",
         "verificationResent": "確認メールを送信しました。",
@@ -725,9 +694,7 @@ export default {
         "members": "メンバー",
         "open": "開く",
         "joining": "参加中...",
-        "join": "参加",
         "details": "詳細",
-        "close": "閉じる",
         "noDescription": "説明はありません。",
         "signInFirst": "グループに参加するにはサインインしてください",
         "unableToJoin": "グループに参加できませんでした",
@@ -741,11 +708,6 @@ export default {
         "ai_note_posted_announcement": "🎉🎉🎉 **{nickname}がノートを投稿しました！！** 🎉🎉🎉",
         "note_posted_title": "📖 聖典学習",
         "note_posted_body": "{nickname}さんがノートを投稿しました！✨",
-        "cheer_options": [
-            "{nickname}さんがあなたの投稿を楽しみに待っています！✨",
-            "{nickname}さんがあなたの学習ノートを心待ちにしています！📖",
-            "全員投稿まであと少し！{nickname}さんからエールが届きました！💪"
-        ],
         "kick_title": "自動退出のお知らせ",
         "kick_body": "⚠️ グループ『{groupName}』から自動退出となりました。一定期間学習が確認されなかったため、ルールに基づき退出となりました。またいつでも戻ってきてくださいね！お待ちしています💪",
         "members_removed": "👋 **{count}名**が活動休止のため退室しました。",
@@ -767,6 +729,10 @@ export default {
         "talk": "お話",
         "speech": "スピーチ",
         "fetchingInfo": "情報を取得中..."
+    },
+    "placeholders": {
+        "unclassified": "未分類",
+        "none": "なし"
     },
     "signOut": {
         "title": "サインアウト",
@@ -846,7 +812,6 @@ export default {
         "description": "デバイスのホーム画面に追加して、より快適に利用しましょう。",
         "instruction1": "「共有」ボタンをタップ",
         "instruction2": "「ホーム画面に追加」を選択",
-        "close": "閉じる",
         "updateAvailable": "新しいバージョンが利用可能です。",
         "updateButton": "更新する"
     },
@@ -903,7 +868,6 @@ export default {
         "address": "住所",
         "phone": "電話番号",
         "email": "メールアドレス",
-        "price": "価格",
         "environment": "動作環境",
         "environmentDetail": "各種ブラウザ、OSの最新バージョンでご利用いただけます。",
         "requestDisclosure": "住所・電話番号については、メールでの請求により遅滞なく提供いたします。",
@@ -958,12 +922,6 @@ export default {
                 "q3": "アプリストア（App Store / Google Play）からダウンロードできますか？",
                 "a3": "このアプリはPWA（Progressive Web App）として提供されています。ブラウザから直接開き、メニューから『ホーム画面に追加』を選択することでダウンロードすることができます。"
             }
-        },
-        "validation": {
-            "groupNameRequired": "グループ名は必須です。",
-            "groupNameTooLong": "グループ名は50文字以内で入力してください。",
-            "messageRequired": "メッセージ内容を入力してください。",
-            "emailInvalid": "有効なメールアドレスを入力してください。"
         }
     },
     "demo": {

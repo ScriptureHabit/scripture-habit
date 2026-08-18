@@ -134,11 +134,9 @@ export default {
     "sidebar": {
         "dashboard": "dashboard",
         "myNotes": "Aking mga Tala",
-        "languages": "Mga Wika",
         "profile": "profile",
         "myGroups": "Aking mga Grupo",
         "joinCreateGroup": "Sumali/Lumikha ng Grupo",
-        "signOut": "Mag-sign Out",
         "selectGroup": "Pumili ng Grupo",
         "close": "Isara",
         "story": "Pagpapakilala sa Tagalikha"
@@ -146,7 +144,6 @@ export default {
     "story": {
         "title": "Pagpapakilala sa Tagalikha",
         "description": "Tungkol sa tagalikha at pinagmulan ng app",
-        "vision": "Naniniwala kami na tulad ng ipinapakita ng mga banal na kasulatan at kasaysayan, sa pamamagitan ng 'personal na paghahayag' na nagmumula sa patuloy na pag-aaral ng banal na kasulatan, maiiwasan natin ang paghina ng kultura, pagkakahati-hati ng lipunan, digmaan, at hidwaan, at makalikha ng kapayapaan.",
         "appBackground": "Pinagmulan ng Pagbuo ng App",
         "backgroundStory": "Ang app na ito ay orihinal na nilikha bilang isang graduation project ko, si Daijiro Sagane, na isang mag-aaral sa BYU Pathway Worldwide (online na programa ng BYU-Idaho), na pinaganda ko pa at inilabas sa publiko.\n\nKung mayroon kayong mga katanungan, opinyon, o komento, huwag mag-atubiling makipag-ugnayan sa akin sa address sa ibaba. ↓\n\nEmail: dazhilangxianggen@gmail.com",
         "developerName": "Daijiro Sagane",
@@ -158,7 +155,6 @@ export default {
         "streak": "Kabuuang Araw",
         "days": "araw",
         "totalNotes": "Kabuuang mga Tala",
-        "notes": "mga tala",
         "seeAll": "Tingnan Lahat",
         "noRecentNotes": "Walang kamakailang mga tala.",
         "readInGospelLibrary": "Basahin sa Gospel Library",
@@ -237,13 +233,10 @@ export default {
         "imageUploadError": "Failed to update profile picture.",
         "photoHint": "Tap to change profile picture",
         "imageTooLarge": "Image is too large. Please pick a smaller one.",
-        "notifications": "Mga Notification",
         "notificationToggle": {
             "title": "Push Notifications",
             "description": "Makatanggap ng mga update tungkol sa aktibidad ng grupo at mga paalala sa pag-aaral.",
             "statusBlocked": "Blocked (I-check ang Settings)",
-            "enable": "I-enable",
-            "disable": "I-disable",
             "disabledSuccess": "Na-disable ang mga notification",
             "error": "Hindi ma-update ang mga settings ng notification."
         },
@@ -265,7 +258,6 @@ export default {
     },
     "myNotes": {
         "description": "Koleksyon ng mga Tala",
-        "newNote": "Bagong Tala",
         "loading": "Naglo-load ng mga tala...",
         "noNotesTitle": "Wala pang mga tala",
         "noNotesDesc": "Simulan ang iyong paglalakbay sa pamamagitan ng paggawa ng iyong unang tala sa pag-aaral.",
@@ -292,7 +284,8 @@ export default {
         "prevPage": "Nakaraan",
         "nextPage": "Susunod",
         "pageInfo": "Pahina {current} ng {total}",
-        "nextLetterInDays": "(Susunod na sulat sa loob ng {days} araw)"
+        "nextLetterInDays": "(Bagong sulat sa {days} araw)",
+        "notMember": "Hindi ka miyembro ng grupong ito"
     },
     "recapModal": {
         "title": "Ang Iyong Lingguhang Sulat",
@@ -311,9 +304,6 @@ export default {
     },
     "groupChat": {
         "defaultScripture": "Luma Tipan",
-        "category": "Kategorya",
-        "chapter": "Kabanata",
-        "comment": "Komento",
         "aiGroupUserNoteCongratulation": "Napakagaling! 🎉🎉 Magkita tayo bukas✨",
         "myGroups": "Aking mga Grupo",
         "send": "Ipadala",
@@ -388,7 +378,6 @@ export default {
         "deleteMessageWarning": "Tatanggalin din nito ang tala mula sa Aking mga Tala.",
         "errorTranslation": "Nabigong isalin ang mensahe",
         "translate": "Isalin",
-        "translating": "Isinasalin...",
         "translation": "Translation",
         "translated": "Naisalin na",
         "showOriginal": "Ipakita ang Orihinal",
@@ -396,7 +385,6 @@ export default {
         "reply": "Sumagot",
         "like": "Like",
         "unlike": "Unlike",
-        "original": "Orihinal",
         "activeToday": "Aktibo ngayon",
         "activeYesterday": "Aktibo kahapon",
         "activeDaysAgo": "Aktibo {days} araw ang nakalipas",
@@ -446,22 +434,18 @@ export default {
         "cheerConfirmButton": "Magpadala ng Cheer",
         "cheerSent": "Naipadala na ang cheer!",
         "autoKickConfirmTitle": "Kumpirmahin ang lyong Layunin",
-        "autoKickErrorMismatch": "Ang numero ay hindi tumutugma sa iyong pinili. Pakisubukang muli.",
         "autoKickSuccess": "Naka-set na ang habit pace! Sabay tayong bumuo ng gawi na ito.",
         "autoKickInitTitle": "Itakda ang Iyong Layunin!",
         "autoKickInitDesc": "Ang Scripture Habit ay may 'awtomatikong pag-alis na tuntunin' upang maiwasan ang pagsuko.\nPumili ng iyong personal na layunin sa ibaba. (Kung hindi sigurado, inirerekomenda naming magsimula sa minsan bawat 7 araw.)",
         "autoKickSelectedSubtext": "Mag-aral ng banal na kasulatan nang hindi bababa sa isang beses bawat {days} araw",
         "next": "Susunod",
-        "autoKickConfirmText": "Pakitype ang numero {days} upang kumpirmahin ang iyong setting.",
         "habitPaceProfileTitle": "Layunin ni {nickname}",
         "habitPaceLetsTryTogether": "Sama-sama nating gawin ito!",
         "habitPaceProfileDesc": "Mag-post tuwing {days} araw upang manatiling aktibo.",
-        "confirm": "Kumpirmahin",
         "aiGroupDefaultGroupName": "Scripture Habit AI",
         "aiGroupDefaultGroupDesc": "1-on-1 Group para sa pag-aaral ng kasulatan kasama ang AI",
         "aiGroupWelcomeMessage": "Maligayang pagdating sa AI Group! Mag-aral tayo ng mga kasulatan at magbahagi ng natutunan araw-araw. Sumusuporta kami sa iyo! 📖✨\n*Tandaan: Nagpo-post ang AI ng araw-araw na note, ngunit ang direktang pagtugon kay {nickname} ay hindi pa suportado sa yugtong ito.",
         "aiGroupBotNickname": "Scripture Habit AI",
-        "aiGroupDailyNoteText": "[Inspirasyon sa Araw-araw na Pag-aaral] Ang patuloy na pagbubukas ng kasulatan araw-araw ay nagdadala ng malalaking pagpapala. Magpakalalim tayo sa pag-aaral ngayon! 📖✨",
         "inviteExpiresAt": "Mag-e-expire sa",
         "regenerateInviteCode": "I-regenerate ang Invite Code",
         "inviteCodeRegenerated": "Na-regenerate na ang Invite Code!",
@@ -478,7 +462,6 @@ export default {
     "newNote": {
         "editTitle": "I-edit ang Tala",
         "newTitle": "Bagong Tala",
-        "deleteTitle": "Tanggalin ang Tala",
         "errorMissingFields": "Pakipunan ang kabanata at pumili ng banal na kasulatan.",
         "chooseScriptureLabel": "Piliin ang banal na kasulatan",
         "chooseScripturePlaceholder": "Mangyaring pumili ng opsyon sa banal na kasulatan",
@@ -512,10 +495,7 @@ export default {
             "Hal: Nakalantad ang madilim na nakaraan ni Corianton sa lahat ng posteridad."
         ],
         "shareLabel": "Ibahagi sa:",
-        "shareToGroup": "Ibahagi sa grupo",
         "shareNone": "Huwag ibahagi (Pribado)",
-        "shareAll": "Ibahagi sa lahat ng grupo",
-        "shareSpecific": "Ibahagi sa partikular na mga grupo",
         "shareToGroupShort": "Ibahagi",
         "shareNoneShort": "Pribado",
         "shareAllShort": "Lahat",
@@ -524,9 +504,6 @@ export default {
         "unnamedGroup": "Walang Pangalang Grupo",
         "cancel": "Kanselahin",
         "saving": "Nagsesave...",
-        "update": "I-update ang Tala",
-        "post": "I-post ang Tala",
-        "saveNote": "✨ I-save ang Tala",
         "btnPost": "✨ I-post",
         "btnSave": "🔒 I-save",
         "btnUpdate": "✨ I-update",
@@ -569,7 +546,6 @@ export default {
     },
     "groupOptions": {
         "title": "Mga Grupo ng Pag-aaral",
-        "subtitle": "Piliin kung paano mo gustong kumonekta sa iba.",
         "joinGroupTitle": "Sumali sa Grupo",
         "joinGroupDesc": "Humanap ng umiiral na grupo para makapag-aral nang sabay.",
         "createGroupTitle": "Lumikha ng Grupo",
@@ -598,7 +574,6 @@ export default {
         "joinConfirmMessage": "Sigurado ka bang gusto mong sumali sa grupong ito?",
         "confirmJoin": "Sumali",
         "cancelJoin": "Kanselahin",
-        "notes": "Mga Tala",
         "createdAt": "Nilikha noong",
         "joiningFromInvite": "Sumasali mula sa imbita...",
         "joiningFromInviteSuccess": "Maligayang pagdating! Nakasali ka sa grupo sa pamamagitan ng isang imbita.",
@@ -612,12 +587,8 @@ export default {
     "onboardingQuest": {
         "title": "🌟 Mga Unang Misyon",
         "step1Title": "1. Sumali sa isang Grupo",
-        "step1Desc": "Gumawa ng sarili mong grupo o sumali sa ibang grupo.",
-        "step1DescSuccess": "Matagumpay na sumali sa grupo! 🎉",
         "step1Action": "Maghanap / Gumawa ng Grupo",
         "step2Title": "2. I-post ang Iyong Unang Tala",
-        "step2Desc": "Ibahagi ang iyong unang tala sa pag-aaral sa grupo.",
-        "step2DescSuccess": "Na-post na ang unang tala! 🎉",
         "step2Action": "Sumulat ng Tala",
         "chatHeaderBackPrompt": "Nakapasok ka na sa grupo! Bumalik tayo sa dashboard at mag-post ng unang tala!",
         "groupOptionsBannerDesc": "Piliin kung paano magsisimula: Magsimula 1-on-1 sa AI, gumawa ng pribadong grupo, o sumali sa pampublikong grupo.",
@@ -648,7 +619,6 @@ export default {
         "invitePreviewTitle": "Preview ng Link ng Imbitasyon",
         "invitePreviewDesc": "*Aktibo pagkatapos magawa ang grupo. Kopyahin at ibahagi ang link na ito para direktang maanyayahan ang iyong mga kaibigan at pamilya.",
         "title": "Lumikha ng Study Group",
-        "subtitle": "Bumuo ng scripture study group at mag-imbita ng iba na sumali.",
         "groupNameLabel": "Pangalan ng Grupo",
         "groupNamePlaceholder": "Ilagay ang pangalan ng grupo",
         "descriptionLabel": "Paglalarawan (opsyonal)",
@@ -681,7 +651,6 @@ export default {
         "googleButton": "Mag-log in gamit ang Google",
         "githubButton": "Mag-login gamit ang GitHub",
         "browserWarning": "Mangyaring mag-log in o mag-sign up gamit ang iyong default na browser (Chrome, Safari, atbp.). Ang mga in-app browser tulad ng LINE, Messenger, o Instagram ay maaaring mabigo dahil sa mga restriksyon sa seguridad.",
-        "inAppBrowserWarning": "Hindi suportado ang Google Login sa in-app browser na ito. Pakibuksan sa Chrome o Safari.",
         "emailNotVerified": "Pakiberipika ang iyong email address bago mag-login.",
         "resendVerification": "Ipadala ang Verification Email",
         "verificationResent": "Naipadala ang verification email.",
@@ -717,9 +686,7 @@ export default {
         "members": "miyembro",
         "open": "Buksan",
         "joining": "Sumasali...",
-        "join": "Sumali",
         "details": "Detalye",
-        "close": "Isara",
         "noDescription": "Walang paglalarawan.",
         "signInFirst": "Mag-sign in muna para makasali",
         "unableToJoin": "Hindi makasali sa grupo",
@@ -733,11 +700,6 @@ export default {
         "ai_note_posted_announcement": "🎉🎉🎉 **Nag-post si {nickname} ng isang tala!!** 🎉🎉🎉",
         "note_posted_title": "📖 Pag-aaral ng Kasulatan",
         "note_posted_body": "Nag-post si {nickname} ng note! ✨",
-        "cheer_options": [
-            "Naghihintay si {nickname} para sa iyong post! ✨",
-            "Inaabangan ni {nickname} ang iyong study note! 📖",
-            "Layon nating makamit ang 100% pagkakaisa! Nagpadala si {nickname} ng lakas sa iyo! 💪"
-        ],
         "kick_title": "Update sa Aktibidad",
         "kick_body": "⚠️ Naalis ka sa '{groupName}' dahil sa hindi pagiging aktibo. Masaya kaming makita kang muli kapag handa ka na! 💪",
         "members_removed": "👋 **{count} miyembro** ang inalis dahil sa hindi pagiging aktibo.",
@@ -759,6 +721,10 @@ export default {
         "talk": "Mensahe",
         "speech": "Talumpati",
         "fetchingInfo": "Kinukuha ang impormasyon..."
+    },
+    "placeholders": {
+        "unclassified": "hindi nakategorya",
+        "none": "wala"
     },
     "signOut": {
         "title": "Mag-sign Out",
@@ -838,7 +804,6 @@ export default {
         "description": "Para sa mas magandang karanasan, i-install ang app na ito sa iyong home screen.",
         "instruction1": "I-tap ang menu at piliin ang 'Add to Home screen'.",
         "instruction2": "Sundin ang mga tagubilin.",
-        "close": "Isara",
         "updateAvailable": "May bagong bersyon na magagamit.",
         "updateButton": "I-update Ngayon"
     },
@@ -895,7 +860,6 @@ export default {
         "address": "Address",
         "phone": "Numero ng Telepono",
         "email": "Email Address",
-        "price": "Presyo",
         "environment": "Kapaligiran sa Operasyon",
         "environmentDetail": "Maaaring gamitin sa mga pinakabagong bersyon ng iba't ibang browser at operating system.",
         "requestDisclosure": "Ang personal na impormasyon sa pakikipag-ugnayan ay ibibigay nang walang pagkaantala sa kahilingan sa pamamagitan ng email.",
@@ -950,12 +914,6 @@ export default {
                 "q3": "Maaari ko ba itong i-download mula sa mga app store (App Store / Google Play)?",
                 "a3": "Ang app na ito ay ibinibigay bilang isang PWA (Progressive Web App). Maaari mo itong i-install sa pamamagitan ng direktang pagbubukas nito sa iyong browser at pagpili ng \"Idagdag sa Home Screen\" mula sa menu."
             }
-        },
-        "validation": {
-            "groupNameRequired": "Kailangan ang pangalan ng grupo.",
-            "groupNameTooLong": "Ang pangalan ng grupo ay dapat may 50 o mas kaunting karakter.",
-            "messageRequired": "Hindi maaaring walang laman ang mensahe.",
-            "emailInvalid": "Mangyaring maglagay ng wastong email address."
         }
     },
     "demo": {

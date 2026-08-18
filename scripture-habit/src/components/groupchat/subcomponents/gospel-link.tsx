@@ -1,5 +1,6 @@
 import { getGospelLibraryUrl } from '../../../utils/gospel-library-mapper';
 import { parseStructuredNoteText, ParsedNote } from '../../../utils/note-parser-utils';
+import { isOtherCategory, isByuSpeeches } from '../../notedisplay/utils/note-translations';
 
 interface GospelLinkProps {
   text: string;
@@ -16,25 +17,13 @@ const GospelLink = ({ text, scripture, chapter, language, isSent, t }: GospelLin
 
   // Aggressively strip asterisks and trim
   const rawPropScripture = scripture?.replace(/\*/g, '').trim();
-  const isPropOther = !rawPropScripture || /other|その他|otros|outros|기타|其他|khác|iba pa|nyingine|อื่นๆ/i.test(rawPropScripture);
+  const isPropOther = isOtherCategory(rawPropScripture);
   const finalScripture = (!isPropOther ? rawPropScripture : parsed.scriptureValue)?.replace(/\*/g, '').trim();
   const finalChapter = (chapter || parsed.chapterValue)?.replace(/\*/g, '').trim();
 
   if (finalScripture && finalChapter) {
-    const scripLower = finalScripture.toLowerCase();
-    const isOther = 
-      scripLower.includes('other') || 
-      scripLower.includes('その他') || 
-      scripLower.includes('otros') || 
-      scripLower.includes('outros') || 
-      scripLower.includes('기타') || 
-      scripLower.includes('其他') || 
-      scripLower.includes('khác') || 
-      scripLower.includes('iba pa') || 
-      scripLower.includes('nyingine') || 
-      scripLower.includes('อื่นๆ') || 
-      finalScripture === '';
-    const isBYU = scripLower.includes('byu');
+    const isOther = isOtherCategory(finalScripture) || finalScripture === '';
+    const isBYU = isByuSpeeches(finalScripture);
 
     // CASE A: Direct URL (Other, GC, BYU with full URL)
     if (finalChapter.toLowerCase().startsWith('http')) {

@@ -134,11 +134,9 @@ export default {
     "sidebar": {
         "dashboard": "대시보드",
         "myNotes": "내 노트",
-        "languages": "언어",
         "profile": "프로필",
         "myGroups": "내 그룹",
         "joinCreateGroup": "그룹 가입/생성",
-        "signOut": "로그아웃",
         "selectGroup": "그룹 선택",
         "close": "닫기",
         "story": "개발자 소개"
@@ -146,7 +144,6 @@ export default {
     "story": {
         "title": "개발자 소개",
         "description": "개발자 소개와 앱 개발 배경에 대하여",
-        "vision": "우리는 지금까지 기록되어 온 경전과 역사가 보여주듯이, 지속적인 경전 공부를 통한 '개인적 계시'를 통해 문화의 쇠퇴, 사회적 분열, 전쟁, 불화를 방지하고 평화를 창조할 수 있다고 믿습니다.",
         "appBackground": "앱 개발 배경",
         "backgroundStory": "이 앱은 BYU Pathway Worldwide(BYU-Idaho의 온라인 프로그램)의 학생인 저(상근 대지로/Daijiro Sagane)가 졸업 제작으로 만든 것을 개선하여 일반에 공개한 것입니다.\n\n문의사항이나 의견, 피드백이 있으신 분은 아래의 연락처로 언제든지 편하게 연락해 주시기 바랍니다. ↓\n\nEmail: dazhilangxianggen@gmail.com",
         "developerName": "사가네 다이지로",
@@ -158,7 +155,6 @@ export default {
         "streak": "총 일수",
         "days": "일",
         "totalNotes": "총 노트",
-        "notes": "노트",
         "seeAll": "모두 보기",
         "noRecentNotes": "최근 노트가 없습니다.",
         "readInGospelLibrary": "복음 자료실에서 읽기",
@@ -237,13 +233,10 @@ export default {
         "imageUploadError": "Failed to update profile picture.",
         "photoHint": "Tap to change profile picture",
         "imageTooLarge": "Image is too large. Please pick a smaller one.",
-        "notifications": "알림",
         "notificationToggle": {
             "title": "푸시 알림",
             "description": "그룹 활동 소식 및 학습 리마인더를 받습니다.",
             "statusBlocked": "차단됨 (설정 확인)",
-            "enable": "활성화",
-            "disable": "비활성화",
             "disabledSuccess": "알림이 비활성화되었습니다",
             "error": "알림 설정을 업데이트하지 못했습니다."
         },
@@ -265,7 +258,6 @@ export default {
     },
     "myNotes": {
         "description": "노트 컬렉션",
-        "newNote": "새 노트",
         "loading": "노트 로드 중...",
         "noNotesTitle": "아직 노트가 없습니다",
         "noNotesDesc": "첫 번째 학습 노트를 작성하여 여정을 시작하세요.",
@@ -291,8 +283,9 @@ export default {
         "letterSaveSuccess": "편지함에 저장되었습니다!",
         "prevPage": "이전",
         "nextPage": "다음",
-        "pageInfo": "{total}페이지 중 {current}페이지",
-        "nextLetterInDays": "(새 편지까지 {days}일 남음)"
+        "pageInfo": "전체 {total}페이지 중 {current}페이지",
+        "nextLetterInDays": "(새 편지까지 {days}일 남음)",
+        "notMember": "이 그룹의 멤버가 아닙니다"
     },
     "recapModal": {
         "title": "당신의 주간 편지",
@@ -311,9 +304,6 @@ export default {
     },
     "groupChat": {
         "defaultScripture": "구약성경",
-        "category": "카테고리",
-        "chapter": "장",
-        "comment": "코멘트",
         "aiGroupUserNoteCongratulation": "참 잘했어요! 🎉🎉 내일 또 만나요✨",
         "myGroups": "내 그룹",
         "send": "전송",
@@ -388,7 +378,6 @@ export default {
         "deleteMessageWarning": "이 작업은 내 노트에서도 해당 노트를 삭제합니다.",
         "errorTranslation": "메시지 번역 실패",
         "translate": "번역",
-        "translating": "번역 중...",
         "translation": "Translation",
         "translated": "번역됨",
         "showOriginal": "원본 보기",
@@ -396,7 +385,6 @@ export default {
         "reply": "답장",
         "like": "좋아요",
         "unlike": "좋아요 취소",
-        "original": "원본",
         "activeToday": "오늘 활동",
         "activeYesterday": "어제 활동",
         "activeDaysAgo": "{days}일 전 활동",
@@ -446,22 +434,18 @@ export default {
         "cheerConfirmButton": "응원 보내기",
         "cheerSent": "응원을 보냈습니다!",
         "autoKickConfirmTitle": "목표 확인",
-        "autoKickErrorMismatch": "입력한 숫자가 선택한 내용과 일치하지 않습니다. 다시 시도해 주세요.",
         "autoKickSuccess": "학습 주기가 설정되었습니다! 함께 습관을 만들어 봅시다.",
         "autoKickInitTitle": "목표를 정해봐요!",
         "autoKickInitDesc": "Scripture Habit에는 작심삼일을 방지하기 위한 '자동 퇴장 규칙'이 있습니다.\n자신의 목표를 정해보세요. (자신이 없다면 처음에는 7일에 한 번 게시하는 것을 목표로 삼는 것을 추천합니다.)",
         "autoKickSelectedSubtext": "최소 {days}일에 한 번은 성구 공부하기",
         "next": "다음",
-        "autoKickConfirmText": "최종 확인: {days}일 동안 노트를 게시하지 않으면 자동으로 그룹에서 삭제된다는 점을 이해하셨나요? 확인을 위해 '{days}'를 입력해 주세요.",
         "habitPaceProfileTitle": "{nickname}의 목표",
         "habitPaceLetsTryTogether": "함께 힘내자!",
         "habitPaceProfileDesc": "활동을 유지하려면 {days}일마다 게시하세요.",
-        "confirm": "확인",
         "aiGroupDefaultGroupName": "Scripture Habit AI",
         "aiGroupDefaultGroupDesc": "Scripture Habit AI와 1대1로 성경을 공부하는 전용 그룹",
         "aiGroupWelcomeMessage": "Scripture Habit AI 그룹에 오신 것을 환영합니다! 매일 함께 성경을 공부하고 깨달음을 나눠봐요. 응원합니다! 📖✨\n※Scripture Habit AI는 매일 노트를 게시하지만, {nickname}님께 직접 답장은 현재 지원되지 않습니다. 양해 부탁드립니다.",
         "aiGroupBotNickname": "Scripture Habit AI",
-        "aiGroupDailyNoteText": "【오늘의 학습 영감】매일 차근차근 성경을 펴는 것이 큰 축복으로 이어집니다. 오늘도 함께 배움을 넓혀가요! 📖✨",
         "inviteExpiresAt": "만료일:",
         "regenerateInviteCode": "초대 코드 재생성",
         "inviteCodeRegenerated": "초대 코드가 재생성되었습니다!",
@@ -478,7 +462,6 @@ export default {
     "newNote": {
         "editTitle": "노트 편집",
         "newTitle": "새 노트",
-        "deleteTitle": "노트 삭제",
         "errorMissingFields": "장(Chapter)을 입력하고 성구를 선택해주세요.",
         "chooseScriptureLabel": "성구 선택",
         "chooseScripturePlaceholder": "성구 옵션을 선택해주세요",
@@ -512,10 +495,7 @@ export default {
             "예: 코리안톤은 후대에 자신의 흑역사가 다 공개되다니..."
         ],
         "shareLabel": "공유 대상:",
-        "shareToGroup": "그룹에 공유하기",
         "shareNone": "공유 안 함 (비공개)",
-        "shareAll": "모든 그룹에 공유하기",
-        "shareSpecific": "특정 그룹에 공유하기",
         "shareToGroupShort": "공유",
         "shareNoneShort": "비공개",
         "shareAllShort": "전체",
@@ -524,9 +504,6 @@ export default {
         "unnamedGroup": "이름 없는 그룹",
         "cancel": "취소",
         "saving": "저장 중...",
-        "update": "노트 업데이트",
-        "post": "노트 게시",
-        "saveNote": "✨ 노트 저장",
         "btnPost": "✨ 게시",
         "btnSave": "🔒 저장",
         "btnUpdate": "✨ 수정",
@@ -569,7 +546,6 @@ export default {
     },
     "groupOptions": {
         "title": "학습 그룹",
-        "subtitle": "다른 사람들과 연결할 방법을 선택하세요.",
         "joinGroupTitle": "그룹 가입",
         "joinGroupDesc": "함께 공부할 기존 그룹을 찾으세요.",
         "createGroupTitle": "그룹 생성",
@@ -598,7 +574,6 @@ export default {
         "joinConfirmMessage": "이 그룹에 가입하시겠습니까?",
         "confirmJoin": "가입",
         "cancelJoin": "취소",
-        "notes": "노트",
         "createdAt": "생성일",
         "joiningFromInvite": "초대로 참여 중...",
         "joiningFromInviteSuccess": "환영합니다! 초대를 통해 그룹에 참여하셨습니다.",
@@ -612,12 +587,8 @@ export default {
     "onboardingQuest": {
         "title": "🌟 첫 번째 과제",
         "step1Title": "1. 그룹에 참여하기",
-        "step1Desc": "새 그룹을 만들거나 다른 그룹에 참여해 보세요.",
-        "step1DescSuccess": "그룹 참여가 완료되었습니다! 🎉",
         "step1Action": "그룹 찾기 / 만들기",
         "step2Title": "2. 첫 학습 노트 작성하기",
-        "step2Desc": "그룹에 첫 학습 노트를 작성해 공유해 보세요.",
-        "step2DescSuccess": "첫 노트를 게시했습니다! 🎉",
         "step2Action": "노트 작성",
         "chatHeaderBackPrompt": "그룹에 참여했습니다! 대시보드로 돌아가서 첫 노트를 작성해 보세요!",
         "groupOptionsBannerDesc": "원하는 방법으로 시작해 보세요: AI와 1:1로 시작, 친구와 그룹 생성 또는 공개 그룹 참여.",
@@ -648,7 +619,6 @@ export default {
         "invitePreviewTitle": "초대 링크 미리보기",
         "invitePreviewDesc": "*그룹 생성 후 활성화됩니다. 이 링크를 복사하여 공유하면 친구와 가족을 직접 초대할 수 있습니다.",
         "title": "학습 그룹 생성",
-        "subtitle": "경전 학습 그룹을 만들고 다른 사람들을 초대하세요.",
         "groupNameLabel": "그룹 이름",
         "groupNamePlaceholder": "그룹 이름 입력",
         "descriptionLabel": "설명 (선택 사항)",
@@ -681,7 +651,6 @@ export default {
         "googleButton": "Google로 로그인",
         "githubButton": "GitHub로 로그인",
         "browserWarning": "기본 브라우저(Chrome, Safari 등)를 사용하여 로그인하거나 가입하십시오. LINE, Messenger, Instagram과 같은 인앱 브라우저는 보안 제한으로 인해 로그인이 실패할 수 있습니다.",
-        "inAppBrowserWarning": "Google 로그인은 이 인앱 브라우저에서 지원되지 않습니다. Chrome 또는 Safari에서 열어주세요.",
         "emailNotVerified": "로그인하기 전에 이메일 주소를 확인해주세요.",
         "resendVerification": "인증 이메일 전송",
         "verificationResent": "인증 이메일이 전송되었습니다.",
@@ -717,9 +686,7 @@ export default {
         "members": "멤버",
         "open": "열기",
         "joining": "가입 중...",
-        "join": "가입",
         "details": "상세",
-        "close": "닫기",
         "noDescription": "설명 없음.",
         "signInFirst": "가입하려면 먼저 로그인하세요",
         "unableToJoin": "그룹에 가입할 수 없음",
@@ -733,11 +700,6 @@ export default {
         "ai_note_posted_announcement": "🎉🎉🎉 **{nickname}가 노트를 게시했습니다!!** 🎉🎉🎉",
         "note_posted_title": "📖 경전 공부",
         "note_posted_body": "{nickname}님이 노트를 게시했습니다! ✨",
-        "cheer_options": [
-            "{nickname}님이 당신의 게시물을 기다리고 있습니다! ✨",
-            "{nickname}님이 당신의 공부 노트를 기대하고 있습니다! 📖",
-            "100% 일치를 목표로 합시다! {nickname}님이 당신에게 응원을 보냈습니다! 💪"
-        ],
         "kick_title": "활동 업데이트",
         "kick_body": "⚠️ 활동이 없어서 '{groupName}'에서 퇴장되셨습니다. 준비가 되시면 언제든지 다시 돌아오세요! 💪",
         "members_removed": "👋 **{count}명**이 비활동으로 인해 퇴장되었습니다.",
@@ -759,6 +721,10 @@ export default {
         "talk": "말씀",
         "speech": "연설",
         "fetchingInfo": "정보를 가져오는 중..."
+    },
+    "placeholders": {
+        "unclassified": "미분류",
+        "none": "없음"
     },
     "signOut": {
         "title": "로그아웃",
@@ -838,7 +804,6 @@ export default {
         "description": "더 나은 경험을 위해, 홈 화면에 이 앱을 설치하세요.",
         "instruction1": "메뉴를 탭하고 '홈 화면에 추가'를 선택하세요.",
         "instruction2": "안내를 따르세요.",
-        "close": "닫기",
         "updateAvailable": "새 버전이 있습니다.",
         "updateButton": "지금 업데이트"
     },
@@ -895,7 +860,6 @@ export default {
         "address": "주소",
         "phone": "전화번호",
         "email": "이메일 주소",
-        "price": "가격",
         "environment": "운영 환경",
         "environmentDetail": "다양한 브라우저 및 운영 체제의 최신 버전에서 사용할 수 있습니다.",
         "requestDisclosure": "개인 연락처 정보는 이메일 요청 시 지체 없이 제공됩니다.",
@@ -950,12 +914,6 @@ export default {
                 "q3": "앱 스토어(App Store / Google Play)에서 다운로드할 수 있나요?",
                 "a3": "이 앱은 PWA(Progressive Web App)로 제공됩니다. 브라우저에서 직접 열고 메뉴에서 '홈 화면에 추가'를 선택하여 설치할 수 있습니다."
             }
-        },
-        "validation": {
-            "groupNameRequired": "그룹 이름은 필수입니다.",
-            "groupNameTooLong": "그룹 이름은 50자 이하여야 합니다.",
-            "messageRequired": "메시지 내용은 비워 둘 수 없습니다.",
-            "emailInvalid": "올바른 이메일 주소를 입력해 주세요."
         }
     },
     "demo": {

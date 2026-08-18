@@ -379,9 +379,9 @@ const Profile = ({ userData, stats }: ProfileProps) => {
             {/* PWA Install App Section */}
             {!isStandalone && platform && (
                 <div className="profile-section install-app-section">
-                    <h2 className="section-title">{t('profile.installApp.title') || (language === 'ja' ? 'アプリをインストール' : 'Install App')}</h2>
+                    <h2 className="section-title">{t('profile.installApp.title')}</h2>
                     <p className="section-desc">
-                        {t('profile.installApp.description') || (language === 'ja' ? 'ホーム画面に追加してアプリとしてご利用いただけます。' : 'Add to home screen for a better app experience.')}
+                        {t('profile.installApp.description')}
                     </p>
                     {platform === 'ios' ? (
                         <div className="ios-instruction">
@@ -401,7 +401,7 @@ const Profile = ({ userData, stats }: ProfileProps) => {
                             ) : (
                                 <div className="android-instruction">
                                     <p className="instruction-text">
-                                        {t('profile.installApp.androidInstruction') || (language === 'ja' ? 'ブラウザのメニュー（︙）から「アプリをインストール」または「ホーム画面に追加」を選択してください。' : "Open your browser menu (⋮) and select 'Install app' or 'Add to Home Screen'.")}
+                                        {t('profile.installApp.androidInstruction')}
                                     </p>
                                 </div>
                             )}

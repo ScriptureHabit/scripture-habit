@@ -1,7 +1,7 @@
 import { useMemo, useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { useUrlMetadata } from '../../../hooks/use-url-metadata';
-import { getNoteLabelFallback, translateScriptureName, isPlaceholderValue } from '../utils/note-translations';
+import { getNoteLabelFallback, translateScriptureName, isPlaceholderValue, isOtherCategory, isByuSpeeches } from '../utils/note-translations';
 import { isGCUrl } from '../../../utils/note-utils';
 import '../note-display.css';
 
@@ -44,9 +44,8 @@ const GCNoteRenderer = ({
     const isTranslated = !!translatedText && !showOriginal;
 
     const constructedMd = useMemo(() => {
-        const scripLower = (scriptureValue || '').toLowerCase();
-        const isOther = scripLower.includes('other') || scripLower.includes('その他') || scriptureValue === '';
-        const isBYU = scripLower.includes('byu');
+        const isOther = isOtherCategory(scriptureValue) || scriptureValue === '';
+        const isBYU = isByuSpeeches(scriptureValue);
 
         const scriptureLabel = getNoteLabelFallback('noteLabels.scripture', language, t('noteLabels.scripture'));
         const scriptName = translateScriptureName(scriptureValue, t);

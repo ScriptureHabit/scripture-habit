@@ -134,11 +134,9 @@ export default {
     "sidebar": {
         "dashboard": "Painel",
         "myNotes": "Minhas Anotações",
-        "languages": "Idiomas",
         "profile": "Perfil",
         "myGroups": "Meus Grupos",
         "joinCreateGroup": "Entrar/Criar Grupo",
-        "signOut": "Sair",
         "selectGroup": "Selecionar Grupo",
         "close": "Fechar",
         "story": "Apresentação do Desenvolvedor"
@@ -146,7 +144,6 @@ export default {
     "story": {
         "title": "Apresentação do Desenvolvedor",
         "description": "Sobre o desenvolvedor e o histórico do aplicativo",
-        "vision": "Acreditamos que, como as escrituras e a história têm demonstrado, por meio da 'revelação pessoal' advinda do estudo contínuo das escrituras, podemos prevenir o declínio cultural, a divisão social, a guerra e o conflito, e criar a paz.",
         "appBackground": "Histórico de Desenvolvimento do Aplicativo",
         "backgroundStory": "Este aplicativo foi originalmente criado como um projeto de graduação por mim, Daijiro Sagane, estudante da BYU Pathway Worldwide (programa on-line da BYU-Idaho), o qual aprimorei e disponibilizei ao público.\n\nSe tiver dúvidas, opiniões ou comentários, sinta-se à vontade para entrar em contato comigo pelo endereço abaixo. ↓\n\nE-mail: dazhilangxianggen@gmail.com",
         "developerName": "Daijiro Sagane",
@@ -158,7 +155,6 @@ export default {
         "streak": "Dias Totais",
         "days": "dias",
         "totalNotes": "Total de Anotações",
-        "notes": "anotações",
         "seeAll": "Ver Tudo",
         "noRecentNotes": "Nenhuma anotação recente.",
         "readInGospelLibrary": "Ler na Biblioteca do Evangelho",
@@ -237,13 +233,10 @@ export default {
         "imageUploadError": "Falha ao atualizar a foto do perfil.",
         "photoHint": "Toque para alterar a foto do perfil",
         "imageTooLarge": "A imagem é muito grande. Por favor, escolha uma menor.",
-        "notifications": "Notificações",
         "notificationToggle": {
             "title": "Notificações Push",
             "description": "Receba atualizações sobre atividades de grupo e lembretes de estudo.",
             "statusBlocked": "Bloqueado (Verifique as Configurações)",
-            "enable": "Ativar",
-            "disable": "Desativar",
             "disabledSuccess": "Notificações desativadas",
             "error": "Falha ao atualizar as configurações de notificação."
         },
@@ -265,7 +258,6 @@ export default {
     },
     "myNotes": {
         "description": "Coleção de Notas",
-        "newNote": "Nova Anotação",
         "loading": "Carregando anotações...",
         "noNotesTitle": "Nenhuma anotação ainda",
         "noNotesDesc": "Comece sua jornada criando sua primeira anotação de estudo.",
@@ -292,7 +284,8 @@ export default {
         "prevPage": "Anterior",
         "nextPage": "Próximo",
         "pageInfo": "Página {current} de {total}",
-        "nextLetterInDays": "(Próxima carta em {days} dias)"
+        "nextLetterInDays": "(Próxima carta em {days} dias)",
+        "notMember": "Você não é membro deste grupo"
     },
     "recapModal": {
         "title": "Sua Carta Semanal",
@@ -311,9 +304,6 @@ export default {
     },
     "groupChat": {
         "defaultScripture": "Velho Testamento",
-        "category": "Categoria",
-        "chapter": "Capítulo",
-        "comment": "Comentário",
         "aiGroupUserNoteCongratulation": "Muito bem! 🎉🎉 Até amanhã! ✨",
         "myGroups": "Meus Grupos",
         "send": "Enviar",
@@ -388,7 +378,6 @@ export default {
         "deleteMessageWarning": "Isso também excluirá a nota de Minhas Anotações.",
         "errorTranslation": "Falha ao traduzir a mensagem",
         "translate": "Traduzir",
-        "translating": "Traduzindo...",
         "translation": "Tradução",
         "translated": "Traduzido",
         "showOriginal": "Ver original",
@@ -396,7 +385,6 @@ export default {
         "reply": "Responder",
         "like": "Curtir",
         "unlike": "Descurtir",
-        "original": "Original",
         "activeToday": "Ativo hoje",
         "activeYesterday": "Ativo ontem",
         "activeDaysAgo": "Ativo há {days} dias",
@@ -446,22 +434,18 @@ export default {
         "cheerConfirmButton": "Enviar incentivo",
         "cheerSent": "Incentivo enviado!",
         "autoKickConfirmTitle": "Confirme seu Objetivo",
-        "autoKickErrorMismatch": "O número não corresponde à sua escolha. Vamos tentar mais uma vez.",
         "autoKickSuccess": "Ritmo de hábito definido! Vamos construir este hábito juntos.",
         "autoKickInitTitle": "Defina seu Objetivo!",
         "autoKickInitDesc": "O Scripture Habit tem uma 'regra de saída automática' para ajudar a evitar desistências.\nEscolha sua meta pessoal abaixo. (Se não tiver certeza, recomendamos começar com uma vez a cada 7 dias.)",
         "autoKickSelectedSubtext": "Estudar as escrituras pelo menos uma vez a cada {days} dias",
         "next": "Próximo",
-        "autoKickConfirmText": "Confirmação final: Você entende que se não postar uma nota por {days} dias, será removido automaticamente? Por favor, digite '{days}' para confirmar.",
         "habitPaceProfileTitle": "Meta de {nickname}",
         "habitPaceLetsTryTogether": "Vamos conseguir juntos!",
         "habitPaceProfileDesc": "Poste uma vez a cada {days} dias para permanecer ativo.",
-        "confirm": "Confirmar",
         "aiGroupDefaultGroupName": "Scripture Habit AI",
         "aiGroupDefaultGroupDesc": "Grupo 1-a-1 de estudo das escrituras com Scripture Habit AI",
         "aiGroupWelcomeMessage": "Bem-vindo ao Grupo Scripture Habit AI! Vamos estudar as escrituras e compartilhar aprendizados todos os dias. Torcendo por você! 📖✨\n*Nota: Scripture Habit AI publica notas diárias, mas respostas diretas para {nickname} não são suportadas nesta fase.",
         "aiGroupBotNickname": "Scripture Habit AI",
-        "aiGroupDailyNoteText": "[Inspiração Diária de Estudo] Abrir as escrituras com consistência todos os dias traz grandes bênçãos. Vamos aprofundar nosso aprendizado hoje! 📖✨",
         "inviteExpiresAt": "Expira em",
         "regenerateInviteCode": "Regerar Código de Convite",
         "inviteCodeRegenerated": "O código de convite foi regerado!",
@@ -478,7 +462,6 @@ export default {
     "newNote": {
         "editTitle": "Editar Anotação",
         "newTitle": "Nova Anotação",
-        "deleteTitle": "Excluir Anotação",
         "errorMissingFields": "Por favor, preencha o capítulo e selecione uma escritura.",
         "chooseScriptureLabel": "Escolha a escritura",
         "chooseScripturePlaceholder": "Por favor, escolha uma opção de escritura",
@@ -512,10 +495,7 @@ export default {
             "Ex: Coriânton está tendo seu passado sombrio exposto para toda a posteridade aqui."
         ],
         "shareLabel": "Compartilhar com:",
-        "shareToGroup": "Compartilhar com o grupo",
         "shareNone": "Não compartilhar (Privado)",
-        "shareAll": "Compartilhar com todos os grupos",
-        "shareSpecific": "Compartilhar com grupos específicos",
         "shareToGroupShort": "Compartilhar",
         "shareNoneShort": "Privado",
         "shareAllShort": "Todos",
@@ -524,9 +504,6 @@ export default {
         "unnamedGroup": "Grupo sem nome",
         "cancel": "Cancelar",
         "saving": "Salvando...",
-        "update": "Atualizar Anotação",
-        "post": "Postar Anotação",
-        "saveNote": "✨ Salvar Anotação",
         "btnPost": "✨ Publicar",
         "btnSave": "🔒 Salvar",
         "btnUpdate": "✨ Atualizar",
@@ -569,7 +546,6 @@ export default {
     },
     "groupOptions": {
         "title": "Grupos de Estudo",
-        "subtitle": "Escolha como você quer se conectar com os outros.",
         "joinGroupTitle": "Entrar em um Grupo",
         "joinGroupDesc": "Encontre um grupo existente para estudar junto.",
         "createGroupTitle": "Criar um Grupo",
@@ -598,7 +574,6 @@ export default {
         "joinConfirmMessage": "Tem certeza de que deseja entrar neste grupo?",
         "confirmJoin": "Entrar",
         "cancelJoin": "Cancelar",
-        "notes": "Anotações",
         "createdAt": "Criado em",
         "joiningFromInvite": "Entrando pelo convite...",
         "joiningFromInviteSuccess": "Bem-vindo! Você entrou no grupo através de um convite.",
@@ -612,12 +587,8 @@ export default {
     "onboardingQuest": {
         "title": "🌟 Primeiras Missões",
         "step1Title": "1. Entrar em um Grupo",
-        "step1Desc": "Crie seu próprio grupo ou participe de outro grupo.",
-        "step1DescSuccess": "Entrou no grupo com sucesso! 🎉",
         "step1Action": "Buscar / Criar Grupo",
         "step2Title": "2. Publicar sua Primeira Nota",
-        "step2Desc": "Compartilhe sua primeira nota de estudo no grupo.",
-        "step2DescSuccess": "Primeira nota publicada! 🎉",
         "step2Action": "Escrever Nota",
         "chatHeaderBackPrompt": "Você entrou no grupo! Vamos voltar ao painel e postar sua primeira anotação!",
         "groupOptionsBannerDesc": "Escolha sua forma preferida: Comece 1 a 1 com IA, crie um grupo privado ou participe de um público.",
@@ -648,7 +619,6 @@ export default {
         "invitePreviewTitle": "Visualização do Link de Convite",
         "invitePreviewDesc": "*Ativo após a criação do grupo. Copie e compartilhe este link para convidar seus amigos e familiares diretamente.",
         "title": "Criar um Grupo de Estudo",
-        "subtitle": "Crie um grupo e convide outros para participar.",
         "groupNameLabel": "Nome do Grupo",
         "groupNamePlaceholder": "Digite o nome do grupo",
         "descriptionLabel": "Descrição (opcional)",
@@ -681,7 +651,6 @@ export default {
         "googleButton": "Entrar com o Google",
         "githubButton": "Entrar com GitHub",
         "browserWarning": "Por favor, faça login ou inscreva-se usando seu navegador padrão (Chrome, Safari, Edge, etc.). Navegadores internos de aplicativos como LINE, Messenger ou Instagram podem impedir o login devido a restrições de segurança.",
-        "inAppBrowserWarning": "O login do Google não é suportado neste navegador no aplicativo. Abra no Chrome ou Safari.",
         "emailNotVerified": "Por favor, verifique seu endereço de e-mail antes de fazer login.",
         "resendVerification": "Enviar e-mail de verificação",
         "verificationResent": "E-mail de verificação enviado.",
@@ -717,9 +686,7 @@ export default {
         "members": "membros",
         "open": "Abrir",
         "joining": "Entrando...",
-        "join": "Entrar",
         "details": "Detalhes",
-        "close": "Fechar",
         "noDescription": "Sem descrição.",
         "signInFirst": "Faça login primeiro para entrar",
         "unableToJoin": "Não foi possível entrar no grupo",
@@ -733,11 +700,6 @@ export default {
         "ai_note_posted_announcement": "🎉🎉🎉 **{nickname} postou uma nota!!** 🎉🎉🎉",
         "note_posted_title": "📖 Estudo das escrituras",
         "note_posted_body": "{nickname} postou uma nota! ✨",
-        "cheer_options": [
-            "{nickname} está esperando sua postagem! ✨",
-            "{nickname} está ansioso pela sua nota de estudo! 📖",
-            "Vamos buscar 100% de unidade! {nickname} enviou um impulso de energia! 💪"
-        ],
         "kick_title": "Atualização de atividade",
         "kick_body": "⚠️ Você foi removido de '{groupName}' por inatividade. Adoraríamos ter você de volta quando estiver pronto! 💪",
         "members_removed": "👋 **{count} membro(s)** foram removidos por inatividade.",
@@ -759,6 +721,10 @@ export default {
         "talk": "Discurso",
         "speech": "Discurso",
         "fetchingInfo": "Carregando info..."
+    },
+    "placeholders": {
+        "unclassified": "sem classificação",
+        "none": "nenhum"
     },
     "signOut": {
         "title": "Sair",
@@ -838,7 +804,6 @@ export default {
         "description": "Para uma melhor experiência, instale este app na sua tela inicial.",
         "instruction1": "Toque no menu e selecione 'Adicionar à Tela Inicial'.",
         "instruction2": "Siga as instruções.",
-        "close": "Fechar",
         "updateAvailable": "Uma nova versão está disponível.",
         "updateButton": "Atualizar agora"
     },
@@ -895,7 +860,6 @@ export default {
         "address": "Endereço",
         "phone": "Número de Telefone",
         "email": "Endereço de E-mail",
-        "price": "Preço",
         "environment": "Ambiente de Operação",
         "environmentDetail": "Pode ser usado nas versões mais recentes de vários navegadores e sistemas operacionais.",
         "requestDisclosure": "As informações de contato pessoal serão fornecidas sem demora mediante solicitação por e-mail.",
@@ -950,12 +914,6 @@ export default {
                 "q3": "Posso baixar o aplicativo nas lojas de aplicativos (App Store / Google Play)?",
                 "a3": "Este aplicativo é fornecido como um PWA (Progressive Web App). Você pode instalá-lo abrindo-o diretamente no navegador e selecionando \"Adicionar à tela de início\" no menu."
             }
-        },
-        "validation": {
-            "groupNameRequired": "O nome do grupo é obrigatório.",
-            "groupNameTooLong": "O nome do grupo deve ter 50 caracteres ou menos.",
-            "messageRequired": "O conteúdo da mensagem não pode estar vazio.",
-            "emailInvalid": "Por favor, insira um endereço de e-mail válido."
         }
     },
     "demo": {

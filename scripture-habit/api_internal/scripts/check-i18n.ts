@@ -27,7 +27,7 @@ function getFlatKeys(obj: TranslationBundle, prefix = ''): string[] {
 }
 
 async function loadLocales(): Promise<Record<string, TranslationBundle>> {
-    const files = fs.readdirSync(LOCALES_DIR).filter(f => (f.endsWith('.ts') || f.endsWith('.js')) && !f.includes('i18n'));
+    const files = fs.readdirSync(LOCALES_DIR).filter(f => (f.endsWith('.ts') || f.endsWith('.js')) && !f.includes('i18n') && !f.includes('registry'));
     const locales: Record<string, TranslationBundle> = {};
 
     for (const file of files) {

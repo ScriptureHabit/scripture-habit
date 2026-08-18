@@ -148,7 +148,7 @@ const NoteDetailModal = ({ isOpen, onClose, note, userGroups, userData, onEdit, 
                     </div>
 
                     <div className="shared-activity-section">
-                        <h4>{t('myNotes.sharedActivity') || (language === 'ja' ? '共有されたグループのアクティビティ' : 'Shared Activity')}</h4>
+                        <h4>{t('myNotes.sharedActivity')}</h4>
 
                         {loadingDetails ? (
                             <div className="loading-spinner">{t('myNotes.loading') || 'Loading...'}</div>
@@ -163,7 +163,6 @@ const NoteDetailModal = ({ isOpen, onClose, note, userGroups, userData, onEdit, 
                                     groupName={detail.groupName}
                                     isMember={detail.isMember}
                                     t={t}
-                                    language={language}
                                 />
                             ))
                         )}
@@ -181,10 +180,9 @@ interface SharedGroupSectionProps {
     groupName: string;
     t: (key: string) => string;
     isMember: boolean;
-    language: string;
 }
 
-const SharedGroupSection = ({ groupId, messageId, groupName, t, isMember, language }: SharedGroupSectionProps) => {
+const SharedGroupSection = ({ groupId, messageId, groupName, t, isMember }: SharedGroupSectionProps) => {
     const [reactions, setReactions] = useState<Record<string, string[]>>({});
     const [replies, setReplies] = useState<Message[]>([]);
     const [error, setError] = useState<boolean | null>(null);
@@ -247,7 +245,7 @@ const SharedGroupSection = ({ groupId, messageId, groupName, t, isMember, langua
             <div className="shared-group-item disabled">
                 <h5 className="group-name-header">{groupName}</h5>
                 <p className="status-label">
-                    {t('groupCard.signInFirst') ? (language === 'ja' ? 'グループに参加していません' : 'You are not a member of this group') : 'Not a member'}
+                    {t('myNotes.notMember')}
                 </p>
             </div>
         );

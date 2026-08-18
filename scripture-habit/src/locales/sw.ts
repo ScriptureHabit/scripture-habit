@@ -134,11 +134,9 @@ export default {
     "sidebar": {
         "dashboard": "Dashibodi",
         "myNotes": "Maelezo Yangu",
-        "languages": "Lugha",
         "profile": "Wasifu",
         "myGroups": "Vikundi Vyangu",
         "joinCreateGroup": "Jiunge/Unda Kikundi",
-        "signOut": "Ondoka",
         "selectGroup": "Chagua Kikundi",
         "close": "Funga",
         "story": "Utambulisho wa Msanidi Programu"
@@ -146,7 +144,6 @@ export default {
     "story": {
         "title": "Utambulisho wa Msanidi Programu",
         "description": "Kuhusu msanidi programu na historia ya programu",
-        "vision": "Tunaamini kwamba, kama maandiko na historia zilivyoonyesha, kupitia 'ufunuo wa kibinafsi' unaotokana na kujifunza maandiko mara kwa mara, tunaweza kuzuia kupungua kwa maadili, mgawanyiko wa kijamii, vita na migogoro, na kuleta amani.",
         "appBackground": "Historia ya Maendeleo ya Programu",
         "backgroundStory": "Programu hii ilitengenezwa mwanzoni kama mradi wa mahafali na mimi, Daijiro Sagane, mwanafunzi katika chuo cha BYU Pathway Worldwide (mpango wa mtandaoni wa BYU-Idaho), ambayo nimeiboresha na kuitoa kwa umma tangu wakati huo.\n\nKama una maswali, maoni, au mapendekezo yoyote, tafadhali jisikie huru kuwasiliana nami kupitia anwani iliyo hapa chini. ↓\n\nBarua pepe: dazhilangxianggen@gmail.com",
         "developerName": "Daijiro Sagane",
@@ -158,7 +155,6 @@ export default {
         "streak": "Siku za Jumla",
         "days": "siku",
         "totalNotes": "Jumla ya Maelezo",
-        "notes": "maelezo",
         "seeAll": "Ona Yote",
         "noRecentNotes": "Hakuna maelezo ya hivi karibuni.",
         "readInGospelLibrary": "Soma katika Gospel Library",
@@ -237,13 +233,10 @@ export default {
         "imageUploadError": "Failed to update profile picture.",
         "photoHint": "Tap to change profile picture",
         "imageTooLarge": "Image is too large. Please pick a smaller one.",
-        "notifications": "Arifa",
         "notificationToggle": {
             "title": "Arifa za Push",
             "description": "Pokea habari kuhusu shughuli za kikundi na vikumbusho vya funzo.",
             "statusBlocked": "Imezuiwa (Angalia Mipangilio)",
-            "enable": "Wezesha",
-            "disable": "Zima",
             "disabledSuccess": "Arifa zimezimwa",
             "error": "Imeshindwa kusasisha mipangilio ya arifa."
         },
@@ -265,7 +258,6 @@ export default {
     },
     "myNotes": {
         "description": "Mkusanyiko wa Maelezo",
-        "newNote": "Ujumbe Mpya",
         "loading": "Inapakia maelezo...",
         "noNotesTitle": "Bado hakuna maelezo",
         "noNotesDesc": "Anza safari yako kwa kuunda dokezo lako la kwanza la kujifunza.",
@@ -292,7 +284,8 @@ export default {
         "prevPage": "Iliyopita",
         "nextPage": "Inayofuata",
         "pageInfo": "Ukurasa {current} kati ya {total}",
-        "nextLetterInDays": "(Barua inayofuata baada ya siku {days})"
+        "nextLetterInDays": "(Barua inayofuata baada ya siku {days})",
+        "notMember": "Wewe si mwanachama wa kikundi hiki"
     },
     "recapModal": {
         "title": "Barua Yako ya Wiki",
@@ -311,9 +304,6 @@ export default {
     },
     "groupChat": {
         "defaultScripture": "Agano la Kale",
-        "category": "Kategoria",
-        "chapter": "Sura",
-        "comment": "Maoni",
         "aiGroupUserNoteCongratulation": "Kazi nzuri! 🎉🎉 Tutaonana kesho! ✨",
         "myGroups": "Vikundi Vyangu",
         "send": "Tuma",
@@ -388,7 +378,6 @@ export default {
         "deleteMessageWarning": "Hii pia itafuta maelezo kutoka Maelezo Yangu.",
         "errorTranslation": "Imeshindwa kutafsiri ujumbe",
         "translate": "Tafsiri",
-        "translating": "Inatafsiri...",
         "translation": "Translation",
         "translated": "Imetafsiriwa",
         "showOriginal": "Onyesha asili",
@@ -396,7 +385,6 @@ export default {
         "reply": "Jibu",
         "like": "Penda",
         "unlike": "Ondoa upendo",
-        "original": "Asili",
         "activeToday": "Hali ya leo",
         "activeYesterday": "Hali ya jana",
         "activeDaysAgo": "Hali siku {days} zilizopita",
@@ -446,22 +434,18 @@ export default {
         "cheerConfirmButton": "Tuma Ushangiliaji",
         "cheerSent": "Ushangiliaji umetumwa!",
         "autoKickConfirmTitle": "Thibitisha Lengo Lako",
-        "autoKickErrorMismatch": "Nambari hailingani na chaguo lako. Tafadhali jaribu tena.",
         "autoKickSuccess": "Kasi ya tabia imewekwa! Hebu tujenge tabia hii pamoja.",
         "autoKickInitTitle": "Weka Lengo Lako la Mwendelezo",
         "autoKickInitDesc": "Ili kusaidia kujenga tabia, Scripture Habit ina 'sheria ya kuondoka kiotomatiki'. Ikiwa hakuna machapisho kwa muda uliowekwa, utaondoka kwenye kikundi kwa muda ili kuweka kikundi kikiwa hai. Ungependa kuchapisha kila baada ya siku ngapi?",
         "autoKickSelectedSubtext": "Jifunze maandiko angalau mara moja kila siku {days}",
         "next": "Inayofuata",
-        "autoKickConfirmText": "Uthibitisho wa mwisho: Ikiwa hutachapisha dokezo ndani ya siku {days}, unakubali kuondolewa kiotomatiki? Tafadhali andika \"{days}\" ili kuthibitisha.",
         "habitPaceProfileTitle": "Lengo la {nickname}",
         "habitPaceLetsTryTogether": "Hebu tujaribu pamoja!",
         "habitPaceProfileDesc": "Chapisha kila baada ya siku {days} ili kubaki hai.",
-        "confirm": "Thibitisha",
         "aiGroupDefaultGroupName": "Scripture Habit AI",
         "aiGroupDefaultGroupDesc": "Kundi la kujifunza maandiko la 1-kwa-1 na Scripture Habit AI",
         "aiGroupWelcomeMessage": "Karibu kwenye Kundi la Scripture Habit AI! Tuwe tukijifunza maandiko na kushiriki mafundisho kila siku. Tunakuunga mkono! 📖✨\n*Kumbuka: AI inachapisha maelezo kila siku, lakini majibu ya moja kwa moja kwa {nickname} hayatumiki kwa sasa.",
         "aiGroupBotNickname": "Scripture Habit AI",
-        "aiGroupDailyNoteText": "[Ushawishi wa Kujifunza Kila Siku] Kufungua maandiko mara kwa mara kila siku huleta baraka kubwa. Hebu tuzidishe ujuzi wetu leo! 📖✨",
         "inviteExpiresAt": "Inaisha mnamo",
         "regenerateInviteCode": "Tengeneza msimbo mpya wa mwaliko",
         "inviteCodeRegenerated": "Msimbo wa mwaliko umetengenezwa upya!",
@@ -478,7 +462,6 @@ export default {
     "newNote": {
         "editTitle": "Hariri Ujumbe",
         "newTitle": "Ujumbe Mpya",
-        "deleteTitle": "Futa Ujumbe",
         "errorMissingFields": "Tafadhali jaza sura na uchague andiko.",
         "chooseScriptureLabel": "Chagua andiko",
         "chooseScripturePlaceholder": "Tafadhali chagua chaguo la andiko",
@@ -512,10 +495,7 @@ export default {
             "mf. Koriantoni anaona jinsi zamani zake mbaya zinavyofunuliwa kwa posteridad."
         ],
         "shareLabel": "Shiriki na:",
-        "shareToGroup": "Shiriki na kikundi",
         "shareNone": "Usishiriki (Binafsi)",
-        "shareAll": "Shiriki na vikundi vyote",
-        "shareSpecific": "Shiriki na vikundi maalum",
         "shareToGroupShort": "Shiriki",
         "shareNoneShort": "Binafsi",
         "shareAllShort": "Vyote",
@@ -524,9 +504,6 @@ export default {
         "unnamedGroup": "Kikundi kisicho na jina",
         "cancel": "Ghairi",
         "saving": "Inahifadhi...",
-        "update": "Sasisha Ujumbe",
-        "post": "Chapisha Ujumbe",
-        "saveNote": "✨ Hifadhi Ujumbe",
         "btnPost": "✨ Chapisha",
         "btnSave": "🔒 Hifadhi",
         "btnUpdate": "✨ Sasisha",
@@ -569,7 +546,6 @@ export default {
     },
     "groupOptions": {
         "title": "Vikundi vya Mafunzo",
-        "subtitle": "Chagua jinsi unavyotaka kuungana na wengine.",
         "joinGroupTitle": "Jiunge na Kikundi",
         "joinGroupDesc": "Tafuta kikundi kilichopo ili kujifunza pamoja.",
         "createGroupTitle": "Unda Kikundi",
@@ -598,7 +574,6 @@ export default {
         "joinConfirmMessage": "Je, una uhakika unataka kujiunga na kikundi hiki?",
         "confirmJoin": "Jiunge",
         "cancelJoin": "Ghairi",
-        "notes": "Maelezo",
         "createdAt": "Imeundwa mnamo",
         "joiningFromInvite": "Inajiunga kutoka kwa mwaliko...",
         "joiningFromInviteSuccess": "Karibu! Umejiunga na kikundi kupitia mwaliko.",
@@ -612,12 +587,8 @@ export default {
     "onboardingQuest": {
         "title": "🌟 Majukumu ya Kwanza",
         "step1Title": "1. Jiunge na Kikundi",
-        "step1Desc": "Unda kikundi chako au ujiunge na kikundi kingine.",
-        "step1DescSuccess": "Umejiunga na kikundi kwa mafanikio! 🎉",
         "step1Action": "Tafuta / Unda Kikundi",
         "step2Title": "2. Chapisha Dokezo lako la Kwanza",
-        "step2Desc": "Shiriki dokezo lako la kwanza la kujifunza katika kikundi.",
-        "step2DescSuccess": "Dokezo la kwanza limechapishwa! 🎉",
         "step2Action": "Andika Dokezo",
         "chatHeaderBackPrompt": "Umejiunga na kikundi! Turudi kwenye dashibodi na uchapishe dokezo lako la kwanza!",
         "groupOptionsBannerDesc": "Chagua njia unayopendelea: Anza 1-kwa-1 na AI, unda kikundi cha faragha, au jiunge na kikundi cha umma.",
@@ -648,7 +619,6 @@ export default {
         "invitePreviewTitle": "Hakiki ya Kiungo cha Mwaliko",
         "invitePreviewDesc": "*Inatumika baada ya kuunda kikundi. Nakili na ushiriki kiungo hiki kualika marafiki na familia yako moja kwa moja.",
         "title": "Unda Kikundi cha Kujifunza",
-        "subtitle": "Jenga kikundi cha kujifunza maandiko na ualike wengine kujiunga.",
         "groupNameLabel": "Jina la Kikundi",
         "groupNamePlaceholder": "Ingiza jina la kikundi",
         "descriptionLabel": "Maelezo (hiari)",
@@ -681,7 +651,6 @@ export default {
         "googleButton": "Ingia na Google",
         "githubButton": "Ingia na GitHub",
         "browserWarning": "Tafadhali ingia au ujisajili ukitumia kivinjari chako chaguo-msingi (Chrome, Safari, n.k.). Vivinjari vya ndani ya programu kama vile LINE, Messenger, au Instagram vinaweza kushindwa kwa sababu ya vikwazo vya usalama.",
-        "inAppBrowserWarning": "Kuingia kwa Google hakutumiki katika kivinjari hiki cha ndani ya programu. Tafadhali fungua kwenye Chrome au Safari.",
         "emailNotVerified": "Tafadhali thibitisha anwani yako ya barua pepe kabla ya kuingia.",
         "resendVerification": "Tuma Barua Pepe ya Uthibitishaji",
         "verificationResent": "Barua pepe ya uthibitishaji imetumwa.",
@@ -717,9 +686,7 @@ export default {
         "members": "wanachama",
         "open": "Fungua",
         "joining": "Inajiunga...",
-        "join": "Jiunge",
         "details": "Maelezo",
-        "close": "Funga",
         "noDescription": "Hakuna maelezo.",
         "signInFirst": "Ingia kwanza ili kujiunga",
         "unableToJoin": "Imeshindwa kujiunga na kikundi",
@@ -733,11 +700,6 @@ export default {
         "ai_note_posted_announcement": "🎉🎉🎉 **{nickname} amechapisha dokezo!!** 🎉🎉🎉",
         "note_posted_title": "📖 Mafunzo ya Maandiko",
         "note_posted_body": "{nickname} amechapisha andiko! ✨",
-        "cheer_options": [
-            "{nickname} anasubiri chapisho lako! ✨",
-            "{nickname} anatarajia andiko lako la mafunzo! 📖",
-            "Tufikie 100% ya umoja! {nickname} amekutumia nguvu! 💪"
-        ],
         "kick_title": "Taarifa ya Shughuli",
         "kick_body": "⚠️ Umeondolewa kwenye '{groupName}' kwa sababu ya kutoshiriki. Tungefurahi kukuona tena utakapokuwa tayari! 💪",
         "members_removed": "👋 **Wanachama {count}** wameondolewa kwa sababu ya kutoshiriki.",
@@ -759,6 +721,10 @@ export default {
         "talk": "Hotuba",
         "speech": "Hotuba",
         "fetchingInfo": "Inapata maelezo..."
+    },
+    "placeholders": {
+        "unclassified": "isiyoainishwa",
+        "none": "hakuna"
     },
     "signOut": {
         "title": "Ondoka",
@@ -838,7 +804,6 @@ export default {
         "description": "Ili kupata matumizi bora, sakinisha programu hii kwenye skrini yako ya nyumbani.",
         "instruction1": "Gonga menyu na uchague 'Ongeza kwenye Skrini ya Nyumbani'.",
         "instruction2": "Fuata maelekezo.",
-        "close": "Funga",
         "updateAvailable": "Toleo jipya linapatikana.",
         "updateButton": "Sasisha Sasa"
     },
@@ -895,7 +860,6 @@ export default {
         "address": "Anwani",
         "phone": "Nambari ya Simu",
         "email": "Anwani ya Barua pepe",
-        "price": "Bei",
         "environment": "Mazingira ya Uendeshaji",
         "environmentDetail": "Inaweza kutumiwa kwenye matoleo ya hivi karibuni ya vivinjari na mifumo ya uendeshaji mbalimbali.",
         "requestDisclosure": "Maelezo ya mawasiliano ya kibinafsi yatatolewa bila kuchelewa baada ya kuombwa kupitia barua pepe.",
@@ -950,12 +914,6 @@ export default {
                 "q3": "Je, ninaweza kuipakua kutoka kwenye maduka ya programu (App Store / Google Play)?",
                 "a3": "Programu hii inatolewa kama PWA (Progressive Web App). Unaweza kuipachika kwa kuifungua moja kwa moja kwenye kivinjari chako na kuchagua \"Ongeza kwenye Skrini ya Kwanza\" kutoka kwenye menyu."
             }
-        },
-        "validation": {
-            "groupNameRequired": "Jina la kikundi linahitajika.",
-            "groupNameTooLong": "Jina la kikundi lazima liwe na herufi 50 au chini.",
-            "messageRequired": "Maudhui ya ujumbe hayawezi kuwa tupu.",
-            "emailInvalid": "Tafadhali ingiza barua pepe halali."
         }
     },
     "demo": {

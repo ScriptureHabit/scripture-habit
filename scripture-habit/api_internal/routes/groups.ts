@@ -10,7 +10,7 @@ import { removeMemberFromGroup } from '../lib/membership-utils.js';
 import { AppError, AuthenticationError, ForbiddenError, NotFoundError, ValidationError, sendErrorResponse } from '../lib/errors.js';
 import { getMessageExpireAt, getDemoExpireAt } from '../lib/ttl-utils.js';
 import { MessageService } from '../services/message-service.js';
-import { t, getDemoGroupTranslations } from '../lib/i18n.js';
+import { t, getDemoGroupTranslations, getAiGroupTranslations } from '../lib/i18n.js';
 import { AiDailyNoteService } from '../services/ai-daily-note-service.js';
 
 const router = express.Router();
@@ -499,23 +499,10 @@ router.post('/create-ai-group', authenticate, requireEmailVerified, verifyAppChe
             const userAlreadyPostedToday = userData.lastPostDate === todayStr;
             const activeMembers = userAlreadyPostedToday ? ['ai-partner-bot', uid] : ['ai-partner-bot'];
 
-            const AI_GROUP_PRE_TRANSLATIONS: Record<string, { name: string; description: string }> = {
-                ja: { name: 'スクハビAI', description: 'スクハビAIと1対1で聖典を学ぶ専用グループ' },
-                en: { name: 'Scripture Habit AI', description: '1-on-1 Scripture Study Group with Scripture Habit AI' },
-                es: { name: 'Scripture Habit AI', description: 'Grupo 1-a-1 de estudio de las escrituras con Scripture Habit AI' },
-                pt: { name: 'Scripture Habit AI', description: 'Grupo 1-a-1 de estudo das escrituras com Scripture Habit AI' },
-                zho: { name: 'Scripture Habit AI', description: '與 Scripture Habit AI 一對一研讀經文的專屬群組' },
-                ko: { name: 'Scripture Habit AI', description: 'Scripture Habit AI와 1대1로 성경을 공부하는 전용 그룹' },
-                vi: { name: 'Scripture Habit AI', description: 'Nhóm học tập kinh thánh 1-on-1 với Scripture Habit AI' },
-                th: { name: 'Scripture Habit AI', description: 'กลุ่มศึกษาพระคัมภีร์แบบตัวต่อตัวกับ Scripture Habit AI' },
-                tl: { name: 'Scripture Habit AI', description: '1-on-1 Group para sa pag-aaral ng kasulatan kasama ang Scripture Habit AI' },
-                sw: { name: 'Scripture Habit AI', description: 'Kikundi cha kujifunza maandiko 1-kwa-1 na Scripture Habit AI' }
-            };
-
             const newGroupData: GroupDocument = {
                 name: defaultGroupName,
                 description: t(lang, 'groupChat.aiGroupDefaultGroupDesc') || '1-on-1 Scripture Study Group with Scripture Habit AI',
-                translations: AI_GROUP_PRE_TRANSLATIONS,
+                translations: getAiGroupTranslations(),
                 createdAt: now,
                 groupStreak: 0,
                 inviteCode,

@@ -134,11 +134,9 @@ export default {
     "sidebar": {
         "dashboard": "แผงควบคุม",
         "myNotes": "บันทึกของฉัน",
-        "languages": "ภาษา",
         "profile": "โปรไฟล์",
         "myGroups": "กลุ่มของฉัน",
         "joinCreateGroup": "เข้าร่วม/สร้างกลุ่ม",
-        "signOut": "ออกจากระบบ",
         "selectGroup": "เลือกกลุ่ม",
         "close": "ปิด",
         "story": "แนะนำผู้พัฒนา"
@@ -146,7 +144,6 @@ export default {
     "story": {
         "title": "แนะนำผู้พัฒนา",
         "description": "เกี่ยวกับผู้พัฒนาและเบื้องหลังของแอปพลิเคชัน",
-        "vision": "เราเชื่อว่าดังที่พระคัมภีร์และประวัติศาสตร์ได้แสดงให้เห็นแล้ว ผ่าน 'การเปิดเผยส่วนตัว' ที่มาจากการศึกษาพระคัมภีร์อย่างต่อเนื่อง เราสามารถป้องกันความเสื่อมโทรมทางวัฒนธรรม ความแตกแยกทางสังคม สงคราม และความขัดแย้ง และสร้างสันติสุขได้",
         "appBackground": "เบื้องหลังการพัฒนาแอป",
         "backgroundStory": "แอปนี้สร้างขึ้นครั้งแรกเป็นโครงการจบการศึกษาโดยข้าพเจ้า ไดจิโร ซากาเนะ นักศึกษาของ BYU Pathway Worldwide (หลักสูตรออนไลน์ของ BYU-Idaho) ซึ่งต่อมาข้าพเจ้าได้ปรับปรุงและเผยแพร่สู่สาธารณะ\n\nหากคุณมีคำถาม ความคิดเห็น หรือข้อเสนอแนะ โปรดติดต่อข้าพเจ้าได้ที่ที่อยู่ด้านล่างนี้ ↓\n\nอีเมล: dazhilangxianggen@gmail.com",
         "developerName": "ไดจิโร ซากาเนะ",
@@ -158,7 +155,6 @@ export default {
         "streak": "วันรวมทั้งหมด",
         "days": "วัน",
         "totalNotes": "บันทึกทั้งหมด",
-        "notes": "บันทึก",
         "seeAll": "ดูทั้งหมด",
         "noRecentNotes": "ไม่มีบันทึกล่าสุด",
         "readInGospelLibrary": "อ่านในคลังค้นคว้าพระกิตติคุณ",
@@ -237,13 +233,10 @@ export default {
         "imageUploadError": "Failed to update profile picture.",
         "photoHint": "Tap to change profile picture",
         "imageTooLarge": "Image is too large. Please pick a smaller one.",
-        "notifications": "การแจ้งเตือน",
         "notificationToggle": {
             "title": "การแจ้งเตือนแบบพุช",
             "description": "รับข้อมูลอัปเดตเกี่ยวกับกิจกรรมของกลุ่มและการแจ้งเตือนการศึกษา",
             "statusBlocked": "ถูกบล็อก (ตรวจสอบการตั้งค่า)",
-            "enable": "เปิดใช้งาน",
-            "disable": "ปิดใช้งาน",
             "disabledSuccess": "ปิดการแจ้งเตือนแล้ว",
             "error": "ไม่สามารถอัปเดตการตั้งค่าการแจ้งเตือนได้"
         },
@@ -265,7 +258,6 @@ export default {
     },
     "myNotes": {
         "description": "คลังบันทึก",
-        "newNote": "บันทึกใหม่",
         "loading": "กำลังโหลดบันทึก...",
         "noNotesTitle": "ยังไม่มีบันทึก",
         "noNotesDesc": "เริ่มต้นการเดินทางของคุณด้วยการสร้างบันทึกการศึกษาแรกของคุณ",
@@ -292,7 +284,8 @@ export default {
         "prevPage": "ก่อนหน้า",
         "nextPage": "ถัดไป",
         "pageInfo": "หน้า {current} จาก {total}",
-        "nextLetterInDays": "(จดหมายฉบับถัดไปในอีก {days} วัน)"
+        "nextLetterInDays": "(จดหมายใหม่ในอีก {days} วัน)",
+        "notMember": "คุณไม่ได้เป็นสมาชิกของกลุ่มนี้"
     },
     "recapModal": {
         "title": "จดหมายรายสัปดาห์ของคุณ",
@@ -311,9 +304,6 @@ export default {
     },
     "groupChat": {
         "defaultScripture": "พันธสัญญาเดิม",
-        "category": "หมวดหมู่",
-        "chapter": "บท",
-        "comment": "ความคิดเห็น",
         "aiGroupUserNoteCongratulation": "เก่งมากเลย! 🎉🎉 แล้วพบกันใหม่พรุ่งนี้นะ✨",
         "myGroups": "กลุ่มของฉัน",
         "send": "ส่ง",
@@ -388,7 +378,6 @@ export default {
         "deleteMessageWarning": "การดำเนินการนี้จะลบบันทึกจาก บันทึกของฉัน ด้วย",
         "errorTranslation": "การแปลข้อความล้มเหลว",
         "translate": "แปล",
-        "translating": "กำลังแปล...",
         "translation": "Translation",
         "translated": "แปลแล้ว",
         "showOriginal": "ดูต้นฉบับ",
@@ -396,7 +385,6 @@ export default {
         "reply": "ตอบกลับ",
         "like": "ถูกใจ",
         "unlike": "เลิกถูกใจ",
-        "original": "ต้นฉบับ",
         "activeToday": "ใช้งานวันนี้",
         "activeYesterday": "ใช้งานเมื่อวาน",
         "activeDaysAgo": "ใช้งานเมื่อ {days} วันที่แล้ว",
@@ -446,22 +434,18 @@ export default {
         "cheerConfirmButton": "ส่งกำลังใจ",
         "cheerSent": "ส่งกำลังใจเรียบร้อยแล้ว!",
         "autoKickConfirmTitle": "ยืนยันเป้าหมายของคุณ",
-        "autoKickErrorMismatch": "ตัวเลขไม่ตรงกับการเลือกของคุณ โปรดลองอีกครั้ง",
         "autoKickSuccess": "ตั้งค่าจังหวะนิสัยแล้ว! มาสร้างนิสัยนี้ไปด้วยกัน",
         "autoKickInitTitle": "ตั้งเป้าหมายของคุณ!",
         "autoKickInitDesc": "Scripture Habit มี 'กฎการออกจากกลุ่มอัตโนมัติ' เพื่อช่วยป้องกันการล้มเลิก\nกำหนดเป้าหมายของคุณด้านล่าง (หากไม่แน่ใจ แนะนำให้เริ่มต้นด้วยทุกๆ 7 วัน)",
         "autoKickSelectedSubtext": "ศึกษาพระคัมภีร์อย่างน้อยหนึ่งครั้งทุกๆ {days} วัน",
         "next": "ถัดไป",
-        "autoKickConfirmText": "ยืนยันครั้งสุดท้าย: หากคุณไม่โพสต์โน้ตภายใน {days} วัน คุณยอมรับการออกจากกลุ่มอัตโนมัติหรือไม่? กรุณาพิมพ์ \"{days}\" เพื่อยืนยัน",
         "habitPaceProfileTitle": "เป้าหมายของ {nickname}",
         "habitPaceLetsTryTogether": "มาลุยด้วยกันเลย!",
         "habitPaceProfileDesc": "โพสต์ทุกๆ {days} วันเพื่อใช้งานต่อไป",
-        "confirm": "ยืนยัน",
         "aiGroupDefaultGroupName": "Scripture Habit AI",
         "aiGroupDefaultGroupDesc": "กลุ่มศึกษาพระคัมภีร์แบบตัวต่อตัวกับ AI",
         "aiGroupWelcomeMessage": "ยินดีต้อนรับสู่กลุ่ม AI! มาศึกษาพระคัมภีร์และแบ่งปันข้อคิดด้วยกันทุกวัน เป็นกำลังใจให้คุณนะ! 📖✨\n*หมายเหตุ: AI จะโพสต์โน้ตทุกวัน แต่ยังไม่สามารถตอบกลับ {nickname} โดยตรงได้ในขณะนี้",
         "aiGroupBotNickname": "Scripture Habit AI",
-        "aiGroupDailyNoteText": "[แรงบันดาลใจในการศึกษาประจำวัน] การเปิดพระคัมภีร์อย่างสม่ำเสมอทุกวันนำมาซึ่งพรแม็กทาย วันนี้มาเรียนรู้ให้ลึกซึ้งยิ่งขึ้นกันเถอะ! 📖✨",
         "inviteExpiresAt": "หมดอายุเมื่อ",
         "regenerateInviteCode": "สร้างรหัสเชิญใหม่",
         "inviteCodeRegenerated": "สร้างรหัสเชิญใหม่แล้ว!",
@@ -478,7 +462,6 @@ export default {
     "newNote": {
         "editTitle": "แก้ไขบันทึก",
         "newTitle": "บันทึกใหม่",
-        "deleteTitle": "ลบบันทึก",
         "errorMissingFields": "กรุณากรอกบทและเลือกพระคัมภีร์",
         "chooseScriptureLabel": "เลือกพระคัมภีร์",
         "chooseScripturePlaceholder": "กรุณาเลือกตัวเลือกพระคัมภีร์",
@@ -512,10 +495,7 @@ export default {
             "ตัวอย่าง: คอริแอนทอนกำลังถูกเปิดเผยอดีตอันมืดมนต่อคนรุ่นหลัง"
         ],
         "shareLabel": "แบ่งปันกับ:",
-        "shareToGroup": "แบ่งปันกับกลุ่ม",
         "shareNone": "ไม่แบ่งปัน (ส่วนตัว)",
-        "shareAll": "แบ่งปันกับทุกกลุ่ม",
-        "shareSpecific": "แบ่งปันกับบางกลุ่ม",
         "shareToGroupShort": "แชร์",
         "shareNoneShort": "ส่วนตัว",
         "shareAllShort": "ทั้งหมด",
@@ -524,9 +504,6 @@ export default {
         "unnamedGroup": "กลุ่มที่ไม่มีชื่อ",
         "cancel": "ยกเลิก",
         "saving": "กำลังบันทึก...",
-        "update": "อัปเดตบันทึก",
-        "post": "โพสต์บันทึก",
-        "saveNote": "✨ บันทึกโน้ต",
         "btnPost": "✨ โพสต์",
         "btnSave": "🔒 บันทึก",
         "btnUpdate": "✨ อัปเดต",
@@ -569,7 +546,6 @@ export default {
     },
     "groupOptions": {
         "title": "กลุ่มการศึกษา",
-        "subtitle": "เลือกวิธีที่คุณต้องการเชื่อมต่อกับผู้อื่น",
         "joinGroupTitle": "เข้าร่วมกลุ่ม",
         "joinGroupDesc": "ค้นหากลุ่มที่มีอยู่เพื่อศึกษาด้วยกัน",
         "createGroupTitle": "สร้างกลุ่ม",
@@ -598,7 +574,6 @@ export default {
         "joinConfirmMessage": "คุณแน่ใจหรือไม่ว่าต้องการเข้าร่วมกลุ่มนี้?",
         "confirmJoin": "เข้าร่วม",
         "cancelJoin": "ยกเลิก",
-        "notes": "บันทึก",
         "createdAt": "สร้างเมื่อ",
         "joiningFromInvite": "กำลังเข้าร่วมจากคำเชิญ...",
         "joiningFromInviteSuccess": "ยินดีต้อนรับ! คุณได้เข้าร่วมกลุ่มผ่านคำเชิญแล้ว",
@@ -612,12 +587,8 @@ export default {
     "onboardingQuest": {
         "title": "🌟 ภารกิจเริ่มต้น",
         "step1Title": "1. เข้าร่วมกลุ่ม",
-        "step1Desc": "สร้างกลุ่มของคุณเองหรือเข้าร่วมกลุ่มอื่น",
-        "step1DescSuccess": "เข้าร่วมกลุ่มสำเร็จแล้ว! 🎉",
         "step1Action": "ค้นหา / สร้างกลุ่ม",
         "step2Title": "2. โพสต์บันทึกแรกของคุณ",
-        "step2Desc": "แบ่งปันบันทึกการศึกษาแรกของคุณในกลุ่ม",
-        "step2DescSuccess": "โพสต์บันทึกแรกเรียบร้อยแล้ว! 🎉",
         "step2Action": "เขียนบันทึก",
         "chatHeaderBackPrompt": "คุณเข้าร่วมกลุ่มแล้ว! กลับไปที่แดชบอร์ดเพื่อโพสต์บันทึกแรกกันเถอะ!",
         "groupOptionsBannerDesc": "เลือกวิธีที่คุณต้องการเริ่มต้น: เริ่ม 1 ต่อ 1 กับ AI, สร้างกลุ่มส่วนตัว หรือเข้าร่วมกลุ่มสาธารณะ",
@@ -648,7 +619,6 @@ export default {
         "invitePreviewTitle": "ตัวอย่างลิงก์เชิญ",
         "invitePreviewDesc": "*ใช้งานได้หลังจากสร้างกลุ่มแล้ว คัดลอกและแชร์ลิงก์นี้เพื่อเชิญเพื่อนและครอบครัวของคุณโดยตรง",
         "title": "สร้างกลุ่มศึกษา",
-        "subtitle": "สร้างกลุ่มศึกษาพระคัมภีร์และเชิญผู้อื่นเข้าร่วม",
         "groupNameLabel": "ชื่อกลุ่ม",
         "groupNamePlaceholder": "ป้อนชื่อกลุ่ม",
         "descriptionLabel": "คำอธิบาย (ไม่บังคับ)",
@@ -681,7 +651,6 @@ export default {
         "googleButton": "เข้าสู่ระบบด้วย Google",
         "githubButton": "เข้าสู่ระบบด้วย GitHub",
         "browserWarning": "กรุณาเข้าสู่ระบบหรือลงทะเบียนโดยใช้เบราว์เซอร์เริ่มต้นของคุณ (Chrome, Safari ฯลฯ) เบราว์เซอร์ในแอป เช่น LINE, Messenger หรือ Instagram อาจทำงานล้มเหลวเนื่องจากข้อจำกัดด้านความปลอดภัย",
-        "inAppBrowserWarning": "การเข้าสู่ระบบด้วย Google ไม่รองรับในเบราว์เซอร์ในแอปนี้ กรุณาเปิดใน Chrome หรือ Safari",
         "emailNotVerified": "กรุณายืนยันที่อยู่อีเมลของคุณก่อนเข้าสู่ระบบ",
         "resendVerification": "ส่งอีเมลยืนยัน",
         "verificationResent": "ส่งอีเมลยืนยันแล้ว",
@@ -717,9 +686,7 @@ export default {
         "members": "สมาชิก",
         "open": "เปิด",
         "joining": "กำลังเข้าร่วม...",
-        "join": "เข้าร่วม",
         "details": "รายละเอียด",
-        "close": "ปิด",
         "noDescription": "ไม่มีคำอธิบาย",
         "signInFirst": "เข้าสู่ระบบก่อนเพื่อเข้าร่วม",
         "unableToJoin": "ไม่สามารถเข้าร่วมกลุ่มได้",
@@ -733,11 +700,6 @@ export default {
         "ai_note_posted_announcement": "🎉🎉🎉 **{nickname} โพสต์บันทึกแล้ว!!** 🎉🎉🎉",
         "note_posted_title": "📖 การศึกษาพระคัมภีร์",
         "note_posted_body": "{nickname} โพสต์บันทึกแล้ว! ✨",
-        "cheer_options": [
-            "{nickname} กำลังรอโพสต์ของคุณอยู่! ✨",
-            "{nickname} ตั้งตารออ่านบันทึกการศึกษาของคุณ! 📖",
-            "มาตั้งเป้าที่ความเป็นน้ำหนึ่งใจเดียว 100%! {nickname} ส่งพลังใจให้คุณ! 💪"
-        ],
         "kick_title": "อัปเดตกิจกรรม",
         "kick_body": "⚠️ คุณถูกนำออกจากกลุ่ม '{groupName}' เนื่องจากไม่มีความเคลื่อนไหว เรายินดีต้อนรับคุณกลับเสมอเมื่อคุณพร้อม! 💪",
         "members_removed": "👋 **สมาชิก {count} ท่าน** ถูกนำออกจากกลุ่มเนื่องจากไม่มีความเคลื่อนไหว",
@@ -759,6 +721,10 @@ export default {
         "talk": "คำปราศรัย",
         "speech": "สุนทรพจน์",
         "fetchingInfo": "กำลังดึงข้อมูล..."
+    },
+    "placeholders": {
+        "unclassified": "ไม่ได้จัดหมวดหมู่",
+        "none": "ไม่มี"
     },
     "signOut": {
         "title": "ออกจากระบบ",
@@ -838,7 +804,6 @@ export default {
         "description": "เพื่อประสบการณ์ที่ดียิ่งขึ้น ติดตั้งแอปนี้ไว้บนหน้าจอหลักของคุณ",
         "instruction1": "แตะที่เมนูและเลือก 'เพิ่มไปยังหน้าจอหลัก'",
         "instruction2": "ทำตามคำแนะนำ",
-        "close": "ปิด",
         "updateAvailable": "มีเวอร์ชันใหม่พร้อมใช้งาน",
         "updateButton": "อัปเดตตอนนี้"
     },
@@ -895,7 +860,6 @@ export default {
         "address": "ที่อยู่",
         "phone": "หมายเลขโทรศัพท์",
         "email": "ที่อยู่อีเมล",
-        "price": "ราคา",
         "environment": "สภาพแวดล้อมการใช้งาน",
         "environmentDetail": "สามารถใช้งานได้บนเว็บเบราว์เซอร์และระบบปฏิบัติการเวอร์ชันล่าสุด",
         "requestDisclosure": "ข้อมูลติดต่อส่วนบุคคลจะถูกให้ไปโดยไม่ชักช้าเมื่อได้รับการร้องขอทางอีเมล",
@@ -950,12 +914,6 @@ export default {
                 "q3": "ฉันสามารถดาวน์โหลดจากแอปสโตร์ (App Store / Google Play) ได้หรือไม่?",
                 "a3": "แอปนี้ให้บริการในรูปแบบ PWA (Progressive Web App) คุณสามารถติดตั้งได้โดยเปิดตรงในเบราว์เซอร์ของคุณแล้วเลือก \"เพิ่มลงในหน้าจอหลัก\" จากเมนู"
             }
-        },
-        "validation": {
-            "groupNameRequired": "จำเป็นต้องระบุชื่อกลุ่ม",
-            "groupNameTooLong": "ชื่อกลุ่มต้องมีไม่เกิน 50 ตัวอักษร",
-            "messageRequired": "เนื้อหาข้อความต้องไม่ว่างเปล่า",
-            "emailInvalid": "โปรดป้อนที่อยู่อีเมลที่ถูกต้อง"
         }
     },
     "demo": {

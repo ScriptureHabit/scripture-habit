@@ -64,7 +64,7 @@ function checkLocales(locales: Record<string, TranslationBundle>, label: string)
 }
 
 async function run() {
-  const files = fs.readdirSync(LOCALES_DIR).filter(f => (f.endsWith('.ts') || f.endsWith('.js')) && !f.includes('i18n'));
+  const files = fs.readdirSync(LOCALES_DIR).filter(f => (f.endsWith('.ts') || f.endsWith('.js')) && !f.includes('i18n') && !f.includes('registry'));
   const locales: Record<string, TranslationBundle> = {};
 
   for (const file of files) {

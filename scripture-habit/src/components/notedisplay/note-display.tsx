@@ -1,10 +1,9 @@
-
 import { useState, useEffect, useRef, useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { useLanguage } from '../../hooks/use-language';
 import { useNoteParser } from './hooks/use-note-parser';
 import GCNoteRenderer from './components/gc-note-renderer';
-import { getNoteLabelFallback, translateScriptureName, isPlaceholderValue } from './utils/note-translations';
+import { getNoteLabelFallback, translateScriptureName, isPlaceholderValue, isSpecialTalkSource } from './utils/note-translations';
 import LinkPreview from '../linkpreview/link-preview';
 import './note-display.css';
 
@@ -48,8 +47,7 @@ const NoteDisplay = ({
     }, [linkColor, isSent]);
 
     // --- Specialized View: Rich Metadata (GC, BYU, etc.) ---
-    const scripLower = (parsed.scriptureValue || '').toLowerCase();
-    const isSpecialSource = scripLower.includes('general') || scripLower.includes('総大会') || scripLower.includes('byu') || scripLower.includes('other') || scripLower.includes('その他') || parsed.scriptureValue === '';
+    const isSpecialSource = isSpecialTalkSource(parsed.scriptureValue) || parsed.scriptureValue === '';
 
     // Memoized standard Markdown construction
     const standardMd = useMemo(() => {

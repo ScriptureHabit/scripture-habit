@@ -134,11 +134,9 @@ export default {
     "sidebar": {
         "dashboard": "Trang chủ",
         "myNotes": "Ghi chép của tôi",
-        "languages": "Ngôn ngữ",
         "profile": "Hồ sơ",
         "myGroups": "Nhóm của tôi",
         "joinCreateGroup": "Tham gia/Tạo nhóm",
-        "signOut": "Đăng xuất",
         "selectGroup": "Chọn Nhóm",
         "close": "Đóng",
         "story": "Giới thiệu nhà phát triển"
@@ -146,7 +144,6 @@ export default {
     "story": {
         "title": "Giới thiệu nhà phát triển",
         "description": "Giới thiệu về nhà phát triển và bối cảnh của ứng dụng",
-        "vision": "Chúng tôi tin rằng, như những gì thánh thư và lịch sử đã chỉ ra, thông qua 'sự mặc khải cá nhân' đến từ việc học hỏi thánh thư liên tục, chúng ta có thể ngăn chặn sự suy thoái văn hóa, chia rẽ xã hội, chiến tranh, bất hòa và kiến tạo hòa bình.",
         "appBackground": "Bối cảnh phát triển ứng dụng",
         "backgroundStory": "Ứng dụng này ban đầu được tạo ra như một dự án tốt nghiệp của tôi, Daijiro Sagane, một sinh viên tại BYU Pathway Worldwide (chương trình trực tuyến của BYU-Idaho), sau đó tôi đã cải tiến và phát hành rộng rãi cho công chúng.\n\nNếu bạn có bất kỳ câu hỏi, ý kiến hoặc cảm nhận nào, vui lòng liên hệ với tôi qua địa chỉ bên dưới. ↓\n\nEmail: dazhilangxianggen@gmail.com",
         "developerName": "Daijiro Sagane",
@@ -158,7 +155,6 @@ export default {
         "streak": "Tổng số ngày",
         "days": "ngày",
         "totalNotes": "Tổng số ghi chép",
-        "notes": "ghi chép",
         "seeAll": "Xem tất cả",
         "noRecentNotes": "Không có ghi chép gần đây.",
         "readInGospelLibrary": "Đọc trong Thư viện Phúc âm",
@@ -237,13 +233,10 @@ export default {
         "imageUploadError": "Failed to update profile picture.",
         "photoHint": "Tap to change profile picture",
         "imageTooLarge": "Image is too large. Please pick a smaller one.",
-        "notifications": "Thông báo",
         "notificationToggle": {
             "title": "Thông báo Đẩy",
             "description": "Nhận cập nhật về hoạt động của nhóm và lời nhắc học tập.",
             "statusBlocked": "Đã chặn (Kiểm tra Cài đặt)",
-            "enable": "Bật",
-            "disable": "Tắt",
             "disabledSuccess": "Đã tắt thông báo",
             "error": "Không thể cập nhật cài đặt thông báo."
         },
@@ -265,7 +258,6 @@ export default {
     },
     "myNotes": {
         "description": "Bộ Sưu Tập Ghi Chép",
-        "newNote": "Ghi chép mới",
         "loading": "Đang tải ghi chép...",
         "noNotesTitle": "Chưa có ghi chép nào",
         "noNotesDesc": "Bắt đầu hành trình của bạn bằng cách tạo ghi chép nghiên cứu đầu tiên.",
@@ -291,8 +283,9 @@ export default {
         "letterSaveSuccess": "Đã lưu vào Hộp thư!",
         "prevPage": "Trước",
         "nextPage": "Tiếp",
-        "pageInfo": "Trang {current} / {total}",
-        "nextLetterInDays": "(Thư tiếp theo sau {days} ngày)"
+        "pageInfo": "Trang {current} trên {total}",
+        "nextLetterInDays": "(Thư mới sau {days} ngày nữa)",
+        "notMember": "Bạn không phải là thành viên của nhóm này"
     },
     "recapModal": {
         "title": "Thư hàng tuần của bạn",
@@ -311,9 +304,6 @@ export default {
     },
     "groupChat": {
         "defaultScripture": "Cựu Ước",
-        "category": "Thể loại",
-        "chapter": "Chương",
-        "comment": "Nhận xét",
         "aiGroupUserNoteCongratulation": "Làm tốt lắm! 🎉🎉 Hẹn gặp lại bạn vào ngày mai nhé✨",
         "myGroups": "Nhóm của tôi",
         "send": "Gửi",
@@ -362,7 +352,6 @@ export default {
         "deleteMessageWarning": "Điều này cũng sẽ xóa ghi chép khỏi Ghi chép của tôi.",
         "errorTranslation": "Dịch tin nhắn thất bại",
         "translate": "Dịch",
-        "translating": "Đang dịch...",
         "translation": "Translation",
         "translated": "Đã dịch",
         "showOriginal": "Xem Bản Gốc",
@@ -370,7 +359,6 @@ export default {
         "reply": "Trả lời",
         "like": "Thích",
         "unlike": "Bỏ thích",
-        "original": "Bản gốc",
         "activeToday": "Hoạt động hôm nay",
         "activeYesterday": "Hoạt động hôm qua",
         "activeDaysAgo": "Hoạt động {days} ngày trước",
@@ -420,22 +408,18 @@ export default {
         "cheerConfirmButton": "Gửi lời khích lệ",
         "cheerSent": "Đã gửi lời khích lệ!",
         "autoKickConfirmTitle": "Xác nhận mục tiêu của bạn",
-        "autoKickErrorMismatch": "Số không khớp với lựa chọn của bạn. Hãy thử lại một lần nữa.",
         "autoKickSuccess": "Đã thiết lập nhịp độ thói quen! Hãy cùng nhau xây dựng thói quen này.",
         "autoKickInitTitle": "Đặt mục tiêu của bạn!",
         "autoKickInitDesc": "Scripture Habit có 'quy tắc tự động rời nhóm' để giúp ngăn ngừa việc bỏ cuộc.\nHãy chọn mục tiêu cá nhân của bạn dưới đây. (Nếu bạn chưa chắc chắn, chúng tôi khuyên bạn nên bắt đầu với 7 ngày một lần.)",
         "autoKickSelectedSubtext": "Học thánh thư ít nhất một lần mỗi {days} ngày",
         "next": "Tiếp theo",
-        "autoKickConfirmText": "Xác nhận cuối cùng: Bạn có hiểu rằng nếu bạn không đăng ghi chép trong {days} ngày, bạn sẽ tự động bị xóa không? Vui lòng nhập '{days}' để xác nhận。",
         "habitPaceProfileTitle": "Mục tiêu của {nickname}",
         "habitPaceLetsTryTogether": "Cùng nhau cố lên!",
         "habitPaceProfileDesc": "Đăng bài một lần mỗi {days} ngày để duy trì hoạt động.",
-        "confirm": "Xác nhận",
         "aiGroupDefaultGroupName": "Scripture Habit AI",
         "aiGroupDefaultGroupDesc": "Nhóm học tập kinh thánh 1-on-1 với AI",
         "aiGroupWelcomeMessage": "Chào mừng bạn đến với Nhóm AI! Hãy cùng nhau học kinh thánh và chia sẻ cảm nhận mỗi ngày nhé. Úng hộ bạn! 📖✨\n*Lưu ý: AI sẽ đăng ghi chú hàng ngày, nhưng chưa thể phản hồi trực tiếp cho {nickname} ở giai đoạn này.",
         "aiGroupBotNickname": "Scripture Habit AI",
-        "aiGroupDailyNoteText": "[Cảm Hứng Học Tập Hàng Ngày] Việc kiên trì mở kinh thánh mỗi ngày mang lại những phước lành to lớn. Cùng nâng cao hiểu biết hôm nay nhé! 📖✨",
         "inviteExpiresAt": "Hết hạn lúc",
         "regenerateInviteCode": "Tạo lại mã mời",
         "inviteCodeRegenerated": "Mã mời đã được tạo lại!",
@@ -452,7 +436,6 @@ export default {
     "newNote": {
         "editTitle": "Chỉnh sửa ghi chép",
         "newTitle": "Ghi chép mới",
-        "deleteTitle": "Xóa ghi chép",
         "errorMissingFields": "Vui lòng điền chương và chọn thánh thư.",
         "chooseScriptureLabel": "Chọn thánh thư",
         "chooseScripturePlaceholder": "Vui lòng chọn một tùy chọn thánh thư",
@@ -486,10 +469,7 @@ export default {
             "Ej: Coriantón está viendo cómo su oscuro pasado queda expuesto para toda la posteridad."
         ],
         "shareLabel": "Chia sẻ với:",
-        "shareToGroup": "Chia sẻ với nhóm",
         "shareNone": "Không chia sẻ (Riêng tư)",
-        "shareAll": "Chia sẻ với tất cả các nhóm",
-        "shareSpecific": "Chia sẻ với các nhóm cụ thể",
         "shareToGroupShort": "Chia sẻ",
         "shareNoneShort": "Riêng tư",
         "shareAllShort": "Tất cả",
@@ -498,9 +478,6 @@ export default {
         "unnamedGroup": "Nhóm không tên",
         "cancel": "Hủy",
         "saving": "Đang lưu...",
-        "update": "Cập nhật ghi chép",
-        "post": "Đăng ghi chép",
-        "saveNote": "✨ Lưu ghi chép",
         "btnPost": "✨ Đăng",
         "btnSave": "🔒 Lưu",
         "btnUpdate": "✨ Cập nhật",
@@ -543,7 +520,6 @@ export default {
     },
     "groupOptions": {
         "title": "Nhóm học tập",
-        "subtitle": "Chọn cách bạn muốn kết nối với người khác.",
         "joinGroupTitle": "Tham gia nhóm",
         "joinGroupDesc": "Tìm một nhóm hiện có để cùng học tập.",
         "createGroupTitle": "Tạo nhóm",
@@ -572,7 +548,6 @@ export default {
         "joinConfirmMessage": "Bạn có chắc chắn muốn tham gia nhóm này không?",
         "confirmJoin": "Tham gia",
         "cancelJoin": "Hủy",
-        "notes": "Ghi chép",
         "createdAt": "Ngày tạo",
         "joiningFromInvite": "Đang tham gia từ lời mời...",
         "joiningFromInviteSuccess": "Chào mừng! Bạn đã tham gia nhóm thông qua lời mời.",
@@ -586,12 +561,8 @@ export default {
     "onboardingQuest": {
         "title": "🌟 Nhiệm Vụ Đầu Tiên",
         "step1Title": "1. Tham Gia Nhóm",
-        "step1Desc": "Tạo nhóm của riêng bạn hoặc tham gia nhóm khác.",
-        "step1DescSuccess": "Đã tham gia nhóm thành công! 🎉",
         "step1Action": "Tìm / Tạo Nhóm",
         "step2Title": "2. Đăng Ghi Chép Đầu Tiên",
-        "step2Desc": "Chia sẻ ghi chép học tập đầu tiên của bạn vào nhóm.",
-        "step2DescSuccess": "Đã đăng ghi chép đầu tiên! 🎉",
         "step2Action": "Viết Ghi Chép",
         "chatHeaderBackPrompt": "Bạn đã tham gia nhóm! Hãy quay lại bảng điều khiển và đăng ghi chú đầu tiên!",
         "groupOptionsBannerDesc": "Chọn cách bạn muốn bắt đầu: Bắt đầu 1-1 với AI, tạo nhóm riêng hoặc tham gia nhóm công khai.",
@@ -622,7 +593,6 @@ export default {
         "invitePreviewTitle": "Xem trước Liên kết Mời",
         "invitePreviewDesc": "*Hoạt động sau khi tạo nhóm. Sao chép và chia sẻ liên kết này để mời trực tiếp bạn bè và gia đình của bạn.",
         "title": "Tạo nhóm học tập",
-        "subtitle": "Tạo một nhóm học thánh thư và mời người khác tham gia.",
         "groupNameLabel": "Tên nhóm",
         "groupNamePlaceholder": "Nhập tên nhóm",
         "descriptionLabel": "Mô tả (tùy chọn)",
@@ -655,7 +625,6 @@ export default {
         "googleButton": "Đăng nhập bằng Google",
         "githubButton": "Đăng nhập bằng GitHub",
         "browserWarning": "Vui lòng đăng nhập hoặc đăng ký bằng trình duyệt mặc định của bạn (Chrome, Safari, v.v.). Các trình duyệt trong ứng dụng như LINE, Messenger hoặc Instagram có thể thất bại do các hạn chế về bảo mật.",
-        "inAppBrowserWarning": "Đăng nhập Google không được hỗ trợ trong trình duyệt ứng dụng này. Vui lòng mở trong Chrome hoặc Safari.",
         "emailNotVerified": "Vui lòng xác minh địa chỉ email của bạn trước khi đăng nhập.",
         "resendVerification": "Gửi email xác minh",
         "verificationResent": "Email xác minh đã được gửi.",
@@ -691,9 +660,7 @@ export default {
         "members": "thành viên",
         "open": "Mở",
         "joining": "Đang tham gia...",
-        "join": "Tham gia",
         "details": "Chi tiết",
-        "close": "Đóng",
         "noDescription": "Không có mô tả.",
         "signInFirst": "Đăng nhập trước để tham gia",
         "unableToJoin": "Không thể tham gia nhóm",
@@ -707,11 +674,6 @@ export default {
         "ai_note_posted_announcement": "🎉🎉🎉 **{nickname} đã đăng một ghi chú!!** 🎉🎉🎉",
         "note_posted_title": "📖 Học hỏi thánh thư",
         "note_posted_body": "{nickname} đã đăng một ghi chú! ✨",
-        "cheer_options": [
-            "{nickname} đang đợi bài đăng của bạn! ✨",
-            "{nickname} đang chờ mong ghi chú học tập của bạn! 📖",
-            "Hãy hướng tới 100% sự đoàn kết! {nickname} đã gửi cho bạn một nguồn năng lượng! 💪"
-        ],
         "kick_title": "Cập nhật hoạt động",
         "kick_body": "⚠️ Bạn đã bị xóa khỏi '{groupName}' do không hoạt động. Chúng tôi rất mong bạn quay lại khi đã sẵn sàng! 💪",
         "members_removed": "👋 **{count} thành viên** đã bị xóa do không hoạt động.",
@@ -733,6 +695,10 @@ export default {
         "talk": "Bài nói chuyện",
         "speech": "Bài phát biểu",
         "fetchingInfo": "Đang tải thông tin..."
+    },
+    "placeholders": {
+        "unclassified": "chưa phân loại",
+        "none": "không có"
     },
     "signOut": {
         "title": "Đăng xuất",
@@ -812,7 +778,6 @@ export default {
         "description": "Để có trải nghiệm tốt hơn, hãy cài đặt ứng dụng này vào màn hình chính của bạn.",
         "instruction1": "Nhấn vào menu và chọn 'Thêm vào màn hình chính'.",
         "instruction2": "Làm theo hướng dẫn.",
-        "close": "Đóng",
         "updateAvailable": "Có phiên bản mới.",
         "updateButton": "Cập nhật ngay"
     },
@@ -869,7 +834,6 @@ export default {
         "address": "Địa chỉ",
         "phone": "Số Điện thoại",
         "email": "Địa chỉ Email",
-        "price": "Giá",
         "environment": "Môi trường Hoạt động",
         "environmentDetail": "Có thể sử dụng trên các phiên bản mới nhất của nhiều trình duyệt và hệ điều hành.",
         "requestDisclosure": "Thông tin liên hệ cá nhân sẽ được cung cấp ngay lập tức theo yêu cầu qua email.",
@@ -924,12 +888,6 @@ export default {
                 "q3": "Tôi có thể tải ứng dụng này từ các cửa hàng ứng dụng (App Store / Google Play) không?",
                 "a3": "Ứng dụng này được cung cấp dưới dạng PWA (Progressive Web App). Bạn có thể cài đặt bằng cách mở trực tiếp trong trình duyệt và chọn \"Thêm vào màn hình chính\" từ menu."
             }
-        },
-        "validation": {
-            "groupNameRequired": "Tên nhóm là bắt buộc.",
-            "groupNameTooLong": "Tên nhóm phải có từ 50 ký tự trở xuống.",
-            "messageRequired": "Nội dung tin nhắn không thể để trống.",
-            "emailInvalid": "Vui lòng nhập địa chỉ email hợp lệ."
         }
     },
     "demo": {

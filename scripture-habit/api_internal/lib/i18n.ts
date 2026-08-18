@@ -104,3 +104,19 @@ export function getDemoGroupTranslations(): Record<string, { name: string; descr
     }
     return result;
 }
+
+/**
+ * Generates pre-baked translations dictionary for the AI Group from single source of truth (locales)
+ */
+export function getAiGroupTranslations(): Record<string, { name: string; description: string }> {
+    const supportedLangs = ['ja', 'en', 'es', 'ko', 'pt', 'sw', 'th', 'tl', 'vi', 'zho'];
+    const result: Record<string, { name: string; description: string }> = {};
+    for (const lang of supportedLangs) {
+        result[lang] = {
+            name: t(lang, 'groupChat.aiGroupDefaultGroupName') || (lang === 'ja' ? 'スクハビAI' : 'Scripture Habit AI'),
+            description: t(lang, 'groupChat.aiGroupDefaultGroupDesc') || '1-on-1 Scripture Study Group with Scripture Habit AI'
+        };
+    }
+    return result;
+}
+
