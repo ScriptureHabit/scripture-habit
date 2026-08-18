@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { normalizeSearchText, createSearchTokens, buildNoteSearchTokens } from './search-utils';
+import { normalizeSearchText, createSearchTokens, buildNoteSearchTokens } from './search-utils.js';
 
 describe('search-utils', () => {
   describe('normalizeSearchText', () => {

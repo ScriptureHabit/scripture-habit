@@ -32,6 +32,10 @@ jobs:
         working-directory: ./scripture-habit
         run: npm run lint
 
+      - name: Run Quality & Consistency Checks
+        working-directory: ./scripture-habit
+        run: npm run check:all
+
       - name: Run Unit Tests (Vitest)
         working-directory: ./scripture-habit
         run: npm test

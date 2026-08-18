@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import fc from 'fast-check';
-import { StreakEngine, StreakState } from './streak-engine';
+import { StreakEngine, StreakState } from './streak-engine.js';
 
 describe('StreakEngine', () => {
     const defaultState: StreakState = {

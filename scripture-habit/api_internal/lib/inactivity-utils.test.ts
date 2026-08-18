@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { decideGroupInactivity, InactivityGroupData, InactivityMemberData, toMillis, calculateMemberStatus } from './inactivity-utils';
+import { decideGroupInactivity, InactivityGroupData, InactivityMemberData, toMillis, calculateMemberStatus } from './inactivity-utils.js';
 
 describe('inactivity-utils', () => {
     const now = new Date('2024-04-25T00:00:00Z');

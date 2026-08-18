@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { isSafeUrl, isPrivateIp, ssrfSafeLookup } from './ssrf';
+import { isSafeUrl, isPrivateIp, ssrfSafeLookup } from './ssrf.js';
 
 describe('ssrf - isSafeUrl', () => {
     it('should return false for invalid URLs or unsupported protocols', () => {

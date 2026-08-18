@@ -18,8 +18,8 @@ vi.mock('./firebase-admin.js', () => {
     };
 });
 
-import { authenticate, verifyAppCheck, requireEmailVerified, aiLimiterKeyGenerator } from './middleware';
-import { AppError } from './errors';
+import { authenticate, verifyAppCheck, requireEmailVerified, aiLimiterKeyGenerator } from './middleware.js';
+import { AppError } from './errors.js';
 import { Request, Response } from 'express';
 
 describe('middleware - express middlewares', () => {

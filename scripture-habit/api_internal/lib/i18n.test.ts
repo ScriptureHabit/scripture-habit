@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { t, tArray } from './i18n';
+import { t, tArray } from './i18n.js';
 
 describe('i18n - translation utilities', () => {
     describe('t()', () => {
