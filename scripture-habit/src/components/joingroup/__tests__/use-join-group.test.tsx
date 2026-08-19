@@ -128,8 +128,12 @@ describe('useJoinGroup Custom Hook', () => {
       await result.current.handleTranslateGroup('g1', 'Original Name', 'Original Desc');
     });
 
-    expect(postSpy).toHaveBeenCalledWith('/api/ai/translate', expect.objectContaining({
-      text: 'Original Name'
+    expect(postSpy).toHaveBeenCalledWith('/api/ai/translate-batch', expect.objectContaining({
+      messages: expect.arrayContaining([
+        expect.objectContaining({ text: 'Original Name' }),
+        expect.objectContaining({ text: 'Original Desc' })
+      ]),
+      targetLanguage: 'ja'
     }));
     expect(result.current.translatedNames['g1']).toBe('Translated Text');
   });

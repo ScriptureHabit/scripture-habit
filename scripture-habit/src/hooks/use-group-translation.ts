@@ -1,7 +1,12 @@
 import { useState, useEffect } from 'react';
-import apiClient from '../utils/api-client';
 import { Group } from '../types/chat';
 import { useLanguage } from './use-language';
+import { isLikelyAlreadyInLanguage } from '../utils/language-utils';
+import { requestTranslation } from '../utils/translation-batcher';
+
+export interface UseGroupTranslationOptions {
+  translateDescription?: boolean;
+}
 
 export interface UseGroupTranslationResult {
   displayName: string;
@@ -11,118 +16,86 @@ export interface UseGroupTranslationResult {
 
 export function useGroupTranslation(
   group: Group | null | undefined,
-  language: string
+  language: string,
+  options?: UseGroupTranslationOptions
 ): UseGroupTranslationResult {
   const { t } = useLanguage();
-  const [translatedName, setTranslatedName] = useState<string>('');
-  const [translatedDesc, setTranslatedDesc] = useState<string>('');
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const shouldTranslateDesc = options?.translateDescription ?? false;
 
   const groupId = group?.id;
   const groupName = group?.name;
   const groupDescription = group?.description;
   const groupTranslations = group?.translations;
 
+  const [asyncName, setAsyncName] = useState<string | null>(null);
+  const [asyncDesc, setAsyncDesc] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const isAiGroup = Boolean(group?.isAiGroup || group?.aiCompanionUid === 'ai-partner-bot');
+  const firestoreTrans = groupTranslations?.[language];
+
+  const cacheKeyName = groupId && language ? `trans_name_${groupId}_${language}` : '';
+  const cacheKeyDesc = groupId && language ? `trans_desc_${groupId}_${language}` : '';
+
+  const cachedName = cacheKeyName ? sessionStorage.getItem(cacheKeyName) || '' : '';
+  const cachedDesc = cacheKeyDesc ? sessionStorage.getItem(cacheKeyDesc) || '' : '';
+
+  const isNameAlreadyTargetLang = groupName ? isLikelyAlreadyInLanguage(groupName, language) : true;
+  const isDescAlreadyTargetLang = groupDescription ? isLikelyAlreadyInLanguage(groupDescription, language) : true;
+
+  const hasFirestoreName = Boolean(firestoreTrans?.name);
+  const hasFirestoreDesc = Boolean(firestoreTrans?.description);
+
+  const needsNameTrans = !isAiGroup && !hasFirestoreName && !cachedName && !!groupName && !isNameAlreadyTargetLang;
+  const needsDescTrans = shouldTranslateDesc && !isAiGroup && !hasFirestoreDesc && !cachedDesc && !!groupDescription && !isDescAlreadyTargetLang;
+
   useEffect(() => {
-    if (!groupId || !language) {
-      queueMicrotask(() => {
-        setTranslatedName('');
-        setTranslatedDesc('');
-      });
+    if (!groupId || !language || isAiGroup || (!needsNameTrans && !needsDescTrans)) {
       return;
     }
 
-    const isAiGroup = Boolean(group?.isAiGroup || group?.aiCompanionUid === 'ai-partner-bot');
-    if (isAiGroup) {
-      const targetTrans = groupTranslations?.[language];
-      const defaultAiName = t('groupChat.aiGroupDefaultGroupName');
-      const defaultAiDesc = t('groupChat.aiGroupDefaultGroupDesc');
-      queueMicrotask(() => {
-        setTranslatedName(targetTrans?.name || defaultAiName);
-        setTranslatedDesc(targetTrans?.description || defaultAiDesc);
-      });
-      return;
-    }
-
-    // 1. Check Firestore Data (Real-time sync)
-    const targetTrans = groupTranslations?.[language];
-    let hasFirestoreName = false;
-    let hasFirestoreDesc = false;
-
-    const nameToSet = targetTrans?.name || '';
-    const descToSet = targetTrans?.description || '';
-
-    if (nameToSet) {
-      hasFirestoreName = true;
-    }
-    if (descToSet) {
-      hasFirestoreDesc = true;
-    }
-
-    // 2. Check Session Cache
-    const cacheKeyName = `trans_name_${groupId}_${language}`;
-    const cacheKeyDesc = `trans_desc_${groupId}_${language}`;
-
-    const cachedName = sessionStorage.getItem(cacheKeyName) || '';
-    const cachedDesc = sessionStorage.getItem(cacheKeyDesc) || '';
-
-    queueMicrotask(() => {
-      setTranslatedName(nameToSet || cachedName);
-      setTranslatedDesc(descToSet || cachedDesc);
-    });
-
-    const needsNameTrans = !hasFirestoreName && !cachedName && !!groupName;
-    const needsDescTrans = !hasFirestoreDesc && !cachedDesc && !!groupDescription;
-
-    if (!needsNameTrans && !needsDescTrans) return;
-
-    // 3. Prevent duplicate requests per group & language
-    const attemptKey = `attempt_group_trans_${groupId}_${language}`;
+    const attemptKey = `attempt_group_trans_${groupId}_${language}_${shouldTranslateDesc ? 'full' : 'name_only'}`;
     if (sessionStorage.getItem(attemptKey)) return;
 
     sessionStorage.setItem(attemptKey, 'true');
 
+    let active = true;
+
     const translateGroup = async () => {
-      queueMicrotask(() => {
-        setIsLoading(true);
-      });
+      setIsLoading(true);
 
       try {
         const promises: Promise<void>[] = [];
 
         if (needsNameTrans && groupName) {
           promises.push(
-            apiClient
-              .post('/api/ai/translate', {
-                text: groupName,
-                targetLanguage: language,
-                groupId,
-                updateType: 'group_name',
-              })
-              .then((res) => {
-                if (res.data?.translatedText) {
-                  setTranslatedName(res.data.translatedText);
-                  sessionStorage.setItem(cacheKeyName, res.data.translatedText);
-                }
-              })
+            requestTranslation({
+              id: `group_name_${groupId}`,
+              text: groupName,
+              targetLanguage: language,
+              groupId,
+            }).then((translated) => {
+              if (active && translated && translated !== groupName) {
+                setAsyncName(translated);
+                if (cacheKeyName) sessionStorage.setItem(cacheKeyName, translated);
+              }
+            })
           );
         }
 
         if (needsDescTrans && groupDescription) {
           promises.push(
-            apiClient
-              .post('/api/ai/translate', {
-                text: groupDescription,
-                targetLanguage: language,
-                groupId,
-                updateType: 'group_description',
-              })
-              .then((res) => {
-                if (res.data?.translatedText) {
-                  setTranslatedDesc(res.data.translatedText);
-                  sessionStorage.setItem(cacheKeyDesc, res.data.translatedText);
-                }
-              })
+            requestTranslation({
+              id: `group_desc_${groupId}`,
+              text: groupDescription,
+              targetLanguage: language,
+              groupId,
+            }).then((translated) => {
+              if (active && translated && translated !== groupDescription) {
+                setAsyncDesc(translated);
+                if (cacheKeyDesc) sessionStorage.setItem(cacheKeyDesc, translated);
+              }
+            })
           );
         }
 
@@ -130,16 +103,39 @@ export function useGroupTranslation(
       } catch (err) {
         console.error('Group auto-translation failed:', err);
       } finally {
-        setIsLoading(false);
+        if (active) setIsLoading(false);
       }
     };
 
     translateGroup();
-  }, [groupId, groupName, groupDescription, groupTranslations, group?.isAiGroup, group?.aiCompanionUid, language, t]);
+
+    return () => {
+      active = false;
+    };
+  }, [
+    groupId,
+    groupName,
+    groupDescription,
+    language,
+    isAiGroup,
+    needsNameTrans,
+    needsDescTrans,
+    shouldTranslateDesc,
+    cacheKeyName,
+    cacheKeyDesc,
+  ]);
+
+  const displayName = isAiGroup
+    ? (firestoreTrans?.name || t('groupChat.aiGroupDefaultGroupName'))
+    : (firestoreTrans?.name || cachedName || asyncName || groupName || '');
+
+  const displayDesc = isAiGroup
+    ? (firestoreTrans?.description || t('groupChat.aiGroupDefaultGroupDesc'))
+    : (firestoreTrans?.description || cachedDesc || asyncDesc || groupDescription || '');
 
   return {
-    displayName: translatedName || groupName || '',
-    displayDesc: translatedDesc || groupDescription || '',
+    displayName,
+    displayDesc,
     isLoading,
   };
 }

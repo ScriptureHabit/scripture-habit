@@ -7,7 +7,7 @@ import { UserData } from '../../types/user';
 import { UserProfile } from '../../types/chat';
 import apiClient from '../../utils/api-client';
 import { toast } from 'react-toastify';
-import { getTranslationHash } from '../../utils/language-utils';
+import { getTranslationHash, isLikelyAlreadyInLanguage } from '../../utils/language-utils';
 
 interface UserProfileModalProps {
     user: UserData | UserProfile | null;
@@ -68,7 +68,7 @@ const UserProfileModal = ({ user, onClose }: UserProfileModalProps) => {
             });
             
             // Auto fetch if languages differ
-            if (shouldAutoTranslate && user?.nickname) {
+            if (shouldAutoTranslate && user?.nickname && !isLikelyAlreadyInLanguage(user.nickname, language)) {
                 const autoFetchNick = async () => {
                     setLoadingNickname(true);
                     try {
@@ -104,7 +104,7 @@ const UserProfileModal = ({ user, onClose }: UserProfileModalProps) => {
             queueMicrotask(() => {
                 setTranslatedStake(null);
             });
-            if (shouldAutoTranslate && user?.stake) {
+            if (shouldAutoTranslate && user?.stake && !isLikelyAlreadyInLanguage(user.stake, language)) {
                 const autoFetchStake = async () => {
                     try {
                         const res = await apiClient.post('/api/ai/translate', {
@@ -137,7 +137,7 @@ const UserProfileModal = ({ user, onClose }: UserProfileModalProps) => {
             queueMicrotask(() => {
                 setTranslatedWard(null);
             });
-            if (shouldAutoTranslate && user?.ward) {
+            if (shouldAutoTranslate && user?.ward && !isLikelyAlreadyInLanguage(user.ward, language)) {
                 const autoFetchWard = async () => {
                     try {
                         const res = await apiClient.post('/api/ai/translate', {
@@ -173,7 +173,7 @@ const UserProfileModal = ({ user, onClose }: UserProfileModalProps) => {
             });
 
             // Auto fetch if languages differ
-            if (shouldAutoTranslate && user?.bio) {
+            if (shouldAutoTranslate && user?.bio && !isLikelyAlreadyInLanguage(user.bio, language)) {
                 const autoFetchBio = async () => {
                     setLoadingBio(true);
                     try {
@@ -214,31 +214,36 @@ const UserProfileModal = ({ user, onClose }: UserProfileModalProps) => {
         if (translatedNickname) {
             setIsNicknameTranslated(true);
         } else if (user?.nickname) {
-            const cached = sessionStorage.getItem(nickCacheKey);
-            if (cached) {
-                setTranslatedNickname(cached);
+            if (isLikelyAlreadyInLanguage(user.nickname, language)) {
+                setTranslatedNickname(user.nickname);
                 setIsNicknameTranslated(true);
             } else {
-                setLoadingNickname(true);
-                try {
-                    const res = await apiClient.post('/api/ai/translate', {
-                        text: user.nickname,
-                        targetLanguage: language,
-                        updateType: 'user_nickname'
-                    });
-                    if (res.data?.translatedText) {
-                        const result = res.data.translatedText;
-                        setTranslatedNickname(result);
-                        sessionStorage.setItem(nickCacheKey, result);
-                        setIsNicknameTranslated(true);
-                    } else {
-                        throw new Error('No translation returned');
+                const cached = sessionStorage.getItem(nickCacheKey);
+                if (cached) {
+                    setTranslatedNickname(cached);
+                    setIsNicknameTranslated(true);
+                } else {
+                    setLoadingNickname(true);
+                    try {
+                        const res = await apiClient.post('/api/ai/translate', {
+                            text: user.nickname,
+                            targetLanguage: language,
+                            updateType: 'user_nickname'
+                        });
+                        if (res.data?.translatedText) {
+                            const result = res.data.translatedText;
+                            setTranslatedNickname(result);
+                            sessionStorage.setItem(nickCacheKey, result);
+                            setIsNicknameTranslated(true);
+                        } else {
+                            throw new Error('No translation returned');
+                        }
+                    } catch (err) {
+                        console.error('Failed to translate nickname:', err);
+                        toast.error(t('common.error') || 'Translation failed');
+                    } finally {
+                        setLoadingNickname(false);
                     }
-                } catch (err) {
-                    console.error('Failed to translate nickname:', err);
-                    toast.error(t('common.error') || 'Translation failed');
-                } finally {
-                    setLoadingNickname(false);
                 }
             }
         }
@@ -246,37 +251,45 @@ const UserProfileModal = ({ user, onClose }: UserProfileModalProps) => {
         // Translate Location tags (stake and ward)
         setIsLocationTranslated(true);
         if (!translatedStake && user?.stake) {
-            const cachedStake = sessionStorage.getItem(stakeCacheKey);
-            if (cachedStake) {
-                setTranslatedStake(cachedStake);
+            if (isLikelyAlreadyInLanguage(user.stake, language)) {
+                setTranslatedStake(user.stake);
             } else {
-                apiClient.post('/api/ai/translate', {
-                    text: user.stake,
-                    targetLanguage: language,
-                    updateType: 'user_stake'
-                }).then(res => {
-                    if (res.data?.translatedText) {
-                        setTranslatedStake(res.data.translatedText);
-                        sessionStorage.setItem(stakeCacheKey, res.data.translatedText);
-                    }
-                }).catch(e => console.error('Translate stake failed:', e));
+                const cachedStake = sessionStorage.getItem(stakeCacheKey);
+                if (cachedStake) {
+                    setTranslatedStake(cachedStake);
+                } else {
+                    apiClient.post('/api/ai/translate', {
+                        text: user.stake,
+                        targetLanguage: language,
+                        updateType: 'user_stake'
+                    }).then(res => {
+                        if (res.data?.translatedText) {
+                            setTranslatedStake(res.data.translatedText);
+                            sessionStorage.setItem(stakeCacheKey, res.data.translatedText);
+                        }
+                    }).catch(e => console.error('Translate stake failed:', e));
+                }
             }
         }
         if (!translatedWard && user?.ward) {
-            const cachedWard = sessionStorage.getItem(wardCacheKey);
-            if (cachedWard) {
-                setTranslatedWard(cachedWard);
+            if (isLikelyAlreadyInLanguage(user.ward, language)) {
+                setTranslatedWard(user.ward);
             } else {
-                apiClient.post('/api/ai/translate', {
-                    text: user.ward,
-                    targetLanguage: language,
-                    updateType: 'user_ward'
-                }).then(res => {
-                    if (res.data?.translatedText) {
-                        setTranslatedWard(res.data.translatedText);
-                        sessionStorage.setItem(wardCacheKey, res.data.translatedText);
-                    }
-                }).catch(e => console.error('Translate ward failed:', e));
+                const cachedWard = sessionStorage.getItem(wardCacheKey);
+                if (cachedWard) {
+                    setTranslatedWard(cachedWard);
+                } else {
+                    apiClient.post('/api/ai/translate', {
+                        text: user.ward,
+                        targetLanguage: language,
+                        updateType: 'user_ward'
+                    }).then(res => {
+                        if (res.data?.translatedText) {
+                            setTranslatedWard(res.data.translatedText);
+                            sessionStorage.setItem(wardCacheKey, res.data.translatedText);
+                        }
+                    }).catch(e => console.error('Translate ward failed:', e));
+                }
             }
         }
     };
@@ -291,6 +304,14 @@ const UserProfileModal = ({ user, onClose }: UserProfileModalProps) => {
             return;
         }
 
+        if (!user || !user.bio) return;
+
+        if (isLikelyAlreadyInLanguage(user.bio, language)) {
+            setTranslatedBio(user.bio);
+            setIsBioTranslated(true);
+            return;
+        }
+
         const cached = sessionStorage.getItem(bioCacheKey);
         if (cached) {
             setTranslatedBio(cached);
@@ -298,7 +319,6 @@ const UserProfileModal = ({ user, onClose }: UserProfileModalProps) => {
             return;
         }
 
-        if (!user || !user.bio) return;
         setLoadingBio(true);
         try {
             const res = await apiClient.post('/api/ai/translate', {

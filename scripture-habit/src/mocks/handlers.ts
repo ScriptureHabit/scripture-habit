@@ -5,7 +5,9 @@ import type {
   GroupListItem,
   JoinGroupRequest,
   TranslateRequest,
-  TranslateResponse
+  TranslateResponse,
+  TranslateBatchRequest,
+  TranslateBatchResponse,
 } from '../../api_internal/lib/schemas.js';
 
 export const handlers = [
@@ -23,6 +25,16 @@ export const handlers = [
   }),
   http.post<never, TranslateRequest, TranslateResponse>('/api/ai/translate', () => {
     return HttpResponse.json({ translatedText: 'Translated Text' });
+  }),
+  http.post<never, TranslateBatchRequest, TranslateBatchResponse>('/api/ai/translate-batch', async ({ request }) => {
+    const body = (await request.json()) as TranslateBatchRequest;
+    const translations: Record<string, string> = {};
+    if (body?.messages) {
+      body.messages.forEach((m) => {
+        translations[m.id] = 'Translated Text';
+      });
+    }
+    return HttpResponse.json({ success: true, translations });
   }),
 ];
 

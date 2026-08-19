@@ -136,7 +136,7 @@ export const translateBatchSchema = z.object({
 export const postNoteSchema = z.object({
     chapter: z.string().min(1).max(500),
     scripture: z.string().min(1).max(100),
-    messageText: z.string().min(1).max(3000), 
+    messageText: z.string().min(1).max(3000),
     title: z.string().max(200).optional().nullable(),
     speaker: z.string().max(100).optional().nullable(),
     comment: z.string().max(2000).refine(noHtmlTags, { message: "HTML tags are not allowed" }),
@@ -223,3 +223,21 @@ export interface GroupListItem {
 export interface TranslateResponse {
     translatedText: string;
 }
+
+export interface TranslateBatchMessage {
+    id: string;
+    text: string;
+}
+
+export interface TranslateBatchRequest {
+    messages: TranslateBatchMessage[];
+    targetLanguage: string;
+    groupId?: string;
+    force?: boolean;
+}
+
+export interface TranslateBatchResponse {
+    success: boolean;
+    translations: Record<string, string>;
+}
+

@@ -10,6 +10,8 @@ import { UserData } from '../../../types/user';
 import apiClient from '../../../utils/api-client';
 import { getApiErrorMessage } from '../../../utils/api-error-parser';
 import { toast } from 'react-toastify';
+import { isLikelyAlreadyInLanguage } from '../../../utils/language-utils';
+import { requestTranslation } from '../../../utils/translation-batcher';
 
 export function useJoinGroup() {
   const { t, language } = useLanguage();
@@ -66,20 +68,26 @@ export function useJoinGroup() {
     }
 
     try {
-      const translate = async (text: string, type: 'group_name' | 'group_description') => {
-        if (!text) return null;
-        const res = await apiClient.post('/api/ai/translate', {
-          text,
-          targetLanguage: language,
-          updateType: type
-        });
-        return res.data.translatedText;
-      };
+      const promises: [Promise<string | null>, Promise<string | null>] = [
+        name && !isLikelyAlreadyInLanguage(name, language)
+          ? requestTranslation({
+              id: `join_group_name_${groupId}`,
+              text: name,
+              targetLanguage: language,
+              groupId,
+            })
+          : Promise.resolve(name || null),
+        description && !isLikelyAlreadyInLanguage(description, language)
+          ? requestTranslation({
+              id: `join_group_desc_${groupId}`,
+              text: description,
+              targetLanguage: language,
+              groupId,
+            })
+          : Promise.resolve(description || null),
+      ];
 
-      const [newName, newDesc] = await Promise.all([
-        translate(name, 'group_name'),
-        description ? translate(description, 'group_description') : Promise.resolve(null)
-      ]);
+      const [newName, newDesc] = await Promise.all(promises);
 
       if (newName) setTranslatedNames(prev => ({ ...prev, [groupId]: newName }));
       if (newDesc) setTranslatedDescs(prev => ({ ...prev, [groupId]: newDesc }));

@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-import apiClient from '../../../../utils/api-client';
 import { isLikelyAlreadyInLanguage, getCachedUserNickname, setCachedUserNickname } from '../../../../utils/language-utils';
+import { requestTranslation } from '../../../../utils/translation-batcher';
 
 /**
  * Custom hook for automatically translating member nicknames asynchronously
- * with local caching support. Follows React 19 best practices.
+ * with local caching support and universal batching. Follows React 19 best practices.
  */
 export const useTranslatedNickname = (
   senderId: string | undefined,
@@ -20,13 +20,12 @@ export const useTranslatedNickname = (
     if (!shouldTranslateNick || cached) return;
 
     let active = true;
-    apiClient.post('/api/ai/translate', {
+    requestTranslation({
+      id: `nick_${senderId || originalNickname}`,
       text: originalNickname,
       targetLanguage: language,
-      updateType: 'user_nickname'
-    }).then(res => {
-      if (active && res.data?.translatedText) {
-        const result = res.data.translatedText;
+    }).then(result => {
+      if (active && result && result !== originalNickname) {
         setAsyncNickname(result);
         setCachedUserNickname(senderId || '', language, originalNickname, result);
       }

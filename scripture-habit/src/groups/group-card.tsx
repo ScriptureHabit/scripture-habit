@@ -6,6 +6,7 @@ import { Group, FirebaseTimestamp } from '../types/chat';
 import './group-card.css';
 import { useLanguage } from '../hooks/use-language';
 import { toast } from 'react-toastify';
+import { isLikelyAlreadyInLanguage } from '../utils/language-utils';
 
 
 interface ActivityStatus {
@@ -105,6 +106,11 @@ export default function GroupCard({ group, currentUser, onJoin, onOpen }: Props)
       const cached = sessionStorage.getItem(cacheKey);
       if (cached) {
         setTranslatedName(cached);
+        return;
+      }
+
+      if (isLikelyAlreadyInLanguage(group.name, language)) {
+        setTranslatedName(group.name);
         return;
       }
 
