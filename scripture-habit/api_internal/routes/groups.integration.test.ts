@@ -368,13 +368,13 @@ describe('Groups Route Additional Integration Tests', () => {
             expect(res.status).toBe(400);
         });
 
-        it('should return 500 when transaction fails (e.g. non-existent or unauthorized)', async () => {
-            setup.mockAuth(MEMBER_ID); // not owner
+        it('should return 403 when user is not a member of the group', async () => {
+            setup.mockAuth('NON_MEMBER_STRANGER');
             const res = await fetch(`${setup.baseUrl}/api/groups/regenerate-invite-code`, {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer token-${MEMBER_ID}`
+                    'Authorization': `Bearer token-NON_MEMBER_STRANGER`
                 },
                 body: JSON.stringify({
                     groupId: ACTIVE_GROUP_ID
@@ -383,13 +383,13 @@ describe('Groups Route Additional Integration Tests', () => {
             expect(res.status).toBe(403);
         });
 
-        it('should successfully regenerate invite code', async () => {
-            setup.mockAuth(OWNER_ID);
+        it('should successfully regenerate invite code by a group member', async () => {
+            setup.mockAuth(MEMBER_ID);
             const res = await fetch(`${setup.baseUrl}/api/groups/regenerate-invite-code`, {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer token-${OWNER_ID}`
+                    'Authorization': `Bearer token-${MEMBER_ID}`
                 },
                 body: JSON.stringify({
                     groupId: ACTIVE_GROUP_ID,
@@ -407,6 +407,34 @@ describe('Groups Route Additional Integration Tests', () => {
             const snap = await db.collection('groups').doc(ACTIVE_GROUP_ID).get();
             expect(snap.data()?.inviteCode).toBe(data.inviteCode);
         });
+
+        it('should successfully regenerate permanent invite code and save previous code to previousInviteCodes', async () => {
+            const beforeSnap = await db.collection('groups').doc(ACTIVE_GROUP_ID).get();
+            const oldCode = beforeSnap.data()?.inviteCode;
+
+            setup.mockAuth(OWNER_ID);
+            const res = await fetch(`${setup.baseUrl}/api/groups/regenerate-invite-code`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer token-${OWNER_ID}`
+                },
+                body: JSON.stringify({
+                    groupId: ACTIVE_GROUP_ID
+                })
+            });
+
+            expect(res.status).toBe(200);
+            const data = await res.json();
+            expect(data.success).toBe(true);
+            expect(data.inviteCode).toBeDefined();
+            expect(data.inviteCode).not.toBe(oldCode);
+            expect(data.expiresAt).toBeNull();
+
+            const snap = await db.collection('groups').doc(ACTIVE_GROUP_ID).get();
+            expect(snap.data()?.inviteCodeExpiresAt).toBeNull();
+            expect(snap.data()?.previousInviteCodes).toContain(oldCode);
+        });
     });
 
     describe('GET /group-preview/:inviteCode', () => {
@@ -415,18 +443,33 @@ describe('Groups Route Additional Integration Tests', () => {
             expect(res.status).toBe(404);
         });
 
-        it('should return 410 if invite link is expired', async () => {
-            const expiredGroupId = 'EXPIRED_GRP_' + Date.now();
-            await db.collection('groups').doc(expiredGroupId).set({
-                name: 'Expired Group',
-                inviteCode: 'EXPR12',
-                inviteCodeExpiresAt: admin.firestore.Timestamp.fromMillis(Date.now() - 1000) // past
+        it('should return 200 even if group has past inviteCodeExpiresAt in DB (transparent permanent compatibility)', async () => {
+            const legacyGroupId = 'LEGACY_GRP_' + Date.now();
+            await db.collection('groups').doc(legacyGroupId).set({
+                name: 'Legacy Group with Past Date',
+                description: 'Created before permanent migration',
+                inviteCode: 'LEGC12',
+                inviteCodeExpiresAt: admin.firestore.Timestamp.fromMillis(Date.now() - 100000) // past
             });
 
-            const res = await fetch(`${setup.baseUrl}/api/groups/group-preview/EXPR12`);
-            expect(res.status).toBe(410);
+            const res = await fetch(`${setup.baseUrl}/api/groups/group-preview/LEGC12`);
+            expect(res.status).toBe(200);
+            const data = await res.json();
+            expect(data.name).toBe('Legacy Group with Past Date');
 
-            await db.collection('groups').doc(expiredGroupId).delete();
+            await db.collection('groups').doc(legacyGroupId).delete();
+        });
+
+        it('should return 200 when previewing using an older code from previousInviteCodes', async () => {
+            const snap = await db.collection('groups').doc(ACTIVE_GROUP_ID).get();
+            const prevCodes = snap.data()?.previousInviteCodes || [];
+            expect(prevCodes.length).toBeGreaterThan(0);
+            const oldCode = prevCodes[0];
+
+            const res = await fetch(`${setup.baseUrl}/api/groups/group-preview/${oldCode}`);
+            expect(res.status).toBe(200);
+            const data = await res.json();
+            expect(data.name).toBe('Super Active Group');
         });
 
         it('should return 200 with standard preview and translations', async () => {

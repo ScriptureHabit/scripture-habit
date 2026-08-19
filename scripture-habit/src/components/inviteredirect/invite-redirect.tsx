@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { safeStorage } from '../../utils/storage';
@@ -18,6 +17,7 @@ const InviteRedirect = () => {
     const navigate = useNavigate();
     const { t, language } = useLanguage();
     const [groupInfo, setGroupInfo] = useState<InviteGroupInfo | null>(null);
+    const [isInvalid, setIsInvalid] = useState(false);
     const [loading, setLoading] = useState<boolean>(() => !!inviteCode);
 
     useEffect(() => {
@@ -29,9 +29,10 @@ const InviteRedirect = () => {
                 try {
                     const res = await apiClient.get(`/api/groups/group-preview/${encodeURIComponent(inviteCode.trim().toUpperCase())}`);
                     setGroupInfo(res.data);
-                } catch (error) {
+                    setIsInvalid(false);
+                } catch (error: unknown) {
                     console.error("Error fetching group info:", error);
-                    console.warn("Invite code invalid or group not found");
+                    setIsInvalid(true);
                 } finally {
                     setLoading(false);
                 }
@@ -40,14 +41,14 @@ const InviteRedirect = () => {
         }
 
         const unsubscribe = auth!.onAuthStateChanged((user) => {
-            if (user && !loading) {
-                // If logged in, go to dashboard where the join logic will trigger
+            if (user && !loading && !isInvalid) {
+                // If logged in and invite is valid, go to dashboard where the join logic will trigger
                 navigate(`/${language}/dashboard`, { replace: true });
             }
         });
 
         return () => unsubscribe();
-    }, [inviteCode, navigate, loading, language]);
+    }, [inviteCode, navigate, loading, language, isInvalid]);
 
     const handleJoin = () => {
         if (auth!.currentUser) {
@@ -71,10 +72,10 @@ const InviteRedirect = () => {
     return (
         <div className="invite-redirect-container">
             <div className="invite-card" data-testid="invite-card">
-                <div className="invite-icon">🤝</div>
-                <h1>{t('joinGroup.joinConfirmTitle')}</h1>
                 {groupInfo ? (
                     <>
+                        <div className="invite-icon">🤝</div>
+                        <h1>{t('joinGroup.joinConfirmTitle')}</h1>
                         <p className="invite-text">
                             {t('joinGroup.invitedToJoin')}
                         </p>
@@ -95,7 +96,9 @@ const InviteRedirect = () => {
                     </>
                 ) : (
                     <div className="error-state">
-                        <p>{t('joinGroup.invalidInvite')}</p>
+                        <div className="error-icon">❌</div>
+                        <h2>{t('joinGroup.invalidInviteTitle')}</h2>
+                        <p className="error-desc">{t('joinGroup.invalidInvite')}</p>
                         <Button onClick={() => navigate(`/${language}/`)}>{t('joinGroup.goBackHome')}</Button>
                     </div>
                 )}
@@ -106,10 +109,6 @@ const InviteRedirect = () => {
 
 export default InviteRedirect;
 
-
 function isStandalone() {
     return window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
 }
-
-
-

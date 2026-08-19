@@ -46,7 +46,8 @@ export interface GroupDocument {
     isDemoGroup?: boolean;
     aiCompanionUid?: string;
     inviteCode?: string;
-    inviteCodeExpiresAt?: FirestoreTimestamp; // Represents Firestore Timestamp
+    inviteCodeExpiresAt?: FirestoreTimestamp | null; // Represents Firestore Timestamp or null (never expires)
+    previousInviteCodes?: string[]; // History of previous invite codes that remain valid for backward compatibility
     
     // Activity Tracking (denormalized)
     memberPreviews?: MemberPreview[];

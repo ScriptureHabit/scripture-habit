@@ -7,7 +7,7 @@ import { joinGroupSchema, updateKickThresholdSchema, leaveGroupSchema, deleteGro
 import { GroupDocument, UserDocument, MemberPreview as PreviewItem, GroupMemberDocument, FirestoreTimestamp } from '../../types/firestore.js';
 import { MAX_GROUPS_PER_USER } from '../lib/constants.js';
 import { removeMemberFromGroup } from '../lib/membership-utils.js';
-import { AppError, AuthenticationError, ForbiddenError, NotFoundError, ValidationError, sendErrorResponse } from '../lib/errors.js';
+import { AuthenticationError, ForbiddenError, NotFoundError, ValidationError, sendErrorResponse } from '../lib/errors.js';
 import { getMessageExpireAt, getDemoExpireAt } from '../lib/ttl-utils.js';
 import { MessageService } from '../services/message-service.js';
 import { t, getDemoGroupTranslations, getAiGroupTranslations } from '../lib/i18n.js';
@@ -360,7 +360,6 @@ router.post('/create-group', authenticate, requireEmailVerified, verifyAppCheck,
 
             // 2. Prepare Data
             const now = admin.firestore.Timestamp.now();
-            const expiresAt = admin.firestore.Timestamp.fromMillis(now.toMillis() + 7 * 24 * 60 * 60 * 1000); // 7 days default
             const inviteCode = await generateUniqueInviteCode(transaction);
 
             const userNick = userData.nickname || 'Owner';
@@ -373,7 +372,8 @@ router.post('/create-group', authenticate, requireEmailVerified, verifyAppCheck,
                 createdAt: now,
                 groupStreak: 0,
                 inviteCode,
-                inviteCodeExpiresAt: expiresAt,
+                inviteCodeExpiresAt: null,
+                previousInviteCodes: [],
                 isPublic: isPublic || false,
                 isPrivate: !isPublic, // Legacy field
                 maxMembers: 5,
@@ -477,7 +477,6 @@ router.post('/create-ai-group', authenticate, requireEmailVerified, verifyAppChe
             }
 
             const now = admin.firestore.Timestamp.now();
-            const expiresAt = admin.firestore.Timestamp.fromMillis(now.toMillis() + 365 * 24 * 60 * 60 * 1000);
             const inviteCode = await generateUniqueInviteCode(transaction);
 
             const userNick = userData.nickname || 'Member';
@@ -506,7 +505,8 @@ router.post('/create-ai-group', authenticate, requireEmailVerified, verifyAppChe
                 createdAt: now,
                 groupStreak: 0,
                 inviteCode,
-                inviteCodeExpiresAt: expiresAt,
+                inviteCodeExpiresAt: null,
+                previousInviteCodes: [],
                 isPublic: false,
                 isPrivate: true,
                 isAiGroup: true,
@@ -665,7 +665,11 @@ router.post('/join-group', authenticate, requireEmailVerified, verifyAppCheck, a
                     groupDoc = await transaction.get(groupRef);
                 } else if (inviteCode) {
                     const groupQuery = db.collection('groups').where('inviteCode', '==', inviteCode).limit(1);
-                    const querySnap = await transaction.get(groupQuery);
+                    let querySnap = await transaction.get(groupQuery);
+                    if (querySnap.empty) {
+                        const prevQuery = db.collection('groups').where('previousInviteCodes', 'array-contains', inviteCode).limit(1);
+                        querySnap = await transaction.get(prevQuery);
+                    }
                     if (querySnap.empty) throw new ValidationError('Invalid invite code.', 'INVALID_INVITE_CODE');
                     groupDoc = querySnap.docs[0];
                     groupRef = groupDoc.ref;
@@ -695,18 +699,10 @@ router.post('/join-group', authenticate, requireEmailVerified, verifyAppCheck, a
                 // 1. Validation Phase
                 if (gData.isPrivate === true || gData.isPublic === false) {
                     if (inviteCode) {
-                        if (gData.inviteCode !== inviteCode) {
-                            throw new ValidationError('Invalid or expired invite code.', 'INVALID_INVITE_CODE');
-                        }
-                        if (gData.inviteCodeExpiresAt) {
-                            const ts = gData.inviteCodeExpiresAt;
-                            const expiresAt = (ts && typeof ts === 'object' && 'toDate' in ts && typeof ts.toDate === 'function')
-                                ? ts.toDate()
-                                : new Date(ts as string | number | Date);
-
-                            if (expiresAt < new Date()) {
-                                throw new ValidationError('This invite link has expired. Please ask the group owner for a new one.', 'EXPIRED_INVITE_LINK');
-                            }
+                        const isCurrent = gData.inviteCode === inviteCode;
+                        const isPrevious = (gData.previousInviteCodes || []).includes(inviteCode);
+                        if (!isCurrent && !isPrevious) {
+                            throw new ValidationError('Invalid invite code.', 'INVALID_INVITE_CODE');
                         }
                     } else if (!gData.isPublic) {
                         throw new ForbiddenError('This is a private group. You need an invite code to join.');
@@ -1292,28 +1288,39 @@ router.post('/regenerate-invite-code', authenticate, verifyAppCheck, async (req:
         const validation = regenerateInviteCodeSchema.safeParse(req.body);
         if (!validation.success) throw new ValidationError('Invalid input');
 
-        const { groupId, expiryDays = 7 } = validation.data;
+        const { groupId } = validation.data;
         const uid = req.user!.uid;
 
         const groupRef = db.collection('groups').doc(groupId);
-        const { inviteCode, inviteCodeExpiresAt } = await db.runTransaction(async (transaction) => {
+        const { inviteCode } = await db.runTransaction(async (transaction) => {
             const gSnap = await transaction.get(groupRef);
             if (!gSnap.exists) throw new NotFoundError('Group not found');
             const gData = gSnap.data()! as GroupDocument;
-            if (gData.ownerUserId !== uid) throw new ForbiddenError('Only owner can regenerate codes');
+            const isMember = (gData.members || []).includes(uid) || gData.ownerUserId === uid;
+            if (!isMember) throw new ForbiddenError('You must be a member of this group to regenerate invite codes');
 
             const code = await generateUniqueInviteCode(transaction);
-            const expires = admin.firestore.Timestamp.fromDate(new Date(Date.now() + expiryDays * 24 * 60 * 60 * 1000));
+            
+            // Retain old invite code in previousInviteCodes for backward compatibility
+            const previousCodes = gData.previousInviteCodes || [];
+            const updatedPreviousCodes = gData.inviteCode && !previousCodes.includes(gData.inviteCode)
+                ? [...previousCodes, gData.inviteCode]
+                : previousCodes;
 
             transaction.update(groupRef, {
                 inviteCode: code,
-                inviteCodeExpiresAt: expires
+                inviteCodeExpiresAt: null,
+                previousInviteCodes: updatedPreviousCodes
             });
             
-            return { inviteCode: code, inviteCodeExpiresAt: expires };
+            return { inviteCode: code };
         });
 
-        res.status(200).json({ success: true, inviteCode, expiresAt: inviteCodeExpiresAt.toDate().toISOString() });
+        res.status(200).json({
+            success: true,
+            inviteCode,
+            expiresAt: null
+        });
     } catch (err) {
         console.error('Error regenerating invite code:', err);
         sendErrorResponse(res, err, 'Failed to generate invite code');
@@ -1371,17 +1378,13 @@ router.get('/group-preview/:inviteCode', async (req: Request, res: Response) => 
     const { inviteCode } = req.params;
 
     try {
-        const snapshot = await db.collection('groups').where('inviteCode', '==', inviteCode).limit(1).get();
+        let snapshot = await db.collection('groups').where('inviteCode', '==', inviteCode).limit(1).get();
+        if (snapshot.empty) {
+            snapshot = await db.collection('groups').where('previousInviteCodes', 'array-contains', inviteCode).limit(1).get();
+        }
         if (snapshot.empty) throw new NotFoundError('Group not found');
 
         const groupData = snapshot.docs[0].data();
-
-        if (groupData.inviteCodeExpiresAt) {
-            const expiresAt = groupData.inviteCodeExpiresAt.toDate();
-            if (expiresAt < new Date()) {
-                throw new AppError('Invite link expired', 410, 'EXPIRED_INVITE_LINK');
-            }
-        }
 
         const language = (req.query.language as string) || (req.query.lang as string) || 'en';
         const translation = groupData.translations?.[language] || groupData.translations?.['en'];

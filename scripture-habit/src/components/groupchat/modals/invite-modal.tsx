@@ -4,12 +4,11 @@ import Mascot from '../../mascot/mascot';
 import ConfirmModal from '../../confirmmodal/confirm-modal';
 import { Group } from '../../../types/chat';
 import { UserData } from '../../../types/user';
-import { parseTimestampToDate } from '../../../utils/time-utils';
 import { formatInviteLink } from '../../../utils/invite-utils';
 
 interface InviteModalProps {
     t: (key: string, replacements?: Record<string, string | number>) => string;
-    language: string | null;
+    language?: string | null;
     userData: UserData | null;
     groupData: Group | null;
     showInviteModal: boolean;
@@ -20,7 +19,6 @@ interface InviteModalProps {
 
 const InviteModal = ({
     t,
-    language,
     userData,
     groupData,
     showInviteModal,
@@ -31,18 +29,6 @@ const InviteModal = ({
     const [showRegenerateConfirm, setShowRegenerateConfirm] = useState(false);
 
     const inviteLink = formatInviteLink(groupData?.inviteCode || '');
-    const formattedExpiry = groupData?.inviteCodeExpiresAt
-        ? parseTimestampToDate(groupData.inviteCodeExpiresAt).toLocaleString(
-            language === 'ja' ? 'ja-JP' : 'en-US',
-            {
-                month: 'short',
-                day: 'numeric',
-                year: 'numeric',
-                hour: 'numeric',
-                minute: 'numeric'
-            }
-          )
-        : null;
 
     if (!showInviteModal || groupData?.isAiGroup) return null;
 
@@ -52,12 +38,13 @@ const InviteModal = ({
                 <div className="leave-modal-content invite-modal" data-testid="invite-modal" onClick={(e) => e.stopPropagation()}>
                     <div className="modal-header">
                         <h3>{t('groupChat.inviteLink')}</h3>
-                        <button className="close-menu-btn" onClick={() => setShowInviteModal(false)} aria-label={t('common.close') || 'Close'} data-testid="close-invite-modal">
+                        <button className="close-menu-btn" onClick={() => setShowInviteModal(false)} aria-label={t('common.close')} data-testid="close-invite-modal">
                             <UilTimes size="24" />
                         </button>
                     </div>
                     <div className="invite-modal-body">
                         <Mascot customMessage={t('groupChat.inviteFriendsPrompt')} userData={userData} />
+
                         <div className="invite-link-card" onClick={handleCopyInviteLink}>
                             <div className="invite-link-content">
                                 <span className="invite-link-url" data-testid="invite-link-url">{inviteLink}</span>
@@ -68,11 +55,9 @@ const InviteModal = ({
                             </div>
                         </div>
 
-                        {formattedExpiry && (
-                            <p className="invite-expiry-text">
-                                {t('groupChat.inviteExpiresAt') || 'Expires at'}: {formattedExpiry}
-                            </p>
-                        )}
+                        <p className="invite-expiry-text permanent">
+                            ✨ {t('groupChat.inviteNoExpiration')}
+                        </p>
 
                         <div className="invite-actions">
                             <button
@@ -82,7 +67,7 @@ const InviteModal = ({
                                     setShowRegenerateConfirm(true);
                                 }}
                             >
-                                {t('groupChat.regenerateInviteCode') || 'Regenerate invite code'}
+                                {t('groupChat.regenerateInviteCode')}
                             </button>
                         </div>
                     </div>
@@ -90,10 +75,10 @@ const InviteModal = ({
             </div>
             <ConfirmModal
                 isOpen={showRegenerateConfirm}
-                title={t('groupChat.regenerateInviteCode') || 'Regenerate invite code'}
-                description={t('groupChat.regenerateInviteConfirm') || 'Regenerate invite code? The old link will no longer work.'}
-                confirmLabel={t('groupChat.regenerateInviteCode') || 'Regenerate invite code'}
-                cancelLabel={t('common.cancel') || 'Cancel'}
+                title={t('groupChat.regenerateInviteCode')}
+                description={t('groupChat.regenerateInviteConfirm')}
+                confirmLabel={t('groupChat.regenerateInviteCode')}
+                cancelLabel={t('common.cancel')}
                 onConfirm={() => {
                     setShowRegenerateConfirm(false);
                     handleRegenerateInviteCode();

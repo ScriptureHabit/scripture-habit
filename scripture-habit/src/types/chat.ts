@@ -74,7 +74,7 @@ export interface Group extends Omit<SharedGroupDocument, 'id' | 'inviteCodeExpir
   ownerId?: string; // Legacy field for compatibility
 
   // Timestamps mapped to FirebaseTimestamp
-  inviteCodeExpiresAt?: FirebaseTimestamp;
+  inviteCodeExpiresAt?: FirebaseTimestamp | null;
   lastMessageAt?: FirebaseTimestamp;
   lastNoteAt?: FirebaseTimestamp;
   lastNoteAtByNickname?: string;

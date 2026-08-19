@@ -71,18 +71,32 @@ export const useDashboardInvitations = (
                         }
                     }, 500);
                 } else {
-                    const errText = await resp.text();
-                    console.error("[DashboardInvite] Join failed with status:", resp.status, errText);
+                    const errorData = await resp.json().catch(() => null);
+                    const errorCode = errorData?.code;
+                    const errorMsg = errorData?.error || '';
+                    console.error("[DashboardInvite] Join failed with status:", resp.status, errorCode, errorMsg);
                     
-                    if (errText.includes('already in this group')) {
-                        console.log("[DashboardInvite] User already in this group");
+                    if (errorCode === 'ALREADY_MEMBER' || errorMsg.includes('already a member') || errorMsg.includes('already in this group')) {
+                        toast.info(t('apiErrors.ALREADY_MEMBER'));
+                    } else if (errorCode === 'EXPIRED_INVITE_LINK' || resp.status === 410) {
+                        toast.error(t('apiErrors.EXPIRED_INVITE_LINK'));
+                    } else if (errorCode === 'INVALID_INVITE_CODE') {
+                        toast.error(t('apiErrors.INVALID_INVITE_CODE'));
+                    } else if (errorCode === 'GROUP_FULL') {
+                        toast.error(t('apiErrors.GROUP_FULL'));
+                    } else if (errorCode === 'MAX_GROUPS_LIMIT') {
+                        toast.error(t('apiErrors.MAX_GROUPS_LIMIT'));
+                    } else {
+                        toast.error(t('joinGroup.errorJoinFailed'));
                     }
+
                     safeStorage.remove('pendingInviteCode');
                     setIsJoiningInvite(false);
                 }
 
             } catch (error) {
                 console.error("Error processing pending invite:", error);
+                toast.error(t('joinGroup.errorJoinFailed'));
                 safeStorage.remove('pendingInviteCode');
                 setIsJoiningInvite(false);
             }

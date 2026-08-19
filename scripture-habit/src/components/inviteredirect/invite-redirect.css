@@ -85,6 +85,37 @@
     line-height: 1.4;
 }
 
+.error-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.error-icon {
+    font-size: 3rem;
+    margin-bottom: 8px;
+}
+
+.error-state h2 {
+    color: #242d49;
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.error-desc {
+    color: #788097;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin: 0 0 16px 0;
+    white-space: pre-line;
+}
+
+.error-state.expired-state h2 {
+    color: #C53030;
+}
+
 @keyframes spin {
     0% {
         transform: rotate(0deg);

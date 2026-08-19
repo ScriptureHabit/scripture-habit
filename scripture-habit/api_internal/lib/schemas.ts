@@ -86,7 +86,7 @@ export const announceUnitySchema = z.object({
 export const regenerateInviteCodeSchema = z.object({
     token: z.string().min(1).optional(),
     groupId: z.string().min(1),
-    expiryDays: z.number().int().min(1).max(30).optional()
+    expiryDays: z.number().int().min(0).max(365).nullable().optional()
 });
 
 export const updateGroupSchema = z.object({
