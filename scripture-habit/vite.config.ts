@@ -110,6 +110,8 @@ export default defineConfig(({ mode }) => ({
           if (id.includes('react-toastify')) return 'vendor-toastify';
           if (id.includes('axios')) return 'vendor-axios';
           if (id.includes('date-fns')) return 'vendor-date-fns';
+          if (id.includes('react-select')) return 'vendor-select';
+          if (id.includes('zod')) return 'vendor-zod';
 
           return 'vendor-others';
         },

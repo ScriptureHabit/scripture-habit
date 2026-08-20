@@ -118,24 +118,21 @@
 
 .quest-step-item.pending.active-guide {
   background: rgba(255, 255, 255, 0.95);
-  border: 1.5px solid rgba(255, 145, 157, 0.7);
+  border: 1.5px solid rgba(255, 145, 157, 0.85);
   position: relative;
   z-index: 6;
+  box-shadow: 0 4px 18px rgba(255, 145, 157, 0.35);
   animation: quest-active-pulse 2.5s infinite ease-in-out;
 }
 
 @keyframes quest-active-pulse {
-  0% {
-    box-shadow: 0 4px 16px rgba(255, 145, 157, 0.2);
-    border-color: rgba(255, 145, 157, 0.5);
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.95;
   }
   50% {
-    box-shadow: 0 6px 22px rgba(255, 145, 157, 0.45);
-    border-color: rgba(255, 145, 157, 0.95);
-  }
-  100% {
-    box-shadow: 0 4px 16px rgba(255, 145, 157, 0.2);
-    border-color: rgba(255, 145, 157, 0.5);
+    transform: scale(1.015);
+    opacity: 1;
   }
 }
 
@@ -261,10 +258,12 @@
 
 @keyframes pulse-glow {
   0% {
-    box-shadow: none;
+    opacity: 0.85;
+    transform: scale(0.98);
   }
   100% {
-    text-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+    opacity: 1;
+    transform: scale(1.02);
   }
 }
 

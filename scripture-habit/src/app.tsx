@@ -1,6 +1,5 @@
 import { Routes, Route, useLocation, Navigate, useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import "./app.css";
 import { Suspense, useEffect, useState, useRef } from 'react';
 
@@ -162,6 +161,11 @@ const App = () => {
     pendingUrlRef.current = url;
     setPendingNavigateUrlState(url);
   };
+
+  // Load Toastify CSS asynchronously so it does not block critical path initial render
+  useEffect(() => {
+    import("react-toastify/dist/ReactToastify.css");
+  }, []);
 
   // 1. Listen for Service Worker navigation messages and buffer them in state
   useEffect(() => {

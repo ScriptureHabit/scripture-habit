@@ -51,8 +51,10 @@ window.addEventListener('unhandledrejection', (event) => {
 
 const shouldInitializeSentry = !!import.meta.env.VITE_SENTRY_DSN && !navigator.webdriver;
 
+let sentryInitialized = false;
 const initSentry = async () => {
-  if (!shouldInitializeSentry) return;
+  if (sentryInitialized || !shouldInitializeSentry) return;
+  sentryInitialized = true;
   try {
     const Sentry = await import("@sentry/react");
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -77,14 +79,14 @@ const initSentry = async () => {
   }
 };
 
-if (typeof window !== 'undefined') {
-  if ('requestIdleCallback' in window) {
-    window.setTimeout(() => {
-      window.requestIdleCallback(() => { void initSentry(); }, { timeout: 2000 });
-    }, 10000);
-  } else {
-    setTimeout(() => { void initSentry(); }, 10000);
-  }
+if (typeof window !== 'undefined' && shouldInitializeSentry) {
+  // Initialize on error, user interaction, or long idle (25s)
+  window.addEventListener('error', () => { void initSentry(); }, { once: true });
+  window.addEventListener('unhandledrejection', () => { void initSentry(); }, { once: true });
+  const triggerOnInteraction = () => { void initSentry(); };
+  window.addEventListener('pointerdown', triggerOnInteraction, { once: true, passive: true });
+  window.addEventListener('keydown', triggerOnInteraction, { once: true, passive: true });
+  setTimeout(() => { void initSentry(); }, 25000);
 }
 
 const queryClient = new QueryClient({
