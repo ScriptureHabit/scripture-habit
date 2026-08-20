@@ -64,9 +64,9 @@ const StreakCalendar = ({ studiedDates = [], kickDate, t }: StreakCalendarProps)
     <div className="streak-calendar-container">
       <div className="calendar-header">
         <div className="calendar-nav">
-          <button onClick={prevMonth} className="nav-btn"><UilAngleLeft /></button>
+          <button onClick={prevMonth} className="nav-btn" aria-label="Previous month"><UilAngleLeft /></button>
           <span className="current-month-label">{monthYearLabel}</span>
-          <button onClick={nextMonth} className="nav-btn"><UilAngleRight /></button>
+          <button onClick={nextMonth} className="nav-btn" aria-label="Next month"><UilAngleRight /></button>
         </div>
       </div>
       
