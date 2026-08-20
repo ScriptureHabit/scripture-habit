@@ -83,6 +83,11 @@ export const test = base.extend<AuthFixtures>({
 
     // 2. Initialize browser state (Wipe cookie consent banners & disable animations)
     await page.addInitScript(disableAnimationsScript());
+    await page.addInitScript(() => {
+      const style = document.createElement('style');
+      style.innerHTML = '.firebase-emulator-warning { display: none !important; pointer-events: none !important; }';
+      document.head?.appendChild(style);
+    });
 
     // Native network interception to propagate fake time from page.clock to backend API calls
     await page.route('**/api/**', async (route) => {

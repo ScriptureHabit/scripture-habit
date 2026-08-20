@@ -322,3 +322,9 @@ button {
 }
 
 @keyframes spin { 100% { transform: rotate(360deg); } }
+
+/* Hide Firebase Auth Emulator banner to prevent intercepting clicks/pointer events in tests & local development */
+.firebase-emulator-warning {
+  display: none !important;
+  pointer-events: none !important;
+}

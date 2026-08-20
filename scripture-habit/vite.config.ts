@@ -67,7 +67,7 @@ export default defineConfig(({ mode }) => ({
     ]
   },
   build: {
-    sourcemap: true, // Sentryにソースマップをアップロードするために必須
+    sourcemap: true,
     chunkSizeWarningLimit: 1000,
     rollupOptions: {
       onwarn(warning, warn) {
@@ -79,24 +79,33 @@ export default defineConfig(({ mode }) => ({
       },
       output: {
         manualChunks(id) {
-          if (id.includes('node_modules')) {
-            if (id.includes('vconsole')) return 'vconsole';
-            if (id.includes('@sentry')) return 'vendor-sentry';
-            if (id.includes('micromark') || id.includes('mdast') || id.includes('remark') || id.includes('unist') || id.includes('hast') || id.includes('property-information')) {
-              return 'vendor-markdown';
-            }
-            if (id.includes('@iconscout') || id.includes('lucide-react')) return 'vendor-icons';
-            if (id.includes('canvas-confetti')) return 'vendor-confetti';
-            if (id.includes('@firebase/storage') || id.includes('firebase/storage')) return 'vendor-firebase-storage';
-            if (id.includes('@firebase/messaging') || id.includes('firebase/messaging')) return 'vendor-firebase-messaging';
-            if (id.includes('@firebase/firestore') || id.includes('firebase/firestore')) return 'vendor-firebase-firestore';
-            if (id.includes('@firebase/auth') || id.includes('firebase/auth')) return 'vendor-firebase-auth';
-            if (id.includes('firebase')) return 'vendor-firebase';
-            if (id.includes('react-dom') || id.includes('/react/') || id.includes('scheduler') || id.includes('react-router')) {
-              return 'vendor-react';
-            }
-            return 'vendor-others';
+          // Only split external third-party packages from node_modules
+          if (!id.includes('node_modules')) return;
+
+          // 1. Diagnostics & Standalone tools
+          if (id.includes('vconsole')) return 'vconsole';
+          if (id.includes('@sentry')) return 'vendor-sentry';
+          if (id.includes('canvas-confetti')) return 'vendor-confetti';
+
+          // 2. UI Icons & Markdown rendering pipeline
+          if (id.includes('@iconscout') || id.includes('lucide-react')) return 'vendor-icons';
+          if (['micromark', 'mdast', 'remark', 'unist', 'hast', 'property-information'].some(pkg => id.includes(pkg))) {
+            return 'vendor-markdown';
           }
+
+          // 3. Firebase SDKs (Specific subsystems first, then general core)
+          if (id.includes('@firebase/storage') || id.includes('firebase/storage')) return 'vendor-firebase-storage';
+          if (id.includes('@firebase/messaging') || id.includes('firebase/messaging')) return 'vendor-firebase-messaging';
+          if (id.includes('@firebase/firestore') || id.includes('firebase/firestore')) return 'vendor-firebase-firestore';
+          if (id.includes('@firebase/auth') || id.includes('firebase/auth')) return 'vendor-firebase-auth';
+          if (id.includes('firebase')) return 'vendor-firebase';
+
+          // 4. React runtime & Routing ecosystem
+          if (['react-dom', '/react/', 'scheduler', 'react-router'].some(pkg => id.includes(pkg))) {
+            return 'vendor-react';
+          }
+
+          return 'vendor-others';
         },
       },
     },

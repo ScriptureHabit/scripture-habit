@@ -29,13 +29,13 @@ test.describe('Habit Pace Setup (E2E)', () => {
     await expect(modal).toContainText('Set Your Goal!');
 
     // 5. Select a threshold (e.g., 5 days)
-    await page.click('button.auto-kick-day-option-styled:has-text("5")');
+    await page.getByTestId('habit-pace-option-5').click({ force: true });
 
     // 6. Click "Next" to go to Step 1
-    await page.click('.leave-modal-content button:has-text("Next")');
+    await page.getByTestId('habit-pace-next-button').click({ force: true });
 
-    // 7. Click "Save"
-    await page.click('button:has-text("Save")');
+    // 7. Click "Save" (Confirm)
+    await page.getByTestId('habit-pace-save-button').click({ force: true });
 
     // 8. Verify modal closes and does not reappear
     await expect(page.locator('.leave-modal-overlay')).not.toBeVisible();
