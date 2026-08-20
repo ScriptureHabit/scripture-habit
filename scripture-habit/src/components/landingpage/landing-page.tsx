@@ -139,7 +139,7 @@ const LandingPage = () => {
                             <div className="concept-card-badge problem-badge">{t('landing.concept.problemBadge')}</div>
                             <h3 className="concept-card-title">{t('landing.concept.card1Title')}</h3>
                             <div className="concept-card-img-wrapper">
-                                <img src="/images/concept_alone.png" alt="Studying alone" className="concept-card-img" />
+                                <img src="/images/concept_alone.webp" alt="Studying alone" className="concept-card-img" />
                             </div>
                             <p className="concept-card-text">{t('landing.concept.card1Text')}</p>
                         </div>
@@ -153,7 +153,7 @@ const LandingPage = () => {
                             <div className="concept-card-badge solution-badge">{t('landing.concept.solutionBadge')}</div>
                             <h3 className="concept-card-title">{t('landing.concept.card2Title')}</h3>
                             <div className="concept-card-img-wrapper">
-                                <img src="/images/concept_together.png" alt="Studying together" className="concept-card-img" />
+                                <img src="/images/concept_together.webp" alt="Studying together" className="concept-card-img" />
                             </div>
                             <p className="concept-card-text">{t('landing.concept.card2Text')}</p>
                         </div>
@@ -168,7 +168,7 @@ const LandingPage = () => {
                             <div className="step-number">1</div>
                             <h3 className="step-title">{t('landing.steps.step1Title')}</h3>
                             <p className="step-desc">{t('landing.steps.step1Desc')}</p>
-                            <img src="/images/concept_together.png" alt="Join a team" className="step-card-img step-img-together" />
+                            <img src="/images/concept_together.webp" alt="Join a team" className="step-card-img step-img-together" />
                         </div>
                         <div className="step-line"></div>
                         <div className="step-card">

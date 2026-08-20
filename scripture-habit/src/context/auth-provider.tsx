@@ -11,7 +11,18 @@ import { AuthContext, AuthContextType } from './auth-context';
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [userData, setUserData] = useState<UserData | null>(null);
+  const [userData, setUserData] = useState<UserData | null>(() => {
+    try {
+      const lastUid = typeof window !== 'undefined' ? localStorage.getItem('last_active_uid') : null;
+      if (lastUid) {
+        const cached = localStorage.getItem(`cached_user_data_${lastUid}`);
+        if (cached) return JSON.parse(cached) as UserData;
+      }
+    } catch {
+      // Ignore parse/storage errors
+    }
+    return null;
+  });
   const [loading, setLoading] = useState<boolean>(() => !auth || !db ? false : true); // Auth loading
   const [dataLoading, setDataLoading] = useState(false); // Data loading
   const [error, setError] = useState<Error | null>(null);
@@ -43,11 +54,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             if (docSnap.exists()) {
               const data = { uid: currentUser.uid, ...docSnap.data() } as UserData;
               setUserData(data);
+              try {
+                localStorage.setItem(`cached_user_data_${currentUser.uid}`, JSON.stringify(data));
+                localStorage.setItem('last_active_uid', currentUser.uid);
+              } catch {
+                // Ignore storage quota errors
+              }
               
               // Ensure existing users with tokens have the hasFcmToken flag correctly set
               syncFcmTokenFlag(currentUser.uid, data.hasFcmToken);
             } else {
               setUserData(null);
+              try {
+                localStorage.removeItem(`cached_user_data_${currentUser.uid}`);
+              } catch {
+                // Ignore
+              }
             }
             setDataLoading(false);
           },
@@ -64,6 +86,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         console.log('[AuthProvider] no current user, clearing userData');
         setUserData(null);
         setDataLoading(false);
+        try {
+          localStorage.removeItem('last_active_uid');
+        } catch {
+          // Ignore
+        }
       }
     });
 

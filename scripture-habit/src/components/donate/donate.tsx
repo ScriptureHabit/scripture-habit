@@ -75,7 +75,7 @@ const Donate = ({ userData }: DonateProps) => {
                     <div className="developer-profile-section">
                         <div className="developer-avatar-container">
                             <img 
-                                src="/images/profile.jpg" 
+                                src="/images/profile.webp" 
                                 alt="Developer Profile" 
                                 className="developer-avatar" 
                             />

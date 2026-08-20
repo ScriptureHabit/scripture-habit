@@ -131,15 +131,15 @@ const BrowserWarningModal = ({ isOpen, onClose, onContinue, t }: BrowserWarningM
                         <h3>{t('browserWarning.recommended')}</h3>
                         <div className="browser-icons">
                             <div className="browser-icon-item">
-                                <img src="/images/chrome.png" alt="Chrome" className="browser-icon-img" />
+                                <img src="/images/chrome.webp" alt="Chrome" className="browser-icon-img" />
                                 <UilCheckCircle className="status-mark o-mark" size="24" />
                             </div>
                             <div className="browser-icon-item">
-                                <img src="/images/safari.png" alt="Safari" className="browser-icon-img" />
+                                <img src="/images/safari.webp" alt="Safari" className="browser-icon-img" />
                                 <UilCheckCircle className="status-mark o-mark" size="24" />
                             </div>
                             <div className="browser-icon-item">
-                                <img src="/images/edge.png" alt="Edge" className="browser-icon-img" />
+                                <img src="/images/edge.webp" alt="Edge" className="browser-icon-img" />
                                 <UilCheckCircle className="status-mark o-mark" size="24" />
                             </div>
                         </div>
