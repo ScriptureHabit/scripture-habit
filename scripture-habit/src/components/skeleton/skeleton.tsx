@@ -1,6 +1,8 @@
 import React from 'react';
 import './skeleton.css';
 
+import Mascot from '../mascot/mascot';
+
 interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {
     width?: string | number;
     height?: string | number;
@@ -49,7 +51,8 @@ export const DashboardSkeleton = ({ quoteText, quoteSource }: { quoteText?: stri
             </div>
 
             <div className="inspiration-section">
-                <div className="inspiration-card">
+                <Mascot />
+                <div className="inspiration-card inspiration-interactive-card">
                     <blockquote className="inspiration-quote">
                         {quoteText}
                     </blockquote>
