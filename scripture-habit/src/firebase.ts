@@ -264,12 +264,15 @@ if (import.meta.env.DEV) {
     (self as unknown as { FIREBASE_APPCHECK_DEBUG_TOKEN: boolean }).FIREBASE_APPCHECK_DEBUG_TOKEN = true;
 }
 
-// App Check initialization logic
+// App Check initialization logic (Lazy & Deferred to prevent blocking FCP/LCP)
 let appCheck: AppCheck | null = null;
-if (!isEmulator) {
+
+export const initAppCheck = (): AppCheck | null => {
+  if (appCheck || isEmulator || typeof window === 'undefined') return appCheck;
   const siteKey = import.meta.env.VITE_APPCHECK_SITE_KEY;
   if (!import.meta.env.DEV && !siteKey) {
     console.error("[AppCheck] CRITICAL: VITE_APPCHECK_SITE_KEY is missing in production! App Check will fail.");
+    return null;
   }
 
   try {
@@ -300,11 +303,20 @@ if (!isEmulator) {
             }
         };
     }
+    return appCheck;
   } catch (e) {
     console.error("App Check failed to initialize:", e);
+    return null;
   }
-} else {
-  console.log("[Firebase] App Check disabled in Emulator mode.");
+};
+
+// Initialize App Check deferred during idle time so it doesn't block the initial page render
+if (typeof window !== 'undefined' && !isEmulator) {
+  if ('requestIdleCallback' in window) {
+    window.requestIdleCallback(() => { initAppCheck(); }, { timeout: 5000 });
+  } else {
+    setTimeout(initAppCheck, 3000);
+  }
 }
 
 // Lazy getters for non-critical modules to avoid blocking initial render

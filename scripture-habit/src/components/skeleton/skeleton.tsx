@@ -32,13 +32,13 @@ export const Skeleton = ({
     );
 };
 
-export const DashboardSkeleton = () => {
+export const DashboardSkeleton = ({ quoteText, quoteSource }: { quoteText?: string; quoteSource?: string }) => {
     return (
         <div className="dashboard-skeleton" data-testid="dashboard-skeleton">
             <div className="skeleton-header">
                 <div>
-                    <Skeleton width="200px" height="32px" style={{ marginBottom: '10px' }} />
-                    <Skeleton width="150px" height="20px" />
+                    <h2 className="dashboard-title-text" style={{ margin: 0 }}>Scripture Habit</h2>
+                    <Skeleton width="180px" height="20px" style={{ marginTop: '8px' }} />
                 </div>
                 <Skeleton width="48px" height="48px" variant="circle" />
             </div>
@@ -48,7 +48,14 @@ export const DashboardSkeleton = () => {
                 <Skeleton className="skeleton-card" />
             </div>
 
-            <Skeleton className="skeleton-inspiration" />
+            <div className="inspiration-section">
+                <div className="inspiration-card">
+                    <blockquote className="inspiration-quote">
+                        {quoteText}
+                    </blockquote>
+                    <p className="inspiration-source">{quoteSource}</p>
+                </div>
+            </div>
 
             <div className="skeleton-section">
                 <Skeleton width="120px" height="24px" style={{ marginBottom: '1rem' }} />

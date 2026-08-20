@@ -245,7 +245,7 @@ const Dashboard = () => {
       <div className='App Dashboard'>
         <div className='AppGlass Grid'>
           <Sidebar selected={selectedView} setSelected={setSelectedView} userGroups={[]} activeGroupId={activeGroupId} setActiveGroupId={setActiveGroupId} currentUserId={userData?.uid} />
-          <DashboardSkeleton />
+          <DashboardSkeleton quoteText={t('dashboard.inspirationQuote')} quoteSource={t('dashboard.inspirationSource')} />
         </div>
       </div>
     );

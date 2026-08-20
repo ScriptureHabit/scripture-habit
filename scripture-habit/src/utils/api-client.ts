@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { auth, appCheck } from '../firebase';
+import { auth, appCheck, initAppCheck } from '../firebase';
 import { getToken } from 'firebase/app-check';
 
 /**
@@ -44,8 +44,9 @@ apiClient.interceptors.request.use(
 
             // 2. Inject Firebase App Check Token
             // set forceRefresh to false to use cached token if available
-            if (appCheck) {
-                const appCheckTokenResponse = await getToken(appCheck, false);
+            const activeAppCheck = appCheck || (typeof window !== 'undefined' ? initAppCheck() : null);
+            if (activeAppCheck) {
+                const appCheckTokenResponse = await getToken(activeAppCheck, false);
                 if (appCheckTokenResponse.token) {
                     config.headers['X-Firebase-AppCheck'] = appCheckTokenResponse.token;
                 }
