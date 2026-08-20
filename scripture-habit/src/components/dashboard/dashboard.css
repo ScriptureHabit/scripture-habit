@@ -612,49 +612,25 @@
   }
 }
 
+@keyframes dot-typing-gpu {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+}
+
 .typing-dots {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1px;
-}
-
-.typing-dots .dot {
   display: inline-block;
-  font-size: 1.1rem;
-  line-height: 0.8;
-  color: var(--gray);
-  font-weight: 900;
-}
-
-.typing-dots .dot-1 {
-  animation: dot-step-1 1.5s infinite;
-}
-
-.typing-dots .dot-2 {
-  animation: dot-step-2 1.5s infinite;
-}
-
-.typing-dots .dot-3 {
-  animation: dot-step-3 1.5s infinite;
-}
-
-@keyframes dot-step-1 {
-  0%, 15% { opacity: 0; }
-  25%, 90% { opacity: 1; }
-  100% { opacity: 0; }
-}
-
-@keyframes dot-step-2 {
-  0%, 40% { opacity: 0; }
-  50%, 90% { opacity: 1; }
-  100% { opacity: 0; }
-}
-
-@keyframes dot-step-3 {
-  0%, 65% { opacity: 0; }
-  75%, 90% { opacity: 1; }
-  100% { opacity: 0; }
+  width: 8px;
+  height: 8px;
+  background: var(--pink);
+  border-radius: 50%;
+  animation: dot-typing-gpu 1.4s ease-in-out infinite;
+  vertical-align: middle;
 }
 
 .note-notification {
