@@ -612,31 +612,25 @@
   }
 }
 
-@keyframes dot-typing {
-  0% {
-    content: '.';
+@keyframes dot-typing-gpu {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(0.8);
   }
-
-  33% {
-    content: '..';
-  }
-
-  66% {
-    content: '...';
-  }
-
-  100% {
-    content: '...';
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
   }
 }
 
-.typing-dots::after {
-  content: '.';
-  animation: dot-typing 1.5s steps(1, end) infinite;
+.typing-dots {
   display: inline-block;
-  width: 1em;
-  text-align: left;
-  padding: 0;
+  width: 8px;
+  height: 8px;
+  background: var(--pink);
+  border-radius: 50%;
+  animation: dot-typing-gpu 1.4s ease-in-out infinite;
+  vertical-align: middle;
 }
 
 .note-notification {
