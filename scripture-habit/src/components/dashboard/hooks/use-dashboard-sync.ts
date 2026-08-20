@@ -19,6 +19,9 @@ export const useDashboardSync = () => {
 
     const state = useMemo<DashboardSyncStatus>(() => {
         if (loading) {
+            if (userData) {
+                return { status: 'authenticated', user: (user || { uid: userData.uid }) as User, userData };
+            }
             return { status: 'loading', user: null, userData: null };
         } else if (error) {
             return { status: 'error', user, userData, message: error.message };

@@ -33,6 +33,7 @@ describe('useDashboardGroups', () => {
     };
 
     beforeEach(() => {
+        localStorage.clear();
         vi.restoreAllMocks();
         vi.clearAllMocks();
         vi.mocked(GroupService.subscribeUserGroups).mockReturnValue(() => {});

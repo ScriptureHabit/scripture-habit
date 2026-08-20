@@ -6,14 +6,33 @@ import { useUnityMidnightReset } from '../../../hooks/use-unity-midnight-reset';
 import { GroupService } from '../../../services/group-service';
 
 export const useDashboardGroups = (userData: UserData | null, initialGroupId: string | null) => {
-    const [rawUserGroups, setRawUserGroups] = useState<Group[]>([]);
+    const [rawUserGroups, setRawUserGroups] = useState<Group[]>(() => {
+        try {
+            if (userData?.uid) {
+                const cached = localStorage.getItem(`cached_user_groups_${userData.uid}`);
+                if (cached) return JSON.parse(cached) as Group[];
+            }
+        } catch {
+            // Ignore parse errors
+        }
+        return [];
+    });
     const userGroupIds = useMemo(() => {
         return userData?.groupIds || (userData?.groupId ? [userData.groupId] : []);
     }, [userData]);
     const userGroupIdsKey = useMemo(() => JSON.stringify(userGroupIds), [userGroupIds]);
 
     const [activeGroupId, setActiveGroupId] = useState<string | null>(() => initialGroupId ?? (userGroupIds[0] || null));
-    const [isLoading, setIsLoading] = useState<boolean>(() => !!userData?.uid);
+    const [isLoading, setIsLoading] = useState<boolean>(() => {
+        if (!userData?.uid) return false;
+        try {
+            const cached = localStorage.getItem(`cached_user_groups_${userData.uid}`);
+            if (cached && (JSON.parse(cached) as Group[])?.length > 0) return false;
+        } catch {
+            // Ignore
+        }
+        return (userData?.groupIds || (userData?.groupId ? [userData.groupId] : [])).length > 0;
+    });
 
     const groupIds = useMemo(() => {
         const ids = JSON.parse(userGroupIdsKey) as string[];
@@ -37,6 +56,11 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
         const unsubGroups = GroupService.subscribeUserGroups(
             userData.uid,
             (fetchedGroups) => {
+                try {
+                    localStorage.setItem(`cached_user_groups_${userData.uid}`, JSON.stringify(fetchedGroups));
+                } catch {
+                    // Ignore quota errors
+                }
                 setRawUserGroups(prev => {
                     // TRUTH: Merge fresh Firestore data with existing "decorations" 
                     const mergeWithDecorations = (newG: Group) => {

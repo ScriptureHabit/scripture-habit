@@ -462,8 +462,6 @@ const App = () => {
       </div>
     );
 
-    if (authLoading) return <MascotLoader />;
-
     if (isMaintenance) {
       return (
         <Suspense fallback={<MascotLoader />}>

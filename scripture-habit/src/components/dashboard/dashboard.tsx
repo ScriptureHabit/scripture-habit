@@ -86,7 +86,7 @@ const Dashboard = () => {
     return gid || location.state?.initialGroupId || null;
   });
   const { userGroups, activeGroupId, setActiveGroupId, isLoading: groupsLoading } = useDashboardGroups(userData, initialGid);
-  const loading = status === 'loading' || groupsLoading;
+  const loading = (status === 'loading' && !userData) || (groupsLoading && !userData);
 
   useEffect(() => {
     // If we have initialShowInviteModalRef.current=true, we want to show it.
