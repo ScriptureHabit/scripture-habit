@@ -92,10 +92,17 @@ export async function sendPushNotification(tokens: string[], payload: PushPayloa
                 ...(payload.data || {}),
             },
             webpush: {
+                headers: {
+                    Urgency: 'high',
+                    TTL: '86400',
+                },
                 notification: {
                     icon: '/favicon-192.png',
                     badge: '/favicon-192.png',
                 },
+            },
+            android: {
+                priority: 'high' as const,
             },
             tokens: chunk,
         };
