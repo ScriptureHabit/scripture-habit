@@ -11,7 +11,7 @@
     "dev": "vite",
     "emulators": "firebase emulators:start --project scripture-habit-auth",
     "server": "npm start --prefix backend",
-    "build": "tsc -b && vite build && npx tsx scripts/localize-meta.ts",
+    "build": "npx tsx scripts/extract-scripture-metadata.ts && tsc -b && vite build && npx tsx scripts/localize-meta.ts",
     "lint": "eslint .",
     "check:i18n": "npx tsx api_internal/scripts/check-i18n.ts",
     "check:unused-i18n": "npx tsx scripts/find-unused-i18n-keys.ts",

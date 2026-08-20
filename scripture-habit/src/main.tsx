@@ -51,7 +51,8 @@ window.addEventListener('unhandledrejection', (event) => {
 
 const shouldInitializeSentry = !!import.meta.env.VITE_SENTRY_DSN && !navigator.webdriver;
 
-if (shouldInitializeSentry) {
+const initSentry = () => {
+  if (!shouldInitializeSentry) return;
   Sentry.init({
     dsn: import.meta.env.VITE_SENTRY_DSN,
     environment: import.meta.env.MODE || 'development',
@@ -74,6 +75,14 @@ if (shouldInitializeSentry) {
     replaysSessionSampleRate: 0, // Disable full session recordings to prevent "Content Too Large"
     replaysOnErrorSampleRate: 1.0, // Only record when an error occurs
   });
+};
+
+if (typeof window !== 'undefined') {
+  if ('requestIdleCallback' in window) {
+    window.requestIdleCallback(() => initSentry(), { timeout: 3000 });
+  } else {
+    setTimeout(initSentry, 1000);
+  }
 }
 
 const queryClient = new QueryClient({

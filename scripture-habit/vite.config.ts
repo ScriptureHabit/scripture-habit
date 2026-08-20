@@ -80,7 +80,15 @@ export default defineConfig(({ mode }) => ({
       output: {
         manualChunks(id) {
           if (id.includes('node_modules')) {
-            if (id.includes('react')) return 'vendor-react';
+            if (id.includes('vconsole')) return 'vconsole';
+            if (id.includes('micromark') || id.includes('mdast') || id.includes('remark') || id.includes('unist') || id.includes('hast') || id.includes('property-information')) {
+              return 'vendor-markdown';
+            }
+            if (id.includes('@iconscout') || id.includes('lucide-react')) return 'vendor-icons';
+            if (id.includes('canvas-confetti')) return 'vendor-confetti';
+            if (id.includes('react-dom') || id.includes('/react/') || id.includes('scheduler') || id.includes('react-router')) {
+              return 'vendor-react';
+            }
             if (id.includes('firebase')) return 'vendor-firebase';
             if (id.includes('@sentry')) return 'vendor-sentry';
             return 'vendor-others';

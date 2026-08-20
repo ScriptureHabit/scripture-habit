@@ -49,25 +49,67 @@ const lazyWithRetry = <T extends ComponentType<any>>(componentImport: () => Prom
   });
 };
 
-// Lazy load components
-const SignupForm = lazyWithRetry(() => import('./components/signupform/signup-form'));
-const LoginForm = lazyWithRetry(() => import('./components/loginform/login-form'));
-const Dashboard = lazyWithRetry(() => import('./components/dashboard/dashboard'));
-const GroupForm = lazyWithRetry(() => import('./components/groupform/group-form'));
-const JoinGroup = lazyWithRetry(() => import('./components/joingroup/join-group'));
-const GroupDetails = lazyWithRetry(() => import('./components/groupdetails/group-details'));
-const GroupOptions = lazyWithRetry(() => import('./components/groupoptions/group-options'));
-const LandingPage = lazyWithRetry(() => import('./components/landingpage/landing-page'));
-const Welcome = lazyWithRetry(() => import('./components/welcome/welcome'));
-const ForgotPassword = lazyWithRetry(() => import('./components/forgotpassword/forgot-password'));
-const InviteRedirect = lazyWithRetry(() => import('./components/inviteredirect/invite-redirect'));
-const Maintenance = lazyWithRetry(() => import('./components/maintenance/maintenance'));
-const InstallPrompt = lazyWithRetry(() => import('./components/installprompt/install-prompt'));
-const CookieConsent = lazyWithRetry(() => import('./components/cookieconsent/cookie-consent'));
-const PrivacyPolicy = lazyWithRetry(() => import('./components/privacypolicy/privacy-policy'));
-const TermsOfService = lazyWithRetry(() => import('./components/termsofservice/terms-of-service'));
-const LegalDisclosure = lazyWithRetry(() => import('./components/legaldisclosure/legal-disclosure'));
-const DemoLogin = lazyWithRetry(() => import('./components/demo/demo-login'));
+// Dynamic component loaders (centralized to prevent path duplication across lazy loading & prefetching)
+const componentLoaders = {
+  SignupForm: () => import('./components/signupform/signup-form'),
+  LoginForm: () => import('./components/loginform/login-form'),
+  Dashboard: () => import('./components/dashboard/dashboard'),
+  GroupForm: () => import('./components/groupform/group-form'),
+  JoinGroup: () => import('./components/joingroup/join-group'),
+  GroupDetails: () => import('./components/groupdetails/group-details'),
+  GroupOptions: () => import('./components/groupoptions/group-options'),
+  LandingPage: () => import('./components/landingpage/landing-page'),
+  Welcome: () => import('./components/welcome/welcome'),
+  ForgotPassword: () => import('./components/forgotpassword/forgot-password'),
+  InviteRedirect: () => import('./components/inviteredirect/invite-redirect'),
+  Maintenance: () => import('./components/maintenance/maintenance'),
+  InstallPrompt: () => import('./components/installprompt/install-prompt'),
+  CookieConsent: () => import('./components/cookieconsent/cookie-consent'),
+  PrivacyPolicy: () => import('./components/privacypolicy/privacy-policy'),
+  TermsOfService: () => import('./components/termsofservice/terms-of-service'),
+  LegalDisclosure: () => import('./components/legaldisclosure/legal-disclosure'),
+  DemoLogin: () => import('./components/demo/demo-login'),
+};
+
+// Lazy load components with retry resiliency
+const SignupForm = lazyWithRetry(componentLoaders.SignupForm);
+const LoginForm = lazyWithRetry(componentLoaders.LoginForm);
+const Dashboard = lazyWithRetry(componentLoaders.Dashboard);
+const GroupForm = lazyWithRetry(componentLoaders.GroupForm);
+const JoinGroup = lazyWithRetry(componentLoaders.JoinGroup);
+const GroupDetails = lazyWithRetry(componentLoaders.GroupDetails);
+const GroupOptions = lazyWithRetry(componentLoaders.GroupOptions);
+const LandingPage = lazyWithRetry(componentLoaders.LandingPage);
+const Welcome = lazyWithRetry(componentLoaders.Welcome);
+const ForgotPassword = lazyWithRetry(componentLoaders.ForgotPassword);
+const InviteRedirect = lazyWithRetry(componentLoaders.InviteRedirect);
+const Maintenance = lazyWithRetry(componentLoaders.Maintenance);
+const InstallPrompt = lazyWithRetry(componentLoaders.InstallPrompt);
+const CookieConsent = lazyWithRetry(componentLoaders.CookieConsent);
+const PrivacyPolicy = lazyWithRetry(componentLoaders.PrivacyPolicy);
+const TermsOfService = lazyWithRetry(componentLoaders.TermsOfService);
+const LegalDisclosure = lazyWithRetry(componentLoaders.LegalDisclosure);
+const DemoLogin = lazyWithRetry(componentLoaders.DemoLogin);
+
+// Route-aware prefetching: start downloading destination bundle in parallel while Auth is resolving
+const prefetchDestinationRoute = () => {
+  if (typeof window === 'undefined') return;
+  const path = window.location.pathname.toLowerCase();
+
+  const prefetchRules = [
+    { match: (p: string) => p.includes('/dashboard') || p.includes('/profile'), load: componentLoaders.Dashboard },
+    { match: (p: string) => p.includes('/login'), load: componentLoaders.LoginForm },
+    { match: (p: string) => p.includes('/welcome'), load: componentLoaders.Welcome },
+    { match: (p: string) => p.includes('/signup'), load: componentLoaders.SignupForm },
+    { match: (p: string) => p.includes('/join/'), load: componentLoaders.InviteRedirect },
+    { match: (p: string) => p === '' || p === '/' || p.endsWith('/'), load: componentLoaders.LandingPage },
+  ];
+
+  const target = prefetchRules.find(rule => rule.match(path));
+  target?.load().catch(() => {});
+};
+
+prefetchDestinationRoute();
 
 
 interface SystemStatus {

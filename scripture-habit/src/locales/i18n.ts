@@ -1,7 +1,7 @@
 import { Language } from '../config/languages';
 import en from './en';
 
-const uiModules = import.meta.glob<{ default: Record<string, unknown> }>(['./*.ts', '!./i18n.ts']);
+const uiModules = import.meta.glob<{ default: Record<string, unknown> }>(['./*.ts', '!./i18n.ts', '!./registry.ts', '!./scripture-metadata.ts']);
 
 export const loadTranslations = async (lang: Language): Promise<Record<string, unknown>> => {
   if (lang === 'en') {
