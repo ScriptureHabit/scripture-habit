@@ -32,4 +32,12 @@ if (envLocalResult.error) {
   console.log(`[Env] Successfully loaded .env.local. Keys: ${Object.keys(envLocalResult.parsed || {}).join(', ')}`);
 }
 
+if (process.env.FORCE_PRODUCTION === 'true') {
+  delete process.env.FIRESTORE_EMULATOR_HOST;
+  delete process.env.FIREBASE_AUTH_EMULATOR_HOST;
+  delete process.env.VITE_FIRESTORE_EMULATOR_HOST;
+  delete process.env.VITE_FIREBASE_AUTH_EMULATOR_HOST;
+  delete process.env.VITE_USE_FIREBASE_EMULATOR;
+}
+
 console.log('[Env] Environment variables loading process complete');
