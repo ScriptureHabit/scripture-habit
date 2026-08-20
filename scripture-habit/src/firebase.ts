@@ -310,15 +310,6 @@ export const initAppCheck = (): AppCheck | null => {
   }
 };
 
-// Initialize App Check deferred during idle time so it doesn't block the initial page render
-if (typeof window !== 'undefined' && !isEmulator) {
-  if ('requestIdleCallback' in window) {
-    window.requestIdleCallback(() => { initAppCheck(); }, { timeout: 5000 });
-  } else {
-    setTimeout(initAppCheck, 3000);
-  }
-}
-
 // Lazy getters for non-critical modules to avoid blocking initial render
 export const getFirebaseMessaging = async () => {
   if (typeof window === 'undefined') return null;
