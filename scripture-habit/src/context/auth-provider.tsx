@@ -23,17 +23,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
     return null;
   });
-  const [loading, setLoading] = useState<boolean>(() => {
-    if (!auth || !db) return false;
-    // If cached userData exists, start with loading=false for instant render (stale-while-revalidate)
-    try {
-      const lastUid = typeof window !== 'undefined' ? localStorage.getItem('last_active_uid') : null;
-      if (lastUid && localStorage.getItem(`cached_user_data_${lastUid}`)) return false;
-    } catch {
-      // Ignore storage errors
-    }
-    return true;
-  }); // Auth loading
+  const [loading, setLoading] = useState<boolean>(() => !auth || !db ? false : true); // Auth loading
   const [dataLoading, setDataLoading] = useState(false); // Data loading
   const [error, setError] = useState<Error | null>(null);
 
