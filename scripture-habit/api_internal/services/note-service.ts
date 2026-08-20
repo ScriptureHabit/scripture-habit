@@ -38,7 +38,6 @@ interface PostNoteReadContext {
     streakResult: StreakResult;
     messagesInGroup: Record<string, Record<string, unknown>[]>;
     existingNoteExists: boolean;
-    allLatestGids: string[];
     groupDocsMap: Record<string, GroupDocument>;
 }
 
@@ -116,8 +115,8 @@ export class NoteService {
         try {
             const result = await db.runTransaction(async (transaction) => {
                 const userRef = db.collection('users').doc(uid);
-                const noteRef = optimisticId 
-                    ? userRef.collection('notes').doc(optimisticId) 
+                const noteRef = optimisticId
+                    ? userRef.collection('notes').doc(optimisticId)
                     : userRef.collection('notes').doc();
 
                 // --- PHASE 1: READ & CALCULATION PHASE (Strict Read-before-Write) ---
@@ -154,11 +153,11 @@ export class NoteService {
 
                 this.applyLatestMessagesCache(transaction, context);
 
-                return { 
-                    personalNoteId: noteRef.id, 
+                return {
+                    personalNoteId: noteRef.id,
                     sharedMessageIds,
-                    newStreak: context.streakResult.newStreak, 
-                    streakUpdated: context.streakResult.streakUpdated, 
+                    newStreak: context.streakResult.newStreak,
+                    streakUpdated: context.streakResult.streakUpdated,
                     nickname: context.userNickname,
                     timeZone: context.userData.timeZone || 'UTC',
                     todayStr: context.streakResult.today
@@ -206,13 +205,13 @@ export class NoteService {
         const uData = userSnap.data()!;
         const uGroupIds: string[] = uData.groupIds || (uData.groupId ? [uData.groupId] : []);
 
-        let groupsToPost: string[] = [];
-        if (shareOption === 'all') groupsToPost = uGroupIds;
-        else if (shareOption === 'specific') groupsToPost = selectedShareGroups || [];
-        else if (shareOption === 'current' && uData.groupId) groupsToPost = [uData.groupId];
-        
-        groupsToPost = [...new Set(groupsToPost.filter(gid => !!gid))].slice(0, 20);
-        console.log(`[NoteService] User uGroupIds=${JSON.stringify(uGroupIds)}, activeGroupId=${uData.groupId}, calculated groupsToPost=${JSON.stringify(groupsToPost)}`);
+        let groupsToPostTo: string[] = [];
+        if (shareOption === 'all') groupsToPostTo = uGroupIds;
+        else if (shareOption === 'specific') groupsToPostTo = (selectedShareGroups || []).filter(gid => uGroupIds.includes(gid));
+        else if (shareOption === 'current' && uData.groupId && uGroupIds.includes(uData.groupId)) groupsToPostTo = [uData.groupId];
+
+        groupsToPostTo = [...new Set(groupsToPostTo.filter(gid => !!gid))].slice(0, 20);
+        console.log(`[NoteService] User uGroupIds=${JSON.stringify(uGroupIds)}, activeGroupId=${uData.groupId}, calculated groupsToPostTo=${JSON.stringify(groupsToPostTo)}`);
 
         const extNote = existingNoteSnap ? existingNoteSnap.data() : undefined;
         const extSharedIds = extNote?.sharedMessageIds || {};
@@ -228,18 +227,16 @@ export class NoteService {
             timeZone: tz
         }, { now: currentNow, clientTimeZone });
 
-        const { newStreak: streakCountNew, streakUpdated: hasStreakUpdated } = streakRes;
-        const allLatestGids = [...new Set([...groupsToPost, ...(hasStreakUpdated && streakCountNew > 0 ? uGroupIds : [])])];
-        const latRefs = allLatestGids.map(gid => db.collection('groups').doc(gid).collection('messages_latest').doc('latest'));
-        
+        const latRefs = groupsToPostTo.map(gid => db.collection('groups').doc(gid).collection('messages_latest').doc('latest'));
+
         let latSnaps: admin.firestore.DocumentSnapshot[] = [];
-        if (allLatestGids.length > 0) {
+        if (groupsToPostTo.length > 0) {
             latSnaps = await transaction.getAll(...latRefs);
         }
 
         const bootStamps: Record<string, Record<string, unknown>[]> = {};
-        for (let i = 0; i < allLatestGids.length; i++) {
-            const gid = allLatestGids[i];
+        for (let i = 0; i < groupsToPostTo.length; i++) {
+            const gid = groupsToPostTo[i];
             const latestSnap = latSnaps[i];
             if (!latestSnap || !latestSnap.exists) {
                 const bootSnap = await transaction.get(
@@ -253,8 +250,8 @@ export class NoteService {
             }
         }
 
-        const groupDocSnaps = groupsToPost.length > 0 
-            ? await transaction.getAll(...groupsToPost.map(gid => db.collection('groups').doc(gid)))
+        const groupDocSnaps = groupsToPostTo.length > 0
+            ? await transaction.getAll(...groupsToPostTo.map(gid => db.collection('groups').doc(gid)))
             : [];
         const groupDocsMap: Record<string, GroupDocument> = {};
         groupDocSnaps.forEach(gsnap => {
@@ -268,13 +265,12 @@ export class NoteService {
             userData: uData,
             userNickname: uData.nickname || 'Member',
             userGroupIds: uGroupIds,
-            groupsToPostTo: groupsToPost,
+            groupsToPostTo,
             existingSharedIds: extSharedIds,
             now: currentNow,
             streakResult: streakRes,
             messagesInGroup: bootStamps,
             existingNoteExists: !!(existingNoteSnap && existingNoteSnap.exists),
-            allLatestGids,
             groupDocsMap
         };
     }
@@ -371,9 +367,9 @@ export class NoteService {
             } as unknown as admin.firestore.UpdateData<GroupDocument>;
 
             transaction.update(gRef, groupUpdate);
-            
+
             const memberRef = gRef.collection('members').doc(uid);
-            transaction.set(memberRef, { 
+            transaction.set(memberRef, {
                 lastNoteAt: serverTime,
                 lastActiveAt: serverTime,
                 lastPostAt: serverTime,
@@ -382,8 +378,8 @@ export class NoteService {
             }, { merge: true });
 
             const userGS = userRef.collection('groupStates').doc(gid);
-            transaction.set(userGS, { 
-                readMessageCount: admin.firestore.FieldValue.increment(1), 
+            transaction.set(userGS, {
+                readMessageCount: admin.firestore.FieldValue.increment(1),
                 lastReadAt: serverTime,
                 lastActiveAt: serverTime
             }, { merge: true });
@@ -423,7 +419,7 @@ export class NoteService {
         context: PostNoteReadContext,
         language?: string | null
     ): void {
-        const { streakResult, userData, userNickname, now, userGroupIds, messagesInGroup, uid } = context;
+        const { streakResult, userData, userNickname, now, groupsToPostTo, messagesInGroup, uid } = context;
         const { streakUpdated } = streakResult;
 
         if (!streakUpdated) return;
@@ -437,7 +433,7 @@ export class NoteService {
         const botName = t(language || 'en', 'notifications.bot_name');
         const announceTime = admin.firestore.Timestamp.fromMillis(now.getTime() + 500);
 
-        [...new Set(userGroupIds)].forEach(gid => {
+        [...new Set(groupsToPostTo)].forEach(gid => {
             const gRef = db.collection('groups').doc(gid);
             const msgRef = gRef.collection('messages').doc();
 
@@ -490,15 +486,15 @@ export class NoteService {
             const gData = groupDocsMap[gid];
             const isAiGroup = Boolean(gData?.isAiGroup || gData?.aiCompanionUid === 'ai-partner-bot');
             console.log(`[NoteService AI Check] Group ID: ${gid}, gDataExists: ${!!gData}, isAiGroup: ${isAiGroup}, aiCompanionUid: ${gData?.aiCompanionUid}`);
-            
+
             if (isAiGroup) {
                 const userLang = userData.language || 'ja';
                 const gTz = gData?.timeZone || userData.timeZone || 'Asia/Tokyo';
                 const todayStr = formatDateInTimeZone(now, gTz);
 
-                const botNickname = t(userLang, 'groupChat.aiGroupBotNickname') || (userLang === 'ja' ? 'スクハビAI' : 'Scripture Habit AI');
-                const congratText = t(userLang, 'groupChat.aiGroupUserNoteCongratulation') || 'よくできました！🎉🎉 明日もお会いしましょう✨';
-                
+                const botNickname = t(userLang, 'groupChat.aiGroupBotNickname');
+                const congratText = t(userLang, 'groupChat.aiGroupUserNoteCongratulation');
+
                 const congratDocId = `ai_congrat_${todayStr}`;
                 const gRef = db.collection('groups').doc(gid);
                 const aiCongratMsgRef = gRef.collection('messages').doc(congratDocId);
@@ -548,7 +544,7 @@ export class NoteService {
             if (isDemoGroup) {
                 const userLang = userData.language || 'ja';
                 const baseTimeMs = now.getTime() + 1500;
-                const safeNickname = userNickname || (userLang === 'ja' ? 'デモユーザー' : 'Demo User');
+                const safeNickname = userNickname;
 
                 const botCelebrations = [
                     {
@@ -606,7 +602,7 @@ export class NoteService {
         transaction: admin.firestore.Transaction,
         context: PostNoteReadContext
     ): void {
-        for (const gid of context.allLatestGids) {
+        for (const gid of context.groupsToPostTo) {
             const latestRef = db.collection('groups').doc(gid).collection('messages_latest').doc('latest');
             transaction.set(latestRef, {
                 groupId: gid,
@@ -623,7 +619,7 @@ export class NoteService {
     ): Promise<unknown> {
         const userToGroupEntries: [string, string][] = [];
         const groupsToSync = Object.keys(result.sharedMessageIds);
-        
+
         let loadedGroupSnaps: admin.firestore.DocumentSnapshot<GroupDocument>[] = [];
         try {
             if (groupsToSync.length > 0) {
@@ -647,7 +643,7 @@ export class NoteService {
             ...groupsToSync.map(async (gid) => {
                 try {
                     const groupRef = db.collection('groups').doc(gid);
-                    
+
                     let gSnap = loadedGroupSnaps.find(snap => snap.id === gid);
                     if (!gSnap || !gSnap.exists) {
                         gSnap = await groupRef.get();
@@ -657,7 +653,7 @@ export class NoteService {
                     const gData = gSnap.data() as GroupDocument;
                     const groupTimeZone = gData.timeZone || result.timeZone || 'UTC';
                     const groupToday = formatDateInTimeZone(new Date(), groupTimeZone);
-                    
+
                     const currentActivityDate = gData.dailyActivity?.date || '';
                     const normCurrent = normalizeDateString(currentActivityDate);
                     const normToday = normalizeDateString(groupToday);
@@ -690,9 +686,9 @@ export class NoteService {
                             activeMembers: groupUpdate.dailyActivity?.activeMembers || activeMembers
                         }
                     };
-                    
+
                     groupUpdate.unityPercentage = calculateUnityPercentage(simulatedGroup as unknown as Group, [], new Date());
-                    
+
                     await groupRef.update(groupUpdate);
                 } catch (err) {
                     console.error(`[NoteService] Unity update failed for group ${gid}:`, err);
@@ -704,14 +700,16 @@ export class NoteService {
             }, { merge: true }).catch(err => {
                 console.error('[NoteService] Failed to write dailyStats in background:', err);
             }),
-            // Push Notifications
-            NotificationService.notifyNotePosted({
-                groupIds: [...new Set(userToGroupEntries.map(e => e[1]))],
-                senderUid: uid,
-                senderNickname: result.nickname,
-                language: language || 'en',
-                userToGroupMapEntries: userToGroupEntries
-            })
+            // Push Notifications (only if shared to groups)
+            groupsToSync.length > 0
+                ? NotificationService.notifyNotePosted({
+                    groupIds: [...new Set(userToGroupEntries.map(e => e[1]))],
+                    senderUid: uid,
+                    senderNickname: result.nickname,
+                    language: language || 'en',
+                    userToGroupMapEntries: userToGroupEntries
+                })
+                : Promise.resolve(null)
         ]).catch(err => {
             console.error('[NoteService] Background updates failed:', err);
             return null;
@@ -892,7 +890,7 @@ export class NoteService {
             // Recalculate unityPercentage after note deletion
             const gDataForCalc = gSnap.data()!;
             const now = new Date();
-            
+
             const simulatedGroup = {
                 ...gDataForCalc,
                 dailyActivity: {
@@ -900,7 +898,7 @@ export class NoteService {
                     activeMembers: updatedActiveMembers
                 }
             };
-            
+
             updatePayload.unityPercentage = calculateUnityPercentage(simulatedGroup as unknown as Group, [], now);
 
             transaction.update(gSnap.ref, updatePayload);

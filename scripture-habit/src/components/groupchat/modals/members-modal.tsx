@@ -16,7 +16,8 @@ interface MembersModalProps {
     membersList: UserProfileBrief[];
     membersMap?: Record<string, UserProfileBrief>;
     membersLoading: boolean;
-    setSelectedMember: (member: UserProfileBrief | null) => void;
+    setSelectedMember?: (member: UserProfileBrief | null) => void;
+    handleUserProfileClick?: (userId: string | null) => Promise<void>;
 }
 
 interface MemberListItemProps {
@@ -25,7 +26,8 @@ interface MemberListItemProps {
     userData: UserData | null;
     membersMap?: Record<string, UserProfileBrief>;
     language: string;
-    setSelectedMember: (member: UserProfileBrief | null) => void;
+    setSelectedMember?: (member: UserProfileBrief | null) => void;
+    handleUserProfileClick?: (userId: string | null) => Promise<void>;
     t: (key: string) => string;
 }
 
@@ -36,6 +38,7 @@ const MemberListItem = ({
     membersMap,
     language,
     setSelectedMember,
+    handleUserProfileClick,
     t
 }: MemberListItemProps) => {
     const originalNickname = member.nickname || 'Unknown User';
@@ -81,7 +84,13 @@ const MemberListItem = ({
     return (
         <div
             className="member-item"
-            onClick={() => setSelectedMember(member)}
+            onClick={() => {
+                if (handleUserProfileClick) {
+                    handleUserProfileClick(member.id);
+                } else if (setSelectedMember) {
+                    setSelectedMember(member);
+                }
+            }}
             style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '0.5rem', borderRadius: '8px', background: 'var(--glass)', cursor: 'pointer' }}
         >
             <div className="member-avatar" style={{
@@ -135,6 +144,7 @@ const MembersModal = ({
     membersMap,
     membersLoading,
     setSelectedMember,
+    handleUserProfileClick,
 }: MembersModalProps) => {
     if (!showMembersModal) return null;
 
@@ -167,6 +177,7 @@ const MembersModal = ({
                                 membersMap={membersMap}
                                 language={language}
                                 setSelectedMember={setSelectedMember}
+                                handleUserProfileClick={handleUserProfileClick}
                                 t={t}
                             />
                         ))

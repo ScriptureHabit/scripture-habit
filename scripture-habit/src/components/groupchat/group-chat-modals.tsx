@@ -157,6 +157,7 @@ const GroupChatModals = () => {
                 membersMap={membersMap}
                 membersLoading={false}
                 setSelectedMember={setSelectedMember}
+                handleUserProfileClick={handleUserProfileClick}
             />
 
             <UnityModal

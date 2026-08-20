@@ -8,6 +8,7 @@ import { UserProfile } from '../../types/chat';
 import apiClient from '../../utils/api-client';
 import { toast } from 'react-toastify';
 import { getTranslationHash, isLikelyAlreadyInLanguage } from '../../utils/language-utils';
+import { useUserProfileData } from './hooks/use-user-profile-data';
 
 interface UserProfileModalProps {
     user: UserData | UserProfile | null;
@@ -16,7 +17,7 @@ interface UserProfileModalProps {
 
 const UserProfileModal = ({ user, onClose }: UserProfileModalProps) => {
     const { t, language } = useLanguage();
-
+    const { currentUser, userId } = useUserProfileData(user);
     const [showFullImage, setShowFullImage] = useState(false);
 
     // Translation states
@@ -30,11 +31,10 @@ const UserProfileModal = ({ user, onClose }: UserProfileModalProps) => {
     const [loadingNickname, setLoadingNickname] = useState(false);
     const [loadingBio, setLoadingBio] = useState(false);
 
-    const userId = user ? ((user as UserProfile).id || (user as UserData).uid) : '';
-    const nickHash = getTranslationHash(user?.nickname || '');
-    const bioHash = getTranslationHash(user?.bio || '');
-    const stakeHash = getTranslationHash(user?.stake || '');
-    const wardHash = getTranslationHash(user?.ward || '');
+    const nickHash = getTranslationHash(currentUser?.nickname || '');
+    const bioHash = getTranslationHash(currentUser?.bio || '');
+    const stakeHash = getTranslationHash(currentUser?.stake || '');
+    const wardHash = getTranslationHash(currentUser?.ward || '');
     
     const nickCacheKey = `trans_user_nick_${userId}_${language}_${nickHash}`;
     const bioCacheKey = `trans_user_bio_${userId}_${language}_${bioHash}`;
@@ -52,7 +52,7 @@ const UserProfileModal = ({ user, onClose }: UserProfileModalProps) => {
         const cachedWard = sessionStorage.getItem(wardCacheKey);
         
         // Determine if we should auto-translate (if languages differ)
-        const shouldAutoTranslate = user?.language && user.language !== language;
+        const shouldAutoTranslate = currentUser?.language && currentUser.language !== language;
 
         if (cachedNick) {
             queueMicrotask(() => {
@@ -68,12 +68,12 @@ const UserProfileModal = ({ user, onClose }: UserProfileModalProps) => {
             });
             
             // Auto fetch if languages differ
-            if (shouldAutoTranslate && user?.nickname && !isLikelyAlreadyInLanguage(user.nickname, language)) {
+            if (shouldAutoTranslate && currentUser?.nickname && !isLikelyAlreadyInLanguage(currentUser.nickname, language)) {
                 const autoFetchNick = async () => {
                     setLoadingNickname(true);
                     try {
                         const res = await apiClient.post('/api/ai/translate', {
-                            text: user.nickname,
+                            text: currentUser.nickname,
                             targetLanguage: language,
                             updateType: 'user_nickname'
                         });
@@ -104,11 +104,11 @@ const UserProfileModal = ({ user, onClose }: UserProfileModalProps) => {
             queueMicrotask(() => {
                 setTranslatedStake(null);
             });
-            if (shouldAutoTranslate && user?.stake && !isLikelyAlreadyInLanguage(user.stake, language)) {
+            if (shouldAutoTranslate && currentUser?.stake && !isLikelyAlreadyInLanguage(currentUser.stake, language)) {
                 const autoFetchStake = async () => {
                     try {
                         const res = await apiClient.post('/api/ai/translate', {
-                            text: user.stake,
+                            text: currentUser.stake,
                             targetLanguage: language,
                             updateType: 'user_stake'
                         });
@@ -137,11 +137,11 @@ const UserProfileModal = ({ user, onClose }: UserProfileModalProps) => {
             queueMicrotask(() => {
                 setTranslatedWard(null);
             });
-            if (shouldAutoTranslate && user?.ward && !isLikelyAlreadyInLanguage(user.ward, language)) {
+            if (shouldAutoTranslate && currentUser?.ward && !isLikelyAlreadyInLanguage(currentUser.ward, language)) {
                 const autoFetchWard = async () => {
                     try {
                         const res = await apiClient.post('/api/ai/translate', {
-                            text: user.ward,
+                            text: currentUser.ward,
                             targetLanguage: language,
                             updateType: 'user_ward'
                         });
@@ -173,12 +173,12 @@ const UserProfileModal = ({ user, onClose }: UserProfileModalProps) => {
             });
 
             // Auto fetch if languages differ
-            if (shouldAutoTranslate && user?.bio && !isLikelyAlreadyInLanguage(user.bio, language)) {
+            if (shouldAutoTranslate && currentUser?.bio && !isLikelyAlreadyInLanguage(currentUser.bio, language)) {
                 const autoFetchBio = async () => {
                     setLoadingBio(true);
                     try {
                         const res = await apiClient.post('/api/ai/translate', {
-                            text: user.bio,
+                            text: currentUser.bio,
                             targetLanguage: language,
                             updateType: 'user_bio'
                         });
@@ -201,7 +201,7 @@ const UserProfileModal = ({ user, onClose }: UserProfileModalProps) => {
         return () => {
             active = false;
         };
-    }, [userId, language, nickCacheKey, bioCacheKey, stakeCacheKey, wardCacheKey, user?.language, user?.nickname, user?.bio, user?.stake, user?.ward]);
+    }, [userId, language, nickCacheKey, bioCacheKey, stakeCacheKey, wardCacheKey, currentUser?.language, currentUser?.nickname, currentUser?.bio, currentUser?.stake, currentUser?.ward]);
 
     const handleTranslateNickname = async () => {
         if (isNicknameTranslated) {
@@ -213,9 +213,9 @@ const UserProfileModal = ({ user, onClose }: UserProfileModalProps) => {
         // Translate Nickname
         if (translatedNickname) {
             setIsNicknameTranslated(true);
-        } else if (user?.nickname) {
-            if (isLikelyAlreadyInLanguage(user.nickname, language)) {
-                setTranslatedNickname(user.nickname);
+        } else if (currentUser?.nickname) {
+            if (isLikelyAlreadyInLanguage(currentUser.nickname, language)) {
+                setTranslatedNickname(currentUser.nickname);
                 setIsNicknameTranslated(true);
             } else {
                 const cached = sessionStorage.getItem(nickCacheKey);
@@ -226,7 +226,7 @@ const UserProfileModal = ({ user, onClose }: UserProfileModalProps) => {
                     setLoadingNickname(true);
                     try {
                         const res = await apiClient.post('/api/ai/translate', {
-                            text: user.nickname,
+                            text: currentUser.nickname,
                             targetLanguage: language,
                             updateType: 'user_nickname'
                         });
@@ -250,16 +250,16 @@ const UserProfileModal = ({ user, onClose }: UserProfileModalProps) => {
 
         // Translate Location tags (stake and ward)
         setIsLocationTranslated(true);
-        if (!translatedStake && user?.stake) {
-            if (isLikelyAlreadyInLanguage(user.stake, language)) {
-                setTranslatedStake(user.stake);
+        if (!translatedStake && currentUser?.stake) {
+            if (isLikelyAlreadyInLanguage(currentUser.stake, language)) {
+                setTranslatedStake(currentUser.stake);
             } else {
                 const cachedStake = sessionStorage.getItem(stakeCacheKey);
                 if (cachedStake) {
                     setTranslatedStake(cachedStake);
                 } else {
                     apiClient.post('/api/ai/translate', {
-                        text: user.stake,
+                        text: currentUser.stake,
                         targetLanguage: language,
                         updateType: 'user_stake'
                     }).then(res => {
@@ -271,16 +271,16 @@ const UserProfileModal = ({ user, onClose }: UserProfileModalProps) => {
                 }
             }
         }
-        if (!translatedWard && user?.ward) {
-            if (isLikelyAlreadyInLanguage(user.ward, language)) {
-                setTranslatedWard(user.ward);
+        if (!translatedWard && currentUser?.ward) {
+            if (isLikelyAlreadyInLanguage(currentUser.ward, language)) {
+                setTranslatedWard(currentUser.ward);
             } else {
                 const cachedWard = sessionStorage.getItem(wardCacheKey);
                 if (cachedWard) {
                     setTranslatedWard(cachedWard);
                 } else {
                     apiClient.post('/api/ai/translate', {
-                        text: user.ward,
+                        text: currentUser.ward,
                         targetLanguage: language,
                         updateType: 'user_ward'
                     }).then(res => {
@@ -304,10 +304,10 @@ const UserProfileModal = ({ user, onClose }: UserProfileModalProps) => {
             return;
         }
 
-        if (!user || !user.bio) return;
+        if (!currentUser || !currentUser.bio) return;
 
-        if (isLikelyAlreadyInLanguage(user.bio, language)) {
-            setTranslatedBio(user.bio);
+        if (isLikelyAlreadyInLanguage(currentUser.bio, language)) {
+            setTranslatedBio(currentUser.bio);
             setIsBioTranslated(true);
             return;
         }
@@ -322,7 +322,7 @@ const UserProfileModal = ({ user, onClose }: UserProfileModalProps) => {
         setLoadingBio(true);
         try {
             const res = await apiClient.post('/api/ai/translate', {
-                text: user.bio,
+                text: currentUser.bio,
                 targetLanguage: language,
                 updateType: 'user_bio'
             });
@@ -342,7 +342,7 @@ const UserProfileModal = ({ user, onClose }: UserProfileModalProps) => {
         }
     };
 
-    if (!user) return null;
+    if (!currentUser) return null;
 
     return (
         <div className="user-profile-modal-overlay" onClick={onClose}>
@@ -352,24 +352,24 @@ const UserProfileModal = ({ user, onClose }: UserProfileModalProps) => {
                 </button>
                 <div className="modal-header">
                     <div
-                        className={`user-avatar-large ${user.photoURL ? 'has-image' : ''}`}
-                        onClick={() => user.photoURL && setShowFullImage(true)}
-                        style={{ cursor: user.photoURL ? 'pointer' : 'default' }}
+                        className={`user-avatar-large ${currentUser.photoURL ? 'has-image' : ''}`}
+                        onClick={() => currentUser.photoURL && setShowFullImage(true)}
+                        style={{ cursor: currentUser.photoURL ? 'pointer' : 'default' }}
                     >
                         {userId === 'ai-partner-bot' ? (
                             <div style={{ width: '100%', height: '100%', borderRadius: '50%', background: 'linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2.5rem' }}>🤖</div>
-                        ) : user.photoURL ? (
-                            <img src={user.photoURL} alt={user.nickname} className="avatar-img" onError={(e) => { (e.target as HTMLImageElement).src = '/images/mascot.webp'; }} />
+                        ) : currentUser.photoURL ? (
+                            <img src={currentUser.photoURL} alt={currentUser.nickname} className="avatar-img" onError={(e) => { (e.target as HTMLImageElement).src = '/images/mascot.webp'; }} />
                         ) : (
-                            user.nickname ? user.nickname.substring(0, 1).toUpperCase() : '?'
+                            currentUser.nickname ? currentUser.nickname.substring(0, 1).toUpperCase() : '?'
                         )}
                     </div>
                 </div>
 
-                {showFullImage && user.photoURL && (
+                {showFullImage && currentUser.photoURL && (
                     <div className="full-image-overlay" onClick={() => setShowFullImage(false)}>
                         <div className="full-image-content" onClick={(e) => e.stopPropagation()}>
-                            <img src={user.photoURL} alt={user.nickname} className="full-avatar-img" />
+                            <img src={currentUser.photoURL} alt={currentUser.nickname} className="full-avatar-img" />
                             <button className="full-image-close" onClick={() => setShowFullImage(false)}>
                                 <UilTimes size="32" color="white" />
                             </button>
@@ -379,8 +379,8 @@ const UserProfileModal = ({ user, onClose }: UserProfileModalProps) => {
 
                 <div className="modal-body">
                     <h2 className="user-nickname">
-                        {isNicknameTranslated ? translatedNickname : user.nickname}
-                        {user.nickname && (
+                        {isNicknameTranslated ? translatedNickname : currentUser.nickname}
+                        {currentUser.nickname && (
                             <button 
                                 type="button"
                                 className={`translate-inline-btn ${isNicknameTranslated ? 'active' : ''} ${loadingNickname ? 'loading' : ''}`}
@@ -394,16 +394,16 @@ const UserProfileModal = ({ user, onClose }: UserProfileModalProps) => {
                         )}
                     </h2>
 
-                    {(user.stake || user.ward) && (
+                    {(currentUser.stake || currentUser.ward) && (
                         <div className="user-location">
-                            {user.stake && <span className="location-tag">{isLocationTranslated && translatedStake ? translatedStake : user.stake}</span>}
-                            {user.ward && <span className="location-tag">{isLocationTranslated && translatedWard ? translatedWard : user.ward}</span>}
+                            {currentUser.stake && <span className="location-tag">{isLocationTranslated && translatedStake ? translatedStake : currentUser.stake}</span>}
+                            {currentUser.ward && <span className="location-tag">{isLocationTranslated && translatedWard ? translatedWard : currentUser.ward}</span>}
                         </div>
                     )}
 
-                    {user.bio && (
+                    {currentUser.bio && (
                         <div className="user-bio">
-                            <p>{isBioTranslated ? translatedBio : user.bio}</p>
+                            <p>{isBioTranslated ? translatedBio : currentUser.bio}</p>
                             <button 
                                 type="button"
                                 className={`translate-bio-btn ${isBioTranslated ? 'active' : ''}`}
@@ -422,7 +422,7 @@ const UserProfileModal = ({ user, onClose }: UserProfileModalProps) => {
                                 <span style={{ fontWeight: '800', fontSize: '1.2rem' }}>L</span>
                             </div>
                             <div className="stat-info">
-                                <span className="stat-value">{Math.floor((user.daysStudiedCount || 0) / 7) + 1}</span>
+                                <span className="stat-value">{Math.floor((currentUser.daysStudiedCount || 0) / 7) + 1}</span>
                                 <span className="stat-label">{t('profile.level')}</span>
                             </div>
                         </div>
@@ -431,7 +431,7 @@ const UserProfileModal = ({ user, onClose }: UserProfileModalProps) => {
                                 <UilFire />
                             </div>
                             <div className="stat-info">
-                                <span className="stat-value">{user.daysStudiedCount || 0}</span>
+                                <span className="stat-value">{currentUser.daysStudiedCount || 0}</span>
                                 <span className="stat-label">{t('dashboard.streak')}</span>
                             </div>
                         </div>
@@ -440,7 +440,7 @@ const UserProfileModal = ({ user, onClose }: UserProfileModalProps) => {
                                 <UilFileAlt />
                             </div>
                             <div className="stat-info">
-                                <span className="stat-value">{user.totalNotes || 0}</span>
+                                <span className="stat-value">{currentUser.totalNotes || 0}</span>
                                 <span className="stat-label">{t('dashboard.totalNotes')}</span>
                             </div>
                         </div>

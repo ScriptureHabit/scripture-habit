@@ -9,7 +9,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 2000;
+    z-index: 3500;
 }
 
 .user-profile-modal-content {
@@ -79,7 +79,7 @@
     width: 100vw;
     height: 100vh;
     background: rgba(0, 0, 0, 0.9);
-    z-index: 3000;
+    z-index: 4500;
     display: flex;
     justify-content: center;
     align-items: center;

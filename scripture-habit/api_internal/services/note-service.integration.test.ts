@@ -140,6 +140,12 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('NoteService Integration T
             const userData = uSnap.data() as UserDocument;
             expect(userData.studiedDates).toContain(todayStr);
             expect(userData.studiedDates?.length).toBe(1);
+
+            // Verify no announcements or messages were sent to groups
+            for (const gid of [GROUP_1, GROUP_2, ...MULTI_GROUPS]) {
+                const msgListSnap = await db.collection('groups').doc(gid).collection('messages').get();
+                expect(msgListSnap.empty).toBe(true);
+            }
         });
     });
 
