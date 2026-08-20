@@ -8,7 +8,7 @@ const DemoLogin = () => {
         <div className="DemoLoginRoot">
             <main className="demo-login-card">
                 <div className="demo-mascot-wrapper">
-                    <img src="/images/mascot.png" alt="Demo Mascot" className="demo-mascot-img" />
+                    <img src="/images/mascot.webp" alt="Demo Mascot" className="demo-mascot-img" />
                 </div>
                 <h1 className="demo-title">{t('demo.loadingTitle')}</h1>
                 <p className="demo-subtitle">

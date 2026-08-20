@@ -192,7 +192,7 @@ export const QuestCard = ({
         <div className="quest-modal-overlay" onClick={() => setShowModal(false)}>
           <div className="quest-modal-card" onClick={(e) => e.stopPropagation()} data-testid="quest-milestone-modal">
             <div className="quest-modal-mascot-wrapper">
-              <img src="/images/mascot.png" alt="Mascot" className="quest-modal-mascot-img" />
+              <img src="/images/mascot.webp" alt="Mascot" className="quest-modal-mascot-img" />
             </div>
             
             <h2 className="quest-modal-title">

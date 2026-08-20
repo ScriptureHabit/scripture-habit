@@ -13,7 +13,7 @@ interface MascotProps {
 
 const Mascot = ({ userData, onClick, customMessage = null, reversed = false }: MascotProps) => {
   const { t } = useLanguage();
-  const mascotImg = '/images/mascot.png';
+  const mascotImg = '/images/mascot.webp';
 
   const isDoneToday = useMemo(() => {
     if (!userData || !userData.lastPostDate) return false;

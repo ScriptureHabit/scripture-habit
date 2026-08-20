@@ -60,7 +60,7 @@ const WelcomeStoryModal = ({ isOpen, onClose, userData }: WelcomeStoryModalProps
     const pages = [
         // Page 1: Welcome
         <div className="story-page" key="p1">
-            <img src="/images/mascot.png" alt="Welcome Bird" className="story-image" />
+            <img src="/images/mascot.webp" alt="Welcome Bird" className="story-image" />
             <h2 className="story-title">{t('welcomeStory.page1Title')}</h2>
             <p className="story-text">{t('welcomeStory.page1Content')}</p>
         </div>,
@@ -126,7 +126,7 @@ const WelcomeStoryModal = ({ isOpen, onClose, userData }: WelcomeStoryModalProps
 
         // Page 6: Start
         <div className="story-page" key="p5">
-            <img src="/images/mascot.png" alt="Welcome Bird" className="story-image" style={{ transform: 'scale(1.2)' }} />
+            <img src="/images/mascot.webp" alt="Welcome Bird" className="story-image" style={{ transform: 'scale(1.2)' }} />
             <h2 className="story-title">{t('welcomeStory.page5Title')}</h2>
             <p className="story-text" style={{ fontSize: '1.2rem' }}>
                 {t('welcomeStory.page5Content')}

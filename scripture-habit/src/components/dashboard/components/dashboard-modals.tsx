@@ -105,7 +105,7 @@ const DashboardModals = ({
                 <div className="mascot-container" style={{ margin: '0.75rem 0 0.25rem', cursor: 'default' }}>
                   <div className="mascot-image-wrapper">
                     <img
-                      src="/images/mascot.png"
+                      src="/images/mascot.webp"
                       alt="Mascot"
                       className="mascot-image"
                     />
@@ -143,7 +143,7 @@ const DashboardModals = ({
                   <div className="mascot-container" style={{ margin: '0 0 0.75rem', cursor: 'default' }}>
                     <div className="mascot-image-wrapper">
                       <img
-                        src="/images/mascot.png"
+                        src="/images/mascot.webp"
                         alt="Mascot"
                         className="mascot-image"
                       />

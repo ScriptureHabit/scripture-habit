@@ -359,7 +359,7 @@ const UserProfileModal = ({ user, onClose }: UserProfileModalProps) => {
                         {userId === 'ai-partner-bot' ? (
                             <div style={{ width: '100%', height: '100%', borderRadius: '50%', background: 'linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2.5rem' }}>🤖</div>
                         ) : user.photoURL ? (
-                            <img src={user.photoURL} alt={user.nickname} className="avatar-img" onError={(e) => { (e.target as HTMLImageElement).src = '/images/mascot.png'; }} />
+                            <img src={user.photoURL} alt={user.nickname} className="avatar-img" onError={(e) => { (e.target as HTMLImageElement).src = '/images/mascot.webp'; }} />
                         ) : (
                             user.nickname ? user.nickname.substring(0, 1).toUpperCase() : '?'
                         )}

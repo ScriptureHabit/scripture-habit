@@ -110,7 +110,7 @@ const SystemMessage = ({ msg, t, kickThreshold = DEFAULT_KICK_THRESHOLD }: Syste
       <div className="message-content">
         {msg.messageType === 'unityAnnouncement' && (
           <div className="unity-announcement-body">
-            <img src="/images/mascot.png" alt="mascot" className="mascot-avatar-celestial" />
+            <img src="/images/mascot.webp" alt="mascot" className="mascot-avatar-celestial" />
           </div>
         )}
         <ReactMarkdown>

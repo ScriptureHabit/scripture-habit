@@ -40,7 +40,7 @@ export const MilestoneCard: React.FC<MilestoneCardProps> = ({
                 <div className="milestone-card-body">
                     <div className="milestone-mascot-wrapper">
                         <img 
-                            src="/images/mascot.png" 
+                            src="/images/mascot.webp" 
                             alt="Scripture Habit Mascot" 
                             className="milestone-mascot-img"
                             crossOrigin="anonymous"

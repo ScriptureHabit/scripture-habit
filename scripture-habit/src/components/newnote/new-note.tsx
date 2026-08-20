@@ -223,7 +223,7 @@ const NewNote = ({
 
                     {onboardingGuideStepText && (
                         <div className="mascot-helper-card" data-testid="mascot-onboarding-helper">
-                            <img src="/images/mascot.png" alt="Mascot" className="mascot-helper-icon" style={{ width: '48px', height: '48px', objectFit: 'contain' }} />
+                            <img src="/images/mascot.webp" alt="Mascot" className="mascot-helper-icon" style={{ width: '48px', height: '48px', objectFit: 'contain' }} />
                             <div className="mascot-helper-text-container">
                                 <p className="mascot-helper-bubble">{onboardingGuideStepText}</p>
                             </div>

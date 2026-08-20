@@ -453,7 +453,7 @@ const App = () => {
     const MascotLoader = () => (
       <div className="App">
         <div className="AppGlass" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'row' }}>
-          <img src="/images/mascot.png" alt="Loading..." className="loader-mascot" width="80" height="80" />
+          <img src="/images/mascot.webp" alt="Loading..." className="loader-mascot" width="80" height="80" />
           <div className="loader-bubble">
             <p className="loader-text">Loading...</p>
             <div className="loader-bubble-tail"></div>

@@ -99,7 +99,7 @@ const LandingPage = () => {
                             <span className="mascot-bubble-text">{t('landing.hero.mascotBubble')}</span>
                             <div className="mascot-bubble-tail"></div>
                         </div>
-                        <img src="/images/mascot.png" alt="Welcome Bird" className="hero-mascot-img" />
+                        <img src="/images/mascot.webp" alt="Welcome Bird" className="hero-mascot-img" />
                     </div>
                     <div className="hero-content">
                         <h1 className="hero-title">{t('landing.hero.title')}</h1>
@@ -175,7 +175,7 @@ const LandingPage = () => {
                             <div className="step-number">2</div>
                             <h3 className="step-title">{t('landing.steps.step2Title')}</h3>
                             <p className="step-desc">{t('landing.steps.step2Desc')}</p>
-                            <img src="/images/mascot.png" alt="Share a thought" className="step-card-img step-img-mascot" />
+                            <img src="/images/mascot.webp" alt="Share a thought" className="step-card-img step-img-mascot" />
                         </div>
                     </div>
                 </section>
@@ -244,7 +244,7 @@ const LandingPage = () => {
                             <span className="mascot-bubble-text">{t('landing.finalCta.mascotBubble')}</span>
                             <div className="mascot-bubble-tail"></div>
                         </div>
-                        <img src="/images/mascot.png" alt="Mascot Bird" className="final-cta-mascot-img" />
+                        <img src="/images/mascot.webp" alt="Mascot Bird" className="final-cta-mascot-img" />
                     </div>
 
                     <div className="hero-cta-container">

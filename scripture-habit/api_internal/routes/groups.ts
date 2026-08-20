@@ -547,7 +547,7 @@ router.post('/create-ai-group', authenticate, requireEmailVerified, verifyAppChe
             transaction.set(groupRef.collection('members').doc('ai-partner-bot'), {
                 uid: 'ai-partner-bot',
                 nickname: botNickname,
-                photoURL: '/images/mascot.png',
+                photoURL: '/images/mascot.webp',
                 joinedAt: now,
                 lastActiveAt: now,
                 lastReadAt: now,
@@ -559,7 +559,7 @@ router.post('/create-ai-group', authenticate, requireEmailVerified, verifyAppChe
             transaction.set(db.collection('users').doc('ai-partner-bot'), {
                 uid: 'ai-partner-bot',
                 nickname: botNickname,
-                photoURL: '/images/mascot.png',
+                photoURL: '/images/mascot.webp',
                 isBot: true,
                 createdAt: now
             }, { merge: true });
@@ -590,7 +590,7 @@ router.post('/create-ai-group', authenticate, requireEmailVerified, verifyAppChe
                 createdAt: now,
                 senderId: 'ai-partner-bot',
                 senderNickname: botNickname,
-                senderPhotoURL: '/images/mascot.png',
+                senderPhotoURL: '/images/mascot.webp',
                 isSystemMessage: false,
                 isNote: false,
                 expireAt: getMessageExpireAt()
@@ -604,7 +604,7 @@ router.post('/create-ai-group', authenticate, requireEmailVerified, verifyAppChe
                     text: congratText,
                     senderId: 'ai-partner-bot',
                     senderNickname: botNickname,
-                    senderPhotoURL: '/images/mascot.png',
+                    senderPhotoURL: '/images/mascot.webp',
                     createdAt: admin.firestore.Timestamp.fromMillis(now.toMillis() + 2000),
                     isSystemMessage: false,
                     isNote: false,

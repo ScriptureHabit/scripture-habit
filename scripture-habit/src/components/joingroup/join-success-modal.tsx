@@ -35,7 +35,7 @@ export default function JoinSuccessModal({ onClose }: JoinSuccessModalProps) {
         {/* Mascot image */}
         <div className="join-success-mascot-wrapper">
           <img
-            src="/images/mascot.png"
+            src="/images/mascot.webp"
             alt="Scripture Habit Mascot"
             className="join-success-mascot"
           />

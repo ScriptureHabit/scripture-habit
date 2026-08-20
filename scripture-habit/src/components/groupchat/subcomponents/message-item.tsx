@@ -75,7 +75,7 @@ const MessageItem = memo(({
               alt=""
               className="profile-avatar-img"
               onError={(e) => {
-                (e.target as HTMLImageElement).src = '/images/mascot.png';
+                (e.target as HTMLImageElement).src = '/images/mascot.webp';
               }}
             />
           ) : (
