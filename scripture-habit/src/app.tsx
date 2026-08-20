@@ -2,7 +2,7 @@ import { Routes, Route, useLocation, Navigate, useNavigate } from 'react-router-
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./app.css";
-import { lazy, Suspense, useEffect, useState, useRef, ComponentType } from 'react';
+import { Suspense, useEffect, useState, useRef } from 'react';
 
 import { ErrorFallback } from './components/common/error-fallback';
 import { useQuery } from '@tanstack/react-query';
@@ -27,27 +27,7 @@ import PWAUpdateHandler from './components/pwaupdatehandler/pwa-update-handler';
 import LanguageRedirect from './components/languageredirect/language-redirect';
 import BrowserWarningWrapper from './components/browserwarningmodal/browser-warning-wrapper';
 
-// Resilient lazy load helper to automatically recover from ChunkLoadErrors / Failed Dynamic Imports
-// caused by new deployments by performing a hard page reload (with infinite loop prevention).
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const lazyWithRetry = <T extends ComponentType<any>>(componentImport: () => Promise<{ default: T }>) => {
-  return lazy(async () => {
-    const pageHasBeenReloaded = window.sessionStorage.getItem('page-has-been-reloaded');
-    try {
-      const component = await componentImport();
-      window.sessionStorage.removeItem('page-has-been-reloaded');
-      return component;
-    } catch (error) {
-      if (!pageHasBeenReloaded) {
-        window.sessionStorage.setItem('page-has-been-reloaded', 'true');
-        console.error("Failed to fetch dynamic module, reloading page to get fresh assets...", error);
-        window.location.reload();
-        return new Promise(() => {});
-      }
-      throw error;
-    }
-  });
-};
+import { lazyWithRetry } from './utils/lazy-with-retry';
 
 // Dynamic component loaders (centralized to prevent path duplication across lazy loading & prefetching)
 const componentLoaders = {

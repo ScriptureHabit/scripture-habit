@@ -3,10 +3,9 @@ import './profile.css';
 import { useLanguage } from '../../hooks/use-language';
 import { LANGUAGES } from '../../config/languages';
 import { useSettings } from '../../context/settings-context';
-import { auth, storage } from '../../firebase';
+import { auth, getFirebaseStorage } from '../../firebase';
 import { useNavigate } from 'react-router-dom';
 import { UilSignOutAlt, UilCamera, UilCalendarAlt, UilVolumeUp } from '@iconscout/react-unicons';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { toast } from 'react-toastify';
 import Button from '../button/button';
 import { DEFAULT_KICK_THRESHOLD } from '../../constants';
@@ -234,7 +233,9 @@ const Profile = ({ userData, stats }: ProfileProps) => {
             // Automatically resize and crop to 400x400 square
             const resizedBlob = await resizeImage(file, 400);
 
-            // Upload to Firebase Storage
+            // Upload to Firebase Storage (on-demand)
+            const storage = await getFirebaseStorage();
+            const { ref, uploadBytes, getDownloadURL } = await import('firebase/storage');
             const storageRef = ref(storage, `profile_pictures/${userData.uid}.jpg`);
             await uploadBytes(storageRef, resizedBlob);
 

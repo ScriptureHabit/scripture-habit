@@ -1,8 +1,6 @@
 import { initializeApp, FirebaseApp } from "firebase/app";
 import { getAnalytics, Analytics } from "firebase/analytics";
 import { getAuth, Auth, connectAuthEmulator, setPersistence, browserLocalPersistence, signInWithEmailAndPassword, signInWithCustomToken, signOut } from "firebase/auth";
-import { getMessaging, Messaging, isSupported } from "firebase/messaging";
-import { getStorage, FirebaseStorage } from "firebase/storage";
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, Firestore, getFirestore, connectFirestoreEmulator } from "firebase/firestore";
 import { initializeAppCheck, ReCaptchaEnterpriseProvider, CustomProvider, AppCheck, getToken } from "firebase/app-check";
 
@@ -97,24 +95,6 @@ try {
   console.error("Firebase Auth failed to initialize. Root cause:", e);
   // Do NOT silence this - it causes "Cannot read properties of null (reading 'app')" later
   throw e;
-}
-
-// Safely initialize Firebase Messaging if supported by the browser environment
-let messaging: Messaging | null = null;
-if (typeof window !== 'undefined') {
-  isSupported()
-    .then((supported) => {
-      if (supported) {
-        try {
-          messaging = getMessaging(app);
-        } catch (e: unknown) {
-          console.log("getMessaging failed:", e instanceof Error ? e.message : e);
-        }
-      }
-    })
-    .catch((err: unknown) => {
-      console.log("Firebase Messaging check failed:", err instanceof Error ? err.message : err);
-    });
 }
 
 // Check if IndexedDB is flagged as broken/corrupted in this session
@@ -260,8 +240,6 @@ if (isIndexedDbBroken) {
   }
 }
 
-const storage: FirebaseStorage = getStorage(app);
-
 // Connect to emulators if requested
 if (import.meta.env.VITE_USE_FIREBASE_EMULATOR === 'true') {
   if (auth) {
@@ -321,5 +299,24 @@ if (!isEmulator) {
   console.log("[Firebase] App Check disabled in Emulator mode.");
 }
 
-export { app, analytics, auth, db, messaging, storage, appCheck };
+// Lazy getters for non-critical modules to avoid blocking initial render
+export const getFirebaseMessaging = async () => {
+  if (typeof window === 'undefined') return null;
+  try {
+    const { getMessaging, isSupported } = await import("firebase/messaging");
+    const supported = await isSupported().catch(() => false);
+    if (!supported) return null;
+    return getMessaging(app);
+  } catch (err) {
+    console.log("Firebase Messaging init failed:", err);
+    return null;
+  }
+};
+
+export const getFirebaseStorage = async () => {
+  const { getStorage } = await import("firebase/storage");
+  return getStorage(app);
+};
+
+export { app, analytics, auth, db, appCheck };
 

@@ -1,11 +1,11 @@
-import React, { StrictMode } from 'react'
+import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { BrowserRouter, useLocation, useNavigationType, createRoutesFromChildren, matchRoutes } from 'react-router-dom';
-import * as Sentry from "@sentry/react";
+import { BrowserRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import './index.css'
 import App from './app'
 import { AuthProvider } from './context/auth-provider';
+import { RootErrorBoundary } from './components/common/root-error-boundary';
 // Only initialize vConsole if ?vconsole=true is in the URL
 if (window.location.search.includes('vconsole=true')) {
   import('vconsole').then(({ default: VConsole }) => {
@@ -51,37 +51,37 @@ window.addEventListener('unhandledrejection', (event) => {
 
 const shouldInitializeSentry = !!import.meta.env.VITE_SENTRY_DSN && !navigator.webdriver;
 
-const initSentry = () => {
+const initSentry = async () => {
   if (!shouldInitializeSentry) return;
-  Sentry.init({
-    dsn: import.meta.env.VITE_SENTRY_DSN,
-    environment: import.meta.env.MODE || 'development',
-    integrations: [
-      Sentry.reactRouterV6BrowserTracingIntegration({
-        useEffect: React.useEffect,
-        useLocation,
-        useNavigationType,
-        createRoutesFromChildren,
-        matchRoutes,
-      }),
-      Sentry.replayIntegration({
-        maskAllText: false,
-        blockAllMedia: true,
-      }),
-    ],
-    // Performance Monitoring
-    tracesSampleRate: 0.1, // Only send 10% of performance traces to save bandwidth
-    // Session Replay
-    replaysSessionSampleRate: 0, // Disable full session recordings to prevent "Content Too Large"
-    replaysOnErrorSampleRate: 1.0, // Only record when an error occurs
-  });
+  try {
+    const Sentry = await import("@sentry/react");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (window as any).Sentry = Sentry;
+    Sentry.init({
+      dsn: import.meta.env.VITE_SENTRY_DSN,
+      environment: import.meta.env.MODE || 'development',
+      integrations: [
+        Sentry.replayIntegration({
+          maskAllText: false,
+          blockAllMedia: true,
+        }),
+      ],
+      // Performance Monitoring
+      tracesSampleRate: 0.1, // Only send 10% of performance traces to save bandwidth
+      // Session Replay
+      replaysSessionSampleRate: 0, // Disable full session recordings to prevent "Content Too Large"
+      replaysOnErrorSampleRate: 1.0, // Only record when an error occurs
+    });
+  } catch (err) {
+    console.warn("Failed to initialize Sentry deferred:", err);
+  }
 };
 
 if (typeof window !== 'undefined') {
   if ('requestIdleCallback' in window) {
-    window.requestIdleCallback(() => initSentry(), { timeout: 3000 });
+    window.requestIdleCallback(() => { initSentry(); }, { timeout: 4000 });
   } else {
-    setTimeout(initSentry, 1000);
+    setTimeout(initSentry, 2000);
   }
 }
 
@@ -98,23 +98,7 @@ const rootElement = document.getElementById('root');
 if (rootElement) {
   createRoot(rootElement).render(
     <StrictMode>
-      <Sentry.ErrorBoundary
-        fallback={({ resetError }) => (
-          <div className="App error-screen-root">
-            <div className="AppGlass error-glass-card-root">
-              <h1 className="error-emoji-root">🛸</h1>
-              <h2 className="error-title-root">Something went wrong.</h2>
-              <p className="error-desc-root">We've been notified and are looking into it.</p>
-              <button 
-                onClick={() => { resetError(); window.location.href = '/'; }}
-                className="error-reload-btn-root"
-              >
-                Reload App
-              </button>
-            </div>
-          </div>
-        )}
-      >
+      <RootErrorBoundary>
         <QueryClientProvider client={queryClient}>
           <BrowserRouter>
             <AuthProvider>
@@ -122,7 +106,7 @@ if (rootElement) {
             </AuthProvider>
           </BrowserRouter>
         </QueryClientProvider>
-      </Sentry.ErrorBoundary>
+      </RootErrorBoundary>
     </StrictMode>,
   )
 }

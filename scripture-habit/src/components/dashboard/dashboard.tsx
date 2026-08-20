@@ -1,23 +1,24 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo, Suspense } from 'react';
 import { Navigate, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { lazyWithRetry } from '../../utils/lazy-with-retry';
 
-// Components
-import GroupChat from '../groupchat/group-chat';
-import NewNote from '../newnote/new-note';
-import MyNotes from '../mynotes/my-notes';
-import Profile from '../profile/profile';
-import Donate from '../donate/donate';
+// Core Dashboard Components (Synchronous for instant Overview render)
 import Footer from '../footer/footer';
 import { DashboardSkeleton } from '../skeleton/skeleton';
 import Sidebar from '../sidebar/sidebar';
-
-// Refactored Sub-components
 import DashboardLayout from './components/dashboard-layout';
 import DashboardOverview from './components/dashboard-overview';
-import DashboardModals from './components/dashboard-modals';
-import JoinSuccessModal from '../joingroup/join-success-modal';
-import MilestoneModal from '../milestone/milestone-modal';
+
+// Lazy-loaded Sub-components and Modals (Split into lightweight on-demand chunks)
+const GroupChat = lazyWithRetry(() => import('../groupchat/group-chat'));
+const NewNote = lazyWithRetry(() => import('../newnote/new-note'));
+const MyNotes = lazyWithRetry(() => import('../mynotes/my-notes'));
+const Profile = lazyWithRetry(() => import('../profile/profile'));
+const Donate = lazyWithRetry(() => import('../donate/donate'));
+const DashboardModals = lazyWithRetry(() => import('./components/dashboard-modals'));
+const JoinSuccessModal = lazyWithRetry(() => import('../joingroup/join-success-modal'));
+const MilestoneModal = lazyWithRetry(() => import('../milestone/milestone-modal'));
 
 // Styles
 import './dashboard.css';
@@ -303,42 +304,68 @@ const Dashboard = () => {
             }}
           />
         )}
-        {selectedView === 1 && <MyNotes userData={userData} isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} userGroups={enrichedUserGroups} />}
-        {selectedView === 2 && activeGroupId && (
-          <GroupChat 
-            groupId={activeGroupId} userData={userData} userGroups={enrichedUserGroups} 
-            onInputFocusChange={setIsInputFocused} isExternalModalOpen={isModalOpen} 
-            onBack={() => { setActiveGroupId(null); setSelectedView(0); navigate(`/${language}/dashboard`); }} onGroupSelect={setActiveGroupId} 
-            onUnityUpdate={handleUnityUpdate} isActive={selectedView === 2}
-          />
+        {selectedView === 1 && (
+          <Suspense fallback={<DashboardSkeleton />}>
+            <MyNotes userData={userData} isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} userGroups={enrichedUserGroups} />
+          </Suspense>
         )}
-        {selectedView === 3 && <Profile userData={userData} stats={{ streak: userData.streakCount || 0, totalNotes: userData.totalNotes || 0, daysStudied: userData.daysStudiedCount || 0 }} />}
-        {selectedView === 4 && <Donate userData={userData} />}
+        {selectedView === 2 && activeGroupId && (
+          <Suspense fallback={<DashboardSkeleton />}>
+            <GroupChat 
+              groupId={activeGroupId} userData={userData} userGroups={enrichedUserGroups} 
+              onInputFocusChange={setIsInputFocused} isExternalModalOpen={isModalOpen} 
+              onBack={() => { setActiveGroupId(null); setSelectedView(0); navigate(`/${language}/dashboard`); }} onGroupSelect={setActiveGroupId} 
+              onUnityUpdate={handleUnityUpdate} isActive={selectedView === 2}
+            />
+          </Suspense>
+        )}
+        {selectedView === 3 && (
+          <Suspense fallback={<DashboardSkeleton />}>
+            <Profile userData={userData} stats={{ streak: userData.streakCount || 0, totalNotes: userData.totalNotes || 0, daysStudied: userData.daysStudiedCount || 0 }} />
+          </Suspense>
+        )}
+        {selectedView === 4 && (
+          <Suspense fallback={<DashboardSkeleton />}>
+            <Donate userData={userData} />
+          </Suspense>
+        )}
         {selectedView !== 2 && <Footer />}
       </DashboardLayout>
 
-      <NewNote isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} userData={userData} userGroups={enrichedUserGroups} />
+      {isModalOpen && (
+        <Suspense fallback={null}>
+          <NewNote isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} userData={userData} userGroups={enrichedUserGroups} />
+        </Suspense>
+      )}
 
-      <DashboardModals 
-        t={t} userData={userData}
-        showWelcomeStory={showWelcomeStory} onCloseWelcomeStory={handleCloseWelcomeStory}
-        showNotifPrompt={showNotifPrompt} handleEnableNotifications={handleEnableNotifications} handleCloseNotifPrompt={handleCloseNotifPrompt}
-        showEditProfileModal={showEditProfileModal} setShowEditProfileModal={setShowEditProfileModal} 
-        newNickname={newNickname} setNewNickname={setNewNickname} handleUpdateProfile={handleUpdateProfile}
-        showAutoKickModal={showAutoKickModal} autoKickStep={autoKickStep} setAutoKickStep={setAutoKickStep}
-        selectedKickDays={selectedKickDays} setSelectedKickDays={setSelectedKickDays}
-        handleAutoKickSubmit={handleAutoKickSubmit}
-      />
+      {hasActiveModal && (
+        <Suspense fallback={null}>
+          <DashboardModals 
+            t={t} userData={userData}
+            showWelcomeStory={showWelcomeStory} onCloseWelcomeStory={handleCloseWelcomeStory}
+            showNotifPrompt={showNotifPrompt} handleEnableNotifications={handleEnableNotifications} handleCloseNotifPrompt={handleCloseNotifPrompt}
+            showEditProfileModal={showEditProfileModal} setShowEditProfileModal={setShowEditProfileModal} 
+            newNickname={newNickname} setNewNickname={setNewNickname} handleUpdateProfile={handleUpdateProfile}
+            showAutoKickModal={showAutoKickModal} autoKickStep={autoKickStep} setAutoKickStep={setAutoKickStep}
+            selectedKickDays={selectedKickDays} setSelectedKickDays={setSelectedKickDays}
+            handleAutoKickSubmit={handleAutoKickSubmit}
+          />
+        </Suspense>
+      )}
 
       {/* Join Success Welcome Modal (from invite link) */}
       {showJoinSuccessModal && (
-        <JoinSuccessModal
-          onClose={() => setShowJoinSuccessModal(false)}
-        />
+        <Suspense fallback={null}>
+          <JoinSuccessModal
+            onClose={() => setShowJoinSuccessModal(false)}
+          />
+        </Suspense>
       )}
 
       {/* Study Days Milestone Celebration Modal */}
-      <MilestoneModal />
+      <Suspense fallback={null}>
+        <MilestoneModal />
+      </Suspense>
     </>
   );
 };

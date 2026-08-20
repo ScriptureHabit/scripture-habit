@@ -81,16 +81,20 @@ export default defineConfig(({ mode }) => ({
         manualChunks(id) {
           if (id.includes('node_modules')) {
             if (id.includes('vconsole')) return 'vconsole';
+            if (id.includes('@sentry')) return 'vendor-sentry';
             if (id.includes('micromark') || id.includes('mdast') || id.includes('remark') || id.includes('unist') || id.includes('hast') || id.includes('property-information')) {
               return 'vendor-markdown';
             }
             if (id.includes('@iconscout') || id.includes('lucide-react')) return 'vendor-icons';
             if (id.includes('canvas-confetti')) return 'vendor-confetti';
+            if (id.includes('@firebase/storage') || id.includes('firebase/storage')) return 'vendor-firebase-storage';
+            if (id.includes('@firebase/messaging') || id.includes('firebase/messaging')) return 'vendor-firebase-messaging';
+            if (id.includes('@firebase/firestore') || id.includes('firebase/firestore')) return 'vendor-firebase-firestore';
+            if (id.includes('@firebase/auth') || id.includes('firebase/auth')) return 'vendor-firebase-auth';
+            if (id.includes('firebase')) return 'vendor-firebase';
             if (id.includes('react-dom') || id.includes('/react/') || id.includes('scheduler') || id.includes('react-router')) {
               return 'vendor-react';
             }
-            if (id.includes('firebase')) return 'vendor-firebase';
-            if (id.includes('@sentry')) return 'vendor-sentry';
             return 'vendor-others';
           }
         },

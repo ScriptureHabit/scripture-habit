@@ -1,5 +1,4 @@
-import { messaging, db } from '../firebase';
-import { getToken, onMessage, deleteToken, MessagePayload } from 'firebase/messaging';
+import { db, getFirebaseMessaging } from '../firebase';
 import { doc, updateDoc, arrayUnion, arrayRemove, setDoc, getDoc } from 'firebase/firestore';
 import { toast } from 'react-toastify';
 
@@ -72,12 +71,14 @@ export const requestNotificationPermission = async (
                     throw new Error('Service Worker not active after registration');
                 }
 
-                // 6. Get FCM token
+                // 6. Get FCM token (dynamically loaded)
+                const messaging = await getFirebaseMessaging();
                 if (!messaging) {
                     console.warn('Messaging is not initialized. Skipping token generation.');
                     return null;
                 }
 
+                const { getToken } = await import('firebase/messaging');
                 const token = await getToken(messaging, {
                     vapidKey: VAPID_KEY,
                     serviceWorkerRegistration: registration
@@ -93,13 +94,13 @@ export const requestNotificationPermission = async (
                         
                         // Secure existing users by removing from public doc, and set the query flag
                         try {
-                           const userRef = doc(db, 'users', userId);
-                           await updateDoc(userRef, {
-                               fcmTokens: arrayRemove(token),
-                               hasFcmToken: true
-                           });
+                            const userRef = doc(db, 'users', userId);
+                            await updateDoc(userRef, {
+                                fcmTokens: arrayRemove(token),
+                                hasFcmToken: true
+                            });
                         } catch {
-                           // Ignore if field doesn't exist
+                            // Ignore if field doesn't exist
                         }
                     }
                     toast.success(translate('notificationSetup.success', 'Notification settings complete! 🎉'));
@@ -141,16 +142,26 @@ export const requestNotificationPermission = async (
     return null;
 };
 
-
-export const setupMessageListener = (callback: (payload: MessagePayload) => void): (() => void) | undefined => {
-    if (!messaging) return undefined;
-    return onMessage(messaging, callback);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const setupMessageListener = (callback: (payload: any) => void): (() => void) => {
+    let unsubscribe: (() => void) | undefined;
+    getFirebaseMessaging().then(async (messaging) => {
+        if (messaging) {
+            const { onMessage } = await import('firebase/messaging');
+            unsubscribe = onMessage(messaging, callback);
+        }
+    });
+    return () => {
+        if (unsubscribe) unsubscribe();
+    };
 };
 
 export const disableNotifications = async (userId: string | null | undefined): Promise<boolean> => {
     try {
         const registration = await navigator.serviceWorker.getRegistration();
+        const messaging = await getFirebaseMessaging();
         if (registration && messaging) {
+            const { getToken, deleteToken } = await import('firebase/messaging');
             const token = await getToken(messaging, {
                 vapidKey: VAPID_KEY,
                 serviceWorkerRegistration: registration
@@ -171,9 +182,6 @@ export const disableNotifications = async (userId: string | null | undefined): P
                     // Ignore if field cleanup fails
                 }
             }
-        }
-        // Also try to delete the token from local storage/FCM
-        if (messaging) {
             await deleteToken(messaging);
         }
         return true;
@@ -195,7 +203,9 @@ export const syncFcmTokenFlag = async (userId: string | null | undefined, curren
     if (Notification.permission === 'granted') {
         try {
             const registration = await navigator.serviceWorker.getRegistration();
+            const messaging = await getFirebaseMessaging();
             if (registration && messaging) {
+                const { getToken } = await import('firebase/messaging');
                 const token = await getToken(messaging, {
                     vapidKey: VAPID_KEY,
                     serviceWorkerRegistration: registration
