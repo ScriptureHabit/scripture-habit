@@ -139,9 +139,6 @@ const DashboardOverview = ({
             {t('dashboard.inspirationQuote')}
           </blockquote>
           <p className="inspiration-source">{t('dashboard.inspirationSource')}</p>
-          <div className="inspiration-status-badge">
-            <span className="typing-dots"></span>
-          </div>
         </div>
       </div>
 

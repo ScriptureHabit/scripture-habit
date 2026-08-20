@@ -612,26 +612,6 @@
   }
 }
 
-@keyframes dot-typing-gpu {
-  0%, 100% {
-    opacity: 0.3;
-    transform: scale(0.8);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.15);
-  }
-}
-
-.typing-dots {
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  background: var(--pink);
-  border-radius: 50%;
-  animation: dot-typing-gpu 1.4s ease-in-out infinite;
-  vertical-align: middle;
-}
 
 .note-notification {
   position: fixed;
@@ -815,21 +795,6 @@
   transform: scale(1.02);
 }
 
-.inspiration-status-badge {
-  position: absolute;
-  top: -10px;
-  right: 10px;
-  background: white;
-  padding: 2px 8px;
-  border-radius: 12px 12px 12px 0;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  font-size: 0.8rem;
-  font-weight: bold;
-  color: #4A5568;
-  border: 1px solid #E2E8F0;
-  min-width: 24px;
-  text-align: center;
-}
 
 /* Reading Plan Layout */
 .reading-plan-card-inner-box {
