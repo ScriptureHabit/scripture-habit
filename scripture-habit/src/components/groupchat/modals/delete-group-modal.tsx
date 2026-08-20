@@ -37,6 +37,8 @@ const DeleteGroupModal = ({
                     )}
                 </div>
                 <input
+                    id="delete-group-confirm-name"
+                    name="deleteConfirmationName"
                     type="text"
                     className="delete-confirmation-input"
                     value={deleteConfirmationName}

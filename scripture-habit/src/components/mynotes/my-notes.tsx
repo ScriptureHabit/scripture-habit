@@ -164,6 +164,8 @@ const MyNotes = ({ userData, isModalOpen, setIsModalOpen, userGroups }: MyNotesP
         <div className="search-bar-container">
           <UilSearchAlt className="search-icon" size="20" />
           <input
+            id="my-notes-search"
+            name="search"
             type="text"
             className="search-input"
             placeholder={t('myNotes.searchPlaceholder') || ''}

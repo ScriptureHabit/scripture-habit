@@ -92,7 +92,7 @@ router.get('/', authenticate, verifyAppCheck, async (req: AuthenticatedRequest, 
                 const groupData: GroupDocument = {
                     name: t(language, 'onboardingQuest.demoGroupName') || '日々の糧 📖',
                     description: t(language, 'onboardingQuest.demoGroupDesc') || '毎日一緒に聖典を読み合う、温かい学習グループです！✨',
-                    translations: getDemoGroupTranslations(),
+                    translations: getDemoGroupTranslations(language),
                     members: ['bot-alice', 'bot-bob', 'bot-charlie'],
                     membersCount: 3,
                     ownerUserId: 'bot-alice',
@@ -201,8 +201,8 @@ router.get('/', authenticate, verifyAppCheck, async (req: AuthenticatedRequest, 
                 if (demoData?.maxMembers !== 5) {
                     updateFields.maxMembers = 5;
                 }
-                if (!demoData?.translations || Object.keys(demoData.translations).length < 10) {
-                    updateFields.translations = getDemoGroupTranslations();
+                if (!demoData?.translations || Object.keys(demoData.translations).length === 0) {
+                    updateFields.translations = getDemoGroupTranslations(userDoc?.language || 'ja');
                 }
                 if (Object.keys(updateFields).length > 0) {
                     await db.collection('groups').doc(demoGroupId).update(updateFields);
@@ -501,7 +501,7 @@ router.post('/create-ai-group', authenticate, requireEmailVerified, verifyAppChe
             const newGroupData: GroupDocument = {
                 name: defaultGroupName,
                 description: t(lang, 'groupChat.aiGroupDefaultGroupDesc') || '1-on-1 Scripture Study Group with Scripture Habit AI',
-                translations: getAiGroupTranslations(),
+                translations: getAiGroupTranslations(lang),
                 createdAt: now,
                 groupStreak: 0,
                 inviteCode,

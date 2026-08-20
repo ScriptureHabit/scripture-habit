@@ -87,6 +87,9 @@ export default function SignupForm() {
 
         <form onSubmit={handleSubmit}>
           <Input
+            id="signup-nickname"
+            name="nickname"
+            autoComplete="nickname"
             data-testid="signup-nickname"
             label={t('signup.nicknameLabel')}
             type="text"
@@ -96,6 +99,9 @@ export default function SignupForm() {
             maxLength={30}
           />
           <Input
+            id="signup-email"
+            name="email"
+            autoComplete="email"
             data-testid="signup-email"
             label={t('signup.emailLabel')}
             type="email"
@@ -103,6 +109,9 @@ export default function SignupForm() {
             onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setEmail(e.target.value)}
             required />
           <Input
+            id="signup-password"
+            name="password"
+            autoComplete="new-password"
             data-testid="signup-password"
             label={t('signup.passwordLabel')}
             type="password"

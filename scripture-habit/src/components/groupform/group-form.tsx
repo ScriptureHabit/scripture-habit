@@ -73,6 +73,8 @@ export default function GroupForm() {
 
         <form onSubmit={handleSubmit} className="group-form">
           <Input
+            id="group-form-name"
+            name="groupName"
             label={t('groupForm.groupNameLabel')}
             type="text"
             placeholder={t('groupForm.groupNamePlaceholder')}
@@ -82,6 +84,8 @@ export default function GroupForm() {
             data-testid="group-name-input"
           />
           <Input
+            id="group-form-description"
+            name="description"
             label={t('groupForm.descriptionLabel')}
             as="textarea"
             value={description}

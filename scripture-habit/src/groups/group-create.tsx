@@ -75,6 +75,7 @@ export default function GroupCreate({ currentUser, onCreated }: GroupCreateProps
         <div className="input-group">
           <input
             id="group-name"
+            name="name"
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -87,6 +88,7 @@ export default function GroupCreate({ currentUser, onCreated }: GroupCreateProps
         <div className="input-group">
           <input
             id="group-description"
+            name="description"
             type="text"
             value={description}
             onChange={(e) => setDescription(e.target.value)}

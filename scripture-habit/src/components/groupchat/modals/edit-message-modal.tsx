@@ -24,6 +24,8 @@ const EditMessageModal = ({
             <div className="leave-modal-content edit-message-modal">
                 <h3>{t('groupChat.editMessage')}</h3>
                 <textarea
+                    id="edit-message-text"
+                    name="editText"
                     className="edit-message-textarea"
                     value={editText}
                     onChange={(e) => setEditText(e.target.value)}

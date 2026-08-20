@@ -63,14 +63,15 @@ export const calculateNearestKickDate = (userData: UserData | null, userGroups: 
   const kickDates: number[] = [];
   
   userGroups.forEach(group => {
-    // Priority: Group-specific member threshold > Group global member threshold > User default threshold > Fallback 3
+    // Priority: Group-specific member threshold > Group global member threshold > MemberStatus > User default threshold > Fallback 3
     const threshold = (group.memberKickThresholds && group.memberKickThresholds[userData.uid]) || 
+                     group.myMemberStatus?.kickThreshold ||
                      userData.kickThreshold || DEFAULT_KICK_THRESHOLD;
     
     const candidateTimestamps = [
       userData.lastPostAt,
       (group.lastNoteByUid === userData.uid ? group.lastNoteAt : null),
-      group.memberJoinedAt?.[userData.uid]
+      group.memberJoinedAt?.[userData.uid] || group.myMemberStatus?.joinedAt
     ];
 
     const dates = candidateTimestamps
@@ -124,7 +125,9 @@ export const hasGroupUnread = (
   }
 
   const lastMessageMillis = parseTimestampToMillis(group.lastMessageAt);
-  const myLastRead = group.memberLastReadAt?.[currentUserId];
+  const myLastRead = group.memberLastReadAt?.[currentUserId] || 
+                     group.myMemberStatus?.lastReadAt || 
+                     group.myGroupState?.lastReadAt;
 
   if (myLastRead) {
     const lastReadMillis = parseTimestampToMillis(myLastRead);
@@ -133,7 +136,8 @@ export const hasGroupUnread = (
   }
 
   // If user hasn't opened the group yet, only consider messages posted after joining
-  const myJoinedAt = group.memberJoinedAt?.[currentUserId];
+  const myJoinedAt = group.memberJoinedAt?.[currentUserId] || 
+                     group.myMemberStatus?.joinedAt;
   if (myJoinedAt) {
     const joinedMillis = parseTimestampToMillis(myJoinedAt);
     return (lastMessageMillis - joinedMillis) > 500;

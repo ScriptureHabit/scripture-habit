@@ -35,6 +35,9 @@ export default function ForgotPassword() {
 
         <form onSubmit={handleReset}>
           <Input
+            id="forgot-password-email"
+            name="email"
+            autoComplete="email"
             label={t('forgotPasswordPage.emailLabel')}
             type="email"
             value={email}

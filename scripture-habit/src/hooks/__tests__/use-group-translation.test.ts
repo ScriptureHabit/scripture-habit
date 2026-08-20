@@ -179,4 +179,53 @@ describe('useGroupTranslation', () => {
       targetLanguage: 'ja',
     });
   });
+
+  it('uses localized default name for default AI group without calling translate API', async () => {
+    const aiGroup: Group = {
+      id: 'ai-1',
+      name: 'Scripture Habit AI',
+      isAiGroup: true,
+      aiCompanionUid: 'ai-partner-bot',
+    } as unknown as Group;
+
+    const { result } = renderHook(() => useGroupTranslation(aiGroup, 'ja'));
+
+    expect(result.current.displayName).toBe('groupChat.aiGroupDefaultGroupName');
+    expect(apiClient.post).not.toHaveBeenCalled();
+  });
+
+  it('respects customized name for renamed AI group', async () => {
+    const customAiGroup: Group = {
+      id: 'ai-2',
+      name: '私の聖典AIパートナー',
+      isAiGroup: true,
+      aiCompanionUid: 'ai-partner-bot',
+    } as unknown as Group;
+
+    const { result } = renderHook(() => useGroupTranslation(customAiGroup, 'ja'));
+
+    expect(result.current.displayName).toBe('私の聖典AIパートナー');
+    expect(apiClient.post).not.toHaveBeenCalled();
+  });
+
+  it('uses localized default name for default Demo group and respects customized Demo name', async () => {
+    const demoGroup: Group = {
+      id: 'demo-1',
+      name: 'Daily Bread 📖',
+      isDemoGroup: true,
+    } as unknown as Group;
+
+    const { result: defaultDemo } = renderHook(() => useGroupTranslation(demoGroup, 'ja'));
+    expect(defaultDemo.current.displayName).toBe('onboardingQuest.demoGroupName');
+
+    const customDemoGroup: Group = {
+      id: 'demo-2',
+      name: 'カスタムデモグループ',
+      isDemoGroup: true,
+    } as unknown as Group;
+
+    const { result: customDemo } = renderHook(() => useGroupTranslation(customDemoGroup, 'ja'));
+    expect(customDemo.current.displayName).toBe('カスタムデモグループ');
+    expect(apiClient.post).not.toHaveBeenCalled();
+  });
 });

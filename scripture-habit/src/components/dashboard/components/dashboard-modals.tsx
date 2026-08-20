@@ -72,6 +72,8 @@ const DashboardModals = ({
           <div className="leave-modal-content">
             <h3>{t('groupChat.changeNickname')}</h3>
             <input 
+              id="dashboard-edit-nickname"
+              name="nickname"
               type="text" 
               className="delete-confirmation-input" 
               value={newNickname} 

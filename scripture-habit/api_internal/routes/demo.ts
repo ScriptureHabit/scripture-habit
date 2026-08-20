@@ -78,7 +78,7 @@ router.post('/initialize', demoInitLimiter, authenticate, verifyAppCheck, async 
         const groupData: GroupDocument = {
             name: t(language, 'onboardingQuest.demoGroupName') || '日々の糧 📖',
             description: t(language, 'onboardingQuest.demoGroupDesc') || '毎日一緒に聖典を読み合う、温かい学習グループです！✨',
-            translations: getDemoGroupTranslations(),
+            translations: getDemoGroupTranslations(language),
             members: ['bot-alice', 'bot-bob', 'bot-charlie'],
             membersCount: 3,
             ownerUserId: 'bot-alice',

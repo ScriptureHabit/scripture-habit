@@ -48,10 +48,12 @@ const EditGroupNameModal = ({
                 <h3>{t('groupChat.changeGroupName')}</h3>
 
                 <div className="edit-group-field" style={{ width: '100%', textAlign: 'left', marginTop: '1rem' }}>
-                    <label style={{ fontSize: '0.8rem', color: 'var(--gray)', fontWeight: 'bold', marginBottom: '4px', display: 'block' }}>
+                    <label htmlFor="edit-group-name" style={{ fontSize: '0.8rem', color: 'var(--gray)', fontWeight: 'bold', marginBottom: '4px', display: 'block' }}>
                         {t('groupForm.groupNameLabel')}
                     </label>
                     <input
+                        id="edit-group-name"
+                        name="groupName"
                         type="text"
                         className="delete-confirmation-input"
                         value={displayGroupName}
@@ -62,10 +64,12 @@ const EditGroupNameModal = ({
                 </div>
 
                 <div className="edit-group-field" style={{ width: '100%', textAlign: 'left' }}>
-                    <label style={{ fontSize: '0.8rem', color: 'var(--gray)', fontWeight: 'bold', marginBottom: '4px', display: 'block' }}>
+                    <label htmlFor="edit-group-desc" style={{ fontSize: '0.8rem', color: 'var(--gray)', fontWeight: 'bold', marginBottom: '4px', display: 'block' }}>
                         {t('groupForm.descriptionLabel')}
                     </label>
                     <textarea
+                        id="edit-group-desc"
+                        name="groupDescription"
                         className="delete-confirmation-input"
                         value={displayGroupDesc}
                         onChange={(e) => setNewGroupDescription(e.target.value)}
@@ -80,10 +84,12 @@ const EditGroupNameModal = ({
                 </h4>
 
                 <div className="edit-group-field" style={{ width: '100%', textAlign: 'left' }}>
-                    <label style={{ fontSize: '0.8rem', color: 'var(--gray)', fontWeight: 'bold', marginBottom: '4px', display: 'block' }}>
+                    <label htmlFor="edit-group-translated-name" style={{ fontSize: '0.8rem', color: 'var(--gray)', fontWeight: 'bold', marginBottom: '4px', display: 'block' }}>
                         {t('groupForm.groupNameLabel')} ({t('languages.' + language) || language})
                     </label>
                     <input
+                        id="edit-group-translated-name"
+                        name="groupTranslatedName"
                         type="text"
                         className="delete-confirmation-input"
                         value={newTranslatedName}
@@ -94,10 +100,12 @@ const EditGroupNameModal = ({
                 </div>
 
                 <div className="edit-group-field" style={{ width: '100%', textAlign: 'left' }}>
-                    <label style={{ fontSize: '0.8rem', color: 'var(--gray)', fontWeight: 'bold', marginBottom: '4px', display: 'block' }}>
+                    <label htmlFor="edit-group-translated-desc" style={{ fontSize: '0.8rem', color: 'var(--gray)', fontWeight: 'bold', marginBottom: '4px', display: 'block' }}>
                         {t('groupForm.descriptionLabel')} ({t('languages.' + language) || language})
                     </label>
                     <textarea
+                        id="edit-group-translated-desc"
+                        name="groupTranslatedDescription"
                         className="delete-confirmation-input"
                         value={newTranslatedDesc}
                         onChange={(e) => setNewTranslatedDesc(e.target.value)}

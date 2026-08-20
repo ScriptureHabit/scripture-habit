@@ -139,8 +139,8 @@ const ChatHeader = () => {
               {isOwner && !groupData.isAiGroup && (
                 <div className="group-status-toggle">
                   <span className="status-label">{groupData.isPublic ? t('groupChat.public') : t('groupChat.private')}</span>
-                  <label className="switch">
-                    <input type="checkbox" checked={groupData.isPublic || false} onChange={togglePublicStatus} aria-label={t('groupChat.public')} />
+                  <label className="switch" htmlFor="group-public-toggle">
+                    <input id="group-public-toggle" name="isPublicToggle" type="checkbox" checked={groupData.isPublic || false} onChange={togglePublicStatus} aria-label={t('groupChat.public')} />
                     <span className="slider round"></span>
                   </label>
                 </div>

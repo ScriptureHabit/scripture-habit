@@ -91,32 +91,29 @@ export function tArray(language: string | undefined | null, key: string): string
 }
 
 /**
- * Generates pre-baked translations dictionary for the Demo Group from single source of truth (locales)
+ * Generates pre-baked translations dictionary for the Demo Group from single source of truth (locales).
+ * Defaults to the user's specific language to avoid storing massive 10-language dictionaries on Firestore documents.
  */
-export function getDemoGroupTranslations(): Record<string, { name: string; description: string }> {
-    const supportedLangs = ['ja', 'en', 'es', 'ko', 'pt', 'sw', 'th', 'tl', 'vi', 'zho'];
-    const result: Record<string, { name: string; description: string }> = {};
-    for (const lang of supportedLangs) {
-        result[lang] = {
-            name: t(lang, 'onboardingQuest.demoGroupName'),
-            description: t(lang, 'onboardingQuest.demoGroupDesc')
-        };
-    }
-    return result;
+export function getDemoGroupTranslations(lang: string = 'ja'): Record<string, { name: string; description: string }> {
+    return {
+        [lang]: {
+            name: t(lang, 'onboardingQuest.demoGroupName') || '日々の糧 📖',
+            description: t(lang, 'onboardingQuest.demoGroupDesc') || '毎日一緒に聖典を読み合う、温かい学習グループです！✨'
+        }
+    };
 }
 
 /**
- * Generates pre-baked translations dictionary for the AI Group from single source of truth (locales)
+ * Generates pre-baked translations dictionary for the AI Group from single source of truth (locales).
+ * Defaults to the user's specific language to avoid storing massive 10-language dictionaries on Firestore documents.
  */
-export function getAiGroupTranslations(): Record<string, { name: string; description: string }> {
-    const supportedLangs = ['ja', 'en', 'es', 'ko', 'pt', 'sw', 'th', 'tl', 'vi', 'zho'];
-    const result: Record<string, { name: string; description: string }> = {};
-    for (const lang of supportedLangs) {
-        result[lang] = {
+export function getAiGroupTranslations(lang: string = 'ja'): Record<string, { name: string; description: string }> {
+    return {
+        [lang]: {
             name: t(lang, 'groupChat.aiGroupDefaultGroupName') || (lang === 'ja' ? 'スクハビAI' : 'Scripture Habit AI'),
             description: t(lang, 'groupChat.aiGroupDefaultGroupDesc') || '1-on-1 Scripture Study Group with Scripture Habit AI'
-        };
-    }
-    return result;
+        }
+    };
 }
+
 

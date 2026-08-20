@@ -346,6 +346,7 @@ const Profile = ({ userData, stats }: ProfileProps) => {
                 </div>
                 <input
                     id="profile-photo-input"
+                    name="profilePhoto"
                     type="file"
                     ref={fileInputRef}
                     onChange={handleFileChange}
@@ -365,6 +366,7 @@ const Profile = ({ userData, stats }: ProfileProps) => {
                     <label className="switch" htmlFor="notif-toggle-input">
                         <input
                             id="notif-toggle-input"
+                            name="notificationToggle"
                             type="checkbox"
                             aria-label={t('profile.notificationToggle.title')}
                             checked={notifPermission === 'granted'}
@@ -418,6 +420,7 @@ const Profile = ({ userData, stats }: ProfileProps) => {
                     <label className="input-label" htmlFor="profile-nickname">{t('profile.nickname')}</label>
                     <input
                         id="profile-nickname"
+                        name="nickname"
                         type="text"
                         value={nickname}
                         onChange={(e) => setNickname(e.target.value)}
@@ -431,6 +434,7 @@ const Profile = ({ userData, stats }: ProfileProps) => {
                     <label className="input-label" htmlFor="profile-stake">{t('profile.stake')}</label>
                     <input
                         id="profile-stake"
+                        name="stake"
                         type="text"
                         value={stake}
                         onChange={(e) => setStake(e.target.value)}
@@ -442,6 +446,7 @@ const Profile = ({ userData, stats }: ProfileProps) => {
                     <label className="input-label" htmlFor="profile-ward">{t('profile.ward')}</label>
                     <input
                         id="profile-ward"
+                        name="ward"
                         type="text"
                         value={ward}
                         onChange={(e) => setWard(e.target.value)}
@@ -453,6 +458,7 @@ const Profile = ({ userData, stats }: ProfileProps) => {
                     <label className="input-label" htmlFor="profile-bio">{t('profile.bio')}</label>
                     <input
                         id="profile-bio"
+                        name="bio"
                         type="text"
                         value={bio}
                         onChange={(e) => setBio(e.target.value)}
@@ -695,6 +701,8 @@ const Profile = ({ userData, stats }: ProfileProps) => {
                                 {t('profile.typeToConfirmNickname').replace('{nickname}', userData.nickname || '')}
                             </p>
                             <input
+                                id="delete-account-confirm-nickname"
+                                name="confirmNickname"
                                 type="text"
                                 value={confirmNickname}
                                 onChange={(e) => setConfirmNickname(e.target.value)}

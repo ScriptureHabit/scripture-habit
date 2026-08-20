@@ -89,6 +89,9 @@ const LoginForm = () => {
 
         <form onSubmit={handleSubmit}>
           <Input
+            id="login-email"
+            name="email"
+            autoComplete="email"
             data-testid="login-email"
             label={t('login.emailLabel')}
             type="email"
@@ -98,6 +101,9 @@ const LoginForm = () => {
           />
 
           <Input
+            id="login-password"
+            name="password"
+            autoComplete="current-password"
             data-testid="login-password"
             label={t('login.passwordLabel')}
             type='password'

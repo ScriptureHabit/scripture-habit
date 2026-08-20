@@ -14,6 +14,7 @@ type InputProps = InputBaseProps &
 
 const Input = ({
   id,
+  name,
   label,
   type = 'text',
   value,
@@ -27,6 +28,7 @@ const Input = ({
 }: InputProps) => {
   const generatedId = React.useId();
   const inputId = id || generatedId;
+  const inputName = name || id || inputId;
 
   const Component = as === 'textarea' ? 'textarea' : 'input';
 
@@ -36,6 +38,7 @@ const Input = ({
 
       <Component
         id={inputId}
+        name={inputName}
         // textarea の場合は type 属性を渡さないようにします
         {...(as === 'input' ? { type } : {})}
         value={value}

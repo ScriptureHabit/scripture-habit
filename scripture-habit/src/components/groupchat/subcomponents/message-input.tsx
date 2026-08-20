@@ -68,6 +68,8 @@ const MessageInput = ({
             )}
             <div className="input-wrapper">
                 <textarea
+                    id="chat-message-input"
+                    name="message"
                     ref={textareaRef}
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}

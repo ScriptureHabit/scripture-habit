@@ -152,6 +152,8 @@ const Donate = ({ userData }: DonateProps) => {
 
                             <div className="feedback-input-group">
                                 <textarea
+                                    id="feedback-message-input"
+                                    name="feedbackMessage"
                                     className="feedback-textarea"
                                     rows={5}
                                     placeholder={t('story.feedbackPlaceholder')}

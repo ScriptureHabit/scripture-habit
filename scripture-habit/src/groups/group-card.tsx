@@ -89,9 +89,18 @@ export default function GroupCard({ group, currentUser, onJoin, onOpen }: Props)
       if (!group.name || !language) return;
 
       const isAiGroup = Boolean(group.isAiGroup || group.aiCompanionUid === 'ai-partner-bot');
-      if (isAiGroup) {
+      const isDefaultAiName = !group.name || group.name === 'スクハビAI' || group.name === 'Scripture Habit AI' || group.name === t('groupChat.aiGroupDefaultGroupName');
+      if (isAiGroup && isDefaultAiName) {
         const defaultAiName = t('groupChat.aiGroupDefaultGroupName');
         const manualName = group.translations?.[language]?.name || defaultAiName;
+        setTranslatedName(manualName);
+        return;
+      }
+
+      const isDefaultDemoName = !group.name || group.name === '日々の糧 📖' || group.name === 'Daily Bread 📖' || group.name === t('onboardingQuest.demoGroupName');
+      if (group.isDemoGroup && isDefaultDemoName) {
+        const defaultDemoName = t('onboardingQuest.demoGroupName');
+        const manualName = group.translations?.[language]?.name || defaultDemoName;
         setTranslatedName(manualName);
         return;
       }
@@ -145,7 +154,7 @@ export default function GroupCard({ group, currentUser, onJoin, onOpen }: Props)
 
     autoTranslate();
     return () => { active = false; };
-  }, [group.id, group.name, group.isAiGroup, group.aiCompanionUid, language, group.translations, t]);
+  }, [group.id, group.name, group.isAiGroup, group.isDemoGroup, group.aiCompanionUid, language, group.translations, t]);
 
   const handleAction = useCallback(async () => {
     if (isMember) {

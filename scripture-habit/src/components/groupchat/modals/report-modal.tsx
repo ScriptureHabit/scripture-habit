@@ -36,8 +36,9 @@ const ReportModal = ({
                     <p className="report-hint">{t('groupChat.reportReason')}:</p>
 
                     <div className="report-options">
-                        <label className={`report-option-label ${reportReason === 'inappropriate' ? 'selected' : ''}`}>
+                        <label className={`report-option-label ${reportReason === 'inappropriate' ? 'selected' : ''}`} htmlFor="report-reason-inappropriate">
                             <input
+                                id="report-reason-inappropriate"
                                 type="radio"
                                 name="reportReason"
                                 value="inappropriate"
@@ -47,8 +48,9 @@ const ReportModal = ({
                             <span>{t('groupChat.reportInappropriate')}</span>
                         </label>
 
-                        <label className={`report-option-label ${reportReason === 'harassment' ? 'selected' : ''}`}>
+                        <label className={`report-option-label ${reportReason === 'harassment' ? 'selected' : ''}`} htmlFor="report-reason-harassment">
                             <input
+                                id="report-reason-harassment"
                                 type="radio"
                                 name="reportReason"
                                 value="harassment"
@@ -58,8 +60,9 @@ const ReportModal = ({
                             <span>{t('groupChat.reportHarassment')}</span>
                         </label>
 
-                        <label className={`report-option-label ${reportReason === 'spam' ? 'selected' : ''}`}>
+                        <label className={`report-option-label ${reportReason === 'spam' ? 'selected' : ''}`} htmlFor="report-reason-spam">
                             <input
+                                id="report-reason-spam"
                                 type="radio"
                                 name="reportReason"
                                 value="spam"
@@ -69,8 +72,9 @@ const ReportModal = ({
                             <span>{t('groupChat.reportSpam')}</span>
                         </label>
 
-                        <label className={`report-option-label ${reportReason === 'other' ? 'selected' : ''}`}>
+                        <label className={`report-option-label ${reportReason === 'other' ? 'selected' : ''}`} htmlFor="report-reason-other">
                             <input
+                                id="report-reason-other"
                                 type="radio"
                                 name="reportReason"
                                 value="other"

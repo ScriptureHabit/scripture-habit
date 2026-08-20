@@ -82,8 +82,10 @@ const NoteSharingOptions = ({
             {shareOption === 'specific' && (
                 <div className="group-selection-list">
                     {userGroups.map(group => (
-                        <label key={group.id} className="group-checkbox-item">
+                        <label key={group.id} className="group-checkbox-item" htmlFor={`share-group-${group.id}`}>
                             <input
+                                id={`share-group-${group.id}`}
+                                name={`shareGroup_${group.id}`}
                                 type="checkbox"
                                 checked={selectedShareGroups.includes(group.id)}
                                 onChange={() => handleGroupSelection(group.id)}

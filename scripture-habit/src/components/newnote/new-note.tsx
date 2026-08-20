@@ -233,6 +233,8 @@ const NewNote = ({
                     <div className="form-group" data-testid="new-note-category">
                         <label className="input-label">{t('newNote.chooseScriptureLabel')}</label>
                         <Select
+                            inputId="new-note-scripture-select"
+                            name="scripture"
                             value={translatedScripturesOptions.find(o => o.value === scripture) || null}
                             onChange={(option) => setScripture(option?.value || '')}
                             options={translatedScripturesOptions}
@@ -259,6 +261,8 @@ const NewNote = ({
 
                     <div className="suggestions-container">
                         <Input
+                            id="new-note-chapter"
+                            name="chapter"
                             label={['General Conference', 'BYU Speeches', 'Other'].includes(scripture) ? t('newNote.urlLabel') : t('newNote.chapterLabel')}
                             type="text"
                             value={chapter}
@@ -350,6 +354,8 @@ const NewNote = ({
                     )}
 
                     <Input
+                        id="new-note-comment"
+                        name="comment"
                         label={t('newNote.commentLabel')}
                         as="textarea"
                         value={comment}
