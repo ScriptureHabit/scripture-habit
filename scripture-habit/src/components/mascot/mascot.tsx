@@ -67,7 +67,15 @@ const Mascot = ({ userData, onClick, customMessage = null, reversed = false }: M
   return (
     <div className={`mascot-container ${isDoneToday ? 'is-done' : ''} ${reversed ? 'reversed' : ''}`} onClick={onClick}>
       <div className="mascot-image-wrapper">
-        <img src={mascotImg} alt="Scripture Habit Mascot - Your guide to daily study" className="mascot-image" />
+        <img 
+          src={mascotImg} 
+          alt="Scripture Habit Mascot - Your guide to daily study" 
+          className="mascot-image" 
+          width={96}
+          height={96}
+          fetchPriority="high"
+          decoding="async"
+        />
         {isDoneToday && <div className="mascot-sparkles">✨</div>}
       </div>
       <div className="mascot-bubble">
