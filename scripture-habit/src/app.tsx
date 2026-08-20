@@ -4,18 +4,13 @@ import "react-toastify/dist/ReactToastify.css";
 import "./app.css";
 import { Suspense, useEffect, useState, useRef } from 'react';
 
-import { ErrorFallback } from './components/common/error-fallback';
 import { useQuery } from '@tanstack/react-query';
-import { Analytics } from "@vercel/analytics/react";
-import { SpeedInsights } from "@vercel/speed-insights/react";
-import { db, analytics } from './firebase';
-import { logEvent } from 'firebase/analytics';
+import { db, logFirebaseEvent } from './firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import { FirebaseError } from 'firebase/app';
 
 import { useAuth } from './hooks/use-auth';
 import { MAINTENANCE_MODE } from './config';
-import * as Sentry from "@sentry/react";
 import { handleInAppBrowserRedirect, isInAppBrowser } from './utils/browser-detection';
 import { setupMessageListener, clearAllNotifications } from './utils/notification-helper';
 
@@ -291,12 +286,7 @@ const App = () => {
       try {
         const targetUrlObj = new URL(targetUrl, window.location.origin);
         if (targetUrlObj.searchParams.get('opened_from_push') === '1') {
-          if (analytics) {
-            logEvent(analytics, 'notification_opened', {
-              source: 'pwa_push'
-            });
-            console.log('[Analytics] Logged notification_opened event in-flight');
-          }
+          void logFirebaseEvent('notification_opened', { source: 'pwa_push' });
           targetUrlObj.searchParams.delete('opened_from_push');
           cleanTargetUrl = targetUrlObj.pathname + targetUrlObj.search + targetUrlObj.hash;
         }
@@ -371,14 +361,14 @@ const App = () => {
         const isQuota = err.code === 'resource-exhausted' || err.message?.toLowerCase().includes('quota exceeded');
         if (err.code !== 'permission-denied' && !isQuota) {
           console.error("System probe failed:", err);
-          Sentry.captureException(err);
+          reportException(err);
         }
       } else if (err instanceof Error) {
         console.error("System probe failed:", err);
-        Sentry.captureException(err);
+        reportException(err);
       } else {
         console.error("System probe failed with unknown error:", err);
-        Sentry.captureException(new Error(String(err)));
+        reportException(new Error(String(err)));
       }
       return false; // Don't trigger error boundary for these
     }
@@ -389,12 +379,7 @@ const App = () => {
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
     if (searchParams.get('opened_from_push') === '1') {
-      if (analytics) {
-        logEvent(analytics, 'notification_opened', {
-          source: 'pwa_push'
-        });
-        console.log('[Analytics] Logged notification_opened event');
-      }
+      void logFirebaseEvent('notification_opened', { source: 'pwa_push' });
       
       // Clean up the URL so it doesn't log again on refresh
       searchParams.delete('opened_from_push');
@@ -440,7 +425,7 @@ const App = () => {
     const MascotLoader = () => (
       <div className="App">
         <div className="AppGlass" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'row' }}>
-          <img src="/images/mascot.webp" alt="Loading..." className="loader-mascot" width="80" height="80" />
+          <img src="/images/mascot-96.webp" alt="Loading..." className="loader-mascot" width="80" height="80" />
           <div className="loader-bubble">
             <p className="loader-text">Loading...</p>
             <div className="loader-bubble-tail"></div>
@@ -502,8 +487,6 @@ const App = () => {
         <PWAUpdateHandler />
         {renderContent()}
         <ToastContainer position="top-right" autoClose={3000} />
-        <Analytics />
-        <SpeedInsights />
         <InstallPrompt />
         <CookieConsent />
         <BrowserWarningWrapper
@@ -515,13 +498,10 @@ const App = () => {
   );
 };
 
-const AppWithErrorBoundary = Sentry.withErrorBoundary(App, {
-  fallback: ({ error, resetError }) => (
-    <ErrorFallback error={error as Error} resetError={resetError} />
-  ),
-});
+const reportException = (error: Error) => {
+  const sentry = (window as typeof window & { Sentry?: { captureException?: (value: Error) => void } }).Sentry;
+  sentry?.captureException?.(error);
+};
 
-AppWithErrorBoundary.displayName = 'AppWithErrorBoundary';
-
-export default AppWithErrorBoundary;
+export default App;
 

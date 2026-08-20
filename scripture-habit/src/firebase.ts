@@ -1,5 +1,5 @@
 import { initializeApp, FirebaseApp } from "firebase/app";
-import { getAnalytics, Analytics } from "firebase/analytics";
+import type { Analytics } from "firebase/analytics";
 import { getAuth, Auth, connectAuthEmulator, setPersistence, browserLocalPersistence, signInWithEmailAndPassword, signInWithCustomToken, signOut } from "firebase/auth";
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, Firestore, getFirestore, connectFirestoreEmulator } from "firebase/firestore";
 import { initializeAppCheck, ReCaptchaEnterpriseProvider, CustomProvider, AppCheck, getToken } from "firebase/app-check";
@@ -47,15 +47,19 @@ try {
   throw e;
 }
 
-// Initialize Firebase Analytics (only in non-emulator mode)
 let analytics: Analytics | null = null;
-if (typeof window !== 'undefined' && !isEmulator) {
+
+export const logFirebaseEvent = async (eventName: string, params: Record<string, string>) => {
+  if (isEmulator || typeof window === 'undefined') return;
+
   try {
-    analytics = getAnalytics(app);
+    const { getAnalytics, logEvent } = await import('firebase/analytics');
+    analytics ??= getAnalytics(app);
+    logEvent(analytics, eventName, params);
   } catch (e) {
     console.warn("Firebase Analytics not supported or failed:", e);
   }
-}
+};
 
 // Add Firebase Auth and App Check to global window object for Playwright tests
 declare global {

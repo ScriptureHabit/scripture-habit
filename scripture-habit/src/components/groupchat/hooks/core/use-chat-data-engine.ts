@@ -1,6 +1,5 @@
 import { useState, useReducer, useEffect, useRef, Dispatch } from 'react';
 import { collection, onSnapshot, doc, Unsubscribe, query, orderBy, limit, getDocs } from 'firebase/firestore';
-import * as Sentry from "@sentry/react";
 import { Message, GroupData, MembersMap, UserProfileBrief } from '../../../../types/chat';
 import { db } from '../../../../firebase';
 import { UserData } from '../../../../types/user';
@@ -49,7 +48,12 @@ const useGroupMetadataSync = (groupId: string | null, dispatch: Dispatch<ChatAct
       }
       const isQuota = err.code === 'resource-exhausted' || err.message.toLowerCase().includes('quota exceeded');
       dispatch({ type: 'SET_ERROR', message: isQuota ? t('systemErrors.quotaExceededMessage') : err.message });
-      if (!isQuota) Sentry.captureException(err);
+      if (!isQuota) {
+        const sentry = (window as typeof window & {
+          Sentry?: { captureException?: (value: unknown) => void }
+        }).Sentry;
+        sentry?.captureException?.(err);
+      }
     });
 
     return unsubscribe;

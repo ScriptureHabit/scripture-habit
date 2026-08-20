@@ -1,5 +1,4 @@
 import axios from 'axios';
-import * as Sentry from '@sentry/react';
 import { auth, appCheck } from '../firebase';
 import { getToken } from 'firebase/app-check';
 
@@ -76,11 +75,12 @@ apiClient.interceptors.response.use(
             // Log server errors to Sentry for observability
             // Filter out gateway/infrastructure issues (like 502/503/504) to reduce noise
             if (status === 500) {
-                Sentry.withScope((scope) => {
-                    scope.setTag('api_url', config?.url || 'unknown');
-                    scope.setTag('status_code', status.toString());
-                    scope.setExtra('response_data', error.response?.data);
-                    Sentry.captureException(error);
+                const sentry = (window as typeof window & {
+                    Sentry?: { captureException?: (value: unknown, context?: unknown) => void }
+                }).Sentry;
+                sentry?.captureException?.(error, {
+                    tags: { api_url: config?.url || 'unknown', status_code: status.toString() },
+                    extra: { response_data: error.response?.data }
                 });
                 console.error(`[apiClient] Server Error (${status}) at ${config?.url}`);
             }

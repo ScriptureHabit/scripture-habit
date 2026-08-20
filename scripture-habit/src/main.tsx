@@ -79,9 +79,11 @@ const initSentry = async () => {
 
 if (typeof window !== 'undefined') {
   if ('requestIdleCallback' in window) {
-    window.requestIdleCallback(() => { initSentry(); }, { timeout: 4000 });
+    window.setTimeout(() => {
+      window.requestIdleCallback(() => { void initSentry(); }, { timeout: 2000 });
+    }, 10000);
   } else {
-    setTimeout(initSentry, 2000);
+    setTimeout(() => { void initSentry(); }, 10000);
   }
 }
 
