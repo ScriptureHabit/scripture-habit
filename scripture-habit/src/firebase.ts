@@ -1,6 +1,6 @@
 import { initializeApp, FirebaseApp } from "firebase/app";
 import type { Analytics } from "firebase/analytics";
-import { getAuth, Auth, connectAuthEmulator, setPersistence, browserLocalPersistence, signInWithEmailAndPassword, signInWithCustomToken, signOut } from "firebase/auth";
+import { getAuth, Auth, connectAuthEmulator, signInWithEmailAndPassword, signInWithCustomToken, signOut } from "firebase/auth";
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, Firestore, getFirestore, connectFirestoreEmulator } from "firebase/firestore";
 import { initializeAppCheck, ReCaptchaEnterpriseProvider, CustomProvider, AppCheck, getToken } from "firebase/app-check";
 
@@ -90,10 +90,6 @@ try {
         signOut
       };
     }
-
-    setPersistence(auth, browserLocalPersistence).catch(err => {
-      console.error("Failed to set auth persistence:", err);
-    });
   }
 } catch (e) {
   console.error("Firebase Auth failed to initialize. Root cause:", e);
@@ -101,151 +97,18 @@ try {
   throw e;
 }
 
-// Check if IndexedDB is flagged as broken/corrupted in this session
-const isIndexedDbBroken = typeof window !== 'undefined' && (() => {
-  try {
-    return window.sessionStorage?.getItem('indexedDbBroken') === 'true';
-  } catch {
-    return false;
-  }
-})();
-
-// Asynchronously check if IndexedDB is fully functional (reads, writes, and deletes work)
-if (typeof window !== 'undefined' && window.indexedDB) {
-  const checkIndexedDb = () => {
-    const dbName = 'indexeddb_health_check';
-    const storeName = 'health_check_store';
-    try {
-      const request = window.indexedDB.open(dbName, 1);
-      
-      request.onerror = () => {
-        try {
-          window.sessionStorage?.setItem('indexedDbBroken', 'true');
-        } catch {
-          void 0;
-        }
-      };
-      
-      request.onblocked = () => {
-        try {
-          window.sessionStorage?.setItem('indexedDbBroken', 'true');
-        } catch {
-          void 0;
-        }
-      };
-      
-      request.onupgradeneeded = () => {
-        try {
-          const db = request.result;
-          if (!db.objectStoreNames.contains(storeName)) {
-            db.createObjectStore(storeName);
-          }
-        } catch {
-          void 0;
-        }
-      };
-      
-      request.onsuccess = () => {
-        const db = request.result;
-        try {
-          const transaction = db.transaction(storeName, 'readwrite');
-          const store = transaction.objectStore(storeName);
-          const putReq = store.put('value', 'key');
-          
-          putReq.onerror = () => {
-            try {
-              window.sessionStorage?.setItem('indexedDbBroken', 'true');
-            } catch {
-              void 0;
-            }
-            db.close();
-          };
-          
-          putReq.onsuccess = () => {
-            const delReq = store.delete('key');
-            
-            delReq.onerror = () => {
-              try {
-                window.sessionStorage?.setItem('indexedDbBroken', 'true');
-              } catch {
-                void 0;
-              }
-              db.close();
-            };
-            
-            delReq.onsuccess = () => {
-              db.close();
-              // All operations succeeded! Clear the broken flag for this session.
-              try {
-                window.sessionStorage?.removeItem('indexedDbBroken');
-              } catch {
-                void 0;
-              }
-              try {
-                window.indexedDB.deleteDatabase(dbName);
-              } catch {
-                void 0;
-              }
-            };
-          };
-        } catch {
-          try {
-            window.sessionStorage?.setItem('indexedDbBroken', 'true');
-          } catch {
-            void 0;
-          }
-          db.close();
-        }
-      };
-    } catch {
-      try {
-        window.sessionStorage?.setItem('indexedDbBroken', 'true');
-      } catch {
-        void 0;
-      }
-    }
-  };
-  
-  // Run health check only after app startup completely settles during idle time
-  if ('requestIdleCallback' in window) {
-    window.requestIdleCallback(() => checkIndexedDb(), { timeout: 6000 });
-  } else {
-    setTimeout(checkIndexedDb, 5000);
-  }
-}
-
-// Global safety net: listen for unhandled promise rejections related to IndexedDB failure
-if (typeof window !== 'undefined') {
-  window.addEventListener('unhandledrejection', (event) => {
-    const errorMsg = event.reason?.message || '';
-    if (typeof errorMsg === 'string' && errorMsg.includes('Failed to delete record from object store')) {
-      console.warn('[Firebase] Firestore/AppCheck IndexedDB failure detected. Switching to memory cache on reload.');
-      try {
-        window.sessionStorage?.setItem('indexedDbBroken', 'true');
-      } catch {
-        void 0;
-      }
-    }
-  });
-}
-
 // Initialize Firestore with persistent cache (modern way)
 // Wrap in try-catch to avoid app crash if IndexedDB is blocked (e.g. private mode)
 let db: Firestore;
-if (isIndexedDbBroken) {
-  console.warn("[Firebase] IndexedDB is flagged as broken/corrupted. Initializing Firestore with memory-only cache.");
+try {
+  db = initializeFirestore(app, {
+    localCache: persistentLocalCache({
+      tabManager: persistentMultipleTabManager()
+    })
+  });
+} catch (e) {
+  console.error("Firestore initialization with persistence failed, falling back to default:", e);
   db = getFirestore(app);
-} else {
-  try {
-    db = initializeFirestore(app, {
-      localCache: persistentLocalCache({
-        tabManager: persistentMultipleTabManager()
-      })
-    });
-  } catch (e) {
-    console.error("Firestore initialization with persistence failed, falling back to default:", e);
-    db = getFirestore(app);
-  }
 }
 
 // Connect to emulators if requested
