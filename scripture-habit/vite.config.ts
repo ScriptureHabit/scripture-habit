@@ -105,6 +105,12 @@ export default defineConfig(({ mode }) => ({
             return 'vendor-react';
           }
 
+          // 5. Data Fetching, State & UI Utilities (granular chunks to prevent Long Tasks)
+          if (id.includes('@tanstack/react-query')) return 'vendor-query';
+          if (id.includes('react-toastify')) return 'vendor-toastify';
+          if (id.includes('axios')) return 'vendor-axios';
+          if (id.includes('date-fns')) return 'vendor-date-fns';
+
           return 'vendor-others';
         },
       },

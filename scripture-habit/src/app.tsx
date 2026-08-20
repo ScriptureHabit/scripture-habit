@@ -89,7 +89,14 @@ const prefetchDestinationRoute = () => {
   target?.load().catch(() => {});
 };
 
-prefetchDestinationRoute();
+// Defer prefetching to after initial render settles (avoids competing with FCP/LCP main thread tasks)
+if (typeof window !== 'undefined') {
+  if ('requestIdleCallback' in window) {
+    window.requestIdleCallback(() => { prefetchDestinationRoute(); }, { timeout: 4000 });
+  } else {
+    setTimeout(prefetchDestinationRoute, 2500);
+  }
+}
 
 
 interface SystemStatus {

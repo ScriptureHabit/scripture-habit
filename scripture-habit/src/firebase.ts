@@ -202,8 +202,12 @@ if (typeof window !== 'undefined' && window.indexedDB) {
     }
   };
   
-  // Run after app startup settles
-  setTimeout(checkIndexedDb, 1000);
+  // Run health check only after app startup completely settles during idle time
+  if ('requestIdleCallback' in window) {
+    window.requestIdleCallback(() => checkIndexedDb(), { timeout: 6000 });
+  } else {
+    setTimeout(checkIndexedDb, 5000);
+  }
 }
 
 // Global safety net: listen for unhandled promise rejections related to IndexedDB failure
