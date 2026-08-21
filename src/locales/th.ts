@@ -162,7 +162,7 @@ export default {
         "developerName": "ไดจิโร ซากาเนะ (Daijiro Sagane)",
         "developerRole": "ผู้พัฒนา Scripture Habit",
         "openSourceTitle": "เกี่ยวกับโอเพนซอร์ส (Open Source)",
-        "openSourceDesc": "Scripture Habit เป็นโครงการโอเพนซอร์สแบบสมบูรณ์ ทุกคนสามารถตรวจสอบซอร์สโค้ดได้ เราให้ความสำคัญกับความโปร่งใส ความปลอดภัย และการพัฒนาร่วมกัน",
+        "openSourceDesc": "Scripture Habit เป็นโครงการโอเพนซอร์ส ซอร์สโค้ดเปิดเผยต่อสาธารณะบน GitHub เรายินดีรับฟังความคิดเห็น การรายงานข้อผิดพลาดผ่าน Issues และการมีส่วนร่วมผ่าน Pull Requests",
         "githubRepo": "คลังข้อมูล GitHub",
         "githubSponsorsComingSoon": "GitHub Sponsors (เร็วๆ นี้)",
         "feedbackTitle": "ข้อเสนอแนะและการติดต่อ",
@@ -954,11 +954,11 @@ export default {
         },
         "openSource": {
             "title": "โครงการโอเพนซอร์ส (Open Source)",
-            "subtitle": "Scripture Habit เป็นโครงการโอเพนซอร์สแบบสมบูรณ์ เพื่อให้คุณสามารถบันทึกและรักษานิสัยการศึกษาพระคัมภีร์ทุกวันได้อย่างมั่นใจ เราให้ความสำคัญกับความเป็นส่วนตัวและความโปร่งใส",
+            "subtitle": "Scripture Habit เปิดเผยซอร์สโค้ดทั้งหมดบน GitHub เพื่อให้ทุกคนสามารถใช้งานได้อย่างมั่นใจและปลอดภัย",
             "card1Title": "ความโปร่งใสและความปลอดภัย",
             "card1Desc": "ทุกคนสามารถตรวจสอบการทำงานและการจัดการข้อมูลของแอปได้อย่างอิสระ",
             "card2Title": "พัฒนาร่วมกับชุมชน",
-            "card2Desc": "ทุกคนสามารถเสนอแนะฟีเจอร์ รายงานปัญหา และร่วมพัฒนาแอปให้ดียิ่งขึ้นได้",
+            "card2Desc": "ทุกคนสามารถมีส่วนร่วมในการพัฒนาได้ ไม่ว่าจะเป็นการเสนอแนะฟีเจอร์ รายงานข้อผิดพลาดบน Issues หรือส่ง Pull Request บน GitHub",
             "githubBtn": "ดูบน GitHub",
             "sponsorsComingSoon": "GitHub Sponsors (เร็วๆ นี้)"
         },

@@ -6,8 +6,8 @@ English | [日本語](README.ja.md)
 
 An open-source community web application featuring AI real-time translation & group features to make daily scripture study a joyful habit together with friends.
 
- 🌐 **Web Application**: [https://scripturehabit.app](https://scripturehabit.app)  
- 🚀 **Live Demo (No Signup Required)**: [https://scripturehabit.app/en/demo](https://scripturehabit.app/en/demo)
+ **Web Application**: [https://scripturehabit.app](https://scripturehabit.app)  
+ **Live Demo (No Signup Required)**: [https://scripturehabit.app/en/demo](https://scripturehabit.app/en/demo)
 
 <p align="center">
   <img src="https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react" alt="React 19" />
@@ -19,7 +19,7 @@ An open-source community web application featuring AI real-time translation & gr
 
 ---
 
-## 💡 A Note from the Creator (Why I Built This)
+## A Note from the Creator (Why I Built This)
 
 > **"Can we make daily scripture study more fun, meaningful, and connected?"**
 
@@ -37,7 +37,7 @@ Daijiro Sagane
 
 The application is actively deployed and in operation, tracking daily active users studying scriptures. Currently, an average of 10+ users post study notes daily on a continuous basis.
 
-- 📈 **[Daily Note-Posting Active Users (Google Sheet)](https://docs.google.com/spreadsheets/d/YOUR_SPREADSHEET_ID/edit?usp=sharing)**
+- **[Daily Note-Posting Active Users (Google Sheet)](https://docs.google.com/spreadsheets/d/YOUR_SPREADSHEET_ID/edit?usp=sharing)**
 
 ---
 

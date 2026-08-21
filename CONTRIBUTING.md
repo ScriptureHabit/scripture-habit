@@ -16,31 +16,32 @@ Thank you for your interest in contributing to Scripture Habit. We welcome contr
 
 ## Development Setup
 
-### Prerequisites
-
-- **Node.js**: 24.x or higher
-- **npm**: 10.x or higher
-- **Git**
-
-### Getting Started
-
+For a quick start:
 1. **Fork and clone the repository**:
    ```bash
    git clone https://github.com/<your-username>/scripture-habit.git
    cd scripture-habit
    ```
-
-2. **Navigate to the application folder and install dependencies**:
+2. **Install dependencies**:
    ```bash
-   cd scripture-habit
    npm install
    ```
-
-3. **Start the local development server**:
+3. **Start local development**:
    ```bash
+   # Copy environment file
+   cp .env.example .env.local
+
+   # Start Firebase Emulators (in a separate terminal)
+   npm run emulators
+
+   # Seed test data
+   npm run db:seed
+
+   # Start frontend dev server
    npm run dev
    ```
-   The application will be accessible at `http://localhost:5173`.
+
+> For step-by-step instructions, Firebase Emulator configuration, environment variable reference, and troubleshooting, please see the **[Development & Setup Guide](docs/development-guide.md)** (or **[日本語版](docs/ja/development-guide.md)**).
 
 ---
 
@@ -137,32 +138,33 @@ Scripture Habit への貢献に関心を持っていただきありがとうご�
 ---
 
 ## 開発環境のセットアップ
-
-### 前提条件
-
-* **Node.js**: 24.x 以上
-* **npm**: 10.x 以上
-* **Git**
-
-### 手順
-
+ 
+クイックスタート：
 1. **リポジトリのフォークとクローン**:
    ```bash
    git clone https://github.com/<your-username>/scripture-habit.git
    cd scripture-habit
    ```
-
-2. **アプリフォルダに移動して依存関係をインストール**:
+2. **依存関係のインストール**:
    ```bash
-   cd scripture-habit
    npm install
    ```
-
-3. **ローカル開発サーバーの起動**:
+3. **ローカル開発環境の起動**:
    ```bash
+   # 環境変数ファイルの作成
+   cp .env.example .env.local
+
+   # Firebase エミュレータの起動（別ターミナルで実行）
+   npm run emulators
+
+   # テスト用データの投入（シード）
+   npm run db:seed
+
+   # 開発サーバーの起動
    npm run dev
    ```
-   ブラウザで `http://localhost:5173` にアクセスして動作を確認できます。
+
+> ステップバイステップの詳細な環境構築手順、Firebase エミュレータの設定、環境変数リファレンス、およびトラブルシューティングについては、**[開発および環境セットアップガイド (docs/ja/development-guide.md)](docs/ja/development-guide.md)** をご覧ください。
 
 ---
 
@@ -218,8 +220,8 @@ Conventional Commits に準拠しています：
 
 本プロジェクトの翻訳システムは **完全な 1 ファイル完結型（Single Source of Truth & Zero-Config）** です。UI文言、プッシュ通知、AI投稿、聖典の書名、言語メタデータがすべて 1 つのファイルにまとまっています：
 
-* **翻訳マスターファイル**: `scripture-habit/src/locales/en.ts`
-* **各言語ファイル**: `scripture-habit/src/locales/<言語コード>.ts`
+* **翻訳マスターファイル**: `src/locales/en.ts`
+* **各言語ファイル**: `src/locales/<言語コード>.ts`
 
 ### 1. 既存言語の修正・改善
 該当する `src/locales/<lang>.ts` を直接修正し、Pull Request を送信してください。

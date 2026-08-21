@@ -162,7 +162,7 @@ export default {
         "developerName": "Daijiro Sagane",
         "developerRole": "Msanidi wa Scripture Habit",
         "openSourceTitle": "Kuhusu Chanzo Huria (Open Source)",
-        "openSourceDesc": "Scripture Habit ni mradi wa chanzo huria kabisa. Msimbo unapatikana hadharani ili kuhakikisha uwazi, usalama, na maendeleo shirikishi.",
+        "openSourceDesc": "Scripture Habit ni mradi wa chanzo huria. Msimbo unapatikana hadharani kwenye GitHub, na tunakaribisha maoni, ripoti za hitilafu kupitia Issues, na michango kupitia Pull Requests.",
         "githubRepo": "Hifadhi ya GitHub",
         "githubSponsorsComingSoon": "GitHub Sponsors (Inakuja Hivi Karibuni)",
         "feedbackTitle": "Maoni na Mawasiliano",
@@ -954,11 +954,11 @@ export default {
         },
         "openSource": {
             "title": "Mpango wa Chanzo Huria (Open Source)",
-            "subtitle": "Scripture Habit ni chanzo huria kabisa ili uweze kurekodi na kuendeleza tabia ya kila siku ya kusoma maandiko kwa ujasiri. Tunathamini faragha ya kibinafsi na maendeleo ya wazi.",
+            "subtitle": "Scripture Habit imefunguliwa kwenye GitHub ili kila mtu aweze kuitumia kwa uhakika na amani.",
             "card1Title": "Uwazi na Usalama",
             "card1Desc": "Mtu yeyote anaweza kuangalia jinsi programu inavyofanya kazi na inavyoshughulikia data.",
             "card2Title": "Pamoja na Jamii",
-            "card2Desc": "Mtu yeyote anaweza kupendekeza vipengele, kuripoti hitilafu, na kusaidia kuboresha programu.",
+            "card2Desc": "Mtu yeyote anaweza kushiriki katika uundaji kupitia mapendekezo ya vipengele, ripoti za hitilafu kwenye Issues, au Pull Requests kwenye GitHub.",
             "githubBtn": "Tazama kwenye GitHub",
             "sponsorsComingSoon": "GitHub Sponsors (Inakuja Hivi Karibuni)"
         },

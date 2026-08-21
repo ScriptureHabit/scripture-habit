@@ -20,7 +20,7 @@
 #### 1. リポジトリのクローン
 ```bash
 git clone https://github.com/your-username/scripture-habit.git
-cd scripture-habit/scripture-habit
+cd scripture-habit
 ```
 
 #### 2. 依存パッケージのインストール
@@ -138,7 +138,11 @@ Firebase エミュレータの動作には Java が必要です。`Java not foun
 
 ## コントリビューションの流れ
 
-1. **フォーク＆ブランチ作成**: `main` から作業用ブランチを作成（`git checkout -b feature/your-feature-name`）。
-2. **コミット**: 変更内容が分かりやすいコミットメッセージを作成。
-3. **コーディング規約**: React フックのルールを遵守し、`/types` の型定義を活用。
-4. **プルリクエストの作成**: 変更内容の説明や、UI変更がある場合はスクリーンショット/GIFを添付してPRを作成してください。
+ローカルでの開発とテストが完了したら、以下の手順で Pull Request を作成してください：
+
+1. **作業ブランチの作成**: `main` から作業用ブランチを作成（例: `git checkout -b feat/your-feature-name`）。
+2. **コミット**: Conventional Commits に従った分かりやすいコミットメッセージを作成。
+3. **品質チェック**: `npm run check:all` および `npm test` がすべてパスすることを確認。
+4. **プルリクエストの作成**: 変更理由、動作確認手順、UI変更がある場合はスクリーンショットを添付して PR を提出します。
+
+> ブランチ命名規則、コミットメッセージの書式、翻訳の追加ルール、および行動規範の詳細については、**[コントリビューションガイド (CONTRIBUTING.md)](../../CONTRIBUTING.md)** をご確認ください。

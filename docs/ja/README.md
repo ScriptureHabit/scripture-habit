@@ -4,7 +4,7 @@
 
 ---
 
-## 📚 一般アーキテクチャ (General Architecture)
+## 一般アーキテクチャ (General Architecture)
 - **[アーキテクチャ & 構成](architecture.md)**
   - ディレクトリ構成のハイレベルな概要。
   - レイヤー定義（API、内部、バックエンド、フロントエンド）。
@@ -26,7 +26,7 @@
 
 ---
 
-## 💬 機能ディープダイブ (Feature Deep-Dives)
+## 機能ディープダイブ (Feature Deep-Dives)
 - **[チャット & ダッシュボード同期](feature-chat-dashboard.md)**
   - リアルタイム Firestore リスナーの詳細な説明。
   - データと UI の分離。
@@ -49,7 +49,7 @@
 
 ---
 
-## ⚙️ コアロジック & メカニズム (Core Logic & Mechanisms)
+## コアロジック & メカニズム (Core Logic & Mechanisms)
 - **[ノート投稿メカニズム](logic-note-posting.md)**
   - ノート投稿のエンドツーエンドフロー。
   - 詳細なストリークおよびレベル計算ロジック。
@@ -83,7 +83,7 @@
 
 ---
 
-## 🛠️ 運用 & 開発 (Operations & Development)
+## 運用 & 開発 (Operations & Development)
 - **[開発 & 環境構築ガイド](development-guide.md)**
   - ローカルセットアップおよびデプロイ手順。
 - **[技術トラブルシューティング & FAQ](troubleshooting.md)**
@@ -109,7 +109,7 @@
 
 ---
 
-## 🔬 詳細技術解説 (Deep-Dive Detail Guides)
+## 詳細技術解説 (Deep-Dive Detail Guides)
 - **[ノート投稿 & ストリーク計算のコアロジック詳細](details/note-posting-streak.md)**
   - 投稿トランザクション処理シーケンス、タイムゾーン判定ロジック、および36時間猶予期間アルゴリズムの図解とコード解説。
 - **[AI (Gemini) 統合・多言語翻訳・週次要約パイプライン詳細](details/ai-integration.md)**
@@ -137,7 +137,7 @@
 
 ---
 
-## 🎨 デザイン & UX (Design & UX)
+## デザイン & UX (Design & UX)
 - **[UI/UX デザインシステム](design-system.md)**
   - グローバル CSS 変数（トークン）、ビジュアルデザイン、およびモバイルファーストのルール。
   - アニメーションパターンとタイポグラフィ標準。

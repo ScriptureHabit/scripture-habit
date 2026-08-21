@@ -22,22 +22,18 @@ jobs:
         with:
           node-version: 24.x
           cache: 'npm'
-          cache-dependency-path: './scripture-habit/package-lock.json'
+          cache-dependency-path: './package-lock.json'
 
       - name: Install dependencies
-        working-directory: ./scripture-habit
         run: npm ci
 
       - name: Run ESLint
-        working-directory: ./scripture-habit
         run: npm run lint
 
       - name: Run Quality & Consistency Checks
-        working-directory: ./scripture-habit
         run: npm run check:all
 
       - name: Run Unit Tests (Vitest)
-        working-directory: ./scripture-habit
         run: npm test
 
   integration-and-e2e:
@@ -54,7 +50,7 @@ jobs:
         with:
           node-version: 24.x
           cache: 'npm'
-          cache-dependency-path: './scripture-habit/package-lock.json'
+          cache-dependency-path: './package-lock.json'
 
       - name: Set up JDK 21
         uses: actions/setup-java@v5
@@ -63,7 +59,6 @@ jobs:
           distribution: 'temurin'
 
       - name: Create Dummy Env File
-        working-directory: ./scripture-habit
         run: |
           echo "VITE_FIREBASE_API_KEY=demo-api-key" > .env.local
           echo "VITE_FIREBASE_AUTH_DOMAIN=demo-project.firebaseapp.com" >> .env.local
@@ -76,19 +71,15 @@ jobs:
           echo "FIREBASE_PROJECT_ID=scripture-habit-auth" >> .env.local
 
       - name: Install dependencies
-        working-directory: ./scripture-habit
         run: npm ci
 
       - name: Run Integration Tests
-        working-directory: ./scripture-habit
         run: npm run test:internal
 
       - name: Build Project
-        working-directory: ./scripture-habit
         run: npm run build
 
       - name: Run E2E Tests
-        working-directory: ./scripture-habit
         run: npm run test:e2e:ci
 
       - name: Upload Playwright Report
@@ -97,7 +88,7 @@ jobs:
         continue-on-error: true
         with:
           name: playwright-report
-          path: scripture-habit/playwright-report/
+          path: playwright-report/
           retention-days: 3
 
   deploy:

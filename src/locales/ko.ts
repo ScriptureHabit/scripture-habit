@@ -162,7 +162,7 @@ export default {
         "developerName": "사가네 다이지로",
         "developerRole": "Scripture Habit 개발자",
         "openSourceTitle": "오픈 소스 안내",
-        "openSourceDesc": "Scripture Habit은 오픈 소스 프로젝트로 공개되어 있습니다. 소스 코드는 누구나 확인할 수 있으며 투명성과 보안을 소중히 여깁니다.",
+        "openSourceDesc": "Scripture Habit은 오픈 소스 프로젝트로 공개되어 있습니다. 소스 코드는 GitHub에서 누구나 확인할 수 있으며, Issues를 통한 의견이나 버그 제보, Pull Request를 통한 기여도 환영합니다.",
         "githubRepo": "GitHub 저장소",
         "githubSponsorsComingSoon": "GitHub Sponsors (준비 중)",
         "feedbackTitle": "의견 및 피드백",
@@ -954,11 +954,11 @@ export default {
         },
         "openSource": {
             "title": "오픈 소스의 시도",
-            "subtitle": "Scripture Habit은 안심하고 매일의 경전 공부를 기록하고 이어갈 수 있도록 모든 소스 코드를 GitHub에 공개하고 있습니다. 개인의 프라이버시를 존중하며 투명한 개발을 중요하게 생각합니다.",
+            "subtitle": "Scripture Habit은 누구나 안심하고 이용할 수 있도록 모든 소스 코드를 GitHub에 공개하고 있습니다.",
             "card1Title": "투명성과 보안",
             "card1Desc": "누구나 데이터 처리 방식과 앱의 동작 원리를 자유롭게 확인할 수 있습니다.",
             "card2Title": "커뮤니티와 함께",
-            "card2Desc": "누구나 기능 제안, 오류 제보를 통해 앱 개선에 참여할 수 있습니다.",
+            "card2Desc": "GitHub에서의 기능 제안, 버그 신고, Pull Request 등 누구나 개발과 개선에 참여할 수 있습니다.",
             "githubBtn": "GitHub 저장소 보기",
             "sponsorsComingSoon": "GitHub Sponsors (준비 중)"
         },
