@@ -1,13 +1,13 @@
 # Technical Documentation Index
 
 > [!NOTE]
-> 🇯🇵 **[日本語版の技術ドキュメントはこちら (Japanese Version Available)](ja/README.md)**
+> **[日本語版の技術ドキュメントはこちら (Japanese Version Available)](ja/README.md)**
 
 Welcome to the **scripture-habit** technical documentation. This directory contains details about the architecture, features, and core logic of the application.
 
 ---
 
-## 📚 General Architecture
+## General Architecture
 - **[Architecture & Structure](architecture.md)**
   - High-level directory overview.
   - Layer definitions (API, Internal, Backend, Frontend).
@@ -29,7 +29,7 @@ Welcome to the **scripture-habit** technical documentation. This directory conta
 
 ---
 
-## 💬 Feature Deep-Dives
+## Feature Deep-Dives
 - **[Chat & Dashboard Synchronization](feature-chat-dashboard.md)**
   - Detailed explanation of real-time Firestore listeners.
   - The separation of data and UI.
@@ -52,7 +52,7 @@ Welcome to the **scripture-habit** technical documentation. This directory conta
 
 ---
 
-## 🧪 Core Logic & Mechanisms
+## Core Logic & Mechanisms
 - **[Note Posting Mechanism](logic-note-posting.md)**
   - End-to-end flow of posting a note.
   - Detailed streak and level calculation logic.
@@ -86,7 +86,7 @@ Welcome to the **scripture-habit** technical documentation. This directory conta
 
 ---
 
-## 🛠️ Operations & Development
+## Operations & Development
 - **[Development & Environment Guide](development-guide.md)**
   - Local setup and deployment instructions.
 - **[Technical Troubleshooting & FAQ](troubleshooting.md)**
@@ -109,7 +109,7 @@ Welcome to the **scripture-habit** technical documentation. This directory conta
 
 ---
 
-## 🔬 Deep-Dive Detail Guides
+## Deep-Dive Detail Guides
 - **[Note Posting & Streak Logic Deep-Dive](details/note-posting-streak.md)**
   - Detailed transactional step-by-step sequences, localized timezone evaluations, and 36-hour grace period algorithms with Mermaid sequence/flowcharts and annotated code.
 - **[AI (Gemini) Translation & Weekly Recap Pipeline Deep-Dive](details/ai-integration.md)**
@@ -137,7 +137,7 @@ Welcome to the **scripture-habit** technical documentation. This directory conta
 
 ---
 
-## 🎨 Design & UX
+## Design & UX
 - **[UI/UX Design System](design-system.md)**
   - Global CSS tokens, visual design, and mobile-first rules.
   - Animation patterns and typography standards.

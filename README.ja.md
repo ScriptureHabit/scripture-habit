@@ -5,10 +5,10 @@
 > **日々の聖典学習をもっと楽しく、有意義に**  
 > *Making daily scripture study more fun and meaningful.*
 
-毎日の聖書学習を仲間と一緒に楽しく習慣化する、AIリアルタイム翻訳＆グループ機能付きのオープンソースWebアプリです。
+毎日の聖典学習を仲間と一緒に楽しく習慣化する、AIリアルタイム翻訳＆グループチャット機能付きのオープンソースWebアプリです。
 
- 🌐 **Web Application**: [https://scripturehabit.app](https://scripturehabit.app)  
- 🚀 **Live Demo (登録不要で今すぐ体験)**: [https://scripturehabit.app/ja/demo](https://scripturehabit.app/ja/demo)
+ **Web Application**: [https://scripturehabit.app](https://scripturehabit.app)  
+ **Live Demo (登録不要で今すぐ体験)**: [https://scripturehabit.app/ja/demo](https://scripturehabit.app/ja/demo)
 
 <p align="center">
   <img src="https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react" alt="React 19" />
@@ -20,7 +20,7 @@
 
 ---
 
-## 💡 このプロジェクトでみんなとやりたいこと
+## このプロジェクトでみんなとやりたいこと
 
 > **「聖典学習って、もっと楽しくて心に残るものにできるんじゃないか？」**
 
@@ -38,7 +38,7 @@
 
 実際に公開・運用を行っており、日々の学習アクティブユーザー数を記録しています。現在、1日平均10人以上のユーザーがこのアプリで継続的にノートを投稿しています。
 
-- 📈 **[日別ノート投稿ユーザー数 (Google スプレッドシート)](https://docs.google.com/spreadsheets/d/YOUR_SPREADSHEET_ID/edit?usp=sharing)**
+- **[日別ノート投稿ユーザー数 (Google スプレッドシート)](https://docs.google.com/spreadsheets/d/YOUR_SPREADSHEET_ID/edit?usp=sharing)**
 
 ---
 

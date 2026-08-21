@@ -137,9 +137,13 @@ The Firebase Emulator Suite requires Java runtime. If you see `Java not found`:
 
 ---
 
-## Contribution Guidelines
+## Contribution Workflow
+ 
+Once you have made and verified your changes locally:
 
-1. **Fork & Branch**: Create a feature branch from `main` (`git checkout -b feature/your-feature-name`).
-2. **Atomic Commits**: Keep commits concise and descriptive.
-3. **Follow Code Conventions**: Use standard React hooks rules, TypeScript types from `/types`, and maintain existing styling patterns.
-4. **Create a Pull Request**: Provide a clear summary and screenshots/GIFs for any UI modifications.
+1. **Branching**: Create a feature branch from `main` (e.g., `git checkout -b feat/your-feature-name`).
+2. **Atomic Commits**: Follow Conventional Commits format with clear messages.
+3. **Quality Checks**: Ensure `npm run check:all` and `npm test` pass with 0 errors.
+4. **Create a Pull Request**: Submit a PR with a description of what was changed and attach screenshots/GIFs for UI modifications.
+
+> For full branch naming conventions, commit formats, translation contribution steps, and our Code of Conduct, please refer to the **[Contributing Guide (CONTRIBUTING.md)](../CONTRIBUTING.md)**.

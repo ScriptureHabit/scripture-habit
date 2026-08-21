@@ -162,7 +162,7 @@ export default {
         "developerName": "Daijiro Sagane",
         "developerRole": "Tagalikha ng Scripture Habit",
         "openSourceTitle": "Tungkol sa Open Source",
-        "openSourceDesc": "Ang Scripture Habit ay ganap na open source. Ang source code ay bukas para sa lahat upang matiyak ang transparency, seguridad, at sama-samang pagpapaunlad.",
+        "openSourceDesc": "Ang Scripture Habit ay isang open source project. Ang source code ay bukas para sa lahat sa GitHub, at malugod naming tinatanggap ang mga puna, ulat ng bug sa pamamagitan ng Issues, at mga kontribusyon gamit ang Pull Requests.",
         "githubRepo": "GitHub Repository",
         "githubSponsorsComingSoon": "GitHub Sponsors (Malapit Na)",
         "feedbackTitle": "Feedback at Pakikipag-ugnayan",
@@ -954,11 +954,11 @@ export default {
         },
         "openSource": {
             "title": "Inisyatiba sa Open Source",
-            "subtitle": "Ang Scripture Habit ay ganap na open source upang makapag-aral at makapagtala ka ng mga banal na kasulatan araw-araw nang may tiwala. Pinahahalagahan namin ang privacy at bukas na pagpapaunlad.",
+            "subtitle": "Ang Scripture Habit ay open source sa GitHub upang magamit ito ng lahat nang may lubos na tiwala at kapanatagan.",
             "card1Title": "Transparency at Seguridad",
             "card1Desc": "Maaaring suriin ng sinuman kung paano gumagana ang app at pinangangasiwaan ang data.",
             "card2Title": "Kasama ang Komunidad",
-            "card2Desc": "Maaaring magmungkahi ng mga feature, mag-ulat ng mga error, at tumulong sa pagpapabuti ng app.",
+            "card2Desc": "Maaaring lumahok ang sinuman sa pagpapaunlad sa pamamagitan ng mga mungkahi sa feature, ulat ng bug sa Issues, o Pull Requests sa GitHub.",
             "githubBtn": "Tingnan sa GitHub",
             "sponsorsComingSoon": "GitHub Sponsors (Malapit Na)"
         },

@@ -162,7 +162,7 @@ export default {
         "developerName": "Daijiro Sagane",
         "developerRole": "Nhà phát triển Scripture Habit",
         "openSourceTitle": "Mã nguồn mở",
-        "openSourceDesc": "Scripture Habit hoàn toàn là mã nguồn mở. Mã nguồn được công khai để đảm bảo tính minh bạch, bảo mật và cùng phát triển.",
+        "openSourceDesc": "Scripture Habit là một dự án mã nguồn mở. Mã nguồn được công khai trên GitHub, chúng tôi luôn hoan nghênh các ý kiến đóng góp, báo cáo lỗi qua Issues và các đóng góp qua Pull Requests.",
         "githubRepo": "Kho lưu trữ GitHub",
         "githubSponsorsComingSoon": "GitHub Sponsors (Sắp ra mắt)",
         "feedbackTitle": "Ý kiến đóng góp & Liên hệ",
@@ -928,11 +928,11 @@ export default {
         },
         "openSource": {
             "title": "Sáng kiến Mã nguồn Mở",
-            "subtitle": "Scripture Habit hoàn toàn là mã nguồn mở để bạn có thể yên tâm ghi chép và duy trì thói quen học thánh thư mỗi ngày. Chúng tôi luôn coi trọng quyền riêng tư và sự minh bạch.",
+            "subtitle": "Scripture Habit mở mã nguồn trên GitHub để mọi người đều có thể an tâm sử dụng.",
             "card1Title": "Minh bạch & Bảo mật",
             "card1Desc": "Bất kỳ ai cũng có thể tự do kiểm tra cách ứng dụng hoạt động và xử lý dữ liệu.",
             "card2Title": "Phát triển cùng Cộng đồng",
-            "card2Desc": "Bất kỳ ai cũng có thể đề xuất tính năng, báo cáo lỗi và cùng nhau cải thiện ứng dụng.",
+            "card2Desc": "Bất kỳ ai cũng có thể tham gia phát triển thông qua việc đề xuất tính năng, báo lỗi trên Issues hoặc gửi Pull Request trên GitHub.",
             "githubBtn": "Xem trên GitHub",
             "sponsorsComingSoon": "GitHub Sponsors (Sắp ra mắt)"
         },

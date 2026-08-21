@@ -4,7 +4,7 @@ Welcome, AI Developer! This document defines the core architecture, constraints,
 
 ---
 
-## 🏗️ Architectural Foundations
+## Architectural Foundations
 
 We follow a clean, type-safe, and modular architecture designed for good cross-platform (Web & Android) performance.
 
@@ -26,7 +26,7 @@ To prevent performance issues and data synchronization errors, always categorize
 
 ---
 
-## 🔒 Write Policy & Data Integrity
+## Write Policy & Data Integrity
 
 To balance production security with offline responsiveness (Firestore Offline Persistence), the application adopts a **hybrid write policy**.
 
@@ -56,7 +56,7 @@ To balance production security with offline responsiveness (Firestore Offline Pe
 
 ---
 
-## 🤖 AI & Localization Integration
+## AI & Localization Integration
 
 ### 1. Multilingual Design
 *   The application supports multiple languages. Do not hardcode strings in the UI. 
@@ -68,7 +68,7 @@ To balance production security with offline responsiveness (Firestore Offline Pe
 
 ---
 
-## 🧪 Testing & Reliability
+## Testing & Reliability
 
 *   **Security Rules**: Validate security rule adjustments with `@firebase/rules-unit-testing` in `api_internal/rules.test.ts`.
 *   **API Integrations**: Test Express routes against emulated Firestore services. Ensure that `verifyIdToken` is mocked appropriately for user contexts.

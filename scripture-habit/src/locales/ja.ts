@@ -162,7 +162,7 @@ export default {
         "developerName": "相根 大治郎",
         "developerRole": "Scripture Habit 開発者",
         "openSourceTitle": "オープンソースについて",
-        "openSourceDesc": "Scripture Habit はオープンソースプロジェクトとして公開しています。ソースコードは誰でも確認でき、透明性とセキュリティを大切にしています。",
+        "openSourceDesc": "Scripture Habit はオープンソースプロジェクトとして公開しています。ソースコードはGitHubから誰でも確認でき、Issuesでのご意見・不具合報告やPull Requestによる貢献も歓迎しています。",
         "githubRepo": "GitHubリポジトリ",
         "githubSponsorsComingSoon": "GitHub Sponsors (準備中)",
         "feedbackTitle": "ご意見・ご感想・フィードバック",
@@ -962,11 +962,11 @@ export default {
         },
         "openSource": {
             "title": "オープンソースの試み",
-            "subtitle": "Scripture Habit は、日々の聖典学習を安心して記録・継続できるよう、すべてのソースコードを GitHub 上で公開しています。個人のプライバシーを尊重し、透明性のある開発を大切にしています。",
+            "subtitle": "Scripture Habitは誰もが安心して利用できるよう、全てのソースコードをGitHub上で公開しています。",
             "card1Title": "透明性とセキュリティ",
             "card1Desc": "データの扱いやアプリの仕組みを誰でも自由に確認できます。",
             "card2Title": "コミュニティと共に",
-            "card2Desc": "バグ報告や機能の提案など、誰でも改善に参加できます。",
+            "card2Desc": "GitHubでの機能提案やバグ報告、Pull Requestなど、どなたでも開発に参加できます。",
             "githubBtn": "GitHubリポジトリを見る",
             "sponsorsComingSoon": "GitHub Sponsors (準備中)"
         },

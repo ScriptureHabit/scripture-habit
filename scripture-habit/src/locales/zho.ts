@@ -162,7 +162,7 @@ export default {
         "developerName": "相根 大治郎 (Daijiro Sagane)",
         "developerRole": "Scripture Habit 開發者",
         "openSourceTitle": "關於開源專案",
-        "openSourceDesc": "Scripture Habit 是完全開源的專案。任何人都可以檢視原始碼，我們非常重視透明度與安全性。",
+        "openSourceDesc": "Scripture Habit 是完全開源的專案。任何人都可以從 GitHub 檢視原始碼，我們非常歡迎透過 Issues 提供建議與回報問題，或是透過 Pull Request 參與貢獻。",
         "githubRepo": "GitHub 儲存庫",
         "githubSponsorsComingSoon": "GitHub Sponsors (準備中)",
         "feedbackTitle": "意見回饋與聯絡",
@@ -929,11 +929,11 @@ export default {
         },
         "openSource": {
             "title": "開源專案的嘗試",
-            "subtitle": "Scripture Habit 是完全開源的，讓您可以安心記錄並維持每日研讀經文的習慣。我們重視個人隱私與透明的開發過程。",
+            "subtitle": "Scripture Habit 在 GitHub 上完全公開所有原始碼，讓每個人都能安心使用。",
             "card1Title": "透明度與安全性",
             "card1Desc": "任何人都可以自由檢視應用程式的運作方式與資料處理機制。",
             "card2Title": "與社群攜手共創",
-            "card2Desc": "任何人都可以提出功能建議、回報問題，共同協助改進應用程式。",
+            "card2Desc": "任何人都可以透過 GitHub 上的功能建議、Issues 錯誤回報或 Pull Request 參與開發與改進。",
             "githubBtn": "在 GitHub 上檢視",
             "sponsorsComingSoon": "GitHub Sponsors (準備中)"
         },
