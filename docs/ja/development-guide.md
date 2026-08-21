@@ -20,7 +20,7 @@
 #### 1. リポジトリのクローン
 ```bash
 git clone https://github.com/your-username/scripture-habit.git
-cd scripture-habit/scripture-habit
+cd scripture-habit
 ```
 
 #### 2. 依存パッケージのインストール

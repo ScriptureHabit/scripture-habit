@@ -20,7 +20,7 @@ For a quick start:
 1. **Fork and clone the repository**:
    ```bash
    git clone https://github.com/<your-username>/scripture-habit.git
-   cd scripture-habit/scripture-habit
+   cd scripture-habit
    ```
 2. **Install dependencies**:
    ```bash
@@ -143,7 +143,7 @@ Scripture Habit への貢献に関心を持っていただきありがとうご�
 1. **リポジトリのフォークとクローン**:
    ```bash
    git clone https://github.com/<your-username>/scripture-habit.git
-   cd scripture-habit/scripture-habit
+   cd scripture-habit
    ```
 2. **依存関係のインストール**:
    ```bash
@@ -220,8 +220,8 @@ Conventional Commits に準拠しています：
 
 本プロジェクトの翻訳システムは **完全な 1 ファイル完結型（Single Source of Truth & Zero-Config）** です。UI文言、プッシュ通知、AI投稿、聖典の書名、言語メタデータがすべて 1 つのファイルにまとまっています：
 
-* **翻訳マスターファイル**: `scripture-habit/src/locales/en.ts`
-* **各言語ファイル**: `scripture-habit/src/locales/<言語コード>.ts`
+* **翻訳マスターファイル**: `src/locales/en.ts`
+* **各言語ファイル**: `src/locales/<言語コード>.ts`
 
 ### 1. 既存言語の修正・改善
 該当する `src/locales/<lang>.ts` を直接修正し、Pull Request を送信してください。

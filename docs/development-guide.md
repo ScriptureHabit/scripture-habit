@@ -20,7 +20,7 @@ You do **not** need a paid Firebase project or production API keys to develop lo
 #### 1. Clone the Repository
 ```bash
 git clone https://github.com/your-username/scripture-habit.git
-cd scripture-habit/scripture-habit
+cd scripture-habit
 ```
 
 #### 2. Install Dependencies
