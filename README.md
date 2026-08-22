@@ -183,10 +183,10 @@ Thanks goes to these wonderful people:
 <table>
   <tbody>
     <tr>
-      <td align="center" valign="top" width="25%"><a href="https://github.com/daijir"><img src="https://avatars.githubusercontent.com/u/104116248?v=4?s=100" width="100px;" alt="daijiro"/><br /><sub><b>daijiro</b></sub></a></td>
-      <td align="center" valign="top" width="25%"><a href="https://github.com/GreiceMoreira"><img src="https://avatars.githubusercontent.com/u/126085301?v=4?s=100" width="100px;" alt="Greice Moreira"/><br /><sub><b>Greice Moreira</b></sub></a></td>
-      <td align="center" valign="top" width="25%"><a href="https://github.com/Sembatya2020"><img src="https://avatars.githubusercontent.com/u/74312384?v=4?s=100" width="100px;" alt="Ivan Sembatya"/><br /><sub><b>Ivan Sembatya</b></sub></a></td>
-      <td align="center" valign="top" width="25%"><a href="https://github.com/bimbolin"><img src="https://avatars.githubusercontent.com/u/68032738?v=4?s=100" width="100px;" alt="Bimbola Osholowu"/><br /><sub><b>Bimbola Osholowu</b></sub></a></td>
+      <td align="center" valign="top" width="25%"><a href="https://github.com/daijir"><img src="https://avatars.githubusercontent.com/u/153198121?v=4&s=100" width="100px;" alt="daijir"/><br /><sub><b>daijir</b></sub></a></td>
+      <td align="center" valign="top" width="25%"><a href="https://github.com/Sembatya2020"><img src="https://avatars.githubusercontent.com/u/181699473?v=4&s=100" width="100px;" alt="Sembatya2020"/><br /><sub><b>Sembatya2020</b></sub></a></td>
+      <td align="center" valign="top" width="25%"><a href="https://github.com/GreiceMoreira"><img src="https://avatars.githubusercontent.com/u/126085301?v=4&s=100" width="100px;" alt="GreiceMoreira"/><br /><sub><b>GreiceMoreira</b></sub></a></td>
+      <td align="center" valign="top" width="25%"><a href="https://github.com/Bimbolin"><img src="https://avatars.githubusercontent.com/u/128802658?v=4&s=100" width="100px;" alt="Bimbolin"/><br /><sub><b>Bimbolin</b></sub></a></td>
     </tr>
   </tbody>
 </table>
