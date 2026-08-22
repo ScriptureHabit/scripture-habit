@@ -558,6 +558,8 @@ export default {
         "other": "Khác"
     },
     "groupOptions": {
+        "aiGroupAlreadyJoinedBadge": "Đã tham gia",
+        "aiGroupAlreadyJoinedNote": "* Mỗi người chỉ có thể tham gia tối đa 1 nhóm Scripture Habit AI.",
         "title": "Nhóm học tập",
         "joinGroupTitle": "Tham gia nhóm",
         "joinGroupDesc": "Tìm một nhóm hiện có để cùng học tập.",
@@ -778,6 +780,7 @@ export default {
     },
     "welcomeGuideButton": "Đã hiểu!",
     "mascot": {
+        "aiGroupAlreadyJoinedPrompt": "Bạn đã tham gia một nhóm Scripture Habit AI rồi! Hãy khám phá các nhóm khác nhé.",
         "streakCelebration": "Tuyệt vời! Đã đạt tổng cộng {streak} ngày!",
         "doneToday": "Hôm nay làm tốt lắm!\nHẹn gặp lại ngày mai!",
         "promptToday": "Bạn đã đọc hôm nay chưa?\nCùng nhau học nào!",

@@ -145,7 +145,7 @@ export class AiDailyNoteService {
             createdAt: now,
             senderId: 'ai-partner-bot',
             senderNickname: content.botName,
-            senderPhotoURL: '/images/mascot.webp',
+            senderPhotoURL: '/images/ai-mascot.webp',
             isSystemMessage: false,
             isNote: true,
             expireAt: getMessageExpireAt()

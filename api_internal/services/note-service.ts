@@ -507,7 +507,7 @@ export class NoteService {
                     text: congratText,
                     senderId: 'ai-partner-bot',
                     senderNickname: botNickname,
-                    senderPhotoURL: '/images/mascot.webp',
+                    senderPhotoURL: '/images/ai-mascot.webp',
                     createdAt: congratTime,
                     isSystemMessage: false,
                     isNote: false,

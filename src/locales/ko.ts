@@ -584,6 +584,8 @@ export default {
         "other": "기타"
     },
     "groupOptions": {
+        "aiGroupAlreadyJoinedBadge": "참여 중",
+        "aiGroupAlreadyJoinedNote": "* 스크하비 AI 그룹은 1인당 1개 그룹만 참여할 수 있습니다.",
         "title": "학습 그룹",
         "joinGroupTitle": "그룹 가입",
         "joinGroupDesc": "함께 공부할 기존 그룹을 찾으세요.",
@@ -804,6 +806,7 @@ export default {
     },
     "welcomeGuideButton": "알겠습니다!",
     "mascot": {
+        "aiGroupAlreadyJoinedPrompt": "스크하비 AI 그룹에 이미 참여 중이야! 다른 그룹을 찾아보자.",
         "streakCelebration": "대단해요! 총 {streak}일 달성!",
         "doneToday": "오늘도 수고했어요!\n내일 또 만나요!",
         "promptToday": "오늘 경전은 읽었나요?\n함께 공부해요!",

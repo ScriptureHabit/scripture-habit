@@ -22,7 +22,7 @@ const ChatHeader = () => {
   // Onboarding back-to-dashboard guide state
   const isDemo = !!userData?.isAnonymousDemo;
   const step1Done = !!userData?.questCreatedGroup || (userData?.groupIds && userData?.groupIds.length > 0) || !!userData?.groupId;
-  const step2Done = !isDemo && (!!userData?.questPostedNote || (userData?.totalNotes && userData?.totalNotes > 0));
+  const step2Done = !!userData?.questPostedNote;
   const isLegacyCompleted = !isDemo && !userData?.questCreatedGroup && !userData?.questPostedNote &&
     (userData?.totalNotes && userData?.totalNotes > 0) &&
     ((userData?.groupIds && userData?.groupIds.length > 0) || !!userData?.groupId);

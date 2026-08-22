@@ -476,6 +476,21 @@ router.post('/create-ai-group', authenticate, requireEmailVerified, verifyAppChe
                 throw new ValidationError(`You have reached the maximum limit of ${MAX_GROUPS_PER_USER} groups.`);
             }
 
+            // Verify user does not already belong to an AI group (max 1 AI group per user)
+            if (currentGroupIds.length > 0) {
+                const groupDocs = await Promise.all(
+                    currentGroupIds.map((gid) => transaction.get(db.collection('groups').doc(gid)))
+                );
+                const hasExistingAiGroup = groupDocs.some((gDoc) => {
+                    if (!gDoc.exists) return false;
+                    const gData = gDoc.data() as GroupDocument;
+                    return Boolean(gData.isAiGroup || gData.aiCompanionUid === 'ai-partner-bot');
+                });
+                if (hasExistingAiGroup) {
+                    throw new ValidationError('You already belong to a Scripture Habit AI group.');
+                }
+            }
+
             const now = admin.firestore.Timestamp.now();
             const inviteCode = await generateUniqueInviteCode(transaction);
 
@@ -547,7 +562,7 @@ router.post('/create-ai-group', authenticate, requireEmailVerified, verifyAppChe
             transaction.set(groupRef.collection('members').doc('ai-partner-bot'), {
                 uid: 'ai-partner-bot',
                 nickname: botNickname,
-                photoURL: '/images/mascot.webp',
+                photoURL: '/images/ai-mascot.webp',
                 joinedAt: now,
                 lastActiveAt: now,
                 lastReadAt: now,
@@ -559,7 +574,7 @@ router.post('/create-ai-group', authenticate, requireEmailVerified, verifyAppChe
             transaction.set(db.collection('users').doc('ai-partner-bot'), {
                 uid: 'ai-partner-bot',
                 nickname: botNickname,
-                photoURL: '/images/mascot.webp',
+                photoURL: '/images/ai-mascot.webp',
                 isBot: true,
                 createdAt: now
             }, { merge: true });
@@ -590,7 +605,7 @@ router.post('/create-ai-group', authenticate, requireEmailVerified, verifyAppChe
                 createdAt: now,
                 senderId: 'ai-partner-bot',
                 senderNickname: botNickname,
-                senderPhotoURL: '/images/mascot.webp',
+                senderPhotoURL: '/images/ai-mascot.webp',
                 isSystemMessage: false,
                 isNote: false,
                 expireAt: getMessageExpireAt()
@@ -604,7 +619,7 @@ router.post('/create-ai-group', authenticate, requireEmailVerified, verifyAppChe
                     text: congratText,
                     senderId: 'ai-partner-bot',
                     senderNickname: botNickname,
-                    senderPhotoURL: '/images/mascot.webp',
+                    senderPhotoURL: '/images/ai-mascot.webp',
                     createdAt: admin.firestore.Timestamp.fromMillis(now.toMillis() + 2000),
                     isSystemMessage: false,
                     isNote: false,

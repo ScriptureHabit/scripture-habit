@@ -99,7 +99,7 @@ const MemberListItem = ({
                 overflow: 'hidden'
             }}>
                 {member.id === 'ai-partner-bot' ? (
-                    <div style={{ width: '100%', height: '100%', borderRadius: '50%', background: 'linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.4rem' }}>🤖</div>
+                    <img src="/images/ai-mascot.webp" alt="AI" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => { (e.target as HTMLImageElement).src = '/images/mascot.webp'; }} />
                 ) : member.photoURL ? (
                     <img src={member.photoURL} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => { (e.target as HTMLImageElement).src = '/images/mascot.webp'; }} />
                 ) : (

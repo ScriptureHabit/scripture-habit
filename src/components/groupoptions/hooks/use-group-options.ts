@@ -3,11 +3,13 @@ import { auth, db } from '../../../firebase';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { UserData } from '../../../types/user';
+import { GroupService } from '../../../services/group-service';
 import apiClient from '../../../utils/api-client';
 
 export function useGroupOptions() {
   const [user, setUser] = useState<User | null>(null);
   const [userData, setUserData] = useState<UserData | null>(null);
+  const [hasAiGroup, setHasAiGroup] = useState(false);
   const [showWelcomeStory, setShowWelcomeStory] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -36,6 +38,28 @@ export function useGroupOptions() {
 
     return () => unsubscribe();
   }, []);
+
+  useEffect(() => {
+    if (!user?.uid) return;
+
+    const unsubGroups = GroupService.subscribeUserGroups(
+      user.uid,
+      (fetchedGroups) => {
+        const hasAi = fetchedGroups.some((g) => Boolean(g.isAiGroup || g.aiCompanionUid === 'ai-partner-bot'));
+        setHasAiGroup(hasAi);
+      },
+      (err) => {
+        if ((err as { code?: string })?.code !== 'permission-denied') {
+          console.error("[GroupOptions] User groups listener error:", err);
+        }
+      }
+    );
+
+    return () => {
+      unsubGroups();
+      setHasAiGroup(false);
+    };
+  }, [user?.uid]);
 
   useEffect(() => {
     const isE2E = typeof navigator !== 'undefined' && navigator.webdriver;
@@ -72,6 +96,7 @@ export function useGroupOptions() {
   return {
     user,
     userData,
+    hasAiGroup,
     showWelcomeStory,
     loading,
     handleCloseWelcomeStory

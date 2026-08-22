@@ -592,6 +592,8 @@ export default {
         "other": "その他"
     },
     "groupOptions": {
+        "aiGroupAlreadyJoinedBadge": "参加中",
+        "aiGroupAlreadyJoinedNote": "※スクハビAIグループは1人1グループまで参加可能です",
         "title": "学習グループ",
         "joinGroupTitle": "グループに参加",
         "joinGroupDesc": "既存のグループを見つけて一緒に学習しましょう。",
@@ -812,6 +814,7 @@ export default {
     },
     "welcomeGuideButton": "了解しました！",
     "mascot": {
+        "aiGroupAlreadyJoinedPrompt": "スクハビAIグループは参加中だよ！他のグループを探してみよう",
         "streakCelebration": "すごい！合計{streak}日達成！",
         "doneToday": "お疲れ様でした！\nまた明日もお会いしましょう！",
         "promptToday": "今日はもう読みましたか？\n一緒に学習しましょう！",

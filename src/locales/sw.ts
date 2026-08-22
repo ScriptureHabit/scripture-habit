@@ -584,6 +584,8 @@ export default {
         "other": "Nyingine"
     },
     "groupOptions": {
+        "aiGroupAlreadyJoinedBadge": "Umejiunga",
+        "aiGroupAlreadyJoinedNote": "* Unaweza kujiunga na kundi 1 pekee la Scripture Habit AI kwa wakati mmoja.",
         "title": "Vikundi vya Mafunzo",
         "joinGroupTitle": "Jiunge na Kikundi",
         "joinGroupDesc": "Tafuta kikundi kilichopo ili kujifunza pamoja.",
@@ -804,6 +806,7 @@ export default {
     },
     "welcomeGuideButton": "Nimeelewa!",
     "mascot": {
+        "aiGroupAlreadyJoinedPrompt": "Tayari uko kwenye kundi la Scripture Habit AI! Hebu tuchunguze makundi mengine.",
         "streakCelebration": "Inashangaza! Siku {streak} za jumla zimefikiwa!",
         "doneToday": "Kazi nzuri leo!\nTuonane kesho!",
         "promptToday": "Je, umesoma leo?\nTujifunze pamoja!",
