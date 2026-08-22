@@ -65,49 +65,64 @@ npm run build
 
 ---
 
-## Making Changes
+## Making Changes & Git Workflow
 
-### Branch Naming
+We follow the **GitHub Flow** model with **Trunk-Based Development** principles to ensure high development velocity and safe, reliable deployments.
 
-Create a feature branch from `main` using descriptive names:
-- `feat/feature-name` (new features)
-- `fix/bug-description` (bug fixes)
-- `docs/update-guide` (documentation updates)
-- `i18n/language-name` (translations)
+### 1. Branch Strategy (GitHub Flow)
 
-### Commit Conventions
+- `main` branch is always stable, passing tests, and deployable.
+- Always create a new branch from `main` before starting any work.
+- **Keep branches short-lived:** Aim to merge branches within 1 to 2 days to prevent merge conflicts.
+- **Keep Pull Requests small and focused:** Smaller PRs (100–300 lines) are reviewed and merged much faster.
+- **Delete branches after merging:** Clean up local and remote feature branches once merged into `main`.
 
-We follow Conventional Commits:
-- `feat: add spanish audio playback support`
-- `fix: correct streak reset calculation for utc offsets`
-- `docs: update setup instructions in README`
-- `chore: update dependency versions`
+### 2. Branch Naming Conventions
 
-### Pull Request Process
+Use clear, standardized prefixes for your branches:
 
-1. Push your branch to your GitHub fork.
-2. Open a Pull Request against the `main` branch of the upstream repository.
+| Prefix | Purpose | Example |
+| :--- | :--- | :--- |
+| `feat/` | New features or functionality | `feat/ai-group-limit`, `feat/audio-alert` |
+| `fix/` | Bug fixes and patches | `fix/quest-celebration-popup` |
+| `refactor/` | Code refactoring without behavior change | `refactor/user-profile-modal` |
+| `perf/` | Performance optimizations | `perf/translation-cache` |
+| `docs/` | Documentation updates | `docs/update-contributing-guide` |
+| `chore/` | Tooling, dependencies, or CI/CD updates | `chore/upgrade-dependencies` |
+
+### 3. Commit Message Conventions
+
+We follow **Conventional Commits**:
+- `feat(ai-group): enforce 1 AI group per user and update card UI`
+- `fix(quest-modal): prevent unwanted celebration modal on page reload`
+- `docs(contributing): add git branch best practices`
+- `refactor(profile): hide stats section for AI bot accounts`
+- `chore(deps): update npm packages`
+
+### 4. Pull Request Process
+
+1. Push your branch to your GitHub fork or repository.
+2. Open a Pull Request targeting the `main` branch.
 3. Fill out the Pull Request template detailing what was changed, why, and how to verify.
-4. Ensure all automated GitHub Actions CI checks pass.
-5. A maintainer will review your pull request and provide feedback.
+4. Ensure all automated GitHub Actions CI checks (`npm test`, `npm run check:all`, `npm run lint`) pass.
+5. Once approved by a maintainer and merged, delete your feature branch.
 
 ---
 
 ## Adding or Updating Translations
 
 Translations are centralized and modular:
-- **UI Translations**: `scripture-habit/src/locales/<lang>.ts` (`en.ts` is the master translation file)
-- **Scripture Book Names**: `scripture-habit/src/locales/books/<lang>.ts`
-- **Language Metadata**: `scripture-habit/src/config/languages.ts`
+- **UI Translations & Master Keys**: `src/locales/en.ts` (`en.ts` is the master translation file)
+- **Language Configurations**: `src/locales/<lang>.ts` (e.g. `ja.ts`, `es.ts`, `zho.ts`)
 
 ### 1. Improving Existing Translations
-Edit the relevant `src/locales/<lang>.ts` or `src/locales/books/<lang>.ts` file and submit a pull request.
+Edit the relevant `src/locales/<lang>.ts` file and submit a pull request.
 
 ### 2. Adding a New Language
-Adding a new language is straightforward:
-1. Create `src/locales/<lang>.ts` and `src/locales/books/<lang>.ts` using `en.ts` as a template.
-2. Add the new language configuration to `scripture-habit/src/config/languages.ts` (language code, native name, translation key, flag emoji, and Gospel Library 3-letter code).
-3. Run `npm run check:i18n` to verify full translation key coverage.
+Adding a new language is simple:
+1. Copy `src/locales/en.ts` to `src/locales/<lang>.ts` (e.g. `fra.ts`) and translate the values.
+2. Update the `_meta` configuration at the top of the file (native name, flag emoji, LDS 3-letter code).
+3. Run `npm run check:i18n` to verify 100% key coverage across all languages. No manual import registration is needed (automatic discovery).
 
 > **Important Notes for Translators:**
 > - **Preserve Placeholders:** Keep variables inside curly braces (e.g. `{nickname}`, `{streak}`, `{count}`, `{days}`) unchanged in your translations.
@@ -188,31 +203,47 @@ npm run build
 
 ---
 
-## 変更と Pull Request の作成手順
+## 変更と Git ワークフロー
 
-### ブランチの命名規則
+本プロジェクトでは、開発速度の向上と安全で信頼性の高いデプロイを両立するため、**GitHub Flow** および **トランクベース開発（Trunk-Based Development）** の原則を採用しています。
 
-`main` ブランチから作業用ブランチを作成してください：
-* `feat/機能名`（新機能の追加）
-* `fix/修正内容`（バグ修正）
-* `docs/ドキュメント内容`（ドキュメントの修正）
-* `i18n/言語名`（翻訳の追加・修正）
+### 1. ブランチ戦略（GitHub Flow）
 
-### コミットメッセージの規則
+- `main` ブランチは常に安定し、テストが通過したデプロイ可能な状態を維持します。
+- 作業を始める際は、必ず `main` ブランチから新しいブランチを作成してください。
+- **ブランチの寿命を短く保つ:** コンフリクトを防ぐため、1〜2 日程度でマージできる粒度を推奨します。
+- **Pull Request を小さく保つ:** 100〜300 行程度の小さく焦点を絞った PR は、レビューとマージが迅速に行えます。
+- **マージ後のブランチ削除:** `main` にマージされたローカルおよびリモートのブランチは速やかに削除します。
 
-Conventional Commits に準拠しています：
-* `feat: add spanish audio playback support`
-* `fix: correct streak reset calculation for utc offsets`
-* `docs: update setup instructions in README`
-* `chore: update dependency versions`
+### 2. ブランチの命名規則
 
-### Pull Request の流れ
+用途が一目で分かるように、統一された接頭辞を使用してください：
 
-1. 変更ブランチをご自身の GitHub フォークにプッシュします。
-2. 本リポジトリの `main` ブランチに対して Pull Request を作成します。
+| 接頭辞 | 用途 | 例 |
+| :--- | :--- | :--- |
+| `feat/` | 新機能・機能追加 | `feat/ai-group-limit`, `feat/audio-alert` |
+| `fix/` | バグ修正・パッチ | `fix/quest-celebration-popup` |
+| `refactor/` | 振る舞いを変えないコードのリファクタリング | `refactor/user-profile-modal` |
+| `perf/` | パフォーマンス改善 | `perf/translation-cache` |
+| `docs/` | ドキュメントの修正・追記 | `docs/update-contributing-guide` |
+| `chore/` | ビルド設定、依存ライブラリ、CI/CD の更新 | `chore/upgrade-dependencies` |
+
+### 3. コミットメッセージの規則
+
+**Conventional Commits** に準拠しています：
+* `feat(ai-group): enforce 1 AI group per user and update card UI`
+* `fix(quest-modal): prevent unwanted celebration modal on page reload`
+* `docs(contributing): add git branch best practices`
+* `refactor(profile): hide stats section for AI bot accounts`
+* `chore(deps): update npm packages`
+
+### 4. Pull Request の流れ
+
+1. 変更ブランチをご自身の GitHub フォークまたは本リポジトリにプッシュします。
+2. `main` ブランチに対して Pull Request を作成します。
 3. PR テンプレートに沿って、変更内容、理由、確認方法を記入してください。
-4. GitHub Actions による自動 CI テストがすべてパスすることを確認します。
-5. メンテナーがレビューを行い、フィードバックをお返しします。
+4. GitHub Actions による自動 CI テスト（`npm test`, `npm run check:all`, `npm run lint`）がすべてパスすることを確認します。
+5. メンテナーのレビューと承認を受けマージされたら、作業ブランチを削除します。
 
 ---
 
