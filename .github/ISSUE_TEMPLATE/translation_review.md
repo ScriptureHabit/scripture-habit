@@ -1,5 +1,5 @@
 ---
-name: 🔍 Translation Review & Verification
+name: Translation Review & Verification
 about: Report an awkward phrasing, incorrect gospel terminology, or verify translation accuracy for an existing language.
 title: "[i18n Review]: [Language] - [Brief Summary]"
 labels: ["i18n", "documentation"]
@@ -7,13 +7,13 @@ assignees: ''
 
 ---
 
-## 🌐 Target Language
+## Target Language
 - **Language**: (e.g. Japanese, Spanish, Portuguese, Vietnamese, etc.)
 - **Locale File**: `src/locales/<language>.ts`
 
 ---
 
-## 🔍 Issue Details / Review Findings
+## Issue Details / Review Findings
 
 ### 1. Incorrect or Awkward Phrasing
 - **Current Translation / Text**:
@@ -29,6 +29,6 @@ assignees: ''
 
 ---
 
-## 🙋 Can You Submit a PR?
+## Can You Submit a PR?
 - [ ] Yes, I can submit a Pull Request with the fix!
 - [ ] No, please have a maintainer/contributor apply this correction.
