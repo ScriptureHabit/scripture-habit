@@ -559,6 +559,8 @@ export default {
         "other": "其他"
     },
     "groupOptions": {
+        "aiGroupAlreadyJoinedBadge": "已加入",
+        "aiGroupAlreadyJoinedNote": "* 每個用戶最多只能加入 1 個經文習慣 AI 小組。",
         "title": "學習群組",
         "joinGroupTitle": "加入群組",
         "joinGroupDesc": "尋找現有的群組一起研讀。",
@@ -779,6 +781,7 @@ export default {
     },
     "welcomeGuideButton": "了解！",
     "mascot": {
+        "aiGroupAlreadyJoinedPrompt": "你已經加入經文習慣 AI 小組囉！來探索其他小組吧。",
         "streakCelebration": "太棒了！總計 {streak} 天達成！",
         "doneToday": "今天辛苦了！\n明天見！",
         "promptToday": "今天讀經文了嗎？\n我們一起學習吧！",

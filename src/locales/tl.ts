@@ -584,6 +584,8 @@ export default {
         "other": "Iba pa"
     },
     "groupOptions": {
+        "aiGroupAlreadyJoinedBadge": "Sumali na",
+        "aiGroupAlreadyJoinedNote": "* Maaari ka lamang sumali sa 1 pangkat ng Scripture Habit AI sa bawat pagkakataon.",
         "title": "Mga Grupo ng Pag-aaral",
         "joinGroupTitle": "Sumali sa Grupo",
         "joinGroupDesc": "Humanap ng umiiral na grupo para makapag-aral nang sabay.",
@@ -804,6 +806,7 @@ export default {
     },
     "welcomeGuideButton": "Naintindihan!",
     "mascot": {
+        "aiGroupAlreadyJoinedPrompt": "Kasali ka na sa isang pangkat ng Scripture Habit AI! Tuklasin natin ang ibang mga pangkat.",
         "streakCelebration": "Kamangha-mangha! Naka-{streak} na kabuuang araw!",
         "doneToday": "Magaling ang ginawa mo ngayong araw!\nKita-kits bukas!",
         "promptToday": "Nagbasa ka na ba ngayong araw?\nMag-aral tayo nang magkasama!",

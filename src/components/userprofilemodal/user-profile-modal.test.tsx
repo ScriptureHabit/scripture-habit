@@ -104,4 +104,23 @@ describe('UserProfileModal', () => {
         fireEvent.click(avatar!);
         expect(onClose).not.toHaveBeenCalled();
     });
+
+    it('hides stats section for AI bot accounts', () => {
+        const onClose = vi.fn();
+        const botUser: UserData = {
+            uid: 'ai-partner-bot',
+            nickname: 'Scripture Habit AI',
+            streakCount: 0,
+            daysStudiedCount: 0,
+            totalNotes: 0
+        };
+
+        const { container } = renderWithLanguageProvider(<UserProfileModal user={botUser} onClose={onClose} />);
+
+        expect(screen.getByText('Scripture Habit AI')).toBeInTheDocument();
+        expect(container.querySelector('.user-stats')).not.toBeInTheDocument();
+        expect(screen.queryByText('profile.level')).not.toBeInTheDocument();
+        expect(screen.queryByText('dashboard.streak')).not.toBeInTheDocument();
+        expect(screen.queryByText('dashboard.totalNotes')).not.toBeInTheDocument();
+    });
 });

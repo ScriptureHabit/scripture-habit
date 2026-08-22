@@ -560,6 +560,8 @@ export default {
         "other": "Otros"
     },
     "groupOptions": {
+        "aiGroupAlreadyJoinedBadge": "Unido",
+        "aiGroupAlreadyJoinedNote": "* Solo puedes unirte a 1 grupo de Scripture Habit AI a la vez.",
         "title": "Grupos de estudio",
         "joinGroupTitle": "Unirse a un grupo",
         "joinGroupDesc": "Encuentra un grupo existente para estudiar juntos.",
@@ -780,6 +782,7 @@ export default {
     },
     "welcomeGuideButton": "¡Entendido!",
     "mascot": {
+        "aiGroupAlreadyJoinedPrompt": "¡Ya estás en un grupo de Scripture Habit AI! Exploremos otros grupos.",
         "streakCelebration": "¡Increíble! ¡{streak} total de días logrados!",
         "doneToday": "¡Buen trabajo hoy!\n¡Nos vemos mañana!",
         "promptToday": "¿Ya leíste hoy?\n¡Estudiemos juntos!",

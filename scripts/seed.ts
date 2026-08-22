@@ -148,7 +148,10 @@ async function seed() {
             lastPostAt: admin.firestore.Timestamp.fromMillis(Date.now() - 1 * 24 * 60 * 60 * 1000),
             createdAt: threeDaysAgo,
             hasSetKickThreshold: true,
-            kickThreshold: 3
+            kickThreshold: 3,
+            hasCompletedOnboarding: true,
+            questCreatedGroup: true,
+            questPostedNote: true
         });
 
         // Seed demo notes for demo-user so "My Notes" and calendar feel rich and alive

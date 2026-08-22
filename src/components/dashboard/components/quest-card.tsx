@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { doc, updateDoc } from 'firebase/firestore';
@@ -36,7 +36,7 @@ export const QuestCard = ({
   const [showModal, setShowModal] = useState(false);
 
   const step1Done = !!userData.questCreatedGroup || (userData.groupIds && userData.groupIds.length > 0) || !!userData.groupId;
-  const step2Done = !!userData.questPostedNote || (!userData.isAnonymousDemo && !!(userData.totalNotes && userData.totalNotes > 0));
+  const step2Done = !!userData.questPostedNote;
   const allDone = step1Done && step2Done;
 
   // Identify legacy users who have already completed the actions before the quest system was introduced
@@ -46,13 +46,18 @@ export const QuestCard = ({
 
   const isSpotlightVisible = !allDone && !activeModal && !hasActiveModal;
 
+  const isInitialMount = useRef(true);
+  const prevAllDone = useRef(allDone);
+
   useEffect(() => {
     const isE2E = typeof navigator !== 'undefined' && navigator.webdriver;
-    if (allDone && !celebrated && !userData.hasCompletedOnboarding && !isLegacyCompleted && !isE2E) {
-      queueMicrotask(() => {
-        setCelebrated(true);
-        setShowModal(true);
-      });
+    const justCompleted = !isInitialMount.current && !prevAllDone.current && allDone;
+    isInitialMount.current = false;
+    prevAllDone.current = allDone;
+
+    if (justCompleted && !celebrated && !userData.hasCompletedOnboarding && !isLegacyCompleted && !isE2E) {
+      setCelebrated(true);
+      setShowModal(true);
       // Fire premium confetti burst!
       confetti({
         particleCount: 150,

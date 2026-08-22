@@ -18,6 +18,7 @@ const GroupOptions = () => {
     const [creatingAiGroup, setCreatingAiGroup] = useState(false);
     const {
         userData,
+        hasAiGroup,
         showWelcomeStory,
         loading,
         handleCloseWelcomeStory
@@ -28,17 +29,17 @@ const GroupOptions = () => {
     const shouldSpotlightJoin = isDemo && isStage1;
 
     const handleCreateAiGroup = async () => {
-        if (creatingAiGroup) return;
+        if (creatingAiGroup || hasAiGroup) return;
         setCreatingAiGroup(true);
         try {
             const res = await apiClient.post('/api/groups/create-ai-group', {});
             if (res.data && res.data.groupId) {
-                toast.success(t('groupForm.successCreated') || 'AI Partner group created!');
+                toast.success(t('groupForm.successCreated'));
                 navigate(`/${language}/dashboard?groupId=${res.data.groupId}&view=2`);
             }
         } catch (err: unknown) {
             console.error('Failed to create AI group:', err);
-            toast.error(t('groupChat.reportError') || 'Failed to create AI Partner group');
+            toast.error(t('groupChat.reportError'));
         } finally {
             setCreatingAiGroup(false);
         }
@@ -77,20 +78,36 @@ const GroupOptions = () => {
                         <div className="card-mascot">
                             <Mascot
                                 userData={userData}
-                                customMessage={t('mascot.aiGroupPrompt') || '一人でマイペースに勉強したい'}
+                                customMessage={
+                                    hasAiGroup
+                                        ? t('mascot.aiGroupAlreadyJoinedPrompt')
+                                        : t('mascot.aiGroupPrompt')
+                                }
                             />
                         </div>
                         <button 
                             type="button"
                             onClick={handleCreateAiGroup}
-                            disabled={creatingAiGroup}
-                            className="option-card create-card" 
+                            disabled={creatingAiGroup || hasAiGroup}
+                            className={`option-card create-card${hasAiGroup ? ' disabled-card' : ''}`}
                             data-testid="create-ai-group-card"
-                            style={{ cursor: creatingAiGroup ? 'wait' : 'pointer', width: '100%' }}
+                            style={{ cursor: (creatingAiGroup || hasAiGroup) ? (hasAiGroup ? 'not-allowed' : 'wait') : 'pointer', width: '100%' }}
                         >
-                            <div className="icon">🤖</div>
-                            <h3>{t('groupOptions.aiGroupTitle') || 'スクハビAIと始める'}</h3>
-                            <p>{t('groupOptions.aiGroupDesc') || 'スクハビAIと1対1で毎日聖典を学ぶ専用グループを作成します。'}</p>
+                            {hasAiGroup && (
+                                <span className="ai-group-joined-badge" data-testid="ai-group-joined-badge">
+                                    {t('groupOptions.aiGroupAlreadyJoinedBadge')}
+                                </span>
+                            )}
+                            <div className="icon option-icon-img-wrapper">
+                                <img src="/images/ai-mascot-without-background.webp" alt="AI Mascot" className="option-icon-img" onError={(e) => { (e.target as HTMLImageElement).src = '/images/mascot.webp'; }} />
+                            </div>
+                            <h3>{t('groupOptions.aiGroupTitle')}</h3>
+                            <p>{t('groupOptions.aiGroupDesc')}</p>
+                            {hasAiGroup && (
+                                <span className="ai-group-joined-note">
+                                    {t('groupOptions.aiGroupAlreadyJoinedNote')}
+                                </span>
+                            )}
                         </button>
                     </div>
 

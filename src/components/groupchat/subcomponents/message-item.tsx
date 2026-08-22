@@ -68,7 +68,14 @@ const MessageItem = memo(({
           onClick={(e) => { e.stopPropagation(); if (msg.senderId) handleUserProfileClick(msg.senderId); }}
         >
           {isAiBot ? (
-            <div className="ai-bot-avatar">🤖</div>
+            <img
+              src="/images/ai-mascot.webp"
+              alt={displayNickname || 'AI'}
+              className="profile-avatar-img"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = '/images/mascot.webp';
+              }}
+            />
           ) : (msg.senderPhotoURL || (msg.senderId && membersMap?.[msg.senderId]?.photoURL)) ? (
             <img
               src={(msg.senderPhotoURL || (msg.senderId ? membersMap?.[msg.senderId]?.photoURL : undefined)) || undefined}

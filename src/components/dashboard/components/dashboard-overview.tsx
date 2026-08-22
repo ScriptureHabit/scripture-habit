@@ -145,7 +145,7 @@ const DashboardOverview = ({
       {/* Compute active onboarding state */}
       {(() => {
         const step1Done = !!userData?.questCreatedGroup || (userData?.groupIds && userData?.groupIds.length > 0) || !!userData?.groupId;
-        const step2Done = !!userData?.questPostedNote || (!userData?.isAnonymousDemo && !!(userData?.totalNotes && userData?.totalNotes > 0));
+        const step2Done = !!userData?.questPostedNote;
         const isLegacyCompleted = !userData?.isAnonymousDemo && !userData?.questCreatedGroup && !userData?.questPostedNote &&
           (userData?.totalNotes && userData?.totalNotes > 0) &&
           ((userData?.groupIds && userData?.groupIds.length > 0) || !!userData?.groupId);

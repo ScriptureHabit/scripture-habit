@@ -344,6 +344,9 @@ const UserProfileModal = ({ user, onClose }: UserProfileModalProps) => {
 
     if (!currentUser) return null;
 
+    const isBot = userId === 'ai-partner-bot' || userId?.startsWith('bot-') || currentUser.uid === 'ai-partner-bot' || currentUser.uid?.startsWith('bot-');
+    const avatarPhotoURL = isBot ? '/images/ai-mascot.webp' : currentUser.photoURL;
+
     return (
         <div className="user-profile-modal-overlay" onClick={onClose}>
             <div className="user-profile-modal-content" onClick={(e) => e.stopPropagation()}>
@@ -352,24 +355,22 @@ const UserProfileModal = ({ user, onClose }: UserProfileModalProps) => {
                 </button>
                 <div className="modal-header">
                     <div
-                        className={`user-avatar-large ${currentUser.photoURL ? 'has-image' : ''}`}
-                        onClick={() => currentUser.photoURL && setShowFullImage(true)}
-                        style={{ cursor: currentUser.photoURL ? 'pointer' : 'default' }}
+                        className={`user-avatar-large ${avatarPhotoURL ? 'has-image' : ''}`}
+                        onClick={() => avatarPhotoURL && setShowFullImage(true)}
+                        style={{ cursor: avatarPhotoURL ? 'pointer' : 'default' }}
                     >
-                        {userId === 'ai-partner-bot' ? (
-                            <div style={{ width: '100%', height: '100%', borderRadius: '50%', background: 'linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2.5rem' }}>🤖</div>
-                        ) : currentUser.photoURL ? (
-                            <img src={currentUser.photoURL} alt={currentUser.nickname} className="avatar-img" onError={(e) => { (e.target as HTMLImageElement).src = '/images/mascot.webp'; }} />
+                        {avatarPhotoURL ? (
+                            <img src={avatarPhotoURL} alt={currentUser.nickname || 'Avatar'} className="avatar-img" onError={(e) => { (e.target as HTMLImageElement).src = '/images/mascot.webp'; }} />
                         ) : (
                             currentUser.nickname ? currentUser.nickname.substring(0, 1).toUpperCase() : '?'
                         )}
                     </div>
                 </div>
 
-                {showFullImage && currentUser.photoURL && (
+                {showFullImage && avatarPhotoURL && (
                     <div className="full-image-overlay" onClick={() => setShowFullImage(false)}>
                         <div className="full-image-content" onClick={(e) => e.stopPropagation()}>
-                            <img src={currentUser.photoURL} alt={currentUser.nickname} className="full-avatar-img" />
+                            <img src={avatarPhotoURL} alt={currentUser.nickname || 'Avatar'} className="full-avatar-img" />
                             <button className="full-image-close" onClick={() => setShowFullImage(false)}>
                                 <UilTimes size="32" color="white" />
                             </button>
@@ -416,17 +417,17 @@ const UserProfileModal = ({ user, onClose }: UserProfileModalProps) => {
                         </div>
                     )}
 
-                    <div className="user-stats">
-                        <div className="stat-box">
-                            <div className="stat-icon level">
-                                <span style={{ fontWeight: '800', fontSize: '1.2rem' }}>L</span>
+                    {!isBot && (
+                        <div className="user-stats">
+                            <div className="stat-box">
+                                <div className="stat-icon level">
+                                    <span style={{ fontWeight: '800', fontSize: '1.2rem' }}>L</span>
+                                </div>
+                                <div className="stat-info">
+                                    <span className="stat-value">{Math.floor((currentUser.daysStudiedCount || 0) / 7) + 1}</span>
+                                    <span className="stat-label">{t('profile.level')}</span>
+                                </div>
                             </div>
-                            <div className="stat-info">
-                                <span className="stat-value">{Math.floor((currentUser.daysStudiedCount || 0) / 7) + 1}</span>
-                                <span className="stat-label">{t('profile.level')}</span>
-                            </div>
-                        </div>
-                        <div className="stat-box">
                             <div className="stat-icon fire">
                                 <UilFire />
                             </div>
@@ -434,17 +435,17 @@ const UserProfileModal = ({ user, onClose }: UserProfileModalProps) => {
                                 <span className="stat-value">{currentUser.daysStudiedCount || 0}</span>
                                 <span className="stat-label">{t('dashboard.streak')}</span>
                             </div>
-                        </div>
-                        <div className="stat-box">
-                            <div className="stat-icon notes">
-                                <UilFileAlt />
+                            <div className="stat-box">
+                                <div className="stat-icon notes">
+                                    <UilFileAlt />
+                                </div>
+                                <div className="stat-info">
+                                    <span className="stat-value">{currentUser.totalNotes || 0}</span>
+                                    <span className="stat-label">{t('dashboard.totalNotes')}</span>
+                                </div>
                             </div>
-                            <div className="stat-info">
-                                <span className="stat-value">{currentUser.totalNotes || 0}</span>
-                                <span className="stat-label">{t('dashboard.totalNotes')}</span>
-                            </div>
                         </div>
-                    </div>
+                    )}
                 </div>
             </div>
         </div>
