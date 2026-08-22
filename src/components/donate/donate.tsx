@@ -109,9 +109,15 @@ const Donate = ({ userData }: DonateProps) => {
                                 <UilGithub size="20" />
                                 <span>{t('story.githubRepo')}</span>
                             </a>
-                            <div className="sponsors-badge">
+                            <a 
+                                href="https://github.com/sponsors/daijir" 
+                                target="_blank" 
+                                rel="noopener noreferrer" 
+                                className="sponsors-btn"
+                            >
+                                <UilHeart size="20" style={{ color: '#ea4aaa' }} />
                                 <span>{t('story.githubSponsorsComingSoon')}</span>
-                            </div>
+                            </a>
                         </div>
                     </div>
 

@@ -692,6 +692,7 @@ section {
 }
 
 .landing-github-btn,
+.landing-sponsors-btn,
 .landing-sponsors-badge {
     width: 280px;
     max-width: 100%;
@@ -723,14 +724,27 @@ section {
     text-decoration: none;
 }
 
-.landing-sponsors-badge {
-    padding: 0.75rem 1.4rem;
+.landing-sponsors-btn {
+    gap: 0.7rem;
+    padding: 0.85rem 1.6rem;
     background: #FFFFFF;
-    color: #475569;
+    color: #242d49;
     border-radius: 12px;
-    font-size: 0.92rem;
     font-weight: 600;
-    border: 1px dashed #CBD5E1;
+    font-size: 0.98rem;
+    text-decoration: none;
+    border: 1px solid #E2E8F0;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+}
+
+.landing-sponsors-btn:hover {
+    background: #FFF5F7;
+    border-color: #FBCFE8;
+    color: #DB2777;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(219, 39, 119, 0.18);
+    text-decoration: none;
 }
 
 @media (max-width: 768px) {

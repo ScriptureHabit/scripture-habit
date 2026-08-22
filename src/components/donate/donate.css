@@ -144,6 +144,7 @@
 }
 
 .github-btn,
+.sponsors-btn,
 .sponsors-badge {
     width: 280px;
     max-width: 100%;
@@ -175,14 +176,27 @@
     text-decoration: none;
 }
 
-.sponsors-badge {
-    padding: 0.65rem 1.2rem;
-    background: #F1F5F9;
-    color: #475569;
+.sponsors-btn {
+    gap: 0.6rem;
+    padding: 0.75rem 1.4rem;
+    background: #FFFFFF;
+    color: #242d49;
     border-radius: 10px;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     font-weight: 600;
-    border: 1px dashed #CBD5E1;
+    text-decoration: none;
+    border: 1px solid #E2E8F0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+}
+
+.sponsors-btn:hover {
+    background: #FFF5F7;
+    border-color: #FBCFE8;
+    color: #DB2777;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(219, 39, 119, 0.15);
+    text-decoration: none;
 }
 
 /* 3. Feedback Form Section */
