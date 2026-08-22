@@ -164,7 +164,7 @@ export default {
         "openSourceTitle": "Mã nguồn mở",
         "openSourceDesc": "Scripture Habit là một dự án mã nguồn mở. Mã nguồn được công khai trên GitHub, chúng tôi luôn hoan nghênh các ý kiến đóng góp, báo cáo lỗi qua Issues và các đóng góp qua Pull Requests.",
         "githubRepo": "Kho lưu trữ GitHub",
-        "githubSponsorsComingSoon": "GitHub Sponsors (Sắp ra mắt)",
+        "githubSponsorsComingSoon": "GitHub Sponsors",
         "feedbackTitle": "Ý kiến đóng góp & Liên hệ",
         "feedbackDesc": "Nếu bạn có đề xuất tính năng, báo cáo lỗi hoặc chia sẻ cảm nghĩ, vui lòng gửi qua biểu mẫu bên dưới. Tôi đọc tất cả các tin nhắn.",
         "feedbackCategoryIdea": "Ý tưởng / Đề xuất",
@@ -937,7 +937,7 @@ export default {
             "card2Title": "Phát triển cùng Cộng đồng",
             "card2Desc": "Bất kỳ ai cũng có thể tham gia phát triển thông qua việc đề xuất tính năng, báo lỗi trên Issues hoặc gửi Pull Request trên GitHub.",
             "githubBtn": "Xem trên GitHub",
-            "sponsorsComingSoon": "GitHub Sponsors (Sắp ra mắt)"
+            "sponsorsComingSoon": "GitHub Sponsors"
         },
         "seoContent": {
             "faq": {

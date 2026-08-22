@@ -692,32 +692,34 @@ section {
 }
 
 .landing-github-btn,
-.landing-sponsors-btn,
-.landing-sponsors-badge {
+.landing-sponsors-btn {
     width: 280px;
     max-width: 100%;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    box-sizing: border-box;
-    text-align: center;
-}
-
-.landing-github-btn {
     gap: 0.7rem;
     padding: 0.85rem 1.6rem;
-    background: #0F172A;
-    color: white;
     border-radius: 12px;
     font-weight: 600;
     font-size: 0.98rem;
+    line-height: 1.5;
     text-decoration: none;
+    box-sizing: border-box;
+    text-align: center;
     transition: all 0.2s ease;
+}
+
+.landing-github-btn {
+    background: #0F172A;
+    color: white;
+    border: 1px solid #0F172A;
     box-shadow: 0 4px 14px rgba(15, 23, 42, 0.18);
 }
 
 .landing-github-btn:hover {
     background: #1E293B;
+    border-color: #1E293B;
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(15, 23, 42, 0.28);
     color: white;
@@ -725,17 +727,10 @@ section {
 }
 
 .landing-sponsors-btn {
-    gap: 0.7rem;
-    padding: 0.85rem 1.6rem;
     background: #FFFFFF;
     color: #242d49;
-    border-radius: 12px;
-    font-weight: 600;
-    font-size: 0.98rem;
-    text-decoration: none;
     border: 1px solid #E2E8F0;
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
-    transition: all 0.2s ease;
 }
 
 .landing-sponsors-btn:hover {
@@ -768,8 +763,9 @@ section {
     }
 
     .landing-github-btn,
-    .landing-sponsors-badge {
+    .landing-sponsors-btn {
         width: 100%;
+        max-width: 320px;
     }
 }
 

@@ -56,7 +56,7 @@ export const initialEnTranslations = {
             "card2Title": "Built with Community",
             "card2Desc": "Anyone can contribute to development through feature proposals, bug reports via Issues, or Pull Requests on GitHub.",
             "githubBtn": "View on GitHub",
-            "sponsorsComingSoon": "GitHub Sponsors (Coming Soon)"
+            "sponsorsComingSoon": "GitHub Sponsors"
         },
         "seoContent": {
             "faq": {

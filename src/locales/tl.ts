@@ -164,7 +164,7 @@ export default {
         "openSourceTitle": "Tungkol sa Open Source",
         "openSourceDesc": "Ang Scripture Habit ay isang open source project. Ang source code ay bukas para sa lahat sa GitHub, at malugod naming tinatanggap ang mga puna, ulat ng bug sa pamamagitan ng Issues, at mga kontribusyon gamit ang Pull Requests.",
         "githubRepo": "GitHub Repository",
-        "githubSponsorsComingSoon": "GitHub Sponsors (Malapit Na)",
+        "githubSponsorsComingSoon": "GitHub Sponsors",
         "feedbackTitle": "Feedback at Pakikipag-ugnayan",
         "feedbackDesc": "Kung mayroon kayong mga mungkahi sa feature, ulat ng error, o pangkalahatang mensahe, huwag mag-atubiling ipadala ito gamit ang form sa ibaba. Binabasa ko ang bawat mensahe.",
         "feedbackCategoryIdea": "Mungkahi / Ideya",
@@ -963,7 +963,7 @@ export default {
             "card2Title": "Kasama ang Komunidad",
             "card2Desc": "Maaaring lumahok ang sinuman sa pagpapaunlad sa pamamagitan ng mga mungkahi sa feature, ulat ng bug sa Issues, o Pull Requests sa GitHub.",
             "githubBtn": "Tingnan sa GitHub",
-            "sponsorsComingSoon": "GitHub Sponsors (Malapit Na)"
+            "sponsorsComingSoon": "GitHub Sponsors"
         },
         "seoContent": {
             "faq": {

@@ -144,32 +144,34 @@
 }
 
 .github-btn,
-.sponsors-btn,
-.sponsors-badge {
+.sponsors-btn {
     width: 280px;
     max-width: 100%;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    box-sizing: border-box;
-    text-align: center;
-}
-
-.github-btn {
     gap: 0.6rem;
     padding: 0.75rem 1.4rem;
-    background: #0F172A;
-    color: white;
     border-radius: 10px;
     font-weight: 600;
     font-size: 0.95rem;
+    line-height: 1.5;
     text-decoration: none;
+    box-sizing: border-box;
+    text-align: center;
     transition: all 0.2s ease;
+}
+
+.github-btn {
+    background: #0F172A;
+    color: white;
+    border: 1px solid #0F172A;
     box-shadow: 0 2px 8px rgba(15, 23, 42, 0.15);
 }
 
 .github-btn:hover {
     background: #1E293B;
+    border-color: #1E293B;
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(15, 23, 42, 0.25);
     color: white;
@@ -177,17 +179,10 @@
 }
 
 .sponsors-btn {
-    gap: 0.6rem;
-    padding: 0.75rem 1.4rem;
     background: #FFFFFF;
     color: #242d49;
-    border-radius: 10px;
-    font-size: 0.95rem;
-    font-weight: 600;
-    text-decoration: none;
     border: 1px solid #E2E8F0;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    transition: all 0.2s ease;
 }
 
 .sponsors-btn:hover {
@@ -400,7 +395,7 @@
         align-items: stretch;
     }
 
-    .github-btn, .sponsors-badge {
+    .github-btn, .sponsors-btn {
         width: 100%;
         justify-content: center;
         box-sizing: border-box;

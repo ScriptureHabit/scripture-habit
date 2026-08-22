@@ -164,7 +164,7 @@ export default {
         "openSourceTitle": "關於開源專案",
         "openSourceDesc": "Scripture Habit 是完全開源的專案。任何人都可以從 GitHub 檢視原始碼，我們非常歡迎透過 Issues 提供建議與回報問題，或是透過 Pull Request 參與貢獻。",
         "githubRepo": "GitHub 儲存庫",
-        "githubSponsorsComingSoon": "GitHub Sponsors (準備中)",
+        "githubSponsorsComingSoon": "GitHub Sponsors",
         "feedbackTitle": "意見回饋與聯絡",
         "feedbackDesc": "如果您有功能建議、問題回報或任何想法，歡迎隨時透過下方表單發送。我會閱讀每一則留言。",
         "feedbackCategoryIdea": "功能建議 / 想法",
@@ -938,7 +938,7 @@ export default {
             "card2Title": "與社群攜手共創",
             "card2Desc": "任何人都可以透過 GitHub 上的功能建議、Issues 錯誤回報或 Pull Request 參與開發與改進。",
             "githubBtn": "在 GitHub 上檢視",
-            "sponsorsComingSoon": "GitHub Sponsors (準備中)"
+            "sponsorsComingSoon": "GitHub Sponsors"
         },
         "seoContent": {
             "faq": {

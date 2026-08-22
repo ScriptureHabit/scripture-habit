@@ -164,7 +164,7 @@ export default {
         "openSourceTitle": "Open Source",
         "openSourceDesc": "Scripture Habit is an open-source project. The source code is publicly available on GitHub, and we welcome feedback, bug reports via Issues, and contributions through Pull Requests.",
         "githubRepo": "GitHub Repository",
-        "githubSponsorsComingSoon": "GitHub Sponsors (Coming Soon)",
+        "githubSponsorsComingSoon": "GitHub Sponsors",
         "feedbackTitle": "Feedback & Contact",
         "feedbackDesc": "If you have feature suggestions, bug reports, or general thoughts, please feel free to send them using the form below. I read every message.",
         "feedbackCategoryIdea": "Feature Request / Idea",
@@ -963,7 +963,7 @@ export default {
             "card2Title": "Built with Community",
             "card2Desc": "Anyone can contribute to development through feature proposals, bug reports via Issues, or Pull Requests on GitHub.",
             "githubBtn": "View on GitHub",
-            "sponsorsComingSoon": "GitHub Sponsors (Coming Soon)"
+            "sponsorsComingSoon": "GitHub Sponsors"
         },
         "seoContent": {
             "faq": {
