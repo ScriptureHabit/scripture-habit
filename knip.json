@@ -1,0 +1,32 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "entry": [
+    "backend/index.ts",
+    "api_internal/**/*.ts",
+    "scripts/**/*.ts",
+    "tests/**/*.ts"
+  ],
+  "project": [
+    "src/**/*.{ts,tsx}",
+    "backend/**/*.{ts,js}",
+    "api_internal/**/*.{ts,js}",
+    "scripts/**/*.{ts,js}",
+    "tests/**/*.{ts,js}"
+  ],
+  "ignoreDependencies": [
+    "@lhci/cli",
+    "@opentelemetry/core",
+    "cors",
+    "helmet",
+    "@types/cors",
+    "@playwright/browser-chromium",
+    "@playwright/browser-webkit",
+    "cross-spawn",
+    "hono"
+  ],
+  "ignoreBinaries": [
+    "netstat",
+    "findstr",
+    "tasklist"
+  ]
+}

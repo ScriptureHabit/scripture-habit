@@ -9,6 +9,13 @@ interface LocaleData {
     title?: string;
     description?: string;
   };
+  landing?: {
+    hero?: {
+      title?: string;
+      subtitle?: string;
+      mascotBubble?: string;
+    };
+  };
   [key: string]: unknown;
 }
 
@@ -55,6 +62,30 @@ async function localizeMeta() {
       /<meta name="description" content=".*?"\s*\/?>/,
       `<meta name="description" content="${description}" />`
     );
+
+    // Replace hero text if available
+    const heroTitle = localeData.landing?.hero?.title;
+    const heroSubtitle = localeData.landing?.hero?.subtitle;
+    const mascotBubble = localeData.landing?.hero?.mascotBubble;
+
+    if (heroTitle) {
+      localizedHtml = localizedHtml.replace(
+        /<h1 class="hero-title">.*?<\/h1>/,
+        `<h1 class="hero-title">${escapeHtmlAttr(heroTitle)}</h1>`
+      );
+    }
+    if (heroSubtitle) {
+      localizedHtml = localizedHtml.replace(
+        /<p class="hero-subtitle">.*?<\/p>/,
+        `<p class="hero-subtitle">${escapeHtmlAttr(heroSubtitle)}</p>`
+      );
+    }
+    if (mascotBubble) {
+      localizedHtml = localizedHtml.replace(
+        /<span class="mascot-bubble-text">.*?<\/span>/,
+        `<span class="mascot-bubble-text">${escapeHtmlAttr(mascotBubble)}</span>`
+      );
+    }
 
     // Replace og:title
     localizedHtml = localizedHtml.replace(

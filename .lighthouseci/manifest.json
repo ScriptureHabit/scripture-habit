@@ -1,0 +1,14 @@
+[
+  {
+    "url": "http://localhost:53408/index.html",
+    "isRepresentativeRun": true,
+    "htmlPath": "C:\\Users\\dazhi\\code\\scripture-habit\\.lighthouseci\\localhost-index_html-2026_08_22_04_57_20.report.html",
+    "jsonPath": "C:\\Users\\dazhi\\code\\scripture-habit\\.lighthouseci\\localhost-index_html-2026_08_22_04_57_20.report.json",
+    "summary": {
+      "performance": 0.74,
+      "accessibility": 0.94,
+      "best-practices": 0.96,
+      "seo": 1
+    }
+  }
+]

@@ -6,13 +6,9 @@ import { loadTranslations, loadBookTranslations } from '../locales/i18n';
 import { identifyBookKey } from '../utils/book-ref-mapper';
 import apiClient from '../utils/api-client';
 
-// Static en for initial load/fallback
-import enTranslations from '../locales/en';
-
-const enBooks = (enTranslations.books || {}) as Record<string, string>;
-
 import { Language, TranslationValue, NestedTranslations, SUPPORTED_LANGUAGES, DEFAULT_LANGUAGE } from '../config/languages';
 import { LanguageContext } from './language-context';
+import { initialEnTranslations } from '../locales/initial-translations';
 
 // --- Helpers ---
 
@@ -67,8 +63,8 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     const { userData, loading: authLoading } = useAuth();
 
     const [language, setLanguageInternal] = useState<Language>(detectInitialLanguage);
-    const [translations, setTranslations] = useState<NestedTranslations>(enTranslations as NestedTranslations);
-    const [bookTranslations, setBookTranslations] = useState<Record<string, string>>(enBooks);
+    const [translations, setTranslations] = useState<NestedTranslations>(initialEnTranslations as unknown as NestedTranslations);
+    const [bookTranslations, setBookTranslations] = useState<Record<string, string>>({});
     const [isLoaded, setIsLoaded] = useState(false);
 
     const lastManualChangeTime = React.useRef<number>(0);
@@ -175,26 +171,18 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
         const load = async () => {
             setIsLoaded(false);
             try {
-                if (language === 'en') {
-                    setTranslations(enTranslations);
-                    setBookTranslations(enBooks);
-                    setIsLoaded(true);
-                } else {
-                    // Load BOTH together to ensure they stay in sync
-                    const [trans, books] = await Promise.all([
-                        loadTranslations(language),
-                        loadBookTranslations(language)
-                    ]);
+                // Load BOTH together to ensure they stay in sync
+                const [trans, books] = await Promise.all([
+                    loadTranslations(language),
+                    loadBookTranslations(language)
+                ]);
 
-                    // Use functional updates to prevent stale state issues
-                    setTranslations(trans as NestedTranslations);
-                    setBookTranslations(books as Record<string, string>);
-                    setIsLoaded(true);
-                }
+                // Use functional updates to prevent stale state issues
+                setTranslations(trans as NestedTranslations);
+                setBookTranslations(books as Record<string, string>);
+                setIsLoaded(true);
             } catch (error) {
                 console.error('Failed to load translations for:', language, error);
-                setTranslations(enTranslations);
-                setBookTranslations(enBooks);
                 setIsLoaded(true);
             }
         };
@@ -204,7 +192,7 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     const translateBookName = useCallback((bookName: string | null | undefined): string => {
         if (!bookName) return '';
 
-        const books = (bookTranslations || enBooks) as Record<string, string>;
+        const books = (bookTranslations || {}) as Record<string, string>;
 
         // Try current language
         if (books[bookName]) {
@@ -215,22 +203,8 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
         const englishKey = identifyBookKey(bookName);
         if (books[englishKey]) return books[englishKey];
 
-        // Try English fallback
-        if (language !== 'en') {
-            if (enBooks[englishKey]) return enBooks[englishKey];
-            if (enBooks[bookName]) {
-                return enBooks[bookName];
-            }
-            const lowerKey = englishKey.toLowerCase();
-            for (const [englishName, translatedName] of Object.entries(enBooks)) {
-                if (englishName.toLowerCase() === lowerKey) {
-                    return translatedName;
-                }
-            }
-        }
-
         return bookName;
-    }, [bookTranslations, language]);
+    }, [bookTranslations]);
 
     const translateChapterField = useCallback((chapterText: string | null | undefined): string => {
         if (!chapterText) return '';
@@ -316,22 +290,11 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
             if (current && typeof current === 'object' && !Array.isArray(current) && current[k] !== undefined) {
                 current = current[k];
             } else {
-                if (language !== 'en') {
-                    let enCurrent: TranslationValue | undefined = enTranslations as NestedTranslations;
-                    for (const ek of keys) {
-                        if (enCurrent && typeof enCurrent === 'object' && !Array.isArray(enCurrent) && enCurrent[ek] !== undefined) {
-                            enCurrent = enCurrent[ek];
-                        } else {
-                            return null;
-                        }
-                    }
-                    return enCurrent;
-                }
                 return null;
             }
         }
         return current ?? null;
-    }, [language, translations]);
+    }, [translations]);
 
     const t = useCallback((key: string, replacements: Record<string, string | number> = {}): string => {
         const value = getValueFromPath(key);

@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { detectInAppBrowser, getAndroidIntentUrl, getLineExternalUrl, openExternalUrl } from '../../utils/browser-detection';
 import './browser-warning-modal.css';
-import { UilCheckCircle, UilInfoCircle, UilCopyAlt, UilExternalLinkAlt, UilTimes } from '@iconscout/react-unicons';
+import { CheckCircle2, Info, Copy, ExternalLink, X } from 'lucide-react';
 import { toast } from 'react-toastify';
 
 interface BrowserWarningModalProps {
@@ -92,7 +92,7 @@ const BrowserWarningModal = ({ isOpen, onClose, onContinue, t }: BrowserWarningM
                 <div className="modal-header">
                     <h2>{t('browserWarning.modalTitle')}</h2>
                     <button className="modal-close-btn" onClick={onClose} aria-label="Close">
-                        <UilTimes size="24" />
+                        <X size={24} />
                     </button>
                 </div>
 
@@ -103,7 +103,7 @@ const BrowserWarningModal = ({ isOpen, onClose, onContinue, t }: BrowserWarningM
                 {detectedApp && (
                     <div className="in-app-instruction">
                         <div className="instruction-header">
-                            <UilInfoCircle size="20" className="info-icon" />
+                            <Info size={20} className="info-icon" />
                             <span>
                                 {detectedApp === 'facebook'
                                     ? (isIos ? t('browserWarning.howToOpen.facebook_ios') : t('browserWarning.howToOpen.facebook_android'))
@@ -117,11 +117,11 @@ const BrowserWarningModal = ({ isOpen, onClose, onContinue, t }: BrowserWarningM
 
                 <div className="browser-action-buttons">
                     <button className="browser-copy-btn" onClick={handleActionClick}>
-                        <UilCopyAlt size="20" />
+                        <Copy size={20} />
                         {getCopyButtonText()}
                     </button>
                     <button className="browser-continue-btn" onClick={onContinue}>
-                        <UilExternalLinkAlt size="20" />
+                        <ExternalLink size={20} />
                         {t('browserWarning.continueButton')}
                     </button>
                 </div>
@@ -132,15 +132,15 @@ const BrowserWarningModal = ({ isOpen, onClose, onContinue, t }: BrowserWarningM
                         <div className="browser-icons">
                             <div className="browser-icon-item">
                                 <img src="/images/chrome.webp" alt="Chrome" className="browser-icon-img" />
-                                <UilCheckCircle className="status-mark o-mark" size="24" />
+                                <CheckCircle2 className="status-mark o-mark" size={24} />
                             </div>
                             <div className="browser-icon-item">
                                 <img src="/images/safari.webp" alt="Safari" className="browser-icon-img" />
-                                <UilCheckCircle className="status-mark o-mark" size="24" />
+                                <CheckCircle2 className="status-mark o-mark" size={24} />
                             </div>
                             <div className="browser-icon-item">
                                 <img src="/images/edge.webp" alt="Edge" className="browser-icon-img" />
-                                <UilCheckCircle className="status-mark o-mark" size="24" />
+                                <CheckCircle2 className="status-mark o-mark" size={24} />
                             </div>
                         </div>
                     </div>

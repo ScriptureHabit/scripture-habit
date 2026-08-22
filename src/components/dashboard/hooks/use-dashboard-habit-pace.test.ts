@@ -5,14 +5,6 @@ import { toast } from 'react-toastify';
 import { http, HttpResponse } from 'msw';
 import { server } from '../../../mocks/server';
 
-// Mock AuthService instead of Firebase directly
-vi.mock('../../../services/auth-service', () => ({
-    AuthService: {
-        getIdToken: vi.fn(() => Promise.resolve('mock-token')),
-        getAppCheckToken: vi.fn(() => Promise.resolve('mock-appcheck-token'))
-    }
-}));
-
 // Mock react-toastify
 vi.mock('react-toastify', () => ({
     toast: {

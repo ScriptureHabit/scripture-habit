@@ -1,11 +1,9 @@
 import { Routes, Route, useLocation, Navigate, useNavigate } from 'react-router-dom';
-import { ToastContainer, toast } from "react-toastify";
 import "./app.css";
 import { Suspense, useEffect, useState, useRef } from 'react';
 
 import { useQuery } from '@tanstack/react-query';
 import { db, logFirebaseEvent } from './firebase';
-import { doc, getDoc } from 'firebase/firestore';
 import { FirebaseError } from 'firebase/app';
 
 import { useAuth } from './hooks/use-auth';
@@ -23,6 +21,8 @@ import BrowserWarningWrapper from './components/browserwarningmodal/browser-warn
 
 import { lazyWithRetry } from './utils/lazy-with-retry';
 
+import LandingPage from './components/landingpage/landing-page';
+
 // Dynamic component loaders (centralized to prevent path duplication across lazy loading & prefetching)
 const componentLoaders = {
   SignupForm: () => import('./components/signupform/signup-form'),
@@ -32,7 +32,6 @@ const componentLoaders = {
   JoinGroup: () => import('./components/joingroup/join-group'),
   GroupDetails: () => import('./components/groupdetails/group-details'),
   GroupOptions: () => import('./components/groupoptions/group-options'),
-  LandingPage: () => import('./components/landingpage/landing-page'),
   Welcome: () => import('./components/welcome/welcome'),
   ForgotPassword: () => import('./components/forgotpassword/forgot-password'),
   InviteRedirect: () => import('./components/inviteredirect/invite-redirect'),
@@ -43,6 +42,7 @@ const componentLoaders = {
   TermsOfService: () => import('./components/termsofservice/terms-of-service'),
   LegalDisclosure: () => import('./components/legaldisclosure/legal-disclosure'),
   DemoLogin: () => import('./components/demo/demo-login'),
+  ToastContainer: () => import('react-toastify').then(m => ({ default: m.ToastContainer })),
 };
 
 // Lazy load components with retry resiliency
@@ -53,7 +53,6 @@ const GroupForm = lazyWithRetry(componentLoaders.GroupForm);
 const JoinGroup = lazyWithRetry(componentLoaders.JoinGroup);
 const GroupDetails = lazyWithRetry(componentLoaders.GroupDetails);
 const GroupOptions = lazyWithRetry(componentLoaders.GroupOptions);
-const LandingPage = lazyWithRetry(componentLoaders.LandingPage);
 const Welcome = lazyWithRetry(componentLoaders.Welcome);
 const ForgotPassword = lazyWithRetry(componentLoaders.ForgotPassword);
 const InviteRedirect = lazyWithRetry(componentLoaders.InviteRedirect);
@@ -64,8 +63,9 @@ const PrivacyPolicy = lazyWithRetry(componentLoaders.PrivacyPolicy);
 const TermsOfService = lazyWithRetry(componentLoaders.TermsOfService);
 const LegalDisclosure = lazyWithRetry(componentLoaders.LegalDisclosure);
 const DemoLogin = lazyWithRetry(componentLoaders.DemoLogin);
+const LazyToastContainer = lazyWithRetry(componentLoaders.ToastContainer);
 
-// Route-aware prefetching: start downloading destination bundle in parallel while Auth is resolving
+// Route-aware prefetching: start downloading destination bundle in background AFTER initial interaction/idle
 const prefetchDestinationRoute = () => {
   if (typeof window === 'undefined') return;
   const path = window.location.pathname.toLowerCase();
@@ -74,21 +74,18 @@ const prefetchDestinationRoute = () => {
     { match: (p: string) => p.includes('/dashboard') || p.includes('/profile'), load: componentLoaders.Dashboard },
     { match: (p: string) => p.includes('/login'), load: componentLoaders.LoginForm },
     { match: (p: string) => p.includes('/welcome'), load: componentLoaders.Welcome },
-    { match: (p: string) => p.includes('/signup'), load: componentLoaders.SignupForm },
-    { match: (p: string) => p.includes('/join/'), load: componentLoaders.InviteRedirect },
-    { match: (p: string) => p === '' || p === '/' || p.endsWith('/'), load: componentLoaders.LandingPage },
   ];
 
   const target = prefetchRules.find(rule => rule.match(path));
-  target?.load().catch(() => {});
+  target?.load().catch(() => { });
 };
 
-// Defer prefetching to after initial render settles (avoids competing with FCP/LCP main thread tasks)
+// Defer prefetching strictly to idle (min 6s) to avoid competing with Lighthouse FCP/TBT
 if (typeof window !== 'undefined') {
   if ('requestIdleCallback' in window) {
-    window.requestIdleCallback(() => { prefetchDestinationRoute(); }, { timeout: 4000 });
+    window.requestIdleCallback(() => { prefetchDestinationRoute(); }, { timeout: 8000 });
   } else {
-    setTimeout(prefetchDestinationRoute, 2500);
+    setTimeout(prefetchDestinationRoute, 6000);
   }
 }
 
@@ -249,18 +246,18 @@ const App = () => {
       try {
         const currentUrl = new URL(window.location.href);
         const targetUrl = new URL(targetUrlStr, window.location.origin);
-        
+
         if (currentUrl.pathname !== targetUrl.pathname) return false;
-        
+
         const ignoreParams = ['opened_from_push'];
         const curParams = new URLSearchParams(currentUrl.search);
         const tarParams = new URLSearchParams(targetUrl.search);
-        
+
         ignoreParams.forEach(p => {
           curParams.delete(p);
           tarParams.delete(p);
         });
-        
+
         curParams.sort();
         tarParams.sort();
         return curParams.toString() === tarParams.toString();
@@ -325,10 +322,15 @@ const App = () => {
     };
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
-    // Setup foreground notifications
-    const unsubscribe = setupMessageListener((payload) => {
+    if (!user) return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+
+    // Setup foreground notifications (only when logged in)
+    const unsubscribe = setupMessageListener(async (payload) => {
       const title = payload.data?.title || payload.notification?.title || 'Notification';
       const body = payload.data?.body || payload.notification?.body || '';
+      const { toast } = await import('react-toastify');
       if (body) {
         toast.info(`${title}: ${body}`, { autoClose: 5000 });
       } else {
@@ -342,13 +344,14 @@ const App = () => {
         unsubscribe();
       }
     };
-  }, []);
+  }, [user]);
 
   const { data: systemStatus, error: systemStatusError } = useQuery<SystemStatus>({
     queryKey: ['system', 'status'],
     queryFn: async () => {
       if (!db) throw new Error("Firestore not initialized");
 
+      const { doc, getDoc } = await import('firebase/firestore');
       const statusRef = doc(db, 'system', 'status');
       const docSnap = await getDoc(statusRef);
       if (docSnap.exists()) {
@@ -357,7 +360,7 @@ const App = () => {
       }
       return { loading: false, error: null };
     },
-    enabled: !!db,
+    enabled: !!db && !!user,
     staleTime: 1000 * 60 * 30, // 30 mins memory cache
     throwOnError: (err: unknown) => {
       // Suppress permission-denied errors to prevent full app crashes
@@ -384,7 +387,7 @@ const App = () => {
     const searchParams = new URLSearchParams(location.search);
     if (searchParams.get('opened_from_push') === '1') {
       void logFirebaseEvent('notification_opened', { source: 'pwa_push' });
-      
+
       // Clean up the URL so it doesn't log again on refresh
       searchParams.delete('opened_from_push');
       const searchStr = searchParams.toString();
@@ -490,13 +493,15 @@ const App = () => {
         <SEOManager />
         <PWAUpdateHandler />
         {renderContent()}
-        <ToastContainer position="top-right" autoClose={3000} />
-        <InstallPrompt />
-        <CookieConsent />
-        <BrowserWarningWrapper
-          isOpen={showBrowserWarning}
-          onClose={() => setShowBrowserWarning(false)}
-        />
+        <Suspense fallback={null}>
+          <LazyToastContainer position="top-right" autoClose={3000} />
+          <InstallPrompt />
+          <CookieConsent />
+          <BrowserWarningWrapper
+            isOpen={showBrowserWarning}
+            onClose={() => setShowBrowserWarning(false)}
+          />
+        </Suspense>
       </LanguageProvider>
     </SettingsProvider>
   );

@@ -5,7 +5,7 @@ import { LANGUAGES } from '../../config/languages';
 import Button from '../button/button';
 import './landing-page.css';
 import Footer from '../footer/footer';
-import { UilGlobe, UilMultiply, UilShare, UilPlusSquare, UilApps, UilRocket, UilGithub, UilShieldCheck, UilUsersAlt } from '@iconscout/react-unicons';
+import { Globe, X, Share2, PlusSquare, LayoutGrid, Rocket, ShieldCheck, Users } from 'lucide-react';
 
 
 const LandingPage = () => {
@@ -24,19 +24,21 @@ const LandingPage = () => {
         if (isAndroid) return 'android';
         return 'desktop';
     });
-    const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+    const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(() => {
+        if (typeof window !== 'undefined' && window.deferredPWAPrompt) {
+            return window.deferredPWAPrompt;
+        }
+        return null;
+    });
 
     useEffect(() => {
-        // Check for globally captured prompt
-        const checkPrompt = () => {
+        const handlePrompt = () => {
             if (window.deferredPWAPrompt) {
                 setDeferredPrompt(window.deferredPWAPrompt);
             }
         };
-
-        checkPrompt();
-        const interval = setInterval(checkPrompt, 1000);
-        return () => clearInterval(interval);
+        window.addEventListener('beforeinstallprompt', handlePrompt);
+        return () => window.removeEventListener('beforeinstallprompt', handlePrompt);
     }, []);
 
     const handleDownloadClick = () => {
@@ -68,7 +70,7 @@ const LandingPage = () => {
                         aria-expanded={isLangMenuOpen}
                         aria-haspopup="true"
                     >
-                        <UilGlobe size="20" />
+                        <Globe size={20} />
                         <span>{currentLang.flag} {currentLang.name}</span>
                     </button>
 
@@ -99,7 +101,15 @@ const LandingPage = () => {
                             <span className="mascot-bubble-text">{t('landing.hero.mascotBubble')}</span>
                             <div className="mascot-bubble-tail"></div>
                         </div>
-                        <img src="/images/mascot.webp" alt="Welcome Bird" className="hero-mascot-img" />
+                        <img 
+                            src="/images/mascot.webp" 
+                            alt="Welcome Bird" 
+                            className="hero-mascot-img" 
+                            width="200" 
+                            height="200"
+                            fetchPriority="high"
+                            decoding="async"
+                        />
                     </div>
                     <div className="hero-content">
                         <h1 className="hero-title">{t('landing.hero.title')}</h1>
@@ -109,14 +119,14 @@ const LandingPage = () => {
                                 className="cta-button primary-cta"
                                 onClick={handleDownloadClick}
                             >
-                                <UilApps size="20" style={{ marginRight: '8px', verticalAlign: 'middle' }} />
+                                <LayoutGrid size={20} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
                                 {t('landing.hero.downloadCta')}
                             </Button>
                             <Button
                                 className="cta-button demo-cta"
                                 onClick={() => navigate(`/${language}/demo`)}
                             >
-                                <UilRocket size="20" style={{ marginRight: '8px', verticalAlign: 'middle' }} />
+                                <Rocket size={20} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
                                 {t('landing.hero.demoCta')}
                             </Button>
                             <Button
@@ -139,7 +149,15 @@ const LandingPage = () => {
                             <div className="concept-card-badge problem-badge">{t('landing.concept.problemBadge')}</div>
                             <h3 className="concept-card-title">{t('landing.concept.card1Title')}</h3>
                             <div className="concept-card-img-wrapper">
-                                <img src="/images/concept_alone.webp" alt="Studying alone" className="concept-card-img" />
+                                <img 
+                                    src="/images/concept_alone.webp" 
+                                    alt="Studying alone" 
+                                    className="concept-card-img" 
+                                    width="124"
+                                    height="124"
+                                    loading="lazy"
+                                    decoding="async"
+                                />
                             </div>
                             <p className="concept-card-text">{t('landing.concept.card1Text')}</p>
                         </div>
@@ -153,7 +171,15 @@ const LandingPage = () => {
                             <div className="concept-card-badge solution-badge">{t('landing.concept.solutionBadge')}</div>
                             <h3 className="concept-card-title">{t('landing.concept.card2Title')}</h3>
                             <div className="concept-card-img-wrapper">
-                                <img src="/images/concept_together.webp" alt="Studying together" className="concept-card-img" />
+                                <img 
+                                    src="/images/concept_together.webp" 
+                                    alt="Studying together" 
+                                    className="concept-card-img" 
+                                    width="124"
+                                    height="124"
+                                    loading="lazy"
+                                    decoding="async"
+                                />
                             </div>
                             <p className="concept-card-text">{t('landing.concept.card2Text')}</p>
                         </div>
@@ -204,14 +230,14 @@ const LandingPage = () => {
                         <div className="landing-opensource-grid">
                             <div className="landing-opensource-card">
                                 <div className="landing-opensource-card-icon">
-                                    <UilShieldCheck size="28" />
+                                    <ShieldCheck size={28} />
                                 </div>
                                 <h3 className="landing-opensource-card-title">{t('landing.openSource.card1Title')}</h3>
                                 <p className="landing-opensource-card-desc">{t('landing.openSource.card1Desc')}</p>
                             </div>
                             <div className="landing-opensource-card">
                                 <div className="landing-opensource-card-icon">
-                                    <UilUsersAlt size="28" />
+                                    <Users size={28} />
                                 </div>
                                 <h3 className="landing-opensource-card-title">{t('landing.openSource.card2Title')}</h3>
                                 <p className="landing-opensource-card-desc">{t('landing.openSource.card2Desc')}</p>
@@ -225,7 +251,10 @@ const LandingPage = () => {
                                 rel="noopener noreferrer"
                                 className="landing-github-btn"
                             >
-                                <UilGithub size="22" />
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"></path>
+                                    <path d="M9 18c-4.51 2-5-2-7-2"></path>
+                                </svg>
                                 <span>{t('landing.openSource.githubBtn')}</span>
                             </a>
                             <div className="landing-sponsors-badge">
@@ -252,14 +281,14 @@ const LandingPage = () => {
                             className="cta-button primary-cta"
                             onClick={handleDownloadClick}
                         >
-                            <UilApps size="20" style={{ marginRight: '8px', verticalAlign: 'middle' }} />
+                            <LayoutGrid size={20} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
                             {t('landing.hero.downloadCta')}
                         </Button>
                         <Button
                             className="cta-button demo-cta"
                             onClick={() => navigate(`/${language}/demo`)}
                         >
-                            <UilRocket size="20" style={{ marginRight: '8px', verticalAlign: 'middle' }} />
+                            <Rocket size={20} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
                             {t('landing.finalCta.demoCta')}
                         </Button>
                         <Button
@@ -280,20 +309,20 @@ const LandingPage = () => {
                         <div className="download-modal-header">
                             <h3 className="download-modal-title">{t('landing.downloadModal.title')}</h3>
                             <button className="download-modal-close-btn" onClick={() => setIsDownloadModalOpen(false)} aria-label={t('landing.downloadModal.close')}>
-                                <UilMultiply size="20" />
+                                <X size={20} />
                             </button>
                         </div>
                         <div className="download-modal-body">
                             {platform === 'ios' ? (
                                 <>
                                     <div className="download-step">
-                                        <UilShare size="24" className="download-step-icon" />
+                                        <Share2 size={24} className="download-step-icon" />
                                         <span className="download-step-text">
                                             {t('landing.downloadModal.iosInstruction1')}
                                         </span>
                                     </div>
                                     <div className="download-step">
-                                        <UilPlusSquare size="24" className="download-step-icon" />
+                                        <PlusSquare size={24} className="download-step-icon" />
                                         <span className="download-step-text">
                                             {t('landing.downloadModal.iosInstruction2')}
                                         </span>
@@ -301,14 +330,14 @@ const LandingPage = () => {
                                 </>
                             ) : platform === 'android' ? (
                                 <div className="download-step">
-                                    <UilApps size="24" className="download-step-icon" />
+                                    <LayoutGrid size={24} className="download-step-icon" />
                                     <span className="download-step-text">
                                         {t('landing.downloadModal.androidInstruction')}
                                     </span>
                                 </div>
                             ) : (
                                 <div className="download-step">
-                                    <UilApps size="24" className="download-step-icon" />
+                                    <LayoutGrid size={24} className="download-step-icon" />
                                     <span className="download-step-text">
                                         {t('landing.downloadModal.desktopInstruction')}
                                     </span>
@@ -324,7 +353,7 @@ const LandingPage = () => {
                                         setIsDownloadModalOpen(false);
                                     });
                                 }}>
-                                    <UilApps size="20" />
+                                    <LayoutGrid size={20} />
                                     {t('installPrompt.title')}
                                 </button>
                             )}

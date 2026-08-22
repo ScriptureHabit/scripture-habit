@@ -1,7 +1,7 @@
 import { initializeApp, FirebaseApp } from "firebase/app";
 import type { Analytics } from "firebase/analytics";
 import { getAuth, Auth, connectAuthEmulator, signInWithEmailAndPassword, signInWithCustomToken, signOut } from "firebase/auth";
-import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, Firestore, getFirestore, connectFirestoreEmulator } from "firebase/firestore";
+import { Firestore, getFirestore, connectFirestoreEmulator } from "firebase/firestore";
 import { initializeAppCheck, ReCaptchaEnterpriseProvider, CustomProvider, AppCheck, getToken } from "firebase/app-check";
 
 const isEmulator = import.meta.env.VITE_USE_FIREBASE_EMULATOR === 'true';
@@ -97,18 +97,13 @@ try {
   throw e;
 }
 
-// Initialize Firestore with persistent cache (modern way)
-// Wrap in try-catch to avoid app crash if IndexedDB is blocked (e.g. private mode)
+// Initialize Firestore (lightweight base instance)
 let db: Firestore;
 try {
-  db = initializeFirestore(app, {
-    localCache: persistentLocalCache({
-      tabManager: persistentMultipleTabManager()
-    })
-  });
-} catch (e) {
-  console.error("Firestore initialization with persistence failed, falling back to default:", e);
   db = getFirestore(app);
+} catch (e) {
+  console.error("Firestore initialization failed:", e);
+  throw e;
 }
 
 // Connect to emulators if requested

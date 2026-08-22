@@ -1,7 +1,6 @@
 /// <reference types="vite/client" />
 import { useEffect, useState, ReactNode, ReactElement } from 'react';
 import { User, onAuthStateChanged } from 'firebase/auth';
-import { doc, onSnapshot } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 import { UserData } from '../types/user';
 import { syncFcmTokenFlag } from '../utils/notification-helper';
@@ -33,55 +32,64 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
 
     let unsubUserData: (() => void) | null = null;
+    let unsubAuth: (() => void) | null = null;
 
-    const unsubAuth = onAuthStateChanged(auth, (currentUser) => {
-      // Clean up previous user data listener
-      if (unsubUserData) {
-        unsubUserData();
-        unsubUserData = null;
-      }
+    const setupListener = () => {
+      if (!auth || !db) return;
+      unsubAuth = onAuthStateChanged(auth, async (currentUser) => {
+        // Clean up previous user data listener
+        if (unsubUserData) {
+          unsubUserData();
+          unsubUserData = null;
+        }
 
-      setUser(currentUser);
-      setLoading(false); // Auth state is now determined
+        setUser(currentUser);
+        setLoading(false); // Auth state is now determined
 
       if (currentUser) {
         setDataLoading(true);
-        // Start listening to user document in Firestore
-        const userDocRef = doc(db, 'users', currentUser.uid);
-        unsubUserData = onSnapshot(
-          userDocRef,
-          (docSnap) => {
-            if (docSnap.exists()) {
-              const data = { uid: currentUser.uid, ...docSnap.data() } as UserData;
-              setUserData(data);
-              try {
-                localStorage.setItem(`cached_user_data_${currentUser.uid}`, JSON.stringify(data));
-                localStorage.setItem('last_active_uid', currentUser.uid);
-              } catch {
-                // Ignore storage quota errors
+        try {
+          const { doc, onSnapshot } = await import('firebase/firestore');
+          // Start listening to user document in Firestore
+          const userDocRef = doc(db, 'users', currentUser.uid);
+          unsubUserData = onSnapshot(
+            userDocRef,
+            (docSnap) => {
+              if (docSnap.exists()) {
+                const data = { uid: currentUser.uid, ...docSnap.data() } as UserData;
+                setUserData(data);
+                try {
+                  localStorage.setItem(`cached_user_data_${currentUser.uid}`, JSON.stringify(data));
+                  localStorage.setItem('last_active_uid', currentUser.uid);
+                } catch {
+                  // Ignore storage quota errors
+                }
+                
+                // Ensure existing users with tokens have the hasFcmToken flag correctly set
+                syncFcmTokenFlag(currentUser.uid, data.hasFcmToken);
+              } else {
+                setUserData(null);
+                try {
+                  localStorage.removeItem(`cached_user_data_${currentUser.uid}`);
+                } catch {
+                  // Ignore
+                }
               }
-              
-              // Ensure existing users with tokens have the hasFcmToken flag correctly set
-              syncFcmTokenFlag(currentUser.uid, data.hasFcmToken);
-            } else {
-              setUserData(null);
-              try {
-                localStorage.removeItem(`cached_user_data_${currentUser.uid}`);
-              } catch {
-                // Ignore
+              setDataLoading(false);
+            },
+            (err) => {
+              console.error('Error listening to user data:', err);
+              // Ignore permission-denied errors that often happen during sign out, but ONLY in production
+              if (err.code !== 'permission-denied' || !import.meta.env.PROD) {
+                setError(err as Error);
               }
+              setDataLoading(false);
             }
-            setDataLoading(false);
-          },
-          (err) => {
-            console.error('Error listening to user data:', err);
-            // Ignore permission-denied errors that often happen during sign out, but ONLY in production
-            if (err.code !== 'permission-denied' || !import.meta.env.PROD) {
-              setError(err as Error);
-            }
-            setDataLoading(false);
-          }
-        );
+          );
+        } catch (err) {
+          console.error('Failed to dynamically import firestore:', err);
+          setDataLoading(false);
+        }
       } else {
         console.log('[AuthProvider] no current user, clearing userData');
         setUserData(null);
@@ -93,9 +101,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
       }
     });
+    };
+
+    queueMicrotask(setupListener);
 
     return () => {
-      unsubAuth();
+      if (unsubAuth) unsubAuth();
       if (unsubUserData) unsubUserData();
     };
   }, []);

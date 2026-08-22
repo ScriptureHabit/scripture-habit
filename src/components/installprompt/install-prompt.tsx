@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { UilMultiply, UilShare, UilPlusSquare, UilApps } from '@iconscout/react-unicons';
+import { X, Share2, PlusSquare, LayoutGrid } from 'lucide-react';
 import { useLanguage } from '../../hooks/use-language';
 import { Language } from '../../context/language-context';
 import { SUPPORTED_LANGUAGES } from '../../config/languages';
@@ -152,20 +152,20 @@ const InstallPrompt = () => {
             <div className="install-header">
                 <h3>{t('installPrompt.title')}</h3>
                 <button className="close-btn" onClick={handleClose} aria-label={t('common.close')}>
-                    <UilMultiply size="20" />
+                    <X size={20} />
                 </button>
             </div>
 
             {platform === 'ios' ? (
                 <div className="install-steps">
                     <div className="step">
-                        <UilShare size="24" className="step-icon ios-blue" />
+                        <Share2 size={24} className="step-icon ios-blue" />
                         <span className="step-text">
                             {t('installPrompt.instruction1')}
                         </span>
                     </div>
                     <div className="step">
-                        <UilPlusSquare size="24" className="step-icon step-icon-gray" />
+                        <PlusSquare size={24} className="step-icon step-icon-gray" />
                         <span className="step-text">
                             {t('installPrompt.instruction2')}
                         </span>
@@ -179,7 +179,7 @@ const InstallPrompt = () => {
                         {t('installPrompt.description')}
                     </p>
                     <button className="pwa-install-button" onClick={handleInstallClick}>
-                        <UilApps size="20" />
+                        <LayoutGrid size={20} />
                         {t('installPrompt.title')}
                     </button>
                 </div>

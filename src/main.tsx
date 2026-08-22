@@ -6,11 +6,11 @@ import './index.css'
 import App from './app'
 import { AuthProvider } from './context/auth-provider';
 import { RootErrorBoundary } from './components/common/root-error-boundary';
-// Only initialize vConsole if ?vconsole=true is in the URL
-if (window.location.search.includes('vconsole=true')) {
-  import('vconsole').then(({ default: VConsole }) => {
+// Only initialize vConsole if ?vconsole=true is in the URL (lazy dynamic import)
+if (typeof window !== 'undefined' && window.location.search.includes('vconsole=true')) {
+  import(/* @vite-ignore */ 'vconsole').then(({ default: VConsole }) => {
     new VConsole();
-  });
+  }).catch(() => {});
 }
 
 // Capture beforeinstallprompt event globally 
@@ -80,13 +80,18 @@ const initSentry = async () => {
 };
 
 if (typeof window !== 'undefined' && shouldInitializeSentry) {
-  // Initialize on error, user interaction, or long idle (25s)
+  // Initialize on error, user interaction, or long idle (15s)
   window.addEventListener('error', () => { void initSentry(); }, { once: true });
   window.addEventListener('unhandledrejection', () => { void initSentry(); }, { once: true });
   const triggerOnInteraction = () => { void initSentry(); };
   window.addEventListener('pointerdown', triggerOnInteraction, { once: true, passive: true });
   window.addEventListener('keydown', triggerOnInteraction, { once: true, passive: true });
-  setTimeout(() => { void initSentry(); }, 25000);
+  
+  if ('requestIdleCallback' in window) {
+    window.requestIdleCallback(() => { void initSentry(); }, { timeout: 15000 });
+  } else {
+    setTimeout(() => { void initSentry(); }, 15000);
+  }
 }
 
 const queryClient = new QueryClient({

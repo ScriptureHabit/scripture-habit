@@ -30,23 +30,16 @@
   <meta name="twitter:description" content="Read scriptures daily and connect with friends. Perfect for LDS members studying the Book of Mormon, Bible, and Come, Follow Me. Let's make gospel study a habit you love, together." />
   <meta name="twitter:image" content="https://scripturehabit.app/og-image.png" />
 
-  <!-- Preconnect (Max 4 critical origins) & DNS-Prefetch -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Preconnect (Critical origins) & DNS-Prefetch -->
   <link rel="preconnect" href="https://scripture-habit-auth.firebaseapp.com">
-  <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
+  <link rel="dns-prefetch" href="https://firestore.googleapis.com">
   <link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
   <link rel="dns-prefetch" href="https://securetoken.googleapis.com">
   <link rel="dns-prefetch" href="https://www.gstatic.com">
 
-  <!-- Preload Critical Loading Mascot -->
+  <!-- Preload Critical Loading Mascot & LCP Hero Image -->
   <link rel="preload" as="image" href="/images/mascot-96.webp" type="image/webp">
-
-  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Outfit:wght@500;700&display=swap">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Outfit:wght@500;700&display=swap" media="print" onload="this.media='all'">
-  <noscript>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Outfit:wght@500;700&display=swap">
-  </noscript>
+  <link rel="preload" as="image" href="/images/mascot.webp" type="image/webp" fetchpriority="high">
   <style>
     :root {
       --glass: rgba(255, 255, 255, 0.54);
@@ -57,103 +50,91 @@
       background: linear-gradient(106.37deg, #feac5e 29.63%, #c779d0 51.55%, #4bc0c8 90.85%);
       min-height: 100vh;
       width: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
-    /* Core App layout to prevent flash */
-    .App {
-      background: linear-gradient(106.37deg, #feac5e 29.63%, #c779d0 51.55%, #4bc0c8 90.85%);
+    .LandingPageRoot {
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .LandingGlass {
+      background: rgba(255, 255, 255, 0.54);
       min-height: 100vh;
       width: 100%;
       display: flex;
-      justify-content: center;
-      align-items: center;
+      flex-direction: column;
     }
-    .AppGlass {
-      width: 97%;
-      min-height: 97%;
-      background: var(--glass);
-      border-radius: 2rem;
-      box-shadow: 0px 19px 60px rgb(0 0 0 / 8%);
-    }
-    @media screen and (max-width: 768px) {
-      .AppGlass {
-        background: transparent;
-        box-shadow: none;
-      }
-    }
-    .initial-loader {
-      width: 100%;
-      height: 100%;
+    .hero-section {
       display: flex;
-      flex-direction: row;
-      justify-content: center;
+      flex-direction: row-reverse;
       align-items: center;
-      margin: 0;
-      gap: 15px;
+      justify-content: center;
+      padding: 120px 24px 80px 24px;
+      max-width: 1200px;
+      margin: 0 auto;
+      gap: 60px;
     }
-    .loader-mascot {
-      width: 80px;
-      height: 80px;
-      object-fit: contain;
-      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
-      animation: float 3s ease-in-out infinite;
-    }
-    .loader-bubble {
-      background: white;
-      border-radius: 1rem;
-      padding: 0.6rem 1rem;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    .hero-mascot-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       position: relative;
-      border: 2px solid #E2E8F0;
-      animation: bounceHorizontal 2s ease-in-out infinite;
+      width: 320px;
+      flex-shrink: 0;
     }
-    .loader-text {
-      margin: 0;
-      font-size: 0.85rem;
-      color: #4A5568;
-      font-weight: 600;
-      font-family: 'Outfit', sans-serif;
+    .hero-mascot-img {
+      width: 200px;
+      height: 200px;
+      object-fit: contain;
     }
-    .loader-bubble-tail {
+    .mascot-bubble {
+      position: relative;
+      background: #fff;
+      border-radius: 20px;
+      padding: 16px 20px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+      border: 1px solid rgba(102, 126, 234, 0.15);
+      margin-bottom: 24px;
+      text-align: center;
+      max-width: 260px;
+    }
+    .mascot-bubble-text {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #667eea;
+      line-height: 1.4;
+    }
+    .mascot-bubble-tail {
       position: absolute;
-      left: -8px;
-      top: 50%;
-      transform: translateY(-50%) rotate(90deg);
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
       width: 0;
       height: 0;
-      border-left: 8px solid transparent;
-      border-right: 8px solid transparent;
-      border-top: 8px solid #E2E8F0;
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      border-top: 10px solid #fff;
     }
-    .loader-bubble-tail::after {
-      content: '';
-      position: absolute;
-      top: -10px;
-      left: -8px;
-      width: 0;
-      height: 0;
-      border-left: 8px solid transparent;
-      border-right: 8px solid transparent;
-      border-top: 8px solid white;
-    }
-    .loader-glass {
+    .hero-content {
+      max-width: 600px;
+      text-align: center;
       display: flex;
-      flex-direction: row;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
-      gap: 15px;
-      width: 97%;
-      min-height: 97vh;
-      background: rgba(255, 255, 255, 0.54);
-      border-radius: 2rem;
-      box-shadow: 0px 19px 60px rgb(0 0 0 / 8%);
     }
-    @keyframes float {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-5px); }
+    .hero-title {
+      font-size: 3.5rem;
+      font-weight: 900;
+      line-height: 1.25;
+      margin-bottom: 1.5rem;
+      color: #242d49;
     }
-    @keyframes bounceHorizontal {
-      0%, 100% { transform: translateX(0); }
-      50% { transform: translateX(5px); }
+    .hero-subtitle {
+      font-size: 1.25rem;
+      color: #788097;
+      line-height: 1.7;
+      margin-bottom: 2.5rem;
     }
   </style>
   <title>Scripture Habit</title>
@@ -161,16 +142,30 @@
 
 <body>
   <div id="root">
-    <div class="App">
-      <div class="AppGlass">
-        <div class="initial-loader">
-          <img src="/images/mascot-96.webp" alt="Loading..." class="loader-mascot" />
-          <div class="loader-bubble">
-            <p class="loader-text">Loading...</p>
-            <div class="loader-bubble-tail"></div>
+    <div class="LandingPageRoot">
+      <main class="LandingGlass">
+        <header class="hero-section">
+          <div class="hero-mascot-container">
+            <div class="mascot-bubble">
+              <span class="mascot-bubble-text">Let's read together!</span>
+              <div class="mascot-bubble-tail"></div>
+            </div>
+            <img 
+              src="/images/mascot.webp" 
+              alt="Welcome Bird" 
+              class="hero-mascot-img" 
+              width="200" 
+              height="200"
+              fetchpriority="high"
+              decoding="async"
+            />
           </div>
-        </div>
-      </div>
+          <div class="hero-content">
+            <h1 class="hero-title">Build a Daily Scripture Habit, Together</h1>
+            <p class="hero-subtitle">Connect with friends, track reading streaks, and encourage one another every day.</p>
+          </div>
+        </header>
+      </main>
     </div>
   </div>
   <script type="module" src="/src/main.tsx"></script>

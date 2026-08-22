@@ -2,21 +2,24 @@
 /// <reference types="vitest" />
 import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
-import legacy from '@vitejs/plugin-legacy'
 import { sentryVitePlugin } from "@sentry/vite-plugin";
+import { visualizer } from 'rollup-plugin-visualizer';
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => ({
   plugins: [
     react(),
-    legacy({
-      targets: ['defaults', 'not IE 11', 'iOS >= 12'],
-    }),
     sentryVitePlugin({
       org: process.env.SENTRY_ORG || "",
       project: process.env.SENTRY_PROJECT || "react", 
       authToken: process.env.SENTRY_AUTH_TOKEN || "",
       telemetry: false,
+    }),
+    visualizer({
+      filename: './dist/stats.html',
+      open: false,
+      gzipSize: true,
+      brotliSize: true,
     }),
   ],
   esbuild: {
@@ -67,6 +70,7 @@ export default defineConfig(({ mode }) => ({
     ]
   },
   build: {
+    target: 'es2022',
     sourcemap: true,
     chunkSizeWarningLimit: 1000,
     rollupOptions: {
