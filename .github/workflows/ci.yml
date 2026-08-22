@@ -36,6 +36,9 @@ jobs:
       - name: Run Unit Tests (Vitest)
         run: npm test
 
+      - name: Run Firestore Rules Tests
+        run: npm run test:rules
+
   integration-and-e2e:
     name: Integration & E2E Tests
     needs: validate

@@ -6,6 +6,6 @@ export default defineConfig({
     environment: 'node',
     testTimeout: 10000,
     hookTimeout: 10000,
-    include: ['tests/firestore-rules.spec.ts'],
+    include: ['tests/rules/firestore.rules.test.ts'],
   },
 });
