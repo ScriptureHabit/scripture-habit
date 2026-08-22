@@ -5,6 +5,8 @@ import { defineConfig, devices } from '@playwright/test';
  */
 export default defineConfig({
   testDir: './tests',
+  testMatch: ['**/*.spec.ts'],
+  testIgnore: ['**/firestore-rules.spec.ts'],
   globalSetup: './tests/global-setup.ts',
   /* Run tests in files in parallel */
   fullyParallel: true,
