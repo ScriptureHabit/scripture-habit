@@ -174,6 +174,30 @@ Issue や Pull Request はいつでもお気軽にお送りください。
 
 ---
 
+## コントリビューター（貢献者）
+
+本プロジェクトを支えてくださっている素晴らしい皆様に心より感謝申し上げます：
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/daijir"><img src="https://avatars.githubusercontent.com/u/104116248?v=4?s=100" width="100px;" alt="daijiro"/><br /><sub><b>daijiro</b></sub></a><br /><a href="https://github.com/ScriptureHabit/scripture-habit/commits?author=daijir" title="Code">💻</a> <a href="#infra-daijir" title="Infrastructure">🚇</a> <a href="#design-daijir" title="Design">🎨</a> <a href="#maintenance-daijir" title="Maintenance">🚧</a> <a href="#doc-daijir" title="Documentation">📖</a></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+本プロジェクトは [all-contributors](https://github.com/all-contributors/all-contributors) 仕様に準拠しています。あらゆる形での貢献を心より歓迎します！
+
+---
+
 ## ライセンス
 
 本プロジェクトは **MIT ライセンス** のもとで公開されています。詳細は [LICENSE](LICENSE) ファイルをご確認ください。

@@ -173,8 +173,33 @@ Feel free to open an issue or submit a pull request on GitHub.
 
 ---
 
+## Contributors
+
+Thanks goes to these wonderful people:
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/daijir"><img src="https://avatars.githubusercontent.com/u/104116248?v=4?s=100" width="100px;" alt="daijiro"/><br /><sub><b>daijiro</b></sub></a><br /><a href="https://github.com/ScriptureHabit/scripture-habit/commits?author=daijir" title="Code">💻</a> <a href="#infra-daijir" title="Infrastructure">🚇</a> <a href="#design-daijir" title="Design">🎨</a> <a href="#maintenance-daijir" title="Maintenance">🚧</a> <a href="#doc-daijir" title="Documentation">📖</a></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
+
+---
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
 
 
