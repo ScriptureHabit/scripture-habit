@@ -7,11 +7,11 @@
 }
 
 .LandingGlass {
-    --primary-color: #667eea;
+    --primary-color: #4c63d2;
     --secondary-color: #764ba2;
     --accent-color: #ff919d;
     --text-main: #242d49;
-    --text-muted: #788097;
+    --text-muted: #555d75;
     --glass-bg: rgba(255, 255, 255, 0.54);
 
     font-family: 'Outfit', 'Inter', sans-serif;
@@ -182,7 +182,7 @@ section {
 .mascot-bubble-text {
     font-size: 1rem;
     font-weight: 700;
-    color: var(--primary-color);
+    color: #4c63d2;
     line-height: 1.4;
     white-space: pre-line;
 }
@@ -890,7 +890,7 @@ section {
 }
 
 .problem-badge {
-    background: #ef4444;
+    background: #dc2626;
 }
 
 .solution-badge {

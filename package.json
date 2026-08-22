@@ -27,6 +27,7 @@
     "preview": "vite preview",
     "test": "vitest src",
     "test:coverage": "vitest run --coverage",
+    "test:rules": "node scripts/test-emulated.js \"npx vitest run --config vitest.rules.config.ts\"",
     "test:internal": "node scripts/test-emulated.js \"npx vitest api_internal --maxWorkers=3 --hookTimeout=30000 --testTimeout=30000\"",
     "test:a11y": "node scripts/test-emulated.js \"npx playwright test tests/accessibility.spec.ts\"",
     "test:e2e": "node scripts/test-emulated.js \"npx playwright test\"",
@@ -81,7 +82,7 @@
   "devDependencies": {
     "@axe-core/playwright": "^4.12.1",
     "@eslint/js": "^10.0.1",
-    "@firebase/rules-unit-testing": "^5.0.1",
+    "@firebase/rules-unit-testing": "^5.0.2",
     "@lhci/cli": "^0.15.1",
     "@playwright/browser-chromium": "^1.62.0",
     "@playwright/browser-webkit": "^1.62.0",
