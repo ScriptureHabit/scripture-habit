@@ -24,12 +24,6 @@ jobs:
           cache: 'npm'
           cache-dependency-path: './package-lock.json'
 
-      - name: Set up JDK 21
-        uses: actions/setup-java@v5
-        with:
-          java-version: '21'
-          distribution: 'temurin'
-
       - name: Install dependencies
         run: npm ci
 
@@ -41,9 +35,6 @@ jobs:
 
       - name: Run Unit Tests (Vitest)
         run: npm test
-
-      - name: Run Firestore Rules Tests
-        run: npm run test:rules
 
   integration-and-e2e:
     name: Integration & E2E Tests
@@ -84,6 +75,9 @@ jobs:
 
       - name: Run Integration Tests
         run: npm run test:internal
+
+      - name: Run Firestore Rules Tests
+        run: npm run test:rules
 
       - name: Build Project
         run: npm run build
