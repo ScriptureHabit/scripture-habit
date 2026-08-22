@@ -185,6 +185,9 @@ Issue や Pull Request はいつでもお気軽にお送りください。
   <tbody>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/daijir"><img src="https://avatars.githubusercontent.com/u/104116248?v=4?s=100" width="100px;" alt="daijiro"/><br /><sub><b>daijiro</b></sub></a><br /><a href="https://github.com/ScriptureHabit/scripture-habit/commits?author=daijir" title="Code">💻</a> <a href="#infra-daijir" title="Infrastructure">🚇</a> <a href="#design-daijir" title="Design">🎨</a> <a href="#maintenance-daijir" title="Maintenance">🚧</a> <a href="#doc-daijir" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/GreiceMoreira"><img src="https://avatars.githubusercontent.com/u/126085301?v=4?s=100" width="100px;" alt="Greice Moreira"/><br /><sub><b>Greice Moreira</b></sub></a><br /><a href="https://github.com/ScriptureHabit/scripture-habit/commits?author=GreiceMoreira" title="Code">💻</a> <a href="#doc-GreiceMoreira" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Sembatya2020"><img src="https://avatars.githubusercontent.com/u/74312384?v=4?s=100" width="100px;" alt="Ivan Sembatya"/><br /><sub><b>Ivan Sembatya</b></sub></a><br /><a href="https://github.com/ScriptureHabit/scripture-habit/commits?author=Sembatya2020" title="Code">💻</a> <a href="#ideas-Sembatya2020" title="Ideas, Planning, & Feedback">🤔</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/bimbolin"><img src="https://avatars.githubusercontent.com/u/68032738?v=4?s=100" width="100px;" alt="Bimbola Osholowu"/><br /><sub><b>Bimbola Osholowu</b></sub></a><br /><a href="https://github.com/ScriptureHabit/scripture-habit/commits?author=bimbolin" title="Code">💻</a> <a href="#doc-bimbolin" title="Documentation">📖</a></td>
     </tr>
   </tbody>
 </table>

@@ -1,0 +1,61 @@
+{
+  "projectName": "scripture-habit",
+  "projectOwner": "ScriptureHabit",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "files": [
+    "README.md",
+    "README.ja.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "commitConvention": "angular",
+  "contributorsPerLine": 7,
+  "contributors": [
+    {
+      "login": "daijir",
+      "name": "daijiro",
+      "avatar_url": "https://avatars.githubusercontent.com/u/104116248?v=4",
+      "profile": "https://github.com/daijir",
+      "contributions": [
+        "code",
+        "design",
+        "doc",
+        "infra",
+        "maintenance",
+        "projectManagement"
+      ]
+    },
+    {
+      "login": "GreiceMoreira",
+      "name": "Greice Moreira",
+      "avatar_url": "https://avatars.githubusercontent.com/u/126085301?v=4",
+      "profile": "https://github.com/GreiceMoreira",
+      "contributions": [
+        "code",
+        "doc"
+      ]
+    },
+    {
+      "login": "Sembatya2020",
+      "name": "Ivan Sembatya",
+      "avatar_url": "https://avatars.githubusercontent.com/u/74312384?v=4",
+      "profile": "https://github.com/Sembatya2020",
+      "contributions": [
+        "code",
+        "ideas"
+      ]
+    },
+    {
+      "login": "bimbolin",
+      "name": "Bimbola Osholowu",
+      "avatar_url": "https://avatars.githubusercontent.com/u/68032738?v=4",
+      "profile": "https://github.com/bimbolin",
+      "contributions": [
+        "code",
+        "doc"
+      ]
+    }
+  ],
+  "linkToUsage": false
+}
