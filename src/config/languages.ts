@@ -1,4 +1,4 @@
-export type Language = 'en' | 'ja' | 'pt' | 'zho' | 'es' | 'vi' | 'th' | 'ko' | 'tl' | 'sw';
+export type Language = 'en' | 'ja' | 'pt' | 'zho' | 'es' | 'vi' | 'th' | 'ko' | 'tl' | 'sw' | 'it';
 
 export type TranslationValue = string | string[] | NestedTranslations;
 export interface NestedTranslations {
@@ -25,6 +25,7 @@ export const LANGUAGES: readonly LanguageConfig[] = [
     { code: 'ko', name: '한국어', englishName: 'Korean', translationKey: 'languages.korean', flag: '🇰🇷', ldsCode: 'kor' },
     { code: 'tl', name: 'Tagalog', englishName: 'Tagalog', translationKey: 'languages.tagalog', flag: '🇵🇭', ldsCode: 'tgl' },
     { code: 'sw', name: 'Kiswahili', englishName: 'Swahili', translationKey: 'languages.swahili', flag: '🇰🇪', ldsCode: 'swa' },
+    { code: 'it', name: 'Italiano', englishName: 'Italian', translationKey: 'languages.italian', flag: '🇮🇹', ldsCode: 'ita' },
 ] as const;
 
 export const SUPPORTED_LANGUAGES: Language[] = LANGUAGES.map(lang => lang.code);

@@ -5,7 +5,7 @@ import { pathToFileURL } from 'url';
 // Import all locales dynamically in node/tsx
 async function generate() {
     const localeDir = path.resolve('./src/locales');
-    const langCodes = ['en', 'ja', 'es', 'pt', 'ko', 'zho', 'vi', 'tl', 'sw', 'th'];
+    const langCodes = ['en', 'ja', 'es', 'pt', 'ko', 'zho', 'vi', 'tl', 'sw', 'th', 'it'];
 
     interface ExtractedMetadata {
         scriptures: Record<string, string>;

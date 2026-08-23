@@ -69,12 +69,12 @@ const CANONICAL_BOOK_TO_SLUG: Record<string, string> = {
 };
 
 const VOLUME_ALIASES: Record<string, string[]> = {
-    ot: ["old testament", "ot", "old", "旧約聖書", "旧約", "velho testamento", "antigo testamento", "antiguo testamento", "cựu ước", "พันธสัญญาเดิม", "구약성경", "구약", "matandang tipan", "agano la kale", "旧约", "舊約"],
-    nt: ["new testament", "nt", "new", "新約聖書", "新約", "novo testamento", "nuevo testamento", "tân ước", "พันธสัญญาใหม่", "신약성경", "신약", "bagong tipan", "agano jipya", "新约", "新約"],
-    bofm: ["book of mormon", "bofm", "bom", "mormon", "モルモン書", "モルモン", "livro de mórmon", "libro de mormón", "sách mặc môn", "พระคัมภีร์มอรมอน", "몰몬경", "aklat ni mormon", "kitabu cha mormoni", "摩爾門經", "摩尔门经"],
-    "dc-testament": ["dc", "d&c", "d.&c.", "d. & c.", "dc-testament", "doctrine and covenants", "教義と聖約", "doutrina e convênios", "教義和聖約", "doctrina y convenios", "giáo lý và giao ước", "หลักคำสอนและพันธสัญญา", "교리와 성약", "doktrina at mga tipan", "mafundisho na maagano", "教义和圣约"],
-    pgp: ["pgp", "pearl of great price", "高価な真珠", "pérola de grande valor", "無價珍珠", "perla de gran precio", "trân châu vô giá", "ไข่มุกอันล้ำค่า", "값진 진주", "perlas na may dakilang halaga", "lulu ya thamani kuu", "无价珍珠"],
-    "general-conference": ["general conference", "gc", "conference", "churchofjesuschrist.org", "総大会", "大会", "conferência geral", "conferência", "conferencia general", "conferencia", "đại hội trung ương", "đại hội", "การประชุมใหญ่สามัญ", "การประชุมใหญ่", "연차대회", "대회", "pangkalahatang kumperensya", "kumperensya", "mkutano mkuu", "mkutano", "总大会", "總大會", "大會"],
+    ot: ["old testament", "ot", "old", "旧約聖書", "旧約", "velho testamento", "antigo testamento", "antiguo testamento", "cựu ước", "พันธสัญญาเดิม", "구약성경", "구약", "matandang tipan", "agano la kale", "旧约", "舊約", "antico testamento"],
+    nt: ["new testament", "nt", "new", "新約聖書", "新約", "novo testamento", "nuevo testamento", "tân ước", "พันธสัญญาใหม่", "신약성경", "신약", "bagong tipan", "agano jipya", "新约", "新約", "nuovo testamento"],
+    bofm: ["book of mormon", "bofm", "bom", "mormon", "モルモン書", "モルモン", "livro de mórmon", "libro de mormón", "sách mặc môn", "พระคัมภีร์มอรมอน", "몰몬경", "aklat ni mormon", "kitabu cha mormoni", "摩爾門經", "摩尔门经", "il libro di mormon", "libro di mormon"],
+    "dc-testament": ["dc", "d&c", "d.&c.", "d. & c.", "dc-testament", "doctrine and covenants", "教義と聖約", "doutrina e convênios", "教義和聖約", "doctrina y convenios", "giáo lý và giao ước", "หลักคำสอนและพันธสัญญา", "교리와 성약", "doktrina at mga tipan", "mafundisho na maagano", "教义和圣约", "dottrina e alleanze"],
+    pgp: ["pgp", "pearl of great price", "高価な真珠", "pérola de grande valor", "無價珍珠", "perla de gran precio", "trân châu vô giá", "ไข่มุกอันล้ำค่า", "값진 진주", "perlas na may dakilang halaga", "lulu ya thamani kuu", "无价珍珠", "perla di gran prezzo"],
+    "general-conference": ["general conference", "gc", "conference", "churchofjesuschrist.org", "総大会", "大会", "conferência geral", "conferência", "conferencia general", "conferencia", "đại hội trung ương", "đại hội", "การประชุมใหญ่สามัญ", "การประชุมใหญ่", "연차대회", "대회", "pangkalahatang kumperensya", "kumperensya", "mkutano mkuu", "mkutano", "总大会", "總大會", "大會", "conferenza generale"],
     "byu-speeches": ["byu-speeches", "byu speeches", "byu", "speeches.byu.edu"],
     "ordinances-and-proclamations": [
         "ordinances and proclamations", "proclamations", "proclamation", "priesthood ordinances and proclamations", "family", "living christ", "restoration", "sacrament", "baptism",
@@ -82,7 +82,8 @@ const VOLUME_ALIASES: Record<string, string[]> = {
         "proclama", "declaracion", "familia", "cristo viviente", "restauración", "bautismo", "ordenanzas del sacerdocio y proclamaciones",
         "declaração", "família", "cristo vivo", "restauração", "sacramento", "batismo", "ordenanças e declarações",
         "家庭", "活著的基督", "復興", "洗禮", "聖職教儀和文告", "教仪和宣告", "mga ordinansa at mga pagpapahayag",
-        "선언문", "살아 계신 그리스도", "회복", "침례", "tangazo", "kristo aliye hai", "urejesho", "sakramenti", "ubatizo"
+        "선언문", "살아 계신 그리스도", "회복", "침례", "tangazo", "kristo aliye hai", "urejesho", "sakramenti", "ubatizo",
+        "ordinanze e proclamazioni", "sacramento", "battesimo", "la famiglia", "il cristo vivente"
     ]
 };
 
