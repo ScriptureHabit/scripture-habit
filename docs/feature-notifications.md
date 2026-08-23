@@ -4,7 +4,7 @@ The **Notifications Subsystem** helps users stay engaged by delivering alerts wh
 
 ---
 
-## 🔑 FCM Token Storage and Privacy
+## FCM Token Storage and Privacy
 
 To protect user privacy and improve performance, FCM registration tokens are stored using two main fields:
 
@@ -20,7 +20,7 @@ During notification delivery, backend helpers safely collect and deduplicate tok
 
 ---
 
-## ⚡ Client Service Worker Setup
+## Client Service Worker Setup
 
 Push notification permissions, service worker setup, and background token synchronization are handled on the client device inside `src/utils/notification-helper.ts`.
 
@@ -42,7 +42,7 @@ To ensure database flags are correct (e.g. after database resets):
 
 ---
 
-## 🧹 Notification Tray Control
+## Notification Tray Control
 
 To keep the OS notification tray clean, active alerts are managed programmatically:
 
@@ -60,7 +60,7 @@ To avoid closing unrelated updates:
 
 ---
 
-## ⚡ Multicast Sending and Chunking
+## Multicast Sending and Chunking
 
 Firestore messaging supports high-volume sending, but it has a 500-token limit per request. Our `sendPushNotification` utility splits requests:
 
@@ -70,7 +70,7 @@ Firestore messaging supports high-volume sending, but it has a 500-token limit p
 
 ---
 
-## 🩹 Self-Healing Token Lifecycle
+## Self-Healing Token Lifecycle
 
 Mobile app uninstalls or device token expirations leave invalid tokens in the database. The `/api/streak-reminder` and `cleanupTokens` services use a self-healing feedback loop:
 
@@ -82,7 +82,7 @@ Mobile app uninstalls or device token expirations leave invalid tokens in the da
 
 ---
 
-## 📦 Payload Structure
+## Payload Structure
 
 Every push we send uses a hybrid payload to ensure compatibility across Android and iOS.
 
@@ -96,7 +96,7 @@ If the app is open (foreground), we suppress the visual notification banner beca
 
 ---
 
-## 🚦 Communication & Lifecycle Flow
+## Communication & Lifecycle Flow
 
 ```mermaid
 flowchart TD
@@ -136,7 +136,7 @@ flowchart TD
 
 ---
 
-## 🚦 App Launch & Deep Linking Flow
+## App Launch & Deep Linking Flow
 
 When a user taps a push notification in the OS tray, the client coordinates window focus, application launching, and route redirection.
 

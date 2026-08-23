@@ -16,7 +16,7 @@
 
 ```mermaid
 flowchart TD
-    UI["🖥️ UI コンポーネント\n(GroupChatPage)"]
+    UI["UI コンポーネント\n(GroupChatPage)"]
 
     UI --> UMA
     UI --> UCS
@@ -24,27 +24,27 @@ flowchart TD
     UI --> UGA
     UI --> UGCH
 
-    UMA["📨 use-message-actions\nメッセージ送受信・リアクション・翻訳"]
-    UCS["🎉 use-cheer-system\nエール管理"]
-    URS["🚩 use-report-system\n通報"]
-    UGA["⚙️ use-group-actions\nグループ管理・SNS共有"]
-    UGCH["👥 use-group-chat-handlers\nモーダル・メンバー"]
+    UMA["use-message-actions\nメッセージ送受信・リアクション・翻訳"]
+    UCS["use-cheer-system\nエール管理"]
+    URS["use-report-system\n通報"]
+    UGA["use-group-actions\nグループ管理・SNS共有"]
+    UGCH["use-group-chat-handlers\nモーダル・メンバー"]
 
-    UMA --> STORE["📦 メッセージストア\nADD / UPDATE / REMOVE"]
+    UMA --> STORE["メッセージストア\nADD / UPDATE / REMOVE"]
     STORE --> UI
 
     UMA --> API_MSG["POST /api/groups/\npost-message\nedit-message\ndelete-message"]
     UMA --> API_REACT["POST /api/groups/\ntoggle-reaction\nupdate-read-status"]
     UMA --> API_TRANS["POST /api/ai/\ntranslate-batch"]
 
-    UCS --> FS_CHEERS["🔥 Firestore\ncheers コレクション"]
+    UCS --> FS_CHEERS["Firestore\ncheers コレクション"]
     UCS --> API_CHEER["POST /api/groups/\nsend-cheer"]
 
-    URS --> FS_REPORTS["🔥 Firestore\nreports コレクション"]
+    URS --> FS_REPORTS["Firestore\nreports コレクション"]
 
     UGA --> API_GROUP["POST /api/groups/\nleave-group\ndelete-group\nupdate-group"]
 
-    UGCH --> FS_MEMBERS["🔥 Firestore\nusers コレクション\n(差分フェッチ)"]
+    UGCH --> FS_MEMBERS["Firestore\nusers コレクション\n(差分フェッチ)"]
 ```
 
 
@@ -72,18 +72,18 @@ sequenceDiagram
     Note over Hook: tempId = "temp-{clientTimestamp}" を生成
 
     Hook->>Store: dispatch(ADD_NEW_MESSAGES, { id: tempId, text, ... })
-    Note over UI: 🟡 仮IDでメッセージが即座に表示される
+    Note over UI: 仮IDでメッセージが即座に表示される
 
     Hook->>API: POST /api/groups/post-message
     alt 成功
         API-->>Hook: { messageId: "実ID" }
         Hook->>Store: dispatch(UPDATE_MESSAGE, { tempId → messageId })
-        Note over UI: ✅ 仮IDが実IDに置き換わる
+        Note over UI: 仮IDが実IDに置き換わる
         Hook-->>ReadAPI: fire-and-forget: POST /api/groups/update-read-status
     else 失敗
         API-->>Hook: エラー
         Hook->>Store: dispatch(REMOVE_MESSAGE, tempId)
-        Note over UI: ❌ 仮メッセージが削除される（ロールバック）
+        Note over UI: 仮メッセージが削除される（ロールバック）
     end
 ```
 
@@ -125,14 +125,14 @@ sequenceDiagram
     ユーザー->>Hook: handleSaveEdit(messageId, newText)
     Note over Hook: 編集前テキストを保存
     Hook->>Store: dispatch(UPDATE_MESSAGE, { id, text: newText })
-    Note over Store: ✅ 即座にUIに反映
+    Note over Store: 即座にUIに反映
 
     Hook->>API: POST /api/groups/edit-message
 
     alt 失敗
         API-->>Hook: エラー
         Hook->>Store: dispatch(UPDATE_MESSAGE, { id, text: 旧テキスト })
-        Note over Store: ❌ 元のテキストに戻す（ロールバック）
+        Note over Store: 元のテキストに戻す（ロールバック）
     end
 ```
 
@@ -148,14 +148,14 @@ sequenceDiagram
     ユーザー->>Hook: handleConfirmDeleteMessage(message)
     Note over Hook: メッセージオブジェクト全体を退避
     Hook->>Store: dispatch(REMOVE_MESSAGE, message.id)
-    Note over Store: ✅ メッセージが即座に消える
+    Note over Store: メッセージが即座に消える
 
     Hook->>API: POST /api/groups/delete-message
 
     alt 失敗
         API-->>Hook: エラー
         Hook->>Store: dispatch(ADD_NEW_MESSAGES, 退避したメッセージ)
-        Note over Store: ❌ 削除を取り消す（メッセージを再追加）
+        Note over Store: 削除を取り消す（メッセージを再追加）
     end
 ```
 
@@ -198,7 +198,7 @@ flowchart TD
 
 ### 2.2 `reactionPreviews` の3件上限
 
-`reactionPreviews` は各絵文字に対して**最大3件**のニックネームプレビューを保持します。これはUI上で「😊 田中, 鈴木, 他1名」のような表示に使用されます。
+`reactionPreviews` は各絵文字に対して**最大3件**のニックネームプレビューを保持します。これはUI上で「田中, 鈴木, 他1名」のような表示に使用されます。
 
 ```typescript
 // reactionPreviews 計算の概念コード
@@ -401,7 +401,7 @@ sequenceDiagram
         API->>Firestore: cheers ドキュメントを追加\n{ senderUid, targetUid, date, groupId, ... }
         API-->>Hook: 成功
         Hook->>Guard: cheeredTodayUids.add(cheerTarget.id)
-        Note over Guard: ✅ 当日中の再送不可セットに追加
+        Note over Guard: 当日中の再送不可セットに追加
     end
 ```
 
@@ -409,9 +409,9 @@ sequenceDiagram
 
 | 条件 | 結果 |
 |------|------|
-| `member.id === userData.uid` | ❌ 処理中断（自分へのエール不可、`handleCheerClick` 内で制御） |
-| `cheeredTodayUids.has(member.id)` | ❌ 送信不可（本日分は使用済み、UIボタン無効化や `handleSendCheer` 内で制御） |
-| 上記のいずれでもない | ✅ API呼び出しを実行 |
+| `member.id === userData.uid` | 処理中断（自分へのエール不可、`handleCheerClick` 内で制御） |
+| `cheeredTodayUids.has(member.id)` | 送信不可（本日分は使用済み、UIボタン無効化や `handleSendCheer` 内で制御） |
+| 上記のいずれでもない | API呼び出しを実行 |
 
 > [!WARNING]
 > `cheeredTodayUids` はメモリ上のSetであるため、ページをリロードすると再度Firestoreからクエリし直します。サーバー側でも重複チェックを実施することを強く推奨します（Firestoreのセキュリティルールまたはバックエンドで強制）。
@@ -473,7 +473,7 @@ interface ReportDocument {
 const actionInProgress = useRef(false);
 
 async function handleLeaveGroup() {
-  if (actionInProgress.current) return; // 🛡 二重送信防止
+  if (actionInProgress.current) return; // 二重送信防止
   actionInProgress.current = true;
 
   try {

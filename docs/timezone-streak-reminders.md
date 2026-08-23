@@ -6,7 +6,7 @@ Instead of sending notifications to all users at a single UTC hour, the system r
 
 ---
 
-## 🏗️ Architecture Overview
+## Architecture Overview
 
 The reminder process uses an hourly Cron trigger, the `Intl` API for timezone calculations, chunked Firestore queries, and Firebase Cloud Messaging (FCM) to send notifications:
 
@@ -25,7 +25,7 @@ flowchart TD
 
 ---
 
-## ⏰ Timezone Evaluation & Date Calculations
+## Timezone Evaluation & Date Calculations
 
 The core logic in `StreakReminderEngine` determines timezone offsets and daily completion status.
 
@@ -53,7 +53,7 @@ To see if a user in a specific timezone has already completed their study, `need
 
 ---
 
-## 🚦 Firestore Chunked Querying
+## Firestore Chunked Querying
 
 Firestore limits `where(field, 'in', Array)` queries to a maximum of **10 array elements**. Since the list of active timezones reaching 8:00 PM at any hour often exceeds 10, the service partitions queries:
 
@@ -63,7 +63,7 @@ Firestore limits `where(field, 'in', Array)` queries to a maximum of **10 array 
 
 ---
 
-## 💬 Localized Push Notifications
+## Localized Push Notifications
 
 Once target users are found, the system optimizes delivery to reduce latency:
 
@@ -80,7 +80,7 @@ Push notifications are sent using `messaging.sendEachForMulticast`, which accept
 
 ---
 
-## 🩹 Stale Token Cleanup (Self-Healing)
+## Stale Token Cleanup (Self-Healing)
 
 When apps are uninstalled or tokens expire, "ghost tokens" remain in the database. Trying to send notifications to these tokens slows down the system.
 

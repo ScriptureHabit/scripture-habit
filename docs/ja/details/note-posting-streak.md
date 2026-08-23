@@ -1,10 +1,10 @@
-# 🔬 詳細解説：ノート投稿とストリーク（継続日数）計算ロジック
+# 詳細解説：ノート投稿とストリーク（継続日数）計算ロジック
 
 本ドキュメントでは、Scripture Habit のコアイベントである**「スタディノートの投稿」**と、それに伴う**「ストリーク（継続日数）の計算」**、さらに**「グループ内団結度（Unity）のリアルタイム集計」**に至るまでの一連の処理設計について、詳細に解説します。
 
 ---
 
-## 🏗️ データベース設計 & エンティティ関係
+## データベース設計 & エンティティ関係
 
 ノート投稿時に影響を受ける Firestore のスキーマとコレクション構造は以下の通りです。
 
@@ -21,7 +21,7 @@
 
 ---
 
-## 🔄 投稿トランザクション処理フロー
+## 投稿トランザクション処理フロー
 
 ユーザーがノートを投稿すると、サーバーは **Firestore トランザクション（`db.runTransaction`）** を開始します。Firestore のトランザクションは競合を防ぐため、**「読み取りフェーズ（厳密な Read-before-Write）」**をすべて終えた後に**「書き込みフェーズ」**に移行する設計ルールを徹底しています。
 
@@ -83,7 +83,7 @@ sequenceDiagram
 
 ---
 
-## 📅 ストリーク（継続日数）計算アルゴリズム
+## ストリーク（継続日数）計算アルゴリズム
 
 ユーザーが異なるタイムゾーン（日本、アメリカ、フィリピンなど）からアクセスする場合でも、**「サーバー時間」ベースで判定すると日付跨ぎの判定にズレが生じます**。
 
@@ -121,7 +121,7 @@ flowchart TD
 
 ---
 
-## 💻 コアコード解説
+## コアコード解説
 
 ### 1. ストリークエンジン (`streak-engine.ts`)
 
@@ -327,7 +327,7 @@ export class NoteService {
                     for (const gid of userGroupIds) {
                         const msgRef = db.collection('groups').doc(gid).collection('messages').doc();
                         transaction.set(msgRef, {
-                            text: `🎉 ${userData.nickname} さんが ストリーク ${newStreak} 日を達成しました！`,
+                            text: `${userData.nickname} さんが ストリーク ${newStreak} 日を達成しました！`,
                             senderId: 'system',
                             createdAt: admin.firestore.Timestamp.fromDate(new Date(currentNow.getTime() + 1000)),
                             isSystemMessage: true,
@@ -349,7 +349,7 @@ export class NoteService {
 
 ---
 
-## 📈 レベルアップ & XP（経験値）計算モデル
+## レベルアップ & XP（経験値）計算モデル
 
 Scripture Habit は学習の継続意欲を促すため、投稿に応じてレベル（等級）が上がる仕組みを導入しています。
 
@@ -364,7 +364,7 @@ Scripture Habit は学習の継続意欲を促すため、投稿に応じてレ�
 
 ---
 
-## ⚡ 非同期バックグラウンド処理の分離設計
+## 非同期バックグラウンド処理の分離設計
 
 なぜ **「団結度（Unity）の再計算」** や **「FCMプッシュ通知の送信」** はトランザクションの外側（非同期）で実行されるのでしょうか？
 

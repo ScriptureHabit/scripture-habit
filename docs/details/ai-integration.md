@@ -1,10 +1,10 @@
-# 🔬 Detailed Explanation: AI (Gemini) Integration, Dynamic Translation, and Weekly Recap Pipeline
+# Detailed Explanation: AI (Gemini) Integration, Dynamic Translation, and Weekly Recap Pipeline
 
 This document provides a detailed explanation of the backend implementation and architecture of Scripture Habit's multi-language features: **"AI (Gemini)-powered Note Translation"**, **"Weekly Recap Generation"** for personalizing study habits, and **"Automated Discussion Topic Generation"** to foster community engagement.
 
 ---
 
-## ⚡ Common Gemini API Call Design
+## Common Gemini API Call Design
 
 AI calls are consolidated into the `callGemini` function in [ai.ts](../../scripture-habit/api_internal/routes/ai.ts).
 
@@ -43,7 +43,7 @@ const callGemini = async (prompt: string): Promise<string> => {
 
 ---
 
-## 🔄 Dynamic Translation Pipeline
+## Dynamic Translation Pipeline
 
 When users speaking other languages read shared notes on the chat screen, translation is performed on demand. The server implements a **two-tier cache layer** to prevent unnecessary API costs.
 
@@ -96,7 +96,7 @@ When translating multiple chat messages at once (e.g., when scrolling through ch
 
 ---
 
-## 📅 Weekly Recap and Smart Self-Healing Cache
+## Weekly Recap and Smart Self-Healing Cache
 
 This feature allows users to reflect on their study notes from the past 7 days and receive a heartwarming feedback letter from the AI. The implementation incorporates a smart check design that satisfies two conflicting requirements: **"API abuse prevention"** and **"graceful recovery from connection errors."**
 
@@ -140,7 +140,7 @@ Therefore, Scripture Habit implements the following logic:
 
 ---
 
-## 💻 Core Code Explanation
+## Core Code Explanation
 
 Below are the core sections of batch translation and weekly recap processing within [ai.ts](../../scripture-habit/api_internal/routes/ai.ts).
 

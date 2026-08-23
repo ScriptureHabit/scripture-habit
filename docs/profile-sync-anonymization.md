@@ -4,7 +4,7 @@ This document explains how user profile changes (like nickname and avatar update
 
 ---
 
-## 🏗️ Core Architecture Overview
+## Core Architecture Overview
 
 The system is managed by the serverless **`ProfileService`** (`api_internal/services/profile-service.ts`), which handles two main workflows:
 1. **Profile Synchronization**: Propagates profile updates (nickname and avatar photo) to active group environments and search indexes.
@@ -40,7 +40,7 @@ sequenceDiagram
 
 ---
 
-## ⚡ Profile Synchronization Engine
+## Profile Synchronization Engine
 
 When a user changes their profile details, the changes must update in group chats so other members see correct names and avatars. However, updating all historical chat logs would be slow and expensive.
 
@@ -74,7 +74,7 @@ Shared messages within group chats contain a `searchTokens` array including the 
 
 ---
 
-## 🧹 Social Identity Purging (Anonymization)
+## Social Identity Purging (Anonymization)
 
 When a user deletes their account, personal data must be deleted. However, deleting their chat messages or reactions would break the conversation flow.
 
@@ -82,10 +82,10 @@ The `purgeSocialIdentity` engine solves this by **anonymizing social interaction
 
 ```
 [Active Message Reaction Previews]
-  👍 Reaction: { uid: "user_123", nickname: "Alice Smith", photoUrl: "https://alice.jpg" }
+  Reaction: { uid: "user_123", nickname: "Alice Smith", photoUrl: "https://alice.jpg" }
                 │
                 ▼ (Account Deleted / Social Identity Purge Triggered)
-  👍 Reaction: { uid: "user_123", nickname: "...", photoUrl: "" }
+  Reaction: { uid: "user_123", nickname: "...", photoUrl: "" }
 ```
 
 ### Anonymization Steps
@@ -102,7 +102,7 @@ The `purgeSocialIdentity` engine solves this by **anonymizing social interaction
 
 ---
 
-## 📦 Batch Management & Performance
+## Batch Management & Performance
 
 To prevent Firestore rate limit errors and serverless function timeouts, the engine uses **Batching Safeguards**:
 

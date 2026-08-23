@@ -174,10 +174,10 @@ The solution is an **Anonymization Pipeline** that replaces personal data with g
 
 ```
 [Active Message Reaction Previews]
-  👍 Reaction: { uid: "user_999", nickname: "Jane Doe", photoUrl: "https://jane.jpg" }
+  Reaction: { uid: "user_999", nickname: "Jane Doe", photoUrl: "https://jane.jpg" }
                  │
                  ▼ (Account Deletion Callback Triggered)
-  👍 Reaction: { uid: "user_999", nickname: "...", photoUrl: "" }
+  Reaction: { uid: "user_999", nickname: "...", photoUrl: "" }
 ```
 
 When `purgeSocialIdentity` is invoked:

@@ -4,7 +4,7 @@ This document explains how users post study notes and how streaks and levels are
 
 ---
 
-## 🔥 Streak Engine (`api_internal/lib/streak-engine.ts`)
+## Streak Engine (`api_internal/lib/streak-engine.ts`)
 
 The app uses a **Hybrid Streak Engine** to calculate user streaks. It prevents users from losing streaks due to timezone changes or late-night study habits.
 
@@ -44,7 +44,7 @@ if (isTargetDay || withinGracePeriod) {
 
 ---
 
-## 💎 Deconstructed Post Transaction Steps (Read-Optimized)
+## Deconstructed Post Transaction Steps (Read-Optimized)
 
 To maximize performance and prevent transaction lock contention, posting a note runs inside a Firestore `db.runTransaction()` with **0 transactional group document reads**:
 
@@ -57,7 +57,7 @@ To maximize performance and prevent transaction lock contention, posting a note 
 
 ---
 
-## 🤝 Asynchronous Post-Transaction Sweeps
+## Asynchronous Post-Transaction Sweeps
 
 All non-blocking calculations, push notification sweeps, and daily activity resets are deferred to **post-transaction background operations** outside the transaction context:
 
@@ -68,7 +68,7 @@ All non-blocking calculations, push notification sweeps, and daily activity rese
 
 ---
 
-## 📊 Firestore Operation Cost Audit (Post Note)
+## Firestore Operation Cost Audit (Post Note)
 
 To maintain budget predictability and audit Firestore read/write patterns, here is the exact theoretical operation breakdown when a user posts a single study note to **one group** (assuming a group size of 5 members; 1 sender + 4 recipients):
 
@@ -100,7 +100,7 @@ To maintain budget predictability and audit Firestore read/write patterns, here 
 
 ---
 
-## 🏆 Level Calculation & UI Optimization
+## Level Calculation & UI Optimization
 
 The user's level is calculated using this formula:
 `Level = floor(daysStudiedCount / 7) + 1`
@@ -113,7 +113,7 @@ The user's level is calculated using this formula:
 
 ---
 
-## 🚦 Posting Flow Diagram
+## Posting Flow Diagram
 
 ```mermaid
 sequenceDiagram
@@ -137,7 +137,7 @@ sequenceDiagram
 
 ---
 
-## 🎉 Total Study Milestones & Dashboard Metric Migration
+## Total Study Milestones & Dashboard Metric Migration
 
 To promote positive psychology and reduce user anxiety related to maintaining daily streaks (which could lead to demotivation if a single day is missed), the application has transitioned to celebrating **Total Study Days (累積日数)** instead of continuous streaks:
 

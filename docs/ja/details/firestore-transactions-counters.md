@@ -101,11 +101,11 @@ const result = await db.runTransaction(async (transaction) => {
 テスト実行の最後に、ハーネスはデータベース操作を要約したテレメトリレポートを出力します。
 
 ```text
-📊 [Firestore Read Audit] -----------------------------
+[Firestore Read Audit] -----------------------------
    Transaction GETs:    14
    Transaction GETALLs: 1
    Document GETs:       8
-   👉 Total Reads:      23
+   Total Reads:      23
    Collection Breakdown:
      - users: 8 reads
      - groups: 12 reads

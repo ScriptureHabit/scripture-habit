@@ -6,7 +6,7 @@ It details the gateway validation chain, CORS policies, trailing slash normaliza
 
 ---
 
-## 🛰️ 1. Express Gateway & Routing Middleware
+## 1. Express Gateway & Routing Middleware
 
 The backend uses a unified Express gateway (`api/api.ts`) acting as a lightweight API controller. To maximize performance and keep cold starts low in serverless environments, Sentry and Firebase SDKs are initialized eagerly (Sentry is initialized at the absolute top of the file before importing Express or any routers to ensure automatic instrumentation hooks work correctly), while routes and middlewares are mounted in a strict security-first hierarchy.
 
@@ -34,7 +34,7 @@ app.use((req, _res, next) => {
 
 ---
 
-## ⚡ 2. The Verification Middleware Pipeline
+## 2. The Verification Middleware Pipeline
 
 All sensitive endpoints mount a middleware sequence before triggering controller files:
 
@@ -95,7 +95,7 @@ Enforces that password-based logins complete activation loops before accessing g
 
 ---
 
-## 🩹 3. Standardized AppError & Exception Engine
+## 3. Standardized AppError & Exception Engine
 
 The backend rejects ad-hoc `res.status(X).send()` errors. Instead, it relies on a custom `AppError` class hierarchy to model database conflicts, permission breaches, and validation flaws.
 
@@ -119,7 +119,7 @@ ValidationError AuthenticationError ForbiddenError NotFoundError
 
 ---
 
-## 🚦 4. Global Error Mitigation & Sentry Integration
+## 4. Global Error Mitigation & Sentry Integration
 
 Any uncaught exception thrown inside routers propagates to the global express error middleware. This middleware ensures perfect client safety and observability.
 

@@ -4,7 +4,7 @@ The **scripture-habit** AI subsystem acts as a virtual facilitator, helping brid
 
 ---
 
-## 🤖 The Persona: "Encouraging Facilitator"
+## The Persona: "Encouraging Facilitator"
 
 Rather than a generic LLM, our prompts are engineered to use a specific persona:
 - **Tone**: Warm, encouraging, and simple. 
@@ -13,7 +13,7 @@ Rather than a generic LLM, our prompts are engineered to use a specific persona:
 
 ---
 
-## ⚡ API Optimization: Gemini 3.1 Flash-Lite
+## API Optimization: Gemini 3.1 Flash-Lite
 
 We use **Gemini 3.1 Flash-Lite Preview** globally. To ensure a fast experience, we apply a minimal thinking configuration:
 ```json
@@ -25,7 +25,7 @@ This forces the model to prioritize speed and directness for simple tasks like t
 
 ---
 
-## 💾 Translation Cache Strategy
+## Translation Cache Strategy
 
 We use a persistent cache for all translations to reduce API costs and latency.
 
@@ -53,7 +53,7 @@ If a test environment is detected, the server awaits the cache write before retu
 
 ---
 
-## ⚡ Batch Translation Optimization
+## Batch Translation Optimization
 
 When a user loads a chat with messages in multiple languages, individual translation requests can slow down the UI and consume extra bandwidth. To optimize this, the backend exposes `/api/ai/translate-batch`, which uses a **3-stage batching process**:
 
@@ -108,7 +108,7 @@ await batch.commit();
 
 ---
 
-## 📊 Weekly Recaps, Cooldowns, & Smart Cache Recovery
+## Weekly Recaps, Cooldowns, & Smart Cache Recovery
 
 Weekly recaps are resource-heavy AI operations. To prevent system overload and control API costs, the system applies a strict **6-day cooldown** while offering a smart recovery mechanism:
 
@@ -133,7 +133,7 @@ Instead of simply rejecting the request with a hard `429` error (which would cau
 
 ---
 
-## 🧹 JSON Sanitization
+## JSON Sanitization
 
 Gemini outputs a JSON object for batch translations. However, LLMs sometimes include extra markdown or text wrappers. 
 Our backend cleans this output:
@@ -144,6 +144,6 @@ This prevents errors if the AI includes extra introductory text.
 
 ---
 
-## 🛠️ Security & AI Middleware
+## Security & AI Middleware
 - **Rate Limiting**: `aiLimiter` restricts the number of AI requests any user can trigger per hour.
 - **AppCheck**: Required for all AI routes to prevent external scripts from abusing the endpoints.

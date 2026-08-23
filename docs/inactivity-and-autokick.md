@@ -4,7 +4,7 @@ This document explains the automated inactivity and auto-kick system. The system
 
 ---
 
-## 🏗️ Architecture Overview
+## Architecture Overview
 
 The inactivity engine consists of two parts:
 1.  **`InactivityService` (`api_internal/services/inactivity-service.ts`)**: Handles database queries, batch updates, notifications, and task scheduling.
@@ -48,7 +48,7 @@ sequenceDiagram
 
 ---
 
-## ⏰ Scheduler Strategy
+## Scheduler Strategy
 
 To avoid Firestore timeouts and reduce database costs, the system uses two search methods:
 
@@ -59,7 +59,7 @@ To avoid Firestore timeouts and reduce database costs, the system uses two searc
 
 ---
 
-## 🛠️ Auto-Kick Threshold Resolution
+## Auto-Kick Threshold Resolution
 
 The system checks if a member is active by finding their **latest activity timestamp** and comparing it to a threshold.
 
@@ -90,7 +90,7 @@ If the threshold is set to **`0`**, auto-kick is disabled for that member. They 
 
 ---
 
-## 🩹 Database Self-Healing
+## Database Self-Healing
 
 The engine automatically repairs inconsistent data during checks:
 
@@ -102,7 +102,7 @@ If a member's `joinedAt` date is set to the future or contains an error, the sys
 
 ---
 
-## 👑 Ownership Transfer & Group Deletion
+## Ownership Transfer & Group Deletion
 
 If the group owner becomes inactive:
 
@@ -113,7 +113,7 @@ If the group owner becomes inactive:
 
 ---
 
-## 🔔 Member Kick Notification Flow
+## Member Kick Notification Flow
 
 When a member is removed for inactivity:
 1.  The system removes their UID from the group's `members` list and deletes their document in the `members` subcollection.

@@ -4,7 +4,7 @@ This document details the security rules, dynamic verification, and write isolat
 
 ---
 
-## 🛡️ Security Model: Two-Tier Protection
+## Security Model: Two-Tier Protection
 
 To achieve maximum protection, the application uses a **Defense-in-Depth (多重防御)** strategy. Security is checked not just once at the API layer, but verified a second time at the database layer.
 

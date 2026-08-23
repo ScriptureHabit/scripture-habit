@@ -101,11 +101,11 @@ This tracking is fully immune to standard mock restorations (`vi.restoreAllMocks
 At the end of a test run, the harness prints a telemetry report summarizing the database operations:
 
 ```text
-📊 [Firestore Read Audit] -----------------------------
+[Firestore Read Audit] -----------------------------
    Transaction GETs:    14
    Transaction GETALLs: 1
    Document GETs:       8
-   👉 Total Reads:      23
+   Total Reads:      23
    Collection Breakdown:
      - users: 8 reads
      - groups: 12 reads

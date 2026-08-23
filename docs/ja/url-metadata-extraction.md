@@ -4,7 +4,7 @@
 
 ---
 
-## 🏗️ アーキテクチャの概要
+## アーキテクチャの概要
 
 メタデータ抽出は、Reactフック、キャッシュレイヤー、およびFirebaseセキュリティミドルウェアで保護された2つのバックエンドAPIエンドポイントを使用します。
 
@@ -52,7 +52,7 @@ sequenceDiagram
 
 ---
 
-## 🔒 セキュリティ対策
+## セキュリティ対策
 
 メタデータの取得では、サーバーがユーザーの代わりにHTTPリクエストを行う必要があるため、悪用を防ぐために複数のセキュリティ対策が適用されています。
 
@@ -72,7 +72,7 @@ sequenceDiagram
 
 ---
 
-## 📡 バックエンドAPIエンドポイント ([preview.ts](../../scripture-habit/api_internal/routes/preview.ts))
+## バックエンドAPIエンドポイント ([preview.ts](../../scripture-habit/api_internal/routes/preview.ts))
 
 ### 1. 教会メタデータ (`/api/preview/fetch-church-metadata`)
 総大会の説教やリアホナの記事などのLDSコンテンツの解析に最適化されています。
@@ -109,7 +109,7 @@ sequenceDiagram
 
 ---
 
-## ⚡ フロントエンドクライアントフック
+## フロントエンドクライアントフック
 
 ### 1. `useUrlMetadata` フック ([use-url-metadata.ts](../../scripture-habit/src/hooks/use-url-metadata.ts))
 メタデータを取得、管理、およびキャッシュするためのカスタムReactフック。
@@ -133,7 +133,7 @@ sequenceDiagram
 
 ---
 
-## 🧪 テストと検証
+## テストと検証
 
 [preview.integration.test.ts](../../scripture-habit/api_internal/routes/preview.integration.test.ts) での統合テストにより、以下の挙動が検証されています。
 -   **認証**: トークンなしのリクエストが `401 Unauthorized` を返すことを検証します。

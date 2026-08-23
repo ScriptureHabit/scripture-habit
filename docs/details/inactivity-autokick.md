@@ -1,10 +1,10 @@
-# 🔬 Detailed Explanation: Inactivity Sweep & Auto-Kick / Owner Transfer Engine
+# Detailed Explanation: Inactivity Sweep & Auto-Kick / Owner Transfer Engine
 
 This document provides a detailed explanation of the **"Inactivity Sweep Middleware"** that completely automates background operations for Scripture Habit, the **"Two-Stage Query Optimization"** that dramatically reduces Firestore read costs, and the **"Owner Transfer & Auto-Dissolution Engine"** that prevents groups from becoming ghost groups.
 
 ---
 
-## 🔄 Batch Check & Double Rotation Strategy
+## Batch Check & Double Rotation Strategy
 
 The inactivity detection process is a backend batch process called daily via a cron job. To scan hundreds or thousands of groups efficiently and evenly, it combines two scanning strategies: **"Rotation"** and **"The Net."**
 
@@ -15,7 +15,7 @@ The inactivity detection process is a backend batch process called daily via a c
 
 ---
 
-## 🛡️ 2-Stage Read Optimization (Firestore Read Optimization)
+## 2-Stage Read Optimization (Firestore Read Optimization)
 
 Firestore's pricing model is based on the number of document reads. When checking the activity status of tens of thousands of users daily, reading every single user's document individually would result in enormous read costs.
 
@@ -30,7 +30,7 @@ Scripture Habit adopts an advanced two-stage optimization design to **"determine
 
 ---
 
-## 🔄 Sweep & Kick Transaction Process Flow
+## Sweep & Kick Transaction Process Flow
 
 The following is the sequence from when the cron job starts until the inactivity kicks, automatic group dissolutions, and owner transfers are completed as Firestore transactions.
 
@@ -80,7 +80,7 @@ sequenceDiagram
 
 ---
 
-## 📅 Inactivity Detection & Owner Transfer Decision Tree
+## Inactivity Detection & Owner Transfer Decision Tree
 
 The decision logic that determines the fate of a group is processed entirely within `decideGroupInactivity`, which is a completely I/O-free **pure function**. This allows for perfect unit test execution simply by mocking time and test data.
 
@@ -116,7 +116,7 @@ flowchart TD
 
 ---
 
-## 💻 Core Code Explanation
+## Core Code Explanation
 
 ### 1. Preparing for Inactivity Evaluation via Two-Stage Read (`inactivity-service.ts`)
 

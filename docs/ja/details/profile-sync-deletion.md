@@ -174,10 +174,10 @@ currentBatch.update(nDoc.ref, {
 
 ```
 [アクティブなメッセージ上のリアクションプレビュー]
-  👍 リアクション情報: { uid: "user_999", nickname: "山田 太郎", photoUrl: "https://taro.jpg" }
+  リアクション情報: { uid: "user_999", nickname: "山田 太郎", photoUrl: "https://taro.jpg" }
                        │
                        ▼ (アカウント削除コールバックのトリガー)
-  👍 リアクション情報: { uid: "user_999", nickname: "...", photoUrl: "" }
+  リアクション情報: { uid: "user_999", nickname: "...", photoUrl: "" }
 ```
 
 `purgeSocialIdentity` が呼び出されると以下のプロセスを実行します。

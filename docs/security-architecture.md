@@ -6,7 +6,7 @@ App Check verifies that incoming HTTP requests come from real instances of our a
 
 ---
 
-## 🛡️ Security Model: Two-Tier Protection
+## Security Model: Two-Tier Protection
 
 Our architecture uses a **Defense-in-Depth (多重防御)** strategy. Security is checked at two different boundaries: the **API Gateway Layer** (this document) and the **Database Security Rules Layer**.
 
@@ -23,7 +23,7 @@ Incoming Request  ──►  [ Tier 1: API Middleware ]  ──►  [ Tier 2: Da
 
 ---
 
-## 🛡️ The App Check Gateway Flow
+## The App Check Gateway Flow
 
 App Check operates as an interceptor middleware at the front of the backend router pipeline.
 
@@ -67,7 +67,7 @@ sequenceDiagram
 
 ---
 
-## 🔒 Security Gateways & Middleware Implementation
+## Security Gateways & Middleware Implementation
 
 The core logic is in `api_internal/lib/middleware.ts` inside the `verifyAppCheck` middleware function.
 
@@ -112,7 +112,7 @@ export const verifyAppCheck = async (req: Request, res: Response, next: NextFunc
 
 ---
 
-## ⚙️ Environment Strategies & Test Bypasses
+## Environment Strategies & Test Bypasses
 
 Running security checks during automated testing and local development requires a flexible setup:
 
@@ -127,7 +127,7 @@ To allow developers to code and test APIs locally without generating signed app 
 
 ---
 
-## 🚦 Protected API Inventory
+## Protected API Inventory
 
 Most state-mutating or resource-heavy routes are protected by the `verifyAppCheck` middleware. Below is an inventory of routes protected by this gateway:
 

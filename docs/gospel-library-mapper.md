@@ -6,7 +6,7 @@ It cleans and parses strings, resolves verse selections, and creates deep-links 
 
 ---
 
-## 🏗️ Technical Pipeline & Data Flow
+## Technical Pipeline & Data Flow
 
 The mapper processes inputs through a 5-step pipeline to create a deep-linked URL:
 
@@ -25,7 +25,7 @@ flowchart TD
 
 ---
 
-## ⚙️ Core Functions
+## Core Functions
 
 The module exports three main functions:
 
@@ -53,7 +53,7 @@ getScriptureInfoFromText(text: string | null | undefined): string | null
 
 ---
 
-## 🛠️ Step-by-Step Implementation
+## Step-by-Step Implementation
 
 ### Step 1: Volume Detection & Language Mapping
 - **Multi-Lingual Matching**: Detects the volume from user inputs (such as "Old Testament", "モルモン書", "Velho Testamento") in English, Japanese, Portuguese, Chinese, Spanish, Vietnamese, Thai, Korean, Tagalog, and Swahili.
@@ -140,7 +140,7 @@ Treats BYU Speeches input as an external reference and returns the `chapterInput
 
 ---
 
-## 🎯 Deep-Link Verse Highlighting & Scrolling
+## Deep-Link Verse Highlighting & Scrolling
 
 To provide deep-links, the mapper parses the verses captured in **Step 3** to build HTML hash attributes:
 
