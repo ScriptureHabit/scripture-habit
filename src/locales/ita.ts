@@ -112,7 +112,7 @@ export default {
         "Sacrament Prayers": "Preghiere del Sacramento",
         "Baptism Ordinance": "Ordinanza del Battesimo",
         "The Living Christ": "Il Cristo Vivente",
-        "The Family Proclamation": "Il Famiglia: Un Proclama al Mondo",
+        "The Family Proclamation": "La Famiglia: Un Proclama al Mondo",
         "Restoration Proclamation": "Proclama sulla Restaurazione"
     },
     "apiErrors": {
