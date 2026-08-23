@@ -208,11 +208,11 @@ scripture-habit のスケールに伴い、データベースコストを低く�
 エミュレートされた各テストファイルの最後に、`TestSetup` はデータベース読み取りの詳細なコレクションレベルのブレイクダウンを記録します：
 
 ```text
-📊 [Firestore Read Audit] -----------------------------
+[Firestore Read Audit] -----------------------------
    Transaction GETs:    18
    Transaction GETALLs: 1
    Document GETs:       10
-   👉 Total Reads:      29
+   Total Reads:      29
    Collection Breakdown:
      - users: 11 reads
      - groups: 16 reads

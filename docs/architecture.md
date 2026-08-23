@@ -4,7 +4,7 @@ This document provides details about the technical structure of the **scripture-
 
 ---
 
-## 🛠️ Technical Stack
+## Technical Stack
 
 We use a modern, type-safe stack designed for fast development and good performance on both web and mobile.
 
@@ -24,7 +24,7 @@ We use a modern, type-safe stack designed for fast development and good performa
 
 ---
 
-## 📂 Directory Structure & Physical Layers
+## Directory Structure & Physical Layers
 
 The project is structured into the following key directories, each representing a physical layer:
 
@@ -53,7 +53,7 @@ A client application built using React 19 and Vite 8. It contains UI components 
 
 ---
 
-## 🏗️ Architectural Layers
+## Architectural Layers
 
 ### 1. The Schema Layer (`/types`)
 **Centralized Data Models**: All Firestore document models are defined as TypeScript interfaces in the root `types/` folder. This ensures that the Backend (Admin SDK) and Frontend (Client SDK) always use identical data structures.
@@ -71,7 +71,7 @@ Routes are simple controllers. All main processes (transactions, streak calculat
 
 ---
 
-## 💾 State Management Taxonomy
+## State Management Taxonomy
 
 We categorize state by its source and persistence to avoid redundant renders.
 
@@ -88,7 +88,7 @@ We categorize state by its source and persistence to avoid redundant renders.
 
 ---
 
-## 🔄 Data Flow: The Synchronized Loop
+## Data Flow: The Synchronized Loop
 
 Our architecture separates **Mutations** (API) from **Queries** (Direct DB Listeners).
 
@@ -121,7 +121,7 @@ graph TD
 
 ---
 
-## 💾 Database Schema Blueprint
+## Database Schema Blueprint
 
 Scripture Habit stores relational and gamified data structures in Firestore. Below is the simplified collection hierarchy:
 
@@ -161,7 +161,7 @@ Firestore Root
 
 ---
 
-## 🎮 Local Emulator Seeding System
+## Local Emulator Seeding System
 
 Connecting a fresh developer workspace to blank emulators makes UI testing tedious. The local environment features an automated seeding pipeline:
 
@@ -175,7 +175,7 @@ Connecting a fresh developer workspace to blank emulators makes UI testing tedio
 
 ---
 
-## 🗺️ CodeTours (Developer Navigation)
+## CodeTours (Developer Navigation)
 
 To guide new developers, the workspace contains **22 interactive CodeTours** (under `.tours/`). Developers can launch them in VS Code via the Command Palette:
 1. `CodeTour: Start Tour`
@@ -183,7 +183,7 @@ To guide new developers, the workspace contains **22 interactive CodeTours** (un
 
 ---
 
-## 🛡️ Reliability & Security
+## Reliability & Security
 - **Type Guards**: `firestoreConverters.ts` uses Zod to ensure that malformed data in Firestore is caught and cleaned before it causes errors in the UI.
 - **Automated Profile Sync**: While member identity fields (e.g. nickname) are duplicated across group preview arrays, messages, and reactions to save read costs, the backend runs `ProfileService.syncProfileToChats` using atomic batches (`db.batch()`) to push updates immediately to all corresponding records, preventing unsynced states.
 - **Error Boundaries**: Component-level boundaries prevent errors in a chat message from breaking the entire Dashboard.

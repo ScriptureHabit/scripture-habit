@@ -235,7 +235,7 @@ export const NoteCard: FC<{ note: Note; onClick: () => void }> = ({ note, onClic
         <span className="scripture-title">{note.scripture} {note.chapter}</span>
         {gospelUrl && (
           <a href={gospelUrl} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}>
-            📖 Gospel Library
+            Gospel Library
           </a>
         )}
       </div>

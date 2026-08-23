@@ -1,10 +1,10 @@
-# 🔬 Technical Deep-Dive: Gospel Library Mapper & Multilingual Unicode Normalization Engine
+# Technical Deep-Dive: Gospel Library Mapper & Multilingual Unicode Normalization Engine
 
 This document provides a detailed explanation of two core utilities that strongly support the global expansion of Scripture Habit: the **"Gospel Library Official Link Auto-Generation Mapper"** and the **"Multilingual Book Suggestion (Auto-complete) Search Engine"** featuring Japanese Hiragana-to-Katakana conversion.
 
 ---
 
-## 🗺️ Gospel Library Link Auto-Mapping (Gospel Library Mapper)
+## Gospel Library Link Auto-Mapping (Gospel Library Mapper)
 
 When a user inputs which scripture they read in a Study Note (e.g., `マタイ 3:13-17` or `1 Nephi 3`), the system automatically parses it and dynamically generates a **deep link (deep-highlight URL) that automatically scrolls to and highlights the corresponding "verses"** on the official website.
 
@@ -40,7 +40,7 @@ flowchart TD
 
 ---
 
-## 🔍 Multilingual Book Autocomplete Suggestion Search Engine
+## Multilingual Book Autocomplete Suggestion Search Engine
 
 This is a suggestion feature designed to help users quickly select scripture book names when writing a new Study Note.
 Specifically in Japanese environments, it is equipped with a **"phonetic code shift (Hiragana-to-Katakana conversion)"** that enables extremely fast search and completion of the official book name "マタイ" (Katakana) even when the user inputs "またい" (Hiragana).
@@ -79,7 +79,7 @@ By utilizing this characteristic, when a user enters Hiragana, the system detect
 
 ---
 
-## 💻 Core Code Explanation
+## Core Code Explanation
 
 Below is the core logic and Japanese comments of `src/utils/gospel-library-mapper.ts` and `src/utils/suggestion-utils.ts`.
 

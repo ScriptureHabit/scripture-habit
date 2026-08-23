@@ -4,7 +4,7 @@ This document defines the data architecture, entity-relationship models, schema 
 
 ---
 
-## 📂 Entity-Relationship (ER) Model
+## Entity-Relationship (ER) Model
 
 Our data model is hierarchical, balancing the need for real-time synchronization with long-term data storage.
 
@@ -73,7 +73,7 @@ erDiagram
 
 ---
 
-## 🌳 Firestore Hierarchical Path Structure
+## Firestore Hierarchical Path Structure
 
 To visualize how these collections and documents are physically structured in Firestore's hierarchical path layout (Collection ➔ Document ➔ Subcollection ➔ Document):
 
@@ -115,7 +115,7 @@ graph TD
 
 ---
 
-## 🗺️ Schema Plan & Denormalization
+## Schema Plan & Denormalization
 
 ### 1. `groups`
 * **Denormalization Strategy**: We store `memberPreviews` (nickname/photo) and `lastMessageAt` directly on the root group document. This allows the client dashboard to show active groups instantly without secondary document requests.
@@ -132,13 +132,13 @@ graph TD
 ---
 
 > [!IMPORTANT]
-> ### 🛡️ Security Rules & Write Permissions
+> ### Security Rules & Write Permissions
 > Details about verification rules (`isAuthenticated()`, `isAppCheckVerified()`), membership lookups, and backend-only write validation policies are documented in **[Firebase Security Rules & Write Isolation](firebase-security-rules.md)**.
 > All client updates and transaction routines are described in **[Firestore Transactions & Counter Service Design](firestore-transactions-counters.md)**.
 
 ---
 
-## 📦 Chat Cleanup (Firestore TTL)
+## Chat Cleanup (Firestore TTL)
 
 To avoid Firestore's document-size limits (1MB per document) and keep real-time client syncs lightweight, the application uses Firestore's native **Time-to-Live (TTL)** auto-deletion feature for chat history.
 
@@ -158,7 +158,7 @@ To avoid Firestore's document-size limits (1MB per document) and keep real-time 
 
 ---
 
-## 🔐 Private Data Isolation
+## Private Data Isolation
 
 Sensitive user credentials and setup tokens are kept separate from general queries:
 `users/{uid}/private/tokens`

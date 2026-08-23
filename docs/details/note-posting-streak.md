@@ -1,10 +1,10 @@
-# 🔬 Detailed Explanation: Note Posting and Streak Calculation Logic
+# Detailed Explanation: Note Posting and Streak Calculation Logic
 
 This document provides a detailed explanation of the sequence of processing designs, from the core event of Scripture Habit, **"Posting a Study Note,"** to the accompanying **"Streak Calculation,"** and finally to the **"Real-Time Aggregation of Group Unity."**
 
 ---
 
-## 🏗️ Database Design & Entity Relationships
+## Database Design & Entity Relationships
 
 The Firestore schema and collection structure affected during note posting are as follows:
 
@@ -21,7 +21,7 @@ The Firestore schema and collection structure affected during note posting are a
 
 ---
 
-## 🔄 Post Transaction Processing Flow
+## Post Transaction Processing Flow
 
 When a user posts a note, the server starts a **Firestore transaction (`db.runTransaction`)**. To prevent conflicts, Firestore transactions strictly adhere to the design rule of completing the entire **"Read Phase (strict Read-before-Write)"** before transitioning to the **"Write Phase."**
 
@@ -83,7 +83,7 @@ sequenceDiagram
 
 ---
 
-## 📅 Streak (Continuous Days) Calculation Algorithm
+## Streak (Continuous Days) Calculation Algorithm
 
 Even when users access the service from different time zones (such as Japan, the United States, or the Philippines), **determining streaks based on "server time" can cause discrepancies in determining when a date changes**.
 
@@ -121,7 +121,7 @@ flowchart TD
 
 ---
 
-## 💻 Core Code Explanation
+## Core Code Explanation
 
 ### 1. Streak Engine (`streak-engine.ts`)
 
@@ -327,7 +327,7 @@ export class NoteService {
                     for (const gid of userGroupIds) {
                         const msgRef = db.collection('groups').doc(gid).collection('messages').doc();
                         transaction.set(msgRef, {
-                            text: `🎉 ${userData.nickname} さんが ストリーク ${newStreak} 日を達成しました！`,
+                            text: `${userData.nickname} さんが ストリーク ${newStreak} 日を達成しました！`,
                             senderId: 'system',
                             createdAt: admin.firestore.Timestamp.fromDate(new Date(currentNow.getTime() + 1000)),
                             isSystemMessage: true,
@@ -349,7 +349,7 @@ export class NoteService {
 
 ---
 
-## 📈 Level Up & XP (Experience Points) Calculation Model
+## Level Up & XP (Experience Points) Calculation Model
 
 To encourage motivation to continue learning, Scripture Habit introduces a system where levels increase in response to note posts.
 
@@ -364,7 +364,7 @@ To encourage motivation to continue learning, Scripture Habit introduces a syste
 
 ---
 
-## ⚡ Isolated Design of Asynchronous Background Processing
+## Isolated Design of Asynchronous Background Processing
 
 Why are **"Unity Recalculation"** and **"Sending FCM Push Notifications"** executed outside the transaction (asynchronously)?
 

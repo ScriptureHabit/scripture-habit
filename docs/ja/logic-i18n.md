@@ -6,7 +6,7 @@ Scripture Habitは、グローバルなユーザー向けに設計されてい�
 
 ---
 
-## 🏛️ アーキテクチャ: SSOT（一元管理）構成
+## アーキテクチャ: SSOT（一元管理）構成
 
 ```mermaid
 flowchart TD
@@ -22,7 +22,7 @@ flowchart TD
 
 ---
 
-## 🎨 フロントエンドアーキテクチャ: 言語コンテキスト＆プロバイダー
+## フロントエンドアーキテクチャ: 言語コンテキスト＆プロバイダー
 
 フロントエンドのローカライズは、以下の構成で管理されています：
 - **`src/config/languages.ts`**: 全言語のメタデータ（コード、名称、国旗アイコン、LDSコード）を一元定義。
@@ -42,7 +42,7 @@ flowchart TD
 
 ---
 
-## ⚙️ バックエンドローカライズ: 自動ディスカバリシステム
+## バックエンドローカライズ: 自動ディスカバリシステム
 
 バックエンド（`api_internal/lib/i18n.ts`）は、システムメッセージ、プッシュ通知、およびAI指示書（AIプロンプト）の翻訳を管理します。
 
@@ -53,7 +53,7 @@ flowchart TD
 
 ---
 
-## 🤖 AIローカライズ: コンテンツ翻訳
+## AIローカライズ: コンテンツ翻訳
 
 ユーザーが作成したスタディノートは、静的ファイルを使用するのではなく、Gemini AIによって動的に翻訳されます。
 
@@ -67,24 +67,24 @@ flowchart TD
 
 ---
 
-## 🌍 サポートされている言語（全10言語）
+## サポートされている言語（全10言語）
 
 | コード | 言語名 (現地表記) | 英語名 | 国旗 | LDSコード |
 | :--- | :--- | :--- | :---: | :--- |
-| `en` | English | English | 🇺🇸 | `eng` |
-| `ja` | 日本語 | Japanese | 🇯🇵 | `jpn` |
-| `pt` | Português | Portuguese | 🇧🇷 | `por` |
-| `zho` (zh) | 繁體中文 | Chinese (Traditional) | 🇹🇼 | `zho` |
-| `es` | Español | Spanish | 🇪🇸 | `spa` |
-| `vi` | Tiếng Việt | Vietnamese | 🇻🇳 | `vie` |
-| `th` | ไทย | Thai | 🇹🇭 | `tha` |
-| `ko` | 한국語 | Korean | 🇰🇷 | `kor` |
-| `tl` | Tagalog | Tagalog | 🇵🇭 | `tgl` |
-| `sw` | Kiswahili | Swahili | 🇰🇪 | `swa` |
+| `en` | English | English | US | `eng` |
+| `ja` | 日本語 | Japanese | JP | `jpn` |
+| `pt` | Português | Portuguese | BR | `por` |
+| `zho` (zh) | 繁體中文 | Chinese (Traditional) | TW | `zho` |
+| `es` | Español | Spanish | ES | `spa` |
+| `vi` | Tiếng Việt | Vietnamese | VN | `vie` |
+| `th` | ไทย | Thai | TH | `tha` |
+| `ko` | 한국語 | Korean | KR | `kor` |
+| `tl` | Tagalog | Tagalog | PH | `tgl` |
+| `sw` | Kiswahili | Swahili | KE | `swa` |
 
 ---
 
-## 🚀 新しい言語の追加（DRYな追加手順）
+## 新しい言語の追加（DRYな追加手順）
 
 言語設定と辞書が一元化されているため、わずか2ステップでフロントエンド・バックエンド・AIのすべてに新しい言語が反映されます：
 

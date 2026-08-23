@@ -1,10 +1,10 @@
-# 🔬 Detailed Explanation: App Check and API Gateway Protection Security
+# Detailed Explanation: App Check and API Gateway Protection Security
 
 This document explains in detail the **"API Gateway Security"** that protects the Scripture Habit API server (Vercel Serverless) from malicious attacks and spam access, as well as the **"Exception Bypass Design"** that balances both development and testing in mobile environments.
 
 ---
 
-## 🛡️ Defense-in-Depth Security Topology
+## Defense-in-Depth Security Topology
 
 The Scripture Habit backend API employs **Defense in Depth**, which progressively increases the security level at each stage. Before a request reaches the controller (business logic), it must pass through up to five layers of filters.
 
@@ -16,7 +16,7 @@ The Scripture Habit backend API employs **Defense in Depth**, which progressivel
 
 ---
 
-## 🔄 API Request Verification Sequence
+## API Request Verification Sequence
 
 Below is the atomic verification sequence for a request passing through the gateway to reach the controller (rendered with high contrast in mind, keeping background colors neutral for dark mode compatibility).
 
@@ -73,7 +73,7 @@ sequenceDiagram
 
 ---
 
-## 🔒 Firebase App Check Verification and Production Guard
+## Firebase App Check Verification and Production Guard
 
 Firebase **App Check** is a defense system that verifies whether requests are sent from officially registered applications (such as the Vite frontend).
 
@@ -96,7 +96,7 @@ if (skipRequested) {
 
 ---
 
-## ⚙️ Bypass Decision Flow During Development and Testing
+## Bypass Decision Flow During Development and Testing
 
 To maintain high security while balancing "development efficiency" and "complete automation of CI/CD E2E tests using Playwright," the bypass decision tree is designed as follows:
 
@@ -133,7 +133,7 @@ flowchart TD
 
 ---
 
-## 🛡️ Privacy-Conscious Hash-Based Rate Limiting
+## Privacy-Conscious Hash-Based Rate Limiting
 
 When limiting requests sent to the API server, a standard IP address-based rate limit stores the **raw (plain text) IP address** in the server's logs or memory, which can be a concern under privacy regulations like GDPR. Additionally, it faces issues such as inaccurate identification when requests come through IPv6 or reverse proxies.
 
@@ -145,7 +145,7 @@ Scripture Habit employs an **cryptographic hash-based rate limit using SHA-256**
 
 ---
 
-## 💻 Core Code Explanation
+## Core Code Explanation
 
 Below is the core logic and detailed annotations of `api_internal/lib/middleware.ts`.
 

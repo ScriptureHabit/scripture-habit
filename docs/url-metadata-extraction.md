@@ -4,7 +4,7 @@ This document explains how the app extracts page titles and speakers/authors fro
 
 ---
 
-## 🏗️ Architecture Overview
+## Architecture Overview
 
 The metadata extraction uses a React hook, a caching layer, and two backend API endpoints protected by Firebase security middleware:
 
@@ -52,7 +52,7 @@ sequenceDiagram
 
 ---
 
-## 🔒 Security Measures
+## Security Measures
 
 Because fetching metadata requires the server to make HTTP requests on behalf of users, multiple security measures are applied to prevent abuse:
 
@@ -72,7 +72,7 @@ Because fetching metadata requires the server to make HTTP requests on behalf of
 
 ---
 
-## 📡 Backend API Endpoints ([preview.ts](../scripture-habit/api_internal/routes/preview.ts))
+## Backend API Endpoints ([preview.ts](../scripture-habit/api_internal/routes/preview.ts))
 
 ### 1. Church Metadata (`/api/preview/fetch-church-metadata`)
 Optimized for parsing LDS content like General Conference talks and Liahona articles.
@@ -109,7 +109,7 @@ Extracts rich metadata previews for general website links.
 
 ---
 
-## ⚡ Frontend Client Hooks
+## Frontend Client Hooks
 
 ### 1. `useUrlMetadata` Hook ([use-url-metadata.ts](../scripture-habit/src/hooks/use-url-metadata.ts))
 A custom React hook to retrieve, manage, and cache metadata.
@@ -133,7 +133,7 @@ An integration hook for the note-creation modal (`NewNote`).
 
 ---
 
-## 🧪 Testing & Verification
+## Testing & Verification
 
 Integration tests in [preview.integration.test.ts](../scripture-habit/api_internal/routes/preview.integration.test.ts) verify the behavior:
 -   **Authentication**: Asserts that requests without a token return `401 Unauthorized`.

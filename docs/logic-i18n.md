@@ -6,7 +6,7 @@ Language definitions and translation dictionaries are structured around a **Sing
 
 ---
 
-## 🏛️ Architecture: Single Source of Truth (SSOT)
+## Architecture: Single Source of Truth (SSOT)
 
 ```mermaid
 flowchart TD
@@ -22,7 +22,7 @@ flowchart TD
 
 ---
 
-## 🎨 Frontend Architecture: Language Context & Provider
+## Frontend Architecture: Language Context & Provider
 
 Frontend localization is managed through:
 - **`src/config/languages.ts`**: Central registry defining all language metadata (codes, native names, English names, flag icons, LDS codes).
@@ -42,7 +42,7 @@ To display scripture book names correctly in multiple languages, we use a mappin
 
 ---
 
-## ⚙️ Backend Localization: Auto-Discovery System
+## Backend Localization: Auto-Discovery System
 
 The backend (`api_internal/lib/i18n.ts`) manages translations for system messages, push notifications, and AI prompts.
 
@@ -53,7 +53,7 @@ The backend directly scans the shared `src/locales/` directory at startup (Auto-
 
 ---
 
-## 🤖 AI Localization: Content Translation
+## AI Localization: Content Translation
 
 User-generated study notes are translated dynamically by Gemini AI rather than using static files.
 
@@ -67,24 +67,24 @@ The app detects if a note's language is different from the viewer's preferred la
 
 ---
 
-## 🌍 Supported Languages (10 Languages)
+## Supported Languages (10 Languages)
 
 | Code | Native Name | English Name | Flag | LDS Code |
 | :--- | :--- | :--- | :---: | :--- |
-| `en` | English | English | 🇺🇸 | `eng` |
-| `ja` | 日本語 | Japanese | 🇯🇵 | `jpn` |
-| `pt` | Português | Portuguese | 🇧🇷 | `por` |
-| `zho` (zh) | 繁體中文 | Chinese (Traditional) | 🇹🇼 | `zho` |
-| `es` | Español | Spanish | 🇪🇸 | `spa` |
-| `vi` | Tiếng Việt | Vietnamese | 🇻🇳 | `vie` |
-| `th` | ไทย | Thai | 🇹🇭 | `tha` |
-| `ko` | 한국語 | Korean | 🇰🇷 | `kor` |
-| `tl` | Tagalog | Tagalog | 🇵🇭 | `tgl` |
-| `sw` | Kiswahili | Swahili | 🇰🇪 | `swa` |
+| `en` | English | English | US | `eng` |
+| `ja` | 日本語 | Japanese | JP | `jpn` |
+| `pt` | Português | Portuguese | BR | `por` |
+| `zho` (zh) | 繁體中文 | Chinese (Traditional) | TW | `zho` |
+| `es` | Español | Spanish | ES | `spa` |
+| `vi` | Tiếng Việt | Vietnamese | VN | `vie` |
+| `th` | ไทย | Thai | TH | `tha` |
+| `ko` | 한국語 | Korean | KR | `kor` |
+| `tl` | Tagalog | Tagalog | PH | `tgl` |
+| `sw` | Kiswahili | Swahili | KE | `swa` |
 
 ---
 
-## 🚀 Adding a New Language (DRY Process)
+## Adding a New Language (DRY Process)
 
 Because language settings and translation bundles are centralized, adding a new language requires just 2 simple steps:
 

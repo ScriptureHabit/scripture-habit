@@ -208,11 +208,11 @@ This tracking is fully immune to standard mock restorations (`vi.restoreAllMocks
 At the end of each emulated test file, `TestSetup` logs a detailed collection-level breakdown of the database reads:
 
 ```text
-📊 [Firestore Read Audit] -----------------------------
+[Firestore Read Audit] -----------------------------
    Transaction GETs:    18
    Transaction GETALLs: 1
    Document GETs:       10
-   👉 Total Reads:      29
+   Total Reads:      29
    Collection Breakdown:
      - users: 11 reads
      - groups: 16 reads

@@ -4,7 +4,7 @@ This document explains the group invitation and joining process. It ensures data
 
 ---
 
-## 🏗️ Pipeline Overview
+## Pipeline Overview
 
 The join pipeline validates requests using rate-limiting, authentication status, code alias resolution, and Firestore transactional writes:
 
@@ -54,7 +54,7 @@ sequenceDiagram
 
 ---
 
-## 🔒 Invite Code Security & Architecture
+## Invite Code Security & Architecture
 
 Invite codes grant access to study groups. The system balances accessibility with safety using a human-centered design:
 
@@ -91,7 +91,7 @@ To prevent automated brute-force scans:
 
 ---
 
-## 📡 Backend API Endpoints (`api_internal/routes/groups.ts`)
+## Backend API Endpoints (`api_internal/routes/groups.ts`)
 
 ### 1. Group Preview (`GET /api/groups/group-preview/:inviteCode`)
 Shows the Group Name, Description, and Member count in a preview card before the user joins.
@@ -109,7 +109,7 @@ Allows group members to generate a new primary invite code while preserving past
 
 ---
 
-## 🤝 Concurrency-Safe Group Joining (`POST /api/groups/join-group`)
+## Concurrency-Safe Group Joining (`POST /api/groups/join-group`)
 
 To prevent database race conditions (like exceeding group capacity during simultaneous joins), joining a group runs inside a Firestore transaction:
 
