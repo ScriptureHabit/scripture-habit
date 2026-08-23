@@ -1,0 +1,30 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": [
+    "src/types/schemas.ts",
+    "src/types/user.ts",
+    "src/types/chat.ts",
+    "src/types/note.ts",
+    "src/types/scripture.ts",
+    "src/types/errors.ts",
+    "types/firestore.ts",
+    "src/config/languages.ts",
+    "src/utils/api-client.ts",
+    "src/utils/firestore-converters.ts",
+    "src/utils/gospel-library-mapper.ts",
+    "src/utils/group-utils.ts",
+    "src/utils/note-logic.ts",
+    "src/utils/notification-helper.ts",
+    "src/utils/unity-utils.ts",
+    "src/utils/suggestion-utils.ts",
+    "src/utils/time-utils.ts",
+    "src/utils/offline-chat-queue.ts"
+  ],
+  "out": "docs/reference",
+  "plugin": ["typedoc-plugin-markdown", "typedoc-vitepress-theme"],
+  "entryFileName": "index.md",
+  "docsRoot": "docs",
+  "readme": "none",
+  "hideBreadcrumbs": true,
+  "tsconfig": "tsconfig.json"
+}

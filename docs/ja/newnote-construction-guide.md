@@ -39,7 +39,6 @@ src/components/newnote/
 ├── new-note.css                        # フォームおよびモーダル共通スタイリング
 ├── new-note.test.tsx                   # Vitest コンポーネント統合テスト
 ├── hooks/
-│   ├── use-note-state.ts              # フォーム入力・公開範囲・初期値設定フック
 │   ├── use-url-meta-fetcher.ts        # 500msデバウンスURLメタデータ自動取得フック
 │   ├── use-ai-generator.ts            # Gemini API (/api/generate-questions) 質問生成フック
 │   ├── use-random-note.ts             # 6カテゴリ/URLローカライズ対応ランダム聖句提案フック

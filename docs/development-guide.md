@@ -92,12 +92,19 @@ Open **[http://localhost:5173](http://localhost:5173)** in your browser to view 
 | :--- | :--- |
 | `npm run dev` | Starts Vite frontend dev server at `localhost:5173` |
 | `npm run server` | Starts local Express backend server at `localhost:5000` |
+| `npm run emulators` | Starts local Firebase Emulator Suite (Firestore, Auth, Functions) |
 | `npm run build` | Builds frontend production bundle and runs meta-localization |
 | `npm run lint` | Runs ESLint across the codebase |
-| `npm run check:all` | Runs full type checks, i18n checks, and FCM message verifications |
-| `npm run test` | Runs unit & integration tests with Vitest |
+| `npm run check:all` | Runs full type checks, i18n checks, and backend integrity checks |
+| `npm run check:i18n` | Verifies 100% translation coverage across all locales |
+| `npm run sort:locales` | Automatically sorts and formats translation files |
+| `npm run test` | Runs frontend unit tests with Vitest |
+| `npm run test:internal` | Runs backend/integration tests with emulated Firebase |
+| `npm run test:rules` | Runs dedicated Firestore security rules unit tests |
 | `npm run test:e2e` | Runs Playwright End-to-End tests against emulated sandbox |
 | `npm run db:seed` | Seeds test users, study groups, streaks, and chat logs into emulators |
+| `npm run docs:dev` | Starts local VitePress documentation dev server |
+| `npm run docs:build` | Generates TypeDoc references and builds production docs site |
 
 ---
 

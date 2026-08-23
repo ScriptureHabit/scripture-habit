@@ -92,12 +92,19 @@ npm run dev
 | :--- | :--- |
 | `npm run dev` | Vite 開発サーバーを起動（`localhost:5173`） |
 | `npm run server` | バックエンド Express サーバーを起動（`localhost:5000`） |
+| `npm run emulators` | Firebase ローカルエミュレータ（Firestore, Auth, Functions）を起動 |
 | `npm run build` | プロダクションビルドおよびメタタグの多言語化を実行 |
 | `npm run lint` | ESLint によるコード静的解析 |
-| `npm run check:all` | 型チェック、多言語翻訳チェック、FCM 型検証を一括実行 |
-| `npm run test` | Vitest による単体・統合テストを実行 |
+| `npm run check:all` | 型チェック、多言語翻訳チェック、バックエンド整合性を一括実行 |
+| `npm run check:i18n` | 全言語の翻訳カバー率（100%）を検証 |
+| `npm run sort:locales` | 翻訳ファイルのキー順と構造を自動整形 |
+| `npm run test` | Vitest によるフロントエンド単体テストを実行 |
+| `npm run test:internal` | エミュレータ環境でバックエンド統合テストを実行 |
+| `npm run test:rules` | Firestore セキュリティルールの単体テストを実行 |
 | `npm run test:e2e` | Playwright による E2E テストを実行 |
 | `npm run db:seed` | エミュレータにテスト用ユーザー・グループ・履歴データを投入 |
+| `npm run docs:dev` | VitePress ドキュメントサイトの開発サーバーを起動 |
+| `npm run docs:build` | TypeDoc リファレンス自動生成およびドキュメントサイトをビルド |
 
 ---
 
