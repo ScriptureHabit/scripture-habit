@@ -6,6 +6,8 @@ import './index.css'
 import App from './app'
 import { AuthProvider } from './context/auth-provider';
 import { RootErrorBoundary } from './components/common/root-error-boundary';
+import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 // Only initialize vConsole if ?vconsole=true is in the URL (lazy dynamic import)
 if (typeof window !== 'undefined' && window.location.search.includes('vconsole=true')) {
   import(/* @vite-ignore */ 'vconsole').then(({ default: VConsole }) => {
@@ -112,6 +114,8 @@ if (rootElement) {
           <BrowserRouter>
             <AuthProvider>
               <App />
+              <Analytics />
+              <SpeedInsights />
             </AuthProvider>
           </BrowserRouter>
         </QueryClientProvider>

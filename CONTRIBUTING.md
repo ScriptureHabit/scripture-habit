@@ -120,9 +120,9 @@ Edit the relevant `src/locales/<lang>.ts` file and submit a pull request.
 
 ### 2. Adding a New Language
 Adding a new language is simple:
-1. Copy `src/locales/en.ts` to `src/locales/<lang>.ts` (e.g. `fra.ts`) and translate the values.
+1. Copy `src/locales/en.ts` to `src/locales/<lang>.ts` (e.g. `fr.ts`, `de.ts`) and translate the values.
 2. Update the `_meta` configuration at the top of the file (native name, flag emoji, LDS 3-letter code).
-3. Run `npm run check:i18n` to verify 100% key coverage across all languages. No manual import registration is needed (automatic discovery).
+3. Run `npm run check:i18n` to verify 100% key coverage. All configurations, types, and metadata are synchronized automatically (Zero-Config).
 
 > **Important Notes for Translators:**
 > - **Preserve Placeholders:** Keep variables inside curly braces (e.g. `{nickname}`, `{streak}`, `{count}`, `{days}`) unchanged in your translations.
@@ -258,10 +258,10 @@ npm run build
 該当する `src/locales/<lang>.ts` を直接修正し、Pull Request を送信してください。
 
 ### 2. 新しい言語の追加（たったの 2 ステップ）
-1. `src/locales/en.ts` をコピーして、新しい言語ファイル `src/locales/<lang>.ts`（例: `fra.ts`）を作成・翻訳します。
-   * ファイル先頭の `_meta`（言語名、国旗絵文字、LDSコード）も設定します。
+1. `src/locales/en.ts` をコピーして、新しい言語ファイル `src/locales/<lang>.ts`（例: `fr.ts`, `de.ts`）を作成・翻訳します。
+   * ファイル先頭の `_meta`（言語コード、言語名、国旗絵文字、LDSコード）も設定します。
 2. `npm run check:i18n` を実行して、未翻訳のキー漏れがないか確認します。
-   * 他のパーサーやサーバー設定ファイルへの import 追記は **完全不要（自動ディスカバリー）** です！
+   * 言語一覧（`languages.ts`）や型定義、聖典メタデータへの登録は **完全自動（Zero-Config）** で行われます！
 
 > **翻訳時の注意点:**
 > - **変数のプレースホルダー:** `{nickname}`, `{streak}`, `{count}`, `{days}` などの波括弧で囲まれた変数名は翻訳せず、そのまま残してください。

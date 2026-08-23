@@ -4,7 +4,8 @@
     "backend/index.ts",
     "api_internal/**/*.ts",
     "scripts/**/*.ts",
-    "tests/**/*.ts"
+    "tests/**/*.ts",
+    "docs/.vitepress/config.mts"
   ],
   "project": [
     "src/**/*.{ts,tsx}",
@@ -22,7 +23,10 @@
     "@playwright/browser-chromium",
     "@playwright/browser-webkit",
     "cross-spawn",
-    "hono"
+    "hono",
+    "caniuse-lite",
+    "sharp",
+    "@vitejs/plugin-legacy"
   ],
   "ignoreBinaries": [
     "netstat",
