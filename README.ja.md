@@ -204,6 +204,6 @@ Issue や Pull Request はいつでもお気軽にお送りください。
 
 ## ライセンス
 
-本プロジェクトは **MIT ライセンス** のもとで公開されています。詳細は [LICENSE](LICENSE) ファイルをご確認ください。
+本プロジェクトは **GNU Affero General Public License v3.0 (AGPL-3.0)** のもとで公開されています。詳細は [LICENSE](LICENSE) ファイルをご確認ください。
 
 
