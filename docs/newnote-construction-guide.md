@@ -39,7 +39,6 @@ src/components/newnote/
 ├── new-note.css                        # Modal & Form layout styling
 ├── new-note.test.tsx                   # Vitest component integration tests
 ├── hooks/
-│   ├── use-note-state.ts              # Form state, visibility, and initial note state hook
 │   ├── use-url-meta-fetcher.ts        # 500ms debounced async URL metadata fetcher hook
 │   ├── use-ai-generator.ts            # Gemini API (/api/generate-questions) reflection question generator hook
 │   ├── use-random-note.ts             # 6 categories with URL localizer random scripture picker hook

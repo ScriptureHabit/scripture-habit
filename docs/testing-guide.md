@@ -8,13 +8,13 @@ This document explains the testing strategies and patterns used in the scripture
 We use `@firebase/rules-unit-testing` to verify that our security rules protect user data and enforce business logic.
 
 - **Location**: `api_internal/rules.test.ts`
-- **How to run** (Recommended):
+- **How to run** (Dedicated test):
+  ```bash
+  npm run test:rules
+  ```
+  *(Or run as part of all internal integration tests)*:
   ```bash
   npm run test:internal
-  ```
-  *(Or run manually for a single file)*:
-  ```bash
-  firebase emulators:exec --project scripture-habit-auth "npx vitest api_internal/rules.test.ts"
   ```
 - **Key Patterns**:
   - Test both authorized and unauthorized access.
@@ -125,5 +125,5 @@ To mathematically enforce optimal Firestore read counts and lock optimization st
 - **Key Patterns**:
   - Uses Vitest spies to verify transaction and document reference read counts.
   - Mathematically asserts exact expected reads (e.g. 0 re-reads inside transaction loops).
-  - Complemented by an automatic, transparent read budget tracker inside [TestSetup](../scripture-habit/api_internal/test-setup.ts) that reports a collection-level breakdown of reads for every emulated test suite.
+  - Complemented by an automatic, transparent read budget tracker inside `api_internal/test-setup.ts` that reports a collection-level breakdown of reads for every emulated test suite.
 

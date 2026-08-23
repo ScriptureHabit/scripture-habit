@@ -77,6 +77,16 @@ When accounts or groups are deleted, social interaction nodes (Cheers) can becom
   - If any associated entity is missing, the cheer document is immediately deleted.
   - If all entities are valid, the cheer's `lastCheckedAt` timestamp is updated to the current time, moving it to the back of the queue.
 
+### 5.3 AI Partner Daily Note Posting (`/api/cron/post-ai-daily-notes`)
+Automatically generates and posts daily scripture study notes for AI Partner study groups (`isAiGroup: true`):
+- **Automated Posting**: Uses `AiDailyNoteService` with Gemini AI to generate insightful scripture reflections based on the daily reading plan.
+- **Cache Reconciliation**: Reconciles the latest messages cache (`messages_latest/latest`) after posting to keep real-time chat previews synchronized.
+
+### 5.4 Demo Sandbox Environment Cleanup (`/api/cron/cleanup-demo-sandboxes`)
+Prevents temporary sandbox data from accumulating in the database:
+- **TTL Expiration**: Automatically queries anonymous demo accounts (`isAnonymousDemo: true`) exceeding the 1-hour expiration window (`DEMO_TTL_MS`).
+- **Full Deletion**: Performs `recursiveDelete` on demo groups and user subcollections, and deletes temporary Firebase Auth accounts.
+
 ---
 
 ## 6. Diagnostics & Simulated Dry-Runs

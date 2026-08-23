@@ -63,7 +63,6 @@ src/components/groupchat/
 │   │   ├── chat-reducer.ts            # Pure reducer state transitions
 │   │   ├── use-chat-data-engine.ts    # Firestore real-time listener & Zod schema validation
 │   │   ├── use-chat-sync-controller.ts# Data sync orchestration
-│   │   ├── use-group-chat-state.ts    # Group state hook
 │   │   └── use-group-messages.ts      # Message caching and fetch logic
 │   ├── api/                            # API & Firestore Data Mutations
 │   │   ├── use-group-actions.ts       # Leave, delete, and update group
@@ -72,16 +71,20 @@ src/components/groupchat/
 │   │   ├── use-report-system.ts       # Message/User reporting handler
 │   │   └── use-user-profile.ts        # Member user profile fetcher
 │   ├── interaction/                    # User Input & Gesture Handlers
+│   │   ├── use-auto-retry.ts          # Offline message queue auto-retry handler
 │   │   ├── use-cheer-system.ts        # Send cheer / check cheer status
-│   │   ├── use-group-chat-handlers.ts  # Event handler delegate
+│   │   ├── use-group-chat-handlers.ts # Event handler delegate
 │   │   ├── use-message-input.ts       # Textarea auto-resize & keyboard handlers
 │   │   └── use-message-interaction.ts # Context menu & touch/click handler
 │   └── view/                           # Visual, Layout & UI State
+│       ├── use-auto-translate-message.ts # Auto-translation for unviewed foreign messages
 │       ├── use-chat-visual-effects.ts # Visual effects & animations
 │       ├── use-group-chat-ui.ts       # Active modal & UI state manager
+│       ├── use-message-read-count.ts  # Per-message unread calculation
 │       ├── use-scroll-manager.ts      # Auto-scroll & scroll anchor calculation
+│       ├── use-translated-nickname.ts # Member nickname localized translation
 │       ├── use-unity-details.ts       # Unity modal member classification
-│       └── use-unity-score.ts         # Unity percentage calculation, 100% fireworks & /api/groups/announce-unity handler
+│       └── use-unity-score.ts         # Unity percentage calculation & 100% celebration
 ├── subcomponents/                      # UI Component Parts
 │   ├── chat-header.tsx                # Chat top header bar
 │   ├── group-chat-footer.tsx          # Footer container with reply preview & input

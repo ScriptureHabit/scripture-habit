@@ -99,7 +99,6 @@ src/components/groupchat/
 │   │   ├── chat-reducer.ts            # Reducer状態更新ロジック
 │   │   ├── use-chat-data-engine.ts    # Firestoreデータ受信・スキーマ検証同期
 │   │   ├── use-chat-sync-controller.ts# データ同期のオーケストレーション
-│   │   ├── use-group-chat-state.ts    # グループ固有ステート管理
 │   │   └── use-group-messages.ts      # メッセージリスト取得・キャッシュ
 │   ├── api/                            # API / Firestore 書き込み操作
 │   │   ├── use-group-actions.ts       # グループ離脱・削除・名変更等
@@ -108,14 +107,18 @@ src/components/groupchat/
 │   │   ├── use-report-system.ts       # メッセージ/ユーザー通報
 │   │   └── use-user-profile.ts        # ユーザープロフィール取得
 │   ├── interaction/                    # ユーザー操作インタラクション
+│   │   ├── use-auto-retry.ts          # オフライン未送信メッセージの自動再送ハンドラー
 │   │   ├── use-cheer-system.ts        # 応援送信・既送信チェック
-│   │   ├── use-group-chat-handlers.ts  # イベントハンドララッパー
+│   │   ├── use-group-chat-handlers.ts # イベントハンドララッパー
 │   │   ├── use-message-input.ts       # 入力フォーム状態管理
 │   │   └── use-message-interaction.ts # 右クリック/長押しコンテキストメニューハンドラー
 │   └── view/                           # 表示・アニメーション・UIロジック
+│       ├── use-auto-translate-message.ts # 未読異言語メッセージの自動翻訳
 │       ├── use-chat-visual-effects.ts # ビジュアルエフェクト
 │       ├── use-group-chat-ui.ts       # アクティブモーダル・UI状態
+│       ├── use-message-read-count.ts  # メッセージ別未読カウント計算
 │       ├── use-scroll-manager.ts      # スクロール位置保持・自動スクロール
+│       ├── use-translated-nickname.ts # 異言語メンバーのニックネーム翻訳
 │       ├── use-unity-details.ts       # 団結度モーダル用メンバー投稿状態分類
 │       └── use-unity-score.ts         # 団結度計算・100%花火・/api/groups/announce-unity送信
 ├── subcomponents/                      # チャット画面のパーツUI

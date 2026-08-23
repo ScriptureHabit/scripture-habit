@@ -4,6 +4,9 @@ node_modules
 dist
 dist-ssr
 *.tsbuildinfo
+docs/.vitepress/dist
+docs/.vitepress/cache
+docs/reference/
 
 # Environment variables & secrets
 .env
