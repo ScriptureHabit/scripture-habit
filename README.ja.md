@@ -184,10 +184,11 @@ Issue や Pull Request はいつでもお気軽にお送りください。
 <table>
   <tbody>
     <tr>
-      <td align="center" valign="top" width="25%"><a href="https://github.com/daijir"><img src="https://avatars.githubusercontent.com/u/153198121?v=4&s=100" width="100px;" alt="daijir"/><br /><sub><b>daijir</b></sub></a></td>
-      <td align="center" valign="top" width="25%"><a href="https://github.com/Sembatya2020"><img src="https://avatars.githubusercontent.com/u/181699473?v=4&s=100" width="100px;" alt="Sembatya2020"/><br /><sub><b>Sembatya2020</b></sub></a></td>
-      <td align="center" valign="top" width="25%"><a href="https://github.com/GreiceMoreira"><img src="https://avatars.githubusercontent.com/u/126085301?v=4&s=100" width="100px;" alt="GreiceMoreira"/><br /><sub><b>GreiceMoreira</b></sub></a></td>
-      <td align="center" valign="top" width="25%"><a href="https://github.com/Bimbolin"><img src="https://avatars.githubusercontent.com/u/128802658?v=4&s=100" width="100px;" alt="Bimbolin"/><br /><sub><b>Bimbolin</b></sub></a></td>
+      <td align="center" valign="top" width="20%"><a href="https://github.com/daijir"><img src="https://avatars.githubusercontent.com/u/153198121?v=4&s=100" width="100px;" alt="daijir"/><br /><sub><b>daijir</b></sub></a></td>
+      <td align="center" valign="top" width="20%"><a href="https://github.com/Sembatya2020"><img src="https://avatars.githubusercontent.com/u/181699473?v=4&s=100" width="100px;" alt="Sembatya2020"/><br /><sub><b>Sembatya2020</b></sub></a></td>
+      <td align="center" valign="top" width="20%"><a href="https://github.com/GreiceMoreira"><img src="https://avatars.githubusercontent.com/u/126085301?v=4&s=100" width="100px;" alt="GreiceMoreira"/><br /><sub><b>GreiceMoreira</b></sub></a></td>
+      <td align="center" valign="top" width="20%"><a href="https://github.com/Bimbolin"><img src="https://avatars.githubusercontent.com/u/128802658?v=4&s=100" width="100px;" alt="Bimbolin"/><br /><sub><b>Bimbolin</b></sub></a></td>
+      <td align="center" valign="top" width="20%"><a href="https://github.com/KadenTheHero"><img src="https://avatars.githubusercontent.com/u/265869306?v=4&s=100" width="100px;" alt="KadenTheHero"/><br /><sub><b>KadenTheHero</b></sub></a></td>
     </tr>
   </tbody>
 </table>
