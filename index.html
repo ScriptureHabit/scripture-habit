@@ -37,9 +37,8 @@
   <link rel="dns-prefetch" href="https://securetoken.googleapis.com"><!-- nosemgrep: html.security.audit.missing-integrity.missing-integrity -->
   <link rel="dns-prefetch" href="https://www.gstatic.com"><!-- nosemgrep: html.security.audit.missing-integrity.missing-integrity -->
 
-  <!-- Preload Critical Loading Mascot & LCP Hero Image -->
+  <!-- Preload Critical Loading Mascot -->
   <link rel="preload" as="image" href="/images/mascot-96.webp" type="image/webp">
-  <link rel="preload" as="image" href="/images/mascot.webp" type="image/webp" fetchpriority="high">
   <style>
     :root {
       --glass: rgba(255, 255, 255, 0.54);
@@ -52,89 +51,91 @@
       width: 100%;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
-    .LandingPageRoot {
-      width: 100%;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-    .LandingGlass {
-      background: rgba(255, 255, 255, 0.54);
-      min-height: 100vh;
+    .App {
+      background: linear-gradient(106.37deg, #feac5e 29.63%, #c779d0 51.55%, #4bc0c8 90.85%);
+      height: 100vh;
       width: 100%;
       display: flex;
-      flex-direction: column;
-    }
-    .hero-section {
-      display: flex;
-      flex-direction: row-reverse;
-      align-items: center;
       justify-content: center;
-      padding: 120px 24px 80px 24px;
-      max-width: 1200px;
-      margin: 0 auto;
-      gap: 60px;
-    }
-    .hero-mascot-container {
-      display: flex;
-      flex-direction: column;
       align-items: center;
-      position: relative;
-      width: 320px;
-      flex-shrink: 0;
     }
-    .hero-mascot-img {
-      width: 200px;
-      height: 200px;
+    .AppGlass {
+      width: 97%;
+      min-height: 97vh;
+      background: var(--glass);
+      border-radius: 2rem;
+      box-shadow: 0px 19px 60px rgb(0 0 0 / 8%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    @media screen and (max-width: 768px) {
+      .AppGlass {
+        background: transparent;
+        box-shadow: none;
+      }
+    }
+    .initial-loader {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      margin: 0;
+      gap: 15px;
+    }
+    .loader-mascot {
+      width: 80px;
+      height: 80px;
       object-fit: contain;
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+      animation: float 3s ease-in-out infinite;
     }
-    .mascot-bubble {
+    .loader-bubble {
+      background: white;
+      border-radius: 1rem;
+      padding: 0.6rem 1rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
       position: relative;
-      background: #fff;
-      border-radius: 20px;
-      padding: 16px 20px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-      border: 1px solid rgba(102, 126, 234, 0.15);
-      margin-bottom: 24px;
-      text-align: center;
-      max-width: 260px;
+      border: 2px solid #E2E8F0;
+      animation: bounceHorizontal 2s ease-in-out infinite;
     }
-    .mascot-bubble-text {
-      font-size: 1rem;
-      font-weight: 700;
-      color: #4c63d2;
-      line-height: 1.4;
+    .loader-text {
+      margin: 0;
+      font-size: 0.85rem;
+      color: #4A5568;
+      font-weight: 600;
     }
-    .mascot-bubble-tail {
+    .loader-bubble-tail {
       position: absolute;
-      bottom: -10px;
-      left: 50%;
-      transform: translateX(-50%);
+      left: -8px;
+      top: 50%;
+      transform: translateY(-50%) rotate(90deg);
       width: 0;
       height: 0;
-      border-left: 10px solid transparent;
-      border-right: 10px solid transparent;
-      border-top: 10px solid #fff;
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-top: 8px solid #E2E8F0;
     }
-    .hero-content {
-      max-width: 600px;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+    .loader-bubble-tail::after {
+      content: '';
+      position: absolute;
+      top: -10px;
+      left: -8px;
+      width: 0;
+      height: 0;
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-top: 8px solid white;
     }
-    .hero-title {
-      font-size: 3.5rem;
-      font-weight: 900;
-      line-height: 1.25;
-      margin-bottom: 1.5rem;
-      color: #242d49;
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
     }
-    .hero-subtitle {
-      font-size: 1.25rem;
-      color: #788097;
-      line-height: 1.7;
-      margin-bottom: 2.5rem;
+    @keyframes bounceHorizontal {
+      0%, 100% { transform: translateX(0); }
+      50% { transform: translateX(5px); }
     }
   </style>
   <title>Scripture Habit</title>
@@ -142,30 +143,16 @@
 
 <body>
   <div id="root">
-    <div class="LandingPageRoot">
-      <main class="LandingGlass">
-        <header class="hero-section">
-          <div class="hero-mascot-container">
-            <div class="mascot-bubble">
-              <span class="mascot-bubble-text">Let's read together!</span>
-              <div class="mascot-bubble-tail"></div>
-            </div>
-            <img 
-              src="/images/mascot.webp" 
-              alt="Welcome Bird" 
-              class="hero-mascot-img" 
-              width="200" 
-              height="200"
-              fetchpriority="high"
-              decoding="async"
-            />
+    <div class="App">
+      <div class="AppGlass">
+        <div class="initial-loader">
+          <img src="/images/mascot-96.webp" alt="Loading..." class="loader-mascot" width="80" height="80" />
+          <div class="loader-bubble">
+            <p class="loader-text">Loading...</p>
+            <div class="loader-bubble-tail"></div>
           </div>
-          <div class="hero-content">
-            <h1 class="hero-title">Build a Daily Scripture Habit, Together</h1>
-            <p class="hero-subtitle">Connect with friends, track reading streaks, and encourage one another every day.</p>
-          </div>
-        </header>
-      </main>
+        </div>
+      </div>
     </div>
   </div>
   <script type="module" src="/src/main.tsx"></script>
