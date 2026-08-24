@@ -8,6 +8,10 @@
 - **[アーキテクチャ & 構成](architecture.md)**
   - ディレクトリ構成のハイレベルな概要。
   - レイヤー定義（API、内部、バックエンド、フロントエンド）。
+- **[ネットワークパフォーマンス & データ通信最適化](network-performance-optimization.md)**
+  - Service Worker Background Sync とオフラインメッセージ保持。
+  - MessagePack バイナリ通信プロトコルと DataLoader による N+1 クエリ重複排除。
+  - 多層キャッシュ（Redis、Axios キャッシュインターセプター）、Brotli/Gzip 圧縮、フォント自己ホスト、および動的コード分割。
 - **[データベース & セキュリティ](database-security.md)**
   - Firestore の ER モデル、階層パス構造、およびプライベートデータの隔離。
   - チャットアーカイブ（バケットパターン）と非正規化戦略。

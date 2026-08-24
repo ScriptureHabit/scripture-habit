@@ -11,6 +11,10 @@ Welcome to the **scripture-habit** technical documentation. This directory conta
 - **[Architecture & Structure](architecture.md)**
   - High-level directory overview.
   - Layer definitions (API, Internal, Backend, Frontend).
+- **[Network Performance & Data Optimization](network-performance-optimization.md)**
+  - Service Worker Background Sync and offline message persistence.
+  - MessagePack binary communication protocol and DataLoader N+1 query deduplication.
+  - Multi-tier caching (Redis, Axios cache interceptor), Brotli/Gzip compression, font self-hosting, and dynamic code splitting.
 - **[Database & Security](database-security.md)**
   - Firestore ER model, path hierarchy, and private data isolation.
   - Chat archiving (Bucket pattern) and collection denormalization strategies.
