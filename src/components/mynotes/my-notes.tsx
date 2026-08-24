@@ -110,7 +110,7 @@ const MyNotes = ({ userData, isModalOpen, setIsModalOpen, userGroups }: MyNotesP
   }
 
   return (
-    <div className="MyNotes DashboardContent">
+    <div className="MyNotes">
       <div className="my-notes-header">
         <div>
           <h1>Scripture Habit</h1>

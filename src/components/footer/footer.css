@@ -17,9 +17,9 @@
 
 @media screen and (max-width: 768px) {
     .DashboardContent>.app-footer {
-        margin: auto -1rem -1rem -1rem;
-        padding-bottom: 72px;
-        /* Close enough to navbar height (70px) */
+        margin: 2rem -1rem -1rem -1rem;
+        padding-bottom: calc(70px + 1.5rem + env(safe-area-inset-bottom, 0px));
+        /* Ensures footer links are clearly visible above bottom navbar (70px) */
     }
 }
 

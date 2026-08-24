@@ -13,6 +13,11 @@
     overflow: hidden;
     color: #444;
     cursor: default;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    word-break: break-word;
+    overflow-wrap: anywhere;
 }
 
 .note-card.editable {
