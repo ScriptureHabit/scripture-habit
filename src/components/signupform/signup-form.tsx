@@ -8,8 +8,10 @@ import { useLanguage } from '../../hooks/use-language';
 import { UilGoogle, UilGithub } from '@iconscout/react-unicons';
 import Footer from '../footer/footer';
 import { useSignupForm } from './hooks/use-signup-form';
+import { useApiWarmupOnMount } from '../../utils/api-warmup';
 
 export default function SignupForm() {
+  useApiWarmupOnMount();
   const { t } = useLanguage();
   const {
     nickname,

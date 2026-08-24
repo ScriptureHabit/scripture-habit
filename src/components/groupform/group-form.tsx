@@ -10,8 +10,10 @@ import Toggle from '../input/toggle';
 import { toast } from "react-toastify";
 import { useLanguage } from '../../hooks/use-language';
 import Mascot from '../mascot/mascot';
+import { useApiWarmupOnMount } from '../../utils/api-warmup';
 
 export default function GroupForm() {
+  useApiWarmupOnMount();
   const { t, language } = useLanguage();
   const [groupName, setGroupName] = useState("");
   const [description, setDescription] = useState("");

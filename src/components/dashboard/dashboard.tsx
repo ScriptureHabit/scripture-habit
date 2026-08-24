@@ -42,8 +42,10 @@ import { useDashboardInvitations } from './hooks/use-dashboard-invitations';
 import { useDashboardActions } from './hooks/use-dashboard-actions';
 import { useToday } from '../../hooks/use-today';
 import { useUnreadAudioAlert } from '../../hooks/use-unread-audio-alert';
+import { useApiWarmupOnMount } from '../../utils/api-warmup';
 
 const Dashboard = () => {
+  useApiWarmupOnMount();
   const location = useLocation();
   // Capture these immediately to avoid unmount loops if location.state is cleared
   const initialGroupIdRef = useRef<string | undefined>(location.state?.groupId || location.state?.initialGroupId);

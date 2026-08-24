@@ -10,8 +10,10 @@ import { PublicGroupsSkeleton } from '../skeleton/skeleton';
 import { Group } from '../../types/chat';
 import { useJoinGroup } from './hooks/use-join-group';
 import { parseTimestampToDate } from '../../utils/time-utils';
+import { useApiWarmupOnMount } from '../../utils/api-warmup';
 
 export default function JoinGroup() {
+  useApiWarmupOnMount();
   const { t, language } = useLanguage();
   const navigate = useNavigate();
 

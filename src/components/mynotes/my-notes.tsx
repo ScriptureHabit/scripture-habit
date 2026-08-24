@@ -25,6 +25,7 @@ import { useRecap } from './hooks/use-recap';
 // Types
 import { SCRIPTURE_CATEGORIES, CATEGORY_TRANSLATION_MAP } from '../../types/scripture';
 import { parseTimestampToDate } from '../../utils/time-utils';
+import { useApiWarmupOnMount } from '../../utils/api-warmup';
 
 interface MyNotesProps {
   userData: UserData;
@@ -34,6 +35,7 @@ interface MyNotesProps {
 }
 
 const MyNotes = ({ userData, isModalOpen, setIsModalOpen, userGroups }: MyNotesProps) => {
+  useApiWarmupOnMount();
   const { language, t } = useLanguage();
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
   type ActiveModalType = 'detail' | 'delete' | 'edit' | 'letterbox' | null;

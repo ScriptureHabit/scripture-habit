@@ -6,6 +6,7 @@ import apiClient from '../../utils/api-client';
 import { useLanguage } from '../../hooks/use-language';
 import Button from '../button/button';
 import './invite-redirect.css';
+import { useApiWarmupOnMount } from '../../utils/api-warmup';
 
 interface InviteGroupInfo {
     name: string;
@@ -13,6 +14,7 @@ interface InviteGroupInfo {
 }
 
 const InviteRedirect = () => {
+    useApiWarmupOnMount();
     const { inviteCode } = useParams<{ inviteCode: string }>();
     const navigate = useNavigate();
     const { t, language } = useLanguage();

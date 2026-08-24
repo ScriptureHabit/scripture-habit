@@ -21,6 +21,7 @@ import NoteSharingOptions from './subcomponents/note-sharing-options';
 import { getBookSuggestions } from '../../utils/suggestion-utils';
 import { getGospelLibraryUrl, getCategoryFromScripture } from '../../utils/gospel-library-mapper';
 import { removeNoteHeader } from '../../utils/note-utils';
+import { useApiWarmupOnMount } from '../../utils/api-warmup';
 
 // types
 import { UserData } from '../../types/user';
@@ -46,6 +47,7 @@ const NewNote = ({
     isOpen, onClose, userData,
     userGroups = [], currentGroupId = null, noteToEdit = null
 }: NewNoteProps) => {
+    useApiWarmupOnMount(isOpen);
     const { t, language, tArray, translateChapterField, bookTranslations } = useLanguage();
     
     // Form State

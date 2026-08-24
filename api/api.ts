@@ -158,6 +158,14 @@ app.use((req, _res, next) => {
 app.set('strict routing', false);
 
 // --- Diagnostics & API Docs ---
+app.get(['/api/warmup', '/api/warmup/'], (_req, res) => {
+    res.json({
+        status: 'ok',
+        warmed: true,
+        time: new Date().toISOString()
+    });
+});
+
 app.get(['/api/health', '/api/health/'], (_req, res) => {
     res.json({
         status: 'ok',
