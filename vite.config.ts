@@ -5,6 +5,7 @@ import react from '@vitejs/plugin-react'
 import { sentryVitePlugin } from "@sentry/vite-plugin";
 import { visualizer } from 'rollup-plugin-visualizer';
 import { VitePWA } from 'vite-plugin-pwa';
+import viteCompression from 'vite-plugin-compression';
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => ({
@@ -48,6 +49,18 @@ export default defineConfig(({ mode }) => ({
         ],
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
       },
+    }),
+    viteCompression({
+      algorithm: 'gzip',
+      ext: '.gz',
+      threshold: 1024,
+      deleteOriginFile: false,
+    }),
+    viteCompression({
+      algorithm: 'brotliCompress',
+      ext: '.br',
+      threshold: 1024,
+      deleteOriginFile: false,
     }),
   ],
   esbuild: {

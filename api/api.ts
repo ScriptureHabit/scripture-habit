@@ -21,6 +21,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import crypto from 'crypto';
+import compression from 'compression';
 
 // Import Route Handlers
 import authRoutes from '../api_internal/routes/auth.js';
@@ -90,6 +91,15 @@ app.use((req, _res, next) => {
 
 // --- Middleware & Configuration ---
 app.use(helmet());
+app.use(compression({
+    threshold: 1024,
+    filter: (req, res) => {
+        if (req.headers['x-no-compression']) {
+            return false;
+        }
+        return compression.filter(req, res);
+    }
+}));
 app.set('trust proxy', 1);
 
 // Generate or propagate Request ID
