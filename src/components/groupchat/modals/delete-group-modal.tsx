@@ -1,4 +1,4 @@
-import ReactMarkdown from 'react-markdown';
+import LazyMarkdown from '../../common/lazy-markdown';
 import { Group } from '../../../types/chat';
 
 interface DeleteGroupModalProps {
@@ -31,9 +31,9 @@ const DeleteGroupModal = ({
                 <p>{t('groupChat.deleteConfirmMessage')}</p>
                 <div style={{ marginBottom: '1rem' }}>
                     {groupData && (
-                        <ReactMarkdown components={{ p: ({ children }) => <span>{children}</span> }}>
+                        <LazyMarkdown components={{ p: ({ children }) => <span>{children}</span> }}>
                             {t('groupChat.typeToConfirm').replace('{groupName}', groupData.name || '')}
-                        </ReactMarkdown>
+                        </LazyMarkdown>
                     )}
                 </div>
                 <input

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import './welcome-story-modal.css';
 import { useLanguage } from '../../hooks/use-language';
 import { UilTimes, UilCheck } from '@iconscout/react-unicons';
-import confetti from 'canvas-confetti';
+import { triggerConfetti } from '../../utils/confetti-utils';
 import { UserData } from '../../types/user';
 import { DEFAULT_KICK_THRESHOLD } from '../../constants';
 
@@ -38,7 +38,7 @@ const WelcomeStoryModal = ({ isOpen, onClose, userData }: WelcomeStoryModalProps
             setPage(page + 1);
         } else {
             // Trigger confetti on clicking 'はじめる' (on the last page)
-            confetti({
+            triggerConfetti({
                 particleCount: 150,
                 spread: 70,
                 origin: { y: 0.6 }

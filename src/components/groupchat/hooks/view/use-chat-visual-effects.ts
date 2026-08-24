@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import confetti from 'canvas-confetti';
+import { triggerConfetti } from '../../../../utils/confetti-utils';
 import { Message } from '../../../../types/chat';
 import { parseTimestampToMillis } from '../../../../utils/time-utils';
 import { UserData } from '../../../../types/user';
@@ -32,7 +32,7 @@ export const useChatVisualEffects = (
         lastMsg.messageData?.userId !== userData?.uid && 
         isRecent
       ) {
-        confetti({ 
+        triggerConfetti({ 
           particleCount: 150, 
           spread: 70, 
           origin: { y: 0.6 }, 

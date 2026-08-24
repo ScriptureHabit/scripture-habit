@@ -2,8 +2,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import { useMilestoneStore } from '../../store/use-milestone-store';
 import { useLanguage } from '../../hooks/use-language';
 import { MilestoneCard } from './milestone-card';
-import { toPng, toBlob } from 'html-to-image';
-import confetti from 'canvas-confetti';
+import { triggerConfetti } from '../../utils/confetti-utils';
 import { UilDownloadAlt, UilShareAlt, UilTimes } from '@iconscout/react-unicons';
 import { toast } from 'react-toastify';
 import './milestone-modal.css';
@@ -17,7 +16,7 @@ export const MilestoneModal: React.FC = () => {
     useEffect(() => {
         if (isOpen && milestoneData) {
             // Elegant, subdued celebratory confetti burst
-            confetti({
+            triggerConfetti({
                 particleCount: 80,
                 spread: 60,
                 origin: { y: 0.6 },
@@ -34,6 +33,7 @@ export const MilestoneModal: React.FC = () => {
         if (!cardRef.current || isSaving) return;
         setIsSaving(true);
         try {
+            const { toPng } = await import('html-to-image');
             const dataUrl = await toPng(cardRef.current, {
                 cacheBust: true,
                 pixelRatio: 3,
@@ -60,6 +60,7 @@ export const MilestoneModal: React.FC = () => {
         try {
             // Attempt native Web Share API with image file if supported
             if (navigator.share) {
+                const { toBlob } = await import('html-to-image');
                 const blob = await toBlob(cardRef.current, { 
                     pixelRatio: 2,
                     skipFonts: true 

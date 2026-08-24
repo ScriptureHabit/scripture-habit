@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
-import ReactMarkdown from 'react-markdown';
+import LazyMarkdown from '../common/lazy-markdown';
 import { useLanguage } from '../../hooks/use-language';
 import { useNoteParser } from './hooks/use-note-parser';
 import GCNoteRenderer from './components/gc-note-renderer';
@@ -131,14 +131,14 @@ const NoteDisplay = ({
                 </div>
             )}
             <div className="note-markdown">
-                <ReactMarkdown 
+                <LazyMarkdown 
                     components={{
                         a: ({ ...p }) => <a {...p} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} />,
                         p: ({ ...p }) => <p {...p} />
                     }}
                 >
                     {standardMd}
-                </ReactMarkdown>
+                </LazyMarkdown>
             </div>
             {showOriginal && (
                 <button 

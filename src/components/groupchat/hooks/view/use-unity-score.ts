@@ -3,7 +3,7 @@ import { useMemo, useEffect } from 'react';
 import { auth, appCheck } from '../../../../firebase';
 import { getToken } from 'firebase/app-check';
 import { safeStorage } from '../../../../utils/storage';
-import confetti from 'canvas-confetti';
+import { triggerConfetti } from '../../../../utils/confetti-utils';
 import { Message, GroupData, MembersMap } from '../../../../types/chat';
 import { UserData } from '../../../../types/user';
 
@@ -67,8 +67,8 @@ export const useUnityScore = (
         const timeLeft = animationEnd - Date.now();
         if (timeLeft <= 0) return clearInterval(interval);
         const particleCount = 50 * (timeLeft / duration);
-        confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } });
-        confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } });
+        triggerConfetti({ ...defaults, particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } });
+        triggerConfetti({ ...defaults, particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } });
       }, 250);
 
       safeStorage.set(storageKey, todayStr);

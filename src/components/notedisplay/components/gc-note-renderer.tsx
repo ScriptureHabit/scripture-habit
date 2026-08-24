@@ -1,5 +1,5 @@
 import { useMemo, useEffect, useRef, useState } from 'react';
-import ReactMarkdown from 'react-markdown';
+import LazyMarkdown from '../../common/lazy-markdown';
 import { useUrlMetadata } from '../../../hooks/use-url-metadata';
 import { getNoteLabelFallback, translateScriptureName, isPlaceholderValue, isOtherCategory, isByuSpeeches } from '../utils/note-translations';
 import { isGCUrl } from '../../../utils/note-utils';
@@ -125,14 +125,14 @@ const GCNoteRenderer = ({
               </div>
             )}
             <div className="note-markdown">
-                <ReactMarkdown 
+                <LazyMarkdown 
                     components={{
                         a: ({ ...p }) => <a {...p} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} />,
                         p: ({ ...p }) => <p {...p} />
                     }}
                 >
                     {constructedMd}
-                </ReactMarkdown>
+                </LazyMarkdown>
             </div>
             {showOriginal && (
                <button 

@@ -1,7 +1,8 @@
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { UilBookOpen, UilSearchAlt, UilAnalysis, UilEnvelope, UilAngleLeft, UilAngleRight } from '@iconscout/react-unicons';
-import NewNote from '../newnote/new-note';
+import { lazyWithRetry } from '../../utils/lazy-with-retry';
+const NewNote = lazyWithRetry(() => import('../newnote/new-note'));
 import NoteCard from '../notecard/note-card';
 import RecapModal from '../recapmodal/recap-modal';
 import LetterBox from '../letterbox/letter-box';
@@ -281,12 +282,16 @@ const MyNotes = ({ userData, isModalOpen, setIsModalOpen, userGroups }: MyNotesP
         isFromCache={isFromCache}
       />
 
-      <NewNote
-        isOpen={activeModal === 'edit' || isModalOpen}
-        onClose={() => { setActiveModal(null); setIsModalOpen(false); setSelectedNote(null); }}
-        userData={userData}
-        noteToEdit={selectedNote || undefined}
-      />
+      <Suspense fallback={null}>
+        {(activeModal === 'edit' || isModalOpen) && (
+          <NewNote
+            isOpen={true}
+            onClose={() => { setActiveModal(null); setIsModalOpen(false); setSelectedNote(null); }}
+            userData={userData}
+            noteToEdit={selectedNote || undefined}
+          />
+        )}
+      </Suspense>
     </div>
   );
 };

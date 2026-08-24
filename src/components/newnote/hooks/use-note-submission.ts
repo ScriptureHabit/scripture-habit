@@ -4,7 +4,7 @@ import apiClient from '../../../utils/api-client';
 import { db } from '../../../firebase';
 import { doc, writeBatch, serverTimestamp } from 'firebase/firestore';
 import { toast } from 'react-toastify';
-import confetti from 'canvas-confetti';
+import { triggerConfetti } from '../../../utils/confetti-utils';
 import { UserData } from '../../../types/user';
 import { buildNoteSearchTokens } from '../../../utils/search-token-utils';
 import { formatNoteText, getNoteValidationError } from '../../../utils/note-logic';
@@ -146,7 +146,7 @@ export const useNoteSubmission = (
                         });
                     } else {
                         playNoteSubmitSound();
-                        confetti({
+                        triggerConfetti({
                             particleCount: 150,
                             spread: 70,
                             origin: { y: 0.6 },

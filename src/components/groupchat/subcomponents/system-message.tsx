@@ -1,4 +1,4 @@
-import ReactMarkdown from 'react-markdown';
+import LazyMarkdown from '../../common/lazy-markdown';
 import './system-message.css';
 import { Message } from '../../../types/chat';
 import { DEFAULT_KICK_THRESHOLD } from '../../../constants';
@@ -113,9 +113,9 @@ const SystemMessage = ({ msg, t, kickThreshold = DEFAULT_KICK_THRESHOLD }: Syste
             <img src="/images/mascot.webp" alt="mascot" className="mascot-avatar-celestial" />
           </div>
         )}
-        <ReactMarkdown>
+        <LazyMarkdown>
           {getSystemText()}
-        </ReactMarkdown>
+        </LazyMarkdown>
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 
 import { UilEnvelope, UilTrashAlt, UilTimes } from '@iconscout/react-unicons';
-import ReactMarkdown from 'react-markdown';
+import LazyMarkdown from '../common/lazy-markdown';
 import './letter-box.css';
 import { useLanguage } from '../../hooks/use-language';
 import { UserData } from '../../types/user';
@@ -47,7 +47,7 @@ const LetterBox = ({ isOpen, onClose, userData }: LetterBoxProps) => {
                                 <div className="letter-date">
                                     {parseTimestampToDate(selectedLetter.createdAt).toLocaleDateString()}
                                 </div>
-                                <ReactMarkdown>{selectedLetter.content || ""}</ReactMarkdown>
+                                <LazyMarkdown>{selectedLetter.content || ""}</LazyMarkdown>
                             </div>
                         </div>
                     ) : (

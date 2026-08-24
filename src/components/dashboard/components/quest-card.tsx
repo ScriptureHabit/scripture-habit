@@ -6,7 +6,7 @@ import { db } from '../../../firebase';
 import { UserData } from '../../../types/user';
 import { useLanguage } from '../../../hooks/use-language';
 import { useModalStore } from '../../../store/use-modal-store';
-import confetti from 'canvas-confetti';
+import { triggerConfetti } from '../../../utils/confetti-utils';
 import './quest-card.css';
 
 interface QuestCardProps {
@@ -59,7 +59,7 @@ export const QuestCard = ({
       setCelebrated(true);
       setShowModal(true);
       // Fire premium confetti burst!
-      confetti({
+      triggerConfetti({
         particleCount: 150,
         spread: 80,
         origin: { y: 0.6 }

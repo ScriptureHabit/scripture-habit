@@ -1,5 +1,5 @@
 
-import ReactMarkdown from 'react-markdown';
+import LazyMarkdown from '../common/lazy-markdown';
 import { UilEnvelopeAlt, UilSave, UilTimes } from '@iconscout/react-unicons';
 import './recap-modal.css';
 import { useLanguage } from '../../hooks/use-language';
@@ -34,7 +34,7 @@ const RecapModal = ({ isOpen, onClose, recapText, onSave, isFromCache = false }:
 
                 <div className="recap-paper">
                     <div className="recap-body">
-                        <ReactMarkdown>{recapText}</ReactMarkdown>
+                        <LazyMarkdown>{recapText}</LazyMarkdown>
                     </div>
                 </div>
 
