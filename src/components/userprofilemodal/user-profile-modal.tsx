@@ -428,12 +428,14 @@ const UserProfileModal = ({ user, onClose }: UserProfileModalProps) => {
                                     <span className="stat-label">{t('profile.level')}</span>
                                 </div>
                             </div>
-                            <div className="stat-icon fire">
-                                <UilFire />
-                            </div>
-                            <div className="stat-info">
-                                <span className="stat-value">{currentUser.daysStudiedCount || 0}</span>
-                                <span className="stat-label">{t('dashboard.streak')}</span>
+                            <div className="stat-box">
+                                <div className="stat-icon fire">
+                                    <UilFire />
+                                </div>
+                                <div className="stat-info">
+                                    <span className="stat-value">{currentUser.daysStudiedCount || 0}</span>
+                                    <span className="stat-label">{t('dashboard.streak')}</span>
+                                </div>
                             </div>
                             <div className="stat-box">
                                 <div className="stat-icon notes">
