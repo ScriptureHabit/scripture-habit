@@ -58,12 +58,14 @@ router.post('/reset-unity-if-midnight', authenticate, async (req: AuthenticatedR
             });
         }
         
-        // Reset dailyActivity and unityPercentage (also handles empty date for new groups)
-        await groupRef.update({
-            'dailyActivity.date': todayStr,
-            'dailyActivity.activeMembers': [],
-            'unityPercentage': 0
-        });
+        // Reset dailyActivity and unityPercentage (safely handles missing or null dailyActivity field)
+        await groupRef.set({
+            dailyActivity: {
+                date: todayStr,
+                activeMembers: []
+            },
+            unityPercentage: 0
+        }, { merge: true });
         
         console.log(`[ResetUnity] Group ${groupId}: Reset unity to 0% for ${todayStr} (was ${activityDate})`);
         
