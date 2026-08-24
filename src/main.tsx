@@ -63,6 +63,12 @@ const initSentry = async () => {
     (window as any).Sentry = Sentry;
     Sentry.init({
       dsn: import.meta.env.VITE_SENTRY_DSN,
+      ignoreErrors: [
+        'Database is closing/hidden',
+        'Failed to get document because the client is offline.',
+        /Failed to get document because the client is offline/i,
+        /client is offline/i,
+      ],
       environment: import.meta.env.MODE || 'development',
       integrations: [
         Sentry.replayIntegration({

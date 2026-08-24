@@ -65,7 +65,7 @@
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "express-rate-limit": "^8.6.2",
-    "firebase": "^12.17.1",
+    "firebase": "^12.18.0",
     "firebase-admin": "^14.2.0",
     "firebase-tools": "^15.27.0",
     "helmet": "^8.3.0",

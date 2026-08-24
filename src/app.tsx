@@ -363,16 +363,20 @@ const App = () => {
     enabled: !!db && !!user,
     staleTime: 1000 * 60 * 30, // 30 mins memory cache
     throwOnError: (err: unknown) => {
-      // Suppress permission-denied errors to prevent full app crashes
+      // Suppress permission-denied, quota, and offline/unavailable errors to prevent noise and crashes
       if (err instanceof FirebaseError) {
         const isQuota = err.code === 'resource-exhausted' || err.message?.toLowerCase().includes('quota exceeded');
-        if (err.code !== 'permission-denied' && !isQuota) {
+        const isOffline = err.code === 'unavailable' || err.message?.toLowerCase().includes('offline');
+        if (err.code !== 'permission-denied' && !isQuota && !isOffline) {
           console.error("System probe failed:", err);
           reportException(err);
         }
       } else if (err instanceof Error) {
-        console.error("System probe failed:", err);
-        reportException(err);
+        const isOffline = err.message?.toLowerCase().includes('offline') || err.message?.toLowerCase().includes('failed to fetch');
+        if (!isOffline) {
+          console.error("System probe failed:", err);
+          reportException(err);
+        }
       } else {
         console.error("System probe failed with unknown error:", err);
         reportException(new Error(String(err)));
