@@ -1,11 +1,11 @@
 import '../api_internal/lib/load-env.js';
 import * as Sentry from "@sentry/node";
 
-// Initialize Sentry at the absolute top before importing Express/routers
-if (process.env.SENTRY_DISABLED !== 'true' && process.env.NODE_ENV !== 'test') {
+// Initialize Sentry at the absolute top before importing Express/routers (Production only)
+if (process.env.SENTRY_DISABLED !== 'true' && process.env.NODE_ENV === 'production') {
   Sentry.init({
     dsn: process.env.VITE_SENTRY_DSN || "",
-    environment: process.env.NODE_ENV || 'development',
+    environment: 'production',
     tracesSampleRate: 1.0,
     beforeSend(event, hint) {
       const err = hint?.originalException;
@@ -237,7 +237,7 @@ app.use('/api/groups', resetUnityRoutes);
 app.use('/api/reset-unity', resetUnityRoutes);
 
 // The Sentry error handler must be before any other error middleware and after all controllers
-if (process.env.SENTRY_DISABLED !== 'true' && process.env.NODE_ENV !== 'test') {
+if (process.env.SENTRY_DISABLED !== 'true' && process.env.NODE_ENV === 'production') {
   Sentry.setupExpressErrorHandler(app);
 }
 

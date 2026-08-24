@@ -51,7 +51,17 @@ window.addEventListener('unhandledrejection', (event) => {
   }
 });
 
-const shouldInitializeSentry = !!import.meta.env.VITE_SENTRY_DSN && !navigator.webdriver;
+const isLocalhost = typeof window !== 'undefined' && 
+  Boolean(
+    window.location.hostname === 'localhost' || 
+    window.location.hostname === '127.0.0.1' || 
+    window.location.hostname.endsWith('.local')
+  );
+
+const shouldInitializeSentry = import.meta.env.PROD && 
+  !isLocalhost && 
+  !!import.meta.env.VITE_SENTRY_DSN && 
+  !navigator.webdriver;
 
 let sentryInitialized = false;
 const initSentry = async () => {
@@ -68,6 +78,9 @@ const initSentry = async () => {
         'Failed to get document because the client is offline.',
         /Failed to get document because the client is offline/i,
         /client is offline/i,
+        /Unable to preload CSS/i,
+        /Failed to fetch dynamically imported module/i,
+        /Loading chunk .* failed/i,
       ],
       environment: import.meta.env.MODE || 'development',
       integrations: [
