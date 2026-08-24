@@ -2,6 +2,7 @@ import express, { Response } from 'express';
 import { isSafeUrl, ssrfSafeHttpAgent, ssrfSafeHttpsAgent } from '../lib/ssrf.js';
 import { verifyAppCheck, authenticate, AuthenticatedRequest } from '../lib/middleware.js';
 import { ValidationError, sendErrorResponse } from '../lib/errors.js';
+import { redisCache } from '../lib/cache.js';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 
@@ -10,7 +11,7 @@ const router = express.Router();
 const USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36';
 
 // Fetch Church (GC, Liahona, etc.) Metadata
-router.get(['/fetch-church-metadata', '/fetch-church-metadata/'], authenticate, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
+router.get(['/fetch-church-metadata', '/fetch-church-metadata/'], authenticate, verifyAppCheck, redisCache(3600, 'api:preview:church:'), async (req: AuthenticatedRequest, res: Response) => {
 
     const { url, language } = req.query as { url?: string, language?: string };
 
@@ -87,7 +88,7 @@ router.get(['/fetch-church-metadata', '/fetch-church-metadata/'], authenticate, 
 });
 
 // URL Preview
-router.get(['/url-preview', '/url-preview/'], authenticate, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
+router.get(['/url-preview', '/url-preview/'], authenticate, verifyAppCheck, redisCache(3600, 'api:preview:ogp:'), async (req: AuthenticatedRequest, res: Response) => {
 
     const { url } = req.query as { url?: string };
 

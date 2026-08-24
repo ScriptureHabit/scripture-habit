@@ -1,8 +1,9 @@
 /// <reference lib="webworker" />
 import { precacheAndRoute, cleanupOutdatedCaches } from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
-import { StaleWhileRevalidate, CacheFirst } from 'workbox-strategies';
+import { StaleWhileRevalidate, CacheFirst, NetworkOnly } from 'workbox-strategies';
 import { ExpirationPlugin } from 'workbox-expiration';
+import { BackgroundSyncPlugin } from 'workbox-background-sync';
 import { initializeApp } from 'firebase/app';
 import { getMessaging, onBackgroundMessage } from 'firebase/messaging/sw';
 import { firebaseConfig, isEmulator } from './config/firebase-config';
@@ -90,7 +91,24 @@ registerRoute(
 );
 
 // ==========================================
-// 3. Cache API-based Pending Navigation Persistence
+// 3. Workbox Background Sync
+// Automatically retries failed offline POST/PUT/DELETE mutations
+// even after the user closes the tab/PWA, as soon as connectivity returns.
+// ==========================================
+const bgSyncPlugin = new BackgroundSyncPlugin('offline-mutations-queue', {
+  maxRetentionTime: 24 * 60, // Retry for up to 24 hours (specified in minutes)
+});
+
+const isMutationApi = ({ url, request }: { url: URL; request: Request }) =>
+  url.pathname.startsWith('/api/') && ['POST', 'PUT', 'DELETE', 'PATCH'].includes(request.method);
+
+registerRoute(isMutationApi, new NetworkOnly({ plugins: [bgSyncPlugin] }), 'POST');
+registerRoute(isMutationApi, new NetworkOnly({ plugins: [bgSyncPlugin] }), 'PUT');
+registerRoute(isMutationApi, new NetworkOnly({ plugins: [bgSyncPlugin] }), 'DELETE');
+registerRoute(isMutationApi, new NetworkOnly({ plugins: [bgSyncPlugin] }), 'PATCH');
+
+// ==========================================
+// 4. Cache API-based Pending Navigation Persistence
 // Handles cold-start navigation from notifications across SW restarts
 // ==========================================
 const PENDING_NAV_CACHE = 'scripture-habit-pending-nav';

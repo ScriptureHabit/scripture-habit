@@ -12,6 +12,7 @@ import { getMessageExpireAt, getDemoExpireAt } from '../lib/ttl-utils.js';
 import { MessageService } from '../services/message-service.js';
 import { t, getDemoGroupTranslations, getAiGroupTranslations } from '../lib/i18n.js';
 import { AiDailyNoteService } from '../services/ai-daily-note-service.js';
+import { redisCache } from '../lib/cache.js';
 
 const router = express.Router();
 
@@ -40,7 +41,7 @@ function getTimestampMillis(ts?: FirestoreTimestamp | null): number {
  * Retrieves public groups for the join group screen.
  * For demo users, automatically ensures their isolated Daily Bread group is available.
  */
-router.get('/', authenticate, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
+router.get('/', authenticate, verifyAppCheck, redisCache(60, 'api:groups:'), async (req: AuthenticatedRequest, res: Response) => {
     try {
         const uid = req.user?.uid;
         const limitCount = Math.min(Number(req.query.limit) || 20, 50);

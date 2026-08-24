@@ -23,6 +23,9 @@ import { lazyWithRetry } from './utils/lazy-with-retry';
 
 import LandingPage from './components/landingpage/landing-page';
 
+import { shouldPrefetch, prefetchComponent } from './utils/prefetch';
+import { requestCanceler } from './utils/request-canceler';
+
 // Dynamic component loaders (centralized to prevent path duplication across lazy loading & prefetching)
 const componentLoaders = {
   SignupForm: () => import('./components/signupform/signup-form'),
@@ -67,17 +70,19 @@ const LazyToastContainer = lazyWithRetry(componentLoaders.ToastContainer);
 
 // Route-aware prefetching: start downloading destination bundle in background AFTER initial interaction/idle
 const prefetchDestinationRoute = () => {
-  if (typeof window === 'undefined') return;
+  if (typeof window === 'undefined' || !shouldPrefetch()) return;
   const path = window.location.pathname.toLowerCase();
 
   const prefetchRules = [
-    { match: (p: string) => p.includes('/dashboard') || p.includes('/profile'), load: componentLoaders.Dashboard },
-    { match: (p: string) => p.includes('/login'), load: componentLoaders.LoginForm },
-    { match: (p: string) => p.includes('/welcome'), load: componentLoaders.Welcome },
+    { match: (p: string) => p.includes('/dashboard') || p.includes('/profile'), key: 'Dashboard', load: componentLoaders.Dashboard },
+    { match: (p: string) => p.includes('/login'), key: 'LoginForm', load: componentLoaders.LoginForm },
+    { match: (p: string) => p.includes('/welcome'), key: 'Welcome', load: componentLoaders.Welcome },
   ];
 
   const target = prefetchRules.find(rule => rule.match(path));
-  target?.load().catch(() => { });
+  if (target) {
+    prefetchComponent(target.key, target.load);
+  }
 };
 
 // Defer prefetching strictly to idle (min 6s) to avoid competing with Lighthouse FCP/TBT
@@ -152,6 +157,12 @@ const App = () => {
   const pendingUrlRef = useRef<string | null>(null);
   const lastNavigatedTimeRef = useRef<number>(0);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Cancel any in-flight GET requests when navigating between routes
+  useEffect(() => {
+    requestCanceler.cancelPendingGetRequests();
+  }, [location.pathname]);
 
   // Helper to set state and ref simultaneously
   const setPendingNavigateUrl = (url: string | null) => {
@@ -397,8 +408,6 @@ const App = () => {
       return false; // Don't trigger error boundary for these
     }
   });
-
-  const location = useLocation();
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);

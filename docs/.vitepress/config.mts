@@ -43,6 +43,7 @@ export default withMermaid(defineConfig({
             text: 'General Architecture',
             items: [
               { text: 'Architecture & Structure', link: '/architecture' },
+              { text: 'Network & Performance Optimization', link: '/network-performance-optimization' },
               { text: 'Database & Security', link: '/database-security' },
               { text: 'App Check & Security Gateway', link: '/security-architecture' },
               { text: 'API Middleware & Error Handling', link: '/api-middleware-error-handling' },
@@ -137,6 +138,7 @@ export default withMermaid(defineConfig({
             text: '一般アーキテクチャ',
             items: [
               { text: 'アーキテクチャ & 構成', link: '/ja/architecture' },
+              { text: 'ネットワーク & パフォーマンス最適化', link: '/ja/network-performance-optimization' },
               { text: 'データベース & セキュリティ', link: '/ja/database-security' },
               { text: 'App Check & API 保護', link: '/ja/security-architecture' },
               { text: 'API ミドルウェア & エラーハンドリング', link: '/ja/api-middleware-error-handling' },

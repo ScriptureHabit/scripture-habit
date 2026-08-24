@@ -14,30 +14,10 @@ export interface AuthenticatedRequest extends Request {
 
 // --- Rate Limiters ---
 
-import { Redis } from 'ioredis';
 import RedisStore from 'rate-limit-redis';
+import { redisClient } from './redis.js';
 
 const isProd = process.env.NODE_ENV === 'production' && process.env.VITE_DEV_MODE !== 'true';
-
-let redisClient: Redis | undefined = undefined;
-
-if (process.env.REDIS_URL) {
-    try {
-        redisClient = new Redis(process.env.REDIS_URL, {
-            connectTimeout: 2000,
-            maxRetriesPerRequest: 1
-        });
-        
-        redisClient.on('error', (err) => {
-            console.error('[Redis] Connection error:', err);
-        });
-        console.log('[RateLimit] Distributed Redis client initialized successfully.');
-    } catch (e) {
-        console.error('[RateLimit] Failed to initialize Redis client:', e);
-    }
-} else {
-    console.log('[RateLimit] REDIS_URL not set. Using MemoryStore (default).');
-}
 
 const createRedisStore = (prefix: string) => {
     if (!redisClient) return undefined;

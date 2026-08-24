@@ -39,6 +39,8 @@ import openapiSpec from '../api_internal/openapi-spec.js';
 
 // Middleware & Utils
 import { globalLimiter } from '../api_internal/lib/middleware.js';
+import { dataLoaderMiddleware } from '../api_internal/lib/dataloaders.js';
+import { msgpackMiddleware } from '../api_internal/lib/msgpack.js';
 import { AppError } from '../api_internal/lib/errors.js';
 import { AsyncLocalStorage } from 'node:async_hooks';
 import { dbStorage, dbRegistry } from '../api_internal/lib/firebase-admin.js';
@@ -100,6 +102,8 @@ app.use(compression({
         return compression.filter(req, res);
     }
 }));
+app.use(dataLoaderMiddleware);
+app.use(msgpackMiddleware);
 app.set('trust proxy', 1);
 
 // Generate or propagate Request ID

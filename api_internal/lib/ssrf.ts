@@ -1,7 +1,5 @@
 import { URL } from 'url';
 import dns from 'dns';
-import http from 'http';
-import https from 'https';
 import ipaddr from 'ipaddr.js';
 
 /**
@@ -93,6 +91,21 @@ export function ssrfSafeLookup(
     });
 }
 
-export const ssrfSafeHttpAgent = new http.Agent({ lookup: ssrfSafeLookup, keepAlive: false });
-export const ssrfSafeHttpsAgent = new https.Agent({ lookup: ssrfSafeLookup, keepAlive: false });
+import Agent, { HttpsAgent } from 'agentkeepalive';
+
+export const ssrfSafeHttpAgent = new Agent({
+    lookup: ssrfSafeLookup,
+    maxSockets: 100,
+    maxFreeSockets: 10,
+    timeout: 60000,
+    freeSocketTimeout: 30000,
+});
+
+export const ssrfSafeHttpsAgent = new HttpsAgent({
+    lookup: ssrfSafeLookup,
+    maxSockets: 100,
+    maxFreeSockets: 10,
+    timeout: 60000,
+    freeSocketTimeout: 30000,
+});
 
