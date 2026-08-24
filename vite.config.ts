@@ -4,6 +4,7 @@ import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 import { sentryVitePlugin } from "@sentry/vite-plugin";
 import { visualizer } from 'rollup-plugin-visualizer';
+import { VitePWA } from 'vite-plugin-pwa';
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => ({
@@ -20,6 +21,33 @@ export default defineConfig(({ mode }) => ({
       open: false,
       gzipSize: true,
       brotliSize: true,
+    }),
+    VitePWA({
+      strategies: 'injectManifest',
+      srcDir: 'src',
+      filename: 'sw.ts',
+      registerType: 'autoUpdate',
+      injectRegister: null,
+      devOptions: {
+        enabled: process.env.VITE_ENABLE_SW_IN_DEV === 'true',
+        type: 'module',
+      },
+      injectManifest: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,json}'],
+        globIgnores: [
+          '**/index-es.html',
+          '**/index-pt.html',
+          '**/index-zho.html',
+          '**/index-vi.html',
+          '**/index-th.html',
+          '**/index-ko.html',
+          '**/index-tl.html',
+          '**/index-sw.html',
+          '**/index-it.html',
+          '**/assets/{es,pt,zho,vi,th,ko,tl,sw,it}-*.js',
+        ],
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
+      },
     }),
   ],
   esbuild: {

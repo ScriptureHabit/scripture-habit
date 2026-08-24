@@ -1,20 +1,17 @@
 import { initializeApp, FirebaseApp } from "firebase/app";
 import type { Analytics } from "firebase/analytics";
 import { getAuth, Auth, connectAuthEmulator, signInWithEmailAndPassword, signInWithCustomToken, signOut } from "firebase/auth";
-import { Firestore, getFirestore, connectFirestoreEmulator } from "firebase/firestore";
+import {
+  Firestore,
+  initializeFirestore,
+  persistentLocalCache,
+  persistentMultipleTabManager,
+  memoryLocalCache,
+  connectFirestoreEmulator
+} from "firebase/firestore";
 import { initializeAppCheck, ReCaptchaEnterpriseProvider, CustomProvider, AppCheck, getToken } from "firebase/app-check";
 
-const isEmulator = import.meta.env.VITE_USE_FIREBASE_EMULATOR === 'true';
-
-const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || (isEmulator ? "demo-api-key" : undefined),
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || (isEmulator ? "demo-project.firebaseapp.com" : undefined),
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || (isEmulator ? "scripture-habit-auth" : undefined),
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || (isEmulator ? "demo-project.firebasestorage.app" : undefined),
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || (isEmulator ? "123456789" : undefined),
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || (isEmulator ? "1:123456789:web:abcdef" : undefined),
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || (isEmulator ? "G-DEMO" : undefined)
-};
+import { firebaseConfig, isEmulator } from "./config/firebase-config";
 
 // Check for required environment variables
 const requiredVars = [
@@ -97,10 +94,20 @@ try {
   throw e;
 }
 
-// Initialize Firestore (lightweight base instance)
+// Initialize Firestore with IndexedDB persistent local cache for multi-tab zero-latency offline support
 let db: Firestore;
 try {
-  db = getFirestore(app);
+  if (typeof window !== 'undefined' && typeof indexedDB !== 'undefined') {
+    db = initializeFirestore(app, {
+      localCache: persistentLocalCache({
+        tabManager: persistentMultipleTabManager(),
+      }),
+    });
+  } else {
+    db = initializeFirestore(app, {
+      localCache: memoryLocalCache(),
+    });
+  }
 } catch (e) {
   console.error("Firestore initialization failed:", e);
   throw e;

@@ -9,6 +9,7 @@
   },
   "scripts": {
     "dev": "vite",
+    "dev:pwa": "cross-env VITE_ENABLE_SW_IN_DEV=true vite",
     "dev:all": "node scripts/dev-runner.js",
     "emulators": "firebase emulators:start --project scripture-habit-auth",
     "server": "npm start --prefix backend",
@@ -128,6 +129,7 @@
     "typescript": "npm:@typescript/typescript6@^6.0.2",
     "typescript-eslint": "^8.67.0",
     "vite": "^8.2.1",
+    "vite-plugin-pwa": "^1.3.0",
     "vitepress": "^1.6.4",
     "vitepress-plugin-mermaid": "^2.0.17",
     "vitest": "^4.1.11"
