@@ -61,7 +61,7 @@ const Dashboard = () => {
   const { activeModal, setActiveModal } = useModalStore();
 
   const [selectedView, setSelectedView] = useState<number>(() => {
-    const gid = searchParams.get('groupId');
+    const gid = searchParams.get('groupId') || location.state?.groupId || location.state?.initialGroupId;
     const viewParam = searchParams.get('view');
     const isProfile = location.pathname.includes('/profile');
     if (viewParam) return parseInt(viewParam, 10);
@@ -84,11 +84,8 @@ const Dashboard = () => {
   const syncState = useDashboardSync();
   const { user, userData, status } = syncState;
   const errorMessage = syncState.status === 'error' ? syncState.message : null;
-  const [initialGid] = useState<string | null>(() => {
-    const gid = searchParams.get('groupId');
-    return gid || location.state?.initialGroupId || null;
-  });
-  const { userGroups, activeGroupId, setActiveGroupId } = useDashboardGroups(userData, initialGid);
+  const paramGroupId = searchParams.get('groupId') || location.state?.groupId || location.state?.initialGroupId || null;
+  const { userGroups, activeGroupId, setActiveGroupId } = useDashboardGroups(userData, paramGroupId);
   const loading = status === 'loading' && !userData;
 
   useEffect(() => {

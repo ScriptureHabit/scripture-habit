@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { toast } from 'react-toastify';
 import { UserData } from '../../../types/user';
 import { Group } from '../../../types/chat';
@@ -36,15 +36,26 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
 
     const groupIds = useMemo(() => {
         const ids = JSON.parse(userGroupIdsKey) as string[];
-        if (activeGroupId && !ids.includes(activeGroupId)) {
-            return Array.from(new Set([...ids, activeGroupId]));
+        const targetId = initialGroupId || activeGroupId;
+        if (targetId && !ids.includes(targetId)) {
+            return Array.from(new Set([...ids, targetId]));
         }
         return ids;
-    }, [userGroupIdsKey, activeGroupId]);
+    }, [userGroupIdsKey, activeGroupId, initialGroupId]);
 
     const groupIdsKey = useMemo(() => {
         return JSON.stringify([...groupIds].sort());
     }, [groupIds]);
+
+    const prevInitialGroupIdRef = useRef<string | null>(initialGroupId);
+
+    // Respond to target initialGroupId changes (e.g. from notification navigation or invite param)
+    useEffect(() => {
+        if (initialGroupId && initialGroupId !== prevInitialGroupIdRef.current) {
+            prevInitialGroupIdRef.current = initialGroupId;
+            setActiveGroupId(initialGroupId);
+        }
+    }, [initialGroupId]);
 
     // Fetch user groups details
     useEffect(() => {
@@ -128,17 +139,19 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
         if (!userData?.uid) return;
         if (!activeGroupId) {
             queueMicrotask(() => {
-                if (groupIds.length > 0) {
+                if (initialGroupId) {
+                    setActiveGroupId(initialGroupId);
+                } else if (groupIds.length > 0) {
                     setActiveGroupId(groupIds[0]);
                 } else if (userGroups.length > 0) {
                     setActiveGroupId(userGroups[0].id);
                 }
             });
         }
-    }, [activeGroupId, groupIds, userGroups, userData?.uid]);
+    }, [activeGroupId, groupIds, userGroups, userData?.uid, initialGroupId]);
 
 
-    // Sync active group - only reset if NOT loading and group is truly missing
+    // Sync active group - only reset if NOT loading, userData exists, and group is truly missing from userGroupIds
     useEffect(() => {
         if (isLoading || !userData || userGroups.length === 0) return;
         

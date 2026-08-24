@@ -274,4 +274,42 @@ describe('useDashboardGroups', () => {
             expect(result.current.activeGroupId).toBe('group1');
         });
     });
+
+    it('should dynamically update activeGroupId when initialGroupId prop changes', async () => {
+        let groupsCallback: ((groups: Group[]) => void) | undefined;
+        vi.mocked(GroupService.subscribeUserGroups).mockImplementation((_userId, onUpdate) => {
+            groupsCallback = onUpdate;
+            return () => {};
+        });
+
+        const userData = {
+            uid: 'user123',
+            groupIds: ['group1', 'group2']
+        };
+
+        const { result, rerender } = renderHook(
+            ({ targetGid }) => useDashboardGroups(userData as any, targetGid),
+            { initialProps: { targetGid: 'group1' as string | null } }
+        );
+
+        act(() => {
+            if (groupsCallback) {
+                groupsCallback([
+                    { id: 'group1', name: 'Group 1' } as Group,
+                    { id: 'group2', name: 'Group 2' } as Group
+                ]);
+            }
+        });
+
+        await waitFor(() => {
+            expect(result.current.activeGroupId).toBe('group1');
+        });
+
+        // Simulate navigation from push notification targeting group2
+        rerender({ targetGid: 'group2' });
+
+        await waitFor(() => {
+            expect(result.current.activeGroupId).toBe('group2');
+        });
+    });
 });
