@@ -76,9 +76,18 @@ export const getUnityParticipation = (
   // SOURCE B: Client-side real-time Messages (Augment if messages are provided)
   if (messages.length > 0) {
     messages.forEach(msg => {
-      // Only count notes (or messages from AI partner if it is a note message)
-      if (msg.isSystemMessage) return;
-      if (msg.senderId === 'ai-partner-bot' && !msg.isNote && !msg.text?.includes('カテゴリ') && !msg.text?.includes('Category') && !msg.text?.includes('Scripture')) return;
+      // Guard: Ignore system messages
+      if (msg.isSystemMessage || msg.senderId === 'system') return;
+
+      // Strict note check: Only count valid study notes
+      const isAiBot = msg.senderId === 'ai-partner-bot';
+      const isAiNote = isAiBot && (
+        msg.isNote === true || 
+        Boolean(msg.text && (msg.text.includes('カテゴリ') || msg.text.includes('Category') || msg.text.includes('Scripture')))
+      );
+      const isUserNote = !isAiBot && (msg.isNote === true || msg.isEntry === true || Boolean(msg.originalNoteId));
+
+      if (!isAiNote && !isUserNote) return;
       
       const msgTime = parseTimestampToMillis(msg.createdAt);
       if (isNaN(msgTime)) return;

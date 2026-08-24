@@ -47,7 +47,7 @@ describe('Unity Utils - getUnityParticipation', () => {
     expect(result.percentage).toBe(67); // 2/3 = 66.6 -> 67
   });
 
-  it('should handle real-time messages correctly', () => {
+  it('should handle real-time note messages correctly', () => {
     const messages: Message[] = [
       { senderId: 'user2', isNote: true, createdAt: '2024-04-18T00:05:00Z' } as unknown as Message // Posted today in Japan
     ];
@@ -57,6 +57,31 @@ describe('Unity Utils - getUnityParticipation', () => {
     expect(result.postedMembers).toContain('user1'); // From Source A
     expect(result.postedMembers).toContain('user2'); // From Source B
     expect(result.percentage).toBe(100); // 2/2 = 100%
+  });
+
+  it('should NOT count regular chat messages towards unity percentage', () => {
+    const chatMessages: Message[] = [
+      { senderId: 'user2', isNote: false, text: 'Hello everyone!', createdAt: '2024-04-18T00:05:00Z' } as unknown as Message,
+      { senderId: 'user3', text: 'Good morning!', createdAt: '2024-04-18T00:06:00Z' } as unknown as Message
+    ];
+
+    const result = getUnityParticipation(mockGroup, chatMessages, referenceDate);
+
+    // Only user1 (from Source A dailyActivity) should be in postedMembers
+    expect(result.postedMembers).toContain('user1');
+    expect(result.postedMembers).not.toContain('user2');
+    expect(result.postedMembers).not.toContain('user3');
+    expect(result.percentage).toBe(50); // 1/2 = 50%
+  });
+
+  it('should count legacy note messages with isEntry or originalNoteId', () => {
+    const legacyEntryMessages: Message[] = [
+      { senderId: 'user2', isEntry: true, text: 'Old note', createdAt: '2024-04-18T00:05:00Z' } as unknown as Message
+    ];
+
+    const result = getUnityParticipation(mockGroup, legacyEntryMessages, referenceDate);
+    expect(result.postedMembers).toContain('user2');
+    expect(result.percentage).toBe(100);
   });
 
   it('should calculate 50% unity percentage when AI partner bot posts a daily note in 2-member AI group', () => {
