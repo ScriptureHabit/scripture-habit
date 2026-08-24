@@ -221,6 +221,7 @@ export default {
         "korean": "韓国語 (Korean)",
         "tagalog": "タガログ語 (Tagalog)",
         "swahili": "スワヒリ語 (Swahili)",
+        "italian": "イタリア語 (Italian)",
         "en": "英語",
         "ja": "日本語",
         "pt": "ポルトガル語",
@@ -230,7 +231,8 @@ export default {
         "th": "タイ語",
         "ko": "韓国語",
         "tl": "タガログ語",
-        "sw": "スワヒリ語"
+        "sw": "スワヒリ語",
+        "it": "イタリア語"
     },
     "profile": {
         "sound": {

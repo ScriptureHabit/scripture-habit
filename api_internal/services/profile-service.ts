@@ -11,7 +11,7 @@ export class ProfileService {
     static async syncProfileToChats(uid: string, updates: { nickname?: string; photoURL?: string }) {
         if (!updates.nickname && !updates.photoURL) return;
 
-        console.log(`[ProfileSync] Starting sync for user ${uid}...`);
+        console.log('[ProfileSync] Starting sync for user:', uid);
 
         try {
             // 1. Get the user's active groups
@@ -175,9 +175,9 @@ export class ProfileService {
             if (currentBatchSize > 0) {
                 await currentBatch.commit();
             }
-            console.log(`[ProfileSync] Successfully completed sync for user ${uid}. Total updates: ${totalOps}`);
+            console.log('[ProfileSync] Successfully completed sync for user:', uid, 'Total updates:', totalOps);
         } catch (error) {
-            console.error(`[ProfileSync] Error syncing profile for ${uid}:`, error);
+            console.error('[ProfileSync] Error syncing profile for uid:', uid, error);
         }
     }
 

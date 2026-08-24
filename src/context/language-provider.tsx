@@ -111,7 +111,7 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     useEffect(() => {
         const pathLang = getLanguageFromPath(location.pathname);
         if (pathLang && pathLang !== language) {
-            console.log(`[LanguageProvider] URL Sync: ${pathLang}`);
+            console.log('[LanguageProvider] URL Sync:', pathLang);
             queueMicrotask(() => {
                 setLanguageInternal(pathLang);
             });
@@ -159,7 +159,7 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
                     return;
                 }
 
-                console.log(`[LanguageProvider] Syncing from Profile: ${userLang}`);
+                console.log('[LanguageProvider] Syncing from Profile:', userLang);
                 queueMicrotask(() => {
                     setLanguage(userLang);
                 });
@@ -287,8 +287,11 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
         let current: TranslationValue | undefined = translations;
 
         for (const k of keys) {
-            if (current && typeof current === 'object' && !Array.isArray(current) && current[k] !== undefined) {
-                current = current[k];
+            if (k === '__proto__' || k === 'constructor' || k === 'prototype') {
+                return null;
+            }
+            if (current && typeof current === 'object' && !Array.isArray(current) && Object.prototype.hasOwnProperty.call(current, k)) {
+                current = (current as Record<string, TranslationValue>)[k]; // nosemgrep: javascript.lang.security.audit.prototype-pollution.prototype-pollution-loop.prototype-pollution-loop
             } else {
                 return null;
             }

@@ -126,8 +126,8 @@ router.get('/bundle/:groupId', authenticate, verifyAppCheck, async (req: Authent
             // Trigger self-healing in the background
             waitUntil(
                 MessageService.reconcileLatestMessages(groupId)
-                    .then(res => console.log(`[Bundle Self-Healing] Reconciled latest messages for ${groupId}: healed=${res.healed}, count=${res.count}`))
-                    .catch(err => console.error(`[Bundle Self-Healing] Failed to reconcile for ${groupId}:`, err)) as Promise<unknown>
+                    .then(res => console.log('[Bundle Self-Healing] Reconciled latest messages for group:', groupId, 'healed:', res.healed, 'count:', res.count))
+                    .catch(err => console.error('[Bundle Self-Healing] Failed to reconcile for group:', groupId, err)) as Promise<unknown>
             );
         }
 

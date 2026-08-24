@@ -220,7 +220,7 @@ router.post('/leave-all-groups', authenticate, async (req: AuthenticatedRequest,
                     });
                 }
             } catch (err) {
-                console.error(`[TestCleanup] Failed to leave group ${gid}:`, err);
+                console.error('[TestCleanup] Failed to leave group:', gid, err);
             }
         }
 

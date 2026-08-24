@@ -199,7 +199,7 @@ export class AiDailyNoteService {
                 }
             });
         } catch (pushErr) {
-            console.warn(`[AiDailyNoteService] FCM Push failed for group ${groupId}:`, pushErr);
+            console.warn('[AiDailyNoteService] FCM Push failed for group:', groupId, pushErr);
         }
     }
 }

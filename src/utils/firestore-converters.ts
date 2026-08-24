@@ -48,7 +48,7 @@ const createConverter = <T extends { id?: string; uid?: string }>(
       try {
         validatedData = schema.parse(baseData) as Record<string, unknown>;
       } catch (err) {
-        console.warn(`[firestoreConverter] Schema parse failed for doc "${snapshot.id}", falling back to raw data:`, err);
+        console.warn('[firestoreConverter] Schema parse failed for doc:', snapshot.id, 'falling back to raw data:', err);
         validatedData = baseData as Record<string, unknown>;
       }
     } else {

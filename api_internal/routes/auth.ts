@@ -42,7 +42,7 @@ router.post('/update-profile', authenticate, verifyAppCheck, async (req: Authent
             throw new ValidationError('No fields to update');
         }
 
-        console.log(`[ProfileUpdate] Updating UID: ${uid} with:`, updates);
+        console.log('[ProfileUpdate] Updating UID:', uid, 'with:', updates);
         await userRef.update(updates);
 
         // SYNC: Propagate identity changes to recent messages (no await required for response)
@@ -187,7 +187,7 @@ router.post('/delete-account', authenticate, verifyAppCheck, async (req: Authent
         if (!req.user) throw new AuthenticationError('Unauthorized');
         const uid = req.user.uid;
         
-        console.log(`Starting account deletion for UID: ${uid}`);
+        console.log('[AccountDelete] Starting account deletion for UID:', uid);
 
         const userRef = db.collection('users').doc(uid);
         const userDoc = await userRef.get();
@@ -214,7 +214,7 @@ router.post('/delete-account', authenticate, verifyAppCheck, async (req: Authent
                         }
                     });
                 } catch (groupErr) {
-                    console.error(`[AccountDelete] Group cleanup failed for ${gid}:`, groupErr);
+                    console.error('[AccountDelete] Group cleanup failed for gid:', gid, groupErr);
                 }
             }
 
@@ -236,23 +236,23 @@ router.post('/delete-account', authenticate, verifyAppCheck, async (req: Authent
                 const [exists] = await file.exists();
                 if (exists) {
                     await file.delete();
-                    console.log(`[AccountDelete] Successfully deleted profile picture for UID: ${uid}`);
+                    console.log('[AccountDelete] Successfully deleted profile picture for UID:', uid);
                 }
             } catch (storageErr) {
                 // Log but do not block deletion if storage file delete fails
-                console.error(`[AccountDelete] Storage cleanup failed or bucket not found for UID ${uid}:`, (storageErr as Error).message);
+                console.error('[AccountDelete] Storage cleanup failed or bucket not found for UID:', uid, (storageErr as Error).message);
             }
         }
 
         // --- STEP 3: Delete from Firebase Auth ---
         await admin.auth().deleteUser(uid);
 
-        console.log(`Successfully deleted account and data for UID: ${uid}`);
+        console.log('[AccountDelete] Successfully deleted account and data for UID:', uid);
         res.status(200).json({ message: 'Account and all data deleted successfully.' });
 
     } catch (err: unknown) {
         const error = err as Error;
-        console.error(`Critical error in /api/delete-account:`, error.message);
+        console.error('[AccountDelete] Critical error in /api/delete-account:', error.message);
         sendErrorResponse(res, err, 'Failed to delete account.');
     }
 });

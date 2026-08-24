@@ -691,7 +691,7 @@ export class NoteService {
 
                     await groupRef.update(groupUpdate);
                 } catch (err) {
-                    console.error(`[NoteService] Unity update failed for group ${gid}:`, err);
+                    console.error('[NoteService] Unity update failed for group:', gid, err);
                 }
             }),
             // Daily Active User Stats Write

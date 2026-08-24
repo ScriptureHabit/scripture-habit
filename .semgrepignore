@@ -1,0 +1,36 @@
+# Common build and test output directories
+node_modules/
+dist/
+dist-ssr/
+build/
+playwright-report/
+test-results/
+coverage/
+.vercel/
+
+# Generated reports, docs & caches
+.lighthouseci/
+docs/public/api-reference.html
+docs/public/openapi.json
+docs/reference/
+semgrep-findings.json
+scratch/
+
+# Developer scripts and internal maintenance tools (CLI only)
+.github/workflows/
+scripts/
+api_internal/scripts/
+api_internal/test-setup.ts
+api_internal/test-push.ts
+tests/
+**/__tests__/**
+**/*.test.ts
+**/*.test.tsx
+**/*.spec.ts
+**/*.spec.tsx
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

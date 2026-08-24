@@ -617,7 +617,7 @@ router.all('/post-ai-daily-notes', verifyCronSecret, async (req: Request, res: R
                 try {
                     await MessageService.reconcileLatestMessages(doc.id);
                 } catch (reconcileErr) {
-                    console.warn(`[Cron] Failed to reconcile latest messages for AI group ${doc.id}:`, reconcileErr);
+                    console.warn('[Cron] Failed to reconcile latest messages for AI group:', doc.id, reconcileErr);
                 }
             }));
         }

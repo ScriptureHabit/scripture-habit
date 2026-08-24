@@ -17,7 +17,7 @@ export const safeStorage = {
         return item as unknown as T;
       }
     } catch (e) {
-      console.warn(`localStorage.get failed for key "${key}":`, e);
+      console.warn('localStorage.get failed for key:', key, e);
       return defaultValue;
     }
   },
@@ -31,7 +31,7 @@ export const safeStorage = {
       window.localStorage.setItem(key, valueToStore);
       return true;
     } catch (e) {
-      console.warn(`localStorage.set failed for key "${key}":`, e);
+      console.warn('localStorage.set failed for key:', key, e);
       return false;
     }
   },
@@ -44,7 +44,7 @@ export const safeStorage = {
       window.localStorage.removeItem(key);
       return true;
     } catch (e) {
-      console.warn(`localStorage.remove failed for key "${key}":`, e);
+      console.warn('localStorage.remove failed for key:', key, e);
       return false;
     }
   },

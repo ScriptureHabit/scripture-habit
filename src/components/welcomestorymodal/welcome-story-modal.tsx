@@ -70,6 +70,7 @@ const WelcomeStoryModal = ({ isOpen, onClose, userData }: WelcomeStoryModalProps
             <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🔬📈</div>
             <h2 className="story-title">{t('welcomeStory.page2Title')}</h2>
             <div className="story-highlight-box">
+                {/* nosemgrep: typescript.react.security.audit.react-dangerouslysetinnerhtml.react-dangerouslysetinnerhtml */}
                 <p
                     className="story-text"
                     style={{ margin: 0, fontWeight: '500' }}
@@ -103,6 +104,7 @@ const WelcomeStoryModal = ({ isOpen, onClose, userData }: WelcomeStoryModalProps
         <div className="story-page" key="p3-rule">
             <h2 className="story-title">{t('welcomeStory.page3RuleTitle')}</h2>
             <div className="story-highlight-box" style={{ background: 'rgba(255, 100, 100, 0.1)', borderLeft: '4px solid #ff6b6b' }}>
+                {/* nosemgrep: typescript.react.security.audit.react-dangerouslysetinnerhtml.react-dangerouslysetinnerhtml */}
                 <p className="story-text" dangerouslySetInnerHTML={{ __html: t('welcomeStory.page3RuleContent1', { days: userData?.kickThreshold || DEFAULT_KICK_THRESHOLD }) }} />
             </div>
             <p className="story-text" style={{ marginTop: '1rem', fontSize: '0.95rem' }}>

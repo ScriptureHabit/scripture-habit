@@ -32,7 +32,7 @@ export const getPendingMessages = (groupId: string): Message[] => {
       isFailed: true
     }));
   } catch (error) {
-    console.error(`[offline-chat-queue] Error loading pending messages for group ${groupId}:`, error);
+    console.error('[offline-chat-queue] Error loading pending messages for group:', groupId, error);
     return [];
   }
 };
@@ -66,7 +66,7 @@ export const savePendingMessage = (groupId: string, message: Message): void => {
 
     window.localStorage.setItem(getQueueKey(groupId), JSON.stringify(current));
   } catch (error) {
-    console.error(`[offline-chat-queue] Error saving pending message for group ${groupId}:`, error);
+    console.error('[offline-chat-queue] Error saving pending message for group:', groupId, error);
   }
 };
 
@@ -90,7 +90,7 @@ export const removePendingMessage = (groupId: string, messageIdOrOptimisticId: s
       window.localStorage.setItem(getQueueKey(groupId), JSON.stringify(filtered));
     }
   } catch (error) {
-    console.error(`[offline-chat-queue] Error removing pending message for group ${groupId}:`, error);
+    console.error('[offline-chat-queue] Error removing pending message for group:', groupId, error);
   }
 };
 
@@ -105,6 +105,6 @@ export const clearPendingMessages = (groupId: string): void => {
   try {
     window.localStorage.removeItem(getQueueKey(groupId));
   } catch (error) {
-    console.error(`[offline-chat-queue] Error clearing pending messages for group ${groupId}:`, error);
+    console.error('[offline-chat-queue] Error clearing pending messages for group:', groupId, error);
   }
 };

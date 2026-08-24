@@ -27,7 +27,7 @@ const useGroupMetadataSync = (groupId: string | null, dispatch: Dispatch<ChatAct
             groupData: parsedGroup
           });
         } catch (err) {
-          console.error(`[useGroupMetadataSync] Schema validation failed for group ${groupId}:`, err);
+          console.error('[useGroupMetadataSync] Schema validation failed for group:', groupId, err);
           // Fallback to unvalidated data to prevent hanging
           dispatch({ 
             type: 'UPDATE_GROUP', 
@@ -43,7 +43,7 @@ const useGroupMetadataSync = (groupId: string | null, dispatch: Dispatch<ChatAct
       }
     }, (err) => {
       if (err.code === 'permission-denied') {
-        console.warn(`[useGroupMetadataSync] Permission denied for group ${groupId}`);
+        console.warn('[useGroupMetadataSync] Permission denied for group:', groupId);
         return;
       }
       const isQuota = err.code === 'resource-exhausted' || err.message.toLowerCase().includes('quota exceeded');

@@ -63,7 +63,7 @@ export class InactivityService {
                 stats.transferredOwnerships += result.transferCount;
                 if (result.groupDeleted) stats.deletedGroups++;
             } catch (err) {
-                console.error(`[InactivityService] Failed to process group ${docSnapshot.id}:`, err);
+                console.error('[InactivityService] Failed to process group:', docSnapshot.id, err);
                 throw err;
             }
         }
@@ -87,7 +87,7 @@ export class InactivityService {
         if (membersArray.length > 0) {
             const oneMemberSnap = await groupRef.collection('members').limit(1).get();
             if (oneMemberSnap.empty) {
-                console.log(`[InactivityService] Healing uninitialized members subcollection for group: ${groupId}`);
+                console.log('[InactivityService] Healing uninitialized members subcollection for group:', groupId);
                 const healBatch = db.batch();
                 for (const uid of membersArray) {
                     const memberRef = groupRef.collection('members').doc(uid);
@@ -207,7 +207,7 @@ export class InactivityService {
 
         // Handle Repairs
         for (const repair of decision.membersToRepair) {
-            console.warn(`[InactivityService] Repairing joinedAt for ${repair.uid} in ${groupId}.`);
+            console.warn('[InactivityService] Repairing joinedAt for:', repair.uid, 'in group:', groupId);
             const repairTS = admin.firestore.Timestamp.fromMillis(repair.joinedAt);
             batch.update(groupRef.collection('members').doc(repair.uid), { joinedAt: repairTS });
             groupUpdates[`memberJoinedAt.${repair.uid}`] = repairTS;
@@ -315,7 +315,7 @@ export class InactivityService {
                 error.message?.includes('no entity to update');
                 
             if (isNotFound) {
-                console.warn(`[InactivityService] Group ${groupId} was deleted or not found during batch commit. Skipping gracefully.`);
+                console.warn('[InactivityService] Group was deleted or not found during batch commit. Skipping gracefully:', groupId);
                 return {
                     removedCount: 0,
                     initializedCount: 0,
@@ -323,7 +323,7 @@ export class InactivityService {
                     groupDeleted: true
                 };
             }
-            console.error(`[InactivityService] Batch commit failed for group ${groupId}. Decision:`, JSON.stringify(decision));
+            console.error('[InactivityService] Batch commit failed for group:', groupId, 'Decision:', JSON.stringify(decision));
             throw err;
         }
 
@@ -356,7 +356,7 @@ export class InactivityService {
                 await cleanupTokens(uid, result.failedTokens);
             }
         } catch (err) {
-            console.error(`[InactivityService] Failed to send kick notification to ${uid}:`, err);
+            console.error('[InactivityService] Failed to send kick notification to uid:', uid, err);
         }
     }
 }

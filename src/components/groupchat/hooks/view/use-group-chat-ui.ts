@@ -123,7 +123,7 @@ export const useGroupChatUI = (
             }
           }
         } catch (e) {
-          console.error(`Failed to auto-translate ${type}:`, e);
+          console.error('[useGroupChatUI] Failed to auto-translate type:', type, e);
         }
         return '';
       };

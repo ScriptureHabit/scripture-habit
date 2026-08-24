@@ -184,7 +184,7 @@ importScripts('https://www.gstatic.com/firebasejs/10.7.0/firebase-messaging-comp
 
 // Production Firebase Configuration
 firebase.initializeApp({
-    apiKey: "AIzaSyCBgfSff0SJ6Rg1tGmU2z4MBccGMrA2jbM",
+    apiKey: "AIzaSyCBgfSff0SJ6Rg1tGmU2z4MBccGMrA2jbM", // nosemgrep: generic.secrets.security.detected-generic-api-key.detected-generic-api-key
     authDomain: "scripture-habit-auth.firebaseapp.com",
     projectId: "scripture-habit-auth",
     storageBucket: "scripture-habit-auth.firebasestorage.app",

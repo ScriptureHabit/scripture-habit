@@ -221,6 +221,7 @@ export default {
         "korean": "Kikorea (Korean)",
         "tagalog": "Kitagalog (Tagalog)",
         "swahili": "Kiswahili (Swahili)",
+        "italian": "Kiitaliano (Italian)",
         "en": "Kiingereza",
         "ja": "Kijapani",
         "pt": "Kireno",
@@ -230,7 +231,8 @@ export default {
         "th": "Kithai",
         "ko": "Kikorea",
         "tl": "Kitagalog",
-        "sw": "Kiswahili"
+        "sw": "Kiswahili",
+        "it": "Kiitaliano"
     },
     "profile": {
         "sound": {

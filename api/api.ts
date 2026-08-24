@@ -251,7 +251,7 @@ app.use('/api', (_req, res) => {
 app.use((err: unknown, req: express.Request, res: express.Response, _next: express.NextFunction) => {
     // 1. Log the error (In production, this would go to Sentry/Datadog)
     const requestId = req.header('x-request-id') || 'unknown';
-    console.error(`[Error] ${req.method} ${req.path} | RequestID: ${requestId}`, {
+    console.error('[Error]', req.method, req.path, '| RequestID:', requestId, {
         message: err instanceof Error ? err.message : 'Unknown error',
         user: (req as { user?: { uid: string } }).user?.uid
     });

@@ -37,8 +37,11 @@ export function t(language: string | undefined | null, key: string, replacements
     let value: TranslationValue | undefined = bundle;
     
     for (const k of keys) {
-        if (value && typeof value === 'object' && !Array.isArray(value) && (value as Record<string, TranslationValue>)[k] !== undefined) {
-            value = (value as Record<string, TranslationValue>)[k];
+        if (k === '__proto__' || k === 'constructor' || k === 'prototype') {
+            return key;
+        }
+        if (value && typeof value === 'object' && !Array.isArray(value) && Object.prototype.hasOwnProperty.call(value, k)) {
+            value = (value as Record<string, TranslationValue>)[k]; // nosemgrep: javascript.lang.security.audit.prototype-pollution.prototype-pollution-loop.prototype-pollution-loop
         } else {
             // Fallback to English if not found in current language
             if (lang !== 'en') {
@@ -69,8 +72,11 @@ export function tArray(language: string | undefined | null, key: string): string
     let value: TranslationValue | undefined = bundle;
     
     for (const k of keys) {
-        if (value && typeof value === 'object' && !Array.isArray(value) && (value as Record<string, TranslationValue>)[k] !== undefined) {
-            value = (value as Record<string, TranslationValue>)[k];
+        if (k === '__proto__' || k === 'constructor' || k === 'prototype') {
+            return [];
+        }
+        if (value && typeof value === 'object' && !Array.isArray(value) && Object.prototype.hasOwnProperty.call(value, k)) {
+            value = (value as Record<string, TranslationValue>)[k]; // nosemgrep: javascript.lang.security.audit.prototype-pollution.prototype-pollution-loop.prototype-pollution-loop
         } else {
             if (lang !== 'en') {
                 return tArray('en', key);

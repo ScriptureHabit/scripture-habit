@@ -62,7 +62,7 @@ const processQueue = async (targetLanguage: string) => {
       }
     }
   } catch (error) {
-    console.error(`[TranslationBatcher] Batch translation failed for ${targetLanguage}:`, error);
+    console.error('[TranslationBatcher] Batch translation failed for targetLanguage:', targetLanguage, error);
     // Graceful fallback to original text on failure
     for (const [, items] of uniqueItemsMap.entries()) {
       for (const item of items) {

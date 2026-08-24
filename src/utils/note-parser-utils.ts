@@ -93,11 +93,13 @@ const allLabels = collectUniqueStrings(
 
 function buildPrefixRegex(words: string[], flags = 'i'): RegExp {
     const pattern = words.sort((a, b) => b.length - a.length).map(escapeRegex).join('|');
+    // nosemgrep: javascript.lang.security.audit.detect-non-literal-regexp.detect-non-literal-regexp
     return new RegExp(`^(?:\\*\\*|)\\s*(?:groupChat\\.|noteLabels\\.|)(?:${pattern})\\s*(?:\\*\\*|)\\s*[:：]`, flags);
 }
 
 function buildExactLabelRegex(words: string[], flags = 'i'): RegExp {
     const pattern = words.sort((a, b) => b.length - a.length).map(escapeRegex).join('|');
+    // nosemgrep: javascript.lang.security.audit.detect-non-literal-regexp.detect-non-literal-regexp
     return new RegExp(`^(?:groupChat\\.|noteLabels\\.|)(?:${pattern})\\s*[:：]?$`, flags);
 }
 

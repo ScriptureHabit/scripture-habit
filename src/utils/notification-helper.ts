@@ -286,11 +286,11 @@ export const clearGroupNotifications = async (groupId: string): Promise<void> =>
                 }
             });
             if (clearedCount > 0) {
-                console.log(`[NotificationHelper] Cleared ${clearedCount} notifications for group ${groupId}.`);
+                console.log('[NotificationHelper] Cleared notifications for group:', groupId, 'count:', clearedCount);
             }
         }
     } catch (e) {
-        console.warn(`[NotificationHelper] Failed to clear notifications for group ${groupId}`, e);
+        console.warn('[NotificationHelper] Failed to clear notifications for group:', groupId, e);
     }
 };
 

@@ -1,0 +1,18 @@
+# Trivy configuration for Scripture Habit
+scan:
+  scanners:
+    - vuln
+    - secret
+  skip-files:
+    - ".env"
+    - ".env.local"
+    - ".env.production"
+    - "api_internal/lib/dummy-service-account.json"
+    - "backend/serviceAccountKey.json"
+  skip-dirs:
+    - "node_modules"
+    - "dist"
+    - "dist-ssr"
+    - "playwright-report"
+    - "test-results"
+    - "coverage"

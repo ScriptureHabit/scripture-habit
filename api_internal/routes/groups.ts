@@ -638,13 +638,13 @@ router.post('/create-ai-group', authenticate, requireEmailVerified, verifyAppChe
                 { isGroupCreation: true, langOverride: result.lang }
             );
         } catch (noteErr) {
-            console.warn(`[Groups] Failed to post initial AI daily note for group ${result.groupId}:`, noteErr);
+            console.warn('[Groups] Failed to post initial AI daily note for group:', result.groupId, noteErr);
         }
 
         try {
             await MessageService.reconcileLatestMessages(result.groupId);
         } catch (reconcileErr) {
-            console.warn(`[Groups] Failed to reconcile latest messages for new AI group ${result.groupId}:`, reconcileErr);
+            console.warn('[Groups] Failed to reconcile latest messages for new AI group:', result.groupId, reconcileErr);
         }
 
         res.status(200).json({
@@ -960,7 +960,7 @@ router.post('/update-read-status', authenticate, verifyAppCheck, async (req: Aut
             readMessageCount: totalMessages
         }, { merge: true });
 
-        console.log(`[API] Updating read status: uid=${uid}, groupId=${groupId}, readCount=${totalMessages}`);
+        console.log('[API] Updating read status:', { uid, groupId, readCount: totalMessages });
         await batch.commit();
 
         res.json({ success: true });
@@ -1121,7 +1121,7 @@ router.post('/update-kick-threshold', authenticate, requireEmailVerified, verify
         const userRef = db.collection('users').doc(uid);
         const userDoc = await userRef.get();
         if (!userDoc.exists) {
-            console.error(`UserDoc not found for UID: ${uid}`);
+            console.error('[Groups] UserDoc not found for UID:', uid);
             throw new NotFoundError('User not found');
         }
 

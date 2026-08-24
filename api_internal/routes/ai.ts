@@ -52,7 +52,7 @@ const handleAiError = (res: Response, err: unknown, contextMessage: string) => {
     // Safely extract error body without circular references
     const axiosErr = err as { response?: { data?: unknown, status?: number }, message?: string };
     const errorBody = axiosErr.response?.data || axiosErr.message || String(err);
-    console.error(`[AI Error] ${contextMessage}:`, errorBody);
+    console.error('[AI Error]', contextMessage, ':', errorBody);
     
     const status = axiosErr.response?.status || 500;
 
@@ -262,7 +262,7 @@ router.post('/translate', authenticate, aiLimiter, verifyAppCheck, async (req: A
                 });
             } catch (groupUpdateErr: unknown) {
                 const error = groupUpdateErr as Error;
-                console.error(`[AI Error] Failed to update group metadata (${updateType}):`, error.message);
+                console.error('[AI Error] Failed to update group metadata for type:', updateType, error.message);
 
             }
         }
