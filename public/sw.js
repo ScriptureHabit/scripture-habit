@@ -202,7 +202,7 @@ messaging.onBackgroundMessage((payload) => {
 // ==========================================
 // Cache and fetch control logic
 // ==========================================
-const CACHE_NAME = 'scripture-habit-v8';
+const CACHE_NAME = 'scripture-habit-v9';
 const OFFLINE_URL = '/offline.html';
 
 const ASSETS_TO_CACHE = [
@@ -296,6 +296,10 @@ self.addEventListener('fetch', (event) => {
             }).catch(() => {
                 if (event.request.destination === 'image') {
                     return caches.match('/logo.svg');
+                }
+                // Never return offline.html for script/style requests as it causes SyntaxError: Unexpected token '<'
+                if (event.request.destination === 'script' || event.request.destination === 'style' || url.pathname.endsWith('.js') || url.pathname.endsWith('.css')) {
+                    return new Response('', { status: 503, statusText: 'Service Unavailable' });
                 }
                 return caches.match(OFFLINE_URL);
             });

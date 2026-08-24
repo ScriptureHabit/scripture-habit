@@ -78,9 +78,12 @@ const initSentry = async () => {
         'Failed to get document because the client is offline.',
         /Failed to get document because the client is offline/i,
         /client is offline/i,
+        /The database connection is closing/i,
+        /Failed to execute 'transaction' on 'IDBDatabase'/i,
         /Unable to preload CSS/i,
         /Failed to fetch dynamically imported module/i,
         /Loading chunk .* failed/i,
+        /Unexpected token '<'/i,
       ],
       environment: import.meta.env.MODE || 'development',
       integrations: [
