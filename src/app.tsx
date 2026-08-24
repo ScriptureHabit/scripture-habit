@@ -349,37 +349,50 @@ const App = () => {
   const { data: systemStatus, error: systemStatusError } = useQuery<SystemStatus>({
     queryKey: ['system', 'status'],
     queryFn: async () => {
-      if (!db) throw new Error("Firestore not initialized");
+      if (!db) return { loading: false, error: null };
 
-      const { doc, getDoc } = await import('firebase/firestore');
-      const statusRef = doc(db, 'system', 'status');
-      const docSnap = await getDoc(statusRef);
-      if (docSnap.exists()) {
-        const data = docSnap.data() as SystemStatus;
-        return data;
+      try {
+        const { doc, getDoc } = await import('firebase/firestore');
+        const statusRef = doc(db, 'system', 'status');
+        const docSnap = await getDoc(statusRef);
+        if (docSnap.exists()) {
+          const data = docSnap.data() as SystemStatus;
+          return data;
+        }
+        return { loading: false, error: null };
+      } catch (err: unknown) {
+        const errObj = err as { code?: string; message?: string };
+        const isOffline = errObj?.code === 'unavailable' ||
+          errObj?.message?.toLowerCase().includes('offline') ||
+          errObj?.message?.toLowerCase().includes('failed to fetch');
+        if (isOffline) {
+          return { loading: false, error: null };
+        }
+        throw err;
       }
-      return { loading: false, error: null };
     },
     enabled: !!db && !!user,
     staleTime: 1000 * 60 * 30, // 30 mins memory cache
+    retry: (failureCount, error) => {
+      const errObj = error as { code?: string; message?: string };
+      const isOffline = errObj?.code === 'unavailable' || errObj?.message?.toLowerCase().includes('offline');
+      if (isOffline) return false;
+      return failureCount < 2;
+    },
     throwOnError: (err: unknown) => {
       // Suppress permission-denied, quota, and offline/unavailable errors to prevent noise and crashes
-      if (err instanceof FirebaseError) {
-        const isQuota = err.code === 'resource-exhausted' || err.message?.toLowerCase().includes('quota exceeded');
-        const isOffline = err.code === 'unavailable' || err.message?.toLowerCase().includes('offline');
-        if (err.code !== 'permission-denied' && !isQuota && !isOffline) {
-          console.error("System probe failed:", err);
+      const errObj = err as { code?: string; message?: string };
+      const isQuota = errObj?.code === 'resource-exhausted' || errObj?.message?.toLowerCase().includes('quota exceeded');
+      const isOffline = errObj?.code === 'unavailable' || errObj?.message?.toLowerCase().includes('offline') || errObj?.message?.toLowerCase().includes('failed to fetch');
+      const isPermissionDenied = errObj?.code === 'permission-denied' || errObj?.message?.toLowerCase().includes('permission-denied');
+
+      if (!isPermissionDenied && !isQuota && !isOffline) {
+        console.error("System probe failed:", err);
+        if (err instanceof Error) {
           reportException(err);
+        } else {
+          reportException(new Error(String(err)));
         }
-      } else if (err instanceof Error) {
-        const isOffline = err.message?.toLowerCase().includes('offline') || err.message?.toLowerCase().includes('failed to fetch');
-        if (!isOffline) {
-          console.error("System probe failed:", err);
-          reportException(err);
-        }
-      } else {
-        console.error("System probe failed with unknown error:", err);
-        reportException(new Error(String(err)));
       }
       return false; // Don't trigger error boundary for these
     }
