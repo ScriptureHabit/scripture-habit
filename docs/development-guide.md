@@ -40,31 +40,37 @@ Copy-Item .env.example .env.local
 > [!NOTE]
 > The default placeholder values in `.env.example` are pre-configured to work out-of-the-box with local emulators.
 
-#### 4. Launch Firebase Emulators
-In your terminal, start the local Firebase suite:
+#### 4. Launch Local Development Environment
+
+##### Option A: Unified All-in-One Command (Recommended)
+Start Firebase Emulators, wait for initialization, automatically seed initial test data, and start both the Express backend and Vite frontend within a single terminal:
 ```bash
-npm run emulators
-# or: npx firebase emulators:start --project scripture-habit-auth
+npm run dev:all
 ```
-Once started, the emulator endpoints will be available:
+Logs from all services will be streamed with color-coded prefixes (`[SYS]`, `[EMU]`, `[API]`, `[WEB]`). Press `Ctrl+C` to stop all services simultaneously.
+
+##### Option B: Individual Service Commands
+If you prefer running services in separate terminal tabs:
+```bash
+# 1. Start Firebase Emulators
+npm run emulators
+
+# 2. Seed test data into local Firestore & Auth emulators
+npm run db:seed
+
+# 3. Start local Express backend server (localhost:5000)
+npm run server
+
+# 4. Start frontend Vite dev server (localhost:5173)
+npm run dev
+```
+
+Once started, the emulator and application endpoints will be available:
+- **Application Frontend**: [http://localhost:5173](http://localhost:5173)
+- **Backend API**: [http://localhost:5000](http://localhost:5000)
 - **Emulator UI Dashboard**: [http://127.0.0.1:4000](http://127.0.0.1:4000)
 - **Firestore Emulator**: `127.0.0.1:8080`
 - **Auth Emulator**: `127.0.0.1:9099`
-
-#### 5. Seed the Sandbox Database
-Open a **new terminal tab/window** and populate the local database with realistic test users, groups, streaks, and chat logs:
-```bash
-npm run db:seed
-```
-> [!TIP]
-> **Idempotent & Safe**: You can run `npm run db:seed` whenever you want to reset your local database to a clean test state.
-
-#### 6. Start the Frontend Dev Server
-In your terminal:
-```bash
-npm run dev
-```
-Open **[http://localhost:5173](http://localhost:5173)** in your browser to view the application.
 
 ---
 
@@ -90,6 +96,7 @@ Open **[http://localhost:5173](http://localhost:5173)** in your browser to view 
 
 | Command | Description |
 | :--- | :--- |
+| `npm run dev:all` | Starts all development services (Emulators, DB seed, Backend, Frontend) in a single unified terminal |
 | `npm run dev` | Starts Vite frontend dev server at `localhost:5173` |
 | `npm run server` | Starts local Express backend server at `localhost:5000` |
 | `npm run emulators` | Starts local Firebase Emulator Suite (Firestore, Auth, Functions) |

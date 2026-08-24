@@ -31,13 +31,13 @@ For a quick start:
    # Copy environment file
    cp .env.example .env.local
 
-   # Start Firebase Emulators (in a separate terminal)
+   # Option A: Start all services in one command (Recommended)
+   npm run dev:all
+
+   # Option B: Start services individually in separate terminals
    npm run emulators
-
-   # Seed test data
    npm run db:seed
-
-   # Start frontend dev server
+   npm run server
    npm run dev
    ```
 
@@ -169,13 +169,13 @@ Scripture Habit への貢献に関心を持っていただきありがとうご�
    # 環境変数ファイルの作成
    cp .env.example .env.local
 
-   # Firebase エミュレータの起動（別ターミナルで実行）
+   # 推奨: 1コマンドで全サービスを一括起動
+   npm run dev:all
+
+   # または個別ターミナルで起動する場合:
    npm run emulators
-
-   # テスト用データの投入（シード）
    npm run db:seed
-
-   # 開発サーバーの起動
+   npm run server
    npm run dev
    ```
 

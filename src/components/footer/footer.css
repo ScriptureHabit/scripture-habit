@@ -11,7 +11,7 @@
 
 .DashboardContent>.app-footer {
     width: auto;
-    margin: auto -2rem -2rem -2rem;
+    margin: auto -1.25rem -1.25rem -1.25rem;
     /* margin-top: auto pushes it to the bottom */
 }
 

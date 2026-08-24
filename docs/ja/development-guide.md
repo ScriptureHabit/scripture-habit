@@ -40,31 +40,37 @@ Copy-Item .env.example .env.local
 > [!NOTE]
 > `.env.example` の初期値（プレースホルダー）は、ローカルエミュレータですぐに動くように設定されています。
 
-#### 4. Firebase エミュレータの起動
-ターミナルでエミュレータを起動します：
+#### 4. ローカル開発環境の起動
+
+##### 方法 A: 1コマンド全自動起動（推奨）
+Firebase エミュレータの起動、初期化待機、テストデータの自動シード投入、Express バックエンドおよび Vite フロントエンドの開発サーバー起動を単一ターミナルでまとめて実行します：
 ```bash
-npm run emulators
-# または: npx firebase emulators:start --project scripture-habit-auth
+npm run dev:all
 ```
+すべてのサービスログが色分けプレフィックス（`[SYS]`, `[EMU]`, `[API]`, `[WEB]`）付きで集約出力されます。`Ctrl+C` を押すと全サービスが一括停止します。
+
+##### 方法 B: 個別ターミナルでの起動
+各サービスを個別のターミナルタブで起動する場合は以下の順序で実行します：
+```bash
+# 1. Firebase エミュレータの起動
+npm run emulators
+
+# 2. テスト用データの投入（シード）
+npm run db:seed
+
+# 3. バックエンド Express サーバーの起動 (localhost:5000)
+npm run server
+
+# 4. フロントエンド Vite 開発サーバーの起動 (localhost:5173)
+npm run dev
+```
+
 起動すると、以下のローカルエンドポイントが利用可能になります：
+- **フロントエンド**: [http://localhost:5173](http://localhost:5173)
+- **バックエンド API**: [http://localhost:5000](http://localhost:5000)
 - **エミュレータ UI ダッシュボード**: [http://127.0.0.1:4000](http://127.0.0.1:4000)
 - **Firestore エミュレータ**: `127.0.0.1:8080`
 - **Auth エミュレータ**: `127.0.0.1:9099`
-
-#### 5. テスト用データの投入（シード）
-**新しいターミナルタブ/ウィンドウ**を開き、シードスクリプトを実行してテスト用のユーザー、学習グループ、カレンダー、ストリーク、チャット履歴を一括で作成します：
-```bash
-npm run db:seed
-```
-> [!TIP]
-> **何度でも実行可能（冪等性）**: データベースを初期状態にリセットしたいときは、いつでも `npm run db:seed` を再実行できます。
-
-#### 6. 開発サーバーの起動
-ターミナルで以下を実行します：
-```bash
-npm run dev
-```
-ブラウザで **[http://localhost:5173](http://localhost:5173)** を開いて動作を確認します。
 
 ---
 
@@ -90,6 +96,7 @@ npm run dev
 
 | コマンド | 説明 |
 | :--- | :--- |
+| `npm run dev:all` | 全開発サービス（エミュレータ、シード投入、バックエンド、フロントエンド）を単一ターミナルで一括起動 |
 | `npm run dev` | Vite 開発サーバーを起動（`localhost:5173`） |
 | `npm run server` | バックエンド Express サーバーを起動（`localhost:5000`） |
 | `npm run emulators` | Firebase ローカルエミュレータ（Firestore, Auth, Functions）を起動 |

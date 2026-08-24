@@ -5,7 +5,7 @@
   border-radius: 2rem;
   background-color: var(--glass);
   overflow: hidden;
-  grid-template-columns: 16.25rem auto;
+  grid-template-columns: 16.25rem minmax(0, 1fr);
   gap: 10px;
   padding-top: 0;
 }
@@ -76,6 +76,8 @@
   flex-direction: column;
   gap: 1rem;
   width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
 }
 
 

@@ -5,7 +5,7 @@ import reactRefresh from 'eslint-plugin-react-refresh'
 import tseslint from 'typescript-eslint'
 
 export default tseslint.config(
-  { ignores: ['dist', 'android', 'backend', 'api', 'public', 'playwright-report', 'test-results', 'scratch'] },
+  { ignores: ['dist', 'android', 'backend', 'api', 'public', 'playwright-report', 'test-results', 'scratch', 'docs/.vitepress/dist', 'docs/.vitepress/cache', 'docs/public'] },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ['**/*.{js,jsx,ts,tsx}'],

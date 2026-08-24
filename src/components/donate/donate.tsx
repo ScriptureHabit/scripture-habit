@@ -58,7 +58,7 @@ const Donate = ({ userData }: DonateProps) => {
     };
 
     return (
-        <div className="Donate DashboardContent">
+        <div className="Donate">
             <div className="dashboard-header">
                 <h1>{t('story.title')}</h1>
                 <div className="donate-mascot-wrapper">
