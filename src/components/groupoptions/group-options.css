@@ -241,4 +241,12 @@
     .options-container h2 {
         margin-bottom: 2rem;
     }
+
+    .options-grid {
+        gap: 2.5rem;
+    }
+
+    .card-mascot {
+        padding-top: 1rem;
+    }
 }
