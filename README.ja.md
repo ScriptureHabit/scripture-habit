@@ -208,11 +208,15 @@ Issue や Pull Request はいつでもお気軽にお送りください。
 
 <p align="left">
   <a href="https://vercel.com/?utm_source=scripture-habit&utm_campaign=oss">
-    <img src="https://www.datocms-assets.com/31049/1618983297-powered-by-vercel.svg" alt="Powered by Vercel" height="32" />
+    <img src="https://img.shields.io/badge/Hosted%20by-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Hosted by Vercel" />
   </a>
-  &nbsp;&nbsp;&nbsp;&nbsp;
+  &nbsp;
   <a href="https://sentry.io">
-    <img src="https://raw.githubusercontent.com/getsentry/sentry-brand/master/sentry-wordmark/sentry-wordmark-dark.svg" alt="Sentry" height="28" />
+    <img src="https://img.shields.io/badge/Monitored%20by-Sentry-362D59?style=for-the-badge&logo=sentry&logoColor=white" alt="Monitored by Sentry" />
+  </a>
+  &nbsp;
+  <a href="https://github.com/features/actions">
+    <img src="https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white" alt="GitHub Actions" />
   </a>
 </p>
 
