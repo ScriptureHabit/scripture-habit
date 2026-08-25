@@ -16,6 +16,8 @@
   <img src="https://img.shields.io/badge/Node.js-26.0-5FA04E?style=for-the-badge&logo=nodedotjs" alt="Node.js" />
   <img src="https://img.shields.io/badge/Express-5.0-000000?style=for-the-badge&logo=express" alt="Express 5.0" />
   <img src="https://img.shields.io/badge/Firebase-Firestore%2FAuth-FFCA28?style=for-the-badge&logo=firebase" alt="Firebase" />
+  <img src="https://img.shields.io/badge/Vercel-Hosted-000000?style=for-the-badge&logo=vercel" alt="Vercel" />
+  <img src="https://img.shields.io/badge/Sentry-Monitored-362D59?style=for-the-badge&logo=sentry" alt="Sentry" />
 </p>
 
 ---
@@ -198,7 +200,25 @@ Issue や Pull Request はいつでもお気軽にお送りください。
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
-本プロジェクトは [all-contributors](https://github.com/all-contributors/all-contributors) 仕様に準拠しています。あらゆる形での貢献を心より歓迎します！
+---
+
+## サポート・インフラ協賛 (Supported By)
+
+本オープンソースプロジェクトをご支援いただいているプラットフォームに深く感謝申し上げます：
+
+<p align="left">
+  <a href="https://vercel.com/?utm_source=scripture-habit&utm_campaign=oss">
+    <img src="https://www.datocms-assets.com/31049/1618983297-powered-by-vercel.svg" alt="Powered by Vercel" height="32" />
+  </a>
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <a href="https://sentry.io">
+    <img src="https://raw.githubusercontent.com/getsentry/sentry-brand/master/sentry-wordmark/sentry-wordmark-dark.svg" alt="Sentry" height="28" />
+  </a>
+</p>
+
+- **[Vercel](https://vercel.com)**: サーバーレスホスティング、エッジルーティング、ウェブアナリティクスをご提供いただいています。
+- **[Sentry](https://sentry.io)**: 本番環境のエラー監視、パフォーマンス追跡、診断トレーシングをご提供いただいています。
+- **[GitHub](https://github.com)**: リポジトリホスティングおよび GitHub Actions による自動テスト・CI/CD パイプラインをご提供いただいています。
 
 ---
 

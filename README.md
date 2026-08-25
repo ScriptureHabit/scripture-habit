@@ -15,6 +15,8 @@ An open-source community web application featuring AI real-time translation & gr
   <img src="https://img.shields.io/badge/Node.js-26.0-5FA04E?style=for-the-badge&logo=nodedotjs" alt="Node.js" />
   <img src="https://img.shields.io/badge/Express-5.0-000000?style=for-the-badge&logo=express" alt="Express 5.0" />
   <img src="https://img.shields.io/badge/Firebase-Firestore%2FAuth-FFCA28?style=for-the-badge&logo=firebase" alt="Firebase" />
+  <img src="https://img.shields.io/badge/Vercel-Hosted-000000?style=for-the-badge&logo=vercel" alt="Vercel" />
+  <img src="https://img.shields.io/badge/Sentry-Monitored-362D59?style=for-the-badge&logo=sentry" alt="Sentry" />
 </p>
 
 ---
@@ -197,7 +199,25 @@ Thanks goes to these wonderful people:
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
-This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
+---
+
+## Supported By
+
+Special thanks to the following platforms for supporting this open-source project:
+
+<p align="left">
+  <a href="https://vercel.com/?utm_source=scripture-habit&utm_campaign=oss">
+    <img src="https://www.datocms-assets.com/31049/1618983297-powered-by-vercel.svg" alt="Powered by Vercel" height="32" />
+  </a>
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <a href="https://sentry.io">
+    <img src="https://raw.githubusercontent.com/getsentry/sentry-brand/master/sentry-wordmark/sentry-wordmark-dark.svg" alt="Sentry" height="28" />
+  </a>
+</p>
+
+- **[Vercel](https://vercel.com)**: Providing serverless hosting, edge routing, and web analytics.
+- **[Sentry](https://sentry.io)**: Supporting real-time production error monitoring, performance tracking, and diagnostic tracing.
+- **[GitHub](https://github.com)**: Providing repository hosting and continuous integration / automated testing pipelines (GitHub Actions).
 
 ---
 

@@ -25,6 +25,15 @@ const Footer = () => {
                 </div>
                 <div className="footer-copyright">
                     © {new Date().getFullYear()} Scripture Habit
+                    <span className="footer-separator">•</span>
+                    <a
+                        href="https://vercel.com/?utm_source=scripture-habit&utm_campaign=oss"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="footer-partner-link"
+                    >
+                        Powered by Vercel
+                    </a>
                 </div>
             </div>
         </footer>
