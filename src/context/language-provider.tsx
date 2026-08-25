@@ -5,6 +5,7 @@ import { safeStorage } from '../utils/storage';
 import { loadTranslations, loadBookTranslations } from '../locales/i18n';
 import { identifyBookKey } from '../utils/book-ref-mapper';
 import apiClient from '../utils/api-client';
+import { auth } from '../firebase';
 
 import { Language, TranslationValue, NestedTranslations, SUPPORTED_LANGUAGES, DEFAULT_LANGUAGE } from '../config/languages';
 import { LanguageContext } from './language-context';
@@ -166,6 +167,13 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
             }
         }
     }, [userData?.uid, userData?.language, authLoading, language, setLanguage, location.pathname]);
+
+    // Sync Firebase Auth email language (for verification/reset emails)
+    useEffect(() => {
+        if (!auth) return;
+        // Firebase uses BCP 47 codes; map our internal 'zho' → 'zh-TW'
+        auth.languageCode = language === 'zho' ? 'zh-TW' : language;
+    }, [language]);
 
     useEffect(() => {
         const load = async () => {
