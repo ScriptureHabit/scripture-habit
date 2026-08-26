@@ -106,7 +106,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           const isDevSignedOut = sessionStorage.getItem('sh_dev_signed_out') === 'true';
           const isPlaywright = Boolean(window.navigator?.userAgent?.includes('Playwright') || (window as unknown as { __playwright?: boolean }).__playwright);
           if (!isDevSignedOut && !isPlaywright) {
-            signInWithEmailAndPassword(auth, 'demo-user@example.com', 'password123')
+            signInWithEmailAndPassword(auth, 'existing-user@example.com', 'password123')
               .catch((loginErr) => {
                 console.warn('[AuthProvider] Auto dev login failed:', loginErr);
               });

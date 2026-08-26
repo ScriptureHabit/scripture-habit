@@ -28,10 +28,23 @@ export function useWelcome() {
             if (typeof sessionStorage !== 'undefined') {
                 sessionStorage.removeItem('sh_dev_signed_out');
             }
-            await signInWithEmailAndPassword(auth, 'demo-user@example.com', 'password123');
+            await signInWithEmailAndPassword(auth, 'existing-user@example.com', 'password123');
             navigate(`/${language}/dashboard`);
         } catch (e) {
             console.error('Dev quick login failed:', e);
+        }
+    };
+
+    const handleDevQuickLoginNew = async () => {
+        if (!auth) return;
+        try {
+            if (typeof sessionStorage !== 'undefined') {
+                sessionStorage.removeItem('sh_dev_signed_out');
+            }
+            await signInWithEmailAndPassword(auth, 'new-user@example.com', 'password123');
+            navigate(`/${language}/dashboard`);
+        } catch (e) {
+            console.error('Dev quick login (new-user) failed:', e);
         }
     };
 
@@ -50,6 +63,7 @@ export function useWelcome() {
         setShowWarning,
         handleAuthClick,
         handleDevQuickLogin,
+        handleDevQuickLoginNew,
         handleContinue
     };
 }

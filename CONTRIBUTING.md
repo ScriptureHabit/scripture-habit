@@ -31,8 +31,13 @@ For a quick start:
    # Copy environment file
    cp .env.example .env.local
 
-   # Option A: Start all services in one command (Recommended)
+   # Option A: Start all services in one command (Recommended, starts with clean DB)
    npm run dev:all
+
+   # (Optional) Seed test data on demand in another terminal:
+   # npm run db:seed:existing   # Existing user (existing-user, group members, streak)
+   # npm run db:seed:new        # Fresh new user (new-user, 0 streaks, onboarding)
+   # Or start everything with seed: npm run dev:all:seed
 
    # Option B: Start services individually in separate terminals
    npm run emulators
@@ -169,8 +174,13 @@ Scripture Habit への貢献に関心を持っていただきありがとうご�
    # 環境変数ファイルの作成
    cp .env.example .env.local
 
-   # 推奨: 1コマンドで全サービスを一括起動
+   # 推奨: 1コマンドで全サービスを一括起動（DBはクリーンな状態で起動）
    npm run dev:all
+
+   # （任意）別ターミナルで必要に応じてテストデータを投入:
+   # npm run db:seed:existing   # 既存ユーザー環境（existing-user、グループ所属、ストリークあり）
+   # npm run db:seed:new        # 新規ユーザー環境（new-user、未所属、初回オンボーディング）
+   # または最初からシード込みで一括起動: npm run dev:all:seed
 
    # または個別ターミナルで起動する場合:
    npm run emulators

@@ -165,8 +165,8 @@ Firestore Root
 
 Connecting a fresh developer workspace to blank emulators makes UI testing tedious. The local environment features an automated seeding pipeline:
 
-- **Command**: `npm run db:seed`
-- **Execution Script**: [`seed.ts`](../scripture-habit/scripts/seed.ts)
+- **Command**: `npm run db:seed:existing` (or `npm run db:seed`) / `npm run db:seed:new`
+- **Execution Script**: [`seed-existing-user.ts`](../scripture-habit/scripts/seed-existing-user.ts) / [`seed-new-user.ts`](../scripture-habit/scripts/seed-new-user.ts)
 - **Lifecycle Flow**:
   1. **Purge**: Cleans out any matching test users and existing active groups to guarantee idempotency.
   2. **Auth Generation**: Automatically generates dummy accounts on the Local Firebase Auth emulator.

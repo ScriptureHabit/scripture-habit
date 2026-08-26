@@ -208,17 +208,22 @@ async function startDevEnvironment() {
 
   log(PREFIXES.SYS, `${COLORS.green}✔ Firebase Emulators are ready!${COLORS.reset}`);
 
-  // Step 4: Run DB Seed
-  log(PREFIXES.SYS, `${COLORS.yellow}🌱 Seeding database (npm run db:seed)...${COLORS.reset}`);
-  const seedResult = spawnSync(npmCmd, ['run', 'db:seed'], {
-    stdio: 'inherit',
-    shell: isWin,
-  });
+  // Step 4: Optional DB Seed (if --seed flag or SEED=true is provided)
+  const shouldSeed = process.argv.includes('--seed') || process.env.SEED === 'true';
+  if (shouldSeed) {
+    log(PREFIXES.SYS, `${COLORS.yellow}🌱 Seeding database (npm run db:seed)...${COLORS.reset}`);
+    const seedResult = spawnSync(npmCmd, ['run', 'db:seed'], {
+      stdio: 'inherit',
+      shell: isWin,
+    });
 
-  if (seedResult.status !== 0) {
-    log(PREFIXES.SYS, `${COLORS.yellow}⚠ db:seed exited with code ${seedResult.status}. Continuing with startup...${COLORS.reset}`);
+    if (seedResult.status !== 0) {
+      log(PREFIXES.SYS, `${COLORS.yellow}⚠ db:seed exited with code ${seedResult.status}. Continuing with startup...${COLORS.reset}`);
+    } else {
+      log(PREFIXES.SYS, `${COLORS.green}✔ Database seeded successfully!${COLORS.reset}`);
+    }
   } else {
-    log(PREFIXES.SYS, `${COLORS.green}✔ Database seeded successfully!${COLORS.reset}`);
+    log(PREFIXES.SYS, `${COLORS.dim}Database seeding skipped. (Run "npm run db:seed:existing" or "npm run db:seed:new" in another terminal to populate data)${COLORS.reset}`);
   }
 
   // Step 5: Start Backend API server

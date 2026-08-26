@@ -122,6 +122,11 @@
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.08);
 }
 
+.letter-item.unread-letter {
+    border-left: 4px solid #8e44ad;
+    background: #faf4fc;
+}
+
 .letter-icon {
     background-color: rgba(142, 68, 173, 0.1);
     padding: 0.5rem;
@@ -131,14 +136,37 @@
     justify-content: center;
 }
 
+.letter-item.unread-letter .letter-icon {
+    background-color: rgba(142, 68, 173, 0.2);
+}
+
 .letter-info {
     flex: 1;
+}
+
+.letter-title-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.2rem;
 }
 
 .letter-info h3 {
     margin: 0;
     font-size: 1rem;
     color: #333;
+    font-weight: 600;
+}
+
+.unread-badge-pill {
+    background: linear-gradient(135deg, #8e44ad, #9b59b6);
+    color: #ffffff;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 10px;
+    letter-spacing: 0.5px;
+    box-shadow: 0 1px 3px rgba(142, 68, 173, 0.3);
 }
 
 .letter-date-meta {

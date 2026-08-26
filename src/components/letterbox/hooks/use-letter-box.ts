@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../../../firebase';
-import { collection, query, orderBy, onSnapshot, doc, deleteDoc } from 'firebase/firestore';
+import { collection, query, orderBy, onSnapshot, doc, deleteDoc, updateDoc } from 'firebase/firestore';
 import { UserData } from '../../../types/user';
 import { FirebaseTimestamp } from '../../../types/chat';
 import { parseTimestampToDate } from '../../../utils/time-utils';
@@ -12,6 +12,7 @@ export interface Letter {
   createdAt?: FirebaseTimestamp;
   expiresAt?: FirebaseTimestamp;
   type?: string;
+  read?: boolean;
 }
 
 export function useLetterBox(isOpen: boolean, userData: UserData | null) {
@@ -67,6 +68,19 @@ export function useLetterBox(isOpen: boolean, userData: UserData | null) {
     return () => unsubscribe();
   }, [userData, isOpen]);
 
+  const handleSelectLetter = (letter: Letter) => {
+    setSelectedLetter(letter);
+
+    // If letter is unread, automatically mark as read in Firestore
+    if (letter.read === false && userData?.uid) {
+      updateDoc(doc(db, 'users', userData.uid, 'letters', letter.id), {
+        read: true
+      }).catch(err => {
+        console.error('[LetterBox] Failed to mark letter as read:', err);
+      });
+    }
+  };
+
   const handleDelete = (e: React.MouseEvent, letterId: string) => {
     e.stopPropagation();
     setDeleteTargetLetterId(letterId);
@@ -92,6 +106,7 @@ export function useLetterBox(isOpen: boolean, userData: UserData | null) {
     loading,
     selectedLetter,
     setSelectedLetter,
+    handleSelectLetter,
     deleteTargetLetterId,
     setDeleteTargetLetterId,
     handleDelete,

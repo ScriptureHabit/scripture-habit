@@ -165,8 +165,8 @@ Firestore ルート
 
 クリーンな開発者ワークスペースを空のエミュレータに接続するとUIテストが非常に困難になります。このため、自動化されたシードパイプラインを用意しています：
 
-- **実行コマンド**: `npm run db:seed`
-- **実行スクリプト**: [`seed.ts`](../../scripture-habit/scripts/seed.ts)
+- **実行コマンド**: `npm run db:seed:existing`（または `npm run db:seed`）/ `npm run db:seed:new`
+- **実行スクリプト**: [`seed-existing-user.ts`](../../scripture-habit/scripts/seed-existing-user.ts) / [`seed-new-user.ts`](../../scripture-habit/scripts/seed-new-user.ts)
 - **処理ライフサイクル**:
   1. **パージ（初期化）**: 冪等性（繰り返し実行しても状態が変わらないこと）を保証するため、一致する既存のテスト用ユーザーやアクティブなグループを事前に削除します。
   2. **Auth アカウント生成**: ローカル Firebase Auth エミュレータ上にダミーアカウントを自動生成します。

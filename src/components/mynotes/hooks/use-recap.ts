@@ -86,7 +86,8 @@ export const useRecapOperations = (userData: UserData, language: string, t: (k: 
         title: title,
         createdAt: serverTimestamp(),
         expiresAt,
-        type: 'study_letter'
+        type: 'study_letter',
+        read: true
       });
 
       toast.success(t('myNotes.letterSaveSuccess') || "Saved to Letter Box!");

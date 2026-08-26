@@ -1,9 +1,10 @@
 import { db, auth, admin } from '../api_internal/lib/firebase-admin.js';
+import type { Timestamp } from 'firebase-admin/firestore';
 import { buildNoteSearchTokens } from '../src/utils/search-token-utils.js';
 import { formatNoteText } from '../src/utils/note-logic.js';
 
-async function seed() {
-    console.log('🌱 Starting local database seeding sequence...');
+async function seedExistingUser() {
+    console.log('🌱 Starting local database seeding sequence (Existing User with Group & Streak)...');
 
     // 1. Strict verification of Emulator environment
     const firestoreHost = process.env.FIRESTORE_EMULATOR_HOST;
@@ -38,10 +39,10 @@ async function seed() {
 
     const users = [
         {
-            uid: 'seeder-demo-user',
-            email: 'demo-user@example.com',
-            nickname: 'demo-user',
-            photoURL: 'https://api.dicebear.com/7.x/bottts/svg?seed=demo-user',
+            uid: 'seeder-existing-user',
+            email: 'existing-user@example.com',
+            nickname: 'existing-user',
+            photoURL: 'https://api.dicebear.com/7.x/bottts/svg?seed=existing-user',
             streakCount: 8,
             highestStreak: 8,
             totalNotes: 8,
@@ -85,7 +86,7 @@ async function seed() {
 
     // 1. Delete existing seed users from Auth and Firestore to keep seeding idempotent
     console.log('🧹 Purging old seed users for idempotency...');
-    const usersToClean = [...users.map(u => u.uid), 'seeder-dev-user'];
+    const usersToClean = [...users.map(u => u.uid), 'seeder-demo-user', 'seeder-dev-user'];
     for (const uid of usersToClean) {
         try {
             await auth.deleteUser(uid);
@@ -127,7 +128,7 @@ async function seed() {
             emailVerified: true
         });
 
-        const studiedDates = u.uid === 'seeder-demo-user'
+        const studiedDates = u.uid === 'seeder-existing-user'
             ? [getDateStr(7), getDateStr(6), getDateStr(5), getDateStr(4), getDateStr(3), getDateStr(2), getDateStr(1), getDateStr(0)]
             : u.uid === 'seeder-alice'
                 ? [getDateStr(5), getDateStr(4), getDateStr(3), getDateStr(2), getDateStr(1)]
@@ -156,8 +157,8 @@ async function seed() {
             questPostedNote: true
         });
 
-        // Seed demo notes for demo-user so "My Notes" and calendar feel rich and alive
-        if (u.uid === 'seeder-demo-user') {
+        // Seed demo notes for existing-user so "My Notes" and calendar feel rich and alive
+        if (u.uid === 'seeder-existing-user') {
             interface DemoNote {
                 id: string;
                 scripture: string;
@@ -165,7 +166,7 @@ async function seed() {
                 comment: string;
                 title?: string;
                 speaker?: string;
-                createdAt: admin.firestore.Timestamp;
+                createdAt: Timestamp;
                 sharedWithGroups: string[];
             }
 
@@ -273,8 +274,8 @@ async function seed() {
 
     // 3. Create Group Document
     console.log(`📦 Seeding group: "${groupName}"...`);
-    const joinedAtMap: Record<string, admin.firestore.Timestamp> = {};
-    const memberLastActiveMap: Record<string, admin.firestore.Timestamp> = {};
+    const joinedAtMap: Record<string, Timestamp> = {};
+    const memberLastActiveMap: Record<string, Timestamp> = {};
     const memberKickThresholds: Record<string, number> = {};
 
     for (const uid of uids) {
@@ -293,14 +294,14 @@ async function seed() {
         members: uids,
         membersCount: uids.length,
         isPublic: true,
-        ownerUserId: 'seeder-demo-user',
+        ownerUserId: 'seeder-existing-user',
         messageCount: 0,
         lastMessageAt: now,
         lastMessageText: 'Seed database setup complete!',
         lastMessageByNickname: 'System',
         lastMessageByUid: 'system',
         dailyActivity: {
-            activeMembers: ['seeder-demo-user', 'seeder-alice', 'seeder-bob'],
+            activeMembers: ['seeder-existing-user', 'seeder-alice', 'seeder-bob'],
             date: new Date().toLocaleDateString('sv-SE') // Sweden format YYYY-MM-DD
         },
         memberJoinedAt: joinedAtMap,
@@ -452,16 +453,18 @@ async function seed() {
         messages: messageDocuments.slice(-5).reverse() // Latest 5 messages in reverse order
     });
 
-    console.log('🎉 Seeding successfully completed!');
+    console.log('\n==================================================');
+    console.log('👥 [Existing User] 既存ユーザー環境をセットアップしました');
     console.log('--------------------------------------------------');
-    console.log('🔐 Demo login credentials:');
-    console.log('   Email:    demo-user@example.com');
+    console.log('🔐 Login Credentials:');
+    console.log('   Email:    existing-user@example.com');
     console.log('   Password: password123');
-    console.log('   Nickname: demo-user');
-    console.log('--------------------------------------------------');
+    console.log('   Nickname: existing-user');
+    console.log('📖 状態: グループ「Daily Bread 📖」参加中 / ストリーク8日 / ノート8件');
+    console.log('==================================================\n');
 }
 
-seed().catch(err => {
+seedExistingUser().catch(err => {
     console.error('❌ Seeding failed with error:', err);
     process.exit(1);
 });

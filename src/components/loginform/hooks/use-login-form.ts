@@ -162,7 +162,7 @@ export function useLoginForm() {
       if (typeof sessionStorage !== 'undefined') {
         sessionStorage.removeItem('sh_dev_signed_out');
       }
-      await signInWithEmailAndPassword(auth, 'demo-user@example.com', 'password123');
+      await signInWithEmailAndPassword(auth, 'existing-user@example.com', 'password123');
       navigate(`/${language}/dashboard`);
     } catch (e) {
       console.error('Dev quick login failed:', e);

@@ -43,11 +43,16 @@ Copy-Item .env.example .env.local
 #### 4. ローカル開発環境の起動
 
 ##### 方法 A: 1コマンド全自動起動（推奨）
-Firebase エミュレータの起動、初期化待機、テストデータの自動シード投入、Express バックエンドおよび Vite フロントエンドの開発サーバー起動を単一ターミナルでまとめて実行します：
+Firebase エミュレータの起動、初期化待機、Express バックエンドおよび Vite フロントエンドの開発サーバー起動を単一ターミナルでまとめて実行します（データベースはクリーンな初期状態で起動します）：
 ```bash
 npm run dev:all
 ```
 すべてのサービスログが色分けプレフィックス（`[SYS]`, `[EMU]`, `[API]`, `[WEB]`）付きで集約出力されます。`Ctrl+C` を押すと全サービスが一括停止します。
+
+> [!TIP]
+> **テストデータの投入（シード）について**:
+> - 起動後に別ターミナルで `npm run db:seed:existing`（既存ユーザー・グループ所属データ）または `npm run db:seed:new`（新規ユーザー・初回オンボーディングデータ）を実行して、いつでも好きなタイミングでデータを投入・初期化できます。
+> - 起動と同時に自動で既存ユーザーデータを投入したい場合は `npm run dev:all:seed` を実行してください。
 
 ##### 方法 B: 個別ターミナルでの起動
 各サービスを個別のターミナルタブで起動する場合は以下の順序で実行します：
@@ -96,7 +101,8 @@ npm run dev
 
 | コマンド | 説明 |
 | :--- | :--- |
-| `npm run dev:all` | 全開発サービス（エミュレータ、シード投入、バックエンド、フロントエンド）を単一ターミナルで一括起動 |
+| `npm run dev:all` | 全開発サービス（エミュレータ、バックエンド、フロントエンド）を単一ターミナルで一括起動（DBはクリーン状態） |
+| `npm run dev:all:seed` | 全開発サービスを一括起動し、自動でテストデータ（db:seed）を投入 |
 | `npm run dev` | Vite 開発サーバーを起動（`localhost:5173`） |
 | `npm run server` | バックエンド Express サーバーを起動（`localhost:5000`） |
 | `npm run emulators` | Firebase ローカルエミュレータ（Firestore, Auth, Functions）を起動 |
@@ -109,7 +115,9 @@ npm run dev
 | `npm run test:internal` | エミュレータ環境でバックエンド統合テストを実行 |
 | `npm run test:rules` | Firestore セキュリティルールの単体テストを実行 |
 | `npm run test:e2e` | Playwright による E2E テストを実行 |
-| `npm run db:seed` | エミュレータにテスト用ユーザー・グループ・履歴データを投入 |
+| `npm run db:seed` | エミュレータに既存ユーザー環境（グループ所属・ストリークあり）のテストデータを投入（`db:seed:existing` と同等） |
+| `npm run db:seed:existing` | エミュレータに既存ユーザー環境（existing-user、グループ「Daily Bread」、ストリーク8日）のデータを投入 |
+| `npm run db:seed:new` | エミュレータに新規ユーザー環境（new-user、未所属、初回オンボーディング）のデータを投入 |
 | `npm run docs:dev` | VitePress ドキュメントサイトの開発サーバーを起動 |
 | `npm run docs:build` | TypeDoc リファレンス自動生成およびドキュメントサイトをビルド |
 

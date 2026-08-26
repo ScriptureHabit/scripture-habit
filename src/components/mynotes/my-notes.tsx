@@ -22,6 +22,7 @@ import { useNoteActions } from './hooks/use-note-actions';
 // Hooks
 import { useMyNotes } from './hooks/use-my-notes';
 import { useRecap } from './hooks/use-recap';
+import { useLetterAvailability } from '../../hooks/use-letter-availability';
 
 // Types
 import { SCRIPTURE_CATEGORIES, CATEGORY_TRANSLATION_MAP } from '../../types/scripture';
@@ -72,6 +73,9 @@ const MyNotes = ({ userData, isModalOpen, setIsModalOpen, userGroups }: MyNotesP
     handleGenerateRecap,
     handleSaveRecapToLetterBox
   } = useRecap(userData, language, t);
+
+  // 3. Unread Developer Letter Hook
+  const { hasUnreadDeveloperLetter, unreadLettersCount } = useLetterAvailability(userData);
 
   const handleNoteClick = (note: Note) => {
     setSelectedNote(note);
@@ -137,12 +141,21 @@ const MyNotes = ({ userData, isModalOpen, setIsModalOpen, userGroups }: MyNotesP
             </button>
           </div>
 
-          <div className="action-card letterbox-card" onClick={() => setActiveModal('letterbox')}>
+          <div
+            className={`action-card letterbox-card ${hasUnreadDeveloperLetter ? 'has-unread' : ''}`}
+            onClick={() => setActiveModal('letterbox')}
+            data-testid="letterbox-card"
+          >
             <div className="mailbox-visual">
               <UilEnvelope size="32" className="envelope-icon" />
               <div className="mailbox-flag"></div>
             </div>
             <span className="letterbox-label">{t('letterBox.title')}</span>
+            {hasUnreadDeveloperLetter && (
+              <span className="letterbox-unread-badge" data-testid="letterbox-unread-badge">
+                {unreadLettersCount}
+              </span>
+            )}
             <div className="hover-indicator"></div>
           </div>
         </div>

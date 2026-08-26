@@ -352,9 +352,30 @@
 }
 
 .generate-recap-main-btn:disabled {
-    background: #f0f0f0;
-    color: #bbb;
+    background: #f8f9fc;
+    border: 1.5px dashed #cbd5e1;
+    color: #64748b;
     cursor: not-allowed;
+    box-shadow: none;
+}
+
+.generate-recap-main-btn:disabled .shimmer-effect {
+    display: none;
+}
+
+.generate-recap-main-btn:disabled .recap-icon {
+    color: #94a3b8;
+}
+
+.generate-recap-main-btn:disabled .stars-decoration {
+    opacity: 0.6;
+}
+
+.generate-recap-main-btn:disabled .btn-sub-row {
+    color: #475569;
+    font-size: 0.82rem;
+    font-weight: 600;
+    opacity: 1;
 }
 
 /* Sky blue pastel gradient for cached recap view */
@@ -406,7 +427,61 @@
     padding: 1.25rem;
     grid-column: span 2;
     flex-direction: row;
-    gap: 1rem;
+    justify-content: center;
+    align-items: center;
+    gap: 0.75rem;
+    position: relative;
+}
+
+.letterbox-card.has-unread {
+    border: 1.5px solid #8e44ad;
+    background: linear-gradient(135deg, #ffffff 0%, #faf5fc 100%);
+    animation: letterboxPulse 2.4s infinite ease-in-out;
+}
+
+.letterbox-card.has-unread:hover {
+    box-shadow: 0 10px 25px rgba(142, 68, 173, 0.25);
+}
+
+.letterbox-unread-badge {
+    background: linear-gradient(135deg, #8e44ad, #9b59b6);
+    color: #ffffff;
+    font-size: 0.8rem;
+    font-weight: 800;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 6px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(142, 68, 173, 0.4);
+    position: absolute;
+    right: 1.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    animation: pulseBadge 1.8s infinite ease-in-out;
+}
+
+@keyframes letterboxPulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(142, 68, 173, 0.45);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(142, 68, 173, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(142, 68, 173, 0);
+    }
+}
+
+@keyframes pulseBadge {
+    0%, 100% {
+        transform: translateY(-50%) scale(1);
+    }
+    50% {
+        transform: translateY(-50%) scale(1.1);
+    }
 }
 
 .mailbox-visual {

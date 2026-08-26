@@ -43,11 +43,16 @@ Copy-Item .env.example .env.local
 #### 4. Launch Local Development Environment
 
 ##### Option A: Unified All-in-One Command (Recommended)
-Start Firebase Emulators, wait for initialization, automatically seed initial test data, and start both the Express backend and Vite frontend within a single terminal:
+Start Firebase Emulators, wait for initialization, and start both the Express backend and Vite frontend within a single terminal (starts with a clean database):
 ```bash
 npm run dev:all
 ```
 Logs from all services will be streamed with color-coded prefixes (`[SYS]`, `[EMU]`, `[API]`, `[WEB]`). Press `Ctrl+C` to stop all services simultaneously.
+
+> [!TIP]
+> **Seeding Test Data**:
+> - Once services are running, execute `npm run db:seed:existing` (existing user, group members, streak) or `npm run db:seed:new` (fresh new user, 0 streaks, uncompleted onboarding) in a separate terminal tab whenever you need fresh test data.
+> - To start all services and automatically seed existing user test data in one command, use `npm run dev:all:seed`.
 
 ##### Option B: Individual Service Commands
 If you prefer running services in separate terminal tabs:
@@ -96,7 +101,8 @@ Once started, the emulator and application endpoints will be available:
 
 | Command | Description |
 | :--- | :--- |
-| `npm run dev:all` | Starts all development services (Emulators, DB seed, Backend, Frontend) in a single unified terminal |
+| `npm run dev:all` | Starts all development services (Emulators, Backend, Frontend) with a clean database in a single terminal |
+| `npm run dev:all:seed` | Starts all development services and automatically seeds initial test data (db:seed) |
 | `npm run dev` | Starts Vite frontend dev server at `localhost:5173` |
 | `npm run server` | Starts local Express backend server at `localhost:5000` |
 | `npm run emulators` | Starts local Firebase Emulator Suite (Firestore, Auth, Functions) |
@@ -109,7 +115,9 @@ Once started, the emulator and application endpoints will be available:
 | `npm run test:internal` | Runs backend/integration tests with emulated Firebase |
 | `npm run test:rules` | Runs dedicated Firestore security rules unit tests |
 | `npm run test:e2e` | Runs Playwright End-to-End tests against emulated sandbox |
-| `npm run db:seed` | Seeds test users, study groups, streaks, and chat logs into emulators |
+| `npm run db:seed` | Seeds existing user test environment (alias for `db:seed:existing`) |
+| `npm run db:seed:existing` | Seeds existing user test environment (`existing-user@example.com`, Daily Bread group, 8-day streak, notes) |
+| `npm run db:seed:new` | Seeds fresh new user test environment (`new-user@example.com`, no groups, uncompleted onboarding) |
 | `npm run docs:dev` | Starts local VitePress documentation dev server |
 | `npm run docs:build` | Generates TypeDoc references and builds production docs site |
 

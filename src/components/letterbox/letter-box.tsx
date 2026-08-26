@@ -21,6 +21,7 @@ const LetterBox = ({ isOpen, onClose, userData }: LetterBoxProps) => {
         loading,
         selectedLetter,
         setSelectedLetter,
+        handleSelectLetter,
         deleteTargetLetterId,
         setDeleteTargetLetterId,
         handleDelete,
@@ -67,14 +68,19 @@ const LetterBox = ({ isOpen, onClose, userData }: LetterBoxProps) => {
                                 letters.map(letter => (
                                     <div
                                         key={letter.id}
-                                        className="letter-item"
-                                        onClick={() => setSelectedLetter(letter)}
+                                        className={`letter-item ${letter.read === false ? 'unread-letter' : ''}`}
+                                        onClick={() => handleSelectLetter(letter)}
                                     >
                                         <div className="letter-icon">
                                             <UilEnvelope size="24" color="#8e44ad" />
                                         </div>
                                         <div className="letter-info">
-                                            <h3>{letter.title || t('letterBox.defaultTitle')}</h3>
+                                            <div className="letter-title-row">
+                                                <h3>{letter.title || t('letterBox.defaultTitle')}</h3>
+                                                {letter.read === false && (
+                                                    <span className="unread-badge-pill">NEW</span>
+                                                )}
+                                            </div>
                                             <span className="letter-date-meta">
                                                 {letter.createdAt ? parseTimestampToDate(letter.createdAt).toLocaleDateString() : ""}
                                             </span>

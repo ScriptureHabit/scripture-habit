@@ -39,15 +39,18 @@ describe('useLetterAvailability', () => {
         vi.mocked(audioFeedback.isSoundEnabled).mockReturnValue(true);
     });
 
-    it('returns false if userData is null/undefined', () => {
+    it('returns false and 0 counts if userData is null/undefined', () => {
         const { result } = renderHook(() => useLetterAvailability(null));
         expect(result.current.isLetterAvailable).toBe(false);
         expect(result.current.newNotesCount).toBe(0);
+        expect(result.current.hasUnreadDeveloperLetter).toBe(false);
+        expect(result.current.unreadLettersCount).toBe(0);
     });
 
     it('returns isLetterAvailable: true when notes count >= 2 and plays notification sound', () => {
-        vi.mocked(onSnapshot).mockImplementation((_q, cb: any) => {
-            cb({ size: 2, docs: [{ id: '1' }, { id: '2' }] });
+        vi.mocked(onSnapshot).mockImplementation((_q: any, cb: any) => {
+            // If it's notes subscription (limit query)
+            cb({ size: 2, docs: [{ id: '1', data: () => ({}) }, { id: '2', data: () => ({}) }] });
             return () => {};
         });
 
@@ -59,23 +62,47 @@ describe('useLetterAvailability', () => {
         expect(sessionStorage.getItem('sh_letter_audio_alerted_session')).toBe('true');
     });
 
-    it('returns isLetterAvailable: false when notes count < 2 and does NOT play sound', () => {
-        vi.mocked(onSnapshot).mockImplementation((_q, cb: any) => {
-            cb({ size: 1, docs: [{ id: '1' }] });
+    it('returns isLetterAvailable: true and hasUnreadDeveloperLetter: true when unread developer letter exists', () => {
+        vi.mocked(onSnapshot).mockImplementation((_q: any, cb: any) => {
+            cb({
+                size: 1,
+                docs: [
+                    {
+                        id: 'dev-welcome',
+                        data: () => ({ type: 'developer_welcome', read: false })
+                    }
+                ]
+            });
+            return () => {};
+        });
+
+        const { result } = renderHook(() => useLetterAvailability(mockUserData));
+
+        expect(result.current.isLetterAvailable).toBe(true);
+        expect(result.current.hasUnreadDeveloperLetter).toBe(true);
+        expect(result.current.unreadLettersCount).toBe(1);
+        expect(audioFeedback.playUnreadNotificationSound).toHaveBeenCalledTimes(1);
+    });
+
+    it('returns isLetterAvailable: false when notes count < 2 and no unread letters', () => {
+        vi.mocked(onSnapshot).mockImplementation((_q: any, cb: any) => {
+            cb({ size: 0, docs: [] });
             return () => {};
         });
 
         const { result } = renderHook(() => useLetterAvailability(mockUserData));
 
         expect(result.current.isLetterAvailable).toBe(false);
-        expect(result.current.newNotesCount).toBe(1);
+        expect(result.current.newNotesCount).toBe(0);
+        expect(result.current.hasUnreadDeveloperLetter).toBe(false);
+        expect(result.current.unreadLettersCount).toBe(0);
         expect(audioFeedback.playUnreadNotificationSound).not.toHaveBeenCalled();
     });
 
     it('does NOT play sound if already alerted in this session', () => {
         sessionStorage.setItem('sh_letter_audio_alerted_session', 'true');
-        vi.mocked(onSnapshot).mockImplementation((_q, cb: any) => {
-            cb({ size: 2, docs: [{ id: '1' }, { id: '2' }] });
+        vi.mocked(onSnapshot).mockImplementation((_q: any, cb: any) => {
+            cb({ size: 2, docs: [{ id: '1', data: () => ({}) }, { id: '2', data: () => ({}) }] });
             return () => {};
         });
 
@@ -87,8 +114,8 @@ describe('useLetterAvailability', () => {
 
     it('does NOT play sound if sound is disabled by user', () => {
         vi.mocked(audioFeedback.isSoundEnabled).mockReturnValue(false);
-        vi.mocked(onSnapshot).mockImplementation((_q, cb: any) => {
-            cb({ size: 2, docs: [{ id: '1' }, { id: '2' }] });
+        vi.mocked(onSnapshot).mockImplementation((_q: any, cb: any) => {
+            cb({ size: 2, docs: [{ id: '1', data: () => ({}) }, { id: '2', data: () => ({}) }] });
             return () => {};
         });
 

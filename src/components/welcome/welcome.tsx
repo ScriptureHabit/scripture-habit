@@ -16,6 +16,7 @@ const Welcome = () => {
         setShowWarning,
         handleAuthClick,
         handleDevQuickLogin,
+        handleDevQuickLoginNew,
         handleContinue
     } = useWelcome();
 
@@ -58,7 +59,7 @@ const Welcome = () => {
                 </div>
 
                 {isEmulator && import.meta.env.DEV && (
-                    <div style={{ marginTop: '0.75rem', width: '100%' }}>
+                    <div style={{ marginTop: '0.75rem', width: '100%', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                         <button
                             type="button"
                             onClick={handleDevQuickLogin}
@@ -74,7 +75,24 @@ const Welcome = () => {
                                 fontSize: '0.9rem'
                             }}
                         >
-                            ⚡ Dev Quick Login (demo-user)
+                            ⚡ Dev Login (existing-user: 既存)
+                        </button>
+                        <button
+                            type="button"
+                            onClick={handleDevQuickLoginNew}
+                            style={{
+                                width: '100%',
+                                padding: '0.65rem 1rem',
+                                borderRadius: '8px',
+                                border: '1px dashed #10b981',
+                                backgroundColor: 'rgba(16, 185, 129, 0.08)',
+                                color: '#10b981',
+                                fontWeight: 'bold',
+                                cursor: 'pointer',
+                                fontSize: '0.9rem'
+                            }}
+                        >
+                            🌱 Dev Login (new-user: 新規)
                         </button>
                     </div>
                 )}
