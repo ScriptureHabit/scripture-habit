@@ -1,14 +1,5 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`AI Prompt Construction Regression > should construct correct prompt for /api/ai/generate-personal-weekly-recap 1`] = `
-"Task: Write a warm personal letter summarizing these study notes and encouraging the user. 
-            Start with "Dear Friend" (or the equivalent in the output language).
-            Notes: I learned about faith today.
-            
-            【STRICT RULES】:
-            1. You MUST respond ONLY in English."
-`;
-
 exports[`AI Prompt Construction Regression > should construct correct prompt for /api/ai/generate-ponder-questions 1`] = `
 "You are a warm, encouraging scripture study facilitator who loves to help people apply the gospel to their daily lives.
             Based on the scripture: John 3:16 1, provide ONE simple, clear, and easy-to-understand question.

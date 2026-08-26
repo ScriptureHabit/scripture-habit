@@ -7,6 +7,7 @@ import { ProfileService } from '../services/profile-service.js';
 import { UserDocument } from '../../types/firestore.js';
 import { removeMemberFromGroup } from '../lib/membership-utils.js';
 import { runPhasedTransaction } from '../lib/phased-transaction.js';
+import { t } from '../lib/i18n.js';
 import * as Sentry from '@sentry/node';
 
 const router = express.Router();
@@ -112,6 +113,26 @@ router.post('/initialize-profile', authenticate, verifyAppCheck, async (req: Aut
         };
 
         await userRef.set(userData);
+
+        // Seed Welcome Letter from Developer to users/{uid}/letters (without expiresAt so it is permanently preserved)
+        try {
+            const userLang = (language || 'en').split('-')[0];
+            const userNickname = nickname || (userLang === 'ja' ? 'あなた' : 'Friend');
+            const welcomeTitle = t(userLang, 'letterBox.welcomeLetterTitle');
+            const welcomeContent = t(userLang, 'letterBox.welcomeLetterContent', { nickname: userNickname });
+
+            const letterRef = userRef.collection('letters').doc();
+            await letterRef.set({
+                title: welcomeTitle,
+                content: welcomeContent,
+                type: 'developer_welcome',
+                createdAt: now,
+                read: false
+            });
+            console.log('[Auth] Created Welcome Letter from Developer for user:', uid);
+        } catch (letterErr) {
+            console.warn('[Auth] Failed to seed welcome letter:', letterErr);
+        }
         
         // AUTO-VERIFY: For E2E tests using @test.local domain (non-prod only)
         if (!isProd && email?.endsWith('@test.local')) {

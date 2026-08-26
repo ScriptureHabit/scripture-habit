@@ -251,4 +251,3 @@ export const auth = (hasFirebaseApp() ? getAuth() : null) as Auth;
 export const appCheck = (hasFirebaseApp() ? getAppCheck() : null) as AppCheck;
 
 export const admin = compatAdmin;
-export default admin;

@@ -1,7 +1,8 @@
 /// <reference types="vite/client" />
 import { useEffect, useState, ReactNode, ReactElement } from 'react';
-import { User, onAuthStateChanged } from 'firebase/auth';
+import { User, onAuthStateChanged, signInWithEmailAndPassword } from 'firebase/auth';
 import { auth, db } from '../firebase';
+import { isEmulator } from '../config/firebase-config';
 import { UserData } from '../types/user';
 import { syncFcmTokenFlag } from '../utils/notification-helper';
 
@@ -98,6 +99,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           localStorage.removeItem('last_active_uid');
         } catch {
           // Ignore
+        }
+
+        // Automatic dev login in emulator mode if not explicitly logged out
+        if (isEmulator && import.meta.env.DEV && typeof window !== 'undefined' && auth) {
+          const isDevSignedOut = sessionStorage.getItem('sh_dev_signed_out') === 'true';
+          const isPlaywright = Boolean(window.navigator?.userAgent?.includes('Playwright') || (window as unknown as { __playwright?: boolean }).__playwright);
+          if (!isDevSignedOut && !isPlaywright) {
+            signInWithEmailAndPassword(auth, 'demo-user@example.com', 'password123')
+              .catch((loginErr) => {
+                console.warn('[AuthProvider] Auto dev login failed:', loginErr);
+              });
+          }
         }
       }
     });

@@ -1,36 +1,42 @@
 import { useState } from 'react';
 import apiClient from '../../../utils/api-client';
 import { db } from '../../../firebase';
-import { serverTimestamp, collection, addDoc } from 'firebase/firestore';
+import { serverTimestamp, collection, addDoc, Timestamp } from 'firebase/firestore';
 import { toast } from 'react-toastify';
 import { UserData } from '../../../types/user';
-import { parseTimestampToDate } from '../../../utils/time-utils';
+import { useLetterAvailability } from '../../../hooks/use-letter-availability';
+
+export interface GeneratedRecapResult {
+  text: string;
+  title: string;
+  fromCache: boolean;
+}
 
 /**
- * Hook for the business logic of generating and saving recaps.
+ * Hook for the business logic of generating and saving recaps/letters.
  * Separated from UI state for better maintainability.
  */
 export const useRecapOperations = (userData: UserData, language: string, t: (k: string, options?: Record<string, string | number>) => string) => {
   const [loading, setLoading] = useState(false);
 
-  const generateRecap = async (notesCount: number): Promise<{ text: string; fromCache: boolean } | null> => {
-    // 1. Rate Limit / Cached View Checks
-    const isWithinCooldown = userData?.lastRecapGeneratedAt && (() => {
-      const lastGenerated = parseTimestampToDate(userData.lastRecapGeneratedAt);
-      const now = new Date();
-      const diffTime = now.getTime() - lastGenerated.getTime();
-      const cooldownMs = 6 * 24 * 60 * 60 * 1000; // 6 days in milliseconds
-      return diffTime < cooldownMs;
-    })();
+  const hasPreviousLetter = !!(userData?.lastLetterGeneratedAt || userData?.lastRecapGeneratedAt);
 
-    if (!isWithinCooldown && notesCount === 0) {
+  const generateRecap = async (
+    canGenerateOrNotesCount: boolean | number = true,
+    hasPrevious: boolean = hasPreviousLetter
+  ): Promise<GeneratedRecapResult | null> => {
+    const canGenerate = typeof canGenerateOrNotesCount === 'boolean' 
+      ? canGenerateOrNotesCount 
+      : canGenerateOrNotesCount >= 2;
+
+    if (!canGenerate && !hasPrevious) {
       toast.info(t('myNotes.noNotesForRecap'));
       return null;
     }
 
-    // 2. API Call
+    // API Call
     setLoading(true);
-    toast.info(isWithinCooldown ? (t('myNotes.fetchingRecentRecap') || "Retrieving recent recap...") : t('myNotes.generatingRecap'));
+    toast.info(!canGenerate ? (t('myNotes.fetchingRecentRecap') || "Retrieving recent recap...") : t('myNotes.generatingRecap'));
     try {
       const response = await apiClient.post('/api/ai/generate-personal-weekly-recap', {
         uid: userData.uid,
@@ -43,6 +49,7 @@ export const useRecapOperations = (userData: UserData, language: string, t: (k: 
         toast.success(t('myNotes.recapSuccess'));
         return {
           text: response.data.recap as string,
+          title: (response.data.title as string) || t('letterBox.defaultTitle') || "Weekly Recap",
           fromCache: !!response.data.fromCache
         };
       } else {
@@ -59,22 +66,27 @@ export const useRecapOperations = (userData: UserData, language: string, t: (k: 
     }
   };
 
-  const saveRecapToLetterBox = async (recapText: string) => {
+  const saveRecapToLetterBox = async (recapText: string, customTitle?: string) => {
     try {
       const lettersRef = collection(db, 'users', userData.uid, 'letters');
       const lines = recapText.split('\n');
-      let title = t('letterBox.defaultTitle') || "Weekly Recap";
+      let title = customTitle || t('letterBox.defaultTitle') || "Weekly Recap";
 
-      const titleLine = lines.find(line => line.toLowerCase().includes('title:') || line.includes('タイトル：'));
-      if (titleLine) {
-        title = titleLine.replace(/Title:|タイトル：/i, '').replace(/\*/g, '').trim();
+      if (!customTitle) {
+        const titleLine = lines.find(line => line.toLowerCase().includes('title:') || line.includes('タイトル：'));
+        if (titleLine) {
+          title = titleLine.replace(/Title:|タイトル：/i, '').replace(/\*/g, '').trim();
+        }
       }
+
+      const expiresAt = Timestamp.fromMillis(Date.now() + 30 * 24 * 60 * 60 * 1000);
 
       await addDoc(lettersRef, {
         content: recapText,
         title: title,
         createdAt: serverTimestamp(),
-        type: 'weekly_recap'
+        expiresAt,
+        type: 'study_letter'
       });
 
       toast.success(t('myNotes.letterSaveSuccess') || "Saved to Letter Box!");
@@ -90,26 +102,34 @@ export const useRecapOperations = (userData: UserData, language: string, t: (k: 
 };
 
 /**
- * Orchestrator hook that combines business logic with UI state (modals, results).
+ * Orchestrator hook that combines business logic with UI state (modals, results, unlock counts).
  */
 export const useRecap = (userData: UserData, language: string, t: (k: string, options?: Record<string, string | number>) => string) => {
   const [isRecapModalOpen, setIsRecapModalOpen] = useState(false);
   const [generatedRecapText, setGeneratedRecapText] = useState('');
+  const [generatedRecapTitle, setGeneratedRecapTitle] = useState('');
   const [isFromCache, setIsFromCache] = useState(false);
   
+  const lastGenAt = userData?.lastLetterGeneratedAt || userData?.lastRecapGeneratedAt;
+  const hasPreviousLetter = !!lastGenAt;
+
+  const { isLetterAvailable: canGenerateRecap, newNotesCount } = useLetterAvailability(userData);
+  const notesRemaining = Math.max(0, 2 - newNotesCount);
+
   const { loading: recapLoading, generateRecap, saveRecapToLetterBox } = useRecapOperations(userData, language, t);
 
-  const handleGenerateRecap = async (notesCount: number) => {
-    const result = await generateRecap(notesCount);
+  const handleGenerateRecap = async (canGenerate: boolean = canGenerateRecap, hasPrevious: boolean = hasPreviousLetter) => {
+    const result = await generateRecap(canGenerate, hasPrevious);
     if (result) {
       setGeneratedRecapText(result.text);
+      setGeneratedRecapTitle(result.title);
       setIsFromCache(result.fromCache);
       setIsRecapModalOpen(true);
     }
   };
 
   const handleSaveRecapToLetterBox = async () => {
-    const success = await saveRecapToLetterBox(generatedRecapText);
+    const success = await saveRecapToLetterBox(generatedRecapText, generatedRecapTitle);
     if (success) {
       setIsRecapModalOpen(false);
     }
@@ -120,7 +140,11 @@ export const useRecap = (userData: UserData, language: string, t: (k: string, op
     recapLoading,
     isRecapModalOpen,
     generatedRecapText,
+    generatedRecapTitle,
     isFromCache,
+    canGenerateRecap,
+    notesRemaining,
+    hasPreviousLetter,
     setIsRecapModalOpen,
     handleGenerateRecap,
     handleSaveRecapToLetterBox

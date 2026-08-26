@@ -289,6 +289,9 @@ const Profile = ({ userData, stats }: ProfileProps) => {
     };
 
     const confirmSignOut = () => {
+        if (typeof sessionStorage !== 'undefined') {
+            sessionStorage.setItem('sh_dev_signed_out', 'true');
+        }
         auth?.signOut();
         navigate('/welcome');
         setShowSignOutModal(false);

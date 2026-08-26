@@ -125,6 +125,7 @@ export interface UserDocument {
     totalNotes?: number; // Standardized from totalNotesCount to match active logic
     streakCount?: number;
     cheersReceived?: number;
+    lastLetterGeneratedAt?: FirestoreTimestamp;
     lastRecapGeneratedAt?: FirestoreTimestamp;
 
     // Study & Streak Tracking
@@ -222,5 +223,30 @@ export interface PersonalNoteDocument {
     isEdited?: boolean;
     editedAt?: FirestoreTimestamp;
 }
+
+/**
+ * Personal Letter Document Schema (inside /users/{uid}/letters)
+ */
+export interface LetterDocument {
+    id?: string;
+    title?: string;
+    content?: string;
+    createdAt?: FirestoreTimestamp;
+    expiresAt?: FirestoreTimestamp;
+    type?: string;
+}
+
+/**
+ * Recap Document Schema (inside /users/{uid}/recaps)
+ */
+export interface RecapDocument {
+    id?: string;
+    title?: string;
+    text?: string;
+    createdAt?: FirestoreTimestamp;
+    expiresAt?: FirestoreTimestamp;
+    type?: string;
+}
+
 
 

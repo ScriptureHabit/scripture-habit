@@ -2,11 +2,11 @@ import { parseStructuredNoteText } from './note-parser-utils.js';
 import { LANGUAGES } from '../config/languages.js';
 import { ALL_LOCALES } from '../locales/registry.js';
 
-export const LANGUAGE_PARAMS: Record<string, string> = Object.fromEntries(
+const LANGUAGE_PARAMS: Record<string, string> = Object.fromEntries(
     LANGUAGES.filter(l => l.code !== 'en').map(l => [l.code, `?lang=${l.ldsCode}`])
 );
 
-export const SLUG_TO_VOLUME: Record<string, string> = {
+const SLUG_TO_VOLUME: Record<string, string> = {
     // Old Testament
     'gen': 'ot', 'ex': 'ot', 'lev': 'ot', 'num': 'ot', 'deut': 'ot', 'josh': 'ot', 'judg': 'ot', 'ruth': 'ot',
     '1-sam': 'ot', '2-sam': 'ot', '1-kgs': 'ot', '2-kgs': 'ot', '1-chr': 'ot', '2-chr': 'ot', 'ezra': 'ot',

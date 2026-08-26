@@ -1,4 +1,6 @@
 import { db, auth, admin } from '../api_internal/lib/firebase-admin.js';
+import { buildNoteSearchTokens } from '../src/utils/search-token-utils.js';
+import { formatNoteText } from '../src/utils/note-logic.js';
 
 async function seed() {
     console.log('🌱 Starting local database seeding sequence...');
@@ -40,8 +42,8 @@ async function seed() {
             email: 'demo-user@example.com',
             nickname: 'demo-user',
             photoURL: 'https://api.dicebear.com/7.x/bottts/svg?seed=demo-user',
-            streakCount: 3,
-            highestStreak: 5,
+            streakCount: 8,
+            highestStreak: 8,
             totalNotes: 8,
             language: 'ja'
         },
@@ -126,7 +128,7 @@ async function seed() {
         });
 
         const studiedDates = u.uid === 'seeder-demo-user'
-            ? [getDateStr(3), getDateStr(2), getDateStr(1)]
+            ? [getDateStr(7), getDateStr(6), getDateStr(5), getDateStr(4), getDateStr(3), getDateStr(2), getDateStr(1), getDateStr(0)]
             : u.uid === 'seeder-alice'
                 ? [getDateStr(5), getDateStr(4), getDateStr(3), getDateStr(2), getDateStr(1)]
                 : u.uid === 'seeder-bob'
@@ -156,37 +158,115 @@ async function seed() {
 
         // Seed demo notes for demo-user so "My Notes" and calendar feel rich and alive
         if (u.uid === 'seeder-demo-user') {
-            const demoNotes = [
+            interface DemoNote {
+                id: string;
+                scripture: string;
+                chapter: string;
+                comment: string;
+                title?: string;
+                speaker?: string;
+                createdAt: admin.firestore.Timestamp;
+                sharedWithGroups: string[];
+            }
+
+            const demoNotes: DemoNote[] = [
                 {
                     id: 'seed-demo-note-1',
                     scripture: 'Book of Mormon',
                     chapter: 'ニーファイ第一書 1:1',
-                    comment: '「わたし、ニーファイは、善良な両親から生まれたので...」聖典学習の第一歩を踏み出しました！',
-                    createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 3 * 24 * 60 * 60 * 1000),
+                    comment: '「わたし、ニーファイは、善良な両親から生まれたので...」聖典学習の第一歩を踏み出しました！日々の小さな積み重ねを大切にしていきたいです。',
+                    createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 7 * 24 * 60 * 60 * 1000),
                     sharedWithGroups: [groupId]
                 },
                 {
                     id: 'seed-demo-note-2',
                     scripture: 'Book of Mormon',
-                    chapter: 'ニーファイ第一書 2:16',
-                    comment: '「わたしは神の奥義を知りたいと強く望んだので、主に叫び求めた」祈りの大切さを感じました。',
-                    createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 2 * 24 * 60 * 60 * 1000),
+                    chapter: 'ニーファイ第一書 3:7',
+                    comment: '「主が命じられることには、それを成し遂げる道を備えてくださる」困難な仕事や課題に直面したとき、いつもこの聖句が勇気と行動力を与えてくれます。',
+                    createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 6 * 24 * 60 * 60 * 1000),
                     sharedWithGroups: [groupId]
                 },
                 {
                     id: 'seed-demo-note-3',
-                    scripture: 'Book of Mormon',
-                    chapter: 'ニーファイ第一書 3:7',
-                    comment: '「主が命じられることには、それを成し遂げる道を備えてくださる」勇気をもらいました。',
+                    scripture: 'Old Testament',
+                    chapter: '創世記 1:1-3',
+                    comment: '「初めに、神は天地を創造された...光あれ」暗闇の中に秩序と希望をもたらす神の御力を深く味わいました。今日一日を光の心で過ごしたいです。',
+                    createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 5 * 24 * 60 * 60 * 1000),
+                    sharedWithGroups: [groupId]
+                },
+                {
+                    id: 'seed-demo-note-4',
+                    scripture: 'New Testament',
+                    chapter: 'ヨハネによる福音書 14:27',
+                    comment: '「わたしは平安をあなたがたに残す。わたしの平安をあなたがたに与える」世の中の不安や忙しさに囲まれても、キリストに心を向けることで真の心の静けさを得られると学びました。',
+                    createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 4 * 24 * 60 * 60 * 1000),
+                    sharedWithGroups: [groupId]
+                },
+                {
+                    id: 'seed-demo-note-5',
+                    scripture: 'Doctrine and Covenants',
+                    chapter: '第6編 36節',
+                    comment: '「あらゆる思いの中でわたしを仰ぎ見なさい。疑ってはならない。恐れてはならない」迷いや不安が頭をよぎった時、すぐに祈りによって主を見上げる習慣をつけたいと思います。',
+                    createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 3 * 24 * 60 * 60 * 1000),
+                    sharedWithGroups: [groupId]
+                },
+                {
+                    id: 'seed-demo-note-6',
+                    scripture: 'General Conference',
+                    chapter: '2024年4月総大会',
+                    title: '主の導きに従う信仰',
+                    speaker: 'ラッセル・M・ネルソン大管長',
+                    comment: '日々の小さな善い選択が、長い年月をかけて私たちの人格と霊性を形作るというメッセージに深く感銘を受けました。聖典学習もその大切な一部です。',
+                    createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 2 * 24 * 60 * 60 * 1000),
+                    sharedWithGroups: [groupId]
+                },
+                {
+                    id: 'seed-demo-note-7',
+                    scripture: 'Pearl of Great Price',
+                    chapter: 'モーセ書 1:39',
+                    comment: '「人の不死不滅と永遠の命をもたらすこと、これがわたしの業であり、栄光である」神様の御計画の中心に私たちがいることを思い起こし、感謝と畏敬の念で満たされました。',
                     createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 1 * 24 * 60 * 60 * 1000),
+                    sharedWithGroups: [groupId]
+                },
+                {
+                    id: 'seed-demo-note-8',
+                    scripture: 'Book of Mormon',
+                    chapter: 'アルマ書 32:28',
+                    comment: '「信仰を試すために、み言葉の種を心に植えなさい」み言葉が心の中で膨らみ、理解が明るくなり、霊的な喜びが芽生えてくるのを実感しています。今日も一歩前進！',
+                    createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 1 * 60 * 60 * 1000),
                     sharedWithGroups: [groupId]
                 }
             ];
 
             for (const note of demoNotes) {
-                await db.collection('users').doc(u.uid).collection('notes').doc(note.id).set(note);
+                const text = formatNoteText(note.scripture, note.chapter, note.comment);
+                const searchTokens = buildNoteSearchTokens({
+                    scripture: note.scripture,
+                    chapter: note.chapter,
+                    comment: note.comment,
+                    title: note.title,
+                    speaker: note.speaker
+                });
+                await db.collection('users').doc(u.uid).collection('notes').doc(note.id).set({
+                    ...note,
+                    text,
+                    searchTokens
+                });
             }
         }
+
+        // Seed Developer Welcome Letter in user's letterbox
+        const welcomeLetterContent = u.language === 'ja'
+            ? `${u.nickname}さんを心から歓迎いたします。\n\n普段、忙しい生活を送る中で聖典を開き、聖文に心を向ける習慣を持つことは、時に小さな挑戦のように感じられるかもしれません。たとえ1日1節でも、短い感想を書き残すだけでも、その小さな積み重ねはあなたの生活に確かな平安と光をもたらします。\n\nノートを2回投稿すると、あなたの気づきや学びをふり返る「特別な手紙」が届くようになります。ぜひ、今日感じたことを最初のノートに綴ってみてくださいね。\n\nあなたのこれからの人生が、豊かな祝福と喜びにみたされますように。\n\nScripture Habit 開発者より`
+            : `A warm welcome to you, ${u.nickname}.\n\nIn our busy daily lives, opening the scriptures and turning our hearts to the sacred word can sometimes feel like a small challenge. Yet, even reading just one verse a day or writing down a short reflection, that small accumulation will surely bring true peace and light into your life.\n\nOnce you post 2 notes, you will receive a special reflection letter looking back on your insights and learning. We encourage you to write down what you felt today in your very first note!\n\nMay your life ahead be filled with abundant blessings and joy.\n\n— Scripture Habit Developer`;
+
+        await db.collection('users').doc(u.uid).collection('letters').doc('seed-welcome-letter').set({
+            title: u.language === 'ja' ? 'ようこそ、Scripture Habitへ' : 'Welcome to Scripture Habit',
+            content: welcomeLetterContent,
+            type: 'developer_welcome',
+            createdAt: threeDaysAgo,
+            read: false
+        });
 
         console.log(`   Created User: ${u.nickname} (${u.email}) with ${studiedDates.length} studied dates`);
     }

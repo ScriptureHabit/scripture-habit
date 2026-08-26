@@ -194,5 +194,5 @@ export const getFirebaseStorage = async () => {
   return getStorage(app);
 };
 
-export { app, analytics, auth, db, appCheck };
+export { auth, db, appCheck };
 

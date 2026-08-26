@@ -5,22 +5,17 @@ import {
   GroupMemberDocument
 } from '../../types/firestore.js';
 import {
-  Reaction as SchemaReaction,
+  UserProfileBrief as SchemaUserProfileBrief,
   ReactionPreview as SchemaReactionPreview,
   MessageType as SchemaMessageType,
-  UserProfileBrief as SchemaUserProfileBrief,
-  CompatibleTimestamp as SchemaCompatibleTimestamp,
   FirebaseTimestamp as SchemaFirebaseTimestamp,
 } from './schemas';
 
 // Re-export core types from Zod schemas for SSOT compatibility
-export type CompatibleTimestamp = SchemaCompatibleTimestamp;
 export type FirebaseTimestamp = SchemaFirebaseTimestamp;
-
-export type Reaction = SchemaReaction;
-export type ReactionPreview = SchemaReactionPreview;
-export type MessageType = SchemaMessageType;
 export type UserProfileBrief = SchemaUserProfileBrief;
+type ReactionPreview = SchemaReactionPreview;
+type MessageType = SchemaMessageType;
 
 /**
  * Frontend Message interface

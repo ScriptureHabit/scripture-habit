@@ -111,7 +111,7 @@ export const LANGUAGES: readonly LanguageConfig[] = [
 export const SUPPORTED_LANGUAGES: Language[] = LANGUAGES.map(lang => lang.code);
 export const DEFAULT_LANGUAGE: Language = 'en';
 
-export function getLanguageConfig(code: string): LanguageConfig | undefined {
+function getLanguageConfig(code: string): LanguageConfig | undefined {
     return LANGUAGES.find(lang => lang.code === code);
 }
 

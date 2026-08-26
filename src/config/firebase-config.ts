@@ -15,4 +15,3 @@ export const firebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || (isEmulator ? "G-DEMO" : undefined)
 };
 
-export type FirebaseConfig = typeof firebaseConfig;

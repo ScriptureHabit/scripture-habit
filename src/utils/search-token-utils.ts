@@ -1,8 +1,8 @@
 import { ScriptureCategory, SCRIPTURE_CATEGORIES } from '../types/scripture';
 
-export const DEFAULT_SCRIPTURE_CATEGORY: ScriptureCategory = 'Other';
+const DEFAULT_SCRIPTURE_CATEGORY: ScriptureCategory = 'Other';
 
-export const normalizeSearchText = (text: string): string => {
+const normalizeSearchText = (text: string): string => {
   return text
     .trim()
     .toLowerCase()

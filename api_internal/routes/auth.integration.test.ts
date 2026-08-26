@@ -262,6 +262,14 @@ describe('Auth Route Integration', () => {
             expect(userData.hasSeenWelcomeStory).toBe(false);
             expect(userData.hasSeenTour).toBe(false);
             expect(userData.hasSeenGroupOptionsTour).toBe(false);
+
+            // Verify Welcome Letter from Developer was seeded
+            const lettersSnap = await db.collection('users').doc(USER_ID).collection('letters').get();
+            expect(lettersSnap.empty).toBe(false);
+            const letter = lettersSnap.docs[0].data();
+            expect(letter.type).toBe('developer_welcome');
+            expect(letter.title).toBe('¡Bienvenido a Scripture Habit!');
+            expect(letter.content).toContain('Reg User');
         });
 
         it('should default nickname and email when they are missing (covering nullish coalesce branches)', async () => {

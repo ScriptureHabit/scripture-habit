@@ -4,6 +4,7 @@ import NoteDisplay from '../notedisplay/note-display';
 import { getGospelLibraryUrl } from '../../utils/gospel-library-mapper';
 import { useLanguage } from '../../hooks/use-language';
 import { parseTimestampToDate } from '../../utils/time-utils';
+import { formatNoteText } from '../../utils/note-logic';
 import './note-card.css';
 import { Note } from '../../types/note';
 
@@ -58,6 +59,8 @@ const NoteCard = ({
         return null;
     };
 
+    const noteText = note.text || formatNoteText(note.scripture || '', note.chapter || '', note.comment || '') || note.comment || '';
+
     return (
         <div
             className={`note-card ${isEditable ? 'editable' : ''} ${className}`}
@@ -71,7 +74,7 @@ const NoteCard = ({
             </div>
             <div className="note-content-preview">
                 {/* Force isSent={true} for card display to ensure links are styled correctly for light backgrounds (or as configured in NoteDisplay) */}
-                <NoteDisplay text={note.text || ''} isSent={false} linkColor="inherit" scripture={note.scripture} chapter={note.chapter} />
+                <NoteDisplay text={noteText} isSent={false} linkColor="inherit" scripture={note.scripture} chapter={note.chapter} />
             </div>
             {getLinkContent()}
         </div>

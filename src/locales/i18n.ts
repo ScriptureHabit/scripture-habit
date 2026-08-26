@@ -33,4 +33,3 @@ export const loadBookTranslations = async (lang: Language): Promise<Record<strin
   return (enCache?.books as Record<string, unknown>) || {};
 };
 
-export default {};

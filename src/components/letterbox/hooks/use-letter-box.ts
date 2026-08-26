@@ -3,12 +3,15 @@ import { db } from '../../../firebase';
 import { collection, query, orderBy, onSnapshot, doc, deleteDoc } from 'firebase/firestore';
 import { UserData } from '../../../types/user';
 import { FirebaseTimestamp } from '../../../types/chat';
+import { parseTimestampToDate } from '../../../utils/time-utils';
 
 export interface Letter {
   id: string;
   title?: string;
   content?: string;
   createdAt?: FirebaseTimestamp;
+  expiresAt?: FirebaseTimestamp;
+  type?: string;
 }
 
 export function useLetterBox(isOpen: boolean, userData: UserData | null) {
@@ -24,10 +27,36 @@ export function useLetterBox(isOpen: boolean, userData: UserData | null) {
     const q = query(lettersRef, orderBy('createdAt', 'desc'));
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const fetchedLetters = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      } as Letter));
+      const now = Date.now();
+      const thirtyDaysAgo = now - 30 * 24 * 60 * 60 * 1000;
+
+      const fetchedLetters = snapshot.docs
+        .map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        } as Letter))
+        .filter(letter => {
+          // 1. If explicit expiresAt is present, check against current time
+          if (letter.expiresAt) {
+            try {
+              const expireDate = parseTimestampToDate(letter.expiresAt);
+              return expireDate.getTime() > now;
+            } catch {
+              // fallback to createdAt check
+            }
+          }
+          // 2. Check createdAt within 30 days
+          if (letter.createdAt) {
+            try {
+              const createDate = parseTimestampToDate(letter.createdAt);
+              return createDate.getTime() >= thirtyDaysAgo;
+            } catch {
+              return true;
+            }
+          }
+          return true;
+        });
+
       setLetters(fetchedLetters);
       setLoading(false);
     }, (err) => {

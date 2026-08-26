@@ -1,6 +1,6 @@
 import { renderHook, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { useRecapOperations, useRecap } from '../use-recap';
+import { useRecapOperations, useRecap, GeneratedRecapResult } from '../use-recap';
 import apiClient from '../../../../utils/api-client';
 import { toast } from 'react-toastify';
 import { UserData } from '../../../../types/user';
@@ -21,7 +21,17 @@ vi.mock('firebase/firestore', () => ({
   doc: vi.fn(),
   updateDoc: vi.fn().mockResolvedValue(undefined),
   serverTimestamp: vi.fn(() => 'mock-timestamp'),
+  Timestamp: {
+    fromMillis: vi.fn((ms) => ({ toMillis: () => ms, seconds: Math.floor(ms / 1000) })),
+  },
   collection: vi.fn(),
+  query: vi.fn(),
+  where: vi.fn(),
+  limit: vi.fn(),
+  onSnapshot: vi.fn((_q, cb) => {
+    cb({ size: 0, docs: [] });
+    return () => {};
+  }),
   addDoc: vi.fn().mockResolvedValue({ id: 'mock-doc-id' }),
 }));
 
@@ -33,7 +43,7 @@ vi.mock('react-toastify', () => ({
   },
 }));
 
-describe('useRecapOperations Cooldown Logic', () => {
+describe('useRecapOperations Letter Generation & Cached View Logic', () => {
   const mockT = (key: string) => key;
 
   beforeEach(() => {
@@ -47,20 +57,19 @@ describe('useRecapOperations Cooldown Logic', () => {
       nickname: 'Test User',
       createdAt: new Date().toISOString(),
       lastRecapGeneratedAt: lastRecapGeneratedAt ? lastRecapGeneratedAt.toISOString() : undefined,
+      lastLetterGeneratedAt: lastRecapGeneratedAt ? lastRecapGeneratedAt.toISOString() : undefined,
     } as unknown as UserData;
   };
 
-  it('should trigger cooldown (isWithinCooldown = true) if recap was generated exactly 5.9 days ago', async () => {
-    const lastGeneratedDate = new Date(Date.now() - 5.9 * 24 * 60 * 60 * 1000);
-    const userData = createUserData(lastGeneratedDate);
-
-    vi.mocked(apiClient.post).mockResolvedValue({ data: { recap: 'Cached Recap', fromCache: true } });
+  it('should fetch cached recent recap if canGenerate is false but hasPreviousLetter is true', async () => {
+    const userData = createUserData(new Date());
+    vi.mocked(apiClient.post).mockResolvedValue({ data: { recap: 'Cached Recap', title: 'Cached Title', fromCache: true } });
 
     const { result } = renderHook(() => useRecapOperations(userData, 'en', mockT));
 
-    let recap: { text: string; fromCache: boolean } | null = null;
+    let recap: GeneratedRecapResult | null = null;
     await act(async () => {
-      recap = await result.current.generateRecap(0);
+      recap = await result.current.generateRecap(false, true);
     });
 
     expect(toast.info).toHaveBeenCalledWith('myNotes.fetchingRecentRecap');
@@ -68,72 +77,33 @@ describe('useRecapOperations Cooldown Logic', () => {
       uid: 'user123',
       language: 'en'
     }, expect.any(Object));
-    expect(recap).toEqual({ text: 'Cached Recap', fromCache: true });
+    expect(recap).toEqual({ text: 'Cached Recap', title: 'Cached Title', fromCache: true });
   });
 
-  it('should trigger cooldown (isWithinCooldown = true) if recap was generated exactly 5.0 days ago', async () => {
-    const lastGeneratedDate = new Date(Date.now() - 5.0 * 24 * 60 * 60 * 1000);
-    const userData = createUserData(lastGeneratedDate);
-
-    vi.mocked(apiClient.post).mockResolvedValue({ data: { recap: 'Cached Recap', fromCache: true } });
+  it('should generate a new recap if canGenerate is true', async () => {
+    const userData = createUserData(null);
+    vi.mocked(apiClient.post).mockResolvedValue({ data: { recap: 'New Recap Text', title: 'New Title', fromCache: false } });
 
     const { result } = renderHook(() => useRecapOperations(userData, 'en', mockT));
 
-    let recap: { text: string; fromCache: boolean } | null = null;
+    let recap: GeneratedRecapResult | null = null;
     await act(async () => {
-      recap = await result.current.generateRecap(0);
-    });
-
-    expect(toast.info).toHaveBeenCalledWith('myNotes.fetchingRecentRecap');
-    expect(apiClient.post).toHaveBeenCalled();
-    expect(recap).toEqual({ text: 'Cached Recap', fromCache: true });
-  });
-
-  it('should NOT trigger cooldown (isWithinCooldown = false) if recap was generated exactly 6.0 days ago', async () => {
-    const lastGeneratedDate = new Date(Date.now() - 6.0 * 24 * 60 * 60 * 1000);
-    const userData = createUserData(lastGeneratedDate);
-
-    vi.mocked(apiClient.post).mockResolvedValue({ data: { recap: 'New Recap Text', fromCache: false } });
-
-    const { result } = renderHook(() => useRecapOperations(userData, 'en', mockT));
-
-    let recap: { text: string; fromCache: boolean } | null = null;
-    await act(async () => {
-      recap = await result.current.generateRecap(5);
+      recap = await result.current.generateRecap(true, false);
     });
 
     expect(toast.info).toHaveBeenCalledWith('myNotes.generatingRecap');
     expect(apiClient.post).toHaveBeenCalled();
-    expect(recap).toEqual({ text: 'New Recap Text', fromCache: false });
+    expect(recap).toEqual({ text: 'New Recap Text', title: 'New Title', fromCache: false });
   });
 
-  it('should NOT trigger cooldown (isWithinCooldown = false) if recap was generated 6.1 days ago', async () => {
-    const lastGeneratedDate = new Date(Date.now() - 6.1 * 24 * 60 * 60 * 1000);
-    const userData = createUserData(lastGeneratedDate);
-
-    vi.mocked(apiClient.post).mockResolvedValue({ data: { recap: 'New Recap Text', fromCache: false } });
+  it('should return null and show toast if canGenerate is false and hasPreviousLetter is false', async () => {
+    const userData = createUserData(null);
 
     const { result } = renderHook(() => useRecapOperations(userData, 'en', mockT));
 
-    let recap: { text: string; fromCache: boolean } | null = null;
+    let recap: GeneratedRecapResult | null = null;
     await act(async () => {
-      recap = await result.current.generateRecap(5);
-    });
-
-    expect(toast.info).toHaveBeenCalledWith('myNotes.generatingRecap');
-    expect(apiClient.post).toHaveBeenCalled();
-    expect(recap).toEqual({ text: 'New Recap Text', fromCache: false });
-  });
-
-  it('should return null and show toast if not in cooldown and notesCount is 0', async () => {
-    const lastGeneratedDate = new Date(Date.now() - 10 * 24 * 60 * 60 * 1000);
-    const userData = createUserData(lastGeneratedDate);
-
-    const { result } = renderHook(() => useRecapOperations(userData, 'en', mockT));
-
-    let recap: { text: string; fromCache: boolean } | null = null;
-    await act(async () => {
-      recap = await result.current.generateRecap(0);
+      recap = await result.current.generateRecap(false, false);
     });
 
     expect(toast.info).toHaveBeenCalledWith('myNotes.noNotesForRecap');
@@ -147,9 +117,9 @@ describe('useRecapOperations Cooldown Logic', () => {
 
     const { result } = renderHook(() => useRecapOperations(userData, 'en', mockT));
 
-    let recap: { text: string; fromCache: boolean } | null = null;
+    let recap: GeneratedRecapResult | null = null;
     await act(async () => {
-      recap = await result.current.generateRecap(5);
+      recap = await result.current.generateRecap(true, false);
     });
 
     expect(toast.info).toHaveBeenCalledWith('Custom API warning');
@@ -162,9 +132,9 @@ describe('useRecapOperations Cooldown Logic', () => {
 
     const { result } = renderHook(() => useRecapOperations(userData, 'en', mockT));
 
-    let recap: { text: string; fromCache: boolean } | null = null;
+    let recap: GeneratedRecapResult | null = null;
     await act(async () => {
-      recap = await result.current.generateRecap(5);
+      recap = await result.current.generateRecap(true, false);
     });
 
     expect(toast.info).toHaveBeenCalledWith('myNotes.noNotesForRecap');
@@ -179,9 +149,9 @@ describe('useRecapOperations Cooldown Logic', () => {
 
     const { result } = renderHook(() => useRecapOperations(userData, 'en', mockT));
 
-    let recap: { text: string; fromCache: boolean } | null = null;
+    let recap: GeneratedRecapResult | null = null;
     await act(async () => {
-      recap = await result.current.generateRecap(5);
+      recap = await result.current.generateRecap(true, false);
     });
 
     expect(consoleSpy).toHaveBeenCalledWith('Error generating recap:', apiError);
@@ -212,12 +182,12 @@ describe('useRecapOperations saveRecapToLetterBox', () => {
       success = await result.current.saveRecapToLetterBox('Line 1\nLine 2');
     });
 
-    expect(addDoc).toHaveBeenCalledWith(undefined, {
+    expect(addDoc).toHaveBeenCalledWith(undefined, expect.objectContaining({
       content: 'Line 1\nLine 2',
       title: 'letterBox.defaultTitle',
       createdAt: 'mock-timestamp',
-      type: 'weekly_recap'
-    });
+      type: 'study_letter'
+    }));
     expect(toast.success).toHaveBeenCalledWith('myNotes.letterSaveSuccess');
     expect(success).toBe(true);
   });
@@ -230,12 +200,12 @@ describe('useRecapOperations saveRecapToLetterBox', () => {
       success = await result.current.saveRecapToLetterBox('Title: **My Awesome Title**\nSome comments here.');
     });
 
-    expect(addDoc).toHaveBeenCalledWith(undefined, {
+    expect(addDoc).toHaveBeenCalledWith(undefined, expect.objectContaining({
       content: 'Title: **My Awesome Title**\nSome comments here.',
       title: 'My Awesome Title',
       createdAt: 'mock-timestamp',
-      type: 'weekly_recap'
-    });
+      type: 'study_letter'
+    }));
     expect(success).toBe(true);
   });
 
@@ -247,12 +217,29 @@ describe('useRecapOperations saveRecapToLetterBox', () => {
       success = await result.current.saveRecapToLetterBox('タイトル：**素晴らしいタイトル**\nここに内容。');
     });
 
-    expect(addDoc).toHaveBeenCalledWith(undefined, {
+    expect(addDoc).toHaveBeenCalledWith(undefined, expect.objectContaining({
       content: 'タイトル：**素晴らしいタイトル**\nここに内容。',
       title: '素晴らしいタイトル',
       createdAt: 'mock-timestamp',
-      type: 'weekly_recap'
+      type: 'study_letter'
+    }));
+    expect(success).toBe(true);
+  });
+
+  it('should use customTitle argument if provided', async () => {
+    const { result } = renderHook(() => useRecapOperations(userData, 'en', mockT));
+
+    let success = false;
+    await act(async () => {
+      success = await result.current.saveRecapToLetterBox('Some letter content', 'Custom Generated Title');
     });
+
+    expect(addDoc).toHaveBeenCalledWith(undefined, expect.objectContaining({
+      content: 'Some letter content',
+      title: 'Custom Generated Title',
+      createdAt: 'mock-timestamp',
+      type: 'study_letter'
+    }));
     expect(success).toBe(true);
   });
 
@@ -292,21 +279,25 @@ describe('useRecap Orchestrator Hook', () => {
 
     expect(result.current.isRecapModalOpen).toBe(false);
     expect(result.current.generatedRecapText).toBe('');
+    expect(result.current.generatedRecapTitle).toBe('');
     expect(result.current.isFromCache).toBe(false);
     expect(result.current.recapLoading).toBe(false);
+    expect(result.current.canGenerateRecap).toBe(false);
+    expect(result.current.notesRemaining).toBe(2);
   });
 
-  it('should open modal and populate text on successful recap generation', async () => {
-    vi.mocked(apiClient.post).mockResolvedValue({ data: { recap: 'Recap content generated', fromCache: true } });
+  it('should open modal and populate text & title on successful recap generation', async () => {
+    vi.mocked(apiClient.post).mockResolvedValue({ data: { recap: 'Recap content generated', title: 'AI Title', fromCache: true } });
 
     const { result } = renderHook(() => useRecap(userData, 'en', mockT));
 
     await act(async () => {
-      await result.current.handleGenerateRecap(5);
+      await result.current.handleGenerateRecap(true, false);
     });
 
     expect(result.current.isRecapModalOpen).toBe(true);
     expect(result.current.generatedRecapText).toBe('Recap content generated');
+    expect(result.current.generatedRecapTitle).toBe('AI Title');
     expect(result.current.isFromCache).toBe(true);
   });
 
@@ -316,23 +307,23 @@ describe('useRecap Orchestrator Hook', () => {
     const { result } = renderHook(() => useRecap(userData, 'en', mockT));
 
     await act(async () => {
-      await result.current.handleGenerateRecap(5);
+      await result.current.handleGenerateRecap(true, false);
     });
 
     expect(result.current.isRecapModalOpen).toBe(false);
     expect(result.current.generatedRecapText).toBe('');
+    expect(result.current.generatedRecapTitle).toBe('');
     expect(result.current.isFromCache).toBe(false);
   });
 
   it('should close modal on successful save to letter box', async () => {
-    // Generate recap first to set modal state
-    vi.mocked(apiClient.post).mockResolvedValue({ data: { recap: 'Recap content', fromCache: false } });
+    vi.mocked(apiClient.post).mockResolvedValue({ data: { recap: 'Recap content', title: 'Title', fromCache: false } });
     vi.mocked(addDoc).mockResolvedValue({ id: 'saved-doc' } as any);
 
     const { result } = renderHook(() => useRecap(userData, 'en', mockT));
 
     await act(async () => {
-      await result.current.handleGenerateRecap(5);
+      await result.current.handleGenerateRecap(true, false);
     });
     expect(result.current.isRecapModalOpen).toBe(true);
 
@@ -346,14 +337,14 @@ describe('useRecap Orchestrator Hook', () => {
   });
 
   it('should keep modal open if save to letter box fails', async () => {
-    vi.mocked(apiClient.post).mockResolvedValue({ data: { recap: 'Recap content', fromCache: false } });
+    vi.mocked(apiClient.post).mockResolvedValue({ data: { recap: 'Recap content', title: 'Title', fromCache: false } });
     vi.mocked(addDoc).mockRejectedValue(new Error('DB failure'));
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     const { result } = renderHook(() => useRecap(userData, 'en', mockT));
 
     await act(async () => {
-      await result.current.handleGenerateRecap(5);
+      await result.current.handleGenerateRecap(true, false);
     });
     expect(result.current.isRecapModalOpen).toBe(true);
 

@@ -13,6 +13,7 @@ import { setupMessageListener, clearAllNotifications } from './utils/notificatio
 
 import { LanguageProvider } from './context/language-provider';
 import { SUPPORTED_LANGUAGES } from './config/languages';
+import { isEmulator } from './config/firebase-config';
 import { SettingsProvider } from './context/settings-context';
 import SEOManager from './components/seo-manager';
 import PWAUpdateHandler from './components/pwaupdatehandler/pwa-update-handler';
@@ -483,7 +484,7 @@ const App = () => {
               <Route key={lang} path={lang}>
                 <Route
                   index
-                  element={isStandalone ? <Navigate to="dashboard" replace /> : <LandingPage />}
+                  element={isStandalone || (isEmulator && import.meta.env.DEV) ? <Navigate to="dashboard" replace /> : <LandingPage />}
                 />
                 <Route path="welcome" element={<Welcome />} />
                 <Route path="demo" element={<DemoLogin />} />

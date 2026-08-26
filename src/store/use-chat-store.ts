@@ -2,7 +2,7 @@ import React from 'react';
 import { create } from 'zustand';
 import { Message, UserProfileBrief } from '../types/chat';
 
-export interface ContextMenu {
+interface ContextMenu {
   show: boolean;
   x: number;
   y: number;

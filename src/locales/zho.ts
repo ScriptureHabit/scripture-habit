@@ -307,13 +307,13 @@ export default {
         "readInGospelLibrary": "在福音圖書館閱讀",
         "goToByuSpeech": "前往 BYU 演講",
         "readStudyMaterial": "閱讀研讀資料",
-        "generateRecap": "✨ 產生每週回顧",
-        "viewRecentRecap": "✨ 查看最近的每週回顧",
-        "generatingRecap": "正在產生每週回顧... 請稍候。",
-        "fetchingRecentRecap": "正在獲取最近的每週回顧...",
-        "recapSuccess": "每週回顧已產生！請檢視並儲存。",
-        "noNotesForRecap": "本週找不到筆記。",
-        "recapError": "產生回顧失敗。",
+        "generateRecap": "✨ 產生 AI 反思信件",
+        "viewRecentRecap": "✨ 查看最近的信件",
+        "generatingRecap": "正在產生反思信件... 請稍候。",
+        "fetchingRecentRecap": "正在獲取最近的信件...",
+        "recapSuccess": "反思信件已產生！請檢視並儲存。",
+        "noNotesForRecap": "發表 2 次筆記即可產生信件。",
+        "recapError": "產生信件失敗。",
         "sharedActivity": "分享的活動",
         "noteDeletedSuccess": "筆記刪除成功",
         "noteDeletedError": "刪除筆記失敗",
@@ -323,13 +323,15 @@ export default {
         "nextPage": "下一頁",
         "pageInfo": "第 {current} 頁，共 {total} 頁",
         "nextLetterInDays": "(距離新信件還有 {days} 天)",
+        "nextLetterInNotes": "(距離新信件還需發布 {count} 篇筆記)",
         "notMember": "您不是此小組的成員"
     },
     "recapModal": {
-        "title": "您的每週信件",
-        "subtitle": "本週靈性旅程的反思。",
+        "title": "AI 反思信件",
+        "subtitle": "針對您最近研讀筆記的反思信件。",
         "close": "關閉",
-        "saveToNotes": "儲存至信箱"
+        "saveToNotes": "儲存至信箱",
+        "savedToLetterBox": "已儲存至信箱"
     },
     "letterBox": {
         "title": "信箱",
@@ -337,8 +339,11 @@ export default {
         "deleteConfirm": "您確定要丟棄這封信嗎？",
         "back": "返回列表",
         "loading": "載入信件中...",
-        "empty": "尚無信件。生成每週回顧以收到一封信！",
-        "defaultTitle": "每週回顧"
+        "empty": "尚無信件。發表 2 次筆記以收到反思信件！",
+        "defaultTitle": "反思信件",
+        "autoDeleteNotice": "信件將在生成 30 天後自動刪除。",
+        "welcomeLetterTitle": "歡迎來到 Scripture Habit",
+        "welcomeLetterContent": "衷心歡迎您，{nickname}。\n\n在忙碌的日常生活中，打開經文並將心轉向神聖的話語，有時可能像是一個小小的挑戰。然而，即使每天只讀一節經文，或寫下簡短的心得，那些微小的累積也必定會為您的生活帶來真正的平安與光明。\n\n當您發布2則筆記後，您將會收到一封回顧您心得與收穫的「特別信件」。請務必在第一則筆記中寫下您今天的感受喔！\n\n願您今後的人生充滿豐盛的祝福與喜樂。\n\n— Scripture Habit 開發者 敬上"
     },
     "groupChat": {
         "defaultScripture": "舊約聖經",

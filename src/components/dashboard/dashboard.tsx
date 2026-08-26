@@ -42,6 +42,7 @@ import { useDashboardInvitations } from './hooks/use-dashboard-invitations';
 import { useDashboardActions } from './hooks/use-dashboard-actions';
 import { useToday } from '../../hooks/use-today';
 import { useUnreadAudioAlert } from '../../hooks/use-unread-audio-alert';
+import { useLetterAvailability } from '../../hooks/use-letter-availability';
 import { useApiWarmupOnMount } from '../../utils/api-warmup';
 
 const Dashboard = () => {
@@ -83,6 +84,7 @@ const Dashboard = () => {
   // 1. Core Hooks
   const syncState = useDashboardSync();
   const { user, userData, status } = syncState;
+  const { isLetterAvailable } = useLetterAvailability(userData);
   const errorMessage = syncState.status === 'error' ? syncState.message : null;
   const paramGroupId = searchParams.get('groupId') || location.state?.groupId || location.state?.initialGroupId || null;
   const { userGroups, activeGroupId, setActiveGroupId } = useDashboardGroups(userData, paramGroupId);
@@ -243,7 +245,7 @@ const Dashboard = () => {
     return (
       <div className='App Dashboard'>
         <div className='AppGlass Grid'>
-          <Sidebar selected={selectedView} setSelected={setSelectedView} userGroups={[]} activeGroupId={activeGroupId} setActiveGroupId={setActiveGroupId} currentUserId={userData?.uid} />
+          <Sidebar selected={selectedView} setSelected={setSelectedView} userGroups={[]} activeGroupId={activeGroupId} setActiveGroupId={setActiveGroupId} currentUserId={userData?.uid} isLetterAvailable={isLetterAvailable} />
           <DashboardSkeleton quoteText={t('dashboard.inspirationQuote')} quoteSource={t('dashboard.inspirationSource')} />
         </div>
       </div>
@@ -284,6 +286,7 @@ const Dashboard = () => {
         isInputFocused={isInputFocused}
         isJoiningInvite={isJoiningInvite}
         currentUserId={userData?.uid}
+        isLetterAvailable={isLetterAvailable}
       >
         {selectedView === 0 && (
           <DashboardOverview 

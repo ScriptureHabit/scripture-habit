@@ -16,7 +16,7 @@ const CANONICAL_KEYS: Record<string, string> = {
     "psalm": "Psalms"
 };
 
-export const BOOK_IDENTITY_MAP: Record<string, string> = { ...CANONICAL_KEYS };
+const BOOK_IDENTITY_MAP: Record<string, string> = { ...CANONICAL_KEYS };
 
 for (const locale of ALL_LOCALES) {
     const bundle = locale?.books as Record<string, string> | undefined;

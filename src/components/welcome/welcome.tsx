@@ -1,38 +1,23 @@
-
-import { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
 import Button from '../button/button';
 import Mascot from '../mascot/mascot';
-import { useLanguage } from '../../hooks/use-language';
 import { LANGUAGES } from '../../config/languages';
+import { isEmulator } from '../../config/firebase-config';
 import BrowserWarningModal from '../browserwarningmodal/browser-warning-modal';
-import { isInAppBrowser } from '../../utils/browser-detection';
 import './welcome.css';
 import Footer from '../footer/footer';
+import { useWelcome } from './hooks/use-welcome';
 
 const Welcome = () => {
-    const { t, setLanguage, language } = useLanguage();
-    const navigate = useNavigate();
-    const location = useLocation();
-    const [showWarning, setShowWarning] = useState(false);
-    const [pendingPath, setPendingPath] = useState<string | null>(null);
-
-    const handleAuthClick = (path: string) => {
-        const fullPath = `/${language}${path}`;
-        if (isInAppBrowser()) {
-            setPendingPath(fullPath);
-            setShowWarning(true);
-        } else {
-            navigate(fullPath, { state: location.state });
-        }
-    };
-
-    const handleContinue = () => {
-        setShowWarning(false);
-        if (pendingPath) {
-            navigate(pendingPath, { state: location.state });
-        }
-    };
+    const {
+        t,
+        setLanguage,
+        language,
+        showWarning,
+        setShowWarning,
+        handleAuthClick,
+        handleDevQuickLogin,
+        handleContinue
+    } = useWelcome();
 
     return (
         <div className="App Welcome">
@@ -72,6 +57,28 @@ const Welcome = () => {
                     </Button>
                 </div>
 
+                {isEmulator && import.meta.env.DEV && (
+                    <div style={{ marginTop: '0.75rem', width: '100%' }}>
+                        <button
+                            type="button"
+                            onClick={handleDevQuickLogin}
+                            style={{
+                                width: '100%',
+                                padding: '0.65rem 1rem',
+                                borderRadius: '8px',
+                                border: '1px dashed #ec4899',
+                                backgroundColor: 'rgba(236, 72, 153, 0.08)',
+                                color: '#ec4899',
+                                fontWeight: 'bold',
+                                cursor: 'pointer',
+                                fontSize: '0.9rem'
+                            }}
+                        >
+                            ⚡ Dev Quick Login (demo-user)
+                        </button>
+                    </div>
+                )}
+
                 <BrowserWarningModal
                     isOpen={showWarning}
                     onClose={() => setShowWarning(false)}
@@ -85,5 +92,3 @@ const Welcome = () => {
 };
 
 export default Welcome;
-
-

@@ -6,7 +6,7 @@ import { useJoinGroup } from '../hooks/use-join-group';
 
 export const mockNavigate = vi.fn();
 
-export const mockT = (key: string) => key;
+const mockT = (key: string) => key;
 
 export interface MockSetupOptions {
   user?: Partial<User> | null;

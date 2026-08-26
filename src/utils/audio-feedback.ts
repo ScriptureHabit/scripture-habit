@@ -86,7 +86,7 @@ export function playNoteSubmitSound(): void {
  * Percussive "pop" burst — the sound of confetti exploding out.
  * Uses filtered white noise with a punchy envelope.
  */
-export function playConfettiBurst(ctx: AudioContext, startTime: number): void {
+function playConfettiBurst(ctx: AudioContext, startTime: number): void {
     // Dual-band noise burst to make the "パン" clearly audible in different
     // playback environments: a sharp high-frequency crack and a short
     // mid/low body for the transient punch.
@@ -144,13 +144,6 @@ export function playConfettiBurst(ctx: AudioContext, startTime: number): void {
     gainLow.connect(ctx.destination);
     srcLow.start(startTime);
     srcLow.stop(startTime + duration);
-}
-
-// Convenience helper to trigger the burst from console/tests.
-export function playConfettiBurstTest(): void {
-    const ctx = getAudioContext();
-    if (!ctx) return;
-    playConfettiBurst(ctx, ctx.currentTime);
 }
 
 /**

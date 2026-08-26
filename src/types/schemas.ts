@@ -4,7 +4,7 @@ import { z } from 'zod';
  * Environment-agnostic Timestamp interface that matches both
  * firebase/firestore and firebase-admin/firestore.
  */
-export interface CompatibleTimestamp {
+interface CompatibleTimestamp {
   seconds: number;
   nanoseconds: number;
   toDate(): Date;
@@ -24,23 +24,17 @@ export type FirebaseTimestamp =
   | { _methodName?: string };
 
 // Helper to handle Firestore Timestamps using a custom validator with correct static types
-export const FirebaseTimestampSchema = z.custom<FirebaseTimestamp>();
+const FirebaseTimestampSchema = z.custom<FirebaseTimestamp>();
 
 // Base schema for user attributes to keep them DRY and consistent
-export const BaseUserSchema = z.object({
+const BaseUserSchema = z.object({
   uid: z.string().optional(),
   nickname: z.string().min(1).max(50).optional(),
   photoURL: z.string().nullable().optional(),
 });
 
-export const ReactionPreviewSchema = BaseUserSchema.extend({
+const ReactionPreviewSchema = BaseUserSchema.extend({
   uid: z.string(), // Override to make it required
-});
-
-export const ReactionSchema = BaseUserSchema.omit({ uid: true }).extend({
-  userId: z.string(),
-  nickname: BaseUserSchema.shape.nickname.unwrap().nullable().optional(),
-  emoji: z.string('👍'),
 });
 
 export const MessageTypeEnumValues = [
@@ -57,7 +51,7 @@ export const MessageTypeEnumValues = [
   'inactivityRemoval'
 ] as const;
 
-export const MessageTypeSchema = z.enum(MessageTypeEnumValues).catch('text'); // Unknown types fall back to 'text' to prevent listener crashes
+const MessageTypeSchema = z.enum(MessageTypeEnumValues).catch('text'); // Unknown types fall back to 'text' to prevent listener crashes
 
 export const MessageSchema = z.object({
   id: z.string(),
@@ -112,17 +106,8 @@ export const GroupMemberSchema = BaseUserSchema.extend({
   joinedAt: FirebaseTimestampSchema.optional(),
 }).passthrough();
 
-export const UserDataSchema = BaseUserSchema.extend({
-  uid: z.string(), // Override to make it required
-  email: z.string().email("validation.emailInvalid").optional(), // Enforce email format validation
-}).passthrough();
-
 // Export inferred types from Zod schemas for SSOT
-export type Reaction = z.infer<typeof ReactionSchema>;
 export type ReactionPreview = z.infer<typeof ReactionPreviewSchema>;
 export type MessageType = z.infer<typeof MessageTypeSchema>;
-export type MessageDb = z.infer<typeof MessageSchema>;
-export type GroupDb = z.infer<typeof GroupSchema>;
 export type UserProfileBrief = z.infer<typeof UserProfileBriefSchema>;
-export type GroupMemberDb = z.infer<typeof GroupMemberSchema>;
-export type UserDataDb = z.infer<typeof UserDataSchema>;
+

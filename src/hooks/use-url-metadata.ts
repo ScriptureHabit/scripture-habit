@@ -5,7 +5,7 @@ import { getLdsLanguageCode } from '../config/languages';
 import { auth } from '../firebase';
 import apiClient from '../utils/api-client';
 
-export interface UrlMetadata {
+interface UrlMetadata {
     title: string;
     speaker: string;
 }
