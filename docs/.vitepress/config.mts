@@ -40,7 +40,7 @@ export default withMermaid(defineConfig({
         ],
         sidebar: [
           {
-            text: 'General Architecture',
+            text: 'Architecture Overview',
             items: [
               { text: 'Architecture & Structure', link: '/architecture' },
               { text: 'Network & Performance Optimization', link: '/network-performance-optimization' },
@@ -54,7 +54,7 @@ export default withMermaid(defineConfig({
             ]
           },
           {
-            text: 'Feature Deep-Dives',
+            text: 'Key Features',
             items: [
               { text: 'Chat & Dashboard Synchronization', link: '/feature-chat-dashboard' },
               { text: 'Group Chat Construction Guide', link: '/groupchat-construction-guide' },
@@ -65,7 +65,7 @@ export default withMermaid(defineConfig({
             ]
           },
           {
-            text: 'UX Psychology & Retention Insights',
+            text: 'UX & Habit Building',
             items: [
               { text: 'Milestone Celebrations & Retention Psychology', link: '/logic-milestone-retention' },
               { text: 'Psychological Impact & Retention of AI Reflection Letters', link: '/ux-ai-reflection-letters' },
@@ -73,7 +73,7 @@ export default withMermaid(defineConfig({
             ]
           },
           {
-            text: 'Core Logic & Mechanisms',
+            text: 'Core Logic',
             items: [
               { text: 'Note Posting Mechanism & Streaks', link: '/logic-note-posting' },
               { text: 'Gospel Library Scripture Mapper', link: '/gospel-library-mapper' },
@@ -108,7 +108,7 @@ export default withMermaid(defineConfig({
             ]
           },
           {
-            text: 'Operations & Development',
+            text: 'Development & Operations',
             items: [
               { text: 'Development & Setup Guide', link: '/development-guide' },
               { text: 'Testing & Reliability Guide', link: '/testing-guide' },
@@ -143,7 +143,7 @@ export default withMermaid(defineConfig({
         ],
         sidebar: [
           {
-            text: '一般アーキテクチャ',
+            text: '全体アーキテクチャ',
             items: [
               { text: 'アーキテクチャ & 構成', link: '/ja/architecture' },
               { text: 'ネットワーク & パフォーマンス最適化', link: '/ja/network-performance-optimization' },
@@ -157,7 +157,7 @@ export default withMermaid(defineConfig({
             ]
           },
           {
-            text: '機能ディープダイブ',
+            text: '主要機能の仕組み',
             items: [
               { text: 'チャット & ダッシュボード同期', link: '/ja/feature-chat-dashboard' },
               { text: 'グループチャット設計・実装ガイド', link: '/ja/groupchat-construction-guide' },
@@ -168,7 +168,7 @@ export default withMermaid(defineConfig({
             ]
           },
           {
-            text: 'User Experienceの心理学的考察',
+            text: '続けやすさのUXデザイン',
             items: [
               { text: 'マイルストーン達成 & リテンション心理学', link: '/ja/logic-milestone-retention' },
               { text: 'AI振り返りレターの心理学的効用とリテンション', link: '/ja/ux-ai-reflection-letters' },
@@ -176,7 +176,7 @@ export default withMermaid(defineConfig({
             ]
           },
           {
-            text: 'コアロジック & メカニズム',
+            text: 'コアロジック',
             items: [
               { text: 'ノート投稿メカニズム & ストリーク', link: '/ja/logic-note-posting' },
               { text: '福音ライブラリ聖句マッパー', link: '/ja/gospel-library-mapper' },
@@ -211,7 +211,7 @@ export default withMermaid(defineConfig({
             ]
           },
           {
-            text: '運用 & 開発',
+            text: '開発・運用ガイド',
             items: [
               { text: '開発 & 環境構築ガイド', link: '/ja/development-guide' },
               { text: 'テスト & 品質保証ガイド', link: '/ja/testing-guide' },
