@@ -1,13 +1,12 @@
 # Group Chat (`GroupChat`) Architecture & Implementation
 
-This document provides an overview of the architecture and implementation details for the `src/components/groupchat` module.
-It covers real-time Firestore synchronization, performance-optimized Context separation into 4 distinct contexts (Context Isolation Pattern), logic-component split using custom hooks, 100% Unity score celebration API integration, modular UI subcomponents, and the modal management system.
+This document outlines the architecture, state management patterns, and subcomponents of the `src/components/groupchat` module.
 
 ---
 
-## 1. Overall Architecture Overview
+## 1. High-Level Architecture
 
-The `GroupChat` module is the core real-time group communication component of the Scripture Habit application.
+`GroupChat` coordinates real-time messaging, Unity score tracking, cheer interactions, and modal dialogs.
 
 ```
                        ┌─────────────────────────┐
@@ -17,7 +16,7 @@ The `GroupChat` module is the core real-time group communication component of th
     ┌──────────────────┬────────────┴─────────────┬──────────────────┐
     ▼                  ▼                          ▼                  ▼
 ChatDataContext   ChatMessageActionsContext   ChatGroupActionsContext   ChatUIActionsContext
-(Data & State)   (Message Mutations)        (Group & Member Ops)      (UI & Scroll)
+  (State Data)       (Message Actions)          (Group/Member Actions)    (UI/Scroll)
     │                  │                          │                  │
     └──────────────────┴────────────┬─────────────┴──────────────────┘
                                     ▼
@@ -28,281 +27,62 @@ ChatDataContext   ChatMessageActionsContext   ChatGroupActionsContext   ChatUIAc
           ┌─────────────────────────┼─────────────────────────┐
           ▼                         ▼                         ▼
     ChatHeader             MessageListContainer           GroupChatFooter
-(Header & Unity Meter)  (Scroll & Message List)      (Reply Bar & Input Box)
+  (Header/Unity)        (Scrollable Messages)          (Reply/Input Area)
 ```
 
-### Key Capabilities
-- **Real-time Messaging**: Instant delta subscription via Firestore `onSnapshot` with Zod schema validation (`GroupSchema`, `UserProfileBriefSchema`).
-- **Scroll & Pagination Optimization**: Dynamic backward scrolling pagination with seamless scroll anchor retention using `useScrollManager`.
-- **Unity Score & 100% Celebration Engine (`useUnityScore`)**: Dynamically calculates group completion percentage. Upon reaching 100%, triggers 3-second celebration fireworks (`canvas-confetti`), persists local daily flag, and sends a POST request to `/api/groups/announce-unity` with AppCheck & ID Token authentication. Handles midnight resets via `useUnityMidnightReset`.
-- **Cheer & Reactions (`useCheerSystem`)**: Direct encouragement messages for unposted members and emoji reaction toggles.
-- **On-Demand Translation & Gospel Links (`GospelLink`)**: Multilingual message translation via Gemini / Google Cloud Translate APIs and automated LDS Gospel Library verse detection & hyperlinking.
-- **Group Management & Moderation**: Owner controls for group settings, invite codes, member management, and message reporting/deletion.
-
-### 4-Tier Context Isolation Pattern
-To avoid unnecessary re-renders across subcomponents when state changes, state and actions are partitioned into 4 specialized React Contexts.
-
-The nesting order follows the unidirectional dependency chain: **Data Layer (`ChatDataContext`) ➔ Domain Mutations (`ChatMessageActionsContext` / `ChatGroupActionsContext`) ➔ UI Layer (`ChatUIActionsContext`)**.
+### Context Isolation Pattern
+To avoid unnecessary re-renders across the entire chat component during typing or scrolling, context is isolated into 4 distinct stores:
+1. **`ChatDataContext`**: Holds message arrays, member rosters, loading states, and group metadata.
+2. **`ChatMessageActionsContext`**: Handlers for sending, editing, deleting, reacting to, and translating messages.
+3. **`ChatGroupActionsContext`**: Handlers for updating group settings, leaving, and deleting groups.
+4. **`ChatUIActionsContext`**: UI helpers for scroll management and localization.
 
 ---
 
-## 2. Directory Taxonomy & File Responsibilities
+## 2. Core Hooks Hierarchy & Data Flow
 
+Hooks in `src/components/groupchat/hooks/core` follow a unidirectional data flow:
+
+```mermaid
+flowchart TD
+    useGroupMessages["useGroupMessages<br/>(Main Orchestrator Hook)"]
+    useChatDataEngine["useChatDataEngine<br/>(Real-Time Ingestion & State Store)"]
+    useChatSyncController["useChatSyncController<br/>(Pagination & Read Status Sync)"]
+    chatReducer["chatReducer<br/>(State Transitions)"]
+    Provider["GroupChatProvider ➔ UI Components"]
+
+    useGroupMessages --> useChatDataEngine
+    useGroupMessages --> useChatSyncController
+    useChatDataEngine --> chatReducer
+    useChatSyncController --> chatReducer
+    chatReducer --> Provider
 ```
-src/components/groupchat/
-├── group-chat.tsx                      # Main Entry Point (Wraps Content with Provider)
-├── group-chat-provider.tsx             # Central Provider combining state engine & domain hooks
-├── chat-context.ts                     # 4 Context definitions & React Custom Hook getters
-├── chat-provider.tsx                  # Context.Provider hierarchy wrapper component
-├── group-chat.css                      # Core layout and container styles
-├── group-chat-modals.tsx              # Central modal switch router component
-├── group-chat-modals.css              # Shared modal overlay and dialog styling
-├── hooks/
-│   ├── use-chat-context.ts            # Context retrieval helper
-│   ├── core/                           # State & Sync Core Engine
-│   │   ├── chat-reducer.ts            # Pure reducer state transitions
-│   │   ├── use-chat-data-engine.ts    # Firestore real-time listener & Zod schema validation
-│   │   ├── use-chat-sync-controller.ts# Data sync orchestration
-│   │   └── use-group-messages.ts      # Message caching and fetch logic
-│   ├── api/                            # API & Firestore Data Mutations
-│   │   ├── use-group-actions.ts       # Leave, delete, and update group
-│   │   ├── use-invite-manager.ts      # Invite code generation & clipboard copy
-│   │   ├── use-message-actions.ts     # Send, edit, delete, translate messages
-│   │   ├── use-report-system.ts       # Message/User reporting handler
-│   │   └── use-user-profile.ts        # Member user profile fetcher
-│   ├── interaction/                    # User Input & Gesture Handlers
-│   │   ├── use-auto-retry.ts          # Offline message queue auto-retry handler
-│   │   ├── use-cheer-system.ts        # Send cheer / check cheer status
-│   │   ├── use-group-chat-handlers.ts # Event handler delegate
-│   │   ├── use-message-input.ts       # Textarea auto-resize & keyboard handlers
-│   │   └── use-message-interaction.ts # Context menu & touch/click handler
-│   └── view/                           # Visual, Layout & UI State
-│       ├── use-auto-translate-message.ts # Auto-translation for unviewed foreign messages
-│       ├── use-chat-visual-effects.ts # Visual effects & animations
-│       ├── use-group-chat-ui.ts       # Active modal & UI state manager
-│       ├── use-message-read-count.ts  # Per-message unread calculation
-│       ├── use-scroll-manager.ts      # Auto-scroll & scroll anchor calculation
-│       ├── use-translated-nickname.ts # Member nickname localized translation
-│       ├── use-unity-details.ts       # Unity modal member classification
-│       └── use-unity-score.ts         # Unity percentage calculation & 100% celebration
-├── subcomponents/                      # UI Component Parts
-│   ├── chat-header.tsx                # Chat top header bar
-│   ├── group-chat-footer.tsx          # Footer container with reply preview & input
-│   ├── group-chat-message-list-container.tsx # Scroll container & load older trigger
-│   ├── group-chat-message-list.tsx    # Message array renderer
-│   ├── message-item.tsx               # Individual message bubble component
-│   ├── message-item.css
-│   ├── message-input.tsx              # Input form and send button
-│   ├── message-input.css
-│   ├── system-message.tsx             # System notice banner component
-│   ├── system-message.css
-│   ├── gospel-link.tsx                # Scripture verse link parser
-│   ├── group-chat-context-menu.tsx    # Context menu (Edit/Delete/Translate/Report)
-│   └── group-menu-item.tsx            # Header dropdown menu item
-└── modals/                             # 11 Modal Dialog Components
-    ├── unity-modal.tsx                # Unity score details dialog
-    ├── members-modal.tsx              # Group members list dialog
-    ├── invite-modal.tsx               # Group invitation dialog
-    ├── edit-group-name-modal.tsx      # Group details edit dialog
-    ├── report-modal.tsx               # Content report dialog
-    ├── cheer-confirm-modal.tsx        # Cheer confirmation dialog
-    ├── delete-group-modal.tsx         # Group deletion confirmation
-    ├── delete-message-modal.tsx       # Message deletion confirmation
-    ├── edit-message-modal.tsx         # Message editing dialog
-    ├── leave-group-modal.tsx          # Leave group confirmation
-    └── reactions-modal.tsx            # Emoji reaction details dialog
-```
+
+- **`useChatDataEngine`**: Ingests real-time events from Firestore `onSnapshot` and dispatches state updates to `chatReducer`.
+- **`useChatSyncController`**: Manages older message pagination and periodic read status synchronization.
+- **`useGroupMessages`**: Combines state and operations to supply `GroupChatProvider`.
 
 ---
 
-## 3. Step-by-Step Construction Phases (Phase 1 to Phase 7)
+## 3. Key Feature Implementations
 
-### Phase 1: Data Models & Context Architecture
+### ① Unity Score & Celebration (`useUnityScore`)
+- Dynamically computes the group's daily study completion rate.
+- When 100% completion is reached, a confetti animation (`canvas-confetti`) triggers, and a notification request is sent to `/api/groups/announce-unity`.
 
-```typescript
-// Implementation of chat-context.ts
-import { createContext, Dispatch, RefObject, useContext } from 'react';
-import { Message, Group, MembersMap, UserProfileBrief, GroupData } from '../../types/chat';
+### ② Cheer System (`useCheerSystem`)
+- Allows members to send 1-tap encouragement pushes to peers who have not yet posted today.
 
-export interface ChatDataContextType {
-  groupId: string;
-  userData: UserData;
-  groupData: GroupData | null;
-  messages: Message[];
-  loading: boolean;
-  membersLoading: boolean; 
-  membersMap: MembersMap;
-  membersList: UserProfileBrief[];
-  unityPercentage: number;
-  isOwner: boolean;
-  language: string;
-  userGroups: Group[];
-}
+### ③ Scripture Deep-Linking (`GospelLink`)
+- Uses regular expressions to detect scripture references (e.g. "Mosiah 3:7", "1 Nephi 3:7") in message text and converts them into direct links to the official Gospel Library app or website.
 
-export interface ChatMessageActionsContextType {
-  handleSendMessage: (text: string, replyTo: Message | null) => Promise<boolean>;
-  handleSaveEdit: (message: Message, text: string) => Promise<boolean>;
-  handleConfirmDeleteMessage: (message: Message) => Promise<boolean>;
-  handleToggleReaction: (msg: Message) => Promise<void>;
-  handleTranslateMessage: (msg: Message, force?: boolean) => Promise<void>;
-}
-
-export interface ChatGroupActionsContextType {
-  handleLeaveGroup: () => Promise<void>;
-  handleDeleteGroup: (confirmation: string) => Promise<void>;
-  handleUpdateGroupName: (name: string, desc: string) => Promise<boolean>;
-}
-
-export interface ChatUIActionsContextType {
-  t: (key: string) => string;
-  scrollToBottom: () => void;
-  hasMoreOlder: boolean;
-  isLoadingOlder: boolean;
-  loadMoreOlderMessages: (...) => Promise<void>;
-}
-
-export const ChatDataContext = createContext<ChatDataContextType | undefined>(undefined);
-export const ChatMessageActionsContext = createContext<ChatMessageActionsContextType | undefined>(undefined);
-export const ChatGroupActionsContext = createContext<ChatGroupActionsContextType | undefined>(undefined);
-export const ChatUIActionsContext = createContext<ChatUIActionsContextType | undefined>(undefined);
-```
-
-#### Context Provider Hierarchy Wrapper (`chat-provider.tsx`)
-
-```tsx
-export const ChatProvider: React.FC<{ 
-  data: ChatDataContextType; 
-  messageActions: ChatMessageActionsContextType;
-  groupActions: ChatGroupActionsContextType;
-  uiActions: ChatUIActionsContextType;
-  children: ReactNode;
-}> = ({ data, messageActions, groupActions, uiActions, children }) => (
-  <ChatDataContext.Provider value={data}>
-    <ChatMessageActionsContext.Provider value={messageActions}>
-      <ChatGroupActionsContext.Provider value={groupActions}>
-        <ChatUIActionsContext.Provider value={uiActions}>
-          {children}
-        </ChatUIActionsContext.Provider>
-      </ChatGroupActionsContext.Provider>
-    </ChatMessageActionsContext.Provider>
-  </ChatDataContext.Provider>
-);
-```
+### ④ Unified Modal Manager (`group-chat-modals.tsx`)
+- Centralized router managing 11 modal types (member list, invite code, group settings, report dialogs, etc.).
 
 ---
 
-### Phase 2: Unity Score Engine & 100% Announcement Handler (`hooks/view/use-unity-score.ts`)
+## 4. Related Documentation
 
-Calculates the daily reading percentage for group members. Upon hitting 100%, triggers fireworks confetti (`canvas-confetti`) and dispatches a unity announcement request to `/api/groups/announce-unity`.
-
-```typescript
-export const useUnityScore = (
-  groupId: string, userData: UserData, groupData: GroupData | null,
-  messages: Message[], membersMap: MembersMap
-): number => {
-  const today = useToday();
-  const unityPercentage = useMemo<number>(() => {
-    if (!groupId || !groupData || groupData.id !== groupId || !today) return 0;
-    return calculateUnityPercentage(groupData, messages, new Date(), membersMap);
-  }, [messages, groupData, groupId, today, membersMap]);
-
-  useUnityMidnightReset({ groupId, groupTimeZone: groupData?.timeZone || 'UTC' });
-
-  useEffect(() => {
-    if (!userData?.uid || !groupId || unityPercentage !== 100) return;
-    const todayStr = new Date().toLocaleDateString('sv-SE');
-    const storageKey = `unity_firework_${groupId}_${userData.uid}`;
-
-    if (safeStorage.get(storageKey) !== todayStr) {
-      confetti({ particleCount: 50, origin: { x: 0.2, y: 0.8 } });
-      safeStorage.set(storageKey, todayStr);
-
-      fetch('/api/groups/announce-unity', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${idToken}` },
-        body: JSON.stringify({ groupId })
-      });
-    }
-  }, [unityPercentage, groupId, userData?.uid]);
-
-  return unityPercentage;
-};
-```
-
----
-
-### Phase 3: Central Modal Switch Router (`group-chat-modals.tsx`)
-
-Renders 11 distinct modal dialogs based on `ModalStore`'s `activeModal`.
-
-```tsx
-export const GroupChatModals: FC = () => {
-  const { activeModal } = useModalStore();
-
-  switch (activeModal) {
-    case 'unity': return <UnityModal />;
-    case 'members': return <MembersModal />;
-    case 'invite': return <InviteModal />;
-    case 'editGroupName': return <EditGroupNameModal />;
-    case 'report': return <ReportModal />;
-    case 'cheerConfirm': return <CheerConfirmModal />;
-    case 'deleteGroup': return <DeleteGroupModal />;
-    case 'deleteMessage': return <DeleteMessageModal />;
-    case 'editMessage': return <EditMessageModal />;
-    case 'leaveGroup': return <LeaveGroupModal />;
-    case 'reactions': return <ReactionsModal />;
-    default: return null;
-  }
-};
-```
-
----
-
-### Phase 4: Main Component Assembly (`group-chat.tsx`)
-
-```tsx
-const GroupChatContent: FC = () => {
-  const { activeModal, setActiveModal } = useModalStore();
-
-  return (
-    <>
-      <div className={`GroupChat ${activeModal === 'members' ? 'members-open' : ''}`}>
-        <ChatHeader />
-        <GroupChatMessageListContainer />
-        <GroupChatFooter />
-      </div>
-
-      <GroupChatContextMenu />
-      <GroupChatModals />
-
-      {activeModal && (
-        <div className="modal-backdrop-overlay" onClick={() => setActiveModal(null)} />
-      )}
-    </>
-  );
-};
-
-const GroupChat: FC<GroupChatProps> = (props) => {
-  useEffect(() => {
-    if (props.isActive) {
-      clearGroupNotifications(props.groupId);
-    }
-  }, [props.groupId, props.isActive]);
-
-  return (
-    <GroupChatProvider {...props} isActive={props.isActive ?? false}>
-      <GroupChatContent />
-    </GroupChatProvider>
-  );
-};
-
-export default GroupChat;
-```
-
----
-
-## 4. Verification & Troubleshooting
-
-1. **Real-time Delta Sync Verification**: Confirm instant message propagation across multiple devices via `onSnapshot`.
-2. **100% Unity Announcement Verification**: Confirm that 100% unity score triggers fireworks animation and POSTs to `/api/groups/announce-unity` with valid tokens.
-3. **Re-render Isolation Audit**: Use React DevTools Profiler to ensure message typing only triggers local input component re-renders.
+- [Chat & Dashboard Synchronization](./feature-chat-dashboard.md)
+- [Unity Participation Architecture](./unity-participation.md)
+- [Gospel Library Scripture Mapper](./gospel-library-mapper.md)
