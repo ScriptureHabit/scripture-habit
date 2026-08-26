@@ -65,14 +65,18 @@ The application is actively deployed and in operation, tracking daily active use
 
 ---
 
-### 3. My Notes & Reflection
+### 3. My Notes & Reflection (LetterBox)
 <p align="center">
   <img src="./docs/images/en-my-notes.png" width="250" alt="My Notes" />
   <img src="./docs/images/en-weekly-letter.png" width="250" alt="Weekly Letter" />
 </p>
 
 - **Search & Filtering**: Instantly search past study notes by tags or keywords.
-- **AI Weekly Letter**: Gemini AI analyzes a week's worth of note entries to deliver personalized reflection feedback.
+- **AI Reflection Letters (LetterBox)**: Gemini AI analyzes note entries to deliver personalized, heartwarming reflection letters woven with inspiring stories of scriptural figures and General Conference speakers.
+- **Developer Welcome Letter**: A permanent welcome letter warmly greets every newly registered user in their LetterBox.
+- **Real-Time Availability Indicator**: A pulsating pink indicator and pleasant audio alert inform users the moment 2+ notes are ready for generating a new reflection letter.
+- **Firestore Native TTL (30-Day Auto-Cleanup)**: Reflection letters automatically expire after 30 days via Firestore TTL to maintain lightweight, privacy-conscious data storage.
+
 
 ---
 

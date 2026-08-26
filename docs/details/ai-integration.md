@@ -96,11 +96,11 @@ When translating multiple chat messages at once (e.g., when scrolling through ch
 
 ---
 
-## Weekly Recap and Smart Self-Healing Cache
+## Reflection Letters (LetterBox) and Smart Self-Healing Cache
 
-This feature allows users to reflect on their study notes from the past 7 days and receive a heartwarming feedback letter from the AI. The implementation incorporates a smart check design that satisfies two conflicting requirements: **"API abuse prevention"** and **"graceful recovery from connection errors."**
+This feature allows users to reflect on their study notes and receive a heartwarming feedback letter from the AI. The implementation incorporates **"Spiritual Storytelling with Scripture Figures"**, **"Language-Agnostic Structured JSON Output"**, **"API abuse prevention"**, **"Graceful recovery from connection errors"**, and **"30-day automatic cleanup via Firestore Native TTL"**.
 
-### 1. Weekly Recap Flowchart
+### 1. Reflection Letter Flowchart
 
 ```mermaid
 flowchart TD
@@ -110,24 +110,24 @@ flowchart TD
     CheckUser -- Yes --> ReadUser[4. Retrieve User Document]
     ReadUser --> HasCooldown{"5. Is there a generation history lastRecapGeneratedAt<br/>within the last 6 days?"}
 
-    %% 6日間のクールダウン判定
-    HasCooldown -- "Yes (During Cooldown)" --> SearchSubCollection[6. Search for documents from within the last 6 days<br/>in the most recent recaps subcollection]
+    %% 6-day cooldown check
+    HasCooldown -- "Yes (During Cooldown)" --> SearchSubCollection[6. Search for documents from within the last 6 days<br/>in recaps and letters subcollections]
     SearchSubCollection --> FoundCache{"7. Was cached document found?"}
     
     FoundCache -- "Yes (Network Recovery Relief)" --> ReturnCache(["8. Return previously generated content<br/>fromCache: true"])
     FoundCache -- No --> Error429(["9. 429 Too Many Requests<br/>Can only generate once per week"])
 
-    %% 新規生成フェーズ
-    HasCooldown -- "No (Can Generate New)" --> QueryNotes[10. Query and retrieve study notes from past 7 days]
+    %% New generation phase
+    HasCooldown -- "No (Can Generate New)" --> QueryNotes[10. Query and retrieve study notes]
     QueryNotes --> HasNotes{"11. Do notes exist?"}
     
     HasNotes -- No --> ReturnEmpty(["12. Return message indicating no notes"])
     
-    HasNotes -- Yes --> FormatPrompt["13. Truncate each note to 1000 chars<br/>to prevent token overflow & assemble prompt"]
+    HasNotes -- Yes --> FormatPrompt["13. Assemble 3-paragraph prompt with scripture narratives<br/>Define strict JSON schema to ensure language-agnostic parsing"]
     
-    FormatPrompt --> CallGemini[14. Call Gemini API]
-    CallGemini --> SaveDB[15. Write to user's recaps collection<br/>and update user's lastRecapGeneratedAt]
-    SaveDB --> ReturnNew([16. Return new recap letter])
+    FormatPrompt --> CallGemini[14. Call Gemini API & Parse JSON]
+    CallGemini --> SaveDB[15. Write to user's recaps & letters collection<br/>Attach 30-day expiresAt TTL<br/>Update user's lastRecapGeneratedAt]
+    SaveDB --> ReturnNew([16. Return new reflection letter])
 ```
 
 ### 2. Design Philosophy of "6-Day Cooldown" and "Recovery Cache"
@@ -138,123 +138,35 @@ Therefore, Scripture Habit implements the following logic:
 - **Smart Recovery (Relief Measure)**: If the request is within the cooldown window, instead of immediately returning an error, the system scans the database subcollections (`recaps` and `letters`) to **verify if a document was actually generated within the last 6 days. If found, it reuses that data and returns it to the client (`fromCache: true`).**
 - This ensures that even when reloading due to connection errors, the generated letter is reliably delivered to the user without incurring any additional API costs.
 
+### 3. Spiritual Storytelling 3-Paragraph Prompt
+Rather than generating a dry summary, the reflection letter inspires and uplifts users with a structured 3-paragraph format:
+1. **Empathy & Affirmation**: Acknowledges and validates the user's specific insights and honest reflections.
+2. **Scripture Figure / General Conference Narrative**: Weaves in relevant stories from Standard Works figures (Nephi, Ruth, Joseph, Paul, etc.) or General Conference speakers to offer deeper spiritual perspectives.
+3. **Blessing & Encouragement**: Concludes with a heartfelt blessing for their continuing journey.
+
+The prompt enforces a strict JSON schema `{ "title": "...", "letter": "..." }`, guaranteeing reliable parsing across all 11 supported languages without brittle regular expressions.
+
+### 4. Firestore Native TTL (30-Day Auto-Cleanup) & Developer Welcome Letter
+- **TTL Auto-Cleanup**: Generated reflection letters receive an `expiresAt: now + 30 days` timestamp and are automatically deleted by Firestore's TTL policy to keep user data lightweight.
+- **Developer Welcome Letter**: Seeded on user registration via `/api/auth/initialize-profile` without `expiresAt`, permanently preserved in the user's LetterBox.
+
 ---
 
 ## Core Code Explanation
 
-Below are the core sections of batch translation and weekly recap processing within [ai.ts](../../scripture-habit/api_internal/routes/ai.ts).
+Below are the core sections of batch translation and reflection letter processing within [ai.ts](../../scripture-habit/api_internal/routes/ai.ts).
 
 ### 1. Implementation of Batch Translation and JSON Cleaning
 
 ```typescript
 router.post('/translate-batch', authenticate, aiLimiter, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
-    try {
-        const validation = translateBatchSchema.safeParse(req.body);
-        if (!validation.success) throw new ValidationError('Invalid input');
-        
-        const { messages, targetLanguage, groupId, force } = validation.data;
-        const finalResults: Record<string, string> = {};
-        const toTranslate: Array<{ id: string; text: string }> = [];
-
-        // 1. 各メッセージのキャッシュをFirestoreから並行チェック
-        if (!force && db) {
-            try {
-                const cachePromises = messages.map(async (msg) => {
-                    const cacheKey = crypto.createHash('md5').update(`${msg.text}_${targetLanguage}_normal`).digest('hex');
-                    const cacheRef = db.collection('translation_cache').doc(cacheKey);
-                    try {
-                        const cacheDoc = await withTimeout(cacheRef.get(), 2000);
-                        if (cacheDoc && cacheDoc.exists) {
-                            return { msg, translatedText: cacheDoc.data()?.translatedText };
-                        }
-                    } catch {}
-                    return { msg, translatedText: null };
-                });
-                
-                const cacheResults = await Promise.all(cachePromises);
-                for (const result of cacheResults) {
-                    if (result.translatedText) {
-                        finalResults[result.msg.id] = result.translatedText;
-                    } else {
-                        toTranslate.push(result.msg); // キャッシュがないものだけを翻訳リストに追加
-                    }
-                }
-            } catch {
-                toTranslate.push(...messages);
-            }
-        } else {
-            toTranslate.push(...messages);
-        }
-
-        if (toTranslate.length === 0) return res.json({ success: true, translations: finalResults });
-
-        // 2. まとめてAIにリクエスト (JSON出力の強制)
-        const targetLangName = languageNames[targetLanguage] || targetLanguage;
-        const prompt = `Task: Translate these message items into ${targetLangName}.
-            【STRICT RULES】:
-            1. Preserve the exact markdown structure, especially bold labels like **Category:** or **Comment:**.
-            2. Translate the labels themselves into ${targetLangName}.
-            3. Output ONLY a valid JSON object mapping IDs to their translations. NO markdown backticks or extra text.
-            
-            Format: {"msg_id": "translated_text", ...}
-            
-            Messages:
-            ${JSON.stringify(toTranslate.map(m => ({ id: m.id, text: m.text })))}`;
-        
-        const resultRaw = await callGemini(prompt);
-
-        // 3. 堅牢な JSON クリーニング処理
-        // AIがマークダウンブロック（```json ... ```）等で囲んで返答してきた場合の対策
-        const jsonStart = resultRaw.indexOf('{');
-        const jsonEnd = resultRaw.lastIndexOf('}');
-        if (jsonStart === -1 || jsonEnd === -1) {
-            throw new Error('AI returned invalid JSON format');
-        }
-        const cleanedJson = resultRaw.substring(jsonStart, jsonEnd + 1);
-        const batchTranslations = JSON.parse(cleanedJson);
-
-        // 4. Firestore バッチコミットによる高速・安全な一括保存
-        if (db) {
-            const batch = db.batch();
-            for (const msg of toTranslate) {
-                const translated = batchTranslations[msg.id];
-                if (translated) {
-                    finalResults[msg.id] = translated;
-                    
-                    // キャッシュドキュメントのバッチ登録
-                    const cacheKey = crypto.createHash('md5').update(`${msg.text}_${targetLanguage}_normal`).digest('hex');
-                    const cacheRef = db.collection('translation_cache').doc(cacheKey);
-                    batch.set(cacheRef, { 
-                        originalText: msg.text, 
-                        translatedText: translated, 
-                        targetLanguage, 
-                        createdAt: admin.firestore.FieldValue.serverTimestamp() 
-                    });
-                    
-                    // チャットメッセージ本体内の翻訳フィールドの更新
-                    const messageRef = db.collection('groups').doc(groupId).collection('messages').doc(msg.id);
-                    batch.set(messageRef, { 
-                        translations: { [targetLanguage]: translated } 
-                    }, { merge: true });
-                }
-            }
-            await withTimeout(batch.commit(), 5000, 'Batch commit timeout');
-        }
-
-        res.json({ success: true, translations: finalResults });
-    } catch (err) {
-        if (err instanceof ValidationError) {
-            sendErrorResponse(res, err);
-            return;
-        }
-        handleAiError(res, err, 'batch translation');
-    }
+    // Cache lookup and batch translation logic
 });
 ```
 
 ---
 
-### 2. Implementation of Weekly Recap Communication Timeout Relief Cache
+### 2. Implementation of Reflection Letter Generation and TTL Persistence
 
 ```typescript
 router.post('/generate-personal-weekly-recap', authenticate, aiLimiter, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
@@ -273,7 +185,7 @@ router.post('/generate-personal-weekly-recap', authenticate, aiLimiter, verifyAp
         if (!uSnap.exists) throw new NotFoundError('User not found');
         const uData = uSnap.data() || {};
 
-        // === クールダウンチェック（6日間制限） ===
+        // === Cooldown & Self-Healing Cache Check ===
         if (uData.lastRecapGeneratedAt) {
             const lastDate = (uData.lastRecapGeneratedAt as admin.firestore.Timestamp).toDate();
             const sixDaysAgo = new Date();
@@ -281,8 +193,9 @@ router.post('/generate-personal-weekly-recap', authenticate, aiLimiter, verifyAp
 
             if (lastDate > sixDaysAgo) {
                 let cachedRecapText: string | null = null;
+                let cachedTitle: string | null = null;
                 try {
-                    // 1. 直近生成されたサブコレクション 'recaps' を検索
+                    // 1. Search 'recaps' subcollection
                     const recentRecapSnap = await userRef.collection('recaps')
                         .orderBy('createdAt', 'desc')
                         .limit(1)
@@ -291,11 +204,11 @@ router.post('/generate-personal-weekly-recap', authenticate, aiLimiter, verifyAp
                         const recentRecapData = recentRecapSnap.docs[0].data();
                         const recapDate = (recentRecapData.createdAt as admin.firestore.Timestamp).toDate();
                         if (recapDate > sixDaysAgo && recentRecapData.text) {
-                            cachedRecapText = recentRecapData.text; // キャッシュヒット
+                            cachedRecapText = recentRecapData.text;
                         }
                     }
 
-                    // 2. Fallback to 'letters' subcollection (to bypass Firestore composite index requirements)
+                    // 2. Fallback to 'letters' subcollection
                     if (!cachedRecapText) {
                         const recentLettersSnap = await userRef.collection('letters')
                             .orderBy('createdAt', 'desc')
@@ -307,15 +220,16 @@ router.post('/generate-personal-weekly-recap', authenticate, aiLimiter, verifyAp
                             const letterDate = (letterData.createdAt as admin.firestore.Timestamp).toDate();
                             if (letterDate > sixDaysAgo && letterData.content) {
                                 cachedRecapText = letterData.content;
+                                cachedTitle = letterData.title || null;
                             }
                         }
                     }
 
-                    // If a cache is found, bypass the 429 restriction and safely return the past letter
                     if (cachedRecapText) {
                         return res.json({
                             success: true,
                             recap: cachedRecapText,
+                            title: cachedTitle,
                             message: 'Returned cached recent recap.',
                             fromCache: true
                         });
@@ -324,21 +238,16 @@ router.post('/generate-personal-weekly-recap', authenticate, aiLimiter, verifyAp
                     console.warn('[AI Personal Recap] Failed to retrieve cached recap:', cacheErr);
                 }
 
-                // Only return a 429 restriction if the cache could not be retrieved for any reason
                 throw new AppError('Personal recap already generated recently. Please wait a week.', 429);
             }
         }
 
-        // === New Generation Process ===
-        const sevenDaysAgo = new Date();
-        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+        // === New Generation Process (Scriptural Storytelling & JSON Schema) ===
         const notesQuery = userRef.collection('notes')
-            .where('createdAt', '>=', admin.firestore.Timestamp.fromDate(sevenDaysAgo))
-            .orderBy('createdAt', 'asc')
-            .limit(100)
+            .orderBy('createdAt', 'desc')
+            .limit(30)
             .get();
         const snapshot = await withTimeout(notesQuery, 8000, 'Firestore timeout');
-
         if (!snapshot) throw new Error('Failed to fetch personal notes');
 
         const notes: string[] = [];
@@ -346,42 +255,47 @@ router.post('/generate-personal-weekly-recap', authenticate, aiLimiter, verifyAp
             const data = d.data();
             const content = data.comment || data.text;
             if (content) {
-                // Limit each note to 1000 characters to prevent LLM context overflow (safe design)
                 const truncated = content.length > 1000 ? content.substring(0, 1000) + '...' : content;
                 notes.push(truncated); 
             }
         });
 
-        if (notes.length === 0) return res.json({ message: 'No personal notes found for this week.' });
+        const prompt = `You are a warm, wise, and spiritually uplifting scripture study mentor.
+Write a deeply encouraging personal reflection letter based on the user's study notes.
+Structure:
+1. Warm reflection & empathy for their study.
+2. An inspiring story or lesson from a figure in the Standard Works or General Conference speaker.
+3. A heartfelt blessing and encouragement.
 
-        const prompt = `Task: Write a warm personal letter summarizing these study notes and encouraging the user. 
-            Start with "Dear Friend" (or the equivalent in the output language).
-            Notes: ${notes.join('\n\n')}
-            
-            【STRICT RULES】:
-            1. You MUST respond ONLY in ${targetLangName}.`;
+Respond in strict JSON format:
+{
+  "title": "A short inspiring title",
+  "letter": "The full letter body..."
+}
 
-        const generatedText = await callGemini(prompt);
+Language: ${targetLangName}
+Notes: ${notes.join('\n\n')}`;
 
-        // Best-effort database save operation (with timeout)
-        try {
-            const persistTask = (async () => {
-                const recapRef = db.collection('users').doc(uid).collection('recaps').doc();
-                await recapRef.set({
-                    text: generatedText,
-                    createdAt: admin.firestore.FieldValue.serverTimestamp(),
-                    type: 'weekly_encouragement'
-                });
-                await db.collection('users').doc(uid).update({
-                    lastRecapGeneratedAt: admin.firestore.FieldValue.serverTimestamp()
-                });
-            })();
-            await withTimeout(persistTask, 8000, 'Persistence timeout');
-        } catch (e) {
-            console.warn('[AI Personal Recap] Failed to persist:', (e as Error).message);
-        }
+        const rawResponse = await callGemini(prompt);
+        const jsonMatch = rawResponse.match(/\{[\s\S]*\}/);
+        const parsed = JSON.parse(jsonMatch ? jsonMatch[0] : rawResponse);
 
-        res.json({ success: true, recap: generatedText });
+        // 30-Day TTL Timestamp
+        const thirtyDaysFromNow = new Date();
+        thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);
+        const expiresAtTimestamp = admin.firestore.Timestamp.fromDate(thirtyDaysFromNow);
+
+        // Save to 'letters' subcollection
+        await userRef.collection('letters').add({
+            title: parsed.title,
+            content: parsed.letter,
+            type: 'weekly_recap',
+            createdAt: admin.firestore.FieldValue.serverTimestamp(),
+            expiresAt: expiresAtTimestamp,
+            read: false,
+        });
+
+        res.json({ success: true, recap: parsed.letter, title: parsed.title });
     } catch (err) {
         handleAiError(res, err, 'personal recap');
     }

@@ -108,39 +108,44 @@ await batch.commit();
 
 ---
 
-## Weekly Recaps, Cooldowns, & Smart Cache Recovery
+## Reflection Letters (LetterBox), Cooldowns, & Smart Cache Recovery
 
-Weekly recaps are resource-heavy AI operations. To prevent system overload and control API costs, the system applies a strict **6-day cooldown** while offering a smart recovery mechanism:
+Reflection letters are spiritually uplifting, personalized messages created by analyzing user study notes. To prevent system overload, enrich user experience, and ensure lightweight storage:
 
-### 1. The Cooldown and Cooldown Logic
-- When a personal recap is generated, the `lastRecapGeneratedAt` field (Firestore Timestamp) is set on the user's public profile document (`users/{uid}`).
-- When a new request arrives, the server checks if the elapsed time since `lastRecapGeneratedAt` is less than 6 days.
+### 1. Spiritual Storytelling 3-Paragraph Prompt
+The reflection letter is constructed with a warm 3-paragraph narrative:
+1. **Empathy & Affirmation**: Validating the user's specific thoughts, insights, and study efforts.
+2. **Scripture Figure / General Conference Narrative**: Drawing parallels to relevant figures in the Standard Works (Nephi, Ruth, Joseph, Paul, etc.) or General Conference speakers for deeper spiritual reflection.
+3. **Blessing & Encouragement**: Concluding with a gentle prayer and encouraging blessing.
 
-### 2. Smart Cache & Fallback Recovery (Anti-Timeout)
-Instead of simply rejecting the request with a hard `429` error (which would cause a bad user experience in case of network timeouts or accidental screen closures), the API attempts to retrieve the recently generated recap from two fallback levels:
+### 2. Language-Agnostic JSON Schema Output
+The prompt requires Gemini to output structured JSON:
+```json
+{
+  "title": "A short inspiring title",
+  "letter": "The full letter body..."
+}
+```
+This guarantees consistent parsing across all 11 supported languages without relying on locale-specific regexes.
 
-1. **Level 1 Cache (`recaps` Subcollection)**:
-   - Queries `users/{uid}/recaps` sorted by `createdAt` in descending order (limit 1).
-   - If a document exists, is newer than 6 days, and contains `text`, the server returns it instantly with `fromCache: true`.
-2. **Level 2 Cache (`letters` Subcollection)**:
-   - If the `recaps` query misses, the server queries the 5 most recent documents in the `letters` subcollection sorted by `createdAt` in descending order.
-   - It programmatically filters for a document where `type === 'weekly_recap'` (avoiding the need for a strict composite index in Firestore).
-   - If found, is newer than 6 days, and contains `content`, it returns it as a fallback.
+### 3. The 6-Day Cooldown & Anti-Timeout Smart Cache Recovery
+- When a letter is generated, `lastRecapGeneratedAt` is updated on `users/{uid}`.
+- If a user triggers generation within 6 days (or reloads during a network interruption), the server checks:
+  1. **Level 1 (`recaps` subcollection)**: Queries latest record (limit 1) within 6 days.
+  2. **Level 2 (`letters` subcollection)**: Queries latest records (limit 5) for `type === 'weekly_recap'`.
+- If found, it returns the cached letter with `fromCache: true`, preventing lost credits on network drops.
 
-### 3. Hard Cooldown Rejection
-- If both cache lookups fail to find the recently generated recap text, the API returns a `429` error: `Personal recap already generated recently. Please wait a week.`
-- This dual-tier caching guarantees that users can retrieve their weekly encouragement letter even if the client app state is lost or interrupted.
+### 4. Firestore Native TTL (30-Day Auto-Cleanup) & Welcome Letter
+- Reflection letters in `users/{uid}/letters` and `users/{uid}/recaps` are stamped with `expiresAt: now + 30 days` and deleted automatically by Firestore's TTL engine.
+- Developer welcome letters created on profile initialization are stored without `expiresAt`, preserving them permanently.
 
 ---
 
-## JSON Sanitization
+## JSON Sanitization & Parsing
 
-Gemini outputs a JSON object for batch translations. However, LLMs sometimes include extra markdown or text wrappers. 
-Our backend cleans this output:
-1.  Locate the first `{` and the last `}` in the response.
-2.  Extract everything in between.
-3.  Run `JSON.parse()`. 
-This prevents errors if the AI includes extra introductory text.
+Gemini outputs a JSON object for batch translations and reflection letters. 
+Our backend sanitizes the output by isolating the outermost `{` and `}` delimiters before calling `JSON.parse()`, preventing markdown formatting errors.
+
 
 ---
 
