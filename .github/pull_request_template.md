@@ -1,33 +1,16 @@
-## Description
-*Provide a concise summary of the changes introduced by this Pull Request. Include relevant background context, architectural rationale, and goals.*
+## What
+<!-- What is happening? Concise description of the issue/feature, code snippet, or expected vs actual behavior. -->
 
-## Related Issues
-- Fixes # (issue number)
-- Closes # (issue number)
+## Why
+<!-- Why did this happen? Root cause, architectural context, or background rationale. -->
 
-## Proposed Changes
-*Briefly list the file modifications and new modules:*
-- **Frontend**: e.g., Updated note sharing styles
-- **Backend / API**: e.g., Refactored cron route early returns
-- **Database / Schema**: e.g., Added hasFcmToken validator rule
+## The fix
+<!-- How was it fixed? Outline the key modifications and design decisions. -->
 
-## Contribution Checklist
-- [ ] My code follows the project's coding standards and style guidelines.
-- [ ] I have verified all modifications compile cleanly without warnings.
-- [ ] I have written unit/integration tests covering the new logic (or adjusted existing tests).
-- [ ] All existing and new automated tests passed successfully (`npm run test` / `npm run test:internal`).
-- [ ] I have verified the changes locally using the Firebase Emulator suite and the seeder script.
-- [ ] I have updated corresponding documentation in `docs/` and `docs/ja/` (if applicable).
+## What the test pins
+<!-- What do the tests guarantee? Describe the specific behaviors/regressions pinned down by tests. -->
 
-## How to Test
-*Detail the precise steps required to verify your contribution:*
-1. Start the local emulator: `npx firebase emulators:start`
-2. Seed the sandbox: `npm run db:seed`
-3. Run internal API integrations: `npm run test:internal`
-4. Confirm expected behavior: *Describe the specific behavior to watch for.*
+## Screenshots / Visual Demos (Optional)
+<!-- If this PR affects the UI, please attach before/after screenshots or short screen recordings. -->
 
-## Screenshots / Visual Demos
-*If your change impacts the user interface, please attach screenshots, recordings, or visual walk-throughs below:*
-
----
-*Thank you for contributing to Scripture Habit!*
+<!-- Related issues (e.g. Closes #123) -->
