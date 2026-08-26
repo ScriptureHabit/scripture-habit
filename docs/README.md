@@ -56,6 +56,19 @@ Welcome to the **scripture-habit** technical documentation. This directory conta
 
 ---
 
+## UX Psychology & Retention Insights
+- **[Milestone Celebrations & Retention Psychology](logic-milestone-retention.md)**
+  - Transitioning to a total days model to prevent demotivation when streaks break (loss aversion and the "what-the-hell effect").
+  - Milestone intervals (Day 10 + every 25 days) and visualizing progress through commemorative cards.
+- **[AI Reflection Letters: Psychological Impact & Retention](ux-ai-reflection-letters.md)**
+  - User feedback showing that personalized AI reflection letters serve as a key retention driver.
+  - Addressing the lack of affirmation in adult daily life and the comfort of non-judgmental, thoughtful reflection.
+- **[Small Group Dynamics (Max 5) & Peer Accountability](ux-small-groups-and-peer-accountability.md)**
+  - Why groups are capped at 5 members (reducing social loafing and keeping interactions personal).
+  - Why groups of close friends and family last longer, and how the app supports groups of strangers.
+
+---
+
 ## Core Logic & Mechanisms
 - **[Note Posting Mechanism](logic-note-posting.md)**
   - End-to-end flow of posting a note.

@@ -65,6 +65,14 @@ export default withMermaid(defineConfig({
             ]
           },
           {
+            text: 'UX Psychology & Retention Insights',
+            items: [
+              { text: 'Milestone Celebrations & Retention Psychology', link: '/logic-milestone-retention' },
+              { text: 'Psychological Impact & Retention of AI Reflection Letters', link: '/ux-ai-reflection-letters' },
+              { text: 'Small Group Dynamics (Max 5) & Peer Accountability', link: '/ux-small-groups-and-peer-accountability' }
+            ]
+          },
+          {
             text: 'Core Logic & Mechanisms',
             items: [
               { text: 'Note Posting Mechanism & Streaks', link: '/logic-note-posting' },
@@ -157,6 +165,14 @@ export default withMermaid(defineConfig({
               { text: 'ダッシュボード ＆ マイノート設計・実装ガイド', link: '/ja/dashboard-mynotes-construction-guide' },
               { text: 'AI 統合 (Gemini)', link: '/ja/feature-ai-integration' },
               { text: 'プッシュ通知 & バックグラウンド FCM', link: '/ja/feature-notifications' }
+            ]
+          },
+          {
+            text: 'User Experienceの心理学的考察',
+            items: [
+              { text: 'マイルストーン達成 & リテンション心理学', link: '/ja/logic-milestone-retention' },
+              { text: 'AI振り返りレターの心理学的効用とリテンション', link: '/ja/ux-ai-reflection-letters' },
+              { text: '少人数グループ（最大5人）とピア・アカウンタビリティの心理学', link: '/ja/ux-small-groups-and-peer-accountability' }
             ]
           },
           {

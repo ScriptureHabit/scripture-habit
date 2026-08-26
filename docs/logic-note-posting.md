@@ -144,6 +144,8 @@ To promote positive psychology and reduce user anxiety related to maintaining da
 1. **Dashboard & Profile Metrics**: The primary dashboard overview card and user profile widgets now display **Total Days** (`daysStudiedCount`) rather than consecutive streaks (`streakCount`).
 2. **Mascot Celebrations**: The mascot speech bubble dynamically celebrates the user's total days achieved (`daysStudiedCount`) upon posting a note (e.g., "Amazing! total 10 days achieved!").
 3. **Group Chat Announcements**:
-   Instead of announcing every daily post to group chats (which causes chat clutter and social pressure), group-wide system announcements are only posted when a user achieves a significant total study milestone:
-   - **Fixed Milestones**: **3, 7, 10, 21, 30, 50, 100 days**
-   - **Recurring Milestones**: Every **50 days** thereafter (e.g., 150, 200, 250...)
+   When a note is posted, standard notification messages ("{nickname} posted a note!!") are posted on regular days, while special celebratory messages ("{nickname} achieved a milestone of {streak} total study days! Let's celebrate!") are automatically posted on **Total Study Milestones**:
+   - **Initial Milestone**: **10 days**
+   - **Recurring Milestones**: Every **25 days** thereafter (**25, 50, 75, 100, 125, 150... days**)
+   - *(Aligned with the commemorative milestone image card generation logic in `src/utils/milestone.ts`. For design philosophy and behavioral psychology, see [Milestone Celebrations & Retention Psychology](./logic-milestone-retention.md))*.
+

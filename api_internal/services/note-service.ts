@@ -81,10 +81,8 @@ function parseFirestoreDate(raw: unknown): Date | null {
 }
 
 function isStreakMilestone(days: number): boolean {
-    const fixedMilestones = [3, 7, 10, 21, 30, 50, 100];
-    if (fixedMilestones.includes(days)) return true;
-    if (days > 100 && days % 50 === 0) return true;
-    return false;
+    if (!days || days <= 0) return false;
+    return days === 10 || days % 25 === 0;
 }
 
 function appendLatestMessage(
