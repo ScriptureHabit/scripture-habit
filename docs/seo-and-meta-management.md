@@ -1,99 +1,55 @@
-# SEO & OGP Dynamic Meta Management
+# SEO & Metadata Management
 
-This document describes the routing structure, metadata synchronization, and indexing settings managed by the **SEO & OGP Dynamic Meta Manager** component (`src/components/seo-manager.tsx`). 
-
-This component maintains search engine listings and rich-media preview snippets (Open Graph) across multiple languages.
+This document details canonical URL generation, search engine privacy policies (Robots tags), social media cards (OGP), and build-time localization.
 
 ---
 
-## 1. Multi-Lingual Route & Canonical URL Parsing
+## 1. Canonical URL Resolution
 
-In a client-side Single Page Application (SPA), generating correct canonical paths for search engines is important, especially when routes are prefixed by dynamic language codes (e.g. `/ja/...`, `/en/...`).
-
-### Root Normalization Flow
-1. **Extraction**: The component reads the current route from React Router (`useLocation().pathname`).
-2. **Prefix Matching**: Paths are split to verify if they are prefixed by any language registered under `SUPPORTED_LANGUAGES`.
-3. **Canonical URL Generation**:
-   * It extracts the logical web path (e.g., `/dashboard`).
-   * It reconstructs a localized, standard canonical URL for the active language and ensures a trailing slash is appended to avoid duplicates:
-     `https://scripturehabit.app/{language}{normalizedPath}/`
-   * It updates the document's `<link rel="canonical" href="...">` element dynamically.
+To help search engines recognize official pages across multilingual URL paths (`/ja/...`, `/en/...`), `SEOManager` (`src/components/seo-manager.tsx`) dynamically sets `<link rel="canonical">`.
 
 ```mermaid
 flowchart TD
-    Path[Get location.pathname] --> CheckPrefix{Has dynamic language prefix?}
-    
-    CheckPrefix -- Yes --> Extract[Strip language code from path]
-    CheckPrefix -- No --> Keep[Keep path as is]
-    
-    Extract --> Canonical[Rebuild: 'https://scripturehabit.app/' + currentLanguage + baseRoute + '/']
+    Path["Extract location.pathname"] --> CheckPrefix{"Contains Language Prefix?"}
+    CheckPrefix -- Yes --> Extract["Isolate Language Code"]
+    CheckPrefix -- No --> Keep["Retain Base Route"]
+    Extract --> Canonical["Generate Canonical URL<br/>https://scripturehabit.app/{lang}/{path}/"]
     Keep --> Canonical
-    
-    Canonical --> Insert[Update link rel='canonical' in HTML Head]
+    Canonical --> Insert["Update HTML Head link rel='canonical'"]
 ```
 
 ---
 
-## 2. Robots & Indexing Settings (Privacy)
+## 2. Robots Directives & Privacy Protection
 
-One of the most important aspects of SEO for private web apps is **excluding private pages** from search engines. 
+To prevent private user notes and group chat interactions from being indexed by search crawlers, robots directives are dynamically assigned per route:
 
-`SEOManager` manages a robots meta tag injected into the document head, separating public pages from private pages:
-
-| Route Parameter | Target Path Examples | Indexed? | Robots Directive | Rationale |
-| :--- | :--- | :--- | :--- | :--- |
-| **Public Core** | `/`, `/privacy`, `/terms`, `/legal` | **Yes** | `index, follow` | Drives organic traffic and maintains public legality terms. |
-| **User Portal** | `/dashboard`, `/welcome` | **No** | `noindex, nofollow` | Avoids caching active portals or empty dynamic states. |
-| **Auth Screen** | `/login`, `/signup`, `/forgot-password` | **No** | `noindex, nofollow` | Prevents exposing registration endpoints or blank pages. |
-| **Group / Social**| `/group/*`, `/join/*` | **No** | `noindex, nofollow` | Protects private study logs and participant directory rosters. |
-| **Personal Space**| `/profile`, `/my-notes`, `/settings` | **No** | `noindex, nofollow` | Strictly isolates user-specific data from scraping engines. |
-
-### Dynamic Directive Application
-The manager parses the primary route. If the route is private, it updates the header:
-```typescript
-robotsTag.setAttribute('content', 'noindex, nofollow');
-```
-If it is a public-facing route, it applies:
-```typescript
-robotsTag.setAttribute('content', 'index, follow');
-```
+| Route Category | Example Paths | Indexed? | Directive & Rationale |
+| :--- | :--- | :---: | :--- |
+| **Public Core** | `/`, `/privacy`, `/terms` | **Yes** | `index, follow` (Promotes search discovery) |
+| **Dashboard** | `/dashboard`, `/welcome` | **No** | `noindex, nofollow` (Protects personalized portals) |
+| **Authentication** | `/login`, `/signup` | **No** | `noindex, nofollow` (Prevents auth page caching) |
+| **Groups & Chats** | `/group/*`, `/join/*` | **No** | `noindex, nofollow` (Protects private study records) |
+| **Personal Spaces** | `/my-notes`, `/profile`, `/settings` | **No** | `noindex, nofollow` (Shields user notes from scrapers) |
 
 ---
 
-## 3. Social Media Preview (OGP & Twitter Cards)
+## 3. Social Media Previews (OGP & Twitter Cards)
 
-To ensure links shared on platforms like Slack, Facebook, LINE, and Twitter render thumbnails, social metadata is synchronized live.
-
-### Synchronized Meta Properties
-Whenever a route changes or a translation is modified, the manager reads values translated by `useLanguage` and writes to the DOM:
-
-1. **Document Title (`document.title`)**:
-   * Appends localized branding suffix (e.g. `Dashboard | Scripture Habit` or `Login | Scripture Habit`).
-   * Propagates automatically to `og:title` and `twitter:title`.
-2. **Metadata Description (`meta[name="description"]`)**:
-   * Evaluates the active localized value (`t('seo.description')`) and populates `description`, `og:description`, and `twitter:description`.
-3. **Google Site Name Optimization (`og:site_name`)**:
-   * Google uses specific metadata to determine how the product name displays in search results.
-   * `SEOManager` injects an `og:site_name` tag declaring `Scripture Habit` to ensure correct branding.
-4. **Canonical URL Alignment (`og:url`)**:
-   * Synthesizes with the localized Canonical URL so social crawlers resolve shares back to the standard multi-lingual page.
+When links are shared on LINE, Slack, or X (Twitter), `SEOManager` evaluates localized metadata (`og:title`, `og:description`, `og:image`) based on the active language to ensure appropriate preview cards.
 
 ---
 
-## 4. Build-Time Pre-Localization and Server Routing (Crawler Optimization)
+## 4. Build-Time Static HTML Pre-Localization
 
-Because simple search engine crawlers and social share scrapers (e.g., Slack, Twitter, LINE bots) often do not execute client-side JavaScript, they may fail to read meta tags updated dynamically by the `SEOManager` React component. To resolve this, **scripture-habit** uses a build-time pre-localization strategy:
+For crawlers and social preview bots that do not execute client-side JavaScript:
+- **Build Pre-Generation (`scripts/localize-meta.ts`)**: Produces static HTML files for each supported language (`dist/index-ja.html`, `dist/index-es.html`, etc.) with pre-populated meta tags.
+- **Server Rewrites (`vercel.json`)**: Automatically routes localized URLs (e.g. `/ja/*`) to `index-ja.html` on the server edge.
 
-### Build-Time Pre-Localization (`scripts/localize-meta.ts`)
-During the production build flow (defined in `package.json`), Vite completes the client compilation, and then the [localize-meta.ts](../scripture-habit/scripts/localize-meta.ts) script runs:
-1. It reads the raw compiled template `dist/index.html`.
-2. For each supported locale (e.g. `ja`, `es`, `pt`, `zho`), it parses title and description strings directly from the language files under `src/locales/*`.
-3. It generates language-specific static HTML templates (e.g., `dist/index-ja.html`, `dist/index-es.html`), replacing fallback title and meta description properties inside the raw HTML head tags.
+---
 
-### Vercel Server Rewrites (`vercel.json`)
-To serve the pre-localized template to crawlers and users dynamically, Vercel routing rules in [vercel.json](../scripture-habit/vercel.json) rewrite all incoming requests with localized path prefixes:
-* `/ja/:path*` rewrites to `/index-ja.html`
-* `/es/:path*` rewrites to `/index-es.html`
-* Prefix-less English paths or standard files fall back to `/index.html` (the default English template).
+## 5. Related Documentation
 
-This hybrid approach guarantees that social scraper bots immediately receive localized title and OGP details in the initial raw HTML payload, while the client-side SPA `SEOManager` handles subsequent dynamic page routing seamlessly.
+- [Architecture Overview](./architecture.md)
+- [Internationalization (i18n)](./logic-i18n.md)
+- [Network & Performance Optimization](./network-performance-optimization.md)
