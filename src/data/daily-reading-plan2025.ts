@@ -23,13 +23,3 @@ export const DailyReadingPlan2025: ReadingPlanItem[] = [
     { day: 364, scripts: ["Doctrine and Covenants 33:17"], date: "2025-12-28" }
 ];
 
-// Function to retrieve today's reading plan
-export const getTodayReadingPlan = (): ReadingPlanItem | undefined => {
-    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Tokyo';
-    const now = new Date();
-    // Format to YYYY-MM-DD in local time
-    const localDate = now.toLocaleDateString('sv-SE', { timeZone });
-
-    // Find plan by matching date string
-    return DailyReadingPlan2025.find(p => p.date === localDate);
-};

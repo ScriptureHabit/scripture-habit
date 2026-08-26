@@ -83,6 +83,7 @@ interface SidebarProps {
   setActiveGroupId: (id: string | null) => void;
   hideMobile?: boolean;
   currentUserId?: string | null;
+  isLetterAvailable?: boolean;
 }
 
 const Sidebar = ({
@@ -92,7 +93,8 @@ const Sidebar = ({
   activeGroupId,
   setActiveGroupId,
   hideMobile = false,
-  currentUserId
+  currentUserId,
+  isLetterAvailable = false
 }: SidebarProps) => {
   const navigate = useNavigate();
   const { t, language } = useLanguage();
@@ -149,7 +151,12 @@ const Sidebar = ({
             }}
             data-testid="sidebar-notes"
           >
-            <NotesIcon />
+            <div className="menu-icon-container">
+              <NotesIcon />
+              {isLetterAvailable && (
+                <span className="notes-unread-dot" title="Reflection letter available" data-testid="sidebar-notes-unread-dot" />
+              )}
+            </div>
             <span>{t('sidebar.myNotes')}</span>
           </div>
 

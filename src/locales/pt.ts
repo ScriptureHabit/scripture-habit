@@ -307,13 +307,13 @@ export default {
         "readInGospelLibrary": "Ler na Biblioteca do Evangelho",
         "goToByuSpeech": "Ir para o Discurso da BYU",
         "readStudyMaterial": "Ler o Material de Estudo",
-        "generateRecap": "✨ Gerar Resumo Semanal",
-        "viewRecentRecap": "✨ Ver resumo recente",
-        "generatingRecap": "Gerando resumo semanal... Isso pode levar um momento.",
-        "fetchingRecentRecap": "Recuperando o resumo recente...",
-        "recapSuccess": "Resumo semanal gerado! Revise e salve-o.",
-        "noNotesForRecap": "Nenhuma nota encontrada esta semana.",
-        "recapError": "Falha ao gerar resumo.",
+        "generateRecap": "✨ Gerar Carta de Reflexão",
+        "viewRecentRecap": "✨ Ver carta recente",
+        "generatingRecap": "Gerando carta de reflexão... Isso pode levar um momento.",
+        "fetchingRecentRecap": "Recuperando a carta recente...",
+        "recapSuccess": "Carta de reflexão gerada! Revise e salve-a.",
+        "noNotesForRecap": "Publique pelo menos 2 notas para gerar uma carta.",
+        "recapError": "Falha ao gerar carta.",
         "sharedActivity": "Atividade Compartilhada",
         "noteDeletedSuccess": "Nota excluída com sucesso",
         "noteDeletedError": "Falha ao excluir a nota",
@@ -323,13 +323,15 @@ export default {
         "nextPage": "Próximo",
         "pageInfo": "Página {current} de {total}",
         "nextLetterInDays": "(Próxima carta em {days} dias)",
+        "nextLetterInNotes": "(Próxima carta em mais {count} anotações)",
         "notMember": "Você não é membro deste grupo"
     },
     "recapModal": {
-        "title": "Sua Carta Semanal",
-        "subtitle": "Uma reflexão sobre sua jornada espiritual esta semana.",
+        "title": "Carta de Reflexão",
+        "subtitle": "Uma reflexão sobre suas anotações de estudo recentes.",
         "close": "Fechar",
-        "saveToNotes": "Salvar na Caixa de Entrada"
+        "saveToNotes": "Salvar na Caixa de Entrada",
+        "savedToLetterBox": "Salvo na caixa de cartas"
     },
     "letterBox": {
         "title": "Caixa de Entrada",
@@ -337,8 +339,11 @@ export default {
         "deleteConfirm": "Tem certeza de que deseja descartar esta carta?",
         "back": "Voltar para a Lista",
         "loading": "Carregando cartas...",
-        "empty": "Nenhuma carta ainda. Gere um resumo semanal para receber uma!",
-        "defaultTitle": "Resumo Semanal"
+        "empty": "Nenhuma carta ainda. Publique 2 notas para receber uma carta de reflexão!",
+        "defaultTitle": "Carta de Reflexão",
+        "autoDeleteNotice": "As cartas serão excluídas automaticamente 30 dias após a geração.",
+        "welcomeLetterTitle": "Bem-vindo ao Scripture Habit",
+        "welcomeLetterContent": "Seja muito bem-vindo(a), {nickname}.\n\nNa correria do dia a dia, abrir as escrituras e voltar o coração para a palavra sagrada pode, às vezes, parecer um pequeno desafio. No entanto, mesmo lendo apenas um versículo por dia ou escrevendo uma breve reflexão, essa pequena constância certamente trará verdadeira paz e luz para a sua vida.\n\nApós publicar 2 notas, você receberá uma carta especial de reflexão sobre seus aprendizados e impressões. Convidamos você a registrar o que sentiu hoje na sua primeira anotação!\n\nQue sua vida seja repleta de abundantes bênçãos e alegria.\n\n— Do desenvolvedor do Scripture Habit"
     },
     "groupChat": {
         "defaultScripture": "Velho Testamento",

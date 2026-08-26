@@ -51,6 +51,7 @@ export interface UserData {
   groupId?: string;
   
   // Feature/AI timestamps
+  lastLetterGeneratedAt?: Timestamp | string | number | Date;
   lastRecapGeneratedAt?: Timestamp | string | number | Date;
   lastActiveAt?: Timestamp | string | number | Date;
 }

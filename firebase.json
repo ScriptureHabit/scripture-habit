@@ -7,6 +7,16 @@
                 "collectionGroup": "translation_cache",
                 "field": "createdAt",
                 "state": "ENABLED"
+            },
+            {
+                "collectionGroup": "letters",
+                "field": "expiresAt",
+                "state": "ENABLED"
+            },
+            {
+                "collectionGroup": "recaps",
+                "field": "expiresAt",
+                "state": "ENABLED"
             }
         ]
     },

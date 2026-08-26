@@ -6,14 +6,13 @@ import {
   DocumentData
 } from 'firebase/firestore';
 import { z } from 'zod';
-import { UserData } from '../types/user';
 import { Group, Message } from '../types/chat';
 import { Note } from '../types/note';
 import { normalizeScriptureCategory, buildNoteSearchTokens } from './search-token-utils';
+import { formatNoteText } from './note-logic';
 import { 
   MessageSchema, 
   GroupSchema, 
-  UserDataSchema, 
   GroupMemberSchema 
 } from '../types/schemas';
 
@@ -60,13 +59,17 @@ const createConverter = <T extends { id?: string; uid?: string }>(
     const title = typeof validatedData.title === 'string' ? validatedData.title : null;
     const speaker = typeof validatedData.speaker === 'string' ? validatedData.speaker : null;
     const comment = typeof validatedData.comment === 'string' ? validatedData.comment : '';
+    const chapter = typeof validatedData.chapter === 'string' ? validatedData.chapter : '';
+    const text = typeof validatedData.text === 'string' && validatedData.text.trim() !== ''
+      ? validatedData.text
+      : formatNoteText(scripture, chapter, comment);
     
     // Build search tokens if they don't exist in DB (Legacy support)
     const searchTokens = Array.isArray(validatedData.searchTokens)
       ? (validatedData.searchTokens as unknown[]).filter((value): value is string => typeof value === 'string')
       : buildNoteSearchTokens({ 
           scripture, 
-          chapter: typeof validatedData.chapter === 'string' ? validatedData.chapter : '', 
+          chapter, 
           comment, 
           title, 
           speaker 
@@ -75,22 +78,17 @@ const createConverter = <T extends { id?: string; uid?: string }>(
     return {
       ...validatedData,
       scripture,
+      chapter,
+      comment,
+      text,
       searchTokens,
     } as unknown as T;
   }
 });
 
 // Primary Converters with Strict Validation
-export const userConverter = createConverter<UserData>('uid', UserDataSchema);
 export const groupConverter = createConverter<Group>('id', GroupSchema);
 export const messageConverter = createConverter<Message>('id', MessageSchema);
 export const noteConverter = createConverter<Note>('id'); // NoteSchema could be added next
 export const groupMemberConverter = createConverter<import('../../types/firestore').GroupMemberDocument>('uid', GroupMemberSchema);
 
-/**
- * Helper to create ad-hoc converters with custom schemas
- */
-export const withConverter = <T extends { id?: string; uid?: string }>(
-  idField: 'id' | 'uid' = 'id',
-  schema?: z.ZodSchema
-) => createConverter<T>(idField, schema);

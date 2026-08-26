@@ -307,13 +307,13 @@ export default {
         "readInGospelLibrary": "Soma katika Maktaba ya Injili",
         "goToByuSpeech": "Nenda kwenye Hotuba ya BYU",
         "readStudyMaterial": "Soma Nyenzo za Kujifunza",
-        "generateRecap": "✨ Tengeneza Muhtasari wa Kila Wiki",
-        "viewRecentRecap": "✨ Ona muhtasari wa hivi karibuni",
-        "generatingRecap": "Inatengeneza muhtasari wa kila wiki... Hii inaweza kuchukua muda.",
-        "fetchingRecentRecap": "Inapata muhtasari wa hivi karibuni...",
-        "recapSuccess": "Muhtasari wa kila wiki umetengenezwa! Ukague na uuhifadhi.",
-        "noNotesForRecap": "Hakuna maelezo yaliyopatikana kwa wiki hii.",
-        "recapError": "Imeshindwa kutengeneza muhtasari.",
+        "generateRecap": "✨ Tengeneza Barua ya Tafakari ya AI",
+        "viewRecentRecap": "✨ Ona barua ya hivi karibuni",
+        "generatingRecap": "Inatengeneza barua ya tafakari... Hii inaweza kuchukua muda.",
+        "fetchingRecentRecap": "Inapata barua ya hivi karibuni...",
+        "recapSuccess": "Barua ya tafakari imetengenezwa! Ukague na uuhifadhi.",
+        "noNotesForRecap": "Chapisha angalau maelezo 2 ili kutengeneza barua.",
+        "recapError": "Imeshindwa kutengeneza barua.",
         "sharedActivity": "Shughuli Iliyoshirikiwa",
         "noteDeletedSuccess": "Dokezo limefutwa kwa mafanikio",
         "noteDeletedError": "Imeshindwa kufuta dokezo",
@@ -323,13 +323,15 @@ export default {
         "nextPage": "Inayofuata",
         "pageInfo": "Ukurasa {current} kati ya {total}",
         "nextLetterInDays": "(Barua inayofuata baada ya siku {days})",
+        "nextLetterInNotes": "(Barua mpya baada ya maelezo {count})",
         "notMember": "Wewe si mwanachama wa kikundi hiki"
     },
     "recapModal": {
-        "title": "Barua Yako ya Wiki",
-        "subtitle": "Tafakari juu ya safari yako ya kiroho wiki hii.",
+        "title": "Barua ya Tafakari ya AI",
+        "subtitle": "Tafakari juu ya maelezo yako ya hivi karibuni ya kujifunza.",
         "close": "Funga",
-        "saveToNotes": "Hifadhi kwenye Sanduku la Barua"
+        "saveToNotes": "Hifadhi kwenye Sanduku la Barua",
+        "savedToLetterBox": "Imehifadhiwa kwenye kisanduku cha barua"
     },
     "letterBox": {
         "title": "Sanduku la Barua",
@@ -337,8 +339,11 @@ export default {
         "deleteConfirm": "Je, una uhakika unataka kufuta barua hii?",
         "back": "Rudi kwenye Orodha",
         "loading": "Inapakia barua...",
-        "empty": "Hakuna barua bado. Tengeneza muhtasari wa wiki ili kupokea moja!",
-        "defaultTitle": "Muhtasari wa Kila Wiki"
+        "empty": "Hakuna barua bado. Chapisha maelezo 2 ili kupokea barua!",
+        "defaultTitle": "Barua ya Tafakari",
+        "autoDeleteNotice": "Barua zitafutwa kiotomatiki siku 30 baada ya kutengenezwa.",
+        "welcomeLetterTitle": "Karibu kwenye Scripture Habit",
+        "welcomeLetterContent": "Tunakukaribisha kwa moyo mkunjufu, {nickname}.\n\nKatika shughuli nyingi za maisha ya kila siku, kufungua maandiko na kuelekeza moyo wako kwenye neno takatifu wakati mwingine inaweza kuonekana kama changamoto ndogo. Hata hivyo, hata kusoma mstari mmoja tu kwa siku au kuandika tafakari fupi, mkusanyiko huo mdogo hakika utaleta amani ya kweli na nuru maishani mwako.\n\nUkishachapisha madokezo 2, utapokea barua maalum ya kutafakari maarifa yako. Tunakuhimiza uandike kile ulichohisi leo katika dokezo lako la kwanza kabisa!\n\nMaisha yako yajazwe na baraka tele na furaha.\n\n— Kutoka kwa Msanidi wa Scripture Habit"
     },
     "groupChat": {
         "defaultScripture": "Agano la Kale",

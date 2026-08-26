@@ -513,7 +513,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('AI Route Integration', ()
             expect(res.status).toBe(404);
         });
 
-        it('should return 429 if personal recap generated too recently', async () => {
+        it('should return 400 if personal letter requested with fewer than 2 new notes', async () => {
             const recentDate = new Date();
             recentDate.setDate(recentDate.getDate() - 3);
 
@@ -533,7 +533,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('AI Route Integration', ()
                     language: 'en'
                 })
             });
-            expect(res.status).toBe(429);
+            expect(res.status).toBe(400);
         });
 
         it('should return cached recap if generated too recently and recap exists in collection', async () => {
@@ -624,7 +624,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('AI Route Integration', ()
 
             expect(res.status).toBe(200);
             const data = await res.json();
-            expect(data.message).toBe('No personal notes found for this week.');
+            expect(data.message).toBe('No personal notes found.');
         });
 
         it('should generate personal recap successfully and cache/persist correctly', async () => {
@@ -637,8 +637,12 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('AI Route Integration', ()
                 comment: 'Faith is hope in things not seen.',
                 createdAt: admin.firestore.Timestamp.now()
             });
+            await userRef.collection('notes').add({
+                comment: 'Charity never faileth.',
+                createdAt: admin.firestore.Timestamp.now()
+            });
 
-            mockGeminiResponse('Dear Friend, you had a wonderful study of faith.');
+            mockGeminiResponse('Title: Living by Faith\n\nDear Friend, you had a wonderful study of faith.');
 
             const res = await fetch(`${setup.baseUrl}/api/ai/generate-personal-weekly-recap`, {
                 method: 'POST',
@@ -655,16 +659,27 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('AI Route Integration', ()
             expect(res.status).toBe(200);
             const data = await res.json();
             expect(data.success).toBe(true);
+            expect(data.title).toBe('Living by Faith');
             expect(data.recap).toBe('Dear Friend, you had a wonderful study of faith.');
 
             // Verify user's lastRecapGeneratedAt update
             const userSnap = await db.collection('users').doc(USER_ID).get();
             expect(userSnap.data()?.lastRecapGeneratedAt).toBeDefined();
+            expect(userSnap.data()?.lastLetterGeneratedAt).toBeDefined();
 
-            // Verify recap document exists
+            // Verify recap document exists with expiresAt
             const recapsSnap = await userRef.collection('recaps').get();
             expect(recapsSnap.empty).toBe(false);
+            expect(recapsSnap.docs[0].data().title).toBe('Living by Faith');
             expect(recapsSnap.docs[0].data().text).toBe('Dear Friend, you had a wonderful study of faith.');
+            expect(recapsSnap.docs[0].data().expiresAt).toBeDefined();
+
+            // Verify letters document exists with expiresAt
+            const lettersSnap = await userRef.collection('letters').get();
+            expect(lettersSnap.empty).toBe(false);
+            expect(lettersSnap.docs[0].data().title).toBe('Living by Faith');
+            expect(lettersSnap.docs[0].data().content).toBe('Dear Friend, you had a wonderful study of faith.');
+            expect(lettersSnap.docs[0].data().expiresAt).toBeDefined();
         });
 
         it('should survive if personal recap persistence fails', async () => {
@@ -675,6 +690,10 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('AI Route Integration', ()
             const userRef = db.collection('users').doc(USER_ID);
             await userRef.collection('notes').add({
                 comment: 'Faith is hope in things not seen.',
+                createdAt: admin.firestore.Timestamp.now()
+            });
+            await userRef.collection('notes').add({
+                comment: 'Charity never faileth.',
                 createdAt: admin.firestore.Timestamp.now()
             });
 

@@ -4,7 +4,7 @@ import { safeStorage } from '../utils/storage';
 
 export type FontSize = 'small' | 'medium' | 'large' | 'extraLarge';
 
-export const FONT_SIZE_MAP: Record<FontSize, string> = {
+const FONT_SIZE_MAP: Record<FontSize, string> = {
     'small': '14px',
     'medium': '16px',
     'large': '18px',

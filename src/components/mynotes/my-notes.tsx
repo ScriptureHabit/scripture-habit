@@ -25,7 +25,6 @@ import { useRecap } from './hooks/use-recap';
 
 // Types
 import { SCRIPTURE_CATEGORIES, CATEGORY_TRANSLATION_MAP } from '../../types/scripture';
-import { parseTimestampToDate } from '../../utils/time-utils';
 import { useApiWarmupOnMount } from '../../utils/api-warmup';
 
 interface MyNotesProps {
@@ -59,12 +58,16 @@ const MyNotes = ({ userData, isModalOpen, setIsModalOpen, userGroups }: MyNotesP
     handlePrevPage
   } = useMyNotes(userData, selectedCategory, searchTerm, NOTES_PER_PAGE);
 
-  // 2. Recap Feature Hook
+  // 2. Recap/Letter Feature Hook
   const {
     recapLoading,
     isRecapModalOpen,
     generatedRecapText,
+    generatedRecapTitle,
     isFromCache,
+    canGenerateRecap,
+    notesRemaining,
+    hasPreviousLetter,
     setIsRecapModalOpen,
     handleGenerateRecap,
     handleSaveRecapToLetterBox
@@ -91,24 +94,6 @@ const MyNotes = ({ userData, isModalOpen, setIsModalOpen, userGroups }: MyNotesP
   const totalPages = Math.ceil(totalCount / NOTES_PER_PAGE);
   const displayNotes = notes; // Server already filtered and paginated these
 
-
-  // Recap Logic
-  let canGenerateRecap = true;
-  let daysRemaining = 0;
-
-  if (userData?.lastRecapGeneratedAt) {
-    const lastGenerated = parseTimestampToDate(userData.lastRecapGeneratedAt);
-    const now = new Date();
-    const diffTime = now.getTime() - lastGenerated.getTime();
-    const cooldownMs = 6 * 24 * 60 * 60 * 1000; // 6 days in milliseconds
-
-    if (diffTime < cooldownMs) {
-      canGenerateRecap = false;
-      const remainingMs = cooldownMs - diffTime;
-      daysRemaining = Math.max(1, Math.ceil(remainingMs / (24 * 60 * 60 * 1000)));
-    }
-  }
-
   return (
     <div className="MyNotes">
       <div className="my-notes-header">
@@ -126,25 +111,25 @@ const MyNotes = ({ userData, isModalOpen, setIsModalOpen, userGroups }: MyNotesP
 
       <div className="my-notes-action-center">
         <div className="action-card-container">
-          <div className={`action-card recap-card ${!canGenerateRecap ? 'view-cached available' : ((canGenerateRecap && notes.length > 0) ? 'available' : 'locked')}`}>
+          <div className={`action-card recap-card ${canGenerateRecap ? 'available' : (hasPreviousLetter ? 'view-cached available' : 'locked')}`}>
             <button
-              className={`generate-recap-main-btn ${!canGenerateRecap ? 'view-cached' : ''}`}
-              onClick={() => handleGenerateRecap(notes.length)}
-              disabled={recapLoading || (canGenerateRecap && notes.length === 0)}
+              className={`generate-recap-main-btn ${!canGenerateRecap && hasPreviousLetter ? 'view-cached' : ''}`}
+              onClick={() => handleGenerateRecap(canGenerateRecap, hasPreviousLetter)}
+              disabled={recapLoading || (!canGenerateRecap && !hasPreviousLetter)}
             >
               <div className="btn-content flex-column">
                 <div className="btn-main-row">
                   <UilAnalysis size="24" className="recap-icon" />
                   <span>
                     {recapLoading ? (canGenerateRecap ? t('myNotes.loading') : (t('myNotes.fetchingRecentRecap') || "Retrieving...")) :
-                      !canGenerateRecap ? (t('myNotes.viewRecentRecap') || "✨ View Recent Recap") :
+                      !canGenerateRecap && hasPreviousLetter ? (t('myNotes.viewRecentRecap') || "✨ View Recent Letter") :
                         t('myNotes.generateRecap')}
                   </span>
                   {!recapLoading && <div className="stars-decoration">✨</div>}
                 </div>
                 {!canGenerateRecap && !recapLoading && (
                   <div className="btn-sub-row">
-                    {t('myNotes.nextLetterInDays', { days: daysRemaining }) || `(新しい手紙まであと ${daysRemaining} 日)`}
+                    {t('myNotes.nextLetterInNotes', { count: notesRemaining }) || `(新しい手紙まであと ${notesRemaining} 回の投稿)`}
                   </div>
                 )}
               </div>
@@ -278,6 +263,7 @@ const MyNotes = ({ userData, isModalOpen, setIsModalOpen, userGroups }: MyNotesP
         isOpen={isRecapModalOpen}
         onClose={() => setIsRecapModalOpen(false)}
         recapText={generatedRecapText}
+        title={generatedRecapTitle}
         onSave={handleSaveRecapToLetterBox}
         isFromCache={isFromCache}
       />

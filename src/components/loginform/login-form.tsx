@@ -4,6 +4,7 @@ import Button from '../button/button';
 import Input from '../input/input';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../../hooks/use-language';
+import { isEmulator } from '../../config/firebase-config';
 import { UilGoogle, UilGithub } from '@iconscout/react-unicons';
 import Footer from '../footer/footer';
 import { useLoginForm } from './hooks/use-login-form';
@@ -23,7 +24,8 @@ const LoginForm = () => {
     handleSocialLogin,
     handleCompleteGoogleSignup,
     handleSubmit,
-    handleResendVerification
+    handleResendVerification,
+    handleDevQuickLogin
   } = useLoginForm();
 
   if (pendingGoogleUser) {
@@ -82,6 +84,27 @@ const LoginForm = () => {
           <UilGithub size="20" />
           {t('login.githubButton')}
         </button>
+
+        {isEmulator && import.meta.env.DEV && (
+          <button
+            type="button"
+            onClick={handleDevQuickLogin}
+            style={{
+              width: '100%',
+              padding: '0.65rem 1rem',
+              marginTop: '0.75rem',
+              borderRadius: '8px',
+              border: '1px dashed #ec4899',
+              backgroundColor: 'rgba(236, 72, 153, 0.08)',
+              color: '#ec4899',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              fontSize: '0.9rem'
+            }}
+          >
+            ⚡ Dev Quick Login (demo-user)
+          </button>
+        )}
 
         <div className="separator">
           <span>OR</span>

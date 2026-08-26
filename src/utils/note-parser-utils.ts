@@ -30,7 +30,7 @@ function collectUniqueStrings(...arrays: (string | undefined | null)[][]): strin
 }
 
 // 1. Automatically collect all scripture category names across all locales (SSOT)
-export const KNOWN_SCRIPTURES = collectUniqueStrings(
+const KNOWN_SCRIPTURES = collectUniqueStrings(
     ALL_LOCALES.flatMap(l => Object.values(l.scriptures || {})),
     ALL_LOCALES.flatMap(l => [
         l.books?.['Doctrine and Covenants'],
@@ -41,7 +41,7 @@ export const KNOWN_SCRIPTURES = collectUniqueStrings(
     ['Doctrine and Covenants', 'D&C', 'BYU Speeches', 'General Conference', 'Book of Mormon', 'Old Testament', 'New Testament', 'Pearl of Great Price', 'Ordinances and Proclamations']
 ).sort((a, b) => b.length - a.length);
 
-export const splitHeaderScriptureAndChapter = (headerText: string): { scriptureValue: string; chapterValue: string } => {
+const splitHeaderScriptureAndChapter = (headerText: string): { scriptureValue: string; chapterValue: string } => {
     const trimmed = headerText.trim();
     for (const scrip of KNOWN_SCRIPTURES) {
         if (trimmed.toLowerCase().startsWith(scrip.toLowerCase())) {
@@ -104,13 +104,13 @@ function buildExactLabelRegex(words: string[], flags = 'i'): RegExp {
 }
 
 // Dynamically generated Regexes adhering to DRY principles
-export const SCRIPTURE_LABEL_REGEX = buildPrefixRegex(scriptureLabels);
-export const CHAPTER_LABEL_REGEX   = buildPrefixRegex(chapterLabels);
-export const COMMENT_LABEL_REGEX   = buildPrefixRegex(commentLabels);
-export const GENERAL_LABEL_REGEX   = buildPrefixRegex(generalLabels);
+const SCRIPTURE_LABEL_REGEX = buildPrefixRegex(scriptureLabels);
+const CHAPTER_LABEL_REGEX   = buildPrefixRegex(chapterLabels);
+const COMMENT_LABEL_REGEX   = buildPrefixRegex(commentLabels);
+const GENERAL_LABEL_REGEX   = buildPrefixRegex(generalLabels);
 
-export const KV_LINE_REGEX         = buildPrefixRegex(allLabels, 'im');
-export const IS_LABEL_HEADER_REGEX = buildExactLabelRegex(allLabels);
+const KV_LINE_REGEX         = buildPrefixRegex(allLabels, 'im');
+const IS_LABEL_HEADER_REGEX = buildExactLabelRegex(allLabels);
 
 const getDividerIndex = (line: string): number => {
     const idxColon = line.indexOf(':');

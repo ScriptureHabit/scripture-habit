@@ -307,13 +307,13 @@ export default {
         "readInGospelLibrary": "Basahin sa Gospel Library",
         "goToByuSpeech": "Pumunta sa BYU Speech",
         "readStudyMaterial": "Basahin ang Study Material",
-        "generateRecap": "✨ Bumuo ng Lingguhang Buod",
-        "viewRecentRecap": "✨ Tingnan ang Kamakailang Buod",
-        "generatingRecap": "Bumubuo ng lingguhang buod... Maaaring tumagal ito ng sandali.",
-        "fetchingRecentRecap": "Kinukuha ang kamakailang buod...",
-        "recapSuccess": "Nakabuo na ng lingguhang buod! Suriin at i-save ito.",
-        "noNotesForRecap": "Walang natagpuang mga tala para sa linggong ito.",
-        "recapError": "Nabigo sa pagbuo ng buod.",
+        "generateRecap": "✨ Bumuo ng AI Pagninilay na Sulat",
+        "viewRecentRecap": "✨ Tingnan ang Kamakailang Sulat",
+        "generatingRecap": "Bumubuo ng sulat ng pagninilay... Maaaring tumagal ito ng sandali.",
+        "fetchingRecentRecap": "Kinukuha ang kamakailang sulat...",
+        "recapSuccess": "Nakabuo na ng sulat ng pagninilay! Suriin at i-save ito.",
+        "noNotesForRecap": "Mag-post ng hindi bababa sa 2 tala upang makabuo ng sulat.",
+        "recapError": "Nabigo sa pagbuo ng sulat.",
         "sharedActivity": "Ibinahaging Aktibidad",
         "noteDeletedSuccess": "Matagumpay na nabura ang tala",
         "noteDeletedError": "Nabigong burahin ang tala",
@@ -323,13 +323,15 @@ export default {
         "nextPage": "Susunod",
         "pageInfo": "Pahina {current} ng {total}",
         "nextLetterInDays": "(Bagong sulat sa {days} araw)",
+        "nextLetterInNotes": "(Bagong sulat sa {count} pang tala)",
         "notMember": "Hindi ka miyembro ng grupong ito"
     },
     "recapModal": {
-        "title": "Ang Iyong Lingguhang Sulat",
-        "subtitle": "Isang pagninilay sa iyong espirituwal na paglalakbay ngayong linggo.",
+        "title": "AI Pagninilay na Sulat",
+        "subtitle": "Isang pagninilay sa iyong mga kamakailang tala sa pag-aaral.",
         "close": "Isara",
-        "saveToNotes": "I-save sa Letter Box"
+        "saveToNotes": "I-save sa Letter Box",
+        "savedToLetterBox": "Nai-save sa Letter Box"
     },
     "letterBox": {
         "title": "Letter Box",
@@ -337,8 +339,11 @@ export default {
         "deleteConfirm": "Sigurado ka bang gusto mong itapon ang sulat na ito?",
         "back": "Bumalik sa Listahan",
         "loading": "Naglo-load ng mga sulat...",
-        "empty": "Wala pang mga sulat. Gumawa ng lingguhang buod upang makatanggap ng isa!",
-        "defaultTitle": "Buod ng Linggo"
+        "empty": "Wala pang mga sulat. Mag-post ng 2 tala upang makatanggap ng sulat!",
+        "defaultTitle": "Sulat ng Pagninilay",
+        "autoDeleteNotice": "Awtomatikong mabubura ang mga sulat 30 araw pagkatapos mabuo.",
+        "welcomeLetterTitle": "Maligayang pagdating sa Scripture Habit",
+        "welcomeLetterContent": "Isang mainit na pagtanggap sa iyo, {nickname}.\n\nSa gitna ng abalang araw-araw na pamumuhay, ang pagbubukas ng mga banal na kasulatan at pagtutuon ng puso sa banal na salita ay maaaring minsan ay parang isang maliit na hamon. Gayunpaman, kahit magbasa lamang ng isang talata sa isang araw o magtala ng maikling pagninilay, ang maliit na pagsisikap na iyon ay tiyak na magdadala ng tunay na kapayapaan at liwanag sa iyong buhay.\n\nKapag nakapag-post ka na ng 2 tala, makakatanggap ka ng isang espesyal na liham ng pagninilay sa iyong mga natutuhan. Inaanyayahan ka naming isulat ang nadama mo ngayon sa iyong pinakaunang tala!\n\nNawa'y mapuspos ang iyong buhay ng masaganang pagpapala at kagalakan.\n\n— Mula sa Developer ng Scripture Habit"
     },
     "groupChat": {
         "defaultScripture": "Luma Tipan",

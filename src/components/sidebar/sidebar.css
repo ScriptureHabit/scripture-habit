@@ -184,6 +184,29 @@
 }
 
 /* Shared Unread Dot Styles (Desktop & Mobile) */
+.menu-icon-container {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.notes-unread-dot {
+    position: absolute;
+    top: -2px;
+    right: -3px;
+    width: 8px !important;
+    height: 8px !important;
+    min-width: 8px !important;
+    min-height: 8px !important;
+    background-color: #ec4899 !important;
+    border-radius: 50% !important;
+    box-shadow: 0 0 6px rgba(236, 72, 153, 0.7);
+    animation: unread-dot-pulse 2s infinite ease-in-out;
+    pointer-events: none;
+    z-index: 2;
+}
+
 .menuItem .group-unread-dot,
 .modal-group-item .group-unread-dot,
 .group-unread-dot {

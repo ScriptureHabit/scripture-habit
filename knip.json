@@ -1,6 +1,7 @@
 {
   "$schema": "https://unpkg.com/knip@5/schema.json",
   "entry": [
+    "api/api.ts",
     "backend/index.ts",
     "api_internal/**/*.ts",
     "scripts/**/*.ts",
@@ -9,6 +10,7 @@
   ],
   "project": [
     "src/**/*.{ts,tsx}",
+    "api/**/*.{ts,js}",
     "backend/**/*.{ts,js}",
     "api_internal/**/*.{ts,js}",
     "scripts/**/*.{ts,js}",
@@ -17,20 +19,22 @@
   "ignoreDependencies": [
     "@lhci/cli",
     "@opentelemetry/core",
-    "cors",
-    "helmet",
-    "@types/cors",
     "@playwright/browser-chromium",
     "@playwright/browser-webkit",
     "cross-spawn",
     "hono",
     "caniuse-lite",
-    "sharp",
-    "@vitejs/plugin-legacy"
+    "@vitejs/plugin-legacy",
+    "workbox-precaching",
+    "workbox-routing",
+    "workbox-strategies",
+    "workbox-expiration",
+    "workbox-background-sync"
   ],
   "ignoreBinaries": [
     "netstat",
     "findstr",
-    "tasklist"
+    "tasklist",
+    "gcloud"
   ]
 }

@@ -8,7 +8,7 @@ import React from 'react';
 
 // --- Sidebar Data ---
 
-export type SidebarKey = 'dashboard' | 'myNotes' | 'profile' | 'myGroup';
+type SidebarKey = 'dashboard' | 'myNotes' | 'profile' | 'myGroup';
 
 export interface SidebarItem {
     id: SidebarKey;

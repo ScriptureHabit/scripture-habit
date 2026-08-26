@@ -367,10 +367,3 @@ export const DailyReadingPlan2026: ReadingPlanItem[] = [
     { day: 364, scripts: ["Luke 2:13-14","Matthew 2:2","Psalms 23:1","Psalms 83:18","Isaiah 12:2","Isaiah 63:16","Isaiah 7:14","Isaiah 9:6","Amos 4:13","Zechariah 14:16","Moses 7:53"], date: "2026-12-27" },
 ];
 
-export const getTodayReadingPlan = (): ReadingPlanItem | undefined => {
-    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Tokyo';
-    const now = new Date();
-    const localDate = now.toLocaleDateString('sv-SE', { timeZone });
-
-    return DailyReadingPlan2026.find(p => p.date === localDate);
-};

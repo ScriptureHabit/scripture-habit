@@ -231,6 +231,10 @@ describe('AI Prompt Construction Regression', () => {
         });
         await db.collection('users').doc(testUid).collection('notes').add({
             text: 'I learned about faith today.',
+            createdAt: new Date(Date.now() - 1000)
+        });
+        await db.collection('users').doc(testUid).collection('notes').add({
+            text: 'Charity never faileth.',
             createdAt: new Date()
         });
 
@@ -248,9 +252,9 @@ describe('AI Prompt Construction Regression', () => {
 
         const prompt = getSentPrompt(0);
 
-        expect(prompt).toContain('Task: Write a warm personal letter');
+        expect(prompt).toContain('Task: Write a warm, spiritually uplifting personal reflection letter');
         expect(prompt).toContain('I learned about faith today.');
-        expect(prompt).toMatchSnapshot();
+        expect(prompt).toContain('Charity never faileth.');
     }, 60000);
 
     describe('SKIP_AI === true mode', () => {
@@ -395,10 +399,10 @@ describe('AI Prompt Construction Regression', () => {
             });
             expect(res.status).toBe(200);
             const data = await res.json();
-            expect(data.message).toBe('No personal notes found for this week.');
+            expect(data.message).toBe('No personal notes found.');
         });
 
-        it('should enforce personal weekly recap cooldown rate limit (429)', async () => {
+        it('should enforce 2-note requirement when recent letter was generated (400)', async () => {
             setup.mockAuth(testUserUid);
             const { db } = await import('./lib/firebase-admin.js');
             
@@ -415,9 +419,9 @@ describe('AI Prompt Construction Regression', () => {
                 body: JSON.stringify({ uid: testUserUid, language: 'en' })
             });
 
-            expect(res.status).toBe(429);
+            expect(res.status).toBe(400);
             const data = await res.json();
-            expect(data.error).toBe('Personal recap already generated recently. Please wait a week.');
+            expect(data.error).toBe('Please post at least 2 notes to generate a new letter.');
 
             // Clean it up
             await db.collection('users').doc(testUserUid).update({
@@ -429,9 +433,13 @@ describe('AI Prompt Construction Regression', () => {
             setup.mockAuth(testUserUid);
             const { db } = await import('./lib/firebase-admin.js');
 
-            // Seed a note
+            // Seed 2 notes
             await db.collection('users').doc(testUserUid).collection('notes').add({
                 comment: 'My sweet daily scripture study.',
+                createdAt: admin.firestore.Timestamp.fromDate(new Date(Date.now() - 1000))
+            });
+            await db.collection('users').doc(testUserUid).collection('notes').add({
+                comment: 'Faith and charity.',
                 createdAt: admin.firestore.Timestamp.fromDate(new Date())
             });
 
@@ -455,11 +463,12 @@ describe('AI Prompt Construction Regression', () => {
             expect(recapsSnap.empty).toBe(false);
             const recapDoc = recapsSnap.docs[0].data();
             expect(recapDoc.text).toBe('Dear Friend, I see you study daily.');
-            expect(recapDoc.type).toBe('weekly_encouragement');
+            expect(recapDoc.type).toBe('study_letter');
 
             // Verify user document has updated lastRecapGeneratedAt
             const userSnap = await db.collection('users').doc(testUserUid).get();
             expect(userSnap.data()?.lastRecapGeneratedAt).toBeDefined();
+            expect(userSnap.data()?.lastLetterGeneratedAt).toBeDefined();
         });
     });
 
@@ -524,25 +533,18 @@ describe('AI Prompt Construction Regression', () => {
                 comment: 'Faith daily study comment.',
                 createdAt: admin.firestore.Timestamp.fromDate(new Date())
             });
+            await db.collection('users').doc(testUserUid).collection('notes').add({
+                comment: 'Hope daily study comment.',
+                createdAt: admin.firestore.Timestamp.fromDate(new Date())
+            });
 
-            // Mock collection subcall to fail, causing persistence block catch
-            const originalDoc = db.collection('users').doc;
-            vi.spyOn(db.collection('users'), 'doc').mockImplementation((id: string) => {
-                const docRef = originalDoc.call(db.collection('users'), id);
-                if (id === testUserUid) {
-                    return {
-                        ...docRef,
-                        get: () => docRef.get(),
-                        collection: () => {
-                            throw new Error('Persistence connection failed');
-                        }
-                    } as any;
-                }
-                return docRef;
+            // Mock batch to fail, causing persistence block catch
+            vi.spyOn(db, 'batch').mockImplementation(() => {
+                throw new Error('Persistence connection failed');
             });
 
             if (!isRealAi) {
-                mockGeminiResponse('Encouraging words');
+                mockGeminiResponse('Title: Encouragement\n\nEncouraging words');
             }
 
             const res = await fetch(`${setup.baseUrl}/api/ai/generate-personal-weekly-recap`, {

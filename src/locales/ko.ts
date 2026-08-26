@@ -307,13 +307,13 @@ export default {
         "readInGospelLibrary": "복음 자료실에서 읽기",
         "goToByuSpeech": "BYU 연설로 이동",
         "readStudyMaterial": "학습 자료 읽기",
-        "generateRecap": "✨ 주간 요약 생성",
-        "viewRecentRecap": "✨ 최근 요약 보기",
-        "generatingRecap": "주간 요약을 생성 중입니다... 잠시만 기다려주세요.",
-        "fetchingRecentRecap": "최근 요약을 가져오는 중...",
-        "recapSuccess": "주간 요약이 생성되었습니다! 검토하고 저장하세요.",
-        "noNotesForRecap": "이번 주 노트를 찾을 수 없습니다.",
-        "recapError": "요약을 생성하지 못했습니다.",
+        "generateRecap": "✨ AI 성찰 편지 생성",
+        "viewRecentRecap": "✨ 최근 편지 보기",
+        "generatingRecap": "성찰 편지를 생성 중입니다... 잠시만 기다려주세요.",
+        "fetchingRecentRecap": "최근 편지를 가져오는 중...",
+        "recapSuccess": "성찰 편지가 생성되었습니다! 검토하고 저장하세요.",
+        "noNotesForRecap": "노트를 2회 작성하면 편지를 생성할 수 있습니다.",
+        "recapError": "편지를 생성하지 못했습니다.",
         "sharedActivity": "공유 활동",
         "noteDeletedSuccess": "노트가 성공적으로 삭제되었습니다",
         "noteDeletedError": "노트 삭제 실패",
@@ -323,13 +323,15 @@ export default {
         "nextPage": "다음",
         "pageInfo": "전체 {total}페이지 중 {current}페이지",
         "nextLetterInDays": "(새 편지까지 {days}일 남음)",
+        "nextLetterInNotes": "(새 편지까지 앞으로 {count}개의 노트 작성 필요)",
         "notMember": "이 그룹의 멤버가 아닙니다"
     },
     "recapModal": {
-        "title": "당신의 주간 편지",
-        "subtitle": "이번 주 영적 여정에 대한 성찰.",
+        "title": "AI 성찰 편지",
+        "subtitle": "최근 학습 노트에 대한 AI의 편지입니다.",
         "close": "닫기",
-        "saveToNotes": "편지함에 저장"
+        "saveToNotes": "편지함에 저장",
+        "savedToLetterBox": "편지함에 저장됨"
     },
     "letterBox": {
         "title": "편지함",
@@ -337,8 +339,11 @@ export default {
         "deleteConfirm": "이 편지를 정말 버리시겠습니까?",
         "back": "목록으로 돌아가기",
         "loading": "편지 로딩 중...",
-        "empty": "아직 편지가 없습니다. 주간 요약을 생성하여 편지를 받으세요!",
-        "defaultTitle": "주간 요약"
+        "empty": "아직 편지가 없습니다. 노트를 2회 작성하여 편지를 받으세요!",
+        "defaultTitle": "성찰 편지",
+        "autoDeleteNotice": "편지는 생성된 지 30일 후에 자동으로 삭제됩니다.",
+        "welcomeLetterTitle": "Scripture Habit에 오신 것을 환영합니다",
+        "welcomeLetterContent": "{nickname}님을 진심으로 환영합니다.\n\n바쁜 일상 속에서 경전을 펴고 거룩한 말씀에 마음을 기울이는 습관을 갖는 것은 때때로 작은 도전처럼 느껴질 수 있습니다. 하지만 하루에 단 한 구절을 읽거나 짧은 소감을 남기는 것만으로도, 그 작은 실천의 쌓임은 당신의 삶에 분명한 평안과 빛을 가져다줄 것입니다.\n\n노트를 2회 게시하시면 당신의 배움과 깨달음을 돌아보는 '특별한 편지'를 받으실 수 있습니다. 오늘 느낀 마음을 첫 번째 노트에 꼭 기록해 보세요.\n\n앞으로의 삶에 풍성한 축복과 기쁨이 가득하기를 바랍니다.\n\n— Scripture Habit 개발자 드림"
     },
     "groupChat": {
         "defaultScripture": "구약성경",

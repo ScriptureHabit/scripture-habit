@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { Note } from '../types/note';
 
-export type ActiveModal = 'leave' | 'delete' | 'members' | 'reactions' | 'editName' | 'newNote' | 'editNote' | null;
+type ActiveModal = 'leave' | 'delete' | 'members' | 'reactions' | 'editName' | 'newNote' | 'editNote' | null;
 
 export interface ReactionItem {
   userId: string;

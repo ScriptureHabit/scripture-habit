@@ -1,4 +1,4 @@
-export const openapiSpec = {
+const openapiSpec = {
   "openapi": "3.0.0",
   "info": {
     "title": "Scripture Habit API",

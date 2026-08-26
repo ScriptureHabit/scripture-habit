@@ -6,7 +6,7 @@ import { DEFAULT_KICK_THRESHOLD } from '../../../constants';
 import { UpdateKickThresholdRequest, UpdateKickThresholdResponse } from '../../../../api_internal/lib/schemas';
 import { auth } from '../../../firebase';
 
-export function shouldShowAutoKickModal(
+function shouldShowAutoKickModal(
     userData: UserData | null,
     loading: boolean,
     isJoiningInvite: boolean

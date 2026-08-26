@@ -156,6 +156,19 @@ export function useLoginForm() {
     }
   };
 
+  const handleDevQuickLogin = async () => {
+    if (!auth) return;
+    try {
+      if (typeof sessionStorage !== 'undefined') {
+        sessionStorage.removeItem('sh_dev_signed_out');
+      }
+      await signInWithEmailAndPassword(auth, 'demo-user@example.com', 'password123');
+      navigate(`/${language}/dashboard`);
+    } catch (e) {
+      console.error('Dev quick login failed:', e);
+    }
+  };
+
   return {
     email,
     setEmail,
@@ -169,6 +182,7 @@ export function useLoginForm() {
     handleSocialLogin,
     handleCompleteGoogleSignup,
     handleSubmit,
-    handleResendVerification
+    handleResendVerification,
+    handleDevQuickLogin
   };
 }

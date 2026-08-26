@@ -307,13 +307,13 @@ export default {
         "readInGospelLibrary": "Read in Gospel Library",
         "goToByuSpeech": "Go to BYU Speeches",
         "readStudyMaterial": "Read The Study Material",
-        "generateRecap": "✨ Generate Weekly Recap",
-        "viewRecentRecap": "✨ View Recent Recap",
-        "generatingRecap": "Generating weekly recap... This may take a moment.",
-        "fetchingRecentRecap": "Retrieving recent recap...",
-        "recapSuccess": "Weekly recap generated! Review and save it.",
-        "noNotesForRecap": "No notes found for this week.",
-        "recapError": "Failed to generate recap.",
+        "generateRecap": "✨ Generate AI Letter",
+        "viewRecentRecap": "✨ View Recent Letter",
+        "generatingRecap": "Generating reflection letter... This may take a moment.",
+        "fetchingRecentRecap": "Retrieving recent letter...",
+        "recapSuccess": "Reflection letter generated! Review and save it.",
+        "noNotesForRecap": "Please post at least 2 notes to generate a letter.",
+        "recapError": "Failed to generate letter.",
         "sharedActivity": "Shared Activity",
         "noteDeletedSuccess": "Note deleted successfully",
         "noteDeletedError": "Failed to delete note",
@@ -323,13 +323,15 @@ export default {
         "nextPage": "Next",
         "pageInfo": "Page {current} of {total}",
         "nextLetterInDays": "(New letter in {days} days)",
+        "nextLetterInNotes": "(New letter in {count} more notes)",
         "notMember": "You are not a member of this group"
     },
     "recapModal": {
-        "title": "Your Weekly Letter",
-        "subtitle": "A reflection on your spiritual journey this week.",
+        "title": "AI Reflection Letter",
+        "subtitle": "A reflection on your recent study notes.",
         "close": "Close",
-        "saveToNotes": "Save to Letter Box"
+        "saveToNotes": "Save to Letter Box",
+        "savedToLetterBox": "Saved in Letter Box"
     },
     "letterBox": {
         "title": "Letter Box",
@@ -337,8 +339,11 @@ export default {
         "deleteConfirm": "Are you sure you want to discard this letter?",
         "back": "Back to List",
         "loading": "Loading letters...",
-        "empty": "No letters yet. Generate a weekly recap to receive one!",
-        "defaultTitle": "Weekly Recap"
+        "empty": "No letters yet. Post 2 notes to receive a reflection letter!",
+        "defaultTitle": "Reflection Letter",
+        "autoDeleteNotice": "Letters will be automatically deleted 30 days after generation.",
+        "welcomeLetterTitle": "Welcome to Scripture Habit",
+        "welcomeLetterContent": "A warm welcome to you, {nickname}.\n\nIn our busy daily lives, opening the scriptures and turning our hearts to the sacred word can sometimes feel like a small challenge. Yet, even reading just one verse a day or writing down a short reflection, that small accumulation will surely bring true peace and light into your life.\n\nOnce you post 2 notes, you will receive a special reflection letter looking back on your insights and learning. We encourage you to write down what you felt today in your very first note!\n\nMay your life ahead be filled with abundant blessings and joy.\n\n— Scripture Habit Developer"
     },
     "groupChat": {
         "defaultScripture": "Old Testament",
@@ -812,7 +817,7 @@ export default {
         "streakCelebration": "Amazing! Total of {streak} days achieved!",
         "doneToday": "Great job today!\nSee you tomorrow!",
         "promptToday": "Have you read today?\nLet's study together!",
-        "weeklyRecapPrompt": "Let's reflect on\nyour learning this week!",
+        "weeklyRecapPrompt": "Post notes to receive\nan AI reflection letter!",
         "groupOptionsPrompt": "Let's find a community\nto study together!",
         "createGroupPrompt": "Create a new group and\ninvite your friends!",
         "joinGroupPrompt": "I want to study with various people!",

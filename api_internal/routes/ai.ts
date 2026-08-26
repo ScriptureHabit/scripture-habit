@@ -3,6 +3,7 @@ import { admin, db } from '../lib/firebase-admin.js';
 import { aiLimiter, verifyAppCheck, authenticate, AuthenticatedRequest } from '../lib/middleware.js';
 import { ponderQuestionsSchema, translateSchema, translateBatchSchema, personalRecapSchema, languageNames } from '../lib/schemas.js';
 import { AppError, ValidationError, ForbiddenError, NotFoundError, sendErrorResponse } from '../lib/errors.js';
+import { t } from '../lib/i18n.js';
 import axios from 'axios';
 import crypto from 'crypto';
 import * as Sentry from "@sentry/node";
@@ -411,113 +412,194 @@ router.post('/generate-personal-weekly-recap', authenticate, aiLimiter, verifyAp
         if (!uSnap.exists) throw new NotFoundError('User not found');
         const uData = uSnap.data() || {};
 
-        // Prevent duplicate generations (6-day cooldown).
-        // If a recap was already generated recently, we return the cached recent recap
-        // instead of throwing a 429 error, which allows the user to recover in case of
-        // network timeouts or accidental closures.
-        if (uData.lastRecapGeneratedAt) {
-            const lastDate = (uData.lastRecapGeneratedAt as admin.firestore.Timestamp).toDate();
-            const sixDaysAgo = new Date();
-            sixDaysAgo.setDate(sixDaysAgo.getDate() - 6);
-            if (lastDate > sixDaysAgo) {
+        // Check if user has generated a letter previously
+        const lastGenAt = uData.lastLetterGeneratedAt || uData.lastRecapGeneratedAt;
+
+        if (lastGenAt) {
+            // Check how many notes were posted after the last letter generation
+            const newNotesQuery = userRef.collection('notes')
+                .where('createdAt', '>', lastGenAt)
+                .orderBy('createdAt', 'desc')
+                .limit(2)
+                .get();
+            const newNotesSnap = await withTimeout(newNotesQuery, 8000, 'Firestore timeout');
+
+            // If fewer than 2 new notes posted since last generation, return cached recent recap
+            if (!newNotesSnap || newNotesSnap.docs.length < 2) {
                 let cachedRecapText: string | null = null;
+                let cachedTitle: string | null = null;
                 try {
-                    // 1. Try 'recaps' subcollection
-                    const recentRecapSnap = await userRef.collection('recaps')
+                    // 1. Try 'letters' subcollection first
+                    const recentLettersSnap = await userRef.collection('letters')
                         .orderBy('createdAt', 'desc')
-                        .limit(1)
+                        .limit(5)
                         .get();
-                    if (!recentRecapSnap.empty) {
-                        const recentRecapData = recentRecapSnap.docs[0].data();
-                        const recapDate = (recentRecapData.createdAt as admin.firestore.Timestamp).toDate();
-                        if (recapDate > sixDaysAgo && recentRecapData.text) {
-                            cachedRecapText = recentRecapData.text;
+                    const recentLetterDoc = recentLettersSnap.docs.find(d => d.data().type === 'weekly_recap' || d.data().type === 'study_letter');
+                    if (recentLetterDoc) {
+                        const letterData = recentLetterDoc.data();
+                        if (letterData.content) {
+                            cachedRecapText = letterData.content;
+                            cachedTitle = letterData.title || null;
                         }
                     }
 
-                    // 2. Fallback to 'letters' subcollection programmatically (avoids composite index requirements)
+                    // 2. Fallback to 'recaps' subcollection
                     if (!cachedRecapText) {
-                        const recentLettersSnap = await userRef.collection('letters')
+                        const recentRecapSnap = await userRef.collection('recaps')
                             .orderBy('createdAt', 'desc')
-                            .limit(5)
+                            .limit(1)
                             .get();
-                        const recentLetterDoc = recentLettersSnap.docs.find(d => d.data().type === 'weekly_recap');
-                        if (recentLetterDoc) {
-                            const letterData = recentLetterDoc.data();
-                            const letterDate = (letterData.createdAt as admin.firestore.Timestamp).toDate();
-                            if (letterDate > sixDaysAgo && letterData.content) {
-                                cachedRecapText = letterData.content;
+                        if (!recentRecapSnap.empty) {
+                            const recentRecapData = recentRecapSnap.docs[0].data();
+                            if (recentRecapData.text) {
+                                cachedRecapText = recentRecapData.text;
+                                cachedTitle = recentRecapData.title || null;
                             }
                         }
                     }
 
+                    const defaultTitle = t(baseLang, 'letterBox.defaultTitle');
+
                     if (cachedRecapText) {
                         return res.json({
                             success: true,
+                            title: cachedTitle || defaultTitle,
                             recap: cachedRecapText,
                             message: 'Returned cached recent recap.',
                             fromCache: true
                         });
                     }
                 } catch (cacheErr) {
-                    console.warn('[AI Personal Recap] Failed to retrieve cached recap:', cacheErr);
+                    console.warn('[AI Personal Letter] Failed to retrieve cached recap:', cacheErr);
                 }
-                throw new AppError('Personal recap already generated recently. Please wait a week.', 429);
+                throw new AppError('Please post at least 2 notes to generate a new letter.', 400);
             }
         }
 
-        const sevenDaysAgo = new Date();
-        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+        // Fetch the latest 2 notes for the user
         const notesQuery = userRef.collection('notes')
-            .where('createdAt', '>=', admin.firestore.Timestamp.fromDate(sevenDaysAgo))
-            .orderBy('createdAt', 'asc')
-            .limit(100)
+            .orderBy('createdAt', 'desc')
+            .limit(2)
             .get();
         const snapshot = await withTimeout(notesQuery, 8000, 'Firestore timeout');
 
         if (!snapshot) throw new Error('Failed to fetch personal notes');
 
         const notes: string[] = [];
-        (snapshot as admin.firestore.QuerySnapshot).forEach(d => { 
+        (snapshot as admin.firestore.QuerySnapshot).docs.reverse().forEach(d => { 
             const data = d.data();
             const content = data.comment || data.text;
             if (content) {
+                let noteHeader = '';
+                if (data.scripture || data.chapter || data.title || data.speaker) {
+                    const parts = [data.scripture, data.chapter, data.title, data.speaker].filter(Boolean);
+                    noteHeader = `[${parts.join(' - ')}]\n`;
+                }
+                const fullText = noteHeader + content;
                 // Truncate individual notes to prevent prompt overflow
-                const truncated = content.length > 1000 ? content.substring(0, 1000) + '...' : content;
+                const truncated = fullText.length > 1000 ? fullText.substring(0, 1000) + '...' : fullText;
                 notes.push(truncated); 
             }
         });
 
-        if (notes.length === 0) return res.json({ message: 'No personal notes found for this week.' });
+        if (notes.length === 0) return res.json({ message: 'No personal notes found.' });
+        if (notes.length < 2) return res.json({ message: 'Please post at least 2 notes to generate a letter.' });
 
-        const prompt = `Task: Write a warm personal letter summarizing these study notes and encouraging the user. 
-            Start with "Dear Friend" (or the equivalent in the output language).
-            Notes: ${notes.join('\n\n')}
-            
-            【STRICT RULES】:
-            1. You MUST respond ONLY in ${targetLangName}.`;
+        const userName = uData.nickname || uData.displayName || (baseLang === 'ja' ? 'あなた' : 'Friend');
+
+        const prompt = `Task: Write a warm, spiritually uplifting personal reflection letter to ${userName} based on their recent study notes, and create a concise, heartwarming 1-sentence title capturing the core spiritual theme.
+
+The letter should be structured in 3 natural, heartfelt paragraphs:
+1. Warm Reflection & Empathy: Lovingly acknowledge ${userName}'s efforts, study, and the insights they felt in their notes.
+2. Story & Fresh Spiritual Perspective: Connect the user's theme to a specific, inspiring story or insight from standard scriptures (Bible, Book of Mormon, Doctrine and Covenants, Pearl of Great Price) or a General Conference address/speaker. Offer a fresh, comforting, or thought-provoking angle that expands on what the user pondered, showing how a person of faith experienced or taught this truth.
+3. Gentle Encouragement & Blessing: Conclude with a warm, encouraging blessing for their daily walk of faith.
+
+Notes studied by ${userName}:
+${notes.join('\n\n')}
+
+Output MUST be a valid JSON object with the following schema:
+{
+  "title": "<A single concise 1-sentence title in ${targetLangName} summarizing the core spiritual theme>",
+  "letter": "<Warm salutation addressing ${userName} in ${targetLangName} (e.g. cultural equivalent of 'Dear ${userName}')>\\n\\n<3-paragraph letter body in ${targetLangName} following the structure above>"
+}
+
+【STRICT RULES】:
+1. You MUST respond ONLY in valid JSON.
+2. The language of the title and letter MUST be in ${targetLangName}.
+3. Address the user directly by name (${userName}).
+4. Ensure the tone is gentle, uplifting, and Christ-centered, providing genuine spiritual companionship without being overly preachy.`;
 
         const generatedText = await callGemini(prompt);
+
+        // Helper to parse title and letter body (Language-agnostic JSON-first parser)
+        let title = '';
+        let letter = generatedText;
+        try {
+            const cleanJson = generatedText.replace(/```(?:json)?\s*([\s\S]*?)\s*```/g, '$1').trim();
+            const parsed = JSON.parse(cleanJson);
+            if (parsed.title) title = String(parsed.title).trim();
+            if (parsed.letter) letter = String(parsed.letter).trim();
+        } catch {
+            // Fallback for non-JSON formatted text (language-agnostic)
+            const colonMatch = generatedText.match(/^[^\n\r:：]+[:：]\s*(.+?)(?:\r?\n|$)/);
+            if (colonMatch && colonMatch[1].length < 100) {
+                title = colonMatch[1].replace(/\*\*/g, '').trim();
+                const remaining = generatedText.substring(colonMatch[0].length).trim();
+                letter = remaining.replace(/^[^\n\r:：]+[:：]\s*/, '').trim();
+            } else {
+                const lines = generatedText.split('\n').map(l => l.trim()).filter(Boolean);
+                if (lines.length > 1 && lines[0].length < 80) {
+                    title = lines[0].replace(/^#+\s*|\*\*/g, '').trim();
+                    letter = lines.slice(1).join('\n\n').trim();
+                }
+            }
+        }
+        if (!title) {
+            title = t(baseLang, 'letterBox.defaultTitle');
+        }
+
+        const expiresAt = admin.firestore.Timestamp.fromMillis(Date.now() + 30 * 24 * 60 * 60 * 1000);
 
         // Best effort persistence
         try {
             const persistTask = (async () => {
+                const batch = db.batch();
+
+                // 1. Save to recaps subcollection
                 const recapRef = db.collection('users').doc(uid).collection('recaps').doc();
-                await recapRef.set({
-                    text: generatedText,
+                batch.set(recapRef, {
+                    title,
+                    text: letter,
                     createdAt: admin.firestore.FieldValue.serverTimestamp(),
-                    type: 'weekly_encouragement'
+                    expiresAt,
+                    type: 'study_letter'
                 });
-                await db.collection('users').doc(uid).update({
+
+                // 2. Save directly to letters subcollection (Letterbox)
+                const letterRef = db.collection('users').doc(uid).collection('letters').doc();
+                batch.set(letterRef, {
+                    title,
+                    content: letter,
+                    createdAt: admin.firestore.FieldValue.serverTimestamp(),
+                    expiresAt,
+                    type: 'study_letter'
+                });
+
+                // 3. Update user last generation timestamp
+                const userDocRef = db.collection('users').doc(uid);
+                batch.update(userDocRef, {
+                    lastLetterGeneratedAt: admin.firestore.FieldValue.serverTimestamp(),
                     lastRecapGeneratedAt: admin.firestore.FieldValue.serverTimestamp()
                 });
+
+                await batch.commit();
             })();
             await withTimeout(persistTask, 8000, 'Persistence timeout');
         } catch (e) {
             console.warn('[AI Personal Recap] Failed to persist:', (e as Error).message);
         }
 
-        res.json({ success: true, recap: generatedText });
+        res.json({ success: true, title, recap: letter });
     } catch (err) {
         if (err instanceof AppError) {
             sendErrorResponse(res, err);

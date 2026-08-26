@@ -38,6 +38,10 @@ const LetterBox = ({ isOpen, onClose, userData }: LetterBoxProps) => {
                 </div>
 
                 <div className="letterbox-body">
+                    <div className="letterbox-notice">
+                        <span>※ {t('letterBox.autoDeleteNotice')}</span>
+                    </div>
+
                     {selectedLetter ? (
                         <div className="letter-detail-view">
                             <button className="back-btn" onClick={() => setSelectedLetter(null)}>

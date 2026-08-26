@@ -9,7 +9,7 @@ interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {
     style?: React.CSSProperties;
 }
 
-export const Skeleton = ({
+const Skeleton = ({
     width,
     height,
     variant = 'rectangle',
@@ -81,28 +81,7 @@ export const OptionsSkeleton = () => {
     );
 };
 
-export const ChatSkeleton = () => {
-    return (
-        <div className="chat-skeleton" style={{ padding: '1rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <div style={{ alignSelf: 'flex-start', display: 'flex', gap: '8px' }}>
-                <Skeleton width="40px" height="40px" variant="circle" />
-                <Skeleton width="180px" height="60px" style={{ borderRadius: '0 12px 12px 12px' }} />
-            </div>
-            <div style={{ alignSelf: 'flex-end' }}>
-                <Skeleton width="150px" height="80px" style={{ borderRadius: '12px 12px 0 12px' }} />
-            </div>
-            <div style={{ alignSelf: 'flex-start', display: 'flex', gap: '8px' }}>
-                <Skeleton width="40px" height="40px" variant="circle" />
-                <Skeleton width="220px" height="40px" style={{ borderRadius: '0 12px 12px 12px' }} />
-            </div>
-            <div style={{ alignSelf: 'flex-end' }}>
-                <Skeleton width="200px" height="50px" style={{ borderRadius: '12px 12px 0 12px' }} />
-            </div>
-        </div>
-    );
-};
-
-export const NoteCardSkeleton = () => {
+const NoteCardSkeleton = () => {
     return (
         <div className="skeleton-note-card" style={{ padding: '1rem', background: '#fff', border: '1px solid #eee' }}>
             <Skeleton width="40px" height="40px" variant="circle" style={{ marginBottom: '1rem' }} />
@@ -139,5 +118,3 @@ export const PublicGroupsSkeleton = () => {
         </div>
     );
 };
-
-export default Skeleton;

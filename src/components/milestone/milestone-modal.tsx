@@ -7,7 +7,7 @@ import { UilDownloadAlt, UilShareAlt, UilTimes } from '@iconscout/react-unicons'
 import { toast } from 'react-toastify';
 import './milestone-modal.css';
 
-export const MilestoneModal: React.FC = () => {
+const MilestoneModal: React.FC = () => {
     const { isOpen, milestoneData, closeMilestone } = useMilestoneStore();
     const { t } = useLanguage();
     const cardRef = useRef<HTMLDivElement>(null);

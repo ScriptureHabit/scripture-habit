@@ -116,9 +116,36 @@
 }
 
 /* Actions */
+.recap-ai-title {
+    background: linear-gradient(135deg, rgba(142, 68, 173, 0.08) 0%, rgba(236, 72, 153, 0.08) 100%);
+    border: 1px solid rgba(142, 68, 173, 0.2);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+    color: #6c2d82;
+    font-size: 1.05rem;
+    text-align: center;
+    line-height: 1.4;
+}
+
+.recap-saved-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: #059669;
+    background-color: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+    font-size: 0.88rem;
+    font-weight: 600;
+}
+
 .recap-actions {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
+    align-items: center;
     gap: 1rem;
     padding-top: 0.5rem;
 }

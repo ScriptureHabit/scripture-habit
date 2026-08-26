@@ -81,7 +81,7 @@ export const isOtherCategory = (scriptureName?: string | null): boolean => {
 /**
  * Checks if a scripture category string represents General Conference.
  */
-export const isGeneralConference = (scriptureName?: string | null): boolean => {
+const isGeneralConference = (scriptureName?: string | null): boolean => {
     if (!scriptureName) return false;
     const lower = scriptureName.toLowerCase().trim();
     return Array.from(GENERAL_CONFERENCE_NAMES).some(name => lower.includes(name));

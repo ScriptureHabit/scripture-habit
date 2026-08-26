@@ -307,13 +307,13 @@ export default {
         "readInGospelLibrary": "Leggi in Biblioteca Evangelica",
         "goToByuSpeech": "Vai a BYU Speeches",
         "readStudyMaterial": "Leggi il Materiale di Studio",
-        "generateRecap": "✨ Genera Riepilogo Settimanale",
-        "viewRecentRecap": "✨ Visualizza Riepilogo Recente",
-        "generatingRecap": "Generazione del riepilogo in corso... Potrebbe richiedere qualche istante.",
-        "fetchingRecentRecap": "Recupero del riepilogo recente...",
-        "recapSuccess": "Riepilogo settimanale generato! Controllalo e salvalo.",
-        "noNotesForRecap": "Nessuna nota trovata per questa settimana.",
-        "recapError": "Impossibile generare il riepilogo.",
+        "generateRecap": "✨ Genera Lettera di Riflessione",
+        "viewRecentRecap": "✨ Visualizza Lettera Recente",
+        "generatingRecap": "Generazione della lettera in corso... Potrebbe richiedere qualche istante.",
+        "fetchingRecentRecap": "Recupero della lettera recente...",
+        "recapSuccess": "Lettera di riflessione generata! Controllala e salvala.",
+        "noNotesForRecap": "Pubblica almeno 2 note per generare una lettera.",
+        "recapError": "Impossibile generare la lettera.",
         "sharedActivity": "Attività Condivisa",
         "noteDeletedSuccess": "Nota eliminata con successo",
         "noteDeletedError": "Impossibile eliminare la nota",
@@ -323,13 +323,15 @@ export default {
         "nextPage": "Successivo",
         "pageInfo": "Pagina {current} di {total}",
         "nextLetterInDays": "(Nuova lettera tra {days} giorni)",
+        "nextLetterInNotes": "(Nuova lettera tra {count} note)",
         "notMember": "Non sei un membro di questo gruppo"
     },
     "recapModal": {
-        "title": "La Tua Lettera Settimanale",
-        "subtitle": "Una riflessione sul tuo percorso spirituale di questa settimana.",
+        "title": "Lettera di Riflessione",
+        "subtitle": "Una riflessione sulle tue note di studio recenti.",
         "close": "Chiudi",
-        "saveToNotes": "Salva nella Cassetta delle Lettere"
+        "saveToNotes": "Salva nella Cassetta delle Lettere",
+        "savedToLetterBox": "Salvato nella cassetta"
     },
     "letterBox": {
         "title": "Cassetta delle Lettere",
@@ -337,8 +339,11 @@ export default {
         "deleteConfirm": "Sei sicuro/a di voler scartare questa lettera?",
         "back": "Torna alla Lista",
         "loading": "Caricamento lettere...",
-        "empty": "Ancora nessuna lettera. Genera un riepilogo settimanale per riceverne una!",
-        "defaultTitle": "Riepilogo Settimanale"
+        "empty": "Ancora nessuna lettera. Pubblica 2 note per ricevere una lettera!",
+        "defaultTitle": "Lettera di Riflessione",
+        "autoDeleteNotice": "Le lettere verranno eliminate automaticamente 30 giorni dopo la loro generazione.",
+        "welcomeLetterTitle": "Benvenuto in Scripture Habit",
+        "welcomeLetterContent": "Ti diamo un caloroso benvenuto, {nickname}.\n\nNella vita frenetica di tutti i giorni, aprire le Scritture e volgere il cuore alla sacra parola può a volte sembrare una piccola sfida. Tuttavia, anche leggendo solo un versetto al giorno o annotando una breve riflessione, quella piccola costanza porterà sicuramente pace e luce nella tua vita.\n\nDopo aver pubblicato 2 note, riceverai una lettera speciale di riflessione sui tuoi apprendimenti e pensieri. Ti invitiamo a scrivere ciò che hai provato oggi nella tua prima nota!\n\nChe la tua vita sia colma di abbondanti benedizioni e gioia.\n\n— Dallo sviluppatore di Scripture Habit"
     },
     "groupChat": {
         "defaultScripture": "Vecchio Testamento",

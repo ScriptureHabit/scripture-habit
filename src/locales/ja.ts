@@ -307,12 +307,12 @@ export default {
         "readInGospelLibrary": "福音ライブラリーで読む",
         "goToByuSpeech": "BYUスピーチへ移動",
         "readStudyMaterial": "学習資料を読む",
-        "generateRecap": "✨ 今週の振り返りを作成",
-        "viewRecentRecap": "✨ 直近の振り返りを見る",
-        "generatingRecap": "振り返りを作成中... 少し時間がかかります。",
-        "fetchingRecentRecap": "直近の振り返りを取得しています...",
+        "generateRecap": "✨ ふり返りレターを作成",
+        "viewRecentRecap": "✨ 直近のレターを見る",
+        "generatingRecap": "ふり返りレターを作成中... 少し時間がかかります。",
+        "fetchingRecentRecap": "直近のレターを取得しています...",
         "recapSuccess": "作成完了！お手紙が届いています。",
-        "noNotesForRecap": "今週のノートが見つかりませんでした。",
+        "noNotesForRecap": "ノートを2回投稿するとレターを作成できます。",
         "recapError": "作成に失敗しました。",
         "sharedActivity": "共有グループのアクティビティ",
         "noteDeletedSuccess": "ノートを削除しました",
@@ -323,13 +323,15 @@ export default {
         "nextPage": "次へ",
         "pageInfo": "{total} ページ中 {current} ページ目",
         "nextLetterInDays": "(新しい手紙まであと {days} 日)",
+        "nextLetterInNotes": "(新しい手紙まであと {count} 回の投稿)",
         "notMember": "グループに参加していません"
     },
     "recapModal": {
-        "title": "今週の振り返りレター",
-        "subtitle": "あなたの今週の霊的な旅路を振り返りましょう。",
+        "title": "ふり返りレター",
+        "subtitle": "直近の学習ノートをもとにしたAIからの手紙です。",
         "close": "閉じる",
-        "saveToNotes": "レターボックスに保存"
+        "saveToNotes": "レターボックスに保存",
+        "savedToLetterBox": "手紙箱に保存済み"
     },
     "letterBox": {
         "title": "レターボックス",
@@ -337,8 +339,11 @@ export default {
         "deleteConfirm": "本当にこの手紙を捨ててしまいますか？",
         "back": "一覧に戻る",
         "loading": "読み込み中...",
-        "empty": "まだ手紙がありません。振り返りを作成して手紙を受け取りましょう！",
-        "defaultTitle": "今週の振り返り"
+        "empty": "まだ手紙がありません。ノートを2回投稿して手紙を受け取りましょう！",
+        "defaultTitle": "学習のふり返り",
+        "autoDeleteNotice": "手紙は生成されてから30日後に自動的に削除されます。",
+        "welcomeLetterTitle": "ようこそ、Scripture Habitへ",
+        "welcomeLetterContent": "{nickname}さんを心から歓迎いたします。\n\n普段、忙しい生活を送る中で聖典を開き、聖文に心を向ける習慣を持つことは、時に小さな挑戦のように感じられるかもしれません。たとえ1日1節でも、短い感想を書き残すだけでも、その小さな積み重ねはあなたの生活に確かな平安と光をもたらします。\n\nノートを2回投稿すると、あなたの気づきや学びをふり返る「特別な手紙」が届くようになります。ぜひ、今日感じたことを最初のノートに綴ってみてくださいね。\n\nあなたのこれからの人生が、豊かな祝福と喜びにみたされますように。\n\nScripture Habit 開発者より"
     },
     "groupChat": {
         "defaultScripture": "旧約聖書",
@@ -820,7 +825,7 @@ export default {
         "streakCelebration": "すごい！合計{streak}日達成！",
         "doneToday": "お疲れ様でした！\nまた明日もお会いしましょう！",
         "promptToday": "今日はもう読みましたか？\n一緒に学習しましょう！",
-        "weeklyRecapPrompt": "今週の学習を\n振り返りましょう！",
+        "weeklyRecapPrompt": "ノートを投稿して、\nAIからの手紙を受け取りましょう！",
         "groupOptionsPrompt": "一緒に切磋琢磨する\n仲間を見つけましょう！",
         "createGroupPrompt": "新しいグループを作って\n友達を招待しましょう！",
         "joinGroupPrompt": "いろんな人と勉強したい",

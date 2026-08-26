@@ -77,4 +77,3 @@ export const MilestoneCard: React.FC<MilestoneCardProps> = ({
     );
 };
 
-export default MilestoneCard;

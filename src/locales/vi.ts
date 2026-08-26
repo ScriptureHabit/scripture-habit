@@ -307,13 +307,13 @@ export default {
         "readInGospelLibrary": "Đọc trong Thư viện Phúc âm",
         "goToByuSpeech": "Đi đến Bài phát biểu BYU",
         "readStudyMaterial": "Đọc Tài liệu Nghiên cứu",
-        "generateRecap": "✨ Tạo Tóm tắt Hàng tuần",
-        "viewRecentRecap": "✨ Xem Tóm tắt Gần đây",
-        "generatingRecap": "Đang tạo tóm tắt hàng tuần... Việc này có thể mất một chút thời gian.",
-        "fetchingRecentRecap": "Đang tải tóm tắt gần đây...",
-        "recapSuccess": "Đã tạo tóm tắt hàng tuần! Xem lại và lưu nó.",
-        "noNotesForRecap": "Không tìm thấy ghi chú nào trong tuần này.",
-        "recapError": "Không thể tạo tóm tắt.",
+        "generateRecap": "✨ Tạo Thư Suy Ngẫm AI",
+        "viewRecentRecap": "✨ Xem Thư Gần đây",
+        "generatingRecap": "Đang tạo thư suy ngẫm... Việc này có thể mất một chút thời gian.",
+        "fetchingRecentRecap": "Đang tải thư gần đây...",
+        "recapSuccess": "Đã tạo thư suy ngẫm! Xem lại và lưu nó.",
+        "noNotesForRecap": "Đăng ít nhất 2 ghi chú để tạo thư.",
+        "recapError": "Không thể tạo thư.",
         "sharedActivity": "Hoạt động được chia sẻ",
         "noteDeletedSuccess": "Xóa ghi chú thành công",
         "noteDeletedError": "Không thể xóa ghi chú",
@@ -323,13 +323,15 @@ export default {
         "nextPage": "Tiếp",
         "pageInfo": "Trang {current} trên {total}",
         "nextLetterInDays": "(Thư mới sau {days} ngày nữa)",
+        "nextLetterInNotes": "(Thư mới sau {count} ghi chú nữa)",
         "notMember": "Bạn không phải là thành viên của nhóm này"
     },
     "recapModal": {
-        "title": "Thư hàng tuần của bạn",
-        "subtitle": "Một sự suy ngẫm về hành trình tâm linh của bạn trong tuần này.",
+        "title": "Thư Suy Ngẫm AI",
+        "subtitle": "Một sự suy ngẫm về các ghi chú học tập gần đây của bạn.",
         "close": "Đóng",
-        "saveToNotes": "Lưu vào Hộp thư"
+        "saveToNotes": "Lưu vào Hộp thư",
+        "savedToLetterBox": "Đã lưu trong Hộp thư"
     },
     "letterBox": {
         "title": "Hộp thư",
@@ -337,8 +339,11 @@ export default {
         "deleteConfirm": "Bạn có chắc chắn muốn hủy lá thư này không?",
         "back": "Quay lại Danh sách",
         "loading": "Đang tải thư...",
-        "empty": "Chưa có thư nào. Hãy tạo bản tóm tắt hàng tuần để nhận được một lá thư!",
-        "defaultTitle": "Tóm tắt hàng tuần"
+        "empty": "Chưa có thư nào. Đăng 2 ghi chú để nhận thư suy ngẫm!",
+        "defaultTitle": "Thư Suy Ngẫm",
+        "autoDeleteNotice": "Thư sẽ tự động bị xóa sau 30 ngày kể từ khi được tạo.",
+        "welcomeLetterTitle": "Chào mừng bạn đến với Scripture Habit",
+        "welcomeLetterContent": "Nồng nhiệt chào đón bạn, {nickname}.\n\nTrong cuộc sống bận rộn hằng ngày, việc mở thánh thư và hướng lòng về lời thiêng liêng đôi khi có thể giống như một thử thách nhỏ. Tuy nhiên, dù chỉ đọc một câu mỗi ngày hay ghi lại một suy ngẫm ngắn, sự tích lũy nhỏ bé đó chắc chắn sẽ mang lại sự bình an và ánh sáng chân thật cho cuộc sống của bạn.\n\nKhi bạn đăng đủ 2 ghi chú, bạn sẽ nhận được một 'lá thư đặc biệt' nhìn lại những hiểu biết và bài học của bạn. Hãy ghi lại cảm nhận hôm nay vào ghi chú đầu tiên của bạn nhé!\n\nNguyện chúc cuộc sống của bạn tràn ngập phước lành và niềm vui dồi dào.\n\n— Từ Nhà phát triển Scripture Habit"
     },
     "groupChat": {
         "defaultScripture": "Cựu Ước",
