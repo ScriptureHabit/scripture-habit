@@ -1,143 +1,78 @@
 # URL Metadata & Speaker Extraction
 
-This document explains how the app extracts page titles and speakers/authors from URLs (specifically General Conference, Liahona, BYU Speeches, and other web links) to enrich study notes.
+This document explains how the application safely extracts page titles, authors/speakers, and thumbnail metadata when users input links (General Conference, Liahona, BYU Speeches, and external websites) in study notes.
 
 ---
 
-## Architecture Overview
+## 1. Pipeline Overview
 
-The metadata extraction uses a React hook, a caching layer, and two backend API endpoints protected by Firebase security middleware:
+When a user inputs a URL, the system checks client-side caches, debounces input, validates security parameters, and fetches metadata server-side:
 
 ```mermaid
 sequenceDiagram
     autonumber
-    participant UI as Frontend UI (NewNote)
-    participant Hook as useUrlMetadata / useUrlMetaFetcher
-    participant Cache as Memory / LocalStorage Cache
-    participant API as Backend API (preview.ts)
-    participant LDS as Church of Jesus Christ Server
-    participant Ext as External Web Server
+    participant UI as Note Creation (NewNote)
+    participant Hook as useUrlMetadata Hook
+    participant Cache as Memory / LocalStorage
+    participant API as Backend API (/api/preview)
+    participant Target as External Web Server
 
-    UI->>Hook: Input URL or shortcode
-    Hook->>Cache: Query cacheKey (Language + URL)
+    UI->>Hook: Enter URL or Shortcode
+    Hook->>Cache: Check Cache
     alt Cache Hit
         Cache-->>Hook: Return cached UrlMetadata
-        Hook-->>UI: Update urlMeta state (Immediate render)
+        Hook-->>UI: Instant Render (Title & Speaker)
     else Cache Miss
-        Hook->>Hook: Debounce input for 500ms
-        Hook->>API: GET /api/preview/fetch-church-metadata (or url-preview)
-        Note over Hook,API: Attach Auth Token & AppCheck Token
-        API->>API: Verify Auth & AppCheck Middleware
-        alt SSRF / Invalid Host / Non-HTTPS
-            API-->>Hook: HTTP 400 Bad Request
-        else Valid Request
-            alt Church URL (/fetch-church-metadata)
-                API->>LDS: Axios GET (with lang query param)
-                alt Lang page fails (e.g. 404 or offline)
-                    API->>LDS: Axios GET (fallback without lang query param)
-                end
-                LDS-->>API: HTML Page Content (Max 512 KB)
-                API->>API: Parse Title & Speaker via Cheerio DOM selectors
-            else General URL (/url-preview)
-                API->>Ext: Axios GET (redirects disabled, timeout 4s)
-                Ext-->>API: HTML Page Content (Max 512 KB)
-                API->>API: Parse Metadata & Optional Speaker
-            end
-            API-->>Hook: JSON metadata response
-            Hook->>Cache: Save to Memory & LocalStorage Caches
-            Hook-->>UI: Update urlMeta state
-        end
+        Hook->>Hook: Wait 500ms Debounce
+        Hook->>API: Fetch Metadata Request
+        API->>API: Auth, App Check & Safe URL Validation (SSRF guard)
+        API->>Target: Download HTML Content (Max 512KB)
+        API->>API: Parse Title, Speaker, Images (Cheerio)
+        API-->>Hook: Return Metadata (JSON)
+        Hook->>Cache: Save to Memory & LocalStorage
+        Hook-->>UI: Auto-populate Form Fields
     end
 ```
 
 ---
 
-## Security Measures
+## 2. Security Safeguards
 
-Because fetching metadata requires the server to make HTTP requests on behalf of users, multiple security measures are applied to prevent abuse:
+To protect against abuse and unauthorized network access, several safeguards are enforced:
 
-1.  **Firebase Authentication Guard**:
-    Every request to the metadata endpoints must include a valid Firebase ID Token in the `Authorization: Bearer <Token>` header.
-2.  **Firebase App Check Guard**:
-    Protects API routes from automated bots and scrapers. The frontend sends an App Check token in the `X-Firebase-AppCheck` header.
-3.  **Server-Side Request Forgery (SSRF) Protection**:
-    -   For `/fetch-church-metadata`, a strict whitelist is enforced: the hostname must be exactly `www.churchofjesuschrist.org` or `churchofjesuschrist.org`, and the protocol must be `https:`.
-    -   For `/url-preview`, the input is checked via `isSafeUrl(url)` to prevent requests to local or private network ranges (like loopback or private subnets).
-4.  **Resource Limits, Timeouts & Redirect Routing**:
-    -   **Content Size Limits**: Axios limits the downloaded payload to `512 KB` to block Denial of Service (DoS) attacks from loading large files.
-    -   **Timeouts**: Requests timeout after `4000ms - 5000ms` to prevent server blocking.
-    -   **Context-Aware Redirect Limits (Multi-Tier SSRF Guard)**:
-        -   **Church Metadata (`/fetch-church-metadata`)**: Allows up to `maxRedirects: 5`. Since the domain is strictly whitelisted and verified as `churchofjesuschrist.org` prior to fetching, it is safe to permit standard redirects (e.g., routing to localized subdirectories or shortcode translations) without SSRF risk.
-        -   **General Previews (`/url-preview`)**: Enforces `maxRedirects: 0` strictly. Since this endpoint handles untrusted external URLs, any HTTP redirects are entirely blocked at the server boundary to prevent attacker-controlled redirect loops that bypass SSRF IP checks.
+1. **Authentication & App Check**: Requests must include valid Firebase Auth and App Check tokens.
+2. **SSRF Protection**:
+   - Church metadata (`/fetch-church-metadata`): Restricted strictly to `churchofjesuschrist.org` domains via HTTPS.
+   - General URL preview (`/url-preview`): Validates URLs against private network blocklists (preventing loopback/internal IP requests).
+3. **Payload Limits & Timeouts**:
+   - Downloads are capped at `512 KB` to avoid resource exhaustion.
+   - Requests timeout within `4–5 seconds` to avoid hanging threads.
 
 ---
 
-## Backend API Endpoints ([preview.ts](../scripture-habit/api_internal/routes/preview.ts))
+## 3. Backend Endpoints (`api_internal/routes/preview.ts`)
 
-### 1. Church Metadata (`/api/preview/fetch-church-metadata`)
-Optimized for parsing LDS content like General Conference talks and Liahona articles.
+### ① Church Content (`/api/preview/fetch-church-metadata`)
+Optimized for General Conference talks and Liahona articles:
+- **Language Fallback**: If fetching a localized version (e.g. `?lang=jpn`) fails, it automatically retries without the language parameter to retrieve the default version.
+- **Author Cleansing**: Automatically strips prefixes like "By", "Par", or "De" to cleanly extract author names.
+- **Graceful Error Handling**: Returns `{ title: '', speaker: '' }` on parse errors so form submission is never blocked.
 
-*   **URL Rules**: Host must be `churchofjesuschrist.org` / `www.churchofjesuschrist.org` and protocol must be `https:`.
-*   **Language Parameters**: Translates application language codes to Church language parameters (e.g., Japanese `'ja'` maps to `'jpn'`).
-*   **Language Fallback**:
-    If a localized page fails (e.g., returning an HTTP error), the system deletes the `lang` parameter and tries again without it. This ensures it extracts the English page or default version instead of failing.
-*   **Cheerio Selectors (DOM Extraction)**:
-    -   **Title**:
-        1.  `meta[property="og:title"]` (content attribute)
-        2.  First `<h1>` element
-        3.  `<title>` tag
-        *Cleanup: If the title contains a separator like `|` (e.g., "Title | Ensign"), it retains only the first part.*
-    -   **Speaker/Author**:
-        1.  `div.byline p.author-name`
-        2.  `p.author-name`
-        3.  `a.author-name`
-        4.  `div.byline p`
-        *Cleanup: Uses a regex to remove author prefixes like "By", "Par", "De", or "Por".*
-*   **Failure Handing**: If extraction fails, it returns empty values `{ title: '', speaker: '' }` with an HTTP 200 so the frontend note-saving form still works.
-
-### 2. General URL Preview (`/api/preview/url-preview`)
-Extracts rich metadata previews for general website links.
-
-*   **Metadata Selectors**:
-    -   **Title**: `og:title` $\rightarrow$ `twitter:title` $\rightarrow$ First `<h1>` $\rightarrow$ `<title>`.
-    -   **Description**: `og:description` $\rightarrow$ `meta[name="description"]`.
-    -   **Image**: `og:image` $\rightarrow$ `twitter:image`. Relative paths are converted to absolute URLs.
-    -   **Favicon**: Uses Google’s favicon service:
-        `https://www.google.com/s2/favicons?domain=${parsedUrl.hostname}&sz=64`
-*   **Church URL Support**:
-    If a general URL belongs to `churchofjesuschrist.org`, it attempts to find a speaker. If a speaker is found, it appends it to the title in parentheses: `Title (Speaker)`.
+### ② General Websites (`/api/preview/url-preview`)
+Extracts Open Graph metadata (`og:title`, `og:description`, `og:image`) and favicons from general web links.
 
 ---
 
-## Frontend Client Hooks
+## 4. Frontend Caching
 
-### 1. `useUrlMetadata` Hook ([use-url-metadata.ts](../scripture-habit/src/hooks/use-url-metadata.ts))
-A custom React hook to retrieve, manage, and cache metadata.
-
-*   **Two-Level Caching**:
-    To minimize backend requests and network delay, the hook uses:
-    1.  **Memory Cache**: Stores metadata in a JavaScript object for instant loading during the active session.
-    2.  **Local Storage Cache**: Saves metadata to browser local storage so it remains after page refreshes.
-*   **Cache Key Format**:
-    `url_meta_${language}_${urlOrSlug}`
-*   **Token Retrieval**:
-    Before sending requests, the hook fetches the Firebase User ID token and Firebase App Check token. If they fail, it logs a warning in development and proceeds gracefully.
-
-### 2. `useUrlMetaFetcher` Hook ([use-url-meta-fetcher.ts](../scripture-habit/src/components/newnote/hooks/use-url-meta-fetcher.ts))
-An integration hook for the note-creation modal (`NewNote`).
-
-*   **Debounced Input**:
-    Delays the fetch request by **`500ms`** after typing. If the user keeps typing, the previous fetch is canceled, reducing API requests.
-*   **Conditions**:
-    Only runs if the input is a valid URL or shortcode, and the scripture category is `"General Conference"`, `"BYU Speeches"`, or `"Other"`.
+- **Two-Tier Cache**:
+  1. **Memory Cache**: Instant rendering during active sessions.
+  2. **LocalStorage**: Persists parsed metadata across page reloads.
+- **500ms Debounce**: Batches rapid typing to avoid firing excessive API requests.
 
 ---
 
-## Testing & Verification
+## 5. Related Documentation
 
-Integration tests in [preview.integration.test.ts](../scripture-habit/api_internal/routes/preview.integration.test.ts) verify the behavior:
--   **Authentication**: Asserts that requests without a token return `401 Unauthorized`.
--   **Validation**: Confirms that invalid domains or empty parameters return `400 Bad Request`.
--   **Mocks**: Uses `vitest` to mock `axios.get` and inject custom HTML pages for testing metadata parsing.
--   **Fallback**: Verifies that language fallback mechanisms work when errors occur.
--   **SSRF Block**: Confirms that attempts to query private IP ranges (e.g. `http://127.0.0.1`) are blocked.
+- [Note Creation & Edit Modal Architecture](./newnote-construction-guide.md)
+- [Gospel Library Scripture Mapper](./gospel-library-mapper.md)

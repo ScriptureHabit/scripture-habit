@@ -1,100 +1,83 @@
-# I18n & Localization
+# Internationalization (i18n)
 
-Scripture Habit is designed for global users. The localization system ensures that all users can use the app in their preferred language (English, Japanese, Spanish, Tagalog, etc.).
+Scripture Habit supports multilingual localization across 11 languages so users around the world can study in their native tongue.
 
-Language definitions and translation dictionaries are structured around a **Single Source of Truth (SSOT)** and follow **DRY (Don't Repeat Yourself)** principles, keeping Frontend, Backend, and AI translation components fully synchronized.
+Language configurations and translation dictionaries are maintained in a Single Source of Truth (`src/locales/`), synchronized across frontend UI, backend notifications, and AI translation services.
 
 ---
 
-## Architecture: Single Source of Truth (SSOT)
+## 1. Architecture Overview
 
 ```mermaid
 flowchart TD
-    Config["src/config/languages.ts<br/>(Centralized Language Codes, Flags & Names)"]
-    Locales["src/locales/{lang}.ts<br/>(Translations & Scripture Book Names)"]
+    Config["src/config/languages.ts<br/>(Unified Code, Flag, & Name Definitions)"]
+    Locales["src/locales/{lang}.ts<br/>(Translation Dictionaries & Scripture Books)"]
     
-    Config --> FrontendContext["src/context/language-provider.tsx<br/>(UI State, Path Detection, Flag Switcher)"]
-    Config --> BackendSchema["api_internal/lib/schemas.ts<br/>(Validation & AI Language Lists)"]
+    Config --> FrontendContext["src/context/language-provider.tsx<br/>(UI State & Language Switching)"]
+    Config --> BackendSchema["api_internal/lib/schemas.ts<br/>(Validation & AI Target Locales)"]
     
-    Locales --> FrontendLoader["src/locales/i18n.ts<br/>(Dynamic Lazy Loading via import.meta.glob)"]
-    Locales --> BackendLoader["api_internal/lib/i18n.ts<br/>(Auto-discovery & Template Resolution)"]
+    Locales --> FrontendLoader["src/locales/i18n.ts<br/>(On-Demand Dynamic Loading)"]
+    Locales --> BackendLoader["api_internal/lib/i18n.ts<br/>(Notification & System Message Parsing)"]
 ```
 
 ---
 
-## Frontend Architecture: Language Context & Provider
+## 2. Frontend Architecture
 
-Frontend localization is managed through:
-- **`src/config/languages.ts`**: Central registry defining all language metadata (codes, native names, English names, flag icons, LDS codes).
-- **`src/context/language-context.ts`**: Declares TypeScript types and the React Context instance.
-- **`src/context/language-provider.tsx`**: Handles URL path extraction, storage caching, browser preference detection, and translation caching.
-- **`src/locales/i18n.ts`**: Uses `import.meta.glob` to lazily import only the required translation files on-demand.
+- **`src/config/languages.ts`**: Unified configuration of supported language codes, native names, flags, and Church LDS codes.
+- **`src/context/language-provider.tsx`**: Manages browser-based language detection, dynamic loading, and active translation caches.
+- **`src/locales/i18n.ts`**: Uses `import.meta.glob` to lazily import only requested locale dictionaries.
 
-### 1. The `t()` Translation Helper
-A custom hook that provides:
-- **Variable Insertion**: Supports dynamic text like `"{name} added a note"`.
-- **English Fallback**: If a translation key is missing in the current language, it safely falls back to the English (`en`) translation instead of leaving the UI blank.
+### ① Translation Helper `t()`
+- **Parameter Interpolation**: Safely replaces dynamic placeholders (e.g. `"{name} posted a note"`).
+- **English Fallback**: If a key is missing in the active language, it falls back to English (`en`) to prevent blank UI labels.
 
-### 2. Scripture Book Translations
-To display scripture book names correctly in multiple languages, we use a mapping function:
-- Book names are stored using standard keys.
-- The UI uses `translateBookName(bookName)` to show "Book of Mormon" as "モルモン書" or "Libro de Mórmon" based on the user's language setting (sourced from the `books` dictionary object).
+### ② Scripture Book Translations
+Scripture book names are stored using canonical keys and dynamically resolved to the viewer's language (e.g., "Book of Mormon" $\rightarrow$ "モルモン書" / "Libro de Mórmon").
 
 ---
 
-## Backend Localization: Auto-Discovery System
+## 3. Backend Localization (`api_internal/lib/i18n.ts`)
 
-The backend (`api_internal/lib/i18n.ts`) manages translations for system messages, push notifications, and AI prompts.
-
-### Shared Translation Bundles
-The backend directly scans the shared `src/locales/` directory at startup (Auto-discovery) rather than keeping duplicate locale files:
-- **Type Safety**: Derives `SupportedLanguage` types directly from `src/config/languages.ts` to ensure 100% parity with Zod validation schemas.
-- **Dynamic Text**: Replaces placeholders like `{nickname}` or `{streak}` inside notification templates.
+The backend directly references `src/locales/` to format multilingual push notifications and system announcement messages.
 
 ---
 
-## AI Localization: Content Translation
+## 4. Dynamic AI Translation (`/api/ai/translate`)
 
-User-generated study notes are translated dynamically by Gemini AI rather than using static files.
-
-### 1. Language Detection
-The app detects if a note's language is different from the viewer's preferred language.
-
-### 2. AI Translation Endpoint (`/api/ai/translate`)
-- The backend identifies the target language (`targetLanguage`).
-- Injects standardized language names into AI prompts using `languageNames` from `api_internal/lib/schemas.ts` (derived from `src/config/languages.ts`).
-- **Caching**: The translation is saved directly to the message document, ensuring each note is translated only once per language.
+User-generated study notes are translated on demand by Gemini AI:
+- **Message Caching**: Translated outputs are cached directly in the message document to avoid redundant API calls.
 
 ---
 
-## Supported Languages (10 Languages)
+## 5. Supported Languages (11 Locales)
 
-| Code | Native Name | English Name | Flag | LDS Code |
+| Code | Native Name | English Name | Flag | Church LDS Code |
 | :--- | :--- | :--- | :---: | :--- |
-| `en` | English | English | US | `eng` |
-| `ja` | 日本語 | Japanese | JP | `jpn` |
-| `pt` | Português | Portuguese | BR | `por` |
-| `zho` (zh) | 繁體中文 | Chinese (Traditional) | TW | `zho` |
-| `es` | Español | Spanish | ES | `spa` |
-| `vi` | Tiếng Việt | Vietnamese | VN | `vie` |
-| `th` | ไทย | Thai | TH | `tha` |
-| `ko` | 한국語 | Korean | KR | `kor` |
-| `tl` | Tagalog | Tagalog | PH | `tgl` |
-| `sw` | Kiswahili | Swahili | KE | `swa` |
+| `en` | English | English | 🇺🇸 | `eng` |
+| `ja` | 日本語 | Japanese | 🇯🇵 | `jpn` |
+| `pt` | Português | Portuguese | 🇧🇷 | `por` |
+| `zho` | 繁體中文 | Chinese (Traditional) | 🇹🇼 | `zho` |
+| `es` | Español | Spanish | 🇪🇸 | `spa` |
+| `vi` | Tiếng Việt | Vietnamese | 🇻🇳 | `vie` |
+| `th` | ไทย | Thai | 🇹🇭 | `tha` |
+| `ko` | 한국어 | Korean | 🇰🇷 | `kor` |
+| `tl` | Tagalog | Tagalog | 🇵🇭 | `tgl` |
+| `sw` | Kiswahili | Swahili | 🇰🇪 | `swa` |
+| `it` | Italiano | Italian | 🇮🇹 | `ita` |
 
 ---
 
-## Adding a New Language (DRY Process)
+## 6. Adding a New Language
 
-Because language settings and translation bundles are centralized, adding a new language requires just 2 simple steps:
+1. **Create Dictionary (`src/locales/{code}.ts`)**:
+   Add a new locale file (e.g., `fr.ts` for French) with UI translations and scripture book names.
+2. **Run Sync Script**:
+   Execute `npm run i18n:sync` to automatically register the new language in `src/config/languages.ts` and backend schemas.
 
-1. **Add Language Configuration (`src/config/languages.ts`)**:
-   Add a new language config object (`code`, `name`, `englishName`, `flag`, `ldsCode`) to the `LANGUAGES` array.
-   > [!NOTE]
-   > This automatically updates backend Zod schemas (`schemas.ts`), UI language switchers, and AI translation target lists.
+---
 
-2. **Create Translation File (`src/locales/{code}.ts`)**:
-   Create a new locale file in `src/locales/` (e.g., `fr.ts` for French) and define UI keys along with the `books` scripture names mapping.
-   > [!TIP]
-   > - **Frontend**: Automatically discovered and lazy-loaded via `import.meta.glob` in `src/locales/i18n.ts`.
-   > - **Backend**: Automatically discovered by `api_internal/lib/i18n.ts` on startup without manual registration.
+## 7. Related Documentation
+
+- [AI Integration (Gemini)](./feature-ai-integration.md)
+- [Push Notification System](./feature-notifications.md)

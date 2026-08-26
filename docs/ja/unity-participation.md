@@ -1,132 +1,64 @@
-# Unity（団結度）の参加率と同期アーキテクチャ
+# 団結度（Unity）の計算と同期の仕組み
 
-このドキュメントでは、**Unity（団結度）** の設計、数式、データの同期、および計算について説明します。この指標は、聖典読書グループの毎日の学習完了ステータスを表します。
-
----
-
-## 1. コアコンセプト
-
-Unity（団結度）の指標は、当日に聖典スタディノートを投稿した対象グループメンバーの割合（パーセンテージ）を示します。
-
-UIの応答性を高速に保つため、アプリは**サーバー側の履歴データ**と**クライアント側のリアルタイムメッセージ**を組み合わせて、この指標を即座に計算します。
-
-```
-       ┌───────────────────────────────┐
-       │   グループドキュメント(Firestore)│
-       │   - dailyActivity.activeMembers│
-       └──────────────┬────────────────┘
-                       │
-                       │ (サーバーベース)
-                       ▼
-             [ getUnityParticipation() ] ◄─── (クライアント補完) ─── [ リアルタイムチャットメッセージ ]
-                       │
-                       ├──────────────────────────┐
-                       ▼                          ▼
-             [ 対象資格ルールの適用 ]        [ タイムゾーン/日付の整合性チェック ]
-                       │
-                       ▼
-             [ 最終的なUnityパーセンテージ ]
-```
+このドキュメントでは、グループメンバー全体の当日の学習達成度を表す指標**「団結度（Unity Percentage）」**の計算ルールとリアルタイム同期について解説します。
 
 ---
 
-## 2. 動的な同期（デュアルデータソース）
+## 1. 団結度（Unity）の基本概念
 
-ユーザーがノートを投稿したときに即座に更新を表示するため、`getUnityParticipation` は2つのデータソースからアクティブな投稿者のIDを集計します。
+団結度は、**「今日ノートを投稿する対象となっているメンバーのうち、実際に投稿した人の割合（％）」**を示します。
 
-### ソースA: サーバー側のスナップショット (`dailyActivity`)
-* **場所**: ルートの `/groups/{groupId}` ドキュメントからロードされます。
-* **プロパティ**: `group.dailyActivity`（`{ activeMembers: string[], date: string }` を含む）。
-* **挙動**: これは、本日ノートを投稿したユーザーの公式なデータベースレコードです。ノートが送信されたときにトランザクション内で更新されます。
-
-### ソースB: クライアント側のメッセージ (`Message[]`)
-* **場所**: アクティブなグループチャット画面内で動的に取得されます。
-* **挙動**: ユーザーがチャット画面を開いているときに他の誰かがノートを投稿すると、静的なグループドキュメントが更新される前に、クライアント状態に新しいメッセージが受信されます。
-* **照合（レコンシリエーション）**: クライアントはこれらのリアルタイムメッセージをスキャンします。メッセージが `isNote: true` を持ち、その日付がグループのタイムゾーンにおける今日と一致する場合、送信者のUIDが即座に投稿者リストに追加され、ネットワークの遅延を回避します。
-
----
-
-## 3. 対象資格ロジック（エッジケース）
-
-公平なパーセンテージを計算するためには、誰が投稿を求められているかについてのルールが必要です。例えば、午後11時59分にグループに参加した新しいユーザーのせいで、グループのUnityパーセンテージが下がってしまうようなことは避けるべきです。
-
-### 分母のルール
-ルールは以下の通りです。
-> **今日参加したメンバーは、すでにノートを投稿していない限り、必要な合計（分母）から除外されます。**
-
-彼らがすでに今日投稿している場合は、対象（分母と分子の両方）としてカウントされます。まだ投稿していない場合は、グループの計算でペナルティ（減点）にはなりません。
+個人同士の順位を競わせるのではなく、「チーム全員で目標を達成できたか」を可視化することで、健全で協力的な習慣化を促します。
 
 ```mermaid
 flowchart TD
-    Start([メンバーのUIDを評価]) --> IsPoster{今日投稿しましたか？}
-    IsPoster -- はい --> Eligible([対象かつ投稿済み])
-    
-    IsPoster -- いいえ --> HasJoinedTs{joinedAtタイムスタンプは利用可能ですか？}
-    HasJoinedTs -- いいえ --> DefaultEligible([デフォルトで対象])
-    
-    HasJoinedTs -- はい --> CompareDates{joinedAt < 今日？}
-    CompareDates -- はい（前日までに参加） --> DefaultEligible
-    CompareDates -- いいえ（今日参加） --> Ineligible([対象外/非対象])
+    ServerDoc["グループの記録 (Firestore)<br/>dailyActivity.activeMembers"] --> Merge["投稿者リストの集計"]
+    ClientMessages["リアルタイム受信メッセージ<br/>(チャット画面)"] --> Merge
+    Merge --> CheckEligibility["対象資格の判定<br/>（今日参加したメンバーの除外など）"]
+    CheckEligibility --> FinalPercentage["最終的な団結度 (%)<br/>(投稿人数 ÷ 対象人数 × 100)"]
 ```
-
-### joinedAt フォールバックリゾルバー
-このルールを適用するには、アプリはメンバーがいつ参加したかを知る必要があります。メンバーデータはビューごとに異なる構造になっているため、アルゴリズムは **3段階のフォールバックチェーン** を使用します。
-
-1. **優先度 1 (Primary)**: `group.memberJoinedAt[uid]`
-   * グループメタデータドキュメントに保存されているグローバルな参加日時マップ。
-2. **優先度 2 (Secondary)**: `membersMap[uid].joinedAt`
-   * メンバーメタデータを解決するグループチャットビュー内のローカルマップ。
-3. **優先度 3 (Tertiary)**: `group.myMemberStatus.joinedAt`（現在のユーザー用）
-   * サイドバーコンテキストで解析された個人メンバーのステータスオブジェクト。
-
-3つすべての段階をチェックしても参加時間が見つからない場合、エラーを避けるためにメンバーはデフォルトで**対象（Eligible）**として扱われます。
 
 ---
 
-## 4. タイムゾーンと日付の正規化
+## 2. リアルタイム表示を支える2つのデータソース
 
-グループメンバーは異なる国に居住している可能性があるため、計算は**グループで指定されたタイムゾーン**（`group.timeZone`、設定されていない場合はデフォルトの `UTC`）に固定されます。
+画面を開いている間に他のメンバーがノートを投稿した際、即座に団結度を更新するために2つのデータを組み合わせて計算します：
 
-1. **日付の解析**: `formatDateInTimeZone()` を使用して、タイムスタンプをグループのタイムゾーンに一致するローカル日付文字列（`YYYY-MM-DD`）に変換します。
-2. **比較**:
-   * 参加日が文字列に変換されます。
-   * `normalizedJoinedDate < normalizedTodayDate`（正規化された参加日 < 正規化された今日の日付）の場合、メンバーは計算対象となります。
-3. **分母が空になる基本ケース**: 投稿対象となるメンバーが存在しない場合（例：今日参加してまだ投稿していない新しいメンバーだけで構成されたグループなど）、ゼロ除算を避けるため、アルゴリズムは **100% Unity** を返します。
+1. **サーバー側の記録 (`group.dailyActivity`)**: Firestore のグループドキュメントに保存されている、本日投稿済みの公式ユーザーリスト。
+2. **チャットのリアルタイムメッセージ (`Message[]`)**: 画面を開いている間に受信したメッセージ。`isNote: true` を持つメッセージがあれば、サーバーデータの更新を待たずに即座に投稿済みとしてカウントします。
 
 ---
 
-## 5. 実装リファレンス
+## 3. 計算対象（分母）の公平なルール
 
-コアロジックは [unity-utils.ts](../../scripture-habit/src/utils/unity-utils.ts) に配置されています。
+不公平なパーセンテージ低下を防ぐため、以下の対象資格ルールを設けています：
 
-```typescript
-export const getUnityParticipation = (
-  group: Group | null,
-  messages: Message[] = [],
-  referenceDate: Date = new Date(),
-  membersMap?: MembersMap
-): UnityParticipation => {
-  // ... コアチェック＆デュアルソース読み込み ...
-  
-  const eligibleMembers = uniqueMemberIds.filter(uid => {
-    const isPoster = uniquePosters.has(uid);
-    if (isPoster) return true; // 今日投稿済み -> カウント
-    
-    // 3段階のフォールバック解決
-    let joinedTs = memberJoinedAt[uid] || membersMap?.[uid]?.joinedAt || group.myMemberStatus?.joinedAt;
-    if (!joinedTs) return true; // デフォルトのフォールバック
+> **今日グループに参加したばかりのメンバーは、まだノートを投稿していない場合、計算の分母（対象人数）から除外されます。**
 
-    const joinedDateStr = formatDateInTimeZone(new Date(parseTimestampToMillis(joinedTs)), groupTimeZone);
-    
-    // 辞書順で比較: 今日より前に参加している必要がある
-    return normalizeDateString(joinedDateStr) < normalizeDateString(todayStr);
-  });
+- **今日参加してすでに投稿した場合**: 対象人数と投稿人数の両方にカウントされます（+1/+1）。
+- **今日参加してまだ投稿していない場合**: 不参加として扱われず、グループの達成率を下げるペナルティにはなりません。
+- **前日までに参加していた場合**: 通常通り投稿対象（分母）としてカウントされます。
 
-  const postedMembers = eligibleMembers.filter(uid => uniquePosters.has(uid));
-  
-  if (eligibleMembers.length === 0) return { ..., percentage: 100 };
-  
-  const percentage = Math.round((postedMembers.length / eligibleMembers.length) * 100);
-  return { eligibleMembers, postedMembers, notPostedMembers, percentage };
-};
+```mermaid
+flowchart TD
+    Start([メンバーの判定]) --> IsPoster{今日投稿済み？}
+    IsPoster -- はい --> Counted([対象 ＆ 投稿済みとしてカウント])
+    IsPoster -- いいえ --> JoinedDate{参加日はいつ？}
+    JoinedDate -- 前日以前 --> CountedEligible([対象（未投稿）としてカウント])
+    JoinedDate -- 今日参加 --> Excluded([分母から除外（ペナルティなし）])
 ```
+
+---
+
+## 4. タイムゾーンの扱いとゼロ除算防止
+
+- **グループタイムゾーンに準拠**: メンバーが異なる地域に住んでいる場合でも、グループ設定のタイムゾーン（`group.timeZone`）における「今日（0:00〜23:59）」を基準に判定します。
+- **対象者が0人の場合**: 新規参加者のみで構成されるなど対象者がいない場合は、ゼロ除算を避けて `100%` を返します。
+
+---
+
+## 5. 関連ドキュメント
+
+- [少人数グループ（最大5人）とピア・アカウンタビリティの心理学](./ux-small-groups-and-peer-accountability.md)
+- [Unity 深夜リセットフック](./client-unity-midnight-reset.md)
+- [グループチャット設計・実装ガイド](./groupchat-construction-guide.md)

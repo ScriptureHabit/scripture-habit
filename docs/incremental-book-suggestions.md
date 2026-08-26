@@ -1,113 +1,64 @@
 # Incremental Book Suggestion Engine
 
-This document details the search matching, text normalization, and sorting logic for the **Book Suggestion Engine** located in `src/utils/suggestion-utils.ts`.
-
-The engine provides fast, real-time typing suggestions (autocomplete) when users input scripture references.
+This document details the search matching, text normalization, and sorting logic of the book autocomplete engine (`src/utils/suggestion-utils.ts`).
 
 ---
 
-## 1. Volume Scopes & Dictionary
+## 1. Input Text Normalization
 
-Search suggestions are filtered based on the selected scripture volume. The engine organizes books under specific paths:
+To ensure smooth matching regardless of case, character width, or phonetic scripts, input strings are normalized before evaluation:
 
-* **Book of Mormon**: 15 books (1 Nephi to Moroni)
-* **Old Testament**: 39 books (Genesis to Malachi)
-* **New Testament**: 27 books (Matthew to Revelation)
-* **Pearl of Great Price**: 5 books (Moses to Articles of Faith)
-* **Doctrine and Covenants**: Standard abbreviation ("D&C")
-* **Ordinances and Proclamations**: Specific custom documents (The Family Proclamation, The Living Christ, etc.).
+```mermaid
+flowchart TD
+    Input[Raw Input Text] --> Lower[Convert to Lowercase]
+    Lower --> NFKC[Unicode NFKC Normalization<br/>(Full-width to Half-width)]
+    NFKC --> IsJa{Language is Japanese?}
+    IsJa -- Yes --> HiraToKata[Convert Hiragana to Katakana]
+    IsJa -- No --> Search[Match Search Tokens]
+    HiraToKata --> Search
+```
+
+### ① Unicode & Width Normalization
+Applies `normalize('NFKC')` and `toLowerCase()` to standardize full-width numbers and alphabetic characters into half-width.
+
+### ② Japanese Phonetic Mapping
+Official Japanese scripture names use Katakana (e.g. `アルマ`, `ニーファイ`), whereas users often type in Hiragana (`あるま`, `にーふぁい`).
+When the active language is Japanese (`'ja'`), the engine shifts character code points to automatically convert Hiragana to Katakana in memory.
+
+### ③ Kanji Phonetic Readings
+For books containing Kanji characters (e.g. 創世記, 信仰箇条), the engine checks a reading dictionary (`KANJI_BOOK_READINGS`) so users can match books by typing pure Hiragana/Katakana without converting to Kanji.
 
 ---
 
-## 2. Multi-Lingual Text Normalization
+## 2. 4-Tier Priority Sorting Algorithm
 
-To ensure search matches work regardless of case, character width, or regional spellings, inputs are normalized using standard NFKC rules.
-
-```
-       [ Raw Text Input ]
-               │
-               ▼
-   [ Lowercase Conversion ]
-               │
-               ▼
-  [ NFKC Unicode Normalization ]
-   (Resolves full-width/half-width)
-               │
-               ▼
-     [ Language == 'ja'? ]
-          ┌────┴────┐
-        Yes        No
-          ▼         │
-  [ Hiragana-to-Katakana ]  │
-   (Shifts character codes) │
-          └────┬────┘
-               ▼
-    [ Normalized Search Token ]
-```
-
-### Unicode & Case Normalization
-All input strings and target book names are cleaned using:
-```typescript
-let res = str.toLowerCase().normalize('NFKC');
-```
-* **`NFKC` Normalization**: Standardizes full-width Roman characters, double-byte numbers, and punctuation into standard single-byte characters.
-
-### Japanese-Specific Phonetic Mapping
-A common challenge in Japanese search is that users type book names using Hiragana (e.g. `あるま`, `にーふぁい`), while official scriptures use Katakana (e.g. `アルマ`, `ニーファイ`).
-
-To solve this, if the active language is Japanese (`'ja'`), the engine uses a regex transformation to **automatically convert Hiragana directly into Katakana**:
-```typescript
-if (language === 'ja') {
-    res = res.replace(/[\u3041-\u3096]/g, m => String.fromCharCode(m.charCodeAt(0) + 0x60));
-}
-```
-* **Mechanism**: Hiragana characters (Unicode block `U+3041` to `U+3096`) are shifted in memory to map directly onto the Katakana Unicode block. This enables instant autocomplete matching.
-
-### Kanji Book Phonetic Mapping
-For Japanese books containing Kanji characters in their titles (e.g. `創世記` / Genesis, `第三ニーファイ` / 3 Nephi, `信仰箇条` / Articles of Faith), the engine maintains a `KANJI_BOOK_READINGS` dictionary so that searches typed in Hiragana or Katakana phonetics match instantly.
-
-1. Automatically converts user-typed Hiragana into Katakana.
-2. Matches against Katakana readings of Kanji titles (e.g., `"ダイサンニーファイ"`).
-3. Displays immediate autocomplete suggestions without requiring users to convert their input to Kanji.
-
----
-
-## 3. Four-Tier Priority Sorting Algorithm
-
-Once books are filtered, they are sorted using a **4-Tier Priority Cascade** to show the most relevant options first:
+Filtered candidates are sorted through a 4-tier cascade so the most relevant matches appear first:
 
 ```mermaid
 graph TD
-    Start[Compare Suggestion A and B] --> Tier1{Tier 1: Exact Match?}
-    
-    Tier1 -- "A matches input" --> ReturnA[Sort A first: return -1]
-    Tier1 -- "B matches input" --> ReturnB[Sort B first: return 1]
-    Tier1 -- No match / Both match --> Tier2{Tier 2: Translated StartsWith?}
-    
-    Tier2 -- "A starts with input" --> ReturnA
-    Tier2 -- "B starts with input" --> ReturnB
-    Tier2 -- No / Both --> Tier3{Tier 3: English StartsWith?}
-    
-    Tier3 -- "A starts with input" --> ReturnA
-    Tier3 -- "B starts with input" --> ReturnB
-    Tier3 -- No / Both --> Tier4[Tier 4: Sort by shortest string length first]
+    Start[Compare Candidates] --> T1{Tier 1: Exact Match?}
+    T1 -- Yes --> R1[Rank Highest]
+    T1 -- No --> T2{Tier 2: Translated Prefix Match?}
+    T2 -- Yes --> R2[Rank 2nd]
+    T2 -- No --> T3{Tier 3: English Prefix Match?}
+    T3 -- Yes --> R3[Rank 3rd]
+    T3 -- No --> T4[Tier 4: Shortest String Length]
 ```
 
-### Priority Tiers:
-1. **Tier 1: Exact Match**
-   * If a book's translated name matches the user's input exactly, it is placed at the top of the list.
-2. **Tier 2: Translated Prefix Match**
-   * Books whose translated names *start* with the user's input are placed next.
-3. **Tier 3: English Prefix Match**
-   * Books whose English names *start* with the user's input are prioritized next. This helps bilingual users or those typing English abbreviations.
-4. **Tier 4: Shortest String Length First**
-   * If two books match at the same level, the **shorter translated name** is placed first.
-   * *Example*: Searching for `Ma` will sort shorter books like `Mark` or `Matthew` higher than `1 Thessalonians`, making it easier to select on mobile screens.
+1. **Tier 1: Exact Match**: Exact name matches appear at the top.
+2. **Tier 2: Translated Prefix Match**: Books starting with the user's localized input.
+3. **Tier 3: English Prefix Match**: Books starting with the user's English input (assisting bilingual typing and abbreviations).
+4. **Tier 4: Shortest String Length**: Prefers shorter names (e.g. `Mark` over `1 Thessalonians`) to optimize touch selection on mobile screens.
 
 ---
 
-## 4. Search Results Capping
+## 3. Suggestion Capping
 
-After sorting, the suggestion list is cut off using `.slice(0, 10)`.
+The output list is capped at **10 suggestions** (`.slice(0, 10)`), preventing viewport overflow and keeping the interface responsive on mobile devices.
 
-Capping the list to a **maximum of 10 suggestions** keeps the interface clean and improves rendering performance on slow mobile devices.
+---
+
+## 4. Related Documentation
+
+- [Note Creation (NewNote) Guide](./newnote-construction-guide.md)
+- [Gospel Library Scripture Mapper](./gospel-library-mapper.md)
