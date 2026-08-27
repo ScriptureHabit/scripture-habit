@@ -116,7 +116,7 @@
                 "properties": {
                   "nickname": {
                     "type": "string",
-                    "example": "だいじろう"
+                    "example": "Daijiro"
                   },
                   "photoURL": {
                     "type": "string",
@@ -344,7 +344,7 @@
                 "properties": {
                   "name": {
                     "type": "string",
-                    "example": "スクハビAI"
+                    "example": "Scripture Habit AI"
                   },
                   "timeZone": {
                     "type": "string",
@@ -369,7 +369,7 @@
                     },
                     "groupName": {
                       "type": "string",
-                      "example": "スクハビAI"
+                      "example": "Scripture Habit AI"
                     },
                     "inviteCode": {
                       "type": "string",
@@ -503,7 +503,7 @@
                   },
                   "comment": {
                     "type": "string",
-                    "example": "信仰を持って前進することの大切さを学びました。"
+                    "example": "I learned the importance of moving forward with faith."
                   },
                   "shareOption": {
                     "type": "string",
@@ -579,7 +579,7 @@
                   },
                   "text": {
                     "type": "string",
-                    "example": "今日も学びがありました！"
+                    "example": "Had great insights today as well!"
                   },
                   "optimisticId": {
                     "type": "string",
@@ -725,7 +725,7 @@
                 "properties": {
                   "text": {
                     "type": "string",
-                    "example": "こんにちは！一緒に聖句を読みましょう。"
+                    "example": "Hello! Let's read scriptures together."
                   },
                   "targetLanguage": {
                     "type": "string",
@@ -804,7 +804,7 @@
                         },
                         "text": {
                           "type": "string",
-                          "example": "ニーファイ第一部3章を読みました。"
+                          "example": "I read 1 Nephi Chapter 3."
                         }
                       }
                     }
@@ -882,7 +882,7 @@
                   "properties": {
                     "recapText": {
                       "type": "string",
-                      "example": "今週はニーファイの信仰について素晴らしい学びがありましたね！"
+                      "example": "We had wonderful learnings about Nephi's faith this week!"
                     }
                   }
                 }
@@ -1542,7 +1542,7 @@
                   },
                   "text": {
                     "type": "string",
-                    "example": "修正後のメッセージです。"
+                    "example": "This is an edited message."
                   }
                 }
               }
@@ -1682,7 +1682,7 @@
                         "type": "string"
                       },
                       "example": [
-                        "主が命じられたことを行うとき、どのような勇気が湧きますか？"
+                        "What courage do you feel when doing what the Lord commands?"
                       ]
                     }
                   }
@@ -1768,11 +1768,11 @@
                   },
                   "message": {
                     "type": "string",
-                    "example": "ダークモードのコントラストをもう少し高くしてほしいです！"
+                    "example": "I would like the contrast in dark mode to be a bit higher!"
                   },
                   "userNickname": {
                     "type": "string",
-                    "example": "だいじろう"
+                    "example": "Daijiro"
                   },
                   "userEmail": {
                     "type": "string",

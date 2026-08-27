@@ -91,7 +91,7 @@ const openapiSpec = {
               "schema": {
                 "type": "object",
                 "properties": {
-                  "nickname": { "type": "string", "example": "だいじろう" },
+                  "nickname": { "type": "string", "example": "Daijiro" },
                   "photoURL": { "type": "string", "example": "https://example.com/avatar.jpg" },
                   "stake": { "type": "string", "example": "Tokyo Stake" },
                   "ward": { "type": "string", "example": "Shinjuku Ward" },
@@ -273,7 +273,7 @@ const openapiSpec = {
               "schema": {
                 "type": "object",
                 "properties": {
-                  "name": { "type": "string", "example": "スクハビAI" },
+                  "name": { "type": "string", "example": "Scripture Habit AI" },
                   "timeZone": { "type": "string", "example": "Asia/Tokyo" }
                 }
               }
@@ -289,7 +289,7 @@ const openapiSpec = {
                   "type": "object",
                   "properties": {
                     "groupId": { "type": "string", "example": "grp_ai123" },
-                    "groupName": { "type": "string", "example": "スクハビAI" },
+                    "groupName": { "type": "string", "example": "Scripture Habit AI" },
                     "inviteCode": { "type": "string", "example": "AI7890" }
                   }
                 }
@@ -378,7 +378,7 @@ const openapiSpec = {
                 "properties": {
                   "category": { "type": "string", "example": "Book of Mormon" },
                   "chapter": { "type": "string", "example": "1 Nephi 3:7" },
-                  "comment": { "type": "string", "example": "信仰を持って前進することの大切さを学びました。" },
+                  "comment": { "type": "string", "example": "I learned the importance of moving forward with faith." },
                   "shareOption": { "type": "string", "enum": ["all", "none", "specific"], "example": "all" },
                   "selectedShareGroups": { "type": "array", "items": { "type": "string" }, "example": ["grp_123"] }
                 }
@@ -419,7 +419,7 @@ const openapiSpec = {
                 "required": ["groupId", "text"],
                 "properties": {
                   "groupId": { "type": "string", "example": "grp_abc123" },
-                  "text": { "type": "string", "example": "今日も学びがありました！" },
+                  "text": { "type": "string", "example": "Had great insights today as well!" },
                   "optimisticId": { "type": "string", "example": "temp-1700000000" }
                 }
               }
@@ -522,7 +522,7 @@ const openapiSpec = {
                 "type": "object",
                 "required": ["text", "targetLanguage"],
                 "properties": {
-                  "text": { "type": "string", "example": "こんにちは！一緒に聖句を読みましょう。" },
+                  "text": { "type": "string", "example": "Hello! Let's read scriptures together." },
                   "targetLanguage": { "type": "string", "example": "en" },
                   "updateType": { "type": "string", "example": "user_nickname" },
                   "groupId": { "type": "string", "example": "group_123" }
@@ -570,7 +570,7 @@ const openapiSpec = {
                       "required": ["id", "text"],
                       "properties": {
                         "id": { "type": "string", "example": "msg_001" },
-                        "text": { "type": "string", "example": "ニーファイ第一部3章を読みました。" }
+                        "text": { "type": "string", "example": "I read 1 Nephi Chapter 3." }
                       }
                     }
                   }
@@ -629,7 +629,7 @@ const openapiSpec = {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "recapText": { "type": "string", "example": "今週はニーファイの信仰について素晴らしい学びがありましたね！" }
+                    "recapText": { "type": "string", "example": "We had wonderful learnings about Nephi's faith this week!" }
                   }
                 }
               }
