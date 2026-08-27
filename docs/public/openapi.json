@@ -264,52 +264,6 @@
         }
       }
     },
-    "/api/groups": {
-      "get": {
-        "tags": [
-          "Groups & Chat"
-        ],
-        "summary": "Fetch Public Groups",
-        "description": "Retrieves public groups with member previews and latest activity for joining. Auto-seeds demo group for demo users.",
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "default": 20
-            }
-          },
-          {
-            "name": "lastId",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "List of public groups",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object"
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        }
-      }
-    },
     "/api/groups/create-group": {
       "post": {
         "tags": [
@@ -1440,7 +1394,7 @@
           "Groups & Chat"
         ],
         "summary": "Get Group Preview by Invite Code",
-        "description": "Retrieves public group details and active member preview cards for invite link landing pages.",
+        "description": "Retrieves group preview details and active member preview cards for invite link landing pages.",
         "parameters": [
           {
             "name": "inviteCode",

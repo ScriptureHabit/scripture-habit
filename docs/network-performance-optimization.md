@@ -66,7 +66,7 @@ flowchart TD
 ## 4. Backend & Database Optimizations
 
 1. **Redis API Caching**:
-   Caches public group listings and external metadata in Redis for sub-millisecond responses.
+   Caches external metadata and frequently accessed resources in Redis for sub-millisecond responses.
 2. **DataLoader Batching**:
    Eliminates N+1 query patterns by batching concurrent Firestore document reads into a single `db.getAll` call.
 3. **HTTP Keep-Alive Pooling**:

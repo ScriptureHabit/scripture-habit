@@ -107,6 +107,7 @@ const GroupOptions = () => {
                             <Mascot
                                 userData={userData}
                                 customMessage={t('mascot.createGroupPrompt2')}
+                                reversed={true}
                             />
                         </div>
                         <Link to={`/${language}/group-form`} className="option-card create-card" data-testid="create-group-card" style={{ width: '100%' }}>

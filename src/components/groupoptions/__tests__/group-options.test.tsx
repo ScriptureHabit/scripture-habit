@@ -72,6 +72,11 @@ describe('GroupOptions Component', () => {
     expect(aiCard).not.toHaveClass('disabled-card');
     expect(screen.queryByTestId('ai-group-joined-badge')).not.toBeInTheDocument();
     expect(screen.getByText('一人でマイペースに勉強したい')).toBeInTheDocument();
+
+    const createGroupMascotMsg = screen.getByText('友達と一緒に勉強したい！');
+    expect(createGroupMascotMsg).toBeInTheDocument();
+    const createGroupMascotContainer = createGroupMascotMsg.closest('.mascot-container');
+    expect(createGroupMascotContainer).toHaveClass('reversed');
   });
 
   it('renders disabled AI card with joined badge, note, and updated mascot message when hasAiGroup is true', () => {

@@ -135,10 +135,9 @@ The application is actively deployed and in operation, tracking daily active use
 
 ## API Documentation (Swagger UI)
 
-Public Swagger UI conforming to OpenAPI 3.0 specification is available:
+Public Swagger UI is available:
 
 - **[Swagger UI Screen](https://scripturehabit.app/api/docs)**: `https://scripturehabit.app/api/docs`
-- **[OpenAPI JSON](https://scripturehabit.app/api/openapi.json)**: `https://scripturehabit.app/api/openapi.json`
 
 ---
 
