@@ -1,141 +1,102 @@
 # Technical Documentation Index
 
-> [!NOTE]
-> **[日本語版の技術ドキュメントはこちら (Japanese Version Available)](ja/README.md)**
-
-Welcome to the **scripture-habit** technical documentation. This directory contains details about the application's architecture, features, design philosophy, and core implementations.
+Welcome to the **scripture-habit** technical documentation. This directory contains detailed guides covering the application's architecture, feature implementations, UX design rationale, and operations.
 
 ---
 
 ## Architecture Overview
 - **[Architecture & Structure](architecture.md)**
-  - High-level directory structure and layer responsibilities (Frontend, Internal API, Backend).
+  - Frontend, API, and backend layer responsibilities.
 - **[Network & Performance Optimization](network-performance-optimization.md)**
-  - Offline message sync (Service Worker Background Sync) and binary payload format (MessagePack).
-  - Multi-tier caching, Brotli compression, and font self-hosting.
+  - Service Worker Background Sync, MessagePack binary protocol, and caching layers.
 - **[Database & Security](database-security.md)**
-  - Firestore data models, privacy isolation, and chat archive structure.
+  - Firestore collection hierarchy, ER models, and token isolation.
 - **[App Check & API Protection](security-architecture.md)**
-  - Gateway middleware guards, token verification, and rate limiting.
+  - Firebase App Check validation and multi-tier rate limiting.
 - **[API Middleware & Error Handling](api-middleware-error-handling.md)**
-  - Express middleware topology, unified error handling, and Sentry tracking.
+  - Express middleware pipelines, standardized `AppError` hierarchy, and Sentry tracking.
 - **[Firebase Security Rules](firebase-security-rules.md)**
-  - Database-level authentication checks (`isAuthenticated()`) and App Check validation.
-- **[AI Context Guide & Coding Standards](ai-context.md)**
-  - Development AI directives, state boundary rules, and transactional integrity guidelines.
+  - Database access controls (`isAuthenticated()`) and mutation write isolation.
+- **[AI Context Guide & Standards](ai-context.md)**
+  - AI developer standards, component-logic separation, and state taxonomy.
 - **[SEO & Metadata Management](seo-and-meta-management.md)**
-  - Search engine indexing, multilingual canonical URLs, and dynamic Open Graph thumbnails.
+  - Canonical URL resolution, dynamic robots directives, and OGP cards.
+- **[UI/UX Design System](design-system.md)**
+  - Color tokens, glassmorphism containers, typography, and responsive rules.
 
 ---
 
 ## Key Features
 - **[Chat & Dashboard Synchronization](feature-chat-dashboard.md)**
-  - Real-time Firestore listener lifecycle and unread message synchronization.
-- **[Group Chat Architecture](groupchat-construction-guide.md)**
-  - Real-time chat system, state management, custom hooks, and modal controllers.
-- **[Note Creation & Editing (NewNote)](newnote-construction-guide.md)**
-  - Form state management, URL metadata extraction, AI reflection prompts, and sharing options.
-- **[Dashboard & MyNotes](dashboard-mynotes-construction-guide.md)**
-  - Calendar grid, habit pace algorithm, note search tokens, and weekly AI recaps.
+  - Real-time listeners and read marker reconciliation.
+- **[Group Chat Construction Guide](groupchat-construction-guide.md)**
+  - Chat layout, context isolation, modal orchestration, and optimistic UI updates.
+- **[Note Creation (NewNote) Guide](newnote-construction-guide.md)**
+  - Form state management, URL metadata extraction, and AI question prompts.
+- **[Dashboard & MyNotes Guide](dashboard-mynotes-construction-guide.md)**
+  - Habit calendar, study metrics, search filtering, and weekly recap letters.
 - **[AI Integration (Gemini)](feature-ai-integration.md)**
-  - Gemini 3.1 Flash-Lite integration for automated translation and weekly reflection letters.
-- **[Push Notifications](feature-notifications.md)**
-  - FCM token lifecycle, background delivery, and OS notification tray management.
+  - Gemini 3.1 Flash-Lite translations, weekly letters, and prompt caching.
+- **[Push Notification System](feature-notifications.md)**
+  - FCM token lifecycle, background delivery, and notification tray pruning.
 
 ---
 
 ## UX & Habit Building
 - **[Milestone Celebrations & Retention Psychology](logic-milestone-retention.md)**
-  - Transitioning to a total days model to prevent demotivation when streaks break.
-  - Milestone intervals (Day 10 + every 25 days) and visualizing progress through commemorative cards.
-- **[AI Reflection Letters: Psychological Impact & Retention](ux-ai-reflection-letters.md)**
-  - User feedback showing that personalized AI reflection letters serve as a key retention driver.
-  - Addressing the lack of affirmation in adult daily life and the comfort of non-judgmental, thoughtful reflection.
+  - Transitioning to total-day streaks and visual milestone cards (10-day/25-day).
+- **[Psychological Impact & Retention of AI Reflection Letters](ux-ai-reflection-letters.md)**
+  - Encouraging reflections, validation of personal efforts, and long-term engagement.
 - **[Small Group Dynamics (Max 5) & Peer Accountability](ux-small-groups-and-peer-accountability.md)**
-  - Why groups are capped at 5 members (reducing social loafing and keeping interactions personal).
-  - Why groups of close friends and family last longer, and how the app supports groups of strangers.
+  - Mitigating diffusion of responsibility and supporting high-trust peer circles.
 
 ---
 
 ## Core Logic
-- **[Note Posting & Streak Logic](logic-note-posting.md)**
-  - End-to-end note submission flow and total study days calculation.
+- **[Note Posting & Streaks](logic-note-posting.md)**
+  - Submission transactions, timezone-safe streak calculations, and level progressions.
 - **[Gospel Library Scripture Mapper](gospel-library-mapper.md)**
-  - Scripture chapter parsing and deep-link generation with verse highlights.
+  - Chapter and verse parsing with deep links to official church applications.
 - **[Group Invites & Joining Pipeline](group-invites.md)**
-  - Secure invite links, expiration handling, and group capacity enforcement.
+  - Invite token generation, expiration tracking, and 5-member limit enforcement.
 - **[Inactivity & Auto-Kick Engine](inactivity-and-autokick.md)**
-  - Automated detection of inactive members and group owner role handoff.
+  - Inactivity detection, automated member pruning, and ownership succession.
 - **[URL Metadata & Speaker Extraction](url-metadata-extraction.md)**
-  - Safely fetching article titles and speaker names with two-tier caching.
+  - Article metadata extraction, SSRF security guards, and multi-tier caching.
 - **[Internationalization (i18n)](logic-i18n.md)**
-  - Frontend locale switching and AI-assisted batch translation.
-- **[Unity Participation & Sync](unity-participation.md)**
-  - Group-wide daily study completion percentage and real-time synchronization.
+  - Language negotiation, UI translation hooks, and AI-assisted dynamic translation.
+- **[Unity & Daily Participation](unity-participation.md)**
+  - Real-time group participation rate calculation and daily progress tracking.
 - **[Firestore Transactions & Counters](firestore-transactions-counters.md)**
-  - Transactional data integrity and distributed sharded counter patterns.
+  - Atomic transactions, distributed counters, and aggregation optimizations.
 - **[Incremental Book Suggestions](incremental-book-suggestions.md)**
-  - Multilingual and phonetic auto-complete suggestions for scripture book names.
-- **[User Profile Sync & Anonymization](profile-sync-anonymization.md)**
-  - Propagating profile updates to group chats and GDPR-compliant data anonymization.
+  - Multilingual fuzzy completion and Japanese reading kana mappings.
+- **[Profile Synchronization & Anonymization](profile-sync-anonymization.md)**
+  - Profile metadata synchronization and GDPR-compliant account deletion.
 - **[Timezone-Aware Streak Reminders](timezone-streak-reminders.md)**
-  - Scheduling personalized evening push notifications based on user timezones.
+  - Localized evening push reminders and dead token cleanup.
+- **[Firestore Offline Persistence](firestore-offline-persistence.md)**
+  - IndexedDB caching, multi-tab coordination, and offline conflict resolution.
 
 ---
 
 ## Development & Operations
 - **[Development & Setup Guide](development-guide.md)**
-  - Local environment setup, emulators, and deployment steps.
+  - Local emulator setup, environment configuration, and dev runners.
 - **[Troubleshooting & FAQ](troubleshooting.md)**
-  - Common development issues and bypass procedures (App Check, auth).
+  - Common development issues, App Check bypasses, and port conflicts.
 - **[Testing & Reliability Guide](testing-guide.md)**
-  - Unit tests with Vitest, Firestore security rules tests, and Playwright E2E suites.
+  - Vitest unit tests, emulated API tests, and Playwright E2E suites.
 - **[CI/CD & Maintenance Automation](cicd-maintenance-automation.md)**
-  - GitHub Actions pipelines, production CD deployment, and daily Cron triggers.
-- **[Maintenance & Batch Jobs (Cron)](maintenance-cron.md)**
-  - Scheduled jobs for inactive account cleanups and counter reconciliations.
+  - GitHub Actions pipelines, automated test runs, and continuous delivery.
+- **[Maintenance & Scheduled Jobs (Cron)](maintenance-cron.md)**
+  - Background sweeps, orphan pruning, and automated chat TTL cleanup.
 - **[Monitoring & Observability](monitoring-observability.md)**
-  - Sentry error monitoring, performance tracing, and crash reporting.
-- **[Firestore Offline Persistence](firestore-offline-persistence.md)**
-  - IndexedDB offline mutation queues and multi-tab shared lock coordination.
-- **[Client-Side Unity Midnight Reset Hook](client-unity-midnight-reset.md)**
-  - Polling and resetting group Unity percentages at midnight local time.
-
----
-
-## Technical Deep-Dives
-- **[Note Posting & Streak Logic Deep-Dive](details/note-posting-streak.md)**
-  - Detailed transactional sequences, timezone calculations, and 36-hour grace periods.
-- **[AI (Gemini) Translation & Recap Deep-Dive](details/ai-integration.md)**
-  - API parameter optimizations, caching strategies, and batch translation parsing.
-- **[App Check & API Security Deep-Dive](details/api-gateway-security.md)**
-  - Defense-in-depth topology, automated testing exceptions, and IP rate limiters.
-- **[Gospel Library Mapper Deep-Dive](details/gospel-scripture-mapper.md)**
-  - Unicode character normalization, search suggestion sorting, and deep links.
-- **[Inactivity & Auto-Kick Deep-Dive](details/inactivity-autokick.md)**
-  - Low-read batch scanning, automated removals, and owner succession logic.
-- **[Group Chat Interaction Deep-Dive](details/group-chat-interactions.md)**
-  - Optimistic UI updates, reaction debouncing, translation queues, and cheers.
-- **[Push Notification System Deep-Dive](details/push-notifications.md)**
-  - Token vaults, dead token pruning, and language-split multicast delivery.
-- **[Profile Sync & Deletion Deep-Dive](details/profile-sync-deletion.md)**
-  - Paginated cursor updates and privacy-preserving account deletion.
-- **[Firestore Distributed Counters Deep-Dive](details/firestore-transactions-counters.md)**
-  - 10-shard distributed counters, server-side count aggregations, and read audits.
-- **[Firestore Offline Persistence Deep-Dive](details/firestore-offline-persistence.md)**
-  - Web Locks API master tab elections, offline queues, and fallback mechanisms.
-- **[URL Metadata Extraction Deep-Dive](details/url-metadata-extraction.md)**
-  - Two-tier caching, SSRF prevention, and Cheerio-based metadata cleansing.
-- **[Timezone-Aware Reminder Deep-Dive](details/timezone-streak-reminders.md)**
-  - Intl API timezone mapping, chunked queries, and delivery recovery flows.
-
----
-
-## Design System
-- **[UI/UX Design System](design-system.md)**
-  - Global CSS tokens, visual design guidelines, and typography standards.
+  - Sentry error logging, performance tracing, and PWA lifecycle alerts.
+- **[Daily Unity Midnight Reset Hook](client-unity-midnight-reset.md)**
+  - Client-side timezone rollover detection and midnight activity resets.
 
 ---
 
 > [!TIP]
-> Each document includes **Mermaid diagrams** to illustrate workflows and architectural relationships.
+> All documentation includes interactive **Mermaid Diagrams** illustrating architecture, data flows, and state machines.

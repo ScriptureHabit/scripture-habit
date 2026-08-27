@@ -22,6 +22,8 @@
   - 開発AI向けの必須ルールと、状態管理・コンポーネント分離の設計方針。
 - **[SEO & メタデータ管理](seo-and-meta-management.md)**
   - 検索エンジンのインデックス設定、多言語URL対応、およびSNS共有用サムネイルの生成。
+- **[UI/UX デザインシステム](design-system.md)**
+  - カラーパレット、グラスモーフィズム、タイポグラフィ、およびレスポンシブ設計。
 
 ---
 
@@ -77,6 +79,8 @@
   - プロフィール更新時のグループチャットへの反映と、退会時のデータ匿名化。
 - **[タイムゾーン対応のリマインダー通知](timezone-streak-reminders.md)**
   - ユーザーごとの現地時間（夜の時間帯）に合わせたプッシュ通知の配信。
+- **[Firestore のオフライン永続化](firestore-offline-persistence.md)**
+  - IndexedDB を使ったオフラインキャッシュと、複数タブ間での排他制御。
 
 ---
 
@@ -93,46 +97,10 @@
   - 非アクティブユーザーの整理やカウンター集計などのバッチ処理。
 - **[監視 & エラー追跡](monitoring-observability.md)**
   - Sentry によるエラー監視とパフォーマンス測定。
-- **[Firestore のオフライン永続化](firestore-offline-persistence.md)**
-  - IndexedDB を使ったオフラインキャッシュと、複数タブ間での排他制御。
 - **[Unity 深夜リセットフック](client-unity-midnight-reset.md)**
   - 深夜0時の日付変更を検知して団結度をリセットする仕組み。
 
 ---
 
-## 詳細な技術解説 (Technical Deep-Dives)
-- **[ノート投稿 & ストリーク計算の詳細](details/note-posting-streak.md)**
-  - トランザクション処理シーケンス、タイムゾーン判定、36時間猶予期間のコード解説。
-- **[AI (Gemini) 翻訳 & 週次要約の詳細](details/ai-integration.md)**
-  - API呼び出しの最適化、キャッシュ戦略、一括翻訳バッチ処理のフロー解説。
-- **[App Check & セキュリティの詳細](details/api-gateway-security.md)**
-  - 多層防御の仕組み、CI/CD環境での例外処理、IPベースのレート制限。
-- **[福音ライブラリマッパーの詳細](details/gospel-scripture-mapper.md)**
-  - 文字正規化、入力補完の優先度ソート、ディープリンク生成のコード解説。
-- **[非アクティブ判定 & 自動整理の詳細](details/inactivity-autokick.md)**
-  - データベース負荷を抑えた定期スキャン、自動キック、オーナー移譲の処理手順。
-- **[グループチャット処理の詳細](details/group-chat-interactions.md)**
-  - 楽観的UI更新、リアクション処理、翻訳キュー、エール送信の仕組み。
-- **[プッシュ通知配信の詳細](details/push-notifications.md)**
-  - トークン管理、無効トークンの自動削除、言語別の配信分割処理。
-- **[プロフィール同期 & 退会処理の詳細](details/profile-sync-deletion.md)**
-  - 複数データの一括更新と、退会時のプライバシー保護・データ匿名化。
-- **[分散カウンター & トランザクションの詳細](details/firestore-transactions-counters.md)**
-  - 10シャード分散カウンター、読み取りコスト削減、集計クエリの最適化。
-- **[オフライン永続化 & 複数タブ同期の詳細](details/firestore-offline-persistence.md)**
-  - Web Locks API によるマスタータブ選出、オフライン書き込みキューの管理。
-- **[URL メタデータ抽出の詳細](details/url-metadata-extraction.md)**
-  - 2層キャッシュ（メモリ+LocalStorage）、SSRF防御、HTMLパース処理。
-- **[タイムゾーン別リマインダーの詳細](details/timezone-streak-reminders.md)**
-  - Intl API による現地時間計算、分割クエリ、配信エラー時の自己修復。
-
----
-
-## デザインシステム (Design System)
-- **[UI/UX デザインシステム](design-system.md)**
-  - CSS 変数（カラー・タイポグラフィ・スペーシング）、コンポーネントスタイル、およびアニメーション設計。
-
----
-
 > [!TIP]
-> 各ドキュメントには、データフローや処理手順を可視化するための **Mermaid ダイアグラム** が含まれています。
+> 各ドキュメントには、データフローや処理手順を分かりやすく可視化するための **Mermaid ダイアグラム** が含まれています。
