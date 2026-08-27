@@ -12,10 +12,10 @@ Scripture Habit では、**10日および25日刻み（25日、50日、75日、1
 
 ```mermaid
 graph TD
-    A[毎日の連続ストリーク] -->|忙しさや体調不良で1日休止| B[ストリークが 0 に戻る]
-    B --> C[積み上げた記録を失った感覚]
-    C --> D[「どうにでもなれ効果」の発生]
-    D --> E[アプリを開かなくなる]
+    A["毎日の連続ストリーク"] -->|"忙しさや体調不良で1日休止"| B["ストリークが 0 に戻る"]
+    B --> C["積み上げた記録を失った感覚"]
+    C --> D["「どうにでもなれ効果」の発生"]
+    D --> E["アプリを開かなくなる"]
     
     style B fill:#ffebee,stroke:#c62828,stroke-width:1px
     style E fill:#ffcdd2,stroke:#b71c1c,stroke-width:1px
@@ -37,12 +37,12 @@ Scripture Habit では、連続日数への過度なプレッシャーを減ら�
 
 ```mermaid
 graph LR
-    subgraph 従来の連続ストリーク
-        S1[100日連続] -->|1日休止| S2[0日にリセット] --> S3[挫折しやすい]
+    subgraph SG_Trad["従来の連続ストリーク"]
+        S1["100日連続"] -->|"1日休止"| S2["0日にリセット"] --> S3["挫折しやすい"]
     end
 
-    subgraph Scripture Habit 合計日数
-        H1[100日達成] -->|1日休止| H2[100日のまま保持] -->|再開| H3[101日目へ加算]
+    subgraph SG_Total["Scripture Habit 合計日数"]
+        H1["100日達成"] -->|"1日休止"| H2["100日のまま保持"] -->|"再開"| H3["101日目へ加算"]
     end
 
     style S2 fill:#ffcdd2,stroke:#b71c1c

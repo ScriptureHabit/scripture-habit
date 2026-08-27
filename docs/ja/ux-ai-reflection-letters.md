@@ -28,18 +28,18 @@ AI振り返りレター（[`api_internal/routes/ai.ts`](file:///c:/Users/dazhi/c
 
 ```mermaid
 graph TD
-    subgraph 日常の中で生じやすいギャップ
-        A[① 努力を褒められる機会の少なさ]
-        B[② 人間同士では丁寧な感想を返しにくい]
-        C[③ 他人に拙い考えを見せる気恥ずかしさ]
+    subgraph SG_Gap["日常の中で生じやすいギャップ"]
+        A["① 努力を褒められる機会の少なさ"]
+        B["② 人間同士では丁寧な感想を返しにくい"]
+        C["③ 他人に拙い考えを見せる気恥ずかしさ"]
     end
 
-    A --> D[自己表現に対する充足感の不足]
+    A --> D["自己表現に対する充足感の不足"]
     B --> D
     C --> D
 
-    D -->|Scripture Habit の AIレター| E[自分だけに向けた丁寧で肯定的なフィードバック]
-    E --> F[安心して書き続けられる動機へ]
+    D -->|"Scripture Habit の AIレター"| E["自分だけに向けた丁寧で肯定的なフィードバック"]
+    E --> F["安心して書き続けられる動機へ"]
 
     style D fill:#ffebee,stroke:#c62828,stroke-width:1px
     style E fill:#e8f5e9,stroke:#2e7d32,stroke-width:1px

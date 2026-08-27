@@ -28,18 +28,18 @@ This feedback highlights that the true value of the feature lies not just in sum
 
 ```mermaid
 graph TD
-    subgraph Common Emotional Realities
-        A[① Rare Opportunities for Praise in Daily Life]
-        B[② High Effort for Peers to Write Long Replies]
-        C[③ Self-Consciousness in Sharing Vulnerable Thoughts]
+    subgraph SG_Realities["Common Emotional Realities"]
+        A["① Rare Opportunities for Praise in Daily Life"]
+        B["② High Effort for Peers to Write Long Replies"]
+        C["③ Self-Consciousness in Sharing Vulnerable Thoughts"]
     end
 
-    A --> D[Unmet Need for Validation]
+    A --> D["Unmet Need for Validation"]
     B --> D
     C --> D
 
-    D -->|Scripture Habit AI Reflection Letters| E[Personalized, Empathetic, and Thoughtful Feedback]
-    E --> F[Comfortable, Sustained Daily Habit]
+    D -->|"Scripture Habit AI Reflection Letters"| E["Personalized, Empathetic, and Thoughtful Feedback"]
+    E --> F["Comfortable, Sustained Daily Habit"]
 
     style D fill:#ffebee,stroke:#c62828,stroke-width:1px
     style E fill:#e8f5e9,stroke:#2e7d32,stroke-width:1px

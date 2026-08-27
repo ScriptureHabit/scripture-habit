@@ -12,10 +12,10 @@ Many habit-tracking applications rely heavily on daily consecutive streaks as th
 
 ```mermaid
 graph TD
-    A[Daily Consecutive Streak] -->|Miss 1 day due to illness or busy schedule| B[Streak Resets to 0]
-    B --> C[Sense of Lost Progress]
-    C --> D[What-the-Hell Effect]
-    D --> E[Abandoning the App]
+    A["Daily Consecutive Streak"] -->|"Miss 1 day due to illness or busy schedule"| B["Streak Resets to 0"]
+    B --> C["Sense of Lost Progress"]
+    C --> D["What-the-Hell Effect"]
+    D --> E["Abandoning the App"]
     
     style B fill:#ffebee,stroke:#c62828,stroke-width:1px
     style E fill:#ffcdd2,stroke:#b71c1c,stroke-width:1px
@@ -37,12 +37,12 @@ To relieve pressure, Scripture Habit uses **"Total Study Days (`daysStudiedCount
 
 ```mermaid
 graph LR
-    subgraph Traditional Streak
-        S1[100-Day Streak] -->|Miss 1 day| S2[Resets to 0] --> S3[Demotivation]
+    subgraph SG_Trad["Traditional Consecutive Streak"]
+        S1["100-Day Streak"] -->|"Miss 1 day"| S2["Resets to 0"] --> S3["Demotivation"]
     end
 
-    subgraph Scripture Habit Total Days
-        H1[100 Total Days] -->|Miss 1 day| H2[Preserved at 100] -->|Resume Next Day| H3[Advances to Day 101]
+    subgraph SG_Total["Scripture Habit Total Days"]
+        H1["100 Total Days"] -->|"Miss 1 day"| H2["Preserved at 100"] -->|"Resume Next Day"| H3["Advances to Day 101"]
     end
 
     style S2 fill:#ffcdd2,stroke:#b71c1c

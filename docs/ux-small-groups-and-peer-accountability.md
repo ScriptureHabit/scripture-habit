@@ -14,16 +14,16 @@ While many social platforms support large groups with dozens or hundreds of memb
 
 ```mermaid
 graph TD
-    subgraph Large Groups (20–100 members)
-        A1[Too Many Members] --> B1[Assumption that 'someone else will post']
-        B1 --> C1[Hesitation to participate or react]
-        C1 --> D1[Group goes quiet and inactive]
+    subgraph SG_Large["Large Groups (20-100 members)"]
+        A1["Too Many Members"] --> B1["Assumption that someone else will post"]
+        B1 --> C1["Hesitation to participate or react"]
+        C1 --> D1["Group goes quiet and inactive"]
     end
 
-    subgraph Scripture Habit (Max 5 Members)
-        A2[5-Member Micro-Group] --> B2[Participation is clearly visible]
-        B2 --> C2[Easy to cheer and encourage each other]
-        C2 --> D2[Habits stay active together]
+    subgraph SG_Habit["Scripture Habit (Max 5 Members)"]
+        A2["5-Member Micro-Group"] --> B2["Participation is clearly visible"]
+        B2 --> C2["Easy to cheer and encourage each other"]
+        C2 --> D2["Habits stay active together"]
     end
 
     style D1 fill:#ffebee,stroke:#c62828,stroke-width:1px
@@ -49,16 +49,16 @@ In practice, **the relationship between group members is a key factor in how lon
 
 ```mermaid
 graph LR
-    subgraph Close Friends, Partners & Family
-        ST1[Established Trust] --> ST2[Comfortable sharing short or unpolished notes]
-        ST2 --> ST3[Enjoying seeing loved ones study]
-        ST3 --> ST4[High Long-Term Retention]
+    subgraph SG_Close["Close Friends, Partners & Family"]
+        ST1["Established Trust"] --> ST2["Comfortable sharing short or unpolished notes"]
+        ST2 --> ST3["Enjoying seeing loved ones study"]
+        ST3 --> ST4["High Long-Term Retention"]
     end
 
-    subgraph Strangers & Loose Acquaintances
-        WT1[Unfamiliar with Each Other] --> WT2[Pressure to sound formal or profound]
-        WT2 --> WT3[One member goes quiet, others follow]
-        WT3 --> WT4[Risk of Group Inactivity]
+    subgraph SG_Strangers["Strangers & Loose Acquaintances"]
+        WT1["Unfamiliar with Each Other"] --> WT2["Pressure to sound formal or profound"]
+        WT2 --> WT3["One member goes quiet, others follow"]
+        WT3 --> WT4["Risk of Group Inactivity"]
     end
 
     style ST4 fill:#e8f5e9,stroke:#2e7d32,stroke-width:1px
