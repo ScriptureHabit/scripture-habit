@@ -105,7 +105,7 @@ Scripture Habit は、不特定多数の大きなコミュニティを作るの�
 
 - [AI振り返りレターの心理学的効用とリテンション](./ux-ai-reflection-letters.md)
 - [マイルストーン達成 & リテンション心理学](./logic-milestone-retention.md)
-- [グループチャット設計・実装ガイド](./groupchat-construction-guide.md)
-- [グループ招待 & 参加パイプライン](./group-invites.md)
-- [非アクティブ判定 & 自動キックエンジン](./inactivity-and-autokick.md)
-- [Unity 参加率計算 & 同期機構](./unity-participation.md)
+- [グループチャットの設計と実装](./groupchat-construction-guide.md)
+- [グループ招待 & 参加処理](./group-invites.md)
+- [非アクティブ判定 & 自動整理](./inactivity-and-autokick.md)
+- [団結度（Unity）の同期](./unity-participation.md)

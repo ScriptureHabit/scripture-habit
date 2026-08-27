@@ -1,4 +1,4 @@
-# AI振り返りレターの心理学的効用と継続への影響
+# AI振り返りレターの心理学的効用とリテンション
 
 Scripture Habit の開発過程でユーザーにヒアリングを行ったところ、合計日数のカウントやグループでの共有以上に、**「AIから届くパーソナルな振り返りレター（AI Reflection Letter）が嬉しくてアプリを続けている」**という声が多く寄せられました。
 
@@ -95,7 +95,7 @@ AI振り返りレターは、以下のようなプロンプト設計（[`api_int
   2. **聖句やエピソードとの結びつけ**: ユーザーの関心に合った聖典の物語や教えを紹介し、理解を深める視点を提供する。
   3. **温かい励まし**: 日常生活への前向きなエールで締めくくる。
 - **手紙箱（Letter Box）への保存**:
-  - 届いた手紙は手紙箱（`LetterBox`）に保存され、過去の振り返りをいつでも読み返すことができます。
+  - 届いた手紙は手紙箱（[`src/components/letterbox/letter-box.tsx`](file:///c:/Users/dazhi/code/scripture-habit/src/components/letterbox/letter-box.tsx)）に保存され、過去の振り返りをいつでも読み返すことができます。
 
 ---
 
@@ -104,4 +104,4 @@ AI振り返りレターは、以下のようなプロンプト設計（[`api_int
 - [少人数グループ（最大5人）とピア・アカウンタビリティの心理学](./ux-small-groups-and-peer-accountability.md)
 - [マイルストーン達成 & リテンション心理学](./logic-milestone-retention.md)
 - [AI 統合 (Gemini)](./feature-ai-integration.md)
-- [ダッシュボード ＆ マイノート設計・実装ガイド](./dashboard-mynotes-construction-guide.md)
+- [ダッシュボード ＆ マイノートの設計と実装](./dashboard-mynotes-construction-guide.md)

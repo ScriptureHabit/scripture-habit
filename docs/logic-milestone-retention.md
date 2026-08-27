@@ -132,7 +132,7 @@ sequenceDiagram
 
 ## 7. Related Documentation
 
-- [AI Reflection Letters: Psychological Impact & Retention](./ux-ai-reflection-letters.md)
+- [Psychological Impact & Retention of AI Reflection Letters](./ux-ai-reflection-letters.md)
 - [Small Group Dynamics (Max 5) & Peer Accountability](./ux-small-groups-and-peer-accountability.md)
-- [Note Posting Mechanism & Streaks](./logic-note-posting.md)
+- [Note Posting & Streaks](./logic-note-posting.md)
 - [Chat & Dashboard Synchronization](./feature-chat-dashboard.md)

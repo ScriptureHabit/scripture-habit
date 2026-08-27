@@ -103,9 +103,9 @@ Scripture Habit is designed not as a large public network, but as a **supportive
 
 ## 5. Related Documentation
 
-- [AI Reflection Letters: Psychological Impact & Retention](./ux-ai-reflection-letters.md)
+- [Psychological Impact & Retention of AI Reflection Letters](./ux-ai-reflection-letters.md)
 - [Milestone Celebrations & Retention Psychology](./logic-milestone-retention.md)
-- [Group Chat Architecture & Implementation](./groupchat-construction-guide.md)
+- [Group Chat Construction Guide](./groupchat-construction-guide.md)
 - [Group Invites & Joining Pipeline](./group-invites.md)
 - [Inactivity & Auto-Kick Engine](./inactivity-and-autokick.md)
-- [Unity Participation & Sync Architecture](./unity-participation.md)
+- [Unity & Daily Participation](./unity-participation.md)

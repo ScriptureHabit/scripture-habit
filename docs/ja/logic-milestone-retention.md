@@ -1,6 +1,6 @@
 # マイルストーン達成 ＆ リテンションの心理学
 
-Scripture Habit では、**10日および25日刻み（25日、50日、75日、100日...）のマイルストーン達成機能**と、**記念画像の生成・共有機能（`src/utils/milestone.ts`）**を導入しています。
+Scripture Habit では、**10日および25日刻み（25日、50日、75日、100日...）のマイルストーン達成機能**と、**記念画像の生成・共有機能（[`src/utils/milestone.ts`](file:///c:/Users/dazhi/code/scripture-habit/src/utils/milestone.ts)）**を導入しています。
 
 この設計は、連続記録の途切れによる挫折を防ぎ、ユーザーが無理なく学習を続けられるように、行動経済学や習慣形成の知見を参考にして作られています。
 
@@ -136,5 +136,5 @@ sequenceDiagram
 
 - [AI振り返りレターの心理学的効用とリテンション](./ux-ai-reflection-letters.md)
 - [少人数グループ（最大5人）とピア・アカウンタビリティの心理学](./ux-small-groups-and-peer-accountability.md)
-- [ノート投稿メカニズム & ストリーク](./logic-note-posting.md)
+- [ノート投稿 & ストリーク計算](./logic-note-posting.md)
 - [チャット & ダッシュボード同期](./feature-chat-dashboard.md)

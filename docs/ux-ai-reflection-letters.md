@@ -1,4 +1,4 @@
-# AI Reflection Letters: Psychological Impact & Retention
+# Psychological Impact & Retention of AI Reflection Letters
 
 During user interviews, users frequently shared that beyond total day counts or group sharing, **"receiving personalized reflection letters from the AI is one of the most rewarding parts of the app and a major reason they keep coming back."**
 
