@@ -87,7 +87,7 @@ To support healthy group interaction, Scripture Habit incorporates several desig
 | :--- | :--- |
 | **Strict 5-Member Cap (`maxMembers: 5`)** | Keeps groups intimate so every member's participation is recognized. |
 | **Direct Invite Links** | Makes it easy to invite a spouse, close friend, or family member to study together. |
-| **AI Partner Bot in Groups** | In newly formed or smaller groups, the AI bot posts daily to keep the group welcoming and active. |
+| **AI Partner Group (Dedicated 1-on-1 Space)** | Provides a private 1-on-1 space with the AI partner bot for users who prefer studying independently without peer pressure. |
 | **Unity Sync (Team Participation)** | Focuses on shared completion percentage rather than competitive individual rankings. |
 | **Inactivity Auto-Kick** | Gently removes inactive members over time so groups remain fresh and active. |
 
