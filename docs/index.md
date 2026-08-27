@@ -20,22 +20,22 @@ hero:
       link: https://scripturehabit.app
 
 features:
-  - title: Modern Web Architecture
-    details: React + Vite + TypeScript frontend with Express & Vercel Serverless API layer and strict CQRS Firestore design.
+  - title: Web Architecture
+    details: React + Vite + TypeScript frontend with Express & Vercel Serverless API layer and CQRS-based Firestore design.
     link: /architecture
-  - title: Enterprise-Grade Security
-    details: App Check verification, Firebase security rules, rate limiting, and dual-layer data isolation.
+  - title: Security Architecture
+    details: App Check verification, Firebase security rules, rate limiting, and private data isolation.
     link: /database-security
-  - title: Realtime Chat & Streak Sync
-    details: Optimized Firestore listeners, bucket archiving patterns, and timezone-aware midnight streak calculation.
+  - title: Chat & Streak Sync
+    details: Firestore listeners, bucket archiving, and timezone-aware midnight streak calculation.
     link: /feature-chat-dashboard
-  - title: AI Automation
-    details: Gemini 3.1 Flash-Lite integration for weekly recaps, scripture reflection generation, and automated note posts.
+  - title: AI Integration (Gemini)
+    details: Gemini 3.1 Flash-Lite for weekly recaps, scripture question prompts, and AI partner notes.
     link: /feature-ai-integration
-  - title: Global Reach & I18n
-    details: 10+ supported languages with dynamic locale resolution, gospel book phonetics, and multi-lingual scripture mapping.
+  - title: Internationalization (i18n) & Scripture Mapper
+    details: 11 supported languages with dynamic locale resolution, scripture phonetics, and Gospel Library deep linking.
     link: /logic-i18n
-  - title: Automated CI/CD & Operations
-    details: GitHub Actions with emulated Firebase unit/rule tests, Playwright E2E suites, and automated cron maintenance.
+  - title: CI/CD & Operations
+    details: GitHub Actions with emulated Firebase tests, Playwright E2E suites, and daily cron maintenance.
     link: /cicd-maintenance-automation
 ---

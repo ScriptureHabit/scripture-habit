@@ -6,7 +6,7 @@
 
 ## クイックスタート（ローカル環境の立ち上げ）
 
-ローカル開発のために、有料の Firebase アカウントや本番用 API キーを用意する必要は**ありません**。Scripture Habit は、ローカルの Firebase エミュレータ上で完全に動作します。
+ローカル開発のために、有料の Firebase アカウントや本番用 API キーを用意する必要は**ありません**。Scripture Habit は、ローカルの Firebase エミュレータ上で動作します。
 
 ### 前提条件
 - **Node.js**: `>= 22.0.0`（`node -v` で確認）
@@ -109,7 +109,7 @@ npm run dev
 | `npm run build` | プロダクションビルドおよびメタタグの多言語化を実行 |
 | `npm run lint` | ESLint によるコード静的解析 |
 | `npm run check:all` | 型チェック、多言語翻訳チェック、バックエンド整合性を一括実行 |
-| `npm run check:i18n` | 全言語の翻訳カバー率（100%）を検証 |
+| `npm run check:i18n` | 全言語の翻訳キー網羅率を検証 |
 | `npm run sort:locales` | 翻訳ファイルのキー順と構造を自動整形 |
 | `npm run test` | Vitest によるフロントエンド単体テストを実行 |
 | `npm run test:internal` | エミュレータ環境でバックエンド統合テストを実行 |

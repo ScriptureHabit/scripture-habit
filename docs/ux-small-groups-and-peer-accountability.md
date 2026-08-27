@@ -1,6 +1,6 @@
 # Small Group Dynamics (Max 5) & Peer Accountability
 
-Scripture Habit's group system is built around a **strict maximum of 5 members per group (`maxMembers: 5`)**.
+Scripture Habit's group system is built around a **maximum of 5 members per group (`maxMembers: 5`)**.
 
 Furthermore, observations from production usage have shown that **groups composed of close friends, romantic partners, or family members tend to maintain high retention over time, whereas groups formed among strangers or loose acquaintances often struggle to stay active.**
 
@@ -85,7 +85,7 @@ To support healthy group interaction, Scripture Habit incorporates several desig
 
 | Mechanism | Purpose |
 | :--- | :--- |
-| **Strict 5-Member Cap (`maxMembers: 5`)** | Keeps groups intimate so every member's participation is recognized. |
+| **5-Member Cap (`maxMembers: 5`)** | Keeps groups intimate so every member's participation is recognized. |
 | **Direct Invite Links** | Makes it easy to invite a spouse, close friend, or family member to study together. |
 | **AI Partner Group (Dedicated 1-on-1 Space)** | Provides a private 1-on-1 space with the AI partner bot for users who prefer studying independently without peer pressure. |
 | **Unity Sync (Team Participation)** | Focuses on shared completion percentage rather than competitive individual rankings. |

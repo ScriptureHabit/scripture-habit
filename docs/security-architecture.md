@@ -18,7 +18,7 @@ Incoming Request ──► [ Tier 1: API Gateway ] ──► [ Tier 2: Database 
 1. **Tier 1 (API Gateway)**:
    Verifies that HTTP requests originate from legitimate app clients before executing resource-heavy operations (Gemini AI translation, push notifications, web scrapers).
 2. **Tier 2 (Database Rules)**:
-   Firestore security rules act as a strict database-level barrier if a client attempts to bypass the Express API.
+   Firestore security rules act as a database-level barrier if a client attempts to bypass the Express API.
 
 ---
 

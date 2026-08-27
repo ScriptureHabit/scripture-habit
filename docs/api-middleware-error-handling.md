@@ -6,7 +6,7 @@ This document details the backend Express middleware pipeline (`api_internal/`),
 
 ## 1. Middleware Pipeline Order
 
-Backend requests traverse a strict, security-first middleware pipeline:
+Backend requests traverse a security-first middleware pipeline:
 
 ```mermaid
 flowchart TD

@@ -69,7 +69,7 @@ Google Cloud Firestore の **TTL（Time-to-Live）機能** により、期限切
 ## 5. 機密データの隔離とアクセス保護
 
 FCM 通知トークンなどの機密情報は、通常のユーザードキュメントとは分離された `users/{uid}/private/tokens` サブコレクションに保存されます。
-Firestore セキュリティルールにより、本人（`request.auth.uid == uid`）およびサーバー（Admin SDK）以外からのアクセスを完全に遮断しています。
+Firestore セキュリティルールにより、本人（`request.auth.uid == uid`）およびサーバー（Admin SDK）以外からのアクセスを制限しています。
 
 ---
 

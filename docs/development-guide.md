@@ -109,7 +109,7 @@ Once started, the emulator and application endpoints will be available:
 | `npm run build` | Builds frontend production bundle and runs meta-localization |
 | `npm run lint` | Runs ESLint across the codebase |
 | `npm run check:all` | Runs full type checks, i18n checks, and backend integrity checks |
-| `npm run check:i18n` | Verifies 100% translation coverage across all locales |
+| `npm run check:i18n` | Verifies translation key coverage across all locales |
 | `npm run sort:locales` | Automatically sorts and formats translation files |
 | `npm run test` | Runs frontend unit tests with Vitest |
 | `npm run test:internal` | Runs backend/integration tests with emulated Firebase |

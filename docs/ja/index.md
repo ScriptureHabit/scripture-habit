@@ -20,22 +20,22 @@ hero:
       link: https://scripturehabit.app
 
 features:
-  - title: モダンWebアーキテクチャ
+  - title: Webアーキテクチャ
     details: React + Vite + TypeScript フロントエンド、Express & Vercel Serverless バックエンド、CQRSに基づいたFirestore設計。
     link: /ja/architecture
-  - title: 堅牢なセキュリティ設計
-    details: App Check検証、厳格なFirestoreセキュリティルール、レート制限、プライベートデータの完全隔離。
+  - title: セキュリティ設計
+    details: App Check検証、Firestoreセキュリティルール、レート制限、プライベートデータの分離管理。
     link: /ja/database-security
-  - title: リアルタイム同期 & ストリーク
-    details: Firestore最適化リスナー、バケットアーカイブパターン、タイムゾーンを考慮した深夜リセットロジック。
+  - title: チャット & ストリーク同期
+    details: Firestoreリスナー、バケットアーカイブ、タイムゾーンを考慮した深夜リセットロジック。
     link: /ja/feature-chat-dashboard
-  - title: AI自動化 (Gemini)
-    details: Gemini 3.1 Flash-Lite を活用した週次振り返り生成、聖句の問いかけ提案、AIボットの自動投稿。
+  - title: AI機能 (Gemini)
+    details: Gemini 3.1 Flash-Lite を活用した振り返り手紙、質問提案、AIパートナー投稿。
     link: /ja/feature-ai-integration
-  - title: 多言語化 (i18n) & 聖典マッパー
-    details: 10言語以上の動的ローカライズ、ひらがな/カタカナ音声変換サジェスト、福音ライブラリへのディープリンク。
+  - title: 多言語対応 (i18n) & 聖典マッパー
+    details: 11言語のローカライズ、ひらがな/カタカナ音声変換サジェスト、福音ライブラリへのディープリンク。
     link: /ja/logic-i18n
-  - title: 自動化された CI/CD & 運用
-    details: GitHub Actions、エミュレータによるルール/結合テスト、Playwright E2E、日次クローンによる自己修復バッチ。
+  - title: CI/CD & 運用
+    details: GitHub Actions、エミュレータによるテスト、Playwright E2E、日次Cronによる定期メンテナンス。
     link: /ja/cicd-maintenance-automation
 ---

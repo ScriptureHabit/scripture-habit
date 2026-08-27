@@ -853,7 +853,7 @@ export default {
         "userConduct": "Maadili ya Mtumiaji",
         "userConductItems": "Unakubali kutumia programu hii kwa ukuaji wa kiroho na kuwaheshimu washiriki wengine. Unyanyasaji, lugha ya chuki, na maudhui yasiyofaa yamepigwa marufuku kabisa.",
         "aiDisclaimer": "Kanusho la AI",
-        "aiDisclaimerItems": "Scripture Habit inatumia AI (Google Gemini) kuzalisha muhtasari na tafsiri. AI inaweza kufanya makosa. Tafadhali tumia uamuzi wako mwenyewe na rasilimali rasmi za kanisa kwa usahihi wa mafundisho.",
+        "aiDisclaimerItems": "Scripture Habit inatumia AI (Google Gemini) kwa barua za tafakari na tafsiri. Barua za tafakari za AI zimekusudiwa kuhimiza masomo yako ya kila siku kwa kutafakari imani ya wahusika wa maandiko, na hazichukui nafasi ya ufunuo wa kibinafsi kutoka kwa Roho Mtakatifu au mwongozo rasmi wa Kanisa. Kwa sababu AI inaweza kufanya makosa, tafadhali tumia uamuzi wako wa maombi na rasilimali rasmi za Kanisa kwa usahihi wa mafundisho.",
         "officialDisclaimer": "Opisyal na Kanusho",
         "officialDisclaimerItems": "Scripture Habit ni mradi wa kibinafsi na si huduma rasmi ya, au inayohusiana na, Kanisa la Yesu Kristo la Watakatifu wa Siku za Mwisho.",
         "termination": "Usitishaji",

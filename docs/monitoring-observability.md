@@ -11,7 +11,7 @@ Sentry is integrated across both frontend and backend to monitor runtime reliabi
 - **Performance Tracing (`tracesSampleRate: 0.1`)**:
   Samples 10% of transactions to identify latency bottlenecks in API handlers and React renders.
 - **Session Replays (`replaysOnErrorSampleRate: 1.0`)**:
-  Records user interaction breadcrumbs strictly when runtime errors occur to assist with diagnosis.
+  Records user interaction breadcrumbs when runtime errors occur to assist with diagnosis.
 - **Normalized Transaction Names**:
   Parameterized routes (e.g. `/api/groups/:groupId`) group performance metrics under clean aggregated tags.
 

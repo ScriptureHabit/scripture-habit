@@ -68,7 +68,7 @@ Cloud Firestore's **Time-to-Live (TTL)** engine automatically deletes expired me
 
 ## 5. Private Token Isolation
 
-Sensitive tokens (e.g. FCM push tokens) are strictly isolated in the `users/{uid}/private/tokens` subcollection.
+Sensitive tokens (e.g. FCM push tokens) are isolated in the `users/{uid}/private/tokens` subcollection.
 Firestore Security Rules ensure only the authenticated user (`request.auth.uid == uid`) and backend Admin SDK can access these credentials.
 
 ---

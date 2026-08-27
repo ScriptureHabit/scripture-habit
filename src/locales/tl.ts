@@ -853,7 +853,7 @@ export default {
         "userConduct": "Asal ng User",
         "userConductItems": "Sumasang-ayon ka na gamitin ang app na ito para sa espirituwal na paglago at igalang ang ibang mga miyembro. Ang harassment, hate speech, at hindi naaangkop na nilalaman ay mahigpit na ipinagbabawal.",
         "aiDisclaimer": "AI Disclaimer",
-        "aiDisclaimerItems": "Ang Scripture Habit ay gumagamit ng AI (Google Gemini) upang bumuo ng mga recap at pagsasalin. Ang AI ay maaaring magkamali. Mangyaring gamitin ang iyong sariling pagpapasya at mga opisyal na mapagkukunan ng simbahan para sa katumpakan ng doktrina.",
+        "aiDisclaimerItems": "Ang Scripture Habit ay gumagamit ng AI (Google Gemini) para sa mga liham ng pagninilay at pagsasalin. Ang mga liham ng pagninilay ng AI ay inilaan upang hikayatin ang iyong pang-araw-araw na pag-aaral sa pamamagitan ng pagninilay sa pananampalataya ng mga tao sa banal na kasulatan, at hindi pinapalitan ang personal na paghahayag mula sa Espiritu Santo o opisyal na patnubay ng Simbahan. Dahil ang AI ay maaaring magkamali, mangyaring gamitin ang iyong sariling mapanalanging pagpapasya at mga opisyal na mapagkukunan ng Simbahan para sa katumpakan ng doktrina.",
         "officialDisclaimer": "Opisyal na Disclaimer",
         "officialDisclaimerItems": "Ang Scripture Habit ay isang personal na proyekto at hindi isang opisyal na serbisyo ng, o kaakibat ng, Ang Simbahan ni Jesucristo ng mga Banal sa mga Huling Araw.",
         "termination": "Pagwawakas",

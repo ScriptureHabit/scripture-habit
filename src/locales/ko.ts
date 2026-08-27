@@ -853,7 +853,7 @@ export default {
         "userConduct": "사용자 행동 수칙",
         "userConductItems": "귀하는 영적 성장을 위해 이 앱을 사용하고 다른 회원을 존중하는 데 동의합니다. 괴롭힘, 혐오 표현 및 부적절한 콘텐츠는 엄격히 금지됩니다.",
         "aiDisclaimer": "AI 면책 조항",
-        "aiDisclaimerItems": "Scripture Habit은 요약 및 번역을 생성하기 위해 AI(Google Gemini)를 사용합니다. AI는 실수를 할 수 있습니다. 교리적 정확성을 위해 귀하의 판단과 공식 교회 자료를 참고하시기 바랍니다.",
+        "aiDisclaimerItems": "Scripture Habit은 성찰 편지 작성 및 번역에 AI(Google Gemini)를 사용합니다. AI 성찰 편지는 경전 속 인물들의 신앙을 되새기며 매일의 학습을 격려하기 위한 것이며, 성령을 통한 개인적인 계시나 교회의 공식적인 지침을 대체하지 않습니다. AI는 실수를 할 수 있으므로 교리적 정확성을 위해 기도하는 마음으로 스스로 판단하고 공식 교회 자료를 참조하시기 바랍니다.",
         "officialDisclaimer": "공식 면책 조항",
         "officialDisclaimerItems": "Scripture Habit은 개인 프로젝트이며 예수 그리스도 후기 성도 교회의 공식 서비스가 아니며 제휴되어 있지 않습니다.",
         "termination": "종료",

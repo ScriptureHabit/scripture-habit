@@ -828,7 +828,7 @@ export default {
         "userConduct": "使用者行為規範",
         "userConductItems": "您同意將此應用程式用於靈性成長並尊重其他成員。嚴禁騷擾、仇恨言論和不當內容。",
         "aiDisclaimer": "AI 免責聲明",
-        "aiDisclaimerItems": "Scripture Habit 使用 AI (Google Gemini) 生成總結和翻譯。AI 可能會犯錯。請運用您自己的判斷並參考教會官方資源以確保教義準確性。",
+        "aiDisclaimerItems": "Scripture Habit 使用 AI (Google Gemini) 生成反思信件和翻譯。AI 反思信件旨在透過回顧經文人物的信心來鼓勵您的每日研讀，並不能取代聖靈帶來的個人啟示或教會的官方指導。由於 AI 可能會犯錯，請透過祈禱、個人判斷並參考教會官方資源以確保教義的準確性。",
         "officialDisclaimer": "官方免責聲明",
         "officialDisclaimerItems": "Scripture Habit 是一個個人專案，並非耶穌基督後期聖徒教會的官方服務，也不代表其立場或與其有隸屬關係。",
         "termination": "終止服務",

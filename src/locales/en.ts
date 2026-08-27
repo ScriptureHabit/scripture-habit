@@ -853,7 +853,7 @@ export default {
         "userConduct": "User Conduct",
         "userConductItems": "You agree to use this app for spiritual growth and to respect other members. Harassment, hate speech, and inappropriate content are strictly prohibited.",
         "aiDisclaimer": "AI Disclaimer",
-        "aiDisclaimerItems": "Scripture Habit uses AI (Google Gemini) to generate recaps and translations. AI can make mistakes. Please use your own judgment and official church resources for doctrinal accuracy.",
+        "aiDisclaimerItems": "Scripture Habit uses AI (Google Gemini) for reflection letters and translations. AI reflection letters are intended to encourage your daily study by reflecting on the faith of scriptural figures, and do not replace personal revelation from the Holy Ghost or official Church guidance. Because AI can make mistakes, please use your own prayerful judgment and official Church resources for doctrinal accuracy.",
         "officialDisclaimer": "Official Disclaimer",
         "officialDisclaimerItems": "Scripture Habit is a personal project and is not an official service of, or affiliated with, The Church of Jesus Christ of Latter-day Saints.",
         "termination": "Termination",

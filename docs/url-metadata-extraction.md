@@ -42,7 +42,7 @@ To protect against abuse and unauthorized network access, several safeguards are
 
 1. **Authentication & App Check**: Requests must include valid Firebase Auth and App Check tokens.
 2. **SSRF Protection**:
-   - Church metadata (`/fetch-church-metadata`): Restricted strictly to `churchofjesuschrist.org` domains via HTTPS.
+   - Church metadata (`/fetch-church-metadata`): Restricted to `churchofjesuschrist.org` domains via HTTPS.
    - General URL preview (`/url-preview`): Validates URLs against private network blocklists (preventing loopback/internal IP requests).
 3. **Payload Limits & Timeouts**:
    - Downloads are capped at `512 KB` to avoid resource exhaustion.

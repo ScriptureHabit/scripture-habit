@@ -72,7 +72,7 @@ The application is actively deployed and in operation, tracking daily active use
 </p>
 
 - **Search & Filtering**: Browse past study notes and search instantly by tags or keywords.
-- **AI Reflection Letters (LetterBox)**: Gemini AI analyzes note entries to deliver personalized, heartwarming reflection letters woven with inspiring stories from scriptures.
+- **AI Reflection Letters (LetterBox)**: Analyzes study notes to deliver reflection letters connecting user insights with scripture stories.
 
 
 

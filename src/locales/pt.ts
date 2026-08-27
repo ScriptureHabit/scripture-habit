@@ -853,7 +853,7 @@ export default {
         "userConduct": "Conduta do Usuário",
         "userConductItems": "Você concorda em usar este app para crescimento espiritual e a respeitar os outros membros. Assédio, discurso de ódio e conteúdo inadequado são estritamente proibidos.",
         "aiDisclaimer": "Aviso de IA",
-        "aiDisclaimerItems": "O Scripture Habit usa IA (Google Gemini) para gerar recapitulações e traduções. A IA pode cometer erros. Use seu próprio julgamento e recursos oficiais da igreja para precisão doutrinária.",
+        "aiDisclaimerItems": "O Scripture Habit usa IA (Google Gemini) para cartas de reflexão e traduções. As cartas de reflexão de IA destinam-se a incentivar seu estudo diário refletindo sobre a fé das figuras das Escrituras e não substituem a revelação pessoal do Espírito Santo ou a orientação oficial da Igreja. Como a IA pode cometer erros, use seu próprio discernimento em oração e os recursos oficiais da Igreja para precisão doutrinária.",
         "officialDisclaimer": "Aviso de Isenção de Responsabilidade Oficial",
         "officialDisclaimerItems": "O Scripture Habit é um projeto pessoal e não é um serviço oficial ou afiliado d'A Igreja de Jesus Cristo dos Santos dos Últimos Dias.",
         "termination": "Rescisão",

@@ -7,7 +7,7 @@ This document defines the core architectural guidelines, state management taxono
 ## 1. Architectural Principles
 
 ### ① Logic-Component Split
-- **UI Components (`src/components/`)**: Focus strictly on layout, rendering, and Vanilla CSS styling. Do not embed direct API requests or complex calculation routines.
+- **UI Components (`src/components/`)**: Focus on layout, rendering, and Vanilla CSS styling. Do not embed direct API requests or complex calculation routines.
 - **Custom Hooks (`src/hooks/`)**: Encapsulate data subscriptions, API calls, and business logic.
 - **Styling**: Use modular **Vanilla CSS** with variables from `src/index.css`. Avoid adding TailwindCSS or utility libraries unless explicitly requested.
 

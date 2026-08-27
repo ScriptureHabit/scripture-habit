@@ -861,7 +861,7 @@ export default {
         "userConduct": "ユーザーの行動規範",
         "userConductItems": "本アプリを霊的な成長のために利用し、他のメンバーを尊重することに同意するものとします。嫌がらせ、ヘイトスピーチ、不適切なコンテンツの投稿は固く禁じられています。",
         "aiDisclaimer": "AIに関する免責事項",
-        "aiDisclaimerItems": "Scripture Habitは、振り返りや翻訳にAI（Google Gemini）を使用しています。AIは誤りを犯す可能性があります。教義的な正確性については、ご自身の判断や教会の公式リソースを参照してください。",
+        "aiDisclaimerItems": "Scripture Habitでは、振り返り手紙の作成や翻訳にAI（Google Gemini）を活用しています。AIからの手紙は、聖典の人物の信仰に思いを馳せ、日々の学習を励ますためのものです。聖霊による個人の啓示や教会の公式な指導に代わるものではありません。また、AIは誤りを生成する可能性もあるため、教義の確認にはご自身の祈りと判断、教会の公式リソースをご活用ください。",
         "officialDisclaimer": "公式な免責事項",
         "officialDisclaimerItems": "Scripture Habitは個人プロジェクトであり、末日聖徒イエス・キリスト教会の公式なサービスではなく、また提携もしておりません。",
         "termination": "利用停止について",

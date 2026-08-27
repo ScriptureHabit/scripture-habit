@@ -59,7 +59,7 @@ Old invite links previously shared via messaging apps continue to work without b
 
 ### ④ Structural Safeguards
 Rather than relying on short expiration windows, safety is maintained through structural rules:
-- **Capacity Limits**: Strictly capped at 5 members (`maxMembers: 5`).
+- **Capacity Limits**: Capped at 5 members (`maxMembers: 5`).
 - **Group Membership Limit**: Users may join up to 4 groups (`MAX_GROUPS_PER_USER = 4`).
 - **Rate Limiting**: Rate-limits join attempts per IP (production: max 15 attempts per hour) to prevent automated scanning.
 

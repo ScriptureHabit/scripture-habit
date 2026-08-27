@@ -84,15 +84,22 @@ By providing thoughtful, personalized letters that honor each user's personal jo
 
 ---
 
-## 5. Implementation Notes
+## 5. Implementation & Church AI Guidelines Alignment
+ 
+The reflection letter prompt ([`api_internal/routes/ai.ts`](file:///c:/Users/dazhi/code/scripture-habit/api_internal/routes/ai.ts)) is designed in thoughtful alignment with **General Handbook Section 38.8.47 ("Appropriate Use of Artificial Intelligence")**:
 
-The reflection letter prompt ([`api_internal/routes/ai.ts`](file:///c:/Users/dazhi/code/scripture-habit/api_internal/routes/ai.ts)) is structured around three key sections:
-
-1. **Empathy & Reflection**: Acknowledging the user's specific insights and study efforts.
-2. **Scripture Connection**: Introducing relevant scripture stories or conference insights to expand on the user's pondering.
-3. **Warm Encouragement**: Offering a gentle blessing for their daily walk of faith.
-
-Generated letters are stored in the user's personal [`LetterBox`](file:///c:/Users/dazhi/code/scripture-habit/src/components/letterbox/letter-box.tsx) so they can be revisited whenever needed.
+- **Standard Works Persona Matching (Hybrid Selection)**:
+  - Considers figures connected to the user's studied chapters (e.g., 1 Nephi → Nephi, D&C 25 → Emma Smith) or resonates with their spiritual topic.
+  - *Jesus Christ and living/modern Church leaders are excluded from the persona pool.*
+- **Letter Structure & Design**:
+  1. **AI Roleplay Greeting**: Clearly states that the AI is embodying the figure (`"Dear ${userName}, I, the AI, am embodying [Persona Name]..."`).
+  2. **Empathy & Reflection**: Acknowledges the user's personal insights and daily consistency.
+  3. **Scriptural Narrative & Christ-Centered Witness**: Shares personal faith stories and scriptural lessons from that figure's recorded life.
+  4. **Clean Encouraging Poem**: A 3–4 line poem formatted without markdown symbols (`*` or `---`).
+  5. **Spiritual Guidance Disclaimer**: Appends a notice that AI does not replace personal revelation through the Holy Ghost.
+  6. **Sign-off**: Concludes with `"— From AI (embodying [Persona Name])"`.
+- **LetterBox Storage**:
+  - Saved in the user's personal [`LetterBox`](file:///c:/Users/dazhi/code/scripture-habit/src/components/letterbox/letter-box.tsx) for ongoing reflection and encouragement.
 
 ---
 

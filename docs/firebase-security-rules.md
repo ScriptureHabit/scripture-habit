@@ -53,7 +53,7 @@ allow create: if isAuthenticated() &&
 
 ## 4. Server-Side Write Isolation for Shared Data
 
-To prevent data tampering and guarantee transactional integrity, **direct client writes to shared resources are strictly forbidden (`allow write: if false;`)**:
+To prevent data tampering and guarantee transactional integrity, **direct client writes to shared resources are disallowed (`allow write: if false;`)**:
 
 ```mermaid
 flowchart TD

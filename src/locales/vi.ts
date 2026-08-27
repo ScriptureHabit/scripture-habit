@@ -827,7 +827,7 @@ export default {
         "userConduct": "Hành vi người dùng",
         "userConductItems": "Bạn đồng ý sử dụng ứng dụng này để phát triển tâm linh và tôn trọng các thành viên khác. Quấy rối, ngôn từ kích động thù địch và nội dung không phù hợp bị nghiêm cấm.",
         "aiDisclaimer": "Tuyên bố miễn trừ trách nhiệm về AI",
-        "aiDisclaimerItems": "Scripture Habit sử dụng AI (Google Gemini) để tạo các bản tổng kết và dịch thuật. AI có thể mắc sai lầm. Vui lòng sử dụng sự phán đoán của riêng bạn và các nguồn lực chính thức của giáo hội để đảm bảo tính chuẩn xác về giáo lý.",
+        "aiDisclaimerItems": "Scripture Habit sử dụng AI (Google Gemini) cho các lá thư suy ngẫm và dịch thuật. Các lá thư suy ngẫm của AI nhằm mục đích khích lệ việc học tập hàng ngày bằng cách suy ngẫm về đức tin của các nhân vật trong thánh thư, và không thay thế sự mặc khải cá nhân từ Đức Thánh Linh hoặc sự hướng dẫn chính thức của Giáo hội. Vì AI có thể mắc sai lầm, vui lòng sử dụng sự suy xét trong lời cầu nguyện và các nguồn tài liệu chính thức của Giáo hội để đảm bảo tính chuẩn xác về giáo lý.",
         "officialDisclaimer": "Tuyên Bố Miễn Trừ Trách Nhiệm Chính Thức",
         "officialDisclaimerItems": "Scripture Habit là một dự án cá nhân và không phải là một dịch vụ chính thức hoặc liên kết với Giáo Hội Các Thánh Hữu Ngày Sau của Chúa Giê Su Ky Tô.",
         "termination": "Chấm dứt",
