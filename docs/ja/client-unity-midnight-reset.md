@@ -1,87 +1,55 @@
-# グループアクティビティの日付変更（深夜）リセットフック
+# 団結度（Unity）深夜リセットフック
 
-**scripture-habit** アプリは、様々なタイムゾーンにわたる日付変更（深夜）リセットを処理するために、**`useUnityMidnightReset`** React フック（`src/hooks/use-unity-midnight-reset.ts`）を使用しています。グループに設定されたタイムゾーンで午前0時（深夜）を過ぎると、フックはクライアント UI を更新し、バックエンドのデータベースを安全にトリガーして、グループの新しい日のアクティビティ統計情報をリセットします。
+このドキュメントでは、グループのタイムゾーンにおける深夜0時（日付変更）を検知し、当日の団結度（Unity）をリセットする React フック（`src/hooks/use-unity-midnight-reset.ts`）について解説します。
 
 ---
 
-## 1. アーキテクチャの概要
+## 1. 処理の流れ
 
-フックは、定期的なチェック（ポーリング）、アプリのフォーカス監視（デバイスの復帰時）、およびセキュアな API 呼び出しを組み合わせて、深夜にグループの統計情報をリセットします。
+端末の復帰時（画面フォーカス時）や定期タイマー（60秒ごと）で日付変更を検知し、安全にバックエンド API を呼び出して団結度をリセットします。
 
 ```mermaid
 stateDiagram-v2
-    [*] --> ActiveState: フックのマウント
+    [*] --> 監視中
     
-    ActiveState --> SleepState: デバイスのスリープ (PWA バックグラウンド)
-    SleepState --> WakeUpTrigger: デバイスの復帰 (ウィンドウフォーカス)
-    WakeUpTrigger --> EvaluateDate: 現在の時刻/日付のチェック
+    監視中 --> 画面復帰: タブを開く / スリープ解除
+    画面復帰 --> 日付判定: グループのタイムゾーンで現在日付を確認
     
-    ActiveState --> PollingTrigger: 60秒のインターバルタイマー
-    PollingTrigger --> EvaluateDate: 現在の時刻/日付のチェック
+    監視中 --> 定期チェック: 60秒ごとのタイマー
+    定期チェック --> 日付判定
     
-    EvaluateDate --> ActiveState: 同じ日付 (リセット不要)
-    EvaluateDate --> SecureHandshake: 日付変更 (深夜を越えた！)
+    日付判定 --> 監視中: 同一日 (リセット不要)
+    日付判定 --> リセット実行: 日付が変わった (深夜0時を通過)
     
-    SecureHandshake --> ResetDatabase: POST /api/groups/reset-unity-if-midnight
-    ResetDatabase --> RefreshUI: onReset() コールバックの起動
-    RefreshUI --> ActiveState: UIを0%に設定 (クリーンな状態)
+    リセット実行 --> サーバーAPI送信: POST /api/groups/reset-unity-if-midnight
+    サーバーAPI送信 --> UI更新: 団結度を 0% にリセット
+    UI更新 --> 監視中
 ```
 
 ---
 
-## 2. コアメカニズム
+## 2. コア機能と工夫
 
-### 2.1 アクティブフォーカス & デバイスの復帰
-モバイルデバイスやプログレッシブ Web アプリ（PWA）では、ユーザーは携帯電話をロックしたり、アプリをバックグラウンドに置いたままにしたりすることがよくあります。これらのスリープ状態では、`setInterval` などの伝統的なタイマーは動作を停止します。これを処理するため、フックはアプリがフォーカスを取得したタイミングを監視（リスニング）します：
-```typescript
-window.addEventListener('focus', handleFocus);
-```
-ユーザーがアプリを開くか、タブに戻ると、`focus` イベントが起動し、日付のチェックがトリガーされます。アプリのスリープ中に新しい日が開始されていた場合、即座にリセット処理が実行されます。
+### ① デバイス復帰（フォーカス）の監視
+スマホなどのスリープ中は JavaScript のタイマーが停止するため、アプリを開いた瞬間（`window.focus` イベント）に日付変更を再チェックします。
 
-### 2.2 タイムゾーンごとの日付計算
-グローバルなユーザーをサポートするため、フックはクライアントの現在時刻をグループの特定のタイムゾーンに変換します：
-1. グループに設定されているタイムゾーンを取得します（例：`Asia/Tokyo`、`America/Denver`）。
-2. クライアントの現在時刻をそのタイムゾーンの形式にフォーマットします：
-   ```typescript
-   const todayStr = formatDateInTimeZone(new Date(), groupTimeZone);
-   ```
-3. フォーマットされた日付文字列を `YYYY-MM-DD` 形式に正規化します。
-4. この日付文字列を、Firestore に保存されているグループの最後のアクティブ日付（`dailyActivity.date`）と比較します：
-   ```typescript
-   if (normalizedActivityDate && normalizedActivityDate !== normalizedToday) {
-       // 深夜（日付変更）を越えた状態
-   }
-   ```
+### ② タイムゾーン別の正確な判定
+グループ設定のタイムゾーン（`group.timeZone`）における今日の日付（`YYYY-MM-DD`）を割り出し、データベースに記録されている日付と比較します。
 
-### 2.3 重複チェックのラッチング (同時実行制御)
-深夜前後にアプリが複数回開かれた際に、冗長なネットワークリクエストが発生するのを防ぐため、フックは React の `useRef` を使用したバッファメカニズムを採用しています：
-- **`lastCheckedDateRef`**: 最後にチェックした日付を保存します。日付が変更されていない場合、フックはリセットリクエストをスキップします。
-- **`isResettingRef`**: API 呼び出しが既に実行されている間に、重複してリセットリクエストが送信されるのを防ぐ Boolean フラグです。
+### ③ 重複リクエストの防止
+短時間に複数回画面を開閉しても重複して API が呼ばれないよう、`useRef`（`isResettingRef`）を用いたロック機構を設けています。
 
 ---
 
-## 3. セキュアな API リセットハンドシェイク
+## 3. 安全なリセット API (`/api/groups/reset-unity-if-midnight`)
 
-データのセットアップ/リセットにはデータベースの書き込み操作が必要なため、バックエンドのエンドポイント（`/api/groups/reset-unity-if-midnight`）には検証（認証・認可）が必要です。クライアントのフックは、リセットリクエストを送信する際に2つの検証用ヘッダーを提供します：
+リセット処理はバックエンドで安全に実行されます：
+- **認証 & App Check**: ログインユーザーの JWT トークンと App Check トークンを検証。
+- **UI の即時反映**: サーバーでリセット完了後、画面上の団結度メーターが即座に `0%` に更新されます。
 
-```
-┌────────────────────────────────────────────────────────┐
-│                   セキュアな HTTP ヘッダー             │
-├──────────────────────┬─────────────────────────────────┤
-│ Authorization        │ Bearer <Firebase ID トークン>   │
-├──────────────────────┼─────────────────────────────────┤
-│ X-Firebase-AppCheck  │ <Firebase App Check JWT>        │
-└──────────────────────┴─────────────────────────────────┘
-```
+---
 
-1. **ユーザー認証**: フックは Firebase Auth から最新の ID トークンを取得し、ユーザーが該当グループのメンバーであることを検証します：
-   ```typescript
-   const idToken = await currentUser.getIdToken();
-   ```
-2. **アプリの完全性（App Integrity）**: アプリが本物であることを検証するため、フックは App Check トークンをリクエストします：
-   ```typescript
-   const tokenResponse = await getToken(appCheck, false);
-   const appCheckToken = tokenResponse.token;
-   ```
-3. **バックエンドによる検証**: バックエンドは、Firestore 内のフィールドをリセットする前に、ユーザー認証トークンと App Check トークンの両方を検証します。
-4. **UI の更新**: バックエンドが `{ reset: true }` を返すと、フックは `onReset()` を呼び出し、UI 上でグループの進捗バーを `0%` にリセットします。
+## 4. 関連ドキュメント
+
+- [団結度（Unity）の同期の仕組み](./unity-participation.md)
+- [チャットとダッシュボードの同期](./feature-chat-dashboard.md)

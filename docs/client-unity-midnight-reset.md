@@ -1,87 +1,55 @@
-# Group Activity Midnight Reset Hook
+# Daily Unity Midnight Reset Hook
 
-The **scripture-habit** app uses the **`useUnityMidnightReset`** React hook (`src/hooks/use-unity-midnight-reset.ts`) to handle midnight resets across different timezones. When midnight passes in a group's configured timezone, the hook updates the client UI and securely triggers the backend database to reset the group's activity statistics for the new day.
+This document details the `useUnityMidnightReset` hook (`src/hooks/use-unity-midnight-reset.ts`), which detects local midnight transitions across group timezones and triggers backend daily activity resets.
 
 ---
 
-## 1. Architectural Overview
+## 1. Lifecycle & Sequence
 
-The hook uses a combination of periodic checking (polling), app focus monitoring (on device wake-up), and secure API calls to reset the group's statistics at midnight.
+The hook coordinates periodic interval timers and window focus listeners to detect midnight rollovers and reset group participation metrics:
 
 ```mermaid
 stateDiagram-v2
     [*] --> ActiveState: Hook Mounted
     
-    ActiveState --> SleepState: Device Suspended (PWA Background)
-    SleepState --> WakeUpTrigger: Device Resumes (window focus)
-    WakeUpTrigger --> EvaluateDate: Check Current Hour/Date
+    ActiveState --> SleepState: Device Sleep (PWA Background)
+    SleepState --> WakeUpTrigger: Device Wake (Window Focus)
+    WakeUpTrigger --> EvaluateDate: Check Current Timezone Date
     
-    ActiveState --> PollingTrigger: 60s Interval Timer
-    PollingTrigger --> EvaluateDate: Check Current Hour/Date
+    ActiveState --> PollingTrigger: 60-Second Interval Timer
+    PollingTrigger --> EvaluateDate: Check Current Timezone Date
     
-    EvaluateDate --> ActiveState: Same Date (No Reset Needed)
-    EvaluateDate --> SecureHandshake: Date Changed (Midnight Crossed!)
+    EvaluateDate --> ActiveState: Same Day (No Reset Needed)
+    EvaluateDate --> SecureHandshake: New Day (Midnight Crossed)
     
     SecureHandshake --> ResetDatabase: POST /api/groups/reset-unity-if-midnight
-    ResetDatabase --> RefreshUI: Trigger onReset() Callback
-    RefreshUI --> ActiveState: UI set to 0% (Clean Slate)
+    ResetDatabase --> RefreshUI: Reset Unity Meter to 0%
+    RefreshUI --> ActiveState: Return to Active Monitoring
 ```
 
 ---
 
-## 2. Core Mechanisms
+## 2. Core Implementation Highlights
 
-### 2.1 Active Focus & Device Wake-Up
-On mobile devices and Progressive Web Apps (PWAs), users often lock their phones or leave the app in the background. In these suspended states, traditional timers like `setInterval` stop running. To handle this, the hook listens for when the app gains focus:
-```typescript
-window.addEventListener('focus', handleFocus);
-```
-When the user opens the app or returns to the tab, the `focus` event triggers a check. If a new day has started while the app was asleep, the reset runs immediately.
+### ① Window Focus Listening
+Because timers pause when devices sleep, the hook listens to `window.addEventListener('focus', ...)` to re-evaluate the date whenever the user reopens the app.
 
-### 2.2 Timezone Date Calculations
-To support global users, the hook converts the client's current time to the group's specific timezone:
-1. Retrieve the group's configured time zone (e.g., `Asia/Tokyo`, `America/Denver`).
-2. Format the client's current time into that time zone:
-   ```typescript
-   const todayStr = formatDateInTimeZone(new Date(), groupTimeZone);
-   ```
-3. Normalize the formatted date string to `YYYY-MM-DD` format.
-4. Compare this date string with the group's last active date (`dailyActivity.date`) stored in Firestore:
-   ```typescript
-   if (normalizedActivityDate && normalizedActivityDate !== normalizedToday) {
-       // MIDNIGHT CROSSED
-   }
-   ```
+### ② Timezone-Aware Evaluation
+Calculates the current date string (`YYYY-MM-DD`) within the group's assigned timezone and compares it against `dailyActivity.date` in Firestore.
 
-### 2.3 Double-Check Latching (Concurrency Control)
-To prevent redundant network requests when the app is opened multiple times around midnight, the hook uses React `useRef` buffers:
-- **`lastCheckedDateRef`**: Stores the last checked date. If the date has not changed, the hook skips the reset request.
-- **`isResettingRef`**: A boolean flag that prevents duplicate reset requests while an API call is already running.
+### ③ Concurrency Locking
+Uses React `useRef` locks (`isResettingRef`) to prevent redundant API dispatches when switching tabs rapidly.
 
 ---
 
-## 3. Secure API Reset Handshake
+## 3. Secure Reset API (`/api/groups/reset-unity-if-midnight`)
 
-Since resetting data requires database write operations, the backend endpoint (`/api/groups/reset-unity-if-midnight`) requires validation. The client hook provides two verification headers when sending the reset request:
+- **Auth & App Check Protected**: Verifies Firebase ID tokens and App Check headers before modifying group activity states.
+- **Immediate UI Refresh**: Upon confirmation (`{ reset: true }`), executes the `onReset()` callback to reset the daily progress meter to 0%.
 
-```
-┌────────────────────────────────────────────────────────┐
-│                   Secure HTTP Headers                  │
-├──────────────────────┬─────────────────────────────────┤
-│ Authorization        │ Bearer <Firebase ID Token>      │
-├──────────────────────┼─────────────────────────────────┤
-│ X-Firebase-AppCheck  │ <Firebase App Check JWT>        │
-└──────────────────────┴─────────────────────────────────┘
-```
+---
 
-1. **User Authentication**: The hook gets a fresh ID token from Firebase Auth to verify the user is a member of the group:
-   ```typescript
-   const idToken = await currentUser.getIdToken();
-   ```
-2. **App Integrity**: The hook requests an App Check token to verify the app is genuine:
-   ```typescript
-   const tokenResponse = await getToken(appCheck, false);
-   const appCheckToken = tokenResponse.token;
-   ```
-3. **Backend Validation**: The backend checks both the user authentication and App Check tokens before resetting the fields in Firestore.
-4. **UI Update**: When the backend returns `{ reset: true }`, the hook calls `onReset()`, resetting the group's progress bar to `0%` in the UI.
+## 4. Related Documentation
+
+- [Unity & Daily Participation](./unity-participation.md)
+- [Chat & Dashboard Synchronization](./feature-chat-dashboard.md)

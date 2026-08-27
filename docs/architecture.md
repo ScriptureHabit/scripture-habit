@@ -12,7 +12,7 @@ This document provides a technical overview of the Scripture Habit project, cove
 | **Routing** | **React Router 7** | SPA navigation and deep-link routing |
 | **State & Fetching** | **Zustand 5** / **TanStack Query 5** | Lightweight UI state and server API caching |
 | **Real-Time Data** | **Firebase Client SDK 12** | Firestore WebSocket listeners for live chat synchronization |
-| **Backend API** | **Node.js 22** + **Express 5** | Serverless API gateway hosted on Vercel Functions |
+| **Backend API** | **Node.js >= 22 (LTS 24)** + **Express 5** | Serverless API gateway hosted on Vercel Functions |
 | **Database** | **Cloud Firestore** | Real-time document-oriented NoSQL database |
 | **Authentication** | **Firebase Authentication** | Email/Password & Google Sign-In with server-side JWT verification |
 | **AI Subsystem** | **Gemini 3.1 Flash-Lite** | Dynamic note translations, question prompts, and weekly letters |

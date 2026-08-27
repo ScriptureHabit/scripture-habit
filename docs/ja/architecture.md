@@ -12,7 +12,7 @@
 | **ルーティング** | **React Router 7** | SPA の画面遷移・ディープリンク管理 |
 | **状態管理・データ取得** | **Zustand 5** / **TanStack Query 5** | 軽量なUI状態管理とAPIキャッシュ管理 |
 | **リアルタイム通信** | **Firebase Client SDK 12** | Firestore の WebSocket リスナーによるチャット同期 |
-| **バックエンド API** | **Node.js 22** + **Express 5** | Vercel Serverless 上で動作するAPIゲートウェイ |
+| **バックエンド API** | **Node.js >= 22 (LTS 24)** + **Express 5** | Vercel Serverless 上で動作するAPIゲートウェイ |
 | **データベース** | **Cloud Firestore** | リアルタイム NoSQL データベース |
 | **認証** | **Firebase Authentication** | メール・パスワード / Google 認証、JWT検証 |
 | **AI サービス** | **Gemini 3.1 Flash-Lite** | ノートの動的翻訳、質問生成、振り返りレター |
