@@ -59,16 +59,27 @@ flowchart TD
 1. **Priority 1 (Scriptural Context Match)**: If the user studied a specific book/chapter featuring a figure (e.g. 1 Nephi → Nephi, D&C 25 → Emma Smith), that person is selected.
 2. **Priority 2 (Spiritual Theme Match)**: If no direct author exists, the AI dynamically selects the figure whose life experiences and teachings best resonate with the user's emotional and spiritual insights.
 
-### ③ Letter Structure & Formatting
+### ③ Letter Structure & Two-Phase Progression (Humor vs Spiritual Emotion)
 - **Salutation**: `"Dear ${userName}, I, the AI, am embodying [Persona Name] as I read your two latest study notes."` (Transparent AI roleplay)
-- **Body**: Loving acknowledgement of user efforts + personal scripture story connecting to Christ's grace.
-- **Poem**: A clean 3–4 line encouraging poem with simple natural line breaks (no `*` or `---` symbols).
+- **Phase 1 (Warm Icebreaker & Human Relatability)**: Shares scriptural self-deprecation (Peter sinking/dozing, Nephi's broken bow, Jonah's runaway boat, Alma passing out) or modern relatable struggles to build rapport and relieve pressure.
+- **Phase 2 (Sincere Christ-Centered Reflection)**: Shifts to a reverent, touching tone without jokes, validating the user's sincere spiritual thoughts and testifying of Christ's grace.
+- **Poem & P.S.**: A clean 3–4 line poem formatted without markdown symbols (`*` or `---`), followed optionally by a heartwarming P.S. (postscript).
 - **Signature**: `"— From AI (embodying [Persona Name])"`
 - **Disclaimer**: `"[Note] AI reflection letters are intended to encourage your daily study by reflecting on the faith of scriptural figures, and do not replace personal revelation from the Holy Ghost or official Church guidance. Because AI can make mistakes, please use your own prayerful judgment and official Church resources for doctrinal accuracy."`
+- **No Structural Labels**: The letter flows naturally without printing bracketed headings (e.g. `[Part 1]` or `[Icebreaker]`).
 
 ---
 
-## 5. Church AI Guidelines (General Handbook 38.8.47) Alignment
+## 5. Daily Scripture Comment Generation (`scripts/generate-ai-daily-comments.ts`)
+
+Pre-generates daily study comments in 10 languages for the Come, Follow Me curriculum:
+- **Strategy**: Replaces generic textbook sermons with punchy 1-line observations, witty modern parallels, and empathetic humor focusing on human realities in the scriptures.
+- **Rules**: Zero emojis, no rhetorical homework questions, single punchy line.
+- **Cultural Localization**: Localized culturally so the humor and cadence sound natural to native speakers across all 10 supported languages.
+
+---
+
+## 6. Church AI Guidelines (General Handbook 38.8.47) Alignment
 
 In alignment with General Handbook Section 38.8.47 ("Appropriate Use of Artificial Intelligence") and foundational Church principles, the prompt incorporates the following safety guidelines:
 

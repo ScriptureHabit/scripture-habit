@@ -91,13 +91,17 @@ The reflection letter prompt ([`api_internal/routes/ai.ts`](file:///c:/Users/daz
 - **Standard Works Persona Matching (Hybrid Selection)**:
   - Considers figures connected to the user's studied chapters (e.g., 1 Nephi → Nephi, D&C 25 → Emma Smith) or resonates with their spiritual topic.
   - *Jesus Christ and living/modern Church leaders are excluded from the persona pool.*
+- **Two-Phase Letter Progression (Separating Humor & Spiritual Emotion)**:
+  1. **Phase 1: Warm Icebreaker & Relatable Human Touch**:
+     - Shares scriptural self-deprecation (Peter sinking/dozing, Nephi's broken bow, Jonah's runaway boat, Alma passing out), modern relatable struggles, or playful AI meta-humor to relieve pressure and create an immediate human connection.
+  2. **Phase 2: Sincere, Moving & Christ-Centered Reflection**:
+     - Transitions seamlessly to a sincere, reverent tone without jokes, validating the user's deep spiritual questions and bearing testimony of Christ's grace and God's love.
 - **Letter Structure & Design**:
   1. **AI Roleplay Greeting**: Clearly states that the AI is embodying the figure (`"Dear ${userName}, I, the AI, am embodying [Persona Name]..."`).
-  2. **Empathy & Reflection**: Acknowledges the user's personal insights and daily consistency.
-  3. **Scriptural Narrative & Christ-Centered Witness**: Shares personal faith stories and scriptural lessons from that figure's recorded life.
-  4. **Clean Encouraging Poem**: A 3–4 line poem formatted without markdown symbols (`*` or `---`).
-  5. **Spiritual Guidance Disclaimer**: Appends a notice that AI does not replace personal revelation through the Holy Ghost.
-  6. **Sign-off**: Concludes with `"— From AI (embodying [Persona Name])"`.
+  2. **Seamless Natural Flow (No Section Labels)**: Flows naturally between paragraphs without printing structural labels like `[Part 1]` or `[Icebreaker]`.
+  3. **Clean Poem & Flexible P.S.**: A 3–4 line poem formatted without markdown symbols (`*` or `---`), followed optionally by a brief, heartwarming P.S. (postscript).
+  4. **Spiritual Guidance Disclaimer**: Appends a notice that AI does not replace personal revelation through the Holy Ghost.
+  5. **Sign-off**: Concludes with `"— From AI (embodying [Persona Name])"`.
 - **LetterBox Storage**:
   - Saved in the user's personal [`LetterBox`](file:///c:/Users/dazhi/code/scripture-habit/src/components/letterbox/letter-box.tsx) for ongoing reflection and encouragement.
 
