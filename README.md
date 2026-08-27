@@ -147,16 +147,10 @@ Public Swagger UI conforming to OpenAPI 3.0 specification is available:
 ### English Version
 - **[Technical Documentation Index](./docs/README.md)**
 - **[Development & Setup Guide](./docs/development-guide.md)**
-- **[Architecture & Structure](./docs/architecture.md)**
-- **[Chat & Dashboard Sync](./docs/feature-chat-dashboard.md)**
-- **[Note Posting Mechanism](./docs/logic-note-posting.md)**
 
 ### 日本語版 (Japanese Version)
 - **[ドキュメント目次](./docs/ja/README.md)**
 - **[開発および環境セットアップガイド](./docs/ja/development-guide.md)**
-- **[アーキテクチャ設計書](./docs/ja/architecture.md)**
-- **[チャット & ダッシュボード同期設計](./docs/ja/feature-chat-dashboard.md)**
-- **[ノート投稿 & ストリーク計算ロジック](./docs/ja/logic-note-posting.md)**
 
 ---
 
