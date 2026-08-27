@@ -24,12 +24,12 @@ Maintains active accountability groups by pruning dormant members:
 
 ```mermaid
 flowchart TD
-    Scan[Scan Group Members] --> CheckActive{Inactive for >= 3 Days?}
-    CheckActive -- Yes (Regular Member) --> AutoKick[Remove from Group]
-    CheckActive -- Yes (Owner) --> TransferOwner{Active Members Remain?}
-    TransferOwner -- Yes --> Promote[Promote Senior Member to Owner]
-    TransferOwner -- No (All Inactive) --> DeleteGroup[Delete Group Document & Messages]
-    CheckActive -- No (Active) --> Keep[Retain Membership]
+    Scan["Scan Group Members"] --> CheckActive{"Inactive for >= 3 Days?"}
+    CheckActive -- "Yes (Regular Member)" --> AutoKick["Remove from Group"]
+    CheckActive -- "Yes (Owner)" --> TransferOwner{"Active Members Remain?"}
+    TransferOwner -- "Yes" --> Promote["Promote Senior Member to Owner"]
+    TransferOwner -- "No (All Inactive)" --> DeleteGroup["Delete Group Document & Messages"]
+    CheckActive -- "No (Active)" --> Keep["Retain Membership"]
 ```
 
 - **Activity Detection**: Posting notes, sending chat messages, or launching the app updates `lastActiveAt`.

@@ -10,11 +10,11 @@ Instead of broadcasting a single global notification at a fixed UTC time, an hou
 
 ```mermaid
 flowchart TD
-    Cron[Hourly Cron Job Trigger] --> Step1[Resolve Timezones at 20:00 Local<br/>(Intl API)]
-    Step1 --> Step2[Query Users in Target Timezones<br/>(Firestore 10-item Chunks)]
-    Step2 --> Step3[Evaluate Study Completion<br/>(Filter unposted users)]
-    Step3 --> Step4[Group by Language & Dispatch<br/>(FCM Multicast)]
-    Step4 --> Step5[Process Delivery Feedback<br/>(Auto-purge invalid tokens)]
+    Cron["Hourly Cron Job Trigger"] --> Step1["Resolve Timezones at 20:00 Local<br/>(Intl API)"]
+    Step1 --> Step2["Query Users in Target Timezones<br/>(Firestore 10-item Chunks)"]
+    Step2 --> Step3["Evaluate Study Completion<br/>(Filter unposted users)"]
+    Step3 --> Step4["Group by Language & Dispatch<br/>(FCM Multicast)"]
+    Step4 --> Step5["Process Delivery Feedback<br/>(Auto-purge invalid tokens)"]
 ```
 
 ---

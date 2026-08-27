@@ -40,11 +40,11 @@ API コストを削減し、表示速度を向上させるため、2つの工夫
 
 ```mermaid
 flowchart TD
-    Request[レター生成リクエスト] --> CheckCooldown{過去6日以内に生成済み？}
-    CheckCooldown -- はい (クールダウン中) --> ReturnCache[既存レターをキャッシュから即時返却]
-    CheckCooldown -- いいえ (新規作成可能) --> CallGemini[Gemini API によるレター生成]
-    CallGemini --> SaveDB[手紙箱 (users/{uid}/letters) へ保存<br/>TTL: 30日]
-    SaveDB --> Deliver[レター表示]
+    Request["レター生成リクエスト"] --> CheckCooldown{"過去6日以内に生成済み？"}
+    CheckCooldown -- "はい (クールダウン中)" --> ReturnCache["既存レターをキャッシュから即時返却"]
+    CheckCooldown -- "いいえ (新規作成可能)" --> CallGemini["Gemini API によるレター生成"]
+    CallGemini --> SaveDB["手紙箱 (users/{uid}/letters) へ保存<br/>TTL: 30日"]
+    SaveDB --> Deliver["レター表示"]
 ```
 
 1. **3段落の構成**:

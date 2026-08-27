@@ -12,12 +12,13 @@ The mapper processes inputs through a 5-step pipeline to create a deep-linked UR
 
 ```mermaid
 flowchart TD
-    A[Raw Input: Book, Volume, Chapter, Verses] --> B[Step 1: Detect Volume & Resolve Language]
-    B --> C[Step 2: Clean & Normalize Characters]
-    C --> D[Step 3: Regex Parse Book, Chapter, and Verses]
-    D --> E[Step 4: Map Book to Church API Slug]
-    E --> F[Step 5: Apply Routing Rules & Append Deep-Link Hash]
-    F --> G[Output: Deep-linked Gospel Library URL]
+    A["Raw Input: Book, Volume, Chapter, Verses"] --> B["Step 1: Detect Volume & Resolve Language"]
+    B --> C["Step 2: Clean & Normalize Characters"]
+    C --> D["Step 3: Regex Parse Book, Chapter, and Verses"]
+    D --> E["Step 4: Map Book to Church API Slug"]
+    E --> F["Step 5: Apply Routing Rules & Append Deep-Link Hash"]
+    G["Output: Deep-linked Gospel Library URL"]
+    F --> G
 
     style A fill:#f9f,stroke:#333,stroke-width:2px
     style G fill:#bbf,stroke:#333,stroke-width:2px

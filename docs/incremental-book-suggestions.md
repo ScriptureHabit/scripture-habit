@@ -10,11 +10,11 @@ To ensure smooth matching regardless of case, character width, or phonetic scrip
 
 ```mermaid
 flowchart TD
-    Input[Raw Input Text] --> Lower[Convert to Lowercase]
-    Lower --> NFKC[Unicode NFKC Normalization<br/>(Full-width to Half-width)]
-    NFKC --> IsJa{Language is Japanese?}
-    IsJa -- Yes --> HiraToKata[Convert Hiragana to Katakana]
-    IsJa -- No --> Search[Match Search Tokens]
+    Input["Raw Input Text"] --> Lower["Convert to Lowercase"]
+    Lower --> NFKC["Unicode NFKC Normalization<br/>(Full-width to Half-width)"]
+    NFKC --> IsJa{"Language is Japanese?"}
+    IsJa -- "Yes" --> HiraToKata["Convert Hiragana to Katakana"]
+    IsJa -- "No" --> Search["Match Search Tokens"]
     HiraToKata --> Search
 ```
 
@@ -36,13 +36,13 @@ Filtered candidates are sorted through a 4-tier cascade so the most relevant mat
 
 ```mermaid
 graph TD
-    Start[Compare Candidates] --> T1{Tier 1: Exact Match?}
-    T1 -- Yes --> R1[Rank Highest]
-    T1 -- No --> T2{Tier 2: Translated Prefix Match?}
-    T2 -- Yes --> R2[Rank 2nd]
-    T2 -- No --> T3{Tier 3: English Prefix Match?}
-    T3 -- Yes --> R3[Rank 3rd]
-    T3 -- No --> T4[Tier 4: Shortest String Length]
+    Start["Compare Candidates"] --> T1{"Tier 1: Exact Match?"}
+    T1 -- "Yes" --> R1["Rank Highest"]
+    T1 -- "No" --> T2{"Tier 2: Translated Prefix Match?"}
+    T2 -- "Yes" --> R2["Rank 2nd"]
+    T2 -- "No" --> T3{"Tier 3: English Prefix Match?"}
+    T3 -- "Yes" --> R3["Rank 3rd"]
+    T3 -- "No" --> T4["Tier 4: Shortest String Length"]
 ```
 
 1. **Tier 1: Exact Match**: Exact name matches appear at the top.

@@ -41,11 +41,11 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    Start([メンバーの判定]) --> IsPoster{今日投稿済み？}
-    IsPoster -- はい --> Counted([対象 ＆ 投稿済みとしてカウント])
-    IsPoster -- いいえ --> JoinedDate{参加日はいつ？}
-    JoinedDate -- 前日以前 --> CountedEligible([対象（未投稿）としてカウント])
-    JoinedDate -- 今日参加 --> Excluded([分母から除外（ペナルティなし）])
+    Start(["メンバーの判定"]) --> IsPoster{"今日投稿済み？"}
+    IsPoster -- "はい" --> Counted(["対象 ＆ 投稿済みとしてカウント"])
+    IsPoster -- "いいえ" --> JoinedDate{"参加日はいつ？"}
+    JoinedDate -- "前日以前" --> CountedEligible(["対象（未投稿）としてカウント"])
+    JoinedDate -- "今日参加" --> Excluded(["分母から除外（ペナルティなし）"])
 ```
 
 ---

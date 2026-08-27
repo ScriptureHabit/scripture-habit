@@ -24,12 +24,12 @@
 
 ```mermaid
 flowchart TD
-    Scan[グループのメンバーをスキャン] --> CheckActive{3日以上活動がない？}
-    CheckActive -- はい (一般メンバー) --> AutoKick[グループから自動退出]
-    CheckActive -- はい (オーナー) --> TransferOwner{他にアクティブなメンバーがいる？}
-    TransferOwner -- はい --> Promote[最長在籍メンバーへオーナー権限を移行]
-    TransferOwner -- いいえ (全員非アクティブ) --> DeleteGroup[グループドキュメントを自動削除]
-    CheckActive -- いいえ (アクティブ) --> Keep[在籍を維持]
+    Scan["グループのメンバーをスキャン"] --> CheckActive{"3日以上活動がない？"}
+    CheckActive -- "はい (一般メンバー)" --> AutoKick["グループから自動退出"]
+    CheckActive -- "はい (オーナー)" --> TransferOwner{"他にアクティブなメンバーがいる？"}
+    TransferOwner -- "はい" --> Promote["最長在籍メンバーへオーナー権限を移行"]
+    TransferOwner -- "いいえ (全員非アクティブ)" --> DeleteGroup["グループドキュメントを自動削除"]
+    CheckActive -- "いいえ (アクティブ)" --> Keep["在籍を維持"]
 ```
 
 - **アクティビティの判定**: ノート投稿、チャット送信、アプリへのログインで `lastActiveAt` が更新されます。

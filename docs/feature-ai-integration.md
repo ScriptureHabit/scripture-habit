@@ -40,11 +40,11 @@ Analyzes the user's weekly study notes to generate a supportive, personal reflec
 
 ```mermaid
 flowchart TD
-    Request[Generate Letter Request] --> CheckCooldown{Generated within last 6 days?}
-    CheckCooldown -- Yes (On Cooldown) --> ReturnCache[Return Existing Letter from Cache]
-    CheckCooldown -- No (Eligible) --> CallGemini[Call Gemini 3.1 Flash-Lite]
-    CallGemini --> SaveDB[Save to LetterBox (users/{uid}/letters)<br/>TTL: 30 Days]
-    SaveDB --> Deliver[Display Letter]
+    Request["Generate Letter Request"] --> CheckCooldown{"Generated within last 6 days?"}
+    CheckCooldown -- "Yes (On Cooldown)" --> ReturnCache["Return Existing Letter from Cache"]
+    CheckCooldown -- "No (Eligible)" --> CallGemini["Call Gemini 3.1 Flash-Lite"]
+    CallGemini --> SaveDB["Save to LetterBox (users/{uid}/letters)<br/>TTL: 30 Days"]
+    SaveDB --> Deliver["Display Letter"]
 ```
 
 1. **Three-Paragraph Structure**:

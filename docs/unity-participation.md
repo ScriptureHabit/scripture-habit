@@ -43,11 +43,11 @@ To prevent unfairly dragging down the group's percentage when a new member joins
 
 ```mermaid
 flowchart TD
-    Start([Evaluate Member]) --> IsPoster{Posted today?}
-    IsPoster -- Yes --> Counted([Eligible & Posted])
-    IsPoster -- No --> JoinedDate{When did they join?}
-    JoinedDate -- Before Today --> CountedEligible([Eligible (Not yet posted)])
-    JoinedDate -- Today --> Excluded([Excluded from Denominator])
+    Start(["Evaluate Member"]) --> IsPoster{"Posted today?"}
+    IsPoster -- "Yes" --> Counted(["Eligible & Posted"])
+    IsPoster -- "No" --> JoinedDate{"When did they join?"}
+    JoinedDate -- "Before Today" --> CountedEligible(["Eligible (Not yet posted)"])
+    JoinedDate -- "Today" --> Excluded(["Excluded from Denominator"])
 ```
 
 ---
