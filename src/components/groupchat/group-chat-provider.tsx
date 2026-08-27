@@ -70,7 +70,7 @@ const GroupChatProvider = ({
 
   // 2. API Actions
   const {
-    isLeaving, isDeleting, handleLeaveGroup, handleDeleteGroup, togglePublicStatus, handleUpdateGroupName
+    isLeaving, isDeleting, handleLeaveGroup, handleDeleteGroup, handleUpdateGroupName
   } = useGroupActions(groupId, userData, groupData, language || 'en', t, /* onLeaveSuccess */ onBack, /* onDeleteSuccess */ onBack);
 
   const {
@@ -161,12 +161,12 @@ const GroupChatProvider = ({
   }), [handleSendMessage, handleRetryMessage, handleSaveEdit, handleConfirmDeleteMessage, handleToggleReaction, handleTranslateMessage, handleLazyTranslate, handleReply, handleMessageClick, handleEditMessage, handleDeleteMessageClick, handleReportClick, handleToggleReactionDirect, translatingIds, translatedTexts]);
 
   const groupActionsValue = useMemo<ChatGroupActionsContextType>(() => ({
-    handleLeaveGroup, handleDeleteGroup, handleUpdateGroupName, togglePublicStatus,
+    handleLeaveGroup, handleDeleteGroup, handleUpdateGroupName,
     handleCopyInviteLink, handleRegenerateInviteCode,
     handleUserProfileClick, handleShowMembers, handleShowUnityModal, handleShowReactions,
     translatedGroupName, translatedGroupDesc, isLeaving, isDeleting,
     isSendingCheer, cheeredTodayUids, confirmReport, handleSendCheer, handleCheerClick
-  }), [handleLeaveGroup, handleDeleteGroup, handleUpdateGroupName, togglePublicStatus, handleCopyInviteLink, handleRegenerateInviteCode, handleUserProfileClick, handleShowMembers, handleShowUnityModal, handleShowReactions, translatedGroupName, translatedGroupDesc, isLeaving, isDeleting, isSendingCheer, cheeredTodayUids, confirmReport, handleSendCheer, handleCheerClick]);
+  }), [handleLeaveGroup, handleDeleteGroup, handleUpdateGroupName, handleCopyInviteLink, handleRegenerateInviteCode, handleUserProfileClick, handleShowMembers, handleShowUnityModal, handleShowReactions, translatedGroupName, translatedGroupDesc, isLeaving, isDeleting, isSendingCheer, cheeredTodayUids, confirmReport, handleSendCheer, handleCheerClick]);
 
   const uiActionsValue = useMemo<ChatUIActionsContextType>(() => ({
     t, tArray, scrollToBottom, handleScroll, dispatch, closeContextMenu,

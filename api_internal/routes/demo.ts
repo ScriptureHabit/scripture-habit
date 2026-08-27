@@ -4,7 +4,7 @@ import { verifyAppCheck, authenticate, demoInitLimiter, AuthenticatedRequest } f
 import { sendErrorResponse, ValidationError } from '../lib/errors.js';
 import { z } from 'zod';
 import { GroupDocument, UserDocument } from '../../types/firestore.js';
-import { t, getDemoGroupTranslations } from '../lib/i18n.js';
+import { getDemoGroupTranslations } from '../lib/i18n.js';
 import { getDemoExpireAt } from '../lib/ttl-utils.js';
 
 const router = express.Router();
@@ -76,15 +76,15 @@ router.post('/initialize', demoInitLimiter, authenticate, verifyAppCheck, async 
         const demoGroupId = `demo-group-${uid}`;
         const groupRef = db.collection('groups').doc(demoGroupId);
         const groupData: GroupDocument = {
-            name: t(language, 'onboardingQuest.demoGroupName') || '日々の糧 📖',
-            description: t(language, 'onboardingQuest.demoGroupDesc') || '毎日一緒に聖典を読み合う、温かい学習グループです！✨',
+            name: language === 'ja' ? '日々の糧 📖' : 'Daily Bread 📖',
+            description: language === 'ja' ? '毎日一緒に聖典を読み合う、温かい学習グループです！✨' : 'A warm study group to read scriptures together daily! ✨',
             translations: getDemoGroupTranslations(language),
             members: ['bot-alice', 'bot-bob', 'bot-charlie'],
             membersCount: 3,
             ownerUserId: 'bot-alice',
             maxMembers: 5,
-            isPrivate: false,
-            isPublic: true,
+            isPrivate: true,
+            isPublic: false,
             isDemoGroup: true,
             groupStreak: 7,
             unityPercentage: 67,

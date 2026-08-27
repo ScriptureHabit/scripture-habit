@@ -45,7 +45,7 @@ describe('Group Management & Lifecycle Integration', () => {
             const response = await fetch(`${setup.baseUrl}/api/groups/create-group`, {
                 method: 'POST',
                 headers: { 'Authorization': 'Bearer token', 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: 'Excess Group', isPublic: true })
+                body: JSON.stringify({ name: 'Excess Group' })
             });
 
             const data = await response.json();
@@ -80,7 +80,7 @@ describe('Group Management & Lifecycle Integration', () => {
             const res = await fetch(`${setup.baseUrl}/api/groups/create-group`, {
                 method: 'POST',
                 headers: { 'Authorization': 'Bearer token', 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: 'Lifecycle Group', isPublic: true })
+                body: JSON.stringify({ name: 'Lifecycle Group' })
             });
 
             const data = await res.json();
@@ -134,38 +134,13 @@ describe('Group Management & Lifecycle Integration', () => {
         });
     });
 
-    describe('Pagination & Search', () => {
-        it('should correctly paginate through public groups', async () => {
-            const prefix = 'page-test-' + Date.now();
-            const batch = db.batch();
-            for (let i = 0; i < 15; i++) {
-                const ref = db.collection('groups').doc();
-                batch.set(ref, {
-                    name: `${prefix} ${i.toString().padStart(2, '0')}`,
-                    isPublic: true,
-                    lastMessageAt: admin.firestore.Timestamp.fromDate(new Date(2030, 0, i + 1)),
-                    membersCount: 1
-                });
-                createdGroupIds.push(ref.id);
-            }
-            await batch.commit();
-
-            setup.mockAuth('test-user-pagination');
-            const res1 = await fetch(`${setup.baseUrl}/api/groups?limit=10`, {
-                headers: { 'Authorization': 'Bearer token' }
-            });
-            const groups1 = await res1.json();
-            expect(groups1).toHaveLength(10);
-            const prefixGroups1 = groups1.filter((g: any) => g.name.startsWith(prefix));
-            expect(prefixGroups1.length).toBeGreaterThan(0);
-        });
-    });
-
     describe('Concurrency & Data Integrity', () => {
         it('should handle simultaneous joins in a limited group', { retry: 3, timeout: 30000 }, async () => {
             const groupId = 'concurrency-' + Date.now();
+            const inviteCode = 'CONCUR';
             await db.collection('groups').doc(groupId).set({
-                id: groupId, name: 'Limited', members: ['owner'], membersCount: 1, maxMembers: 2, isPublic: true,
+                id: groupId, name: 'Limited', members: ['owner'], membersCount: 1, maxMembers: 2, isPublic: false,
+                inviteCode,
                 lastInactivityCheckedAt: admin.firestore.Timestamp.now()
             });
             createdGroupIds.push(groupId);
@@ -180,7 +155,7 @@ describe('Group Management & Lifecycle Integration', () => {
             const requests = joiners.map(j => fetch(`${setup.baseUrl}/api/groups/join-group`, {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer token-${j.uid}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ groupId })
+                body: JSON.stringify({ inviteCode })
             }));
 
             const responses = await Promise.all(requests);

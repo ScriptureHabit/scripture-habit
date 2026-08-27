@@ -1,6 +1,4 @@
-
 import { useState } from 'react';
-import { createPortal } from 'react-dom';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import apiClient from '../../utils/api-client';
@@ -10,7 +8,6 @@ import WelcomeStoryModal from '../welcomestorymodal/welcome-story-modal';
 import Mascot from '../mascot/mascot';
 import { OptionsSkeleton } from '../skeleton/skeleton';
 import { useGroupOptions } from './hooks/use-group-options';
-import { auth } from '../../firebase';
 
 const GroupOptions = () => {
     const { t, language } = useLanguage();
@@ -25,8 +22,6 @@ const GroupOptions = () => {
     } = useGroupOptions();
 
     const isStage1 = userData && (!userData.groupIds || userData.groupIds.length === 0) && !userData.groupId && !userData.hasCompletedOnboarding;
-    const isDemo = !!userData?.isAnonymousDemo || !!(auth && auth.currentUser?.isAnonymous);
-    const shouldSpotlightJoin = isDemo && isStage1;
 
     const handleCreateAiGroup = async () => {
         if (creatingAiGroup || hasAiGroup) return;
@@ -57,10 +52,6 @@ const GroupOptions = () => {
 
     return (
         <div className="App GroupOptions">
-            {shouldSpotlightJoin && createPortal(
-                <div className="quest-spotlight-overlay" />,
-                document.body
-            )}
             <div className="AppGlass options-container">
                 {isStage1 && (
                     <div className="group-options-quest-banner" data-testid="group-options-quest-banner">
@@ -111,29 +102,14 @@ const GroupOptions = () => {
                         </button>
                     </div>
 
-                    <div className={`option-wrapper join-wrapper${shouldSpotlightJoin ? ' demo-spotlight-active' : ''}`}>
-                        <div className="card-mascot">
-                            <Mascot
-                                userData={userData}
-                                customMessage={t('mascot.joinGroupPrompt')}
-                                reversed={true}
-                            />
-                        </div>
-                        <Link to="/join-group" className="option-card join-card">
-                            <div className="icon">🔍</div>
-                            <h3>{t('groupOptions.joinGroupTitle')}</h3>
-                            <p>{t('groupOptions.joinGroupDesc')}</p>
-                        </Link>
-                    </div>
-
-                    <div className="option-wrapper">
+                    <div className="option-wrapper create-wrapper">
                         <div className="card-mascot">
                             <Mascot
                                 userData={userData}
                                 customMessage={t('mascot.createGroupPrompt2')}
                             />
                         </div>
-                        <Link to="/group-form" className="option-card create-card" data-testid="create-group-card">
+                        <Link to="/group-form" className="option-card create-card" data-testid="create-group-card" style={{ width: '100%' }}>
                             <div className="icon">✨</div>
                             <h3>{t('groupOptions.createGroupTitle')}</h3>
                             <p>{t('groupOptions.createGroupDesc')}</p>
@@ -156,5 +132,3 @@ const GroupOptions = () => {
 };
 
 export default GroupOptions;
-
-

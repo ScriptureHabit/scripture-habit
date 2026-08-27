@@ -43,7 +43,7 @@ const ChatHeader = () => {
 
   // 2. Actions
   const { 
-      togglePublicStatus, handleShowMembers, handleShowUnityModal,
+      handleShowMembers, handleShowUnityModal,
       handleCopyInviteLink,
       translatedGroupName, translatedGroupDesc
   } = useChatGroupActions();
@@ -136,15 +136,6 @@ const ChatHeader = () => {
         {groupData && (
           <>
             <div className="header-right desktop-only">
-              {isOwner && !groupData.isAiGroup && (
-                <div className="group-status-toggle">
-                  <span className="status-label">{groupData.isPublic ? t('groupChat.public') : t('groupChat.private')}</span>
-                  <label className="switch" htmlFor="group-public-toggle">
-                    <input id="group-public-toggle" name="isPublicToggle" type="checkbox" checked={groupData.isPublic || false} onChange={togglePublicStatus} aria-label={t('groupChat.public')} />
-                    <span className="slider round"></span>
-                  </label>
-                </div>
-              )}
               {!groupData.isAiGroup && (
                 <div className="invite-code-wrapper">
                   <div
@@ -221,16 +212,6 @@ const ChatHeader = () => {
                       {isFull ? t('groupChat.maxMembersReachedMessage') : t('groupChat.inviteCode')}
                     </span>
                     <span className="invite-code-text">{groupData.inviteCode}</span>
-                  </div>
-                </div>
-              )}
-
-              {/* Private Toggle */}
-              {isOwner && !groupData.isAiGroup && (
-                <div className="mobile-menu-item-row toggle-row" onClick={(e) => { e.stopPropagation(); togglePublicStatus(); }}>
-                  <span className="menu-item-label">{t('groupChat.private')}</span>
-                  <div className={`custom-toggle ${!groupData.isPublic ? 'active' : ''}`}>
-                    <div className="toggle-handle"></div>
                   </div>
                 </div>
               )}

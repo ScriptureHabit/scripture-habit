@@ -33,8 +33,6 @@ const componentLoaders = {
   LoginForm: () => import('./components/loginform/login-form'),
   Dashboard: () => import('./components/dashboard/dashboard'),
   GroupForm: () => import('./components/groupform/group-form'),
-  JoinGroup: () => import('./components/joingroup/join-group'),
-  GroupDetails: () => import('./components/groupdetails/group-details'),
   GroupOptions: () => import('./components/groupoptions/group-options'),
   Welcome: () => import('./components/welcome/welcome'),
   ForgotPassword: () => import('./components/forgotpassword/forgot-password'),
@@ -54,8 +52,6 @@ const SignupForm = lazyWithRetry(componentLoaders.SignupForm);
 const LoginForm = lazyWithRetry(componentLoaders.LoginForm);
 const Dashboard = lazyWithRetry(componentLoaders.Dashboard);
 const GroupForm = lazyWithRetry(componentLoaders.GroupForm);
-const JoinGroup = lazyWithRetry(componentLoaders.JoinGroup);
-const GroupDetails = lazyWithRetry(componentLoaders.GroupDetails);
 const GroupOptions = lazyWithRetry(componentLoaders.GroupOptions);
 const Welcome = lazyWithRetry(componentLoaders.Welcome);
 const ForgotPassword = lazyWithRetry(componentLoaders.ForgotPassword);
@@ -493,10 +489,9 @@ const App = () => {
                 <Route path="dashboard" element={<Dashboard />} />
                 <Route path="profile" element={<Dashboard />} />
                 <Route path="group-form" element={<GroupForm />} />
-                <Route path="join-group" element={<JoinGroup />} />
-
+                <Route path="join-group" element={<Navigate to="../dashboard" replace />} />
                 <Route path="group-options" element={<GroupOptions />} />
-                <Route path="group/:id" element={<GroupDetails group={null} />} />
+                <Route path="group/:id" element={<Navigate to="../dashboard" replace />} />
                 <Route path="forgot-password" element={<ForgotPassword />} />
                 <Route path="join/:inviteCode" element={<InviteRedirect />} />
                 <Route path="privacy" element={<PrivacyPolicy />} />

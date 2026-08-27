@@ -1,0 +1,101 @@
+.join-success-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+  animation: fadeIn 0.2s ease-out forwards;
+}
+
+.join-success-card {
+  background: var(--color-surface, #ffffff);
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 1.5rem;
+  padding: 2rem 1.5rem;
+  max-width: 380px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.join-success-mascot-wrapper {
+  width: 90px;
+  height: 90px;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.join-success-mascot {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  animation: bounce 1s infinite alternate ease-in-out;
+}
+
+.join-success-body {
+  margin-bottom: 1.5rem;
+}
+
+.join-success-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-text, #1e293b);
+  line-height: 1.4;
+  margin: 0;
+}
+
+.join-success-btn {
+  background-color: var(--color-primary, #3b82f6);
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 1rem;
+  padding: 0.75rem 2rem;
+  border-radius: 0.75rem;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
+}
+
+.join-success-btn:hover {
+  background-color: var(--color-primary-hover, #2563eb);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 8px -1px rgba(59, 130, 246, 0.4);
+}
+
+.join-success-btn:active {
+  transform: translateY(0);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes bounce {
+  from { transform: translateY(0); }
+  to { transform: translateY(-8px); }
+}

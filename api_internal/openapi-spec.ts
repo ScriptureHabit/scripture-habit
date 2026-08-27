@@ -235,7 +235,6 @@ const openapiSpec = {
                 "properties": {
                   "name": { "type": "string", "example": "Tokyo Scripture Group" },
                   "description": { "type": "string", "example": "Let's read daily at 7 AM" },
-                  "isPublic": { "type": "boolean", "example": true },
                   "timeZone": { "type": "string", "example": "Asia/Tokyo" }
                 }
               }
@@ -304,16 +303,16 @@ const openapiSpec = {
     "/api/groups/join-group": {
       "post": {
         "tags": ["Groups & Chat"],
-        "summary": "Join Group by ID or Invite Code",
-        "description": "Adds current user to a group using a group ID or invite code.",
+        "summary": "Join Group by Invite Code",
+        "description": "Adds current user to a private group using an invite code.",
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
+                "required": ["inviteCode"],
                 "properties": {
-                  "groupId": { "type": "string", "example": "grp_abc123" },
                   "inviteCode": { "type": "string", "example": "XYZ789" }
                 }
               }

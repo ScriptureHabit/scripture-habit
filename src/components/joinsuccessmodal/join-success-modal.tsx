@@ -1,4 +1,3 @@
-
 import { useEffect } from 'react';
 import { useLanguage } from '../../hooks/use-language';
 import './join-success-modal.css';

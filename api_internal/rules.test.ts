@@ -140,27 +140,21 @@ describe('Firestore Security Rules', () => {
     });
 
     describe('Groups Collection', () => {
-        it('should allow verified user to read public group', async () => {
+        it('should allow verified member to read group', async () => {
             const alice = testEnv.authenticatedContext('alice', { email_verified: true });
-            await seedGroup('public_grp', { isPublic: true });
-            await assertSucceeds(getDoc(doc(alice.firestore(), 'groups/public_grp')));
-        });
-
-        it('should deny unverified user from reading groups', async () => {
-            const alice = testEnv.authenticatedContext('alice', { email_verified: false });
-            await seedGroup('public_grp', { isPublic: true });
-            await assertFails(getDoc(doc(alice.firestore(), 'groups/public_grp')));
-        });
-
-        it('should allow member to read private group', async () => {
-            const alice = testEnv.authenticatedContext('alice', { email_verified: true });
-            await seedGroup('private_grp', { isPublic: false, members: ['alice'] });
+            await seedGroup('private_grp', { members: ['alice'] });
             await assertSucceeds(getDoc(doc(alice.firestore(), 'groups/private_grp')));
         });
 
-        it('should deny non-member from reading private group', async () => {
+        it('should deny unverified user from reading groups even if member', async () => {
+            const alice = testEnv.authenticatedContext('alice', { email_verified: false });
+            await seedGroup('private_grp', { members: ['alice'] });
+            await assertFails(getDoc(doc(alice.firestore(), 'groups/private_grp')));
+        });
+
+        it('should deny non-member from reading group', async () => {
             const alice = testEnv.authenticatedContext('alice', { email_verified: true });
-            await seedGroup('private_grp', { isPublic: false, members: ['bob'] });
+            await seedGroup('private_grp', { members: ['bob'] });
             await assertFails(getDoc(doc(alice.firestore(), 'groups/private_grp')));
         });
 
@@ -239,33 +233,28 @@ describe('Firestore Security Rules', () => {
                 email: 'test@example.com',
                 email_verified: false
             });
-            await seedGroup('public_grp', { isPublic: true });
-            await assertFails(getDoc(doc(tester.firestore(), 'groups/public_grp')));
+            await seedGroup('private_grp', { members: ['tester'] });
+            await assertFails(getDoc(doc(tester.firestore(), 'groups/private_grp')));
         });
 
-        it('should allow verified users to access public groups', async () => {
+        it('should allow verified users to access their groups', async () => {
             const tester = testEnv.authenticatedContext('tester', {
                 email: 'test@example.com',
                 email_verified: true
             });
-            await seedGroup('public_grp', { isPublic: true });
-            await assertSucceeds(getDoc(doc(tester.firestore(), 'groups/public_grp')));
+            await seedGroup('private_grp', { members: ['tester'] });
+            await assertSucceeds(getDoc(doc(tester.firestore(), 'groups/private_grp')));
         });
     });
 
     describe('List Queries Filtering', () => {
         it('should correctly filter groups by membership in list query', async () => {
             const alice = testEnv.authenticatedContext('alice', { email_verified: true });
-            await seedGroup('grp1', { isPublic: false, members: ['alice'] });
-            await seedGroup('grp2', { isPublic: false, members: ['bob'] });
-            await seedGroup('grp3', { isPublic: true, members: [] });
+            await seedGroup('grp1', { members: ['alice'] });
+            await seedGroup('grp2', { members: ['bob'] });
 
-            // Alice should see grp1 (joined) and grp3 (public)
+            // Alice should only be able to query groups she is a member of
             const q = query(collection(alice.firestore(), 'groups'));
-            // Note: In rules-unit-testing, getDocs(q) will fail if ANY document in the collection 
-            // would be denied by the list rule, UNLESS the query filters them out.
-            // Our rule says: allow list if isPublic == true || uid in members.
-
             // This query should FAIL because it attempts to list ALL groups including grp2.
             await assertFails(getDocs(q));
 
@@ -354,14 +343,14 @@ describe('Firestore Security Rules', () => {
         describe('Groups Collection', () => {
             it('should deny updateDoc on groups directly from client (all mutations via API)', async () => {
                 const alice = testEnv.authenticatedContext('alice', { email_verified: true });
-                await seedGroup('grp1', { isPublic: true, members: ['alice'] });
+                await seedGroup('grp1', { members: ['alice'] });
                 // Rule: allow create, update, delete: if false
                 await assertFails(updateDoc(doc(alice.firestore(), 'groups/grp1'), { name: 'Hacked' }));
             });
 
             it('should deny deleteDoc on groups directly from client', async () => {
                 const alice = testEnv.authenticatedContext('alice', { email_verified: true });
-                await seedGroup('grp1', { isPublic: true, members: ['alice'] });
+                await seedGroup('grp1', { members: ['alice'] });
                 await assertFails(deleteDoc(doc(alice.firestore(), 'groups/grp1')));
             });
         });

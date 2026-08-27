@@ -77,21 +77,6 @@ export const useGroupActions = (
     }
   };
 
-  const togglePublicStatus = async () => {
-    if (!groupData) return;
-    try {
-      await apiClient.post('/api/groups/update-group', { 
-        groupId, 
-        isPublic: !groupData.isPublic 
-      });
-
-      toast.success(groupData.isPublic ? t('groupChat.markedPrivate') : t('groupChat.markedPublic'));
-    } catch (err: unknown) {
-      console.error("Error toggling public status:", err);
-      toast.error(t('groupChat.errorUpdateGroupStatus'));
-    }
-  };
-
   const handleUpdateGroupName = async (
     newName: string, 
     newDesc: string, 
@@ -156,7 +141,6 @@ export const useGroupActions = (
     isDeleting,
     handleLeaveGroup,
     handleDeleteGroup,
-    togglePublicStatus,
     handleUpdateGroupName,
     handleShareLine,
     handleShareWhatsApp,

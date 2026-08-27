@@ -17,7 +17,7 @@ const MyNotes = lazyWithRetry(() => import('../mynotes/my-notes'));
 const Profile = lazyWithRetry(() => import('../profile/profile'));
 const Donate = lazyWithRetry(() => import('../donate/donate'));
 const DashboardModals = lazyWithRetry(() => import('./components/dashboard-modals'));
-const JoinSuccessModal = lazyWithRetry(() => import('../joingroup/join-success-modal'));
+const JoinSuccessModal = lazyWithRetry(() => import('../joinsuccessmodal/join-success-modal'));
 const MilestoneModal = lazyWithRetry(() => import('../milestone/milestone-modal'));
 
 // Styles

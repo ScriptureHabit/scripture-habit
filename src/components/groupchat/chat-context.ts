@@ -49,7 +49,6 @@ export interface ChatGroupActionsContextType {
   handleLeaveGroup: () => Promise<void>;
   handleDeleteGroup: (confirmation: string) => Promise<void>;
   handleUpdateGroupName: (name: string, desc: string, tName: string, tDesc: string) => Promise<boolean>;
-  togglePublicStatus: () => Promise<void>;
   handleCopyInviteLink: () => void;
   handleRegenerateInviteCode: () => Promise<void>;
 

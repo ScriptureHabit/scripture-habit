@@ -34,14 +34,12 @@ export const updateProfileSchema = z.object({
 
 export const joinGroupSchema = z.object({
     token: z.string().min(1).optional(),
-    groupId: z.string().optional(),
-    inviteCode: z.string().optional()
+    inviteCode: z.string().min(1)
 });
 
 export const createGroupSchema = z.object({
     name: z.string().min(1).max(100),
     description: z.string().max(1000).optional(),
-    isPublic: z.boolean().optional(),
     timeZone: z.string().optional()
 });
 
@@ -94,8 +92,6 @@ export const updateGroupSchema = z.object({
     groupId: z.string().min(1),
     name: z.string().max(100).optional(),
     description: z.string().max(1000).optional(),
-    isPublic: z.boolean().optional(),
-    isPrivate: z.boolean().optional(),
     timeZone: z.string().optional(),
     translations: z.record(z.string(), z.object({
         name: z.string().max(100).optional(),

@@ -77,9 +77,8 @@ service cloud.firestore {
     
     // 2. Groups Collection: Tightly guarded by Email Verification & Sandbox Isolation
     match /groups/{groupId} {
-      // Allow 'get' for public non-demo groups, user's own demo group, or verified group members
+      // Allow 'get' for user's own demo group or verified group members
       allow get: if isAuthenticated() && (
-        (resource.data.isPublic == true && resource.data.get('isDemoGroup', false) == false) ||
         (resource.data.get('isDemoGroup', false) == true && (
           request.auth.uid in resource.data.get('members', []) ||
           groupId == 'demo-group-' + request.auth.uid ||
@@ -88,10 +87,8 @@ service cloud.firestore {
         request.auth.uid in resource.data.get('members', [])
       );
       
-      // Allow 'list' if the result is either a real Public group OR a group the caller is a member of.
-      // This explicitly excludes other users' demo groups from broad list queries.
+      // Allow 'list' only for groups the caller is a member of.
       allow list: if isAuthenticated() && (
-        (resource.data.isPublic == true && resource.data.get('isDemoGroup', false) == false) ||
         request.auth.uid in resource.data.get('members', [])
       );
       

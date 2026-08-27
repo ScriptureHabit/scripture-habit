@@ -43,23 +43,7 @@
         { "fieldPath": "createdAt", "order": "DESCENDING" }
       ]
     },
-    {
-      "collectionGroup": "groups",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "isPublic", "order": "ASCENDING" },
-        { "fieldPath": "membersCount", "order": "ASCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "groups",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "isPublic", "order": "ASCENDING" },
-        { "fieldPath": "lastMessageAt", "order": "DESCENDING" },
-        { "fieldPath": "__name__", "order": "DESCENDING" }
-      ]
-    },
+
     {
       "collectionGroup": "notes",
       "queryScope": "COLLECTION",

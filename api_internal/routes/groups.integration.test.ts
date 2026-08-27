@@ -333,8 +333,6 @@ describe('Groups Route Additional Integration Tests', () => {
                     groupId: ACTIVE_GROUP_ID,
                     name: 'Super Active Group',
                     description: 'Brand new description',
-                    isPublic: false,
-                    isPrivate: true,
                     timeZone: 'Europe/London'
                 })
             });
@@ -348,8 +346,6 @@ describe('Groups Route Additional Integration Tests', () => {
             const group = snap.data();
             expect(group?.name).toBe('Super Active Group');
             expect(group?.description).toBe('Brand new description');
-            expect(group?.isPublic).toBe(false);
-            expect(group?.isPrivate).toBe(true);
             expect(group?.timeZone).toBe('Europe/London');
         });
     });
@@ -540,25 +536,6 @@ describe('Groups Route Additional Integration Tests', () => {
 
             const res = await fetch(`${setup.baseUrl}/api/groups/group-preview/ANYCODE`);
             expect(res.status).toBe(500);
-
-            spy.mockRestore();
-        });
-    });
-
-    describe('GET / public groups error handling', () => {
-        it('should return 500 on database error during paginated group fetch', async () => {
-            // Mock firestore query to fail by spying on db.collection
-            const spy = vi.spyOn(db, 'collection').mockImplementation(() => {
-                throw new Error('Simulated query failure');
-            });
-
-            setup.mockAuth('test-user-error');
-            const res = await fetch(`${setup.baseUrl}/api/groups`, {
-                headers: { 'Authorization': 'Bearer token' }
-            });
-            expect(res.status).toBe(500);
-            const data = await res.json();
-            expect(data.error).toBe('Simulated query failure');
 
             spy.mockRestore();
         });

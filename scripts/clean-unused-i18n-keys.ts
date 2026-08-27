@@ -161,7 +161,13 @@ async function run() {
 
     console.log(`\n🧹 Cleaning unused keys from all locale files in src/locales/ ...`);
 
-    const localeFiles = fs.readdirSync(LOCALES_DIR).filter(f => (f.endsWith('.ts') || f.endsWith('.js')) && !f.includes('i18n') && !f.includes('registry'));
+    const localeFiles = fs.readdirSync(LOCALES_DIR).filter(f => 
+        (f.endsWith('.ts') || f.endsWith('.js')) && 
+        !f.includes('i18n') && 
+        !f.includes('registry') && 
+        !f.includes('initial-translations') && 
+        !f.includes('scripture-metadata')
+    );
 
     for (const file of localeFiles) {
         const filePath = path.join(LOCALES_DIR, file);
