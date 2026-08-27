@@ -162,8 +162,9 @@ export default {
         "developerRole": "ผู้พัฒนา Scripture Habit",
         "openSourceTitle": "เกี่ยวกับโอเพนซอร์ส (Open Source)",
         "openSourceDesc": "Scripture Habit เป็นโครงการโอเพนซอร์ส ซอร์สโค้ดเปิดเผยต่อสาธารณะบน GitHub เรายินดีรับฟังความคิดเห็น การรายงานข้อผิดพลาดผ่าน Issues และการมีส่วนร่วมผ่าน Pull Requests",
-        "githubRepo": "คลังข้อมูล GitHub",
-        "githubSponsorsComingSoon": "GitHub Sponsors",
+        "githubRepo": "GitHub Repository",
+        "supportProject": "สนับสนุน Scripture Habit",
+        "githubSponsorsComingSoon": "สนับสนุน Scripture Habit",
         "feedbackTitle": "ข้อเสนอแนะและการติดต่อ",
         "feedbackDesc": "หากคุณมีข้อเสนอแนะเกี่ยวกับฟีเจอร์ รายงานปัญหา หรือข้อคิดเห็นทั่วไป สามารถส่งผ่านแบบฟอร์มด้านล่างได้เสมอ ข้าพเจ้าอ่านทุกข้อความ",
         "feedbackCategoryIdea": "ไอเดีย / ข้อเสนอแนะ",
@@ -924,7 +925,8 @@ export default {
             "card2Title": "พัฒนาร่วมกับชุมชน",
             "card2Desc": "ทุกคนสามารถมีส่วนร่วมในการพัฒนาได้ ไม่ว่าจะเป็นการเสนอแนะฟีเจอร์ รายงานข้อผิดพลาดบน Issues หรือส่ง Pull Request บน GitHub",
             "githubBtn": "ดูบน GitHub",
-            "sponsorsComingSoon": "GitHub Sponsors"
+            "supportBtn": "สนับสนุน Scripture Habit",
+            "sponsorsComingSoon": "สนับสนุน Scripture Habit"
         },
         "seoContent": {
             "faq": {

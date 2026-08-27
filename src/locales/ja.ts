@@ -163,7 +163,8 @@ export default {
         "openSourceTitle": "オープンソースについて",
         "openSourceDesc": "Scripture Habit はオープンソースプロジェクトとして公開しています。ソースコードはGitHubから誰でも確認でき、Issuesでのご意見・不具合報告やPull Requestによる貢献も歓迎しています。",
         "githubRepo": "GitHubリポジトリ",
-        "githubSponsorsComingSoon": "GitHub Sponsors",
+        "supportProject": "Scripture Habitを支援する",
+        "githubSponsorsComingSoon": "Scripture Habitを支援する",
         "feedbackTitle": "ご意見・ご感想・フィードバック",
         "feedbackDesc": "アプリの改善案、不具合の報告、日々の感想などがあれば、以下のフォームから気軽に送信してください。すべて目を通しています。",
         "feedbackCategoryIdea": "アイデア・要望",
@@ -932,7 +933,8 @@ export default {
             "card2Title": "コミュニティと共に",
             "card2Desc": "GitHubでの機能提案やバグ報告、Pull Requestなど、どなたでも開発に参加できます。",
             "githubBtn": "GitHubで見る",
-            "sponsorsComingSoon": "GitHub Sponsors"
+            "supportBtn": "Scripture Habitを支援する",
+            "sponsorsComingSoon": "Scripture Habitを支援する"
         },
         "seoContent": {
             "faq": {

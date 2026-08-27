@@ -5,6 +5,7 @@ import Mascot from '../mascot/mascot';
 import { UserData } from '../../types/user';
 import apiClient from '../../utils/api-client';
 import { auth } from '../../firebase';
+import { GITHUB_REPO_URL, getStripeDonationUrl } from '../../config';
 import { 
     UilGithub, 
     UilLightbulbAlt, 
@@ -22,7 +23,7 @@ interface DonateProps {
 type FeedbackCategory = 'idea' | 'bug' | 'cheer';
 
 const Donate = ({ userData }: DonateProps) => {
-    const { t } = useLanguage();
+    const { t, language } = useLanguage();
 
     const [category, setCategory] = useState<FeedbackCategory>('idea');
     const [message, setMessage] = useState('');
@@ -101,7 +102,7 @@ const Donate = ({ userData }: DonateProps) => {
                         <p className="section-description">{t('story.openSourceDesc')}</p>
                         <div className="opensource-links">
                             <a 
-                                href="https://github.com/ScriptureHabit/scripture-habit" 
+                                href={GITHUB_REPO_URL} 
                                 target="_blank" 
                                 rel="noopener noreferrer" 
                                 className="github-btn"
@@ -110,13 +111,13 @@ const Donate = ({ userData }: DonateProps) => {
                                 <span>{t('story.githubRepo')}</span>
                             </a>
                             <a 
-                                href="https://github.com/sponsors/daijir" 
+                                href={getStripeDonationUrl(language)} 
                                 target="_blank" 
                                 rel="noopener noreferrer" 
                                 className="sponsors-btn"
                             >
                                 <UilHeart size="20" style={{ color: '#ea4aaa' }} />
-                                <span>{t('story.githubSponsorsComingSoon')}</span>
+                                <span>{t('story.supportProject')}</span>
                             </a>
                         </div>
                     </div>

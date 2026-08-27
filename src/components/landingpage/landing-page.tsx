@@ -7,6 +7,7 @@ import Button from '../button/button';
 import './landing-page.css';
 import Footer from '../footer/footer';
 import { Globe, X, Share2, PlusSquare, LayoutGrid, Rocket, ShieldCheck, Users, LayoutDashboard } from 'lucide-react';
+import { GITHUB_REPO_URL, getStripeDonationUrl } from '../../config';
 
 
 const LandingPage = () => {
@@ -70,10 +71,10 @@ const LandingPage = () => {
                         <button
                             className="landing-dashboard-btn"
                             onClick={() => navigate(`/${language}/dashboard`)}
-                            title={t('dashboard.title') || 'Dashboard'}
+                            title={t('sidebar.dashboard')}
                         >
                             <LayoutDashboard size={18} />
-                            <span>{t('dashboard.title') || 'Dashboard'}</span>
+                            <span>{t('sidebar.dashboard')}</span>
                         </button>
                     )}
                     <button
@@ -258,7 +259,7 @@ const LandingPage = () => {
 
                         <div className="landing-opensource-cta-wrapper">
                             <a
-                                href="https://github.com/ScriptureHabit/scripture-habit"
+                                href={GITHUB_REPO_URL}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="landing-github-btn"
@@ -270,7 +271,7 @@ const LandingPage = () => {
                                 <span>{t('landing.openSource.githubBtn')}</span>
                             </a>
                             <a
-                                href="https://github.com/sponsors/daijir"
+                                href={getStripeDonationUrl(language)}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="landing-sponsors-btn"
@@ -278,7 +279,7 @@ const LandingPage = () => {
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="#ea4aaa" stroke="#ea4aaa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
                                     <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path>
                                 </svg>
-                                <span>{t('landing.openSource.sponsorsComingSoon')}</span>
+                                <span>{t('landing.openSource.supportBtn')}</span>
                             </a>
                         </div>
                     </div>

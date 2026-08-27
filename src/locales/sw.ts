@@ -163,7 +163,8 @@ export default {
         "openSourceTitle": "Kuhusu Chanzo Huria (Open Source)",
         "openSourceDesc": "Scripture Habit ni mradi wa chanzo huria. Msimbo unapatikana hadharani kwenye GitHub, na tunakaribisha maoni, ripoti za hitilafu kupitia Issues, na michango kupitia Pull Requests.",
         "githubRepo": "Hifadhi ya GitHub",
-        "githubSponsorsComingSoon": "GitHub Sponsors",
+        "supportProject": "Saidia Scripture Habit",
+        "githubSponsorsComingSoon": "Saidia Scripture Habit",
         "feedbackTitle": "Maoni na Mawasiliano",
         "feedbackDesc": "Kama una mapendekezo ya vipengele, ripoti za hitilafu, au mawazo ya jumla, tafadhali jisikie huru kuyatuma kupitia fomu iliyo hapa chini. Ninasoma kila ujumbe.",
         "feedbackCategoryIdea": "Wazo / Pendekezo",
@@ -924,7 +925,8 @@ export default {
             "card2Title": "Pamoja na Jamii",
             "card2Desc": "Mtu yeyote anaweza kushiriki katika uundaji kupitia mapendekezo ya vipengele, ripoti za hitilafu kwenye Issues, au Pull Requests kwenye GitHub.",
             "githubBtn": "Tazama kwenye GitHub",
-            "sponsorsComingSoon": "GitHub Sponsors"
+            "supportBtn": "Saidia Scripture Habit",
+            "sponsorsComingSoon": "Saidia Scripture Habit"
         },
         "seoContent": {
             "faq": {

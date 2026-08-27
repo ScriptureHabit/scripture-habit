@@ -144,9 +144,9 @@ export default {
         "description": "A web app where you can share what you learn from scripture study with each other. It also comes packed with features to support building a habit."
     },
     "sidebar": {
-        "dashboard": "dashboard",
+        "dashboard": "Dashboard",
         "myNotes": "My Notes",
-        "profile": "profile",
+        "profile": "Profile",
         "myGroups": "My Groups",
         "joinCreateGroup": "Join/Create Group",
         "selectGroup": "Select Group",
@@ -163,7 +163,8 @@ export default {
         "openSourceTitle": "Open Source",
         "openSourceDesc": "Scripture Habit is an open-source project. The source code is publicly available on GitHub, and we welcome feedback, bug reports via Issues, and contributions through Pull Requests.",
         "githubRepo": "GitHub Repository",
-        "githubSponsorsComingSoon": "GitHub Sponsors",
+        "supportProject": "Support Scripture Habit",
+        "githubSponsorsComingSoon": "Support Scripture Habit",
         "feedbackTitle": "Feedback & Contact",
         "feedbackDesc": "If you have feature suggestions, bug reports, or general thoughts, please feel free to send them using the form below. I read every message.",
         "feedbackCategoryIdea": "Feature Request / Idea",
@@ -924,7 +925,8 @@ export default {
             "card2Title": "Built with Community",
             "card2Desc": "Anyone can contribute to development through feature proposals, bug reports via Issues, or Pull Requests on GitHub.",
             "githubBtn": "View on GitHub",
-            "sponsorsComingSoon": "GitHub Sponsors"
+            "supportBtn": "Support Scripture Habit",
+            "sponsorsComingSoon": "Support Scripture Habit"
         },
         "seoContent": {
             "faq": {

@@ -162,8 +162,9 @@ export default {
         "developerRole": "Desarrollador de Scripture Habit",
         "openSourceTitle": "Código Abierto",
         "openSourceDesc": "Scripture Habit es un proyecto de código abierto. El código fuente está disponible públicamente en GitHub, y agradecemos comentarios, informes de errores a través de Issues y contribuciones mediante Pull Requests.",
-        "githubRepo": "Repositorio de GitHub",
-        "githubSponsorsComingSoon": "GitHub Sponsors",
+        "githubRepo": "Repositorio GitHub",
+        "supportProject": "Apoyar Scripture Habit",
+        "githubSponsorsComingSoon": "Apoyar Scripture Habit",
         "feedbackTitle": "Comentarios y Contacto",
         "feedbackDesc": "Si tienes sugerencias de funciones, informes de errores o comentarios generales, no dudes en enviarlos mediante el formulario a continuación. Leo cada mensaje.",
         "feedbackCategoryIdea": "Sugerencia / Idea",
@@ -900,7 +901,8 @@ export default {
             "card2Title": "Construido con la Comunidad",
             "card2Desc": "Cualquiera puede participar en el desarrollo mediante propuestas de funciones, informes de errores en Issues o Pull Requests en GitHub.",
             "githubBtn": "Ver en GitHub",
-            "sponsorsComingSoon": "GitHub Sponsors"
+            "supportBtn": "Apoyar Scripture Habit",
+            "sponsorsComingSoon": "Apoyar Scripture Habit"
         },
         "seoContent": {
             "faq": {
