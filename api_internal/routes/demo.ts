@@ -41,6 +41,7 @@ router.post('/initialize', demoInitLimiter, authenticate, verifyAppCheck, async 
 
         const oneDayAgoTimestamp = admin.firestore.Timestamp.fromMillis(now - 1 * 24 * 60 * 60 * 1000);
         const currentTimestamp = admin.firestore.Timestamp.fromMillis(now);
+        const demoGroupId = `demo-group-${uid}`;
 
         const batch = db.batch();
 
@@ -56,11 +57,12 @@ router.post('/initialize', demoInitLimiter, authenticate, verifyAppCheck, async 
             daysStudiedCount: 999,
             studiedDates: studiedDates,
             language: language,
-            groupIds: [],
+            groupIds: [demoGroupId],
+            groupId: demoGroupId,
             hasSeenWelcomeStory: true,
             hasSeenTour: true,
             hasCompletedOnboarding: false,
-            questCreatedGroup: false,
+            questCreatedGroup: true,
             questPostedNote: false,
             isAnonymousDemo: true,
             createdAt: admin.firestore.Timestamp.fromMillis(now - 999 * 24 * 60 * 60 * 1000),
@@ -72,15 +74,14 @@ router.post('/initialize', demoInitLimiter, authenticate, verifyAppCheck, async 
         };
         batch.set(userRef, userData, { merge: true });
 
-        // 2. Public Demo Group (Daily Bread 📖) for the user to join
-        const demoGroupId = `demo-group-${uid}`;
+        // 2. Demo Group (Daily Bread 📖) pre-joined by user
         const groupRef = db.collection('groups').doc(demoGroupId);
         const groupData: GroupDocument = {
             name: language === 'ja' ? '日々の糧 📖' : 'Daily Bread 📖',
             description: language === 'ja' ? '毎日一緒に聖典を読み合う、温かい学習グループです！✨' : 'A warm study group to read scriptures together daily! ✨',
             translations: getDemoGroupTranslations(language),
-            members: ['bot-alice', 'bot-bob', 'bot-charlie'],
-            membersCount: 3,
+            members: ['bot-alice', 'bot-bob', 'bot-charlie', uid],
+            membersCount: 4,
             ownerUserId: 'bot-alice',
             maxMembers: 5,
             isPrivate: true,
@@ -101,22 +102,29 @@ router.post('/initialize', demoInitLimiter, authenticate, verifyAppCheck, async 
                 {
                     uid: 'bot-charlie',
                     nickname: 'Charlie 💤'
+                },
+                {
+                    uid: uid,
+                    nickname: language === 'ja' ? 'デモユーザー' : 'Demo User'
                 }
             ],
             memberJoinedAt: {
                 'bot-alice': admin.firestore.Timestamp.fromMillis(now - 14 * 24 * 60 * 60 * 1000),
                 'bot-bob': admin.firestore.Timestamp.fromMillis(now - 20 * 24 * 60 * 60 * 1000),
-                'bot-charlie': admin.firestore.Timestamp.fromMillis(now - 5 * 24 * 60 * 60 * 1000)
+                'bot-charlie': admin.firestore.Timestamp.fromMillis(now - 5 * 24 * 60 * 60 * 1000),
+                [uid]: currentTimestamp
             },
             memberLastActive: {
                 'bot-alice': admin.firestore.Timestamp.fromMillis(now - 4 * 60 * 60 * 1000),
                 'bot-bob': admin.firestore.Timestamp.fromMillis(now - 2 * 60 * 60 * 1000),
-                'bot-charlie': admin.firestore.Timestamp.fromMillis(now - 2 * 24 * 60 * 60 * 1000)
+                'bot-charlie': admin.firestore.Timestamp.fromMillis(now - 2 * 24 * 60 * 60 * 1000),
+                [uid]: currentTimestamp
             },
             memberLastReadAt: {
                 'bot-alice': admin.firestore.Timestamp.fromMillis(now - 4 * 60 * 60 * 1000),
                 'bot-bob': admin.firestore.Timestamp.fromMillis(now - 2 * 60 * 60 * 1000),
-                'bot-charlie': admin.firestore.Timestamp.fromMillis(now - 2 * 24 * 60 * 60 * 1000)
+                'bot-charlie': admin.firestore.Timestamp.fromMillis(now - 2 * 24 * 60 * 60 * 1000),
+                [uid]: currentTimestamp
             },
             dailyActivity: {
                 date: getDateStr(0),
@@ -133,6 +141,14 @@ router.post('/initialize', demoInitLimiter, authenticate, verifyAppCheck, async 
             expireAt: getDemoExpireAt()
         };
         batch.set(groupRef, groupData, { merge: true });
+
+        // Add demo user to group members subcollection
+        const userMemberRef = groupRef.collection('members').doc(uid);
+        batch.set(userMemberRef, {
+            joinedAt: currentTimestamp,
+            lastActiveAt: currentTimestamp,
+            kickThreshold: 7
+        });
 
         // 3. Messages inside the Public Demo Group
         const seedMessages = [

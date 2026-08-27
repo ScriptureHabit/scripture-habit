@@ -5,6 +5,7 @@ import { UserData } from '../../../types/user';
 import StreakCalendar from './streak-calendar';
 import { QuestCard } from './quest-card';
 import { useModalStore } from '../../../store/use-modal-store';
+import { useLanguage } from '../../../hooks/use-language';
 import './quest-card.css';
 
 interface DashboardOverviewProps {
@@ -43,6 +44,7 @@ const DashboardOverview = ({
   onGoToGroupChat
 }: DashboardOverviewProps) => {
   const { activeModal } = useModalStore();
+  const { language } = useLanguage();
   const isAnyModalOpen = hasActiveModal || !!activeModal;
 
   return (
@@ -125,7 +127,7 @@ const DashboardOverview = ({
         {!hasGroups && (
           <div className="no-group-cta">
             <p>{t('dashboard.joinGroupStudy')}</p>
-            <Link to="/group-options">
+            <Link to={`/${language}/group-options`}>
               <button className="cta-btn">{t('dashboard.joinCreateGroup')}</button>
             </Link>
           </div>

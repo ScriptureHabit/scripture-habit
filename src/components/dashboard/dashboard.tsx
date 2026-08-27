@@ -266,7 +266,7 @@ const Dashboard = () => {
     );
   }
 
-  if (status === 'unauthenticated') return <Navigate to="/welcome" replace state={{ from: location }} />;
+  if (status === 'unauthenticated') return <Navigate to={`/${language}/welcome`} replace state={{ from: location }} />;
   if (!userData) return null;
 
 

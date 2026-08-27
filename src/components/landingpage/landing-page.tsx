@@ -1,15 +1,17 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../hooks/use-language';
+import { useAuth } from '../../hooks/use-auth';
 import { LANGUAGES } from '../../config/languages';
 import Button from '../button/button';
 import './landing-page.css';
 import Footer from '../footer/footer';
-import { Globe, X, Share2, PlusSquare, LayoutGrid, Rocket, ShieldCheck, Users } from 'lucide-react';
+import { Globe, X, Share2, PlusSquare, LayoutGrid, Rocket, ShieldCheck, Users, LayoutDashboard } from 'lucide-react';
 
 
 const LandingPage = () => {
     const { t, language, setLanguage } = useLanguage();
+    const { user } = useAuth();
     const navigate = useNavigate();
     const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
     const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
@@ -62,8 +64,18 @@ const LandingPage = () => {
                 {/* Click outside to close lang menu */}
                 {isLangMenuOpen && <div className="lang-menu-backdrop" onClick={() => setIsLangMenuOpen(false)}></div>}
 
-                {/* Language Selector Overlay */}
+                {/* Language Selector Overlay & Dashboard Quick Access */}
                 <div className="lang-selector-container">
+                    {user && (
+                        <button
+                            className="landing-dashboard-btn"
+                            onClick={() => navigate(`/${language}/dashboard`)}
+                            title={t('dashboard.title') || 'Dashboard'}
+                        >
+                            <LayoutDashboard size={18} />
+                            <span>{t('dashboard.title') || 'Dashboard'}</span>
+                        </button>
+                    )}
                     <button
                         className="lang-selector-btn"
                         onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}

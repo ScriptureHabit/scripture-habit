@@ -11,7 +11,7 @@ interface LeaveGroupButtonProps {
 }
 
 export default function LeaveGroupButton({ groupId }: LeaveGroupButtonProps) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const navigate = useNavigate();
   const [showConfirm, setShowConfirm] = useState(false);
 
@@ -20,7 +20,7 @@ export default function LeaveGroupButton({ groupId }: LeaveGroupButtonProps) {
       await apiClient.post('/api/groups/leave-group', { groupId });
 
       toast.success(t('groupChat.leftGroupSuccess') || 'You have left the group');
-      navigate('/dashboard');
+      navigate(`/${language}/dashboard`);
     } catch (err: unknown) {
       console.error(err);
       const message = getApiErrorMessage(err, 'groupChat.errorLeaveGroup', t);

@@ -113,7 +113,7 @@ export default function GroupForm() {
         </form>
         {error && <p className="error-message">{error}</p>}
 
-        <Link to="/dashboard" className="back-link">
+        <Link to={`/${language}/dashboard`} className="back-link">
           {t('groupOptions.backToDashboard')}
         </Link>
       </div>

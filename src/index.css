@@ -46,7 +46,7 @@ body {
 
 .App {
   background: linear-gradient(106.37deg,
-      #feac5e 29.63%,
+      #feada6 0%,
       #c779d0 51.55%,
       #4bc0c8 90.85%);
   min-height: 100vh;
@@ -54,31 +54,10 @@ body {
   max-width: 100%;
   overflow-x: hidden;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  font-family: 'Inter', sans-serif;
-}
-
-.App.Dashboard,
-.App.LoginForm,
-.App.SignupForm,
-.App.Welcome {
   flex-direction: column;
-}
-
-.App.LoginForm,
-.App.SignupForm,
-.App.Welcome {
   justify-content: flex-start;
-}
-
-.App.Dashboard,
-.App.LandingPage {
   align-items: stretch;
-}
-
-.App.Dashboard {
-  align-items: stretch;
+  font-family: 'Inter', sans-serif;
 }
 
 .App.LoginForm,
@@ -86,6 +65,10 @@ body {
 .App.Welcome {
   align-items: center;
   box-sizing: border-box;
+}
+
+.App.LandingPage {
+  display: block;
 }
 
 .AppGlass {

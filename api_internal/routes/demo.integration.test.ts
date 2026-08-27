@@ -56,7 +56,8 @@ describe('Demo Route Integration (Isolated Sandbox)', () => {
             expect(userData.nickname).toBe('デモユーザー');
             expect(userData.streakCount).toBe(999);
             expect(userData.studiedDates).toHaveLength(999);
-            expect(userData.groupIds).toEqual([]);
+            expect(userData.groupIds).toEqual([`demo-group-${DEMO_USER_A}`]);
+            expect(userData.questCreatedGroup).toBe(true);
             expect(userData.isAnonymousDemo).toBe(true);
 
             // 2. Verify Group Document
@@ -67,6 +68,8 @@ describe('Demo Route Integration (Isolated Sandbox)', () => {
             expect(groupData.members).toContain('bot-alice');
             expect(groupData.members).toContain('bot-bob');
             expect(groupData.members).toContain('bot-charlie');
+            expect(groupData.members).toContain(DEMO_USER_A);
+            expect(groupData.membersCount).toBe(4);
             expect(groupData.unityPercentage).toBe(67);
             expect(groupData.groupStreak).toBe(7);
 

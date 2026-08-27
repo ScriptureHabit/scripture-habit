@@ -109,7 +109,7 @@ const GroupOptions = () => {
                                 customMessage={t('mascot.createGroupPrompt2')}
                             />
                         </div>
-                        <Link to="/group-form" className="option-card create-card" data-testid="create-group-card" style={{ width: '100%' }}>
+                        <Link to={`/${language}/group-form`} className="option-card create-card" data-testid="create-group-card" style={{ width: '100%' }}>
                             <div className="icon">✨</div>
                             <h3>{t('groupOptions.createGroupTitle')}</h3>
                             <p>{t('groupOptions.createGroupDesc')}</p>
@@ -117,7 +117,7 @@ const GroupOptions = () => {
                     </div>
                 </div>
 
-                <Link to="/dashboard" className="back-link">
+                <Link to={`/${language}/dashboard`} className="back-link">
                     {t('groupOptions.backToDashboard')}
                 </Link>
             </div>

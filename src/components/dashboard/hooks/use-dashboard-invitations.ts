@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { safeStorage } from '../../../utils/storage';
 
 import { User } from 'firebase/auth';
@@ -17,12 +17,14 @@ export const useDashboardInvitations = (
     onJoinSuccess?: (groupId: string, groupName: string) => void
 ) => {
     const [isJoiningInvite, setIsJoiningInvite] = useState<boolean>(false);
+    const isProcessingRef = useRef<boolean>(false);
 
     useEffect(() => {
         const processPendingInvite = async () => {
             const inviteCode = safeStorage.get('pendingInviteCode');
-            if (!inviteCode || !user || !userData || showWelcomeStory || isJoiningInvite) return;
+            if (!inviteCode || !user || !userData || showWelcomeStory || isJoiningInvite || isProcessingRef.current) return;
 
+            isProcessingRef.current = true;
             setIsJoiningInvite(true);
             console.log("Processing pending invite code:", inviteCode);
 
@@ -64,6 +66,7 @@ export const useDashboardInvitations = (
                             setActiveGroupId(joinedGroupId);
                         }
                         setSelectedView(2);
+                        isProcessingRef.current = false;
                         setIsJoiningInvite(false);
                         toast.success(`🎉 ${t('joinGroup.joiningFromInviteSuccess')}`);
                         if (onJoinSuccess) {
@@ -91,6 +94,7 @@ export const useDashboardInvitations = (
                     }
 
                     safeStorage.remove('pendingInviteCode');
+                    isProcessingRef.current = false;
                     setIsJoiningInvite(false);
                 }
 
@@ -98,6 +102,7 @@ export const useDashboardInvitations = (
                 console.error("Error processing pending invite:", error);
                 toast.error(t('joinGroup.errorJoinFailed'));
                 safeStorage.remove('pendingInviteCode');
+                isProcessingRef.current = false;
                 setIsJoiningInvite(false);
             }
         };

@@ -160,14 +160,16 @@ const ChatHeader = () => {
                 <span className="desktop-members-label">{t('groupChat.members')}</span>
               </div>
 
-              <div
-                className="invite-code-display members-btn-desktop danger-action-btn"
-                onClick={() => setActiveModal('leave')}
-                title={t('groupChat.leaveGroup')}
-              >
-                <UilTrashAlt size="16" />
-                <span className="desktop-members-label">{t('groupChat.leaveGroup')}</span>
-              </div>
+              {!groupData?.isDemoGroup && (
+                <div
+                  className="invite-code-display members-btn-desktop danger-action-btn"
+                  onClick={() => setActiveModal('leave')}
+                  title={t('groupChat.leaveGroup')}
+                >
+                  <UilTrashAlt size="16" />
+                  <span className="desktop-members-label">{t('groupChat.leaveGroup')}</span>
+                </div>
+              )}
             </div>
             <div className="hamburger-container mobile-only">
               {!groupData?.isAiGroup && groupData?.members?.length === 1 && (
@@ -242,15 +244,19 @@ const ChatHeader = () => {
                 <span className="menu-item-label">{t('groupChat.members')}</span>
               </div>
 
-              <div className="mobile-menu-divider-thin" />
+              {!groupData?.isDemoGroup && (
+                <>
+                  <div className="mobile-menu-divider-thin" />
 
-              {/* Danger Actions */}
-              <div className="mobile-menu-item-action danger" onClick={() => { setActiveModal('leave'); setShowMobileMenu(false); }}>
-                <div className="menu-item-icon-circle danger-bg">
-                  <UilTrashAlt size="20" />
-                </div>
-                <span className="menu-item-label">{t('groupChat.leaveGroup')}</span>
-              </div>
+                  {/* Danger Actions */}
+                  <div className="mobile-menu-item-action danger" onClick={() => { setActiveModal('leave'); setShowMobileMenu(false); }}>
+                    <div className="menu-item-icon-circle danger-bg">
+                      <UilTrashAlt size="20" />
+                    </div>
+                    <span className="menu-item-label">{t('groupChat.leaveGroup')}</span>
+                  </div>
+                </>
+              )}
 
               {/* My Groups Section */}
               {userGroups && userGroups.length > 0 && (

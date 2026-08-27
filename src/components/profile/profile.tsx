@@ -293,7 +293,7 @@ const Profile = ({ userData, stats }: ProfileProps) => {
             sessionStorage.setItem('sh_dev_signed_out', 'true');
         }
         auth?.signOut();
-        navigate('/welcome');
+        navigate(`/${language}/welcome`);
         setShowSignOutModal(false);
     };
 
@@ -308,20 +308,20 @@ const Profile = ({ userData, stats }: ProfileProps) => {
             if (response.status === 200) {
                 toast.success(t('profile.deleteAccountSuccess'));
                 await auth?.signOut();
-                navigate('/welcome');
+                navigate(`/${language}/welcome`);
             } else {
                 const errorData = response.data;
                 console.error("Server-side deletion failed:", errorData);
                 toast.error(t('profile.deleteAccountError') || "Error deleting account");
                 // If it failed but maybe partially deleted, we should still sign out to be safe
                 await auth?.signOut();
-                navigate('/welcome');
+                navigate(`/${language}/welcome`);
             }
         } catch (err: unknown) {
             console.error("Error during account deletion process:", err);
             toast.error(t('profile.deleteAccountError') || "Error deleting account");
             await auth?.signOut();
-            navigate('/welcome');
+            navigate(`/${language}/welcome`);
         } finally {
             setIsDeleting(false);
             setShowDeleteModal(false);

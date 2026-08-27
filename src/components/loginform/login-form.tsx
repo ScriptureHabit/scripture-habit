@@ -10,7 +10,7 @@ import Footer from '../footer/footer';
 import { useLoginForm } from './hooks/use-login-form';
 
 const LoginForm = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const {
     email,
     setEmail,
@@ -111,32 +111,35 @@ const LoginForm = () => {
         </div>
 
         <form onSubmit={handleSubmit}>
+          {/* Email input */}
           <Input
             id="login-email"
-            name="email"
-            autoComplete="email"
             data-testid="login-email"
             label={t('login.emailLabel')}
             type="email"
+            name="email"
+            placeholder={t('login.emailPlaceholder')}
             value={email}
-            onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setEmail(e.target.value)}
+            onChange={(e) => setEmail(e.target.value)}
+            autoComplete="email"
             required
           />
 
+          {/* Password input */}
           <Input
-            id="login-password"
-            name="password"
-            autoComplete="current-password"
             data-testid="login-password"
             label={t('login.passwordLabel')}
-            type='password'
+            type="password"
+            name="password"
+            placeholder={t('login.passwordPlaceholder')}
             value={password}
-            onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setPassword(e.target.value)}
+            onChange={(e) => setPassword(e.target.value)}
+            autoComplete="current-password"
             required
           />
 
           <div className="forgot-password-container">
-            <Link to="/forgot-password" className="forgot-password-link">
+            <Link to={`/${language}/forgot-password`} className="forgot-password-link">
               {t('login.forgotPassword')}
             </Link>
           </div>
@@ -163,13 +166,13 @@ const LoginForm = () => {
         )}
 
         <div className="auth-switch">
-          <p>{t('login.noAccount')} <Link to="/signup" className="auth-link">{t('login.signupLink')}</Link></p>
+          <p>{t('login.noAccount')} <Link to={`/${language}/signup`} className="auth-link">{t('login.signupLink')}</Link></p>
         </div>
       </main>
       <Footer />
     </div>
   );
-}
+};
 
 export default LoginForm;
 

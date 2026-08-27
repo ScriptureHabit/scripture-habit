@@ -12,7 +12,7 @@ import { useApiWarmupOnMount } from '../../utils/api-warmup';
 
 export default function SignupForm() {
   useApiWarmupOnMount();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const {
     nickname,
     setNickname,
@@ -133,7 +133,7 @@ export default function SignupForm() {
         )}
 
         <div className="auth-switch">
-          <p>{t('signup.hasAccount')} <Link to="/login" className="auth-link">{t('signup.loginLink')}</Link></p>
+          <p>{t('signup.hasAccount')} <Link to={`/${language}/login`} className="auth-link">{t('signup.loginLink')}</Link></p>
         </div>
       </main>
       <Footer />

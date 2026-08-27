@@ -26,12 +26,36 @@
     position: relative;
 }
 
-/* Language Selector */
+/* Language Selector & Dashboard Access */
 .lang-selector-container {
     position: absolute;
     top: 24px;
     right: 24px;
     z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.landing-dashboard-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 0.92rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 14px rgba(76, 99, 210, 0.35);
+}
+
+.landing-dashboard-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(76, 99, 210, 0.45);
 }
 
 .lang-selector-btn {

@@ -6,7 +6,7 @@ import { useLanguage } from '../../hooks/use-language';
 import './cookie-consent.css';
 
 const CookieConsent = () => {
-    const { t } = useLanguage();
+    const { t, language } = useLanguage();
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
@@ -44,7 +44,7 @@ const CookieConsent = () => {
             <div className="cookie-consent-content">
                 <p>
                     {t('cookieConsent.message')}
-                    <Link to="/privacy" className="privacy-link">
+                    <Link to={`/${language}/privacy`} className="privacy-link">
                         {t('cookieConsent.privacyPolicy')}
                     </Link>
                 </p>

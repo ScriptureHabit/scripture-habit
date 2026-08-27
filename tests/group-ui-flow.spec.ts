@@ -45,9 +45,9 @@ test.describe('Group UI Flow (E2E)', () => {
     expect(url).toContain('group-form');
   });
 
-  test('should join a public group through the UI', async ({ authenticatedPage: page }) => {
-    // 0. Create a public group and then leave it so it appears as joinable
-    await page.evaluate(async () => {
+  test('should join a group via invite link through the UI', async ({ authenticatedPage: page }) => {
+    // 0. Create a group and then leave it so it can be joined via invite link
+    const { inviteCode, name } = await page.evaluate(async () => {
       const auth = window.firebaseAuth;
       const idToken = await auth!.currentUser!.getIdToken();
 
@@ -63,38 +63,29 @@ test.describe('Group UI Flow (E2E)', () => {
         return resp.json();
       }
 
-      const name = `Public UI Test ${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
-      const createResp = await callApi('/api/groups/create-group', { name, isPublic: true });
-      // Leave so it shows in the joinable list (join-group page filters out user's groups)
+      const name = `Invite UI Test ${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
+      const createResp = await callApi('/api/groups/create-group', { name });
+      // Leave so the user can rejoin via invite code
       await callApi('/api/groups/leave-group', { groupId: createResp.groupId });
-      return name;
+      return { inviteCode: createResp.inviteCode, name };
     });
 
-    // 1. Go to Join Group page
-    await page.goto('/en/join-group');
+    // 1. Go to Invite Link page
+    await page.goto(`/en/join/${inviteCode}`);
 
-    // 2. Wait for groups to load
-    await page.waitForSelector('.group-card', { timeout: 15000 });
+    // 2. Verify redirect to dashboard or click join button if shown
+    await page.waitForURL(/.*dashboard/, { timeout: 15000 });
 
-    // 3. Find the group card and click "Details" to open the confirm modal
-    const groupCard = page.locator('.group-card').first();
-    await groupCard.locator('button.join-btn').click();
-
-    // 4. Confirm in the modal
-    await expect(page.locator('.group-modal-content')).toBeVisible();
-    await page.click('.confirm-join-btn');
-
-    // 5. Verify redirection and join-success modal
-    await page.waitForURL(/.*dashboard/);
+    // 3. Verify join-success modal is displayed
     const successOverlay = page.locator('.join-success-overlay');
     await expect(successOverlay).toBeVisible({ timeout: 15000 });
     
-    // Close the success modal
+    // 4. Close the success modal
     await page.click('#join-success-close-btn');
     await expect(successOverlay).not.toBeVisible();
     
-    // Verify a group appears in the sidebar (the one we just joined)
-    await expect(page.locator('[data-testid="sidebar-group-item"]').first()).toBeVisible();
+    // 5. Verify the group appears in the sidebar (the one we just joined)
+    await expect(page.locator(`[data-testid="sidebar-group-item"]:has-text("${name}")`)).toBeVisible({ timeout: 15000 });
   });
 
   test('should display pink unread dot on new messages and dismiss it after opening chat', async ({ authenticatedPage: page }) => {

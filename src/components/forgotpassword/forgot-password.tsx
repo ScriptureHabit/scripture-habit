@@ -11,7 +11,7 @@ export default function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   const handleReset = async (e: FormEvent) => {
     e.preventDefault();
@@ -52,7 +52,7 @@ export default function ForgotPassword() {
         {error && <p className="error">{error}</p>}
 
         <div className="auth-switch">
-          <Link to="/login" className="auth-link">{t('forgotPasswordPage.backToLogin')}</Link>
+          <Link to={`/${language}/login`} className="auth-link">{t('forgotPasswordPage.backToLogin')}</Link>
         </div>
       </div>
     </div>
