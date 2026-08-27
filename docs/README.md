@@ -44,11 +44,14 @@ Welcome to the **scripture-habit** technical documentation. This directory conta
 
 ## UX & Habit Building
 - **[Milestone Celebrations & Retention Psychology](logic-milestone-retention.md)**
-  - Transitioning to total-day streaks and visual milestone cards (10-day/25-day).
+  - Total-day study model preventing demotivation from broken consecutive streaks.
+  - 10-day and 25-day milestone spacing with shareable commemorative cards.
 - **[Psychological Impact & Retention of AI Reflection Letters](ux-ai-reflection-letters.md)**
-  - Encouraging reflections, validation of personal efforts, and long-term engagement.
+  - Why adult learners find personal encouragement letters from AI motivating.
+  - Addressing the lack of everyday validation through safe, thoughtful reflection.
 - **[Small Group Dynamics (Max 5) & Peer Accountability](ux-small-groups-and-peer-accountability.md)**
-  - Mitigating diffusion of responsibility and supporting high-trust peer circles.
+  - Why groups are capped at 5 members (preventing social loafing and bystander effect).
+  - High retention in high-trust circles and design support for new groups.
 
 ---
 
