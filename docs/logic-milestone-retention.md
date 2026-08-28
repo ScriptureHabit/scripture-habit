@@ -36,18 +36,22 @@ Users who drop out after a broken streak do so primarily because of this psychol
 To relieve pressure, Scripture Habit uses **"Total Study Days (`daysStudiedCount`)"** as its primary celebration metric:
 
 ```mermaid
-graph LR
-    subgraph SG_Trad["Traditional Consecutive Streak"]
-        S1["100-Day Streak"] -->|"Miss 1 day"| S2["Resets to 0"] --> S3["Demotivation"]
+flowchart TD
+    classDef bad fill:#450a0a,stroke:#ef4444,stroke-width:2px,color:#fef2f2;
+    classDef good fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#f0fdf4;
+    classDef step fill:#1e293b,stroke:#64748b,stroke-width:1.5px,color:#f8fafc;
+
+    subgraph SG_Trad["❌ Traditional Consecutive Streak (Zeroed on Miss)"]
+        S1["100-Day Streak"]:::step -->|Miss 1 day| S2["Resets to 0 (Lost Progress)"]:::bad
+        S2 --> S3["Demotivation & App Abandonment"]:::bad
     end
 
-    subgraph SG_Total["Scripture Habit Total Days"]
-        H1["100 Total Days"] -->|"Miss 1 day"| H2["Preserved at 100"] -->|"Resume Next Day"| H3["Advances to Day 101"]
+    subgraph SG_Total["✅ Scripture Habit Total Days Model (Effort Is Preserved)"]
+        H1["100 Total Days"]:::step -->|Miss 1 day| H2["Preserved at 100 (Effort Intact)"]:::good
+        H2 -->|Resume Next Day| H3["🌟 Advances to Day 101 Positively"]:::good
     end
 
-    style S2 fill:#ffcdd2,stroke:#b71c1c
-    style H2 fill:#e8f5e9,stroke:#2e7d32
-    style H3 fill:#c8e6c9,stroke:#1b5e20
+    SG_Trad ~~~ SG_Total
 ```
 
 - **Effort Is Never Lost**: Missing a day does not erase past progress; cumulative days remain intact.

@@ -10,33 +10,41 @@
 
 ```mermaid
 flowchart TD
-    subgraph Client["📱 クライアント (Browser / PWA)"]
-        UI["React UI (即時表示)"]
-        TQuery["TanStack Query (localStorage 保存)"]
-        AxiosCache["Axios キャッシュ (2分間)"]
-        SW["Service Worker (アセットキャッシュ)"]
-        IndexedDB["Firestore IndexedDB (オフライン保存)"]
+    classDef nodeStyle fill:#1e293b,stroke:#64748b,stroke-width:1.5px,color:#f8fafc;
+
+    subgraph Client["1. 📱 クライアント層 (Browser / PWA)"]
+        UI["React UI (即時レンダリング)"]:::nodeStyle
+        TQuery["TanStack Query (localStorage永続化)"]:::nodeStyle
+        IndexedDB["Firestore IndexedDB (オフライン保存)"]:::nodeStyle
+        SW["Service Worker (アセットキャッシュ)"]:::nodeStyle
+
+        UI --> TQuery
+        UI --> IndexedDB
+        TQuery --> SW
     end
 
-    subgraph Network["🌐 ネットワーク層"]
-        MsgPack["MessagePack (バイナリ通信)"]
-        Brotli["Brotli & Gzip 圧縮"]
-        BgSync["Background Sync (オフライン再送キュー)"]
+    subgraph Network["2. 🌐 ネットワーク転送層"]
+        MsgPack["MessagePack (バイナリ通信)"]:::nodeStyle
+        Brotli["Brotli & Gzip 転送圧縮"]:::nodeStyle
+        BgSync["Background Sync (オフライン再送キュー)"]:::nodeStyle
+
+        SW --> MsgPack
+        MsgPack --> Brotli
+        Brotli --> BgSync
     end
 
-    subgraph Server["☁️ バックエンド (Express API)"]
-        RedisCache["Redis キャッシュ"]
-        DataLoader["DataLoader (N+1 クエリ解消)"]
-        KeepAlive["コネクションプール"]
+    subgraph Server["3. ☁️ バックエンド層 (Express API)"]
+        RedisCache["Redis インメモリキャッシュ"]:::nodeStyle
+        DataLoader["DataLoader (バッチ集約・N+1解消)"]:::nodeStyle
+        KeepAlive["HTTP Keep-Alive コネクションプール"]:::nodeStyle
+
+        BgSync --> RedisCache
+        RedisCache --> DataLoader
+        DataLoader --> KeepAlive
     end
 
-    UI --> TQuery
-    TQuery --> AxiosCache
-    AxiosCache --> SW
-    UI --> IndexedDB
-    SW --> MsgPack
-    MsgPack --> RedisCache
-    RedisCache --> DataLoader
+    Client ~~~ Network
+    Network ~~~ Server
 ```
 
 ---

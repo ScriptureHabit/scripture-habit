@@ -36,18 +36,22 @@ graph TD
 Scripture Habit では、連続日数への過度なプレッシャーを減らすため、**「これまでに学習した合計日数（`daysStudiedCount`）」**をメインの指標として表示・祝福する仕組みを採用しています。
 
 ```mermaid
-graph LR
-    subgraph SG_Trad["従来の連続ストリーク"]
-        S1["100日連続"] -->|"1日休止"| S2["0日にリセット"] --> S3["挫折しやすい"]
+flowchart TD
+    classDef bad fill:#450a0a,stroke:#ef4444,stroke-width:2px,color:#fef2f2;
+    classDef good fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#f0fdf4;
+    classDef step fill:#1e293b,stroke:#64748b,stroke-width:1.5px,color:#f8fafc;
+
+    subgraph SG_Trad["❌ 従来の連続ストリーク方式（途切れるとゼロ）"]
+        S1["100日連続達成"]:::step -->|1日休止| S2["0日にリセット（進捗喪失感）"]:::bad
+        S2 --> S3["挫折・アプリ離脱につながる"]:::bad
     end
 
-    subgraph SG_Total["Scripture Habit 合計日数"]
-        H1["100日達成"] -->|"1日休止"| H2["100日のまま保持"] -->|"再開"| H3["101日目へ加算"]
+    subgraph SG_Total["✅ Scripture Habit 合計日数モデル（努力が消えない）"]
+        H1["100日達成"]:::step -->|1日休止| H2["100日のまま保持（努力は消えない）"]:::good
+        H2 -->|翌日再開| H3["🌟 101日目へ前向きに加算"]:::good
     end
 
-    style S2 fill:#ffcdd2,stroke:#b71c1c
-    style H2 fill:#e8f5e9,stroke:#2e7d32
-    style H3 fill:#c8e6c9,stroke:#1b5e20
+    SG_Trad ~~~ SG_Total
 ```
 
 - **過去の努力が消えない安心感**: 1日休んでも、これまで積み上げた日数はそのまま残ります。

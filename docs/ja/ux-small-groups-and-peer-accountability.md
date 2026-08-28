@@ -13,21 +13,24 @@ Scripture Habit のグループ機能では、**「1グループあたりの最�
 一般的なソーシャルサービスでは数十人以上の大きなグループを作れることが多いですが、日々の習慣づくりや内省を共有する場においては、人数が多すぎると以下のような課題が生じます。
 
 ```mermaid
-graph TD
-    subgraph SG_Large["人数が多いグループ（20〜100人）"]
-        A1["人数が多い"] --> B1["「誰かがやるだろう」という気の緩み"]
-        B1 --> C1["誰も発言・リアクションしなくなる"]
-        C1 --> D1["グループの過疎化・自然消滅"]
+flowchart TD
+    classDef good fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#f0fdf4;
+    classDef bad fill:#450a0a,stroke:#ef4444,stroke-width:2px,color:#fef2f2;
+    classDef step fill:#1e293b,stroke:#64748b,stroke-width:1.5px,color:#f8fafc;
+
+    subgraph SG_Large["❌ 人数が多いグループ（20〜100人）"]
+        A1["人数が多すぎる"]:::step --> B1["「誰かがやるだろう」という気の緩み"]:::step
+        B1 --> C1["誰も発言・リアクションしなくなる"]:::step
+        C1 --> D1["グループの過疎化・自然消滅"]:::bad
     end
 
-    subgraph SG_Habit["Scripture Habit（最大5人）"]
-        A2["5人の少人数"] --> B2["個人の参加状況が見えやすい"]
-        B2 --> C2["スタンプやエールで反応しやすい"]
-        C2 --> D2["お互いに習慣が続きやすい"]
+    subgraph SG_Habit["✅ Scripture Habit（最大5人の少人数サークル）"]
+        A2["5人のマイクロサークル"]:::step --> B2["個人の参加状況が全員に見える"]:::step
+        B2 --> C2["スタンプやエールで反応しやすい"]:::step
+        C2 --> D2["お互いに習慣が続きやすい"]:::good
     end
 
-    style D1 fill:#ffebee,stroke:#c62828,stroke-width:1px
-    style D2 fill:#e8f5e9,stroke:#2e7d32,stroke-width:1px
+    SG_Large ~~~ SG_Habit
 ```
 
 ### ① 社会的手抜き（リンゲルマン効果）の防止
@@ -48,21 +51,24 @@ graph TD
 実際の運用で特に顕著だったのは、**「メンバー同士の関係性」が継続率に大きく関わっている**という点です。
 
 ```mermaid
-graph LR
-    subgraph SG_Close["親友・恋人・家族"]
-        ST1["もともと信頼関係がある"] --> ST2["短いメモでも気兼ねなく投稿できる"]
-        ST2 --> ST3["相手の投稿を見るのが楽しみになる"]
-        ST3 --> ST4["長く続きやすい"]
+flowchart TD
+    classDef good fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#f0fdf4;
+    classDef bad fill:#450a0a,stroke:#ef4444,stroke-width:2px,color:#fef2f2;
+    classDef step fill:#1e293b,stroke:#64748b,stroke-width:1.5px,color:#f8fafc;
+
+    subgraph SG_Close["✨ 親友・恋人・家族（高い継続率）"]
+        ST1["もともと信頼関係がある"]:::step --> ST2["短いメモでも気兼ねなく投稿できる"]:::step
+        ST2 --> ST3["相手の投稿を見るのが楽しみになる"]:::step
+        ST3 --> ST4["🌟 自然と長く続きやすい（高い定着率）"]:::good
     end
 
-    subgraph SG_Strangers["見知らぬ人同士"]
-        WT1["お互いをよく知らない"] --> WT2["「変なことを書けない」と構えてしまう"]
-        WT2 --> WT3["1人が休むと他の人も休みがちに"]
-        WT3 --> WT4["自然消滅しやすい"]
+    subgraph SG_Strangers["⚠️ 見知らぬ人同士（離脱しやすい）"]
+        WT1["お互いをよく知らない"]:::step --> WT2["「変なことを書けない」と構えてしまう"]:::step
+        WT2 --> WT3["1人が休むと他の人も休みがちに"]:::step
+        WT3 --> WT4["❌ 気まずくなり自然消滅しやすい"]:::bad
     end
 
-    style ST4 fill:#e8f5e9,stroke:#2e7d32,stroke-width:1px
-    style WT4 fill:#ffebee,stroke:#c62828,stroke-width:1px
+    SG_Close ~~~ SG_Strangers
 ```
 
 ### ① 親友・恋人・家族グループが続きやすい理由

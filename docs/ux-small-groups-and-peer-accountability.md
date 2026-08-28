@@ -13,21 +13,24 @@ This document explores why the 5-member limit is effective for daily habit forma
 While many social platforms support large groups with dozens or hundreds of members, large group sizes present several challenges for daily personal reflection and habit building:
 
 ```mermaid
-graph TD
-    subgraph SG_Large["Large Groups (20-100 members)"]
-        A1["Too Many Members"] --> B1["Assumption that someone else will post"]
-        B1 --> C1["Hesitation to participate or react"]
-        C1 --> D1["Group goes quiet and inactive"]
+flowchart TD
+    classDef good fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#f0fdf4;
+    classDef bad fill:#450a0a,stroke:#ef4444,stroke-width:2px,color:#fef2f2;
+    classDef step fill:#1e293b,stroke:#64748b,stroke-width:1.5px,color:#f8fafc;
+
+    subgraph SG_Large["❌ Large Groups (20-100 members)"]
+        A1["Too Many Members"]:::step --> B1["Assumption that someone else will post"]:::step
+        B1 --> C1["Hesitation to participate or react"]:::step
+        C1 --> D1["Group goes quiet and inactive"]:::bad
     end
 
-    subgraph SG_Habit["Scripture Habit (Max 5 Members)"]
-        A2["5-Member Micro-Group"] --> B2["Participation is clearly visible"]
-        B2 --> C2["Easy to cheer and encourage each other"]
-        C2 --> D2["Habits stay active together"]
+    subgraph SG_Habit["✅ Scripture Habit (Max 5-Member Circles)"]
+        A2["5-Member Micro-Group"]:::step --> B2["Participation is clearly visible"]:::step
+        B2 --> C2["Easy to cheer and encourage each other"]:::step
+        C2 --> D2["Habits stay active together"]:::good
     end
 
-    style D1 fill:#ffebee,stroke:#c62828,stroke-width:1px
-    style D2 fill:#e8f5e9,stroke:#2e7d32,stroke-width:1px
+    SG_Large ~~~ SG_Habit
 ```
 
 ### ① Mitigating Social Loafing (The Ringelmann Effect)
@@ -48,21 +51,24 @@ Anthropological research suggests that the number of people with whom an individ
 In practice, **the relationship between group members is a key factor in how long a group remains active**:
 
 ```mermaid
-graph LR
-    subgraph SG_Close["Close Friends, Partners & Family"]
-        ST1["Established Trust"] --> ST2["Comfortable sharing short or unpolished notes"]
-        ST2 --> ST3["Enjoying seeing loved ones study"]
-        ST3 --> ST4["High Long-Term Retention"]
+flowchart TD
+    classDef good fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#f0fdf4;
+    classDef bad fill:#450a0a,stroke:#ef4444,stroke-width:2px,color:#fef2f2;
+    classDef step fill:#1e293b,stroke:#64748b,stroke-width:1.5px,color:#f8fafc;
+
+    subgraph SG_Close["✨ Close Friends, Partners & Family (High Retention)"]
+        ST1["Established Trust"]:::step --> ST2["Comfortable sharing short or unpolished notes"]:::step
+        ST2 --> ST3["Enjoying seeing loved ones study"]:::step
+        ST3 --> ST4["🌟 High Long-Term Retention & Consistency"]:::good
     end
 
-    subgraph SG_Strangers["Strangers & Loose Acquaintances"]
-        WT1["Unfamiliar with Each Other"] --> WT2["Pressure to sound formal or profound"]
-        WT2 --> WT3["One member goes quiet, others follow"]
-        WT3 --> WT4["Risk of Group Inactivity"]
+    subgraph SG_Strangers["⚠️ Strangers & Loose Acquaintances (High Dropout)"]
+        WT1["Unfamiliar with Each Other"]:::step --> WT2["Pressure to sound formal or profound"]:::step
+        WT2 --> WT3["One member goes quiet, others follow"]:::step
+        WT3 --> WT4["❌ Groups easily fade into silence"]:::bad
     end
 
-    style ST4 fill:#e8f5e9,stroke:#2e7d32,stroke-width:1px
-    style WT4 fill:#ffebee,stroke:#c62828,stroke-width:1px
+    SG_Close ~~~ SG_Strangers
 ```
 
 ### ① Why Close Friend and Family Groups Last

@@ -9,15 +9,30 @@ Scripture Habit は、世界中のユーザーが母国語で学習できるよ�
 ## 1. 全体アーキテクチャ
 
 ```mermaid
-flowchart TD
-    Config["src/config/languages.ts<br/>（言語コード・国旗・名称の一元定義）"]
-    Locales["src/locales/{lang}.ts<br/>（翻訳辞書・聖典書籍名）"]
-    
-    Config --> FrontendContext["src/context/language-provider.tsx<br/>（UI表示・言語切り替え）"]
-    Config --> BackendSchema["api_internal/lib/schemas.ts<br/>（バリデーション・AI翻訳用）"]
-    
-    Locales --> FrontendLoader["src/locales/i18n.ts<br/>（オンデマンド動的ロード）"]
-    Locales --> BackendLoader["api_internal/lib/i18n.ts<br/>（通知・システムメッセージ解決）"]
+flowchart LR
+    classDef ssot fill:#1e293b,stroke:#38bdf8,stroke-width:2px,color:#f8fafc;
+    classDef fe fill:#0f172a,stroke:#818cf8,stroke-width:1.5px,color:#f8fafc;
+    classDef be fill:#1e1b4b,stroke:#c084fc,stroke-width:1.5px,color:#f8fafc;
+
+    subgraph SSOT["📦 言語設定・辞書の単一情報源 (SSOT)"]
+        Config["src/config/languages.ts<br/>(言語コード・国旗・名称定義)"]:::ssot
+        Locales["src/locales/{lang}.ts<br/>(11言語の翻訳辞書・聖典名)"]:::ssot
+    end
+
+    subgraph UsageFE["📱 フロントエンド利用"]
+        FrontendContext["language-provider.tsx<br/>(UI表示・言語切り替え)"]:::fe
+        FrontendLoader["i18n.ts (動的遅延ロード)"]:::fe
+    end
+
+    subgraph UsageBE["☁️ バックエンド利用"]
+        BackendSchema["schemas.ts<br/>(入力検証・AI翻訳)"]:::be
+        BackendLoader["lib/i18n.ts<br/>(通知・システム文言)"]:::be
+    end
+
+    Config --> FrontendContext
+    Config --> BackendSchema
+    Locales --> FrontendLoader
+    Locales --> BackendLoader
 ```
 
 ---

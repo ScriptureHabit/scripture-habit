@@ -10,33 +10,41 @@ To provide fast page transitions and robust offline capabilities, optimizations 
 
 ```mermaid
 flowchart TD
-    subgraph Client["📱 Client (Browser / PWA)"]
-        UI["React UI (Instant Render)"]
-        TQuery["TanStack Query (localStorage Persisted)"]
-        AxiosCache["Axios In-Memory Cache (2 mins)"]
-        SW["Service Worker (Asset Precache)"]
-        IndexedDB["Firestore IndexedDB (Offline Persistence)"]
+    classDef nodeStyle fill:#1e293b,stroke:#64748b,stroke-width:1.5px,color:#f8fafc;
+
+    subgraph Client["1. 📱 Client Layer (Browser / PWA)"]
+        UI["React UI (Instant Render)"]:::nodeStyle
+        TQuery["TanStack Query (localStorage Persisted)"]:::nodeStyle
+        IndexedDB["Firestore IndexedDB (Offline Persistence)"]:::nodeStyle
+        SW["Service Worker (Asset Precache)"]:::nodeStyle
+
+        UI --> TQuery
+        UI --> IndexedDB
+        TQuery --> SW
     end
 
-    subgraph Network["🌐 Network Layer"]
-        MsgPack["MessagePack (Binary Protocol)"]
-        Brotli["Brotli & Gzip Pre-Compression"]
-        BgSync["Background Sync (Offline Mutation Queue)"]
+    subgraph Network["2. 🌐 Network & Serialization Layer"]
+        MsgPack["MessagePack (Binary Protocol)"]:::nodeStyle
+        Brotli["Brotli & Gzip Pre-Compression"]:::nodeStyle
+        BgSync["Background Sync (Offline Mutation Queue)"]:::nodeStyle
+
+        SW --> MsgPack
+        MsgPack --> Brotli
+        Brotli --> BgSync
     end
 
-    subgraph Server["☁️ Backend (Express API)"]
-        RedisCache["Redis Cache Layer"]
-        DataLoader["DataLoader (Batch Reads)"]
-        KeepAlive["Connection Pooling"]
+    subgraph Server["3. ☁️ Backend API Layer (Express / Cloud)"]
+        RedisCache["Redis Cache Layer"]:::nodeStyle
+        DataLoader["DataLoader (Batch Reads & N+1 Prevention)"]:::nodeStyle
+        KeepAlive["HTTP Keep-Alive Connection Pooling"]:::nodeStyle
+
+        BgSync --> RedisCache
+        RedisCache --> DataLoader
+        DataLoader --> KeepAlive
     end
 
-    UI --> TQuery
-    TQuery --> AxiosCache
-    AxiosCache --> SW
-    UI --> IndexedDB
-    SW --> MsgPack
-    MsgPack --> RedisCache
-    RedisCache --> DataLoader
+    Client ~~~ Network
+    Network ~~~ Server
 ```
 
 ---

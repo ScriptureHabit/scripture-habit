@@ -9,15 +9,30 @@ Language configurations and translation dictionaries are maintained in a Single 
 ## 1. Architecture Overview
 
 ```mermaid
-flowchart TD
-    Config["src/config/languages.ts<br/>(Unified Code, Flag, & Name Definitions)"]
-    Locales["src/locales/{lang}.ts<br/>(Translation Dictionaries & Scripture Books)"]
-    
-    Config --> FrontendContext["src/context/language-provider.tsx<br/>(UI State & Language Switching)"]
-    Config --> BackendSchema["api_internal/lib/schemas.ts<br/>(Validation & AI Target Locales)"]
-    
-    Locales --> FrontendLoader["src/locales/i18n.ts<br/>(On-Demand Dynamic Loading)"]
-    Locales --> BackendLoader["api_internal/lib/i18n.ts<br/>(Notification & System Message Parsing)"]
+flowchart LR
+    classDef ssot fill:#1e293b,stroke:#38bdf8,stroke-width:2px,color:#f8fafc;
+    classDef fe fill:#0f172a,stroke:#818cf8,stroke-width:1.5px,color:#f8fafc;
+    classDef be fill:#1e1b4b,stroke:#c084fc,stroke-width:1.5px,color:#f8fafc;
+
+    subgraph SSOT["📦 Single Source of Truth (SSOT)"]
+        Config["src/config/languages.ts<br/>(Language Codes, Flags & Names)"]:::ssot
+        Locales["src/locales/{lang}.ts<br/>(11 Locale Dictionaries & Books)"]:::ssot
+    end
+
+    subgraph UsageFE["📱 Frontend Layer"]
+        FrontendContext["language-provider.tsx<br/>(UI Language State & Switch)"]:::fe
+        FrontendLoader["i18n.ts (Dynamic Lazy Load)"]:::fe
+    end
+
+    subgraph UsageBE["☁️ Backend Layer"]
+        BackendSchema["schemas.ts<br/>(Validation & AI Translation)"]:::be
+        BackendLoader["lib/i18n.ts<br/>(Notifications & System Msgs)"]:::be
+    end
+
+    Config --> FrontendContext
+    Config --> BackendSchema
+    Locales --> FrontendLoader
+    Locales --> BackendLoader
 ```
 
 ---

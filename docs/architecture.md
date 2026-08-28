@@ -49,29 +49,31 @@ scripture-habit/
 ## 4. Data Flow: Separation of Mutations and Queries
 
 ```mermaid
-graph TD
-    subgraph Frontend ["Frontend (React)"]
-        Component["UI Components"]
-        Hook["Feature Hooks"]
+flowchart TD
+    classDef fe fill:#1e293b,stroke:#38bdf8,stroke-width:1.5px,color:#f8fafc;
+    classDef be fill:#1e1b4b,stroke:#a855f7,stroke-width:1.5px,color:#f8fafc;
+    classDef fb fill:#0f172a,stroke:#f59e0b,stroke-width:1.5px,color:#f8fafc;
+
+    subgraph Frontend["1. 📱 Frontend Client (React / PWA)"]
+        Component["UI Components"]:::fe --> Hook["Feature Hooks (UI State & Subscriptions)"]:::fe
     end
 
-    subgraph Backend ["Backend API (Vercel)"]
-        API["Express Controllers"]
-        Service["Domain Services"]
+    subgraph Backend["2. ☁️ Backend API (Express / Vercel)"]
+        API["Express Controllers (Validation & Auth Guards)"]:::be --> Service["Domain Services (Business Logic)"]:::be
     end
 
-    subgraph Firebase ["Firebase Cloud"]
-        DB[("Firestore")]
-        Auth["Firebase Auth"]
+    subgraph Firebase["3. 🔥 Firebase Cloud Infrastructure"]
+        Auth["Firebase Auth (JWT Verification)"]:::fb
+        DB[("Cloud Firestore (DB)")]:::fb
     end
 
-    Component --> Hook
     Hook -- "① API Mutation (Post/Edit)" --> API
-    API --> Service
-    Service -- "② Transactional Write" --> DB
-    DB -- "③ Real-time Feed (onSnapshot)" --> Hook
-    Hook --> Component
-    Auth -- "JWT Token" --> API
+    Auth -. "JWT Verification" .-> API
+    Service -- "② Transactional Atomic Write" --> DB
+    DB ==>|③ Real-Time Live Feed onSnapshot| Hook
+
+    Frontend ~~~ Backend
+    Backend ~~~ Firebase
 ```
 
 - **Mutations**: Dispatched to backend Express endpoints to ensure validation and atomic multi-document updates.

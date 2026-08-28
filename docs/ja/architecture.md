@@ -49,29 +49,31 @@ scripture-habit/
 ## 4. データフロー: 書き込みとライブ受信の分離
 
 ```mermaid
-graph TD
-    subgraph Frontend ["フロントエンド (React)"]
-        Component["UIコンポーネント"]
-        Hook["カスタムフック"]
+flowchart TD
+    classDef fe fill:#1e293b,stroke:#38bdf8,stroke-width:1.5px,color:#f8fafc;
+    classDef be fill:#1e1b4b,stroke:#a855f7,stroke-width:1.5px,color:#f8fafc;
+    classDef fb fill:#0f172a,stroke:#f59e0b,stroke-width:1.5px,color:#f8fafc;
+
+    subgraph Frontend["1. 📱 フロントエンド (React / PWA)"]
+        Component["UIコンポーネント"]:::fe --> Hook["カスタムフック (状態管理 & リアルタイム購読)"]:::fe
     end
 
-    subgraph Backend ["バックエンド API (Vercel)"]
-        API["Express コントローラー"]
-        Service["ビジネスロジック (Service)"]
+    subgraph Backend["2. ☁️ バックエンド API (Express / Vercel)"]
+        API["Express コントローラー (入力検証 & 認可)"]:::be --> Service["ビジネスロジック (Domain Services)"]:::be
     end
 
-    subgraph Firebase ["Firebase クラウド"]
-        DB[("Firestore")]
-        Auth["Firebase Auth"]
+    subgraph Firebase["3. 🔥 Firebase クラウドインフラ"]
+        Auth["Firebase Auth (JWT認証)"]:::fb
+        DB[("Cloud Firestore (DB)")]:::fb
     end
 
-    Component --> Hook
-    Hook -- "① APIリクエスト (投稿・編集)" --> API
-    API --> Service
+    Hook -- "① API ミューテーション (投稿・更新)" --> API
+    Auth -. "JWT トークン検証" .-> API
     Service -- "② トランザクション書き込み" --> DB
-    DB -- "③ リアルタイム受信 (onSnapshot)" --> Hook
-    Hook --> Component
-    Auth -- "認証トークン (JWT)" --> API
+    DB ==>|③ リアルタイム同期 onSnapshot| Hook
+
+    Frontend ~~~ Backend
+    Backend ~~~ Firebase
 ```
 
 - **書き込み**: バックエンド API を経由して整合性を保ちながら一括トランザクションで書き込みます。
