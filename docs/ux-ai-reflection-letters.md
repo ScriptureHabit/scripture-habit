@@ -27,23 +27,23 @@ This feedback highlights that the true value of the feature lies not just in sum
 ## 2. Psychological Realities of Adulthood
 
 ```mermaid
-graph TD
-    subgraph SG_Realities["Common Emotional Realities"]
-        A["① Rare Opportunities for Praise in Daily Life"]
-        B["② High Effort for Peers to Write Long Replies"]
-        C["③ Self-Consciousness in Sharing Vulnerable Thoughts"]
+flowchart TD
+    classDef default fill:#1e293b,stroke:#64748b,stroke-width:1.5px,color:#f8fafc;
+    classDef issue fill:#7f1d1d,stroke:#ef4444,stroke-width:2px,color:#fef2f2;
+    classDef good fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#f0fdf4;
+
+    subgraph SG_Gap["Common Psychological Friction Points"]
+        A["① Lack of Feedback on Personal Effort"]:::default
+        B["② Social Friction in Returning Thoughtful Replies"]:::default
+        C["③ Vulnerability of Sharing Raw Thoughts"]:::default
     end
 
-    A --> D["Unmet Need for Validation"]
+    A --> D["Unmet Emotional Need for Affirmation"]:::issue
     B --> D
     C --> D
 
-    D -->|"Scripture Habit AI Reflection Letters"| E["Personalized, Empathetic, and Thoughtful Feedback"]
-    E --> F["Comfortable, Sustained Daily Habit"]
-
-    style D fill:#ffebee,stroke:#c62828,stroke-width:1px
-    style E fill:#e8f5e9,stroke:#2e7d32,stroke-width:1px
-    style F fill:#c8e6c9,stroke:#1b5e20,stroke-width:1px
+    D -->|"Scripture Habit AI Reflection Letters"| E["Personalized, Empathetic & Growth-Oriented Reflection"]:::good
+    E --> F["🌟 Safe & Motivated Environment to Keep Writing"]:::good
 ```
 
 ### ① Few Opportunities for Validation in Daily Adult Life

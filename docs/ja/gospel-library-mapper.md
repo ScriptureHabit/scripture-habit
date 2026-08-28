@@ -12,16 +12,16 @@
 
 ```mermaid
 flowchart TD
-    A["生入力: 書、巻、章、節"] --> B["ステップ 1: 巻の検出 ＆ 言語の解決"]
-    B --> C["ステップ 2: 文字のクレンジング ＆ 正規化"]
-    C --> D["ステップ 3: 正規表現による書・章・節の解析"]
-    D --> E["ステップ 4: 書を教会 API スラッグにマッピング"]
-    E --> F["ステップ 5: ルーティングルールの適用 ＆ ディープリンクハッシュの追加"]
-    G["出力: ディープリンクされた福音ライブラリ URL"]
-    F --> G
+    classDef input fill:#1e1b4b,stroke:#a855f7,stroke-width:2px,color:#f8fafc;
+    classDef step fill:#1e293b,stroke:#64748b,stroke-width:1.5px,color:#f8fafc;
+    classDef output fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#f0fdf4;
 
-    style A fill:#f9f,stroke:#333,stroke-width:2px
-    style G fill:#bbf,stroke:#333,stroke-width:2px
+    A["生入力: 書、巻、章、節"]:::input --> B["ステップ 1: 巻の検出 ＆ 言語の解決"]:::step
+    B --> C["ステップ 2: 文字のクレンジング ＆ 正規化"]:::step
+    C --> D["ステップ 3: 正規表現による書・章・節の解析"]:::step
+    D --> E["ステップ 4: 書を教会 API スラッグにマッピング"]:::step
+    E --> F["ステップ 5: ルーティングルールの適用 ＆ ディープリンクハッシュの追加"]:::step
+    F --> G["🌟 出力: ディープリンクされた福音ライブラリ URL"]:::output
 ```
 
 ---

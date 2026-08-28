@@ -11,14 +11,15 @@ This mechanism is designed to reduce the anxiety associated with broken streaks 
 Many habit-tracking applications rely heavily on daily consecutive streaks as their primary incentive. However, rigid streak models introduce several psychological friction points:
 
 ```mermaid
-graph TD
-    A["Daily Consecutive Streak"] -->|"Miss 1 day due to illness or busy schedule"| B["Streak Resets to 0"]
-    B --> C["Sense of Lost Progress"]
-    C --> D["What-the-Hell Effect"]
-    D --> E["Abandoning the App"]
-    
-    style B fill:#ffebee,stroke:#c62828,stroke-width:1px
-    style E fill:#ffcdd2,stroke:#b71c1c,stroke-width:1px
+flowchart TD
+    classDef default fill:#1e293b,stroke:#64748b,stroke-width:1.5px,color:#f8fafc;
+    classDef warn fill:#78350f,stroke:#f59e0b,stroke-width:1.5px,color:#fef3c7;
+    classDef danger fill:#7f1d1d,stroke:#ef4444,stroke-width:2px,color:#fef2f2;
+
+    A["Daily Consecutive Streak"]:::default -->|"Miss 1 day due to busy schedule"| B["Streak Resets to 0"]:::warn
+    B --> C["Sense of Lost Progress"]:::warn
+    C --> D["What-the-Hell Effect"]:::danger
+    D --> E["Abandoning the App (Dropout)"]:::danger
 ```
 
 ### Loss Aversion

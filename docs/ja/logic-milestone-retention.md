@@ -11,14 +11,15 @@ Scripture Habit では、**10日および25日刻み（25日、50日、75日、1
 多くの習慣化アプリでは、「連続達成日数（Streak）」を伸ばすことが主なモチベーションとして使われています。しかし、連続記録に頼りすぎると以下のような心理的ハードルが生まれます。
 
 ```mermaid
-graph TD
-    A["毎日の連続ストリーク"] -->|"忙しさや体調不良で1日休止"| B["ストリークが 0 に戻る"]
-    B --> C["積み上げた記録を失った感覚"]
-    C --> D["「どうにでもなれ効果」の発生"]
-    D --> E["アプリを開かなくなる"]
-    
-    style B fill:#ffebee,stroke:#c62828,stroke-width:1px
-    style E fill:#ffcdd2,stroke:#b71c1c,stroke-width:1px
+flowchart TD
+    classDef default fill:#1e293b,stroke:#64748b,stroke-width:1.5px,color:#f8fafc;
+    classDef warn fill:#78350f,stroke:#f59e0b,stroke-width:1.5px,color:#fef3c7;
+    classDef danger fill:#7f1d1d,stroke:#ef4444,stroke-width:2px,color:#fef2f2;
+
+    A["毎日の連続ストリーク"]:::default -->|"忙しさや体調不良で1日休止"| B["ストリークが 0 に戻る"]:::warn
+    B --> C["積み上げた記録を失った感覚"]:::warn
+    C --> D["「どうにでもなれ効果」の発生"]:::danger
+    D --> E["アプリを開かなくなる（離脱）"]:::danger
 ```
 
 ### 損失回避（Loss Aversion）の影響

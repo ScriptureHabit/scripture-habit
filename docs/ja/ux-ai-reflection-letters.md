@@ -27,23 +27,23 @@ AI振り返りレター（[`api_internal/routes/ai.ts`](file:///c:/Users/dazhi/c
 ## 2. 背景にある大人の心理的環境
 
 ```mermaid
-graph TD
+flowchart TD
+    classDef default fill:#1e293b,stroke:#64748b,stroke-width:1.5px,color:#f8fafc;
+    classDef issue fill:#7f1d1d,stroke:#ef4444,stroke-width:2px,color:#fef2f2;
+    classDef good fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#f0fdf4;
+
     subgraph SG_Gap["日常の中で生じやすいギャップ"]
-        A["① 努力を褒められる機会の少なさ"]
-        B["② 人間同士では丁寧な感想を返しにくい"]
-        C["③ 他人に拙い考えを見せる気恥ずかしさ"]
+        A["① 努力を褒められる機会の少なさ"]:::default
+        B["② 人間同士では丁寧な感想を返しにくい"]:::default
+        C["③ 他人に拙い考えを見せる気恥ずかしさ"]:::default
     end
 
-    A --> D["自己表現に対する充足感の不足"]
+    A --> D["自己表現に対する充足感の不足"]:::issue
     B --> D
     C --> D
 
-    D -->|"Scripture Habit の AIレター"| E["自分だけに向けた丁寧で肯定的なフィードバック"]
-    E --> F["安心して書き続けられる動機へ"]
-
-    style D fill:#ffebee,stroke:#c62828,stroke-width:1px
-    style E fill:#e8f5e9,stroke:#2e7d32,stroke-width:1px
-    style F fill:#c8e6c9,stroke:#1b5e20,stroke-width:1px
+    D -->|"Scripture Habit の AIレター"| E["自分だけに向けた丁寧で肯定的なフィードバック"]:::good
+    E --> F["🌟 安心して書き続けられる動機へ"]:::good
 ```
 
 ### ① 日常生活で褒められる機会の少なさ
