@@ -1,12 +1,12 @@
 import { db } from '../api_internal/lib/firebase-admin.js';
 
 async function migrateMaxMembers() {
-    console.log('既存グループの maxMembers の5人制限移行を開始します...');
+    console.log('Starting migration for maxMembers (5-member limit) on existing groups...');
     
     try {
         // 1. Fetch all groups
         const groupsSnapshot = await db.collection('groups').get();
-        console.log(`📂 全 ${groupsSnapshot.size} 件のグループを取得しました。`);
+        console.log(`📂 Retrieved ${groupsSnapshot.size} total groups.`);
         
         let updateCount = 0;
         let batch = db.batch();
@@ -16,7 +16,7 @@ async function migrateMaxMembers() {
             const data = doc.data();
             const currentMaxMembers = data.maxMembers;
             
-            // maxMembers が 5 以外のすべてのドキュメント（未定義、または 100000 など）を対象にする
+            // Target all documents where maxMembers is not 5 (undefined or legacy numbers)
             if (currentMaxMembers !== 5) {
                 batch.update(doc.ref, {
                     maxMembers: 5
@@ -24,9 +24,9 @@ async function migrateMaxMembers() {
                 batchOpCount++;
                 updateCount++;
                 
-                // Firestore の 500 件書き込み制限ごとにバッチコミット
+                // Batch commit every 400 operations to stay within Firestore 500 limit
                 if (batchOpCount >= 400) {
-                    console.log(`📦 バッチコミット中... (${updateCount} 件処理済)`);
+                    console.log(`📦 Committing batch... (${updateCount} items processed)`);
                     await batch.commit();
                     batch = db.batch();
                     batchOpCount = 0;
@@ -34,18 +34,18 @@ async function migrateMaxMembers() {
             }
         }
         
-        // 残りのバッチがあればコミット
+        // Commit remaining batch
         if (batchOpCount > 0) {
             await batch.commit();
         }
         
         console.log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
-        console.log(`✨ 移行処理が完了しました！`);
-        console.log(`📝 更新されたグループ数: ${updateCount} 件`);
+        console.log(`✨ Migration complete!`);
+        console.log(`📝 Updated groups: ${updateCount}`);
         console.log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
         
     } catch (error) {
-        console.error('❌ 移行中にエラーが発生しました:', error);
+        console.error('❌ Migration failed with error:', error);
         process.exit(1);
     }
     process.exit(0);

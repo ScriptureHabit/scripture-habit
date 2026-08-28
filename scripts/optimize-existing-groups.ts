@@ -11,13 +11,13 @@ async function optimizeExistingGroups() {
     const { db } = await import('../api_internal/lib/firebase-admin.js');
     const isApply = process.argv.includes('--apply');
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    console.log(`🚀 既存グループの多言語辞書スリム化・最適化処理を開始します`);
-    console.log(`⚙️ モード: ${isApply ? '【本番適用モード (APPLY)】' : '【シミュレーション (DRY-RUN)】'}`);
+    console.log(`🚀 Starting existing group translation dictionary optimization...`);
+    console.log(`⚙️ Mode: ${isApply ? '[APPLY MODE]' : '[DRY-RUN SIMULATION]'}`);
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
 
     try {
         const groupsSnapshot = await db.collection('groups').get();
-        console.log(`📂 全 ${groupsSnapshot.size} 件のグループドキュメントを取得しました。\n`);
+        console.log(`📂 Retrieved ${groupsSnapshot.size} total group documents.\n`);
 
         let eligibleCount = 0;
         let totalBytesSaved = 0;
@@ -90,9 +90,9 @@ async function optimizeExistingGroups() {
             totalBytesSaved += savedBytes;
             eligibleCount++;
 
-            console.log(`📌 [${isAiGroup ? 'AIグループ' : 'デモグループ'}] ${data.name || '名称未設定'} (ID: ${groupId})`);
-            console.log(`   言語数: ${langKeys.length}言語 (${langKeys.join(', ')}) ➔ ${preferredLang} のみ保持`);
-            console.log(`   削減サイズ: ${oldBytes} bytes ➔ ${newBytes} bytes (-${(savedBytes / 1024).toFixed(2)} KB)\n`);
+            console.log(`📌 [${isAiGroup ? 'AI Group' : 'Demo Group'}] ${data.name || 'Untitled'} (ID: ${groupId})`);
+            console.log(`   Languages: ${langKeys.length} (${langKeys.join(', ')}) ➔ retaining ${preferredLang} only`);
+            console.log(`   Size reduction: ${oldBytes} bytes ➔ ${newBytes} bytes (-${(savedBytes / 1024).toFixed(2)} KB)\n`);
 
             if (isApply) {
                 batch.update(doc.ref, {
@@ -101,7 +101,7 @@ async function optimizeExistingGroups() {
                 batchOpCount++;
 
                 if (batchOpCount >= 400) {
-                    console.log(`📦 バッチコミット中... (${eligibleCount} 件処理済)`);
+                    console.log(`📦 Committing batch... (${eligibleCount} items processed)`);
                     await batch.commit();
                     batch = db.batch();
                     batchOpCount = 0;
@@ -114,19 +114,19 @@ async function optimizeExistingGroups() {
         }
 
         console.log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
-        console.log(`✨ 処理結果サマリー:`);
-        console.log(`   最適化対象グループ数: ${eligibleCount} 件`);
-        console.log(`   合計削減データ量: ~${(totalBytesSaved / 1024).toFixed(2)} KB (1ドキュメント平均 -${eligibleCount > 0 ? ((totalBytesSaved / eligibleCount) / 1024).toFixed(2) : 0} KB)`);
+        console.log(`✨ Execution Summary:`);
+        console.log(`   Optimized Groups: ${eligibleCount}`);
+        console.log(`   Total Data Saved: ~${(totalBytesSaved / 1024).toFixed(2)} KB (Avg per doc: -${eligibleCount > 0 ? ((totalBytesSaved / eligibleCount) / 1024).toFixed(2) : 0} KB)`);
         if (!isApply) {
-            console.log(`\n💡 これは【シミュレーション】です。Firestoreのデータはまだ更新されていません。`);
-            console.log(`   実際にデータを更新する場合は、'--apply' オプションをつけて実行してください。`);
+            console.log(`\n💡 This was a [DRY-RUN SIMULATION]. No Firestore data was modified.`);
+            console.log(`   To apply these changes, rerun with the '--apply' flag.`);
         } else {
-            console.log(`\n🎉 Firestoreの既存グループデータが正常にスリム化されました！`);
+            console.log(`\n🎉 Firestore group dictionaries successfully optimized!`);
         }
         console.log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
 
     } catch (error) {
-        console.error('❌ 処理中にエラーが発生しました:', error);
+        console.error('❌ Error during optimization:', error);
         process.exit(1);
     }
     process.exit(0);

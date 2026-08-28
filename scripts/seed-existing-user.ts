@@ -46,7 +46,7 @@ async function seedExistingUser() {
             streakCount: 8,
             highestStreak: 8,
             totalNotes: 8,
-            language: 'ja'
+            language: 'en'
         },
         {
             uid: 'seeder-alice',
@@ -174,66 +174,66 @@ async function seedExistingUser() {
                 {
                     id: 'seed-demo-note-1',
                     scripture: 'Book of Mormon',
-                    chapter: 'ニーファイ第一書 1:1',
-                    comment: '「わたし、ニーファイは、善良な両親から生まれたので...」聖典学習の第一歩を踏み出しました！日々の小さな積み重ねを大切にしていきたいです。',
+                    chapter: '1 Nephi 1:1',
+                    comment: '“I, Nephi, having been born of goodly parents...” Taking the first step in my scripture study journey! Excited to build this daily habit one day at a time.',
                     createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 7 * 24 * 60 * 60 * 1000),
                     sharedWithGroups: [groupId]
                 },
                 {
                     id: 'seed-demo-note-2',
                     scripture: 'Book of Mormon',
-                    chapter: 'ニーファイ第一書 3:7',
-                    comment: '「主が命じられることには、それを成し遂げる道を備えてくださる」困難な仕事や課題に直面したとき、いつもこの聖句が勇気と行動力を与えてくれます。',
+                    chapter: '1 Nephi 3:7',
+                    comment: '“I will go and do the things which the Lord hath commanded, for I know that the Lord giveth no commandments unto the children of men, save he shall prepare a way for them...” Whenever I face difficult challenges, this verse gives me courage.',
                     createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 6 * 24 * 60 * 60 * 1000),
                     sharedWithGroups: [groupId]
                 },
                 {
                     id: 'seed-demo-note-3',
                     scripture: 'Old Testament',
-                    chapter: '創世記 1:1-3',
-                    comment: '「初めに、神は天地を創造された...光あれ」暗闇の中に秩序と希望をもたらす神の御力を深く味わいました。今日一日を光の心で過ごしたいです。',
+                    chapter: 'Genesis 1:1-3',
+                    comment: '“In the beginning God created the heaven and the earth... And God said, Let there be light: and there was light.” Felt deeply inspired by God’s creative power bringing order and hope into darkness.',
                     createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 5 * 24 * 60 * 60 * 1000),
                     sharedWithGroups: [groupId]
                 },
                 {
                     id: 'seed-demo-note-4',
                     scripture: 'New Testament',
-                    chapter: 'ヨハネによる福音書 14:27',
-                    comment: '「わたしは平安をあなたがたに残す。わたしの平安をあなたがたに与える」世の中の不安や忙しさに囲まれても、キリストに心を向けることで真の心の静けさを得られると学びました。',
+                    chapter: 'John 14:27',
+                    comment: '“Peace I leave with you, my peace I give unto you: not as the world giveth, give I unto you. Let not your heart be troubled, neither let it be afraid.” In a restless world, focusing on Christ brings genuine peace to my heart.',
                     createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 4 * 24 * 60 * 60 * 1000),
                     sharedWithGroups: [groupId]
                 },
                 {
                     id: 'seed-demo-note-5',
                     scripture: 'Doctrine and Covenants',
-                    chapter: '第6編 36節',
-                    comment: '「あらゆる思いの中でわたしを仰ぎ見なさい。疑ってはならない。恐れてはならない」迷いや不安が頭をよぎった時、すぐに祈りによって主を見上げる習慣をつけたいと思います。',
+                    chapter: 'Section 6:36',
+                    comment: '“Look unto me in every thought; doubt not, fear not.” Making it an instant daily habit to turn to prayer whenever doubt or anxiety creeps in.',
                     createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 3 * 24 * 60 * 60 * 1000),
                     sharedWithGroups: [groupId]
                 },
                 {
                     id: 'seed-demo-note-6',
                     scripture: 'General Conference',
-                    chapter: '2024年4月総大会',
-                    title: '主の導きに従う信仰',
-                    speaker: 'ラッセル・M・ネルソン大管長',
-                    comment: '日々の小さな善い選択が、長い年月をかけて私たちの人格と霊性を形作るというメッセージに深く感銘を受けました。聖典学習もその大切な一部です。',
+                    chapter: 'April 2024 General Conference',
+                    title: 'Faith to Follow the Lord',
+                    speaker: 'President Russell M. Nelson',
+                    comment: 'Deeply moved by the message that small daily righteous choices shape our character over time. Scripture study is a foundational anchor for that.',
                     createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 2 * 24 * 60 * 60 * 1000),
                     sharedWithGroups: [groupId]
                 },
                 {
                     id: 'seed-demo-note-7',
                     scripture: 'Pearl of Great Price',
-                    chapter: 'モーセ書 1:39',
-                    comment: '「人の不死不滅と永遠の命をもたらすこと、これがわたしの業であり、栄光である」神様の御計画の中心に私たちがいることを思い起こし、感謝と畏敬の念で満たされました。',
+                    chapter: 'Moses 1:39',
+                    comment: '“For behold, this is my work and my glory—to bring to pass the immortality and eternal life of man.” Filled with gratitude knowing God’s grand plan centers on our eternal joy.',
                     createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 1 * 24 * 60 * 60 * 1000),
                     sharedWithGroups: [groupId]
                 },
                 {
                     id: 'seed-demo-note-8',
                     scripture: 'Book of Mormon',
-                    chapter: 'アルマ書 32:28',
-                    comment: '「信仰を試すために、み言葉の種を心に植えなさい」み言葉が心の中で膨らみ、理解が明るくなり、霊的な喜びが芽生えてくるのを実感しています。今日も一歩前進！',
+                    chapter: 'Alma 32:28',
+                    comment: '“Now, we will compare the word unto a seed... if ye give place, that a seed may be planted in your heart...” Experiencing the word growing and enlightening my understanding. Moving forward with joyful faith!',
                     createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 1 * 60 * 60 * 1000),
                     sharedWithGroups: [groupId]
                 }
@@ -454,13 +454,13 @@ async function seedExistingUser() {
     });
 
     console.log('\n==================================================');
-    console.log('👥 [Existing User] 既存ユーザー環境をセットアップしました');
+    console.log('👥 [Existing User] Test environment setup complete');
     console.log('--------------------------------------------------');
     console.log('🔐 Login Credentials:');
     console.log('   Email:    existing-user@example.com');
     console.log('   Password: password123');
     console.log('   Nickname: existing-user');
-    console.log('📖 状態: グループ「Daily Bread 📖」参加中 / ストリーク8日 / ノート8件');
+    console.log('📖 Status: Member of "Daily Bread 📖" / 8-day streak / 8 study notes');
     console.log('==================================================\n');
 }
 

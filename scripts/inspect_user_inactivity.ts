@@ -52,14 +52,14 @@ async function diagnose() {
     const mockMemberData = memberDoc.exists ? memberDoc.data()! : {};
     const result = calculateMemberStatus(userId, mockMemberData, groupData, new Date());
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    console.log('📊 【自動退室シミュレーション結果】');
-    console.log(`👤 ユーザー: ${userData.nickname}`);
-    console.log(`🏢 グループ: ${groupData.name}`);
-    console.log(`⏰ ステータス: ${result.status.toUpperCase()}`);
-    console.log(`⏰ 最後のアクティブ日時: ${new Date(result.lastActiveTime).toLocaleString()}`);
-    console.log(`⏰ 現在の経過日数: ${(result.diffMs / (24 * 60 * 60 * 1000)).toFixed(2)} 日`);
-    console.log(`⏰ 退室しきい値日数: ${result.thresholdMs / (24 * 60 * 60 * 1000)} 日`);
-    console.log(`📝 判定理由 (Reason): ${result.reason}`);
+    console.log('📊 [Auto-Inactivity Sweep Simulation Results]');
+    console.log(`👤 User: ${userData.nickname}`);
+    console.log(`🏢 Group: ${groupData.name}`);
+    console.log(`⏰ Status: ${result.status.toUpperCase()}`);
+    console.log(`⏰ Last Active Time: ${new Date(result.lastActiveTime).toLocaleString()}`);
+    console.log(`⏰ Days Elapsed: ${(result.diffMs / (24 * 60 * 60 * 1000)).toFixed(2)} days`);
+    console.log(`⏰ Kick Threshold: ${result.thresholdMs / (24 * 60 * 60 * 1000)} days`);
+    console.log(`📝 Evaluation Reason: ${result.reason}`);
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 }
 

@@ -42,7 +42,7 @@ async function seedNewUser() {
         streakCount: 0,
         highestStreak: 0,
         totalNotes: 0,
-        language: 'ja'
+        language: 'en'
     };
 
     // 1. Purge existing new user and legacy solo seed user for idempotency
@@ -156,13 +156,13 @@ async function seedNewUser() {
     });
 
     console.log('\n==================================================');
-    console.log('🌱 [New User] 新規ユーザー環境をセットアップしました');
+    console.log('🌱 [New User] Test environment setup complete');
     console.log('--------------------------------------------------');
     console.log('🔐 Login Credentials:');
     console.log(`   Email:    ${newUser.email}`);
     console.log('   Password: password123');
     console.log(`   Nickname: ${newUser.nickname}`);
-    console.log('📖 状態: 未所属 / ストリーク0 / オンボーディング未完了（初回登録直後）');
+    console.log('📖 Status: No group / 0 streak / Onboarding incomplete (Fresh user state)');
     console.log('==================================================\n');
 }
 

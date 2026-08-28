@@ -7,6 +7,8 @@
 
 毎日の聖典学習を仲間と一緒に楽しく習慣化する、オープンソースのWebアプリです。
 
+> 💡 **開発への参加に興味がありますか？** コードベース全体を理解する必要はありません！ [`/docs`](docs/ja/README.md) から気になる機能を1つ選んで、小さなところから気軽に始めてみてください。
+
 <div align="center">
   <video src="https://github.com/user-attachments/assets/9cb294e7-7a90-49c3-93f5-3995a899ee43" width="360" autoplay loop muted playsinline>
   </video>
@@ -162,6 +164,9 @@ Swagger UI を公開しています。
 ## 貢献について
 
 Scripture Habit はオープンソースプロジェクトです。開発者だけでなく、翻訳やデザイン、日常の利用からのフィードバックなど、どなたでも歓迎しています。
+
+> [!TIP]
+> **コードベース全体を理解する必要はありません！** [`/docs`](docs/ja/README.md) から気になる機能を1つ選んで、小さなところから気軽に始めてみてください。
 
 開発の始め方やガイドラインについては [コントリビューションガイド](CONTRIBUTING.md) を、コミュニティ基準については [行動規範 (Code of Conduct)](CODE_OF_CONDUCT.md) をご確認ください。
 

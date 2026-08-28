@@ -2,6 +2,9 @@
 
 Welcome to the **scripture-habit** technical documentation. This directory contains detailed guides covering the application's architecture, feature implementations, UX design rationale, and operations.
 
+> [!TIP]
+> **Looking to contribute?** You don't need to read everything! Pick the single feature or guide that interests you and start small.
+
 ---
 
 ## Architecture Overview

@@ -10,18 +10,19 @@ if (keys.length > 0) {
     console.log('Languages in scripture:', Object.keys(sample.scripture));
 }
 
-const chapterList: { date: string; scripture: string; chapter: string; commentJa: string }[] = [];
+const chapterList: { date: string; scripture: string; chapter: string; commentEn: string; commentJa: string }[] = [];
 for (const k of keys) {
     const entry = AI_DAILY_COMMENTS[k];
     chapterList.push({
         date: k,
-        scripture: entry.scripture.ja,
-        chapter: entry.chapter.ja,
-        commentJa: entry.comment.ja.replace(/\n/g, ' / ')
+        scripture: entry.scripture.en || entry.scripture.ja,
+        chapter: entry.chapter.en || entry.chapter.ja,
+        commentEn: entry.comment.en?.replace(/\n/g, ' / ') || '',
+        commentJa: entry.comment.ja?.replace(/\n/g, ' / ') || ''
     });
 }
 console.log('Sample 10 items:');
 console.log(chapterList.slice(0, 10));
 console.log('Job items (around Aug 2026):');
-console.log(chapterList.filter(c => c.chapter.includes('ヨブ')));
+console.log(chapterList.filter(c => c.chapter.toLowerCase().includes('job') || c.chapter.includes('ヨブ')));
 

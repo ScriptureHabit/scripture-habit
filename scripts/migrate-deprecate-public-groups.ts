@@ -7,13 +7,13 @@ async function migrateDeprecatePublicGroups() {
     const isApply = process.argv.includes('--apply');
 
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    console.log('🚀 パブリックグループ廃止に伴うデータマイグレーションを開始します');
-    console.log(`⚙️ モード: ${isApply ? '【本番適用モード (APPLY)】' : '【シミュレーション (DRY-RUN)】'}`);
+    console.log('🚀 Starting migration to deprecate public groups...');
+    console.log(`⚙️ Mode: ${isApply ? '[APPLY MODE]' : '[DRY-RUN SIMULATION]'}`);
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
 
     try {
         const groupsSnapshot = await db.collection('groups').get();
-        console.log(`📂 全 ${groupsSnapshot.size} 件のグループドキュメントを取得しました。\n`);
+        console.log(`📂 Retrieved ${groupsSnapshot.size} total group documents.\n`);
 
         let modifiedCount = 0;
         let batch = db.batch();
@@ -26,7 +26,7 @@ async function migrateDeprecatePublicGroups() {
 
             if (isPublic) {
                 modifiedCount++;
-                console.log(`🔒 [対象グループ] ID: ${groupId}, Name: "${data.name || '名称未設定'}" -> isPublic: false に更新`);
+                console.log(`🔒 [Target Group] ID: ${groupId}, Name: "${data.name || 'Untitled'}" -> updating isPublic: false`);
 
                 if (isApply) {
                     batch.update(doc.ref, {
@@ -49,15 +49,15 @@ async function migrateDeprecatePublicGroups() {
         }
 
         console.log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-        console.log(`✅ 処理完了`);
-        console.log(`📊 対象グループ数: ${modifiedCount} 件`);
+        console.log(`✅ Process complete`);
+        console.log(`📊 Target groups modified: ${modifiedCount}`);
         if (!isApply) {
-            console.log(`💡 実際に変更を適用するには --apply フラグを付けて実行してください:`);
+            console.log(`💡 To apply these changes, run with the '--apply' flag:`);
             console.log(`   npx tsx scripts/migrate-deprecate-public-groups.ts --apply`);
         }
         console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
     } catch (err) {
-        console.error('❌ マイグレーション中にエラーが発生しました:', err);
+        console.error('❌ Migration failed with error:', err);
         process.exit(1);
     }
 }

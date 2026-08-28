@@ -6,6 +6,8 @@ English | [日本語](README.ja.md)
 
 An open-source community web application featuring to make daily scripture study a joyful habit together with friends.
 
+> 💡 **Interested in contributing?** You don't need to understand the whole codebase! Pick a feature in [`/docs`](docs/README.md) that interests you and start small.
+
 <div align="center">
   <video src="https://github.com/user-attachments/assets/9cb294e7-7a90-49c3-93f5-3995a899ee43" width="360" autoplay loop muted playsinline>
   </video>
@@ -161,6 +163,9 @@ Public Swagger UI is available:
 ## Contributing
 
 Scripture Habit is an open-source project, and contributions are welcome. Whether you write code, design, translate, or just use the app, any help is appreciated.
+
+> [!TIP]
+> **You don't need to understand the whole codebase!** Pick a feature in [`/docs`](docs/README.md) that interests you and start small.
 
 Please see our [Contributing Guide](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md) for details on development setup, guidelines, and community standards.
 

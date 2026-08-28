@@ -75,7 +75,7 @@ const Welcome = () => {
                                 fontSize: '0.9rem'
                             }}
                         >
-                            ⚡ Dev Login (existing-user: 既存)
+                            ⚡ Dev Login (existing-user: 8-day streak)
                         </button>
                         <button
                             type="button"
@@ -92,7 +92,7 @@ const Welcome = () => {
                                 fontSize: '0.9rem'
                             }}
                         >
-                            🌱 Dev Login (new-user: 新規)
+                            🌱 Dev Login (new-user: fresh onboarding)
                         </button>
                     </div>
                 )}

@@ -2,6 +2,9 @@
 
 Thank you for your interest in contributing to Scripture Habit. We welcome contributions from developers, designers, translators, and users of all experience levels.
 
+> [!TIP]
+> **You don't need to understand the whole codebase!** Pick a feature in [`/docs`](docs/README.md) that interests you and start small.
+
 ---
 
 ## Ways to Contribute
@@ -11,6 +14,24 @@ Thank you for your interest in contributing to Scripture Habit. We welcome contr
 3. **Improving Translations**: Review existing translations for natural phrasing, or add new language files in `scripture-habit/src/locales/`.
 4. **Improving Documentation**: Fix typos, add explanations, or improve developer guides in the `docs/` folder.
 5. **Writing Code**: Pick up an existing issue (especially issues labeled `good first issue`) or propose a pull request for a bug fix or feature.
+
+---
+
+## Where to Start: Quick Navigation by Feature
+
+You do not need to understand every layer of Scripture Habit to make a meaningful contribution. Find a feature or topic below that sparks your interest, review its dedicated guide, and start small:
+
+| Feature / Domain | Documentation | Key Files & Directories | Test / Verification |
+| :--- | :--- | :--- | :--- |
+| **Translations & i18n** | [logic-i18n.md](docs/logic-i18n.md) | `src/locales/*.ts` | `npm run check:all` |
+| **AI Integration & Prompts** | [feature-ai-integration.md](docs/feature-ai-integration.md) | `api_internal/routes/ai.ts` | `npm test` |
+| **Scripture Links & Mapper** | [gospel-library-mapper.md](docs/gospel-library-mapper.md) | `src/utils/gospelLibraryMapper.ts` | `npm test` |
+| **UI & Design System** | [design-system.md](docs/design-system.md) | `src/components/*`, `src/index.css` | `npm run dev` |
+| **Note Creation & Streaks** | [logic-note-posting.md](docs/logic-note-posting.md) | `src/services/noteService.ts`, `src/utils/streakUtils.ts` | `npm test` |
+| **Group Chat & Real-Time Sync** | [groupchat-construction-guide.md](docs/groupchat-construction-guide.md) | `src/components/chat/*`, `src/services/chatService.ts` | `npm test` |
+| **Push Notifications & FCM** | [feature-notifications.md](docs/feature-notifications.md) | `src/services/fcmService.ts` | `npm test` |
+| **Backend API & Middleware** | [api-middleware-error-handling.md](docs/api-middleware-error-handling.md) | `api_internal/middleware/*`, `api_internal/routes/*` | `npm test` |
+| **Firebase Security & Rules** | [firebase-security-rules.md](docs/firebase-security-rules.md) | `firestore.rules`, `firestore.indexes.json` | `npm run check:all` |
 
 ---
 
@@ -145,6 +166,9 @@ Please note that this project is released with a [Code of Conduct](CODE_OF_CONDU
 
 Scripture Habit への貢献に関心を持っていただきありがとうございます。開発者、デザイナー、翻訳者、日常のユーザーなど、経験のレベルを問わずどなたからの貢献も歓迎しています。
 
+> [!TIP]
+> **コードベース全体を理解する必要はありません！** [`/docs`](docs/ja/README.md) から気になる機能を1つ選んで、小さなところから気軽に始めてみてください。
+
 ---
 
 ## 貢献の方法
@@ -154,6 +178,24 @@ Scripture Habit への貢献に関心を持っていただきありがとうご�
 3. **翻訳の改善**: 既存の翻訳の自然な言い回しの確認や、`scripture-habit/src/locales/` への新しい言語ファイルの追加。
 4. **ドキュメントの改善**: 誤字脱字の修正、説明の追記、`docs/` フォルダ内の開発ガイドの改善。
 5. **コードの実装**: 既存の Issue（特に `good first issue` ラベルが付いたもの）の対応や、バグ修正・機能追加の Pull Request の作成。
+
+---
+
+## はじめに：機能別のクイック逆引き表
+
+Scripture Habit に貢献するために、すべての機能を理解しておく必要はありません。興味のある領域や機能を見つけ、専用ガイドを読んで小さなところから着手してみてください：
+
+| 機能 / 領域 | ドキュメント | 主な関連ファイル・ディレクトリ | テスト・検証コマンド |
+| :--- | :--- | :--- | :--- |
+| **翻訳・多言語対応 (i18n)** | [logic-i18n.md](docs/ja/logic-i18n.md) | `src/locales/*.ts` | `npm run check:all` |
+| **AI 連携・プロンプト改善** | [feature-ai-integration.md](docs/ja/feature-ai-integration.md) | `api_internal/routes/ai.ts` | `npm test` |
+| **聖典リンク・URLマッパー** | [gospel-library-mapper.md](docs/ja/gospel-library-mapper.md) | `src/utils/gospelLibraryMapper.ts` | `npm test` |
+| **UI・デザインシステム** | [design-system.md](docs/ja/design-system.md) | `src/components/*`, `src/index.css` | `npm run dev` |
+| **ノート作成・ストリーク計算** | [logic-note-posting.md](docs/ja/logic-note-posting.md) | `src/services/noteService.ts`, `src/utils/streakUtils.ts` | `npm test` |
+| **グループチャット・リアルタイム同期** | [groupchat-construction-guide.md](docs/ja/groupchat-construction-guide.md) | `src/components/chat/*`, `src/services/chatService.ts` | `npm test` |
+| **プッシュ通知・FCM** | [feature-notifications.md](docs/ja/feature-notifications.md) | `src/services/fcmService.ts` | `npm test` |
+| **バックエンドAPI・ミドルウェア** | [api-middleware-error-handling.md](docs/ja/api-middleware-error-handling.md) | `api_internal/middleware/*`, `api_internal/routes/*` | `npm test` |
+| **Firebase セキュリティ・DBルール** | [firebase-security-rules.md](docs/ja/firebase-security-rules.md) | `firestore.rules`, `firestore.indexes.json` | `npm run check:all` |
 
 ---
 

@@ -6,8 +6,8 @@ async function aggregateNotesByDate(daysLimit = 30) {
     cutoffDate.setDate(cutoffDate.getDate() - daysLimit);
     cutoffDate.setHours(0, 0, 0, 0);
     
-    console.log(`📊 過去 ${daysLimit} 日間の日別学習データを集計中...`);
-    console.log(`📅 集計開始日: ${cutoffDate.toLocaleDateString()}`);
+    console.log(`📊 Aggregating daily study activity for the past ${daysLimit} days...`);
+    console.log(`📅 Start Date: ${cutoffDate.toLocaleDateString()}`);
     
     const startTimestamp = admin.firestore.Timestamp.fromDate(cutoffDate);
 
@@ -38,26 +38,26 @@ async function aggregateNotesByDate(daysLimit = 30) {
         }
     });
 
-    // 4. Sort dates chronologically and print a beautiful ASCII report
+    // 4. Sort dates chronologically and print a clean ASCII report
     const sortedDates = Object.keys(dailyStats).sort();
 
     console.log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
-    console.log(` 📅 日付 (Date)   │ 📝 ノート総数 (Notes) │ 👥 アクティブユーザー (Users)`);
+    console.log(` 📅 Date          │ 📝 Total Notes        │ 👥 Active Users`);
     console.log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
 
     if (sortedDates.length === 0) {
-        console.log(`   データがありません。`);
+        console.log(`   No data found.`);
     } else {
         sortedDates.forEach(date => {
             const stats = dailyStats[date];
-            const notesStr = String(stats.totalNotes).padStart(5) + ' 件';
-            const usersStr = String(stats.uniqueUsers.size).padStart(5) + ' 人';
-            console.log(` 📅 ${date}  │      ${notesStr}      │      ${usersStr}`);
+            const notesStr = String(stats.totalNotes).padStart(5);
+            const usersStr = String(stats.uniqueUsers.size).padStart(5);
+            console.log(` 📅 ${date}  │      ${notesStr} notes       │      ${usersStr} users`);
         });
     }
     
     console.log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
-    console.log(`✨ 合計データ取得数: ${notesSnapshot.size} 件 (Read消費: ${notesSnapshot.size})`);
+    console.log(`✨ Total Notes Retrieved: ${notesSnapshot.size} (Read operations: ${notesSnapshot.size})`);
 }
 
 // Default to past 30 days, can be overridden by CLI args if needed
