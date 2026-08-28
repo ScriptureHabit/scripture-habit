@@ -10,14 +10,23 @@
 
 ```mermaid
 flowchart TD
-    Req[クライアントからのリクエスト] --> ReqId[1. x-request-id 採番<br/>(追跡用IDの付与)]
-    ReqId --> CORS[2. CORS 検証<br/>(正規オリジン確認)]
-    CORS --> RateLimit[3. レート制限<br/>(IP/トークン別制限)]
-    RateLimit --> AppCheck[4. verifyAppCheck<br/>(App Check トークン検証)]
-    AppCheck --> Auth[5. authenticate<br/>(Firebase JWT 検証)]
-    Auth --> EmailCheck[6. requireEmailVerified<br/>(メール確認チェック)]
-    EmailCheck --> Handler[7. ルートハンドラー実行]
-    Handler --> ErrHandler[8. グローバルエラーハンドラー<br/>(Sentry 連携)]
+    classDef req fill:#1e1b4b,stroke:#a855f7,stroke-width:2px,color:#f8fafc;
+    classDef mw fill:#1e293b,stroke:#64748b,stroke-width:1.5px,color:#f8fafc;
+    classDef handler fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#f0fdf4;
+    classDef err fill:#7f1d1d,stroke:#ef4444,stroke-width:2px,color:#fef2f2;
+
+    Req["クライアントからの HTTP リクエスト"]:::req
+    ReqId["1. x-request-id 採番 (追跡用UUID付与)"]:::mw
+    CORS["2. CORS 検証 (正規オリジン確認)"]:::mw
+    RateLimit["3. レート制限 (IP / トークン別)"]:::mw
+    AppCheck["4. verifyAppCheck (App Check トークン検証)"]:::mw
+    Auth["5. authenticate (Firebase JWT トークン検証)"]:::mw
+    EmailCheck["6. requireEmailVerified (メール確認ガード)"]:::mw
+    Handler["🌟 7. ルートハンドラー実行 (ビジネスロジック)"]:::handler
+    ErrHandler["⚠️ 8. グローバルエラーハンドラー (Sentry連携)"]:::err
+
+    Req --> ReqId --> CORS --> RateLimit --> AppCheck --> Auth --> EmailCheck --> Handler
+    Handler -.->|例外発生時| ErrHandler
 ```
 
 ---
@@ -44,13 +53,17 @@ flowchart TD
 場当たり的なエラー返却を避け、統一された `AppError` クラスを使用してクライアントへ分かりやすいレスポンスを返します：
 
 ```mermaid
-graph TD
-    NativeError[Native Error] --> AppError[AppError (statusCode, errorCode)]
-    AppError --> ValidationError["ValidationError (400)"]
-    AppError --> AuthError["AuthenticationError (401)"]
-    AppError --> ForbiddenError["ForbiddenError (403)"]
-    AppError --> NotFoundError["NotFoundError (404)"]
-    AppError --> ConflictError["ConflictError (409)"]
+flowchart TD
+    classDef base fill:#1e293b,stroke:#64748b,stroke-width:1.5px,color:#f8fafc;
+    classDef clientErr fill:#78350f,stroke:#f59e0b,stroke-width:1.5px,color:#fef3c7;
+
+    NativeError["Native Error (標準 Error クラス)"]:::base --> AppError["AppError (statusCode, errorCode)"]:::base
+    
+    AppError --> ValidationError["ValidationError (400 Bad Request)"]:::clientErr
+    AppError --> AuthError["AuthenticationError (401 Unauthorized)"]:::clientErr
+    AppError --> ForbiddenError["ForbiddenError (403 Forbidden)"]:::clientErr
+    AppError --> NotFoundError["NotFoundError (404 Not Found)"]:::clientErr
+    AppError --> ConflictError["ConflictError (409 Conflict)"]:::clientErr
 ```
 
 - **`ValidationError` (400)**: 入力データのバリデーション（Zod）失敗。

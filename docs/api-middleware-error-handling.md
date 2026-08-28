@@ -10,14 +10,23 @@ Backend requests traverse a security-first middleware pipeline:
 
 ```mermaid
 flowchart TD
-    Req[Incoming Client Request] --> ReqId[1. x-request-id Injection<br/>(Request correlation ID)]
-    ReqId --> CORS[2. CORS Verification<br/>(Valid Origin Check)]
-    CORS --> RateLimit[3. Rate Limiters<br/>(IP/Token Bucket)]
-    RateLimit --> AppCheck[4. verifyAppCheck<br/>(App Check Token Check)]
-    AppCheck --> Auth[5. authenticate<br/>(Firebase JWT Validation)]
-    Auth --> EmailCheck[6. requireEmailVerified<br/>(Email Verification Guard)]
-    EmailCheck --> Handler[7. Route Handler Execution]
-    Handler --> ErrHandler[8. Global Error Handler<br/>(Sentry Capture & Scrubbing)]
+    classDef req fill:#1e1b4b,stroke:#a855f7,stroke-width:2px,color:#f8fafc;
+    classDef mw fill:#1e293b,stroke:#64748b,stroke-width:1.5px,color:#f8fafc;
+    classDef handler fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#f0fdf4;
+    classDef err fill:#7f1d1d,stroke:#ef4444,stroke-width:2px,color:#fef2f2;
+
+    Req["Incoming Client HTTP Request"]:::req
+    ReqId["1. x-request-id Injection (Request UUID)"]:::mw
+    CORS["2. CORS Verification (Valid Origin Check)"]:::mw
+    RateLimit["3. Rate Limiters (IP / Token Bucket)"]:::mw
+    AppCheck["4. verifyAppCheck (App Check Token Check)"]:::mw
+    Auth["5. authenticate (Firebase JWT Validation)"]:::mw
+    EmailCheck["6. requireEmailVerified (Email Verification Guard)"]:::mw
+    Handler["🌟 7. Route Handler Execution (Business Logic)"]:::handler
+    ErrHandler["⚠️ 8. Global Error Handler (Sentry Capture & Scrubbing)"]:::err
+
+    Req --> ReqId --> CORS --> RateLimit --> AppCheck --> Auth --> EmailCheck --> Handler
+    Handler -.->|On Exception| ErrHandler
 ```
 
 ---
@@ -44,13 +53,17 @@ flowchart TD
 Instead of ad-hoc status returns, the backend utilizes structured `AppError` subclasses:
 
 ```mermaid
-graph TD
-    NativeError[Native Error] --> AppError[AppError (statusCode, errorCode)]
-    AppError --> ValidationError["ValidationError (400)"]
-    AppError --> AuthError["AuthenticationError (401)"]
-    AppError --> ForbiddenError["ForbiddenError (403)"]
-    AppError --> NotFoundError["NotFoundError (404)"]
-    AppError --> ConflictError["ConflictError (409)"]
+flowchart TD
+    classDef base fill:#1e293b,stroke:#64748b,stroke-width:1.5px,color:#f8fafc;
+    classDef clientErr fill:#78350f,stroke:#f59e0b,stroke-width:1.5px,color:#fef3c7;
+
+    NativeError["Native Error (Standard JS Error)"]:::base --> AppError["AppError (statusCode, errorCode)"]:::base
+    
+    AppError --> ValidationError["ValidationError (400 Bad Request)"]:::clientErr
+    AppError --> AuthError["AuthenticationError (401 Unauthorized)"]:::clientErr
+    AppError --> ForbiddenError["ForbiddenError (403 Forbidden)"]:::clientErr
+    AppError --> NotFoundError["NotFoundError (404 Not Found)"]:::clientErr
+    AppError --> ConflictError["ConflictError (409 Conflict)"]:::clientErr
 ```
 
 - **`ValidationError` (400)**: Failed schema validation (Zod).
