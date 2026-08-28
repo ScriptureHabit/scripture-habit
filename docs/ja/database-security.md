@@ -14,16 +14,13 @@ flowchart TD
     classDef sub fill:#0f172a,stroke:#94a3b8,stroke-width:1.5px,color:#e2e8f0;
     classDef social fill:#1e1b4b,stroke:#a855f7,stroke-width:2px,color:#f8fafc;
 
-    subgraph UserDomain["👤 ユーザー領域 users/{uid}"]
-        direction TB
+    subgraph UserDomain["1. ユーザー領域 users/{uid}"]
         USERS["<b>USERS</b> (親ドキュメント)<br/>PK: uid / プロフィール・学習習慣・所属グループ"]:::main
 
-        subgraph UserSubs["ユーザー配下のサブコレクション"]
-            NOTES["<b>NOTES</b><br/>PK: id<br/>個人学習ノート"]:::sub
-            GROUP_STATES["<b>GROUP_STATES</b><br/>PK: groupId<br/>グループ既読状態"]:::sub
-            PRIVATE_TOKENS["<b>PRIVATE_TOKENS</b><br/>PK: tokens<br/>機密FCMトークン"]:::sub
-            LETTERS["<b>LETTERS</b><br/>PK: id<br/>AI振り返りレター"]:::sub
-        end
+        NOTES["<b>NOTES</b><br/>PK: id<br/>個人学習ノート"]:::sub
+        GROUP_STATES["<b>GROUP_STATES</b><br/>PK: groupId<br/>グループ既読状態"]:::sub
+        PRIVATE_TOKENS["<b>PRIVATE_TOKENS</b><br/>PK: tokens<br/>機密FCMトークン"]:::sub
+        LETTERS["<b>LETTERS</b><br/>PK: id<br/>AI振り返りレター"]:::sub
 
         USERS -->|1:N 所有| NOTES
         USERS -->|1:N 記録| GROUP_STATES
@@ -31,27 +28,26 @@ flowchart TD
         USERS -->|1:N 受信| LETTERS
     end
 
-    subgraph GroupDomain["👥 グループ領域 groups/{groupId}"]
-        direction TB
+    subgraph GroupDomain["2. グループ領域 groups/{groupId}"]
         GROUPS["<b>GROUPS</b> (親ドキュメント)<br/>PK: groupId / グループ情報・定員5名・団結度"]:::main
 
-        subgraph GroupSubs["グループ配下のサブコレクション"]
-            MESSAGES["<b>MESSAGES</b><br/>PK: id<br/>チャットログ (TTL 30日)"]:::sub
-            MEMBERS["<b>MEMBERS</b><br/>PK: uid<br/>メンバー個別進捗"]:::sub
-            MESSAGES_LATEST["<b>MESSAGES_LATEST</b><br/>PK: latest<br/>最新5件キャッシュ"]:::sub
-        end
+        MESSAGES["<b>MESSAGES</b><br/>PK: id<br/>チャットログ (TTL 30日)"]:::sub
+        MEMBERS["<b>MEMBERS</b><br/>PK: uid<br/>メンバー個別進捗"]:::sub
+        MESSAGES_LATEST["<b>MESSAGES_LATEST</b><br/>PK: latest<br/>最新5件キャッシュ"]:::sub
 
         GROUPS -->|1:N 投稿| MESSAGES
         GROUPS -->|1:N 管理| MEMBERS
         GROUPS -->|1:1 キャッシュ| MESSAGES_LATEST
     end
 
-    subgraph SocialDomain["🌟 ソーシャル・管理領域 (ルートコレクション)"]
+    subgraph SocialDomain["3. ソーシャル・管理領域 (ルートコレクション)"]
         CHEERS["<b>CHEERS</b> cheers/{cheerId}<br/>PK: cheerId / エール送信"]:::social
         REPORTS["<b>REPORTS</b> reports/{reportId}<br/>PK: reportId / 違反通報"]:::social
     end
 
     USERS ===>|N:M 参加 groupIds| GROUPS
+    GROUPS ~~~ CHEERS
+    GROUPS ~~~ REPORTS
     USERS -.->|エール送信| CHEERS
     USERS -.->|違反通報| REPORTS
 ```

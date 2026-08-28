@@ -14,16 +14,13 @@ flowchart TD
     classDef sub fill:#0f172a,stroke:#94a3b8,stroke-width:1.5px,color:#e2e8f0;
     classDef social fill:#1e1b4b,stroke:#a855f7,stroke-width:2px,color:#f8fafc;
 
-    subgraph UserDomain["👤 User Domain users/{uid}"]
-        direction TB
+    subgraph UserDomain["1. User Domain users/{uid}"]
         USERS["<b>USERS</b> (Parent Document)<br/>PK: uid / Profile, study streaks & membership"]:::main
 
-        subgraph UserSubs["User Subcollections"]
-            NOTES["<b>NOTES</b><br/>PK: id<br/>Study notes"]:::sub
-            GROUP_STATES["<b>GROUP_STATES</b><br/>PK: groupId<br/>Read markers"]:::sub
-            PRIVATE_TOKENS["<b>PRIVATE_TOKENS</b><br/>PK: tokens<br/>Sensitive FCM tokens"]:::sub
-            LETTERS["<b>LETTERS</b><br/>PK: id<br/>AI reflection letters"]:::sub
-        end
+        NOTES["<b>NOTES</b><br/>PK: id<br/>Study notes"]:::sub
+        GROUP_STATES["<b>GROUP_STATES</b><br/>PK: groupId<br/>Read markers"]:::sub
+        PRIVATE_TOKENS["<b>PRIVATE_TOKENS</b><br/>PK: tokens<br/>Sensitive FCM tokens"]:::sub
+        LETTERS["<b>LETTERS</b><br/>PK: id<br/>AI reflection letters"]:::sub
 
         USERS -->|1:N owns| NOTES
         USERS -->|1:N tracks| GROUP_STATES
@@ -31,27 +28,26 @@ flowchart TD
         USERS -->|1:N receives| LETTERS
     end
 
-    subgraph GroupDomain["👥 Group Domain groups/{groupId}"]
-        direction TB
+    subgraph GroupDomain["2. Group Domain groups/{groupId}"]
         GROUPS["<b>GROUPS</b> (Parent Document)<br/>PK: groupId / Max 5 members & unity score"]:::main
 
-        subgraph GroupSubs["Group Subcollections"]
-            MESSAGES["<b>MESSAGES</b><br/>PK: id<br/>Chat log (TTL 30-day)"]:::sub
-            MEMBERS["<b>MEMBERS</b><br/>PK: uid<br/>Member progress"]:::sub
-            MESSAGES_LATEST["<b>MESSAGES_LATEST</b><br/>PK: latest<br/>5-msg cache"]:::sub
-        end
+        MESSAGES["<b>MESSAGES</b><br/>PK: id<br/>Chat log (TTL 30-day)"]:::sub
+        MEMBERS["<b>MEMBERS</b><br/>PK: uid<br/>Member progress"]:::sub
+        MESSAGES_LATEST["<b>MESSAGES_LATEST</b><br/>PK: latest<br/>5-msg cache"]:::sub
 
         GROUPS -->|1:N contains| MESSAGES
         GROUPS -->|1:N manages| MEMBERS
         GROUPS -->|1:1 caches| MESSAGES_LATEST
     end
 
-    subgraph SocialDomain["🌟 Social & Moderation Domain (Root Collections)"]
+    subgraph SocialDomain["3. Social & Moderation Domain (Root Collections)"]
         CHEERS["<b>CHEERS</b> cheers/{cheerId}<br/>PK: cheerId / Social cheers"]:::social
         REPORTS["<b>REPORTS</b> reports/{reportId}<br/>PK: reportId / Content reports"]:::social
     end
 
     USERS ===>|N:M joins groupIds| GROUPS
+    GROUPS ~~~ CHEERS
+    GROUPS ~~~ REPORTS
     USERS -.->|sends cheer| CHEERS
     USERS -.->|files report| REPORTS
 ```
