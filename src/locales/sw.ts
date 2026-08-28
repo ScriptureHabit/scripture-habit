@@ -323,6 +323,10 @@ export default {
         "nextPage": "Inayofuata",
         "pageInfo": "Ukurasa {current} kati ya {total}",
         "nextLetterInNotes": "(Barua mpya baada ya maelezo {count})",
+        "preparingNextLetter": "Inaandaa barua mpya",
+        "viewPreviousLetterAction": "Gusa kusoma barua iliyotangulia 📖",
+        "notesNeededForLetter": "Andika madokezo {count} zaidi kupokea",
+        "newLetterReadySub": "Barua mpya imewasili kutoka kwa madokezo yako 2!",
         "notMember": "Wewe si mwanachama wa kikundi hiki"
     },
     "recapModal": {

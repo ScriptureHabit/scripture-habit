@@ -93,6 +93,7 @@ In alignment with General Handbook Section 38.8.47 ("Appropriate Use of Artifici
 8. **Hope & Peace**: Focuses on peace, spiritual courage, and hope in Christ rather than inciting anxiety around warfare or apocalyptic topics.
 9. **Accessibility for Youth & All Ages**: Uses clear, natural, and respectful language suitable for learners of all ages.
 10. **Real-World Connections**: Encourages personal prayer and fostering meaningful connections with family and the faith community.
+11. **Word of Wisdom Compliance (D&C 89)**: Strictly prohibits referencing coffee, tea, alcohol, tobacco, or prohibited substances in metaphors or icebreakers, favoring wholesome universal habits (drinking water, eating breakfast, walking).
 
 ---
 

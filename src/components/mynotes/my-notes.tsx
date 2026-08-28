@@ -1,6 +1,7 @@
 
 import { useState, Suspense } from 'react';
-import { UilBookOpen, UilSearchAlt, UilAnalysis, UilEnvelope, UilAngleLeft, UilAngleRight } from '@iconscout/react-unicons';
+import { UilBookOpen, UilSearchAlt, UilEnvelopeEdit, UilEnvelopeOpen, UilAngleLeft, UilAngleRight } from '@iconscout/react-unicons';
+import { Mailbox } from 'lucide-react';
 import { lazyWithRetry } from '../../utils/lazy-with-retry';
 const NewNote = lazyWithRetry(() => import('../newnote/new-note'));
 import NoteCard from '../notecard/note-card';
@@ -68,6 +69,7 @@ const MyNotes = ({ userData, isModalOpen, setIsModalOpen, userGroups }: MyNotesP
     isFromCache,
     canGenerateRecap,
     notesRemaining,
+    newNotesCount,
     hasPreviousLetter,
     setIsRecapModalOpen,
     handleGenerateRecap,
@@ -98,6 +100,9 @@ const MyNotes = ({ userData, isModalOpen, setIsModalOpen, userGroups }: MyNotesP
   const totalPages = Math.ceil(totalCount / NOTES_PER_PAGE);
   const displayNotes = notes; // Server already filtered and paginated these
 
+  const currentCount = newNotesCount ?? Math.max(0, 2 - notesRemaining);
+  const progressPercent = Math.min(100, Math.max(0, (currentCount / 2) * 100));
+
   return (
     <div className="MyNotes">
       <div className="my-notes-header">
@@ -117,27 +122,47 @@ const MyNotes = ({ userData, isModalOpen, setIsModalOpen, userGroups }: MyNotesP
         <div className="action-card-container">
           <div className={`action-card recap-card ${canGenerateRecap ? 'available' : (hasPreviousLetter ? 'view-cached available' : 'locked')}`}>
             <button
-              className={`generate-recap-main-btn ${!canGenerateRecap && hasPreviousLetter ? 'view-cached' : ''}`}
+              className={`generate-recap-main-btn ${!canGenerateRecap ? 'view-cached' : ''}`}
               onClick={() => handleGenerateRecap(canGenerateRecap, hasPreviousLetter)}
               disabled={recapLoading || (!canGenerateRecap && !hasPreviousLetter)}
             >
               <div className="btn-content flex-column">
-                <div className="btn-main-row">
-                  <UilAnalysis size="24" className="recap-icon" />
-                  <span>
-                    {recapLoading ? (canGenerateRecap ? t('myNotes.loading') : (t('myNotes.fetchingRecentRecap') || "Retrieving...")) :
-                      !canGenerateRecap && hasPreviousLetter ? (t('myNotes.viewRecentRecap') || "✨ View Recent Letter") :
-                        t('myNotes.generateRecap')}
-                  </span>
-                  {!recapLoading && <div className="stars-decoration">✨</div>}
-                </div>
-                {!canGenerateRecap && !recapLoading && (
-                  <div className="btn-sub-row">
-                    {t('myNotes.nextLetterInNotes', { count: notesRemaining }) || `(新しい手紙まであと ${notesRemaining} 回の投稿)`}
-                  </div>
+                {canGenerateRecap ? (
+                  // --- Ready State (2/2 Notes) ---
+                  <>
+                    <div className="btn-main-row">
+                      <UilEnvelopeOpen size="24" className="recap-icon" />
+                      <span>
+                        {recapLoading ? t('myNotes.loading') : t('myNotes.generateRecap')}
+                      </span>
+                      {!recapLoading && <div className="stars-decoration">✨</div>}
+                    </div>
+                    {!recapLoading && (
+                      <div className="btn-sub-row">
+                        {t('myNotes.newLetterReadySub')}
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  // --- Waiting State (0/2 or 1/2 Notes with Progress Gauge on 2nd row) ---
+                  <>
+                    <div className="btn-main-row waiting-header-row">
+                      <UilEnvelopeEdit size="20" className="recap-icon waiting-icon" />
+                      <span className="waiting-title">
+                        {t('myNotes.preparingNextLetter')}
+                        <span className="waiting-count-badge">({currentCount}/2)</span>
+                      </span>
+                    </div>
+                    <div className="recap-progress-track">
+                      <div
+                        className="recap-progress-fill"
+                        style={{ width: `${progressPercent}%` }}
+                      />
+                    </div>
+                  </>
                 )}
               </div>
-              <div className="shimmer-effect"></div>
+              {canGenerateRecap && <div className="shimmer-effect"></div>}
             </button>
           </div>
 
@@ -147,7 +172,7 @@ const MyNotes = ({ userData, isModalOpen, setIsModalOpen, userGroups }: MyNotesP
             data-testid="letterbox-card"
           >
             <div className="mailbox-visual">
-              <UilEnvelope size="32" className="envelope-icon" />
+              <Mailbox size={26} className="envelope-icon" />
               <div className="mailbox-flag"></div>
             </div>
             <span className="letterbox-label">{t('letterBox.title')}</span>

@@ -323,6 +323,10 @@ export default {
         "nextPage": "次へ",
         "pageInfo": "{total} ページ中 {current} ページ目",
         "nextLetterInNotes": "(新しい手紙まであと {count} 回の投稿)",
+        "preparingNextLetter": "新しい手紙の準備中",
+        "viewPreviousLetterAction": "タップして前回のレターを読む 📖",
+        "notesNeededForLetter": "あと {count} 回のノート投稿で届きます",
+        "newLetterReadySub": "2つのノートから新しいお手紙が届きました！",
         "notMember": "グループに参加していません"
     },
     "recapModal": {

@@ -323,6 +323,10 @@ export default {
         "nextPage": "Susunod",
         "pageInfo": "Pahina {current} ng {total}",
         "nextLetterInNotes": "(Bagong sulat sa {count} pang tala)",
+        "preparingNextLetter": "Inihahanda ang bagong sulat",
+        "viewPreviousLetterAction": "I-tap upang basahin ang nakaraang sulat 📖",
+        "notesNeededForLetter": "{count} pang tala upang matanggap",
+        "newLetterReadySub": "Dumating ang bagong sulat mula sa iyong 2 tala!",
         "notMember": "Hindi ka miyembro ng grupong ito"
     },
     "recapModal": {

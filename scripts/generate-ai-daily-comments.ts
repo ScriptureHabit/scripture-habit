@@ -93,6 +93,7 @@ For each item, generate a single punchy 1-line comment (NO line breaks, NO emoji
 - Focus on the specific characters, actions, human dilemmas, or ironic realities in the reading.
 - One single, memorable, witty, and relatable sentence that hits home immediately.
 - Absolutely NO emojis under any circumstances.
+- Word of Wisdom Compliance (知恵の言葉の遵守): NEVER mention or reference coffee (コーヒー), tea, alcohol, tobacco, or prohibited substances in modern analogies or jokes. Use universal daily habits (e.g. drinking water, waking up, having a meal, walking).
 
 【FEW-SHOT EXAMPLES (For Style & Tone Reference)】:
 - Example: Martha and Mary (Luke 10)

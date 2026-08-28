@@ -323,6 +323,10 @@ export default {
         "nextPage": "ถัดไป",
         "pageInfo": "หน้า {current} จาก {total}",
         "nextLetterInNotes": "(จดหมายใหม่ในอีก {count} โน้ต)",
+        "preparingNextLetter": "กำลังเตรียมจดหมายใหม่",
+        "viewPreviousLetterAction": "แตะเพื่ออ่านจดหมายฉบับก่อน 📖",
+        "notesNeededForLetter": "เขียนอีก {count} บันทึกเพื่อรับจดหมาย",
+        "newLetterReadySub": "จดหมายใหม่จาก 2 บันทึกของคุณมาถึงแล้ว!",
         "notMember": "คุณไม่ได้เป็นสมาชิกของกลุ่มนี้"
     },
     "recapModal": {

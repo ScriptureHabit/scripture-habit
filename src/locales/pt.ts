@@ -323,6 +323,10 @@ export default {
         "nextPage": "Próximo",
         "pageInfo": "Página {current} de {total}",
         "nextLetterInNotes": "(Próxima carta em mais {count} anotações)",
+        "preparingNextLetter": "Preparando nova carta",
+        "viewPreviousLetterAction": "Toque para ler a carta anterior 📖",
+        "notesNeededForLetter": "Escreva mais {count} nota(s) para receber",
+        "newLetterReadySub": "Uma nova carta chegou das suas 2 notas!",
         "notMember": "Você não é membro deste grupo"
     },
     "recapModal": {

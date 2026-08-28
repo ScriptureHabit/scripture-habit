@@ -323,6 +323,10 @@ export default {
         "nextPage": "Tiếp",
         "pageInfo": "Trang {current} trên {total}",
         "nextLetterInNotes": "(Thư mới sau {count} ghi chú nữa)",
+        "preparingNextLetter": "Đang chuẩn bị thư mới",
+        "viewPreviousLetterAction": "Nhấn để đọc thư trước 📖",
+        "notesNeededForLetter": "Viết thêm {count} ghi chú để nhận thư",
+        "newLetterReadySub": "Một lá thư mới đã đến từ 2 ghi chú của bạn!",
         "notMember": "Bạn không phải là thành viên của nhóm này"
     },
     "recapModal": {

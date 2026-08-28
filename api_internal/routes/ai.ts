@@ -592,7 +592,8 @@ Output MUST be a valid JSON object with the following schema:
 12. Respect for All Faiths: Uphold the spirit of the 11th Article of Faith by showing unconditional charity, warmth, and respect to people of all faith backgrounds and seekers, avoiding any criticism of other denominations.
 13. Hope Over Fear (Warfare & End-Times): When addressing scriptures about warfare, trials, or apocalyptic events, never incite fear, violence, or anxiety. Focus on spiritual courage, standing for peace, and the joyful hope of Christ's promised return.
 14. Accessible & Dignified Tone: Use warm, natural, and easily understood language suitable for youth and members of all ages, avoiding overly archaic or obscure phrasing while maintaining reverence.
-15. Real-World Connections: Gently encourage the user to cherish personal prayer with Heavenly Father and foster loving, supportive connections with family and their faith community.`;
+15. Real-World Connections: Gently encourage the user to cherish personal prayer with Heavenly Father and foster loving, supportive connections with family and their faith community.
+16. Word of Wisdom & Lifestyle Standards (知恵の言葉・生活習慣の遵守): The audience follows the Latter-day Saint Word of Wisdom (Doctrine & Covenants 89). STRICTLY PROHIBIT mentioning or suggesting the consumption of coffee (コーヒー), tea (紅茶・緑茶等), alcohol (お酒・ビール・ワイン), tobacco, or other prohibited substances, even in casual metaphors, icebreakers, or P.S. (追伸). For casual morning or daily routine metaphors, use universal wholesome actions such as drinking a glass of water (朝一杯の水を飲むとき), eating breakfast/meals (朝食をとるとき), taking a walk (散歩), or enjoying fresh morning air (朝の新鮮な空気を吸うとき).`;
 
         const generatedText = await callGemini(prompt);
 

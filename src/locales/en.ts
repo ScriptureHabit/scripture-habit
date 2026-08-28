@@ -323,6 +323,10 @@ export default {
         "nextPage": "Next",
         "pageInfo": "Page {current} of {total}",
         "nextLetterInNotes": "(New letter in {count} more notes)",
+        "preparingNextLetter": "Preparing next letter",
+        "viewPreviousLetterAction": "Tap to read previous letter 📖",
+        "notesNeededForLetter": "{count} more note(s) to receive",
+        "newLetterReadySub": "A new letter has arrived from your 2 notes!",
         "notMember": "You are not a member of this group"
     },
     "recapModal": {

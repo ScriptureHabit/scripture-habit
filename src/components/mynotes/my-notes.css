@@ -352,7 +352,7 @@
 }
 
 .generate-recap-main-btn:disabled {
-    background: #f8f9fc;
+    background: #f8fafc;
     border: 1.5px dashed #cbd5e1;
     color: #64748b;
     cursor: not-allowed;
@@ -378,17 +378,77 @@
     opacity: 1;
 }
 
-/* Sky blue pastel gradient for cached recap view */
+/* Waiting state: Clean soft light-gray background with high contrast dark text */
 .generate-recap-main-btn.view-cached {
-    background: linear-gradient(135deg, #4fc3f7 0%, #81d4fa 100%);
+    background: #f8fafc;
+    border: 1.5px solid #e2e8f0;
+    color: #1e293b;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.generate-recap-main-btn.view-cached:hover:not(:disabled) {
+    background: #ffffff;
+    border-color: #cbd5e1;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
 }
 
 .recap-card.view-cached {
-    background: linear-gradient(135deg, #ffffff 0%, #e1f5fe 100%);
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    border-radius: 12px;
 }
 
 .action-card.available.view-cached:hover {
-    box-shadow: 0 10px 25px rgba(79, 195, 247, 0.3);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+    transform: translateY(-2px);
+}
+
+.generate-recap-main-btn.view-cached .waiting-icon {
+    color: #64748b;
+}
+
+.waiting-header-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+.waiting-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1e293b;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.waiting-count-badge {
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #ff6584;
+    background: #ffecef;
+    padding: 0.1rem 0.5rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 101, 132, 0.2);
+}
+
+.recap-progress-track {
+    width: 160px;
+    max-width: 85%;
+    height: 8px;
+    background: #e2e8f0;
+    border-radius: 999px;
+    overflow: hidden;
+    margin: 0.35rem auto 0;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.recap-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #FF8A96 0%, #FF6B7A 100%);
+    border-radius: 999px;
+    transition: width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .btn-content.flex-column {

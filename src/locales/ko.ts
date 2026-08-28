@@ -323,6 +323,10 @@ export default {
         "nextPage": "다음",
         "pageInfo": "전체 {total}페이지 중 {current}페이지",
         "nextLetterInNotes": "(새 편지까지 앞으로 {count}개의 노트 작성 필요)",
+        "preparingNextLetter": "새 편지 준비 중",
+        "viewPreviousLetterAction": "탭하여 이전 편지 읽기 📖",
+        "notesNeededForLetter": "앞으로 {count}개의 노트를 작성하면 도착합니다",
+        "newLetterReadySub": "2개의 노트로부터 새 편지가 도착했습니다!",
         "notMember": "이 그룹의 멤버가 아닙니다"
     },
     "recapModal": {

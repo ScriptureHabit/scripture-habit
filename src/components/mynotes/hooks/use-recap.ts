@@ -145,6 +145,7 @@ export const useRecap = (userData: UserData, language: string, t: (k: string, op
     isFromCache,
     canGenerateRecap,
     notesRemaining,
+    newNotesCount,
     hasPreviousLetter,
     setIsRecapModalOpen,
     handleGenerateRecap,

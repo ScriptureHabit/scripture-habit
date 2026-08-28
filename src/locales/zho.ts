@@ -323,6 +323,10 @@ export default {
         "nextPage": "下一頁",
         "pageInfo": "第 {current} 頁，共 {total} 頁",
         "nextLetterInNotes": "(距離新信件還需發布 {count} 篇筆記)",
+        "preparingNextLetter": "正在準備新信件",
+        "viewPreviousLetterAction": "點擊閱讀上一封信 📖",
+        "notesNeededForLetter": "再發布 {count} 篇筆記即可收到",
+        "newLetterReadySub": "來自2篇筆記的新信件已送達！",
         "notMember": "您不是此小組的成員"
     },
     "recapModal": {

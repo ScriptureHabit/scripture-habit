@@ -101,7 +101,8 @@ The reflection letter prompt ([`api_internal/routes/ai.ts`](file:///c:/Users/daz
   2. **Seamless Natural Flow (No Section Labels)**: Flows naturally between paragraphs without printing structural labels like `[Part 1]` or `[Icebreaker]`.
   3. **Clean Poem & Flexible P.S.**: A 3–4 line poem formatted without markdown symbols (`*` or `---`), followed optionally by a brief, heartwarming P.S. (postscript).
   4. **Spiritual Guidance Disclaimer**: Appends a notice that AI does not replace personal revelation through the Holy Ghost.
-  5. **Sign-off**: Concludes with `"— From AI (embodying [Persona Name])"`.
+  5. **Word of Wisdom Compliance (D&C 89)**: Strictly prohibits mentioning or referencing coffee, tea, alcohol, tobacco, or prohibited substances in metaphors, icebreakers, or postscripts, favoring universal healthy routines (drinking water, eating breakfast, fresh air, walking).
+  6. **Sign-off**: Concludes with `"— From AI (embodying [Persona Name])"`.
 - **LetterBox Storage**:
   - Saved in the user's personal [`LetterBox`](file:///c:/Users/dazhi/code/scripture-habit/src/components/letterbox/letter-box.tsx) for ongoing reflection and encouragement.
 
