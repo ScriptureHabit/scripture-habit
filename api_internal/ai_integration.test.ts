@@ -252,7 +252,7 @@ describe('AI Prompt Construction Regression', () => {
 
         const prompt = getSentPrompt(0);
 
-        expect(prompt).toContain('Task: Write a warm, spiritually uplifting personal reflection letter');
+        expect(prompt).toContain('Task: Write a warm, spiritually uplifting, deeply human, and charmingly relatable personal reflection letter');
         expect(prompt).toContain('I learned about faith today.');
         expect(prompt).toContain('Charity never faileth.');
     }, 60000);
