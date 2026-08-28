@@ -14,36 +14,44 @@ flowchart TD
     classDef sub fill:#0f172a,stroke:#94a3b8,stroke-width:1.5px,color:#e2e8f0;
     classDef social fill:#1e1b4b,stroke:#a855f7,stroke-width:2px,color:#f8fafc;
 
-    subgraph UserGroup["ユーザー領域 users/{uid}"]
-        USERS["<b>USERS</b> (親ドキュメント)<br/>PK: uid / ユーザー基本情報・習慣記録"]:::main
-        NOTES["<b>NOTES</b> (サブコレクション)<br/>PK: id / 個人用学習ノート"]:::sub
-        GROUP_STATES["<b>GROUP_STATES</b> (サブコレクション)<br/>PK: groupId / 既読メッセージ数・閲覧日時"]:::sub
-        PRIVATE_TOKENS["<b>PRIVATE_TOKENS</b> (サブコレクション)<br/>PK: tokens / 機密FCMプッシュトークン"]:::sub
-        LETTERS["<b>LETTERS</b> (サブコレクション)<br/>PK: id / AI振り返りレター・ウェルカム手紙"]:::sub
+    subgraph UserDomain["👤 ユーザー領域 users/{uid}"]
+        direction TB
+        USERS["<b>USERS</b> (親ドキュメント)<br/>PK: uid / プロフィール・学習習慣・所属グループ"]:::main
+
+        subgraph UserSubs["ユーザー配下のサブコレクション"]
+            NOTES["<b>NOTES</b><br/>PK: id<br/>個人学習ノート"]:::sub
+            GROUP_STATES["<b>GROUP_STATES</b><br/>PK: groupId<br/>グループ既読状態"]:::sub
+            PRIVATE_TOKENS["<b>PRIVATE_TOKENS</b><br/>PK: tokens<br/>機密FCMトークン"]:::sub
+            LETTERS["<b>LETTERS</b><br/>PK: id<br/>AI振り返りレター"]:::sub
+        end
+
+        USERS -->|1:N 所有| NOTES
+        USERS -->|1:N 記録| GROUP_STATES
+        USERS -->|1:1 隔離| PRIVATE_TOKENS
+        USERS -->|1:N 受信| LETTERS
     end
 
-    subgraph GroupDomain["グループ領域 groups/{groupId}"]
+    subgraph GroupDomain["👥 グループ領域 groups/{groupId}"]
+        direction TB
         GROUPS["<b>GROUPS</b> (親ドキュメント)<br/>PK: groupId / グループ情報・定員5名・団結度"]:::main
-        MESSAGES["<b>MESSAGES</b> (サブコレクション)<br/>PK: id / チャットログ - 30日TTL自動削除"]:::sub
-        MEMBERS["<b>MEMBERS</b> (サブコレクション)<br/>PK: uid / 参加メンバー個別進捗・状態"]:::sub
-        MESSAGES_LATEST["<b>MESSAGES_LATEST</b> (サブコレクション)<br/>PK: latest / 最新5件キャッシュ"]:::sub
+
+        subgraph GroupSubs["グループ配下のサブコレクション"]
+            MESSAGES["<b>MESSAGES</b><br/>PK: id<br/>チャットログ (TTL 30日)"]:::sub
+            MEMBERS["<b>MEMBERS</b><br/>PK: uid<br/>メンバー個別進捗"]:::sub
+            MESSAGES_LATEST["<b>MESSAGES_LATEST</b><br/>PK: latest<br/>最新5件キャッシュ"]:::sub
+        end
+
+        GROUPS -->|1:N 投稿| MESSAGES
+        GROUPS -->|1:N 管理| MEMBERS
+        GROUPS -->|1:1 キャッシュ| MESSAGES_LATEST
     end
 
-    subgraph SocialDomain["ソーシャル・管理領域"]
-        CHEERS["<b>CHEERS</b> cheers/{cheerId}<br/>PK: cheerId / メンバー間のエール送信"]:::social
-        REPORTS["<b>REPORTS</b> reports/{reportId}<br/>PK: reportId / 不適切コンテンツの通報"]:::social
+    subgraph SocialDomain["🌟 ソーシャル・管理領域 (ルートコレクション)"]
+        CHEERS["<b>CHEERS</b> cheers/{cheerId}<br/>PK: cheerId / エール送信"]:::social
+        REPORTS["<b>REPORTS</b> reports/{reportId}<br/>PK: reportId / 違反通報"]:::social
     end
 
-    USERS -->|1:N 所有| NOTES
-    USERS -->|1:N 既読記録| GROUP_STATES
-    USERS -->|1:1 隔離| PRIVATE_TOKENS
-    USERS -->|1:N 受信| LETTERS
-    USERS -.->|N:M 参加 groupIds| GROUPS
-
-    GROUPS -->|1:N 投稿| MESSAGES
-    GROUPS -->|1:N 管理| MEMBERS
-    GROUPS -->|1:1 キャッシュ| MESSAGES_LATEST
-
+    USERS ===>|N:M 参加 groupIds| GROUPS
     USERS -.->|エール送信| CHEERS
     USERS -.->|違反通報| REPORTS
 ```
