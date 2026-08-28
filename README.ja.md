@@ -5,7 +5,12 @@
 > **日々の聖典学習をもっと楽しく、有意義に**  
 > *Making daily scripture study more fun and meaningful.*
 
-毎日の聖典学習を仲間と一緒に楽しく習慣化する、AIリアルタイム翻訳＆グループチャット機能付きのオープンソースWebアプリです。
+毎日の聖典学習を仲間と一緒に楽しく習慣化する、オープンソースのWebアプリです。
+
+<div align="center">
+  <video src="https://github.com/user-attachments/assets/9cb294e7-7a90-49c3-93f5-3995a899ee43" width="360" autoplay loop muted playsinline>
+  </video>
+</div>
 
  **Web Application**: [https://scripturehabit.app](https://scripturehabit.app)  
  **Live Demo (登録不要で今すぐ体験)**: [https://scripturehabit.app/ja/demo](https://scripturehabit.app/ja/demo)
