@@ -363,11 +363,13 @@ router.post('/translate-batch', authenticate, aiLimiter, verifyAppCheck, async (
                 const cacheRef = db.collection('translation_cache').doc(cacheKey);
                 batch.set(cacheRef, { originalText: msg.text, translatedText: translated, targetLanguage, createdAt: admin.firestore.FieldValue.serverTimestamp() });
                 
-                // Message Persistence
-                const messageRef = db.collection('groups').doc(groupId).collection('messages').doc(msg.id);
-                batch.set(messageRef, { 
-                    translations: { [targetLanguage]: translated } 
-                }, { merge: true });
+                // Message Persistence (if in group context)
+                if (groupId) {
+                    const messageRef = db.collection('groups').doc(groupId).collection('messages').doc(msg.id);
+                    batch.set(messageRef, { 
+                        translations: { [targetLanguage]: translated } 
+                    }, { merge: true });
+                }
             }
         }
         await withTimeout(batch.commit(), 5000, 'Persistence timeout')
