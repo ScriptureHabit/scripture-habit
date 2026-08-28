@@ -90,31 +90,37 @@ flowchart TD
 
 ## 3. Firestore の階層パス構造
 
+Cloud Firestore のコレクション・ドキュメント・サブコレクションの階層パスです：
+
 ```mermaid
-graph TD
-    Root["Firestore ルート"]
+flowchart LR
+    classDef root fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#f8fafc;
+    classDef col fill:#1e293b,stroke:#818cf8,stroke-width:1.5px,color:#f8fafc;
+    classDef doc fill:#1e1b4b,stroke:#c084fc,stroke-width:1.5px,color:#f8fafc;
+    classDef sub fill:#0f172a,stroke:#94a3b8,stroke-width:1px,color:#e2e8f0;
 
-    Root --> Users["users / コレクション"]
-    Root --> Groups["groups / コレクション"]
-    Root --> Cheers["cheers / コレクション"]
-    Root --> Reports["reports / コレクション"]
+    Root["🔥 Firestore ルート"]:::root
 
-    Users --> UserDoc["{uid} / ドキュメント"]
-    Groups --> GroupDoc["{groupId} / ドキュメント"]
+    Root --> UsersCol["users (コレクション)"]:::col
+    UsersCol --> UserDoc["{uid} (ドキュメント)"]:::doc
+    UserDoc --> Notes["notes / {noteId} (個人用学習ノート)"]:::sub
+    UserDoc --> GroupStates["groupStates / {groupId} (グループ別既読)"]:::sub
+    UserDoc --> Private["private / tokens (機密FCMトークン)"]:::sub
+    UserDoc --> Letters["letters / {letterId} (AI振り返りレター)"]:::sub
 
-    UserDoc --> Private["private / tokens (機密FCMトークン)"]
-    UserDoc --> Notes["notes / {noteId} (個人用学習ノート)"]
-    UserDoc --> GroupStates["groupStates / {groupId} (グループ別既読カウント)"]
-    UserDoc --> Letters["letters / {letterId} (AI振り返りレター)"]
+    Root --> GroupsCol["groups (コレクション)"]:::col
+    GroupsCol --> GroupDoc["{groupId} (ドキュメント)"]:::doc
+    GroupDoc --> Messages["messages / {messageId} (チャットログ)"]:::sub
+    GroupDoc --> MessagesLatest["messages_latest / latest (最新5件キャッシュ)"]:::sub
+    GroupDoc --> Members["members / {uid} (メンバー進捗)"]:::sub
 
-    GroupDoc --> Messages["messages / {messageId} (アクティブチャットログ)"]
-    GroupDoc --> MessagesLatest["messages_latest / latest (高速プレビュー用最新5件)"]
-    GroupDoc --> Members["members / {uid} (メンバー個別ステータス・進捗)"]
+    Root --> CheersCol["cheers / {cheerId} (エール送信)"]:::sub
+    Root --> ReportsCol["reports / {reportId} (違反通報)"]:::sub
 ```
 
 ---
 
-## 3. データの非正規化と高速化設計
+## 4. データの非正規化と高速化設計
 
 1. **グループドキュメントの工夫 (`groups/{groupId}`)**:
    - `memberPreviews`（参加者の名前とアイコン）を親ドキュメント内に保持することで、メンバー全員分のドキュメントを読み込まずに一覧を表示できます。
@@ -124,22 +130,23 @@ graph TD
 
 ---
 
-## 4. チャットメッセージの自動クリーンアップ (Firestore TTL)
+## 5. チャットメッセージの自動クリーンアップ (Firestore TTL)
 
 チャット履歴の肥大化を防ぎ、リアルタイムリスナーを軽量に保つため、メッセージドキュメントには `expireAt`（30日後）が設定されています。
 Google Cloud Firestore の **TTL（Time-to-Live）機能** により、期限切れのメッセージはバックグラウンドで自動削除されます。
 
 ---
 
-## 5. 機密データの隔離とアクセス保護
+## 6. 機密データの隔離とアクセス保護
 
 FCM 通知トークンなどの機密情報は、通常のユーザードキュメントとは分離された `users/{uid}/private/tokens` サブコレクションに保存されます。
 Firestore セキュリティルールにより、本人（`request.auth.uid == uid`）およびサーバー（Admin SDK）以外からのアクセスを制限しています。
 
 ---
 
-## 6. 関連ドキュメント
+## 7. 関連ドキュメント
 
 - [Firebase セキュリティルール](./firebase-security-rules.md)
 - [Firestore トランザクション & カウンター設計](./firestore-transactions-counters.md)
 - [全体アーキテクチャ](./architecture.md)
+

@@ -90,31 +90,37 @@ flowchart TD
 
 ## 3. Firestore Hierarchical Path Layout
 
+Cloud Firestore hierarchical paths for collections, documents, and subcollections:
+
 ```mermaid
-graph TD
-    Root["Firestore Root"]
+flowchart LR
+    classDef root fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#f8fafc;
+    classDef col fill:#1e293b,stroke:#818cf8,stroke-width:1.5px,color:#f8fafc;
+    classDef doc fill:#1e1b4b,stroke:#c084fc,stroke-width:1.5px,color:#f8fafc;
+    classDef sub fill:#0f172a,stroke:#94a3b8,stroke-width:1px,color:#e2e8f0;
 
-    Root --> Users["users / collection"]
-    Root --> Groups["groups / collection"]
-    Root --> Cheers["cheers / collection"]
-    Root --> Reports["reports / collection"]
+    Root["🔥 Firestore Root"]:::root
 
-    Users --> UserDoc["{uid} / document"]
-    Groups --> GroupDoc["{groupId} / document"]
+    Root --> UsersCol["users (collection)"]:::col
+    UsersCol --> UserDoc["{uid} (document)"]:::doc
+    UserDoc --> Notes["notes / {noteId} (study notes)"]:::sub
+    UserDoc --> GroupStates["groupStates / {groupId} (read markers)"]:::sub
+    UserDoc --> Private["private / tokens (sensitive FCM tokens)"]:::sub
+    UserDoc --> Letters["letters / {letterId} (AI reflection letters)"]:::sub
 
-    UserDoc --> Private["private / tokens (sensitive FCM push tokens)"]
-    UserDoc --> Notes["notes / {noteId} (personal study notes)"]
-    UserDoc --> GroupStates["groupStates / {groupId} (per-group read counts)"]
-    UserDoc --> Letters["letters / {letterId} (AI recap & reflection letters)"]
+    Root --> GroupsCol["groups (collection)"]:::col
+    GroupsCol --> GroupDoc["{groupId} (document)"]:::doc
+    GroupDoc --> Messages["messages / {messageId} (chat log)"]:::sub
+    GroupDoc --> MessagesLatest["messages_latest / latest (cached 5 msgs)"]:::sub
+    GroupDoc --> Members["members / {uid} (member progress)"]:::sub
 
-    GroupDoc --> Messages["messages / {messageId} (active chat messages)"]
-    GroupDoc --> MessagesLatest["messages_latest / latest (cached 5 most recent messages)"]
-    GroupDoc --> Members["members / {uid} (member status & activity)"]
+    Root --> CheersCol["cheers / {cheerId} (social cheers)"]:::sub
+    Root --> ReportsCol["reports / {reportId} (content reports)"]:::sub
 ```
 
 ---
 
-## 3. Schema Design & Denormalization
+## 4. Schema Design & Denormalization
 
 1. **Groups Collection (`groups/{groupId}`)**:
    - Stores `memberPreviews` (nicknames and avatars) directly in the parent document to render dashboard cards without extra reads.
@@ -124,22 +130,23 @@ graph TD
 
 ---
 
-## 4. Automated Chat Retention (Firestore Native TTL)
+## 5. Automated Chat Retention (Firestore Native TTL)
 
 To prevent unbounded document growth and keep real-time listeners lightweight, messages are written with an `expireAt` timestamp (30 days from creation).
 Cloud Firestore's **Time-to-Live (TTL)** engine automatically deletes expired message documents in the background.
 
 ---
 
-## 5. Private Token Isolation
+## 6. Private Token Isolation
 
 Sensitive tokens (e.g. FCM push tokens) are isolated in the `users/{uid}/private/tokens` subcollection.
 Firestore Security Rules ensure only the authenticated user (`request.auth.uid == uid`) and backend Admin SDK can access these credentials.
 
 ---
 
-## 6. Related Documentation
+## 7. Related Documentation
 
 - [Firebase Security Rules](./firebase-security-rules.md)
 - [Firestore Transactions & Counters](./firestore-transactions-counters.md)
 - [Architecture Overview](./architecture.md)
+
