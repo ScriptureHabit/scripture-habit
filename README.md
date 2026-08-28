@@ -4,7 +4,12 @@ English | [日本語](README.ja.md)
 
 > **Making daily scripture study more fun and meaningful.**
 
-An open-source community web application featuring AI real-time translation & group features to make daily scripture study a joyful habit together with friends.
+An open-source community web application featuring to make daily scripture study a joyful habit together with friends.
+
+<div align="center">
+  <video src="https://github.com/user-attachments/assets/9cb294e7-7a90-49c3-93f5-3995a899ee43" width="360" autoplay loop muted playsinline>
+  </video>
+</div>
 
  **Web Application**: [https://scripturehabit.app](https://scripturehabit.app)  
  **Live Demo (No Signup Required)**: [https://scripturehabit.app/en/demo](https://scripturehabit.app/en/demo)
