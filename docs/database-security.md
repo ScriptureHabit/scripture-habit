@@ -14,35 +14,35 @@ flowchart TD
     classDef sub fill:#0f172a,stroke:#94a3b8,stroke-width:1.5px,color:#e2e8f0;
     classDef social fill:#1e1b4b,stroke:#a855f7,stroke-width:2px,color:#f8fafc;
 
-    subgraph UserGroup["👤 User Domain (/users/{uid})"]
+    subgraph UserGroup["User Domain users/{uid}"]
         USERS["<b>USERS</b> (Parent Document)<br/>PK: uid / User profile, streaks & settings"]:::main
         NOTES["<b>NOTES</b> (Subcollection)<br/>PK: id / Personal study notes"]:::sub
         GROUP_STATES["<b>GROUP_STATES</b> (Subcollection)<br/>PK: groupId / Read message counts & timestamps"]:::sub
-        PRIVATE_TOKENS["<b>PRIVATE_TOKENS</b> (Subcollection)<br/>PK: 'tokens' / Sensitive FCM push tokens"]:::sub
+        PRIVATE_TOKENS["<b>PRIVATE_TOKENS</b> (Subcollection)<br/>PK: tokens / Sensitive FCM push tokens"]:::sub
         LETTERS["<b>LETTERS</b> (Subcollection)<br/>PK: id / AI recap letters & welcome note"]:::sub
     end
 
-    subgraph GroupDomain["👥 Group Domain (/groups/{groupId})"]
+    subgraph GroupDomain["Group Domain groups/{groupId}"]
         GROUPS["<b>GROUPS</b> (Parent Document)<br/>PK: groupId / Group settings, max 5 members & unity"]:::main
-        MESSAGES["<b>MESSAGES</b> (Subcollection)<br/>PK: id / Active chat log (TTL 30-day auto-purge)"]:::sub
+        MESSAGES["<b>MESSAGES</b> (Subcollection)<br/>PK: id / Active chat log - 30-day auto-purge"]:::sub
         MEMBERS["<b>MEMBERS</b> (Subcollection)<br/>PK: uid / Member progress & activity status"]:::sub
-        MESSAGES_LATEST["<b>MESSAGES_LATEST</b> (Subcollection)<br/>PK: 'latest' / Cached 5 recent messages"]:::sub
+        MESSAGES_LATEST["<b>MESSAGES_LATEST</b> (Subcollection)<br/>PK: latest / Cached 5 recent messages"]:::sub
     end
 
-    subgraph SocialDomain["🌟 Social & Moderation Domain"]
-        CHEERS["<b>CHEERS</b> (/cheers/{cheerId})<br/>PK: cheerId / Peer encouragement cheers"]:::social
-        REPORTS["<b>REPORTS</b> (/reports/{reportId})<br/>PK: reportId / Inappropriate content reports"]:::social
+    subgraph SocialDomain["Social & Moderation Domain"]
+        CHEERS["<b>CHEERS</b> cheers/{cheerId}<br/>PK: cheerId / Peer encouragement cheers"]:::social
+        REPORTS["<b>REPORTS</b> reports/{reportId}<br/>PK: reportId / Inappropriate content reports"]:::social
     end
 
-    USERS -->|1 : N owns| NOTES
-    USERS -->|1 : N tracks| GROUP_STATES
-    USERS -->|1 : 1 isolates| PRIVATE_TOKENS
-    USERS -->|1 : N receives| LETTERS
-    USERS -.->|N : M joins (groupIds)| GROUPS
+    USERS -->|1:N owns| NOTES
+    USERS -->|1:N tracks| GROUP_STATES
+    USERS -->|1:1 isolates| PRIVATE_TOKENS
+    USERS -->|1:N receives| LETTERS
+    USERS -.->|N:M joins groupIds| GROUPS
 
-    GROUPS -->|1 : N contains| MESSAGES
-    GROUPS -->|1 : N manages| MEMBERS
-    GROUPS -->|1 : 1 caches| MESSAGES_LATEST
+    GROUPS -->|1:N contains| MESSAGES
+    GROUPS -->|1:N manages| MEMBERS
+    GROUPS -->|1:1 caches| MESSAGES_LATEST
 
     USERS -.->|sends cheer| CHEERS
     USERS -.->|files report| REPORTS

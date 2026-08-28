@@ -14,35 +14,35 @@ flowchart TD
     classDef sub fill:#0f172a,stroke:#94a3b8,stroke-width:1.5px,color:#e2e8f0;
     classDef social fill:#1e1b4b,stroke:#a855f7,stroke-width:2px,color:#f8fafc;
 
-    subgraph UserGroup["👤 ユーザー領域 (/users/{uid})"]
+    subgraph UserGroup["ユーザー領域 users/{uid}"]
         USERS["<b>USERS</b> (親ドキュメント)<br/>PK: uid / ユーザー基本情報・習慣記録"]:::main
         NOTES["<b>NOTES</b> (サブコレクション)<br/>PK: id / 個人用学習ノート"]:::sub
         GROUP_STATES["<b>GROUP_STATES</b> (サブコレクション)<br/>PK: groupId / 既読メッセージ数・閲覧日時"]:::sub
-        PRIVATE_TOKENS["<b>PRIVATE_TOKENS</b> (サブコレクション)<br/>PK: 'tokens' / 機密FCMプッシュトークン"]:::sub
+        PRIVATE_TOKENS["<b>PRIVATE_TOKENS</b> (サブコレクション)<br/>PK: tokens / 機密FCMプッシュトークン"]:::sub
         LETTERS["<b>LETTERS</b> (サブコレクション)<br/>PK: id / AI振り返りレター・ウェルカム手紙"]:::sub
     end
 
-    subgraph GroupDomain["👥 グループ領域 (/groups/{groupId})"]
+    subgraph GroupDomain["グループ領域 groups/{groupId}"]
         GROUPS["<b>GROUPS</b> (親ドキュメント)<br/>PK: groupId / グループ情報・定員5名・団結度"]:::main
-        MESSAGES["<b>MESSAGES</b> (サブコレクション)<br/>PK: id / チャットログ (TTL 30日自動削除)"]:::sub
+        MESSAGES["<b>MESSAGES</b> (サブコレクション)<br/>PK: id / チャットログ - 30日TTL自動削除"]:::sub
         MEMBERS["<b>MEMBERS</b> (サブコレクション)<br/>PK: uid / 参加メンバー個別進捗・状態"]:::sub
-        MESSAGES_LATEST["<b>MESSAGES_LATEST</b> (サブコレクション)<br/>PK: 'latest' / 最新5件キャッシュ"]:::sub
+        MESSAGES_LATEST["<b>MESSAGES_LATEST</b> (サブコレクション)<br/>PK: latest / 最新5件キャッシュ"]:::sub
     end
 
-    subgraph SocialDomain["🌟 ソーシャル・管理領域"]
-        CHEERS["<b>CHEERS</b> (/cheers/{cheerId})<br/>PK: cheerId / メンバー間のエール送信"]:::social
-        REPORTS["<b>REPORTS</b> (/reports/{reportId})<br/>PK: reportId / 不適切コンテンツの通報"]:::social
+    subgraph SocialDomain["ソーシャル・管理領域"]
+        CHEERS["<b>CHEERS</b> cheers/{cheerId}<br/>PK: cheerId / メンバー間のエール送信"]:::social
+        REPORTS["<b>REPORTS</b> reports/{reportId}<br/>PK: reportId / 不適切コンテンツの通報"]:::social
     end
 
-    USERS -->|1 : N 所有| NOTES
-    USERS -->|1 : N 既読記録| GROUP_STATES
-    USERS -->|1 : 1 隔離| PRIVATE_TOKENS
-    USERS -->|1 : N 受信| LETTERS
-    USERS -.->|N : M 参加 (groupIds)| GROUPS
+    USERS -->|1:N 所有| NOTES
+    USERS -->|1:N 既読記録| GROUP_STATES
+    USERS -->|1:1 隔離| PRIVATE_TOKENS
+    USERS -->|1:N 受信| LETTERS
+    USERS -.->|N:M 参加 groupIds| GROUPS
 
-    GROUPS -->|1 : N 投稿| MESSAGES
-    GROUPS -->|1 : N 管理| MEMBERS
-    GROUPS -->|1 : 1 キャッシュ| MESSAGES_LATEST
+    GROUPS -->|1:N 投稿| MESSAGES
+    GROUPS -->|1:N 管理| MEMBERS
+    GROUPS -->|1:1 キャッシュ| MESSAGES_LATEST
 
     USERS -.->|エール送信| CHEERS
     USERS -.->|違反通報| REPORTS
