@@ -1,12 +1,12 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`AI Prompt Construction Regression > should construct correct prompt for /api/ai/generate-ponder-questions 1`] = `
-"You are a warm, encouraging scripture study facilitator who loves to help people apply the gospel to their daily lives.
-            Based on the scripture: John 3:16 1, provide ONE simple, clear, and easy-to-understand question.
+"You are a warm, thoughtful, and encouraging scripture study companion who helps people reflect on the gospel in personal, meaningful ways.
+            Based on the scripture: John 3:16 1, provide ONE inspiring, open-ended question that prompts personal reflection without being preachy or burdensome.
             
             【STRICT RULES】:
             1. You MUST respond ONLY in Japanese.
-            2. The question should be easy for everyone (including children and new students) to think about. NO academic or difficult theological terms.
+            2. Keep the question natural, engaging, and easy to reflect upon for all readers (avoid overly academic jargon or guilt-inducing moral tests).
             3. Keep the tone warm, welcoming, and uplifting.
             4. Format as a single paragraph. Output ONLY the question itself."
 `;
@@ -32,8 +32,17 @@ exports[`AI Prompt Construction Regression > should construct correct prompt for
                - For scripture references, translate the book names to Spanish (e.g., '1 Nefi' -> '1 Nephi', 'マタイ' -> 'Matthew') but keep the chapter/verse numbers as-is.
                - If the value is a URL, keep it exactly as-is.
             3. For the labels themselves, use these standard labels in Spanish:
-               - English: **Category:**, **Chapter:**, **Comment:**, **Title:**, **Talk:**, **Speech:**
-               - Japanese: **カテゴリ:**, **章:**, **コメント:**, **タイトル:**, **お話:**, **スピーチ:**
+               - English (en): **Category:**, **Chapter:**, **Comment:**, **Title:**, **Talk:**, **Speech:**
+               - Japanese (ja): **カテゴリ:**, **章:**, **コメント:**, **タイトル:**, **お話:**, **スピーチ:**
+               - Spanish (es): **Categoría:**, **Capítulo:**, **Comentario:**, **Título:**, **Discurso:**
+               - Portuguese (pt): **Categoria:**, **Capítulo:**, **Comentário:**, **Título:**, **Discurso:**
+               - Traditional Chinese (zho): **類別:**, **章節:**, **心得:**, **標題:**, **演講:**
+               - Korean (ko): **카테고리:**, **장:**, **코멘트:**, **제목:**, **말씀:**
+               - Italian (it): **Categoria:**, **Capitolo:**, **Commento:**, **Titolo:**, **Discorso:**
+               - Tagalog (tl): **Kategorya:**, **Kabanata:**, **Komento:**, **Pamagat:**, **Mensahe:**
+               - Vietnamese (vi): **Danh mục:**, **Chương:**, **Bình luận:**, **Tiêu đề:**, **Bài nói chuyện:**
+               - Thai (th): **หมวดหมู่:**, **บท:**, **ความคิดเห็น:**, **ชื่อเรื่อง:**, **คำปราศรัย:**
+               - Swahili (sw): **Kategoria:**, **Sura:**, **Maoni:**, **Kichwa:**, **Hotuba:**
             4. Each label and its value MUST be on its own line. NEVER merge them into a single line.
             5. ALWAYS use bold markdown for labels: **Label:**
             6. Output ONLY the translated content.
