@@ -184,8 +184,8 @@ router.post('/create-ai-group', authenticate, requireEmailVerified, verifyAppChe
             const newGroupId = groupRef.id;
             const lang = userData.language || 'en';
 
-            const botNickname = t(lang, 'groupChat.aiGroupBotNickname') || (lang === 'ja' ? 'スクハビAI' : 'Scripture Habit AI');
-            const defaultGroupName = name || t(lang, 'groupChat.aiGroupDefaultGroupName') || (lang === 'ja' ? 'スクハビAI' : 'Scripture Habit AI');
+            const botNickname = t(lang, 'groupChat.aiGroupBotNickname') || 'Scripture Habit AI';
+            const defaultGroupName = name || t(lang, 'groupChat.aiGroupDefaultGroupName') || 'Scripture Habit AI';
 
             const groupTz = timeZone || 'Asia/Tokyo';
             let todayStr: string;
@@ -278,12 +278,7 @@ router.post('/create-ai-group', authenticate, requireEmailVerified, verifyAppChe
             });
 
             const welcomeMsgRef = groupRef.collection('messages').doc();
-            const rawWelcome = t(lang, 'groupChat.aiGroupWelcomeMessage', { nickname: userNick });
-            const welcomeMsgText = (rawWelcome && rawWelcome !== 'groupChat.aiGroupWelcomeMessage')
-                ? rawWelcome.replace('{nickname}', userNick)
-                : (lang === 'ja'
-                    ? `スクハビAIグループへようこそ！毎日一緒に聖典を学び、気づきをシェアしましょう。応援しています！📖✨\n※AIは毎日ノートを投稿しますが、${userNick}さんへの直接返信は現段階ではできません。ご了承ください。`
-                    : `Welcome to your Scripture Habit AI Group! I will study scriptures with you every day and share notes. Let's do our best together! 📖✨\n*Please note: While I post daily notes, I cannot directly reply to messages from ${userNick} at this time.`).replace('{nickname}', userNick);
+            const welcomeMsgText = t(lang, 'groupChat.aiGroupWelcomeMessage', { nickname: userNick });
 
             transaction.set(welcomeMsgRef, {
                 text: welcomeMsgText,

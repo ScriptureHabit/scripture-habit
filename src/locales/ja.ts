@@ -628,6 +628,7 @@ export default {
         "congratsBtn": "とじる",
         "demoGroupName": "日々の糧 📖",
         "demoGroupDesc": "毎日一緒に聖典を読み合う、温かい学習グループです！✨",
+        "demoSeedMessage1": "日々の糧へようこそ！みんなで毎日聖典を学んで励まし合いましょう🎉",
         "demoWelcomeAlice": "{nickname}さん、ようこそ！✨ え、プロフィールを見たら今日で連続999日目じゃないですか！？すごすぎる…！",
         "demoWelcomeBob": "うおおお！あと1回ノートを投稿すれば、ついに夢の【1,000日達成】だ！！🔥 今日のノート投稿めちゃくちゃ楽しみにしてるよ！",
         "demoWelcomeCharlie": "1,000日とかもはや伝説の領域…！ダッシュボードに戻ってノート投稿されるのをみんなで楽しみに待ってますね🎉",
@@ -953,6 +954,7 @@ export default {
         }
     },
     "demo": {
+        "demoUser": "デモユーザー",
         "loadingTitle": "デモ環境を準備しています...",
         "loadingSubtitle": "データを読み込んでいます。少々お待ちください。",
         "loginSuccess": "デモアカウントでログインしました！",

@@ -620,6 +620,7 @@ export default {
         "congratsBtn": "Fechar",
         "demoGroupName": "Pão Diário 📖",
         "demoGroupDesc": "Um grupo caloroso de estudo lendo as escrituras juntos todos os dias! ✨",
+        "demoSeedMessage1": "Boas-vindas ao Pão Diário! Vamos nos apoiar mutuamente no nosso hábito diário de leitura das escrituras 🎉",
         "demoWelcomeAlice": "Boas-vindas, {nickname}! ✨ Espera, acabei de ver seu perfil... você está em 999 dias consecutivos hoje?! Incrível...!",
         "demoWelcomeBob": "Uauuu! Só mais uma publicação de notas e você alcançará o marco lendário de 1.000 dias!! 🔥 Mal podemos esperar pela sua nota hoje!",
         "demoWelcomeCharlie": "1.000 dias é lendário...! Estamos todos esperando ansiosamente pela sua nota no painel 🎉",
@@ -945,6 +946,7 @@ export default {
         }
     },
     "demo": {
+        "demoUser": "Usuário Demo",
         "loadingTitle": "Preparando ambiente de demonstração...",
         "loadingSubtitle": "Carregando dados. Aguarde um momento.",
         "loginSuccess": "Conectado com a conta de demonstração!",

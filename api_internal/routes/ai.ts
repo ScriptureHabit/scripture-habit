@@ -516,7 +516,7 @@ router.post('/generate-personal-weekly-recap', authenticate, aiLimiter, verifyAp
         if (notes.length === 0) return res.json({ message: 'No personal notes found.' });
         if (notes.length < 2) return res.json({ message: 'Please post at least 2 notes to generate a letter.' });
 
-        const userName = uData.nickname || uData.displayName || (baseLang === 'ja' ? 'あなた' : 'Friend');
+        const userName = uData.nickname || uData.displayName || t(baseLang, 'profile.you') || 'Friend';
 
         const prompt = `Task: Write a warm, spiritually uplifting, deeply human, and charmingly relatable personal reflection letter to ${userName} based on their recent study notes, and create a concise, heartwarming 1-sentence title capturing the core spiritual theme.
 

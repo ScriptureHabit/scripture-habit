@@ -55,13 +55,13 @@ function resolveGroupLocalTime(
 }
 
 function buildAiNotePayload(todayStr: string, lang: string): AiDailyNoteContent {
-    const botName = t(lang, 'groupChat.aiGroupBotNickname') || (lang === 'ja' ? 'スクハビAI' : 'Scripture Habit AI');
+    const botName = t(lang, 'groupChat.aiGroupBotNickname');
     const dailyComment = getAiDailyComment(todayStr, lang);
     const scripture = dailyComment.scripture || t(lang, 'groupChat.defaultScripture');
     const chapter = dailyComment.chapter || 'Genesis 1:1';
-    const categoryLabel = t(lang, 'noteLabels.scripture') || t(lang, 'noteLabels.category') || (lang === 'ja' ? 'カテゴリ' : 'Category');
-    const chapterLabel = t(lang, 'noteLabels.chapter') || (lang === 'ja' ? '章' : 'Chapter');
-    const commentLabel = t(lang, 'noteLabels.comment') || (lang === 'ja' ? 'コメント' : 'Comment');
+    const categoryLabel = t(lang, 'noteLabels.scripture') || t(lang, 'noteLabels.category');
+    const chapterLabel = t(lang, 'noteLabels.chapter');
+    const commentLabel = t(lang, 'noteLabels.comment');
     const structuredText = `${categoryLabel}: ${scripture}\n${chapterLabel}: ${chapter}\n\n${commentLabel}:\n${dailyComment.comment}`;
 
     return {

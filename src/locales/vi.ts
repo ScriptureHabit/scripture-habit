@@ -594,6 +594,7 @@ export default {
         "congratsBtn": "Đóng",
         "demoGroupName": "Lương Thực Hàng Ngày 📖",
         "demoGroupDesc": "Nhóm học tập ấm áp cùng nhau đọc và chia sẻ thánh thư mỗi ngày! ✨",
+        "demoSeedMessage1": "Chào mừng bạn đến với Lương Thực Hàng Ngày! Hãy cùng nhau nâng đỡ và duy trì thói quen đọc thánh thư mỗi ngày nhé 🎉",
         "demoWelcomeAlice": "Chào mừng {nickname}! ✨ Khoan đã, mình vừa xem hồ sơ của bạn—hôm nay là ngày thứ 999 liên tiếp rồi sao?! Thật phi thường...!",
         "demoWelcomeBob": "Oaaa! Chỉ cần đăng thêm 1 ghi chú nữa thôi là bạn sẽ đạt mốc kỷ lục 【1.000 ngày】 rồi!! 🔥 Mọi người đang rất háo hức chờ ghi chú hôm nay của bạn!",
         "demoWelcomeCharlie": "1.000 ngày thì đúng là huyền thoại rồi...! Mọi người đều đang rất mong chờ ghi chú của bạn từ bảng điều khiển đấy🎉",
@@ -919,6 +920,7 @@ export default {
         }
     },
     "demo": {
+        "demoUser": "Người dùng Thử nghiệm",
         "loadingTitle": "Đang chuẩn bị môi trường demo...",
         "loadingSubtitle": "Đang tải dữ liệu. Vui lòng đợi trong giây lát.",
         "loginSuccess": "Đã đăng nhập bằng tài khoản demo!",

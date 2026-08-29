@@ -620,6 +620,7 @@ export default {
         "congratsBtn": "닫기",
         "demoGroupName": "일용할 양식 📖",
         "demoGroupDesc": "매일 함께 성경을 읽고 격려하는 따뜻한 스터디 그룹입니다! ✨",
+        "demoSeedMessage1": "일용할 양식에 오신 것을 환영합니다! 매일 성경을 읽으며 서로를 격려해요 🎉",
         "demoWelcomeAlice": "{nickname}님, 환영합니다! ✨ 어, 프로필을 보니 오늘로 연속 999일째이신가요?! 대단해요...!",
         "demoWelcomeBob": "우와아아! 노트 1개만 더 작성하면 드디어 꿈의 【1,000일 달성】이에요!! 🔥 오늘 올리실 노트 엄청 기대하고 있어요!",
         "demoWelcomeCharlie": "1,000일이라니 그야말로 전설의 영역...! 대시보드로 돌아가셔서 노트 작성해 주시길 모두 기대하며 기다릴게요🎉",
@@ -945,6 +946,7 @@ export default {
         }
     },
     "demo": {
+        "demoUser": "데모 사용자",
         "loadingTitle": "데모 환경을 준비 중입니다...",
         "loadingSubtitle": "데이터를 불러오고 있습니다. 잠시만 기다려 주세요.",
         "loginSuccess": "데모 계정으로 로그인되었습니다!",

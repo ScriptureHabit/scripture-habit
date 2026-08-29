@@ -595,6 +595,7 @@ export default {
         "congratsBtn": "關閉",
         "demoGroupName": "每日靈糧 📖",
         "demoGroupDesc": "一個溫馨的研讀群組，每天一起閱讀經文互相勉勵！✨",
+        "demoSeedMessage1": "歡迎來到每日靈糧！讓我們在每天的經文研讀中互相勉勵 🎉",
         "demoWelcomeAlice": "歡迎 {nickname}！✨ 等等，我看了一下你的個人資料——今天居然是連續第 999 天研讀？！太厲害了…！",
         "demoWelcomeBob": "哇啊啊！只要再發布 1 篇筆記，就能達成夢寐以求的【1,000 天里程碑】了！！🔥 超級期待你今天的筆記分享！",
         "demoWelcomeCharlie": "1,000 天簡直是傳說級別…！大家都在滿心期待你回到儀表板發布筆記喔🎉",
@@ -920,6 +921,7 @@ export default {
         }
     },
     "demo": {
+        "demoUser": "示範用戶",
         "loadingTitle": "正在準備即時示範...",
         "loadingSubtitle": "正在載入資料，請稍候。",
         "loginSuccess": "已使用示範帳號登入！",

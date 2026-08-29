@@ -620,6 +620,7 @@ export default {
         "congratsBtn": "Chiudi",
         "demoGroupName": "Pane Quotidiano 📖",
         "demoGroupDesc": "Un accogliente gruppo di studio per leggere le Scritture insieme ogni giorno! ✨",
+        "demoSeedMessage1": "Benvenuto/a in Pane Quotidiano! Sosteniamoci a vicenda nella nostra abitudine quotidiana di studio delle Scritture 🎉",
         "demoWelcomeAlice": "Benvenuto/a {nickname}! ✨ Aspetta, ho guardato il tuo profilo... sei a 999 giorni consecutivi oggi?! Incredibile...!",
         "demoWelcomeBob": "WOOO!! Manca solo una nota per raggiungere lo storico traguardo dei 【1.000 giorni】!! 🔥 Non vedo l'ora di leggere la tua nota oggi!",
         "demoWelcomeCharlie": "1.000 giorni è uno stato leggendario...! Siamo tutti in trepidante attesa sulla dashboard 🎉",
@@ -945,6 +946,7 @@ export default {
         }
     },
     "demo": {
+        "demoUser": "Utente Demo",
         "loadingTitle": "Configurazione Ambiente Demo...",
         "loadingSubtitle": "Caricamento dati. Attendi un momento.",
         "loginSuccess": "Connesso come Utente Demo!",

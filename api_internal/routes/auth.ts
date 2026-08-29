@@ -117,7 +117,7 @@ router.post('/initialize-profile', authenticate, verifyAppCheck, async (req: Aut
         // Seed Welcome Letter from Developer to users/{uid}/letters (without expiresAt so it is permanently preserved)
         try {
             const userLang = (language || 'en').split('-')[0];
-            const userNickname = nickname || (userLang === 'ja' ? 'あなた' : 'Friend');
+            const userNickname = nickname || t(userLang, 'profile.you') || 'Friend';
             const welcomeTitle = t(userLang, 'letterBox.welcomeLetterTitle');
             const welcomeContent = t(userLang, 'letterBox.welcomeLetterContent', { nickname: userNickname });
 

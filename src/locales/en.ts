@@ -620,6 +620,7 @@ export default {
         "congratsBtn": "Close",
         "demoGroupName": "Daily Bread 📖",
         "demoGroupDesc": "A cozy study group reading the scriptures daily together! ✨",
+        "demoSeedMessage1": "Welcome to Daily Bread! Let us support each other in our daily scripture habit 🎉",
         "demoWelcomeAlice": "Welcome {nickname}! ✨ Wait, I just looked at your profile—you're at 999 consecutive days today?! Incredible...!",
         "demoWelcomeBob": "WOOO!! Just one more note to reach the dream 【1,000 days milestone】!! 🔥 I'm so excited to see your note today!",
         "demoWelcomeCharlie": "1,000 days is legendary status...! We're all eagerly waiting on the dashboard for your note post 🎉",
@@ -945,6 +946,7 @@ export default {
         }
     },
     "demo": {
+        "demoUser": "Demo User",
         "loadingTitle": "Setting up Demo Environment...",
         "loadingSubtitle": "Loading data. Please wait a moment.",
         "loginSuccess": "Logged in as Demo User!",

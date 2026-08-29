@@ -620,6 +620,7 @@ export default {
         "congratsBtn": "Funga",
         "demoGroupName": "Mkate wa Kila Siku 📖",
         "demoGroupDesc": "Kikundi cha kupendeza kinachosoma maandiko pamoja kila siku! ✨",
+        "demoSeedMessage1": "Karibu kwenye Mkate wa Kila Siku! Hebu tusaidiane katika tabia yetu ya kila siku ya kusoma maandiko 🎉",
         "demoWelcomeAlice": "Karibu {nickname}! ✨ Subiri, nimetazama wasifu wako—leo ni siku yako ya 999 mfululizo?! Ajabu sana...!",
         "demoWelcomeBob": "Waooo! Chapisho moja tu zaidi la kumbukumbu na utafikia lengo kuu la siku 1,000!! 🔥 Tunasubiri kwa hamu kumbukumbu yako ya leo!",
         "demoWelcomeCharlie": "Siku 1,000 ni kiwango cha hadithi...! Sote tunasubiri kwa hamu kumbukumbu yako kutoka kwenye dashibodi 🎉",
@@ -945,6 +946,7 @@ export default {
         }
     },
     "demo": {
+        "demoUser": "Mtumiaji wa Onyesho",
         "loadingTitle": "Inatayarisha mazingira ya majaribio...",
         "loadingSubtitle": "Inapakia data. Tafadhali subiri kidogo.",
         "loginSuccess": "Umeingia kwa kutumia akaunti ya majaribio!",

@@ -620,6 +620,7 @@ export default {
         "congratsBtn": "Isara",
         "demoGroupName": "Pang-araw-araw na Tinapay 📖",
         "demoGroupDesc": "Isang masayang grupo ng pag-aaral na sama-samang nagbabasa ng banal na kasulatan araw-araw! ✨",
+        "demoSeedMessage1": "Maligayang pagdating sa Pang-araw-araw na Tinapay! Suportahan natin ang isa't isa sa ating pang-araw-araw na gawi sa banal na kasulatan 🎉",
         "demoWelcomeAlice": "Maligayang pagdating {nickname}! ✨ Teka, tiningnan ko ang profile mo—999 na magkakasunod na araw ka na ngayon?! Ang galing...!",
         "demoWelcomeBob": "Wooww! Isang post na lang ng tala at maabot mo na ang maalamat na 1,000-araw na milestone!! 🔥 Sabik na kaming makita ang tala mo ngayon!",
         "demoWelcomeCharlie": "Ang 1,000 araw ay maalamat na...! Sabik na kaming lahat na maghintay para sa iyong tala mula sa dashboard 🎉",
@@ -945,6 +946,7 @@ export default {
         }
     },
     "demo": {
+        "demoUser": "Demo User",
         "loadingTitle": "Inihahanda ang demo environment...",
         "loadingSubtitle": "Kinakarga ang data. Mangyaring maghintay.",
         "loginSuccess": "Naka-sign in gamit ang demo account!",

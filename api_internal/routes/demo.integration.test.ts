@@ -97,9 +97,15 @@ describe('Demo Route Integration (Isolated Sandbox)', () => {
             // Group A and Group B are distinct
             expect(bodyB.groupId).not.toBe(`demo-group-${DEMO_USER_A}`);
 
+            const userBSnap = await db.collection('users').doc(DEMO_USER_B).get();
+            expect(userBSnap.exists).toBe(true);
+            const userBData = userBSnap.data()!;
+            expect(userBData.nickname).toBe('Demo User');
+
             const groupASnap = await db.collection('groups').doc(`demo-group-${DEMO_USER_A}`).get();
             const groupBSnap = await db.collection('groups').doc(`demo-group-${DEMO_USER_B}`).get();
 
+            expect(groupBSnap.data()!.name).toBe('Daily Bread 📖');
             expect(groupASnap.data()!.members).not.toContain(DEMO_USER_B);
             expect(groupBSnap.data()!.members).not.toContain(DEMO_USER_A);
         });

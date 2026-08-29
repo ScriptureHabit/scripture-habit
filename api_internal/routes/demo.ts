@@ -4,7 +4,7 @@ import { verifyAppCheck, authenticate, demoInitLimiter, AuthenticatedRequest } f
 import { sendErrorResponse, ValidationError } from '../lib/errors.js';
 import { z } from 'zod';
 import { GroupDocument, UserDocument } from '../../types/firestore.js';
-import { getDemoGroupTranslations } from '../lib/i18n.js';
+import { getDemoGroupTranslations, t } from '../lib/i18n.js';
 import { getDemoExpireAt } from '../lib/ttl-utils.js';
 
 const router = express.Router();
@@ -26,6 +26,11 @@ router.post('/initialize', demoInitLimiter, authenticate, verifyAppCheck, async 
 
         const uid = req.user!.uid;
         const language = validation.data.language || 'ja';
+
+        const demoUserNickname = t(language, 'demo.demoUser') || 'Demo User';
+        const demoGroupName = t(language, 'onboardingQuest.demoGroupName') || 'Daily Bread 📖';
+        const demoGroupDesc = t(language, 'onboardingQuest.demoGroupDesc') || 'A warm study group to read scriptures together daily! ✨';
+        const demoSeedMessageText = t(language, 'onboardingQuest.demoSeedMessage1') || 'Welcome to Daily Bread! Let us support each other in our daily scripture habit 🎉';
 
         const now = Date.now();
 
@@ -49,7 +54,7 @@ router.post('/initialize', demoInitLimiter, authenticate, verifyAppCheck, async 
         const userRef = db.collection('users').doc(uid);
         const userData: UserDocument = {
             uid: uid,
-            nickname: language === 'ja' ? 'デモユーザー' : 'Demo User',
+            nickname: demoUserNickname,
             photoURL: `https://api.dicebear.com/7.x/bottts/svg?seed=${uid}`,
             streakCount: 999,
             highestStreak: 999,
@@ -77,8 +82,8 @@ router.post('/initialize', demoInitLimiter, authenticate, verifyAppCheck, async 
         // 2. Demo Group (Daily Bread 📖) pre-joined by user
         const groupRef = db.collection('groups').doc(demoGroupId);
         const groupData: GroupDocument = {
-            name: language === 'ja' ? '日々の糧 📖' : 'Daily Bread 📖',
-            description: language === 'ja' ? '毎日一緒に聖典を読み合う、温かい学習グループです！✨' : 'A warm study group to read scriptures together daily! ✨',
+            name: demoGroupName,
+            description: demoGroupDesc,
             translations: getDemoGroupTranslations(language),
             members: ['bot-alice', 'bot-bob', 'bot-charlie', uid],
             membersCount: 4,
@@ -105,7 +110,7 @@ router.post('/initialize', demoInitLimiter, authenticate, verifyAppCheck, async 
                 },
                 {
                     uid: uid,
-                    nickname: language === 'ja' ? 'デモユーザー' : 'Demo User'
+                    nickname: demoUserNickname
                 }
             ],
             memberJoinedAt: {
@@ -154,9 +159,7 @@ router.post('/initialize', demoInitLimiter, authenticate, verifyAppCheck, async 
         const seedMessages = [
             {
                 id: `demo-msg-1-${uid}`,
-                text: language === 'ja'
-                    ? '日々の糧へようこそ！みんなで毎日聖典を学んで励まし合いましょう🎉'
-                    : 'Welcome to Daily Bread! Let us support each other in our daily scripture habit 🎉',
+                text: demoSeedMessageText,
                 senderId: 'bot-alice',
                 senderNickname: 'Alice 📖',
                 userPhotoURL: 'https://api.dicebear.com/7.x/bottts/svg?seed=Alice',
