@@ -20,8 +20,8 @@ if (!GEMINI_API_KEY) {
     process.exit(1);
 }
 
-// Supported 10 languages
-export const SUPPORTED_LANGUAGES = ['ja', 'en', 'ko', 'zho', 'es', 'pt', 'vi', 'tl', 'th', 'sw'] as const;
+// Supported 11 languages
+export const SUPPORTED_LANGUAGES = ['ja', 'en', 'ko', 'zho', 'es', 'pt', 'vi', 'tl', 'th', 'sw', 'it'] as const;
 
 interface DailyGenerationResult {
     date: string;
@@ -46,7 +46,7 @@ function saveCache(cache: Record<string, Record<string, string>>) {
 }
 
 // Gemini API Caller
-async function callGemini(prompt: string, model = 'gemini-3.1-flash-lite-preview'): Promise<string> {
+async function callGemini(prompt: string, model = 'gemini-3.5-flash-lite'): Promise<string> {
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`;
     
     let attempts = 0;
@@ -117,7 +117,7 @@ For each item, generate a single punchy 1-line comment (NO line breaks, NO emoji
   en: Peter stepping onto the water with total confidence only to panic two seconds later is a brutally honest picture of human focus.
 
 【LANGUAGES REQUIRED & CULTURAL LOCALIZATION】:
-Provide the 1-line comment in all 10 languages.
+Provide the 1-line comment in all 11 languages.
 CRITICAL: Do NOT do mechanical translations. Adapt the humor and relatable nuance naturally for each culture:
 - "ja": Japanese (natural, witty, polite yet friendly 「です・ます/だ・である/言い切り」 with sharp relatable nuance)
 - "en": English (witty, punchy, conversational, 1 line)
@@ -129,6 +129,7 @@ CRITICAL: Do NOT do mechanical translations. Adapt the humor and relatable nuanc
 - "tl": Tagalog (warm, witty, culturally natural 1 line)
 - "th": Thai (warm, witty, culturally natural 1 line)
 - "sw": Swahili (warm, witty, culturally natural 1 line)
+- "it": Italian (warm, witty, culturally natural 1 line)
 
 【OUTPUT FORMAT】:
 Output MUST be a valid JSON array of objects with the following schema (single line per comment, NO \\n, NO emojis):
@@ -145,7 +146,8 @@ Output MUST be a valid JSON array of objects with the following schema (single l
       "vi": "...",
       "tl": "...",
       "th": "...",
-      "sw": "..."
+      "sw": "...",
+      "it": "..."
     }
   }
 ]
@@ -340,6 +342,11 @@ export function getAiDailyComment(dateStr: string, lang: string = 'ja') {
             scripture: "Scripture Study",
             chapter: "Today's Scripture",
             comment: "Taking one small step each day to open the scriptures is a habit worth keeping."
+        },
+        it: {
+            scripture: "Studio delle Scritture",
+            chapter: "Scrittura di oggi",
+            comment: "Fare anche solo un piccolo passo ogni giorno per aprire le Scritture è un'abitudine preziosa da custodire."
         }
     };
 

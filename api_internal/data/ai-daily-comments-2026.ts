@@ -18,7 +18,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Pearl of Great Price",
           "tl": "Pearl of Great Price",
           "th": "Pearl of Great Price",
-          "sw": "Pearl of Great Price"
+          "sw": "Pearl of Great Price",
+          "it": "Perla di Gran Prezzo"
         },
         chapter: {
           "ja": "モーセ書 6:63",
@@ -30,7 +31,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Moses 6:63",
           "tl": "Moses 6:63",
           "th": "Moses 6:63",
-          "sw": "Moses 6:63"
+          "sw": "Moses 6:63",
+          "it": "Mosè 6:63"
         },
         comment: {
           "ja": "万物が神の証しだと言われても、日常の忙しさに追われていると目の前の真珠さえただの小石に見えてしまうのが人間というもの。",
@@ -42,7 +44,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Dẫu biết vạn vật đều làm chứng về Chúa, nhưng khi bị cuộc sống cuốn đi, chúng ta lại thường nhầm lẫn những viên ngọc quý với sỏi đá.",
           "tl": "Sinasabing ang lahat ng bagay ay saksi sa Diyos, pero sa dami ng iniisip sa araw-araw, madalas nating mapagkamalang batong-bato ang mga perlas.",
           "th": "แม้จะบอกว่าทุกสิ่งคือพยานถึงพระเจ้า แต่ในวันที่ชีวิตวุ่นวาย เราก็มักมองข้ามไข่มุกแล้วเห็นเป็นแค่ก้อนกรวดอยู่ดี",
-          "sw": "Tunaambiwa kila kitu ni ushahidi wa Mungu, lakini katika harakati za maisha, mara nyingi tunachanganya lulu na mawe ya kawaida."
+          "sw": "Tunaambiwa kila kitu ni ushahidi wa Mungu, lakini katika harakati za maisha, mara nyingi tunachanganya lulu na mawe ya kawaida.",
+          "it": "Tra le mille cose da fare nella lista della spesa, finiamo sempre per calpestare le vere perle pensando che siano solo sassolini."
         }
     },
     "2025-12-30": {
@@ -57,7 +60,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "出エジプト記 12:3-5",
@@ -69,7 +73,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Exodus 12:3-5",
           "tl": "Exodus 12:3-5",
           "th": "Exodus 12:3-5",
-          "sw": "Exodus 12:3-5"
+          "sw": "Exodus 12:3-5",
+          "it": "Esodo 12:3-5"
         },
         comment: {
           "ja": "傷のない子羊を選別する厳格なルールを前に、自分の不完全さを棚に上げて完璧主義を演じる人間の緊張感が伝わってくる。",
@@ -81,7 +86,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Trước quy định khắt khe về con chiên không tì vết, chúng ta thường mải mê theo đuổi sự hoàn hảo bên ngoài mà quên mất sự lộn xộn bên trong mình.",
           "tl": "Sa higpit ng panuntunan tungkol sa korderong walang kapintasan, ramdam ko ang pagiging mapagkunwari ng tao na gustong magmukhang perpekto kahit marami ring mali sa sarili.",
           "th": "กฎเรื่องลูกแกะที่ไร้ตำหนิทำให้เห็นชัดเลยว่า มนุษย์เราชอบโฟกัสกับความสมบูรณ์แบบภายนอกทั้งที่ข้างในตัวเองก็ไม่ได้ต่างกัน",
-          "sw": "Sheria kali kuhusu mwana-kondoo asiye na dosari inatukumbusha jinsi tunavyopenda kuonekana wakamilifu kwa nje huku tukipuuza dosari zetu za ndani."
+          "sw": "Sheria kali kuhusu mwana-kondoo asiye na dosari inatukumbusha jinsi tunavyopenda kuonekana wakamilifu kwa nje huku tukipuuza dosari zetu za ndani.",
+          "it": "Ci scandalizziamo per i dettagli perfetti mentre in casa nostra regna il caos più totale, proprio un classico."
         }
     },
     "2025-12-31": {
@@ -96,7 +102,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "民数記 21:4-10",
@@ -108,7 +115,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Numbers 21:4-10",
           "tl": "Numbers 21:4-10",
           "th": "Numbers 21:4-10",
-          "sw": "Numbers 21:4-10"
+          "sw": "Numbers 21:4-10",
+          "it": "Numeri 21:4-10"
         },
         comment: {
           "ja": "文句を言いながら歩き続けたイスラエルの民、極限状態の空腹と疲労で何でもかんでも批判したくなる気持ちは正直よくわかる。",
@@ -120,7 +128,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Than vãn về mọi thứ khi đang mệt mỏi trên đường đi là phản ứng rất con người khi chúng ta để cái đói lấn át lý trí.",
           "tl": "Ang pagrereklamo ng mga Israelita habang naglalakad ay patunay na kapag pagod at gutom na ang tao, kahit anong milagro ay magiging dahilan pa rin ng reklamo.",
           "th": "การบ่นไปเดินไปของชาวอิสราเอลในทะเลทรายคือภาพสะท้อนความหงุดหงิดเวลาหิวและเหนื่อยที่ใครๆ ก็เคยเป็น",
-          "sw": "Waisraeli kulalamika kila kitu wakiwa safarini ni dhihirisho la jinsi njaa na uchovu vinavyoweza kumfanya mtu akose shukrani hata kwa mambo makubwa."
+          "sw": "Waisraeli kulalamika kila kitu wakiwa safarini ni dhihirisho la jinsi njaa na uchovu vinavyoweza kumfanya mtu akose shukrani hata kwa mambo makubwa.",
+          "it": "Camminare sotto il sole con la pancia vuota e brontolare per ogni singola cosa è lo sport nazionale di ogni viaggiatore stanco."
         }
     },
     "2026-01-01": {
@@ -135,7 +144,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "New Testament",
           "tl": "New Testament",
           "th": "New Testament",
-          "sw": "New Testament"
+          "sw": "New Testament",
+          "it": "Nuovo Testamento"
         },
         chapter: {
           "ja": "ヨハネによる福音書 1:4-17",
@@ -147,7 +157,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "John 1:4-17",
           "tl": "John 1:4-17",
           "th": "John 1:4-17",
-          "sw": "John 1:4-17"
+          "sw": "John 1:4-17",
+          "it": "Giovanni 1:4-17"
         },
         comment: {
           "ja": "光が闇を照らしても闇が気づかないという皮肉、どれだけ近くに答えがあっても自分の頑固さでそれを見失うことってよくある。",
@@ -159,7 +170,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Ánh sáng chiếu vào bóng tối mà bóng tối không hiểu được, giống như việc chúng ta cứ loay hoay tìm kiếm câu trả lời dù nó đang ở ngay trước mắt.",
           "tl": "Ang liwanag na hindi maintindihan ng kadiliman ay parang tayo na nakatingin sa maling direksyon kahit na ang sagot ay nasa harap na natin.",
           "th": "แสงสว่างส่องท่ามกลางความมืดแต่ไม่มีใครเห็น ก็เหมือนกับคำตอบที่วางอยู่ตรงหน้าแต่เรากลับมองไม่เห็นเพราะมัวแต่ยึดติดกับความคิดเดิมๆ",
-          "sw": "Nuru kuangaza gizani na giza kutoielewa ni ukumbusho kwamba mara nyingi tunashindwa kuona ukweli uliopo mbele yetu kwa sababu tu ya ukaidi wetu."
+          "sw": "Nuru kuangaza gizani na giza kutoielewa ni ukumbusho kwamba mara nyingi tunashindwa kuona ukweli uliopo mbele yetu kwa sababu tu ya ukaidi wetu.",
+          "it": "Ignorare la soluzione lampante che abbiamo proprio davanti al naso solo perché siamo troppo testardi per cambiare prospettiva."
         }
     },
     "2026-01-02": {
@@ -174,7 +186,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Special Witness",
           "tl": "Special Witness",
           "th": "Special Witness",
-          "sw": "Special Witness"
+          "sw": "Special Witness",
+          "it": "Testimonianza speciale"
         },
         chapter: {
           "ja": "生けるキリスト",
@@ -186,7 +199,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "The Living Christ",
           "tl": "The Living Christ",
           "th": "The Living Christ",
-          "sw": "The Living Christ"
+          "sw": "The Living Christ",
+          "it": "Il Cristo Vivente"
         },
         comment: {
           "ja": "歴史の教科書に載るような偉大な存在なのに、その正体が誰よりも身近な隣人として描かれているこのギャップがたまらない。",
@@ -198,7 +212,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Thật thú vị khi nhân vật vĩ đại nhất trong lịch sử lại được mô tả như một người hàng xóm gần gũi nhất mà bạn từng biết.",
           "tl": "Nakakatuwa na ang pinakamahalagang pigura sa kasaysayan ay inilalarawan din bilang ang pinakamalapit na kapitbahay na maaari mong magkaroon.",
           "th": "น่าทึ่งที่บุคคลที่สำคัญที่สุดในประวัติศาสตร์กลับถูกบรรยายให้ดูเหมือนเพื่อนบ้านที่ใกล้ชิดที่สุดเท่าที่คุณจะมีได้",
-          "sw": "Inafurahisha jinsi mtu muhimu zaidi katika historia anavyoelezewa kama jirani wa karibu zaidi ambaye ungeweza kuwa naye."
+          "sw": "Inafurahisha jinsi mtu muhimu zaidi katika historia anavyoelezewa kama jirani wa karibu zaidi ambaye ungeweza kuwa naye.",
+          "it": "Fa sorridere come la persona più importante della storia umana finisca per sembrare semplicemente il vicino di casa perfetto."
         }
     },
     "2026-01-03": {
@@ -213,7 +228,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Pearl of Great Price",
           "tl": "Pearl of Great Price",
           "th": "Pearl of Great Price",
-          "sw": "Pearl of Great Price"
+          "sw": "Pearl of Great Price",
+          "it": "Perla di Gran Prezzo"
         },
         chapter: {
           "ja": "モーセ書 7:18-19",
@@ -225,7 +241,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Moses 7:18-19",
           "tl": "Moses 7:18-19",
           "th": "Moses 7:18-19",
-          "sw": "Moses 7:18-19"
+          "sw": "Moses 7:18-19",
+          "it": "Mosè 7:18-19"
         },
         comment: {
           "ja": "心も一つ、思いも一つ、貧しい者もいないという理想郷、現代のSNSのギスギスした雰囲気からするとファンタジーすぎて逆に癒やされる。",
@@ -237,7 +254,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Một nơi không có người nghèo và mọi người đều hòa hợp tuyệt đối nghe thật như mơ, thật dễ chịu khi so sánh với sự hỗn loạn trên mạng xã hội ngày nay.",
           "tl": "Ang isang lugar na walang mahirap at ang lahat ay nagkakaisa ay parang isang panaginip, at nakaka-relax isipin kumpara sa gulo ng social media ngayon.",
           "th": "สถานที่ที่ไม่มีคนจนและทุกคนเป็นหนึ่งเดียวกันฟังดูเหมือนเทพนิยาย ซึ่งช่างน่าสบายใจเมื่อเทียบกับความวุ่นวายบนโซเชียลมีเดียในยุคนี้",
-          "sw": "Mahali pasipo na maskini ambapo kila mtu ana umoja kamili inasikika kama hadithi ya kufikirika, jambo ambalo linaburudisha ikilinganishwa na machafuko ya mitandao ya kijamii ya sasa."
+          "sw": "Mahali pasipo na maskini ambapo kila mtu ana umoja kamili inasikika kama hadithi ya kufikirika, jambo ambalo linaburudisha ikilinganishwa na machafuko ya mitandao ya kijamii ya sasa.",
+          "it": "Un mondo senza disuguaglianze e in totale armonia sembra così irreale da far quasi sorridere rispetto alla confusione dei social media."
         }
     },
     "2026-01-04": {
@@ -252,7 +270,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Pearl of Great Price",
           "tl": "Pearl of Great Price",
           "th": "Pearl of Great Price",
-          "sw": "Pearl of Great Price"
+          "sw": "Pearl of Great Price",
+          "it": "Perla di Gran Prezzo"
         },
         chapter: {
           "ja": "アブラハム書 3:22-28",
@@ -264,7 +283,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Abraham 3:22-28",
           "tl": "Abraham 3:22-28",
           "th": "Abraham 3:22-28",
-          "sw": "Abraham 3:22-28"
+          "sw": "Abraham 3:22-28",
+          "it": "Abramo 3:22-28"
         },
         comment: {
           "ja": "宇宙規模の会議で自分が選ばれたと知った途端に、急に自分の重要性を過信し始めるのが人間の愛すべき性分というものだ。",
@@ -276,7 +296,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Biết mình được chọn trong một hội nghị vũ trụ rồi ngay lập tức tự cao tự đại chính là bản tính đáng yêu của con người.",
           "tl": "Ang malaman na pinili ka sa isang cosmic council at agad na lumaki ang ulo ay ang pinaka-human na reaksyon na posible.",
           "th": "พอรู้ว่าตัวเองถูกเลือกในที่ประชุมระดับจักรวาลแล้วเกิดอาการหลงตัวเองขึ้นมาทันที นี่แหละนิสัยความเป็นมนุษย์ที่แก้ยาก",
-          "sw": "Kujua ulichaguliwa katika baraza la mbinguni kisha kuanza kujiona kuwa wewe ni muhimu sana ni hulka ya kibinadamu inayotabirika."
+          "sw": "Kujua ulichaguliwa katika baraza la mbinguni kisha kuanza kujiona kuwa wewe ni muhimu sana ni hulka ya kibinadamu inayotabirika.",
+          "it": "Scoprire di avere un grande potenziale e montarsi la testa all'istante è proprio una tipica debolezza umana."
         }
     },
     "2026-01-05": {
@@ -291,7 +312,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Pearl of Great Price",
           "tl": "Pearl of Great Price",
           "th": "Pearl of Great Price",
-          "sw": "Pearl of Great Price"
+          "sw": "Pearl of Great Price",
+          "it": "Perla di Gran Prezzo"
         },
         chapter: {
           "ja": "モーセ書 1:1-11",
@@ -303,7 +325,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Moses 1:1-11",
           "tl": "Moses 1:1-11",
           "th": "Moses 1:1-11",
-          "sw": "Moses 1:1-11"
+          "sw": "Moses 1:1-11",
+          "it": "Mosè 1:1-11"
         },
         comment: {
           "ja": "神の威光を前にして腰を抜かしているモーセを見て、自分だけじゃないんだと妙に安心する。",
@@ -315,7 +338,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Nhìn thấy Môi-se mất bình tĩnh trước sự hiện diện của Chúa khiến tôi thấy nhẹ nhõm vì biết mình không phải là người duy nhất hay hoảng loạn.",
           "tl": "Ang makitang mawala sa sarili si Moises sa harap ng Diyos ay nakakapanatag ng loob dahil hindi lang ako ang nagpa-panic.",
           "th": "เห็นโมเสสสติหลุดต่อหน้าพระพักตร์พระเจ้าแล้วรู้สึกสบายใจขึ้นมาแปลกๆ เพราะรู้ว่าเราไม่ได้เป็นคนเดียวที่ทำตัวไม่ถูก",
-          "sw": "Kumwona Musa akipoteza utulivu wake mbele za Mungu kunanipa faraja ya ajabu kwa sababu inanikumbusha kuwa si mimi pekee ninayeingiwa na hofu."
+          "sw": "Kumwona Musa akipoteza utulivu wake mbele za Mungu kunanipa faraja ya ajabu kwa sababu inanikumbusha kuwa si mimi pekee ninayeingiwa na hofu.",
+          "it": "Vedere un grande profeta perdere la pazienza e andare in confusione totale ci fa sentire decisamente meno soli nei nostri momenti no."
         }
     },
     "2026-01-06": {
@@ -330,7 +354,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Pearl of Great Price",
           "tl": "Pearl of Great Price",
           "th": "Pearl of Great Price",
-          "sw": "Pearl of Great Price"
+          "sw": "Pearl of Great Price",
+          "it": "Perla di Gran Prezzo"
         },
         chapter: {
           "ja": "モーセ書 1:12-23",
@@ -342,7 +367,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Moses 1:12-23",
           "tl": "Moses 1:12-23",
           "th": "Moses 1:12-23",
-          "sw": "Moses 1:12-23"
+          "sw": "Moses 1:12-23",
+          "it": "Mosè 1:12-23"
         },
         comment: {
           "ja": "神の栄光を見た直後に「お前はただの人間だ」とマウントをとってくるサタン、自信満々なときほど横から茶々を入れてくる嫌な上司そのもの。",
@@ -354,7 +380,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Satan đến đòi làm cha chú ngay sau khi Môi-se vừa trải nghiệm vinh quang của Chúa, đúng là kiểu người hay ghen ăn tức ở điển hình.",
           "tl": "Ang pagsulpot ni Satanas para sabihing tao lang si Moises pagkatapos ng isang banal na karanasan ay parang yung taong ayaw na ayaw makitang masaya ka.",
           "th": "ซาตานที่โผล่มาขัดจังหวะทันทีหลังจากโมเสสเห็นรัศมีของพระเจ้า ก็เหมือนคนที่คอยหาเรื่องมาบั่นทอนกำลังใจเราในวันที่เรากำลังไปได้สวย",
-          "sw": "Shetani kujitokeza kumwambia Musa yeye ni mwanadamu tu baada tu ya tukio takatifu ni kama yule mtu anayependa kukukatisha tamaa wakati unapopiga hatua."
+          "sw": "Shetani kujitokeza kumwambia Musa yeye ni mwanadamu tu baada tu ya tukio takatifu ni kama yule mtu anayependa kukukatisha tamaa wakati unapopiga hatua.",
+          "it": "Arrivare carichi da un'esperienza speciale e trovare subito qualcuno pronto a sminuirci è la prova che la vita non cambia mai."
         }
     },
     "2026-01-07": {
@@ -369,7 +396,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Pearl of Great Price",
           "tl": "Pearl of Great Price",
           "th": "Pearl of Great Price",
-          "sw": "Pearl of Great Price"
+          "sw": "Pearl of Great Price",
+          "it": "Perla di Gran Prezzo"
         },
         chapter: {
           "ja": "モーセ書 1:24-35",
@@ -381,7 +409,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Moses 1:24-35",
           "tl": "Moses 1:24-35",
           "th": "Moses 1:24-35",
-          "sw": "Moses 1:24-35"
+          "sw": "Moses 1:24-35",
+          "it": "Mosè 1:24-35"
         },
         comment: {
           "ja": "宇宙の広大さを教えられても「で、結局人間はどうなるの？」と即座に自分中心の質問をしてしまうモーセ、なんだかんだ言って人間らしくて安心する。",
@@ -393,7 +422,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Môi-se được xem cả vũ trụ bao la mà câu đầu tiên lại hỏi 'thế còn tôi thì sao', đúng là cái tôi của con người luôn chiếm sóng.",
           "tl": "Ang makita ang buong sansinukob at ang unang itanong ni Moises ay kung ano ang kahulugan nito para sa kanya ay napaka-tao at nakaka-relate.",
           "th": "โมเสสเห็นความกว้างใหญ่ของจักรวาลแล้วถามกลับทันทีว่า 'แล้วมันเกี่ยวกับผมยังไง' เป็นปฏิกิริยาของมนุษย์ที่ซื่อตรงจนน่าเอ็นดู",
-          "sw": "Musa kuonyeshwa ulimwengu mzima na kisha kuuliza haraka nini maana yake kwake ni mwitikio wa kibinadamu ambao ni rahisi sana kuuelewa."
+          "sw": "Musa kuonyeshwa ulimwengu mzima na kisha kuuliza haraka nini maana yake kwake ni mwitikio wa kibinadamu ambao ni rahisi sana kuuelewa.",
+          "it": "Aver davanti l'infinito e chiedere subito cosa c'è in serbo per noi è la mossa più egoista e umana del mondo."
         }
     },
     "2026-01-08": {
@@ -408,7 +438,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Pearl of Great Price",
           "tl": "Pearl of Great Price",
           "th": "Pearl of Great Price",
-          "sw": "Pearl of Great Price"
+          "sw": "Pearl of Great Price",
+          "it": "Perla di Gran Prezzo"
         },
         chapter: {
           "ja": "モーセ書 1:36-42",
@@ -420,7 +451,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Moses 1:36-42",
           "tl": "Moses 1:36-42",
           "th": "Moses 1:36-42",
-          "sw": "Moses 1:36-42"
+          "sw": "Moses 1:36-42",
+          "it": "Mosè 1:36-42"
         },
         comment: {
           "ja": "宇宙の広さを語る神様を前に、自分の小ささに圧倒されるどころか、その計画の一部に自分を組み込んでくれたことにただただ驚くしかない。",
@@ -432,7 +464,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Đứng trước sự bao la của vũ trụ, tôi không còn bận tâm về sự nhỏ bé của mình mà chỉ thấy kinh ngạc vì mình lại là một phần của kế hoạch đó.",
           "tl": "Sa harap ng lawak ng sansinukob, mas nakakamangha na kasama ako sa plano kaysa sa pagiging maliit ko.",
           "th": "เมื่ออยู่ต่อหน้าความกว้างใหญ่ของจักรวาล ผมไม่ได้กังวลเรื่องความเล็กจ้อยของตัวเอง แต่กลับทึ่งที่พระองค์ให้ผมเป็นส่วนหนึ่งของแผนการนี้",
-          "sw": "Mbele ya ukubwa wa ulimwengu, nashangaa zaidi kuona kuwa nimejumuishwa katika mpango huo badala ya kuhisi udogo wangu."
+          "sw": "Mbele ya ukubwa wa ulimwengu, nashangaa zaidi kuona kuwa nimejumuishwa katika mpango huo badala ya kuhisi udogo wangu.",
+          "it": "Di fronte all'infinito dell'universo, la vera sorpresa non è sentirsi piccoli, ma scoprire di avere comunque un posto riservato nel piano."
         }
     },
     "2026-01-09": {
@@ -447,7 +480,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Pearl of Great Price",
           "tl": "Pearl of Great Price",
           "th": "Pearl of Great Price",
-          "sw": "Pearl of Great Price"
+          "sw": "Pearl of Great Price",
+          "it": "Perla di Gran Prezzo"
         },
         chapter: {
           "ja": "アブラハム書 3:1-11",
@@ -459,7 +493,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Abraham 3:1-11",
           "tl": "Abraham 3:1-11",
           "th": "Abraham 3:1-11",
-          "sw": "Abraham 3:1-11"
+          "sw": "Abraham 3:1-11",
+          "it": "Abramo 3:1-11"
         },
         comment: {
           "ja": "星の数や階層を計算して自分のランクを気にするアブラハムの姿は、現代のSNSでフォロワー数や評価を気にしてしまう私たちの痛いほどリアルな姿そのもの。",
@@ -471,7 +506,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Abraham đếm các vì sao và tính toán thứ bậc giống hệt như cách chúng ta cứ loay hoay với số lượng người theo dõi trên mạng xã hội mỗi ngày.",
           "tl": "Ang pagbibilang ni Abraham sa mga bituin at pag-uuri sa mga ito ay parang tayo na laging nag-aalala sa dami ng followers at likes sa social media.",
           "th": "การที่อับราฮัมพยายามนับดวงดาวและจัดลำดับชั้นนั้น เหมือนกับพวกเราที่คอยกังวลเรื่องจำนวนผู้ติดตามและยอดไลก์บนโซเชียลมีเดียไม่มีผิด",
-          "sw": "Ibrahim akihesabu nyota na vyeo vyake ni kama sisi tunavyohangaika na idadi ya wafuasi na maoni kwenye mitandao ya kijamii kila siku."
+          "sw": "Ibrahim akihesabu nyota na vyeo vyake ni kama sisi tunavyohangaika na idadi ya wafuasi na maoni kwenye mitandao ya kijamii kila siku.",
+          "it": "Abrahamo che controlla le gerarchie delle stelle dimostra che l'ossessione per i numeri e la visibilità ci accompagna da sempre."
         }
     },
     "2026-01-10": {
@@ -486,7 +522,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Pearl of Great Price",
           "tl": "Pearl of Great Price",
           "th": "Pearl of Great Price",
-          "sw": "Pearl of Great Price"
+          "sw": "Pearl of Great Price",
+          "it": "Perla di Gran Prezzo"
         },
         chapter: {
           "ja": "アブラハム書 3:12-20",
@@ -498,7 +535,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Abraham 3:12-20",
           "tl": "Abraham 3:12-20",
           "th": "Abraham 3:12-20",
-          "sw": "Abraham 3:12-20"
+          "sw": "Abraham 3:12-20",
+          "it": "Abramo 3:12-20"
         },
         comment: {
           "ja": "星の数ほどある宇宙の広大さと自分の小ささを突きつけられると、悩みなんてどうでもよくなる不思議な感覚。",
@@ -510,7 +548,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Nhìn vào sự bao la của vũ trụ, bỗng thấy những rắc rối thường ngày chẳng đáng là bao.",
           "tl": "Ang pag-unawa sa lawak ng uniberso ay mabisang paalala na hindi naman dapat masyadong dibdibin ang mga problema sa buhay.",
           "th": "การได้เห็นความกว้างใหญ่ของจักรวาลช่วยเตือนสติได้ดีว่าปัญหาของเรามันเล็กน้อยแค่ไหน",
-          "sw": "Kukumbushwa jinsi ulimwengu ulivyo mkubwa kunanifanya nitambue kuwa shida zangu za kila siku si kitu kikubwa sana."
+          "sw": "Kukumbushwa jinsi ulimwengu ulivyo mkubwa kunanifanya nitambue kuwa shida zangu za kila siku si kitu kikubwa sana.",
+          "it": "Puntare lo sguardo sulla vastità del cosmo è il modo migliore per ridimensionare i piccoli grattacapi della giornata."
         }
     },
     "2026-01-11": {
@@ -525,7 +564,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Pearl of Great Price",
           "tl": "Pearl of Great Price",
           "th": "Pearl of Great Price",
-          "sw": "Pearl of Great Price"
+          "sw": "Pearl of Great Price",
+          "it": "Perla di Gran Prezzo"
         },
         chapter: {
           "ja": "アブラハム書 3:21-28",
@@ -537,7 +577,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Abraham 3:21-28",
           "tl": "Abraham 3:21-28",
           "th": "Abraham 3:21-28",
-          "sw": "Abraham 3:21-28"
+          "sw": "Abraham 3:21-28",
+          "it": "Abramo 3:21-28"
         },
         comment: {
           "ja": "ある者は神の計画を掲げ、ある者は自分の正しさを主張して揉める、この世の会議室の光景とあまりに重なる。",
@@ -549,7 +590,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Cảnh tranh luận xem nên theo kế hoạch nào chẳng khác gì những cuộc họp căng thẳng ở văn phòng ngày nay.",
           "tl": "Ang pagtatalo kung kaninong plano ang dapat sundin ay parang eksena lang sa isang meeting sa opisina na walang gustong magpatalo.",
           "th": "ฉากการถกเถียงเรื่องแผนการที่ควรทำ ดูแล้วเหมือนบรรยากาศในห้องประชุมงานที่ทุกคนต่างคิดว่าไอเดียตัวเองดีที่สุด",
-          "sw": "Kuona watu wakibishana kuhusu mpango wa kufuata ni kama kuwa kwenye kikao cha kazi ambapo kila mtu anajiona ana wazo bora zaidi."
+          "sw": "Kuona watu wakibishana kuhusu mpango wa kufuata ni kama kuwa kwenye kikao cha kazi ambapo kila mtu anajiona ana wazo bora zaidi.",
+          "it": "Assistere al dibattito su quale piano seguire è identico a partecipare a una riunione di lavoro dove tutti credono di avere l'idea geniale."
         }
     },
     "2026-01-12": {
@@ -564,7 +606,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "創世記 1:1-5",
@@ -576,7 +619,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Genesis 1:1-5",
           "tl": "Genesis 1:1-5",
           "th": "Genesis 1:1-5",
-          "sw": "Genesis 1:1-5"
+          "sw": "Genesis 1:1-5",
+          "it": "Genesi 1:1-5"
         },
         comment: {
           "ja": "無から世界を創り出す神の壮大なプロジェクトの幕開けだけど、最初の仕事が光と闇を分けることだなんて、なんだか大掃除の第一歩を見ているようで親近感がわく。",
@@ -588,7 +632,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Chúa bắt đầu tạo dựng vũ trụ bằng cách phân chia ánh sáng và bóng tối giống như cách chúng ta bắt đầu một dự án lớn bằng việc dọn dẹp ngăn nắp vậy.",
           "tl": "Ang paglikha ng mundo na nagsimula sa paghihiwalay ng liwanag at dilim ay parang pag-aayos ng gamit bago magsimula ng isang malaking proyekto sa bahay.",
           "th": "การที่พระผู้เป็นเจ้าทรงเริ่มสร้างจักรวาลด้วยการแยกแสงสว่างออกจากความมืดนั้น ช่างดูเหมือนการเริ่มต้นจัดบ้านก่อนจะลงมือทำโปรเจกต์ใหญ่ที่เรารู้สึกคุ้นเคยดี",
-          "sw": "Mungu kuanza uumbaji kwa kutenganisha nuru na giza ni kama vile hatua ya kwanza ya kupanga vitu kabla ya kuanza mradi mkubwa wa ukarabati nyumbani."
+          "sw": "Mungu kuanza uumbaji kwa kutenganisha nuru na giza ni kama vile hatua ya kwanza ya kupanga vitu kabla ya kuanza mradi mkubwa wa ukarabati nyumbani.",
+          "it": "Mettere ordine tra luce e buio come primo passo della creazione assomiglia tanto a quelle pulizie di primavera che sembrano non finire mai."
         }
     },
     "2026-01-13": {
@@ -603,7 +648,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "創世記 1:6-13",
@@ -615,7 +661,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Genesis 1:6-13",
           "tl": "Genesis 1:6-13",
           "th": "Genesis 1:6-13",
-          "sw": "Genesis 1:6-13"
+          "sw": "Genesis 1:6-13",
+          "it": "Genesi 1:6-13"
         },
         comment: {
           "ja": "植物が芽を出した瞬間に神がそれを見てよしとされたけれど、自分の小さな成長に対してもこれくらい自分に甘く評価していいのかもしれない。",
@@ -627,7 +674,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Chúa thấy cây cối đâm chồi và khen là tốt lành, có lẽ chúng ta cũng nên học cách tự khích lệ bản thân ngay từ những bước tiến nhỏ bé đầu đời.",
           "tl": "Nakita ng Diyos ang mga halaman na sumibol at agad itong tinawag na mabuti, isang paalala na dapat din nating pahalagahan ang ating maliliit na pagsisimula.",
           "th": "พระผู้เป็นเจ้าทรงเห็นพืชพรรณที่เพิ่งงอกเงยแล้วทรงชมว่าดีนักหนา เป็นบทเรียนที่บอกว่าเราควรใจดีกับก้าวแรกที่ยังไม่สมบูรณ์แบบของตัวเองบ้าง",
-          "sw": "Mungu aliona mimea ikichipuka na kusema ni njema, labda tunapaswa kujifunza kuwa na huruma kama hiyo kwa hatua zetu ndogo za maendeleo."
+          "sw": "Mungu aliona mimea ikichipuka na kusema ni njema, labda tunapaswa kujifunza kuwa na huruma kama hiyo kwa hatua zetu ndogo za maendeleo.",
+          "it": "Se le prime pianticelle sono state approvate subito, forse dovremmo essere un po' più indulgenti anche con i nostri timidi tentativi di crescita."
         }
     },
     "2026-01-14": {
@@ -642,7 +690,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "創世記 1:14-23",
@@ -654,7 +703,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Genesis 1:14-23",
           "tl": "Genesis 1:14-23",
           "th": "Genesis 1:14-23",
-          "sw": "Genesis 1:14-23"
+          "sw": "Genesis 1:14-23",
+          "it": "Genesi 1:14-23"
         },
         comment: {
           "ja": "何もない暗闇から光や星を次々とデザインしていく創造の過程、もはや壮大なDIYプロジェクトのようで見ているだけで圧倒される。",
@@ -666,7 +716,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Chứng kiến quá trình kiến tạo ánh sáng và các vì sao từ hư không giống như một dự án DIY vĩ đại khiến mọi kế hoạch của chúng ta trở nên thật nhỏ bé.",
           "tl": "Ang pagdisenyo ng liwanag at mga bituin mula sa kawalan ay parang isang dambuhalang DIY project na nakakabilib sa sinumang makakakita.",
           "th": "การออกแบบแสงสว่างและดวงดาวจากความว่างเปล่าดูเหมือนโปรเจกต์ DIY ระดับจักรวาลที่ทำให้งานของมนุษย์ดูเล็กน้อยไปเลย",
-          "sw": "Kuona jinsi mwanga na nyota vilivyobuniwa kutoka kwenye giza totoro ni kama mradi mkubwa wa ujenzi unaoacha kila mtu akishangaa."
+          "sw": "Kuona jinsi mwanga na nyota vilivyobuniwa kutoka kwenye giza totoro ni kama mradi mkubwa wa ujenzi unaoacha kila mtu akishangaa.",
+          "it": "Disegnare galassie dal nulla rende la nostra lista di cose da fare per il fine settimana decisamente ridicola."
         }
     },
     "2026-01-15": {
@@ -681,7 +732,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "創世記 1:24-31",
@@ -693,7 +745,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Genesis 1:24-31",
           "tl": "Genesis 1:24-31",
           "th": "Genesis 1:24-31",
-          "sw": "Genesis 1:24-31"
+          "sw": "Genesis 1:24-31",
+          "it": "Genesi 1:24-31"
         },
         comment: {
           "ja": "最後に人間を創造して「よし、これで完璧だ」と満足げな様子、その後の人類の散らかりっぷりを知ったら神様も苦笑いしそうだ。",
@@ -705,7 +758,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Chúa tạo ra con người và thấy mọi thứ đều rất tốt đẹp, nhưng có lẽ Ngài đã không lường trước được sự rắc rối mà chúng ta sẽ gây ra sau này.",
           "tl": "Sinabi ng Diyos na napakabuti ng lahat matapos likhain ang tao, pero siguro ay mapapangiti na lang Siya kung nakita Niya ang gulo na gagawin natin.",
           "th": "พระเจ้าทรงสร้างมนุษย์และเห็นว่าดีมาก แต่ถ้าพระองค์ทรงเห็นความวุ่นวายที่เราก่อหลังจากนั้น คงได้แต่ยิ้มแห้งๆ ให้แน่",
-          "sw": "Mungu alimaliza uumbaji na kusema kila kitu ni chema, ingawa huenda hakujua jinsi tutakavyokuwa na fujo huko mbele."
+          "sw": "Mungu alimaliza uumbaji na kusema kila kitu ni chema, ingawa huenda hakujua jinsi tutakavyokuwa na fujo huko mbele.",
+          "it": "Dichiarare che tutto è molto buono dopo aver creato l'essere umano è un atto di grande fiducia, specie sapendo quanti guai combineremo."
         }
     },
     "2026-01-16": {
@@ -720,7 +774,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "創世記 2:1-7",
@@ -732,7 +787,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Genesis 2:1-7",
           "tl": "Genesis 2:1-7",
           "th": "Genesis 2:1-7",
-          "sw": "Genesis 2:1-7"
+          "sw": "Genesis 2:1-7",
+          "it": "Genesi 2:1-7"
         },
         comment: {
           "ja": "天地創造の最後にしっかり休息をとる神様を見て、現代の私たちは休み下手な自分を少し反省するべきかもしれない。",
@@ -744,7 +800,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Chứng kiến cảnh Chúa nghỉ ngơi sau khi tạo dựng thế giới, chúng ta mới thấy mình cần học cách sống chậm lại thay vì cứ chạy theo guồng quay công việc.",
           "tl": "Ang pagpapahinga ng Diyos matapos ang paglikha ay isang paalala na hindi natin kailangang maging busy nang 24/7 para maging sapat.",
           "th": "การที่พระเจ้าทรงพักผ่อนหลังสร้างโลก เป็นการเตือนสติคนยุคใหม่ที่บ้างานว่าการหยุดพักบ้างไม่ใช่เรื่องผิด",
-          "sw": "Mungu kupumzika baada ya kuumba ulimwengu ni ukumbusho tosha kwamba sisi sote tunahitaji kupunguza kasi ya maisha yetu yenye pilikapilika."
+          "sw": "Mungu kupumzika baada ya kuumba ulimwengu ni ukumbusho tosha kwamba sisi sote tunahitaji kupunguza kasi ya maisha yetu yenye pilikapilika.",
+          "it": "Se persino l'universo ha richiesto una pausa strategica, forse possiamo smetterla di sentirci in colpa quando ci riposiamo."
         }
     },
     "2026-01-17": {
@@ -759,7 +816,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "創世記 2:8-17",
@@ -771,7 +829,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Genesis 2:8-17",
           "tl": "Genesis 2:8-17",
           "th": "Genesis 2:8-17",
-          "sw": "Genesis 2:8-17"
+          "sw": "Genesis 2:8-17",
+          "it": "Genesi 2:8-17"
         },
         comment: {
           "ja": "楽園に住みながら禁断の木の実だけがやたら気になるアダムとエバ、人間が持っている「ダメと言われると余計にやりたくなる」根性は太古から健在だった。",
@@ -783,7 +842,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Sở hữu cả thiên đường nhưng lại chỉ quan tâm đến trái cấm, Adam và Eva cho thấy bản tính tò mò thích làm ngược lại của con người vốn đã có từ thuở sơ khai.",
           "tl": "Ang pagkakaroon ng lahat sa paraiso ngunit pagtuon lang sa ipinagbabawal na bunga ay patunay na ang pagiging makulit ng tao ay hindi na bago.",
           "th": "การที่อาดัมกับเอวาสนใจแต่ผลไม้ต้องห้ามทั้งที่มีทุกอย่างในสวนอีเดน แสดงให้เห็นว่านิสัยดื้อรั้นของมนุษย์นั้นมีมานานแล้วจริงๆ",
-          "sw": "Adam na Hawa kuwa na kila kitu katika bustani lakini wakajikita kwenye tunda moja lililokatazwa inathibitisha kuwa udadisi wa kibinadamu ni ukaidi wa asili."
+          "sw": "Adam na Hawa kuwa na kila kitu katika bustani lakini wakajikita kwenye tunda moja lililokatazwa inathibitisha kuwa udadisi wa kibinadamu ni ukaidi wa asili.",
+          "it": "Avere tutto il paradiso a disposizione ma fissarsi sull'unico frutto vietato conferma che la curiosità testarda è il nostro marchio di fabbrica."
         }
     },
     "2026-01-18": {
@@ -798,7 +858,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "創世記 2:18-25",
@@ -810,7 +871,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Genesis 2:18-25",
           "tl": "Genesis 2:18-25",
           "th": "Genesis 2:18-25",
-          "sw": "Genesis 2:18-25"
+          "sw": "Genesis 2:18-25",
+          "it": "Genesi 2:18-25"
         },
         comment: {
           "ja": "あらゆる動物に名前をつけた直後に理想のパートナーが現れる展開、もはや神様による完璧なマッチングアプリの演出にしか見えない。",
@@ -822,7 +884,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Đặt tên cho muôn loài xong xuôi rồi tìm thấy người bạn đời lý tưởng, đây quả là dịch vụ mai mối thần thánh nhất lịch sử.",
           "tl": "Ang pangalanan ang lahat ng hayop at biglang lumitaw ang iyong kapareha ay ang pinaka-epektibong serbisyo ng matchmaking sa kasaysayan.",
           "th": "การตั้งชื่อให้สัตว์ทุกชนิดแล้วจู่ๆ ก็เจอคู่แท้โผล่มาตรงหน้า นี่มันบริการจัดหาคู่จากสวรรค์แบบครบวงจรชัดๆ",
-          "sw": "Kuwapa wanyama wote majina kisha kukutana na mwenza wako mara moja ni huduma ya kutafuta wachumba bora kupita zote."
+          "sw": "Kuwapa wanyama wote majina kisha kukutana na mwenza wako mara moja ni huduma ya kutafuta wachumba bora kupita zote.",
+          "it": "Dare un nome a tutti gli animali e poi trovarsi davanti l'anima gemella sembra proprio la versione divina di un'app di incontri che non sbaglia un colpo."
         }
     },
     "2026-01-19": {
@@ -837,7 +900,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "創世記 3:1-7",
@@ -849,7 +913,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Genesis 3:1-7",
           "tl": "Genesis 3:1-7",
           "th": "Genesis 3:1-7",
-          "sw": "Genesis 3:1-7"
+          "sw": "Genesis 3:1-7",
+          "it": "Genesi 3:1-7"
         },
         comment: {
           "ja": "蛇の甘い誘惑に負けてすぐに食べてしまう二人、禁断の果実という名の期間限定スイーツに抗える人間なんて最初からいなかったのだ。",
@@ -861,7 +926,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Dễ dàng bị con rắn dụ dỗ và nếm thử trái cấm, cho thấy con người chưa bao giờ đủ bản lĩnh để cưỡng lại những lời chào mời ngọt ngào.",
           "tl": "Ang madaling mapaniwala ng ahas at pagkagat sa ipinagbabawal na bunga ay patunay na hindi talaga kaya ng tao ang mga tuksong mukhang napakaganda.",
           "th": "การหลงเชื่อคำหวานของงูและกินผลไม้ต้องห้ามทันที พิสูจน์ให้เห็นว่ามนุษย์เราไม่มีทางต้านทานข้อเสนอสุดพิเศษแบบจำกัดเวลาได้เลย",
-          "sw": "Kuangukia mtego wa nyoka na kula tunda lililokatazwa mara moja ni uthibitisho kwamba wanadamu hawakuwahi kuwa na nafasi dhidi ya ofa hiyo ya kwanza ya kuvutia."
+          "sw": "Kuangukia mtego wa nyoka na kula tunda lililokatazwa mara moja ni uthibitisho kwamba wanadamu hawakuwahi kuwa na nafasi dhidi ya ofa hiyo ya kwanza ya kuvutia.",
+          "it": "Cascare subito nella trappola del serpente dimostra che nessun essere umano ha mai avuto speranza contro il primo dolce fuori stagione."
         }
     },
     "2026-01-20": {
@@ -876,7 +942,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "創世記 3:8-19",
@@ -888,7 +955,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Genesis 3:8-19",
           "tl": "Genesis 3:8-19",
           "th": "Genesis 3:8-19",
-          "sw": "Genesis 3:8-19"
+          "sw": "Genesis 3:8-19",
+          "it": "Genesi 3:8-19"
         },
         comment: {
           "ja": "やらかした直後に木の陰に隠れてやり過ごそうとするアダムとエバの姿、気まずい時にスマホを見て現実逃避する現代人の姿と重なりすぎてつらい。",
@@ -900,7 +968,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Hình ảnh A-đam và Ê-va trốn sau bụi cây để tránh né hậu quả thật giống hệt cách chúng ta tìm cách lánh mặt khi vừa gây ra chuyện.",
           "tl": "Ang pagtatago nina Adan at Eva sa likod ng puno para iwasan ang pagkakamali nila ay parang tayo lang na umiiwas sa mahirap na usapan.",
           "th": "อดัมกับเอวาทําผิดแล้วไปแอบหลังต้นไม้ มันช่างเหมือนเวลาที่เราพยายามเนียนหายตัวไปตอนมีเรื่องยุ่งยากจริงๆ",
-          "sw": "Adam na Hawa kujificha nyuma ya miti baada ya kufanya makosa ni kama sisi tunavyojaribu kukwepa wajibu wetu wakati mambo yameharibika."
+          "sw": "Adam na Hawa kujificha nyuma ya miti baada ya kufanya makosa ni kama sisi tunavyojaribu kukwepa wajibu wetu wakati mambo yameharibika.",
+          "it": "Adamo ed Eva che si nascondono dietro un albero per evitare le conseguenze sono esattamente noi quando fingiamo di non aver visto quella mail di lavoro."
         }
     },
     "2026-01-21": {
@@ -915,7 +984,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "創世記 3:20-24",
@@ -927,7 +997,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Genesis 3:20-24",
           "tl": "Genesis 3:20-24",
           "th": "Genesis 3:20-24",
-          "sw": "Genesis 3:20-24"
+          "sw": "Genesis 3:20-24",
+          "it": "Genesi 3:20-24"
         },
         comment: {
           "ja": "エデンの園を追い出される直前に名前をつけ合う夫婦、どんなに状況が悪くてもとりあえず目の前の生活を回そうとする人間という生き物のたくましさよ。",
@@ -939,7 +1010,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc đặt tên cho nhau ngay trước khi bị trục xuất khỏi vườn Ê-đen cho thấy bản năng con người là luôn cố gắng duy trì nếp sống dù hoàn cảnh có tồi tệ đến đâu.",
           "tl": "Ang pagpapangalan sa isa't isa bago pa man palayasin sa Eden ay patunay na kahit gaano kalala ang sitwasyon, sinusubukan pa rin nating gawing normal ang lahat.",
           "th": "การตั้งชื่อให้กันก่อนจะถูกไล่ออกจากสวนเอเดน แสดงให้เห็นว่าไม่ว่าจะเจอวิกฤตแค่ไหน มนุษย์เราก็ยังพยายามจะใช้ชีวิตประจําวันกันต่อไป",
-          "sw": "Kuitana majina kabla ya kufukuzwa kutoka Edeni inaonyesha jinsi wanadamu wanavyojitahidi kuendeleza maisha hata mambo yanapoharibika kabisa."
+          "sw": "Kuitana majina kabla ya kufukuzwa kutoka Edeni inaonyesha jinsi wanadamu wanavyojitahidi kuendeleza maisha hata mambo yanapoharibika kabisa.",
+          "it": "Mettersi d'accordo sui nomi un attimo prima di essere sfrattati dall'Eden dimostra che noi umani cerchiamo di mantenere la nostra routine anche durante l'apocalisse."
         }
     },
     "2026-01-22": {
@@ -954,7 +1026,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Pearl of Great Price",
           "tl": "Pearl of Great Price",
           "th": "Pearl of Great Price",
-          "sw": "Pearl of Great Price"
+          "sw": "Pearl of Great Price",
+          "it": "Perla di Gran Prezzo"
         },
         chapter: {
           "ja": "モーセ書 5:1-15",
@@ -966,7 +1039,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Moses 5:1-15",
           "tl": "Moses 5:1-15",
           "th": "Moses 5:1-15",
-          "sw": "Moses 5:1-15"
+          "sw": "Moses 5:1-15",
+          "it": "Mosè 5:1-15"
         },
         comment: {
           "ja": "エデンの園を追い出されてからが本番という現実は、新生活でいきなり壁にぶつかる社会人そのものだ。",
@@ -978,7 +1052,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Nhận ra cuộc sống thực sự bắt đầu sau khi bị đuổi khỏi vườn địa đàng cũng giống như cảm giác vỡ mộng khi bắt đầu đi làm vậy.",
           "tl": "Ang mapagtantong nagsisimula lang ang tunay na buhay pagkatapos mong mapalayas sa hardin ay ang pinaka-relatable na karanasan sa pagtanda.",
           "th": "การที่ต้องเผชิญกับความจริงหลังจากถูกไล่ออกจากสวนเอเดน ก็ไม่ต่างอะไรกับเด็กจบใหม่ที่เพิ่งเริ่มเจอกับโลกของการทำงานจริงๆ",
-          "sw": "Kutambua kuwa maisha huanza kweli baada ya kufukuzwa bustanini ni hali halisi inayowakabili watu wengi wanapoanza kujitegemea."
+          "sw": "Kutambua kuwa maisha huanza kweli baada ya kufukuzwa bustanini ni hali halisi inayowakabili watu wengi wanapoanza kujitegemea.",
+          "it": "Realizzare che la vita vera comincia solo dopo lo sfratto dal giardino è la quintessenza del diventare grandi all'improvviso."
         }
     },
     "2026-01-23": {
@@ -993,7 +1068,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "創世記 4:1-8",
@@ -1005,7 +1081,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Genesis 4:1-8",
           "tl": "Genesis 4:1-8",
           "th": "Genesis 4:1-8",
-          "sw": "Genesis 4:1-8"
+          "sw": "Genesis 4:1-8",
+          "it": "Genesi 4:1-8"
         },
         comment: {
           "ja": "神様からのお願いを無視してまで自分のこだわりを通そうとするカインの頑固さは、誰の心にも少しは住み着いている。",
@@ -1017,7 +1094,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Sự bướng bỉnh của Cain khi phớt lờ lời khuyên để làm theo ý mình chính là hình ảnh phản chiếu sự cứng đầu mà ai cũng từng có.",
           "tl": "Ang katigasan ng ulo ni Cain na balewalain ang payo para lang masunod ang sariling gusto ay isang ugaling lahat tayo ay paminsan-minsang nakikipagbuno.",
           "th": "ความดื้อรั้นของคาอินที่เพิกเฉยต่อคำแนะนำเพื่อทำตามใจตัวเอง คือนิสัยที่เราทุกคนต่างก็เคยเผลอทำในบางครั้ง",
-          "sw": "Ukaidi wa Kaini wa kupuuza ushauri ili tu afuate anayotaka ni tabia ambayo sote tunapambana nayo mara kwa mara."
+          "sw": "Ukaidi wa Kaini wa kupuuza ushauri ili tu afuate anayotaka ni tabia ambayo sote tunapambana nayo mara kwa mara.",
+          "it": "La cocciutaggine di Caino che ignora il consiglio dall'alto per fare di testa sua è quel briciolo di testardaggine che ci portiamo dietro tutti."
         }
     },
     "2026-01-24": {
@@ -1032,7 +1110,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "創世記 4:9-16",
@@ -1044,7 +1123,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Genesis 4:9-16",
           "tl": "Genesis 4:9-16",
           "th": "Genesis 4:9-16",
-          "sw": "Genesis 4:9-16"
+          "sw": "Genesis 4:9-16",
+          "it": "Genesi 4:9-16"
         },
         comment: {
           "ja": "神様に聞かれて「知りません、私は弟の番人じゃないので」と逆ギレするカイン、都合が悪くなると急に開き直る自分の姿を見ているようで胃が痛い。",
@@ -1056,7 +1136,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Ca-in hỏi ngược lại Chúa xem mình có phải là người giữ em mình không, một kiểu chống chế đầy bản năng khi chúng ta lỡ tay gây chuyện.",
           "tl": "Ang pagsagot ni Cain kay Lord na hindi siya ang tagapangalaga ng kanyang kapatid ay ang pinaka-relatable na depensa kapag alam nating may nagawa tayong mali.",
           "th": "การที่คาอินย้อนถามพระเจ้าว่าเขาไม่ใช่ผู้ดูแลน้องชาย คือปฏิกิริยาป้องกันตัวแบบมนุษย์สุดๆ เวลาที่เรารู้ว่าตัวเองทำผิดพลาด",
-          "sw": "Kaini kumjibu Mungu kuwa yeye si mlinzi wa ndugu yake ni ile hali ya kujitetea tunapojua kabisa tumekosea."
+          "sw": "Kaini kumjibu Mungu kuwa yeye si mlinzi wa ndugu yake ni ile hali ya kujitetea tunapojua kabisa tumekosea.",
+          "it": "Caino che risponde male a Dio dicendo di non essere la bambinaia di suo fratello è la classica mossa da campioni quando veniamo beccati con le mani nel sacco."
         }
     },
     "2026-01-25": {
@@ -1071,7 +1152,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "創世記 4:17-26",
@@ -1083,7 +1165,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Genesis 4:17-26",
           "tl": "Genesis 4:17-26",
           "th": "Genesis 4:17-26",
-          "sw": "Genesis 4:17-26"
+          "sw": "Genesis 4:17-26",
+          "it": "Genesi 4:17-26"
         },
         comment: {
           "ja": "人類初の都市建設が殺人犯の名前から始まるという皮肉、どれだけ文明が発展しても人間の根っこにある矛盾はなかなか消えないものだ。",
@@ -1095,7 +1178,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc thành phố đầu tiên lại do một kẻ sát nhân xây dựng thật mỉa mai, nhắc nhở rằng văn minh không phải lúc nào cũng xóa sạch được sự bất toàn trong bản chất con người.",
           "tl": "Ang ironya na ang unang lungsod ay itinayo ng isang mamamatay-tao ay paalala na ang pag-unlad ay hindi palaging nakakapagbura sa ating mga pagkakamali.",
           "th": "ความย้อนแย้งที่ว่าเมืองแรกของมนุษย์ถูกสร้างโดยฆาตกร เป็นเครื่องเตือนใจว่าความเจริญไม่ได้ลบล้างความไม่สมบูรณ์แบบในใจคนได้เสมอไป",
-          "sw": "Ukweli mchungu kuwa mji wa kwanza ulijengwa na muuaji unakumbusha kuwa maendeleo hayafuti kabisa udhaifu wa asili yetu ya kibinadamu."
+          "sw": "Ukweli mchungu kuwa mji wa kwanza ulijengwa na muuaji unakumbusha kuwa maendeleo hayafuti kabisa udhaifu wa asili yetu ya kibinadamu.",
+          "it": "Che la prima città della storia sia stata fondata da un assassino ci ricorda che il progresso non cancella mai del tutto i nostri pasticci."
         }
     },
     "2026-01-26": {
@@ -1110,7 +1194,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Pearl of Great Price",
           "tl": "Pearl of Great Price",
           "th": "Pearl of Great Price",
-          "sw": "Pearl of Great Price"
+          "sw": "Pearl of Great Price",
+          "it": "Perla di Gran Prezzo"
         },
         chapter: {
           "ja": "モーセ書 6:1-9",
@@ -1122,7 +1207,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Moses 6:1-9",
           "tl": "Moses 6:1-9",
           "th": "Moses 6:1-9",
-          "sw": "Moses 6:1-9"
+          "sw": "Moses 6:1-9",
+          "it": "Mosè 6:1-9"
         },
         comment: {
           "ja": "アダムが神の似姿として歩んだ記録を読んでから自分の日常を振り返ると、あまりの落差に思わず苦笑いしてしまう。",
@@ -1134,7 +1220,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Đọc về cách A-đam bước đi cùng Chúa rồi nhìn lại cuộc sống thường nhật của chính mình, sự khác biệt thật khiến người ta phải bật cười.",
           "tl": "Ang pagbabasa tungkol sa paglakad ni Adan kasama ang Diyos at pagtingin sa sarili kong buhay ay isang realidad na nakakatuwang pagtawanan.",
           "th": "อ่านบันทึกเรื่องอาดัมดำเนินกับพระเจ้าแล้วหันมามองชีวิตประจำวันของตัวเอง ก็อดอมยิ้มให้กับความต่างไม่ได้เลย",
-          "sw": "Kusoma kuhusu Adamu akitembea na Mungu na kisha kutazama maisha yangu ya kila siku ni tofauti inayokufanya utabasamu kwa aibu."
+          "sw": "Kusoma kuhusu Adamu akitembea na Mungu na kisha kutazama maisha yangu ya kila siku ni tofauti inayokufanya utabasamu kwa aibu.",
+          "it": "Leggere di Adamo che cammina a braccetto con il cielo e poi guardare alla nostra caotica lista della spesa fa quasi sorridere per il contrasto."
         }
     },
     "2026-01-27": {
@@ -1149,7 +1236,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "創世記 5:1-11",
@@ -1161,7 +1249,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Genesis 5:1-11",
           "tl": "Genesis 5:1-11",
           "th": "Genesis 5:1-11",
-          "sw": "Genesis 5:1-11"
+          "sw": "Genesis 5:1-11",
+          "it": "Genesi 5:1-11"
         },
         comment: {
           "ja": "何百歳も生きた長寿の記録が淡々と続くのを見ると、現代の忙しさに追われて焦っている自分が少し小さく見える。",
@@ -1173,7 +1262,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Nhìn những kỷ lục về tuổi thọ được ghi lại một cách bình thản, tôi thấy sự vội vã của mình trong cuộc sống hiện đại thật buồn cười.",
           "tl": "Ang makita ang mga tala ng mahabang buhay na isinulat nang simple ay nagpaparamdam sa akin na ang aking stress sa deadlines ay medyo nakakatawa.",
           "th": "การได้เห็นบันทึกเรื่องอายุขัยที่ยาวนานถูกเขียนไว้อย่างเรียบง่าย ทำให้ความเครียดเรื่องเดดไลน์ของฉันดูตลกไปเลย",
-          "sw": "Kuona rekodi hizi za umri mrefu zikiorodheshwa kwa kawaida hufanya msongo wangu wa mawazo kuhusu makataa ya kazi uonekane kama mzaha."
+          "sw": "Kuona rekodi hizi za umri mrefu zikiorodheshwa kwa kawaida hufanya msongo wangu wa mawazo kuhusu makataa ya kazi uonekane kama mzaha.",
+          "it": "Leggere di queste vite lunghe secoli e secoli fa sembrare la mia ansia per le scadenze di oggi una barzelletta."
         }
     },
     "2026-01-28": {
@@ -1188,7 +1278,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "創世記 5:12-20",
@@ -1200,7 +1291,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Genesis 5:12-20",
           "tl": "Genesis 5:12-20",
           "th": "Genesis 5:12-20",
-          "sw": "Genesis 5:12-20"
+          "sw": "Genesis 5:12-20",
+          "it": "Genesi 5:12-20"
         },
         comment: {
           "ja": "何百歳も生きる家系図の数字を見ていると、現代の私たちの人生はまるで早送りボタンを押されたような気分になる。",
@@ -1212,7 +1304,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Nhìn vào những con số tuổi thọ khổng lồ này, đời người hiện đại dường như chỉ như một cái chớp mắt.",
           "tl": "Sa haba ng mga taong nabuhay sa talaang ito, parang pinindot lang ang fast-forward button sa buhay natin ngayon.",
           "th": "การได้เห็นอายุขัยที่ยาวนานในลำดับพงศ์พันธุ์นี้ ทำให้ชีวิตสมัยใหม่ของเราดูเหมือนถูกกดปุ่มกรอไปข้างหน้าอย่างรวดเร็ว",
-          "sw": "Kuona umri mrefu katika vizazi hivi kunafanya maisha yetu ya sasa yaonekane kama yamepigwa mbio kwa kasi."
+          "sw": "Kuona umri mrefu katika vizazi hivi kunafanya maisha yetu ya sasa yaonekane kama yamepigwa mbio kwa kasi.",
+          "it": "A vedere queste età così lunghe, la nostra vita moderna sembra accelerata come un video riprodotto al doppio della velocità."
         }
     },
     "2026-01-29": {
@@ -1227,7 +1320,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "創世記 5:21-24",
@@ -1239,7 +1333,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Genesis 5:21-24",
           "tl": "Genesis 5:21-24",
           "th": "Genesis 5:21-24",
-          "sw": "Genesis 5:21-24"
+          "sw": "Genesis 5:21-24",
+          "it": "Genesi 5:21-24"
         },
         comment: {
           "ja": "神様と仲良すぎてそのまま連れ去られてしまったエノク、もはや究極の神隠しというよりは最高の早期リタイア生活。",
@@ -1251,7 +1346,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Hê-nóc quá thân thiết với Chúa đến mức Ngài đem ông đi, đó không phải là mất tích mà là sự nghỉ hưu sớm hoàn hảo nhất.",
           "tl": "Si Enoc na masyadong naging malapit sa Diyos kaya kinuha na lang siya, hindi ito pagkawala kundi ang pinaka-ultimate na early retirement.",
           "th": "เอโนคสนิทกับพระเจ้ามากจนพระองค์ทรงรับไป นี่ไม่ใช่อาการหายตัวไป แต่คือการเกษียณอายุก่อนกำหนดขั้นสุดยอด",
-          "sw": "Enoki kuwa karibu sana na Mungu hadi akachukuliwa ni zaidi ya kutoweka, ni kama kustaafu mapema kwa njia ya kipekee."
+          "sw": "Enoki kuwa karibu sana na Mungu hadi akachukuliwa ni zaidi ya kutoweka, ni kama kustaafu mapema kwa njia ya kipekee.",
+          "it": "Enoc era così in sintonia con il cielo che la sua scomparsa sembra più la pensione anticipata perfetta che un mistero."
         }
     },
     "2026-01-30": {
@@ -1266,7 +1362,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Pearl of Great Price",
           "tl": "Pearl of Great Price",
           "th": "Pearl of Great Price",
-          "sw": "Pearl of Great Price"
+          "sw": "Pearl of Great Price",
+          "it": "Perla di Gran Prezzo"
         },
         chapter: {
           "ja": "モーセ書 6:35-46",
@@ -1278,7 +1375,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Moses 6:35-46",
           "tl": "Moses 6:35-46",
           "th": "Moses 6:35-46",
-          "sw": "Moses 6:35-46"
+          "sw": "Moses 6:35-46",
+          "it": "Mosè 6:35-46"
         },
         comment: {
           "ja": "神様に「お前は雄弁じゃない」と先回りして言い訳を封じられるエノク、神様には隠し事も言い訳も通用しないという絶望的な事実がここにある。",
@@ -1290,7 +1388,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Hê-nóc cố gắng đưa ra lý do để từ chối sứ mệnh nhưng bị Chúa chặn đứng mọi lời bào chữa cho thấy mọi sự biện hộ đều vô ích trước mặt Ngài.",
           "tl": "Ang pagtatangka ni Enoc na magdahilan para hindi tumanggap ng misyon, na agad namang sinagot ng Diyos, ay nagpapaalala sa atin na walang saysay ang mga palusot sa harap ng Maykapal.",
           "th": "เอโนคพยายามหาข้ออ้างเพื่อเลี่ยงภารกิจแต่ถูกพระเจ้าดักทางไว้ทุกประการ เป็นเครื่องเตือนใจว่าข้อแก้ตัวของเราไม่มีความหมายอะไรเลยในสายพระเนตรของพระองค์",
-          "sw": "Enoki akijaribu kutoa visingizio ili kuepuka wito wake huku Mungu akivivunja vyote ni ukumbusho kwamba hatuwezi kujificha nyuma ya visingizio vyetu mbele ya Mungu."
+          "sw": "Enoki akijaribu kutoa visingizio ili kuepuka wito wake huku Mungu akivivunja vyote ni ukumbusho kwamba hatuwezi kujificha nyuma ya visingizio vyetu mbele ya Mungu.",
+          "it": "Provare a inventare scuse con chi sa già tutto è la dimostrazione che non possiamo sfuggire alla nostra vocazione."
         }
     },
     "2026-01-31": {
@@ -1305,7 +1404,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Pearl of Great Price",
           "tl": "Pearl of Great Price",
           "th": "Pearl of Great Price",
-          "sw": "Pearl of Great Price"
+          "sw": "Pearl of Great Price",
+          "it": "Perla di Gran Prezzo"
         },
         chapter: {
           "ja": "モーセ書 6:47-57",
@@ -1317,7 +1417,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Moses 6:47-57",
           "tl": "Moses 6:47-57",
           "th": "Moses 6:47-57",
-          "sw": "Moses 6:47-57"
+          "sw": "Moses 6:47-57",
+          "it": "Mosè 6:47-57"
         },
         comment: {
           "ja": "生まれたばかりの赤ん坊が泣く理由を「罪を背負って生まれてきたから」と真剣に説くエノク、子育ての苦労を神学的に捉えすぎていて逆に面白い。",
@@ -1329,7 +1430,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Hê-nóc giải thích rằng trẻ sơ sinh khóc vì chúng sinh ra trong một thế giới sa ngã là một cách nhìn nhận đầy tính thần học về tiếng khóc của trẻ nhỏ.",
           "tl": "Ang paliwanag ni Enoc na ang mga sanggol ay umiiyak dahil ipinanganak sila sa isang mundong puno ng kasalanan ay isang napakalalim na pagtingin sa simpleng pag-iyak ng bata.",
           "th": "เอโนคอธิบายว่าเด็กทารกร้องไห้เพราะเกิดมาในโลกที่ตกในบาป เป็นมุมมองทางเทววิทยาที่จริงจังเกินไปนิดสำหรับเรื่องที่เด็กแค่หิวนม",
-          "sw": "Enoki kueleza kuwa watoto wachanga hulia kwa sababu wamezaliwa katika ulimwengu ulioanguka ni mtazamo mzito sana wa kiteolojia kuhusu kilio cha mtoto."
+          "sw": "Enoki kueleza kuwa watoto wachanga hulia kwa sababu wamezaliwa katika ulimwengu ulioanguka ni mtazamo mzito sana wa kiteolojia kuhusu kilio cha mtoto.",
+          "it": "Spiegare il pianto di un neonato con la teologia è un modo decisamente originale per affrontare la stanchezza dei genitori."
         }
     },
     "2026-02-01": {
@@ -1344,7 +1446,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Pearl of Great Price",
           "tl": "Pearl of Great Price",
           "th": "Pearl of Great Price",
-          "sw": "Pearl of Great Price"
+          "sw": "Pearl of Great Price",
+          "it": "Perla di Gran Prezzo"
         },
         chapter: {
           "ja": "モーセ書 6:58-68",
@@ -1356,7 +1459,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Moses 6:58-68",
           "tl": "Moses 6:58-68",
           "th": "Moses 6:58-68",
-          "sw": "Moses 6:58-68"
+          "sw": "Moses 6:58-68",
+          "it": "Mosè 6:58-68"
         },
         comment: {
           "ja": "水と血と霊で清められるというのは、結局のところ自分という人間を一度リセットしてゼロからやり直すという究極の断捨離なのかもしれない。",
@@ -1368,7 +1472,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Được thanh tẩy bởi nước, huyết và thần linh thực chất giống như một cuộc dọn dẹp tâm hồn triệt để để làm lại từ đầu.",
           "tl": "Ang malinis sa pamamagitan ng tubig, dugo, at espiritu ay parang ultimate na pag-declutter sa buhay para magsimulang muli nang tama.",
           "th": "การชำระล้างด้วยน้ำ เลือด และพระวิญญาณ ก็เหมือนการทำความสะอาดครั้งใหญ่เพื่อรีเซ็ตชีวิตตัวเองแล้วเริ่มต้นใหม่จากศูนย์",
-          "sw": "Kutakaswa kwa maji, damu, na roho ni kama kufanya usafi wa kina wa nafsi ili uanze maisha upya kabisa."
+          "sw": "Kutakaswa kwa maji, damu, na roho ni kama kufanya usafi wa kina wa nafsi ili uanze maisha upya kabisa.",
+          "it": "Ricevere una pulizia profonda dello spirito è in fondo il modo migliore per fare il tagliando alla propria vita e ripartire."
         }
     },
     "2026-02-02": {
@@ -1383,7 +1488,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Pearl of Great Price",
           "tl": "Pearl of Great Price",
           "th": "Pearl of Great Price",
-          "sw": "Pearl of Great Price"
+          "sw": "Pearl of Great Price",
+          "it": "Perla di Gran Prezzo"
         },
         chapter: {
           "ja": "モーセ書 7:1-11",
@@ -1395,7 +1501,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Moses 7:1-11",
           "tl": "Moses 7:1-11",
           "th": "Moses 7:1-11",
-          "sw": "Moses 7:1-11"
+          "sw": "Moses 7:1-11",
+          "it": "Mosè 7:1-11"
         },
         comment: {
           "ja": "神様がニネベの民を心から愛していると聞いて、なんであんな奴らを許すんだと不貞腐れるエノクの姿に、正直すぎる人間味を感じてしまう。",
@@ -1407,7 +1514,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Phản ứng của Hê-nóc khi biết Chúa yêu thương dân Ni-ni-ve giống hệt cách chúng ta vẫn thường cằn nhằn khi thấy người mình ghét lại được đối xử tử tế.",
           "tl": "Ang makita si Enoc na nahihirapang tanggapin ang pagmamahal ng Diyos sa mga taong ayaw niya ay saktong-sakto sa nararamdaman natin kapag may taong hindi natin gusto.",
           "th": "การที่เอโนคพยายามทำความเข้าใจความรักของพระเจ้าที่มีต่อคนนีเนเวห์ คือภาพสะท้อนความรู้สึกจริงใจแบบมนุษย์เวลาเราต้องให้อภัยคนที่ไม่อยากให้อภัย",
-          "sw": "Kuona jinsi Enoki anavyohangaika kukubali upendo wa Mungu kwa watu asiotaka kuwapenda ni kioo kamili cha jinsi tunavyohisi tunapokutana na watu tunaowachukia."
+          "sw": "Kuona jinsi Enoki anavyohangaika kukubali upendo wa Mungu kwa watu asiotaka kuwapenda ni kioo kamili cha jinsi tunavyohisi tunapokutana na watu tunaowachukia.",
+          "it": "Fare i conti con l'idea che il cielo ami anche chi non sopportiamo è la prova più dura del nostro ego."
         }
     },
     "2026-02-03": {
@@ -1422,7 +1530,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Pearl of Great Price",
           "tl": "Pearl of Great Price",
           "th": "Pearl of Great Price",
-          "sw": "Pearl of Great Price"
+          "sw": "Pearl of Great Price",
+          "it": "Perla di Gran Prezzo"
         },
         chapter: {
           "ja": "モーセ書 7:12-17",
@@ -1434,7 +1543,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Moses 7:12-17",
           "tl": "Moses 7:12-17",
           "th": "Moses 7:12-17",
-          "sw": "Moses 7:12-17"
+          "sw": "Moses 7:12-17",
+          "it": "Mosè 7:12-17"
         },
         comment: {
           "ja": "敵陣のど真ん中で恐れずに言葉を放つエノク、メンタルが強すぎて現代のSNS炎上案件なら即座にミュートされそうなレベル。",
@@ -1446,7 +1556,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Enoch đi thẳng vào hang cọp để nói lên sự thật, một tinh thần thép mà nếu ở thời đại mạng xã hội bây giờ thì đã bị chặn từ lâu rồi.",
           "tl": "Si Enoc na pumasok sa gitna ng kaaway para magsalita nang walang takot ay may tapang na siguradong maba-bash agad sa social media ngayon.",
           "th": "เอโนคเดินดุ่มๆ เข้าไปในดงศัตรูเพื่อพูดความจริงด้วยความกล้าหาญระดับที่ถ้าเป็นโซเชียลสมัยนี้คงโดนทัวร์ลงไปนานแล้ว",
-          "sw": "Enoki kuingia katikati ya maadui zake bila hofu ili kusema kweli ni ujasiri ambao ungemfanya azuiwe kwenye mitandao ya kijamii ya sasa."
+          "sw": "Enoki kuingia katikati ya maadui zake bila hofu ili kusema kweli ni ujasiri ambao ungemfanya azuiwe kwenye mitandao ya kijamii ya sasa.",
+          "it": "Entrare in territorio ostile per dire la verità richiede un coraggio tale che oggi verrebbe bloccato da qualsiasi algoritmo."
         }
     },
     "2026-02-04": {
@@ -1461,7 +1572,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Pearl of Great Price",
           "tl": "Pearl of Great Price",
           "th": "Pearl of Great Price",
-          "sw": "Pearl of Great Price"
+          "sw": "Pearl of Great Price",
+          "it": "Perla di Gran Prezzo"
         },
         chapter: {
           "ja": "モーセ書 7:18-27",
@@ -1473,7 +1585,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Moses 7:18-27",
           "tl": "Moses 7:18-27",
           "th": "Moses 7:18-27",
-          "sw": "Moses 7:18-27"
+          "sw": "Moses 7:18-27",
+          "it": "Mosè 7:18-27"
         },
         comment: {
           "ja": "みんなが争っている横でシオンという理想郷を作ってしまうエノクたち、周りに流されず自分のコミュニティを構築する強さを見習いたい。",
@@ -1485,7 +1598,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Trong khi thiên hạ mải mê đánh đấm, nhóm của Enoch lại lặng lẽ xây dựng Sion, một ví dụ điển hình cho việc không để bản thân bị cuốn vào những tiêu cực xung quanh.",
           "tl": "Habang abala ang lahat sa pakikipag-away, si Enoc at ang kanyang mga tao ay tahimik na nagtayo ng Sion, isang magandang halimbawa ng pagpili sa sariling kapaligiran kaysa sa gulo.",
           "th": "ในขณะที่คนอื่นมัวแต่ทะเลาะกัน เอโนคและพวกพ้องกลับสร้างเมืองไซอันขึ้นมาได้ นี่คือตัวอย่างของการไม่ปล่อยให้สภาพแวดล้อมที่เป็นพิษมากำหนดชีวิตเรา",
-          "sw": "Enoki na watu wake kujenga Sayuni wakati wengine wote walikuwa wakipigana ni mfano bora wa kuchagua mazingira yako mwenyewe badala ya kufuata mkumbo wa vurugu."
+          "sw": "Enoki na watu wake kujenga Sayuni wakati wengine wote walikuwa wakipigana ni mfano bora wa kuchagua mazingira yako mwenyewe badala ya kufuata mkumbo wa vurugu.",
+          "it": "Costruire una comunità di pace mentre tutti litigano è la scelta migliore per isolarsi dal caos generale."
         }
     },
     "2026-02-05": {
@@ -1500,7 +1614,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Pearl of Great Price",
           "tl": "Pearl of Great Price",
           "th": "Pearl of Great Price",
-          "sw": "Pearl of Great Price"
+          "sw": "Pearl of Great Price",
+          "it": "Perla di Gran Prezzo"
         },
         chapter: {
           "ja": "モーセ書 7:28-40",
@@ -1512,7 +1627,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Moses 7:28-40",
           "tl": "Moses 7:28-40",
           "th": "Moses 7:28-40",
-          "sw": "Moses 7:28-40"
+          "sw": "Moses 7:28-40",
+          "it": "Mosè 7:28-40"
         },
         comment: {
           "ja": "人類がやらかし続けているのを見て神様が泣いているという事実は、現代のニュースを見ている時の我々の絶望感と完全に一致している。",
@@ -1524,7 +1640,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Chúa rơi lệ trước những sai lầm liên tiếp của con người cũng giống hệt cảm giác tuyệt vọng của chúng ta khi xem tin tức mỗi ngày.",
           "tl": "Ang pag-iyak ng Diyos sa patuloy na pagkakamali ng sangkatauhan ay parang eksaktong nararamdaman natin tuwing nanonood ng balita.",
           "th": "การที่พระเจ้าทรงพระกันแสงเพราะความผิดพลาดของมนุษย์ช่างตรงกับความรู้สึกสิ้นหวังที่เรามีเวลาเห็นข่าวในทุกวันนี้เหลือเกิน",
-          "sw": "Wazo la Mungu kulilia makosa yetu ya kila mara linafanana kabisa na jinsi ninavyohisi ninapotazama habari siku hizi."
+          "sw": "Wazo la Mungu kulilia makosa yetu ya kila mara linafanana kabisa na jinsi ninavyohisi ninapotazama habari siku hizi.",
+          "it": "Sapere che il cielo si rattrista per i nostri pasticci rispecchia esattamente lo stato d'animo di chi guarda i telegiornali."
         }
     },
     "2026-02-06": {
@@ -1539,7 +1656,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Pearl of Great Price",
           "tl": "Pearl of Great Price",
           "th": "Pearl of Great Price",
-          "sw": "Pearl of Great Price"
+          "sw": "Pearl of Great Price",
+          "it": "Perla di Gran Prezzo"
         },
         chapter: {
           "ja": "モーセ書 7:41-47",
@@ -1551,7 +1669,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Moses 7:41-47",
           "tl": "Moses 7:41-47",
           "th": "Moses 7:41-47",
-          "sw": "Moses 7:41-47"
+          "sw": "Moses 7:41-47",
+          "it": "Mosè 7:41-47"
         },
         comment: {
           "ja": "自分のことだけで手一杯な人間に対し、はるか未来の救済計画まで見通して淡々と語る神様のスケール感、もはやついていけないレベルで凄い。",
@@ -1563,7 +1682,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Trong khi chúng ta còn đang chật vật với cuộc sống thường nhật, Chúa đã thản nhiên vạch ra kế hoạch cứu rỗi cho mọi thế hệ, một tầm nhìn quá đỗi vĩ đại.",
           "tl": "Habang tayo ay hirap na hirap sa araw-araw, kalmado namang pinaplano ng Diyos ang kaligtasan ng lahat, isang perspektibong hindi natin kayang pantayan.",
           "th": "ในขณะที่เรากำลังดิ้นรนกับชีวิตวันต่อวัน พระเจ้ากลับกำลังวางแผนการช่วยให้รอดของทุกยุคสมัยอย่างใจเย็น ซึ่งเป็นมุมมองที่เหนือชั้นจริงๆ",
-          "sw": "Wakati sisi tunahangaika na maisha ya kila siku, Mungu anapanga kwa utulivu wokovu wa vizazi vyote, mtazamo ambao hatuwezi kuufikia."
+          "sw": "Wakati sisi tunahangaika na maisha ya kila siku, Mungu anapanga kwa utulivu wokovu wa vizazi vyote, mtazamo ambao hatuwezi kuufikia.",
+          "it": "Mentre noi lottiamo per arrivare a sera, il piano universale va avanti con una prospettiva decisamente fuori dal comune."
         }
     },
     "2026-02-07": {
@@ -1578,7 +1698,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Pearl of Great Price",
           "tl": "Pearl of Great Price",
           "th": "Pearl of Great Price",
-          "sw": "Pearl of Great Price"
+          "sw": "Pearl of Great Price",
+          "it": "Perla di Gran Prezzo"
         },
         chapter: {
           "ja": "モーセ書 7:48-59",
@@ -1590,7 +1711,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Moses 7:48-59",
           "tl": "Moses 7:48-59",
           "th": "Moses 7:48-59",
-          "sw": "Moses 7:48-59"
+          "sw": "Moses 7:48-59",
+          "it": "Mosè 7:48-59"
         },
         comment: {
           "ja": "人類の失敗を全部見せられて泣き崩れるエノク、神様の苦労人っぷりを目の当たりにして言葉を失うのは当然の反応だ。",
@@ -1602,7 +1724,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Chứng kiến Hê-nóc bật khóc khi nhìn thấu những sai lầm của nhân loại, ta mới hiểu được gánh nặng trong lòng Đấng Tạo Hóa lớn đến nhường nào.",
           "tl": "Ang pag-iyak ni Enoc matapos makita ang lahat ng pagkakamali ng tao ay ang tanging normal na reaksyon kapag nakita mo kung gaano nasasaktan ang Diyos para sa atin.",
           "th": "การที่เอโนคต้องหลั่งน้ำตาเมื่อเห็นความล้มเหลวทั้งหมดของมนุษย์ คือปฏิกิริยาของคนที่เพิ่งเข้าใจว่าพระเจ้าทรงอดทนกับเรามากแค่ไหน",
-          "sw": "Enoki kulia baada ya kuona makosa yote ya wanadamu ni jibu la kawaida la mtu anayegundua jinsi Mungu anavyotuvumilia kwa uchungu."
+          "sw": "Enoki kulia baada ya kuona makosa yote ya wanadamu ni jibu la kawaida la mtu anayegundua jinsi Mungu anavyotuvumilia kwa uchungu.",
+          "it": "Vedere Enoc scoppiare in pianto davanti ai fallimenti dell'umanita e la reazione piu logica quando ci si rende conto di quanto dolore provi Dio nel vederci sbagliare."
         }
     },
     "2026-02-08": {
@@ -1617,7 +1740,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Pearl of Great Price",
           "tl": "Pearl of Great Price",
           "th": "Pearl of Great Price",
-          "sw": "Pearl of Great Price"
+          "sw": "Pearl of Great Price",
+          "it": "Perla di Gran Prezzo"
         },
         chapter: {
           "ja": "モーセ書 7:60-69",
@@ -1629,7 +1753,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Moses 7:60-69",
           "tl": "Moses 7:60-69",
           "th": "Moses 7:60-69",
-          "sw": "Moses 7:60-69"
+          "sw": "Moses 7:60-69",
+          "it": "Mosè 7:60-69"
         },
         comment: {
           "ja": "文明が滅びても神様は再会を待ち望んでいるという話、どれだけ裏切られても諦めない親の愛の究極系を見せられている気分だ。",
@@ -1641,7 +1766,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Chúa vẫn chờ đợi ngày đoàn tụ ngay cả khi nền văn minh sụp đổ chính là minh chứng rõ nhất cho tình yêu của người cha không bao giờ từ bỏ con cái.",
           "tl": "Ang malaman na naghihintay ang Diyos sa ating muling pagkikita kahit matapos ang pagkawasak ng lahat ay ang pinakamalinaw na halimbawa ng magulang na hindi sumusuko.",
           "th": "การที่พระเจ้าทรงรอคอยการกลับมาพบกันแม้ในยามที่ทุกอย่างพังทลาย คือนิยามของความรักแบบพ่อแม่ที่ไม่มีวันตัดใจจากลูกได้เลย",
-          "sw": "Kujua kuwa Mungu anasubiri tukutane tena hata baada ya kila kitu kuanguka ni uthibitisho wa upendo wa mzazi ambaye hawezi kukata tamaa."
+          "sw": "Kujua kuwa Mungu anasubiri tukutane tena hata baada ya kila kitu kuanguka ni uthibitisho wa upendo wa mzazi ambaye hawezi kukata tamaa.",
+          "it": "Sapere che Dio aspetta il nostro ritorno anche quando tutto va in pezzi e la prova definitiva di un amore genitoriale che non sa proprio arrendersi."
         }
     },
     "2026-02-09": {
@@ -1656,7 +1782,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Pearl of Great Price",
           "tl": "Pearl of Great Price",
           "th": "Pearl of Great Price",
-          "sw": "Pearl of Great Price"
+          "sw": "Pearl of Great Price",
+          "it": "Perla di Gran Prezzo"
         },
         chapter: {
           "ja": "モーセ書 8:1-30",
@@ -1668,7 +1795,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Moses 8:1-30",
           "tl": "Moses 8:1-30",
           "th": "Moses 8:1-30",
-          "sw": "Moses 8:1-30"
+          "sw": "Moses 8:1-30",
+          "it": "Mosè 8:1-30"
         },
         comment: {
           "ja": "周囲がどれだけ腐敗していても一人黙々と箱舟を作り続けるノア、究極のマイペースというかメンタルの強さがもはや伝説の域。",
@@ -1680,7 +1808,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Nô-ê bình thản đóng tàu trong khi cả thế giới đang náo loạn chính là bài học đỉnh cao về việc giữ vững tinh thần giữa nghịch cảnh.",
           "tl": "Si Noe na matiyagang gumagawa ng arko habang ang lahat ay abala sa kaguluhan ay ang tunay na definition ng pagiging focused sa gitna ng pressure.",
           "th": "การที่โนอาห์ยังคงมุ่งมั่นสร้างเรือท่ามกลางผู้คนที่วุ่นวาย คือตัวอย่างของการมีสมาธิที่น่านับถือที่สุดในโลก",
-          "sw": "Nuhu kujenga safina huku kila mtu akipoteza mwelekeo ni mfano bora wa jinsi ya kukaa makini katika mazingira magumu."
+          "sw": "Nuhu kujenga safina huku kila mtu akipoteza mwelekeo ni mfano bora wa jinsi ya kukaa makini katika mazingira magumu.",
+          "it": "Noe che si costruisce la sua arca mentre tutti gli altri perdono la testa e l'esempio supremo di come mantenere la calma in mezzo a un delirio collettivo."
         }
     },
     "2026-02-10": {
@@ -1695,7 +1824,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "創世記 6:1-22",
@@ -1707,7 +1837,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Genesis 6:1-22",
           "tl": "Genesis 6:1-22",
           "th": "Genesis 6:1-22",
-          "sw": "Genesis 6:1-22"
+          "sw": "Genesis 6:1-22",
+          "it": "Genesi 6:1-22"
         },
         comment: {
           "ja": "何十年もかけて巨大な船を作っているノアを横目に、誰も気に留めなかった当時の人々のスルー力、ある意味で現代のSNSの反応と変わらない。",
@@ -1719,7 +1850,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc không ai đoái hoài gì đến Nô-ê khi ông đóng con tàu khổng lồ suốt nhiều thập kỷ cho thấy con người vốn dĩ rất giỏi phớt lờ những gì mình không muốn thấy.",
           "tl": "Ang katotohanang walang pumansin kay Noe habang gumagawa siya ng arko sa loob ng ilang dekada ay nagpapakita na likas na sa tao ang magbulag-bulagan sa ayaw nilang harapin.",
           "th": "การที่ไม่มีใครสนใจโนอาห์ขณะสร้างเรือยักษ์ตลอดหลายสิบปี แสดงให้เห็นว่ามนุษย์เราเก่งเรื่องการมองข้ามสิ่งที่ไม่อยากเห็นมานานแล้ว",
-          "sw": "Watu kutomjali Nuhu alipokuwa akijenga safina kwa miongo kadhaa inaonyesha jinsi wanadamu walivyo na kipaji cha kupuuza mambo wasiyotaka kukabiliana nayo."
+          "sw": "Watu kutomjali Nuhu alipokuwa akijenga safina kwa miongo kadhaa inaonyesha jinsi wanadamu walivyo na kipaji cha kupuuza mambo wasiyotaka kukabiliana nayo.",
+          "it": "Il fatto che nessuno se ne fregasse di Noe mentre costruiva una nave gigante per decenni dimostra che siamo sempre stati campioni nell'ignorare cio che non vogliamo vedere."
         }
     },
     "2026-02-11": {
@@ -1734,7 +1866,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "創世記 7:1-24",
@@ -1746,7 +1879,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Genesis 7:1-24",
           "tl": "Genesis 7:1-24",
           "th": "Genesis 7:1-24",
-          "sw": "Genesis 7:1-24"
+          "sw": "Genesis 7:1-24",
+          "it": "Genesi 7:1-24"
         },
         comment: {
           "ja": "動物たちを詰め込んで箱舟の扉を閉めるノア、現代の引っ越しで荷造りが終わらずにパニックになっている自分を重ねてしまう。",
@@ -1758,7 +1892,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Nhìn Nô-ê đóng cửa tàu sau khi nhồi nhét bao nhiêu con vật, tôi lại thấy hình ảnh mình đang hoảng loạn vì đóng gói đồ đạc khi chuyển nhà.",
           "tl": "Ang pagpapasok ni Noe sa mga hayop at pagkulong sa ark ay parang ako lang tuwing nag-aayos ng gamit na hindi na kasya sa bag.",
           "th": "เห็นโนอาห์ต้อนสัตว์เข้าเรือและปิดประตูแล้วนึกถึงสภาพตัวเองตอนจัดกระเป๋าเดินทางที่ของล้นจนแทบปิดไม่ได้เลย",
-          "sw": "Nuhu akipakia wanyama na kufunga mlango wa safina inanikumbusha jinsi ninavyohangaika kupakia mizigo yangu kabla ya safari."
+          "sw": "Nuhu akipakia wanyama na kufunga mlango wa safina inanikumbusha jinsi ninavyohangaika kupakia mizigo yangu kabla ya safari.",
+          "it": "Noe che chiude la porta dell'arca con tutti quegli animali dentro mi ricorda esattamente il caos dei miei giorni di trasloco quando niente sembra incastrarsi."
         }
     },
     "2026-02-12": {
@@ -1773,7 +1908,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "創世記 8:1-22",
@@ -1785,7 +1921,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Genesis 8:1-22",
           "tl": "Genesis 8:1-22",
           "th": "Genesis 8:1-22",
-          "sw": "Genesis 8:1-22"
+          "sw": "Genesis 8:1-22",
+          "it": "Genesi 8:1-22"
         },
         comment: {
           "ja": "カラスとハトを放して外の様子を確認するノア、遠隔操作でドローンを飛ばして外の空気を確かめる現代人の姿と何ら変わりない。",
@@ -1797,7 +1934,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Nô-ê thả chim để thăm dò bên ngoài chẳng khác nào việc chúng ta mở app thời tiết kiểm tra trước khi quyết định ra khỏi nhà.",
           "tl": "Ang pagpapakawala ni Noe ng mga ibon para mag-check sa labas ay parang pagtingin lang natin sa weather app bago lumabas ng bahay.",
           "th": "โนอาห์ปล่อยนกออกไปสำรวจข้างนอกก็เหมือนเราที่เช็กแอปพยากรณ์อากาศก่อนจะก้าวเท้าออกจากบ้านนั่นแหละ",
-          "sw": "Nuhu akituma ndege kuangalia hali ya nje ni kama sisi tunavyoangalia programu ya hali ya hewa kwenye simu kabla ya kutoka nje."
+          "sw": "Nuhu akituma ndege kuangalia hali ya nje ni kama sisi tunavyoangalia programu ya hali ya hewa kwenye simu kabla ya kutoka nje.",
+          "it": "Noe che manda in giro gli uccelli per vedere se fuori fa bel tempo e praticamente l'antenato di chi controlla l'app meteo prima di uscire di casa."
         }
     },
     "2026-02-13": {
@@ -1812,7 +1950,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "創世記 9:1-29",
@@ -1824,7 +1963,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Genesis 9:1-29",
           "tl": "Genesis 9:1-29",
           "th": "Genesis 9:1-29",
-          "sw": "Genesis 9:1-29"
+          "sw": "Genesis 9:1-29",
+          "it": "Genesi 9:1-29"
         },
         comment: {
           "ja": "大洪水から生還した直後にぶどう酒でやらかして息子たちに醜態をさらすノア、どんな聖人でも油断すると人間味全開になるという教訓。",
@@ -1836,7 +1976,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Noah sống sót qua trận đại hồng thủy chỉ để say xỉn và làm trò cười trước mặt các con, một lời nhắc nhở rằng ai cũng có lúc yếu lòng.",
           "tl": "Si Noe na nakaligtas sa baha pero nalasing at napahiya sa harap ng mga anak ay patunay na kahit ang pinakabanal ay may kahinaan din.",
           "th": "โนอาห์รอดพ้นจากน้ำท่วมโลกมาได้แต่กลับมาพลาดท่าเมามายจนเสียอาการต่อหน้าลูกๆ เป็นเครื่องเตือนใจว่าคนเราพลาดกันได้ทุกเมื่อ",
-          "sw": "Nuhu kunusurika gharika kisha kulewa na kujiaibisha mbele ya wanawe ni ukumbusho kwamba hata mtu mkuu anaweza kuwa na udhaifu wa kibinadamu."
+          "sw": "Nuhu kunusurika gharika kisha kulewa na kujiaibisha mbele ya wanawe ni ukumbusho kwamba hata mtu mkuu anaweza kuwa na udhaifu wa kibinadamu.",
+          "it": "Noe che sopravvive al diluvio universale solo per fare una pessima figura davanti ai figli dimostra che nessuno e immune ai momenti di totale assurdita."
         }
     },
     "2026-02-14": {
@@ -1851,7 +1992,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "創世記 10:1-32",
@@ -1863,7 +2005,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Genesis 10:1-32",
           "tl": "Genesis 10:1-32",
           "th": "Genesis 10:1-32",
-          "sw": "Genesis 10:1-32"
+          "sw": "Genesis 10:1-32",
+          "it": "Genesi 10:1-32"
         },
         comment: {
           "ja": "延々と続く系図のリストは、当時の人々が自分たちのルーツを必死に記録しようとした、現代のSNSのフォロワーリスト以上に切実な生存証明書。",
@@ -1875,7 +2018,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Những danh sách gia phả dài dằng dặc ấy thực chất là cách người xưa lưu giữ nguồn cội, một bản ghi chép còn nghiêm túc hơn cả danh sách bạn bè trên mạng xã hội.",
           "tl": "Ang mahabang listahan ng mga pangalan ay pagtatangka ng mga sinaunang tao na itala ang kanilang pinagmulan, na mas seryoso pa sa kahit anong listahan ng followers ngayon.",
           "th": "รายชื่อบรรพบุรุษที่ยาวเหยียดคือความพยายามอย่างยิ่งยวดของคนสมัยก่อนในการบันทึกรากเหง้าของตน ซึ่งดูจริงจังกว่ารายชื่อผู้ติดตามในโซเชียลยุคนี้เสียอีก",
-          "sw": "Orodha ndefu ya majina ni juhudi za watu wa kale kuhifadhi asili yao, jambo ambalo ni zito kuliko orodha yoyote ya wafuasi kwenye mitandao ya kijamii leo."
+          "sw": "Orodha ndefu ya majina ni juhudi za watu wa kale kuhifadhi asili yao, jambo ambalo ni zito kuliko orodha yoyote ya wafuasi kwenye mitandao ya kijamii leo.",
+          "it": "Quelle liste infinite di nomi sono fondamentalmente il tentativo dei nostri antenati di tracciare le proprie origini, molto piu serio di qualsiasi elenco di follower odierno."
         }
     },
     "2026-02-15": {
@@ -1890,7 +2034,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "創世記 11:1-32",
@@ -1902,7 +2047,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Genesis 11:1-32",
           "tl": "Genesis 11:1-32",
           "th": "Genesis 11:1-32",
-          "sw": "Genesis 11:1-32"
+          "sw": "Genesis 11:1-32",
+          "it": "Genesi 11:1-32"
         },
         comment: {
           "ja": "天まで届く塔を建てようとするバベルの人々の壮大な計画も、結局は言葉が通じないだけで瓦解するあたり、現代の会議の風景を見ているようで胃が痛くなる。",
@@ -1914,7 +2060,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Chứng kiến cả dự án Tháp Babel sụp đổ chỉ vì sự cố giao tiếp cơ bản thực sự giống như bất kỳ cuộc họp công ty nào mà tôi từng tham gia.",
           "tl": "Ang makita ang pagbagsak ng buong proyekto ng Tore ni Babel dahil lang sa hindi pagkakaunawaan ay parang anumang meeting sa opisina na naranasan ko na.",
           "th": "เห็นโครงการหอคอยบาเบลพังทลายลงเพียงเพราะการสื่อสารล้มเหลว มันก็เหมือนกับการประชุมในออฟฟิศที่ฉันเคยเจอมาไม่มีผิด",
-          "sw": "Kuona mradi mzima wa Mnara wa Babeli ukiporomoka kwa sababu tu ya kutoelewana ni kama mikutano yote ya kazini niliyowahi kuhudhuria."
+          "sw": "Kuona mradi mzima wa Mnara wa Babeli ukiporomoka kwa sababu tu ya kutoelewana ni kama mikutano yote ya kazini niliyowahi kuhudhuria.",
+          "it": "Vedere il progetto della Torre di Babel fallire unicamente per un problema di comunicazione mi ricorda fin troppo certe riunioni di lavoro interminabili."
         }
     },
     "2026-02-16": {
@@ -1929,7 +2076,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Pearl of Great Price",
           "tl": "Pearl of Great Price",
           "th": "Pearl of Great Price",
-          "sw": "Pearl of Great Price"
+          "sw": "Pearl of Great Price",
+          "it": "Perla di Gran Prezzo"
         },
         chapter: {
           "ja": "アブラハム書 1:1-31",
@@ -1941,7 +2089,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Abraham 1:1-31",
           "tl": "Abraham 1:1-31",
           "th": "Abraham 1:1-31",
-          "sw": "Abraham 1:1-31"
+          "sw": "Abraham 1:1-31",
+          "it": "Abramo 1:1-31"
         },
         comment: {
           "ja": "神を信じようとしたアブラハムが、いきなり祭壇に縛り付けられるという理不尽な試練に直面する様子は、正しいことをしようとする時ほど逆風が吹く現実を突きつけてくる。",
@@ -1953,7 +2102,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Abraham cố gắng làm điều đúng đắn nhưng lại bị trói vào bàn thờ là lời nhắc nhở rằng đôi khi cuộc đời thử thách ta khắc nghiệt nhất ngay lúc ta đang nỗ lực hết mình.",
           "tl": "Ang pagtatangka ni Abraham na gawin ang tama pero nauwi sa pagkatali sa altar ay isang paalala na kung minsan, sinusubok ka ng tadhana nang matindi kapag sinusubukan mong magpakabuti.",
           "th": "อับราฮัมพยายามทำสิ่งที่ถูกต้องแต่กลับต้องถูกมัดไว้ที่แท่นบูชา เป็นเครื่องเตือนใจว่าบางครั้งชีวิตก็ทดสอบเราหนักที่สุดในตอนที่เราพยายามทำดีที่สุดแล้ว",
-          "sw": "Abraham kujaribu kufanya jambo sahihi na kuishia kufungwa kwenye madhabahu ni ukumbusho kwamba wakati mwingine maisha hukujaribu sana unapojitahidi kufanya mema."
+          "sw": "Abraham kujaribu kufanya jambo sahihi na kuishia kufungwa kwenye madhabahu ni ukumbusho kwamba wakati mwingine maisha hukujaribu sana unapojitahidi kufanya mema.",
+          "it": "Abrahamo che cerca di fare la cosa giusta e finisce legato su un altare ci ricorda che a volte la vita ti mette alla prova proprio quando ce la metti tutta."
         }
     },
     "2026-02-17": {
@@ -1968,7 +2118,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "創世記 12:1-9",
@@ -1980,7 +2131,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Genesis 12:1-9",
           "tl": "Genesis 12:1-9",
           "th": "Genesis 12:1-9",
-          "sw": "Genesis 12:1-9"
+          "sw": "Genesis 12:1-9",
+          "it": "Genesi 12:1-9"
         },
         comment: {
           "ja": "行き先も告げられずに引っ越しを命じられるアブラム、神様の無茶ぶりにもほどがあるけれど、それでも準備して出発するあたりが彼のすごいところだ。",
@@ -1992,7 +2144,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Được lệnh dọn nhà mà không biết đi đâu, Abram cứ thế lên đường như thể đó là một việc hết sức bình thường, thật là một tinh thần thép.",
           "tl": "Ang utos na lumipat nang hindi alam ang destinasyon ay isang matinding pagsubok, pero si Abram ay naghanda na lang na parang normal na araw lang iyon.",
           "th": "การถูกสั่งให้ย้ายบ้านโดยไม่บอกจุดหมายคือบททดสอบความเชื่อที่หนักหนา แต่ดูเหมือนอับรามจะเตรียมตัวออกเดินทางเหมือนเป็นเรื่องปกติธรรมดามาก",
-          "sw": "Kuambiwa uhame bila kuambiwa unaenda wapi ni jaribu kubwa la imani, lakini Abramu kuanza safari kama jambo la kawaida ni jambo la kushangaza."
+          "sw": "Kuambiwa uhame bila kuambiwa unaenda wapi ni jaribu kubwa la imani, lakini Abramu kuanza safari kama jambo la kawaida ni jambo la kushangaza.",
+          "it": "Partire per una destinazione sconosciuta senza un navigatore è il massimo salto nel buio, ma Abramo ha fatto i bagagli come se fosse un martedì qualunque."
         }
     },
     "2026-02-18": {
@@ -2007,7 +2160,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "創世記 12:10-20",
@@ -2019,7 +2173,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Genesis 12:10-20",
           "tl": "Genesis 12:10-20",
           "th": "Genesis 12:10-20",
-          "sw": "Genesis 12:10-20"
+          "sw": "Genesis 12:10-20",
+          "it": "Genesi 12:10-20"
         },
         comment: {
           "ja": "異国の地で怖くなって妻を妹と偽るアブラム、保身に走るあまりの人間臭さに、完璧な聖人なんてどこにもいないんだと安心する。",
@@ -2031,7 +2186,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Abram nói dối vợ mình là em gái vì sợ hãi là một hành động rất con người, cho thấy ngay cả những người vĩ đại cũng có lúc hoảng loạn.",
           "tl": "Ang pagsisinungaling ni Abram na kapatid niya ang kanyang asawa dahil sa takot ay isang makataong kahinaan na nagpapakita na hindi perpekto ang sinuman.",
           "th": "การที่อับรามโกหกว่าภรรยาเป็นน้องสาวเพราะความกลัว เป็นความผิดพลาดที่ดูเป็นมนุษย์สุดๆ จนทำให้เขารู้สึกเข้าถึงได้ง่ายขึ้นมาก",
-          "sw": "Abramu kusema uongo kuwa mkewe ni dada yake kwa sababu ya hofu ni udhaifu wa kibinadamu unaotukumbusha kuwa hata watu wakuu wana nyakati za hofu."
+          "sw": "Abramu kusema uongo kuwa mkewe ni dada yake kwa sababu ya hofu ni udhaifu wa kibinadamu unaotukumbusha kuwa hata watu wakuu wana nyakati za hofu.",
+          "it": "Mentire sulla propria moglie per paura di rimetterci la pelle è una mossa così disperata e umana che rende Abramo stranamente vicino a noi."
         }
     },
     "2026-02-19": {
@@ -2046,7 +2202,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "創世記 13:1-18",
@@ -2058,7 +2215,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Genesis 13:1-18",
           "tl": "Genesis 13:1-18",
           "th": "Genesis 13:1-18",
-          "sw": "Genesis 13:1-18"
+          "sw": "Genesis 13:1-18",
+          "it": "Genesi 13:1-18"
         },
         comment: {
           "ja": "財産が増えた途端に部下同士が揉め始めるのは、いつの時代も変わらない人間関係の縮図ですね。",
@@ -2070,7 +2228,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc nhân viên cãi nhau ngay khi tài sản tăng lên chính là hình ảnh thu nhỏ của những rắc rối nhân sự muôn thuở.",
           "tl": "Ang mag-away ang mga tauhan kapag dumami ang pera ay isang klasikong problema sa opisina na hanggang ngayon ay totoo pa rin.",
           "th": "พอรวยขึ้นแล้วลูกน้องเริ่มทะเลาะกันเอง นี่มันปัญหาคลาสสิกของคนทำงานทุกยุคสมัยชัดๆ",
-          "sw": "Wafanyakazi kuanza kugombana mara tu mali inapoongezeka ni hali ya kawaida ya mahusiano ya kibinadamu tangu zamani."
+          "sw": "Wafanyakazi kuanza kugombana mara tu mali inapoongezeka ni hali ya kawaida ya mahusiano ya kibinadamu tangu zamani.",
+          "it": "Appena il conto in banca cresce, i collaboratori iniziano a litigare, e certe dinamiche d'ufficio non cambiano proprio mai."
         }
     },
     "2026-02-20": {
@@ -2085,7 +2244,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "創世記 14:17-24",
@@ -2097,7 +2257,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Genesis 14:17-24",
           "tl": "Genesis 14:17-24",
           "th": "Genesis 14:17-24",
-          "sw": "Genesis 14:17-24"
+          "sw": "Genesis 14:17-24",
+          "it": "Genesi 14:17-24"
         },
         comment: {
           "ja": "王様からのお礼をきっぱり断るアブラム、損得勘定が先行する世の中で一番かっこいい生き方かもしれない。",
@@ -2109,7 +2270,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Áp-ram từ chối của cải của vua một cách dứt khoát là hành động đỉnh cao trong một thế giới chỉ biết tính toán lợi ích.",
           "tl": "Ang pagtanggi ni Abram sa kayamanan ng hari ay isang napakagandang halimbawa ng pagpapahalaga sa prinsipyo higit sa pera.",
           "th": "การที่อับรามปฏิเสธของกำนัลจากกษัตริย์อย่างเด็ดขาด เป็นจุดยืนที่เท่ที่สุดในโลกที่เอาแต่คิดเรื่องผลประโยชน์แบบนี้",
-          "sw": "Abram kukataa utajiri wa mfalme kwa ujasiri ni mfano bora wa kuwa na msimamo katika ulimwengu unaopenda faida tu."
+          "sw": "Abram kukataa utajiri wa mfalme kwa ujasiri ni mfano bora wa kuwa na msimamo katika ulimwengu unaopenda faida tu.",
+          "it": "Rifiutare le ricchezze del re con tanta naturalezza è la mossa di classe definitiva in un mondo ossessionato dal profitto."
         }
     },
     "2026-02-21": {
@@ -2124,7 +2286,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "創世記 16:1-16",
@@ -2136,7 +2299,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Genesis 16:1-16",
           "tl": "Genesis 16:1-16",
           "th": "Genesis 16:1-16",
-          "sw": "Genesis 16:1-16"
+          "sw": "Genesis 16:1-16",
+          "it": "Genesi 16:1-16"
         },
         comment: {
           "ja": "神の約束を待ちきれずに自分で解決策をひねり出したサライとアブラム、その焦りが後の壮大な家庭内トラブルの種になるあたりが人間臭くて切ない。",
@@ -2148,7 +2312,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Sarai và Abram mất kiên nhẫn rồi tự tìm đường tắt cho lời hứa của Chúa chính là sai lầm kinh điển mà ai trong chúng ta cũng từng mắc phải.",
           "tl": "Ang paggawa ng sariling paraan dahil hindi na makapaghintay sa pangako ng Diyos ay isang klasikong pagkakamali na nagbubunga ng gulo.",
           "th": "การพยายามหาทางลัดเพราะรอคำสัญญาของพระเจ้าไม่ไหว คือความใจร้อนที่มักจะสร้างปัญหาใหญ่ในระยะยาวให้กับทุกคน",
-          "sw": "Kujaribu kumsaidia Mungu kwa njia za mkato kwa sababu ya kukosa subira ni kosa la kibinadamu linaloleta matatizo yasiyoisha."
+          "sw": "Kujaribu kumsaidia Mungu kwa njia za mkato kwa sababu ya kukosa subira ni kosa la kibinadamu linaloleta matatizo yasiyoisha.",
+          "it": "Cercare di dare una mano ai piani alti inventandosi scorciatoie è il modo perfetto per complicarsi la vita per generazioni."
         }
     },
     "2026-02-22": {
@@ -2163,7 +2328,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "創世記 17:1-27",
@@ -2175,7 +2341,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Genesis 17:1-27",
           "tl": "Genesis 17:1-27",
           "th": "Genesis 17:1-27",
-          "sw": "Genesis 17:1-27"
+          "sw": "Genesis 17:1-27",
+          "it": "Genesi 17:1-27"
         },
         comment: {
           "ja": "99歳になって神から名前を変えろと言われ、思わず吹き出して笑ってしまうアブラハム、聖人だって無理難題にはツッコミを入れたくなるものだ。",
@@ -2187,7 +2354,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Phản ứng bật cười của Abraham khi nghe tin mình sẽ làm cha ở tuổi chín mươi chín chính là biểu cảm chân thật nhất trước một tình huống không tưởng.",
           "tl": "Ang pagtawa ni Abraham nang sabihan siyang magiging ama sa edad na siyamnapu't siyam ay ang pinaka-totoong reaksyon sa isang imposibleng sitwasyon.",
           "th": "การที่อับราฮัมหัวเราะออกมาเมื่อได้ยินว่าจะได้เป็นพ่อคนในวัยเก้าสิบเก้าปี เป็นปฏิกิริยาที่ดูเป็นมนุษย์ที่สุดเท่าที่จะจินตนาการได้",
-          "sw": "Abraham kucheka baada ya kuambiwa atakuwa baba akiwa na umri wa miaka tisini na tisa ni mwitikio wa kweli kabisa wa kibinadamu mbele ya jambo lisilowezekana."
+          "sw": "Abraham kucheka baada ya kuambiwa atakuwa baba akiwa na umri wa miaka tisini na tisa ni mwitikio wa kweli kabisa wa kibinadamu mbele ya jambo lisilowezekana.",
+          "it": "Farsi una risata alla sola idea di diventare genitori a novantanove anni è la reazione più onesta a un colpo di scena divino."
         }
     },
     "2026-02-23": {
@@ -2202,7 +2370,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "創世記 18:1-33",
@@ -2214,7 +2383,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Genesis 18:1-33",
           "tl": "Genesis 18:1-33",
           "th": "Genesis 18:1-33",
-          "sw": "Genesis 18:1-33"
+          "sw": "Genesis 18:1-33",
+          "it": "Genesi 18:1-33"
         },
         comment: {
           "ja": "神の使いが突然来訪したとき、とっさに最高級の料理を振る舞おうとするアブラハムのホスピタリティ精神、もはや過剰なまでの気遣いで親近感がわく。",
@@ -2226,7 +2396,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Abraham vội vã chuẩn bị bữa ăn thịnh soạn cho những vị khách bất ngờ ghé thăm chính là hiện thân của tâm lý muốn chu toàn mọi thứ trong tích tắc.",
           "tl": "Ang pagmamadali ni Abraham na maghanda ng piging para sa mga hindi inaasahang bisita ay tunay na sumasalamin sa pagiging sobrang mapag-asikong tao.",
           "th": "อับราฮัมรีบเตรียมอาหารชุดใหญ่ต้อนรับแขกไม่ได้รับเชิญทันที เป็นภาพสะท้อนความกระตือรือร้นในการเป็นเจ้าบ้านที่ดีที่ดูแล้วอบอุ่นใจ",
-          "sw": "Ibrahim kukimbia kuandaa karamu kwa wageni wasiotarajiwa ni kielelezo kamili cha mtu anayejaribu kufanya kila liwezekanalo ili kuwa mwenyeji bora."
+          "sw": "Ibrahim kukimbia kuandaa karamu kwa wageni wasiotarajiwa ni kielelezo kamili cha mtu anayejaribu kufanya kila liwezekanalo ili kuwa mwenyeji bora.",
+          "it": "Muoversi all'istante per cucinare un banchetto ai primi ospiti di passaggio è la quintessenza dell'ansia da padrone di casa perfetto."
         }
     },
     "2026-02-24": {
@@ -2241,7 +2412,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "創世記 19:1-38",
@@ -2253,7 +2425,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Genesis 19:1-38",
           "tl": "Genesis 19:1-38",
           "th": "Genesis 19:1-38",
-          "sw": "Genesis 19:1-38"
+          "sw": "Genesis 19:1-38",
+          "it": "Genesi 19:1-38"
         },
         comment: {
           "ja": "逃げる途中で未練たらしく後ろを振り返って塩の柱になってしまうロトの妻、過去を捨てきれない人間の弱さをこれ以上ないほど強烈に体現している。",
@@ -2265,7 +2438,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Vợ của Lót biến thành cột muối chỉ vì không cưỡng lại được việc ngoái nhìn lại quá khứ là bài học đắt giá nhất về việc buông bỏ.",
           "tl": "Ang pagiging haligi ng asin ng asawa ni Lot dahil hindi mapigilang lumingon sa nakaraan ay ang pinakamabigat na paalala na huwag nang lingunin ang mga bagay na dapat nang iwanan.",
           "th": "ภรรยาของโลทกลายเป็นเสาเกลือเพียงเพราะอดใจไม่ไหวที่จะหันกลับไปมองอดีต เป็นบทเรียนที่เจ็บปวดที่สุดว่าบางครั้งการปล่อยวางก็จำเป็นจริงๆ",
-          "sw": "Mke wa Lutu kugeuka kuwa nguzo ya chumvi kwa sababu hakuweza kujizuia kutazama nyuma ni onyo kali zaidi dhidi ya kung'ang'ania yaliyopita."
+          "sw": "Mke wa Lutu kugeuka kuwa nguzo ya chumvi kwa sababu hakuweza kujizuia kutazama nyuma ni onyo kali zaidi dhidi ya kung'ang'ania yaliyopita.",
+          "it": "Voltarsi indietro per un'ultima occhiata e finire trasformati in sale è la lezione più drastica di sempre sull'importanza di lasciar andare il passato."
         }
     },
     "2026-02-25": {
@@ -2280,7 +2454,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "創世記 20:1-18",
@@ -2292,7 +2467,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Genesis 20:1-18",
           "tl": "Genesis 20:1-18",
           "th": "Genesis 20:1-18",
-          "sw": "Genesis 20:1-18"
+          "sw": "Genesis 20:1-18",
+          "it": "Genesi 20:1-18"
         },
         comment: {
           "ja": "妻を妹だと言い張るアブラハムの保身術、夫婦の危機管理としてはあまりに人間臭すぎて苦笑いしか出てこない。",
@@ -2304,7 +2480,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Abraham nói dối vợ mình là em gái để tự bảo vệ bản thân là một tình huống đầy tính người đến mức dở khóc dở cười.",
           "tl": "Ang pagpapanggap ni Abraham na kapatid niya ang kanyang asawa para lang makaligtas ay isang nakakatawang halimbawa ng pagiging tao.",
           "th": "การที่อับราฮัมบอกว่าภรรยาเป็นน้องสาวเพียงเพื่อเอาตัวรอดนั้น เป็นความย้อนแย้งของมนุษย์ที่ชวนให้ขำไม่ออกจริงๆ",
-          "sw": "Abraham kusema mkewe ni dada yake ili ajilinde ni ule udhaifu wa kibinadamu unaotufanya tutabasamu kwa aibu."
+          "sw": "Abraham kusema mkewe ni dada yake ili ajilinde ni ule udhaifu wa kibinadamu unaotufanya tutabasamu kwa aibu.",
+          "it": "Spacciare la propria moglie per la sorella per puro istinto di conservazione è quella tattica di sopravvivenza che strappa un amaro sorriso."
         }
     },
     "2026-02-26": {
@@ -2319,7 +2496,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "創世記 21:1-21",
@@ -2331,7 +2509,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Genesis 21:1-21",
           "tl": "Genesis 21:1-21",
           "th": "Genesis 21:1-21",
-          "sw": "Genesis 21:1-21"
+          "sw": "Genesis 21:1-21",
+          "it": "Genesi 21:1-21"
         },
         comment: {
           "ja": "長年待ち続けた子供がようやく生まれたのに、今度は家庭内のいざこざで追い出されるハガル、人生のハードモードぶりが切なすぎる。",
@@ -2343,7 +2522,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Hagar vừa mới có được niềm vui làm mẹ thì lại bị đuổi đi, cuộc đời quả thật luôn biết cách thử thách chúng ta vào lúc không ngờ nhất.",
           "tl": "Ang pagpapalayas kay Hagar matapos niyang magkaanak ay isang malupit na paalala na ang buhay ay hindi laging patas.",
           "th": "ฮาการ์เพิ่งได้ลูกมาแต่กลับต้องถูกไล่ออกไป ชีวิตคนเรามักจะมีบททดสอบโหดๆ มาแบบไม่ทันตั้งตัวเสมอ",
-          "sw": "Hagar kupata mtoto baada ya kusubiri muda mrefu kisha kufukuzwa mara moja ni ukumbusho mchungu wa jinsi maisha yanavyoweza kubadilika ghafla."
+          "sw": "Hagar kupata mtoto baada ya kusubiri muda mrefu kisha kufukuzwa mara moja ni ukumbusho mchungu wa jinsi maisha yanavyoweza kubadilika ghafla.",
+          "it": "Ritrovarsi a fare i conti con la dura realtà dopo un momento di pura gioia ci ricorda che la vita ama metterci alla prova proprio quando ci sentiamo sicuri."
         }
     },
     "2026-02-27": {
@@ -2358,7 +2538,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "創世記 21:22-34",
@@ -2370,7 +2551,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Genesis 21:22-34",
           "tl": "Genesis 21:22-34",
           "th": "Genesis 21:22-34",
-          "sw": "Genesis 21:22-34"
+          "sw": "Genesis 21:22-34",
+          "it": "Genesi 21:22-34"
         },
         comment: {
           "ja": "アブラハムが井戸を巡って近隣住民と契約を結ぶ様子は、現代の地主トラブルや近所付き合いの苦労と地続きすぎて笑ってしまう。",
@@ -2382,7 +2564,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Abraham phải đàm phán về giếng nước với hàng xóm cho thấy những rắc rối về quyền lợi đất đai đã tồn tại từ thời cổ đại.",
           "tl": "Ang pakikipagkasundo ni Abraham sa kanyang mga kapitbahay tungkol sa balon ay parang modernong awayan sa subdivision na hindi natatapos.",
           "th": "การที่อับราฮัมต้องเจรจาเรื่องบ่อน้ำกับเพื่อนบ้านทำให้เห็นว่าปัญหาเรื่องเขตแดนและพื้นที่ส่วนตัวเป็นเรื่องที่มนุษย์ปวดหัวกันมาทุกยุคสมัย",
-          "sw": "Abraham kujadiliana na majirani zake kuhusu kisima inaonyesha kuwa migogoro ya mipaka ya ardhi na ujirani imekuwepo tangu zamani."
+          "sw": "Abraham kujadiliana na majirani zake kuhusu kisima inaonyesha kuwa migogoro ya mipaka ya ardhi na ujirani imekuwepo tangu zamani.",
+          "it": "Negoziare i confini e i diritti dell'acqua con i vicini dimostra che le beghe di condominio esistono dall'alba dei tempi."
         }
     },
     "2026-02-28": {
@@ -2397,7 +2580,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "創世記 22:1-24",
@@ -2409,7 +2593,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Genesis 22:1-24",
           "tl": "Genesis 22:1-24",
           "th": "Genesis 22:1-24",
-          "sw": "Genesis 22:1-24"
+          "sw": "Genesis 22:1-24",
+          "it": "Genesi 22:1-24"
         },
         comment: {
           "ja": "息子を連れて山へ向かうアブラハムの心中を思うと、どんなに信仰があっても足がすくむのは人間として当然のことだ。",
@@ -2421,7 +2606,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Hình ảnh Abraham đưa con trai lên núi là minh chứng đau đớn nhất cho việc phải thực hiện điều khó khăn nhất khi lòng đang tan nát.",
           "tl": "Ang pag-akyat ni Abraham sa bundok kasama ang kanyang anak ay nagpapakita na ang pananampalataya ay minsan nangangailangan ng masakit na pagsasakripisyo.",
           "th": "การที่อับราฮัมต้องพาลูกชายขึ้นไปบนภูเขาเป็นบททดสอบที่หนักหนาที่สุด ซึ่งแสดงให้เห็นว่าความศรัทธามักมาพร้อมกับความเจ็บปวดที่คาดไม่ถึง",
-          "sw": "Abraham kupanda mlima na mwanawe ni mfano mkuu wa jinsi imani inavyoweza kuhitaji ujasiri mkubwa hata wakati moyo wako unavunjika."
+          "sw": "Abraham kupanda mlima na mwanawe ni mfano mkuu wa jinsi imani inavyoweza kuhitaji ujasiri mkubwa hata wakati moyo wako unavunjika.",
+          "it": "Camminare verso la montagna con proprio figlio è la prova estrema di dover fare la cosa giusta quando si ha il cuore a pezzi."
         }
     },
     "2026-03-01": {
@@ -2436,7 +2622,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "創世記 23:1-20",
@@ -2448,7 +2635,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Genesis 23:1-20",
           "tl": "Genesis 23:1-20",
           "th": "Genesis 23:1-20",
-          "sw": "Genesis 23:1-20"
+          "sw": "Genesis 23:1-20",
+          "it": "Genesi 23:1-20"
         },
         comment: {
           "ja": "最愛の人を失った悲しみの中で土地の交渉という現実的な事務作業をこなすアブラハム、人生の荒波でも日常を回さなきゃいけないという残酷なリアル。",
@@ -2460,7 +2648,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Phải đi thương lượng giá đất trong lúc đau buồn vì mất vợ, Abraham cho thấy một sự thật phũ phàng rằng cuộc sống vẫn tiếp diễn ngay cả khi thế giới của ta sụp đổ.",
           "tl": "Ang kailangang makipag-negosasyon sa presyo ng lupa habang nagluluksa ay isang masakit na paalala na ang buhay ay hindi humihinto kahit sa gitna ng matinding pighati.",
           "th": "การต้องมาต่อรองราคาที่ดินในขณะที่กำลังโศกเศร้ากับการจากไปของภรรยา คือความจริงอันโหดร้ายของชีวิตที่บังคับให้เราต้องเดินหน้าต่อไปแม้ใจจะแหลกสลาย",
-          "sw": "Kulazimika kujadiliana bei ya ardhi wakati unajawa na huzuni ya kumpoteza mkeo ni ukumbusho mchungu kwamba maisha hayasimami hata ulimwengu wako unapoanguka."
+          "sw": "Kulazimika kujadiliana bei ya ardhi wakati unajawa na huzuni ya kumpoteza mkeo ni ukumbusho mchungu kwamba maisha hayasimami hata ulimwengu wako unapoanguka.",
+          "it": "Dover sbrigare pratiche burocratiche e comprare terreni mentre si piange la propria sposa è la prova che la vita non si ferma nemmeno quando il tuo mondo crolla."
         }
     },
     "2026-03-02": {
@@ -2475,7 +2664,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "創世記 24:1-49",
@@ -2487,7 +2677,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Genesis 24:1-49",
           "tl": "Genesis 24:1-49",
           "th": "Genesis 24:1-49",
-          "sw": "Genesis 24:1-49"
+          "sw": "Genesis 24:1-49",
+          "it": "Genesi 24:1-49"
         },
         comment: {
           "ja": "息子の嫁探しを部下に丸投げするアブラハム、現代なら過保護な親と自立できない息子の究極の形かもしれない。",
@@ -2499,7 +2690,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Abraham giao phó hoàn toàn chuyện tìm vợ cho con trai vào tay người đầy tớ là ví dụ điển hình của những bậc phụ huynh can thiệp quá sâu vào đời tư của con cái.",
           "tl": "Ang pagpapasa ni Abraham sa kanyang alipin ng paghahanap ng mapapangasawa ng kanyang anak ay ang pinaka-halimbawa ng isang magulang na hindi kayang bitawan ang pagkontrol sa buhay ng anak.",
           "th": "การที่อับราฮัมมอบหมายให้คนใช้ไปหาคู่ครองให้ลูกชายนั้น ช่างเป็นตัวอย่างที่ชัดเจนของพ่อแม่ที่ก้าวก่ายชีวิตลูกจนไม่ยอมปล่อยให้เขาได้ตัดสินใจเอง",
-          "sw": "Abraham kumkabidhi mtumishi wake jukumu la kumtafutia mwanawe mke ni mfano mkuu wa mzazi anayeshindwa kuacha kudhibiti maisha ya mtoto wake."
+          "sw": "Abraham kumkabidhi mtumishi wake jukumu la kumtafutia mwanawe mke ni mfano mkuu wa mzazi anayeshindwa kuacha kudhibiti maisha ya mtoto wake.",
+          "it": "Delegare la ricerca della moglie di tuo figlio a un sottoposto è l'esempio definitivo di un genitore iperprotettivo che proprio non sa mollare la presa."
         }
     },
     "2026-03-03": {
@@ -2514,7 +2706,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "創世記 24:50-66",
@@ -2526,7 +2719,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Genesis 24:50-66",
           "tl": "Genesis 24:50-66",
           "th": "Genesis 24:50-66",
-          "sw": "Genesis 24:50-66"
+          "sw": "Genesis 24:50-66",
+          "it": "Genesi 24:50-66"
         },
         comment: {
           "ja": "見知らぬ土地へ行く決断を即座に下すリベカ、今の時代ならSNSで大炎上しそうだけど、その潔さは一周回って憧れる。",
@@ -2538,7 +2732,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Rê-be-ca đồng ý kết hôn với người lạ và rời bỏ quê hương ngay lập tức là một quyết định táo bạo mà thời nay chắc chắn sẽ khiến cả mạng xã hội bùng nổ.",
           "tl": "Ang pagpayag ni Rebeca na magpakasal sa estranghero at lumipat agad ng lugar ay ang uri ng desisyon na kung gagawin ngayon ay pagpipiyestahan ng buong internet.",
           "th": "เรเบคาห์ตัดสินใจแต่งงานกับคนแปลกหน้าและย้ายถิ่นฐานในทันทีเป็นความกล้าที่ถ้าเกิดขึ้นในยุคนี้คงเป็นประเด็นร้อนแรงในโซเชียลไปแล้ว",
-          "sw": "Rebeka kukubali kuolewa na mgeni na kuhama nchi papo hapo ni uamuzi wa kijasiri ambao leo hii ungewafanya watu wengi kwenye mitandao kupagawa kwa mshangao."
+          "sw": "Rebeka kukubali kuolewa na mgeni na kuhama nchi papo hapo ni uamuzi wa kijasiri ambao leo hii ungewafanya watu wengi kwenye mitandao kupagawa kwa mshangao.",
+          "it": "Accettare di sposare uno sconosciuto e partire all'istante è un atto di fede radicale che oggi farebbe gridare al miracolo su qualsiasi social network."
         }
     },
     "2026-03-04": {
@@ -2553,7 +2748,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "創世記 26:1-35",
@@ -2565,7 +2761,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Genesis 26:1-35",
           "tl": "Genesis 26:1-35",
           "th": "Genesis 26:1-35",
-          "sw": "Genesis 26:1-35"
+          "sw": "Genesis 26:1-35",
+          "it": "Genesi 26:1-35"
         },
         comment: {
           "ja": "隣人の井戸を埋めたり掘り返したりを繰り返すイサク、もはや平和的解決というより根気比べの持久戦でしかない。",
@@ -2577,7 +2774,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Y-sác kiên trì đào lại những cái giếng bị lấp đầy bởi hàng xóm cho thấy rằng đôi khi sự nhẫn nhịn cũng cần một sức chịu đựng bền bỉ đến kinh ngạc.",
           "tl": "Ang paulit-ulit na paghukay ni Isaac ng mga balon na tinatambakan ng kanyang mga kapitbahay ay patunay na minsan ang pasensya ay isa ring uri ng digmaan.",
           "th": "การที่อิสอัคขุดบ่อน้ำใหม่ซ้ำแล้วซ้ำเล่าหลังจากถูกเพื่อนบ้านกลบฝัง เป็นบทเรียนที่บอกว่าบางครั้งความอดทนก็คือการรบทางจิตวิทยาดีๆ นี่เอง",
-          "sw": "Isaka kuchimba visima mara kwa mara baada ya majirani kuvifukia ni ushahidi kwamba uvumilivu wakati mwingine ni mchezo wa nani atachoka kwanza."
+          "sw": "Isaka kuchimba visima mara kwa mara baada ya majirani kuvifukia ni ushahidi kwamba uvumilivu wakati mwingine ni mchezo wa nani atachoka kwanza.",
+          "it": "Affrontare i vicini che continuano a tappare i pozzi è la classica lezione su chi possiede la pazienza più testarda al mondo."
         }
     },
     "2026-03-05": {
@@ -2592,7 +2790,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "創世記 27:18-46",
@@ -2604,7 +2803,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Genesis 27:18-46",
           "tl": "Genesis 27:18-46",
           "th": "Genesis 27:18-46",
-          "sw": "Genesis 27:18-46"
+          "sw": "Genesis 27:18-46",
+          "it": "Genesi 27:18-46"
         },
         comment: {
           "ja": "毛皮をまとって父親を騙すヤコブの必死さと、それにまんまと騙されるイサクのポンコツ具合、家族の修羅場はいつの時代もコントのようですね。",
@@ -2616,7 +2816,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Gia-cốp khoác da dê để lừa cha và Y-sác lại tin sái cổ, đúng là những vở kịch gia đình luôn có những tình tiết khó tin nhất.",
           "tl": "Si Jacob na nagbalat ng kambing para lokohin ang ama at si Isaac na naniwala naman ay patunay na ang drama sa pamilya ay parang isang sitcom noon pa man.",
           "th": "ยาโคบที่เอาหนังแพะมาคลุมตัวเพื่อหลอกพ่อและอิสอัคที่ดันเชื่อสนิทใจ เป็นเครื่องเตือนใจว่าดราม่าในครอบครัวมักจะตลกขบขันเสมอ",
-          "sw": "Yakobo kuvaa ngozi ya mbuzi ili kumdanganya baba yake na Isaka kuamini hivyo ni ushahidi kwamba migogoro ya kifamilia imekuwa ni kama mchezo wa kuigiza tangu zamani."
+          "sw": "Yakobo kuvaa ngozi ya mbuzi ili kumdanganya baba yake na Isaka kuamini hivyo ni ushahidi kwamba migogoro ya kifamilia imekuwa ni kama mchezo wa kuigiza tangu zamani.",
+          "it": "Mettersi pelli di capra per ingannare il padre e cascarci in pieno dimostra che i drammi familiari sono sempre stati un po' caotici."
         }
     },
     "2026-03-06": {
@@ -2631,7 +2832,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "創世記 29:1-35",
@@ -2643,7 +2845,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Genesis 29:1-35",
           "tl": "Genesis 29:1-35",
           "th": "Genesis 29:1-35",
-          "sw": "Genesis 29:1-35"
+          "sw": "Genesis 29:1-35",
+          "it": "Genesi 29:1-35"
         },
         comment: {
           "ja": "7年も働いていざ結婚と思ったら妹を押し付けられるヤコブ、世の中そう甘くないという現実をこれでもかと突きつけられている。",
@@ -2655,7 +2858,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Làm lụng vất vả bảy năm trời rồi cuối cùng bị lừa lấy nhầm người, Gia-cốp đã nếm trải sự thật cay đắng rằng đời không như mơ.",
           "tl": "Ang magtrabaho ng pitong taon para sa taong mahal mo tapos ay mapunta sa kapatid niya ay patunay na ang buhay ay sadyang hindi sumusunod sa plano.",
           "th": "ทำงานเจ็ดปีเพื่อจะได้แต่งงานกับคนที่รักแต่กลับได้น้องสาวมาแทน เป็นบทเรียนราคาแพงว่าชีวิตมักจะหักมุมได้เสมอ",
-          "sw": "Kufanya kazi miaka saba kwa ajili ya mwanamke unayempenda kisha kupewa dada yake ni funzo tosha kwamba maisha hayafuati mipango yako."
+          "sw": "Kufanya kazi miaka saba kwa ajili ya mwanamke unayempenda kisha kupewa dada yake ni funzo tosha kwamba maisha hayafuati mipango yako.",
+          "it": "Lavorare sette anni per amore e ritrovarsi con la sorella sbagliata è la prova che la vita non segue mai i piani stabiliti."
         }
     },
     "2026-03-07": {
@@ -2670,7 +2874,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "創世記 30:25-43",
@@ -2682,7 +2887,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Genesis 30:25-43",
           "tl": "Genesis 30:25-43",
           "th": "Genesis 30:25-43",
-          "sw": "Genesis 30:25-43"
+          "sw": "Genesis 30:25-43",
+          "it": "Genesi 30:25-43"
         },
         comment: {
           "ja": "ヤコブが羊の毛色を操作する必死の努力とラバンのあくどい駆け引き、もはや古代のスタートアップ企業における泥沼の契約交渉を見ている気分になる。",
@@ -2694,7 +2900,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Gia-cốp cố gắng điều khiển màu lông cừu và sự lươn lẹo của La-ban chẳng khác nào một cuộc đàm phán hợp đồng đầy toan tính trong các công ty khởi nghiệp hiện nay.",
           "tl": "Ang pagmamanipula ni Jacob sa mga tupa at ang maduming taktikang negosasyon ni Laban ay parang eksena sa isang kumpanya na puro siraan ang kontrata.",
           "th": "ความพยายามของยาโคบในการคัดเลือกสายพันธุ์สัตว์กับเล่ห์เหลี่ยมของลาบันช่างเหมือนการต่อรองธุรกิจในบริษัทสตาร์ทอัพที่เต็มไปด้วยความวุ่นวาย",
-          "sw": "Jitihada za Yakobo za kubadili rangi za kondoo na hila za Labani katika mikataba ni kama mazungumzo ya biashara yaliyoharibika katika kampuni za kisasa."
+          "sw": "Jitihada za Yakobo za kubadili rangi za kondoo na hila za Labani katika mikataba ni kama mazungumzo ya biashara yaliyoharibika katika kampuni za kisasa.",
+          "it": "Assistere alle strane strategie di allevamento e ai contratti truccati sembra proprio una trattativa d'affari moderna finita male."
         }
     },
     "2026-03-08": {
@@ -2709,7 +2916,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "創世記 32:1-32",
@@ -2721,7 +2929,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Genesis 32:1-32",
           "tl": "Genesis 32:1-32",
           "th": "Genesis 32:1-32",
-          "sw": "Genesis 32:1-32"
+          "sw": "Genesis 32:1-32",
+          "it": "Genesi 32:1-32"
         },
         comment: {
           "ja": "夜通し天使と格闘してまで祝福を勝ち取ろうとするヤコブ、ここまで必死になれるものがあるのは羨ましいけれど、腰を痛めるのは避けたいところ。",
@@ -2733,7 +2942,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Gia-cốp vật lộn với thiên sứ suốt đêm để giành lấy phước lành là một sự kiên trì đáng nể, dù tôi chắc chắn không muốn kết thúc bằng một chấn thương hông như thế.",
           "tl": "Ang pakikipagbuno ni Jacob sa anghel buong gabi para lang sa basbas ay nagpapakita ng kanyang determinasyon, kahit na ayaw ko sigurong magkaproblema sa balakang.",
           "th": "การปล้ำสู้กับทูตสวรรค์ทั้งคืนเพื่อให้ได้พรแสดงถึงความมุ่งมั่นของยาโคบอย่างที่สุด แม้ว่าส่วนตัวแล้วผมอยากจะเลี่ยงอาการบาดเจ็บที่สะโพกก็ตาม",
-          "sw": "Kupambana na malaika usiku kucha ili kupata baraka ni ujasiri wa kipekee wa Yakobo, ingawa binafsi ningependa kuepuka jeraha la kudumu la nyonga."
+          "sw": "Kupambana na malaika usiku kucha ili kupata baraka ni ujasiri wa kipekee wa Yakobo, ingawa binafsi ningependa kuepuka jeraha la kudumu la nyonga.",
+          "it": "Lottare tutta la notte contro un angelo per ottenere una benedizione è tipico di Jacob, anche se un mal di schiena simile è decisamente da evitare."
         }
     },
     "2026-03-09": {
@@ -2748,7 +2958,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "創世記 37:1-22",
@@ -2760,7 +2971,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Genesis 37:1-22",
           "tl": "Genesis 37:1-22",
           "th": "Genesis 37:1-22",
-          "sw": "Genesis 37:1-22"
+          "sw": "Genesis 37:1-22",
+          "it": "Genesi 37:1-22"
         },
         comment: {
           "ja": "派手なコートを着て夢の話を兄たちに語るヨセフの空気の読めなさは、もはや才能としか言いようがない。",
@@ -2772,7 +2984,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Joseph mặc áo choàng sặc sỡ rồi đi khoe giấc mơ với các anh mình, đúng là bậc thầy trong việc không biết đọc tình huống.",
           "tl": "Si Jose na suot ang kanyang makulay na damit at nagyayabang ng panaginip sa mga kapatid ay tunay na walang pakiramdam sa paligid.",
           "th": "โยเซฟที่ใส่เสื้อคลุมสีฉูดฉาดแล้วไปเล่าความฝันให้พี่ๆ ฟัง คือตัวอย่างของคนที่อ่านบรรยากาศไม่เป็นอย่างแท้จริง",
-          "sw": "Yusufu kuvaa kanzu yake ya rangi na kujigamba kuhusu ndoto zake mbele ya kaka zake ni mfano bora wa mtu asiyejua kusoma mazingira."
+          "sw": "Yusufu kuvaa kanzu yake ya rangi na kujigamba kuhusu ndoto zake mbele ya kaka zake ni mfano bora wa mtu asiyejua kusoma mazingira.",
+          "it": "Giuseppe che va in giro con la sua tunica sgargiante a raccontare sogni ai fratelli è l'incarnazione perfetta della totale mancanza di tatto."
         }
     },
     "2026-03-10": {
@@ -2787,7 +3000,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "創世記 37:23-36",
@@ -2799,7 +3013,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Genesis 37:23-36",
           "tl": "Genesis 37:23-36",
           "th": "Genesis 37:23-36",
-          "sw": "Genesis 37:23-36"
+          "sw": "Genesis 37:23-36",
+          "it": "Genesi 37:23-36"
         },
         comment: {
           "ja": "血まみれの服を見せて父親を騙す兄弟たちの演技力、その必死な隠蔽工作ぶりに闇の深さを感じる。",
@@ -2811,7 +3026,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Các anh của Joseph diễn kịch với chiếc áo đẫm máu để lừa cha, đúng là một màn kịch che đậy sự thật đen tối đến đáng sợ.",
           "tl": "Ang mga kapatid na nanlinlang sa ama gamit ang duguang damit ay nagpapakita kung gaano kadilim ang kayang gawin ng tao dahil sa inggit.",
           "th": "เหล่าพี่ชายที่สร้างฉากโกหกพ่อด้วยเสื้อผ้าเปื้อนเลือด เป็นการปกปิดความผิดที่ทั้งมืดมนและสิ้นหวังสุดๆ",
-          "sw": "Kaka zake kumdanganya baba yao kwa nguo zilizolowa damu ni kiwango cha uongo na drama ya kifamilia inayotisha."
+          "sw": "Kaka zake kumdanganya baba yao kwa nguo zilizolowa damu ni kiwango cha uongo na drama ya kifamilia inayotisha.",
+          "it": "I fratelli che mettono in scena una finta tragedia con la veste sporca di sangue ci ricordano quanto sappia essere contorto il dramma familiare."
         }
     },
     "2026-03-11": {
@@ -2826,7 +3042,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "創世記 38:12-30",
@@ -2838,7 +3055,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Genesis 38:12-30",
           "tl": "Genesis 38:12-30",
           "th": "Genesis 38:12-30",
-          "sw": "Genesis 38:12-30"
+          "sw": "Genesis 38:12-30",
+          "it": "Genesi 38:12-30"
         },
         comment: {
           "ja": "義父の家系図を複雑にするタマルの執念、もはやドラマの脚本家も真っ青な展開で目が離せない。",
@@ -2850,7 +3068,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Sự quyết liệt của Ta-ma trong việc thay đổi vận mệnh gia đình là một cú bẻ lái khiến các biên kịch phim truyền hình cũng phải chào thua.",
           "tl": "Ang tapang ni Tamar na baguhin ang kanyang kapalaran ay isang plot twist na hindi kayang isipin kahit ng mga manunulat ng teleserye.",
           "th": "ความกล้าของทามาร์ในการพลิกชะตาชีวิตตัวเองเป็นพล็อตเรื่องที่หักมุมจนนักเขียนบทละครยังต้องยอมแพ้",
-          "sw": "Ujasiri wa Tamari katika kubadili hatima ya familia yake ni aina ya mabadiliko ya hadithi ambayo ingemfanya mwandishi yeyote wa tamthilia aache kazi."
+          "sw": "Ujasiri wa Tamari katika kubadili hatima ya familia yake ni aina ya mabadiliko ya hadithi ambayo ingemfanya mwandishi yeyote wa tamthilia aache kazi.",
+          "it": "La mossa di Tamar per riprendersi il proprio futuro è un colpo di scena che farebbe invidia a qualsiasi sceneggiatore di soap opera."
         }
     },
     "2026-03-12": {
@@ -2865,7 +3084,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "創世記 39:1-23",
@@ -2877,7 +3097,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Genesis 39:1-23",
           "tl": "Genesis 39:1-23",
           "th": "Genesis 39:1-23",
-          "sw": "Genesis 39:1-23"
+          "sw": "Genesis 39:1-23",
+          "it": "Genesi 39:1-23"
         },
         comment: {
           "ja": "無実の罪で投獄されても腐らずに結果を出すヨセフ、もはや鋼のメンタルという言葉では片付けられないレベル。",
@@ -2890,7 +3111,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "tl": "Ang pagkakulong nang walang kasalanan ni Jose pero sa huli ay siya pa ang nagpatakbo ng kulungan ay ang tunay na kahulugan ng paggawa ng lemonade mula sa mga dayap.",
           "th": "การที่โยเซฟถูกขังคุกทั้งที่ไม่ได้ทำผิดแต่กลับกลายเป็นผู้คุมคุกเสียเอง คือนิยามของการเปลี่ยนวิกฤตให้เป็นโอกาสที่เหนือชั้นที่สุด",
           "sw": "Yusufu kufungwa jela bila kosa na bado akaishia kusimamia gereza hilo zima ni mfano mkuu wa kugeuza changamoto kuwa fursa.",
-          "zh": "約瑟即使身陷冤獄卻依然能把監獄經營得有聲有色，這份抗壓性簡直是職場生存的天花板。"
+          "zh": "約瑟即使身陷冤獄卻依然能把監獄經營得有聲有色，這份抗壓性簡直是職場生存的天花板。",
+          "it": "Finire in prigione da innocente e finire comunque a gestire tutto dimostra che Giuseppe sapeva davvero fare di necessità virtù."
         }
     },
     "2026-03-13": {
@@ -2905,7 +3127,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "創世記 40:1-23",
@@ -2917,7 +3140,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Genesis 40:1-23",
           "tl": "Genesis 40:1-23",
           "th": "Genesis 40:1-23",
-          "sw": "Genesis 40:1-23"
+          "sw": "Genesis 40:1-23",
+          "it": "Genesi 40:1-23"
         },
         comment: {
           "ja": "助けてやった相手に速攻で忘れ去られるヨセフの悲哀、現代の職場で義理を通したのに恩を仇で返されるあの虚しさそのものだ。",
@@ -2929,7 +3153,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Giô-sép bị người hầu rượu quên lãng ngay sau khi được giúp đỡ chính là minh chứng cho sự bạc bẽo thường thấy trong các mối quan hệ.",
           "tl": "Ang makalimutan ni Jose matapos niyang tulungan ang cupbearer ay ang sinaunang bersyon ng pagiging seenzoned matapos kang gumawa ng pabor.",
           "th": "โยเซฟที่ถูกลืมหลังจากช่วยคนอื่นไว้ได้สำเร็จ เป็นภาพสะท้อนความใจดำของมนุษย์ที่พบได้ทั่วไปในชีวิตจริง",
-          "sw": "Yusufu kusahauliwa na mnyweshaji baada ya kumsaidia ni mfano wa jinsi watu wanavyosahau fadhila haraka sana."
+          "sw": "Yusufu kusahauliwa na mnyweshaji baada ya kumsaidia ni mfano wa jinsi watu wanavyosahau fadhila haraka sana.",
+          "it": "Essere scaricato dal coppiere dopo averlo aiutato è l'antenato biblico del visualizzato e non risposto dopo un grosso favore."
         }
     },
     "2026-03-14": {
@@ -2944,7 +3169,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "創世記 41:1-36",
@@ -2956,7 +3182,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Genesis 41:1-36",
           "tl": "Genesis 41:1-36",
           "th": "Genesis 41:1-36",
-          "sw": "Genesis 41:1-36"
+          "sw": "Genesis 41:1-36",
+          "it": "Genesi 41:1-36"
         },
         comment: {
           "ja": "ファラオの夢を解き明かして突然のCEO抜擢、準備不足のままいきなり大役を押し付けられるヨセフの戸惑いは現代の転職と重なる。",
@@ -2968,7 +3195,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Từ tù nhân trở thành người quyền lực thứ hai chỉ sau một đêm vì giải mã giấc mơ, đây đúng là kiểu thăng chức gây áp lực nhất mọi thời đại.",
           "tl": "Ang biglaang pag-angat ni Jose mula bilanggo patungong CEO dahil lang sa interpretasyon ng panaginip ay ang pinaka-nakaka-stress na promotion sa kasaysayan.",
           "th": "จากนักโทษกลายเป็นผู้บริหารสูงสุดเพียงข้ามคืนเพราะทำนายฝันได้ เป็นการเลื่อนตำแหน่งที่กดดันที่สุดในประวัติศาสตร์",
-          "sw": "Kutoka gerezani hadi kuwa kiongozi mkuu mara moja kwa sababu tu ya kutafsiri ndoto ni kupandishwa cheo chenye shinikizo kubwa zaidi kuwahi kutokea."
+          "sw": "Kutoka gerezani hadi kuwa kiongozi mkuu mara moja kwa sababu tu ya kutafsiri ndoto ni kupandishwa cheo chenye shinikizo kubwa zaidi kuwahi kutokea.",
+          "it": "Passare dalla cella al vertice solo perché hai interpretato un sogno è la promozione più stressante della storia."
         }
     },
     "2026-03-15": {
@@ -2983,7 +3211,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "創世記 41:37-57",
@@ -2995,7 +3224,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Genesis 41:37-57",
           "tl": "Genesis 41:37-57",
           "th": "Genesis 41:37-57",
-          "sw": "Genesis 41:37-57"
+          "sw": "Genesis 41:37-57",
+          "it": "Genesi 41:37-57"
         },
         comment: {
           "ja": "奴隷からいきなり国家のトップに大抜擢されるヨセフを見ていると、人生のフラグ回収が早すぎてついていけない。",
@@ -3007,7 +3237,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Nhìn Giô-sép từ thân phận nô lệ bỗng chốc trở thành tể tướng, ta thấy cuộc đời đôi khi còn khó đoán hơn cả phim truyền hình.",
           "tl": "Ang pag-angat ni Jose mula sa pagiging alipin patungo sa pagiging kanang-kamay ng Faraon ay patunay na ang buhay ay may mga plot twist na hindi natin inaasahan.",
           "th": "การที่โยเซฟพลิกชีวิตจากทาสกลายเป็นรองผู้ปกครองประเทศในชั่วข้ามคืน ทำให้รู้ว่าชีวิตจริงยิ่งกว่าละครที่เดาทางไม่ได้เลย",
-          "sw": "Kumwona Yusufu akitoka utumwani na kuwa kiongozi mkuu wa nchi kwa usiku mmoja ni ukumbusho kwamba maisha hubadilika kwa njia tusizozitarajia."
+          "sw": "Kumwona Yusufu akitoka utumwani na kuwa kiongozi mkuu wa nchi kwa usiku mmoja ni ukumbusho kwamba maisha hubadilika kwa njia tusizozitarajia.",
+          "it": "Vedere Giuseppe passare da schiavo a braccio destro del faraone ci ricorda che la vita cambia più in fretta di un curriculum aggiornato."
         }
     },
     "2026-03-16": {
@@ -3022,7 +3253,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "創世記 42:1-38",
@@ -3034,7 +3266,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Genesis 42:1-38",
           "tl": "Genesis 42:1-38",
           "th": "Genesis 42:1-38",
-          "sw": "Genesis 42:1-38"
+          "sw": "Genesis 42:1-38",
+          "it": "Genesi 42:1-38"
         },
         comment: {
           "ja": "かつて自分を売った兄弟たちと再会して、わざと厳しい態度で揺さぶりをかけるヨセフの心中を察すると、胃が痛くなるような気まずさがある。",
@@ -3046,7 +3279,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Chứng kiến Giô-sép thử lòng những người anh từng bán mình, ta thấy rõ sự đấu tranh nội tâm của một người đang cố tỏ ra cứng rắn trước quá khứ đau thương.",
           "tl": "Ang pagsubok ni Jose sa kanyang mga kapatid na nagbenta sa kanya ay patunay na kahit ang pagpapatawad ay may kasamang matinding emosyonal na bagahe.",
           "th": "ฉากที่โยเซฟแกล้งทำเป็นดุใส่พี่ชายที่เคยขายเขาไป สะท้อนถึงความอึดอัดใจเวลาต้องเผชิญหน้ากับอดีตที่ยังลืมไม่ลง",
-          "sw": "Yusufu kuwajaribu ndugu zake waliomuuza zamani ni kielelezo cha jinsi ilivyo vigumu kusahau yaliyopita wakati wa kukutana tena na familia."
+          "sw": "Yusufu kuwajaribu ndugu zake waliomuuza zamani ni kielelezo cha jinsi ilivyo vigumu kusahau yaliyopita wakati wa kukutana tena na familia.",
+          "it": "La tensione al primo incontro con i fratelli dopo anni è il prototipo della cena di famiglia imbarazzante."
         }
     },
     "2026-03-17": {
@@ -3061,7 +3295,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "創世記 43:1-34",
@@ -3073,7 +3308,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Genesis 43:1-34",
           "tl": "Genesis 43:1-34",
           "th": "Genesis 43:1-34",
-          "sw": "Genesis 43:1-34"
+          "sw": "Genesis 43:1-34",
+          "it": "Genesi 43:1-34"
         },
         comment: {
           "ja": "散々自分たちを苦しめた兄弟を前にして、涙をこらえきれず奥の部屋で号泣するヨセフ、憎しみよりも懐かしさが勝ってしまうのが人間というものだ。",
@@ -3085,7 +3321,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Joseph trốn vào phòng để khóc khi thấy anh em mình cho thấy rằng, đôi khi tha thứ là một cuộc chiến thầm lặng bên trong chính chúng ta.",
           "tl": "Ang pagtatago ni Jose para umiyak sa harap ng kanyang mga kapatid ay nagpapakita na ang pagpapatawad ay hindi laging madali, ito ay isang emosyonal na laban.",
           "th": "โยเซฟแอบไปร้องไห้เพราะทนเห็นพี่น้องไม่ได้ เตือนใจเราว่าบางครั้งการให้อภัยก็เป็นเรื่องของหัวใจที่บอบช้ำมากกว่าแค่การใช้เหตุผล",
-          "sw": "Yosefu kujificha ili kulia anapowaona ndugu zake inatukumbusha kuwa kusamehe mara nyingi ni mchakato wa ndani wenye maumivu makali."
+          "sw": "Yosefu kujificha ili kulia anapowaona ndugu zake inatukumbusha kuwa kusamehe mara nyingi ni mchakato wa ndani wenye maumivu makali.",
+          "it": "Giuseppe che corre a piangere di nascosto ci mostra che il perdono è un percorso molto più disordinato e umano di quanto pensiamo."
         }
     },
     "2026-03-18": {
@@ -3100,7 +3337,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "創世記 44:6-34",
@@ -3112,7 +3350,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Genesis 44:6-34",
           "tl": "Genesis 44:6-34",
           "th": "Genesis 44:6-34",
-          "sw": "Genesis 44:6-34"
+          "sw": "Genesis 44:6-34",
+          "it": "Genesi 44:6-34"
         },
         comment: {
           "ja": "弟を人質に取られ、身代わりを申し出るユダの姿に、かつてヨセフを売った男の面影はなく、ただ家族を守ろうと必死な一人の父親の姿がある。",
@@ -3124,7 +3363,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Judah từ kẻ bán anh em mình trở thành người sẵn sàng hy sinh để bảo vệ em trai là minh chứng rõ nhất cho thấy con người có thể thay đổi hoàn toàn.",
           "tl": "Ang pag-aalok ni Juda sa kanyang sarili bilang alipin para iligtas ang kapatid ay patunay na kahit ang taong may madilim na nakaraan ay kayang magbago para sa tama.",
           "th": "ยูดาห์ที่เคยขายน้องชายตัวเองกลับมายอมเป็นทาสเพื่อช่วยน้อง พิสูจน์ให้เห็นว่าคนเราสามารถเปลี่ยนไปในทางที่ดีขึ้นได้จริงๆ ไม่ว่าอดีตจะเคยพลาดแค่ไหน",
-          "sw": "Yuda ambaye zamani alimuuza ndugu yake, sasa anajitolea kuwa mtumwa ili kumlinda, ni ushahidi kuwa watu wanaweza kubadilika na kufanya yaliyo sawa."
+          "sw": "Yuda ambaye zamani alimuuza ndugu yake, sasa anajitolea kuwa mtumwa ili kumlinda, ni ushahidi kuwa watu wanaweza kubadilika na kufanya yaliyo sawa.",
+          "it": "Vedere Giuda offrirsi come schiavo per salvare il fratello dimostra che anche le persone con un passato pesante possono cambiare davvero."
         }
     },
     "2026-03-19": {
@@ -3139,7 +3379,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "創世記 45:16-28",
@@ -3151,7 +3392,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Genesis 45:16-28",
           "tl": "Genesis 45:16-28",
           "th": "Genesis 45:16-28",
-          "sw": "Genesis 45:16-28"
+          "sw": "Genesis 45:16-28",
+          "it": "Genesi 45:16-28"
         },
         comment: {
           "ja": "散々苦労をかけた息子が実は大出世していたと知ったときの父の驚きは、現代の親がSNSで子供の成功を初めて知る瞬間に通じるものがある。",
@@ -3163,7 +3405,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc người cha bàng hoàng khi biết đứa con tưởng đã mất lại là một quan chức quyền lực cũng giống như cảm giác khi cha mẹ bất ngờ thấy con mình thành đạt trên mạng xã hội.",
           "tl": "Ang gulat ng ama nang malaman na ang anak na akala niya ay nawala na ay isa palang mataas na opisyal ay parang pagtuklas sa tagumpay ng anak mo sa social media.",
           "th": "การที่พ่อรู้ว่าลูกชายที่หายไปนานกลายเป็นผู้มีอำนาจยิ่งใหญ่ ก็เหมือนความรู้สึกพ่อแม่สมัยนี้ที่เพิ่งรู้ว่าลูกตัวเองประสบความสำเร็จจากโซเชียลมีเดีย",
-          "sw": "Baba kugundua kuwa mwanawe aliyedhaniwa kuwa amepotea ni kiongozi mkuu ni kama mzazi anayegundua mafanikio ya mtoto wake kupitia mitandao ya kijamii."
+          "sw": "Baba kugundua kuwa mwanawe aliyedhaniwa kuwa amepotea ni kiongozi mkuu ni kama mzazi anayegundua mafanikio ya mtoto wake kupitia mitandao ya kijamii.",
+          "it": "Scoprire che il figlio che credevi disperso è diventato un pezzo grosso è la versione antica di vederlo comparire su LinkedIn come amministratore delegato."
         }
     },
     "2026-03-20": {
@@ -3178,7 +3421,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "創世記 46:28-34",
@@ -3190,7 +3434,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Genesis 46:28-34",
           "tl": "Genesis 46:28-34",
           "th": "Genesis 46:28-34",
-          "sw": "Genesis 46:28-34"
+          "sw": "Genesis 46:28-34",
+          "it": "Genesi 46:28-34"
         },
         comment: {
           "ja": "数十年ぶりに再会した父と子の抱擁シーン、言葉はいらないはずなのに結局あれこれ話が止まらないのは人間味の極み。",
@@ -3202,7 +3447,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Cảnh cha con ôm nhau sau hàng chục năm xa cách, dù biết rằng không cần lời nói nhưng họ vẫn cứ nói không ngừng, thật là một nét tính cách con người rất đỗi bình thường.",
           "tl": "Ang yakapan ng mag-ama pagkalipas ng ilang dekada ay napaka-emosyonal, at kahit na hindi na kailangan ng salita, hindi nila mapigilang magkwentuhan nang walang katapusan.",
           "th": "ฉากกอดกันของพ่อลูกที่ไม่ได้เจอกันหลายสิบปี มันเป็นช่วงเวลาที่คำพูดอาจไม่จำเป็น แต่การที่พวกเขาคุยกันไม่หยุดนี่แหละคือความจริงใจแบบมนุษย์สุดๆ",
-          "sw": "Kukumbatiana kwa baba na mwana baada ya miongo kadhaa ni tukio la kugusa moyo, ambapo hata kama maneno hayahitajiki, hawawezi kujizuia kuzungumza."
+          "sw": "Kukumbatiana kwa baba na mwana baada ya miongo kadhaa ni tukio la kugusa moyo, ambapo hata kama maneno hayahitajiki, hawawezi kujizuia kuzungumza.",
+          "it": "L abbraccio tra padre e figlio dopo decenni è così travolgente che, pur sapendo che le parole sono superflue, finiscono inevitabilmente per raccontarsi di tutto."
         }
     },
     "2026-03-21": {
@@ -3217,7 +3463,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "創世記 48:1-22",
@@ -3229,7 +3476,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Genesis 48:1-22",
           "tl": "Genesis 48:1-22",
           "th": "Genesis 48:1-22",
-          "sw": "Genesis 48:1-22"
+          "sw": "Genesis 48:1-22",
+          "it": "Genesi 48:1-22"
         },
         comment: {
           "ja": "孫の頭に手を置くときにわざわざ手を交差させて長男を焦らせるヤコブ、死の間際まで親のえこひいき全開で笑うしかない。",
@@ -3241,7 +3489,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Gia-cốp cố tình bắt chéo tay khi chúc phước cho cháu nội chỉ để làm khó con trưởng, đúng là kiểu ưu ái gia đình không bao giờ cũ.",
           "tl": "Ang pag-cross ng kamay ni Jacob sa pagbasbas sa mga apo para lang guluhin ang panganay ay patunay na kahit sa huling sandali ay hilig niya ang paboritismo.",
           "th": "ยาโคบไขว้มือตอนอวยพรหลานเพื่อให้ลูกชายคนโตตกใจ เป็นการแสดงความลำเอียงที่ยังคงเส้นคงวาจนวินาทีสุดท้ายจริงๆ",
-          "sw": "Yakobo kuvuka mikono yake ili kubariki mjukuu mdogo ili tu kumchanganya mzaliwa wa kwanza inaonyesha kuwa upendeleo hauna ukomo hata ukubwani."
+          "sw": "Yakobo kuvuka mikono yake ili kubariki mjukuu mdogo ili tu kumchanganya mzaliwa wa kwanza inaonyesha kuwa upendeleo hauna ukomo hata ukubwani.",
+          "it": "Giacobbe che incrocia le mani per benedire il nipote minore e far innervosire il primogenito dimostra che il favoritismo di famiglia non va mai in pensione."
         }
     },
     "2026-03-22": {
@@ -3256,7 +3505,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "創世記 49:29-33",
@@ -3268,7 +3518,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Genesis 49:29-33",
           "tl": "Genesis 49:29-33",
           "th": "Genesis 49:29-33",
-          "sw": "Genesis 49:29-33"
+          "sw": "Genesis 49:29-33",
+          "it": "Genesi 49:29-33"
         },
         comment: {
           "ja": "死に際に「絶対にこの場所に埋めてくれ」と念押しするヤコブ、死後の住所までこだわり抜くその執着心がもはや清々しい。",
@@ -3280,7 +3531,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Gia-cốp dặn dò kỹ lưỡng về nơi an nghỉ cuối cùng, cho thấy ngay cả khi cận kề cái chết, ông vẫn muốn kiểm soát mọi thứ đến cùng.",
           "tl": "Ang pag-utos ni Jacob kung saan eksaktong ililibing ay patunay na hanggang sa huling hininga ay gusto niya pa ring kontrolado ang lahat.",
           "th": "ยาโคบสั่งเสียเรื่องที่ฝังศพแบบเป๊ะๆ แสดงให้เห็นว่าความต้องการควบคุมทุกอย่างของเขาไม่ได้จบลงแม้ในวาระสุดท้ายของชีวิต",
-          "sw": "Yakobo kusisitiza mahali hasa anapopaswa kuzikwa inaonyesha kwamba hitaji lake la kudhibiti kila kitu halikuishia hata kwenye pumzi yake ya mwisho."
+          "sw": "Yakobo kusisitiza mahali hasa anapopaswa kuzikwa inaonyesha kwamba hitaji lake la kudhibiti kila kitu halikuishia hata kwenye pumzi yake ya mwisho.",
+          "it": "Giacobbe che detta disposizioni precise sul proprio luogo di sepoltura conferma che il suo bisogno di pianificare tutto non si ferma nemmeno davanti all aldilà."
         }
     },
     "2026-03-23": {
@@ -3295,7 +3547,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "出エジプト記 1:1-22",
@@ -3307,7 +3560,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Exodus 1:1-22",
           "tl": "Exodus 1:1-22",
           "th": "Exodus 1:1-22",
-          "sw": "Exodus 1:1-22"
+          "sw": "Exodus 1:1-22",
+          "it": "Esodo 1:1-22"
         },
         comment: {
           "ja": "新しい王が過去の功績を忘れて手のひらを返す展開、歴史の教科書というより現代の組織の縮図を見ているようで胃が痛い。",
@@ -3319,7 +3573,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Một vị vua mới lên ngôi quên sạch công lao quá khứ và trở mặt ngay lập tức, nghe chẳng khác nào tình huống oái oăm chốn công sở thời nay.",
           "tl": "Ang paglimot ng bagong hari sa nakaraang kabutihan at biglaang pagbabago ng trato ay parang eksena lang sa opisina na nakaka-stress.",
           "th": "กษัตริย์องค์ใหม่ที่ลืมความดีความชอบเก่าๆ แล้วเปลี่ยนท่าทีทันที เป็นสถานการณ์ที่ดูเหมือนการเมืองในที่ทำงานยุคปัจจุบันมากกว่าประวัติศาสตร์",
-          "sw": "Mfalme mpya kusahau yaliyopita na kubadili msimamo ghafla ni ukumbusho kwamba siasa za ofisini hazijawahi kubadilika tangu zamani."
+          "sw": "Mfalme mpya kusahau yaliyopita na kubadili msimamo ghafla ni ukumbusho kwamba siasa za ofisini hazijawahi kubadilika tangu zamani.",
+          "it": "Un nuovo sovrano che dimentica il passato e cambia rotta da un giorno all altro è il classico promemoria di come certe dinamiche di potere non cambino mai."
         }
     },
     "2026-03-24": {
@@ -3334,7 +3589,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "出エジプト記 2:1-25",
@@ -3346,7 +3602,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Exodus 2:1-25",
           "tl": "Exodus 2:1-25",
           "th": "Exodus 2:1-25",
-          "sw": "Exodus 2:1-25"
+          "sw": "Exodus 2:1-25",
+          "it": "Esodo 2:1-25"
         },
         comment: {
           "ja": "川に流された赤ん坊を王女が拾うという展開、あまりにドラマチックすぎて現実味がないようでいて実は一番人間らしいドラマが詰まっている。",
@@ -3358,7 +3615,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Công chúa nhặt được em bé trôi sông nghe như phim truyền hình, nhưng cuộc đời thực vốn dĩ là một chuỗi những sự tình cờ không tưởng.",
           "tl": "Ang pagpulot ng prinsesa sa sanggol na nasa basket ay parang eksena sa pelikula, pero ang totoong buhay ay puno talaga ng mga ganyang hindi inaasahang pagkakataon.",
           "th": "ฉากเจ้าหญิงเก็บทารกได้จากแม่น้ำดูเหมือนพล็อตละครจนไม่น่าเชื่อ แต่ชีวิตจริงมักเต็มไปด้วยเหตุบังเอิญที่เหนือความคาดหมายแบบนี้เสมอ",
-          "sw": "Binti wa mfalme kuokota mtoto mtoni inaonekana kama hadithi ya filamu, lakini maisha halisi yamejaa matukio ya ajabu tusiyoweza kuyatabiri."
+          "sw": "Binti wa mfalme kuokota mtoto mtoni inaonekana kama hadithi ya filamu, lakini maisha halisi yamejaa matukio ya ajabu tusiyoweza kuyatabiri.",
+          "it": "Trovare un neonato in una cesta lungo il fiume sembra una scena da film, ma la vita reale sa essere sempre più imprevedibile di qualsiasi sceneggiatura."
         }
     },
     "2026-03-25": {
@@ -3373,7 +3631,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "出エジプト記 3:1-22",
@@ -3385,7 +3644,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Exodus 3:1-22",
           "tl": "Exodus 3:1-22",
           "th": "Exodus 3:1-22",
-          "sw": "Exodus 3:1-22"
+          "sw": "Exodus 3:1-22",
+          "it": "Esodo 3:1-22"
         },
         comment: {
           "ja": "燃えているのに燃え尽きない茂みを見て足を止めるモーセ、現代ならとりあえずスマホで動画を撮ってSNSに投稿しそうな距離感。",
@@ -3397,7 +3657,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Môi-se dừng lại trước bụi gai cháy mà không rụi giống như cách chúng ta dừng lại để quay phim một hiện tượng lạ cho mạng xã hội vậy.",
           "tl": "Ang paghinto ni Moises sa harap ng naglalablab na palumpong ay parang paghinto natin ngayon para i-video ang isang viral na pangyayari.",
           "th": "การที่โมเสสหยุดดูพุ่มไม้ที่ไฟไหม้แต่ไม่มอดนั้น เหมือนกับคนยุคนี้ที่หยุดถ่ายคลิปวิดีโอเพื่อลงโซเชียลมีเดียเมื่อเจออะไรแปลกๆ",
-          "sw": "Musa kusimama kutazama kichaka kinachowaka moto bila kuungua ni sawa na mtu wa leo kusimama kurekodi tukio la ajabu kwa ajili ya mitandao ya kijamii."
+          "sw": "Musa kusimama kutazama kichaka kinachowaka moto bila kuungua ni sawa na mtu wa leo kusimama kurekodi tukio la ajabu kwa ajili ya mitandao ya kijamii.",
+          "it": "Mosè che si ferma a guardare un cespuglio che brucia senza consumarsi è l equivalente antico di fermarsi a filmare qualcosa di assurdo per caricarlo sui social."
         }
     },
     "2026-03-26": {
@@ -3412,7 +3673,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "出エジプト記 4:1-17",
@@ -3424,7 +3686,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Exodus 4:1-17",
           "tl": "Exodus 4:1-17",
           "th": "Exodus 4:1-17",
-          "sw": "Exodus 4:1-17"
+          "sw": "Exodus 4:1-17",
+          "it": "Esodo 4:1-17"
         },
         comment: {
           "ja": "神様に大役を任された途端に自分の口下手さを言い訳にするモーセ、大事なプレゼンの直前に腹痛を訴える学生そのもの。",
@@ -3436,7 +3699,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Môi-se viện cớ mình ăn nói kém ngay khi nhận trọng trách giống hệt như học sinh bỗng dưng thấy đau bụng trước giờ thuyết trình quan trọng.",
           "tl": "Ang pagdadahilan ni Moises na hindi siya mahusay magsalita matapos bigyan ng misyon ay parang estudyante na biglang sumasakit ang tiyan bago ang report.",
           "th": "โมเสสพยายามอ้างว่าพูดไม่เก่งทันทีที่ได้รับมอบหมายงานใหญ่ เหมือนนักเรียนที่จู่ๆ ก็ปวดท้องก่อนขึ้นไปนำเสนองานหน้าชั้นเรียนเป๊ะ",
-          "sw": "Musa kutoa visingizio kuhusu kutoweza kwake kuongea vizuri baada ya kupewa wito ni sawa na mwanafunzi anayesema anaumwa tumbo kabla ya kutoa mada darasani."
+          "sw": "Musa kutoa visingizio kuhusu kutoweza kwake kuongea vizuri baada ya kupewa wito ni sawa na mwanafunzi anayesema anaumwa tumbo kabla ya kutoa mada darasani.",
+          "it": "Mosè che si inventa scuse sulla propria parlantina appena riceve una grande missione è identico a chi cerca di svignarsela prima di una riunione importante."
         }
     },
     "2026-03-27": {
@@ -3451,7 +3715,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "出エジプト記 4:18-31",
@@ -3463,7 +3728,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Exodus 4:18-31",
           "tl": "Exodus 4:18-31",
           "th": "Exodus 4:18-31",
-          "sw": "Exodus 4:18-31"
+          "sw": "Exodus 4:18-31",
+          "it": "Esodo 4:18-31"
         },
         comment: {
           "ja": "仕事の準備が万端とは言えない状態で、とりあえず家族を連れて現地に向かうモーセの背中には、新生活に不安な現代人の哀愁が漂っている。",
@@ -3475,7 +3741,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Môi-se dẫn cả gia đình đi làm nhiệm vụ trong khi bản thân vẫn còn đầy lo âu giống hệt như cách chúng ta bước vào những chương mới của cuộc đời một cách đầy bỡ ngỡ.",
           "tl": "Ang pag-alis ni Moises kasama ang buong pamilya nang hindi pa handa ay parang tayo lang na sumusubok mag-adjust sa mga biglaang pagbabago sa buhay.",
           "th": "การที่โมเสสพาครอบครัวออกเดินทางทั้งที่ยังไม่พร้อมดูเหมือนชีวิตจริงของพวกเราทุกคนที่ต้องก้าวไปข้างหน้าทั้งที่ใจยังหวั่นๆ",
-          "sw": "Musa kuondoka na familia yake kuelekea kusiko julikana ni kama sisi tunavyoanza mambo mapya huku tukijaribu kuonekana kama tuko sawa."
+          "sw": "Musa kuondoka na familia yake kuelekea kusiko julikana ni kama sisi tunavyoanza mambo mapya huku tukijaribu kuonekana kama tuko sawa.",
+          "it": "Partire per una grande avventura con tutta la famiglia al seguito senza avere la minima idea di cosa succederà è il ritratto perfetto dell incertezza quotidiana."
         }
     },
     "2026-03-28": {
@@ -3490,7 +3757,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "出エジプト記 5:15-23",
@@ -3502,7 +3770,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Exodus 5:15-23",
           "tl": "Exodus 5:15-23",
           "th": "Exodus 5:15-23",
-          "sw": "Exodus 5:15-23"
+          "sw": "Exodus 5:15-23",
+          "it": "Esodo 5:15-23"
         },
         comment: {
           "ja": "神様に言われた通りに動いたはずなのに事態がむしろ悪化して、思わず「なぜこんなことに？」と天を仰ぐモーセの気持ち、痛いほどよくわかる。",
@@ -3514,7 +3783,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Làm đúng như lời dặn mà mọi việc vẫn tệ đi, sự bất lực của Môi-se khi hỏi tại sao chính là cảm giác của chúng ta mỗi khi nỗ lực nhưng không được đền đáp.",
           "tl": "Ang gawin ang lahat ng tama pero lalong gumulo ang sitwasyon ay ang klasikong pagkadismaya ni Moises na ramdam na ramdam nating lahat.",
           "th": "การทำตามคำสั่งแล้วผลลัพธ์กลับแย่ลงเป็นความรู้สึกของโมเสสที่พวกเราทุกคนคงเคยเจอเวลาทุ่มเทเต็มที่แต่กลับไม่ได้ดั่งใจ",
-          "sw": "Kufanya yale uliyoambiwa lakini mambo yakaharibika zaidi ni ile hali ya kuchanganyikiwa ya Musa ambayo sote tumeipitia tunapohisi juhudi zetu hazina matokeo."
+          "sw": "Kufanya yale uliyoambiwa lakini mambo yakaharibika zaidi ni ile hali ya kuchanganyikiwa ya Musa ambayo sote tumeipitia tunapohisi juhudi zetu hazina matokeo.",
+          "it": "Seguire le istruzioni alla lettera e ritrovarsi la situazione peggiorata è quella frustrazione universale che chiunque abbia avuto una giornata storta conosce bene."
         }
     },
     "2026-03-29": {
@@ -3529,7 +3799,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "出エジプト記 6:14-30",
@@ -3541,7 +3812,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Exodus 6:14-30",
           "tl": "Exodus 6:14-30",
           "th": "Exodus 6:14-30",
-          "sw": "Exodus 6:14-30"
+          "sw": "Exodus 6:14-30",
+          "it": "Esodo 6:14-30"
         },
         comment: {
           "ja": "口下手で自信がないモーセに、神様が「じゃあ兄貴を代弁者にすればいい」と即座に妥協案を出すあたり、神様との交渉も案外現実的な落とし所があるんだなと思わされる。",
@@ -3553,7 +3825,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Môi-se cố thoái thác vì không giỏi ăn nói và được Chúa sắp xếp cho anh trai làm người phát ngôn nghe chẳng khác nào một sự thỏa hiệp đầy thực tế nơi công sở.",
           "tl": "Ang pagdadahilan ni Moises na hindi siya mahusay magsalita at ang agad na pagtalaga ng Diyos sa kapatid niya bilang tagapagsalita ay parang isang napaka-relatable na kompromiso sa trabaho.",
           "th": "การที่โมเสสพยายามเลี่ยงงานเพราะพูดไม่เก่ง แต่พระเจ้ากลับแก้ปัญหาด้วยการหาพี่ชายมาเป็นโฆษกให้ทันทีนั้น ดูเป็นทางออกที่สมเหตุสมผลเหมือนการเจรจางานในชีวิตจริงเลย",
-          "sw": "Musa akijaribu kukwepa kazi kwa kisingizio cha kutokuwa msemaji mzuri na Mungu kumpa kaka yake kama msemaji ni kama maelewano ya kirafiki tunayopata kazini kila siku."
+          "sw": "Musa akijaribu kukwepa kazi kwa kisingizio cha kutokuwa msemaji mzuri na Mungu kumpa kaka yake kama msemaji ni kama maelewano ya kirafiki tunayopata kazini kila siku.",
+          "it": "Che Mosè cerchi di defilarsi dicendo di non saper parlare e Dio gli affianchi subito il fratello come portavoce sembra il classico compromesso d'ufficio."
         }
     },
     "2026-03-30": {
@@ -3568,7 +3841,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "イザヤ書 61:1-3",
@@ -3580,7 +3854,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Isaiah 61:1-3",
           "tl": "Isaiah 61:1-3",
           "th": "Isaiah 61:1-3",
-          "sw": "Isaiah 61:1-3"
+          "sw": "Isaiah 61:1-3",
+          "it": "Isaia 61:1-3"
         },
         comment: {
           "ja": "灰の代わりに冠を、悲しみの代わりに喜びの油を与えようという言葉は、どん底の時にこそ一番欲しい救済の形そのものだ。",
@@ -3592,7 +3867,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Đổi tro bụi lấy mão triều và sự than vãn lấy dầu vui mừng chính là hình thức cứu rỗi mà ai cũng khao khát khi rơi vào hoàn cảnh tồi tệ nhất.",
           "tl": "Ang pagpapalit ng abo ng korona at ng pighati ng langis ng kagalakan ay ang eksaktong uri ng paghilom na hinahanap nating lahat kapag nasa pinakamababa tayong estado.",
           "th": "การเปลี่ยนเถ้าถ่านเป็นมงกุฎและเปลี่ยนความโศกเศร้าเป็นน้ำมันแห่งความชื่นชมยินดี คือการเยียวยาจิตใจที่ทุกคนปรารถนาเมื่อถึงจุดต่ำสุดของชีวิต",
-          "sw": "Kubadilisha majivu na taji na huzuni na mafuta ya furaha ndiyo aina ya wokovu wa kihisia tunaotamani zaidi tunapokuwa katika hali ngumu kabisa."
+          "sw": "Kubadilisha majivu na taji na huzuni na mafuta ya furaha ndiyo aina ya wokovu wa kihisia tunaotamani zaidi tunapokuwa katika hali ngumu kabisa.",
+          "it": "Scambiare la cenere con una corona e il lutto con l'olio della gioia è esattamente il tipo di riscatto emotivo che cerchiamo quando tocchiamo il fondo."
         }
     },
     "2026-03-31": {
@@ -3607,7 +3883,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "イザヤ書 53:4",
@@ -3619,7 +3896,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Isaiah 53:4",
           "tl": "Isaiah 53:4",
           "th": "Isaiah 53:4",
-          "sw": "Isaiah 53:4"
+          "sw": "Isaiah 53:4",
+          "it": "Isaia 53:4"
         },
         comment: {
           "ja": "誰にも言えない痛みを抱えたまま平然と振る舞う私たちにとって、先に傷ついてくれた存在がいるという事実は救い以外の何物でもない。",
@@ -3631,7 +3909,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Với những người luôn tỏ ra ổn trong khi giấu kín nỗi đau, việc biết rằng có người đã chịu đựng thay mình thực sự là một sự cứu rỗi.",
           "tl": "Para sa ating nagkukunwaring maayos habang nagtatago ng sakit, ang malaman na may nagtiis na para sa atin ay isang malaking kaginhawaan.",
           "th": "สำหรับพวกเราที่แกล้งทำเป็นโอเคขณะซ่อนความเจ็บปวดไว้ การรู้ว่ามีคนยอมเจ็บแทนเรามาก่อนแล้วนั้นถือเป็นความสบายใจที่สุด",
-          "sw": "Kwa sisi tunaojifanya wazima huku tukiwa na maumivu ya ndani, kujua kuwa kuna mtu alishateseka kwa ajili yetu ni faraja kubwa."
+          "sw": "Kwa sisi tunaojifanya wazima huku tukiwa na maumivu ya ndani, kujua kuwa kuna mtu alishateseka kwa ajili yetu ni faraja kubwa.",
+          "it": "Per chi finge un sorriso mentre nasconde un dolore profondo, sapere che qualcuno lo ha già provato prima di noi è un sollievo immenso."
         }
     },
     "2026-04-01": {
@@ -3646,7 +3925,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "出エジプト記 12:30",
@@ -3658,7 +3938,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Exodus 12:30",
           "tl": "Exodus 12:30",
           "th": "Exodus 12:30",
-          "sw": "Exodus 12:30"
+          "sw": "Exodus 12:30",
+          "it": "Esodo 12:30"
         },
         comment: {
           "ja": "昨夜までは何事もなく日常を過ごしていたのに、一晩で家中の空気が凍りつくような喪失感を味わうエジプトの光景は、人生の脆さを突きつけてくる。",
@@ -3670,7 +3951,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Sự thay đổi đột ngột từ một đêm bình thường sang khung cảnh tang thương khắp Ai Cập là lời nhắc nhở tàn nhẫn về sự mong manh của cuộc sống thường nhật.",
           "tl": "Ang biglaang pagbabago mula sa isang normal na gabi patungo sa bahay na puno ng pagdadalamhati sa Ehipto ay isang malupit na paalala kung gaano kahina ang ating normal na buhay.",
           "th": "การเปลี่ยนจากคืนที่ปกติสุขไปสู่ความโศกเศร้าทั่วทั้งอียิปต์ในชั่วข้ามคืน เป็นเครื่องเตือนใจที่โหดร้ายว่าความปกติของเรานั้นเปราะบางแค่ไหน",
-          "sw": "Mabadiliko ya ghafla kutoka usiku wa kawaida hadi nyumba iliyojaa maombolezo huko Misri ni ukumbusho mkali wa jinsi maisha yetu yalivyo dhaifu."
+          "sw": "Mabadiliko ya ghafla kutoka usiku wa kawaida hadi nyumba iliyojaa maombolezo huko Misri ni ukumbusho mkali wa jinsi maisha yetu yalivyo dhaifu.",
+          "it": "Il passaggio improvviso da una notte tranquilla a una casa piena di lutto in Egitto è un promemoria brutale di quanto sia fragile la nostra normalità."
         }
     },
     "2026-04-02": {
@@ -3685,7 +3967,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "イザヤ書 53:1-12",
@@ -3697,7 +3980,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Isaiah 53:1-12",
           "tl": "Isaiah 53:1-12",
           "th": "Isaiah 53:1-12",
-          "sw": "Isaiah 53:1-12"
+          "sw": "Isaiah 53:1-12",
+          "it": "Isaia 53:1-12"
         },
         comment: {
           "ja": "何一つ見栄えのしない姿で現れた救い主を誰も気に留めなかったという事実は、現代の私たちが外見や肩書きで人を判断しがちなことへの強烈な皮肉だ。",
@@ -3709,7 +3993,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Đấng Cứu Rỗi xuất hiện mà chẳng có vẻ ngoài hào nhoáng để rồi bị người đời ngó lơ là lời nhắc nhở cay đắng về thói đời trọng hình thức của chúng ta.",
           "tl": "Ang pagdating ng Tagapagligtas na walang anumang karangyaan at hindi napansin ng nakararami ay isang malinaw na salamin sa hilig nating manghusga base lang sa panlabas na anyo.",
           "th": "การที่พระผู้ช่วยให้รอดเสด็จมาโดยไม่มีรูปลักษณ์ที่น่าดึงดูดจนถูกมองข้าม เป็นการตบหน้าคนยุคนี้ที่มักตัดสินคนอื่นแค่จากเปลือกนอกและตำแหน่งหน้าที่",
-          "sw": "Ukweli kwamba Mwokozi alikuja bila muonekano wa kuvutia na kupuuzwa na wengi ni onyo kali kuhusu tabia yetu ya kisasa ya kuhukumu watu kwa sura zao pekee."
+          "sw": "Ukweli kwamba Mwokozi alikuja bila muonekano wa kuvutia na kupuuzwa na wengi ni onyo kali kuhusu tabia yetu ya kisasa ya kuhukumu watu kwa sura zao pekee.",
+          "it": "Che il Salvatore sia apparso senza alcun tratto appariscente è una critica feroce alla nostra moderna ossessione per l'apparenza e lo status."
         }
     },
     "2026-04-03": {
@@ -3724,7 +4009,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "イザヤ書 53:6-7",
@@ -3736,7 +4022,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Isaiah 53:6-7",
           "tl": "Isaiah 53:6-7",
           "th": "Isaiah 53:6-7",
-          "sw": "Isaiah 53:6-7"
+          "sw": "Isaiah 53:6-7",
+          "it": "Isaia 53:6-7"
         },
         comment: {
           "ja": "自分の好きな道へ勝手に迷い込んだ挙句に助けを求める人間と、黙々と屠殺場へ引かれる羊のように耐える姿の対比が、あまりに一方的で胸が痛い。",
@@ -3748,7 +4035,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Sự đối lập giữa việc chúng ta cứ tự ý đi chệch đường và Ngài thì lặng lẽ chịu đựng như con chiên bị dẫn đến nơi giết mổ thật sự là một lời nhắc nhở đau lòng.",
           "tl": "Ang pagkakaiba ng paglayas natin sa sarili nating mga maling desisyon at ang pananahimik Niya na parang tupang dinadala sa katayan ay isang masakit na paalala ng ating mga pagkukulang.",
           "th": "ความต่างระหว่างเราที่ชอบเตลิดเปิดเปิงไปตามทางของตัวเอง กับพระองค์ที่ยอมเงียบเหมือนลูกแกะที่ถูกนำไปเชือด เป็นความจริงที่น่าจุกอกและชวนให้คิดทบทวน",
-          "sw": "Tofauti kati ya sisi kupotea katika njia zetu wenyewe na Yeye kunyamaza kama kondoo anayepelekwa machinjoni ni ukumbusho wa kusikitisha wa uzito wa kile alichokibeba kwa ajili yetu."
+          "sw": "Tofauti kati ya sisi kupotea katika njia zetu wenyewe na Yeye kunyamaza kama kondoo anayepelekwa machinjoni ni ukumbusho wa kusikitisha wa uzito wa kile alichokibeba kwa ajili yetu.",
+          "it": "Il contrasto tra noi che ci perdiamo nei nostri guai e Lui che resta in silenzio come un agnello al mattatoio fa capire quanto peso porti per noi."
         }
     },
     "2026-04-04": {
@@ -3763,7 +4051,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "詩篇 16:8-11",
@@ -3775,7 +4064,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Psalms 16:8-11",
           "tl": "Psalms 16:8-11",
           "th": "Psalms 16:8-11",
-          "sw": "Psalms 16:8-11"
+          "sw": "Psalms 16:8-11",
+          "it": "Salmi 16:8-11"
         },
         comment: {
           "ja": "右を見ても左を見ても不安だらけの人生で、神様だけを指標にするという究極のブレない生き方はもはや職人芸。",
@@ -3787,7 +4077,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Giữa cuộc đời đầy bất an, việc chỉ giữ mắt hướng về Chúa đúng là một nghệ thuật sống đỉnh cao.",
           "tl": "Ang pananatiling nakatuon sa Diyos sa gitna ng magulong buhay ay isang antas ng disiplina na mahirap pantayan.",
           "th": "ท่ามกลางความไม่แน่นอนของชีวิต การยึดพระเจ้าเป็นศูนย์กลางเพียงหนึ่งเดียวถือเป็นทักษะขั้นสูงของการใช้ชีวิต",
-          "sw": "Kuishi maisha yaliyojaa utata huku ukiweka macho yako kwa Mungu pekee ni sanaa ya hali ya juu ya utulivu."
+          "sw": "Kuishi maisha yaliyojaa utata huku ukiweka macho yako kwa Mungu pekee ni sanaa ya hali ya juu ya utulivu.",
+          "it": "Mantenere lo sguardo fisso su Dio in un mondo pieno di incertezze è onestamente un capolavoro di equilibrio interiore."
         }
     },
     "2026-04-05": {
@@ -3802,7 +4093,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "イザヤ書 25:8-9",
@@ -3814,7 +4106,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Isaiah 25:8-9",
           "tl": "Isaiah 25:8-9",
           "th": "Isaiah 25:8-9",
-          "sw": "Isaiah 25:8-9"
+          "sw": "Isaiah 25:8-9",
+          "it": "Isaia 25:8-9"
         },
         comment: {
           "ja": "泣きっ面に蜂のような絶望の淵で、最後には必ず宴会が待っていると信じ抜くのは、もはや最強のポジティブシンキング。",
@@ -3826,7 +4119,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Tin rằng một bữa tiệc đang chờ đón ở cuối chuỗi ngày tồi tệ nhất chính là đỉnh cao của sự lạc quan.",
           "tl": "Ang paniniwalang may handaan na naghihintay sa dulo ng pinakamahirap mong araw ay ang pinakamataas na antas ng pag-asa.",
           "th": "การเชื่อว่าจะมีงานเลี้ยงรอคุณอยู่ในวันที่แย่ที่สุด คือรูปแบบของความคิดบวกที่ทรงพลังที่สุดแล้ว",
-          "sw": "Kuamini kuwa kuna karamu inakusubiri mwishoni mwa siku yako ngumu zaidi ndiyo namna bora zaidi ya kuwa na matumaini."
+          "sw": "Kuamini kuwa kuna karamu inakusubiri mwishoni mwa siku yako ngumu zaidi ndiyo namna bora zaidi ya kuwa na matumaini.",
+          "it": "Credere che ci sia un banchetto ad attenderci alla fine del giorno peggiore è la forma più pura di ottimismo."
         }
     },
     "2026-04-06": {
@@ -3841,7 +4135,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "出エジプト記 7:1-25",
@@ -3853,7 +4148,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Exodus 7:1-25",
           "tl": "Exodus 7:1-25",
           "th": "Exodus 7:1-25",
-          "sw": "Exodus 7:1-25"
+          "sw": "Exodus 7:1-25",
+          "it": "Esodo 7:1-25"
         },
         comment: {
           "ja": "杖を投げたら蛇になるという超常現象を目の当たりにしても、まずは手品師を呼んで対抗しようとするエジプト側の必死すぎる現実逃避が人間臭い。",
@@ -3865,7 +4161,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Chứng kiến phép màu mà vẫn cố gọi phù thủy đến để so tài, sự phủ nhận thực tế này đúng là bản chất khó bỏ của con người.",
           "tl": "Ang makakita ng himala at subukan pa ring tapatan ito ng mahika sa halip na maniwala ay patunay ng katigasan ng ulo ng tao.",
           "th": "การเห็นปาฏิหาริย์แล้วพยายามหาทางแก้ด้วยกลมายาแทนที่จะยอมรับความจริงนั้นช่างเป็นความดื้อรั้นที่น่าเห็นใจจริงๆ",
-          "sw": "Kuona miujiza na kujaribu kuishinda kwa uchawi badala ya kukubali ukweli ni kilele cha ukaidi wa kibinadamu."
+          "sw": "Kuona miujiza na kujaribu kuishinda kwa uchawi badala ya kukubali ukweli ni kilele cha ukaidi wa kibinadamu.",
+          "it": "Vedere un bastone trasformarsi in serpente e cercare subito un mago per pareggiare il conto è la dimostrazione più ostinata di negazione mai vista."
         }
     },
     "2026-04-07": {
@@ -3880,7 +4177,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "出エジプト記 8:1-32",
@@ -3892,7 +4190,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Exodus 8:1-32",
           "tl": "Exodus 8:1-32",
           "th": "Exodus 8:1-32",
-          "sw": "Exodus 8:1-32"
+          "sw": "Exodus 8:1-32",
+          "it": "Esodo 8:1-32"
         },
         comment: {
           "ja": "カエルが大量発生して家の中まで占拠されているのに、少し落ち着くとまた元の態度に戻るパロのメンタルの切り替えの早さはある意味すごい。",
@@ -3904,7 +4203,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Hứa thả dân khi ếch nhái đầy nhà rồi đổi ý ngay khi chúng biến mất, cách lật mặt của Pha-ra-ôn đúng là kiểu hối cải chỉ khi gặp nạn.",
           "tl": "Ang mangako na palalayain ang bayan kapag puno ng palaka ang bahay at bawiin ito agad pagkaalis ng mga ito ay ang pinakamalinaw na halimbawa ng panandaliang pagsisisi.",
           "th": "การสัญญว่าจะปล่อยคนไปตอนที่กบเต็มบ้านแล้วกลับคำทันทีที่พวกมันหายไปนั้น เป็นตัวอย่างของการสำนึกผิดแบบฉาบฉวยที่เห็นได้บ่อยในชีวิตจริง",
-          "sw": "Kuahidi kuwapa watu uhuru wakati vyura wamejaa nyumbani na kubadili nia mara tu wanapotoweka ni mfano bora wa toba ya msimu."
+          "sw": "Kuahidi kuwapa watu uhuru wakati vyura wamejaa nyumbani na kubadili nia mara tu wanapotoweka ni mfano bora wa toba ya msimu.",
+          "it": "Promettere di liberare il popolo finché le rane invadono la casa e rimangiarsi tutto appena spariscono è il manuale del pentimento di convenienza."
         }
     },
     "2026-04-08": {
@@ -3919,7 +4219,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "出エジプト記 9:1-35",
@@ -3931,7 +4232,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Exodus 9:1-35",
           "tl": "Exodus 9:1-35",
           "th": "Exodus 9:1-35",
-          "sw": "Exodus 9:1-35"
+          "sw": "Exodus 9:1-35",
+          "it": "Esodo 9:1-35"
         },
         comment: {
           "ja": "パロが災いに襲われるたびに降伏のフリをしては、嵐が過ぎ去るとすぐ態度を翻す姿、都合が悪くなると急に謙虚になる自分を見ているようで苦しい。",
@@ -3943,7 +4245,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Pharaoh hứa hẹn thay đổi mỗi khi gặp tai ương rồi lại lật lọng ngay khi mọi chuyện êm xuôi, nhìn mà thấy bóng dáng chính mình trong đó.",
           "tl": "Ang pagpapanggap ni Faraon na magbago kapag may sakuna at pagbabalik sa dati kapag ligtas na ay parang repleksyon ng ating sariling kawalan ng paninindigan.",
           "th": "ฟาโรห์ที่สัญญาว่าจะกลับตัวตอนเจอภัยพิบัติแต่พอสถานการณ์ดีขึ้นก็กลับไปเป็นเหมือนเดิม คือภาพสะท้อนความดื้อรั้นของมนุษย์ที่เห็นได้ชัดจริงๆ",
-          "sw": "Farao kuahidi kubadilika wakati wa shida na kurejea kwenye tabia zake mara tu mambo yanapotulia ni mfano kamili wa jinsi tunavyokuwa na msimamo duni."
+          "sw": "Farao kuahidi kubadilika wakati wa shida na kurejea kwenye tabia zake mara tu mambo yanapotulia ni mfano kamili wa jinsi tunavyokuwa na msimamo duni.",
+          "it": "Faraone che promette di cambiare solo quando le cose si mettono male e torna subito alle vecchie abitudini mi ricorda fin troppo i miei buoni propositi di inizio anno."
         }
     },
     "2026-04-09": {
@@ -3958,7 +4261,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "出エジプト記 10:1-29",
@@ -3970,7 +4274,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Exodus 10:1-29",
           "tl": "Exodus 10:1-29",
           "th": "Exodus 10:1-29",
-          "sw": "Exodus 10:1-29"
+          "sw": "Exodus 10:1-29",
+          "it": "Esodo 10:1-29"
         },
         comment: {
           "ja": "目の前で国が壊滅に向かっているのに、まだ自分のプライドを守ろうと交渉の余地を探るパロの頑固さは、もはや一周回って逆にすごい。",
@@ -3982,7 +4287,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Vương quốc đang tan tành mà vẫn cố mặc cả để giữ thể diện, sự cứng đầu của Pharaoh thực sự là đỉnh cao của việc trốn tránh thực tại.",
           "tl": "Ang pagtatangkang makipag-negosasyon ni Faraon habang guguho na ang kanyang kaharian ay ang pinakamataas na antas ng pagtanggi sa katotohanan.",
           "th": "ฟาโรห์ที่ยังพยายามต่อรองเงื่อนไขทั้งที่อาณาจักรกำลังล่มสลาย คือตัวอย่างของคนที่ปฏิเสธความจริงได้อย่างน่าเหลือเชื่อ",
-          "sw": "Farao kujaribu kufanya mazungumzo wakati ufalme wake wote unaporomoka ni mfano mkuu wa mtu anayekataa kukubali uhalisia wa mambo."
+          "sw": "Farao kujaribu kufanya mazungumzo wakati ufalme wake wote unaporomoka ni mfano mkuu wa mtu anayekataa kukubali uhalisia wa mambo.",
+          "it": "Vedere il Faraone che cerca di negoziare i termini mentre il suo regno cade a pezzi è il capolavoro assoluto della negazione della realtà."
         }
     },
     "2026-04-10": {
@@ -3997,7 +4303,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "出エジプト記 11:1-10",
@@ -4009,7 +4316,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Exodus 11:1-10",
           "tl": "Exodus 11:1-10",
           "th": "Exodus 11:1-10",
-          "sw": "Exodus 11:1-10"
+          "sw": "Exodus 11:1-10",
+          "it": "Esodo 11:1-10"
         },
         comment: {
           "ja": "散々強情を張った挙句に結局最後は「とにかく出て行ってくれ」と懇願するファラオ、追い詰められてから慌てるのはいつの時代も変わらない。",
@@ -4021,7 +4329,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Pharaoh cố chấp đến phút cuối rồi mới vội vã cầu xin mọi người đi cho nhanh, đúng là kiểu người chỉ chịu thay đổi khi không còn đường lui.",
           "tl": "Ang pagmamatigas ni Faraon hanggang sa huli at ang biglang pagmamakaawa na umalis na sila ay patunay na tao nga talaga ang madalas maghintay sa huling sandali.",
           "th": "ฟาโรห์ที่ดื้อรั้นมาตลอดจนถึงนาทีสุดท้ายแล้วค่อยมาไล่คนอื่นให้ออกไปเร็วๆ นี่มันนิสัยคนเราชัดๆ ที่มักจะรอจนถึงวินาทีสุดท้ายค่อยยอมแพ้",
-          "sw": "Farao kuwa mkaidi hadi dakika ya mwisho kisha kuwasihi watu waondoke haraka ni mfano kamili wa jinsi binadamu tunavyosubiri hadi hali iwe mbaya ndipo tutende."
+          "sw": "Farao kuwa mkaidi hadi dakika ya mwisho kisha kuwasihi watu waondoke haraka ni mfano kamili wa jinsi binadamu tunavyosubiri hadi hali iwe mbaya ndipo tutende.",
+          "it": "Il Faraone che fa il testardo fino all'ultimo secondo per poi supplicare tutti di andarsene dimostra che aspettiamo sempre di essere con le spalle al muro prima di muoverci."
         }
     },
     "2026-04-11": {
@@ -4036,7 +4345,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "出エジプト記 12:31-51",
@@ -4048,7 +4358,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Exodus 12:31-51",
           "tl": "Exodus 12:31-51",
           "th": "Exodus 12:31-51",
-          "sw": "Exodus 12:31-51"
+          "sw": "Exodus 12:31-51",
+          "it": "Esodo 12:31-51"
         },
         comment: {
           "ja": "パン種を入れる暇もないほど急いで脱出したイスラエルの人々、準備万端なんて幻想で、人生は結局いつもバタバタの連続なのかもしれない。",
@@ -4060,7 +4371,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Người Israel vội vã ra đi đến nỗi không kịp để bột nở, nhắc nhở chúng ta rằng cuộc đời hiếm khi nào hoàn hảo và thường là những chuỗi ngày chạy đua với thời gian.",
           "tl": "Ang pagmamadali ng mga Israelita na wala man lang panahon para pampaalsahin ang tinapay ay paalala na ang buhay ay madalas na hindi planado kundi isang malaking pagmamadali.",
           "th": "ชาวอิสราเอลที่รีบออกเดินทางจนไม่มีเวลาแม้แต่จะรอให้แป้งขนมปังขึ้นฟู เป็นเครื่องเตือนใจว่าชีวิตจริงไม่ค่อยมีอะไรที่เตรียมพร้อมสมบูรณ์แบบหรอก ส่วนใหญ่ก็ลนลานกันไปแบบนี้แหละ",
-          "sw": "Waisraeli walivyotoka haraka kiasi cha kutopata muda wa kuchachusha mikate inatukumbusha kuwa maisha ni nadra kupangwa kikamilifu na mara nyingi huwa ni kukimbizana na wakati."
+          "sw": "Waisraeli walivyotoka haraka kiasi cha kutopata muda wa kuchachusha mikate inatukumbusha kuwa maisha ni nadra kupangwa kikamilifu na mara nyingi huwa ni kukimbizana na wakati.",
+          "it": "Gli israeliani che scappano così di fretta da non avere il tempo di far lievitare il pane ci ricordano che la vita non è mai perfettamente pianificata ma quasi sempre un'improvvisazione continua."
         }
     },
     "2026-04-12": {
@@ -4075,7 +4387,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "出エジプト記 13:1-22",
@@ -4087,7 +4400,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Exodus 13:1-22",
           "tl": "Exodus 13:1-22",
           "th": "Exodus 13:1-22",
-          "sw": "Exodus 13:1-22"
+          "sw": "Exodus 13:1-22",
+          "it": "Esodo 13:1-22"
         },
         comment: {
           "ja": "出発の準備でバタバタしている時にまで細かく指示が飛んでくるのは、神様もかなり心配性な保護者という証拠。",
@@ -4099,7 +4413,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Chúa đưa ra những chỉ dẫn chi tiết ngay lúc mọi người đang hối hả chuẩn bị lên đường cho thấy ngay cả Đấng Tối Cao cũng có chút lo lắng của một phụ huynh.",
           "tl": "Ang pagbibigay ng detalyadong utos ni God habang nagmamadali ang lahat ay patunay na kahit ang Maykapal ay may pagka-anxious na magulang din.",
           "th": "การที่พระเจ้าคอยกำชับรายละเอียดต่างๆ ในตอนที่ทุกคนกำลังรีบเก็บของหนีตาย แสดงว่าพระองค์ก็มีความเป็นผู้ปกครองขี้กังวลอยู่ไม่น้อย",
-          "sw": "Mungu kutoa maagizo ya kina wakati kila mtu anahangaika kuondoka inadhihirisha kwamba hata Mwenyezi Mungu ana chembechembe za mzazi mwenye wasiwasi."
+          "sw": "Mungu kutoa maagizo ya kina wakati kila mtu anahangaika kuondoka inadhihirisha kwamba hata Mwenyezi Mungu ana chembechembe za mzazi mwenye wasiwasi.",
+          "it": "Che Dio dia istruzioni così dettagliate proprio mentre tutti sono nel panico più totale per partire dimostra che perfino l'Altissimo ha un po' di ansia da genitore apprensivo."
         }
     },
     "2026-04-13": {
@@ -4114,7 +4429,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "出エジプト記 14:1-14",
@@ -4126,7 +4442,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Exodus 14:1-14",
           "tl": "Exodus 14:1-14",
           "th": "Exodus 14:1-14",
-          "sw": "Exodus 14:1-14"
+          "sw": "Exodus 14:1-14",
+          "it": "Esodo 14:1-14"
         },
         comment: {
           "ja": "目の前に海、後ろから敵が迫る絶体絶命の状況で文句を言うイスラエルの民、追い詰められた時の人間は結局いつも同じ反応をする。",
@@ -4138,7 +4455,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc người dân Y-sơ-ra-ên than phiền khi trước mặt là biển cả còn sau lưng là quân địch chính là minh chứng rõ nhất cho việc con người luôn hoảng loạn khi bị dồn vào đường cùng.",
           "tl": "Ang pagrereklamo ng mga Israelita habang nasa harap ang dagat at nasa likod ang kalaban ay patunay na lagi tayong nagpa-panic kapag naiipit sa sulok.",
           "th": "การที่ชาวอิสราเอลเอาแต่บ่นทั้งที่ข้างหน้าคือทะเลข้างหลังคือศัตรู เป็นเครื่องพิสูจน์ได้ดีว่ามนุษย์เรามักจะมีปฏิกิริยาแบบเดียวกันเสมอเมื่อจนตรอก",
-          "sw": "Waisraeli kulalamika huku wakiwa wamebanwa na bahari mbele na adui nyuma ni mfano kamili wa jinsi binadamu wanavyopagawa kila wanapofikishwa pabaya."
+          "sw": "Waisraeli kulalamika huku wakiwa wamebanwa na bahari mbele na adui nyuma ni mfano kamili wa jinsi binadamu wanavyopagawa kila wanapofikishwa pabaya.",
+          "it": "Gli israeliani che si lamentano con il mare davanti e l'esercito alle spalle sono la prova provata che noi umani andiamo sempre nel panico quando siamo accerchiati."
         }
     },
     "2026-04-14": {
@@ -4153,7 +4471,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "出エジプト記 14:15-31",
@@ -4165,7 +4484,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Exodus 14:15-31",
           "tl": "Exodus 14:15-31",
           "th": "Exodus 14:15-31",
-          "sw": "Exodus 14:15-31"
+          "sw": "Exodus 14:15-31",
+          "it": "Esodo 14:15-31"
         },
         comment: {
           "ja": "絶体絶命の崖っぷちで神様に文句を言いたくなるのは、いつの時代も変わらない人間のデフォルト設定ですね。",
@@ -4177,7 +4497,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Than vãn với Chúa khi lâm vào đường cùng dường như là phản ứng mặc định của con người qua mọi thời đại.",
           "tl": "Ang pagrereklamo sa Diyos kapag tayo ay gipit na gipit ay tila default na setting ng tao sa buong kasaysayan.",
           "th": "การบ่นกับพระเจ้าเมื่อเราจนมุมดูจะเป็นการตั้งค่าเริ่มต้นของมนุษย์ทุกยุคทุกสมัยจริงๆ",
-          "sw": "Kulalamika kwa Mungu unapokuwa umekwama ni kama mpangilio wa kawaida wa binadamu katika historia yote."
+          "sw": "Kulalamika kwa Mungu unapokuwa umekwama ni kama mpangilio wa kawaida wa binadamu katika historia yote.",
+          "it": "Lamentarsi con il cielo quando ci si ritrova con le spalle al muro è chiaramente l'impostazione di fabbrica di noi umani da sempre."
         }
     },
     "2026-04-15": {
@@ -4192,7 +4513,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "出エジプト記 15:1-22",
@@ -4204,7 +4526,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Exodus 15:1-22",
           "tl": "Exodus 15:1-22",
           "th": "Exodus 15:1-22",
-          "sw": "Exodus 15:1-22"
+          "sw": "Exodus 15:1-22",
+          "it": "Esodo 15:1-22"
         },
         comment: {
           "ja": "奇跡を目の当たりにした直後にまた不平を言い始めるイスラエルの民、まるで三歩歩くと忘れるあの方のようで他人事とは思えません。",
@@ -4216,7 +4539,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc người Israel tiếp tục than vãn ngay sau khi chứng kiến phép lạ thật sự quá gần gũi với tính cách con người chúng ta.",
           "tl": "Ang pagrereklamo ulit ng mga Israelita pagkatapos makakita ng milagro ay sobrang relatable kaya nakakasakit ng damdamin.",
           "th": "การที่ชาวอิสราเอลกลับมาบ่นทันทีหลังจากเห็นปาฏิหาริย์เป็นอะไรที่เข้าใจได้จนน่าเจ็บใจ",
-          "sw": "Waisraeli kulalamika tena mara baada ya kushuhudia muujiza ni hali ya kibinadamu inayoumiza kwa jinsi inavyotufanana."
+          "sw": "Waisraeli kulalamika tena mara baada ya kushuhudia muujiza ni hali ya kibinadamu inayoumiza kwa jinsi inavyotufanana.",
+          "it": "Gli israeliani che ricominciano a lamentarsi subito dopo aver visto un miracolo sono di una coerenza disarmante che fa quasi male."
         }
     },
     "2026-04-16": {
@@ -4231,7 +4555,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "出エジプト記 15:23-27",
@@ -4243,7 +4568,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Exodus 15:23-27",
           "tl": "Exodus 15:23-27",
           "th": "Exodus 15:23-27",
-          "sw": "Exodus 15:23-27"
+          "sw": "Exodus 15:23-27",
+          "it": "Esodo 15:23-27"
         },
         comment: {
           "ja": "奇跡を体験した直後に水が苦いと文句を言う民の切り替えの早さは、現代のSNSの炎上の速さといい勝負をしている。",
@@ -4255,7 +4581,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Vừa được chứng kiến phép màu đã quay sang cằn nhằn vì nước đắng, thái độ này chẳng khác nào kiểu người vừa được giúp đỡ đã vội đòi hỏi thêm.",
           "tl": "Ang pagrereklamo sa mapait na tubig pagkatapos ng himala ay parang pag-iwan ng isang star na review pagkatapos ng masarap na pagkain.",
           "th": "เพิ่งเจอเรื่องมหัศจรรย์มาหมาดๆ แต่พอเจอน้ำขมก็บ่นทันที นี่มันวิถีมนุษย์ที่ลืมบุญคุณไวจนน่าตกใจจริงๆ",
-          "sw": "Kulalamika kuhusu maji machungu mara tu baada ya muujiza ni sawa na mtu kutoa maoni mabaya mara baada ya kupata huduma bora."
+          "sw": "Kulalamika kuhusu maji machungu mara tu baada ya muujiza ni sawa na mtu kutoa maoni mabaya mara baada ya kupata huduma bora.",
+          "it": "Lamentarsi dell'acqua amara subito dopo un miracolo è l'equivalente biblico di lasciare una recensione a una stella un attimo dopo aver mangiato benissimo."
         }
     },
     "2026-04-17": {
@@ -4270,7 +4597,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "出エジプト記 17:8-16",
@@ -4282,7 +4610,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Exodus 17:8-16",
           "tl": "Exodus 17:8-16",
           "th": "Exodus 17:8-16",
-          "sw": "Exodus 17:8-16"
+          "sw": "Exodus 17:8-16",
+          "it": "Esodo 17:8-16"
         },
         comment: {
           "ja": "腕を上げ続けるのが限界でモーセが支えてもらう様子は、一人で全部抱え込まずにさっさと助けを求めることの大切さを教えてくれる。",
@@ -4294,7 +4623,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Môi-se cần người đỡ lấy đôi tay mỏi mệt cho thấy ngay cả những người mạnh mẽ nhất cũng không thể làm mọi thứ một mình.",
           "tl": "Ang pagkapagod ni Moises na kailangan pang suportahan ang kanyang mga kamay ay paalala na kahit ang pinakamalakas na lider ay hindi kayang gawin ang lahat nang mag-isa.",
           "th": "ภาพโมเสสที่แขนล้าจนต้องมีคนมาช่วยพยุง เป็นเครื่องเตือนใจชั้นดีว่าต่อให้เก่งแค่ไหน ก็ไม่ควรแบกทุกอย่างไว้คนเดียว",
-          "sw": "Musa kuhitaji watu wa kumsaidia kuinua mikono yake iliyochoka ni ukumbusho kwamba hata viongozi hodari hawawezi kufanya kila kitu peke yao."
+          "sw": "Musa kuhitaji watu wa kumsaidia kuinua mikono yake iliyochoka ni ukumbusho kwamba hata viongozi hodari hawawezi kufanya kila kitu peke yao.",
+          "it": "Mosè che ha bisogno di qualcuno che gli tenga su le braccia stanche è il promemoria definitivo che nessuno, nemmeno il più forte, può fare tutto da solo."
         }
     },
     "2026-04-18": {
@@ -4309,7 +4639,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "出エジプト記 18:1-12",
@@ -4321,7 +4652,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Exodus 18:1-12",
           "tl": "Exodus 18:1-12",
           "th": "Exodus 18:1-12",
-          "sw": "Exodus 18:1-12"
+          "sw": "Exodus 18:1-12",
+          "it": "Esodo 18:1-12"
         },
         comment: {
           "ja": "モーセが義父イテロに武勇伝を語る姿は、久しぶりに実家に帰って親に仕事の苦労を聞いてもらうアラフォーの姿そのもの。",
@@ -4333,7 +4665,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Môi-se kể cho cha vợ nghe về những kỳ tích giống hệt như người làm con lâu ngày về nhà lại được dịp than thở về công việc với cha mẹ.",
           "tl": "Ang pagkuwento ni Moises ng kanyang mga tagumpay sa kanyang biyenan ay parang isang anak na umuwi sa probinsya para magsumbong tungkol sa hirap ng trabaho.",
           "th": "โมเสสเล่าเรื่องราวความสำเร็จให้พ่อตาฟังดูเหมือนลูกที่กลับบ้านไปบ่นเรื่องงานให้พ่อแม่ฟังด้วยความอัดอั้นใจจริงๆ",
-          "sw": "Musa kumweleza baba mkwe wake mambo aliyopitia ni kama mtu anayetembelea wazazi wake na hatimaye kuelezea shinikizo zote za kazi yake."
+          "sw": "Musa kumweleza baba mkwe wake mambo aliyopitia ni kama mtu anayetembelea wazazi wake na hatimaye kuelezea shinikizo zote za kazi yake.",
+          "it": "Mosè che racconta le sue imprese al suocero sembra esattamente uno di noi che torna a casa dai genitori per sfogarsi sul lavoro."
         }
     },
     "2026-04-19": {
@@ -4348,7 +4681,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "出エジプト記 18:13-27",
@@ -4360,7 +4694,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Exodus 18:13-27",
           "tl": "Exodus 18:13-27",
           "th": "Exodus 18:13-27",
-          "sw": "Exodus 18:13-27"
+          "sw": "Exodus 18:13-27",
+          "it": "Esodo 18:13-27"
         },
         comment: {
           "ja": "一人で全部抱え込んでパンク寸前のモーセに組織論を説くイテロ、現場の空気を読まない上司というよりは、限界を迎えた部下を救う有能なコンサルタント。",
@@ -4372,7 +4707,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Giê-trô khuyên Môi-se chia sẻ bớt công việc là lời nhắc nhở thực tế cho những ai cứ khăng khăng tự mình làm hết mọi thứ.",
           "tl": "Ang payo ni Jetro kay Moises na mag-delegate ay ang pinakamagandang sampal ng realidad para sa mga taong akala ay sila lang ang makakagawa ng lahat.",
           "th": "เยโธรแนะนำให้โมเสสรู้จักแบ่งงานเป็นบทเรียนที่เตือนใจคนชอบแบกโลกไว้คนเดียวได้ดีที่สุด",
-          "sw": "Yethro kumshauri Musa kugawa majukumu ni ukumbusho mzuri kwa mtu yeyote anayefikiri kwamba lazima afanye kila kitu peke yake ili mambo yaende."
+          "sw": "Yethro kumshauri Musa kugawa majukumu ni ukumbusho mzuri kwa mtu yeyote anayefikiri kwamba lazima afanye kila kitu peke yake ili mambo yaende.",
+          "it": "Jetro che consiglia a Mosè di delegare è il promemoria perfetto per chi pensa di dover fare sempre tutto da solo."
         }
     },
     "2026-04-20": {
@@ -4387,7 +4723,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "出エジプト記 19:1-25",
@@ -4399,7 +4736,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Exodus 19:1-25",
           "tl": "Exodus 19:1-25",
           "th": "Exodus 19:1-25",
-          "sw": "Exodus 19:1-25"
+          "sw": "Exodus 19:1-25",
+          "it": "Esodo 19:1-25"
         },
         comment: {
           "ja": "シナイ山に登るモーセを麓で待つイスラエルの民、神聖な場所へのアクセス権を制限されると途端に不安になるあたり、現代の行列待ちと変わらない。",
@@ -4411,7 +4749,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Dân Y-sơ-ra-ên đứng chờ dưới chân núi và lo lắng vì bị giữ khoảng cách, giống hệt cảm giác khi chúng ta phải đứng ngoài danh sách khách mời của một sự kiện quan trọng.",
           "tl": "Ang paghihintay ng mga Israelita sa paanan ng bundok na parang naiinip sa pila ay patunay na kahit noon pa man, mahirap talaga ang maghintay nang hindi nakikita ang nasa harapan.",
           "th": "ชาวอิสราเอลที่ยืนรออยู่ที่ตีนเขาด้วยความกระวนกระวายใจเพราะถูกกันให้อยู่ห่างๆ ช่างเหมือนกับความรู้สึกเวลาเราต้องรอคิวเข้างานสำคัญโดยไม่รู้ว่าเมื่อไหร่จะได้เข้า",
-          "sw": "Waisraeli walipokuwa wakimsubiri Musa chini ya mlima kwa wasiwasi, walionyesha jinsi wanadamu tunavyochoka haraka tunapokosa mwongozo wa moja kwa moja."
+          "sw": "Waisraeli walipokuwa wakimsubiri Musa chini ya mlima kwa wasiwasi, walionyesha jinsi wanadamu tunavyochoka haraka tunapokosa mwongozo wa moja kwa moja.",
+          "it": "Vedere gli israeliti in ansia ai piedi della montagna è come fare una fila infinita senza sapere se arriverai mai in cima."
         }
     },
     "2026-04-21": {
@@ -4426,7 +4765,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "出エジプト記 20:1-26",
@@ -4438,7 +4778,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Exodus 20:1-26",
           "tl": "Exodus 20:1-26",
           "th": "Exodus 20:1-26",
-          "sw": "Exodus 20:1-26"
+          "sw": "Exodus 20:1-26",
+          "it": "Esodo 20:1-26"
         },
         comment: {
           "ja": "十戒という究極のガイドラインを授かった直後なのに、もう次の失敗の準備をしている人間たち、学習能力の低さが逆に愛おしい。",
@@ -4450,7 +4791,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Vừa nhận được mười điều răn như một bản hướng dẫn sống, con người đã sẵn sàng để phạm lỗi ngay sau đó, một sự nhất quán đáng kinh ngạc trong bản tính loài người.",
           "tl": "Ang matanggap ang Sampung Utos at agad na maghandang sumuway ay ang pinaka-relatable na bahagi ng pagiging tao na kahit kailan ay hindi nagbabago.",
           "th": "เพิ่งได้รับบัญญัติสิบประการเป็นแนวทางชีวิต แต่ก็พร้อมจะทำผิดกฎในทันที ความดื้อรั้นระดับนี้คือความเป็นมนุษย์ที่แท้จริงเลย",
-          "sw": "Kupokea Amri Kumi na kuwa tayari kuzivunja mara moja ni ushahidi kwamba wanadamu tuna kipaji cha kipekee cha kujikwaa hata baada ya kuonyeshwa njia sahihi."
+          "sw": "Kupokea Amri Kumi na kuwa tayari kuzivunja mara moja ni ushahidi kwamba wanadamu tuna kipaji cha kipekee cha kujikwaa hata baada ya kuonyeshwa njia sahihi.",
+          "it": "Ricevere i Dieci Comandamenti ed essere già pronti a infrangerli dimostra quanto la coerenza umana sia discutibile."
         }
     },
     "2026-04-22": {
@@ -4465,7 +4807,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "出エジプト記 24:1-18",
@@ -4477,7 +4820,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Exodus 24:1-18",
           "tl": "Exodus 24:1-18",
           "th": "Exodus 24:1-18",
-          "sw": "Exodus 24:1-18"
+          "sw": "Exodus 24:1-18",
+          "it": "Esodo 24:1-18"
         },
         comment: {
           "ja": "モーセが山で神と対話している間に下界で金の子牛を作ってしまうイスラエルの民、待つことの苦手さは今も昔も変わらない。",
@@ -4489,7 +4833,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Dân Israel đúc bò vàng trong lúc Môi Se đang ở trên núi cho thấy sự thiếu kiên nhẫn là bản tính khó bỏ của con người.",
           "tl": "Ang paggawa ng mga Israelita ng gintong baka habang nasa bundok si Moises ay patunay na ang paghihintay ay hindi kailanman naging madali para sa tao.",
           "th": "ชาวอิสราเอลสร้างรูปเคารพวัวทองคำในขณะที่โมเสสกำลังเข้าเฝ้าพระเจ้า พิสูจน์ให้เห็นว่าความอดทนรอคอยเป็นเรื่องยากสำหรับมนุษย์เสมอมา",
-          "sw": "Waisraeli kutengeneza ndama wa dhahabu wakati Musa alipokuwa mlimani inaonyesha kuwa uvumilivu umekuwa changamoto kwa wanadamu tangu zamani."
+          "sw": "Waisraeli kutengeneza ndama wa dhahabu wakati Musa alipokuwa mlimani inaonyesha kuwa uvumilivu umekuwa changamoto kwa wanadamu tangu zamani.",
+          "it": "Gli israeliti che creano un vitello d'oro mentre Mosè è sul monte dimostrano che la pazienza non è mai stata il nostro forte."
         }
     },
     "2026-04-23": {
@@ -4504,7 +4849,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "出エジプト記 31:1-18",
@@ -4516,7 +4862,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Exodus 31:1-18",
           "tl": "Exodus 31:1-18",
           "th": "Exodus 31:1-18",
-          "sw": "Exodus 31:1-18"
+          "sw": "Exodus 31:1-18",
+          "it": "Esodo 31:1-18"
         },
         comment: {
           "ja": "神殿の設計図を細部まで任されるベツァルエル、専門技術がいざという時に神の業を支えるという事実は、現代のエンジニアやクリエイターにも勇気をくれる。",
@@ -4528,7 +4875,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Chúa chọn một người thợ thủ công để xây dựng đền tạm nhắc nhở rằng kỹ năng nghề nghiệp của chúng ta cũng là một phần trong công việc của Ngài.",
           "tl": "Ang pagpili ng Diyos sa isang bihasang manggagawa para sa tabernakulo ay paalala na ang ating mga propesyonal na kasanayan ay bahagi rin ng Kanyang gawain.",
           "th": "การที่พระเจ้าทรงเลือกช่างฝีมือมาสร้างพลับพลาเตือนใจเราว่าทักษะวิชาชีพของเราก็เป็นส่วนหนึ่งของงานของพระองค์เช่นกัน",
-          "sw": "Mungu kumchagua fundi stadi kujenga hema la kukutania inatukumbusha kuwa ujuzi wetu wa kitaaluma ni sehemu muhimu ya kazi Yake kama vile sala zetu."
+          "sw": "Mungu kumchagua fundi stadi kujenga hema la kukutania inatukumbusha kuwa ujuzi wetu wa kitaaluma ni sehemu muhimu ya kazi Yake kama vile sala zetu.",
+          "it": "Che Dio scelga un artigiano per costruire il tabernacolo ci ricorda che le nostre capacità professionali valgono quanto le nostre preghiere."
         }
     },
     "2026-04-24": {
@@ -4543,7 +4891,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "出エジプト記 32:1-35",
@@ -4555,7 +4904,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Exodus 32:1-35",
           "tl": "Exodus 32:1-35",
           "th": "Exodus 32:1-35",
-          "sw": "Exodus 32:1-35"
+          "sw": "Exodus 32:1-35",
+          "it": "Esodo 32:1-35"
         },
         comment: {
           "ja": "リーダーが少し席を外した隙に金の子牛を拝み出すイスラエルの民、監視の目がないと途端に自分たちのやりたい放題を正当化する人間の脆さそのもの。",
@@ -4567,7 +4917,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc dân Y-sơ-ra-ên đúc bò vàng ngay khi Môi-se vừa khuất bóng cho thấy bản chất con người dễ dàng sa ngã vào những giải pháp nhanh chóng thế nào khi không có ai giám sát.",
           "tl": "Ang paggawa ng gintong baka ng mga Israelita sa sandaling tumalikod si Moises ay patunay kung gaano kabilis tayong gumawa ng maling desisyon kapag akala natin ay walang nakakakita.",
           "th": "การที่ชาวอิสราเอลหันไปกราบไหว้รูปเคารพทันทีที่โมเสสไม่อยู่ เป็นเครื่องพิสูจน์ชัดเจนว่ามนุษย์เราพร้อมจะหาทางลัดให้ตัวเองแค่ไหนเมื่อไม่มีใครคอยเตือน",
-          "sw": "Waisraeli kutengeneza ndama wa dhahabu mara tu Musa alipoondoka ni uthibitisho kamili wa jinsi tunavyojihalalishia mambo tunapofikiri hakuna anayetutazama."
+          "sw": "Waisraeli kutengeneza ndama wa dhahabu mara tu Musa alipoondoka ni uthibitisho kamili wa jinsi tunavyojihalalishia mambo tunapofikiri hakuna anayetutazama.",
+          "it": "Adorare un vitello d'oro appena Mosè si volta è la prova definitiva di come dimentichiamo i nostri valori quando nessuno ci guarda."
         }
     },
     "2026-04-25": {
@@ -4582,7 +4933,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "出エジプト記 33:1-23",
@@ -4594,7 +4946,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Exodus 33:1-23",
           "tl": "Exodus 33:1-23",
           "th": "Exodus 33:1-23",
-          "sw": "Exodus 33:1-23"
+          "sw": "Exodus 33:1-23",
+          "it": "Esodo 33:1-23"
         },
         comment: {
           "ja": "神様がもう一緒に行かないと言い出した途端、慌てて装飾品を外して反省モードに入る民、結局のところ損得勘定で動いているのが人間味あふれる。",
@@ -4606,7 +4959,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc dân Y-sơ-ra-ên vội vàng tháo bỏ trang sức ngay khi Chúa dọa sẽ không đồng hành cùng họ là minh chứng rõ nhất cho kiểu ăn năn có điều kiện rất đỗi con người.",
           "tl": "Ang pagmamadaling hubarin ng mga Israelita ang kanilang mga alahas nang sabihin ng Diyos na hindi na Siya sasama sa kanila ay isang napakatotoong halimbawa ng pagsisising nakadepende sa sitwasyon.",
           "th": "การที่ชาวอิสราเอลรีบถอดเครื่องประดับออกทันทีที่พระเจ้าขู่ว่าจะไม่ไปต่อด้วย เป็นภาพสะท้อนความเห็นแก่ตัวแบบมนุษย์ๆ ที่ยอมสำนึกผิดเฉพาะตอนที่กลัวจะเสียผลประโยชน์",
-          "sw": "Waisraeli kuvua vito vyao haraka mara tu Mungu alipotishia kutotembea nao ni mfano wa kweli wa jinsi tunavyotubu pale tu tunapohisi tunapoteza faida."
+          "sw": "Waisraeli kuvua vito vyao haraka mara tu Mungu alipotishia kutotembea nao ni mfano wa kweli wa jinsi tunavyotubu pale tu tunapohisi tunapoteza faida.",
+          "it": "Gli israeliti che si tolgono i gioielli non appena Dio minaccia di lasciarli soli sono il ritratto perfetto del pentimento condizionato."
         }
     },
     "2026-04-26": {
@@ -4621,7 +4975,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "出エジプト記 34:1-35",
@@ -4633,7 +4988,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Exodus 34:1-35",
           "tl": "Exodus 34:1-35",
           "th": "Exodus 34:1-35",
-          "sw": "Exodus 34:1-35"
+          "sw": "Exodus 34:1-35",
+          "it": "Esodo 34:1-35"
         },
         comment: {
           "ja": "モーセが山から降りてきたら顔が光りすぎていて周囲がドン引きしている図、仕事で成果を出しすぎて逆に浮いてしまう悲しきエースそのもの。",
@@ -4645,7 +5001,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Moses xuống núi với khuôn mặt sáng rực khiến mọi người sợ hãi, đúng là cảm giác khi mình quá nhiệt tình trong công việc mà lại thành ra lạc quẻ.",
           "tl": "Si Moises na bumaba mula sa bundok na nakakasilaw ang mukha kaya natakot ang lahat ay parang yung time na masyado kang magaling sa trabaho kaya naiilang na sayo ang mga kasama mo.",
           "th": "โมเสสลงจากภูเขาพร้อมใบหน้าที่ส่องสว่างจนคนอื่นตกใจกลัว เป็นภาพสะท้อนของคนที่ทำงานทุ่มเทเกินจนเพื่อนร่วมงานทำตัวไม่ถูก",
-          "sw": "Musa kushuka kutoka mlimani akiwa anang'aa sana kiasi kwamba watu wanamwogopa ni kama vile unavyojituma sana kazini hadi wenzako wanakuona kama mgeni."
+          "sw": "Musa kushuka kutoka mlimani akiwa anang'aa sana kiasi kwamba watu wanamwogopa ni kama vile unavyojituma sana kazini hadi wenzako wanakuona kama mgeni.",
+          "it": "Mosè che scende dalla montagna splendendo così tanto da spaventare tutti è la rappresentazione classica di chi eccede troppo."
         }
     },
     "2026-04-27": {
@@ -4660,7 +5017,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "出エジプト記 35:1-35",
@@ -4672,7 +5030,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Exodus 35:1-35",
           "tl": "Exodus 35:1-35",
           "th": "Exodus 35:1-35",
-          "sw": "Exodus 35:1-35"
+          "sw": "Exodus 35:1-35",
+          "it": "Esodo 35:1-35"
         },
         comment: {
           "ja": "神殿の設えのために皆が材料を寄付しすぎて現場からストップがかかる事態、やる気が空回りするどころか溢れ出している人間臭さが最高。",
@@ -4684,7 +5043,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Mọi người quyên góp vật liệu xây đền tạm nhiều đến mức phải ra lệnh dừng lại, cái sự nhiệt tình quá mức này đúng là thứ chúng ta cần cho những công việc nhà chán ngắt.",
           "tl": "Yung sobra-sobra ang donasyon ng mga tao para sa tabernakulo kaya pinatigil na sila, sana ganyan din tayo ka-excited sa paggawa ng gawaing bahay.",
           "th": "ผู้คนบริจาคของสร้างพลับพลามากจนต้องประกาศให้หยุด เป็นความกระตือรือร้นที่ล้นทะลักจนน่าอิจฉา ผิดกับเวลาที่เราต้องทำงานบ้านจริงๆ",
-          "sw": "Watu kutoa michango mingi sana kwa ajili ya hema ya kukutania kiasi kwamba walilazimika kuambiwa wasimamishe ni kiwango cha shauku tunachotamani kuwa nacho kwenye kazi za kawaida."
+          "sw": "Watu kutoa michango mingi sana kwa ajili ya hema ya kukutania kiasi kwamba walilazimika kuambiwa wasimamishe ni kiwango cha shauku tunachotamani kuwa nacho kwenye kazi za kawaida.",
+          "it": "Donare così tanti materiali da dover fermare la gente è il tipo di entusiasmo che vorremmo avere per le faccende domestiche."
         }
     },
     "2026-04-28": {
@@ -4699,7 +5059,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "出エジプト記 36:8-38",
@@ -4711,7 +5072,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Exodus 36:8-38",
           "tl": "Exodus 36:8-38",
           "th": "Exodus 36:8-38",
-          "sw": "Exodus 36:8-38"
+          "sw": "Exodus 36:8-38",
+          "it": "Esodo 36:8-38"
         },
         comment: {
           "ja": "幕屋の細部までこだわりすぎて過集中気味の職人たち、こだわりが強すぎて納期に追われる現代のクリエイターそのもの。",
@@ -4723,7 +5085,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Các nghệ nhân quá chú tâm vào từng chi tiết nhỏ của đền tạm, y hệt như chúng ta khi dành cả buổi chỉ để sửa font chữ cho một bài thuyết trình.",
           "tl": "Ang mga artisan na masyadong nakatutok sa maliliit na detalye ng tabernakulo ay parang tayo na naglalaan ng tatlong oras para sa isang slide na hindi naman babasahin ng iba.",
           "th": "ช่างฝีมือที่หมกมุ่นอยู่กับรายละเอียดเล็กๆ น้อยๆ ของพลับพลา ก็เหมือนกับเราที่ใช้เวลาทั้งวันกับการปรับฟอนต์ในสไลด์ที่ไม่มีใครสนใจจะอ่าน",
-          "sw": "Mafundi waliozama kwenye maelezo madogo ya hema ya kukutania ni sawa na sisi tunavyopoteza muda mwingi kwenye vitu vidogo huku kazi kubwa ikisubiri."
+          "sw": "Mafundi waliozama kwenye maelezo madogo ya hema ya kukutania ni sawa na sisi tunavyopoteza muda mwingi kwenye vitu vidogo huku kazi kubwa ikisubiri.",
+          "it": "Quegli artigiani persi nei dettagli del tabernacolo mi ricordano esattamente quando passo tre ore su una presentazione che nessuno leggerà mai."
         }
     },
     "2026-04-29": {
@@ -4738,7 +5101,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "出エジプト記 38:1-31",
@@ -4750,7 +5114,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Exodus 38:1-31",
           "tl": "Exodus 38:1-31",
           "th": "Exodus 38:1-31",
-          "sw": "Exodus 38:1-31"
+          "sw": "Exodus 38:1-31",
+          "it": "Esodo 38:1-31"
         },
         comment: {
           "ja": "数え切れないほどの金属を計量して記録する事務作業、どんなに聖なるプロジェクトでも最後は結局膨大な書類仕事に追われるという現実。",
@@ -4762,7 +5127,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Dù sứ mệnh có thiêng liêng đến đâu, cuối cùng vẫn phải có người ngồi lại để kiểm kê sổ sách và làm những công việc giấy tờ nhàm chán.",
           "tl": "Kahit gaano kasagrado ang misyon, sa huli ay kailangan pa ring maglista ng imbentaryo at mag-ayos ng mga dokumento na nakakaantok.",
           "th": "ไม่ว่าภารกิจจะศักดิ์สิทธิ์แค่ไหน สุดท้ายก็หนีไม่พ้นการมานั่งทำบัญชีคลังสินค้าและจัดการงานเอกสารที่น่าเบื่อหน่ายอยู่ดี",
-          "sw": "Haijalishi kazi ni takatifu kiasi gani, mwishowe lazima mtu akae chini na kufanya hesabu za kuchosha za vitu vilivyotumika."
+          "sw": "Haijalishi kazi ni takatifu kiasi gani, mwishowe lazima mtu akae chini na kufanya hesabu za kuchosha za vitu vilivyotumika.",
+          "it": "Non importa quanto sia spirituale la missione, alla fine c'è sempre qualcuno costretto a fare il noioso inventario di fine mese."
         }
     },
     "2026-04-30": {
@@ -4777,7 +5143,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "出エジプト記 39:1-43",
@@ -4789,7 +5156,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Exodus 39:1-43",
           "tl": "Exodus 39:1-43",
           "th": "Exodus 39:1-43",
-          "sw": "Exodus 39:1-43"
+          "sw": "Exodus 39:1-43",
+          "it": "Esodo 39:1-43"
         },
         comment: {
           "ja": "神殿の細部まで厳格に指示通り作り上げた職人たち、こだわりが強すぎて締め切り前夜のクリエイターの顔になっている。",
@@ -4801,7 +5169,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Những người thợ làm việc tỉ mỉ đến từng chi tiết cho đền tạm trông giống hệt như những người cầu toàn đang cố gắng hoàn thành deadline vậy.",
           "tl": "Ang mga artisan na sumusunod sa bawat detalye ng tabernakulo ay parang mga taong perfectionist na nagmamadali bago ang deadline.",
           "th": "เหล่าช่างฝีมือที่ตั้งใจทำรายละเอียดทุกอย่างให้เป๊ะตามสั่งดูเหมือนคนที่กำลังปั่นงานให้เสร็จก่อนเดดไลน์สุดๆ",
-          "sw": "Wafundi wanaofuata kila maelekezo ya hema takatifu kwa usahihi wanaonekana kama watu wanaojitahidi sana kumaliza kazi kabla ya muda kuisha."
+          "sw": "Wafundi wanaofuata kila maelekezo ya hema takatifu kwa usahihi wanaonekana kama watu wanaojitahidi sana kumaliza kazi kabla ya muda kuisha.",
+          "it": "Vedere gli artigiani seguire ogni singolo dettaglio tecnico è la quintessenza del perfezionista che fa le ore piccole prima della consegna."
         }
     },
     "2026-05-01": {
@@ -4816,7 +5185,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "出エジプト記 40:1-38",
@@ -4828,7 +5198,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Exodus 40:1-38",
           "tl": "Exodus 40:1-38",
           "th": "Exodus 40:1-38",
-          "sw": "Exodus 40:1-38"
+          "sw": "Exodus 40:1-38",
+          "it": "Esodo 40:1-38"
         },
         comment: {
           "ja": "ついに完成した幕屋に雲が降りてきて神様が住まうという展開、もはや壮大な引越し完了報告を見ている気分になる。",
@@ -4840,7 +5211,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Đám mây hạ xuống đền tạm sau khi hoàn thành giống như khoảnh khắc bạn dọn vào nhà mới và mọi thứ cuối cùng cũng ổn định.",
           "tl": "Ang ulap na bumaba sa natapos na tabernakulo ay parang ang eksena kung saan sa wakas ay nakalipat na ang may-ari ng bahay.",
           "th": "ฉากที่เมฆลงมาปกคลุมพลับพลาหลังสร้างเสร็จดูเหมือนโมเมนต์ที่ย้ายเข้าบ้านใหม่แล้วทุกอย่างลงตัวพอดี",
-          "sw": "Wingu kushuka juu ya hema takatifu baada ya kukamilika ni kama wakati ambapo mtu anahamia nyumba mpya na kila kitu kinaanza kuwa sawa."
+          "sw": "Wingu kushuka juu ya hema takatifu baada ya kukamilika ni kama wakati ambapo mtu anahamia nyumba mpya na kila kitu kinaanza kuwa sawa.",
+          "it": "La nube che finalmente scende sul tabernacolo completato è la versione biblica di un trasloco andato incredibilmente bene."
         }
     },
     "2026-05-02": {
@@ -4855,7 +5227,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "レビ記 1:1-17",
@@ -4867,7 +5240,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Leviticus 1:1-17",
           "tl": "Leviticus 1:1-17",
           "th": "Leviticus 1:1-17",
-          "sw": "Leviticus 1:1-17"
+          "sw": "Leviticus 1:1-17",
+          "it": "Levitico 1:1-17"
         },
         comment: {
           "ja": "儀式の細かすぎる手順を読みながら、マニュアルを完璧にこなすこと自体が目的になっていないかと少しだけ心配になる。",
@@ -4879,7 +5253,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Đọc những quy định chi tiết về tế lễ, tôi tự hỏi liệu có khi nào chúng ta quá chú trọng vào hình thức mà quên đi mục đích cốt lõi.",
           "tl": "Sa dami ng mga detalyadong tagubilin sa paghahandog, napapaisip ako kung minsan ay nagiging mas importante na lang ang pagsunod sa manual kaysa sa nilalaman ng puso.",
           "th": "เมื่ออ่านขั้นตอนการถวายเครื่องบูชาที่ละเอียดหยุมหยิม ก็อดคิดไม่ได้ว่าบางทีเราก็มักจะยึดติดกับพิธีรีตองจนลืมความหมายที่แท้จริงไป",
-          "sw": "Kusoma maelekezo yote haya ya kina kuhusu dhabihu kunanifanya nijiulize kama wakati mwingine tunajikita sana kwenye taratibu kiasi cha kusahau kusudi la kweli."
+          "sw": "Kusoma maelekezo yote haya ya kina kuhusu dhabihu kunanifanya nijiulize kama wakati mwingine tunajikita sana kwenye taratibu kiasi cha kusahau kusudi la kweli.",
+          "it": "Leggendo tutte queste istruzioni iper-specifiche sui sacrifici, mi chiedo se a volte ci perdiamo nel manuale dimenticandoci del punto centrale."
         }
     },
     "2026-05-03": {
@@ -4894,7 +5269,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "レビ記 16:1-34",
@@ -4906,7 +5282,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Leviticus 16:1-34",
           "tl": "Leviticus 16:1-34",
           "th": "Leviticus 16:1-34",
-          "sw": "Leviticus 16:1-34"
+          "sw": "Leviticus 16:1-34",
+          "it": "Levitico 16:1-34"
         },
         comment: {
           "ja": "罪を負わせたヤギを荒野に追い出すという大胆な解決策、自分の悩みもこうやって誰かがどこかへ連れ去ってくれたらどんなに楽かと思う。",
@@ -4918,7 +5295,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Ý tưởng trút hết gánh nặng tội lỗi lên một con dê rồi thả nó vào hoang mạc quả là cách giải tỏa căng thẳng mà ai cũng mong muốn.",
           "tl": "Ang ideya na ipasa ang lahat ng problema sa isang kambing at palayasin ito sa ilang ay isang paraan ng pag-manage ng stress na sana ay magagawa rin natin.",
           "th": "การโยนความผิดทั้งหมดให้แพะแล้วไล่มันเข้าป่าไป เป็นวิธีจัดการความเครียดที่ดูเรียบง่ายแต่ได้ผลอย่างน่าทึ่ง",
-          "sw": "Wazo la kubebesha mbuzi dhambi zako zote na kumfukuza jangwani ni mbinu ya kushughulikia msongo wa mawazo ambayo tungependa sote tuiweze."
+          "sw": "Wazo la kubebesha mbuzi dhambi zako zote na kumfukuza jangwani ni mbinu ya kushughulikia msongo wa mawazo ambayo tungependa sote tuiweze.",
+          "it": "L'idea di caricare tutti i problemi su una capra e mandarla nel deserto è un livello di gestione dello stress che farebbe comodo a tutti."
         }
     },
     "2026-05-04": {
@@ -4933,7 +5311,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "民数記 11:1-35",
@@ -4945,7 +5324,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Numbers 11:1-35",
           "tl": "Numbers 11:1-35",
           "th": "Numbers 11:1-35",
-          "sw": "Numbers 11:1-35"
+          "sw": "Numbers 11:1-35",
+          "it": "Numeri 11:1-35"
         },
         comment: {
           "ja": "贅沢な食生活を夢見て文句を言い続ける民を前に、ついに神様に愚痴り始めたモーセの心中、完全に中間管理職のそれ。",
@@ -4957,7 +5337,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Chứng kiến dân chúng không ngừng cằn nhằn về thực đơn, việc Môi-se phải than thở với Chúa chính là nỗi lòng của những người làm quản lý.",
           "tl": "Ang pagdaing ni Moises sa Diyos dahil sa walang katapusang reklamo ng mga tao tungkol sa pagkain ay tunay na damdamin ng isang pagod na lider.",
           "th": "การที่โมเสสต้องบ่นกับพระเจ้าเพราะคนในชาติเอาแต่โวยวายเรื่องอาหารช่างเป็นอารมณ์ของหัวหน้างานที่แบกรับความกดดันไว้เต็มที่",
-          "sw": "Musa kulalamika kwa Mungu kwa sababu ya malalamiko ya watu kuhusu chakula ni hali halisi ya kiongozi aliyelemewa na majukumu."
+          "sw": "Musa kulalamika kwa Mungu kwa sababu ya malalamiko ya watu kuhusu chakula ni hali halisi ya kiongozi aliyelemewa na majukumu.",
+          "it": "Mosè che finalmente sbotta con Dio a causa delle lamentele sul cibo è lo stereotipo perfetto del manager allo stremo con la sua squadra."
         }
     },
     "2026-05-05": {
@@ -4972,7 +5353,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "民数記 13:1-38",
@@ -4984,7 +5366,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Numbers 13:1-38",
           "tl": "Numbers 13:1-38",
           "th": "Numbers 13:1-38",
-          "sw": "Numbers 13:1-38"
+          "sw": "Numbers 13:1-38",
+          "it": "Numeri 13:1-38"
         },
         comment: {
           "ja": "目の前の現実に圧倒されて自分たちを勝手に草むらの虫扱いする偵察隊、ポジティブ思考の難しさを痛感する。",
@@ -4996,7 +5379,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc các thám tử nhìn thấy những người khổng lồ rồi tự coi mình là châu chấu chính là ví dụ điển hình cho việc tự ti làm lu mờ năng lực bản thân.",
           "tl": "Ang mga espiya na nakakita ng mga higante at nag-isip agad na sila ay parang mga tipaklong ay tunay na halimbawa ng pagliit ng tingin sa sarili dahil sa takot.",
           "th": "การที่เหล่าคนสอดแนมเห็นยักษ์แล้วรีบตัดสินใจว่าตัวเองเป็นแค่ตั๊กแตนช่างเป็นตัวอย่างของความไม่มั่นใจที่ทำลายตัวเองได้ดีจริงๆ",
-          "sw": "Wapelelezi kuona majitu na kujiona kama panzi ni mfano bora wa jinsi ukosefu wa kujiamini unavyotufanya tujidharau kabla ya pambano."
+          "sw": "Wapelelezi kuona majitu na kujiona kama panzi ni mfano bora wa jinsi ukosefu wa kujiamini unavyotufanya tujidharau kabla ya pambano.",
+          "it": "Le spie che guardano i giganti e si sentono subito come cavallette sono la prova lampante di come l'insicurezza ci faccia rimpicciolire."
         }
     },
     "2026-05-06": {
@@ -5011,7 +5395,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "民数記 14:6-45",
@@ -5023,7 +5408,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Numbers 14:6-45",
           "tl": "Numbers 14:6-45",
           "th": "Numbers 14:6-45",
-          "sw": "Numbers 14:6-45"
+          "sw": "Numbers 14:6-45",
+          "it": "Numeri 14:6-45"
         },
         comment: {
           "ja": "散々文句を言った挙句に神様に怒られてから急にやる気を出して突撃し、返り討ちにあうイスラエルの人々、計画性のなさが一周回って他人事とは思えない。",
@@ -5035,7 +5421,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Người Israel phàn nàn rồi bị quở trách, sau đó lại vội vàng xông vào trận chiến để rồi nhận lấy thất bại, đúng là bài học về việc hành động thiếu suy nghĩ.",
           "tl": "Ang mga Israelita na nagreklamo, napagalitan, at biglang sumugod sa labanan para lang matalo ay patunay na ang padalos-dalos na desisyon ay laging nauuwi sa gulo.",
           "th": "ชาวอิสราเอลที่บ่นกระปอดกระแปดพอโดนดุเข้าหน่อยก็ฮึดสู้จนบุกไปแพ้กลับมา เป็นตัวอย่างชัดเจนของการทำอะไรโดยไม่คิดหน้าคิดหลัง",
-          "sw": "Waisraeli kulalamika, kukemewa, halafu kukimbilia vitani bila mpango na kushindwa vibaya ni mfano kamili wa jinsi tunavyofanya maamuzi ya haraka bila kufikiri."
+          "sw": "Waisraeli kulalamika, kukemewa, halafu kukimbilia vitani bila mpango na kushindwa vibaya ni mfano kamili wa jinsi tunavyofanya maamuzi ya haraka bila kufikiri.",
+          "it": "Israele che si lamenta, viene sgridato e poi si lancia alla cieca in battaglia rimediando una sconfitta è l'apice della pessima pianificazione."
         }
     },
     "2026-05-07": {
@@ -5050,7 +5437,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "民数記 20:14-29",
@@ -5062,7 +5450,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Numbers 20:14-29",
           "tl": "Numbers 20:14-29",
           "th": "Numbers 20:14-29",
-          "sw": "Numbers 20:14-29"
+          "sw": "Numbers 20:14-29",
+          "it": "Numeri 20:14-29"
         },
         comment: {
           "ja": "モーセが一生懸命お願いしたのにエドムの王に「絶対に通さない」と門前払いされる様子は、どれほどリーダーでも交渉がうまくいかない時の気まずさを物語っている。",
@@ -5074,7 +5463,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Môi-se lịch sự xin phép nhưng bị vua Ê-đôm từ chối thẳng thừng, đúng là minh chứng cho thấy ngay cả lãnh đạo vĩ đại cũng có lúc gặp cảnh bẽ bàng khi đàm phán.",
           "tl": "Ang magalang na pakiusap ni Moises na tinanggihan lang ng hari ng Edom ay patunay na kahit ang pinakamahusay na lider ay nakakaranas ng pagkabigo sa negosasyon.",
           "th": "โมเสสขอร้องอย่างสุภาพแต่กลับถูกกษัตริย์แห่งเอโดมปฏิเสธหน้าตาเฉย เป็นเครื่องเตือนใจว่าต่อให้เป็นผู้นำที่ยิ่งใหญ่แค่ไหนก็ต้องมีวันที่เจรจาไม่สำเร็จ",
-          "sw": "Musa kuomba kwa heshima na kukataliwa na mfalme wa Edomu ni ukumbusho kwamba hata viongozi wakuu hupata wakati mgumu wakati mambo hayaendi kama walivyopanga."
+          "sw": "Musa kuomba kwa heshima na kukataliwa na mfalme wa Edomu ni ukumbusho kwamba hata viongozi wakuu hupata wakati mgumu wakati mambo hayaendi kama walivyopanga.",
+          "it": "Mosè che riceve un secco rifiuto dal re di Edom ci ricorda che a volte ricevono un bel due di picche anche i leader più grandi."
         }
     },
     "2026-05-08": {
@@ -5089,7 +5479,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "民数記 22:1-41",
@@ -5101,7 +5492,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Numbers 22:1-41",
           "tl": "Numbers 22:1-41",
           "th": "Numbers 22:1-41",
-          "sw": "Numbers 22:1-41"
+          "sw": "Numbers 22:1-41",
+          "it": "Numeri 22:1-41"
         },
         comment: {
           "ja": "自分のロバに論破されるまで神の意志に気づかないバラム、空気を読めない頑固者の末路としてこれ以上の教訓はない。",
@@ -5113,7 +5505,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Balaam phải để một con lừa chỉ ra sai lầm của mình mới chịu tỉnh ngộ chính là bài học cay đắng cho những kẻ cứng đầu.",
           "tl": "Ang mapahiya ng sarili mong asno dahil sa katigasan ng ulo mo ay isang antas ng pagkakamali na hindi mo na gugustuhing maranasan.",
           "th": "การที่ต้องให้ลามาพูดเตือนสติถึงจะยอมหยุดดื้อรั้น แสดงให้เห็นว่าบางครั้งมนุษย์เราก็ต้องการการเตือนที่แรงกว่าคำพูดคนทั่วไป",
-          "sw": "Balaamu kushindwa kuelewa mapenzi ya Mungu hadi punda wake alipoanza kumkosoa ni kielelezo kamili cha jinsi ukaidi unavyotufanya kuwa vipofu."
+          "sw": "Balaamu kushindwa kuelewa mapenzi ya Mungu hadi punda wake alipoanza kumkosoa ni kielelezo kamili cha jinsi ukaidi unavyotufanya kuwa vipofu.",
+          "it": "Che un asino debba rimettere in riga Balaam è la prova definitiva che la testardaggine non ha limiti."
         }
     },
     "2026-05-09": {
@@ -5128,7 +5521,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "民数記 23:1-30",
@@ -5140,7 +5534,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Numbers 23:1-30",
           "tl": "Numbers 23:1-30",
           "th": "Numbers 23:1-30",
-          "sw": "Numbers 23:1-30"
+          "sw": "Numbers 23:1-30",
+          "it": "Numeri 23:1-30"
         },
         comment: {
           "ja": "呪ってくれと頼まれているのに祝福しか出てこないバラム、もはや自分の口が制御不能になっているのが滑稽で人間味がある。",
@@ -5152,7 +5547,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Cố gắng buông lời nguyền rủa nhưng kết quả lại toàn là ban phước, Balaam cho thấy rằng đôi khi chính miệng chúng ta cũng phải phục tùng ý muốn cao hơn.",
           "tl": "Ang pilit mong manumpa pero puro pagpapala lang ang lumalabas sa bibig mo ay patunay na minsan, hindi mo kayang labanan ang plano ng nasa itaas.",
           "th": "การที่พยายามจะแช่งตามคำสั่งแต่กลับหลุดออกมาเป็นคำอวยพร แสดงให้เห็นว่าบางครั้งความตั้งใจของมนุษย์ก็แพ้ทางให้กับแผนการที่ใหญ่กว่าเสมอ",
-          "sw": "Balaamu kujaribu kulaani lakini maneno ya baraka yakamtoka badala yake ni ukumbusho kwamba mipango ya Mungu huwa inashinda nia zetu mbaya."
+          "sw": "Balaamu kujaribu kulaani lakini maneno ya baraka yakamtoka badala yake ni ukumbusho kwamba mipango ya Mungu huwa inashinda nia zetu mbaya.",
+          "it": "Balaam che prova a insultare tutti ma riesce solo a fare complimenti dimostra che a volte la lingua va per conto suo."
         }
     },
     "2026-05-10": {
@@ -5167,7 +5563,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "民数記 27:1-23",
@@ -5179,7 +5576,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Numbers 27:1-23",
           "tl": "Numbers 27:1-23",
           "th": "Numbers 27:1-23",
-          "sw": "Numbers 27:1-23"
+          "sw": "Numbers 27:1-23",
+          "it": "Numeri 27:1-23"
         },
         comment: {
           "ja": "相続権がなかった娘たちが前例を覆して権利を勝ち取った様子は、現代の会議室で声を上げる若手社員のたくましさと重なる。",
@@ -5191,7 +5589,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Những người con gái của Xê-lô-phát dám phá vỡ quy tắc để đòi quyền lợi cho mình thực sự là hình mẫu của sự bản lĩnh trong mọi thời đại.",
           "tl": "Ang mga anak na babae ni Zelofehad na lumaban para sa kanilang karapatan ay patunay na minsan kailangan mong magsalita para mabago ang sistema.",
           "th": "เหล่าลูกสาวของเศโลเฟหัดที่กล้าท้าทายจารีตเพื่อทวงสิทธิ์ของตน คือตัวอย่างของความกล้าหาญที่ทันสมัยสุดๆ",
-          "sw": "Binti za Selofehadi kupinga utaratibu ili kudai haki yao ni mfano bora wa ujasiri wa kusimamia kile unachostahili."
+          "sw": "Binti za Selofehadi kupinga utaratibu ili kudai haki yao ni mfano bora wa ujasiri wa kusimamia kile unachostahili.",
+          "it": "Le figlie di Zelofhead che ribaltano le regole per avere ciò che spetta loro sono il classico esempio di chi non si arrende mai."
         }
     },
     "2026-05-11": {
@@ -5206,7 +5605,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "申命記 6:1-25",
@@ -5218,7 +5618,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Deuteronomy 6:1-25",
           "tl": "Deuteronomy 6:1-25",
           "th": "Deuteronomy 6:1-25",
-          "sw": "Deuteronomy 6:1-25"
+          "sw": "Deuteronomy 6:1-25",
+          "it": "Deuteronomio 6:1-25"
         },
         comment: {
           "ja": "家中に教えを書き記せという教訓、現代ならスマホの待ち受け画面を全部聖句にするくらい必死な親心を感じる。",
@@ -5230,7 +5631,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Dặn dò khắc ghi lời dạy khắp nhà chẳng khác nào việc cài thông báo nhắc nhở trên điện thoại để không quên những điều quan trọng mỗi ngày.",
           "tl": "Ang pagpapaskil ng mga utos sa pinto ay parang paglalagay ng wallpaper sa cellphone para hindi makalimutan ang mga dapat gawin sa araw-araw.",
           "th": "การให้เขียนคำสอนไว้ที่ประตูบ้านก็เหมือนกับการตั้งเตือนในมือถือเพื่อให้เราไม่ลืมสิ่งที่สำคัญที่สุดในชีวิตทุกวัน",
-          "sw": "Kuandika mafundisho kila mahali ni kama kuweka ukumbusho kwenye simu ili usisahau mambo muhimu unayopaswa kufanya kila siku."
+          "sw": "Kuandika mafundisho kila mahali ni kama kuweka ukumbusho kwenye simu ili usisahau mambo muhimu unayopaswa kufanya kila siku.",
+          "it": "Mettere i comandamenti ovunque in casa è l'antenato spirituale del mettere le notifiche importanti sullo schermo del telefono."
         }
     },
     "2026-05-12": {
@@ -5245,7 +5647,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "申命記 7:1-26",
@@ -5257,7 +5660,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Deuteronomy 7:1-26",
           "tl": "Deuteronomy 7:1-26",
           "th": "Deuteronomy 7:1-26",
-          "sw": "Deuteronomy 7:1-26"
+          "sw": "Deuteronomy 7:1-26",
+          "it": "Deuteronomio 7:1-26"
         },
         comment: {
           "ja": "異文化と関わるとすぐ流されてしまう自分たちを自覚しているからこそ、極端なまでの距離感を強いるモーセの必死さが逆に人間臭い。",
@@ -5269,7 +5673,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Môi-se yêu cầu cách biệt hoàn toàn vì biết dân mình dễ bị lung lay cho thấy ông hiểu rõ bản chất con người dễ bị ảnh hưởng bởi môi trường xung quanh đến mức nào.",
           "tl": "Ang paghingi ni Moises ng total na distansya dahil alam niyang madaling maimpluwensyahan ang mga tao ay parang isang magulang na takot na mapahamak ang mga anak.",
           "th": "การที่โมเสสสั่งให้ตัดขาดจากอิทธิพลภายนอกเพราะรู้ว่าคนของเขาใจอ่อนไหวง่ายนั้น ช่างเป็นความกังวลที่เข้าถึงอารมณ์มนุษย์สุดๆ",
-          "sw": "Musa kudai watu wajitenge kabisa kwa sababu anajua jinsi watu wake wanavyoshawishika kirahisi ni kweli kabisa kulingana na udhaifu wa kibinadamu."
+          "sw": "Musa kudai watu wajitenge kabisa kwa sababu anajua jinsi watu wake wanavyoshawishika kirahisi ni kweli kabisa kulingana na udhaifu wa kibinadamu.",
+          "it": "Mosè che pretende una distanza di sicurezza perché sa benissimo quanto siano distraibili i suoi è di una sincerità disarmante."
         }
     },
     "2026-05-13": {
@@ -5284,7 +5689,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "申命記 8:1-20",
@@ -5296,7 +5702,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Deuteronomy 8:1-20",
           "tl": "Deuteronomy 8:1-20",
           "th": "Deuteronomy 8:1-20",
-          "sw": "Deuteronomy 8:1-20"
+          "sw": "Deuteronomy 8:1-20",
+          "it": "Deuteronomio 8:1-20"
         },
         comment: {
           "ja": "成功して調子に乗るたびに「お前がやったんじゃないぞ」と釘を刺される申命記8章、現代の自分にも毎日突きつけたいリマインダーだ。",
@@ -5308,7 +5715,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Phục-truyền 8 giống như một lời nhắc nhở thực tế rằng đừng quá tự mãn khi mọi việc đang suôn sẻ, vì thành công không chỉ đến từ nỗ lực của riêng ta.",
           "tl": "Ang Deuteronomio 8 ay parang paalala na huwag lumaki ang ulo tuwing nagtatagumpay tayo, dahil hindi lang tayo ang gumawa ng paraan para mangyari iyon.",
           "th": "เฉลยธรรมบัญญัติบทที่ 8 เหมือนเป็นเสียงเตือนสติไม่ให้เราหลงระเริงกับความสำเร็จจนลืมไปว่ามีอะไรช่วยเราอยู่เบื้องหลังบ้าง",
-          "sw": "Kumbukumbu la Torati 8 ni kama ukumbusho wa kila siku kwetu tusijivune tunapofanikiwa, tukasahau kuwa mafanikio yetu yanategemea msaada wa Mungu."
+          "sw": "Kumbukumbu la Torati 8 ni kama ukumbusho wa kila siku kwetu tusijivune tunapofanikiwa, tukasahau kuwa mafanikio yetu yanategemea msaada wa Mungu.",
+          "it": "Deuteronomio 8 è quel promemoria quotidiano perfetto per ricordarci di non montarci la testa quando le cose vanno troppo bene."
         }
     },
     "2026-05-14": {
@@ -5323,7 +5731,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "申命記 15:1-23",
@@ -5335,7 +5744,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Deuteronomy 15:1-23",
           "tl": "Deuteronomy 15:1-23",
           "th": "Deuteronomy 15:1-23",
-          "sw": "Deuteronomy 15:1-23"
+          "sw": "Deuteronomy 15:1-23",
+          "it": "Deuteronomio 15:1-23"
         },
         comment: {
           "ja": "7年ごとに借金を帳消しにするという制度、現代の住宅ローン返済中の身としては神の慈悲そのものにしか見えない。",
@@ -5347,7 +5757,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc xóa nợ mỗi bảy năm là kiểu lòng thương xót mà bất cứ ai đang gánh nợ cũng phải ước ao.",
           "tl": "Ang ideya ng pagpapatawad ng utang tuwing pitong taon ay ang uri ng awa na talagang kailangan ng pitaka ko ngayon.",
           "th": "กฎการล้างหนี้ทุกเจ็ดปีนี่คือความเมตตาที่มนุษย์เงินผ่อนทุกคนใฝ่ฝันอยากให้มีจริงในยุคนี้",
-          "sw": "Wazo la kusamehe madeni kila baada ya miaka saba ni aina ya huruma ya kimungu ambayo akaunti yangu ya benki inaihitaji sana."
+          "sw": "Wazo la kusamehe madeni kila baada ya miaka saba ni aina ya huruma ya kimungu ambayo akaunti yangu ya benki inaihitaji sana.",
+          "it": "Cancellare tutti i debiti ogni sette anni è esattamente quel tipo di clemenza divina che farebbe comodo a chiunque oggi."
         }
     },
     "2026-05-15": {
@@ -5362,7 +5773,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "申命記 18:1-22",
@@ -5374,7 +5786,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Deuteronomy 18:1-22",
           "tl": "Deuteronomy 18:1-22",
           "th": "Deuteronomy 18:1-22",
-          "sw": "Deuteronomy 18:1-22"
+          "sw": "Deuteronomy 18:1-22",
+          "it": "Deuteronomio 18:1-22"
         },
         comment: {
           "ja": "神様が直々に語りかける預言者がいる一方で、結局は聞き手の好みのメッセージしか信じない人間の性もまた変わらない。",
@@ -5386,7 +5799,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Dù có tiên tri nói lời của Chúa, con người vẫn giữ thói quen chỉ nghe những gì mình muốn nghe mà thôi.",
           "tl": "Kahit may mga propeta na nagsasalita para sa Diyos, likas pa rin sa tao na piliin lang ang payong sang-ayon sa gusto na nilang gawin.",
           "th": "ถึงจะมีผู้เผยพระวจนะมาบอกกล่าว แต่คนเราก็ยังไม่วายเลือกฟังเฉพาะสิ่งที่ตัวเองอยากได้ยินอยู่ดี",
-          "sw": "Hata manabii wanapozungumza kwa niaba ya Mungu, wanadamu bado wana tabia ya kusikiliza tu ushauri unaothibitisha kile walichotaka kufanya."
+          "sw": "Hata manabii wanapozungumza kwa niaba ya Mungu, wanadamu bado wana tabia ya kusikiliza tu ushauri unaothibitisha kile walichotaka kufanya.",
+          "it": "Anche con i profeti a disposizione, gli umani riescono sempre ad ascoltare solo quello che fa comodo alle proprie convinzioni."
         }
     },
     "2026-05-16": {
@@ -5401,7 +5815,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "申命記 29:1-29",
@@ -5413,7 +5828,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Deuteronomy 29:1-29",
           "tl": "Deuteronomy 29:1-29",
           "th": "Deuteronomy 29:1-29",
-          "sw": "Deuteronomy 29:1-29"
+          "sw": "Deuteronomy 29:1-29",
+          "it": "Deuteronomio 29:1-29"
         },
         comment: {
           "ja": "散々奇跡を見せられたのにすぐ忘れて偶像に走るイスラエルの民、記憶力のなさと気の多さが現代人のスマホ依存と重なって笑えない。",
@@ -5425,7 +5841,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Người Israel quên sạch các phép lạ ngay khi gặp khó khăn, thật giống với cái cách chúng ta dễ dàng mất tập trung trong cuộc sống hiện đại.",
           "tl": "Ang mga Israelita na nakakita na ng himala pero naghahanap pa rin ng ibang sasambahin ay eksaktong repleksyon ng pagiging makalimutin nating mga tao.",
           "th": "ชาวอิสราเอลที่เห็นปาฏิหาริย์แล้วยังหันไปหาเทวรูปเหมือนคนสมัยนี้ที่สมาธิสั้นจนลืมสิ่งที่สำคัญที่สุดในชีวิตไปเลย",
-          "sw": "Waisraeli kusahau miujiza mara tu wanapoona changamoto ni kama sisi tunavyosahau mambo ya msingi kwa sababu ya usumbufu wa kila siku."
+          "sw": "Waisraeli kusahau miujiza mara tu wanapoona changamoto ni kama sisi tunavyosahau mambo ya msingi kwa sababu ya usumbufu wa kila siku.",
+          "it": "Dimenticarsi dei miracoli visti il giorno prima per inseguire distrazioni è un vizio vecchio quanto il mondo."
         }
     },
     "2026-05-17": {
@@ -5440,7 +5857,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "申命記 30:1-20",
@@ -5452,7 +5870,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Deuteronomy 30:1-20",
           "tl": "Deuteronomy 30:1-20",
           "th": "Deuteronomy 30:1-20",
-          "sw": "Deuteronomy 30:1-20"
+          "sw": "Deuteronomy 30:1-20",
+          "it": "Deuteronomio 30:1-20"
         },
         comment: {
           "ja": "命か死か、祝福か呪いかを選べと言われて結局いつも迷走する人間、選択肢がシンプルすぎて逆に選びにくいという矛盾。",
@@ -5464,7 +5883,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Được bảo hãy chọn giữa sự sống và cái chết, vậy mà con người lúc nào cũng giỏi biến những lựa chọn đơn giản thành rắc rối cho chính mình.",
           "tl": "Pinapipili tayo sa pagitan ng buhay at kamatayan, pero dahil tayo ay tao, lagi nating ginagawang mas komplikado ang dapat sana ay simpleng desisyon.",
           "th": "พระเจ้าบอกให้เลือกชีวิตหรือความตาย แต่คนเรากลับเก่งเหลือเกินในการทำให้เรื่องง่ายๆ กลายเป็นเรื่องซับซ้อนจนตัดสินใจไม่ได้",
-          "sw": "Kuambiwa uchague kati ya uzima na mauti inaonekana rahisi, lakini sisi wanadamu tuna kipaji cha kufanya maamuzi rahisi kuwa magumu."
+          "sw": "Kuambiwa uchague kati ya uzima na mauti inaonekana rahisi, lakini sisi wanadamu tuna kipaji cha kufanya maamuzi rahisi kuwa magumu.",
+          "it": "Tra vita e morte la scelta dovrebbe essere ovvia, eppure riusciamo sempre a complicarci la vita da soli."
         }
     },
     "2026-05-18": {
@@ -5479,7 +5899,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "ヨシュア記 1:1-18",
@@ -5491,7 +5912,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Joshua 1:1-18",
           "tl": "Joshua 1:1-18",
           "th": "Joshua 1:1-18",
-          "sw": "Joshua 1:1-18"
+          "sw": "Joshua 1:1-18",
+          "it": "Giosuè 1:1-18"
         },
         comment: {
           "ja": "偉大なリーダーの跡を継ぐプレッシャーで押しつぶされそうなヨシュアに、神様が最初にしたアドバイスがとにかく強くあれという精神論なのは、現代の管理職の悩みと変わらない。",
@@ -5503,7 +5925,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Lời dặn dò phải can đảm ngay khi vừa kế nhiệm vị trí lãnh đạo vĩ đại của Joshua cho thấy ngay cả những người vĩ đại nhất cũng cần một cú hích tinh thần trước áp lực.",
           "tl": "Ang pagpapakatatag ni Josue sa kabila ng bigat ng responsibilidad na iniwan sa kanya ay isang paalala na ang pagiging lider ay laging may kasamang kaba at kailangang lakas ng loob.",
           "th": "การที่พระเจ้าบอกให้โยชูวากล้าหาญทันทีที่เขารับตำแหน่งต่อจากผู้นำผู้ยิ่งใหญ่ เป็นบททดสอบความกดดันที่คนรับงานต่อจากมือโปรทุกคนต้องเข้าใจดี",
-          "sw": "Mungu kumwambia Yoshua awe jasiri mara tu baada ya kuchukua nafasi ya kiongozi mkuu ni aina ya motisha ambayo kila mtu anahitaji anapokabili changamoto mpya kazini."
+          "sw": "Mungu kumwambia Yoshua awe jasiri mara tu baada ya kuchukua nafasi ya kiongozi mkuu ni aina ya motisha ambayo kila mtu anahitaji anapokabili changamoto mpya kazini.",
+          "it": "Che Dio dica a Giosuè di farsi coraggio subito dopo aver ereditato un ruolo impossibile è quel genere di spinta che farebbe sudare freddo qualsiasi manager moderno."
         }
     },
     "2026-05-19": {
@@ -5518,7 +5941,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "ヨシュア記 3:1-17",
@@ -5530,7 +5954,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Joshua 3:1-17",
           "tl": "Joshua 3:1-17",
           "th": "Joshua 3:1-17",
-          "sw": "Joshua 3:1-17"
+          "sw": "Joshua 3:1-17",
+          "it": "Giosuè 3:1-17"
         },
         comment: {
           "ja": "川の真ん中で立ち止まって水が引くのを待つなんて、現実的に考えれば正気の沙汰ではないけれど、神様のタイミングを信じるしかなかった彼らの緊張感は想像を絶する。",
@@ -5542,7 +5967,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Đứng giữa dòng sông chờ nước rút là một thử thách lòng kiên nhẫn tột độ, khiến cho việc chờ đợi bất cứ điều gì trong cuộc sống hiện đại cũng trở nên nhẹ nhàng hơn hẳn.",
           "tl": "Ang pagtayo sa gitna ng ilog habang hinihintay na huminto ang tubig ay isang antas ng pagtitiwala na hindi kayang tapatan ng kahit anong modernong paghihintay.",
           "th": "การยืนรออยู่กลางแม่น้ำจนกว่าน้ำจะหยุดไหลคือบททดสอบความอดทนขั้นสุด ที่ทำให้การรอคิวในชีวิตประจำวันดูเป็นเรื่องเล็กไปเลย",
-          "sw": "Kusimama katikati ya mto ukisubiri maji yaache kutiririka ni jaribu kuu la imani ambalo hufanya kusubiri chochote katika maisha ya sasa kuonekana kuwa rahisi."
+          "sw": "Kusimama katikati ya mto ukisubiri maji yaache kutiririka ni jaribu kuu la imani ambalo hufanya kusubiri chochote katika maisha ya sasa kuonekana kuwa rahisi.",
+          "it": "Rimanere piantati in mezzo a un fiume ad aspettare che l'acqua si fermi è il test di pazienza supremo, molto più stressante di qualsiasi attesa con la connessione lenta."
         }
     },
     "2026-05-20": {
@@ -5557,7 +5983,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "ヨシュア記 4:15-24",
@@ -5569,7 +5996,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Joshua 4:15-24",
           "tl": "Joshua 4:15-24",
           "th": "Joshua 4:15-24",
-          "sw": "Joshua 4:15-24"
+          "sw": "Joshua 4:15-24",
+          "it": "Giosuè 4:15-24"
         },
         comment: {
           "ja": "川の真ん中に石を積んでおかないとすぐ忘れる自分の記憶力、ヨシュアの時代から人類共通の悩みだったようだ。",
@@ -5581,7 +6009,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Nếu không chất đá giữa sông để ghi nhớ thì chúng ta sẽ quên sạch mọi thứ, có vẻ như bệnh đãng trí là đặc điểm chung của nhân loại từ thời xưa.",
           "tl": "Kung hindi tayo magtatambak ng bato sa gitna ng ilog, siguradong makakalimutan natin ang lahat, dahil ganyan talaga tayong mga tao.",
           "th": "ถ้าไม่วางหินกองไว้กลางแม่น้ำเราก็คงลืมกันหมด ดูเหมือนว่าความขี้ลืมจะเป็นปัญหาของมนุษย์มาตั้งแต่ยุคโยชูวาแล้ว",
-          "sw": "Kama hatutajenga jiwe la ukumbusho katikati ya mto, tutasahau kila kitu, inaonekana kusahau ni tatizo la kibinadamu tangu enzi za Yoshua."
+          "sw": "Kama hatutajenga jiwe la ukumbusho katikati ya mto, tutasahau kila kitu, inaonekana kusahau ni tatizo la kibinadamu tangu enzi za Yoshua.",
+          "it": "Se non lasciamo pietre segnate lungo la strada dimentichiamo tutto alla settimana prossima, a quanto pare la pessima memoria è un problema universale."
         }
     },
     "2026-05-21": {
@@ -5596,7 +6025,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "ヨシュア記 6:1-27",
@@ -5608,7 +6038,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Joshua 6:1-27",
           "tl": "Joshua 6:1-27",
           "th": "Joshua 6:1-27",
-          "sw": "Joshua 6:1-27"
+          "sw": "Joshua 6:1-27",
+          "it": "Giosuè 6:1-27"
         },
         comment: {
           "ja": "ただ静かに歩いて最後に叫ぶだけで壁が崩れるなんて、世の中そんなに都合よくいけば苦労しないよと当時の住民は思ったはず。",
@@ -5620,7 +6051,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Chỉ đi bộ rồi hét lên mà tường thành đổ sập, cư dân Jericho chắc hẳn đã nghĩ đây là một trò đùa quái đản trước khi mọi thứ trở nên nghiêm trọng.",
           "tl": "Ang paglalakad lang nang tahimik at pagsigaw para gumuho ang pader ay parang nakakatawang joke, pero gulat ang mga taga-Jericho nang gumana ito.",
           "th": "แค่เดินวนแล้วตะโกนจนกำแพงพัง ฟังดูเหมือนเรื่องตลก แต่ชาวเมืองเยริโคคงขำไม่ออกเมื่อมันเกิดขึ้นจริง",
-          "sw": "Kutembea kimya kimya kisha kupiga kelele ili kuta zianguke inaonekana kama utani, lakini wakazi wa Yeriko walishtuka kuona mpango huo wa ajabu ukifanya kazi."
+          "sw": "Kutembea kimya kimya kisha kupiga kelele ili kuta zianguke inaonekana kama utani, lakini wakazi wa Yeriko walishtuka kuona mpango huo wa ajabu ukifanya kazi.",
+          "it": "Camminare in silenzio e urlare per far crollare le mura sembra uno scherzo di cattivo gusto, i residenti di Gerico saranno rimasti scioccati nel vedere che ha funzionato."
         }
     },
     "2026-05-22": {
@@ -5635,7 +6067,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "ヨシュア記 7:1-26",
@@ -5647,7 +6080,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Joshua 7:1-26",
           "tl": "Joshua 7:1-26",
           "th": "Joshua 7:1-26",
-          "sw": "Joshua 7:1-26"
+          "sw": "Joshua 7:1-26",
+          "it": "Giosuè 7:1-26"
         },
         comment: {
           "ja": "たった一人の隠し事のせいでチーム全体が敗北するヨシュア記の展開、組織の連帯責任の重さを突きつけられて背筋が凍る。",
@@ -5659,7 +6093,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Cả một đội quân thất bại chỉ vì một người giấu diếm đồ vật là lời nhắc nhở đau đớn về việc một cá nhân có thể ảnh hưởng đến tập thể như thế nào.",
           "tl": "Ang pagkatalo ng buong grupo dahil sa isang lihim na pagtatago ng gamit ay isang matinding paalala na ang maling desisyon ng isa ay damay ang lahat.",
           "th": "การที่คนทั้งกองทัพต้องพ่ายแพ้เพราะความลับของคนคนเดียว เป็นเครื่องเตือนใจที่น่ากลัวว่าการตัดสินใจของคนหนึ่งคนส่งผลกระทบต่อส่วนรวมได้มากแค่ไหน",
-          "sw": "Kikosi kizima kushindwa vita kwa sababu ya siri ya mtu mmoja ni ukumbusho mkali wa jinsi maamuzi ya mtu mmoja yanavyoathiri wote."
+          "sw": "Kikosi kizima kushindwa vita kwa sababu ya siri ya mtu mmoja ni ukumbusho mkali wa jinsi maamuzi ya mtu mmoja yanavyoathiri wote.",
+          "it": "Che un'intera squadra perda una battaglia per il segreto di una singola persona è un promemoria brutale di come le nostre azioni si ripercuotano su chi ci circonda."
         }
     },
     "2026-05-23": {
@@ -5674,7 +6109,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "ヨシュア記 8:1-35",
@@ -5686,7 +6122,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Joshua 8:1-35",
           "tl": "Joshua 8:1-35",
           "th": "Joshua 8:1-35",
-          "sw": "Joshua 8:1-35"
+          "sw": "Joshua 8:1-35",
+          "it": "Giosuè 8:1-35"
         },
         comment: {
           "ja": "一度失敗した後のリベンジ戦で、前回の反省を活かして着実に作戦を実行するヨシュアたちの姿に、泥臭い努力の大切さを感じる。",
@@ -5698,7 +6135,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Nhìn cách Giô-suê điều chỉnh chiến thuật sau thất bại, ta thấy được bài học quý giá về việc rút kinh nghiệm để tiến xa hơn.",
           "tl": "Ang makita si Josue na nagbago ng istratehiya matapos ang pagkakamali ay isang magandang halimbawa ng pagkatuto mula sa mga pagkukulang.",
           "th": "การเห็นโยชูวาปรับเปลี่ยนกลยุทธ์หลังจากความล้มเหลว เป็นบทเรียนชั้นดีของการเรียนรู้จากความผิดพลาดเพื่อก้าวไปข้างหน้า",
-          "sw": "Kuona Yoshua akibadilisha mkakati baada ya kushindwa ni somo bora la kujifunza kutokana na makosa ili kusonga mbele."
+          "sw": "Kuona Yoshua akibadilisha mkakati baada ya kushindwa ni somo bora la kujifunza kutokana na makosa ili kusonga mbele.",
+          "it": "Vedere Giosuè che raddrizza il tiro e mette in campo una strategia migliore dopo un fallimento è la prova lampante che imparare dai propri errori è l'unico modo per avanzare."
         }
     },
     "2026-05-24": {
@@ -5713,7 +6151,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "ヨシュア記 23:1-16",
@@ -5725,7 +6164,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Joshua 23:1-16",
           "tl": "Joshua 23:1-16",
           "th": "Joshua 23:1-16",
-          "sw": "Joshua 23:1-16"
+          "sw": "Joshua 23:1-16",
+          "it": "Giosuè 23:1-16"
         },
         comment: {
           "ja": "散々助けてもらったのにすぐ忘れて別の神様に浮気するイスラエル、人間という生き物の記憶力の短さと移ろいやすさを体現しすぎている。",
@@ -5737,7 +6177,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc dân Y-sơ-ra-ên nhanh chóng quên đi mọi sự giúp đỡ và chạy theo thần khác chính là minh chứng rõ nhất cho sự mau quên và dễ thay lòng của con người.",
           "tl": "Ang mabilis na paglimot ng Israel sa lahat ng tulong na natanggap nila at pagbaling sa ibang diyos ay patunay lamang kung gaano kabilis makalimot ang tao.",
           "th": "การที่อิสราเอลลืมความช่วยเหลือทั้งหมดที่ได้รับและหันไปหาพระอื่นอย่างรวดเร็ว สะท้อนให้เห็นความขี้ลืมและความไม่มั่นคงของมนุษย์ได้อย่างชัดเจน",
-          "sw": "Waisraeli kusahau haraka sana msaada wote waliopokea na kugeukia miungu mingine ni uthibitisho kamili wa jinsi kumbukumbu za binadamu zilivyo fupi na tete."
+          "sw": "Waisraeli kusahau haraka sana msaada wote waliopokea na kugeukia miungu mingine ni uthibitisho kamili wa jinsi kumbukumbu za binadamu zilivyo fupi na tete.",
+          "it": "Vedere Israele dimenticarsi così in fretta di tutto l'aiuto ricevuto per distrurarsi altrove è il riflesso perfetto della nostra memoria a breve termine."
         }
     },
     "2026-05-25": {
@@ -5752,7 +6193,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "士師記 2:1-23",
@@ -5764,7 +6206,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Judges 2:1-23",
           "tl": "Judges 2:1-23",
           "th": "Judges 2:1-23",
-          "sw": "Judges 2:1-23"
+          "sw": "Judges 2:1-23",
+          "it": "Giudici 2:1-23"
         },
         comment: {
           "ja": "世代交代した途端に先人の苦労を忘れて好き勝手やり始める若者たちの姿、いつの時代も変わらない組織のリアルなあるあるすぎる。",
@@ -5776,7 +6219,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Thế hệ sau vừa tiếp quản đã quên sạch những hy sinh của người đi trước để làm theo ý mình, quả là thực tế phũ phàng của mọi tổ chức qua mọi thời đại.",
           "tl": "Ang bagong henerasyon na nakakalimot sa sakripisyo ng mga nauna sa kanila sa sandaling humawak sila ng kapangyarihan ay isang klasikong kwento sa kahit anong organisasyon.",
           "th": "การที่คนรุ่นหลังลืมความเหนื่อยยากของคนรุ่นก่อนทันทีที่ได้รับอำนาจ เป็นเรื่องจริงที่พบเห็นได้ทั่วไปในทุกองค์กรไม่ว่ายุคสมัยไหน",
-          "sw": "Kizazi kipya kusahau mara moja taabu za wazee wao punde tu wanaposhika madaraka ni jambo la kawaida sana katika kila shirika tangu zamani."
+          "sw": "Kizazi kipya kusahau mara moja taabu za wazee wao punde tu wanaposhika madaraka ni jambo la kawaida sana katika kila shirika tangu zamani.",
+          "it": "Che la nuova generazione ignori i sacrifici di chi l'ha preceduta non appena prende il comando è il cliché più antico e reale della storia di qualsiasi ufficio."
         }
     },
     "2026-05-26": {
@@ -5791,7 +6235,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "士師記 4:1-24",
@@ -5803,7 +6248,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Judges 4:1-24",
           "tl": "Judges 4:1-24",
           "th": "Judges 4:1-24",
-          "sw": "Judges 4:1-24"
+          "sw": "Judges 4:1-24",
+          "it": "Giudici 4:1-24"
         },
         comment: {
           "ja": "戦いの最前線に行きたがらない将軍に代わって、ヤエルがテントの釘一本で伝説を作ってしまうあたり、結局現場で一番強いのは覚悟を決めた人だという現実。",
@@ -5815,7 +6261,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Khi vị tướng không muốn ra trận, Jael đã tạo nên lịch sử chỉ với một chiếc cọc lều, minh chứng rằng người làm được việc cuối cùng lại chính là người dám hành động.",
           "tl": "Noong ayaw lumaban ng heneral, isang tulos lang ng tolda ang ginamit ni Jael para gumawa ng kasaysayan, na nagpapatunay na ang tunay na lakas ay nasa taong hindi natatakot kumilos.",
           "th": "ในขณะที่แม่ทัพไม่ยอมออกรบ ยาเอลกลับสร้างตำนานด้วยหมุดเต็นท์เพียงตัวเดียว ซึ่งพิสูจน์ให้เห็นว่าคนที่ลงมือทำจริงนั่นแหละคือผู้ที่แข็งแกร่งที่สุด",
-          "sw": "Wakati jemadari anapoogopa kwenda vitani, Jael anatumia kigingi kimoja tu cha hema kuweka historia, ikithibitisha kuwa nguvu halisi iko kwa yule anayethubutu kuchukua hatua."
+          "sw": "Wakati jemadari anapoogopa kwenda vitani, Jael anatumia kigingi kimoja tu cha hema kuweka historia, ikithibitisha kuwa nguvu halisi iko kwa yule anayethubutu kuchukua hatua.",
+          "it": "Quando un generale rifiuta di andare al fronte, Giaele fa la storia con un solo picchetto da tenda, dimostrando che chi ha davvero polso risolve la situazione."
         }
     },
     "2026-05-27": {
@@ -5830,7 +6277,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "士師記 6:1-24",
@@ -5842,7 +6290,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Judges 6:1-24",
           "tl": "Judges 6:1-24",
           "th": "Judges 6:1-24",
-          "sw": "Judges 6:1-24"
+          "sw": "Judges 6:1-24",
+          "it": "Giudici 6:1-24"
         },
         comment: {
           "ja": "隠れて麦を打っているときに神様から「勇士よ」と声をかけられたギデオン、今の自分の姿と神様からの期待値のギャップに一番戸惑っているのは本人だろう。",
@@ -5854,7 +6303,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Khi Gideôn đang trốn để đập lúa mà được Chúa gọi là dũng sĩ, sự tương phản giữa thực tại nhỏ bé của ông và kỳ vọng của Chúa hẳn là điều khiến ông hoang mang nhất.",
           "tl": "Nang tawaging matapang na mandirigma si Gideon habang nagtatago sa paggiik ng trigo, ramdam ko ang pagkalito niya sa pagitan ng kanyang abang kalagayan at ng tiwala ng Diyos.",
           "th": "การที่พระเจ้าเรียกกิเดโอนว่านักรบผู้กล้าหาญในขณะที่เขากำลังแอบนวดข้าว แสดงให้เห็นถึงความแตกต่างระหว่างความเป็นจริงที่เขารู้สึกกับสิ่งที่พระเจ้ามองเห็นในตัวเขา",
-          "sw": "Gideoni akiwa anajificha akipura ngano na kuitwa shujaa na Mungu ni kielelezo tosha cha jinsi tunavyohisi kama watu wa kawaida sana wakati Mungu anapoona uwezo mkubwa ndani yetu."
+          "sw": "Gideoni akiwa anajificha akipura ngano na kuitwa shujaa na Mungu ni kielelezo tosha cha jinsi tunavyohisi kama watu wa kawaida sana wakati Mungu anapoona uwezo mkubwa ndani yetu.",
+          "it": "Che Dio chiami forte guerriero Gedeone mentre si nasconde per battere il grano è il ritratto perfetto di chi si sente un impostor pur cercando solo di sopravvivere alla giornata."
         }
     },
     "2026-05-28": {
@@ -5869,7 +6319,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "士師記 7:1-25",
@@ -5881,7 +6332,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Judges 7:1-25",
           "tl": "Judges 7:1-25",
           "th": "Judges 7:1-25",
-          "sw": "Judges 7:1-25"
+          "sw": "Judges 7:1-25",
+          "it": "Giudici 7:1-25"
         },
         comment: {
           "ja": "3万2千人から300人にまで減らされるギデオンの軍隊、神様の戦力調整は時として経営コンサルタントより容赦がない。",
@@ -5893,7 +6345,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Chúa cắt giảm đội quân của Ghê-đê-ôn từ 32.000 xuống còn 300 người cho thấy chiến lược của Ngài chẳng bao giờ quan tâm đến các con số thống kê.",
           "tl": "Ang pagbabawas ng Diyos sa hukbo ni Gideon mula 32,000 tungong 300 ay patunay na hindi kailanman sumusunod sa logic ng tao ang plano ng langit.",
           "th": "การที่พระเจ้าลดกองทัพของกิเดโอนจาก 32,000 เหลือ 300 คน บอกเราว่ากลยุทธ์ของพระองค์ไม่ได้สนตรรกะเรื่องความคุ้มค่าของมนุษย์เลยสักนิด",
-          "sw": "Mungu kupunguza jeshi la Gideoni kutoka 32,000 hadi 300 inatukumbusha kuwa hesabu za Mungu hazijali kanuni zozote za kijeshi za binadamu."
+          "sw": "Mungu kupunguza jeshi la Gideoni kutoka 32,000 hadi 300 inatukumbusha kuwa hesabu za Mungu hazijali kanuni zozote za kijeshi za binadamu.",
+          "it": "Ridurre l'esercito da trentaduemila a trecento uomini dimostra che la logica divina non segue proprio gli standard di efficienza delle risorse umane."
         }
     },
     "2026-05-29": {
@@ -5908,7 +6361,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "士師記 8:18-35",
@@ -5920,7 +6374,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Judges 8:18-35",
           "tl": "Judges 8:18-35",
           "th": "Judges 8:18-35",
-          "sw": "Judges 8:18-35"
+          "sw": "Judges 8:18-35",
+          "it": "Giudici 8:18-35"
         },
         comment: {
           "ja": "王になりたいと言いつつ、最後は金でエフォドを作って民を迷わせるギデオン、成功した後に一番やらかしやすいタイプだ。",
@@ -5932,7 +6387,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Ghê-đê-ôn từ chối làm vua nhưng lại đúc một cái ê-phốt khiến cả dân sự sa ngã, một minh chứng cho thấy người ta dễ đánh mất phương hướng sau khi đạt được thành công.",
           "tl": "Ang pagtanggi ni Gideon sa trono kapalit ng paggawa ng isang idolo na nagligaw sa bayan ay isang babala na ang tagumpay ay madaling makasilaw sa kahit sino.",
           "th": "กิเดโอนปฏิเสธตำแหน่งกษัตริย์แต่กลับสร้างเอโฟดทองคำที่ทำให้คนทั้งชาติหลงทาง นี่คือบทเรียนราคาแพงของคนที่เริ่มเหลิงหลังจากประสบความสำเร็จ",
-          "sw": "Gideoni kukataa kuwa mfalme kisha kutengeneza sanamu iliyopoteza watu ni ukumbusho kuwa mafanikio yanaweza kumfanya mtu ajikwae kwa urahisi sana."
+          "sw": "Gideoni kukataa kuwa mfalme kisha kutengeneza sanamu iliyopoteza watu ni ukumbusho kuwa mafanikio yanaweza kumfanya mtu ajikwae kwa urahisi sana.",
+          "it": "Gedeone che rifiuta la corona ma poi costruisce un idolo d'oro per tutti è l'esempio perfetto di chi perde completamente la bussola dopo una grande vittoria."
         }
     },
     "2026-05-30": {
@@ -5947,7 +6403,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "士師記 14:1-20",
@@ -5959,7 +6416,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Judges 14:1-20",
           "tl": "Judges 14:1-20",
           "th": "Judges 14:1-20",
-          "sw": "Judges 14:1-20"
+          "sw": "Judges 14:1-20",
+          "it": "Giudici 14:1-20"
         },
         comment: {
           "ja": "親の反対を押し切ってまで異邦人の女性に一目惚れするサムソン、恋は盲目という言葉がここまで似合う男も珍しい。",
@@ -5971,7 +6429,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Samson phớt lờ lời khuyên của cha mẹ chỉ để theo đuổi một cô gái mình vừa gặp là minh chứng rõ nhất cho việc tình yêu làm con người mù quáng.",
           "tl": "Ang pagbalewala ni Samson sa payo ng kanyang mga magulang para lang sa isang babaeng nagustuhan niya ay patunay na bulag talaga ang pag-ibig.",
           "th": "แซมซั่นที่ไม่ฟังคำเตือนของพ่อแม่เพราะหลงรักหญิงต่างชาติเพียงแรกเห็น คือนิยามของคำว่าความรักทำให้คนตาบอดได้ชัดเจนที่สุด",
-          "sw": "Samson kupuuza ushauri wa wazazi wake kwa sababu tu ya kumpenda mwanamke aliyemwona mara moja ni uthibitisho tosha kuwa mapenzi ni upofu."
+          "sw": "Samson kupuuza ushauri wa wazazi wake kwa sababu tu ya kumpenda mwanamke aliyemwona mara moja ni uthibitisho tosha kuwa mapenzi ni upofu.",
+          "it": "Sansone che ignora i consigli dei genitori solo per correre dietro a una ragazza vista una volta è la prova vivente che l'amore sa essere proprio cieco."
         }
     },
     "2026-05-31": {
@@ -5986,7 +6445,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "士師記 16:1-31",
@@ -5998,7 +6458,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Judges 16:1-31",
           "tl": "Judges 16:1-31",
           "th": "Judges 16:1-31",
-          "sw": "Judges 16:1-31"
+          "sw": "Judges 16:1-31",
+          "it": "Giudici 16:1-31"
         },
         comment: {
           "ja": "怪力無双の英雄なのに女性の口説き文句にだけは弱すぎるサムソン、強さの定義を根本から考えさせられる。",
@@ -6010,7 +6471,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Samson là người đàn ông mạnh nhất thế gian nhưng lại gục ngã trước những lời dụ dỗ, thật khiến người ta phải suy ngẫm về định nghĩa của sức mạnh.",
           "tl": "Si Samson ang pinakamalakas na lalaki pero natalo lang sa lambing, kaya mapapaisip ka talaga kung ano ba ang tunay na kahulugan ng lakas.",
           "th": "แซมซั่นคือชายที่แข็งแกร่งที่สุดแต่กลับพ่ายแพ้ให้กับคำหวานเพียงไม่กี่คำ ทำให้ต้องกลับมาทบทวนใหม่ว่าความแข็งแกร่งที่แท้จริงคืออะไร",
-          "sw": "Samson ni mwanamume mwenye nguvu kuliko wote lakini anashindwa na ushawishi wa kihisia, jambo linalofanya mtu ajiulize kuhusu vipaumbele vyake."
+          "sw": "Samson ni mwanamume mwenye nguvu kuliko wote lakini anashindwa na ushawishi wa kihisia, jambo linalofanya mtu ajiulize kuhusu vipaumbele vyake.",
+          "it": "Sansone è l'uomo più forte del mondo ma crolla subito davanti a una manipolazione emotiva, il che fa seriamente dubitare delle sue priorità."
         }
     },
     "2026-06-01": {
@@ -6025,7 +6487,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Scriptures",
           "tl": "Scriptures",
           "th": "Scriptures",
-          "sw": "Scriptures"
+          "sw": "Scriptures",
+          "it": "Scritture"
         },
         chapter: {
           "ja": "聖典  Ruth 1:1-22",
@@ -6037,7 +6500,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": " Ruth 1:1-22",
           "tl": " Ruth 1:1-22",
           "th": " Ruth 1:1-22",
-          "sw": " Ruth 1:1-22"
+          "sw": " Ruth 1:1-22",
+          "it": "Rut 1:1-22"
         },
         comment: {
           "ja": "義理の母についていくと決めたルツの決断、実家に戻れば楽だったはずなのにあえて茨の道を選ぶその強さはもはやかっこよすぎて心配になるレベル。",
@@ -6049,7 +6513,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Quyết định đi theo mẹ chồng của Ru-tơ thay vì trở về nhà đầy đủ tiện nghi là một sự trung thành khiến người ta vừa ngưỡng mộ vừa thấy lo thay cho cô ấy.",
           "tl": "Ang pagpili ni Ruth na sumama sa kanyang biyenan sa halip na bumalik sa ginhawa ng tahanan ay isang katapatan na nakakamangha pero nakakabahala rin.",
           "th": "การที่นางรูธเลือกติดตามแม่สามีไปแทนที่จะกลับไปใช้ชีวิตสบายๆ ที่บ้านเดิม เป็นความภักดีที่น่าชื่นชมจนอดห่วงไม่ได้จริงๆ",
-          "sw": "Uamuzi wa Ruth kumfuata mama mkwe wake badala ya kurudi nyumbani kwa raha ni uaminifu wa ajabu ambao unafurahisha lakini pia unatia wasiwasi."
+          "sw": "Uamuzi wa Ruth kumfuata mama mkwe wake badala ya kurudi nyumbani kwa raha ni uaminifu wa ajabu ambao unafurahisha lakini pia unatia wasiwasi.",
+          "it": "La decisione di Rut di seguire la suocera invece di tornarsene comoda a casa è una lealtà così estrema che fa quasi preoccupare per la sua sanità mentale."
         }
     },
     "2026-06-02": {
@@ -6064,7 +6529,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Scriptures",
           "tl": "Scriptures",
           "th": "Scriptures",
-          "sw": "Scriptures"
+          "sw": "Scriptures",
+          "it": "Scritture"
         },
         chapter: {
           "ja": "聖典  Ruth 3:1-22",
@@ -6076,7 +6542,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": " Ruth 3:1-22",
           "tl": " Ruth 3:1-22",
           "th": " Ruth 3:1-22",
-          "sw": " Ruth 3:1-22"
+          "sw": " Ruth 3:1-22",
+          "it": "Rut 3:1-22"
         },
         comment: {
           "ja": "真夜中に寝ているボアズの足元に潜り込んで結婚を迫るルツの作戦、現代なら完全にアウトだが当時の必死さが痛いほど伝わってくる奇策。",
@@ -6088,7 +6555,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Ru-tơ lẻn vào sân đập lúa lúc nửa đêm để cầu hôn Bô-ô là một nước đi mà thời nay chắc chắn sẽ bị bắt, nhưng nó cho thấy cô ấy đã táo bạo và tuyệt vọng đến mức nào.",
           "tl": "Ang pagpasok ni Ruth sa giikan sa hatinggabi para alukin ng kasal si Boaz ay isang hakbang na ikukulong ka na sa panahon ngayon, pero nagpapakita lang ito kung gaano siya katapang at desperada.",
           "th": "แผนการของนางรูธที่แอบเข้าไปหาโบอาซกลางดึกเพื่อขอแต่งงาน ถ้าทำสมัยนี้คงโดนแจ้งความแน่ๆ แต่ก็แสดงให้เห็นว่าเธอทุ่มเทและกล้าหาญแค่ไหนในตอนนั้น",
-          "sw": "Mpango wa Ruth wa kujipenyeza kwenye uwanja wa kupuria nafaka usiku wa manane ili kumchumbia Boazi ni jambo ambalo linaweza kusababisha matatizo leo, lakini linaonyesha ujasiri wake mkubwa."
+          "sw": "Mpango wa Ruth wa kujipenyeza kwenye uwanja wa kupuria nafaka usiku wa manane ili kumchumbia Boazi ni jambo ambalo linaweza kusababisha matatizo leo, lakini linaonyesha ujasiri wake mkubwa.",
+          "it": "Rut che si intrufola nell'aia a mezzanotte per fare la proposta a Booz sarebbe uno scandalo imperdibile oggi, ma dimostra una determinazione fuori dal comune."
         }
     },
     "2026-06-03": {
@@ -6103,7 +6571,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "サムエル記上 1:1-28",
@@ -6115,7 +6584,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "1 Samuel 1:1-28",
           "tl": "1 Samuel 1:1-28",
           "th": "1 Samuel 1:1-28",
-          "sw": "1 Samuel 1:1-28"
+          "sw": "1 Samuel 1:1-28",
+          "it": "1 Samuele 1:1-28"
         },
         comment: {
           "ja": "ハンナの切実な祈りを酔っ払いと勘違いするエリ、人の心に寄り添うことの難しさを痛感させられる。",
@@ -6127,7 +6597,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Ê-li hiểu lầm lời cầu nguyện chân thành của An-ne thành sự say xỉn nhắc nhở ta rằng việc thấu hiểu nỗi đau của người khác khó khăn đến nhường nào.",
           "tl": "Ang pag-aakala ni Eli na lasing si Ana sa kabila ng taimtim nitong panalangin ay isang paalala kung gaano kadaling maliin ang pinagdadaanan ng iba.",
           "th": "การที่เอลีเข้าใจผิดว่าคำอธิษฐานอันลึกซึ้งของฮันนาห์คืออาการเมา เป็นเครื่องเตือนใจว่าเรามักมองข้ามความเจ็บปวดที่ซ่อนอยู่ของผู้อื่นได้ง่ายเพียงใด",
-          "sw": "Eli kudhani kuwa sala ya dhati ya Hana ilikuwa ulevi inatukumbusha jinsi tunavyoweza kuhukumu vibaya maumivu ya watu wengine kwa urahisi."
+          "sw": "Eli kudhani kuwa sala ya dhati ya Hana ilikuwa ulevi inatukumbusha jinsi tunavyoweza kuhukumu vibaya maumivu ya watu wengine kwa urahisi.",
+          "it": "Eli che scambia la preghiera profonda di Anna per una sbronza ci ricorda quanto sia facile giudicare male le battaglie silenziose degli altri."
         }
     },
     "2026-06-04": {
@@ -6142,7 +6613,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "サムエル記上 2:12-36",
@@ -6154,7 +6626,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "1 Samuel 2:12-36",
           "tl": "1 Samuel 2:12-36",
           "th": "1 Samuel 2:12-36",
-          "sw": "1 Samuel 2:12-36"
+          "sw": "1 Samuel 2:12-36",
+          "it": "1 Samuele 2:12-36"
         },
         comment: {
           "ja": "神殿でやりたい放題の息子たちを注意しきれないエリを見ていると、親の甘さと責任の重さという永遠の難問にぶち当たる。",
@@ -6166,7 +6639,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Chứng kiến Ê-li không thể kiểm soát hành vi của các con trai tại đền thờ gợi lên bài học muôn thuở về sự cân bằng đầy đau đớn giữa tình yêu thương và sự nghiêm khắc của cha mẹ.",
           "tl": "Ang makita si Eli na hindi mapagsabihan ang kanyang mga anak sa templo ay isang paalala sa walang katapusang hamon ng pagiging magulang sa pagitan ng pagmamahal at disiplina.",
           "th": "การได้เห็นเอลีไม่สามารถจัดการพฤติกรรมแย่ๆ ของลูกชายในพระวิหารได้ ทำให้เห็นภาพความลำบากใจของพ่อแม่ในการรักษาสมดุลระหว่างความรักกับการตักเตือน",
-          "sw": "Kumtazama Eli akishindwa kuwazuia wanawe wasio na heshima hekaluni ni funzo la milele kuhusu ugumu wa uwiano kati ya upendo wa wazazi na uwajibikaji."
+          "sw": "Kumtazama Eli akishindwa kuwazuia wanawe wasio na heshima hekaluni ni funzo la milele kuhusu ugumu wa uwiano kati ya upendo wa wazazi na uwajibikaji.",
+          "it": "Vedere Eli incapace di rimettere in riga i figli nel tempio ci sbatte in faccia il difficile equilibrio tra affetto genitoriale e responsabilità."
         }
     },
     "2026-06-05": {
@@ -6181,7 +6655,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "サムエル記上 3:1-21",
@@ -6193,7 +6668,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "1 Samuel 3:1-21",
           "tl": "1 Samuel 3:1-21",
           "th": "1 Samuel 3:1-21",
-          "sw": "1 Samuel 3:1-21"
+          "sw": "1 Samuel 3:1-21",
+          "it": "1 Samuele 3:1-21"
         },
         comment: {
           "ja": "夜中に何度も名前を呼ばれてエリのところへ走り回るサムエル、寝起きが悪いどころの騒ぎではない理不尽な深夜の呼び出しに同情しかない。",
@@ -6205,7 +6681,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Samuel bị gọi dậy giữa đêm nhiều lần để chạy việc cho Eli giống hệt cảm giác của những người bị làm phiền khi đang ngủ ngon.",
           "tl": "Si Samuel na pabalik-balik kay Eli sa gitna ng gabi ay parang sinumang ginising sa mahimbing na tulog para sa isang hindi importanteng utos.",
           "th": "ซามูเอลที่ถูกปลุกกลางดึกให้วิ่งไปหาเอลีหลายรอบช่างน่าเห็นใจเหมือนคนที่กำลังหลับสบายแล้วถูกเรียกตัวแบบไม่เกรงใจ.",
-          "sw": "Samweli kuamshwa mara kwa mara katikati ya usiku ili kumtumikia Eli ni mfano tosha wa jinsi usingizi wa mtu unavyoweza kuvurugwa bila huruma."
+          "sw": "Samweli kuamshwa mara kwa mara katikati ya usiku ili kumtumikia Eli ni mfano tosha wa jinsi usingizi wa mtu unavyoweza kuvurugwa bila huruma.",
+          "it": "Samuele svegliato nel cuore della notte per correre avanti e indietro da Eli è la rappresentazione grafica di quanto il sonno sia un lusso da custodire."
         }
     },
     "2026-06-06": {
@@ -6220,7 +6697,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "サムエル記上 4:1-22",
@@ -6232,7 +6710,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "1 Samuel 4:1-22",
           "tl": "1 Samuel 4:1-22",
           "th": "1 Samuel 4:1-22",
-          "sw": "1 Samuel 4:1-22"
+          "sw": "1 Samuel 4:1-22",
+          "it": "1 Samuele 4:1-22"
         },
         comment: {
           "ja": "ピンチになるととりあえず神殿から契約の箱を持ち出せばなんとかなると思っているイスラエルの人々、お守り代わりに神様を振り回すその短絡的な思考はまさに人間そのもの。",
@@ -6244,7 +6723,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Người Israel nghĩ rằng chỉ cần mang hòm bia ra trận là mọi chuyện sẽ ổn, đúng là tư duy lấy đức tin làm bùa hộ mệnh điển hình.",
           "tl": "Ang pagdadala ng mga Israelita sa kaban ng tipan sa labanan na parang isang lucky charm ay patunay na minsan ginagawa nating shortcut ang pananampalataya.",
           "th": "ชาวอิสราเอลที่คิดว่าแค่ยกหีบพันธสัญญาไปสนามรบแล้วทุกอย่างจะจบ เป็นภาพสะท้อนของมนุษย์ที่ชอบมองความเชื่อเป็นเหมือนเครื่องรางของขลัง.",
-          "sw": "Waisraeli kufikiri kuwa kubeba sanduku la agano vitani kutatatua matatizo yao ni kielelezo cha jinsi watu wanavyotumia imani kama hirizi ya bahati."
+          "sw": "Waisraeli kufikiri kuwa kubeba sanduku la agano vitani kutatatua matatizo yao ni kielelezo cha jinsi watu wanavyotumia imani kama hirizi ya bahati.",
+          "it": "Pensare di trascinare l'arca in battaglia come un talismano portafortuna dimostra che la tendenza a usare la fede come soluzione rapida è sempre esistita."
         }
     },
     "2026-06-07": {
@@ -6259,7 +6739,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "サムエル記上 5:1-12",
@@ -6271,7 +6752,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "1 Samuel 5:1-12",
           "tl": "1 Samuel 5:1-12",
           "th": "1 Samuel 5:1-12",
-          "sw": "1 Samuel 5:1-12"
+          "sw": "1 Samuel 5:1-12",
+          "it": "1 Samuele 5:1-12"
         },
         comment: {
           "ja": "ダゴンの神像がアークの前に倒れて首が折れた話は、神の存在を無視して自分の都合の良い場所に置こうとすると痛い目を見るという最高の反面教師。",
@@ -6283,7 +6765,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc bức tượng Dagon đổ sấp mặt trước hòm bia là bài học nhớ đời cho thấy việc cố gắng sắp xếp Chúa theo ý mình chỉ mang lại kết cục ê chề.",
           "tl": "Ang pagkadapa ng rebulto ni Dagon sa harap ng kaban ay patunay na kapag pinilit mong ilagay ang Diyos sa iyong sariling termino, ikaw lang din ang mapapahiya.",
           "th": "รูปเคารพดากันที่ล้มคว่ำต่อหน้าหีบพันธสัญญาเป็นบทเรียนเตือนใจว่าการพยายามจัดระเบียบพระเจ้าให้เข้ากับความต้องการส่วนตัวมักจบลงที่ความพินาศของตัวเอง",
-          "sw": "Sanamu ya Dagon kuanguka mbele ya sanduku ni ukumbusho kwamba kujaribu kumlazimisha Mungu afuate mipango yako mwenyewe ni njia ya haraka ya kujiaibisha."
+          "sw": "Sanamu ya Dagon kuanguka mbele ya sanduku ni ukumbusho kwamba kujaribu kumlazimisha Mungu afuate mipango yako mwenyewe ni njia ya haraka ya kujiaibisha.",
+          "it": "La statua di Dagone che finisce faccia a terra davanti all'arca dimostra che cercare di incastrare Dio nei propri schemi finisce sempre male."
         }
     },
     "2026-06-08": {
@@ -6298,7 +6781,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "サムエル記上 8:1-22",
@@ -6310,7 +6794,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "1 Samuel 8:1-22",
           "tl": "1 Samuel 8:1-22",
           "th": "1 Samuel 8:1-22",
-          "sw": "1 Samuel 8:1-22"
+          "sw": "1 Samuel 8:1-22",
+          "it": "1 Samuele 8:1-22"
         },
         comment: {
           "ja": "隣の芝生が青く見えて王様を欲しがるイスラエルの民、結局は自分たちの選択の重さに後で苦しむことになるという典型的な隣人コンプレックス。",
@@ -6322,7 +6807,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Dân Israel đòi có vua chỉ để giống các nước lân cận giống hệt như việc cố chạy theo xu hướng mà không biết mình đang tự rước họa vào thân.",
           "tl": "Ang pagpilit ng mga Israelita na magkaroon ng hari para lang maging katulad ng ibang bansa ay parang pagbili ng gamit na hindi mo kailangan para lang makipagsabayan sa kapitbahay.",
           "th": "การที่คนอิสราเอลเรียกร้องขอมีกษัตริย์เพียงเพราะอยากเหมือนคนอื่น ก็เหมือนการซื้อของที่ไม่จำเป็นเพียงเพื่อรักษาหน้าตาให้เท่าเทียมกับเพื่อนบ้าน",
-          "sw": "Waisraeli kudai mfalme ili wafanane na mataifa mengine ni kama kununua kitu usichokihitaji ili tu uonekane kama jirani zako."
+          "sw": "Waisraeli kudai mfalme ili wafanane na mataifa mengine ni kama kununua kitu usichokihitaji ili tu uonekane kama jirani zako.",
+          "it": "Il popolo che vuole un re a tutti i costi è l'equivalente antico di comprare cose inutili solo per fare come i vicini."
         }
     },
     "2026-06-09": {
@@ -6337,7 +6823,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "サムエル記上 9:1-24",
@@ -6349,7 +6836,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "1 Samuel 9:1-24",
           "tl": "1 Samuel 9:1-24",
           "th": "1 Samuel 9:1-24",
-          "sw": "1 Samuel 9:1-24"
+          "sw": "1 Samuel 9:1-24",
+          "it": "1 Samuele 9:1-24"
         },
         comment: {
           "ja": "迷子のロバを探しに出たはずが王様になるという展開、人生の迷走が実は正解への伏線だったという現実味のないラッキーすぎて羨ましい。",
@@ -6361,7 +6849,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Đi tìm lừa lạc mà lại được chọn làm vua, cái kết quá bất ngờ cho một chuyến đi tìm kiếm tưởng chừng như vô vọng.",
           "tl": "Ang maghanap ng nawawalang asno at mauwi sa pagiging hari ay ang uri ng plot twist na sana ay nangyayari rin sa totoong buhay.",
           "th": "ออกไปตามหาลาที่หายไปแต่กลับได้เป็นกษัตริย์ เป็นการเปลี่ยนเส้นทางชีวิตที่เหนือความคาดหมายและน่าอิจฉาที่สุด",
-          "sw": "Kutoka kutafuta punda waliopotea na kuishia kuwa mfalme ni aina ya mabadiliko ya maisha ambayo kila mtu anatamani yatokee kwake."
+          "sw": "Kutoka kutafuta punda waliopotea na kuishia kuwa mfalme ni aina ya mabadiliko ya maisha ambayo kila mtu anatamani yatokee kwake.",
+          "it": "Uscire a cercare asini smarriti e ritrovarsi re è la svolta di carriera più invidiabile della storia."
         }
     },
     "2026-06-10": {
@@ -6376,7 +6865,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "サムエル記上 9:25-27",
@@ -6388,7 +6878,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "1 Samuel 9:25-27",
           "tl": "1 Samuel 9:25-27",
           "th": "1 Samuel 9:25-27",
-          "sw": "1 Samuel 9:25-27"
+          "sw": "1 Samuel 9:25-27",
+          "it": "1 Samuele 9:25-27"
         },
         comment: {
           "ja": "屋上で二人きりの密談とか、まるでドラマのワンシーンだけど、サウルにとっては緊張で朝食どころじゃなかったはず。",
@@ -6400,7 +6891,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Một cuộc trò chuyện riêng tư trên mái nhà nghe thật lãng mạn, nhưng với Saul, đó chắc hẳn là khoảnh khắc hồi hộp đến nghẹt thở.",
           "tl": "Ang pribadong usapan sa bubong ay parang eksena sa pelikula, pero para kay Saul, malamang na sobrang kaba ang naramdaman niya.",
           "th": "การคุยลับๆ บนดาดฟ้าฟังดูเหมือนฉากในหนัง แต่สำหรับซาอูลแล้ว มันคงเป็นช่วงเวลาที่ตึงเครียดจนกินอะไรไม่ลง",
-          "sw": "Mazungumzo ya siri juu ya paa yanaonekana kama eneo la filamu, lakini kwa Sauli, labda ilikuwa wakati wa wasiwasi mwingi."
+          "sw": "Mazungumzo ya siri juu ya paa yanaonekana kama eneo la filamu, lakini kwa Sauli, labda ilikuwa wakati wa wasiwasi mwingi.",
+          "it": "Fare due chiacchiere serie sul tetto sembra una scena da film romantico, ma per Saùl era solo pura ansia."
         }
     },
     "2026-06-11": {
@@ -6415,7 +6907,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "サムエル記上 10:17-27",
@@ -6427,7 +6920,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "1 Samuel 10:17-27",
           "tl": "1 Samuel 10:17-27",
           "th": "1 Samuel 10:17-27",
-          "sw": "1 Samuel 10:17-27"
+          "sw": "1 Samuel 10:17-27",
+          "it": "1 Samuele 10:17-27"
         },
         comment: {
           "ja": "王様になりたくなくて荷物の後ろに隠れるサウル、大役を任されそうになった時のあの逃げ出したい気持ち、全人類が共感する。",
@@ -6439,7 +6933,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Saul trốn sau đống hành lý để tránh làm vua giống hệt cảm giác muốn bỏ chạy khi phải nhận một trọng trách quá lớn.",
           "tl": "Si Saul na nagtago sa likod ng mga gamit para hindi maging hari ay ang pinaka-relatable na reaksyon kapag ayaw nating tanggapin ang isang malaking responsibilidad.",
           "th": "การที่ซาอูลแอบหลังสัมภาระเพื่อหลีกเลี่ยงการเป็นกษัตริย์ คือความรู้สึกที่ทุกคนน่าจะเข้าใจดีเวลาต้องรับผิดชอบอะไรที่ใหญ่เกินตัว",
-          "sw": "Sauli kujificha nyuma ya mizigo ili asifanywe mfalme ni hisia ile ile tunayokuwa nayo tunapotaka kukwepa jukumu zito."
+          "sw": "Sauli kujificha nyuma ya mizigo ili asifanywe mfalme ni hisia ile ile tunayokuwa nayo tunapotaka kukwepa jukumu zito.",
+          "it": "Saùl che si nasconde tra i bagagli per non fare il re è lo stato d'animo universale quando si evita una grande responsabilità."
         }
     },
     "2026-06-12": {
@@ -6454,7 +6949,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "サムエル記上 13:1-23",
@@ -6466,7 +6962,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "1 Samuel 13:1-23",
           "tl": "1 Samuel 13:1-23",
           "th": "1 Samuel 13:1-23",
-          "sw": "1 Samuel 13:1-23"
+          "sw": "1 Samuel 13:1-23",
+          "it": "1 Samuele 13:1-23"
         },
         comment: {
           "ja": "サムエルを待てずに自分で祭壇を準備して大失敗するサウル、焦って自爆する姿は現代の空回りするリーダーそのもの。",
@@ -6478,7 +6975,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Saul mất kiên nhẫn và tự ý làm mọi việc để rồi hỏng bét là hình ảnh điển hình của một nhà lãnh đạo tự hủy hoại mình vì lo âu.",
           "tl": "Si Saul na nawalan ng pasensya at gumawa ng sariling paraan hanggang sa masira ang lahat ay tipikal na halimbawa ng lider na nag-a-autosabotage dahil sa kaba.",
           "th": "การที่ซาอูลหมดความอดทนและทำอะไรตามใจตัวเองจนพังไม่เป็นท่า คือตัวอย่างคลาสสิกของผู้นำที่ทำตัวเองพังเพราะความวิตกกังวล",
-          "sw": "Sauli kukosa subira na kujaribu kufanya mambo kwa njia yake hadi kuharibu kila kitu ni mfano kamili wa kiongozi anayejiharibia mambo kwa sababu ya wasiwasi."
+          "sw": "Sauli kukosa subira na kujaribu kufanya mambo kwa njia yake hadi kuharibu kila kitu ni mfano kamili wa kiongozi anayejiharibia mambo kwa sababu ya wasiwasi.",
+          "it": "Saùl che perde la pazienza e rovina tutto da solo è il classico ritratto del leader che si autosabota per l'ansia."
         }
     },
     "2026-06-13": {
@@ -6493,7 +6991,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "サムエル記上 15:1-35",
@@ -6505,7 +7004,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "1 Samuel 15:1-35",
           "tl": "1 Samuel 15:1-35",
           "th": "1 Samuel 15:1-35",
-          "sw": "1 Samuel 15:1-35"
+          "sw": "1 Samuel 15:1-35",
+          "it": "1 Samuele 15:1-35"
         },
         comment: {
           "ja": "言い訳を並べて自分の都合を押し通そうとするサウル、怒られると分かっているのに保身に走るあの時の自分を見ているようで胃が痛い。",
@@ -6517,7 +7017,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Saul cố gắng biện minh ngay khi bị bắt quả tang chính là hình ảnh phản chiếu của bất kỳ ai trong chúng ta khi cố bao biện cho sai lầm của mình.",
           "tl": "Ang pagdadahilan ni Saul nang mahuli siya ay parang tayo lang na pilit nagpapaliwanag kahit alam nating mali ang ginawa natin.",
           "th": "การที่ซาอูลพยายามหาข้ออ้างทันทีที่ถูกจับได้นั้น เป็นภาพสะท้อนของตัวเราเวลาที่พยายามแก้ต่างให้ความผิดของตัวเองอย่างชัดเจนที่สุด",
-          "sw": "Sauli akitafuta visingizio punde tu anapokamatwa ni kioo cha kila wakati tunapojaribu kujitetea kwa makosa yetu wenyewe."
+          "sw": "Sauli akitafuta visingizio punde tu anapokamatwa ni kioo cha kila wakati tunapojaribu kujitetea kwa makosa yetu wenyewe.",
+          "it": "Saùl che cerca scuse appena viene beccato è lo specchio di tutte le volte in cui ho cercato di giustificare i miei errori."
         }
     },
     "2026-06-14": {
@@ -6532,7 +7033,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "サムエル記上 16:1-23",
@@ -6544,7 +7046,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "1 Samuel 16:1-23",
           "tl": "1 Samuel 16:1-23",
           "th": "1 Samuel 16:1-23",
-          "sw": "1 Samuel 16:1-23"
+          "sw": "1 Samuel 16:1-23",
+          "it": "1 Samuele 16:1-23"
         },
         comment: {
           "ja": "外見だけでリーダーを決めようとする人間をよそに、神様は全く別のところを見ているという現実は、評価に一喜一憂する私たちへの強烈な皮肉だ。",
@@ -6556,7 +7059,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc con người đánh giá năng lực qua vẻ bề ngoài trong khi Chúa nhìn thấu tâm can là lời nhắc nhở rằng chúng ta thường quá chú trọng vào những thứ nông cạn.",
           "tl": "Ang paghusga ng mga tao sa liderato base sa hitsura habang ang Diyos naman ay sa puso tumitingin ay isang paalala na madalas ay mali ang ating prayoridad.",
           "th": "การที่มนุษย์มักตัดสินผู้นำจากรูปลักษณ์ภายนอก ในขณะที่พระเจ้าทรงมองที่หัวใจ เป็นเครื่องเตือนใจว่าเรามักจะให้ความสำคัญกับสิ่งที่ผิดพลาดเสมอ",
-          "sw": "Watu kuhukumu uongozi kwa sura wakati Mungu anaangalia moyo ni ukumbusho kwamba mara nyingi sisi huangalia vitu visivyofaa."
+          "sw": "Watu kuhukumu uongozi kwa sura wakati Mungu anaangalia moyo ni ukumbusho kwamba mara nyingi sisi huangalia vitu visivyofaa.",
+          "it": "Che gli uomini giudichino l'apparenza mentre Dio guarda il cuore è un promemoria sul fatto che guardiamo sempre le cose sbagliate."
         }
     },
     "2026-06-15": {
@@ -6571,7 +7075,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "サムエル記上 17:1-37",
@@ -6583,7 +7088,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "1 Samuel 17:1-37",
           "tl": "1 Samuel 17:1-37",
           "th": "1 Samuel 17:1-37",
-          "sw": "1 Samuel 17:1-37"
+          "sw": "1 Samuel 17:1-37",
+          "it": "1 Samuele 17:1-37"
         },
         comment: {
           "ja": "兄貴たちに「お前は何しに来たんだ」とマウントを取られても怯まないダビデのメンタル、現代の職場で一番見習いたい。",
@@ -6595,7 +7101,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Cách Đa-vít giữ vững tinh thần khi bị các anh coi thường là bài học lớn về bản lĩnh trong môi trường đầy áp lực.",
           "tl": "Ang tibay ng loob ni David kahit minamaliit siya ng kanyang mga kuya ay ang uri ng confidence na kailangan nating lahat.",
           "th": "การที่ดาวิดยังนิ่งได้แม้จะโดนพี่ชายกดดันใส่ คือความสตรองที่คนทำงานยุคนี้ต้องเรียนรู้",
-          "sw": "Ujasiri wa Daudi mbele ya ndugu zake wanaomdharau ni mfano mzuri wa jinsi ya kubaki imara katikati ya shinikizo."
+          "sw": "Ujasiri wa Daudi mbele ya ndugu zake wanaomdharau ni mfano mzuri wa jinsi ya kubaki imara katikati ya shinikizo.",
+          "it": "La calma di Davide mentre i fratelli maggiori cercano di metterlo in un angolo è la sicurezza che tutti vorremmo avere al lavoro."
         }
     },
     "2026-06-16": {
@@ -6610,7 +7117,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "サムエル記上 17:38-58",
@@ -6622,7 +7130,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "1 Samuel 17:38-58",
           "tl": "1 Samuel 17:38-58",
           "th": "1 Samuel 17:38-58",
-          "sw": "1 Samuel 17:38-58"
+          "sw": "1 Samuel 17:38-58",
+          "it": "1 Samuele 17:38-58"
         },
         comment: {
           "ja": "最新鋭の重装備を断っていつもの石ころで戦うダビデ、結局は自分らしいやり方が最強という身も蓋もない真実。",
@@ -6634,7 +7143,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Đa-vít từ chối bộ giáp cồng kềnh để chọn những viên đá quen thuộc, một bài học đắt giá về việc sống thật với chính mình.",
           "tl": "Ang pagtanggi ni David sa mabigat na armor para gamitin ang kanyang mga bato ay patunay na mas epektibo ang maging sarili mo kaysa gayahin ang iba.",
           "th": "การที่ดาวิดทิ้งชุดเกราะหนักๆ แล้วเลือกหยิบหินที่ถนัดมือ คือหลักฐานว่าการเป็นตัวเองนั้นทรงพลังที่สุด",
-          "sw": "Daudi kukataa silaha nzito ili atumie mawe anayoyajua ni ukumbusho kuwa kujaribu kuwa mtu mwingine hakukupi ushindi."
+          "sw": "Daudi kukataa silaha nzito ili atumie mawe anayoyajua ni ukumbusho kuwa kujaribu kuwa mtu mwingine hakukupi ushindi.",
+          "it": "Davide che rifiuta l'armatura pesante per usare le sue pietre ci ricorda che cercare di essere qualcun altro non funziona mai."
         }
     },
     "2026-06-17": {
@@ -6649,7 +7159,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "サムエル記上 24:1-22",
@@ -6661,7 +7172,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "1 Samuel 24:1-22",
           "tl": "1 Samuel 24:1-22",
           "th": "1 Samuel 24:1-22",
-          "sw": "1 Samuel 24:1-22"
+          "sw": "1 Samuel 24:1-22",
+          "it": "1 Samuele 24:1-22"
         },
         comment: {
           "ja": "洞窟でサウルを暗殺する絶好のチャンスが訪れたのに、結局服の端を切るだけで済ませるダビデの詰めが甘いのか徳が高いのか、判断に迷うところだ。",
@@ -6673,7 +7185,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Đa-vít có cơ hội ngàn năm có một để hạ gục Sau-lơ trong hang nhưng chỉ cắt một vạt áo cho thấy lòng nhân từ đôi khi còn khó hiểu hơn cả sự trả thù.",
           "tl": "Ang pagkakaroon ni David ng perpektong pagkakataon na patayin si Saul sa loob ng kuweba pero ang pinili lang ay gupitan ang laylayan ng damit ay patunay na minsan, ang kabutihan ay mas nakakalito kaysa sa paghihiganti.",
           "th": "การที่ดาวิดมีโอกาสทองที่จะจัดการกับซาอูลในถ้ำแต่กลับเลือกแค่ตัดชายเสื้อทิ้งไปนั้น เป็นบทพิสูจน์ว่าบางครั้งความใจดีก็ดูน่าหงุดหงิดยิ่งกว่าการแก้แค้นเสียอีก",
-          "sw": "Daudi kupata nafasi nzuri ya kumuua Sauli pangoni lakini akaishia kukata tu kipande cha vazi lake ni uthibitisho kwamba wakati mwingine wema unaweza kuwa wa ajabu kuliko kisasi chenyewe."
+          "sw": "Daudi kupata nafasi nzuri ya kumuua Sauli pangoni lakini akaishia kukata tu kipande cha vazi lake ni uthibitisho kwamba wakati mwingine wema unaweza kuwa wa ajabu kuliko kisasi chenyewe.",
+          "it": "Avere la vittoria in mano nella grotta e cavarsela tagliando solo un pezzo di stoffa dimostra una pazienza che rasenta l'incredibile."
         }
     },
     "2026-06-18": {
@@ -6688,7 +7201,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "サムエル記上 25:1-44",
@@ -6700,7 +7214,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "1 Samuel 25:1-44",
           "tl": "1 Samuel 25:1-44",
           "th": "1 Samuel 25:1-44",
-          "sw": "1 Samuel 25:1-44"
+          "sw": "1 Samuel 25:1-44",
+          "it": "1 Samuele 25:1-44"
         },
         comment: {
           "ja": "無礼な夫ナバルに代わって、アビガイルが先回りして謝罪と根回しを完璧にこなす姿は、現代の優秀な秘書や調整役の苦労そのものだ。",
@@ -6712,7 +7227,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc A-bi-ga-in phải vội vàng đi xin lỗi và dọn dẹp đống hỗn độn do chồng mình gây ra chính là nỗi lòng của bất kỳ ai đang phải đóng vai người hòa giải trong gia đình.",
           "tl": "Ang pagmamadali ni Abigail na mag-sorry at ayusin ang gulo na ginawa ng asawa niyang si Nabal ay tunay na makaka-relate ang sinumang naging taga-linis ng kalat ng iba sa kanilang sariling tahanan.",
           "th": "การที่อาบีกายิลต้องรีบไปขอโทษและตามแก้ปัญหาที่สามีจอมหยาบคายก่อไว้ คือภาพสะท้อนชีวิตของคนที่ต้องคอยตามเช็ดตามล้างความผิดพลาดของคนอื่นในครอบครัวได้ดีที่สุด",
-          "sw": "Abigail kukimbia na kuomba radhi kwa ajili ya ujinga wa mume wake Nabali ni kielelezo kamili cha mtu yeyote ambaye amewahi kulazimika kurekebisha makosa ya wengine nyumbani kwake."
+          "sw": "Abigail kukimbia na kuomba radhi kwa ajili ya ujinga wa mume wake Nabali ni kielelezo kamili cha mtu yeyote ambaye amewahi kulazimika kurekebisha makosa ya wengine nyumbani kwake.",
+          "it": "Abigail che rincorre tutti per rimediare ai guai del marito è l'incarnazione di chiunque debba fare da mediatore in famiglia."
         }
     },
     "2026-06-19": {
@@ -6727,7 +7243,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "サムエル記上 26:1-25",
@@ -6739,7 +7256,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "1 Samuel 26:1-25",
           "tl": "1 Samuel 26:1-25",
           "th": "1 Samuel 26:1-25",
-          "sw": "1 Samuel 26:1-25"
+          "sw": "1 Samuel 26:1-25",
+          "it": "1 Samuele 26:1-25"
         },
         comment: {
           "ja": "寝ているサウルを殺すチャンスを前にして、結局手を出さないダビデの慎重さは、もはや恩を仇で返さないというレベルを超えた執念を感じる。",
@@ -6751,7 +7269,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Đa-vít đứng trước một Sau-lơ đang ngủ say mà vẫn không ra tay, đó là đỉnh cao của sự kiềm chế mà người thường khó lòng làm được.",
           "tl": "Ang hindi pagpatay ni David kay Saul habang natutulog ito ay nagpapakita ng antas ng pagtitimpi na halos imposible para sa ating mga ordinaryong tao.",
           "th": "ดาวิดเห็นซาอูลนอนหลับอยู่ตรงหน้าแต่กลับไม่ทำอะไรเลย นี่คือระดับของการยับยั้งชั่งใจที่มนุษย์ทั่วไปทำได้ยากมาก",
-          "sw": "Daudi kumuona Sauli akiwa amelala na kuamua kutomdhuru ni kielelezo cha uvumilivu ambacho wengi wetu tungependa kuwa nacho kwenye migogoro."
+          "sw": "Daudi kumuona Sauli akiwa amelala na kuamua kutomdhuru ni kielelezo cha uvumilivu ambacho wengi wetu tungependa kuwa nacho kwenye migogoro.",
+          "it": "Lasciare dormire Saul senza fargli nulla è quel livello di autocontrollo che vorremmo tutti avere durante una discussione accesa."
         }
     },
     "2026-06-20": {
@@ -6766,7 +7285,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "サムエル記下 5:1-25",
@@ -6778,7 +7298,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "2 Samuel 5:1-25",
           "tl": "2 Samuel 5:1-25",
           "th": "2 Samuel 5:1-25",
-          "sw": "2 Samuel 5:1-25"
+          "sw": "2 Samuel 5:1-25",
+          "it": "2 Samuele 5:1-25"
         },
         comment: {
           "ja": "ようやく王になったと思ったら、今度はペリシテ人が攻めてくるという、ダビデの人生が休む暇なさすぎて逆に笑えてくる。",
@@ -6790,7 +7311,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Đa-vít vừa lên ngôi thì dân Phi-li-tin đã kéo đến gây hấn, chứng tỏ rằng lên làm sếp không có nghĩa là cuộc đời sẽ bớt sóng gió.",
           "tl": "Nang maging hari na si David, biglang sumugod ang mga Filisteo; patunay na ang pagiging boss ay hindi kailanman nangangahulugan ng mas kaunting problema.",
           "th": "ดาวิดเพิ่งจะได้เป็นกษัตริย์ ชาวฟีลิสเตียก็บุกมาหาเรื่องทันที พิสูจน์ให้เห็นว่าการเป็นหัวหน้าไม่เคยหมายถึงชีวิตที่ไร้ความเครียด",
-          "sw": "Daudi anapokuwa mfalme tu, Wafilisti wanavamia; hii inathibitisha kuwa kuwa kiongozi hakuwahi kumaanisha maisha ya raha na amani."
+          "sw": "Daudi anapokuwa mfalme tu, Wafilisti wanavamia; hii inathibitisha kuwa kuwa kiongozi hakuwahi kumaanisha maisha ya raha na amani.",
+          "it": "Diventare finalmente re e vedersi subito attaccare dai filistei dimostra che salire di grado non riduce mai lo stress."
         }
     },
     "2026-06-21": {
@@ -6805,7 +7327,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "サムエル記下 7:1-29",
@@ -6817,7 +7340,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "2 Samuel 7:1-29",
           "tl": "2 Samuel 7:1-29",
           "th": "2 Samuel 7:1-29",
-          "sw": "2 Samuel 7:1-29"
+          "sw": "2 Samuel 7:1-29",
+          "it": "2 Samuele 7:1-29"
         },
         comment: {
           "ja": "神様のために立派な神殿を建てようと張り切るダビデに、いい意味で肩の力を抜かせる神様の対応は、空回りしがちな真面目な人への最高の処方箋だ。",
@@ -6829,7 +7353,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Chúa bảo Đa-vít cứ bình tĩnh thay vì vội vàng xây đền thờ là lời nhắc nhở nhẹ nhàng cho những ai luôn cố gắng ôm đồm mọi việc.",
           "tl": "Ang pagpapahinto ng Diyos kay David sa pagtatayo ng templo ay isang paalala na hindi laging kailangan ng Diyos ang ating pagmamadali.",
           "th": "การที่พระเจ้าบอกให้ดาวิดใจเย็นๆ แทนที่จะรีบสร้างพระวิหาร คือคำแนะนำที่ดีที่สุดสำหรับคนที่ชอบแบกโลกไว้คนเดียวจนเกินตัว",
-          "sw": "Mungu kumwambia Daudi atulie badala ya kujenga hekalu ni ukumbusho mzuri kwa wale wanaohisi lazima wafanye kila kitu ili kumpendeza Mungu."
+          "sw": "Mungu kumwambia Daudi atulie badala ya kujenga hekalu ni ukumbusho mzuri kwa wale wanaohisi lazima wafanye kila kitu ili kumpendeza Mungu.",
+          "it": "Che Dio dica a Davide di fermarsi invece di costruire il tempio è il miglior consiglio per chi tende sempre a strafare."
         }
     },
     "2026-06-22": {
@@ -6844,7 +7369,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "サムエル記下 11:1-27",
@@ -6856,7 +7382,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "2 Samuel 11:1-27",
           "tl": "2 Samuel 11:1-27",
           "th": "2 Samuel 11:1-27",
-          "sw": "2 Samuel 11:1-27"
+          "sw": "2 Samuel 11:1-27",
+          "it": "2 Samuele 11:1-27"
         },
         comment: {
           "ja": "王としての責任を放り出して昼寝から目覚めたダビデが深みにはまっていく様子は、一瞬の気の緩みが人生をどう変えるかという教訓を冷や汗が出るほど見せつけてくる。",
@@ -6868,7 +7395,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Chứng kiến Đa-vít từ một giấc ngủ trưa dẫn đến những quyết định sai lầm nối tiếp nhau là lời cảnh tỉnh về việc một phút lơ là có thể phá hỏng cả cuộc đời.",
           "tl": "Ang pagkakita kay David na nagmula sa isang idlip hanggang sa pagbagsak ng kanyang moralidad ay isang nakakatakot na paalala kung gaano kabilis magulo ang lahat dahil sa isang maling desisyon.",
           "th": "การเห็นดาวิดตื่นจากงีบหลับแล้วค่อยๆ ถลำลึกสู่ความผิดพลาด เป็นบทเรียนที่ทำให้เหงื่อตกได้เลยว่าแค่เผลอใจไปนิดเดียวชีวิตก็เปลี่ยนไปได้ขนาดไหน",
-          "sw": "Kuona Daudi akitoka kwenye usingizi wa mchana na kuangukia dhambini ni ukumbusho wa kutisha jinsi uamuzi mmoja mbaya unavyoweza kuharibu kila kitu."
+          "sw": "Kuona Daudi akitoka kwenye usingizi wa mchana na kuangukia dhambini ni ukumbusho wa kutisha jinsi uamuzi mmoja mbaya unavyoweza kuharibu kila kitu.",
+          "it": "Vedere Davide passare da un sonnellino pomeridiano a un disastro morale totale è il promemoria di quanto velocemente una pessima scelta possa rovinare tutto."
         }
     },
     "2026-06-23": {
@@ -6883,7 +7411,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "列王紀上 3:1-28",
@@ -6895,7 +7424,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "1 Kings 3:1-28",
           "tl": "1 Kings 3:1-28",
           "th": "1 Kings 3:1-28",
-          "sw": "1 Kings 3:1-28"
+          "sw": "1 Kings 3:1-28",
+          "it": "1 Re 3:1-28"
         },
         comment: {
           "ja": "赤ちゃんを真っ二つにするという過激な判決を下すふりをして真実を暴くソロモン、現代のバラエティ番組のドッキリ並みに心臓に悪い。",
@@ -6907,7 +7437,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Solomon dọa xẻ đôi đứa bé để tìm ra sự thật chẳng khác nào một cú lừa ngoạn mục trong các chương trình truyền hình thực tế.",
           "tl": "Ang pagbabanta ni Solomon na hahatiin ang sanggol para malaman ang katotohanan ay ang pinaka-nakaka-stress na plot twist sa kasaysayan.",
           "th": "โซโลมอนที่ขู่ว่าจะผ่าเด็กทารกครึ่งหนึ่งเพื่อหาความจริงนั้น ตื่นเต้นยิ่งกว่าดูรายการเรียลลิตี้โชว์สมัยนี้เสียอีก",
-          "sw": "Sulemani kutishia kumkata mtoto katikati ili kupata ukweli ni mbinu ya kisaikolojia inayoshinda hata vipindi vya televisheni vya leo."
+          "sw": "Sulemani kutishia kumkata mtoto katikati ili kupata ukweli ni mbinu ya kisaikolojia inayoshinda hata vipindi vya televisheni vya leo.",
+          "it": "Minacciare di tagliare un neonato a metà per scoprire la verità è il colpo di scena più stressante della storia."
         }
     },
     "2026-06-24": {
@@ -6922,7 +7453,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "列王紀上 6:1-38",
@@ -6934,7 +7466,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "1 Kings 6:1-38",
           "tl": "1 Kings 6:1-38",
           "th": "1 Kings 6:1-38",
-          "sw": "1 Kings 6:1-38"
+          "sw": "1 Kings 6:1-38",
+          "it": "1 Re 6:1-38"
         },
         comment: {
           "ja": "神殿建設に7年も費やしたソロモン、こだわりの強いこだわり派のDIY愛好家が理想の家を建てるとこうなるという良い例。",
@@ -6946,7 +7479,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Solomon mất bảy năm để xây đền thờ là minh chứng rõ nhất cho thấy chuyện gì xảy ra khi một người đam mê DIY cầu toàn có trong tay ngân sách không giới hạn.",
           "tl": "Ang paggugol ni Solomon ng pitong taon sa pagtatayo ng templo ay ang pinakamagandang halimbawa ng mangyayari kapag ang isang perfectionist na DIY enthusiast ay may unlimited budget.",
           "th": "โซโลมอนใช้เวลาสร้างพระวิหารถึง 7 ปี เป็นตัวอย่างชั้นดีของความเป๊ะระดับมือโปรเมื่อคนรักงานฝีมือได้งบประมาณมาทำตามใจฝัน",
-          "sw": "Sulemani kutumia miaka saba kujenga hekalu ni mfano kamili wa kile kinachotokea wakati mtu anayependa ubora anapokuwa na bajeti isiyo na kikomo ya ujenzi."
+          "sw": "Sulemani kutumia miaka saba kujenga hekalu ni mfano kamili wa kile kinachotokea wakati mtu anayependa ubora anapokuwa na bajeti isiyo na kikomo ya ujenzi.",
+          "it": "Solomone che ci mette sette anni a costruire il tempio è l'esempio perfetto di cosa succede quando un perfezionista ha budget illimitato."
         }
     },
     "2026-06-25": {
@@ -6961,7 +7495,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "列王紀上 7:1-51",
@@ -6973,7 +7508,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "1 Kings 7:1-51",
           "tl": "1 Kings 7:1-51",
           "th": "1 Kings 7:1-51",
-          "sw": "1 Kings 7:1-51"
+          "sw": "1 Kings 7:1-51",
+          "it": "1 Re 7:1-51"
         },
         comment: {
           "ja": "ソロモンが神殿より先に自分の宮殿に時間をかけているあたり、どんなに偉くなっても自分の部屋のインテリアにはこだわりたい人間の性が見える。",
@@ -6985,7 +7521,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Solomon dành nhiều thời gian xây cung điện cho mình hơn là đền thờ cho thấy dù có khôn ngoan đến đâu, con người vẫn không thể cưỡng lại việc ưu tiên cho không gian sống của bản thân.",
           "tl": "Ang paglaan ni Solomon ng mas mahabang panahon sa sarili niyang palasyo kaysa sa templo ay patunay na kahit gaano tayo katalino, prayoridad pa rin natin ang sarili nating bahay.",
           "th": "การที่ซาโลมอนใช้เวลาสร้างวังของตัวเองนานกว่าพระวิหาร สะท้อนให้เห็นว่าต่อให้ฉลาดแค่ไหน มนุษย์ก็ยังอดไม่ได้ที่จะให้ความสำคัญกับการแต่งบ้านของตัวเองก่อน",
-          "sw": "Sulemani kutumia muda mwingi kujenga jumba lake kuliko hekalu inaonyesha kuwa hata ukiwa na hekima kiasi gani, bado tunapenda kipaumbele chetu cha kwanza kiwe nyumba zetu wenyewe."
+          "sw": "Sulemani kutumia muda mwingi kujenga jumba lake kuliko hekalu inaonyesha kuwa hata ukiwa na hekima kiasi gani, bado tunapenda kipaumbele chetu cha kwanza kiwe nyumba zetu wenyewe.",
+          "it": "Metterci più tempo per il proprio palazzo che per il tempio dimostra che, per quanto saggi si sia, la ristrutturazione di casa resta la priorità."
         }
     },
     "2026-06-26": {
@@ -7000,7 +7537,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "列王紀上 8:1-53",
@@ -7012,7 +7550,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "1 Kings 8:1-53",
           "tl": "1 Kings 8:1-53",
           "th": "1 Kings 8:1-53",
-          "sw": "1 Kings 8:1-53"
+          "sw": "1 Kings 8:1-53",
+          "it": "1 Re 8:1-53"
         },
         comment: {
           "ja": "神殿が完成して祝杯をあげた直後に、神様から「もし背いたら全部ぶち壊すからな」と釘を刺されるソロモン、絶頂期の緊張感たるや。",
@@ -7024,7 +7563,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Solomon vừa khánh thành đền thờ xong đã bị cảnh báo rằng mọi thứ có thể tan thành mây khói nếu đi chệch đường là một gáo nước lạnh thực tế ngay trên đỉnh vinh quang.",
           "tl": "Ang pagbabala kay Solomon na mawawasak ang templo kung hindi siya susunod, agad pagkatapos itong matapos, ay isang matinding paalala na ang tagumpay ay may kaakibat na pananagutan.",
           "th": "ซาโลมอนเพิ่งฉลองสร้างพระวิหารเสร็จก็โดนเตือนทันทีว่าถ้าพลาดไปอาจจะพังไม่เหลือชิ้นดี เป็นการเตือนสติที่มาได้ถูกจังหวะจริงๆ",
-          "sw": "Sulemani kumaliza hekalu na kuonywa mara moja kuwa linaweza kuharibiwa kama atapotoka ni ukumbusho mkali kwamba mafanikio yanakuja na wajibu mkubwa."
+          "sw": "Sulemani kumaliza hekalu na kuonywa mara moja kuwa linaweza kuharibiwa kama atapotoka ni ukumbusho mkali kwamba mafanikio yanakuja na wajibu mkubwa.",
+          "it": "Ricevere un avvertimento sui rischi del futuro proprio mentre si festeggia il grande traguardo è la doccia fredda definitiva dopo il successo."
         }
     },
     "2026-06-27": {
@@ -7039,7 +7579,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "列王紀上 8:54-66",
@@ -7051,7 +7592,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "1 Kings 8:54-66",
           "tl": "1 Kings 8:54-66",
           "th": "1 Kings 8:54-66",
-          "sw": "1 Kings 8:54-66"
+          "sw": "1 Kings 8:54-66",
+          "it": "1 Re 8:54-66"
         },
         comment: {
           "ja": "盛大な奉献式のあとに七日間も祝宴を開くソロモン、どれだけパーティー好きなのかと思いつつそのエネルギーに圧倒される。",
@@ -7063,7 +7605,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Solomon tổ chức tiệc suốt bảy ngày sau khi dâng hiến đền thờ đúng là đỉnh cao của sự nhiệt huyết và sức bền.",
           "tl": "Ang pagdaraos ni Solomon ng pitong araw na piging pagkatapos ng pagtatalaga ng templo ay nagpapakita ng kanyang walang kapantay na sigla.",
           "th": "โซโลมอนจัดงานเลี้ยงฉลองเจ็ดวันหลังสร้างพระวิหารเสร็จ เป็นตัวอย่างของความทุ่มเทและการเฉลิมฉลองที่ยิ่งใหญ่จริงๆ",
-          "sw": "Sulemani kuandaa sherehe ya siku saba baada ya kuweka wakfu hekalu inaonyesha kiwango cha juu cha shauku na nishati."
+          "sw": "Sulemani kuandaa sherehe ya siku saba baada ya kuweka wakfu hekalu inaonyesha kiwango cha juu cha shauku na nishati.",
+          "it": "Organizzare una festa di sette giorni dopo la dedicazione del tempio è il livello definitivo di resistenza spirituale e fisica."
         }
     },
     "2026-06-28": {
@@ -7078,7 +7621,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "列王紀上 11:1-43",
@@ -7090,7 +7634,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "1 Kings 11:1-43",
           "tl": "1 Kings 11:1-43",
           "th": "1 Kings 11:1-43",
-          "sw": "1 Kings 11:1-43"
+          "sw": "1 Kings 11:1-43",
+          "it": "1 Re 11:1-43"
         },
         comment: {
           "ja": "知恵の代名詞だったはずのソロモンが、結局は周りの意見に流されて迷走する姿、人間ってどこまでいっても環境に弱い生き物だと痛感する。",
@@ -7102,7 +7647,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Chứng kiến người khôn ngoan nhất lịch sử bị lung lay bởi áp lực xung quanh là lời nhắc nhở rằng không ai miễn nhiễm với những ảnh hưởng xấu.",
           "tl": "Ang makitang ang pinakamatalinong tao sa kasaysayan ay nagpadala sa impluwensya ng iba ay isang paalala na walang sinuman ang ligtas sa panggigipit ng lipunan.",
           "th": "การได้เห็นคนที่ฉลาดที่สุดในประวัติศาสตร์ยังหลงทางเพราะคล้อยตามคนรอบข้าง เป็นเครื่องเตือนใจว่าไม่มีใครต้านทานแรงกดดันทางสังคมได้จริงๆ",
-          "sw": "Kumwona mtu mwenye hekima zaidi katika historia akishawishiwa na maoni ya wengine ni ukumbusho kwamba hakuna aliye salama dhidi ya shinikizo la kijamii."
+          "sw": "Kumwona mtu mwenye hekima zaidi katika historia akishawishiwa na maoni ya wengine ni ukumbusho kwamba hakuna aliye salama dhidi ya shinikizo la kijamii.",
+          "it": "Vedere l'uomo più saggio della storia cedere alla pressione sociale è la prova che nessuno è immune alle cattive influenze."
         }
     },
     "2026-06-29": {
@@ -7117,7 +7663,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "列王紀上 12:1-33",
@@ -7129,7 +7676,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "1 Kings 12:1-33",
           "tl": "1 Kings 12:1-33",
           "th": "1 Kings 12:1-33",
-          "sw": "1 Kings 12:1-33"
+          "sw": "1 Kings 12:1-33",
+          "it": "1 Re 12:1-33"
         },
         comment: {
           "ja": "若手の意見を完全無視して老臣の強気な助言を採用し、結果として国を真っ二つにしたレハベアム、上司選びの重要性をこれ以上ないほど教えてくれる。",
@@ -7141,7 +7689,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Rehoboam bỏ ngoài tai lời khuyên của các bậc tiền bối để nghe theo đám bạn trẻ và làm tan nát cả vương quốc, một bài học đắt giá về việc chọn bạn mà chơi.",
           "tl": "Ang pagbalewala ni Rehoboam sa payo ng matatanda para lang makinig sa mga tropa niya na nagresulta sa pagkakawatak-watak ng kaharian ay isang malaking babala sa maling desisyon.",
           "th": "เรโหโบอัมเมินคำแนะนำของผู้อาวุโสแล้วไปฟังพวกพ้องจนอาณาจักรแตกแยก คือบทเรียนราคาแพงของการเลือกที่ปรึกษาผิดชีวิตเปลี่ยน",
-          "sw": "Rehoboamu kupuuza ushauri wa wazee na kusikiliza marafiki zake hadi ufalme ukagawanyika ni funzo tosha kuhusu umuhimu wa kuchagua washauri sahihi."
+          "sw": "Rehoboamu kupuuza ushauri wa wazee na kusikiliza marafiki zake hadi ufalme ukagawanyika ni funzo tosha kuhusu umuhimu wa kuchagua washauri sahihi.",
+          "it": "Roboam che ignora i saggi per ascoltare gli amici e finisce per dividere il regno è il manuale perfetto su come rovinare tutto in un giorno."
         }
     },
     "2026-06-30": {
@@ -7156,7 +7705,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "列王紀上 13:1-34",
@@ -7168,7 +7718,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "1 Kings 13:1-34",
           "tl": "1 Kings 13:1-34",
           "th": "1 Kings 13:1-34",
-          "sw": "1 Kings 13:1-34"
+          "sw": "1 Kings 13:1-34",
+          "it": "1 Re 13:1-34"
         },
         comment: {
           "ja": "神様との約束を破った預言者がライオンに襲われるという結末、誘惑に負けて自分を正当化した瞬間の脆さを突きつけられているようで背筋が凍る。",
@@ -7180,7 +7731,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc vị tiên tri bị sư tử vồ chỉ vì một sai lầm nhỏ sau khi đã nhận chỉ dẫn rõ ràng là lời nhắc nhở đau đớn rằng sự vâng lời nửa vời là cái bẫy nguy hiểm.",
           "tl": "Ang pagkamatay ng propeta dahil sa isang pagkakamali matapos bigyan ng malinaw na tagubilin ay isang matinding paalala na ang pagsunod ay hindi pwedeng pili-pili lang.",
           "th": "การที่ผู้เผยพระวจนะต้องจบชีวิตเพราะพลาดไปเพียงครั้งเดียวหลังจากได้รับคำสั่งชัดเจน เป็นเครื่องเตือนใจว่าการเชื่อฟังแบบครึ่งๆ กลางๆ นั้นอันตรายแค่ไหน",
-          "sw": "Nabii kuangamia kwa kosa moja baada ya kupewa maagizo wazi ni ukumbusho mkali kwamba kutii kwa nusu ni hatari kuliko kutotii kabisa."
+          "sw": "Nabii kuangamia kwa kosa moja baada ya kupewa maagizo wazi ni ukumbusho mkali kwamba kutii kwa nusu ni hatari kuliko kutotii kabisa.",
+          "it": "Il profeta punito da un leone per una sola distrazione ci ricorda quanto sia pericolosa l'obbedienza a metà."
         }
     },
     "2026-07-01": {
@@ -7195,7 +7747,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "列王紀上 17:1-24",
@@ -7207,7 +7760,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "1 Kings 17:1-24",
           "tl": "1 Kings 17:1-24",
           "th": "1 Kings 17:1-24",
-          "sw": "1 Kings 17:1-24"
+          "sw": "1 Kings 17:1-24",
+          "it": "1 Re 17:1-24"
         },
         comment: {
           "ja": "預言者として大役を任された直後に隠れ家でカラスから食料をもらう生活を始めるエリヤ、神の采配の斜め上を行く展開に振り回される苦労が滲み出ている。",
@@ -7219,7 +7773,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Elijah vừa được giao trọng trách đã phải đi trốn và chờ quạ mang thức ăn tới, cách sắp xếp của Chúa đôi khi kỳ lạ đến mức khiến ta chỉ biết cạn lời.",
           "tl": "Si Elias na inutusang maging propeta tapos ay kailangan pang magtago at maghintay ng pagkain mula sa mga uwak ay patunay na minsan, ang plano ng Diyos ay sadyang nakakaloka.",
           "th": "เอลียาห์ได้รับภารกิจยิ่งใหญ่แต่กลับต้องไปหลบซ่อนรออาหารจากอีกา การทรงนำของพระเจ้านี่มันเหนือความคาดหมายจนทำตัวไม่ถูกจริงๆ",
-          "sw": "Eliya kuitwa kuwa nabii na kisha kuishia kujificha akisubiri kunguru wamletee chakula ni funzo tosha kwamba mipango ya Mungu huwa haifuati taratibu zetu za kawaida."
+          "sw": "Eliya kuitwa kuwa nabii na kisha kuishia kujificha akisubiri kunguru wamletee chakula ni funzo tosha kwamba mipango ya Mungu huwa haifuati taratibu zetu za kawaida.",
+          "it": "Elia che si nasconde in una grotta aspettando il cibo portato dai corvi dimostra che i piani divini sanno essere davvero imprevedibili."
         }
     },
     "2026-07-02": {
@@ -7234,7 +7789,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "列王紀上 18:1-46",
@@ -7246,7 +7802,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "1 Kings 18:1-46",
           "tl": "1 Kings 18:1-46",
           "th": "1 Kings 18:1-46",
-          "sw": "1 Kings 18:1-46"
+          "sw": "1 Kings 18:1-46",
+          "it": "1 Re 18:1-46"
         },
         comment: {
           "ja": "バアルの預言者たちと対決する直前にわざわざ祭壇に水をぶっかけるエリヤ、ここぞという時の煽りスキルの高さに人間味を感じる。",
@@ -7258,7 +7815,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Elijah dội nước lên bàn thờ trước khi đối đầu cho thấy ông không chỉ có đức tin mà còn có kỹ năng khiêu khích đối thủ ở đẳng cấp chuyên nghiệp.",
           "tl": "Ang pagbuhos ni Elias ng tubig sa altar bago ang malaking tapatan ay patunay na ang tunay na tiwala sa Diyos ay may kasama ring konting tapang na mang-asar.",
           "th": "เอลียาห์ราดน้ำลงบนแท่นบูชาก่อนการประลองครั้งสำคัญ นี่มันไม่ใช่แค่ความเชื่อ แต่มันคือการปั่นประสาทคู่ต่อสู้แบบเหนือชั้นจริงๆ",
-          "sw": "Eliya kumwagia maji madhabahu kabla ya mashindano makuu ni uthibitisho kwamba wakati mwingine imani inahitaji ujasiri wa hali ya juu na kidogo ya kuwashangaza maadui."
+          "sw": "Eliya kumwagia maji madhabahu kabla ya mashindano makuu ni uthibitisho kwamba wakati mwingine imani inahitaji ujasiri wa hali ya juu na kidogo ya kuwashangaza maadui.",
+          "it": "Elia che bagna l'altare con l'acqua prima della grande sfida è la quintessenza della sicurezza e della provocazione in grande stile."
         }
     },
     "2026-07-03": {
@@ -7273,7 +7831,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "列王紀上 19:1-21",
@@ -7285,7 +7844,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "1 Kings 19:1-21",
           "tl": "1 Kings 19:1-21",
           "th": "1 Kings 19:1-21",
-          "sw": "1 Kings 19:1-21"
+          "sw": "1 Kings 19:1-21",
+          "it": "1 Re 19:1-21"
         },
         comment: {
           "ja": "大勝利の直後に一人の女性から脅されただけで死にたがるエリヤ、偉大な預言者でもメンタルが折れる時は一瞬という親近感。",
@@ -7297,7 +7857,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Elijah vừa giành chiến thắng vang dội đã muốn bỏ cuộc chỉ vì một lời đe dọa, cho thấy ngay cả những vị tiên tri vĩ đại cũng có lúc kiệt sức.",
           "tl": "Si Elias na nagwagi sa isang malaking laban pero biglang nag-collapse dahil sa isang banta ay patunay na kahit ang pinakamalakas ay napapagod din.",
           "th": "เอลียาห์เพิ่งชนะศึกใหญ่มาหมาดๆ แต่กลับอยากยอมแพ้เพียงเพราะคำขู่ของคนคนเดียว เป็นภาพสะท้อนของอาการหมดไฟที่มนุษย์ทุกคนเข้าใจได้ดี",
-          "sw": "Elijah kushinda vita kuu na kisha kutaka kukata tamaa kwa sababu ya tishio moja tu ni kielelezo kamili cha jinsi uchovu wa kiroho unavyoweza kutupata sote."
+          "sw": "Elijah kushinda vita kuu na kisha kutaka kukata tamaa kwa sababu ya tishio moja tu ni kielelezo kamili cha jinsi uchovu wa kiroho unavyoweza kutupata sote.",
+          "it": "Vedere Elia crollare per una singola minaccia dopo una grande vittoria ci ricorda che tutti abbiamo bisogno di una pausa."
         }
     },
     "2026-07-04": {
@@ -7312,7 +7873,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "列王紀上 20:1-43",
@@ -7324,7 +7886,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "1 Kings 20:1-43",
           "tl": "1 Kings 20:1-43",
           "th": "1 Kings 20:1-43",
-          "sw": "1 Kings 20:1-43"
+          "sw": "1 Kings 20:1-43",
+          "it": "1 Re 20:1-43"
         },
         comment: {
           "ja": "神様がせっかく勝利をくれたのに、敵の王を勝手に逃がして怒られるアハブ、空気を読まないにもほどがある。",
@@ -7336,7 +7899,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Được Chúa ban cho chiến thắng nhưng Ahab lại tự ý thả vua kẻ thù, đây đúng là đỉnh cao của việc không hiểu chuyện.",
           "tl": "Binigyan na ng tagumpay ni God si Ahab, pinalampas pa niya ang hari ng mga kaaway; minsan talaga, tayo ang humaharang sa sarili nating pagpapala.",
           "th": "พระเจ้าประทานชัยชนะให้แท้ๆ แต่อาหับกลับปล่อยราชาศัตรูไปเองจนเรื่องบานปลาย นี่คือตัวอย่างของการทำลายโอกาสตัวเองชัดๆ",
-          "sw": "Ahab kupewa ushindi na Mungu kisha kuuharibu kwa kumwachilia mfalme wa adui ni mfano bora wa jinsi tunavyoweza kujikwaza wenyewe."
+          "sw": "Ahab kupewa ushindi na Mungu kisha kuuharibu kwa kumwachilia mfalme wa adui ni mfano bora wa jinsi tunavyoweza kujikwaza wenyewe.",
+          "it": "Acab che riceve la vittoria da Dio e poi la rovina lasciando andare il re nemico è l'esempio perfetto di chi non capisce la missione."
         }
     },
     "2026-07-05": {
@@ -7351,7 +7915,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "列王紀上 22:1-53",
@@ -7363,7 +7928,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "1 Kings 22:1-53",
           "tl": "1 Kings 22:1-53",
           "th": "1 Kings 22:1-53",
-          "sw": "1 Kings 22:1-53"
+          "sw": "1 Kings 22:1-53",
+          "it": "1 Re 22:1-53"
         },
         comment: {
           "ja": "都合の悪い予言は聞かなかったことにして突き進むアハブ王、自分に甘い鏡を見ているようでいたたまれない。",
@@ -7375,7 +7941,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Vua A-háp lờ đi sự thật chỉ để nghe những điều mình muốn là hình ảnh phản chiếu sự bướng bỉnh của chính chúng ta.",
           "tl": "Ang pagbalewala ni Haring Ahab sa katotohanan para lang marinig ang gusto niyang pakinggan ay salamin ng ating sariling katigasan ng ulo.",
           "th": "กษัตริย์อาหับที่เลือกฟังแต่สิ่งที่อยากได้ยินและเพิกเฉยต่อความจริง คือกระจกสะท้อนความดื้อรั้นในใจเราทุกคน",
-          "sw": "Mfalme Ahab kupuuza ukweli ili asikie tu kile anachotaka kusikia ni kioo kamili cha ukaidi wetu wenyewe."
+          "sw": "Mfalme Ahab kupuuza ukweli ili asikie tu kile anachotaka kusikia ni kioo kamili cha ukaidi wetu wenyewe.",
+          "it": "Il re Acab che ignora la verità per sentirsi dire solo ciò che vuole è lo specchio perfetto della nostra stessa testardaggine."
         }
     },
     "2026-07-06": {
@@ -7390,7 +7957,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "列王紀下 2:1-25",
@@ -7402,7 +7970,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "2 Kings 2:1-25",
           "tl": "2 Kings 2:1-25",
           "th": "2 Kings 2:1-25",
-          "sw": "2 Kings 2:1-25"
+          "sw": "2 Kings 2:1-25",
+          "it": "2 Re 2:1-25"
         },
         comment: {
           "ja": "エリヤの昇天を目の当たりにして服を破るエリシャ、師匠との別れへの動揺が隠しきれず人間味に溢れている。",
@@ -7414,7 +7983,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Ê-li-sê xé áo khi thấy Ê-li được đưa lên trời nhắc nhở chúng ta rằng ngay cả một nhà tiên tri cũng có những cảm xúc con người rất thực.",
           "tl": "Ang pagpunit ni Eliseo sa kanyang damit habang nakikita ang pag-akyat ni Elias ay paalala na kahit ang mga propeta ay may pusong marunong masaktan.",
           "th": "เอลีชาฉีกเสื้อตัวเองเมื่อเห็นเอลียาห์จากไป เป็นภาพที่เตือนใจว่าแม้แต่ผู้เผยพระวจนะก็มีความรู้สึกที่เปราะบางเช่นกัน",
-          "sw": "Elisha kurarua nguo zake baada ya kumwona Eliya akipaa ni ukumbusho mbichi kwamba hata manabii wana hisia za kibinadamu."
+          "sw": "Elisha kurarua nguo zake baada ya kumwona Eliya akipaa ni ukumbusho mbichi kwamba hata manabii wana hisia za kibinadamu.",
+          "it": "Eliseo che si strappa le vesti per il dolore ci ricorda che dire addio a un maestro è devastante anche per un profeta."
         }
     },
     "2026-07-07": {
@@ -7429,7 +7999,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "列王紀下 3:1-27",
@@ -7441,7 +8012,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "2 Kings 3:1-27",
           "tl": "2 Kings 3:1-27",
           "th": "2 Kings 3:1-27",
-          "sw": "2 Kings 3:1-27"
+          "sw": "2 Kings 3:1-27",
+          "it": "2 Re 3:1-27"
         },
         comment: {
           "ja": "ピンチになった途端に神様を頼り出す王たちの姿、結局最後は神頼みという人間の身勝手さは古今東西変わりませんね。",
@@ -7453,7 +8025,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Các vị vua chỉ tìm đến Chúa khi gặp khó khăn là minh chứng rõ nhất cho thói quen chỉ cầu nguyện khi nước đến chân mới nhảy của con người.",
           "tl": "Ang mga hari na tumatawag lang sa Diyos kapag gipit na gipit na ay tunay na repleksyon ng ating pagiging makasarili sa pananampalataya.",
           "th": "เหล่ากษัตริย์ที่หันมาพึ่งพระเจ้าก็ต่อเมื่อจนตรอก สะท้อนให้เห็นถึงนิสัยมนุษย์ที่มักจะนึกถึงฟ้าดินก็ต่อเมื่อเกิดเรื่องเท่านั้น",
-          "sw": "Wafalme kumtafuta Mungu wakiwa wameishiwa na njia ni kielelezo kamili cha jinsi binadamu tunavyokumbuka kumuomba Mungu wakati wa shida pekee."
+          "sw": "Wafalme kumtafuta Mungu wakiwa wameishiwa na njia ni kielelezo kamili cha jinsi binadamu tunavyokumbuka kumuomba Mungu wakati wa shida pekee.",
+          "it": "Cercare Dio solo quando si e nei guai dimostra che siamo tutti credenti part-time."
         }
     },
     "2026-07-08": {
@@ -7468,7 +8041,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "列王紀下 4:1-17",
@@ -7480,7 +8054,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "2 Kings 4:1-17",
           "tl": "2 Kings 4:1-17",
           "th": "2 Kings 4:1-17",
-          "sw": "2 Kings 4:1-17"
+          "sw": "2 Kings 4:1-17",
+          "it": "2 Re 4:1-17"
         },
         comment: {
           "ja": "空の器が油で満たされるまで借りてこいと言われて、近所中から器を集めて回る母子の必死さは、もはや現代のフリマアプリの出品作業より大変そう。",
@@ -7492,7 +8067,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Cảnh hai mẹ con chạy đôn chạy đáo mượn từng chiếc bình khắp xóm thật sự là một ví dụ điển hình về sự nỗ lực hết mình khi cơ hội đến.",
           "tl": "Ang pagmamadali ng mag-ina na humiram ng lahat ng bote sa kapitbahayan ay isang nakaka-relate na eksena ng pagsisikap para sa isang himala.",
           "th": "ภาพแม่ลูกที่วิ่งวุ่นยืมภาชนะไปทั่วละแวกบ้านเพื่อรองรับน้ำมัน เป็นความพยายามที่ดูจริงจังและน่าเอาใจช่วยอย่างบอกไม่ถูก",
-          "sw": "Mama na mwanae kukimbia kote wakiazima vyombo kwa ajili ya mafuta ni kielelezo cha jinsi tunavyopaswa kujiandaa kupokea baraka kwa bidii."
+          "sw": "Mama na mwanae kukimbia kote wakiazima vyombo kwa ajili ya mafuta ni kielelezo cha jinsi tunavyopaswa kujiandaa kupokea baraka kwa bidii.",
+          "it": "La disperazione di questa madre che cerca barattoli vuoti in tutto il vicinato fa sembrare lo shopping online moderno una passeggiata."
         }
     },
     "2026-07-09": {
@@ -7507,7 +8083,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "列王紀下 4:18-44",
@@ -7519,7 +8096,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "2 Kings 4:18-44",
           "tl": "2 Kings 4:18-44",
           "th": "2 Kings 4:18-44",
-          "sw": "2 Kings 4:18-44"
+          "sw": "2 Kings 4:18-44",
+          "it": "2 Re 4:18-44"
         },
         comment: {
           "ja": "毒入りの鍋に粉を投げ込んで中和させるエリシャ、現代の料理で失敗したときのリカバリー術として参考にしたいレベル。",
@@ -7531,7 +8109,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Elisha cứu cả nồi súp bị nhiễm độc chỉ bằng một ít bột mì đúng là bậc thầy xử lý khủng hoảng trong nhà bếp.",
           "tl": "Ang paglagay ni Eliseo ng harina sa nilalasong nilaga ay ang ultimate life hack para sa mga palpak na lutuin.",
           "th": "เอลีชาแก้ปัญหาหม้อซุปที่มีพิษด้วยการโรยแป้งลงไป เป็นเทคนิคกู้สถานการณ์ในครัวที่น่าเอาไปใช้ตามจริงๆ",
-          "sw": "Elisha kutupa unga kwenye sufuria yenye sumu ili kuokoa chakula ni ustadi wa hali ya juu wa kutatua matatizo jikoni."
+          "sw": "Elisha kutupa unga kwenye sufuria yenye sumu ili kuokoa chakula ni ustadi wa hali ya juu wa kutatua matatizo jikoni.",
+          "it": "Eliseo che salva una cena avvelenata con un po' di farina e il livello di improvvisazione culinaria che tutti vorremmo avere in un giorno storto."
         }
     },
     "2026-07-10": {
@@ -7546,7 +8125,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "列王紀下 5:1-27",
@@ -7558,7 +8138,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "2 Kings 5:1-27",
           "tl": "2 Kings 5:1-27",
           "th": "2 Kings 5:1-27",
-          "sw": "2 Kings 5:1-27"
+          "sw": "2 Kings 5:1-27",
+          "it": "2 Re 5:1-27"
         },
         comment: {
           "ja": "高級将軍なのにヨルダン川で洗えと言われてプライドが邪魔をするナアマン、簡単な解決策ほど受け入れられないのは今も昔も変わらない。",
@@ -7570,7 +8151,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Naaman suýt chút nữa đã bỏ lỡ cơ hội được chữa lành chỉ vì ông thấy phương pháp đó quá tầm thường, đúng là cái tôi luôn cản trở những giải pháp đơn giản nhất.",
           "tl": "Halos palampasin ni Naaman ang himala dahil lang sa pride niya sa simpleng utos, patunay na minsan ang ego natin ang hadlang sa solusyon.",
           "th": "นาอามานเกือบพลาดโอกาสรักษาโรคเพียงเพราะวิธีแก้ดูเรียบง่ายเกินไปสำหรับตำแหน่งของเขา เป็นบทเรียนว่าอีโก้มักจะขวางทางความสำเร็จเสมอ",
-          "sw": "Naaman karibu akose uponyaji kwa sababu tu maagizo yalionekana kuwa ya kawaida sana, ikithibitisha kuwa kiburi ndicho kikwazo kikubwa cha suluhisho rahisi."
+          "sw": "Naaman karibu akose uponyaji kwa sababu tu maagizo yalionekana kuwa ya kawaida sana, ikithibitisha kuwa kiburi ndicho kikwazo kikubwa cha suluhisho rahisi.",
+          "it": "Naaman che quasi rovina la sua guarigione solo perche la cura sembrava troppo semplice e la prova che il nostro ego e il peggior nemico."
         }
     },
     "2026-07-11": {
@@ -7585,7 +8167,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "列王紀下 6:1-33",
@@ -7597,7 +8180,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "2 Kings 6:1-33",
           "tl": "2 Kings 6:1-33",
           "th": "2 Kings 6:1-33",
-          "sw": "2 Kings 6:1-33"
+          "sw": "2 Kings 6:1-33",
+          "it": "2 Re 6:1-33"
         },
         comment: {
           "ja": "借りた斧を池に落として絶望する弟子と、それをあっさり回収してあげるエリシャの温度差が、まさに厳しくも優しい上司と部下の関係そのもの。",
@@ -7609,7 +8193,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Sự hoảng loạn của người môn đệ khi làm mất chiếc rìu đi mượn so với cách Ê-li-sê thản nhiên lấy lại nó chính là bài học về sự khác biệt giữa người lo lắng và người làm chủ tình hình.",
           "tl": "Ang pagpapanic ng alagad dahil sa nawalang palakol kumpara sa kalmadong pagkuha ni Eliseo rito ay eksaktong sumasalamin sa ugnayan ng isang nag-aalalang empleyado at isang bihasang boss.",
           "th": "ความตื่นตระหนกของศิษย์ที่ทำขวานยืมเขามาตกน้ำ กับการที่เอลีชาช่วยกู้คืนมาให้ได้อย่างง่ายดายนั้น เป็นภาพสะท้อนความสัมพันธ์ระหว่างลูกน้องที่ขี้กังวลกับเจ้านายที่เก๋าเกมได้ดีจริงๆ",
-          "sw": "Woga wa mwanafunzi aliyepoteza shoka alilokopa ikilinganishwa na jinsi Elisha alivyolichota kwa urahisi ni mfano kamili wa tofauti kati ya mfanyakazi mwenye hofu na bosi mwenye uzoefu."
+          "sw": "Woga wa mwanafunzi aliyepoteza shoka alilokopa ikilinganishwa na jinsi Elisha alivyolichota kwa urahisi ni mfano kamili wa tofauti kati ya mfanyakazi mwenye hofu na bosi mwenye uzoefu.",
+          "it": "Il panico del discepolo per un'ascia prestata rispetto alla calma di Eliseo e la perfetta dinamica tra un dipendente in ansia e un capo esperto."
         }
     },
     "2026-07-12": {
@@ -7624,7 +8209,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "列王紀下 7:1-20",
@@ -7636,7 +8222,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "2 Kings 7:1-20",
           "tl": "2 Kings 7:1-20",
           "th": "2 Kings 7:1-20",
-          "sw": "2 Kings 7:1-20"
+          "sw": "2 Kings 7:1-20",
+          "it": "2 Re 7:1-20"
         },
         comment: {
           "ja": "目の前の奇跡を信じきれず、結局恩恵に預かれないまま踏みつけられて終わる高官、理屈で考えすぎてチャンスを逃す現代人の末路を見ているようで苦しい。",
@@ -7648,7 +8235,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Vị quan không tin vào phép màu rồi cuối cùng bị giẫm đạp đến chết là một lời nhắc nhở cay đắng về việc suy nghĩ quá nhiều có thể khiến ta bỏ lỡ mọi cơ hội tốt đẹp.",
           "tl": "Ang opisyal na hindi naniwala sa himala at sa huli ay nayurakan lang ay isang malupit na paalala kung paano tayo nawawalan ng pagkakataon dahil sa sobrang pag-iisip.",
           "th": "ขุนนางที่ไม่ยอมเชื่อในปาฏิหาริย์ตรงหน้าจนสุดท้ายต้องจบชีวิตด้วยการถูกเหยียบตาย เป็นเครื่องเตือนใจที่เจ็บปวดว่าการคิดเยอะเกินไปอาจทำให้เราพลาดทุกโอกาสดีๆ ในชีวิต",
-          "sw": "Ofisa aliyeshindwa kuamini muujiza na mwishowe kukanyagwa hadi kufa ni ukumbusho mchungu wa jinsi kufikiri kupita kiasi kunavyoweza kutufanya tukose fursa zote muhimu."
+          "sw": "Ofisa aliyeshindwa kuamini muujiza na mwishowe kukanyagwa hadi kufa ni ukumbusho mchungu wa jinsi kufikiri kupita kiasi kunavyoweza kutufanya tukose fursa zote muhimu.",
+          "it": "L'ufficiale che non ha creduto al miracolo e ci e rimasto sotto e il promemoria crudele di come pensare troppo ci faccia perdere le occasioni migliori."
         }
     },
     "2026-07-13": {
@@ -7663,7 +8251,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "列王紀下 16:1-20",
@@ -7675,7 +8264,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "2 Kings 16:1-20",
           "tl": "2 Kings 16:1-20",
           "th": "2 Kings 16:1-20",
-          "sw": "2 Kings 16:1-20"
+          "sw": "2 Kings 16:1-20",
+          "it": "2 Re 16:1-20"
         },
         comment: {
           "ja": "親が敬虔だったからといって子供が自動的に立派になるわけではないという、アハズ王という残酷な現実に直面する朝。",
@@ -7687,7 +8277,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Vua A-cha là minh chứng cho thấy việc sinh ra trong một gia đình đạo đức không tự động biến bạn thành một người tốt.",
           "tl": "Ang kwento ni Haring Ahaz ay patunay na hindi awtomatikong nagiging mabuti ang isang tao kahit pa matuwid ang kanyang mga magulang.",
           "th": "กษัตริย์อาหัสเป็นเครื่องเตือนใจว่าการมีพ่อแม่ที่ยำเกรงพระเจ้าไม่ได้การันตีว่าลูกจะเดินตามรอยนั้นเสมอไป",
-          "sw": "Mfalme Ahazi anatukumbusha kuwa kuwa na wazazi wema hakuhakikishi kwamba mtoto hatachagua njia mbaya zaidi maishani."
+          "sw": "Mfalme Ahazi anatukumbusha kuwa kuwa na wazazi wema hakuhakikishi kwamba mtoto hatachagua njia mbaya zaidi maishani.",
+          "it": "Il re Acaz ci ricorda che avere genitori esemplari non ti impedisce di combinare guai colossali."
         }
     },
     "2026-07-14": {
@@ -7702,7 +8293,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "列王紀下 18:1-37",
@@ -7714,7 +8306,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "2 Kings 18:1-37",
           "tl": "2 Kings 18:1-37",
           "th": "2 Kings 18:1-37",
-          "sw": "2 Kings 18:1-37"
+          "sw": "2 Kings 18:1-37",
+          "it": "2 Re 18:1-37"
         },
         comment: {
           "ja": "神殿の宝物を削ってまで敵に貢ぎ物を送るヒゼキヤの姿、追い詰められた時の人間は本当に冷静な判断ができなくなるものだ。",
@@ -7726,7 +8319,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Ê-xê-chi-a tháo dỡ đền thờ để cống nạp cho kẻ thù cho thấy con người dễ đánh mất sự sáng suốt thế nào khi bị dồn vào chân tường.",
           "tl": "Ang pagbaklas ni Hezekias sa mga kayamanan ng templo para pambayad sa kaaway ay nagpapakita kung gaano tayo kawalang-kibo kapag desperado na.",
           "th": "การที่เฮเซคียาห์ยอมถอดสมบัติในพระวิหารเพื่อไปจ่ายค่าไถ่ศัตรู ทำให้เห็นว่าเมื่อคนเราจนตรอกเราก็มักจะตัดสินใจอะไรที่พลาดไปได้ง่ายๆ",
-          "sw": "Hezekia kung'oa dhahabu kwenye hekalu ili kumlipa adui inaonyesha jinsi tunavyoweza kupoteza busara tunapokuwa kwenye shinikizo kubwa."
+          "sw": "Hezekia kung'oa dhahabu kwenye hekalu ili kumlipa adui inaonyesha jinsi tunavyoweza kupoteza busara tunapokuwa kwenye shinikizo kubwa.",
+          "it": "Ezechia che smantella il tempio per pagare i nemici dimostra quanto il panico ci faccia perdere la bussola."
         }
     },
     "2026-07-15": {
@@ -7741,7 +8335,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "列王紀下 19:1-37",
@@ -7753,7 +8348,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "2 Kings 19:1-37",
           "tl": "2 Kings 19:1-37",
           "th": "2 Kings 19:1-37",
-          "sw": "2 Kings 19:1-37"
+          "sw": "2 Kings 19:1-37",
+          "it": "2 Re 19:1-37"
         },
         comment: {
           "ja": "絶体絶命の危機に手紙を広げて神様に助けを求めるヒゼキヤ、結局最後は神頼みという人間の究極の正直さが出ている。",
@@ -7765,7 +8361,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Ê-xê-chia mang bức thư đe dọa đến trước mặt Chúa cho thấy chiến lược cuối cùng của con người khi bế tắc chính là phó thác hoàn toàn cho Ngài.",
           "tl": "Ang pagdadala ni Hezekias ng sulat ng pananakot sa templo ay nagpapakita na sa harap ng matinding krisis, ang pinaka-tapat nating magagawa ay ipaubaya na lang sa Diyos ang lahat.",
           "th": "การที่เฮเซคียาห์นำจดหมายข่มขู่ไปวางต่อหน้าพระเจ้าแสดงให้เห็นว่า ในนาทีวิกฤตที่สุด กลยุทธ์ที่จริงใจที่สุดของเราก็คือการปล่อยให้พระองค์จัดการทุกอย่าง",
-          "sw": "Hezekia kupeleka barua ya vitisho hekaluni inaonyesha kuwa katika wakati wa dhiki kuu, mbinu yetu ya kweli ni kumwachia Mungu ashughulikie kila kitu."
+          "sw": "Hezekia kupeleka barua ya vitisho hekaluni inaonyesha kuwa katika wakati wa dhiki kuu, mbinu yetu ya kweli ni kumwachia Mungu ashughulikie kila kitu.",
+          "it": "Ezechia che porta una lettera minacciosa direttamente in preghiera ci ricorda che l'onesta estrema e la prima cosa che facciamo quando siamo con le spalle al muro."
         }
     },
     "2026-07-16": {
@@ -7780,7 +8377,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "列王紀下 20:1-21",
@@ -7792,7 +8390,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "2 Kings 20:1-21",
           "tl": "2 Kings 20:1-21",
           "th": "2 Kings 20:1-21",
-          "sw": "2 Kings 20:1-21"
+          "sw": "2 Kings 20:1-21",
+          "it": "2 Re 20:1-21"
         },
         comment: {
           "ja": "死の宣告を受けて命乞いをして15年寿命を延ばしたヒゼキヤ、その後の傲慢な態度を見ると、人間は時間ができても結局同じ間違いを繰り返す生き物だと痛感する。",
@@ -7804,7 +8403,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Ê-xê-chia cầu xin thêm mười lăm năm cuộc đời rồi lại dùng chính thời gian đó để khoe khoang của cải, chứng tỏ rằng thêm thời gian không phải lúc nào cũng mang lại thêm sự khôn ngoan.",
           "tl": "Nagmakaawa si Hezekias para sa karagdagang labinlimang taon, pero ginamit lang niya ito para ipagmalaki ang kanyang mga kayamanan, na nagpapatunay na ang dagdag na oras ay hindi laging nangangahulugan ng dagdag na karunungan.",
           "th": "เฮเซคียาห์ขอชีวิตเพิ่มอีก 15 ปี แต่กลับใช้เวลาที่ได้มานั้นไปกับการอวดสมบัติ ซึ่งพิสูจน์ให้เห็นว่าเวลาที่เพิ่มขึ้นไม่ได้ทำให้เราฉลาดขึ้นเสมอไป",
-          "sw": "Hezekia aliomba kuongezewa miaka kumi na mitano ya kuishi, lakini akaitumia kujivunia mali zake, ikithibitisha kuwa muda wa ziada haufanyi mtu kuwa na hekima zaidi."
+          "sw": "Hezekia aliomba kuongezewa miaka kumi na mitano ya kuishi, lakini akaitumia kujivunia mali zake, ikithibitisha kuwa muda wa ziada haufanyi mtu kuwa na hekima zaidi.",
+          "it": "Ezechia che implora altri quindici anni di vita per poi sprecarli a fare lo sborone dimostra che il tempo extra non ci rende automaticamente piu saggi."
         }
     },
     "2026-07-17": {
@@ -7819,7 +8419,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "列王紀下 22:1-20",
@@ -7831,7 +8432,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "2 Kings 22:1-20",
           "tl": "2 Kings 22:1-20",
           "th": "2 Kings 22:1-20",
-          "sw": "2 Kings 22:1-20"
+          "sw": "2 Kings 22:1-20",
+          "it": "2 Re 22:1-20"
         },
         comment: {
           "ja": "何十年も放置されていた古い律法の書を偶然見つけて大騒ぎになる様子は、年末の大掃除で失くしたはずの通帳が出てきた時のあの気まずさに似ている。",
@@ -7843,7 +8445,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc tình cờ tìm thấy cuộn sách luật pháp bị lãng quên trong lúc sửa đền thờ cũng giống như cảm giác tìm thấy cuốn sổ tiết kiệm cũ trong lúc dọn nhà vậy.",
           "tl": "Ang aksidenteng pagkakadiskubre sa nakalimutang aklat ng kautusan habang naglilinis ay parang paghahanap ng nawawalang gamit sa ilalim ng kama na matagal mo nang hinahanap.",
           "th": "การบังเอิญไปเจอหนังสือธรรมบัญญัติที่ถูกลืมไว้ตอนซ่อมพระวิหาร ก็เหมือนกับการจัดบ้านแล้วไปเจอสมุดบัญชีเงินฝากเก่าที่ลืมไปแล้วว่ามีอยู่",
-          "sw": "Kupata kitabu cha sheria kilichosahaulika wakati wa ukarabati ni kama kugundua pesa ulizozisahau kwenye koti la zamani wakati wa kufanya usafi."
+          "sw": "Kupata kitabu cha sheria kilichosahaulika wakati wa ukarabati ni kama kugundua pesa ulizozisahau kwenye koti la zamani wakati wa kufanya usafi.",
+          "it": "Ritrovare un vecchio rotolo della legge dimenticato durante i lavori di ristrutturazione è un po' come trovare l'estratto conto della banca dimenticato tra le vecchie ricevute durante le pulizie di primavera."
         }
     },
     "2026-07-18": {
@@ -7858,7 +8461,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "列王紀下 23:31-37",
@@ -7870,7 +8474,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "2 Kings 23:31-37",
           "tl": "2 Kings 23:31-37",
           "th": "2 Kings 23:31-37",
-          "sw": "2 Kings 23:31-37"
+          "sw": "2 Kings 23:31-37",
+          "it": "2 Re 23:31-37"
         },
         comment: {
           "ja": "たった数ヶ月で王位を追われるエホアハズを見ていると、現代の激務な職場での異動や短期プロジェクトの儚さを突きつけられているようで胃が痛くなる。",
@@ -7882,7 +8487,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Nhìn cảnh vua Giô-a-cha bị phế truất chỉ sau ba tháng cầm quyền, thật khó mà không liên tưởng đến những công việc ngắn hạn đầy áp lực trong thời đại ngày nay.",
           "tl": "Ang makitang mapatalsik si Jehoahaz matapos ang tatlong buwan ay parang isang brutal na paalala kung gaano kabilis magbago ang takbo ng buhay sa trabaho.",
           "th": "การเห็นเยโฮอาหาสถูกถอดจากตำแหน่งกษัตริย์หลังครองราชย์ได้แค่สามเดือน ช่างเป็นภาพสะท้อนความไม่แน่นอนของตำแหน่งงานยุคปัจจุบันที่น่าใจหาย",
-          "sw": "Kuona Jehoahazi akiondolewa madarakani baada ya miezi mitatu tu ni ukumbusho mchungu wa jinsi mambo yanavyoweza kubadilika haraka kazini."
+          "sw": "Kuona Jehoahazi akiondolewa madarakani baada ya miezi mitatu tu ni ukumbusho mchungu wa jinsi mambo yanavyoweza kubadilika haraka kazini.",
+          "it": "Vedere Ioacaz spodestato dopo appena tre mesi è un promemoria brutale di quanto velocemente possano cambiare le cose in certi ambienti lavorativi."
         }
     },
     "2026-07-19": {
@@ -7897,7 +8503,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "列王紀下 25:1-30",
@@ -7909,7 +8516,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "2 Kings 25:1-30",
           "tl": "2 Kings 25:1-30",
           "th": "2 Kings 25:1-30",
-          "sw": "2 Kings 25:1-30"
+          "sw": "2 Kings 25:1-30",
+          "it": "2 Re 25:1-30"
         },
         comment: {
           "ja": "王様が捕まって目をくり抜かれるという結末はあまりに無慈悲だけれど、国が滅びるまで現実逃避し続けた末の光景だと思うと背筋が凍る。",
@@ -7921,7 +8529,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Cái kết bị bắt và chọc mù mắt của vị vua thật tàn khốc, nhưng đó là kết quả tất yếu của việc cố chấp trốn tránh thực tại quá lâu.",
           "tl": "Ang malagim na wakas ng hari ay brutal, pero paalala ito na ang pagbalewala sa mga babala ay humahantong sa mga desisyong hindi na mababawi.",
           "th": "จุดจบที่แสนโหดร้ายของกษัตริย์เป็นเครื่องเตือนใจว่าการเพิกเฉยต่อความจริงมาตลอดชีวิตนั้นต้องแลกด้วยราคาที่แพงมหาศาล",
-          "sw": "Mwisho wa mfalme ni wa kutisha, lakini ni ukumbusho kwamba kupuuza ukweli kwa muda mrefu kuna gharama zake kubwa."
+          "sw": "Mwisho wa mfalme ni wa kutisha, lakini ni ukumbusho kwamba kupuuza ukweli kwa muda mrefu kuna gharama zake kubwa.",
+          "it": "La fine tragica del re è brutale, ma fa gelare il sangue pensare a cosa succede quando si ignorano tutti i segnali di allarme fino a non avere più via d'uscita."
         }
     },
     "2026-07-20": {
@@ -7936,7 +8545,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "歴代志下 14:1-15",
@@ -7948,7 +8558,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "2 Chronicles 14:1-15",
           "tl": "2 Chronicles 14:1-15",
           "th": "2 Chronicles 14:1-15",
-          "sw": "2 Chronicles 14:1-15"
+          "sw": "2 Chronicles 14:1-15",
+          "it": "2 Cronache 14:1-15"
         },
         comment: {
           "ja": "圧倒的な敵を前にして神様を頼るアサ王の姿はかっこいいけれど、その後の慢心で足が病むまで神に頼らなくなった展開が人間臭すぎて切ない。",
@@ -7960,7 +8571,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Vua A-sa khởi đầu đầy đức tin khi đối mặt với kẻ thù, nhưng rồi lại quên mất Chúa khi mọi thứ trở nên suôn sẻ, một sự thay đổi tâm lý rất đỗi con người.",
           "tl": "Si Haring Asa ay nagsimula nang may pananalig sa harap ng panganib, ngunit nakakalungkot na kinalimutan niya ang Diyos nang guminhawa na ang buhay.",
           "th": "กษัตริย์อาสาเริ่มต้นด้วยการพึ่งพาพระเจ้าในยามวิกฤต แต่พอชีวิตเริ่มสบายก็กลับลืมพระองค์ไปเสียสนิท ซึ่งช่างเป็นนิสัยมนุษย์ที่คุ้นเคยเหลือเกิน",
-          "sw": "Mfalme Asa alianza kwa kumtegemea Mungu dhidi ya maadui, lakini alipoanza kufanikiwa akamsahau Mungu, jambo ambalo ni kosa la kawaida la kibinadamu."
+          "sw": "Mfalme Asa alianza kwa kumtegemea Mungu dhidi ya maadui, lakini alipoanza kufanikiwa akamsahau Mungu, jambo ambalo ni kosa la kawaida la kibinadamu.",
+          "it": "Il re Asa che si affida a Dio davanti all'impossibile è ammirevole, ma smettere di farlo appena le cose vanno bene è un errore umano tanto comune quanto doloroso."
         }
     },
     "2026-07-21": {
@@ -7975,7 +8587,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "歴代志下 16:1-14",
@@ -7987,7 +8600,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "2 Chronicles 16:1-14",
           "tl": "2 Chronicles 16:1-14",
           "th": "2 Chronicles 16:1-14",
-          "sw": "2 Chronicles 16:1-14"
+          "sw": "2 Chronicles 16:1-14",
+          "it": "2 Cronache 16:1-14"
         },
         comment: {
           "ja": "神様を頼りにしていたアサ王が晩年になって急に外交と賄賂に頼りだす姿、成功体験に甘えて初心を忘れる人間の脆さを突きつけられている気分だ。",
@@ -7999,7 +8613,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Vua A-sa từ bỏ niềm tin vào Chúa để cậy nhờ vào hối lộ và ngoại giao lúc về già là minh chứng rõ nhất cho việc con người dễ đánh mất bản chất khi áp lực ập đến.",
           "tl": "Ang paglipat ni Haring Asa mula sa pagtitiwala sa Diyos patungo sa paggamit ng suhol at diplomasya ay isang masakit na paalala kung gaano kadaling makalimot sa prinsipyo kapag tayo ay tumatanda.",
           "th": "กษัตริย์อาสาที่เคยพึ่งพาพระเจ้ากลับหันไปพึ่งพาการติดสินบนในบั้นปลายชีวิต เป็นภาพสะท้อนที่ชัดเจนว่าเมื่อเราประสบความสำเร็จเรามักจะลืมว่าอะไรคือสิ่งสำคัญที่สุด",
-          "sw": "Mfalme Asa kuacha kumtegemea Mungu na kuanza kutegemea rushwa na diplomasia katika uzee wake ni ukumbusho mchungu jinsi ilivyo rahisi kupoteza mwelekeo tunapozeeka."
+          "sw": "Mfalme Asa kuacha kumtegemea Mungu na kuanza kutegemea rushwa na diplomasia katika uzee wake ni ukumbusho mchungu jinsi ilivyo rahisi kupoteza mwelekeo tunapozeeka.",
+          "it": "Vedere il re Asa passare dal confidare in Dio a ricorrere ai favori negli ultimi anni di vita è un promemoria scomodo di quanto sia facile perdere i propri principi con il tempo."
         }
     },
     "2026-07-22": {
@@ -8014,7 +8629,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "歴代志下 17:1-19",
@@ -8026,7 +8642,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "2 Chronicles 17:1-19",
           "tl": "2 Chronicles 17:1-19",
           "th": "2 Chronicles 17:1-19",
-          "sw": "2 Chronicles 17:1-19"
+          "sw": "2 Chronicles 17:1-19",
+          "it": "2 Cronache 17:1-19"
         },
         comment: {
           "ja": "ヨシャパテが律法の本を持って国中を回らせたのは、現代で言えばインフルエンサーが正しい情報を拡散してバズらせるようなものだが、その影響力は桁違いだ。",
@@ -8038,7 +8655,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Giô-sa-phát cử người mang sách luật đi khắp nơi dạy dỗ dân chúng chẳng khác nào một chiến dịch lan tỏa giá trị cốt lõi, thứ mà thời nay hiếm thấy.",
           "tl": "Ang pagpapadala ni Josaphat ng mga guro sa buong lupain para ituro ang batas ay parang sinaunang bersyon ng isang viral campaign para sa katotohanan, at kailangan natin ang ganyang klaseng impluwensya ngayon.",
           "th": "การที่เยโฮชาฟัทส่งคนไปสอนธรรมบัญญัติทั่วแผ่นดินก็ไม่ต่างจากการทำแคมเปญสร้างสรรค์สังคมให้เป็นกระแส และผลลัพธ์ที่ได้นั้นทรงพลังยิ่งกว่าการตลาดสมัยไหนๆ",
-          "sw": "Yehoshafati kutuma walimu na kitabu cha sheria nchi nzima ni kama kampeni ya kisasa ya kusambaza ukweli kwa ufanisi, na kwa kweli tungependa kuona mambo kama hayo yakitokea leo."
+          "sw": "Yehoshafati kutuma walimu na kitabu cha sheria nchi nzima ni kama kampeni ya kisasa ya kusambaza ukweli kwa ufanisi, na kwa kweli tungependa kuona mambo kama hayo yakitokea leo.",
+          "it": "Giosafat che manda maestri a insegnare la legge in tutto il paese è fondamentalmente la versione antica di una campagna virale di valori, e onore al merito per aver funzionato."
         }
     },
     "2026-07-23": {
@@ -8053,7 +8671,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "歴代志下 18:1-34",
@@ -8065,7 +8684,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "2 Chronicles 18:1-34",
           "tl": "2 Chronicles 18:1-34",
           "th": "2 Chronicles 18:1-34",
-          "sw": "2 Chronicles 18:1-34"
+          "sw": "2 Chronicles 18:1-34",
+          "it": "2 Cronache 18:1-34"
         },
         comment: {
           "ja": "変装して戦場に紛れ込めばバレないと信じたアハブの甘い期待と、結局流れ矢に当たるという人生の皮肉、もはやコントを見ている気分になる。",
@@ -8077,7 +8697,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Vua A-háp nghĩ rằng cải trang là có thể an toàn trong trận chiến, để rồi bị một mũi tên lạc kết liễu, một bài học đắt giá về việc đừng bao giờ cố đánh lừa định mệnh.",
           "tl": "Ang akala ni Ahab na ligtas siya sa labanan dahil lang sa pagpapalit ng damit, hanggang sa tamaan siya ng isang ligaw na palaso, ay patunay na hindi mo matatakasan ang tadhana.",
           "th": "อาหับคิดว่าแค่ปลอมตัวไปรบก็คงรอด แต่สุดท้ายก็มาตายเพราะธนูหลงทาง เป็นบทเรียนที่บอกว่าเราหนีความจริงไม่พ้นจริงๆ",
-          "sw": "Ahab kudhani kuwa kujificha kutamfanya awe salama vitani, kisha kupigwa na mshale wa bahati mbaya, ni ukumbusho kuwa huwezi kukimbia hatima yako."
+          "sw": "Ahab kudhani kuwa kujificha kutamfanya awe salama vitani, kisha kupigwa na mshale wa bahati mbaya, ni ukumbusho kuwa huwezi kukimbia hatima yako.",
+          "it": "Acab che pensa di passare inosservato in battaglia con un travestimento da quattro soldi, solo per beccarsi una freccia persa, è la prova che non puoi sfuggire al tuo destino."
         }
     },
     "2026-07-24": {
@@ -8092,7 +8713,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "歴代志下 20:1-37",
@@ -8104,7 +8726,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "2 Chronicles 20:1-37",
           "tl": "2 Chronicles 20:1-37",
           "th": "2 Chronicles 20:1-37",
-          "sw": "2 Chronicles 20:1-37"
+          "sw": "2 Chronicles 20:1-37",
+          "it": "2 Cronache 20:1-37"
         },
         comment: {
           "ja": "敵の大軍を前にして武器ではなく聖歌隊を先頭に立たせるヨシャパトの作戦、常識外れすぎて逆に最強のメンタルケアに見えてくる。",
@@ -8116,7 +8739,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Giô-sa-phát cử đội hát thánh ca lên hàng đầu thay vì quân đội là một chiến thuật kỳ lạ đến mức khiến người ta phải nể phục sự liều lĩnh đầy đức tin của ông.",
           "tl": "Ang pagpapadala ni Jehosapat sa koro sa harapan ng labanan imbes na sa mga sundalo ay isang kakaibang diskarte na nagpapakita na minsan, pananampalataya lang ang tanging armas na kailangan.",
           "th": "เยโฮชาฟัทส่งนักร้องประสานเสียงไปหน้ากองทัพแทนที่จะเป็นทหาร เป็นกลยุทธ์ที่แปลกประหลาดจนน่าทึ่งว่าความเชื่อมั่นมันทรงพลังได้ขนาดนี้เลยหรือ",
-          "sw": "Yehoshafati kutuma kwaya mstari wa mbele badala ya jeshi ni mkakati wa ajabu ambao unaonyesha kuwa wakati mwingine imani ndiyo silaha pekee inayohitajika."
+          "sw": "Yehoshafati kutuma kwaya mstari wa mbele badala ya jeshi ni mkakati wa ajabu ambao unaonyesha kuwa wakati mwingine imani ndiyo silaha pekee inayohitajika.",
+          "it": "Mandare un coro in prima linea invece dell'esercito è quel tipo di mossa folle e audace che ha senso solo quando ormai non hai più nulla da perdere."
         }
     },
     "2026-07-25": {
@@ -8131,7 +8755,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "歴代志下 26:1-23",
@@ -8143,7 +8768,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "2 Chronicles 26:1-23",
           "tl": "2 Chronicles 26:1-23",
           "th": "2 Chronicles 26:1-23",
-          "sw": "2 Chronicles 26:1-23"
+          "sw": "2 Chronicles 26:1-23",
+          "it": "2 Cronache 26:1-23"
         },
         comment: {
           "ja": "成功して調子に乗った途端に分をわきまえられなくなるウジヤ王、どんなに有能でも最後は謙虚さという装備を外してはいけないという教訓。",
@@ -8155,7 +8781,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Vua U-si-gia thành công mọi việc rồi lại tự mãn đến mức đánh mất mình, một bài học đắt giá rằng giữ được sự khiêm nhường còn khó hơn nhiều so với việc giành chiến thắng.",
           "tl": "Si Haring Uzias na nagtagumpay sa lahat pero kinalaunan ay naging mayabang ay isang paalala na mas mahirap manatiling mapagkumbaba kaysa sa magtagumpay.",
           "th": "กษัตริย์อุสซียาห์ที่ทำทุกอย่างสำเร็จจนเหลิงไปกับอำนาจ เตือนให้เรารู้ว่าความสำเร็จที่ปราศจากความถ่อมตนนั้นน่ากลัวแค่ไหน",
-          "sw": "Mfalme Uzia kufanikiwa katika kila kitu kisha kulewa sifa ni ukumbusho kwamba sehemu ngumu zaidi ya kushinda ni kubaki mnyenyekevu."
+          "sw": "Mfalme Uzia kufanikiwa katika kila kitu kisha kulewa sifa ni ukumbusho kwamba sehemu ngumu zaidi ya kushinda ni kubaki mnyenyekevu.",
+          "it": "Il re Ozzia che si fa dare alla testa dal successo fino a perdere la testa è la dimostrazione che la parte più difficile di una vittoria è rimanere con i piedi per terra."
         }
     },
     "2026-07-26": {
@@ -8170,7 +8797,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "歴代志下 30:1-27",
@@ -8182,7 +8810,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "2 Chronicles 30:1-27",
           "tl": "2 Chronicles 30:1-27",
           "th": "2 Chronicles 30:1-27",
-          "sw": "2 Chronicles 30:1-27"
+          "sw": "2 Chronicles 30:1-27",
+          "it": "2 Cronache 30:1-27"
         },
         comment: {
           "ja": "予定より遅れても、形式にこだわらずにみんなで集まることを優先したヒゼキヤの柔軟さ、完璧主義より大切なことがあると教えてくれる。",
@@ -8194,7 +8823,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Ê-xê-chia ưu tiên sự gắn kết thay vì cứng nhắc theo lịch trình cho thấy đôi khi việc làm muộn vẫn tốt hơn là không làm gì cả.",
           "tl": "Ang pag-una ni Hezekias sa pagsasama kaysa sa mahigpit na iskedyul ay nagtuturo sa atin na minsan, mas mahalaga ang intensyon kaysa sa pagiging perpekto.",
           "th": "กษัตริย์เฮเซคียาห์ที่ยอมยืดหยุ่นเรื่องเวลาเพื่อให้ทุกคนได้มารวมตัวกัน สอนให้รู้ว่าความรักและความสามัคคีสำคัญกว่าการทำตามกฎเป๊ะๆ",
-          "sw": "Hezekia kuweka umoja mbele badala ya ratiba ngumu inatufundisha kuwa wakati mwingine kufanya mambo kwa kuchelewa ni bora kuliko kutoyafanya kabisa."
+          "sw": "Hezekia kuweka umoja mbele badala ya ratiba ngumu inatufundisha kuwa wakati mwingine kufanya mambo kwa kuchelewa ni bora kuliko kutoyafanya kabisa.",
+          "it": "Ezechia che mette la comunità davanti alla rigida tabella di marcia ci ricorda che a volte fare le cose con calma è comunque meglio che non farle affatto."
         }
     },
     "2026-07-27": {
@@ -8209,7 +8839,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "エズラ記 1:1-11",
@@ -8221,7 +8852,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Ezra 1:1-11",
           "tl": "Ezra 1:1-11",
           "th": "Ezra 1:1-11",
-          "sw": "Ezra 1:1-11"
+          "sw": "Ezra 1:1-11",
+          "it": "Esdra 1:1-11"
         },
         comment: {
           "ja": "異国の王様が突然神様の感動で帰還を命じるなんて、人生の急展開すぎてついていくのが大変そう。",
@@ -8233,7 +8865,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Được một vị vua ngoại bang đột ngột ra lệnh cho phép trở về nhờ sự cảm động từ Chúa là một cú bẻ lái cuộc đời không ai ngờ tới.",
           "tl": "Ang biglaang pag-utos ng isang dayuhang hari na pauwiin kayo dahil sa utos ng Diyos ay isang plot twist na hindi mo mahuhulaan.",
           "th": "จู่ๆ กษัตริย์ต่างแดนก็ได้รับดลใจให้ปล่อยตัวกลับบ้าน นี่มันคือจุดเปลี่ยนชีวิตแบบที่ไม่มีใครคาดคิดมาก่อนเลยจริงๆ",
-          "sw": "Mfalme wa kigeni kuamua ghafla kukuacha urudi nyumbani kwa sababu ya msukumo wa Mungu ni jambo la kushangaza sana maishani."
+          "sw": "Mfalme wa kigeni kuamua ghafla kukuacha urudi nyumbani kwa sababu ya msukumo wa Mungu ni jambo la kushangaza sana maishani.",
+          "it": "Un re straniero che riceve una spinta divina per rispedire tutti a casa è il colpo di scena che ribalta completamente ogni piano."
         }
     },
     "2026-07-28": {
@@ -8248,7 +8881,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "エズラ記 4:1-24",
@@ -8260,7 +8894,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Ezra 4:1-24",
           "tl": "Ezra 4:1-24",
           "th": "Ezra 4:1-24",
-          "sw": "Ezra 4:1-24"
+          "sw": "Ezra 4:1-24",
+          "it": "Esdra 4:1-24"
         },
         comment: {
           "ja": "手伝うふりをして実は邪魔をする、という現代の職場で一番遭遇したくないタイプの人間関係がエズラ記にもあったとは。",
@@ -8272,7 +8907,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Hóa ra thời của Ê-xơ-ra đã có những người giả vờ giúp đỡ nhưng thực chất là phá hoại, đúng là kiểu người mà ai cũng từng gặp trong đời.",
           "tl": "Ang makita na noon pa man ay may mga taong nagkukunwaring tumutulong pero nanggugulo lang ay patunay na hindi nagbabago ang ugali ng tao.",
           "th": "การที่ต้องรับมือกับพวกแสร้งทำเป็นหวังดีแต่จริงๆ แล้วจ้องจะขัดขวางตั้งแต่ยุคเอสรานี่มันเป็นปัญหาคลาสสิกจริงๆ",
-          "sw": "Kugundua kuwa hata wakati wa Ezra watu walilazimika kukabiliana na watu wanaojifanya kusaidia huku wakihujumu kazi ni jambo linaloeleweka sana."
+          "sw": "Kugundua kuwa hata wakati wa Ezra watu walilazimika kukabiliana na watu wanaojifanya kusaidia huku wakihujumu kazi ni jambo linaloeleweka sana.",
+          "it": "Scoprire che già gli antichi israeliti dovevano vedersela con falsi alleati pronti a sabotare tutto è fin troppo familiare."
         }
     },
     "2026-07-29": {
@@ -8287,7 +8923,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "エズラ記 6:1-22",
@@ -8299,7 +8936,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Ezra 6:1-22",
           "tl": "Ezra 6:1-22",
           "th": "Ezra 6:1-22",
-          "sw": "Ezra 6:1-22"
+          "sw": "Ezra 6:1-22",
+          "it": "Esdra 6:1-22"
         },
         comment: {
           "ja": "何年も放置していた神殿建設が、王様の一言で急に予算が降りて再開する様子は、まさに締め切り直前の現場のドタバタそのもの。",
@@ -8311,7 +8949,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc xây dựng đền thờ bị trì hoãn nhiều năm rồi đột ngột được tái khởi động ngay khi nhà vua ra lệnh giống hệt như cảnh chạy deadline vào phút cuối.",
           "tl": "Ang pagpapatuloy ng konstruksyon ng templo matapos ang ilang taong pagkakaantala dahil lang sa utos ng hari ay parang pagmamadali sa deadline ng isang proyekto.",
           "th": "การที่งานสร้างพระวิหารที่ถูกทิ้งร้างมานานกลับมาคึกคักทันทีเมื่อกษัตริย์สั่งให้ทำต่อนั้น ช่างเหมือนกับการเร่งงานให้เสร็จก่อนเดดไลน์ไม่มีผิด",
-          "sw": "Ujenzi wa hekalu uliokuwa umesimama kwa miaka mingi kuanza tena kwa amri ya mfalme ni mfano kamili wa jinsi tunavyosubiri mpaka dakika ya mwisho ili kumaliza mambo."
+          "sw": "Ujenzi wa hekalu uliokuwa umesimama kwa miaka mingi kuanza tena kwa amri ya mfalme ni mfano kamili wa jinsi tunavyosubiri mpaka dakika ya mwisho ili kumaliza mambo.",
+          "it": "Il tempio lasciato in sospeso per anni che riceve fondi all'improvviso solo perché il capo lo ordina è il classico progetto salvato dalla scadenza imminente."
         }
     },
     "2026-07-30": {
@@ -8326,7 +8965,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "ネヘミヤ記 2:1-20",
@@ -8338,7 +8978,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Nehemiah 2:1-20",
           "tl": "Nehemiah 2:1-20",
           "th": "Nehemiah 2:1-20",
-          "sw": "Nehemiah 2:1-20"
+          "sw": "Nehemiah 2:1-20",
+          "it": "Neemia 2:1-20"
         },
         comment: {
           "ja": "王の前で緊張して顔色が悪いことを隠しきれないネヘミヤ、どんなに準備しても結局最後は素の自分が漏れ出てしまう人間味が愛おしい。",
@@ -8350,7 +8991,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Nê-hê-mi không thể giấu nổi vẻ lo lắng trước mặt nhà vua nhắc nhở chúng ta rằng dù chuẩn bị kỹ đến đâu, gương mặt vẫn luôn phản bội lại suy nghĩ thật của mình.",
           "tl": "Ang hindi pagtatago ni Nehemias sa kanyang kaba sa harap ng hari ay nagpapaalala na kahit gaano tayo maghanda, palaging mababasa sa ating mukha ang tunay nating nararamdaman.",
           "th": "การที่เนหะมีย์ปิดบังความกังวลต่อหน้ากษัตริย์ไม่ได้เลย ทำให้รู้ว่าไม่ว่าเราจะเตรียมตัวมาดีแค่ไหน สีหน้าก็มักจะฟ้องความรู้สึกข้างในอยู่ดี",
-          "sw": "Nehemia kushindwa kuficha wasiwasi wake mbele ya mfalme ni ukumbusho kwamba hata uwe umejiandaa vipi, uso wako utaonyesha kile kilichomo moyoni mwako."
+          "sw": "Nehemia kushindwa kuficha wasiwasi wake mbele ya mfalme ni ukumbusho kwamba hata uwe umejiandaa vipi, uso wako utaonyesha kile kilichomo moyoni mwako.",
+          "it": "Neemia che non riesce a nascondere l'ansia davanti al re dimostra che, per quanto ti impegni, la faccia ti tradisce sempre."
         }
     },
     "2026-07-31": {
@@ -8365,7 +9007,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "ネヘミヤ記 4:7-23",
@@ -8377,7 +9020,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Nehemiah 4:7-23",
           "tl": "Nehemiah 4:7-23",
           "th": "Nehemiah 4:7-23",
-          "sw": "Nehemiah 4:7-23"
+          "sw": "Nehemiah 4:7-23",
+          "it": "Neemia 4:7-23"
         },
         comment: {
           "ja": "片手に武器を持ちもう片手でレンガを積むネヘミヤの姿は、締め切りに追われながら来るメールを捌く現代のマルチタスクの極み。",
@@ -8389,7 +9033,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Nê-hê-mi vừa xây tường vừa cầm vũ khí chính là hình ảnh đỉnh cao của việc đa nhiệm khi bị áp lực công việc bủa vây.",
           "tl": "Ang pagtatayo ni Nehemias ng pader habang may hawak na armas ay ang biblikal na bersyon ng pagtatrabaho sa gitna ng matinding pressure.",
           "th": "เนฮามีย์ที่สร้างกำแพงไปถืออาวุธไป คือภาพสะท้อนของการทำงานแบบมัลติทาสก์ในยุคปัจจุบันที่ต้องรับมือกับเดดไลน์ไปพร้อมกับป้องกันตัว",
-          "sw": "Nehemia kujenga ukuta kwa mkono mmoja na kushika silaha kwa mwingine ni mfano halisi wa kufanya kazi nyingi kwa wakati mmoja chini ya shinikizo."
+          "sw": "Nehemia kujenga ukuta kwa mkono mmoja na kushika silaha kwa mwingine ni mfano halisi wa kufanya kazi nyingi kwa wakati mmoja chini ya shinikizo.",
+          "it": "Neemia che costruisce un muro con una mano e tiene un'arma con l'altra è la versione biblica del multitasking sotto scadenza."
         }
     },
     "2026-08-01": {
@@ -8404,7 +9049,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "ネヘミヤ記 6:1-19",
@@ -8416,7 +9062,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Nehemiah 6:1-19",
           "tl": "Nehemiah 6:1-19",
           "th": "Nehemiah 6:1-19",
-          "sw": "Nehemiah 6:1-19"
+          "sw": "Nehemiah 6:1-19",
+          "it": "Neemia 6:1-19"
         },
         comment: {
           "ja": "忙しいからと面会を断り続けるネヘミヤは、面倒な会議の誘いを丁重に断り続ける現代の社畜の鏡である。",
@@ -8428,7 +9075,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Nê-hê-mi liên tục từ chối gặp mặt vì bận rộn là tấm gương sáng cho bất kỳ ai muốn né tránh những cuộc họp vô bổ.",
           "tl": "Ang paulit-ulit na pagtanggi ni Nehemias sa mga meeting dahil siya ay abala ay huwaran para sa sinumang umiiwas sa mga hindi kailangang tawag sa opisina.",
           "th": "เนฮามีย์ที่ปฏิเสธการนัดพบซ้ำแล้วซ้ำเล่าเพราะยุ่งอยู่ เป็นต้นแบบที่ดีที่สุดสำหรับคนที่พยายามหลีกเลี่ยงการประชุมที่ไม่จำเป็นในที่ทำงาน",
-          "sw": "Nehemia kukataa mikutano mara kwa mara kwa sababu ya shughuli nyingi ni mfano bora kwa yeyote anayejaribu kukwepa vikao visivyo vya lazima."
+          "sw": "Nehemia kukataa mikutano mara kwa mara kwa sababu ya shughuli nyingi ni mfano bora kwa yeyote anayejaribu kukwepa vikao visivyo vya lazima.",
+          "it": "Neemia che rifiuta continuamente le riunioni perché troppo occupato è il modello ideale per chiunque voglia evitare incontri inutili."
         }
     },
     "2026-08-02": {
@@ -8443,7 +9091,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "ネヘミヤ記 8:1-18",
@@ -8455,7 +9104,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Nehemiah 8:1-18",
           "tl": "Nehemiah 8:1-18",
           "th": "Nehemiah 8:1-18",
-          "sw": "Nehemiah 8:1-18"
+          "sw": "Nehemiah 8:1-18",
+          "it": "Neemia 8:1-18"
         },
         comment: {
           "ja": "朝から晩まで立ちっぱなしで律法を読み上げるエズラに、お腹が空いて集中力が切れてくる民の姿は、長すぎる会議に耐える現代の私たちと何ら変わりない。",
@@ -8467,7 +9117,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Đám đông cố gắng tập trung nghe đọc luật pháp từ sáng đến tối cho thấy sự kiên nhẫn có giới hạn, y hệt chúng ta trong những cuộc họp kéo dài vô tận.",
           "tl": "Ang mga taong hirap nang makinig sa pagbasa ng batas mula umaga hanggang gabi ay parang tayo lang din sa loob ng isang napakahabang meeting.",
           "th": "ผู้คนที่พยายามตั้งใจฟังการอ่านธรรมบัญญัติจากเช้าจรดเย็นช่างเหมือนกับเราในที่ประชุมที่ยาวนานจนแทบจะหลับคาเก้าอี้",
-          "sw": "Watu waliojitahidi kusikiliza kusomwa kwa sheria kuanzia asubuhi hadi jioni ni kama sisi tunavyohisi katika mikutano mirefu isiyoisha."
+          "sw": "Watu waliojitahidi kusikiliza kusomwa kwa sheria kuanzia asubuhi hadi jioni ni kama sisi tunavyohisi katika mikutano mirefu isiyoisha.",
+          "it": "La folla che perde la concentrazione mentre Esdra legge la legge dall'alba al tramonto è chiunque sia mai rimasto bloccato in una riunione infinita."
         }
     },
     "2026-08-03": {
@@ -8482,7 +9133,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "エステル記 1:1-22",
@@ -8494,7 +9146,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Esther 1:1-22",
           "tl": "Esther 1:1-22",
           "th": "Esther 1:1-22",
-          "sw": "Esther 1:1-22"
+          "sw": "Esther 1:1-22",
+          "it": "Ester 1:1-22"
         },
         comment: {
           "ja": "王様が酔った勢いで妻に無茶ぶりをして、断られたらプライドを傷つけられたと大騒ぎする姿、現代のSNSで見る炎上騒動と本質が変わらなくて笑ってしまう。",
@@ -8506,7 +9159,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Ông vua say xỉn đưa ra yêu cầu vô lý rồi làm ầm ĩ khi bị từ chối chính là hình mẫu kinh điển của sự sĩ diện hão huyền.",
           "tl": "Ang haring lasing na nag-utos ng kung ano-ano at nag-wala nang tumanggi ang asawa ay isang klasikong halimbawa ng marupok na ego.",
           "th": "ราชาที่เมามายแล้วสั่งให้มเหสีทำเรื่องไร้สาระ พอถูกปฏิเสธก็โกรธจนเป็นเรื่องใหญ่ ช่างเป็นตัวอย่างของอีโก้ที่เปราะบางเกินจะรับไหว",
-          "sw": "Mfalme mlevi anayetoa amri za kipumbavu na kuanzisha fujo baada ya kukataliwa na mkewe ni mfano halisi wa mtu mwenye kiburi na ego dhaifu."
+          "sw": "Mfalme mlevi anayetoa amri za kipumbavu na kuanzisha fujo baada ya kukataliwa na mkewe ni mfano halisi wa mtu mwenye kiburi na ego dhaifu.",
+          "it": "Un re ubriaco che fa richieste assurde e fa scenate quando viene rifiutato è la prova che certi ego fragili non cambiano mai."
         }
     },
     "2026-08-04": {
@@ -8521,7 +9175,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "エステル記 2:1-23",
@@ -8533,7 +9188,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Esther 2:1-23",
           "tl": "Esther 2:1-23",
           "th": "Esther 2:1-23",
-          "sw": "Esther 2:1-23"
+          "sw": "Esther 2:1-23",
+          "it": "Ester 2:1-23"
         },
         comment: {
           "ja": "王妃選びのオーディションに強制参加させられるエステル、いざという時の度胸がすさまじすぎて推せる。",
@@ -8545,7 +9201,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Ê-xơ-tê bị ép tham gia cuộc thi tuyển hoàng hậu mà vẫn giữ được bản lĩnh cho thấy cô ấy thực sự là một người phụ nữ phi thường.",
           "tl": "Si Ester na sapilitang isinama sa patimpalak ng kagandahan pero nagwagi pa rin ay patunay na kahit sa gulo, may plano ang tadhana.",
           "th": "เอสเธอร์ถูกบังคับให้เข้าประกวดนางงามแต่ดันชนะจนได้ตำแหน่งราชินี เป็นบทพิสูจน์ว่าชีวิตมักพาเราไปในที่ที่ไม่คาดคิดเสมอ",
-          "sw": "Esta kulazimishwa kushiriki shindano la urembo na hatimaye kuwa malkia ni ushahidi kwamba wakati mwingine maisha hutupeleka pasipokutarajiwa."
+          "sw": "Esta kulazimishwa kushiriki shindano la urembo na hatimaye kuwa malkia ni ushahidi kwamba wakati mwingine maisha hutupeleka pasipokutarajiwa.",
+          "it": "Ester trascinata in un concorso reale e capace di cavarsela con un coraggio pazzesco è un vero mito."
         }
     },
     "2026-08-05": {
@@ -8560,7 +9217,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "エステル記 3:1-15",
@@ -8572,7 +9230,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Esther 3:1-15",
           "tl": "Esther 3:1-15",
           "th": "Esther 3:1-15",
-          "sw": "Esther 3:1-15"
+          "sw": "Esther 3:1-15",
+          "it": "Ester 3:1-15"
         },
         comment: {
           "ja": "モルデカイに挨拶されないだけで国中の民族を滅ぼそうとするハマン、プライドの高さがもはや一周回って滑稽だ。",
@@ -8584,7 +9243,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Ha-man đòi tiêu diệt cả một dân tộc chỉ vì một người không cúi chào cho thấy cái tôi quá lớn có thể khiến con người trở nên mù quáng đến mức nào.",
           "tl": "Ang magalit nang sobra dahil lang hindi pinagbigyan sa pagyukod at gustong ubusin ang isang lahi ay patunay na ang ego ni Haman ay napakababaw.",
           "th": "ฮามานโกรธถึงขั้นจะฆ่าล้างเผ่าพันธุ์คนทั้งชาติเพียงเพราะคนคนเดียวไม่ก้มหัวให้ เป็นตัวอย่างของคนที่เอาอีโก้เป็นใหญ่จนน่าสมเพช",
-          "sw": "Hamani kutaka kuangamiza watu wote kwa sababu tu mtu mmoja hakumwinamia ni kielelezo kamili cha mtu mwenye kiburi na ego iliyopitiliza."
+          "sw": "Hamani kutaka kuangamiza watu wote kwa sababu tu mtu mmoja hakumwinamia ni kielelezo kamili cha mtu mwenye kiburi na ego iliyopitiliza.",
+          "it": "Aman che vuole sterminare un popolo intero solo perché uno non si è inchinato è il livello massimo di permalosità."
         }
     },
     "2026-08-06": {
@@ -8599,7 +9259,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "エステル記 4:9-17",
@@ -8611,7 +9272,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Esther 4:9-17",
           "tl": "Esther 4:9-17",
           "th": "Esther 4:9-17",
-          "sw": "Esther 4:9-17"
+          "sw": "Esther 4:9-17",
+          "it": "Ester 4:9-17"
         },
         comment: {
           "ja": "死を覚悟して王の前に立つエステルの勇気は、ここぞという時に言い訳を探す自分にはあまりに眩しすぎる。",
@@ -8623,7 +9285,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Sự dũng cảm của Ê-xơ-tê khi đối mặt với cái chết khiến tôi tự nhìn lại bản thân, người luôn tìm lý do thoái thác khi cần thiết.",
           "tl": "Ang tapang ni Ester na harapin ang kamatayan ay nakakahiyang ikumpara sa sarili kong ugali na laging naghahanap ng palusot.",
           "th": "ความกล้าของเอสเธอร์ที่ยอมเสี่ยงชีวิตทำให้เห็นชัดเลยว่าตัวเรามักหาข้ออ้างหลีกเลี่ยงเสมอในเวลาที่สำคัญจริงๆ",
-          "sw": "Ujasiri wa Esta wa kuhatarisha maisha yake unanikumbusha jinsi ninavyotafuta visingizio kila wakati ninapopaswa kuchukua hatua."
+          "sw": "Ujasiri wa Esta wa kuhatarisha maisha yake unanikumbusha jinsi ninavyotafuta visingizio kila wakati ninapopaswa kuchukua hatua.",
+          "it": "Il coraggio di Ester di rischiare tutto rende la mia solita abitudine di cercare scuse a tutti i costi davvero patetica."
         }
     },
     "2026-08-07": {
@@ -8638,7 +9301,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "エステル記 6:1-14",
@@ -8650,7 +9314,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Esther 6:1-14",
           "tl": "Esther 6:1-14",
           "th": "Esther 6:1-14",
-          "sw": "Esther 6:1-14"
+          "sw": "Esther 6:1-14",
+          "it": "Ester 6:1-14"
         },
         comment: {
           "ja": "自分を陥れたはずの敵を盛大に称える羽目になったハマン、自尊心が完全に崩壊する様は皮肉すぎて笑えない。",
@@ -8662,7 +9327,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Haman bị buộc phải tôn vinh kẻ thù của mình là một cú tát thực tế đau đớn về cái giá của sự kiêu ngạo.",
           "tl": "Ang mapilitang parangalan ang taong gusto mong ipapatay ay isang uri ng karma na talagang nakakahiya.",
           "th": "การที่ฮามานต้องออกมาป่าวประกาศเกียรติให้ศัตรูที่ตัวเองเกลียดชัง เป็นบทเรียนเรื่องความหยิ่งยโสที่เจ็บแสบที่สุด",
-          "sw": "Haman kulazimishwa kumheshimisha adui yake ni funzo kubwa kuhusu jinsi kiburi kinavyoweza kugeuka kuwa fedheha kuu."
+          "sw": "Haman kulazimishwa kumheshimisha adui yake ni funzo kubwa kuhusu jinsi kiburi kinavyoweza kugeuka kuwa fedheha kuu.",
+          "it": "Costringere Aman a sfilare per la città per onorare il suo peggior nemico è quel tipo di ironia della sorte che fa male anche solo da guardare."
         }
     },
     "2026-08-08": {
@@ -8677,7 +9343,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "エステル記 8:1-17",
@@ -8689,7 +9356,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Esther 8:1-17",
           "tl": "Esther 8:1-17",
           "th": "Esther 8:1-17",
-          "sw": "Esther 8:1-17"
+          "sw": "Esther 8:1-17",
+          "it": "Ester 8:1-17"
         },
         comment: {
           "ja": "王の印章リングをもらって即座に権力を行使するモルデカイ、出世した途端に服が変わる同僚を見ているような複雑な気持ちになる。",
@@ -8701,7 +9369,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Nhìn Mạc-đô-chê nhận chiếc nhẫn của vua và lập tức phô trương quyền lực, cảm giác thật giống như khi thấy đồng nghiệp đổi thái độ ngay sau khi được thăng chức.",
           "tl": "Ang makitang hawak na ni Mardokeo ang singsing ng hari at agad na nagpapalakad ng kapangyarihan ay parang pagtingin sa katrabahong nagbago ang ugali nang ma-promote.",
           "th": "การเห็นมอร์เดคัยได้รับแหวนของกษัตริย์แล้วใช้อำนาจทันที ทำให้รู้สึกเหมือนเห็นเพื่อนร่วมงานเปลี่ยนท่าทีไปทันทีที่ได้เลื่อนตำแหน่ง",
-          "sw": "Kuona Mordekai akipokea pete ya mfalme na kuanza kuitumia mamlaka yake mara moja ni kama kumtazama mfanyakazi mwenzako anayebadilika ghafla baada ya kupandishwa cheo."
+          "sw": "Kuona Mordekai akipokea pete ya mfalme na kuanza kuitumia mamlaka yake mara moja ni kama kumtazama mfanyakazi mwenzako anayebadilika ghafla baada ya kupandishwa cheo.",
+          "it": "Vedere Mardocheo ricevere l'anello e iniziare subito a comandare tutti mi ricorda quel collega che cambia atteggiamento appena riceve una promozione."
         }
     },
     "2026-08-09": {
@@ -8716,7 +9385,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "エステル記 9:20-32",
@@ -8728,7 +9398,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Esther 9:20-32",
           "tl": "Esther 9:20-32",
           "th": "Esther 9:20-32",
-          "sw": "Esther 9:20-32"
+          "sw": "Esther 9:20-32",
+          "it": "Ester 9:20-32"
         },
         comment: {
           "ja": "自分たちの勝利を祝うために記念日を作って毎年盛り上がるエステル記の結末、人間、結局イベントと美味しいものが大好きなのは昔も今も変わらない。",
@@ -8740,7 +9411,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc lập ra một ngày lễ quốc gia chỉ để ăn mừng chiến thắng cá nhân là một hành động rất con người; xét cho cùng, chúng ta chưa bao giờ thay đổi trong việc thích tiệc tùng và đồ ăn ngon.",
           "tl": "Ang paggawa ng holiday para lang ipagdiwang ang isang tagumpay ay tunay na makatao; hindi talaga nagbabago ang hilig natin sa party at masarap na pagkain.",
           "th": "การตั้งวันหยุดเพื่อฉลองชัยชนะของตัวเองเป็นเรื่องที่เข้าถึงอารมณ์มนุษย์สุดๆ เพราะไม่ว่าจะยุคไหนเราก็ยังชอบงานปาร์ตี้กับของอร่อยเหมือนเดิม",
-          "sw": "Kuanzisha sikukuu ya kitaifa ili kusherehekea ushindi ni tabia ya kibinadamu sana; hatujabadilika kamwe linapokuja suala la kupenda sherehe na chakula kizuri."
+          "sw": "Kuanzisha sikukuu ya kitaifa ili kusherehekea ushindi ni tabia ya kibinadamu sana; hatujabadilika kamwe linapokuja suala la kupenda sherehe na chakula kizuri.",
+          "it": "Inventarsi una festa nazionale solo per celebrare una vittoria personale è una mossa geniale; alla fine, un buon banchetto mette sempre tutti d'accordo."
         }
     },
     "2026-08-10": {
@@ -8755,7 +9427,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "ヨブ記 1:1-22",
@@ -8767,7 +9440,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Job 1:1-22",
           "tl": "Job 1:1-22",
           "th": "Job 1:1-22",
-          "sw": "Job 1:1-22"
+          "sw": "Job 1:1-22",
+          "it": "Giobbe 1:1-22"
         },
         comment: {
           "ja": "完璧な人生を送っていたはずのヨブが、ある日突然どん底に突き落とされる展開、人生の理不尽さを凝縮しすぎていて震える。",
@@ -8779,7 +9453,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Gióp mất tất cả chỉ trong một ngày là lời nhắc nhở phũ phàng về sự bấp bênh của cuộc đời.",
           "tl": "Ang makitang mawala ang lahat kay Job sa isang iglap ay isang matinding paalala kung gaano kabilis magbago ang buhay.",
           "th": "การที่โยบสูญเสียทุกอย่างไปในพริบตาเป็นเครื่องเตือนใจที่เจ็บปวดว่าชีวิตนั้นไม่แน่นอนเพียงใด",
-          "sw": "Kuona Ayubu akipoteza kila kitu kwa muda mfupi ni ukumbusho mkali jinsi maisha yanavyoweza kubadilika ghafla."
+          "sw": "Kuona Ayubu akipoteza kila kitu kwa muda mfupi ni ukumbusho mkali jinsi maisha yanavyoweza kubadilika ghafla.",
+          "it": "Vedere Giobbe perdere tutto nel giro di poche ore è un promemoria brutale di quanto velocemente la vita possa ribaltare la situazione."
         }
     },
     "2026-08-11": {
@@ -8794,7 +9469,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "ヨブ記 12:1-25",
@@ -8806,7 +9482,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Job 12:1-25",
           "tl": "Job 12:1-25",
           "th": "Job 12:1-25",
-          "sw": "Job 12:1-25"
+          "sw": "Job 12:1-25",
+          "it": "Giobbe 12:1-25"
         },
         comment: {
           "ja": "散々な目に遭って皮肉が止まらないヨブの言い分、限界まで追い詰められた人間がいかに毒を吐くかを教えてくれる。",
@@ -8818,7 +9495,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Sự mỉa mai của Gióp đối với bạn bè cho thấy mức độ sắc sảo của con người khi chẳng còn gì để mất.",
           "tl": "Ang pagiging sarkastiko ni Job sa kanyang mga kaibigan ay nagpapakita kung gaano katapang ang taong wala nang mawawala.",
           "th": "ความประชดประชันของโยบต่อเพื่อนๆ แสดงให้เห็นว่าคนเราจะปากร้ายได้แค่ไหนเมื่อถึงจุดที่ไม่มีอะไรจะเสียแล้ว",
-          "sw": "Ucheshi mchungu wa Ayubu kwa marafiki zake unaonyesha jinsi mtu anavyoweza kuwa mkali anapokuwa hana cha kupoteza tena."
+          "sw": "Ucheshi mchungu wa Ayubu kwa marafiki zake unaonyesha jinsi mtu anavyoweza kuwa mkali anapokuwa hana cha kupoteza tena.",
+          "it": "Il sarcasmo di Giobbe verso i suoi amici dimostra quanta pazienza ti rimanga quando non hai più assolutamente nulla da perdere."
         }
     },
     "2026-08-12": {
@@ -8833,7 +9511,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "ヨブ記 14:1-22",
@@ -8845,7 +9524,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Job 14:1-22",
           "tl": "Job 14:1-22",
           "th": "Job 14:1-22",
-          "sw": "Job 14:1-22"
+          "sw": "Job 14:1-22",
+          "it": "Giobbe 14:1-22"
         },
         comment: {
           "ja": "人生を花に例えてはかなく散ると嘆くヨブ、どん底の時に限って人生の哲学を語りたくなるのは人間の性かもしれない。",
@@ -8857,7 +9537,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Ví von cuộc đời như đóa hoa chóng tàn ngay lúc khốn cùng nhất, tâm trạng muốn triết lý hóa nỗi đau của Gióp thật quá đỗi con người.",
           "tl": "Ang paghambing sa buhay sa isang bulaklak na nalalanta habang nasa gitna ng pagdurusa ay isang napaka-makataong paraan ng pagharap sa kawalan.",
           "th": "การเปรียบชีวิตเป็นดอกไม้ที่ร่วงโรยในยามที่ทุกข์ที่สุด เป็นความรู้สึกดราม่าที่มนุษย์ทุกคนเข้าใจได้ดี",
-          "sw": "Kulinganisha maisha na ua linalonyauka wakati unapopitia magumu ni hali ya kibinadamu ambayo sote tunaweza kuhusiana nayo."
+          "sw": "Kulinganisha maisha na ua linalonyauka wakati unapopitia magumu ni hali ya kibinadamu ambayo sote tunaweza kuhusiana nayo.",
+          "it": "Mettersi a filosofeggiare sulla brevità della vita mentre tutto va a rotoli è il massimo del dramma esistenziale, eppure ci siamo passati tutti."
         }
     },
     "2026-08-13": {
@@ -8872,7 +9553,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "ヨブ記 21:17-34",
@@ -8884,7 +9566,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Job 21:17-34",
           "tl": "Job 21:17-34",
           "th": "Job 21:17-34",
-          "sw": "Job 21:17-34"
+          "sw": "Job 21:17-34",
+          "it": "Giobbe 21:17-34"
         },
         comment: {
           "ja": "悪人がなぜか成功して平穏に暮らしているという理不尽を突きつけるヨブ、現代のSNSを見ていて感じるモヤモヤと全く同じだ。",
@@ -8896,7 +9579,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Gióp thắc mắc tại sao kẻ ác lại sống sung túc cũng giống hệt cảm giác bất công khi chúng ta lướt mạng xã hội ngày nay.",
           "tl": "Ang pagtataka ni Job kung bakit tila mas masaya ang mga taong masama ay isang frustrasyon na ramdam natin tuwing nag-i-scroll tayo sa social media.",
           "th": "การที่โยบตั้งคำถามว่าทำไมคนไม่ดีถึงได้ดีเสมอ เป็นความรู้สึกขัดใจที่คนยุคนี้เข้าใจได้ดีเวลาไถฟีดโซเชียลมีเดีย",
-          "sw": "Kulalamika kuwa watu wabaya wanaonekana kufanikiwa zaidi ni hisia ya kukata tamaa ambayo sote tunayo tunapovinjari mitandao ya kijamii leo."
+          "sw": "Kulalamika kuwa watu wabaya wanaonekana kufanikiwa zaidi ni hisia ya kukata tamaa ambayo sote tunayo tunapovinjari mitandao ya kijamii leo.",
+          "it": "Infastidirsi perché ai malvagi sembra andare sempre tutto bene è la stessa frustrazione che provi oggi guardando i social network."
         }
     },
     "2026-08-14": {
@@ -8911,7 +9595,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "ヨブ記 24:1-25",
@@ -8923,7 +9608,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Job 24:1-25",
           "tl": "Job 24:1-25",
           "th": "Job 24:1-25",
-          "sw": "Job 24:1-25"
+          "sw": "Job 24:1-25",
+          "it": "Giobbe 24:1-25"
         },
         comment: {
           "ja": "理不尽な世の中に憤るヨブの叫びは、まるで深夜のSNSで社会の不公平を呟く我々の姿そのものだ。",
@@ -8935,7 +9621,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Lời than trách của Gióp về sự bất công của thế giới chẳng khác nào cách chúng ta trút giận lên mạng xã hội lúc nửa đêm.",
           "tl": "Ang pagdaing ni Job tungkol sa kawalang-katarungan sa mundo ay parang tayo lang na naglalabas ng sama ng loob sa social media tuwing madaling araw.",
           "th": "เสียงคร่ำครวญของโยบต่อความไม่ยุติธรรมในโลกนี้ เหมือนกับเราที่กำลังระบายความคับข้องใจลงบนโซเชียลมีเดียตอนดึกไม่มีผิด",
-          "sw": "Kilio cha Ayubu kuhusu ukosefu wa haki duniani ni kama sisi tunavyotoa malalamiko yetu kwenye mitandao ya kijamii usiku wa manane."
+          "sw": "Kilio cha Ayubu kuhusu ukosefu wa haki duniani ni kama sisi tunavyotoa malalamiko yetu kwenye mitandao ya kijamii usiku wa manane.",
+          "it": "Lo sfogo di Giobbe contro le ingiustizie del mondo è praticamente l'equivalente antico di lamentarsi di tutto online a notte fonda."
         }
     },
     "2026-08-15": {
@@ -8950,7 +9637,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "ヨブ記 39:1-30",
@@ -8962,7 +9650,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Job 39:1-30",
           "tl": "Job 39:1-30",
           "th": "Job 39:1-30",
-          "sw": "Job 39:1-30"
+          "sw": "Job 39:1-30",
+          "it": "Giobbe 39:1-30"
         },
         comment: {
           "ja": "「大自然の驚異を理解できるか」と神に問われ、言葉を失うヨブを見ていると、自分の悩みがいかにちっぽけかと思い知らされてぐうの音も出ない。",
@@ -8974,7 +9663,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Khi Chúa hỏi Gióp liệu ông có hiểu được sự huyền bí của thiên nhiên không, đó chính là cú tát thực tế khiến ta nhận ra những lo âu cá nhân của mình thật nhỏ bé.",
           "tl": "Nang tanungin ng Diyos si Job kung nauunawaan niya ang mga hiwaga ng kalikasan, ito ang sampal ng realidad na nagpapaalala sa atin kung gaano kaliit ang ating mga personal na problema.",
           "th": "เมื่อพระเจ้าถามโยบว่าเข้าใจความลึกลับของธรรมชาติหรือไม่ นั่นคือการเตือนสติชั้นดีที่ทำให้รู้ว่าปัญหาชีวิตของเรานั้นเล็กจ้อยแค่ไหน",
-          "sw": "Mungu anapomuuliza Ayubu ikiwa anaelewa siri za asili, ni ukumbusho mkubwa unaotufanya tutambue jinsi matatizo yetu ya kibinafsi yalivyo madogo."
+          "sw": "Mungu anapomuuliza Ayubu ikiwa anaelewa siri za asili, ni ukumbusho mkubwa unaotufanya tutambue jinsi matatizo yetu ya kibinafsi yalivyo madogo.",
+          "it": "Quando Dio ricorda a Giobbe la grandezza della natura, è il definitivo bagno di umiltà che ridimensiona immediatamente tutti i nostri piccoli drammi quotidiani."
         }
     },
     "2026-08-16": {
@@ -8989,7 +9679,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "ヨブ記 40:1-24",
@@ -9001,7 +9692,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Job 40:1-24",
           "tl": "Job 40:1-24",
           "th": "Job 40:1-24",
-          "sw": "Job 40:1-24"
+          "sw": "Job 40:1-24",
+          "it": "Giobbe 40:1-24"
         },
         comment: {
           "ja": "人生どん底のヨブに神様がベヒモスの強さを語り出す展開、もはや壮大なスケールすぎて逆に励まされるのか困惑するのか紙一重。",
@@ -9013,7 +9705,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Chúa đáp lại nỗi đau của Gióp bằng cách kể về sức mạnh của quái vật khổng lồ thực sự là một màn đối thoại đầy khó hiểu nhưng cũng rất đáng suy ngẫm.",
           "tl": "Ang pagsagot ng Diyos sa pagdurusa ni Job sa pamamagitan ng pagyayabang tungkol sa isang dambuhalang hayop ay nakakalito pero nakakamangha sa sobrang lalim.",
           "th": "การที่พระเจ้าตอบความทุกข์ของโยบด้วยการเล่าเรื่องความยิ่งใหญ่ของสัตว์ยักษ์เป็นอะไรที่เหนือชั้นจนไม่รู้จะขำหรือจะซึ้งดี",
-          "sw": "Mungu kumjibu Ayubu kuhusu mateso yake kwa kuelezea nguvu za mnyama mkubwa ni jambo la kushangaza ambalo linakuacha ukiwa na mchanganyiko wa mshangao na faraja."
+          "sw": "Mungu kumjibu Ayubu kuhusu mateso yake kwa kuelezea nguvu za mnyama mkubwa ni jambo la kushangaza ambalo linakuacha ukiwa na mchanganyiko wa mshangao na faraja.",
+          "it": "Quando sei nel bel mezzo di una crisi esistenziale e Dio decide di consolarti parlandoti di un mostro marino gigante, non sai se ridere o piangere."
         }
     },
     "2026-08-17": {
@@ -9028,7 +9721,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "詩篇 1:1-6",
@@ -9040,7 +9734,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Psalms 1:1-6",
           "tl": "Psalms 1:1-6",
           "th": "Psalms 1:1-6",
-          "sw": "Psalms 1:1-6"
+          "sw": "Psalms 1:1-6",
+          "it": "Salmi 1:1-6"
         },
         comment: {
           "ja": "悪人の集まりには近づくなと釘を刺す詩篇1篇、結局のところ環境が人間を形成するという、現代のSNS断捨離と全く同じことを言っている。",
@@ -9052,7 +9747,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Thi thiên 1 khuyên chúng ta nên tránh xa những kẻ nhạo báng, nghe chẳng khác nào lời khuyên hiện đại về việc thanh lọc mạng xã hội để giữ tinh thần lạc quan.",
           "tl": "Ang payo ng Awit 1 na huwag sumama sa mga mapanlait ay parang sinaunang bersyon ng pag-unfollow sa mga toxic na tao sa social media para sa iyong peace of mind.",
           "th": "สดุดีบทที่ 1 ที่สอนไม่ให้คบคนพาล ก็คือคำแนะนำเรื่องการคัดกรองเพื่อนในโซเชียลมีเดียเพื่อสุขภาพจิตที่ดีในยุคปัจจุบันนั่นเอง",
-          "sw": "Zaburi 1 inayotushauri kuepuka watu wabaya ni kama ushauri wa kisasa wa kuchuja watu unaowafuatilia kwenye mitandao ya kijamii ili kulinda amani yako ya akili."
+          "sw": "Zaburi 1 inayotushauri kuepuka watu wabaya ni kama ushauri wa kisasa wa kuchuja watu unaowafuatilia kwenye mitandao ya kijamii ili kulinda amani yako ya akili.",
+          "it": "Evitare la gente tossica secondo il Salmo 19 è fondamentalmente la versione antica del ripulire il feed dei social per salvare la propria sanità mentale."
         }
     },
     "2026-08-18": {
@@ -9067,7 +9763,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "詩篇 19:1-14",
@@ -9079,7 +9776,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Psalms 19:1-14",
           "tl": "Psalms 19:1-14",
           "th": "Psalms 19:1-14",
-          "sw": "Psalms 19:1-14"
+          "sw": "Psalms 19:1-14",
+          "it": "Salmi 19:1-14"
         },
         comment: {
           "ja": "スマホの通知ばかり気にして空を見上げる余裕を失っている現代人に、詩篇19篇の壮大な宇宙の語りかけは耳が痛いほど突き刺さる。",
@@ -9091,7 +9789,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Trong thế giới mà chúng ta dành nhiều thời gian nhìn vào thông báo hơn là ngước nhìn bầu trời, Thi Thiên 19 là một lời nhắc nhở khiêm nhường về những gì chúng ta đang bỏ lỡ.",
           "tl": "Sa mundong mas nakatingin tayo sa mga notification kaysa sa langit, ang Awit 19 ay isang mapagpakumbabang paalala sa mga bagay na nakakaligtaan natin.",
           "th": "ในโลกที่เราก้มหน้าดูการแจ้งเตือนมากกว่าแหงนมองท้องฟ้า สดุดีบทที่ 19 คือการเตือนใจให้เราเห็นสิ่งที่พลาดไปอย่างเจ็บแสบ",
-          "sw": "Katika ulimwengu ambapo tunatumia muda mwingi kutazama arifa kuliko anga, Zaburi 19 ni ukumbusho wa unyenyekevu wa mambo tunayopoteza."
+          "sw": "Katika ulimwengu ambapo tunatumia muda mwingi kutazama arifa kuliko anga, Zaburi 19 ni ukumbusho wa unyenyekevu wa mambo tunayopoteza.",
+          "it": "Passiamo così tanto tempo a fissare le notifiche del telefono che un richiamo a guardare il cielo come fa il Salmo 19 ci spiazza non poco."
         }
     },
     "2026-08-19": {
@@ -9106,7 +9805,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "詩篇 22:1-31",
@@ -9118,7 +9818,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Psalms 22:1-31",
           "tl": "Psalms 22:1-31",
           "th": "Psalms 22:1-31",
-          "sw": "Psalms 22:1-31"
+          "sw": "Psalms 22:1-31",
+          "it": "Salmi 22:1-31"
         },
         comment: {
           "ja": "神に見捨てられたと叫びながらも結局神に祈り続けるダビデの姿は、どん底のときほど本音が出る人間の矛盾そのものだ。",
@@ -9130,7 +9831,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Đa-vít vừa kêu gào rằng Chúa đã bỏ rơi mình vừa tiếp tục cầu nguyện với Ngài chính là biểu hiện chân thực nhất về sự giằng xé tâm linh của con người.",
           "tl": "Ang paghiyaw ni David na iniwan siya ng Diyos habang patuloy pa rin siyang nagdarasal ay ang pinakatotoong pagpapakita ng ating sariling krisis sa pananampalataya.",
           "th": "การที่ดาวิดตะโกนว่าพระเจ้าทอดทิ้งเขาในขณะที่ยังคงอธิษฐานต่อพระองค์ คือภาพสะท้อนที่ตรงไปตรงมาที่สุดของความสับสนทางจิตวิญญาณของมนุษย์",
-          "sw": "Daudi kulia kwamba Mungu amemwacha huku akiendelea kumwomba ni kielelezo cha kweli cha jinsi tunavyohisi wakati wa majaribu makali."
+          "sw": "Daudi kulia kwamba Mungu amemwacha huku akiendelea kumwomba ni kielelezo cha kweli cha jinsi tunavyohisi wakati wa majaribu makali.",
+          "it": "Urlare che Dio ti ha abbandonato mentre continui a pregarlo è la rappresentazione più onesta e caotica delle nostre crisi personali."
         }
     },
     "2026-08-20": {
@@ -9145,7 +9847,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "詩篇 25:1-22",
@@ -9157,7 +9860,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Psalms 25:1-22",
           "tl": "Psalms 25:1-22",
           "th": "Psalms 25:1-22",
-          "sw": "Psalms 25:1-22"
+          "sw": "Psalms 25:1-22",
+          "it": "Salmi 25:1-22"
         },
         comment: {
           "ja": "失敗だらけの過去を棚に上げて神に許しを請うダビデの厚かましさ、結局のところ人間が救われる唯一の道かもしれない。",
@@ -9169,7 +9873,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Đa-vít cầu xin sự tha thứ sau khi phạm bao nhiêu sai lầm có lẽ là cách chân thật nhất để đến với Chúa.",
           "tl": "Ang paghingi ni David ng tawad sa kabila ng dami ng kanyang pagkakamali ay marahil ang pinaka-tapat na paraan para lumapit sa Diyos.",
           "th": "การที่ดาวิดกล้าขอให้พระเจ้าอภัยทั้งที่ตัวเองทำพลาดมาเยอะ อาจจะเป็นวิธีที่จริงใจที่สุดในการเข้าหาพระเจ้าแล้ว",
-          "sw": "Daudi kuomba msamaha baada ya kufanya makosa mengi pengine ndiyo njia ya kweli zaidi ya kumwendea Mungu."
+          "sw": "Daudi kuomba msamaha baada ya kufanya makosa mengi pengine ndiyo njia ya kweli zaidi ya kumwendea Mungu.",
+          "it": "Chiedere scusa dopo aver combinato un pasticcio colossale è il modo più ironico e umano per ripartire da zero."
         }
     },
     "2026-08-21": {
@@ -9184,7 +9889,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "詩篇 28:1-9",
@@ -9196,7 +9902,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Psalms 28:1-9",
           "tl": "Psalms 28:1-9",
           "th": "Psalms 28:1-9",
-          "sw": "Psalms 28:1-9"
+          "sw": "Psalms 28:1-9",
+          "it": "Salmi 28:1-9"
         },
         comment: {
           "ja": "静かに祈っていたはずが気づけば敵への不満をぶちまけているダビデ、結局神様は愚痴の聞き役としても最強ということか。",
@@ -9208,7 +9915,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Đa-vít cố gắng cầu nguyện nhưng cuối cùng lại trút giận lên kẻ thù nhắc nhở rằng Chúa là người lắng nghe tuyệt vời nhất cho những lời than vãn của chúng ta.",
           "tl": "Ang pagtatangka ni David na manalangin na nauuwi sa paglalabas ng sama ng loob sa mga kaaway ay paalala na ang Diyos ang pinakamahusay na tagapakinig sa ating mga hinaing.",
           "th": "ดาวิดตั้งใจจะอธิษฐานแต่สุดท้ายกลายเป็นการระบายความแค้นใส่ศัตรู ทำให้รู้เลยว่าพระเจ้าคือที่รองรับอารมณ์ที่ดีที่สุดจริงๆ",
-          "sw": "Daudi kujaribu kuomba lakini anamalizia kwa kulalamika kuhusu maadui zake inatukumbusha kuwa Mungu ndiye msikilizaji bora wa malalamiko yetu."
+          "sw": "Daudi kujaribu kuomba lakini anamalizia kwa kulalamika kuhusu maadui zake inatukumbusha kuwa Mungu ndiye msikilizaji bora wa malalamiko yetu.",
+          "it": "Iniziare la preghiera con i migliori propositi e finire per sfogarsi sui propri nemici dimostra che lassù ci ascoltano davvero anche quando brontoliamo."
         }
     },
     "2026-08-22": {
@@ -9223,7 +9931,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "詩篇 31:1-24",
@@ -9235,7 +9944,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Psalms 31:1-24",
           "tl": "Psalms 31:1-24",
           "th": "Psalms 31:1-24",
-          "sw": "Psalms 31:1-24"
+          "sw": "Psalms 31:1-24",
+          "it": "Salmi 31:1-24"
         },
         comment: {
           "ja": "散々な目に遭って人間不信になりそうなダビデが、それでも最後に神にすべてを委ねる姿は、一周回って最強の開き直り術だ。",
@@ -9247,7 +9957,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "David sau khi chịu đủ mọi tổn thương vẫn chọn cách phó thác cho Chúa, đó chính là nghệ thuật buông bỏ đỉnh cao khi đời quá mệt mỏi.",
           "tl": "Si David na halos mawalan na ng tiwala sa tao dahil sa dami ng pinagdaanan, pero pinili pa ring ipaubaya ang lahat sa Diyos, ay ang tunay na definition ng pag-let go.",
           "th": "ดาวิดผู้ผ่านเรื่องราวมาจนแทบจะหมดศรัทธาในมนุษย์ แต่สุดท้ายเลือกที่จะฝากทุกอย่างไว้กับพระเจ้า คือวิชาการปล่อยวางที่เหนือชั้นที่สุด",
-          "sw": "Daudi kupitia yote na bado kuchagua kumkabidhi Mungu mzigo wake ni somo kuu la jinsi ya kuacha yasiyowezekana na kusonga mbele."
+          "sw": "Daudi kupitia yote na bado kuchagua kumkabidhi Mungu mzigo wake ni somo kuu la jinsi ya kuacha yasiyowezekana na kusonga mbele.",
+          "it": "Quando tutto va storto e decidi di mollare il colpo affidandoti a Qualcuno più in alto, scopri la vera arte del lasciar andare."
         }
     },
     "2026-08-23": {
@@ -9262,7 +9973,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "詩篇 33:1-22",
@@ -9274,7 +9986,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Psalms 33:1-22",
           "tl": "Psalms 33:1-22",
           "th": "Psalms 33:1-22",
-          "sw": "Psalms 33:1-22"
+          "sw": "Psalms 33:1-22",
+          "it": "Salmi 33:1-22"
         },
         comment: {
           "ja": "王様がどれだけ軍勢を揃えても結局は神頼みという事実は、現代の私たちがどれだけスマホで検索しても結局は運に任せるしかない心理と似ている。",
@@ -9286,7 +9999,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Các vị vua có trong tay đội quân hùng mạnh vẫn cần đến Chúa, giống như việc chúng ta dù có tra Google cả ngày thì cuối cùng vẫn phải chấp nhận rằng có những thứ nằm ngoài tầm kiểm soát.",
           "tl": "Ang katotohanang kahit ang mga hari ay kailangan pa rin ng tulong ng Diyos sa kabila ng kanilang hukbo ay parang tayo lang na kahit i-Google mo na ang lahat, kailangan mo pa ring magtiwala sa tadhana.",
           "th": "กษัตริย์ที่มีกองทัพยิ่งใหญ่ยังต้องพึ่งพาพระเจ้า ไม่ต่างอะไรกับเราที่แม้จะเสิร์ชหาคำตอบจากกูเกิลจนล้นจอ สุดท้ายก็ต้องยอมรับว่ามีหลายอย่างที่ควบคุมไม่ได้",
-          "sw": "Wafalme kutambua kuwa majeshi yao hayatoshi bila Mungu ni sawa na sisi tunavyotafuta majibu yote mtandaoni lakini mwisho wa siku tunatambua hatuna udhibiti wa kila kitu."
+          "sw": "Wafalme kutambua kuwa majeshi yao hayatoshi bila Mungu ni sawa na sisi tunavyotafuta majibu yote mtandaoni lakini mwisho wa siku tunatambua hatuna udhibiti wa kila kitu.",
+          "it": "Capire che i re non potevano salvarsi da soli è un po' come quando cerchiamo mille risposte online prima di accorgerci che ci vuole ben altro."
         }
     },
     "2026-08-24": {
@@ -9301,7 +10015,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "詩篇 49:1-20",
@@ -9313,7 +10028,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Psalms 49:1-20",
           "tl": "Psalms 49:1-20",
           "th": "Psalms 49:1-20",
-          "sw": "Psalms 49:1-20"
+          "sw": "Psalms 49:1-20",
+          "it": "Salmi 49:1-20"
         },
         comment: {
           "ja": "どれだけ高級車やブランド品を買い込んでも死ぬときは全部置いていくという事実に、改めて財布の紐を締め直したくなる瞬間です。",
@@ -9325,7 +10041,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc nhận ra rằng bạn không thể mang theo tài sản xuống mồ chính là cú tát tỉnh táo cho những ai đang quá mải mê chạy theo danh vọng.",
           "tl": "Ang paalala na hindi natin madadala ang ating mga ari-arian sa kabilang buhay ay isang matinding sampal ng katotohanan para sa ating pagkahumaling sa status.",
           "th": "การเตือนสติว่าไม่มีใครเอาทรัพย์สินติดตัวไปได้เมื่อตายคือความจริงที่เจ็บปวดที่สุดสำหรับคนที่มัวแต่ยึดติดกับชื่อเสียงและเงินทอง",
-          "sw": "Kukumbushwa kuwa huwezi kuondoka na utajiri wako kwenda kaburini ni ukweli mchungu unaotufanya tutafakari upya vipaumbele vyetu vya maisha."
+          "sw": "Kukumbushwa kuwa huwezi kuondoka na utajiri wako kwenda kaburini ni ukweli mchungu unaotufanya tutafakari upya vipaumbele vyetu vya maisha.",
+          "it": "Ricordarsi che non possiamo portarci dietro l'estratto conto nella tomba è quella doccia di umiltà che rimette a posto le priorità della spesa."
         }
     },
     "2026-08-25": {
@@ -9340,7 +10057,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "詩篇 51:1-19",
@@ -9352,7 +10070,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Psalms 51:1-19",
           "tl": "Psalms 51:1-19",
           "th": "Psalms 51:1-19",
-          "sw": "Psalms 51:1-19"
+          "sw": "Psalms 51:1-19",
+          "it": "Salmi 51:1-19"
         },
         comment: {
           "ja": "盛大にやらかした後に言い訳せず潔く謝るダビデの姿は、プライドが邪魔をして謝罪をこじらせがちな現代人の鏡のようです。",
@@ -9364,7 +10083,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Cách David thành thật nhận lỗi mà không cần bào chữa là bài học quý giá cho những ai thường vì cái tôi quá lớn mà khó lòng mở lời xin lỗi.",
           "tl": "Ang pag-amin ni David sa kanyang pagkakamali nang walang palusot ay isang aral sa pagpapakumbaba na kailangan nating lahat kapag pinipigilan tayo ng ating pride.",
           "th": "การที่ดาวิดยอมรับผิดโดยไม่หาข้ออ้างเป็นบทเรียนเรื่องความถ่อมใจที่ยอดเยี่ยมสำหรับคนที่มักจะปล่อยให้ทิฐิขวางทางคำขอโทษ",
-          "sw": "Jinsi Daudi alivyokiri makosa yake bila visingizio ni funzo kuu la unyenyekevu kwa sisi ambao mara nyingi tunashindwa kuomba msamaha kwa sababu ya kiburi."
+          "sw": "Jinsi Daudi alivyokiri makosa yake bila visingizio ni funzo kuu la unyenyekevu kwa sisi ambao mara nyingi tunashindwa kuomba msamaha kwa sababu ya kiburi.",
+          "it": "Ammettere di aver fatto un errore senza inventare scuse è una lezione di stile che faremmo tutti bene a ripassare ogni tanto."
         }
     },
     "2026-08-26": {
@@ -9379,7 +10099,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "詩篇 64:1-10",
@@ -9391,7 +10112,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Psalms 64:1-10",
           "tl": "Psalms 64:1-10",
           "th": "Psalms 64:1-10",
-          "sw": "Psalms 64:1-10"
+          "sw": "Psalms 64:1-10",
+          "it": "Salmi 64:1-10"
         },
         comment: {
           "ja": "陰口を叩く人たちの矢が自分に刺さる前に神様に助けを求めるダビデ、人間関係の悩みはいつの時代も変わらない。",
@@ -9403,7 +10125,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "David tìm kiếm sự bảo vệ trước những lời đàm tiếu cho thấy rằng vấn đề thị phi trong các mối quan hệ đã tồn tại từ ngàn xưa.",
           "tl": "Ang paghingi ni David ng proteksyon laban sa mga tsismoso ay patunay na ang toxic na ugali ng tao ay hindi nagbabago sa paglipas ng panahon.",
           "th": "ดาวิดขอให้พระเจ้าช่วยให้พ้นจากคำนินทาที่เหมือนลูกธนู ทำให้รู้ว่าปัญหาเรื่องคนช่างเม้าท์มอยเป็นเรื่องคลาสสิกที่อยู่มาทุกยุคสมัย",
-          "sw": "Daudi kutafuta hifadhi dhidi ya maneno ya watu inatukumbusha kuwa tabia ya kusengenya ni tatizo la kale sana lisiloisha."
+          "sw": "Daudi kutafuta hifadhi dhidi ya maneno ya watu inatukumbusha kuwa tabia ya kusengenya ni tatizo la kale sana lisiloisha.",
+          "it": "David che chiede protezione dai pettegolezzi ci ricorda che le dinamiche tossiche tra colleghi sono antiche quanto il mondo."
         }
     },
     "2026-08-27": {
@@ -9418,7 +10141,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "詩篇 69:19-36",
@@ -9430,7 +10154,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Psalms 69:19-36",
           "tl": "Psalms 69:19-36",
           "th": "Psalms 69:19-36",
-          "sw": "Psalms 69:19-36"
+          "sw": "Psalms 69:19-36",
+          "it": "Salmi 69:19-36"
         },
         comment: {
           "ja": "誰にもわかってもらえない孤独の中で神様だけが頼みの綱という状況、強がっている人ほど実は一番寂しいのかもしれない。",
@@ -9442,7 +10167,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Cảm giác không ai hiểu mình và chỉ còn Chúa là chỗ dựa duy nhất chính là khoảnh khắc cô đơn nhất nhưng cũng chân thực nhất của con người.",
           "tl": "Ang pakiramdam na walang nakakaunawa sa iyo at tanging Diyos lang ang nakikinig ay isang mapait na katotohanan na madalas nating nararanasan.",
           "th": "การรู้สึกว่าไม่มีใครเข้าใจเราเลยนอกจากพระเจ้า เป็นช่วงเวลาที่เปราะบางที่สุดแต่ก็จริงใจกับตัวเองที่สุดเช่นกัน",
-          "sw": "Kuhisi kuwa hakuna anayekuelewa na Mungu ndiye msikilizaji wako pekee ni hali inayomfanya hata mtu mwenye nguvu ajihisi mpweke."
+          "sw": "Kuhisi kuwa hakuna anayekuelewa na Mungu ndiye msikilizaji wako pekee ni hali inayomfanya hata mtu mwenye nguvu ajihisi mpweke.",
+          "it": "Sentire che nessuno ti capisce e realizzare che lassù c'è qualcuno in ascolto è la vera svolta quando ci si sente soli."
         }
     },
     "2026-08-28": {
@@ -9457,7 +10183,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "詩篇 72:1-20",
@@ -9469,7 +10196,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Psalms 72:1-20",
           "tl": "Psalms 72:1-20",
           "th": "Psalms 72:1-20",
-          "sw": "Psalms 72:1-20"
+          "sw": "Psalms 72:1-20",
+          "it": "Salmi 72:1-20"
         },
         comment: {
           "ja": "理想のリーダー像をこれでもかと詰め込まれたソロモンの祈り、現代の選挙公約なら満場一致で当選確実だけど現実はそう甘くない。",
@@ -9481,7 +10209,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Lời cầu nguyện của Sa-lô-môn về một nhà lãnh đạo hoàn hảo nghe như một lời hứa tranh cử tuyệt vời, nhưng thực tế việc quản lý con người lại khó hơn nhiều.",
           "tl": "Ang panalangin ni Solomon para sa perpektong pamumuno ay parang perpektong pangako sa kampanya, pero alam nating lahat na mas mahirap mamuno sa totoong buhay.",
           "th": "คำอธิษฐานของซาโลมอนที่ขอให้เป็นผู้นำที่สมบูรณ์แบบฟังดูเหมือนคำสัญญาหาเสียงที่ยอดเยี่ยม แต่ในความเป็นจริงการปกครองคนนั้นยากกว่าที่คิดเยอะ",
-          "sw": "Sala ya Sulemani ya kuomba uongozi bora inasikika kama ahadi za kampeni za kuvutia, lakini tunajua sote kuwa kuongoza watu ni changamoto kubwa zaidi."
+          "sw": "Sala ya Sulemani ya kuomba uongozi bora inasikika kama ahadi za kampeni za kuvutia, lakini tunajua sote kuwa kuongoza watu ni changamoto kubwa zaidi.",
+          "it": "La preghiera di Salomone per un governo perfetto suona benissimo sulla carta, peccato che gestire le persone sia tutta un'altra storia."
         }
     },
     "2026-08-29": {
@@ -9496,7 +10225,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "詩篇 78:1-55",
@@ -9508,7 +10238,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Psalms 78:1-55",
           "tl": "Psalms 78:1-55",
           "th": "Psalms 78:1-55",
-          "sw": "Psalms 78:1-55"
+          "sw": "Psalms 78:1-55",
+          "it": "Salmi 78:1-55"
         },
         comment: {
           "ja": "神の奇跡を散々見ておきながら、喉が渇いただけで文句を言って不平を垂れるイスラエルの民、もはや人間あるあるの極み。",
@@ -9520,7 +10251,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Dân Y-sơ-ra-ên chứng kiến những phép lạ vĩ đại rồi lại càm ràm ngay khi khát nước là minh chứng rõ nhất cho trí nhớ ngắn hạn của con người.",
           "tl": "Ang mga Israelita na nakakita ng napakaraming himala pero nagrereklamo agad pagkauhaw ay patunay na napakabilis talaga nating makalimot ng tao.",
           "th": "ชาวอิสราเอลที่เห็นปาฏิหาริย์มามากมายแต่กลับบ่นทันทีที่หิวน้ำ เป็นเครื่องพิสูจน์ชั้นดีว่าความจำระยะสั้นของมนุษย์นั้นสั้นยิ่งกว่าอะไร",
-          "sw": "Waisraeli kushuhudia miujiza mikuu na kisha kulalamika mara tu wanapopata kiu ni uthibitisho tosha kuwa kumbukumbu zetu za kibinadamu ni fupi ajabu."
+          "sw": "Waisraeli kushuhudia miujiza mikuu na kisha kulalamika mara tu wanapopata kiu ni uthibitisho tosha kuwa kumbukumbu zetu za kibinadamu ni fupi ajabu.",
+          "it": "Vedere gli israeliti assistere a miracoli incredibili e lamentarsi per un po' di sete dimostra quanto la nostra memoria a breve termine faccia acqua."
         }
     },
     "2026-08-30": {
@@ -9535,7 +10267,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "詩篇 78:56-72",
@@ -9547,7 +10280,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Psalms 78:56-72",
           "tl": "Psalms 78:56-72",
           "th": "Psalms 78:56-72",
-          "sw": "Psalms 78:56-72"
+          "sw": "Psalms 78:56-72",
+          "it": "Salmi 78:56-72"
         },
         comment: {
           "ja": "散々助けてもらった恩を忘れてはまた神様に背くイスラエルの民、まるで学習能力ゼロの自分を見ているようで苦しい。",
@@ -9559,7 +10293,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Thấy dân Y-sơ-ra-ên quên ơn ngay khi gặp khó khăn, tôi lại thấy bóng dáng mình trong đó.",
           "tl": "Ang makitang nakalimutan ng Israel ang lahat ng tulong sa oras na mahirapan sila ay parang nakikita ko na ang sarili ko.",
           "th": "การที่อิสราเอลลืมทุกอย่างทันทีที่เจอปัญหาช่างเป็นภาพสะท้อนที่เจ็บปวดของความขี้ลืมในตัวเราเอง",
-          "sw": "Kuona Israeli wakisahau baraka zote pindi tu wanapopata matatizo ni ukumbusho mchungu wa jinsi tunavyosahau haraka."
+          "sw": "Kuona Israeli wakisahau baraka zote pindi tu wanapopata matatizo ni ukumbusho mchungu wa jinsi tunavyosahau haraka.",
+          "it": "Guardare Israele dimenticarsi di ogni benedizione appena sorge un problema è un doloroso promemoria della mia stessa memoria selettiva."
         }
     },
     "2026-08-31": {
@@ -9574,7 +10309,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "詩篇 102:1-28",
@@ -9586,7 +10322,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Psalms 102:1-28",
           "tl": "Psalms 102:1-28",
           "th": "Psalms 102:1-28",
-          "sw": "Psalms 102:1-28"
+          "sw": "Psalms 102:1-28",
+          "it": "Salmi 102:1-28"
         },
         comment: {
           "ja": "孤独で消え入りそうな夜に神様へ愚痴をこぼす詩篇の作者、誰にも言えない弱音を吐ける相手がいることの救いよ。",
@@ -9598,7 +10335,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc tác giả thi thiên trút hết nỗi lòng với Chúa trong đêm khuya chứng tỏ cầu nguyện chính là liệu pháp tâm lý tốt nhất.",
           "tl": "Ang pagbubuhos ng salmista ng lahat ng kanyang takot sa Diyos sa kalagitnaan ng gabi ay patunay na ang panalangin ay parang isang divine therapy session.",
           "th": "การที่ผู้เขียนสดุดีระบายความกังวลใจทั้งหมดกับพระเจ้าในยามค่ำคืนเป็นหลักฐานว่าการอธิษฐานคือการบำบัดจิตใจที่ดีที่สุด",
-          "sw": "Mtunga-zaburi kumwaga wasiwasi wake wote kwa Mungu usiku wa manane ni uthibitisho kuwa sala ni kama tiba ya kiroho."
+          "sw": "Mtunga-zaburi kumwaga wasiwasi wake wote kwa Mungu usiku wa manane ni uthibitisho kuwa sala ni kama tiba ya kiroho.",
+          "it": "Buttare tutte le proprie ansie notturne addosso al cielo conferma che la preghiera è fondamentalmente una seduta di terapia gratuita."
         }
     },
     "2026-09-01": {
@@ -9613,7 +10351,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "詩篇 116:1-19",
@@ -9625,7 +10364,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Psalms 116:1-19",
           "tl": "Psalms 116:1-19",
           "th": "Psalms 116:1-19",
-          "sw": "Psalms 116:1-19"
+          "sw": "Psalms 116:1-19",
+          "it": "Salmi 116:1-19"
         },
         comment: {
           "ja": "死の淵から生還した途端に神への恩義を語りまくる詩人のテンション、助かった時の人間ってこんなにも現金で正直なものか。",
@@ -9637,7 +10377,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Tác giả thi thiên thề thốt lòng thành ngay sau khi thoát chết là minh chứng rõ nhất cho việc con người dễ dàng trở nên ngoan đạo thế nào khi cơn nguy khốn qua đi.",
           "tl": "Ang pagpapasalamat ng salmista pagkatapos maligtas ay paalala na tayong mga tao ay sadyang nagiging mapagkumbaba lang kapag tapos na ang krisis.",
           "th": "การที่ผู้เขียนสดุดีรีบประกาศความภักดีทันทีที่รอดพ้นจากความตาย ช่างสะท้อนให้เห็นว่ามนุษย์เรามีความจริงใจและตื่นตัวแค่ไหนหลังจากผ่านวิกฤตมาได้",
-          "sw": "Mtunga-zaburi anayeapa utii mara tu baada ya kunusurika kifo ni ukumbusho kamili wa jinsi tunavyokuwa waaminifu tunapopona kutoka kwenye matatizo."
+          "sw": "Mtunga-zaburi anayeapa utii mara tu baada ya kunusurika kifo ni ukumbusho kamili wa jinsi tunavyokuwa waaminifu tunapopona kutoka kwenye matatizo.",
+          "it": "Il salmista che promette fedeltà eterna appena scampa a un pericolo è l'esempio perfetto di quanto diventiamo devoti quando lo spavento è passato."
         }
     },
     "2026-09-02": {
@@ -9652,7 +10393,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "詩篇 119:9-72",
@@ -9664,7 +10406,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Psalms 119:9-72",
           "tl": "Psalms 119:9-72",
           "th": "Psalms 119:9-72",
-          "sw": "Psalms 119:9-72"
+          "sw": "Psalms 119:9-72",
+          "it": "Salmi 119:9-72"
         },
         comment: {
           "ja": "若いうちから清く正しく生きるなんて無理ゲーだと嘆きつつ、結局そこにすがりたくなるのは人生の難易度を痛感している証拠だ。",
@@ -9676,7 +10419,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Than vãn rằng sống một cuộc đời trọn vẹn là điều bất khả thi trong khi vẫn cố gắng làm điều đúng đắn chính là cuộc đấu tranh tâm lý muôn thuở của con người.",
           "tl": "Ang magreklamo na mahirap magpakabanal habang pilit pa ring sumusubok ay ang pinaka-relatable na pakikibaka ng ating pagkatao.",
           "th": "การบ่นว่าการใช้ชีวิตให้บริสุทธิ์นั้นยากเหลือเกิน ทั้งที่ในใจก็ยังพยายามทำตาม เป็นความย้อนแย้งที่มนุษย์ทุกคนต้องเผชิญในเส้นทางชีวิต",
-          "sw": "Kulalamika kuwa kuishi maisha matakatifu haiwezekani huku ukijaribu kufanya hivyo ni mapambano ya kawaida ya kibinadamu tunapokabiliana na ugumu wa maisha."
+          "sw": "Kulalamika kuwa kuishi maisha matakatifu haiwezekani huku ukijaribu kufanya hivyo ni mapambano ya kawaida ya kibinadamu tunapokabiliana na ugumu wa maisha.",
+          "it": "Lamentarsi che vivere senza macchia sia impossibile mentre cerchi comunque di fare del tuo meglio è la lotta quotidiana di tutti noi."
         }
     },
     "2026-09-03": {
@@ -9691,7 +10435,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "詩篇 119:73-136",
@@ -9703,7 +10448,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Psalms 119:73-136",
           "tl": "Psalms 119:73-136",
           "th": "Psalms 119:73-136",
-          "sw": "Psalms 119:73-136"
+          "sw": "Psalms 119:73-136",
+          "it": "Salmi 119:73-136"
         },
         comment: {
           "ja": "これでもかと律法への愛を語り続ける詩篇119篇の作者、もはや推し活をしている時のオタクの熱量と同じで親近感しかない。",
@@ -9715,7 +10461,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Tác giả Thi Thiên 119 bày tỏ tình yêu với luật pháp mãnh liệt đến mức trông giống như một người hâm mộ đang cuồng nhiệt ủng hộ thần tượng của mình.",
           "tl": "Ang tindi ng pagmamahal ng may-akda ng Awit 119 sa kautusan ay parang isang fan na todo kung mag-promote ng kanyang iniidolo.",
           "th": "ผู้เขียนสดุดี 119 พูดถึงกฎเกณฑ์ด้วยความหลงใหลขนาดนี้ ไม่ต่างอะไรกับแฟนคลับที่กำลังคลั่งไคล้ศิลปินคนโปรดจนถอนตัวไม่ขึ้น",
-          "sw": "Mwandishi wa Zaburi 119 anavyozungumzia sheria kwa shauku kubwa inafanana sana na jinsi shabiki anavyomtetea msanii wake anayempenda sana."
+          "sw": "Mwandishi wa Zaburi 119 anavyozungumzia sheria kwa shauku kubwa inafanana sana na jinsi shabiki anavyomtetea msanii wake anayempenda sana.",
+          "it": "L'intensità con cui l'autore del Salmo 119 loda la legge è praticamente il livello di devozione di un fan sfegatato."
         }
     },
     "2026-09-04": {
@@ -9730,7 +10477,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "詩篇 119:137-176",
@@ -9742,7 +10490,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Psalms 119:137-176",
           "tl": "Psalms 119:137-176",
           "th": "Psalms 119:137-176",
-          "sw": "Psalms 119:137-176"
+          "sw": "Psalms 119:137-176",
+          "it": "Salmi 119:137-176"
         },
         comment: {
           "ja": "迷える羊のように彷徨っていると自認しつつも神の言葉を求め続ける作者、結局のところ人生は迷いながらの正解探しそのもの。",
@@ -9754,7 +10503,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Thừa nhận mình như một con chiên lạc lối nhưng vẫn cố gắng bám lấy lẽ thật, đó chính là trạng thái chung của chúng ta khi đối mặt với cuộc đời.",
           "tl": "Ang pag-amin na parang nawawalang tupa habang patuloy na naghahanap ng katotohanan ay ang mismong kwento ng ating buhay na puno ng pagkalito.",
           "th": "การยอมรับว่าตัวเองเหมือนแกะที่หลงทางแต่ก็ยังพยายามไขว่คว้าหาความจริง คือนิยามของชีวิตผู้ใหญ่ที่ต้องเดินไปงมเข็มไปอย่างแท้จริง",
-          "sw": "Kukiri kuwa wewe ni kama kondoo aliyepotea huku ukiendelea kutafuta kweli ni hali halisi ya maisha yetu tunapozidi kutafuta majibu katikati ya changamoto."
+          "sw": "Kukiri kuwa wewe ni kama kondoo aliyepotea huku ukiendelea kutafuta kweli ni hali halisi ya maisha yetu tunapozidi kutafuta majibu katikati ya changamoto.",
+          "it": "Ammettere di sentirsi una pecora smarrita mentre si cerca la rotta giusta è la sintesi perfetta di cosa significhi essere adulti."
         }
     },
     "2026-09-05": {
@@ -9769,7 +10519,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "詩篇 136:1-26",
@@ -9781,7 +10532,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Psalms 136:1-26",
           "tl": "Psalms 136:1-26",
           "th": "Psalms 136:1-26",
-          "sw": "Psalms 136:1-26"
+          "sw": "Psalms 136:1-26",
+          "it": "Salmi 136:1-26"
         },
         comment: {
           "ja": "26回も繰り返し「恵みはとこしえまで」と歌い続ける詩篇のしつこさは、忘れたくないことを自分に言い聞かせるための究極のメモ帳だ。",
@@ -9793,7 +10545,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc lặp lại cụm từ lòng thương xót tồn tại đời đời đến hai mươi sáu lần giống như cách chúng ta tự nhắc nhở bản thân bằng hàng tá ghi chú dán khắp nhà.",
           "tl": "Ang pag-uulit ng dalawampu't anim na beses na ang awa ay magpakailanman ay parang paglalagay ng napakaraming sticky note sa salamin para hindi makalimutan ang mahalagang bagay.",
           "th": "การร้องย้ำถึงความเมตตาถึงยี่สิบหกครั้งก็เหมือนกับการแปะโพสต์อิทเตือนตัวเองไว้ทั่วบ้านเพราะกลัวจะลืมเรื่องสำคัญ",
-          "sw": "Kurudia mara ishirini na sita kwamba rehema ni za milele ni kama kujibandika noti nyingi za ukumbusho ili usisahau jambo muhimu."
+          "sw": "Kurudia mara ishirini na sita kwamba rehema ni za milele ni kama kujibandika noti nyingi za ukumbusho ili usisahau jambo muhimu.",
+          "it": "Ripetere ventisei volte che la sua misericordia dura per sempre è praticamente la versione antica di mettersi un post-it sulla fronte per non dimenticare l'ovvio."
         }
     },
     "2026-09-06": {
@@ -9808,7 +10561,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "詩篇 146:1-10",
@@ -9820,7 +10574,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Psalms 146:1-10",
           "tl": "Psalms 146:1-10",
           "th": "Psalms 146:1-10",
-          "sw": "Psalms 146:1-10"
+          "sw": "Psalms 146:1-10",
+          "it": "Salmi 146:1-10"
         },
         comment: {
           "ja": "権力者に頼るなと言い切る詩篇のこの潔さは、結局最後は自分の足で立つしかないという人生の厳しい現実を突きつけてくる。",
@@ -9832,7 +10587,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Lời khuyên đừng đặt niềm tin vào những người có quyền lực là một lời nhắc nhở thẳng thắn rằng cuối cùng thì bạn vẫn phải tự chịu trách nhiệm cho cuộc đời mình.",
           "tl": "Ang payo na huwag umasa sa mga nasa kapangyarihan ay isang direktang paalala na sa huli, sarili mo lang ang maaasahan mo.",
           "th": "คำเตือนไม่ให้ฝากชีวิตไว้กับผู้มีอำนาจเป็นเหมือนการตบหน้าให้ตื่นว่าสุดท้ายแล้วเราต้องรับผิดชอบชีวิตตัวเอง",
-          "sw": "Kushauri watu wasiweke tumaini lao kwa watawala ni ukumbusho wa moja kwa moja kwamba mwisho wa siku, wewe ndiye unayepaswa kubeba mzigo wa maamuzi yako."
+          "sw": "Kushauri watu wasiweke tumaini lao kwa watawala ni ukumbusho wa moja kwa moja kwamba mwisho wa siku, wewe ndiye unayepaswa kubeba mzigo wa maamuzi yako.",
+          "it": "Dire di non fidarsi dei potenti è il promemoria definitivo che, alla fine della fiera, siamo noi a dover convivere con le nostre scelte."
         }
     },
     "2026-09-07": {
@@ -9847,7 +10603,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "箴言 1:1-33",
@@ -9859,7 +10616,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Proverbs 1:1-33",
           "tl": "Proverbs 1:1-33",
           "th": "Proverbs 1:1-33",
-          "sw": "Proverbs 1:1-33"
+          "sw": "Proverbs 1:1-33",
+          "it": "Proverbi 1:1-33"
         },
         comment: {
           "ja": "知恵が通りで必死に叫んでいるのに誰も聞いていない様子、現代のSNSで有益な情報が埋もれていく光景と重なって切ない。",
@@ -9871,7 +10629,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Sự khôn ngoan kêu gọi giữa phố phường mà chẳng ai thèm nghe, nghe thật giống với cảm giác khi bạn nói điều tử tế mà bị lờ đi.",
           "tl": "Ang karunungan na sumisigaw sa lansangan pero walang nakikinig ay parang pag-post ng seryosong payo na walang nag-like.",
           "th": "ความฉลาดตะโกนปาวๆ อยู่ข้างถนนแต่ไม่มีใครฟัง เหมือนการพิมพ์เตือนเรื่องสำคัญในกลุ่มไลน์แล้วไม่มีใครอ่านเลยสักคน",
-          "sw": "Hekima kupiga kelele barabarani bila mtu kusikiliza ni kama vile kutoa ushauri muhimu kwenye kikundi cha WhatsApp na watu wote kukupuuza."
+          "sw": "Hekima kupiga kelele barabarani bila mtu kusikiliza ni kama vile kutoa ushauri muhimu kwenye kikundi cha WhatsApp na watu wote kukupuuza.",
+          "it": "La saggezza che urla per strada mentre tutti la ignorano è praticamente la versione originale dell'essere visualizzati e non ricevuti."
         }
     },
     "2026-09-08": {
@@ -9886,7 +10645,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "箴言 3:1-35",
@@ -9898,7 +10658,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Proverbs 3:1-35",
           "tl": "Proverbs 3:1-35",
           "th": "Proverbs 3:1-35",
-          "sw": "Proverbs 3:1-35"
+          "sw": "Proverbs 3:1-35",
+          "it": "Proverbi 3:1-35"
         },
         comment: {
           "ja": "自分の賢さを頼りにするなと言われるたびに、今の自分の計画に自信満々な自分を突きつけられているようで耳が痛い。",
@@ -9910,7 +10671,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Lời khuyên đừng dựa vào sự khôn ngoan của bản thân giống như một gáo nước lạnh tạt vào sự tự phụ của chính mình.",
           "tl": "Ang payo na huwag umasa sa sariling unawa ay parang pagsampal sa sarili kong diskarte na madalas naman palang mali.",
           "th": "การถูกเตือนไม่ให้พึ่งพาความฉลาดของตัวเองนี่เหมือนโดนตบหน้าเรียกสติเวลาเรามั่นใจในแผนการที่ผิดพลาดของตัวเองเกินไป",
-          "sw": "Kuambiwa usitegemee akili zako mwenyewe ni kama kukumbushwa kuwa mipango yangu ya kujivunia mara nyingi haina mwelekeo."
+          "sw": "Kuambiwa usitegemee akili zako mwenyewe ni kama kukumbushwa kuwa mipango yangu ya kujivunia mara nyingi haina mwelekeo.",
+          "it": "Sentirsi dire di non confidare nella propria intelligenza è un attacco diretto al mio ego e alle mie decisioni di vita quantomeno discutibili."
         }
     },
     "2026-09-09": {
@@ -9925,7 +10687,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "箴言 4:10-27",
@@ -9937,7 +10700,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Proverbs 4:10-27",
           "tl": "Proverbs 4:10-27",
           "th": "Proverbs 4:10-27",
-          "sw": "Proverbs 4:10-27"
+          "sw": "Proverbs 4:10-27",
+          "it": "Proverbi 4:10-27"
         },
         comment: {
           "ja": "右にも左にも曲がるなと忠告されるほど、私たちの足元は誘惑という名の落とし穴だらけなのだと痛感する。",
@@ -9949,7 +10713,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Lời khuyên không được lệch trái hay phải nhắc nhở rằng cuộc sống này đầy rẫy những cám dỗ chực chờ làm ta vấp ngã.",
           "tl": "Ang paalalang huwag lumiko sa kanan o kaliwa ay patunay lang na punong-puno ng tukso ang bawat hakbang natin.",
           "th": "การถูกเตือนไม่ให้หันซ้ายหรือขวาทำให้รู้เลยว่าในแต่ละวันเราต้องเจอสิ่งเร้าที่คอยดึงให้เราออกนอกลู่นอกทางมากแค่ไหน",
-          "sw": "Kuambiwa usigeuke kulia wala kushoto ni ukumbusho tosha kuwa maisha yamejaa vishawishi vinavyojaribu kutupoteza njia kila siku."
+          "sw": "Kuambiwa usigeuke kulia wala kushoto ni ukumbusho tosha kuwa maisha yamejaa vishawishi vinavyojaribu kutupoteza njia kila siku.",
+          "it": "Ricevere il consiglio di non voltarsi né a destra né a sinistra dimostra solo quante distrazioni ci tendono un agguato ogni singolo giorno."
         }
     },
     "2026-09-10": {
@@ -9964,7 +10729,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "箴言 16:1-33",
@@ -9976,7 +10742,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Proverbs 16:1-33",
           "tl": "Proverbs 16:1-33",
           "th": "Proverbs 16:1-33",
-          "sw": "Proverbs 16:1-33"
+          "sw": "Proverbs 16:1-33",
+          "it": "Proverbi 16:1-33"
         },
         comment: {
           "ja": "計画を立てるのは人間ですが、結局その通りにいかないのが人生というもので、神様の采配に身を任せるほうがよっぽど気が楽です。",
@@ -9988,7 +10755,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Con người lập kế hoạch nhưng đời không như mơ, nên đôi khi buông tay để mọi thứ thuận theo ý Trời lại là cách sống nhẹ nhàng nhất.",
           "tl": "Tayong mga tao ang nagpaplano, pero ang buhay ay may sariling takbo, kaya mas mainam na lang na ipaubaya ang lahat sa Kanya.",
           "th": "เราวางแผนไว้ดิบดีแต่ชีวิตมักจะมีเซอร์ไพรส์เสมอ การปล่อยวางและเชื่อมั่นในสิ่งที่เหนือกว่าจึงเป็นวิธีจัดการความเครียดที่ดีที่สุด",
-          "sw": "Sisi hupanga mipango, lakini maisha yana njia zake, hivyo kuacha kujaribu kudhibiti kila kitu na kumwamini Mungu ndilo suluhisho la amani."
+          "sw": "Sisi hupanga mipango, lakini maisha yana njia zake, hivyo kuacha kujaribu kudhibiti kila kitu na kumwamini Mungu ndilo suluhisho la amani.",
+          "it": "Noi facciamo piani ma la vita ha tutt'altri programmi, e onor del vero mollare il controllo è una liberazione incredibile."
         }
     },
     "2026-09-11": {
@@ -10003,7 +10771,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "箴言 22:1-29",
@@ -10015,7 +10784,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Proverbs 22:1-29",
           "tl": "Proverbs 22:1-29",
           "th": "Proverbs 22:1-29",
-          "sw": "Proverbs 22:1-29"
+          "sw": "Proverbs 22:1-29",
+          "it": "Proverbi 22:1-29"
         },
         comment: {
           "ja": "名声や富よりも人間としての評判が大事だと言われても、結局は目先の損得勘定に振り回されてしまうのが私たちという生き物だ。",
@@ -10027,7 +10797,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Biết rằng danh tiếng quan trọng hơn tiền bạc nhưng vẫn mãi loay hoay với những lợi ích trước mắt, đó chính là bản chất thật của chúng ta.",
           "tl": "Ang sabihing mas mahalaga ang mabuting pangalan kaysa sa kayamanan, ngunit patuloy pa ring naghahabol sa pera, ay ang walang katapusang ironiya ng buhay.",
           "th": "การถูกบอกว่าชื่อเสียงสำคัญกว่าเงินทอง แต่ก็ยังคงหมกมุ่นอยู่กับผลประโยชน์ตรงหน้า คือความย้อนแย้งที่เป็นธรรมชาติที่สุดของมนุษย์เรา",
-          "sw": "Kuambiwa kuwa jina zuri ni bora kuliko utajiri, lakini bado tukihangaika na faida za muda mfupi, ndiyo hali halisi ya kibinadamu."
+          "sw": "Kuambiwa kuwa jina zuri ni bora kuliko utajiri, lakini bado tukihangaika na faida za muda mfupi, ndiyo hali halisi ya kibinadamu.",
+          "it": "Sentirsi dire che una buona reputazione vale più delle ricchezze e poi continuare a ossessionarsi per lo stipendio è la classica ironia umana."
         }
     },
     "2026-09-12": {
@@ -10042,7 +10813,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "箴言 31:1-31",
@@ -10054,7 +10826,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Proverbs 31:1-31",
           "tl": "Proverbs 31:1-31",
           "th": "Proverbs 31:1-31",
-          "sw": "Proverbs 31:1-31"
+          "sw": "Proverbs 31:1-31",
+          "it": "Proverbi 31:1-31"
         },
         comment: {
           "ja": "スーパーウーマンすぎる箴言31章の女性を読んで、自分の生活の散らかり具合に思わず遠い目をしてしまうのは私だけではないはずだ。",
@@ -10066,7 +10839,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Đọc về người phụ nữ hoàn hảo trong Châm ngôn 31 rồi nhìn lại đống quần áo bừa bộn của chính mình, đó đúng là một cú tát thực tế.",
           "tl": "Ang basahin ang tungkol sa babae sa Kawikaan 31 at pagkatapos ay tumingin sa tambak ng labada sa kwarto ko ay ang tunay na sampal ng realidad.",
           "th": "การอ่านเรื่องหญิงสาวในสุภาษิตบทที่ 31 แล้วหันมามองกองผ้าที่ยังไม่ได้ซักในห้องตัวเอง คือความจริงอันแสนเจ็บปวดที่พบเจอได้ทุกวัน",
-          "sw": "Kusoma kuhusu mwanamke wa Mithali 31 kisha kutazama rundo la nguo chafu chumbani kwangu ni ukweli mchungu ambao sote tunaujua."
+          "sw": "Kusoma kuhusu mwanamke wa Mithali 31 kisha kutazama rundo la nguo chafu chumbani kwangu ni ukweli mchungu ambao sote tunaujua.",
+          "it": "Leggere della donna di Proverbi trentuno e poi guardare la pila di vestiti sulla sedia è il controllo della realtà definitivo."
         }
     },
     "2026-09-13": {
@@ -10081,7 +10855,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "伝道の書 2:1-26",
@@ -10093,7 +10868,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Ecclesiastes 2:1-26",
           "tl": "Ecclesiastes 2:1-26",
           "th": "Ecclesiastes 2:1-26",
-          "sw": "Ecclesiastes 2:1-26"
+          "sw": "Ecclesiastes 2:1-26",
+          "it": "Ecclesiaste 2:1-26"
         },
         comment: {
           "ja": "あれもこれもと手を出して結局むなしさにたどり着くソロモンの姿、現代のSNSで他人のキラキラした生活を覗き見して疲れ果てている私たちそのものだ。",
@@ -10105,7 +10881,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Vua Solomon trải nghiệm đủ mọi thú vui rồi nhận ra tất cả chỉ là hư không, nghe sao mà giống tâm trạng chúng ta sau khi lướt mạng xã hội cả ngày rồi thấy trống rỗng.",
           "tl": "Ang pagsubok ni Solomon sa lahat ng bagay at pagkadismaya sa huli ay katulad ng ating paghahanap ng ligaya sa social media na nauuwi lang din sa pagod.",
           "th": "โซโลมอนผู้ลองทำทุกอย่างแต่สุดท้ายก็ว่างเปล่า ไม่ต่างอะไรกับเราที่พยายามเติมเต็มชีวิตด้วยสิ่งของและยอดไลก์จนเหนื่อยล้าไปหมด",
-          "sw": "Sulemani kujaribu kila kitu na kuishia na ubatili ni kama sisi tunavyohangaika kutafuta kuridhika kwenye mitandao ya kijamii na kuishia kuchoka."
+          "sw": "Sulemani kujaribu kila kitu na kuishia na ubatili ni kama sisi tunavyohangaika kutafuta kuridhika kwenye mitandao ya kijamii na kuishia kuchoka.",
+          "it": "Salomone che insegue ogni piacere per poi scoprire che è tutto un vuoto pneumatico siamo letteralmente noi che scrolliamo i social fino a esaurimento."
         }
     },
     "2026-09-14": {
@@ -10120,7 +10897,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "イザヤ書 1:1-31",
@@ -10132,7 +10910,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Isaiah 1:1-31",
           "tl": "Isaiah 1:1-31",
           "th": "Isaiah 1:1-31",
-          "sw": "Isaiah 1:1-31"
+          "sw": "Isaiah 1:1-31",
+          "it": "Isaia 1:1-31"
         },
         comment: {
           "ja": "どれだけ盛大な儀式や立派な礼拝を捧げても、隣人への優しさを忘れていたら神様に見抜かれているという事実は、現代の宗教的なパフォーマンスへの強烈な皮肉だ。",
@@ -10144,7 +10923,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Chúa phê phán những nghi lễ phô trương trong khi bỏ quên người khốn khó chính là lời cảnh tỉnh cho những ai chỉ biết thể hiện đức tin qua vẻ bề ngoài.",
           "tl": "Ang pagpuna ng Diyos sa mga walang kabuluhang ritwal habang pinababayaan ang kapwa ay isang matinding paalala na hindi sapat ang pakitang-tao lang sa relihiyon.",
           "th": "พระเจ้าทรงตำหนิพิธีกรรมที่ว่างเปล่าในขณะที่เพิกเฉยต่อเพื่อนมนุษย์ เป็นการเตือนสติเราว่าศรัทธาที่แท้จริงไม่ใช่แค่การแสดงละครทางศาสนา",
-          "sw": "Mungu kukemea ibada za kisherehe huku jirani akipuuza ni ukumbusho mkali kwamba imani haipaswi kuwa maonyesho ya nje tu bila upendo wa kweli."
+          "sw": "Mungu kukemea ibada za kisherehe huku jirani akipuuza ni ukumbusho mkali kwamba imani haipaswi kuwa maonyesho ya nje tu bila upendo wa kweli.",
+          "it": "Dio che striglia i riti vuoti è la sveglia definitiva per chi fa sceneggiate di fede senza preoccuparsi davvero del prossimo."
         }
     },
     "2026-09-15": {
@@ -10159,7 +10939,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "イザヤ書 2:1-22",
@@ -10171,7 +10952,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Isaiah 2:1-22",
           "tl": "Isaiah 2:1-22",
           "th": "Isaiah 2:1-22",
-          "sw": "Isaiah 2:1-22"
+          "sw": "Isaiah 2:1-22",
+          "it": "Isaia 2:1-22"
         },
         comment: {
           "ja": "剣を鋤に打ち替えるという平和な未来を夢見つつ、結局は銀や金や馬に依存してしまう人間の矛盾、いつの時代も変わりませんね。",
@@ -10183,7 +10965,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Mơ về việc biến gươm giáo thành lưỡi cày trong khi vẫn ám ảnh bởi vàng bạc và ngựa xe là sự mâu thuẫn điển hình của con người.",
           "tl": "Ang mangarap na gawing araro ang mga espada habang abala pa rin sa ginto at pilak ay ang pinakakaraniwang kahinaan nating mga tao.",
           "th": "ฝันถึงการเปลี่ยนดาบให้เป็นคันไถ แต่ก็ยังหมกมุ่นอยู่กับเงินทองและม้าศึก นี่แหละคือความย้อนแย้งในใจมนุษย์ที่แก้ไม่หาย",
-          "sw": "Kuota ndoto ya kubadilisha panga kuwa majembe huku tukiwa bado tunashikilia dhahabu na fedha ni utata wa kibinadamu ambao haujabadilika."
+          "sw": "Kuota ndoto ya kubadilisha panga kuwa majembe huku tukiwa bado tunashikilia dhahabu na fedha ni utata wa kibinadamu ambao haujabadilika.",
+          "it": "Sognare la pace ma continuare a ossessionarsi per il conto in banca e gli ultimi gadget è la più grande contraddizione umana."
         }
     },
     "2026-09-16": {
@@ -10198,7 +10981,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "イザヤ書 3:13-26",
@@ -10210,7 +10994,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Isaiah 3:13-26",
           "tl": "Isaiah 3:13-26",
           "th": "Isaiah 3:13-26",
-          "sw": "Isaiah 3:13-26"
+          "sw": "Isaiah 3:13-26",
+          "it": "Isaia 3:13-26"
         },
         comment: {
           "ja": "ファッションや持ち物で武装して自分を大きく見せようとする心理、何千年経ってもSNSのプロフィール欄で戦っている現代人と全く同じですね。",
@@ -10222,7 +11007,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Cố gắng khoe khoang bản thân qua trang phục và phụ kiện chẳng khác nào cách chúng ta đang cố tô vẽ cho trang cá nhân trên mạng xã hội bây giờ.",
           "tl": "Ang paggamit ng mamahaling gamit para magmukhang importante ay katulad lang ng ginagawa natin sa ating mga social media profile ngayon.",
           "th": "การพยายามเสริมภาพลักษณ์ด้วยแฟชั่นและของใช้หรูหรานั้น ไม่ต่างอะไรกับการที่เราพยายามจัดโปรไฟล์บนโซเชียลมีเดียให้ดูดีในทุกวันนี้เลย",
-          "sw": "Kujaribu kujionyesha kwa nguo na vitu vya thamani ni sawa kabisa na kile tunachofanya leo kwenye kurasa zetu za mitandao ya kijamii."
+          "sw": "Kujaribu kujionyesha kwa nguo na vitu vya thamani ni sawa kabisa na kile tunachofanya leo kwenye kurasa zetu za mitandao ya kijamii.",
+          "it": "Cercare di sembrare importanti attraverso vestiti e apparenze è esattamente quello che facciamo oggi sui profili dei social network."
         }
     },
     "2026-09-17": {
@@ -10237,7 +11023,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "イザヤ書 5:8-30",
@@ -10249,7 +11036,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Isaiah 5:8-30",
           "tl": "Isaiah 5:8-30",
           "th": "Isaiah 5:8-30",
-          "sw": "Isaiah 5:8-30"
+          "sw": "Isaiah 5:8-30",
+          "it": "Isaia 5:8-30"
         },
         comment: {
           "ja": "隣の土地まで買い占めて限界まで拡大しようとするイザヤ時代の欲張りさんたち、現代の終わらないラットレースを先取りしすぎている。",
@@ -10261,7 +11049,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Những kẻ thời Ê-sai cố gắng thâu tóm mọi tấc đất xung quanh thực sự là những phiên bản cổ xưa của hội chứng cuồng công việc thời nay.",
           "tl": "Ang mga taong gustong sakupin ang lahat ng lupa noong panahon ni Isaias ay parang mga modernong tao na hindi marunong makuntento sa kanilang mga gamit.",
           "th": "คนที่พยายามกว้านซื้อที่ดินทุกตารางนิ้วในสมัยอิสยาห์ดูไม่ต่างอะไรกับคนยุคนี้ที่หมกมุ่นอยู่กับการสะสมทรัพย์สินจนลืมใช้ชีวิต",
-          "sw": "Watu wa wakati wa Isaya waliotaka kumiliki kila kipande cha ardhi ni kama watu wa leo ambao hawatosheki na kile walichonacho."
+          "sw": "Watu wa wakati wa Isaya waliotaka kumiliki kila kipande cha ardhi ni kama watu wa leo ambao hawatosheki na kile walichonacho.",
+          "it": "Quei personaggi dei tempi di Isaia che volevano accumulare tutto sono fondamentalmente i nostri antenati della frenesia lavorativa moderna."
         }
     },
     "2026-09-18": {
@@ -10276,7 +11065,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "イザヤ書 7:1-25",
@@ -10288,7 +11078,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Isaiah 7:1-25",
           "tl": "Isaiah 7:1-25",
           "th": "Isaiah 7:1-25",
-          "sw": "Isaiah 7:1-25"
+          "sw": "Isaiah 7:1-25",
+          "it": "Isaia 7:1-25"
         },
         comment: {
           "ja": "パニックでガチガチに震える王様に「とりあえず落ち着いて深呼吸しなよ」と諭すイザヤ、完全にメンタルケアの専門家。",
@@ -10300,7 +11091,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Ê-sai khuyên vị vua đang hoảng loạn hãy bình tĩnh và hít thở sâu giống như một chuyên gia tâm lý đang cố gắng trấn an một người sắp suy sụp.",
           "tl": "Ang payo ni Isaias sa takot na takot na hari na huminga nang malalim at magpakalma ay parang isang therapist na sinusubukang ayusin ang mental breakdown ng pasyente.",
           "th": "การที่อิสยาห์บอกให้กษัตริย์ที่กำลังขวัญเสียใจเย็นลงและหายใจเข้าลึกๆ นั้นช่างเหมือนกับนักจิตวิทยาที่กำลังรับมือกับคนที่กำลังสติแตกสุดๆ",
-          "sw": "Isaya kumwambia mfalme aliyejawa na hofu apumue kwa kina na atulie ni kama mshauri anayejaribu kumtuliza mtu aliyepagawa na msongo wa mawazo."
+          "sw": "Isaya kumwambia mfalme aliyejawa na hofu apumue kwa kina na atulie ni kama mshauri anayejaribu kumtuliza mtu aliyepagawa na msongo wa mawazo.",
+          "it": "Vedere Isaia che dice a un re terrorizzato di calmarsi e respirare profondo è come avere un terapeuta che cerca di gestire una crisi di nervi."
         }
     },
     "2026-09-19": {
@@ -10315,7 +11107,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "イザヤ書 9:1-21",
@@ -10327,7 +11120,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Isaiah 9:1-21",
           "tl": "Isaiah 9:1-21",
           "th": "Isaiah 9:1-21",
-          "sw": "Isaiah 9:1-21"
+          "sw": "Isaiah 9:1-21",
+          "it": "Isaia 9:1-21"
         },
         comment: {
           "ja": "暗闇の中で光を待ちわびるイザヤの言葉は、まるで深夜のSNSで救いを求めてスクロールし続ける私たちの姿そのものだ。",
@@ -10339,7 +11133,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Lời của Ê-sai về việc chờ đợi ánh sáng trong bóng tối giống hệt cảm giác chúng ta lướt mạng xã hội lúc nửa đêm để tìm chút hy vọng.",
           "tl": "Ang paghihintay ni Isaias ng liwanag sa gitna ng dilim ay parang tayo na nag-i-scroll sa social media sa madaling araw para humanap ng karamay.",
           "th": "คำพูดของอิสยาห์ที่รอคอยแสงสว่างในความมืดดูเหมือนการที่เราไถฟีดโซเชียลในยามดึกเพื่อหาความหวังเล็กๆ น้อยๆ ในชีวิต",
-          "sw": "Maneno ya Isaya kuhusu kusubiri nuru gizani ni kama sisi tunavyokaa usiku kucha kwenye simu tukitafuta tumaini."
+          "sw": "Maneno ya Isaya kuhusu kusubiri nuru gizani ni kama sisi tunavyokaa usiku kucha kwenye simu tukitafuta tumaini.",
+          "it": "Attendere la luce nel buio descritto da Isaia sembra esattamente quando scorriamo lo schermo del telefono a notte fonda in cerca di speranza."
         }
     },
     "2026-09-20": {
@@ -10354,7 +11149,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "イザヤ書 10:20-34",
@@ -10366,7 +11162,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Isaiah 10:20-34",
           "tl": "Isaiah 10:20-34",
           "th": "Isaiah 10:20-34",
-          "sw": "Isaiah 10:20-34"
+          "sw": "Isaiah 10:20-34",
+          "it": "Isaia 10:20-34"
         },
         comment: {
           "ja": "散々強がっていた人間が最終的に神様を頼るしかないと悟るまでのプロセス、どれだけ遠回りすれば気が済むのかと自分に問いかけたくなる。",
@@ -10378,7 +11175,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Chứng kiến cảnh con người cứ cố chấp làm theo ý mình cho đến khi bế tắc mới chịu quay về với Chúa, thật là một bài học đắt giá về việc đi đường vòng.",
           "tl": "Ang makita ang mga tao na pilit ginagawa ang gusto nila hanggang sa wala na silang mapuntahan kundi ang bumalik sa Diyos ay nakakapagod na paalala kung gaano tayo mahilig magpaligoy-ligoy.",
           "th": "การเห็นผู้คนดื้อรั้นทำตามใจตัวเองจนสุดท้ายต้องหันกลับมาหาพระเจ้า ทำให้รู้เลยว่าเราชอบเลือกเส้นทางที่อ้อมโลกแค่ไหน",
-          "sw": "Kuona watu wakisisitiza njia zao wenyewe hadi mwisho wanapomgeukia Mungu inatukumbusha jinsi tunavyopenda njia ndefu na ngumu bila sababu."
+          "sw": "Kuona watu wakisisitiza njia zao wenyewe hadi mwisho wanapomgeukia Mungu inatukumbusha jinsi tunavyopenda njia ndefu na ngumu bila sababu.",
+          "it": "Vedere la gente insistere sui propri piani fino a sbattere contro un muro ci ricorda quanto amiamo complicarci la vita."
         }
     },
     "2026-09-21": {
@@ -10393,7 +11191,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "イザヤ書 13:1-22",
@@ -10405,7 +11204,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Isaiah 13:1-22",
           "tl": "Isaiah 13:1-22",
           "th": "Isaiah 13:1-22",
-          "sw": "Isaiah 13:1-22"
+          "sw": "Isaiah 13:1-22",
+          "it": "Isaia 13:1-22"
         },
         comment: {
           "ja": "バビロンの崩壊を予告するイザヤの言葉は、どれほど強大な組織や権力も時代の流れには勝てないという歴史の無情さを突きつけてくる。",
@@ -10417,7 +11217,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Lời tiên tri của Ê-sai về sự sụp đổ của Ba-by-lôn nhắc nhở chúng ta rằng dù đế chế có hùng mạnh đến đâu, lịch sử vẫn luôn có cách để đưa mọi thứ trở về con số không.",
           "tl": "Ang hula ni Isaias tungkol sa pagbagsak ng Babilonia ay paalala na gaano man kalaki ang isang imperyo, sa huli ay may hangganan din ang lahat.",
           "th": "คำพยากรณ์ของอิสยาห์เรื่องบาบิโลนล่มสลายเตือนใจเราว่า ไม่ว่าอาณาจักรจะยิ่งใหญ่เพียงใด สุดท้ายก็หนีไม่พ้นกฎแห่งความไม่เที่ยงของประวัติศาสตร์",
-          "sw": "Utabiri wa Isaya kuhusu kuanguka kwa Babeli unatukumbusha kwamba hata mamlaka iwe kubwa kiasi gani, historia ina njia yake ya kuonyesha kwamba hakuna kinachodumu milele."
+          "sw": "Utabiri wa Isaya kuhusu kuanguka kwa Babeli unatukumbusha kwamba hata mamlaka iwe kubwa kiasi gani, historia ina njia yake ya kuonyesha kwamba hakuna kinachodumu milele.",
+          "it": "La profezia sulla caduta di Babilonia ci ricorda che per quanto grande sia un impero, la storia trova sempre il modo di resettarsi."
         }
     },
     "2026-09-22": {
@@ -10432,7 +11233,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "イザヤ書 14:1-32",
@@ -10444,7 +11246,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Isaiah 14:1-32",
           "tl": "Isaiah 14:1-32",
           "th": "Isaiah 14:1-32",
-          "sw": "Isaiah 14:1-32"
+          "sw": "Isaiah 14:1-32",
+          "it": "Isaia 14:1-32"
         },
         comment: {
           "ja": "天から落ちた明けの明星のように、高慢のあまり頂点から転がり落ちる姿は、いつの時代も変わらない人間の悲喜劇だ。",
@@ -10456,7 +11259,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Chứng kiến một người rơi từ đỉnh cao xuống vì kiêu ngạo, giống như ngôi sao mai rụng xuống, là tấn bi kịch nhân loại vẫn lặp lại qua bao thế hệ.",
           "tl": "Ang makitang mahulog ang isang tao mula sa tuktok dahil sa sobrang pagmamalaki ay isang trahedyang paulit-ulit na nangyayari sa bawat henerasyon.",
           "th": "การได้เห็นใครสักคนตกจากจุดสูงสุดเพียงเพราะความหยิ่งผยองนั้น เป็นโศกนาฏกรรมที่วนเวียนซ้ำซากในทุกยุคสมัยจริงๆ",
-          "sw": "Kuona mtu akianguka kutoka kileleni kwa sababu ya kiburi chake ni ile ile huzuni ya kibinadamu inayojirudia katika kila kizazi."
+          "sw": "Kuona mtu akianguka kutoka kileleni kwa sababu ya kiburi chake ni ile ile huzuni ya kibinadamu inayojirudia katika kila kizazi.",
+          "it": "Vedere qualcuno cadere dall'alto a causa della propria superbia è la classica tragedia che si ripete in ogni generazione."
         }
     },
     "2026-09-23": {
@@ -10471,7 +11275,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "イザヤ書 22:1-25",
@@ -10483,7 +11288,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Isaiah 22:1-25",
           "tl": "Isaiah 22:1-25",
           "th": "Isaiah 22:1-25",
-          "sw": "Isaiah 22:1-25"
+          "sw": "Isaiah 22:1-25",
+          "it": "Isaia 22:1-25"
         },
         comment: {
           "ja": "神殿の奥底までゴミ溜めのように腐敗させるシェブナという男、地位に執着して自分の墓を立派に作りすぎるあたりが人間臭くて生々しい。",
@@ -10495,7 +11301,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Shebna bận rộn xây dựng ngôi mộ xa hoa cho chính mình trong khi thành phố đang sụp đổ là ví dụ điển hình về việc đặt ưu tiên sai chỗ.",
           "tl": "Si Shebna na abala sa pagpapagawa ng magarbong libingan habang guguho na ang lungsod ay malinaw na halimbawa ng maling prayoridad.",
           "th": "เชบนาที่มัวแต่สร้างหลุมศพหรูหราให้ตัวเองในขณะที่เมืองกำลังจะล่มสลาย คือตัวอย่างชัดเจนของการให้ความสำคัญกับสิ่งที่ไม่ควรให้.",
-          "sw": "Shebna kushughulika na kujijengea kaburi la kifahari wakati mji unaporomoka ni mfano kamili wa kuweka kipaumbele kwenye mambo yasiyo na maana."
+          "sw": "Shebna kushughulika na kujijengea kaburi la kifahari wakati mji unaporomoka ni mfano kamili wa kuweka kipaumbele kwenye mambo yasiyo na maana.",
+          "it": "Preoccuparsi di costruire una tomba lussuosa mentre la città cade a pezzi è l'esempio perfetto di avere le priorità totalmente sottosopra."
         }
     },
     "2026-09-24": {
@@ -10510,7 +11317,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "イザヤ書 24:1-23",
@@ -10522,7 +11330,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Isaiah 24:1-23",
           "tl": "Isaiah 24:1-23",
           "th": "Isaiah 24:1-23",
-          "sw": "Isaiah 24:1-23"
+          "sw": "Isaiah 24:1-23",
+          "it": "Isaia 24:1-23"
         },
         comment: {
           "ja": "地球全体が揺れ動くような大混乱の中でも、結局は自分の楽しみや損得を優先してしまう人間の懲りなさはある意味で最強。",
@@ -10534,7 +11343,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Ngay cả khi cả thế giới rung chuyển, con người vẫn ưu tiên những lợi ích nhỏ nhen của chính mình, sự ngoan cố đó thật đáng kinh ngạc.",
           "tl": "Kahit yumanig na ang buong mundo, inuuna pa rin ng tao ang sarili nilang interes, na nagpapatunay lang kung gaano tayo katigas ang ulo.",
           "th": "แม้โลกจะสั่นสะเทือนไปทั่ว แต่ผู้คนก็ยังคงให้ความสำคัญกับความสะดวกสบายเล็กๆ น้อยๆ ของตัวเอง ความดื้อรั้นนี้ช่างน่าทึ่งจริงๆ",
-          "sw": "Hata wakati ulimwengu unatetemeka, wanadamu bado wanatanguliza starehe zao ndogo, na ukaidi huo ni wa kushangaza kweli."
+          "sw": "Hata wakati ulimwengu unatetemeka, wanadamu bado wanatanguliza starehe zao ndogo, na ukaidi huo ni wa kushangaza kweli.",
+          "it": "Anche quando il mondo trema, riusciamo sempre a pensare ai nostri piccoli interessi personali con una caparbietà impressionante."
         }
     },
     "2026-09-25": {
@@ -10549,7 +11359,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "イザヤ書 26:1-21",
@@ -10561,7 +11372,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Isaiah 26:1-21",
           "tl": "Isaiah 26:1-21",
           "th": "Isaiah 26:1-21",
-          "sw": "Isaiah 26:1-21"
+          "sw": "Isaiah 26:1-21",
+          "it": "Isaia 26:1-21"
         },
         comment: {
           "ja": "どれだけ隠れて悪巧みをしても神様には全部筒抜けだと知ったとき、自分の検索履歴を見られたときのような冷や汗が出る。",
@@ -10573,7 +11385,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Nhận ra Chúa thấy hết mọi thứ ta cố giấu cũng giống như cảm giác ai đó bất ngờ đọc to lịch sử duyệt web của mình vậy.",
           "tl": "Ang malaman na nakikita ng Diyos ang lahat ng tinatago natin ay parang biglang binabasa ang iyong browser history sa harap ng maraming tao.",
           "th": "การรู้ว่าพระเจ้าทรงเห็นทุกอย่างที่เราพยายามซ่อนไว้ ให้ความรู้สึกเหมือนมีคนมาเปิดประวัติการเข้าชมเว็บไซต์ของเราให้อ่านกลางที่สาธารณะ",
-          "sw": "Kujua kuwa Mungu anaona kila kitu tunachojaribu kuficha ni kama mtu kusoma historia yako ya mtandao mbele za watu wote."
+          "sw": "Kujua kuwa Mungu anaona kila kitu tunachojaribu kuficha ni kama mtu kusoma historia yako ya mtandao mbele za watu wote.",
+          "it": "Realizzare che Dio vede tutto quello che cerchiamo di nascondere è come scoprire che qualcuno ha proiettato la cronologia del nostro browser su uno schermo gigante."
         }
     },
     "2026-09-26": {
@@ -10588,7 +11401,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "イザヤ書 28:1-29",
@@ -10600,7 +11414,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Isaiah 28:1-29",
           "tl": "Isaiah 28:1-29",
           "th": "Isaiah 28:1-29",
-          "sw": "Isaiah 28:1-29"
+          "sw": "Isaiah 28:1-29",
+          "it": "Isaia 28:1-29"
         },
         comment: {
           "ja": "酔っ払ってふらついている祭司たちを見てイザヤが呆れている様子、現代のニュース番組を観ているときの感覚と大差ない。",
@@ -10612,7 +11427,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Chứng kiến Ê-sai ngao ngán nhìn các thầy tế lễ say xỉn loạng choạng cũng giống hệt tâm trạng chúng ta khi xem bản tin thời sự thời nay.",
           "tl": "Ang pagkadismaya ni Isaias sa mga paring lasing na naglalakad nang pasuray-suray ay eksaktong nararamdaman natin kapag nanonood ng balita ngayon.",
           "th": "การเห็นอิสยาห์เอือมระอากับบรรดาปุโรหิตที่เมามายจนเดินเซนั้น ไม่ต่างอะไรกับความรู้สึกของเราเวลาดูข่าวในทุกวันนี้เลย",
-          "sw": "Kuona Isaya akiwa amekata tamaa na makuhani wanaotembea kwa kulewa ni kama jinsi tunavyohisi tunapotazama habari siku hizi."
+          "sw": "Kuona Isaya akiwa amekata tamaa na makuhani wanaotembea kwa kulewa ni kama jinsi tunavyohisi tunapotazama habari siku hizi.",
+          "it": "Vedere Isaia frustrato dai sacerdoti che barcollano è esattamente la stessa sensazione che proviamo noi oggi guardando il telegiornale la sera."
         }
     },
     "2026-09-27": {
@@ -10627,7 +11443,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "イザヤ書 30:1-33",
@@ -10639,7 +11456,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Isaiah 30:1-33",
           "tl": "Isaiah 30:1-33",
           "th": "Isaiah 30:1-33",
-          "sw": "Isaiah 30:1-33"
+          "sw": "Isaiah 30:1-33",
+          "it": "Isaia 30:1-33"
         },
         comment: {
           "ja": "助けを求めてエジプトに走るイザヤの時代の民、自分に都合のいい解決策を求めて結局遠回りをする私たちの姿そのものだ。",
@@ -10651,7 +11469,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Chạy sang Ai Cập cầu cứu là hình ảnh phản chiếu sự cố chấp của con người khi cứ muốn tìm lối tắt thay vì tin vào giải pháp đơn giản nhất.",
           "tl": "Ang pagtakbo sa Egipto para humingi ng tulong ay parang tayo lang na pilit naghahanap ng shortcut kahit alam nating mali ang direksyon.",
           "th": "การวิ่งไปหาอียิปต์เพื่อขอความช่วยเหลือก็เหมือนเราที่พยายามหาทางลัดแบบผิดๆ ทั้งที่รู้อยู่เต็มอกว่านั่นไม่ใช่คำตอบ",
-          "sw": "Kukimbilia Misri kutafuta msaada ni kama sisi tunavyojaribu kutafuta njia za mkato zenye shaka badala ya kutegemea suluhisho la kweli."
+          "sw": "Kukimbilia Misri kutafuta msaada ni kama sisi tunavyojaribu kutafuta njia za mkato zenye shaka badala ya kutegemea suluhisho la kweli.",
+          "it": "Correre in Egitto a cercare aiuto è l'equivalente antico di cercare soluzioni su internet sapendo benissimo che non dovremmo farlo."
         }
     },
     "2026-09-28": {
@@ -10666,7 +11485,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "イザヤ書 40:1-31",
@@ -10678,7 +11498,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Isaiah 40:1-31",
           "tl": "Isaiah 40:1-31",
           "th": "Isaiah 40:1-31",
-          "sw": "Isaiah 40:1-31"
+          "sw": "Isaiah 40:1-31",
+          "it": "Isaia 40:1-31"
         },
         comment: {
           "ja": "草のようにすぐ枯れる人間の儚さを嘆きつつ、それでも星の数ほどある約束を信じようとするこの緩急の激しさが人生のリアルだ。",
@@ -10690,7 +11511,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Than thở về thân phận mong manh như cỏ dại mà vẫn cố tin vào những lời hứa vĩnh cửu chính là bản chất đầy mâu thuẫn của con người.",
           "tl": "Ang pagdadalamhati sa pagiging marupok natin gaya ng damo habang pilit na kumakapit sa mga pangakong walang hanggan ang tunay na drama ng buhay.",
           "th": "การบ่นว่าชีวิตเปราะบางเหมือนต้นหญ้าแต่ยังพยายามเชื่อในคำสัญญาที่ยิ่งใหญ่ คือความย้อนแย้งที่น่าเห็นใจของความเป็นมนุษย์",
-          "sw": "Kulalamika kuwa sisi ni kama nyasi zinazonyauka huku tukijaribu kuamini ahadi za milele ndiyo hali halisi ya maisha yetu ya kila siku."
+          "sw": "Kulalamika kuwa sisi ni kama nyasi zinazonyauka huku tukijaribu kuamini ahadi za milele ndiyo hali halisi ya maisha yetu ya kila siku.",
+          "it": "Lamentarci di essere fragili come l'erba mentre cerchiamo di credere a promesse eterne è la perfetta montagna rusa emotiva dell'essere umani."
         }
     },
     "2026-09-29": {
@@ -10705,7 +11527,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "イザヤ書 41:1-29",
@@ -10717,7 +11540,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Isaiah 41:1-29",
           "tl": "Isaiah 41:1-29",
           "th": "Isaiah 41:1-29",
-          "sw": "Isaiah 41:1-29"
+          "sw": "Isaiah 41:1-29",
+          "it": "Isaia 41:1-29"
         },
         comment: {
           "ja": "神様が隣にいるのに、必死で木や石の偶像をこねて安心しようとする人々の姿、現代のスマホ中毒と重なって笑えない。",
@@ -10729,7 +11553,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc con người cố gắng tìm sự an tâm nơi những bức tượng gỗ đá khi Chúa đang hiện diện ngay đó, cũng giống như cách chúng ta tìm kiếm sự an ủi trong thế giới ảo thay vì đời thực.",
           "tl": "Ang pagpilit ng mga tao na humanap ng kapanatagan sa mga idolo habang nasa tabi na nila ang Diyos ay parang paghahanap ng validation sa social media sa halip na sa totoong buhay.",
           "th": "การที่ผู้คนพยายามหาความอุ่นใจจากรูปเคารพที่ทำจากไม้และหินทั้งที่พระเจ้าอยู่ตรงนั้น ก็เหมือนกับการที่เราพยายามหาความมั่นใจจากยอดไลก์แทนที่จะมองหาความจริงข้างๆ ตัว",
-          "sw": "Watu kujaribu kutafuta usalama kwenye sanamu za mbao na mawe wakati Mungu yupo hapo hapo ni kama mtu anayetafuta faraja kwenye mitandao ya kijamii badala ya maisha halisi."
+          "sw": "Watu kujaribu kutafuta usalama kwenye sanamu za mbao na mawe wakati Mungu yupo hapo hapo ni kama mtu anayetafuta faraja kwenye mitandao ya kijamii badala ya maisha halisi.",
+          "it": "Vedere la gente costruire idoli per sentirsi sicura quando Dio è proprio lì accanto è come passare ore sui social cercando conferme al posto di guardare la realtà."
         }
     },
     "2026-09-30": {
@@ -10744,7 +11569,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "イザヤ書 42:10-25",
@@ -10756,7 +11582,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Isaiah 42:10-25",
           "tl": "Isaiah 42:10-25",
           "th": "Isaiah 42:10-25",
-          "sw": "Isaiah 42:10-25"
+          "sw": "Isaiah 42:10-25",
+          "it": "Isaia 42:10-25"
         },
         comment: {
           "ja": "散々手助けを無視して勝手に失敗しては「なんで助けてくれないんだ」と文句を言う、思春期の反抗期みたいな人類の歴史がここに詰まっている。",
@@ -10768,7 +11595,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc từ chối mọi sự giúp đỡ rồi quay sang trách móc Chúa khi gặp rắc rối chẳng khác nào thái độ nổi loạn của một đứa trẻ tuổi teen đối với cha mẹ.",
           "tl": "Ang pagtanggi sa tulong at pagkatapos ay paninisi sa Diyos kapag nagkamali na ay parang tipikal na yugto ng pagrerebelde ng isang tinedyer.",
           "th": "การปฏิเสธความช่วยเหลือทุกอย่างแล้วพอทำพังก็หันมาโทษพระเจ้าว่าทำไมไม่ช่วย คือพฤติกรรมวัยรุ่นใจแตกของมนุษยชาติที่วนลูปไม่จบสิ้น",
-          "sw": "Kukataa msaada wote na kisha kumlaumu Mungu baada ya kufanya makosa ni kama hatua ya uasi ya kijana mdogo katika historia ya ubinadamu."
+          "sw": "Kukataa msaada wote na kisha kumlaumu Mungu baada ya kufanya makosa ni kama hatua ya uasi ya kijana mdogo katika historia ya ubinadamu.",
+          "it": "Ignorare ogni aiuto, combinare un disastro e poi prendersela con Dio perché non è intervenuto è la classica fase adolescenziale di tutta l'umanità."
         }
     },
     "2026-10-01": {
@@ -10783,7 +11611,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "イザヤ書 44:1-28",
@@ -10795,7 +11624,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Isaiah 44:1-28",
           "tl": "Isaiah 44:1-28",
           "th": "Isaiah 44:1-28",
-          "sw": "Isaiah 44:1-28"
+          "sw": "Isaiah 44:1-28",
+          "it": "Isaia 44:1-28"
         },
         comment: {
           "ja": "木を切って半分で暖を取り残り半分で神像を作るイザヤの皮肉、現代の私たちが流行り廃りに右往左往する姿と重なって笑えない。",
@@ -10807,7 +11637,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Sự châm biếm của Ê-sai về việc dùng một nửa khúc gỗ để sưởi ấm và nửa kia để làm thần tượng thật sự là một lời nhắc nhở về những ưu tiên sai lầm của con người.",
           "tl": "Ang paggamit ng kalahati ng kahoy para pampainit at ang kalahati naman ay para sa rebulto ay isang nakakatawang paalala kung gaano tayo kadalas magkamali sa ating mga prayoridad.",
           "th": "การที่อิสยาห์ล้อเลียนคนที่เอาไม้ไปทำฟืนครึ่งหนึ่งแล้วเอาอีกครึ่งไปทำรูปเคารพนั้น ช่างจี้จุดเรื่องความย้อนแย้งในใจคนเราได้ดีเหลือเกิน",
-          "sw": "Isaya anapohoji upuuzi wa kutumia nusu ya mti kwa kupasha moto na nusu nyingine kwa kuabudu sanamu, anatukumbusha jinsi tunavyopoteza mwelekeo kirahisi."
+          "sw": "Isaya anapohoji upuuzi wa kutumia nusu ya mti kwa kupasha moto na nusu nyingine kwa kuabudu sanamu, anatukumbusha jinsi tunavyopoteza mwelekeo kirahisi.",
+          "it": "L'ironia di usare metà tronco per scaldarsi e l'altra metà per fare un idolo ci ricorda quanto siano assurde le nostre priorità a volte."
         }
     },
     "2026-10-02": {
@@ -10822,7 +11653,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "イザヤ書 45:14-25",
@@ -10834,7 +11666,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Isaiah 45:14-25",
           "tl": "Isaiah 45:14-25",
           "th": "Isaiah 45:14-25",
-          "sw": "Isaiah 45:14-25"
+          "sw": "Isaiah 45:14-25",
+          "it": "Isaia 45:14-25"
         },
         comment: {
           "ja": "神様が隠れているように見える時ほど、実は一番近くで導いているという逆転の発想、人生の迷子には一番必要な処方箋かもしれない。",
@@ -10846,7 +11679,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Chúa dường như ẩn mình ngay lúc Ngài đang dẫn dắt chúng ta sát sao nhất chính là một cú ngoặt đầy hy vọng cho những lúc ta thấy lạc lối.",
           "tl": "Ang katotohanan na tila nagtatago ang Diyos sa sandaling Siya ang pinakamalapit na gumagabay sa atin ay isang mahalagang paalala sa tuwing tayo ay naliligaw.",
           "th": "ความจริงที่ว่าพระเจ้าดูเหมือนจะซ่อนตัวอยู่ทั้งที่จริงแล้วพระองค์กำลังนำทางเราอยู่นั้น เป็นบทเรียนที่ช่วยปลอบใจได้ดีเหลือเกินในวันที่ชีวิตดูมืดแปดด้าน",
-          "sw": "Wazo la kwamba Mungu anaonekana kuwa amejificha wakati ndipo anapotuongoza kwa karibu zaidi ni ukweli tunaohitaji kukumbuka tunapohisi tumepotea."
+          "sw": "Wazo la kwamba Mungu anaonekana kuwa amejificha wakati ndipo anapotuongoza kwa karibu zaidi ni ukweli tunaohitaji kukumbuka tunapohisi tumepotea.",
+          "it": "L'idea che Dio sembri nascosto proprio mentre ci sta guidando più da vicino è quel colpo di scena che dovremmo ricordare quando ci sentiamo persi."
         }
     },
     "2026-10-03": {
@@ -10861,7 +11695,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "イザヤ書 48:1-22",
@@ -10873,7 +11708,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Isaiah 48:1-22",
           "tl": "Isaiah 48:1-22",
           "th": "Isaiah 48:1-22",
-          "sw": "Isaiah 48:1-22"
+          "sw": "Isaiah 48:1-22",
+          "it": "Isaia 48:1-22"
         },
         comment: {
           "ja": "口では立派なことを言いつつ心はどこか遠くにある人たちへの神様の指摘は、耳が痛すぎて直視できない。",
@@ -10885,7 +11721,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Chúa chỉ ra rằng miệng chúng ta nói một đằng nhưng lòng lại nghĩ một nẻo, một sự thật phũ phàng mà ai cũng từng mắc phải.",
           "tl": "Ang pagpuna ng Diyos sa mga taong magaling lang sa salita pero malayo ang puso ay isang realidad na masakit tanggapin.",
           "th": "พระเจ้าชี้ให้เห็นว่าปากพูดอย่างหนึ่งแต่ใจไปอีกทาง เป็นความจริงที่กระแทกใจจนแทบไม่อยากยอมรับ",
-          "sw": "Mungu kuonyesha kwamba kinywa chetu kinasema kitu kimoja lakini mioyo yetu iko mahali pengine ni ukweli mchungu tunaopaswa kukubali."
+          "sw": "Mungu kuonyesha kwamba kinywa chetu kinasema kitu kimoja lakini mioyo yetu iko mahali pengine ni ukweli mchungu tunaopaswa kukubali.",
+          "it": "Sentirci dire che la nostra bocca dice una cosa ma il nostro cuore è altrove è quel controllo della realtà che ci fa arrossire non poco."
         }
     },
     "2026-10-04": {
@@ -10900,7 +11737,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "イザヤ書 49:1-26",
@@ -10912,7 +11750,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Isaiah 49:1-26",
           "tl": "Isaiah 49:1-26",
           "th": "Isaiah 49:1-26",
-          "sw": "Isaiah 49:1-26"
+          "sw": "Isaiah 49:1-26",
+          "it": "Isaia 49:1-26"
         },
         comment: {
           "ja": "自分を忘れたかのように落ち込む私に、刺青のように刻まれているから忘れるわけないだろうと諭す神様の愛は、重いけれど温かい。",
@@ -10924,7 +11763,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Khi ta cảm thấy bị bỏ rơi và Chúa nhắc rằng Ngài đã khắc tên ta trong lòng bàn tay mình, đó là sự an ủi tuyệt đối cho những lúc ta thấy mình nhỏ bé.",
           "tl": "Ang pakiramdam na nakalimutan ka na ng mundo hanggang sa ipaalala ng Diyos na nakaukit ka sa kanyang mga palad ay sapat na para gumaan ang loob.",
           "th": "ในวันที่รู้สึกเหมือนถูกลืม การได้ยินว่าพระเจ้าสลักชื่อเราไว้ในอุ้งพระหัตถ์เป็นความอุ่นใจที่หาอะไรเปรียบไม่ได้เลย",
-          "sw": "Kuhisi kusahaulika na kisha kukumbushwa na Mungu kwamba amekuchora kwenye viganja vya mikono yake ni faraja kuu kwa wakati wowote wa upweke."
+          "sw": "Kuhisi kusahaulika na kisha kukumbushwa na Mungu kwamba amekuchora kwenye viganja vya mikono yake ni faraja kuu kwa wakati wowote wa upweke.",
+          "it": "Sentirsi dimenticati e sentirsi rispondere che Dio ci ha incisi sulle palme delle sue mani è la dose di affetto che ci rimette in sesto."
         }
     },
     "2026-10-05": {
@@ -10939,7 +11779,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "イザヤ書 50:1-11",
@@ -10951,7 +11792,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Isaiah 50:1-11",
           "tl": "Isaiah 50:1-11",
           "th": "Isaiah 50:1-11",
-          "sw": "Isaiah 50:1-11"
+          "sw": "Isaiah 50:1-11",
+          "it": "Isaia 50:1-11"
         },
         comment: {
           "ja": "離婚証明書なんてないと言い放つ神様、どれだけ突き放されても離れてくれない元サヤへの執念が重すぎて逆に愛を感じる。",
@@ -10963,7 +11805,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Chúa khẳng định không có tờ giấy ly hôn nào là cách Ngài nói rằng dù chúng ta có tệ đến đâu, Ngài cũng nhất quyết không buông tay.",
           "tl": "Ang pagsabi ng Diyos na walang divorce paper ay patunay na kahit gaano pa tayo magkamali, hindi Niya talaga tayo bibitawan.",
           "th": "การที่พระเจ้าบอกว่าไม่มีใบหย่าเป็นวิธีบอกว่าไม่ว่าเราจะทำตัวแย่แค่ไหน พระองค์ก็ไม่มีวันปล่อยมือจากเราแน่นอน",
-          "sw": "Mungu kusisitiza kuwa hakuna cheti cha talaka ni njia yake ya kuonyesha kuwa hata tufanye makosa kiasi gani, hatatuacha kamwe."
+          "sw": "Mungu kusisitiza kuwa hakuna cheti cha talaka ni njia yake ya kuonyesha kuwa hata tufanye makosa kiasi gani, hatatuacha kamwe.",
+          "it": "Dio che insiste sul fatto che non esista alcun atto di divorzio dimostra una caparbietà nell'amarci che ha quasi del paradossale."
         }
     },
     "2026-10-06": {
@@ -10978,7 +11821,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "イザヤ書 51:1-23",
@@ -10990,7 +11834,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Isaiah 51:1-23",
           "tl": "Isaiah 51:1-23",
           "th": "Isaiah 51:1-23",
-          "sw": "Isaiah 51:1-23"
+          "sw": "Isaiah 51:1-23",
+          "it": "Isaia 51:1-23"
         },
         comment: {
           "ja": "ちっぽけな人間のせいで神様が怒るわけないと分かっていても、つい自分の失敗のせいだと思って凹んでしまうこの自意識過剰さ、人類共通の悩みかもしれない。",
@@ -11002,7 +11847,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Dù biết sai lầm nhỏ nhoi của mình chẳng thể làm hỏng kế hoạch của Chúa, nhưng chúng ta vẫn cứ tự trách, đúng là cái tôi của con người thật kỳ lạ.",
           "tl": "Alam nating hindi kayang sirain ng maliliit nating pagkakamali ang plano ng Diyos, pero sige pa rin tayo sa pagsisi sa sarili; talagang mapagbiro ang ating ego.",
           "th": "การที่เรารู้ว่าความผิดพลาดเล็กน้อยของเราไม่สามารถทำลายแผนการอันยิ่งใหญ่ของพระเจ้าได้ แต่เราก็ยังอดโทษตัวเองไม่ได้ นี่มันคืออาการหลงตัวเองชัดๆ",
-          "sw": "Kujua kuwa makosa yetu madogo hayawezi kuharibu mpango mkuu wa Mungu, lakini bado tukijilaumu kwa kila kitu, ni uthibitisho wa jinsi tunavyojiona kuwa muhimu sana."
+          "sw": "Kujua kuwa makosa yetu madogo hayawezi kuharibu mpango mkuu wa Mungu, lakini bado tukijilaumu kwa kila kitu, ni uthibitisho wa jinsi tunavyojiona kuwa muhimu sana.",
+          "it": "Pensare che i nostri piccoli errori quotidiani possano mandare all'aria i piani divini è solo il nostro ego che lavora straordinari."
         }
     },
     "2026-10-07": {
@@ -11017,7 +11863,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "イザヤ書 52:1-15",
@@ -11029,7 +11876,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Isaiah 52:1-15",
           "tl": "Isaiah 52:1-15",
           "th": "Isaiah 52:1-15",
-          "sw": "Isaiah 52:1-15"
+          "sw": "Isaiah 52:1-15",
+          "it": "Isaia 52:1-15"
         },
         comment: {
           "ja": "塵を払い落として立ち上がれと言われても、まずは溜まった洗濯物をどうにかしたいと思ってしまうのが人間というもの。",
@@ -11041,7 +11889,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Được bảo hãy phủi bụi và đứng dậy nghe thì hay đấy, nhưng hầu hết chúng ta vẫn chỉ đang loay hoay với đống quần áo chưa giặt.",
           "tl": "Ang payong magpagpag ng alikabok at bumangon ay madaling sabihin, pero karamihan sa atin ay abala pa sa pag-iisip kung paano tatapusin ang tambak na labahin.",
           "th": "การถูกบอกให้สะบัดฝุ่นแล้วลุกขึ้นยืนฟังดูดี แต่คนส่วนใหญ่ก็ยังคงวุ่นวายกับการจัดการกองผ้าที่ยังไม่ได้ซักอยู่ดี",
-          "sw": "Kuambiwa uondoe mavumbi na uinuke ni jambo zuri, lakini wengi wetu bado tunahangaika tu na rundo la nguo chafu kule kona."
+          "sw": "Kuambiwa uondoe mavumbi na uinuke ni jambo zuri, lakini wengi wetu bado tunahangaika tu na rundo la nguo chafu kule kona.",
+          "it": "Ci dicono di scrollarci la polvere di dosso e alzarci, ma la verità è che siamo tutti bloccati a fissare la pila di panni da stirare."
         }
     },
     "2026-10-08": {
@@ -11056,7 +11905,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "イザヤ書 53:1-12",
@@ -11068,7 +11918,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Isaiah 53:1-12",
           "tl": "Isaiah 53:1-12",
           "th": "Isaiah 53:1-12",
-          "sw": "Isaiah 53:1-12"
+          "sw": "Isaiah 53:1-12",
+          "it": "Isaia 53:1-12"
         },
         comment: {
           "ja": "見た目が地味だからと見向きもされない人が実は一番のキーマンだったという展開、現代の職場でもよくある逆転劇すぎて胸に刺さる。",
@@ -11080,7 +11931,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Người bị phớt lờ chỉ vì vẻ ngoài bình thường lại chính là nhân vật quan trọng nhất, một cú lật kèo thường thấy trong thực tế khiến ta phải suy ngẫm.",
           "tl": "Yung taong binabalewala dahil hindi mukhang bida pero siya pala ang pinaka-importante, parang totoong buhay lang na nakaka-relate.",
           "th": "คนที่ถูกมองข้ามเพราะรูปลักษณ์ภายนอกกลับกลายเป็นคนสำคัญที่สุด เป็นบทเรียนชีวิตที่พบเจอได้บ่อยจนน่าตกใจ",
-          "sw": "Mtu anayepuuzwa kwa sababu ya mwonekano wake kumbe ndiye mtu muhimu zaidi ni ukweli mchungu tunaouona kila siku kazini."
+          "sw": "Mtu anayepuuzwa kwa sababu ya mwonekano wake kumbe ndiye mtu muhimu zaidi ni ukweli mchungu tunaouona kila siku kazini.",
+          "it": "La persona che tutti ignorano perché ha un aspetto qualunque che si rivela poi fondamentale è il classico colpo di scena della vita."
         }
     },
     "2026-10-09": {
@@ -11095,7 +11947,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "イザヤ書 54:1-17",
@@ -11107,7 +11960,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Isaiah 54:1-17",
           "tl": "Isaiah 54:1-17",
           "th": "Isaiah 54:1-17",
-          "sw": "Isaiah 54:1-17"
+          "sw": "Isaiah 54:1-17",
+          "it": "Isaia 54:1-17"
         },
         comment: {
           "ja": "限界までテントを広げろと励まされるイザヤの言葉は、失敗を恐れて縮こまる自分にこそ必要な強引なポジティブさだ。",
@@ -11119,7 +11973,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Được bảo hãy nới rộng lều ngay khi đang cảm thấy nhỏ bé là kiểu lạc quan táo bạo mà tất cả chúng ta đều cần khi cứ mãi thu mình trong vùng an toàn.",
           "tl": "Ang utos na palawakin ang tolda kahit pakiramdam mo ay hindi mo kaya ay ang uri ng matapang na optimismo na kailangan natin kapag takot tayong lumabas sa ating comfort zone.",
           "th": "การถูกบอกให้ขยายเต็นท์ในตอนที่เรารู้สึกตัวเล็กจ้อย คือความมองโลกในแง่ดีแบบหักดิบที่เราทุกคนต้องการเวลาที่เราไม่กล้าเสี่ยง",
-          "sw": "Kuambiwa upanue hema lako wakati unahisi mdogo ni aina ya matumaini makali tunayohitaji tunapoogopa kutoka katika eneo letu la usalama."
+          "sw": "Kuambiwa upanue hema lako wakati unahisi mdogo ni aina ya matumaini makali tunayohitaji tunapoogopa kutoka katika eneo letu la usalama.",
+          "it": "Chiederci di allargare la tenda proprio quando ci sentiamo minuscoli è quell'ottimismo sfacciato di cui abbiamo disperatamente bisogno."
         }
     },
     "2026-10-10": {
@@ -11134,7 +11989,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "イザヤ書 55:1-13",
@@ -11146,7 +12002,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Isaiah 55:1-13",
           "tl": "Isaiah 55:1-13",
           "th": "Isaiah 55:1-13",
-          "sw": "Isaiah 55:1-13"
+          "sw": "Isaiah 55:1-13",
+          "it": "Isaia 55:1-13"
         },
         comment: {
           "ja": "金も払わずに飲み食いしに来いという神様の招待状、現代のカフェなら即閉店だがこれこそが究極の恩寵というやつだ。",
@@ -11158,7 +12015,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Lời mời ăn uống miễn phí của Chúa sẽ khiến bất kỳ quán cà phê hiện đại nào phá sản, nhưng đó chính là cách ân điển vận hành.",
           "tl": "Ang paanyaya ng Diyos na kumain at uminom nang libre ay magpapabangkarote sa anumang negosyo ngayon, pero ganyan talaga ang biyaya pag walang bayad.",
           "th": "คำเชิญของพระเจ้าให้มากินดื่มฟรีอาจทำให้ร้านกาแฟสมัยนี้เจ๊งได้ทันที แต่นั่นแหละคือวิถีแห่งพระคุณที่ไม่มีใบเสร็จ",
-          "sw": "Mwaliko wa Mungu wa kula na kunywa bila malipo ungefilisi biashara yoyote ya kisasa, lakini ndivyo neema inavyofanya kazi bila bili."
+          "sw": "Mwaliko wa Mungu wa kula na kunywa bila malipo ungefilisi biashara yoyote ya kisasa, lakini ndivyo neema inavyofanya kazi bila bili.",
+          "it": "Un invito divino a mangiare e bere gratis farebbe fallire qualsiasi locale oggi, ma è esattamente questa la bellezza della grazia."
         }
     },
     "2026-10-11": {
@@ -11173,7 +12031,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "イザヤ書 57:1-21",
@@ -11185,7 +12044,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Isaiah 57:1-21",
           "tl": "Isaiah 57:1-21",
           "th": "Isaiah 57:1-21",
-          "sw": "Isaiah 57:1-21"
+          "sw": "Isaiah 57:1-21",
+          "it": "Isaia 57:1-21"
         },
         comment: {
           "ja": "悪人が好き勝手して平穏に暮らす一方で、正しい人が早くいなくなる世の中の理不尽さは、昔も今も変わらないのが一番の悩みどころです。",
@@ -11197,7 +12057,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc kẻ ác sống an nhàn còn người tốt lại ra đi sớm là một thực tế trớ trêu tồn tại từ ngàn xưa đến nay.",
           "tl": "Ang nakakainis na realidad na mas nagtatagumpay ang masama habang nauuna pang mawala ang mabubuti ay problema na noon pa man.",
           "th": "ความจริงที่ว่าคนชั่วได้ดีในขณะที่คนดีจากไปเร็วนั้น เป็นเรื่องน่าหงุดหงิดใจที่เกิดขึ้นมาตั้งแต่ยุคโบราณจนถึงปัจจุบัน",
-          "sw": "Ukweli mchungu kwamba watu wabaya hufanikiwa huku wema wakitoweka mapema ni tatizo ambalo limekuwepo tangu zamani."
+          "sw": "Ukweli mchungu kwamba watu wabaya hufanikiwa huku wema wakitoweka mapema ni tatizo ambalo limekuwepo tangu zamani.",
+          "it": "Vedere chi si comporta male passarla liscia mentre i bravi ragazzi faticano è l'eterna ingiustizia che ci fa storcere il naso."
         }
     },
     "2026-10-12": {
@@ -11212,7 +12073,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "イザヤ書 58:1-14",
@@ -11224,7 +12086,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Isaiah 58:1-14",
           "tl": "Isaiah 58:1-14",
           "th": "Isaiah 58:1-14",
-          "sw": "Isaiah 58:1-14"
+          "sw": "Isaiah 58:1-14",
+          "it": "Isaia 58:1-14"
         },
         comment: {
           "ja": "断食してアピールしているのに隣の同僚と喧嘩しているなんて、神様も呆れて溜息をついていそうです。",
@@ -11236,7 +12099,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Nhịn ăn để tỏ ra đạo mạo nhưng lại quay sang cãi cọ với hàng xóm là kiểu giả tạo khiến người ta chỉ biết thở dài.",
           "tl": "Ang pag-aayuno para magmukhang banal habang nakikipag-away sa kapitbahay ay ang uri ng pagpapaimbabaw na nakakainis kahit sa langit.",
           "th": "การถือศีลอดเพื่อสร้างภาพว่าเคร่งครัดแต่กลับไปทะเลาะกับเพื่อนบ้าน เป็นความย้อนแย้งที่น่าถอนหายใจที่สุด",
-          "sw": "Kufunga ili uonekane mtakatifu huku ukigombana na jirani ni aina ya unafiki ambayo inafanya mbingu zishangae."
+          "sw": "Kufunga ili uonekane mtakatifu huku ukigombana na jirani ni aina ya unafiki ambayo inafanya mbingu zishangae.",
+          "it": "Digiunare per sembrare santi mentre litighiamo con il vicino di casa è l'ennesima dimostrazione della nostra incoerenza quotidiana."
         }
     },
     "2026-10-13": {
@@ -11251,7 +12115,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "イザヤ書 59:1-21",
@@ -11263,7 +12128,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Isaiah 59:1-21",
           "tl": "Isaiah 59:1-21",
           "th": "Isaiah 59:1-21",
-          "sw": "Isaiah 59:1-21"
+          "sw": "Isaiah 59:1-21",
+          "it": "Isaia 59:1-21"
         },
         comment: {
           "ja": "神様が遠くに感じるのは腕が短いからではなく、私たちが勝手に壁を積み上げているせいだという事実に刺さりすぎて息が止まる。",
@@ -11275,7 +12141,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Nhận ra rằng Chúa không hề xa cách mà chính chúng ta tự dựng lên những bức tường ngăn cách thật là một sự thật đau lòng.",
           "tl": "Ang katotohanang hindi malayo ang Diyos kundi tayo ang nagtatayo ng mga pader sa pagitan natin ay isang masakit na realidad.",
           "th": "ความจริงที่ว่าพระเจ้าไม่ได้อยู่ไกล แต่เป็นเราเองที่สร้างกำแพงกั้นขึ้นมานั้น เป็นความจริงที่จุกจนพูดไม่ออก",
-          "sw": "Kutambua kuwa Mungu hayuko mbali, bali sisi ndio tunajijengea kuta za kututenganisha, ni ukweli unaoumiza lakini wa kweli."
+          "sw": "Kutambua kuwa Mungu hayuko mbali, bali sisi ndio tunajijengea kuta za kututenganisha, ni ukweli unaoumiza lakini wa kweli.",
+          "it": "Realizzare che Dio non è distante, ma siamo noi a costruire barriere con i nostri capricci, è una vera doccia fredda."
         }
     },
     "2026-10-14": {
@@ -11290,7 +12157,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "イザヤ書 60:1-22",
@@ -11302,7 +12170,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Isaiah 60:1-22",
           "tl": "Isaiah 60:1-22",
           "th": "Isaiah 60:1-22",
-          "sw": "Isaiah 60:1-22"
+          "sw": "Isaiah 60:1-22",
+          "it": "Isaia 60:1-22"
         },
         comment: {
           "ja": "暗闇の中でも起き上がって光を放てと言われても、まず布団から出るのが一番の難関だという現代人の悲哀。",
@@ -11314,7 +12183,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Được bảo hãy đứng dậy và tỏa sáng trong bóng tối nghe thật tuyệt, nhưng thử thách lớn nhất vẫn là làm sao để rời khỏi giường.",
           "tl": "Ang utos na bumangon at magliwanag sa dilim ay maganda, pero ang totoo, ang pinakamahirap ay ang pagbangon sa kama.",
           "th": "การถูกบอกให้ลุกขึ้นและส่องแสงในความมืดฟังดูดี แต่ความท้าทายที่สุดคือการลุกออกจากเตียงในตอนเช้านี่แหละ",
-          "sw": "Kuambiwa uinuke na uangaze gizani ni jambo zuri, lakini changamoto kubwa zaidi bado ni ile hatua ya kwanza ya kuamka kitandani."
+          "sw": "Kuambiwa uinuke na uangaze gizani ni jambo zuri, lakini changamoto kubwa zaidi bado ni ile hatua ya kwanza ya kuamka kitandani.",
+          "it": "Ci dicono di alzarci e brillare nel buio, ma il vero miracolo quotidiano resta semplicemente riuscire a scendere dal letto."
         }
     },
     "2026-10-15": {
@@ -11329,7 +12199,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "イザヤ書 61:1-11",
@@ -11341,7 +12212,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Isaiah 61:1-11",
           "tl": "Isaiah 61:1-11",
           "th": "Isaiah 61:1-11",
-          "sw": "Isaiah 61:1-11"
+          "sw": "Isaiah 61:1-11",
+          "it": "Isaia 61:1-11"
         },
         comment: {
           "ja": "灰の代わりに髪飾りをというイザヤの言葉は、どん底の時にこそ誰かに一番言われたい最高に気の利いた慰め言葉だ。",
@@ -11353,7 +12225,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Lời hứa thay tro bụi bằng vòng hoa của Ê-sai chính là lời an ủi tuyệt vời nhất mà ai cũng muốn nghe khi đang ở trong giai đoạn tồi tệ nhất.",
           "tl": "Ang ipagpalit ang abo sa korona ng kagandahan ay ang uri ng pampalakas-loob na kailangan nating marinig kapag tayo ay nasa pinakamababa.",
           "th": "การเปลี่ยนเถ้าถ่านให้เป็นมงกุฎแห่งความงดงามคือคำปลอบใจที่ทรงพลังที่สุดที่เราอยากได้ยินในวันที่ชีวิตพังไม่เป็นท่า",
-          "sw": "Kubadilishana majivu na taji ya uzuri ni aina ya faraja ambayo sote tunahitaji tunapohisi tumefika mwisho wa safari."
+          "sw": "Kubadilishana majivu na taji ya uzuri ni aina ya faraja ambayo sote tunahitaji tunapohisi tumefika mwisho wa safari.",
+          "it": "Scambiare la cenere con un diadema di bellezza è la dose di incoraggiamento definitivo che serve a tutti quando si tocca il fondo."
         }
     },
     "2026-10-16": {
@@ -11368,7 +12241,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "イザヤ書 63:1-19",
@@ -11380,7 +12254,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Isaiah 63:1-19",
           "tl": "Isaiah 63:1-19",
           "th": "Isaiah 63:1-19",
-          "sw": "Isaiah 63:1-19"
+          "sw": "Isaiah 63:1-19",
+          "it": "Isaia 63:1-19"
         },
         comment: {
           "ja": "散々逆らっておいてピンチになると急に「昔の恩を忘れたのか」と神に文句を言うイスラエルの民、現代の私たちと全く同じで苦笑いするしかない。",
@@ -11392,7 +12267,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Dân Y-sơ-ra-ên cứ phớt lờ Chúa rồi khi gặp họa lại quay sang trách móc Ngài, kiểu cư xử này đúng là phiên bản lỗi của chính chúng ta.",
           "tl": "Ang mga Israelita na hindi nakikinig sa Diyos pero biglang magrereklamo kapag may problema ay tila salamin ng ating sariling kakulitan.",
           "th": "ชาวอิสราเอลที่ทำตัวห่างเหินจากพระเจ้าแต่พอเดือดร้อนก็รีบหันมาทวงบุญคุณ คือความย้อนแย้งที่น่าขำเพราะมันเหมือนชีวิตเราเป๊ะ",
-          "sw": "Waisraeli kupuuza Mungu kisha kulalamika wakati wa shida ni aina ya unafiki wa kibinadamu ambao sote tunajikuta nao mara kwa mara."
+          "sw": "Waisraeli kupuuza Mungu kisha kulalamika wakati wa shida ni aina ya unafiki wa kibinadamu ambao sote tunajikuta nao mara kwa mara.",
+          "it": "Ignorare Dio finché arrivano i guai e poi chiedersi perché non aiuti più è quel livello di ipocrisia con cui facciamo tutti i conti."
         }
     },
     "2026-10-17": {
@@ -11407,7 +12283,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "イザヤ書 65:1-25",
@@ -11419,7 +12296,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Isaiah 65:1-25",
           "tl": "Isaiah 65:1-25",
           "th": "Isaiah 65:1-25",
-          "sw": "Isaiah 65:1-25"
+          "sw": "Isaiah 65:1-25",
+          "it": "Isaia 65:1-25"
         },
         comment: {
           "ja": "一日中手を広げて待っているのに無視され続ける神様と、自分のこだわりを突き通して空回りする人間、いつの時代もすれ違いのスケールが大きすぎる。",
@@ -11431,7 +12309,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Chúa dang tay đợi cả ngày mà vẫn bị phớt lờ, trong khi con người cứ khăng khăng làm theo ý mình, quả là một khoảng cách giao tiếp kinh điển.",
           "tl": "Ang paghihintay ng Diyos nang nakabukas ang mga braso habang binabalewala siya ng tao para sa sariling agenda ay ang sukdulang halimbawa ng hindi pagkakaunawaan.",
           "th": "พระเจ้าทรงรอคอยด้วยอ้อมแขนที่เปิดกว้างทั้งวันแต่ถูกเมิน ในขณะที่มนุษย์ก็เอาแต่ดื้อรั้นทำตามใจตัวเอง นี่คือตัวอย่างคลาสสิกของช่องว่างในการสื่อสารจริงๆ",
-          "sw": "Mungu akisubiri kwa mikono wazi kutwa nzima huku akipuuzwa na watu wanaofanya mambo yao wenyewe ni mfano dhahiri wa kutokuelewana kwa kiwango cha juu."
+          "sw": "Mungu akisubiri kwa mikono wazi kutwa nzima huku akipuuzwa na watu wanaofanya mambo yao wenyewe ni mfano dhahiri wa kutokuelewana kwa kiwango cha juu.",
+          "it": "Dio che aspetta tutto il giorno a braccia aperte mentre la gente lo ignora per fare di testa sua è la definizione di un cortocircuito comunicativo."
         }
     },
     "2026-10-18": {
@@ -11446,7 +12325,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "イザヤ書 66:1-24",
@@ -11458,7 +12338,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Isaiah 66:1-24",
           "tl": "Isaiah 66:1-24",
           "th": "Isaiah 66:1-24",
-          "sw": "Isaiah 66:1-24"
+          "sw": "Isaiah 66:1-24",
+          "it": "Isaia 66:1-24"
         },
         comment: {
           "ja": "天を玉座、地を足台と言い切る神様の前で、自分の小さな建物を自慢する人間の姿は、どう見ても壮大なコントにしか見えない。",
@@ -11470,7 +12351,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc con người khoe khoang về những tòa nhà nhỏ bé trước mặt một Đấng coi cả vũ trụ là bệ chân thật giống như một vở hài kịch quy mô lớn.",
           "tl": "Ang pagyayabang ng tao tungkol sa kanilang maliliit na gusali sa harap ng Diyos na itinuturing ang buong mundo na kanyang tuntungan ay isang nakakatawang komedya.",
           "th": "การที่มนุษย์อวดอาคารสิ่งก่อสร้างเล็กๆ ของตัวเองต่อหน้าพระเจ้าผู้ทรงเรียกสวรรค์ว่าบัลลังก์และแผ่นดินโลกเป็นที่วางพระบาทนั้น ดูเป็นเรื่องตลกขบขันระดับจักรวาลจริงๆ",
-          "sw": "Wanadamu kujivunia majengo yao madogo mbele ya Mungu anayeuita ulimwengu wote kiti chake cha miguu ni vichekesho vya kiwango cha juu sana."
+          "sw": "Wanadamu kujivunia majengo yao madogo mbele ya Mungu anayeuita ulimwengu wote kiti chake cha miguu ni vichekesho vya kiwango cha juu sana.",
+          "it": "Vedere gli umani che si vantano dei loro piccoli edifici davanti a un Dio che chiama la terra il suo sgabello è pura commedia cosmica."
         }
     },
     "2026-10-19": {
@@ -11485,7 +12367,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "エレミヤ書 1:1-19",
@@ -11497,7 +12380,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Jeremiah 1:1-19",
           "tl": "Jeremiah 1:1-19",
           "th": "Jeremiah 1:1-19",
-          "sw": "Jeremiah 1:1-19"
+          "sw": "Jeremiah 1:1-19",
+          "it": "Geremia 1:1-19"
         },
         comment: {
           "ja": "まだ子供だからと言い訳して逃げようとするエレミヤと、そんなの知ってるよと言わんばかりに背中を押す神様のやり取り、まるで新入社員と上司の攻防戦を見ている気分だ。",
@@ -11509,7 +12393,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Giê-rê-mi cố gắng viện cớ còn quá trẻ và Chúa thẳng thừng bác bỏ giống hệt cảnh một nhân viên mới đang tìm cách từ chối sếp mình.",
           "tl": "Ang pagdadahilan ni Jeremias na siya ay bata pa at ang hindi pagpapansin ng Diyos dito ay parang eksena lang ng bagong empleyado na sinusubukang tumanggi sa kanyang boss.",
           "th": "การที่เยเรมีย์พยายามอ้างว่าตัวเองยังเด็กเกินไปแต่พระเจ้ากลับเมินเฉยนั้น เหมือนเห็นภาพพนักงานใหม่กำลังพยายามปฏิเสธงานกับหัวหน้าเป๊ะเลย",
-          "sw": "Yeremia kujaribu kutumia kisingizio cha kuwa kijana sana na Mungu kukipuuza moja kwa moja ni kama kumuona mfanyakazi mpya akijaribu kukwepa majukumu kutoka kwa bosi wake."
+          "sw": "Yeremia kujaribu kutumia kisingizio cha kuwa kijana sana na Mungu kukipuuza moja kwa moja ni kama kumuona mfanyakazi mpya akijaribu kukwepa majukumu kutoka kwa bosi wake.",
+          "it": "Geremia che cerca di giocare la carta della giovane età e Dio che la scarta all'istante è la versione divina del capo che ignora le tue scuse."
         }
     },
     "2026-10-20": {
@@ -11524,7 +12409,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "エレミヤ書 2:9-37",
@@ -11536,7 +12422,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Jeremiah 2:9-37",
           "tl": "Jeremiah 2:9-37",
           "th": "Jeremiah 2:9-37",
-          "sw": "Jeremiah 2:9-37"
+          "sw": "Jeremiah 2:9-37",
+          "it": "Geremia 2:9-37"
         },
         comment: {
           "ja": "壊れた水たまりにすがるより湧き出る泉に行けばいいのに、わざわざ苦労する方を選ぶ人間の習性はいつの時代も変わらないようだ。",
@@ -11548,7 +12435,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc cứ cố đào những bể nước nứt nẻ thay vì đi đến nguồn nước hằng sống là ví dụ điển hình cho việc con người tự làm khổ mình một cách không cần thiết.",
           "tl": "Ang pagpilit na maghukay ng mga sirang balon sa halip na pumunta sa bukal ng buhay na tubig ay ang perpektong halimbawa kung bakit natin pinahihirapan ang sarili natin.",
           "th": "การดันทุรังขุดบ่อที่แตกแทนที่จะไปตักน้ำจากแหล่งน้ำพุที่แท้จริง เป็นตัวอย่างชั้นดีของการที่มนุษย์ชอบทำให้ชีวิตตัวเองยากกว่าที่ควรจะเป็น",
-          "sw": "Kushikilia visima vilivyopasuka badala ya kwenda kwenye chemchemi ya maji ya uzima ndio mfano bora wa jinsi tunavyojifanyia maisha kuwa magumu bila sababu."
+          "sw": "Kushikilia visima vilivyopasuka badala ya kwenda kwenye chemchemi ya maji ya uzima ndio mfano bora wa jinsi tunavyojifanyia maisha kuwa magumu bila sababu.",
+          "it": "Aggrapparsi a cisterne rotte invece di andare alla fonte di acqua viva è il manuale perfetto per complicarsi la vita senza motivo."
         }
     },
     "2026-10-21": {
@@ -11563,7 +12451,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "エレミヤ書 3:1-25",
@@ -11575,7 +12464,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Jeremiah 3:1-25",
           "tl": "Jeremiah 3:1-25",
           "th": "Jeremiah 3:1-25",
-          "sw": "Jeremiah 3:1-25"
+          "sw": "Jeremiah 3:1-25",
+          "it": "Geremia 3:1-25"
         },
         comment: {
           "ja": "散々浮気しておいて神様にしれっと戻ってくるイスラエルの民の図々しさは、もはや一周回って清々しいレベル。",
@@ -11587,7 +12477,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Sự trơ trẽn của dân Y-sơ-ra-ên khi cứ phản bội rồi lại thản nhiên quay về như chưa có chuyện gì xảy ra thật đáng kinh ngạc.",
           "tl": "Ang kapal ng mukha ng Israel na magtaksil tapos babalik lang na parang walang nangyari ay nakakamangha sa totoo lang.",
           "th": "ความหน้าไม่อายของชาวอิสราเอลที่นอกใจไปทั่วแล้วยังกล้ากลับมาหาพระเจ้าเหมือนไม่มีอะไรเกิดขึ้นนั้นถือว่าสุดยอดจริงๆ",
-          "sw": "Ujasiri wa Israeli wa kutenda dhambi kisha kurudi kwa Mungu kana kwamba hakuna kilichotokea ni kiwango cha juu cha ubishi."
+          "sw": "Ujasiri wa Israeli wa kutenda dhambi kisha kurudi kwa Mungu kana kwamba hakuna kilichotokea ni kiwango cha juu cha ubishi.",
+          "it": "La sfacciataggine di Israele che combina guai e poi torna come se nulla fosse è un vero capolavoro di faccia tosta."
         }
     },
     "2026-10-22": {
@@ -11602,7 +12493,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "エレミヤ書 7:1-34",
@@ -11614,7 +12506,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Jeremiah 7:1-34",
           "tl": "Jeremiah 7:1-34",
           "th": "Jeremiah 7:1-34",
-          "sw": "Jeremiah 7:1-34"
+          "sw": "Jeremiah 7:1-34",
+          "it": "Geremia 7:1-34"
         },
         comment: {
           "ja": "神殿に行けば全てが帳消しになると勘違いしている人たち、現代のSNSで適当な投稿をして免罪符を得ようとする感覚に近い。",
@@ -11626,7 +12519,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc nghĩ rằng cứ đến đền thờ là mọi tội lỗi sẽ được xóa sạch cũng giống như việc đăng một lời xin lỗi giả tạo lên mạng để tẩy trắng bản thân vậy.",
           "tl": "Ang akala na ang pagpunta sa templo ay pambura ng masasamang gawa ay parang pag-post ng pekeng apology sa social media para malinis ang imahe.",
           "th": "คนที่คิดว่าแค่ไปโบสถ์ก็ล้างความผิดได้ทุกอย่างก็ไม่ต่างอะไรกับคนที่โพสต์ขอโทษแบบขอไปทีบนโซเชียลเพื่อหวังจะจบเรื่อง",
-          "sw": "Watu wanaofikiri kuwa kuhudhuria hekaluni kunafuta matendo yao mabaya ni sawa na watu wa kisasa wanaochapisha msamaha wa uongo mtandaoni ili kusafisha sifa zao."
+          "sw": "Watu wanaofikiri kuwa kuhudhuria hekaluni kunafuta matendo yao mabaya ni sawa na watu wa kisasa wanaochapisha msamaha wa uongo mtandaoni ili kusafisha sifa zao.",
+          "it": "Pensare che frequentare il tempio cancelli ogni cattiva azione è l'equivalente antico di pubblicare una falsa scusa online per ripulirsi la reputazione."
         }
     },
     "2026-10-23": {
@@ -11641,7 +12535,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "エレミヤ書 16:1-21",
@@ -11653,7 +12548,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Jeremiah 16:1-21",
           "tl": "Jeremiah 16:1-21",
           "th": "Jeremiah 16:1-21",
-          "sw": "Jeremiah 16:1-21"
+          "sw": "Jeremiah 16:1-21",
+          "it": "Geremia 16:1-21"
         },
         comment: {
           "ja": "結婚も葬式も禁止、おまけに宴会もダメと言われたエレミヤの孤独っぷりは、空気を読みすぎて疲弊する現代人の極致を見ているようだ。",
@@ -11665,7 +12561,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc bị cấm kết hôn, dự đám tang hay tiệc tùng khiến cuộc đời của Giê-rê-mi trở nên cô độc đến mức khó tin, một kiểu áp lực xã hội mà người hiện đại hẳn sẽ thấy rất quen.",
           "tl": "Ang pagbabawal kay Jeremias na mag-asawa, pumunta sa burol, o dumalo sa mga piging ay isang antas ng pag-iisa na tiyak na hindi kakayanin ng mga taong sanay sa social media.",
           "th": "การที่เยเรมีย์ถูกห้ามไม่ให้แต่งงาน ไปงานศพ หรือไปงานเลี้ยง เป็นความโดดเดี่ยวสุดโต่งที่แม้แต่คนชอบเก็บตัวที่สุดในยุคนี้ก็คงรู้สึกสะทกสะท้าน",
-          "sw": "Yeremia kukatazwa kuoa, kuhudhuria mazishi, au kwenda kwenye karamu ni kiwango cha upweke ambacho hata mtu anayependa faragha angeona ni kigumu sana."
+          "sw": "Yeremia kukatazwa kuoa, kuhudhuria mazishi, au kwenda kwenye karamu ni kiwango cha upweke ambacho hata mtu anayependa faragha angeona ni kigumu sana.",
+          "it": "Aver il divieto di sposarsi o andare alle feste è un livello di isolamento sociale che metterebbe a dura prova anche il più convinto solitario."
         }
     },
     "2026-10-24": {
@@ -11680,7 +12577,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "エレミヤ書 17:1-27",
@@ -11692,7 +12590,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Jeremiah 17:1-27",
           "tl": "Jeremiah 17:1-27",
           "th": "Jeremiah 17:1-27",
-          "sw": "Jeremiah 17:1-27"
+          "sw": "Jeremiah 17:1-27",
+          "it": "Geremia 17:1-27"
         },
         comment: {
           "ja": "心に罪を刻み込むなんて物騒なことを言われているけれど、結局のところ人は誰しも自分の都合の良いことしか覚えていないのがリアルなところだ。",
@@ -11704,7 +12603,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Dù lời cảnh báo về việc tội lỗi khắc sâu trong lòng nghe thật đáng sợ, nhưng thực tế là ai trong chúng ta cũng có trí nhớ chọn lọc khi nghĩ về lỗi lầm của chính mình.",
           "tl": "Sinasabing ang kasalanan ay nakaukit sa puso, pero sa totoo lang, lahat tayo ay may selective memory pagdating sa sarili nating mga pagkakamali.",
           "th": "คำเตือนเรื่องบาปที่ถูกสลักไว้ในใจฟังดูน่ากลัว แต่เอาเข้าจริงเราทุกคนต่างก็มีความจำแบบเลือกจำเวลาที่ต้องยอมรับความผิดของตัวเอง",
-          "sw": "Wanasema dhambi huchorwa moyoni, lakini ukweli ni kwamba sote tuna kumbukumbu za kuchagua pale tunapokosea wenyewe."
+          "sw": "Wanasema dhambi huchorwa moyoni, lakini ukweli ni kwamba sote tuna kumbukumbu za kuchagua pale tunapokosea wenyewe.",
+          "it": "Parlare di peccati incisi nel cuore fa impressione, ma si sa che tutti abbiamo una memoria fin troppo selettiva sui nostri sbagli."
         }
     },
     "2026-10-25": {
@@ -11719,7 +12619,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "エレミヤ書 18:11-23",
@@ -11731,7 +12632,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Jeremiah 18:11-23",
           "tl": "Jeremiah 18:11-23",
           "th": "Jeremiah 18:11-23",
-          "sw": "Jeremiah 18:11-23"
+          "sw": "Jeremiah 18:11-23",
+          "it": "Geremia 18:11-23"
         },
         comment: {
           "ja": "粘土をこね直す神様の忍耐強さと、何度作り直されてもまた形を変えてしまうエレミヤの不屈のメンタル、どっちも人間には真似できない領域。",
@@ -11743,7 +12645,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Kiên nhẫn nhào nặn lại bình gốm và tinh thần không chịu khuất phục của Giê-rê-mi cho thấy sự bền bỉ là một thử thách khó nhằn đối với bất cứ ai.",
           "tl": "Ang pagpapasensya ng Diyos sa paghuhulma ng luwad at ang katatagan ni Jeremias sa gitna ng pagsubok ay nagpapakita na ang pagbangon muli ay hindi madaling gawin.",
           "th": "ความอดทนของพระเจ้าในการปั้นดินใหม่และการที่เยเรมีย์ไม่ยอมแพ้แม้ชีวิตจะแตกสลายซ้ำแล้วซ้ำเล่า เป็นภาพสะท้อนความอดทนที่มนุษย์อย่างเราทำได้ยากจริงๆ",
-          "sw": "Uvumilivu wa Mungu katika kurekebisha udongo na ujasiri wa Yeremia wa kutokata tamaa ni mfano wa jinsi tunavyopaswa kusimama imara hata wakati mambo yanaharibika."
+          "sw": "Uvumilivu wa Mungu katika kurekebisha udongo na ujasiri wa Yeremia wa kutokata tamaa ni mfano wa jinsi tunavyopaswa kusimama imara hata wakati mambo yanaharibika.",
+          "it": "La pazienza infinita di Dio nel rimodellare l'argilla e la resistenza di Geremia dimostrano una resilienza che noi possiamo solo sognare."
         }
     },
     "2026-10-26": {
@@ -11758,7 +12661,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "エレミヤ書 31:1-40",
@@ -11770,7 +12674,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Jeremiah 31:1-40",
           "tl": "Jeremiah 31:1-40",
           "th": "Jeremiah 31:1-40",
-          "sw": "Jeremiah 31:1-40"
+          "sw": "Jeremiah 31:1-40",
+          "it": "Geremia 31:1-40"
         },
         comment: {
           "ja": "過去の失敗を全部忘れて新しい契約を結ぼうとする神様、どんだけ懐が深いのか、もはや人間離れした包容力。",
@@ -11782,7 +12687,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Chúa xóa bỏ mọi sai lầm trong quá khứ để thiết lập một giao ước mới chính là minh chứng cho sự bao dung vượt xa tầm hiểu biết của con người.",
           "tl": "Ang paglimot ng Diyos sa ating mga nakaraang pagkakamali para magsimula muli ay patunay ng Kanyang walang hanggang pagpapatawad.",
           "th": "การที่พระเจ้าเลือกจะลืมความผิดพลาดในอดีตของเราทั้งหมดเพื่อทำพันธสัญญาใหม่ เป็นความใจกว้างที่เกินกว่ามนุษย์อย่างเราจะจินตนาการถึง",
-          "sw": "Mungu kufuta makosa yetu ya zamani na kutupa mwanzo mpya ni uthibitisho wa jinsi upendo wake unavyozidi uelewa wetu wa kibinadamu."
+          "sw": "Mungu kufuta makosa yetu ya zamani na kutupa mwanzo mpya ni uthibitisho wa jinsi upendo wake unavyozidi uelewa wetu wa kibinadamu.",
+          "it": "Dio che cancella tutti i nostri errori passati per offrirci un nuovo inizio è la definizione stessa di una seconda possibilità."
         }
     },
     "2026-10-27": {
@@ -11797,7 +12703,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "エレミヤ書 32:1-44",
@@ -11809,7 +12716,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Jeremiah 32:1-44",
           "tl": "Jeremiah 32:1-44",
           "th": "Jeremiah 32:1-44",
-          "sw": "Jeremiah 32:1-44"
+          "sw": "Jeremiah 32:1-44",
+          "it": "Geremia 32:1-44"
         },
         comment: {
           "ja": "国が滅びそうな時に不動産投資を命じられたエレミヤ、神様からの指示とはいえ究極の無理ゲーすぎて同情しかない。",
@@ -11821,7 +12729,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Được lệnh đi mua đất ngay khi đất nước sắp sụp đổ, Jeremiah chắc hẳn đã phải đấu tranh tư tưởng rất nhiều với quyết định tréo ngoe này.",
           "tl": "Ang utusan si Jeremias na bumili ng lupa habang guguho na ang bansa ay ang pinakamatinding pagsubok ng pananampalataya sa gitna ng krisis.",
           "th": "การที่พระเจ้าสั่งให้เยเรมีย์ซื้อที่ดินในวันที่บ้านเมืองกำลังจะล่มสลายนั้น เป็นการทดสอบความเชื่อที่ชวนให้ปวดหัวที่สุดเลยจริงๆ",
-          "sw": "Mungu kumwambia Yeremia anunue ardhi wakati nchi inaporomoka ni kama kuwekeza kwenye soko la hisa wakati wa janga kuu."
+          "sw": "Mungu kumwambia Yeremia anunue ardhi wakati nchi inaporomoka ni kama kuwekeza kwenye soko la hisa wakati wa janga kuu.",
+          "it": "Chiedere a Geremia di comprare immobili mentre il paese crolla a pezzi è la prova definitiva di una fede che sfida ogni logica di mercato."
         }
     },
     "2026-10-28": {
@@ -11836,7 +12745,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "エレミヤ書 33:1-26",
@@ -11848,7 +12758,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Jeremiah 33:1-26",
           "tl": "Jeremiah 33:1-26",
           "th": "Jeremiah 33:1-26",
-          "sw": "Jeremiah 33:1-26"
+          "sw": "Jeremiah 33:1-26",
+          "it": "Geremia 33:1-26"
         },
         comment: {
           "ja": "牢屋の中から未来の希望を語り続けるエレミヤ、もはや環境という概念を超越していて逆に清々しい。",
@@ -11860,7 +12771,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Jeremiah vẫn say sưa nói về tương lai tươi sáng ngay từ trong ngục tối, một minh chứng cho thấy sự lạc quan không hề biết đến hoàn cảnh là gì.",
           "tl": "Ang patuloy na pangangaral ni Jeremias tungkol sa pag-asa habang nasa loob ng bilangguan ay nagpapakita na ang pananampalataya ay walang pakialam sa rehas.",
           "th": "การที่เยเรมีย์ยังคงพูดถึงความหวังในอนาคตขณะที่ตัวเองยังติดคุกอยู่ เป็นนิยามของคำว่ามองโลกในแง่ดีแบบทะลุกำแพงจริงๆ",
-          "sw": "Yeremia kuhubiri kuhusu tumaini la wakati ujao akiwa gerezani ni ushahidi kwamba matumaini hayawezi kufungwa na minyororo."
+          "sw": "Yeremia kuhubiri kuhusu tumaini la wakati ujao akiwa gerezani ni ushahidi kwamba matumaini hayawezi kufungwa na minyororo.",
+          "it": "Geremia che parla di un futuro pieno di speranza mentre è chiuso in cella è una lezione magistrale sull'ignorare le circostanze."
         }
     },
     "2026-10-29": {
@@ -11875,7 +12787,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "エレミヤ書 36:1-32",
@@ -11887,7 +12800,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Jeremiah 36:1-32",
           "tl": "Jeremiah 36:1-32",
           "th": "Jeremiah 36:1-32",
-          "sw": "Jeremiah 36:1-32"
+          "sw": "Jeremiah 36:1-32",
+          "it": "Geremia 36:1-32"
         },
         comment: {
           "ja": "都合の悪い報告書をナイフで切り刻んで暖炉に放り込む王様の姿は、現代の不都合なメールを未読のままゴミ箱に入れる私たちの姿と重なって笑えない。",
@@ -11899,7 +12813,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Vị vua cắt nát cuộn giấy rồi ném vào lửa chẳng khác nào cách chúng ta xóa đi những email khó chịu mà mình không muốn đối mặt.",
           "tl": "Ang hari na pinagpipira-piraso ang sulat at itinapon sa apoy ay parang tayo lang na dinedelete ang email na ayaw nating basahin.",
           "th": "กษัตริย์ที่หั่นม้วนหนังสือแล้วโยนเข้ากองไฟนั้น ไม่ต่างอะไรกับเราที่กดลบอีเมลที่ไม่อยากอ่านทิ้งไปในทันที",
-          "sw": "Mfalme kukata hati na kuichoma moto ni kama tu sisi tunavyofuta barua pepe ambazo hatutaki kuzishughulikia."
+          "sw": "Mfalme kukata hati na kuichoma moto ni kama tu sisi tunavyofuta barua pepe ambazo hatutaki kuzishughulikia.",
+          "it": "Il re che taglia il rotolo e lo getta nel fuoco è l'equivalente antico di cestinare quella email che proprio non vogliamo leggere."
         }
     },
     "2026-10-30": {
@@ -11914,7 +12829,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "エレミヤ書 37:1-21",
@@ -11926,7 +12842,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Jeremiah 37:1-21",
           "tl": "Jeremiah 37:1-21",
           "th": "Jeremiah 37:1-21",
-          "sw": "Jeremiah 37:1-21"
+          "sw": "Jeremiah 37:1-21",
+          "it": "Geremia 37:1-21"
         },
         comment: {
           "ja": "真実を伝えただけなのに牢屋に入れられるエレミヤ、正論を言うと空気が読めない奴扱いされる現代の職場環境そのもの。",
@@ -11938,7 +12855,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Giê-rê-mi bị tống giam chỉ vì nói ra sự thật cho thấy cái giá phải trả khi bạn là người duy nhất dám thẳng thắn trong một thế giới thích nghe lời đường mật.",
           "tl": "Ang pagkakakulong kay Jeremias dahil lang sa pagsasabi ng totoo ay patunay kung gaano kahirap maging tapat sa mundong ayaw makarinig ng katotohanan.",
           "th": "เยเรมีย์ถูกขังคุกเพียงเพราะพูดความจริง เป็นเครื่องเตือนใจว่าการเป็นคนซื่อสัตย์ในโลกที่ชอบฟังแต่คำหวานนั้นมันช่างยากเย็นเพียงใด",
-          "sw": "Yeremia kufungwa gerezani kwa sababu tu ya kusema ukweli ni ukumbusho wa jinsi watu wanavyomchukulia mtu anayekataa kupamba ukweli."
+          "sw": "Yeremia kufungwa gerezani kwa sababu tu ya kusema ukweli ni ukumbusho wa jinsi watu wanavyomchukulia mtu anayekataa kupamba ukweli.",
+          "it": "Geremia sbattuto in cella solo per aver detto la verità è lo specchio di quanto sia difficile essere sinceri in un mondo che preferisce le comodità."
         }
     },
     "2026-10-31": {
@@ -11953,7 +12871,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "哀歌 1:1-22",
@@ -11965,7 +12884,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Lamentations 1:1-22",
           "tl": "Lamentations 1:1-22",
           "th": "Lamentations 1:1-22",
-          "sw": "Lamentations 1:1-22"
+          "sw": "Lamentations 1:1-22",
+          "it": "Lamentazioni 1:1-22"
         },
         comment: {
           "ja": "かつての賑わいが嘘のように静まり返った街で独り言をこぼすエルサレム、人生で一度は味わうあの孤独な夜のリアリティが痛い。",
@@ -11977,7 +12897,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Jerusalem ngồi một mình trong thành phố từng náo nhiệt giờ vắng lặng, cảm giác cô đơn trống rỗng đó chính là hiện thực mà ai cũng từng nếm trải.",
           "tl": "Ang pag-upo ni Jerusalem nang mag-isa sa isang lungsod na dati ay puno ng buhay ay ang uri ng katahimikan na nararanasan nating lahat sa ating pinakamababang sandali.",
           "th": "เยรูซาเล็มที่นั่งอยู่ลำพังในเมืองที่เคยคึกคักคือความเงียบเหงาที่บาดลึกแบบที่เราทุกคนเคยเจอในช่วงเวลาที่แย่ที่สุดในชีวิต",
-          "sw": "Yerusalemu kukaa peke yake katika mji uliokuwa na watu wengi ni ile hali ya upweke ambayo sote tunapitia tunapokuwa kwenye wakati mgumu."
+          "sw": "Yerusalemu kukaa peke yake katika mji uliokuwa na watu wengi ni ile hali ya upweke ambayo sote tunapitia tunapokuwa kwenye wakati mgumu.",
+          "it": "Gerusalemme seduta da sola in una città silenziosa rappresenta esattamente quel vuoto che tutti proviamo nei momenti più difficili."
         }
     },
     "2026-11-01": {
@@ -11992,7 +12913,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "哀歌 3:1-66",
@@ -12004,7 +12926,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Lamentations 3:1-66",
           "tl": "Lamentations 3:1-66",
           "th": "Lamentations 3:1-66",
-          "sw": "Lamentations 3:1-66"
+          "sw": "Lamentations 3:1-66",
+          "it": "Lamentazioni 3:1-66"
         },
         comment: {
           "ja": "散々な目に遭いながらも「神様は朝ごとに新しい」とつぶやく筆者、どん底でも前向きになろうとする姿勢がいじらしくて逆に泣けてくる。",
@@ -12016,7 +12939,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Tác giả dù chịu đủ mọi đắng cay vẫn khẳng định lòng thương xót của Chúa luôn mới mỗi sáng, một sự kiên cường đầy hy vọng khiến người ta vừa xót xa vừa ngưỡng mộ.",
           "tl": "Ang manunulat na dumanas ng matinding hirap pero pilit pa ring naniniwalang bago ang awa ng Diyos tuwing umaga ay isang uri ng pag-asang nakakapukaw ng damdamin.",
           "th": "ผู้เขียนที่เจอเรื่องร้ายมาสารพัดแต่ยังยืนยันว่าความเมตตาของพระเจ้าใหม่เสมอในทุกเช้า คือความหวังที่ดื้อรั้นจนน่าเห็นใจและซึ้งใจไปพร้อมกัน",
-          "sw": "Mwandishi kupitia mateso mengi lakini bado akisisitiza kuwa huruma za Mungu ni mpya kila asubuhi ni ile hali ya kutokukata tamaa inayotugusa ndani kabisa."
+          "sw": "Mwandishi kupitia mateso mengi lakini bado akisisitiza kuwa huruma za Mungu ni mpya kila asubuhi ni ile hali ya kutokukata tamaa inayotugusa ndani kabisa.",
+          "it": "L'autore che dopo aver subito di tutto ripete che la misericordia si rinnova ogni mattina ci mostra una speranza testarda che commuove."
         }
     },
     "2026-11-02": {
@@ -12031,7 +12955,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "エゼキエル書 1:1-28",
@@ -12043,7 +12968,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Ezekiel 1:1-28",
           "tl": "Ezekiel 1:1-28",
           "th": "Ezekiel 1:1-28",
-          "sw": "Ezekiel 1:1-28"
+          "sw": "Ezekiel 1:1-28",
+          "it": "Ezechiele 1:1-28"
         },
         comment: {
           "ja": "エゼキエルが見たあまりに難解なビジョン、もはや何が何だかわからないまま圧倒されるしかない感覚は、人生の不可解な出来事に直面した時の私たちの姿そのものだ。",
@@ -12055,7 +12981,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Khải tượng của Ê-xê-chi-ên quá khó hiểu khiến ta chỉ biết lặng người, giống hệt cảm giác khi đối mặt với những biến cố kỳ quặc trong đời.",
           "tl": "Ang nakakalitong bisyon ni Ezekiel ay parang buhay natin na minsan ay hindi natin maipaliwanag kung bakit nangyayari ang mga bagay-bagay.",
           "th": "นิมิตที่ซับซ้อนเกินเข้าใจของเอเสเคียลเปรียบเสมือนเหตุการณ์ในชีวิตที่ทำให้เรามึนงงจนทำอะไรไม่ถูกเหมือนกัน",
-          "sw": "Maono ya Ezekieli yanayochanganya akili ni kama vile maisha yanavyotuletea mambo tusiyoweza kuelewa hata kidogo."
+          "sw": "Maono ya Ezekieli yanayochanganya akili ni kama vile maisha yanavyotuletea mambo tusiyoweza kuelewa hata kidogo.",
+          "it": "La visione di Ezechiele è così complessa da lasciarci senza parole, proprio come quando ci troviamo davanti a situazioni inspiegabili."
         }
     },
     "2026-11-03": {
@@ -12070,7 +12997,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "エゼキエル書 2:1-10",
@@ -12082,7 +13010,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Ezekiel 2:1-10",
           "tl": "Ezekiel 2:1-10",
           "th": "Ezekiel 2:1-10",
-          "sw": "Ezekiel 2:1-10"
+          "sw": "Ezekiel 2:1-10",
+          "it": "Ezechiele 2:1-10"
         },
         comment: {
           "ja": "神様から渡された巻物を丸ごと食べてこいと言われるエゼキエル、断ることもできず腹をくくって飲み込む姿は、苦手な仕事を任された時の私たちの精一杯の覚悟だ。",
@@ -12094,7 +13023,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Ê-xê-chi-ên được bảo ăn cuộn sách và ông làm theo, đó chính là tâm trạng của chúng ta mỗi khi phải cắn răng nhận lấy một công việc khó nhằn.",
           "tl": "Ang pagsunod ni Ezekiel na kainin ang scroll ay parang tayo na napipilitang tanggapin ang mahirap na trabahong ayaw naman nating gawin.",
           "th": "เอเสเคียลได้รับคำสั่งให้กินม้วนหนังสือแล้วเขาก็ทำตาม นี่คืออารมณ์เดียวกับเวลาที่เราต้องจำใจรับงานยากๆ ที่ไม่อยากทำเลย",
-          "sw": "Ezekieli kuambiwa ale gombo na yeye kutii bila swali ni kama sisi tunavyolazimika kukubali majukumu magumu kazini bila kupenda."
+          "sw": "Ezekieli kuambiwa ale gombo na yeye kutii bila swali ni kama sisi tunavyolazimika kukubali majukumu magumu kazini bila kupenda.",
+          "it": "A Ezechiele viene chiesto di ingoiare un rotolo e lui semplicemente lo fa, proprio come quando dobbiamo accettare un compito scomodo senza poter fiatare."
         }
     },
     "2026-11-04": {
@@ -12109,7 +13039,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "エゼキエル書 33:1-33",
@@ -12121,7 +13052,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Ezekiel 33:1-33",
           "tl": "Ezekiel 33:1-33",
           "th": "Ezekiel 33:1-33",
-          "sw": "Ezekiel 33:1-33"
+          "sw": "Ezekiel 33:1-33",
+          "it": "Ezechiele 33:1-33"
         },
         comment: {
           "ja": "見張り番の話を聞き流して結局手遅れになるエゼキエルの時代の民、通知を無視して締め切りギリギリに焦る現代人の姿そのものだ。",
@@ -12133,7 +13065,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Phớt lờ lời cảnh báo của người canh gác rồi mới hối hận, chẳng khác nào chúng ta phớt lờ thông báo cho đến khi hạn chót ập đến.",
           "tl": "Ang pagbalewala sa babala hanggang sa huli ay parang tayo na hindi pinapansin ang mga notification hanggang sa deadline na.",
           "th": "การเมินเฉยต่อคำเตือนจนสายเกินไปนั้นไม่ต่างอะไรกับการที่เรากดปิดการแจ้งเตือนรัวๆ จนถึงนาทีสุดท้ายก่อนงานส่ง",
-          "sw": "Kupuuza onyo la mlinzi hadi wakati unapoisha ni kama sisi tunavyopuuza arifa zote hadi dakika ya mwisho."
+          "sw": "Kupuuza onyo la mlinzi hadi wakati unapoisha ni kama sisi tunavyopuuza arifa zote hadi dakika ya mwisho.",
+          "it": "Ignorare il guardiano fino all'ultimo secondo è proprio come ignorare tutte le notifiche sullo smartphone prima di una scadenza importante."
         }
     },
     "2026-11-05": {
@@ -12148,7 +13081,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "エゼキエル書 34:1-31",
@@ -12160,7 +13094,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Ezekiel 34:1-31",
           "tl": "Ezekiel 34:1-31",
           "th": "Ezekiel 34:1-31",
-          "sw": "Ezekiel 34:1-31"
+          "sw": "Ezekiel 34:1-31",
+          "it": "Ezechiele 34:1-31"
         },
         comment: {
           "ja": "自分だけ肥えて群れを顧みない牧者たち、組織のリーダーによくある残念なあるあるを数千年前から指摘されている。",
@@ -12172,7 +13107,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Những người chăn nuôi chỉ biết làm béo bản thân mà bỏ mặc đàn cừu là một ví dụ kinh điển về sự thất bại trong lãnh đạo suốt bao thế kỷ qua.",
           "tl": "Ang mga pastol na pinapataba ang sarili habang pinapabayaan ang kawan ay klasikong halimbawa ng maling pamumuno na hindi nagbabago sa paglipas ng panahon.",
           "th": "ผู้นำที่มัวแต่กอบโกยผลประโยชน์โดยไม่สนใจลูกน้องคือปัญหาคลาสสิกที่เกิดขึ้นซ้ำรอยมานานหลายพันปีแล้ว",
-          "sw": "Wachungaji wanaojinufaisha huku wakipuuza kundi ni mfano kamili wa uongozi mbaya ambao umeendelea kwa maelfu ya miaka."
+          "sw": "Wachungaji wanaojinufaisha huku wakipuuza kundi ni mfano kamili wa uongozi mbaya ambao umeendelea kwa maelfu ya miaka.",
+          "it": "Quel tipo di leader che pensa solo a se stesso e si dimentica degli altri è purtroppo un classico senza tempo."
         }
     },
     "2026-11-06": {
@@ -12187,7 +13123,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "エゼキエル書 36:1-38",
@@ -12199,7 +13136,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Ezekiel 36:1-38",
           "tl": "Ezekiel 36:1-38",
           "th": "Ezekiel 36:1-38",
-          "sw": "Ezekiel 36:1-38"
+          "sw": "Ezekiel 36:1-38",
+          "it": "Ezechiele 36:1-38"
         },
         comment: {
           "ja": "ボロボロの廃墟を再建するなんて無理だと諦めそうになるけれど、神様は意外と私たちの伸びしろを信じて疑わない。",
@@ -12211,7 +13149,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Khi chúng ta nhìn vào những đống đổ nát của chính mình và muốn bỏ cuộc, Chúa lại luôn tin vào tiềm năng phục hồi của chúng ta một cách lạ kỳ.",
           "tl": "Habang tayo ay sumusuko na sa ating mga pagkakamali, ang Diyos ay patuloy na naniniwala sa ating kakayahang magbago.",
           "th": "ในขณะที่เรามองเห็นแต่ซากปรักหักพังในชีวิตและอยากจะยอมแพ้ พระเจ้ากลับเชื่อมั่นในศักยภาพที่จะฟื้นฟูเราได้อย่างน่าประหลาดใจ",
-          "sw": "Wakati tunapoona magofu katika maisha yetu na kutaka kukata tamaa, Mungu anaendelea kuamini uwezo wetu wa kurejeshewa hali ya awali."
+          "sw": "Wakati tunapoona magofu katika maisha yetu na kutaka kukata tamaa, Mungu anaendelea kuamini uwezo wetu wa kurejeshewa hali ya awali.",
+          "it": "Quando pensiamo che tutto sia distrutto e irrecuperabile, c'è sempre qualcuno che continua a credere in noi."
         }
     },
     "2026-11-07": {
@@ -12226,7 +13165,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "エゼキエル書 37:1-28",
@@ -12238,7 +13178,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Ezekiel 37:1-28",
           "tl": "Ezekiel 37:1-28",
           "th": "Ezekiel 37:1-28",
-          "sw": "Ezekiel 37:1-28"
+          "sw": "Ezekiel 37:1-28",
+          "it": "Ezechiele 37:1-28"
         },
         comment: {
           "ja": "カサカサの骨の山に息を吹き込んで生き返らせる光景は、もう無理だと腐っていた自分のやる気を起こすには最高の特効薬だ。",
@@ -12250,7 +13191,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Chứng kiến những bộ xương khô bỗng nhiên hồi sinh là liều thuốc tinh thần mạnh mẽ nhất cho những ai từng nghĩ mình đã hết hy vọng.",
           "tl": "Ang makitang muling mabuhay ang mga tuyong buto ay ang kailangan nating paalala na walang sitwasyon ang masyadong patay para hindi mabigyang-buhay.",
           "th": "การได้เห็นกระดูกแห้งฟื้นคืนชีวิตขึ้นมาใหม่คือยาชูกำลังชั้นดีสำหรับคนที่เคยคิดว่าตัวเองหมดหวังไปแล้ว",
-          "sw": "Kuona mifupa mikavu ikipata uhai tena ni dawa bora kabisa kwa yeyote anayehisi kuwa matumaini yake yamekwisha kabisa."
+          "sw": "Kuona mifupa mikavu ikipata uhai tena ni dawa bora kabisa kwa yeyote anayehisi kuwa matumaini yake yamekwisha kabisa.",
+          "it": "Vedere delle vecchie ossa secche che tornano improvvisamente a vivere è la scossa perfetta quando ci sentiamo completamente svuotati."
         }
     },
     "2026-11-08": {
@@ -12265,7 +13207,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "エゼキエル書 47:1-23",
@@ -12277,7 +13220,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Ezekiel 47:1-23",
           "tl": "Ezekiel 47:1-23",
           "th": "Ezekiel 47:1-23",
-          "sw": "Ezekiel 47:1-23"
+          "sw": "Ezekiel 47:1-23",
+          "it": "Ezechiele 47:1-23"
         },
         comment: {
           "ja": "ちょろちょろ流れる小さな水が気づけば泳ぐしかない大河になる様子は、神様の恵みがいつの間にか自分を包み込んでいる現実そのもの。",
@@ -12289,7 +13233,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Nhìn dòng nước nhỏ dần biến thành con sông lớn không thể lội qua, ta thấy được cách ân điển của Chúa âm thầm bao phủ cuộc đời mình.",
           "tl": "Ang makitang ang maliit na agos ay nagiging malalim na ilog ay patunay na ang biyaya ng Diyos ay hindi natin kayang sukatin.",
           "th": "การเห็นสายน้ำเล็กๆ กลายเป็นแม่น้ำที่กว้างใหญ่จนต้องว่ายข้าม เป็นภาพเปรียบเทียบที่ชัดเจนว่าพระคุณของพระเจ้าครอบคลุมชีวิตเรามากแค่ไหน",
-          "sw": "Kuona kijito kidogo kikiwa mto mkubwa usioweza kuvukika ni kielelezo kamili cha jinsi neema ya Mungu inavyotuzidi kila siku."
+          "sw": "Kuona kijito kidogo kikiwa mto mkubwa usioweza kuvukika ni kielelezo kamili cha jinsi neema ya Mungu inavyotuzidi kila siku.",
+          "it": "Quel piccolo ruscello che diventa un fiume impossibile da attraversare dimostra come la gentilezza riesca sempre a sorprenderci."
         }
     },
     "2026-11-09": {
@@ -12304,7 +13249,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "ダニエル書 1:1-21",
@@ -12316,7 +13262,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Daniel 1:1-21",
           "tl": "Daniel 1:1-21",
           "th": "Daniel 1:1-21",
-          "sw": "Daniel 1:1-21"
+          "sw": "Daniel 1:1-21",
+          "it": "Daniele 1:1-21"
         },
         comment: {
           "ja": "王様の豪華な食事を断って豆と水で勝負に出たダニエル、結局は見た目も能力も一番という結果を出して、健康志向が最強であることを証明してしまった。",
@@ -12328,7 +13275,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Daniel từ chối yến tiệc của vua để ăn rau đậu mà vẫn khỏe mạnh hơn người khác, đúng là minh chứng cho việc kỷ luật bản thân luôn mang lại kết quả tốt nhất.",
           "tl": "Ang pagtanggi ni Daniel sa handaan ng hari para kumain ng gulay at tubig, at ang pagiging mas magaling niya kaysa sa iba, ay patunay na ang disiplina ang susi sa tagumpay.",
           "th": "การที่ดาเนียลปฏิเสธอาหารหรูของราชาเพื่อกินเพียงพืชผักแต่กลับดูดีกว่าทุกคน เป็นบทพิสูจน์ว่าวินัยในตัวเองนั้นทรงพลังแค่ไหน",
-          "sw": "Daniel kukataa karamu ya mfalme ili ale mboga tu na bado akashinda wote, ni uthibitisho kwamba nidhamu binafsi ndiyo njia bora ya kufanikiwa."
+          "sw": "Daniel kukataa karamu ya mfalme ili ale mboga tu na bado akashinda wote, ni uthibitisho kwamba nidhamu binafsi ndiyo njia bora ya kufanikiwa.",
+          "it": "Rifiutare i banchetti sontuosi per un po' d'acqua e verdura e finire in gran forma è la dimostrazione che uno stile di vita semplice vince sempre."
         }
     },
     "2026-11-10": {
@@ -12343,7 +13291,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "ダニエル書 2:1-49",
@@ -12355,7 +13304,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Daniel 2:1-49",
           "tl": "Daniel 2:1-49",
           "th": "Daniel 2:1-49",
-          "sw": "Daniel 2:1-49"
+          "sw": "Daniel 2:1-49",
+          "it": "Daniele 2:1-49"
         },
         comment: {
           "ja": "夢の内容を言わずに解釈しろと迫る王、部下の心中を察する能力が皆無すぎて今の職場にもいそうなタイプだ。",
@@ -12367,7 +13317,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Yêu cầu giải mã giấc mơ mà không nói giấc mơ đó là gì, đúng là kiểu sếp thích làm khó nhân viên kinh điển.",
           "tl": "Ang utusan ang mga tao na ipaliwanag ang panaginip nang hindi naman sinasabi kung ano ito ay parang boss na walang malinaw na instruction.",
           "th": "การสั่งให้คนอื่นทายฝันโดยไม่บอกว่าฝันว่าอะไร เป็นสไตล์หัวหน้าที่เอาแต่ใจจนน่าปวดหัวจริงๆ",
-          "sw": "Kumtaka mtu atafsiri ndoto bila kukuambia ndoto hiyo ni mtindo wa bosi asiye na ujuzi wa mawasiliano."
+          "sw": "Kumtaka mtu atafsiri ndoto bila kukuambia ndoto hiyo ni mtindo wa bosi asiye na ujuzi wa mawasiliano.",
+          "it": "Pretendere che qualcuno indovini un sogno senza nemmeno raccontarglielo è la mossa tipica di un capo che non sa comunicare."
         }
     },
     "2026-11-11": {
@@ -12382,7 +13333,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "ダニエル書 3:1-30",
@@ -12394,7 +13346,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Daniel 3:1-30",
           "tl": "Daniel 3:1-30",
           "th": "Daniel 3:1-30",
-          "sw": "Daniel 3:1-30"
+          "sw": "Daniel 3:1-30",
+          "it": "Daniele 3:1-30"
         },
         comment: {
           "ja": "巨大な金の像を建てて全員に拝ませようとする王、承認欲求の暴走がすぎて逆に哀れにすら思えてくる。",
@@ -12406,7 +13359,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Xây tượng vàng khổng lồ chỉ để ép mọi người quỳ lạy, đúng là kiểu khao khát được công nhận đến mức lố bịch.",
           "tl": "Ang pagpapatayo ng dambuhalang rebultong ginto para lang pilitin ang lahat na sumamba ay desperadong paraan para mapansin.",
           "th": "การสร้างรูปปั้นทองคำยักษ์เพื่อบังคับให้ทุกคนกราบไหว้ เป็นวิธีเรียกร้องความสนใจที่ดูน่าสมเพชที่สุดในประวัติศาสตร์",
-          "sw": "Kujenga sanamu kubwa ya dhahabu ili kulazimisha watu wainame ni njia ya kijinga sana ya kutaka sifa."
+          "sw": "Kujenga sanamu kubwa ya dhahabu ili kulazimisha watu wainame ni njia ya kijinga sana ya kutaka sifa.",
+          "it": "Costruire una statua d'oro gigante solo per farsi adorare da tutti è il grido d'attenzione più insicuro della storia."
         }
     },
     "2026-11-12": {
@@ -12421,7 +13375,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "ダニエル書 4:1-37",
@@ -12433,7 +13388,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Daniel 4:1-37",
           "tl": "Daniel 4:1-37",
           "th": "Daniel 4:1-37",
-          "sw": "Daniel 4:1-37"
+          "sw": "Daniel 4:1-37",
+          "it": "Daniele 4:1-37"
         },
         comment: {
           "ja": "天下を取って傲慢の極みにいた王が、最終的に草を食べて正気に戻るという展開、人生の絶頂で調子に乗るなという強烈な戒めすぎる。",
@@ -12445,7 +13401,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Một vị vua từ đỉnh cao của sự kiêu ngạo rơi xuống đến mức phải ăn cỏ ngoài đồng chính là lời nhắc nhở rằng cái tôi quá lớn sẽ luôn khiến ta phải trả giá.",
           "tl": "Ang makitang ang isang hari na nasa tuktok ng kayabangan ay mauwi sa pagkain ng damo ay isang matinding paalala na ang ego ay may hangganan.",
           "th": "กษัตริย์ที่เคยอยู่จุดสูงสุดของความเย่อหยิ่งแต่สุดท้ายต้องไปกินหญ้าคือบทเรียนราคาแพงที่สอนว่าอย่าหลงระเริงในอำนาจจนลืมตัว",
-          "sw": "Mfalme anayepanda kutoka kilele cha kiburi na kuishia kula majani ni ukumbusho mkali kwamba kiburi hakidumu milele."
+          "sw": "Mfalme anayepanda kutoka kilele cha kiburi na kuishia kula majani ni ukumbusho mkali kwamba kiburi hakidumu milele.",
+          "it": "Passare dal culmine della superbia a brucare l'erba nel campo è il promemoria definitivo che l'ego ha sempre una data di scadenza."
         }
     },
     "2026-11-13": {
@@ -12460,7 +13417,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "ダニエル書 5:1-31",
@@ -12472,7 +13430,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Daniel 5:1-31",
           "tl": "Daniel 5:1-31",
           "th": "Daniel 5:1-31",
-          "sw": "Daniel 5:1-31"
+          "sw": "Daniel 5:1-31",
+          "it": "Daniele 5:1-31"
         },
         comment: {
           "ja": "神殿の聖なる器で酒盛りをしていたら突然壁に文字が浮かび上がるというホラー展開、調子に乗って線を超えると何が起きるか分からないという教訓。",
@@ -12484,7 +13443,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Tiệc tùng bằng đồ thánh rồi đột nhiên thấy chữ viết hiện lên trên tường, đây đúng là bài học nhớ đời về việc biết đâu là giới hạn không nên vượt qua.",
           "tl": "Ang magpakalasing gamit ang mga banal na kagamitan at biglang makakita ng sulat sa dingding ay isang nakakatakot na paalala na may mga hangganang hindi dapat nilalagpasan.",
           "th": "การจัดปาร์ตี้ด้วยของศักดิ์สิทธิ์แล้วจู่ๆ มีมือปริศนามาเขียนคำพิพากษาบนกำแพงคือบทเรียนชั้นดีว่าอย่าหาทำในสิ่งที่ข้ามเส้นเกินไป",
-          "sw": "Kufanya sherehe kwa vyombo vitakatifu kisha kuona maandishi ya ajabu ukutani ni onyo kali kwamba kuna mipaka ambayo hupaswi kamwe kuivuka."
+          "sw": "Kufanya sherehe kwa vyombo vitakatifu kisha kuona maandishi ya ajabu ukutani ni onyo kali kwamba kuna mipaka ambayo hupaswi kamwe kuivuka.",
+          "it": "Festeggiare con gli oggetti sacri e ritrovarsi una mano misteriosa che scrive sul muro è l'avvertimento perfetto a non oltrepassare certi limiti."
         }
     },
     "2026-11-14": {
@@ -12499,7 +13459,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "ダニエル書 6:1-28",
@@ -12511,7 +13472,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Daniel 6:1-28",
           "tl": "Daniel 6:1-28",
           "th": "Daniel 6:1-28",
-          "sw": "Daniel 6:1-28"
+          "sw": "Daniel 6:1-28",
+          "it": "Daniele 6:1-28"
         },
         comment: {
           "ja": "同僚の嫉妬で罠にかけられたダニエルが、それでも窓を開けて祈り続ける姿は、理不尽な職場環境で心を保つ究極のライフハックだ。",
@@ -12523,7 +13485,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Đa-ni-ên vẫn mở cửa sổ cầu nguyện dù biết đồng nghiệp đang gài bẫy là bài học đỉnh cao về việc giữ vững lập trường nơi công sở độc hại.",
           "tl": "Ang pagdarasal ni Daniel sa harap ng bintana kahit alam niyang may nagbabantay na mga inggitero ay ang ultimate version ng hindi pagpapaapekto sa toxic na katrabaho.",
           "th": "การที่ดาเนียลยังคงเปิดหน้าต่างอธิษฐานทั้งที่รู้ว่าเพื่อนร่วมงานกำลังหาเรื่องกำจัดเขา เป็นวิธีรักษาใจท่ามกลางสภาพแวดล้อมที่แย่ได้ดีที่สุด",
-          "sw": "Daniel kuendelea kusali kwa uwazi hata wakati wenzake wakimtega ni mfano bora wa jinsi ya kutoyumba katika mazingira ya kazi yenye fitina."
+          "sw": "Daniel kuendelea kusali kwa uwazi hata wakati wenzake wakimtega ni mfano bora wa jinsi ya kutoyumba katika mazingira ya kazi yenye fitina.",
+          "it": "Daniele che continua a pregare con la finestra aperta nonostante i colleghi tramino contro di lui è la prova che la coerenza sul lavoro richiede una dose notevole di faccia tosta."
         }
     },
     "2026-11-15": {
@@ -12538,7 +13501,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "ダニエル書 7:1-28",
@@ -12550,7 +13514,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Daniel 7:1-28",
           "tl": "Daniel 7:1-28",
           "th": "Daniel 7:1-28",
-          "sw": "Daniel 7:1-28"
+          "sw": "Daniel 7:1-28",
+          "it": "Daniele 7:1-28"
         },
         comment: {
           "ja": "ダニエルが見た恐ろしい獣たちの夢、現代の混沌としたニュースフィードを夜中に見続けてしまった時の心理状態と大差ない気がする。",
@@ -12562,7 +13527,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Những giấc mơ về các con thú đáng sợ của Đa-ni-ên chẳng khác nào trạng thái tâm trí sau khi lỡ tay lướt tin tức tiêu cực quá khuya.",
           "tl": "Ang panaginip ni Daniel tungkol sa mga nakakatakot na hayop ay parang yung nararamdaman mo kapag masyado kang babad sa mga negatibong balita bago matulog.",
           "th": "ความฝันเรื่องสัตว์ร้ายของดาเนียลไม่ต่างอะไรกับสภาพจิตใจตอนที่เราไถฟีดข่าวเครียดๆ ก่อนนอนเลยสักนิด",
-          "sw": "Ndoto za Daniel kuhusu wanyama wa kutisha zinafanana kabisa na hali ya akili unayopata baada ya kusoma habari za kusikitisha kabla ya kulala."
+          "sw": "Ndoto za Daniel kuhusu wanyama wa kutisha zinafanana kabisa na hali ya akili unayopata baada ya kusoma habari za kusikitisha kabla ya kulala.",
+          "it": "Gli incubi di Daniele sulle bestie spaventose sono esattamente quello che ti succede quando passi troppo tempo a leggere notizie angoscianti prima di spegnere la luce."
         }
     },
     "2026-11-16": {
@@ -12577,7 +13543,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "ホセア書 1:1-11",
@@ -12589,7 +13556,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Hosea 1:1-11",
           "tl": "Hosea 1:1-11",
           "th": "Hosea 1:1-11",
-          "sw": "Hosea 1:1-11"
+          "sw": "Hosea 1:1-11",
+          "it": "Osea 1:1-11"
         },
         comment: {
           "ja": "神様からとんでもない試練を与えられたホセアの困惑ぶりは、理不尽な上司の指示に頭を抱える現代人の心境そのもの。",
@@ -12601,7 +13569,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Chúa yêu cầu Ô-sê sống cuộc đời mình như một bài học minh họa là đỉnh cao của sự 'không nằm trong mô tả công việc'.",
           "tl": "Ang utos ng Diyos kay Oseas na gawing aral ang kanyang buhay ay parang boss na pinapagawa ka ng hindi mo naman trabaho.",
           "th": "การที่พระเจ้าให้โฮเชยาใช้ชีวิตเป็นบทเรียนสอนใจนั้น เป็นระดับสูงสุดของคำว่า 'นั่นไม่ใช่หน้าที่ของผมเลยนะ'.",
-          "sw": "Mungu kumwambia Hosea aishi maisha yake kama mfano ni kiwango cha juu kabisa cha 'hili halimo kwenye maelezo ya kazi yangu'."
+          "sw": "Mungu kumwambia Hosea aishi maisha yake kama mfano ni kiwango cha juu kabisa cha 'hili halimo kwenye maelezo ya kazi yangu'.",
+          "it": "Chiedere a Osea di usare la sua vita privata come lezione divina è il livello supremo del non rientra nelle mie mansioni."
         }
     },
     "2026-11-17": {
@@ -12616,7 +13585,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "ホセア書 3:1-5",
@@ -12628,7 +13598,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Hosea 3:1-5",
           "tl": "Hosea 3:1-5",
           "th": "Hosea 3:1-5",
-          "sw": "Hosea 3:1-5"
+          "sw": "Hosea 3:1-5",
+          "it": "Osea 3:1-5"
         },
         comment: {
           "ja": "裏切られた相手を自腹を切って買い戻しに行くホセア、もはや執念を超えて愛の究極の空回りを見ているようで切なくなる。",
@@ -12640,7 +13611,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Ô-sê bỏ tiền ra mua lại người đã phản bội mình là thứ tình yêu vô điều kiện khiến ta tự hỏi ông là thánh nhân hay là người thích tự làm khổ mình.",
           "tl": "Ang pagbawi ni Oseas sa taong nagtaksil sa kanya ay isang uri ng pagmamahal na nakakalito kung kabanalan ba o pagpapahirap lang sa sarili.",
           "th": "การที่โฮเชยาควักเงินไปไถ่ตัวคนที่หักหลังเขากลับมานั้น เป็นความรักที่ทำให้เราอดสงสัยไม่ได้ว่าเขาเป็นนักบุญหรือคนชอบหาเรื่องใส่ตัวกันแน่",
-          "sw": "Hosea kwenda kumkomboa yule aliyemsaliti ni aina ya upendo usio na masharti unaokufanya ujiulize kama yeye ni mtakatifu au anajitaabisha bure."
+          "sw": "Hosea kwenda kumkomboa yule aliyemsaliti ni aina ya upendo usio na masharti unaokufanya ujiulize kama yeye ni mtakatifu au anajitaabisha bure.",
+          "it": "Osea che spende i suoi risparmi per ricomprare chi lo ha tradito ci fa decisamente dubitare se sia un santo o semplicemente un inguaribile testardo."
         }
     },
     "2026-11-18": {
@@ -12655,7 +13627,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "ホセア書 6:1-11",
@@ -12667,7 +13640,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Hosea 6:1-11",
           "tl": "Hosea 6:1-11",
           "th": "Hosea 6:1-11",
-          "sw": "Hosea 6:1-11"
+          "sw": "Hosea 6:1-11",
+          "it": "Osea 6:1-11"
         },
         comment: {
           "ja": "朝の霧のようにすぐ消える熱心さで神様にすがりつき、都合が悪くなるとすぐ忘れる我々の信仰、もはや伝統芸の域です。",
@@ -12679,7 +13653,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Lòng sốt sắng của chúng ta tan biến nhanh như sương sớm ngay khi gặp chút bất tiện, đúng là tài năng thiên bẩm của con người.",
           "tl": "Ang ating debosyon na parang hamog sa umaga na nawawala agad kapag hindi na maginhawa ay tunay na tatak ng ating pagkatao.",
           "th": "ความศรัทธาที่จางหายไปเหมือนหมอกยามเช้าทันทีที่เริ่มไม่สะดวกสบายนั้นถือเป็นความสามารถพิเศษของมนุษย์เราจริงๆ",
-          "sw": "Ibada yetu inayotoweka kama umande wa asubuhi pindi tu mambo yanapokuwa magumu ni kama utaalamu wetu wa asili."
+          "sw": "Ibada yetu inayotoweka kama umande wa asubuhi pindi tu mambo yanapokuwa magumu ni kama utaalamu wetu wa asili.",
+          "it": "La nostra devozione che svanisce come la nebbia mattutina appena le cose si mettono male è ormai un classico intramontabile."
         }
     },
     "2026-11-19": {
@@ -12694,7 +13669,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "ホセア書 11:1-12",
@@ -12706,7 +13682,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Hosea 11:1-12",
           "tl": "Hosea 11:1-12",
           "th": "Hosea 11:1-12",
-          "sw": "Hosea 11:1-12"
+          "sw": "Hosea 11:1-12",
+          "it": "Osea 11:1-12"
         },
         comment: {
           "ja": "反抗期まっただ中の子供をそれでも愛し続ける親の苦悩、神様も我々に対して毎日同じような胃の痛みを感じているのかもしれません。",
@@ -12718,7 +13695,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Nỗi đau đáu khi yêu thương một đứa con nổi loạn không chịu nghe lời khiến ta nhận ra Chúa có lẽ cũng đang rất đau đầu vì chúng ta.",
           "tl": "Ang paghihirap ng magmahal sa isang rebeldeng anak na ayaw makinig ay nagpapaalala sa atin na baka araw-araw ay sumasakit ang ulo ng Diyos dahil sa atin.",
           "th": "ความเจ็บปวดจากการรักลูกที่ดื้อรั้นไม่ยอมฟังทำให้รู้ว่าพระเจ้าคงต้องปวดหัวกับพวกเรามากแค่ไหนในแต่ละวัน",
-          "sw": "Maumivu ya kumpenda mtoto mkaidi asiyesikiliza yanatufanya tutambue kuwa Mungu labda anapata maumivu ya moyo kila siku kwa sababu yetu."
+          "sw": "Maumivu ya kumpenda mtoto mkaidi asiyesikiliza yanatufanya tutambue kuwa Mungu labda anapata maumivu ya moyo kila siku kwa sababu yetu.",
+          "it": "L'agonia di amare un figlio ribelle che non ascolta ci fa capire che lassù probabilmente si prendono un bel po' di mal di testa a causa nostra."
         }
     },
     "2026-11-20": {
@@ -12733,7 +13711,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "ホセア書 13:1-10",
@@ -12745,7 +13724,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Hosea 13:1-10",
           "tl": "Hosea 13:1-10",
           "th": "Hosea 13:1-10",
-          "sw": "Hosea 13:1-10"
+          "sw": "Hosea 13:1-10",
+          "it": "Osea 13:1-10"
         },
         comment: {
           "ja": "神様を忘れてアイドルに熱中し、いざという時に助けてもらおうとするイスラエルの姿、流行りに乗って後で痛い目を見る現代の私たちと何ら変わりません。",
@@ -12757,7 +13737,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Quên mất Chúa để chạy theo những trào lưu rồi lại mong Ngài giải cứu khi gặp hoạn nạn, đó chẳng phải là sự trớ trêu điển hình của con người sao.",
           "tl": "Ang kalimutan ang Diyos para sa mga uso at saka maghanap kapag may problema ay ang pinakamalinaw na halimbawa ng pagiging makasarili ng tao.",
           "th": "ลืมพระเจ้าไปวิ่งตามกระแสพอตกที่นั่งลำบากก็หันกลับมาขอความช่วยเหลือ นี่มันนิสัยมนุษย์ชัดๆ",
-          "sw": "Kumsahau Mungu ili kufuata mambo ya kidunia kisha kutaka msaada wakati mambo yanaharibika ni unafiki mkuu wa binadamu."
+          "sw": "Kumsahau Mungu ili kufuata mambo ya kidunia kisha kutaka msaada wakati mambo yanaharibika ni unafiki mkuu wa binadamu.",
+          "it": "Dimenticarsi di tutto per seguire le mode del momento e poi pretendere che qualcuno ci tiri fuori dai guai è la quintessenza della nostra incoerenza."
         }
     },
     "2026-11-21": {
@@ -12772,7 +13753,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "ヨエル書 1:1-20",
@@ -12784,7 +13766,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Joel 1:1-20",
           "tl": "Joel 1:1-20",
           "th": "Joel 1:1-20",
-          "sw": "Joel 1:1-20"
+          "sw": "Joel 1:1-20",
+          "it": "Gioele 1:1-20"
         },
         comment: {
           "ja": "収穫が全滅して大騒ぎするヨエル記の光景、何気ない日常が崩れた瞬間に初めて当たり前のありがたさに気づく人間の鈍感さを突きつけられます。",
@@ -12796,7 +13779,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Chứng kiến mùa màng mất trắng rồi mới hoảng hốt nhận ra những điều bình thường vốn quý giá, con người quả thật chỉ biết trân trọng khi đã mất đi.",
           "tl": "Ang mapagtanto lang ang halaga ng mga bagay kapag wala na ang mga ito ay isang masakit na paalala kung gaano tayo kawalang-pakialam sa araw-araw.",
           "th": "พอผลผลิตเสียหายถึงได้เริ่มโวยวาย นี่แหละความชะล่าใจของคนเราที่มักจะเห็นค่าของสิ่งที่อยู่ตรงหน้าก็ต่อเมื่อมันหายไปแล้ว",
-          "sw": "Kuona mavuno yakipotea na ndipo kuanza kushtuka ni ukumbusho mchungu wa jinsi tunavyothamini vitu pale tu vinapotutoka."
+          "sw": "Kuona mavuno yakipotea na ndipo kuanza kushtuka ni ukumbusho mchungu wa jinsi tunavyothamini vitu pale tu vinapotutoka.",
+          "it": "Perdere tutto all'improvviso e accorgersi solo allora di quanto davamo tutto per scontato è la lezione più amara che la vita ci riserva."
         }
     },
     "2026-11-22": {
@@ -12811,7 +13795,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "ヨエル書 2:19-32",
@@ -12823,7 +13808,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Joel 2:19-32",
           "tl": "Joel 2:19-32",
           "th": "Joel 2:19-32",
-          "sw": "Joel 2:19-32"
+          "sw": "Joel 2:19-32",
+          "it": "Gioele 2:19-32"
         },
         comment: {
           "ja": "災いの中にいても豊作を約束されるヨエルの言葉は、先行き不透明な現代の私たちにとって究極のライフハックに聞こえる。",
@@ -12835,7 +13821,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Lời hứa về sự sung túc ngay giữa lúc tai ương của Joel nghe như một bí quyết sống tuyệt vời cho thời đại đầy bất ổn này.",
           "tl": "Ang pangako ng kasaganaan ni Joel sa gitna ng sakuna ay parang pinakamagandang payo sa buhay para sa panahon ngayon.",
           "th": "คำสัญญาเรื่องความอุดมสมบูรณ์ท่ามกลางภัยพิบัติของโยเอลฟังดูเหมือนเคล็ดลับการใช้ชีวิตที่ดีที่สุดในยุคที่ไม่แน่นอนนี้",
-          "sw": "Ahadi ya Joel ya wingi katikati ya maafa inasikika kama ushauri bora wa maisha kwa nyakati hizi zisizotabirika."
+          "sw": "Ahadi ya Joel ya wingi katikati ya maafa inasikika kama ushauri bora wa maisha kwa nyakati hizi zisizotabirika.",
+          "it": "La promessa di riscatto in mezzo al disastro suona proprio come quel barlume di speranza di cui abbiamo bisogno quando tutto sembra andare storto."
         }
     },
     "2026-11-23": {
@@ -12850,7 +13837,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "アモス書 1:1-15",
@@ -12862,7 +13850,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Amos 1:1-15",
           "tl": "Amos 1:1-15",
           "th": "Amos 1:1-15",
-          "sw": "Amos 1:1-15"
+          "sw": "Amos 1:1-15",
+          "it": "Amos 1:1-15"
         },
         comment: {
           "ja": "近所の国々の悪事をリストアップして神に怒りをぶつけるアモス、まるでSNSで正義感を振りかざす現代人の先駆けのようだ。",
@@ -12874,7 +13863,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc A-mốt liệt kê tội lỗi của các nước láng giềng để kêu gọi cơn thịnh nộ của Chúa giống hệt như cách người ta tranh cãi nảy lửa trên mạng xã hội ngày nay.",
           "tl": "Ang paglilista ni Amos ng mga kasalanan ng kanyang mga kapitbahay upang galitin ang Diyos ay parang sinaunang bersyon ng isang mainit na thread sa social media.",
           "th": "การที่อาโมสไล่เรียงความผิดของเพื่อนบ้านเพื่อให้พระเจ้าพิโรธนั้นดูเหมือนการจุดชนวนดราม่าในโซเชียลมีเดียในยุคโบราณไม่มีผิด",
-          "sw": "Amosi kuorodhesha dhambi za majirani zake ili kuchochea hasira ya Mungu ni kama toleo la zamani la mjadala mkali kwenye mitandao ya kijamii."
+          "sw": "Amosi kuorodhesha dhambi za majirani zake ili kuchochea hasira ya Mungu ni kama toleo la zamani la mjadala mkali kwenye mitandao ya kijamii.",
+          "it": "Amos che elenca tutti i peccati dei paesi vicini sembra proprio il precursore di chi passa le serate a fare polemica sui social."
         }
     },
     "2026-11-24": {
@@ -12889,7 +13879,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "アモス書 3:1-15",
@@ -12901,7 +13892,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Amos 3:1-15",
           "tl": "Amos 3:1-15",
           "th": "Amos 3:1-15",
-          "sw": "Amos 3:1-15"
+          "sw": "Amos 3:1-15",
+          "it": "Amos 3:1-15"
         },
         comment: {
           "ja": "ライオンが吠えたら誰だって恐れるのに、神の警告を無視して平然と日常を送れるアモス時代のイスラエルの鈍感力は逆にすごい。",
@@ -12913,7 +13905,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Khi sư tử gầm lên ai cũng sợ, nhưng sự thờ ơ của người Israel thời A-mốt trước những lời cảnh báo thật là khó tin.",
           "tl": "Kapag umungal ang leon lahat ay natatakot, pero ang galing ng mga tao sa panahon ni Amos na balewalain ang babala at magpatuloy lang sa buhay.",
           "th": "เมื่อสิงโตคำรามใครๆ ก็ต้องกลัว แต่ความนิ่งเฉยของคนในสมัยอาโมสที่เพิกเฉยต่อคำเตือนนั้นช่างน่าทึ่งจริงๆ",
-          "sw": "Simba akinguruma kila mtu anaogopa, lakini uwezo wa watu wa wakati wa Amosi kupuuza onyo na kuendelea na maisha yao ni wa kushangaza."
+          "sw": "Simba akinguruma kila mtu anaogopa, lakini uwezo wa watu wa wakati wa Amosi kupuuza onyo na kuendelea na maisha yao ni wa kushangaza.",
+          "it": "Se un leone ruggisce tutti scappano, ma la capacità di ignorare i segnali evidenti ai tempi di Amos ha del leggendario."
         }
     },
     "2026-11-25": {
@@ -12928,7 +13921,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "アモス書 6:1-14",
@@ -12940,7 +13934,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Amos 6:1-14",
           "tl": "Amos 6:1-14",
           "th": "Amos 6:1-14",
-          "sw": "Amos 6:1-14"
+          "sw": "Amos 6:1-14",
+          "it": "Amos 6:1-14"
         },
         comment: {
           "ja": "贅沢三昧で破滅の予兆に気づかない人々の姿は、現代の私たちがついついやってしまう現実逃避の究極系に見える。",
@@ -12952,7 +13947,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Chứng kiến cảnh sống xa hoa mà không nhận ra dấu hiệu của sự sụp đổ chính là tấm gương phản chiếu sự chối bỏ thực tại của chính chúng ta.",
           "tl": "Ang makita ang mga taong nagpapakasasa sa luho habang hindi napapansin ang paparating na sakuna ay parang salamin ng ating sariling pagtanggi sa katotohanan.",
           "th": "การเห็นผู้คนใช้ชีวิตหรูหราโดยไม่รู้ตัวถึงหายนะที่กำลังจะมาถึง คือภาพสะท้อนที่ชัดเจนที่สุดของการปฏิเสธความจริงในปัจจุบัน",
-          "sw": "Kuona watu wakiishi kwa anasa huku wakipuuza dalili za maangamizi ni kioo kamili cha jinsi tunavyokataa ukweli leo."
+          "sw": "Kuona watu wakiishi kwa anasa huku wakipuuza dalili za maangamizi ni kioo kamili cha jinsi tunavyokataa ukweli leo.",
+          "it": "Vivere nel lusso totale ignorando che tutto sta crollando è lo specchio perfetto di come tendiamo a evitare la realtà."
         }
     },
     "2026-11-26": {
@@ -12967,7 +13963,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "アモス書 8:1-14",
@@ -12979,7 +13976,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Amos 8:1-14",
           "tl": "Amos 8:1-14",
           "th": "Amos 8:1-14",
-          "sw": "Amos 8:1-14"
+          "sw": "Amos 8:1-14",
+          "it": "Amos 8:1-14"
         },
         comment: {
           "ja": "夏果の籠を見て終焉を悟るアモス、明日から本気出すと言い続けて結局何も変わらない自分たちの姿を突きつけられているようで胃が痛い。",
@@ -12991,7 +13989,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Amos nhìn giỏ trái cây mùa hè mà thấy trước sự kết thúc, giống như cách chúng ta cứ phớt lờ những dấu hiệu báo động cho đến khi mọi chuyện quá muộn.",
           "tl": "Ang pagkakita ni Amos sa katapusan sa isang basket ng prutas ay parang tayo na hindi pinapansin ang mga babala hanggang sa huli na ang lahat.",
           "th": "อามอสเห็นจุดจบในตะกร้าผลไม้ฤดูร้อน เหมือนกับเราที่มักจะมองข้ามสัญญาณเตือนชัดๆ จนกระทั่งสายเกินไป",
-          "sw": "Amos kuona mwisho kwenye kikapu cha matunda ya kiangazi ni kama sisi tunavyopuuza ishara za wazi hadi inapokuwa imechelewa."
+          "sw": "Amos kuona mwisho kwenye kikapu cha matunda ya kiangazi ni kama sisi tunavyopuuza ishara za wazi hadi inapokuwa imechelewa.",
+          "it": "Amos che vede la fine in un cesto di frutta estiva mi ricorda fin troppo bene come ignoro le mie scadenze imminenti."
         }
     },
     "2026-11-27": {
@@ -13006,7 +14005,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "オバデヤ書 1:1-21",
@@ -13018,7 +14018,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Obadiah 1:1-21",
           "tl": "Obadiah 1:1-21",
           "th": "Obadiah 1:1-21",
-          "sw": "Obadiah 1:1-21"
+          "sw": "Obadiah 1:1-21",
+          "it": "Abdia 1:1-21"
         },
         comment: {
           "ja": "高慢で岩の裂け目に隠れていれば安全だと思い込んでいるエドム人、自分の殻に閉じこもるのが一番の防御だと思っている現代人の縮図にしか見えない。",
@@ -13030,7 +14031,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Người Ê-đôm tưởng mình an toàn vì sống trong vách đá, chẳng khác nào chúng ta cứ ngỡ cái tôi là pháo đài bất khả xâm phạm.",
           "tl": "Ang pag-aakala ng mga Edomita na ligtas sila sa loob ng kanilang mga bato ay parang tayo na nagtatago sa likod ng ating sariling kayabangan.",
           "th": "ชาวเอโดมคิดว่าตนปลอดภัยเพราะอาศัยอยู่ในซอกหิน ก็เหมือนกับเราที่คิดว่ากำแพงแห่งความหยิ่งผยองจะปกป้องเราได้ตลอดไป",
-          "sw": "Edom kufikiri wako salama kwa sababu wanaishi kwenye miamba ni kama sisi tunavyojificha nyuma ya kiburi chetu tukiamini ni ngome."
+          "sw": "Edom kufikiri wako salama kwa sababu wanaishi kwenye miamba ni kama sisi tunavyojificha nyuma ya kiburi chetu tukiamini ni ngome.",
+          "it": "Edom che si crede intoccabile tra le rocce è la prova che l'arroganza è il rifugio più ingannevole del mondo."
         }
     },
     "2026-11-28": {
@@ -13045,7 +14047,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "ヨナ書 1:1-17",
@@ -13057,7 +14060,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Jonah 1:1-17",
           "tl": "Jonah 1:1-17",
           "th": "Jonah 1:1-17",
-          "sw": "Jonah 1:1-17"
+          "sw": "Jonah 1:1-17",
+          "it": "Giona 1:1-17"
         },
         comment: {
           "ja": "神様に言われたことと真逆の方角へ全力で逃げ出すヨナの行動力、見ていて清々しいほどの人間臭さがある。",
@@ -13069,7 +14073,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Jonah tìm cách chạy trốn hoàn toàn ngược hướng với mệnh lệnh là minh chứng rõ nhất cho bản năng trì hoãn của con người.",
           "tl": "Ang pagtakbo ni Jonas sa kabilang direksyon para lang umiwas sa utos ay ang pinaka-relatable na paraan ng pagpapaliban ng gawain.",
           "th": "โยนาห์จองตั๋วเรือหนีไปทิศตรงกันข้ามทันทีที่รู้ว่าต้องไปไหน เป็นการผัดวันประกันพรุ่งที่เข้าถึงใจมนุษย์ที่สุด",
-          "sw": "Yona kukimbia kuelekea upande mwingine kabisa wa wito wake ni mfano halisi wa jinsi tunavyopenda kukwepa majukumu."
+          "sw": "Yona kukimbia kuelekea upande mwingine kabisa wa wito wake ni mfano halisi wa jinsi tunavyopenda kukwepa majukumu.",
+          "it": "Giona che prenota un biglietto nella direzione opposta alla sua chiamata è l'atto di procrastinazione spirituale più onesto di sempre."
         }
     },
     "2026-11-29": {
@@ -13084,7 +14089,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "ヨナ書 3:1-10",
@@ -13096,7 +14102,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Jonah 3:1-10",
           "tl": "Jonah 3:1-10",
           "th": "Jonah 3:1-10",
-          "sw": "Jonah 3:1-10"
+          "sw": "Jonah 3:1-10",
+          "it": "Giona 3:1-10"
         },
         comment: {
           "ja": "渋々ニネベに行って適当に説教したら街全体が悔い改め始めた時のヨナの困惑、成功したのに面白くないという皮肉な現実。",
@@ -13108,7 +14115,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Jonah miễn cưỡng đi rao giảng mà cả thành phố lại ăn năn thực sự là một sự mỉa mai cho người không hề muốn ở đó.",
           "tl": "Ang pag-aalinlangan ni Jonas habang nakikita ang buong lungsod na nagbago dahil sa kanyang sermon ay isang klasikong halimbawa ng hindi inaasahang tagumpay.",
           "th": "โยนาห์ไปเทศนาแบบขอไปทีแต่คนทั้งเมืองกลับกลับใจกันหมด ความสำเร็จที่เจ้าตัวไม่ต้องการนี้ช่างย้อนแย้งเสียจริง",
-          "sw": "Yona kuhubiri kwa shingo upande na kuona mji mzima ukitubu ni kejeli ya hali ya juu kwa mtu ambaye hakutaka kuwa hapo kabisa."
+          "sw": "Yona kuhubiri kwa shingo upande na kuona mji mzima ukitubu ni kejeli ya hali ya juu kwa mtu ambaye hakutaka kuwa hapo kabisa.",
+          "it": "Giona che fa il minimo sforzo e finisce per convertire un'intera città è la beffa perfetta per chi voleva solo sparire."
         }
     },
     "2026-11-30": {
@@ -13123,7 +14131,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "ミカ書 1:1-16",
@@ -13135,7 +14144,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Micah 1:1-16",
           "tl": "Micah 1:1-16",
           "th": "Micah 1:1-16",
-          "sw": "Micah 1:1-16"
+          "sw": "Micah 1:1-16",
+          "it": "Michea 1:1-16"
         },
         comment: {
           "ja": "神様が山を溶かすほどの勢いで怒っているのに自分はまだ日常の些細なことで消耗しているのを見ると、スケールの差に少し笑えてくる。",
@@ -13147,7 +14157,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Chứng kiến cảnh Chúa nổi giận đến mức làm tan chảy cả núi non, trong khi bản thân vẫn cứ loay hoay với mấy chuyện vụn vặt thường ngày, thật là một sự chênh lệch đáng suy ngẫm.",
           "tl": "Nakakatawa isiping ang Diyos ay nagpapaalog ng mga bundok sa galit habang ako ay problemado pa rin sa mga maliliit na bagay sa buhay.",
           "th": "เห็นพระเจ้าพิโรธจนภูเขาละลาย แต่เรายังมานั่งเครียดกับเรื่องจุกจิกในชีวิตประจำวัน มันก็น่าขำดีเหมือนกันนะ",
-          "sw": "Kuona Mungu akiyeyusha milima kwa hasira wakati mimi bado ninasumbuka na mambo madogo ya kila siku kunanifanya nitabasamu kwa aibu."
+          "sw": "Kuona Mungu akiyeyusha milima kwa hasira wakati mimi bado ninasumbuka na mambo madogo ya kila siku kunanifanya nitabasamu kwa aibu.",
+          "it": "Guardare Dio sciogliere le montagne mentre io mi preoccupo delle solite sciocchezze ridimensiona parecchio la mia giornata."
         }
     },
     "2026-12-01": {
@@ -13162,7 +14173,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "ミカ書 4:1-13",
@@ -13174,7 +14186,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Micah 4:1-13",
           "tl": "Micah 4:1-13",
           "th": "Micah 4:1-13",
-          "sw": "Micah 4:1-13"
+          "sw": "Micah 4:1-13",
+          "it": "Michea 4:1-13"
         },
         comment: {
           "ja": "剣を鋤に打ち替えるなんて理想的すぎて、現代のSNSでレスバしている人たちに見せてやりたい気分。",
@@ -13186,7 +14199,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Biến gươm đao thành lưỡi cày là một viễn cảnh quá đỗi tuyệt vời, ước gì những người đang tranh cãi trên mạng xã hội hôm nay đều thấy được điều này.",
           "tl": "Ang paggawa ng mga espada para maging araro ay isang napakagandang ideyal na sana ay makita ng mga taong laging nagtatalo sa social media.",
           "th": "การเปลี่ยนดาบให้เป็นผาลไถเป็นอุดมคติที่งดงามมาก อยากให้พวกคนที่กำลังทะเลาะกันในโซเชียลมีเดียได้เห็นจริงๆ",
-          "sw": "Kugeuza panga kuwa majembe ni wazo zuri sana, natamani ningewaonyesha wale wote wanaogombana kwenye mitandao ya kijamii leo."
+          "sw": "Kugeuza panga kuwa majembe ni wazo zuri sana, natamani ningewaonyesha wale wote wanaogombana kwenye mitandao ya kijamii leo.",
+          "it": "Trasformare le spade in vomeri è un'idea così nobile che andrebbe fatta leggere a chi litiga furiosamente sui social media."
         }
     },
     "2026-12-02": {
@@ -13201,7 +14215,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "ミカ書 6:1-16",
@@ -13213,7 +14228,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Micah 6:1-16",
           "tl": "Micah 6:1-16",
           "th": "Micah 6:1-16",
-          "sw": "Micah 6:1-16"
+          "sw": "Micah 6:1-16",
+          "it": "Michea 6:1-16"
         },
         comment: {
           "ja": "神様が求めているのは豪華な儀式ではなく公正と慈しみだと突きつけられるミカ書、結局シンプルが一番難しいという現実を突きつけてくる。",
@@ -13225,7 +14241,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Mi-chê chỉ ra rằng Chúa muốn sự công bằng và lòng nhân từ hơn là các nghi lễ cầu kỳ là lời nhắc nhở phũ phàng rằng những điều đơn giản nhất thường khó thực hiện nhất.",
           "tl": "Ang pagpapaalala ni Mikas na mas gusto ng Diyos ang katarungan at awa kaysa sa mga magarbo at ritwal ay isang sampal na katotohanan na ang pinakasimpleng bagay ang siyang pinakamahirap gawin.",
           "th": "มีคาห์เตือนสติเราว่าพระเจ้าต้องการความยุติธรรมและความเมตตามากกว่าพิธีกรรมที่หรูหรา ซึ่งเป็นความจริงที่เจ็บปวดว่าสิ่งที่ง่ายที่สุดมักทำได้ยากที่สุด",
-          "sw": "Mika anapokumbusha kuwa Mungu anataka haki na fadhili badala ya matambiko ya gharama ni ukumbusho mchungu kwamba mambo rahisi ndiyo magumu zaidi kutekeleza."
+          "sw": "Mika anapokumbusha kuwa Mungu anataka haki na fadhili badala ya matambiko ya gharama ni ukumbusho mchungu kwamba mambo rahisi ndiyo magumu zaidi kutekeleza.",
+          "it": "Michea ci ricorda che l'equità e la compassione valgono più di mille cerimonie, confermando che le cose semplici sono sempre le più difficili."
         }
     },
     "2026-12-03": {
@@ -13240,7 +14257,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "ナホム書 1:1-15",
@@ -13252,7 +14270,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Nahum 1:1-15",
           "tl": "Nahum 1:1-15",
           "th": "Nahum 1:1-15",
-          "sw": "Nahum 1:1-15"
+          "sw": "Nahum 1:1-15",
+          "it": "Naum 1:1-15"
         },
         comment: {
           "ja": "神様が敵に対して激しく怒るナホム書の描写、普段の優しい神様とは違う一面に、人間側も怒っていいんだと妙な安心感を覚える。",
@@ -13264,7 +14283,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Sự thịnh nộ dữ dội của Chúa trong sách Na-hum tương phản với hình ảnh hiền lành thường thấy, mang lại cảm giác nhẹ nhõm kỳ lạ khi biết rằng sự phẫn nộ chính đáng cũng có vị trí của nó.",
           "tl": "Ang matinding galit ng Diyos sa Nahum ay malayo sa karaniwan niyang imahe, ngunit nakakapanatag isiping may lugar din pala ang matuwid na galit.",
           "th": "ความโกรธเกรี้ยวของพระเจ้าในหนังสือนาฮูมดูแตกต่างจากภาพลักษณ์ที่อ่อนโยนปกติ แต่มันก็น่าโล่งใจที่ได้รู้ว่าความโกรธที่ถูกต้องนั้นมีที่ทางของมัน",
-          "sw": "Hasira kali ya Mungu katika Nahumu inatofautiana na sura yake ya upole, lakini inaleta faraja ya ajabu kujua kwamba hasira ya haki ina nafasi yake."
+          "sw": "Hasira kali ya Mungu katika Nahumu inatofautiana na sura yake ya upole, lakini inaleta faraja ya ajabu kujua kwamba hasira ya haki ina nafasi yake.",
+          "it": "La furia di Dio in Nahum spiazza un po', ma fa quasi comodo sapere che arrabbiarsi per le ingiustizie è concesso."
         }
     },
     "2026-12-04": {
@@ -13279,7 +14299,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "ハバクク書 1:1-17",
@@ -13291,7 +14312,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Habakkuk 1:1-17",
           "tl": "Habakkuk 1:1-17",
           "th": "Habakkuk 1:1-17",
-          "sw": "Habakkuk 1:1-17"
+          "sw": "Habakkuk 1:1-17",
+          "it": "Abacuc 1:1-17"
         },
         comment: {
           "ja": "神様に「なぜ悪を放置するのですか」と強気で詰め寄るハバククは、理不尽な世の中に直面した時の私たちの本音そのものです。",
@@ -13303,7 +14325,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Habacúc chất vấn Chúa vì sao Ngài làm ngơ trước cái ác chính là tâm trạng của chúng ta mỗi khi đối diện với những nghịch lý của cuộc đời.",
           "tl": "Ang pagtatanong ni Habacuc kay Lord kung bakit hinahayaan ang kasamaan ay eksaktong nararamdaman nating lahat kapag hindi patas ang mundo.",
           "th": "ฮาบากุกที่กล้าถามพระเจ้าว่าทำไมถึงเพิกเฉยต่อความชั่วร้าย คือตัวแทนความรู้สึกอึดอัดใจของเราเวลาเจอเรื่องไม่ยุติธรรมในชีวิตจริง",
-          "sw": "Habakuki kumuuliza Mungu kwa nini anavumilia uovu ni taswira halisi ya jinsi tunavyohisi tunapokabiliwa na mambo yasiyo na haki maishani."
+          "sw": "Habakuki kumuuliza Mungu kwa nini anavumilia uovu ni taswira halisi ya jinsi tunavyohisi tunapokabiliwa na mambo yasiyo na haki maishani.",
+          "it": "Habacuc che chiede conto a Dio del caos nel mondo rappresenta esattamente il nostro stato d'animo quando leggiamo le notizie."
         }
     },
     "2026-12-05": {
@@ -13318,7 +14341,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "ゼパニヤ書 1:1-18",
@@ -13330,7 +14354,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Zephaniah 1:1-18",
           "tl": "Zephaniah 1:1-18",
           "th": "Zephaniah 1:1-18",
-          "sw": "Zephaniah 1:1-18"
+          "sw": "Zephaniah 1:1-18",
+          "it": "Sofonia 1:1-18"
         },
         comment: {
           "ja": "神様の怒りを前にして「きっと何もしてくれないだろう」と高をくくっていたゼパニヤ時代の住民たち、油断しきった日常に突然の通告が来る怖さは現代の私たちにも刺さります。",
@@ -13342,7 +14367,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Người dân thời Xê-pha-ni tưởng rằng Chúa sẽ không can thiệp chính là bài học đắt giá về sự chủ quan trong cuộc sống hằng ngày của chúng ta.",
           "tl": "Ang mga tao noong panahon ni Zefanias na akala ay walang gagawin ang Diyos ay paalala na ang pagiging kampante ay isang mapanganib na bisyo.",
           "th": "ผู้คนที่คิดว่าพระเจ้าจะไม่ทำอะไรในสมัยของเศฟันยาห์ คือตัวอย่างชัดเจนของความประมาทที่คิดว่าตัวเองรอดจากผลของการกระทำได้เสมอ",
-          "sw": "Watu wa wakati wa Sefania waliodhani Mungu hatatenda lolote ni ukumbusho kwamba kujiamini kupita kiasi katika uzembe ni hatari sana."
+          "sw": "Watu wa wakati wa Sefania waliodhani Mungu hatatenda lolote ni ukumbusho kwamba kujiamini kupita kiasi katika uzembe ni hatari sana.",
+          "it": "La gente ai tempi di Sofonie convinta che Dio non avrebbe fatto nulla dimostra quanto la pigrizia mentale sia un gioco pericoloso."
         }
     },
     "2026-12-06": {
@@ -13357,7 +14383,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "ゼパニヤ書 3:1-20",
@@ -13369,7 +14396,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Zephaniah 3:1-20",
           "tl": "Zephaniah 3:1-20",
           "th": "Zephaniah 3:1-20",
-          "sw": "Zephaniah 3:1-20"
+          "sw": "Zephaniah 3:1-20",
+          "it": "Sofonia 3:1-20"
         },
         comment: {
           "ja": "散々背を向けていたのに最後は「歌って喜べ」と言われるゼパニヤ書の展開、神様のツンデレ具合が振り切れていてついていけない。",
@@ -13381,7 +14409,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Xê-pha-ni bảo những người vốn quay lưng với Chúa hãy cất tiếng hát vui mừng là một cú bẻ lái cảm xúc đầy bất ngờ.",
           "tl": "Ang utos ni Zefanias na kumanta sa tuwa ang mga taong matagal nang tinalikuran ang Diyos ay parang isang matinding emosyonal na sorpresa.",
           "th": "การที่เศฟันยาห์บอกให้ผู้คนที่หันหลังให้พระเจ้ากลับมาร้องเพลงด้วยความยินดี เป็นอะไรที่ปรับอารมณ์ตามแทบไม่ทัน",
-          "sw": "Zefania kuwaambia watu waliompuuza Mungu kwa muda mrefu waanze kuimba kwa furaha ni kama mabadiliko ya ghafla ya hisia ambayo ni vigumu kuyaelewa."
+          "sw": "Zefania kuwaambia watu waliompuuza Mungu kwa muda mrefu waanze kuimba kwa furaha ni kama mabadiliko ya ghafla ya hisia ambayo ni vigumu kuyaelewa.",
+          "it": "Chiedere a un popolo che ha appena voltato le spalle a Dio di cantare di gioia è il colpo di scena emotivo definitivo."
         }
     },
     "2026-12-07": {
@@ -13396,7 +14425,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "ハガイ書 1:1-15",
@@ -13408,7 +14438,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Haggai 1:1-15",
           "tl": "Haggai 1:1-15",
           "th": "Haggai 1:1-15",
-          "sw": "Haggai 1:1-15"
+          "sw": "Haggai 1:1-15",
+          "it": "Aggeo 1:1-15"
         },
         comment: {
           "ja": "自分の家を豪華にすることに必死で神殿を放置していたハガイ時代の民、現代のライフスタイルそのもので耳が痛い。",
@@ -13420,7 +14451,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Người dân thời A-ghê mải mê trang hoàng nhà cửa mà bỏ bê đền thờ chính là hình ảnh phản chiếu sự trì hoãn của chúng ta ngày nay.",
           "tl": "Ang pag-una ng mga tao kay Ageo sa pag-aayos ng sarili nilang bahay habang napapabayaan ang templo ay parang salamin ng ating sariling mga prayoridad.",
           "th": "ผู้คนในสมัยฮักกัยที่มัวแต่แต่งบ้านจนลืมสร้างพระวิหาร ช่างเป็นภาพสะท้อนชีวิตสมัยใหม่ที่ทำเอาเราสะดุ้งได้เหมือนกัน",
-          "sw": "Watu wa wakati wa Hagai waliojishughulisha na ukarabati wa nyumba zao huku wakipuuza hekalu ni mfano kamili wa jinsi tunavyopanga vipaumbele vyetu leo."
+          "sw": "Watu wa wakati wa Hagai waliojishughulisha na ukarabati wa nyumba zao huku wakipuuza hekalu ni mfano kamili wa jinsi tunavyopanga vipaumbele vyetu leo.",
+          "it": "La gente dei tempi di Aggeo ossessionata dal ristrutturare casa mentre il tempio cadeva a pezzi suona troppo simile alle nostre priorità quotidiane."
         }
     },
     "2026-12-08": {
@@ -13435,7 +14467,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "ゼカリヤ書 1:1-21",
@@ -13447,7 +14480,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Zechariah 1:1-21",
           "tl": "Zechariah 1:1-21",
           "th": "Zechariah 1:1-21",
-          "sw": "Zechariah 1:1-21"
+          "sw": "Zechariah 1:1-21",
+          "it": "Zaccaria 1:1-21"
         },
         comment: {
           "ja": "先祖が聞き入れなかった警告をそのまま繰り返して失敗する歴史のループ、人間はいつになっても学習能力をアップデートできない生き物らしい。",
@@ -13459,7 +14493,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Chứng kiến các thế hệ lặp lại sai lầm dù đã được cảnh báo cho thấy con người dường như mãi mãi không chịu rút kinh nghiệm.",
           "tl": "Ang makitang inuulit ng bawat henerasyon ang parehong pagkakamali sa kabila ng babala ay patunay na sadyang matigas ang ulo ng tao.",
           "th": "การได้เห็นคนรุ่นหลังทำพลาดซ้ำรอยบรรพบุรุษทั้งที่ถูกเตือนแล้ว เป็นเครื่องยืนยันว่ามนุษย์เราไม่ค่อยจะจำบทเรียนกันเลย",
-          "sw": "Kuona vizazi vikirudia makosa yale yale licha ya maonyo ni ushahidi kwamba binadamu ni wabishi sana katika kujifunza."
+          "sw": "Kuona vizazi vikirudia makosa yale yale licha ya maonyo ni ushahidi kwamba binadamu ni wabishi sana katika kujifunza.",
+          "it": "Vedere intere generazioni ripetere gli stessi errori nonostante i chiari avvertimenti conferma che gli umani sono bloccati nel loop di non imparare mai."
         }
     },
     "2026-12-09": {
@@ -13474,7 +14509,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "ゼカリヤ書 3:1-10",
@@ -13486,7 +14522,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Zechariah 3:1-10",
           "tl": "Zechariah 3:1-10",
           "th": "Zechariah 3:1-10",
-          "sw": "Zechariah 3:1-10"
+          "sw": "Zechariah 3:1-10",
+          "it": "Zaccaria 3:1-10"
         },
         comment: {
           "ja": "汚れた服を脱がされて新しい服を着せてもらうヨシュア、過去の失敗をいつまでも引きずって恥じている自分に聞かせたい光景だ。",
@@ -13498,7 +14535,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Hình ảnh Giô-suê cởi bỏ bộ y phục bẩn thỉu để mặc đồ mới là lời nhắc nhở rằng chúng ta nên thôi mặc mãi chiếc áo của những sai lầm cũ.",
           "tl": "Ang pagpapalit ng maruming damit ni Josue ay isang paalala na dapat na nating hubarin ang mga pagkakamali ng nakaraan na parang uniporme.",
           "th": "ภาพที่โยชูวาได้เปลี่ยนจากชุดเปื้อนโคลนมาเป็นชุดใหม่ คือการเตือนใจชั้นดีว่าเราควรเลิกเอาความผิดพลาดในอดีตมาสวมใส่เป็นชุดประจำตัวได้แล้ว",
-          "sw": "Kuona Yoshua akivua nguo chafu na kuvaa mpya ni ukumbusho kamili kwamba tunapaswa kuacha kuvaa makosa yetu ya zamani kama sare."
+          "sw": "Kuona Yoshua akivua nguo chafu na kuvaa mpya ni ukumbusho kamili kwamba tunapaswa kuacha kuvaa makosa yetu ya zamani kama sare.",
+          "it": "Giosuè che si toglie i vestiti sporchi per metterne di puliti è il promemoria perfetto per smettere di indossare i nostri errori passati come una divisa."
         }
     },
     "2026-12-10": {
@@ -13513,7 +14551,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "ゼカリヤ書 7:1-14",
@@ -13525,7 +14564,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Zechariah 7:1-14",
           "tl": "Zechariah 7:1-14",
           "th": "Zechariah 7:1-14",
-          "sw": "Zechariah 7:1-14"
+          "sw": "Zechariah 7:1-14",
+          "it": "Zaccaria 7:1-14"
         },
         comment: {
           "ja": "断食の意味を形だけで済ませようとする民に冷や水を浴びせるゼカリヤ、形式主義に走りがちな現代人の耳に痛すぎる。",
@@ -13537,7 +14577,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Zechariah thẳng thắn vạch trần việc chỉ giữ hình thức trong ăn chay, một bài học đắt giá cho những ai hay chạy theo thủ tục.",
           "tl": "Ang pagpuna ni Zacarias sa mga taong pormalidad lang ang habol sa pag-aayuno ay tumatama sa ating ugaling mahilig sa checklist.",
           "th": "เศคาริยาห์ตอกหน้าคนที่ถือศีลอดแค่ให้ครบพิธี เป็นการเตือนสติที่เจ็บจี๊ดสำหรับใครที่ชอบทำอะไรแค่พอเป็นพิธี",
-          "sw": "Zekaria kukemea watu wanaofunga kwa mazoea bila moyo ni ukumbusho mgumu kwa mtu yeyote anayepoteza maana katika ibada."
+          "sw": "Zekaria kukemea watu wanaofunga kwa mazoea bila moyo ni ukumbusho mgumu kwa mtu yeyote anayepoteza maana katika ibada.",
+          "it": "Zaccaria che critica chi tratta il digiuno come una semplice lista di cose da fare è una sveglia per chiunque metta i rituali davanti all'empatia."
         }
     },
     "2026-12-11": {
@@ -13552,7 +14593,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "ゼカリヤ書 9:1-17",
@@ -13564,7 +14606,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Zechariah 9:1-17",
           "tl": "Zechariah 9:1-17",
           "th": "Zechariah 9:1-17",
-          "sw": "Zechariah 9:1-17"
+          "sw": "Zechariah 9:1-17",
+          "it": "Zaccaria 9:1-17"
         },
         comment: {
           "ja": "王がロバに乗ってやってくるという平和の演出、派手な成功を求める世の中の価値観を完全にひっくり返していて痛快だ。",
@@ -13576,7 +14619,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Vị vua cưỡi lừa vào thành là sự đối lập hoàn hảo với những hào nhoáng của thế giới, khiến chúng ta phải nhìn lại định nghĩa về sự thành công.",
           "tl": "Ang pagpasok ng hari na nakasakay sa asno ay isang sampal sa ating obsession sa magarbo at maingay na tagumpay.",
           "th": "การที่กษัตริย์เสด็จมาบนหลังลาเป็นการหักมุมที่ตบหน้าความบ้าคลั่งเรื่องความสำเร็จที่ดูหรูหราอลังการในยุคนี้ได้เจ็บแสบมาก",
-          "sw": "Mfalme kuingia mjini akiwa amepanda punda ni kinyume kabisa na jinsi tunavyotafuta mafanikio ya kishindo leo hii."
+          "sw": "Mfalme kuingia mjini akiwa amepanda punda ni kinyume kabisa na jinsi tunavyotafuta mafanikio ya kishindo leo hii.",
+          "it": "Un re che arriva in città su un asinello ribalta completamente la nostra moderna ossessione per il successo appariscente."
         }
     },
     "2026-12-12": {
@@ -13591,7 +14635,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "ゼカリヤ書 11:1-17",
@@ -13603,7 +14648,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Zechariah 11:1-17",
           "tl": "Zechariah 11:1-17",
           "th": "Zechariah 11:1-17",
-          "sw": "Zechariah 11:1-17"
+          "sw": "Zechariah 11:1-17",
+          "it": "Zaccaria 11:1-17"
         },
         comment: {
           "ja": "羊飼いが杖をへし折って辞めていく姿、もはやブラック企業をバックレる現代人の断末魔にしか見えない。",
@@ -13615,7 +14661,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Hình ảnh người chăn cừu bẻ gãy gậy và bỏ đi giống hệt tâm trạng của một nhân viên văn phòng cuối cùng cũng chịu hết nổi và nộp đơn nghỉ việc.",
           "tl": "Ang pastol na binali ang kanyang baston at umalis ay parang isang empleyadong bigla na lang nag-resign dahil hindi na kinaya ang stress.",
           "th": "ภาพผู้เลี้ยงแกะหักไม้เท้าแล้วเดินหนีไปดูเหมือนพนักงานที่ทนไม่ไหวแล้วตัดสินใจลาออกกะทันหันชัดๆ",
-          "sw": "Mchungaji kuvunja fimbo yake na kuondoka ni kama mfanyakazi anayechoka na kazi yake kisha kuamua kuacha ghafla."
+          "sw": "Mchungaji kuvunja fimbo yake na kuondoka ni kama mfanyakazi anayechoka na kazi yake kisha kuamua kuacha ghafla.",
+          "it": "Il pastore che spezza il bastone e se ne va è l'equivalente antico di qualcuno che molla un lavoro tossico dopo aver sopportato troppo."
         }
     },
     "2026-12-13": {
@@ -13630,7 +14677,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "ゼカリヤ書 13:1-9",
@@ -13642,7 +14690,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Zechariah 13:1-9",
           "tl": "Zechariah 13:1-9",
           "th": "Zechariah 13:1-9",
-          "sw": "Zechariah 13:1-9"
+          "sw": "Zechariah 13:1-9",
+          "it": "Zaccaria 13:1-9"
         },
         comment: {
           "ja": "預言者が傷跡の理由を誤魔化して友達の家でついた傷だと言い張るの、気まずい空気を読んだ嘘としてはあまりに切ない。",
@@ -13654,7 +14703,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc vị tiên tri cố tình che giấu vết sẹo bằng cách đổ lỗi cho một tai nạn ở nhà bạn bè là một lời nói dối vụng về đến đáng thương.",
           "tl": "Ang pagdadahilan ng propeta na ang kanyang mga sugat ay nakuha lang niya sa bahay ng kanyang kaibigan ay ang pinaka-awkward na kasinungalingan.",
           "th": "การที่ผู้เผยพระวจนะพยายามอ้างว่ารอยแผลเกิดจากการไปบ้านเพื่อนเป็นคำโกหกที่ดูน่าอึดอัดที่สุดเลย",
-          "sw": "Nabii kujaribu kuficha makovu yake kwa kusema alijeruhiwa nyumbani kwa rafiki yake ni uongo wa aibu sana."
+          "sw": "Nabii kujaribu kuficha makovu yake kwa kusema alijeruhiwa nyumbani kwa rafiki yake ni uongo wa aibu sana.",
+          "it": "Il profeta che cerca di giustificare le sue ferite dicendo che sono un incidente domestico è la scusa più imbarazzante di sempre."
         }
     },
     "2026-12-14": {
@@ -13669,7 +14719,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "マラキ書 1:1-5",
@@ -13681,7 +14732,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Malachi 1:1-5",
           "tl": "Malachi 1:1-5",
           "th": "Malachi 1:1-5",
-          "sw": "Malachi 1:1-5"
+          "sw": "Malachi 1:1-5",
+          "it": "Malachia 1:1-5"
         },
         comment: {
           "ja": "愛していると言われても「いつ愛してくれたの？」と即座に疑ってかかるマラキの民、まるで思春期の反抗期そのもの。",
@@ -13693,7 +14745,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Hỏi Chúa rằng Ngài đã yêu mình thế nào ngay khi gặp khó khăn chính là phản ứng mang tính 'nổi loạn tuổi mới lớn' nhất của con người.",
           "tl": "Ang pagtatanong sa Diyos kung paano Niya tayo minahal sa gitna ng hirap ay ang pinaka-human at parang teenager na reaksyon kailanman.",
           "th": "การถามพระเจ้าว่ารักเราตอนไหนในวันที่ชีวิตดูแย่ คือปฏิกิริยาของมนุษย์วัยรุ่นที่ชัดเจนที่สุดเท่าที่เคยมีมา",
-          "sw": "Kuuliza Mungu umetupenda lini wakati mambo yanapokuwa magumu ni jibu la kibinadamu na la kitoto zaidi kuwahi kutokea."
+          "sw": "Kuuliza Mungu umetupenda lini wakati mambo yanapokuwa magumu ni jibu la kibinadamu na la kitoto zaidi kuwahi kutokea.",
+          "it": "Chiedere a Dio come ci ha amati quando le cose vanno storte è la classica ribellione adolescenziale su scala nazionale."
         }
     },
     "2026-12-15": {
@@ -13708,7 +14761,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "マラキ書 1:6-14",
@@ -13720,7 +14774,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Malachi 1:6-14",
           "tl": "Malachi 1:6-14",
           "th": "Malachi 1:6-14",
-          "sw": "Malachi 1:6-14"
+          "sw": "Malachi 1:6-14",
+          "it": "Malachia 1:6-14"
         },
         comment: {
           "ja": "神様への捧げ物としてわざわざ傷物や病気の動物を選んで持ってくるあたり、人間はどこまでも自分に都合よくズルをする生き物だ。",
@@ -13732,7 +14787,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc dâng lên Chúa những con vật ốm yếu chỉ chứng minh rằng con người luôn tìm cách làm tắt ngay cả trong việc thờ phượng.",
           "tl": "Ang paghahandog sa Diyos ng mga sirang hayop ay patunay na kahit sa pagsamba, hilig pa rin ng tao na maghanap ng shortcut.",
           "th": "การนำสัตว์ป่วยมาถวายพระเจ้าเป็นหลักฐานชั้นดีว่า แม้แต่ในการนมัสการ มนุษย์เราก็ยังพยายามหาทางลัดเสมอ",
-          "sw": "Kumtolea Mungu wanyama wagonjwa ni ushahidi kuwa hata katika ibada, wanadamu hupenda kutafuta njia za mkato."
+          "sw": "Kumtolea Mungu wanyama wagonjwa ni ushahidi kuwa hata katika ibada, wanadamu hupenda kutafuta njia za mkato.",
+          "it": "Portare a Dio gli animali malati e gli scarti dimostra che cerchiamo scorciatoie persino quando facciamo le cose per Lui."
         }
     },
     "2026-12-16": {
@@ -13747,7 +14803,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "マラキ書 2:1-9",
@@ -13759,7 +14816,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Malachi 2:1-9",
           "tl": "Malachi 2:1-9",
           "th": "Malachi 2:1-9",
-          "sw": "Malachi 2:1-9"
+          "sw": "Malachi 2:1-9",
+          "it": "Malachia 2:1-9"
         },
         comment: {
           "ja": "教える立場にありながら自分は守らないという祭司たちの矛盾、どこまでいっても人間は肩書きだけで偉くなれるわけではないという現実。",
@@ -13771,7 +14829,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Các tư tế rao giảng nhưng không thực hành là minh chứng rõ nhất cho việc chức vụ không thể che đậy những khiếm khuyết trong nhân cách.",
           "tl": "Ang mga paring nagtuturo pero hindi ginagawa ang kanilang sinasabi ay paalala na ang katungkulan ay hindi garantiya ng integridad.",
           "th": "ปุโรหิตที่สอนคนอื่นแต่ตัวเองกลับไม่ทำตาม เป็นเครื่องเตือนใจว่าตำแหน่งไม่ได้การันตีคุณภาพของคนเสมอไป",
-          "sw": "Makuhani wanaohubiri wasichokifanya ni ukumbusho kwamba vyeo havitufanyi kuwa bora kuliko matendo yetu halisi."
+          "sw": "Makuhani wanaohubiri wasichokifanya ni ukumbusho kwamba vyeo havitufanyi kuwa bora kuliko matendo yetu halisi.",
+          "it": "Vedere i sacerdoti predicare bene e razzolare male ci ricorda che un bel titolo non sistema un carattere debole."
         }
     },
     "2026-12-17": {
@@ -13786,7 +14845,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "マラキ書 2:10-17",
@@ -13798,7 +14858,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Malachi 2:10-17",
           "tl": "Malachi 2:10-17",
           "th": "Malachi 2:10-17",
-          "sw": "Malachi 2:10-17"
+          "sw": "Malachi 2:10-17",
+          "it": "Malachia 2:10-17"
         },
         comment: {
           "ja": "家庭の誓いを軽んじておきながら祭壇で涙を流す人々、神様はそんなパフォーマンスよりも日々の誠実さを見ておられるはず。",
@@ -13810,7 +14871,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Khóc lóc trước bàn thờ trong khi thất hứa với gia đình là minh chứng cho việc con người thường dùng nghi lễ để che đậy sự thiếu trung thực.",
           "tl": "Ang pagluha sa altar habang binabalewala ang pangako sa pamilya ay isang klasikong pagtatangka na gamitin ang relihiyon para pagtakpan ang maling ugali.",
           "th": "การร้องไห้ที่แท่นบูชาในขณะที่ผิดคำสัตย์กับครอบครัว คือการพยายามใช้พิธีกรรมมากลบเกลื่อนความบกพร่องในชีวิตจริง",
-          "sw": "Kulia mbele ya madhabahu huku ukivunja ahadi za kifamilia ni jaribio la kibinadamu la kutumia dini kuficha dosari za tabia."
+          "sw": "Kulia mbele ya madhabahu huku ukivunja ahadi za kifamilia ni jaribio la kibinadamu la kutumia dini kuficha dosari za tabia.",
+          "it": "Piangere sull'altare mentre si tradiscono le promesse fatte in famiglia è il classico tentativo di delegare l'onestà a un rituale religioso."
         }
     },
     "2026-12-18": {
@@ -13825,7 +14887,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "マラキ書 3:1-5",
@@ -13837,7 +14900,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Malachi 3:1-5",
           "tl": "Malachi 3:1-5",
           "th": "Malachi 3:1-5",
-          "sw": "Malachi 3:1-5"
+          "sw": "Malachi 3:1-5",
+          "it": "Malachia 3:1-5"
         },
         comment: {
           "ja": "きれいに掃除された家で待機していても、肝心の主人が突然予告なしに帰宅して慌てふためく、あの抜き打ち検査のような緊張感。",
@@ -13849,7 +14913,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Sự xuất hiện bất ngờ của Chúa giống như khoảnh khắc hoảng hốt khi bạn nhận ra mình chưa dọn dẹp nhà cửa trước khi khách đến chơi.",
           "tl": "Ang pagdating ng Panginoon ay parang yung biglang pagdating ng bisita kung kailan hindi pa malinis ang bahay, nakaka-tense na nakakahiya.",
           "th": "การเสด็จมาของพระเจ้าให้ความรู้สึกเหมือนตอนที่มีแขกมาบ้านโดยไม่บอกล่วงหน้า แล้วเราก็ต้องรีบเก็บกวาดบ้านให้ทันเวลา",
-          "sw": "Kuja kwa Bwana kwa ghafla ni kama ule wakati unapoona wageni wanakuja nyumbani na hujasafisha, ile hali ya wasiwasi na haraka."
+          "sw": "Kuja kwa Bwana kwa ghafla ni kama ule wakati unapoona wageni wanakuja nyumbani na hujasafisha, ile hali ya wasiwasi na haraka.",
+          "it": "L'arrivo improvviso del Signore sembra meno un grande evento e più il panico totale quando ti accorgi di non aver pulito casa prima che arrivino gli ospiti."
         }
     },
     "2026-12-19": {
@@ -13864,7 +14929,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "マラキ書 3:6-18",
@@ -13876,7 +14942,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Malachi 3:6-18",
           "tl": "Malachi 3:6-18",
           "th": "Malachi 3:6-18",
-          "sw": "Malachi 3:6-18"
+          "sw": "Malachi 3:6-18",
+          "it": "Malachia 3:6-18"
         },
         comment: {
           "ja": "神様がどれだけ愛を伝えても「具体的に何をしたっていうの？」と返してしまうあたり、思春期の子供と親の会話を見ている気分になる。",
@@ -13888,7 +14955,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Chúa nói Ngài yêu thương chúng ta còn chúng ta lại hỏi 'Ngài đã làm được gì cho con?', đúng là kiểu đối thoại giữa cha mẹ và đứa con tuổi dậy thì.",
           "tl": "Ang pagsasabi ng Diyos na mahal Niya tayo at ang pagsagot natin ng 'ano naman ang ginawa Mo?' ay parang pagtatalo ng magulang at anak na teenager.",
           "th": "พระเจ้าบอกว่ารักเรา แต่เรากลับถามว่า 'แล้วพระองค์ทำอะไรให้บ้าง?' นี่มันบทสนทนาคลาสสิกของลูกวัยรุ่นกับพ่อแม่ชัดๆ",
-          "sw": "Mungu kusema anatupenda nasi tunajibu 'umetufanyia nini?' ni kama mazungumzo ya kawaida kati ya mzazi na kijana aliyekosa shukrani."
+          "sw": "Mungu kusema anatupenda nasi tunajibu 'umetufanyia nini?' ni kama mazungumzo ya kawaida kati ya mzazi na kijana aliyekosa shukrani.",
+          "it": "Dio che dice di amarci e noi che rispondiamo con cosa ha fatto per noi di recente è il ritratto perfetto di un adolescente ingrato."
         }
     },
     "2026-12-20": {
@@ -13903,7 +14971,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "マラキ書 4:1-6",
@@ -13915,7 +14984,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Malachi 4:1-6",
           "tl": "Malachi 4:1-6",
           "th": "Malachi 4:1-6",
-          "sw": "Malachi 4:1-6"
+          "sw": "Malachi 4:1-6",
+          "it": "Malachia 4:1-6"
         },
         comment: {
           "ja": "最後の一行で親子の絆について触れるあたり、神様もやっぱり家庭内のゴタゴタを一番心配しているんだなと感じて少し安心する。",
@@ -13927,7 +14997,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Chúa kết thúc thông điệp cuối cùng bằng cách nhắc đến tình cảm gia đình cho thấy Ngài hiểu rõ những rắc rối đời thường nhất.",
           "tl": "Ang pagtatapos ng mensahe ng Diyos sa pagbanggit ng pamilya ay patunay na alam Niya kung saan tayo nahihirapan araw-araw.",
           "th": "การที่พระเจ้าปิดท้ายคำพยากรณ์ด้วยเรื่องความสัมพันธ์ในครอบครัว แสดงว่าพระองค์รู้ดีว่าเรื่องในบ้านคือเรื่องที่น่าปวดหัวที่สุด",
-          "sw": "Mungu kuhitimisha ujumbe wake kwa kuzungumzia familia inaonyesha Anajua vyema mahali ambapo changamoto zetu kubwa zipo."
+          "sw": "Mungu kuhitimisha ujumbe wake kwa kuzungumzia familia inaonyesha Anajua vyema mahali ambapo changamoto zetu kubwa zipo.",
+          "it": "Che Dio finisca il suo discorso parlando di dinamiche familiari dimostra che sa benissimo dove si concentrano i nostri stress quotidiani."
         }
     },
     "2026-12-21": {
@@ -13942,7 +15013,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "New Testament",
           "tl": "New Testament",
           "th": "New Testament",
-          "sw": "New Testament"
+          "sw": "New Testament",
+          "it": "Nuovo Testamento"
         },
         chapter: {
           "ja": "ルカによる福音書 2:7",
@@ -13954,7 +15026,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Luke 2:7",
           "tl": "Luke 2:7",
           "th": "Luke 2:7",
-          "sw": "Luke 2:7"
+          "sw": "Luke 2:7",
+          "it": "Luca 2:7"
         },
         comment: {
           "ja": "救い主の誕生という歴史的イベントなのに宿屋に空きがないという現実、人生のハイライトは案外こんなドタバタの中で起きるものらしい。",
@@ -13966,7 +15039,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc Đấng Cứu Thế phải sinh ra trong máng cỏ vì hết chỗ trọ cho thấy những khoảnh khắc vĩ đại nhất đời người thường đến vào lúc hỗn loạn nhất.",
           "tl": "Ang pagsilang ng Tagapagligtas sa isang sabsaban dahil walang matuluyan ay paalala na ang mahahalagang pangyayari sa buhay ay madalas nagaganap sa gitna ng kaguluhan.",
           "th": "การที่พระผู้ช่วยให้รอดต้องประสูติในรางหญ้าเพราะไม่มีห้องว่าง เตือนให้รู้ว่าช่วงเวลาที่สำคัญที่สุดในชีวิตมักเกิดขึ้นท่ามกลางความวุ่นวายเสมอ",
-          "sw": "Mwokozi kuzaliwa kwenye hori kwa sababu ya kukosa nafasi ni ukumbusho kwamba matukio makubwa ya maisha hutokea katikati ya machafuko."
+          "sw": "Mwokozi kuzaliwa kwenye hori kwa sababu ya kukosa nafasi ni ukumbusho kwamba matukio makubwa ya maisha hutokea katikati ya machafuko.",
+          "it": "Il Salvatore nato in una stalla per mancanza di posti ci ricorda che i momenti più importanti della vita arrivano sempre nel bel mezzo del caos."
         }
     },
     "2026-12-22": {
@@ -13981,7 +15055,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Book of Mormon",
           "tl": "Book of Mormon",
           "th": "Book of Mormon",
-          "sw": "Book of Mormon"
+          "sw": "Book of Mormon",
+          "it": "Libro di Mormon"
         },
         chapter: {
           "ja": "2 ニーファイ 11:4",
@@ -13993,7 +15068,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "2 Nephi 11:4",
           "tl": "2 Nephi 11:4",
           "th": "2 Nephi 11:4",
-          "sw": "2 Nephi 11:4"
+          "sw": "2 Nephi 11:4",
+          "it": "2 Nefi 11:4"
         },
         comment: {
           "ja": "すべてが誰かの予言の伏線だと言われると、人生のどんな些細な出来事も壮大な物語の一部に見えてくるから不思議だ。",
@@ -14005,7 +15081,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Khi mọi thứ đều được coi là điềm báo, ngay cả những chuyện vụn vặt nhất trong ngày cũng bỗng trở thành một phần của kịch bản sử thi.",
           "tl": "Kapag ang lahat ng bagay ay itinuturing na pahiwatig, maging ang mga simpleng pangyayari sa buhay ay nagmumukhang bahagi ng isang malaking kuwento.",
           "th": "เมื่อทุกอย่างถูกมองว่าเป็นคำบอกใบ้ แม้แต่เรื่องธรรมดาที่สุดในชีวิตก็ดูเหมือนจะเป็นส่วนหนึ่งของเรื่องราวที่ยิ่งใหญ่",
-          "sw": "Unapochukulia kila kitu kama ishara ya mambo yajayo, hata mambo madogo ya kila siku yanaanza kuhisi kama sehemu ya hadithi kuu."
+          "sw": "Unapochukulia kila kitu kama ishara ya mambo yajayo, hata mambo madogo ya kila siku yanaanza kuhisi kama sehemu ya hadithi kuu.",
+          "it": "Quando tutto viene visto come una profezia, persino il martedì più noioso sembra improvvisamente parte di una grande storia epica."
         }
     },
     "2026-12-23": {
@@ -14020,7 +15097,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "出エジプト記 16:4",
@@ -14032,7 +15110,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Exodus 16:4",
           "tl": "Exodus 16:4",
           "th": "Exodus 16:4",
-          "sw": "Exodus 16:4"
+          "sw": "Exodus 16:4",
+          "it": "Esodo 16:4"
         },
         comment: {
           "ja": "毎日空から食料が降ってくるのに文句を言い出すイスラエル人、贅沢な悩みの極致すぎて逆に親近感が湧く。",
@@ -14044,7 +15123,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc dân Y-sơ-ra-ên than phiền về thức ăn từ trên trời rơi xuống chính là minh chứng rõ nhất cho việc con người chẳng bao giờ thấy đủ.",
           "tl": "Ang mga Israelita na nagrereklamo sa pagkaing nahuhulog mula sa langit ay patunay na kahit gaano kasagana, laging may hahanapin ang tao.",
           "th": "การที่ชาวอิสราเอลบ่นเรื่องอาหารที่ตกลงมาจากฟ้าเป็นเครื่องพิสูจน์ว่ามนุษย์เราไม่เคยพอใจกับอะไรเลยจริงๆ",
-          "sw": "Waisraeli kulalamika kuhusu chakula kinachoshuka kutoka mbinguni ni uthibitisho kwamba binadamu hatutosheki na chochote."
+          "sw": "Waisraeli kulalamika kuhusu chakula kinachoshuka kutoka mbinguni ni uthibitisho kwamba binadamu hatutosheki na chochote.",
+          "it": "Gli israeliti che si lamentano del cibo gratis che cade dal cielo sono la prova che siamo capaci di trovare da ridire su qualsiasi cosa."
         }
     },
     "2026-12-24": {
@@ -14059,7 +15139,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "出エジプト記 17:1-6",
@@ -14071,7 +15152,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Exodus 17:1-6",
           "tl": "Exodus 17:1-6",
           "th": "Exodus 17:1-6",
-          "sw": "Exodus 17:1-6"
+          "sw": "Exodus 17:1-6",
+          "it": "Esodo 17:1-6"
         },
         comment: {
           "ja": "喉が渇いただけで即座に指導者を責め立てるイスラエルの民、極限状態での他責思考の速さがリアルすぎる。",
@@ -14083,7 +15165,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Người Israel đổ lỗi cho lãnh đạo ngay khi thấy khát là minh chứng rõ nhất cho bản năng đổ lỗi khi gặp khó khăn.",
           "tl": "Ang mga Israelita na agad sinisi ang kanilang lider sa sandaling mauhaw ay isang totoong repleksyon ng ugali nating magsisihan kapag nahihirapan.",
           "th": "ชาวอิสราเอลที่โทษผู้นำทันทีที่รู้สึกหิวน้ำ สะท้อนให้เห็นว่ามนุษย์เรามักจะโทษคนอื่นก่อนเสมอเมื่อเจอความลำบาก",
-          "sw": "Waisraeli kumlaumu kiongozi wao mara tu walipohisi kiu ni dhihirisho la jinsi tunavyotafuta wa kulaumiwa tunapokuwa na shida."
+          "sw": "Waisraeli kumlaumu kiongozi wao mara tu walipohisi kiu ni dhihirisho la jinsi tunavyotafuta wa kulaumiwa tunapokuwa na shida.",
+          "it": "Gli israeliti che danno la colpa al leader alla prima goccia di sete sono lo specchio perfetto di quanto siamo impazienti sotto pressione."
         }
     },
     "2026-12-25": {
@@ -14098,7 +15181,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "民数記 21:4-9",
@@ -14110,7 +15194,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Numbers 21:4-9",
           "tl": "Numbers 21:4-9",
           "th": "Numbers 21:4-9",
-          "sw": "Numbers 21:4-9"
+          "sw": "Numbers 21:4-9",
+          "it": "Numeri 21:4-9"
         },
         comment: {
           "ja": "不平不満を言った直後に災難に遭い慌てて助けを求める民、まさに喉元過ぎれば熱さを忘れる我々の縮図だ。",
@@ -14122,7 +15207,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Than vãn rồi cuống cuồng cầu cứu khi gặp họa là vòng lặp trớ trêu điển hình của con người.",
           "tl": "Ang magreklamo at pagkatapos ay magpanic at humingi ng tulong kapag nagkaproblema ay ang klasikong siklo ng ating pagkatao.",
           "th": "การบ่นพึมพำแล้วกลับมาตื่นตระหนกขอความช่วยเหลือทันทีที่เจอเรื่องร้าย คือวัฏจักรความย้อนแย้งสุดคลาสสิกของมนุษย์เรา",
-          "sw": "Kulalamika kisha kutapatapa kuomba msaada mara tu matatizo yanapojitokeza ni mzunguko wa kawaida wa tabia za kibinadamu."
+          "sw": "Kulalamika kisha kutapatapa kuomba msaada mara tu matatizo yanapojitokeza ni mzunguko wa kawaida wa tabia za kibinadamu.",
+          "it": "Lamentarsi continuamente e poi correre ai ripari quando le cose vanno male è il grande classico della nostra incoerenza quotidiana."
         }
     },
     "2026-12-26": {
@@ -14137,7 +15223,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Old Testament",
           "tl": "Old Testament",
           "th": "Old Testament",
-          "sw": "Old Testament"
+          "sw": "Old Testament",
+          "it": "Vecchio Testamento"
         },
         chapter: {
           "ja": "イザヤ書 11:1-5",
@@ -14149,7 +15236,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Isaiah 11:1-5",
           "tl": "Isaiah 11:1-5",
           "th": "Isaiah 11:1-5",
-          "sw": "Isaiah 11:1-5"
+          "sw": "Isaiah 11:1-5",
+          "it": "Isaia 11:1-5"
         },
         comment: {
           "ja": "切り株から芽が出るという地味な再出発、派手な成功ばかり追い求める現代人にはかなり耳が痛い話だ。",
@@ -14161,7 +15249,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Hình ảnh chồi non mọc lên từ gốc cây khô là lời nhắc nhở nhẹ nhàng cho những ai chỉ mải mê đuổi theo thành công hào nhoáng.",
           "tl": "Ang ideya ng isang usbong na lumalabas mula sa tuyot na puno ay isang mapagpakumbabang paalala para sa atin na laging nagmamadali sa tagumpay.",
           "th": "การที่หน่อไม้งอกออกมาจากตอไม้ที่ดูไร้ชีวิต เป็นเครื่องเตือนใจชั้นดีสำหรับคนที่มัวแต่ไขว่คว้าหาความสำเร็จแบบทางลัด",
-          "sw": "Wazo la chipukizi kuchipuka kutoka kwenye shina lililokauka ni ukumbusho wa unyenyekevu kwa wale wanaotafuta mafanikio ya haraka."
+          "sw": "Wazo la chipukizi kuchipuka kutoka kwenye shina lililokauka ni ukumbusho wa unyenyekevu kwa wale wanaotafuta mafanikio ya haraka.",
+          "it": "Un germoglio che spunta da un tronco tagliato è una bella boccata d'aria per chi è ossessionato dal successo immediato."
         }
     },
     "2026-12-27": {
@@ -14176,7 +15265,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "New Testament",
           "tl": "New Testament",
           "th": "New Testament",
-          "sw": "New Testament"
+          "sw": "New Testament",
+          "it": "Nuovo Testamento"
         },
         chapter: {
           "ja": "ルカによる福音書 2:13-14",
@@ -14188,7 +15278,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Luke 2:13-14",
           "tl": "Luke 2:13-14",
           "th": "Luke 2:13-14",
-          "sw": "Luke 2:13-14"
+          "sw": "Luke 2:13-14",
+          "it": "Luca 2:13-14"
         },
         comment: {
           "ja": "救い主の誕生を羊飼いに告げる軍勢、地上の騒がしいニュースよりも先に聞くべき本当の速報はこれのことだ。",
@@ -14200,7 +15291,8 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {
           "vi": "Việc các thiên sứ hiện ra với những người chăn cừu thay vì giới thượng lưu cho thấy tin tức quan trọng nhất thường không nằm trên mặt báo.",
           "tl": "Ang pagpapakita ng mga anghel sa mga pastol sa halip na sa mga makapangyarihan ay patunay na ang pinakamahalagang balita ay hindi laging nasa headline.",
           "th": "การที่เหล่าทูตสวรรค์เลือกบอกข่าวดีกับคนเลี้ยงแกะแทนที่จะเป็นคนใหญ่คนโต ยืนยันได้ว่าข่าวที่สำคัญที่สุดมักไม่อยู่ในพาดหัวข่าว",
-          "sw": "Jeshi la mbinguni kuwatokea wachungaji badala ya watu mashuhuri ni ushahidi kwamba habari muhimu zaidi mara nyingi hazipo kwenye vichwa vya habari."
+          "sw": "Jeshi la mbinguni kuwatokea wachungaji badala ya watu mashuhuri ni ushahidi kwamba habari muhimu zaidi mara nyingi hazipo kwenye vichwa vya habari.",
+          "it": "Dare la notizia della nascita ai pastori e non ai potenti dimostra che le cose che contano davvero saltano sempre i titoli dei giornali."
         }
     }
 };
@@ -14228,6 +15320,11 @@ export function getAiDailyComment(dateStr: string, lang: string = 'ja') {
             scripture: "Scripture Study",
             chapter: "Today's Scripture",
             comment: "Taking one small step each day to open the scriptures is a habit worth keeping."
+        },
+        it: {
+            scripture: "Studio delle Scritture",
+            chapter: "Scrittura di oggi",
+            comment: "Fare anche solo un piccolo passo ogni giorno per aprire le Scritture è un'abitudine preziosa da custodire."
         }
     };
 
