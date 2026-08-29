@@ -59,9 +59,17 @@ flowchart TD
 1. **Priority 1 (Scriptural Context Match)**: If the user studied a specific book/chapter featuring a figure (e.g. 1 Nephi → Nephi, D&C 25 → Emma Smith), that person is selected.
 2. **Priority 2 (Spiritual Theme Match)**: If no direct author exists, the AI dynamically selects the figure whose life experiences and teachings best resonate with the user's emotional and spiritual insights.
 
-### ③ Letter Structure & Two-Phase Progression (Humor vs Spiritual Emotion)
+### ③ Dynamic 4-Lens Emotional Adaptation
+The AI analyzes the tone, emotion, and struggles in the user's notes to select the most fitting lens:
+- **Lens 1: Scholarly & Contextual Insight**: Applied when notes show intellectual curiosity or textual questions.
+- **Lens 2: Poetic Paradox & Eloquent Epigrams**: Applied when notes express heavy trials, grief, or deep prayer.
+- **Lens 3: Relatable Human Irony & Vulnerability**: Applied when notes describe everyday chaos, slip-ups, or casual friction.
+- **Lens 4: Pastoral Warmth & Relieving Perfectionism**: Applied when notes show fatigue, guilt, or perfectionist pressure.
+- **Multifaceted Persona Episodes**: Rather than flat stereotypes, the persona's specific life episode is matched to the lens (e.g. for Nephi: smelting ore vs. weeping in 2 Ne 4 vs. broken bow vs. stepping into the dark).
+
+### ④ Letter Structure & Two-Phase Progression (Humor vs Spiritual Emotion)
 - **Salutation**: `"Dear ${userName}, I, the AI, am embodying [Persona Name] as I read your two latest study notes."` (Transparent AI roleplay)
-- **Phase 1 (Warm Icebreaker & Human Relatability)**: Shares scriptural self-deprecation (Peter sinking/dozing, Nephi's broken bow, Jonah's runaway boat, Alma passing out) or modern relatable struggles to build rapport and relieve pressure.
+- **Phase 1 (Warm Icebreaker & Human Relatability)**: Shapes rapport and humor around the selected lens.
 - **Phase 2 (Sincere Christ-Centered Reflection)**: Shifts to a reverent, touching tone without jokes, validating the user's sincere spiritual thoughts and testifying of Christ's grace.
 - **Poem & P.S.**: A clean 3–4 line poem formatted without markdown symbols (`*` or `---`), followed optionally by a heartwarming P.S. (postscript).
 - **Signature**: `"— From AI (embodying [Persona Name])"`
@@ -72,10 +80,19 @@ flowchart TD
 
 ## 5. Daily Scripture Comment Generation (`scripts/generate-ai-daily-comments.ts`)
 
-Pre-generates daily study comments in 10 languages for the Come, Follow Me curriculum:
-- **Strategy**: Replaces generic textbook sermons with punchy 1-line observations, witty modern parallels, and empathetic humor focusing on human realities in the scriptures.
-- **Rules**: Zero emojis, no rhetorical homework questions, single punchy line.
-- **Cultural Localization**: Localized culturally so the humor and cadence sound natural to native speakers across all 10 supported languages.
+Pre-generates high-impact daily study comments across **11 languages** for the *Come, Follow Me* curriculum using a **Multi-Lens Scholar Blend**:
+
+### ① Dynamic 4-Lens Rotation
+Prevents tone fatigue by dynamically rotating across four distinct perspectives:
+- **Lens 1: Scholarly & Contextual Insight** *(John W. Welch, Hugh Nibley)*: Ancient context, wordplay, and structural pivots.
+- **Lens 2: Poetic Paradox & Eloquent Epigrams** *(Neal A. Maxwell, Terryl Givens)*: Mortal limits vs. divine timing, quiet grace, and growth.
+- **Lens 3: Relatable Human Irony & Gentle Satire** *(Hugh Nibley, Dieter F. Uchtdorf)*: Relatable human overthinking, awkwardness, and everyday ironies.
+- **Lens 4: Pastoral Warmth & Relieving Perfectionism** *(Jeffrey R. Holland, Chieko Okazaki)*: Dismantles exhausting perfectionism with Christ-centered reassurance.
+
+### ② Core Engineering Rules
+- **English Instructions + Bilingual Few-Shots**: All system instructions are written in English for optimal reasoning, while few-shots provide paired English/Japanese models to eliminate mechanical translation artifacts.
+- **Strict Constraints**: Exactly 1 sentence, strictly zero emojis, no preachy clichés (`"This teaches us to..."`, `"Let us..."`), and full Word of Wisdom compliance (no coffee, tea, alcohol metaphors).
+- **11-Language Native Cadence**: Culturally localized for `ja`, `en`, `ko`, `zho`, `es`, `pt`, `vi`, `tl`, `th`, `sw`, `it`.
 
 ---
 
@@ -97,7 +114,7 @@ In alignment with General Handbook Section 38.8.47 ("Appropriate Use of Artifici
 
 ---
 
-## 6. Related Documentation
+## 7. Related Documentation
 
 - [AI Reflection Letters & Retention Psychology](./ux-ai-reflection-letters.md)
 - [Internationalization (i18n)](./logic-i18n.md)
