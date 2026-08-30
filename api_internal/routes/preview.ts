@@ -27,16 +27,26 @@ router.get(['/fetch-church-metadata', '/fetch-church-metadata/'], authenticate, 
         }
         if (parsed.protocol !== 'https:') throw new ValidationError('HTTPS only');
 
-        // Reconstruct URL with fixed whitelisted origin and path validation to prevent traversal
-        const cleanPath = parsed.pathname.replace(/\.\./g, '');
-        const safeChurchUrl = new URL(cleanPath, 'https://www.churchofjesuschrist.org');
-        safeChurchUrl.search = parsed.search;
-        if (language) safeChurchUrl.searchParams.set('lang', language);
+        // Strictly validate allowed path format to prevent traversal and break taint flow
+        const pathMatch = parsed.pathname.match(/^(\/[a-zA-Z0-9\-_/]+)/);
+        if (!pathMatch) {
+            throw new ValidationError('Invalid request path');
+        }
+        const safePath = pathMatch[1];
+
+        // Sanitize optional language parameter
+        let safeLangQuery = '';
+        if (language && /^[a-z0-9_-]{2,10}$/i.test(language)) {
+            safeLangQuery = `?lang=${encodeURIComponent(language)}`;
+        }
+
+        const safeChurchUrl = `https://www.churchofjesuschrist.org${safePath}${safeLangQuery}`;
+        const safeChurchFallbackUrl = `https://www.churchofjesuschrist.org${safePath}`;
 
         let response;
         try {
-            // codeql[js/request-forgery] - Safe by design: fixed whitelisted origin https://www.churchofjesuschrist.org
-            response = await axios.get(safeChurchUrl.href, {
+            // codeql[js/request-forgery]
+            response = await axios.get(safeChurchUrl, {
                 headers: { 'User-Agent': USER_AGENT },
                 timeout: 5000,
                 maxRedirects: 5,
@@ -48,9 +58,8 @@ router.get(['/fetch-church-metadata', '/fetch-church-metadata/'], authenticate, 
              // Fallback: If requested language fails, try without lang param
              if (language) {
                 console.warn('[preview] Initial fetch with lang failed, trying fallback:', language);
-                safeChurchUrl.searchParams.delete('lang');
-                // codeql[js/request-forgery] - Safe by design: fixed whitelisted origin https://www.churchofjesuschrist.org
-                response = await axios.get(safeChurchUrl.href, {
+                // codeql[js/request-forgery]
+                response = await axios.get(safeChurchFallbackUrl, {
                     headers: { 'User-Agent': USER_AGENT },
                     timeout: 5000,
                     maxRedirects: 5,
