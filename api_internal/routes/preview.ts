@@ -16,21 +16,25 @@ router.get(['/fetch-church-metadata', '/fetch-church-metadata/'], authenticate, 
     const { url, language } = req.query as { url?: string, language?: string };
 
     try {
-        if (!url) throw new ValidationError('URL is required');
+        if (!url || typeof url !== 'string') throw new ValidationError('URL is required');
 
-        const targetUrl = new URL(url);
+        const parsed = new URL(url);
         // SSRF Protection: White-list domain
-        if (targetUrl.hostname !== 'www.churchofjesuschrist.org' && targetUrl.hostname !== 'churchofjesuschrist.org') {
-            console.warn(`Blocked metadata fetch for invalid domain: ${targetUrl.hostname}`);
+        const host = parsed.hostname.toLowerCase();
+        if (host !== 'www.churchofjesuschrist.org' && host !== 'churchofjesuschrist.org') {
+            console.warn('[preview] Blocked metadata fetch for invalid domain:', host);
             throw new ValidationError('Invalid request');
         }
-        if (targetUrl.protocol !== 'https:') throw new ValidationError('HTTPS only');
+        if (parsed.protocol !== 'https:') throw new ValidationError('HTTPS only');
 
-        if (language) targetUrl.searchParams.set('lang', language);
+        // Reconstruct URL with fixed whitelisted origin to completely eliminate SSRF
+        const safeChurchUrl = new URL(parsed.pathname, 'https://www.churchofjesuschrist.org');
+        safeChurchUrl.search = parsed.search;
+        if (language) safeChurchUrl.searchParams.set('lang', language);
 
         let response;
         try {
-            response = await axios.get(targetUrl.toString(), {
+            response = await axios.get(safeChurchUrl.href, {
                 headers: { 'User-Agent': USER_AGENT },
                 timeout: 5000,
                 maxRedirects: 5,
@@ -41,9 +45,9 @@ router.get(['/fetch-church-metadata', '/fetch-church-metadata/'], authenticate, 
         } catch (axiosError) {
              // Fallback: If requested language fails, try without lang param
              if (language) {
-                console.warn(`Initial fetch with lang=${language} failed, trying fallback...`);
-                targetUrl.searchParams.delete('lang');
-                response = await axios.get(targetUrl.toString(), {
+                console.warn('[preview] Initial fetch with lang failed, trying fallback:', language);
+                safeChurchUrl.searchParams.delete('lang');
+                response = await axios.get(safeChurchUrl.href, {
                     headers: { 'User-Agent': USER_AGENT },
                     timeout: 5000,
                     maxRedirects: 5,
@@ -95,9 +99,13 @@ router.get(['/url-preview', '/url-preview/'], authenticate, verifyAppCheck, redi
     try {
         if (!url || typeof url !== 'string') throw new ValidationError('URL required');
 
-        if (!isSafeUrl(url)) throw new ValidationError('Invalid URL');
-
         const parsedUrl = new URL(url);
+        if (parsedUrl.protocol !== 'http:' && parsedUrl.protocol !== 'https:') {
+            throw new ValidationError('HTTP or HTTPS required');
+        }
+
+        if (!isSafeUrl(parsedUrl.href)) throw new ValidationError('Invalid URL');
+
         const previewData: {
             url: string;
             title: string;
@@ -119,7 +127,7 @@ router.get(['/url-preview', '/url-preview/'], authenticate, verifyAppCheck, redi
                             hostname === 'www.churchofjesuschrist.org' || 
                             hostname.endsWith('.churchofjesuschrist.org');
 
-        const response = await axios.get(parsedUrl.toString(), {
+        const response = await axios.get(parsedUrl.href, {
             headers: { 'User-Agent': USER_AGENT },
             timeout: 4000,
             maxContentLength: 512 * 1024,

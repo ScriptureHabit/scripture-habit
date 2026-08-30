@@ -6,6 +6,8 @@ on:
     - cron: '0 */6 * * *'
   workflow_dispatch: # Allows manual trigger from GitHub Actions tab
 
+permissions: {}
+
 jobs:
   cleanup-demo:
     runs-on: ubuntu-latest
