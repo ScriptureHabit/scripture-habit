@@ -99,9 +99,21 @@ export const updateGroupSchema = z.object({
     })).optional()
 });
 
+const safeSingleLineText = (val: string | null | undefined) => {
+    if (!val) return true;
+    // Disallow newlines and ASCII control characters (0-31, 127) without triggering no-control-regex lint rule
+    for (let i = 0; i < val.length; i++) {
+        const code = val.charCodeAt(i);
+        if ((code >= 0 && code <= 31) || code === 127) {
+            return false;
+        }
+    }
+    return noHtmlTags(val);
+};
+
 export const ponderQuestionsSchema = z.object({
-    scripture: z.string().min(1).max(100),
-    chapter: z.string().min(1).max(50),
+    scripture: z.string().min(1).max(100).refine(safeSingleLineText, { message: "Invalid characters in scripture name" }),
+    chapter: z.string().min(1).max(50).refine(safeSingleLineText, { message: "Invalid characters in chapter" }),
     language: z.enum(supportedLanguages).optional()
 });
 

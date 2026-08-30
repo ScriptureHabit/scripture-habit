@@ -1,0 +1,19 @@
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Allowlist for test fixtures, mock data, and dummy CI credentials"
+regexes = [
+  '''ci-dummy-cron-secret-key-12345''',
+  '''demo-api-key''',
+  '''demo-project\.firebaseapp\.com''',
+  '''1:123456789:web:abcdef''',
+]
+paths = [
+  '''^\.github/workflows/ci\.yml$''',
+  '''^tests/.*''',
+  '''^api_internal/test-setup\.ts$''',
+  '''^api_internal/__tests__/.*''',
+  '''^src/.*__tests__/.*''',
+  '''^docs/.*''',
+]
