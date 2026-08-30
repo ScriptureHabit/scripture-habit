@@ -27,46 +27,42 @@ router.get(['/fetch-church-metadata', '/fetch-church-metadata/'], authenticate, 
         }
         if (parsed.protocol !== 'https:') throw new ValidationError('HTTPS only');
 
-        // Strictly validate allowed path format to prevent traversal and break taint flow
-        const pathMatch = parsed.pathname.match(/^(\/[a-zA-Z0-9\-_/]+)/);
-        if (!pathMatch) {
-            throw new ValidationError('Invalid request path');
+        // Deconstruct path into safe alphanumeric segments to eliminate path traversal and break taint flow
+        const rawSegments = parsed.pathname.split('/').filter(Boolean);
+        const safeSegments: string[] = [];
+        for (const seg of rawSegments) {
+            if (/^[a-zA-Z0-9\-_]+$/.test(seg)) {
+                safeSegments.push(encodeURIComponent(seg));
+            } else {
+                throw new ValidationError('Invalid request path characters');
+            }
         }
-        const safePath = pathMatch[1];
+        const relativePath = '/' + safeSegments.join('/');
 
-        // Sanitize optional language parameter
-        let safeLangQuery = '';
-        if (language && /^[a-z0-9_-]{2,10}$/i.test(language)) {
-            safeLangQuery = `?lang=${encodeURIComponent(language)}`;
-        }
+        const churchClient = axios.create({
+            baseURL: 'https://www.churchofjesuschrist.org',
+            headers: { 'User-Agent': USER_AGENT },
+            timeout: 5000,
+            maxRedirects: 5,
+            maxContentLength: 512 * 1024,
+            httpAgent: ssrfSafeHttpAgent,
+            httpsAgent: ssrfSafeHttpsAgent
+        });
 
-        const safeChurchUrl = `https://www.churchofjesuschrist.org${safePath}${safeLangQuery}`;
-        const safeChurchFallbackUrl = `https://www.churchofjesuschrist.org${safePath}`;
+        const safeLang = (language && /^[a-z0-9_-]{2,10}$/i.test(language)) ? language : undefined;
 
         let response;
         try {
-            // codeql[js/request-forgery]
-            response = await axios.get(safeChurchUrl, {
-                headers: { 'User-Agent': USER_AGENT },
-                timeout: 5000,
-                maxRedirects: 5,
-                maxContentLength: 512 * 1024,
-                httpAgent: ssrfSafeHttpAgent,
-                httpsAgent: ssrfSafeHttpsAgent
+            // codeql[js/request-forgery] - Safe by design: fixed baseURL https://www.churchofjesuschrist.org
+            response = await churchClient.get(relativePath, {
+                params: safeLang ? { lang: safeLang } : undefined
             });
         } catch (axiosError) {
              // Fallback: If requested language fails, try without lang param
-             if (language) {
-                console.warn('[preview] Initial fetch with lang failed, trying fallback:', language);
-                // codeql[js/request-forgery]
-                response = await axios.get(safeChurchFallbackUrl, {
-                    headers: { 'User-Agent': USER_AGENT },
-                    timeout: 5000,
-                    maxRedirects: 5,
-                    maxContentLength: 512 * 1024,
-                    httpAgent: ssrfSafeHttpAgent,
-                    httpsAgent: ssrfSafeHttpsAgent
-                });
+             if (safeLang) {
+                console.warn('[preview] Initial fetch with lang failed, trying fallback:', safeLang);
+                // codeql[js/request-forgery] - Safe by design: fixed baseURL https://www.churchofjesuschrist.org
+                response = await churchClient.get(relativePath);
              } else {
                  throw axiosError;
              }
