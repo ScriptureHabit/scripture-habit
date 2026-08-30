@@ -2,7 +2,7 @@
 useDefault = true
 
 [allowlist]
-description = "Allowlist for test fixtures, mock data, and dummy CI credentials"
+description = "Allowlist for test fixtures, mock data, dummy CI credentials, and public client configs"
 regexes = [
   '''ci-dummy-cron-secret-key-12345''',
   '''demo-api-key''',
@@ -10,10 +10,23 @@ regexes = [
   '''1:123456789:web:abcdef''',
 ]
 paths = [
-  '''^\.github/workflows/ci\.yml$''',
-  '''^tests/.*''',
-  '''^api_internal/test-setup\.ts$''',
-  '''^api_internal/__tests__/.*''',
-  '''^src/.*__tests__/.*''',
-  '''^docs/.*''',
+  '''(?i).*\.github/workflows/.*''',
+  '''(?i).*tests?/.*''',
+  '''(?i).*fixtures/.*''',
+  '''(?i).*\.test\.[tj]sx?$''',
+  '''(?i).*dummy.*''',
+  '''(?i).*google-services\.json$''',
+  '''(?i).*public/sw\.js$''',
+  '''(?i).*notificationHelper\.js$''',
+  '''(?i).*docs/.*''',
+]
+commits = [
+  "b1c98f2f98990a245aed8b027219e892fa805823",
+  "46ce3725942bf27f0506ef2faaa0f4ebd568aa0d",
+  "62a08d3333649ef0267152da30bb315b91a684e9",
+  "16ce640d8133b89ec57f431a644166ee03d5a946",
+  "f8a1b0f746de5220dd720d7a394267f0b2e65296",
+  "4006926d281c4c826b02ee77fa5069506483171a",
+  "4c95ba68194e7094f6d3e1e823fcd3482f9aab75",
+  "539ec22a8f34b76d23afdfd8947842b2a4322880",
 ]

@@ -1,0 +1,11 @@
+# Gitleaks ignore list for historical commits and public client configurations
+b1c98f2f98990a245aed8b027219e892fa805823:public/sw.js:gcp-api-key:187
+46ce3725942bf27f0506ef2faaa0f4ebd568aa0d:scripture-habit/tests/fixtures/auth.fixture.ts:gcp-api-key:27
+62a08d3333649ef0267152da30bb315b91a684e9:scripture-habit/public/sw.js:gcp-api-key:157
+16ce640d8133b89ec57f431a644166ee03d5a946:scripture-habit/api_internal/routes/ai.integration.test.ts:generic-api-key:163
+16ce640d8133b89ec57f431a644166ee03d5a946:scripture-habit/api_internal/routes/ai.integration.test.ts:generic-api-key:379
+f8a1b0f746de5220dd720d7a394267f0b2e65296:scripture-habit/api_internal/lib/dummy-service-account.json:private-key:5
+4006926d281c4c826b02ee77fa5069506483171a:scripture-habit/public/sw.js:gcp-api-key:6
+4c95ba68194e7094f6d3e1e823fcd3482f9aab75:scripture-habit/src/Utils/notificationHelper.js:generic-api-key:6
+4006926d281c4c826b02ee77fa5069506483171a:scripture-habit/src/Utils/notificationHelper.js:generic-api-key:6
+539ec22a8f34b76d23afdfd8947842b2a4322880:scripture-habit/android/app/google-services.json:gcp-api-key:23
