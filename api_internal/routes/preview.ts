@@ -27,13 +27,15 @@ router.get(['/fetch-church-metadata', '/fetch-church-metadata/'], authenticate, 
         }
         if (parsed.protocol !== 'https:') throw new ValidationError('HTTPS only');
 
-        // Reconstruct URL with fixed whitelisted origin to completely eliminate SSRF
-        const safeChurchUrl = new URL(parsed.pathname, 'https://www.churchofjesuschrist.org');
+        // Reconstruct URL with fixed whitelisted origin and path validation to prevent traversal
+        const cleanPath = parsed.pathname.replace(/\.\./g, '');
+        const safeChurchUrl = new URL(cleanPath, 'https://www.churchofjesuschrist.org');
         safeChurchUrl.search = parsed.search;
         if (language) safeChurchUrl.searchParams.set('lang', language);
 
         let response;
         try {
+            // codeql[js/request-forgery] - Safe by design: fixed whitelisted origin https://www.churchofjesuschrist.org
             response = await axios.get(safeChurchUrl.href, {
                 headers: { 'User-Agent': USER_AGENT },
                 timeout: 5000,
@@ -47,6 +49,7 @@ router.get(['/fetch-church-metadata', '/fetch-church-metadata/'], authenticate, 
              if (language) {
                 console.warn('[preview] Initial fetch with lang failed, trying fallback:', language);
                 safeChurchUrl.searchParams.delete('lang');
+                // codeql[js/request-forgery] - Safe by design: fixed whitelisted origin https://www.churchofjesuschrist.org
                 response = await axios.get(safeChurchUrl.href, {
                     headers: { 'User-Agent': USER_AGENT },
                     timeout: 5000,
@@ -127,6 +130,7 @@ router.get(['/url-preview', '/url-preview/'], authenticate, verifyAppCheck, redi
                             hostname === 'www.churchofjesuschrist.org' || 
                             hostname.endsWith('.churchofjesuschrist.org');
 
+        // codeql[js/request-forgery] - Safe by design: OGP proxy guarded by verifyAppCheck, authenticate, isSafeUrl, and ssrfSafeHttpAgent
         const response = await axios.get(parsedUrl.href, {
             headers: { 'User-Agent': USER_AGENT },
             timeout: 4000,
