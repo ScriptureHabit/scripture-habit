@@ -59,16 +59,16 @@ flowchart TD
 1. **Priority 1 (Scriptural Context Match)**: If the user studied a specific book/chapter featuring a figure (e.g. 1 Nephi → Nephi, D&C 25 → Emma Smith), that person is selected.
 2. **Priority 2 (Spiritual Theme Match)**: If no direct author exists, the AI dynamically selects the figure whose life experiences and teachings best resonate with the user's emotional and spiritual insights.
 
-### ③ Dynamic 4-Lens Emotional Adaptation
+### ③ Dynamic 4 Everyday Lenses & Emotional Adaptation
 The AI analyzes the tone, emotion, and struggles in the user's notes to select the most fitting lens:
-- **Lens 1: Scholarly & Contextual Insight**: Applied when notes show intellectual curiosity or textual questions.
-- **Lens 2: Poetic Paradox & Eloquent Epigrams**: Applied when notes express heavy trials, grief, or deep prayer.
-- **Lens 3: Relatable Human Irony & Vulnerability**: Applied when notes describe everyday chaos, slip-ups, or casual friction.
-- **Lens 4: Pastoral Warmth & Relieving Perfectionism**: Applied when notes show fatigue, guilt, or perfectionist pressure.
-- **Multifaceted Persona Episodes**: Rather than flat stereotypes, the persona's specific life episode is matched to the lens (e.g. for Nephi: smelting ore vs. weeping in 2 Ne 4 vs. broken bow vs. stepping into the dark).
+- **Lens 1: Relatable Human Struggles**: Applied when notes describe everyday chaos, slip-ups, busy lifestyle friction, or lighthearted frustration.
+- **Lens 2: Breath of Relief & Grace**: Applied when notes show fatigue, guilt, or perfectionist pressure.
+- **Lens 3: Raw & Vivid Realness**: Applied when notes show intellectual curiosity or honest questions about scripture events.
+- **Lens 4: Unfiltered Soul & Quiet Resonance**: Applied when notes express heavy trials, grief, or sincere spiritual longing.
+- **Multifaceted Persona Episodes**: Rather than flat stereotypes, the persona's specific life episode is matched to the lens (e.g. for Nephi: broken bow panic vs. 2 Ne 4 psalm vs. ship tools vs. stepping into the dark).
 
 ### ④ Letter Structure & Two-Phase Progression (Humor vs Spiritual Emotion)
-- **Salutation**: `"Dear ${userName}, I, the AI, am embodying [Persona Name] as I read your two latest study notes."` (Transparent AI roleplay)
+- **Salutation**: `"Dear ${userName}, I, the AI, am embodying [Persona Name] as I read your study notes."` (Transparent AI roleplay)
 - **Phase 1 (Warm Icebreaker & Human Relatability)**: Shapes rapport and humor around the selected lens.
 - **Phase 2 (Sincere Christ-Centered Reflection)**: Shifts to a reverent, touching tone without jokes, validating the user's sincere spiritual thoughts and testifying of Christ's grace.
 - **Poem & P.S.**: A clean 3–4 line poem formatted without markdown symbols (`*` or `---`), followed optionally by a heartwarming P.S. (postscript).
@@ -80,18 +80,18 @@ The AI analyzes the tone, emotion, and struggles in the user's notes to select t
 
 ## 5. Daily Scripture Comment Generation (`scripts/generate-ai-daily-comments.ts`)
 
-Pre-generates high-impact daily study comments across **11 languages** for the *Come, Follow Me* curriculum using a **Multi-Lens Scholar Blend**:
+Pre-generates high-impact daily study comments across **11 languages** for the *Come, Follow Me* curriculum using **Everyday Lenses & Relatable Human Touch**:
 
-### ① Dynamic 4-Lens Rotation
+### ① Dynamic 4 Everyday Lenses
 Prevents tone fatigue by dynamically rotating across four distinct perspectives:
-- **Lens 1: Scholarly & Contextual Insight** *(John W. Welch, Hugh Nibley)*: Ancient context, wordplay, and structural pivots.
-- **Lens 2: Poetic Paradox & Eloquent Epigrams** *(Neal A. Maxwell, Terryl Givens)*: Mortal limits vs. divine timing, quiet grace, and growth.
-- **Lens 3: Relatable Human Irony & Gentle Satire** *(Hugh Nibley, Dieter F. Uchtdorf)*: Relatable human overthinking, awkwardness, and everyday ironies.
-- **Lens 4: Pastoral Warmth & Relieving Perfectionism** *(Jeffrey R. Holland, Chieko Okazaki)*: Dismantles exhausting perfectionism with Christ-centered reassurance.
+- **Lens 1: Relatable Human Struggles**: Ancient figures being just as clumsy, overwhelmed, or anxious as we are ("Humans haven't changed in thousands of years").
+- **Lens 2: Breath of Relief & Grace**: Dismantles exhausting perfectionism; reminds that God is eager to help and forgive.
+- **Lens 3: Raw & Vivid Realness**: Unpacks the honest, unpolished reality of the scripture story that people usually gloss over.
+- **Lens 4: Unfiltered Soul & Quiet Resonance**: Captures a quiet, honest feeling or simple prayer needing no fancy religious vocabulary.
 
 ### ② Core Engineering Rules
-- **English Instructions + Bilingual Few-Shots**: All system instructions are written in English for optimal reasoning, while few-shots provide paired English/Japanese models to eliminate mechanical translation artifacts.
-- **Strict Constraints**: Exactly 1 sentence, strictly zero emojis, no preachy clichés (`"This teaches us to..."`, `"Let us..."`), and full Word of Wisdom compliance (no coffee, tea, alcohol metaphors).
+- **100% English System Instructions + Bilingual Few-Shots**: All system directives and constraints are written in concise English for optimal LLM reasoning, while few-shots provide paired English/Japanese models to eliminate robotic translation artifacts.
+- **Strict Constraints**: Exactly 1 sentence, strictly zero emojis, no preachy clichés (`"This teaches us to..."`, `"Let us..."`, `"〜の象徴です"`), no overdramatic paradoxes/lyrical exaggerations, and full Word of Wisdom compliance (no coffee, tea, alcohol metaphors).
 - **11-Language Native Cadence**: Culturally localized for `ja`, `en`, `ko`, `zho`, `es`, `pt`, `vi`, `tl`, `th`, `sw`, `it`.
 
 ---

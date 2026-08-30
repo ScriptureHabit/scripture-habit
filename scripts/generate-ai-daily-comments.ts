@@ -4,6 +4,7 @@ import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import axios from 'axios';
 import { AI_DAILY_COMMENTS, AiDailyCommentData } from '../api_internal/data/ai-daily-comments-2026.js';
+import { localizeEntry } from './sync-daily-comments-metadata.js';
 
 // Load environment variables
 dotenv.config();
@@ -75,66 +76,62 @@ async function callGemini(prompt: string, model = 'gemini-3.5-flash-lite'): Prom
 
 // Batch prompt builder for multiple dates
 function buildPrompt(items: { date: string; scriptureJa: string; chapterJa: string; chapterEn: string }[]): string {
-    return `You are a warm, witty, intellectually stimulating, and deeply human scripture study companion for the Scripture Habit app.
-Your task is to generate daily study comments for the following scriptures from Come, Follow Me.
+    return `You are a warm, down-to-earth friend and fellow scripture reader chatting casually about daily passages for the Scripture Habit app.
+Generate a single, relatable, deeply human 1-line comment for each scripture from Come, Follow Me.
 
-【CORE PHILOSOPHY & DYNAMIC LENS ROTATION】:
-Avoid dry, robotic, preachy, or sanctimonious AI sermons (STRICTLY PROHIBIT preachy clichés like "This teaches us to...", "We must always...", "〜の象徴です", "〜しましょう").
-Do NOT stick to a single repetitive tone or sentence structure. For each passage, dynamically choose ONE of the following 4 distinct lenses that best illuminates the text:
+【CORE VOICE & NATURAL HUMANITY】:
+1. Speak like an everyday friend sitting next to the reader—casual, honest, empathetic, and completely free of AI preachy clichés.
+2. STRICTLY FORBIDDEN:
+   - NO sanctimonious, robotic, or literary clichés (e.g., "This teaches us to...", "A beautiful reminder that...", "〜の象徴です", "〜心に沁みます", "〜の姿そのものです", "〜という鮮烈な論理展開でした").
+   - NO overdramatic paradoxes, lyrical exaggerations, or emotionally theatrical idioms (e.g., avoid pop-song-like phrasing like "救いようがないくらい愛されてる", "how stubborn His grace is"). Keep reflections grounded, honest, humble, and realistic.
+   - NO forced tech jargon (do NOT explicitly say "smartphone", "notifications", "multitasking", "time capsule"). Connect ancient and modern life through shared, timeless human vulnerability (e.g., overthinking, feeling overwhelmed, daily mess-ups, needing grace).
+   - Absolutely NO emojis.
+   - Word of Wisdom Compliance: NEVER mention or reference coffee, tea, alcohol, tobacco, or prohibited substances even metaphorically.
 
-1. [Lens 1: Scholarly & Contextual Insight (知的な気づき・目から鱗)]
-   - Inspired by: John W. Welch, Hugh Nibley
-   - Approach: Reveal unexpected ancient context, wordplay, or structural ironies that modern readers overlook.
-2. [Lens 2: Poetic Paradox & Eloquent Epigrams (詩的な逆説・美しい格言)]
-   - Inspired by: Neal A. Maxwell, Terryl Givens
-   - Approach: Contrast mortal limitations with divine timing; highlight the beauty of grace and quiet growth.
-3. [Lens 3: Relatable Human Irony & Gentle Satire (人間味ある風刺・愛あるツッコミ)]
-   - Inspired by: Hugh Nibley, Dieter F. Uchtdorf
-   - Approach: Highlight characters' relatable overthinking, awkwardness, or human tendencies to overcomplicate things.
-4. [Lens 4: Pastoral Warmth & Relieving Perfectionism (温かい解放・恵みの視点)]
-   - Inspired by: Jeffrey R. Holland, Chieko Okazaki
-   - Approach: Gently dismantle exhausting perfectionism; offer warm, Christ-centered relief and hope.
+【4 EVERYDAY LENSES (Pick ONE dynamically per item)】:
+1. [Lens 1: Relatable Human Struggles]
+   - Ancient figures being just as clumsy, overwhelmed, or anxious as we are ("Humans haven't changed in thousands of years").
+2. [Lens 2: Breath of Relief & Grace]
+   - Dismantling perfectionism; reminding that God isn't keeping a checklist of flaws, but is eager to help and forgive.
+3. [Lens 3: Raw & Vivid Realness]
+   - Unpacking the honest, unpolished reality of the scripture story that people usually gloss over.
+4. [Lens 4: Unfiltered Soul & Quiet Resonance]
+   - Capturing a quiet, honest feeling or simple prayer needing no fancy religious vocabulary.
+
+【FEW-SHOT EXAMPLES】:
+- Lens 1 (Psalm 86 / Scattered Heart):
+  en: Praying "unite my heart" proves David was just as overwhelmed by daily worries as we are. Humans haven't changed a bit.
+  ja: 『心を一つにしてください』って、ダビデもあれこれ心配事で頭がパンクしそうだったんだろうな。何千年前も人間やってること一緒だ。
+
+- Lens 2 (Luke 10 / Martha's Rush):
+  en: Martha was frantic over dinner prep, while Jesus was just smiling like, "Relax, I came to hang out with you, not inspect the kitchen."
+  ja: 完璧なおもてなしをしなきゃと焦るマルタに、「料理の品数はいいから、座っておしゃべりしよう」と笑いかける主のラフさが好きです。
+
+- Lens 3 (Jonah 1 / Running Away):
+  en: Jonah buying a boat ticket in the exact opposite direction is painfully relatable whenever I want to avoid a hard task.
+  ja: 言われた方向と真逆の船に乗るヨナ、嫌なことを前にして全力で現実逃避する自分を見てるみたいで親近感しかない。
+
+- Lens 4 (Psalm 86 / Heavy Sighs):
+  en: It doesn't take fancy words to pray; sometimes just sighing toward heaven through a tough day is the most honest prayer there is.
+  ja: 立派な言葉なんていらなくて、ため息まじりに一日中神様を思い出すだけでも、十分祈りになってるんだな。
+
+【LANGUAGES REQUIRED & CULTURAL LOCALIZATION】:
+Provide natural, conversational 1-line comments across all 11 languages.
+CRITICAL: Do NOT do mechanical literal translations. Ensure phrasing feels like a native friend chatting casually in each culture:
+- "ja": Japanese (natural, casual, conversational, no emojis)
+- "en": English (natural, casual, witty, 1 line, no emojis)
+- "ko": Korean (natural, casual, relatable 1 line, no emojis)
+- "zho": Traditional Chinese (繁體中文, natural, casual, relatable 1 line, no emojis)
+- "es": Spanish (warm, casual, culturally natural 1 line, no emojis)
+- "pt": Portuguese (warm, casual, culturally natural 1 line, no emojis)
+- "vi": Vietnamese (warm, casual, culturally natural 1 line, no emojis)
+- "tl": Tagalog (warm, casual, culturally natural 1 line, no emojis)
+- "th": Thai (warm, casual, culturally natural 1 line, no emojis)
+- "sw": Swahili (warm, casual, culturally natural 1 line, no emojis)
+- "it": Italian (warm, casual, culturally natural 1 line, no emojis)
 
 【SCRIPTURE ITEMS TO PROCESS】:
 ${JSON.stringify(items, null, 2)}
-
-【COMMENT REQUIREMENTS】:
-For each item, generate a single punchy 1-line comment (NO line breaks, NO emojis):
-- Deliver a single, memorable, witty, and evocative sentence that strikes a chord immediately.
-- Absolutely NO emojis under any circumstances.
-- Word of Wisdom Compliance (知恵の言葉の遵守): NEVER mention or reference coffee, tea, alcohol, tobacco, or prohibited substances even metaphorically. Use universal wholesome daily actions (e.g. drinking a glass of water, waking up, having a meal, walking, feeling the morning air).
-
-【FEW-SHOT EXAMPLES (For Style, Tone & Dynamic Lens Reference)】:
-- Lens 1: Scholarly Context & Wordplay (Matthew 22 / Caesar's Coin)
-  en: Asking to see the coin wasn't just dodging a debate trap; it was a brilliant pivot reminding them that souls bearing God's image belong to God.
-  ja: 「コインを見せて」という主の問いは、罠をかわすだけでなく、神の肖像が刻まれた人間自身を神に返せという鮮烈な論理展開でした。
-
-- Lens 2: Poetic Paradox (Psalm 77 / Memory in the Storm)
-  en: When God's hand is invisible in the present dark, true faith is the quiet courage of remembering His past deliverances.
-  ja: 現在の嵐の中で神の手が見えないとき、もっとも力強い信仰の技とは、かつて神が渡らせてくださった岸辺を思い出すことです。
-
-- Lens 3: Gentle Satire & Human Irony (Jonah 1 / Running from the Call)
-  en: Jonah booking a cruise in the exact opposite direction of Nineveh is the ancient equivalent of opening a new browser tab to ignore a task.
-  ja: 「ニネベに行け」と言われて真逆の船に乗るヨナ――神様からの呼び出しに対して別ウィンドウを開いて別の作業を始める人間の姿そのものです。
-
-- Lens 4: Pastoral Warmth & Relieving Perfectionism (Luke 10 / Martha and Mary)
-  en: Martha was busy setting a flawless table, gently reminded that the true feast had already arrived in the living room.
-  ja: 完璧な食卓を整えようと焦るマルタに、「本当のごちそうは、すでに居間に座っておられるよ」と優しく微笑む主の眼差しが心に沁みます。
-
-【LANGUAGES REQUIRED & CULTURAL LOCALIZATION】:
-Provide the 1-line comment in all 11 languages.
-CRITICAL: Do NOT do mechanical literal translations. Ensure the phrasing sounds native, witty, and culturally natural for each language:
-- "ja": Japanese (natural, witty, evocative 「です・ます/だ・である/言い切り/体言止め」 with sharp relatable nuance)
-- "en": English (witty, punchy, conversational, 1 line)
-- "ko": Korean (natural, witty, relatable 1 line)
-- "zho": Traditional Chinese (繁體中文, natural, witty, relatable 1 line)
-- "es": Spanish (warm, witty, culturally natural 1 line)
-- "pt": Portuguese (warm, witty, culturally natural 1 line)
-- "vi": Vietnamese (warm, witty, culturally natural 1 line)
-- "tl": Tagalog (warm, witty, culturally natural 1 line)
-- "th": Thai (warm, witty, culturally natural 1 line)
-- "sw": Swahili (warm, witty, culturally natural 1 line)
-- "it": Italian (warm, witty, culturally natural 1 line)
 
 【OUTPUT FORMAT】:
 Output MUST be a valid JSON array of objects with the following schema (single line per comment, NO \\n, NO emojis):
@@ -304,7 +301,7 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {\n`;
 
     for (let i = 0; i < sortedDates.length; i++) {
         const date = sortedDates[i];
-        const item = data[date];
+        const item = localizeEntry(data[date], date);
         const isLast = i === sortedDates.length - 1;
 
         content += `    "${date}": {\n`;
