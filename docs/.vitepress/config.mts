@@ -13,6 +13,9 @@ export default withMermaid(defineConfig({
   ],
 
   vite: {
+    build: {
+      target: 'esnext'
+    },
     optimizeDeps: {
       include: ['mermaid', 'fastdom']
     }
