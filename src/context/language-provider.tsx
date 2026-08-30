@@ -239,7 +239,15 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
             }
         }
 
-        if (chapterText.includes('speeches.byu.edu')) {
+        let isByuTalk = false;
+        try {
+            const parsedByu = new URL(chapterText.startsWith('http') ? chapterText : 'https://' + chapterText);
+            isByuTalk = parsedByu.hostname === 'speeches.byu.edu' || parsedByu.hostname.endsWith('.byu.edu');
+        } catch {
+            // Ignore invalid URLs
+        }
+
+        if (isByuTalk) {
             const byuMatch = chapterText.match(/speeches\.byu\.edu\/talks\/([^/]+)\/([^/]+)/);
             if (byuMatch) {
                 const speaker = byuMatch[1].split('-').map(w => w.length === 1 ? w.toUpperCase() + '.' : w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
@@ -278,7 +286,7 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
 
         // Expanded regex to allow Japanese chapter/verse markers like 章 and 節
         // Note: we still allow 'ー' in the second part for ranges
-        const match = normalized.match(/^((?:\d\s*)?[\p{L}\s—-]+)(?:\s+|(?=\d))(\d+[\d\s:,-ー章節]*)$/u);
+        const match = normalized.match(/^((?:\d\s*)?[\p{L}\s—-]+)(?:\s+|(?=\d))(\d+[\d\s:,ー章節-]*)$/u);
         if (match) {
             const bookName = match[1].trim().replace(/—/g, '-');
             // For the chapter/verse part, we CAN safely convert 'ー' to '-'

@@ -18,7 +18,9 @@ export const localizeLdsUrl = (url: string | null | undefined, langCode: string)
     const urlObj = new URL(url);
     
     // Only process URLs that already have a lang param or are from church domains
-    if (url.includes('lang=') || urlObj.hostname.includes('churchofjesuschrist.org')) {
+    const host = urlObj.hostname.toLowerCase();
+    const isChurchHost = host === 'churchofjesuschrist.org' || host === 'www.churchofjesuschrist.org' || host.endsWith('.churchofjesuschrist.org');
+    if (url.includes('lang=') || isChurchHost) {
       urlObj.searchParams.set('lang', targetLang);
       return urlObj.toString();
     }

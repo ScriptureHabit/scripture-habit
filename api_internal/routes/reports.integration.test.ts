@@ -109,7 +109,13 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Reports Route Integration
     it('should submit report and call discord webhook if configured', async () => {
         process.env.DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/dummy';
         const fetchSpy = vi.spyOn(global, 'fetch').mockImplementation((url, init) => {
-            if (url.toString().includes('discord.com')) {
+            let isDiscord = false;
+            try {
+                isDiscord = new URL(url.toString()).hostname === 'discord.com';
+            } catch {
+                // Ignore URL parsing errors in test mock
+            }
+            if (isDiscord) {
                 return Promise.resolve(new Response(null, { status: 204 }));
             }
             return originalFetch(url, init);
@@ -140,7 +146,13 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Reports Route Integration
     it('should submit report successfully even if discord webhook throws an error', async () => {
         process.env.DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/dummy';
         vi.spyOn(global, 'fetch').mockImplementation((url, init) => {
-            if (url.toString().includes('discord.com')) {
+            let isDiscord = false;
+            try {
+                isDiscord = new URL(url.toString()).hostname === 'discord.com';
+            } catch {
+                // Ignore URL parsing errors in test mock
+            }
+            if (isDiscord) {
                 return Promise.reject(new Error('Webhook timeout'));
             }
             return originalFetch(url, init);

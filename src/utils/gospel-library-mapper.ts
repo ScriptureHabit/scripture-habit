@@ -236,14 +236,17 @@ export const getGospelLibraryUrl = (volume: string | null | undefined, chapterIn
 
     // 1. General Conference
     if (volumeUrlPart === "general-conference") {
-        if (chapterInput.includes("churchofjesuschrist.org")) {
-            try {
-                let urlStr = chapterInput.trim();
-                if (!urlStr.startsWith('http')) urlStr = 'https://' + urlStr;
-                const url = new URL(urlStr);
-                url.searchParams.set('lang', langParam.split('=')[1]);
-                return url.toString();
-            } catch {
+        try {
+            const tempUrl = new URL(chapterInput.trim().startsWith('http') ? chapterInput.trim() : 'https://' + chapterInput.trim());
+            const hostname = tempUrl.hostname.toLowerCase();
+            const isChurch = hostname === 'churchofjesuschrist.org' || hostname === 'www.churchofjesuschrist.org' || hostname.endsWith('.churchofjesuschrist.org');
+            if (isChurch) {
+                tempUrl.searchParams.set('lang', langParam.split('=')[1]);
+                return tempUrl.toString();
+            }
+        } catch {
+            // Fallback for malformed URLs that clearly target the church domain
+            if (/^https?:\/\/(?:www\.)?churchofjesuschrist\.org(?::|\/|$)/i.test(chapterInput.trim())) {
                 return chapterInput;
             }
         }
@@ -317,10 +320,16 @@ export const getCategoryFromScripture = (scriptureText: string | null | undefine
     const url = getGospelLibraryUrl(null, scriptureText);
     let volumeUrlPart = "";
     if (url) {
+        let host = '';
+        try {
+            host = new URL(url).hostname.toLowerCase();
+        } catch {
+            // Ignore invalid URLs
+        }
         const scriptMatch = url.match(/\/scriptures\/([^/?#]+)/);
         if (scriptMatch) volumeUrlPart = scriptMatch[1];
-        else if (url.includes('/general-conference/')) volumeUrlPart = 'general-conference';
-        else if (url.includes('speeches.byu.edu')) volumeUrlPart = 'byu-speeches';
+        else if (url.includes('/general-conference/') && (host === 'churchofjesuschrist.org' || host.endsWith('.churchofjesuschrist.org'))) volumeUrlPart = 'general-conference';
+        else if (host === 'speeches.byu.edu' || host.endsWith('.byu.edu')) volumeUrlPart = 'byu-speeches';
     }
     if (!volumeUrlPart) volumeUrlPart = detectVolume(null, scriptureText);
 

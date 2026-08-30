@@ -25,7 +25,7 @@ export const redisCache = (ttlSeconds: number, prefix: string = 'api:cache:') =>
                 return res.send(cachedData);
             }
         } catch (err) {
-            console.warn(`[RedisCache] Cache read error for ${cacheKey}:`, err);
+            console.warn('[RedisCache] Cache read error for key:', cacheKey, err);
             // Fall through to original handler
         }
 
@@ -37,10 +37,10 @@ export const redisCache = (ttlSeconds: number, prefix: string = 'api:cache:') =>
                 try {
                     const serialized = JSON.stringify(body);
                     redisClient.setex(cacheKey, ttlSeconds, serialized).catch((err) => {
-                        console.warn(`[RedisCache] Cache write error for ${cacheKey}:`, err);
+                        console.warn('[RedisCache] Cache write error for key:', cacheKey, err);
                     });
                 } catch (e) {
-                    console.warn(`[RedisCache] Serialization error for ${cacheKey}:`, e);
+                    console.warn('[RedisCache] Serialization error for key:', cacheKey, e);
                 }
             }
             res.setHeader('X-Cache', 'MISS');

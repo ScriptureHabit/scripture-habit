@@ -9,6 +9,9 @@ on:
 env:
   CRON_SECRET: ci-dummy-cron-secret-key-12345
 
+permissions:
+  contents: read
+
 jobs:
   validate:
     name: Lint & Unit Test

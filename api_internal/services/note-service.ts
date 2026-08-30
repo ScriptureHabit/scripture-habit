@@ -96,7 +96,7 @@ function appendLatestMessage(
 
 export class NoteService {
     private static escapeMarkdown(text: string) {
-        return text.replace(/([_*[\]()~`>#+\-=|{}.!])/g, '\\$1');
+        return text.replace(/([\\`*_{}[\]()#+\-.!~>|])/g, '\\$1');
     }
 
     // ==========================================

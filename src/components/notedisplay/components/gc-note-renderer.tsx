@@ -71,7 +71,7 @@ const GCNoteRenderer = ({
             const cleanLines = rawComment.split('\n').filter(line => {
                 const l = line.trim().toLowerCase();
                 if (!l) return false;
-                if (l.includes('churchofjesuschrist.org') || l.includes('byu.edu')) return false;
+                if (/(?:^|\/\/|[.@])churchofjesuschrist\.org(?:\/|$)/i.test(l) || /(?:^|\/\/|[.@])byu\.edu(?:\/|$)/i.test(l)) return false;
                 if (url) {
                     const cleanUrl = url.toLowerCase().replace(/[.,:;"')\]*_]+$/, '');
                     if (l.includes(cleanUrl)) return false;

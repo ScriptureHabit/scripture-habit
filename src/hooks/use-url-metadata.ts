@@ -68,7 +68,15 @@ export const useUrlMetadata = (
                     targetUrl = `https://www.churchofjesuschrist.org${targetUrl.startsWith('/') ? '' : '/'}${targetUrl}`;
                 }
 
-                const isChurchUrl = targetUrl.includes('churchofjesuschrist.org') || targetUrl.includes('general-conference');
+                let parsedHost = '';
+                try {
+                    parsedHost = new URL(targetUrl).hostname.toLowerCase();
+                } catch {
+                    // Ignore invalid URLs
+                }
+                const isChurchUrl = parsedHost === 'churchofjesuschrist.org' || 
+                                    parsedHost === 'www.churchofjesuschrist.org' || 
+                                    parsedHost.endsWith('.churchofjesuschrist.org');
                 const apiLang = getLdsLanguageCode(language);
                 
                 const endpoint = isChurchUrl ? '/api/preview/fetch-church-metadata' : '/api/preview/url-preview';

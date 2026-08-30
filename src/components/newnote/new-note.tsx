@@ -329,7 +329,7 @@ const NewNote = ({
                         </div>
                     )}
 
-                    {glUrl && (
+                    {glUrl && /^https?:\/\//i.test(glUrl) && (
                         <div className="gl-link-preview">
                             <a href={glUrl} target="_blank" rel="noopener noreferrer" className="gl-preview-link">
                                 {t('dashboard.readInGospelLibrary')}

@@ -114,9 +114,12 @@ router.get(['/url-preview', '/url-preview/'], authenticate, verifyAppCheck, redi
             image: null 
         };
 
-        const isChurchUrl = parsedUrl.hostname.includes('churchofjesuschrist.org');
+        const hostname = parsedUrl.hostname.toLowerCase();
+        const isChurchUrl = hostname === 'churchofjesuschrist.org' || 
+                            hostname === 'www.churchofjesuschrist.org' || 
+                            hostname.endsWith('.churchofjesuschrist.org');
 
-        const response = await axios.get(url, {
+        const response = await axios.get(parsedUrl.toString(), {
             headers: { 'User-Agent': USER_AGENT },
             timeout: 4000,
             maxContentLength: 512 * 1024,
