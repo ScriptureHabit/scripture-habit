@@ -2,11 +2,12 @@
 
 English | [日本語](README.ja.md)
 
-> **Making daily scripture study more fun and meaningful.**
+> **Making daily scripture study more fun and meaningful.**  
 
-An open-source community web application featuring to make daily scripture study a joyful habit together with friends.
+An open-source web application designed to help people build a lasting and joyful daily scripture study habit together with friends and family.
 
-> 💡 **Interested in contributing?** You don't need to understand the whole codebase! Pick a feature in [`/docs`](docs/README.md) that interests you and start small.
+> 💡 **Interested in contributing or improving features?**  
+> You don't need to understand the entire codebase! Feel free to pick a feature from [`/docs`](docs/README.md) that catches your interest and start small.
 
 <div align="center">
   <video src="https://github.com/user-attachments/assets/9cb294e7-7a90-49c3-93f5-3995a899ee43" width="360" autoplay loop muted playsinline>
@@ -14,7 +15,7 @@ An open-source community web application featuring to make daily scripture study
 </div>
 
  **Web Application**: [https://scripturehabit.app](https://scripturehabit.app)  
- **Live Demo (No Signup Required)**: [https://scripturehabit.app/en/demo](https://scripturehabit.app/en/demo)
+ **Live Demo (No registration required)**: [https://scripturehabit.app/en/demo](https://scripturehabit.app/en/demo)
 
 <p align="center">
   <img src="https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react" alt="React 19" />
@@ -28,23 +29,24 @@ An open-source community web application featuring to make daily scripture study
 
 ---
 
-## A Note from the Creator (Why I Built This)
+## About This Initiative
 
-> **"Can we make daily scripture study more fun, meaningful, and connected?"**
+> **"Can we make daily scripture study more joyful and meaningful?"**
 
-To be completely honest, I was never great at reading scriptures consistently on my own. I kept dropping the habit after just a few days.  
+To be completely honest, I was never very good at reading the scriptures consistently on my own, and I found myself repeatedly giving up after just a few days.  
 
-I realized I didn't need another strict checklist. What I really wanted was **joy and connection**, a simple place to share small daily thoughts with friends and family, even if we speak different languages. On a bit of a whim and pure excitement, I started writing code, and Scripture Habit was born.
+Rather than turning study into an obligation or a mechanical checklist, I wished for a place where friends and family—even when living far apart—could simply share what they read and felt each day. With that hope in heart, I sat down and began writing code, which became the beginning of Scripture Habit.
 
-There is no single "right answer" when it comes to software for building a scripture habit. That’s why I made this project open-source: so we can experiment, build, and shape the best experience together as a community.
+There is no single "correct answer" when it comes to building tools for scripture study.  
+That is why this project is open-source: so that we can open it to the world, learn through trial and error together, and shape something that brings joy to Heavenly Father and blesses the lives of others.
 
 Daijiro Sagane
 
 ---
 
-## Operational Data
+## Operational Records
 
-The application is actively deployed and in operation, tracking daily active users studying scriptures. Currently, an average of 10+ users post study notes daily on a continuous basis.
+Scripture Habit is actively deployed and running in production. Currently, an average of 10+ users consistently write and share study notes every day.
 
 - **[Daily Note-Posting Active Users (Google Sheet)](https://docs.google.com/spreadsheets/d/YOUR_SPREADSHEET_ID/edit?usp=sharing)**
 
@@ -57,8 +59,8 @@ The application is actively deployed and in operation, tracking daily active use
   <img src="./docs/images/en-dashboard.png" width="340" alt="Dashboard" />
 </p>
 
-- **Level & Streak Display**: Experience visible growth as continuous study days (streaks) and levels increase with daily note creation.
-- **Today's Reading Guide**: Automatically displays the recommended reading passage for the day, allowing users to open the target page with a single tap.
+- **Growth & Streak Tracking**: Experience steady progress as daily note-taking accumulates into continuous study days and levels.
+- **Today's Reading Guide**: Gently displays the suggested passage for the day, allowing you to open the scripture page with a single tap.
 
 ---
 
@@ -67,8 +69,8 @@ The application is actively deployed and in operation, tracking daily active use
   <img src="./docs/images/en-create-note.png" width="320" alt="Note Creation" />
 </p>
 
-- **Note Editor**: Record and save daily insights and reflection notes.
-- **Atomic Update Processing**: Executes a Firestore transaction upon saving a note to atomically handle streak calculation, chat synchronization, and user data updates.
+- **Note Editor**: Freely record and preserve your personal thoughts, promptings, and insights.
+- **Reliable Synchronization**: Executes Firestore transactions upon saving to seamlessly update study days, sync group chats, and refresh data without conflict.
 
 ---
 
@@ -78,42 +80,40 @@ The application is actively deployed and in operation, tracking daily active use
   <img src="./docs/images/en-weekly-letter.png" width="250" alt="Weekly Letter" />
 </p>
 
-- **Search & Filtering**: Browse past study notes and search instantly by tags or keywords.
-- **AI Reflection Letters (LetterBox)**: Analyzes study notes to deliver reflection letters connecting user insights with scripture stories.
-- **Letters to Future Self (Time Capsule)**: Pre-commit personal encouragement and SOS crisis reminders for upcoming milestones (Day 10, 25...), unlocked with a snapshot of past growth.
-
-
+- **Search & Filtering**: Browse past study notes and easily revisit previous reflections using tags and keywords.
+- **AI Reflection Letters (LetterBox)**: Delivers thoughtful letters that embrace your notes and connect your insights with scripture stories.
+- **Letters to Future Self (Time Capsule)**: Seal words of encouragement and SOS reminders for future milestones (Day 10, 25...), unlocked alongside a snapshot of your past journey.
 
 ---
 
-### 4. Group Chat & Multi-language Support
+### 4. Group Chat & Multi-Language Support
 <p align="center">
   <img src="./docs/images/en-group-chat.png" width="250" alt="Group Chat" />
   <img src="./docs/images/en-languages.png" width="250" alt="Language Settings" />
 </p>
 
-- **Automatic Scripture Link Conversion**: Automatically converts scripture references in chat messages into easy-to-read interactive links.
-- **AI Real-Time Translation**: Instantly and automatically translates messages and user names from international group members.
+- **Scripture Link Conversion**: Automatically identifies scripture references in messages and formats them into clean, interactive links.
+- **Real-Time AI Translation**: Instantly translates messages and names from friends around the world into natural, everyday language.
 
 ---
 
-### 5. Habit Rules & Settings
+### 5. Habit Rules & Preferences
 <p align="center">
   <img src="./docs/images/en-habit-rule.png" width="230" alt="Habit Rules" />
   <img src="./docs/images/en-profile.png" width="230" alt="Profile" />
   <img src="./docs/images/en-setting.png" width="230" alt="Settings" />
 </p>
 
-- **Personal Habit Rules**: Set custom study rules to maintain motivation and prevent routines from becoming monotonous.
-- **Profile Settings**: Flexibly customize avatar, language, notification preferences, and more.
+- **Personal Habit Rules**: Establish custom study guidelines to keep your daily learning fresh and sustainable.
+- **Profile & Preferences**: Flexibly customize your avatar, language, and notification preferences at your own pace.
 
 ---
 
-## Security & Testing
+## Security & Quality Assurance
 
-- **Security**: Firebase AppCheck and Zod input validation (see [Security Policy](SECURITY.md))
-- **Error Monitoring**: Sentry integration for real-time production error logging
-- **Testing**: Vitest (Unit testing) and Playwright (E2E testing) to prevent regressions
+- **Security Measures**: Thorough validation with Firebase AppCheck and Zod ensures secure and trustworthy communication (see [Security Policy](SECURITY.md)).
+- **Error Monitoring**: Sentry integration actively monitors and catches unexpected production issues in real time.
+- **Quality Verification**: Continuous testing with Vitest (Unit) and Playwright (E2E) guarantees stable and reliable operation.
 
 ---
 
@@ -125,9 +125,9 @@ The application is actively deployed and in operation, tracking daily active use
 | **State Management** | React Context (Split Context), `useReducer`, Zustand |
 | **Backend API** | Node.js 26.0, Express 5.0, Vercel Serverless Functions |
 | **Database / Auth** | Google Cloud Firestore, Firebase Authentication, Firebase AppCheck |
-| **AI** | Google Gemini API (Automatic Translation & Weekly Letter Generation) |
+| **AI Integration** | Google Gemini API (Real-Time Translation & Reflection Letters) |
 | **API Documentation** | OpenAPI 3.0, Swagger UI (`/api/docs`) |
-| **Testing** | Vitest (Unit), Playwright (E2E) |
+| **Testing** | Vitest (Unit Tests), Playwright (E2E Tests) |
 
 ### Database Schema (ER Diagram)
 <p align="center">
@@ -143,7 +143,7 @@ The application is actively deployed and in operation, tracking daily active use
 
 ## API Documentation (Swagger UI)
 
-Public Swagger UI is available:
+Interactive Swagger UI documentation is publicly available:
 
 - **[Swagger UI Screen](https://scripturehabit.app/api/docs)**: `https://scripturehabit.app/api/docs`
 
@@ -152,38 +152,38 @@ Public Swagger UI is available:
 ## Documentation
 
 ### English Version
-- **[Technical Documentation Index](./docs/README.md)**
-- **[Development & Setup Guide](./docs/development-guide.md)**
+- **[Technical Documentation Index](./docs/README.md)**: Index of architectural and technical guides.
+- **[Development & Setup Guide](./docs/development-guide.md)**: Local development setup and contribution guide.
 
 ### 日本語版 (Japanese Version)
 - **[ドキュメント目次](./docs/ja/README.md)**
-- **[開発および環境セットアップガイド](./docs/ja/development-guide.md)**
+- **[開発および環境構築ガイド](./docs/ja/development-guide.md)**
 
 ---
 
 ## Contributing
 
-Scripture Habit is an open-source project, and contributions are welcome. Whether you write code, design, translate, or just use the app, any help is appreciated.
+Scripture Habit is an open-source project. Whether you write code, refine translations, improve UI design, or share thoughts on daily usability, every form of participation is warmly welcomed.
 
 > [!TIP]
-> **You don't need to understand the whole codebase!** Pick a feature in [`/docs`](docs/README.md) that interests you and start small.
+> **You don't need to understand the whole codebase!** Pick a feature from [`/docs`](docs/README.md) that interests you and start small.
 
-Please see our [Contributing Guide](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md) for details on development setup, guidelines, and community standards.
+For setup steps and guidelines, please see our [Contributing Guide](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md).
 
-Areas where we could use help:
+We would especially love your help in these areas:
 
-- **Translations**: Reviewing existing translations for natural phrasing, or adding support for new languages.
-- **Dashboard & UI**: Improving dashboard usability, layouts, and mobile interface design.
-- **User Experience & Testing**: Reporting bugs, testing features, and suggesting workflow improvements.
-- **Feature Ideas**: Suggesting ideas that could make daily study habits more effective.
+- **Translations & Phrasing**: Polishing expressions for natural phrasing and adding new languages.
+- **Dashboard & UI**: Improving usability, layouts, and mobile experience.
+- **User Experience & Testing**: Reporting bugs and suggesting ideas to make daily study smoother.
+- **Feature Ideas**: Sharing thoughts on how to nurture lasting scripture habits.
 
-Feel free to open an issue or submit a pull request on GitHub.
+Feel free to open an issue or submit a pull request anytime.
 
 ---
 
 ## Contributors
 
-Thanks goes to these wonderful people:
+Special thanks to the wonderful people who support this journey:
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
@@ -199,17 +199,15 @@ Thanks goes to these wonderful people:
     </tr>
   </tbody>
 </table>
-
 <!-- markdownlint-restore -->
 <!-- prettier-ignore-end -->
-
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 ---
 
 ## Supported By
 
-Special thanks to the following platforms for supporting this open-source project:
+Special thanks to the following platforms for generously supporting this open-source project:
 
 <p align="left">
   <a href="https://vercel.com/?utm_source=scripture-habit&utm_campaign=oss">
@@ -233,7 +231,4 @@ Special thanks to the following platforms for supporting this open-source projec
 
 ## License
 
-This project is licensed under the GNU Affero General Public License v3.0 (AGPL-3.0) - see the [LICENSE](LICENSE) file for details.
-
-
-
+This project is licensed under the **GNU Affero General Public License v3.0 (AGPL-3.0)** - see the [LICENSE](LICENSE) file for details.
