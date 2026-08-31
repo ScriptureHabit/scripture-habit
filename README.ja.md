@@ -199,8 +199,10 @@ Issue や Pull Request は、いつでもどうぞお気軽にお寄せくださ
     </tr>
   </tbody>
 </table>
+
 <!-- markdownlint-restore -->
 <!-- prettier-ignore-end -->
+
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 ---
