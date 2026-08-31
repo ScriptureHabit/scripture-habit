@@ -16,6 +16,7 @@ export function applyDomReconciliationPolyfill(): void {
     __reconciliation_patched__?: boolean;
     removeChild: <T extends Node>(child: T) => T;
     insertBefore: <T extends Node>(newNode: T, referenceNode: Node | null) => T;
+    replaceChild: <T extends Node>(newChild: Node, oldChild: T) => T;
   };
 
   // Prevent double application
@@ -38,11 +39,31 @@ export function applyDomReconciliationPolyfill(): void {
         );
       }
       if (child.parentNode) {
-        return child.parentNode.removeChild(child) as T;
+        try {
+          return child.parentNode.removeChild(child) as T;
+        } catch {
+          // If removal from actual parent also fails, safely suppress
+          return child;
+        }
       }
       return child;
     }
-    return originalRemoveChild.call(this, child) as T;
+
+    try {
+      return originalRemoveChild.call(this, child) as T;
+    } catch (error) {
+      if (typeof console !== 'undefined' && console.warn) {
+        console.warn('[DOM Polyfill] Suppressed native removeChild error:', error);
+      }
+      if (child.parentNode && child.parentNode !== this) {
+        try {
+          return child.parentNode.removeChild(child) as T;
+        } catch {
+          return child;
+        }
+      }
+      return child;
+    }
   };
 
   const originalInsertBefore = Node.prototype.insertBefore;
@@ -59,11 +80,80 @@ export function applyDomReconciliationPolyfill(): void {
         );
       }
       if (referenceNode.parentNode) {
-        return referenceNode.parentNode.insertBefore(newNode, referenceNode) as T;
+        try {
+          return referenceNode.parentNode.insertBefore(newNode, referenceNode) as T;
+        } catch {
+          // Fall through to append or insert on target parent
+        }
       }
-      return originalInsertBefore.call(this, newNode, null) as T;
+      try {
+        return originalInsertBefore.call(this, newNode, null) as T;
+      } catch {
+        try {
+          return this.appendChild(newNode) as T;
+        } catch {
+          return newNode;
+        }
+      }
     }
-    return originalInsertBefore.call(this, newNode, referenceNode) as T;
+
+    try {
+      return originalInsertBefore.call(this, newNode, referenceNode) as T;
+    } catch (error) {
+      if (typeof console !== 'undefined' && console.warn) {
+        console.warn('[DOM Polyfill] Suppressed native insertBefore error:', error);
+      }
+      try {
+        return originalInsertBefore.call(this, newNode, null) as T;
+      } catch {
+        try {
+          return this.appendChild(newNode) as T;
+        } catch {
+          return newNode;
+        }
+      }
+    }
+  };
+
+  const originalReplaceChild = Node.prototype.replaceChild;
+  Node.prototype.replaceChild = function <T extends Node>(newChild: Node, oldChild: T): T {
+    if (!newChild || !oldChild) {
+      return oldChild;
+    }
+
+    if (oldChild.parentNode !== this) {
+      if (typeof console !== 'undefined' && console.warn) {
+        console.warn(
+          '[DOM Polyfill] Suppressed replaceChild error: Old node is not a child of target parent. Delegating to actual parent.',
+          { targetParent: this, actualParent: oldChild.parentNode, oldChild }
+        );
+      }
+      if (oldChild.parentNode) {
+        try {
+          return oldChild.parentNode.replaceChild(newChild, oldChild) as T;
+        } catch {
+          // Fall through
+        }
+      }
+      try {
+        return this.appendChild(newChild) as unknown as T;
+      } catch {
+        return oldChild;
+      }
+    }
+
+    try {
+      return originalReplaceChild.call(this, newChild, oldChild) as T;
+    } catch (error) {
+      if (typeof console !== 'undefined' && console.warn) {
+        console.warn('[DOM Polyfill] Suppressed native replaceChild error:', error);
+      }
+      try {
+        return this.appendChild(newChild) as unknown as T;
+      } catch {
+        return oldChild;
+      }
+    }
   };
 }
 

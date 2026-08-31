@@ -12,6 +12,52 @@
   <link rel="manifest" href="/manifest.json" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
   <meta name="google" content="notranslate" />
+  <script>
+    /* Early DOM reconciliation polyfill to prevent Chrome Translate / extension crashes */
+    (function() {
+      if (typeof window === 'undefined' || typeof Node === 'undefined' || !Node.prototype) return;
+      var p = Node.prototype;
+      if (p.__reconciliation_patched__) return;
+      p.__reconciliation_patched__ = true;
+      var origRemove = p.removeChild;
+      p.removeChild = function(child) {
+        if (!child) return child;
+        if (child.parentNode !== this) {
+          if (child.parentNode) {
+            try { return child.parentNode.removeChild(child); } catch(e) { return child; }
+          }
+          return child;
+        }
+        try {
+          return origRemove.call(this, child);
+        } catch(e) {
+          if (child.parentNode && child.parentNode !== this) {
+            try { return child.parentNode.removeChild(child); } catch(err) { return child; }
+          }
+          return child;
+        }
+      };
+      var origInsert = p.insertBefore;
+      p.insertBefore = function(newNode, refNode) {
+        if (!newNode) return newNode;
+        if (refNode && refNode.parentNode !== this) {
+          if (refNode.parentNode) {
+            try { return refNode.parentNode.insertBefore(newNode, refNode); } catch(e) {}
+          }
+          try { return origInsert.call(this, newNode, null); } catch(e) {
+            try { return this.appendChild(newNode); } catch(err) { return newNode; }
+          }
+        }
+        try {
+          return origInsert.call(this, newNode, refNode);
+        } catch(e) {
+          try { return origInsert.call(this, newNode, null); } catch(err) {
+            try { return this.appendChild(newNode); } catch(err2) { return newNode; }
+          }
+        }
+      };
+    })();
+  </script>
   <meta name="color-scheme" content="light">
   <meta name="theme-color" content="#FF919D">
   <meta name="apple-mobile-web-app-capable" content="yes">
