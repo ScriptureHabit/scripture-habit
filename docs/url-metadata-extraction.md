@@ -1,12 +1,12 @@
 # URL Metadata & Speaker Extraction
 
-This document explains how the application safely extracts page titles, authors/speakers, and thumbnail metadata when users input links (General Conference, Liahona, BYU Speeches, and external websites) in study notes.
+This document details the metadata extraction pipeline, speaker identification algorithms, SSRF defense boundaries, and client-side caching mechanisms in Scripture Habit.
 
 ---
 
 ## 1. Pipeline Overview
 
-When a user inputs a URL, the system checks client-side caches, debounces input, validates security parameters, and fetches metadata server-side:
+When a user pastes a URL (General Conference talks, Liahona articles, BYU Speeches, or external resources) into a note, the system evaluates client caches, debounces input, enforces SSRF validations, and parses structured metadata:
 
 ```mermaid
 sequenceDiagram
@@ -18,57 +18,63 @@ sequenceDiagram
     participant Target as External Web Server
 
     UI->>Hook: Enter URL or Shortcode
-    Hook->>Cache: Check Cache
+    Hook->>Cache: Check Local Cache
     alt Cache Hit
         Cache-->>Hook: Return cached UrlMetadata
         Hook-->>UI: Instant Render (Title & Speaker)
     else Cache Miss
         Hook->>Hook: Wait 500ms Debounce
         Hook->>API: Fetch Metadata Request
-        API->>API: Auth, App Check & Safe URL Validation (SSRF guard)
+        API->>API: Auth, App Check & SSRF Validation
         API->>Target: Download HTML Content (Max 512KB)
         API->>API: Parse Title, Speaker, Images (Cheerio)
         API-->>Hook: Return Metadata (JSON)
-        Hook->>Cache: Save to Memory & LocalStorage
+        Hook->>Cache: Persist to Memory & LocalStorage
         Hook-->>UI: Auto-populate Form Fields
     end
 ```
+
+### Extraction Sequence Breakdown
+
+1. **Local Cache Evaluation & Debounce**  
+   Checks memory and `localStorage` to return immediate preview matches. If missed, it applies a 500ms debounce to filter rapid typing.
+
+2. **Security Verification & Safe Fetching**  
+   Validates Firebase JWT and App Check credentials, enforces SSRF blocklists against private IP ranges, and streams up to 512KB over HTTPS.
+
+3. **HTML Parsing & Storage**  
+   Parses Open Graph tags, author prefixes ("By", "Par"), and speaker metadata via Cheerio, returning structured JSON to populate note fields.
 
 ---
 
 ## 2. Security Safeguards
 
-To protect against abuse and unauthorized network access, several safeguards are enforced:
-
-1. **Authentication & App Check**: Requests must include valid Firebase Auth and App Check tokens.
-2. **SSRF Protection**:
-   - Church metadata (`/fetch-church-metadata`): Restricted to `churchofjesuschrist.org` domains via HTTPS.
-   - General URL preview (`/url-preview`): Validates URLs against private network blocklists (preventing loopback/internal IP requests).
-3. **Payload Limits & Timeouts**:
-   - Downloads are capped at `512 KB` to avoid resource exhaustion.
-   - Requests timeout within `4–5 seconds` to avoid hanging threads.
+1. **Authentication & App Check**: Enforces valid tokens on all preview endpoints.
+2. **SSRF Mitigation**:
+   - Church metadata (`/fetch-church-metadata`): Restricted strictly to `*.churchofjesuschrist.org` domains.
+   - General URL preview (`/url-preview`): Validates DNS lookups against internal private network blocklists (loopback, link-local, private subnets).
+3. **Bandwidth & Timeout Limits**:
+   - Downloads are capped at `512 KB` to prevent resource exhaustion.
+   - Socket requests enforce strict `4–5 second` timeouts.
 
 ---
 
 ## 3. Backend Endpoints (`api_internal/routes/preview.ts`)
 
 ### ① Church Content (`/api/preview/fetch-church-metadata`)
-Optimized for General Conference talks and Liahona articles:
-- **Language Fallback**: If fetching a localized version (e.g. `?lang=jpn`) fails, it automatically retries without the language parameter to retrieve the default version.
-- **Author Cleansing**: Automatically strips prefixes like "By", "Par", or "De" to cleanly extract author names.
-- **Graceful Error Handling**: Returns `{ title: '', speaker: '' }` on parse errors so form submission is never blocked.
+- **Language Parameter Fallback**: If fetching localized paths fails (e.g., `?lang=jpn`), it automatically retries without query parameters.
+- **Speaker Normalization**: Strips localized prefixes ("By", "Par", "De", "Por") to extract clean speaker names.
+- **Graceful Error Recovery**: Returns `{ title: '', speaker: '' }` on parse errors to ensure note submissions are never blocked.
 
-### ② General Websites (`/api/preview/url-preview`)
-Extracts Open Graph metadata (`og:title`, `og:description`, `og:image`) and favicons from general web links.
+### ② General Web Previews (`/api/preview/url-preview`)
+Parses Open Graph tags (`og:title`, `og:description`, `og:image`) and HTML favicons.
 
 ---
 
 ## 4. Frontend Caching
 
-- **Two-Tier Cache**:
-  1. **Memory Cache**: Instant rendering during active sessions.
-  2. **LocalStorage**: Persists parsed metadata across page reloads.
-- **500ms Debounce**: Batches rapid typing to avoid firing excessive API requests.
+- **Two-Tier Cache**: Memory cache for instant session rendering; `localStorage` for cross-session persistence.
+- **500ms Debounce**: Bundles keystrokes to minimize server requests.
 
 ---
 

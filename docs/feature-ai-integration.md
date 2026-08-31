@@ -1,36 +1,36 @@
 # AI Integration (Gemini)
 
-This document details how the Gemini AI subsystem handles dynamic message translations, question prompts, and weekly reflection letters.
+This document details the architecture, translation pipeline, prompt design, and safety guidelines for the Gemini AI subsystem in Scripture Habit.
 
 ---
 
-## 1. Role & Persona Design
+## 1. Role & System Objectives
 
-AI functions as an encouraging facilitator that bridges language gaps and validates personal study efforts:
-- **Tone**: Warm, supportive, plainspoken, and concise.
-- **Focus**: Emphasizes daily personal application rather than complex theological debate.
+The AI subsystem operates as an encouraging facilitator that bridges multilingual barriers and reinforces personal study habits:
+- **Tone**: Empathetic, supportive, plainspoken, and concise.
+- **Focus**: Centered on daily personal application rather than speculative theological debate.
 
 ---
 
 ## 2. Model Configuration
 
 - **Model**: **Gemini 3.1 Flash-Lite**
-- **Optimization**: Configured with minimal thinking levels (`thinkingLevel: "minimal"`) to maximize response speed for translations and question generation.
+- **Latency Optimization**: Configured with minimal thinking levels (`thinkingLevel: "minimal"`) to optimize turnaround latency for message translations and reflection generation.
 
 ---
 
 ## 3. Translation Caching & Batching
 
-To minimize API costs and optimize response times, the app employs two optimization strategies:
+To minimize API cost and latency, the system utilizes two optimization layers:
 
 ### ① MD5 Persistent Cache
-Hashes request parameters (`OriginalText + TargetLanguage`) to check the `translation_cache` collection. Cached translations resolve in under 50ms.
+Generates MD5 hash keys from `OriginalText + TargetLanguage` and queries the `translation_cache` collection. Cached translations resolve in under 50ms.
 
-### ② Batch Translation (`/api/ai/translate-batch`)
-When loading chat streams with multiple foreign messages:
+### ② Batch Translation Pipeline (`/api/ai/translate-batch`)
+When loading message feeds with multiple foreign entries:
 1. **Parallel Cache Lookup**: Queries all message hashes concurrently via `Promise.all()`.
-2. **Single Structured Request**: Bundles only cache-missed messages into a single JSON payload for Gemini, reducing network latency to a single round-trip.
-3. **Atomic Persistence**: Commits translations directly to the respective message documents via a Firestore batch.
+2. **Single Structured Dispatch**: Aggregates cache-missed items into a single JSON payload for Gemini.
+3. **Batch Persistence**: Commits translations directly to respective Firestore message documents in an atomic batch write.
 
 ---
 
@@ -40,77 +40,51 @@ Analyzes recent study notes to generate personalized reflection letters **writte
 
 ```mermaid
 flowchart TD
-    Request["Generate Letter Request (2+ recent notes)"] --> CheckCooldown{"2+ new notes posted?"}
-    CheckCooldown -- "No (Return cached)" --> ReturnCache["Return Existing Letter from Cache"]
-    CheckCooldown -- "Yes (Eligible)" --> PersonaMatch["Hybrid Persona Matching (Scripture match / Spiritual theme)"]
-    PersonaMatch --> CallGemini["Gemini API (Church AI Guidelines Applied)"]
-    CallGemini --> SaveDB["Save to LetterBox (users/{uid}/letters)<br/>TTL: 30 Days"]
-    SaveDB --> Deliver["Display Letter (with Disclaimer)"]
+    classDef req fill:#1e1b4b,stroke:#a855f7,stroke-width:2px,color:#f8fafc;
+    classDef step fill:#1e293b,stroke:#64748b,stroke-width:1.5px,color:#f8fafc;
+    classDef db fill:#0f172a,stroke:#f59e0b,stroke-width:1.5px,color:#f8fafc;
+    classDef deliver fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#f0fdf4;
+
+    Request["Letter Generation Request (2+ recent notes)"]:::req --> CheckCooldown{"2+ new notes posted?"}:::step
+    CheckCooldown -- "No" --> ReturnCache["Return Existing Letter from Cache"]:::deliver
+    CheckCooldown -- "Yes" --> PersonaMatch["Hybrid Persona Matching (Scripture match / Spiritual theme)"]:::step
+    PersonaMatch --> CallGemini["Gemini API (Church AI Guidelines Applied)"]:::step
+    CallGemini --> SaveDB["Save to LetterBox (users/{uid}/letters)<br/>TTL: 30 Days"]:::db
+    SaveDB --> Deliver["Render Letter in UI (with Disclaimer)"]:::deliver
 ```
 
-### ① Standard Works Persona Pool (Excluding Jesus Christ & Living Leaders)
-- **Old Testament**: Adam, Enoch, Noah, Abraham, Moses, Elijah, Isaiah, Daniel, etc.
-- **New Testament**: John the Baptist, Peter, James, John, Paul, Matthew, Stephen, etc. *(Jesus Christ excluded)*
-- **Book of Mormon**: Lehi, Nephi, Alma, King Benjamin, Mormon, Moroni, Enos, etc.
-- **Doctrine & Covenants / Early Restoration (19th Century)**: Joseph Smith Jr., Hyrum Smith, Emma Smith, Oliver Cowdery, Eliza R. Snow, Brigham Young, etc.
-- **Pearl of Great Price**: Moses, Abraham, Enoch
+### Pipeline Breakdown
 
-### ② Hybrid Selection Logic
-1. **Priority 1 (Scriptural Context Match)**: If the user studied a specific book/chapter featuring a figure (e.g. 1 Nephi → Nephi, D&C 25 → Emma Smith), that person is selected.
-2. **Priority 2 (Spiritual Theme Match)**: If no direct author exists, the AI dynamically selects the figure whose life experiences and teachings best resonate with the user's emotional and spiritual insights.
+1. **Eligibility Evaluation & Cache Gate**  
+   If fewer than 2 new notes have been submitted since the previous generation, the API returns the cached letter to conserve quotas.
 
-### ③ Dynamic 4 Everyday Lenses & Emotional Adaptation
-The AI analyzes the tone, emotion, and struggles in the user's notes to select the most fitting lens:
-- **Lens 1: Relatable Human Struggles**: Applied when notes describe everyday chaos, slip-ups, busy lifestyle friction, or lighthearted frustration.
-- **Lens 2: Breath of Relief & Grace**: Applied when notes show fatigue, guilt, or perfectionist pressure.
-- **Lens 3: Raw & Vivid Realness**: Applied when notes show intellectual curiosity or honest questions about scripture events.
-- **Lens 4: Unfiltered Soul & Quiet Resonance**: Applied when notes express heavy trials, grief, or sincere spiritual longing.
-- **Multifaceted Persona Episodes**: Rather than flat stereotypes, the persona's specific life episode is matched to the lens (e.g. for Nephi: broken bow panic vs. 2 Ne 4 psalm vs. ship tools vs. stepping into the dark).
+2. **Hybrid Scriptural Persona Matching**  
+   Prioritizes figures directly associated with studied chapters (e.g., 1 Nephi $\rightarrow$ Nephi, D&C 25 $\rightarrow$ Emma Smith). If no direct match exists, the model matches the note's spiritual theme to a relevant scriptural figure (excluding the Savior and living leaders).
 
-### ④ Letter Structure & Two-Phase Progression (Humor vs Spiritual Emotion)
-- **Salutation**: `"Dear ${userName}, I, the AI, am embodying [Persona Name] as I read your study notes."` (Transparent AI roleplay)
-- **Phase 1 (Warm Icebreaker & Human Relatability)**: Shapes rapport and humor around the selected lens.
-- **Phase 2 (Sincere Christ-Centered Reflection)**: Shifts to a reverent, touching tone without jokes, validating the user's sincere spiritual thoughts and testifying of Christ's grace.
-- **Poem & P.S.**: A clean 3–4 line poem formatted without markdown symbols (`*` or `---`), followed optionally by a heartwarming P.S. (postscript).
-- **Signature**: `"— From AI (embodying [Persona Name])"`
-- **Disclaimer**: `"[Note] AI reflection letters are intended to encourage your daily study by reflecting on the faith of scriptural figures, and do not replace personal revelation from the Holy Ghost or official Church guidance. Because AI can make mistakes, please use your own prayerful judgment and official Church resources for doctrinal accuracy."`
-- **No Structural Labels**: The letter flows naturally without printing bracketed headings (e.g. `[Part 1]` or `[Icebreaker]`).
+3. **Church AI Guideline Enforcement**  
+   Executes generation against safety-engineered prompt directives, saving outputs to `users/{uid}/letters` before UI delivery.
 
 ---
 
 ## 5. Daily Scripture Comment Generation (`scripts/generate-ai-daily-comments.ts`)
 
-Pre-generates high-impact daily study comments across **11 languages** for the *Come, Follow Me* curriculum using **Everyday Lenses & Relatable Human Touch**:
+Pre-generates daily reflection commentary across **11 languages** for the *Come, Follow Me* curriculum:
 
-### ① Dynamic 4 Everyday Lenses
-Prevents tone fatigue by dynamically rotating across four distinct perspectives:
-- **Lens 1: Relatable Human Struggles**: Ancient figures being just as clumsy, overwhelmed, or anxious as we are ("Humans haven't changed in thousands of years").
-- **Lens 2: Breath of Relief & Grace**: Dismantles exhausting perfectionism; reminds that God is eager to help and forgive.
-- **Lens 3: Raw & Vivid Realness**: Unpacks the honest, unpolished reality of the scripture story that people usually gloss over.
-- **Lens 4: Unfiltered Soul & Quiet Resonance**: Captures a quiet, honest feeling or simple prayer needing no fancy religious vocabulary.
-
-### ② Core Engineering Rules
-- **100% English System Instructions + Bilingual Few-Shots**: All system directives and constraints are written in concise English for optimal LLM reasoning, while few-shots provide paired English/Japanese models to eliminate robotic translation artifacts.
-- **Strict Constraints**: Exactly 1 sentence, strictly zero emojis, no preachy clichés (`"This teaches us to..."`, `"Let us..."`, `"〜の象徴です"`), no overdramatic paradoxes/lyrical exaggerations, and full Word of Wisdom compliance (no coffee, tea, alcohol metaphors).
-- **11-Language Native Cadence**: Culturally localized for `ja`, `en`, `ko`, `zho`, `es`, `pt`, `vi`, `tl`, `th`, `sw`, `it`.
+- **Dynamic 4 Everyday Lenses**: Alternates among Relatable Human Struggles, Breath of Relief & Grace, Raw & Vivid Realness, and Unfiltered Soul to prevent tone fatigue.
+- **Engineering Principles**: 100% English system directives with bilingual few-shot models to ensure high inference quality and natural localized phrasing.
 
 ---
 
-## 6. Church AI Guidelines (General Handbook 38.8.47) Alignment
+## 6. Alignment with Church AI Guidelines (General Handbook 38.8.47)
 
-In alignment with General Handbook Section 38.8.47 ("Appropriate Use of Artificial Intelligence") and foundational Church principles, the prompt incorporates the following safety guidelines:
+In alignment with General Handbook Section 38.8.47 ("Appropriate Use of Artificial Intelligence"), prompts incorporate strict safety boundaries:
 
-1. **Respect for Personal Revelation**: Clarifies in both the letter notice and Terms of Service that AI does not replace personal revelation from the Holy Ghost or official Church guidance.
-2. **Transparency**: Explicitly identifies AI roleplay in both the opening greeting and signature to prevent confusion.
-3. **Priesthood & Doctrinal Boundaries**: Avoids speculating on unrevealed mysteries, pronouncing forgiveness of sins, assessing personal worthiness, or directing ecclesiastical callings.
-4. **Professional Boundaries (Handbook 38.8.47)**: Refrains from offering medical, clinical mental health, legal, or financial advice.
-5. **Reverence for Sacred Matters**: Avoids impersonating the Savior or living leaders; refrains from discussing sacred temple ordinance wording or confidential ceremonies.
-6. **Agency & Teaching Principles**: Avoids imposing rigid micro-rules; teaches principles to encourage prayerful personal decisions.
-7. **Interfaith Respect (11th Article of Faith)**: Maintains charity and respect for people of all faith backgrounds, avoiding criticism of other denominations.
-8. **Hope & Peace**: Focuses on peace, spiritual courage, and hope in Christ rather than inciting anxiety around warfare or apocalyptic topics.
-9. **Accessibility for Youth & All Ages**: Uses clear, natural, and respectful language suitable for learners of all ages.
-10. **Real-World Connections**: Encourages personal prayer and fostering meaningful connections with family and the faith community.
-11. **Word of Wisdom Compliance (D&C 89)**: Strictly prohibits referencing coffee, tea, alcohol, tobacco, or prohibited substances in metaphors or icebreakers, favoring wholesome universal habits (drinking water, eating breakfast, walking).
+1. **Respect for Personal Revelation**: Disclaimers emphasize that AI does not replace personal revelation from the Holy Ghost or ecclesiastical guidance.
+2. **Transparency**: Salutations and signatures explicitly identify the text as AI-generated roleplay.
+3. **Priesthood Boundaries**: Refrains from speculating on unrevealed doctrines, pronouncing forgiveness, or assessing worthiness.
+4. **Professional Boundaries**: Avoids providing medical, clinical mental health, legal, or financial counsel.
+5. **Reverence for Sacred Matters**: Prohibits impersonating Jesus Christ or living authorities, and avoids discussing sacred temple ordinance wording.
+6. **Word of Wisdom Compliance**: Strictly forbids references to coffee, tea, alcohol, or tobacco in metaphors, using wholesome habits instead.
 
 ---
 

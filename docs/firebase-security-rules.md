@@ -1,28 +1,28 @@
 # Firebase Security Rules & Mutation Isolation
 
-This document outlines the authentication constraints, membership validation, and server-side write isolation patterns in `firestore.rules`.
+This document outlines the authentication constraints, group boundary checks, and backend mutation isolation policies defined in `firestore.rules`.
 
 ---
 
 ## 1. Two-Tier Defense Model
 
-Security is verified across two boundaries:
+Security validation occurs across two infrastructural boundaries:
 
 ```
-Incoming Request ──► [ Tier 1: API Gateway ] ──► [ Tier 2: Database Rules ] ──► Commit
+Incoming Request ──► [ Tier 1: API Gateway ] ──► [ Tier 2: Database Layer ] ──► Data Commit
                        - Express Middleware            - firestore.rules
                        - verifyAppCheck (App Check)    - isAuthenticated()
                        - Rate Limiters                 - allow write: if false; (Shared Data)
 ```
 
-If a client attempts to bypass the Express API to write directly to Firestore, security rules block the operation at the database level.
+Should an unauthorized client bypass the Express API and attempt direct Firestore mutations, Security Rules terminate the operation at the database level.
 
 ---
 
 ## 2. Core Security Rule Functions
 
-### ① Authentication & Email Check (`isAuthenticated()`)
-Restricts access to authenticated users with verified email addresses:
+### ① Authentication & Verification Guard (`isAuthenticated()`)
+Restricts access to authenticated sessions with verified email addresses.
 
 ```javascript
 function isAuthenticated() {
@@ -35,13 +35,13 @@ function isAuthenticated() {
 ```
 
 ### ② App Check Validation (`isAppCheckVerified()`)
-Validates that incoming requests contain genuine App Check tokens when performing initial user registrations.
+Validates that incoming requests contain cryptographic App Check signatures during registration and high-risk workflows.
 
 ---
 
-## 3. Enforcing Business Rules at Database Level
+## 3. Database-Level Quota Enforcement
 
-To prevent clients from circumventing the 4-group limit, security rules evaluate the user's current group count before allowing group creation:
+To prevent client manipulation of the 4-group limit, Security Rules dynamically inspect the user's membership count prior to granting group creation permissions:
 
 ```javascript
 allow create: if isAuthenticated() && 
@@ -51,30 +51,40 @@ allow create: if isAuthenticated() &&
 
 ---
 
-## 4. Server-Side Write Isolation for Shared Data
+## 4. Write Isolation Architecture for Shared Resources
 
-To prevent data tampering and guarantee transactional integrity, **direct client writes to shared resources are disallowed (`allow write: if false;`)**:
+To prevent state tampering and guarantee atomic consistency, **direct client mutations to shared resources are strictly disallowed (`allow write: if false;`)**.
 
 ```mermaid
 flowchart TD
-    Client["Client App (Web/PWA)"]
-    API["Express API (Admin SDK)"]
-    DB[("Firestore Database")]
+    classDef client fill:#1e293b,stroke:#38bdf8,stroke-width:1.5px,color:#f8fafc;
+    classDef server fill:#1e1b4b,stroke:#a855f7,stroke-width:1.5px,color:#f8fafc;
+    classDef db fill:#0f172a,stroke:#f59e0b,stroke-width:1.5px,color:#f8fafc;
 
-    Client -- "Private Read/Write (Settings, Read Markers)" --> DB
-    Client -- "Shared Mutations (Posts, Joins, Cheers)" --> API
-    API -- "Atomic Transactional Writes" --> DB
+    Client["Client App (Web / PWA)"]:::client
+    API["Express API (Admin SDK)"]:::server
+    DB[("Cloud Firestore")]:::db
+
+    Client -- "① Private Read / Write (Profile, Settings)" --> DB
+    Client -- "② Shared Mutations (Posts, Joins, Reactions)" --> API
+    API -- "③ Atomic Transactional Writes" --> DB
 ```
 
-- **Shared Resources (`messages`, `members`, `cheers`)**:
-  Locked down with `allow write: if false;`. All mutations must route through Express endpoints using the Firebase Admin SDK.
-- **Private Resources (`users/{uid}`, `private/tokens`, `groupStates`)**:
-  Authenticated owners (`request.auth.uid == userId`) may read and write their private documents directly for seamless offline responsiveness.
+### Write Isolation Breakdown
+
+1. **Private Scope (`users/{uid}`, `groupStates`)**  
+   Scoped strictly to the authenticated owner (`request.auth.uid == userId`). Direct SDK mutations are permitted to support offline persistence and immediate UI feedback.
+
+2. **Shared Scope (`messages`, `members`, `cheers`)**  
+   Direct client writes are prohibited (`allow write: if false;`).
+
+3. **Transactional Guarantees via Backend API**  
+   All shared mutations route through Express API controllers, where the Firebase Admin SDK executes atomic transactions to update streaks, message streams, and statistics concurrently.
 
 ---
 
 ## 5. Related Documentation
 
-- [Database & Security](./database-security.md)
+- [Database & Security Architecture](./database-security.md)
 - [App Check & API Protection](./security-architecture.md)
 - [Firestore Transactions & Counters](./firestore-transactions-counters.md)

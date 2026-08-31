@@ -1,14 +1,12 @@
 # マイルストーン達成 ＆ リテンションの心理学
 
-Scripture Habit では、**10日および25日刻み（25日、50日、75日、100日...）のマイルストーン達成機能**と、**記念画像の生成・共有機能（[`src/utils/milestone.ts`](file:///c:/Users/dazhi/code/scripture-habit/src/utils/milestone.ts)）**を導入しています。
-
-この設計は、連続記録の途切れによる挫折を防ぎ、ユーザーが無理なく学習を続けられるように、行動経済学や習慣形成の知見を参考にして作られています。
+このドキュメントでは、10日および25日刻み（25日、50日、75日、100日...）のマイルストーン判定、記念画像カードの生成・共有機能、および行動経済学に基づいた継続支援設計について解説します。
 
 ---
 
 ## 1. 従来の「連続ストリーク」が抱える課題
 
-多くの習慣化アプリでは、「連続達成日数（Streak）」を伸ばすことが主なモチベーションとして使われています。しかし、連続記録に頼りすぎると以下のような心理的ハードルが生まれます。
+多くの習慣化アプリでは「連続達成日数（Streak）」が主要な指標として用いられますが、完全な連続性に過度に依存すると以下の心理的摩擦が生じます。
 
 ```mermaid
 flowchart TD
@@ -16,25 +14,25 @@ flowchart TD
     classDef warn fill:#78350f,stroke:#f59e0b,stroke-width:1.5px,color:#fef3c7;
     classDef danger fill:#7f1d1d,stroke:#ef4444,stroke-width:2px,color:#fef2f2;
 
-    A["毎日の連続ストリーク"]:::default -->|"忙しさや体調不良で1日休止"| B["ストリークが 0 に戻る"]:::warn
-    B --> C["積み上げた記録を失った感覚"]:::warn
-    C --> D["「どうにでもなれ効果」の発生"]:::danger
-    D --> E["アプリを開かなくなる（離脱）"]:::danger
+    A["毎日の連続ストリーク"]:::default -->|"多忙や体調不良による1日の休止"| B["ストリークが 0 にリセット"]:::warn
+    B --> C["積み上げた進捗の喪失感"]:::warn
+    C --> D["「どうにでもなれ効果」の発動"]:::danger
+    D --> E["アプリの利用停止（離脱）"]:::danger
 ```
 
-### 損失回避（Loss Aversion）の影響
-行動経済学では、何かを失うことの心理的痛みは、同等のものを得る喜びよりも大きく感じられることが知られています。
-例えば100日続けてきた記録が1日休んだだけで「0日」にリセットされると、過去の100日分の努力まで無駄になったように感じてしまいます。
+### 心理的メカニズムの解説
 
-### 「どうにでもなれ効果」（What-the-Hell Effect）
-心理学で言われる「どうにでもなれ効果（目標不達成効果）」とは、一度ルールが途切れたことをきっかけに、「もういいや」と努力自体をやめてしまう現象です。
-ストリークが途切れたユーザーが離脱しやすいのは、意志の強さの問題ではなく、この心理が働くためです。
+1. **損失回避（Loss Aversion）**  
+   何かを失う痛みは得る喜びよりも大きく評価されます。100日積み上げた記録が1日の休止で「0」に戻ることで、過去の努力全体が無価値になったと錯覚させます。
+
+2. **「どうにでもなれ効果」（What-the-Hell Effect）**  
+   ルールが一度途切れたことを契機に、「すべてが無駄になった」と努力自体を放棄してしまう心理バイアスです。ストリーク切れによる離脱は個人の意志ではなく、この設計上の欠陥に起因します。
 
 ---
 
-## 2. 合計日数（累積日数）モデルへの移行
+## 2. 累計学習日数モデルへの移行
 
-Scripture Habit では、連続日数への過度なプレッシャーを減らすため、**「これまでに学習した合計日数（`daysStudiedCount`）」**をメインの指標として表示・祝福する仕組みを採用しています。
+Scripture Habit では、連続日数への過剰なプレッシャーを排除するため、**「これまでの累計学習日数（`daysStudiedCount`）」**を主要な指標として評価します。
 
 ```mermaid
 flowchart TD
@@ -42,47 +40,46 @@ flowchart TD
     classDef good fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#f0fdf4;
     classDef step fill:#1e293b,stroke:#64748b,stroke-width:1.5px,color:#f8fafc;
 
-    subgraph SG_Trad["❌ 従来の連続ストリーク方式（途切れるとゼロ）"]
-        S1["100日連続達成"]:::step -->|1日休止| S2["0日にリセット（進捗喪失感）"]:::bad
-        S2 --> S3["挫折・アプリ離脱につながる"]:::bad
+    subgraph SG_Trad["❌ 従来の連続ストリーク方式（途切れによるゼロ化）"]
+        S1["100日連続達成"]:::step -->|1日休止| S2["0日にリセット（進捗喪失）"]:::bad
+        S2 --> S3["アプリ離脱・挫折"]:::bad
     end
 
-    subgraph SG_Total["✅ Scripture Habit 合計日数モデル（努力が消えない）"]
-        H1["100日達成"]:::step -->|1日休止| H2["100日のまま保持（努力は消えない）"]:::good
-        H2 -->|翌日再開| H3["🌟 101日目へ前向きに加算"]:::good
+    subgraph SG_Total["✅ Scripture Habit 累計日数モデル（努力の保持）"]
+        H1["100日達成"]:::step -->|1日休止| H2["100日を保持（過去の努力が残る）"]:::good
+        H2 -->|翌日再開| H3["101日目へ前向きに加算"]:::good
     end
 
     SG_Trad ~~~ SG_Total
 ```
 
-- **過去の努力が消えない安心感**: 1日休んでも、これまで積み上げた日数はそのまま残ります。
-- **再開しやすさ**: 「今まで100日読んできたのだから、また今日から再開しよう」と前向きに習慣へ戻ることができます。
+### 比較解説
+
+- **過去の努力の不可逆性**: 1日休止しても、これまで積み重ねた日数はそのまま残存します。
+- **再開障壁の低減**: 「100日積み上げた事実」が手元に残るため、いつでも翌日から前向きに再開できます。
 
 ---
 
 ## 3. マイルストーンの間隔設計（10日 ＋ 25日刻み）
 
-マイルストーンを「10日」と「以降25日ごと」に設定している理由には、習慣化の段階に応じた狙いがあります。
+マイルストーン間隔は、習慣形成のフェーズに合わせて段階的に設計されています。
 
 ```
-[Day 1] ───→ [Day 10 (最初の関門突破)] ───→ [Day 25] ───→ [Day 50] ───→ [Day 75] ───→ [Day 100] ...
+[Day 1] ───→ [Day 10 (初期離脱防止)] ───→ [Day 25] ───→ [Day 50] ───→ [Day 75] ───→ [Day 100] ...
               ▲                             ▲           ▲           ▲           ▲
-        初期の成功体験（離脱防止）               約3〜4週間ごとの適度な目標設定
+        初期の成功体験（Quick Win）              約3〜4週間ごとの適正目標（中だるみ防止）
 ```
 
-### ① 最初の10日：習慣化の初期関門を突破する（Quick Win）
-習慣を始めるときに最も脱落しやすいのは最初の1〜2週間です。
-3日や7日ではまだ実感が湧きにくく、30日は始めたばかりの人には遠すぎます。10日は「少し頑張れば届き、自分も続けられそうだ」と手応えを感じやすいタイミングです。
-
-### ② 以降25日ごと：目標勾配効果（Goal Gradient Effect）の維持
-目標に近づくほどやる気が高まる心理効果（目標勾配効果）を活用しています。
-次の目標が50日後や100日後だと遠すぎて中だるみしやすくなりますが、「25日（約3〜4週間）」というスパンであれば、常に次の達成が手の届く範囲に見え、モチベーションを保ちやすくなります。
+1. **初期 10 日間（Quick Win）**  
+   最も離脱率の高い最初の 2 週間を乗り越えるため、到達しやすい 10 日目を第 1 の関門として設定します。
+2. **以降 25 日ごと（目標勾配効果の維持）**  
+   目標が近づくほどモチベーションが高まる「目標勾配効果（Goal Gradient Effect）」を活用し、約 3〜4 週間ごとに次の節目を配置して中だるみを予防します。
 
 ---
 
 ## 4. 記念カードによる達成の可視化
 
-マイルストーン達成時には、モーダル（[`MilestoneModal`](file:///c:/Users/dazhi/code/scripture-habit/src/components/milestone/milestone-modal.tsx)）と記念カード（[`MilestoneCard`](file:///c:/Users/dazhi/code/scripture-habit/src/components/milestone/milestone-card.tsx)）が表示されます。
+マイルストーン達成時には、モーダル（[`MilestoneModal`](file:///c:/Users/dazhi/code/scripture-habit/src/components/milestone/milestone-modal.tsx)）と記念カード（[`MilestoneCard`](file:///c:/Users/dazhi/code/scripture-habit/src/components/milestone/milestone-card.tsx)）が描画されます。
 
 ```
 ┌────────────────────────────────────────────────────────┐
@@ -98,31 +95,38 @@ flowchart TD
 └────────────────────────────────────────────────────────┘
 ```
 
-- **自己効力感（Self-Efficacy）の向上**: 自分の努力がきちんとした形（画像カード）として可視化されることで、「自分は継続できている」という自信につながります。
-- **他人との比較ではなく自分の成長を称える**: ランキングや競争ではなく、過去の自分に対する積み上げを祝福するため、無理のない継続を促します。
+- **自己効力感（Self-Efficacy）の強化**: 積み重ねた努力を画像カードとして具現化し、継続の自信を補強します。
+- **他者比較の排除**: ランキングによる競争ではなく、過去の自分に対する積み上げを祝福します。
 
 ---
 
 ## 5. シェアとグループでのお祝い
 
-記念カードは、個人で楽しむだけでなく、手軽に共有できる設計になっています。
+記念カードは、個人での保存に加え、所属グループへも適度な頻度で通知されます。
 
 ```mermaid
 sequenceDiagram
+    autonumber
     participant User as ユーザー
     participant Modal as 記念カードモーダル
     participant Group as グループチャット
-    participant SNS as 端末保存 / SNS
+    participant SNS as 端末保存 / Web Share
 
-    User->>Modal: 10日・25日ごとのマイルストーン達成
+    User->>Modal: 10日・25日ごとのマイルストーン到達
     Modal-->>User: 記念カード表示
-    Modal->>Group: お祝いシステムメッセージを自動投稿
+    Modal->>Group: お祝いメッセージを自動投稿
     Group-->>User: メンバーからのリアクション
-    User->>SNS: 画像保存やシェア（任意）
+    User->>SNS: 画像保存または SNS 共有（任意）
 ```
 
-- **グループ内での適度な共有**: 毎回の投稿でチャットを埋めるのではなく、マイルストーン達成時にお祝いメッセージが流れることで、メンバー同士が自然に励まし合えます。
-- **手軽な画像保存と共有**: Web Share API や画像保存（html-to-image）により、ワンタップで手元に保存したり、SNSに投稿したりできます。
+### シーケンスの解説
+
+1. **マイルストーン達成の検知**  
+   ノート投稿時に判定ロジックが走り、節目に達した場合は記念カードモーダルが展開されます。
+2. **グループへの自動告知**  
+   毎回の投稿でチャットを埋めることなく、節目（10日、25日刻み）のみお祝いメッセージが流れるため、メンバー同士の自然な励まし合いを促します。
+3. **柔軟な共有手段**  
+   Web Share API または `html-to-image` を用いた画像保存により、ワンタップで手元に保存または外部共有が可能です。
 
 ---
 
@@ -130,9 +134,9 @@ sequenceDiagram
 
 | 役割 | 対象ファイル | 説明 |
 | :--- | :--- | :--- |
-| **判定ロジック** | [`src/utils/milestone.ts`](file:///c:/Users/dazhi/code/scripture-habit/src/utils/milestone.ts) | 10日、および25の倍数日をマイルストーンとして判定 |
-| **状態管理** | [`src/store/use-milestone-store.ts`](file:///c:/Users/dazhi/code/scripture-habit/src/store/use-milestone-store.ts) | モーダルの開閉とマイルストーンデータの保持 |
-| **UIコンポーネント** | [`src/components/milestone/`](file:///c:/Users/dazhi/code/scripture-habit/src/components/milestone/) | 記念カードの描画と画像ダウンロード・共有機能 |
+| **判定ロジック** | [`src/utils/milestone.ts`](file:///c:/Users/dazhi/code/scripture-habit/src/utils/milestone.ts) | 10日および25の倍数日をマイルストーンとして判定 |
+| **状態管理** | [`src/store/use-milestone-store.ts`](file:///c:/Users/dazhi/code/scripture-habit/src/store/use-milestone-store.ts) | モーダルの開閉状態とマイルストーンデータの保持 |
+| **UI コンポーネント** | [`src/components/milestone/`](file:///c:/Users/dazhi/code/scripture-habit/src/components/milestone/) | 記念カードの描画および画像ダウンロード・共有機能 |
 | **バックエンド連携** | [`api_internal/services/note-service.ts`](file:///c:/Users/dazhi/code/scripture-habit/api_internal/services/note-service.ts) | ノート投稿時のマイルストーン判定とチャットへのお祝い投稿 |
 
 ---

@@ -1,72 +1,63 @@
-# Letters to Your Future Self (Time Capsule) & Habit Psychology
+# Letters to Future Self (Time Capsule) & Habit Psychology
 
-## Overview
+The **Time Capsule (Letters to Future Self)** feature enables users to compose and seal encouragement letters and emergency SOS reminders addressed to their future self at upcoming milestone targets (Day 10, 25, 50, 75, 100...).
 
-The **Time Capsule (Letters to Future Self)** feature allows users to write and seal a personal encouragement letter and an emergency "SOS reminder" addressed to their future self upon reaching upcoming milestone targets (Day 10, 25, 50, 75, 100...).
-
-Rather than serving as a simple note-taking mechanism, this feature is engineered around core behavioral psychology principles—specifically **Future Self Continuity** and **Pre-commitment Devices**—to transform daily scripture study into a resilient, lifelong habit.
+Grounded in **Future Self Continuity** and **Pre-commitment Devices**, this feature anchors daily scripture study into an intrinsically motivated habit loop.
 
 ---
 
-## 🧠 Behavioral Psychology Principles
+## 1. Behavioral Psychology Principles
 
-### 1. Strengthening Future Self Continuity
-Psychological research reveals that individuals often view their future selves as disconnected strangers, leading to procrastination ("Future me can handle it").  
-Writing a letter to one's future self bridges this emotional gap (**Future Self Continuity**). Users cultivate empathy and accountability toward their future self, significantly increasing their commitment to daily habits.
-
-### 2. Pre-commitment Device
-By drafting and "sealing" a letter for a specific future date (e.g., Day 10), users establish an internal psychological contract. The existence of a sealed, unopened time capsule creates strong intrinsic motivation: *"I must reach Day 10 to unlock what past-me wrote."*
-
-### 3. Shift from External Validation to Self-Dialogue
-While habits sustained purely by external peer approval are vulnerable to burnout, habits anchored in self-dialogue (*"My past self is cheering me on"*) build durable internal motivation independent of external circumstances.
+1. **Strengthening Future Self Continuity**  
+   Bridges the cognitive gap where individuals view their future self as a detached stranger, fostering empathy and accountability toward future goals.
+2. **Pre-commitment Devices**  
+   Sealing a message for a specific future target creates a psychological contract, transforming milestone attainment into an intrinsic reward.
+3. **Shift Toward Self-Dialogue**  
+   Anchors habit motivation in private self-reflection (*"My past self is cheering me on"*) rather than external social approval.
 
 ---
 
-## 🎨 5-Stage UX Journey Architecture
+## 2. 5-Stage UX Journey Architecture
 
 ```mermaid
 flowchart TD
-    A["① Pre-commit & Write<br/>（Social Proof Badge + 2-Tier Form）"] -->|Seal Capsule| B["② Sealed Progress Tracking<br/>（🔒 Remaining Days & Progress Bar）"]
-    B -->|Near Inactivity Limit &lt;24h| C["③ SOS Intervention<br/>🚨 Words from Your Past Self"]
-    B -->|Milestone Reached!| D["④ Time Capsule Unlocked<br/>✉️ Snapshot of Lv & Date + Letter"]
-    D -->|Next Capsule CTA| E["⑤ Seamless Loop to Next Goal<br/>（Day 25, 50...）"]
-    D -->|Permanent Archive| F["⑥ Saved Forever in Letter Box"]
+    classDef step fill:#1e293b,stroke:#64748b,stroke-width:1.5px,color:#f8fafc;
+    classDef highlight fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#f0fdf4;
+    classDef alert fill:#78350f,stroke:#f59e0b,stroke-width:2px,color:#fef3c7;
+
+    A["① Pre-commit & Seal<br/>（Milestone Letter ＋ SOS Reminder）"]:::step -->|Seal Capsule| B["② Sealed Progress Tracking<br/>（Dashboard Progress Bar ＆ Countdown）"]:::step
+    B -->|Near Deadline &lt; 24h| C["③ SOS Intervention<br/>（Words from Your Past Self）"]:::alert
+    B -->|Milestone Reached| D["④ Time Capsule Unlocked<br/>（Historical Lv ＆ Date Snapshot）"]:::highlight
+    D -->|Next Target CTA| E["⑤ Next Milestone Loop<br/>（Day 25, 50...）"]:::step
+    D -->|Permanent Archive| F["⑥ Saved Forever in Letter Box"]:::highlight
 ```
 
-### ① Pre-commitment & Writing (`TimeCapsuleModal`)
-*   **Social Proof Badge**:
-    *   3+ achievers: `✨ {count} companions have achieved Day {days}!`
-    *   Fewer than 3 achievers: `🌱 Companions around the world are aiming for Day {days}!`
-    *   Alleviates isolation and boosts self-efficacy.
-*   **2-Tier Structured Form**:
-    1.  **Letter to Yourself on Day {days}** (Max 500 chars): Joy of accomplishment and encouragement.
-    2.  **Emergency SOS Reminder** (Max 100 chars): Crisis prevention note (*"Remember why you started! Just one verse today is a win"*).
-*   **Automatic Draft Sync**: Inputs are saved to local storage in real-time, preventing data loss on accidental dismissal.
+### UX Journey Breakdown
 
-### ② Sealed Progress Tracking (`TimeCapsuleCard`)
-*   Prominently placed on the Dashboard with a soothing coral pink (`--pink: #FF919D`) progress bar and a remaining days badge (e.g., `あと 1日` / `1 day left`).
-*   With every daily note submitted, the progress bar visibly fills, reinforcing a sense of steady progress.
-
-### ③ SOS Crisis Intervention
-*   When a user approaches a group inactivity deadline (< 24 hours remaining), the Dashboard card automatically transforms into an **"🚨 Words from Your Past Self"** banner.
-*   Instead of a generic automated nag, the user receives their own heartfelt words written when they were inspired, gently prompting them to open the scriptures without guilt.
-
-### ④ Milestone Unlocking Surprise (`TimeCapsuleUnlockModal`)
-*   Reaching the target day unlocks the capsule with a celebratory stationery view.
-*   **Past Snapshot**: Displays the creation date, study day count at the time, and level (e.g., `Written on: 2026.08.31 (Back then: Day 1 / Lv.1)`), providing concrete proof of personal growth.
-
-### ⑤ Seamless Loop to the Next Target
-*   The unlock modal concludes with a clear call-to-action: **"Write a Letter for Day {nextDays}"**, seamlessly channeling milestone momentum into the next habit loop.
-
-### ⑥ Permanent Letter Box Archive
-*   **While Sealed**: Hidden from the Letter Box to prevent spoilers.
-*   **After Unlocking**: Permanently archived in the user's Letter Box (exempt from standard 30-day pruning), accessible as a lifelong treasure.
+1. **Pre-commit & Seal**  
+   Users draft a milestone celebration letter (max 500 chars) and an emergency crisis reminder (max 100 chars), sealing it until the target day.
+2. **Sealed Progress Tracking**  
+   A dedicated dashboard progress bar advances with every daily note submission, visualizing steady progress toward the goal.
+3. **SOS Crisis Intervention**  
+   Approaching a group inactivity deadline replaces standard generic alerts with the user's own past words of encouragement.
+4. **Milestone Unlocking**  
+   Reaching the target day unlocks the capsule, displaying the user's past level and creation date to highlight personal growth.
+5. **Continuous Loop & Permanent Archive**  
+   The unlocked letter archives permanently into the Letter Box, seamlessly prompting creation of the next milestone capsule.
 
 ---
 
-## 🔒 Privacy & Data Architecture
+## 3. Privacy & Security Architecture
 
-1.  **Strict Privacy Isolation**:
-    *   Capsules are stored under `users/{uid}/letters/capsule_{targetDays}` with Firestore security rules restricting read access exclusively to the owner. Group members cannot view personal letters.
-2.  **Efficient Count Aggregation**:
-    *   Achiever counts for social proof leverage Firestore Server Aggregation (`getCountFromServer`) with in-memory caching to eliminate redundant reads.
+1. **Strict Privacy Isolation**  
+   Letter documents (`content`, `sosMessage`) reside strictly within `users/{uid}/letters/capsule_{targetDays}`, accessible only by the authenticated owner.
+2. **Server Aggregation Optimization**  
+   Social proof counts utilize Firestore server aggregations (`getCountFromServer`) paired with in-memory caching to eliminate redundant reads.
+
+---
+
+## 4. Related Documentation
+
+- [Milestone Celebrations & Retention Psychology](./logic-milestone-retention.md)
+- [AI Reflection Letters & Retention Psychology](./ux-ai-reflection-letters.md)
+- [Dashboard & MyNotes Guide](./dashboard-mynotes-construction-guide.md)

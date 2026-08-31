@@ -1,8 +1,8 @@
 # Internationalization (i18n)
 
-Scripture Habit supports multilingual localization across 11 languages so users around the world can study in their native tongue.
+Scripture Habit supports multilingual localization across 11 languages, allowing users worldwide to study in their native language.
 
-Language configurations and translation dictionaries are maintained in a Single Source of Truth (`src/locales/`), synchronized across frontend UI, backend notifications, and AI translation services.
+Configurations and translation dictionaries reside in a Single Source of Truth (`src/locales/`), shared across frontend rendering, backend push notifications, and AI translation pipelines.
 
 ---
 
@@ -15,18 +15,18 @@ flowchart LR
     classDef be fill:#1e1b4b,stroke:#c084fc,stroke-width:1.5px,color:#f8fafc;
 
     subgraph SSOT["📦 Single Source of Truth (SSOT)"]
-        Config["src/config/languages.ts<br/>(Language Codes, Flags & Names)"]:::ssot
-        Locales["src/locales/{lang}.ts<br/>(11 Locale Dictionaries & Books)"]:::ssot
+        Config["src/config/languages.ts<br/>(Metadata, Flags & LDS Codes)"]:::ssot
+        Locales["src/locales/{lang}.ts<br/>(11 Dictionaries & Book Slugs)"]:::ssot
     end
 
     subgraph UsageFE["📱 Frontend Layer"]
-        FrontendContext["language-provider.tsx<br/>(UI Language State & Switch)"]:::fe
-        FrontendLoader["i18n.ts (Dynamic Lazy Load)"]:::fe
+        FrontendContext["language-provider.tsx<br/>(Language State & Switcher)"]:::fe
+        FrontendLoader["i18n.ts (Dynamic Lazy Import)"]:::fe
     end
 
     subgraph UsageBE["☁️ Backend Layer"]
-        BackendSchema["schemas.ts<br/>(Validation & AI Translation)"]:::be
-        BackendLoader["lib/i18n.ts<br/>(Notifications & System Msgs)"]:::be
+        BackendSchema["schemas.ts<br/>(Zod Validation & AI Target Schemas)"]:::be
+        BackendLoader["lib/i18n.ts<br/>(Multicast Push & System Notices)"]:::be
     end
 
     Config --> FrontendContext
@@ -35,33 +35,42 @@ flowchart LR
     Locales --> BackendLoader
 ```
 
+### Architecture Breakdown
+
+1. **Single Source of Truth**  
+   All language codes, native names, Church LDS codes, and UI dictionaries are centralized under `src/locales/` and `src/config/`.
+2. **Frontend Dynamic Imports**  
+   Uses Vite's `import.meta.glob` to load translation bundles on demand, keeping initial bundle size minimal.
+3. **Backend Multi-Language Formatting**  
+   Express services import locale bundles directly to format push notifications and system messages according to each recipient's language preference.
+
 ---
 
 ## 2. Frontend Architecture
 
-- **`src/config/languages.ts`**: Unified configuration of supported language codes, native names, flags, and Church LDS codes.
-- **`src/context/language-provider.tsx`**: Manages browser-based language detection, dynamic loading, and active translation caches.
-- **`src/locales/i18n.ts`**: Uses `import.meta.glob` to lazily import only requested locale dictionaries.
+- **`src/config/languages.ts`**: Centralized configuration of supported language codes, native names, flags, and Church LDS codes.
+- **`src/context/language-provider.tsx`**: Manages browser language detection, state changes, and translation caches.
+- **`src/locales/i18n.ts`**: Lazy-imports locale dictionaries on demand.
 
 ### ① Translation Helper `t()`
-- **Parameter Interpolation**: Safely replaces dynamic placeholders (e.g. `"{name} posted a note"`).
-- **English Fallback**: If a key is missing in the active language, it falls back to English (`en`) to prevent blank UI labels.
+- **Parameter Interpolation**: Replaces placeholders (e.g., `"{name} posted a note"`).
+- **English Fallback**: Missing keys fall back to English (`en`) to prevent missing UI labels.
 
 ### ② Scripture Book Translations
-Scripture book names are stored using canonical keys and dynamically resolved to the viewer's language (e.g., "Book of Mormon" $\rightarrow$ "モルモン書" / "Libro de Mórmon").
+Scripture book names are stored using canonical keys and resolved dynamically to the viewer's language (e.g., "Book of Mormon" $\rightarrow$ "モルモン書" / "Libro de Mórmon").
 
 ---
 
 ## 3. Backend Localization (`api_internal/lib/i18n.ts`)
 
-The backend directly references `src/locales/` to format multilingual push notifications and system announcement messages.
+The backend references `src/locales/` directly to compose localized push notifications and group announcement cards.
 
 ---
 
 ## 4. Dynamic AI Translation (`/api/ai/translate`)
 
-User-generated study notes are translated on demand by Gemini AI:
-- **Message Caching**: Translated outputs are cached directly in the message document to avoid redundant API calls.
+Study notes are translated dynamically via Gemini AI:
+- **Direct Cache Storage**: Outputs are persisted in the Firestore message document (`translations.{lang}`) to eliminate redundant API calls.
 
 ---
 
@@ -85,10 +94,8 @@ User-generated study notes are translated on demand by Gemini AI:
 
 ## 6. Adding a New Language
 
-1. **Create Dictionary (`src/locales/{code}.ts`)**:
-   Add a new locale file (e.g., `fr.ts` for French) with UI translations and scripture book names.
-2. **Run Sync Script**:
-   Execute `npm run i18n:sync` to automatically register the new language in `src/config/languages.ts` and backend schemas.
+1. **Create Dictionary (`src/locales/{code}.ts`)**: Add a new locale dictionary with UI strings and scripture book titles.
+2. **Run Sync Automation**: Run `npm run i18n:sync` to register the new language in `src/config/languages.ts` and backend validation schemas.
 
 ---
 

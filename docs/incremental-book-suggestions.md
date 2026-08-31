@@ -1,60 +1,68 @@
 # Incremental Book Suggestion Engine
 
-This document details the search matching, text normalization, and sorting logic of the book autocomplete engine (`src/utils/suggestion-utils.ts`).
+This document details the search matching, text normalization, and priority sorting algorithms of the book autocomplete engine (`src/utils/suggestion-utils.ts`) in Scripture Habit.
 
 ---
 
 ## 1. Input Text Normalization
 
-To ensure smooth matching regardless of case, character width, or phonetic scripts, input strings are normalized before evaluation:
+To ensure consistent matching regardless of letter casing, character widths, or phonetic input variations:
 
 ```mermaid
 flowchart TD
-    Input["Raw Input Text"] --> Lower["Convert to Lowercase"]
-    Lower --> NFKC["Unicode NFKC Normalization<br/>(Full-width to Half-width)"]
-    NFKC --> IsJa{"Language is Japanese?"}
-    IsJa -- "Yes" --> HiraToKata["Convert Hiragana to Katakana"]
-    IsJa -- "No" --> Search["Match Search Tokens"]
+    classDef step fill:#1e293b,stroke:#64748b,stroke-width:1.5px,color:#f8fafc;
+    classDef branch fill:#1e1b4b,stroke:#a855f7,stroke-width:1.5px,color:#f8fafc;
+    classDef match fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#f0fdf4;
+
+    Input["Raw User Input Text"]:::step --> Lower["Convert to Lowercase"]:::step
+    Lower --> NFKC["Unicode NFKC Normalization<br/>(Full-width to Half-width)"]:::step
+    NFKC --> IsJa{"Language is Japanese?"}:::branch
+    IsJa -- "Yes" --> HiraToKata["Convert Hiragana to Katakana"]:::step
+    IsJa -- "No" --> Search["Execute Token Match"]:::match
     HiraToKata --> Search
 ```
 
-### ① Unicode & Width Normalization
-Applies `normalize('NFKC')` and `toLowerCase()` to standardize full-width numbers and alphabetic characters into half-width.
+### Normalization Pipeline Breakdown
 
-### ② Japanese Phonetic Mapping
-Official Japanese scripture names use Katakana (e.g. `アルマ`, `ニーファイ`), whereas users often type in Hiragana (`あるま`, `にーふぁい`).
-When the active language is Japanese (`'ja'`), the engine shifts character code points to automatically convert Hiragana to Katakana in memory.
-
-### ③ Kanji Phonetic Readings
-For books containing Kanji characters (e.g. 創世記, 信仰箇条), the engine checks a reading dictionary (`KANJI_BOOK_READINGS`) so users can match books by typing pure Hiragana/Katakana without converting to Kanji.
+1. **Unicode NFKC Standard**  
+   Converts full-width numbers and Latin characters to half-width equivalents and standardizes case.
+2. **Japanese Phonetic Shift**  
+   Converts Hiragana code points (`あるま`) to Katakana (`アルマ`) dynamically, removing input mode switching friction on mobile keyboards.
+3. **Kanji Phonetic Lookup**  
+   Consults reading maps (`KANJI_BOOK_READINGS`) to resolve phonetic matches against Kanji book titles (e.g., 創世記, 信仰箇条).
 
 ---
 
 ## 2. 4-Tier Priority Sorting Algorithm
 
-Filtered candidates are sorted through a 4-tier cascade so the most relevant matches appear first:
+Filtered candidate books are sorted through a 4-tier cascade to present the most relevant selections first:
 
 ```mermaid
 graph TD
-    Start["Compare Candidates"] --> T1{"Tier 1: Exact Match?"}
-    T1 -- "Yes" --> R1["Rank Highest"]
-    T1 -- "No" --> T2{"Tier 2: Translated Prefix Match?"}
-    T2 -- "Yes" --> R2["Rank 2nd"]
-    T2 -- "No" --> T3{"Tier 3: English Prefix Match?"}
-    T3 -- "Yes" --> R3["Rank 3rd"]
-    T3 -- "No" --> T4["Tier 4: Shortest String Length"]
+    classDef tier fill:#1e1b4b,stroke:#a855f7,stroke-width:1.5px,color:#f8fafc;
+    classDef rank fill:#064e3b,stroke:#10b981,stroke-width:1.5px,color:#f0fdf4;
+
+    Start["Evaluate Candidate List"]:::tier --> T1{"Tier 1: Exact Match?"}:::tier
+    T1 -- "Yes" --> R1["Rank Highest (Exact)"]:::rank
+    T1 -- "No" --> T2{"Tier 2: Localized Prefix Match?"}:::tier
+    T2 -- "Yes" --> R2["Rank 2nd (Localized Prefix)"]:::rank
+    T2 -- "No" --> T3{"Tier 3: English Prefix Match?"}:::tier
+    T3 -- "Yes" --> R3["Rank 3rd (English Prefix)"]:::rank
+    T3 -- "No" --> T4["Tier 4: Shortest String Length"]:::rank
 ```
 
-1. **Tier 1: Exact Match**: Exact name matches appear at the top.
-2. **Tier 2: Translated Prefix Match**: Books starting with the user's localized input.
-3. **Tier 3: English Prefix Match**: Books starting with the user's English input (assisting bilingual typing and abbreviations).
-4. **Tier 4: Shortest String Length**: Prefers shorter names (e.g. `Mark` over `1 Thessalonians`) to optimize touch selection on mobile screens.
+### Priority Cascade Breakdown
+
+- **Tier 1 (Exact Match)**: Identical title matches receive first priority.
+- **Tier 2 (Localized Prefix Match)**: Books starting with the localized input string.
+- **Tier 3 (English Prefix Match)**: Matches against canonical English book slugs, supporting multilingual search and common abbreviations.
+- **Tier 4 (Shortest String Length)**: Shorter titles (e.g., `Mark` vs. `1 Thessalonians`) rank ahead of longer titles to optimize touch selection.
 
 ---
 
-## 3. Suggestion Capping
+## 3. Candidate Result Limits
 
-The output list is capped at **10 suggestions** (`.slice(0, 10)`), preventing viewport overflow and keeping the interface responsive on mobile devices.
+Candidate results are capped at **10 suggestions** (`.slice(0, 10)`), preventing mobile viewport overflow and preserving rendering performance.
 
 ---
 

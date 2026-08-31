@@ -1,19 +1,19 @@
 # Group Invites & Joining Pipeline
 
-This document describes the group invite lifecycle, join validation flows, and the mechanisms ensuring link compatibility and security.
+This document details the group invite lifecycle, join validation flows, historical code compatibility, and security boundaries in Scripture Habit.
 
 ---
 
 ## 1. Join Pipeline Overview
 
-Joining a group is processed through rate-limiting guards, email verification checks, and Firestore transactions:
+Group join operations execute through rate-limiting filters, verified email guards, and atomic Firestore transactions:
 
 ```mermaid
 sequenceDiagram
     autonumber
     participant UI as Client UI (Join Modal)
     participant Rate as Rate Limiter (inviteLimiter)
-    participant Auth as Email Verification Check
+    participant Auth as Auth & Email Guard
     participant API as Backend API (/join-group)
     participant DB as Firestore Transaction
 
@@ -22,17 +22,17 @@ sequenceDiagram
         Rate-->>UI: 429 Too Many Requests
     else Allowed
         Rate->>Auth: Verify Auth Context & Email Status
-        alt Email not verified (Password login)
+        alt Email not verified (Password auth)
             Auth-->>UI: 403 Forbidden
         else Verified
             Auth->>API: Execute Join Handler
-            API->>DB: Begin Transaction
-            Note over DB: Check invite code, capacity (max 5), group limit (max 4)
-            alt Validation fails (Group full, already member, etc.)
-                DB-->>API: Return validation error
+            API->>DB: Begin Atomic Transaction
+            Note over DB: Validate invite code, capacity (max 5), membership quota (max 4)
+            alt Validation Fails (Full, Max Groups, Already Joined)
+                DB-->>API: Rollback & Return Error
                 API-->>UI: 400 Bad Request
-            else Valid Join
-                Note over DB: Add member, update user profile, write welcome message
+            else Validation Succeeded
+                Note over DB: Append member, update profile, create welcome message
                 DB-->>API: Commit Transaction
                 API-->>UI: 200 OK (Navigate to Group)
             end
@@ -40,46 +40,52 @@ sequenceDiagram
     end
 ```
 
+### Join Sequence Breakdown
+
+1. **Rate Limiting & Authentication Guards**  
+   Protects endpoints from automated brute-force scans (max 15 attempts/hour) and verifies verified email tokens.
+
+2. **Transactional Validation**  
+   Atomically verifies group capacity (max 5 members) and user group quotas (max 4 groups) within a Firestore transaction.
+
+3. **Atomic Commit & Welcome Message**  
+   Appends the user to the roster, updates the user's `groupIds` array, and writes an official welcome announcement into the chat feed simultaneously.
+
 ---
 
-## 2. Invite Link Design
+## 2. Invite Link Architecture
 
 ### ① Ambiguity-Free Character Set
-To prevent user input errors (e.g., confusing `O` with `0` or `I` with `1`), codes use 32 distinct alphanumeric characters:
+To prevent visual transcription errors (`O` vs. `0`, `I` vs. `1`), codes use 32 high-contrast alphanumeric characters:
 `ABCDEFGHJKLMNPQRSTUVWXYZ23456789`
 - **Length**: 6 characters
-- **Combinations**: Over 1 billion distinct codes
+- **Namespace Capacity**: Over 1 billion combinations
 
-### ② Permanent Invites (No Expiration Friction)
-Scripture study groups are trust-based circles. Hard 24-hour expiration windows create communication friction when links are opened late in messaging apps. Therefore, invite codes are permanent by default (`inviteCodeExpiresAt: null`).
+### ② Permanent Invites (Zero Friction)
+To avoid link expiration friction across messaging apps, invite codes remain active indefinitely by default (`inviteCodeExpiresAt: null`).
 
-### ③ Historical Link Compatibility (`previousInviteCodes`)
-When members regenerate a group's invite code, the old code is saved into the `previousInviteCodes` history array.
-Old invite links previously shared via messaging apps continue to work without breaking.
+### ③ Historical Code Compatibility (`previousInviteCodes`)
+When an invite code is regenerated, previous codes are preserved in the `previousInviteCodes` history array. Previously shared links continue to resolve seamlessly.
 
-### ④ Structural Safeguards
-Rather than relying on short expiration windows, safety is maintained through structural rules:
-- **Capacity Limits**: Capped at 5 members (`maxMembers: 5`).
-- **Group Membership Limit**: Users may join up to 4 groups (`MAX_GROUPS_PER_USER = 4`).
-- **Rate Limiting**: Rate-limits join attempts per IP (production: max 15 attempts per hour) to prevent automated scanning.
+### ④ Boundary Enforcement
+- **Hard Capacity Cap**: Capped at 5 members (`maxMembers: 5`).
+- **User Membership Limit**: Capped at 4 groups per account (`MAX_GROUPS_PER_USER = 4`).
+- **Rate Limiting**: Enforces strict IP-level rate limits on join attempts.
 
 ---
 
 ## 3. Backend API Endpoints (`api_internal/routes/groups.ts`)
 
 ### 1. Group Preview (`GET /api/groups/group-preview/:inviteCode`)
-Public endpoint that returns the group name, description, and member count prior to joining.
-- **Two-Stage Lookup**: Checks the active `inviteCode` first, then falls back to `previousInviteCodes`.
-- **Localization**: Resolves translated group metadata based on client language.
+Public endpoint returning group metadata and member counts before joining.
+- **Two-Stage Lookup**: Evaluates the active `inviteCode`, falling back to `previousInviteCodes`.
+- **Localization**: Delivers localized group names and descriptions based on client headers.
 
-### 2. Regenerate Code (`POST /api/groups/regenerate-invite-code`)
-Generates a new active code while preserving past codes in the `previousInviteCodes` history.
+### 2. Code Regeneration (`POST /api/groups/regenerate-invite-code`)
+Generates a new 6-character code and archives the active code to history.
 
 ### 3. Join Group (`POST /api/groups/join-group`)
-Executed in a Firestore transaction to prevent race conditions:
-- **Capacity Check**: Rejects if member count is $\ge 5$ (`GROUP_FULL`).
-- **Limit Check**: Rejects if user belongs to $\ge 4$ groups (`MAX_GROUPS_LIMIT`).
-- **Atomic Updates**: Concurrently updates member arrays, user state subcollections, and writes the welcome announcement message.
+Executes transactional capacity and membership checks before committing updates.
 
 ---
 

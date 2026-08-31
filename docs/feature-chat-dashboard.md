@@ -1,60 +1,63 @@
 # Chat & Dashboard Synchronization
 
-This document explains the real-time Firestore listener architecture (`onSnapshot`), read status tracking, and media handling across chat and dashboard views.
+This document explains the real-time Firestore listener architecture (`onSnapshot`), read marker synchronization, and media upload optimization across chat and dashboard surfaces.
 
 ---
 
 ## 1. Real-Time Synchronization Architecture
 
-Instead of continuous polling, the app maintains active WebSocket connections (`onSnapshot`) with Firestore to mirror changes instantly into the UI.
+Eliminating polling overhead, the client maintains active WebSocket connections (`onSnapshot`) with Firestore to mirror remote mutations into local state with sub-second latency.
 
 ```mermaid
 stateDiagram-v2
     [*] --> Initializing
     Initializing --> FetchingMetadata: Fetch Group Context
-    FetchingMetadata --> AttachingListeners: onSnapshot (Latest Messages)
+    FetchingMetadata --> AttachingListeners: onSnapshot (Aggregated Messages)
     AttachingListeners --> ActiveSync
     
     state ActiveSync {
         [*] --> Idle
         Idle --> OptimisticUpdate: User Posts / Reads
-        OptimisticUpdate --> ServerAPISync: POST /api/...
-        ServerAPISync --> Idle: Confirmed (Snapshot Received)
+        OptimisticUpdate --> ServerAPISync: POST /api/messages/...
+        ServerAPISync --> Idle: Confirmed (Snapshot Broadcast Received)
     }
 ```
 
-### Core Architecture Patterns
-1. **Aggregated View Subscription (`messages_latest/latest`)**:
-   Instead of listening to the entire `/messages` subcollection (which incurs high read costs on active chats), clients subscribe to a single aggregated document holding the latest 25 messages.
-2. **Delta Processing (`docChanges`)**:
-   Member lists are synchronized by processing only incremental document additions or modifications, avoiding full re-renders.
-3. **Optimistic UI Updates**:
-   When sending messages or marking chats as read, local React state is updated immediately before server confirmation.
+### Synchronization Lifecycle Breakdown
+
+1. **Initialization & Listener Connection**  
+   Upon mounting a group view, the client fetches parent document metadata before subscribing to the aggregated message document (`messages_latest/latest`).
+
+2. **Optimistic Local Mutation**  
+   User actions (posting a note, sending a reaction, updating read state) immediately apply to local React state, followed by an asynchronous API dispatch.
+
+3. **Remote Reconciliation**  
+   When the backend transaction commits, Firestore broadcasts the updated snapshot, reconciling and finalizing client state.
 
 ---
 
-## 2. Read Status Management
+## 2. Read Marker Management
 
-Read markers are maintained using a server-authoritative model:
+Read states adhere to a server-authoritative synchronization model:
 
-1. **Local Clear**: Opening a group chat clears the local `unreadCount` to 0.
-2. **Server Sync**: Dispatches `/api/update-read-status` to record the new `lastReadAt` timestamp.
-3. **Automatic Recovery**: If the API call encounters network errors, the next incoming `onSnapshot` event reconciles local state with server data.
+1. **Local Immediate Clear**: Navigating into a group resets the local unread badge count to `0`.
+2. **Asynchronous Server Dispatch**: Invokes `/api/update-read-status` to update `lastReadAt` in the user's `groupStates` subcollection.
+3. **Automatic Fault Recovery**: If network interruptions delay the API dispatch, the subsequent Firestore snapshot reconciles local unread counts automatically.
 
 ---
 
 ## 3. Media & Image Processing
 
-- **Client-Side Compression**: Images are compressed on the client device prior to Firebase Storage upload to save user bandwidth.
-- **Optimistic Preview**: Selected images immediately render with a local object URL and switch to the permanent storage URL upon upload completion.
+- **Client-Side Canvas Compression**: Images are resized and JPEG-compressed directly within the browser before upload to Firebase Storage, conserving mobile data.
+- **Immediate Local Previews**: Captured photos render immediately using `URL.createObjectURL`, seamlessly swapping to the permanent Storage URL once upload completes.
 
 ---
 
 ## 4. Best Practices & Anti-Pattern Prevention
 
-### ① Preventing Infinite Subscription Loops (Stable Ref Pattern)
-Placing the `messages` array in the dependency list of the `useEffect` that attaches `onSnapshot` causes an infinite unsubscribe/resubscribe loop.
-To prevent this, active message state is mirrored into a `useRef`:
+### ① Preventing Subscription Loops (Stable Ref Pattern)
+Including the dynamic `messages` array in the dependency list of an `onSnapshot` `useEffect` triggers an infinite unsubscribe-resubscribe cycle.
+Message state is stored in a `useRef` to decouple data consumption from listener lifecycles:
 
 ```typescript
 const currentMessagesRef = useRef<Message[]>(currentMessages);
@@ -63,9 +66,9 @@ useEffect(() => {
 }, [currentMessages]);
 ```
 
-### ② Group Switching Race Conditions (Synchronous Reset)
-Resetting chat state asynchronously inside a `useEffect` when changing `groupId` causes visual flicker and wiped cache states.
-Detecting `groupId` changes directly during the component render phase ensures clean, flicker-free state transitions.
+### ② Preventing Group Transition Race Conditions (Synchronous Reset)
+Resetting group state asynchronously via effects during route changes causes visual artifacting and stale data leaks.
+Detecting `groupId` mutations during the render phase and resetting state synchronously guarantees clean navigation transitions.
 
 ---
 

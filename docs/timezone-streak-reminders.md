@@ -1,44 +1,62 @@
 # Timezone-Aware Streak Reminders
 
-This document describes how the application delivers localized evening push reminders according to each user's local timezone (`api_internal/lib/streak-reminder.ts`).
+This document details the scheduling pipeline, timezone resolution, and multicast delivery of localized evening push notifications (`api_internal/lib/streak-reminder.ts`) in Scripture Habit.
 
 ---
 
 ## 1. Pipeline Overview
 
-Instead of broadcasting a single global notification at a fixed UTC time, an hourly cron job detects which regions have reached **8:00 PM (20:00) local time**, finds users who have not yet studied today, and dispatches localized push notifications.
+Rather than broadcasting an uniform global notification, an hourly cron job identifies regions experiencing **8:00 PM (20:00) local time**, filters users with incomplete daily study, and dispatches localized push notifications.
 
 ```mermaid
 flowchart TD
-    Cron["Hourly Cron Job Trigger"] --> Step1["Resolve Timezones at 20:00 Local<br/>(Intl API)"]
-    Step1 --> Step2["Query Users in Target Timezones<br/>(Firestore 10-item Chunks)"]
-    Step2 --> Step3["Evaluate Study Completion<br/>(Filter unposted users)"]
-    Step3 --> Step4["Group by Language & Dispatch<br/>(FCM Multicast)"]
-    Step4 --> Step5["Process Delivery Feedback<br/>(Auto-purge invalid tokens)"]
+    classDef step fill:#1e293b,stroke:#64748b,stroke-width:1.5px,color:#f8fafc;
+    classDef cron fill:#1e1b4b,stroke:#a855f7,stroke-width:1.5px,color:#f8fafc;
+    classDef done fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#f0fdf4;
+
+    Cron["Hourly Cron Trigger (:00)"]:::cron --> Step1["Resolve Timezones at 20:00 Local<br/>(Intl API)"]:::step
+    Step1 --> Step2["Query Candidates in Target Timezones<br/>(Firestore 10-Item Chunks)"]:::step
+    Step2 --> Step3["Filter Unposted Candidates<br/>(Local Date Comparison)"]:::step
+    Step3 --> Step4["Group by Language & Multicast Dispatch<br/>(FCM sendEachForMulticast)"]:::step
+    Step4 --> Step5["Process Feedback & Auto-Purge Dead Tokens"]:::done
 ```
+
+### Pipeline Breakdown
+
+1. **Dynamic Timezone Identification**  
+   Evaluates all IANA timezones using Node.js's `Intl` API to locate regions currently at 20:00 local time (adjusting automatically for Daylight Saving Time).
+
+2. **Chunked Firestore Queries**  
+   Partitions eligible timezones into 10-item chunks to adhere to Firestore `in` query limits.
+
+3. **Localized Completion Filtering**  
+   Compares the candidate's `lastPostDate` against their local calendar date string (`YYYY-MM-DD`), filtering for uncompleted sessions.
+
+4. **Multicast Dispatch & Self-Healing Purge**  
+   Groups candidate tokens by language preference for batched FCM delivery, automatically purging invalidated tokens on failure feedback.
 
 ---
 
 ## 2. Timezone Resolution & Completion Evaluation
 
 ### ① Detecting 8:00 PM Timezones
-To seamlessly handle Daylight Saving Time changes, the engine dynamically checks `Intl.supportedValuesOf('timeZone')` to identify which zones are currently in their 20:00 hour.
+Dynamically scans `Intl.supportedValuesOf('timeZone')` to identify zones whose current local hour is `20`.
 
-### ② Localized Completion Check
-Converts the current time into the user's local `YYYY-MM-DD` date string and compares it against their `lastPostDate`. If the user has not posted on their local calendar date, a reminder is scheduled.
+### ② Localized Completion Verification
+Derives the local `YYYY-MM-DD` string in the target timezone rather than UTC, comparing it against the user's `lastPostDate` to prevent erroneous reminder alerts.
 
 ---
 
 ## 3. Query Partitioning & Multicast Delivery
 
-- **10-Item Query Chunks**: Partitions active timezones into batches of 10 to comply with Firestore's `in` query limits.
-- **Multicast Grouping**: Bundles tokens by user language and sends notifications in batches of up to 500 via FCM `sendEachForMulticast`.
+- **10-Item Query Partitioning**: Splits target timezones into 10-item arrays to satisfy Firestore operator constraints.
+- **Multicast Grouping**: Bundles tokens by user language, dispatching in batches of up to 500 via `sendEachForMulticast`.
 
 ---
 
 ## 4. Automatic Token Purging
 
-Stale or uninstalled FCM tokens (e.g. `messaging/registration-token-not-registered`) are automatically removed from the user's token list based on FCM delivery feedback.
+Tokens that fail delivery due to app uninstallation or expiration (e.g., `messaging/registration-token-not-registered`) are parsed from response arrays and deleted from Firestore.
 
 ---
 

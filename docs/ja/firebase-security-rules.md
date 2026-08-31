@@ -1,28 +1,28 @@
 # Firebase セキュリティルールと書き込み分離
 
-このドキュメントでは、Firestore セキュリティルール（`firestore.rules`）による認証検証、グループ制限の強制、およびクライアント直接書き込みの禁止設計について解説します。
+このドキュメントでは、Firestore セキュリティルール（`firestore.rules`）による認証検証、グループ参加制限の強制、および共有データへのクライアント直接書き込みを禁止する設計について解説します。
 
 ---
 
 ## 1. 2層の防御モデル
 
-セキュリティは、API ゲートウェイ（Express ミドルウェア）とデータベースルール（`firestore.rules`）の2段階で検証されます：
+セキュリティは、API ゲートウェイ（Express ミドルウェア）とデータベースルール（`firestore.rules`）の 2 段階で検証されます。
 
 ```
-リクエスト ──► [ 第1層: API ゲートウェイ ] ──► [ 第2層: データベースルール ] ──► データ保存
+リクエスト ──► [ 第1層: API ゲートウェイ ] ──► [ 第2層: データベース層 ] ──► データ保存
                  - Express ミドルウェア           - firestore.rules
                  - verifyAppCheck (App Check)     - isAuthenticated()
                  - レート制限                     - allow write: if false; (共有データ)
 ```
 
-クライアントが API を介さずに Firestore に直接アクセスしようとした場合でも、データベースルールが不正な書き込みを確実にブロックします。
+クライアントが API を介さずに Firestore へ直接書き込みを試行した場合でも、データベースルールにより不正なミューテーションを確実に遮断します。
 
 ---
 
 ## 2. セキュリティルールの基本関数
 
 ### ① 認証とメール確認 (`isAuthenticated()`)
-ログイン済みかつメールアドレスの確認が完了しているユーザーのみにアクセスを許可します：
+サインイン済みであり、メールアドレスの確認が完了しているユーザーのみにアクセスを許可します。
 
 ```javascript
 function isAuthenticated() {
@@ -35,13 +35,13 @@ function isAuthenticated() {
 ```
 
 ### ② App Check 検証 (`isAppCheckVerified()`)
-自動化されたボットからのアクセスを防ぐため、新規ユーザー登録時などに正規アプリのトークンを検証します。
+自動化されたボットからのアクセスを防ぐため、新規ユーザー登録などの重要操作時に正規アプリからのトークンを検証します。
 
 ---
 
 ## 3. データベース層でのグループ制限の強制
 
-ユーザーが不正に多くのグループを作成できないよう、ルール内で所属グループ数（最大4個）を動的に確認します：
+ユーザーが不正に多数のグループを作成できないよう、ルール内で所属グループ数（最大4グループ）を動的に検証します。
 
 ```javascript
 allow create: if isAuthenticated() && 
@@ -53,28 +53,38 @@ allow create: if isAuthenticated() &&
 
 ## 4. 共有データの書き込み分離（バックエンド限定書き込み）
 
-データの改ざん防止とトランザクション整合性を保つため、**共有データへのクライアント直接書き込みを制限（`allow write: if false;`）** しています：
+データの改ざん防止とトランザクション整合性を保つため、**共有リソースへのクライアント直接書き込みを禁止（`allow write: if false;`）** しています。
 
 ```mermaid
 flowchart TD
-    Client["クライアント (Web/モバイル)"]
-    API["Express API (Admin SDK)"]
-    DB[("Firestore データベース")]
+    classDef client fill:#1e293b,stroke:#38bdf8,stroke-width:1.5px,color:#f8fafc;
+    classDef server fill:#1e1b4b,stroke:#a855f7,stroke-width:1.5px,color:#f8fafc;
+    classDef db fill:#0f172a,stroke:#f59e0b,stroke-width:1.5px,color:#f8fafc;
 
-    Client -- "個人データ読み書き (ユーザー設定・既読など)" --> DB
-    Client -- "共有データ操作 (投稿・参加・リアクション)" --> API
-    API -- "トランザクション一括書き込み" --> DB
+    Client["クライアント (Web / PWA)"]:::client
+    API["Express API (Admin SDK)"]:::server
+    DB[("Cloud Firestore")]:::db
+
+    Client -- "① 個人データ操作 (ユーザー設定・既読など)" --> DB
+    Client -- "② 共有データ操作 (ノート投稿・参加・リアクション)" --> API
+    API -- "③ トランザクション一括書き込み" --> DB
 ```
 
-- **共有データ (`messages`, `members`, `cheers`)**:
-  クライアントからの書き込みを禁止（`allow write: if false;`）。必ずバックエンド API（Admin SDK）を経由してトランザクション書き込みを行います。
-- **個人データ (`users/{uid}`, `private/tokens`, `groupStates`)**:
-  本人（`request.auth.uid == userId`）に限り、オフライン時の操作性向上のため直接書き込みを許可。
+### 書き込み分離の解説
+
+1. **個人スコープのデータ (`users/{uid}`, `groupStates`)**  
+   本人のみが読み書き可能（`request.auth.uid == userId`）であり、オフライン操作性とレスポンス向上のためクライアント SDK からの直接更新を許可しています。
+
+2. **共有スコープのデータ (`messages`, `members`, `cheers`)**  
+   クライアント SDK からの直接書き込みをルールで一律禁止（`allow write: if false;`）しています。
+
+3. **バックエンド経由の整合性保証**  
+   共有データの更新は必ずバックエンド API を経由させ、Firebase Admin SDK によるトランザクション内で学習日数やレベル、チャットログをアトミックに書き込みます。
 
 ---
 
 ## 5. 関連ドキュメント
 
-- [データベース & セキュリティ](./database-security.md)
+- [データベースとセキュリティ](./database-security.md)
 - [App Check & API 保護](./security-architecture.md)
 - [Firestore トランザクション & カウンター設計](./firestore-transactions-counters.md)

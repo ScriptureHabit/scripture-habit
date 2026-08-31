@@ -1,55 +1,66 @@
 # Daily Unity Midnight Reset Hook
 
-This document details the `useUnityMidnightReset` hook (`src/hooks/use-unity-midnight-reset.ts`), which detects local midnight transitions across group timezones and triggers backend daily activity resets.
+This document details the `useUnityMidnightReset` hook (`src/hooks/use-unity-midnight-reset.ts`), which detects local midnight transitions across group timezones and triggers backend daily activity resets in Scripture Habit.
 
 ---
 
-## 1. Lifecycle & Sequence
+## 1. Lifecycle & State Machine
 
-The hook coordinates periodic interval timers and window focus listeners to detect midnight rollovers and reset group participation metrics:
+The hook coordinates 60-second polling timers with browser window focus events to detect midnight date rollovers:
 
 ```mermaid
 stateDiagram-v2
     [*] --> ActiveState: Hook Mounted
     
     ActiveState --> SleepState: Device Sleep (PWA Background)
-    SleepState --> WakeUpTrigger: Device Wake (Window Focus)
-    WakeUpTrigger --> EvaluateDate: Check Current Timezone Date
+    SleepState --> WakeUpTrigger: Device Wake (Window Focus Event)
+    WakeUpTrigger --> EvaluateDate: Verify Group Timezone Date
     
     ActiveState --> PollingTrigger: 60-Second Interval Timer
-    PollingTrigger --> EvaluateDate: Check Current Timezone Date
+    PollingTrigger --> EvaluateDate: Verify Group Timezone Date
     
-    EvaluateDate --> ActiveState: Same Day (No Reset Needed)
-    EvaluateDate --> SecureHandshake: New Day (Midnight Crossed)
+    EvaluateDate --> ActiveState: Same Date (No Reset Needed)
+    EvaluateDate --> SecureHandshake: Date Rollover Detected
     
     SecureHandshake --> ResetDatabase: POST /api/groups/reset-unity-if-midnight
     ResetDatabase --> RefreshUI: Reset Unity Meter to 0%
-    RefreshUI --> ActiveState: Return to Active Monitoring
+    RefreshUI --> ActiveState: Resume Active Monitoring
 ```
+
+### State Machine Breakdown
+
+1. **Dual Detection System**  
+   Combines an active 60-second polling timer with `window.focus` listeners to capture midnight transitions occurring while the device is sleeping or tab is backgrounded.
+
+2. **Timezone Date Comparison**  
+   Resolves the current date string (`YYYY-MM-DD`) within the group's assigned timezone, comparing it with the cached `dailyActivity.date`.
+
+3. **Concurrency Locking & Reset Dispatch**  
+   Enforces a `useRef` lock (`isResettingRef`) to prevent duplicate API dispatches, calling `/api/groups/reset-unity-if-midnight` and resetting the UI meter to 0%.
 
 ---
 
 ## 2. Core Implementation Highlights
 
 ### ① Window Focus Listening
-Because timers pause when devices sleep, the hook listens to `window.addEventListener('focus', ...)` to re-evaluate the date whenever the user reopens the app.
+Because background timers throttle during device sleep, the hook attaches a `focus` event listener to re-evaluate the calendar date immediately upon app resumption.
 
 ### ② Timezone-Aware Evaluation
-Calculates the current date string (`YYYY-MM-DD`) within the group's assigned timezone and compares it against `dailyActivity.date` in Firestore.
+Calculates the current date string within the group's specific timezone (`group.timeZone`) rather than local device time.
 
-### ③ Concurrency Locking
-Uses React `useRef` locks (`isResettingRef`) to prevent redundant API dispatches when switching tabs rapidly.
+### ③ Mutual Exclusion Locking
+Employs React `useRef` locks to guard against race conditions caused by rapid tab switches.
 
 ---
 
 ## 3. Secure Reset API (`/api/groups/reset-unity-if-midnight`)
 
-- **Auth & App Check Protected**: Verifies Firebase ID tokens and App Check headers before modifying group activity states.
-- **Immediate UI Refresh**: Upon confirmation (`{ reset: true }`), executes the `onReset()` callback to reset the daily progress meter to 0%.
+- **Authentication & App Check**: Verifies cryptographic signatures and bearer tokens prior to database modification.
+- **Immediate Local Callback**: Upon receiving `{ reset: true }`, invokes the `onReset()` callback to reset the Unity progress bar immediately.
 
 ---
 
 ## 4. Related Documentation
 
-- [Unity & Daily Participation](./unity-participation.md)
+- [Unity Participation Architecture](./unity-participation.md)
 - [Chat & Dashboard Synchronization](./feature-chat-dashboard.md)

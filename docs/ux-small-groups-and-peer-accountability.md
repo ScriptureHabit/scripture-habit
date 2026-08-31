@@ -1,16 +1,16 @@
 # Small Group Dynamics (Max 5) & Peer Accountability
 
-Scripture Habit's group system is built around a **maximum of 5 members per group (`maxMembers: 5`)**.
+Scripture Habit enforces a strict capacity limit of **5 members per group (`maxMembers: 5`)**.
 
-Furthermore, observations from production usage have shown that **groups composed of close friends, romantic partners, or family members tend to maintain high retention over time, whereas groups formed among strangers or loose acquaintances often struggle to stay active.**
+Operational telemetry and user behavior demonstrate that **circles composed of trusted ties (family, partners, close friends) sustain high long-term retention, whereas groups of unacquainted strangers experience high attrition.**
 
-This document explores why the 5-member limit is effective for daily habit formation, and how relational context influences long-term engagement.
+This document details the psychological principles underlying the 5-member limit and the role of relational safety in habit formation.
 
 ---
 
 ## 1. Why Cap Groups at 5 Members?
 
-While many social platforms support large groups with dozens or hundreds of members, large group sizes present several challenges for daily personal reflection and habit building:
+In personal reflection and habit-building domains, oversized groups create psychological friction that degrades individual commitment:
 
 ```mermaid
 flowchart TD
@@ -18,37 +18,35 @@ flowchart TD
     classDef bad fill:#450a0a,stroke:#ef4444,stroke-width:2px,color:#fef2f2;
     classDef step fill:#1e293b,stroke:#64748b,stroke-width:1.5px,color:#f8fafc;
 
-    subgraph SG_Large["❌ Large Groups (20-100 members)"]
-        A1["Too Many Members"]:::step --> B1["Assumption that someone else will post"]:::step
-        B1 --> C1["Hesitation to participate or react"]:::step
-        C1 --> D1["Group goes quiet and inactive"]:::bad
+    subgraph SG_Large["❌ Large Groups (20–100 Members)"]
+        A1["Scale Oversaturation"]:::step --> B1["Diffusion of Responsibility (Social Loafing)"]:::step
+        B1 --> C1["Hesitation to Post (Bystander Inaction)"]:::step
+        C1 --> D1["Channel Dormancy & Abandonment"]:::bad
     end
 
     subgraph SG_Habit["✅ Scripture Habit (Max 5-Member Circles)"]
-        A2["5-Member Micro-Group"]:::step --> B2["Participation is clearly visible"]:::step
-        B2 --> C2["Easy to cheer and encourage each other"]:::step
-        C2 --> D2["Habits stay active together"]:::good
+        A2["5-Member Micro-Circle"]:::step --> B2["Individual Participation is Transparent"]:::step
+        B2 --> C2["Low-Friction Cheers & Mutual Validation"]:::step
+        C2 --> D2["Sustained Peer Accountability"]:::good
     end
 
     SG_Large ~~~ SG_Habit
 ```
 
-### ① Mitigating Social Loafing (The Ringelmann Effect)
-As group size increases, individual sense of responsibility often decreases because people assume their contribution won't make much difference to the whole.
-In a large chat, skipping a day easily goes unnoticed. **In a 5-person circle, each member's presence matters, providing natural, positive peer accountability.**
+### Scale Dynamics Breakdown
 
-### ② Reducing the Bystander Effect
-In crowded chatrooms, people frequently wait for someone else to respond, resulting in collective silence.
-In a small group of 5, members naturally feel more involved, making it easier to share reactions, cheers, and words of encouragement.
+1. **Mitigating Social Loafing (The Ringelmann Effect)**  
+   As group size increases, individual effort diminishes because members assume others will compensate. In a 5-person circle, every member's presence is visible, activating healthy peer accountability.
 
-### ③ Staying Within Close Relational Capacity (Dunbar's Number)
-Anthropological research suggests that the number of people with whom an individual can maintain close, unpretentious relationships is around 5 (the "Support Clique").
+2. **Suppressing the Bystander Effect**  
+   In large chatrooms, members assume someone else will reply, causing collective silence. Small groups foster an active environment where cheers and reactions circulate naturally.
+
+3. **Dunbar’s Support Clique Capacity**  
+   Anthropological research indicates the maximum number of close, unpretentious relationships an individual can maintain simultaneously is approximately 5.
 
 ---
 
-## 2. The Influence of Pre-Existing Relationships on Retention
-
-In practice, **the relationship between group members is a key factor in how long a group remains active**:
+## 2. Relational Safety and Retention Correlation
 
 ```mermaid
 flowchart TD
@@ -56,62 +54,48 @@ flowchart TD
     classDef bad fill:#450a0a,stroke:#ef4444,stroke-width:2px,color:#fef2f2;
     classDef step fill:#1e293b,stroke:#64748b,stroke-width:1.5px,color:#f8fafc;
 
-    subgraph SG_Close["✨ Close Friends, Partners & Family (High Retention)"]
-        ST1["Established Trust"]:::step --> ST2["Comfortable sharing short or unpolished notes"]:::step
-        ST2 --> ST3["Enjoying seeing loved ones study"]:::step
-        ST3 --> ST4["🌟 High Long-Term Retention & Consistency"]:::good
+    subgraph SG_Close["✨ Trusted Ties: Family, Friends & Partners (High Retention)"]
+        ST1["Pre-existing Trust & Psychological Safety"]:::step --> ST2["Comfort Sharing Short, Unpolished Notes"]:::step
+        ST2 --> ST3["Genuine Interest in Peer Progress"]:::step
+        ST3 --> ST4["Sustained Habit Retention"]:::good
     end
 
-    subgraph SG_Strangers["⚠️ Strangers & Loose Acquaintances (High Dropout)"]
-        WT1["Unfamiliar with Each Other"]:::step --> WT2["Pressure to sound formal or profound"]:::step
-        WT2 --> WT3["One member goes quiet, others follow"]:::step
-        WT3 --> WT4["❌ Groups easily fade into silence"]:::bad
+    subgraph SG_Strangers["⚠️ Unacquainted Groups (High Attrition)"]
+        WT1["Relational Distance & Evaluation Anxiety"]:::step --> WT2["Pressure to Compose Formal, Polished Essays"]:::step
+        WT2 --> WT3["Single-Member Silence Triggers Groupwide Inaction"]:::step
+        WT3 --> WT4["Gradual Silence & Attrition"]:::bad
     end
 
     SG_Close ~~~ SG_Strangers
 ```
 
-### ① Why Close Friend and Family Groups Last
-- **Psychological Safety**:
-  Close friends and partners don't worry about being judged for short or simple notes. A quick one-sentence reflection can be shared without hesitation.
-- **Mutual Encouragement**:
-  Seeing someone you care about study daily serves as natural motivation: *"If they found time today, I'd like to read as well."*
+### Relational Context Breakdown
 
-### ② Challenges Faced by Groups of Strangers
-- **Pressure to Sound Formal**:
-  When sharing with strangers, people often feel the need to write well-composed essays, which raises the friction of posting.
-- **Cascading Inactivity**:
-  If one stranger stops posting, others may conclude that the group is inactive and gradually stop posting as well.
+1. **Psychological Safety in Trusted Ties**  
+   Pre-existing trust allows members to share quick, one-sentence reflections without fearing superficiality or judgment.
+
+2. **Evaluation Anxiety Among Strangers**  
+   Unacquainted groups induce pressure to compose polished essays, raising friction and causing missed days to cascade across members.
 
 ---
 
-## 3. Product Strategies in Scripture Habit
+## 3. Product Architecture Alignment
 
-To support healthy group interaction, Scripture Habit incorporates several design choices:
-
-| Mechanism | Purpose |
+| Architectural Choice | Objective & Behavioral Impact |
 | :--- | :--- |
-| **5-Member Cap (`maxMembers: 5`)** | Keeps groups intimate so every member's participation is recognized. |
-| **Direct Invite Links** | Makes it easy to invite a spouse, close friend, or family member to study together. |
-| **AI Partner Group (Dedicated 1-on-1 Space)** | Provides a private 1-on-1 space with the AI partner bot for users who prefer studying independently without peer pressure. |
-| **Unity Sync (Team Participation)** | Focuses on shared completion percentage rather than competitive individual rankings. |
-| **Inactivity Auto-Kick** | Gently removes inactive members over time so groups remain fresh and active. |
+| **5-Member Hard Cap (`maxMembers: 5`)** | Prevents responsibility diffusion and keeps participation transparent. |
+| **Direct Invite Links** | Empowers users to seed circles with established relationships. |
+| **Dedicated AI Partner Circle** | Offers a private 1-on-1 space with the AI bot for users preferring individual study. |
+| **Unity Percentage (Team Metric)** | Replaces individual leaderboards with a shared completion goal. |
+| **Automated Inactivity Purging** | Removes dormant accounts to keep remaining active members engaged. |
 
 ---
 
-## 4. Summary
+## 4. Related Documentation
 
-Building a lasting habit depends not just on individual willpower, but on **the people sharing the journey**.
-
-Scripture Habit is designed not as a large public network, but as a **supportive, comfortable space for up to 5 people** to encourage each other along the way.
-
----
-
-## 5. Related Documentation
-
-- [Psychological Impact & Retention of AI Reflection Letters](./ux-ai-reflection-letters.md)
+- [AI Reflection Letters & Retention Psychology](./ux-ai-reflection-letters.md)
 - [Milestone Celebrations & Retention Psychology](./logic-milestone-retention.md)
-- [Group Chat Construction Guide](./groupchat-construction-guide.md)
+- [Group Chat Architecture & Implementation](./groupchat-construction-guide.md)
 - [Group Invites & Joining Pipeline](./group-invites.md)
 - [Inactivity & Auto-Kick Engine](./inactivity-and-autokick.md)
-- [Unity & Daily Participation](./unity-participation.md)
+- [Unity Participation Architecture](./unity-participation.md)

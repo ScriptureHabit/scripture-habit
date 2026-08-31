@@ -1,160 +1,138 @@
-# PWA モバイルのライフサイクル
+# PWA ＆ モバイルライフサイクル管理
 
-このドキュメントでは、**scripture-habit** アプリが PWA の更新、プラットフォームごとのインストールプロンプト、および WebView の設定をどのように処理するかについて説明します。
+このドキュメントでは、**Scripture Habit** における PWA の更新検知、プラットフォーム別のインストールプロンプト、およびアプリ内 WebView（LINE, Instagram 等）の回避制御について解説します。
 
 ---
 
 ## 1. PWA 更新ライフサイクル (`PWAUpdateHandler`)
 
-クライアントのアセットを最新の状態に保ち、エラーを防止するため、アプリは Service Worker のキャッシュ戦略と更新通知を組み合わせて使用しています。
-
-### 更新フロー
-1. **検出**: 新しいバージョンがデプロイされると、ブラウザは新しい Service Worker を検出します。
-2. **待機**: アクティブなセッションを中断しないよう、新しい Service Worker は `waiting`（待機）状態に入ります。
-3. **イベント**: アプリはカスタムイベント `pwa-update-available` をトリガーします。
-4. **通知**: ユーザーに閉じることができない通知を表示します。
-5. **更新の適用**: ユーザーが「アップデート」ボタンをクリックしたとき：
-   - ボタンが無効（disabled）になり、読み込み状態が表示されます。
-   - アプリは Service Worker に `SKIP_WAITING` メッセージを送信します。
-   - 更新に時間がかかりすぎる場合に備えて、ページを強制的にリロードする 3 秒のフォールバックタイマーが設定されます。
+クライアントのアセット整合性を維持し、旧バージョンのキャッシュ起因による不具合を防ぐため、Service Worker の待機戦略と更新通知トーストを連携させています。
 
 ```mermaid
 sequenceDiagram
-    participant Browser as ブラウザウィンドウ
+    autonumber
+    participant Browser as ブラウザ
     participant Event as pwa-update-available イベント
     participant UI as PWAUpdateHandler トースト
     participant SW as Service Worker
 
-    Browser->>SW: 新しい SW スクリプトを取得
-    SW-->>Browser: SW がインストールされ、'waiting' 状態に入る
-    Browser->>Event: SW Registration とともにイベントを送信
-    Event->>UI: 「アップデートが利用可能です」のトーストを表示
-    Note over UI: ユーザーが「アップデート」をクリック
+    Browser->>SW: 新規 Service Worker スクリプトを取得
+    SW-->>Browser: インストール完了 ('waiting' 状態で待機)
+    Browser->>Event: Registration オブジェクト付きでイベント発行
+    Event->>UI: 「アップデートが利用可能です」トーストを表示
+    Note over UI: ユーザーが「アップデート」ボタンをクリック
     UI->>SW: postMessage({ type: 'SKIP_WAITING' })
-    SW->>Browser: コントローラーの変更 / キャッシュの更新
-    rect rgb(240, 240, 255)
+    SW->>Browser: コントローラー切り替え ＆ キャッシュ更新
+    rect rgb(30, 41, 59)
         Note over UI: 3秒のフォールバックタイマー
-        UI->>Browser: 強制的に location.reload() を実行
+        UI->>Browser: location.reload() による強制リロード
     end
 ```
 
+### ライフサイクルの解説
+
+1. **バックグラウンド検出と待機状態**  
+   新規デプロイ時に新しい Service Worker が検知されてインストールされますが、利用中のセッションを中断しないよう `waiting` 状態で待機します。
+2. **更新トーストの提示**  
+   `pwa-update-available` イベントを捕捉し、画面上に更新ボタンを提示します。
+3. **明示的なアクティベーションと安全なリロード**  
+   ボタン押下時に `SKIP_WAITING` を送信して新しいキャッシュを即時有効化します。万が一イベントが停滞した場合に備え、3 秒のタイマーでフォールバックリロードを実行します。
+
 ---
 
-## 2. プラットフォーム固有のインストールプロンプト
+## 2. プラットフォーム別のインストールプロンプト
 
-アプリは、ユーザーのオペレーティングシステムに基づいてカスタムの PWA インストールプロンプトを表示します。
+ユーザーの OS 環境（Android / iOS）を自動判別し、最適なインストール案内を提供します。
 
 ### 表示ルール
-ユーザーの邪魔にならないよう、プロンプトは以下の条件をすべて満たす場合にのみ表示されます：
-* ユーザーが `/dashboard` ルートにいる。
-* アプリがスタンドアロンモード（インストール済みモード）でまだ実行されていない。
-* モーダルが現在開いていない。
-* ユーザーが最後にプロンプトを閉じてから 7 日以上経過している（`localStorage` で追跡）。
+操作の妨げとならないよう、以下の条件をすべて満たす場合にのみプロンプトを表示します。
+- `/dashboard` ルートを表示中。
+- スタンドアロンモード（インストール済み）で起動されていない。
+- 他のモーダルが開いていない。
+- 前回閉じてから 7 日以上経過している（`localStorage` でクールダウン管理）。
 
-### アダプティブ戦略 (Android vs. iOS)
+### アダプティブ制御 (Android vs. iOS)
 
 ```
                       [ InstallPrompt マウント ]
                                  │
                   ┌──────────────┴──────────────┐
                   ▼                             ▼
-         [ プラットフォーム = Android ] [ プラットフォーム = iOS ]
+         [ Android / Chrome ]            [ iOS / Safari ]
                   │                             │
-     BeforeInstallPromptEvent をキャプチャ     4秒遅延で待機 (UI 重なり防止)
+      beforeinstallprompt を捕捉         4 秒の待機遅延 (UI 重なり防止)
                   │                             │
-       ネイティブプロンプトボタンを表示          カスタム手順のオーバーレイを表示
+        ネイティブプロンプト起動ボタン      カスタム案内オーバーレイ表示
                   │                             │
-     deferredPrompt.prompt() をトリガー       ポインターが下部の共有バーを指示
+      deferredPrompt.prompt() 実行       下部共有ボタンを指し示すポインタ表示
 ```
 
-### 2.1 Android (Chrome) フロー
-1. ブラウザ固有の `beforeinstallprompt` イベントがキャプチャされます。
-2. イベントが利用可能になると、アプリはクリーンなインストールバナーを表示します。
-3. ボタンをクリックすると `deferredPrompt.prompt()` が呼び出され、ネイティブのインストールダイアログが表示されます。
-4. ユーザーが応答した後、アプリはプロンプトの参照をリセットし、7 日間のクールダウンを開始します。
-
-### 2.2 iOS (Safari) フロー
-iOS Safari はネイティブのインストールイベントをサポートしていないため、アプリはカスタムの手順を表示します：
-1. UI の重なりを防ぐため、プロンプトは 4 秒の遅延の後に表示されます。
-2. オーバーレイが表示され、ユーザーに以下の操作を指示します：
-   - Safari の**共有**アイコンをタップ。
-   - **ホーム画面に追加** を選択。
-3. ビジュアルポインターが Safari の下部アクションバーを指し示します。
+- **Android (Chrome)**: `beforeinstallprompt` イベントを保持し、ユーザーのタップ操作でネイティブダイアログを起動。
+- **iOS (Safari)**: ネイティブ API が存在しないため、4 秒遅延後に「共有アイコン ➔ ホーム画面に追加」の手順を明示した視覚ポインターを表示。
 
 ---
 
-## 3. アプリ内 WebView の安全性
+## 3. アプリ内 WebView の検出と安全な脱出
 
-ソーシャルネットワークやメッセージングアプリの内部からアプリを開くユーザーをサポートするため、アプリにはアプリ内 WebView 用の安全性チェックが含まれています。
+SNS アプリ（LINE、Instagram、Facebook 等）の内蔵ブラウザは、Service Worker や通知、IndexedDB が制限されているケースがあります。
 
-### 4.1 アプリ内ブラウザ（In-App Browser）の問題
-Facebook、Instagram、LINE、WhatsApp などのアプリ内ブラウザは、Web 機能を制限します。これらは、Service Worker、IndexedDB、および通知権限をブロックすることがよくあります。
+### ① アプリ内ブラウザの検出 (`src/utils/browser-detection.ts`)
+`navigator.userAgent` を評価して以下のアプリを特定します。
+- **LINE**: `/Line\//i`
+- **Instagram**: `/Instagram/i`
+- **Facebook & Messenger**: `/FBAN|FBAV/i` (iOS), `/FB_IAB/i` (Android)
+- **WhatsApp**: `/WhatsApp/i`
 
-### 4.2 アプリ内ブラウザの検出
-アプリは、ユーザーエージェントのチェックを使用して `src/utils/browser-detection.ts` でアプリ内ブラウザを検出します：
-- **LINE**: `/Line\//i` をチェック。
-- **Instagram**: `/Instagram/i` をチェック。
-- **Facebook & Messenger**: `/FBAN|FBAV/i` (iOS) および `/FB_IAB/i` (Android) をチェック。
-- **WhatsApp**: `/WhatsApp/i` をチェック。
-- **テスト用オーバーライド**: URL に `?debugBrowser=instagram` を追加することで、これらのモードをテストできます。
-
-### 4.3 リダイレクト警告
-アプリ内ブラウザ内部で強制的にリダイレクトを行うと、クラッシュやフリーズの原因となる可能性があります。代わりに：
-- 自動的なリダイレクトは無効化されています。
-- アプリ内ブラウザのユーザーが「ログイン」または「新規登録」をクリックすると、アプリは `BrowserWarningModal` を表示し、標準ブラウザでリンクを開く手順を提示します。
-
-### 4.4 アプリ内ブラウザからの回避（脱出）
-警告モーダルは、デバイスに応じて異なるオプションを提供します：
-
-#### iOS LINE
-- URL に `?openExternalBrowser=1` を付加します。
-- LINE iOS はこのパラメータをインターセプトし、Safari で URL を自動的に開きます。
-
-#### Android (すべてのアプリ内ブラウザ)
-- URL プロトコルをネイティブの Android Intent に置き換えます：
-   `intent://[host_and_path]#Intent;scheme=https;action=android.intent.action.VIEW;end`
-- これにより、Android OS はデフォルトのブラウザ（Chrome など）でリンクを強制的に開きます。
-
-#### クリップボードへのフォールバック
-- `navigator.clipboard.writeText()` を使用して URL をクリップボードにコピーします。
-- ホストアプリによってブラウザの自動起動がブロックされている場合のバックアップとして役立ちます。
-
----
-
-## 4. WebView 回避（脱出）シーケンス
+### ② 脱出シーケンス
 
 ```mermaid
 sequenceDiagram
     autonumber
     participant User as ユーザー
-    participant Welcome as ウェルカム画面コンポーネント
-    participant Detect as detectInAppBrowser ユーティリティ
+    participant Welcome as ウェルカム画面
+    participant Detect as browser-detection
     participant Warning as BrowserWarningModal
     participant OS as デバイス OS
     
     User->>Welcome: 「ログイン」または「新規登録」をクリック
-    Welcome->>Detect: navigator.userAgent の評価
-    alt WebView を検出 (LINE, Instagram, FB)
-        Detect-->>Welcome: ブラウザの種類（例：'line'）を返す
-        Welcome->>Warning: モーダルを開く (showWarning = true)
-        Warning-->>User: 回避アクション付きの警告モーダルを表示
+    Welcome->>Detect: UserAgent を評価
+    alt アプリ内 WebView (LINE, Instagram, FB 等)
+        Detect-->>Welcome: ブラウザ識別子 (例: 'line') を返却
+        Welcome->>Warning: 警告モーダルを展開
+        Warning-->>User: 脱出アクション付きモーダルを表示
         
-        alt アクションクリック (iOS LINE)
-            User->>Warning: 「Safari で開く」をクリック
+        alt アクション: iOS LINE
+            User->>Warning: 「Safari で開く」をタップ
             Warning->>OS: window.location.assign(url?openExternalBrowser=1)
-            OS-->>User: ネイティブの Safari ブラウザを自動的に起動
-        else アクションクリック (Android WebView)
-            User->>Warning: 「Chrome で開く」をクリック
+            OS-->>User: ネイティブ Safari を自動起動
+        else アクション: Android WebView
+            User->>Warning: 「Chrome で開く」をタップ
             Warning->>OS: window.location.assign(intent://...)
-            OS-->>User: ネイティブの Google Chrome ブラウザを自動的に起動
-        else アクションクリック (標準 iOS Instagram/FB)
-            User->>Warning: 「リンクをコピー」をクリック
-            Warning->>Warning: クリップボードに URL をコピー & トーストを起動
-            Warning-->>User: 「リンクがコピーされました！」と手順を表示
-            User->>OS: 手動で Safari/Chrome を開き、貼り付け
+            OS-->>User: ネイティブ Chrome を自動起動
+        else アクション: その他 (Instagram / FB)
+            User->>Warning: 「リンクをコピー」をタップ
+            Warning->>OS: クリップボードに URL をコピー
+            Warning-->>User: 「ブラウザに貼り付けて開いてください」と案内
         end
-    else 標準ブラウザ (Chrome/Safari)
-        Detect-->>Welcome: null を返す
-        Welcome->>Welcome: アプリ内のダイレクトルーティングを続行
+    else 標準ブラウザ (Chrome / Safari)
+        Detect-->>Welcome: null (通常ブラウザ)
+        Welcome->>Welcome: アプリ内認証フローを継続
     end
 ```
+
+### シーケンスの解説
+
+1. **認証前の早期検出**  
+   「ログイン」「新規登録」タップ時に UserAgent を検査し、WebView の場合は認証画面に進む前に警告モーダルを展開します。
+2. **プラットフォーム別ディープリンク脱出**  
+   - iOS LINE: `?openExternalBrowser=1` クエリを付与して Safari を直接起動。
+   - Android: `intent://` スキームを用いてデフォルトブラウザ（Chrome 等）を強制起動。
+   - その他: クリップボードへコピーし、標準ブラウザでの手動貼り付けを案内。
+
+---
+
+## 4. 関連ドキュメント
+
+- [全体アーキテクチャ](./architecture.md)
+- [SEO ＆ メタデータ管理](./seo-and-meta-management.md)
+- [ネットワーク ＆ パフォーマンス最適化](./network-performance-optimization.md)

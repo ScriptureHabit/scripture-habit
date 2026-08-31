@@ -1,14 +1,14 @@
 # 福音ライブラリ URL マッパー
 
-`Gospel Library Mapper` (`src/utils/gospel-library-mapper.ts`) は、ユーザー入力、聖句の引用、書（巻）、およびトピックを、末日聖徒イエス・キリスト教会の公式サイト上の公式学習 URL に変換します。
+`Gospel Library Mapper` (`src/utils/gospel-library-mapper.ts`) は、ユーザー入力、聖句の引用、書（巻）、およびトピック文字列を、末日聖徒イエス・キリスト教会公式サイト上の公式学習 URL へ変換するユーティリティです。
 
-文字列のクレンジングと解析、節選択の解決を行い、複数言語向けにハイライトパラメータ付きのディープリンクを作成します。
+文字列のクレンジング、書名と章節の構文解析を行い、多言語に対応したハイライト・自動スクロール付きディープリンクを構築します。
 
 ---
 
-## 技術的パイプラインとデータフロー
+## 1. パイプラインアーキテクチャ
 
-マッパーは、ディープリンクされた URL を作成するために、5つのステップからなるパイプラインを通じて入力を処理します：
+マッパーは、5 つの処理ステップを経てディープリンク URL を生成します。
 
 ```mermaid
 flowchart TD
@@ -16,22 +16,29 @@ flowchart TD
     classDef step fill:#1e293b,stroke:#64748b,stroke-width:1.5px,color:#f8fafc;
     classDef output fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#f0fdf4;
 
-    A["生入力: 書、巻、章、節"]:::input --> B["ステップ 1: 巻の検出 ＆ 言語の解決"]:::step
-    B --> C["ステップ 2: 文字のクレンジング ＆ 正規化"]:::step
-    C --> D["ステップ 3: 正規表現による書・章・節の解析"]:::step
-    D --> E["ステップ 4: 書を教会 API スラッグにマッピング"]:::step
-    E --> F["ステップ 5: ルーティングルールの適用 ＆ ディープリンクハッシュの追加"]:::step
-    F --> G["🌟 出力: ディープリンクされた福音ライブラリ URL"]:::output
+    A["入力文字列: 書、巻、章、節"]:::input --> B["ステップ 1: 巻の検出 ＆ 言語パラメータ解決"]:::step
+    B --> C["ステップ 2: 文字列の正規化・サニタイズ"]:::step
+    C --> D["ステップ 3: 正規表現による書・章・節の構文解析"]:::step
+    D --> E["ステップ 4: 多言語辞書による API スラッグ照合"]:::step
+    E --> F["ステップ 5: ルーティングルール適用 ＆ ハッシュ付与"]:::step
+    F --> G["ディープリンク URL (ハイライト・自動スクロール付き)"]:::output
 ```
+
+### パイプラインの解説
+
+1. **言語解決とクレンジング**  
+   ユーザーの言語設定から教会公式の 3 文字クエリ（`jpn`, `eng`, `spa` 等）を導出し、全角数字や特殊記号を標準半角形式へ正規化します。
+2. **構文解析と多言語スラッグ照合**  
+   正規表現で書名・章番号・節範囲を切り出し、150 以上の多言語辞書（日本語・英語・スペイン語等）と照合して教会 URL スラッグ（例: `bofm/alma`）を特定します。
+3. **ディープリンクの構築**  
+   章 URL に加え、対象節のハイライトパラメータ（`&id=p...`）と自動スクロール用アンカーハッシュ（`#p...`）を結合して最終リンクを出力します。
 
 ---
 
-## コア機能
-
-このモジュールは、3つの主要な関数をエクスポートします：
+## 2. エクスポート関数
 
 ### 1. `getGospelLibraryUrl(...)`
-メインの関数です。書（巻）、章/聖句テキスト、および言語が指定されると、正しい URL を構築します。
+主要関数です。巻、章/節文字列、および言語コードを受け取り、公式 URL を構築します。
 ```typescript
 getGospelLibraryUrl(
   volume: string | null | undefined,
@@ -41,119 +48,59 @@ getGospelLibraryUrl(
 ```
 
 ### 2. `getCategoryFromScripture(...)`
-生の文字列から聖句のカテゴリ（例：「モルモン書」、「総大会」など）を特定します。
+入力テキストから聖典カテゴリ（「モルモン書」「総大会」など）を特定します。
 ```typescript
 getCategoryFromScripture(scriptureText: string | null | undefined): string
 ```
 
 ### 3. `getScriptureInfoFromText(...)`
-マークダウン風のスタディノートから構造化された行（`**Chapter:**` または `**Scripture:**`、日本語では `**章:**` や `**聖句:**` など）を読み取り、正しい学習 URL を作成します。
+マークダウン形式のスタディノートから構造化ヘッダー行（`**章:**` や `**聖句:**` 等）を抽出し、対応する URL を生成します。
 ```typescript
 getScriptureInfoFromText(text: string | null | undefined): string | null
 ```
 
 ---
 
-## ステップごとの実装詳細
+## 3. ステップごとの処理詳細
 
 ### ステップ 1: 巻（聖典）の検出と言語マッピング
-- **多言語マッチング**: 英語、日本語、ポルトガル語、中国語、スペイン語、ベトナム語、タイ語、韓国語、タガログ語、スワヒリ語のユーザー入力（「Old Testament」、「モルモン書」、「Velho Testamento」など）から、書（巻）を検出します。
-- **言語コード変換**: アプリケーションの言語コードを、教会の公式な3文字のクエリパラメータに変換します：
-  - `'en'` $\rightarrow$ `?lang=eng`
-  - `'ja'` $\rightarrow$ `?lang=jpn`
-  - `'pt'` $\rightarrow$ `?lang=por`
-  - `'zho'` $\rightarrow$ `?lang=zho`
-  - `'es'` $\rightarrow$ `?lang=spa`
-  - `'vi'` $\rightarrow$ `?lang=vie`
-  - `'th'` $\rightarrow$ `?lang=tha`
-  - `'ko'` $\rightarrow$ `?lang=kor`
-  - `'tl'` $\rightarrow$ `?lang=tgl`
-  - `'sw'` $\rightarrow$ `?lang=swa`
-  
-> [!NOTE]
-> **ベトナム語のフォールバック**: 旧約聖書（`ot`）および新約聖書（`nt`）の巻については、教会の公式サイトにベトナム語訳が存在しないため、ベトナム語のパラメータは英語（`?lang=eng`）にフォールバックされます。
+- **多言語マッチング**: 英語、日本語、ポルトガル語、スペイン語、中国語、韓国語、ベトナム語、タイ語、タガログ語、スワヒリ語の各表記から巻を検出。
+- **公式クエリ変換**: `'ja'` $\rightarrow$ `?lang=jpn`, `'en'` $\rightarrow$ `?lang=eng`, `'es'` $\rightarrow$ `?lang=spa` 等。
+- **ベトナム語フォールバック**: 旧約・新約聖書のベトナム語ページが存在しないため、自動的に英語（`?lang=eng`）へフォールバック。
 
----
+### ステップ 2: 正規化とサニタイズ
+- 全角数字（`０-９`）を半角（`0-9`）へ変換。
+- コロン（`：` $\rightarrow$ `:`）、読点（`、` $\rightarrow$ `,`）、全角空白（`\u3000` $\rightarrow$ ` `）、ダッシュ（`―` $\rightarrow$ `-`）を統一。
+- 日本語の「第」「章」「節」などの接頭辞・接尾辞を正規化。
 
-### ステップ 2: 正規化とサニタイズ（クレンジング）
-異なるキーボード環境やコピー＆ペーストによる入力に対応するため、マッパーは解析前に文字列をクレンジングします：
-- **全角から半角**: 全角数字（`０-９`）を標準的な半角数字（`0-9`）に変換します。
-- **記号の統一**:
-  - コロン: `：` $\rightarrow$ `:`
-  - 読点・カンマ: `，` または `、` $\rightarrow$ `,`
-  - スペース: `\u3000`（全角スペース） $\rightarrow$ ` `（標準的な半角スペース）
-  - ダッシュ: `－`、`—`、または `―` $\rightarrow$ `-`
-- **接尾辞の削除**: 日本語の「章」などの地域化された接尾辞を標準的なコロン表記に変換し、単独の「章」や「節」といった文字を削除します。
-
----
-
-### ステップ 3: 正規表現による解析
-正規表現を使用して、書名、章番号、および節の境界を抽出します：
+### ステップ 3: 正規表現による構文解析
 ```typescript
 const match = cleanChapterInput.match(/(.*?)\s*(\d+)(?::([\d\s,-]+))?\s*$/);
 ```
-
-#### 抽出されるコンポーネント:
-- **書名** (`match[1]`): ピリオドが削除され、小文字に変換されます。また、数字が続く場合は日本語の接頭辞である「第」を取り除きます。
-- **章番号** (`match[2]`): 標準的な文字列にフォーマットされます。
-- **節** (`match[3]`): 範囲（例：`3-5`）、単一の節、またはカンマ区切りのリストをキャプチャします。
-
----
+- **書名** (`match[1]`): 書名部分。
+- **章番号** (`match[2]`): 章の数値。
+- **節** (`match[3]`): 単一節、範囲（例: `3-5`）、またはカンマ区切りの節リスト。
 
 ### ステップ 4: 多言語辞書マッピング
-マッパーには、**10の異なる言語**にわたる聖典の書を表す**150以上のマッピング**を含む辞書が保持されています。
+- **1 Nephi**: `"1 nephi"`, `"1 néfi"`, `"1ニーファイ"`, `"第1ニーファイ"`, `"尼腓一書"` $\rightarrow$ `1-ne`
+- **Doctrine and Covenants**: `"doctrine and covenants"`, `"教義と聖約"`, `"d&c"` $\rightarrow$ `dc`
 
-#### 書のマッピング例:
-- **1 Nephi**: `"1 nephi"`, `"1 néfi"`, `"1ニーファイ"`, `"第1ニーファイ"`, `"尼腓一書"`, `"1 นีไฟ"`, `"니파이전서"`.
-- **Doctrine and Covenants**: `"doctrine and covenants"`, `"教義と聖約"`, `"doutrina e convênios"`, `"doctrina y convenios"`, `"giáo lý và giao ước"`, `"d&c"`, `"dc"`.
+### ステップ 5: ルーティングルールとディープリンクの構築
+- **標準聖典**: `https://www.churchofjesuschrist.org/study/scriptures/{volume}/{book}/{chapter}{suffix}`
+- **教義と聖約**: `https://www.churchofjesuschrist.org/study/scriptures/dc-testament/dc/{chapter}{suffix}`
+- **総大会**: `https://www.churchofjesuschrist.org/study/general-conference/{input}{langParam}`
+- **節のハイライトとスクロール**:
+  - ハイライト: `&id=p3-p5`（3〜5節を選択状態に指定）
+  - スクロール: `#p3`（開始節の位置へブラウザを自動移動）
 
-#### 巻のフォールバック:
-ユーザーが書（巻）を指定せずに書の引用を入力した場合、マッパーは `slugToVolume` マップ（例：`gen` $\rightarrow$ `ot`、`1-ne` $\rightarrow$ `bofm`、`dc` $\rightarrow$ `dc-testament` のマッピング）を使用して、巻を自動的に特定します。
-
----
-
-### ステップ 5: ルーティングルールとディープリンク
-
-解決されたカテゴリに従って URL が組み立てられます：
-
-#### 1. 標準聖典
-`https://www.churchofjesuschrist.org/study/scriptures/{volumeUrlPart}/{bookUrlPart}/{chapterNum}{urlSuffix}`
-
-#### 2. 教義と聖約（ネストされたパス）
-`https://www.churchofjesuschrist.org/study/scriptures/dc-testament/dc/{chapterNum}{urlSuffix}`
-
-#### 3. 総大会のリンク
-- **完全なURL**: 入力がすでに完全な `churchofjesuschrist.org` の URL である場合、ユーザーの現在のセッションに合わせて言語パラメータ（`?lang=...`）を更新します。
-- **ショートコード**: `YYYY/MM/DD` や `YYYY/MM` のような形式をサポートし、以下のように構築します：
-  `https://www.churchofjesuschrist.org/study/general-conference/{chapterInput}{langParam}`
-
-#### 4. 儀式および宣言
-特定の用語を専用の URL にマッピングします：
-- **聖餐 (Sacrament)** $\rightarrow$ `/study/scriptures/sacrament`
-- **バプテスマ (Baptism)** $\rightarrow$ `/study/scriptures/baptism`
-- **家族：世界への宣言 (The Family Proclamation)** $\rightarrow$ `/study/scriptures/the-family-a-proclamation-to-the-world`
-- **生けるキリスト：使徒たちの証 (The Living Christ)** $\rightarrow$ `/study/scriptures/the-living-christ-the-testimony-of-the-apostles`
-- **復元についての宣言 (The Restoration Proclamation)** $\rightarrow$ `/study/scriptures/the-restoration-of-the-fulness-of-the-gospel-of-jesus-christ`
-- **デフォルトのカテゴリランディング** $\rightarrow$ `/study/scriptures/ordinances-and-proclamations`
-
-#### 5. BYU Speeches のパススルー
-BYU Speeches（BYUスピーチ）の入力を外部参照として扱い、`chapterInput` を変更せずにそのまま返します。
+#### 生成例
+- **入力**: `getGospelLibraryUrl("Book of Mormon", "Alma 32:21", "es")`
+- **出力**: `https://www.churchofjesuschrist.org/study/scriptures/bofm/alma/32?lang=spa&id=p21#p21`
 
 ---
 
-## ディープリンクによる節のハイライトとスクロール
+## 4. 関連ドキュメント
 
-ディープリンクを提供するため、マッパーは**ステップ 3**でキャプチャされた節を解析して、HTMLハッシュ属性を構築します：
-
-1.  **選択箇所のハイライト (`id` パラメータ)**:
-    節文字列内の数値を、教会ウェブサイト向けの `p` プレフィックス付きパラメータに変換します。
-    -   *入力*: `"3-5"` $\rightarrow$ `&id=p3-p5`
-    -   *結果*: ウェブページ上で3節から5節がハイライトされます。
-2.  **自動スクロールアンカー (`#` ハッシュ)**:
-    最初の節番号を抽出し、アンカーハッシュとして末尾に追加します。
-    -   *入力*: `"3-5"` $\rightarrow$ `#p3`
-    -   *結果*: ブラウザをスクロールして、開始節の位置まで自動的に移動します。
-
-### 生成例:
-*   **入力**: `getGospelLibraryUrl("Book of Mormon", "Alma 32:21", "es")`
-*   **出力**: `https://www.churchofjesuschrist.org/study/scriptures/bofm/alma/32?lang=spa&id=p21#p21`
+- [グループチャットの設計と実装](./groupchat-construction-guide.md)
+- [ノート作成（NewNote）設計・実装ガイド](./newnote-construction-guide.md)
+- [多言語対応 (i18n)](./logic-i18n.md)

@@ -1,12 +1,12 @@
 # User Profile Sync & Reaction Anonymization
 
-This document details how profile updates (nickname, avatar) are synchronized to group chats and how personal data is anonymized upon account deletion.
+This document details the propagation of profile modifications (nickname, avatar URL) to active group feeds and the privacy anonymization protocol executed upon account deletion in Scripture Habit.
 
 ---
 
 ## 1. Architecture Overview (`ProfileService`)
 
-The serverless `ProfileService` (`api_internal/services/profile-service.ts`) handles two main workflows:
+The serverless `ProfileService` (`api_internal/services/profile-service.ts`) coordinates identity propagation and social data anonymization:
 
 ```mermaid
 sequenceDiagram
@@ -14,40 +14,46 @@ sequenceDiagram
     actor User as User Client
     participant API as Profile API
     participant PS as ProfileService
-    participant DB as Firestore Database
+    participant DB as Cloud Firestore
 
-    rect rgb(240, 248, 255)
-        Note over User,DB: Scenario A: User Updates Profile (Nickname/Avatar)
-        User->>API: Update Profile
-        API->>PS: syncProfileToChats()
-        PS->>DB: Update active group member previews & recent chat messages
+    rect rgb(20, 30, 45)
+        Note over User,DB: Scenario A: User Updates Profile (Nickname / Avatar)
+        User->>API: Submit Profile Update
+        API->>PS: syncProfileToChats(userId, newProfile)
+        PS->>DB: Batch update memberPreviews & recent message reactionPreviews
     end
 
-    rect rgb(255, 240, 245)
+    rect rgb(35, 20, 30)
         Note over User,DB: Scenario B: User Deletes Account
-        User->>API: Delete Account
-        API->>PS: purgeSocialIdentity()
-        PS->>DB: Anonymize reaction previews in chat logs (replace with '...' and '')
+        User->>API: Request Account Deletion
+        API->>PS: purgeSocialIdentity(userId)
+        PS->>DB: Anonymize reaction identity in chat history (replace with '...' and '')
     end
 ```
 
+### Synchronization Sequence Breakdown
+
+1. **Profile Modification Sync**  
+   Updates the user's root document and propagates altered nicknames and avatars across joined group parent cards and recent message cache documents.
+
+2. **Account Deletion & Identity Scrubbing**  
+   Clears private records and traverses active group logs to anonymize reaction author descriptors without disrupting conversation flow.
+
 ---
 
-## 2. Profile Sync to Group Chats
+## 2. Profile Propagation to Group Feeds
 
-Updating every historic message across all past groups would cause massive database write volumes. The sync engine balances performance and accuracy:
+Updating every historical message across all groups would incur prohibitive write costs. The sync engine balances consistency with performance:
 
-1. **Targeted Scan Horizon**: Scans recent active messages (up to 500 messages per group).
-2. **Reaction Preview Updates**: Updates cached sender nicknames and avatars stored in `reactionPreviews`.
-3. **Batching Safeguards**: Commits Firestore writes in chunks of 450 (well within Firestore's 500-write limit).
+1. **Targeted Scan Horizon**: Scans recent active messages (up to 500 documents per joined group).
+2. **Reaction Preview Invalidation**: Updates cached author nicknames and avatars within `reactionPreviews`.
+3. **Batch Partitioning**: Commits Firestore operations in chunks of 450 (within Firestore's 500-write transactional limit).
 
 ---
 
 ## 3. Account Deletion & Social Identity Anonymization
 
-When an account is deleted, personal identifiable data must be removed, but deleting messages or reaction entries entirely would disrupt conversation context.
-
-To solve this, the service **anonymizes reaction metadata**:
+When an account is deleted, personal identifiable data is removed while preserving chat stream continuity:
 
 ```
 [Before Account Deletion]
@@ -58,12 +64,12 @@ To solve this, the service **anonymizes reaction metadata**:
   Reaction: { uid: "user_123", nickname: "...", photoURL: "" }
 ```
 
-- **Personal Data Stripped**: The nickname becomes `"..."` and the avatar URL is emptied.
-- **Chat Continuity Preserved**: Total reaction counts and message flows remain intact for other members.
+- **Identity Scrubbing**: Display nicknames are replaced with `"..."` and avatar URLs are cleared.
+- **Feed Integrity**: Reaction counts and discussion threads remain intact without rendering broken image placeholders.
 
 ---
 
 ## 4. Related Documentation
 
 - [Group Chat Architecture & Implementation](./groupchat-construction-guide.md)
-- [Database & Security](./database-security.md)
+- [Database & Security Architecture](./database-security.md)

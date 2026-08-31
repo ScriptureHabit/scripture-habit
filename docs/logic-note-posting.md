@@ -1,32 +1,32 @@
-# Note Posting & Streak Logic
+# Note Posting & Streak Calculation Architecture
 
-This document describes the end-to-end flow of posting a study note, calculating timezone-aware streaks, and determining user levels.
+This document describes the end-to-end processing pipeline for study notes, timezone-aware streak evaluation, and dynamic user level computation in Scripture Habit.
 
 ---
 
 ## 1. Streak Calculation Engine (`api_internal/lib/streak-engine.ts`)
 
-To accurately evaluate a user's study consistency across different timezones and daily routines (e.g., late-night reading), the app employs a hybrid calculation engine.
+To accurately evaluate consistency across timezones and personal study routines, the system applies a hybrid calendar and grace-period engine.
 
 ### Core Rules
-When a user posts a note, the system evaluates their streak using their configured `timeZone` (defaults to `'UTC'`):
+Upon note submission, the engine evaluates the user's configured `timeZone` (defaults to `'UTC'`):
 
-1. **Local Date Resolution**:
-   Using Node.js's `Intl` API, the current server time is converted into the user's local calendar date string (e.g., `'2026-05-22'`).
-2. **Duplicate Post Guard**:
-   To prevent multiple increments within the same calendar day, if the user's `lastPostDate` is already today, the note is saved without increasing the streak (`streakUpdated = false`).
-3. **Streak Continuity Conditions**:
-   When posting on a new calendar day, the streak increases by **+1** if either of the following holds true:
-   - **Consecutive Day**: The user's `lastPostDate` was yesterday in their local timezone.
-   - **36-Hour Grace Period**: The time elapsed since the previous post is **within 36 hours** (`hoursSinceLastPost <= 36`).
+1. **Local Date Resolution**  
+   Converts server timestamps to the user's localized calendar date string (e.g., `'2026-05-22'`) via the Node.js `Intl` API.
+2. **Same-Day Duplicate Guard**  
+   If the user's `lastPostDate` matches today's local date, the note is committed without incrementing the streak count (`streakUpdated = false`).
+3. **Streak Continuity Evaluation**  
+   On a new calendar day, the streak increments by **+1** if either condition holds:
+   - **Consecutive Calendar Day**: `lastPostDate` equals yesterday in the local timezone.
+   - **36-Hour Grace Window**: Time elapsed since the previous post is **$\le$ 36 hours** (`hoursSinceLastPost <= 36`).
 
    If neither condition is met, the streak resets to `1`.
-4. **Highest Streak Tracking**:
-   If the new streak exceeds the user's `highestStreak`, it is automatically updated.
+4. **All-Time Record Updating**  
+   When the updated streak surpasses `highestStreak`, the record updates automatically.
 
 ### Practical Scenarios
-- **Late-Night Study**: If a user posts Monday at 8:00 AM and again Tuesday at 10:00 PM (38 hours later), the streak continues because the calendar days are consecutive (Monday → Tuesday).
-- **Timezone Shifts**: When traveling across timezones and skipping a local calendar day, the 36-hour physical window protects the streak.
+- **Late-Night Routine**: Posting Monday at 8:00 AM and Tuesday at 10:00 PM (38 hours later) preserves the streak because calendar days are consecutive.
+- **Transcontinental Travel**: Crossing timezones and skipping a local calendar day is covered by the 36-hour physical window.
 
 ```typescript
 const isTargetDay = lastPostDate === yesterday;
@@ -44,29 +44,29 @@ if (isTargetDay || withinGracePeriod) {
 
 ## 2. Note Posting Transaction Flow
 
-To maintain data consistency and minimize latency, note submissions are executed within a Firestore transaction (`db.runTransaction()`):
+To guarantee state consistency, note submissions execute within an atomic Firestore transaction (`db.runTransaction()`):
 
-1. **Membership Verification**: Verifies that the user belongs to the target group using `userData.groupIds`.
-2. **Streak Calculation**: Calculates updated streak counts and total study days via `StreakEngine`.
-3. **Message Creation**: Adds the message document to `groups/{id}/messages`.
-4. **Personal Note Archive**: Duplicates the note to `users/{uid}/notes` for the user's private library.
-5. **User Profile Update**: Updates `totalNotes`, `lastPostAt`, and `streakCount`.
-6. **Group Statistics Update**: Uses `FieldValue.increment` to increment message and note counters.
+1. **Membership Verification**: Confirms group authorization via `userData.groupIds`.
+2. **Streak Calculation**: Resolves new streak counts and total study days via `StreakEngine`.
+3. **Message Publishing**: Writes the note payload into `groups/{id}/messages`.
+4. **Master Note Archive**: Saves a copy into `users/{uid}/notes` for the private library.
+5. **User Profile Update**: Updates `totalNotes`, `lastPostAt`, `streakCount`, and `daysStudiedCount`.
+6. **Group Statistics Increment**: Atomically increments counters via `FieldValue.increment`.
 
 ---
 
 ## 3. Post-Transaction Background Tasks
 
-To keep the transaction fast and lightweight, non-blocking tasks run asynchronously after commit:
+To maintain low commit latency, non-blocking tasks execute asynchronously after the transaction commits:
 
-1. **Push Notifications**: Retrieves target member tokens and dispatches notifications in the background.
-2. **Unity Percentage Calculation**: Asynchronously updates the group's daily completion rate (`unityPercentage`).
+1. **Push Notifications**: Retrieves member FCM tokens and broadcasts multicast notifications.
+2. **Unity Score Recomputation**: Asynchronously recalculates the group's daily participation score.
 
 ---
 
 ## 4. Database Operation Costs (5-Member Group Example)
 
-Theoretical Firestore read/write operations when 1 member posts to a 5-member group (1 sender + 4 recipients):
+Operational read/write costs for a single note submission within a 5-member group (1 author + 4 peers):
 
 ### Writes (Total: 8)
 - **Within Transaction (7 writes)**:
@@ -80,7 +80,7 @@ Theoretical Firestore read/write operations when 1 member posts to a 5-member gr
 - **Background Async (1 write)**:
   8. Group Unity Status (`/groups/{gid}`)
 
-*(Achieving a milestone adds +1 write within the transaction for the celebratory system message.)*
+*(Achieving a milestone adds +1 transaction write for the system announcement.)*
 
 ### Reads (Total: 7)
 - **Within Transaction (2 reads)**: User Profile, Latest Message Cache
@@ -88,14 +88,14 @@ Theoretical Firestore read/write operations when 1 member posts to a 5-member gr
 
 ---
 
-## 5. Level Calculation
+## 5. Dynamic Level Computation
 
-A user's level is calculated from their total cumulative study days:
+User level is derived dynamically from cumulative study days (`daysStudiedCount`):
 
 $$\text{Level} = \lfloor \frac{\text{daysStudiedCount}}{7} \rfloor + 1$$
 
-- **Weekly Progression**: Every 7 unique study days advances the level by 1.
-- **On-the-Fly Optimization**: The `level` is computed dynamically on the client side from `daysStudiedCount` during UI render, saving database write operations.
+- **Weekly Progression**: Every 7 unique study days advances the user by 1 level.
+- **On-the-Fly Derivation**: Computing levels on the client during render avoids database write overhead.
 
 ---
 
@@ -103,33 +103,45 @@ $$\text{Level} = \lfloor \frac{\text{daysStudiedCount}}{7} \rfloor + 1$$
 
 ```mermaid
 sequenceDiagram
+    autonumber
     participant FE as Frontend (NewNote)
     participant API as PostNote API
     participant SE as StreakEngine
     participant DB as Firestore Transaction
     
-    FE->>API: Submit Note (Content, Scripture, etc.)
-    API->>SE: calculateNextStreak(lastPostAt, currentTime)
-    SE-->>API: Returns Updated Streak & Days Count
+    FE->>API: Submit Note (Content, Scripture Reference, Scope)
+    API->>SE: calculateNextStreak(lastPostAt, timeZone, currentTime)
+    SE-->>API: Return Updated Streak & Days Count
     API->>DB: [Atomic Multi-Document Write]
-    Note right of DB: Create Note & Message<br/>Update Stats & Counters
+    Note right of DB: Create Note & Message<br/>Update Profile, Roster & Stats
     DB-->>API: Commit Success
-    API-->>FE: HTTP 200 + Updated Stats
-    FE->>FE: Confetti & Success Toast
+    API-->>FE: HTTP 200 (Updated Stats Payload)
+    FE->>FE: Trigger Confetti & Render Success View
 ```
+
+### Posting Sequence Breakdown
+
+1. **Payload Dispatch**  
+   The client submits reflection text, scripture references, and group visibility scopes to `/api/messages/post-note`.
+
+2. **Timezone-Aware Evaluation**  
+   `StreakEngine` evaluates local date continuity and the 36-hour grace window against the user's historical records.
+
+3. **Atomic Commit & Client Feedback**  
+   Personal archives, chat messages, and group rosters commit in a single transaction. Upon success, the client triggers celebration feedback.
 
 ---
 
 ## 7. Milestone Celebrations
 
-To prevent demotivation when streaks break, the application highlights **Total Study Days (`daysStudiedCount`)** as its primary metric:
+To prevent demotivation when streaks break, the app celebrates **Total Study Days (`daysStudiedCount`)** as its primary retention driver:
 
-- **Regular Days**: Posts a standard notification (*"User posted a note!"*).
-- **Milestone Days**: Automatically triggers a celebration message in the group:
+- **Regular Days**: Publishes a standard note notification to the group feed.
+- **Milestones**: Automatically publishes an official celebration card:
   - **Initial Milestone**: **Day 10**
-  - **Regular Cadence**: Every **25 days** thereafter (25, 50, 75, 100, 125...).
+  - **Regular Cadence**: Every **25 days** thereafter (Day 25, 50, 75, 100, 125...).
 
-For design principles and psychological context, see [Milestone Celebrations & Retention Psychology](./logic-milestone-retention.md).
+See [Milestone Celebrations & Retention Psychology](./logic-milestone-retention.md) for UX rationale.
 
 ---
 

@@ -1,12 +1,12 @@
 # Group Chat (`GroupChat`) Architecture & Implementation
 
-This document outlines the architecture, state management patterns, and subcomponents of the `src/components/groupchat` module.
+This document outlines the component architecture, state management patterns, 4-tier Context isolation, and core feature implementations in `src/components/groupchat`.
 
 ---
 
 ## 1. High-Level Architecture
 
-`GroupChat` coordinates real-time messaging, Unity score tracking, cheer interactions, and modal dialogs.
+`GroupChat` is a composite component coordinating real-time messaging, Unity meter progress, peer encouragement cheers, and modal workflows.
 
 ```
                        ┌─────────────────────────┐
@@ -31,25 +31,31 @@ ChatDataContext   ChatMessageActionsContext   ChatGroupActionsContext   ChatUIAc
 ```
 
 ### Context Isolation Pattern
-To avoid unnecessary re-renders across the entire chat component during typing or scrolling, context is isolated into 4 distinct stores:
-1. **`ChatDataContext`**: Holds message arrays, member rosters, loading states, and group metadata.
-2. **`ChatMessageActionsContext`**: Handlers for sending, editing, deleting, reacting to, and translating messages.
-3. **`ChatGroupActionsContext`**: Handlers for updating group settings, leaving, and deleting groups.
-4. **`ChatUIActionsContext`**: UI helpers for scroll management and localization.
+
+To eliminate unnecessary re-renders during high-frequency typing or scroll events, state and action handlers are partitioned into 4 distinct contexts:
+
+1. **`ChatDataContext`**: Message arrays, active member rosters, Unity metrics, and loading indicators.
+2. **`ChatMessageActionsContext`**: Mutations for creating, editing, deleting, reacting to, and translating messages.
+3. **`ChatGroupActionsContext`**: Handlers for updating group metadata, leaving, and disbanding groups.
+4. **`ChatUIActionsContext`**: UI helpers for scroll positioning and translation toggles.
 
 ---
 
 ## 2. Core Hooks Hierarchy & Data Flow
 
-Hooks in `src/components/groupchat/hooks/core` follow a unidirectional data flow:
+Hooks residing in `src/components/groupchat/hooks/core` enforce unidirectional data flow:
 
 ```mermaid
 flowchart TD
-    useGroupMessages["useGroupMessages<br/>(Main Orchestrator Hook)"]
-    useChatDataEngine["useChatDataEngine<br/>(Real-Time Ingestion & State Store)"]
-    useChatSyncController["useChatSyncController<br/>(Pagination & Read Status Sync)"]
-    chatReducer["chatReducer<br/>(State Transitions)"]
-    Provider["GroupChatProvider ➔ UI Components"]
+    classDef hook fill:#1e293b,stroke:#38bdf8,stroke-width:1.5px,color:#f8fafc;
+    classDef reducer fill:#1e1b4b,stroke:#a855f7,stroke-width:1.5px,color:#f8fafc;
+    classDef provider fill:#0f172a,stroke:#10b981,stroke-width:1.5px,color:#f8fafc;
+
+    useGroupMessages["useGroupMessages<br/>(Unified Interface Orchestrator)"]:::hook
+    useChatDataEngine["useChatDataEngine<br/>(Real-Time Listener & State Store)"]:::hook
+    useChatSyncController["useChatSyncController<br/>(Pagination & Read State Sync)"]:::hook
+    chatReducer["chatReducer<br/>(State Transition Logic)"]:::reducer
+    Provider["GroupChatProvider ➔ UI Components"]:::provider
 
     useGroupMessages --> useChatDataEngine
     useGroupMessages --> useChatSyncController
@@ -58,26 +64,33 @@ flowchart TD
     chatReducer --> Provider
 ```
 
-- **`useChatDataEngine`**: Ingests real-time events from Firestore `onSnapshot` and dispatches state updates to `chatReducer`.
-- **`useChatSyncController`**: Manages older message pagination and periodic read status synchronization.
-- **`useGroupMessages`**: Combines state and operations to supply `GroupChatProvider`.
+### Hook Hierarchy Breakdown
+
+1. **`useChatDataEngine` (Real-Time Ingestion)**  
+   Subscribes to Firestore `onSnapshot` events for new messages and roster updates, dispatching raw events directly to `chatReducer`.
+
+2. **`useChatSyncController` (Synchronization Controller)**  
+   Manages cursor-based pagination for older messages (infinite scroll) and dispatches debounced read state updates to the server.
+
+3. **`useGroupMessages` (Orchestrator)**  
+   Aggregates the data engine and sync controller, exposing a consolidated state interface to `GroupChatProvider`.
 
 ---
 
 ## 3. Key Feature Implementations
 
 ### ① Unity Score & Celebration (`useUnityScore`)
-- Dynamically computes the group's daily study completion rate.
-- When 100% completion is reached, a confetti animation (`canvas-confetti`) triggers, and a notification request is sent to `/api/groups/announce-unity`.
+- Computes group study completion rate dynamically based on daily active members.
+- On 100% completion, triggers confetti animations (`canvas-confetti`) and broadcasts celebratory system announcements via `/api/groups/announce-unity`.
 
-### ② Cheer System (`useCheerSystem`)
-- Allows members to send 1-tap encouragement pushes to peers who have not yet posted today.
+### ② Peer Encouragement (`useCheerSystem`)
+- Enables members to send 1-tap push notifications (cheers) to peers who have not yet published a note today.
 
 ### ③ Scripture Deep-Linking (`GospelLink`)
-- Uses regular expressions to detect scripture references (e.g. "Mosiah 3:7", "1 Nephi 3:7") in message text and converts them into direct links to the official Gospel Library app or website.
+- Parses scripture references (e.g., "Mosiah 3:7", "1 Nephi 3:7") via regular expressions, generating deep-links to the Gospel Library app or website with verse highlights.
 
 ### ④ Unified Modal Manager (`group-chat-modals.tsx`)
-- Centralized router managing 11 modal types (member list, invite code, group settings, report dialogs, etc.).
+- Coordinates 11 distinct modal dialogs (roster, invite code, group settings, reporting) via centralized state.
 
 ---
 
