@@ -63,15 +63,25 @@ const Dashboard = () => {
   
   const { activeModal, setActiveModal } = useModalStore();
 
-  const [selectedView, setSelectedView] = useState<number>(() => {
-    const gid = searchParams.get('groupId') || location.state?.groupId || location.state?.initialGroupId;
-    const viewParam = searchParams.get('view');
-    const isProfile = location.pathname.includes('/profile');
-    if (viewParam) return parseInt(viewParam, 10);
-    if (isProfile) return 3;
-    if (gid) return 2;
+  const [internalSelectedView, setInternalSelectedView] = useState<number>(() => {
     return location.state?.initialView ?? 0;
   });
+
+  const selectedView = useMemo(() => {
+    if (location.pathname.includes('/profile')) return 3;
+    const viewParam = searchParams.get('view');
+    if (viewParam !== null) {
+      const parsed = parseInt(viewParam, 10);
+      if (!isNaN(parsed)) return parsed;
+    }
+    const gid = searchParams.get('groupId') || location.state?.groupId || location.state?.initialGroupId;
+    if (gid) return 2;
+    return internalSelectedView;
+  }, [location.pathname, location.state, searchParams, internalSelectedView]);
+
+  const setSelectedView = (view: number) => {
+    setInternalSelectedView(view);
+  };
   const [showWelcomeStory, setShowWelcomeStory] = useState<boolean>(false);
   const [isInputFocused, setIsInputFocused] = useState<boolean>(false);
   const [showEditProfileModal, setShowEditProfileModal] = useState<boolean>(false);
@@ -173,38 +183,18 @@ const Dashboard = () => {
   }, [activeGroupId, setActiveModal]);
 
   useEffect(() => {
-    queueMicrotask(() => {
-      // Sync view state with localized URL paths
-      const path = location.pathname;
-      if (path.includes('/profile')) {
-        if (selectedView !== 3) setSelectedView(3);
-      } else if (path.includes('/dashboard')) {
-        // If current path is /dashboard (not /profile), reset view if currently on Profile (3)
-        if (selectedView === 3) setSelectedView(0);
-      }
-    });
-
-    if (searchParams.has('groupId') || searchParams.has('openNewNote') || searchParams.has('view')) {
-      const gid = searchParams.get('groupId');
-      const v = searchParams.get('view');
-      const openNote = searchParams.get('openNewNote');
-
-      queueMicrotask(() => {
-        if (gid) setActiveGroupId(gid);
-        
-        if (v) {
-          setSelectedView(parseInt(v));
-        } else if (gid) {
-          setSelectedView(2); 
-        }
-
-        if (openNote === 'true') setActiveModal('newNote');
-        
-        // Clear the search params after consumption
-        navigate(location.pathname, { replace: true });
-      });
+    if (searchParams.get('openNewNote') === 'true') {
+      setActiveModal('newNote');
+      // Clear only transient deep-link modal param
+      const nextParams = new URLSearchParams(searchParams);
+      nextParams.delete('openNewNote');
+      const nextSearch = nextParams.toString();
+      navigate(
+        { pathname: location.pathname, search: nextSearch ? `?${nextSearch}` : '' },
+        { replace: true }
+      );
     }
-  }, [searchParams, location.pathname, navigate, setActiveGroupId, setActiveModal, selectedView]);
+  }, [searchParams, location.pathname, navigate, setActiveModal]);
 
   // 2. Onboarding Modal Flow Evaluator (State Machine Approach)
   useEffect(() => {

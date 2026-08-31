@@ -1,3 +1,4 @@
+import './utils/dom-polyfills';
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom';
@@ -97,6 +98,10 @@ const initSentry = async () => {
         /Failed to fetch dynamically imported module/i,
         /Loading chunk .* failed/i,
         /Unexpected token '<'/i,
+        /Failed to execute 'removeChild' on 'Node'/i,
+        /Failed to execute 'insertBefore' on 'Node'/i,
+        /The node to be removed is not a child of this node/i,
+        /The node before which the new node is to be inserted is not a child of this node/i,
       ],
       environment: import.meta.env.MODE || 'development',
       integrations: [

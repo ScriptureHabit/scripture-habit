@@ -168,11 +168,15 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
         }
     }, [userData?.uid, userData?.language, authLoading, language, setLanguage, location.pathname]);
 
-    // Sync Firebase Auth email language (for verification/reset emails)
+    // Sync Firebase Auth email language and HTML lang attribute
     useEffect(() => {
-        if (!auth) return;
-        // Firebase uses BCP 47 codes; map our internal 'zho' → 'zh-TW'
-        auth.languageCode = language === 'zho' ? 'zh-TW' : language;
+        const bcp47 = language === 'zho' ? 'zh-TW' : language;
+        if (typeof document !== 'undefined') {
+            document.documentElement.lang = bcp47;
+        }
+        if (auth) {
+            auth.languageCode = bcp47;
+        }
     }, [language]);
 
     useEffect(() => {
