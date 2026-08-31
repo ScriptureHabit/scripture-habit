@@ -6,7 +6,7 @@ import { AppError, ValidationError, ForbiddenError, NotFoundError, sendErrorResp
 import { t } from '../lib/i18n.js';
 import axios from 'axios';
 import crypto from 'crypto';
-import * as Sentry from "@sentry/node";
+import { captureException } from '../lib/sentry.js';
 
 const router = express.Router();
 
@@ -80,13 +80,11 @@ const handleAiError = (res: Response, err: unknown, contextMessage: string) => {
     
     const status = axiosErr.response?.status || 500;
 
-    // Capture specific AI error details in Sentry (production only to prevent dev/test mock noise)
-    if (process.env.SENTRY_DISABLED !== 'true' && process.env.NODE_ENV === 'production') {
-        Sentry.captureException(err, {
-            tags: { context: contextMessage, ai_status: status },
-            extra: { errorBody }
-        });
-    }
+    // Capture specific AI error details in Sentry (guaranteed no-op in development and test)
+    captureException(err, {
+        tags: { context: contextMessage, ai_status: status },
+        extra: { errorBody }
+    });
 
     res.status(status).json({
         error: `AI ${contextMessage} failed`,

@@ -8,7 +8,7 @@ import { UserDocument } from '../../types/firestore.js';
 import { removeMemberFromGroup } from '../lib/membership-utils.js';
 import { runPhasedTransaction } from '../lib/phased-transaction.js';
 import { t } from '../lib/i18n.js';
-import * as Sentry from '@sentry/node';
+import { captureException } from '../lib/sentry.js';
 
 const router = express.Router();
 
@@ -50,9 +50,7 @@ router.post('/update-profile', authenticate, verifyAppCheck, async (req: Authent
         if (nickname || photoURL) {
             ProfileService.syncProfileToChats(uid, { nickname, photoURL }).catch(err => {
                 console.error('[ProfileSync] Error in background sync:', err);
-                if (process.env.SENTRY_DISABLED !== 'true' && process.env.NODE_ENV === 'production') {
-                    Sentry.captureException(err);
-                }
+                captureException(err);
             });
         }
 

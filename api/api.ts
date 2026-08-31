@@ -1,21 +1,8 @@
 import '../api_internal/lib/load-env.js';
-import * as Sentry from "@sentry/node";
+import { initBackendSentry, setupBackendSentryErrorHandler, captureException } from '../api_internal/lib/sentry.js';
 
 // Initialize Sentry at the absolute top before importing Express/routers (Production only)
-if (process.env.SENTRY_DISABLED !== 'true' && process.env.NODE_ENV === 'production') {
-  Sentry.init({
-    dsn: process.env.VITE_SENTRY_DSN || "",
-    environment: 'production',
-    tracesSampleRate: 1.0,
-    beforeSend(event, hint) {
-      const err = hint?.originalException;
-      if (err instanceof AppError && err.statusCode < 500) {
-        return null; // Ignore 4xx client-side errors in Sentry
-      }
-      return event;
-    },
-  });
-}
+initBackendSentry();
 
 import express from 'express';
 import cors from 'cors';
@@ -259,9 +246,7 @@ app.use('/api/groups', resetUnityRoutes);
 app.use('/api/reset-unity', resetUnityRoutes);
 
 // The Sentry error handler must be before any other error middleware and after all controllers
-if (process.env.SENTRY_DISABLED !== 'true' && process.env.NODE_ENV === 'production') {
-  Sentry.setupExpressErrorHandler(app);
-}
+setupBackendSentryErrorHandler(app);
 
 // --- 404 Handler (Keep it JSON for API) ---
 app.use('/api', (_req, res) => {
@@ -279,13 +264,11 @@ app.use((err: unknown, req: express.Request, res: express.Response, _next: expre
     });
 
     // Capture error in Sentry (Only report unexpected server-side errors in production, ignore 400/401/403/404)
-    if (process.env.SENTRY_DISABLED !== 'true' && process.env.NODE_ENV === 'production') {
-        if (!(err instanceof AppError) || err.statusCode >= 500) {
-            Sentry.captureException(err, {
-                user: { id: (req as { user?: { uid: string } }).user?.uid },
-                tags: { requestId }
-            });
-        }
+    if (!(err instanceof AppError) || err.statusCode >= 500) {
+        captureException(err, {
+            user: { id: (req as { user?: { uid: string } }).user?.uid },
+            tags: { requestId }
+        });
     }
 
 
