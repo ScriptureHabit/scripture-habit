@@ -1,10 +1,7 @@
 # Note Creation & Edit Modal (`NewNote`)
 
-::: tip Interactive Architecture Tour
-Explore the live data-flow blueprint and guided walkthrough for this feature:
-- **Online (GitHub Browser Preview)**: [Open Interactive Tour (Create New Note & Scripture Tags)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-newnote&lang=en)
-- **VitePress / Local**: [Open Create New Note & Scripture Tags Tour](/architecture-tour.html?tour=tour-newnote&lang=en)
-:::
+> [!TIP]
+> **Interactive Architecture Tour**: [Open Live Tour (Create New Note & Scripture Tags)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-newnote&lang=en)
 
 This document describes the structure, form state management, custom hook separation, and implementation of the study note creation modal (`src/components/newnote`).
 

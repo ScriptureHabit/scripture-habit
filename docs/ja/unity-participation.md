@@ -1,10 +1,7 @@
 # 団結度（Unity）の計算と同期の仕組み
 
-::: tip インタラクティブ・アーキテクチャツアー
-この機能のデータフローとステップ解説ツアーを体験できます：
-- **オンライン（GitHubブラウザプレビュー）**: [インタラクティブツアーを開く (グループチャット & 団結力)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-groupchat&lang=ja)
-- **VitePress / ローカル**: [グループチャット & 団結力 の解説ツアーを開く](/architecture-tour.html?tour=tour-groupchat&lang=ja)
-:::
+> [!TIP]
+> **インタラクティブ・アーキテクチャツアー**: [ブラウザでツアーを開く (グループチャット & 団結力)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-groupchat&lang=ja)
 
 このドキュメントでは、グループメンバー全体の当日の学習達成度を表す指標**「団結度（Unity Percentage）」**の算出ロジックとリアルタイム同期について解説します。
 

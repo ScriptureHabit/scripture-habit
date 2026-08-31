@@ -1,10 +1,7 @@
 # Firestore Offline Persistence
 
-::: tip Interactive Architecture Tour
-Explore the live data-flow blueprint and guided walkthrough for this feature:
-- **Online (GitHub Browser Preview)**: [Open Interactive Tour (Offline Persistence)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-pwa&lang=en)
-- **VitePress / Local**: [Open Offline Persistence Tour](/architecture-tour.html?tour=tour-pwa&lang=en)
-:::
+> [!TIP]
+> **Interactive Architecture Tour**: [Open Live Tour (Offline Persistence)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-pwa&lang=en)
 
 This document details client-side IndexedDB caching, multi-tab synchronization, private browsing fallbacks, and conflict resolution strategies.
 

@@ -1,10 +1,7 @@
 # Firestore トランザクション ＆ パフォーマンス最適化
 
-::: tip インタラクティブ・アーキテクチャツアー
-この機能のデータフローとステップ解説ツアーを体験できます：
-- **オンライン（GitHubブラウザプレビュー）**: [インタラクティブツアーを開く (グループ & トランザクション処理)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-groupchat&lang=ja)
-- **VitePress / ローカル**: [グループ & トランザクション処理 の解説ツアーを開く](/architecture-tour.html?tour=tour-groupchat&lang=ja)
-:::
+> [!TIP]
+> **インタラクティブ・アーキテクチャツアー**: [ブラウザでツアーを開く (グループ & トランザクション処理)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-groupchat&lang=ja)
 
 このドキュメントでは、データの整合性を担保するトランザクション処理ルール、読み取り回数を削減するメッセージ集約構造、およびパフォーマンス最適化について解説します。
 

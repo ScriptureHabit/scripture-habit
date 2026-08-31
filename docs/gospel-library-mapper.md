@@ -1,10 +1,7 @@
 # Gospel Library URL Mapper
 
-::: tip Interactive Architecture Tour
-Explore the live data-flow blueprint and guided walkthrough for this feature:
-- **Online (GitHub Browser Preview)**: [Open Interactive Tour (Gospel Library Mapper)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-newnote&lang=en)
-- **VitePress / Local**: [Open Gospel Library Mapper Tour](/architecture-tour.html?tour=tour-newnote&lang=en)
-:::
+> [!TIP]
+> **Interactive Architecture Tour**: [Open Live Tour (Gospel Library Mapper)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-newnote&lang=en)
 
 The `Gospel Library Mapper` (`src/utils/gospel-library-mapper.ts`) translates user inputs, scripture citations, volumes, and topic references into official study URLs on the Church of Jesus Christ of Latter-day Saints website.
 

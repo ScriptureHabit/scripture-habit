@@ -1,10 +1,7 @@
 # SEO ＆ メタデータ管理
 
-::: tip インタラクティブ・アーキテクチャツアー
-この機能のデータフローとステップ解説ツアーを体験できます：
-- **オンライン（GitHubブラウザプレビュー）**: [インタラクティブツアーを開く (SEO & OGPメタタグ管理)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-seo&lang=ja)
-- **VitePress / ローカル**: [SEO & OGPメタタグ管理 の解説ツアーを開く](/architecture-tour.html?tour=tour-seo&lang=ja)
-:::
+> [!TIP]
+> **インタラクティブ・アーキテクチャツアー**: [ブラウザでツアーを開く (SEO & OGPメタタグ管理)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-seo&lang=ja)
 
 このドキュメントでは、多言語カノニカル（正規化）URL の動的解決、非公開画面の検索除外設定（Robots 設定）、SNS 共有用 OGP 管理、およびビルド時事前ローカライズについて解説します。
 

@@ -1,10 +1,7 @@
 # 非アクティブ判定 ＆ 自動整理システム
 
-::: tip インタラクティブ・アーキテクチャツアー
-この機能のデータフローとステップ解説ツアーを体験できます：
-- **オンライン（GitHubブラウザプレビュー）**: [インタラクティブツアーを開く (グループ設定 & メンバー管理)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-groupoptions&lang=ja)
-- **VitePress / ローカル**: [グループ設定 & メンバー管理 の解説ツアーを開く](/architecture-tour.html?tour=tour-groupoptions&lang=ja)
-:::
+> [!TIP]
+> **インタラクティブ・アーキテクチャツアー**: [ブラウザでツアーを開く (グループ設定 & メンバー管理)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-groupoptions&lang=ja)
 
 このドキュメントでは、長期間活動のないメンバーの判定アルゴリズム、自動退出処理、オーナー権限の自動移譲、および休眠グループのパージ機能について解説します。
 

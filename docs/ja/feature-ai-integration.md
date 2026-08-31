@@ -1,10 +1,7 @@
 # AI 統合 (Gemini)
 
-::: tip インタラクティブ・アーキテクチャツアー
-この機能のデータフローとステップ解説ツアーを体験できます：
-- **オンライン（GitHubブラウザプレビュー）**: [インタラクティブツアーを開く (Gemini AI聖句インサイト & ノート生成)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-newnote&lang=ja)
-- **VitePress / ローカル**: [Gemini AI聖句インサイト & ノート生成 の解説ツアーを開く](/architecture-tour.html?tour=tour-newnote&lang=ja)
-:::
+> [!TIP]
+> **インタラクティブ・アーキテクチャツアー**: [ブラウザでツアーを開く (Gemini AI聖句インサイト & ノート生成)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-newnote&lang=ja)
 
 このドキュメントでは、Gemini AI を活用したスタディノートの動的翻訳、質問生成、および振り返りレター機能のアーキテクチャと最適化方針について解説します。
 

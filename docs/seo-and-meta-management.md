@@ -1,10 +1,7 @@
 # SEO & Metadata Management
 
-::: tip Interactive Architecture Tour
-Explore the live data-flow blueprint and guided walkthrough for this feature:
-- **Online (GitHub Browser Preview)**: [Open Interactive Tour (SEO & OpenGraph Meta Management)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-seo&lang=en)
-- **VitePress / Local**: [Open SEO & OpenGraph Meta Management Tour](/architecture-tour.html?tour=tour-seo&lang=en)
-:::
+> [!TIP]
+> **Interactive Architecture Tour**: [Open Live Tour (SEO & OpenGraph Meta Management)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-seo&lang=en)
 
 This document details canonical URL generation, search privacy boundaries (Robots directives), social share cards (OGP), and build-time static HTML localization in Scripture Habit.
 

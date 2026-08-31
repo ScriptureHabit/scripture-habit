@@ -1,10 +1,7 @@
 # Firestore オフライン永続化
 
-::: tip インタラクティブ・アーキテクチャツアー
-この機能のデータフローとステップ解説ツアーを体験できます：
-- **オンライン（GitHubブラウザプレビュー）**: [インタラクティブツアーを開く (PWA オフライン永続化)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-pwa&lang=ja)
-- **VitePress / ローカル**: [PWA オフライン永続化 の解説ツアーを開く](/architecture-tour.html?tour=tour-pwa&lang=ja)
-:::
+> [!TIP]
+> **インタラクティブ・アーキテクチャツアー**: [ブラウザでツアーを開く (PWA オフライン永続化)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-pwa&lang=ja)
 
 このドキュメントでは、IndexedDB を活用したオフラインキャッシュ、複数タブ間のデータ同期、プライベートブラウズ時のフォールバック、およびオフライン時の競合解決について解説します。
 

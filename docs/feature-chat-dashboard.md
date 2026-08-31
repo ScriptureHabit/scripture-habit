@@ -1,10 +1,7 @@
 # Chat & Dashboard Synchronization
 
-::: tip Interactive Architecture Tour
-Explore the live data-flow blueprint and guided walkthrough for this feature:
-- **Online (GitHub Browser Preview)**: [Open Interactive Tour (Group Chat & Multilingual Translation)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-groupchat&lang=en)
-- **VitePress / Local**: [Open Group Chat & Multilingual Translation Tour](/architecture-tour.html?tour=tour-groupchat&lang=en)
-:::
+> [!TIP]
+> **Interactive Architecture Tour**: [Open Live Tour (Group Chat & Multilingual Translation)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-groupchat&lang=en)
 
 This document explains the real-time Firestore listener architecture (`onSnapshot`), read marker synchronization, and media upload optimization across chat and dashboard surfaces.
 

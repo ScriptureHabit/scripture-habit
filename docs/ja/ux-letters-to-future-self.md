@@ -1,10 +1,7 @@
 # 将来の自分への手紙（タイムカプセル機能）と習慣化心理学
 
-::: tip インタラクティブ・アーキテクチャツアー
-この機能のデータフローとステップ解説ツアーを体験できます：
-- **オンライン（GitHubブラウザプレビュー）**: [インタラクティブツアーを開く (タイムカプセル・未来の手紙)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-timecapsule&lang=ja)
-- **VitePress / ローカル**: [タイムカプセル・未来の手紙 の解説ツアーを開く](/architecture-tour.html?tour=tour-timecapsule&lang=ja)
-:::
+> [!TIP]
+> **インタラクティブ・アーキテクチャツアー**: [ブラウザでツアーを開く (タイムカプセル・未来の手紙)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-timecapsule&lang=ja)
 
 「将来の自分への手紙（タイムカプセル機能）」は、次のマイルストーン（Day 10, 25, 50, 75, 100...）に向けて未来の自分へ宛てた応援の手紙と、挫折しそうな時のための「SOS メッセージ」を事前に封印し、目標達成時に開封する機能です。
 

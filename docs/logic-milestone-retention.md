@@ -1,10 +1,7 @@
 # Milestone Celebrations & Retention Psychology
 
-::: tip Interactive Architecture Tour
-Explore the live data-flow blueprint and guided walkthrough for this feature:
-- **Online (GitHub Browser Preview)**: [Open Interactive Tour (Milestone Achievements)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-milestone&lang=en)
-- **VitePress / Local**: [Open Milestone Achievements Tour](/architecture-tour.html?tour=tour-milestone&lang=en)
-:::
+> [!TIP]
+> **Interactive Architecture Tour**: [Open Live Tour (Milestone Achievements)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-milestone&lang=en)
 
 This document details the milestone calculation engine (Day 10 and every 25 days thereafter), commemorative image generation ([`src/utils/milestone.ts`](file:///c:/Users/dazhi/code/scripture-habit/src/utils/milestone.ts)), and behavioral retention principles in Scripture Habit.
 

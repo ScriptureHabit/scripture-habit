@@ -1,10 +1,7 @@
 # グループ招待と参加の仕組み
 
-::: tip インタラクティブ・アーキテクチャツアー
-この機能のデータフローとステップ解説ツアーを体験できます：
-- **オンライン（GitHubブラウザプレビュー）**: [インタラクティブツアーを開く (招待リンク & リダイレクト)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-invite&lang=ja)
-- **VitePress / ローカル**: [招待リンク & リダイレクト の解説ツアーを開く](/architecture-tour.html?tour=tour-invite&lang=ja)
-:::
+> [!TIP]
+> **インタラクティブ・アーキテクチャツアー**: [ブラウザでツアーを開く (招待リンク & リダイレクト)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-invite&lang=ja)
 
 このドキュメントでは、グループ招待リンクの生成、招待コードによる参加検証フロー、およびリンク互換性とセキュリティ設計について解説します。
 

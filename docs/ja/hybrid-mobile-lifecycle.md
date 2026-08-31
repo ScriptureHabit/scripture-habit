@@ -1,10 +1,7 @@
 # PWA ＆ モバイルライフサイクル管理
 
-::: tip インタラクティブ・アーキテクチャツアー
-この機能のデータフローとステップ解説ツアーを体験できます：
-- **オンライン（GitHubブラウザプレビュー）**: [インタラクティブツアーを開く (PWA オフライン & アップデート)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-pwa&lang=ja)
-- **VitePress / ローカル**: [PWA オフライン & アップデート の解説ツアーを開く](/architecture-tour.html?tour=tour-pwa&lang=ja)
-:::
+> [!TIP]
+> **インタラクティブ・アーキテクチャツアー**: [ブラウザでツアーを開く (PWA オフライン & アップデート)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-pwa&lang=ja)
 
 このドキュメントでは、**Scripture Habit** における PWA の更新検知、プラットフォーム別のインストールプロンプト、およびアプリ内 WebView（LINE, Instagram 等）の回避制御について解説します。
 

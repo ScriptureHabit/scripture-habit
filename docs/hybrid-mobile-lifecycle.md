@@ -1,10 +1,7 @@
 # PWA & Mobile Lifecycle Management
 
-::: tip Interactive Architecture Tour
-Explore the live data-flow blueprint and guided walkthrough for this feature:
-- **Online (GitHub Browser Preview)**: [Open Interactive Tour (PWA Offline & Lifecycle)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-pwa&lang=en)
-- **VitePress / Local**: [Open PWA Offline & Lifecycle Tour](/architecture-tour.html?tour=tour-pwa&lang=en)
-:::
+> [!TIP]
+> **Interactive Architecture Tour**: [Open Live Tour (PWA Offline & Lifecycle)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-pwa&lang=en)
 
 This document details Service Worker updates, platform-adaptive install prompts, and in-app WebView escape mechanisms in Scripture Habit.
 

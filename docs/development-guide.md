@@ -1,10 +1,7 @@
 # Development & Environment Setup Guide
 
-::: tip Interactive Architecture Tour
-Explore the live data-flow blueprint and guided walkthrough for this feature:
-- **Online (GitHub Browser Preview)**: [Open Interactive Tour (App Bootstrapping & Routing)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-root&lang=en)
-- **VitePress / Local**: [Open App Bootstrapping & Routing Tour](/architecture-tour.html?tour=tour-root&lang=en)
-:::
+> [!TIP]
+> **Interactive Architecture Tour**: [Open Live Tour (App Bootstrapping & Routing)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-root&lang=en)
 
 Welcome to the **Scripture Habit** development guide. This document outlines everything you need to set up a local development environment, run tests, and contribute to the project.
 

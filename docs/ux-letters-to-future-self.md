@@ -1,10 +1,7 @@
 # Letters to Future Self (Time Capsule) & Habit Psychology
 
-::: tip Interactive Architecture Tour
-Explore the live data-flow blueprint and guided walkthrough for this feature:
-- **Online (GitHub Browser Preview)**: [Open Interactive Tour (Time Capsule & Future Letters)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-timecapsule&lang=en)
-- **VitePress / Local**: [Open Time Capsule & Future Letters Tour](/architecture-tour.html?tour=tour-timecapsule&lang=en)
-:::
+> [!TIP]
+> **Interactive Architecture Tour**: [Open Live Tour (Time Capsule & Future Letters)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-timecapsule&lang=en)
 
 The **Time Capsule (Letters to Future Self)** feature enables users to compose and seal encouragement letters and emergency SOS reminders addressed to their future self at upcoming milestone targets (Day 10, 25, 50, 75, 100...).
 

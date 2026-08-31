@@ -1,10 +1,7 @@
 # グループチャット (`GroupChat`) の設計と実装
 
-::: tip インタラクティブ・アーキテクチャツアー
-この機能のデータフローとステップ解説ツアーを体験できます：
-- **オンライン（GitHubブラウザプレビュー）**: [インタラクティブツアーを開く (グループチャット & 多言語翻訳)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-groupchat&lang=ja)
-- **VitePress / ローカル**: [グループチャット & 多言語翻訳 の解説ツアーを開く](/architecture-tour.html?tour=tour-groupchat&lang=ja)
-:::
+> [!TIP]
+> **インタラクティブ・アーキテクチャツアー**: [ブラウザでツアーを開く (グループチャット & 多言語翻訳)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-groupchat&lang=ja)
 
 このドキュメントでは、グループチャットモジュール（`src/components/groupchat`）の構成、状態管理、4系統の Context 分割設計、および主要機能の実装について解説します。
 

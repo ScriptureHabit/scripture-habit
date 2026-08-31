@@ -1,10 +1,7 @@
 # Dashboard & MyNotes (`Dashboard` / `MyNotes` / `NoteCard`)
 
-::: tip Interactive Architecture Tour
-Explore the live data-flow blueprint and guided walkthrough for this feature:
-- **Online (GitHub Browser Preview)**: [Open Interactive Tour (Habit Dashboard & Streaks)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-dashboard&lang=en)
-- **VitePress / Local**: [Open Habit Dashboard & Streaks Tour](/architecture-tour.html?tour=tour-dashboard&lang=en)
-:::
+> [!TIP]
+> **Interactive Architecture Tour**: [Open Live Tour (Habit Dashboard & Streaks)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-dashboard&lang=en)
 
 This document outlines the architecture, data management, and visual components of the personal hub: `Dashboard`, `MyNotes`, and `NoteCard`.
 

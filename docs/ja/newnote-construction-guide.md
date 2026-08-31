@@ -1,10 +1,7 @@
 # ノート作成・編集モーダル (`NewNote`) の設計と実装
 
-::: tip インタラクティブ・アーキテクチャツアー
-この機能のデータフローとステップ解説ツアーを体験できます：
-- **オンライン（GitHubブラウザプレビュー）**: [インタラクティブツアーを開く (新規ノート作成 & 聖句タグ)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-newnote&lang=ja)
-- **VitePress / ローカル**: [新規ノート作成 & 聖句タグ の解説ツアーを開く](/architecture-tour.html?tour=tour-newnote&lang=ja)
-:::
+> [!TIP]
+> **インタラクティブ・アーキテクチャツアー**: [ブラウザでツアーを開く (新規ノート作成 & 聖句タグ)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-newnote&lang=ja)
 
 このドキュメントでは、スタディノートの作成・編集モーダル（`src/components/newnote`）の構成、フォーム状態の管理、カスタムフックの分離、および各機能の実装について解説します。
 

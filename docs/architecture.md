@@ -2,11 +2,8 @@
 
 This document provides a technical overview of the Scripture Habit architecture, detailing the technology stack, directory structure, data flow, and state management strategy.
 
-::: tip Interactive Architecture Tour
-Explore the live data-flow blueprint and guided walkthrough for this feature:
-- **Online (GitHub Browser Preview)**: [Open Interactive Tour (App Bootstrapping & Routing)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-root&lang=en)
-- **VitePress / Local**: [Open App Bootstrapping & Routing Tour](/architecture-tour.html?tour=tour-root&lang=en)
-:::
+> [!TIP]
+> **Interactive Architecture Tour**: [Open Live Tour (App Bootstrapping & Routing)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-root&lang=en)
 
 ---
 

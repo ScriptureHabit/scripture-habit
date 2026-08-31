@@ -1,10 +1,7 @@
 # AI Integration (Gemini)
 
-::: tip Interactive Architecture Tour
-Explore the live data-flow blueprint and guided walkthrough for this feature:
-- **Online (GitHub Browser Preview)**: [Open Interactive Tour (Gemini AI Insights & Notes)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-newnote&lang=en)
-- **VitePress / Local**: [Open Gemini AI Insights & Notes Tour](/architecture-tour.html?tour=tour-newnote&lang=en)
-:::
+> [!TIP]
+> **Interactive Architecture Tour**: [Open Live Tour (Gemini AI Insights & Notes)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-newnote&lang=en)
 
 This document details the architecture, translation pipeline, prompt design, and safety guidelines for the Gemini AI subsystem in Scripture Habit.
 

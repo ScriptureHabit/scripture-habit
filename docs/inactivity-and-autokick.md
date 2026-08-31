@@ -1,10 +1,7 @@
 # Inactivity & Auto-Kick Engine
 
-::: tip Interactive Architecture Tour
-Explore the live data-flow blueprint and guided walkthrough for this feature:
-- **Online (GitHub Browser Preview)**: [Open Interactive Tour (Group Settings & Auto-kick)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-groupoptions&lang=en)
-- **VitePress / Local**: [Open Group Settings & Auto-kick Tour](/architecture-tour.html?tour=tour-groupoptions&lang=en)
-:::
+> [!TIP]
+> **Interactive Architecture Tour**: [Open Live Tour (Group Settings & Auto-kick)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-groupoptions&lang=en)
 
 This document details the automated inactivity evaluation algorithm, member eviction pipeline, owner succession protocol, and dormant group purging in Scripture Habit.
 

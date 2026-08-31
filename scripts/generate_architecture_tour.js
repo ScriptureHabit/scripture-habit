@@ -2072,19 +2072,20 @@ const docTourMappings = [
 
 let injectedCount = 0;
 docTourMappings.forEach(item => {
+  const calloutRegex = /(?::*>*\s*\[!TIP\][^\n]*\n(?:>[^\n]*\n?)*|:{1,}\s*(?:tip|::: tip)[\s\S]*?:{1,})/;
+
   // 1. Process English document (docs/*.md)
   const fullEnPath = path.join(projectRoot, item.file);
   if (fs.existsSync(fullEnPath)) {
     const enContent = fs.readFileSync(fullEnPath, 'utf8');
-    const enCallout = `::: tip Interactive Architecture Tour
-Explore the live data-flow blueprint and guided walkthrough for this feature:
-- **Online (GitHub Browser Preview)**: [Open Interactive Tour (${item.titleEn})](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=${item.tourId}&lang=en)
-- **VitePress / Local**: [Open ${item.titleEn} Tour](/architecture-tour.html?tour=${item.tourId}&lang=en)
-:::`;
+    const enCallout = `> [!TIP]
+> **Interactive Architecture Tour**: [Open Live Tour (${item.titleEn})](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=${item.tourId}&lang=en)
+
+`;
 
     let updatedEn;
-    if (enContent.includes('::: tip Interactive Architecture Tour') || enContent.includes('::: tip 🚀 Interactive Architecture Tour')) {
-      updatedEn = enContent.replace(/::: tip (?:🚀 )?Interactive Architecture Tour[\s\S]*?:::/, enCallout);
+    if (calloutRegex.test(enContent)) {
+      updatedEn = enContent.replace(calloutRegex, enCallout);
     } else {
       const h1Match = enContent.match(/^#\s+.+$/m);
       if (h1Match) {
@@ -2104,15 +2105,14 @@ Explore the live data-flow blueprint and guided walkthrough for this feature:
   const fullJaPath = path.join(projectRoot, relJaPath);
   if (fs.existsSync(fullJaPath)) {
     const jaContent = fs.readFileSync(fullJaPath, 'utf8');
-    const jaCallout = `::: tip インタラクティブ・アーキテクチャツアー
-この機能のデータフローとステップ解説ツアーを体験できます：
-- **オンライン（GitHubブラウザプレビュー）**: [インタラクティブツアーを開く (${item.titleJa})](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=${item.tourId}&lang=ja)
-- **VitePress / ローカル**: [${item.titleJa} の解説ツアーを開く](/architecture-tour.html?tour=${item.tourId}&lang=ja)
-:::`;
+    const jaCallout = `> [!TIP]
+> **インタラクティブ・アーキテクチャツアー**: [ブラウザでツアーを開く (${item.titleJa})](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=${item.tourId}&lang=ja)
+
+`;
 
     let updatedJa;
-    if (jaContent.includes('::: tip インタラクティブ・アーキテクチャツアー') || jaContent.includes('::: tip 🚀 Interactive Architecture Tour')) {
-      updatedJa = jaContent.replace(/::: tip (?:🚀 )?(?:Interactive Architecture Tour|インタラクティブ・アーキテクチャツアー)[\s\S]*?:::/, jaCallout);
+    if (calloutRegex.test(jaContent)) {
+      updatedJa = jaContent.replace(calloutRegex, jaCallout);
     } else {
       const h1Match = jaContent.match(/^#\s+.+$/m);
       if (h1Match) {

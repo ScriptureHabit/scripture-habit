@@ -1,10 +1,7 @@
 # Internationalization (i18n)
 
-::: tip Interactive Architecture Tour
-Explore the live data-flow blueprint and guided walkthrough for this feature:
-- **Online (GitHub Browser Preview)**: [Open Interactive Tour (Language Switcher & i18n)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-languages&lang=en)
-- **VitePress / Local**: [Open Language Switcher & i18n Tour](/architecture-tour.html?tour=tour-languages&lang=en)
-:::
+> [!TIP]
+> **Interactive Architecture Tour**: [Open Live Tour (Language Switcher & i18n)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-languages&lang=en)
 
 Scripture Habit supports multilingual localization across 11 languages, allowing users worldwide to study in their native language.
 

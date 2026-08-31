@@ -1,10 +1,7 @@
 # Firebase Security Rules & Mutation Isolation
 
-::: tip Interactive Architecture Tour
-Explore the live data-flow blueprint and guided walkthrough for this feature:
-- **Online (GitHub Browser Preview)**: [Open Interactive Tour (User Authentication & Login)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-login&lang=en)
-- **VitePress / Local**: [Open User Authentication & Login Tour](/architecture-tour.html?tour=tour-login&lang=en)
-:::
+> [!TIP]
+> **Interactive Architecture Tour**: [Open Live Tour (User Authentication & Login)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-login&lang=en)
 
 This document outlines the authentication constraints, group boundary checks, and backend mutation isolation policies defined in `firestore.rules`.
 

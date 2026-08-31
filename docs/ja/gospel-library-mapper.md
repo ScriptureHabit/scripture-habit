@@ -1,10 +1,7 @@
 # 福音ライブラリ URL マッパー
 
-::: tip インタラクティブ・アーキテクチャツアー
-この機能のデータフローとステップ解説ツアーを体験できます：
-- **オンライン（GitHubブラウザプレビュー）**: [インタラクティブツアーを開く (聖句リンク & 福音ライブラリ連携)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-newnote&lang=ja)
-- **VitePress / ローカル**: [聖句リンク & 福音ライブラリ連携 の解説ツアーを開く](/architecture-tour.html?tour=tour-newnote&lang=ja)
-:::
+> [!TIP]
+> **インタラクティブ・アーキテクチャツアー**: [ブラウザでツアーを開く (聖句リンク & 福音ライブラリ連携)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-newnote&lang=ja)
 
 `Gospel Library Mapper` (`src/utils/gospel-library-mapper.ts`) は、ユーザー入力、聖句の引用、書（巻）、およびトピック文字列を、末日聖徒イエス・キリスト教会公式サイト上の公式学習 URL へ変換するユーティリティです。
 
