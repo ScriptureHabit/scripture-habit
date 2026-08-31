@@ -412,16 +412,14 @@ Format: {"msg_id": "translated_text", ...}`;
         console.warn('[AI Batch] Batch translation AI call failed or errored:', (aiErr as Error).message);
     }
 
-    // 4. Update results, cache, and Firestore (Best effort with fallback to original text)
+    // 4. Update results, cache, and Firestore (Best effort)
     if (db) {
         const batch = db.batch();
         let hasBatchOps = false;
         for (const msg of toTranslate) {
-            const translated = batchTranslations[msg.id] || msg.text;
-            finalResults[msg.id] = translated;
-            
-            // Only cache and update DB if an actual translated text was produced
-            if (batchTranslations[msg.id] && batchTranslations[msg.id] !== msg.text) {
+            const translated = batchTranslations[msg.id];
+            if (translated) {
+                finalResults[msg.id] = translated;
                 hasBatchOps = true;
                 // Cache
                 const cacheKey = crypto.createHash('md5').update(`${msg.text}_${targetLanguage}_normal`).digest('hex');
@@ -442,9 +440,11 @@ Format: {"msg_id": "translated_text", ...}`;
                 .catch(e => console.warn('[AI Batch] Persistence failed:', e.message));
         }
     } else {
-        // If no DB, populate finalResults from batchTranslations or fallback
+        // If no DB, populate finalResults from batchTranslations
         for (const msg of toTranslate) {
-            finalResults[msg.id] = batchTranslations[msg.id] || msg.text;
+            if (batchTranslations[msg.id]) {
+                finalResults[msg.id] = batchTranslations[msg.id];
+            }
         }
     }
 
