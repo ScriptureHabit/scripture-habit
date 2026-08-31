@@ -1,0 +1,183 @@
+.time-capsule-card {
+  border-radius: 16px;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.25rem;
+  transition: all 0.25s ease;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+}
+
+/* 1. SOS Crisis State */
+.time-capsule-card.state-sos {
+  background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
+  border: 1.5px solid #feb2b2;
+  box-shadow: 0 6px 20px rgba(229, 62, 62, 0.15);
+  animation: pulseSos 2s infinite ease-in-out;
+}
+
+@keyframes pulseSos {
+  0% { box-shadow: 0 0 0 0 rgba(229, 62, 62, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(229, 62, 62, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(229, 62, 62, 0); }
+}
+
+.sos-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #c53030;
+  font-weight: 700;
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+}
+
+.sos-card-message {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #742a2a;
+  font-style: italic;
+  background: rgba(255, 255, 255, 0.7);
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  border-left: 3px solid #e53e3e;
+  margin: 0.5rem 0 0.85rem;
+}
+
+.sos-card-action-btn {
+  background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 0.6rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: all 0.2s;
+  box-shadow: 0 3px 10px rgba(229, 62, 62, 0.3);
+}
+
+.sos-card-action-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 14px rgba(229, 62, 62, 0.4);
+}
+
+/* 2. Sealed State */
+.time-capsule-card.state-sealed {
+  background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+  border: 1px solid #e2e8f0;
+}
+
+.sealed-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.sealed-card-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #4a5568;
+}
+
+.sealed-card-badge {
+  background: rgba(255, 145, 157, 0.15);
+  color: #e05666;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+}
+
+.sealed-card-progress-text {
+  font-size: 0.825rem;
+  color: #718096;
+  margin-bottom: 0.5rem;
+}
+
+.sealed-progress-bar-container {
+  width: 100%;
+  height: 8px;
+  background: #e2e8f0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.sealed-progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ff919d 0%, #ff758c 100%);
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+/* 3. Unwritten State */
+.time-capsule-card.state-unwritten {
+  background: linear-gradient(135deg, #fff9f9 0%, #fff0f2 100%);
+  border: 1.5px dashed #ffb3bc;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.unwritten-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.unwritten-card-title {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #4a5568;
+}
+
+.unwritten-card-desc {
+  font-size: 0.825rem;
+  color: #718096;
+  margin: 0;
+}
+
+.unwritten-card-btn {
+  background: linear-gradient(135deg, #ff919d 0%, #ff758c 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 0.6rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+  transition: all 0.2s;
+  box-shadow: 0 3px 10px rgba(255, 145, 157, 0.3);
+}
+
+.unwritten-card-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 14px rgba(255, 145, 157, 0.45);
+  background: linear-gradient(135deg, #ff758c 0%, #e05666 100%);
+}
+
+@media (max-width: 480px) {
+  .time-capsule-card.state-unwritten {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .unwritten-card-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}

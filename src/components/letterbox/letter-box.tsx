@@ -50,9 +50,18 @@ const LetterBox = ({ isOpen, onClose, userData }: LetterBoxProps) => {
                             </button>
                             <div className="letter-paper">
                                 <div className="letter-date">
-                                    {parseTimestampToDate(selectedLetter.createdAt).toLocaleDateString()}
+                                    {selectedLetter.title || t('letterBox.defaultTitle')} &bull; {parseTimestampToDate(selectedLetter.createdAt).toLocaleDateString()}
                                 </div>
                                 <LazyMarkdown>{selectedLetter.content || ""}</LazyMarkdown>
+                                {selectedLetter.createdStats && (
+                                    <div style={{ marginTop: '1rem', paddingTop: '0.75rem', borderTop: '1px dashed #e2e8f0', fontSize: '0.8rem', color: '#718096', textAlign: 'right' }}>
+                                        {t('timeCapsule.createdOn', {
+                                            date: selectedLetter.createdStats.date || '',
+                                            days: selectedLetter.createdStats.days ?? 0,
+                                            level: selectedLetter.createdStats.level ?? 1
+                                        })}
+                                    </div>
+                                )}
                             </div>
                         </div>
                     ) : (

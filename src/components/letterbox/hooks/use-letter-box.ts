@@ -13,6 +13,13 @@ export interface Letter {
   expiresAt?: FirebaseTimestamp;
   type?: string;
   read?: boolean;
+  isUnlocked?: boolean;
+  targetDays?: number;
+  createdStats?: {
+    days?: number;
+    level?: number;
+    date?: string;
+  };
 }
 
 export function useLetterBox(isOpen: boolean, userData: UserData | null) {
@@ -37,6 +44,14 @@ export function useLetterBox(isOpen: boolean, userData: UserData | null) {
           ...doc.data()
         } as Letter))
         .filter(letter => {
+          // Special handling for Time Capsule letters
+          if (letter.type === 'time_capsule') {
+            // If still sealed, do not show in letterbox until unlocked
+            if (!letter.isUnlocked) return false;
+            // If unlocked, permanently keep in archive (bypass 30 days check)
+            return true;
+          }
+
           // 1. If explicit expiresAt is present, check against current time
           if (letter.expiresAt) {
             try {

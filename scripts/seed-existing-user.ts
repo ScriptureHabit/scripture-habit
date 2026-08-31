@@ -43,10 +43,10 @@ async function seedExistingUser() {
             email: 'existing-user@example.com',
             nickname: 'existing-user',
             photoURL: 'https://api.dicebear.com/7.x/bottts/svg?seed=existing-user',
-            streakCount: 8,
-            highestStreak: 8,
-            totalNotes: 8,
-            language: 'en'
+            streakCount: 9,
+            highestStreak: 9,
+            totalNotes: 9,
+            language: 'ja'
         },
         {
             uid: 'seeder-alice',
@@ -129,7 +129,7 @@ async function seedExistingUser() {
         });
 
         const studiedDates = u.uid === 'seeder-existing-user'
-            ? [getDateStr(7), getDateStr(6), getDateStr(5), getDateStr(4), getDateStr(3), getDateStr(2), getDateStr(1), getDateStr(0)]
+            ? [getDateStr(8), getDateStr(7), getDateStr(6), getDateStr(5), getDateStr(4), getDateStr(3), getDateStr(2), getDateStr(1), getDateStr(0)]
             : u.uid === 'seeder-alice'
                 ? [getDateStr(5), getDateStr(4), getDateStr(3), getDateStr(2), getDateStr(1)]
                 : u.uid === 'seeder-bob'
@@ -176,7 +176,7 @@ async function seedExistingUser() {
                     scripture: 'Book of Mormon',
                     chapter: '1 Nephi 1:1',
                     comment: '“I, Nephi, having been born of goodly parents...” Taking the first step in my scripture study journey! Excited to build this daily habit one day at a time.',
-                    createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 7 * 24 * 60 * 60 * 1000),
+                    createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 8 * 24 * 60 * 60 * 1000),
                     sharedWithGroups: [groupId]
                 },
                 {
@@ -184,7 +184,7 @@ async function seedExistingUser() {
                     scripture: 'Book of Mormon',
                     chapter: '1 Nephi 3:7',
                     comment: '“I will go and do the things which the Lord hath commanded, for I know that the Lord giveth no commandments unto the children of men, save he shall prepare a way for them...” Whenever I face difficult challenges, this verse gives me courage.',
-                    createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 6 * 24 * 60 * 60 * 1000),
+                    createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 7 * 24 * 60 * 60 * 1000),
                     sharedWithGroups: [groupId]
                 },
                 {
@@ -192,7 +192,7 @@ async function seedExistingUser() {
                     scripture: 'Old Testament',
                     chapter: 'Genesis 1:1-3',
                     comment: '“In the beginning God created the heaven and the earth... And God said, Let there be light: and there was light.” Felt deeply inspired by God’s creative power bringing order and hope into darkness.',
-                    createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 5 * 24 * 60 * 60 * 1000),
+                    createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 6 * 24 * 60 * 60 * 1000),
                     sharedWithGroups: [groupId]
                 },
                 {
@@ -200,7 +200,7 @@ async function seedExistingUser() {
                     scripture: 'New Testament',
                     chapter: 'John 14:27',
                     comment: '“Peace I leave with you, my peace I give unto you: not as the world giveth, give I unto you. Let not your heart be troubled, neither let it be afraid.” In a restless world, focusing on Christ brings genuine peace to my heart.',
-                    createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 4 * 24 * 60 * 60 * 1000),
+                    createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 5 * 24 * 60 * 60 * 1000),
                     sharedWithGroups: [groupId]
                 },
                 {
@@ -208,7 +208,7 @@ async function seedExistingUser() {
                     scripture: 'Doctrine and Covenants',
                     chapter: 'Section 6:36',
                     comment: '“Look unto me in every thought; doubt not, fear not.” Making it an instant daily habit to turn to prayer whenever doubt or anxiety creeps in.',
-                    createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 3 * 24 * 60 * 60 * 1000),
+                    createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 4 * 24 * 60 * 60 * 1000),
                     sharedWithGroups: [groupId]
                 },
                 {
@@ -218,7 +218,7 @@ async function seedExistingUser() {
                     title: 'Faith to Follow the Lord',
                     speaker: 'President Russell M. Nelson',
                     comment: 'Deeply moved by the message that small daily righteous choices shape our character over time. Scripture study is a foundational anchor for that.',
-                    createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 2 * 24 * 60 * 60 * 1000),
+                    createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 3 * 24 * 60 * 60 * 1000),
                     sharedWithGroups: [groupId]
                 },
                 {
@@ -226,7 +226,7 @@ async function seedExistingUser() {
                     scripture: 'Pearl of Great Price',
                     chapter: 'Moses 1:39',
                     comment: '“For behold, this is my work and my glory—to bring to pass the immortality and eternal life of man.” Filled with gratitude knowing God’s grand plan centers on our eternal joy.',
-                    createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 1 * 24 * 60 * 60 * 1000),
+                    createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 2 * 24 * 60 * 60 * 1000),
                     sharedWithGroups: [groupId]
                 },
                 {
@@ -234,6 +234,14 @@ async function seedExistingUser() {
                     scripture: 'Book of Mormon',
                     chapter: 'Alma 32:28',
                     comment: '“Now, we will compare the word unto a seed... if ye give place, that a seed may be planted in your heart...” Experiencing the word growing and enlightening my understanding. Moving forward with joyful faith!',
+                    createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 1 * 24 * 60 * 60 * 1000),
+                    sharedWithGroups: [groupId]
+                },
+                {
+                    id: 'seed-demo-note-9',
+                    scripture: 'New Testament',
+                    chapter: 'Matthew 5:14-16',
+                    comment: '“Ye are the light of the world. A city that is set on an hill cannot be hid.” 9 days of consistent scripture study has truly brightened my daily mindset and purpose.',
                     createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 1 * 60 * 60 * 1000),
                     sharedWithGroups: [groupId]
                 }
@@ -254,6 +262,19 @@ async function seedExistingUser() {
                     searchTokens
                 });
             }
+
+            // Seed Day 10 Sealed Time Capsule Letter for existing-user
+            await db.collection('users').doc(u.uid).collection('letters').doc('capsule_10').set({
+                title: 'Day 10の自分へ',
+                content: 'Day 10達成おめでとう！最初は続くか不安だったかもしれないけど、9日間毎日コツコツ読み続けてここまで来られたね。本当に素晴らしい！次のDay 25も楽しんで聖典を開いていこう！',
+                sosMessage: '初心を思い出して！1日1節読むだけでも大きな前進だよ！',
+                targetDays: 10,
+                isUnlocked: false,
+                type: 'time_capsule',
+                snapshotDaysCount: 1,
+                snapshotLevel: 1,
+                createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 8 * 24 * 60 * 60 * 1000)
+            });
         }
 
         // Seed Developer Welcome Letter in user's letterbox

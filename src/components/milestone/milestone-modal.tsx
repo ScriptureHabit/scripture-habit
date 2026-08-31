@@ -1,17 +1,26 @@
-import React, { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { useMilestoneStore } from '../../store/use-milestone-store';
+import { useTimeCapsuleStore } from '../../store/use-time-capsule-store';
+import { useMilestoneCapsule } from '../../hooks/use-milestone-capsule';
 import { useLanguage } from '../../hooks/use-language';
 import { MilestoneCard } from './milestone-card';
 import { triggerConfetti } from '../../utils/confetti-utils';
-import { UilDownloadAlt, UilShareAlt, UilTimes } from '@iconscout/react-unicons';
+import { UilDownloadAlt, UilShareAlt, UilTimes, UilEnvelopeOpen } from '@iconscout/react-unicons';
 import { toast } from 'react-toastify';
 import './milestone-modal.css';
 
-const MilestoneModal: React.FC = () => {
+function MilestoneModal() {
     const { isOpen, milestoneData, closeMilestone } = useMilestoneStore();
+    const { openUnlockModal } = useTimeCapsuleStore();
     const { t } = useLanguage();
     const cardRef = useRef<HTMLDivElement>(null);
     const [isSaving, setIsSaving] = useState(false);
+
+    const days = milestoneData?.days;
+    const nickname = milestoneData?.nickname;
+    const achievedDate = milestoneData?.achievedDate;
+
+    const { capsule, unlockCapsule } = useMilestoneCapsule(days, isOpen);
 
     useEffect(() => {
         if (isOpen && milestoneData) {
@@ -25,9 +34,24 @@ const MilestoneModal: React.FC = () => {
         }
     }, [isOpen, milestoneData]);
 
-    if (!isOpen || !milestoneData) return null;
+    if (!isOpen || !milestoneData || !days) return null;
 
-    const { days, nickname, achievedDate } = milestoneData;
+    const handleOpenCapsule = async () => {
+        if (!capsule) {
+            closeMilestone();
+            return;
+        }
+
+        try {
+            await unlockCapsule(capsule.id);
+            closeMilestone();
+            openUnlockModal({ ...capsule, isUnlocked: true });
+        } catch (err) {
+            console.error('Error unlocking capsule:', err);
+            closeMilestone();
+            openUnlockModal({ ...capsule, isUnlocked: true });
+        }
+    };
 
     const handleSaveImage = async () => {
         if (!cardRef.current || isSaving) return;
@@ -122,15 +146,26 @@ const MilestoneModal: React.FC = () => {
                 </div>
 
                 <div className="milestone-modal-actions">
-                    <button 
-                        className="milestone-action-btn primary" 
-                        onClick={handleSaveImage}
-                        disabled={isSaving}
-                        data-testid="save-milestone-img-btn"
-                    >
-                        <UilDownloadAlt size="18" />
-                        <span>{isSaving ? t('milestone.saving') : t('milestone.saveImage')}</span>
-                    </button>
+                    {capsule ? (
+                        <button 
+                            className="milestone-action-btn primary" 
+                            onClick={handleOpenCapsule}
+                            data-testid="open-milestone-letter-btn"
+                        >
+                            <UilEnvelopeOpen size="18" />
+                            <span>{t('milestone.openLetterAction')}</span>
+                        </button>
+                    ) : (
+                        <button 
+                            className="milestone-action-btn primary" 
+                            onClick={handleSaveImage}
+                            disabled={isSaving}
+                            data-testid="save-milestone-img-btn"
+                        >
+                            <UilDownloadAlt size="18" />
+                            <span>{isSaving ? t('milestone.saving') : t('milestone.saveImage')}</span>
+                        </button>
+                    )}
                     <button 
                         className="milestone-action-btn secondary" 
                         onClick={handleShare}

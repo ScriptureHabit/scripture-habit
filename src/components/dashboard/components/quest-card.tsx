@@ -6,6 +6,7 @@ import { db } from '../../../firebase';
 import { UserData } from '../../../types/user';
 import { useLanguage } from '../../../hooks/use-language';
 import { useModalStore } from '../../../store/use-modal-store';
+import { useTimeCapsuleStore } from '../../../store/use-time-capsule-store';
 import { triggerConfetti } from '../../../utils/confetti-utils';
 import './quest-card.css';
 
@@ -31,6 +32,7 @@ export const QuestCard = ({
   const navigate = useNavigate();
   const { language } = useLanguage();
   const { activeModal } = useModalStore();
+  const { openCreateModal } = useTimeCapsuleStore();
   const [celebrated, setCelebrated] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -78,6 +80,10 @@ export const QuestCard = ({
       await updateDoc(doc(db, 'users', userData.uid), {
         hasCompletedOnboarding: true
       });
+      // For non-demo users, open Day 10 Time Capsule creation modal
+      if (!userData.isAnonymousDemo) {
+        openCreateModal(10);
+      }
     } catch (err) {
       console.error('Error completing onboarding:', err);
       setIsDismissed(false); // Rollback optimistic update if network/server write fails

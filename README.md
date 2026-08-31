@@ -80,6 +80,7 @@ The application is actively deployed and in operation, tracking daily active use
 
 - **Search & Filtering**: Browse past study notes and search instantly by tags or keywords.
 - **AI Reflection Letters (LetterBox)**: Analyzes study notes to deliver reflection letters connecting user insights with scripture stories.
+- **Letters to Future Self (Time Capsule)**: Pre-commit personal encouragement and SOS crisis reminders for upcoming milestones (Day 10, 25...), unlocked with a snapshot of past growth.
 
 
 

@@ -55,6 +55,9 @@ Welcome to the **scripture-habit** technical documentation. This directory conta
 - **[Small Group Dynamics (Max 5) & Peer Accountability](ux-small-groups-and-peer-accountability.md)**
   - Why groups are capped at 5 members (preventing social loafing and bystander effect).
   - High retention in high-trust circles and design support for new groups.
+- **[Letters to Your Future Self (Time Capsule) & Habit Psychology](ux-letters-to-future-self.md)**
+  - Fostering Future Self Continuity and pre-commitment for sustainable retention.
+  - Social proof badge, crisis SOS reminder, snapshot-backed unlocking, and next-goal loops.
 
 ---
 

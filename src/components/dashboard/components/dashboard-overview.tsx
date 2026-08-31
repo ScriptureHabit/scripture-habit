@@ -4,6 +4,7 @@ import Mascot from '../../mascot/mascot';
 import { UserData } from '../../../types/user';
 import StreakCalendar from './streak-calendar';
 import { QuestCard } from './quest-card';
+import { TimeCapsuleCard } from './time-capsule-card';
 import { useModalStore } from '../../../store/use-modal-store';
 import { useLanguage } from '../../../hooks/use-language';
 import './quest-card.css';
@@ -116,6 +117,12 @@ const DashboardOverview = ({
         setIsModalOpen={setIsModalOpen} 
         hasActiveModal={isAnyModalOpen} 
         onGoToGroupChat={onGoToGroupChat}
+      />
+
+      <TimeCapsuleCard
+        userData={userData}
+        warnings={warnings}
+        setIsModalOpen={setIsModalOpen}
       />
 
       <div className="inspiration-section">
