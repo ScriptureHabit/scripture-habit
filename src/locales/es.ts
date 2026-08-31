@@ -43,8 +43,7 @@ export default {
         "postNowBtn": "Publicar nota ahora",
         "existingUserModalTitle": "Nuevo: Carta a tu futuro yo",
         "existingUserModalDesc": "Ahora puedes escribir cartas a tu futuro yo en hitos especiales. ¡Comienza escribiendo una carta para tu próximo hito!",
-        "openCreateModalBtn": "Escribir mi primera carta",
-        "maybeLaterBtn": "Quizás más tarde"
+        "existingUserModalBtn": "Escribir una carta"
     },
     "_meta": {
         "code": "es",

@@ -1,5 +1,4 @@
-// @vitest-environment node
-import { describe, it, expect, beforeAll, afterAll, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll, afterEach, beforeEach, vi } from 'vitest';
 import { TestSetup } from '../test-setup.js';
 import axios from 'axios';
 
@@ -18,6 +17,12 @@ describe('Preview Route Integration', () => {
 
     afterEach(() => {
         vi.restoreAllMocks();
+    });
+
+    beforeEach(() => {
+        vi.spyOn(axios, 'create').mockReturnValue({
+            get: vi.fn().mockImplementation((url, config) => axios.get(url, config))
+        } as any);
     });
 
     describe('GET /fetch-church-metadata', () => {
@@ -72,7 +77,7 @@ describe('Preview Route Integration', () => {
             const axiosSpy = vi.spyOn(axios, 'get').mockResolvedValue({ data: mockHtml });
 
             setup.mockAuth(USER_ID);
-            const res = await fetch(`${setup.baseUrl}/api/preview/fetch-church-metadata?url=https://churchofjesuschrist.org/study/ensign/2020/04/faith`, {
+            const res = await fetch(`${setup.baseUrl}/api/preview/fetch-church-metadata?url=https://churchofjesuschrist.org/study/ensign/2020/04/faith-success`, {
                 headers: { 'Authorization': `Bearer token-${USER_ID}` }
             });
 
@@ -95,16 +100,16 @@ describe('Preview Route Integration', () => {
                 </html>
             `;
             let callCount = 0;
-            vi.spyOn(axios, 'get').mockImplementation(async (url) => {
+            vi.spyOn(axios, 'get').mockImplementation(async (url, config) => {
                 callCount++;
-                if (url.includes('lang=ja')) {
+                if ((config as any)?.params?.lang === 'ja' || (typeof url === 'string' && url.includes('lang=ja'))) {
                     throw new Error('Language not supported');
                 }
                 return { data: mockHtml };
             });
 
             setup.mockAuth(USER_ID);
-            const res = await fetch(`${setup.baseUrl}/api/preview/fetch-church-metadata?url=https://churchofjesuschrist.org/study/ensign/2020/04/faith&language=ja`, {
+            const res = await fetch(`${setup.baseUrl}/api/preview/fetch-church-metadata?url=https://churchofjesuschrist.org/study/ensign/2020/04/faith-fallback&language=ja`, {
                 headers: { 'Authorization': `Bearer token-${USER_ID}` }
             });
 
@@ -119,7 +124,7 @@ describe('Preview Route Integration', () => {
             vi.spyOn(axios, 'get').mockRejectedValue(new Error('Network offline'));
 
             setup.mockAuth(USER_ID);
-            const res = await fetch(`${setup.baseUrl}/api/preview/fetch-church-metadata?url=https://churchofjesuschrist.org/study/ensign/2020/04/faith`, {
+            const res = await fetch(`${setup.baseUrl}/api/preview/fetch-church-metadata?url=https://churchofjesuschrist.org/study/ensign/2020/04/faith-error`, {
                 headers: { 'Authorization': `Bearer token-${USER_ID}` }
             });
 
@@ -133,7 +138,7 @@ describe('Preview Route Integration', () => {
             vi.spyOn(axios, 'get').mockResolvedValue({});
 
             setup.mockAuth(USER_ID);
-            const res = await fetch(`${setup.baseUrl}/api/preview/fetch-church-metadata?url=https://churchofjesuschrist.org/study/ensign/2020/04/faith`, {
+            const res = await fetch(`${setup.baseUrl}/api/preview/fetch-church-metadata?url=https://churchofjesuschrist.org/study/ensign/2020/04/faith-empty`, {
                 headers: { 'Authorization': `Bearer token-${USER_ID}` }
             });
 

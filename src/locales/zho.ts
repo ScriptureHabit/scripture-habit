@@ -43,8 +43,7 @@ export default {
         "postNowBtn": "立即發布筆記",
         "existingUserModalTitle": "新功能：寫信給未來的自己",
         "existingUserModalDesc": "現在可以在達成各個里程碑時給未來的自己寫信了。為你的下一個目標寫下第一封信吧！",
-        "openCreateModalBtn": "撰寫我的第一封信",
-        "maybeLaterBtn": "稍後再說"
+        "existingUserModalBtn": "撰寫信件"
     },
     "_meta": {
         "code": "zho",

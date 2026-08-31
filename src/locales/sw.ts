@@ -43,8 +43,7 @@ export default {
         "postNowBtn": "Chapisha Dokezo Sasa",
         "existingUserModalTitle": "Mpya: Barua kwa Nafsi ya Baadaye",
         "existingUserModalDesc": "Sasa unaweza kuandika barua kwa nafsi yako ya baadaye katika hatua maalum. Anza kwa kuandika barua kwa lengo lako linalofuata!",
-        "openCreateModalBtn": "Andika Barua Yangu ya Kwanza",
-        "maybeLaterBtn": "Labda Baadaye"
+        "existingUserModalBtn": "Andika Barua"
     },
     "_meta": {
         "code": "sw",

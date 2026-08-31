@@ -43,8 +43,7 @@ export default {
         "postNowBtn": "지금 노트 작성하기",
         "existingUserModalTitle": "새 기능: 미래의 나에게 편지 쓰기",
         "existingUserModalDesc": "특별한 마일스톤 달성 시 미래의 나에게 편지를 보낼 수 있습니다. 다음 목표를 위한 편지를 지금 작성해 보세요!",
-        "openCreateModalBtn": "첫 편지 작성하기",
-        "maybeLaterBtn": "나중에 하기"
+        "existingUserModalBtn": "편지 쓰기"
     },
     "_meta": {
         "code": "ko",

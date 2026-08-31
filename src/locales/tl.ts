@@ -43,8 +43,7 @@ export default {
         "postNowBtn": "Mag-post ng Tala Ngayon",
         "existingUserModalTitle": "Bago: Liham sa Hinaharap",
         "existingUserModalDesc": "Maaari ka na ngayong sumulat ng mga liham sa iyong sarili sa mga espesyal na tagumpay. Simulan sa pamamagitan ng pagsulat para sa iyong susunod na layunin!",
-        "openCreateModalBtn": "Isulat ang Aking Unang Liham",
-        "maybeLaterBtn": "Mamaya na"
+        "existingUserModalBtn": "Sumulat ng Liham"
     },
     "_meta": {
         "code": "tl",

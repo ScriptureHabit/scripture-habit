@@ -43,8 +43,7 @@ export default {
         "postNowBtn": "โพสต์บันทึกตอนนี้",
         "existingUserModalTitle": "ใหม่: เขียนจดหมายถึงตัวเองในอนาคต",
         "existingUserModalDesc": "ตอนนี้คุณสามารถเขียนจดหมายถึงตัวเองในอนาคตเมื่อบรรลุเป้าหมายสำคัญได้แล้ว เริ่มต้นเขียนจดหมายสำหรับเป้าหมายถัดไปของคุณกันเลย!",
-        "openCreateModalBtn": "เขียนจดหมายฉบับแรก",
-        "maybeLaterBtn": "ไว้คราวหลัง"
+        "existingUserModalBtn": "เขียนจดหมาย"
     },
     "_meta": {
         "code": "th",

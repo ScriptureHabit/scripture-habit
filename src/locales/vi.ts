@@ -43,8 +43,7 @@ export default {
         "postNowBtn": "Đăng ghi chú ngay",
         "existingUserModalTitle": "Tính năng mới: Viết thư gửi tương lai",
         "existingUserModalDesc": "Giờ đây bạn có thể viết thư gửi bản thân trong tương lai tại các cột mốc đặc biệt. Hãy viết bức thư đầu tiên ngay nhé!",
-        "openCreateModalBtn": "Viết bức thư đầu tiên",
-        "maybeLaterBtn": "Để sau"
+        "existingUserModalBtn": "Viết bức thư"
     },
     "_meta": {
         "code": "vi",

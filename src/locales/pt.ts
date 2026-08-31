@@ -43,8 +43,7 @@ export default {
         "postNowBtn": "Publicar nota agora",
         "existingUserModalTitle": "Novo: Carta para o futuro eu",
         "existingUserModalDesc": "Agora você pode escrever cartas para o seu futuro eu em marcos especiais. Comece escrevendo uma carta para o seu próximo marco!",
-        "openCreateModalBtn": "Escrever minha primeira carta",
-        "maybeLaterBtn": "Talvez mais tarde"
+        "existingUserModalBtn": "Escrever uma carta"
     },
     "_meta": {
         "code": "pt",

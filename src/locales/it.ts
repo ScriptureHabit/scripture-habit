@@ -43,8 +43,7 @@ export default {
         "postNowBtn": "Pubblica Nota Ora",
         "existingUserModalTitle": "Novità: Lettera al Tuo Io Futuro",
         "existingUserModalDesc": "Ora puoi scrivere lettere al tuo io futuro in occasione di traguardi speciali. Inizia scrivendo una lettera per il tuo prossimo obiettivo!",
-        "openCreateModalBtn": "Scrivi la Mia Prima Lettera",
-        "maybeLaterBtn": "Forse Più Tardi"
+        "existingUserModalBtn": "Scrivi una Lettera"
     },
     "_meta": {
         "code": "it",
