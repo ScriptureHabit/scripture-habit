@@ -1,95 +1,119 @@
 # Network & Performance Optimization
 
-This document outlines the client-side caching strategies, binary payload serialization, server-side data loaders, and offline synchronization mechanisms in Scripture Habit.
+This document outlines the multi-tier caching architecture, binary serialization protocols, server-side data loaders, and offline resilience mechanisms in Scripture Habit.
 
 ---
 
-## 1. Architecture Overview
+## 1. Multi-Tier Optimization Architecture
 
-To provide fast page transitions and robust offline capabilities, optimizations span the client, network, and backend layers:
+To ensure instant application boot times and resilient network performance, optimizations are applied across the client, network, backend, and database layers:
 
 ```mermaid
 flowchart TD
-    classDef nodeStyle fill:#1e293b,stroke:#64748b,stroke-width:1.5px,color:#f8fafc;
+    classDef client fill:#1e293b,stroke:#38bdf8,stroke-width:1.5px,color:#f8fafc;
+    classDef network fill:#1e1b4b,stroke:#a855f7,stroke-width:1.5px,color:#f8fafc;
+    classDef server fill:#0f172a,stroke:#10b981,stroke-width:1.5px,color:#f8fafc;
+    classDef storage fill:#0f172a,stroke:#f59e0b,stroke-width:1.5px,color:#f8fafc;
 
     subgraph Client["1. 📱 Client Layer (Browser / PWA)"]
-        UI["React UI (Instant Render)"]:::nodeStyle
-        TQuery["TanStack Query (localStorage Persisted)"]:::nodeStyle
-        IndexedDB["Firestore IndexedDB (Offline Persistence)"]:::nodeStyle
-        SW["Service Worker (Asset Precache)"]:::nodeStyle
+        UI["React 19 UI"]:::client
+        TQ["TanStack Query (localStorage Persistence)"]:::client
+        SW["Service Worker (CacheStorage & Sync)"]:::client
+        FClient["Firestore SDK (IndexedDB Persistence)"]:::client
 
-        UI --> TQuery
-        UI --> IndexedDB
-        TQuery --> SW
+        UI <-->|State Restoration & Query Cache| TQ
+        UI <-->|Live Subscriptions & Offline View| FClient
+        TQ <-->|Asset Precache & Retry Queue| SW
     end
 
-    subgraph Network["2. 🌐 Network & Serialization Layer"]
-        MsgPack["MessagePack (Binary Protocol)"]:::nodeStyle
-        Brotli["Brotli & Gzip Pre-Compression"]:::nodeStyle
-        BgSync["Background Sync (Offline Mutation Queue)"]:::nodeStyle
+    subgraph Network["2. 🌐 Network & Transport Layer"]
+        HTTP["HTTPS / HTTP Keep-Alive"]:::network
+        MsgPack["MessagePack Binary (Header Negotiation)"]:::network
+        Compression["Brotli (.br) / Gzip (.gz) Pre-Compression"]:::network
 
-        SW --> MsgPack
-        MsgPack --> Brotli
-        Brotli --> BgSync
+        SW <-->|API Requests| HTTP
+        HTTP --- MsgPack
+        HTTP --- Compression
     end
 
-    subgraph Server["3. ☁️ Backend API Layer (Express / Cloud)"]
-        RedisCache["Redis Cache Layer"]:::nodeStyle
-        DataLoader["DataLoader (Batch Reads & N+1 Prevention)"]:::nodeStyle
-        KeepAlive["HTTP Keep-Alive Connection Pooling"]:::nodeStyle
+    subgraph Server["3. ☁️ Backend API Layer (Express / Vercel)"]
+        API["Express Controllers"]:::server
+        Redis[("Redis Cache")]:::storage
+        DLoader["DataLoader (Batch Aggregation)"]:::server
 
-        BgSync --> RedisCache
-        RedisCache --> DataLoader
-        DataLoader --> KeepAlive
+        HTTP <-->|REST API Requests| API
+        API <-->|High-Frequency Lookups| Redis
+        API -->|N+1 Prevention| DLoader
     end
 
-    Client ~~~ Network
-    Network ~~~ Server
+    subgraph Database["4. 🔥 Database Layer"]
+        Firestore[("Cloud Firestore")]:::storage
+
+        DLoader <-->|db.getAll Batch Reads| Firestore
+        FClient <===>|WebSocket Real-Time Sync| Firestore
+    end
 ```
 
+### Architecture Breakdown
+
+1. **Multi-Tier Client Caching**  
+   Instant UI rendering is powered by TanStack Query persisted to `localStorage`, eliminating loading spinners on return visits. Static assets (JS, CSS, fonts) are cached via Service Worker Cache Storage for offline boot, while study notes and chat histories are persisted in IndexedDB through the Firestore Client SDK.
+
+2. **Network Transport Efficiency**  
+   API endpoints automatically negotiate binary serialization via HTTP headers (`Accept: application/x-msgpack`), reducing payload sizes by 30–50% compared to JSON. Pre-compressed Brotli (`.br`) and Gzip (`.gz`) static bundles minimize bandwidth consumption.
+
+3. **Backend Load Reduction & Batching**  
+   External article metadata and high-frequency read models are cached in Redis for single-digit millisecond response times. For database operations, DataLoader aggregates concurrent document lookups into batched `db.getAll` calls, preventing N+1 query overhead.
+
 ---
 
-## 2. Multi-Tier Client Caching
+## 2. Multi-Tier Client Caching Strategy
 
-| Layer | Storage | Duration | Purpose |
+| Layer | Storage | Retention | Purpose |
 | :--- | :--- | :--- | :--- |
-| **Query State** | `localStorage` | 24 hours | Eliminates loading spinners on app reload by restoring recent UI state. |
-| **API Cache** | In-Memory (Axios) | 2 minutes | Deduplicates concurrent GET requests for translations and metadata. |
-| **Static Assets** | Cache Storage (SW) | Per version | Pre-caches JS, CSS, and fonts for immediate offline boot. |
-| **Firestore Cache** | IndexedDB | Managed | Enables offline reading of notes and chats with multi-tab coordination. |
+| **Query State** | `localStorage` | 24 hours | Instantly restores recent UI state on app reload without loading spinners. |
+| **API Cache** | In-Memory (Axios) | 2 minutes | Deduplicates identical concurrent GET requests within short intervals. |
+| **Static Assets** | Cache Storage (SW) | Per version | Pre-caches JS, CSS, and web fonts to enable immediate offline launch. |
+| **Firestore Data** | IndexedDB | Managed | Supports offline note and chat access with multi-tab mutex coordination. |
 
 ---
 
-## 3. Serialization & Payload Optimization
+## 3. Serialization & Payload Optimizations
 
-1. **Transparent MessagePack (`@msgpack/msgpack`)**:
-   Reduces payload size by 30–50% compared to JSON. Negotiates headers via `Accept: application/x-msgpack` to serialize binary data over HTTP.
-2. **Build-Time Pre-Compression (Brotli & Gzip)**:
-   Pre-generates `.br` and `.gz` assets during the Vite build step to minimize bandwidth.
-3. **Self-Hosted Typography (`@fontsource`)**:
-   Replaces external Google Fonts CDN links with bundled fonts to prevent layout shift (FOUT) and eliminate extra TLS negotiations.
+1. **Transparent MessagePack (`@msgpack/msgpack`)**  
+   Reduces payload size by 30–50% relative to JSON. The client and server negotiate headers automatically to transfer binary payloads over HTTP.
+
+2. **Build-Time Pre-Compression (Brotli & Gzip)**  
+   Pre-generates `.br` and `.gz` static assets during the build process, serving compressed files directly to reduce bandwidth usage.
+
+3. **Self-Hosted Typography (`@fontsource`)**  
+   Eliminates external Google Fonts CDN dependencies, preventing layout shift (FOUT) and removing additional TLS handshake latency.
 
 ---
 
 ## 4. Backend & Database Optimizations
 
-1. **Redis API Caching**:
-   Caches external metadata and frequently accessed resources in Redis for sub-millisecond responses.
-2. **DataLoader Batching**:
-   Eliminates N+1 query patterns by batching concurrent Firestore document reads into a single `db.getAll` call.
-3. **HTTP Keep-Alive Pooling**:
-   Maintains warm socket connections for external metadata fetching.
+1. **Redis API Caching**  
+   Caches external URL metadata and frequently accessed resources in Redis for low-latency responses.
+
+2. **DataLoader Batching**  
+   Consolidates concurrent Firestore document lookups within the same request lifecycle into a single `db.getAll` call, eliminating N+1 query overhead.
+
+3. **HTTP Keep-Alive Pooling**  
+   Maintains persistent socket connections for external service communication, reducing TLS handshake overhead.
 
 ---
 
-## 5. Mobile Resilience & Traffic Control
+## 5. Offline Resilience & Traffic Control
 
-- **Service Worker Background Sync**:
-  Queues failed mutations in IndexedDB when offline and replays them automatically when connectivity is restored.
-- **Request Cancellation (`AbortController`)**:
-  Cancels in-flight GET requests on route transitions to free up client bandwidth.
-- **Exponential Backoff**:
-  Automatically retries intermittent 5xx network failures up to 3 times.
+1. **Service Worker Background Sync**  
+   Temporarily queues offline note submissions and messages, automatically replaying and completing them when network connectivity is restored.
+
+2. **Request Cancellation (`AbortController`)**  
+   Aborts pending GET requests upon route transitions to conserve device resources and client bandwidth.
+
+3. **Exponential Backoff Retries**  
+   Automatically retries intermittent network failures and 5xx errors up to 3 times with progressive backoff delays.
 
 ---
 
@@ -97,4 +121,4 @@ flowchart TD
 
 - [Architecture Overview](./architecture.md)
 - [Firestore Offline Persistence](./firestore-offline-persistence.md)
-- [API Middleware & Error Handling](./api-middleware-error-handling.md)
+- [API Design & Error Handling](./api-middleware-error-handling.md)
