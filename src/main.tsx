@@ -52,6 +52,17 @@ window.addEventListener('unhandledrejection', (event) => {
     return;
   }
 
+  // Silence benign browser IndexedDB background/closing tab errors
+  const message = typeof reason === 'string' ? reason : (reason?.message || '');
+  if (
+    message.includes('Database is closing/hidden') ||
+    message.includes('The database connection is closing') ||
+    message.includes('IndexedDBLocalPersistence')
+  ) {
+    event.preventDefault();
+    return;
+  }
+
   // Silence Firebase permission-denied errors that escape try/catch via internal async queue
   // ONLY in production to ensure proper security rules debugging locally
   if (
@@ -89,6 +100,7 @@ const initSentry = async () => {
       dsn: import.meta.env.VITE_SENTRY_DSN,
       ignoreErrors: [
         'Database is closing/hidden',
+        /Database is closing/i,
         'Failed to get document because the client is offline.',
         /Failed to get document because the client is offline/i,
         /client is offline/i,
@@ -103,7 +115,22 @@ const initSentry = async () => {
         /The node to be removed is not a child of this node/i,
         /The node before which the new node is to be inserted is not a child of this node/i,
       ],
-      environment: import.meta.env.MODE || 'development',
+      beforeSend(event, hint) {
+        const error = hint?.originalException;
+        const msg = (error instanceof Error ? error.message : typeof error === 'string' ? error : '') || event.message || '';
+        if (
+          /database is closing/i.test(msg) ||
+          /client is offline/i.test(msg) ||
+          /IndexedDBLocalPersistence/i.test(msg) ||
+          (/offline/i.test(msg) && /document/i.test(msg)) ||
+          /removeChild/i.test(msg) ||
+          /insertBefore/i.test(msg)
+        ) {
+          return null; // Ignore transient/offline errors
+        }
+        return event;
+      },
+      environment: 'production',
       integrations: [
         Sentry.replayIntegration({
           maskAllText: false,
