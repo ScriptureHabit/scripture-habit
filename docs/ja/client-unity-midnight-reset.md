@@ -1,5 +1,11 @@
 # 団結度（Unity）深夜リセットフック
 
+::: tip インタラクティブ・アーキテクチャツアー
+この機能のデータフローとステップ解説ツアーを体験できます：
+- **オンライン（GitHubブラウザプレビュー）**: [インタラクティブツアーを開く (習慣ダッシュボード & 日次リセット)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-dashboard&lang=ja)
+- **VitePress / ローカル**: [習慣ダッシュボード & 日次リセット の解説ツアーを開く](/architecture-tour.html?tour=tour-dashboard&lang=ja)
+:::
+
 このドキュメントでは、グループのタイムゾーンにおける深夜 0 時（日付変更）を検知し、当日の団結度（Unity）をリセットする React フック（`src/hooks/use-unity-midnight-reset.ts`）について解説します。
 
 ---

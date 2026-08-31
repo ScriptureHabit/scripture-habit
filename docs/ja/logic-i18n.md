@@ -1,5 +1,11 @@
 # 多言語対応（i18n）の仕組み
 
+::: tip インタラクティブ・アーキテクチャツアー
+この機能のデータフローとステップ解説ツアーを体験できます：
+- **オンライン（GitHubブラウザプレビュー）**: [インタラクティブツアーを開く (多言語切り替え & 国際化)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-languages&lang=ja)
+- **VitePress / ローカル**: [多言語切り替え & 国際化 の解説ツアーを開く](/architecture-tour.html?tour=tour-languages&lang=ja)
+:::
+
 Scripture Habit は、世界各地のユーザーが母国語で学習できるよう全 11 言語に対応しています。
 
 言語設定および翻訳辞書は `src/locales/` を単一情報源（SSOT）として一元管理され、フロントエンド、バックエンド、および AI 翻訳パイプラインの間で整合性を保っています。

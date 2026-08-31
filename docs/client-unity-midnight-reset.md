@@ -1,5 +1,11 @@
 # Daily Unity Midnight Reset Hook
 
+::: tip Interactive Architecture Tour
+Explore the live data-flow blueprint and guided walkthrough for this feature:
+- **Online (GitHub Browser Preview)**: [Open Interactive Tour (Habit Dashboard & Reset)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-dashboard&lang=en)
+- **VitePress / Local**: [Open Habit Dashboard & Reset Tour](/architecture-tour.html?tour=tour-dashboard&lang=en)
+:::
+
 This document details the `useUnityMidnightReset` hook (`src/hooks/use-unity-midnight-reset.ts`), which detects local midnight transitions across group timezones and triggers backend daily activity resets in Scripture Habit.
 
 ---

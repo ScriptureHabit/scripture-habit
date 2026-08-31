@@ -1,5 +1,11 @@
 # AI振り返りレターの心理学的効用とリテンション
 
+::: tip インタラクティブ・アーキテクチャツアー
+この機能のデータフローとステップ解説ツアーを体験できます：
+- **オンライン（GitHubブラウザプレビュー）**: [インタラクティブツアーを開く (習慣リキャップ & 振り返り)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-recap&lang=ja)
+- **VitePress / ローカル**: [習慣リキャップ & 振り返り の解説ツアーを開く](/architecture-tour.html?tour=tour-recap&lang=ja)
+:::
+
 Scripture Habit の開発過程におけるユーザーヒアリングにおいて、合計日数の集計やグループ共有以上に、**「AI から届くパーソナルな振り返りレター（AI Reflection Letter）が継続の大きな支えになっている」**という声が多数寄せられました。
 
 本ドキュメントでは、AI 振り返りレターがもたらす心理学的効用と、継続率（リテンション）への影響について解説します。

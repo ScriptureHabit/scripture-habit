@@ -1,5 +1,11 @@
 # Firebase セキュリティルールと書き込み分離
 
+::: tip インタラクティブ・アーキテクチャツアー
+この機能のデータフローとステップ解説ツアーを体験できます：
+- **オンライン（GitHubブラウザプレビュー）**: [インタラクティブツアーを開く (ユーザー認証・ログイン)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-login&lang=ja)
+- **VitePress / ローカル**: [ユーザー認証・ログイン の解説ツアーを開く](/architecture-tour.html?tour=tour-login&lang=ja)
+:::
+
 このドキュメントでは、Firestore セキュリティルール（`firestore.rules`）による認証検証、グループ参加制限の強制、および共有データへのクライアント直接書き込みを禁止する設計について解説します。
 
 ---

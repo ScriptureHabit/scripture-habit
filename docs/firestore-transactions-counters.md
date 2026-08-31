@@ -1,5 +1,11 @@
 # Firestore Transactions & Counter Design
 
+::: tip Interactive Architecture Tour
+Explore the live data-flow blueprint and guided walkthrough for this feature:
+- **Online (GitHub Browser Preview)**: [Open Interactive Tour (Group Transactions & Counters)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-groupchat&lang=en)
+- **VitePress / Local**: [Open Group Transactions & Counters Tour](/architecture-tour.html?tour=tour-groupchat&lang=en)
+:::
+
 This document details the transactional constraints, atomic multi-document updates, and read-cost optimizations implemented for Cloud Firestore in Scripture Habit.
 
 ---

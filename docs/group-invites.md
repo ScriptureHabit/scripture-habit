@@ -1,5 +1,11 @@
 # Group Invites & Joining Pipeline
 
+::: tip Interactive Architecture Tour
+Explore the live data-flow blueprint and guided walkthrough for this feature:
+- **Online (GitHub Browser Preview)**: [Open Interactive Tour (Invite Links & Redirects)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-invite&lang=en)
+- **VitePress / Local**: [Open Invite Links & Redirects Tour](/architecture-tour.html?tour=tour-invite&lang=en)
+:::
+
 This document details the group invite lifecycle, join validation flows, historical code compatibility, and security boundaries in Scripture Habit.
 
 ---

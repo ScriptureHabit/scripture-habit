@@ -31,6 +31,7 @@
     "check:all": "npm run check:i18n && npm run check:messages && npm run check:fcm && npm run check:backend && npx tsc --noEmit",
     "preview": "vite preview",
     "docs:sync-spec": "node -e \"const fs=require('fs');fs.mkdirSync('docs/public',{recursive:true});fs.copyFileSync('api_internal/openapi.json','docs/public/openapi.json')\"",
+    "docs:flow": "node scripts/generate_architecture_tour.js",
     "docs:typedoc": "typedoc",
     "docs:dev": "npm run docs:sync-spec && typedoc && vitepress dev docs",
     "docs:build": "npm run docs:sync-spec && typedoc && vitepress build docs",

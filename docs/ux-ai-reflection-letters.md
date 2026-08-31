@@ -1,5 +1,11 @@
 # AI Reflection Letters & Retention Psychology
 
+::: tip Interactive Architecture Tour
+Explore the live data-flow blueprint and guided walkthrough for this feature:
+- **Online (GitHub Browser Preview)**: [Open Interactive Tour (Habit Recap & Reflections)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-recap&lang=en)
+- **VitePress / Local**: [Open Habit Recap & Reflections Tour](/architecture-tour.html?tour=tour-recap&lang=en)
+:::
+
 During user research interviews, learners consistently noted that beyond cumulative day tallies or group feeds, **"receiving personalized reflection letters from the AI provides immediate personal validation and serves as a primary driver of long-term engagement."**
 
 This document examines the psychological principles and retention dynamics behind AI reflection letters.

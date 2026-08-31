@@ -1,5 +1,11 @@
 # Group Chat (`GroupChat`) Architecture & Implementation
 
+::: tip Interactive Architecture Tour
+Explore the live data-flow blueprint and guided walkthrough for this feature:
+- **Online (GitHub Browser Preview)**: [Open Interactive Tour (Group Chat & Multilingual Translation)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-groupchat&lang=en)
+- **VitePress / Local**: [Open Group Chat & Multilingual Translation Tour](/architecture-tour.html?tour=tour-groupchat&lang=en)
+:::
+
 This document outlines the component architecture, state management patterns, 4-tier Context isolation, and core feature implementations in `src/components/groupchat`.
 
 ---

@@ -1,5 +1,11 @@
 # 開発および環境セットアップガイド
 
+::: tip インタラクティブ・アーキテクチャツアー
+この機能のデータフローとステップ解説ツアーを体験できます：
+- **オンライン（GitHubブラウザプレビュー）**: [インタラクティブツアーを開く (アプリ起動 & 全体配線)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-root&lang=ja)
+- **VitePress / ローカル**: [アプリ起動 & 全体配線 の解説ツアーを開く](/architecture-tour.html?tour=tour-root&lang=ja)
+:::
+
 **Scripture Habit** の開発ガイドです。このドキュメントでは、ローカル開発環境の構築、テストの実行、およびプロジェクトへのコントリビューション手順を説明します。
 
 ---

@@ -1,5 +1,11 @@
 # Unity Participation & Sync Architecture
 
+::: tip Interactive Architecture Tour
+Explore the live data-flow blueprint and guided walkthrough for this feature:
+- **Online (GitHub Browser Preview)**: [Open Interactive Tour (Group Chat & Unity Score)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-groupchat&lang=en)
+- **VitePress / Local**: [Open Group Chat & Unity Score Tour](/architecture-tour.html?tour=tour-groupchat&lang=en)
+:::
+
 This document details the mathematical models, eligibility criteria, and real-time synchronization mechanisms underlying the **Unity Percentage** metric in Scripture Habit.
 
 ---

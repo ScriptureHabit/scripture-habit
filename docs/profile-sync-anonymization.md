@@ -1,5 +1,11 @@
 # User Profile Sync & Reaction Anonymization
 
+::: tip Interactive Architecture Tour
+Explore the live data-flow blueprint and guided walkthrough for this feature:
+- **Online (GitHub Browser Preview)**: [Open Interactive Tour (User Profile & Settings)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-profile&lang=en)
+- **VitePress / Local**: [Open User Profile & Settings Tour](/architecture-tour.html?tour=tour-profile&lang=en)
+:::
+
 This document details the propagation of profile modifications (nickname, avatar URL) to active group feeds and the privacy anonymization protocol executed upon account deletion in Scripture Habit.
 
 ---

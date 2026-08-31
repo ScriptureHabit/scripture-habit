@@ -1,5 +1,11 @@
 # マイルストーン達成 ＆ リテンションの心理学
 
+::: tip インタラクティブ・アーキテクチャツアー
+この機能のデータフローとステップ解説ツアーを体験できます：
+- **オンライン（GitHubブラウザプレビュー）**: [インタラクティブツアーを開く (マイルストーン達成 & カプセル報酬)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-milestone&lang=ja)
+- **VitePress / ローカル**: [マイルストーン達成 & カプセル報酬 の解説ツアーを開く](/architecture-tour.html?tour=tour-milestone&lang=ja)
+:::
+
 このドキュメントでは、10日および25日刻み（25日、50日、75日、100日...）のマイルストーン判定、記念画像カードの生成・共有機能、および行動経済学に基づいた継続支援設計について解説します。
 
 ---

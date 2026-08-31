@@ -1,5 +1,11 @@
 # ダッシュボード ＆ マイノートの設計と実装
 
+::: tip インタラクティブ・アーキテクチャツアー
+この機能のデータフローとステップ解説ツアーを体験できます：
+- **オンライン（GitHubブラウザプレビュー）**: [インタラクティブツアーを開く (習慣ダッシュボード & 記録)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-dashboard&lang=ja)
+- **VitePress / ローカル**: [習慣ダッシュボード & 記録 の解説ツアーを開く](/architecture-tour.html?tour=tour-dashboard&lang=ja)
+:::
+
 このドキュメントでは、ダッシュボード（`src/components/dashboard`）、マイノート一覧（`src/components/mynotes`）、およびノートカード（`src/components/notecard`）の構成と機能について解説します。
 
 ---

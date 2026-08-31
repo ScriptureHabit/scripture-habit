@@ -1,5 +1,11 @@
 # ノート投稿 & ストリーク計算のロジック
 
+::: tip インタラクティブ・アーキテクチャツアー
+この機能のデータフローとステップ解説ツアーを体験できます：
+- **オンライン（GitHubブラウザプレビュー）**: [インタラクティブツアーを開く (新規ノート作成 & 投稿フロー)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-newnote&lang=ja)
+- **VitePress / ローカル**: [新規ノート作成 & 投稿フロー の解説ツアーを開く](/architecture-tour.html?tour=tour-newnote&lang=ja)
+:::
+
 このドキュメントでは、スタディノートの投稿処理パイプライン、タイムゾーンを考慮したストリーク（継続日数）の判定アルゴリズム、およびレベル計算の仕組みについて解説します。
 
 ---

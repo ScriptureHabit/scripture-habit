@@ -1,5 +1,11 @@
 # ユーザー情報の同期 ＆ アカウント削除時の匿名化
 
+::: tip インタラクティブ・アーキテクチャツアー
+この機能のデータフローとステップ解説ツアーを体験できます：
+- **オンライン（GitHubブラウザプレビュー）**: [インタラクティブツアーを開く (プロファイル & 設定編集)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-profile&lang=ja)
+- **VitePress / ローカル**: [プロファイル & 設定編集 の解説ツアーを開く](/architecture-tour.html?tour=tour-profile&lang=ja)
+:::
+
 このドキュメントでは、プロフィール（表示名やアバター画像）更新時のグループチャットへの差分同期と、アカウント削除（退会）時におけるソーシャルデータの匿名化処理について解説します。
 
 ---

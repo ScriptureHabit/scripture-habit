@@ -1,5 +1,11 @@
 # 全体アーキテクチャ ＆ 構成リファレンス
 
+::: tip インタラクティブ・アーキテクチャツアー
+この機能のデータフローとステップ解説ツアーを体験できます：
+- **オンライン（GitHubブラウザプレビュー）**: [インタラクティブツアーを開く (アプリ起動 & 全体配線)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-root&lang=ja)
+- **VitePress / ローカル**: [アプリ起動 & 全体配線 の解説ツアーを開く](/architecture-tour.html?tour=tour-root&lang=ja)
+:::
+
 このドキュメントでは、Scripture Habit を支える技術基盤、ディレクトリの構造、データの流れ、および状態管理の設計方針について解説いたします。
 
 ---

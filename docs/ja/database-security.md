@@ -1,5 +1,11 @@
 # データベース ＆ セキュリティ設計
 
+::: tip インタラクティブ・アーキテクチャツアー
+この機能のデータフローとステップ解説ツアーを体験できます：
+- **オンライン（GitHubブラウザプレビュー）**: [インタラクティブツアーを開く (ユーザー認証・ログイン)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-login&lang=ja)
+- **VitePress / ローカル**: [ユーザー認証・ログイン の解説ツアーを開く](/architecture-tour.html?tour=tour-login&lang=ja)
+:::
+
 このドキュメントでは、Cloud Firestore のデータ構造（ER モデル）、コレクション階層、非正規化によるパフォーマンス最適化、および機密データの保護方針について解説します。
 
 ---
