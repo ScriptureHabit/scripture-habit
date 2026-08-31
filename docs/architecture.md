@@ -1,33 +1,37 @@
 # Architecture & Technical Reference
 
-This document provides a technical overview of the Scripture Habit project, covering the tech stack, layer topology, data flow, and state management patterns.
+This document provides a technical overview of the Scripture Habit architecture, detailing the technology stack, directory structure, data flow, and state management strategy.
 
 ---
 
 ## 1. Tech Stack
 
+Built on modern web standards to deliver high responsiveness and a cohesive developer experience.
+
 | Layer | Technology | Rationale & Responsibility |
 | :--- | :--- | :--- |
-| **Frontend** | **React 19** + **Vite 8** | Modern component model, fast builds, and efficient HMR |
+| **Frontend** | **React 19** + **Vite 8** | Fast builds and modern component architecture |
 | **Routing** | **React Router 7** | SPA navigation and deep-link routing |
-| **State & Fetching** | **Zustand 5** / **TanStack Query 5** | Lightweight UI state and server API caching |
-| **Real-Time Data** | **Firebase Client SDK 12** | Firestore WebSocket listeners for live chat synchronization |
-| **Backend API** | **Node.js >= 22 (LTS 24)** + **Express 5** | Serverless API gateway hosted on Vercel Functions |
-| **Database** | **Cloud Firestore** | Real-time document-oriented NoSQL database |
-| **Authentication** | **Firebase Authentication** | Email/Password & Google Sign-In with server-side JWT verification |
-| **AI Subsystem** | **Gemini 3.1 Flash-Lite** | Dynamic note translations, question prompts, and weekly letters |
+| **State & Data Fetching** | **Zustand 5** / **TanStack Query 5** | Lightweight UI state and efficient API cache management |
+| **Real-Time Data** | **Firebase Client SDK 12** | Firestore WebSocket listeners for instant message synchronization |
+| **Backend API** | **Node.js >= 22 (LTS 24)** + **Express 5** | Robust serverless API gateway hosted on Vercel Functions |
+| **Database** | **Cloud Firestore** | Real-time, document-oriented NoSQL database |
+| **Authentication** | **Firebase Authentication** | Secure sign-in (Google / Email) and server-side JWT verification |
+| **AI Subsystem** | **Gemini 3.1 Flash-Lite** | Multilingual translation, question prompts, and reflection letters |
 
 ---
 
-## 2. Directory Structure & Physical Layers
+## 2. Directory Structure & Responsibilities
+
+Maintains clear separation of concerns with predictable module boundaries.
 
 ```
 scripture-habit/
-├── api/                  # Vercel Serverless Function entry point
-├── api_internal/         # Core backend logic (routes, services, cron, notifications)
+├── api/                  # Vercel Serverless Function entry points
+├── api_internal/         # Core backend logic (routes, services, notifications, cron)
 ├── backend/              # Local development Express server wrapper (Port: 5000)
 ├── src/                  # Frontend client (React 19 + Vite application)
-└── types/                # Shared TypeScript schemas and data interfaces
+└── types/                # Shared TypeScript schemas and data contracts
 ```
 
 ---
@@ -35,18 +39,20 @@ scripture-habit/
 ## 3. Layer Architecture & State Taxonomy
 
 ### ① Logic-Component Split
-- **Components (`src/components/`)**: Focus solely on layout, styling (Vanilla CSS), and rendering.
-- **Custom Hooks (`src/hooks/`)**: Encapsulate API mutations, data subscriptions, and domain logic.
+- **UI Components (`src/components/`)**: Dedicated to layout, styling (Vanilla CSS), and visual presentation.
+- **Custom Hooks (`src/hooks/`)**: Handle server communication, data synchronization, and business logic.
 
 ### ② State Management Division
-- **Real-Time Data (Chat, Unread Counts, Streaks)**: Subscribed via Firestore `onSnapshot`.
-- **Server API State (System Status, Static Metadata)**: Cached and refetched via TanStack Query.
-- **Global UI State (Modals, Theme)**: Managed in Zustand stores.
-- **Auth State**: Standardized in `AuthContext`.
+- **Real-Time Data (Chat, Unread Counts, Streaks)**: Subscribed via Firestore `onSnapshot` for instant updates.
+- **Server API State (System Settings, Static Metadata)**: Managed and revalidated through TanStack Query.
+- **Global UI State (Modals, Theme)**: Maintained in lightweight Zustand stores.
+- **Auth State**: Centrally managed through `AuthContext`.
 
 ---
 
-## 4. Data Flow: Separation of Mutations and Queries
+## 4. Data Flow: Decoupled Writes and Real-Time Subscriptions
+
+Scripture Habit adopts a data flow architecture that cleanly separates transactional write operations from real-time subscriptions.
 
 ```mermaid
 flowchart TD
@@ -55,7 +61,7 @@ flowchart TD
     classDef fb fill:#0f172a,stroke:#f59e0b,stroke-width:1.5px,color:#f8fafc;
 
     subgraph Frontend["1. 📱 Frontend Client (React / PWA)"]
-        Component["UI Components"]:::fe --> Hook["Feature Hooks (UI State & Subscriptions)"]:::fe
+        Component["UI Components"]:::fe --> Hook["Custom Hooks (State & Subscriptions)"]:::fe
     end
 
     subgraph Backend["2. ☁️ Backend API (Express / Vercel)"]
@@ -76,14 +82,24 @@ flowchart TD
     Backend ~~~ Firebase
 ```
 
-- **Mutations**: Dispatched to backend Express endpoints to ensure validation and atomic multi-document updates.
-- **Queries**: Real-time Firestore subscriptions (`onSnapshot`) push updates directly into the UI.
+### Data Flow Mechanism
+
+1. **Write Operations (Mutations)**  
+   When a user creates a study note or sends a chat message, the frontend custom hook dispatches a request to the backend API.  
+   The server verifies authentication via JWT and validates the payload using Zod schemas. It then executes a **Firestore atomic transaction** to calculate study metrics, synchronize chat feeds, and update progression levels simultaneously.
+
+2. **Real-Time Synchronization (Subscriptions)**  
+   Upon database updates, Firestore `onSnapshot` listeners deliver changes directly to the client without requiring page reloads.  
+   This instantly updates both the user's own actions and activities from group members, such as new study notes and shared Unity progress.
+
+3. **Separation of Writes and Reads**  
+   Executing writes through backend API transactions while streaming updates through real-time subscriptions prevents client-side state divergence and guarantees strict data consistency across devices.
 
 ---
 
 ## 5. Related Documentation
 
 - [Network & Performance Optimization](./network-performance-optimization.md)
-- [Database & Security](./database-security.md)
-- [API Middleware & Error Handling](./api-middleware-error-handling.md)
+- [Database & Data Security](./database-security.md)
+- [API Design & Error Handling](./api-middleware-error-handling.md)
 - [Development & Setup Guide](./development-guide.md)
