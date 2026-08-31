@@ -278,12 +278,14 @@ app.use((err: unknown, req: express.Request, res: express.Response, _next: expre
         user: (req as { user?: { uid: string } }).user?.uid
     });
 
-    // Capture error in Sentry (Only report unexpected server-side errors, ignore 400/401/403/404)
-    if (!(err instanceof AppError) || err.statusCode >= 500) {
-        Sentry.captureException(err, {
-            user: { id: (req as { user?: { uid: string } }).user?.uid },
-            tags: { requestId }
-        });
+    // Capture error in Sentry (Only report unexpected server-side errors in production, ignore 400/401/403/404)
+    if (process.env.SENTRY_DISABLED !== 'true' && process.env.NODE_ENV === 'production') {
+        if (!(err instanceof AppError) || err.statusCode >= 500) {
+            Sentry.captureException(err, {
+                user: { id: (req as { user?: { uid: string } }).user?.uid },
+                tags: { requestId }
+            });
+        }
     }
 
 

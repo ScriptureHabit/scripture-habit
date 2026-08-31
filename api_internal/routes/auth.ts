@@ -50,7 +50,9 @@ router.post('/update-profile', authenticate, verifyAppCheck, async (req: Authent
         if (nickname || photoURL) {
             ProfileService.syncProfileToChats(uid, { nickname, photoURL }).catch(err => {
                 console.error('[ProfileSync] Error in background sync:', err);
-                Sentry.captureException(err);
+                if (process.env.SENTRY_DISABLED !== 'true' && process.env.NODE_ENV === 'production') {
+                    Sentry.captureException(err);
+                }
             });
         }
 
