@@ -18,6 +18,7 @@ router.use((req, _res, next) => {
 export interface GeminiCallOptions {
     prompt: string;
     systemInstruction?: string;
+    responseMimeType?: string;
 }
 
 const BASE_SECURITY_INSTRUCTION = `【CRITICAL SECURITY & BEHAVIOR RULES】:
@@ -32,8 +33,8 @@ const BASE_SECURITY_INSTRUCTION = `【CRITICAL SECURITY & BEHAVIOR RULES】:
 const callGemini = async (options: string | GeminiCallOptions): Promise<string> => {
     if (!process.env.GEMINI_API_KEY) throw new Error('Gemini API Key missing');
     
-    const { prompt, systemInstruction } = typeof options === 'string'
-        ? { prompt: options, systemInstruction: undefined }
+    const { prompt, systemInstruction, responseMimeType } = typeof options === 'string'
+        ? { prompt: options, systemInstruction: undefined, responseMimeType: undefined }
         : options;
 
     const fullSystemInstruction = systemInstruction
@@ -50,7 +51,8 @@ const callGemini = async (options: string | GeminiCallOptions): Promise<string> 
         generationConfig: {
             thinkingConfig: {
                 thinkingLevel: "minimal"
-            }
+            },
+            ...(responseMimeType ? { responseMimeType } : {})
         }
     }, { timeout: 30000 }); // 30s timeout
 
@@ -78,8 +80,8 @@ const handleAiError = (res: Response, err: unknown, contextMessage: string) => {
     
     const status = axiosErr.response?.status || 500;
 
-    // Capture specific AI error details in Sentry
-    if (process.env.SENTRY_DISABLED !== 'true' && process.env.NODE_ENV !== 'test') {
+    // Capture specific AI error details in Sentry (production only to prevent dev/test mock noise)
+    if (process.env.SENTRY_DISABLED !== 'true' && process.env.NODE_ENV === 'production') {
         Sentry.captureException(err, {
             tags: { context: contextMessage, ai_status: status },
             extra: { errorBody }
@@ -356,25 +358,66 @@ Format: {"msg_id": "translated_text", ...}`;
 
     const userPrompt = `Messages to translate:\n${JSON.stringify(toTranslate.map(m => ({ id: m.id, text: m.text })))}`;
     
-    const resultRaw = await callGemini({ prompt: userPrompt, systemInstruction });
-    // Robust JSON cleaning: Find first { and last }
-    const jsonStart = resultRaw.indexOf('{');
-    const jsonEnd = resultRaw.lastIndexOf('}');
-    if (jsonStart === -1 || jsonEnd === -1) {
-        console.error('[AI Batch] Invalid JSON response:', resultRaw);
-        throw new Error('AI returned invalid JSON format');
-    }
-    const cleanedJson = resultRaw.substring(jsonStart, jsonEnd + 1);
-    const batchTranslations = JSON.parse(cleanedJson);
+    let batchTranslations: Record<string, string> = {};
+    try {
+        const resultRaw = await callGemini({ 
+            prompt: userPrompt, 
+            systemInstruction,
+            responseMimeType: 'application/json'
+        });
 
-    // 4. Update results, cache, and Firestore (Best effort)
+        // Robust JSON extraction & cleaning:
+        const clean = resultRaw.replace(/```(?:json)?\s*([\s\S]*?)\s*```/g, '$1').trim();
+        
+        // Step 1: Try parsing direct or cleaned JSON
+        try {
+            const parsed = JSON.parse(clean);
+            if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+                batchTranslations = parsed as Record<string, string>;
+            }
+        } catch {
+            // Step 2: Try extracting from first { to last }
+            const jsonStart = clean.indexOf('{');
+            const jsonEnd = clean.lastIndexOf('}');
+            if (jsonStart !== -1 && jsonEnd !== -1 && jsonEnd > jsonStart) {
+                try {
+                    const parsed = JSON.parse(clean.substring(jsonStart, jsonEnd + 1));
+                    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+                        batchTranslations = parsed as Record<string, string>;
+                    }
+                } catch {
+                    // Fall through
+                }
+            }
+        }
+
+        // Step 3: Single-message fallback (if AI returned plain text translation without JSON wrapper)
+        if (Object.keys(batchTranslations).length === 0 && toTranslate.length === 1 && resultRaw) {
+            const singleId = toTranslate[0].id;
+            const fallbackText = clean.replace(/^["']|["']$/g, '').trim();
+            if (fallbackText) {
+                batchTranslations[singleId] = fallbackText;
+            }
+        }
+
+        if (Object.keys(batchTranslations).length === 0) {
+            console.warn('[AI Batch] Could not parse AI response as JSON, falling back to original texts:', resultRaw);
+        }
+    } catch (aiErr) {
+        console.warn('[AI Batch] Batch translation AI call failed or errored:', (aiErr as Error).message);
+    }
+
+    // 4. Update results, cache, and Firestore (Best effort with fallback to original text)
     if (db) {
         const batch = db.batch();
+        let hasBatchOps = false;
         for (const msg of toTranslate) {
-            const translated = batchTranslations[msg.id];
-            if (translated) {
-                finalResults[msg.id] = translated;
-                
+            const translated = batchTranslations[msg.id] || msg.text;
+            finalResults[msg.id] = translated;
+            
+            // Only cache and update DB if an actual translated text was produced
+            if (batchTranslations[msg.id] && batchTranslations[msg.id] !== msg.text) {
+                hasBatchOps = true;
                 // Cache
                 const cacheKey = crypto.createHash('md5').update(`${msg.text}_${targetLanguage}_normal`).digest('hex');
                 const cacheRef = db.collection('translation_cache').doc(cacheKey);
@@ -389,12 +432,14 @@ Format: {"msg_id": "translated_text", ...}`;
                 }
             }
         }
-        await withTimeout(batch.commit(), 5000, 'Persistence timeout')
-            .catch(e => console.warn('[AI Batch] Persistence failed:', e.message));
+        if (hasBatchOps) {
+            await withTimeout(batch.commit(), 5000, 'Persistence timeout')
+                .catch(e => console.warn('[AI Batch] Persistence failed:', e.message));
+        }
     } else {
-        // If no DB, just populate finalResults from batchTranslations
+        // If no DB, populate finalResults from batchTranslations or fallback
         for (const msg of toTranslate) {
-            if (batchTranslations[msg.id]) finalResults[msg.id] = batchTranslations[msg.id];
+            finalResults[msg.id] = batchTranslations[msg.id] || msg.text;
         }
     }
 
@@ -632,7 +677,11 @@ Output MUST be a valid JSON object with the following schema:
 
         const userPrompt = `User name: ${userName}\nLanguage: ${targetLangName}\n\nNotes studied by ${userName}:\n${notes.join('\n\n')}`;
 
-        const generatedText = await callGemini({ prompt: userPrompt, systemInstruction });
+        const generatedText = await callGemini({ 
+            prompt: userPrompt, 
+            systemInstruction,
+            responseMimeType: 'application/json'
+        });
 
         // Helper to parse title and letter body (Language-agnostic JSON-first parser)
         let title = '';

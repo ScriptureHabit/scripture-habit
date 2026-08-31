@@ -423,8 +423,8 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('AI Route Integration', ()
             expect(data.translations.m2).toBe('テキスト２');
         });
 
-        it('should fail with 500 and call handleAiError if Gemini returns invalid JSON', async () => {
-            mockGeminiResponse('This is not JSON text at all!');
+        it('should fallback gracefully to plain text translation for single message if Gemini returns non-JSON', async () => {
+            mockGeminiResponse('テキスト２');
 
             const res = await fetch(`${setup.baseUrl}/api/ai/translate-batch`, {
                 method: 'POST',
@@ -441,12 +441,35 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('AI Route Integration', ()
 
             const status = res.status;
             const data = await res.json();
-            if (status !== 500) {
-                console.error('--- DEBUG BATCH INVALID JSON ---', status, data);
-            }
 
-            expect(status).toBe(500);
-            expect(data.error).toBe('AI batch translation failed');
+            expect(status).toBe(200);
+            expect(data.success).toBe(true);
+            expect(data.translations.m2).toBe('テキスト２');
+        });
+
+        it('should fallback to original text for multi-message batch if Gemini returns invalid JSON', async () => {
+            mockGeminiResponse('This is not JSON text at all!');
+
+            const res = await fetch(`${setup.baseUrl}/api/ai/translate-batch`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer token-${USER_ID}`
+                },
+                body: JSON.stringify({
+                    messages: [MSG_1, MSG_2],
+                    targetLanguage: 'ja',
+                    groupId: GROUP_ID
+                })
+            });
+
+            const status = res.status;
+            const data = await res.json();
+
+            expect(status).toBe(200);
+            expect(data.success).toBe(true);
+            expect(data.translations.m1).toBe('Text one');
+            expect(data.translations.m2).toBe('Text two');
         });
 
         it('should survive if batch commit throws timeout / persistence fail', async () => {
