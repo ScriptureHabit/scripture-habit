@@ -48,7 +48,7 @@
 
 本アプリケーションは現在実際に公開・運用しております。現在、1日平均10名以上の皆さんが、このアプリで継続的にノートを投稿しておられます。
 
-- **[日別ノート投稿ユーザー数 (Google スプレッドシート)](https://docs.google.com/spreadsheets/d/YOUR_SPREADSHEET_ID/edit?usp=sharing)**
+- **[日別ノート投稿ユーザー数 (Google スプレッドシート)](https://docs.google.com/spreadsheets/d/1mocqYfFnQdeCrkDQSfLO1vpDha69oXHS5fmdq-hdODw/edit?usp=sharing)**
 
 ---
 
