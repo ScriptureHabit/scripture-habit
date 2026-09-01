@@ -149,7 +149,7 @@ Visual Studio Code の拡張機能マーケットプレイスから **[CodeTour]
      - `arch-01` 〜 `arch-24`: 各主要機能（ユーザー認証、新規ノート作成、習慣ダッシュボード、タイムカプセル、PWA 等）における UI・フック・状態・サービス・インフラ層の End-to-End データリレー。
 
 > [!TIP]
-> ブラウザ上でモジュール間の配線図やデータリレーのアニメーションを俯瞰したい場合は、ローカルの [`code-flow.html`](../../code-flow.html) を開くか、[オンライン・アーキテクチャツアー](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html) を参照してください。
+> ブラウザ上でモジュール間の配線図やデータリレーのアニメーションを俯瞰したい場合は、ローカルの [`docs/architecture-tour.html`](../architecture-tour.html) を開くか、[オンライン・アーキテクチャツアー](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html) を参照してください。
 
 ---
 

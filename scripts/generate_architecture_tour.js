@@ -2380,9 +2380,8 @@ const html = `<!DOCTYPE html>
 </html>
 `;
 
-// Write to docs/architecture-tour.html, code-flow.html, and docs/public/architecture-tour.html
+// Write to docs/architecture-tour.html and docs/public/architecture-tour.html
 fs.writeFileSync(path.join(projectRoot, 'docs', 'architecture-tour.html'), html, 'utf8');
-fs.writeFileSync(path.join(projectRoot, 'code-flow.html'), html, 'utf8');
 
 const docsPublic = path.join(projectRoot, 'docs', 'public');
 if (!fs.existsSync(docsPublic)) {
@@ -2575,13 +2574,13 @@ const docTourMappings = [
 
 let injectedCount = 0;
 docTourMappings.forEach(item => {
-  const calloutRegex = /(?::*>*\s*\[!TIP\][^\n]*\n(?:>[^\n]*\n?)*|:{1,}\s*(?:tip|::: tip)[\s\S]*?:{1,})/;
+  const calloutRegex = /(?::*>*\s*\[!TIP\][^\n]*\n(?:>[^\n]*\n?)*\n*|:{1,}\s*(?:tip|::: tip)[\s\S]*?:{1,}\n*)/;
 
   // 1. Process English document (docs/*.md)
   const fullEnPath = path.join(projectRoot, item.file);
   if (fs.existsSync(fullEnPath)) {
     const enContent = fs.readFileSync(fullEnPath, 'utf8');
-    const enCallout = `> [!TIP]\n> **Interactive Architecture Tour**: [Open Live Tour (${item.titleEn})](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=${item.tourId}&lang=en)`;
+    const enCallout = `> [!TIP]\n> **Interactive Architecture Tour**: [Open Live Tour (${item.titleEn})](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=${item.tourId}&lang=en)\n\n`;
 
     let updatedEn;
     if (calloutRegex.test(enContent)) {
@@ -2591,7 +2590,7 @@ docTourMappings.forEach(item => {
       if (h1Match) {
         updatedEn = enContent.replace(h1Match[0], `${h1Match[0]}\n\n${enCallout}`);
       } else {
-        updatedEn = `${enCallout}\n\n${enContent}`;
+        updatedEn = `${enCallout}${enContent}`;
       }
     }
     // Clean up excessive 3+ consecutive newlines
@@ -2607,7 +2606,7 @@ docTourMappings.forEach(item => {
   const fullJaPath = path.join(projectRoot, relJaPath);
   if (fs.existsSync(fullJaPath)) {
     const jaContent = fs.readFileSync(fullJaPath, 'utf8');
-    const jaCallout = `> [!TIP]\n> **インタラクティブ・アーキテクチャツアー**: [ブラウザでツアーを開く (${item.titleJa})](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=${item.tourId}&lang=ja)`;
+    const jaCallout = `> [!TIP]\n> **インタラクティブ・アーキテクチャツアー**: [ブラウザでツアーを開く (${item.titleJa})](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=${item.tourId}&lang=ja)\n\n`;
 
     let updatedJa;
     if (calloutRegex.test(jaContent)) {
@@ -2617,7 +2616,7 @@ docTourMappings.forEach(item => {
       if (h1Match) {
         updatedJa = jaContent.replace(h1Match[0], `${h1Match[0]}\n\n${jaCallout}`);
       } else {
-        updatedJa = `${jaCallout}\n\n${jaContent}`;
+        updatedJa = `${jaCallout}${jaContent}`;
       }
     }
     // Clean up excessive 3+ consecutive newlines

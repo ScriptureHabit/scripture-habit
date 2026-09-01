@@ -149,7 +149,7 @@ Install the **[CodeTour](https://marketplace.visualstudio.com/items?itemName=vsl
      - `arch-01` to `arch-24`: Full data relay from UI components through custom hooks, context state, and backend services to Firestore persistence for each core feature (Authentication, New Note, Habit Dashboard, Group Chat, Time Capsule, PWA, etc.).
 
 > [!TIP]
-> To visualize component wiring and node data relays as an interactive graph in your browser, open [`code-flow.html`](../code-flow.html) locally or explore the [Live Architecture Tour](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html).
+> To visualize component wiring and node data relays as an interactive graph in your browser, open [`docs/architecture-tour.html`](architecture-tour.html) locally or explore the [Live Architecture Tour](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html).
 
 ---
 
