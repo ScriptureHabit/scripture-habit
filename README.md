@@ -48,7 +48,7 @@ Daijiro Sagane
 
 Scripture Habit is actively deployed and running in production. Currently, an average of 10+ users consistently write and share study notes every day.
 
-- **[Daily Note-Posting Active Users (Google Sheet)](https://docs.google.com/spreadsheets/d/YOUR_SPREADSHEET_ID/edit?usp=sharing)**
+- **[Daily Note-Posting Active Users (Google Sheet)](https://docs.google.com/spreadsheets/d/1mocqYfFnQdeCrkDQSfLO1vpDha69oXHS5fmdq-hdODw/edit?usp=sharing)**
 
 ---
 
