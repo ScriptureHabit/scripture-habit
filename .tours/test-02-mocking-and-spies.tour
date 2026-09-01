@@ -1,17 +1,23 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "Testing基礎 02: モック (Mocking) と スパイ (vi.fn / vi.mock)",
-  "tags": ["Testing Fundamentals", "Vitest", "Mocking"],
+  "title": "Testing 02: Mocking & Spies (vi.fn / vi.mock) / モックとスパイ",
+  "tags": [
+    "Testing Fundamentals",
+    "Vitest",
+    "Mocking"
+  ],
   "steps": [
     {
-      "file": "scripture-habit/src/components/newnote/hooks/use-note-submission.test.ts",
-      "line": 15,
-      "description": "### 1. 🎭 関数の偽装とモック化 (`vi.fn()` / `vi.mock()`)\n\n`vi.mock(...)` と `vi.fn()` を使うことで、実際の API 通信や外部ライブラリ（`confetti` や `toast`）を呼び出さずに、「関数が何回呼ばれたか」「どんな引数で呼ばれたか」を安全に検証する偽装関数（モック）を作成します。"
+      "file": "src/components/newnote/hooks/use-note-submission.test.ts",
+      "description": "### 1. 🎭 Mocking External Dependencies (`vi.mock`)\n\n#### 💡 What is happening here? (Overview)\nReplaces **real confetti animations (`canvas-confetti`) or toast alerts with fake mock functions** during unit testing.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`vi.mock('canvas-confetti', () => ({ default: vi.fn() }))`**:\n   - Mocks the entire library module with dummy functions.\n2. **`vi.fn()` (Spy Function)**:\n   - Records how many times it was called and what arguments were passed.\n\n---\n\n#### 💡 Pro Tip: Fast Headless Testing\nMocking browser-only visual libraries allows tests to execute at lightning speed inside a Node.js CLI environment.\n\n---\n\n### 1. 🎭 外部ライブラリの偽装・モック化 (`vi.mock`)\n\n#### 💡 ここで何をしているの？（全体像）\nテスト中に**本物のクラッカーアニメーション（`canvas-confetti`）やトースト通知を動かさず、偽物の関数（モック）にすり替え**ます。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`vi.mock('canvas-confetti', () => ({ default: vi.fn() }))`**:\n   - ライブラリ全体を「空っぽの偽物関数」に置き換えます。\n2. **`vi.fn()` (スパイ関数)**:\n   - 呼び出された回数や、渡された引数をメモ（スパイ）してくれる偽物関数です。\n\n---\n\n#### 💡 プロの知恵：なぜモックが必要なの？\nブラウザ環境がないNode.js上でのテストでは、画面アニメーションや実際のAPI通信をモックに差し替えることで、超高速かつエラーなくテストを実行できます。",
+      "pattern": "^\\s*vi\\.mock\\('canvas-confetti',\\s+\\(\\)\\s+=>\\s+\\(\\{",
+      "line": 39
     },
     {
-      "file": "scripture-habit/src/components/newnote/hooks/use-note-submission.test.ts",
-      "line": 54,
-      "description": "### 2. 🧹 テスト間のモックリセット (`beforeEach` / `vi.clearAllMocks`)\n\n`beforeEach(() => { vi.clearAllMocks(); })` を使用し、各テストケース実行前にモックの呼び出しカウントや状態を完全にクリアして、テスト同士の干渉（誤判定）を防ぎます。"
+      "file": "src/components/newnote/hooks/use-note-submission.test.ts",
+      "description": "### 2. 🧹 Resetting Mocks Between Tests (`beforeEach` / `vi.clearAllMocks`)\n\n#### 💡 What is happening here? (Overview)\nClears call histories before each test case to **prevent state leakage between test scenarios**.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`beforeEach(() => { ... })`**:\n   - Automatically runs before each `it(...)` test block.\n2. **`vi.clearAllMocks()`**:\n   - Resets all call counts to 0.\n\n---\n\n#### 💡 Pro Tip: Test Isolation\nPrevents subtle bugs where Test B fails only when run after Test A.\n\n---\n\n### 2. 🧹 テスト間のモックリセット (`beforeEach` / `vi.clearAllMocks`)\n\n#### 💡 ここで何をしているの？（全体像）\n前のテストケースで記録された呼び出し履歴を綺麗にリセットし、**「次のテストに過去の記録が混ざらないように初期化」**します。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`beforeEach(() => { ... })`**:\n   - 各 `it('...')` が実行される直前に毎回自動で実行されるセットアップ処理です。\n2. **`vi.clearAllMocks()`**:\n   - すべてのモックの呼び出しカウントを 0 に戻します。\n\n---\n\n#### 💡 プロの知恵：テストの独立性（Isolation）\n「テストAを実行した後にテストBを実行すると失敗するが、テストB単体なら成功する」という厄介なテスト汚染バグを完璧に防ぎます。",
+      "pattern": "^\\s*vi\\.clearAllMocks\\(\\);",
+      "line": 60
     }
   ]
 }

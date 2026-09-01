@@ -32,6 +32,8 @@
     "preview": "vite preview",
     "docs:sync-spec": "node -e \"const fs=require('fs');fs.mkdirSync('docs/public',{recursive:true});fs.copyFileSync('api_internal/openapi.json','docs/public/openapi.json')\"",
     "docs:flow": "node scripts/generate_architecture_tour.js",
+    "tour:generate-arch": "node scripts/generate_architecture_tour.js",
+    "tour:convert-patterns": "node scripts/convert_tours_to_pattern.js",
     "docs:typedoc": "typedoc",
     "docs:dev": "npm run docs:sync-spec && typedoc && vitepress dev docs",
     "docs:build": "npm run docs:sync-spec && typedoc && vitepress build docs",

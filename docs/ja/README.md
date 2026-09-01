@@ -96,6 +96,8 @@
 ## 開発・運用ガイド (Development & Operations)
 - **[開発 & 環境構築ガイド](development-guide.md)**
   - ローカル環境の立ち上げ手順と、本番デプロイまでの流れ。
+- **[インタラクティブ・コードツアー (VS Code)](development-guide.md#インタラクティブコードツアーvs-code)**
+  - VS Code 上で基礎技術やアーキテクチャのデータフローを対話型で学べる全64ツアー。
 - **[トラブルシューティング & FAQ](troubleshooting.md)**
   - 開発中によく遭遇する問題の解決策（App Check や認証のバイパス設定など）。
 - **[テスト & 信頼性ガイド](testing-guide.md)**

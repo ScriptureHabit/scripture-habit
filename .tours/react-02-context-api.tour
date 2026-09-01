@@ -1,6 +1,6 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "React基礎 02: Context API による状態配信とProps Drilling回避",
+  "title": "React 02: Context API & Props Drilling Avoidance / Context API と状態配信",
   "tags": [
     "React Fundamentals",
     "GroupChat",
@@ -8,24 +8,28 @@
   ],
   "steps": [
     {
-      "file": "scripture-habit/src/components/groupchat/chat-context.ts",
-      "line": 89,
-      "description": "### 1. 🌐 Context の定義 (`createContext`)\n\n`createContext<ChatDataContextType | undefined>(undefined)` で Context オブジェクトを生成します。\nContext はコンポーネントツリーの階層を無視して、親から遠く離れた子コンポーネントへデータを直接配給するためのグローバルパイプラインです。"
+      "file": "src/components/groupchat/chat-context.ts",
+      "description": "### 1. 🌐 Defining Context with `createContext`\n\n#### 💡 What is happening here? (Overview)\nWe create a **dedicated communication pipeline (Context)** that transports data across deep component hierarchies without manual props drilling.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`createContext<Type | undefined>(undefined)`**:\n   - Sets up the typed context channel.\n2. **`undefined` Default Value**:\n   - Serves as a defensive marker to detect if consumers attempt to access values outside a Provider.\n\n---\n\n#### 💡 Pro Tip: Eliminating Props Drilling\nContext removes the need to pass props through 5-10 intermediate components that don't need them.\n\n---\n\n### 1. 🌐 Context の定義 (`createContext`)\n\n#### 💡 ここで何をしているの？（全体像）\nコンポーネントツリーの階層を飛び越えて、**親からどんなに深い子孫コンポーネントへもデータを直接ワープさせる「専用パイプライン」を作成**します。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`createContext<Type | undefined>(undefined)`**:\n   - パイプラインを通るデータの型（TypeScript）を指定して作成します。\n2. **初期値としての `undefined`**:\n   - Provider の外側で誤って使われたことを検知するための安全な初期値設計です。\n\n---\n\n#### 💡 プロの知恵：なぜ Context が必要なの？\nProps だけでデータを渡そうとすると、`親 → 子 → 孫 → ひ孫` と、中間にあるコンポーネント全員が使わないPropsを手渡しする「バケツリレー（Props Drilling）」が発生してしまいます。Context はそれを一発で解消します。",
+      "pattern": "^\\s*export\\s+const\\s+ChatDataContext\\s+=\\s+createContext<ChatDataContextType\\s+\\|\\s+undefined>\\(undefined\\);",
+      "line": 90
     },
     {
-      "file": "scripture-habit/src/components/groupchat/group-chat-provider.tsx",
-      "line": 172,
-      "description": "### 2. 🎁 Provider コンポーネントによるデータの提供 (`GroupChatProvider`)\n\n`<GroupChatContext.Provider value={contextValue}>` で配下のコンポーネントツリーをラップします。\n`value` プロパティに渡したデータが、ツリー内のすべての配下コンポーネントから参照可能になります。"
+      "file": "src/components/groupchat/group-chat-provider.tsx",
+      "description": "### 2. 🎁 Providing Data with Provider (`GroupChatProvider`)\n\n#### 💡 What is happening here? (Overview)\nWe wrap child components with `<ChatDataContext.Provider value={...}>` to **stream the latest data down the pipeline**.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`value={dataValue}`**:\n   - The object provided here becomes accessible to every nested descendant component.\n2. **`{children}`**:\n   - Renders the wrapped tree naturally.\n\n---\n\n#### 💡 Pro Tip: Split Providers\nProviding separate Data and Action contexts prevents high-frequency data changes from re-rendering action-only consumers.\n\n---\n\n### 2. 🎁 Provider コンポーネントによるデータの提供 (`GroupChatProvider`)\n\n#### 💡 ここで何をしているの？（全体像）\n`<ChatDataContext.Provider value={...}>` で配下のコンポーネント全体を包み込み、**パイプラインに実際の最新データを流し込みます**。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`value={dataValue}`**:\n   - ここにセットしたオブジェクトが、配下にある全コンポーネントからアクセス可能になります。\n2. **`{children}`**:\n   - 中に配置される子コンポーネントたちをそのまま描画します。\n\n---\n\n#### 💡 プロの知恵：データの分割配信\n「頻繁に変わるデータ（メッセージ一覧）」と「ほとんど変わらない操作関数（送信・削除）」を別の Context に分けることで、不要な再レンダリングを防ぐハイレベルな最適化が行われています。",
+      "pattern": "^\\s*\\}:\\s+GroupChatProviderProps\\)\\s+=>\\s+\\{",
+      "line": 47
     },
     {
-      "file": "scripture-habit/src/components/groupchat/hooks/use-chat-context.ts",
-      "line": 9,
-      "description": "### 3. 🔒 ガード付きカスタムフック (`useChatContext`)\n\n`useContext(ChatDataContext)` をそのまま使わず、専用のカスタムフックに包みます。\nもし Provider の外側で消費されそうになった場合に `throw new Error(...)` で早期にエラーを投げるガード処理を施すのがReactの実践的パターンです。"
+      "file": "src/components/groupchat/hooks/use-chat-context.ts",
+      "description": "### 3. 🔒 Guarded Custom Consumer Hook (`useChatData`)\n\n#### 💡 What is happening here? (Overview)\nInstead of calling `useContext()` directly in components, we **wrap it in a custom hook with built-in runtime guards**.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`if (!context) throw new Error(...)`**:\n   - Throws a descriptive developer error if used outside of its Provider.\n2. **`NonNullable` Guarantee**:\n   - Guarantees the returned value is strictly non-null, removing repetitive `?` checks in UI components.\n\n---\n\n#### 💡 Pro Tip: Cleaner Consumer Code\nGuarded hooks allow consumers to destructure properties cleanly: `const { messages } = useChatData();`.\n\n---\n\n### 3. 🔒 ガード付きカスタムフック (`useChatData`)\n\n#### 💡 ここで何をしているの？（全体像）\n`useContext(ChatDataContext)` を直接呼ばず、**「安全装置（ガード）のついた専用フック」経由で取得**させます。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`if (!context) throw new Error(...)`**:\n   - 万が一、開発者が Provider の外側でこのフックを呼んでしまった場合に、即座に分かりやすいエラー文を出して開発者に警告します。\n2. **`NonNullable` 型の保証**:\n   - エラーを投げることで、戻り値が `undefined` ではなく確実にデータが存在する型として扱えるようになります。\n\n---\n\n#### 💡 プロの知恵：オプショナルチェックの排除\nガードを設けることで、呼び出し側のコンポーネントで毎回 `context?.messages` のように `?` を書く必要がなくなり、コードが劇的にすっきりします。",
+      "pattern": "^\\s*if\\s+\\(!context\\)\\s+throw\\s+new\\s+Error\\('useChatData\\s+must\\s+be\\s+used\\s+within\\s+ChatProvider'\\);",
+      "line": 11
     },
     {
-      "file": "scripture-habit/src/components/groupchat/subcomponents/chat-header.tsx",
-      "line": 18,
-      "description": "### 4. 🧩 子コンポーネントでの値の消費 (Consumption)\n\nバケツリレー（Props Drilling）で何階層も props をバケツリレーすることなく、`useChatData()` などを呼ぶだけで必要なデータだけをピンポイントで取得・レンダリングできます。"
+      "file": "src/components/groupchat/subcomponents/chat-header.tsx",
+      "description": "### 4. 🧩 Consuming Values in Child Components\n\n#### 💡 What is happening here? (Overview)\nDeep descendant components can **fetch exactly the data they need with a single line** `useChatData()`.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **One-Liner Access**:\n   - Zero intermediate props required.\n2. **Targeted Destructuring**:\n   - Extracts only the needed values (`groupData`, `unityPercentage`).\n\n---\n\n#### 💡 Pro Tip: Modularity & Refactoring\nDecoupling components from parent props makes moving and refactoring UI elements effortless.\n\n---\n\n### 4. 🧩 子コンポーネントでの値の消費 (Consumption)\n\n#### 💡 ここで何をしているの？（全体像）\nヘッダーなどの深い階層のコンポーネントが、**たった1行 `const { groupData } = useChatData();` と書くだけで欲しいデータを手に入れます**。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **ワンライナーでのデータ取得**:\n   - Props を受け取る必要が一切なくなり、コンポーネントの独立性が高まります。\n2. **必要な値だけの分割代入**:\n   - `const { groupData, unityPercentage } = useChatData();` のように、そのコンポーネントが本当に使いたい値だけを抜き出して使えます。\n\n---\n\n#### 💡 プロの知恵：モジュール設計の美しさ\nコンポーネントの見た目とデータ取得が綺麗に分離され、後からのレイアウト変更やコンポーネントの移動が驚くほど簡単になります。",
+      "pattern": "^\\s*groupData,\\s+unityPercentage,\\s+isOwner,\\s+language,\\s+groupId,\\s+userGroups,\\s+userData",
+      "line": 17
     }
   ]
 }

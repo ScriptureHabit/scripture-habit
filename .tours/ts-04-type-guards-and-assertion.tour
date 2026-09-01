@@ -1,22 +1,30 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "TypeScript基礎 04: 型ガード (Type Guard) と Null 安全 (Null Safety)",
-  "tags": ["TypeScript Fundamentals", "GroupChat", "Type Guard", "Null Safety"],
+  "title": "TypeScript 04: Type Guards & Null Safety (is / ?. / ??) / 型ガードとNull安全",
+  "tags": [
+    "TypeScript Fundamentals",
+    "GroupChat",
+    "Type Guard",
+    "Null Safety"
+  ],
   "steps": [
     {
-      "file": "scripture-habit/src/components/groupchat/hooks/use-chat-context.ts",
-      "line": 15,
-      "description": "### 1. 🛡️ `null` / `undefined` のアサーションガード\n\n`if (!context) throw new Error(...)` を挟むことで、それ以降の処理において TypeScript コンパイラは `context` が `undefined` でないことを確信できます (Type Narrowing)。"
+      "file": "src/components/groupchat/hooks/use-chat-context.ts",
+      "description": "### 1. 🛡️ Early Assertion Guards for `null` / `undefined`\n\n#### 💡 What is happening here? (Overview)\nWriting `if (!context) throw new Error(...)` **guarantees to TypeScript that `context` is strictly defined in subsequent lines**.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **Type Narrowing**:\n   - Eliminates the `undefined` possibility from the union.\n2. **Promoted to `NonNullable<T>`**:\n   - Callers can access `context.messages` directly without repetitive `?` checks.\n\n---\n\n#### 💡 Pro Tip: Natural JS Guards\nUsing natural `if` statements is far safer and cleaner than using `as Type` force casts.\n\n---\n\n### 1. 🛡️ `null` / `undefined` の早期ガード処理\n\n#### 💡 ここで何をしているの？（全体像）\n`if (!context) throw new Error(...)` を書いておくことで、**「これ以降のコードでは `context` は絶対に `undefined` ではない」と TypeScript に保証**します。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **型の絞り込み（Type Narrowing）**:\n   - `if` で `undefined` の可能性を排除すると、TypeScript が自動的に型から `undefined` を消してくれます。\n2. **`NonNullable<T>` への昇格**:\n   - これ以降の行では `context.messages` と直接書けるようになります。\n\n---\n\n#### 💡 プロの知恵：コンパイラを納得させる\n`as` による強制キャストを使わずに、自然な JavaScript の `if` 条件文で型を絞り込むのが一番安全で美しい書き方です。",
+      "pattern": "^\\s*if\\s+\\(!context\\)\\s+throw\\s+new\\s+Error\\('useChatMessageActions\\s+must\\s+be\\s+used\\s+within\\s+ChatProvider'\\);",
+      "line": 17
     },
     {
-      "file": "scripture-habit/src/components/groupchat/hooks/core/use-chat-data-engine.ts",
-      "line": 222,
-      "description": "### 2. 🔗 Optional Chaining (`?.`) と Nullish Coalescing (`??`)\n\n`userData?.uid` や `data?.user?.name ?? 'ゲスト'` を使うことで、プロパティが存在しない (`null` / `undefined`) 場合の `TypeError` クラッシュを防ぎ、安全なデフォルト値を設定します。"
+      "file": "src/components/groupchat/hooks/core/use-chat-data-engine.ts",
+      "description": "### 2. 🔗 Optional Chaining (`?.`) & Nullish Coalescing (`??`)\n\n#### 💡 What is happening here? (Overview)\nSafeguards against **'Cannot read properties of undefined' runtime crashes** when data is loading or nullable.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`userData?.uid` (Optional Chaining)**:\n   - Returns `undefined` immediately without throwing if `userData` is null.\n2. **`name ?? 'Guest'` (Nullish Coalescing)**:\n   - Falls back to `'Guest'` *only* when the left-hand side is `null` or `undefined` (preserving `0` and `''`).\n\n---\n\n#### 💡 Pro Tip: `||` vs `??`\n- `count || 10`: Overwrites `0` with `10` (bug prone!).\n- `count ?? 10`: Correctly preserves `0` as a valid number.\n\n---\n\n### 2. 🔗 オプショナルチェイニング (`?.`) と Null合体 (`??`)\n\n#### 💡 ここで何をしているの？（全体像）\nデータがまだ読み込まれていなかったり `null` の場合でも、**アプリが「Cannot read properties of undefined」で落ちないように守るモダン記法**です。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`userData?.uid` (オプショナルチェイニング)**:\n   - `userData` が `null` なら、エラーを出さずに即座に `undefined` を返します。\n2. **`name ?? 'ゲスト'` (Nullish Coalescing)**:\n   - 左側が `null` または `undefined` の時だけ、右側のデフォルト値 `'ゲスト'` を使います（`0` や `''` は有効な値として扱えます）。\n\n---\n\n#### 💡 プロの知恵：`||` と `??` の違い\n- `count || 10`: `count` が `0` のときも `10` になってしまう（バグの温床）\n- `count ?? 10`: `count` が `0` のときは正しく `0` を保つ（安全！）",
+      "pattern": "^\\s*if\\s+\\(!groupId\\s+\\|\\|\\s+!userData\\?\\.uid\\)\\s+return;",
+      "line": 147
     },
     {
-      "file": "scripture-habit/src/utils/group-utils.ts",
-      "line": 79,
-      "description": "### 3. 🔍 述語付きカスタム型ガード関数 (`is` キーワード)\n\n`.filter((d): d is Date => d !== null)` のように `d is Date`（ユーザー定義型ガード）を指定することで、配列の `filter` 処理後に `null` や `undefined` が除外された正確な型（`Date[]`）へ絞り込むことができます。"
+      "file": "src/utils/group-utils.ts",
+      "description": "### 3. 🔍 User-Defined Type Guards (`is` Keyword)\n\n#### 💡 What is happening here? (Overview)\nFilters nulls out of arrays while **promoting the TypeScript return type from `(Date | null)[]` to `Date[]`**.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **Type Predicate `d is Date`**:\n   - Informs the compiler: 'When this function returns `true`, `d` is guaranteed to be a `Date`'.\n2. **Clean Array Types**:\n   - Subsequent operations do not require redundant null checks.\n\n---\n\n#### 💡 Pro Tip: Beginner Stumbling Block\nSolves the classic beginner frustration where `array.filter(x => x !== null)` still leaves `null` in the TypeScript type.\n\n---\n\n### 3. 🔍 ユーザー定義型ガード (`is` キーワード)\n\n#### 💡 ここで何をしているの？（全体像）\n配列から `null` や `undefined` を `.filter()` で除外した時に、**TypeScript の型上でも `(Date | null)[]` から `Date[]` へ綺麗に浄化するテクニック**です。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **型述語（Type Predicate）`d is Date`**:\n   - 「この関数が `true` を返したら、引数 `d` は確実に `Date` 型ですよ」とコンパイラに宣言します。\n2. **配列の型の進化**:\n   - 通常の `filter(d => d !== null)` だと型が `(Date | null)[]` のままですが、`d is Date` を書くと返り値が `Date[]` に昇格します。\n\n---\n\n#### 💡 プロの知恵：TypeScript 初心者が必ずハマる罠の解消\n「せっかく filter で null を消したのに、後続の処理で null チェックを求められてエラーになる…」という初心者の悩みを完璧に解決する強力な武器です。",
+      "pattern": "^\\s*\\.filter\\(\\(d\\):\\s+d\\s+is\\s+Date\\s+=>\\s+d\\s+!==\\s+null\\s+&&\\s+!isNaN\\(d\\.getTime\\(\\)\\)\\);",
+      "line": 79
     }
   ]
 }

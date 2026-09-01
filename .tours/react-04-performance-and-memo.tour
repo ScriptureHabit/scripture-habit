@@ -1,22 +1,30 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "React基礎 04: レンダリング最適化 (useMemo / useCallback / React.memo)",
-  "tags": ["React Fundamentals", "GroupChat", "Performance", "Optimization"],
+  "title": "React 04: Performance Optimization (useMemo / useCallback / React.memo) / レンダリング最適化",
+  "tags": [
+    "React Fundamentals",
+    "GroupChat",
+    "Performance",
+    "Optimization"
+  ],
   "steps": [
     {
-      "file": "scripture-habit/src/components/groupchat/group-chat-provider.tsx",
-      "line": 133,
-      "description": "### 1. 💎 `useMemo` による参照の同一性 (Referential Equality) の保持\n\nContext の `value` オブジェクトを `useMemo` なしで渡すと、親がレンダリングされるたびに「新しいオブジェクト参照（アドレス）」が作成され、全配下コンポーネントが不要に再レンダリングされてしまいます。\n依存値が変わった時だけ参照を新しく生成することで、この無駄を防ぎます。"
+      "file": "src/components/groupchat/group-chat-provider.tsx",
+      "description": "### 1. 💎 Object Memoization with `useMemo`\n\n#### 💡 What is happening here? (Overview)\nCaches complex data objects so that **the previous calculation is reused when inputs haven't changed**.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **Referential Equality**:\n   - JS treats `{ a: 1 }` created on each render as a brand-new object reference.\n2. **Dependency List**:\n   - Only rebuilds the object when items in `[messages, loading, ...]` actually change.\n\n---\n\n#### 💡 Pro Tip: Preventing Re-render Cascades\nWithout `useMemo`, every parent render cascades down to all Context consumers.\n\n---\n\n### 1. 💎 オブジェクトのメモ化 (`useMemo`)\n\n#### 💡 ここで何をしているの？（全体像）\nContext に渡す大きなデータオブジェクトを、**「中身が変わっていない時は前回の計算結果をそのまま使い回す（キャッシュする）」**処理です。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **参照の同一性（Referential Equality）**:\n   - JavaScript では、中身が同じ `{ a: 1 }` でも毎回新しく作ると「別のオブジェクト（別のメモリアドレス）」と判定されてしまいます。\n2. **依存配列**:\n   - `[messages, loading, ...]` のように、指定した変数の値が変わった時だけ新しいオブジェクトを作ります。\n\n---\n\n#### 💡 プロの知恵：全画面再描画のドミノ倒しを防ぐ\nもし `useMemo` を忘れると、親が1回動くたびに「新しいContextが配給された！」とReactが勘違いし、配下にある何十個もの子コンポーネントが一斉に無駄に再レンダリングされてしまいます。",
+      "pattern": "^\\s*const\\s+dataValue\\s+=\\s+useMemo<ChatDataContextType>\\(\\(\\)\\s+=>\\s+\\(\\{",
+      "line": 146
     },
     {
-      "file": "scripture-habit/src/components/groupchat/hooks/api/use-message-actions.ts",
-      "line": 44,
-      "description": "### 2. ⚓ `useCallback` による関数参照の固定\n\n子コンポーネントに props や Context 経由でコールバック関数を渡す場合、`useCallback` で関数をメモ化します。\nこれにより、レンダリング毎に新しい関数インスタンス（新しいアドレス）が作られるのを防止します。"
+      "file": "src/components/groupchat/hooks/api/use-message-actions.ts",
+      "description": "### 2. ⚓ Function Memoization with `useCallback`\n\n#### 💡 What is happening here? (Overview)\nPrevents **functions from being re-instantiated on every render**, reusing the exact same callback instance.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **Function Re-creation**:\n   - Passing an inline function as a prop looks like a new prop to memoized children.\n2. **`useCallback(fn, deps)`**:\n   - Preserves function reference stability across renders.\n\n---\n\n#### 💡 Pro Tip: `useMemo` vs `useCallback`\n- `useMemo`: Caches the *result/value* of a computation.\n- `useCallback`: Caches the *function instance itself*.\n\n---\n\n### 2. ⚓ 関数のメモ化 (`useCallback`)\n\n#### 💡 ここで何をしているの？（全体像）\nコンポーネントが再描画されるたびに**「関数が新しく作り直されるのを防ぎ、同じ関数インスタンスを使い回す」**処理です。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **関数の再生成問題**:\n   - 普通に関数を書くと、レンダリングのたびに関数が新しく生まれ、子コンポーネントから見ると「新しい props が渡された」と見なされてしまいます。\n2. **`useCallback(fn, deps)`**:\n   - 依存配列 `deps` が変化しない限り、まったく同じ関数の参照を保ち続けます。\n\n---\n\n#### 💡 プロの知恵：`useMemo` との違い\n- `useMemo`: 関数の「実行結果（値やオブジェクト）」をキャッシュする\n- `useCallback`: 「関数そのもの」をキャッシュする",
+      "pattern": "^\\s*const\\s+handleToggleReactionDirect\\s+=\\s+useCallback\\(async\\s+\\(message:\\s+Message,\\s+emoji:\\s+string\\)\\s+=>\\s+\\{",
+      "line": 304
     },
     {
-      "file": "scripture-habit/src/components/groupchat/subcomponents/message-item.tsx",
-      "line": 22,
-      "description": "### 3. 🛡️ `React.memo` によるコンポーネントの再レンダリング抑制\n\nチャットメッセージのようにリスト内で多数並ぶコンポーネントには `memo(MessageItem)` を適用します。\n渡された `props` が前回のレンダリング時と浅い比較（Shallow Compare）で変化していない場合、React はそのコンポーネントの再描画を完全にスキップします。"
+      "file": "src/components/groupchat/subcomponents/message-item.tsx",
+      "description": "### 3. 🛡️ Component Memoization with `React.memo`\n\n#### 💡 What is happening here? (Overview)\nWraps the message component in `memo()` to **skip re-rendering if props are unchanged**.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **Shallow Comparison**:\n   - Compares previous and current props, instantly reusing the cached Virtual DOM.\n2. **List Performance**:\n   - In a list of 100 items, adding 1 new item only renders the 1 new item.\n\n---\n\n#### 💡 Pro Tip: Silky Smooth 60 FPS Lists\nHigh-performing timeline and chat feeds rely heavily on `React.memo` for butter-smooth mobile scrolling.\n\n---\n\n### 3. 🛡️ コンポーネントの再レンダリング抑制 (`React.memo`)\n\n#### 💡 ここで何をしているの？（全体像）\nメッセージ1件を描画するコンポーネントを `memo()` で包み、**「自分の props（メッセージ内容）が変わっていないなら、再描画を完全にスキップする」**処理です。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **浅い比較（Shallow Compare）**:\n   - 前回の props と今回の props を比較し、変化がなければ前回の描画結果（仮想DOM）をそのまま即座に再利用します。\n2. **大量リストでの劇的な効果**:\n   - 100件のメッセージが表示されている状態で1件追加された時、再描画されるのは「追加された1件だけ」になり、残りの99件は描画コストがゼロになります。\n\n---\n\n#### 💡 プロの知恵：スマホでの電池持ち＆サクサク感\nチャットやSNSのタイムラインでスクロールが滑らかなアプリは、ほぼ 100% この `React.memo` による最適化が施されています。",
+      "pattern": "^\\s*const\\s+MessageItem\\s+=\\s+memo\\(\\(\\{",
+      "line": 23
     }
   ]
 }

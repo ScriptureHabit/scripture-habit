@@ -1,17 +1,24 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "TypeScript基礎 05: as const リテラル固定と keyof typeof 型抽出",
-  "tags": ["TypeScript Fundamentals", "GroupChat", "as const", "Type Inference"],
+  "title": "TypeScript 05: as const Assertions & typeof Type Extraction / as const と型自動生成",
+  "tags": [
+    "TypeScript Fundamentals",
+    "GroupChat",
+    "as const",
+    "Type Inference"
+  ],
   "steps": [
     {
-      "file": "scripture-habit/src/types/scripture.ts",
-      "line": 11,
-      "description": "### 1. 🔒 `as const` アサーションによるリテラル型固定\n\n`const SCRIPTURE_CATEGORIES = [...] as const` と宣言することで、配列やオブジェクトが変更不可 (readonly) になり、単なる `string[]` ではなく固有名（リテラル文字列）の配列として正確に型推論されます。"
+      "file": "src/types/scripture.ts",
+      "description": "### 1. 🔒 Literal Locking with `as const`\n\n#### 💡 What is happening here? (Overview)\nAttaching `as const` to a constant array locks its shape into a **read-only tuple of exact string literals**.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **Standard `const arr = ['a', 'b']`**:\n   - Inferred loosely as `string[]`.\n2. **With `as const`**:\n   - Inferred strictly as `readonly ['a', 'b']` where values can never be mutated.\n\n---\n\n#### 💡 Pro Tip: Superior to `enum`\nModern TypeScript codebases favor plain JS objects with `as const` over TypeScript `enum` because it generates zero extra runtime bundle overhead.\n\n---\n\n### 1. 🔒 `as const` によるリテラル型の固定 (Const Assertion)\n\n#### 💡 ここで何をしているの？（全体像）\n定数配列やオブジェクトの末尾に `as const` をつけることで、**「単なる文字列ではなく、この決まった文字列以外の変更を一切認めない完全固定の型」として定義**します。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **通常の `const arr = ['a', 'b']`**:\n   - 型は `string[]` と広めに推論されてしまい、後から別の文字列を入れられてしまいます。\n2. **`as const` をつけた場合**:\n   - 型が `readonly ['a', 'b']` となり、値の追加・変更が完全に禁止され、中身の文字列そのものが型になります。\n\n---\n\n#### 💡 プロの知恵：enum（列挙型）の代わりとして大人気\n昔使われていた TypeScript の `enum` よりも、JavaScript の標準オブジェクト + `as const` の組み合わせの方がバンドルサイズが小さく、現代のフロントエンドで圧倒的に推奨されています。",
+      "pattern": "^\\s*\\}\\s+as\\s+const\\s+satisfies\\s+Record<ScriptureCategory,\\s+string>;",
+      "line": 26
     },
     {
-      "file": "scripture-habit/src/types/scripture.ts",
-      "line": 13,
-      "description": "### 2. 🔑 `typeof` を組み合わせた型の自動抽出\n\n`type ScriptureCategory = (typeof SCRIPTURE_CATEGORIES)[number];` と書くことで、`as const` で固定した配列要素から `'Old Testament' | 'New Testament' | ...` というユニオン型を自動で抽出できます。\n配列要素を1箇所変更するだけで型も自動で同期する最高のパターンです。"
+      "file": "src/types/scripture.ts",
+      "description": "### 2. 🔑 Auto-Generating Union Types (`typeof arr[number]`)\n\n#### 💡 What is happening here? (Overview)\nAutomatically extracts a **TypeScript union type (`'Old' | 'New' | ...`) directly from JavaScript array values**.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`typeof SCRIPTURE_CATEGORIES`**:\n   - Extracts the type of the constant.\n2. **`[number]`**:\n   - Indexes into array elements to produce a union of all members.\n\n---\n\n#### 💡 Pro Tip: Zero Duplicate Maintenance\nAdding a new item to the array automatically updates the TypeScript union type everywhere in the project.\n\n---\n\n### 2. 🔑 `typeof` を組み合わせた型の自動生成 (`typeof arr[number]`)\n\n#### 💡 ここで何をしているの？（全体像）\nJavaScript の配列の値から、**TypeScript のユニオン型（`'Old' | 'New' | ...`）を自動的に逆生成**します。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`typeof SCRIPTURE_CATEGORIES`**:\n   - JavaScript の定数から型情報を抜き出します。\n2. **`[number]`**:\n   - 「配列の中に入っている要素の型」を取り出します。\n\n---\n\n#### 💡 プロの知恵：二重メンテナンスの撲滅\n配列に新しいカテゴリを1個追加するだけで、TypeScript の型も同時に自動更新されます。「配列に項目を足したのに型定義の更新を忘れてバグる」というミスを 100% 防げます。",
+      "pattern": "^\\s*export\\s+type\\s+ScriptureCategory\\s+=\\s+\\(typeof\\s+SCRIPTURE_CATEGORIES\\)\\[number\\];",
+      "line": 13
     }
   ]
 }

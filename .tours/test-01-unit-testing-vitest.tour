@@ -1,17 +1,23 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "Testing基礎 01: Vitest による単体テスト (describe, it, expect)",
-  "tags": ["Testing Fundamentals", "Vitest", "Unit Testing"],
+  "title": "Testing 01: Unit Testing with Vitest (describe / it / expect) / 単体テストの基礎",
+  "tags": [
+    "Testing Fundamentals",
+    "Vitest",
+    "Unit Testing"
+  ],
   "steps": [
     {
-      "file": "scripture-habit/src/utils/group-utils.test.ts",
-      "line": 6,
-      "description": "### 1. 🧪 テストのグループ化 (`describe`) と 個別テスト (`it` / `test`)\n\n`describe('関数名', () => { ... })` でテスト対象のグループを作り、`it('期待する挙動', () => { ... })` 内に個々のテストケースを記述します。"
+      "file": "src/utils/group-utils.test.ts",
+      "description": "### 1. 🧪 Grouping Tests with `describe` & `it`\n\n#### 💡 What is happening here? (Overview)\nOrganizes test specifications into **logical folders (`describe`) and individual test scenarios (`it`)**.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`describe('Function', () => { ... })`**:\n   - Groups tests for a specific module or function.\n2. **`it('should ...', () => { ... })`**:\n   - Individual test case describing the expected behavior in clear language.\n\n---\n\n#### 💡 Pro Tip: BDD Grammar\nWriting tests that read like English sentences (`describe` subject + `it` should do X) makes documentation effortless.\n\n---\n\n### 1. 🧪 テストのグループ化 (`describe`) と 個別テスト (`it` / `test`)\n\n#### 💡 ここで何をしているの？（全体像）\nテスト対象の関数ごとに**「どんな条件で何をテストするか」をフォルダのように整理して記述**します。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`describe('関数名', () => { ... })`**:\n   - テストのグループ（まとまり）を作ります。\n2. **`it('日本語の説明', () => { ... })`**:\n   - 1つ1つの具体的なテストケースです。「〜した時、〜になるべき」という仕様を言葉で書きます。\n\n---\n\n#### 💡 プロの知恵：BDD（振る舞い駆動開発）の文法\n`describe`（対象）+ `it should ...`（振る舞い）という英語の文章になるように命名するのが、読みやすいテストコードの標準作法です。",
+      "pattern": "^\\s*describe\\('Group\\s+Utils\\s+-\\s+enrichGroupUnity',\\s+\\(\\)\\s+=>\\s+\\{",
+      "line": 6
     },
     {
-      "file": "scripture-habit/src/utils/group-utils.test.ts",
-      "line": 23,
-      "description": "### 2. 🎯 アサーション (検証文: `expect().toBe() / toEqual()`)\n\n`expect(actual).toBe(expected)` や `toEqual()` を使って、実行結果が期待通りであるかを検証（アサーション）します。"
+      "file": "src/utils/group-utils.test.ts",
+      "description": "### 2. 🎯 Verifying Outcomes with `expect().toBe()`\n\n#### 💡 What is happening here? (Overview)\nProgrammatically asserts that **the actual output matches the expected result**.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`expect(actual).toBe(expected)`**:\n   - Strict equality assertion (`===`) for primitives and references.\n2. **`toEqual()` vs `toBe()`**:\n   - `toBe`: Value / reference equality.\n   - `toEqual`: Deep structure equality for objects and arrays.\n\n---\n\n#### 💡 Pro Tip: Regression Prevention\nRunning `npm test` after modifying code gives instant feedback in milliseconds whether past logic broke.\n\n---\n\n### 2. 🎯 アサーション (検証文: `expect().toBe()`)\n\n#### 💡 ここで何をしているの？（全体像）\n実際に関数を実行した結果が、**「開発者が期待した通りの値になっているか」を機械的に判定**します。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`expect(actual).toBe(expected)`**:\n   - 数値や文字列、boolean の完全一致（`===`）を検証します。\n2. **`toEqual()` との違い**:\n   - `toBe`: プリミティブ値や参照の一致\n   - `toEqual`: オブジェクトや配列の「中身（ディープな構造）」の一致\n\n---\n\n#### 💡 プロの知恵：リグレッション（先祖返り）の完全防止\nコードを修正した時に `npm test` を一発叩くだけで、過去に作った計算ロジックが壊れていないか数ミリ秒で全確認できます。",
+      "pattern": "expect\\(result\\.unityPercentage\\)\\.toBe\\(50\\);",
+      "line": 23
     }
   ]
 }

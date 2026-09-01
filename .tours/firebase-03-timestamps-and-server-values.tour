@@ -1,17 +1,24 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "Firebase基礎 03: serverTimestamp() と タイムスタンプの扱い",
-  "tags": ["Firebase Fundamentals", "GroupChat", "Firestore", "Timestamp"],
+  "title": "Firebase 03: serverTimestamp() & Date Parsing / タイムスタンプ処理",
+  "tags": [
+    "Firebase Fundamentals",
+    "GroupChat",
+    "Firestore",
+    "Timestamp"
+  ],
   "steps": [
     {
-      "file": "scripture-habit/src/components/dashboard/hooks/use-dashboard-actions.ts",
-      "line": 42,
-      "description": "### 1. 🕒 端末時刻に頼らない `serverTimestamp()`\n\n`new Date()` を使用するとユーザー端末の時計のズレや不正変更の影響を受けます。\nデータ更新時は `serverTimestamp()` を使用し、Firestore サーバー側の正確な統一時刻を書き込みます。"
+      "file": "src/components/dashboard/hooks/use-dashboard-actions.ts",
+      "description": "### 1. 🕒 Trusting Server Time with `serverTimestamp()`\n\n#### 💡 What is happening here? (Overview)\nWhen saving timestamps, we use **the canonical time from Google's Firestore servers** rather than trusting the user's device clock.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **The Risk of `new Date()`**:\n   - If a user's phone clock is skewed or intentionally altered, timestamps will become corrupted.\n2. **`serverTimestamp()` (Sentinel Value)**:\n   - Acts as a placeholder token instructing Firestore: 'Replace this with the exact server time upon arrival.'\n\n---\n\n#### 💡 Pro Tip: Streak & Ordering Integrity\nFor streaks and message ordering, `serverTimestamp()` completely eliminates timezone cheats and device clock sync issues.\n\n---\n\n### 1. 🕒 端末時刻に頼らない `serverTimestamp()`\n\n#### 💡 ここで何をしているの？（全体像）\nデータを更新する際に、ユーザーのスマホ端末の時計ではなく、**「Google の Firestore サーバー側の正確な統一時刻」を書き込みます**。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`new Date()` の危険性**:\n   - ユーザーのスマホの時計が5分ズレていたり、意図的に時刻を変更（タイムトラベル裏技など）された場合、データの日時が狂ってしまいます。\n2. **`serverTimestamp()`（センチネル値）**:\n   - 「サーバーに届いた瞬間の正確な時間をここに埋め込んでくれ」という特別な予約チケットのような値です。\n\n---\n\n#### 💡 プロの知恵：習慣記録やチャットでの重要性\n「連続ログイン日数（ストリーク）」や「メッセージの送信順」を判定する際、端末時刻ではなく `serverTimestamp()` を使うことで、ズルやタイムゾーンのバグを 100% 防げます。",
+      "pattern": "^\\s*lastReadAt:\\s+serverTimestamp\\(\\)",
+      "line": 63
     },
     {
-      "file": "scripture-habit/src/utils/time-utils.ts",
-      "line": 12,
-      "description": "### 2. 🔄 Firestore `Timestamp` オブジェクトの安全なパース\n\nFirestore から取得した時刻フィールドは標準の `Date` ではなく `Timestamp` 型 (`toMillis()` や `seconds` を持つ) になっています。\nReact 側で表示・判定を行う際にミリ秒や Date へ安全に変換・正規化するユーティリティ (`parseTimestampToMillis`) を用意します。"
+      "file": "src/utils/time-utils.ts",
+      "description": "### 2. 🔄 Safely Parsing Firestore `Timestamp` Objects\n\n#### 💡 What is happening here? (Overview)\nWe convert Firestore's specialized `Timestamp` objects into **standard JavaScript `Date` instances and millisecond numbers**.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`ts.toMillis()` / `ts.seconds`**:\n   - Firestore timestamps have different methods and properties from native JS `Date` objects.\n2. **Handling Heterogeneous Types**:\n   - `parseTimestampToMillis` seamlessly normalizes Firestore Timestamps, ISO strings, Epoch numbers, and Date objects into a single numeric millisecond format.\n\n---\n\n#### 💡 Pro Tip: Preventing White-Screen Crashes\nNormalizing timestamps at the utility boundary prevents `TypeError: ts.getTime is not a function` crashes when rendering date labels.\n\n---\n\n### 2. 🔄 Firestore `Timestamp` オブジェクトの安全なパース\n\n#### 💡 ここで何をしているの？（全体像）\nFirestore から取得した特殊な日時データ（`Timestamp` 型）を、**JavaScript で扱いやすい標準の `Date` やミリ秒（数値）に安全に変換（正規化）**します。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`ts.toMillis()` / `ts.seconds`**:\n   - Firestore のタイムスタンプは通常の `Date` オブジェクトとはメソッドが異なります。\n2. **多重型の吸収**:\n   - サーバーから取得したデータが「Firestore Timestamp」「ISO文字列」「ミリ秒の数値」「Dateオブジェクト」のどれであっても、1つのヘルパー関数で確実にミリ秒へ変換します。\n\n---\n\n#### 💡 プロの知恵：型エラーによる画面真っ白（ホワイトアウト）の防止\n日時の形式が想定と違った時にアプリがクラッシュするのを防ぐため、このような共通ユーティリティ（`parseTimestampToMillis`）を挟むのが堅牢なアプリ開発の基本です。",
+      "pattern": "^\\s*export\\s+const\\s+parseTimestampToDate\\s+=\\s+\\(ts\\?:\\s+FirebaseTimestamp\\s+\\|\\s+null\\):\\s+Date\\s+=>\\s+\\{",
+      "line": 3
     }
   ]
 }

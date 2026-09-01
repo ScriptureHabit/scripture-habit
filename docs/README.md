@@ -91,6 +91,8 @@ Welcome to the **scripture-habit** technical documentation. This collection outl
 ## Development & Operations
 - **[Development & Setup Guide](development-guide.md)**
   - Step-by-step local environment setup, Firebase emulators, and local development workflows.
+- **[Interactive Code Tours (VS Code)](development-guide.md#interactive-code-tours-vs-code)**
+  - 64 interactive guided tours inside VS Code covering fundamental concepts and architectural data flows.
 - **[Troubleshooting & FAQ](troubleshooting.md)**
   - Solutions for common local issues, App Check bypass configurations, and port conflicts.
 - **[Testing & Reliability Guide](testing-guide.md)**

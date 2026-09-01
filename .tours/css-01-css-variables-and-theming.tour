@@ -1,17 +1,24 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "CSS/UI基礎 01: CSS変数 (--var-name) と 統一テーマシステム",
-  "tags": ["CSS Fundamentals", "UI", "CSS Variables", "Theming"],
+  "title": "CSS 01: CSS Variables (--var) & Unified Theming / CSS変数とテーマシステム",
+  "tags": [
+    "CSS Fundamentals",
+    "UI",
+    "CSS Variables",
+    "Theming"
+  ],
   "steps": [
     {
-      "file": "scripture-habit/src/index.css",
-      "line": 7,
-      "description": "### 1. 🎨 CSS カスタムプロパティ (CSS Variables: `--var-name`)\n\n`:root` で `--yellow`, `--orange`, `--purple`, `--glass` のようにデザインシステム共通の変数（カスタムプロパティ）を定義し、アプリ全体のテーマカラーを一元管理します。"
+      "file": "src/index.css",
+      "description": "### 1. 🎨 CSS Custom Properties (`:root` Variables)\n\n#### 💡 What is happening here? (Overview)\nDeclares **global theme colors (orange, purple, glass tints) in `:root`** for unified app-wide design tokens.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`--var-name: #ff9800;`**:\n   - Prefixing with `--` creates a native CSS variable.\n2. **`var(--var-name)`**:\n   - Referencing tokens in stylesheets: `color: var(--orange);`.\n\n---\n\n#### 💡 Pro Tip: Effortless Dark Mode\nInstead of hardcoding color hexes across 50 components, CSS variables allow toggling themes in 1 line of CSS.\n\n---\n\n### 1. 🎨 CSS 変数（カスタムプロパティ）の定義 (`:root`)\n\n#### 💡 ここで何をしているの？（全体像）\nアプリ全体で使うテーマカラー（オレンジ、パープル、半透明ガラス背景など）を、**「`:root` という大元に変数として登録」し、一括管理**します。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`--var-name: #ff9800;`**:\n   - 先頭に `--` をつけると CSS 変数になります。\n2. **`var(--var-name)`**:\n   - 使う側は `color: var(--orange);` と書くだけでその色を呼び出せます。\n\n---\n\n#### 💡 プロの知恵：ダークモードやテーマ切り替えが超簡単に！\nカラーコード `#ff9800` を何十箇所にも直書きするのをやめ、変数にしておくことで、将来のダークモード対応やブランドカラー変更が1行の書き換えだけで完了します。",
+      "pattern": "background-color: var\\(--glass\\);",
+      "line": 79
     },
     {
-      "file": "scripture-habit/src/index.css",
-      "line": 19,
-      "description": "### 2. 🌙 テーマカラーの宣言とグラデーション変数\n\n`--yellow: linear-gradient(...)` のようにグラデーションや透過色 (`--glass`) を変数化しておくことで、一箇所を修正するだけで全コンポーネントのデザインが一括更新される堅牢な基盤を作ります。"
+      "file": "src/index.css",
+      "description": "### 2. 🌙 Glassmorphism & Gradient Variables\n\n#### 💡 What is happening here? (Overview)\nDefines translucent background tokens (`--glass`) and backdrop blurs to **create premium Glassmorphism card effects**.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`backdrop-filter: blur(10px)`**:\n   - Blurs underlying content so foreground cards float elegantly.\n2. **Token Centralization**:\n   - Adjusting transparency in `:root` instantly cascades to every glass card in the app.\n\n---\n\n#### 💡 Pro Tip: Design Tokens Standard\nTokenizing colors, spacing, and border radii is the gold standard for modern web UI architecture.\n\n---\n\n### 2. 🌙 すりガラス効果（グラスモーフィズム）とグラデーション\n\n#### 💡 ここで何をしているの？（全体像）\n`--glass: rgba(255, 255, 255, 0.7)` などの半透明カラーを変数化し、**今どきの高級感ある「すりガラス風UI（Glassmorphism）」を実現**します。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`backdrop-filter: blur(10px)`**:\n   - 背景のコンテンツをぼかすことで、手前のカードが浮かび上がって見える美しいエフェクトです。\n2. **一元管理の威力**:\n   - すりガラスの透明度を少し変えたい時も、`:root` の変数を1つ調整するだけでアプリ全体の全カードに一斉反映されます。\n\n---\n\n#### 💡 プロの知恵：デザインシステム（Design Tokens）\n色・余白・フォントサイズ・角丸（`border-radius`）を変数としてトークン化しておくのが、モダンWebデザインのデファクトスタンダードです。",
+      "pattern": "^\\s*-webkit-backdrop-filter:\\s+blur\\(10px\\);",
+      "line": 253
     }
   ]
 }

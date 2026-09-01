@@ -1,22 +1,30 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "TypeScript基礎 01: 判別可能なユニオン型 (Discriminated Unions) と型絞り込み",
-  "tags": ["TypeScript Fundamentals", "GroupChat", "Discriminated Unions", "Types"],
+  "title": "TypeScript 01: Discriminated Unions & Type Narrowing / 判別可能なユニオン型",
+  "tags": [
+    "TypeScript Fundamentals",
+    "GroupChat",
+    "Discriminated Unions",
+    "Types"
+  ],
   "steps": [
     {
-      "file": "scripture-habit/src/components/groupchat/hooks/core/chat-reducer.ts",
-      "line": 19,
-      "description": "### 1. 🏷️ リテラル型による判別キー (`type` / `status`)\n\nユニオン型を構成するすべての型に、共通の識別子プロパティ（例: `type: 'SET_MESSAGES'` や `type: 'ADD_NEW_MESSAGES'`）を持たせます。\n文字列ではなく「特定のリテラル文字列型」として宣言するのがポイントです。"
+      "file": "src/components/groupchat/hooks/core/chat-reducer.ts",
+      "description": "### 1. 🏷️ Discriminant Key with Literal Types (`type` Property)\n\n#### 💡 What is happening here? (Overview)\nAttaches a **common identifier tag (e.g. `type: 'SET_MESSAGES'`)** to each action object to form a strongly-typed Discriminated Union.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **String Literal Types**:\n   - Narrower than `string`; matches only the exact string literal `'SET_MESSAGES'`.\n2. **Discriminated Unions (Tagged Unions)**:\n   - Enables TypeScript to distinguish between completely different payload shapes.\n\n---\n\n#### 💡 Pro Tip: Industry Standard Pattern\nTagged unions are standard in TypeScript, Rust, and Swift for type-safe state modeling.\n\n---\n\n### 1. 🏷️ リテラル型による判別キー (`type` プロパティ)\n\n#### 💡 ここで何をしているの？（全体像）\n複数の異なるアクション（メッセージ設定、追加、削除など）に、**共通の名前札（`type: 'SET_MESSAGES'` など）を付けて1つの大きな型（ユニオン型）にまとめます**。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **文字列リテラル型**:\n   - 単なる `string` ではなく `'SET_MESSAGES'` という特定の文字列そのものを型として指定します。\n2. **判別可能なユニオン型（Discriminated Unions）**:\n   - 共通の `type` フィールドがあるおかげで、TypeScript が「あ、これは SET_MESSAGES 型だな」と見分けられるようになります。\n\n---\n\n#### 💡 プロの知恵：タグ付き共用体（Tagged Unions）\nRust や Swift などの先進的な言語でも使われている、最も安全で型安全なデータ表現パターンです。",
+      "pattern": "^\\s*\\|\\s+\\{\\s+type:\\s+'SET_MESSAGES';\\s+messages:\\s+Message\\[\\]\\s+\\}",
+      "line": 26
     },
     {
-      "file": "scripture-habit/src/components/groupchat/hooks/core/chat-reducer.ts",
-      "line": 80,
-      "description": "### 2. 🔍 `switch` / `if` 文による自動型絞り込み (Type Narrowing)\n\n`switch (action.type)` の分岐の中で、TypeScript コンパイラは自動的に `action` の型を特定の Action（例: `SetMessagesAction`）に絞り込みます。\nこれにより、`action.messages` などその型特有のプロパティへ安全にアクセスできるようになります。"
+      "file": "src/components/groupchat/hooks/core/chat-reducer.ts",
+      "description": "### 2. 🔍 Automatic Type Narrowing via `switch`\n\n#### 💡 What is happening here? (Overview)\nInside `switch (action.type)`, TypeScript **automatically narrows the variable's type to the specific Action**.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **Type Narrowing**:\n   - Inside `case 'SET_MESSAGES':`, accessing `action.messages` is 100% type-safe with full IDE autocomplete.\n2. **Blocking Non-existent Properties**:\n   - Accessing invalid properties produces compile-time errors.\n\n---\n\n#### 💡 Pro Tip: Zero Runtime Crashes\nEliminates runtime `TypeError: undefined is not an object` bugs before code deploys.\n\n---\n\n### 2. 🔍 `switch` 文による自動型絞り込み (Type Narrowing)\n\n#### 💡 ここで何をしているの？（全体像）\n`switch (action.type)` で分岐に入った瞬間、**TypeScript が自動的に「この `case` の中では `action` は確実にこの型だ」と理解してくれる機能**です。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **型推論の自動絞り込み**:\n   - `case 'SET_MESSAGES':` の中では、`action.messages` にアクセスしてもエラーにならず、エディタで自動補完が効きます。\n2. **存在しないプロパティのブロック**:\n   - 逆に、この中で `action.messageId` にアクセスしようとすると「そんなプロパティはありません」と TypeScript が即座に警告してくれます。\n\n---\n\n#### 💡 プロの知恵：実行時エラーの根絶\n「存在しないプロパティを触って `undefined` エラーでクラッシュする」というバグを、実行する前に 100% コンパイル段階で防ぐことができます。",
+      "pattern": "^\\s*switch\\s+\\(action\\.type\\)\\s+\\{",
+      "line": 86
     },
     {
-      "file": "scripture-habit/src/components/groupchat/hooks/core/chat-reducer.ts",
-      "line": 4,
-      "description": "### 3. 🛡️ 矛盾した状態を表現させない State 設計\n\n`ChatStatus = 'loading' | 'active' | 'error' | 'notFound'` のようにステータスをユニオン型にすることで、`isLoading: true` かつ `isError: true` のような不正な状態の発生を型レベルで防止します。"
+      "file": "src/components/groupchat/hooks/core/chat-reducer.ts",
+      "description": "### 3. 🛡️ Preventing Impossible States\n\n#### 💡 What is happening here? (Overview)\n`ChatStatus = 'loading' | 'active' | 'error' | 'notFound'` **makes invalid state combinations impossible**.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **Bad Practice**:\n   - `{ isLoading: true, isError: true }` ❌ (Unclear what the UI should show).\n2. **Good Practice**:\n   - `{ status: 'loading' }` | `{ status: 'error' }` ⭕ (Mutually exclusive).\n\n---\n\n#### 💡 Pro Tip: Make Impossible States Impossible\nA core tenet of TypeScript design: structure types so incorrect states cannot even be expressed.\n\n---\n\n### 3. 🛡️ 矛盾した状態を作らせない State 設計\n\n#### 💡 ここで何をしているの？（全体像）\n`ChatStatus = 'loading' | 'active' | 'error' | 'notFound'` のように、**「あり得ない状態の組み合わせ」を型レベルで物理的に作れないようにします**。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **bad 例（boolean フラグ乱立）**:\n   - `{ isLoading: true, isError: true }` ❌（読み込み中なのかエラーなのか分からない）\n2. **good 例（ユニオン型）**:\n   - `{ status: 'loading' }` または `{ status: 'error' }` ⭕（必ず1つに決定）\n\n---\n\n#### 💡 プロの知恵：Make Impossible States Impossible\n「不可能な状態はそもそも型で表現できないように設計せよ」というTypeScriptの最高原則です。これに従うだけでバグの 90% が消え去ります。",
+      "pattern": "^\\s*export\\s+type\\s+ChatStatus\\s+=\\s+'loading'\\s+\\|\\s+'active'\\s+\\|\\s+'error'\\s+\\|\\s+'notFound';",
+      "line": 4
     }
   ]
 }

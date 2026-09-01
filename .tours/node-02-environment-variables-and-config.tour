@@ -1,17 +1,23 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "Node.js/Express基礎 02: 環境変数 (process.env) と環境分岐",
-  "tags": ["Node.js Fundamentals", "Express", "Environment Variables"],
+  "title": "Node.js 02: Environment Variables & Mode Branching / 環境変数と設定分岐",
+  "tags": [
+    "Node.js Fundamentals",
+    "Express",
+    "Environment Variables"
+  ],
   "steps": [
     {
-      "file": "scripture-habit/api_internal/lib/middleware.ts",
-      "line": 96,
-      "description": "### 1. 🌐 `process.env` による環境変数の参照\n\n`process.env.NODE_ENV` や `process.env.SKIP_APP_CHECK` を参照することで、本番環境 (Production)・開発環境 (Development)・ローカルテストなどの実行環境に応じた設定を切り替えます。"
+      "file": "api_internal/lib/middleware.ts",
+      "description": "### 1. 🌐 Reading Configuration via `process.env`\n\n#### 💡 What is happening here? (Overview)\nLoads passwords, API secrets, and server modes **safely from OS environment variables (`.env`) rather than hardcoding them into source code**.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`process.env.NODE_ENV === 'production'`**:\n   - Identifies whether the app is running in cloud production or local development.\n2. **Protecting Secrets**:\n   - Prevents database credentials and private keys from leaking into public GitHub repositories.\n\n---\n\n#### 💡 Pro Tip: Twelve-Factor App Standard\n'Store config in the environment' is a fundamental law of cloud-native development.\n\n---\n\n### 1. 🌐 `process.env` による環境変数の参照\n\n#### 💡 ここで何をしているの？（全体像）\nパスワードやAPIキー、本番/開発の動作モードなどの設定値を、**「ソースコードに直接書かず、OSの環境変数（`.env`）から安全に読み込む」**処理です。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`process.env.NODE_ENV === 'production'`**:\n   - 現在動いているのが「本番サーバー（Vercel/クラウド）」なのか「手元の開発PC（localhost）」なのかを判定します。\n2. **秘密情報の保護**:\n   - データベースの暗号鍵などをコードに直書きして GitHub に流出する事故を 100% 防ぎます。\n\n---\n\n#### 💡 プロの知恵：Twelve-Factor App の原則\n「設定はコードから分離して環境変数に格納せよ」という、現代のクラウドネイティブ開発における最重要原則です。",
+      "pattern": "^\\s*const\\s+isProd\\s+=\\s+process\\.env\\.NODE_ENV\\s+===\\s+'production'\\s+&&\\s+process\\.env\\.VITE_DEV_MODE\\s+!==\\s+'true';",
+      "line": 20
     },
     {
-      "file": "scripture-habit/api_internal/lib/middleware.ts",
-      "line": 100,
-      "description": "### 2. 🛡️ 本番環境 (Production) ガード\n\n`if (isProduction)` による条件分岐を設け、開発用フラグ（セキュリティスキップなど）が本番環境で誤って有効化された場合にエラーを発行して即座に遮断する安全設計を施します。"
+      "file": "api_internal/lib/middleware.ts",
+      "description": "### 2. 🛡️ Hardened Production Mode Guards\n\n#### 💡 What is happening here? (Overview)\nActs as a safety valve to **instantly crash or reject requests if dangerous development skip-flags are accidentally deployed to production**.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **Multi-layer Validation**:\n   - `if (isProduction && skipFlag) throw new Error(...)` blocks insecure configurations.\n2. **Eliminating Human Error**:\n   - Protects users even if a developer forgets to clean up test flags before deploying.\n\n---\n\n#### 💡 Pro Tip: Fail-Safe Engineering\nIn security systems, it is always safer to fail loudly and immediately than to run silently in an insecure state.\n\n---\n\n### 2. 🛡️ 本番環境 (Production) ガード\n\n#### 💡 ここで何をしているの？（全体像）\n「開発用のスキップフラグ」が、**万が一のミスで本番環境で有効化されてしまった場合に、サーバーを即時停止・拒否する安全装置**です。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **多層の安全チェック**:\n   - `if (isProduction && skipFlag) throw new Error(...)` のように二重でガードをかけます。\n2. **ヒューマンエラーの封殺**:\n   - 開発者が設定ファイルをうっかり本番にデプロイしてしまっても、サーバー側で強制ブロックします。\n\n---\n\n#### 💡 プロの知恵：フェイルセーフ（Fail-Safe）設計\n「危ない設定のまま動き続けるくらいなら、即座にエラーを出して止まった方が安全である」という、金融や認証システムで用いられるプロの設計思想です。",
+      "pattern": "^\\s*throw\\s+new\\s+Error\\('Firebase\\s+App\\s+Check\\s+service\\s+is\\s+unavailable\\.\\s+Please\\s+ensure\\s+FIREBASE_SERVICE_ACCOUNT\\s+or\\s+similar\\s+environment\\s+variables\\s+are\\s+set\\s+in\\s+production\\.'\\);",
+      "line": 107
     }
   ]
 }

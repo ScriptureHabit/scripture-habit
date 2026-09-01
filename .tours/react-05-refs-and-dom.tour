@@ -1,22 +1,30 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "React基礎 05: useRef による DOM操作と非レンダリング状態保持",
-  "tags": ["React Fundamentals", "GroupChat", "useRef", "DOM"],
+  "title": "React 05: DOM Access & Mutable Values with useRef / useRef と DOM操作",
+  "tags": [
+    "React Fundamentals",
+    "GroupChat",
+    "useRef",
+    "DOM"
+  ],
   "steps": [
     {
-      "file": "scripture-habit/src/components/groupchat/hooks/view/use-scroll-manager.ts",
-      "line": 20,
-      "description": "### 1. 🔍 DOM 要素への参照保持 (`useRef`)\n\n`const containerRef = useRef<HTMLDivElement>(null)` を定義し、JSX 側の `ref={containerRef}` にバインドします。\nこれにより `containerRef.current` 経由で実際の DOM ノード (`scrollTop`, `scrollHeight` 等) へ直接アクセスできます。"
+      "file": "src/components/groupchat/hooks/view/use-scroll-manager.ts",
+      "description": "### 1. 🔍 Direct DOM Access (`useRef`)\n\n#### 💡 What is happening here? (Overview)\nCreates a **persistent handle to an actual HTML element** (e.g. scroll container) to measure and modify scroll positions directly.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`useRef<HTMLDivElement>(null)`**:\n   - Instantiates the ref, bound in JSX with `<div ref={containerRef}>`.\n2. **`containerRef.current`**:\n   - Holds the real DOM element, exposing native properties like `scrollTop` and `scrollHeight`.\n\n---\n\n#### 💡 Pro Tip: Avoiding `getElementById`\n`useRef` is safely scoped to the component instance, avoiding ID conflicts in multi-instance applications.\n\n---\n\n### 1. 🔍 DOM 要素への参照保持 (`useRef`)\n\n#### 💡 ここで何をしているの？（全体像）\nHTMLの特定の要素（チャットのスクロール枠など）を掴み、**スクロール位置や要素の高さを直接読み書きできるようにする「リモコン」**を作ります。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`useRef<HTMLDivElement>(null)`**:\n   - 初期値 `null` でリモコンを作成し、JSX 側で `<div ref={containerRef}>` と書くことで要素と紐付けます。\n2. **`containerRef.current`**:\n   - 実際の HTML 要素（DOMノード）が入っています。`scrollTop` や `scrollHeight` などの標準DOMプロパティを直接操作できます。\n\n---\n\n#### 💡 プロの知恵：`document.getElementById` を使わない理由\nReact ではコンポーネントが複数マウントされる可能性があるため、グローバルな ID 検索（`getElementById`）を使うと予期せぬ要素を掴むバグが起きます。`useRef` を使うのが安全な作法です。",
+      "pattern": "^\\s*const\\s+containerRef\\s+=\\s+useRef<HTMLDivElement>\\(null\\);",
+      "line": 20
     },
     {
-      "file": "scripture-habit/src/components/groupchat/hooks/core/use-chat-data-engine.ts",
-      "line": 134,
-      "description": "### 2. 🤫 レンダリングを起こさない変数の保持 (Instance Variables)\n\n`useRef` の値 (`ref.current`) を書き換えても、React はコンポーネントを再レンダリングしません。\n「画面には描画しないが、フックの内部状態として保持・比較したい値」（例: `activeSyncGroupIdRef` などの二重同期防止フラグやタイマーID）の保存に最適です。"
+      "file": "src/components/groupchat/hooks/core/use-chat-data-engine.ts",
+      "description": "### 2. 🤫 Preserving Values Without Re-rendering (`useRef`)\n\n#### 💡 What is happening here? (Overview)\nStores **internal flags, timer IDs, or sync locks** without triggering component re-renders when updated.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **Difference from `useState`**:\n   - Changing `useState` forces a re-render; mutating `ref.current` never triggers a re-render.\n2. **Instance Variables**:\n   - Equivalent to private class instance properties in modern functional components.\n\n---\n\n#### 💡 Pro Tip: Lock & Sync Management\nIdeal for flags like `activeSyncGroupIdRef` or retry counters that only matter to background logic.\n\n---\n\n### 2. 🤫 画面を再描画させない変数の保持 (`useRef`)\n\n#### 💡 ここで何をしているの？（全体像）\n画面の見た目には影響しないが、**「裏側のロジックでこっそり覚えておきたい値（タイマーIDや同期中フラグなど）」を保存**します。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`useState` との違い**:\n   - `useState` の値を書き換えると画面全体が再描画されますが、`ref.current` の値を書き換えても再描画は一切発生しません。\n2. **インスタンス変数の代替**:\n   - クラスコンポーネントにおける「クラスのプロパティ（`this.timer` など）」と同じ感覚で使える便利な入れ物です。\n\n---\n\n#### 💡 プロの知恵：フラグ管理での活用\n「今まさに通信中かどうか」「前回のスクロール位置」といった内部フラグを `useState` で持つと無駄な再レンダリングの原因になります。`useRef` で持つのがスマートです。",
+      "pattern": "^\\s*const\\s+\\[prevGroupId,\\s+setPrevGroupId\\]\\s+=\\s+useState<string\\s+\\|\\s+null>\\(null\\);",
+      "line": 237
     },
     {
-      "file": "scripture-habit/src/components/groupchat/subcomponents/message-input.tsx",
-      "line": 31,
-      "description": "### 3. 🎯 フォーカス制御と命令型 API 操作 (`textareaRef`)\n\nメッセージ送信後に入力欄へ即座にフォーカスを戻す（`textareaRef.current?.focus()`）など、宣言的 UI では表現しにくい直接的な命令型 DOM 操作を実行する際に `useRef` が威力を発揮します。"
+      "file": "src/components/groupchat/subcomponents/message-input.tsx",
+      "description": "### 3. 🎯 Focus Management & Imperative Actions (`textareaRef`)\n\n#### 💡 What is happening here? (Overview)\nDirects user focus back into the input textarea **immediately after a message is sent**.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`textareaRef.current?.focus()`**:\n   - Programmatically triggers the DOM element's `.focus()` method.\n2. **Optional Chaining (`?.`)**:\n   - Safely guards against calls before the element is mounted.\n\n---\n\n#### 💡 Pro Tip: Bridging Declarative and Imperative UI\nWhile React is primarily declarative, imperative actions (focus, media play, scrolling) are bridged via `useRef`.\n\n---\n\n### 3. 🎯 フォーカス制御と命令型操作 (`textareaRef`)\n\n#### 💡 ここで何をしているの？（全体像）\nメッセージ送信後に、**「テキスト入力欄に自動でカーソル（フォーカス）を戻す」**といった、ユーザーのキーボード入力を快適にするUI操作です。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`textareaRef.current?.focus()`**:\n   - 入力欄にフォーカスを当てる標準DOMメソッドを呼び出します。\n2. **オプショナルチェイニング (`?.`)**:\n   - まだ画面に要素が表示されていない瞬間に呼ばれてもエラーで落ちないように保護しています。\n\n---\n\n#### 💡 プロの知恵：宣言的UIと命令的UIの架け橋\nReact は基本「状態に応じて画面を表示する（宣言的）」フレームワークですが、フォーカス当てやアニメーション開始などの「今すぐこれを実行せよ！（命令的）」な操作は `useRef` を介して行います。",
+      "pattern": "^\\s*const\\s+textarea\\s+=\\s+textareaRef\\.current;",
+      "line": 37
     }
   ]
 }

@@ -1,22 +1,29 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "Node.js/Express基礎 01: ミドルウェアパイプライン (req, res, next)",
-  "tags": ["Node.js Fundamentals", "Express", "Middleware"],
+  "title": "Node.js 01: Middleware Pipeline (req, res, next) / ミドルウェアパイプライン",
+  "tags": [
+    "Node.js Fundamentals",
+    "Express",
+    "Middleware"
+  ],
   "steps": [
     {
-      "file": "scripture-habit/api_internal/lib/middleware.ts",
-      "line": 94,
-      "description": "### 1. ⚙️ ミドルウェア関数の基本シグネチャ `(req, res, next)`\n\nExpress のミドルウェアは `(req: Request, res: Response, next: NextFunction)` という統一された関数シグネチャを持ちます。\nクライアントからの要求（`req`）と応答（`res`）を処理します。"
+      "file": "api_internal/lib/middleware.ts",
+      "description": "### 1. ⚙️ Express Middleware Structure `(req, res, next)`\n\n#### 💡 What is happening here? (Overview)\nIntercepts incoming HTTP requests to **perform authentication, logging, and pre-processing before they reach the route controller**.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`req` (Request)**: Incoming payload, headers, and client parameters.\n2. **`res` (Response)**: Object used to return HTTP responses to the client.\n3. **`next` (NextFunction)**: Callback instructing Express to advance to the next middleware in the chain.\n\n---\n\n#### 💡 Pro Tip: Assembly-Line Architecture\nThink of middleware as an assembly line where requests pass sequentially through: Auth Check → Security Filter → Business Logic.\n\n---\n\n### 1. ⚙️ ミドルウェア関数の基本構造 `(req, res, next)`\n\n#### 💡 ここで何をしているの？（全体像）\nクライアントから届いたリクエストがメインの処理に届く前に、**「認証チェックやログ記録などの下準備を挟み込む（インターセプトする）仕組み」**です。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`req` (Request)**: クライアントから送られてきたデータやヘッダー情報\n2. **`res` (Response)**: クライアントに送り返すレスポンス操作オブジェクト\n3. **`next` (NextFunction)**: 「次の関所（ミドルウェア）へ進め！」と合図する関数\n\n---\n\n#### 💡 プロの知恵：パイプライン設計（ベルトコンベア）\nリクエストをベルトコンベアに乗せ、`認証チェック → セキュリティ検証 → 本処理` と順番に通していく設計パターンです。",
+      "pattern": "^\\s*export\\s+const\\s+verifyAppCheck\\s+=\\s+async\\s+\\(req:\\s+Request,\\s+_res:\\s+Response,\\s+next:\\s+NextFunction\\)\\s+=>\\s+\\{",
+      "line": 85
     },
     {
-      "file": "scripture-habit/api_internal/lib/middleware.ts",
-      "line": 105,
-      "description": "### 2. 🔗 パイプラインを次に進める `next()`\n\nミドルウェアでチェックが合格した場合、`next()` を呼び出すことで次のミドルウェアやルーティング処理へバトンタッチします。\n`next()` を呼び出し忘れると、リクエストが途中で止まってブラウザが応答待ち（タイムアウト）になります。"
+      "file": "api_internal/lib/middleware.ts",
+      "description": "### 2. 🔗 Passing the Baton with `next()`\n\n#### 💡 What is happening here? (Overview)\nWhen verification succeeds, we **call `next()` to hand off control to the next handler**.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **Risk of Forgetting `next()`**:\n   - If neither `next()` nor `res.send()` is called, the request hangs indefinitely until the client times out.\n2. **Conditional Advancement**:\n   - Call `next()` on success, or return `res.status(401).json(...)` to abort.\n\n---\n\n#### 💡 Pro Tip: Early Rejection\nReject invalid requests at the earliest possible middleware stage to protect backend database resources.\n\n---\n\n### 2. 🔗 次の関所へバトンを渡す `next()`\n\n#### 💡 ここで何をしているの？（全体像）\nチェックが合格した際に、**`next()` を呼び出して次のミドルウェアやコントローラーへ処理を引き継ぎます**。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **呼び出し忘れの危険性**:\n   - もし `next()` も `res.send()` も呼ばないと、ブラウザ側が「応答待ち（ぐるぐるローディング）」のままタイムアウトしてしまいます。\n2. **条件付きバトン渡し**:\n   - 合格なら `next()`、不合格なら `res.status(401).json(...)` で遮断します。\n\n---\n\n#### 💡 プロの知恵：早期遮断（Early Rejection）\n不正なリクエストはメインのデータベース処理に届く前に、一番最初のミドルウェアの段階で即座に弾くのがWebサーバーの基本です。",
+      "pattern": "return next\\(\\);",
+      "line": 96
     },
     {
-      "file": "scripture-habit/api_internal/lib/middleware.ts",
-      "line": 102,
-      "description": "### 3. 🚨 エラー発生時の `next(error)` 発火\n\n処理中にエラーが発生した場合は、`next(new AppError(...))` のように引数にエラーオブジェクトを渡して `next()` を呼び出すことで、後続のエラーハンドリングミドルウェアへ処理をジャンプさせます。"
+      "file": "api_internal/lib/middleware.ts",
+      "description": "### 3. 🚨 Jumping to Error Handlers with `next(error)`\n\n#### 💡 What is happening here? (Overview)\nWhen an unexpected error occurs, **passing an error object into `next(error)` bypasses all remaining routes directly to the centralized error middleware**.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`next(err)` Jump**:\n   - Express immediately skips normal middleware and jumps straight to the 4-argument error handler.\n2. **`AppError` Class**:\n   - Encapsulates HTTP status codes (401, 404, 500) and error codes in a clean structured object.\n\n---\n\n#### 💡 Pro Tip: Centralized try-catch\nForwarding errors to `next(err)` standardizes error formatting and audit logging in a single file.\n\n---\n\n### 3. 🚨 エラー発生時のワープ処理 `next(error)`\n\n#### 💡 ここで何をしているの？（全体像）\n処理中に予期せぬエラーが起きた時に、**`next(error)` を呼んで後続の処理を一気にスキップし、専用のエラー処理係へワープ**させます。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **引数付きの `next(err)`**:\n   - `next()` に引数を渡すと、Express は通常ルートをすべて飛ばして、エラーハンドリングミドルウェアに直行します。\n2. **`AppError` クラス**:\n   - HTTP ステータスコード（401, 404, 500など）とエラーメッセージを1つにまとめたカスタムエラーです。\n\n---\n\n#### 💡 プロの知恵：try-catch の集中管理\n各ルートで毎回エラーレスポンスを書かずに `next(err)` に投げることで、エラーの整形・ログ記録を1箇所に集約できます。",
+      "pattern": "^\\s*return\\s+next\\(new\\s+AppError\\('Unauthorized:\\s+Security\\s+check\\s+failed',\\s+error\\.message\\.includes\\('unavailable'\\)\\s+\\?\\s+503\\s+:\\s+401,\\s+'APP_CHECK_FAILED'\\)\\);",
+      "line": 114
     }
   ]
 }

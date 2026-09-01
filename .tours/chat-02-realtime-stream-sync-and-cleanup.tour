@@ -1,37 +1,31 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "GroupChat Master 02: リアルタイム通信・背景同期・メモリ管理",
-  "tags": ["GroupChat", "Firestore Stream", "Cleanup", "Memory Leak", "Visibility API"],
+  "title": "GroupChat 02: Realtime Stream Sync & Cleanup / リアルタイム同期と接続解除",
+  "tags": [
+    "GroupChat",
+    "Realtime",
+    "onSnapshot",
+    "Cleanup",
+    "Visibility API"
+  ],
   "steps": [
     {
-      "file": "scripture-habit/src/components/groupchat/hooks/core/use-chat-data-engine.ts",
-      "line": 159,
-      "description": "### 1. 📡 リアルタイムストリーム受信 (`onSnapshot`)\n\nFirestore の `onSnapshot` を設定し、新しいメッセージの投稿やリアクションの追加をリアルタイムで自動受信します。"
+      "file": "src/components/groupchat/hooks/core/use-chat-data-engine.ts",
+      "description": "### 1. 📡 Real-time Firestore Listener (`onSnapshot`)\n\n#### 💡 What is happening here? (Overview)\nWe open a live socket connection to Firestore so that **new incoming messages appear instantly without refreshing the page**.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`onSnapshot(docRef, (snapshot) => { ... })`**:\n   - Listens for server changes and receives the latest document snapshot in real-time.\n2. **`isCancelled` Guard**:\n   - Drops stale asynchronous responses if the active group or user ID changes during in-flight requests.\n\n---\n\n#### 💡 Pro Tip: Subscribing to Summary Documents\nListening to a compact `latest` summary document rather than thousands of individual message documents drastically reduces read billing.\n\n---\n\n### 1. 📡 Firestore とのリアルタイム接続 (`onSnapshot`)\n\n#### 💡 ここで何をしているの？（全体像）\nFirestore とアプリの間にパイプを開通し、**「誰かがメッセージを送ったら、再読み込み（リロード）なしで即座に画面に届く」**ようにします。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`onSnapshot(docRef, (snapshot) => { ... })`**:\n   - サーバー上のデータが変わるたびに自動で中のコールバック関数が呼ばれます。\n2. **`isCancelled` フラグ**:\n   - 別のグループへ素早く切り替えた時に、古いグループのデータが混ざらないようガードします。\n\n---\n\n#### 💡 プロの知恵：なぜ `latest` ドキュメントを購読するのか？\n何千通もあるメッセージ1件1件を購読すると通信費が高額になりますが、最新25件をまとめた `latest` ドキュメントを1通購読するだけでコストを最小限に抑えられます。",
+      "pattern": "^\\s*const\\s+unsubscribe\\s+=\\s+onSnapshot\\(latestDocRef,\\s+\\(snapshot\\)\\s+=>\\s+\\{",
+      "line": 163
     },
     {
-      "file": "scripture-habit/src/components/groupchat/hooks/core/use-chat-data-engine.ts",
-      "line": 163,
-      "description": "### 2. 📄 Firestore スナップショットデータの抽出\n\n`snapshot.data()` から配列やプロパティを取り出し、必要に応じて既存のメッセージリストとマージします。"
+      "file": "src/components/groupchat/hooks/core/use-chat-data-engine.ts",
+      "description": "### 2. 🧹 Guaranteed Teardown (Unsubscribe)\n\n#### 💡 What is happening here? (Overview)\nWhen the user switches groups or leaves the screen, we **tear down the connection to stop background data streaming**.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`unsubMessagesRef.current()`**:\n   - Invokes the unsubscribe closure stored in a ref.\n2. **`useEffect` Teardown Contract**:\n   - React automatically triggers this return cleanup function on component unmount.\n\n---\n\n#### 💡 Pro Tip: Preventing Memory Leaks & Duplicates\nWithout cleanup, listeners accumulate every time a user visits the chat, leading to duplicate messages and massive bandwidth waste.\n\n---\n\n### 2. 🧹 確実な後片付け（接続解除 / Unsubscribe）\n\n#### 💡 ここで何をしているの？（全体像）\n画面を閉じた時や別のグループへ移動した時に、**「前の接続を切断して通信をピタッと止める」後片付け処理**です。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`unsubMessagesRef.current()`**:\n   - 保存しておいた解約用の関数を実行します。\n2. **`useEffect` のお掃除機能**:\n   - コンポーネントが画面から消える時に React が自動で実行してくれます。\n\n---\n\n#### 💡 プロの知恵：解約しないとどうなる？\n解約を忘れると、グループを移動するたびにリスナーが2重・3重と増え続け、同じメッセージが画面に何個もダブって表示される大バグになります。",
+      "pattern": "^\\s*unsubMessagesRef\\.current\\s+=\\s+unsubscribe;",
+      "line": 212
     },
     {
-      "file": "scripture-habit/src/components/groupchat/hooks/core/use-chat-data-engine.ts",
-      "line": 214,
-      "description": "### 3. 🧹 解約処理 (Cleanup) と メモリリーク防止 (★シニア必須知識)\n\n`useEffect` のクリーンアップ関数で `unsubMessagesRef.current()` を呼び出し、リスナーを確実に解除します。これを行わないと画面移動後に裏で無駄な通信と課金が発生し続ける原因になります。"
-    },
-    {
-      "file": "scripture-habit/src/components/groupchat/hooks/core/use-chat-sync-controller.ts",
-      "line": 49,
-      "description": "### 4. 👁️ ブラウザのタブ可視性チェック (`document.visibilityState`)\n\nユーザーがタブを裏に隠したか、アプリ画面をフォアグラウンドに表示しているかを `visibilityState` で監視します。"
-    },
-    {
-      "file": "scripture-habit/src/components/groupchat/hooks/core/use-chat-sync-controller.ts",
-      "line": 54,
-      "description": "### 5. 🔄 背景同期とアクティブ状態の自動更新\n\n画面がアクティブになった瞬間に `updateReadStatus(groupId, totalMsgs)` を呼び出し、最新の既読カウントを Firestore に自動同期します。"
-    },
-    {
-      "file": "scripture-habit/src/components/groupchat/hooks/core/use-chat-sync-controller.ts",
-      "line": 61,
-      "description": "### 6. 👂 Firestore 既読ソース・オブ・トゥルースの監視\n\n`users/{uid}/groupStates/{groupId}` の既読カウント変化をバックグラウンドリスナーで常に最新化します。"
+      "file": "src/components/groupchat/hooks/core/use-chat-data-engine.ts",
+      "description": "### 3. 👁️ Tab Backgrounding Optimization (Visibility API)\n\n#### 💡 What is happening here? (Overview)\nWe detect when the user **switches to another browser tab or minimizes the app**, pausing unnecessary background polling.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`document.visibilityState === 'visible'`**:\n   - Triggers re-sync only when the user actually brings the tab back into focus.\n2. **Bandwidth Preservation**:\n   - Avoids burning database reads while the user is away.\n\n---\n\n#### 💡 Pro Tip: Battery & Data Saver\nSmart listeners that respond to tab visibility make your web application feel as efficient as a native mobile app.\n\n---\n\n### 3. 👁️ ブラウザタブ非アクティブ時の通信節約 (Visibility API)\n\n#### 💡 ここで何をしているの？（全体像）\nユーザーが**別のタブを開いて放置している間は無駄な通信を控え、戻ってきた瞬間に最新状態へ同期**します。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`document.visibilityState === 'visible'`**:\n   - タブが画面に見えているかどうかを判定するブラウザ標準の機能です。\n2. **復帰時の一括同期**:\n   - 再びタブを開いた瞬間に最新データをサッと取得して画面を更新します。\n\n---\n\n#### 💡 プロの知恵：スマホの電池持ち向上\n裏で動く無駄な処理を減らすことで、スマホのバッテリー消費とパケット代を大幅に節約するプロの配慮です。",
+      "pattern": "^\\s*useMessageStreamSync\\(groupId,\\s+userData,\\s+state\\.messages,\\s+dispatch\\);",
+      "line": 248
     }
   ]
 }

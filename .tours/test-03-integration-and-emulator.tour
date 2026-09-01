@@ -1,17 +1,23 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "Testing基礎 03: 統合テスト (Integration Test) と Firebase エミュレータ",
-  "tags": ["Testing Fundamentals", "Integration Test", "Firebase Emulator"],
+  "title": "Testing 03: Integration Testing with Firebase Emulator / 統合テストとエミュレータ",
+  "tags": [
+    "Testing Fundamentals",
+    "Integration Test",
+    "Firebase Emulator"
+  ],
   "steps": [
     {
-      "file": "scripture-habit/api_internal/firestore-read-count.integration.test.ts",
-      "line": 8,
-      "description": "### 1. 🏢 エミュレータ（擬似本番環境）を使った統合テスト (`TestSetup`)\n\n本物のサーバーやデータベースを傷つけずに、ローカルで起動した Firebase エミュレータ（`setup.start()`）に対して実際のデータベース操作や API 処理を行い、読取回数や書き込み結果を結合テスト（Integration Test）します。"
+      "file": "tests/rules/firestore.rules.test.ts",
+      "description": "### 1. 🏢 Integration Testing via Local Emulators (`initializeTestEnvironment`)\n\n#### 💡 What is happening here? (Overview)\nRuns real database queries against **a local virtual Firebase Emulator** without touching production databases.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`@firebase/rules-unit-testing`**:\n   - Official SDK for testing security rules.\n2. **Simulating Auth Contexts**:\n   - `testEnv.authenticatedContext('user_123')` easily mocks any logged-in user state.\n\n---\n\n#### 💡 Pro Tip: Integration Test Value\nCatches real-world database permission bugs that unit tests cannot detect.\n\n---\n\n### 1. 🏢 エミュレータ環境を使った結合テスト (`initializeTestEnvironment`)\n\n#### 💡 ここで何をしているの？（全体像）\n本番のクラウドデータベースを一切汚さずに、**PC内で起動した仮想の Firebase データベース（エミュレータ）に対して実際のアクセス検証**を行います。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`@firebase/rules-unit-testing`**:\n   - Firebase 公式が提供するセキュリティルール検証用テストライブラリです。\n2. **認証コンテキストの偽装**:\n   - `testEnv.authenticatedContext('user_123')` を使うことで、「user_123 としてログインした状態」を自由に作り出してテストできます。\n\n---\n\n#### 💡 プロの知恵：結合テスト（Integration Test）の価値\n単体テストだけでは検知できない「データベースとセキュリティルールの実際の組み合わせ」を自動で検証できます。",
+      "pattern": "^\\s*testEnv\\s+=\\s+await\\s+initializeTestEnvironment\\(\\{",
+      "line": 19
     },
     {
-      "file": "scripture-habit/api_internal/firestore-read-count.integration.test.ts",
-      "line": 21,
-      "description": "### 2. 🔄 テストデータのクリーンアップとフィクスチャ (`recursiveDelete`)\n\n`afterAll` フック内で `db.recursiveDelete` を実行してテスト中に作成したグループやユーザーデータを自動削除し、常にクリーンな状態を保つ安全設計です。"
+      "file": "tests/rules/firestore.rules.test.ts",
+      "description": "### 2. 🔄 Database Cleanup (`clearFirestore`)\n\n#### 💡 What is happening here? (Overview)\nCleans all generated documents after test completion to **reset the emulator to a clean state**.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`afterEach` / `afterAll` Hooks**:\n   - Teardown handlers that run automatically after testing.\n2. **`testEnv.clearFirestore()`**:\n   - Wipes all mock documents in the local emulator.\n\n---\n\n#### 💡 Pro Tip: 100% Reproducible Tests\nEnsures test suites produce the exact same outcome every time they run.\n\n---\n\n### 2. 🔄 テストデータのクリーンアップ (`clearFirestore`)\n\n#### 💡 ここで何をしているの？（全体像）\nテストが終わった後に、**「エミュレータ内に作られたテストデータを綺麗に全消去」**して初期状態に戻します。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`afterEach` / `afterAll` フック**:\n   - すべてのテスト完了時に自動で呼ばれる後片付けフックです。\n2. **`testEnv.clearFirestore()`**:\n   - 仮想データベースの中身をゴミひとつないクリーンな状態にリセットします。\n\n---\n\n#### 💡 プロの知恵：テストの再現性 100%\n何回テストを再実行しても常に同じ初期状態から始まるため、「2回目だけテストがコケる」というストレスから完全に解放されます。",
+      "pattern": "^\\s*await\\s+testEnv\\.clearFirestore\\(\\);",
+      "line": 37
     }
   ]
 }

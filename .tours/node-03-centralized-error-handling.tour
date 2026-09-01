@@ -1,17 +1,23 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "Node.js/Express基礎 03: 一元管理型エラーハンドリング (AppError)",
-  "tags": ["Node.js Fundamentals", "Express", "Error Handling"],
+  "title": "Node.js 03: Centralized Error Handling & AppError / 一元管理型エラーハンドリング",
+  "tags": [
+    "Node.js Fundamentals",
+    "Express",
+    "Error Handling"
+  ],
   "steps": [
     {
-      "file": "scripture-habit/api_internal/lib/middleware.ts",
-      "line": 102,
-      "description": "### 1. 🏗️ カスタムエラー型 (`AppError`) の構築\n\n`new AppError(message, statusCode, errorCode)` を使うことで、HTTP ステータスコード (401, 404, 500) やエラー識別コードを安全に保持したエラーオブジェクトを生成します。"
+      "file": "api_internal/lib/middleware.ts",
+      "description": "### 1. 🏗️ Custom Error Class (`AppError`)\n\n#### 💡 What is happening here? (Overview)\nExtends standard JavaScript `Error` to **bundle HTTP status codes (401, 404, 500) and error codes into a single structured object**.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`new AppError(message, 401, 'APP_CHECK_FAILED')`**:\n   - Sets error reason and HTTP status code in one clean line.\n2. **Dynamic Status Mapping**:\n   - Transient outages (`unavailable`) map to 503; auth failures map to 401.\n\n---\n\n#### 💡 Pro Tip: Structured Errors\nThrowing structured error objects automates generating consistent HTTP JSON responses.\n\n---\n\n### 1. 🏗️ カスタムエラークラス (`AppError`)\n\n#### 💡 ここで何をしているの？（全体像）\nJavaScript 標準の `Error` を拡張し、**「HTTPステータスコード（401, 404, 500など）」や「エラー識別コード」を一緒に持てる専用のエラー型**を作ります。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`new AppError('メッセージ', 401, 'APP_CHECK_FAILED')`**:\n   - エラーの原因と、クライアントに返すステータスコードを1行でセットできます。\n2. **動的なステータス判定**:\n   - 一時的な障害（`unavailable`）なら 503、認証失敗なら 401 と適切に振り分けます。\n\n---\n\n#### 💡 プロの知恵：エラーの構造化\n文字列だけでエラーを投げると後からHTTPステータスを特定するのが大変ですが、`AppError` を使えばエラーレスポンスの生成が完全に自動化できます。",
+      "pattern": "^\\s*return\\s+next\\(new\\s+AppError\\('Unauthorized:\\s+Security\\s+check\\s+failed',\\s+error\\.message\\.includes\\('unavailable'\\)\\s+\\?\\s+503\\s+:\\s+401,\\s+'APP_CHECK_FAILED'\\)\\);",
+      "line": 114
     },
     {
-      "file": "scripture-habit/api_internal/routes/messages.ts",
-      "line": 66,
-      "description": "### 2. 統一エラーフォーマットによるクライアントレスポンス\n\nエラーを呼び出し元の各処理でバラバラに `res.status(404).send()` せず、`throw new NotFoundError('Group not found')` や `next(error)` を使って中央のエラーミドルウェアへ集約し、`{ error: string, code: string }` の統一フォーマットでクライアントへ返却します。"
+      "file": "api_internal/routes/messages.ts",
+      "description": "### 2. 🎯 Uniform Error Response Format\n\n#### 💡 What is happening here? (Overview)\nInstead of writing ad-hoc error replies in every route, **throwing `new NotFoundError(...)` automatically returns a standardized JSON format**.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **Consistent JSON Shape**:\n   - `{ error: 'Message', code: 'NOT_FOUND' }` makes frontend error handling trivial.\n2. **Hiding Stack Traces in Production**:\n   - Internal server details are securely hidden from client responses.\n\n---\n\n#### 💡 Pro Tip: 4-Argument Express Handler\nExpress error middleware with 4 arguments `(err, req, res, next)` catches all unhandled exceptions across the entire app.\n\n---\n\n### 2. 🎯 統一エラーフォーマットによるレスポンス\n\n#### 💡 ここで何をしているの？（全体像）\n各エンドポイントでバラバラにエラー返却を書かず、**`throw new NotFoundError(...)` で投げるだけで、統一されたJSON形式でクライアントに返る仕組み**です。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **統一された JSON 構造**:\n   - `{ error: 'エラーメッセージ', code: 'NOT_FOUND' }` という決まった形式で返るため、フロントエンド側でのエラー表示が超簡単になります。\n2. **スタックトレースの隠蔽**:\n   - 本番環境ではサーバー内部の詳細なエラーログをクライアントに見せない安全処理が自動で施されます。\n\n---\n\n#### 💡 プロの知恵：Express の 4引数エラーハンドラー\n`(err, req, res, next)` という4つの引数を持つ特別なミドルウェアをサーバーの最後に置くことで、アプリ内で発生したすべての例外を1つの網でキャッチできます。",
+      "pattern": "^\\s*sendErrorResponse\\(res,\\s+new\\s+NotFoundError\\(error\\.message\\)\\);",
+      "line": 337
     }
   ]
 }

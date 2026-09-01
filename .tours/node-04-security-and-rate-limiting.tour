@@ -1,17 +1,24 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "Node.js/Express基礎 04: セキュリティミドルウェア (Rate Limit & AppCheck)",
-  "tags": ["Node.js Fundamentals", "Express", "Security", "Rate Limiting"],
+  "title": "Node.js 04: Security Middleware (Rate Limiting & App Check) / セキュリティとアクセス制限",
+  "tags": [
+    "Node.js Fundamentals",
+    "Express",
+    "Security",
+    "Rate Limiting"
+  ],
   "steps": [
     {
-      "file": "scripture-habit/api_internal/lib/middleware.ts",
-      "line": 82,
-      "description": "### 1. 🛑 アクセス制限 (`rateLimit`)\n\n`express-rate-limit` を使用して、特定 IP またはユーザーからの過剰なリクエスト（DDoS攻撃やAPIの乱用）を時間単位 (`windowMs`) で制限・制御します。"
+      "file": "api_internal/lib/middleware.ts",
+      "description": "### 1. 🛑 Rate Limiting (`rateLimit`)\n\n#### 💡 What is happening here? (Overview)\nAutomatically throttles **excessive repeated requests (DDoS attacks, bot abuse, spam)** from the same IP or user account.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`windowMs: 15 * 60 * 1000`**:\n   - 15-minute sliding monitoring window.\n2. **`limit: 100`**:\n   - Max allowed requests per window before returning HTTP `429 Too Many Requests`.\n\n---\n\n#### 💡 Pro Tip: Preventing Denial of Wallet\nCrucial for preventing malicious scripts from triggering millions of LLM or database operations and draining cloud billing quotas.\n\n---\n\n### 1. 🛑 アクセス頻度制限 (`rateLimit`)\n\n#### 💡 ここで何をしているの？（全体像）\n同一の IP アドレスやユーザーから**「1分間に100回リクエストを送るような連続アクセス（DDoS攻撃・ボット・スパム）」を自動検知して一時的にアクセスを遮断**します。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`windowMs: 15 * 60 * 1000`**:\n   - 監視する時間枠（15分間）を設定します。\n2. **`limit: 100`**:\n   - その時間枠内に許容する最大リクエスト回数です。超えると HTTP `429 Too Many Requests` を返します。\n\n---\n\n#### 💡 プロの知恵：クラウド破産（Denial of Wallet）の防止\nAPI が悪意あるボットに連打されて数千万円のクラウド請求が来るのを防ぐ、サーバー公開時の必須防御策です。",
+      "pattern": "^\\s*windowMs:\\s+15\\s+\\*\\s+60\\s+\\*\\s+1000,",
+      "line": 35
     },
     {
-      "file": "scripture-habit/api_internal/lib/middleware.ts",
-      "line": 108,
-      "description": "### 2. 🔐 ヘッダー検証と App Check トークン\n\n`req.header('X-Firebase-AppCheck')` を検証し、正規のアプリ（クライアント）以外からの不正な直叩きリクエストを未然に遮断します。"
+      "file": "api_internal/lib/middleware.ts",
+      "description": "### 2. 🔐 Verifying Client Authenticity (`Firebase App Check`)\n\n#### 💡 What is happening here? (Overview)\nVerifies that requests originate **only from your genuine, authorized mobile or web application** rather than third-party scripts or curl commands.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`X-Firebase-AppCheck` Header**:\n   - Carries cryptographic attestation tokens from browser Web Crypto or device integrity engines.\n2. **Server-Side Token Verification**:\n   - Admin SDK validates token authenticity and rejects spoofed requests.\n\n---\n\n#### 💡 Pro Tip: Ultimate API Protection\nEven if public API endpoints are discovered, App Check ensures only your official frontend can communicate with them.\n\n---\n\n### 2. 🔐 アプリの真正性チェック (`Firebase App Check`)\n\n#### 💡 ここで何をしているの？（全体像）\nリクエストが**「本物の正規アプリから送られてきたものか？（curl や Python スクリプトで不正に直叩きされていないか？）」**を判定します。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`X-Firebase-AppCheck` ヘッダー**:\n   - ブラウザの Web Crypto や Play Integrity によって生成された暗号トークンを読み取ります。\n2. **サーバーサイド検証**:\n   - Firebase Admin SDK でトークンの正当性を検証し、偽造トークンを即座にブロックします。\n\n---\n\n#### 💡 プロの知恵：API キー流出への究極の対抗策\nAPI キーが他人に知られてしまっても、App Check を導入していれば正規アプリ以外からのアクセスを 100% 弾くことができます。",
+      "pattern": "^\\s*const\\s+token\\s+=\\s+req\\.header\\('X-Firebase-AppCheck'\\);",
+      "line": 99
     }
   ]
 }

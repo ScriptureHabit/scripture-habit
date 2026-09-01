@@ -1,32 +1,42 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "React基礎 01: useReducer による状態管理一元化",
-  "tags": ["React Fundamentals", "GroupChat", "State Management"],
+  "title": "React 01: State Management with useReducer / useReducer による状態管理",
+  "tags": [
+    "React Fundamentals",
+    "GroupChat",
+    "State Management",
+    "useReducer"
+  ],
   "steps": [
     {
-      "file": "scripture-habit/src/components/groupchat/hooks/core/chat-reducer.ts",
-      "line": 35,
-      "description": "### 1. 🎯 State型とAction型の厳密な定義\n\n`useReducer` を使用する最初の一歩は、**状態 (State)** と **発生し得るすべての変更 (Action)** を TypeScript の判別可能なユニオン型 (Discriminated Unions) で定義することです。\n`ChatAction` を定義することで、どのような操作が可能かが型レベルで自己文書化されます。"
+      "file": "src/components/groupchat/hooks/core/chat-reducer.ts",
+      "description": "### 1. 🎯 Defining State & Action Types\n\n#### 💡 What is happening here? (Overview)\nWe model **all possible states and user events (Actions)** in the chat system using TypeScript Discriminated Unions.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **Discriminated Unions**:\n   - Each action has a distinct `type: 'SET_MESSAGES' | ...` property.\n2. **Self-Documenting Code**:\n   - Anyone reading the type definitions instantly understands every available capability in this module.\n\n---\n\n#### 💡 Pro Tip: Catching Typos at Compile Time\nUsing union types prevents typos like `'SET_MESSAGE'` before code ever runs in a browser.\n\n---\n\n### 1. 🎯 State型とAction型の厳密な定義\n\n#### 💡 ここで何をしているの？（全体像）\nチャット機能で扱う**「すべての状態（State）」と「発生し得るすべての変更（Action）」を TypeScript の型で設計**します。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **判別可能なユニオン型（Discriminated Unions）**:\n   - `type: 'SET_MESSAGES' | 'ADD_NEW_MESSAGES' | ...` のように、`type` プロパティで Action の種類を明確に区別します。\n2. **型による自己文書化**:\n   - 「この画面でどんな操作ができるか」が型を見るだけで一目瞭然になります。\n\n---\n\n#### 💡 プロの知恵：タイポ（打ち間違い）の完全防止\n文字列を直接使う代わりに TypeScript の型で縛ることで、`type: 'SET_MESSAGE'` のような一文字のスペルミスをコンパイル段階で 100% 検知できます。",
+      "pattern": "^\\s*export\\s+type\\s+ChatAction\\s+=",
+      "line": 20
     },
     {
-      "file": "scripture-habit/src/components/groupchat/hooks/core/chat-reducer.ts",
-      "line": 48,
-      "description": "### 2. 🧠 純粋関数としての Reducer (`chatReducer`)\n\n`chatReducer` は `(state, action) => newState` という単一の純粋関数です。\n外部APIの呼び出しや副作用を含めず、**現在の state と送られてきた action だけから次の新しい state を作成して返す**ことで、予測可能でバグの少ない状態遷移を実現します。"
+      "file": "src/components/groupchat/hooks/core/chat-reducer.ts",
+      "description": "### 2. 🧠 Pure Function Reducer (`chatReducer`)\n\n#### 💡 What is happening here? (Overview)\n`chatReducer` is a **pure function that receives the previous state and an action, returning the new state** without side-effects.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **Side-effect Free**:\n   - Never performs API calls or touches global variables directly inside the reducer.\n2. **`switch (action.type)`**:\n   - Routes each action type to its dedicated state transformation branch.\n\n---\n\n#### 💡 Pro Tip: Effortless Testing\nBecause Reducers are pure functions, you can unit-test complex business logic with simple input-output test assertions.\n\n---\n\n### 2. 🧠 純粋関数としての Reducer (`chatReducer`)\n\n#### 💡 ここで何をしているの？（全体像）\n`chatReducer` は、**「現在の状態」と「変更の指示（Action）」を受け取って、「新しい状態」を返す単一の関数**です。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **純粋関数（Side-effect Free）**:\n   - 外部との通信や現在時刻の取得などを行わず、「入力値だけで出力が決まる」クリーンな関数です。\n2. **`switch (action.type)`**:\n   - 送られてきた `action.type` に応じて処理を分岐し、適切な新しい State を計算します。\n\n---\n\n#### 💡 プロの知恵：テストが超簡単になる！\nReducer は純粋な関数なので、「この state にこの action を渡したら、期待通りの新しい state になるか」を画面なしで簡単にユニットテストできます。",
+      "pattern": "^\\s*export\\s+const\\s+chatReducer\\s+=\\s+\\(state:\\s+ChatState,\\s+action:\\s+ChatAction\\):\\s+ChatState\\s+=>\\s+\\{",
+      "line": 85
     },
     {
-      "file": "scripture-habit/src/components/groupchat/hooks/core/chat-reducer.ts",
-      "line": 79,
-      "description": "### 3. 🛡️ イミュータビリティ (不変性) の維持\n\n`state.messages.push(...)` のように既存のオブジェクトを直接変更（Mutation）してはいけません。\n`{ ...state, messages: [...] }` のようにスプレッド構文を使用して**常に新しいオブジェクトを生成して返す**ことが React の再検知・再レンダリングにおける絶対ルールです。"
+      "file": "src/components/groupchat/hooks/core/chat-reducer.ts",
+      "description": "### 3. 🛡️ Immutability Maintenance\n\n#### 💡 What is happening here? (Overview)\nWe use **the spread operator `{ ...state }` to return a new object reference** rather than mutating the existing state directly.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **Anti-pattern to Avoid**:\n   - `state.messages.push(newMsg)` ❌ (React cannot detect this mutation and will fail to re-render).\n2. **Correct Pattern**:\n   - `{ ...state, messages: [...state.messages, newMsg] }` ⭕ (Creates a clean new array reference).\n\n---\n\n#### 💡 Pro Tip: Referential Equality in React\nReact compares object memory addresses to decide when to re-render components. Always returning a new object reference ensures reliable UI updates.\n\n---\n\n### 3. 🛡️ イミュータビリティ (不変性) の維持\n\n#### 💡 ここで何をしているの？（全体像）\n元のオブジェクトを直接いじる（ミューテーション）のではなく、**スプレッド構文 `{ ...state }` を使って「常に新しいオブジェクトを生成して返す」**処理です。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **やってはいけない例**:\n   - `state.messages.push(newMsg)` ❌（React が状態の変更を検知できません）\n2. **正しい書き方**:\n   - `{ ...state, messages: [...state.messages, newMsg] }` ⭕（新しい配列を作って返す）\n\n---\n\n#### 💡 プロの知恵：なぜ不変性が大事なの？\nReact は「オブジェクトの参照先（メモリアドレス）が変わったかどうか」で再描画を判定しています。新しいオブジェクトを作って返さないと、画面が更新されない原因になります。",
+      "pattern": "^\\s*const\\s+anchorId\\s+=\\s+computeUnreadAnchorId\\(state\\.messages,\\s+newReadCount,\\s+state\\.unreadAnchorMessageId\\);",
+      "line": 188
     },
     {
-      "file": "scripture-habit/src/components/groupchat/hooks/core/use-chat-data-engine.ts",
-      "line": 230,
-      "description": "### 4. ⚙️ `useReducer` フックの呼び出し\n\n`useChatDataEngine` フック内で `useReducer(chatReducer, initialState)` を実行します。\n戻り値として **現在の状態 `state`** と **変更を要求する関数 `dispatch`** のペアが返されます。"
+      "file": "src/components/groupchat/hooks/core/use-chat-data-engine.ts",
+      "description": "### 4. ⚙️ Initializing `useReducer`\n\n#### 💡 What is happening here? (Overview)\nWe boot up the reducer inside the custom hook to **obtain the current `state` and the `dispatch` trigger function**.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`const [state, dispatch] = useReducer(chatReducer, initialState)`**:\n   - `state`: Holds the current reactive chat data.\n   - `dispatch`: Function used to submit actions to the reducer.\n\n---\n\n#### 💡 Pro Tip: `useState` vs `useReducer`\n- Single independent value → `useState`\n- Complex interdependent states (messages + loading + unread counts) → `useReducer`\n\n---\n\n### 4. ⚙️ `useReducer` フックの呼び出し\n\n#### 💡 ここで何をしているの？（全体像）\nReact コンポーネント（またはカスタムフック）の中で **Reducer を起動し、`state` と `dispatch` を受け取ります**。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`const [state, dispatch] = useReducer(chatReducer, initialState)`**:\n   - `state`: 現在のチャット状態（メッセージ一覧や読込フラグなど）\n   - `dispatch`: 状態変更を要求するための送信関数\n\n---\n\n#### 💡 プロの知恵：`useState` との使い分け\n- 状態が単純（ON/OFF、数値1つなど） → `useState`\n- 状態が複数あり、連動して変わる（メッセージ追加＋読込完了＋未読数更新など） → `useReducer`",
+      "pattern": "^\\s*const\\s+\\[state,\\s+dispatch\\]\\s+=\\s+useReducer\\(chatReducer,\\s+initialState\\);",
+      "line": 234
     },
     {
-      "file": "scripture-habit/src/components/groupchat/hooks/core/use-chat-data-engine.ts",
-      "line": 183,
-      "description": "### 5. 🚚 `dispatch` による Action の発火\n\nデータが読み込まれた際、`dispatch({ type: 'SET_MESSAGES', messages: finalMessages })` を呼び出します。\nコンポーネントやフックは「状態をどう書き換えるか」を知る必要はなく、「何が起きたか（Action）」を `dispatch` に伝えるだけで済みます。"
+      "file": "src/components/groupchat/hooks/core/use-chat-data-engine.ts",
+      "description": "### 5. 🚚 Firing Actions with `dispatch`\n\n#### 💡 What is happening here? (Overview)\nUpon receiving data, we **dispatch an action to request a state transition**.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **Separation of Concerns**:\n   - The hook does not need to know state calculation logic; it simply notifies the reducer about what happened.\n2. **Unidirectional Flow**:\n   - Creates a clean cycle: UI Event → Dispatch → Reducer → State → View.\n\n---\n\n#### 💡 Pro Tip: Large-Scale Scalability\nCentralizing state mutations in the reducer makes large codebases vastly easier to maintain.\n\n---\n\n### 5. 🚚 `dispatch` による Action の発火\n\n#### 💡 ここで何をしているの？（全体像）\nデータを受信した際に、**`dispatch({ type: 'SET_MESSAGES', messages: ... })` を呼んで状態の更新を指示**します。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **責務の分離**:\n   - フック側は「状態をどう書き換えるか」の計算式を知る必要はなく、「何が起きたか（Action）」を Reducer に手紙を出すように送るだけです。\n2. **一方向データフロー**:\n   - `UI操作/通信 → dispatch → Reducer → 新しいState → UI再描画` という美しい一方向の流れが完成します。\n\n---\n\n#### 💡 プロの知恵：大規模開発での圧倒的な保守性\n複数人で開発する際も、状態変更のロジックが Reducer 1箇所に集約されているため、どこでバグが起きたかを瞬時に特定できます。",
+      "pattern": "^\\s*const\\s+\\[state,\\s+dispatch\\]\\s+=\\s+useReducer\\(chatReducer,\\s+initialState\\);",
+      "line": 234
     }
   ]
 }

@@ -126,6 +126,33 @@ Once started, the emulator and application endpoints will be available:
 
 ---
 
+## Interactive Code Tours (VS Code)
+
+To help developers quickly navigate the codebase, this repository includes guided **CodeTours (64 tours in total)** that walk through key files and architectural data flows directly inside VS Code.
+
+### Installation & Prerequisites
+
+Install the **[CodeTour](https://marketplace.visualstudio.com/items?itemName=vsls-contrib.codetour)** extension from the Visual Studio Code Marketplace.
+
+### Starting a Tour
+
+1. Open the **CodeTour** panel in the VS Code Primary Side Bar (or run `CodeTour: Start Tour` from the Command Palette via `Ctrl+Shift+P` / `Cmd+Shift+P`).
+2. Select any tour from the available categories:
+   - **Fundamentals & Frameworks (40 tours)**:
+     - `chat-01` to `chat-08`: Group chat architecture, real-time sync, scroll anchor, message translation, security.
+     - `firebase-01` to `firebase-04`: `onSnapshot`, query optimization, server timestamps, Firestore security rules.
+     - `react-01` to `react-09`: `useReducer`, Context API, custom hooks, ref synchronization, optimistic UI.
+     - `ts-01` to `ts-06`: Discriminated unions, generics, type guards, `as const`, asynchronous types.
+     - `test-01` to `test-04`: Vitest unit tests, mocking strategies, Firebase Emulator integration, Playwright E2E.
+     - `node-01` to `node-06`: Express middleware, environment variables, centralized error handling, rate limiting.
+   - **Architecture & End-to-End Data Flow (24 tours)**:
+     - `arch-01` to `arch-24`: Full data relay from UI components through custom hooks, context state, and backend services to Firestore persistence for each core feature (Authentication, New Note, Habit Dashboard, Group Chat, Time Capsule, PWA, etc.).
+
+> [!TIP]
+> To visualize component wiring and node data relays as an interactive graph in your browser, open [`code-flow.html`](../code-flow.html) locally or explore the [Live Architecture Tour](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html).
+
+---
+
 ## Testing & Quality Verification
 
 Before submitting a Pull Request, verify that all checks pass:

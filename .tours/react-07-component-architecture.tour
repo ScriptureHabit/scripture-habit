@@ -1,22 +1,30 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "React基礎 07: コンポーネントアーキテクチャ (Container / Presentational & Composition)",
-  "tags": ["React Fundamentals", "GroupChat", "Architecture", "Component Design"],
+  "title": "React 07: Component Architecture (Container/Presentational) / コンポーネント設計",
+  "tags": [
+    "React Fundamentals",
+    "GroupChat",
+    "Architecture",
+    "Component Design"
+  ],
   "steps": [
     {
-      "file": "scripture-habit/src/components/groupchat/subcomponents/group-chat-message-list-container.tsx",
-      "line": 5,
-      "description": "### 1. 🎛️ Container Component (ロジック層)\n\n`GroupChatMessageListContainer` はデータの取得、スクロールロジック、Context との接続（状態管理）を担当します。\n自ら複雑な DOM やスタイリングの構造を抱え込まず、下位コンポーネントをオーケストレートします。"
+      "file": "src/components/groupchat/subcomponents/group-chat-message-list-container.tsx",
+      "description": "### 1. 🎛️ Container Component (Logic & State)\n\n#### 💡 What is happening here? (Overview)\nHandles **data fetching, Context subscription, and scroll orchestration** without containing heavy presentation markup.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **No Complex Markup**:\n   - Prepares all needed data and delegates rendering to `GroupChatMessageList`.\n2. **State Orchestration**:\n   - Uses hooks (`useChatData`, `useLayoutEffect`) to orchestrate view requirements.\n\n---\n\n#### 💡 Pro Tip: Container / Presentational Pattern\nSplitting logic from presentation keeps both halves clean, focused, and testable.\n\n---\n\n### 1. 🎛️ Container Component (ロジック・段取り役)\n\n#### 💡 ここで何をしているの？（全体像）\nデータの取得やスクロールの計算、Context とのやり取りなど、**「裏側の頭脳（ロジック）」を担当するコンポーネント**です。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **見た目を持たない**:\n   - 複雑な HTML タグや CSS クラスを持たず、表示用のコンポーネント（`GroupChatMessageList`）にデータを渡して呼び出すだけです。\n2. **状態と副作用の統合**:\n   - `useChatData()` や `useLayoutEffect` などを使い、表示に必要な材料をすべて準備します。\n\n---\n\n#### 💡 プロの知恵：Container / Presentational パターン\n「ロジック役（Container）」と「見た目役（Presentational）」に分ける設計手法です。これによって、コードの見通しが劇的に良くなります。",
+      "pattern": "^\\s*const\\s+GroupChatMessageListContainer\\s+=\\s+\\(\\)\\s+=>\\s+\\{",
+      "line": 5
     },
     {
-      "file": "scripture-habit/src/components/groupchat/subcomponents/group-chat-message-list.tsx",
-      "line": 11,
-      "description": "### 2. 🎨 Presentational Component (見た目・表示層)\n\n`GroupChatMessageList` はデータやイベントハンドラーを props / Context から受け取り、それらをどう表示・配置するかだけに専念します（Stateless / Pure）。\nビジネスロジックと描画が分離されているため、見た目の修正や単体テストが極めて容易になります。"
+      "file": "src/components/groupchat/subcomponents/group-chat-message-list.tsx",
+      "description": "### 2. 🎨 Presentational Component (Pure View)\n\n#### 💡 What is happening here? (Overview)\nPure visual component focused **solely on layout, CSS styling, and HTML structure**.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **Stateless & Pure**:\n   - Contains zero direct network calls, making it fast and predictable.\n2. **Mapping List Data**:\n   - Renders message feeds with date headers and dividers.\n\n---\n\n#### 💡 Pro Tip: Storybook Ready\nPure presentational components can easily be rendered and tested in Storybook with mock data.\n\n---\n\n### 2. 🎨 Presentational Component (見た目・表示役)\n\n#### 💡 ここで何をしているの？（全体像）\n渡されたメッセージの配列を受け取り、**「どう画面に綺麗に並べるか（デザイン・HTML）」だけに専念するコンポーネント**です。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **通信や重い計算をしない**:\n   - API通信や複雑な状態を持たない（Stateless）ため、動作が非常に軽快で予測しやすいです。\n2. **`map()` による一覧表示**:\n   - メッセージを上から順に並べ、日付ヘッダーや区切り線を装飾して描画します。\n\n---\n\n#### 💡 プロの知恵：Storybook でのUIカタログ化\n通信処理を持たない表示専用コンポーネントにしておくことで、Storybook などのデザインツールでモックデータを使って単体で見た目を確認・テストできるようになります。",
+      "pattern": "^\\s*\\{messages\\.map\\(\\(msg,\\s+index\\)\\s+=>\\s+\\{",
+      "line": 19
     },
     {
-      "file": "scripture-habit/src/components/groupchat/group-chat.tsx",
-      "line": 32,
-      "description": "### 3. 🧩 Component Composition (合成パターン)\n\n巨大な1つのファイルを作るのではなく、`ChatHeader` `GroupChatMessageListContainer` `GroupChatFooter` のように小さなコンポーネントを組み合わせて画面（`GroupChat`）を組み立てます。"
+      "file": "src/components/groupchat/group-chat.tsx",
+      "description": "### 3. 🧩 Component Composition\n\n#### 💡 What is happening here? (Overview)\nAssembles **modular subcomponents like building blocks** to form the complete screen.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **Declarative Layout**:\n   - Reads like a blueprint: Header at the top, Timeline in the middle, Input at the bottom.\n2. **Reusability**:\n   - Subcomponents like `MessageInput` can easily be repurposed across modals.\n\n---\n\n#### 💡 Pro Tip: Optimal File Size\nKeeping files under 200 lines maximizes developer productivity and prevents merge collisions.\n\n---\n\n### 3. 🧩 Component Composition (コンポーネントの合成)\n\n#### 💡 ここで何をしているの？（全体像）\n1000行もある巨大な1つのファイルを作るのではなく、**小さく分けた部品（ヘッダー、タイムライン、入力欄など）をブロックのように組み立てて画面を完成**させます。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **高い可読性**:\n   - JSX の構造を見るだけで、「上にヘッダーがあり、中央にメッセージ一覧があり、下に入力フォームがある」ことが一目で分かります。\n2. **再利用性の向上**:\n   - 分割された部品（例: `MessageInput`）は、他のモーダルや画面でも簡単に使い回せます。\n\n---\n\n#### 💡 プロの知恵：分割のベストな粒度\n「1ファイル 100〜200行程度」を目安にコンポーネントを分割していくと、チーム開発でファイルのコンフリクト（衝突）が起きにくく、快適に開発が進められます。",
+      "pattern": "^\\s*<GroupChatMessageListContainer\\s+/>",
+      "line": 34
     }
   ]
 }

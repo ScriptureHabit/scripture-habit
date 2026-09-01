@@ -1,37 +1,36 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "GroupChat Master 01: チャットデータの開通とデータフローリレー",
-  "tags": ["GroupChat", "Data Flow", "Architecture", "State Propagation"],
+  "title": "GroupChat 01: Architecture & State Management / アーキテクチャとデータフロー",
+  "tags": [
+    "GroupChat",
+    "Architecture",
+    "State Management",
+    "Context API"
+  ],
   "steps": [
     {
-      "file": "scripture-habit/src/components/groupchat/group-chat.tsx",
-      "line": 62,
-      "description": "### 1. 🏁 【データリレー 1】チャット画面の起動 (`GroupChat`)\n\nユーザーがグループを選択すると `GroupChat` が起動し、全子コンポーネントへデータを供給する「データパイプライン (`ChatProvider`)」を設置します。"
+      "file": "src/components/groupchat/chat-context.ts",
+      "description": "### 1. 🌐 Global Chat Pipeline (`ChatDataContext`)\n\n#### 💡 What is happening here? (Overview)\nWe create a **dedicated communication pipe (Context)** to teleport chat messages and loading states directly to any child component without manual props forwarding (Props Drilling).\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`createContext<Type | undefined>(undefined)`**:\n   - Defines the data pipe type. Initialized to `undefined` to detect if a component tries to consume data outside the Provider.\n2. **Type Safety**:\n   - Strongly typed with TypeScript so every component consuming this context enjoys autocomplete and compile-time checks.\n\n---\n\n#### 💡 Pro Tip: Split Context Architecture\nSeparating fast-changing data (`ChatDataContext`) from stable actions (`ChatActionsContext`) avoids unnecessary re-renders across the entire component tree.\n\n---\n\n### 1. 🌐 チャット専用データパイプライン (`ChatDataContext`)\n\n#### 💡 ここで何をしているの？（全体像）\n画面のあちこちにあるコンポーネント（ヘッダー、メッセージ一覧、フッター等）に、**「チャットのメッセージ一覧」や「読み込み中フラグ」を直接ワープして届けるための専用パイプライン（Context）を作成**します。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`createContext<ChatDataContextType | undefined>(undefined)`**:\n   - パイプラインを通るデータの型（TypeScript）を指定して作成します。\n2. **バケツリレー（Props Drilling）の解消**:\n   - 親から子へ `props` を何重にも手渡しする必要がなくなります。\n\n---\n\n#### 💡 プロの知恵：なぜ Context を分けるのか？\n「頻繁に変わるメッセージデータ」と「めったに変わらない送信・削除などの操作関数」を別の Context に分けることで、関係のないコンポーネントの再描画を極限まで減らしています。",
+      "pattern": "^\\s*export\\s+const\\s+ChatDataContext\\s+=\\s+createContext<ChatDataContextType\\s+\\|\\s+undefined>\\(undefined\\);",
+      "line": 90
     },
     {
-      "file": "scripture-habit/src/components/groupchat/group-chat-provider.tsx",
-      "line": 56,
-      "description": "### 2. 📡 【データリレー 2】データエンジンの発動 (`useGroupMessages`)\n\n`GroupChatProvider` 内で `useGroupMessages` が動き出し、Firestore サーバーとのリアルタイム接続を開通させてメッセージ生データを取得します。"
+      "file": "src/components/groupchat/hooks/core/chat-reducer.ts",
+      "description": "### 2. 🧠 State Management with Reducer (`chatReducer`)\n\n#### 💡 What is happening here? (Overview)\n`chatReducer` is a **pure function that receives the current state and an action (command), then calculates and returns the brand-new state**.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **Immutability (`{ ...state, messages: [...] }`)**:\n   - Never mutates the original object. Spreading into a new object ensures React detects the change and triggers a re-render.\n2. **Discriminated Union Actions**:\n   - `action.type` safely switches logic branches with full TypeScript type narrowing.\n\n---\n\n#### 💡 Pro Tip: Unidirectional Data Flow\n`User Action → dispatch(action) → chatReducer → New State → UI Render`. Having all state transitions in one pure function makes debugging and unit testing effortless.\n\n---\n\n### 2. 🧠 状態変更の頭脳 (`chatReducer`)\n\n#### 💡 ここで何をしているの？（全体像）\n`chatReducer` は、**「現在の画面状態（State）」と「何が起きたか（Action）」を受け取り、「新しい画面状態」を計算して返す単一の関数**です。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **不変性（イミュータビリティ）の維持**:\n   - 元の配列を `push()` で直接いじらず、`{ ...state, messages: [...] }` のように新しいオブジェクトを作って返します。\n2. **`switch (action.type)`**:\n   - メッセージ受信、追加、更新、削除などのイベントに応じて状態を安全に更新します。\n\n---\n\n#### 💡 プロの知恵：一方向データフロー\n`UI操作 → dispatch → Reducer → 新しいState → UI再描画` という一方通行の流れを作ることで、どこでデータがおかしくなったかを 100% 特定できます。",
+      "pattern": "^\\s*export\\s+const\\s+chatReducer\\s+=\\s+\\(state:\\s+ChatState,\\s+action:\\s+ChatAction\\):\\s+ChatState\\s+=>\\s+\\{",
+      "line": 85
     },
     {
-      "file": "scripture-habit/src/components/groupchat/hooks/core/chat-reducer.ts",
-      "line": 56,
-      "description": "### 3. 🗃️ 【データリレー 3】データの集約と正規化 (`chatReducer`)\n\n仕入れられたメッセージ配列は `dispatch({ type: 'SET_INITIAL_STATE' })` 経由で Reducer へ送られ、`ChatState`（チャット統一状態）として安全に格納されます。"
+      "file": "src/components/groupchat/group-chat-provider.tsx",
+      "description": "### 3. 💎 Memoizing Context Value (`useMemo`)\n\n#### 💡 What is happening here? (Overview)\nWe memoize the large context object so that **a new object reference is only generated when underlying data actually changes**.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **Referential Equality**:\n   - Without `useMemo`, a new object literal is created on every parent render, forcing all children to re-render needlessly.\n2. **Dependency Array**:\n   - `[messages, loading, ...]` tells React to reuse the previous cached object unless these specific values change.\n\n---\n\n#### 💡 Pro Tip: Eliminating Cascading Re-renders\nIn high-frequency apps like chat, memoizing the context value is critical to keep the UI smooth at 60 FPS.\n\n---\n\n### 3. 💎 配信データのメモ化 (`useMemo`)\n\n#### 💡 ここで何をしているの？（全体像）\n配下のコンポーネントに配るデータオブジェクトを、**「中身が変わっていない時は前回の計算結果をそのまま使い回す（キャッシュする）」**処理です。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **参照の同一性（Referential Equality）**:\n   - JavaScript では同じ内容でもオブジェクトを新しく作ると「別物」と判定され、子コンポーネントが全員再描画されてしまいます。\n2. **`useMemo` によるキャッシュ**:\n   - メッセージの中身やローディング状態が変わった時だけ、新しいオブジェクトを生成します。\n\n---\n\n#### 💡 プロの知恵：画面のチラつきと重さの根絶\nこのメモ化を1行挟むだけで、親コンポーネントが動くたびにチャット一覧が全再描画されるドミノ倒しを完璧に阻止できます。",
+      "pattern": "^\\s*const\\s+dataValue\\s+=\\s+useMemo<ChatDataContextType>\\(\\(\\)\\s+=>\\s+\\(\\{",
+      "line": 146
     },
     {
-      "file": "scripture-habit/src/components/groupchat/group-chat-provider.tsx",
-      "line": 141,
-      "description": "### 4. 🧠 【データリレー 4】コンテキスト値へのバインドとメモ化\n\n正規化されたチャット状態は `useMemo` で包まれ、再描画の無駄をカットした状態で全子要素へ配給（Provider）されます。"
-    },
-    {
-      "file": "scripture-habit/src/components/groupchat/subcomponents/group-chat-message-list-container.tsx",
-      "line": 6,
-      "description": "### 5. 🎛️ 【データリレー 5】Container によるデータの受け取りとスクロール調達\n\n`GroupChatMessageListContainer` が `useChatData()` でメッセージデータを引き取り、同時に `useChatUIActions()` からスクロール制御ロジックを合体させます。"
-    },
-    {
-      "file": "scripture-habit/src/components/groupchat/subcomponents/group-chat-message-list.tsx",
-      "line": 19,
-      "description": "### 6. 🎨 【データリレー 6】最終描画 (`GroupChatMessageList`)\n\nバトンを受け取った Presentational が、メッセージ配列を `map` で回し、日付区切り線やカードを画面上にレンダリングして完結します！"
+      "file": "src/components/groupchat/group-chat.tsx",
+      "description": "### 4. 🧩 Clean Component Composition\n\n#### 💡 What is happening here? (Overview)\nInstead of putting 1,000 lines in one monolithic file, we assemble **clean, independent LEGO blocks (`ChatHeader`, `MessageList`, `Footer`)** into the main `GroupChat` screen.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **Component Composition**:\n   - High-level layout reads clearly like natural document structure.\n2. **Isolated Responsibilities**:\n   - Each subcomponent handles its own domain without leaking implementation details.\n\n---\n\n#### 💡 Pro Tip: Team Maintainability\nKeeping components between 100-200 lines eliminates git merge conflicts and allows multiple developers to work concurrently.\n\n---\n\n### 4. 🧩 コンポーネントの組み立て（合成パターン）\n\n#### 💡 ここで何をしているの？（全体像）\n1つの巨大なファイルを作るのではなく、**ヘッダー・メッセージ一覧・フッターなどの小さく分けた部品を綺麗に合体**させて画面を完成させます。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **コードの見通しの良さ**:\n   - `<GroupChat>` の中身を見るだけで、「上にヘッダー、中央にリスト、下に入力欄がある」と一目で構造が分かります。\n2. **責任の分離**:\n   - ヘッダーのデザインを変えたい時は `chat-header.tsx` だけを修正すればOKです。\n\n---\n\n#### 💡 プロの知恵：コンポーネント分割の黄金比\n1ファイルを 100〜200 行程度に保つことで、チーム開発でファイルの衝突（コンフリクト）が起きにくく、保守性が最高になります。",
+      "pattern": "^\\s*<GroupChatMessageListContainer\\s+/>",
+      "line": 34
     }
   ]
 }

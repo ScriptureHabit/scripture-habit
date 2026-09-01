@@ -1,0 +1,17 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "Architecture 19: Language Switcher & i18n (Languages) / 多言語切り替え & 国際化 (Languages)",
+  "tags": [
+    "Architecture",
+    "End-to-End Flow",
+    "platform",
+    "tour-languages"
+  ],
+  "steps": [
+    {
+      "file": "src/config/languages.ts",
+      "description": "### Step 1/1. Infra languages.ts (Infra & Database Layer)\n\n#### 💡 Architectural Purpose & Why It Exists\nManages physical connections, offline storage caches, and security boundaries with cloud infrastructure.\n\n#### 🔍 Beginner's Code Breakdown\n1. SDK Instance Lifecycle: Maintains shared singleton connections to cloud services\n2. Offline Storage: Configures IndexedDB caching for offline resilience\n3. Security Rules: Protects database collections against unauthorized access\n\n#### 🔄 Data Flow Relay\n- **Inbound from**: app.tsx, install-prompt.tsx, landing-page.tsx, language-redirect.tsx, use-url-meta-fetcher.ts, profile.tsx, seo-manager.tsx, welcome.tsx, language-context.ts, language-provider.tsx, use-url-metadata.ts, i18n.ts, url-localizer.ts\n- **Outbound to**: None (Terminal Leaf)\n\n#### 💡 Pro Tip: Best Practices\nAutomating Firestore Security Rules tests in CI/CD ensures private collections can never be exposed accidentally.\n\n---\n\n### Step 1/1. Infra languages.ts (インフラ & データベース層)\n\n#### 💡 アーキテクチャ上の設計意図（なぜこの層にこのファイルが必要？）\nクラウドインフラ（Firestore, Firebase Auth, Cloud Storage）との物理的な接続やセキュリティ境界を管理します。\n\n#### 🔍 初心者向けコードの読み解きポイント（主要関数と仕組み）\n1. SDK インスタンス管理: 初期化とシングルトン接続の維持\n2. オフライン永続化: IndexedDB を活用したローカルキャッシュの制御\n3. セキュリティルール: 悪意あるアクセスからデータベースを保護\n\n#### 🔄 データの流れ（データリレー）\n- **⬅️ 入力元**: app.tsx, install-prompt.tsx, landing-page.tsx, language-redirect.tsx, use-url-meta-fetcher.ts, profile.tsx, seo-manager.tsx, welcome.tsx, language-context.ts, language-provider.tsx, use-url-metadata.ts, i18n.ts, url-localizer.ts\n- **➡️ 送信先**: なし (終端 / 末端モジュール)\n\n#### 💡 プロの知恵・なぜこう書くのか？\nセキュリティルールを単体テスト（@firebase/rules-unit-testing）で自動検証しておくことで、本番環境での情報漏洩を確実に防止できます。",
+      "line": 1
+    }
+  ]
+}

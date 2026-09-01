@@ -1,22 +1,30 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "React基礎 09: 楽観的UI更新 (Optimistic Updates) と状態ロールバック",
-  "tags": ["React Fundamentals", "GroupChat", "Optimistic UI", "UX"],
+  "title": "React 09: Optimistic UI Updates & Rollback / 楽観的UI更新とロールバック",
+  "tags": [
+    "React Fundamentals",
+    "GroupChat",
+    "Optimistic UI",
+    "UX"
+  ],
   "steps": [
     {
-      "file": "scripture-habit/src/components/groupchat/hooks/api/use-message-actions.ts",
-      "line": 49,
-      "description": "### 1. ⚡ 楽観的更新 (Optimistic Update) の概念\n\nネットワーク通信（API書き込み）の完了を待ってから UI を更新すると、ユーザーはタイムラグ（遅延）を感じます。\n「サーバー処理は成功するはずだ」と予測（楽観）して、**API リクエストを投げる直前に仮メッセージ (`optimisticMessage`) を生成**します。"
+      "file": "src/components/groupchat/hooks/api/use-message-actions.ts",
+      "description": "### 1. ⚡ Instant UI Feedback with Optimistic Updates\n\n#### 💡 What is happening here? (Overview)\nDisplays the outgoing message **immediately upon button press (0ms)** without waiting for the server round-trip.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`isOptimistic: true`**:\n   - Marker flag denoting a message is pending server confirmation.\n2. **Local Timestamp Generation**:\n   - Generates temporary local timestamp with `Date.now()`.\n\n---\n\n#### 💡 Pro Tip: Zero Perceived Latency\nOptimistic UI makes web apps feel as responsive and snappy as native iOS/Android applications.\n\n---\n\n### 1. ⚡ 楽観的更新 (Optimistic Update) の概念\n\n#### 💡 ここで何をしているの？（全体像）\n通信完了を待たずに**「送信ボタンを押した瞬間にメッセージを画面に出す」という先回り処理**です。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`isOptimistic: true` フラグ**:\n   - 「このメッセージはまだサーバーで確定していない送信中のデータですよ」という目印です。\n2. **タイムスタンプの事前生成**:\n   - `Date.now()` で現在日時をローカルで仮発行し、即座にメッセージオブジェクトを作成します。\n\n---\n\n#### 💡 プロの知恵：待ち時間ゼロの快適さ\n普通に作ると 0.5 秒ほど画面が止まって待たされますが、楽観的更新を導入することで「押した瞬間に吹き出しが出る」超快適な体験になります。",
+      "pattern": "isOptimistic: true,",
+      "line": 58
     },
     {
-      "file": "scripture-habit/src/components/groupchat/hooks/api/use-message-actions.ts",
-      "line": 72,
-      "description": "### 2. 📝 Pending メッセージのローカル即時挿入\n\n`dispatch({ type: 'ADD_NEW_MESSAGES', newMessages: [optimisticMessage] })` を即座に呼ぶことで、仮の ID と `isOptimistic: true` を持ったメッセージを0ミリ秒で画面へ反映させます。"
+      "file": "src/components/groupchat/hooks/api/use-message-actions.ts",
+      "description": "### 2. 📝 Immediate Local Insertion\n\n#### 💡 What is happening here? (Overview)\nInserts the optimistic message into the Reducer state **at the exact moment the API call is dispatched**.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`ADD_NEW_MESSAGES`**:\n   - Dispatches the pending message into local state.\n2. **Temporary Key (`temp-...`)**:\n   - Uses a temporary UUID as React's list key.\n\n---\n\n#### 💡 Pro Tip: Visual Indicators\nPending messages can be styled with subtle translucency or clock icons while `isOptimistic` is true.\n\n---\n\n### 2. 📝 Pending メッセージのローカル即時挿入\n\n#### 💡 ここで何をしているの？（全体像）\nAPI リクエストをサーバーに送信する**「まさにその瞬間（0ミリ秒）」に、Reducer を通じて画面に仮メッセージを追加**します。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`ADD_NEW_MESSAGES`**:\n   - Reducer にメッセージ追加をディスパッチします。\n2. **仮 ID (`temp-...`)**:\n   - まだサーバーの ID がないため、一時的な ID を振ってリストの `key` として使います。\n\n---\n\n#### 💡 プロの知恵：半透明やスピナーの演出\n`isOptimistic: true` がついている間は、吹き出しの横に小さな「時計マーク（送信中アイコン）」を出したり、少し半透明にするなどの演出が可能です。",
+      "pattern": "^\\s*dispatch\\(\\{\\s+type:\\s+'ADD_NEW_MESSAGES',\\s+newMessages:\\s+\\[optimisticMessage\\]\\s+\\}\\);",
+      "line": 73
     },
     {
-      "file": "scripture-habit/src/components/groupchat/hooks/api/use-message-actions.ts",
-      "line": 115,
-      "description": "### 3. 🔄 サーバー応答時の確定処理とエラー時のロールバック\n\nサーバーへの送信が成功したら仮メッセージを本物の確定データに差し替えます。\nもし失敗（`catch` ブロック）した場合は、`dispatch({ type: 'REMOVE_MESSAGE', messageId: optimisticId })` を呼んで仮メッセージを画面から取り消す（ロールバック）ことで、データ整合性を完全に保ちます。"
+      "file": "src/components/groupchat/hooks/api/use-message-actions.ts",
+      "description": "### 3. 🔄 Reconciliation & Error Rollback\n\n#### 💡 What is happening here? (Overview)\nPromotes the message to a **confirmed server ID on success**, or **reverts (rolls back) the local state on failure**.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **Success (`UPDATE_MESSAGE`)**:\n   - Replaces temp ID with the canonical Firestore ID and clears `isOptimistic`.\n2. **Failure (`catch`)**:\n   - Dispatches `REMOVE_MESSAGE` and alerts the user to retry.\n\n---\n\n#### 💡 Pro Tip: Golden Rule of Optimistic UI\nAnything rendered optimistically must be cleanly reverted on failure to preserve data integrity.\n\n---\n\n### 3. 🔄 サーバー応答時の確定とエラーロールバック\n\n#### 💡 ここで何をしているの？（全体像）\nサーバーから「保存できたよ！」と返事が来たら**「本物のIDに昇格（確定）」**させ、電波切れ等で失敗したら**「画面から仮メッセージを取り消す（ロールバック）」**処理です。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **成功時 (`UPDATE_MESSAGE`)**:\n   - 仮 ID を正式な Firestore ドキュメント ID に差し替え、`isOptimistic: false` に更新します。\n2. **失敗時 (`catch (error)`)**:\n   - `REMOVE_MESSAGE` で画面から消去し、「送信に失敗しました」と再試行ボタンを出します。\n\n---\n\n#### 💡 プロの知恵：楽観的UIの絶対原則\n「先走って表示したものは、失敗した時に必ず元の状態に戻す（ロールバックする）」。この後片付けがあるからこそ、画面とサーバーのデータがズレずに完璧に同期します。",
+      "pattern": "isOptimistic: false,",
+      "line": 129
     }
   ]
 }

@@ -1,22 +1,31 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "TypeScript基礎 06: 非同期 Promise<T> と 外部SDK/DB の型境界設計",
-  "tags": ["TypeScript Fundamentals", "GroupChat", "Async", "Promises", "Type Boundaries"],
+  "title": "TypeScript 06: Async Promise<T> & Type Boundaries / 非同期型と型境界設計",
+  "tags": [
+    "TypeScript Fundamentals",
+    "GroupChat",
+    "Async",
+    "Promises",
+    "Type Boundaries"
+  ],
   "steps": [
     {
-      "file": "scripture-habit/src/components/groupchat/hooks/api/use-message-actions.ts",
-      "line": 44,
-      "description": "### 1. ⏳ 非同期処理関数の型付け (`Promise<T>`)\n\n`async` 関数の戻り値は自動的に `Promise<T>` で包まれます。\n`handleSendMessage` のように `async (text: string, ...)` と定義することで、呼び出し側（React コンポーネント）が `await` 完了時に何が得られるかを型安全に把握できます。"
+      "file": "src/components/groupchat/hooks/api/use-message-actions.ts",
+      "description": "### 1. ⏳ Typing Async Functions with `Promise<boolean>`\n\n#### 💡 What is happening here? (Overview)\nGuarantees that asynchronous `async` functions **return a typed `Promise<T>` upon completion**.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`async` Return Types**:\n   - `async` automatically wraps return values in `Promise<T>`.\n2. **`await` Unwrapping**:\n   - Using `await handleSendMessage(...)` unwraps the promise into a clean primitive `boolean`.\n\n---\n\n#### 💡 Pro Tip: Catching Missing `await`\nIf you forget `await`, TypeScript alerts you immediately when you try to use `Promise<boolean>` as a boolean.\n\n---\n\n### 1. ⏳ 非同期関数の型定義 (`Promise<boolean>`)\n\n#### 💡 ここで何をしているの？（全体像）\nサーバー通信を伴う非同期関数（`async`）が、**「処理が終わった後にどんな型の結果を返すか」を型で保証**します。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`async` 関数の戻り値**:\n   - `async` をつけた関数は、自動的に `Promise<T>` で包まれます（例: `return true` すると戻り値は `Promise<boolean>` になる）。\n2. **`await` によるアンラップ**:\n   - 呼び出し側で `const success = await handleSendMessage(...)` と書くと、`Promise` が剥がれて純粋な `boolean` が手に入ります。\n\n---\n\n#### 💡 プロの知恵：型エラーによる非同期忘れ防止\n`await` を書き忘れた場合、`Promise<boolean>` を `boolean` として扱おうとして TypeScript が即座に警告してくれるため、非同期処理の待ち忘れバグを確実に防げます。",
+      "pattern": "^\\s*const\\s+handleSendMessage\\s+=\\s+useCallback\\(async\\s+\\(text:\\s+string,\\s+replyTo:\\s+Message\\s+\\|\\s+null\\)\\s+=>\\s+\\{",
+      "line": 45
     },
     {
-      "file": "scripture-habit/src/utils/firestore-converters.ts",
-      "line": 33,
-      "description": "### 2. 🌉 外部データ (Firestore / API) とドメイン型の境界マッピング (`withConverter`)\n\n`fromFirestore(snapshot): T` を使って Firestore の生データ (`DocumentData`) をそのまま React に流さず、アプリケーション固有の型 (`Message` や `UserData` 型) へ安全に変換・マッピングする境界（アンカー）を設けます。"
+      "file": "src/utils/firestore-converters.ts",
+      "description": "### 2. 🌉 Database Boundary Mapping with `withConverter`\n\n#### 💡 What is happening here? (Overview)\nSets up a **custom converter (customs checkpoint)** to map untyped Firestore documents (`DocumentData`) into strongly-typed app models (`Message`, `UserData`).\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`FirestoreDataConverter<T>`**:\n   - `fromFirestore`: Parses raw database records into app domain models.\n   - `toFirestore`: Serializes domain models for database storage.\n2. **Type-Safe Collections**:\n   - `collection(...).withConverter(converter)` gives 100% autocompletion across Firestore operations.\n\n---\n\n#### 💡 Pro Tip: Clean Architecture\nAvoid loose `as Message` casts by using Firestore Converters to guarantee runtime type safety at the IO boundary.\n\n---\n\n### 2. 🌉 外部データとアプリ内データの型変換境界 (`withConverter`)\n\n#### 💡 ここで何をしているの？（全体像）\nFirestore から届く正体不明の生データ（`DocumentData`）を、**アプリ内で使う安全な型（`Message` や `UserData`）へと変換する「入国審査ゲート」**を設置します。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`FirestoreDataConverter<T>`**:\n   - `fromFirestore`: データベースから読み取った生データをアプリの型 `T` に変換\n   - `toFirestore`: アプリのデータ `T` をデータベース保存用の形式に変換\n2. **型安全なコレクション操作**:\n   - `collection(db, 'messages').withConverter(messageConverter)` と書くだけで、取得・追加するデータがすべて `Message` 型として自動補完されるようになります。\n\n---\n\n#### 💡 プロの知恵：型汚染の防止\nデータベースの生データに `as Message` と無理やり型キャストするのをやめ、コンバーターで正規化して通すのが、世界水準のクリーンアーキテクチャです。",
+      "pattern": "^\\s*toFirestore\\(data:\\s+WithFieldValue<T>\\):\\s+DocumentData\\s+\\{",
+      "line": 26
     },
     {
-      "file": "scripture-habit/src/components/groupchat/hooks/core/use-chat-data-engine.ts",
-      "line": 246,
-      "description": "### 3. 🎯 関数の戻り値型推論と Custom Hook の返り値設計\n\n`return { state, dispatch }` のように Custom Hook の末尾でオブジェクトを返すと、TypeScript が自動的に `{ state: ChatState, dispatch: Dispatch<ChatAction> }` という正確な戻り値の型を推論してくれます。"
+      "file": "src/components/groupchat/hooks/core/use-chat-data-engine.ts",
+      "description": "### 3. 🎯 Hook Return Types & Automatic Inference\n\n#### 💡 What is happening here? (Overview)\nReturning `{ state, dispatch }` allows TypeScript to **automatically infer precise return types without writing redundant interface boilerplate**.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **Automatic Return Inference**:\n   - TypeScript accurately derives `{ state: ChatState, dispatch: Dispatch<ChatAction> }`.\n2. **Clean Destructuring**:\n   - Callers destructure with full autocomplete: `const { state, dispatch } = useChatDataEngine(...)`.\n\n---\n\n#### 💡 Pro Tip: Tuples vs Objects\n- 2 values (like `useState`) → Return a tuple `[state, setState]`.\n- 3+ values → Return an object `{ a, b, c }` for better scalability.\n\n---\n\n### 3. 🎯 カスタムフックの戻り値と型推論\n\n#### 💡 ここで何をしているの？（全体像）\nカスタムフックの末尾で `return { state, dispatch }` と書くだけで、**TypeScript がオブジェクトの中身を完璧に推論して呼び出し側に引き渡します**。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **自動型推論の威力**:\n   - 戻り値の型をわざわざ `interface UseChatDataEngineReturn { ... }` と手書きしなくても、TypeScript が自動で正確なオブジェクト型を組み立ててくれます。\n2. **分割代入での受け取り**:\n   - 呼び出し側は `const { state, dispatch } = useChatDataEngine(...)` と書くだけで、型補完が 100% 効いた状態で使えます。\n\n---\n\n#### 💡 プロの知恵：タプル vs オブジェクト\n- `useState` のように値が 2 つだけならタプル `[state, setState]` が便利\n- カスタムフックで返す値が 3 つ以上ならオブジェクト `{ a, b, c }` で返すのがベストプラクティスです。",
+      "pattern": "^\\s*return\\s+\\{\\s+state,\\s+dispatch\\s+\\};",
+      "line": 250
     }
   ]
 }

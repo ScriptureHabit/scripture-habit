@@ -1,22 +1,30 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "TypeScript基礎 03: React Component Props と Event ハンドラーの型定義",
-  "tags": ["TypeScript Fundamentals", "GroupChat", "React Props", "Event Handling"],
+  "title": "TypeScript 03: Component Props & Event Typing / React Props とイベントの型付け",
+  "tags": [
+    "TypeScript Fundamentals",
+    "GroupChat",
+    "React Props",
+    "Event Handling"
+  ],
   "steps": [
     {
-      "file": "scripture-habit/src/components/groupchat/subcomponents/message-item.tsx",
-      "line": 18,
-      "description": "### 1. 📦 Component Props インターフェースの設計\n\n`interface MessageItemProps { msg: Message; }` のように、コンポーネントが親から受け取る入力データ（props）を明示的に型付けします。"
+      "file": "src/components/groupchat/subcomponents/message-item.tsx",
+      "description": "### 1. 📦 Explicit Component Props Interface\n\n#### 💡 What is happening here? (Overview)\nDeclares an **interface contract (`MessageItemProps`)** that defines precisely what input data the component expects from its parent.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`interface MessageItemProps { msg: Message; }`**:\n   - Mandatory specification that parent components must provide `msg={message}`.\n2. **IDE Red-squiggles**:\n   - Instantly warns developers in VS Code if required props are missing.\n\n---\n\n#### 💡 Pro Tip: Optional Props (`?`)\nAdding `?` (e.g. `className?: string`) creates clean optional parameters.\n\n---\n\n### 1. 📦 Component Props インターフェースの設計\n\n#### 💡 ここで何をしているの？（全体像）\nコンポーネントが親から**「どんなデータを受け取って動くのか」という仕様書（契約書）を `interface` で定義**します。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`interface MessageItemProps { msg: Message; }`**:\n   - 「このコンポーネントを呼ぶ時は、必ず `msg={message}` を渡してください」というルールを作ります。\n2. **エディタの強力なアシスト**:\n   - 親側で `<MessageItem />` と書くだけで、「`msg` が足りません」と赤線で教えてくれ、渡し忘れをゼロにします。\n\n---\n\n#### 💡 プロの知恵：オプショナル Props (`?`)\n必須ではない設定（例: `className?: string`）には `?` をつけることで、渡しても渡さなくても良い柔軟なコンポーネントを設計できます。",
+      "pattern": "^\\s*interface\\s+MessageItemProps\\s+\\{",
+      "line": 19
     },
     {
-      "file": "scripture-habit/src/components/groupchat/subcomponents/message-input.tsx",
-      "line": 80,
-      "description": "### 2. ⚡ DOM イベントの型付け (`React.ChangeEvent`, `React.FormEvent`)\n\n`onChange={(e) => ...}` や `onSubmit={(e) => ...}` のようにイベントハンドラーを書く際、`e`（イベントオブジェクト）には `React.ChangeEvent<HTMLTextAreaElement>` などの型が自動推論（または明示型付け）され、`e.target.value` や `e.preventDefault()` が補完・安全に利用できます。"
+      "file": "src/components/groupchat/subcomponents/message-input.tsx",
+      "description": "### 2. ⚡ Typing DOM Event Handlers (`React.ChangeEvent`)\n\n#### 💡 What is happening here? (Overview)\nStrongly types keyboard and form input events so **`e.target.value` has full autocomplete and safety**.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`React.ChangeEvent<HTMLTextAreaElement>`**:\n   - Specifies this is a change event from an HTML textarea element.\n2. **Safe Value Access**:\n   - Guarantees `e.target` is an input/textarea with a valid string `value`.\n\n---\n\n#### 💡 Pro Tip: Inline Inference\nInline arrow functions in JSX (`onChange={(e) => ...}`) infer event types automatically without manual annotations.\n\n---\n\n### 2. ⚡ React イベントオブジェクトの型定義 (`React.ChangeEvent`)\n\n#### 💡 ここで何をしているの？（全体像）\nキーボード入力やクリック時の**イベントオブジェクト `e` に型をつけることで、`e.target.value` などの補完を完璧に効かせます**。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`React.ChangeEvent<HTMLTextAreaElement>`**:\n   - `<textarea>` の文字入力イベントであることを型で指定します。\n2. **`e.target.value` の安全な取得**:\n   - `e.target` が間違いなくテキストエリア要素であると保証されるため、文字列を安全に取り出せます。\n\n---\n\n#### 💡 プロの知恵：インライン関数の自動推論\n`onChange={(e) => setNewMessage(e.target.value)}` のように JSX 内に直接アロー関数を書くと、React が `e` の型を自動で推論してくれるため、型注釈を省略しても型安全が保たれます。",
+      "pattern": "^\\s*onChange=\\{\\(e\\)\\s+=>\\s+setNewMessage\\(e\\.target\\.value\\)\\}",
+      "line": 75
     },
     {
-      "file": "scripture-habit/src/components/groupchat/chat-provider.tsx",
-      "line": 18,
-      "description": "### 3. 👶 `React.ReactNode` と Children の型指定\n\n`children: ReactNode;` のように、コンポーネントが配下の子要素（children）を受け取る場合は `ReactNode` 型で型定義します。（JSX、文字列、数値、null など画面に表示可能なすべての要素を受け入れられます。）"
+      "file": "src/components/groupchat/chat-provider.tsx",
+      "description": "### 3. 👶 Typing Wrapped Elements with `React.ReactNode`\n\n#### 💡 What is happening here? (Overview)\nSpecifies the `children` prop for wrapper components so they can **safely receive any renderable JSX elements**.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`children: ReactNode`**:\n   - Universal type accepting JSX tags, strings, numbers, arrays, and null.\n2. **Modern Standard**:\n   - Preferred over `React.FC` in modern React best practices.\n\n---\n\n#### 💡 Pro Tip: Wrapper Architecture\nUsed in 100% of wrapper components, layouts, modals, and context providers.\n\n---\n\n### 3. 👶 子要素を受け取る型 (`React.ReactNode`)\n\n#### 💡 ここで何をしているの？（全体像）\n`<Provider><App /></Provider>` のように、**タグで囲んだ中身（`children`）を受け取るコンポーネントの型定義**です。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`children: ReactNode`**:\n   - JSX タグ、文字列、数値、配列、`null` など、「React が画面に描画できるあらゆるもの」を受け入れられる万能な型です。\n2. **`React.FC` との違い**:\n   - 昔流行した `React.FC` よりも、明示的に `interface { children: ReactNode }` と書く方が現代の React では推奨されています。\n\n---\n\n#### 💡 プロの知恵：ラッパーコンポーネントの必須知識\nProvider やカード枠、レイアウトコンポーネントなど、「中に何かが入るコンポーネント」を作る時は 100% この `ReactNode` を使います。",
+      "pattern": "^\\s*children:\\s+ReactNode;",
+      "line": 18
     }
   ]
 }

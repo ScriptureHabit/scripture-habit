@@ -1,0 +1,31 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "GroupChat 07: Rich Features & Moderation / 編集・翻訳・通報システム",
+  "tags": [
+    "GroupChat",
+    "Rich Features",
+    "Moderation",
+    "Translation",
+    "Report System"
+  ],
+  "steps": [
+    {
+      "file": "src/components/groupchat/hooks/api/use-message-actions.ts",
+      "description": "### 1. ✏️ Granular Message Editing & Deletion\n\n#### 💡 What is happening here? (Overview)\nAllows the author to **edit their message text inline or soft-delete it** while maintaining full audit metadata (`editedAt`).\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`editedAt` Timestamp**:\n   - Records when the message was modified and displays an '(edited)' label.\n2. **Ownership Guard**:\n   - UI only presents edit/delete actions if `msg.senderId === currentUser.uid`.\n\n---\n\n#### 💡 Pro Tip: Soft vs Hard Deletes\nFor chat safety and context, updating the text to '[Message deleted]' (soft delete) prevents broken reply threads.\n\n---\n\n### 1. ✏️ メッセージ編集・削除とタイムスタンプ記録\n\n#### 💡 ここで何をしているの？（全体像）\n自分が送ったメッセージを**「後から編集したり、削除したりする」機能を安全に提供**します。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`editedAt` フィールド**:\n   - 編集された日時を記録し、吹き出しの横に「（編集済み）」と表示します。\n2. **所有者チェック**:\n   - 自分のメッセージにだけ編集・削除ボタンが表示されます。\n\n---\n\n#### 💡 プロの知恵：ソフトデリート（論理削除）\n完全にデータベースから消すのではなく、「このメッセージは削除されました」という状態に更新することで、会話の文脈やつながりを壊さない工夫がされています。",
+      "pattern": "^\\s*let\\s+errorMessage\\s+=\\s+t\\('groupChat\\.errorDeleteMessage'\\);",
+      "line": 290
+    },
+    {
+      "file": "src/components/groupchat/hooks/api/use-message-actions.ts",
+      "description": "### 2. 🌐 On-Demand Multilingual Translation & Cache\n\n#### 💡 What is happening here? (Overview)\nTranslates foreign messages into the user's native language on-demand, **caching translation results in local state to prevent repeat API billing**.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`translatedTexts` Cache Map**:\n   - `[messageId]: translatedContent` stores previously translated strings.\n2. **On-Demand Execution**:\n   - Calls translation APIs only when the user explicitly clicks 'Translate'.\n\n---\n\n#### 💡 Pro Tip: LLM & Translation Cost Optimization\nLocal caching cuts translation API costs by up to 90% in multilingual community channels.\n\n---\n\n### 2. 🌐 オンデマンド多言語翻訳とキャッシュ機構\n\n#### 💡 ここで何をしているの？（全体像）\n外国語で届いたメッセージを、**「翻訳ボタンを押した時だけその場で翻訳し、結果をキャッシュして二重課金を防止」**します。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **キャッシュ辞書 (`translatedTexts`)**:\n   - 一度翻訳した結果をメモリに保存しておき、2回目以降は API を呼ばずに即座に表示します。\n2. **オンデマンド実行**:\n   - 全文を勝手に翻訳せず、ユーザーが読みたいメッセージだけを翻訳することで、AI API の利用料金を大幅に抑えます。\n\n---\n\n#### 💡 プロの知恵：グローバル対応の基本\n世界中のユーザーが集まるコミュニティでも、言語の壁を意識せずにスムーズに交流できる神機能です。",
+      "pattern": "^\\s*\\},\\s+\\[language,\\s+translatedTexts,\\s+processBatch\\]\\);",
+      "line": 405
+    },
+    {
+      "file": "src/components/groupchat/hooks/api/use-report-system.ts",
+      "description": "### 3. 🚨 In-App Moderation & Reporting System\n\n#### 💡 What is happening here? (Overview)\nEnables community safety by allowing members to **report inappropriate content directly to administrators** with violation categorizations.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`useReportSystem` Hook**:\n   - Collects reported message ID, sender ID, reason, and reporter metadata.\n2. **Admin Queue**:\n   - Writes into a secure `reports` collection reviewed by moderators.\n\n---\n\n#### 💡 Pro Tip: App Store & Play Store Compliance\nHaving a built-in user reporting and blocking mechanism is a mandatory requirement for UGC (User-Generated Content) app store approval.\n\n---\n\n### 3. 🚨 不適切コンテンツの通報・モデレーション機能\n\n#### 💡 ここで何をしているの？（全体像）\n嫌がらせやスパムメッセージを見つけた時に、**ユーザーが運営者へ「通報（レポート）」できる安心安全の仕組み**です。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **通報理由の選択**:\n   - 「不快な言葉」「スパム」「個人情報」などの理由を選んで送信できます。\n2. **管理者用コレクション (`reports`)**:\n   - 通報データは一般ユーザーからは見えない安全な管理用データベースに保管されます。\n\n---\n\n#### 💡 プロの知恵：アプリストア（Apple/Google）の審査基準\nユーザーが投稿できるアプリ（チャットやSNS）では、この「通報機能」がないと App Store の審査で 100% リジェクト（却下）されます。",
+      "pattern": "^\\s*export\\s+const\\s+useReportSystem\\s+=\\s+\\(",
+      "line": 8
+    }
+  ]
+}

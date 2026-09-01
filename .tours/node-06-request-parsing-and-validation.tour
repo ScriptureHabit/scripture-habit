@@ -1,17 +1,24 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "Node.js/Express基礎 06: リクエストパース (req.body) と バリデーション",
-  "tags": ["Node.js Fundamentals", "Express", "Validation", "Request Parsing"],
+  "title": "Node.js 06: Request Parsing (req.body) & Zod Validation / リクエスト検証",
+  "tags": [
+    "Node.js Fundamentals",
+    "Express",
+    "Validation",
+    "Request Parsing"
+  ],
   "steps": [
     {
-      "file": "scripture-habit/api_internal/routes/messages.ts",
-      "line": 161,
-      "description": "### 1. 📥 `req.body` による POST データの受信\n\nクライアントから送られてきた JSON パイロードは `req.body` 経由で取得します。"
+      "file": "api_internal/routes/messages.ts",
+      "description": "### 1. 📥 Parsing POST Payloads with `req.body`\n\n#### 💡 What is happening here? (Overview)\nReceives incoming JSON payloads from frontend clients and **parses them into structured server variables**.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`express.json()` Middleware**:\n   - Automatically parses incoming JSON request bodies into `req.body`.\n2. **`req.body` Contents**:\n   - Contains parameters like `{ groupId: '...', text: 'Hello' }`.\n\n---\n\n#### 💡 Pro Tip: Untrusted Input\nBecause `req.body` is untrusted data from the open internet, it must always be validated before use.\n\n---\n\n### 1. 📥 `req.body` による POST データの受信\n\n#### 💡 ここで何をしているの？（全体像）\nフロントエンドから送られてきた JSON 形式のデータ（メッセージ本文やユーザーIDなど）を**サーバー側で受け取って変数に展開**します。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`express.json()` ミドルウェア**:\n   - リクエストの JSON 文字列を自動で JavaScript オブジェクトに変換（パース）して `req.body` に詰めてくれます。\n2. **`req.body` の中身**:\n   - `{ groupId: '...', text: 'こんにちは' }` のようなデータが入っています。\n\n---\n\n#### 💡 プロの知恵：型が不定である危険性\n`req.body` の中身は実行時まで何が入っているか分からない（`any` または `unknown`）ため、次のステップで解説するバリデーションが必須になります。",
+      "pattern": "^\\s*const\\s+\\{\\s+groupId,\\s+messageId,\\s+text\\s+\\}\\s+=\\s+req\\.body;",
+      "line": 288
     },
     {
-      "file": "scripture-habit/api_internal/routes/messages.ts",
-      "line": 162,
-      "description": "### 2. 🛡️ サーバーサイドバリデーション (`Zod.safeParse`)\n\n受け取った `req.body` をそのまま信用してデータベースや処理へ流さず、`postNoteSchema.safeParse(req.body)` で必須フィールドや型チェックを行って不正なリクエスト（`ValidationError`）を早期に弾きます。"
+      "file": "api_internal/routes/messages.ts",
+      "description": "### 2. 🛡️ Schema Validation with `Zod.safeParse`\n\n#### 💡 What is happening here? (Overview)\nStrictly validates that the payload **matches all required fields and type constraints using the Zod schema library**.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`safeParse(req.body)`**:\n   - Safely parses input without throwing exceptions, returning `{ success: true, data }` or `{ success: false, error }`.\n2. **`if (!validation.success)`**:\n   - Rejects malformed requests immediately with HTTP 400 Bad Request.\n\n---\n\n#### 💡 Pro Tip: Complete Type Inference\nData that passes `safeParse` is automatically inferred with 100% strict TypeScript types.\n\n---\n\n### 2. 🛡️ スキーマバリデーション (`Zod.safeParse`)\n\n#### 💡 ここで何をしているの？（全体像）\n送られてきたデータが**「必須項目を満たしているか？文字数が多すぎないか？」を Zod ライブラリで厳格に審査**します。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`safeParse(req.body)`**:\n   - エラーでサーバーを落とさず、`{ success: true, data: ... }` または `{ success: false, error: ... }` を返します。\n2. **`if (!validation.success)`**:\n   - 不正なリクエストなら即座に 400 Bad Request を返し、エラー理由をクライアントに伝えます。\n\n---\n\n#### 💡 プロの知恵：TypeScript との完全連動\n`safeParse` に合格した後の `validation.data` は、TypeScript の型が完璧に推論されたクリーンなデータになります。安全なバックエンド開発のゴールドスタンダードです。",
+      "pattern": "^\\s*const\\s+validation\\s+=\\s+postNoteSchema\\.safeParse\\(req\\.body\\);",
+      "line": 161
     }
   ]
 }

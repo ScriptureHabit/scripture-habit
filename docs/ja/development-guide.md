@@ -58,12 +58,12 @@ npm run dev:all
 > - 起動と同時に自動で既存ユーザーデータを投入したい場合は `npm run dev:all:seed` を実行してください。
 
 ##### 方法 B: 個別ターミナルでの起動
-各サービスを個別のターミナルタブで起動する場合は以下の順序で実行します：
+サービスを個別のターミナルタブで起動したい場合：
 ```bash
 # 1. Firebase エミュレータの起動
 npm run emulators
 
-# 2. テスト用データの投入（シード）
+# 2. ローカル Firestore & Auth エミュレータにテストデータを投入
 npm run db:seed
 
 # 3. バックエンド Express サーバーの起動 (localhost:5000)
@@ -73,8 +73,8 @@ npm run server
 npm run dev
 ```
 
-起動すると、以下のローカルエンドポイントが利用可能になります：
-- **フロントエンド**: [http://localhost:5173](http://localhost:5173)
+起動後、以下のエンドポイントにアクセスできます：
+- **フロントエンド Web アプリ**: [http://localhost:5173](http://localhost:5173)
 - **バックエンド API**: [http://localhost:5000](http://localhost:5000)
 - **エミュレータ UI ダッシュボード**: [http://127.0.0.1:4000](http://127.0.0.1:4000)
 - **Firestore エミュレータ**: `127.0.0.1:8080`
@@ -82,21 +82,21 @@ npm run dev
 
 ---
 
-## 環境変数リファレンス
+## 環境変数の設定一覧
 
-| 変数名 | スコープ | ローカル開発で必須？ | 説明 |
+| 変数名 | 利用スコープ | ローカル開発での必須性 | 説明 |
 | :--- | :--- | :---: | :--- |
-| `VITE_FIREBASE_API_KEY` | フロントエンド | 不要（初期値のままでOK） | Firebase Web API キー |
-| `VITE_FIREBASE_AUTH_DOMAIN` | フロントエンド | 不要（初期値のままでOK） | Firebase Auth ドメイン |
-| `VITE_FIREBASE_PROJECT_ID` | フロントエンド | 不要（初期値のままでOK） | Firebase プロジェクト ID |
-| `VITE_FIREBASE_STORAGE_BUCKET` | フロントエンド | 不要（初期値のままでOK） | Firebase Storage バケット |
-| `VITE_FIREBASE_MESSAGING_SENDER_ID` | フロントエンド | 不要（初期値のままでOK） | FCM 送信者 ID |
-| `VITE_FIREBASE_APP_ID` | フロントエンド | 不要（初期値のままでOK） | Firebase アプリ ID |
+| `VITE_FIREBASE_API_KEY` | フロントエンド | 不要（初期値のままで動作） | Firebase Web API キー |
+| `VITE_FIREBASE_AUTH_DOMAIN` | フロントエンド | 不要（初期値のままで動作） | Firebase Auth ドメイン |
+| `VITE_FIREBASE_PROJECT_ID` | フロントエンド | 不要（初期値のままで動作） | Firebase プロジェクト ID |
+| `VITE_FIREBASE_STORAGE_BUCKET` | フロントエンド | 不要（初期値のままで動作） | Firebase Storage バケット |
+| `VITE_FIREBASE_MESSAGING_SENDER_ID` | フロントエンド | 不要（初期値のままで動作） | FCM 送信者 ID |
+| `VITE_FIREBASE_APP_ID` | フロントエンド | 不要（初期値のままで動作） | Firebase アプリ ID |
 | `VITE_APPCHECK_SITE_KEY` | フロントエンド | 不要（空欄でOK） | reCAPTCHA v3 キー（ローカルでは無効化） |
-| `VITE_SENTRY_DSN` | フロントエンド | 不要（空欄でOK） | Sentry エラーログ送信先 |
-| `GEMINI_API_KEY` | バックエンド | 任意 | AI 自動翻訳 / 週間レター生成用の Google Gemini API キー |
-| `CRON_SECRET` | バックエンド | 任意 | 定期実行 / メンテナンス用共有シークレット |
-| `DISCORD_WEBHOOK_URL` | バックエンド | 任意 | 内部監視アラート用 Discord Webhook |
+| `VITE_SENTRY_DSN` | フロントエンド | 不要（空欄でOK） | Sentry エラー監視 DSN |
+| `GEMINI_API_KEY` | バックエンド | 任意 | Google Gemini API キー（AI 機能検証時） |
+| `CRON_SECRET` | バックエンド | 任意 | 定期実行バッチ用共有シークレット |
+| `DISCORD_WEBHOOK_URL` | バックエンド | 任意 | 監視通知用 Discord Webhook URL |
 
 ---
 
@@ -123,6 +123,33 @@ npm run dev
 | `npm run db:seed:new` | エミュレータに新規ユーザー環境（new-user、未所属、初回オンボーディング）のデータを投入 |
 | `npm run docs:dev` | VitePress ドキュメントサイトの開発サーバーを起動 |
 | `npm run docs:build` | TypeDoc リファレンス自動生成およびドキュメントサイトをビルド |
+
+---
+
+## インタラクティブ・コードツアー（VS Code）
+
+コードベースの理解と迅速なオンボーディングを支援するため、本リポジトリには VS Code 上でソースコードとデータフローを対話型で学べる **CodeTour（全64ツアー）** が用意されています。
+
+### 拡張機能のインストール
+
+Visual Studio Code の拡張機能マーケットプレイスから **[CodeTour](https://marketplace.visualstudio.com/items?itemName=vsls-contrib.codetour)** をインストールしてください。
+
+### ツアーの開始手順
+
+1. VS Code サイドバーの **「CodeTour」** パネルを開く（またはコマンドパレット `Ctrl+Shift+P` / `Cmd+Shift+P` から `CodeTour: Start Tour` を実行）。
+2. 一覧から学習したいツアーを選択して開始します：
+   - **基礎・フレームワーク編（40ツアー）**:
+     - `chat-01` 〜 `chat-08`: グループチャット設計、リアルタイム同期、スクロール制御、多言語翻訳、セキュリティ。
+     - `firebase-01` 〜 `firebase-04`: `onSnapshot`、クエリ最適化、サーバータイムスタンプ、Firestore セキュリティルール。
+     - `react-01` 〜 `react-09`: `useReducer`、Context API、カスタムフック、Ref 制御、楽観的 UI 更新。
+     - `ts-01` 〜 `ts-06`: 判別可能なユニオン型、ジェネリクス、型ガード、`as const`、非同期型定義。
+     - `test-01` 〜 `test-04`: Vitest 単体テスト、モック戦略、Firebase エミュレータ統合テスト、Playwright E2E。
+     - `node-01` 〜 `node-06`: Express ミドルウェア、環境変数管理、共通エラーハンドリング、レート制限。
+   - **アーキテクチャ・データフロー編（24ツアー）**:
+     - `arch-01` 〜 `arch-24`: 各主要機能（ユーザー認証、新規ノート作成、習慣ダッシュボード、タイムカプセル、PWA 等）における UI・フック・状態・サービス・インフラ層の End-to-End データリレー。
+
+> [!TIP]
+> ブラウザ上でモジュール間の配線図やデータリレーのアニメーションを俯瞰したい場合は、ローカルの [`code-flow.html`](../../code-flow.html) を開くか、[オンライン・アーキテクチャツアー](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html) を参照してください。
 
 ---
 

@@ -1,22 +1,30 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "Firebase基礎 01: onSnapshot によるリアルタイムデータ同期",
-  "tags": ["Firebase Fundamentals", "GroupChat", "Firestore", "onSnapshot"],
+  "title": "Firebase 01: Realtime Sync with onSnapshot / リアルタイム同期",
+  "tags": [
+    "Firebase Fundamentals",
+    "GroupChat",
+    "Firestore",
+    "onSnapshot"
+  ],
   "steps": [
     {
-      "file": "scripture-habit/src/components/groupchat/hooks/core/use-chat-data-engine.ts",
-      "line": 159,
-      "description": "### 1. 📡 一発取得 (`getDocs`) と リアルタイム受信 (`onSnapshot`) の違い\n\n`getDocs` は呼び出した瞬間のスナップショットだけを取得しますが、`onSnapshot` はサーバー上でデータが変更・追加・削除された際に**プッシュ通知形式で自動的に最新データが配信**されます。"
+      "file": "src/components/groupchat/hooks/core/use-chat-data-engine.ts",
+      "description": "### 1. 📡 One-time Fetch (`getDocs`) vs Real-time Listener (`onSnapshot`)\n\n#### 💡 What is happening here? (Overview)\nWe are opening a **continuous real-time communication pipeline** between the Firestore database and the app.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`getDocs` (One-time fetch)**:\n   - Retrieves data only once at the moment the screen loads. New messages sent by other users will not appear automatically.\n2. **`onSnapshot` (Real-time stream)**:\n   - Keeps the connection open. Whenever data is added, updated, or deleted on the server, a callback fires with the latest snapshot instantly.\n\n---\n\n#### 💡 Pro Tip: The Heart of Collaborative Apps\nFor collaborative features like chat rooms, live notifications, and real-time document editing, `onSnapshot` is the fundamental building block.\n\n---\n\n### 1. 📡 一発取得 (`getDocs`) と リアルタイム受信 (`onSnapshot`) の違い\n\n#### 💡 ここで何をしているの？（全体像）\nFirestore データベースとアプリの間に**「リアルタイムの通信パイプ（リスナー）」を開通**させています。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`getDocs` (1回きり)**:\n   - 画面を開いた瞬間のデータだけを取得します。他のユーザーが投稿しても画面は更新されません。\n2. **`onSnapshot` (リアルタイム)**:\n   - 接続を開いたまま待機し、サーバー側でデータが追加・変更・削除されるたびに自動でコールバック関数が呼ばれ、最新データが届きます。\n\n---\n\n#### 💡 プロの知恵：チャットアプリの心臓部\nチャットや通知、共同編集のような「相手の操作がすぐ画面に現れてほしい機能」では `onSnapshot` が必須の技術です。",
+      "pattern": "^\\s*const\\s+unsubscribe\\s+=\\s+onSnapshot\\(latestDocRef,\\s+\\(snapshot\\)\\s+=>\\s+\\{",
+      "line": 163
     },
     {
-      "file": "scripture-habit/src/components/groupchat/hooks/core/use-chat-data-engine.ts",
-      "line": 163,
-      "description": "### 2. 📄 QuerySnapshot と DocumentSnapshot のデータ抽出\n\n`onSnapshot(ref, (snapshot) => { ... })` コールバックの `snapshot.data()` を使って、Firestore の文書データから生の JavaScript オブジェクトを取り出します。"
+      "file": "src/components/groupchat/hooks/core/use-chat-data-engine.ts",
+      "description": "### 2. 📄 Extracting Raw Document Data (`snapshot.data()`)\n\n#### 💡 What is happening here? (Overview)\nWe extract a **plain JavaScript object from the server snapshot** so it can be safely used in React components.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`snapshot.data()`**:\n   - Extracts raw fields (strings, timestamps, arrays) stored in the Firestore document.\n2. **Safe Fallback Access**:\n   - Using `data?.messages || []` ensures the application never crashes even if the document does not exist yet.\n\n---\n\n#### 💡 Pro Tip: DocumentSnapshot vs QuerySnapshot\n- Subscribing to a single document → `DocumentSnapshot` (`docSnap.data()`)\n- Subscribing to a collection/query → `QuerySnapshot` (`querySnap.forEach(...)`)\n\n---\n\n### 2. 📄 スナップショットからの生データ抽出 (`snapshot.data()`)\n\n#### 💡 ここで何をしているの？（全体像）\nサーバーから届いた「スナップショット（データの入れ物）」から、**JavaScript で扱える通常のオブジェクトを取り出します**。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`snapshot.data()`**:\n   - Firestore の文書内に入っているフィールド（テキストや日時、配列など）をプレーンなオブジェクトとして取り出します。\n2. **安全な取り出し**:\n   - `data?.messages || []` のように書くことで、万が一文書が空だった場合でもアプリがクラッシュしないように保護します。\n\n---\n\n#### 💡 プロの知恵：DocumentSnapshot と QuerySnapshot\n- 単一の文書を購読するとき → `DocumentSnapshot`（`docSnap.data()`）\n- コレクション（一覧）を購読するとき → `QuerySnapshot`（`querySnap.forEach(...)`）",
+      "pattern": "^\\s*const\\s+data\\s+=\\s+snapshot\\.data\\(\\);",
+      "line": 167
     },
     {
-      "file": "scripture-habit/src/components/groupchat/hooks/core/use-chat-data-engine.ts",
-      "line": 217,
-      "description": "### 3. 🔌 Unsubscribe 関数による接続解除\n\n`onSnapshot` を呼び出すと解約用の関数 (`Unsubscribe`) が返されます。\nReact の `useEffect` のクリーンアップ処理（`return () => { unsub(); }`）でこれを呼び出すことで、バックグラウンドでの不要なデータ通信と課金を防ぎます。"
+      "file": "src/components/groupchat/hooks/core/use-chat-data-engine.ts",
+      "description": "### 3. 🔌 Disconnecting via Unsubscribe (Preventing Memory Leaks)\n\n#### 💡 What is happening here? (Overview)\nWhen the screen is closed or unmounted, we **explicitly tear down the Firestore listener** to prevent background bandwidth consumption and memory leaks.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **Unsubscribe Function**:\n   - Calling `onSnapshot()` returns a teardown function (`Unsubscribe`).\n2. **`useEffect` Cleanup**:\n   - Placing `return () => { unsub(); }` inside `useEffect` ensures React automatically runs the cleanup when the component unmounts.\n\n---\n\n#### 💡 Pro Tip: The Cost of Forgetting Unsubscribe\nFailing to unsubscribe will keep the socket connection alive in the background, causing severe battery drain, high mobile data usage, and unexpected cloud bills!\n\n---\n\n### 3. 🔌 Unsubscribe 関数による接続解除 (メモリリーク防止)\n\n#### 💡 ここで何をしているの？（全体像）\n画面を閉じた時に**「Firestore とのリアルタイム接続を確実に切断（解約）」**し、裏で無駄な通信が走り続けるのを防ぎます。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **解約用の関数 (`Unsubscribe`)**:\n   - `onSnapshot()` を呼び出すと、戻り値として解約関数が返されます。\n2. **`useEffect` のクリーンアップ**:\n   - `return () => { unsub(); }` の中に書いておくことで、画面離脱時（アンマウント時）に React が自動で実行してくれます。\n\n---\n\n#### 💡 プロの知恵：解約を忘れるとどうなる？\nもし解約しないと、別の画面を見ている間もずっと通信が行われ、**スマホのバッテリー消耗・パケ死・クラウドの高額請求**につながる大事故になります。リアルタイム接続は「開始」と「解約」を必ずペアで実装しましょう！",
+      "pattern": "^\\s*const\\s+unsubscribe\\s+=\\s+onSnapshot\\(latestDocRef,\\s+\\(snapshot\\)\\s+=>\\s+\\{",
+      "line": 163
     }
   ]
 }

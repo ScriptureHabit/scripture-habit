@@ -1,22 +1,31 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "React基礎 06: useEffect のライフサイクルとクリーンアップ処理",
-  "tags": ["React Fundamentals", "GroupChat", "useEffect", "Lifecycle"],
+  "title": "React 06: Side Effects, Lifecycle & Cleanup / useEffect とライフサイクル",
+  "tags": [
+    "React Fundamentals",
+    "GroupChat",
+    "useEffect",
+    "Lifecycle",
+    "Cleanup"
+  ],
   "steps": [
     {
-      "file": "scripture-habit/src/components/groupchat/hooks/core/use-chat-data-engine.ts",
-      "line": 142,
-      "description": "### 1. 🔄 外部システムとの同期 (`useEffect`)\n\n`useEffect` は「React のレンダリング結果を外部システム（Firestore、WebSocket、DOMイベント等）と同期させる」ためのフックです。\n第2引数の依存配列 (`[groupId, userData?.uid, dispatch]`) に渡した値が変化した際、またはマウント時に副作用が発火します。"
+      "file": "src/components/groupchat/hooks/core/use-chat-data-engine.ts",
+      "description": "### 1. 🔄 Syncing with External Systems (`useEffect`)\n\n#### 💡 What is happening here? (Overview)\nExecutes side-effects like **connecting to Firestore sockets** after the component renders to the screen.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **Side Effects**:\n   - Operations outside React's pure rendering loop (network requests, subscriptions, DOM listeners).\n2. **Non-blocking Execution**:\n   - Runs asynchronously after paint so the user experiences zero UI freezing.\n\n---\n\n#### 💡 Pro Tip: Never Fetch in Component Bodies\nCalling `fetch()` or `onSnapshot()` directly in the component body causes infinite render loops.\n\n---\n\n### 1. 🔄 外部システムとの同期 (`useEffect`)\n\n#### 💡 ここで何をしているの？（全体像）\n画面が表示されたタイミングに合わせて、**「Firestore データベースとの接続を開く」といった外部システムとの連携処理を実行**します。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **副作用（Side Effect）**:\n   - React のレンダリング（HTML作り）とは直接関係のない「通信」「タイマー」「イベントリスナー登録」などを副作用と呼びます。\n2. **実行タイミング**:\n   - 画面が描画され終わった直後に、ブラウザをブロックせずに非同期で実行されます。\n\n---\n\n#### 💡 プロの知恵：レンダリング関数内に通信を書かない\nコンポーネント本体に直接 `fetch()` や `onSnapshot()` を書くと、再描画のたびに通信が無限ループしてアプリがクラッシュします。必ず `useEffect` の中に隔離しましょう。",
+      "pattern": "useEffect\\(\\(\\) => \\{",
+      "line": 15
     },
     {
-      "file": "scripture-habit/src/components/groupchat/hooks/core/use-chat-data-engine.ts",
-      "line": 214,
-      "description": "### 2. 🧹 クリーンアップ関数 (Cleanup Function) の徹底\n\n`useEffect` 内で `return () => { unsubMessagesRef.current(); }` のように関数を返すと、コンポーネントのアンマウント時や依存値 (`groupId`) の変更直前に実行されます。\nリスナーの重複登録やメモリリークを防ぐためにクリーンアップは必須の作法です。"
+      "file": "src/components/groupchat/hooks/core/use-chat-data-engine.ts",
+      "description": "### 2. 🧹 Guaranteed Cleanup Teardowns\n\n#### 💡 What is happening here? (Overview)\nCleans up active connections **when the component unmounts or before re-running effects**.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`return () => { ... }`**:\n   - Returning a function from `useEffect` registers it as the official cleanup handler.\n2. **Execution Timing**:\n   - Runs automatically right before component removal or dependency changes.\n\n---\n\n#### 💡 Pro Tip: Preventing Duplicate Listeners\nCleanup ensures switching channels doesn't leave lingering listeners streaming old messages.\n\n---\n\n### 2. 🧹 クリーンアップ関数の徹底 (後片付け)\n\n#### 💡 ここで何をしているの？（全体像）\n画面を閉じる時や別のグループへ移動する直前に、**「前の接続を切断してゴミ（メモリの無駄）を残さない」後片付け処理**です。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`return () => { ... }`**:\n   - `useEffect` の中で関数を `return` すると、それがクリーンアップ関数として登録されます。\n2. **実行されるタイミング**:\n   - コンポーネントが画面から消える時（アンマウント時）や、次の `useEffect` が再実行される直前に動きます。\n\n---\n\n#### 💡 プロの知恵：二重リスナーの防止\nもしクリーンアップを忘れると、グループを A → B → A と切り替えるたびにリスナーが2重、3重に増え、同じメッセージが画面に何通も重複表示されるバグの原因になります。",
+      "pattern": "useEffect\\(\\(\\) => \\{",
+      "line": 146
     },
     {
-      "file": "scripture-habit/src/components/groupchat/hooks/core/use-chat-data-engine.ts",
-      "line": 222,
-      "description": "### 3. ⚠️ 依存配列 (Dependency Array) の正しい設計\n\nエフェクト内で使用している外部変数や関数 (`groupId`, `userData?.uid`, `dispatch`) は原則としてすべて依存配列に含める必要があります。\n依存配列の指定を誤ると、古い状態を参照し続ける「Stale Closure」のバグが発生します。"
+      "file": "src/components/groupchat/hooks/core/use-chat-data-engine.ts",
+      "description": "### 3. ⚠️ Dependency Array Design & Stale Closure Prevention\n\n#### 💡 What is happening here? (Overview)\n`[groupId, userData?.uid, dispatch]` specifies **exactly which variables trigger a reconnection when changed**.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`[groupId]`**:\n   - Switches listener channels when the user selects a different group.\n2. **Stale Closures**:\n   - Missing dependencies traps old variable values inside the effect, causing severe data desync.\n\n---\n\n#### 💡 Pro Tip: Follow ESLint Exhaustive-Deps\nAlways include all referenced external variables in the dependency array to eliminate stale closures.\n\n---\n\n### 3. ⚠️ 依存配列 (deps) と Stale Closure 防止\n\n#### 💡 ここで何をしているの？（全体像）\n`useEffect` の第2引数 `[groupId, userData?.uid, dispatch]` を指定し、**「どの値が変わった時に接続をやり直すか」を厳格に管理**します。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`[groupId]`**:\n   - ユーザーが別のグループを選択した時に、前のグループの接続を切断して新しいグループへ接続し直します。\n2. **空配列 `[]` との違い**:\n   - `[]`: 最初の1回だけ実行\n   - `[値]`: その値が変わるたびに再実行\n\n---\n\n#### 💡 プロの知恵：Stale Closure（古い値の参照バグ）を防ぐ\nエフェクト内で使っている変数を依存配列に入れ忘れると、関数の中に「昔の古い値（過去のgroupIdなど）」が閉じ込められてしまい、別のグループのデータが混ざる深刻なバグ（Stale Closure）を引き起こします。ESLint の警告に従い、漏れなく指定するのが鉄則です。",
+      "pattern": "^\\s*\\},\\s+\\[groupId,\\s+userData\\?\\.uid,\\s+dispatch\\]\\);",
+      "line": 226
     }
   ]
 }

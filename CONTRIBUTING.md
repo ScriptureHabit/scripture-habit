@@ -19,7 +19,12 @@ Thank you for your interest in contributing to Scripture Habit. We welcome contr
 
 ## Where to Start: Quick Navigation by Feature
 
-You do not need to understand every layer of Scripture Habit to make a meaningful contribution. Find a feature or topic below that sparks your interest, review its dedicated guide, and start small:
+You do not need to understand every layer of Scripture Habit to make a meaningful contribution.
+
+> [!TIP]
+> **Learn with Interactive Code Tours**: If you use VS Code, install the [CodeTour extension](https://marketplace.visualstudio.com/items?itemName=vsls-contrib.codetour) to explore 64 guided interactive tours covering fundamentals (React, TypeScript, Firebase, Express, Testing) and architectural data flows. For details, see the [Development Guide](docs/development-guide.md#interactive-code-tours-vs-code).
+
+Find a feature or topic below that sparks your interest, review its dedicated guide, and start small:
 
 | Feature / Domain | Documentation | Key Files & Directories | Test / Verification |
 | :--- | :--- | :--- | :--- |

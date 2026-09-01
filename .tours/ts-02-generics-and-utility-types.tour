@@ -1,22 +1,30 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "TypeScript基礎 02: ジェネリクス (Generics) と ユーティリティ型",
-  "tags": ["TypeScript Fundamentals", "GroupChat", "Generics", "Utility Types"],
+  "title": "TypeScript 02: Generics & Utility Types (Omit / Partial / Record) / ジェネリクスと型ユーティリティ",
+  "tags": [
+    "TypeScript Fundamentals",
+    "GroupChat",
+    "Generics",
+    "Utility Types"
+  ],
   "steps": [
     {
-      "file": "scripture-habit/src/components/groupchat/chat-context.ts",
-      "line": 89,
-      "description": "### 1. 🧬 ジェネリクス (Generics) による型のパラメータ化\n\n`createContext<ChatDataContextType | undefined>(undefined)` のように `<T>` を指定して型を渡すことで、関数やクラスに型を動的に流し込む（パラメータ化する）ことができます。"
+      "file": "src/components/groupchat/chat-context.ts",
+      "description": "### 1. 🧬 Parameterizing Types with Generics (`<T>`)\n\n#### 💡 What is happening here? (Overview)\nGenerics allow passing **types as arguments (`<T>`)** to functions and objects, just like passing parameters.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`createContext<ChatDataContextType | undefined>(undefined)`**:\n   - Informs the Context channel what data shape it transmits.\n2. **Type Safety Without `any`**:\n   - Provides reusable generic utilities while preserving 100% strict type safety.\n\n---\n\n#### 💡 Pro Tip: Passing Types as Arguments\nThink of `(x, y)` as values, and `<T, U>` as types passed to the function.\n\n---\n\n### 1. 🧬 ジェネリクス (Generics) による型のパラメータ化\n\n#### 💡 ここで何をしているの？（全体像）\n関数やオブジェクトに「どんな型のデータが入るか」を**外から引数のように後付けで指定できる仕組み（`<T>`）**です。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`createContext<ChatDataContextType | undefined>(undefined)`**:\n   - `<...>` の部分に型を渡すことで、「この Context は `ChatDataContextType` のデータを配給するんだよ」と教え込みます。\n2. **`any` を使わない型安全性**:\n   - どんな型でも受け入れられる汎用的な関数を作りつつ、`any` を使わずに型チェックを完璧に効かせることができます。\n\n---\n\n#### 💡 プロの知恵：型を変数のように扱う\n「値の引数は `(x, y)` で渡し、型の引数は `<T, U>` で渡す」と覚えると、ジェネリクスへの苦手意識が一瞬で消えます！",
+      "pattern": "^\\s*export\\s+const\\s+ChatDataContext\\s+=\\s+createContext<ChatDataContextType\\s+\\|\\s+undefined>\\(undefined\\);",
+      "line": 90
     },
     {
-      "file": "scripture-habit/src/types/chat.ts",
-      "line": 29,
-      "description": "### 2. ✂️ 既存型からの抽出と除外 (`Pick` / `Omit`)\n\n`interface Message extends Omit<MessageDocument, 'id' | 'createdAt' ...>` を活用することで、既存の Firestore スキーマ型から一部のプロパティを除外 (`Omit`) してクライアント用に最適化し、型定義の重複（二重管理）を防ぎます。"
+      "file": "src/types/chat.ts",
+      "description": "### 2. ✂️ Excluding Properties with `Omit`\n\n#### 💡 What is happening here? (Overview)\nDerives a clean client-side message type by **stripping unnecessary database-only fields** from the base schema.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`Omit<BaseType, 'id' | 'createdAt'>`**:\n   - Creates a new type by subtracting specified keys.\n2. **DRY (Don't Repeat Yourself)**:\n   - Automatically stays in sync when the server-side database schema changes.\n\n---\n\n#### 💡 Pro Tip: `Pick` vs `Omit`\n- `Pick<Type, 'a' | 'b'>`: Keeps *only* specified keys (addition).\n- `Omit<Type, 'x' | 'y'>`: Keeps everything *except* specified keys (subtraction).\n\n---\n\n### 2. ✂️ 既存型からのプロパティ除外 (`Omit`)\n\n#### 💡 ここで何をしているの？（全体像）\nデータベース用の型から、**「クライアント側では使わない不要な項目を差し引いて、新しい型を作る」ユーティリティ型**です。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`Omit<BaseType, 'id' | 'createdAt'>`**:\n   - `BaseType` の中から `'id'` と `'createdAt'` の2つだけを取り除いた型を作ります。\n2. **型の二重管理（DRY原則）の解消**:\n   - サーバー用と画面用で似たような型定義を2回書く必要がなくなり、データベースのスキーマが変わっても自動で追従します。\n\n---\n\n#### 💡 プロの知恵：`Pick` との違い\n- `Pick<Type, 'a' | 'b'>`: 指定した項目「だけ」を抜き出す（足し算）\n- `Omit<Type, 'x' | 'y'>`: 指定した項目「以外」を残す（引き算）",
+      "pattern": "^\\s*export\\s+interface\\s+Group\\s+extends\\s+Omit<SharedGroupDocument,\\s+'id'\\s+\\|\\s+'inviteCodeExpiresAt'\\s+\\|\\s+'lastNoteAt'\\s+\\|\\s+'lastMessageAt'\\s+\\|\\s+'lastRecapGeneratedAt'\\s+\\|\\s+'createdAt'\\s+\\|\\s+'memberJoinedAt'\\s+\\|\\s+'memberLastActive'\\s+\\|\\s+'memberLastReadAt'>\\s+\\{",
+      "line": 67
     },
     {
-      "file": "scripture-habit/src/components/groupchat/hooks/core/chat-reducer.ts",
-      "line": 32,
-      "description": "### 3. 🧩 部分変更やキーマップ型 (`Partial` / `Record`)\n\n`Partial<Message>`（全プロパティのオプショナル化）や `Record<string, string>`（辞書・マップ型の定義）を活用することで、一部のフィールドだけ更新したい場合などに柔軟で安全な型を作成します。"
+      "file": "src/components/groupchat/hooks/core/chat-reducer.ts",
+      "description": "### 3. 🧩 Optional Updates & Key-Value Maps (`Partial` / `Record`)\n\n#### 💡 What is happening here? (Overview)\nUsing **`Partial<Message>` to allow updating arbitrary subsets of fields** without needing redundant interface declarations.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`Partial<Message>`**:\n   - Makes every property in `Message` optional (`?`).\n2. **`Record<string, string>`**:\n   - Typed dictionary map: `{ [key: string]: string }`.\n\n---\n\n#### 💡 Pro Tip: Standard Type Tooling\nTypeScript's built-in utility types dramatically cut boilerplate code.\n\n---\n\n### 3. 🧩 部分変更やキーマップ型 (`Partial` / `Record`)\n\n#### 💡 ここで何をしているの？（全体像）\n「メッセージの全項目のうち、**編集したい一部の項目だけを渡せばOKにする（`Partial`）**」など、TypeScript 標準の便利ツールを活用します。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`Partial<Message>`**:\n   - `Message` のすべてのプロパティを「あってもなくてもいい（オプショナル `?`）」に変換します。\n2. **`Record<string, string>`**:\n   - `{ [key: string]: string }` と同じ意味で、キーと値が文字列の辞書オブジェクトを表現します。\n\n---\n\n#### 💡 プロの知恵：型の再利用で生産性爆上がり\n手動で `interface MessageUpdate { text?: string; ... }` と書く代わりに `Partial<Message>` とするだけで、コード量が減りメンテナンス性も最高になります。",
+      "pattern": "^\\s*\\|\\s+\\{\\s+type:\\s+'UPDATE_MESSAGE';\\s+messageId:\\s+string;\\s+data:\\s+Partial<Message>\\s+\\}",
+      "line": 33
     }
   ]
 }

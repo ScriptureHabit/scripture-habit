@@ -1,37 +1,31 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "GroupChat Master 03: プロ級スクロール制御とアニメーション描画同期",
-  "tags": ["GroupChat", "useLayoutEffect", "requestAnimationFrame", "queueMicrotask", "Smart Scroll"],
+  "title": "GroupChat 03: Pro Scroll Control & Frame Sync / スクロール制御とフレーム同期",
+  "tags": [
+    "GroupChat",
+    "Scroll Control",
+    "useLayoutEffect",
+    "requestAnimationFrame",
+    "DOM"
+  ],
   "steps": [
     {
-      "file": "scripture-habit/src/components/groupchat/subcomponents/group-chat-message-list-container.tsx",
-      "line": 35,
-      "description": "### 1. ⚡ 同期実行フック (`useLayoutEffect`)\n\nブラウザが画紙に描画（ペイント）する『前』に同期的に割り込んで実行されるフックです。目に見える画面のガタつきを防ぐために使用します。"
+      "file": "src/components/groupchat/subcomponents/group-chat-message-list-container.tsx",
+      "description": "### 1. ⚡ Flicker-Free Layout Alignment (`useLayoutEffect`)\n\n#### 💡 What is happening here? (Overview)\nWe calculate and jump to the correct scroll position **before the browser paints pixels on the screen**, eliminating visible jumping or flickering.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`useEffect` vs `useLayoutEffect`**:\n   - `useEffect`: Runs *after* painting (causes a visible jump from top to bottom).\n   - `useLayoutEffect`: Runs synchronously *before* paint, so the user only sees the final, perfectly scrolled state.\n\n---\n\n#### 💡 Pro Tip: When to use `useLayoutEffect`\nOnly use `useLayoutEffect` for DOM measurements and instant scroll corrections to avoid blocking browser rendering pipelines.\n\n---\n\n### 1. ⚡ 画面のチラつきを防ぐ同期実行 (`useLayoutEffect`)\n\n#### 💡 ここで何をしているの？（全体像）\nブラウザが画面を描画する**「まさにその瞬間（0ミリ秒）」にスクロール位置を合わせることで、一瞬上が見えてから下にガクッと飛ぶチラつきを完全にゼロ**にします。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`useEffect` との違い**:\n   - `useEffect`: 画面が描かれた「後」に動くため、一瞬ガクッとスクロールがズレるのが目に見えてしまいます。\n   - `useLayoutEffect`: 画面が描かれる「前」に動くため、最初から完璧な位置にピタッと表示されます。\n\n---\n\n#### 💡 プロの知恵：チラつき撲滅\nチャットの初期表示や未読位置へのジャンプなど、「位置合わせ」には `useLayoutEffect` を使うのがプロの鉄則です。",
+      "pattern": "useLayoutEffect\\(\\(\\) => \\{",
+      "line": 26
     },
     {
-      "file": "scripture-habit/src/components/groupchat/subcomponents/group-chat-message-list-container.tsx",
-      "line": 41,
-      "description": "### 2. 🎯 一番下への瞬間移動 (`scrollTop = scrollHeight`)\n\nユーザーの目に画面が映る前に、最下部までスクロール位置をジャンプさせ、準備が整った後に表示を解禁します。"
+      "file": "src/components/groupchat/hooks/view/use-scroll-manager.ts",
+      "description": "### 2. 🎞️ Frame-Accurate Animation (`requestAnimationFrame`)\n\n#### 💡 What is happening here? (Overview)\nWe synchronize smooth auto-scrolling with the **browser's native 60 FPS / 120 FPS refresh cycle**.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`requestAnimationFrame` (rAF)**:\n   - Requests that the browser call a specified function to update an animation before the next repaint.\n2. **`isUserNearBottomRef` Guard**:\n   - If the user is scrolling up reading older history, we do not forcefully yank their scroll to the bottom when someone posts a new message.\n\n---\n\n#### 💡 Pro Tip: Preventing Janky UI\nUsing `requestAnimationFrame` prevents layout thrashing and ensures smooth 60 FPS scrolling even during rapid bursts of messages.\n\n---\n\n### 2. 🎞️ ブラウザのコマ送りに同期したスクロール (`requestAnimationFrame`)\n\n#### 💡 ここで何をしているの？（全体像）\nブラウザの画面更新タイミング（60fpsなど）に合わせて、**メッセージ送信時や新着受信時に一番下まで滑らかに自動スクロール**させます。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`requestAnimationFrame`**:\n   - ブラウザが次のコマを描画するベストな瞬間に合わせて関数を実行します。\n2. **スマートスクロール判定**:\n   - ユーザーが過去ログを読んでいる最中（上にスクロールしている時）は、勝手に一番下へ引っ張らないよう配慮しています。\n\n---\n\n#### 💡 プロの知恵：カクつきのない操作感\nタイマー（`setTimeout`）ではなく `requestAnimationFrame` を使うことで、スマホでもヌルヌル動く心地よい操作感を実現しています。",
+      "pattern": "^\\s*requestAnimationFrame\\(\\(\\)\\s+=>\\s+\\{",
+      "line": 61
     },
     {
-      "file": "scripture-habit/src/components/groupchat/subcomponents/group-chat-message-list-container.tsx",
-      "line": 42,
-      "description": "### 3. ⚡ 即時マイクロタスク予約 (`queueMicrotask`)\n\nJavaScript スタック終了直後に `setIsInitialLoad(false)` を予約し、React 18 の Cascading Render 警告を回避します。"
-    },
-    {
-      "file": "scripture-habit/src/components/groupchat/subcomponents/group-chat-message-list-container.tsx",
-      "line": 46,
-      "description": "### 4. 🎬 描画フレームの同期 (`requestAnimationFrame`)\n\nブラウザが画面にスクロール位置を書き塗り終わる『次のコマ（フレーム）』まで待機してから `setIsVisible(true)` で画面を表示します。"
-    },
-    {
-      "file": "scripture-habit/src/components/groupchat/subcomponents/group-chat-message-list-container.tsx",
-      "line": 29,
-      "description": "### 5. 📏 最下部判定メモ (`scrollAtBottomRef`)\n\nメッセージ更新直前のスクロール位置をチェックし、ユーザーが最下部（20px以内）に居たかどうかを記憶させます。"
-    },
-    {
-      "file": "scripture-habit/src/components/groupchat/subcomponents/group-chat-message-list-container.tsx",
-      "line": 56,
-      "description": "### 6. 🚫 読書中ユーザーへの配慮 (Smart Scroll)\n\n新着メッセージ受信時、最下部に居た場合のみ自動で下に追いかけ、過去ログをスクロール読書中の場合はスクロールを横取りしない優しいUXを提供します。"
+      "file": "src/components/groupchat/hooks/view/use-scroll-manager.ts",
+      "description": "### 3. 🎯 Proximity-Based Auto Scroll\n\n#### 💡 What is happening here? (Overview)\nWe detect whether the user is **within 100 pixels of the bottom** of the chat feed.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **Threshold Measurement**:\n   - `scrollHeight - scrollTop - clientHeight < 100` calculates distance to the bottom.\n2. **Respecting User Focus**:\n   - Auto-scrolls only if the user was already following the latest conversation at the bottom.\n\n---\n\n#### 💡 Pro Tip: Essential Chat UX\nForcing scroll while a user is reading past messages is one of the most frustrating UX bugs. This proximity check solves it permanently.\n\n---\n\n### 3. 🎯 底面付近判定によるスマートスクロール\n\n#### 💡 ここで何をしているの？（全体像）\nユーザーが**「現在メッセージ欄の一番下（100px以内）を見ているかどうか」を常に監視**します。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **位置の計算式**:\n   - 全体の高さ（`scrollHeight`） - スクロール量（`scrollTop`） - 表示領域の高さ（`clientHeight`）で「底から何ピクセル離れているか」を計算します。\n2. **親切な設計**:\n   - 底面付近にいる時だけ新着メッセージで下へ自動追従し、過去ログを読んでいる時は位置をキープします。\n\n---\n\n#### 💡 プロの知恵：LINE や Slack と同じ挙動\n世界中で使われている有名チャットアプリのすべてが、この「底面100px判定」を採用しています。",
+      "pattern": "^\\s*containerRef\\.current\\.scrollTop\\s+=\\s+containerRef\\.current\\.scrollHeight;",
+      "line": 27
     }
   ]
 }

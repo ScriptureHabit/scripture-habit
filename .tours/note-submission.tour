@@ -1,47 +1,61 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "ノート投稿からグループ共有・ストリーク計算・カレンダー反映までの全ライフサイクル",
-  "tags": ["Full Lifecycle", "Note Submission", "Streak Engine", "Firestore Transaction", "Group Chat Sync"],
+  "title": "Full Lifecycle: Note Submission, Groups, Streaks & Confetti / ノート投稿からカレンダー反映までの全ライフサイクル",
+  "tags": [
+    "Full Lifecycle",
+    "Note Submission",
+    "Streak Engine",
+    "Firestore Transaction",
+    "Group Chat Sync"
+  ],
   "steps": [
     {
-      "file": "scripture-habit/src/components/newnote/new-note.tsx",
-      "line": 368,
-      "description": "### Step 1. 📝 【UI層】ノート投稿フォームと「保存して共有」ボタンのトリガー\n\nユーザーが聖句・章・感想・共有グループを選択して「保存して共有」ボタンをタップすると、`handleSubmit` がトリガーされます。"
+      "file": "src/components/newnote/new-note.tsx",
+      "description": "### Step 1. 📝 [UI Layer] Form Trigger & 'Save and Share'\n\n#### 💡 What is happening here? (Overview)\nWhen the user fills out scripture, chapter, and reflections, then taps 'Save and Share', this **`handleSubmit` handler aggregates all inputs and triggers the submission flow**.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`handleSubmit(...)` Parameters**:\n   - Collects scripture book, chapter number, reflection text, and selected group IDs.\n2. **Multilingual Text Normalization**:\n   - Formats localized scripture titles before sending.\n\n---\n\n#### 💡 Pro Tip: The Relay Race Begins\nThis button press initiates the end-to-end journey: Client UI → Backend API → Database Transaction.\n\n---\n\n### Step 1. 📝 【UI層】ノート作成フォームと「保存して共有」ボタンの発火\n\n#### 💡 ここで何をしているの？（全体像）\nユーザーが聖句・章・感想を入力し、共有したいグループにチェックを入れて「保存して共有」をタップした瞬間に呼ばれる処理です。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`handleSubmit(...)` の引数**:\n   - 聖句（`scripture`）、章（`chapter`）、感想（`comment`）、共有先グループ一覧（`selectedShareGroups`）など、入力されたすべての情報を集約して送信関数に引き渡します。\n2. **多言語入力対応**:\n   - 英語や日本語など、ユーザーが選択した聖句の表記揺れを整えて送信準備に入ります。\n\n---\n\n#### 💡 プロの知恵：UIと通信の橋渡し\nこのボタンを押すことで、クライアント → バックエンド → データベースへと続く「ノート投稿の旅（データリレー）」がスタートします。",
+      "pattern": "^\\s*onClick=\\{\\(\\)\\s+=>\\s+handleSubmit\\(noteToEdit,\\s+scripture,\\s+chapter,\\s+comment,\\s+shareOption,\\s+selectedShareGroups,\\s+currentGroupId,\\s+urlMeta,\\s+onClose\\)\\}",
+      "line": 400
     },
     {
-      "file": "scripture-habit/src/components/newnote/hooks/use-note-submission.ts",
-      "line": 117,
-      "description": "### Step 2. 🚀 【クライアント層】API 通信とパラメーター構築\n\n`useNoteSubmission` フック内で入力バリデーション（`getNoteValidationError`）を通過後、検索トークンを構築し、`apiClient.post('/api/groups/post-note', ...)` 経由でバックエンド API へ送信用データを一括送信します。"
+      "file": "src/components/newnote/hooks/use-note-submission.ts",
+      "description": "### Step 2. 🚀 [Client Layer] Validation & API Call\n\n#### 💡 What is happening here? (Overview)\nValidates user comments locally and **submits the payload to the backend API (`/api/groups/post-note`)** with auth credentials.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`getNoteValidationError`**:\n   - Intercepts blank comments or length limits before sending HTTP requests.\n2. **`apiClient.post(...)`**:\n   - Securely forwards data with Bearer ID tokens.\n\n---\n\n#### 💡 Pro Tip: Search Tokens\nGenerates search n-grams locally so notes can be searched instantly in the My Notes tab.\n\n---\n\n### Step 2. 🚀 【クライアント層】入力検証と API 送信\n\n#### 💡 ここで何をしているの？（全体像）\n感想が空文字でないかなどの**入力チェック（バリデーション）を通過させた後、バックエンド API（`/api/groups/post-note`）へデータを送信**します。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`getNoteValidationError`**:\n   - 不正な入力（文字数オーバーや未入力）をクライアント側で即座に検知し、無駄な通信を防ぎます。\n2. **`apiClient.post(...)`**:\n   - 認証トークンを自動添付して安全に Express サーバーへデータを届けます。\n\n---\n\n#### 💡 プロの知恵：検索用トークンの事前生成\nノート本文から単語を切り分けた検索トークン（`searchTokens`）を生成して一緒に送ることで、後からマイノート画面で超高速な全文検索ができるよう工夫されています。",
+      "pattern": "^\\s*const\\s+response\\s+=\\s+await\\s+apiClient\\.post\\('/api/groups/post-note',\\s+\\{",
+      "line": 121
     },
     {
-      "file": "scripture-habit/api_internal/services/note-service.ts",
-      "line": 42,
-      "description": "### Step 3. 🔒 【バックエンド層】Firestore アトミック・トランザクション開始\n\n`NoteService.postNote` 内で `db.runTransaction` を開始します。データ不整合や重複書き込みを防ぐため、Strict Read-before-Write パターンでユーザーデータと関連グループを一括取得します。"
+      "file": "api_internal/services/note-service.ts",
+      "description": "### Step 3. 🔒 [Backend Layer] Firestore Atomic Transaction\n\n#### 💡 What is happening here? (Overview)\nExecutes multiple database updates (personal note, group chats, streak score) inside an **atomic transaction (All-or-Nothing)**.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`db.runTransaction(...)`**:\n   - Prevents partial saves where personal notes persist but group chats fail.\n2. **Read-before-Write Protocol**:\n   - Strictly reads all user and group docs before committing writes.\n\n---\n\n#### 💡 Pro Tip: ACID Guarantees\nGuarantees zero race conditions even when multiple members post simultaneously.\n\n---\n\n### Step 3. 🔒 【バックエンド層】Firestore アトミック・トランザクション開始\n\n#### 💡 ここで何をしているの？（全体像）\n「個人ノートの保存」「グループへのメッセージ投稿」「連続学習日数の加算」など、**複数のデータベース更新を「全部成功するか、全部失敗するか（All or Nothing）」の金庫のようなトランザクションで実行**します。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`db.runTransaction(...)`**:\n   - 途中で通信が切れても「ノートは保存されたのにグループには届いていない」といった中途半端なデータ不整合を 100% 防ぎます。\n2. **Read-before-Write 原則**:\n   - Firestore トランザクションのルールに従い、まず全データを読み取ってから一括で書き込みます。\n\n---\n\n#### 💡 プロの知恵：データの整合性（ACID特性）\n複数のユーザーが同時にグループに投稿しても、データの衝突や上書き事故が起きない最高峰の安全設計です。",
+      "pattern": "^\\s*\\?\\s+await\\s+transaction\\.getAll\\(\\.\\.\\.groupsToPostTo\\.map\\(gid\\s+=>\\s+db\\.collection\\('groups'\\)\\.doc\\(gid\\)\\)\\)",
+      "line": 252
     },
     {
-      "file": "scripture-habit/api_internal/lib/streak-engine.ts",
-      "line": 29,
-      "description": "### Step 4. 🧮 【計算エンジン層】ストリーク (Streak)・連続学習日数の判定\n\n`StreakEngine.calculateNextStreak` が発火します。ユーザーのローカルタイムゾーン (`timeZone`) に基づいて「今日すでに投稿済みか？」「昨日からの連続投稿（ストリーク継続）か？」「1日以上空いたか（ストリークリセット）？」を判定し、`streakCount` と `highestStreak` を算出します。"
+      "file": "api_internal/lib/streak-engine.ts",
+      "description": "### Step 4. 🧮 [Engine Layer] Local Timezone Streak Computation\n\n#### 💡 What is happening here? (Overview)\nComputes **whether the user maintained their study streak, posted twice today, or lapsed** based on their local `timeZone`.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **Timezone Awareness**:\n   - Computes local 'Today' correctly for users in Tokyo vs Los Angeles.\n2. **`streakCount` & `highestStreak`**:\n   - Calculates current consecutive days and personal all-time bests.\n\n---\n\n#### 💡 Pro Tip: Gamification Psychology\nDuolingo-style streak counters create powerful habit-forming psychological loops.\n\n---\n\n### Step 4. 🧮 【計算エンジン層】ストリーク（連続学習日数）の判定\n\n#### 💡 ここで何をしているの？（全体像）\nユーザーの住んでいるタイムゾーン（日本やニューヨークなど）に合わせて、**「今日すでに学習済みか？」「昨日からの連続記録（ストリーク継続）か？」「1日空いたからリセットか？」を正確に判定**します。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **タイムゾーンの考慮 (`timeZone`)**:\n   - 日本の夜23時に投稿した人と、ロサンゼルスの朝7時に投稿した人の「今日」をそれぞれ現地時間で正確に計算します。\n2. **`streakCount` と `highestStreak`**:\n   - 現在の連続日数と、過去最高記録（自己ベスト）を更新したかを同時に算出します。\n\n---\n\n#### 💡 プロの知恵：習慣化アプリのモチベーション設計\nDuolingo や GitHub 草（Contributions）のように、連続記録が1日ずつ増えていく達成感がこの計算エンジンから生み出されます。",
+      "pattern": "^\\s*const\\s+\\{\\s+streakCount,\\s+highestStreak,\\s+lastPostDate,\\s+lastPostAt,\\s+timeZone\\s+\\}\\s+=\\s+currentState;",
+      "line": 46
     },
     {
-      "file": "scripture-habit/api_internal/services/note-service.ts",
-      "line": 239,
-      "description": "### Step 5. 📖 【データベース層】My Note (個人ノート) への自動保管\n\nトランザクション内で `users/{uid}/notes` サブコレクションへ書き込み (`transaction.set(noteRef, ...)`) を行います。これにより「自分だけの学習ノート一覧（My Notes）」に即座に新しいノートが永続化されます。"
+      "file": "api_internal/services/note-service.ts",
+      "description": "### Step 5. 📖 [Database Layer] Saving to Private My Notes\n\n#### 💡 What is happening here? (Overview)\nWrites the note document into the **user's private `users/{uid}/notes` subcollection**.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`transaction.set(noteRef, payload)`**:\n   - Generates a persistent note document.\n2. **Private Vault**:\n   - Firestore Security Rules enforce that only the author can read/write this subcollection.\n\n---\n\n#### 💡 Pro Tip: Instant My Notes Sync\nImmediately visible in the My Notes tab sorted chronologically or by scripture book.\n\n---\n\n### Step 5. 📖 【データベース層】My Note (個人ノート) への自動保管\n\n#### 💡 ここで何をしているの？（全体像）\nユーザー個人の秘密の保管庫である **`users/{uid}/notes` サブコレクションにノートデータを保存**します。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`transaction.set(noteRef, payload)`**:\n   - 新しいドキュメントIDを発行してノートを書き込みます。\n2. **プライベート領域**:\n   - セキュリティルールによって、この領域は本人以外絶対にアクセスできない安全な個人保管庫になっています。\n\n---\n\n#### 💡 プロの知恵：マイノート一覧（MyNotes）との即時同期\nここで保存されたデータは、マイノート画面を開いた時に日付順・聖句順でいつでも振り返り閲覧できます。",
+      "pattern": "^\\s*await\\s+this\\.applyDeleteNoteWrites\\(transaction,\\s+userRef,\\s+noteRef,\\s+uid,\\s+readContext\\);",
+      "line": 728
     },
     {
-      "file": "scripture-habit/api_internal/services/note-service.ts",
-      "line": 180,
-      "description": "### Step 6. 💬 【データベース層】選択された各グループチャットへメッセージを自動作成・既読同期\n\n共有先に指定されたグループの `groups/{groupId}/messages` サブコレクションへ、カード型チャットメッセージを一括作成します。同時に、投稿者本人の既読数 (`readMessageCount`) を自動的に `increment(1)` 補正します。"
+      "file": "api_internal/services/note-service.ts",
+      "description": "### Step 6. 💬 [Database Layer] Posting Cards to Group Feeds\n\n#### 💡 What is happening here? (Overview)\nPublishes rich note cards to **`groups/{groupId}/messages` feeds** and increments the sender's read counter.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **Multi-Group Broadcast**:\n   - Appends cards to all selected groups simultaneously.\n2. **`FieldValue.increment(1)`**:\n   - Automatically marks the author's own post as read so no phantom unread badges appear.\n\n---\n\n#### 💡 Pro Tip: Unity Score\nSharing notes immediately boosts the entire group's daily Unity percentage score!\n\n---\n\n### Step 6. 💬 【データベース層】選択された各グループチャットへカード投稿\n\n#### 💡 ここで何をしているの？（全体像）\nユーザーがチェックを入れた**各グループのチャットルームに、「📖 ノートを投稿しました！」というカード型メッセージを自動作成**します。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **複数グループへの一括配信**:\n   - ユーザーが2つのグループを選んでいれば、両方のグループの `messages` コレクションへ同時にカードを追加します。\n2. **既読数の自動インクリメント (`FieldValue.increment(1)`)**:\n   - 投稿者本人の既読数を自動で +1 することで、自分の投稿で未読バッジがつかないように配慮します。\n\n---\n\n#### 💡 プロの知恵：団結力（Unity Score）の向上\nグループチャットにノートが共有されることで、グループ全体の今日の学習達成率（Unity Score）がリアルタイムに上昇します！",
+      "pattern": "readMessageCount: admin\\.firestore\\.FieldValue\\.increment\\(1\\)",
+      "line": 375
     },
     {
-      "file": "scripture-habit/api_internal/services/note-service.ts",
-      "line": 157,
-      "description": "### Step 7. 📅 【データベース層】ユーザープロファイル・合計日数・カレンダー (`studiedDates`) のアトミック更新\n\n`if (streakUpdated)` ブロック内で `users/{uid}` ドキュメントを更新します。`streakCount`（連続日数）、`daysStudiedCount`（通算学習日数）、`totalNotes`（総ノート数）、そして `studiedDates`（カレンダーに草を生やすための日付文字列配列 `YYYY-MM-DD`）が一気にアトミック更新されます。"
+      "file": "api_internal/services/note-service.ts",
+      "description": "### Step 7. 📅 [Database Layer] Calendar Heatmap (`studiedDates`)\n\n#### 💡 What is happening here? (Overview)\nAppends today's date string (e.g. `'2026-09-01'`) into **`studiedDates` array to paint the habit heatmap**.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`FieldValue.arrayUnion(today)`**:\n   - Appends atomically without duplicates (Set behavior).\n2. **`daysStudiedCount`**:\n   - Increments total lifetime study days on the user's profile.\n\n---\n\n#### 💡 Pro Tip: GitHub-Style Heatmap\nThe dashboard calendar reads `studiedDates` to render the daily activity grid in green.\n\n---\n\n### Step 7. 📅 【データベース層】カレンダーの「草」アトミック更新 (`studiedDates`)\n\n#### 💡 ここで何をしているの？（全体像）\n学習カレンダーに色を塗る（草を生やす）ために、**`studiedDates` 配列に今日の日付文字列（例: `'2026-09-01'`）を追加**します。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`FieldValue.arrayUnion(today)`**:\n   - Firestore の配列追加関数です。同じ日に2回投稿しても重複して追加されない（Setのように動作する）便利なメソッドです。\n2. **通算日数の加算**:\n   - 今日初めての投稿であれば、`daysStudiedCount`（通算学習日数）を +1 します。\n\n---\n\n#### 💡 プロの知恵：ダッシュボードのカレンダー即時反映\nトップページの学習カレンダーは、この `studiedDates` 配列を参照して各マスの色を塗っています。",
+      "pattern": "^\\s*userUpdate\\.studiedDates\\s+=\\s+admin\\.firestore\\.FieldValue\\.arrayUnion\\(today\\);",
+      "line": 302
     },
     {
-      "file": "scripture-habit/src/components/newnote/hooks/use-note-submission.ts",
-      "line": 133,
-      "description": "### Step 8. 🎉 【UIフィードバック層】紙吹雪 (Confetti) 演出と画面更新\n\nAPI レスポンス（`success: true`）を受け取ると、画面上に祝福の紙吹雪アニメーション (`confetti`) が舞い散り、成功トーストメッセージを表示して入力モーダルを自動的にクローズします。"
+      "file": "src/components/newnote/hooks/use-note-submission.ts",
+      "description": "### Step 8. 🎉 [UI Layer] Confetti Celebration & Modal Close\n\n#### 💡 What is happening here? (Overview)\nUpon receiving `200 OK`, **launches celebratory confetti particles and closes the modal**.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`triggerConfetti()`**:\n   - Triggers `canvas-confetti` fireworks.\n2. **`onClose()`**:\n   - Dismisses dialog to reveal updated dashboard streak counts.\n\n---\n\n#### 💡 Pro Tip: Dopamine Reward UX\nDelivering celebration feedback immediately upon habit completion solidifies long-term user retention!\n\n---\n\n### Step 8. 🎉 【UIフィードバック層】紙吹雪 (Confetti) 演出と画面更新\n\n#### 💡 ここで何をしているの？（全体像）\nサーバーからの成功レスポンス（`200 OK`）を受け取った瞬間に、**画面上にカラフルな紙吹雪を舞わせ、投稿モーダルを閉じます**。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`triggerConfetti()`**:\n   - `canvas-confetti` ライブラリを呼び出して祝賀アニメーションを再生します。\n2. **`onClose()`**:\n   - 入力モーダルを閉じてダッシュボードに戻り、更新された新しいストリーク日数を見せます。\n\n---\n\n#### 💡 プロの知恵：最高の達成感（UXドーパミン演出）\n毎日の習慣をやり遂げた瞬間に紙吹雪と軽快なサウンドを届けることで、ユーザーが「明日も続けよう！」と思える最高の習慣継続体験（Habit Loop）を完成させています！",
+      "pattern": "^\\s*triggerConfetti\\(\\{",
+      "line": 149
     }
   ]
 }

@@ -1,0 +1,30 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "GroupChat 06: Senior Unread Anchor Design / 未読アンカー設計",
+  "tags": [
+    "GroupChat",
+    "Unread Anchor",
+    "Senior Design",
+    "UX"
+  ],
+  "steps": [
+    {
+      "file": "src/components/groupchat/hooks/core/chat-reducer.ts",
+      "description": "### 1. 📌 Session-Locked Unread Anchor\n\n#### 💡 What is happening here? (Overview)\nWe capture and freeze the ID of the first unread message **at the exact moment the channel is opened**, keeping it static for the entire reading session.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`unreadAnchorMessageId` State**:\n   - Recorded on initial channel entry and locked in the Reducer.\n2. **Preventing Moving Dividers**:\n   - Even as the user reads or as new messages arrive in the background, the 'Unread Messages Below' divider stays anchored at its original entry point.\n\n---\n\n#### 💡 Pro Tip: Senior-Level UX\nIf the divider moved dynamically as messages were read, the screen would violently shift up and down. Freezing the anchor per session delivers rock-solid UX.\n\n---\n\n### 1. 📌 入室時の未読アンカー固定 (`unreadAnchorMessageId`)\n\n#### 💡 ここで何をしているの？（全体像）\nチャットを開いた瞬間に、**「あなたがまだ読んでいない一番最初のメッセージ」を特定し、その位置にしおり（アンカー）を固定**します。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **しおりの固定化**:\n   - 画面を開いた瞬間に1度だけ計算し、その後の会話中はずっと同じ位置をキープします。\n2. **「ここから新着メッセージ」バー**:\n   - このアンカー位置の上に、赤い未読区切り線が表示されます。\n\n---\n\n#### 💡 プロの知恵：画面が暴れないためのシニア設計\nもしスクロールに合わせて区切り線がリアルタイムに消えると、メッセージの高さが急に縮んで画面がガクガク揺れてしまいます。セッション中固定にするのがプロの流儀です。",
+      "pattern": "^\\s*const\\s+anchorId\\s+=\\s+computeUnreadAnchorId\\(state\\.messages,\\s+newReadCount,\\s+state\\.unreadAnchorMessageId\\);",
+      "line": 188
+    },
+    {
+      "file": "src/components/groupchat/subcomponents/group-chat-message-list.tsx",
+      "description": "### 2. 📍 Visual Unread Divider Rendering\n\n#### 💡 What is happening here? (Overview)\nWe insert an **'Unread Messages Below' visual separator bar** immediately above the anchored message ID in the timeline.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **Anchor Comparison**:\n   - `msg.id === unreadAnchorMessageId` identifies the boundary between read and unread history.\n2. **Accessible Styling**:\n   - Renders with a distinct accent color so users instantly spot where their missed conversation starts.\n\n---\n\n#### 💡 Pro Tip: Contextual Dividers\nVisual unread bars eliminate the need for users to manually scroll and search for where they left off.\n\n---\n\n### 2. 📍 未読区切りバーの表示描画\n\n#### 💡 ここで何をしているの？（全体像）\nタイムライン上で、**固定したアンカーメッセージのすぐ上に「ここから未読メッセージ」という赤いバーを挿入**します。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`msg.id === unreadAnchorMessageId`**:\n   - メッセージを上から順に並べる際、アンカーと一致した場所だけに特別な区切り線を挟みます。\n2. **ひと目で分かる新着**:\n   - どこまでが過去の会話で、どこからが不在時の新着かが一瞬で分かります。\n\n---\n\n#### 💡 プロの知恵：Slack / Teams スタイルのUI\n一流のビジネスチャットツールと同じ洗練された未読体験を再現しています。",
+      "pattern": "^\\s*\\{unreadAnchorMessageId\\s+!==\\s+null\\s+&&\\s+msg\\.id\\s+===\\s+unreadAnchorMessageId\\s+&&\\s+msg\\.senderId\\s+!==\\s+'system'\\s+&&\\s+\\(",
+      "line": 33
+    },
+    {
+      "file": "src/components/dashboard/hooks/use-dashboard-actions.ts",
+      "description": "### 3. 🕒 Atomic Read Counter Sync (`lastReadAt`)\n\n#### 💡 What is happening here? (Overview)\nWhen the user reads the messages, we **update their personal `lastReadAt` timestamp and mark messages as read** on the server.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`serverTimestamp()` Update**:\n   - Updates the user's membership record with the server's canonical time.\n2. **Badge Clearance**:\n   - Clears the unread notification dot on the dashboard channel list.\n\n---\n\n#### 💡 Pro Tip: Read Receipts Without Race Conditions\nWriting `lastReadAt` atomically prevents conflicts even if multiple devices are open simultaneously.\n\n---\n\n### 3. 🕒 既読状態のサーバー同期 (`lastReadAt`)\n\n#### 💡 ここで何をしているの？（全体像）\nメッセージを読み終わった時に、**「この人はここまで読みました」という時刻（`lastReadAt`）を Firestore に送信して既読バッジを消去**します。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`serverTimestamp()`**:\n   - 正確なサーバー時刻で既読日時を記録します。\n2. **未読バッジの自動消去**:\n   - トップページに戻った時に、赤い未読件数マークがスッキリ消えるようになります。\n\n---\n\n#### 💡 プロの知恵：既読同期の非同期化\n画面操作を邪魔しないようにバックグラウンドでそっと通信するのが、ユーザーを待たせないコツです。",
+      "pattern": "^\\s*lastReadAt:\\s+serverTimestamp\\(\\)",
+      "line": 63
+    }
+  ]
+}

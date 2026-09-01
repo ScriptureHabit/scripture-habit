@@ -1,17 +1,24 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "Firebase基礎 04: Security Rules (セキュリティルール) と Firebase Auth 連携",
-  "tags": ["Firebase Fundamentals", "GroupChat", "Security Rules", "Auth"],
+  "title": "Firebase 04: Security Rules & Auth Integration / セキュリティルールと認証連携",
+  "tags": [
+    "Firebase Fundamentals",
+    "GroupChat",
+    "Security Rules",
+    "Auth"
+  ],
   "steps": [
     {
-      "file": "scripture-habit/firestore.rules",
-      "line": 22,
-      "description": "### 1. 🔑 Firebase Auth 認証チェック (`request.auth`)\n\nFirestore Security Rules では `request.auth != null` を用いて、リクエストを送信したユーザーが確実に認証済み（ログイン済み）であるかを確認します。"
+      "file": "firestore.rules",
+      "description": "### 1. 🔑 Firebase Auth Verification (`request.auth`)\n\n#### 💡 What is happening here? (Overview)\nIn Firestore Security Rules, we verify that **incoming requests originate from an authenticated (logged-in) user**.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`request.auth != null`**:\n   - Rejects unauthenticated requests immediately at the database edge.\n2. **`request.auth.uid == userId`**:\n   - Ownership validation ensuring users can only view and modify their own private documents.\n\n---\n\n#### 💡 Pro Tip: Serverless Security Model\nEven without a custom backend proxy, Firestore Security Rules act as a bulletproof authorization wall directly in front of the database.\n\n---\n\n### 1. 🔑 Firebase Auth 認証チェック (`request.auth`)\n\n#### 💡 ここで何をしているの？（全体像）\nFirestore のセキュリティルールで、**「リクエストを送ってきた人が、正しくログインしているユーザーかどうか」を判定**します。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`request.auth != null`**:\n   - ログインしていない未認証のリクエストを門前払いします。\n2. **`request.auth.uid == userId`**:\n   - 「自分のユーザーデータ（プロファイルなど）は自分だけが読み書きできる」という所有権チェックです。\n\n---\n\n#### 💡 プロの知恵：バックエンドがなくても安全な理由\nFirebase ではバックエンドのサーバーを書かなくても、この `firestore.rules` を正しく設定することで、安全なアクセス制御が自動で適用されます。",
+      "pattern": "^\\s*allow\\s+get:\\s+if\\s+request\\.auth\\s+!=\\s+null\\s+&&\\s+\\(request\\.auth\\.uid\\s+==\\s+userId\\s+\\|\\|\\s+isAuthenticated\\(\\)\\);",
+      "line": 34
     },
     {
-      "file": "scripture-habit/firestore.rules",
-      "line": 36,
-      "description": "### 2. 🛡️ サーバーサイドでのデータ保護と属性制限 (`affectedKeys`)\n\nクライアント側でどんな不正コードが実行されても、`affectedKeys().hasOnly([...])` や所有権チェック（`request.auth.uid == userId`）によって、無権限なフィールド書き込みや改ざんをサーバーレベルで安全にブロックします。"
+      "file": "firestore.rules",
+      "description": "### 2. 🛡️ Preventing Unauthorized Field Tampering (`affectedKeys`)\n\n#### 💡 What is happening here? (Overview)\nWhen updating records, we verify that **only explicitly permitted fields (whitelist) are being modified**.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`affectedKeys().hasOnly([...])`**:\n   - Inspects the exact list of modified fields in the diff between the existing document and the incoming write.\n2. **Protecting Privileged Attributes**:\n   - If a malicious client tries injecting `isAdmin: true` or tampering with audit fields, the entire write is rejected by Firestore.\n\n---\n\n#### 💡 Pro Tip: Zero-Trust Client Principle\nClient-side JavaScript code can always be tampered with in browser DevTools. Database security rules ensure server-enforced data integrity regardless of client behavior.\n\n---\n\n### 2. 🛡️ 許可されたフィールド以外の改ざんをブロック (`affectedKeys`)\n\n#### 💡 ここで何をしているの？（全体像）\nユーザーがデータを更新する際に、**「変更を許可した特定の項目（例: ニックネームなど）以外を勝手に書き換えていないか」を厳格にチェック**します。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`affectedKeys().hasOnly([...])`**:\n   - 今回のリクエストで書き換えようとしているフィールドの一覧を調べ、ホワイトリストに含まれる項目だけかを確認します。\n2. **管理者権限の保護**:\n   - 例えば一般ユーザーが勝手に `isAdmin: true` のようなフラグをリクエストに混ぜて送信しても、サーバー側で即座に拒否（ブロック）されます。\n\n---\n\n#### 💡 プロの知恵：ゼロトラストの徹底\nブラウザ側のコードは悪意のあるユーザーによって書き換えられる可能性があります。そのため、「ブラウザから送られてくるデータは信用せず、データベースのルールで弾く」のがセキュリティの鉄則です。",
+      "pattern": "^\\s*&&\\s+request\\.resource\\.data\\.diff\\(resource\\.data\\)\\.affectedKeys\\(\\)\\.hasOnly\\(\\[",
+      "line": 39
     }
   ]
 }

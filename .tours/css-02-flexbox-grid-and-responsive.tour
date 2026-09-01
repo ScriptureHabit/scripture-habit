@@ -1,17 +1,24 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "CSS/UI基礎 02: Flexbox レイアウト と スマホ/PC レスポンシブ対応",
-  "tags": ["CSS Fundamentals", "UI", "Flexbox", "Responsive Design"],
+  "title": "CSS 02: Flexbox Layout & Mobile/Desktop Responsiveness / Flexbox とレスポンシブ",
+  "tags": [
+    "CSS Fundamentals",
+    "UI",
+    "Flexbox",
+    "Responsive Design"
+  ],
   "steps": [
     {
-      "file": "scripture-habit/src/components/groupchat/group-chat.css",
-      "line": 2,
-      "description": "### 1. 📐 Flexbox (`display: flex`) による柔軟な縦並びレイアウト\n\n`display: flex` と `flex-direction: column` を組み合わせて、ヘッダー・メッセージリスト・入力フッターの縦並び構造を直感的にレイアウトします。"
+      "file": "src/components/groupchat/group-chat.css",
+      "description": "### 1. 📐 Column Flexbox (`display: flex`)\n\n#### 💡 What is happening here? (Overview)\nStructures the chat layout into a **clean vertical column (Header, Message List, Input Bar)**.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`display: flex`**:\n   - Activates CSS Flexbox.\n2. **`flex-direction: column`**:\n   - Changes flex direction from horizontal to vertical stacking.\n3. **`flex: 1`**:\n   - Expands the message list container to fill all remaining vertical space.\n\n---\n\n#### 💡 Pro Tip: Dynamic Viewport Units (`100dvh`)\nPairing flex layouts with `100dvh` prevents mobile Safari address bar jumpiness.\n\n---\n\n### 1. 📐 Flexbox (`display: flex`) による縦並びレイアウト\n\n#### 💡 ここで何をしているの？（全体像）\nチャット画面全体を、**「上部にヘッダー、中央にメッセージ一覧、下部に入力欄」という縦並び構造（Column）で綺麗に配置**します。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`display: flex`**:\n   - 要素を柔軟にレイアウトするための Flexbox を有効化します。\n2. **`flex-direction: column`**:\n   - デフォルトの横並び（row）から「縦並び（column）」に切り替えます。\n3. **`flex: 1`（中央のリスト）**:\n   - 画面の余った高さいっぱいまでメッセージ一覧枠を自動で引き伸ばします。\n\n---\n\n#### 💡 プロの知恵：100dvh（ダイナミックビューポート）\nスマホのブラウザのアドレスバーの出現・格納による画面崩れを防ぐため、最新の CSS 単位 `100dvh` と組み合わせるのがチャットUIの鉄則です。",
+      "pattern": "^\\s*\\.reactions-list\\s+\\{\\s+display:\\s+flex;\\s+flex-direction:\\s+column;\\s+gap:\\s+0\\.8rem;\\s+max-height:\\s+250px;\\s+overflow-y:\\s+auto;\\s+padding:\\s+0\\.5rem;\\s+\\}",
+      "line": 2709
     },
     {
-      "file": "scripture-habit/src/components/groupchat/group-chat.css",
-      "line": 14,
-      "description": "### 2. 📱 Media Queries (`@media`) によるスマホ/PC レスポンシブ切り替え\n\n`@media screen and (max-width: 768px)` を使用して、画面幅がスマホサイズになった際（768px以下）に角丸 (`border-radius: 0`) や背景を最適化し、マルチデバイスに対応させます。"
+      "file": "src/components/groupchat/group-chat.css",
+      "description": "### 2. 📱 Mobile Breakpoints (`@media` Queries)\n\n#### 💡 What is happening here? (Overview)\nDisplays rounded card panels on desktop screens while **maximizing edge-to-edge space (`border-radius: 0`) on mobile viewports (<768px)**.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`@media screen and (max-width: 768px)`**:\n   - Scopes rules specifically to smartphones and portrait tablets.\n2. **Edge-to-edge Space**:\n   - Maximizes text readability on small displays.\n\n---\n\n#### 💡 Pro Tip: Mobile-First Strategy\nDesign primarily for touch on mobile, then progressively enhance for larger screens.\n\n---\n\n### 2. 📱 メディアクエリ (`@media`) によるスマホ最適化\n\n#### 💡 ここで何をしているの？（全体像）\nPCの大画面では枠線や角丸をつけてカード風に見せ、**「スマホ（画面幅768px以下）では画面いっぱいに広げる（角丸ゼロ）」というレスポンシブ切り替え**を行います。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`@media screen and (max-width: 768px)`**:\n   - 画面の横幅が 768px 以下のデバイス（スマホやタブレット縦持ち）だけに適用するスタイルを囲みます。\n2. **`border-radius: 0`**:\n   - スマホでは画面の端までチャット欄を広げて表示領域を最大化します。\n\n---\n\n#### 💡 プロの知恵：モバイルファーストの思想\n「まずスマホで使いやすいように作り、PCではよりリッチに見せる」。現代のWebアプリ開発で最も重要なレスポンシブ設計の基礎です。",
+      "pattern": "@media screen and \\(max-width: 768px\\) \\{",
+      "line": 14
     }
   ]
 }

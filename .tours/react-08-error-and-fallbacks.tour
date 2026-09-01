@@ -1,22 +1,30 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "React基礎 08: 宣言的UIとエラー/ローディング状態管理",
-  "tags": ["React Fundamentals", "GroupChat", "Declarative UI", "Error Handling"],
+  "title": "React 08: Declarative UI & Status Management / 宣言的UIとエラー管理",
+  "tags": [
+    "React Fundamentals",
+    "GroupChat",
+    "Declarative UI",
+    "Error Handling"
+  ],
   "steps": [
     {
-      "file": "scripture-habit/src/components/groupchat/hooks/core/chat-reducer.ts",
-      "line": 4,
-      "description": "### 1. 🚦 State によるステータス表現 (`ChatStatus = 'loading' | 'active' | 'error' | 'notFound'`)\n\n「現在読み込み中か？」「エラーが起きたか？」といった画面の状態を boolean フラグの乱立（`isLoading`, `isError`）で管理せず、列挙型（Union type）として単一の `status` フィールドで表現します。\nこれにより「読み込み中かつエラー」のような矛盾した不整合な状態を防ぐことができます。"
+      "file": "src/components/groupchat/hooks/core/chat-reducer.ts",
+      "description": "### 1. 🚦 Mutually Exclusive Status (`ChatStatus`)\n\n#### 💡 What is happening here? (Overview)\nModels screen status as a **single mutually exclusive union type: `'loading' | 'active' | 'error' | 'notFound'`** rather than separate boolean flags.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **Preventing Impossible States**:\n   - Multiple boolean flags allow impossible combinations like `isLoading && isError`.\n2. **Finite State Machine (FSM)**:\n   - Exactly one state is active at any given moment.\n\n---\n\n#### 💡 Pro Tip: Make Impossible States Impossible\nTypeScript union types completely eliminate impossible UI states at compile time.\n\n---\n\n### 1. 🚦 排他的なステータス管理 (`ChatStatus`)\n\n#### 💡 ここで何をしているの？（全体像）\n画面の状態を `isLoading = true` や `isError = true` のような boolean フラグで散らかさず、**`'loading' | 'active' | 'error' | 'notFound'` という「同時に1つしかあり得ない状態」として厳密に定義**します。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **不整合な状態（Impossible States）の防止**:\n   - boolean を複数使うと、「読み込み中なのにエラー画面も出ている」といったあり得ない組み合わせのバグが起きます。\n2. **ユニオン型（Union Type）**:\n   - 4つの状態のうち必ずどれか1つだけに決定するため、状態遷移がとてもシンプルになります。\n\n---\n\n#### 💡 プロの知恵：ステートマシン（FSM）の考え方\n信号機のように「赤・黄・青」のどれか1つしか点灯しない仕組みにすることで、UIの切り替えコードが劇的に壊れにくくなります。",
+      "pattern": "^\\s*export\\s+type\\s+ChatStatus\\s+=\\s+'loading'\\s+\\|\\s+'active'\\s+\\|\\s+'error'\\s+\\|\\s+'notFound';",
+      "line": 4
     },
     {
-      "file": "scripture-habit/src/components/groupchat/subcomponents/group-chat-message-list-container.tsx",
-      "line": 49,
-      "description": "### 2. 🎭 宣言的 UI スイッチング (Declarative UI Pattern)\n\n手続き的な IF 条件文を何重にもネストする代わりに、`messagesLoaded` やデータ状態に応じて画面表示の切り替え（ローディングスケルトン/メッセージ一覧/空メッセージ画面）をスッキリと制御します。"
+      "file": "src/components/groupchat/subcomponents/group-chat-message-list-container.tsx",
+      "description": "### 2. 🎭 Declarative UI Switching\n\n#### 💡 What is happening here? (Overview)\nSmoothly switches between **Loading Skeletons, Message Timelines, and Empty State banners** based on declarative status.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **Declarative Rendering**:\n   - Declares what UI to render for each state condition cleanly.\n2. **Flicker Protection**:\n   - `messagesLoaded` flag prevents empty state flickers during initial load.\n\n---\n\n#### 💡 Pro Tip: Early Return Pattern\nUsing early returns (`if (loading) return <Loading />`) keeps the main render branch flat and readable.\n\n---\n\n### 2. 🎭 宣言的 UI スイッチング (Declarative UI)\n\n#### 💡 ここで何をしているの？（全体像）\nデータの読み込み状況に応じて、**「ローディング中のアニメーション」「メッセージ一覧」「メッセージが0件の案内」を美しく切り替えます**。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **宣言的（Declarative）とは**:\n   - 「状態が A なら画面 A を表示し、状態が B なら画面 B を表示する」とルールを宣言する書き方です。\n2. **チラつき防止**:\n   - `messagesLoaded` フラグを使い、データが揃う前に空画面が一瞬チラ見えするのを防ぎます。\n\n---\n\n#### 💡 プロの知恵：早期リターン（Early Return）\nエラー時やローディング時に `if (loading) return <LoadingSpinner />` のように関数を早く切り上げることで、メインの描画ロジックのネストを浅く保てます。",
+      "pattern": "^\\s*\\},\\s+\\[messages,\\s+isInitialLoad,\\s+messagesLoaded,\\s+containerRef\\]\\);",
+      "line": 59
     },
     {
-      "file": "scripture-habit/src/components/groupchat/group-chat-modals.tsx",
-      "line": 70,
-      "description": "### 3. 🛡️ モーダルやフォールバックの宣言的制御\n\nダイアログやモーダルの表示・非表示も DOM を直接操作（`display: block/none`）するのではなく、`showLeaveModal={activeModal === 'leave'}` という state / props に基づいて宣言的に制御します。"
+      "file": "src/components/groupchat/group-chat-modals.tsx",
+      "description": "### 3. 🛡️ Declarative Modal Orchestration\n\n#### 💡 What is happening here? (Overview)\nControls modal dialogs (Leave Group, Report, Member List) **declaratively via `activeModal` state** without manual DOM manipulation.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`showLeaveModal={activeModal === 'leave'}`**:\n   - Modal renders purely based on state condition.\n2. **Centralized Management**:\n   - Aggregates all modal views in one dedicated component.\n\n---\n\n#### 💡 Pro Tip: Preventing Overlapping Modals\nA single `activeModal` string variable guarantees two modals can never awkwardly pop up at the same time.\n\n---\n\n### 3. 🛡️ モーダルの宣言的表示制御\n\n#### 💡 ここで何をしているの？（全体像）\n「グループ退出確認」「通報」「メンバー一覧」などのモーダルダイアログを、**DOM を直接触らず、`activeModal` の状態（State）に応じてスマートに表示**します。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`showLeaveModal={activeModal === 'leave'}`**:\n   - `activeModal` が `'leave'` の時だけ、退出モーダルの表示フラグが `true` になります。\n2. **モーダルの集約管理**:\n   - 画面のあちこちにモーダルを散らばらせず、`group-chat-modals.tsx` に一箇所に集約しています。\n\n---\n\n#### 💡 プロの知恵：モーダル同士の重複オープン防止\n`activeModal` という単一の変数で管理することで、「通報モーダルと退出モーダルが2重に重なって開いてしまう」といった不快なUIバグを物理的に防ぐことができます。",
+      "pattern": "^\\s*showLeaveModal=\\{activeModal\\s+===\\s+'leave'\\}",
+      "line": 69
     }
   ]
 }

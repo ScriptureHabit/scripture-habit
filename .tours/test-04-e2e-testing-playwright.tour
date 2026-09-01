@@ -1,22 +1,30 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "Testing基礎 04: Playwright による E2E テスト (画面自動操作とユーザー体験の検証)",
-  "tags": ["Testing Fundamentals", "Playwright", "E2E Testing", "Browser Automation"],
+  "title": "Testing 04: E2E Browser Testing with Playwright / Playwright による E2E テスト",
+  "tags": [
+    "Testing Fundamentals",
+    "Playwright",
+    "E2E Testing",
+    "Browser Automation"
+  ],
   "steps": [
     {
-      "file": "scripture-habit/tests/auth-flow.spec.ts",
-      "line": 15,
-      "description": "### 1. 🌐 Playwright による E2E テスト構造 (`test.describe` & `page`)\n\n単体テストとは異なり、Playwright は実際に本物のブラウザ（Chromium/WebKit）を裏で起動します。各テスト関数に引き渡される `{ page }` オブジェクトを使って、ユーザーが実際に画面を操作する動きをシミュレートします。"
+      "file": "tests/auth-flow.spec.ts",
+      "description": "### 1. 🌐 End-to-End Testing with Playwright (`{ page }`)\n\n#### 💡 What is happening here? (Overview)\nUnlike unit tests, Playwright **launches a real browser instance (Chromium/Safari) to simulate authentic human interactions**.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`{ page }` Fixture**:\n   - Represents an open browser tab to trigger clicks, navigations, and keyboard typing.\n2. **Cross-Browser Verification**:\n   - Tests across Chrome, Firefox, Safari (WebKit), and mobile screen viewports concurrently.\n\n---\n\n#### 💡 Pro Tip: End-to-End Coverage\nVerifies the entire chain: UI rendering → server communication → database updates → UI feedback.\n\n---\n\n### 1. 🌐 Playwright による E2E テスト構造 (`page` オブジェクト)\n\n#### 💡 ここで何をしているの？（全体像）\n単体テストとは違い、**裏で本物のブラウザ（ChromeやSafari）を自動で立ち上げ、ロボットが人間と同じように画面を操作するテスト**です。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`{ page }` 引数**:\n   - ブラウザのタブ1枚を表すオブジェクトです。クリックや文字入力、画面遷移などの命令を出せます。\n2. **クロスブラウザテスト**:\n   - Chrome, Firefox, Safari (WebKit), スマホ画面など、複数のブラウザで同時にテストを実行できます。\n\n---\n\n#### 💡 プロの知恵：E2E (End-to-End) テストの威力\nボタンを押して画面が開き、データベースと通信して正しく描画されるまでの「ユーザー体験の全行程（End to End）」を一気通貫で保証します。",
+      "pattern": "^\\s*test\\('should\\s+complete\\s+full\\s+email\\s+signup\\s+and\\s+profile\\s+initialization\\s+flow',\\s+async\\s+\\(\\{\\s+page\\s+\\}\\)\\s+=>\\s+\\{",
+      "line": 46
     },
     {
-      "file": "scripture-habit/tests/auth-flow.spec.ts",
-      "line": 30,
-      "description": "### 2. 🖱️ 宣言的な画面操作 (`page.goto` & `getByRole().click()`)\n\n`page.goto('/')` でトップページへ遷移し、アクセシビリティ標準に基づく `getByRole('button', { name: 'Start in Browser' })` でボタンを特定して `.click()` を実行します。人間がクリックする操作を完全に全自動化します。"
+      "file": "tests/auth-flow.spec.ts",
+      "description": "### 2. 🖱️ Declarative User Interactions (`page.goto` & `getByRole`)\n\n#### 💡 What is happening here? (Overview)\nNavigates to the home page and **finds buttons by accessibility roles (`getByRole`) rather than fragile CSS classes**.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`await page.goto('/')`**:\n   - Loads the root URL.\n2. **`getByRole('button', { name: '...' })`**:\n   - Finds buttons by their semantic screen-reader accessibility role.\n\n---\n\n#### 💡 Pro Tip: Resilient Selectors\nSelecting elements by accessibility role ensures tests don't break when CSS classes are refactored.\n\n---\n\n### 2. 🖱️ 宣言的な画面操作 (`page.goto` & `getByRole().click()`)\n\n#### 💡 ここで何をしているの？（全体像）\n指定した URL を開き、**画面上のボタンを探して自動でクリック**させます。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`await page.goto('/')`**:\n   - トップページにアクセスします。\n2. **`getByRole('button', { name: '...' })`**:\n   - アクセシビリティ標準（Role）に基づいて「ボタン」かつ「指定した文字が書かれたもの」を賢く探します。\n\n---\n\n#### 💡 プロの知恵：セレクタの壊れにくさ\nCSS クラス名（`.btn-primary` など）で探すとデザイン変更でテストがすぐ壊れますが、`getByRole` で「ボタンという役割」で探すことで、デザイン変更に強い頑健なテストになります。",
+      "pattern": "^\\s*const\\s+signupButton\\s+=\\s+page\\.locator\\('\\.auth-buttons'\\)\\.getByRole\\('button',\\s+\\{\\s+name:\\s+'Sign\\s+Up'\\s+\\}\\);",
+      "line": 38
     },
     {
-      "file": "scripture-habit/tests/auth-flow.spec.ts",
-      "line": 34,
-      "description": "### 3. 🎯 画面遷移と表示の検証 (`expect(page).toHaveURL` & `toBeVisible`)\n\n`expect(page).toHaveURL(/\/welcome\/?$/)` を使って、ボタンクリック後に正しく目標の URL へ画面遷移したか、目的の要素が画面に表示されているか (`toBeVisible()`) を検証します。"
+      "file": "tests/auth-flow.spec.ts",
+      "description": "### 3. 🎯 Visual Assertions with `toBeVisible()`\n\n#### 💡 What is happening here? (Overview)\nAsserts that **expected headings and elements appear visibly on the screen after navigation**.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`expect(page.getByRole('heading', ...)).toBeVisible()`**:\n   - Automatically waits for elements to appear (Auto-waiting).\n2. **Automating Manual QA**:\n   - Programmatically verifies visual rendering.\n\n---\n\n#### 💡 Pro Tip: CI/CD Quality Gates\nRuns automatically in GitHub Actions on every pull request to block visual regressions.\n\n---\n\n### 3. 🎯 画面遷移と表示の検証 (`expect().toBeVisible()`)\n\n#### 💡 ここで何をしているの？（全体像）\nボタンを押した後に、**「ちゃんと次の画面に遷移し、目標の見出しが表示されたか」を目視レベルで自動判定**します。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`expect(page.getByRole('heading', ...)).toBeVisible()`**:\n   - 画面上に指定の見出し（`<h1>` など）が実際に表示されるまで、自動で数秒間待機（Auto-waiting）してくれます。\n2. **手動テストの完全自動化**:\n   - 人間が目で見て「よし、タイトルが出たな」と確認する作業を 100% プログラムが代行します。\n\n---\n\n#### 💡 プロの知恵：CI/CD パイプラインでの自動実行\nプルリクエストを出すたびに GitHub Actions でこの E2E テストが走り、画面が壊れたバグコードのマージを鉄壁のガードで阻止します。",
+      "pattern": "await expect\\(page\\.getByRole\\('heading', \\{ name: 'Scripture Habit', level: 1 \\}\\)\\)\\.toBeVisible\\(\\);",
+      "line": 35
     }
   ]
 }

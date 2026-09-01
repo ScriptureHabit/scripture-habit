@@ -1,22 +1,29 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "React基礎 03: Custom Hooks による関心事の分離 (Separation of Concerns)",
-  "tags": ["React Fundamentals", "GroupChat", "Custom Hooks"],
+  "title": "React 03: Custom Hooks & Separation of Concerns / カスタムフックと関心事の分離",
+  "tags": [
+    "React Fundamentals",
+    "GroupChat",
+    "Custom Hooks"
+  ],
   "steps": [
     {
-      "file": "scripture-habit/src/components/groupchat/hooks/core/use-group-messages.ts",
-      "line": 14,
-      "description": "### 1. 🎼 Hook のオーケストレーション (親 Custom Hook)\n\n`useGroupMessages` は、データエンジン (`useChatDataEngine`) や同期コントローラー (`useChatSyncController`) など、複数の子フックを統合する最上位の Hook Orchestrator（オーケストレーター）です。\nコンポーネント側に複雑なロジックを直接書かせず、カプセル化して1行の呼び出しで済むように設計します。"
+      "file": "src/components/groupchat/hooks/core/use-group-messages.ts",
+      "description": "### 1. 🎼 Top-Level Hook Orchestration (`useGroupMessages`)\n\n#### 💡 What is happening here? (Overview)\n`useGroupMessages` acts as the **conductor of multiple specialized sub-hooks**, giving components a single, unified point of contact.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **Custom Hook Convention**:\n   - Functions starting with `use...` can call built-in React hooks and compose them.\n2. **Encapsulation**:\n   - Keeps networking, caching, and state machines out of UI component files.\n\n---\n\n#### 💡 Pro Tip: Slim UI Components\nKeep React components purely focused on layout and styles, delegating all thinking and computation to custom hooks.\n\n---\n\n### 1. 🎼 フックの統合役 (`useGroupMessages`)\n\n#### 💡 ここで何をしているの？（全体像）\n通信、状態管理、スクロール制御などの複数の子フックをまとめあげ、**コンポーネント側からはたった1行呼ぶだけで済むようにパッケージングした「親玉フック」**です。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **カスタムフック（Custom Hook）の命名ルール**:\n   - React では名前が `use...` で始まる関数をカスタムフックと呼び、内部で `useState` や `useEffect` などの標準フックを自由に呼び出せます。\n2. **ロジックのカプセル化**:\n   - 画面を描くコードの中に通信や計算を長々と書かず、フックの中に閉じ込めて（隠蔽して）います。\n\n---\n\n#### 💡 プロの知恵：コンポーネントをスリムに保つ\n「UIコンポーネントはHTMLとCSSの描画に専念させ、頭を使うロジックはすべてカスタムフックに逃がす」のが、現代のReact開発で最も美しいとされる設計パターンです。",
+      "pattern": "^\\s*export\\s+const\\s+useGroupMessages\\s+=\\s+\\(",
+      "line": 14
     },
     {
-      "file": "scripture-habit/src/components/groupchat/hooks/core/use-chat-data-engine.ts",
-      "line": 229,
-      "description": "### 2. 🧱 単一責任原則 (Single Responsibility Principle)\n\nデータエンジン (`useChatDataEngine`) は、Firestoreからのデータ受信と Reducer への投入だけに専念します。\nUIのプレゼンテーションやユーザー操作などの関心事を混ぜないことで、再利用性とテスト容易性が著しく高まります。"
+      "file": "src/components/groupchat/hooks/core/use-chat-data-engine.ts",
+      "description": "### 2. 🧱 Single Responsibility Principle (SRP)\n\n#### 💡 What is happening here? (Overview)\n`useChatDataEngine` focuses **100% on receiving Firestore data and feeding it into the Reducer**, without handling DOM or UI events.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **Single Focus**:\n   - Contains zero scroll calculations or button click handlers.\n2. **High Portability**:\n   - Completely UI-agnostic, meaning you could redesign the entire UI without touching this hook.\n\n---\n\n#### 💡 Pro Tip: Avoiding God Hooks\nDividing logic into single-purpose hooks prevents massive, unmaintainable 'God Hooks' from forming.\n\n---\n\n### 2. 🧱 単一責任原則 (Single Responsibility Principle)\n\n#### 💡 ここで何をしているの？（全体像）\n「Firestore からのリアルタイム受信と Reducer への格納」という**データ通信のことだけに100%集中する専用フック**です。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **単一責任（ひとつの役目）**:\n   - スクロール位置の計算やボタンのクリック処理など、関係のない処理を一切含めません。\n2. **ポータビリティ（使い回しやすさ）**:\n   - UIに依存しない純粋なデータ層フックなので、将来デザインを全取っ替えしてもこのフックはそのまま使えます。\n\n---\n\n#### 💡 プロの知恵：SOLID原則の実践\nひとつのフックにあれもこれも詰め込む「神フック（God Hook）」を作らないことが、半年後にコードを読み直した時に迷子にならない最大の秘訣です。",
+      "pattern": "^\\s*export\\s+const\\s+useChatDataEngine\\s+=\\s+\\(groupId:\\s+string\\s+\\|\\s+null,\\s+userData:\\s+UserData\\s+\\|\\s+null,\\s+t:\\s+\\(key:\\s+string\\)\\s+=>\\s+string\\)\\s+=>\\s+\\{",
+      "line": 233
     },
     {
-      "file": "scripture-habit/src/components/groupchat/hooks/view/use-scroll-manager.ts",
-      "line": 9,
-      "description": "### 3. 🎯 UIインタラクションの独立フック (`useScrollManager`)\n\n「最下部への自動スクロール」「未読位置の復元」「過去ログ取得時の位置固定」といった DOM/UI 特有の複雑なスクロール計算・ロジックも独立したフックに切り出します。\nこれにより、データ同期層のコードを変更せずにスクロール挙動だけを安全に修正・拡張できるようになります。"
+      "file": "src/components/groupchat/hooks/view/use-scroll-manager.ts",
+      "description": "### 3. 🎯 Independent UI Interaction Hook (`useScrollManager`)\n\n#### 💡 What is happening here? (Overview)\nIsolates all **scroll pixel calculations, threshold checks, and scroll animations** into a standalone hook.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **Localizing DOM Manipulation**:\n   - Keeps messy DOM offsets and height math contained in one place.\n2. **Clean Imperative API**:\n   - Returns clean, descriptive methods like `scrollToBottom()` and `jumpToUnread()`.\n\n---\n\n#### 💡 Pro Tip: Isolated Maintenance\nTweaking scroll easing or behavior will never break network synchronization.\n\n---\n\n### 3. 🎯 UI操作の独立フック (`useScrollManager`)\n\n#### 💡 ここで何をしているの？（全体像）\n「最下部への自動スクロール」「未読位置へのジャンプ」「過去ログ読込時の位置維持」といった、**スクロールに関する複雑な計算だけを独立させたフック**です。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **DOM 操作の局所化**:\n   - ブラウザのスクロールバーやピクセル計算といった泥臭いDOM操作を1箇所に隔離しています。\n2. **直感的な操作関数の返却**:\n   - 呼び出し側には `scrollToBottom()` や `jumpToUnread()` といった、英語として読みやすいシンプルな関数だけを提供します。\n\n---\n\n#### 💡 プロの知恵：分業とメンテナンス性\nスクロールのアニメーション速度を変えたい時や挙動を微調整したい時に、データ通信のコードを触る必要がなく、このファイルだけを安全にいじれます。",
+      "pattern": "scrollToBottom\\(\\);",
+      "line": 74
     }
   ]
 }

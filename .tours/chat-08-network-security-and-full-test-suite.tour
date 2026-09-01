@@ -1,37 +1,31 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "GroupChat Master 08: ネットワーク・セキュリティ・完全自動テスト",
-  "tags": ["GroupChat", "Security Rules", "Exponential Backoff", "Unity Calculation", "Integration Test", "E2E Test"],
+  "title": "GroupChat 08: Security & Testing / セキュリティとテスト自動化",
+  "tags": [
+    "GroupChat",
+    "Security",
+    "Exponential Backoff",
+    "Security Rules",
+    "Testing"
+  ],
   "steps": [
     {
-      "file": "scripture-habit/firestore.rules",
-      "line": 20,
-      "description": "### 1. 🔑 グループ参加チェック関数 (`isMemberOfGroup`)\n\nリクエスト送信者の UID (`request.auth.uid`) が該当グループの `members` 配列または `ownerUserId` に含まれているかを判定するヘルパー関数です。"
+      "file": "firestore.rules",
+      "description": "### 1. 🛡️ Serverless Authorization (Firestore Security Rules)\n\n#### 💡 What is happening here? (Overview)\nEnforces that **only verified members of a group can read and write chat messages**.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`isGroupMember(groupId)`**:\n   - Validates membership using `exists(/databases/.../groups/$(groupId)/members/$(request.auth.uid))`.\n2. **`request.auth != null`**:\n   - Instantly rejects unauthenticated requests.\n\n---\n\n#### 💡 Pro Tip: Defense in Depth\nNever rely solely on frontend IF conditions. Firestore Security Rules enforce bulletproof authorization directly at the database engine.\n\n---\n\n### 1. 🛡️ サーバーレス認可制御 (Firestore Security Rules)\n\n#### 💡 ここで何をしているの？（全体像）\n「そのグループのメンバーではない部外者」が、**チャットの内容を盗み見たり、勝手に投稿したりするのをデータベースの門番（Security Rules）で完全ブロック**します。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`isGroupMember(groupId)`**:\n   - ログイン中のユーザーがメンバー一覧に登録されているかを確認します。\n2. **`request.auth != null`**:\n   - ログインしていない人は門前払いします。\n\n---\n\n#### 💡 プロの知恵：画面側のチェックを信用しない\nブラウザ側の JavaScript は改ざんされる危険があるため、「データベースのルールで弾く」のが鉄則です。",
+      "pattern": "^\\s*request\\.auth\\.uid\\s+in\\s+get\\(/databases/\\$\\(database\\)/documents/groups/\\$\\(groupId\\)\\)\\.data\\.get\\('members',\\s+\\[\\]\\)\\s+\\|\\|",
+      "line": 25
     },
     {
-      "file": "scripture-habit/firestore.rules",
-      "line": 50,
-      "description": "### 2. 🛡️ 部外者からのメッセージ閲覧・書き込み遮断\n\n`allow read, write: if isMemberOfGroup(groupId)` ルールにより、未参加ユーザーによるメッセージ盗み見や不正書き込みをサーバーレベルで 100% 拒否します。"
+      "file": "src/components/groupchat/hooks/core/use-chat-data-engine.ts",
+      "description": "### 2. ⚡ Network Resilience with Exponential Backoff\n\n#### 💡 What is happening here? (Overview)\nWhen internet connectivity drops, the app **automatically retries connecting with exponential delays (1s, 2s, 4s...)** to prevent server congestion.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`Math.min(1000 * Math.pow(2, retryCount), 30000)`**:\n   - Progressively spaces out reconnection attempts up to a maximum cap (30 seconds).\n2. **Jitter Randomization**:\n   - Spreads retry spikes across clients.\n\n---\n\n#### 💡 Pro Tip: Avoiding Retry Storms (Thundering Herd)\nExponential backoff prevents millions of disconnected mobile devices from crashing the backend simultaneously upon network recovery.\n\n---\n\n### 2. ⚡ 接続障害時の指数バックオフ再試行 (Exponential Backoff)\n\n#### 💡 ここで何をしているの？（全体像）\n地下鉄などで電波が切れた時に、**「1秒後、2秒後、4秒後…と待ち時間を少しずつ伸ばしながら自動で再接続を試みる」**賢い仕組みです。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **指数関数的な待ち時間**:\n   - すぐに連続連打せず、間隔を広げながら再試行します。\n2. **自動復帰**:\n   - 電波が戻った瞬間に何事もなかったかのようにチャットが復活します。\n\n---\n\n#### 💡 プロの知恵：サーバーダウンの防止\n何千人ものスマホが一斉に同じ瞬間にリトライするとサーバーがパンクするため、時間をバラけさせるプロのテクニックです。",
+      "pattern": "^\\s*const\\s+incomingMessages\\s+=\\s+\\(data\\.messages\\s+\\|\\|\\s+\\[\\]\\)\\s+as\\s+Message\\[\\];",
+      "line": 168
     },
     {
-      "file": "scripture-habit/api_internal/routes/messages.ts",
-      "line": 43,
-      "description": "### 3. 🔄 エクスポネンシャル・バックオフによるエラー再試行戦略\n\nネットワーク瞬断時に `delays = [800, 1500, 2500]` と段階的に時間を延ばして再試行を行い、サーバーパンクを防ぐ分散回復力を実装します。"
-    },
-    {
-      "file": "scripture-habit/src/utils/unity-utils.ts",
-      "line": 15,
-      "description": "### 4. 🧮 団結度 (`unityPercentage`) リアルタイム計算\n\n「メンバー全体の何％が今日すでにノートを投稿したか」をパーセンテージで計算し、ヘッダーにプログレスバーを動的描画します。"
-    },
-    {
-      "file": "scripture-habit/api_internal/firestore-read-count.integration.test.ts",
-      "line": 38,
-      "description": "### 5. 🧪 単一グループチャットの結合テスト (`/join-group Read Count Assertion`)\n\nエミュレータ環境でグループ参加・メッセージ送信・既読数インクリメントが予期通りの最小読取回数で動くかを自動検証します。"
-    },
-    {
-      "file": "scripture-habit/tests/auth-flow.spec.ts",
-      "line": 27,
-      "description": "### 6. 🌐 Playwright による全ユーザー体験の E2E 自動検証\n\nブラウザを起動し、ログインからグループ選択・チャット表示までの全一連フローがユーザーの画面上で崩れずに動作することを最終保証します。"
+      "file": "tests/rules/firestore.rules.test.ts",
+      "description": "### 3. 🧪 Automated Rules & Security Testing\n\n#### 💡 What is happening here? (Overview)\nWe write **automated unit and integration tests against local Firebase Emulators** to continuously verify that security rules block unauthorized operations.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`assertFails` & `assertSucceeds`**:\n   - Vitest assertions that verify permission denial / grant.\n2. **CI Pipeline Integration**:\n   - Runs in GitHub Actions before code merges.\n\n---\n\n#### 💡 Pro Tip: Security Regression Testing\nAutomated rules tests ensure that adding a new feature never accidentally opens a security vulnerability in existing collections.\n\n---\n\n### 3. 🧪 セキュリティルールの自動テスト (Vitest & Emulator)\n\n#### 💡 ここで何をしているの？（全体像）\n「部外者がアクセスしたらちゃんとエラーになるか？」「本人は正しく書き込めるか？」を、**PC内の仮想データベース（エミュレータ）を使って全自動テスト**します。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`assertFails` / `assertSucceeds`**:\n   - 「アクセス拒否されるべき」「成功するべき」を機械的に判定します。\n2. **手動チェックの廃止**:\n   - `npm test` を叩くだけでセキュリティの穴がないか数秒で全自動チェックできます。\n\n---\n\n#### 💡 プロの知恵：セキュリティ事故のゼロ化\nルールを変更した際も、既存の権限設定が壊れていないか一瞬で確認できるため、情報漏洩を確実に防げます。",
+      "pattern": "^\\s*describe\\('Firestore\\s+Security\\s+Rules\\s+Unit\\s+Tests',\\s+\\(\\)\\s+=>\\s+\\{",
+      "line": 12
     }
   ]
 }

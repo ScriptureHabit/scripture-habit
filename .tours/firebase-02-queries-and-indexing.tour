@@ -1,22 +1,30 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "Firebase基礎 02: Firestore クエリ構築 (query / where / orderBy / limit)",
-  "tags": ["Firebase Fundamentals", "GroupChat", "Firestore", "Queries"],
+  "title": "Firebase 02: Queries & Indexing (query / orderBy / limit) / クエリ構築と最適化",
+  "tags": [
+    "Firebase Fundamentals",
+    "GroupChat",
+    "Firestore",
+    "Queries"
+  ],
   "steps": [
     {
-      "file": "scripture-habit/src/components/groupchat/hooks/core/use-chat-data-engine.ts",
-      "line": 187,
-      "description": "### 1. 🔍 `query()` 関数による複合クエリの組み立て\n\nFirestore では `query(collectionRef, orderBy(...), limit(...))` のようにビルダーパターンでクエリを構築します。"
+      "file": "src/components/groupchat/hooks/core/use-chat-data-engine.ts",
+      "description": "### 1. 🔍 Constructing Queries with `query()`\n\n#### 💡 What is happening here? (Overview)\nWe build a **composable query specification** to fetch only the documents that match specific criteria from Firestore.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **Builder Pattern**:\n   - `query(collectionRef, condition1, condition2, ...)` allows adding query constraints like `orderBy` and `limit` in a clear, chained fashion.\n2. **Modular SDK (Firebase v9+)**:\n   - Instead of calling methods directly on the collection reference, independent tree-shakeable functions (`query`, `orderBy`) are imported and composed.\n\n---\n\n#### 💡 Pro Tip: Server-Side vs Client-Side Filtering\nFetching all records and filtering locally in JavaScript with `array.filter()` drastically increases your Firestore read costs. Always filter on the server using `query()` constraints.\n\n---\n\n### 1. 🔍 `query()` 関数による複合クエリの組み立て\n\n#### 💡 ここで何をしているの？（全体像）\nFirestore の中から**「必要な条件に合うデータだけを絞り込んで取得する」ためのクエリ（命令書）を作成**しています。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **ビルダーパターン**:\n   - `query(コレクション参照, 条件1, 条件2, ...)` のように、カンマ区切りで条件（`orderBy` や `limit` など）を追加していく書き方です。\n2. **モジュラー構文（Firebase v9+）**:\n   - `collectionRef.orderBy()` ではなく、独立した関数 `query(...)` や `orderBy(...)` をインポートして組み合わせるツリーシェイキング対応のモダンな書き方です。\n\n---\n\n#### 💡 プロの知恵：なぜクエリで絞り込むの？\n全件データを手元に持ってきてから JavaScript の `filter()` で絞り込むと、Firestore の読み取り課金が跳ね上がります。サーバー側で `query()` を使って最初から必要なデータだけに絞るのが大原則です。",
+      "pattern": "^\\s*import\\s+\\{\\s+collection,\\s+onSnapshot,\\s+doc,\\s+Unsubscribe,\\s+query,\\s+orderBy,\\s+limit,\\s+getDocs\\s+\\}\\s+from\\s+'firebase/firestore';",
+      "line": 2
     },
     {
-      "file": "scripture-habit/src/components/groupchat/hooks/core/use-chat-data-engine.ts",
-      "line": 189,
-      "description": "### 2. 🎯 並び順の制御 (`orderBy`)\n\n`orderBy('createdAt', 'desc')` でメッセージを作成日時順（降順）に並び替えます。\nNoSQL データベースにおける複合インデックス (Composite Index) やソート順の重要性を理解するポイントです。"
+      "file": "src/components/groupchat/hooks/core/use-chat-data-engine.ts",
+      "description": "### 2. 🎯 Sorting Documents with `orderBy`\n\n#### 💡 What is happening here? (Overview)\nWe sort incoming messages **in descending order (`'desc'`) based on creation timestamp** to fetch the most recent messages first.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`orderBy('createdAt', 'desc')`**:\n   - The 1st argument specifies the target field name, and the 2nd specifies sort direction (`'asc'` or `'desc'`).\n2. **Composite Indexes**:\n   - When combining `where` equality filters with `orderBy` on different fields, Firestore requires creating a Composite Index in the Firebase Console.\n\n---\n\n#### 💡 Pro Tip: Chat Chronological Display\nIn chat apps, messages are usually queried in descending order (`desc`) to grab the latest 25 items, and then reversed locally on the client for natural top-to-bottom reading.\n\n---\n\n### 2. 🎯 並び順の制御 (`orderBy`)\n\n#### 💡 ここで何をしているの？（全体像）\n取得するメッセージを**「投稿された日時が新しい順（降順: desc）」に並び替えます**。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`orderBy('createdAt', 'desc')`**:\n   - 第1引数に対象フィールド名（`createdAt`）、第2引数にソート方向（`'asc'`=昇順、`'desc'`=降順）を指定します。\n2. **複合インデックス（Composite Index）**:\n   - `where` と `orderBy` を組み合わせる場合、Firebase コンソール上で「複合インデックス」を作成する必要があります。\n\n---\n\n#### 💡 プロの知恵：タイムスタンプソートの基本\nチャットアプリでは「最新のメッセージから取得する」ために降順（`desc`）で取得し、画面に表示する際に反転（リバース）させる手法がよく使われます。",
+      "pattern": "^\\s*orderBy\\('createdAt',\\s+'desc'\\),",
+      "line": 193
     },
     {
-      "file": "scripture-habit/src/components/groupchat/hooks/core/use-chat-data-engine.ts",
-      "line": 190,
-      "description": "### 3. 💰 コストと速度の最適化 (`limit`)\n\n全件取得を行うと転送量・読み取りコストが肥大化します。\n`limit(25)` のように件数制限を設けることで、初期表示速度の高速化と読取費用の削減を両立します。"
+      "file": "src/components/groupchat/hooks/core/use-chat-data-engine.ts",
+      "description": "### 3. 💰 Optimizing Cost & Performance with `limit`\n\n#### 💡 What is happening here? (Overview)\nWe cap the query at **a maximum of 25 messages**, speeding up initial screen loading and minimizing database read billing.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`limit(25)`**:\n   - Guarantees Firestore will return at most 25 documents.\n2. **Lightning-Fast Initial Load**:\n   - Even if a channel has 10,000 historical messages, fetching only 25 on load ensures instantaneous UI rendering.\n\n---\n\n#### 💡 Pro Tip: Pagination with Infinite Scrolling\nCombining `limit(25)` with `startAfter(lastVisibleDoc)` enables seamless infinite scrolling when the user scrolls up for older chat history.\n\n---\n\n### 3. 💰 コストと速度の最適化 (`limit`)\n\n#### 💡 ここで何をしているの？（全体像）\n一度に取得するメッセージ数を**「直近 25 件」に制限**し、アプリの起動スピード向上とデータベース費用の削減を両立します。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`limit(25)`**:\n   - 最大で25件までしか取得しないという件数上限を設定します。\n2. **初期ロードの軽量化**:\n   - 過去に10,000件の会話があっても、チャットを開いた瞬間は25件だけ読み込むため、一瞬で画面が表示されます。\n\n---\n\n#### 💡 プロの知恵：無限スクロールとのコンビネーション\n最初は `limit(25)` で最小限読み込み、ユーザーが上にスクロールした時だけ次の25件を追加で読み込む（`startAfter`）のが、商用アプリの鉄則パターンです。",
+      "pattern": "^\\s*limit\\(25\\)",
+      "line": 194
     }
   ]
 }

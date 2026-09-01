@@ -1,17 +1,24 @@
 {
   "$schema": "https://aka.ms/codetour-schema",
-  "title": "Node.js/Express基礎 05: REST API ルーティング (Router) と HTTP ステータス",
-  "tags": ["Node.js Fundamentals", "Express", "Routing", "REST API"],
+  "title": "Node.js 05: REST API Routing & HTTP Status Codes / ルーティングとHTTPステータス",
+  "tags": [
+    "Node.js Fundamentals",
+    "Express",
+    "Routing",
+    "REST API"
+  ],
   "steps": [
     {
-      "file": "scripture-habit/api_internal/routes/messages.ts",
-      "line": 10,
-      "description": "### 1. 🔀 `Router()` によるエンドポイントのモジュール化\n\n`const router = express.Router();` を生成し、機能単位（メッセージ関連、グループ関連など）でファイルを分割してルーティングを整理します。"
+      "file": "api_internal/routes/messages.ts",
+      "description": "### 1. 🔀 Modular Routing with `express.Router()`\n\n#### 💡 What is happening here? (Overview)\nDivides endpoints into **modular, feature-specific route files (messages, groups, auth)** rather than bloating a single server file.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **`const router = express.Router()`**:\n   - Instantiates an isolated mini Express routing application.\n2. **Mounting on Root**:\n   - Mounted in the main server using `app.use('/api/messages', router)`.\n\n---\n\n#### 💡 Pro Tip: RESTful URL Design\nStructuring endpoints around resources (`/api/messages`, `/api/groups`) is the international standard for REST APIs.\n\n---\n\n### 1. 🔀 `express.Router()` によるエンドポイントの分割\n\n#### 💡 ここで何をしているの？（全体像）\nサーバーのURL（エンドポイント）を1つの巨大なファイルにまとめず、**「メッセージ用」「ユーザー用」などの機能ごとにファイルを綺麗に小分け**します。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`const router = express.Router()`**:\n   - ミニチュアの Express アプリのようなものを作成します。\n2. **メインアプリへのマウント**:\n   - メインサーバー側で `app.use('/api/messages', router)` と合体させて使います。\n\n---\n\n#### 💡 プロの知恵：RESTful URL設計\n`/api/messages`, `/api/groups`, `/api/auth` のようにリソース名でURLを整理するのが REST API の世界基準です。",
+      "pattern": "^\\s*const\\s+router\\s+=\\s+express\\.Router\\(\\);",
+      "line": 10
     },
     {
-      "file": "scripture-habit/api_internal/routes/messages.ts",
-      "line": 29,
-      "description": "### 2. 📡 HTTP メソッド (GET, POST, DELETE) と ステータスコード\n\n`router.get('/bundle/:groupId', ...)` や `router.post(...)` で意図に沿った HTTP メソッドを定義し、レスポンス時には `res.status(200).json(...)` や `res.status(400)` で適切なステータスコードを返却します。"
+      "file": "api_internal/routes/messages.ts",
+      "description": "### 2. 📡 HTTP Methods & Status Code Semantics\n\n#### 💡 What is happening here? (Overview)\nUses **appropriate HTTP methods (GET / POST / DELETE) and status codes (200 / 400 / 404 / 500)** to communicate operation intent and results.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **HTTP Methods**:\n   - `GET`: Safe data retrieval.\n   - `POST`: Data creation / state mutations.\n   - `DELETE`: Resource removal.\n2. **URL Parameters (`:groupId`)**:\n   - Extracted cleanly via `req.params.groupId`.\n\n---\n\n#### 💡 Pro Tip: HTTP Status Cheat-Sheet\n- `200 OK`: Success\n- `400 Bad Request`: Client input error\n- `401 Unauthorized`: Authentication required\n- `403 Forbidden`: Authenticated, but not permitted\n- `404 Not Found`: Resource does not exist",
+      "pattern": "^\\s*router\\.get\\('/bundle/:groupId',\\s+authenticate,\\s+verifyAppCheck,\\s+async\\s+\\(req:\\s+AuthenticatedRequest,\\s+res:\\s+Response,\\s+next\\)\\s+=>\\s+\\{",
+      "line": 29
     }
   ]
 }

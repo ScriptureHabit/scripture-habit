@@ -9,212 +9,402 @@ const allNodes = [];
 const allWires = [];
 const nodeMap = new Map();
 
-// Generate file-specific bilingual description based on domain dictionaries & heuristics
+// Generate file-specific bilingual rich description based on domain dictionaries & heuristics
 function generateFileDescription(relPath, content, meta) {
   const norm = relPath.replace(/\\/g, '/').toLowerCase();
   const base = path.basename(norm, path.extname(norm));
 
-  // 1. Specific file mappings for Scripture Habit codebase
+  // 1. Specific rich mappings for Scripture Habit codebase
   const dict = {
+    'api-client': {
+      summary: {
+        ja: 'バックエンドAPIとのHTTP通信を一元管理し、認証トークンやApp Checkを自動付与するAPIクライアント',
+        en: 'Centralized HTTP client managing backend API requests with auto Firebase token and App Check injection'
+      },
+      purpose: {
+        ja: 'バックエンド（Expressサーバー）とのHTTP通信を1箇所に集約し、「全通信に認証トークンやセキュリティヘッダーを自動添付する」通信ハブです。',
+        en: 'Acts as the single gateway for all backend HTTP traffic, automatically injecting Firebase Bearer tokens and security headers.'
+      },
+      breakdown: {
+        ja: [
+          '1. `apiClient.get / post / put / delete`: fetch をラップした直感的なREST通信メソッド群',
+          '2. `getAuthToken()`: バックグラウンドで最新のFirebase認証トークンを取得してヘッダーへ自動添付',
+          '3. `ApiError`: サーバーからのエラー応答（401, 404, 500等）を構造化された共通エラー型に変換'
+        ],
+        en: [
+          '1. `apiClient.get / post / put / delete`: Intuitive wrapper methods over standard fetch for REST calls',
+          '2. `getAuthToken()`: Automatically grabs the latest Firebase ID token and injects it into headers',
+          '3. `ApiError`: Formats server errors (401, 404, 500) into standardized error instances'
+        ]
+      },
+      proTip: {
+        ja: 'コンポーネント内に生の fetch() を直書きせず、サービス層の API クライアントに集約することで、リトライやログ記録、トークン更新が全画面で自動化されます。',
+        en: 'Never write raw fetch() inside React components. Putting a central API client in the Service Layer enables unified error handling, retries, and auth refresh across the app.'
+      }
+    },
     'login-form': {
-      ja: 'ログイン入力フォームのバリデーション、セッション確立、エラー制御UI',
-      en: 'Login form input validation, session creation, and error handling UI'
+      summary: {
+        ja: 'ログイン入力フォームのバリデーション、セッション確立、エラー制御UI',
+        en: 'Login form input validation, session creation, and error handling UI'
+      },
+      purpose: {
+        ja: 'ユーザーがメール・パスワードを入力してログインするための対話画面です。入力値の即時バリデーションと視覚的フィードバックを提供します。',
+        en: 'Interactive form for user email/password login, providing instant input validation and visual feedback.'
+      },
+      breakdown: {
+        ja: [
+          '1. `handleSubmit`: 入力されたメールアドレス・パスワードを検証し、認証フックに引き渡す',
+          '2. `error`: 認証エラー（パスワード不一致や未登録など）を赤文字アラートで分かりやすく通知',
+          '3. `Button / Input`: 共通のUIコンポーネントを組み合わせてアクセシブルなフォームを構築'
+        ],
+        en: [
+          '1. `handleSubmit`: Validates email/password credentials and invokes the authentication hook',
+          '2. `error`: Renders user-friendly alert banners when login fails (e.g. invalid password)',
+          '3. `Button / Input`: Assembles reusable UI primitives for consistent styling and accessibility'
+        ]
+      },
+      proTip: {
+        ja: 'UIコンポーネント内には「見た目とユーザー操作の検知」だけを持たせ、通信や認証の重い処理はカスタムフック（useLoginForm）へ逃がすのがクリーンな設計です。',
+        en: 'Keep UI components focused solely on rendering and user events, delegating all complex state and async auth logic to custom hooks (useLoginForm).'
+      }
     },
     'use-login-form': {
-      ja: 'ログインフォームの入力値管理、Firebase Auth認証実行、エラー制御フック',
-      en: 'Manages login form input state, executes Firebase Auth, and handles errors'
+      summary: {
+        ja: 'ログインフォームの入力値管理、Firebase Auth認証実行、エラー制御フック',
+        en: 'Manages login form input state, executes Firebase Auth, and handles errors'
+      },
+      purpose: {
+        ja: 'ログイン画面のビジネスロジックを担当し、入力フォームの状態管理から Firebase Auth との認証通信までを一括制御します。',
+        en: 'Encapsulates authentication business logic, managing form state and orchestrating Firebase Auth requests.'
+      },
+      breakdown: {
+        ja: [
+          '1. `email / password` 状態: useState でフォームの入力値をリアクティブに保持',
+          '2. `handleLogin`: Firebase SDK の signInWithEmailAndPassword を呼び出しセッションを確立',
+          '3. `isLoading / error`: 通信中のスピナー表示や失敗時のエラー文言を管理'
+        ],
+        en: [
+          '1. `email / password` state: Tracks input values reactively with useState',
+          '2. `handleLogin`: Dispatches signInWithEmailAndPassword to authenticate with Firebase Auth',
+          '3. `isLoading / error`: Controls loading spinner state and error message rendering'
+        ]
+      },
+      proTip: {
+        ja: '認証が成功した後は、Auth Context が自動的に状態変化（onAuthStateChanged）を検知して画面を切り替えるため、手動の画面遷移を最小限に抑えられます。',
+        en: 'Upon successful login, global Auth Context automatically picks up onAuthStateChanged and routes the user, eliminating manual redirect spaghetti.'
+      }
     },
     'signup-form': {
-      ja: '新規ユーザー登録フォームの入力検証、アカウント初期化、Firestore初期データ作成UI',
-      en: 'User sign-up form validation, account initialization, and Firestore setup UI'
+      summary: {
+        ja: '新規ユーザー登録フォームの入力検証、アカウント初期化、Firestore初期データ作成UI',
+        en: 'User sign-up form validation, account initialization, and Firestore setup UI'
+      },
+      purpose: {
+        ja: '新規ユーザーのアカウント登録を受け付け、パスワード強度チェックや利用規約の同意確認を行います。',
+        en: 'Handles new user registration with live password strength indicators and Terms of Service consent.'
+      },
+      breakdown: {
+        ja: [
+          '1. `email / password / nickname`: 基本プロファイル項目の入力フィールド',
+          '2. `passwordStrength`: 入力されたパスワードの安全性をリアルタイムに計算してバー表示',
+          '3. `termsConsent`: 利用規約・プライバシーポリシーへの同意チェックボックス'
+        ],
+        en: [
+          '1. `email / password / nickname`: Form fields collecting initial user profile information',
+          '2. `passwordStrength`: Computes real-time password entropy with visual progress bars',
+          '3. `termsConsent`: Enforces mandatory Terms of Service & Privacy Policy checkboxes'
+        ]
+      },
+      proTip: {
+        ja: 'アカウント作成直後にユーザーが迷わないよう、初期タイムゾーンと言語設定を自動検知して初期値にセットする工夫が施されています。',
+        en: 'Auto-detecting browser timezone and language during registration prevents blank profile states on the very first session.'
+      }
     },
     'use-signup-form': {
-      ja: '新規登録のバリデーション、初期言語/タイムゾーン設定、アカウント作成フック',
-      en: 'Handles registration validation, initial locale/timezone, and account creation'
-    },
-    'user-profile-modal': {
-      ja: 'ユーザーニックネーム・アイコン・タイムゾーン設定の編集モーダルUI',
-      en: 'Modal UI for editing user nickname, avatar, and timezone settings'
-    },
-    'use-user-profile': {
-      ja: 'ユーザープロファイル情報の取得、更新バリデーション、Firestore保存フック',
-      en: 'Fetches user profile, validates changes, and saves updates to Firestore'
-    },
-    'auth-provider': {
-      ja: 'Firebase Auth状態監視（onAuthStateChanged）とグローバル認証セッションの供給',
-      en: 'Listens to Firebase Auth state changes and supplies global user session'
-    },
-    'use-auth': {
-      ja: '現在のログインユーザー情報、認証トークン、ログイン/ログアウト操作へのアクセス',
-      en: 'Provides access to current user session, auth token, and login/logout methods'
-    },
-    'forgot-password': {
-      ja: 'パスワード再設定メール送信リクエストの入力画面UI',
-      en: 'UI for requesting password reset emails'
-    },
-    'use-forgot-password': {
-      ja: 'パスワード再設定メールの送信要求とエラー通知の管理フック',
-      en: 'Manages password reset email dispatch and feedback notifications'
+      summary: {
+        ja: '新規登録のバリデーション、初期言語/タイムゾーン設定、アカウント作成フック',
+        en: 'Handles registration validation, initial locale/timezone, and account creation'
+      },
+      purpose: {
+        ja: 'アカウント登録の通信と、Firestore への初期ユーザープロファイル（ストリーク0日、タイムゾーン設定等）の自動セットアップを実行します。',
+        en: 'Executes user registration and initializes the Firestore user document (streaks, timezone, locale).'
+      },
+      breakdown: {
+        ja: [
+          '1. `createUserWithEmailAndPassword`: Firebase Auth で安全に新規ユーザーを作成',
+          '2. `setupInitialUserData`: Firestore の users/{uid} に初期プロファイルドキュメントを書き込み',
+          '3. `validateInputs`: パスワード文字数やメールアドレス形式を厳格に事前チェック'
+        ],
+        en: [
+          '1. `createUserWithEmailAndPassword`: Securely provisions new credentials via Firebase Auth',
+          '2. `setupInitialUserData`: Populates initial profile document in Firestore users/{uid}',
+          '3. `validateInputs`: Pre-validates email format and password complexity before sending requests'
+        ]
+      },
+      proTip: {
+        ja: 'Auth のユーザー作成と Firestore の初期化を非同期チェーンで確実に繋ぎ、失敗時はロールバックまたは適切な案内を出す堅牢設計です。',
+        en: 'Chaining Auth creation and Firestore document setup ensures consistent database state without orphaned auth accounts.'
+      }
     },
     'new-note': {
-      ja: '新規ノート作成・編集画面UI、文字数カウント、聖句引用タグ付け',
-      en: 'UI for creating and editing notes, character count validation, and scripture tagging'
-    },
-    'use-note-form': {
-      ja: 'ノート作成フォームの入力値・聖句選択状態・タグの管理フック',
-      en: 'Manages note form inputs, scripture selections, and category tags'
+      summary: {
+        ja: '新規ノート作成・編集画面UI、文字数カウント、聖句引用タグ付け',
+        en: 'UI for creating and editing notes, character count validation, and scripture tagging'
+      },
+      purpose: {
+        ja: 'ユーザーが聖句を読み、その感想やインサイトを記録・編集するためのメインエディタUIです。',
+        en: 'Primary editor UI for reading scriptures and writing daily reflections and insights.'
+      },
+      breakdown: {
+        ja: [
+          '1. `ScriptureSelector`: 聖書・モルモン書などの聖句と章を選択するドロップダウン',
+          '2. `ReflectionTextarea`: 学習メモ・感想を自由に入力するリッチなテキストエリア',
+          '3. `GroupSharePicker`: 作成したノートを共有したいグループチャットを選択するチェックボックス'
+        ],
+        en: [
+          '1. `ScriptureSelector`: Dropdown picker for selecting scripture books and chapters',
+          '2. `ReflectionTextarea`: Rich textarea for inputting thoughts, questions, and insights',
+          '3. `GroupSharePicker`: Checkboxes selecting group channels where the note card should be broadcasted'
+        ]
+      },
+      proTip: {
+        ja: '保存と同時に紙吹雪（Confetti）を舞わせ、グループチャットへカード投稿する「習慣化のドーパミン演出」をここから起動します。',
+        en: 'Tapping save triggers celebratory confetti and broadcasts rich cards to selected groups, reinforcing the positive habit loop.'
+      }
     },
     'use-note-submission': {
-      ja: 'ノートデータのFirestore保存、画像添付、更新完了イベントの制御フック',
-      en: 'Handles note persistence to Firestore, attachments, and submit lifecycle'
+      summary: {
+        ja: 'ノートデータのFirestore保存、画像添付、更新完了イベントの制御フック',
+        en: 'Handles note persistence to Firestore, attachments, and submit lifecycle'
+      },
+      purpose: {
+        ja: 'ノート作成時の検証・検索用トークン生成・APIへの送信・カレンダー草の更新・紙吹雪演出を一連のパイプラインとして統括します。',
+        en: 'Coordinates validation, search token generation, API submission, streak heatmap update, and celebration feedback.'
+      },
+      breakdown: {
+        ja: [
+          '1. `handleSubmit`: ノート内容をバックエンドの /api/groups/post-note に POST 送信',
+          '2. `triggerConfetti`: 投稿成功時に canvas-confetti を発火させて達成感を最大化',
+          '3. `optimisticUpdate`: カレンダーやダッシュボードのストリーク表示を即座にインクリメント'
+        ],
+        en: [
+          '1. `handleSubmit`: Dispatches note payload to backend /api/groups/post-note',
+          '2. `triggerConfetti`: Fires canvas-confetti upon success to reward habit completion',
+          '3. `optimisticUpdate`: Optimistically bumps streak counters and calendar heatmaps immediately'
+        ]
+      },
+      proTip: {
+        ja: 'トランザクション処理により、個人ノート保存・グループ共有・連続記録加算の3つが「全部成功するか全部元に戻るか」のACID特性を保証します。',
+        en: 'Uses atomic database transactions ensuring private notes, group broadcasts, and streak calculations succeed or fail together.'
+      }
     },
     'use-ai-generator': {
-      ja: 'Gemini AIを活用した聖句の自動要約・振り返り質問・インサイト生成フック',
-      en: 'Generates AI summaries, reflection questions, and insights via Gemini AI'
-    },
-    'note-logic': {
-      ja: 'ノートデータの正規化、検索用トークン生成、Firestore保存データ構造の組み立て',
-      en: 'Normalizes note data, generates search tokens, and constructs Firestore payload'
-    },
-    'my-notes': {
-      ja: '保存済みノート一覧画面UI、聖句別・日付別フィルタリング、全文検索',
-      en: 'List view for saved user notes with scripture/date filtering and full-text search'
-    },
-    'use-my-notes': {
-      ja: 'ユーザーのノート一覧の非同期取得、ページネーション、検索クエリ管理フック',
-      en: 'Asynchronously fetches user notes, manages pagination, and applies search filters'
-    },
-    'note-display': {
-      ja: 'ノート詳細ビュー、リッチテキスト/Markdown表示、操作メニューUI',
-      en: 'Detailed note view with Markdown rendering and action menus'
-    },
-    'note-card': {
-      ja: '一覧画面用のコンパクトなノートカード表示コンポーネント',
-      en: 'Compact card component for displaying note summaries in lists'
+      summary: {
+        ja: 'Gemini AIを活用した聖句の自動要約・振り返り質問・インサイト生成フック',
+        en: 'Generates AI summaries, reflection questions, and insights via Gemini AI'
+      },
+      purpose: {
+        ja: '選択された聖句に対して、Google Gemini AI が要約・歴史的背景・振り返りの問いかけをリアルタイム生成してユーザーの深い思索を助けます。',
+        en: 'Leverages Google Gemini AI to generate contextual summaries, historical backgrounds, and reflection questions for scriptures.'
+      },
+      breakdown: {
+        ja: [
+          '1. `generateInsight`: 聖句名をパラメータにしてサーバーサイドのAIエンドポイントを呼び出し',
+          '2. `streaming / loading`: AI の生成アニメーションとローディング状態を滑らかに制御',
+          '3. `applyToNote`: 生成されたAIの問いかけや要約を1タップでノート本文に挿入'
+        ],
+        en: [
+          '1. `generateInsight`: Calls backend Gemini AI endpoint passing selected scripture chapter',
+          '2. `streaming / loading`: Manages smooth loading states and typing indicator animations',
+          '3. `applyToNote`: Injects AI generated questions into note editor with a single tap'
+        ]
+      },
+      proTip: {
+        ja: 'AI API キーをクライアントに露出させず、バックエンドを経由してレートリミットをかけることで安全かつコスト効率よく運用されています。',
+        en: 'API keys remain safely hidden on the server with strict rate limiting, protecting against quota abuse.'
+      }
     },
     'dashboard': {
-      ja: '習慣継続ストリーク、今日の進捗、未読通知、マイルストーンの総合ダッシュボードUI',
-      en: 'Unified dashboard UI for habit streaks, daily progress, notifications, and milestones'
+      summary: {
+        ja: '習慣継続ストリーク、今日の進捗、未読通知、マイルストーンの総合ダッシュボードUI',
+        en: 'Unified dashboard UI for habit streaks, daily progress, notifications, and milestones'
+      },
+      purpose: {
+        ja: 'ユーザーがアプリを開いて最初に目にするメイン画面です。今日の学習状況、現在のストリーク日数、所属グループの団結力を一望できます。',
+        en: 'Central hub greeting the user, displaying daily streak counters, study calendar heatmaps, and group unity scores.'
+      },
+      breakdown: {
+        ja: [
+          '1. `StreakCard`: 連続学習日数（Flame Badge）と自己ベスト記録を視覚的に表示',
+          '2. `StudyCalendar`: GitHubの草のような日々の学習活動ヒートマップを描画',
+          '3. `GroupRoster`: 参加中グループの今日の団結力（Unity %）をカード一覧で表示'
+        ],
+        en: [
+          '1. `StreakCard`: Renders consecutive study days with fire badges and personal best records',
+          '2. `StudyCalendar`: Visualizes GitHub-style activity heatmaps of daily scripture reading',
+          '3. `GroupRoster`: Displays cards showing real-time group unity scores and recent activity'
+        ]
+      },
+      proTip: {
+        ja: '毎朝のモチベーションを高めるため、今日まだ学習していない場合は目立つ「今日の聖句を読む」アクションボタンが上部に配置されます。',
+        en: 'Contextually displays prominent Call-to-Action buttons when study has not been recorded for the current day.'
+      }
     },
     'use-today': {
-      ja: '今日の日付、ストリーク達成判定、日次リセット状態の管理フック',
-      en: 'Manages today\'s progress, consecutive streak calculation, and midnight reset'
-    },
-    'time-capsule': {
-      ja: '未来の自分へのメッセージ暗号化、開封日タイマー設定、タイムカプセル作成UI',
-      en: 'UI for composing encrypted letters to future self with unlock timers'
-    },
-    'use-time-capsule': {
-      ja: 'タイムカプセルの作成・暗号化・Firestore保存・開封予定日管理フック',
-      en: 'Handles encryption, Firestore storage, and unlock scheduling for time capsules'
-    },
-    'letter-box': {
-      ja: '開封可能になった過去からの手紙一覧とレター開封モーダルUI',
-      en: 'Inbox UI for viewing and unlocking available time capsule letters'
-    },
-    'use-letter-availability': {
-      ja: 'タイムカプセルの開封予定日と現在日時を照合し、開封可能状態をリアルタイム判定',
-      en: 'Compares capsule unlock dates with current time to determine availability'
-    },
-    'milestone': {
-      ja: '習慣継続マイルストーン達成時の祝賀演出とカプセル報酬表示UI',
-      en: 'Celebration screen and time-capsule rewards upon reaching habit milestones'
-    },
-    'use-milestone-capsule': {
-      ja: 'マイルストーン達成判定と特別タイムカプセルのアンロック処理フック',
-      en: 'Checks milestone thresholds and unlocks exclusive milestone capsules'
-    },
-    'recap-modal': {
-      ja: '月間・年間の習慣達成率、ハイライトノートの振り返りスライドショーモーダル',
-      en: 'Modal presenting monthly/annual habit recap statistics and highlighted notes'
-    },
-    'use-recap': {
-      ja: '月間習慣データ・読了聖句数・投稿ノートの集計とリキャップスライド生成フック',
-      en: 'Aggregates monthly habit statistics, scripture counts, and recap slide data'
+      summary: {
+        ja: '今日の日付、ストリーク達成判定、日次リセット状態の管理フック',
+        en: 'Manages today\'s progress, consecutive streak calculation, and midnight reset'
+      },
+      purpose: {
+        ja: 'ユーザーのローカルタイムゾーンに基づいて「今日」「昨日」を正確に判定し、日付が変わった瞬間に自動リセットを行います。',
+        en: 'Calculates localized calendar dates and triggers automatic daily state resets at midnight.'
+      },
+      breakdown: {
+        ja: [
+          '1. `isStudiedToday`: studiedDates 配列に今日の日付文字列が存在するかを高速判定',
+          '2. `todayString`: ユーザーの timeZone に合わせた YYYY-MM-DD 文字列を生成',
+          '3. `midnightTimer`: 日付が変わった瞬間に画面を再描画して翌日の未達成状態へ移行'
+        ],
+        en: [
+          '1. `isStudiedToday`: Rapidly checks if today\'s date string exists in the studiedDates array',
+          '2. `todayString`: Formats YYYY-MM-DD strings localized to the user\'s configured timeZone',
+          '3. `midnightTimer`: Automatically triggers calendar refresh when crossing midnight'
+        ]
+      },
+      proTip: {
+        ja: '日本時間（UTC+9）とニューヨーク時間（UTC-5）など、時差による「ストリーク途切れバグ」を防ぐためにサーバーとクライアントでタイムゾーン計算を完全一致させています。',
+        en: 'Standardizing timezone calculations between client and server eliminates streak desync bugs across international time boundaries.'
+      }
     },
     'group-chat': {
-      ja: 'リアルタイムグループチャット画面UI、多言語メッセージ送受信、未読管理',
-      en: 'Real-time group chat UI with multilingual messaging and unread markers'
+      summary: {
+        ja: 'リアルタイムグループチャット画面UI、多言語メッセージ送受信、未読管理',
+        en: 'Real-time group chat UI with multilingual messaging and unread markers'
+      },
+      purpose: {
+        ja: 'グループメンバー同士が励まし合い、読んだ感想をリアルタイムに共有・議論するためのチャットルームUIです。',
+        en: 'Real-time interactive chatroom for group members to share scripture reflections and encourage each other.'
+      },
+      breakdown: {
+        ja: [
+          '1. `MessageList`: バーチャルスクロールと React.memo で最適化された高速メッセージ一覧',
+          '2. `ChatInput`: テキスト入力、返信（ReplyTo）、画像添付、絵文字ピッカーを統合',
+          '3. `UnreadAnchor`: 前回の退出以降に届いた新着メッセージの位置に「ここから未読」バーを表示'
+        ],
+        en: [
+          '1. `MessageList`: High-performance message list optimized with memoization and smooth scrolling',
+          '2. `ChatInput`: Integrated input bar supporting text, threaded replies, image attachments, and emojis',
+          '3. `UnreadAnchor`: Pins an unread dividing line where the user left off during their last session'
+        ]
+      },
+      proTip: {
+        ja: '外国語で投稿されたメッセージにはワンタップ「翻訳」ボタンが表示され、言語の壁を越えた国際的な習慣コミュニティを実現しています。',
+        en: 'Provides instant on-demand translation buttons for foreign messages, enabling seamless multilingual community chats.'
+      }
     },
     'chat-provider': {
-      ja: 'グループチャットのリアルタイムFirestoreリスナーとメッセージ状態の供給',
-      en: 'Provides real-time Firestore chat subscription and message state'
+      summary: {
+        ja: 'グループチャットのリアルタイムFirestoreリスナーとメッセージ状態の供給',
+        en: 'Provides real-time Firestore chat subscription and message state'
+      },
+      purpose: {
+        ja: 'Firestore の onSnapshot リスナーを確立し、チャットの全メッセージ・未読数・参加メンバー状態を子コンポーネント全体へ配信します。',
+        en: 'Establishes real-time Firestore onSnapshot listeners and distributes message stream state to all chat components.'
+      },
+      breakdown: {
+        ja: [
+          '1. `onSnapshot Listener`: 新着メッセージが届くたびに差分（docChanges）だけを効率的に受信',
+          '2. `useReducer Engine`: メッセージ追加・編集・削除・楽観的UIロールバックを一元管理',
+          '3. `Cleanup Function`: チャット画面を閉じた瞬間に通信を切断し、不要なクラウド課金を完全阻止'
+        ],
+        en: [
+          '1. `onSnapshot Listener`: Subscribes to collection updates, receiving minimal diff changes',
+          '2. `useReducer Engine`: Manages message lifecycle: additions, edits, deletions, and optimistic rollbacks',
+          '3. `Cleanup Function`: Unsubscribes active stream listeners immediately on unmount to prevent memory leaks'
+        ]
+      },
+      proTip: {
+        ja: 'Context と Reducer を組み合わせることで、深い階層にある子コンポーネントへバケツリレー（Props Drilling）せずにアクションを dispatch できます。',
+        en: 'Pairing Context with useReducer completely eliminates Props Drilling, allowing any child button to dispatch chat actions directly.'
+      }
     },
-    'use-group-translation': {
-      ja: '多言語メンバー間チャットのリアルタイム自動翻訳とキャッシュ管理フック',
-      en: 'Manages real-time translation for group messages with local caching'
-    },
-    'use-group-actions': {
-      ja: 'グループ参加・退出・メンバー権限変更などのAPIアクション制御フック',
-      en: 'Handles group join, leave, and member permission management actions'
-    },
-    'group-service': {
-      ja: 'グループ関連のFirestoreトランザクション（作成・メンバー管理・招待コード検証）処理',
-      en: 'Handles Firestore operations for group creation, members, and invite verification'
-    },
-    'invite-redirect': {
-      ja: 'グループ招待URLのパラメータ解析、トークン検証、ワンクリック参加処理コンポーネント',
-      en: 'Parses invite URLs, validates tokens, and executes 1-click group joining'
-    },
-    'use-unity-score': {
-      ja: 'グループ全員の今日の習慣達成率から団結力（Unity Score）をリアルタイム算出',
-      en: 'Calculates real-time group Unity Score from members daily habit completions'
-    },
-    'unity-modal': {
-      ja: 'グループメンバー全員の習慣達成状況と団結力スコアを表示するモーダルUI',
-      en: 'Modal displaying member habit progress and collective Unity Score'
+    'auth-provider': {
+      summary: {
+        ja: 'Firebase Auth状態監視（onAuthStateChanged）とグローバル認証セッションの供給',
+        en: 'Listens to Firebase Auth state changes and supplies global user session'
+      },
+      purpose: {
+        ja: 'アプリ全体の「ログイン中・ログアウト中・認証確認中（ローディング）」の状態を監視し、全画面に安全な認証情報を提供します。',
+        en: 'Monitors global authentication status (signed-in, signed-out, authenticating) and protects private routes.'
+      },
+      breakdown: {
+        ja: [
+          '1. `onAuthStateChanged`: ページリロード時もローカルストレージのトークンを復元して自動ログイン',
+          '2. `currentUser / userData`: ログイン中のユーザーIDと Firestore のプロファイル情報を保持',
+          '3. `isInitialized`: 認証チェックが完了するまで画面のチラつき（ローディングフラッシュ）を防止'
+        ],
+        en: [
+          '1. `onAuthStateChanged`: Listens for credential changes and auto-restores sessions on page reload',
+          '2. `currentUser / userData`: Exposes active user credentials and Firestore profile state',
+          '3. `isInitialized`: Blocks route rendering until authentication initialization finishes, eliminating UI flickers'
+        ]
+      },
+      proTip: {
+        ja: '認証チェックが完了する前にプライベート画面を描画しないよう `if (!isInitialized) return <LoadingSpinner />` を挟むのがセキュアなSPAの鉄則です。',
+        en: 'Guarding routes with `if (!isInitialized) return <LoadingSpinner />` prevents flashing unauthenticated content to logged-in users.'
+      }
     },
     'app': {
-      ja: '全画面ルーティング、遅延コンポーネントロード、グローバルProvider階層の統括構成',
-      en: 'Configures client-side routes, lazy-loading, and global provider hierarchy'
-    },
-    'main': {
-      ja: 'React 19 Rootのマウント、Service Workerの初期登録エントリポイント',
-      en: 'Mounts React 19 root and registers Service Worker'
+      summary: {
+        ja: '全画面ルーティング、遅延コンポーネントロード、グローバルProvider階層の統括構成',
+        en: 'Configures client-side routes, lazy-loading, and global provider hierarchy'
+      },
+      purpose: {
+        ja: 'アプリケーションの最上位ルートコンポーネントです。認証・多言語・テーマなどの Provider を正しい順序で重ね、URL ごとの画面描画をルーティングします。',
+        en: 'Top-level root component configuring provider hierarchies (Auth, Theme, i18n) and client-side page routing.'
+      },
+      breakdown: {
+        ja: [
+          '1. `Provider Nesting`: LanguageProvider → AuthProvider → NotificationProvider の順で依存関係を解決',
+          '2. `React.lazy / Suspense`: 各画面（Dashboard, GroupChat, MyNotes等）をコード分割して初回表示を超高速化',
+          '3. `Route Guarding`: 未ログインユーザーをログイン画面へ自動リダイレクトする保護ルート設定'
+        ],
+        en: [
+          '1. `Provider Nesting`: Wraps global contexts in proper dependency order (Language → Auth → Notifications)',
+          '2. `React.lazy / Suspense`: Code-splits pages to minimize initial bundle size and boost page speed',
+          '3. `Route Guarding`: Protects private application routes from unauthenticated access'
+        ]
+      },
+      proTip: {
+        ja: 'Provider の階層順序は重要です。例えば AuthProvider の中で多言語テキストを使うなら、LanguageProvider をより外側に配置する必要があります。',
+        en: 'Provider hierarchy matters: Always wrap low-level context providers (i18n, Theme) outside high-level ones (Auth, Chat).'
+      }
     },
     'firebase': {
-      ja: 'Firebase Client SDK（Auth, Firestore, Analytics）の初期化とインスタンスのエクスポート',
-      en: 'Initializes and exports Firebase Client SDK (Auth, Firestore, Analytics)'
-    },
-    'firebase-config': {
-      ja: '環境変数からのFirebaseプロジェクト設定ロードと初期構成オブジェクト',
-      en: 'Loads Firebase project configuration and environment variables'
-    },
-    'languages': {
-      ja: '多言語（日本語・英語など）切り替えドロップダウン・UIセレクター',
-      en: 'Language selector dropdown and locale switcher UI'
-    },
-    'use-language': {
-      ja: '現在の言語設定、翻訳辞書（t関数）、言語切り替えロジックを提供するフック',
-      en: 'Provides active language, translation helper function, and locale switcher'
-    },
-    'language-provider': {
-      ja: 'アプリ全体にi18n翻訳コンテキストと現在のロケール状態を供給するProvider',
-      en: 'Supplies global i18n translation context and active locale to the app'
-    },
-    'pwa-update-handler': {
-      ja: 'Service Workerの新規バージョン検知とPWAアプリアップデート催促バナーUI',
-      en: 'Detects Service Worker updates and displays PWA refresh banner'
-    },
-    'seo-manager': {
-      ja: '動的OGPメタタグ、ページタイトル、Twitter Cardメタデータの動的生成・更新',
-      en: 'Dynamically updates page title, OpenGraph tags, and Twitter Card metadata'
-    },
-    'cookie-consent': {
-      ja: 'Cookie利用同意バナーの表示とユーザー同意設定のローカル保存',
-      en: 'Displays Cookie consent banner and persists user preference'
-    },
-    'sidebar': {
-      ja: 'アプリ全体のグローバルナビゲーション、画面遷移リンク、ユーザー情報表示サイドバー',
-      en: 'Global navigation sidebar with page links and user profile status'
-    },
-    'privacy-policy': {
-      ja: 'プライバシーポリシー・個人情報保護方針の閲覧画面コンポーネント',
-      en: 'Privacy policy and data protection terms view component'
-    },
-    'terms-of-service': {
-      ja: '利用規約・サービス利用約款の閲覧画面コンポーネント',
-      en: 'Terms of Service and legal disclosure view component'
+      summary: {
+        ja: 'Firebase Client SDK（Auth, Firestore, Analytics）の初期化とインスタンスのエクスポート',
+        en: 'Initializes and exports Firebase Client SDK (Auth, Firestore, Analytics)'
+      },
+      purpose: {
+        ja: 'Firebase の各種クラウドサービス（認証・データベース・キャッシュ設定）を一括初期化し、アプリ全体で共有するシングルトン接続を提供します。',
+        en: 'Initializes Firebase Cloud SDK services and exports shared singleton instances (auth, db, analytics).'
+      },
+      breakdown: {
+        ja: [
+          '1. `initializeApp`: 環境変数（VITE_FIREBASE_*）を読み込んで Firebase プロジェクトに接続',
+          '2. `getFirestore / initializeFirestore`: オフラインキャッシュ（IndexedDB永続化）を有効化',
+          '3. `getAuth`: 認証インスタンスをエクスポートし、セキュリティトークンを管理'
+        ],
+        en: [
+          '1. `initializeApp`: Connects to Firebase project using environment variables (VITE_FIREBASE_*)',
+          '2. `initializeFirestore`: Configures local offline IndexedDB persistence for lightning-fast reads',
+          '3. `getAuth`: Exports shared Authentication instance for user credential management'
+        ]
+      },
+      proTip: {
+        ja: 'Firestore の初期化で `enableIndexedDbPersistence` を設定しておくことで、地下鉄などのオフライン環境でも過去のノートを読み込めるようになります。',
+        en: 'Enabling IndexedDB offline persistence ensures users can read scriptures and notes even without an active internet connection.'
+      }
     }
   };
 
@@ -225,49 +415,170 @@ function generateFileDescription(relPath, content, meta) {
     }
   }
 
-  // 2. Fallback heuristic pattern matcher
-  if (base.startsWith('use-')) {
-    const featureName = base.replace(/^use-/, '').replace(/-/g, ' ');
-    return {
-      ja: `「${featureName}」に関する状態管理と操作ロジックを提供するカスタムフック`,
-      en: `Custom hook providing reactive state and handlers for ${featureName}`
-    };
-  }
+  // 2. Intelligent Layer-aware Fallback Generator
+  const layer = meta ? meta.layer : 1;
+  const featureName = base.replace(/^(use-|comp-)/, '').replace(/-?(modal|card|form|provider|service|view|engine|logic)$/, '').replace(/-/g, ' ');
 
-  if (base.endsWith('-modal') || base.endsWith('modal')) {
-    const featureName = base.replace(/-?modal$/, '').replace(/-/g, ' ');
-    return {
-      ja: `「${featureName}」の操作・確認ダイアログを表示するモーダルUIコンポーネント`,
-      en: `Modal dialog component for ${featureName} actions`
-    };
-  }
+  const layerTemplates = {
+    0: {
+      summary: {
+        ja: `「${featureName}」のルート設定とアプリケーション起動エントリポイント`,
+        en: `Root entry point and configuration bootstrapping for ${featureName}`
+      },
+      purpose: {
+        ja: `アプリケーションの土台として、グローバルな状態配信・ルーティング・初期化処理を司る起点モジュールです。`,
+        en: `Foundation module orchestrating global providers, routing pipelines, and application bootstrapping.`
+      },
+      breakdown: {
+        ja: [
+          `1. 初期化ロジック: アプリ起動時に必要な設定を確実にロード`,
+          `2. ルーティング & 分岐: URL や認証状態に応じた適切な画面の出し分け`,
+          `3. コンテキスト供給: 下位の全コンポーネントで利用可能な基盤を提供`
+        ],
+        en: [
+          `1. Initialization: Safely bootstraps application configuration on startup`,
+          `2. Routing & Branching: Directs users to correct views based on authentication state`,
+          `3. Global Contexts: Supplies shared services down to all nested components`
+        ]
+      },
+      proTip: {
+        ja: `ルート層をシンプルに保つことで、アプリ全体の起動パフォーマンスが向上し、予期せぬ初期化バグを防げます。`,
+        en: `Keeping the entry layer lightweight improves initial load times and eliminates startup race conditions.`
+      }
+    },
+    1: {
+      summary: {
+        ja: `「${featureName}」に関する画面表示とユーザー操作を受け付けるUIコンポーネント`,
+        en: `UI component handling screen rendering and user interactions for ${featureName}`
+      },
+      purpose: {
+        ja: `ユーザーに対して分かりやすいビジュアルを提供し、ボタンクリックやフォーム入力などの操作を検知して下位フックへ伝達します。`,
+        en: `Presents intuitive visual interfaces to users, capturing user gestures and forwarding actions to underlying hooks.`
+      },
+      breakdown: {
+        ja: [
+          `1. 視覚的UIレンダリング: テーマや言語設定に応じたレスポンシブな画面描画`,
+          `2. ユーザーイベント処理: onClick や onChange などの操作をスマートにハンドル`,
+          `3. 状態の視覚化: ローディングスピナーやエラーアラートの適切な表示`
+        ],
+        en: [
+          `1. Visual Rendering: Renders responsive interfaces matching active themes and locales`,
+          `2. User Event Handling: Captures onClick/onChange inputs and triggers handlers`,
+          `3. State Visualization: Contextually displays loading spinners and error alerts`
+        ]
+      },
+      proTip: {
+        ja: `UIコンポーネントの中に通信やデータ変換のコードを直接書かず、カスタムフックに任せることで、デザイン変更に強いコードになります。`,
+        en: `Separating UI presentation from data fetching ensures component styling can be refactored without breaking business logic.`
+      }
+    },
+    2: {
+      summary: {
+        ja: `「${featureName}」の状態管理・副作用・ビジネスロジックをカプセル化するカスタムフック`,
+        en: `Custom hook encapsulating state management, side effects, and business logic for ${featureName}`
+      },
+      purpose: {
+        ja: `画面（UI）と通信（API）の間に立ち、リアクティブな状態管理やバリデーション、データ整形を担当する頭脳の役割を果たします。`,
+        en: `Serves as the brains between UI and APIs, managing reactive state, validations, and data transformations.`
+      },
+      breakdown: {
+        ja: [
+          `1. リアクティブ状態管理: useState や useReducer で画面に必要なデータをリアルタイム保持`,
+          `2. 非同期アクションハンドラ: API 呼び出しや Firestore 更新などの非同期処理を実行`,
+          `3. クリーンアップ & ライフサイクル: useEffect でリスナーの登録と確実な接続解除を制御`
+        ],
+        en: [
+          `1. Reactive State: Manages component state using useState and useReducer`,
+          `2. Async Action Handlers: Dispatches network requests and database updates`,
+          `3. Lifecycle Management: Uses useEffect for automated setup and teardown`
+        ]
+      },
+      proTip: {
+        ja: `カスタムフックにロジックを抽出することで、同一の機能を別画面や別モーダルでも再利用できるようになります。`,
+        en: `Extracting logic into custom hooks allows the same business logic to be shared across multiple screens and modals.`
+      }
+    },
+    3: {
+      summary: {
+        ja: `「${featureName}」のデータ型スキーマ定義とグローバル状態コンテキスト`,
+        en: `Data schema definitions and global context provider for ${featureName}`
+      },
+      purpose: {
+        ja: `アプリ全体でやり取りされるデータの型（TypeScriptインターフェース）やバリデーション規則を定義し、型安全な状態配信を担います。`,
+        en: `Defines TypeScript types, validation rules, and context providers for strict type-safe state distribution.`
+      },
+      breakdown: {
+        ja: [
+          `1. スキーマ & 型定義: ドキュメント構造やアクション型の厳格な型付け`,
+          `2. Context API: 状態をアプリ全体へバケツリレーなしで届けるプロバイダー`,
+          `3. 入力バリデーション: Zod や型ガードによる実行時データの検証`
+        ],
+        en: [
+          `1. Type Schemas: Strongly types document structures and action objects`,
+          `2. Context API: Supplies global state to nested trees without props drilling`,
+          `3. Runtime Validation: Enforces schema correctness using Zod or custom type guards`
+        ]
+      },
+      proTip: {
+        ja: `型定義を中央集権化（types/）しておくことで、データベースの仕様変更があった際も TypeScript が修正箇所をすべて教えてくれます。`,
+        en: `Centralizing type definitions ensures TypeScript immediately flags every file needing updates when data schemas change.`
+      }
+    },
+    4: {
+      summary: {
+        ja: `「${featureName}」に関するバックエンド通信・トランザクション・外部API連携サービス`,
+        en: `Backend service handling transactions, networking, and external APIs for ${featureName}`
+      },
+      purpose: {
+        ja: `ネットワーク通信や複雑なデータ集計・トランザクション処理を実行し、クライアントへ安全にデータを返す役割を担います。`,
+        en: `Executes database transactions, API calls, and computational workflows, returning structured data.`
+      },
+      breakdown: {
+        ja: [
+          `1. トランザクション制御: Firestore runTransaction 等によるデータ整合性の保護`,
+          `2. セキュリティ & 認可: トークン検証や権限チェックによる不正アクセスの遮断`,
+          `3. レスポンス正規化: 生データをフロントエンドが扱いやすい形式へ整形`
+        ],
+        en: [
+          `1. Atomic Transactions: Guarantees ACID database consistency via transactions`,
+          `2. Security & Auth: Enforces token validation and permission access control`,
+          `3. Response Normalization: Formats raw data into clean frontend payloads`
+        ]
+      },
+      proTip: {
+        ja: `サービス層を独立させることで、フロントエンドのUI変更に影響されることなく、バックエンドの単体テスト（Vitest）を高速に実行できます。`,
+        en: `Isolating the service layer enables lightning-fast automated unit testing independent of React UI rendering.`
+      }
+    },
+    5: {
+      summary: {
+        ja: `「${featureName}」のインフラ構成・データベース永続化・セキュリティルール`,
+        en: `Infrastructure setup, database persistence, and security rules for ${featureName}`
+      },
+      purpose: {
+        ja: `クラウドインフラ（Firestore, Firebase Auth, Cloud Storage）との物理的な接続やセキュリティ境界を管理します。`,
+        en: `Manages physical connections, offline storage caches, and security boundaries with cloud infrastructure.`
+      },
+      breakdown: {
+        ja: [
+          `1. SDK インスタンス管理: 初期化とシングルトン接続の維持`,
+          `2. オフライン永続化: IndexedDB を活用したローカルキャッシュの制御`,
+          `3. セキュリティルール: 悪意あるアクセスからデータベースを保護`
+        ],
+        en: [
+          `1. SDK Instance Lifecycle: Maintains shared singleton connections to cloud services`,
+          `2. Offline Storage: Configures IndexedDB caching for offline resilience`,
+          `3. Security Rules: Protects database collections against unauthorized access`
+        ]
+      },
+      proTip: {
+        ja: `セキュリティルールを単体テスト（@firebase/rules-unit-testing）で自動検証しておくことで、本番環境での情報漏洩を確実に防止できます。`,
+        en: `Automating Firestore Security Rules tests in CI/CD ensures private collections can never be exposed accidentally.`
+      }
+    }
+  };
 
-  if (base.endsWith('-card') || base.endsWith('card')) {
-    const featureName = base.replace(/-?card$/, '').replace(/-/g, ' ');
-    return {
-      ja: `「${featureName}」の情報をコンパクトに表示するカードコンポーネント`,
-      en: `Card component displaying ${featureName} summary`
-    };
-  }
-
-  if (norm.includes('/utils/') || norm.includes('/lib/')) {
-    const featureName = base.replace(/-/g, ' ');
-    return {
-      ja: `「${featureName}」に関する共通ユーティリティ・フォーマット・ヘルパー関数群`,
-      en: `Helper utilities and formatting functions for ${featureName}`
-    };
-  }
-
-  if (norm.includes('/types/')) {
-    const featureName = base.replace(/-/g, ' ');
-    return {
-      ja: `「${featureName}」に関するTypeScript型定義・データスキーマ`,
-      en: `TypeScript type definitions and data schema for ${featureName}`
-    };
-  }
-
-  // Fallback to layer category role
-  return meta.role;
+  return layerTemplates[layer] || layerTemplates[1];
 }
 
 // Classify layer / column for auto-layout
@@ -1640,7 +1951,26 @@ const html = `<!DOCTYPE html>
       document.getElementById('card-loc').innerText = node.lineCount;
       document.getElementById('card-out').innerText = conns.out.length;
       document.getElementById('card-in').innerText = conns.in.length;
-      document.getElementById('card-doc').innerText = (typeof node.doc === 'object' ? node.doc[currentLang] : node.doc) || (typeof node.role === 'object' ? node.role[currentLang] : node.role);
+
+      const docObj = typeof node.doc === 'object' ? node.doc : {};
+      const purpose = docObj.purpose ? docObj.purpose[currentLang] : (docObj.summary ? docObj.summary[currentLang] : '');
+      const breakdown = docObj.breakdown ? (docObj.breakdown[currentLang] || []).map(b => '<div style="padding: 2px 0;">' + b + '</div>').join('') : '';
+      const proTip = docObj.proTip ? docObj.proTip[currentLang] : '';
+
+      let docHtml = '';
+      if (purpose) {
+        docHtml += '<div style="margin-bottom: 6px; font-weight: 600; color: #f8fafc;">💡 ' + purpose + '</div>';
+      }
+      if (breakdown) {
+        docHtml += '<div style="margin-bottom: 6px; padding: 6px; background: rgba(56, 189, 248, 0.06); border-radius: 6px; border-left: 2px solid #38bdf8; font-size: 0.72rem; color: #cbd5e1;">' + breakdown + '</div>';
+      }
+      if (proTip) {
+        docHtml += '<div style="font-size: 0.7rem; color: #ec4899; background: rgba(236, 72, 153, 0.08); padding: 4px 6px; border-radius: 4px; margin-bottom: 6px;">💡 <b>Pro Tip:</b> ' + proTip + '</div>';
+      }
+      if (!docHtml) {
+        docHtml = (typeof node.role === 'object' ? node.role[currentLang] : node.role) || '';
+      }
+      document.getElementById('card-doc').innerHTML = docHtml;
 
       const list = document.getElementById('card-connections');
       list.innerHTML = '';
@@ -1764,7 +2094,27 @@ const html = `<!DOCTYPE html>
       const badge = document.getElementById('tour-curr-layer');
       badge.innerText = typeof step.category === 'object' ? step.category[currentLang] : step.category;
       badge.style.background = step.color;
-      document.getElementById('tour-curr-doc').innerText = (typeof step.doc === 'object' ? step.doc[currentLang] : step.doc) || (typeof step.role === 'object' ? step.role[currentLang] : step.role);
+
+      const docObj = typeof step.doc === 'object' ? step.doc : {};
+      const purpose = docObj.purpose ? docObj.purpose[currentLang] : (docObj.summary ? docObj.summary[currentLang] : '');
+      const breakdown = docObj.breakdown ? (docObj.breakdown[currentLang] || []).map(b => '<div style="padding: 2px 0;">' + b + '</div>').join('') : '';
+      const proTip = docObj.proTip ? docObj.proTip[currentLang] : '';
+
+      let docHtml = '';
+      if (purpose) {
+        docHtml += '<div style="margin-bottom: 6px; font-weight: 600; color: #f8fafc;">💡 ' + purpose + '</div>';
+      }
+      if (breakdown) {
+        docHtml += '<div style="margin-bottom: 6px; padding: 6px; background: rgba(56, 189, 248, 0.06); border-radius: 6px; border-left: 2px solid #38bdf8; font-size: 0.72rem; color: #cbd5e1;">' + breakdown + '</div>';
+      }
+      if (proTip) {
+        docHtml += '<div style="font-size: 0.7rem; color: #ec4899; background: rgba(236, 72, 153, 0.08); padding: 4px 6px; border-radius: 4px; margin-bottom: 6px;">💡 <b>Pro Tip:</b> ' + proTip + '</div>';
+      }
+      if (!docHtml) {
+        docHtml = (typeof step.role === 'object' ? step.role[currentLang] : step.role) || '';
+      }
+      document.getElementById('tour-curr-doc').innerHTML = docHtml;
+
       document.getElementById('tour-in-summary').innerText = step.inSummary || t.inNone;
       document.getElementById('tour-out-summary').innerText = step.outSummary || t.outNone;
 
@@ -2042,6 +2392,159 @@ fs.writeFileSync(path.join(docsPublic, 'architecture-tour.html'), html, 'utf8');
 
 console.log(`✅ Generated Bilingual Architecture Tour with ${allNodes.length} nodes, ${allWires.length} wires, and ${Object.keys(prebuiltTours).length} preset tours!`);
 
+// Generate 24 VS Code CodeTour (.tour) files into .tours/
+const toursDir = path.join(projectRoot, '.tours');
+if (!fs.existsSync(toursDir)) {
+  fs.mkdirSync(toursDir, { recursive: true });
+}
+
+const tourFileNames = {
+  'tour-login': 'arch-01-user-authentication-and-login.tour',
+  'tour-signup': 'arch-02-user-registration-and-setup.tour',
+  'tour-profile': 'arch-03-user-profile-and-settings.tour',
+  'tour-forgot': 'arch-04-password-reset-flow.tour',
+  'tour-newnote': 'arch-05-create-new-note-and-scripture-tags.tour',
+  'tour-mynotes': 'arch-06-my-notes-list-and-search.tour',
+  'tour-notedisplay': 'arch-07-note-details-and-card-rendering.tour',
+  'tour-dashboard': 'arch-08-habit-dashboard-and-streaks.tour',
+  'tour-timecapsule': 'arch-09-time-capsule-and-future-letters.tour',
+  'tour-letterbox': 'arch-10-letter-box-and-unlocking-system.tour',
+  'tour-milestone': 'arch-11-milestone-achievements.tour',
+  'tour-recap': 'arch-12-habit-recap-and-reflections.tour',
+  'tour-groupchat': 'arch-13-group-chat-and-multilingual-translation.tour',
+  'tour-groupform': 'arch-14-create-and-configure-group.tour',
+  'tour-groupcard': 'arch-15-group-cards-and-roster.tour',
+  'tour-groupoptions': 'arch-16-group-settings-and-permissions.tour',
+  'tour-invite': 'arch-17-invite-links-and-redirects.tour',
+  'tour-root': 'arch-18-app-bootstrapping-and-routing.tour',
+  'tour-languages': 'arch-19-language-switcher-and-i18n.tour',
+  'tour-pwa': 'arch-20-pwa-offline-and-updates.tour',
+  'tour-seo': 'arch-21-seo-and-opengraph-meta-management.tour',
+  'tour-welcome': 'arch-22-welcome-modal-and-onboarding.tour',
+  'tour-sidebar': 'arch-23-sidebar-and-navigation.tour',
+  'tour-legal': 'arch-24-privacy-policy-and-terms.tour'
+};
+
+const layerJaNames = {
+  0: 'ルート / エントリー',
+  1: 'UI コンポーネント層',
+  2: 'カスタムフック層',
+  3: '状態 & スキーマ層',
+  4: 'サービス & API層',
+  5: 'インフラ & データベース層'
+};
+
+const layerEnNames = {
+  0: 'Root / Entry',
+  1: 'UI Component Layer',
+  2: 'Custom Hook Layer',
+  3: 'State & Schema Layer',
+  4: 'Service & API Layer',
+  5: 'Infra & Database Layer'
+};
+
+let archTourCount = 0;
+presetTours.forEach((pt, pIdx) => {
+  const tourData = prebuiltTours[pt.id];
+  if (!tourData) return;
+
+  const fileName = tourFileNames[pt.id] || `arch-${String(pIdx + 1).padStart(2, '0')}-${pt.id.replace('tour-', '')}.tour`;
+  const tourFilePath = path.join(toursDir, fileName);
+
+  const cleanTitleJa = pt.title.ja.replace(/^[^\w\s\u3000-\u30FF\u4E00-\u9FA0\uFF00-\uFFEF]+/, '').trim();
+  const cleanTitleEn = pt.title.en.replace(/^[^\w\s]+/, '').trim();
+  const numStr = String(pIdx + 1).padStart(2, '0');
+
+  const tourObj = {
+    $schema: "https://aka.ms/codetour-schema",
+    title: `Architecture ${numStr}: ${cleanTitleEn} / ${cleanTitleJa}`,
+    tags: [
+      "Architecture",
+      "End-to-End Flow",
+      pt.group,
+      pt.id
+    ],
+    steps: tourData.steps.map((step, sIdx) => {
+      const stepNum = sIdx + 1;
+      const totalSteps = tourData.steps.length;
+      const node = allNodes.find(n => n.id === step.nodeId);
+      const layerNum = node ? node.layer : 1;
+      const layerJa = layerJaNames[layerNum] || 'モジュール層';
+      const layerEn = layerEnNames[layerNum] || 'Module Layer';
+
+      const inSummaryEn = step.inSummary ? step.inSummary : 'None (Entry Point)';
+      const outSummaryEn = step.outSummary ? step.outSummary : 'None (Terminal Leaf)';
+      const inSummaryJa = step.inSummary ? step.inSummary : 'なし (起点 / エントリーポイント)';
+      const outSummaryJa = step.outSummary ? step.outSummary : 'なし (終端 / 末端モジュール)';
+
+      const doc = step.doc || {};
+      const purposeEn = (doc.purpose && doc.purpose.en) ? doc.purpose.en : ((doc.summary && doc.summary.en) ? doc.summary.en : 'Handles application processing in this architectural layer.');
+      const purposeJa = (doc.purpose && doc.purpose.ja) ? doc.purpose.ja : ((doc.summary && doc.summary.ja) ? doc.summary.ja : 'この階層におけるデータ処理と操作を担当します。');
+
+      const breakdownListEn = (doc.breakdown && Array.isArray(doc.breakdown.en)) ? doc.breakdown.en : [
+        `1. Module Execution: Handles incoming actions and state updates`,
+        `2. Downstream Forwarding: Dispatches events to lower architectural layers`
+      ];
+      const breakdownListJa = (doc.breakdown && Array.isArray(doc.breakdown.ja)) ? doc.breakdown.ja : [
+        `1. モジュールの実行: 上位からのアクションやデータ更新を安全に処理`,
+        `2. 下位へのリレー: 次の階層へイベントやデータを伝達`
+      ];
+
+      const breakdownEn = breakdownListEn.join('\n');
+      const breakdownJa = breakdownListJa.join('\n');
+
+      const proTipEn = (doc.proTip && doc.proTip.en) ? doc.proTip.en : `Maintaining clear separation of concerns in Layer ${layerNum} keeps components modular, reusable, and easily testable.`;
+      const proTipJa = (doc.proTip && doc.proTip.ja) ? doc.proTip.ja : `第${layerNum}層の関心事を明確に分離しておくことで、コンポーネントの再利用性とテスト容易性が大幅に向上します。`;
+
+      const desc = [
+        `### Step ${stepNum}/${totalSteps}. ${step.badge} ${step.name} (${layerEn})`,
+        ``,
+        `#### 💡 Architectural Purpose & Why It Exists`,
+        `${purposeEn}`,
+        ``,
+        `#### 🔍 Beginner's Code Breakdown`,
+        `${breakdownEn}`,
+        ``,
+        `#### 🔄 Data Flow Relay`,
+        `- **Inbound from**: ${inSummaryEn}`,
+        `- **Outbound to**: ${outSummaryEn}`,
+        ``,
+        `#### 💡 Pro Tip: Best Practices`,
+        `${proTipEn}`,
+        ``,
+        `---`,
+        ``,
+        `### Step ${stepNum}/${totalSteps}. ${step.badge} ${step.name} (${layerJa})`,
+        ``,
+        `#### 💡 アーキテクチャ上の設計意図（なぜこの層にこのファイルが必要？）`,
+        `${purposeJa}`,
+        ``,
+        `#### 🔍 初心者向けコードの読み解きポイント（主要関数と仕組み）`,
+        `${breakdownJa}`,
+        ``,
+        `#### 🔄 データの流れ（データリレー）`,
+        `- **⬅️ 入力元**: ${inSummaryJa}`,
+        `- **➡️ 送信先**: ${outSummaryJa}`,
+        ``,
+        `#### 💡 プロの知恵・なぜこう書くのか？`,
+        `${proTipJa}`
+      ].join('\n');
+
+      return {
+        file: step.path.replace(/\\/g, '/'),
+        description: desc,
+        line: 1
+      };
+    })
+  };
+
+  fs.writeFileSync(tourFilePath, JSON.stringify(tourObj, null, 2), 'utf8');
+  archTourCount++;
+});
+
+console.log(`📦 Generated ${archTourCount} CodeTour (.tour) files in .tours/`);
+
+
 // Automatic Doc Callout Link Mapping (Clean language-separated, no emojis)
 const docTourMappings = [
   { file: 'docs/architecture.md', tourId: 'tour-root', titleJa: 'アプリ起動 & 全体配線', titleEn: 'App Bootstrapping & Routing' },
@@ -2078,10 +2581,7 @@ docTourMappings.forEach(item => {
   const fullEnPath = path.join(projectRoot, item.file);
   if (fs.existsSync(fullEnPath)) {
     const enContent = fs.readFileSync(fullEnPath, 'utf8');
-    const enCallout = `> [!TIP]
-> **Interactive Architecture Tour**: [Open Live Tour (${item.titleEn})](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=${item.tourId}&lang=en)
-
-`;
+    const enCallout = `> [!TIP]\n> **Interactive Architecture Tour**: [Open Live Tour (${item.titleEn})](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=${item.tourId}&lang=en)`;
 
     let updatedEn;
     if (calloutRegex.test(enContent)) {
@@ -2094,6 +2594,8 @@ docTourMappings.forEach(item => {
         updatedEn = `${enCallout}\n\n${enContent}`;
       }
     }
+    // Clean up excessive 3+ consecutive newlines
+    updatedEn = updatedEn.replace(/\n{3,}/g, '\n\n');
     if (updatedEn !== enContent) {
       fs.writeFileSync(fullEnPath, updatedEn, 'utf8');
       injectedCount++;
@@ -2105,10 +2607,7 @@ docTourMappings.forEach(item => {
   const fullJaPath = path.join(projectRoot, relJaPath);
   if (fs.existsSync(fullJaPath)) {
     const jaContent = fs.readFileSync(fullJaPath, 'utf8');
-    const jaCallout = `> [!TIP]
-> **インタラクティブ・アーキテクチャツアー**: [ブラウザでツアーを開く (${item.titleJa})](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=${item.tourId}&lang=ja)
-
-`;
+    const jaCallout = `> [!TIP]\n> **インタラクティブ・アーキテクチャツアー**: [ブラウザでツアーを開く (${item.titleJa})](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=${item.tourId}&lang=ja)`;
 
     let updatedJa;
     if (calloutRegex.test(jaContent)) {
@@ -2121,6 +2620,8 @@ docTourMappings.forEach(item => {
         updatedJa = `${jaCallout}\n\n${jaContent}`;
       }
     }
+    // Clean up excessive 3+ consecutive newlines
+    updatedJa = updatedJa.replace(/\n{3,}/g, '\n\n');
     if (updatedJa !== jaContent) {
       fs.writeFileSync(fullJaPath, updatedJa, 'utf8');
       injectedCount++;
@@ -2129,3 +2630,4 @@ docTourMappings.forEach(item => {
 });
 
 console.log(`🔗 Updated language-appropriate callouts across ${injectedCount} documentation files.`);
+

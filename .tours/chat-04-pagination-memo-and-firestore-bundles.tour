@@ -1,0 +1,31 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "GroupChat 04: Pagination, React.memo & Bundles / パフォーマンス最適化",
+  "tags": [
+    "GroupChat",
+    "Performance",
+    "Pagination",
+    "React.memo",
+    "Firestore Bundles"
+  ],
+  "steps": [
+    {
+      "file": "src/components/groupchat/hooks/core/use-chat-data-engine.ts",
+      "description": "### 1. 📜 Cursor-Based Pagination (`startAfter`)\n\n#### 💡 What is happening here? (Overview)\nWhen the user reaches the top of the chat, we **fetch the next batch of 25 older messages** using the oldest visible message as a cursor bookmark.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **Cursor Pagination**:\n   - `startAfter(oldestMessageTimestamp)` efficiently queries older records without expensive SQL-style `OFFSET` scanning.\n2. **Infinite Scroll UX**:\n   - Seamlessly prepends historical messages to the list while maintaining the user's scroll anchor.\n\n---\n\n#### 💡 Pro Tip: Offset vs Cursor\nCursor pagination keeps database performance O(1) regardless of whether you are reading page 1 or page 10,000.\n\n---\n\n### 1. 📜 過去ログ取得とカーソルページネーション (`startAfter`)\n\n#### 💡 ここで何をしているの？（全体像）\nユーザーが上にスクロールした時に、**「今見えている一番古いメッセージのさらに前の25件」を追加で読み込み**ます。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **カーソル方式 (`startAfter`)**:\n   - 「この日時のメッセージより前」というしおり（カーソル）を挟んで続きを取得します。\n2. **追加読み込み（Append/Prepend）**:\n   - 取得した過去メッセージを配列の先頭に合体させます。\n\n---\n\n#### 💡 プロの知恵：なぜ一括で読まないのか？\n何千通もの過去ログを一度に読み込むと通信が重くなり、Firestore の読み取り課金も爆発します。25件ずつ小分けに読むのが鉄則です。",
+      "pattern": "^\\s*useMessageStreamSync\\(groupId,\\s+userData,\\s+state\\.messages,\\s+dispatch\\);",
+      "line": 248
+    },
+    {
+      "file": "src/components/groupchat/subcomponents/message-item.tsx",
+      "description": "### 2. 🛡️ Selective Re-rendering (`React.memo`)\n\n#### 💡 What is happening here? (Overview)\nWe wrap each individual message component in `React.memo` so that **only newly added or edited messages re-render**.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **Shallow Comparison**:\n   - Checks if `msg` properties have changed. If unchanged, React skips virtual DOM diffing entirely.\n2. **Large List Scalability**:\n   - When 1 message arrives in a feed of 200 items, 199 components skip rendering.\n\n---\n\n#### 💡 Pro Tip: Custom `areEqual` Comparator\nFor complex props, passing a custom comparison function as the 2nd argument to `memo()` provides fine-grained control over re-renders.\n\n---\n\n### 2. 🛡️ メッセージ1件ごとの描画スキップ (`React.memo`)\n\n#### 💡 ここで何をしているの？（全体像）\n新着メッセージが1件届いた時、**「中身が変わっていない過去のメッセージたち」の再描画を完全にスキップ**します。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **`memo(MessageItem)`**:\n   - 渡された props（メッセージ内容）が変わっていないなら、前回の描画結果をそのまま使い回します。\n2. **圧倒的な軽さ**:\n   - 100件のメッセージが表示されていても、動くのは「新しく増えた1件だけ」なので、画面が一切カクつきません。\n\n---\n\n#### 💡 プロの知恵：スマホでの電池持ち向上\nチャットのスクロールがサラサラ快適に動くのは、この `React.memo` のおかげです。",
+      "pattern": "^\\s*<button\\s+className=\"hover-action-btn\"\\s+onClick=\\{\\(e\\)\\s+=>\\s+\\{\\s+e\\.stopPropagation\\(\\);\\s+handleToggleReaction\\(msg\\);\\s+\\}\\}\\s+title=\\{msg\\.reactions\\?\\.\\['👍'\\]\\?\\.includes\\(userUid\\s+\\|\\|\\s+''\\)\\s+\\?\\s+t\\('groupChat\\.unlike'\\)\\s+:\\s+t\\('groupChat\\.like'\\)\\}>👍</button>",
+      "line": 116
+    },
+    {
+      "file": "src/components/groupchat/hooks/core/use-chat-data-engine.ts",
+      "description": "### 3. 📦 Instant Loading with Firestore Bundles & Local Cache\n\n#### 💡 What is happening here? (Overview)\nOn initial screen load, we **instantly render cached messages from IndexedDB or pre-compiled Bundles** before waiting for the network.\n\n---\n\n#### 🔍 Beginner's Code Breakdown\n1. **Offline & Cache First**:\n   - Displays cached content in under 50ms, then merges live server updates seamlessly in the background.\n2. **Sub-second TTI (Time to Interactive)**:\n   - Users experience zero perceived latency when navigating back and forth between channels.\n\n---\n\n#### 💡 Pro Tip: Cloud Cost Reduction\nLoading from local cache costs $0 in Firestore read quotas, keeping infrastructure expenses exceptionally low.\n\n---\n\n### 3. 📦 初期表示の爆速化 (キャッシュ活用とバンドル)\n\n#### 💡 ここで何をしているの？（全体像）\n画面を開いた瞬間に、**「スマホ内に保存されている前回のキャッシュ」を使って0.1秒で即座にメッセージを表示**します。\n\n---\n\n#### 🔍 初心者向けコードの読み解きポイント\n1. **キャッシュファースト**:\n   - ネットワーク通信を待たずに手元のデータで画面をパッと出し、裏で最新データを取得して差し替えます。\n2. **通信代ゼロ**:\n   - 手元のキャッシュから読むため、Firestore の読み取り回数（課金）を節約できます。\n\n---\n\n#### 💡 プロの知恵：快適な体感速度（TTI）\nユーザーに「待たされている」と感じさせないための、商用アプリ必須のスピードチューニングです。",
+      "pattern": "^\\s*if\\s+\\(!groupId\\s+\\|\\|\\s+!members\\s+\\|\\|\\s+status\\s+===\\s+'loading'\\)\\s+return;",
+      "line": 98
+    }
+  ]
+}
