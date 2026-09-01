@@ -4,6 +4,7 @@ import { withMermaid } from 'vitepress-plugin-mermaid';
 export default withMermaid(defineConfig({
   title: 'Scripture Habit',
   description: 'Technical Documentation & Architecture Guides',
+  base: '/scripture-habit/',
   lastUpdated: true,
   cleanUrls: true,
   ignoreDeadLinks: [
