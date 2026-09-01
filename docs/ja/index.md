@@ -6,7 +6,7 @@ hero:
   text: "技術ドキュメント"
   tagline: "アーキテクチャ・セキュリティ・CQRS・リアルタイム同期・運用バッチ設計"
   image:
-    src: /images/dashboard.png
+    src: /images/mascot.webp
     alt: Scripture Habit ダッシュボード
   actions:
     - theme: brand

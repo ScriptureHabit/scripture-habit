@@ -6,7 +6,7 @@ hero:
   text: "Technical Documentation"
   tagline: "Architecture, Security, CQRS, Realtime Sync & Batch Operations"
   image:
-    src: /images/dashboard.png
+    src: /images/mascot.webp
     alt: Scripture Habit Dashboard
   actions:
     - theme: brand
