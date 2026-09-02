@@ -197,6 +197,9 @@ Issue や Pull Request は、いつでもどうぞお気軽にお寄せくださ
       <td align="center" valign="top" width="20%"><a href="https://github.com/Bimbolin"><img src="https://avatars.githubusercontent.com/u/128802658?v=4&s=100" width="100px;" alt="Bimbolin"/><br /><sub><b>Bimbolin</b></sub></a></td>
       <td align="center" valign="top" width="20%"><a href="https://github.com/KadenTheHero"><img src="https://avatars.githubusercontent.com/u/265869306?v=4&s=100" width="100px;" alt="KadenTheHero"/><br /><sub><b>KadenTheHero</b></sub></a></td>
     </tr>
+    <tr>
+      <td align="center" valign="top" width="20%"><a href="https://github.com/otarupippi"><img src="https://avatars.githubusercontent.com/u/64906894?v=4&s=100" width="100px;" alt="otarupippi"/><br /><sub><b>otarupippi</b></sub></a></td>
+    </tr>
   </tbody>
 </table>
 
