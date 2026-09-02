@@ -11,7 +11,7 @@ Scripture Habit の開発過程におけるユーザーヒアリングにおい�
 
 ## 1. ユーザーフィードバックからの洞察
 
-AI 振り返りレター（[`api_internal/routes/ai.ts`](file:///c:/Users/dazhi/code/scripture-habit/api_internal/routes/ai.ts)）は、ユーザーが投稿した直近の学習ノートをもとに、AI が気づきを整理し、聖句の文脈や励ましの言葉を手紙形式で届ける機能です。
+AI 振り返りレター（`api_internal/routes/ai.ts`）は、ユーザーが投稿した直近の学習ノートをもとに、AI が気づきを整理し、聖句の文脈や励ましの言葉を手紙形式で届ける機能です。
 
 > *「日々の地道な努力や考えを誰かに認めてもらえる機会は少ないため、自分のノートを丁寧に受け止めて返信が届く体験が、次のノートを書く動機になっています」*
 
@@ -83,7 +83,7 @@ flowchart TD
   2. **後半（霊的洞察・キリスト中心）**: トーンを切り替え、信仰や疑問に寄り添った深い洞察を提示。
 - **透明性と注記**: 冒頭と末尾で AI のなりすましであることを明記し、個人の啓示を代替しない旨の免責注記を付与。
 - **知恵の言葉の遵守**: コーヒー・アルコール・タバコ等の飲食の言及・比喩を禁止し、健全な日常習慣を使用。
-- **手紙箱（Letter Box）への保存**: 生成された手紙は [`src/components/letterbox/letter-box.tsx`](file:///c:/Users/dazhi/code/scripture-habit/src/components/letterbox/letter-box.tsx) に保存され、いつでも読み返すことが可能です。
+- **手紙箱（Letter Box）への保存**: 生成された手紙は `src/components/letterbox/letter-box.tsx` に保存され、いつでも読み返すことが可能です。
 
 ---
 

@@ -3,7 +3,7 @@
 > [!TIP]
 > **Interactive Architecture Tour**: [Open Live Tour (Milestone Achievements)](https://htmlpreview.github.io/?https://github.com/ScriptureHabit/scripture-habit/blob/main/docs/public/architecture-tour.html?tour=tour-milestone&lang=en)
 
-This document details the milestone calculation engine (Day 10 and every 25 days thereafter), commemorative image generation ([`src/utils/milestone.ts`](file:///c:/Users/dazhi/code/scripture-habit/src/utils/milestone.ts)), and behavioral retention principles in Scripture Habit.
+This document details the milestone calculation engine (Day 10 and every 25 days thereafter), commemorative image generation (`src/utils/milestone.ts`), and behavioral retention principles in Scripture Habit.
 
 ---
 
@@ -82,7 +82,7 @@ Milestone intervals are structured around habit formation phases:
 
 ## 4. Visualizing Achievement with Commemorative Cards
 
-Reaching a milestone renders a dedicated modal ([`MilestoneModal`](file:///c:/Users/dazhi/code/scripture-habit/src/components/milestone/milestone-modal.tsx)) and card ([`MilestoneCard`](file:///c:/Users/dazhi/code/scripture-habit/src/components/milestone/milestone-card.tsx)):
+Reaching a milestone renders a dedicated modal (`MilestoneModal`) and card (`MilestoneCard`):
 
 ```
 ┌────────────────────────────────────────────────────────┐
@@ -135,10 +135,10 @@ sequenceDiagram
 
 | Layer | Key File | Responsibility |
 | :--- | :--- | :--- |
-| **Logic** | [`src/utils/milestone.ts`](file:///c:/Users/dazhi/code/scripture-habit/src/utils/milestone.ts) | Identifies Day 10 and 25-multiple milestones |
-| **State** | [`src/store/use-milestone-store.ts`](file:///c:/Users/dazhi/code/scripture-habit/src/store/use-milestone-store.ts) | Manages modal lifecycle and card payload |
-| **UI Components** | [`src/components/milestone/`](file:///c:/Users/dazhi/code/scripture-habit/src/components/milestone/) | Renders cards with PNG export and share handlers |
-| **Backend Integration** | [`api_internal/services/note-service.ts`](file:///c:/Users/dazhi/code/scripture-habit/api_internal/services/note-service.ts) | Emits group announcements in note transactions |
+| **Logic** | `src/utils/milestone.ts` | Identifies Day 10 and 25-multiple milestones |
+| **State** | `src/store/use-milestone-store.ts` | Manages modal lifecycle and card payload |
+| **UI Components** | `src/components/milestone/` | Renders cards with PNG export and share handlers |
+| **Backend Integration** | `api_internal/services/note-service.ts` | Emits group announcements in note transactions |
 
 ---
 

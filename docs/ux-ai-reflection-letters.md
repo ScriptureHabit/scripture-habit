@@ -11,7 +11,7 @@ This document examines the psychological principles and retention dynamics behin
 
 ## 1. Insights from User Feedback
 
-The AI Reflection Letter pipeline ([`api_internal/routes/ai.ts`](file:///c:/Users/dazhi/code/scripture-habit/api_internal/routes/ai.ts)) reviews recent study notes, contextualizes personal insights with scriptural narratives, and delivers encouragement in letter format.
+The AI Reflection Letter pipeline (`api_internal/routes/ai.ts`) reviews recent study notes, contextualizes personal insights with scriptural narratives, and delivers encouragement in letter format.
 
 > *"In adult life, it is rare for daily inner efforts to be explicitly acknowledged. Knowing my thoughts are received and thoughtfully responded to motivates me to write each day."*
 
@@ -75,7 +75,7 @@ flowchart TD
 
 ## 5. Engineering Implementation & Church AI Guidelines Alignment
 
-The generation prompt ([`api_internal/routes/ai.ts`](file:///c:/Users/dazhi/code/scripture-habit/api_internal/routes/ai.ts)) aligns strictly with **General Handbook Section 38.8.47 ("Appropriate Use of Artificial Intelligence")**:
+The generation prompt (`api_internal/routes/ai.ts`) aligns strictly with **General Handbook Section 38.8.47 ("Appropriate Use of Artificial Intelligence")**:
 
 - **Persona Selection**: Connects characters from the Four Standard Works to studied chapters (e.g., 1 Nephi $\rightarrow$ Nephi, D&C 25 $\rightarrow$ Emma Smith), excluding the Savior and living leaders.
 - **Two-Phase Progression**:
@@ -83,7 +83,7 @@ The generation prompt ([`api_internal/routes/ai.ts`](file:///c:/Users/dazhi/code
   2. **Phase 2 (Christ-Centered Reflection)**: Shifts to a reverent, sincere tone validating faith and testimony.
 - **Transparency & Disclaimers**: Clarifies AI roleplay at greeting and sign-off, affirming that letters do not replace personal revelation.
 - **Word of Wisdom Adherence**: Forbids references to prohibited substances (coffee, tea, alcohol), utilizing wholesome daily habits instead.
-- **LetterBox Archive**: Persisted in [`LetterBox`](file:///c:/Users/dazhi/code/scripture-habit/src/components/letterbox/letter-box.tsx) for lifelong personal review.
+- **LetterBox Archive**: Persisted in `src/components/letterbox/letter-box.tsx` for lifelong personal review.
 
 ---
 

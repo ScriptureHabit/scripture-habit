@@ -82,7 +82,7 @@ flowchart TD
 
 ## 4. 記念カードによる達成の可視化
 
-マイルストーン達成時には、モーダル（[`MilestoneModal`](file:///c:/Users/dazhi/code/scripture-habit/src/components/milestone/milestone-modal.tsx)）と記念カード（[`MilestoneCard`](file:///c:/Users/dazhi/code/scripture-habit/src/components/milestone/milestone-card.tsx)）が描画されます。
+マイルストーン達成時には、モーダル（`MilestoneModal`）と記念カード（`MilestoneCard`）が描画されます。
 
 ```
 ┌────────────────────────────────────────────────────────┐
@@ -137,10 +137,10 @@ sequenceDiagram
 
 | 役割 | 対象ファイル | 説明 |
 | :--- | :--- | :--- |
-| **判定ロジック** | [`src/utils/milestone.ts`](file:///c:/Users/dazhi/code/scripture-habit/src/utils/milestone.ts) | 10日および25の倍数日をマイルストーンとして判定 |
-| **状態管理** | [`src/store/use-milestone-store.ts`](file:///c:/Users/dazhi/code/scripture-habit/src/store/use-milestone-store.ts) | モーダルの開閉状態とマイルストーンデータの保持 |
-| **UI コンポーネント** | [`src/components/milestone/`](file:///c:/Users/dazhi/code/scripture-habit/src/components/milestone/) | 記念カードの描画および画像ダウンロード・共有機能 |
-| **バックエンド連携** | [`api_internal/services/note-service.ts`](file:///c:/Users/dazhi/code/scripture-habit/api_internal/services/note-service.ts) | ノート投稿時のマイルストーン判定とチャットへのお祝い投稿 |
+| **判定ロジック** | `src/utils/milestone.ts` | 10日および25の倍数日をマイルストーンとして判定 |
+| **状態管理** | `src/store/use-milestone-store.ts` | モーダルの開閉状態とマイルストーンデータの保持 |
+| **UI コンポーネント** | `src/components/milestone/` | 記念カードの描画および画像ダウンロード・共有機能 |
+| **バックエンド連携** | `api_internal/services/note-service.ts` | ノート投稿時のマイルストーン判定とチャットへのお祝い投稿 |
 
 ---
 
