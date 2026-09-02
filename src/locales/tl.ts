@@ -13,6 +13,20 @@ export default {
         "viewCard": "Tingnan ang Tala ng Pag-aaral",
         "openLetterAction": "Buksan ang Liham"
     },
+    "levelUp": {
+        "title": "Naabot ang Antas {level}!",
+        "label": "LEVEL UP",
+        "levelBadge": "Lv.{level}",
+        "daysStudied": "{days} DAYS",
+        "achievementMessage": "Maligayang pagbati! Ang iyong ugali sa pag-aaral ay umabot sa Antas {level}.",
+        "saveImage": "I-save ang Larawan",
+        "saving": "Nagse-save...",
+        "imageSaved": "Matagumpay na na-save ang larawan",
+        "imageSaveError": "Nabigong i-save ang larawan",
+        "share": "Ibahagi",
+        "shareText": "Naabot ang Antas {level} sa Scripture Habit! ({days} araw ng pag-aaral)",
+        "viewCard": "Tingnan ang Antas ng Card"
+    },
     "timeCapsule": {
         "createTitle": "Sumulat ng Liham sa Iyong Sarili (Araw {days})",
         "socialProofCount": "{count} mga kasama ang nakamit ang Araw {days}!",

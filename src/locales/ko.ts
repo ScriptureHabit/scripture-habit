@@ -7,11 +7,25 @@ export default {
         "saveImage": "이미지 저장",
         "saving": "저장 중...",
         "imageSaved": "이미지가 저장되었습니다",
-        "imageSaveError": "이미지 저장に失敗했습니다",
+        "imageSaveError": "이미지 저장에 실패했습니다",
         "share": "공유",
         "shareText": "Scripture Habit에서 경전 학습 {days}일을 달성했습니다.",
         "viewCard": "학습 기록 보기",
         "openLetterAction": "편지 열기"
+    },
+    "levelUp": {
+        "title": "레벨 {level} 달성!",
+        "label": "레벨업",
+        "levelBadge": "Lv.{level}",
+        "daysStudied": "{days} DAYS",
+        "achievementMessage": "축하합니다! 학습 습관이 레벨 {level}에 도달했습니다.",
+        "saveImage": "이미지 저장",
+        "saving": "저장 중...",
+        "imageSaved": "이미지가 저장되었습니다",
+        "imageSaveError": "이미지 저장에 실패했습니다",
+        "share": "공유",
+        "shareText": "Scripture Habit에서 레벨 {level}에 도달했습니다! (학습 일수: {days}일)",
+        "viewCard": "레벨 카드 보기"
     },
     "timeCapsule": {
         "createTitle": "Day {days}의 나에게 편지 쓰기",

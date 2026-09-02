@@ -13,6 +13,20 @@ export default {
         "viewCard": "Ver registro de estudio",
         "openLetterAction": "Abrir carta"
     },
+    "levelUp": {
+        "title": "¡Nivel {level} alcanzado!",
+        "label": "SUBIDA DE NIVEL",
+        "levelBadge": "Nv.{level}",
+        "daysStudied": "{days} DÍAS",
+        "achievementMessage": "¡Felicitaciones! Tu hábito de estudio ha alcanzado el Nivel {level}.",
+        "saveImage": "Guardar imagen",
+        "saving": "Guardando...",
+        "imageSaved": "Imagen guardada con éxito",
+        "imageSaveError": "Error al guardar la imagen",
+        "share": "Compartir",
+        "shareText": "¡He alcanzado el Nivel {level} en Scripture Habit! ({days} días estudiados)",
+        "viewCard": "Ver tarjeta de nivel"
+    },
     "timeCapsule": {
         "createTitle": "Escribe una carta a tu futuro yo (Día {days})",
         "socialProofCount": "¡{count} compañeros han alcanzado el Día {days}!",

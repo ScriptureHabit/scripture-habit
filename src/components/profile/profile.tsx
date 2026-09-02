@@ -14,6 +14,8 @@ import { UserData } from '../../types/user';
 import apiClient from '../../utils/api-client';
 import { isSoundEnabled, setSoundEnabled, playNoteSubmitSound } from '../../utils/audio-feedback';
 import { useMilestoneStore } from '../../store/use-milestone-store';
+import { useLevelUpStore } from '../../store/use-level-up-store';
+import { calculateLevel } from '../../utils/level-utils';
 
 interface ProfileStats {
     streak: number;
@@ -481,8 +483,34 @@ const Profile = ({ userData, stats }: ProfileProps) => {
                 {stats && (
                     <div className="profile-stats">
                         <div className="level-section">
-                            <div className="level-badge">
-                                <span className="level-number">{Math.floor((stats.daysStudied || 0) / 7) + 1}</span>
+                            <div 
+                                className="level-badge"
+                                style={{ cursor: 'pointer' }}
+                                onClick={() => {
+                                    const days = stats.daysStudied || 0;
+                                    const currentLevel = calculateLevel(days);
+                                    useLevelUpStore.getState().openLevelUp({
+                                        level: currentLevel,
+                                        days,
+                                        nickname: userData?.nickname || ''
+                                    });
+                                }}
+                                title={t('levelUp.viewCard')}
+                                role="button"
+                                tabIndex={0}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === ' ') {
+                                        const days = stats.daysStudied || 0;
+                                        const currentLevel = calculateLevel(days);
+                                        useLevelUpStore.getState().openLevelUp({
+                                            level: currentLevel,
+                                            days,
+                                            nickname: userData?.nickname || ''
+                                        });
+                                    }
+                                }}
+                            >
+                                <span className="level-number">{calculateLevel(stats.daysStudied || 0)}</span>
                                 <span className="level-text">{t('profile.level')}</span>
                             </div>
                             <div className="level-progress-container">

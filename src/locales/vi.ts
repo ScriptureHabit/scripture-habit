@@ -13,6 +13,20 @@ export default {
         "viewCard": "Xem nhật ký học tập",
         "openLetterAction": "Mở thư"
     },
+    "levelUp": {
+        "title": "Đạt Cấp {level}!",
+        "label": "LÊN CẤP",
+        "levelBadge": "Lv.{level}",
+        "daysStudied": "{days} DAYS",
+        "achievementMessage": "Chúc mừng! Thói quen học tập của bạn đã đạt Cấp {level}.",
+        "saveImage": "Lưu hình ảnh",
+        "saving": "Đang lưu...",
+        "imageSaved": "Đã lưu hình ảnh thành công",
+        "imageSaveError": "Không thể lưu hình ảnh",
+        "share": "Chia sẻ",
+        "shareText": "Đã đạt Cấp {level} trên Scripture Habit! ({days} ngày học)",
+        "viewCard": "Xem thẻ cấp độ"
+    },
     "timeCapsule": {
         "createTitle": "Viết thư gửi bản thân tương lai (Ngày {days})",
         "socialProofCount": "Đã có {count} người bạn đồng hành đạt Ngày {days}!",

@@ -19,6 +19,7 @@ const Donate = lazyWithRetry(() => import('../donate/donate'));
 const DashboardModals = lazyWithRetry(() => import('./components/dashboard-modals'));
 const JoinSuccessModal = lazyWithRetry(() => import('../joinsuccessmodal/join-success-modal'));
 const MilestoneModal = lazyWithRetry(() => import('../milestone/milestone-modal'));
+const LevelUpModal = lazyWithRetry(() => import('../levelup/level-up-modal'));
 const TimeCapsuleModal = lazyWithRetry(() => import('../timecapsule/time-capsule-modal').then(m => ({ default: m.TimeCapsuleModal })));
 const TimeCapsuleUnlockModal = lazyWithRetry(() => import('../timecapsule/time-capsule-unlock-modal').then(m => ({ default: m.TimeCapsuleUnlockModal })));
 
@@ -356,8 +357,9 @@ const Dashboard = () => {
         </Suspense>
       )}
 
-      {/* Study Days Milestone Celebration Modal */}
+      {/* Study Days Milestone & Level Up Celebration Modals */}
       <Suspense fallback={null}>
+        <LevelUpModal />
         <MilestoneModal />
       </Suspense>
 

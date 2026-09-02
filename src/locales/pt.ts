@@ -1,17 +1,31 @@
 export default {
     "milestone": {
-        "title": "{days} dias completados!",
-        "label": "Registro de estudo",
+        "title": "{days} Dias Concluídos!",
+        "label": "Registro de Estudo",
         "daysUnit": "DIAS",
         "achievementMessage": "Completou {days} dias de estudo das escrituras.",
-        "saveImage": "Salvar imagem",
+        "saveImage": "Salvar Imagem",
         "saving": "Salvando...",
         "imageSaved": "Imagem salva com sucesso",
-        "imageSaveError": "Falha ao salvar imagem",
+        "imageSaveError": "Falha ao salvar a imagem",
         "share": "Compartilhar",
         "shareText": "Completei {days} dias de estudo das escrituras no Scripture Habit.",
-        "viewCard": "Ver registro de estudo",
-        "openLetterAction": "Abrir carta"
+        "viewCard": "Ver Registro de Estudo",
+        "openLetterAction": "Abrir Carta"
+    },
+    "levelUp": {
+        "title": "Nível {level} Alcançado!",
+        "label": "SUBIU DE NÍVEL",
+        "levelBadge": "Nv.{level}",
+        "daysStudied": "{days} DIAS",
+        "achievementMessage": "Parabéns! Seu hábito de estudo alcançou o Nível {level}.",
+        "saveImage": "Salvar Imagem",
+        "saving": "Salvando...",
+        "imageSaved": "Imagem salva com sucesso",
+        "imageSaveError": "Falha ao salvar a imagem",
+        "share": "Compartilhar",
+        "shareText": "Alcancei o Nível {level} no Scripture Habit! ({days} dias estudados)",
+        "viewCard": "Ver Cartão de Nível"
     },
     "timeCapsule": {
         "createTitle": "Escreva uma carta para seu futuro eu (Dia {days})",

@@ -13,6 +13,20 @@ export default {
         "viewCard": "查看研讀記錄",
         "openLetterAction": "開啟信件"
     },
+    "levelUp": {
+        "title": "達到等級 {level}！",
+        "label": "等級提升",
+        "levelBadge": "Lv.{level}",
+        "daysStudied": "{days} DAYS",
+        "achievementMessage": "恭喜！你的研讀習慣已提升至等級 {level}。",
+        "saveImage": "儲存圖片",
+        "saving": "儲存中...",
+        "imageSaved": "圖片已成功儲存",
+        "imageSaveError": "儲存圖片失敗",
+        "share": "分享",
+        "shareText": "在 Scripture Habit 上達到了等級 {level}！（研讀天數：{days} 天）",
+        "viewCard": "查看等級卡片"
+    },
     "timeCapsule": {
         "createTitle": "寫信給未來的自己（第 {days} 天）",
         "socialProofCount": "已有 {count} 位夥伴達成了第 {days} 天！",

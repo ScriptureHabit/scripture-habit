@@ -233,7 +233,7 @@ describe('use-note-submission', () => {
         expect(toast.error).toHaveBeenCalledWith('errors.prefix: errors.networkError');
     });
 
-    it('should open milestone modal when reaching a milestone day', async () => {
+    it('should open milestone modal when reaching a milestone day (e.g. 10 days)', async () => {
         const { useMilestoneStore } = await import('../../../store/use-milestone-store');
         const openMilestoneSpy = vi.spyOn(useMilestoneStore.getState(), 'openMilestone');
 
@@ -258,5 +258,69 @@ describe('use-note-submission', () => {
         expect(openMilestoneSpy).toHaveBeenCalledWith(expect.objectContaining({
             days: 10
         }));
+    });
+
+    it('should open level-up modal when reaching a level-up day (e.g. 7 days -> Level 2)', async () => {
+        const { useLevelUpStore } = await import('../../../store/use-level-up-store');
+        const openLevelUpSpy = vi.spyOn(useLevelUpStore.getState(), 'openLevelUp');
+
+        vi.mocked(apiClient.post).mockResolvedValue({ 
+            data: { success: true, streakUpdated: true } 
+        });
+        const onSuccess = vi.fn();
+
+        const userWith6Days: UserData = {
+            ...mockUserData,
+            daysStudiedCount: 6
+        };
+
+        const { result } = renderHook(() => useNoteSubmission(userWith6Days, 'en', mockT));
+
+        await act(async () => {
+            await result.current.handleSubmit(
+                null, 'Book of Mormon', '1 Nephi 1', 'Test', 'all', [], null, null, onSuccess
+            );
+        });
+
+        expect(openLevelUpSpy).toHaveBeenCalledWith(
+            expect.objectContaining({
+                level: 2,
+                days: 7
+            }),
+            null
+        );
+    });
+
+    it('should queue pending milestone when both level-up and milestone occur (e.g. 175 days)', async () => {
+        const { useLevelUpStore } = await import('../../../store/use-level-up-store');
+        const openLevelUpSpy = vi.spyOn(useLevelUpStore.getState(), 'openLevelUp');
+
+        vi.mocked(apiClient.post).mockResolvedValue({ 
+            data: { success: true, streakUpdated: true } 
+        });
+        const onSuccess = vi.fn();
+
+        const userWith174Days: UserData = {
+            ...mockUserData,
+            daysStudiedCount: 174
+        };
+
+        const { result } = renderHook(() => useNoteSubmission(userWith174Days, 'en', mockT));
+
+        await act(async () => {
+            await result.current.handleSubmit(
+                null, 'Book of Mormon', '1 Nephi 1', 'Test', 'all', [], null, null, onSuccess
+            );
+        });
+
+        expect(openLevelUpSpy).toHaveBeenCalledWith(
+            expect.objectContaining({
+                level: 26,
+                days: 175
+            }),
+            expect.objectContaining({
+                days: 175
+            })
+        );
     });
 });

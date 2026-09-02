@@ -13,6 +13,20 @@ export default {
         "viewCard": "View Study Record",
         "openLetterAction": "Open Letter"
     },
+    "levelUp": {
+        "title": "Level {level} Achieved!",
+        "label": "LEVEL UP",
+        "levelBadge": "Lv.{level}",
+        "daysStudied": "{days} DAYS",
+        "achievementMessage": "Congratulations! Your study habit has reached Level {level}.",
+        "saveImage": "Save Image",
+        "saving": "Saving...",
+        "imageSaved": "Image saved successfully",
+        "imageSaveError": "Failed to save image",
+        "share": "Share",
+        "shareText": "Reached Level {level} on Scripture Habit! ({days} days studied)",
+        "viewCard": "View Level Card"
+    },
     "timeCapsule": {
         "createTitle": "Write a Letter to Yourself (Day {days})",
         "socialProofCount": "{count} companions have achieved Day {days}!",

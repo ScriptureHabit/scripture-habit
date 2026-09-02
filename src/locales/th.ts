@@ -13,6 +13,20 @@ export default {
         "viewCard": "ดูบันทึกการเรียนรู้",
         "openLetterAction": "เปิดจดหมาย"
     },
+    "levelUp": {
+        "title": "ถึงระดับ {level} แล้ว!",
+        "label": "เลเวลอัป",
+        "levelBadge": "Lv.{level}",
+        "daysStudied": "{days} DAYS",
+        "achievementMessage": "ยินดีด้วย! นิสัยการศึกษาของคุณก้าวสู่ระดับ {level} แล้ว",
+        "saveImage": "บันทึกรูปภาพ",
+        "saving": "กำลังบันทึก...",
+        "imageSaved": "บันทึกรูปภาพสำเร็จแล้ว",
+        "imageSaveError": "บันทึกรูปภาพไม่สำเร็จ",
+        "share": "แชร์",
+        "shareText": "ถึงระดับ {level} บน Scripture Habit แล้ว! (ศึกษาไปแล้ว {days} วัน)",
+        "viewCard": "ดูการ์ดระดับ"
+    },
     "timeCapsule": {
         "createTitle": "เขียนจดหมายถึงตัวเองในอนาคต (วันที่ {days})",
         "socialProofCount": "มีเพื่อนร่วมทาง {count} คนที่บรรลุเป้าหมายวันที่ {days} แล้ว!",

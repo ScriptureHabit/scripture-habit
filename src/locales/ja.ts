@@ -13,6 +13,20 @@ export default {
         "viewCard": "学びの記録を表示",
         "openLetterAction": "手紙を開封する"
     },
+    "levelUp": {
+        "title": "Level {level} 達成！",
+        "label": "レベルアップ",
+        "levelBadge": "Lv.{level}",
+        "daysStudied": "{days} DAYS",
+        "achievementMessage": "おめでとうございます！学習習慣がレベル{level}に成長しました。",
+        "saveImage": "画像を保存",
+        "saving": "保存中...",
+        "imageSaved": "画像を保存しました",
+        "imageSaveError": "画像の保存に失敗しました",
+        "share": "シェア",
+        "shareText": "聖典習慣で Level {level} に到達しました！（学習日数: {days}日）",
+        "viewCard": "レベルアップカードを表示"
+    },
     "timeCapsule": {
         "createTitle": "Day {days}の自分へ手紙を書く",
         "socialProofCount": "今まで{count}名の仲間がDay {days}を達成しました！",

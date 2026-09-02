@@ -13,6 +13,20 @@ export default {
         "viewCard": "Tazama Kumbukumbu ya Masomo",
         "openLetterAction": "Fungua Barua"
     },
+    "levelUp": {
+        "title": "Kiwango {level} Kimefikiwa!",
+        "label": "ONGEZEKO LA KIWANGO",
+        "levelBadge": "Lv.{level}",
+        "daysStudied": "{days} SIKU",
+        "achievementMessage": "Hongera! Tabia yako ya kujifunza imefikia Kiwango cha {level}.",
+        "saveImage": "Hifadhi Picha",
+        "saving": "Inahifadhi...",
+        "imageSaved": "Picha imehifadhiwa vizuri",
+        "imageSaveError": "Imeshindwa kuhifadhi picha",
+        "share": "Shiriki",
+        "shareText": "Nimefikia Kiwango cha {level} kwenye Scripture Habit! (Siku {days} za masomo)",
+        "viewCard": "Tazama Kadi ya Kiwango"
+    },
     "timeCapsule": {
         "createTitle": "Andika Barua kwa Nafsi Yako ya Baadaye (Siku {days})",
         "socialProofCount": "Wenzako {count} wamefanikiwa kufikia Siku {days}!",

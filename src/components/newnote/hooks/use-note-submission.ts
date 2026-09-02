@@ -10,7 +10,9 @@ import { buildNoteSearchTokens } from '../../../utils/search-token-utils';
 import { formatNoteText, getNoteValidationError } from '../../../utils/note-logic';
 import { playNoteSubmitSound } from '../../../utils/audio-feedback';
 import { isStudyMilestone } from '../../../utils/milestone';
+import { isLevelUpDay, calculateLevel } from '../../../utils/level-utils';
 import { useMilestoneStore } from '../../../store/use-milestone-store';
+import { useLevelUpStore } from '../../../store/use-level-up-store';
 
 import { Message } from '../../../types/chat';
 import { Note } from '../../../types/note';
@@ -138,12 +140,37 @@ export const useNoteSubmission = (
                     const streakUpdated = response.data?.streakUpdated;
                     const newDays = streakUpdated ? prevDays + 1 : prevDays;
 
-                    if (streakUpdated && isStudyMilestone(newDays)) {
-                        // Open milestone modal; milestone sound removed per request
-                        useMilestoneStore.getState().openMilestone({
-                            days: newDays,
-                            nickname: userData?.nickname || ''
-                        });
+                    if (streakUpdated) {
+                        const isLevelUp = isLevelUpDay(newDays);
+                        const isMilestone = isStudyMilestone(newDays);
+
+                        if (isLevelUp) {
+                            const newLevel = calculateLevel(newDays);
+                            const pendingMilestone = isMilestone ? {
+                                days: newDays,
+                                nickname: userData?.nickname || ''
+                            } : null;
+
+                            useLevelUpStore.getState().openLevelUp({
+                                level: newLevel,
+                                days: newDays,
+                                nickname: userData?.nickname || ''
+                            }, pendingMilestone);
+                        } else if (isMilestone) {
+                            // Open milestone modal; milestone sound removed per request
+                            useMilestoneStore.getState().openMilestone({
+                                days: newDays,
+                                nickname: userData?.nickname || ''
+                            });
+                        } else {
+                            playNoteSubmitSound();
+                            triggerConfetti({
+                                particleCount: 150,
+                                spread: 70,
+                                origin: { y: 0.6 },
+                                zIndex: 10000
+                            });
+                        }
                     } else {
                         playNoteSubmitSound();
                         triggerConfetti({

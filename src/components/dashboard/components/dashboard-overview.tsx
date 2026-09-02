@@ -6,7 +6,9 @@ import StreakCalendar from './streak-calendar';
 import { QuestCard } from './quest-card';
 import { TimeCapsuleCard } from './time-capsule-card';
 import { useModalStore } from '../../../store/use-modal-store';
+import { useLevelUpStore } from '../../../store/use-level-up-store';
 import { useLanguage } from '../../../hooks/use-language';
+import { calculateLevel } from '../../../utils/level-utils';
 import './quest-card.css';
 
 interface DashboardOverviewProps {
@@ -94,11 +96,37 @@ const DashboardOverview = ({
             <span className="label">{t('dashboard.days')}</span>
           </div>
         </div>
-        <div className="stat-card level-card">
+        <div 
+          className="stat-card level-card"
+          onClick={() => {
+            const days = userData.daysStudiedCount || 0;
+            const currentLevel = calculateLevel(days);
+            useLevelUpStore.getState().openLevelUp({
+              level: currentLevel,
+              days,
+              nickname: userData.nickname || ''
+            });
+          }}
+          style={{ cursor: 'pointer' }}
+          title={t('levelUp.viewCard')}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              const days = userData.daysStudiedCount || 0;
+              const currentLevel = calculateLevel(days);
+              useLevelUpStore.getState().openLevelUp({
+                level: currentLevel,
+                days,
+                nickname: userData.nickname || ''
+              });
+            }
+          }}
+        >
           <h3>{t('profile.level')}</h3>
           <div className="streak-value">
             <span className="number">
-              {Math.floor((userData.daysStudiedCount || 0) / 7) + 1}
+              {calculateLevel(userData.daysStudiedCount || 0)}
             </span>
             <span className="label">Lv</span>
           </div>

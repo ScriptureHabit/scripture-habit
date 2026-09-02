@@ -13,6 +13,20 @@ export default {
         "viewCard": "Visualizza Registro di Studio",
         "openLetterAction": "Apri Lettera"
     },
+    "levelUp": {
+        "title": "Livello {level} Raggiunto!",
+        "label": "LIVELLO SUPERATO",
+        "levelBadge": "Lv.{level}",
+        "daysStudied": "{days} GIORNI",
+        "achievementMessage": "Congratulazioni! La tua abitudine di studio ha raggiunto il Livello {level}.",
+        "saveImage": "Salva Immagine",
+        "saving": "Salvataggio...",
+        "imageSaved": "Immagine salvata con successo",
+        "imageSaveError": "Impossibile salvare l'immagine",
+        "share": "Condividi",
+        "shareText": "Ho raggiunto il Livello {level} su Scripture Habit! ({days} giorni di studio)",
+        "viewCard": "Visualizza Scheda Livello"
+    },
     "timeCapsule": {
         "createTitle": "Scrivi una Lettera al Tuo Io Futuro (Giorno {days})",
         "socialProofCount": "{count} compagni hanno raggiunto il Giorno {days}!",
