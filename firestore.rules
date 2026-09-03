@@ -42,7 +42,7 @@ service cloud.firestore {
              'readCountGoal', 'email', 'createdAt', 'language', 'hasCompletedOnboarding',
              'hasSeenWelcomeStory', 'hasSeenTour', 'daysStudiedCount', 'totalNotes', 
              'studiedDates', 'isLevelMigrated', 'fcmTokens', 'hasFcmToken',
-             'questCreatedGroup', 'questPostedNote'
+             'questCreatedGroup', 'questPostedNote', 'lastRecentGroup'
            ])
         && (!request.resource.data.keys().hasAny(['nickname']) || (request.resource.data.nickname is string && request.resource.data.nickname.size() <= 50));
 

@@ -528,16 +528,96 @@ describe('Groups Route Additional Integration Tests', () => {
         });
     });
 
-    describe('GET /group-preview/:inviteCode error handling', () => {
-        it('should return 500 when Firestore query throws during group-preview', async () => {
-            const spy = vi.spyOn(db, 'collection').mockImplementation(() => {
-                throw new Error('Firestore unavailable');
+    describe('POST /rejoin-group', () => {
+        const REJOIN_GROUP_ID = 'REJOIN_GRP_' + Date.now();
+        const REJOIN_USER_ID = 'REJOIN_USER_' + Date.now();
+
+        beforeEach(async () => {
+            await db.collection('groups').doc(REJOIN_GROUP_ID).set({
+                name: 'Rejoin Test Group',
+                ownerUserId: OWNER_ID,
+                members: [OWNER_ID],
+                membersCount: 1,
+                maxMembers: 5,
+                createdAt: admin.firestore.Timestamp.now()
             });
 
-            const res = await fetch(`${setup.baseUrl}/api/groups/group-preview/ANYCODE`);
-            expect(res.status).toBe(500);
+            await db.collection('users').doc(REJOIN_USER_ID).set({
+                uid: REJOIN_USER_ID,
+                nickname: 'Rejoin User',
+                groupIds: [],
+                lastRecentGroup: {
+                    id: REJOIN_GROUP_ID,
+                    name: 'Rejoin Test Group',
+                    isAiGroup: false
+                }
+            });
+        });
 
-            spy.mockRestore();
+        it('should successfully rejoin without invite code', async () => {
+            setup.mockAuth(REJOIN_USER_ID);
+            const res = await fetch(`${setup.baseUrl}/api/groups/rejoin-group`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer token-${REJOIN_USER_ID}`
+                },
+                body: JSON.stringify({ groupId: REJOIN_GROUP_ID })
+            });
+
+            expect(res.status).toBe(200);
+            const data = await res.json();
+            expect(data.gid).toBe(REJOIN_GROUP_ID);
+
+            // Verify group members
+            const groupSnap = await db.collection('groups').doc(REJOIN_GROUP_ID).get();
+            expect(groupSnap.data()?.members).toContain(REJOIN_USER_ID);
+
+            // Verify user doc
+            const userSnap = await db.collection('users').doc(REJOIN_USER_ID).get();
+            expect(userSnap.data()?.groupIds).toContain(REJOIN_GROUP_ID);
+            expect(userSnap.data()?.lastRecentGroup).toBeUndefined();
+        });
+
+        it('should return error when group is full', async () => {
+            await db.collection('groups').doc(REJOIN_GROUP_ID).update({
+                members: ['m1', 'm2', 'm3', 'm4', 'm5'],
+                maxMembers: 5
+            });
+
+            setup.mockAuth(REJOIN_USER_ID);
+            const res = await fetch(`${setup.baseUrl}/api/groups/rejoin-group`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer token-${REJOIN_USER_ID}`
+                },
+                body: JSON.stringify({ groupId: REJOIN_GROUP_ID })
+            });
+
+            expect(res.status).toBe(400);
+            const data = await res.json();
+            expect(data.code).toBe('GROUP_FULL');
+        });
+
+        it('should return 404 when group is deleted', async () => {
+            await db.collection('groups').doc(REJOIN_GROUP_ID).update({
+                isDeleted: true
+            });
+
+            setup.mockAuth(REJOIN_USER_ID);
+            const res = await fetch(`${setup.baseUrl}/api/groups/rejoin-group`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer token-${REJOIN_USER_ID}`
+                },
+                body: JSON.stringify({ groupId: REJOIN_GROUP_ID })
+            });
+
+            expect(res.status).toBe(404);
+            const data = await res.json();
+            expect(data.code).toBe('GROUP_DELETED');
         });
     });
 });

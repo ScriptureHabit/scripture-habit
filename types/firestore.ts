@@ -27,6 +27,13 @@ export interface MemberPreview {
     nickname?: string;
 }
 
+export interface RecentGroupInfo {
+    id: string;
+    name: string;
+    isAiGroup?: boolean;
+    leftAt?: FirestoreTimestamp;
+}
+
 /**
  * Group Document Schema
  */
@@ -116,6 +123,7 @@ export interface UserDocument {
     groupIds?: string[];
     kickThreshold?: number;
     hasSetKickThreshold?: boolean;
+    lastRecentGroup?: RecentGroupInfo;
     
     // Activity & System
     lastInteractionAt?: FirestoreTimestamp;

@@ -718,6 +718,33 @@
   width: auto !important;
 }
 
+.no-group-cta .cta-buttons-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+}
+
+.no-group-cta .cta-btn.secondary-cta-btn {
+  background: rgba(255, 255, 255, 0.85) !important;
+  color: var(--pink) !important;
+  border: 1px solid var(--pink) !important;
+  box-shadow: none !important;
+}
+
+.no-group-cta .cta-btn.secondary-cta-btn:hover {
+  background: #ffffff !important;
+  color: #ff6b7e !important;
+  transform: translateY(-1px) !important;
+}
+
+.no-group-cta .cta-btn:disabled {
+  opacity: 0.6 !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+}
+
 /* Error and Maintenance States */
 .error-screen-container {
   display: flex;

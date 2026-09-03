@@ -3,6 +3,8 @@ export type ApiErrorCode =
   | 'EXPIRED_INVITE_LINK'
   | 'FORBIDDEN'
   | 'NOT_FOUND'
+  | 'GROUP_NOT_FOUND'
+  | 'GROUP_DELETED'
   | 'ALREADY_MEMBER'
   | 'GROUP_FULL'
   | 'MAX_GROUPS_LIMIT'

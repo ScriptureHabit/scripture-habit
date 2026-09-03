@@ -183,6 +183,7 @@ export class InactivityService {
         const decision = decideGroupInactivity(groupData, memberList, now);
 
         // 4. Execute Decision
+        const isCurrentAiGroup = Boolean(groupData.isAiGroup || groupData.aiCompanionUid === 'ai-partner-bot');
         if (decision.shouldDeleteGroup) {
             // Cleanup user refs first
             const batch = db.batch();
@@ -191,7 +192,13 @@ export class InactivityService {
                 const userRef = db.collection('users').doc(member.uid);
                 batch.set(userRef, {
                     groupIds: admin.firestore.FieldValue.arrayRemove(groupId),
-                    groupId: admin.firestore.FieldValue.delete()
+                    groupId: admin.firestore.FieldValue.delete(),
+                    lastRecentGroup: {
+                        id: groupId,
+                        name: groupData.name || 'Group',
+                        isAiGroup: isCurrentAiGroup,
+                        leftAt: admin.firestore.FieldValue.serverTimestamp()
+                    }
                 }, { merge: true });
                 batch.delete(userRef.collection('groupStates').doc(groupId));
             }
@@ -294,7 +301,13 @@ export class InactivityService {
                 // Use set with merge for robustness against missing fields/docs
                 batch.set(userRef, { 
                     groupIds: admin.firestore.FieldValue.arrayRemove(groupId),
-                    groupId: admin.firestore.FieldValue.delete() 
+                    groupId: admin.firestore.FieldValue.delete(),
+                    lastRecentGroup: {
+                        id: groupId,
+                        name: groupData.name || 'Group',
+                        isAiGroup: isCurrentAiGroup,
+                        leftAt: admin.firestore.FieldValue.serverTimestamp()
+                    }
                 }, { merge: true });
                 batch.delete(userRef.collection('groupStates').doc(groupId));
                 batch.delete(groupRef.collection('members').doc(uid));

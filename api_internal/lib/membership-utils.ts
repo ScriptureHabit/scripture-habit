@@ -189,9 +189,27 @@ export async function removeMemberFromGroup(
     transaction.delete(memberDocRef);
 
     if (options.removeFromUserDoc) {
-        transaction.update(userRef, {
+        const userUpdates: admin.firestore.UpdateData<UserDocument> = {
             groupIds: admin.firestore.FieldValue.arrayRemove(groupId)
-        });
+        };
+
+        const isCurrentAiGroup = Boolean(groupData.isAiGroup || groupData.aiCompanionUid === 'ai-partner-bot');
+        const currentUserData = userSnap.exists ? (userSnap.data() as UserDocument) : undefined;
+        const existingRecent = currentUserData?.lastRecentGroup;
+
+        // If existing is non-AI (regular group) and current leaving group is AI, keep existing regular group
+        const shouldKeepExisting = existingRecent && !existingRecent.isAiGroup && isCurrentAiGroup;
+
+        if (!shouldKeepExisting) {
+            userUpdates.lastRecentGroup = {
+                id: groupId,
+                name: groupData.name || 'Group',
+                isAiGroup: isCurrentAiGroup,
+                leftAt: admin.firestore.FieldValue.serverTimestamp()
+            };
+        }
+
+        transaction.update(userRef, userUpdates);
     }
 
     if (options.clearUserGroupId) {

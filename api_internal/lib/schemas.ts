@@ -58,6 +58,11 @@ export const deleteGroupSchema = z.object({
     groupId: z.string().min(1)
 });
 
+export const rejoinGroupSchema = z.object({
+    token: z.string().min(1).optional(),
+    groupId: z.string().min(1)
+});
+
 export const deleteNoteSchema = z.object({
     token: z.string().min(1).optional(),
     noteId: z.string().min(1)

@@ -165,7 +165,7 @@ const Dashboard = () => {
   }, [userData, enrichedUserGroups]);
 
   const { showNotifPrompt, handleEnableNotifications, handleCloseNotifPrompt } = useDashboardNotifications(userData, t);
-  const { markWelcomeStorySeen, updateNickname } = useDashboardActions(user, userData);
+  const { markWelcomeStorySeen, updateNickname, clearLastRecentGroup } = useDashboardActions(user, userData);
 
   // Play unread sound alert on app start (session-capped) and new messages
   useUnreadAudioAlert(enrichedUserGroups, userData?.uid, selectedView === 2, activeGroupId);
@@ -297,6 +297,12 @@ const Dashboard = () => {
                 setSelectedView(2);
               }
             }}
+            onRejoinSuccess={(groupId) => {
+              setActiveGroupId(groupId);
+              setSelectedView(2);
+              navigate(`/${language}/dashboard?groupId=${encodeURIComponent(groupId)}&view=2`);
+            }}
+            onClearRecentGroup={clearLastRecentGroup}
           />
         )}
         {selectedView === 1 && (

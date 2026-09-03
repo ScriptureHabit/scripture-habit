@@ -136,12 +136,12 @@ async function seedExistingUser() {
                     ? [getDateStr(3), getDateStr(2), getDateStr(1)]
                     : [];
 
-        await db.collection('users').doc(u.uid).set({
+        const isExistingUser = u.uid === 'seeder-existing-user';
+        const userDocData: Record<string, unknown> = {
             uid: u.uid,
             nickname: u.nickname,
             photoURL: u.photoURL,
-            groupIds: [groupId],
-            groupId: groupId,
+            groupIds: isExistingUser ? [] : [groupId],
             streakCount: u.streakCount,
             highestStreak: u.highestStreak,
             daysStudiedCount: u.streakCount,
@@ -155,7 +155,20 @@ async function seedExistingUser() {
             hasCompletedOnboarding: true,
             questCreatedGroup: true,
             questPostedNote: true
-        });
+        };
+
+        if (!isExistingUser) {
+            userDocData.groupId = groupId;
+        } else {
+            userDocData.lastRecentGroup = {
+                id: groupId,
+                name: groupName,
+                isAiGroup: false,
+                leftAt: admin.firestore.Timestamp.fromMillis(Date.now() - 2 * 60 * 60 * 1000) // Left 2 hours ago
+            };
+        }
+
+        await db.collection('users').doc(u.uid).set(userDocData);
 
         // Seed demo notes for existing-user so "My Notes" and calendar feel rich and alive
         if (u.uid === 'seeder-existing-user') {
@@ -271,11 +284,14 @@ async function seedExistingUser() {
 
     // 3. Create Group Document
     console.log(`📦 Seeding group: "${groupName}"...`);
+    const activeUids = uids.filter(id => id !== 'seeder-existing-user');
+    const activeUsers = users.filter(u => u.uid !== 'seeder-existing-user');
+
     const joinedAtMap: Record<string, Timestamp> = {};
     const memberLastActiveMap: Record<string, Timestamp> = {};
     const memberKickThresholds: Record<string, number> = {};
 
-    for (const uid of uids) {
+    for (const uid of activeUids) {
         joinedAtMap[uid] = threeDaysAgo;
         memberLastActiveMap[uid] = now;
         memberKickThresholds[uid] = uid === 'seeder-charlie' ? 1 : 3; // Charlie has a 1-day threshold
@@ -284,23 +300,26 @@ async function seedExistingUser() {
     // Simulate Charlie last active 2 days ago (which triggers kick logic during sweeps)
     memberLastActiveMap['seeder-charlie'] = admin.firestore.Timestamp.fromMillis(Date.now() - 2 * 24 * 60 * 60 * 1000);
 
+    const leaveTimestamp = admin.firestore.Timestamp.fromMillis(Date.now() - 2 * 60 * 60 * 1000);
+
     await db.collection('groups').doc(groupId).set({
         name: groupName,
         inviteCode: inviteCode,
         inviteCodeExpiresAt: admin.firestore.Timestamp.fromMillis(Date.now() + 30 * 24 * 60 * 60 * 1000), // Expires in 30 days
-        members: uids,
-        membersCount: uids.length,
+        members: activeUids,
+        membersCount: activeUids.length,
         isPublic: true,
-        ownerUserId: 'seeder-existing-user',
-        messageCount: 0,
-        lastMessageAt: now,
-        lastMessageText: 'Seed database setup complete!',
+        ownerUserId: 'seeder-alice',
+        messageCount: 7,
+        lastMessageAt: leaveTimestamp,
+        lastMessageText: '🚪 existing-userさんがグループを退会しました。',
         lastMessageByNickname: 'System',
         lastMessageByUid: 'system',
         dailyActivity: {
-            activeMembers: ['seeder-existing-user', 'seeder-alice', 'seeder-bob'],
+            activeMembers: ['seeder-alice', 'seeder-bob'],
             date: new Date().toLocaleDateString('sv-SE') // Sweden format YYYY-MM-DD
         },
+        memberPreviews: activeUsers.map(u => ({ uid: u.uid, nickname: u.nickname })),
         memberJoinedAt: joinedAtMap,
         memberLastActive: memberLastActiveMap,
         memberKickThresholds: memberKickThresholds,
@@ -310,8 +329,8 @@ async function seedExistingUser() {
     // 4. Seed Subcollections: Members & Messages
     console.log('📥 Seeding group subcollections (members & messages)...');
     
-    // Seed Members subcollection
-    for (const u of users) {
+    // Seed Members subcollection (only active members)
+    for (const u of activeUsers) {
         await db.collection('groups').doc(groupId).collection('members').doc(u.uid).set({
             uid: u.uid,
             nickname: u.nickname,
@@ -434,6 +453,19 @@ async function seedExistingUser() {
                 userId: 'seeder-bob'
             },
             createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 2 * 60 * 60 * 1000 + 1000)
+        },
+        {
+            id: 'msg-seed-7-leave',
+            text: '🚪 existing-userさんがグループを退会しました。',
+            senderId: 'system',
+            senderNickname: 'System',
+            isSystemMessage: true,
+            type: 'leave',
+            messageType: 'userLeft',
+            messageData: {
+                nickname: 'existing-user'
+            },
+            createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 2 * 60 * 60 * 1000 + 2000)
         }
     ];
 
@@ -457,7 +489,7 @@ async function seedExistingUser() {
     console.log('   Email:    existing-user@example.com');
     console.log('   Password: password123');
     console.log('   Nickname: existing-user');
-    console.log('📖 Status: Member of "Daily Bread 📖" / 8-day streak / 8 study notes');
+    console.log('📖 Status: Left "Daily Bread 📖" (rejoin ready) / 6-day streak / 6 study notes');
     console.log('==================================================\n');
 }
 

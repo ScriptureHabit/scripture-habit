@@ -1,7 +1,11 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { UilPlus, UilPen } from '@iconscout/react-unicons';
+import { toast } from 'react-toastify';
+import axios from 'axios';
+import apiClient from '../../../utils/api-client';
 import Mascot from '../../mascot/mascot';
-import { UserData } from '../../../types/user';
+import { UserData, RecentGroupInfo } from '../../../types/user';
 import StreakCalendar from './streak-calendar';
 import { QuestCard } from './quest-card';
 import { TimeCapsuleCard } from './time-capsule-card';
@@ -27,6 +31,8 @@ interface DashboardOverviewProps {
   kickDate?: string | null;
   hasActiveModal?: boolean;
   onGoToGroupChat?: () => void;
+  onRejoinSuccess?: (groupId: string) => void;
+  onClearRecentGroup?: () => Promise<boolean> | void;
 }
 
 const DashboardOverview = ({
@@ -44,11 +50,55 @@ const DashboardOverview = ({
   setNewNickname,
   kickDate,
   hasActiveModal = false,
-  onGoToGroupChat
+  onGoToGroupChat,
+  onRejoinSuccess,
+  onClearRecentGroup
 }: DashboardOverviewProps) => {
   const { activeModal } = useModalStore();
   const { language } = useLanguage();
   const isAnyModalOpen = hasActiveModal || !!activeModal;
+  const [isRejoining, setIsRejoining] = useState(false);
+
+  const handleRejoin = async (recentGroup: RecentGroupInfo) => {
+    if (isRejoining) return;
+    setIsRejoining(true);
+    try {
+      if (recentGroup.isAiGroup) {
+        // AI groups: create new AI group
+        const res = await apiClient.post('/api/groups/create-ai-group', {});
+        if (res.data?.groupId) {
+          toast.success(t('dashboard.rejoinSuccess'));
+          onRejoinSuccess?.(res.data.groupId);
+        }
+      } else {
+        // Regular group: one-tap rejoin
+        const res = await apiClient.post('/api/groups/rejoin-group', { groupId: recentGroup.id });
+        if (res.data?.gid) {
+          toast.success(t('dashboard.rejoinSuccess'));
+          onRejoinSuccess?.(res.data.gid);
+        }
+      }
+    } catch (err: unknown) {
+      console.error('Error rejoining group:', err);
+      let errorCode = '';
+      if (axios.isAxiosError(err)) {
+        errorCode = err.response?.data?.code || '';
+      }
+
+      if (errorCode === 'GROUP_FULL') {
+        toast.error(t('dashboard.groupFullRejoin'));
+      } else if (errorCode === 'GROUP_NOT_FOUND' || errorCode === 'GROUP_DELETED') {
+        toast.error(t('dashboard.groupDeletedRejoin'));
+        // Clear deleted group from user doc via action hook
+        await onClearRecentGroup?.();
+      } else {
+        const fallbackMsg = axios.isAxiosError(err) ? err.response?.data?.error : null;
+        toast.error(fallbackMsg || t('groupChat.reportError'));
+      }
+    } finally {
+      setIsRejoining(false);
+    }
+  };
 
   return (
     <div className="dashboard-inner-wrapper">
@@ -161,10 +211,36 @@ const DashboardOverview = ({
 
         {!hasGroups && (
           <div className="no-group-cta">
-            <p>{t('dashboard.joinGroupStudy')}</p>
-            <Link to={`/${language}/group-options`}>
-              <button className="cta-btn">{t('dashboard.joinCreateGroup')}</button>
-            </Link>
+            {userData?.lastRecentGroup ? (
+              <>
+                <p>
+                  {userData.lastRecentGroup.isAiGroup
+                    ? t('dashboard.rejoinAiGroupPrompt')
+                    : t('dashboard.rejoinGroupPrompt', { groupName: userData.lastRecentGroup.name })}
+                </p>
+                <div className="cta-buttons-container">
+                  <button
+                    className="cta-btn"
+                    onClick={() => handleRejoin(userData.lastRecentGroup!)}
+                    disabled={isRejoining}
+                  >
+                    {isRejoining ? t('dashboard.rejoiningBtn') : t('dashboard.rejoinBtn')}
+                  </button>
+                  <Link to={`/${language}/group-options`}>
+                    <button className="cta-btn secondary-cta-btn">
+                      {t('dashboard.findOrCreateOtherGroup')}
+                    </button>
+                  </Link>
+                </div>
+              </>
+            ) : (
+              <>
+                <p>{t('dashboard.joinGroupStudy')}</p>
+                <Link to={`/${language}/group-options`}>
+                  <button className="cta-btn">{t('dashboard.joinCreateGroup')}</button>
+                </Link>
+              </>
+            )}
           </div>
         )}
 

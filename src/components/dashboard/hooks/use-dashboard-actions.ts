@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { User } from 'firebase/auth';
-import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, setDoc, updateDoc, deleteField, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../../firebase';
 import apiClient from '../../../utils/api-client';
 import { UserData } from '../../../types/user';
@@ -86,5 +86,19 @@ export const useDashboardActions = (user: User | null, userData: UserData | null
     }
   }, [user]);
 
-  return { markWelcomeStorySeen, markTourSeen, updateNickname, updateGroupReadStatus };
+  const clearLastRecentGroup = useCallback(async (): Promise<boolean> => {
+    if (!user?.uid) return false;
+
+    try {
+      await updateDoc(doc(db, 'users', user.uid), {
+        lastRecentGroup: deleteField()
+      });
+      return true;
+    } catch (error) {
+      console.error('Error clearing lastRecentGroup:', error);
+      return false;
+    }
+  }, [user]);
+
+  return { markWelcomeStorySeen, markTourSeen, updateNickname, updateGroupReadStatus, clearLastRecentGroup };
 };

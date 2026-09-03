@@ -318,5 +318,59 @@ describe('MembershipUtils Unit Tests', () => {
             const updateCall = mockUpdate.mock.calls[0][1];
             expect(updateCall.ownerUserId).toBeUndefined();
         });
+
+        it('should record lastRecentGroup when removeFromUserDoc is true', async () => {
+            const mockUpdate = vi.fn();
+            const mockTransaction = {
+                get: vi.fn().mockImplementation(async (ref) => {
+                    if (ref.path.startsWith('groups/g1')) {
+                        return makeSnap(true, { name: 'Alpha Group', isAiGroup: false });
+                    }
+                    return makeSnap(true, {});
+                }),
+                update: mockUpdate,
+                delete: vi.fn(),
+                set: vi.fn()
+            } as unknown as admin.firestore.Transaction;
+
+            await removeMemberFromGroup(mockTransaction, 'g1', 'u1', { removeFromUserDoc: true });
+            
+            const userUpdateCall = mockUpdate.mock.calls.find((c) => c[0]?.path?.startsWith('users/u1'));
+            expect(userUpdateCall).toBeDefined();
+            expect(userUpdateCall![1]).toMatchObject({
+                lastRecentGroup: expect.objectContaining({
+                    id: 'g1',
+                    name: 'Alpha Group',
+                    isAiGroup: false
+                })
+            });
+        });
+
+        it('should keep existing non-AI group when leaving an AI group', async () => {
+            const mockUpdate = vi.fn();
+            const mockTransaction = {
+                get: vi.fn().mockImplementation(async (ref) => {
+                    if (ref.path.startsWith('groups/g_ai')) {
+                        return makeSnap(true, { name: 'AI Group', isAiGroup: true });
+                    }
+                    if (ref.path.startsWith('users/u1')) {
+                        return makeSnap(true, {
+                            lastRecentGroup: { id: 'g_regular', name: 'Regular Group', isAiGroup: false }
+                        });
+                    }
+                    return makeSnap(true, {});
+                }),
+                update: mockUpdate,
+                delete: vi.fn(),
+                set: vi.fn()
+            } as unknown as admin.firestore.Transaction;
+
+            await removeMemberFromGroup(mockTransaction, 'g_ai', 'u1', { removeFromUserDoc: true });
+
+            const userUpdateCall = mockUpdate.mock.calls.find((c) => c[0]?.path?.startsWith('users/u1'));
+            expect(userUpdateCall).toBeDefined();
+            // Should not have overwritten lastRecentGroup
+            expect(userUpdateCall![1].lastRecentGroup).toBeUndefined();
+        });
     });
 });

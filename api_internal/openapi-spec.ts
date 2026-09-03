@@ -339,6 +339,45 @@ const openapiSpec = {
         }
       }
     },
+    "/api/groups/rejoin-group": {
+      "post": {
+        "tags": ["Groups & Chat"],
+        "summary": "Rejoin Group",
+        "description": "Allows a previous member to rejoin a group without invite code if group exists and has capacity.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["groupId"],
+                "properties": {
+                  "groupId": { "type": "string", "example": "grp_abc123" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully rejoined group",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "gid": { "type": "string", "example": "grp_abc123" },
+                    "groupName": { "type": "string", "example": "Tokyo Group" }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Group is full or already joined" },
+          "404": { "description": "Group not found or deleted" }
+        }
+      }
+    },
     "/api/groups/leave-group": {
       "post": {
         "tags": ["Groups & Chat"],

@@ -5,7 +5,7 @@ import {
   assertFails,
   assertSucceeds,
 } from '@firebase/rules-unit-testing';
-import { doc, getDoc, setDoc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, updateDoc, deleteDoc, deleteField } from 'firebase/firestore';
 import fs from 'fs';
 import path from 'path';
 
@@ -77,11 +77,23 @@ describe('Firestore Security Rules Unit Tests', () => {
         });
       });
 
-      // Updating allowed field 'nickname' & 'bio'
+      // Updating allowed field 'nickname' & 'bio' & 'lastRecentGroup'
       await assertSucceeds(
         updateDoc(doc(aliceDb, 'users/user_alice'), {
           nickname: 'Alice New',
           bio: 'Updated Bio',
+        })
+      );
+
+      // Updating and deleting lastRecentGroup (used when clearing defunct groups)
+      await assertSucceeds(
+        updateDoc(doc(aliceDb, 'users/user_alice'), {
+          lastRecentGroup: { id: 'grp_123', name: 'Test Group', isAiGroup: false }
+        })
+      );
+      await assertSucceeds(
+        updateDoc(doc(aliceDb, 'users/user_alice'), {
+          lastRecentGroup: deleteField()
         })
       );
 

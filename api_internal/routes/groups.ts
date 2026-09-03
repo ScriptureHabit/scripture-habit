@@ -3,7 +3,7 @@ import express, { Request, Response } from 'express';
 import { admin, db } from '../lib/firebase-admin.js';
 import { verifyAppCheck, authenticate, requireEmailVerified, AuthenticatedRequest } from '../lib/middleware.js';
 import { runPhasedTransaction } from '../lib/phased-transaction.js';
-import { joinGroupSchema, updateKickThresholdSchema, leaveGroupSchema, deleteGroupSchema, updateReadStatusSchema, announceUnitySchema, updateGroupSchema, regenerateInviteCodeSchema, kickMemberSchema, createGroupSchema, createAiGroupSchema } from '../lib/schemas.js';
+import { joinGroupSchema, rejoinGroupSchema, updateKickThresholdSchema, leaveGroupSchema, deleteGroupSchema, updateReadStatusSchema, announceUnitySchema, updateGroupSchema, regenerateInviteCodeSchema, kickMemberSchema, createGroupSchema, createAiGroupSchema } from '../lib/schemas.js';
 import { GroupDocument, UserDocument, MemberPreview as PreviewItem, GroupMemberDocument } from '../../types/firestore.js';
 import { MAX_GROUPS_PER_USER } from '../lib/constants.js';
 import { removeMemberFromGroup } from '../lib/membership-utils.js';
@@ -536,6 +536,151 @@ router.post('/join-group', authenticate, requireEmailVerified, verifyAppCheck, a
     } catch (error) {
         console.error('Error joining group:', error);
         sendErrorResponse(res, error, 'Join group failed');
+    }
+});
+
+// Rejoin Group (One-tap rejoin for previous members without invite code)
+router.post('/rejoin-group', authenticate, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+        const validation = rejoinGroupSchema.safeParse(req.body);
+        if (!validation.success) {
+            throw new ValidationError(validation.error.issues[0]?.message || 'Invalid input');
+        }
+
+        const { groupId } = validation.data;
+        const uid = req.user?.uid;
+        if (!uid) throw new AuthenticationError('Unauthorized');
+
+        const result = await runPhasedTransaction(db, {
+            read: async (transaction) => {
+                const groupRef = db.collection('groups').doc(groupId);
+                const userRef = db.collection('users').doc(uid);
+                const latestRef = groupRef.collection('messages_latest').doc('latest');
+
+                const [groupSnap, userSnap, latestSnap] = await transaction.getAll(groupRef, userRef, latestRef);
+
+                return { groupRef, userRef, latestRef, groupSnap, userSnap, latestSnap };
+            },
+            write: async (transaction, { groupRef, userRef, latestRef, groupSnap, userSnap, latestSnap }) => {
+                if (!groupSnap.exists) {
+                    throw new NotFoundError('Group does not exist or has been deleted.', 'GROUP_NOT_FOUND');
+                }
+
+                const gData = groupSnap.data() as GroupDocument;
+                if (gData.isDeleted) {
+                    throw new NotFoundError('This group has been deleted.', 'GROUP_DELETED');
+                }
+
+                if (!userSnap.exists) {
+                    throw new NotFoundError('User profile not found.', 'NOT_FOUND');
+                }
+
+                const userData = userSnap.data()! as UserDocument;
+                const members = gData.members || [];
+                const maxMembers = gData.maxMembers || 5;
+
+                const isUserDemo = userData.isAnonymousDemo || req.user?.firebase?.sign_in_provider === 'anonymous';
+                if (isUserDemo && (!gData.isDemoGroup || groupId !== `demo-group-${uid}`)) {
+                    throw new ForbiddenError('Demo accounts can only join their dedicated demo group.');
+                }
+                if (!isUserDemo && gData.isDemoGroup) {
+                    throw new ForbiddenError('Real accounts cannot join demo sandbox groups.');
+                }
+
+                if (members.includes(uid)) throw new ValidationError('You are already a member of this group.', 'ALREADY_MEMBER');
+                if (members.length >= maxMembers) {
+                    throw new ValidationError('This group is full.', 'GROUP_FULL');
+                }
+
+                const userGroupIds = userData.groupIds || [];
+                if (userGroupIds.length >= MAX_GROUPS_PER_USER) {
+                    throw new ValidationError(`You can only join up to ${MAX_GROUPS_PER_USER} groups. Please leave one before joining another.`, 'MAX_GROUPS_LIMIT');
+                }
+
+                // Prepare Data
+                const updatedMembers = [...members, uid];
+                const newMemberPreview = { uid, nickname: userData.nickname || 'Member' };
+                const existingPreviews = (gData.memberPreviews || []) as PreviewItem[];
+                const updatedPreviews = [newMemberPreview, ...existingPreviews.filter((p) => p.uid !== uid)].slice(0, 15);
+
+                const memberData: admin.firestore.WithFieldValue<GroupMemberDocument> = {
+                    uid,
+                    nickname: userData.nickname || 'Member',
+                    photoURL: userData.photoURL || '',
+                    joinedAt: admin.firestore.FieldValue.serverTimestamp(),
+                    lastActiveAt: admin.firestore.FieldValue.serverTimestamp(),
+                    kickThreshold: userData.kickThreshold || 3,
+                    lastReadAt: admin.firestore.FieldValue.serverTimestamp(),
+                    readMessageCount: 0
+                };
+
+                // START WRITES
+                transaction.update(groupRef, {
+                    members: updatedMembers,
+                    membersCount: updatedMembers.length,
+                    memberPreviews: updatedPreviews,
+                    [`memberJoinedAt.${uid}`]: admin.firestore.FieldValue.serverTimestamp(),
+                    [`memberKickThresholds.${uid}`]: userData.kickThreshold || 3,
+                    lastMessageAt: admin.firestore.FieldValue.serverTimestamp(),
+                    lastMessageByNickname: userData.nickname || 'Member',
+                    lastMessageByUid: uid,
+                    lastInactivityCheckedAt: admin.firestore.FieldValue.serverTimestamp()
+                });
+
+                const memberRef = groupRef.collection('members').doc(uid);
+                transaction.set(memberRef, memberData);
+
+                const userGS = userRef.collection('groupStates').doc(groupId);
+                transaction.set(userGS, {
+                    readMessageCount: 0,
+                    lastReadAt: admin.firestore.FieldValue.serverTimestamp(),
+                    lastActiveAt: admin.firestore.FieldValue.serverTimestamp()
+                });
+
+                transaction.update(userRef, {
+                    groupIds: admin.firestore.FieldValue.arrayUnion(groupId),
+                    groupId: groupId,
+                    questCreatedGroup: true,
+                    lastRecentGroup: admin.firestore.FieldValue.delete()
+                });
+
+                const msgRef = groupRef.collection('messages').doc();
+                const joinLang = userData.language || 'en';
+                const nickname = userData.nickname || 'Someone';
+                const systemMsg = {
+                    text: t(joinLang, 'notifications.member_joined_welcome', { nickname }),
+                    createdAt: admin.firestore.FieldValue.serverTimestamp(),
+                    senderId: 'system',
+                    isSystemMessage: true,
+                    type: 'join',
+                    messageType: 'userJoined',
+                    messageData: { nickname },
+                    expireAt: getMessageExpireAt()
+                };
+                transaction.set(msgRef, systemMsg);
+
+                const currentMessages: Record<string, unknown>[] = (latestSnap && latestSnap.exists)
+                    ? (latestSnap.data()?.messages || [])
+                    : [];
+                const updatedMessages = [...currentMessages, { id: msgRef.id, ...systemMsg, createdAt: admin.firestore.Timestamp.now() }].slice(-25);
+
+                transaction.set(latestRef, {
+                    groupId,
+                    messages: updatedMessages,
+                    lastUpdatedAt: admin.firestore.FieldValue.serverTimestamp()
+                }, { merge: true });
+
+                const ownerPreview = (gData.memberPreviews || []).find((p: PreviewItem) => p.uid === gData.ownerUserId);
+                const ownerName = ownerPreview ? ownerPreview.nickname : 'Owner';
+
+                return { gid: groupId, groupName: gData.name, ownerName };
+            }
+        });
+
+        res.status(200).json({ message: 'Success', ...result });
+    } catch (error) {
+        console.error('Error rejoining group:', error);
+        sendErrorResponse(res, error, 'Rejoin group failed');
     }
 });
 

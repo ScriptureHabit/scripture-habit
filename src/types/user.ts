@@ -1,5 +1,12 @@
 import { Timestamp } from 'firebase/firestore';
 
+export interface RecentGroupInfo {
+  id: string;
+  name: string;
+  isAiGroup?: boolean;
+  leftAt?: Timestamp | string | number | Date;
+}
+
 /**
  * Represents the detailed user document stored in Firestore.
  */
@@ -49,6 +56,7 @@ export interface UserData {
   hasSetKickThreshold?: boolean;
   groupIds?: string[];
   groupId?: string;
+  lastRecentGroup?: RecentGroupInfo;
   
   // Feature/AI timestamps
   lastLetterGeneratedAt?: Timestamp | string | number | Date;
