@@ -84,7 +84,16 @@ export function TimeCapsuleCard({
   if (sealedCapsule) {
     const target = sealedCapsule.targetDays;
     const remaining = Math.max(0, target - currentDays);
-    const progressPercent = Math.min(100, Math.max(0, (currentDays / target) * 100));
+
+    // Calculate progress within the current milestone interval (e.g. Day 275 -> Day 300)
+    // Milestones: 10, 25, 50, 75, 100, 125, 150...
+    const previousMilestone = target <= 10 ? 0 : target <= 25 ? 10 : target - 25;
+    const startDays = sealedCapsule.createdStats?.days != null
+      ? Math.min(sealedCapsule.createdStats.days, previousMilestone)
+      : previousMilestone;
+    const totalSpan = Math.max(1, target - startDays);
+    const progressDays = Math.max(0, currentDays - startDays);
+    const progressPercent = Math.min(100, Math.max(0, (progressDays / totalSpan) * 100));
 
     return (
       <div className="time-capsule-card state-sealed" data-testid="time-capsule-sealed-card">

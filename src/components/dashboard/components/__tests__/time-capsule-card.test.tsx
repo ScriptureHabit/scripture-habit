@@ -91,6 +91,41 @@ describe('TimeCapsuleCard', () => {
     expect(screen.getByText('あと 6日')).toBeTruthy();
   });
 
+  it('calculates progress correctly within the milestone interval for Day 300', () => {
+    mockUseTimeCapsule.mockReturnValue({
+      sealedCapsule: {
+        id: 'capsule_300',
+        targetDays: 300,
+        title: 'Day 300の自分へ',
+        content: 'Letter body',
+        sosMessage: 'SOS message',
+        isUnlocked: false,
+        createdStats: {
+          days: 275,
+          level: 40,
+          date: '2026.09.04'
+        }
+      },
+      nextTargetDays: 300,
+      activeSosMessage: null
+    });
+
+    const { container, rerender } = render(
+      <TimeCapsuleCard userData={{ ...mockUserData, daysStudiedCount: 275 }} warnings={[]} />
+    );
+
+    // At Day 275 (start of 275->300 interval, 25 days remaining), progress should be 0%
+    const progressBarFill = container.querySelector('.sealed-progress-bar-fill') as HTMLElement;
+    expect(progressBarFill).toBeTruthy();
+    expect(progressBarFill.style.width).toBe('0%');
+
+    // After studying 10 more days (Day 285, 15 days remaining), progress should be (10 / 25) = 40%
+    rerender(
+      <TimeCapsuleCard userData={{ ...mockUserData, daysStudiedCount: 285 }} warnings={[]} />
+    );
+    expect(progressBarFill.style.width).toBe('40%');
+  });
+
   it('renders SOS crisis card when warnings exist and activeSosMessage is available', () => {
     mockUseTimeCapsule.mockReturnValue({
       sealedCapsule: {
