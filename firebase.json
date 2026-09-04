@@ -27,6 +27,18 @@
             "**/.*",
             "**/node_modules/**"
         ],
+        "redirects": [
+            {
+                "source": "/",
+                "destination": "https://scripturehabit.app/",
+                "type": 301
+            },
+            {
+                "source": "/:path*",
+                "destination": "https://scripturehabit.app/:path",
+                "type": 301
+            }
+        ],
         "rewrites": [
             {
                 "source": "**",

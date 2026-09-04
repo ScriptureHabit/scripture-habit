@@ -1,6 +1,7 @@
 # Dependency & build outputs
 node_modules
 .vercel
+.firebase
 dist
 dist-ssr
 *.tsbuildinfo
