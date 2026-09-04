@@ -2,6 +2,38 @@ import { useRef, useLayoutEffect, useState, useEffect } from 'react';
 import GroupChatMessageList from './group-chat-message-list';
 import { useChatData, useChatUIActions } from '../hooks/use-chat-context';
 
+const ChatMessageSkeleton = ({ isVisible }: { isVisible: boolean }) => (
+  <div 
+    className={`chat-skeleton-container ${isVisible ? 'fade-out' : ''}`} 
+    aria-hidden="true" 
+    data-testid="chat-skeleton"
+  >
+    <div className="chat-skeleton-item incoming">
+      <div className="chat-skeleton-avatar chat-skeleton-shimmer" />
+      <div className="chat-skeleton-bubble-group">
+        <div className="chat-skeleton-bubble chat-skeleton-shimmer medium" />
+      </div>
+    </div>
+    <div className="chat-skeleton-item outgoing">
+      <div className="chat-skeleton-bubble-group">
+        <div className="chat-skeleton-bubble chat-skeleton-shimmer short" />
+      </div>
+    </div>
+    <div className="chat-skeleton-item incoming">
+      <div className="chat-skeleton-avatar chat-skeleton-shimmer" />
+      <div className="chat-skeleton-bubble-group">
+        <div className="chat-skeleton-bubble chat-skeleton-shimmer long" />
+        <div className="chat-skeleton-bubble chat-skeleton-shimmer medium" />
+      </div>
+    </div>
+    <div className="chat-skeleton-item outgoing">
+      <div className="chat-skeleton-bubble-group">
+        <div className="chat-skeleton-bubble chat-skeleton-shimmer medium" />
+      </div>
+    </div>
+  </div>
+);
+
 const GroupChatMessageListContainer = () => {
   const { messages, groupId, messagesLoaded } = useChatData();
   const { 
@@ -76,6 +108,7 @@ const GroupChatMessageListContainer = () => {
 
   return (
     <div className="message-list-outer">
+      <ChatMessageSkeleton isVisible={isVisible} />
       <div 
         className={`message-list-container ${isVisible ? 'fully-visible' : ''}`} 
         ref={containerRef}

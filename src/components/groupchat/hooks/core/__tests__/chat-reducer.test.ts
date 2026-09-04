@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { computeUnreadAnchorId } from '../chat-reducer';
-import { Message } from '../../../../../types/chat';
+import { computeUnreadAnchorId, chatReducer, initialState } from '../chat-reducer';
+import { Message, GroupData } from '../../../../../types/chat';
 
 const createMockMsg = (id: string, senderId: string, timestamp: number): Message => ({
   id,
@@ -68,5 +68,42 @@ describe('computeUnreadAnchorId Unit Tests', () => {
     expect(computeUnreadAnchorId(unsortedMsgs, 1, null)).toBe('msg1');
     // Read count is 2 => anchor is msg2
     expect(computeUnreadAnchorId(unsortedMsgs, 2, null)).toBe('msg2');
+  });
+});
+
+describe('chatReducer RESET action', () => {
+  it('resets state and preserves initialGroupData if provided', () => {
+    const mockGroup: GroupData = {
+      id: 'group-1',
+      _groupId: 'group-1',
+      name: 'Test Holy Group',
+      ownerUserId: 'user-1',
+      members: ['user-1', 'user-2'],
+      maxMembers: 5
+    };
+
+    const state = chatReducer(initialState, {
+      type: 'RESET',
+      groupId: 'group-1',
+      initialGroupData: mockGroup
+    });
+
+    expect(state.status).toBe('loading');
+    expect(state.messagesLoaded).toBe(false);
+    expect(state.groupData).toEqual(mockGroup);
+    expect(state.groupData?.name).toBe('Test Holy Group');
+  });
+
+  it('resets groupData to null if initialGroupData is omitted', () => {
+    const state = chatReducer({
+      ...initialState,
+      groupData: { id: 'old', name: 'Old' } as GroupData
+    }, {
+      type: 'RESET',
+      groupId: 'group-2'
+    });
+
+    expect(state.groupData).toBeNull();
+    expect(state.messagesLoaded).toBe(false);
   });
 });

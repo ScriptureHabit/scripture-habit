@@ -230,15 +230,23 @@ const useMessageStreamSync = (groupId: string | null, userData: UserData | null,
  * useChatDataEngine
  * Pure synchronization with Firestore. UI-agnostic.
  */
-export const useChatDataEngine = (groupId: string | null, userData: UserData | null, t: (key: string) => string) => {
-  const [state, dispatch] = useReducer(chatReducer, initialState);
+export const useChatDataEngine = (
+  groupId: string | null, 
+  userData: UserData | null, 
+  t: (key: string) => string,
+  initialGroupData?: GroupData | null
+) => {
+  const [state, dispatch] = useReducer(chatReducer, {
+    ...initialState,
+    groupData: initialGroupData || null
+  });
   
   // Synchronous render-phase state reset on groupId change to eliminate race conditions
-  const [prevGroupId, setPrevGroupId] = useState<string | null>(null);
+  const [prevGroupId, setPrevGroupId] = useState<string | null>(groupId);
   if (groupId !== prevGroupId) {
     setPrevGroupId(groupId);
     if (groupId) {
-      dispatch({ type: 'RESET', groupId });
+      dispatch({ type: 'RESET', groupId, initialGroupData });
     }
   }
 

@@ -18,7 +18,7 @@ export interface ChatState {
 }
 
 export type ChatAction =
-  | { type: 'RESET'; groupId: string }
+  | { type: 'RESET'; groupId: string; initialGroupData?: GroupData | null }
   | { type: 'SET_INITIAL_STATE'; messages: Message[]; groupData: GroupData; readCount: number }
   | { type: 'UPDATE_GROUP'; groupData: GroupData }
   | { type: 'SET_NOT_FOUND' }
@@ -88,6 +88,7 @@ export const chatReducer = (state: ChatState, action: ChatAction): ChatState => 
       return {
         ...initialState,
         status: 'loading',
+        groupData: action.initialGroupData || null,
         unreadAnchorMessageId: null,
         messagesLoaded: false,
       };

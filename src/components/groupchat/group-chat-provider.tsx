@@ -9,7 +9,7 @@ import {
   ChatUIActionsContextType
 } from './chat-context';
 import { UserData } from '../../types/user';
-import { Group, UserProfileBrief } from '../../types/chat';
+import { Group, UserProfileBrief, GroupData } from '../../types/chat';
 import { useChatStore } from '../../store/use-chat-store';
 
 // Hooks
@@ -50,12 +50,18 @@ const GroupChatProvider = ({
   // Zustand Stores
   const chatUI = useChatStore();
 
+  // Memoize initial group metadata from userGroups (0ms render on dashboard navigation)
+  const initialGroupData = useMemo(() => {
+    const found = userGroups.find(g => g.id === groupId);
+    return found ? ({ ...found, _groupId: found.id } as GroupData) : null;
+  }, [userGroups, groupId]);
+
   // Primary Data Hooks
   const {
     messages, groupData, loading, groupNotFound, userReadCount, unreadAnchorMessageId,
     initialScrollDone, setInitialScrollDone, hasMoreOlder, isLoadingOlder, loadMoreOlderMessages,
     membersMap, latestMessageRef, prevMessageCountRef, dispatch, messagesLoaded
-  } = useGroupMessages(groupId, userData, t, isActive);
+  } = useGroupMessages(groupId, userData, t, isActive, initialGroupData);
 
   // 1. Feature Hooks (State & Scoring)
   const {

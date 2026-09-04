@@ -3,6 +3,7 @@ import { useChatDataEngine } from './use-chat-data-engine';
 import { useChatSyncController } from './use-chat-sync-controller';
 import { useChatVisualEffects } from '../view/use-chat-visual-effects';
 import { UserData } from '../../../../types/user';
+import { GroupData } from '../../../../types/chat';
 
 /**
  * Hook Orchestrator: useGroupMessages
@@ -15,10 +16,11 @@ export const useGroupMessages = (
   groupId: string | null, 
   userData: UserData | null, 
   t: (key: string) => string,
-  isViewActive: boolean = false
+  isViewActive: boolean = false,
+  initialGroupData?: GroupData | null
 ) => {
   // 1. Core Data Engine (Pure subscriptions)
-  const { state, dispatch } = useChatDataEngine(groupId, userData, t);
+  const { state, dispatch } = useChatDataEngine(groupId, userData, t, initialGroupData);
 
   // 2. Functional Sync Controller (Read status, infinite scroll)
   const controller = useChatSyncController(

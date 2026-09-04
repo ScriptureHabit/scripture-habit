@@ -14,7 +14,7 @@ import { getUnityStatusEmoji } from '../../../utils/unity-utils';
 const ChatHeader = () => {
   // 1. Data
   const { 
-      groupData, unityPercentage, isOwner, language, groupId, userGroups, userData
+      groupData, unityPercentage, isOwner, language, groupId, userGroups, userData, messagesLoaded
   } = useChatData();
 
   const isFull = groupData ? (groupData.members?.length || 0) >= (groupData.maxMembers || 5) : false;
@@ -101,8 +101,12 @@ const ChatHeader = () => {
             </div>
           )}
           <h2 data-testid="group-name-title">
-            <span className="group-name-text" title={groupData ? groupData.name : t('groupChat.groupName')}>
-              {groupData ? (translatedGroupName || groupData.name) : t('groupChat.groupName')}
+            <span className="group-name-text" title={groupData ? groupData.name : ''}>
+              {groupData ? (
+                translatedGroupName || groupData.name
+              ) : (
+                <span className="group-title-skeleton" data-testid="chat-header-title-skeleton" />
+              )}
             </span>
             {isOwner && (
               <button
@@ -124,10 +128,14 @@ const ChatHeader = () => {
               <>
                 {groupData?.members && <span className="member-count-badge">({groupData.members.length}/{groupData.maxMembers || 5})</span>}
                 <div className="unity-score-container">
-                  <span className={`unity-score-badge ${unityPercentage === 100 ? 'celestial' : ''}`} onClick={handleShowUnityModal} title="Unity Score: members who posted notes today" data-testid="chat-header-unity">
-                    <span className="unity-icon">{getUnityStatusEmoji(unityPercentage)}</span>
-                    <span className="unity-percent-text">{unityPercentage}%</span>
-                  </span>
+                  {!messagesLoaded ? (
+                    <span className="unity-score-skeleton" data-testid="chat-header-unity-skeleton" />
+                  ) : (
+                    <span className={`unity-score-badge ${unityPercentage === 100 ? 'celestial' : ''}`} onClick={handleShowUnityModal} title="Unity Score: members who posted notes today" data-testid="chat-header-unity">
+                      <span className="unity-icon">{getUnityStatusEmoji(unityPercentage)}</span>
+                      <span className="unity-percent-text">{unityPercentage}%</span>
+                    </span>
+                  )}
                 </div>
               </>
             )}
