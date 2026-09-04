@@ -24,7 +24,7 @@ export function TimeCapsuleCard({
 }: TimeCapsuleCardProps) {
   const { t } = useLanguage();
   const { openCreateModal } = useTimeCapsuleStore();
-  const { sealedCapsule, nextTargetDays, activeSosMessage } = useTimeCapsule(userData);
+  const { sealedCapsule, nextTargetDays, activeSosMessage, loading } = useTimeCapsule(userData);
 
   // Do not show for demo users
   if (userData.isAnonymousDemo) {
@@ -39,6 +39,17 @@ export function TimeCapsuleCard({
 
   if (!hasOnboarded) {
     return null;
+  }
+
+  // 0. Skeleton Loading State (When loading and no local cached capsule is available)
+  if (loading && !sealedCapsule) {
+    return (
+      <div className="time-capsule-card time-capsule-skeleton" data-testid="time-capsule-skeleton">
+        <div className="skeleton-line skeleton-header-line" />
+        <div className="skeleton-line skeleton-desc-line" />
+        <div className="skeleton-bar" />
+      </div>
+    );
   }
 
   const currentDays = userData.daysStudiedCount || 0;
@@ -60,7 +71,7 @@ export function TimeCapsuleCard({
     };
 
     return (
-      <div className="time-capsule-card state-sos" data-testid="time-capsule-sos-card">
+      <div className="time-capsule-card state-sos fade-in" data-testid="time-capsule-sos-card">
         <div className="sos-card-header">
           <UilExclamationTriangle size="20" />
           <span>{t('timeCapsule.cardSosTitle')}</span>
@@ -96,7 +107,7 @@ export function TimeCapsuleCard({
     const progressPercent = Math.min(100, Math.max(0, (progressDays / totalSpan) * 100));
 
     return (
-      <div className="time-capsule-card state-sealed" data-testid="time-capsule-sealed-card">
+      <div className="time-capsule-card state-sealed fade-in" data-testid="time-capsule-sealed-card">
         <div className="sealed-card-header">
           <span className="sealed-card-title">
             <UilEnvelopeLock size="18" color="#6b46c1" />
@@ -121,7 +132,7 @@ export function TimeCapsuleCard({
 
   // 3. Unwritten State (User has completed onboarding or passed previous capsule, but hasn't written the next one)
   return (
-    <div className="time-capsule-card state-unwritten" data-testid="time-capsule-unwritten-card">
+    <div className="time-capsule-card state-unwritten fade-in" data-testid="time-capsule-unwritten-card">
       <div className="unwritten-card-info">
         <span className="unwritten-card-title">
           <UilEnvelopeAlt size="18" color="#6b46c1" />

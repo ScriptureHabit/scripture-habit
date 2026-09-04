@@ -181,3 +181,61 @@
     justify-content: center;
   }
 }
+
+/* 4. Skeleton Loading State (Zero Layout Shift) */
+.time-capsule-card.time-capsule-skeleton {
+  min-height: 102px;
+  background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+  border: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.65rem;
+  box-sizing: border-box;
+}
+
+.time-capsule-skeleton .skeleton-line {
+  background: linear-gradient(90deg, #edf2f7 25%, #e2e8f0 50%, #edf2f7 75%);
+  background-size: 200% 100%;
+  animation: capsuleShimmer 1.5s infinite;
+  border-radius: 6px;
+}
+
+.time-capsule-skeleton .skeleton-header-line {
+  width: 55%;
+  height: 18px;
+}
+
+.time-capsule-skeleton .skeleton-desc-line {
+  width: 75%;
+  height: 14px;
+}
+
+.time-capsule-skeleton .skeleton-bar {
+  width: 100%;
+  height: 8px;
+  background: linear-gradient(90deg, #edf2f7 25%, #e2e8f0 50%, #edf2f7 75%);
+  background-size: 200% 100%;
+  animation: capsuleShimmer 1.5s infinite;
+  border-radius: 4px;
+}
+
+@keyframes capsuleShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Smooth Fade-In for state transitions */
+.time-capsule-card.fade-in {
+  animation: capsuleFadeIn 0.25s ease-out forwards;
+}
+
+@keyframes capsuleFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+

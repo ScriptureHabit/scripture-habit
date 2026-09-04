@@ -7,15 +7,38 @@ import { FirebaseTimestamp } from '../types/chat';
 import { getNextMilestone } from '../utils/milestone';
 
 const DRAFT_KEY_PREFIX = 'scripture_habit_capsule_draft_';
+const SEALED_CACHE_PREFIX = 'scripture_habit_sealed_capsule_';
+
+function getCachedCapsule(uid: string | undefined): TimeCapsule | null {
+  if (!uid || typeof window === 'undefined') return null;
+  try {
+    const cached = localStorage.getItem(`${SEALED_CACHE_PREFIX}${uid}`);
+    return cached ? (JSON.parse(cached) as TimeCapsule) : null;
+  } catch {
+    return null;
+  }
+}
 
 export function useTimeCapsule(userData: UserData | null) {
-  const [sealedCapsule, setSealedCapsule] = useState<TimeCapsule | null>(null);
-  const [unlockedCapsules, setUnlockedCapsules] = useState<TimeCapsule[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-
   const uid = userData?.uid;
   const isDemo = !!userData?.isAnonymousDemo;
   const daysStudiedCount = userData?.daysStudiedCount || 0;
+
+  // Track server-fetched data keyed by uid
+  const [serverData, setServerData] = useState<
+    Record<string, { sealed: TimeCapsule | null; unlocked: TimeCapsule[] }>
+  >({});
+
+  const currentUserData = uid ? serverData[uid] : undefined;
+  const isFetched = !uid || isDemo || !!currentUserData;
+
+  // Read from server data if fetched; otherwise fallback to local cache for instant render
+  const cachedCapsule = useMemo(() => (!isFetched && uid ? getCachedCapsule(uid) : null), [isFetched, uid]);
+  const sealedCapsule = currentUserData ? currentUserData.sealed : cachedCapsule;
+  const unlockedCapsules = currentUserData ? currentUserData.unlocked : [];
+
+  // Loading is true only when we haven't fetched from server AND don't even have a cached capsule
+  const loading = !isDemo && !!uid && !isFetched && !cachedCapsule;
 
   const nextTargetDays = useMemo(() => getNextMilestone(daysStudiedCount), [daysStudiedCount]);
 
@@ -39,13 +62,30 @@ export function useTimeCapsule(userData: UserData | null) {
         const sealed = capsules.find((c) => !c.isUnlocked) || null;
         const unlocked = capsules.filter((c) => c.isUnlocked);
 
-        setSealedCapsule(sealed);
-        setUnlockedCapsules(unlocked);
-        setLoading(false);
+        setServerData((prev) => ({
+          ...prev,
+          [uid]: { sealed, unlocked }
+        }));
+
+        // Sync with local cache
+        if (typeof window !== 'undefined') {
+          try {
+            if (sealed) {
+              localStorage.setItem(`${SEALED_CACHE_PREFIX}${uid}`, JSON.stringify(sealed));
+            } else {
+              localStorage.removeItem(`${SEALED_CACHE_PREFIX}${uid}`);
+            }
+          } catch (e) {
+            console.warn('Failed to sync sealed capsule cache to localStorage', e);
+          }
+        }
       },
       (error) => {
         console.error('Error subscribing to time capsules:', error);
-        setLoading(false);
+        setServerData((prev) => ({
+          ...prev,
+          [uid]: prev[uid] || { sealed: null, unlocked: [] }
+        }));
       }
     );
 
@@ -112,6 +152,27 @@ export function useTimeCapsule(userData: UserData | null) {
 
       await setDoc(capsuleRef, newCapsule, { merge: true });
       clearDraft(targetDays);
+
+      // Optimistically update local cache
+      if (typeof window !== 'undefined') {
+        try {
+          const optimisticCapsule: TimeCapsule = {
+            id: capsuleDocId,
+            ...newCapsule,
+            createdAt: { seconds: Math.floor(Date.now() / 1000), nanoseconds: 0 } as FirebaseTimestamp
+          };
+          localStorage.setItem(`${SEALED_CACHE_PREFIX}${uid}`, JSON.stringify(optimisticCapsule));
+          setServerData((prev) => ({
+            ...prev,
+            [uid]: {
+              sealed: optimisticCapsule,
+              unlocked: prev[uid]?.unlocked || []
+            }
+          }));
+        } catch {
+          // ignore
+        }
+      }
     },
     [uid, daysStudiedCount, clearDraft]
   );
@@ -125,6 +186,20 @@ export function useTimeCapsule(userData: UserData | null) {
         isUnlocked: true,
         unlockedAt: serverTimestamp()
       });
+      if (typeof window !== 'undefined') {
+        try {
+          localStorage.removeItem(`${SEALED_CACHE_PREFIX}${uid}`);
+          setServerData((prev) => ({
+            ...prev,
+            [uid]: {
+              sealed: null,
+              unlocked: prev[uid]?.unlocked || []
+            }
+          }));
+        } catch {
+          // ignore
+        }
+      }
     },
     [uid]
   );

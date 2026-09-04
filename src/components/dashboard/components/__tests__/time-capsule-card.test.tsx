@@ -52,11 +52,49 @@ describe('TimeCapsuleCard', () => {
     expect(screen.queryByTestId('time-capsule-sealed-card')).toBeNull();
   });
 
+  it('renders skeleton loader when loading is true and no sealed capsule exists', () => {
+    mockUseTimeCapsule.mockReturnValue({
+      sealedCapsule: null,
+      nextTargetDays: 10,
+      activeSosMessage: null,
+      loading: true
+    });
+
+    render(<TimeCapsuleCard userData={mockUserData} />);
+
+    expect(screen.getByTestId('time-capsule-skeleton')).toBeTruthy();
+    expect(screen.queryByTestId('time-capsule-unwritten-card')).toBeNull();
+    expect(screen.queryByTestId('time-capsule-sealed-card')).toBeNull();
+  });
+
+  it('renders sealed card immediately if sealed capsule is already cached even while loading', () => {
+    mockUseTimeCapsule.mockReturnValue({
+      sealedCapsule: {
+        id: 'capsule_300',
+        targetDays: 300,
+        title: 'Day 300の自分へ',
+        content: 'Letter body',
+        sosMessage: 'SOS message',
+        isUnlocked: false
+      },
+      nextTargetDays: 300,
+      activeSosMessage: null,
+      loading: true
+    });
+
+    render(<TimeCapsuleCard userData={{ ...mockUserData, daysStudiedCount: 275 }} />);
+
+    expect(screen.queryByTestId('time-capsule-skeleton')).toBeNull();
+    expect(screen.getByTestId('time-capsule-sealed-card')).toBeTruthy();
+    expect(screen.queryByTestId('time-capsule-unwritten-card')).toBeNull();
+  });
+
   it('renders unwritten card when user has no active sealed capsule', () => {
     mockUseTimeCapsule.mockReturnValue({
       sealedCapsule: null,
       nextTargetDays: 10,
-      activeSosMessage: null
+      activeSosMessage: null,
+      loading: false
     });
 
     render(<TimeCapsuleCard userData={mockUserData} />);
