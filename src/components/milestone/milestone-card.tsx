@@ -36,15 +36,25 @@ export const MilestoneCard: React.FC<MilestoneCardProps> = ({
                     </span>
                 </div>
 
-                {/* Mascot & Central Stat */}
+                {/* Mascot & Speech Bubble */}
                 <div className="milestone-card-body">
-                    <div className="milestone-mascot-wrapper">
-                        <img 
-                            src="/images/mascot.webp" 
-                            alt="Scripture Habit Mascot" 
-                            className="milestone-mascot-img"
-                            crossOrigin="anonymous"
-                        />
+                    <div className="milestone-mascot-row">
+                        <div className="milestone-mascot-wrapper">
+                            <img 
+                                src="/images/mascot.webp" 
+                                alt="Scripture Habit Mascot" 
+                                className="milestone-mascot-img"
+                                crossOrigin="anonymous"
+                            />
+                        </div>
+                        <div className="milestone-speech-bubble" data-testid="milestone-speech-bubble">
+                            <span className="milestone-bubble-line1">
+                                {t('milestone.speechBubbleLine1', { days })}
+                            </span>
+                            <span className="milestone-bubble-line2">
+                                {t('milestone.speechBubbleLine2')}
+                            </span>
+                        </div>
                     </div>
                     <div className="milestone-number-container">
                         <span className="milestone-number">{days}</span>

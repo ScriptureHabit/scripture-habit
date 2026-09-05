@@ -40,15 +40,25 @@ export const LevelUpCard: React.FC<LevelUpCardProps> = ({
                     </span>
                 </div>
 
-                {/* Mascot & Level Display */}
+                {/* Mascot & Speech Bubble */}
                 <div className="level-up-card-body">
-                    <div className="level-up-mascot-wrapper">
-                        <img 
-                            src="/images/mascot.webp" 
-                            alt="Scripture Habit Mascot" 
-                            className="level-up-mascot-img"
-                            crossOrigin="anonymous"
-                        />
+                    <div className="level-up-mascot-row">
+                        <div className="level-up-mascot-wrapper">
+                            <img 
+                                src="/images/mascot.webp" 
+                                alt="Scripture Habit Mascot" 
+                                className="level-up-mascot-img"
+                                crossOrigin="anonymous"
+                            />
+                        </div>
+                        <div className="level-up-speech-bubble" data-testid="level-up-speech-bubble">
+                            <span className="level-up-bubble-line1">
+                                {t('levelUp.speechBubbleLine1', { level })}
+                            </span>
+                            <span className="level-up-bubble-line2">
+                                {t('levelUp.speechBubbleLine2')}
+                            </span>
+                        </div>
                     </div>
                     <div className="level-up-number-container">
                         <span className="level-up-prefix">Lv.</span>

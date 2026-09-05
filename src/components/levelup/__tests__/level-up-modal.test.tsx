@@ -28,6 +28,8 @@ vi.mock('../../../hooks/use-language', () => ({
         t: (key: string, replacements?: Record<string, any>) => {
             if (key === 'levelUp.title') return `Level ${replacements?.level} 達成！`;
             if (key === 'levelUp.daysStudied') return `${replacements?.days} DAYS`;
+            if (key === 'levelUp.speechBubbleLine1') return `Lv.${replacements?.level}達成おめでとう！✨`;
+            if (key === 'levelUp.speechBubbleLine2') return 'すごい！';
             if (key === 'levelUp.shareText') return `Level ${replacements?.level} reached (${replacements?.days} days)`;
             if (key === 'levelUp.saveImage') return '画像を保存';
             if (key === 'levelUp.imageSaved') return '画像を保存しました';
@@ -50,6 +52,14 @@ describe('LevelUpCard', () => {
 
         const card = screen.getByTestId('level-up-card');
         expect(card.className).toContain('tier-gold');
+    });
+
+    it('renders the speech bubble with celebration text', () => {
+        render(<LevelUpCard level={3} days={21} />);
+        const bubble = screen.getByTestId('level-up-speech-bubble');
+        expect(bubble).toBeDefined();
+        expect(screen.getByText('Lv.3達成おめでとう！✨')).toBeDefined();
+        expect(screen.getByText('すごい！')).toBeDefined();
     });
 });
 

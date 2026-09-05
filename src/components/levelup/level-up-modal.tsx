@@ -3,7 +3,7 @@ import { useLevelUpStore } from '../../store/use-level-up-store';
 import { useLanguage } from '../../hooks/use-language';
 import { LevelUpCard } from './level-up-card';
 import { triggerConfetti } from '../../utils/confetti-utils';
-import { UilDownloadAlt, UilShareAlt, UilTimes } from '@iconscout/react-unicons';
+import { UilDownloadAlt, UilTimes } from '@iconscout/react-unicons';
 import { toast } from 'react-toastify';
 import './level-up-modal.css';
 
@@ -55,49 +55,6 @@ function LevelUpModal() {
         }
     };
 
-    const handleShare = async () => {
-        if (!cardRef.current) return;
-        const shareText = t('levelUp.shareText', { level, days });
-        const shareUrl = 'https://scripturehabit.app';
-
-        try {
-            // Attempt native Web Share API with image file if supported
-            if (navigator.share) {
-                const { toBlob } = await import('html-to-image');
-                const blob = await toBlob(cardRef.current, { 
-                    pixelRatio: 2,
-                    skipFonts: true 
-                });
-                if (blob && navigator.canShare && navigator.canShare({ files: [new File([blob], 'levelup.png', { type: 'image/png' })] })) {
-                    const file = new File([blob], `scripture-habit-level-${level}.png`, { type: 'image/png' });
-                    await navigator.share({
-                        title: 'Scripture Habit',
-                        text: shareText,
-                        url: shareUrl,
-                        files: [file]
-                    });
-                    return;
-                }
-
-                // Fallback to text share
-                await navigator.share({
-                    title: 'Scripture Habit',
-                    text: `${shareText}\n${shareUrl}`,
-                    url: shareUrl
-                });
-                return;
-            }
-
-            // Desktop fallback: Open X (Twitter) intent
-            const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
-            window.open(twitterUrl, '_blank', 'noopener,noreferrer');
-        } catch (error) {
-            if ((error as Error)?.name !== 'AbortError') {
-                console.warn('Share cancelled or failed:', error);
-            }
-        }
-    };
-
     return (
         <div className="level-up-modal-overlay" onClick={closeLevelUp} data-testid="level-up-modal-overlay">
             <div className="level-up-modal-container" onClick={(e) => e.stopPropagation()}>
@@ -135,14 +92,6 @@ function LevelUpModal() {
                     >
                         <UilDownloadAlt size="18" />
                         <span>{isSaving ? t('levelUp.saving') : t('levelUp.saveImage')}</span>
-                    </button>
-                    <button 
-                        className="level-up-action-btn secondary" 
-                        onClick={handleShare}
-                        data-testid="share-level-up-btn"
-                    >
-                        <UilShareAlt size="18" />
-                        <span>{t('levelUp.share')}</span>
                     </button>
                 </div>
             </div>
