@@ -241,9 +241,13 @@ export const syncFcmTokenFlag = async (userId: string | null | undefined, curren
 };
 
 /**
- * Clears all existing push notifications displayed by the service worker.
+ * Helper to clear push notifications matching a predicate.
  */
-export const clearAllNotifications = async (): Promise<void> => {
+const clearNotificationsMatching = async (
+    predicate: (notification: Notification) => boolean,
+    onSuccessLog?: (count: number) => void,
+    errorMessage: string = '[NotificationHelper] Failed to clear notifications'
+): Promise<void> => {
     if (!('serviceWorker' in navigator)) return;
     try {
         const registration = await navigator.serviceWorker.getRegistration();
@@ -251,19 +255,30 @@ export const clearAllNotifications = async (): Promise<void> => {
             const notifications = await registration.getNotifications();
             let clearedCount = 0;
             notifications.forEach(notification => {
-                // Only clear streak reminders, leaving group messages and other important notifications intact
-                if (notification.data?.type === 'streak_reminder') {
+                if (predicate(notification)) {
                     notification.close();
                     clearedCount++;
                 }
             });
-            if (clearedCount > 0) {
-                console.log(`[NotificationHelper] Cleared ${clearedCount} streak notifications upon app launch.`);
+            if (clearedCount > 0 && onSuccessLog) {
+                onSuccessLog(clearedCount);
             }
         }
     } catch (e) {
-        console.warn('[NotificationHelper] Failed to clear notifications', e);
+        console.warn(errorMessage, e);
     }
+};
+
+/**
+ * Clears all existing push notifications displayed by the service worker.
+ */
+export const clearAllNotifications = async (): Promise<void> => {
+    await clearNotificationsMatching(
+        (notification) => notification.data?.type === 'streak_reminder',
+        (clearedCount) => {
+            console.log(`[NotificationHelper] Cleared ${clearedCount} streak notifications upon app launch.`);
+        }
+    );
 };
 
 /**
@@ -271,26 +286,13 @@ export const clearAllNotifications = async (): Promise<void> => {
  * Useful when the user opens the group manually.
  */
 export const clearGroupNotifications = async (groupId: string): Promise<void> => {
-    if (!('serviceWorker' in navigator)) return;
     if (!groupId) return;
-    try {
-        const registration = await navigator.serviceWorker.getRegistration();
-        if (registration) {
-            const notifications = await registration.getNotifications();
-            let clearedCount = 0;
-            notifications.forEach(notification => {
-                // Clear group messages that match the opened group
-                if (notification.data?.groupId === groupId) {
-                    notification.close();
-                    clearedCount++;
-                }
-            });
-            if (clearedCount > 0) {
-                console.log('[NotificationHelper] Cleared notifications for group:', groupId, 'count:', clearedCount);
-            }
-        }
-    } catch (e) {
-        console.warn('[NotificationHelper] Failed to clear notifications for group:', groupId, e);
-    }
+    await clearNotificationsMatching(
+        (notification) => notification.data?.groupId === groupId,
+        (clearedCount) => {
+            console.log('[NotificationHelper] Cleared notifications for group:', groupId, 'count:', clearedCount);
+        },
+        `[NotificationHelper] Failed to clear notifications for group: ${groupId}`
+    );
 };
 

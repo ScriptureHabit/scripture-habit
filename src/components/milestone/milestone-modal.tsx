@@ -4,8 +4,9 @@ import { useTimeCapsuleStore } from '../../store/use-time-capsule-store';
 import { useMilestoneCapsule } from '../../hooks/use-milestone-capsule';
 import { useLanguage } from '../../hooks/use-language';
 import { MilestoneCard } from './milestone-card';
+import { CelebrationModal } from '../common/celebration-modal';
 import { triggerConfetti } from '../../utils/confetti-utils';
-import { UilDownloadAlt, UilTimes, UilEnvelopeOpen } from '@iconscout/react-unicons';
+import { UilDownloadAlt, UilEnvelopeOpen } from '@iconscout/react-unicons';
 import { toast } from 'react-toastify';
 import './milestone-modal.css';
 
@@ -77,32 +78,16 @@ function MilestoneModal() {
     };
 
     return (
-        <div className="milestone-modal-overlay" onClick={closeMilestone} data-testid="milestone-modal-overlay">
-            <div className="milestone-modal-container" onClick={(e) => e.stopPropagation()}>
-                <button 
-                    className="milestone-close-btn" 
-                    onClick={closeMilestone} 
-                    aria-label={t('common.close')}
-                >
-                    <UilTimes size="20" />
-                </button>
-
-                <div className="milestone-modal-header">
-                    <h3 className="milestone-modal-title">
-                        {t('milestone.title', { days })}
-                    </h3>
-                </div>
-
-                <div className="milestone-card-wrapper">
-                    <MilestoneCard
-                        days={days}
-                        nickname={nickname}
-                        achievedDate={achievedDate}
-                        cardRef={cardRef}
-                    />
-                </div>
-
-                <div className="milestone-modal-actions">
+        <CelebrationModal
+            isOpen={isOpen}
+            onClose={closeMilestone}
+            title={t('milestone.title', { days })}
+            closeAriaLabel={t('common.close')}
+            overlayClassName="milestone-modal-overlay"
+            containerClassName="milestone-modal-container"
+            overlayTestId="milestone-modal-overlay"
+            actions={
+                <>
                     {capsule && (
                         <button 
                             className="milestone-action-btn primary" 
@@ -122,9 +107,16 @@ function MilestoneModal() {
                         <UilDownloadAlt size="18" />
                         <span>{isSaving ? t('milestone.saving') : t('milestone.saveImage')}</span>
                     </button>
-                </div>
-            </div>
-        </div>
+                </>
+            }
+        >
+            <MilestoneCard
+                days={days}
+                nickname={nickname}
+                achievedDate={achievedDate}
+                cardRef={cardRef}
+            />
+        </CelebrationModal>
     );
 };
 

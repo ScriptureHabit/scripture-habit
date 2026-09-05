@@ -2,8 +2,9 @@ import { useRef, useEffect, useState } from 'react';
 import { useLevelUpStore } from '../../store/use-level-up-store';
 import { useLanguage } from '../../hooks/use-language';
 import { LevelUpCard } from './level-up-card';
+import { CelebrationModal } from '../common/celebration-modal';
 import { triggerConfetti } from '../../utils/confetti-utils';
-import { UilDownloadAlt, UilTimes } from '@iconscout/react-unicons';
+import { UilDownloadAlt } from '@iconscout/react-unicons';
 import { toast } from 'react-toastify';
 import './level-up-modal.css';
 
@@ -56,46 +57,35 @@ function LevelUpModal() {
     };
 
     return (
-        <div className="level-up-modal-overlay" onClick={closeLevelUp} data-testid="level-up-modal-overlay">
-            <div className="level-up-modal-container" onClick={(e) => e.stopPropagation()}>
+        <CelebrationModal
+            isOpen={isOpen}
+            onClose={closeLevelUp}
+            title={t('levelUp.title', { level })}
+            closeAriaLabel={t('common.close')}
+            overlayClassName="level-up-modal-overlay"
+            containerClassName="level-up-modal-container"
+            overlayTestId="level-up-modal-overlay"
+            closeBtnTestId="level-up-close-btn"
+            actions={
                 <button 
-                    className="level-up-close-btn" 
-                    onClick={closeLevelUp} 
-                    aria-label={t('common.close')}
-                    data-testid="level-up-close-btn"
+                    className="level-up-action-btn primary" 
+                    onClick={handleSaveImage}
+                    disabled={isSaving}
+                    data-testid="save-level-up-img-btn"
                 >
-                    <UilTimes size="20" />
+                    <UilDownloadAlt size="18" />
+                    <span>{isSaving ? t('levelUp.saving') : t('levelUp.saveImage')}</span>
                 </button>
-
-                <div className="level-up-modal-header">
-                    <h3 className="level-up-modal-title">
-                        {t('levelUp.title', { level })}
-                    </h3>
-                </div>
-
-                <div className="level-up-card-wrapper">
-                    <LevelUpCard
-                        level={level}
-                        days={days}
-                        nickname={nickname}
-                        achievedDate={achievedDate}
-                        cardRef={cardRef}
-                    />
-                </div>
-
-                <div className="level-up-modal-actions">
-                    <button 
-                        className="level-up-action-btn primary" 
-                        onClick={handleSaveImage}
-                        disabled={isSaving}
-                        data-testid="save-level-up-img-btn"
-                    >
-                        <UilDownloadAlt size="18" />
-                        <span>{isSaving ? t('levelUp.saving') : t('levelUp.saveImage')}</span>
-                    </button>
-                </div>
-            </div>
-        </div>
+            }
+        >
+            <LevelUpCard
+                level={level}
+                days={days}
+                nickname={nickname}
+                achievedDate={achievedDate}
+                cardRef={cardRef}
+            />
+        </CelebrationModal>
     );
 }
 
