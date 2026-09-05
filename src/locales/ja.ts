@@ -143,7 +143,7 @@ export default {
         "1 Timothy": "テモテへの第一の手紙",
         "2 Timothy": "テモテへの第二の手紙",
         "Titus": "テトスへの手紙",
-        "Philemon": "ピリピ人への手紙",
+        "Philemon": "ピレモンへの手紙",
         "Hebrews": "ヘブル人への手紙",
         "James": "ヤコブの手紙",
         "1 Peter": "ペテロの第一の手紙",
