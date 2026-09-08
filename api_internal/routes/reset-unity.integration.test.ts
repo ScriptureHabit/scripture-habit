@@ -142,6 +142,35 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Reset Unity Route Integra
         expect(data.reason).toBe('Already reset for today');
     });
 
+    it("preserves today's active members and does not wipe them out", async () => {
+        setup.mockAuth(USER_ID);
+        const expectedToday = formatDateInTimeZone(new Date(), 'America/New_York');
+        // Simulate that today's note was posted right as or before reset runs
+        await db.collection('groups').doc(GID_VALID).update({
+            'dailyActivity.date': expectedToday,
+            'dailyActivity.activeMembers': [USER_ID, 'member_2'],
+            unityPercentage: 100
+        });
+
+        const res = await fetch(`${setup.baseUrl}/api/groups/reset-unity-if-midnight`, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer token-${USER_ID}`
+            },
+            body: JSON.stringify({ groupId: GID_VALID })
+        });
+        
+        expect(res.status).toBe(200);
+        const data = await res.json();
+        expect(data.reset).toBe(false);
+
+        const groupSnap = await db.collection('groups').doc(GID_VALID).get();
+        const groupData = groupSnap.data()!;
+        expect(groupData.dailyActivity.activeMembers).toEqual([USER_ID, 'member_2']);
+        expect(groupData.unityPercentage).toBe(100);
+    });
+
     it('should return 500 if an unexpected database error occurs', async () => {
         setup.mockAuth(USER_ID);
         // Spy on get and force it to throw

@@ -66,7 +66,7 @@ function checkMessageTypeConsistency() {
         const componentContent = fs.readFileSync(systemMessageComponentPath, 'utf-8');
 
         for (const type of schemaEnumKeys) {
-            if (type === 'text' || type === 'system' || type === 'studyNote') continue; // Non-announcement types
+            if (type === 'text' || type === 'system' || type === 'studyNote' || type === 'familyStudyNote') continue; // Non-announcement types
 
             const hasTypeHandler = componentContent.includes(`msg.messageType === '${type}'`) ||
                                   componentContent.includes(`msg.messageType === "${type}"`);

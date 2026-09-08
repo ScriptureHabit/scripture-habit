@@ -37,9 +37,15 @@ export const createSearchTokens = (text: string, maxTokens = 500): string[] => {
   return Array.from(tokens);
 };
 
-export const normalizeScriptureCategory = (value: unknown): ScriptureCategory => {
-  if (typeof value === 'string' && SCRIPTURE_CATEGORIES.includes(value as ScriptureCategory)) {
-    return value as ScriptureCategory;
+export const normalizeScriptureCategory = (value: unknown): ScriptureCategory | 'familyStudy' => {
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    if (trimmed === 'familyStudy' || trimmed === 'Family Study' || trimmed === '家族学習') {
+      return 'familyStudy';
+    }
+    if (SCRIPTURE_CATEGORIES.includes(trimmed as ScriptureCategory)) {
+      return trimmed as ScriptureCategory;
+    }
   }
   return DEFAULT_SCRIPTURE_CATEGORY;
 };

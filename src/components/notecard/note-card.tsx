@@ -5,6 +5,8 @@ import { getGospelLibraryUrl } from '../../utils/gospel-library-mapper';
 import { useLanguage } from '../../hooks/use-language';
 import { parseTimestampToDate } from '../../utils/time-utils';
 import { formatNoteText } from '../../utils/note-logic';
+import { parseStructuredNoteText } from '../../utils/note-parser-utils';
+import { isFamilyStudyCategory, isFamilyStudyComment } from '../notedisplay/utils/note-translations';
 import './note-card.css';
 import { Note } from '../../types/note';
 
@@ -27,8 +29,23 @@ const NoteCard = ({
         e.stopPropagation();
     };
 
+    const noteText = note.text || formatNoteText(note.scripture || '', note.chapter || '', note.comment || '') || note.comment || '';
+
     const getLinkContent = () => {
+        const parsed = parseStructuredNoteText(noteText);
+        const isFamilyStudy =
+            isFamilyStudyCategory(note.scripture) ||
+            isFamilyStudyCategory(parsed.scriptureValue) ||
+            isFamilyStudyComment(note.comment || parsed.comment);
+
+        if (isFamilyStudy) {
+            return null;
+        }
+
         if (note.scripture === 'Other' && note.chapter) {
+            const isUrl = /^https?:\/\//i.test(note.chapter.trim());
+            if (!isUrl) return null;
+
             return (
                 <a
                     href={note.chapter}
@@ -58,8 +75,6 @@ const NoteCard = ({
         }
         return null;
     };
-
-    const noteText = note.text || formatNoteText(note.scripture || '', note.chapter || '', note.comment || '') || note.comment || '';
 
     return (
         <div

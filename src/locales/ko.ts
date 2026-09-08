@@ -188,7 +188,9 @@ export default {
         "cancel": "취소",
         "delete": "삭제",
         "close": "닫기",
-        "dismiss": "닫기"
+        "dismiss": "닫기",
+        "saved": "저장되었습니다",
+        "error": "오류가 발생했습니다"
     },
     "seo": {
         "title": "Scripture Habit | 일일 경전 공부 및 커뮤니티 도구",
@@ -491,9 +493,9 @@ export default {
         "activeDaysAgo": "{days}일 전 활동",
         "activeMonthsAgo": "{months}개월 전 활동",
         "noActivity": "최근 활동 없음",
-        "inactivityPolicyBanner": "⚠️ 3일 동안 이 그룹에 노트나 메시지를 게시하지 않으면 자동으로 삭제됩니다.",
+        "inactivityPolicyBanner": "⚠️ {days}일 동안 이 그룹에 노트나 메시지를 게시하지 않으면 자동으로 삭제됩니다.",
         "placeholderShare": "오늘 배운 내용을 공유해 보세요!",
-        "placeholderInactivity": "⚠️ 3일 동안 활동이 없으면 자동 삭제됩니다.",
+        "placeholderInactivity": "⚠️ {days}일 동안 활동이 없으면 자동 삭제됩니다.",
         "placeholderEncourage": "그룹과 생각을 공유하세요.",
         "welcomeGuideButton": "알겠습니다!",
         "unityAnnouncement": "☀️ **정확히 해의 왕국의 영광입니다!** ☀️\n\n**모든 회원이 오늘 학습을 공유했습니다!**",
@@ -554,7 +556,11 @@ export default {
         "newMessages": "여기부터 읽지 않은 메시지입니다",
         "errorToggleReaction": "Failed to update reaction.",
         "inviteFriends": "Invite Friends",
-        "reTranslate": "Refresh translation"
+        "reTranslate": "Refresh translation",
+        "retrySend": "다시 보내기",
+        "retry": "재시도",
+        "sending": "전송 중...",
+        "userKicked": "⚠️ **{nickname}**님이 그룹에서 삭제되었습니다."
     },
     "newNote": {
         "editTitle": "노트 편집",
@@ -730,7 +736,9 @@ export default {
         "emailNotVerified": "로그인하기 전에 이메일 주소를 확인해주세요.",
         "resendVerification": "인증 이메일 전송",
         "verificationResent": "인증 이메일이 전송되었습니다.",
-        "errorInvalidCredential": "이메일 또는 비밀번호가 잘못되었습니다. 다시 시도해 주세요."
+        "errorInvalidCredential": "이메일 또는 비밀번호가 잘못되었습니다. 다시 시도해 주세요.",
+        "emailPlaceholder": "name@example.com",
+        "passwordPlaceholder": "비밀번호를 입력하세요"
     },
     "forgotPasswordPage": {
         "title": "비밀번호 재설정",
@@ -1010,5 +1018,51 @@ export default {
         "loadingSubtitle": "데이터를 불러오고 있습니다. 잠시만 기다려 주세요.",
         "loginSuccess": "데모 계정으로 로그인되었습니다!",
         "loginError": "데모 환경 연결에 실패했습니다. 로그인 화면으로 이동합니다."
+    },
+    "familyTheme": {
+        "cardTitle": "가족과 함께 경전을 공부하셨나요?",
+        "cardDesc": "오늘의 주제를 맞추고 학습을 기록해 보세요!",
+        "openModalBtn": "오늘의 주제를 선택해 보세요",
+        "waitingPartnerTitle": "파트너의 선택을 기다리고 있습니다…",
+        "waitingPartnerDesc": "「{selectedTheme}」을(를) 선택하셨습니다. 상대방이 고를 때까지 기다려 봅시다.",
+        "partnerSelectedTitle": "파트너가 주제를 선택했습니다!",
+        "partnerSelectedDesc": "나의 주제를 선택해 보세요",
+        "completedTitle": "오늘의 가족 주제: 【{theme}】",
+        "completedDesc": "온 가족의 경전 공부가 달성되었습니다! 대단해요! ✨",
+        "completedBadge": "완료",
+        "changeSelection": "다시 선택",
+        "modalTitle": "오늘의 주제 선택",
+        "modalSubtitle": "오늘 가족과 함께 나눈 경전의 주제를 하나 선택해 주세요",
+        "mismatchTitle": "아쉬워요! 함께 이야기하고 하나로 맞춰보세요!",
+        "mismatchDesc": "나: 【{myTheme}】 / 파트너: 【{partnerTheme}】",
+        "matchSuccessTitle": "가족과 함께 경전 공부를 완료했습니다! ✨",
+        "matchSuccessDesc": "오늘의 주제: 【{theme}】",
+        "confirmBtn": "이 주제로 결정",
+        "closeBtn": "닫기",
+        "themes": {
+            "faith": "신앙",
+            "hope": "희망",
+            "charity": "자애",
+            "gratitude": "감사",
+            "prayer": "기도",
+            "patience": "인내",
+            "repentance": "회개",
+            "guidance": "영의 인도"
+        },
+        "chatMessageFamily": "🎊가족과 함께 {theme}에 대해 공부했습니다!!🎊",
+        "chatMessageOther": "✨{nickname} 님이 가족과 함께 {theme}에 대해 배웠습니다!!✨",
+        "aiBotCongratulation": "{nickname} 님, 가족과의 경전 공부 정말 훌륭합니다. 축하드립니다.",
+        "familyStudyNoteTitle": "가족 학습 노트",
+        "familyStudyNoteTheme": "오늘의 주제: {theme}",
+        "familyStudyNoteBody": "가족과 함께 「{theme}」에 대해 이야기하고 경전을 공부했습니다.",
+        "categoryFamilyStudy": "가족 학습",
+        "themeLabel": "주제",
+        "groupOptionToggle": "가족 모드",
+        "groupOptionToggleDesc": "가족이 같은 시간에 모여 함께 경전 공부를 하는 그룹에 가장 적합합니다. (1인당 1그룹 제한)",
+        "alreadyEnabledInOtherGroup": "가족 모드가 이미 다른 그룹에서 활성화되어 있습니다",
+        "modeFamilyTitle": "가족 모드 (ON)",
+        "modeFamilyDesc": "가족이 같은 시간에 모여 함께 경전 공부를 하는 그룹에 가장 적합합니다. 오늘의 주제를 맞추고 원탭으로 완료하세요. (1인당 1그룹 제한)",
+        "modeIndividualTitle": "개인 모드 (OFF)",
+        "modeIndividualDesc": "각자의 페이스로 학습하거나 시간을 맞추기 어렵지만 노트로 배움을 나누고 싶은 그룹에 가장 적합합니다."
     }
 };

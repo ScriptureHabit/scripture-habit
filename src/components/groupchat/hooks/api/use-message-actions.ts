@@ -107,8 +107,8 @@ export const useMessageActions = (
         }
       }
 
-      if (groupId) {
-        removePendingMessage(groupId, optimisticId);
+      if (groupId && userData?.uid) {
+        removePendingMessage(userData.uid, groupId, optimisticId);
       }
 
       return true;
@@ -116,8 +116,8 @@ export const useMessageActions = (
       console.error("Error sending message:", error);
 
       // Persist failed message to offline queue
-      if (groupId) {
-        savePendingMessage(groupId, optimisticMessage);
+      if (groupId && userData?.uid) {
+        savePendingMessage(userData.uid, groupId, optimisticMessage);
       }
 
       // Update message with isFailed: true instead of removing it
@@ -143,6 +143,12 @@ export const useMessageActions = (
 
   const handleRetryMessage = useCallback(async (failedMessage: Message) => {
     if (!failedMessage.text || !userData || !userData.uid) return false;
+
+    // Guard: Do not retry messages that do not belong to the current authenticated user
+    if (failedMessage.senderId && failedMessage.senderId !== userData.uid) {
+      console.warn('[useMessageActions] Prevented retrying message belonging to another user');
+      return false;
+    }
 
     // Set status back to sending (isOptimistic: true, isFailed: false)
     if (dispatch) {
@@ -192,10 +198,10 @@ export const useMessageActions = (
         }
       }
 
-      if (groupId) {
-        removePendingMessage(groupId, failedMessage.id);
+      if (groupId && userData?.uid) {
+        removePendingMessage(userData.uid, groupId, failedMessage.id);
         if (failedMessage.optimisticId) {
-          removePendingMessage(groupId, failedMessage.optimisticId);
+          removePendingMessage(userData.uid, groupId, failedMessage.optimisticId);
         }
       }
 
@@ -203,8 +209,8 @@ export const useMessageActions = (
     } catch (error: unknown) {
       console.error("Error retrying message:", error);
 
-      if (groupId) {
-        savePendingMessage(groupId, failedMessage);
+      if (groupId && userData?.uid) {
+        savePendingMessage(userData.uid, groupId, failedMessage);
       }
 
       if (dispatch) {
@@ -263,10 +269,10 @@ export const useMessageActions = (
 
   const handleConfirmDeleteMessage = useCallback(async (message: Message) => {
     // If it's a failed message that was never persisted to the server, clean up locally
-    if (groupId) {
-      removePendingMessage(groupId, message.id);
+    if (groupId && userData?.uid) {
+      removePendingMessage(userData.uid, groupId, message.id);
       if (message.optimisticId) {
-        removePendingMessage(groupId, message.optimisticId);
+        removePendingMessage(userData.uid, groupId, message.optimisticId);
       }
     }
 
@@ -299,7 +305,7 @@ export const useMessageActions = (
       }
       return false;
     }
-  }, [groupId, dispatch, t]);
+  }, [groupId, userData, dispatch, t]);
 
   const handleToggleReactionDirect = useCallback(async (message: Message, emoji: string) => {
     if (!userData || !userData.uid) return;

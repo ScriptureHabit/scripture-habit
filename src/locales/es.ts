@@ -188,7 +188,9 @@ export default {
         "cancel": "Cancelar",
         "delete": "Eliminar",
         "close": "Cerrar",
-        "dismiss": "Descartar"
+        "dismiss": "Descartar",
+        "saved": "Guardado",
+        "error": "Ocurrió un error"
     },
     "seo": {
         "title": "Scripture Habit",
@@ -491,9 +493,9 @@ export default {
         "activeDaysAgo": "Activo hace {days} días",
         "activeMonthsAgo": "Activo hace > {months} meses",
         "noActivity": "Sin actividad reciente",
-        "inactivityPolicyBanner": "⚠️ Si no publica una nota o mensaje en este grupo durante 3 días, será eliminado automáticamente.",
+        "inactivityPolicyBanner": "⚠️ Si no publica una nota o mensaje en este grupo durante {days} días, será eliminado automáticamente.",
         "placeholderShare": "¡Compartamos lo que aprendió hoy!",
-        "placeholderInactivity": "⚠️ La inactividad durante 3 días conducirá a la eliminación automática.",
+        "placeholderInactivity": "⚠️ La inactividad durante {days} días conducirá a la eliminación automática.",
         "placeholderEncourage": "Comparta sus pensamientos con el grupo.",
         "welcomeGuideButton": "¡Entendido!",
         "unityAnnouncement": "☀️ **¡Exactamente la Gloria del Reino Celestial!** ☀️\n\n**¡Todos los miembros han compartido su aprendizaje!**",
@@ -554,7 +556,11 @@ export default {
         "newMessages": "Nuevos mensajes",
         "errorToggleReaction": "Failed to update reaction.",
         "inviteFriends": "Invite Friends",
-        "reTranslate": "Refresh translation"
+        "reTranslate": "Refresh translation",
+        "retrySend": "Reintentar envío",
+        "retry": "Reintentar",
+        "sending": "Enviando...",
+        "userKicked": "⚠️ **{nickname}** fue eliminado/a del grupo."
     },
     "newNote": {
         "editTitle": "Editar Nota",
@@ -706,7 +712,9 @@ export default {
         "emailNotVerified": "Por favor, verifique su dirección de correo electrónico antes de iniciar sesión.",
         "resendVerification": "Enviar correo de verificación",
         "verificationResent": "Correo de verificación enviado.",
-        "errorInvalidCredential": "Correo electrónico o contraseña no válidos. Por favor, inténtelo de nuevo."
+        "errorInvalidCredential": "Correo electrónico o contraseña no válidos. Por favor, inténtelo de nuevo.",
+        "emailPlaceholder": "nombre@ejemplo.com",
+        "passwordPlaceholder": "Introduce tu contraseña"
     },
     "forgotPasswordPage": {
         "title": "Restablecer tu contraseña",
@@ -986,5 +994,51 @@ export default {
         "loadingSubtitle": "Cargando datos. Por favor, espera un momento.",
         "loginSuccess": "¡Sesión iniciada con la cuenta de demostración!",
         "loginError": "Error al conectar con el entorno demo. Redirigiendo al inicio de sesión..."
+    },
+    "familyTheme": {
+        "cardTitle": "¿Estudiaron las Escrituras en familia?",
+        "cardDesc": "¡Hagan coincidir el tema de hoy y registren el estudio!",
+        "openModalBtn": "Elijamos el tema de hoy",
+        "waitingPartnerTitle": "Esperando la elección de tu compañero/a…",
+        "waitingPartnerDesc": "Has seleccionado \"{selectedTheme}\". Esperemos a que tu compañero/a elija.",
+        "partnerSelectedTitle": "¡Tu compañero/a ha elegido un tema!",
+        "partnerSelectedDesc": "Elige tu tema",
+        "completedTitle": "Tema familiar de hoy: 【{theme}】",
+        "completedDesc": "¡Se ha cumplido el estudio de las Escrituras de toda la familia! ¡Genial! ✨",
+        "completedBadge": "Completado",
+        "changeSelection": "Cambiar tema",
+        "modalTitle": "Elige el tema de hoy",
+        "modalSubtitle": "Selecciona un tema que hayan conversado durante su estudio familiar",
+        "mismatchTitle": "¡Casi! ¡Conversen y pónganse de acuerdo en uno!",
+        "mismatchDesc": "Tú: 【{myTheme}】 / Compañero/a: 【{partnerTheme}】",
+        "matchSuccessTitle": "¡Estudiamos las Escrituras en familia! ✨",
+        "matchSuccessDesc": "Tema de hoy: 【{theme}】",
+        "confirmBtn": "Elegir este tema",
+        "closeBtn": "Cerrar",
+        "themes": {
+            "faith": "Fe",
+            "hope": "Esperanza",
+            "charity": "Caridad",
+            "gratitude": "Gratitud",
+            "prayer": "Oración",
+            "patience": "Paciencia",
+            "repentance": "Arrepentimiento",
+            "guidance": "Guía del Espíritu"
+        },
+        "chatMessageFamily": "🎊¡Estudiamos sobre {theme} en familia!!🎊",
+        "chatMessageOther": "✨¡{nickname} estudió sobre {theme} con su familia!!✨",
+        "aiBotCongratulation": "¡Qué maravilloso estudiar las Escrituras en familia, {nickname}! ¡Muchas felicidades!",
+        "familyStudyNoteTitle": "Nota de estudio familiar",
+        "familyStudyNoteTheme": "Tema de hoy: {theme}",
+        "familyStudyNoteBody": "Conversamos en familia sobre \"{theme}\" y estudiamos las Escrituras.",
+        "categoryFamilyStudy": "Estudio familiar",
+        "themeLabel": "Tema",
+        "groupOptionToggle": "Modo familiar",
+        "groupOptionToggleDesc": "Ideal para grupos que estudian juntos a la misma hora (Límite de 1 grupo por usuario)",
+        "alreadyEnabledInOtherGroup": "El modo familiar ya está activado en otro grupo",
+        "modeFamilyTitle": "Modo familiar (ON)",
+        "modeFamilyDesc": "Ideal para grupos que estudian juntos a la misma hora. ¡Sincronicen el tema de hoy y completen con un toque! (Límite de 1 grupo por usuario)",
+        "modeIndividualTitle": "Modo individual (OFF)",
+        "modeIndividualDesc": "Ideal para estudiar a su propio ritmo o cuando no coinciden los horarios, compartiendo notas y reflexiones."
     }
 };

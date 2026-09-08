@@ -188,7 +188,9 @@ export default {
         "cancel": "Annulla",
         "delete": "Elimina",
         "close": "Chiudi",
-        "dismiss": "Ignora"
+        "dismiss": "Ignora",
+        "saved": "Salvato",
+        "error": "Si è verificato un errore"
     },
     "seo": {
         "title": "Scripture Habit",
@@ -554,7 +556,11 @@ export default {
         "newMessages": "Nuovi Messaggi",
         "errorToggleReaction": "Impossibile aggiornare la reazione.",
         "inviteFriends": "Invita Amici",
-        "reTranslate": "Aggiorna traduzione"
+        "reTranslate": "Aggiorna traduzione",
+        "retrySend": "Riprova invio",
+        "retry": "Riprova",
+        "sending": "Invio in corso...",
+        "userKicked": "⚠️ **{nickname}** è stato/a rimosso/a dal gruppo."
     },
     "newNote": {
         "editTitle": "Modifica Nota",
@@ -730,7 +736,9 @@ export default {
         "emailNotVerified": "L'indirizzo email non è verificato. Controlla la posta in arrivo.",
         "resendVerification": "Invia Email di Verifica",
         "verificationResent": "Email di verifica inviata.",
-        "errorInvalidCredential": "Email o password non valide. Riprova."
+        "errorInvalidCredential": "Email o password non valide. Riprova.",
+        "emailPlaceholder": "nome@esempio.com",
+        "passwordPlaceholder": "Inserisci la tua password"
     },
     "forgotPasswordPage": {
         "title": "Reimposta la Password",
@@ -1010,5 +1018,51 @@ export default {
         "loadingSubtitle": "Caricamento dati. Attendi un momento.",
         "loginSuccess": "Connesso come Utente Demo!",
         "loginError": "Impossibile accedere all'ambiente demo. Reindirizzamento al login."
+    },
+    "familyTheme": {
+        "cardTitle": "Avete studiato le Scritture in famiglia?",
+        "cardDesc": "Sintonizzate il tema di oggi e registrate lo studio!",
+        "openModalBtn": "Scegliamo il tema di oggi",
+        "waitingPartnerTitle": "In attesa della scelta del partner…",
+        "waitingPartnerDesc": "Hai selezionato \"{selectedTheme}\". Aspettiamo che il partner scelga.",
+        "partnerSelectedTitle": "Il tuo partner ha scelto un tema!",
+        "partnerSelectedDesc": "Scegli il tuo tema",
+        "completedTitle": "Tema familiare di oggi: 【{theme}】",
+        "completedDesc": "Lo studio delle Scritture di tutta la famiglia è compiuto! Fantastico! ✨",
+        "completedBadge": "Completato",
+        "changeSelection": "Cambia tema",
+        "modalTitle": "Scegli il tema di oggi",
+        "modalSubtitle": "Seleziona un tema di cui avete discusso durante lo studio in famiglia",
+        "mismatchTitle": "Quasi! Parlatene e accordatevi su uno!",
+        "mismatchDesc": "Tu: 【{myTheme}】 / Partner: 【{partnerTheme}】",
+        "matchSuccessTitle": "Abbiamo studiato le Scritture in famiglia! ✨",
+        "matchSuccessDesc": "Tema di oggi: 【{theme}】",
+        "confirmBtn": "Conferma questo tema",
+        "closeBtn": "Chiudi",
+        "themes": {
+            "faith": "Fede",
+            "hope": "Speranza",
+            "charity": "Carità",
+            "gratitude": "Gratitudine",
+            "prayer": "Preghiera",
+            "patience": "Pazienza",
+            "repentance": "Pentimento",
+            "guidance": "Guida dello Spirito"
+        },
+        "chatMessageFamily": "🎊Abbiamo studiato {theme} in famiglia!!🎊",
+        "chatMessageOther": "✨{nickname} ha studiato {theme} con la famiglia!!✨",
+        "aiBotCongratulation": "Che meraviglia studiare le Scritture in famiglia, {nickname}! Congratulazioni!",
+        "familyStudyNoteTitle": "Nota di studio familiare",
+        "familyStudyNoteTheme": "Tema di oggi: {theme}",
+        "familyStudyNoteBody": "Abbiamo parlato di \"{theme}\" in famiglia e studiato le Scritture.",
+        "categoryFamilyStudy": "Studio familiare",
+        "themeLabel": "Tema",
+        "groupOptionToggle": "Modalità Famiglia",
+        "groupOptionToggleDesc": "Ideale per i gruppi che studiano insieme alla stessa ora (Limite di 1 gruppo per utente)",
+        "alreadyEnabledInOtherGroup": "La modalità famiglia è già attiva in un altro gruppo",
+        "modeFamilyTitle": "Modalità Famiglia (ON)",
+        "modeFamilyDesc": "Ideale per i gruppi che studiano insieme alla stessa ora. Sintonizzate il tema di oggi e completate con un tocco! (Limite di 1 gruppo per utente)",
+        "modeIndividualTitle": "Modalità Individuale (OFF)",
+        "modeIndividualDesc": "Ideale per studiare al proprio ritmo o quando non è possibile coordinare gli orari, continuando a condividere note e riflessioni."
     }
 };

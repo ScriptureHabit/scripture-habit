@@ -235,7 +235,8 @@ const openapiSpec = {
                 "properties": {
                   "name": { "type": "string", "example": "Tokyo Scripture Group" },
                   "description": { "type": "string", "example": "Let's read daily at 7 AM" },
-                  "timeZone": { "type": "string", "example": "Asia/Tokyo" }
+                  "timeZone": { "type": "string", "example": "Asia/Tokyo" },
+                  "isFamilySyncEnabled": { "type": "boolean", "example": false }
                 }
               }
             }

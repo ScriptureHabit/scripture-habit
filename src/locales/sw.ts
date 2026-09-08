@@ -188,7 +188,9 @@ export default {
         "cancel": "Ghairi",
         "delete": "Futa",
         "close": "Funga",
-        "dismiss": "Ondoa"
+        "dismiss": "Ondoa",
+        "saved": "Imehifadhiwa",
+        "error": "Hitilafu imetokea"
     },
     "seo": {
         "title": "Scripture Habit | Mafunzo ya Maandiko ya Kila Siku na Zana ya Jumuiya",
@@ -491,9 +493,9 @@ export default {
         "activeDaysAgo": "Hali siku {days} zilizopita",
         "activeMonthsAgo": "Hali miezi {months} iliyopita",
         "noActivity": "Hakuna shughuli za hivi karibuni",
-        "inactivityPolicyBanner": "⚠️ Ikiwa hutachapisha dokezo au ujumbe katika kikundi hiki kwa siku 3, utaondolewa kiotomatiki.",
+        "inactivityPolicyBanner": "⚠️ Ikiwa hutachapisha dokezo au ujumbe katika kikundi hiki kwa siku {days}, utaondolewa kiotomatiki.",
         "placeholderShare": "Tushiriki ulichojifunza leo!",
-        "placeholderInactivity": "⚠️ Kutofanya kazi kwa siku 3 kutasababisha kuondolewa kiotomatiki.",
+        "placeholderInactivity": "⚠️ Kutofanya kazi kwa siku {days} kutasababisha kuondolewa kiotomatiki.",
         "placeholderEncourage": "Shiriki mawazo yako na kikundi.",
         "welcomeGuideButton": "Nimeelewa!",
         "unityAnnouncement": "☀️ **Hasa Utukufu wa Ufalme wa Selestia!** ☀️\n\n**Kila mshiriki ameshiriki alichojifunza!**",
@@ -554,7 +556,11 @@ export default {
         "newMessages": "Ujumbe mpya kuanzia hapa",
         "errorToggleReaction": "Failed to update reaction.",
         "inviteFriends": "Invite Friends",
-        "reTranslate": "Refresh translation"
+        "reTranslate": "Refresh translation",
+        "retrySend": "Jaribu kutuma tena",
+        "retry": "Jaribu tena",
+        "sending": "Inatuma...",
+        "userKicked": "⚠️ **{nickname}** ameondolewa kwenye kikundi."
     },
     "newNote": {
         "editTitle": "Hariri Ujumbe",
@@ -730,7 +736,9 @@ export default {
         "emailNotVerified": "Tafadhali thibitisha anwani yako ya barua pepe kabla ya kuingia.",
         "resendVerification": "Tuma Barua Pepe ya Uthibitishaji",
         "verificationResent": "Barua pepe ya uthibitishaji imetumwa.",
-        "errorInvalidCredential": "Barua pepe au nenosiri si sahihi. Tafadhali jaribu tena."
+        "errorInvalidCredential": "Barua pepe au nenosiri si sahihi. Tafadhali jaribu tena.",
+        "emailPlaceholder": "jina@mfano.com",
+        "passwordPlaceholder": "Weka nenosiri lako"
     },
     "forgotPasswordPage": {
         "title": "Weka Upya Nenosiri Lako",
@@ -1010,5 +1018,51 @@ export default {
         "loadingSubtitle": "Inapakia data. Tafadhali subiri kidogo.",
         "loginSuccess": "Umeingia kwa kutumia akaunti ya majaribio!",
         "loginError": "Imeshindwa kuunganisha kwenye mazingira ya majaribio. Inaelekeza kwenye ukurasa wa kuingia..."
+    },
+    "familyTheme": {
+        "cardTitle": "Mmejifunza maandiko kama familia?",
+        "cardDesc": "Linganisheni mada ya leo ili kurekodi mafunzo yenu!",
+        "openModalBtn": "Tuchague mada ya leo",
+        "waitingPartnerTitle": "Inasubiri chaguo la mwenzako…",
+        "waitingPartnerDesc": "Umechagua \"{selectedTheme}\". Tusubiri mwenzako achague.",
+        "partnerSelectedTitle": "Mwenzako amechagua mada!",
+        "partnerSelectedDesc": "Chagua mada yako",
+        "completedTitle": "Mada ya Familia ya Leo: 【{theme}】",
+        "completedDesc": "Kujifunza maandiko kwa familia nzima kumekamilika! Vizuri sana! ✨",
+        "completedBadge": "Imekamilika",
+        "changeSelection": "Badilisha Mada",
+        "modalTitle": "Chagua Mada ya Leo",
+        "modalSubtitle": "Chagua mada mliyojadili wakati wa kujifunza kama familia",
+        "mismatchTitle": "Ilikaribia! Jadilianeni na mkubaliane kuhusu mada moja!",
+        "mismatchDesc": "Wewe: 【{myTheme}】 / Mwenzako: 【{partnerTheme}】",
+        "matchSuccessTitle": "Tumejifunza maandiko kama familia! ✨",
+        "matchSuccessDesc": "Mada ya leo: 【{theme}】",
+        "confirmBtn": "Thibitisha Mada Hii",
+        "closeBtn": "Funga",
+        "themes": {
+            "faith": "Imani",
+            "hope": "Tumaini",
+            "charity": "Hisa",
+            "gratitude": "Shukrani",
+            "prayer": "Sala",
+            "patience": "Subira",
+            "repentance": "Toba",
+            "guidance": "Mwongozo wa Roho"
+        },
+        "chatMessageFamily": "🎊Tumejifunza kuhusu {theme} kama familia!!🎊",
+        "chatMessageOther": "✨{nickname} amejifunza kuhusu {theme} na familia!!✨",
+        "aiBotCongratulation": "Ni vizuri sana kujifunza maandiko na familia, {nickname}! Hongera sana!",
+        "familyStudyNoteTitle": "Dokezo la Mafunzo ya Familia",
+        "familyStudyNoteTheme": "Mada ya Leo: {theme}",
+        "familyStudyNoteBody": "Tumejadiliana kama familia kuhusu \"{theme}\" na kujifunza maandiko.",
+        "categoryFamilyStudy": "Mafunzo ya Familia",
+        "themeLabel": "Mada",
+        "groupOptionToggle": "Modi ya Familia",
+        "groupOptionToggleDesc": "Inafaa zaidi kwa vikundi vinavyojifunza pamoja kwa wakati mmoja (Kikundi 1 kwa kila mtumiaji)",
+        "alreadyEnabledInOtherGroup": "Hali ya familia tayari imewezeshwa katika kikundi kingine",
+        "modeFamilyTitle": "Modi ya Familia (ON)",
+        "modeFamilyDesc": "Inafaa zaidi kwa vikundi vinavyojifunza pamoja kwa wakati mmoja. Linganisha mada ya leo na ukamilishe kwa mguso mmoja! (Kikundi 1 kwa kila mtumiaji)",
+        "modeIndividualTitle": "Modi ya Binafsi (OFF)",
+        "modeIndividualDesc": "Inafaa zaidi kwa wanaojifunza kwa mwendo wao au wakati hawawezi kulingana muda, huku wakishiriki maelezo na mafunzo."
     }
 };

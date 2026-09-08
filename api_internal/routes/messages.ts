@@ -248,13 +248,12 @@ router.post('/toggle-reaction', authenticate, verifyAppCheck, async (req: Authen
             messageId,
             emoji,
             nickname,
-            photoURL,
-            skipGroupCheck: true
+            photoURL
         });
 
         res.json({ success: true, ...result });
     } catch (error) {
-        if (error instanceof ValidationError) {
+        if (error instanceof AppError) {
             sendErrorResponse(res, error);
             return;
         }
@@ -358,9 +357,7 @@ router.post('/send-cheer', authenticate, verifyAppCheck, async (req: Authenticat
             targetUid,
             groupId,
             senderNickname,
-            senderTimeZone,
-            skipGroupCheck: true,
-            skipTargetUserCheck: true
+            senderTimeZone
         });
 
         if (result.alreadySent) throw new AppError('alreadySent', 429);

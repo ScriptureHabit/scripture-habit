@@ -1,0 +1,192 @@
+.family-theme-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px 22px;
+    border-radius: 20px;
+    background: var(--glass-bg, rgba(255, 255, 255, 0.75));
+    border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.4));
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+    margin-bottom: 20px;
+    cursor: pointer;
+    transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.family-theme-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+    border-color: rgba(246, 135, 179, 0.5);
+}
+
+.family-card-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 1;
+    min-width: 0;
+}
+
+.family-card-icon-container {
+    width: 48px;
+    height: 48px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
+    color: #fff;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(255, 154, 158, 0.35);
+    transition: transform 0.2s ease;
+}
+
+.family-theme-card:hover .family-card-icon-container {
+    transform: scale(1.05);
+}
+
+.heart-icon {
+    width: 26px;
+    height: 26px;
+}
+
+.matched-theme-emoji {
+    font-size: 1.6rem;
+    line-height: 1;
+}
+
+.family-card-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.family-card-title {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0 0 4px 0;
+    color: var(--text-color, #2d3748);
+    line-height: 1.35;
+    word-break: break-word;
+}
+
+.family-card-desc {
+    font-size: 0.84rem;
+    color: var(--text-muted, #718096);
+    margin: 0;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    word-break: break-word;
+}
+
+/* Status variants */
+.family-theme-card.partner-ready {
+    border-color: #4299e1;
+    background: linear-gradient(135deg, rgba(235, 248, 255, 0.8) 0%, rgba(255, 255, 255, 0.8) 100%);
+    animation: gentleGlow 2.5s infinite ease-in-out;
+}
+
+@keyframes gentleGlow {
+    0%, 100% {
+        box-shadow: 0 8px 24px rgba(66, 153, 225, 0.15);
+    }
+    50% {
+        box-shadow: 0 12px 32px rgba(66, 153, 225, 0.3);
+    }
+}
+
+.partner-ready-title {
+    color: #2b6cb0;
+}
+
+.waiting-title {
+    color: #d69e2e;
+}
+
+.family-theme-card.is-completed {
+    background: linear-gradient(135deg, rgba(240, 255, 244, 0.85) 0%, rgba(255, 255, 255, 0.9) 100%);
+    border-color: #68d391;
+    box-shadow: 0 8px 24px rgba(72, 187, 120, 0.15);
+}
+
+.completed-title {
+    color: #276749;
+}
+
+.family-card-right {
+    flex-shrink: 0;
+}
+
+.completed-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #38a169;
+    color: #fff;
+    padding: 8px 14px;
+    border-radius: 9999px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    box-shadow: 0 4px 10px rgba(56, 161, 105, 0.3);
+}
+
+.family-action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: linear-gradient(135deg, #f687b3 0%, #ed64a6 100%);
+    color: #fff;
+    border: none;
+    padding: 9px 16px;
+    border-radius: 12px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(237, 100, 166, 0.3);
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.family-action-btn:hover {
+    transform: scale(1.03);
+    box-shadow: 0 6px 16px rgba(237, 100, 166, 0.4);
+}
+
+/* Mobile responsive layout */
+@media screen and (max-width: 640px) {
+    .family-theme-card {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+        padding: 14px 16px;
+        border-radius: 16px;
+        margin-bottom: 16px;
+    }
+
+    .family-card-left {
+        flex: initial;
+        width: 100%;
+    }
+
+    .family-card-right {
+        width: 100%;
+    }
+
+    .family-action-btn {
+        width: 100%;
+        justify-content: center;
+        padding: 10px 16px;
+    }
+
+    .completed-badge {
+        width: 100%;
+        justify-content: center;
+    }
+}

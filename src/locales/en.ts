@@ -188,7 +188,9 @@ export default {
         "cancel": "Cancel",
         "delete": "Delete",
         "close": "Close",
-        "dismiss": "Dismiss"
+        "dismiss": "Dismiss",
+        "saved": "Saved",
+        "error": "An error occurred"
     },
     "seo": {
         "title": "Scripture Habit",
@@ -554,7 +556,11 @@ export default {
         "newMessages": "New Messages",
         "errorToggleReaction": "Failed to update reaction.",
         "inviteFriends": "Invite Friends",
-        "reTranslate": "Refresh translation"
+        "reTranslate": "Refresh translation",
+        "retrySend": "Retry sending",
+        "retry": "Retry",
+        "sending": "Sending...",
+        "userKicked": "⚠️ **{nickname}** was removed from the group."
     },
     "newNote": {
         "editTitle": "Edit Note",
@@ -730,7 +736,9 @@ export default {
         "emailNotVerified": "Please verify your email address before logging in.",
         "resendVerification": "Send Verification Email",
         "verificationResent": "Verification email sent.",
-        "errorInvalidCredential": "Invalid email or password. Please try again."
+        "errorInvalidCredential": "Invalid email or password. Please try again.",
+        "emailPlaceholder": "name@example.com",
+        "passwordPlaceholder": "Enter your password"
     },
     "forgotPasswordPage": {
         "title": "Reset Your Password",
@@ -1010,5 +1018,51 @@ export default {
         "loadingSubtitle": "Loading data. Please wait a moment.",
         "loginSuccess": "Logged in as Demo User!",
         "loginError": "Failed to enter demo environment. Redirecting to login."
+    },
+    "familyTheme": {
+        "cardTitle": "Studied scriptures with family?",
+        "cardDesc": "Match today's theme and record your study!",
+        "openModalBtn": "Choose Today's Theme",
+        "waitingPartnerTitle": "Waiting for partner's choice…",
+        "waitingPartnerDesc": "You selected \"{selectedTheme}\". Let's wait for your partner to choose.",
+        "partnerSelectedTitle": "Your partner chose a theme!",
+        "partnerSelectedDesc": "Choose your theme!",
+        "completedTitle": "Today's Family Theme: 【{theme}】",
+        "completedDesc": "Family scripture study achieved! Awesome! ✨",
+        "completedBadge": "Completed",
+        "changeSelection": "Change Theme",
+        "modalTitle": "Choose Today's Theme",
+        "modalSubtitle": "Select a theme you discussed during your family study",
+        "mismatchTitle": "Almost! Discuss and unite on one!",
+        "mismatchDesc": "You: 【{myTheme}】 / Partner: 【{partnerTheme}】",
+        "matchSuccessTitle": "Studied scriptures with family! ✨",
+        "matchSuccessDesc": "Today's theme: 【{theme}】",
+        "confirmBtn": "Select Theme",
+        "closeBtn": "Close",
+        "themes": {
+            "faith": "Faith",
+            "hope": "Hope",
+            "charity": "Charity",
+            "gratitude": "Gratitude",
+            "prayer": "Prayer",
+            "patience": "Patience",
+            "repentance": "Repentance",
+            "guidance": "Spirit Guidance"
+        },
+        "chatMessageFamily": "🎊Studied about {theme} as a family!!🎊",
+        "chatMessageOther": "✨{nickname} studied about {theme} with family!!✨",
+        "aiBotCongratulation": "Wonderful to study scriptures with family, {nickname}! Congratulations!",
+        "familyStudyNoteTitle": "Family Study Note",
+        "familyStudyNoteTheme": "Today's Theme: {theme}",
+        "familyStudyNoteBody": "Discussed \"{theme}\" together with family and studied the scriptures.",
+        "categoryFamilyStudy": "Family Study",
+        "themeLabel": "Theme",
+        "groupOptionToggle": "Family Mode",
+        "groupOptionToggleDesc": "Best for groups studying scriptures together at the same time (1 group per user).",
+        "alreadyEnabledInOtherGroup": "Family mode is already enabled in another group",
+        "modeFamilyTitle": "Family Mode (ON)",
+        "modeFamilyDesc": "Best for groups studying scriptures together at the same time. Match today's theme and complete in one tap! (1 group per user)",
+        "modeIndividualTitle": "Individual Mode (OFF)",
+        "modeIndividualDesc": "Best for studying at your own pace or when study times differ, while still sharing notes and insights."
     }
 };

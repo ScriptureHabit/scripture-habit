@@ -286,6 +286,7 @@ const Dashboard = () => {
             t={t} userData={userData} warnings={warnings} todayPlan={getTodayReadingPlan() || null} 
             getReadingPlanUrl={(script) => getGospelLibraryUrl(null, script, language)}
             translateChapterField={translateChapterField} isJoiningInvite={isJoiningInvite} hasGroups={enrichedUserGroups.length > 0} 
+            userGroups={enrichedUserGroups}
             setIsModalOpen={setIsModalOpen} setShowWelcomeStory={setShowWelcomeStory} 
             setShowEditProfileModal={setShowEditProfileModal} setNewNickname={setNewNickname}
             kickDate={kickDate} hasActiveModal={hasActiveModal}

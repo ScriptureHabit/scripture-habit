@@ -22,6 +22,7 @@ import feedbackRoutes from '../api_internal/routes/feedback.js';
 import testUtilsRoutes from '../api_internal/routes/test-utils.js';
 import resetUnityRoutes from '../api_internal/routes/reset-unity.js';
 import demoRoutes from '../api_internal/routes/demo.js';
+import familyThemeRoutes from '../api_internal/routes/family-theme.js';
 import openapiSpec from '../api_internal/openapi-spec.js';
 
 // Middleware & Utils
@@ -244,6 +245,7 @@ app.use('/api/test', testUtilsRoutes);
 app.use('/api/demo', demoRoutes);
 app.use('/api/groups', resetUnityRoutes);
 app.use('/api/reset-unity', resetUnityRoutes);
+app.use('/api/groups', familyThemeRoutes);
 
 // The Sentry error handler must be before any other error middleware and after all controllers
 setupBackendSentryErrorHandler(app);

@@ -188,7 +188,9 @@ export default {
         "cancel": "Hủy",
         "delete": "Xóa",
         "close": "Đóng",
-        "dismiss": "Bỏ qua"
+        "dismiss": "Bỏ qua",
+        "saved": "Đã lưu",
+        "error": "Đã xảy ra lỗi"
     },
     "seo": {
         "title": "Scripture Habit",
@@ -465,9 +467,9 @@ export default {
         "activeDaysAgo": "Hoạt động {days} ngày trước",
         "activeMonthsAgo": "Hoạt động > {months} tháng trước",
         "noActivity": "Không có hoạt động gần đây",
-        "inactivityPolicyBanner": "⚠️ Nếu bạn không đăng ghi chép hoặc tin nhắn trong nhóm này trong 3 ngày, bạn sẽ tự động bị xóa.",
+        "inactivityPolicyBanner": "⚠️ Nếu bạn không đăng ghi chép hoặc tin nhắn trong nhóm này trong {days} ngày, bạn sẽ tự động bị xóa.",
         "placeholderShare": "Hãy chia sẻ những gì bạn đã học được hôm nay!",
-        "placeholderInactivity": "⚠️ Không hoạt động trong 3 ngày sẽ bị tự động xóa.",
+        "placeholderInactivity": "⚠️ Không hoạt động trong {days} ngày sẽ bị tự động xóa.",
         "placeholderEncourage": "Chia sẻ suy nghĩ của bạn với nhóm.",
         "welcomeGuideButton": "Đã hiểu!",
         "unityAnnouncement": "☀️ **Chính là Vinh quang của Vương quốc Thượng giới!** ☀️\n\n**Tất cả các thành viên đã chia sẻ bài học của mình!**",
@@ -528,7 +530,11 @@ export default {
         "newMessages": "Tin nhắn mới từ đây",
         "errorToggleReaction": "Failed to update reaction.",
         "inviteFriends": "Invite Friends",
-        "reTranslate": "Refresh translation"
+        "reTranslate": "Refresh translation",
+        "retrySend": "Thử gửi lại",
+        "retry": "Thử lại",
+        "sending": "Đang gửi...",
+        "userKicked": "⚠️ **{nickname}** đã bị xóa khỏi nhóm."
     },
     "newNote": {
         "editTitle": "Chỉnh sửa ghi chép",
@@ -704,7 +710,9 @@ export default {
         "emailNotVerified": "Vui lòng xác minh địa chỉ email của bạn trước khi đăng nhập.",
         "resendVerification": "Gửi email xác minh",
         "verificationResent": "Email xác minh đã được gửi.",
-        "errorInvalidCredential": "Email hoặc mật khẩu không hợp lệ. Vui lòng thử lại."
+        "errorInvalidCredential": "Email hoặc mật khẩu không hợp lệ. Vui lòng thử lại.",
+        "emailPlaceholder": "ten@vidu.com",
+        "passwordPlaceholder": "Nhập mật khẩu của bạn"
     },
     "forgotPasswordPage": {
         "title": "Đặt lại mật khẩu của bạn",
@@ -984,5 +992,51 @@ export default {
         "loadingSubtitle": "Đang tải dữ liệu. Vui lòng đợi trong giây lát.",
         "loginSuccess": "Đã đăng nhập bằng tài khoản demo!",
         "loginError": "Không thể kết nối đến môi trường demo. Đang chuyển hướng về trang đăng nhập..."
+    },
+    "familyTheme": {
+        "cardTitle": "Bạn đã cùng gia đình học thánh thư chưa?",
+        "cardDesc": "Khớp chủ đề hôm nay để ghi lại giờ học nhé!",
+        "openModalBtn": "Cùng chọn chủ đề hôm nay nào",
+        "waitingPartnerTitle": "Đang chờ bạn đời lựa chọn…",
+        "waitingPartnerDesc": "Bạn đã chọn \"{selectedTheme}\". Hãy đợi bạn đời chọn nhé.",
+        "partnerSelectedTitle": "Bạn đời của bạn đã chọn một chủ đề!",
+        "partnerSelectedDesc": "Hãy chọn chủ đề của bạn",
+        "completedTitle": "Chủ đề gia đình hôm nay: 【{theme}】",
+        "completedDesc": "Việc học thánh thư của cả gia đình đã hoàn thành! Thật tuyệt vời! ✨",
+        "completedBadge": "Hoàn thành",
+        "changeSelection": "Chọn lại chủ đề",
+        "modalTitle": "Chọn chủ đề hôm nay",
+        "modalSubtitle": "Chọn một chủ đề mà gia đình bạn đã thảo luận trong giờ học",
+        "mismatchTitle": "Suýt chút nữa! Hãy thảo luận và cùng thống nhất nhé!",
+        "mismatchDesc": "Bạn: 【{myTheme}】 / Bạn đời: 【{partnerTheme}】",
+        "matchSuccessTitle": "Đã cùng gia đình học thánh thư! ✨",
+        "matchSuccessDesc": "Chủ đề hôm nay: 【{theme}】",
+        "confirmBtn": "Xác nhận chủ đề này",
+        "closeBtn": "Đóng",
+        "themes": {
+            "faith": "Đức tin",
+            "hope": "Hy vọng",
+            "charity": "Lòng bác ái",
+            "gratitude": "Lòng biết ơn",
+            "prayer": "Cầu nguyện",
+            "patience": "Kiên nhẫn",
+            "repentance": "Sự hối cải",
+            "guidance": "Sự hướng dẫn của Thánh Linh"
+        },
+        "chatMessageFamily": "🎊Cả gia đình đã học về {theme} cùng nhau!!🎊",
+        "chatMessageOther": "✨{nickname} đã học về {theme} cùng gia đình!!✨",
+        "aiBotCongratulation": "Thật tuyệt vời khi học thánh thư cùng gia đình, {nickname}! Xin chúc mừng!",
+        "familyStudyNoteTitle": "Ghi chú học tập gia đình",
+        "familyStudyNoteTheme": "Chủ đề hôm nay: {theme}",
+        "familyStudyNoteBody": "Đã cùng gia đình thảo luận về \"{theme}\" và học thánh thư.",
+        "categoryFamilyStudy": "Học tập gia đình",
+        "themeLabel": "Chủ đề",
+        "groupOptionToggle": "Chế độ gia đình",
+        "groupOptionToggleDesc": "Phù hợp nhất cho các nhóm cùng học thánh thư vào cùng một thời điểm (Giới hạn 1 nhóm mỗi người dùng)",
+        "alreadyEnabledInOtherGroup": "Chế độ gia đình đã được bật ở một nhóm khác",
+        "modeFamilyTitle": "Chế độ gia đình (ON)",
+        "modeFamilyDesc": "Phù hợp nhất cho các nhóm cùng học thánh thư vào cùng một thời điểm. Khớp chủ đề hôm nay và hoàn thành trong một lần chạm! (Giới hạn 1 nhóm mỗi người dùng)",
+        "modeIndividualTitle": "Chế độ cá nhân (OFF)",
+        "modeIndividualDesc": "Phù hợp cho những ai muốn học theo nhịp độ riêng hoặc khi khó sắp xếp thời gian, nhưng vẫn muốn chia sẻ ghi chú."
     }
 };

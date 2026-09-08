@@ -253,7 +253,9 @@ describe('Auth Route Integration', () => {
             const userSnap = await db.collection('users').doc(USER_ID).get();
             const userData = userSnap.data()!;
             expect(userData.uid).toBe(USER_ID);
-            expect(userData.email).toBe('regular_user@gmail.com');
+            expect(userData.email).toBe('');
+            const accountSnap = await db.collection('users').doc(USER_ID).collection('private').doc('account').get();
+            expect(accountSnap.data()?.email).toBe('regular_user@gmail.com');
             expect(userData.nickname).toBe('Reg User');
             expect(userData.timeZone).toBe('Europe/London');
             expect(userData.language).toBe('es');

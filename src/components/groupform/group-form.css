@@ -121,3 +121,138 @@
   line-height: 1.4;
   margin: 0;
 }
+
+/* Mode Selection Card */
+.group-mode-selection-card {
+  width: 100%;
+  max-width: 300px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 14px;
+  padding: 14px 14px;
+  margin: 0.2rem 0 1.2rem;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  text-align: left;
+  box-sizing: border-box;
+  animation: fadeIn 0.3s ease-in-out;
+  transition: all 0.25s ease;
+}
+
+.mode-selection-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.mode-header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mode-icon {
+  font-size: 1.25rem;
+}
+
+.mode-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--black, #2d3748);
+}
+
+.mode-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 10px;
+  color: #ffffff;
+  transition: all 0.2s ease;
+}
+
+.mode-badge.family-badge {
+  background: #ed64a6;
+}
+
+.mode-badge.individual-badge {
+  background: #718096;
+}
+
+.already-enabled-warning {
+  font-size: 0.76rem;
+  color: #c53030;
+  background: rgba(254, 178, 178, 0.25);
+  border: 1px solid rgba(229, 62, 62, 0.2);
+  border-radius: 8px;
+  padding: 6px 8px;
+  margin: 0 0 10px;
+  line-height: 1.35;
+}
+
+.mode-cards-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.mode-card {
+  padding: 10px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.35);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.mode-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.mode-card.disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.mode-card.selected-family {
+  background: rgba(237, 100, 166, 0.12);
+  border: 1.5px solid rgba(237, 100, 166, 0.4);
+}
+
+.mode-card.selected-individual {
+  background: rgba(66, 153, 225, 0.1);
+  border: 1.5px solid rgba(66, 153, 225, 0.35);
+}
+
+.mode-card-title {
+  font-weight: 700;
+  font-size: 0.85rem;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.mode-card-title.family-text {
+  color: #b83280;
+}
+
+.mode-card-title.individual-text {
+  color: #2b6cb0;
+}
+
+.mode-card-desc {
+  font-size: 0.75rem;
+  color: var(--gray, #718096);
+  line-height: 1.4;
+}
+
+.radio-indicator {
+  font-size: 0.8rem;
+}
+

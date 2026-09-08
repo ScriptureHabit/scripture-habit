@@ -85,28 +85,22 @@ const SystemMessage = ({ msg, t, kickThreshold = DEFAULT_KICK_THRESHOLD }: Syste
       return t('groupChat.unityAnnouncement');
     }
 
-    // 2. Legacy fallback for old unstructured messages in history
-    const legacyBoldMatch = text.match(/\*\*(.+?)\*\*/);
-    if (legacyBoldMatch && !msg.messageType) {
-      const rawName = legacyBoldMatch[1].trim();
-      const nickname = displayNickname || rawName;
-
-      if (/join|参加|entrou|加入|unió|tham gia|เข้า|참여|sumali|amejiunga/i.test(text)) {
-        return t('groupChat.userJoined', { nickname });
+    if (msg.messageType === 'familyThemeCompleted') {
+      const themeId = msg.messageData?.themeId;
+      const themeName = themeId ? t(`familyTheme.themes.${themeId}`) : String(msg.messageData?.themeName || '');
+      if (msg.messageData?.userId) {
+        const nickname = displayNickname || String(msg.messageData?.nickname || '');
+        return t('familyTheme.chatMessageOther', { nickname, theme: themeName });
       }
-      if (/left|退|saiu|離開|离开|salió|ha dejado|rời|ออก|떠났|나갔|umalis|ondoka/i.test(text)) {
-        return t('groupChat.userLeft', { nickname });
-      }
-      if (/inactivity|名|thành viên|miyembro|สมาชิก|Wanachama|membro/i.test(text) && /^\d+$/.test(rawName)) {
-        return t('groupChat.inactivityRemoval', { count: rawName, days: kickThreshold });
-      }
+      return t('familyTheme.chatMessageFamily', { theme: themeName });
     }
 
+    // 2. Legacy fallback for old unstructured messages (display stored text directly)
     return text;
   };
 
   return (
-    <div id={`message-${msg.id}`} className={`message system-message ${msg.messageType === 'streakAnnouncement' ? 'streak-announcement' : ''} ${msg.messageType === 'notePostedAnnouncement' || msg.messageType === 'aiNotePostedAnnouncement' ? 'note-posted-announcement' : ''} ${msg.messageType === 'unityAnnouncement' ? 'unity-announcement' : ''}`}>
+    <div id={`message-${msg.id}`} className={`message system-message ${msg.messageType === 'streakAnnouncement' ? 'streak-announcement' : ''} ${msg.messageType === 'notePostedAnnouncement' || msg.messageType === 'aiNotePostedAnnouncement' ? 'note-posted-announcement' : ''} ${msg.messageType === 'unityAnnouncement' ? 'unity-announcement' : ''} ${msg.messageType === 'familyThemeCompleted' ? 'family-theme-announcement' : ''}`}>
       <div className="message-content">
         {msg.messageType === 'unityAnnouncement' && (
           <div className="unity-announcement-body">

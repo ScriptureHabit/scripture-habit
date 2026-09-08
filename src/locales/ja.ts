@@ -188,7 +188,9 @@ export default {
         "cancel": "キャンセル",
         "delete": "削除",
         "close": "閉じる",
-        "dismiss": "閉じる"
+        "dismiss": "閉じる",
+        "saved": "保存しました",
+        "error": "エラーが発生しました"
     },
     "seo": {
         "title": "Scripture Habit",
@@ -554,7 +556,11 @@ export default {
         "newMessages": "ここから新着メッセージ",
         "errorToggleReaction": "リアクションの更新に失敗しました。",
         "inviteFriends": "友達を招待",
-        "reTranslate": "翻訳を再読み込み"
+        "reTranslate": "翻訳を再読み込み",
+        "retrySend": "再送信",
+        "retry": "再試行",
+        "sending": "送信中...",
+        "userKicked": "⚠️ **{nickname}**さんがグループから削除されました。"
     },
     "newNote": {
         "editTitle": "ノートを編集",
@@ -738,7 +744,9 @@ export default {
         "emailNotVerified": "ログインする前にメールアドレスの確認を行ってください。",
         "resendVerification": "確認メールを送信",
         "verificationResent": "確認メールを送信しました。",
-        "errorInvalidCredential": "メールアドレスまたはパスワードが正しくありません。もう一度お試しください。"
+        "errorInvalidCredential": "メールアドレスまたはパスワードが正しくありません。もう一度お試しください。",
+        "emailPlaceholder": "example@email.com",
+        "passwordPlaceholder": "パスワードを入力"
     },
     "forgotPasswordPage": {
         "title": "パスワードをリセット",
@@ -1018,5 +1026,51 @@ export default {
         "loadingSubtitle": "データを読み込んでいます。少々お待ちください。",
         "loginSuccess": "デモアカウントでログインしました！",
         "loginError": "デモ環境への接続に失敗しました。ログイン画面へ移動します。"
+    },
+    "familyTheme": {
+        "cardTitle": "家族で聖典学習をしましたか？",
+        "cardDesc": "今日のテーマを合わせて、学習を記録しよう！",
+        "openModalBtn": "今日のテーマを選びましょう",
+        "waitingPartnerTitle": "パートナーの選択を待っています…",
+        "waitingPartnerDesc": "あなたは「{selectedTheme}」を選びました。相手が選ぶのを待ちましょう。",
+        "partnerSelectedTitle": "パートナーがテーマを選びました！",
+        "partnerSelectedDesc": "あなたのテーマを選びましょう",
+        "completedTitle": "本日の家族テーマ：【{theme}】",
+        "completedDesc": "家族みんなの聖典学習が達成されました！",
+        "completedBadge": "完了",
+        "changeSelection": "選び直す",
+        "modalTitle": "今日のテーマを選ぶ",
+        "modalSubtitle": "今日家族で話し合った聖典のテーマを1つ選んでください",
+        "mismatchTitle": "惜しい！話し合って1つに揃えよう！",
+        "mismatchDesc": "あなた: 【{myTheme}】 / パートナー: 【{partnerTheme}】",
+        "matchSuccessTitle": "家族で聖典学習できました！✨",
+        "matchSuccessDesc": "今日のテーマ：【{theme}】",
+        "confirmBtn": "このテーマで決定",
+        "closeBtn": "閉じる",
+        "themes": {
+            "faith": "信仰",
+            "hope": "希望",
+            "charity": "慈愛",
+            "gratitude": "感謝",
+            "prayer": "祈り",
+            "patience": "忍耐",
+            "repentance": "悔い改め",
+            "guidance": "御霊の導き"
+        },
+        "chatMessageFamily": "🎊家族で{theme}について勉強しました！！🎊",
+        "chatMessageOther": "✨{nickname}が家族と{theme}について学びました！！✨",
+        "aiBotCongratulation": "{nickname}さん、ご家族での聖典学習、素晴らしいですね。おめでとうございます。",
+        "familyStudyNoteTitle": "家族学習ノート",
+        "familyStudyNoteTheme": "本日のテーマ：{theme}",
+        "familyStudyNoteBody": "家族といっしょに「{theme}」について話し合い、聖典を学びました。",
+        "categoryFamilyStudy": "家族学習",
+        "themeLabel": "テーマ",
+        "groupOptionToggle": "家族モード",
+        "groupOptionToggleDesc": "家族で同じ時間に集まって聖典学習をするグループに最適です。（1人1グループ限定）",
+        "alreadyEnabledInOtherGroup": "家族モードはすでに別のグループで有効になっています",
+        "modeFamilyTitle": "家族モード（ON）",
+        "modeFamilyDesc": "家族で同じ時間に集まって聖典学習をするグループに最適です。テーマを合わせてワンタップで記録できます。（1人1グループ限定）",
+        "modeIndividualTitle": "個人モード（OFF）",
+        "modeIndividualDesc": "各自のペースで学習したい方や、時間を合わせるのが難しいけれど学びをノートで共有したいグループに最適です。"
     }
 };

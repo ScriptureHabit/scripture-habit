@@ -36,9 +36,15 @@ const KNOWN_SCRIPTURES = collectUniqueStrings(
         l.books?.['Doctrine and Covenants'],
         l.books?.['D&C'],
         l.books?.['The Living Christ'],
-        l.books?.['The Family Proclamation']
+        l.books?.['The Family Proclamation'],
+        l.familyTheme?.categoryFamilyStudy
     ]),
-    ['Doctrine and Covenants', 'D&C', 'BYU Speeches', 'General Conference', 'Book of Mormon', 'Old Testament', 'New Testament', 'Pearl of Great Price', 'Ordinances and Proclamations']
+    [
+        'Doctrine and Covenants', 'D&C', 'BYU Speeches', 'General Conference', 'Book of Mormon',
+        'Old Testament', 'New Testament', 'Pearl of Great Price', 'Ordinances and Proclamations',
+        'Family Study', '家族学習', '가족 학습', '家庭研讀', 'Estudio familiar', 'Estudo familiar',
+        'Studio familiare', 'Pag-aaral ng Pamilya', 'การศึกษาของครอบครัว', 'Học tập gia đình', 'Mafunzo ya Familia'
+    ]
 ).sort((a, b) => b.length - a.length);
 
 const splitHeaderScriptureAndChapter = (headerText: string): { scriptureValue: string; chapterValue: string } => {
@@ -68,7 +74,8 @@ const scriptureLabels = collectUniqueStrings(
 const chapterLabels = collectUniqueStrings(
     ALL_LOCALES.map(l => l.noteLabels?.chapter),
     ALL_LOCALES.map(l => typeof l.groupChat?.chapter === 'string' ? l.groupChat.chapter : undefined),
-    ['Chapter', '章', 'Capítulo', '장', '章節', '章节', 'Kabanata', 'Chương', 'Sura', 'บท']
+    ALL_LOCALES.map(l => l.familyTheme?.themeLabel),
+    ['Chapter', '章', 'Capítulo', '장', '章節', '章节', 'Kabanata', 'Chương', 'Sura', 'บท', 'Theme', 'テーマ', '주제', '主題', 'Tema', 'หัวข้อ', 'Chủ đề', 'Mada']
 );
 
 const commentLabels = collectUniqueStrings(

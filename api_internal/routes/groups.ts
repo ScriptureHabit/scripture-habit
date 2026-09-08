@@ -26,7 +26,7 @@ router.post('/create-group', authenticate, requireEmailVerified, verifyAppCheck,
             throw new ValidationError('Invalid input');
         }
 
-        const { name, description, timeZone } = validation.data;
+        const { name, description, timeZone, isFamilySyncEnabled } = validation.data;
         const uid = req.user?.uid;
         if (!uid) throw new ValidationError('Unauthorized');
 
@@ -41,6 +41,18 @@ router.post('/create-group', authenticate, requireEmailVerified, verifyAppCheck,
             const currentGroupIds = userData.groupIds || [];
             if (currentGroupIds.length >= MAX_GROUPS_PER_USER) {
                 throw new ValidationError(`You have reached the maximum limit of ${MAX_GROUPS_PER_USER} groups. Please leave or delete an existing group before creating a new one.`);
+            }
+
+            if (isFamilySyncEnabled) {
+                const existingFamilyGroups = await transaction.get(
+                    db.collection('groups')
+                        .where('members', 'array-contains', uid)
+                        .where('isFamilySyncEnabled', '==', true)
+                );
+                const otherEnabled = existingFamilyGroups.docs.filter((d) => !d.data().isDeleted);
+                if (otherEnabled.length > 0) {
+                    throw new ValidationError('familyTheme.alreadyEnabledInOtherGroup');
+                }
             }
 
             // 2. Prepare Data
@@ -72,7 +84,8 @@ router.post('/create-group', authenticate, requireEmailVerified, verifyAppCheck,
                 lastInactivityCheckedAt: now,
                 lastMessageAt: now,
                 lastMessageByNickname: userNick,
-                lastMessageByUid: uid
+                lastMessageByUid: uid,
+                isFamilySyncEnabled: !!isFamilySyncEnabled
             };
 
             const memberData: admin.firestore.WithFieldValue<GroupMemberDocument> = {

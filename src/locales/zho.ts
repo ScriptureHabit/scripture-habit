@@ -188,7 +188,9 @@ export default {
         "cancel": "取消",
         "delete": "刪除",
         "close": "關閉",
-        "dismiss": "關閉"
+        "dismiss": "關閉",
+        "saved": "已儲存",
+        "error": "發生錯誤"
     },
     "seo": {
         "title": "Scripture Habit | 每日經文研讀與社群工具",
@@ -465,9 +467,9 @@ export default {
         "activeDaysAgo": "{days} 天前活躍",
         "activeMonthsAgo": "{months} 個月前活躍",
         "noActivity": "無近期活躍",
-        "inactivityPolicyBanner": "⚠️ 如果您在 3 天內未在此群組發布筆記或訊息，您將被自動移除。",
+        "inactivityPolicyBanner": "⚠️ 如果您在 {days} 天內未在此群組發布筆記或訊息，您將被自動移除。",
         "placeholderShare": "分享您今天學到的內容吧！",
-        "placeholderInactivity": "⚠️ 閒置 3 天將導致自動移除。",
+        "placeholderInactivity": "⚠️ 閒置 {days} 天將導致自動移除。",
         "placeholderEncourage": "與群組分享您的想法。",
         "welcomeGuideButton": "明白了！",
         "unityAnnouncement": "☀️ **正是高級國度的光輝！** ☀️\n\n**所有成員都分享了他們的學習！**",
@@ -528,7 +530,11 @@ export default {
         "newMessages": "新訊息",
         "errorToggleReaction": "Failed to update reaction.",
         "inviteFriends": "Invite Friends",
-        "reTranslate": "Refresh translation"
+        "reTranslate": "Refresh translation",
+        "retrySend": "重新發送",
+        "retry": "重試",
+        "sending": "發送中...",
+        "userKicked": "⚠️ **{nickname}** 已被移出群組。"
     },
     "newNote": {
         "editTitle": "編輯筆記",
@@ -705,7 +711,9 @@ export default {
         "emailNotVerified": "請在登錄前驗證您的電子郵件地址。",
         "resendVerification": "發送驗證郵件",
         "verificationResent": "驗證郵件已發送。",
-        "errorInvalidCredential": "電子郵件或密碼無效。請再試一次。"
+        "errorInvalidCredential": "電子郵件或密碼無效。請再試一次。",
+        "emailPlaceholder": "name@example.com",
+        "passwordPlaceholder": "請輸入您的密碼"
     },
     "forgotPasswordPage": {
         "title": "重設您的密碼",
@@ -985,5 +993,51 @@ export default {
         "loadingSubtitle": "正在載入資料，請稍候。",
         "loginSuccess": "已使用示範帳號登入！",
         "loginError": "連接示範環境失敗。正在重新導向至登入頁面..."
+    },
+    "familyTheme": {
+        "cardTitle": "今天和家人一起研讀經文了嗎？",
+        "cardDesc": "對齊今天的主題，記錄全家的研讀！",
+        "openModalBtn": "選擇今日主題吧",
+        "waitingPartnerTitle": "正在等待伴侶選擇…",
+        "waitingPartnerDesc": "您已選擇「{selectedTheme}」。請等待對方選擇吧。",
+        "partnerSelectedTitle": "伴侶已選擇主題！",
+        "partnerSelectedDesc": "請選擇您的主題",
+        "completedTitle": "今日家庭主題：【{theme}】",
+        "completedDesc": "全家人的經文研讀都已達成！太棒了！✨",
+        "completedBadge": "已完成",
+        "changeSelection": "重新選擇",
+        "modalTitle": "選擇今日主題",
+        "modalSubtitle": "請選擇一個今天在家庭研讀中討論過的經文主題",
+        "mismatchTitle": "好可惜！一起討論並達成共識吧！",
+        "mismatchDesc": "您：【{myTheme}】 / 伴侶：【{partnerTheme}】",
+        "matchSuccessTitle": "和家人一起完成經文研讀了！✨",
+        "matchSuccessDesc": "今日主題：【{theme}】",
+        "confirmBtn": "確定選擇此主題",
+        "closeBtn": "關閉",
+        "themes": {
+            "faith": "信心",
+            "hope": "盼望",
+            "charity": "仁愛",
+            "gratitude": "感恩",
+            "prayer": "祈禱",
+            "patience": "耐心",
+            "repentance": "悔改",
+            "guidance": "聖靈的指引"
+        },
+        "chatMessageFamily": "🎊我們全家一起研讀了{theme}！！🎊",
+        "chatMessageOther": "✨{nickname} 與家人一起研讀了{theme}！！✨",
+        "aiBotCongratulation": "{nickname}，能和家人一起研讀經文真是太棒了！恭喜你們！",
+        "familyStudyNoteTitle": "家庭研讀筆記",
+        "familyStudyNoteTheme": "今日主題：{theme}",
+        "familyStudyNoteBody": "與家人一起討論「{theme}」並研讀了經文。",
+        "categoryFamilyStudy": "家庭研讀",
+        "themeLabel": "主題",
+        "groupOptionToggle": "家庭模式",
+        "groupOptionToggleDesc": "最適合在同一時間聚在一起研讀經文的團體（每位用戶限1個群組）",
+        "alreadyEnabledInOtherGroup": "家庭模式已在其他群組中啟用",
+        "modeFamilyTitle": "家庭模式（ON）",
+        "modeFamilyDesc": "最適合在同一時間聚在一起研讀經文的團體。對齊今日主題即可一鍵完成！（每位用戶限1個群組）",
+        "modeIndividualTitle": "個人模式（OFF）",
+        "modeIndividualDesc": "適合依自己的節奏研讀、或難以協調時間但仍希望透過筆記分享心得的團體。"
     }
 };

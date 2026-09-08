@@ -91,6 +91,7 @@ const GroupChatProvider = ({
   // Offline pending message hydration & automatic online retry
   useAutoRetry({
     groupId,
+    userId: userData?.uid,
     messages,
     messagesLoaded,
     dispatch,

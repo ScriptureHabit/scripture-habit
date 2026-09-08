@@ -93,7 +93,7 @@ router.post('/initialize-profile', authenticate, verifyAppCheck, async (req: Aut
         
         const userData: UserDocument = {
             uid,
-            email: email || '',
+            email: '', // Separated to private/account subcollection
             nickname: nickname || 'New User',
             timeZone: timeZone || 'UTC',
             language: language || 'en',
@@ -113,6 +113,13 @@ router.post('/initialize-profile', authenticate, verifyAppCheck, async (req: Aut
         };
 
         await userRef.set(userData);
+
+        if (email) {
+            await userRef.collection('private').doc('account').set({
+                email,
+                createdAt: now
+            }, { merge: true });
+        }
 
         // Seed Welcome Letter from Developer to users/{uid}/letters (without expiresAt so it is permanently preserved)
         try {
@@ -275,6 +282,24 @@ router.post('/delete-account', authenticate, verifyAppCheck, async (req: Authent
         const error = err as Error;
         console.error('[AccountDelete] Critical error in /api/delete-account:', error.message);
         sendErrorResponse(res, err, 'Failed to delete account.');
+    }
+});
+
+/**
+ * Milestone achievers count
+ * Server-side aggregation avoiding open listing of users collection from client
+ */
+router.get('/milestone-count', authenticate, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+        const days = parseInt(req.query.days as string, 10);
+        if (isNaN(days) || days <= 0) {
+            return res.json({ count: 0 });
+        }
+        const usersRef = db.collection('users');
+        const snapshot = await usersRef.where('daysStudiedCount', '>=', days).count().get();
+        res.json({ count: snapshot.data().count });
+    } catch (err) {
+        sendErrorResponse(res, err, 'Failed to fetch milestone count');
     }
 });
 

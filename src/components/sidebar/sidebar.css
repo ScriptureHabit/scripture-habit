@@ -159,22 +159,6 @@
         position: relative;
     }
 
-    .mobile-groups-trigger .unread-dot {
-        position: absolute;
-        top: 6px;
-        right: 8px;
-        width: 10px;
-        height: 10px;
-        background-color: #ec4899;
-        border-radius: 50%;
-        border: 2px solid #ffffff;
-        box-shadow: 0 0 6px rgba(236, 72, 153, 0.7);
-        z-index: 100;
-        display: block !important;
-        transform-origin: center center;
-        animation: unread-dot-pulse 2s infinite ease-in-out;
-    }
-
     .Sidebar.hide-mobile {
         transform: translateY(100%);
         opacity: 0;
@@ -191,20 +175,33 @@
     justify-content: center;
 }
 
+/* Shared Pink Badge Dot (My Notes, Group Trigger) */
+.mobile-groups-trigger .unread-dot,
 .notes-unread-dot {
     position: absolute;
-    top: -2px;
-    right: -3px;
-    width: 8px !important;
-    height: 8px !important;
-    min-width: 8px !important;
-    min-height: 8px !important;
+    width: 10px !important;
+    height: 10px !important;
+    min-width: 10px !important;
+    min-height: 10px !important;
     background-color: #ec4899 !important;
     border-radius: 50% !important;
-    box-shadow: 0 0 6px rgba(236, 72, 153, 0.7);
+    border: 2px solid #ffffff !important;
+    box-shadow: 0 0 6px rgba(236, 72, 153, 0.7) !important;
     animation: unread-dot-pulse 2s infinite ease-in-out;
     pointer-events: none;
-    z-index: 2;
+    z-index: 100;
+    display: block !important;
+    transform-origin: center center;
+}
+
+.mobile-groups-trigger .unread-dot {
+    top: 6px;
+    right: 8px;
+}
+
+.notes-unread-dot {
+    top: -3px;
+    right: -4px;
 }
 
 .menuItem .group-unread-dot,

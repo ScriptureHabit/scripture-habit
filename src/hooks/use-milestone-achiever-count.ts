@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import { db } from '../firebase';
-import { collection, query, where, getCountFromServer } from 'firebase/firestore';
+import apiClient from '../utils/api-client';
 
 // In-memory cache to avoid duplicate counts in the same session
 const countCache: Record<number, number> = {};
@@ -18,12 +17,14 @@ export function useMilestoneAchieverCount(targetDays: number) {
 
     const fetchCount = async () => {
       try {
-        const usersRef = collection(db, 'users');
-        const q = query(usersRef, where('daysStudiedCount', '>=', targetDays));
-        const snapshot = await getCountFromServer(q);
-        const total = snapshot.data().count;
+        const response = await apiClient.get('/api/auth/milestone-count', {
+          params: { days: targetDays }
+        });
+        const total = typeof response.data?.count === 'number' ? response.data.count : null;
 
-        countCache[targetDays] = total;
+        if (total !== null) {
+          countCache[targetDays] = total;
+        }
         if (isMounted) {
           setCount(total);
           setLoading(false);

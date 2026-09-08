@@ -3,7 +3,15 @@ import LazyMarkdown from '../common/lazy-markdown';
 import { useLanguage } from '../../hooks/use-language';
 import { useNoteParser } from './hooks/use-note-parser';
 import GCNoteRenderer from './components/gc-note-renderer';
-import { getNoteLabelFallback, translateScriptureName, isPlaceholderValue, isSpecialTalkSource } from './utils/note-translations';
+import { 
+    getNoteLabelFallback, 
+    translateScriptureName, 
+    isPlaceholderValue, 
+    isSpecialTalkSource,
+    isFamilyStudyCategory,
+    resolveThemeId,
+    isFamilyStudyComment
+} from './utils/note-translations';
 import LinkPreview from '../linkpreview/link-preview';
 import './note-display.css';
 
@@ -54,8 +62,12 @@ const NoteDisplay = ({
         const effectivePropScripture = (!scripture || isPlaceholderValue(scripture)) ? undefined : scripture;
         const showScripture = effectivePropScripture || parsed.scriptureValue;
         const isPlaceholder = isPlaceholderValue(showScripture);
+        const isFamilyStudy = isFamilyStudyCategory(showScripture);
+
         const scriptureLabel = getNoteLabelFallback('noteLabels.scripture', language, t('noteLabels.scripture') || 'Scripture');
-        const chapterLabel = getNoteLabelFallback('noteLabels.chapter', language, t('noteLabels.chapter') || 'Chapter');
+        const chapterLabel = isFamilyStudy
+            ? (t('familyTheme.themeLabel') || 'テーマ')
+            : getNoteLabelFallback('noteLabels.chapter', language, t('noteLabels.chapter') || 'Chapter');
         
         const scriptureLine = !isPlaceholder 
             ? `**${scriptureLabel}:** ${translateScriptureName(showScripture, t)}`
@@ -64,12 +76,34 @@ const NoteDisplay = ({
         if (!parsed.isOriginalStructured) return parsed.finalSimpleContent;
         
         const showChapter = chapter || parsed.chapterValue;
-        const chapterLine = (showChapter && !isPlaceholderValue(showChapter)) 
-            ? `**${chapterLabel}:** ${translateChapterField(showChapter)}` 
+        let formattedChapter = '';
+        if (showChapter && !isPlaceholderValue(showChapter)) {
+            if (isFamilyStudy) {
+                const themeId = resolveThemeId(showChapter);
+                const themeTranslation = t(`familyTheme.themes.${themeId}`);
+                formattedChapter = (themeTranslation && !themeTranslation.startsWith('familyTheme.themes.'))
+                    ? themeTranslation
+                    : translateChapterField(showChapter);
+            } else {
+                formattedChapter = translateChapterField(showChapter);
+            }
+        }
+
+        const chapterLine = formattedChapter 
+            ? `**${chapterLabel}:** ${formattedChapter}` 
             : null;
         
         const commentLabel = getNoteLabelFallback('noteLabels.comment', language, t('noteLabels.comment'));
-        const commentWithLinks = parsed.comment.replace(/(https?:\/\/[^\s]+)/g, (match: string) => {
+
+        let commentText = parsed.comment;
+        if (isFamilyStudy && formattedChapter) {
+            const localizedBody = t('familyTheme.familyStudyNoteBody', { theme: formattedChapter });
+            if (!commentText || isFamilyStudyComment(commentText)) {
+                commentText = localizedBody;
+            }
+        }
+
+        const commentWithLinks = commentText.replace(/(https?:\/\/[^\s]+)/g, (match: string) => {
             const cleanUrl = match.replace(/[.,:;"')\]*_]+$/, '');
             const trailing = match.substring(cleanUrl.length);
             return `[${cleanUrl}](${cleanUrl})${trailing}`;

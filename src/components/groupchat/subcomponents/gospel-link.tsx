@@ -1,6 +1,6 @@
 import { getGospelLibraryUrl } from '../../../utils/gospel-library-mapper';
 import { parseStructuredNoteText, ParsedNote } from '../../../utils/note-parser-utils';
-import { isOtherCategory, isByuSpeeches } from '../../notedisplay/utils/note-translations';
+import { isOtherCategory, isByuSpeeches, isFamilyStudyCategory } from '../../notedisplay/utils/note-translations';
 
 interface GospelLinkProps {
   text: string;
@@ -20,6 +20,10 @@ const GospelLink = ({ text, scripture, chapter, language, isSent, t }: GospelLin
   const isPropOther = isOtherCategory(rawPropScripture);
   const finalScripture = (!isPropOther ? rawPropScripture : parsed.scriptureValue)?.replace(/\*/g, '').trim();
   const finalChapter = (chapter || parsed.chapterValue)?.replace(/\*/g, '').trim();
+
+  if (isFamilyStudyCategory(rawPropScripture) || isFamilyStudyCategory(finalScripture) || isFamilyStudyCategory(parsed.scriptureValue)) {
+    return null;
+  }
 
   if (finalScripture && finalChapter) {
     const isOther = isOtherCategory(finalScripture) || finalScripture === '';

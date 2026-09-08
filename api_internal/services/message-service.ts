@@ -11,6 +11,7 @@ import {
 import { formatDateInTimeZone, normalizeDateString } from '../../src/utils/time-utils.js';
 import { buildNoteSearchTokens } from '../lib/search-utils.js';
 import { getMessageExpireAt } from '../lib/ttl-utils.js';
+import { NotFoundError, ForbiddenError } from '../lib/errors.js';
 
 export interface PostMessageParams {
     uid: string;
@@ -35,7 +36,6 @@ export interface ToggleReactionParams {
     emoji?: string;
     nickname?: string;
     photoURL?: string | null;
-    skipGroupCheck?: boolean;
 }
 
 export interface EditMessageParams {
@@ -57,8 +57,6 @@ export interface SendCheerParams {
     groupId: string;
     senderNickname?: string;
     senderTimeZone?: string;
-    skipGroupCheck?: boolean;
-    skipTargetUserCheck?: boolean;
 }
 
 interface PostMessageReadContext {
@@ -373,14 +371,10 @@ export class MessageService {
         latestRef: admin.firestore.DocumentReference,
         params: ToggleReactionParams
     ): Promise<ToggleReactionReadContext> {
-        const { uid, nickname, photoURL, skipGroupCheck } = params;
+        const { uid, nickname, photoURL } = params;
         const needsUserRead = !nickname || photoURL === undefined;
-        const needsGroupRead = !skipGroupCheck;
 
-        const refsToGet = [messageRef, latestRef];
-        if (needsGroupRead) {
-            refsToGet.push(groupRef);
-        }
+        const refsToGet = [messageRef, latestRef, groupRef];
         if (needsUserRead) {
             refsToGet.push(userRef);
         }
@@ -388,21 +382,22 @@ export class MessageService {
         const snaps = await transaction.getAll(...refsToGet);
         const mSnap = snaps[0] as admin.firestore.DocumentSnapshot<MessageDocument>;
         const latestSnap = snaps[1];
-        
-        let snapIdx = 2;
-        const gSnap = needsGroupRead ? (snaps[snapIdx++] as admin.firestore.DocumentSnapshot<GroupDocument>) : null;
-        const uSnap = needsUserRead ? (snaps[snapIdx] as admin.firestore.DocumentSnapshot<UserDocument>) : null;
+        const gSnap = snaps[2] as admin.firestore.DocumentSnapshot<GroupDocument>;
+        const uSnap = needsUserRead ? (snaps[3] as admin.firestore.DocumentSnapshot<UserDocument>) : null;
 
-        if (!mSnap.exists || (needsGroupRead && !gSnap?.exists) || (needsUserRead && !uSnap?.exists)) {
-            if (!mSnap.exists) {
-                throw new Error('Message not found');
-            }
-            throw new Error('Not found');
+        if (!mSnap.exists) {
+            throw new NotFoundError('Message not found');
+        }
+        if (!gSnap.exists) {
+            throw new NotFoundError('Group not found');
+        }
+        if (needsUserRead && !uSnap?.exists) {
+            throw new NotFoundError('User not found');
         }
 
-        if (needsGroupRead && gSnap) {
-            const gData = gSnap.data() as GroupDocument;
-            if (!gData || !(gData.members || []).includes(uid)) throw new Error('Forbidden');
+        const gData = gSnap.data() as GroupDocument;
+        if (!gData || !(gData.members || []).includes(uid)) {
+            throw new ForbiddenError('Forbidden');
         }
 
         let resolvedNickname = nickname || 'Member';
@@ -508,8 +503,24 @@ export class MessageService {
 
             let noteSnap: admin.firestore.DocumentSnapshot<PersonalNoteDocument> | null = null;
             const noteRef = db.collection('users').doc(uid).collection('notes').doc(mData.originalNoteId || 'dummy');
+            let otherMsgEntries: Array<{ ref: admin.firestore.DocumentReference; snap: admin.firestore.DocumentSnapshot }> = [];
+
             if (mData.isNote && mData.originalNoteId) {
                 noteSnap = (await transaction.get(noteRef)) as admin.firestore.DocumentSnapshot<PersonalNoteDocument>;
+                if (noteSnap.exists) {
+                    const noteData = noteSnap.data() as PersonalNoteDocument;
+                    const sharedMsgMap: Record<string, string> = noteData.sharedMessageIds || {};
+                    const targetGids = Object.entries(sharedMsgMap).slice(0, 20);
+                    const targetRefs = targetGids
+                        .filter(([gid, mid]) => !(gid === groupId && mid === messageId))
+                        .map(([gid, mid]) => ({
+                            ref: db.collection('groups').doc(gid).collection('messages').doc(mid)
+                        }));
+                    if (targetRefs.length > 0) {
+                        const targetSnaps = await Promise.all(targetRefs.map(t => transaction.get(t.ref)));
+                        otherMsgEntries = targetRefs.map((t, idx) => ({ ref: t.ref, snap: targetSnaps[idx] }));
+                    }
+                }
             }
 
             // --- 2. EXECUTE ALL WRITES ---
@@ -544,17 +555,17 @@ export class MessageService {
                     searchTokens: updatedTokens
                 });
 
-                const sharedMsgMap: Record<string, string> = noteData.sharedMessageIds || {};
-                const targetGids = Object.entries(sharedMsgMap).slice(0, 20);
-
-                for (const [gid, mid] of targetGids) {
-                    if (gid === groupId && mid === messageId) continue;
-                    const otherRef = db.collection('groups').doc(gid).collection('messages').doc(mid);
-                    transaction.update(otherRef, {
-                        text,
-                        isEdited: true,
-                        editedAt: admin.firestore.FieldValue.serverTimestamp()
-                    });
+                for (const entry of otherMsgEntries) {
+                    if (entry.snap.exists) {
+                        const otherData = entry.snap.data() as MessageDocument;
+                        if (otherData?.senderId === uid && otherData?.originalNoteId === mData.originalNoteId) {
+                            transaction.update(entry.ref, {
+                                text,
+                                isEdited: true,
+                                editedAt: admin.firestore.FieldValue.serverTimestamp()
+                            });
+                        }
+                    }
                 }
             }
         });
@@ -829,34 +840,20 @@ export class MessageService {
             const groupRef = db.collection('groups').doc(groupId);
             const targetUserRef = db.collection('users').doc(targetUid);
             
-            const refsToGet = [cheerRef];
-            const needsTargetUserRead = !params.skipTargetUserCheck;
-            if (needsTargetUserRead) {
-                refsToGet.push(targetUserRef);
-            }
-            const needsGroupRead = !params.skipGroupCheck;
-            if (needsGroupRead) {
-                refsToGet.push(groupRef);
-            }
-
-            const snaps = await transaction.getAll(...refsToGet);
+            const snaps = await transaction.getAll(cheerRef, targetUserRef, groupRef);
             const existing = snaps[0];
-            
-            let snapIdx = 1;
-            const targetUserDoc = needsTargetUserRead ? snaps[snapIdx++] : null;
-            const gSnap = needsGroupRead ? snaps[snapIdx] : null;
+            const targetUserDoc = snaps[1];
+            const gSnap = snaps[2];
 
-            if (needsGroupRead && gSnap) {
-                if (!gSnap.exists) throw new Error('Group not found.');
-                const gData = gSnap.data() as GroupDocument;
-                const gMembers: string[] = gData.members || [];
-                if (!gMembers.includes(senderUid) || !gMembers.includes(targetUid)) throw new Error('Forbidden.');
+            if (!gSnap.exists) throw new NotFoundError('Group not found.');
+            const gData = gSnap.data() as GroupDocument;
+            const gMembers: string[] = gData.members || [];
+            if (!gMembers.includes(senderUid) || !gMembers.includes(targetUid)) {
+                throw new ForbiddenError('Forbidden.');
             }
 
             if (existing.exists) return { alreadySent: true, targetData: null };
-            if (needsTargetUserRead && targetUserDoc) {
-                if (!targetUserDoc.exists) throw new Error('Target not found.');
-            }
+            if (!targetUserDoc.exists) throw new NotFoundError('Target not found.');
 
             transaction.set(cheerRef, { 
                 senderUid, 

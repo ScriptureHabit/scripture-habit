@@ -1,6 +1,8 @@
 import { Timestamp } from 'firebase/firestore';
 import { ScriptureCategory } from './scripture';
 
+export type NoteScriptureCategory = ScriptureCategory | 'familyStudy';
+
 /**
  * Represents a study note or scripture entry.
  */
@@ -8,7 +10,7 @@ export interface Note {
   id: string;
   text?: string;
   chapter?: string;
-  scripture?: ScriptureCategory;
+  scripture?: NoteScriptureCategory;
   comment?: string;
   title?: string;
   speaker?: string;

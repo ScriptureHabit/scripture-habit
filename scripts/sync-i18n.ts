@@ -38,6 +38,12 @@ interface LocaleContent {
         comment?: string;
         [key: string]: unknown;
     };
+    familyTheme?: {
+        categoryFamilyStudy?: string;
+        themeLabel?: string;
+        themes?: Record<string, string>;
+        [key: string]: unknown;
+    };
     [key: string]: unknown;
 }
 
@@ -50,6 +56,11 @@ interface ExtractedMetadata {
         category?: string;
         chapter?: string;
         comment?: string;
+    };
+    familyTheme: {
+        categoryFamilyStudy?: string;
+        themeLabel?: string;
+        themes?: Record<string, string>;
     };
 }
 
@@ -118,6 +129,11 @@ async function syncI18n() {
                 category: typeof data.groupChat?.category === 'string' ? data.groupChat.category : undefined,
                 chapter: typeof data.groupChat?.chapter === 'string' ? data.groupChat.chapter : undefined,
                 comment: typeof data.groupChat?.comment === 'string' ? data.groupChat.comment : undefined,
+            },
+            familyTheme: {
+                categoryFamilyStudy: typeof data.familyTheme?.categoryFamilyStudy === 'string' ? data.familyTheme.categoryFamilyStudy : undefined,
+                themeLabel: typeof data.familyTheme?.themeLabel === 'string' ? data.familyTheme.themeLabel : undefined,
+                themes: (data.familyTheme?.themes && typeof data.familyTheme.themes === 'object' ? data.familyTheme.themes : {}) as Record<string, string>,
             }
         };
     }
@@ -179,6 +195,11 @@ export interface LocaleDefinition {
         chapter?: string;
         comment?: string;
         [key: string]: unknown;
+    };
+    familyTheme?: {
+        categoryFamilyStudy?: string;
+        themeLabel?: string;
+        themes?: Record<string, string>;
     };
     books?: Record<string, string>;
 }

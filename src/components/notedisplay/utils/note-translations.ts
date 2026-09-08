@@ -41,11 +41,66 @@ for (const locale of ALL_LOCALES) {
     }
 }
 
+const FAMILY_STUDY_NAMES = new Set<string>([
+    'familystudy', 'family study', 'family_study', 'family-study',
+    '家族学習', '가족 학습', '家庭研讀', 'estudio familiar', 'estudo familiar',
+    'studio familiare', 'pag-aaral ng pamilya', 'การศึกษาของครอบครัว', 'học tập gia đình', 'mafunzo ya familia',
+    ...ALL_LOCALES.map(l => l.familyTheme?.categoryFamilyStudy?.toLowerCase().trim()).filter((v): v is string => Boolean(v))
+]);
+
+export const isFamilyStudyCategory = (scriptureName?: string | null): boolean => {
+    if (!scriptureName) return false;
+    const lower = scriptureName.toLowerCase().trim();
+    return FAMILY_STUDY_NAMES.has(lower);
+};
+
+const THEME_NAME_TO_ID: Record<string, string> = {};
+
+for (const locale of ALL_LOCALES) {
+    const themes = locale.familyTheme?.themes;
+    if (themes && typeof themes === 'object') {
+        for (const [id, localizedName] of Object.entries(themes)) {
+            if (typeof localizedName === 'string' && localizedName.trim().length > 0) {
+                THEME_NAME_TO_ID[localizedName.trim().toLowerCase()] = id;
+                THEME_NAME_TO_ID[id.toLowerCase()] = id;
+            }
+        }
+    }
+}
+
+export const resolveThemeId = (themeNameOrId?: string | null): string => {
+    if (!themeNameOrId) return '';
+    const trimmed = themeNameOrId.trim();
+    const lower = trimmed.toLowerCase();
+    return THEME_NAME_TO_ID[lower] || THEME_NAME_TO_ID[trimmed] || trimmed;
+};
+
+export const isFamilyStudyComment = (comment: string): boolean => {
+    if (!comment) return true;
+    const c = comment.trim();
+    return (
+        c.includes('について話し合い') ||
+        c.includes('together as a family') ||
+        c.includes('이야기 나누고') ||
+        c.includes('與家人一起討論') ||
+        c.includes('en familia sobre') ||
+        c.includes('em família sobre') ||
+        c.includes('in famiglia di') ||
+        c.includes('ng pamilya ang tungkol') ||
+        c.includes('ในครอบครัวเกี่ยวกับ') ||
+        c.includes('gia đình đã cùng nhau') ||
+        c.includes('kama familia kuhusu')
+    );
+};
+
 /**
  * Translates a localized or English scripture category name into current user language using t().
  */
 export const translateScriptureName = (name: string, t: (key: string) => string): string => {
     if (!name) return '';
+    if (isFamilyStudyCategory(name)) {
+        return t('familyTheme.categoryFamilyStudy');
+    }
     const key = SCRIPTURE_NAME_TO_I18N_KEY[name.trim()];
     return key ? t(key) : name;
 };

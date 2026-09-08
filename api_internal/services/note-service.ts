@@ -10,6 +10,7 @@ import { formatDateInTimeZone, normalizeDateString } from '../../src/utils/time-
 import { calculateUnityPercentage } from '../../src/utils/unity-utils.js';
 import { Group } from '../../src/types/chat.js';
 import { getMessageExpireAt, getDemoExpireAt } from '../lib/ttl-utils.js';
+import { runPhasedTransaction } from '../lib/phased-transaction.js';
 
 export interface PostNoteInput {
     uid: string;
@@ -618,11 +619,9 @@ export class NoteService {
         const userToGroupEntries: [string, string][] = [];
         const groupsToSync = Object.keys(result.sharedMessageIds);
 
-        let loadedGroupSnaps: admin.firestore.DocumentSnapshot<GroupDocument>[] = [];
         try {
             if (groupsToSync.length > 0) {
                 const groupDocs = await db.getAll(...groupsToSync.map(gid => db.collection('groups').doc(gid))) as admin.firestore.DocumentSnapshot<GroupDocument>[];
-                loadedGroupSnaps = groupDocs;
                 groupDocs.forEach(gSnap => {
                     if (gSnap.exists) {
                         const gData = gSnap.data()!;
@@ -641,53 +640,65 @@ export class NoteService {
             ...groupsToSync.map(async (gid) => {
                 try {
                     const groupRef = db.collection('groups').doc(gid);
+                    await runPhasedTransaction(db, {
+                        read: async (transaction) => {
+                            const gSnap = await transaction.get(groupRef);
+                            if (!gSnap.exists) return null;
 
-                    let gSnap = loadedGroupSnaps.find(snap => snap.id === gid);
-                    if (!gSnap || !gSnap.exists) {
-                        gSnap = await groupRef.get();
-                    }
-                    if (!gSnap.exists) return;
+                            const gData = gSnap.data() as GroupDocument;
+                            const groupTimeZone = gData.timeZone || result.timeZone || 'UTC';
+                            const groupToday = formatDateInTimeZone(new Date(), groupTimeZone);
 
-                    const gData = gSnap.data() as GroupDocument;
-                    const groupTimeZone = gData.timeZone || result.timeZone || 'UTC';
-                    const groupToday = formatDateInTimeZone(new Date(), groupTimeZone);
+                            const currentActivityDate = gData.dailyActivity?.date || '';
+                            const normCurrent = normalizeDateString(currentActivityDate);
+                            const normToday = normalizeDateString(groupToday);
 
-                    const currentActivityDate = gData.dailyActivity?.date || '';
-                    const normCurrent = normalizeDateString(currentActivityDate);
-                    const normToday = normalizeDateString(groupToday);
+                            let activeMembers = Array.isArray(gData.dailyActivity?.activeMembers)
+                                ? [...gData.dailyActivity.activeMembers]
+                                : [];
+                            let dateToSet: string;
 
-                    const groupUpdate: {
-                        dailyActivity?: { date: string; activeMembers: string[] };
-                        'dailyActivity.activeMembers'?: admin.firestore.FieldValue;
-                        'dailyActivity.date'?: string;
-                        unityPercentage?: number;
-                    } = {};
-                    let activeMembers = gData.dailyActivity?.activeMembers || [];
-                    if (!activeMembers.includes(uid)) {
-                        activeMembers = [...activeMembers, uid];
-                    }
+                            if (normCurrent !== '' && normToday > normCurrent) {
+                                activeMembers = [uid];
+                                dateToSet = groupToday;
+                            } else if (normCurrent === '' || normToday === normCurrent) {
+                                if (!activeMembers.includes(uid)) {
+                                    activeMembers.push(uid);
+                                }
+                                dateToSet = normCurrent === '' ? groupToday : currentActivityDate;
+                            } else {
+                                console.warn(`[NoteService] Future date detected for group ${gid}: ${normCurrent}. Resetting to ${normToday}.`);
+                                activeMembers = [uid];
+                                dateToSet = groupToday;
+                            }
 
-                    if (normCurrent !== '' && normToday > normCurrent) {
-                        groupUpdate.dailyActivity = { date: groupToday, activeMembers: [uid] };
-                    } else if (normCurrent === '' || normToday === normCurrent) {
-                        groupUpdate['dailyActivity.activeMembers'] = admin.firestore.FieldValue.arrayUnion(uid);
-                        if (normCurrent === '') groupUpdate['dailyActivity.date'] = groupToday;
-                    } else {
-                        console.warn(`[NoteService] Future date detected for group ${gid}: ${normCurrent}. Resetting to ${normToday}.`);
-                        groupUpdate.dailyActivity = { date: groupToday, activeMembers: [uid] };
-                    }
+                            const simulatedGroup = {
+                                ...gData,
+                                dailyActivity: {
+                                    date: dateToSet,
+                                    activeMembers
+                                }
+                            };
 
-                    const simulatedGroup = {
-                        ...gData,
-                        dailyActivity: {
-                            date: groupUpdate.dailyActivity?.date || gData.dailyActivity?.date || groupToday,
-                            activeMembers: groupUpdate.dailyActivity?.activeMembers || activeMembers
+                            const unityPercentage = calculateUnityPercentage(simulatedGroup as unknown as Group, [], new Date());
+
+                            return {
+                                dateToSet,
+                                activeMembers,
+                                unityPercentage
+                            };
+                        },
+                        write: (transaction, readResult) => {
+                            if (!readResult) return;
+                            transaction.set(groupRef, {
+                                dailyActivity: {
+                                    date: readResult.dateToSet,
+                                    activeMembers: readResult.activeMembers
+                                },
+                                unityPercentage: readResult.unityPercentage
+                            }, { merge: true });
                         }
-                    };
-
-                    groupUpdate.unityPercentage = calculateUnityPercentage(simulatedGroup as unknown as Group, [], new Date());
-
-                    await groupRef.update(groupUpdate);
+                    });
                 } catch (err) {
                     console.error('[NoteService] Unity update failed for group:', gid, err);
                 }
@@ -776,7 +787,10 @@ export class NoteService {
             const [groupId, messageId] = sharedEntries[i];
             const gSnap = groupDocs[i];
             const mSnap = msgDocs[i];
-            if (!gSnap.exists || !mSnap.exists) {
+            const mData = mSnap.data();
+            const isOwnedMessage = mSnap.exists && mData?.senderId === uid && mData?.originalNoteId === noteRef.id;
+
+            if (!gSnap.exists || !isOwnedMessage) {
                 queryMetadata.push({ groupId, messageId, needsNextNote: false, needsTodayNotes: false });
                 continue;
             }
@@ -846,6 +860,9 @@ export class NoteService {
             const mSnap = msgDocs[i];
             const meta = queryMetadata[i];
             if (!gSnap.exists || !mSnap.exists) continue;
+
+            const mData = mSnap.data();
+            if (mData?.senderId !== uid || mData?.originalNoteId !== noteRef.id) continue;
 
             const updatePayload: admin.firestore.UpdateData<GroupDocument> = {};
 

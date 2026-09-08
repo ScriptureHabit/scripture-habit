@@ -77,16 +77,30 @@ async function seedExistingUser() {
             highestStreak: 2,
             totalNotes: 2,
             language: 'en'
+        },
+        {
+            uid: 'seeder-partner',
+            email: 'partner@example.com',
+            nickname: 'Partner 🌸',
+            photoURL: 'https://api.dicebear.com/7.x/bottts/svg?seed=Partner',
+            streakCount: 6,
+            highestStreak: 6,
+            totalNotes: 6,
+            language: 'ja'
         }
     ];
 
-    const groupId = 'seed-group-daily-bread';
-    const groupName = 'Daily Bread 📖';
-    const inviteCode = 'BREAD123';
+    const dailyGroupId = 'seed-group-daily-bread';
+    const dailyGroupName = 'Daily Bread 📖';
+    const dailyInviteCode = 'BREAD123';
+
+    const familyGroupId = 'seed-group-together-in-faith';
+    const familyGroupName = 'Together in Faith 🌿';
+    const familyInviteCode = 'FAITH777';
 
     // 1. Delete existing seed users from Auth and Firestore to keep seeding idempotent
     console.log('🧹 Purging old seed users for idempotency...');
-    const usersToClean = [...users.map(u => u.uid), 'seeder-demo-user', 'seeder-dev-user'];
+    const usersToClean = [...users.map(u => u.uid), 'seeder-demo-user', 'seeder-dev-user', 'seeder-mary'];
     for (const uid of usersToClean) {
         try {
             await auth.deleteUser(uid);
@@ -100,17 +114,18 @@ async function seedExistingUser() {
         }
     }
 
-    // Delete group if exists
-    try {
-        await db.recursiveDelete(db.collection('groups').doc(groupId));
-        console.log(`🧹 Purged existing seed group: ${groupId}`);
-    } catch {
-        // Ignore
+    // Delete groups if exist
+    for (const gid of [dailyGroupId, familyGroupId, 'seed-group-family']) {
+        try {
+            await db.recursiveDelete(db.collection('groups').doc(gid));
+            console.log(`🧹 Purged existing seed group: ${gid}`);
+        } catch {
+            // Ignore
+        }
     }
 
     // 2. Create Auth Accounts & Firestore User Profiles
     console.log('👥 Creating Auth accounts and Firestore user documents...');
-    const uids = users.map(u => u.uid);
     const now = admin.firestore.Timestamp.now();
     const threeDaysAgo = admin.firestore.Timestamp.fromMillis(Date.now() - 3 * 24 * 60 * 60 * 1000);
 
@@ -128,7 +143,7 @@ async function seedExistingUser() {
             emailVerified: true
         });
 
-        const studiedDates = u.uid === 'seeder-existing-user'
+        const studiedDates = (u.uid === 'seeder-existing-user' || u.uid === 'seeder-partner')
             ? [getDateStr(6), getDateStr(5), getDateStr(4), getDateStr(3), getDateStr(2), getDateStr(1)]
             : u.uid === 'seeder-alice'
                 ? [getDateStr(5), getDateStr(4), getDateStr(3), getDateStr(2), getDateStr(1)]
@@ -137,11 +152,22 @@ async function seedExistingUser() {
                     : [];
 
         const isExistingUser = u.uid === 'seeder-existing-user';
+        const isPartner = u.uid === 'seeder-partner';
+
+        const userGroupIds = isExistingUser
+            ? [dailyGroupId, familyGroupId]
+            : isPartner
+                ? [familyGroupId]
+                : [dailyGroupId];
+
+        const primaryGroupId = (isExistingUser || isPartner) ? familyGroupId : dailyGroupId;
+
         const userDocData: Record<string, unknown> = {
             uid: u.uid,
             nickname: u.nickname,
             photoURL: u.photoURL,
-            groupIds: isExistingUser ? [] : [groupId],
+            groupIds: userGroupIds,
+            groupId: primaryGroupId,
             streakCount: u.streakCount,
             highestStreak: u.highestStreak,
             daysStudiedCount: u.streakCount,
@@ -156,17 +182,6 @@ async function seedExistingUser() {
             questCreatedGroup: true,
             questPostedNote: true
         };
-
-        if (!isExistingUser) {
-            userDocData.groupId = groupId;
-        } else {
-            userDocData.lastRecentGroup = {
-                id: groupId,
-                name: groupName,
-                isAiGroup: false,
-                leftAt: admin.firestore.Timestamp.fromMillis(Date.now() - 2 * 60 * 60 * 1000) // Left 2 hours ago
-            };
-        }
 
         await db.collection('users').doc(u.uid).set(userDocData);
 
@@ -190,7 +205,7 @@ async function seedExistingUser() {
                     chapter: '1 Nephi 1:1',
                     comment: '“I, Nephi, having been born of goodly parents...” Taking the first step in my scripture study journey! Excited to build this daily habit one day at a time.',
                     createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 6 * 24 * 60 * 60 * 1000),
-                    sharedWithGroups: [groupId]
+                    sharedWithGroups: [dailyGroupId]
                 },
                 {
                     id: 'seed-demo-note-2',
@@ -198,7 +213,7 @@ async function seedExistingUser() {
                     chapter: '1 Nephi 3:7',
                     comment: '“I will go and do the things which the Lord hath commanded, for I know that the Lord giveth no commandments unto the children of men, save he shall prepare a way for them...” Whenever I face difficult challenges, this verse gives me courage.',
                     createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 5 * 24 * 60 * 60 * 1000),
-                    sharedWithGroups: [groupId]
+                    sharedWithGroups: [dailyGroupId]
                 },
                 {
                     id: 'seed-demo-note-3',
@@ -206,7 +221,7 @@ async function seedExistingUser() {
                     chapter: 'Genesis 1:1-3',
                     comment: '“In the beginning God created the heaven and the earth... And God said, Let there be light: and there was light.” Felt deeply inspired by God’s creative power bringing order and hope into darkness.',
                     createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 4 * 24 * 60 * 60 * 1000),
-                    sharedWithGroups: [groupId]
+                    sharedWithGroups: [dailyGroupId]
                 },
                 {
                     id: 'seed-demo-note-4',
@@ -214,7 +229,7 @@ async function seedExistingUser() {
                     chapter: 'John 14:27',
                     comment: '“Peace I leave with you, my peace I give unto you: not as the world giveth, give I unto you. Let not your heart be troubled, neither let it be afraid.” In a restless world, focusing on Christ brings genuine peace to my heart.',
                     createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 3 * 24 * 60 * 60 * 1000),
-                    sharedWithGroups: [groupId]
+                    sharedWithGroups: [dailyGroupId]
                 },
                 {
                     id: 'seed-demo-note-5',
@@ -222,7 +237,7 @@ async function seedExistingUser() {
                     chapter: 'Section 6:36',
                     comment: '“Look unto me in every thought; doubt not, fear not.” Making it an instant daily habit to turn to prayer whenever doubt or anxiety creeps in.',
                     createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 2 * 24 * 60 * 60 * 1000),
-                    sharedWithGroups: [groupId]
+                    sharedWithGroups: [dailyGroupId]
                 },
                 {
                     id: 'seed-demo-note-6',
@@ -232,7 +247,7 @@ async function seedExistingUser() {
                     speaker: 'President Russell M. Nelson',
                     comment: 'Deeply moved by the message that small daily righteous choices shape our character over time. Scripture study is a foundational anchor for that.',
                     createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 1 * 24 * 60 * 60 * 1000),
-                    sharedWithGroups: [groupId]
+                    sharedWithGroups: [dailyGroupId]
                 }
             ];
 
@@ -282,56 +297,52 @@ async function seedExistingUser() {
         console.log(`   Created User: ${u.nickname} (${u.email}) with ${studiedDates.length} studied dates`);
     }
 
-    // 3. Create Group Document
-    console.log(`📦 Seeding group: "${groupName}"...`);
-    const activeUids = uids.filter(id => id !== 'seeder-existing-user');
-    const activeUsers = users.filter(u => u.uid !== 'seeder-existing-user');
+    // 3. Create Daily Bread Group Document
+    console.log(`📦 Seeding group: "${dailyGroupName}"...`);
+    const dailyUids = ['seeder-existing-user', 'seeder-alice', 'seeder-bob', 'seeder-charlie'];
+    const dailyUsers = users.filter(u => dailyUids.includes(u.uid));
 
     const joinedAtMap: Record<string, Timestamp> = {};
     const memberLastActiveMap: Record<string, Timestamp> = {};
     const memberKickThresholds: Record<string, number> = {};
 
-    for (const uid of activeUids) {
+    for (const uid of dailyUids) {
         joinedAtMap[uid] = threeDaysAgo;
         memberLastActiveMap[uid] = now;
         memberKickThresholds[uid] = uid === 'seeder-charlie' ? 1 : 3; // Charlie has a 1-day threshold
     }
 
-    // Simulate Charlie last active 2 days ago (which triggers kick logic during sweeps)
     memberLastActiveMap['seeder-charlie'] = admin.firestore.Timestamp.fromMillis(Date.now() - 2 * 24 * 60 * 60 * 1000);
 
-    const leaveTimestamp = admin.firestore.Timestamp.fromMillis(Date.now() - 2 * 60 * 60 * 1000);
-
-    await db.collection('groups').doc(groupId).set({
-        name: groupName,
-        inviteCode: inviteCode,
-        inviteCodeExpiresAt: admin.firestore.Timestamp.fromMillis(Date.now() + 30 * 24 * 60 * 60 * 1000), // Expires in 30 days
-        members: activeUids,
-        membersCount: activeUids.length,
+    await db.collection('groups').doc(dailyGroupId).set({
+        name: dailyGroupName,
+        inviteCode: dailyInviteCode,
+        inviteCodeExpiresAt: admin.firestore.Timestamp.fromMillis(Date.now() + 30 * 24 * 60 * 60 * 1000),
+        members: dailyUids,
+        membersCount: dailyUids.length,
         isPublic: true,
+        isFamilySyncEnabled: false,
         ownerUserId: 'seeder-alice',
-        messageCount: 7,
-        lastMessageAt: leaveTimestamp,
-        lastMessageText: '🚪 existing-userさんがグループを退会しました。',
-        lastMessageByNickname: 'System',
-        lastMessageByUid: 'system',
+        messageCount: 8,
+        lastMessageAt: now,
+        lastMessageText: '“Faith to Follow the Lord” - Deeply moved by President Nelson’s message.',
+        lastMessageByNickname: 'existing-user',
+        lastMessageByUid: 'seeder-existing-user',
         dailyActivity: {
-            activeMembers: ['seeder-alice', 'seeder-bob'],
-            date: new Date().toLocaleDateString('sv-SE') // Sweden format YYYY-MM-DD
+            activeMembers: ['seeder-alice', 'seeder-bob', 'seeder-existing-user'],
+            date: new Date().toLocaleDateString('sv-SE')
         },
-        memberPreviews: activeUsers.map(u => ({ uid: u.uid, nickname: u.nickname })),
+        memberPreviews: dailyUsers.map(u => ({ uid: u.uid, nickname: u.nickname })),
         memberJoinedAt: joinedAtMap,
         memberLastActive: memberLastActiveMap,
         memberKickThresholds: memberKickThresholds,
         timeZone: 'Asia/Tokyo'
     });
 
-    // 4. Seed Subcollections: Members & Messages
-    console.log('📥 Seeding group subcollections (members & messages)...');
-    
-    // Seed Members subcollection (only active members)
-    for (const u of activeUsers) {
-        await db.collection('groups').doc(groupId).collection('members').doc(u.uid).set({
+    // 4. Seed Daily Bread Subcollections: Members & Messages
+    console.log('📥 Seeding Daily Bread subcollections (members & messages)...');
+    for (const u of dailyUsers) {
+        await db.collection('groups').doc(dailyGroupId).collection('members').doc(u.uid).set({
             uid: u.uid,
             nickname: u.nickname,
             photoURL: u.photoURL,
@@ -342,8 +353,7 @@ async function seedExistingUser() {
         });
     }
 
-    // Seed Messages subcollection with authentic study note postings and system announcements
-    const messages = [
+    const dailyMessages = [
         {
             id: 'msg-seed-1',
             text: 'Hello everyone! Welcome to our study habit group! Let’s keep up the daily readings. 📖🔥',
@@ -414,7 +424,7 @@ async function seedExistingUser() {
             senderId: 'seeder-alice',
             senderNickname: 'Alice 📖',
             userPhotoURL: 'https://api.dicebear.com/7.x/bottts/svg?seed=Alice',
-            createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 4 * 60 * 60 * 1000), // 4 hours ago
+            createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 4 * 60 * 60 * 1000),
             isNote: true,
             scripture: 'New Testament',
             chapter: 'Matthew 5:3',
@@ -437,7 +447,7 @@ async function seedExistingUser() {
             senderId: 'seeder-bob',
             senderNickname: 'Bob 🔥',
             userPhotoURL: 'https://api.dicebear.com/7.x/bottts/svg?seed=Bob',
-            createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
+            createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 2 * 60 * 60 * 1000),
             isNote: true,
             scripture: 'Book of Mormon',
             chapter: '1 Nephi 3:7',
@@ -455,31 +465,134 @@ async function seedExistingUser() {
             createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 2 * 60 * 60 * 1000 + 1000)
         },
         {
-            id: 'msg-seed-7-leave',
-            text: '🚪 existing-userさんがグループを退会しました。',
+            id: 'msg-seed-7-note',
+            text: '**General Conference April 2024**\n\n“Faith to Follow the Lord” - Deeply moved by President Nelson’s message.',
+            senderId: 'seeder-existing-user',
+            senderNickname: 'existing-user',
+            userPhotoURL: 'https://api.dicebear.com/7.x/bottts/svg?seed=existing-user',
+            createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 1 * 60 * 60 * 1000),
+            isNote: true,
+            scripture: 'General Conference',
+            chapter: 'April 2024 General Conference',
+            comment: '“Faith to Follow the Lord” - Deeply moved by President Nelson’s message.'
+        },
+        {
+            id: 'msg-seed-7-ann',
             senderId: 'system',
             senderNickname: 'System',
-            isSystemMessage: true,
-            type: 'leave',
-            messageType: 'userLeft',
+            messageType: 'notePostedAnnouncement',
             messageData: {
-                nickname: 'existing-user'
+                nickname: 'existing-user',
+                userId: 'seeder-existing-user'
             },
-            createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 2 * 60 * 60 * 1000 + 2000)
+            createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 1 * 60 * 60 * 1000 + 1000)
         }
     ];
 
-    const messageDocuments: Record<string, unknown>[] = [];
-    for (const m of messages) {
-        await db.collection('groups').doc(groupId).collection('messages').doc(m.id).set(m);
-        messageDocuments.push(m);
+    const dailyMessageDocs: Record<string, unknown>[] = [];
+    for (const m of dailyMessages) {
+        await db.collection('groups').doc(dailyGroupId).collection('messages').doc(m.id).set(m);
+        dailyMessageDocs.push(m);
     }
 
-    // 5. Seed Strategy B cache aggregates: messages_latest/latest
-    console.log('⚡ Seeding messages_latest/latest preview cache...');
-    await db.collection('groups').doc(groupId).collection('messages_latest').doc('latest').set({
-        groupId: groupId,
-        messages: messageDocuments.slice(-5).reverse() // Latest 5 messages in reverse order
+    await db.collection('groups').doc(dailyGroupId).collection('messages_latest').doc('latest').set({
+        groupId: dailyGroupId,
+        messages: dailyMessageDocs.slice(-5).reverse()
+    });
+
+    // 5. Create Couple Group Document ("Together in Faith 🌿")
+    console.log(`📦 Seeding couple group: "${familyGroupName}" (Family Sync Enabled)...`);
+    const familyUids = ['seeder-existing-user', 'seeder-partner'];
+    const familyUsers = users.filter(u => familyUids.includes(u.uid));
+    const todayStr = new Date().toLocaleDateString('sv-SE');
+
+    const familyJoinedAtMap: Record<string, Timestamp> = {
+        'seeder-existing-user': threeDaysAgo,
+        'seeder-partner': threeDaysAgo
+    };
+    const familyMemberLastActiveMap: Record<string, Timestamp> = {
+        'seeder-existing-user': now,
+        'seeder-partner': now
+    };
+
+    await db.collection('groups').doc(familyGroupId).set({
+        name: familyGroupName,
+        inviteCode: familyInviteCode,
+        inviteCodeExpiresAt: admin.firestore.Timestamp.fromMillis(Date.now() + 30 * 24 * 60 * 60 * 1000),
+        members: familyUids,
+        membersCount: 2,
+        isPublic: false,
+        isFamilySyncEnabled: true,
+        familyThemeSession: {
+            date: todayStr,
+            selections: {
+                'seeder-partner': 'charity' // Partner 🌸 has already selected charity!
+            }
+        },
+        ownerUserId: 'seeder-existing-user',
+        messageCount: 2,
+        lastMessageAt: now,
+        lastMessageText: '今日も一緒に聖典を読もうね！📖🌸',
+        lastMessageByNickname: 'Partner 🌸',
+        lastMessageByUid: 'seeder-partner',
+        dailyActivity: {
+            activeMembers: [],
+            date: todayStr
+        },
+        memberPreviews: familyUsers.map(u => ({ uid: u.uid, nickname: u.nickname })),
+        memberJoinedAt: familyJoinedAtMap,
+        memberLastActive: familyMemberLastActiveMap,
+        memberKickThresholds: {
+            'seeder-existing-user': 3,
+            'seeder-partner': 3
+        },
+        timeZone: 'Asia/Tokyo'
+    });
+
+    // 6. Seed Couple Group Subcollections: Members & Messages
+    console.log('📥 Seeding couple group subcollections (members & messages)...');
+    for (const u of familyUsers) {
+        await db.collection('groups').doc(familyGroupId).collection('members').doc(u.uid).set({
+            uid: u.uid,
+            nickname: u.nickname,
+            photoURL: u.photoURL,
+            joinedAt: familyJoinedAtMap[u.uid] || now,
+            lastActive: familyMemberLastActiveMap[u.uid] || now,
+            kickThreshold: 3,
+            status: 'active'
+        });
+    }
+
+    const familyMessages = [
+        {
+            id: 'msg-fam-1',
+            text: '夫婦で一緒に聖典学習を習慣にしていこう！🌿✨',
+            senderId: 'seeder-existing-user',
+            senderNickname: 'existing-user',
+            userPhotoURL: 'https://api.dicebear.com/7.x/bottts/svg?seed=existing-user',
+            createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 2 * 24 * 60 * 60 * 1000),
+            isNote: false
+        },
+        {
+            id: 'msg-fam-2',
+            text: '今日も一緒に聖典を読もうね！📖🌸',
+            senderId: 'seeder-partner',
+            senderNickname: 'Partner 🌸',
+            userPhotoURL: 'https://api.dicebear.com/7.x/bottts/svg?seed=Partner',
+            createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 3 * 60 * 60 * 1000),
+            isNote: false
+        }
+    ];
+
+    const familyMessageDocs: Record<string, unknown>[] = [];
+    for (const m of familyMessages) {
+        await db.collection('groups').doc(familyGroupId).collection('messages').doc(m.id).set(m);
+        familyMessageDocs.push(m);
+    }
+
+    await db.collection('groups').doc(familyGroupId).collection('messages_latest').doc('latest').set({
+        groupId: familyGroupId,
+        messages: familyMessageDocs.slice(-5).reverse()
     });
 
     console.log('\n==================================================');
@@ -489,7 +602,9 @@ async function seedExistingUser() {
     console.log('   Email:    existing-user@example.com');
     console.log('   Password: password123');
     console.log('   Nickname: existing-user');
-    console.log('📖 Status: Left "Daily Bread 📖" (rejoin ready) / 6-day streak / 6 study notes');
+    console.log('📖 Group 1:  Daily Bread 📖 (Member)');
+    console.log('💑 Group 2:  Together in Faith 🌿 (Family Sync Enabled)');
+    console.log('🌸 Partner:  Partner 🌸 (Waiting with theme: "charity" / 慈愛)');
     console.log('==================================================\n');
 }
 

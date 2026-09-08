@@ -188,7 +188,9 @@ export default {
         "cancel": "ยกเลิก",
         "delete": "ลบ",
         "close": "ปิด",
-        "dismiss": "ยกเลิก"
+        "dismiss": "ยกเลิก",
+        "saved": "บันทึกแล้ว",
+        "error": "เกิดข้อผิดพลาด"
     },
     "seo": {
         "title": "Scripture Habit",
@@ -491,9 +493,9 @@ export default {
         "activeDaysAgo": "ใช้งานเมื่อ {days} วันที่แล้ว",
         "activeMonthsAgo": "ใช้งานเมื่อ {months} เดือนที่แล้ว",
         "noActivity": "ไม่มีกิจกรรมล่าสุด",
-        "inactivityPolicyBanner": "⚠️ หากคุณไม่โพสต์บันทึกหรือข้อความในกลุ่มนี้เป็นเวลา 3 วัน คุณจะถูกลบออกโดยอัตโนมัติ",
+        "inactivityPolicyBanner": "⚠️ หากคุณไม่โพสต์บันทึกหรือข้อความในกลุ่มนี้เป็นเวลา {days} วัน คุณจะถูกลบออกโดยอัตโนมัติ",
         "placeholderShare": "มาแบ่งปันสิ่งที่คุณเรียนรู้วันนี้กันเถอะ!",
-        "placeholderInactivity": "⚠️ ไม่มีความเคลื่อนไหว 3 วันจะถูกลบออกอัตโนมัติ",
+        "placeholderInactivity": "⚠️ ไม่มีความเคลื่อนไหว {days} วันจะถูกลบออกอัตโนมัติ",
         "placeholderEncourage": "แบ่งปันความคิดของคุณกับกลุ่ม",
         "welcomeGuideButton": "เข้าใจแล้ว!",
         "unityAnnouncement": "☀️ **รัศมีภาพแห่งอาณาจักรซีเลสเชียลอย่างแท้จริง!** ☀️\n\n**สมาชิกทุกคนได้แบ่งปันการเรียนรู้ของพวกเขาแล้ว!**",
@@ -554,7 +556,11 @@ export default {
         "newMessages": "ข้อความใหม่จากตรงนี้",
         "errorToggleReaction": "Failed to update reaction.",
         "inviteFriends": "Invite Friends",
-        "reTranslate": "Refresh translation"
+        "reTranslate": "Refresh translation",
+        "retrySend": "ลองส่งอีกครั้ง",
+        "retry": "ลองใหม่",
+        "sending": "กำลังส่ง...",
+        "userKicked": "⚠️ **{nickname}** ถูกลบออกจากกลุ่มแล้ว"
     },
     "newNote": {
         "editTitle": "แก้ไขบันทึก",
@@ -730,7 +736,9 @@ export default {
         "emailNotVerified": "กรุณายืนยันที่อยู่อีเมลของคุณก่อนเข้าสู่ระบบ",
         "resendVerification": "ส่งอีเมลยืนยัน",
         "verificationResent": "ส่งอีเมลยืนยันแล้ว",
-        "errorInvalidCredential": "อีเมลหรือรหัสผ่านไม่ถูกต้อง โปรดลองอีกครั้ง"
+        "errorInvalidCredential": "อีเมลหรือรหัสผ่านไม่ถูกต้อง โปรดลองอีกครั้ง",
+        "emailPlaceholder": "name@example.com",
+        "passwordPlaceholder": "ใส่รหัสผ่านของคุณ"
     },
     "forgotPasswordPage": {
         "title": "รีเซ็ตรหัสผ่านของคุณ",
@@ -1010,5 +1018,51 @@ export default {
         "loadingSubtitle": "กำลังโหลดข้อมูล กรุณารอสักครู่",
         "loginSuccess": "เข้าสู่ระบบด้วยบัญชีเดโมเรียบร้อยแล้ว!",
         "loginError": "ไม่สามารถเชื่อมต่อสภาพแวดล้อมเดโมได้ กำลังนำทางไปยังหน้าเข้าสู่ระบบ..."
+    },
+    "familyTheme": {
+        "cardTitle": "ได้ศึกษาพระคัมภีร์ร่วมกับครอบครัวหรือไม่?",
+        "cardDesc": "เลือกหัวข้อวันนี้ให้ตรงกันเพื่อบันทึกการเรียนรู้กันเถอะ!",
+        "openModalBtn": "เลือกหัวข้อวันนี้กันเถอะ",
+        "waitingPartnerTitle": "กำลังรอให้คู่ของคุณเลือก…",
+        "waitingPartnerDesc": "คุณเลือก \"{selectedTheme}\" มารอให้อีกฝ่ายเลือกกันเถอะ",
+        "partnerSelectedTitle": "คู่ของคุณเลือกหัวข้อแล้ว!",
+        "partnerSelectedDesc": "เลือกหัวข้อของคุณกันเถอะ",
+        "completedTitle": "หัวข้อครอบครัววันนี้: 【{theme}】",
+        "completedDesc": "การศึกษาพระคัมภีร์ของทุกคนในครอบครัวสำเร็จแล้ว! ยอดเยี่ยมมาก! ✨",
+        "completedBadge": "เสร็จสิ้น",
+        "changeSelection": "เปลี่ยนหัวข้อ",
+        "modalTitle": "เลือกหัวข้อวันนี้",
+        "modalSubtitle": "เลือกหัวข้อที่คุณได้พูดคุยกันระหว่างการศึกษาของครอบครัว",
+        "mismatchTitle": "เกือบแล้ว! พูดคุยกันและเลือกหัวข้อเดียวกันนะ!",
+        "mismatchDesc": "คุณ: 【{myTheme}】 / คู่ของคุณ: 【{partnerTheme}】",
+        "matchSuccessTitle": "ศึกษาพระคัมภีร์ร่วมกับครอบครัวสำเร็จแล้ว! ✨",
+        "matchSuccessDesc": "หัวข้อวันนี้: 【{theme}】",
+        "confirmBtn": "เลือกหัวข้อนี้",
+        "closeBtn": "ปิด",
+        "themes": {
+            "faith": "ศรัทธา",
+            "hope": "ความหวัง",
+            "charity": "จิตกุศล",
+            "gratitude": "ความกตัญญู",
+            "prayer": "การสวดอ้อนวอน",
+            "patience": "ความอดทน",
+            "repentance": "การกลับใจ",
+            "guidance": "การนำทางของพระวิญญาณ"
+        },
+        "chatMessageFamily": "🎊ครอบครัวเราได้ศึกษาเกี่ยวกับ {theme} แล้ว!!🎊",
+        "chatMessageOther": "✨{nickname} ได้ศึกษาเกี่ยวกับ {theme} ร่วมกับครอบครัวแล้ว!!✨",
+        "aiBotCongratulation": "ยอดเยี่ยมมากที่ได้ศึกษาพระคัมภีร์กับครอบครัว คุณ {nickname}! ขอแสดงความยินดีด้วยนะ",
+        "familyStudyNoteTitle": "บันทึกการศึกษาของครอบครัว",
+        "familyStudyNoteTheme": "หัวข้อวันนี้: {theme}",
+        "familyStudyNoteBody": "ได้พูดคุยร่วมกับครอบครัวเกี่ยวกับ \"{theme}\" และศึกษาพระคัมภีร์",
+        "categoryFamilyStudy": "การศึกษาของครอบครัว",
+        "themeLabel": "หัวข้อ",
+        "groupOptionToggle": "โหมดครอบครัว",
+        "groupOptionToggleDesc": "เหมาะที่สุดสำหรับกลุ่มที่ศึกษาพระคัมภีร์ร่วมกันในเวลาเดียวกัน (จำกัด 1 กลุ่มต่อผู้ใช้)",
+        "alreadyEnabledInOtherGroup": "เปิดใช้งานโหมดครอบครัวในกลุ่มอื่นแล้ว",
+        "modeFamilyTitle": "โหมดครอบครัว (ON)",
+        "modeFamilyDesc": "เหมาะที่สุดสำหรับกลุ่มที่ศึกษาพระคัมภีร์ร่วมกันในเวลาเดียวกัน จับคู่หัวข้อวันนี้แล้วบันทึกเสร็จในแตะเดียว! (จำกัด 1 กลุ่มต่อผู้ใช้)",
+        "modeIndividualTitle": "โหมดส่วนบุคคล (OFF)",
+        "modeIndividualDesc": "เหมาะสำหรับผู้ที่ศึกษาตามจังหวะของตนเอง หรือไม่สะดวกในเวลาเดียวกัน แต่ยังแบ่งปันบันทึกและข้อคิดได้"
     }
 };

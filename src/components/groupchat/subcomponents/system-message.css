@@ -37,6 +37,16 @@
     animation: celestialRadiance 3s infinite alternate ease-in-out;
 }
 
+.message.system-message.family-theme-announcement p {
+    background: linear-gradient(135deg, #fff5f7 0%, #fed7e2 100%);
+    color: #b83280;
+    border: 1px solid rgba(237, 100, 166, 0.3);
+    font-weight: 700;
+    box-shadow: 0 4px 15px rgba(237, 100, 166, 0.18);
+    padding: 0.75rem 1.4rem;
+    animation: floatCelebration 3s infinite ease-in-out;
+}
+
 .unity-announcement-body {
     display: flex;
     flex-direction: column;

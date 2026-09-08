@@ -5,7 +5,7 @@ import {
   assertFails,
   assertSucceeds,
 } from '@firebase/rules-unit-testing';
-import { doc, getDoc, setDoc, updateDoc, deleteDoc, deleteField } from 'firebase/firestore';
+import { doc, getDoc, getDocs, collection, setDoc, updateDoc, deleteDoc, deleteField } from 'firebase/firestore';
 import fs from 'fs';
 import path from 'path';
 
@@ -122,6 +122,57 @@ describe('Firestore Security Rules Unit Tests', () => {
         })
       );
     });
+
+    it('forbids any client from listing the users collection (R3)', async () => {
+      const aliceDb = testEnv.authenticatedContext('user_alice', {
+        email_verified: true,
+      }).firestore();
+
+      await assertFails(getDocs(collection(aliceDb, 'users')));
+    });
+
+    it('forbids anonymous user from reading another user profile (R3)', async () => {
+      const anonDb = testEnv.authenticatedContext('anon_user', {
+        firebase: { sign_in_provider: 'anonymous' }
+      }).firestore();
+
+      await testEnv.withSecurityRulesDisabled(async (adminContext) => {
+        await setDoc(doc(adminContext.firestore(), 'users/user_alice'), {
+          nickname: 'Alice',
+        });
+      });
+
+      await assertFails(getDoc(doc(anonDb, 'users/user_alice')));
+    });
+
+    it('forbids other users or anonymous users from reading private subcollections (R3)', async () => {
+      const bobDb = testEnv.authenticatedContext('user_bob', {
+        email_verified: true,
+      }).firestore();
+
+      const anonDb = testEnv.authenticatedContext('anon_user', {
+        firebase: { sign_in_provider: 'anonymous' }
+      }).firestore();
+
+      // Seed Alice's private account doc
+      await testEnv.withSecurityRulesDisabled(async (adminContext) => {
+        await setDoc(doc(adminContext.firestore(), 'users/user_alice/private/account'), {
+          email: 'alice@example.com'
+        });
+      });
+
+      // Bob cannot read Alice's private account
+      await assertFails(getDoc(doc(bobDb, 'users/user_alice/private/account')));
+
+      // Anonymous user cannot read Alice's private account
+      await assertFails(getDoc(doc(anonDb, 'users/user_alice/private/account')));
+
+      // Alice can read her own private account
+      const aliceDb = testEnv.authenticatedContext('user_alice', {
+        email_verified: true,
+      }).firestore();
+      await assertSucceeds(getDoc(doc(aliceDb, 'users/user_alice/private/account')));
+    });
   });
 
   describe('2. User Notes (/users/{userId}/notes/{noteId})', () => {
@@ -143,6 +194,42 @@ describe('Firestore Security Rules Unit Tests', () => {
 
       // Delete note
       await assertSucceeds(deleteDoc(doc(aliceDb, 'users/user_alice/notes/note_1')));
+    });
+
+    it('forbids client from injecting or tampering with sharedMessageIds or sharedWithGroups (R1)', async () => {
+      const aliceDb = testEnv.authenticatedContext('user_alice', {
+        email_verified: true,
+      }).firestore();
+
+      // Attempting to create note with sharedMessageIds
+      await assertFails(
+        setDoc(doc(aliceDb, 'users/user_alice/notes/forged_note'), {
+          content: 'My note',
+          sharedMessageIds: { 'group_1': 'victim_msg_1' }
+        })
+      );
+
+      // Attempting to create note with sharedWithGroups
+      await assertFails(
+        setDoc(doc(aliceDb, 'users/user_alice/notes/forged_note_2'), {
+          content: 'My note',
+          sharedWithGroups: ['group_1']
+        })
+      );
+
+      // Create normal note
+      await testEnv.withSecurityRulesDisabled(async (adminContext) => {
+        await setDoc(doc(adminContext.firestore(), 'users/user_alice/notes/legit_note'), {
+          content: 'Legit content'
+        });
+      });
+
+      // Attempting to update note with sharedMessageIds
+      await assertFails(
+        updateDoc(doc(aliceDb, 'users/user_alice/notes/legit_note'), {
+          sharedMessageIds: { 'group_1': 'victim_msg_1' }
+        })
+      );
     });
 
     it('strictly forbids other users from reading or writing Alice’s private notes', async () => {

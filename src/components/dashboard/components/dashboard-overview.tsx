@@ -6,9 +6,11 @@ import axios from 'axios';
 import apiClient from '../../../utils/api-client';
 import Mascot from '../../mascot/mascot';
 import { UserData, RecentGroupInfo } from '../../../types/user';
+import { Group } from '../../../types/chat';
 import StreakCalendar from './streak-calendar';
 import { QuestCard } from './quest-card';
 import { TimeCapsuleCard } from './time-capsule-card';
+import { FamilyThemeCard } from './family-theme-card';
 import { useModalStore } from '../../../store/use-modal-store';
 import { useLevelUpStore } from '../../../store/use-level-up-store';
 import { useLanguage } from '../../../hooks/use-language';
@@ -24,6 +26,7 @@ interface DashboardOverviewProps {
   translateChapterField: (field: string) => string;
   isJoiningInvite: boolean;
   hasGroups: boolean;
+  userGroups?: Group[];
   setIsModalOpen: (open: boolean) => void;
   setShowWelcomeStory: (show: boolean) => void;
   setShowEditProfileModal: (show: boolean) => void;
@@ -44,6 +47,7 @@ const DashboardOverview = ({
   translateChapterField,
   isJoiningInvite,
   hasGroups,
+  userGroups = [],
   setIsModalOpen,
   setShowWelcomeStory,
   setShowEditProfileModal,
@@ -265,51 +269,63 @@ const DashboardOverview = ({
         const isStep2Active = !userData?.hasCompletedOnboarding && !isLegacyCompleted && step1Done && !step2Done && !isAnyModalOpen;
 
         return (
-          <div className="dashboard-split-row">
-            <div className="reading-plan-section">
-              <div className="reading-plan-card reading-plan-card-inner-box">
-                <h3 className="reading-plan-title-styled">{t('dashboard.todaysComeFollowMe')}</h3>
-                {todayPlan ? (
-                  <div>
-                    <p className="reading-plan-date-detail">{todayPlan.date}</p>
-                    <div className="reading-plan-links-container">
-                      {todayPlan.scripts.map((script, idx) => {
-                        const url = getReadingPlanUrl(script);
-                        const displayScript = translateChapterField(script);
+          <>
+            {(() => {
+              const familyGroup = userGroups.find((g) => g.isFamilySyncEnabled);
+              return familyGroup ? (
+                <FamilyThemeCard
+                  userData={userData}
+                  familyGroup={familyGroup}
+                />
+              ) : null;
+            })()}
 
-                        return (
-                          <a
-                            key={idx}
-                            href={url || '#'}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="reading-plan-link-item"
-                          >
-                            {displayScript}
-                          </a>
-                        );
-                      })}
+            <div className="dashboard-split-row">
+              <div className="reading-plan-section">
+                <div className="reading-plan-card reading-plan-card-inner-box">
+                  <h3 className="reading-plan-title-styled">{t('dashboard.todaysComeFollowMe')}</h3>
+                  {todayPlan ? (
+                    <div>
+                      <p className="reading-plan-date-detail">{todayPlan.date}</p>
+                      <div className="reading-plan-links-container">
+                        {todayPlan.scripts.map((script, idx) => {
+                          const url = getReadingPlanUrl(script);
+                          const displayScript = translateChapterField(script);
+
+                          return (
+                            <a
+                              key={idx}
+                              href={url || '#'}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="reading-plan-link-item"
+                            >
+                              {displayScript}
+                            </a>
+                          );
+                        })}
+                      </div>
                     </div>
-                  </div>
-                ) : (
-                  <p>{t('dashboard.noReadingPlan')}</p>
-                )}
+                  ) : (
+                    <p>{t('dashboard.noReadingPlan')}</p>
+                  )}
+                </div>
               </div>
-            </div>
 
-            <div className={`share-learning-cta ${isStep2Active ? 'spotlight-elevated' : ''}`}>
-              <p>{t('dashboard.shareLearningCall')}</p>
-              <div className="new-note-btn-wrapper">
-                <button 
-                  className={`new-note-btn cta-btn ${isStep2Active ? 'glow-active' : ''}`} 
-                  onClick={() => setIsModalOpen(true)} 
-                  data-testid="new-note-button"
-                >
-                  <UilPlus /> {t('dashboard.newNote')}
-                </button>
+              <div className={`share-learning-cta ${isStep2Active ? 'spotlight-elevated' : ''}`}>
+                <p>{t('dashboard.shareLearningCall')}</p>
+                <div className="new-note-btn-wrapper">
+                  <button 
+                    className={`new-note-btn cta-btn ${isStep2Active ? 'glow-active' : ''}`} 
+                    onClick={() => setIsModalOpen(true)} 
+                    data-testid="new-note-button"
+                  >
+                    <UilPlus /> {t('dashboard.newNote')}
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
+          </>
         );
       })()}
 

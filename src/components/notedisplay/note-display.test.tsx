@@ -193,6 +193,76 @@ describe('note-display', () => {
         fireEvent.click(screen.getByText('See original'));
         expect(screen.getByText('Translate')).toBeDefined();
     });
+
+    it('renders family study note with correct category, theme label and comment in Japanese', () => {
+        mockUseLanguage.mockReturnValue({
+            ...mockLanguageContext,
+            language: 'ja',
+            t: (key: string, replacements?: Record<string, string | number>) => {
+                if (key === 'noteLabels.scripture') return 'カテゴリ';
+                if (key === 'noteLabels.comment') return 'コメント';
+                if (key === 'familyTheme.categoryFamilyStudy') return '家族学習';
+                if (key === 'familyTheme.themeLabel') return 'テーマ';
+                if (key === 'familyTheme.themes.charity') return '慈愛';
+                if (key === 'familyTheme.familyStudyNoteBody') return `家族といっしょに「${replacements?.theme}」について話し合い、聖典を学びました。`;
+                return key;
+            },
+            translateChapterField: (val?: string | null) => val || '',
+        });
+
+        const text = `**カテゴリ:** 家族学習\n**テーマ:** 慈愛\n\n**コメント:**\n家族といっしょに「慈愛」について話し合い、聖典を学びました。`;
+        render(
+            <NoteDisplay
+                text={text}
+                isSent={false}
+                scripture="familyStudy"
+                chapter="charity"
+            />
+        );
+
+        const markdown = screen.getByTestId('markdown').textContent || '';
+        expect(markdown).toContain('カテゴリ:');
+        expect(markdown).toContain('家族学習');
+        expect(markdown).toContain('テーマ:');
+        expect(markdown).toContain('慈愛');
+        expect(markdown).toContain('コメント:');
+        expect(markdown).toContain('家族といっしょに「慈愛」について話し合い、聖典を学びました。');
+    });
+
+    it('translates family study note properly when viewed in English', () => {
+        mockUseLanguage.mockReturnValue({
+            ...mockLanguageContext,
+            language: 'en',
+            t: (key: string, replacements?: Record<string, string | number>) => {
+                if (key === 'noteLabels.scripture') return 'Category';
+                if (key === 'noteLabels.comment') return 'Comment';
+                if (key === 'familyTheme.categoryFamilyStudy') return 'Family Study';
+                if (key === 'familyTheme.themeLabel') return 'Theme';
+                if (key === 'familyTheme.themes.charity') return 'Charity';
+                if (key === 'familyTheme.familyStudyNoteBody') return `We discussed "${replacements?.theme}" together as a family and studied the scriptures.`;
+                return key;
+            },
+            translateChapterField: (val?: string | null) => val || '',
+        });
+
+        const text = `**カテゴリ:** 家族学習\n**テーマ:** 慈愛\n\n**コメント:**\n家族といっしょに「慈愛」について話し合い、聖典を学びました。`;
+        render(
+            <NoteDisplay
+                text={text}
+                isSent={false}
+                scripture="familyStudy"
+                chapter="charity"
+            />
+        );
+
+        const markdown = screen.getByTestId('markdown').textContent || '';
+        expect(markdown).toContain('Category:');
+        expect(markdown).toContain('Family Study');
+        expect(markdown).toContain('Theme:');
+        expect(markdown).toContain('Charity');
+        expect(markdown).toContain('Comment:');
+        expect(markdown).toContain('We discussed "Charity" together as a family and studied the scriptures.');
+    });
 });
 
 

@@ -16,6 +16,7 @@ import { isSoundEnabled, setSoundEnabled, playNoteSubmitSound } from '../../util
 import { useMilestoneStore } from '../../store/use-milestone-store';
 import { useLevelUpStore } from '../../store/use-level-up-store';
 import { calculateLevel } from '../../utils/level-utils';
+import { clearPendingMessages } from '../../utils/offline-chat-queue';
 
 interface ProfileStats {
     streak: number;
@@ -294,6 +295,10 @@ const Profile = ({ userData, stats }: ProfileProps) => {
         if (typeof sessionStorage !== 'undefined') {
             sessionStorage.setItem('sh_dev_signed_out', 'true');
         }
+        const currentUid = userData?.uid || auth?.currentUser?.uid;
+        if (currentUid) {
+            clearPendingMessages(currentUid);
+        }
         auth?.signOut();
         navigate(`/${language}/welcome`);
         setShowSignOutModal(false);
@@ -309,6 +314,10 @@ const Profile = ({ userData, stats }: ProfileProps) => {
 
             if (response.status === 200) {
                 toast.success(t('profile.deleteAccountSuccess'));
+                const currentUid = userData?.uid || user.uid;
+                if (currentUid) {
+                    clearPendingMessages(currentUid);
+                }
                 await auth?.signOut();
                 navigate(`/${language}/welcome`);
             } else {
@@ -316,12 +325,20 @@ const Profile = ({ userData, stats }: ProfileProps) => {
                 console.error("Server-side deletion failed:", errorData);
                 toast.error(t('profile.deleteAccountError') || "Error deleting account");
                 // If it failed but maybe partially deleted, we should still sign out to be safe
+                const currentUid = userData?.uid || user.uid;
+                if (currentUid) {
+                    clearPendingMessages(currentUid);
+                }
                 await auth?.signOut();
                 navigate(`/${language}/welcome`);
             }
         } catch (err: unknown) {
             console.error("Error during account deletion process:", err);
             toast.error(t('profile.deleteAccountError') || "Error deleting account");
+            const currentUid = userData?.uid || user.uid;
+            if (currentUid) {
+                clearPendingMessages(currentUid);
+            }
             await auth?.signOut();
             navigate(`/${language}/welcome`);
         } finally {

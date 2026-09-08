@@ -188,7 +188,9 @@ export default {
         "cancel": "Kanselahin",
         "delete": "I-delete",
         "close": "Isara",
-        "dismiss": "I-dismiss"
+        "dismiss": "I-dismiss",
+        "saved": "Nai-save na",
+        "error": "May naganap na error"
     },
     "seo": {
         "title": "Scripture Habit | Daily Scripture Study at Tool sa Komunidad",
@@ -491,9 +493,9 @@ export default {
         "activeDaysAgo": "Aktibo {days} araw ang nakalipas",
         "activeMonthsAgo": "Aktibo {months} buwan ang nakalipas",
         "noActivity": "Walang kamakailang aktibidad",
-        "inactivityPolicyBanner": "⚠️ Kung hindi ka mag-post ng note o mensahe sa grupong ito sa loob ng 3 araw, awtomatiko kang aalisin.",
+        "inactivityPolicyBanner": "⚠️ Kung hindi ka mag-post ng note o mensahe sa grupong ito sa loob ng {days} araw, awtomatiko kang aalisin.",
         "placeholderShare": "Ibahagi natin ang iyong natutunan ngayong araw!",
-        "placeholderInactivity": "⚠️ Ang kawalan ng aktibidad sa loob ng 3 araw ay hahantong sa awtomatikong pagtanggal.",
+        "placeholderInactivity": "⚠️ Ang kawalan ng aktibidad sa loob ng {days} araw ay hahantong sa awtomatikong pagtanggal.",
         "placeholderEncourage": "Ibahagi ang iyong mga saloobin sa grupo.",
         "welcomeGuideButton": "Nakuha ko!",
         "unityAnnouncement": "☀️ **Eksaktong Kaluwalhatian ng Kahariang Selestiyal!** ☀️\n\n**Nagbahagi na ang lahat ng miyembro ng kanilang natutunan!**",
@@ -554,7 +556,11 @@ export default {
         "newMessages": "Mga bagong mensahe mula rito",
         "errorToggleReaction": "Failed to update reaction.",
         "inviteFriends": "Invite Friends",
-        "reTranslate": "Refresh translation"
+        "reTranslate": "Refresh translation",
+        "retrySend": "Subukang ipadala muli",
+        "retry": "Subukan muli",
+        "sending": "Ipinapadala...",
+        "userKicked": "⚠️ Si **{nickname}** ay inalis sa grupo."
     },
     "newNote": {
         "editTitle": "I-edit ang Tala",
@@ -730,7 +736,9 @@ export default {
         "emailNotVerified": "Pakiberipika ang iyong email address bago mag-login.",
         "resendVerification": "Ipadala ang Verification Email",
         "verificationResent": "Naipadala ang verification email.",
-        "errorInvalidCredential": "Inbalidong email o password. Pakisubukang muli."
+        "errorInvalidCredential": "Inbalidong email o password. Pakisubukang muli.",
+        "emailPlaceholder": "pangalan@halimbawa.com",
+        "passwordPlaceholder": "Ilagay ang iyong password"
     },
     "forgotPasswordPage": {
         "title": "I-reset ang Iyong Password",
@@ -1010,5 +1018,51 @@ export default {
         "loadingSubtitle": "Kinakarga ang data. Mangyaring maghintay.",
         "loginSuccess": "Naka-sign in gamit ang demo account!",
         "loginError": "Bigo sa pagkonekta sa demo. Nire-redirect sa login..."
+    },
+    "familyTheme": {
+        "cardTitle": "Nag-aral ba kayo ng banal na kasulatan kasama ang pamilya?",
+        "cardDesc": "Itugma ang tema ngayon at itala ang pag-aaral!",
+        "openModalBtn": "Piliin natin ang tema ngayon",
+        "waitingPartnerTitle": "Hinihintay ang pagpili ng kapareha…",
+        "waitingPartnerDesc": "Pinili mo ang \"{selectedTheme}\". Hintayin natin ang pagpili ng kapareha.",
+        "partnerSelectedTitle": "Pumili na ng tema ang iyong kapareha!",
+        "partnerSelectedDesc": "Piliin ang iyong tema",
+        "completedTitle": "Tema ng Pamilya Ngayon: 【{theme}】",
+        "completedDesc": "Nakamit ang pag-aaral ng banal na kasulatan ng buong pamilya! Kahanga-hanga! ✨",
+        "completedBadge": "Kumpleto",
+        "changeSelection": "Palitan ang Tema",
+        "modalTitle": "Piliin ang Tema Ngayon",
+        "modalSubtitle": "Pumili ng isang tema na napag-usapan ninyo sa pag-aaral ng pamilya",
+        "mismatchTitle": "Halos magtugma! Mag-usap at magkasundo sa isa!",
+        "mismatchDesc": "Ikaw: 【{myTheme}】 / Kapareha: 【{partnerTheme}】",
+        "matchSuccessTitle": "Nag-aral ng banal na kasulatan kasama ang pamilya! ✨",
+        "matchSuccessDesc": "Tema ngayon: 【{theme}】",
+        "confirmBtn": "Piliin ang Temang Ito",
+        "closeBtn": "Isara",
+        "themes": {
+            "faith": "Pananampalataya",
+            "hope": "Pag-asa",
+            "charity": "Pag-ibig sa kapwa",
+            "gratitude": "Pasasalamat",
+            "prayer": "Panalangin",
+            "patience": "Pagtitiis",
+            "repentance": "Pagsisisi",
+            "guidance": "Patnubay ng Espiritu"
+        },
+        "chatMessageFamily": "🎊Nag-aral kami tungkol sa {theme} bilang isang pamilya!!🎊",
+        "chatMessageOther": "✨Nag-aral si {nickname} tungkol sa {theme} kasama ang pamilya!!✨",
+        "aiBotCongratulation": "Napakagandang mag-aral ng banal na kasulatan kasama ang pamilya, {nickname}! Maligayang pagbati!",
+        "familyStudyNoteTitle": "Tala ng Pag-aaral ng Pamilya",
+        "familyStudyNoteTheme": "Tema Ngayon: {theme}",
+        "familyStudyNoteBody": "Nag-usap bilang pamilya tungkol sa \"{theme}\" at nag-aral ng mga banal na kasulatan.",
+        "categoryFamilyStudy": "Pag-aaral ng Pamilya",
+        "themeLabel": "Tema",
+        "groupOptionToggle": "Family Mode",
+        "groupOptionToggleDesc": "Pinakamainam para sa mga grupong sabay-sabay na nag-aaral sa parehong oras (1 grupo bawat user)",
+        "alreadyEnabledInOtherGroup": "Naka-enable na ang family sync mode sa ibang grupo",
+        "modeFamilyTitle": "Family Mode (ON)",
+        "modeFamilyDesc": "Pinakamainam para sa mga grupong sabay-sabay na nag-aaral sa parehong oras. Itugma ang tema at tapusin sa isang pindot! (1 grupo bawat user)",
+        "modeIndividualTitle": "Individual Mode (OFF)",
+        "modeIndividualDesc": "Pinakamainam para sa mga nag-aaral sa sariling bilis o kapag magkaiba ang oras, habang nagbabahagi ng mga tala."
     }
 };

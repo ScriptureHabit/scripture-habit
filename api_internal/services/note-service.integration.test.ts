@@ -313,4 +313,45 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('NoteService Integration T
             expect(gSnap.data()?.dailyActivity?.activeMembers).toEqual([TEST_UID]);
         });
     });
+
+    describe('R1: Security Against Forged Note References', () => {
+        it('does not delete victim message when note contains forged sharedMessageIds', async () => {
+            const victimUid = `victim_${Date.now()}`;
+            const victimGroupId = GROUP_1;
+
+            // Seed a victim message in GROUP_1
+            const victimMsgRef = db.collection('groups').doc(victimGroupId).collection('messages').doc();
+            await victimMsgRef.set({
+                id: victimMsgRef.id,
+                groupId: victimGroupId,
+                senderId: victimUid,
+                text: 'Victim important message',
+                originalNoteId: 'victim-original-note-id',
+                createdAt: admin.firestore.Timestamp.now()
+            });
+
+            // Attacker seeds personal note pointing to victim's message
+            const attackerNoteRef = db.collection('users').doc(TEST_UID).collection('notes').doc();
+            await attackerNoteRef.set({
+                content: 'Attacker note with forged ref',
+                sharedMessageIds: {
+                    [victimGroupId]: victimMsgRef.id
+                },
+                createdAt: admin.firestore.Timestamp.now()
+            });
+
+            // Attacker requests deletion of their own note
+            const delRes = await NoteService.deleteNote(TEST_UID, attackerNoteRef.id);
+            expect(delRes.success).toBe(true);
+
+            // Attacker's note is deleted
+            const attackerNoteSnap = await attackerNoteRef.get();
+            expect(attackerNoteSnap.exists).toBe(false);
+
+            // Crucial: Victim's message must NOT be deleted!
+            const victimMsgSnap = await victimMsgRef.get();
+            expect(victimMsgSnap.exists).toBe(true);
+            expect(victimMsgSnap.data()?.text).toBe('Victim important message');
+        });
+    });
 });

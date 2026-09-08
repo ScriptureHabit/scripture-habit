@@ -80,6 +80,9 @@ const callGemini = async (options: string | GeminiCallOptions): Promise<string> 
 };
 
 const handleAiError = (res: Response, err: unknown, contextMessage: string) => {
+    if (err instanceof AppError) {
+        return sendErrorResponse(res, err);
+    }
     // Safely extract error body without circular references
     const axiosErr = err as { response?: { data?: unknown, status?: number }, message?: string };
     const errorBody = axiosErr.response?.data || axiosErr.message || String(err);
@@ -161,15 +164,43 @@ router.post('/translate', authenticate, aiLimiter, verifyAppCheck, async (req: A
     try {
         const validation = translateSchema.safeParse(req.body);
         if (!validation.success) throw new ValidationError('Invalid input');
-        
-        const { text, targetLanguage, messageId, groupId, updateType, force } = validation.data;
+          const { text, targetLanguage, messageId, groupId, updateType, force } = validation.data;
+        const uid = req.user!.uid;
+
+        let textToTranslate = text;
+        let verifiedGroupDoc: admin.firestore.DocumentSnapshot | null = null;
+        let verifiedMessageDoc: admin.firestore.DocumentSnapshot | null = null;
+
+        if (groupId) {
+            verifiedGroupDoc = await db.collection('groups').doc(groupId).get();
+            if (!verifiedGroupDoc.exists) throw new NotFoundError('Group not found');
+            const members = (verifiedGroupDoc.data()?.members || []) as string[];
+            if (!members.includes(uid)) {
+                throw new ForbiddenError('Forbidden: Not a group member');
+            }
+
+            if (messageId) {
+                const messageRef = db.collection('groups').doc(groupId).collection('messages').doc(messageId);
+                verifiedMessageDoc = await messageRef.get();
+                if (!verifiedMessageDoc.exists) {
+                    throw new NotFoundError('Message not found');
+                }
+                const msgData = verifiedMessageDoc.data();
+                textToTranslate = msgData?.text || '';
+            } else if (updateType === 'group_name' || updateType === 'group_description') {
+                const field = updateType === 'group_name' ? 'name' : 'description';
+                textToTranslate = verifiedGroupDoc.data()?.[field] || '';
+            }
+        } else if (messageId) {
+            throw new ValidationError('groupId is required when specifying messageId');
+        }
 
         if (process.env.SKIP_AI === 'true') {
-            return res.json({ success: true, translatedText: text });
+            return res.json({ success: true, translatedText: textToTranslate });
         }
 
         const typeStr = updateType || 'normal';
-        const cacheKey = crypto.createHash('md5').update(`${text}_${targetLanguage}_${typeStr}`).digest('hex');
+        const cacheKey = crypto.createHash('md5').update(`${textToTranslate}_${targetLanguage}_${typeStr}`).digest('hex');
         let translatedText: string | null = null;
         
         // Only use cache if DB is available and not in a hanging state (simple check)
@@ -245,7 +276,7 @@ Example structure (MANDATORY):
 4. Maintain the tone and line breaks of the original text.`;
             }
             
-            const userPrompt = `Text to translate:\n"""\n${text}\n"""`;
+            const userPrompt = `Text to translate:\n"""\n${textToTranslate}\n"""`;
             const resultText = await callGemini({ prompt: userPrompt, systemInstruction });
             translatedText = resultText.replace(/<translation>|<\/translation>/gi, '').replace(/^.*?translation.*?:/i, '').replace(/^["'](.*)["']$/g, '$1').trim();
             
@@ -253,7 +284,7 @@ Example structure (MANDATORY):
             
             // Persist to cache if DB is healthy
             if (canUseCache && cacheRef) {
-                const savePromise = cacheRef.set({ originalText: text, translatedText, targetLanguage, createdAt: admin.firestore.FieldValue.serverTimestamp() }).catch(e => {
+                const savePromise = cacheRef.set({ originalText: textToTranslate, translatedText, targetLanguage, createdAt: admin.firestore.FieldValue.serverTimestamp() }).catch(e => {
                     console.warn('[AI Cache] Failed to save to cache:', e.message);
                 });
                 if (process.env.NODE_ENV === 'test' || process.env.VITEST === 'true') {
@@ -263,7 +294,7 @@ Example structure (MANDATORY):
         }
 
         // If messageId and groupId are provided, persist the translation to the message document
-        if (messageId && groupId && translatedText) {
+        if (messageId && groupId && translatedText && verifiedMessageDoc && verifiedMessageDoc.exists) {
             try {
                 const messageRef = db.collection('groups').doc(groupId).collection('messages').doc(messageId);
                 await messageRef.update({
@@ -277,9 +308,8 @@ Example structure (MANDATORY):
             }
         }
 
-
         // If it's a group-level metadata (name/desc), persist to the group doc in backend
-        if (groupId && translatedText && updateType) {
+        if (groupId && translatedText && updateType && verifiedGroupDoc && verifiedGroupDoc.exists) {
             try {
                 const groupRef = db.collection('groups').doc(groupId);
                 const field = updateType === 'group_name' ? 'name' : 'description';
@@ -289,7 +319,6 @@ Example structure (MANDATORY):
             } catch (groupUpdateErr: unknown) {
                 const error = groupUpdateErr as Error;
                 console.error('[AI Error] Failed to update group metadata for type:', updateType, error.message);
-
             }
         }
 
@@ -312,6 +341,30 @@ router.post('/translate-batch', authenticate, aiLimiter, verifyAppCheck, async (
         if (!validation.success) throw new ValidationError('Invalid input');
         
         const { messages, targetLanguage, groupId, force } = validation.data;
+        const uid = req.user!.uid;
+        let verifiedGroup = false;
+        const validDbMessagesMap = new Map<string, string>();
+
+        if (groupId) {
+            const groupDoc = await db.collection('groups').doc(groupId).get();
+            if (!groupDoc.exists) throw new NotFoundError('Group not found');
+            const members = (groupDoc.data()?.members || []) as string[];
+            if (!members.includes(uid)) {
+                throw new ForbiddenError('Forbidden: Not a group member');
+            }
+            verifiedGroup = true;
+
+            const msgRefs = messages.map(m => db.collection('groups').doc(groupId).collection('messages').doc(m.id));
+            if (msgRefs.length > 0) {
+                const msgDocs = await db.getAll(...msgRefs);
+                msgDocs.forEach(d => {
+                    if (d.exists) {
+                        validDbMessagesMap.set(d.id, d.data()?.text || '');
+                    }
+                });
+            }
+        }
+
         const finalResults: Record<string, string> = {};
         const toTranslate: Array<{ id: string; text: string }> = [];
 
@@ -426,12 +479,15 @@ Format: {"msg_id": "translated_text", ...}`;
                 const cacheRef = db.collection('translation_cache').doc(cacheKey);
                 batch.set(cacheRef, { originalText: msg.text, translatedText: translated, targetLanguage, createdAt: admin.firestore.FieldValue.serverTimestamp() });
                 
-                // Message Persistence (if in group context)
-                if (groupId) {
-                    const messageRef = db.collection('groups').doc(groupId).collection('messages').doc(msg.id);
-                    batch.set(messageRef, { 
-                        translations: { [targetLanguage]: translated } 
-                    }, { merge: true });
+                // Message Persistence (if in verified group context and text matches actual stored message)
+                if (groupId && verifiedGroup && validDbMessagesMap.has(msg.id)) {
+                    const actualDbText = validDbMessagesMap.get(msg.id);
+                    if (actualDbText && actualDbText.trim() === msg.text.trim()) {
+                        const messageRef = db.collection('groups').doc(groupId).collection('messages').doc(msg.id);
+                        batch.set(messageRef, { 
+                            translations: { [targetLanguage]: translated } 
+                        }, { merge: true });
+                    }
                 }
             }
         }

@@ -4,6 +4,7 @@ import { admin, db } from '../lib/firebase-admin.js';
 import { MessageService } from './message-service.js';
 import { GroupDocument, MessageDocument, UserDocument } from '../../types/firestore.js';
 import { formatDateInTimeZone } from '../../src/utils/time-utils.js';
+import { ForbiddenError, NotFoundError } from '../lib/errors.js';
 
 describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('MessageService Integration Test', () => {
     vi.setConfig({ testTimeout: 15000 });
@@ -684,5 +685,170 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('MessageService Integratio
         // Cleanup
         await MessageService.deleteMessage({ uid: TEST_UID, groupId: TEST_GROUP_ID, messageId: res1.messageId });
         await MessageService.deleteMessage({ uid: TEST_UID, groupId: TEST_GROUP_ID, messageId: res2.messageId });
+    });
+
+    describe('R2: toggleReaction and sendCheer mandatory membership checks', () => {
+        it('rejects toggleReaction from a non-member', async () => {
+            const nonMemberUid = `non_member_${Date.now()}`;
+            await db.collection('users').doc(nonMemberUid).set({
+                uid: nonMemberUid,
+                nickname: 'Intruder'
+            });
+
+            const postRes = await MessageService.postMessage({
+                uid: TEST_UID,
+                groupId: TEST_GROUP_ID,
+                text: 'Message for reaction test'
+            });
+
+            await expect(MessageService.toggleReaction({
+                uid: nonMemberUid,
+                groupId: TEST_GROUP_ID,
+                messageId: postRes.messageId,
+                emoji: '❤️',
+                nickname: 'Intruder'
+            })).rejects.toThrow(ForbiddenError);
+        });
+
+        it('rejects toggleReaction if group does not exist', async () => {
+            await expect(MessageService.toggleReaction({
+                uid: TEST_UID,
+                groupId: 'non-existent-group-xyz',
+                messageId: 'some-msg',
+                emoji: '❤️',
+                nickname: 'Alice'
+            })).rejects.toThrow(NotFoundError);
+        });
+
+        it('allows toggleReaction from a valid group member', async () => {
+            const postRes = await MessageService.postMessage({
+                uid: TEST_UID,
+                groupId: TEST_GROUP_ID,
+                text: 'Member reaction test'
+            });
+
+            const result = await MessageService.toggleReaction({
+                uid: TEST_UID,
+                groupId: TEST_GROUP_ID,
+                messageId: postRes.messageId,
+                emoji: '👍',
+                nickname: 'TestUser'
+            });
+
+            expect(result.hasReacted).toBe(true);
+            expect(result.newUids).toContain(TEST_UID);
+        });
+
+        it('rejects sendCheer if sender is not in the group', async () => {
+            const targetUid = 'target-member-user';
+            await db.collection('groups').doc(TEST_GROUP_ID).update({
+                members: [TEST_UID, targetUid]
+            });
+
+            await expect(MessageService.sendCheer({
+                senderUid: 'non-member-sender',
+                senderNickname: 'Intruder',
+                targetUid,
+                groupId: TEST_GROUP_ID
+            })).rejects.toThrow(ForbiddenError);
+        });
+
+        it('rejects sendCheer if target user is not in the group', async () => {
+            await expect(MessageService.sendCheer({
+                senderUid: TEST_UID,
+                senderNickname: 'TestUser',
+                targetUid: 'unrelated-target-user',
+                groupId: TEST_GROUP_ID
+            })).rejects.toThrow(ForbiddenError);
+        });
+
+        it('rejects sendCheer if group does not exist', async () => {
+            await expect(MessageService.sendCheer({
+                senderUid: TEST_UID,
+                senderNickname: 'TestUser',
+                targetUid: TEST_UID,
+                groupId: 'non-existent-group-999'
+            })).rejects.toThrow(NotFoundError);
+        });
+
+        it('allows sendCheer when both sender and target are valid group members', async () => {
+            const targetUid = `target_${Date.now()}`;
+            await db.collection('users').doc(targetUid).set({
+                uid: targetUid,
+                nickname: 'TargetUser'
+            });
+            await db.collection('groups').doc(TEST_GROUP_ID).update({
+                members: admin.firestore.FieldValue.arrayUnion(targetUid)
+            });
+
+            const cheerRes = await MessageService.sendCheer({
+                senderUid: TEST_UID,
+                senderNickname: 'TestUser',
+                targetUid,
+                groupId: TEST_GROUP_ID
+            });
+
+            expect(cheerRes.alreadySent).toBe(false);
+            expect(cheerRes.targetData).toBeDefined();
+        });
+    });
+
+    describe('R1: editMessage tamper resistance', () => {
+        it('does not edit victim message if personal note sharedMessageIds is forged', async () => {
+            const victimUid = `victim_${Date.now()}`;
+            const victimGroupId = `victim_grp_${Date.now()}`;
+
+            // Create victim group and message
+            await db.collection('groups').doc(victimGroupId).set({
+                name: 'Victim Group',
+                members: [victimUid]
+            });
+            const victimMsgRef = db.collection('groups').doc(victimGroupId).collection('messages').doc();
+            await victimMsgRef.set({
+                id: victimMsgRef.id,
+                groupId: victimGroupId,
+                senderId: victimUid,
+                text: 'Original victim text',
+                originalNoteId: 'victim-note-1',
+                createdAt: admin.firestore.Timestamp.now()
+            });
+
+            // Attacker posts note in TEST_GROUP_ID
+            const attackerNoteId = `attacker_note_${Date.now()}`;
+            const attackerMsgRef = db.collection('groups').doc(TEST_GROUP_ID).collection('messages').doc();
+            await attackerMsgRef.set({
+                id: attackerMsgRef.id,
+                groupId: TEST_GROUP_ID,
+                senderId: TEST_UID,
+                text: 'Attacker original text',
+                originalNoteId: attackerNoteId,
+                createdAt: admin.firestore.Timestamp.now()
+            });
+
+            // Attacker puts victim's message reference into their personal note's sharedMessageIds
+            await db.collection('users').doc(TEST_UID).collection('notes').doc(attackerNoteId).set({
+                content: 'Attacker note content',
+                sharedMessageIds: {
+                    [TEST_GROUP_ID]: attackerMsgRef.id,
+                    [victimGroupId]: victimMsgRef.id
+                }
+            });
+
+            // Attacker calls editMessage for attackerMsgRef
+            await MessageService.editMessage({
+                uid: TEST_UID,
+                groupId: TEST_GROUP_ID,
+                messageId: attackerMsgRef.id,
+                text: 'Attacker modified text'
+            });
+
+            // Attacker message was updated
+            const attackerMsgSnap = await attackerMsgRef.get();
+            expect(attackerMsgSnap.data()?.text).toBe('Attacker modified text');
+
+            // Victim message was NOT modified!
+            const victimMsgSnap = await victimMsgRef.get();
+            expect(victimMsgSnap.data()?.text).toBe('Original victim text');
+        });
     });
 });

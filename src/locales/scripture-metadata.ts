@@ -15,6 +15,11 @@ export interface LocaleDefinition {
         comment?: string;
         [key: string]: unknown;
     };
+    familyTheme?: {
+        categoryFamilyStudy?: string;
+        themeLabel?: string;
+        themes?: Record<string, string>;
+    };
     books?: Record<string, string>;
 }
 
@@ -141,7 +146,21 @@ export const LOCALES_BY_CODE: Record<string, LocaleDefinition> = {
             "unclassified": "unclassified",
             "none": "none"
         },
-        "groupChat": {}
+        "groupChat": {},
+        "familyTheme": {
+            "categoryFamilyStudy": "Family Study",
+            "themeLabel": "Theme",
+            "themes": {
+                "faith": "Faith",
+                "hope": "Hope",
+                "charity": "Charity",
+                "gratitude": "Gratitude",
+                "prayer": "Prayer",
+                "patience": "Patience",
+                "repentance": "Repentance",
+                "guidance": "Spirit Guidance"
+            }
+        }
     },
     "ja": {
         "scriptures": {
@@ -265,7 +284,21 @@ export const LOCALES_BY_CODE: Record<string, LocaleDefinition> = {
             "unclassified": "未分類",
             "none": "なし"
         },
-        "groupChat": {}
+        "groupChat": {},
+        "familyTheme": {
+            "categoryFamilyStudy": "家族学習",
+            "themeLabel": "テーマ",
+            "themes": {
+                "faith": "信仰",
+                "hope": "希望",
+                "charity": "慈愛",
+                "gratitude": "感謝",
+                "prayer": "祈り",
+                "patience": "忍耐",
+                "repentance": "悔い改め",
+                "guidance": "御霊の導き"
+            }
+        }
     },
     "pt": {
         "scriptures": {
@@ -389,7 +422,21 @@ export const LOCALES_BY_CODE: Record<string, LocaleDefinition> = {
             "unclassified": "sem classificação",
             "none": "nenhum"
         },
-        "groupChat": {}
+        "groupChat": {},
+        "familyTheme": {
+            "categoryFamilyStudy": "Estudo familiar",
+            "themeLabel": "Tema",
+            "themes": {
+                "faith": "Fé",
+                "hope": "Esperança",
+                "charity": "Caridade",
+                "gratitude": "Gratidão",
+                "prayer": "Oração",
+                "patience": "Paciência",
+                "repentance": "Arrependimento",
+                "guidance": "Guia do Espírito"
+            }
+        }
     },
     "zho": {
         "scriptures": {
@@ -513,7 +560,21 @@ export const LOCALES_BY_CODE: Record<string, LocaleDefinition> = {
             "unclassified": "未分類",
             "none": "無"
         },
-        "groupChat": {}
+        "groupChat": {},
+        "familyTheme": {
+            "categoryFamilyStudy": "家庭研讀",
+            "themeLabel": "主題",
+            "themes": {
+                "faith": "信心",
+                "hope": "盼望",
+                "charity": "仁愛",
+                "gratitude": "感恩",
+                "prayer": "祈禱",
+                "patience": "耐心",
+                "repentance": "悔改",
+                "guidance": "聖靈的指引"
+            }
+        }
     },
     "es": {
         "scriptures": {
@@ -637,7 +698,21 @@ export const LOCALES_BY_CODE: Record<string, LocaleDefinition> = {
             "unclassified": "sin clasificar",
             "none": "ninguno"
         },
-        "groupChat": {}
+        "groupChat": {},
+        "familyTheme": {
+            "categoryFamilyStudy": "Estudio familiar",
+            "themeLabel": "Tema",
+            "themes": {
+                "faith": "Fe",
+                "hope": "Esperanza",
+                "charity": "Caridad",
+                "gratitude": "Gratitud",
+                "prayer": "Oración",
+                "patience": "Paciencia",
+                "repentance": "Arrepentimiento",
+                "guidance": "Guía del Espíritu"
+            }
+        }
     },
     "vi": {
         "scriptures": {
@@ -761,7 +836,21 @@ export const LOCALES_BY_CODE: Record<string, LocaleDefinition> = {
             "unclassified": "chưa phân loại",
             "none": "không có"
         },
-        "groupChat": {}
+        "groupChat": {},
+        "familyTheme": {
+            "categoryFamilyStudy": "Học tập gia đình",
+            "themeLabel": "Chủ đề",
+            "themes": {
+                "faith": "Đức tin",
+                "hope": "Hy vọng",
+                "charity": "Lòng bác ái",
+                "gratitude": "Lòng biết ơn",
+                "prayer": "Cầu nguyện",
+                "patience": "Kiên nhẫn",
+                "repentance": "Sự hối cải",
+                "guidance": "Sự hướng dẫn của Thánh Linh"
+            }
+        }
     },
     "th": {
         "scriptures": {
@@ -885,7 +974,21 @@ export const LOCALES_BY_CODE: Record<string, LocaleDefinition> = {
             "unclassified": "ไม่ได้จัดหมวดหมู่",
             "none": "ไม่มี"
         },
-        "groupChat": {}
+        "groupChat": {},
+        "familyTheme": {
+            "categoryFamilyStudy": "การศึกษาของครอบครัว",
+            "themeLabel": "หัวข้อ",
+            "themes": {
+                "faith": "ศรัทธา",
+                "hope": "ความหวัง",
+                "charity": "จิตกุศล",
+                "gratitude": "ความกตัญญู",
+                "prayer": "การสวดอ้อนวอน",
+                "patience": "ความอดทน",
+                "repentance": "การกลับใจ",
+                "guidance": "การนำทางของพระวิญญาณ"
+            }
+        }
     },
     "ko": {
         "scriptures": {
@@ -1009,7 +1112,21 @@ export const LOCALES_BY_CODE: Record<string, LocaleDefinition> = {
             "unclassified": "미분류",
             "none": "없음"
         },
-        "groupChat": {}
+        "groupChat": {},
+        "familyTheme": {
+            "categoryFamilyStudy": "가족 학습",
+            "themeLabel": "주제",
+            "themes": {
+                "faith": "신앙",
+                "hope": "희망",
+                "charity": "자애",
+                "gratitude": "감사",
+                "prayer": "기도",
+                "patience": "인내",
+                "repentance": "회개",
+                "guidance": "영의 인도"
+            }
+        }
     },
     "tl": {
         "scriptures": {
@@ -1133,7 +1250,21 @@ export const LOCALES_BY_CODE: Record<string, LocaleDefinition> = {
             "unclassified": "hindi nakategorya",
             "none": "wala"
         },
-        "groupChat": {}
+        "groupChat": {},
+        "familyTheme": {
+            "categoryFamilyStudy": "Pag-aaral ng Pamilya",
+            "themeLabel": "Tema",
+            "themes": {
+                "faith": "Pananampalataya",
+                "hope": "Pag-asa",
+                "charity": "Pag-ibig sa kapwa",
+                "gratitude": "Pasasalamat",
+                "prayer": "Panalangin",
+                "patience": "Pagtitiis",
+                "repentance": "Pagsisisi",
+                "guidance": "Patnubay ng Espiritu"
+            }
+        }
     },
     "sw": {
         "scriptures": {
@@ -1257,7 +1388,21 @@ export const LOCALES_BY_CODE: Record<string, LocaleDefinition> = {
             "unclassified": "isiyoainishwa",
             "none": "hakuna"
         },
-        "groupChat": {}
+        "groupChat": {},
+        "familyTheme": {
+            "categoryFamilyStudy": "Mafunzo ya Familia",
+            "themeLabel": "Mada",
+            "themes": {
+                "faith": "Imani",
+                "hope": "Tumaini",
+                "charity": "Hisa",
+                "gratitude": "Shukrani",
+                "prayer": "Sala",
+                "patience": "Subira",
+                "repentance": "Toba",
+                "guidance": "Mwongozo wa Roho"
+            }
+        }
     },
     "it": {
         "scriptures": {
@@ -1381,7 +1526,21 @@ export const LOCALES_BY_CODE: Record<string, LocaleDefinition> = {
             "unclassified": "non classificato",
             "none": "nessuno"
         },
-        "groupChat": {}
+        "groupChat": {},
+        "familyTheme": {
+            "categoryFamilyStudy": "Studio familiare",
+            "themeLabel": "Tema",
+            "themes": {
+                "faith": "Fede",
+                "hope": "Speranza",
+                "charity": "Carità",
+                "gratitude": "Gratitudine",
+                "prayer": "Preghiera",
+                "patience": "Pazienza",
+                "repentance": "Pentimento",
+                "guidance": "Guida dello Spirito"
+            }
+        }
     }
 };
 
