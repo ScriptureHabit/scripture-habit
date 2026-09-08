@@ -1,7 +1,5 @@
 import './group-form.css';
-import React, { useState, useEffect } from "react";
-import { auth } from '../../firebase';
-import { onAuthStateChanged } from 'firebase/auth';
+import React, { useState } from "react";
 import apiClient from '../../utils/api-client';
 import { useNavigate, Link } from 'react-router-dom';
 import Input from '../input/input';
@@ -10,49 +8,24 @@ import { toast } from "react-toastify";
 import { useLanguage } from '../../hooks/use-language';
 import Mascot from '../mascot/mascot';
 import { useApiWarmupOnMount } from '../../utils/api-warmup';
-import { GroupService } from '../../services/group-service';
+import { useGroupForm } from './hooks/use-group-form';
 
 export default function GroupForm() {
   useApiWarmupOnMount();
   const { t, language } = useLanguage();
+  const { user, hasExistingFamilyGroup } = useGroupForm();
   const [groupName, setGroupName] = useState("");
   const [description, setDescription] = useState("");
   const [isFamilySyncEnabled, setIsFamilySyncEnabled] = useState(false);
-  const [hasExistingFamilyGroup, setHasExistingFamilyGroup] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!auth) return;
-    let unsubGroups: (() => void) | null = null;
-    const unsubAuth = onAuthStateChanged(auth, (user) => {
-      if (user?.uid) {
-        unsubGroups = GroupService.subscribeUserGroups(
-          user.uid,
-          (groups) => {
-            const hasFam = groups.some((g) => g.isFamilySyncEnabled && !g.isDeleted);
-            setHasExistingFamilyGroup(hasFam);
-          },
-          (err) => {
-            console.error("[GroupForm] Failed to subscribe user groups:", err);
-          }
-        );
-      }
-    });
-
-    return () => {
-      unsubAuth();
-      if (unsubGroups) unsubGroups();
-    };
-  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
 
-    const user = auth?.currentUser;
-    if (!auth || !user) {
+    if (!user) {
       setError(t('groupForm.errorLoggedIn'));
       return;
     }
