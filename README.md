@@ -4,7 +4,7 @@ English | [日本語](README.ja.md)
 
 > **Making daily scripture study more fun and meaningful.**  
 
-An open-source web application designed to help people build a lasting and joyful daily scripture study habit together with friends and family.
+A free, open-source web application designed to help people build a lasting and joyful daily scripture study habit together with friends and family.
 
 > 💡 **Interested in contributing or improving features?**  
 > You don't need to understand the entire codebase! Feel free to pick a feature from [`/docs`](docs/README.md) that catches your interest and start small.
