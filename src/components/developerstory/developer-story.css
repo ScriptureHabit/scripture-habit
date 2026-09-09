@@ -1,3 +1,4 @@
+.DeveloperStory,
 .Donate {
     width: 100%;
     max-width: 900px;
@@ -139,7 +140,8 @@
     margin-bottom: 1.5rem;
 }
 
-.opensource-links {
+.opensource-links,
+.isaiah-links {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -147,7 +149,7 @@
 }
 
 .github-btn,
-.sponsors-btn {
+.reddit-btn {
     width: 280px;
     max-width: 100%;
     display: inline-flex;
@@ -181,19 +183,19 @@
     text-decoration: none;
 }
 
-.sponsors-btn {
+.reddit-btn {
     background: #FFFFFF;
-    color: #242d49;
+    color: #1A1A1B;
     border: 1px solid #E2E8F0;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
-.sponsors-btn:hover {
-    background: #FFF5F7;
-    border-color: #FBCFE8;
-    color: #DB2777;
+.reddit-btn:hover {
+    background: #FFF5F2;
+    border-color: #FFD2C2;
+    color: #FF4500;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(219, 39, 119, 0.15);
+    box-shadow: 0 4px 12px rgba(255, 69, 0, 0.15);
     text-decoration: none;
 }
 
@@ -393,12 +395,14 @@
         width: 100%;
     }
 
-    .opensource-links {
+    .opensource-links,
+    .isaiah-links {
         flex-direction: column;
         align-items: stretch;
     }
 
-    .github-btn, .sponsors-btn {
+    .github-btn,
+    .reddit-btn {
         width: 100%;
         justify-content: center;
         box-sizing: border-box;

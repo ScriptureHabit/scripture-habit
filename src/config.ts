@@ -5,6 +5,8 @@
 export const MAINTENANCE_MODE: boolean = false;
 export const MAX_GROUPS_PER_USER: number = 4;
 export const GITHUB_REPO_URL: string = 'https://github.com/ScriptureHabit/scripture-habit';
+export const REDDIT_COMMUNITY_URL: string = 'https://www.reddit.com/r/ldsScriptureHabit/';
+export const ISAIAH_REPO_URL: string = 'https://github.com/daijir/isaiah';
 export const STRIPE_DONATION_URL: string = (import.meta.env.VITE_STRIPE_DONATION_URL as string) || 'https://buy.stripe.com/your_payment_link_id';
 
 /**

@@ -216,6 +216,10 @@ export default {
         "openSourceTitle": "關於開源專案",
         "openSourceDesc": "Scripture Habit 是完全開源的專案。任何人都可以從 GitHub 檢視原始碼，我們非常歡迎透過 Issues 提供建議與回報問題，或是透過 Pull Request 參與貢獻。",
         "githubRepo": "GitHub 倉庫",
+        "redditCommunity": "Reddit 社区",
+        "isaiahTitle": "以赛亚书个人研究",
+        "isaiahDesc": "开发者个人进行的以赛亚书研究笔记已发布于GitHub（仅限日语）。有兴趣的朋友欢迎参考查阅。",
+        "isaiahBtn": "以赛亚书研究笔记 (GitHub)",
         "supportProject": "支持 Scripture Habit",
         "githubSponsorsComingSoon": "支持 Scripture Habit",
         "feedbackTitle": "意見回饋與聯絡",
@@ -972,18 +976,22 @@ export default {
             "card2Title": "與社群攜手共創",
             "card2Desc": "任何人都可以透過 GitHub 上的功能建議、Issues 錯誤回報或 Pull Request 參與開發與改進。",
             "githubBtn": "在 GitHub 上查看",
+            "redditBtn": "Reddit 社区",
+            "isaiahBtn": "以赛亚书研究笔记 (GitHub)",
             "supportBtn": "支持 Scripture Habit",
             "sponsorsComingSoon": "支持 Scripture Habit"
         },
         "seoContent": {
             "faq": {
                 "title": "常見問題",
-                "q1": "我該如何建立經文研讀的習慣？",
-                "a1": "彼此啟發非常重要。Scripture Habit 支持為此創造良好的環境。",
+                "q1": "這個應用程式是免費的嗎？",
+                "a1": "是的，這個應用程式完全免費使用。",
                 "q2": "Scripture Habit 是教會的官方應用程式嗎？",
                 "a2": "Scripture Habit 是一個個人專案，旨在支持耶穌基督後期聖徒教會的成員以及所有經文研研讀者。這不是教會的官方應用程式，但它的設計可以與福音圖書館無縫配合。",
                 "q3": "可以從應用程式商店（App Store / Google Play）下載嗎？",
-                "a3": "本應用程式以 PWA（Progressive Web App）形式提供。您可以直接在瀏覽器中開啟它，然後從選單中選擇「新增至主畫面」來進行安裝。"
+                "a3": "本應用程式以 PWA（Progressive Web App）形式提供。您可以直接在瀏覽器中開啟它，然後從選單中選擇「新增至主畫面」來進行安裝。",
+                "q4": "為什麼是開源的？",
+                "a4": "為了確保資料處理和應用程式運作機制的完全透明與安心。所有原始碼均已在 GitHub 上公開，非常歡迎來自社群的意見與貢獻。"
             }
         }
     },

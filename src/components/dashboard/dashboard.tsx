@@ -15,7 +15,7 @@ const GroupChat = lazyWithRetry(() => import('../groupchat/group-chat'));
 const NewNote = lazyWithRetry(() => import('../newnote/new-note'));
 const MyNotes = lazyWithRetry(() => import('../mynotes/my-notes'));
 const Profile = lazyWithRetry(() => import('../profile/profile'));
-const Donate = lazyWithRetry(() => import('../donate/donate'));
+const DeveloperStory = lazyWithRetry(() => import('../developerstory/developer-story'));
 const DashboardModals = lazyWithRetry(() => import('./components/dashboard-modals'));
 const JoinSuccessModal = lazyWithRetry(() => import('../joinsuccessmodal/join-success-modal'));
 const MilestoneModal = lazyWithRetry(() => import('../milestone/milestone-modal'));
@@ -328,7 +328,7 @@ const Dashboard = () => {
         )}
         {selectedView === 4 && (
           <Suspense fallback={<DashboardSkeleton />}>
-            <Donate userData={userData} />
+            <DeveloperStory userData={userData} />
           </Suspense>
         )}
         {selectedView !== 2 && <Footer />}

@@ -216,6 +216,10 @@ export default {
         "openSourceTitle": "Mã nguồn mở",
         "openSourceDesc": "Scripture Habit là một dự án mã nguồn mở. Mã nguồn được công khai trên GitHub, chúng tôi luôn hoan nghênh các ý kiến đóng góp, báo cáo lỗi qua Issues và các đóng góp qua Pull Requests.",
         "githubRepo": "Kho lưu trữ GitHub",
+        "redditCommunity": "Cộng đồng Reddit",
+        "isaiahTitle": "Nghiên cứu cá nhân về Ê-sai",
+        "isaiahDesc": "Ghi chú nghiên cứu cá nhân về sách Ê-sai do nhà phát triển duy trì và xuất bản trên GitHub (chỉ bằng tiếng Nhật). Hãy xem để tham khảo nếu bạn quan tâm.",
+        "isaiahBtn": "Ghi chú Ê-sai (GitHub)",
         "supportProject": "Ủng hộ Scripture Habit",
         "githubSponsorsComingSoon": "Ủng hộ Scripture Habit",
         "feedbackTitle": "Ý kiến đóng góp & Liên hệ",
@@ -971,18 +975,22 @@ export default {
             "card2Title": "Phát triển cùng Cộng đồng",
             "card2Desc": "Bất kỳ ai cũng có thể tham gia phát triển thông qua việc đề xuất tính năng, báo lỗi trên Issues hoặc gửi Pull Request trên GitHub.",
             "githubBtn": "Xem trên GitHub",
+            "redditBtn": "Cộng đồng Reddit",
+            "isaiahBtn": "Ghi chú Ê-sai (GitHub)",
             "supportBtn": "Ủng hộ Scripture Habit",
             "sponsorsComingSoon": "Ủng hộ Scripture Habit"
         },
         "seoContent": {
             "faq": {
                 "title": "Câu hỏi thường gặp",
-                "q1": "Làm thế nào để tôi bắt đầu thói quen học dã ký thánh thư?",
-                "a1": "Gây dựng đức tin lẫn nhau là rất quan trọng. Scripture Habit hỗ trợ tạo ra môi trường cho điều đó.",
+                "q1": "Ứng dụng này có miễn phí không?",
+                "a1": "Có, ứng dụng này hoàn toàn miễn phí khi sử dụng.",
                 "q2": "Scripture Habit có phải là ứng dụng chính thức của Giáo hội không?",
                 "a2": "Scripture Habit là một dự án cá nhân nhằm hỗ trợ các thành viên của Giáo Hội Các Thánh Hữu Ngày Sau của Chúa Giê-su Ky Tô và tất cả học viên thánh thư. Đây không phải là ứng dụng chính thức của Giáo hội, nhưng nó được thiết kế để hoạt động liền mạch với Thư viện Phúc âm.",
                 "q3": "Tôi có thể tải ứng dụng này từ các cửa hàng ứng dụng (App Store / Google Play) không?",
-                "a3": "Ứng dụng này được cung cấp dưới dạng PWA (Progressive Web App). Bạn có thể cài đặt bằng cách mở trực tiếp trong trình duyệt và chọn \"Thêm vào màn hình chính\" từ menu."
+                "a3": "Ứng dụng này được cung cấp dưới dạng PWA (Progressive Web App). Bạn có thể cài đặt bằng cách mở trực tiếp trong trình duyệt và chọn \"Thêm vào màn hình chính\" từ menu.",
+                "q4": "Tại sao lại là mã nguồn mở?",
+                "a4": "Để đảm bảo tính minh bạch hoàn toàn và sự an tâm về cách dữ liệu được xử lý cũng như cách ứng dụng hoạt động. Toàn bộ mã nguồn được công khai trên GitHub, và các phản hồi cũng như đóng góp từ cộng đồng luôn được chào đón."
             }
         }
     },

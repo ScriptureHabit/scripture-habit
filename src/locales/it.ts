@@ -216,6 +216,10 @@ export default {
         "openSourceTitle": "Open Source",
         "openSourceDesc": "Scripture Habit è un progetto open-source. Il codice sorgente è disponibile pubblicamente su GitHub; commenti, segnalazioni di bug via Issues e contributi via Pull Request sono i benvenuti.",
         "githubRepo": "Repository GitHub",
+        "redditCommunity": "Community Reddit",
+        "isaiahTitle": "Studio personale di Isaia",
+        "isaiahDesc": "Note di studio personali sul libro di Isaia curate dallo sviluppatore e pubblicate su GitHub (solo in giapponese). Chi è interessato può consultarle come riferimento.",
+        "isaiahBtn": "Note di studio su Isaia (GitHub)",
         "supportProject": "Supporta Scripture Habit",
         "githubSponsorsComingSoon": "Supporta Scripture Habit",
         "feedbackTitle": "Feedback e Contatti",
@@ -997,18 +1001,22 @@ export default {
             "card2Title": "Costruito con la Comunità",
             "card2Desc": "Puoi contribuire allo sviluppo proponendo funzionalità, segnalando bug tramite Issues o inviando Pull Request su GitHub.",
             "githubBtn": "Vedi su GitHub",
+            "redditBtn": "Community Reddit",
+            "isaiahBtn": "Note di studio su Isaia (GitHub)",
             "supportBtn": "Supporta Scripture Habit",
             "sponsorsComingSoon": "Supporta Scripture Habit"
         },
         "seoContent": {
             "faq": {
                 "title": "Domande Frequenti",
-                "q1": "Come posso iniziare l'abitudine di studiare le Scritture?",
-                "a1": "Edificarsi a vicenda è fondamentale. Scripture Habit ti aiuta a creare l'ambiente ideale per farlo.",
+                "q1": "Questa applicazione è gratuita?",
+                "a1": "Sì, questa applicazione è completamente gratuita.",
                 "q2": "Scripture Habit è un'app ufficiale LDS / SUD?",
                 "a2": "Scripture Habit è un progetto personale creato per supportare i membri de La Chiesa di Gesù Cristo dei Santi degli Ultimi Giorni e tutti gli studenti delle Scritture. Non è un'app ufficiale della Chiesa, ma è pensata per integrarsi perfettamente con la Biblioteca Evangelica.",
                 "q3": "Posso scaricarla dagli store (App Store / Google Play)?",
-                "a3": "Questa app è fornita come PWA (Progressive Web App). Puoi installarla aprendola nel tuo browser e selezionando \"Aggiungi alla schermata Home\" dal menu."
+                "a3": "Questa app è fornita come PWA (Progressive Web App). Puoi installarla aprendola nel tuo browser e selezionando \"Aggiungi alla schermata Home\" dal menu.",
+                "q4": "Perché è open source?",
+                "a4": "Per garantire la massima trasparenza e serenità su come vengono gestiti i dati e su come funziona l'applicazione. Tutto il codice sorgente è disponibile pubblicamente su GitHub e feedback e contributi della community sono sempre i benvenuti."
             }
         }
     },

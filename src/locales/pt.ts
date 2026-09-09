@@ -216,6 +216,10 @@ export default {
         "openSourceTitle": "Código Aberto",
         "openSourceDesc": "O Scripture Habit é um projeto de código aberto. O código-fonte está disponível publicamente no GitHub, e agradecemos comentários, relatórios de bugs via Issues e contribuições por meio de Pull Requests.",
         "githubRepo": "Repositório GitHub",
+        "redditCommunity": "Comunidade no Reddit",
+        "isaiahTitle": "Estudo pessoal de Isaías",
+        "isaiahDesc": "Notas de estudo pessoal sobre o livro de Isaías mantidas pelo desenvolvedor e publicadas no GitHub (somente em japonês). Sinta-se à vontade para consultá-las como referência se estiver interessado.",
+        "isaiahBtn": "Notas de Isaías (GitHub)",
         "supportProject": "Apoiar Scripture Habit",
         "githubSponsorsComingSoon": "Apoiar Scripture Habit",
         "feedbackTitle": "Comentários e Contato",
@@ -997,18 +1001,22 @@ export default {
             "card2Title": "Construído com a Comunidade",
             "card2Desc": "Qualquer pessoa pode contribuir com o desenvolvimento por meio de sugestões de recursos, relatórios de bugs em Issues ou Pull Requests no GitHub.",
             "githubBtn": "Ver no GitHub",
+            "redditBtn": "Comunidade no Reddit",
+            "isaiahBtn": "Notas de Isaías (GitHub)",
             "supportBtn": "Apoiar Scripture Habit",
             "sponsorsComingSoon": "Apoiar Scripture Habit"
         },
         "seoContent": {
             "faq": {
                 "title": "Perguntas frequentes",
-                "q1": "Como inicio um hábito de estudo das escrituras?",
-                "a1": "É importante edificar-se uns aos outros. O Scripture Habit apoia a criação de um ambiente para isso.",
+                "q1": "Este aplicativo é gratuito?",
+                "a1": "Sim, este aplicativo é totalmente gratuito para usar.",
                 "q2": "O Scripture Habit é um aplicativo oficial da Igreja?",
                 "a2": "O Scripture Habit é um projeto pessoal destinado a apoiar os membros de A Igreja de Jesus Cristo dos Santos dos Últimos Dias e todos os estudantes das escrituras. Não é um aplicativo oficial da Igreja, mas foi projetado para funcionar perfeitamente com o aplicativo Biblioteca do Evangelho.",
                 "q3": "Posso baixar o aplicativo nas lojas de aplicativos (App Store / Google Play)?",
-                "a3": "Este aplicativo é fornecido como um PWA (Progressive Web App). Você pode instalá-lo abrindo-o diretamente no navegador e selecionando \"Adicionar à tela de início\" no menu."
+                "a3": "Este aplicativo é fornecido como um PWA (Progressive Web App). Você pode instalá-lo abrindo-o diretamente no navegador e selecionando \"Adicionar à tela de início\" no menu.",
+                "q4": "Por que é de código aberto?",
+                "a4": "Para garantir total transparência e tranquilidade sobre como os dados são tratados e como o aplicativo funciona. Todo o código-fonte está publicamente disponível no GitHub, e comentários e contribuições da comunidade são bem-vindos."
             }
         }
     },

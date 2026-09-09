@@ -216,6 +216,10 @@ export default {
         "openSourceTitle": "オープンソースについて",
         "openSourceDesc": "Scripture Habit はオープンソースプロジェクトとして公開しています。ソースコードはGitHubから誰でも確認でき、Issuesでのご意見・不具合報告やPull Requestによる貢献も歓迎しています。",
         "githubRepo": "GitHubリポジトリ",
+        "redditCommunity": "Reddit コミュニティ",
+        "isaiahTitle": "イザヤ書の個人研究",
+        "isaiahDesc": "開発者が個人で進めているイザヤ書の研究ノートをGitHubで公開しています（日本語のみ）。興味のある方は参考程度にご覧ください。",
+        "isaiahBtn": "イザヤ書研究ノート (GitHub)",
         "supportProject": "Scripture Habitを支援する",
         "githubSponsorsComingSoon": "Scripture Habitを支援する",
         "feedbackTitle": "ご意見・ご感想・フィードバック",
@@ -1005,18 +1009,22 @@ export default {
             "card2Title": "コミュニティと共に",
             "card2Desc": "GitHubでの機能提案やバグ報告、Pull Requestなど、どなたでも開発に参加できます。",
             "githubBtn": "GitHubで見る",
+            "redditBtn": "Reddit コミュニティ",
+            "isaiahBtn": "イザヤ書研究ノート (GitHub)",
             "supportBtn": "Scripture Habitを支援する",
             "sponsorsComingSoon": "Scripture Habitを支援する"
         },
         "seoContent": {
             "faq": {
                 "title": "よくあるご質問",
-                "q1": "どうすれば聖典学習を続けられますか？",
-                "a1": "互いに教化し合うことが大切です。Scripture Habitはそのための環境作りをサポートします。",
+                "q1": "このアプリは無料ですか？",
+                "a1": "はい、このアプリは完全に無料でご利用いただけます。",
                 "q2": "このアプリは教会公式のものですか？",
                 "a2": "本アプリは公式ではありませんが、会員や全ての聖典学習者を支えるために個人で開発された非営利のツールです。",
                 "q3": "アプリストア（App Store / Google Play）からダウンロードできますか？",
-                "a3": "このアプリはPWA（Progressive Web App）として提供されています。ブラウザから直接開き、メニューから『ホーム画面に追加』を選択することでダウンロードすることができます。"
+                "a3": "このアプリはPWA（Progressive Web App）として提供されています。ブラウザから直接開き、メニューから『ホーム画面に追加』を選択することでダウンロードすることができます。",
+                "q4": "なぜオープンソースなのですか？",
+                "a4": "データの扱い方や仕組みの透明性を誰でも確認でき、安心して学習を続けていただくためです。ソースコードはすべてGitHub上で公開されており、世界中のコミュニティからの改善提案や貢献も歓迎しています。"
             }
         }
     },

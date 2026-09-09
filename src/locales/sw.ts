@@ -216,6 +216,10 @@ export default {
         "openSourceTitle": "Kuhusu Chanzo Huria (Open Source)",
         "openSourceDesc": "Scripture Habit ni mradi wa chanzo huria. Msimbo unapatikana hadharani kwenye GitHub, na tunakaribisha maoni, ripoti za hitilafu kupitia Issues, na michango kupitia Pull Requests.",
         "githubRepo": "Hifadhi ya GitHub",
+        "redditCommunity": "Jumuiya ya Reddit",
+        "isaiahTitle": "Utafiti binafsi wa Isaya",
+        "isaiahDesc": "Vidokezo vya utafiti wa kibinafsi kuhusu Kitabu cha Isaya vinavyosimamiwa na msanidi programu na kuchapishwa kwenye GitHub (kwa Kijapani pekee). Jisikie huru kuviangalia kama marejeleo ukipenda.",
+        "isaiahBtn": "Vidokezo vya Isaya (GitHub)",
         "supportProject": "Saidia Scripture Habit",
         "githubSponsorsComingSoon": "Saidia Scripture Habit",
         "feedbackTitle": "Maoni na Mawasiliano",
@@ -997,18 +1001,22 @@ export default {
             "card2Title": "Pamoja na Jamii",
             "card2Desc": "Mtu yeyote anaweza kushiriki katika uundaji kupitia mapendekezo ya vipengele, ripoti za hitilafu kwenye Issues, au Pull Requests kwenye GitHub.",
             "githubBtn": "Tazama kwenye GitHub",
+            "redditBtn": "Jumuiya ya Reddit",
+            "isaiahBtn": "Vidokezo vya Isaya (GitHub)",
             "supportBtn": "Saidia Scripture Habit",
             "sponsorsComingSoon": "Saidia Scripture Habit"
         },
         "seoContent": {
             "faq": {
                 "title": "Maswali yanayoulizwa mara kwa mara",
-                "q1": "Ninawezaje kuanza tabia ya kujifunza maandiko?",
-                "a1": "Ni muhimu kujengana mmoja na mwenzake. Scripture Habit inasaidia kuunda mazingira ya kufanya hivyo.",
+                "q1": "Je, programu hii ni ya bure?",
+                "a1": "Ndiyo, programu hii ni bure kabisa kutumia.",
                 "q2": "Je, Scripture Habit ni programu rasmi ya Kanisa?",
                 "a2": "Scripture Habit ni mradi wa kibinafsi uliokusudiwa kusaida washiriki wa Kanisa la Yesu Kristo la Waumini wa Siku za Mwisho na wanafunzi wote wa maandiko. Si programu rasmi ya Kanisa, lakini imeundwa kufanya kazi vizuri na Gospel Library.",
                 "q3": "Je, ninaweza kuipakua kutoka kwenye maduka ya programu (App Store / Google Play)?",
-                "a3": "Programu hii inatolewa kama PWA (Progressive Web App). Unaweza kuipachika kwa kuifungua moja kwa moja kwenye kivinjari chako na kuchagua \"Ongeza kwenye Skrini ya Kwanza\" kutoka kwenye menyu."
+                "a3": "Programu hii inatolewa kama PWA (Progressive Web App). Unaweza kuipachika kwa kuifungua moja kwa moja kwenye kivinjari chako na kuchagua \"Ongeza kwenye Skrini ya Kwanza\" kutoka kwenye menyu.",
+                "q4": "Kwa nini ni chanzo wazi (open source)?",
+                "a4": "Ili kuhakikisha uwazi kamili na amani ya akili kuhusu jinsi data inavyoshughulikiwa na jinsi programu inavyofanya kazi. Nambari zote za chanzo zinapatikana hadharani kwenye GitHub, na maoni pamoja na michango kutoka kwa jamii yanakaribishwa sana."
             }
         }
     },

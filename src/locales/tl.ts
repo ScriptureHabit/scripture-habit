@@ -216,6 +216,10 @@ export default {
         "openSourceTitle": "Tungkol sa Open Source",
         "openSourceDesc": "Ang Scripture Habit ay isang open source project. Ang source code ay bukas para sa lahat sa GitHub, at malugod naming tinatanggap ang mga puna, ulat ng bug sa pamamagitan ng Issues, at mga kontribusyon gamit ang Pull Requests.",
         "githubRepo": "GitHub Repository",
+        "redditCommunity": "Komunidad sa Reddit",
+        "isaiahTitle": "Personal na Pag-aaral sa Isaias",
+        "isaiahDesc": "Mga personal na tala sa pag-aaral sa Aklat ni Isaias na pinapanatili ng developer at inilathala sa GitHub (sa wikang Hapon lamang). Maaari itong tingnan bilang sanggunian kung interesado ka.",
+        "isaiahBtn": "Mga Tala sa Isaias (GitHub)",
         "supportProject": "Suportahan ang Scripture Habit",
         "githubSponsorsComingSoon": "Suportahan ang Scripture Habit",
         "feedbackTitle": "Feedback at Pakikipag-ugnayan",
@@ -997,18 +1001,22 @@ export default {
             "card2Title": "Kasama ang Komunidad",
             "card2Desc": "Maaaring lumahok ang sinuman sa pagpapaunlad sa pamamagitan ng mga mungkahi sa feature, ulat ng bug sa Issues, o Pull Requests sa GitHub.",
             "githubBtn": "Tingnan sa GitHub",
+            "redditBtn": "Komunidad sa Reddit",
+            "isaiahBtn": "Mga Tala sa Isaias (GitHub)",
             "supportBtn": "Suportahan ang Scripture Habit",
             "sponsorsComingSoon": "Suportahan ang Scripture Habit"
         },
         "seoContent": {
             "faq": {
                 "title": "Mga Madalas Itanong",
-                "q1": "Paano ko sisimulan ang gawi sa pag-aaral ng banal na kasulatan?",
-                "a1": "Mahalaga na mapatibay ang isa't isa. Sinusuportahan ng Scripture Habit ang paglikha ng angkop na kapaligiran para doon.",
+                "q1": "Libre ba ang app na ito?",
+                "a1": "Oo, ang app na ito ay ganap na libreng gamitin.",
                 "q2": "Ang Scripture Habit ba ay isang opisyal na app ng Simbahan?",
                 "a2": "Ang Scripture Habit ay isang personal na proyekto na naglalayong suportahan ang mga miyembro ng Ang Simbahan ni Jesucristo ng mga Banal sa mga Huling Araw at ang lahat ng nag-aaral ng banal na kasulatan. Ito ay hindi isang opisyal na app ng Simbahan, ngunit ito ay idinisenyo upang gumana nang maayos kasama ang Gospel Library.",
                 "q3": "Maaari ko ba itong i-download mula sa mga app store (App Store / Google Play)?",
-                "a3": "Ang app na ito ay ibinibigay bilang isang PWA (Progressive Web App). Maaari mo itong i-install sa pamamagitan ng direktang pagbubukas nito sa iyong browser at pagpili ng \"Idagdag sa Home Screen\" mula sa menu."
+                "a3": "Ang app na ito ay ibinibigay bilang isang PWA (Progressive Web App). Maaari mo itong i-install sa pamamagitan ng direktang pagbubukas nito sa iyong browser at pagpili ng \"Idagdag sa Home Screen\" mula sa menu.",
+                "q4": "Bakit ito open source?",
+                "a4": "Upang matiyak ang kumpletong transparency at kapanatagan ng loob sa kung paano pinangangasiwaan ang data at kung paano gumagana ang app. Ang lahat ng source code ay pampublikong makikita sa GitHub, at malugod naming tinatanggap ang feedback at kontribusyon ng komunidad."
             }
         }
     },

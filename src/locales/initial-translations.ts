@@ -62,18 +62,22 @@ export const initialEnTranslations = {
             "card2Title": "Built with Community",
             "card2Desc": "Anyone can contribute to development through feature proposals, bug reports via Issues, or Pull Requests on GitHub.",
             "githubBtn": "View on GitHub",
+            "redditBtn": "Reddit Community",
+            "isaiahBtn": "Isaiah Study Notes (GitHub)",
             "supportBtn": "Support Scripture Habit",
             "sponsorsComingSoon": "Support Scripture Habit"
         },
         "seoContent": {
             "faq": {
                 "title": "Frequently Asked Questions",
-                "q1": "How do I start a scripture study habit?",
-                "a1": "It is important to edify one another. Scripture Habit supports creating the right environment for doing just that.",
+                "q1": "Is this app free?",
+                "a1": "Yes, this app is completely free to use.",
                 "q2": "Is Scripture Habit an official LDS app?",
                 "a2": "Scripture Habit is a personal project intended to support members of The Church of Jesus Christ of Latter-day Saints and all scripture students. It is not an official app of the Church, but it is designed to work seamlessly with the Gospel Library.",
                 "q3": "Can I download it from the app stores (App Store / Google Play)?",
-                "a3": "This app is provided as a PWA (Progressive Web App). You can install it by opening it directly in your browser and selecting \"Add to Home Screen\" from the menu."
+                "a3": "This app is provided as a PWA (Progressive Web App). You can install it by opening it directly in your browser and selecting \"Add to Home Screen\" from the menu.",
+                "q4": "Why is it open source?",
+                "a4": "To ensure complete transparency and peace of mind in how data is handled and how the app works. All source code is publicly available on GitHub, and community feedback and contributions are welcome."
             }
         }
     }

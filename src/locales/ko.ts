@@ -216,6 +216,10 @@ export default {
         "openSourceTitle": "오픈 소스 안내",
         "openSourceDesc": "Scripture Habit은 오픈 소스 프로젝트로 공개되어 있습니다. 소스 코드는 GitHub에서 누구나 확인할 수 있으며, Issues를 통한 의견이나 버그 제보, Pull Request를 통한 기여도 환영합니다.",
         "githubRepo": "GitHub 저장소",
+        "redditCommunity": "Reddit 커뮤니티",
+        "isaiahTitle": "이사야서 개인 연구",
+        "isaiahDesc": "개발자가 개인적으로 진행 중인 이사야서 연구 노트를 GitHub에 공개하고 있습니다(일본어 전용). 관심 있으신 분은 참고용으로 확인해 보세요.",
+        "isaiahBtn": "이사야서 연구 노트 (GitHub)",
         "supportProject": "Scripture Habit 후원하기",
         "githubSponsorsComingSoon": "Scripture Habit 후원하기",
         "feedbackTitle": "의견 및 피드백",
@@ -997,18 +1001,22 @@ export default {
             "card2Title": "커뮤니티와 함께",
             "card2Desc": "GitHub에서의 기능 제안, 버그 신고, Pull Request 등 누구나 개발과 개선에 참여할 수 있습니다.",
             "githubBtn": "GitHub에서 보기",
+            "redditBtn": "Reddit 커뮤니티",
+            "isaiahBtn": "이사야서 연구 노트 (GitHub)",
             "supportBtn": "Scripture Habit 후원하기",
             "sponsorsComingSoon": "Scripture Habit 후원하기"
         },
         "seoContent": {
             "faq": {
                 "title": "자주 묻는 질문",
-                "q1": "경전 공부 습관을 어떻게 시작하나요?",
-                "a1": "서로 덕을 세우는 것이 중요합니다. Scripture Habit은 이를 위한 환경 조성을 지원합니다.",
+                "q1": "이 앱은 무료인가요?",
+                "a1": "네, 이 앱은 완전 무료로 이용하실 수 있습니다.",
                 "q2": "Scripture Habit은 공식 예수 그리스도 후기 성도 교회 앱인가요?",
                 "a2": "Scripture Habit은 예수 그리스도 후기 성도 교회 회원들과 모든 경전 공부를 하는 분들을 지원하기 위한 개인 프로젝트입니다. 교회의 공식 앱은 아니지만 복음 라이브러리와 원활하게 작동하도록 설계되었습니다.",
                 "q3": "앱 스토어(App Store / Google Play)에서 다운로드할 수 있나요?",
-                "a3": "이 앱은 PWA(Progressive Web App)로 제공됩니다. 브라우저에서 직접 열고 메뉴에서 '홈 화면에 추가'를 선택하여 설치할 수 있습니다."
+                "a3": "이 앱은 PWA(Progressive Web App)로 제공됩니다. 브라우저에서 직접 열고 메뉴에서 '홈 화면에 추가'를 선택하여 설치할 수 있습니다.",
+                "q4": "왜 오픈 소스인가요?",
+                "a4": "데이터 처리 방식과 앱 동작의 투명성을 누구나 확인하고 안심하고 사용할 수 있도록 하기 위함입니다. 모든 소스 코드는 GitHub에 공개되어 있으며, 커뮤니티의 피드백과 기여를 언제나 환영합니다."
             }
         }
     },

@@ -7,7 +7,7 @@ import Button from '../button/button';
 import './landing-page.css';
 import Footer from '../footer/footer';
 import { Globe, X, Share2, PlusSquare, LayoutGrid, Rocket, ShieldCheck, Users, LayoutDashboard } from 'lucide-react';
-import { GITHUB_REPO_URL, getStripeDonationUrl } from '../../config';
+import { GITHUB_REPO_URL, REDDIT_COMMUNITY_URL, ISAIAH_REPO_URL } from '../../config';
 
 
 const LandingPage = () => {
@@ -224,7 +224,7 @@ const LandingPage = () => {
                     <div className="faq-container">
                         <h2 className="section-title">{t('landing.seoContent.faq.title')}</h2>
                         <div className="faq-grid">
-                            {[1, 2, 3].map(id => (
+                            {[1, 2, 3, 4].map(id => (
                                 <div key={id} className="faq-item">
                                     <h3 className="faq-q">{t(`landing.seoContent.faq.q${id}`)}</h3>
                                     <p className="faq-a">{t(`landing.seoContent.faq.a${id}`)}</p>
@@ -271,16 +271,69 @@ const LandingPage = () => {
                                 <span>{t('landing.openSource.githubBtn')}</span>
                             </a>
                             <a
-                                href={getStripeDonationUrl(language)}
+                                href={REDDIT_COMMUNITY_URL}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="landing-sponsors-btn"
+                                className="landing-reddit-btn"
                             >
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="#ea4aaa" stroke="#ea4aaa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
-                                    <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="#FF4500" style={{ flexShrink: 0 }}>
+                                    <path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm5.01 4.744c.688 0 1.25.56 1.25 1.249a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 0 1 .042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 0 1 4.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 0 1 .14-.197.35.35 0 0 1 .238-.042l2.906.617a1.214 1.214 0 0 1 1.108-.702zM9.25 12C8.56 12 8 12.56 8 13.25c0 .688.56 1.25 1.25 1.25.69 0 1.25-.56 1.25-1.25C10.5 12.56 9.94 12 9.25 12zm5.5 0c-.69 0-1.25.56-1.25 1.25 0 .688.56 1.25 1.25 1.25.688 0 1.25-.56 1.25-1.25 0-.69-.56-1.25-1.25-1.25zm-5.465 4.412a.458.458 0 0 0-.03.645c.42.476 1.48 1.05 2.745 1.05 1.266 0 2.324-.574 2.745-1.05a.457.457 0 0 0-.03-.645.457.457 0 0 0-.645.03c-.27.306-1.07.728-2.07.728-1 0-1.8-.422-2.07-.728a.457.457 0 0 0-.645-.03z"/>
                                 </svg>
-                                <span>{t('landing.openSource.supportBtn')}</span>
+                                <span>{t('landing.openSource.redditBtn')}</span>
                             </a>
+                        </div>
+                    </div>
+                </section>
+
+                {/* Developer Story & Personal Study Section */}
+                <section className="landing-developer-section">
+                    <div className="landing-developer-container">
+                        <h2 className="section-title">{t('story.title')}</h2>
+                        <p className="landing-developer-subtitle">{t('story.description')}</p>
+
+                        <div className="landing-developer-card">
+                            {/* Profile Header */}
+                            <div className="landing-developer-profile">
+                                <div className="landing-developer-avatar-wrapper">
+                                    <img
+                                        src="/images/profile.webp"
+                                        alt="Developer Profile"
+                                        className="landing-developer-avatar"
+                                    />
+                                </div>
+                                <div className="landing-developer-info">
+                                    <h3 className="landing-developer-name">{t('story.developerName')}</h3>
+                                    <p className="landing-developer-role">{t('story.developerRole')}</p>
+                                </div>
+                            </div>
+
+                            {/* App Background Story */}
+                            <div className="landing-story-content">
+                                <h3 className="landing-story-title">{t('story.appBackground')}</h3>
+                                <div className="landing-story-text">{t('story.backgroundStory')}</div>
+                            </div>
+
+                            <div className="landing-developer-divider"></div>
+
+                            {/* Personal Study (Isaiah) */}
+                            <div className="landing-isaiah-content">
+                                <h3 className="landing-story-title">{t('story.isaiahTitle')}</h3>
+                                <p className="landing-story-text">{t('story.isaiahDesc')}</p>
+                                <div className="landing-isaiah-cta">
+                                    <a
+                                        href={ISAIAH_REPO_URL}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="landing-isaiah-btn"
+                                    >
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                                            <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"></path>
+                                            <path d="M9 18c-4.51 2-5-2-7-2"></path>
+                                        </svg>
+                                        <span>{t('story.isaiahBtn')}</span>
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </section>
