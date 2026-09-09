@@ -39,4 +39,20 @@ describe('StreakCalendar', () => {
     const studiedIndicator = container.querySelector('.studied-indicator');
     expect(studiedIndicator).not.toBeNull();
   });
+
+  it('formats month and year in English when language is "en"', () => {
+    const today = new Date();
+    const englishMonth = today.toLocaleString('en-US', { month: 'long' });
+    render(<StreakCalendar t={mockT} language="en" />);
+    expect(screen.getByText(new RegExp(englishMonth, 'i'))).toBeDefined();
+    expect(screen.getByText('Sun')).toBeDefined();
+    expect(screen.getByText('Mon')).toBeDefined();
+  });
+
+  it('formats month and year in Japanese when language is "ja"', () => {
+    render(<StreakCalendar t={mockT} language="ja" />);
+    expect(screen.getByText(/年.*月/)).toBeDefined();
+    expect(screen.getByText('日')).toBeDefined();
+    expect(screen.getByText('月')).toBeDefined();
+  });
 });

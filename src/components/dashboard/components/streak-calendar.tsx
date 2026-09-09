@@ -1,14 +1,35 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useContext } from 'react';
 import { UilAngleLeft, UilAngleRight } from '@iconscout/react-unicons';
+import { LanguageContext } from '../../../context/language-context';
+import { Language } from '../../../config/languages';
 import './streak-calendar.css';
 
 interface StreakCalendarProps {
   studiedDates?: string[]; // Array of 'YYYY-MM-DD'
   kickDate?: string | null; // 'YYYY-MM-DD'
   t: (key: string) => string;
+  language?: Language | string;
 }
 
-const StreakCalendar = ({ studiedDates = [], kickDate, t }: StreakCalendarProps) => {
+const LANGUAGE_LOCALE_MAP: Record<string, string> = {
+  en: 'en-US',
+  ja: 'ja-JP',
+  pt: 'pt-BR',
+  zho: 'zh-TW',
+  es: 'es-ES',
+  vi: 'vi-VN',
+  th: 'th-TH',
+  ko: 'ko-KR',
+  tl: 'fil-PH',
+  sw: 'sw-KE',
+  it: 'it-IT'
+};
+
+const StreakCalendar = ({ studiedDates = [], kickDate, t, language }: StreakCalendarProps) => {
+  const languageContext = useContext(LanguageContext);
+  const currentLang = language || languageContext?.language || 'en';
+  const locale = LANGUAGE_LOCALE_MAP[currentLang] || currentLang;
+
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
   const calendarData = useMemo(() => {
@@ -57,8 +78,27 @@ const StreakCalendar = ({ studiedDates = [], kickDate, t }: StreakCalendarProps)
     setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1));
   };
 
-  const monthYearLabel = currentMonth.toLocaleString('default', { month: 'long', year: 'numeric' });
-  const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const monthYearLabel = useMemo(() => {
+    try {
+      return currentMonth.toLocaleString(locale, { month: 'long', year: 'numeric' });
+    } catch {
+      return currentMonth.toLocaleString('en-US', { month: 'long', year: 'numeric' });
+    }
+  }, [currentMonth, locale]);
+
+  const weekDays = useMemo(() => {
+    try {
+      const weekdayFormat = ['th', 'sw', 'vi', 'zho'].includes(currentLang) ? 'narrow' : 'short';
+      const formatter = new Intl.DateTimeFormat(locale, { weekday: weekdayFormat, timeZone: 'UTC' });
+      // 2021-08-01 was Sunday (0) through 2021-08-07 Saturday (6)
+      return Array.from({ length: 7 }, (_, i) => {
+        const d = new Date(Date.UTC(2021, 7, 1 + i, 12, 0, 0));
+        return formatter.format(d);
+      });
+    } catch {
+      return ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    }
+  }, [locale, currentLang]);
 
   return (
     <div className="streak-calendar-container">

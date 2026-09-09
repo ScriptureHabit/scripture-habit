@@ -333,6 +333,7 @@ const DashboardOverview = ({
         studiedDates={userData.studiedDates} 
         kickDate={kickDate}
         t={t} 
+        language={language}
       />
     </div>
   );
