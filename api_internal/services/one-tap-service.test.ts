@@ -39,6 +39,7 @@ vi.mock('../lib/notifications.js', () => ({
 
 import { OneTapService, VALID_THEMES } from './one-tap-service.js';
 import { AppError } from '../lib/errors.js';
+import { formatDateInTimeZone } from '../../src/utils/time-utils.js';
 
 describe('OneTapService', () => {
     beforeEach(() => {
@@ -58,11 +59,8 @@ describe('OneTapService', () => {
     });
 
     it('rejects study if already completed today with CONFLICT error', async () => {
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, '0');
-        const day = String(now.getDate()).padStart(2, '0');
-        const todayStr = `${year}-${month}-${day}`;
+        const tz = 'Asia/Tokyo';
+        const todayStr = formatDateInTimeZone(new Date(), tz);
 
         mockCollection.mockImplementation(() => ({
             doc: vi.fn().mockReturnValue({ id: 'user-completed' })
