@@ -197,41 +197,6 @@ describe('Group Management & Lifecycle Integration', () => {
             const snap2 = await db.collection('groups').doc(gid).get();
             expect(snap2.data()?.unityPercentage).toBe(100);
         });
-
-        it('should allow creating a group with isFamilySyncEnabled: true and reject a second family group', async () => {
-            const uid = 'family-creator-' + Date.now();
-            await db.collection('users').doc(uid).set({
-                uid,
-                nickname: 'Family Creator',
-                groupIds: []
-            });
-            createdUserUids.push(uid);
-
-            setup.mockAuth(uid);
-
-            // 1. First family group creation -> SUCCESS
-            const res1 = await fetch(`${setup.baseUrl}/api/groups/create-group`, {
-                method: 'POST',
-                headers: { 'Authorization': 'Bearer token', 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: 'Family Group 1', isFamilySyncEnabled: true })
-            });
-            const data1 = await res1.json();
-            expect(res1.status).toBe(200);
-            expect(data1.groupId).toBeDefined();
-            createdGroupIds.push(data1.groupId);
-
-            const groupSnap1 = await db.collection('groups').doc(data1.groupId).get();
-            expect(groupSnap1.data()?.isFamilySyncEnabled).toBe(true);
-
-            // 2. Second family group creation for same user -> REJECT with familyTheme.alreadyEnabledInOtherGroup
-            const res2 = await fetch(`${setup.baseUrl}/api/groups/create-group`, {
-                method: 'POST',
-                headers: { 'Authorization': 'Bearer token', 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: 'Family Group 2', isFamilySyncEnabled: true })
-            });
-            const data2 = await res2.json();
-            expect(res2.status).toBe(400);
-            expect(data2.error).toContain('familyTheme.alreadyEnabledInOtherGroup');
-        });
     });
 });
+

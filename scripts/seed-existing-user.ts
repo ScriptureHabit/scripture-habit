@@ -77,16 +77,6 @@ async function seedExistingUser() {
             highestStreak: 2,
             totalNotes: 2,
             language: 'en'
-        },
-        {
-            uid: 'seeder-partner',
-            email: 'partner@example.com',
-            nickname: 'Partner 🌸',
-            photoURL: 'https://api.dicebear.com/7.x/bottts/svg?seed=Partner',
-            streakCount: 6,
-            highestStreak: 6,
-            totalNotes: 6,
-            language: 'ja'
         }
     ];
 
@@ -94,13 +84,9 @@ async function seedExistingUser() {
     const dailyGroupName = 'Daily Bread 📖';
     const dailyInviteCode = 'BREAD123';
 
-    const familyGroupId = 'seed-group-together-in-faith';
-    const familyGroupName = 'Together in Faith 🌿';
-    const familyInviteCode = 'FAITH777';
-
     // 1. Delete existing seed users from Auth and Firestore to keep seeding idempotent
     console.log('🧹 Purging old seed users for idempotency...');
-    const usersToClean = [...users.map(u => u.uid), 'seeder-demo-user', 'seeder-dev-user', 'seeder-mary'];
+    const usersToClean = ['seeder-partner', ...users.map(u => u.uid), 'seeder-demo-user', 'seeder-dev-user', 'seeder-mary'];
     for (const uid of usersToClean) {
         try {
             await auth.deleteUser(uid);
@@ -115,7 +101,7 @@ async function seedExistingUser() {
     }
 
     // Delete groups if exist
-    for (const gid of [dailyGroupId, familyGroupId, 'seed-group-family']) {
+    for (const gid of [dailyGroupId, 'seed-group-together-in-faith', 'seed-group-family']) {
         try {
             await db.recursiveDelete(db.collection('groups').doc(gid));
             console.log(`🧹 Purged existing seed group: ${gid}`);
@@ -143,7 +129,7 @@ async function seedExistingUser() {
             emailVerified: true
         });
 
-        const studiedDates = (u.uid === 'seeder-existing-user' || u.uid === 'seeder-partner')
+        const studiedDates = u.uid === 'seeder-existing-user'
             ? [getDateStr(6), getDateStr(5), getDateStr(4), getDateStr(3), getDateStr(2), getDateStr(1)]
             : u.uid === 'seeder-alice'
                 ? [getDateStr(5), getDateStr(4), getDateStr(3), getDateStr(2), getDateStr(1)]
@@ -151,23 +137,12 @@ async function seedExistingUser() {
                     ? [getDateStr(3), getDateStr(2), getDateStr(1)]
                     : [];
 
-        const isExistingUser = u.uid === 'seeder-existing-user';
-        const isPartner = u.uid === 'seeder-partner';
-
-        const userGroupIds = isExistingUser
-            ? [dailyGroupId, familyGroupId]
-            : isPartner
-                ? [familyGroupId]
-                : [dailyGroupId];
-
-        const primaryGroupId = (isExistingUser || isPartner) ? familyGroupId : dailyGroupId;
-
         const userDocData: Record<string, unknown> = {
             uid: u.uid,
             nickname: u.nickname,
             photoURL: u.photoURL,
-            groupIds: userGroupIds,
-            groupId: primaryGroupId,
+            groupIds: [dailyGroupId],
+            groupId: dailyGroupId,
             streakCount: u.streakCount,
             highestStreak: u.highestStreak,
             daysStudiedCount: u.streakCount,
@@ -321,7 +296,6 @@ async function seedExistingUser() {
         members: dailyUids,
         membersCount: dailyUids.length,
         isPublic: true,
-        isFamilySyncEnabled: false,
         ownerUserId: 'seeder-alice',
         messageCount: 8,
         lastMessageAt: now,
@@ -500,101 +474,6 @@ async function seedExistingUser() {
         messages: dailyMessageDocs.slice(-5).reverse()
     });
 
-    // 5. Create Couple Group Document ("Together in Faith 🌿")
-    console.log(`📦 Seeding couple group: "${familyGroupName}" (Family Sync Enabled)...`);
-    const familyUids = ['seeder-existing-user', 'seeder-partner'];
-    const familyUsers = users.filter(u => familyUids.includes(u.uid));
-    const todayStr = new Date().toLocaleDateString('sv-SE');
-
-    const familyJoinedAtMap: Record<string, Timestamp> = {
-        'seeder-existing-user': threeDaysAgo,
-        'seeder-partner': threeDaysAgo
-    };
-    const familyMemberLastActiveMap: Record<string, Timestamp> = {
-        'seeder-existing-user': now,
-        'seeder-partner': now
-    };
-
-    await db.collection('groups').doc(familyGroupId).set({
-        name: familyGroupName,
-        inviteCode: familyInviteCode,
-        inviteCodeExpiresAt: admin.firestore.Timestamp.fromMillis(Date.now() + 30 * 24 * 60 * 60 * 1000),
-        members: familyUids,
-        membersCount: 2,
-        isPublic: false,
-        isFamilySyncEnabled: true,
-        familyThemeSession: {
-            date: todayStr,
-            selections: {
-                'seeder-partner': 'charity' // Partner 🌸 has already selected charity!
-            }
-        },
-        ownerUserId: 'seeder-existing-user',
-        messageCount: 2,
-        lastMessageAt: now,
-        lastMessageText: '今日も一緒に聖典を読もうね！📖🌸',
-        lastMessageByNickname: 'Partner 🌸',
-        lastMessageByUid: 'seeder-partner',
-        dailyActivity: {
-            activeMembers: [],
-            date: todayStr
-        },
-        memberPreviews: familyUsers.map(u => ({ uid: u.uid, nickname: u.nickname })),
-        memberJoinedAt: familyJoinedAtMap,
-        memberLastActive: familyMemberLastActiveMap,
-        memberKickThresholds: {
-            'seeder-existing-user': 3,
-            'seeder-partner': 3
-        },
-        timeZone: 'Asia/Tokyo'
-    });
-
-    // 6. Seed Couple Group Subcollections: Members & Messages
-    console.log('📥 Seeding couple group subcollections (members & messages)...');
-    for (const u of familyUsers) {
-        await db.collection('groups').doc(familyGroupId).collection('members').doc(u.uid).set({
-            uid: u.uid,
-            nickname: u.nickname,
-            photoURL: u.photoURL,
-            joinedAt: familyJoinedAtMap[u.uid] || now,
-            lastActive: familyMemberLastActiveMap[u.uid] || now,
-            kickThreshold: 3,
-            status: 'active'
-        });
-    }
-
-    const familyMessages = [
-        {
-            id: 'msg-fam-1',
-            text: '夫婦で一緒に聖典学習を習慣にしていこう！🌿✨',
-            senderId: 'seeder-existing-user',
-            senderNickname: 'existing-user',
-            userPhotoURL: 'https://api.dicebear.com/7.x/bottts/svg?seed=existing-user',
-            createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 2 * 24 * 60 * 60 * 1000),
-            isNote: false
-        },
-        {
-            id: 'msg-fam-2',
-            text: '今日も一緒に聖典を読もうね！📖🌸',
-            senderId: 'seeder-partner',
-            senderNickname: 'Partner 🌸',
-            userPhotoURL: 'https://api.dicebear.com/7.x/bottts/svg?seed=Partner',
-            createdAt: admin.firestore.Timestamp.fromMillis(Date.now() - 3 * 60 * 60 * 1000),
-            isNote: false
-        }
-    ];
-
-    const familyMessageDocs: Record<string, unknown>[] = [];
-    for (const m of familyMessages) {
-        await db.collection('groups').doc(familyGroupId).collection('messages').doc(m.id).set(m);
-        familyMessageDocs.push(m);
-    }
-
-    await db.collection('groups').doc(familyGroupId).collection('messages_latest').doc('latest').set({
-        groupId: familyGroupId,
-        messages: familyMessageDocs.slice(-5).reverse()
-    });
-
     console.log('\n==================================================');
     console.log('👥 [Existing User] Test environment setup complete');
     console.log('--------------------------------------------------');
@@ -602,9 +481,8 @@ async function seedExistingUser() {
     console.log('   Email:    existing-user@example.com');
     console.log('   Password: password123');
     console.log('   Nickname: existing-user');
-    console.log('📖 Group 1:  Daily Bread 📖 (Member)');
-    console.log('💑 Group 2:  Together in Faith 🌿 (Family Sync Enabled)');
-    console.log('🌸 Partner:  Partner 🌸 (Waiting with theme: "charity" / 慈愛)');
+    console.log('📖 Group:    Daily Bread 📖 (Member)');
+    console.log('⚡ One-Tap:  Enabled on Dashboard');
     console.log('==================================================\n');
 }
 

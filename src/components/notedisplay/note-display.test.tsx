@@ -201,68 +201,69 @@ describe('note-display', () => {
             t: (key: string, replacements?: Record<string, string | number>) => {
                 if (key === 'noteLabels.scripture') return 'カテゴリ';
                 if (key === 'noteLabels.comment') return 'コメント';
-                if (key === 'familyTheme.categoryFamilyStudy') return '家族学習';
-                if (key === 'familyTheme.themeLabel') return 'テーマ';
-                if (key === 'familyTheme.themes.charity') return '慈愛';
-                if (key === 'familyTheme.familyStudyNoteBody') return `家族といっしょに「${replacements?.theme}」について話し合い、聖典を学びました。`;
+                if (key === 'oneTapStudy.categoryOneTap') return 'ワンタップ';
+                if (key === 'oneTapStudy.themeLabel') return 'テーマ';
+                if (key === 'oneTapStudy.themes.charity') return '慈愛';
+                if (key === 'oneTapStudy.noteBody') return `今日は${replacements?.theme}について学びを深めることができました。`;
                 return key;
             },
             translateChapterField: (val?: string | null) => val || '',
         });
 
-        const text = `**カテゴリ:** 家族学習\n**テーマ:** 慈愛\n\n**コメント:**\n家族といっしょに「慈愛」について話し合い、聖典を学びました。`;
+        const text = `**カテゴリ:** ワンタップ\n**テーマ:** 慈愛\n\n**コメント:**\n今日は慈愛について学びを深めることができました。`;
         render(
             <NoteDisplay
                 text={text}
                 isSent={false}
-                scripture="familyStudy"
+                scripture="oneTap"
                 chapter="charity"
             />
         );
 
         const markdown = screen.getByTestId('markdown').textContent || '';
         expect(markdown).toContain('カテゴリ:');
-        expect(markdown).toContain('家族学習');
+        expect(markdown).toContain('ワンタップ');
         expect(markdown).toContain('テーマ:');
         expect(markdown).toContain('慈愛');
         expect(markdown).toContain('コメント:');
-        expect(markdown).toContain('家族といっしょに「慈愛」について話し合い、聖典を学びました。');
+        expect(markdown).toContain('今日は慈愛について学びを深めることができました。');
     });
 
-    it('translates family study note properly when viewed in English', () => {
+    it('translates one-tap study note properly when viewed in English', () => {
         mockUseLanguage.mockReturnValue({
             ...mockLanguageContext,
             language: 'en',
             t: (key: string, replacements?: Record<string, string | number>) => {
                 if (key === 'noteLabels.scripture') return 'Category';
                 if (key === 'noteLabels.comment') return 'Comment';
-                if (key === 'familyTheme.categoryFamilyStudy') return 'Family Study';
-                if (key === 'familyTheme.themeLabel') return 'Theme';
-                if (key === 'familyTheme.themes.charity') return 'Charity';
-                if (key === 'familyTheme.familyStudyNoteBody') return `We discussed "${replacements?.theme}" together as a family and studied the scriptures.`;
+                if (key === 'oneTapStudy.categoryOneTap') return 'One-Tap';
+                if (key === 'oneTapStudy.themeLabel') return 'Theme';
+                if (key === 'oneTapStudy.themes.charity') return 'Charity';
+                if (key === 'oneTapStudy.noteBody') return `Today I was able to deepen my learning about ${replacements?.theme}.`;
                 return key;
             },
             translateChapterField: (val?: string | null) => val || '',
         });
 
-        const text = `**カテゴリ:** 家族学習\n**テーマ:** 慈愛\n\n**コメント:**\n家族といっしょに「慈愛」について話し合い、聖典を学びました。`;
+        const text = `**カテゴリ:** ワンタップ\n**テーマ:** 慈愛\n\n**コメント:**\n今日は慈愛について学びを深めることができました。`;
         render(
             <NoteDisplay
                 text={text}
                 isSent={false}
-                scripture="familyStudy"
+                scripture="oneTap"
                 chapter="charity"
             />
         );
 
         const markdown = screen.getByTestId('markdown').textContent || '';
         expect(markdown).toContain('Category:');
-        expect(markdown).toContain('Family Study');
+        expect(markdown).toContain('One-Tap');
         expect(markdown).toContain('Theme:');
         expect(markdown).toContain('Charity');
         expect(markdown).toContain('Comment:');
-        expect(markdown).toContain('We discussed "Charity" together as a family and studied the scriptures.');
+        expect(markdown).toContain('Today I was able to deepen my learning about Charity.');
     });
 });
+
 
 

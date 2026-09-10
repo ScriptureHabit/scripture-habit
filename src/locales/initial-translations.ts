@@ -13,8 +13,35 @@ export const initialEnTranslations = {
         "dashboard": "Dashboard"
     },
     "dashboard": {
-        "title": "Dashboard"
+        "title": "Dashboard",
+        "modeNote": "Note Mode",
+        "modeOneTap": "One-Tap"
     },
+    "oneTapStudy": {
+        "modeNote": "Create Note",
+        "modeOneTap": "One-Tap",
+        "selectThemePrompt": "Select a theme to record today's study",
+        "completedToday": "Today's Study Theme: 【{theme}】",
+        "successMessage": "Today's study completed! 【{theme}】",
+        "errorMessage": "Failed to record study. Please try again.",
+        "categoryOneTap": "One-Tap",
+        "categoryThemeStudy": "One-Tap",
+        "themeLabel": "Theme",
+        "noteCardTitle": "One-Tap Study",
+        "noteCardTheme": "Theme: {theme}",
+        "noteBody": "Today I was able to deepen my learning about {theme}.",
+        "themes": {
+            "faith": "Faith",
+            "hope": "Hope",
+            "charity": "Charity",
+            "gratitude": "Gratitude",
+            "prayer": "Prayer",
+            "patience": "Patience",
+            "repentance": "Repentance",
+            "guidance": "Spirit's Guidance"
+        }
+    },
+
     "landing": {
         "hero": {
             "title": "Scripture Habit",

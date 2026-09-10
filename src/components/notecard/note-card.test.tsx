@@ -11,9 +11,10 @@ vi.mock('../../hooks/use-language', () => ({
                 'myNotes.readStudyMaterial': '学習資料を読む',
                 'myNotes.readInGospelLibrary': '福音ライブラリーで読む',
                 'myNotes.goToByuSpeech': 'BYUスピーチへ',
-                'familyTheme.categoryFamilyStudy': '家族学習',
-                'familyTheme.themeLabel': 'テーマ',
+                'oneTapStudy.categoryOneTap': 'ワンタップ',
+                'oneTapStudy.themeLabel': 'テーマ',
                 'noteLabels.scripture': 'カテゴリ',
+
                 'noteLabels.chapter': 'テーマ',
                 'noteLabels.comment': 'コメント',
             };

@@ -15,13 +15,15 @@ export interface LocaleDefinition {
         comment?: string;
         [key: string]: unknown;
     };
-    familyTheme?: {
-        categoryFamilyStudy?: string;
+    oneTapStudy?: {
+        categoryOneTap?: string;
         themeLabel?: string;
+        noteBody?: string;
         themes?: Record<string, string>;
     };
     books?: Record<string, string>;
 }
+
 
 export const LOCALES_BY_CODE: Record<string, LocaleDefinition> = {
     "en": {
@@ -147,9 +149,10 @@ export const LOCALES_BY_CODE: Record<string, LocaleDefinition> = {
             "none": "none"
         },
         "groupChat": {},
-        "familyTheme": {
-            "categoryFamilyStudy": "Family Study",
+        "oneTapStudy": {
+            "categoryOneTap": "One-Tap",
             "themeLabel": "Theme",
+            "noteBody": "Today I was able to deepen my learning about {theme}.",
             "themes": {
                 "faith": "Faith",
                 "hope": "Hope",
@@ -158,7 +161,7 @@ export const LOCALES_BY_CODE: Record<string, LocaleDefinition> = {
                 "prayer": "Prayer",
                 "patience": "Patience",
                 "repentance": "Repentance",
-                "guidance": "Spirit Guidance"
+                "guidance": "Spirit's Guidance"
             }
         }
     },
@@ -285,9 +288,10 @@ export const LOCALES_BY_CODE: Record<string, LocaleDefinition> = {
             "none": "なし"
         },
         "groupChat": {},
-        "familyTheme": {
-            "categoryFamilyStudy": "家族学習",
+        "oneTapStudy": {
+            "categoryOneTap": "ワンタップ",
             "themeLabel": "テーマ",
+            "noteBody": "今日は{theme}について学びを深めることができました。",
             "themes": {
                 "faith": "信仰",
                 "hope": "希望",
@@ -423,9 +427,10 @@ export const LOCALES_BY_CODE: Record<string, LocaleDefinition> = {
             "none": "nenhum"
         },
         "groupChat": {},
-        "familyTheme": {
-            "categoryFamilyStudy": "Estudo familiar",
+        "oneTapStudy": {
+            "categoryOneTap": "Um Toque",
             "themeLabel": "Tema",
+            "noteBody": "Hoje aprofundei meu aprendizado sobre {theme}.",
             "themes": {
                 "faith": "Fé",
                 "hope": "Esperança",
@@ -561,9 +566,10 @@ export const LOCALES_BY_CODE: Record<string, LocaleDefinition> = {
             "none": "無"
         },
         "groupChat": {},
-        "familyTheme": {
-            "categoryFamilyStudy": "家庭研讀",
+        "oneTapStudy": {
+            "categoryOneTap": "單擊記錄",
             "themeLabel": "主題",
+            "noteBody": "今天我加深了對{theme}的學習。",
             "themes": {
                 "faith": "信心",
                 "hope": "盼望",
@@ -699,9 +705,10 @@ export const LOCALES_BY_CODE: Record<string, LocaleDefinition> = {
             "none": "ninguno"
         },
         "groupChat": {},
-        "familyTheme": {
-            "categoryFamilyStudy": "Estudio familiar",
+        "oneTapStudy": {
+            "categoryOneTap": "Un Toque",
             "themeLabel": "Tema",
+            "noteBody": "Hoy profundicé mi aprendizaje sobre {theme}.",
             "themes": {
                 "faith": "Fe",
                 "hope": "Esperanza",
@@ -837,9 +844,10 @@ export const LOCALES_BY_CODE: Record<string, LocaleDefinition> = {
             "none": "không có"
         },
         "groupChat": {},
-        "familyTheme": {
-            "categoryFamilyStudy": "Học tập gia đình",
+        "oneTapStudy": {
+            "categoryOneTap": "Một Chạm",
             "themeLabel": "Chủ đề",
+            "noteBody": "Hôm nay tôi đã hiểu sâu hơn về {theme}.",
             "themes": {
                 "faith": "Đức tin",
                 "hope": "Hy vọng",
@@ -975,9 +983,10 @@ export const LOCALES_BY_CODE: Record<string, LocaleDefinition> = {
             "none": "ไม่มี"
         },
         "groupChat": {},
-        "familyTheme": {
-            "categoryFamilyStudy": "การศึกษาของครอบครัว",
+        "oneTapStudy": {
+            "categoryOneTap": "วันแท็ป",
             "themeLabel": "หัวข้อ",
+            "noteBody": "วันนี้ฉันได้เรียนรู้เพิ่มเติมเกี่ยวกับ {theme}",
             "themes": {
                 "faith": "ศรัทธา",
                 "hope": "ความหวัง",
@@ -1113,9 +1122,10 @@ export const LOCALES_BY_CODE: Record<string, LocaleDefinition> = {
             "none": "없음"
         },
         "groupChat": {},
-        "familyTheme": {
-            "categoryFamilyStudy": "가족 학습",
+        "oneTapStudy": {
+            "categoryOneTap": "원터치",
             "themeLabel": "주제",
+            "noteBody": "오늘은 {theme}에 대해 배움을 넓힐 수 있었습니다.",
             "themes": {
                 "faith": "신앙",
                 "hope": "희망",
@@ -1251,9 +1261,10 @@ export const LOCALES_BY_CODE: Record<string, LocaleDefinition> = {
             "none": "wala"
         },
         "groupChat": {},
-        "familyTheme": {
-            "categoryFamilyStudy": "Pag-aaral ng Pamilya",
-            "themeLabel": "Tema",
+        "oneTapStudy": {
+            "categoryOneTap": "Isang Pindot",
+            "themeLabel": "Paksa",
+            "noteBody": "Ngayong araw ay napalalim ko ang aking pag-aaral tungkol sa {theme}.",
             "themes": {
                 "faith": "Pananampalataya",
                 "hope": "Pag-asa",
@@ -1389,9 +1400,10 @@ export const LOCALES_BY_CODE: Record<string, LocaleDefinition> = {
             "none": "hakuna"
         },
         "groupChat": {},
-        "familyTheme": {
-            "categoryFamilyStudy": "Mafunzo ya Familia",
+        "oneTapStudy": {
+            "categoryOneTap": "Mguso Mmoja",
             "themeLabel": "Mada",
+            "noteBody": "Leo nimeweza kukuza mafunzo yangu kuhusu {theme}.",
             "themes": {
                 "faith": "Imani",
                 "hope": "Tumaini",
@@ -1527,9 +1539,10 @@ export const LOCALES_BY_CODE: Record<string, LocaleDefinition> = {
             "none": "nessuno"
         },
         "groupChat": {},
-        "familyTheme": {
-            "categoryFamilyStudy": "Studio familiare",
+        "oneTapStudy": {
+            "categoryOneTap": "Un Tocco",
             "themeLabel": "Tema",
+            "noteBody": "Oggi ho approfondito il mio studio su {theme}.",
             "themes": {
                 "faith": "Fede",
                 "hope": "Speranza",

@@ -4,8 +4,8 @@ import { Message } from '../../../types/chat';
 import { ReactionPreview } from '../../../../types/firestore';
 import SystemMessage from './system-message';
 import GospelLink from './gospel-link';
-import FamilyStudyNoteCard from './family-study-note-card';
 import {
+
   useChatData,
   useChatMessageActions,
   useChatGroupActions,
@@ -181,8 +181,8 @@ const MessageItem = memo(({
                     text={rawText}
                     isSent={isMe}
                     translatedText={translatedText}
-                    scripture={msg.scripture || (msg.messageType === 'familyStudyNote' ? 'familyStudy' : undefined)}
-                    chapter={msg.chapter || (msg.messageType === 'familyStudyNote' ? (msg.messageData?.themeId ? String(msg.messageData.themeId) : undefined) : undefined)}
+                    scripture={msg.scripture}
+                    chapter={msg.chapter}
                     isTranslating={isTranslating}
                     onRetranslate={() => handleTranslateMessage(msg, true)}
                   />
@@ -195,15 +195,9 @@ const MessageItem = memo(({
                     t={t}
                   />
                 </div>
-              ) : msg.messageType === 'familyStudyNote' ? (
-                <FamilyStudyNoteCard
-                  themeId={msg.messageData?.themeId != null ? String(msg.messageData.themeId) : undefined}
-                  themeName={msg.messageData?.themeName != null ? String(msg.messageData.themeName) : undefined}
-                  isSent={isMe}
-                  t={t}
-                />
               ) : null}
             </div>
+
           </div>
           {!isMe && (
             <span className="message-time received">

@@ -48,10 +48,9 @@ export const MessageTypeEnumValues = [
   'userLeft', 
   'userKicked',
   'unityAnnouncement',
-  'inactivityRemoval',
-  'familyThemeCompleted',
-  'familyStudyNote'
+  'inactivityRemoval'
 ] as const;
+
 
 const MessageTypeSchema = z.enum(MessageTypeEnumValues).catch('text'); // Unknown types fall back to 'text' to prevent listener crashes
 

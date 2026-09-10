@@ -85,22 +85,12 @@ const SystemMessage = ({ msg, t, kickThreshold = DEFAULT_KICK_THRESHOLD }: Syste
       return t('groupChat.unityAnnouncement');
     }
 
-    if (msg.messageType === 'familyThemeCompleted') {
-      const themeId = msg.messageData?.themeId;
-      const themeName = themeId ? t(`familyTheme.themes.${themeId}`) : String(msg.messageData?.themeName || '');
-      if (msg.messageData?.userId) {
-        const nickname = displayNickname || String(msg.messageData?.nickname || '');
-        return t('familyTheme.chatMessageOther', { nickname, theme: themeName });
-      }
-      return t('familyTheme.chatMessageFamily', { theme: themeName });
-    }
-
     // 2. Legacy fallback for old unstructured messages (display stored text directly)
     return text;
   };
 
   return (
-    <div id={`message-${msg.id}`} className={`message system-message ${msg.messageType === 'streakAnnouncement' ? 'streak-announcement' : ''} ${msg.messageType === 'notePostedAnnouncement' || msg.messageType === 'aiNotePostedAnnouncement' ? 'note-posted-announcement' : ''} ${msg.messageType === 'unityAnnouncement' ? 'unity-announcement' : ''} ${msg.messageType === 'familyThemeCompleted' ? 'family-theme-announcement' : ''}`}>
+    <div id={`message-${msg.id}`} className={`message system-message ${msg.messageType === 'streakAnnouncement' ? 'streak-announcement' : ''} ${msg.messageType === 'notePostedAnnouncement' || msg.messageType === 'aiNotePostedAnnouncement' ? 'note-posted-announcement' : ''} ${msg.messageType === 'unityAnnouncement' ? 'unity-announcement' : ''}`}>
       <div className="message-content">
         {msg.messageType === 'unityAnnouncement' && (
           <div className="unity-announcement-body">
@@ -113,6 +103,7 @@ const SystemMessage = ({ msg, t, kickThreshold = DEFAULT_KICK_THRESHOLD }: Syste
       </div>
     </div>
   );
+
 };
 
 export default SystemMessage;

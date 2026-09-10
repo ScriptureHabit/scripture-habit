@@ -41,23 +41,24 @@ for (const locale of ALL_LOCALES) {
     }
 }
 
-const FAMILY_STUDY_NAMES = new Set<string>([
-    'familystudy', 'family study', 'family_study', 'family-study',
-    '家族学習', '가족 학습', '家庭研讀', 'estudio familiar', 'estudo familiar',
-    'studio familiare', 'pag-aaral ng pamilya', 'การศึกษาของครอบครัว', 'học tập gia đình', 'mafunzo ya familia',
-    ...ALL_LOCALES.map(l => l.familyTheme?.categoryFamilyStudy?.toLowerCase().trim()).filter((v): v is string => Boolean(v))
+const ONE_TAP_STUDY_NAMES = new Set<string>([
+    'onetap', 'one tap', 'one-tap', 'one_tap',
+    'themestudy', 'theme study', 'theme_study', 'theme-study',
+    ...ALL_LOCALES.map(l => l.oneTapStudy?.categoryOneTap?.toLowerCase().trim()).filter((v): v is string => Boolean(v))
 ]);
 
-export const isFamilyStudyCategory = (scriptureName?: string | null): boolean => {
+export const isOneTapCategory = (scriptureName?: string | null): boolean => {
     if (!scriptureName) return false;
     const lower = scriptureName.toLowerCase().trim();
-    return FAMILY_STUDY_NAMES.has(lower);
+    return ONE_TAP_STUDY_NAMES.has(lower);
 };
+
+export const isFamilyStudyCategory = isOneTapCategory;
 
 const THEME_NAME_TO_ID: Record<string, string> = {};
 
 for (const locale of ALL_LOCALES) {
-    const themes = locale.familyTheme?.themes;
+    const themes = locale.oneTapStudy?.themes;
     if (themes && typeof themes === 'object') {
         for (const [id, localizedName] of Object.entries(themes)) {
             if (typeof localizedName === 'string' && localizedName.trim().length > 0) {
@@ -75,51 +76,58 @@ export const resolveThemeId = (themeNameOrId?: string | null): string => {
     return THEME_NAME_TO_ID[lower] || THEME_NAME_TO_ID[trimmed] || trimmed;
 };
 
-export const isFamilyStudyComment = (comment: string): boolean => {
+/**
+ * Dynamically generated regex patterns from locale dictionaries (ALL_LOCALES) to detect
+ * auto-generated one-tap study boilerplate comments without hardcoded language phrases.
+ */
+const ONE_TAP_COMMENT_PATTERNS: RegExp[] = ALL_LOCALES.map(locale => {
+    const template = locale.oneTapStudy?.noteBody;
+    if (!template || !template.includes('{theme}')) return null;
+    const parts = template
+        .split('{theme}')
+        .map((p: string) => p.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+        .filter(Boolean);
+    return new RegExp(parts.join('.*'), 'i');
+}).filter((re): re is RegExp => re !== null);
+
+export const isOneTapComment = (comment: string): boolean => {
     if (!comment) return true;
     const c = comment.trim();
-    return (
-        c.includes('について話し合い') ||
-        c.includes('together as a family') ||
-        c.includes('이야기 나누고') ||
-        c.includes('與家人一起討論') ||
-        c.includes('en familia sobre') ||
-        c.includes('em família sobre') ||
-        c.includes('in famiglia di') ||
-        c.includes('ng pamilya ang tungkol') ||
-        c.includes('ในครอบครัวเกี่ยวกับ') ||
-        c.includes('gia đình đã cùng nhau') ||
-        c.includes('kama familia kuhusu')
-    );
+    return ONE_TAP_COMMENT_PATTERNS.some(pattern => pattern.test(c));
 };
+
+export const isFamilyStudyComment = isOneTapComment;
+
 
 /**
  * Translates a localized or English scripture category name into current user language using t().
  */
 export const translateScriptureName = (name: string, t: (key: string) => string): string => {
     if (!name) return '';
-    if (isFamilyStudyCategory(name)) {
-        return t('familyTheme.categoryFamilyStudy');
+    if (isOneTapCategory(name)) {
+        return t('oneTapStudy.categoryOneTap') || name;
     }
     const key = SCRIPTURE_NAME_TO_I18N_KEY[name.trim()];
     return key ? t(key) : name;
 };
 
+
 // Sets of keywords for category type detection across all supported languages
 const OTHER_SCRIPTURE_NAMES = new Set<string>([
-    'other', '(other)', 'others', '(others)', 'otro', 'otros', 'outro', 'outros',
-    'その他', '(その他)', '기타', '(기타)', '其他', '(其他)', 'khác', '(khác)',
-    'iba pa', '(iba pa)', 'nyingine', '(nyingine)', 'อื่นๆ', '(อื่นๆ)',
-    ...ALL_LOCALES.map(l => l.scriptures?.other?.toLowerCase().trim()).filter((v): v is string => Boolean(v))
+    'other', '(other)', 'others', '(others)',
+    ...ALL_LOCALES.flatMap(l => {
+        const o = l.scriptures?.other?.toLowerCase().trim();
+        return o ? [o, `(${o})`] : [];
+    })
 ]);
 
 const GENERAL_CONFERENCE_NAMES = new Set<string>([
-    'general conference', 'general', 'conference', 'gc', '総大会', '大会',
+    'general conference', 'general', 'conference', 'gc',
     ...ALL_LOCALES.map(l => l.scriptures?.generalConference?.toLowerCase().trim()).filter((v): v is string => Boolean(v))
 ]);
 
 const BYU_SPEECHES_NAMES = new Set<string>([
-    'byu speeches', 'byu', 'speeches', 'mga talumpati sa byu',
+    'byu speeches', 'byu', 'speeches',
     ...ALL_LOCALES.map(l => l.scriptures?.byuSpeeches?.toLowerCase().trim()).filter((v): v is string => Boolean(v))
 ]);
 

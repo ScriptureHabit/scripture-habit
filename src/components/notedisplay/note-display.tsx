@@ -66,7 +66,7 @@ const NoteDisplay = ({
 
         const scriptureLabel = getNoteLabelFallback('noteLabels.scripture', language, t('noteLabels.scripture') || 'Scripture');
         const chapterLabel = isFamilyStudy
-            ? (t('familyTheme.themeLabel') || 'テーマ')
+            ? (t('oneTapStudy.themeLabel') || getNoteLabelFallback('noteLabels.chapter', language, 'Theme'))
             : getNoteLabelFallback('noteLabels.chapter', language, t('noteLabels.chapter') || 'Chapter');
         
         const scriptureLine = !isPlaceholder 
@@ -80,8 +80,8 @@ const NoteDisplay = ({
         if (showChapter && !isPlaceholderValue(showChapter)) {
             if (isFamilyStudy) {
                 const themeId = resolveThemeId(showChapter);
-                const themeTranslation = t(`familyTheme.themes.${themeId}`);
-                formattedChapter = (themeTranslation && !themeTranslation.startsWith('familyTheme.themes.'))
+                const themeTranslation = t(`oneTapStudy.themes.${themeId}`);
+                formattedChapter = (themeTranslation && !themeTranslation.startsWith('oneTapStudy.themes.'))
                     ? themeTranslation
                     : translateChapterField(showChapter);
             } else {
@@ -97,11 +97,12 @@ const NoteDisplay = ({
 
         let commentText = parsed.comment;
         if (isFamilyStudy && formattedChapter) {
-            const localizedBody = t('familyTheme.familyStudyNoteBody', { theme: formattedChapter });
+            const localizedBody = t('oneTapStudy.noteBody', { theme: formattedChapter });
             if (!commentText || isFamilyStudyComment(commentText)) {
                 commentText = localizedBody;
             }
         }
+
 
         const commentWithLinks = commentText.replace(/(https?:\/\/[^\s]+)/g, (match: string) => {
             const cleanUrl = match.replace(/[.,:;"')\]*_]+$/, '');

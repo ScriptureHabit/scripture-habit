@@ -80,10 +80,6 @@ export interface GroupDocument {
     };
     unityPercentage?: number; // 0-100 percentage for sidebar display
 
-    // Family Sync Mode
-    isFamilySyncEnabled?: boolean;
-    familyThemeSession?: FamilyThemeSession | null;
-
     // Metadata
     createdAt?: FirestoreTimestamp;
     lastInactivityCheckedAt?: FirestoreTimestamp;
@@ -95,16 +91,6 @@ export interface GroupDocument {
     expireAt?: FirestoreTimestamp;
 }
 
-/**
- * Family Theme Session Schema (for synchronous family study check-in)
- */
-export interface FamilyThemeSession {
-    date: string; // YYYY-MM-DD in group's timeZone
-    selections: Record<string, string>; // uid -> themeId
-    matchedTheme?: string | null;
-    completedAt?: FirestoreTimestamp | null;
-    completedBy?: string[]; // uids of members whose match triggered completion
-}
 
 /**
  * Group Member Document Schema (inside /groups/{groupId}/members)
@@ -158,6 +144,8 @@ export interface UserDocument {
     lastPostDate?: string | null;
     highestStreak?: number;
     studiedDates?: string[];
+    todayTheme?: string;
+    todayThemeDate?: string;
 
     // Onboarding/Metadata
     createdAt?: FirestoreTimestamp;

@@ -1,6 +1,3 @@
-import { useState } from 'react';
-import { toast } from 'react-toastify';
-import apiClient from '../../../utils/api-client';
 import { Group } from '../../../types/chat';
 
 interface EditGroupNameModalProps {
@@ -40,37 +37,7 @@ const EditGroupNameModal = ({
     translatedGroupName,
     translatedGroupDesc,
 }: EditGroupNameModalProps) => {
-    const [prevFamilySyncProp, setPrevFamilySyncProp] = useState(groupData?.isFamilySyncEnabled);
-    const [isFamilySyncEnabled, setIsFamilySyncEnabled] = useState(!!groupData?.isFamilySyncEnabled);
-    const [togglingFamilySync, setTogglingFamilySync] = useState(false);
-
-    if (groupData?.isFamilySyncEnabled !== prevFamilySyncProp) {
-        setPrevFamilySyncProp(groupData?.isFamilySyncEnabled);
-        setIsFamilySyncEnabled(!!groupData?.isFamilySyncEnabled);
-    }
-
     if (!showEditNameModal) return null;
-
-    const handleToggleFamilySync = async () => {
-        if (!groupData?.id || togglingFamilySync) return;
-        const nextState = !isFamilySyncEnabled;
-        setTogglingFamilySync(true);
-        try {
-            await apiClient.post(`/api/groups/${groupData.id}/family-theme/toggle`, {
-                enabled: nextState
-            });
-            setIsFamilySyncEnabled(nextState);
-            toast.success(t('common.saved') || 'Saved');
-        } catch (err: unknown) {
-            console.error('Failed to toggle family sync:', err);
-            const resData = (err as { response?: { data?: { error?: string; message?: string } } })?.response?.data;
-            const errObj = err as { message?: string };
-            const msgKey = resData?.error || resData?.message || errObj?.message || 'Failed';
-            toast.error(t(msgKey) || msgKey);
-        } finally {
-            setTogglingFamilySync(false);
-        }
-    };
 
     const displayGroupName = newGroupName?.startsWith('groupChat.') ? t(newGroupName) : newGroupName;
     const displayGroupDesc = newGroupDescription?.startsWith('groupChat.') ? t(newGroupDescription) : newGroupDescription;
@@ -146,97 +113,6 @@ const EditGroupNameModal = ({
                         style={{ minHeight: '80px', resize: 'vertical', padding: '10px' }}
                     />
                 </div>
-
-                {!groupData?.isAiGroup && (
-                    <div className="edit-group-field family-sync-toggle-field" style={{
-                        width: '100%',
-                        textAlign: 'left',
-                        marginTop: '1.2rem',
-                        padding: '14px 16px',
-                        background: isFamilySyncEnabled ? 'rgba(255, 154, 158, 0.12)' : 'rgba(0, 0, 0, 0.03)',
-                        borderRadius: '14px',
-                        border: isFamilySyncEnabled ? '1px solid rgba(255, 154, 158, 0.4)' : '1px solid rgba(0, 0, 0, 0.08)',
-                        transition: 'all 0.2s ease'
-                    }}>
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                <span style={{ fontSize: '1.2rem' }}>👨‍👩‍👧</span>
-                                <strong style={{ fontSize: '0.95rem', color: 'var(--text-color, #2d3748)' }}>
-                                    {t('familyTheme.groupOptionToggle')}
-                                </strong>
-                                <span style={{
-                                    fontSize: '0.72rem',
-                                    fontWeight: 700,
-                                    padding: '2px 8px',
-                                    borderRadius: '10px',
-                                    background: isFamilySyncEnabled ? '#ed64a6' : '#a0aec0',
-                                    color: '#ffffff'
-                                }}>
-                                    {isFamilySyncEnabled ? 'ON' : 'OFF'}
-                                </span>
-                            </div>
-                            <label className="switch" style={{ position: 'relative', display: 'inline-block', width: '44px', height: '24px', flexShrink: 0, marginLeft: '12px' }}>
-                                <input
-                                    type="checkbox"
-                                    checked={isFamilySyncEnabled}
-                                    onChange={handleToggleFamilySync}
-                                    disabled={togglingFamilySync}
-                                    style={{ opacity: 0, width: 0, height: 0 }}
-                                />
-                                <span style={{
-                                    position: 'absolute', cursor: 'pointer', top: 0, left: 0, right: 0, bottom: 0,
-                                    backgroundColor: isFamilySyncEnabled ? '#ed64a6' : '#ccc',
-                                    transition: '.3s', borderRadius: '24px'
-                                }}>
-                                    <span style={{
-                                        position: 'absolute', content: '""', height: '18px', width: '18px', left: isFamilySyncEnabled ? '23px' : '3px', bottom: '3px',
-                                        backgroundColor: 'white', transition: '.3s', borderRadius: '50%'
-                                    }} />
-                                </span>
-                            </label>
-                        </div>
-
-                        <div style={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            gap: '8px',
-                            paddingTop: '10px',
-                            borderTop: '1px solid rgba(0, 0, 0, 0.06)',
-                            fontSize: '0.8rem',
-                            lineHeight: '1.45'
-                        }}>
-                            <div style={{
-                                padding: '8px 10px',
-                                borderRadius: '8px',
-                                background: isFamilySyncEnabled ? 'rgba(237, 100, 166, 0.1)' : 'transparent',
-                                border: isFamilySyncEnabled ? '1px solid rgba(237, 100, 166, 0.25)' : '1px solid transparent',
-                                transition: 'all 0.2s ease'
-                            }}>
-                                <div style={{ fontWeight: 700, color: isFamilySyncEnabled ? '#b83280' : 'var(--text-color, #2d3748)', marginBottom: '2px' }}>
-                                    {isFamilySyncEnabled ? '● ' : '○ '}{t('familyTheme.modeFamilyTitle')}
-                                </div>
-                                <div style={{ color: isFamilySyncEnabled ? 'var(--text-color, #2d3748)' : 'var(--gray, #718096)' }}>
-                                    {t('familyTheme.modeFamilyDesc')}
-                                </div>
-                            </div>
-
-                            <div style={{
-                                padding: '8px 10px',
-                                borderRadius: '8px',
-                                background: !isFamilySyncEnabled ? 'rgba(66, 153, 225, 0.08)' : 'transparent',
-                                border: !isFamilySyncEnabled ? '1px solid rgba(66, 153, 225, 0.2)' : '1px solid transparent',
-                                transition: 'all 0.2s ease'
-                            }}>
-                                <div style={{ fontWeight: 700, color: !isFamilySyncEnabled ? '#2b6cb0' : 'var(--text-color, #2d3748)', marginBottom: '2px' }}>
-                                    {!isFamilySyncEnabled ? '● ' : '○ '}{t('familyTheme.modeIndividualTitle')}
-                                </div>
-                                <div style={{ color: !isFamilySyncEnabled ? 'var(--text-color, #2d3748)' : 'var(--gray, #718096)' }}>
-                                    {t('familyTheme.modeIndividualDesc')}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                )}
 
                 <div className="leave-modal-actions" style={{ marginTop: '1.5rem' }}>
                     <button className="modal-btn cancel" onClick={() => {

@@ -40,8 +40,7 @@ export const joinGroupSchema = z.object({
 export const createGroupSchema = z.object({
     name: z.string().min(1).max(100),
     description: z.string().max(1000).optional(),
-    timeZone: z.string().optional(),
-    isFamilySyncEnabled: z.boolean().optional()
+    timeZone: z.string().optional()
 });
 
 export const createAiGroupSchema = z.object({

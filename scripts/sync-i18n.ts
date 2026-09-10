@@ -38,9 +38,10 @@ interface LocaleContent {
         comment?: string;
         [key: string]: unknown;
     };
-    familyTheme?: {
-        categoryFamilyStudy?: string;
+    oneTapStudy?: {
+        categoryOneTap?: string;
         themeLabel?: string;
+        noteBody?: string;
         themes?: Record<string, string>;
         [key: string]: unknown;
     };
@@ -57,12 +58,14 @@ interface ExtractedMetadata {
         chapter?: string;
         comment?: string;
     };
-    familyTheme: {
-        categoryFamilyStudy?: string;
+    oneTapStudy: {
+        categoryOneTap?: string;
         themeLabel?: string;
+        noteBody?: string;
         themes?: Record<string, string>;
     };
 }
+
 
 // Preferred ordering for established core languages
 const PREFERRED_ORDER = ['en', 'ja', 'pt', 'zho', 'es', 'vi', 'th', 'ko', 'tl', 'sw', 'it'];
@@ -130,13 +133,15 @@ async function syncI18n() {
                 chapter: typeof data.groupChat?.chapter === 'string' ? data.groupChat.chapter : undefined,
                 comment: typeof data.groupChat?.comment === 'string' ? data.groupChat.comment : undefined,
             },
-            familyTheme: {
-                categoryFamilyStudy: typeof data.familyTheme?.categoryFamilyStudy === 'string' ? data.familyTheme.categoryFamilyStudy : undefined,
-                themeLabel: typeof data.familyTheme?.themeLabel === 'string' ? data.familyTheme.themeLabel : undefined,
-                themes: (data.familyTheme?.themes && typeof data.familyTheme.themes === 'object' ? data.familyTheme.themes : {}) as Record<string, string>,
+            oneTapStudy: {
+                categoryOneTap: typeof data.oneTapStudy?.categoryOneTap === 'string' ? data.oneTapStudy.categoryOneTap : undefined,
+                themeLabel: typeof data.oneTapStudy?.themeLabel === 'string' ? data.oneTapStudy.themeLabel : undefined,
+                noteBody: typeof data.oneTapStudy?.noteBody === 'string' ? data.oneTapStudy.noteBody : undefined,
+                themes: (data.oneTapStudy?.themes && typeof data.oneTapStudy.themes === 'object' ? data.oneTapStudy.themes : {}) as Record<string, string>,
             }
         };
     }
+
 
     // 1. Generate src/config/languages.ts
     const languageUnionType = discoveredLanguages.map(l => `'${l.code}'`).join(' | ');
@@ -196,13 +201,15 @@ export interface LocaleDefinition {
         comment?: string;
         [key: string]: unknown;
     };
-    familyTheme?: {
-        categoryFamilyStudy?: string;
+    oneTapStudy?: {
+        categoryOneTap?: string;
         themeLabel?: string;
+        noteBody?: string;
         themes?: Record<string, string>;
     };
     books?: Record<string, string>;
 }
+
 
 export const LOCALES_BY_CODE: Record<string, LocaleDefinition> = ${JSON.stringify(metadataByCode, null, 4)};
 

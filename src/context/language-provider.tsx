@@ -303,20 +303,27 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     }, [translateBookName]);
 
     const getValueFromPath = useCallback((key: string): TranslationValue | null => {
-        const keys = key.split('.');
-        let current: TranslationValue | undefined = translations;
+        const resolveFrom = (source: TranslationValue | undefined): TranslationValue | null => {
+            const keys = key.split('.');
+            let current: TranslationValue | undefined = source;
 
-        for (const k of keys) {
-            if (k === '__proto__' || k === 'constructor' || k === 'prototype') {
-                return null;
+            for (const k of keys) {
+                if (k === '__proto__' || k === 'constructor' || k === 'prototype') {
+                    return null;
+                }
+                if (current && typeof current === 'object' && !Array.isArray(current) && Object.prototype.hasOwnProperty.call(current, k)) {
+                    current = (current as Record<string, TranslationValue>)[k]; // nosemgrep: javascript.lang.security.audit.prototype-pollution.prototype-pollution-loop.prototype-pollution-loop
+                } else {
+                    return null;
+                }
             }
-            if (current && typeof current === 'object' && !Array.isArray(current) && Object.prototype.hasOwnProperty.call(current, k)) {
-                current = (current as Record<string, TranslationValue>)[k]; // nosemgrep: javascript.lang.security.audit.prototype-pollution.prototype-pollution-loop.prototype-pollution-loop
-            } else {
-                return null;
-            }
-        }
-        return current ?? null;
+            return current ?? null;
+        };
+
+        const fromActive = resolveFrom(translations);
+        if (fromActive !== null) return fromActive;
+
+        return resolveFrom(initialEnTranslations as unknown as TranslationValue);
     }, [translations]);
 
     const t = useCallback((key: string, replacements: Record<string, string | number> = {}): string => {

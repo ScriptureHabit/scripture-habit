@@ -30,6 +30,8 @@ export interface UserData {
   daysStudiedCount?: number;
   totalNotes?: number;
   studiedDates?: string[];
+  todayTheme?: string;
+  todayThemeDate?: string;
   
   // Preferences
   timeZone?: string;

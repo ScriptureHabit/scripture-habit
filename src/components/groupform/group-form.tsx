@@ -13,10 +13,9 @@ import { useGroupForm } from './hooks/use-group-form';
 export default function GroupForm() {
   useApiWarmupOnMount();
   const { t, language } = useLanguage();
-  const { user, hasExistingFamilyGroup } = useGroupForm();
+  const { user } = useGroupForm();
   const [groupName, setGroupName] = useState("");
   const [description, setDescription] = useState("");
-  const [isFamilySyncEnabled, setIsFamilySyncEnabled] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -35,8 +34,7 @@ export default function GroupForm() {
       const response = await apiClient.post('/api/groups/create-group', {
         name: groupName,
         description: description,
-        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Tokyo',
-        isFamilySyncEnabled: isFamilySyncEnabled
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Tokyo'
       });
 
       const result = response.data;
@@ -92,123 +90,6 @@ export default function GroupForm() {
             value={description}
             onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setDescription(e.target.value)}
           />
-
-          {/* Mode Selection: Family Mode vs Personal Mode */}
-          <div className="group-mode-selection-card" data-testid="group-mode-selection-card">
-            <div className="mode-selection-header">
-              <div className="mode-header-left">
-                <span className="mode-icon">👨‍👩‍👧</span>
-                <strong className="mode-title">{t('familyTheme.groupOptionToggle')}</strong>
-                <span className={`mode-badge ${isFamilySyncEnabled ? 'family-badge' : 'individual-badge'}`}>
-                  {isFamilySyncEnabled ? 'ON' : 'OFF'}
-                </span>
-              </div>
-              <label
-                className={`switch ${hasExistingFamilyGroup && !isFamilySyncEnabled ? 'disabled' : ''}`}
-                style={{ position: 'relative', display: 'inline-block', width: '44px', height: '24px', flexShrink: 0 }}
-                aria-label={t('familyTheme.groupOptionToggle')}
-              >
-                <input
-                  type="checkbox"
-                  checked={isFamilySyncEnabled}
-                  onChange={(e) => {
-                    if (hasExistingFamilyGroup && !isFamilySyncEnabled) {
-                      toast.warning(t('familyTheme.alreadyEnabledInOtherGroup'));
-                      return;
-                    }
-                    setIsFamilySyncEnabled(e.target.checked);
-                  }}
-                  disabled={hasExistingFamilyGroup && !isFamilySyncEnabled}
-                  style={{ opacity: 0, width: 0, height: 0 }}
-                  data-testid="family-mode-toggle"
-                />
-                <span
-                  style={{
-                    position: 'absolute',
-                    cursor: (hasExistingFamilyGroup && !isFamilySyncEnabled) ? 'not-allowed' : 'pointer',
-                    top: 0, left: 0, right: 0, bottom: 0,
-                    backgroundColor: isFamilySyncEnabled ? '#ed64a6' : '#ccc',
-                    transition: '.3s',
-                    borderRadius: '24px'
-                  }}
-                >
-                  <span
-                    style={{
-                      position: 'absolute',
-                      content: '""',
-                      height: '18px',
-                      width: '18px',
-                      left: isFamilySyncEnabled ? '23px' : '3px',
-                      bottom: '3px',
-                      backgroundColor: 'white',
-                      transition: '.3s',
-                      borderRadius: '50%'
-                    }}
-                  />
-                </span>
-              </label>
-            </div>
-
-            {hasExistingFamilyGroup && (
-              <p className="already-enabled-warning" data-testid="already-enabled-warning">
-                ⚠️ {t('familyTheme.alreadyEnabledInOtherGroup')}
-              </p>
-            )}
-
-            <div className="mode-cards-container">
-              {/* Family Mode Card */}
-              <div
-                className={`mode-card ${isFamilySyncEnabled ? 'selected-family' : ''} ${hasExistingFamilyGroup && !isFamilySyncEnabled ? 'disabled' : ''}`}
-                onClick={() => {
-                  if (hasExistingFamilyGroup && !isFamilySyncEnabled) {
-                    toast.warning(t('familyTheme.alreadyEnabledInOtherGroup'));
-                    return;
-                  }
-                  setIsFamilySyncEnabled(true);
-                }}
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    if (!hasExistingFamilyGroup || isFamilySyncEnabled) setIsFamilySyncEnabled(true);
-                  }
-                }}
-                data-testid="mode-card-family"
-              >
-                <div className="mode-card-title family-text">
-                  <span className="radio-indicator">{isFamilySyncEnabled ? '● ' : '○ '}</span>
-                  {t('familyTheme.modeFamilyTitle')}
-                </div>
-                <div className="mode-card-desc">
-                  {t('familyTheme.modeFamilyDesc')}
-                </div>
-              </div>
-
-              {/* Personal / Individual Mode Card */}
-              <div
-                className={`mode-card ${!isFamilySyncEnabled ? 'selected-individual' : ''}`}
-                onClick={() => setIsFamilySyncEnabled(false)}
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    setIsFamilySyncEnabled(false);
-                  }
-                }}
-                data-testid="mode-card-individual"
-              >
-                <div className="mode-card-title individual-text">
-                  <span className="radio-indicator">{!isFamilySyncEnabled ? '● ' : '○ '}</span>
-                  {t('familyTheme.modeIndividualTitle')}
-                </div>
-                <div className="mode-card-desc">
-                  {t('familyTheme.modeIndividualDesc')}
-                </div>
-              </div>
-            </div>
-          </div>
 
           <div className="invite-link-preview-card">
             <div className="preview-header">

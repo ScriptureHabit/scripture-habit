@@ -48,21 +48,21 @@ export const DashboardSkeleton = ({ quoteText, quoteSource }: { quoteText?: stri
                 <Skeleton className="skeleton-card" />
             </div>
 
-            <div className="inspiration-section">
-                <div className="inspiration-card">
-                    <blockquote className="inspiration-quote">
-                        {quoteText}
-                    </blockquote>
-                    <p className="inspiration-source">{quoteSource}</p>
-                </div>
-            </div>
-
             <div className="skeleton-section">
                 <Skeleton width="120px" height="24px" style={{ marginBottom: '1rem' }} />
                 <div className="skeleton-grid">
                     <Skeleton className="skeleton-note-card" />
                     <Skeleton className="skeleton-note-card" />
                     <Skeleton className="skeleton-note-card" />
+                </div>
+            </div>
+
+            <div className="inspiration-section">
+                <div className="inspiration-card">
+                    <blockquote className="inspiration-quote">
+                        {quoteText}
+                    </blockquote>
+                    <p className="inspiration-source">{quoteSource}</p>
                 </div>
             </div>
         </div>

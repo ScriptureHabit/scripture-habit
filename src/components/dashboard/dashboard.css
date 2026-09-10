@@ -298,6 +298,7 @@
   padding: 1.5rem 2rem;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
   text-align: center;
+  margin-bottom: 2rem;
 }
 
 .inspiration-title {
@@ -346,13 +347,13 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1rem;
-  padding: 0.8rem;
+  gap: 0.9rem;
+  padding: 1.1rem 1rem;
   /* Match reading plan card padding */
-  background: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.65);
   /* Slightly unrelated but consistency */
-  border-radius: 1rem;
-  border: 1px dashed rgba(0, 0, 0, 0.1);
+  border-radius: 1.25rem;
+  border: 1px dashed rgba(0, 0, 0, 0.12);
 }
 
 .share-learning-cta p {
@@ -361,6 +362,156 @@
   color: var(--black);
   font-weight: 500;
   text-align: center;
+}
+
+/* Study Mode Toggle */
+.study-mode-toggle-wrapper {
+  display: flex;
+  background: rgba(0, 0, 0, 0.06);
+  padding: 4px;
+  border-radius: 24px;
+  gap: 4px;
+  margin-bottom: 0.35rem;
+}
+
+.study-mode-toggle-btn {
+  border: none;
+  background: transparent;
+  padding: 7px 18px;
+  border-radius: 18px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--gray, #718096);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.study-mode-toggle-btn.active {
+  background: #ffffff;
+  color: var(--black, #2d3748);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.onetap-theme-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.onetap-theme-prompt {
+  margin: 0 0 0.85rem 0 !important;
+  font-size: 0.95rem !important;
+  color: var(--black);
+  font-weight: 600;
+  text-align: center;
+}
+
+.onetap-theme-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.onetap-theme-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 14px;
+  min-height: 52px;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1.5px solid rgba(0, 0, 0, 0.08);
+  border-radius: 14px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--black);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.onetap-theme-icon {
+  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.onetap-theme-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.onetap-theme-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  background: #ffffff;
+  border-color: rgba(255, 105, 180, 0.45);
+  box-shadow: 0 4px 14px rgba(255, 105, 180, 0.18);
+}
+
+.onetap-theme-btn.selected {
+  background: linear-gradient(135deg, rgba(255, 154, 158, 0.22) 0%, rgba(254, 207, 239, 0.35) 100%);
+  border: 2px solid var(--pink, #FF919D);
+  color: #b83280;
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgba(255, 145, 157, 0.22);
+}
+
+.onetap-check {
+  font-size: 0.85rem;
+  color: #b83280;
+  font-weight: 800;
+  margin-left: 3px;
+}
+
+.onetap-theme-btn:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.onetap-theme-btn.completed:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+  filter: grayscale(20%);
+}
+
+.onetap-theme-btn.selected.completed:disabled {
+  cursor: default;
+  opacity: 1;
+  filter: none;
+  background: linear-gradient(135deg, rgba(255, 154, 158, 0.22) 0%, rgba(254, 207, 239, 0.35) 100%);
+  border: 2px solid var(--pink, #FF919D);
+  color: #b83280;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(255, 145, 157, 0.18);
+}
+
+.onetap-theme-prompt.completed {
+  color: #2b7a4b;
+  background: rgba(46, 125, 50, 0.08);
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(46, 125, 50, 0.2);
+  display: inline-block;
+}
+
+.onetap-next-day-notice {
+  margin: 12px 0 0 0 !important;
+  font-size: 0.84rem !important;
+  color: #718096;
+  text-align: center;
+  font-weight: 500;
 }
 
 .cta-btn {
