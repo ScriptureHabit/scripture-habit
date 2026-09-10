@@ -63,8 +63,8 @@ export const initialEnTranslations = {
             "card2Desc": "Anyone can contribute to development through feature proposals, bug reports via Issues, or Pull Requests on GitHub.",
             "githubBtn": "View on GitHub",
             "redditBtn": "Reddit Community",
-            "isaiahBtn": "Isaiah Study (GitHub)",
-            "bookOfMormonBtn": "Book of Mormon Study (GitHub)",
+            "isaiahBtn": "Isaiah Study (Website)",
+            "bookOfMormonBtn": "Book of Mormon Study (Website)",
             "supportBtn": "Support Scripture Habit",
             "sponsorsComingSoon": "Support Scripture Habit"
         },
