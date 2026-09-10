@@ -3,6 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import DashboardOverview from '../dashboard-overview';
 import { UserData } from '../../../../types/user';
+import { formatDateInTimeZone } from '../../../../utils/time-utils';
 
 vi.mock('../../mascot/mascot', () => ({
   default: () => <div data-testid="mock-mascot">Mascot</div>
@@ -121,17 +122,14 @@ describe('DashboardOverview recent group CTA', () => {
   });
 
   it('disables one-tap theme buttons and displays notice when completed today', () => {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-    const todayStr = `${year}-${month}-${day}`;
+    const tz = 'Asia/Tokyo';
+    const todayStr = formatDateInTimeZone(new Date(), tz);
 
     const completedUserData: UserData = {
       ...baseUserData,
       todayTheme: 'faith',
       todayThemeDate: todayStr,
-      timeZone: 'Asia/Tokyo'
+      timeZone: tz
     };
 
     render(
