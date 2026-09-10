@@ -5,7 +5,7 @@ import Mascot from '../mascot/mascot';
 import { UserData } from '../../types/user';
 import apiClient from '../../utils/api-client';
 import { auth } from '../../firebase';
-import { GITHUB_REPO_URL, REDDIT_COMMUNITY_URL, ISAIAH_REPO_URL } from '../../config';
+import { GITHUB_REPO_URL, REDDIT_COMMUNITY_URL, ISAIAH_REPO_URL, BOOK_OF_MORMON_REPO_URL } from '../../config';
 import { 
     UilGithub, 
     UilLightbulbAlt, 
@@ -128,8 +128,8 @@ const DeveloperStory = ({ userData }: DeveloperStoryProps) => {
 
                     {/* 3. Personal Study Section */}
                     <div className="isaiah-section">
-                        <h2 className="section-heading">{t('story.isaiahTitle')}</h2>
-                        <p className="section-description">{t('story.isaiahDesc')}</p>
+                        <h2 className="section-heading">{t('story.personalStudyTitle') || t('story.isaiahTitle')}</h2>
+                        <p className="section-description">{t('story.personalStudyDesc') || t('story.isaiahDesc')}</p>
                         <div className="isaiah-links">
                             <a 
                                 href={ISAIAH_REPO_URL} 
@@ -139,6 +139,15 @@ const DeveloperStory = ({ userData }: DeveloperStoryProps) => {
                             >
                                 <UilGithub size="20" />
                                 <span>{t('story.isaiahBtn')}</span>
+                            </a>
+                            <a 
+                                href={BOOK_OF_MORMON_REPO_URL} 
+                                target="_blank" 
+                                rel="noopener noreferrer" 
+                                className="github-btn"
+                            >
+                                <UilGithub size="20" />
+                                <span>{t('story.bookOfMormonBtn')}</span>
                             </a>
                         </div>
                     </div>
