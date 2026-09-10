@@ -10,10 +10,50 @@ const router = express.Router();
 
 const USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36';
 
+const LDS_LANGUAGE_MAP: Record<string, string> = {
+    ja: 'jpn',
+    en: 'eng',
+    pt: 'por',
+    es: 'spa',
+    zho: 'zho',
+    zh: 'zho',
+    vi: 'vie',
+    th: 'tha',
+    ko: 'kor',
+    tl: 'tgl',
+    sw: 'swa',
+    it: 'ita',
+    fr: 'fra',
+    de: 'deu',
+    ru: 'rus',
+    jpn: 'jpn',
+    eng: 'eng',
+    por: 'por',
+    spa: 'spa',
+    vie: 'vie',
+    tha: 'tha',
+    kor: 'kor',
+    tgl: 'tgl',
+    swa: 'swa',
+    ita: 'ita',
+    fra: 'fra',
+    deu: 'deu',
+    rus: 'rus'
+};
+
+function normalizeToLdsLang(lang: string | undefined): string | undefined {
+    if (!lang) return undefined;
+    const lower = lang.toLowerCase().trim();
+    if (LDS_LANGUAGE_MAP[lower]) return LDS_LANGUAGE_MAP[lower];
+    if (/^[a-z]{3}$/.test(lower)) return lower;
+    if (/^[a-z0-9_-]{2,10}$/i.test(lower)) return lower;
+    return undefined;
+}
+
 // Fetch Church (GC, Liahona, etc.) Metadata
 router.get(['/fetch-church-metadata', '/fetch-church-metadata/'], authenticate, verifyAppCheck, redisCache(3600, 'api:preview:church:'), async (req: AuthenticatedRequest, res: Response) => {
 
-    const { url, language } = req.query as { url?: string, language?: string };
+    const { url, language, lang } = req.query as { url?: string, language?: string, lang?: string };
 
     try {
         if (!url || typeof url !== 'string') throw new ValidationError('URL is required');
@@ -49,7 +89,10 @@ router.get(['/fetch-church-metadata', '/fetch-church-metadata/'], authenticate, 
             httpsAgent: ssrfSafeHttpsAgent
         });
 
-        const safeLang = (language && /^[a-z0-9_-]{2,10}$/i.test(language)) ? language : undefined;
+        // Determine language: prioritize explicit query parameter (lang or language), then URL searchParams
+        const urlLang = parsed.searchParams.get('lang') || undefined;
+        const requestedLang = lang || language || urlLang;
+        const safeLang = normalizeToLdsLang(requestedLang);
 
         let response;
         try {

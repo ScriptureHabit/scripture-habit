@@ -171,12 +171,14 @@ export const SUPPORTED_LANGUAGES: Language[] = LANGUAGES.map(lang => lang.code);
 export const DEFAULT_LANGUAGE: Language = 'en';
 
 function getLanguageConfig(code: string): LanguageConfig | undefined {
-    return LANGUAGES.find(lang => lang.code === code);
+    return LANGUAGES.find(lang => lang.code === code || lang.ldsCode === code);
 }
 
 export function getLdsLanguageCode(code: string): string {
     const config = getLanguageConfig(code);
-    return config ? config.ldsCode : 'eng';
+    if (config) return config.ldsCode;
+    if (/^[a-z]{3}$/.test(code)) return code;
+    return 'eng';
 }
 `;
 

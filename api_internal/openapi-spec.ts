@@ -763,6 +763,13 @@ const openapiSpec = {
             "required": false,
             "schema": { "type": "string" },
             "example": "jpn"
+          },
+          {
+            "name": "lang",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string" },
+            "example": "jpn"
           }
         ],
         "responses": {

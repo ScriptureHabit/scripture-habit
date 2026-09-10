@@ -102,7 +102,7 @@ describe('Preview Route Integration', () => {
             let callCount = 0;
             vi.spyOn(axios, 'get').mockImplementation(async (url, config) => {
                 callCount++;
-                if ((config as any)?.params?.lang === 'ja' || (typeof url === 'string' && url.includes('lang=ja'))) {
+                if ((config as any)?.params?.lang === 'ja' || (config as any)?.params?.lang === 'jpn' || (typeof url === 'string' && (url.includes('lang=ja') || url.includes('lang=jpn')))) {
                     throw new Error('Language not supported');
                 }
                 return { data: mockHtml };
@@ -118,6 +118,63 @@ describe('Preview Route Integration', () => {
             expect(data.title).toBe('Some Title');
             expect(data.speaker).toBe('Elder Jeffrey R. Holland');
             expect(callCount).toBe(2);
+        });
+
+        it('should pass normalized LDS language when lang query param is supplied', async () => {
+            const mockHtml = `
+                <html>
+                    <head>
+                        <meta property="og:title" content="信仰の力 | リアホナ" />
+                    </head>
+                    <body>
+                        <div class="byline">
+                            <p class="author-name">ディーター・F・ウークトドルフ長老</p>
+                        </div>
+                    </body>
+                </html>
+            `;
+            let capturedConfig: any = null;
+            vi.spyOn(axios, 'get').mockImplementation(async (_url, config) => {
+                capturedConfig = config;
+                return { data: mockHtml };
+            });
+
+            setup.mockAuth(USER_ID);
+            const res = await fetch(`${setup.baseUrl}/api/preview/fetch-church-metadata?url=https://churchofjesuschrist.org/study/ensign/2020/04/faith-jpn&lang=jpn`, {
+                headers: { 'Authorization': `Bearer token-${USER_ID}` }
+            });
+
+            expect(res.status).toBe(200);
+            const data = await res.json();
+            expect(data.title).toBe('信仰の力');
+            expect(data.speaker).toBe('ディーター・F・ウークトドルフ長老');
+            expect(capturedConfig?.params?.lang).toBe('jpn');
+        });
+
+        it('should extract lang from target URL query string when omitted in request params', async () => {
+            const mockHtml = `
+                <html>
+                    <head>
+                        <meta property="og:title" content="幕屋と犠牲 | 教会" />
+                    </head>
+                </html>
+            `;
+            let capturedConfig: any = null;
+            vi.spyOn(axios, 'get').mockImplementation(async (_url, config) => {
+                capturedConfig = config;
+                return { data: mockHtml };
+            });
+
+            setup.mockAuth(USER_ID);
+            const targetUrl = encodeURIComponent('https://churchofjesuschrist.org/study/manual/cfm-2026/17-thoughts?lang=jpn');
+            const res = await fetch(`${setup.baseUrl}/api/preview/fetch-church-metadata?url=${targetUrl}`, {
+                headers: { 'Authorization': `Bearer token-${USER_ID}` }
+            });
+
+            expect(res.status).toBe(200);
+            const data = await res.json();
+            expect(data.title).toBe('幕屋と犠牲');
+            expect(capturedConfig?.params?.lang).toBe('jpn');
         });
 
         it('should return empty title and speaker on general fetch error', async () => {
