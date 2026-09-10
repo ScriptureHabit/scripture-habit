@@ -157,7 +157,8 @@ const LandingPage = () => {
                     <h2 className="section-title">{t('landing.concept.title')}</h2>
                     <p className="concept-subtitle">{t('landing.concept.subtitle')}</p>
                     
-                    <div className="concept-comparison-grid">
+                    <div className="concept-flow-container">
+                        {/* 1. Problem Card */}
                         <div className="concept-card concept-problem">
                             <div className="concept-card-badge problem-badge">{t('landing.concept.problemBadge')}</div>
                             <h3 className="concept-card-title">{t('landing.concept.card1Title')}</h3>
@@ -174,28 +175,77 @@ const LandingPage = () => {
                             </div>
                             <p className="concept-card-text">{t('landing.concept.card1Text')}</p>
                         </div>
-                        <div className="concept-arrow-divider">
-                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                                <line x1="5" y1="12" x2="19" y2="12"></line>
-                                <polyline points="12 5 19 12 12 19"></polyline>
-                            </svg>
-                        </div>
-                        <div className="concept-card concept-solution">
-                            <div className="concept-card-badge solution-badge">{t('landing.concept.solutionBadge')}</div>
-                            <h3 className="concept-card-title">{t('landing.concept.card2Title')}</h3>
-                            <div className="concept-card-img-wrapper">
-                                <img 
-                                    src="/images/concept_together.webp" 
-                                    alt="Studying together" 
-                                    className="concept-card-img" 
-                                    width="124"
-                                    height="124"
-                                    loading="lazy"
-                                    decoding="async"
-                                />
+
+                        {/* Transition: Arrow + Two Ways Badge */}
+                        <div className="concept-transition-wrapper">
+                            <div className="concept-arrow-divider">
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                    <polyline points="19 12 12 19 5 12"></polyline>
+                                </svg>
                             </div>
-                            <p className="concept-card-text">{t('landing.concept.card2Text')}</p>
+                            <div className="concept-choice-label">
+                                <span>{t('landing.concept.twoWaysLabel')}</span>
+                            </div>
                         </div>
+
+                        {/* 2. Solutions Grid (Friends & AI) */}
+                        <div className="concept-solutions-grid">
+                            <div className="concept-card concept-solution">
+                                <div className="concept-card-badge solution-badge">{t('landing.concept.solutionBadge')}</div>
+                                <h3 className="concept-card-title">{t('landing.concept.card2Title')}</h3>
+                                <div className="concept-card-img-wrapper">
+                                    <img 
+                                        src="/images/concept_together.webp" 
+                                        alt="Studying together" 
+                                        className="concept-card-img" 
+                                        width="124"
+                                        height="124"
+                                        loading="lazy"
+                                        decoding="async"
+                                    />
+                                </div>
+                                <p className="concept-card-text">{t('landing.concept.card2Text')}</p>
+                            </div>
+
+                            <div className="concept-card concept-ai">
+                                <div className="concept-card-badge ai-badge">{t('landing.concept.aiBadge')}</div>
+                                <h3 className="concept-card-title">{t('landing.concept.card3Title')}</h3>
+                                <div className="concept-card-img-wrapper">
+                                    <img 
+                                        src="/images/ai-mascot-without-background.webp" 
+                                        alt="Studying with AI" 
+                                        className="concept-card-img" 
+                                        width="124"
+                                        height="124"
+                                        loading="lazy"
+                                        decoding="async"
+                                    />
+                                </div>
+                                <p className="concept-card-text">{t('landing.concept.card3Text')}</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                {/* AI Reflection Letter Section */}
+                <section className="ai-letter-section">
+                    <div className="ai-letter-container">
+                        <h2 className="section-title ai-letter-title">{t('landing.aiLetter.title')}</h2>
+
+                        <div className="ai-letter-mascot-box">
+                            <img 
+                                src="/images/ai-mascot-writing.webp" 
+                                alt="AI mascot writing a reflection letter" 
+                                className="ai-letter-mascot-img" 
+                                width="210" 
+                                height="210" 
+                                loading="lazy" 
+                                decoding="async" 
+                            />
+                        </div>
+
+                        <p className="ai-letter-subtitle">{t('landing.aiLetter.subtitle')}</p>
                     </div>
                 </section>
 

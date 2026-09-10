@@ -942,18 +942,26 @@ export default {
         },
         "concept": {
             "title": "Thật khó để tiếp tục một mình, phải không?",
-            "subtitle": "Đồng hành cùng những người bạn có chung mục tiêu là cách đơn giản nhất để tạo dựng một thói quen bền lâu.",
+            "subtitle": "Dù là cùng nhau khích lệ hay tự học thoải mái theo tốc độ riêng cùng AI, bạn đều có thể xây dựng thói quen bền vững.",
             "problemBadge": "Khó duy trì",
             "solutionBadge": "Vui vẻ & Dễ dàng!",
+            "aiBadge": "Một mình vẫn an tâm!",
+            "twoWaysLabel": "2 cách để duy trì thói quen",
             "card1Title": "Khi học một mình",
             "card1Text": "Những ngày bận rộn dễ làm bạn quên đọc, và rồi thói quen dần biến mất lúc nào không hay.",
             "card2Title": "Cùng những người bạn đồng hành!",
-            "card2Text": "Khi nhẹ nhàng khích lệ lẫn nhau và viết ra những suy nghĩ nhỏ mỗi ngày, việc học sẽ tự nhiên trở thành thói quen."
+            "card2Text": "Khi nhẹ nhàng khích lệ lẫn nhau và viết ra những suy nghĩ nhỏ mỗi ngày, việc học sẽ tự nhiên trở thành thói quen.",
+            "card3Title": "Một mình? Học cùng AI!",
+            "card3Text": "Không có bạn đồng hành học tập? Đừng lo. Scripture Habit AI đăng ghi chú mỗi ngày và đồng hành cùng bạn theo nhịp độ riêng."
+        },
+        "aiLetter": {
+            "title": "Không còn cô đơn: Những bức thư suy ngẫm ấm áp từ AI",
+            "subtitle": "Mỗi khi bạn viết được 2 ghi chú, AI sẽ hóa thân thành một nhân vật trong thánh thư để viết cho bạn một bức thư ấm áp, đồng hành cùng bạn."
         },
         "steps": {
             "title": "Cách sử dụng",
             "step1Title": "1. Tạo một nhóm",
-            "step1Desc": "Hãy thử tạo một nhóm với bạn bè, người yêu, gia đình, đồng nghiệp hoặc bất kỳ ai bạn muốn cùng học tập thánh thư.",
+            "step1Desc": "Hãy thử tạo một nhóm với những người bạn muốn cùng học tập thánh thư, hoặc với AI.",
             "step2Title": "2. Chia sẻ điều bạn nhận ra",
             "step2Desc": "Chia sẻ một ghi chú ngắn về điều chạm đến trái tim bạn hoặc điều bạn nhận ra khi học thánh thư."
         },

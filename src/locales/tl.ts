@@ -968,18 +968,26 @@ export default {
         },
         "concept": {
             "title": "Medyo mahirap magpatuloy sa pag-aaral ng mga banal na kasulatan nang mag-isa.",
-            "subtitle": "Ang pagsali sa isang grupo na may parehong layunin ang pinakamadaling paraan upang bumuo ng isang ugali.",
+            "subtitle": "Kung nagpapatibayan man kayo ng bawat isa o nag-aaral sa sariling bilis kasama ang AI, makakabuo ka ng pangmatagalang gawi.",
             "problemBadge": "Mahirap Magpatuloy",
             "solutionBadge": "Madali at Masaya!",
+            "aiBadge": "Panatag kahit mag-isa!",
+            "twoWaysLabel": "Dalawang paraan para magpatuloy",
             "card1Title": "Kapag nag-aaral nang mag-isa",
             "card1Text": "Madaling maisantabi ang pagbabasa dahil sa abalang araw, at bago mo malaman, humihinto ka na pala.",
             "card2Title": "Kasama ang mga supportive na kaibigan!",
-            "card2Text": "Sa pamamagitan ng pagbibigay ng banayad na suporta sa isa't isa at pagsulat ng mga simpleng kaisipan araw-araw, natural na nagiging ugali ang pag-aaral."
+            "card2Text": "Sa pamamagitan ng pagbibigay ng banayad na suporta sa isa't isa at pagsulat ng mga simpleng kaisipan araw-araw, natural na nagiging ugali ang pag-aaral.",
+            "card3Title": "Mag-isa? Kasama ang AI!",
+            "card3Text": "Walang kasamang mag-aral? Ayos lang. Ang Scripture Habit AI ay nagpo-post ng mga tala araw-araw at sasamahan ka sa sarili mong bilis."
+        },
+        "aiLetter": {
+            "title": "Hindi Ka Nag-iisa: Mga Liham ng Pagmumuni-muni Mula sa AI",
+            "subtitle": "Sa bawat dalawang tala na iyong isusulat, gaganap ang AI bilang isang tauhan sa banal na kasulatan upang sumulat ng isang mainit na liham na aalalay sa iyo."
         },
         "steps": {
             "title": "Paano Gamitin",
             "step1Title": "1. Gumawa ng Grupo",
-            "step1Desc": "Subukang gumawa ng grupo kasama ang mga kaibigan, kapareha, pamilya, katrabaho, o sinumang nais mong makasama sa pag-aaral ng banal na kasulatan.",
+            "step1Desc": "Subukang gumawa ng grupo kasama ang mga taong nais mong makasama sa pag-aaral ng banal na kasulatan, o kasama ang AI.",
             "step2Title": "2. Ibahagi ang lyong Kaisipan",
             "step2Desc": "Mag-post ng maikling tala tungkol sa kung ano ang nakaantig sa iyong puso o sa iyong pang-araw-araw na pananaw upang ibahagi sa mga kaibigan."
         },

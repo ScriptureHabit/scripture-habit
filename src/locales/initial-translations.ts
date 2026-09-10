@@ -26,18 +26,26 @@ export const initialEnTranslations = {
         },
         "concept": {
             "title": "It's hard to keep going alone, isn't it?",
-            "subtitle": "Placing yourself in a group with people who share the same goal is the best shortcut to build a habit.",
+            "subtitle": "Whether encouraging each other with everyone or pacing yourself comfortably with AI, you can build a lasting habit.",
             "problemBadge": "Hard to keep going",
             "solutionBadge": "Fun to keep going!",
+            "aiBadge": "Safe Even Alone!",
+            "twoWaysLabel": "Two Ways to Build the Habit",
             "card1Title": "Studying alone...",
             "card1Text": "Busy days push it aside, and it's easy to lose momentum before you notice.",
             "card2Title": "With friends!",
-            "card2Text": "When everyone gently encourages each other and turns what they noticed into words, it becomes a natural habit."
+            "card2Text": "When everyone gently encourages each other and turns what they noticed into words, it becomes a natural habit.",
+            "card3Title": "Alone? Study with AI!",
+            "card3Text": "No study buddy? No problem. Scripture Habit AI posts daily notes and companions you at your own comfortable pace."
+        },
+        "aiLetter": {
+            "title": "Never Alone: Heartfelt 'Reflection Letters' from AI",
+            "subtitle": "Every two notes you write, the AI steps into the role of a scripture figure and writes a warm letter tailored to you."
         },
         "steps": {
             "title": "How to Use",
             "step1Title": "1. Create a Group",
-            "step1Desc": "Try creating a group with friends, partners, family, coworkers, or anyone else you'd like to study the scriptures with.",
+            "step1Desc": "Try creating a group with people you'd like to study the scriptures with, or with AI.",
             "step2Title": "2. Share what you noticed",
             "step2Desc": "Share a short note about what touched your heart or what you noticed during scripture study."
         },

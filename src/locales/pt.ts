@@ -968,18 +968,26 @@ export default {
         },
         "concept": {
             "title": "Pode ser um pouco difícil continuar estudando as escrituras sozinho.",
-            "subtitle": "Estar em um grupo com pessoas que compartilham o mesmo objetivo é o atalho mais fácil para formar um hábito.",
+            "subtitle": "Seja incentivando uns aos outros com todos ou avançando no seu próprio ritmo com a IA, você pode criar um hábito duradouro.",
             "problemBadge": "Difícil de continuar",
             "solutionBadge": "Fácil e divertido!",
+            "aiBadge": "Seguro mesmo sozinho!",
+            "twoWaysLabel": "Duas maneiras de continuar",
             "card1Title": "Estudar sozinho...",
             "card1Text": "Dias corridos facilmente deixam a leitura de lado, e é fácil perder o ritmo antes de perceber.",
             "card2Title": "Com amigos!",
-            "card2Text": "Quando todos se incentivam com carinho e transformam o que notam em palavras, o estudo se torna um hábito natural."
+            "card2Text": "Quando todos se incentivam com carinho e transformam o que notam em palavras, o estudo se torna um hábito natural.",
+            "card3Title": "Sozinho? Estude com IA!",
+            "card3Text": "Não tem um colega de estudo? Sem problemas. A IA do Scripture Habit posta notas diárias e acompanha você no seu próprio ritmo."
+        },
+        "aiLetter": {
+            "title": "Nunca sozinho: Cartas de reflexão acolhedoras da IA",
+            "subtitle": "A cada duas notas que você escreve, a IA assume o papel de um personagem das escrituras para lhe escrever uma carta calorosa e acolhedora para você."
         },
         "steps": {
             "title": "Como usar",
             "step1Title": "1. Criar um grupo",
-            "step1Desc": "Tente criar um grupo com amigos, parceiros, familiares, colegas de trabalho ou qualquer pessoa com quem você queira estudar as escrituras.",
+            "step1Desc": "Tente criar um grupo com pessoas com quem você queira estudar as escrituras, ou com a IA.",
             "step2Title": "2. Compartilhe o que você notou",
             "step2Desc": "Compartilhe uma nota curta sobre o que tocou seu coração ou o que você notou ao estudar as escrituras."
         },

@@ -968,18 +968,26 @@ export default {
         },
         "concept": {
             "title": "È difficile continuare da soli, vero?",
-            "subtitle": "Inserirti in un gruppo di persone con lo stesso obiettivo è la scorciatoia migliore per creare un'abitudine dura nel tempo.",
+            "subtitle": "Che sia incoraggiandosi a vicenda con tutti o avanzando al proprio ritmo con l'IA, puoi costruire un'abitudine duratura.",
             "problemBadge": "Difficile andare avanti",
             "solutionBadge": "Bello andare avanti!",
+            "aiBadge": "Sereno anche da solo!",
+            "twoWaysLabel": "Due modi per continuare",
             "card1Title": "Studiare da soli...",
             "card1Text": "Le giornate piene prendono il sopravvento ed è facile perdere il ritmo senza accorgersene.",
             "card2Title": "Con gli amici!",
-            "card2Text": "Quando ci si incoraggia a vicenda e si condivide ciò che si scopre, diventa un'abitudine naturale."
+            "card2Text": "Quando ci si incoraggia a vicenda e si condivide ciò che si scopre, diventa un'abitudine naturale.",
+            "card3Title": "Da solo? Studia con l'IA!",
+            "card3Text": "Non hai compagni di studio? Nessun problema. L'IA di Scripture Habit pubblica note quotidiane e ti accompagna al tuo ritmo."
+        },
+        "aiLetter": {
+            "title": "Mai solo: Lettere di riflessione calorose dall'IA",
+            "subtitle": "Ogni due note scritte, l'IA veste i panni di un personaggio delle Scritture per scriverti una lettera affettuosa e vicina a te."
         },
         "steps": {
             "title": "Come Funziona",
             "step1Title": "1. Crea un Gruppo",
-            "step1Desc": "Prova a creare un gruppo con amici, partner, familiari, colleghi o chiunque desideri condividere questo percorso.",
+            "step1Desc": "Prova a creare un gruppo con persone con cui desideri studiare le Scritture, o con l'IA.",
             "step2Title": "2. Condividi le tue riflessioni",
             "step2Desc": "Condividi una breve nota su ciò che ti ha colpito o su ciò che hai notato durante lo studio."
         },

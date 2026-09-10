@@ -1100,22 +1100,28 @@ section {
     font-weight: 500;
 }
 
-.concept-comparison-grid {
+.concept-flow-container {
     display: flex;
-    align-items: stretch;
-    justify-content: center;
-    gap: 30px;
-    max-width: 1000px;
+    flex-direction: column;
+    align-items: center;
+    max-width: 960px;
     margin: 0 auto;
+    width: 100%;
+}
+
+.concept-solutions-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 28px;
+    width: 100%;
 }
 
 .concept-card {
-    flex: 1;
     background: rgba(255, 255, 255, 0.5);
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
     border-radius: 24px;
-    padding: 40px 30px;
+    padding: 38px 28px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.4);
     transition: all 0.3s ease;
@@ -1123,6 +1129,7 @@ section {
     position: relative;
     display: flex;
     flex-direction: column;
+    box-sizing: border-box;
 }
 
 .concept-card:hover {
@@ -1133,7 +1140,7 @@ section {
 .concept-card-badge {
     position: absolute;
     top: -14px;
-    left: 30px;
+    left: 28px;
     padding: 6px 16px;
     border-radius: 50px;
     font-size: 0.85rem;
@@ -1150,102 +1157,219 @@ section {
     background: linear-gradient(135deg, #10b981, #059669);
 }
 
+.ai-badge {
+    background: linear-gradient(135deg, #8B5CF6, #6366F1);
+}
+
 .concept-problem {
+    max-width: 480px;
+    width: 100%;
     border-left: 5px solid #ef4444;
-    padding-right: 110px; /* Graceful right padding to ensure text flows beautifully without touching the lonely bird */
+    padding-right: 120px;
+    min-height: 220px;
 }
 
 .concept-solution {
     border-left: 5px solid #10b981;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(102, 126, 234, 0.05));
-    border-color: rgba(102, 126, 234, 0.3);
-    padding-right: 150px; /* Graceful right padding to ensure text flows beautifully without touching the book/social birds */
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.85), rgba(16, 185, 129, 0.04));
+    border-color: rgba(16, 185, 129, 0.25);
+    padding-right: 140px;
+    min-height: 240px;
 }
 
-.concept-problem,
-.concept-solution {
-    min-height: 240px; /* Keep height aligned nicely */
+.concept-ai {
+    border-left: 5px solid #8B5CF6;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.85), rgba(139, 92, 246, 0.05));
+    border-color: rgba(139, 92, 246, 0.25);
+    padding-right: 140px;
+    min-height: 240px;
 }
 
 .concept-card-title {
-    font-size: 1.5rem;
+    font-size: 1.45rem;
     font-weight: 800;
     margin-top: 10px;
-    margin-bottom: 16px;
+    margin-bottom: 14px;
     color: var(--text-main);
     max-width: 95%;
 }
 
-/* Both cards feature the dramatic top-right popup overlap directly on top of the text */
-/* pointer-events: none ensures the floating image doesn't block text highlighting or clicks */
 .concept-problem .concept-card-img-wrapper,
-.concept-solution .concept-card-img-wrapper {
+.concept-solution .concept-card-img-wrapper,
+.concept-ai .concept-card-img-wrapper {
     position: absolute;
     height: auto;
-    background: transparent; /* No containing box - let the birds float naturally */
+    background: transparent;
     border: none;
     box-shadow: none;
     overflow: visible;
     margin: 0;
     z-index: 10;
-    pointer-events: none; /* Mouse clicks and selections pass right through the image to text below */
+    pointer-events: none;
     transition: all 0.3s ease;
 }
 
-/* Custom top/right offsets and widths to sit perfectly on their respective card corners */
 .concept-problem .concept-card-img-wrapper {
-    top: -75px; /* Sits nicely on the upper boundary */
-    right: -35px; /* Shifted outer-right to prevent overlap with title text */
-    width: 200px; /* Perfectly compact alone bird size */
+    top: -70px;
+    right: -30px;
+    width: 190px;
 }
 
 .concept-solution .concept-card-img-wrapper {
-    top: -85px; /* Floats dramatically over the corner */
-    right: -30px; /* Shifted outer-right to prevent overlap with title text */
-    width: 245px; /* Prominent width for the group of birds */
+    top: -80px;
+    right: -25px;
+    width: 235px;
+}
+
+.concept-ai .concept-card-img-wrapper {
+    top: -70px;
+    right: -20px;
+    width: 195px;
 }
 
 .concept-problem .concept-card-img,
-.concept-solution .concept-card-img {
+.concept-solution .concept-card-img,
+.concept-ai .concept-card-img {
     width: 100%;
     height: auto;
     max-width: 100%;
     max-height: none;
     object-fit: contain;
-    filter: drop-shadow(0 15px 25px rgba(0,0,0,0.12)); /* Beautiful floating shadow */
+    filter: drop-shadow(0 15px 25px rgba(0,0,0,0.12));
     transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.3s ease;
 }
 
-/* Custom micro-animations tailored to their moods */
 .concept-problem:hover .concept-card-img {
-    transform: scale(1.08) translate(-4px, -4px) rotate(-1deg); /* Soft floating popup */
+    transform: scale(1.08) translate(-4px, -4px) rotate(-1deg);
     filter: drop-shadow(0 20px 35px rgba(239, 68, 68, 0.15));
 }
 
 .concept-solution:hover .concept-card-img {
-    transform: scale(1.08) translate(-6px, -6px) rotate(2deg); /* Dynamic spring popup */
-    filter: drop-shadow(0 20px 35px rgba(102, 126, 234, 0.22));
+    transform: scale(1.08) translate(-6px, -6px) rotate(2deg);
+    filter: drop-shadow(0 20px 35px rgba(16, 185, 129, 0.22));
 }
 
-/* Natural full-width text layouts for ultimate legibility without forced early wrapping */
-.concept-problem .concept-card-text,
-.concept-solution .concept-card-text {
-    max-width: 95%; /* Clean flow across both cards */
+.concept-ai:hover .concept-card-img {
+    transform: scale(1.08) translate(-4px, -4px) rotate(1deg);
+    filter: drop-shadow(0 20px 35px rgba(139, 92, 246, 0.22));
 }
 
 .concept-card-text {
     font-size: 1rem;
-    line-height: 1.65;
+    line-height: 1.68;
     color: var(--text-muted);
+    margin: 0;
+}
+
+.concept-problem .concept-card-text,
+.concept-solution .concept-card-text,
+.concept-ai .concept-card-text {
+    max-width: 95%;
+}
+
+.concept-transition-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    margin: 2rem 0 2.25rem 0;
 }
 
 .concept-arrow-divider {
-    color: var(--primary-color);
+    color: #94A3B8;
     display: flex;
     align-items: center;
     justify-content: center;
     animation: pulse 2s infinite;
     flex-shrink: 0;
+}
+
+.concept-choice-label {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 18px;
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 9999px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #475569;
+    letter-spacing: 0.02em;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+
+/* AI Reflection Letter Showcase Section */
+.ai-letter-section {
+    padding: 70px 24px;
+    background: linear-gradient(180deg, #FAF8F5 0%, #F5F0FB 50%, #FAF8F5 100%);
+    border-top: 1px solid rgba(139, 92, 246, 0.08);
+    border-bottom: 1px solid rgba(139, 92, 246, 0.08);
+    position: relative;
+    overflow: hidden;
+}
+
+.ai-letter-section::before {
+    content: '';
+    position: absolute;
+    top: -40px;
+    left: 20%;
+    width: 260px;
+    height: 260px;
+    background: radial-gradient(circle, rgba(167, 139, 250, 0.12) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.ai-letter-container {
+    max-width: 800px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+}
+
+
+
+.ai-letter-title {
+    text-align: center;
+    margin-bottom: 0.5rem;
+    font-size: 2.1rem;
+    font-weight: 800;
+    color: var(--text-main);
+}
+
+.ai-letter-mascot-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    margin: 0.75rem 0 1.25rem 0;
+}
+
+.ai-letter-mascot-img {
+    max-width: 210px;
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 16px 30px rgba(139, 92, 246, 0.18));
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.ai-letter-mascot-img:hover {
+    transform: scale(1.06) translateY(-4px);
+}
+
+.ai-letter-subtitle {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    text-align: center;
+    max-width: 640px;
+    margin: 0 auto;
+    line-height: 1.7;
 }
 
 /* Steps Section */
@@ -1464,9 +1588,13 @@ section {
         margin-bottom: 2.5rem;
     }
 
-    .concept-comparison-grid {
-        flex-direction: column;
-        gap: 35px;
+    .concept-flow-container {
+        gap: 0;
+    }
+
+    .concept-solutions-grid {
+        grid-template-columns: 1fr;
+        gap: 30px;
     }
 
     .concept-card {
@@ -1474,9 +1602,11 @@ section {
     }
 
     .concept-problem,
-    .concept-solution {
-        padding-right: 20px; /* Reset individual right paddings on mobile */
+    .concept-solution,
+    .concept-ai {
+        padding-right: 20px;
         min-height: auto;
+        max-width: 100%;
     }
 
     .concept-card-title {
@@ -1485,7 +1615,8 @@ section {
     }
 
     .concept-problem .concept-card-img-wrapper,
-    .concept-solution .concept-card-img-wrapper {
+    .concept-solution .concept-card-img-wrapper,
+    .concept-ai .concept-card-img-wrapper {
         position: relative;
         top: 0;
         right: 0;
@@ -1503,7 +1634,8 @@ section {
     }
 
     .concept-problem .concept-card-img,
-    .concept-solution .concept-card-img {
+    .concept-solution .concept-card-img,
+    .concept-ai .concept-card-img {
         max-width: 90%;
         max-height: 90%;
         width: auto;
@@ -1517,15 +1649,40 @@ section {
         max-width: 100% !important;
     }
 
+    .concept-transition-wrapper {
+        margin: 20px 0 25px 0;
+    }
+
     .concept-arrow-divider {
-        margin: 20px 0;
         display: flex;
         justify-content: center;
         align-items: center;
     }
 
-    .concept-arrow-divider svg {
-        transform: rotate(90deg) !important;
+
+    .ai-letter-section {
+        padding: 40px 16px;
+    }
+
+    .ai-letter-title {
+        font-size: 1.45rem;
+        margin-bottom: 0.35rem;
+        padding: 0 8px;
+    }
+
+    .ai-letter-mascot-box {
+        margin: 0.5rem 0 1rem 0;
+    }
+
+    .ai-letter-mascot-img {
+        max-width: 145px;
+    }
+
+    .ai-letter-subtitle {
+        font-size: 0.95rem;
+        line-height: 1.6;
+        padding: 0 10px;
+        margin: 0 auto;
     }
 
     .steps-section {

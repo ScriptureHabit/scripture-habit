@@ -968,18 +968,26 @@ export default {
         },
         "concept": {
             "title": "Ni vigumu kuendelea peke yako, sivyo?",
-            "subtitle": "Kujiunga na kikundi chenye malengo sawa ndiyo njia rahisi zaidi ya kujenga tabia ya kudumu.",
+            "subtitle": "Iwe ni kutiana moyo na wote au kujifunza kwa kasi yako mwenyewe ukitumia AI, unaweza kujenga tabia endelevu.",
             "problemBadge": "Vigumu Kuendelea",
             "solutionBadge": "Rahisi & Furaha!",
+            "aiBadge": "Hata peke yako, unajiamini!",
+            "twoWaysLabel": "Njia 2 za kuendelea",
             "card1Title": "Unaposoma peke yako",
             "card1Text": "Siku zenye shughuli nyingi hufanya iwe rahisi kusahau kusoma, na kabla ya kujua, tabia hiyo hupotea.",
             "card2Title": "Pamoja na marafiki wanaounga mkono!",
-            "card2Text": "Kwa kutiana moyo kwa upole na kuandika mawazo madogo kila siku, kujifunza kunakuwa tabia ya kawaida."
+            "card2Text": "Kwa kutiana moyo kwa upole na kuandika mawazo madogo kila siku, kujifunza kunakuwa tabia ya kawaida.",
+            "card3Title": "Peke yako? Jifunze na AI!",
+            "card3Text": "Huna mwenzako wa kujifunza naye? Usijali. Scripture Habit AI huchapisha maelezo kila siku na kuwa mwandani wako kwa kasi yako mwenyewe."
+        },
+        "aiLetter": {
+            "title": "Kamwe Huko Peke Yako: Barua za Tafakari Kutoka kwa AI",
+            "subtitle": "Kila unapoandika maelezo mara 2, AI huvaa uhusika wa mhusika wa maandiko na kukuandikia barua yenye upendo na usaidizi wa kibinafsi."
         },
         "steps": {
             "title": "Jinsi ya kutumia",
             "step1Title": "1. Anzisha Kikundi",
-            "step1Desc": "Jaribu kuanzisha kikundi na marafiki, wapenzi, familia, wafanyakazi wenzako, au mtu yeyote ambaye ungependa kusoma naye maandiko.",
+            "step1Desc": "Jaribu kuanzisha kikundi na watu ambao ungependa kusoma nao maandiko, au na AI.",
             "step2Title": "2. Shiriki ulichokiona",
             "step2Desc": "Shiriki dokezo fupi kuhusu kilichogusa moyo wako au ulichokiona wakati wa kusoma maandiko."
         },

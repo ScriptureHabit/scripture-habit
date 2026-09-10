@@ -944,18 +944,26 @@ export default {
         },
         "concept": {
             "title": "Es difícil seguir adelante solo, ¿verdad?",
-            "subtitle": "Estar en un grupo con personas que comparten el mismo objetivo es el camino más directo para formar un hábito.",
+            "subtitle": "Ya sea animándose mutuamente con todos o avanzando a tu propio ritmo con la IA, puedes crear un hábito constante.",
             "problemBadge": "Difícil de continuar",
             "solutionBadge": "¡Fácil y divertido!",
+            "aiBadge": "¡Tranquilidad a solas!",
+            "twoWaysLabel": "Dos formas de continuar",
             "card1Title": "Estudiar a solas...",
             "card1Text": "Los días ocupados empujan la lectura a un lado, y es fácil perder el ritmo antes de darte cuenta.",
             "card2Title": "¡Con amigos!",
-            "card2Text": "Cuando todos se alientan con cariño y convierten lo que notan en palabras, estudiar se convierte en un hábito natural."
+            "card2Text": "Cuando todos se alientan con cariño y convierten lo que notan en palabras, estudiar se convierte en un hábito natural.",
+            "card3Title": "¿A solas? ¡Con la IA!",
+            "card3Text": "No hay problema si no tienes con quién estudiar. La IA de Scripture Habit publica notas diarias y te acompaña a tu propio ritmo."
+        },
+        "aiLetter": {
+            "title": "Nunca estás solo: Cálidas 'Cartas de reflexión' de la IA",
+            "subtitle": "Cada dos notas que escribes, la IA se pone en el papel de un personaje de las Escrituras para escribirte una carta cálida y cercana a ti."
         },
         "steps": {
             "title": "Cómo usar",
             "step1Title": "1. Crear un grupo",
-            "step1Desc": "Intenta crear un grupo con amigos, pareja, familia, compañeros de trabajo o cualquier otra persona con la que quieras estudiar las Escrituras.",
+            "step1Desc": "Intenta crear un grupo con personas con las que quieras estudiar las Escrituras, o con la IA.",
             "step2Title": "2. Comparte lo que notaste",
             "step2Desc": "Comparte una nota corta sobre lo que tocó tu corazón o lo que notaste durante el estudio de las escrituras."
         },
