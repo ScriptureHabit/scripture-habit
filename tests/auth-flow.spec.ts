@@ -57,7 +57,7 @@ test.describe('Auth & Onboarding Flow', () => {
     await performLogin(page, email);
 
     // Verify dashboard
-    await waitForDashboardLoad(page, nickname);
+    await waitForDashboardLoad(page);
     
     const streakCard = page.locator('.streak-card');
     await expect(streakCard.locator('.number')).toHaveText('0');

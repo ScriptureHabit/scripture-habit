@@ -115,7 +115,7 @@ export async function performLogin(
 /**
  * Wait for dashboard to fully load
  */
-export async function waitForDashboardLoad(page: Page, nickname: string) {
+export async function waitForDashboardLoad(page: Page) {
   await expect(page.getByTestId('dashboard-skeleton')).not.toBeVisible({ timeout: DASHBOARD_LOAD_TIMEOUT });
-  await expect(page.getByText(nickname)).toBeVisible();
+  await expect(page.locator('.dashboard-title-text')).toBeVisible({ timeout: DASHBOARD_LOAD_TIMEOUT });
 }

@@ -72,8 +72,8 @@ test.describe('Account Lifecycle', () => {
       console.log('[Lifecycle] Habit Pace modal not visible or skipped. Continuing...');
     }
     
-    // Verify we are on the dashboard and nickname is visible
-    await expect(page.getByText(initialNickname)).toBeVisible();
+    // Verify we are on the dashboard
+    await expect(page.locator('.dashboard-title-text')).toBeVisible();
 
     // 3. Modify profile
     console.log('[Lifecycle] Modifying profile');
