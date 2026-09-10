@@ -132,22 +132,22 @@ const DeveloperStory = ({ userData }: DeveloperStoryProps) => {
                         <p className="section-description">{t('story.personalStudyDesc') || t('story.isaiahDesc')}</p>
                         <div className="isaiah-links">
                             <a 
-                                href={ISAIAH_REPO_URL} 
-                                target="_blank" 
-                                rel="noopener noreferrer" 
-                                className="github-btn"
-                            >
-                                <UilGithub size="20" />
-                                <span>{t('story.isaiahBtn')}</span>
-                            </a>
-                            <a 
                                 href={BOOK_OF_MORMON_REPO_URL} 
                                 target="_blank" 
                                 rel="noopener noreferrer" 
-                                className="github-btn"
+                                className="mormon-btn"
                             >
                                 <UilGithub size="20" />
                                 <span>{t('story.bookOfMormonBtn')}</span>
+                            </a>
+                            <a 
+                                href={ISAIAH_REPO_URL} 
+                                target="_blank" 
+                                rel="noopener noreferrer" 
+                                className="isaiah-btn"
+                            >
+                                <UilGithub size="20" />
+                                <span>{t('story.isaiahBtn')}</span>
                             </a>
                         </div>
                     </div>
