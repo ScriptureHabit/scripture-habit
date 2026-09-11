@@ -253,6 +253,7 @@ export default {
         "shareLearningCall": "¿Te gustaría compartir lo que aprendiste hoy?",
         "modeNote": "Modo Notas",
         "modeOneTap": "Un Toque",
+        "modeUrl": "URL",
         "goToByuSpeech": "Ir al Discurso de BYU",
         "readStudyMaterial": "Leer el Material de Estudio",
         "todaysComeFollowMe": "'Ven, sígueme' de hoy",
@@ -1042,5 +1043,19 @@ export default {
             "repentance": "Arrepentimiento",
             "guidance": "Guía del Espíritu"
         }
+    },
+    "urlStudy": {
+        "modeUrl": "URL",
+        "prompt": "Enter a Gospel Library or talk URL to record today's study",
+        "urlInputPlaceholder": "Paste URL (https://...)",
+        "commentLabel": "Comment (Editable)",
+        "commentPlaceholder": "Thoughts or impressions...",
+        "fetchingInfo": "Fetching URL details...",
+        "completeButton": "Complete",
+        "submitting": "Saving...",
+        "successMessage": "Today's study recorded! 🎉",
+        "errorMessage": "Failed to record study. Please try again.",
+        "urlRequired": "Please enter a URL",
+        "commentRequired": "Please enter a comment"
     }
 };

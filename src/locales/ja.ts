@@ -253,6 +253,7 @@ export default {
         "shareLearningCall": "あなたの今日の学びを共有しませんか？",
         "modeNote": "ノート作成",
         "modeOneTap": "ワンタップ",
+        "modeUrl": "URL",
         "goToByuSpeech": "BYUスピーチへ移動",
         "readStudyMaterial": "学習資料を読む",
         "todaysComeFollowMe": "今日の「わたしに従ってきなさい」",
@@ -1074,6 +1075,20 @@ export default {
             "repentance": "悔い改め",
             "guidance": "御霊の導き"
         }
+    },
+    "urlStudy": {
+        "modeUrl": "URL",
+        "prompt": "読んだ聖典や総大会のURLを入力して記録しよう",
+        "urlInputPlaceholder": "福音ライブラリー等のURLを貼り付け (https://...)",
+        "commentLabel": "コメント (編集可能)",
+        "commentPlaceholder": "学んだことや心に残ったこと...",
+        "fetchingInfo": "URLから情報を取得中...",
+        "completeButton": "完了する",
+        "submitting": "記録中...",
+        "successMessage": "本日の学習を完了しました！🎉",
+        "errorMessage": "学習の記録に失敗しました。もう一度お試しください。",
+        "urlRequired": "URLを入力してください",
+        "commentRequired": "コメントを入力してください"
     }
 };
 

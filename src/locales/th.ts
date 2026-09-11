@@ -253,6 +253,7 @@ export default {
         "shareLearningCall": "คุณต้องการแบ่งปันสิ่งที่คุณเรียนรู้วันนี้หรือไม่?",
         "modeNote": "โหมดบันทึก",
         "modeOneTap": "แตะครั้งเดียว",
+        "modeUrl": "URL",
         "goToByuSpeech": "ไปที่สุนทรพจน์ BYU",
         "readStudyMaterial": "อ่านเอกสารการศึกษา",
         "todaysComeFollowMe": "'จงตามเรามา' ของวันนี้",
@@ -1066,5 +1067,19 @@ export default {
             "repentance": "การกลับใจ",
             "guidance": "การนำทางของพระวิญญาณ"
         }
+    },
+    "urlStudy": {
+        "modeUrl": "URL",
+        "prompt": "Enter a Gospel Library or talk URL to record today's study",
+        "urlInputPlaceholder": "Paste URL (https://...)",
+        "commentLabel": "Comment (Editable)",
+        "commentPlaceholder": "Thoughts or impressions...",
+        "fetchingInfo": "Fetching URL details...",
+        "completeButton": "Complete",
+        "submitting": "Saving...",
+        "successMessage": "Today's study recorded! 🎉",
+        "errorMessage": "Failed to record study. Please try again.",
+        "urlRequired": "Please enter a URL",
+        "commentRequired": "Please enter a comment"
     }
 };

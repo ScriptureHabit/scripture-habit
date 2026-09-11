@@ -253,6 +253,7 @@ export default {
         "shareLearningCall": "Bạn có muốn chia sẻ những gì bạn đã học hôm nay không?",
         "modeNote": "Ghi chú",
         "modeOneTap": "Một chạm",
+        "modeUrl": "URL",
         "goToByuSpeech": "Đi đến Bài phát biểu BYU",
         "readStudyMaterial": "Đọc Tài liệu Nghiên cứu",
         "todaysComeFollowMe": "'Hãy Đến Mà Theo Ta' Hôm nay",
@@ -1040,5 +1041,19 @@ export default {
             "repentance": "Sự hối cải",
             "guidance": "Sự hướng dẫn của Thánh Linh"
         }
+    },
+    "urlStudy": {
+        "modeUrl": "URL",
+        "prompt": "Enter a Gospel Library or talk URL to record today's study",
+        "urlInputPlaceholder": "Paste URL (https://...)",
+        "commentLabel": "Comment (Editable)",
+        "commentPlaceholder": "Thoughts or impressions...",
+        "fetchingInfo": "Fetching URL details...",
+        "completeButton": "Complete",
+        "submitting": "Saving...",
+        "successMessage": "Today's study recorded! 🎉",
+        "errorMessage": "Failed to record study. Please try again.",
+        "urlRequired": "Please enter a URL",
+        "commentRequired": "Please enter a comment"
     }
 };

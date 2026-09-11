@@ -3,7 +3,6 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import DashboardOverview from '../dashboard-overview';
 import { UserData } from '../../../../types/user';
-import { formatDateInTimeZone } from '../../../../utils/time-utils';
 
 vi.mock('../../mascot/mascot', () => ({
   default: () => <div data-testid="mock-mascot">Mascot</div>
@@ -121,38 +120,36 @@ describe('DashboardOverview recent group CTA', () => {
     expect(screen.queryByText('dashboard.rejoinBtn')).toBeNull();
   });
 
-  it('disables one-tap theme buttons and displays notice when completed today', () => {
-    const tz = 'Asia/Tokyo';
-    const todayStr = formatDateInTimeZone(new Date(), tz);
-
-    const completedUserData: UserData = {
-      ...baseUserData,
-      todayTheme: 'faith',
-      todayThemeDate: todayStr,
-      timeZone: tz
-    };
-
+  it('switches to URL study mode and handles URL input and comment preview', async () => {
     render(
       <MemoryRouter>
-        <DashboardOverview {...baseProps} userData={completedUserData} />
+        <DashboardOverview {...baseProps} userData={baseUserData} />
       </MemoryRouter>
     );
 
-    // Switch to one-tap mode
-    const oneTapTab = screen.getByTestId('mode-toggle-onetap');
-    fireEvent.click(oneTapTab);
+    // Switch to URL study mode
+    const urlTab = screen.getByTestId('mode-toggle-url');
+    fireEvent.click(urlTab);
 
-    // Check faith button is selected and disabled
-    const faithBtn = screen.getByTestId('onetap-theme-faith') as HTMLButtonElement;
-    expect(faithBtn.disabled).toBe(true);
-    expect(faithBtn.className).toContain('selected');
-    expect(faithBtn.className).toContain('completed');
+    // Check URL input is rendered
+    const urlInput = screen.getByTestId('url-study-input') as HTMLInputElement;
+    expect(urlInput).toBeDefined();
 
-    // Check hope button is also disabled
-    const hopeBtn = screen.getByTestId('onetap-theme-hope') as HTMLButtonElement;
-    expect(hopeBtn.disabled).toBe(true);
+    // Input Proverbs 22 URL
+    fireEvent.change(urlInput, { target: { value: 'https://www.churchofjesuschrist.org/study/scriptures/ot/prov/22?lang=jpn' } });
 
-    // Check next day notice is shown
-    expect(screen.getByText('※ 次の日の学習記録は明日また利用可能になります')).toBeDefined();
+    // Verify preview and comment textarea are displayed
+    const preview = screen.getByTestId('url-study-preview');
+    expect(preview).toBeDefined();
+    expect(screen.getByText('旧約聖書')).toBeDefined();
+    expect(screen.getByText(/箴言 22/)).toBeDefined();
+
+    const commentTextarea = screen.getByTestId('url-study-comment') as HTMLTextAreaElement;
+    expect(commentTextarea.value).toBe('今日は旧約聖書の箴言22章について学びを深めました。');
+
+    // Check complete button
+    const submitBtn = screen.getByTestId('url-study-submit') as HTMLButtonElement;
+    expect(submitBtn).toBeDefined();
+    expect(submitBtn.disabled).toBe(false);
   });
 });

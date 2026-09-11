@@ -253,6 +253,7 @@ export default {
         "shareLearningCall": "Gusto mo bang ibahagi ang iyong natutunan ngayon?",
         "modeNote": "Tala Mode",
         "modeOneTap": "Isang Tap",
+        "modeUrl": "URL",
         "goToByuSpeech": "Pumunta sa BYU Speech",
         "readStudyMaterial": "Basahin ang Study Material",
         "todaysComeFollowMe": "'Pumarito Ka, Sumunod Ka sa Akin' Ngayon",
@@ -1066,5 +1067,19 @@ export default {
             "repentance": "Pagsisisi",
             "guidance": "Patnubay ng Espiritu"
         }
+    },
+    "urlStudy": {
+        "modeUrl": "URL",
+        "prompt": "Enter a Gospel Library or talk URL to record today's study",
+        "urlInputPlaceholder": "Paste URL (https://...)",
+        "commentLabel": "Comment (Editable)",
+        "commentPlaceholder": "Thoughts or impressions...",
+        "fetchingInfo": "Fetching URL details...",
+        "completeButton": "Complete",
+        "submitting": "Saving...",
+        "successMessage": "Today's study recorded! 🎉",
+        "errorMessage": "Failed to record study. Please try again.",
+        "urlRequired": "Please enter a URL",
+        "commentRequired": "Please enter a comment"
     }
 };

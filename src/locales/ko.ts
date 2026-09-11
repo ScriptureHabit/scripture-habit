@@ -253,6 +253,7 @@ export default {
         "shareLearningCall": "오늘 배운 것을 공유하시겠습니까?",
         "modeNote": "노트 모드",
         "modeOneTap": "원탭 모드",
+        "modeUrl": "URL",
         "goToByuSpeech": "BYU 연설로 이동",
         "readStudyMaterial": "학습 자료 읽기",
         "todaysComeFollowMe": "오늘의 '와서 나를 따르라'",
@@ -1066,5 +1067,19 @@ export default {
             "repentance": "회개",
             "guidance": "영의 인도"
         }
+    },
+    "urlStudy": {
+        "modeUrl": "URL",
+        "prompt": "Enter a Gospel Library or talk URL to record today's study",
+        "urlInputPlaceholder": "Paste URL (https://...)",
+        "commentLabel": "Comment (Editable)",
+        "commentPlaceholder": "Thoughts or impressions...",
+        "fetchingInfo": "Fetching URL details...",
+        "completeButton": "Complete",
+        "submitting": "Saving...",
+        "successMessage": "Today's study recorded! 🎉",
+        "errorMessage": "Failed to record study. Please try again.",
+        "urlRequired": "Please enter a URL",
+        "commentRequired": "Please enter a comment"
     }
 };

@@ -253,6 +253,7 @@ export default {
         "shareLearningCall": "您想分享今天所學到的嗎？",
         "modeNote": "筆記模式",
         "modeOneTap": "一鍵模式",
+        "modeUrl": "URL",
         "goToByuSpeech": "前往 BYU 演講",
         "readStudyMaterial": "閱讀研讀資料",
         "todaysComeFollowMe": "今日的《來跟從我》",
@@ -1041,5 +1042,19 @@ export default {
             "repentance": "悔改",
             "guidance": "聖靈的指引"
         }
+    },
+    "urlStudy": {
+        "modeUrl": "URL",
+        "prompt": "Enter a Gospel Library or talk URL to record today's study",
+        "urlInputPlaceholder": "Paste URL (https://...)",
+        "commentLabel": "Comment (Editable)",
+        "commentPlaceholder": "Thoughts or impressions...",
+        "fetchingInfo": "Fetching URL details...",
+        "completeButton": "Complete",
+        "submitting": "Saving...",
+        "successMessage": "Today's study recorded! 🎉",
+        "errorMessage": "Failed to record study. Please try again.",
+        "urlRequired": "Please enter a URL",
+        "commentRequired": "Please enter a comment"
     }
 };

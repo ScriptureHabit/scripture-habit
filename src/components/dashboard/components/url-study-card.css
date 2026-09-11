@@ -1,0 +1,214 @@
+.url-study-card {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  gap: 12px;
+  box-sizing: border-box;
+}
+
+.url-study-prompt {
+  margin: 0 0 4px 0 !important;
+  font-size: 0.95rem !important;
+  color: var(--black, #2d3748);
+  font-weight: 600;
+  text-align: center;
+}
+
+.url-input-wrapper {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.url-study-input {
+  width: 100%;
+  padding: 12px 38px 12px 14px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1.5px solid rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  font-size: 0.92rem;
+  color: #2d3748;
+  outline: none;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-sizing: border-box;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+}
+
+.url-study-input:focus {
+  border-color: var(--pink, #FF919D);
+  box-shadow: 0 0 0 3px rgba(255, 145, 157, 0.2);
+  background: #ffffff;
+}
+
+.url-study-clear-btn {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #a0aec0;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.15s ease;
+}
+
+.url-study-clear-btn:hover {
+  color: #4a5568;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.url-study-meta-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 14px;
+  background: linear-gradient(135deg, rgba(255, 145, 157, 0.08) 0%, rgba(254, 207, 239, 0.15) 100%);
+  border: 1px solid rgba(255, 145, 157, 0.25);
+  border-radius: 10px;
+  animation: fadeIn 0.25s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.url-study-badge-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.url-study-category-badge {
+  background: var(--pink, #FF919D);
+  color: white;
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.02em;
+}
+
+.url-study-passage-badge,
+.url-study-session-badge,
+.url-study-speaker-badge {
+  background: rgba(255, 255, 255, 0.9);
+  color: #4a5568;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.url-study-title-preview {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #2d3748;
+  line-height: 1.4;
+}
+
+.url-study-loading-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  color: #718096;
+  padding: 2px 4px;
+}
+
+.url-study-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 145, 157, 0.3);
+  border-top-color: var(--pink, #FF919D);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.url-study-comment-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+
+.url-study-comment-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #718096;
+  margin-left: 2px;
+}
+
+.url-study-comment-textarea {
+  width: 100%;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1.5px solid rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: #2d3748;
+  outline: none;
+  resize: vertical;
+  min-height: 64px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.url-study-comment-textarea:focus {
+  border-color: var(--pink, #FF919D);
+  box-shadow: 0 0 0 3px rgba(255, 145, 157, 0.2);
+  background: #ffffff;
+}
+
+.url-study-submit-btn {
+  width: 100%;
+  padding: 12px 20px;
+  font-size: 1rem;
+  font-weight: 700;
+  border-radius: 14px;
+  border: none;
+  background: linear-gradient(135deg, #FF919D 0%, #FF69B4 100%);
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(255, 105, 180, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.url-study-submit-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(255, 105, 180, 0.35);
+}
+
+.url-study-submit-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}

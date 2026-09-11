@@ -10,13 +10,11 @@ import { Group } from '../../../types/chat';
 import StreakCalendar from './streak-calendar';
 import { QuestCard } from './quest-card';
 import { TimeCapsuleCard } from './time-capsule-card';
-import { triggerConfetti } from '../../../utils/confetti-utils';
-import { playNoteSubmitSound } from '../../../utils/audio-feedback';
 import { useModalStore } from '../../../store/use-modal-store';
 import { useLevelUpStore } from '../../../store/use-level-up-store';
 import { useLanguage } from '../../../hooks/use-language';
 import { calculateLevel } from '../../../utils/level-utils';
-import { formatDateInTimeZone } from '../../../utils/time-utils';
+import UrlStudyCard from './url-study-card';
 import './quest-card.css';
 
 interface DashboardOverviewProps {
@@ -40,17 +38,6 @@ interface DashboardOverviewProps {
   onClearRecentGroup?: () => Promise<boolean> | void;
 }
 
-const STUDY_THEMES = [
-  { id: 'faith', icon: '🌱', defaultLabel: '信仰' },
-  { id: 'hope', icon: '⚓', defaultLabel: '希望' },
-  { id: 'charity', icon: '❤️', defaultLabel: '慈愛' },
-  { id: 'gratitude', icon: '🙏', defaultLabel: '感謝' },
-  { id: 'prayer', icon: '✨', defaultLabel: '祈り' },
-  { id: 'patience', icon: '⏳', defaultLabel: '忍耐' },
-  { id: 'repentance', icon: '🕊️', defaultLabel: '悔い改め' },
-  { id: 'guidance', icon: '🧭', defaultLabel: '御霊の導き' }
-];
-
 const DashboardOverview = ({
   t,
   userData,
@@ -72,19 +59,7 @@ const DashboardOverview = ({
   const { language } = useLanguage();
   const isAnyModalOpen = hasActiveModal || !!activeModal;
   const [isRejoining, setIsRejoining] = useState(false);
-  const [studyMode, setStudyMode] = useState<'note' | 'onetap'>('note');
-  const [submittingTheme, setSubmittingTheme] = useState<string | null>(null);
-  const [submittedTheme, setSubmittedTheme] = useState<string | null>(null);
-  const [submittedDate, setSubmittedDate] = useState<string | null>(null);
-
-  const userTz = userData?.timeZone || Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Tokyo';
-  const todayStr = formatDateInTimeZone(new Date(), userTz);
-
-  const currentThemeDate = submittedDate || userData?.todayThemeDate || null;
-  const currentTheme = submittedTheme || userData?.todayTheme || null;
-
-  const isCompletedToday = Boolean(currentThemeDate && currentThemeDate === todayStr);
-  const effectiveTodayTheme = isCompletedToday ? currentTheme : null;
+  const [studyMode, setStudyMode] = useState<'note' | 'url'>('note');
 
   const getSafeTranslation = (key: string, fallback: string, replacements?: Record<string, string | number>): string => {
     const val = t(key, replacements);
@@ -92,36 +67,6 @@ const DashboardOverview = ({
       return fallback;
     }
     return val;
-  };
-
-  const handleSelectTheme = async (themeId: string) => {
-    if (submittingTheme || isCompletedToday) return;
-    setSubmittingTheme(themeId);
-    try {
-      const res = await apiClient.post('/api/study/one-tap', { themeId });
-      if (res.data?.success) {
-        setSubmittedTheme(themeId);
-        setSubmittedDate(todayStr);
-        triggerConfetti({ particleCount: 60, spread: 70, origin: { y: 0.7 } });
-        playNoteSubmitSound();
-        const fallbackTheme = STUDY_THEMES.find(th => th.id === themeId)?.defaultLabel || themeId;
-        const themeName = getSafeTranslation(`oneTapStudy.themes.${themeId}`, fallbackTheme);
-        const successMsg = getSafeTranslation('oneTapStudy.successMessage', `本日の学習を完了しました！【${themeName}】`, { theme: themeName });
-        toast.success(successMsg);
-      }
-    } catch (err: unknown) {
-      if (axios.isAxiosError(err) && (err.response?.data?.code === 'CONFLICT' || err.response?.data?.error?.includes('already completed'))) {
-        setSubmittedDate(todayStr);
-        const alreadyDoneMsg = getSafeTranslation('oneTapStudy.alreadyCompleted', '本日のワンタップ学習は完了しています。また明日記録しましょう！');
-        toast.info(alreadyDoneMsg);
-        return;
-      }
-      console.error('Failed to submit one-tap study:', err);
-      const errorMsg = getSafeTranslation('oneTapStudy.errorMessage', '学習の記録に失敗しました。もう一度お試しください。');
-      toast.error(errorMsg);
-    } finally {
-      setSubmittingTheme(null);
-    }
   };
 
   const handleRejoin = async (recentGroup: RecentGroupInfo) => {
@@ -259,11 +204,11 @@ const DashboardOverview = ({
                   </button>
                   <button
                     type="button"
-                    className={`study-mode-toggle-btn ${studyMode === 'onetap' ? 'active' : ''}`}
-                    onClick={() => setStudyMode('onetap')}
-                    data-testid="mode-toggle-onetap"
+                    className={`study-mode-toggle-btn ${studyMode === 'url' ? 'active' : ''}`}
+                    onClick={() => setStudyMode('url')}
+                    data-testid="mode-toggle-url"
                   >
-                    {getSafeTranslation('oneTapStudy.modeOneTap', getSafeTranslation('dashboard.modeOneTap', 'ワンタップ'))}
+                    {getSafeTranslation('urlStudy.modeUrl', getSafeTranslation('dashboard.modeUrl', 'URL'))}
                   </button>
                 </div>
 
@@ -281,51 +226,11 @@ const DashboardOverview = ({
                     </div>
                   </>
                 ) : (
-                  <div className="onetap-theme-section">
-                    <p className={`onetap-theme-prompt ${isCompletedToday ? 'completed' : ''}`}>
-                      {isCompletedToday
-                        ? (() => {
-                            const fallbackLabel = STUDY_THEMES.find(th => th.id === effectiveTodayTheme)?.defaultLabel || effectiveTodayTheme || '';
-                            const translatedTheme = effectiveTodayTheme
-                              ? getSafeTranslation(`oneTapStudy.themes.${effectiveTodayTheme}`, fallbackLabel)
-                              : '';
-                            return translatedTheme
-                              ? getSafeTranslation('oneTapStudy.completedToday', `本日の学習テーマ：【${translatedTheme}】`, { theme: translatedTheme })
-                              : getSafeTranslation('oneTapStudy.alreadyCompleted', '本日のワンタップ学習は完了しています。また明日記録しましょう！');
-                          })()
-                        : getSafeTranslation('oneTapStudy.selectThemePrompt', '今日のテーマを1つ選んで学習を記録しよう')}
-                    </p>
-                    <div className={`onetap-theme-grid ${isCompletedToday ? 'disabled' : ''}`}>
-                      {STUDY_THEMES.map((th) => {
-                        const isSelected = effectiveTodayTheme === th.id;
-                        const isSubmitting = submittingTheme === th.id;
-                        const themeName = getSafeTranslation(
-                          `oneTapStudy.themes.${th.id}`,
-                          th.defaultLabel
-                        );
-                        return (
-                          <button
-                            key={th.id}
-                            type="button"
-                            className={`onetap-theme-btn ${isSelected ? 'selected' : ''} ${isSubmitting ? 'submitting' : ''} ${isCompletedToday ? 'completed' : ''}`}
-                            onClick={() => handleSelectTheme(th.id)}
-                            disabled={isCompletedToday || !!submittingTheme}
-                            aria-disabled={isCompletedToday || !!submittingTheme}
-                            data-testid={`onetap-theme-${th.id}`}
-                          >
-                            <span className="onetap-theme-icon">{th.icon}</span>
-                            <span className="onetap-theme-name">{themeName}</span>
-                            {isSelected && <span className="onetap-check">✓</span>}
-                          </button>
-                        );
-                      })}
-                    </div>
-                    {isCompletedToday && (
-                      <p className="onetap-next-day-notice">
-                        {getSafeTranslation('oneTapStudy.nextDayNotice', '※ 次の日の学習記録は明日また利用可能になります')}
-                      </p>
-                    )}
-                  </div>
+                  <UrlStudyCard
+                    userData={userData}
+                    language={language || 'ja'}
+                    t={t}
+                  />
                 )}
               </div>
             </div>

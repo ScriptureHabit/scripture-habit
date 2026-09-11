@@ -253,6 +253,7 @@ export default {
         "shareLearningCall": "Je, ungependa kushiriki ulichojifunza leo?",
         "modeNote": "Nukuu",
         "modeOneTap": "Mguso Mmoja",
+        "modeUrl": "URL",
         "goToByuSpeech": "Nenda kwenye Hotuba ya BYU",
         "readStudyMaterial": "Soma Nyenzo za Kujifunza",
         "todaysComeFollowMe": "'Njoo, Unifuate' ya Leo",
@@ -1066,5 +1067,19 @@ export default {
             "repentance": "Toba",
             "guidance": "Mwongozo wa Roho"
         }
+    },
+    "urlStudy": {
+        "modeUrl": "URL",
+        "prompt": "Enter a Gospel Library or talk URL to record today's study",
+        "urlInputPlaceholder": "Paste URL (https://...)",
+        "commentLabel": "Comment (Editable)",
+        "commentPlaceholder": "Thoughts or impressions...",
+        "fetchingInfo": "Fetching URL details...",
+        "completeButton": "Complete",
+        "submitting": "Saving...",
+        "successMessage": "Today's study recorded! 🎉",
+        "errorMessage": "Failed to record study. Please try again.",
+        "urlRequired": "Please enter a URL",
+        "commentRequired": "Please enter a comment"
     }
 };
