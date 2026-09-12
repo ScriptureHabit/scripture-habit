@@ -10,15 +10,12 @@ export default {
         "saving": "กำลังบันทึก...",
         "imageSaved": "บันทึกรูปภาพสำเร็จแล้ว",
         "imageSaveError": "บันทึกรูปภาพไม่สำเร็จ",
-        "share": "แชร์",
-        "shareText": "ศึกษาพระคัมภีร์ครบ {days} วันบน Scripture Habit",
         "viewCard": "ดูบันทึกการเรียนรู้",
         "openLetterAction": "เปิดจดหมาย"
     },
     "levelUp": {
         "title": "ถึงระดับ {level} แล้ว!",
         "label": "เลเวลอัป",
-        "levelBadge": "Lv.{level}",
         "daysStudied": "{days} DAYS",
         "speechBubbleLine1": "ยินดีด้วยกับระดับ {level}! ✨",
         "speechBubbleLine2": "เก่งมากเลย!",
@@ -27,8 +24,6 @@ export default {
         "saving": "กำลังบันทึก...",
         "imageSaved": "บันทึกรูปภาพสำเร็จแล้ว",
         "imageSaveError": "บันทึกรูปภาพไม่สำเร็จ",
-        "share": "แชร์",
-        "shareText": "ถึงระดับ {level} บน Scripture Habit แล้ว! (ศึกษาไปแล้ว {days} วัน)",
         "viewCard": "ดูการ์ดระดับ"
     },
     "timeCapsule": {
@@ -59,9 +54,9 @@ export default {
         "cardSealedDesc": "ปัจจุบันวันที่ {current} / จะเปิดในอีก {remaining} วัน",
         "cardSosTitle": "ข้อความจากตัวคุณในอดีต",
         "postNowBtn": "โพสต์บันทึกตอนนี้",
-        "existingUserModalTitle": "ใหม่: เขียนจดหมายถึงตัวเองในอนาคต",
-        "existingUserModalDesc": "ตอนนี้คุณสามารถเขียนจดหมายถึงตัวเองในอนาคตเมื่อบรรลุเป้าหมายสำคัญได้แล้ว เริ่มต้นเขียนจดหมายสำหรับเป้าหมายถัดไปของคุณกันเลย!",
-        "existingUserModalBtn": "เขียนจดหมาย"
+        "cardSealedBadgeRemaining": "เหลืออีก {remaining} วัน",
+        "cardSealedBadgeOpeningSoon": "เปิดเร็วๆ นี้!",
+        "toMyselfTitle": "ถึงตัวเองในวันที่ {days}"
     },
     "_meta": {
         "code": "th",
@@ -167,29 +162,28 @@ export default {
         "Restoration Proclamation": "ถ้อยแถลงเรื่องการฟื้นฟู"
     },
     "apiErrors": {
-        "INVALID_INVITE_CODE": "Invalid or expired invite code.",
+        "INVALID_INVITE_CODE": "รหัสคำเชิญไม่ถูกต้องหรือหมดอายุแล้ว",
         "EXPIRED_INVITE_LINK": "ลิงก์คำเชิญนี้หมดอายุแล้ว โปรดขอลิงก์ใหม่จากสมาชิกในกลุ่มที่เชิญคุณ",
-        "FORBIDDEN": "Access denied.",
-        "NOT_FOUND": "Resource not found.",
-        "ALREADY_MEMBER": "You are already a member of this group.",
+        "FORBIDDEN": "ปฏิเสธการเข้าถึง",
+        "NOT_FOUND": "ไม่พบข้อมูล",
+        "ALREADY_MEMBER": "คุณเป็นสมาชิกของกลุ่มนี้อยู่แล้ว",
         "GROUP_FULL": "ขออภัยด้วยค่ะ! กลุ่มนี้มีสมาชิกครบกำหนด 5 คนแล้ว 💦 ลองหากลุ่มอื่นดู หรือมาเป็นผู้นำแล้วสร้างกลุ่มใหม่ของตัวเองดีไหมคะ? 🌱",
-        "MAX_GROUPS_LIMIT": "You can only join up to 4 groups. Please leave another group first.",
-        "NETWORK_ERROR": "Network error. Please check your internet connection.",
-        "VALIDATION_ERROR": "Invalid input.",
-        "CONFLICT": "Conflict occurred.",
-        "UNAUTHENTICATED": "Authentication required.",
-        "SERVICE_UNAVAILABLE": "Service temporarily unavailable.",
-        "APP_CHECK_MISSING": "App Check token is missing.",
-        "APP_CHECK_FAILED": "App Check verification failed.",
-        "INVALID_TOKEN": "Session expired. Please log in again.",
-        "auth/email-not-verified": "Email address is not verified. Please check your inbox."
+        "MAX_GROUPS_LIMIT": "คุณสามารถเข้าร่วมได้สูงสุด 4 กลุ่มเท่านั้น โปรดออกจากกลุ่มอื่นก่อน",
+        "NETWORK_ERROR": "เกิดข้อผิดพลาดในการเชื่อมต่อเครือข่าย โปรดตรวจสอบการเชื่อมต่ออินเทอร์เน็ต",
+        "VALIDATION_ERROR": "ข้อมูลที่ป้อนไม่ถูกต้อง",
+        "CONFLICT": "เกิดข้อขัดแย้งของข้อมูล",
+        "UNAUTHENTICATED": "จำเป็นต้องเข้าสู่ระบบ",
+        "SERVICE_UNAVAILABLE": "บริการไม่พร้อมใช้งานชั่วคราว",
+        "APP_CHECK_MISSING": "ไม่มีโทเค็น App Check",
+        "APP_CHECK_FAILED": "การตรวจสอบ App Check ล้มเหลว",
+        "INVALID_TOKEN": "เซสชันหมดอายุแล้ว โปรดเข้าสู่ระบบใหม่อีกครั้ง",
+        "auth/email-not-verified": "ที่อยู่อีเมลยังไม่ได้รับการยืนยัน โปรดตรวจสอบกล่องข้อความของคุณ"
     },
     "common": {
         "cancel": "ยกเลิก",
         "delete": "ลบ",
         "close": "ปิด",
         "dismiss": "ยกเลิก",
-        "saved": "บันทึกแล้ว",
         "error": "เกิดข้อผิดพลาด"
     },
     "seo": {
@@ -223,8 +217,6 @@ export default {
         "isaiahDesc": "บันทึกการศึกษาส่วนตัวเกี่ยวกับหนังสืออิสยาห์ที่พัฒนาโดยผู้พัฒนาและเผยแพร่บน GitHub (ภาษาญี่ปุ่นเท่านั้น) หากสนใจสามารถเข้ามาดูเพื่อเป็นข้อมูลอ้างอิงได้",
         "isaiahBtn": "การศึกษาอิสยาห์ (เว็บไซต์)",
         "bookOfMormonBtn": "การศึกษาพระคัมภีร์มอรมอน (เว็บไซต์)",
-        "supportProject": "สนับสนุน Scripture Habit",
-        "githubSponsorsComingSoon": "สนับสนุน Scripture Habit",
         "feedbackTitle": "ข้อเสนอแนะและการติดต่อ",
         "feedbackDesc": "หากคุณมีข้อเสนอแนะเกี่ยวกับฟีเจอร์ รายงานปัญหา หรือข้อคิดเห็นทั่วไป สามารถส่งผ่านแบบฟอร์มด้านล่างได้เสมอ ข้าพเจ้าอ่านทุกข้อความ",
         "feedbackCategoryIdea": "ไอเดีย / ข้อเสนอแนะ",
@@ -240,7 +232,6 @@ export default {
         "directContact": "ติดต่อโดยตรง: dazhilangxianggen@gmail.com"
     },
     "dashboard": {
-        "welcomeBack": "ยินดีต้อนรับกลับ",
         "newNote": "บันทึกใหม่",
         "streak": "วันรวมทั้งหมด",
         "days": "วัน",
@@ -252,7 +243,6 @@ export default {
         "inspirationSource": "— พระเยซูคริสต์ (หลักคำสอนและพันธสัญญา 50:22)",
         "shareLearningCall": "คุณต้องการแบ่งปันสิ่งที่คุณเรียนรู้วันนี้หรือไม่?",
         "modeNote": "โหมดบันทึก",
-        "modeOneTap": "แตะครั้งเดียว",
         "modeUrl": "URL",
         "goToByuSpeech": "ไปที่สุนทรพจน์ BYU",
         "readStudyMaterial": "อ่านเอกสารการศึกษา",
@@ -338,10 +328,10 @@ export default {
         "consecutiveDays": "จำนวนวันติดต่อกัน",
         "successUpdate": "อัปเดตโปรไฟล์สำเร็จแล้ว!",
         "errorUpdate": "อัปเดตโปรไฟล์ไม่สำเร็จ กรุณาลองใหม่อีกครั้ง",
-        "imageUploadSuccess": "Profile picture updated!",
-        "imageUploadError": "Failed to update profile picture.",
-        "photoHint": "Tap to change profile picture",
-        "imageTooLarge": "Image is too large. Please pick a smaller one.",
+        "imageUploadSuccess": "อัปเดตรูปโปรไฟล์สำเร็จแล้ว!",
+        "imageUploadError": "อัปเดตรูปโปรไฟล์ไม่สำเร็จ",
+        "photoHint": "แตะเพื่อเปลี่ยนรูปโปรไฟล์",
+        "imageTooLarge": "ไฟล์ภาพมีขนาดใหญ่เกินไป กรุณาเลือกภาพที่เล็กลง",
         "notificationToggle": {
             "title": "การแจ้งเตือนแบบพุช",
             "description": "รับข้อมูลอัปเดตเกี่ยวกับกิจกรรมของกลุ่มและการแจ้งเตือนการศึกษา",
@@ -379,7 +369,6 @@ export default {
         "goToByuSpeech": "ไปที่สุนทรพจน์ BYU",
         "readStudyMaterial": "อ่านเอกสารการศึกษา",
         "generateRecap": "✨ สร้างจดหมายสะท้อนคิด AI",
-        "viewRecentRecap": "✨ ดูจดหมายล่าสุด",
         "generatingRecap": "กำลังสร้างจดหมายสะท้อนคิด... อาจใช้เวลาสักครู่",
         "fetchingRecentRecap": "กำลังดึงข้อมูลจดหมายล่าสุด...",
         "recapSuccess": "สร้างจดหมายสะท้อนคิดแล้ว! ตรวจสอบและบันทึก",
@@ -393,10 +382,7 @@ export default {
         "prevPage": "ก่อนหน้า",
         "nextPage": "ถัดไป",
         "pageInfo": "หน้า {current} จาก {total}",
-        "nextLetterInNotes": "(จดหมายใหม่ในอีก {count} โน้ต)",
         "preparingNextLetter": "กำลังเตรียมจดหมายใหม่",
-        "viewPreviousLetterAction": "แตะเพื่ออ่านจดหมายฉบับก่อน 📖",
-        "notesNeededForLetter": "เขียนอีก {count} บันทึกเพื่อรับจดหมาย",
         "newLetterReadySub": "จดหมายใหม่จาก 2 บันทึกของคุณมาถึงแล้ว!",
         "notMember": "คุณไม่ได้เป็นสมาชิกของกลุ่มนี้"
     },
@@ -462,7 +448,6 @@ export default {
         "confirmDelete": "ลบกลุ่ม",
         "confirmLeave": "ออกจากกลุ่ม",
         "leaveConfirmMessage": "คุณแน่ใจหรือไม่ว่าต้องการออกจากกลุ่มนี้?",
-        "groupName": "แชทกลุ่ม",
         "inviteCode": "รหัสเชิญ",
         "replyTo": "ตอบกลับ",
         "replyingTo": "กำลังตอบกลับ",
@@ -491,7 +476,7 @@ export default {
         "deleteNoteWarning": "บันทึกนี้จะถูกลบออกจากกลุ่มทั้งหมดที่แชร์ไว้ด้วย",
         "deleteMessageWarning": "การดำเนินการนี้จะลบบันทึกจาก บันทึกของฉัน ด้วย",
         "translate": "แปล",
-        "translation": "Translation",
+        "translation": "การแปล",
         "translated": "แปลแล้ว",
         "showOriginal": "ดูต้นฉบับ",
         "showTranslation": "ดูคำแปล",
@@ -564,9 +549,9 @@ export default {
         "reportError": "ไม่สามารถส่งรายงานได้ กรุณาลองใหม่อีกครั้ง",
         "linkCopiedForInstagram": "คัดลอกลิงก์คำเชิญแล้ว! คุณสามารถนำไปวางในโปรไฟล์หรือสตอรี่ Instagram ได้เลย",
         "newMessages": "ข้อความใหม่จากตรงนี้",
-        "errorToggleReaction": "Failed to update reaction.",
-        "inviteFriends": "Invite Friends",
-        "reTranslate": "Refresh translation",
+        "errorToggleReaction": "อัปเดตความรู้สึกไม่สำเร็จ",
+        "inviteFriends": "เชิญเพื่อน",
+        "reTranslate": "แปลใหม่อีกครั้ง",
         "retrySend": "ลองส่งอีกครั้ง",
         "retry": "ลองใหม่",
         "sending": "กำลังส่ง...",
@@ -579,7 +564,15 @@ export default {
         "chooseScriptureLabel": "เลือกพระคัมภีร์",
         "chooseScripturePlaceholder": "กรุณาเลือกตัวเลือกพระคัมภีร์",
         "chapterLabel": "บท",
-        "chapterPlaceholder": "เช่น แอลมา 5, อิสยาห์ 9:6",
+        "chapterPlaceholder": [
+            "เช่น อิสยาห์ 1",
+            "เช่น 1 นีไฟ 3:7",
+            "เช่น มัทธิว 11:28",
+            "เช่น 88:125 (สำหรับหลักคำสอนและพันธสัญญา)",
+            "เช่น แอลมา 32:21",
+            "เช่น โมไซยาห์ 2:17",
+            "เช่น ยาโคบ 1:5"
+        ],
         "urlPlaceholder": "กรุณาวาง URL (เช่น https://www.churchofjesuschrist.org/...)",
         "commentLabel": "ความคิดเห็น",
         "commentPlaceholder": [
@@ -1015,11 +1008,7 @@ export default {
             "card2Title": "พัฒนาร่วมกับชุมชน",
             "card2Desc": "ทุกคนสามารถมีส่วนร่วมในการพัฒนาได้ ไม่ว่าจะเป็นการเสนอแนะฟีเจอร์ รายงานข้อผิดพลาดบน Issues หรือส่ง Pull Request บน GitHub",
             "githubBtn": "ดูบน GitHub",
-            "redditBtn": "ชุมชน Reddit",
-            "isaiahBtn": "การศึกษาอิสยาห์ (เว็บไซต์)",
-            "bookOfMormonBtn": "การศึกษาพระคัมภีร์มอรมอน (เว็บไซต์)",
-            "supportBtn": "สนับสนุน Scripture Habit",
-            "sponsorsComingSoon": "สนับสนุน Scripture Habit"
+            "redditBtn": "ชุมชน Reddit"
         },
         "seoContent": {
             "faq": {
@@ -1042,21 +1031,11 @@ export default {
         "loginSuccess": "เข้าสู่ระบบด้วยบัญชีเดโมเรียบร้อยแล้ว!",
         "loginError": "ไม่สามารถเชื่อมต่อสภาพแวดล้อมเดโมได้ กำลังนำทางไปยังหน้าเข้าสู่ระบบ..."
     },
-        "oneTapStudy": {
+    "oneTapStudy": {
         "modeNote": "สร้างบันทึก",
-        "modeOneTap": "วันแท็ป",
-        "selectThemePrompt": "เลือกหัวข้อเพื่อบันทึกการเรียนรู้วันนี้",
-        "completedToday": "หัวข้อการเรียนรู้วันนี้: 【{theme}】",
-        "successMessage": "เสร็จสิ้นการเรียนรู้วันนี้แล้ว! 【{theme}】",
-        "errorMessage": "ไม่สามารถบันทึกการเรียนรู้ได้ โปรดลองอีกครั้ง",
         "categoryOneTap": "วันแท็ป",
-        "categoryThemeStudy": "วันแท็ป",
         "themeLabel": "หัวข้อ",
-        "noteCardTitle": "การเรียนรู้วันแท็ป",
-        "noteCardTheme": "หัวข้อ: {theme}",
         "noteBody": "วันนี้ฉันได้เรียนรู้เพิ่มเติมเกี่ยวกับ {theme}",
-        "alreadyCompleted": "การเรียนรู้แบบแตะครั้งเดียวของวันนี้เสร็จสมบูรณ์แล้ว พรุ่งนี้มาเรียนรู้กันใหม่นะ!",
-        "nextDayNotice": "※ จะสามารถบันทึกได้อีกครั้งในวันพรุ่งนี้",
         "themes": {
             "faith": "ศรัทธา",
             "hope": "ความหวัง",
@@ -1070,16 +1049,16 @@ export default {
     },
     "urlStudy": {
         "modeUrl": "URL",
-        "prompt": "Enter a Gospel Library or talk URL to record today's study",
-        "urlInputPlaceholder": "Paste URL (https://...)",
-        "commentLabel": "Comment (Editable)",
-        "commentPlaceholder": "Thoughts or impressions...",
-        "fetchingInfo": "Fetching URL details...",
-        "completeButton": "Complete",
-        "submitting": "Saving...",
-        "successMessage": "Today's study recorded! 🎉",
-        "errorMessage": "Failed to record study. Please try again.",
-        "urlRequired": "Please enter a URL",
-        "commentRequired": "Please enter a comment"
+        "prompt": "ป้อน URL ของคลังค้นคว้าพระกิตติคุณหรือคำปราศรัยเพื่อบันทึกการศึกษาของวันนี้",
+        "urlInputPlaceholder": "วาง URL (https://...)",
+        "commentLabel": "ความคิดเห็น (แก้ไขได้)",
+        "commentPlaceholder": "ข้อคิดหรือความประทับใจ...",
+        "fetchingInfo": "กำลังดึงข้อมูล URL...",
+        "completeButton": "เสร็จสิ้น",
+        "submitting": "กำลังบันทึก...",
+        "successMessage": "บันทึกการศึกษาของวันนี้แล้ว! 🎉",
+        "errorMessage": "บันทึกการศึกษาไม่สำเร็จ โปรดลองอีกครั้ง",
+        "urlRequired": "โปรดป้อน URL",
+        "commentRequired": "โปรดป้อนความคิดเห็น"
     }
 };

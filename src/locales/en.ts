@@ -10,15 +10,12 @@ export default {
         "saving": "Saving...",
         "imageSaved": "Image saved successfully",
         "imageSaveError": "Failed to save image",
-        "share": "Share",
-        "shareText": "Completed {days} days of scripture study on Scripture Habit.",
         "viewCard": "View Study Record",
         "openLetterAction": "Open Letter"
     },
     "levelUp": {
         "title": "Level {level} Achieved!",
         "label": "LEVEL UP",
-        "levelBadge": "Lv.{level}",
         "daysStudied": "{days} DAYS",
         "speechBubbleLine1": "Congrats on Level {level}! ✨",
         "speechBubbleLine2": "You're incredible!",
@@ -27,8 +24,6 @@ export default {
         "saving": "Saving...",
         "imageSaved": "Image saved successfully",
         "imageSaveError": "Failed to save image",
-        "share": "Share",
-        "shareText": "Reached Level {level} on Scripture Habit! ({days} days studied)",
         "viewCard": "View Level Card"
     },
     "timeCapsule": {
@@ -59,9 +54,9 @@ export default {
         "cardSealedDesc": "Currently Day {current} / Unlocks in {remaining} days",
         "cardSosTitle": "Words from Your Past Self",
         "postNowBtn": "Post Note Now",
-        "existingUserModalTitle": "New: Letter to Future Self",
-        "existingUserModalDesc": "Leave a message for yourself when you hit key milestones! Write a letter for your upcoming goal to get started.",
-        "existingUserModalBtn": "Write a Letter"
+        "cardSealedBadgeRemaining": "{remaining} days left",
+        "cardSealedBadgeOpeningSoon": "Opening Soon!",
+        "toMyselfTitle": "To myself on Day {days}"
     },
     "_meta": {
         "code": "en",
@@ -189,7 +184,6 @@ export default {
         "delete": "Delete",
         "close": "Close",
         "dismiss": "Dismiss",
-        "saved": "Saved",
         "error": "An error occurred"
     },
     "seo": {
@@ -223,8 +217,6 @@ export default {
         "isaiahDesc": "Personal study notes on the Book of Isaiah maintained by the developer, published on GitHub (Japanese only). Feel free to check them out as a reference if you are interested.",
         "isaiahBtn": "Isaiah Study (Website)",
         "bookOfMormonBtn": "Book of Mormon Study (Website)",
-        "supportProject": "Support Scripture Habit",
-        "githubSponsorsComingSoon": "Support Scripture Habit",
         "feedbackTitle": "Feedback & Contact",
         "feedbackDesc": "If you have feature suggestions, bug reports, or general thoughts, please feel free to send them using the form below. I read every message.",
         "feedbackCategoryIdea": "Feature Request / Idea",
@@ -240,7 +232,6 @@ export default {
         "directContact": "Direct Contact: dazhilangxianggen@gmail.com"
     },
     "dashboard": {
-        "welcomeBack": "Welcome back",
         "newNote": "New Note",
         "streak": "Total Days",
         "days": "days",
@@ -252,7 +243,6 @@ export default {
         "inspirationSource": "— Jesus Christ (Doctrine and Covenants 50:22)",
         "shareLearningCall": "Would you like to share what you learned today?",
         "modeNote": "Note Mode",
-        "modeOneTap": "One-Tap",
         "modeUrl": "URL",
         "goToByuSpeech": "Go to BYU Speech",
         "readStudyMaterial": "Read The Study Material",
@@ -379,7 +369,6 @@ export default {
         "goToByuSpeech": "Go to BYU Speeches",
         "readStudyMaterial": "Read The Study Material",
         "generateRecap": "✨ Generate AI Letter",
-        "viewRecentRecap": "✨ View Recent Letter",
         "generatingRecap": "Generating reflection letter... This may take a moment.",
         "fetchingRecentRecap": "Retrieving recent letter...",
         "recapSuccess": "Reflection letter generated! Review and save it.",
@@ -393,10 +382,7 @@ export default {
         "prevPage": "Previous",
         "nextPage": "Next",
         "pageInfo": "Page {current} of {total}",
-        "nextLetterInNotes": "(New letter in {count} more notes)",
         "preparingNextLetter": "Preparing next letter",
-        "viewPreviousLetterAction": "Tap to read previous letter 📖",
-        "notesNeededForLetter": "{count} more note(s) to receive",
         "newLetterReadySub": "A new letter has arrived from your 2 notes!",
         "notMember": "You are not a member of this group"
     },
@@ -462,7 +448,6 @@ export default {
         "confirmDelete": "Delete Group",
         "confirmLeave": "Leave Group",
         "leaveConfirmMessage": "Are you sure you want to leave this group?",
-        "groupName": "Group Chat",
         "inviteCode": "Invite Code",
         "replyTo": "reply to",
         "replyingTo": "Replying to",
@@ -579,7 +564,15 @@ export default {
         "chooseScriptureLabel": "Choose the category",
         "chooseScripturePlaceholder": "Please choose a category option",
         "chapterLabel": "Chapter",
-        "chapterPlaceholder": "e.g. Alma 5, Isaiah 9:6, Matthew 22:36-40",
+        "chapterPlaceholder": [
+            "e.g. Isaiah 1",
+            "e.g. 1 Nephi 3:7",
+            "e.g. Matthew 11:28",
+            "e.g. 88:125 (for Doctrine and Covenants)",
+            "e.g. Alma 32:21",
+            "e.g. Mosiah 2:17",
+            "e.g. Jacob 1:5"
+        ],
         "urlPlaceholder": "Please paste the URL (e.g. https://www.churchofjesuschrist.org/...)",
         "commentLabel": "Comment",
         "commentPlaceholder": [
@@ -1015,11 +1008,7 @@ export default {
             "card2Title": "Built with Community",
             "card2Desc": "Anyone can contribute to development through feature proposals, bug reports via Issues, or Pull Requests on GitHub.",
             "githubBtn": "View on GitHub",
-            "redditBtn": "Reddit Community",
-            "isaiahBtn": "Isaiah Study (Website)",
-            "bookOfMormonBtn": "Book of Mormon Study (Website)",
-            "supportBtn": "Support Scripture Habit",
-            "sponsorsComingSoon": "Support Scripture Habit"
+            "redditBtn": "Reddit Community"
         },
         "seoContent": {
             "faq": {
@@ -1044,19 +1033,9 @@ export default {
     },
     "oneTapStudy": {
         "modeNote": "Create Note",
-        "modeOneTap": "One-Tap",
-        "selectThemePrompt": "Select a theme to record today's study",
-        "completedToday": "Today's Study Theme: 【{theme}】",
-        "successMessage": "Today's study completed! 【{theme}】",
-        "errorMessage": "Failed to record study. Please try again.",
         "categoryOneTap": "One-Tap",
-        "categoryThemeStudy": "One-Tap",
         "themeLabel": "Theme",
-        "noteCardTitle": "One-Tap Study",
-        "noteCardTheme": "Theme: {theme}",
         "noteBody": "Today I was able to deepen my learning about {theme}.",
-        "alreadyCompleted": "Today's one-tap study is completed. Let's study again tomorrow!",
-        "nextDayNotice": "* Available again tomorrow",
         "themes": {
             "faith": "Faith",
             "hope": "Hope",
@@ -1083,4 +1062,3 @@ export default {
         "commentRequired": "Please enter a comment"
     }
 };
-

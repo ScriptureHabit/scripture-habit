@@ -10,15 +10,12 @@ export default {
         "saving": "保存中...",
         "imageSaved": "画像を保存しました",
         "imageSaveError": "画像の保存に失敗しました",
-        "share": "シェア",
-        "shareText": "聖典学習 {days} 日目を達成しました。",
         "viewCard": "学びの記録を表示",
         "openLetterAction": "手紙を開封する"
     },
     "levelUp": {
         "title": "Level {level} 達成！",
         "label": "レベルアップ",
-        "levelBadge": "Lv.{level}",
         "daysStudied": "{days} DAYS",
         "speechBubbleLine1": "Lv.{level}達成おめでとう！✨",
         "speechBubbleLine2": "すごい！",
@@ -27,8 +24,6 @@ export default {
         "saving": "保存中...",
         "imageSaved": "画像を保存しました",
         "imageSaveError": "画像の保存に失敗しました",
-        "share": "シェア",
-        "shareText": "聖典習慣で Level {level} に到達しました！（学習日数: {days}日）",
         "viewCard": "レベルアップカードを表示"
     },
     "timeCapsule": {
@@ -59,9 +54,9 @@ export default {
         "cardSealedDesc": "現在 {current}日 / あと {remaining}日で開封されます",
         "cardSosTitle": "サボりそうなあなたへ：過去の自分からの言葉",
         "postNowBtn": "今すぐ投稿する",
-        "existingUserModalTitle": "新機能：未来の自分へ手紙を書こう",
-        "existingUserModalDesc": "目標日数に達した時の自分へ手紙を届けるタイムカプセル機能が登場しました。まずは次の目標に向けて手紙を書いてみましょう！",
-        "existingUserModalBtn": "手紙を書いてみる"
+        "cardSealedBadgeRemaining": "あと {remaining}日",
+        "cardSealedBadgeOpeningSoon": "開封間近！",
+        "toMyselfTitle": "Day {days}の自分へ"
     },
     "_meta": {
         "code": "ja",
@@ -189,7 +184,6 @@ export default {
         "delete": "削除",
         "close": "閉じる",
         "dismiss": "閉じる",
-        "saved": "保存しました",
         "error": "エラーが発生しました"
     },
     "seo": {
@@ -223,8 +217,6 @@ export default {
         "isaiahDesc": "開発者が個人で進めているイザヤ書の研究ノートをGitHubで公開しています（日本語のみ）。興味のある方は参考程度にご覧ください。",
         "isaiahBtn": "イザヤ書研究(Webサイト)",
         "bookOfMormonBtn": "モルモン書研究(Webサイト)",
-        "supportProject": "Scripture Habitを支援する",
-        "githubSponsorsComingSoon": "Scripture Habitを支援する",
         "feedbackTitle": "ご意見・ご感想・フィードバック",
         "feedbackDesc": "アプリの改善案、不具合の報告、日々の感想などがあれば、以下のフォームから気軽に送信してください。すべて目を通しています。",
         "feedbackCategoryIdea": "アイデア・要望",
@@ -240,7 +232,6 @@ export default {
         "directContact": "直接のお問い合わせ: dazhilangxianggen@gmail.com"
     },
     "dashboard": {
-        "welcomeBack": "おかえりなさい",
         "newNote": "ノート作成",
         "streak": "合計日数",
         "days": "日",
@@ -252,7 +243,6 @@ export default {
         "inspirationSource": "— イエス・キリスト (教義と聖約50:22)",
         "shareLearningCall": "あなたの今日の学びを共有しませんか？",
         "modeNote": "ノート作成",
-        "modeOneTap": "ワンタップ",
         "modeUrl": "URL",
         "goToByuSpeech": "BYUスピーチへ移動",
         "readStudyMaterial": "学習資料を読む",
@@ -379,7 +369,6 @@ export default {
         "goToByuSpeech": "BYUスピーチへ移動",
         "readStudyMaterial": "学習資料を読む",
         "generateRecap": "✨ ふり返りレターを作成",
-        "viewRecentRecap": "✨ 直近のレターを見る",
         "generatingRecap": "ふり返りレターを作成中... 少し時間がかかります。",
         "fetchingRecentRecap": "直近のレターを取得しています...",
         "recapSuccess": "作成完了！お手紙が届いています。",
@@ -393,10 +382,7 @@ export default {
         "prevPage": "前へ",
         "nextPage": "次へ",
         "pageInfo": "{total} ページ中 {current} ページ目",
-        "nextLetterInNotes": "(新しい手紙まであと {count} 回の投稿)",
         "preparingNextLetter": "新しい手紙の準備中",
-        "viewPreviousLetterAction": "タップして前回のレターを読む 📖",
-        "notesNeededForLetter": "あと {count} 回のノート投稿で届きます",
         "newLetterReadySub": "2つのノートから新しいお手紙が届きました！",
         "notMember": "グループに参加していません"
     },
@@ -462,7 +448,6 @@ export default {
         "confirmDelete": "グループを削除",
         "confirmLeave": "グループを退会",
         "leaveConfirmMessage": "本当にこのグループを退会しますか？",
-        "groupName": "グループチャット",
         "inviteCode": "招待リンク",
         "replyTo": "返信先",
         "replyingTo": "返信中",
@@ -841,7 +826,7 @@ export default {
         "page1Content": "このアプリはグループ内でお互いに聖典から学び、教化し合うことで日々の聖典学習を習慣づけることを目的に作成しました。(一人で利用することもできます。)",
         "page2Title": "知っていましたか？",
         "page2Content": "カリフォルニア州ドミニカン大学の研究によると、新しいことの習慣化において一人でやるより友人とお互いに協力してやった方が<strong style='color: #E53E3E; font-size: 1.2em;'>約２倍</strong>の習慣化達成率があることがわかったんです！",
-        "page3Title": "このアプリは...",
+        "page3Title": "{username}さんのための使い方",
         "page3Step1": "1. 学んだことを書き出す(アウトプット)",
         "page3Step2": "2. お互いに学んだことを共有する(教化)",
         "page3Step3": "3. AIによる一週間のレポート作成(振り返り)",
@@ -1023,11 +1008,7 @@ export default {
             "card2Title": "コミュニティと共に",
             "card2Desc": "GitHubでの機能提案やバグ報告、Pull Requestなど、どなたでも開発に参加できます。",
             "githubBtn": "GitHubで見る",
-            "redditBtn": "Reddit コミュニティ",
-            "isaiahBtn": "イザヤ書研究(Webサイト)",
-            "bookOfMormonBtn": "モルモン書研究(Webサイト)",
-            "supportBtn": "Scripture Habitを支援する",
-            "sponsorsComingSoon": "Scripture Habitを支援する"
+            "redditBtn": "Reddit コミュニティ"
         },
         "seoContent": {
             "faq": {
@@ -1052,19 +1033,9 @@ export default {
     },
     "oneTapStudy": {
         "modeNote": "ノート作成",
-        "modeOneTap": "ワンタップ",
-        "selectThemePrompt": "今日のテーマを1つ選んで学習を記録しよう",
-        "completedToday": "本日の学習テーマ：【{theme}】",
-        "successMessage": "本日の学習を完了しました！【{theme}】",
-        "errorMessage": "学習の記録に失敗しました。もう一度お試しください。",
         "categoryOneTap": "ワンタップ",
-        "categoryThemeStudy": "ワンタップ",
         "themeLabel": "テーマ",
-        "noteCardTitle": "ワンタップ学習",
-        "noteCardTheme": "テーマ: {theme}",
         "noteBody": "今日は{theme}について学びを深めることができました。",
-        "alreadyCompleted": "本日のワンタップ学習は完了しています。また明日記録しましょう！",
-        "nextDayNotice": "※ 次の日の学習記録は明日また利用可能になります",
         "themes": {
             "faith": "信仰",
             "hope": "希望",
@@ -1091,4 +1062,3 @@ export default {
         "commentRequired": "コメントを入力してください"
     }
 };
-

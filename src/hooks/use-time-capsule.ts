@@ -1,10 +1,11 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useContext } from 'react';
 import { db } from '../firebase';
 import { collection, query, where, onSnapshot, doc, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { UserData } from '../types/user';
 import { TimeCapsule } from '../types/time-capsule';
 import { FirebaseTimestamp } from '../types/chat';
 import { getNextMilestone } from '../utils/milestone';
+import { LanguageContext } from '../context/language-context';
 
 const DRAFT_KEY_PREFIX = 'scripture_habit_capsule_draft_';
 const SEALED_CACHE_PREFIX = 'scripture_habit_sealed_capsule_';
@@ -20,6 +21,11 @@ function getCachedCapsule(uid: string | undefined): TimeCapsule | null {
 }
 
 export function useTimeCapsule(userData: UserData | null) {
+  const langContext = useContext(LanguageContext);
+  const t = useMemo(() => langContext?.t || ((k: string, r?: Record<string, string | number>) => {
+    if (k === 'timeCapsule.toMyselfTitle' && r?.days) return `Day ${r.days}の自分へ`;
+    return k;
+  }), [langContext?.t]);
   const uid = userData?.uid;
   const isDemo = !!userData?.isAnonymousDemo;
   const daysStudiedCount = userData?.daysStudiedCount || 0;
@@ -138,7 +144,7 @@ export function useTimeCapsule(userData: UserData | null) {
       const newCapsule: Omit<TimeCapsule, 'id'> = {
         type: 'time_capsule',
         targetDays,
-        title: `Day ${targetDays}の自分へ`,
+        title: t('timeCapsule.toMyselfTitle', { days: targetDays }) || `Day ${targetDays}`,
         content: content.trim(),
         sosMessage: sosMessage.trim(),
         isUnlocked: false,
@@ -174,7 +180,7 @@ export function useTimeCapsule(userData: UserData | null) {
         }
       }
     },
-    [uid, daysStudiedCount, clearDraft]
+    [uid, daysStudiedCount, clearDraft, t]
   );
 
   // Unlock a Time Capsule

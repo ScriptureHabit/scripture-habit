@@ -114,7 +114,9 @@ export function TimeCapsuleCard({
             {t('timeCapsule.cardSealedTitle', { days: target })}
           </span>
           <span className="sealed-card-badge">
-            {remaining > 0 ? `あと ${remaining}日` : '開封間近！'}
+            {remaining > 0 
+              ? t('timeCapsule.cardSealedBadgeRemaining', { remaining }) 
+              : t('timeCapsule.cardSealedBadgeOpeningSoon')}
           </span>
         </div>
         <div className="sealed-card-progress-text">

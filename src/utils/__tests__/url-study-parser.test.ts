@@ -173,5 +173,64 @@ describe('url-study-parser', () => {
 
             expect(comment).toBe('Today I deepened my learning on Proverbs 22 from the Old Testament.');
         });
+
+        it('generates Spanish comments properly', () => {
+            const parsed = parseStudyUrl('https://www.churchofjesuschrist.org/study/scriptures/bofm/1-ne/3?lang=spa', 'es');
+            const comment = generateUrlStudyComment({
+                type: parsed.type,
+                categoryLabel: parsed.categoryLabel,
+                category: parsed.category,
+                bookName: parsed.bookName,
+                chapter: parsed.chapter,
+                language: 'es'
+            });
+
+            expect(comment).toBe('Hoy profundicé mi aprendizaje sobre 1 Nefi 3 de El Libro de Mormón.');
+        });
+
+        it('generates Korean comments properly with units', () => {
+            const parsed = parseStudyUrl('https://www.churchofjesuschrist.org/study/scriptures/bofm/1-ne/3?lang=kor', 'ko');
+            const comment = generateUrlStudyComment({
+                type: parsed.type,
+                categoryLabel: parsed.categoryLabel,
+                category: parsed.category,
+                bookName: parsed.bookName,
+                chapter: parsed.chapter,
+                verses: '7',
+                language: 'ko'
+            });
+
+            expect(comment).toBe('오늘은 몰몬경의 니파이전서 3장 7절에 대해 깊이 있게 공부했습니다.');
+        });
+
+        it('generates Traditional Chinese comments properly with units', () => {
+            const parsed = parseStudyUrl('https://www.churchofjesuschrist.org/study/scriptures/bofm/1-ne/3?lang=zho', 'zho');
+            const comment = generateUrlStudyComment({
+                type: parsed.type,
+                categoryLabel: parsed.categoryLabel,
+                category: parsed.category,
+                bookName: parsed.bookName,
+                chapter: parsed.chapter,
+                verses: '7',
+                language: 'zho'
+            });
+
+            expect(comment).toBe('今天我深入研讀了《摩爾門經》中的尼腓一書第3章第7節。');
+        });
+
+        it('generates Tagalog comments properly', () => {
+            const parsed = parseStudyUrl('https://www.churchofjesuschrist.org/study/scriptures/bofm/1-ne/3?lang=tgl', 'tl');
+            const comment = generateUrlStudyComment({
+                type: parsed.type,
+                categoryLabel: parsed.categoryLabel,
+                category: parsed.category,
+                bookName: parsed.bookName,
+                chapter: parsed.chapter,
+                language: 'tl'
+            });
+
+            expect(comment).toBe('Ngayong araw ay pinalalim ko ang aking pag-aaral tungkol sa 1 Nephi 3 mula sa Aklat ni Mormon.');
+        });
     });
 });
+

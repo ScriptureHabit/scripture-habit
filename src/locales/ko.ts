@@ -10,15 +10,12 @@ export default {
         "saving": "저장 중...",
         "imageSaved": "이미지가 저장되었습니다",
         "imageSaveError": "이미지 저장에 실패했습니다",
-        "share": "공유",
-        "shareText": "Scripture Habit에서 경전 학습 {days}일을 달성했습니다.",
         "viewCard": "학습 기록 보기",
         "openLetterAction": "편지 열기"
     },
     "levelUp": {
         "title": "레벨 {level} 달성!",
         "label": "레벨업",
-        "levelBadge": "Lv.{level}",
         "daysStudied": "{days} DAYS",
         "speechBubbleLine1": "레벨 {level} 달성을 축하해요! ✨",
         "speechBubbleLine2": "정말 대단해요!",
@@ -27,8 +24,6 @@ export default {
         "saving": "저장 중...",
         "imageSaved": "이미지가 저장되었습니다",
         "imageSaveError": "이미지 저장에 실패했습니다",
-        "share": "공유",
-        "shareText": "Scripture Habit에서 레벨 {level}에 도달했습니다! (학습 일수: {days}일)",
         "viewCard": "레벨 카드 보기"
     },
     "timeCapsule": {
@@ -59,9 +54,9 @@ export default {
         "cardSealedDesc": "현재 {current}일 / {remaining}일 후 개봉됩니다",
         "cardSosTitle": "과거의 내가 전하는 한마디",
         "postNowBtn": "지금 노트 작성하기",
-        "existingUserModalTitle": "새 기능: 미래의 나에게 편지 쓰기",
-        "existingUserModalDesc": "특별한 마일스톤 달성 시 미래의 나에게 편지를 보낼 수 있습니다. 다음 목표를 위한 편지를 지금 작성해 보세요!",
-        "existingUserModalBtn": "편지 쓰기"
+        "cardSealedBadgeRemaining": "앞으로 {remaining}일",
+        "cardSealedBadgeOpeningSoon": "개봉 임박!",
+        "toMyselfTitle": "Day {days}의 나에게"
     },
     "_meta": {
         "code": "ko",
@@ -189,7 +184,6 @@ export default {
         "delete": "삭제",
         "close": "닫기",
         "dismiss": "닫기",
-        "saved": "저장되었습니다",
         "error": "오류가 발생했습니다"
     },
     "seo": {
@@ -223,8 +217,6 @@ export default {
         "isaiahDesc": "개발자가 개인적으로 진행 중인 이사야서 연구 노트를 GitHub에 공개하고 있습니다(일본어 전용). 관심 있으신 분은 참고용으로 확인해 보세요.",
         "isaiahBtn": "이사야서 연구 (웹사이트)",
         "bookOfMormonBtn": "몰몬경 연구 (웹사이트)",
-        "supportProject": "Scripture Habit 후원하기",
-        "githubSponsorsComingSoon": "Scripture Habit 후원하기",
         "feedbackTitle": "의견 및 피드백",
         "feedbackDesc": "기능 제안, 오류 제보, 응원 메시지 등 나누고 싶은 의견이 있으시다면 아래 양식을 통해 편하게 보내주세요. 모든 메시지를 확인하고 있습니다.",
         "feedbackCategoryIdea": "아이디어 / 기능 제안",
@@ -240,7 +232,6 @@ export default {
         "directContact": "직접 문의: dazhilangxianggen@gmail.com"
     },
     "dashboard": {
-        "welcomeBack": "환영합니다",
         "newNote": "새 노트",
         "streak": "총 일수",
         "days": "일",
@@ -252,7 +243,6 @@ export default {
         "inspirationSource": "— 예수 그리스도 (교리와 성약 50:22)",
         "shareLearningCall": "오늘 배운 것을 공유하시겠습니까?",
         "modeNote": "노트 모드",
-        "modeOneTap": "원탭 모드",
         "modeUrl": "URL",
         "goToByuSpeech": "BYU 연설로 이동",
         "readStudyMaterial": "학습 자료 읽기",
@@ -338,10 +328,10 @@ export default {
         "consecutiveDays": "연속 달성 일수",
         "successUpdate": "프로필이 성공적으로 업데이트되었습니다!",
         "errorUpdate": "프로필 업데이트에 실패했습니다. 다시 시도해 주세요.",
-        "imageUploadSuccess": "Profile picture updated!",
-        "imageUploadError": "Failed to update profile picture.",
-        "photoHint": "Tap to change profile picture",
-        "imageTooLarge": "Image is too large. Please pick a smaller one.",
+        "imageUploadSuccess": "프로필 사진이 업데이트되었습니다!",
+        "imageUploadError": "프로필 사진 업데이트에 실패했습니다.",
+        "photoHint": "탭하여 프로필 사진 변경",
+        "imageTooLarge": "이미지가 너무 큽니다. 더 작은 이미지를 선택해 주세요.",
         "notificationToggle": {
             "title": "푸시 알림",
             "description": "그룹 활동 소식 및 학습 리마인더를 받습니다.",
@@ -379,7 +369,6 @@ export default {
         "goToByuSpeech": "BYU 연설로 이동",
         "readStudyMaterial": "학습 자료 읽기",
         "generateRecap": "✨ AI 성찰 편지 생성",
-        "viewRecentRecap": "✨ 최근 편지 보기",
         "generatingRecap": "성찰 편지를 생성 중입니다... 잠시만 기다려주세요.",
         "fetchingRecentRecap": "최근 편지를 가져오는 중...",
         "recapSuccess": "성찰 편지가 생성되었습니다! 검토하고 저장하세요.",
@@ -393,10 +382,7 @@ export default {
         "prevPage": "이전",
         "nextPage": "다음",
         "pageInfo": "전체 {total}페이지 중 {current}페이지",
-        "nextLetterInNotes": "(새 편지까지 앞으로 {count}개의 노트 작성 필요)",
         "preparingNextLetter": "새 편지 준비 중",
-        "viewPreviousLetterAction": "탭하여 이전 편지 읽기 📖",
-        "notesNeededForLetter": "앞으로 {count}개의 노트를 작성하면 도착합니다",
         "newLetterReadySub": "2개의 노트로부터 새 편지가 도착했습니다!",
         "notMember": "이 그룹의 멤버가 아닙니다"
     },
@@ -462,7 +448,6 @@ export default {
         "confirmDelete": "그룹 삭제",
         "confirmLeave": "그룹 나가기",
         "leaveConfirmMessage": "정말로 이 그룹을 나가시겠습니까?",
-        "groupName": "그룹 채팅",
         "inviteCode": "초대 코드",
         "replyTo": "답장",
         "replyingTo": "답장 중",
@@ -491,7 +476,7 @@ export default {
         "deleteNoteWarning": "이 노트는 공유된 모든 그룹에서도 삭제됩니다.",
         "deleteMessageWarning": "이 작업은 내 노트에서도 해당 노트를 삭제합니다.",
         "translate": "번역",
-        "translation": "Translation",
+        "translation": "번역",
         "translated": "번역됨",
         "showOriginal": "원본 보기",
         "showTranslation": "번역 보기",
@@ -557,16 +542,16 @@ export default {
         "habitPaceProfileTitle": "{nickname}의 목표",
         "habitPaceLetsTryTogether": "함께 힘내자!",
         "habitPaceProfileDesc": "활동을 유지하려면 {days}일마다 게시하세요.",
-        "aiGroupDefaultGroupName": "Scripture Habit AI",
+        "aiGroupDefaultGroupName": "스크립처 해빗 AI",
         "aiGroupDefaultGroupDesc": "Scripture Habit AI와 1대1로 성경을 공부하는 전용 그룹",
         "aiGroupWelcomeMessage": "Scripture Habit AI 그룹에 오신 것을 환영합니다! 매일 함께 성경을 공부하고 깨달음을 나눠봐요. 응원합니다! 📖✨\n※Scripture Habit AI는 매일 노트를 게시하지만, {nickname}님께 직접 답장은 현재 지원되지 않습니다. 양해 부탁드립니다.",
-        "aiGroupBotNickname": "Scripture Habit AI",
+        "aiGroupBotNickname": "스크립처 해빗 AI",
         "reportError": "신고를 제출하는 중 오류가 발생했습니다. 다시 시도해 주세요.",
         "linkCopiedForInstagram": "초대 링크가 복사되었습니다! 이제 Instagram 프로필이나 스토리에 붙여넣을 수 있습니다.",
         "newMessages": "여기부터 읽지 않은 메시지입니다",
-        "errorToggleReaction": "Failed to update reaction.",
-        "inviteFriends": "Invite Friends",
-        "reTranslate": "Refresh translation",
+        "errorToggleReaction": "반응 업데이트에 실패했습니다.",
+        "inviteFriends": "친구 초대",
+        "reTranslate": "다시 번역",
         "retrySend": "다시 보내기",
         "retry": "재시도",
         "sending": "전송 중...",
@@ -579,7 +564,15 @@ export default {
         "chooseScriptureLabel": "성구 선택",
         "chooseScripturePlaceholder": "성구 옵션을 선택해주세요",
         "chapterLabel": "장",
-        "chapterPlaceholder": "예: 앨마서 5, 이사야 9:6",
+        "chapterPlaceholder": [
+            "예: 이사야 1",
+            "예: 니파이전서 3:7",
+            "예: 마태복음 11:28",
+            "예: 88:125 (교리와 성약은 이렇게 입력하세요)",
+            "예: 앨마서 32:21",
+            "예: 모사이야서 2:17",
+            "예: 야곱서 1:5"
+        ],
         "urlPlaceholder": "URL을 붙여넣으세요 (예: https://www.churchofjesuschrist.org/...)",
         "commentLabel": "코멘트",
         "commentPlaceholder": [
@@ -1015,11 +1008,7 @@ export default {
             "card2Title": "커뮤니티와 함께",
             "card2Desc": "GitHub에서의 기능 제안, 버그 신고, Pull Request 등 누구나 개발과 개선에 참여할 수 있습니다.",
             "githubBtn": "GitHub에서 보기",
-            "redditBtn": "Reddit 커뮤니티",
-            "isaiahBtn": "이사야서 연구 (웹사이트)",
-            "bookOfMormonBtn": "몰몬경 연구 (웹사이트)",
-            "supportBtn": "Scripture Habit 후원하기",
-            "sponsorsComingSoon": "Scripture Habit 후원하기"
+            "redditBtn": "Reddit 커뮤니티"
         },
         "seoContent": {
             "faq": {
@@ -1042,21 +1031,11 @@ export default {
         "loginSuccess": "데모 계정으로 로그인되었습니다!",
         "loginError": "데모 환경 연결에 실패했습니다. 로그인 화면으로 이동합니다."
     },
-        "oneTapStudy": {
+    "oneTapStudy": {
         "modeNote": "노트 작성",
-        "modeOneTap": "원터치",
-        "selectThemePrompt": "오늘의 주제를 선택하여 학습을 기록하세요",
-        "completedToday": "오늘의 학습 주제: 【{theme}】",
-        "successMessage": "오늘의 학습을 완료했습니다! 【{theme}】",
-        "errorMessage": "학습 기록에 실패했습니다. 다시 시도해 주세요.",
         "categoryOneTap": "원터치",
-        "categoryThemeStudy": "원터치",
         "themeLabel": "주제",
-        "noteCardTitle": "원터치 학습",
-        "noteCardTheme": "주제: {theme}",
         "noteBody": "오늘은 {theme}에 대해 배움을 넓힐 수 있었습니다.",
-        "alreadyCompleted": "오늘의 원터치 학습이 완료되었습니다. 내일 다시 학습해 봅시다!",
-        "nextDayNotice": "※ 내일 다시 기록할 수 있습니다",
         "themes": {
             "faith": "신앙",
             "hope": "희망",
@@ -1070,16 +1049,16 @@ export default {
     },
     "urlStudy": {
         "modeUrl": "URL",
-        "prompt": "Enter a Gospel Library or talk URL to record today's study",
-        "urlInputPlaceholder": "Paste URL (https://...)",
-        "commentLabel": "Comment (Editable)",
-        "commentPlaceholder": "Thoughts or impressions...",
-        "fetchingInfo": "Fetching URL details...",
-        "completeButton": "Complete",
-        "submitting": "Saving...",
-        "successMessage": "Today's study recorded! 🎉",
-        "errorMessage": "Failed to record study. Please try again.",
-        "urlRequired": "Please enter a URL",
-        "commentRequired": "Please enter a comment"
+        "prompt": "복음 자료실이나 말씀 URL을 입력하여 오늘의 학습을 기록하세요",
+        "urlInputPlaceholder": "URL 붙여넣기 (https://...)",
+        "commentLabel": "코멘트 (수정 가능)",
+        "commentPlaceholder": "생각이나 느낌...",
+        "fetchingInfo": "URL 정보 가져오는 중...",
+        "completeButton": "완료",
+        "submitting": "저장 중...",
+        "successMessage": "오늘의 학습이 기록되었습니다! 🎉",
+        "errorMessage": "학습 기록에 실패했습니다. 다시 시도해 주세요.",
+        "urlRequired": "URL을 입력해 주세요",
+        "commentRequired": "코멘트를 입력해 주세요"
     }
 };

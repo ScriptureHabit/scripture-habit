@@ -15,6 +15,8 @@ vi.mock('../../../../hooks/use-language', () => ({
     t: (key: string, replacements?: any) => {
       if (key === 'timeCapsule.cardNoLetterTitle') return `Day ${replacements?.days}への手紙がまだありません`;
       if (key === 'timeCapsule.cardSealedTitle') return `Day ${replacements?.days}のタイムカプセル封印中`;
+      if (key === 'timeCapsule.cardSealedBadgeRemaining') return `あと ${replacements?.remaining}日`;
+      if (key === 'timeCapsule.cardSealedBadgeOpeningSoon') return '開封間近！';
       if (key === 'timeCapsule.cardSosTitle') return 'サボりそうなあなたへ：過去の自分からの言葉';
       if (key === 'timeCapsule.writeLetterBtn') return '手紙を書く';
       if (key === 'timeCapsule.postNowBtn') return '今すぐ投稿する';

@@ -18,6 +18,7 @@
     "lint": "eslint .",
     "sync:i18n": "npx tsx scripts/sync-i18n.ts",
     "check:i18n": "npm run sync:i18n && npx tsx api_internal/scripts/check-i18n.ts",
+    "audit:i18n": "npx tsx scripts/audit-i18n.ts",
     "check:unused-i18n": "npx tsx scripts/find-unused-i18n-keys.ts",
     "clean:unused-i18n": "npx tsx scripts/clean-unused-i18n-keys.ts",
     "sort:locales": "npx tsx api_internal/scripts/sort-locales.ts",

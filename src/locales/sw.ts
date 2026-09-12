@@ -10,15 +10,12 @@ export default {
         "saving": "Inahifadhi...",
         "imageSaved": "Picha imehifadhiwa vizuri",
         "imageSaveError": "Imeshindwa kuhifadhi picha",
-        "share": "Shiriki",
-        "shareText": "Nimekamilisha siku {days} za kusoma maandiko kwenye Scripture Habit.",
         "viewCard": "Tazama Kumbukumbu ya Masomo",
         "openLetterAction": "Fungua Barua"
     },
     "levelUp": {
         "title": "Kiwango {level} Kimefikiwa!",
         "label": "ONGEZEKO LA KIWANGO",
-        "levelBadge": "Lv.{level}",
         "daysStudied": "{days} SIKU",
         "speechBubbleLine1": "Hongera kwa Kiwango {level}! ✨",
         "speechBubbleLine2": "Ajabu sana!",
@@ -27,8 +24,6 @@ export default {
         "saving": "Inahifadhi...",
         "imageSaved": "Picha imehifadhiwa vizuri",
         "imageSaveError": "Imeshindwa kuhifadhi picha",
-        "share": "Shiriki",
-        "shareText": "Nimefikia Kiwango cha {level} kwenye Scripture Habit! (Siku {days} za masomo)",
         "viewCard": "Tazama Kadi ya Kiwango"
     },
     "timeCapsule": {
@@ -59,9 +54,9 @@ export default {
         "cardSealedDesc": "Sasa Siku ya {current} / Litafunguliwa baada ya siku {remaining}",
         "cardSosTitle": "Maneno Kutoka Kwako wa Zamani",
         "postNowBtn": "Chapisha Dokezo Sasa",
-        "existingUserModalTitle": "Mpya: Barua kwa Nafsi ya Baadaye",
-        "existingUserModalDesc": "Sasa unaweza kuandika barua kwa nafsi yako ya baadaye katika hatua maalum. Anza kwa kuandika barua kwa lengo lako linalofuata!",
-        "existingUserModalBtn": "Andika Barua"
+        "cardSealedBadgeRemaining": "Zimesalia siku {remaining}",
+        "cardSealedBadgeOpeningSoon": "Kufunguliwa hivi karibuni!",
+        "toMyselfTitle": "Kwa nafsi yangu katika Siku ya {days}"
     },
     "_meta": {
         "code": "sw",
@@ -167,29 +162,28 @@ export default {
         "Restoration Proclamation": "Tangazo la Urejesho"
     },
     "apiErrors": {
-        "INVALID_INVITE_CODE": "Invalid or expired invite code.",
+        "INVALID_INVITE_CODE": "Msimbo wa mwaliko si sahihi au umekwisha muda wake.",
         "EXPIRED_INVITE_LINK": "Kiungo hiki cha mwaliko kimeisha muda. Tafadhali muombe mwanachama wa kikundi aliyekualika kiungo kipya.",
-        "FORBIDDEN": "Access denied.",
-        "NOT_FOUND": "Resource not found.",
-        "ALREADY_MEMBER": "You are already a member of this group.",
+        "FORBIDDEN": "Ufikiaji umekataliwa.",
+        "NOT_FOUND": "Nyenzo haipatikani.",
+        "ALREADY_MEMBER": "Tayari wewe ni mwanachama wa kikundi hiki.",
         "GROUP_FULL": "Samahani! Kikundi hiki kimefikia kikomo cha wanachama 5 💦 Mbona usitafute kikundi kingine, au kuwa kiongozi na kuanzisha kikundi chako wenyewe? 🌱",
-        "MAX_GROUPS_LIMIT": "You can only join up to 4 groups. Please leave another group first.",
-        "NETWORK_ERROR": "Network error. Please check your internet connection.",
-        "VALIDATION_ERROR": "Invalid input.",
-        "CONFLICT": "Conflict occurred.",
-        "UNAUTHENTICATED": "Authentication required.",
-        "SERVICE_UNAVAILABLE": "Service temporarily unavailable.",
-        "APP_CHECK_MISSING": "App Check token is missing.",
-        "APP_CHECK_FAILED": "App Check verification failed.",
-        "INVALID_TOKEN": "Session expired. Please log in again.",
-        "auth/email-not-verified": "Email address is not verified. Please check your inbox."
+        "MAX_GROUPS_LIMIT": "Unaweza kujiunga na hadi vikundi 4 pekee. Tafadhali ondoka kwenye kikundi kingine kwanza.",
+        "NETWORK_ERROR": "Hitilafu ya mtandao. Tafadhali angalia muunganisho wako wa intaneti.",
+        "VALIDATION_ERROR": "Ingizo si sahihi.",
+        "CONFLICT": "Mgongano umetokea.",
+        "UNAUTHENTICATED": "Uthibitishaji unahitajika.",
+        "SERVICE_UNAVAILABLE": "Huduma haipatikani kwa sasa.",
+        "APP_CHECK_MISSING": "Tokeni ya App Check inakosekana.",
+        "APP_CHECK_FAILED": "Uthibitishaji wa App Check umeshindwa.",
+        "INVALID_TOKEN": "Kipindi kimekwisha muda wake. Tafadhali ingia tena.",
+        "auth/email-not-verified": "Barua pepe haijathibitishwa. Tafadhali angalia kisanduku pokezi chako."
     },
     "common": {
         "cancel": "Ghairi",
         "delete": "Futa",
         "close": "Funga",
         "dismiss": "Ondoa",
-        "saved": "Imehifadhiwa",
         "error": "Hitilafu imetokea"
     },
     "seo": {
@@ -223,8 +217,6 @@ export default {
         "isaiahDesc": "Vidokezo vya utafiti wa kibinafsi kuhusu Kitabu cha Isaya vinavyosimamiwa na msanidi programu na kuchapishwa kwenye GitHub (kwa Kijapani pekee). Jisikie huru kuviangalia kama marejeleo ukipenda.",
         "isaiahBtn": "Utafiti wa Isaya (Tovuti)",
         "bookOfMormonBtn": "Utafiti wa Kitabu cha Mormoni (Tovuti)",
-        "supportProject": "Saidia Scripture Habit",
-        "githubSponsorsComingSoon": "Saidia Scripture Habit",
         "feedbackTitle": "Maoni na Mawasiliano",
         "feedbackDesc": "Kama una mapendekezo ya vipengele, ripoti za hitilafu, au mawazo ya jumla, tafadhali jisikie huru kuyatuma kupitia fomu iliyo hapa chini. Ninasoma kila ujumbe.",
         "feedbackCategoryIdea": "Wazo / Pendekezo",
@@ -240,7 +232,6 @@ export default {
         "directContact": "Mawasiliano ya Moja kwa Moja: dazhilangxianggen@gmail.com"
     },
     "dashboard": {
-        "welcomeBack": "Karibu tena",
         "newNote": "Ujumbe Mpya",
         "streak": "Siku za Jumla",
         "days": "siku",
@@ -252,7 +243,6 @@ export default {
         "inspirationSource": "— Yesu Kristo (Mafundisho na Maagano 50:22)",
         "shareLearningCall": "Je, ungependa kushiriki ulichojifunza leo?",
         "modeNote": "Nukuu",
-        "modeOneTap": "Mguso Mmoja",
         "modeUrl": "URL",
         "goToByuSpeech": "Nenda kwenye Hotuba ya BYU",
         "readStudyMaterial": "Soma Nyenzo za Kujifunza",
@@ -338,10 +328,10 @@ export default {
         "consecutiveDays": "Siku mfululizo",
         "successUpdate": "Wasifu umesasishwa kikamilifu!",
         "errorUpdate": "Imeshindikana kusasisha wasifu. Tafadhali jaribu tena.",
-        "imageUploadSuccess": "Profile picture updated!",
-        "imageUploadError": "Failed to update profile picture.",
-        "photoHint": "Tap to change profile picture",
-        "imageTooLarge": "Image is too large. Please pick a smaller one.",
+        "imageUploadSuccess": "Picha ya wasifu imesasishwa kikamilifu!",
+        "imageUploadError": "Imeshindwa kusasisha picha ya wasifu.",
+        "photoHint": "Gusa ili kubadilisha picha ya wasifu",
+        "imageTooLarge": "Picha ni kubwa mno. Tafadhali chagua picha ndogo zaidi.",
         "notificationToggle": {
             "title": "Arifa za Push",
             "description": "Pokea habari kuhusu shughuli za kikundi na vikumbusho vya funzo.",
@@ -379,7 +369,6 @@ export default {
         "goToByuSpeech": "Nenda kwenye Hotuba ya BYU",
         "readStudyMaterial": "Soma Nyenzo za Kujifunza",
         "generateRecap": "✨ Tengeneza Barua ya Tafakari ya AI",
-        "viewRecentRecap": "✨ Ona barua ya hivi karibuni",
         "generatingRecap": "Inatengeneza barua ya tafakari... Hii inaweza kuchukua muda.",
         "fetchingRecentRecap": "Inapata barua ya hivi karibuni...",
         "recapSuccess": "Barua ya tafakari imetengenezwa! Ukague na uuhifadhi.",
@@ -393,10 +382,7 @@ export default {
         "prevPage": "Iliyopita",
         "nextPage": "Inayofuata",
         "pageInfo": "Ukurasa {current} kati ya {total}",
-        "nextLetterInNotes": "(Barua mpya baada ya maelezo {count})",
         "preparingNextLetter": "Inaandaa barua mpya",
-        "viewPreviousLetterAction": "Gusa kusoma barua iliyotangulia 📖",
-        "notesNeededForLetter": "Andika madokezo {count} zaidi kupokea",
         "newLetterReadySub": "Barua mpya imewasili kutoka kwa madokezo yako 2!",
         "notMember": "Wewe si mwanachama wa kikundi hiki"
     },
@@ -462,7 +448,6 @@ export default {
         "confirmDelete": "Futa Kikundi",
         "confirmLeave": "Ondoka Kwenye Kikundi",
         "leaveConfirmMessage": "Je, una uhakika unataka kuondoka kwenye kikundi hiki?",
-        "groupName": "Mazungumzo ya Kikundi",
         "inviteCode": "Msimbo wa Mwaliko",
         "replyTo": "jibu kwa",
         "replyingTo": "Inajibu kwa",
@@ -491,7 +476,7 @@ export default {
         "deleteNoteWarning": "Maelezo haya pia yatafutwa kutoka vikundi vyote viliposhirikiwa.",
         "deleteMessageWarning": "Hii pia itafuta maelezo kutoka Maelezo Yangu.",
         "translate": "Tafsiri",
-        "translation": "Translation",
+        "translation": "Tafsiri",
         "translated": "Imetafsiriwa",
         "showOriginal": "Onyesha asili",
         "showTranslation": "Onyesha tafsiri",
@@ -564,9 +549,9 @@ export default {
         "reportError": "Imeshindwa kutuma ripoti. Tafadhali jaribu tena.",
         "linkCopiedForInstagram": "Kiungo cha mwaliko kimenakiliwa! Kibandike kwenye wasifu au hadithi yako ya Instagram.",
         "newMessages": "Ujumbe mpya kuanzia hapa",
-        "errorToggleReaction": "Failed to update reaction.",
-        "inviteFriends": "Invite Friends",
-        "reTranslate": "Refresh translation",
+        "errorToggleReaction": "Imeshindwa kusasisha maoni.",
+        "inviteFriends": "Alika Marafiki",
+        "reTranslate": "Tafsiri upya",
         "retrySend": "Jaribu kutuma tena",
         "retry": "Jaribu tena",
         "sending": "Inatuma...",
@@ -579,7 +564,15 @@ export default {
         "chooseScriptureLabel": "Chagua andiko",
         "chooseScripturePlaceholder": "Tafadhali chagua chaguo la andiko",
         "chapterLabel": "Sura",
-        "chapterPlaceholder": "mf. Alma 5, Isaya 9:6",
+        "chapterPlaceholder": [
+            "mf. Isaya 1",
+            "mf. 1 Nefi 3:7",
+            "mf. Mathayo 11:28",
+            "mf. 88:125 (kwa Mafundisho na Maagano)",
+            "mf. Alma 32:21",
+            "mf. Mosia 2:17",
+            "mf. Yakobo 1:5"
+        ],
         "urlPlaceholder": "Tafadhali bandika URL (mfano https://www.churchofjesuschrist.org/...)",
         "commentLabel": "Maoni",
         "commentPlaceholder": [
@@ -1015,11 +1008,7 @@ export default {
             "card2Title": "Pamoja na Jamii",
             "card2Desc": "Mtu yeyote anaweza kushiriki katika uundaji kupitia mapendekezo ya vipengele, ripoti za hitilafu kwenye Issues, au Pull Requests kwenye GitHub.",
             "githubBtn": "Tazama kwenye GitHub",
-            "redditBtn": "Jumuiya ya Reddit",
-            "isaiahBtn": "Utafiti wa Isaya (Tovuti)",
-            "bookOfMormonBtn": "Utafiti wa Kitabu cha Mormoni (Tovuti)",
-            "supportBtn": "Saidia Scripture Habit",
-            "sponsorsComingSoon": "Saidia Scripture Habit"
+            "redditBtn": "Jumuiya ya Reddit"
         },
         "seoContent": {
             "faq": {
@@ -1042,21 +1031,11 @@ export default {
         "loginSuccess": "Umeingia kwa kutumia akaunti ya majaribio!",
         "loginError": "Imeshindwa kuunganisha kwenye mazingira ya majaribio. Inaelekeza kwenye ukurasa wa kuingia..."
     },
-        "oneTapStudy": {
+    "oneTapStudy": {
         "modeNote": "Andika Dokezo",
-        "modeOneTap": "Mguso Mmoja",
-        "selectThemePrompt": "Chagua mada kurekodi mafunzo yako ya leo",
-        "completedToday": "Mada ya mafunzo ya leo: 【{theme}】",
-        "successMessage": "Mafunzo ya leo yamekamilika! 【{theme}】",
-        "errorMessage": "Imeshindwa kurekodi mafunzo. Tafadhali jaribu tena.",
         "categoryOneTap": "Mguso Mmoja",
-        "categoryThemeStudy": "Mguso Mmoja",
         "themeLabel": "Mada",
-        "noteCardTitle": "Mafunzo ya Mguso Mmoja",
-        "noteCardTheme": "Mada: {theme}",
         "noteBody": "Leo nimeweza kukuza mafunzo yangu kuhusu {theme}.",
-        "alreadyCompleted": "Funzo la mguso mmoja la leo limekamilika. Tusome tena kesho!",
-        "nextDayNotice": "※ Itapatikana tena kesho",
         "themes": {
             "faith": "Imani",
             "hope": "Tumaini",
@@ -1070,16 +1049,16 @@ export default {
     },
     "urlStudy": {
         "modeUrl": "URL",
-        "prompt": "Enter a Gospel Library or talk URL to record today's study",
-        "urlInputPlaceholder": "Paste URL (https://...)",
-        "commentLabel": "Comment (Editable)",
-        "commentPlaceholder": "Thoughts or impressions...",
-        "fetchingInfo": "Fetching URL details...",
-        "completeButton": "Complete",
-        "submitting": "Saving...",
-        "successMessage": "Today's study recorded! 🎉",
-        "errorMessage": "Failed to record study. Please try again.",
-        "urlRequired": "Please enter a URL",
-        "commentRequired": "Please enter a comment"
+        "prompt": "Weka kiungo cha Gospel Library au hotuba ili kurekodi masomo ya leo",
+        "urlInputPlaceholder": "Bandika kiungo (https://...)",
+        "commentLabel": "Maoni (yanaweza kubadilishwa)",
+        "commentPlaceholder": "Mawazo au hisia...",
+        "fetchingInfo": "Inaleta maelezo ya kiungo...",
+        "completeButton": "Kamilisha",
+        "submitting": "Inahifadhi...",
+        "successMessage": "Masomo ya leo yamerekodiwa! 🎉",
+        "errorMessage": "Imeshindwa kurekodi masomo. Tafadhali jaribu tena.",
+        "urlRequired": "Tafadhali weka kiungo",
+        "commentRequired": "Tafadhali weka maoni"
     }
 };

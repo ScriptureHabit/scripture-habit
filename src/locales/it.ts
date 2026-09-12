@@ -10,15 +10,12 @@ export default {
         "saving": "Salvataggio...",
         "imageSaved": "Immagine salvata con successo",
         "imageSaveError": "Impossibile salvare l'immagine",
-        "share": "Condividi",
-        "shareText": "Ho completato {days} giorni di studio delle scritture su Scripture Habit.",
         "viewCard": "Visualizza Registro di Studio",
         "openLetterAction": "Apri Lettera"
     },
     "levelUp": {
         "title": "Livello {level} Raggiunto!",
         "label": "LIVELLO SUPERATO",
-        "levelBadge": "Lv.{level}",
         "daysStudied": "{days} GIORNI",
         "speechBubbleLine1": "Congratulazioni per il Livello {level}! ✨",
         "speechBubbleLine2": "Fantastico!",
@@ -27,8 +24,6 @@ export default {
         "saving": "Salvataggio...",
         "imageSaved": "Immagine salvata con successo",
         "imageSaveError": "Impossibile salvare l'immagine",
-        "share": "Condividi",
-        "shareText": "Ho raggiunto il Livello {level} su Scripture Habit! ({days} giorni di studio)",
         "viewCard": "Visualizza Scheda Livello"
     },
     "timeCapsule": {
@@ -59,9 +54,9 @@ export default {
         "cardSealedDesc": "Attualmente Giorno {current} / Si sblocca tra {remaining} giorni",
         "cardSosTitle": "Parole dal Tuo Io Passato",
         "postNowBtn": "Pubblica Nota Ora",
-        "existingUserModalTitle": "Novità: Lettera al Tuo Io Futuro",
-        "existingUserModalDesc": "Ora puoi scrivere lettere al tuo io futuro in occasione di traguardi speciali. Inizia scrivendo una lettera per il tuo prossimo obiettivo!",
-        "existingUserModalBtn": "Scrivi una Lettera"
+        "cardSealedBadgeRemaining": "Mancano {remaining} giorni",
+        "cardSealedBadgeOpeningSoon": "Apertura imminente!",
+        "toMyselfTitle": "A me stesso al Giorno {days}"
     },
     "_meta": {
         "code": "it",
@@ -189,7 +184,6 @@ export default {
         "delete": "Elimina",
         "close": "Chiudi",
         "dismiss": "Ignora",
-        "saved": "Salvato",
         "error": "Si è verificato un errore"
     },
     "seo": {
@@ -223,8 +217,6 @@ export default {
         "isaiahDesc": "Note di studio personali sul libro di Isaia curate dallo sviluppatore e pubblicate su GitHub (solo in giapponese). Chi è interessato può consultarle come riferimento.",
         "isaiahBtn": "Studio di Isaia (Sito web)",
         "bookOfMormonBtn": "Studio del Libro di Mormon (Sito web)",
-        "supportProject": "Supporta Scripture Habit",
-        "githubSponsorsComingSoon": "Supporta Scripture Habit",
         "feedbackTitle": "Feedback e Contatti",
         "feedbackDesc": "Se hai suggerimenti, segnalazioni di bug o considerazioni generali, inviali usando il modulo sottostante. Leggo ogni messaggio.",
         "feedbackCategoryIdea": "Richiesta di funzionalità / Idea",
@@ -240,7 +232,6 @@ export default {
         "directContact": "Contatto Diretto: dazhilangxianggen@gmail.com"
     },
     "dashboard": {
-        "welcomeBack": "Bentornato/a",
         "newNote": "Nuova Nota",
         "streak": "Giorni Totali",
         "days": "giorni",
@@ -252,7 +243,6 @@ export default {
         "inspirationSource": "— Gesù Cristo (Dottrina e Alleanze 50:22)",
         "shareLearningCall": "Ti andrebbe di condividere ciò che hai imparato oggi?",
         "modeNote": "Modalità Note",
-        "modeOneTap": "Un Tocco",
         "modeUrl": "URL",
         "goToByuSpeech": "Vai a BYU Speeches",
         "readStudyMaterial": "Leggi il Materiale di Studio",
@@ -379,7 +369,6 @@ export default {
         "goToByuSpeech": "Vai a BYU Speeches",
         "readStudyMaterial": "Leggi il Materiale di Studio",
         "generateRecap": "✨ Genera Lettera di Riflessione",
-        "viewRecentRecap": "✨ Visualizza Lettera Recente",
         "generatingRecap": "Generazione della lettera in corso... Potrebbe richiedere qualche istante.",
         "fetchingRecentRecap": "Recupero della lettera recente...",
         "recapSuccess": "Lettera di riflessione generata! Controllala e salvala.",
@@ -393,10 +382,7 @@ export default {
         "prevPage": "Precedente",
         "nextPage": "Successivo",
         "pageInfo": "Pagina {current} di {total}",
-        "nextLetterInNotes": "(Nuova lettera tra {count} note)",
         "preparingNextLetter": "Preparazione nuova lettera",
-        "viewPreviousLetterAction": "Tocca per leggere la lettera precedente 📖",
-        "notesNeededForLetter": "Scrivi ancora {count} nota/e per riceverla",
         "newLetterReadySub": "Una nuova lettera è arrivata dalle tue 2 note!",
         "notMember": "Non sei un membro di questo gruppo"
     },
@@ -462,7 +448,6 @@ export default {
         "confirmDelete": "Elimina Gruppo",
         "confirmLeave": "Lascia Gruppo",
         "leaveConfirmMessage": "Sei sicuro/a di voler lasciare questo gruppo?",
-        "groupName": "Chat di Gruppo",
         "inviteCode": "Codice Invito",
         "replyTo": "rispondi a",
         "replyingTo": "Risposta a",
@@ -579,7 +564,15 @@ export default {
         "chooseScriptureLabel": "Scegli la categoria",
         "chooseScripturePlaceholder": "Scegli un'opzione di categoria",
         "chapterLabel": "Capitolo",
-        "chapterPlaceholder": "es. Alma 5, Isaia 9:6, Matteo 22:36-40",
+        "chapterPlaceholder": [
+            "es. Isaia 1",
+            "es. 1 Nefi 3:7",
+            "es. Matteo 11:28",
+            "es. 88:125 (per Dottrina e Alleanze)",
+            "es. Alma 32:21",
+            "es. Mosia 2:17",
+            "es. Giacomo 1:5"
+        ],
         "urlPlaceholder": "Incolla l'URL (es. https://www.churchofjesuschrist.org/...)",
         "commentLabel": "Commento",
         "commentPlaceholder": [
@@ -1015,11 +1008,7 @@ export default {
             "card2Title": "Costruito con la Comunità",
             "card2Desc": "Puoi contribuire allo sviluppo proponendo funzionalità, segnalando bug tramite Issues o inviando Pull Request su GitHub.",
             "githubBtn": "Vedi su GitHub",
-            "redditBtn": "Community Reddit",
-            "isaiahBtn": "Studio di Isaia (Sito web)",
-            "bookOfMormonBtn": "Studio del Libro di Mormon (Sito web)",
-            "supportBtn": "Supporta Scripture Habit",
-            "sponsorsComingSoon": "Supporta Scripture Habit"
+            "redditBtn": "Community Reddit"
         },
         "seoContent": {
             "faq": {
@@ -1042,21 +1031,11 @@ export default {
         "loginSuccess": "Connesso come Utente Demo!",
         "loginError": "Impossibile accedere all'ambiente demo. Reindirizzamento al login."
     },
-        "oneTapStudy": {
+    "oneTapStudy": {
         "modeNote": "Crea Nota",
-        "modeOneTap": "Un Tocco",
-        "selectThemePrompt": "Scegli un tema per registrare il tuo studio di oggi",
-        "completedToday": "Tema di studio di oggi: 【{theme}】",
-        "successMessage": "Studio di oggi completato! 【{theme}】",
-        "errorMessage": "Impossibile registrare lo studio. Riprova.",
         "categoryOneTap": "Un Tocco",
-        "categoryThemeStudy": "Un Tocco",
         "themeLabel": "Tema",
-        "noteCardTitle": "Studio con Un Tocco",
-        "noteCardTheme": "Tema: {theme}",
         "noteBody": "Oggi ho approfondito il mio studio su {theme}.",
-        "alreadyCompleted": "Lo studio con un tocco di oggi è completato. Studiamo di nuovo domani!",
-        "nextDayNotice": "※ Disponibile di nuovo domani",
         "themes": {
             "faith": "Fede",
             "hope": "Speranza",
@@ -1070,16 +1049,16 @@ export default {
     },
     "urlStudy": {
         "modeUrl": "URL",
-        "prompt": "Enter a Gospel Library or talk URL to record today's study",
-        "urlInputPlaceholder": "Paste URL (https://...)",
-        "commentLabel": "Comment (Editable)",
-        "commentPlaceholder": "Thoughts or impressions...",
-        "fetchingInfo": "Fetching URL details...",
-        "completeButton": "Complete",
-        "submitting": "Saving...",
-        "successMessage": "Today's study recorded! 🎉",
-        "errorMessage": "Failed to record study. Please try again.",
-        "urlRequired": "Please enter a URL",
-        "commentRequired": "Please enter a comment"
+        "prompt": "Inserisci l'URL di Biblioteca Evangelica o di un discorso per registrare lo studio di oggi",
+        "urlInputPlaceholder": "Incolla URL (https://...)",
+        "commentLabel": "Commento (modificabile)",
+        "commentPlaceholder": "Pensieri o impressioni...",
+        "fetchingInfo": "Recupero dettagli URL in corso...",
+        "completeButton": "Completa",
+        "submitting": "Salvataggio...",
+        "successMessage": "Studio di oggi registrato! 🎉",
+        "errorMessage": "Impossibile registrare lo studio. Riprova.",
+        "urlRequired": "Inserisci un URL",
+        "commentRequired": "Inserisci un commento"
     }
 };

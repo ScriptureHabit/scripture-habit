@@ -10,15 +10,12 @@ export default {
         "saving": "儲存中...",
         "imageSaved": "圖片已成功儲存",
         "imageSaveError": "儲存圖片失敗",
-        "share": "分享",
-        "shareText": "在 Scripture Habit 上達成了經文研讀 {days} 天。",
         "viewCard": "查看研讀記錄",
         "openLetterAction": "開啟信件"
     },
     "levelUp": {
         "title": "達到等級 {level}！",
         "label": "等級提升",
-        "levelBadge": "Lv.{level}",
         "daysStudied": "{days} DAYS",
         "speechBubbleLine1": "恭喜升至等級 {level}！✨",
         "speechBubbleLine2": "太厲害了！",
@@ -27,8 +24,6 @@ export default {
         "saving": "儲存中...",
         "imageSaved": "圖片已成功儲存",
         "imageSaveError": "儲存圖片失敗",
-        "share": "分享",
-        "shareText": "在 Scripture Habit 上達到了等級 {level}！（研讀天數：{days} 天）",
         "viewCard": "查看等級卡片"
     },
     "timeCapsule": {
@@ -59,9 +54,9 @@ export default {
         "cardSealedDesc": "目前第 {current} 天 / 還有 {remaining} 天解鎖",
         "cardSosTitle": "來自過去自己的一句話",
         "postNowBtn": "立即發布筆記",
-        "existingUserModalTitle": "新功能：寫信給未來的自己",
-        "existingUserModalDesc": "現在可以在達成各個里程碑時給未來的自己寫信了。為你的下一個目標寫下第一封信吧！",
-        "existingUserModalBtn": "撰寫信件"
+        "cardSealedBadgeRemaining": "還剩 {remaining} 天",
+        "cardSealedBadgeOpeningSoon": "即將開封！",
+        "toMyselfTitle": "致第 {days} 天的自己"
     },
     "_meta": {
         "code": "zho",
@@ -189,7 +184,6 @@ export default {
         "delete": "刪除",
         "close": "關閉",
         "dismiss": "關閉",
-        "saved": "已儲存",
         "error": "發生錯誤"
     },
     "seo": {
@@ -223,8 +217,6 @@ export default {
         "isaiahDesc": "開發者個人進行的以賽亞書研究筆記已發布於GitHub（僅限日語）。有興趣的朋友歡迎參考查閱。",
         "isaiahBtn": "以賽亞書研究(網站)",
         "bookOfMormonBtn": "摩爾門經研究(網站)",
-        "supportProject": "支持 Scripture Habit",
-        "githubSponsorsComingSoon": "支持 Scripture Habit",
         "feedbackTitle": "意見回饋與聯絡",
         "feedbackDesc": "如果您有功能建議、問題回報或任何想法，歡迎隨時透過下方表單發送。我會閱讀每一則留言。",
         "feedbackCategoryIdea": "功能建議 / 想法",
@@ -240,7 +232,6 @@ export default {
         "directContact": "直接聯絡: dazhilangxianggen@gmail.com"
     },
     "dashboard": {
-        "welcomeBack": "歡迎回來",
         "newNote": "新增筆記",
         "streak": "總計天數",
         "days": "天",
@@ -252,7 +243,6 @@ export default {
         "inspirationSource": "— 耶穌基督(教義和聖約50:22)",
         "shareLearningCall": "您想分享今天所學到的嗎？",
         "modeNote": "筆記模式",
-        "modeOneTap": "一鍵模式",
         "modeUrl": "URL",
         "goToByuSpeech": "前往 BYU 演講",
         "readStudyMaterial": "閱讀研讀資料",
@@ -379,7 +369,6 @@ export default {
         "goToByuSpeech": "前往 BYU 演講",
         "readStudyMaterial": "閱讀研讀資料",
         "generateRecap": "✨ 產生 AI 反思信件",
-        "viewRecentRecap": "✨ 查看最近的信件",
         "generatingRecap": "正在產生反思信件... 請稍候。",
         "fetchingRecentRecap": "正在獲取最近的信件...",
         "recapSuccess": "反思信件已產生！請檢視並儲存。",
@@ -393,10 +382,7 @@ export default {
         "prevPage": "上一頁",
         "nextPage": "下一頁",
         "pageInfo": "第 {current} 頁，共 {total} 頁",
-        "nextLetterInNotes": "(距離新信件還需發布 {count} 篇筆記)",
         "preparingNextLetter": "正在準備新信件",
-        "viewPreviousLetterAction": "點擊閱讀上一封信 📖",
-        "notesNeededForLetter": "再發布 {count} 篇筆記即可收到",
         "newLetterReadySub": "來自2篇筆記的新信件已送達！",
         "notMember": "您不是此小組的成員"
     },
@@ -429,14 +415,39 @@ export default {
         "maxMembersReachedMessage": "此群組已滿 5 人 ✨（已停用邀請）",
         "members": "成員",
         "groupMembers": "群組成員",
-        "typeMessage": "輸入訊息或分享心得...",
+        "typeMessage": [
+            "點擊 + 按鈕新增筆記或輸入訊息...",
+            "好難...這是什麼意思？有人理解這段經文嗎？",
+            "這一章跟高級評議員的演講一樣長...",
+            "老實說，讀到這一章的戰爭描寫時我就睡著了。",
+            "我的生活也需要一個利阿賀拿...而不是 Google 地圖。",
+            "又撞上「以賽亞之牆」了...恐怕以後還會繼續撞上。",
+            "瑪黑爾－沙拉勒－哈希－巴斯...我只是想說說看這個名字。",
+            "我專心尋求智慧，誰知這也是虛空...",
+            "又是尼腓...這到底是第幾個尼腓了...？",
+            "咦？我昨天是不是讀過同樣的地方了？",
+            "滑手機 30 分鐘感覺很快，讀經文卻感覺像過了一輩子。經文簡直是靈魂的精神時光屋。",
+            "如果我對研讀的專注度能跟我的貓專注於打擾我一樣，我現在應該已經勝過世界了。",
+            "有沒有試過反覆讀同一個地方，然後想：「咦？這裡以前有寫這句話嗎？」",
+            "感覺這週的《跟我來》比平時還要長。",
+            "寫銅版的人有種神祕的魅力，到底是誰呢...？",
+            "齊愛治樂的熱病到底有多燙？大概真的很燙吧。",
+            "雅列人的船，「像碟子一樣」...到底是長什麼樣啊？",
+            "付完什一奉獻後「天上的窗戶一定會開啟...！」的期待與錢包的輕盈。",
+            "摩賽亞之子艾蒙、探險隊的艾蒙、希拉曼之子艾蒙...",
+            "誰生誰，誰生誰...在族譜區我的意識飛走了。",
+            "演講中途十二使徒喝水時，那種「啊，喝水了」的神祕安心感。",
+            "當唱詩班站起來時，心想「喔，要唱歌了嗎？」，結果演講還在繼續的套路。",
+            "這個時候門徒們肯定處於一種「宇宙貓」的震驚狀態...",
+            "柯林安頓的黑歷史竟然被完完整整地暴露給了後代...",
+            "咦，我讀到哪了...？...嗯...（翻頁...）...「我，尼腓，出生自良好的父母...」"
+        ],
         "leaveGroup": "退出群組",
         "deleteGroup": "刪除群組",
         "cancel": "取消",
         "confirmDelete": "刪除群組",
         "confirmLeave": "退出群組",
         "leaveConfirmMessage": "您確定要退出此群組嗎？",
-        "groupName": "群組聊天",
         "inviteCode": "邀請碼",
         "replyTo": "回覆給",
         "replyingTo": "回覆中",
@@ -465,7 +476,7 @@ export default {
         "deleteNoteWarning": "此筆記也將從所有分享的群組中刪除。",
         "deleteMessageWarning": "此操作也會從「我的筆記」中刪除此筆記。",
         "translate": "翻譯",
-        "translation": "Translation",
+        "translation": "翻譯",
         "translated": "已翻譯",
         "showOriginal": "顯示原文",
         "showTranslation": "顯示翻譯",
@@ -538,9 +549,9 @@ export default {
         "reportError": "舉報發送失敗。請重試.",
         "linkCopiedForInstagram": "邀請連結已複製！現在您可以將其貼到您的 Instagram 個人簡介或限時動態中。",
         "newMessages": "新訊息",
-        "errorToggleReaction": "Failed to update reaction.",
-        "inviteFriends": "Invite Friends",
-        "reTranslate": "Refresh translation",
+        "errorToggleReaction": "更新表情回應失敗。",
+        "inviteFriends": "邀請好友",
+        "reTranslate": "重新翻譯",
         "retrySend": "重新發送",
         "retry": "重試",
         "sending": "發送中...",
@@ -553,7 +564,15 @@ export default {
         "chooseScriptureLabel": "選擇經文",
         "chooseScripturePlaceholder": "請選擇經文選項",
         "chapterLabel": "章節",
-        "chapterPlaceholder": "例如：阿爾瑪書 5, 以賽亞書 9:6",
+        "chapterPlaceholder": [
+            "例如：以賽亞書 1",
+            "例如：尼腓一書 3:7",
+            "例如：馬太福音 11:28",
+            "例如：88:125 (教義和聖約請這樣輸入)",
+            "例如：阿爾瑪書 32:21",
+            "例如：摩賽亞書 2:17",
+            "例如：雅各書 1:5"
+        ],
         "urlPlaceholder": "請貼上 URL (例如 https://www.churchofjesuschrist.org/...)",
         "commentLabel": "心得",
         "commentPlaceholder": [
@@ -579,8 +598,7 @@ export default {
             "例：演講中途十二使徒喝水時，那種「啊，喝水了」的神祕安心感。",
             "例：當唱詩班站起來時，心想「喔，要唱歌了嗎？」，結果演講還在繼續的套路。",
             "例：這個時候門徒們肯定處於一種「宇宙貓」的震驚狀態...",
-            "例：柯林安頓的黑歷史竟然被完完整整地暴露給了後代...",
-            "例：咦，我讀到哪了...？...嗯...（翻頁...）...「我，尼腓，出生自良好的父母...」"
+            "例：柯林安頓的黑歷史竟然被完完整整地暴露給了後代..."
         ],
         "shareLabel": "分享對象：",
         "shareNone": "不分享 (私人)",
@@ -990,11 +1008,7 @@ export default {
             "card2Title": "與社群攜手共創",
             "card2Desc": "任何人都可以透過 GitHub 上的功能建議、Issues 錯誤回報或 Pull Request 參與開發與改進。",
             "githubBtn": "在 GitHub 上查看",
-            "redditBtn": "Reddit 社区",
-            "isaiahBtn": "以賽亞書研究(網站)",
-            "bookOfMormonBtn": "摩爾門經研究(網站)",
-            "supportBtn": "支持 Scripture Habit",
-            "sponsorsComingSoon": "支持 Scripture Habit"
+            "redditBtn": "Reddit 社区"
         },
         "seoContent": {
             "faq": {
@@ -1017,21 +1031,11 @@ export default {
         "loginSuccess": "已使用示範帳號登入！",
         "loginError": "連接示範環境失敗。正在重新導向至登入頁面..."
     },
-        "oneTapStudy": {
+    "oneTapStudy": {
         "modeNote": "撰寫筆記",
-        "modeOneTap": "單擊記錄",
-        "selectThemePrompt": "選擇一個主題記錄今天的研讀",
-        "completedToday": "今天的研讀主題：【{theme}】",
-        "successMessage": "已完成今天的研讀！【{theme}】",
-        "errorMessage": "記錄研讀失敗，請重試。",
         "categoryOneTap": "單擊記錄",
-        "categoryThemeStudy": "單擊記錄",
         "themeLabel": "主題",
-        "noteCardTitle": "單擊研讀",
-        "noteCardTheme": "主題：{theme}",
         "noteBody": "今天我加深了對{theme}的學習。",
-        "alreadyCompleted": "今日的一键学习已完成。明天再继续学习吧！",
-        "nextDayNotice": "※ 明日可再次记录",
         "themes": {
             "faith": "信心",
             "hope": "盼望",
@@ -1045,16 +1049,16 @@ export default {
     },
     "urlStudy": {
         "modeUrl": "URL",
-        "prompt": "Enter a Gospel Library or talk URL to record today's study",
-        "urlInputPlaceholder": "Paste URL (https://...)",
-        "commentLabel": "Comment (Editable)",
-        "commentPlaceholder": "Thoughts or impressions...",
-        "fetchingInfo": "Fetching URL details...",
-        "completeButton": "Complete",
-        "submitting": "Saving...",
-        "successMessage": "Today's study recorded! 🎉",
-        "errorMessage": "Failed to record study. Please try again.",
-        "urlRequired": "Please enter a URL",
-        "commentRequired": "Please enter a comment"
+        "prompt": "輸入福音圖書館或演講網址以記錄今天的研讀",
+        "urlInputPlaceholder": "貼上網址 (https://...)",
+        "commentLabel": "心得 (可編輯)",
+        "commentPlaceholder": "感想或啟發...",
+        "fetchingInfo": "正在取得網址資訊...",
+        "completeButton": "完成",
+        "submitting": "儲存中...",
+        "successMessage": "今天的研讀已記錄！🎉",
+        "errorMessage": "研讀記錄失敗，請再試一次。",
+        "urlRequired": "請輸入網址",
+        "commentRequired": "請輸入心得"
     }
 };

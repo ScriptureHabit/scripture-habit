@@ -38,6 +38,7 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 results.txt
+scratch/
 test-results/
 playwright-report/
 blob-report/

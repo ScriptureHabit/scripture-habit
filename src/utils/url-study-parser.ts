@@ -231,6 +231,20 @@ export interface GenerateCommentParams {
     language?: string;
 }
 
+const DEFAULT_SESSION_NAMES: Record<string, string> = {
+    ja: '総大会',
+    en: 'General Conference',
+    es: 'Conferencia General',
+    pt: 'Conferência Geral',
+    it: 'Conferenza Generale',
+    ko: '연차대회',
+    zho: '總會大會',
+    vi: 'Đại Hội Trung Ương',
+    tl: 'Pangkalahatang Kumperensya',
+    th: 'การประชุมใหญ่สามัญ',
+    sw: 'Mkutano Mkuu'
+};
+
 /**
  * Generate a naturally formatted note comment based on parsed URL metadata.
  */
@@ -248,10 +262,10 @@ export function generateUrlStudyComment(params: GenerateCommentParams): string {
         language = 'ja'
     } = params;
 
-    const isJa = language === 'ja';
+    const lang = language.toLowerCase();
 
     if (type === 'scripture') {
-        if (isJa) {
+        if (lang === 'ja') {
             // Check for D&C (Sections instead of Chapters)
             let chapterUnit = '章';
             if (category === 'Doctrine and Covenants' || bookName?.includes('教義と聖約')) {
@@ -280,53 +294,264 @@ export function generateUrlStudyComment(params: GenerateCommentParams): string {
                 return `今日は${categoryLabel}の${passageText}について学びを深めました。`;
             }
             return `今日は${categoryLabel}について学びを深めました。`;
-        } else {
-            // English / other
-            const verseSuffix = verses ? `:${verses}` : '';
-            const chapterText = chapter ? ` ${chapter}${verseSuffix}` : '';
-            const ref = bookName ? `${bookName}${chapterText}` : title || categoryLabel;
-            return `Today I deepened my learning on ${ref} from the ${categoryLabel}.`;
+        }
+
+        if (lang === 'zho') {
+            const unit = (category === 'Doctrine and Covenants' || bookName?.includes('教義和聖約') || bookName?.includes('教义和圣约')) ? '篇' : '章';
+            let passageText = '';
+            if (bookName && chapter) {
+                passageText = `${bookName}第${chapter}${unit}`;
+            } else if (bookName) {
+                passageText = bookName;
+            } else if (title) {
+                passageText = title;
+            }
+
+            if (verses && passageText) {
+                passageText += `第${verses}節`;
+            }
+
+            if (passageText) {
+                return `今天我深入研讀了《${categoryLabel}》中的${passageText}。`;
+            }
+            return `今天我深入研讀了《${categoryLabel}》。`;
+        }
+
+        if (lang === 'ko') {
+            const unit = (category === 'Doctrine and Covenants' || bookName?.includes('교리와 성약')) ? '편' : '장';
+            let passageText = '';
+            if (bookName && chapter) {
+                passageText = `${bookName} ${chapter}${unit}`;
+            } else if (bookName) {
+                passageText = bookName;
+            } else if (title) {
+                passageText = title;
+            }
+
+            if (verses && passageText) {
+                passageText += ` ${verses}절`;
+            }
+
+            if (passageText) {
+                return `오늘은 ${categoryLabel}의 ${passageText}에 대해 깊이 있게 공부했습니다.`;
+            }
+            return `오늘은 ${categoryLabel}에 대해 깊이 있게 공부했습니다.`;
+        }
+
+        // Alphabetical / other languages (es, pt, it, vi, tl, th, sw, en)
+        const verseSuffix = verses ? `:${verses}` : '';
+        const chapterText = chapter ? ` ${chapter}${verseSuffix}` : '';
+        const ref = bookName ? `${bookName}${chapterText}` : title || categoryLabel;
+
+        switch (lang) {
+            case 'es':
+                return `Hoy profundicé mi aprendizaje sobre ${ref} de ${categoryLabel}.`;
+            case 'pt':
+                return `Hoje aprofundei meu aprendizado sobre ${ref} de ${categoryLabel}.`;
+            case 'it':
+                return `Oggi ho approfondito il mio studio su ${ref} di ${categoryLabel}.`;
+            case 'vi':
+                return `Hôm nay tôi đã đào sâu học hỏi về ${ref} từ ${categoryLabel}.`;
+            case 'tl':
+                return `Ngayong araw ay pinalalim ko ang aking pag-aaral tungkol sa ${ref} mula sa ${categoryLabel}.`;
+            case 'th':
+                return `วันนี้ฉันได้ศึกษาเรียนรู้อย่างลึกซึ้งเกี่ยวกับ ${ref} จาก ${categoryLabel}`;
+            case 'sw':
+                return `Leo nimejifunza zaidi kuhusu ${ref} kutoka ${categoryLabel}.`;
+            case 'en':
+            default:
+                return `Today I deepened my learning on ${ref} from the ${categoryLabel}.`;
         }
     }
 
     if (type === 'general-conference') {
-        const session = sessionLabel || (isJa ? '総大会' : 'General Conference');
+        const session = sessionLabel || DEFAULT_SESSION_NAMES[lang] || 'General Conference';
         const cleanSpeaker = speaker?.trim().replace(/^(By|Par|De|Por)\s+/i, '') || '';
         const cleanTitle = title?.trim() || '';
 
-        if (isJa) {
-            if (cleanSpeaker && cleanTitle) {
-                return `今日は${session}の${cleanSpeaker}の説教「${cleanTitle}」について学びを深めました。`;
-            }
-            if (cleanTitle) {
-                return `今日は${session}の説教「${cleanTitle}」について学びを深めました。`;
-            }
-            if (cleanSpeaker) {
-                return `今日は${session}の${cleanSpeaker}のお話について学びを深めました。`;
-            }
-            return `今日は${session}について学びを深めました。`;
-        } else {
-            if (cleanSpeaker && cleanTitle) {
-                return `Today I deepened my learning on ${cleanSpeaker}'s talk "${cleanTitle}" from the ${session}.`;
-            }
-            if (cleanTitle) {
-                return `Today I deepened my learning on the talk "${cleanTitle}" from the ${session}.`;
-            }
-            return `Today I deepened my learning on the ${session}.`;
+        switch (lang) {
+            case 'ja':
+                if (cleanSpeaker && cleanTitle) {
+                    return `今日は${session}の${cleanSpeaker}の説教「${cleanTitle}」について学びを深めました。`;
+                }
+                if (cleanTitle) {
+                    return `今日は${session}の説教「${cleanTitle}」について学びを深めました。`;
+                }
+                if (cleanSpeaker) {
+                    return `今日は${session}の${cleanSpeaker}のお話について学びを深めました。`;
+                }
+                return `今日は${session}について学びを深めました。`;
+
+            case 'zho':
+                if (cleanSpeaker && cleanTitle) {
+                    return `今天我深入研讀了${session}中${cleanSpeaker}的講話「${cleanTitle}」。`;
+                }
+                if (cleanTitle) {
+                    return `今天我深入研讀了${session}的講話「${cleanTitle}」。`;
+                }
+                if (cleanSpeaker) {
+                    return `今天我深入研讀了${session}中${cleanSpeaker}的講話。`;
+                }
+                return `今天我深入研讀了${session}。`;
+
+            case 'ko':
+                if (cleanSpeaker && cleanTitle) {
+                    return `오늘은 ${session}에서 ${cleanSpeaker}의 말씀 "${cleanTitle}"에 대해 깊이 있게 공부했습니다.`;
+                }
+                if (cleanTitle) {
+                    return `오늘은 ${session}의 말씀 "${cleanTitle}"에 대해 깊이 있게 공부했습니다.`;
+                }
+                if (cleanSpeaker) {
+                    return `오늘은 ${session}에서 ${cleanSpeaker}의 말씀에 대해 깊이 있게 공부했습니다.`;
+                }
+                return `오늘은 ${session}에 대해 깊이 있게 공부했습니다.`;
+
+            case 'es':
+                if (cleanSpeaker && cleanTitle) {
+                    return `Hoy profundicé mi aprendizaje en el discurso "${cleanTitle}" de ${cleanSpeaker} de la ${session}.`;
+                }
+                if (cleanTitle) {
+                    return `Hoy profundicé mi aprendizaje en el discurso "${cleanTitle}" de la ${session}.`;
+                }
+                if (cleanSpeaker) {
+                    return `Hoy profundicé mi aprendizaje en el mensaje de ${cleanSpeaker} de la ${session}.`;
+                }
+                return `Hoy profundicé mi aprendizaje en la ${session}.`;
+
+            case 'pt':
+                if (cleanSpeaker && cleanTitle) {
+                    return `Hoje aprofundei meu aprendizado no discurso "${cleanTitle}" de ${cleanSpeaker} da ${session}.`;
+                }
+                if (cleanTitle) {
+                    return `Hoje aprofundei meu aprendizado no discurso "${cleanTitle}" da ${session}.`;
+                }
+                if (cleanSpeaker) {
+                    return `Hoje aprofundei meu aprendizado na mensagem de ${cleanSpeaker} da ${session}.`;
+                }
+                return `Hoje aprofundei meu aprendizado na ${session}.`;
+
+            case 'it':
+                if (cleanSpeaker && cleanTitle) {
+                    return `Oggi ho approfondito il mio studio sul discorso "${cleanTitle}" di ${cleanSpeaker} della ${session}.`;
+                }
+                if (cleanTitle) {
+                    return `Oggi ho approfondito il mio studio sul discorso "${cleanTitle}" della ${session}.`;
+                }
+                if (cleanSpeaker) {
+                    return `Oggi ho approfondito il mio studio sul messaggio di ${cleanSpeaker} della ${session}.`;
+                }
+                return `Oggi ho approfondito il mio studio sulla ${session}.`;
+
+            case 'vi':
+                if (cleanSpeaker && cleanTitle) {
+                    return `Hôm nay tôi đã đào sâu học hỏi bài phát biểu "${cleanTitle}" của ${cleanSpeaker} từ ${session}.`;
+                }
+                if (cleanTitle) {
+                    return `Hôm nay tôi đã đào sâu học hỏi bài phát biểu "${cleanTitle}" từ ${session}.`;
+                }
+                if (cleanSpeaker) {
+                    return `Hôm nay tôi đã đào sâu học hỏi thông điệp của ${cleanSpeaker} từ ${session}.`;
+                }
+                return `Hôm nay tôi đã đào sâu học hỏi về ${session}.`;
+
+            case 'tl':
+                if (cleanSpeaker && cleanTitle) {
+                    return `Ngayong araw ay pinalalim ko ang aking pag-aaral tungkol sa mensaheng "${cleanTitle}" ni ${cleanSpeaker} mula sa ${session}.`;
+                }
+                if (cleanTitle) {
+                    return `Ngayong araw ay pinalalim ko ang aking pag-aaral tungkol sa mensaheng "${cleanTitle}" mula sa ${session}.`;
+                }
+                if (cleanSpeaker) {
+                    return `Ngayong araw ay pinalalim ko ang aking pag-aaral tungkol sa mensahe ni ${cleanSpeaker} mula sa ${session}.`;
+                }
+                return `Ngayong araw ay pinalalim ko ang aking pag-aaral tungkol sa ${session}.`;
+
+            case 'th':
+                if (cleanSpeaker && cleanTitle) {
+                    return `วันนี้ฉันได้ศึกษาเรียนรู้อย่างลึกซึ้งเกี่ยวกับคำปราศรัยของ ${cleanSpeaker} เรื่อง "${cleanTitle}" จาก ${session}`;
+                }
+                if (cleanTitle) {
+                    return `วันนี้ฉันได้ศึกษาเรียนรู้อย่างลึกซึ้งเกี่ยวกับคำปราศรัยเรื่อง "${cleanTitle}" จาก ${session}`;
+                }
+                if (cleanSpeaker) {
+                    return `วันนี้ฉันได้ศึกษาเรียนรู้อย่างลึกซึ้งเกี่ยวกับข้อความของ ${cleanSpeaker} จาก ${session}`;
+                }
+                return `วันนี้ฉันได้ศึกษาเรียนรู้อย่างลึกซึ้งเกี่ยวกับ ${session}`;
+
+            case 'sw':
+                if (cleanSpeaker && cleanTitle) {
+                    return `Leo nimejifunza zaidi kuhusu hotuba ya ${cleanSpeaker} "${cleanTitle}" kutoka ${session}.`;
+                }
+                if (cleanTitle) {
+                    return `Leo nimejifunza zaidi kuhusu hotuba "${cleanTitle}" kutoka ${session}.`;
+                }
+                if (cleanSpeaker) {
+                    return `Leo nimejifunza zaidi kuhusu ujumbe wa ${cleanSpeaker} kutoka ${session}.`;
+                }
+                return `Leo nimejifunza zaidi kuhusu ${session}.`;
+
+            case 'en':
+            default:
+                if (cleanSpeaker && cleanTitle) {
+                    return `Today I deepened my learning on ${cleanSpeaker}'s talk "${cleanTitle}" from the ${session}.`;
+                }
+                if (cleanTitle) {
+                    return `Today I deepened my learning on the talk "${cleanTitle}" from the ${session}.`;
+                }
+                if (cleanSpeaker) {
+                    return `Today I deepened my learning on ${cleanSpeaker}'s message from the ${session}.`;
+                }
+                return `Today I deepened my learning on the ${session}.`;
         }
     }
 
     // Other / BYU
     const targetTitle = title?.trim();
-    if (isJa) {
-        if (targetTitle) {
-            return `今日は「${targetTitle}」について学びを深めました。`;
-        }
-        return `今日は資料を読み、学びを深めました。`;
-    } else {
-        if (targetTitle) {
-            return `Today I deepened my learning on "${targetTitle}".`;
-        }
-        return `Today I deepened my learning on today's study material.`;
+    switch (lang) {
+        case 'ja':
+            return targetTitle
+                ? `今日は「${targetTitle}」について学びを深めました。`
+                : `今日は資料を読み、学びを深めました。`;
+        case 'zho':
+            return targetTitle
+                ? `今天我深入研讀了「${targetTitle}」。`
+                : `今天我研讀了學習資料並深入學習。`;
+        case 'ko':
+            return targetTitle
+                ? `오늘은 "${targetTitle}"에 대해 깊이 있게 공부했습니다.`
+                : `오늘은 학습 자료를 읽고 깊이 있게 공부했습니다.`;
+        case 'es':
+            return targetTitle
+                ? `Hoy profundicé mi aprendizaje sobre "${targetTitle}".`
+                : `Hoy leí el material de estudio y profundicé mi aprendizaje.`;
+        case 'pt':
+            return targetTitle
+                ? `Hoje aprofundei meu aprendizado sobre "${targetTitle}".`
+                : `Hoje li o material de estudo e aprofundei meu aprendizado.`;
+        case 'it':
+            return targetTitle
+                ? `Oggi ho approfondito il mio studio su "${targetTitle}".`
+                : `Oggi ho letto il materiale di studio e approfondito il mio studio.`;
+        case 'vi':
+            return targetTitle
+                ? `Hôm nay tôi đã đào sâu học hỏi về "${targetTitle}".`
+                : `Hôm nay tôi đã đọc tài liệu học tập và đào sâu học hỏi.`;
+        case 'tl':
+            return targetTitle
+                ? `Ngayong araw ay pinalalim ko ang aking pag-aaral tungkol sa "${targetTitle}".`
+                : `Ngayong araw ay nagbasa ako ng materyal sa pag-aaral at pinalalim ang aking kaalaman.`;
+        case 'th':
+            return targetTitle
+                ? `วันนี้ฉันได้ศึกษาเรียนรู้อย่างลึกซึ้งเกี่ยวกับ "${targetTitle}"`
+                : `วันนี้ฉันได้อ่านเนื้อหาการเรียนรู้และศึกษาอย่างลึกซึ้ง`;
+        case 'sw':
+            return targetTitle
+                ? `Leo nimejifunza zaidi kuhusu "${targetTitle}".`
+                : `Leo nimesoma nyenzo za somo na kujifunza zaidi.`;
+        case 'en':
+        default:
+            return targetTitle
+                ? `Today I deepened my learning on "${targetTitle}".`
+                : `Today I deepened my learning on today's study material.`;
     }
 }
