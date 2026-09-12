@@ -61,14 +61,6 @@ const DashboardOverview = ({
   const [isRejoining, setIsRejoining] = useState(false);
   const [studyMode, setStudyMode] = useState<'note' | 'url'>('note');
 
-  const getSafeTranslation = (key: string, fallback: string, replacements?: Record<string, string | number>): string => {
-    const val = t(key, replacements);
-    if (!val || val === key || val.startsWith(key) || (val.includes('.') && !val.includes(' '))) {
-      return fallback;
-    }
-    return val;
-  };
-
   const handleRejoin = async (recentGroup: RecentGroupInfo) => {
     if (isRejoining) return;
     setIsRejoining(true);
@@ -200,7 +192,7 @@ const DashboardOverview = ({
                     onClick={() => setStudyMode('note')}
                     data-testid="mode-toggle-note"
                   >
-                    {getSafeTranslation('oneTapStudy.modeNote', getSafeTranslation('dashboard.modeNote', 'ノート作成'))}
+                    {t('dashboard.modeNote')}
                   </button>
                   <button
                     type="button"
@@ -208,7 +200,7 @@ const DashboardOverview = ({
                     onClick={() => setStudyMode('url')}
                     data-testid="mode-toggle-url"
                   >
-                    {getSafeTranslation('urlStudy.modeUrl', getSafeTranslation('dashboard.modeUrl', 'URL'))}
+                    {t('urlStudy.modeUrl')}
                   </button>
                 </div>
 

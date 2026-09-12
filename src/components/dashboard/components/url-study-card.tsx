@@ -50,14 +50,6 @@ export const UrlStudyCard: React.FC<UrlStudyCardProps> = ({
 
     const fetchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    const getSafeTranslation = (key: string, fallback: string, replacements?: Record<string, string | number>): string => {
-        const val = t(key, replacements);
-        if (!val || val === key || val.startsWith(key) || (val.includes('.') && !val.includes(' '))) {
-            return fallback;
-        }
-        return val;
-    };
-
     const handleUrlChange = (val: string) => {
         setUrl(val);
 
@@ -195,13 +187,13 @@ export const UrlStudyCard: React.FC<UrlStudyCardProps> = ({
 
         const trimmedUrl = url.trim();
         if (!trimmedUrl) {
-            toast.error(getSafeTranslation('urlStudy.urlRequired', 'URLを入力してください'));
+            toast.error(t('urlStudy.urlRequired'));
             return;
         }
 
         const trimmedComment = comment.trim();
         if (!trimmedComment) {
-            toast.error(getSafeTranslation('urlStudy.commentRequired', 'コメントを入力してください'));
+            toast.error(t('urlStudy.commentRequired'));
             return;
         }
 
@@ -267,7 +259,7 @@ export const UrlStudyCard: React.FC<UrlStudyCardProps> = ({
                     triggerConfetti({ particleCount: 70, spread: 70, origin: { y: 0.6 } });
                 }
 
-                toast.success(getSafeTranslation('urlStudy.successMessage', '本日の学習を完了しました！🎉'));
+                toast.success(t('urlStudy.successMessage'));
 
                 // Clear input so user can submit another note if desired
                 setUrl('');
@@ -279,7 +271,7 @@ export const UrlStudyCard: React.FC<UrlStudyCardProps> = ({
             }
         } catch (err: unknown) {
             console.error('Failed to submit URL study:', err);
-            toast.error(getSafeTranslation('urlStudy.errorMessage', '学習の記録に失敗しました。もう一度お試しください。'));
+            toast.error(t('urlStudy.errorMessage'));
         } finally {
             setIsSubmitting(false);
         }
@@ -294,7 +286,7 @@ export const UrlStudyCard: React.FC<UrlStudyCardProps> = ({
     return (
         <div className="url-study-card" data-testid="url-study-card">
             <p className="url-study-prompt">
-                {getSafeTranslation('urlStudy.prompt', '読んだ聖典や総大会のURLを入力して記録しよう')}
+                {t('urlStudy.prompt')}
             </p>
 
             <div className="url-input-wrapper">
@@ -302,10 +294,10 @@ export const UrlStudyCard: React.FC<UrlStudyCardProps> = ({
                     type="url"
                     value={url}
                     onChange={(e) => handleUrlChange(e.target.value)}
-                    placeholder={getSafeTranslation('urlStudy.urlInputPlaceholder', '福音ライブラリー等のURLを貼り付け (https://...)')}
+                    placeholder={t('urlStudy.urlInputPlaceholder')}
                     className="url-study-input"
                     data-testid="url-study-input"
-                    aria-label={getSafeTranslation('urlStudy.urlInputPlaceholder', '福音ライブラリー等のURLを貼り付け')}
+                    aria-label={t('urlStudy.urlInputPlaceholder')}
                 />
                 {url && (
                     <button
@@ -322,7 +314,7 @@ export const UrlStudyCard: React.FC<UrlStudyCardProps> = ({
             {isLoadingMeta && (
                 <div className="url-study-loading-row">
                     <div className="url-study-spinner" />
-                    <span>{getSafeTranslation('urlStudy.fetchingInfo', 'URLから情報を取得中...')}</span>
+                    <span>{t('urlStudy.fetchingInfo')}</span>
                 </div>
             )}
 
@@ -348,7 +340,7 @@ export const UrlStudyCard: React.FC<UrlStudyCardProps> = ({
                     </div>
                     {meta?.title && parsedInfo.type !== 'scripture' && (
                         <div className="url-study-title-preview">
-                            「{meta.title}」
+                            {language === 'ja' || language === 'zho' ? `「${meta.title}」` : `"${meta.title}"`}
                         </div>
                     )}
                 </div>
@@ -357,7 +349,7 @@ export const UrlStudyCard: React.FC<UrlStudyCardProps> = ({
             {url.trim().length > 0 && (
                 <div className="url-study-comment-container">
                     <label htmlFor="url-study-comment-textarea" className="url-study-comment-label">
-                        {getSafeTranslation('urlStudy.commentLabel', 'コメント (編集可能)')}
+                        {t('urlStudy.commentLabel')}
                     </label>
                     <textarea
                         id="url-study-comment-textarea"
@@ -366,7 +358,7 @@ export const UrlStudyCard: React.FC<UrlStudyCardProps> = ({
                             setComment(e.target.value);
                             setIsCommentDirty(true);
                         }}
-                        placeholder={getSafeTranslation('urlStudy.commentPlaceholder', '学んだことや心に残ったこと...')}
+                        placeholder={t('urlStudy.commentPlaceholder')}
                         className="url-study-comment-textarea"
                         data-testid="url-study-comment"
                         rows={3}
@@ -383,8 +375,8 @@ export const UrlStudyCard: React.FC<UrlStudyCardProps> = ({
                 data-testid="url-study-submit"
             >
                 {isSubmitting
-                    ? getSafeTranslation('urlStudy.submitting', '記録中...')
-                    : getSafeTranslation('urlStudy.completeButton', '完了する')}
+                    ? t('urlStudy.submitting')
+                    : t('urlStudy.completeButton')}
             </button>
         </div>
     );
