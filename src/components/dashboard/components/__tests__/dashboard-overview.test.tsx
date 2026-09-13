@@ -1,8 +1,9 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import DashboardOverview from '../dashboard-overview';
+import DashboardOverview, { STORAGE_KEY_STUDY_MODE } from '../dashboard-overview';
 import { UserData } from '../../../../types/user';
+import { safeStorage } from '../../../../utils/storage';
 
 vi.mock('../../mascot/mascot', () => ({
   default: () => <div data-testid="mock-mascot">Mascot</div>
@@ -29,6 +30,10 @@ vi.mock('../../../../hooks/use-language', () => ({
 }));
 
 describe('DashboardOverview recent group CTA', () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
   const mockT = (key: string, replacements?: Record<string, string | number>) => {
     if (key === 'dashboard.rejoinGroupPrompt' && replacements?.groupName) {
       return `Rejoin ${replacements.groupName}`;
@@ -151,5 +156,39 @@ describe('DashboardOverview recent group CTA', () => {
     const submitBtn = screen.getByTestId('url-study-submit') as HTMLButtonElement;
     expect(submitBtn).toBeDefined();
     expect(submitBtn.disabled).toBe(false);
+  });
+
+  it('persists selected study mode to localStorage when switching tabs', () => {
+    render(
+      <MemoryRouter>
+        <DashboardOverview {...baseProps} userData={baseUserData} />
+      </MemoryRouter>
+    );
+
+    // Initial state is 'note'
+    expect(screen.getByTestId('new-note-button')).toBeDefined();
+
+    // Switch to URL mode
+    fireEvent.click(screen.getByTestId('mode-toggle-url'));
+    expect(safeStorage.get(STORAGE_KEY_STUDY_MODE)).toBe('url');
+
+    // Switch back to Note mode
+    fireEvent.click(screen.getByTestId('mode-toggle-note'));
+    expect(safeStorage.get(STORAGE_KEY_STUDY_MODE)).toBe('note');
+  });
+
+  it('restores preferred study mode from localStorage on initial render', () => {
+    // Pre-populate localStorage with 'url'
+    safeStorage.set(STORAGE_KEY_STUDY_MODE, 'url');
+
+    render(
+      <MemoryRouter>
+        <DashboardOverview {...baseProps} userData={baseUserData} />
+      </MemoryRouter>
+    );
+
+    // URL input should be displayed by default instead of the new-note button
+    expect(screen.getByTestId('url-study-input')).toBeDefined();
+    expect(screen.queryByTestId('new-note-button')).toBeNull();
   });
 });

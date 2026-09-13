@@ -14,8 +14,11 @@ import { useModalStore } from '../../../store/use-modal-store';
 import { useLevelUpStore } from '../../../store/use-level-up-store';
 import { useLanguage } from '../../../hooks/use-language';
 import { calculateLevel } from '../../../utils/level-utils';
+import { safeStorage } from '../../../utils/storage';
 import UrlStudyCard from './url-study-card';
 import './quest-card.css';
+
+export const STORAGE_KEY_STUDY_MODE = 'preferred_study_mode';
 
 interface DashboardOverviewProps {
   t: (key: string, replacements?: Record<string, string | number>) => string;
@@ -59,7 +62,15 @@ const DashboardOverview = ({
   const { language } = useLanguage();
   const isAnyModalOpen = hasActiveModal || !!activeModal;
   const [isRejoining, setIsRejoining] = useState(false);
-  const [studyMode, setStudyMode] = useState<'note' | 'url'>('note');
+  const [studyMode, setStudyMode] = useState<'note' | 'url'>(() => {
+    const saved = safeStorage.get<'note' | 'url'>(STORAGE_KEY_STUDY_MODE);
+    return saved === 'url' || saved === 'note' ? saved : 'note';
+  });
+
+  const handleStudyModeChange = (mode: 'note' | 'url') => {
+    setStudyMode(mode);
+    safeStorage.set(STORAGE_KEY_STUDY_MODE, mode);
+  };
 
   const handleRejoin = async (recentGroup: RecentGroupInfo) => {
     if (isRejoining) return;
@@ -189,7 +200,7 @@ const DashboardOverview = ({
                   <button
                     type="button"
                     className={`study-mode-toggle-btn ${studyMode === 'note' ? 'active' : ''}`}
-                    onClick={() => setStudyMode('note')}
+                    onClick={() => handleStudyModeChange('note')}
                     data-testid="mode-toggle-note"
                   >
                     {t('dashboard.modeNote')}
@@ -197,7 +208,7 @@ const DashboardOverview = ({
                   <button
                     type="button"
                     className={`study-mode-toggle-btn ${studyMode === 'url' ? 'active' : ''}`}
-                    onClick={() => setStudyMode('url')}
+                    onClick={() => handleStudyModeChange('url')}
                     data-testid="mode-toggle-url"
                   >
                     {t('urlStudy.modeUrl')}
