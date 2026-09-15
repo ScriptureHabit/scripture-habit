@@ -9,9 +9,15 @@ interface WarningInfo {
   hoursRemaining: number;
 }
 
-export const useDashboardWarnings = (userData: UserData | null, userGroups: Group[]) => {
+export const useDashboardWarnings = (
+    userData: UserData | null, 
+    userGroups: Group[],
+    isDataFetching: boolean = false
+) => {
     const warnings = useMemo<WarningInfo[]>(() => {
-        if (!userData || userGroups.length === 0) return [];
+        // Suppress warnings while data is being fetched (e.g. on initial load or live sync)
+        // to prevent momentary false positive warnings from stale cached data.
+        if (isDataFetching || !userData || userGroups.length === 0) return [];
 
         const newWarnings: WarningInfo[] = [];
         const now = new Date();
@@ -22,38 +28,38 @@ export const useDashboardWarnings = (userData: UserData | null, userGroups: Grou
             const candidateTimestamps: (FirebaseTimestamp | null | undefined)[] = [
                 userData.lastPostAt,
                 (group.lastNoteByUid === userData.uid ? group.lastNoteAt : null),
-                group.memberJoinedAt?.[userData.uid]
+                group.memberJoinedAt?.[userData.uid] || group.myMemberStatus?.joinedAt
             ];
 
-            if (candidateTimestamps.length > 0) {
-                // Convert all candidates to Date objects and find the newest valid one
-                // parseTimestampToDate handles various Firestore timestamp formats safely
-                const dates = candidateTimestamps
-                    .map(t => parseTimestampToDate(t))
-                    .filter(d => !isNaN(d.getTime()));
+            const dates = candidateTimestamps
+                .filter((t): t is NonNullable<typeof t> => !!t)
+                .map(t => parseTimestampToDate(t))
+                .filter(d => !isNaN(d.getTime()));
 
-                if (dates.length === 0) return;
+            if (dates.length === 0) return;
 
-                const lastActiveDate = new Date(Math.max(...dates.map(d => d.getTime())));
-                const diffMs = now.getTime() - lastActiveDate.getTime();
-                
-                // Use the threshold from memberKickThresholds if available
-                const threshold = (group.memberKickThresholds && group.memberKickThresholds[userData.uid]) || userData.kickThreshold || DEFAULT_KICK_THRESHOLD;
-                const thresholdMs = threshold * 24 * 60 * 60 * 1000;
-                
-                const remainingMs = thresholdMs - diffMs;
-                const hoursRemaining = Math.max(0, Math.ceil(remainingMs / (1000 * 60 * 60)));
+            const lastActiveDate = new Date(Math.max(...dates.map(d => d.getTime())));
+            const diffMs = now.getTime() - lastActiveDate.getTime();
+            
+            // Use the threshold from memberKickThresholds if available
+            const threshold = (group.memberKickThresholds && group.memberKickThresholds[userData.uid]) || 
+                             group.myMemberStatus?.kickThreshold ||
+                             userData.kickThreshold || 
+                             DEFAULT_KICK_THRESHOLD;
+            const thresholdMs = threshold * 24 * 60 * 60 * 1000;
+            
+            const remainingMs = thresholdMs - diffMs;
+            const hoursRemaining = Math.max(0, Math.ceil(remainingMs / (1000 * 60 * 60)));
 
-                // Avoid false positives: Warning shows only if less than 24 hours remain 
-                // and it's strictly smaller than the full threshold period.
-                if (hoursRemaining <= 24 && hoursRemaining < threshold * 24 - 1) {
-                    newWarnings.push({ name: group.name || 'Group', hoursRemaining });
-                }
+            // Avoid false positives: Warning shows only if less than 24 hours remain 
+            // and it's strictly smaller than the full threshold period.
+            if (hoursRemaining <= 24 && hoursRemaining < threshold * 24 - 1) {
+                newWarnings.push({ name: group.name || 'Group', hoursRemaining });
             }
         });
 
         return newWarnings;
-    }, [userGroups, userData]);
+    }, [userGroups, userData, isDataFetching]);
 
     return { warnings };
 };

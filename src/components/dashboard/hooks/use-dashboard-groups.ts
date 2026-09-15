@@ -23,6 +23,7 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
     const userGroupIdsKey = useMemo(() => JSON.stringify(userGroupIds), [userGroupIds]);
 
     const [activeGroupId, setActiveGroupId] = useState<string | null>(() => initialGroupId ?? (userGroupIds[0] || null));
+    const [isInitialFetchDone, setIsInitialFetchDone] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(() => {
         if (!userData?.uid) return false;
         try {
@@ -91,12 +92,14 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
                     return Array.from(uniqueMap.values());
                 });
                 setIsLoading(false);
+                setIsInitialFetchDone(true);
             },
             (err) => {
                 console.error("Dashboard groups query listener error:", err);
                 const firestoreError = err as { code?: string; message?: string };
                 toast.error(`Groups Error: ${firestoreError.code || 'unknown'} - ${firestoreError.message}`);
                 setIsLoading(false);
+                setIsInitialFetchDone(true);
             }
         );
 
@@ -179,5 +182,7 @@ export const useDashboardGroups = (userData: UserData | null, initialGroupId: st
         }
     });
 
-    return { userGroups, activeGroupId, setActiveGroupId, isLoading };
+    const isFetching = !!userData?.uid && !isInitialFetchDone;
+
+    return { userGroups, activeGroupId, setActiveGroupId, isLoading, isFetching };
 };

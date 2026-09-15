@@ -96,11 +96,11 @@ const Dashboard = () => {
   
   // 1. Core Hooks
   const syncState = useDashboardSync();
-  const { user, userData, status } = syncState;
+  const { user, userData, status, isDataFetching: isUserDataFetching } = syncState;
   const { isLetterAvailable } = useLetterAvailability(userData);
   const errorMessage = syncState.status === 'error' ? syncState.message : null;
   const paramGroupId = searchParams.get('groupId') || location.state?.groupId || location.state?.initialGroupId || null;
-  const { userGroups, activeGroupId, setActiveGroupId } = useDashboardGroups(userData, paramGroupId);
+  const { userGroups, activeGroupId, setActiveGroupId, isFetching: isGroupsFetching } = useDashboardGroups(userData, paramGroupId);
   const loading = status === 'loading' && !userData;
 
   useEffect(() => {
@@ -143,7 +143,8 @@ const Dashboard = () => {
       }, 800);
     }
   );
-  const { warnings } = useDashboardWarnings(userData, userGroups);
+  const isDataFetching = (isUserDataFetching ?? false) || (isGroupsFetching ?? false);
+  const { warnings } = useDashboardWarnings(userData, userGroups, isDataFetching);
 
   const referenceDate = useMemo(() => {
     void today;

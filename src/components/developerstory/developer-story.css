@@ -62,13 +62,16 @@
 /* 1. Developer Profile Section */
 .developer-profile-section {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 2rem;
-    padding: 1.5rem 2rem;
+    justify-content: center;
+    text-align: center;
+    gap: 1.2rem;
+    padding: 2.2rem 2rem;
     background: #F8FAFC;
     border-radius: 16px;
     border: 1px solid #E2E8F0;
-    margin-bottom: 2rem;
+    margin-bottom: 2.5rem;
 }
 
 .developer-avatar-container {
@@ -87,7 +90,7 @@
 }
 
 .developer-info-container {
-    text-align: left;
+    text-align: center;
 }
 
 .developer-name {
@@ -311,8 +314,17 @@
     margin-top: 0.3rem;
 }
 
-.feedback-meta {
-    margin-bottom: 1.2rem;
+.feedback-actions-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem;
+    margin-top: 1.2rem;
+}
+
+.feedback-actions-bar .feedback-meta {
+    margin-bottom: 0;
+    flex: 1;
 }
 
 .feedback-sender {
@@ -367,6 +379,8 @@
     cursor: pointer;
     transition: all 0.2s ease;
     box-shadow: 0 2px 6px rgba(37, 99, 235, 0.2);
+    flex-shrink: 0;
+    white-space: nowrap;
 }
 
 .feedback-submit-btn:hover:not(:disabled) {
@@ -402,14 +416,8 @@
     }
 
     .developer-profile-section {
-        flex-direction: column;
-        text-align: center;
-        gap: 1rem;
         padding: 1.5rem 1rem;
-    }
-
-    .developer-info-container {
-        text-align: center;
+        gap: 1rem;
     }
 
     .developer-avatar-container {
@@ -433,6 +441,12 @@
     .category-tab {
         width: 100%;
         justify-content: center;
+    }
+
+    .feedback-actions-bar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1.2rem;
     }
 
     .feedback-submit-btn {

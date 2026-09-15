@@ -204,15 +204,6 @@ const DeveloperStory = ({ userData }: DeveloperStoryProps) => {
                                 </div>
                             </div>
 
-                            <div className="feedback-meta">
-                                <span className="feedback-sender">
-                                    {t('story.feedbackSender', { nickname: userData?.nickname || 'Anonymous' })}
-                                </span>
-                                <p className="feedback-reply-note">
-                                    {t('story.feedbackReplyNote')}
-                                </p>
-                            </div>
-
                             {submitStatus === 'success' && (
                                 <div className="feedback-alert success">
                                     <UilCheckCircle size="20" />
@@ -227,13 +218,24 @@ const DeveloperStory = ({ userData }: DeveloperStoryProps) => {
                                 </div>
                             )}
 
-                            <button 
-                                type="submit" 
-                                className="feedback-submit-btn"
-                                disabled={isSubmitting || !message.trim()}
-                            >
-                                {isSubmitting ? t('story.feedbackSubmitting') : t('story.feedbackSubmit')}
-                            </button>
+                            <div className="feedback-actions-bar">
+                                <div className="feedback-meta">
+                                    <span className="feedback-sender">
+                                        {t('story.feedbackSender', { nickname: userData?.nickname || 'Anonymous' })}
+                                    </span>
+                                    <p className="feedback-reply-note">
+                                        {t('story.feedbackReplyNote')}
+                                    </p>
+                                </div>
+
+                                <button 
+                                    type="submit" 
+                                    className="feedback-submit-btn"
+                                    disabled={isSubmitting || !message.trim()}
+                                >
+                                    {isSubmitting ? t('story.feedbackSubmitting') : t('story.feedbackSubmit')}
+                                </button>
+                            </div>
                         </form>
                     </div>
 

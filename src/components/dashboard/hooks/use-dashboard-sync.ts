@@ -8,33 +8,35 @@ import { useAuth } from '../../../hooks/use-auth';
 import { noteConverter } from '../../../utils/firestore-converters';
 
 export type DashboardSyncStatus = 
-  | { status: 'loading'; user: User | null; userData: UserData | null }
-  | { status: 'unauthenticated'; user: null; userData: null }
-  | { status: 'authenticated'; user: User; userData: UserData }
-  | { status: 'error'; user: User | null; userData: UserData | null; message: string };
+  | { status: 'loading'; user: User | null; userData: UserData | null; isDataFetching: boolean }
+  | { status: 'unauthenticated'; user: null; userData: null; isDataFetching: false }
+  | { status: 'authenticated'; user: User; userData: UserData; isDataFetching: boolean }
+  | { status: 'error'; user: User | null; userData: UserData | null; message: string; isDataFetching: boolean };
 
 export const useDashboardSync = () => {
-    const { user, userData, loading, error } = useAuth();
+    const { user, userData, loading, dataLoading, error } = useAuth();
     const migrationInProgress = useRef(false);
+
+    const isDataFetching = loading || dataLoading;
 
     const state = useMemo<DashboardSyncStatus>(() => {
         if (loading) {
             if (userData) {
-                return { status: 'authenticated', user: (user || { uid: userData.uid }) as User, userData };
+                return { status: 'authenticated', user: (user || { uid: userData.uid }) as User, userData, isDataFetching };
             }
-            return { status: 'loading', user: null, userData: null };
+            return { status: 'loading', user: null, userData: null, isDataFetching };
         } else if (error) {
-            return { status: 'error', user, userData, message: error.message };
+            return { status: 'error', user, userData, message: error.message, isDataFetching };
         } else if (user) {
             if (userData) {
-                return { status: 'authenticated', user, userData };
+                return { status: 'authenticated', user, userData, isDataFetching };
             } else {
-                return { status: 'loading', user, userData: null };
+                return { status: 'loading', user, userData: null, isDataFetching };
             }
         } else {
-            return { status: 'unauthenticated', user: null, userData: null };
+            return { status: 'unauthenticated', user: null, userData: null, isDataFetching: false };
         }
-    }, [user, userData, loading, error]);
+    }, [user, userData, loading, error, isDataFetching]);
 
     // Level Migration / Fix Logic
     useEffect(() => {
