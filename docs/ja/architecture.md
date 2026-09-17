@@ -39,7 +39,172 @@ scripture-habit/
 
 ---
 
-## 3. レイヤー設計と状態管理の分類
+## 3. 全体システム構成図 (System Component Map)
+
+Markdownプレビューアでの視認性と理解しやすさを高めるため、システム全体の構造を以下の3つの視点に分割し、縦横比を最適化して整理しています：
+1. **ハイレベル全体俯瞰図**: フロントエンド、バックエンド、クラウド基盤の全体連携
+2. **フロントエンド & 機能ワークフロー詳細**: クライアント構成、状態管理、学習・チャットフロー
+3. **バックエンド API & インフラ詳細**: サーバーレスAPI、認証ガード、ドメインサービス、外部サービス連携
+
+### 3.1 ハイレベル全体俯瞰図
+
+React PWA クライアントから、信頼されたバックエンド API、およびリアルタイム Firestore へのデータフローと連携を示す全体概要です。
+
+```mermaid
+flowchart TD
+    subgraph Client["📱 1. フロントエンド (React 19 / PWA)"]
+        UI["アプリシェル & Contexts [app.tsx]"]
+        Workflows["学習ワークフロー & グループチャット"]
+        UI --> Workflows
+    end
+
+    subgraph Backend["☁️ 2. 信頼されたバックエンド (Express 5 / Vercel)"]
+        Gateway["API ゲートウェイ & 認証ガード [api.ts]"]
+        Services["ドメインサービス [note-service.ts]"]
+        Gateway --> Services
+    end
+
+    subgraph Platform["🔥 3. クラウドプラットフォーム (Firebase / AI)"]
+        DB[("Cloud Firestore (リアルタイム DB)")]
+        AI["Gemini 3.1 & 定期メンテナンス"]
+    end
+
+    Workflows -->|"① 特権ミューテーション"| Gateway
+    Workflows <==>|"② リアルタイム同期 onSnapshot"| DB
+    Services -->|"③ トランザクション書き込み"| DB
+    Services <-->|"AI 処理 & リテンションタスク"| AI
+
+    classDef fe fill:#dbeafe,stroke:#2563eb,stroke-width:1.5px,color:#172554
+    classDef be fill:#ffe4e6,stroke:#e11d48,stroke-width:1.5px,color:#881337
+    classDef pl fill:#e0e7ff,stroke:#4f46e5,stroke-width:1.5px,color:#312e81
+    class Client,UI,Workflows fe
+    class Backend,Gateway,Services be
+    class Platform,DB,AI pl
+```
+
+---
+
+### 3.2 フロントエンド & 機能ワークフロー詳細
+
+クライアントの起動、グローバル状態、学習ワークフロー、およびオフラインチャットキューの連携詳細です。
+
+```mermaid
+flowchart TD
+    subgraph Core["📱 1. React クライアント基盤"]
+        Bootstrap["クライアント起動 [main.tsx]"] --> AppShell["アプリシェル & ルーター [app.tsx]"]
+        AppShell --> Contexts["認証・ロケール管理 [auth-provider.tsx]"]
+        AppShell --> Stores["UI 状態 (Zustand) & PWA [sw.ts]"]
+        Contexts --> SDK["Firebase Client SDK [firebase.ts]"]
+    end
+
+    subgraph Features["⚡ 2. 学習 & コミュニティワークフロー"]
+        direction LR
+        subgraph Study["学習 & 振り返り"]
+            NoteWork["ノート投稿処理 [use-note-submission.ts]"]
+            DashSync["ダッシュボード同期 [use-dashboard-sync.ts]"]
+            MyNotes["ノート一覧・検索 [my-notes.tsx]"]
+            LetterBox["レターボックス [use-letter-box.ts]"]
+            MyNotes --> LetterBox
+        end
+        subgraph Chat["グループ & チャット"]
+            ChatProvider["チャット Provider [group-chat-provider.tsx]"]
+            ChatSync["ストリーム同期 [use-chat-sync-controller.ts]"]
+            OfflineQueue["オフラインキュー [offline-chat-queue.ts]"]
+            ChatProvider --> ChatSync
+            ChatProvider -.-> OfflineQueue
+        end
+    end
+
+    subgraph External["🔥 3. 外部連携ターゲット"]
+        Firestore[("Cloud Firestore (リアルタイム DB)")]
+        API["信頼されたバックエンド API [api.ts]"]
+    end
+
+    AppShell ==> Features
+    NoteWork & ChatProvider -->|"API ミューテーション"| API
+    OfflineQueue -.->|"未送信メッセージ再試行"| API
+    NoteWork & DashSync & ChatSync <==>|"リアルタイム同期"| Firestore
+
+    click Bootstrap "https://github.com/scripturehabit/scripture-habit/blob/main/src/main.tsx"
+    click AppShell "https://github.com/scripturehabit/scripture-habit/blob/main/src/app.tsx"
+    click Contexts "https://github.com/scripturehabit/scripture-habit/blob/main/src/context/auth-provider.tsx"
+    click Stores "https://github.com/scripturehabit/scripture-habit/blob/main/src/sw.ts"
+    click SDK "https://github.com/scripturehabit/scripture-habit/blob/main/src/firebase.ts"
+    click NoteWork "https://github.com/scripturehabit/scripture-habit/blob/main/src/components/newnote/hooks/use-note-submission.ts"
+    click DashSync "https://github.com/scripturehabit/scripture-habit/blob/main/src/components/dashboard/hooks/use-dashboard-sync.ts"
+    click MyNotes "https://github.com/scripturehabit/scripture-habit/blob/main/src/components/mynotes/my-notes.tsx"
+    click LetterBox "https://github.com/scripturehabit/scripture-habit/blob/main/src/components/letterbox/hooks/use-letter-box.ts"
+    click ChatProvider "https://github.com/scripturehabit/scripture-habit/blob/main/src/components/groupchat/group-chat-provider.tsx"
+    click ChatSync "https://github.com/scripturehabit/scripture-habit/blob/main/src/components/groupchat/hooks/core/use-chat-sync-controller.ts"
+    click OfflineQueue "https://github.com/scripturehabit/scripture-habit/blob/main/src/utils/offline-chat-queue.ts"
+    click API "https://github.com/scripturehabit/scripture-habit/blob/main/api/api.ts"
+
+    classDef toneBlue fill:#dbeafe,stroke:#2563eb,stroke-width:1.5px,color:#172554
+    classDef toneAmber fill:#fef3c7,stroke:#d97706,stroke-width:1.5px,color:#78350f
+    classDef toneMint fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#14532d
+    classDef toneNeutral fill:#f1f5f9,stroke:#64748b,stroke-width:1.5px,color:#0f172a
+    class Core,Bootstrap,AppShell,Contexts,Stores,SDK toneBlue
+    class Study,NoteWork,DashSync,MyNotes,LetterBox toneAmber
+    class Chat,ChatProvider,ChatSync,OfflineQueue toneMint
+    class External,Firestore,API toneNeutral
+```
+
+---
+
+### 3.3 バックエンド API & インフラ詳細
+
+トリガーから Express パイプライン、ドメインサービス、Firestore トランザクション、および Gemini AI へと上から下へ流れる実行経路です。
+
+```mermaid
+flowchart TD
+    subgraph group_triggers["1. エントリーポイント & トリガー"]
+        direction LR
+        node_serverless_entry["サーバーレス API エントリー<br/>Vercel Functions [api.ts]"]
+        node_scheduled_ops["定期メンテナンスタスク<br/>Cron バッチ実行 [cron.ts]"]
+    end
+
+    subgraph group_api["2. 信頼されたバックエンド (Express 5)"]
+        node_backend_app["Express アプリケーション [index.ts]"]
+        node_api_middleware["認証 & 信頼ミドルウェア [middleware.ts]"]
+        node_domain_routes["ドメイン別ルート (Groups, Notes, AI) [groups.ts]"]
+        node_backend_services["ドメインサービス (習慣化 & 継続支援) [note-service.ts]"]
+
+        node_backend_app --> node_api_middleware --> node_domain_routes --> node_backend_services
+    end
+
+    subgraph group_platform["3. プラットフォーム & 外部基盤"]
+        direction LR
+        node_firebase_security["Firebase セキュリティ & Admin SDK [firebase-admin.ts]"]
+        node_firestore[("Firestore データベース<br/>リアルタイム NoSQL DB")]
+        node_ai_integrations["Gemini 3.1 Flash-Lite<br/>AI サービス [ai.ts]"]
+
+        node_firebase_security -->|"アクセス制御保護"| node_firestore
+    end
+
+    node_serverless_entry --> node_backend_app
+    node_scheduled_ops -->|"定期バッチ実行"| node_backend_services
+
+    node_backend_services -->|"Admin SDK ミューテーション"| node_firestore
+    node_domain_routes -->|"振り返り・問い生成"| node_ai_integrations
+
+    click node_serverless_entry "https://github.com/scripturehabit/scripture-habit/blob/main/api/api.ts"
+    click node_scheduled_ops "https://github.com/scripturehabit/scripture-habit/blob/main/api_internal/routes/cron.ts"
+    click node_backend_app "https://github.com/scripturehabit/scripture-habit/blob/main/backend/index.ts"
+    click node_api_middleware "https://github.com/scripturehabit/scripture-habit/blob/main/api_internal/lib/middleware.ts"
+    click node_domain_routes "https://github.com/scripturehabit/scripture-habit/blob/main/api_internal/routes/groups.ts"
+    click node_backend_services "https://github.com/scripturehabit/scripture-habit/blob/main/api_internal/services/note-service.ts"
+    click node_firebase_security "https://github.com/scripturehabit/scripture-habit/blob/main/api_internal/lib/firebase-admin.ts"
+    click node_ai_integrations "https://github.com/scripturehabit/scripture-habit/blob/main/api_internal/routes/ai.ts"
+
+    classDef toneRose fill:#ffe4e6,stroke:#e11d48,stroke-width:1.5px,color:#881337
+    classDef toneIndigo fill:#e0e7ff,stroke:#4f46e5,stroke-width:1.5px,color:#312e81
+    class group_triggers,node_serverless_entry,node_scheduled_ops,group_api,node_backend_app,node_api_middleware,node_domain_routes,node_backend_services toneRose
+    class group_platform,node_firebase_security,node_firestore,node_ai_integrations toneIndigo
+```
+
+---
+
+## 4. レイヤー設計と状態管理の分類
 
 ### ① 画面の表現とロジックの分離 (Logic-Component Split)
 - **UIコンポーネント (`src/components/`)**: 画面の描画、スタイリング（Vanilla CSS）、およびレイアウトの構築に専念します。
@@ -53,7 +218,7 @@ scripture-habit/
 
 ---
 
-## 4. データフロー：書き込みとリアルタイム同期の分離
+## 5. データフロー：書き込みとリアルタイム同期の分離
 
 Scripture Habit では、データの書き込みとリアルタイム同期の経路を分離した設計を採用しています。
 
@@ -100,7 +265,7 @@ flowchart TD
 
 ---
 
-## 5. 関連ドキュメント
+## 6. 関連ドキュメント
 
 - [ネットワークと通信の最適化](./network-performance-optimization.md)
 - [データベースとセキュリティ](./database-security.md)
