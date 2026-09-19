@@ -19,6 +19,7 @@ export interface GeminiCallOptions {
     prompt: string;
     systemInstruction?: string;
     responseMimeType?: string;
+    temperature?: number;
 }
 
 const BASE_SECURITY_INSTRUCTION = `【CRITICAL SECURITY & BEHAVIOR RULES】:
@@ -33,8 +34,8 @@ const BASE_SECURITY_INSTRUCTION = `【CRITICAL SECURITY & BEHAVIOR RULES】:
 const callGemini = async (options: string | GeminiCallOptions): Promise<string> => {
     if (!process.env.GEMINI_API_KEY) throw new Error('Gemini API Key missing');
     
-    const { prompt, systemInstruction, responseMimeType } = typeof options === 'string'
-        ? { prompt: options, systemInstruction: undefined, responseMimeType: undefined }
+    const { prompt, systemInstruction, responseMimeType, temperature } = typeof options === 'string'
+        ? { prompt: options, systemInstruction: undefined, responseMimeType: undefined, temperature: undefined }
         : options;
 
     const fullSystemInstruction = systemInstruction
@@ -52,14 +53,15 @@ const callGemini = async (options: string | GeminiCallOptions): Promise<string> 
             thinkingConfig: {
                 thinkingLevel: "minimal"
             },
+            ...(temperature !== undefined ? { temperature } : {}),
             ...(responseMimeType ? { responseMimeType } : {})
         },
         safetySettings: [
-            { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
-            { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
-            { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
-            { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" },
-            { category: "HARM_CATEGORY_CIVIC_INTEGRITY", threshold: "BLOCK_NONE" }
+            { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_ONLY_HIGH" },
+            { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_ONLY_HIGH" },
+            { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_MEDIUM_AND_ABOVE" },
+            { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_MEDIUM_AND_ABOVE" },
+            { category: "HARM_CATEGORY_CIVIC_INTEGRITY", threshold: "BLOCK_ONLY_HIGH" }
         ]
     }, { 
         headers: {
@@ -99,9 +101,14 @@ const handleAiError = (res: Response, err: unknown, contextMessage: string) => {
         extra: { errorBody }
     });
 
+    const isProduction = process.env.NODE_ENV === 'production';
+    const clientDetails = isProduction
+        ? 'An error occurred while communicating with the AI service. Please try again later.'
+        : (typeof errorBody === 'string' ? errorBody : (axiosErr.message || 'Unknown error'));
+
     res.status(status).json({
         error: `AI ${contextMessage} failed`,
-        details: typeof errorBody === 'string' ? errorBody : (axiosErr.message || 'Unknown error')
+        details: clientDetails
     });
 };
 
@@ -149,7 +156,7 @@ Based on the scripture reference provided by the user, provide ONE inspiring, op
 
         const userPrompt = `Scripture: ${scripture}\nChapter/Reference: ${chapter}`;
 
-        const questions = await withTimeout(callGemini({ prompt: userPrompt, systemInstruction }), 15000, 'Generation timed out');
+        const questions = await withTimeout(callGemini({ prompt: userPrompt, systemInstruction, temperature: 0.7 }), 15000, 'Generation timed out');
         res.json({ success: true, questions });
     } catch (err) {
         if (err instanceof ValidationError) {
@@ -252,7 +259,7 @@ Example structure (MANDATORY):
             }
             
             const userPrompt = `Text to translate:\n"""\n${text}\n"""`;
-            const resultText = await callGemini({ prompt: userPrompt, systemInstruction });
+            const resultText = await callGemini({ prompt: userPrompt, systemInstruction, temperature: 0.1 });
             translatedText = resultText.replace(/<translation>|<\/translation>/gi, '').replace(/^.*?translation.*?:/i, '').replace(/^["'](.*)["']$/g, '$1').trim();
             
             if (!translatedText) throw new Error('AI blocked response');
@@ -389,7 +396,8 @@ Format: {"msg_id": "translated_text", ...}`;
         const resultRaw = await callGemini({ 
             prompt: userPrompt, 
             systemInstruction,
-            responseMimeType: 'application/json'
+            responseMimeType: 'application/json',
+            temperature: 0.1
         });
 
         // Robust JSON extraction & cleaning:
@@ -595,9 +603,10 @@ router.post('/generate-personal-weekly-recap', authenticate, aiLimiter, verifyAp
         if (notes.length === 0) return res.json({ message: 'No personal notes found.' });
         if (notes.length < 2) return res.json({ message: 'Please post at least 2 notes to generate a letter.' });
 
-        const userName = uData.nickname || uData.displayName || t(baseLang, 'profile.you') || 'Friend';
+        const rawName = uData.nickname || uData.displayName || t(baseLang, 'profile.you') || 'Friend';
+        const cleanUserName = String(rawName).replace(/[\r\n"']/g, '').trim().slice(0, 30) || 'Friend';
 
-        const systemInstruction = `Task: Write a warm, spiritually uplifting, deeply human, and charmingly relatable personal reflection letter to ${userName} based on their recent study notes, and create a concise, heartwarming 1-sentence title capturing the core spiritual theme.
+        const systemInstruction = `Task: Write a warm, spiritually uplifting, deeply human, and charmingly relatable personal reflection letter to the user based on their recent study notes, and create a concise, heartwarming 1-sentence title capturing the core spiritual theme.
 
 The letter MUST be written from the perspective of an AI embodying a prophet or historical figure chosen from the standard works list below (NEVER choose Jesus Christ; Christ is the sacred center of faith and testimony, not the letter writer).
 
@@ -613,7 +622,7 @@ The letter MUST be written from the perspective of an AI embodying a prophet or 
 2. Connect ancient life and modern life through shared human vulnerability (e.g., overthinking, feeling overwhelmed, daily mess-ups, needing grace) rather than clumsy buzzwords or melodramatic lyrics-like phrasing.
 
 【4 EVERYDAY LENSES & EMOTIONAL ADAPTATION】:
-Dynamically choose ONE dominant lens that best matches ${userName}'s emotional state, comments, and needs in their notes:
+Dynamically choose ONE dominant lens that best matches the reader's emotional state, comments, and needs in their notes:
 1. **Lens 1: Relatable Human Struggles** (Highlighting that the persona was just as clumsy, overwhelmed, or anxious as we are)
    - Use when the user shares everyday friction, busy lifestyle fatigue, or lighthearted frustration.
 2. **Lens 2: Breath of Relief & Grace** (Unconditional reassurance, dismantling guilt, celebrating small steps, reminding that God is eager to forgive and heal)
@@ -653,11 +662,11 @@ The letter must follow a natural two-phase emotional progression shaped by the c
 1. Opening Salutation (STRICT FORMAT):
    - The letter MUST open by clearly stating that the AI is embodying the selected persona.
    - For Japanese (${baseLang === 'ja'}):
-     「${userName}さんへ、わたし、AIは[人物名]になりきってあなたのノートを読ませていただきました。」
+     「[User Name]さんへ、わたし、AIは[人物名]になりきってあなたのノートを読ませていただきました。」
    - For English / other languages:
-     "Dear ${userName}, I, the AI, am embodying [Persona Name in ${targetLangName}] as I read your study notes."
+     "Dear [User Name], I, the AI, am embodying [Persona Name in ${targetLangName}] as I read your study notes."
 2. Icebreaker & Relatable Human Empathy (Paragraph 1):
-   - Lovingly acknowledge ${userName}'s efforts and thoughts with a touch of relatable humor, self-deprecation, or a warm modern parallel to bring a smile.
+   - Lovingly acknowledge the reader's efforts and thoughts with a touch of relatable humor, self-deprecation, or a warm modern parallel to bring a smile.
 3. Deep Spiritual Insight & Moving Reflection (Paragraph 2 & 3):
    - Shift to a sincere, touching, and Christ-centered tone. Deeply connect the persona's sacred experiences to the user's spiritual growth and faith.
 4. Uplifting Poem or Rhythmic Lines (3-4 lines):
@@ -687,7 +696,7 @@ Output MUST be a valid JSON object with the following schema:
 1. You MUST respond ONLY in valid JSON.
 2. The language of the title and letter MUST be in ${targetLangName}.
 3. The chosen persona's name MUST be translated appropriately into ${targetLangName} (e.g., Nephi -> ニーファイ, Moses -> モーセ, Peter -> ペテロ, Paul -> パウロ).
-4. Address the user directly by name (${userName}).
+4. Address the user directly using the provided User name from the prompt.
 5. NO SECTION HEADERS OR LABELS: DO NOT include bracketed headers, stage directions, or labels (such as '【前半】', '【アイスブレイク】', '[Part 1]', etc.). The letter must read as a seamless, elegant personal letter.
 6. Ensure the tone is gentle, spiritually uplifting, Christ-centered, and transparently grounded in the scriptures.
 7. Priesthood & Doctrinal Boundaries: NEVER speculate on unrevealed mysteries, NEVER pronounce forgiveness of sins, NEVER judge worthiness, and NEVER give ecclesiastical directions or callings (these belong solely to authorized priesthood leaders).
@@ -701,12 +710,13 @@ Output MUST be a valid JSON object with the following schema:
 15. Real-World Connections: Gently encourage the user to cherish personal prayer with Heavenly Father and foster loving, supportive connections with family and their faith community.
 16. Word of Wisdom & Lifestyle Standards: The audience follows the Latter-day Saint Word of Wisdom (Doctrine & Covenants 89). STRICTLY PROHIBIT mentioning or suggesting the consumption of coffee, tea, alcohol, tobacco, or other prohibited substances, even in casual metaphors, icebreakers, or P.S. For casual morning or daily routine metaphors, use universal wholesome actions such as drinking a glass of water, eating meals, taking a walk, or enjoying fresh morning air.`;
 
-        const userPrompt = `User name: ${userName}\nLanguage: ${targetLangName}\n\nNotes studied by ${userName}:\n${notes.join('\n\n')}`;
+        const userPrompt = `User name: ${cleanUserName}\nLanguage: ${targetLangName}\n\nNotes studied by ${cleanUserName}:\n${notes.join('\n\n')}`;
 
         const generatedText = await callGemini({ 
             prompt: userPrompt, 
             systemInstruction,
-            responseMimeType: 'application/json'
+            responseMimeType: 'application/json',
+            temperature: 0.7
         });
 
         // Helper to parse title and letter body (Language-agnostic JSON-first parser)
