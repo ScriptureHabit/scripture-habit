@@ -1,7 +1,7 @@
 /* eslint-disable no-restricted-properties */
 import express, { Request, Response } from 'express';
 import { admin, db } from '../lib/firebase-admin.js';
-import { verifyAppCheck, authenticate, requireEmailVerified, AuthenticatedRequest } from '../lib/middleware.js';
+import { verifyAppCheck, authenticate, requireEmailVerified, inviteLimiter, AuthenticatedRequest } from '../lib/middleware.js';
 import { runPhasedTransaction } from '../lib/phased-transaction.js';
 import { joinGroupSchema, rejoinGroupSchema, updateKickThresholdSchema, leaveGroupSchema, deleteGroupSchema, updateReadStatusSchema, announceUnitySchema, updateGroupSchema, regenerateInviteCodeSchema, kickMemberSchema, createGroupSchema, createAiGroupSchema } from '../lib/schemas.js';
 import { GroupDocument, UserDocument, MemberPreview as PreviewItem, GroupMemberDocument } from '../../types/firestore.js';
@@ -1153,7 +1153,7 @@ router.post('/regenerate-invite-code', authenticate, verifyAppCheck, async (req:
 
 
 // Group Preview
-router.get('/group-preview/:inviteCode', async (req: Request, res: Response) => {
+router.get('/group-preview/:inviteCode', inviteLimiter, async (req: Request, res: Response) => {
     const { inviteCode } = req.params;
 
     try {

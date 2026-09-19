@@ -268,40 +268,43 @@ Example structure (MANDATORY):
             }
         }
 
-        // If messageId and groupId are provided, persist the translation to the message document
-        if (messageId && groupId && translatedText) {
-            try {
-                const messageRef = db.collection('groups').doc(groupId).collection('messages').doc(messageId);
-                await messageRef.update({
-                    [`translations.${targetLanguage}`]: translatedText
-                });
-            } catch (updateErr: unknown) {
-                const error = updateErr as Error;
-                console.error('[AI Error] Failed to update message with translation:', error.message);
-
-                // We still return the translation even if persistent storage fails
-            }
-        }
-
-
-        // If it's a group-level metadata (name/desc), persist to the group doc in backend
-        if (groupId && translatedText && updateType) {
+        // If groupId is provided, verify caller belongs to the group before persisting any changes
+        if (groupId && db) {
             try {
                 const groupRef = db.collection('groups').doc(groupId);
-                const field = updateType === 'group_name' ? 'name' : 'description';
-                await groupRef.update({
-                    [`translations.${targetLanguage}.${field}`]: translatedText
-                });
-            } catch (groupUpdateErr: unknown) {
-                const error = groupUpdateErr as Error;
-                console.error('[AI Error] Failed to update group metadata for type:', updateType, error.message);
+                const groupSnap = await groupRef.get();
+                if (groupSnap.exists) {
+                    const groupData = groupSnap.data();
+                    const isMember = (groupData?.members || []).includes(req.user!.uid) || groupData?.ownerUserId === req.user!.uid;
+                    if (!isMember) {
+                        throw new ForbiddenError('You are not a member of this group');
+                    }
 
+                    // 1. If messageId is provided, persist translation to message doc
+                    if (messageId && translatedText) {
+                        const messageRef = groupRef.collection('messages').doc(messageId);
+                        await messageRef.update({
+                            [`translations.${targetLanguage}`]: translatedText
+                        }).catch((e: Error) => console.error('[AI Error] Failed to update message with translation:', e.message));
+                    }
+
+                    // 2. If it's a group-level metadata (name/desc), persist to the group doc
+                    if (translatedText && (updateType === 'group_name' || updateType === 'group_description')) {
+                        const field = updateType === 'group_name' ? 'name' : 'description';
+                        await groupRef.update({
+                            [`translations.${targetLanguage}.${field}`]: translatedText
+                        }).catch((e: Error) => console.error('[AI Error] Failed to update group metadata for type:', updateType, e.message));
+                    }
+                }
+            } catch (authzErr) {
+                if (authzErr instanceof ForbiddenError) throw authzErr;
+                console.warn('[AI Error] Failed group authorization check or update:', (authzErr as Error).message);
             }
         }
 
         res.json({ success: true, translatedText });
     } catch (err) {
-        if (err instanceof ValidationError) {
+        if (err instanceof ValidationError || err instanceof ForbiddenError) {
             sendErrorResponse(res, err);
             return;
         }
@@ -320,6 +323,18 @@ router.post('/translate-batch', authenticate, aiLimiter, verifyAppCheck, async (
         const { messages, targetLanguage, groupId, force } = validation.data;
         const finalResults: Record<string, string> = {};
         const toTranslate: Array<{ id: string; text: string }> = [];
+
+        // If groupId is provided, verify caller belongs to the group before processing
+        if (groupId && db) {
+            const groupSnap = await db.collection('groups').doc(groupId).get();
+            if (groupSnap.exists) {
+                const groupData = groupSnap.data();
+                const isMember = (groupData?.members || []).includes(req.user!.uid) || groupData?.ownerUserId === req.user!.uid;
+                if (!isMember) {
+                    throw new ForbiddenError('You are not a member of this group');
+                }
+            }
+        }
 
         if (process.env.SKIP_AI === 'true') {
             messages.forEach(m => { finalResults[m.id] = m.text; });
@@ -456,7 +471,7 @@ Format: {"msg_id": "translated_text", ...}`;
 
     res.json({ success: true, translations: finalResults });
 } catch (err) {
-    if (err instanceof ValidationError) {
+    if (err instanceof ValidationError || err instanceof ForbiddenError) {
         sendErrorResponse(res, err);
         return;
     }

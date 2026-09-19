@@ -7,6 +7,14 @@ import { ForbiddenError, AuthenticationError, NotFoundError, sendErrorResponse }
 
 const router = express.Router();
 
+// Defense-in-depth: Reject any test-utils invocation in production unless VITE_DEV_MODE is explicitly enabled
+router.use((_req, _res, next) => {
+    if (process.env.NODE_ENV === 'production' && process.env.VITE_DEV_MODE !== 'true') {
+        throw new ForbiddenError('Test utilities are disabled in production');
+    }
+    next();
+});
+
 /**
  * [TEST ONLY] Seeding endpoint to ensure a group exists for the test user.
  * This removes the need for UI-based group creation in E2E tests.
