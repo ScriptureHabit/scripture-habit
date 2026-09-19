@@ -291,8 +291,8 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('AI Route Integration', ()
 
         it('should persist translation to message doc and group doc if ids are provided', async () => {
             const MSG_ID = 'AI_TRANS_MSG';
-            // Seed group and message docs
-            await db.collection('groups').doc(GROUP_ID).set({ name: 'Group' });
+            // Seed group and message docs with user as member
+            await db.collection('groups').doc(GROUP_ID).set({ name: 'Group', members: [USER_ID], ownerUserId: USER_ID });
             await db.collection('groups').doc(GROUP_ID).collection('messages').doc(MSG_ID).set({ text: 'Original Msg' });
 
             mockGeminiResponse('Translated Msg');
@@ -320,8 +320,32 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('AI Route Integration', ()
             expect(msgSnap.data()?.translations?.ja).toBe('Translated Msg');
         });
 
+        it('should return 403 when user is not a member of the group on translate', async () => {
+            await db.collection('groups').doc(GROUP_ID).set({ name: 'Other Group', members: ['STRANGER'], ownerUserId: 'STRANGER' });
+
+            mockGeminiResponse('Translated Msg');
+
+            const res = await fetch(`${setup.baseUrl}/api/ai/translate`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer token-${USER_ID}`
+                },
+                body: JSON.stringify({
+                    text: 'Original Msg',
+                    targetLanguage: 'ja',
+                    groupId: GROUP_ID,
+                    updateType: 'group_name'
+                })
+            });
+
+            expect(res.status).toBe(403);
+            const data = await res.json();
+            expect(data.error).toContain('not a member');
+        });
+
         it('should persist metadata translation to group doc if updateType is provided', async () => {
-            await db.collection('groups').doc(GROUP_ID).set({ name: 'Original Name' });
+            await db.collection('groups').doc(GROUP_ID).set({ name: 'Original Name', members: [USER_ID], ownerUserId: USER_ID });
 
             mockGeminiResponse('Nom de Groupe');
 
@@ -497,6 +521,27 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('AI Route Integration', ()
             expect(res.status).toBe(200); // Survives the commit fail
             const data = await res.json();
             expect(data.translations.m2).toBe('テキスト２');
+        });
+
+        it('should return 403 when user is not a member of the group on translate-batch', async () => {
+            await db.collection('groups').doc(GROUP_ID).set({ name: 'Other Group', members: ['STRANGER'], ownerUserId: 'STRANGER' });
+
+            const res = await fetch(`${setup.baseUrl}/api/ai/translate-batch`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer token-${USER_ID}`
+                },
+                body: JSON.stringify({
+                    messages: [MSG_1],
+                    targetLanguage: 'ja',
+                    groupId: GROUP_ID
+                })
+            });
+
+            expect(res.status).toBe(403);
+            const data = await res.json();
+            expect(data.error).toContain('not a member');
         });
     });
 
