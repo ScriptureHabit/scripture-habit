@@ -42,7 +42,7 @@ const callGemini = async (options: string | GeminiCallOptions): Promise<string> 
         : BASE_SECURITY_INSTRUCTION;
 
     // Using the Gemini 3.1 Flash-Lite Preview model with minimal thinking for best speed/cost
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent?key=${process.env.GEMINI_API_KEY}`;
+    const apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent';
     const response = await axios.post(apiUrl, { 
         systemInstruction: {
             parts: [{ text: fullSystemInstruction }]
@@ -61,7 +61,13 @@ const callGemini = async (options: string | GeminiCallOptions): Promise<string> 
             { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" },
             { category: "HARM_CATEGORY_CIVIC_INTEGRITY", threshold: "BLOCK_NONE" }
         ]
-    }, { timeout: 30000 }); // 30s timeout
+    }, { 
+        headers: {
+            'Content-Type': 'application/json',
+            'x-goog-api-key': process.env.GEMINI_API_KEY
+        },
+        timeout: 30000 
+    }); // 30s timeout
 
     const candidate = response.data?.candidates?.[0];
     

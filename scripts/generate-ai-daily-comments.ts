@@ -48,7 +48,7 @@ function saveCache(cache: Record<string, Record<string, string>>) {
 
 // Gemini API Caller
 async function callGemini(prompt: string, model = 'gemini-3.5-flash-lite'): Promise<string> {
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`;
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
     
     let attempts = 0;
     while (attempts < 3) {
@@ -60,7 +60,13 @@ async function callGemini(prompt: string, model = 'gemini-3.5-flash-lite'): Prom
                     temperature: 0.7,
                     responseMimeType: "application/json"
                 }
-            }, { timeout: 60000 });
+            }, { 
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-goog-api-key': GEMINI_API_KEY
+                },
+                timeout: 60000 
+            });
 
             const text = response.data?.candidates?.[0]?.content?.parts?.[0]?.text;
             if (!text) throw new Error('Empty response from Gemini API');

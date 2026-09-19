@@ -1,4 +1,5 @@
 import express, { Request, Response, NextFunction } from 'express';
+import crypto from 'crypto';
 import { admin, db, messaging } from '../lib/firebase-admin.js';
 import { StreakReminderEngine, UserReminderData, ReminderType } from '../lib/streak-reminder.js';
 import { InactivityService } from '../services/inactivity-service.js';
@@ -52,8 +53,18 @@ const verifyCronSecret = (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.header('Authorization');
     const cronSecret = process.env.CRON_SECRET;
 
-    if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
-        console.warn('Unauthorized access attempt to Cron endpoint');
+    if (!cronSecret || !authHeader) {
+        console.warn('Unauthorized access attempt to Cron endpoint: missing secret or header');
+        sendErrorResponse(res, new AuthenticationError('Unauthorized'));
+        return;
+    }
+
+    const expectedHeader = `Bearer ${cronSecret}`;
+    const actualHash = crypto.createHash('sha256').update(authHeader).digest();
+    const expectedHash = crypto.createHash('sha256').update(expectedHeader).digest();
+
+    if (!crypto.timingSafeEqual(actualHash, expectedHash)) {
+        console.warn('Unauthorized access attempt to Cron endpoint: invalid secret');
         sendErrorResponse(res, new AuthenticationError('Unauthorized'));
         return;
     }

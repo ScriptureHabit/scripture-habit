@@ -39,11 +39,14 @@ describe('Firestore Security Rules Unit Tests', () => {
   });
 
   describe('1. Users Collection (/users/{userId})', () => {
-    it('allows unauthenticated user to read public system doc but NOT user docs', async () => {
+    it('allows unauthenticated user to read public system status but NOT arbitrary system docs or user docs', async () => {
       const unauthedDb = testEnv.unauthenticatedContext().firestore();
       
-      // System document is publicly readable
+      // System status is publicly readable
       await assertSucceeds(getDoc(doc(unauthedDb, 'system/status')));
+
+      // Arbitrary system documents are forbidden
+      await assertFails(getDoc(doc(unauthedDb, 'system/secret_config')));
 
       // User document cannot be read by unauthenticated caller
       await assertFails(getDoc(doc(unauthedDb, 'users/user_alice')));
@@ -101,6 +104,13 @@ describe('Firestore Security Rules Unit Tests', () => {
       await assertFails(
         updateDoc(doc(aliceDb, 'users/user_alice'), {
           isAdmin: true,
+        })
+      );
+
+      // Attempting to update 'email' directly must fail (must be managed via Firebase Auth / backend)
+      await assertFails(
+        updateDoc(doc(aliceDb, 'users/user_alice'), {
+          email: 'spoofed@example.com',
         })
       );
     });
@@ -172,6 +182,20 @@ describe('Firestore Security Rules Unit Tests', () => {
         email_verified: true,
       }).firestore();
       await assertSucceeds(getDoc(doc(aliceDb, 'users/user_alice/private/account')));
+
+      // Alice CANNOT write directly to private/account (reserved for Server Admin SDK)
+      await assertFails(
+        setDoc(doc(aliceDb, 'users/user_alice/private/account'), {
+          email: 'tampered@example.com',
+        })
+      );
+
+      // Alice CAN write to private/tokens for FCM tokens
+      await assertSucceeds(
+        setDoc(doc(aliceDb, 'users/user_alice/private/tokens'), {
+          fcmTokens: ['token_123'],
+        })
+      );
     });
   });
 
@@ -296,6 +320,64 @@ describe('Firestore Security Rules Unit Tests', () => {
       }).firestore();
 
       await assertFails(getDoc(doc(unverifiedCharlieDb, 'groups/team_study/messages/msg_1')));
+    });
+  });
+
+  describe('4. Reports Collection (/reports/{reportId})', () => {
+    it('allows verified user to submit report with valid fields', async () => {
+      const aliceDb = testEnv.authenticatedContext('user_alice', {
+        email_verified: true,
+      }).firestore();
+
+      await assertSucceeds(
+        setDoc(doc(aliceDb, 'reports/rep_1'), {
+          reporterUid: 'user_alice',
+          messageId: 'msg_123',
+          groupId: 'grp_123',
+          reason: 'spam',
+          text: 'Spam message',
+        })
+      );
+    });
+
+    it('forbids anonymous user from creating reports', async () => {
+      const anonDb = testEnv.authenticatedContext('anon_user', {
+        firebase: { sign_in_provider: 'anonymous' },
+      }).firestore();
+
+      await assertFails(
+        setDoc(doc(anonDb, 'reports/rep_anon'), {
+          reporterUid: 'anon_user',
+          reason: 'spam',
+        })
+      );
+    });
+
+    it('forbids creating report with spoofed reporter ID', async () => {
+      const aliceDb = testEnv.authenticatedContext('user_alice', {
+        email_verified: true,
+      }).firestore();
+
+      await assertFails(
+        setDoc(doc(aliceDb, 'reports/rep_spoof'), {
+          reporterUid: 'user_bob',
+          reason: 'spam',
+        })
+      );
+    });
+
+    it('forbids creating report with unauthorized injected fields', async () => {
+      const aliceDb = testEnv.authenticatedContext('user_alice', {
+        email_verified: true,
+      }).firestore();
+
+      await assertFails(
+        setDoc(doc(aliceDb, 'reports/rep_bad_field'), {
+          reporterUid: 'user_alice',
+          reason: 'spam',
+          adminBypass: true,
+        })
+      );
     });
   });
 });

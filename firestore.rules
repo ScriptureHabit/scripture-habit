@@ -21,15 +21,27 @@ service cloud.firestore {
     // Helpers for Membership Logic
     function isMemberOfGroup(groupId) {
       // Ensure we check the parent doc's member list (most efficient for group listing queries)
+      let groupDoc = get(/databases/$(database)/documents/groups/$(groupId));
       return request.auth != null && (
-        request.auth.uid in get(/databases/$(database)/documents/groups/$(groupId)).data.get('members', []) ||
-        get(/databases/$(database)/documents/groups/$(groupId)).data.get('ownerUserId', '') == request.auth.uid
+        request.auth.uid in groupDoc.data.get('members', []) ||
+        groupDoc.data.get('ownerUserId', '') == request.auth.uid
       );
     }
 
     // 1. Users Collection: Maintain self-access even if unverified (to see verification UI)
     match /users/{userId} {
-      allow create: if request.auth != null && request.auth.uid == userId && isAppCheckVerified();
+      // Enforce strict schema constraints on create to prevent injecting arbitrary/unauthorized fields
+      allow create: if request.auth != null && request.auth.uid == userId && isAppCheckVerified()
+        && request.resource.data.keys().hasOnly([
+             'nickname', 'preferredLanguage', 'stake', 'ward', 'bio', 
+             'updatedAt', 'lastActiveAt', 'selectedGroupId', 'groupId', 
+             'readCountGoal', 'createdAt', 'language', 'hasCompletedOnboarding',
+             'hasSeenWelcomeStory', 'hasSeenTour', 'daysStudiedCount', 'totalNotes', 
+             'studiedDates', 'isLevelMigrated', 'fcmTokens', 'hasFcmToken',
+             'questCreatedGroup', 'questPostedNote', 'lastRecentGroup', 'uid'
+           ])
+        && (!request.resource.data.keys().hasAny(['nickname']) || (request.resource.data.nickname is string && request.resource.data.nickname.size() <= 50));
+
       // Allow self-lookup even if not verified yet, or verified non-anonymous users
       allow get: if request.auth != null && (
         request.auth.uid == userId || 
@@ -38,11 +50,12 @@ service cloud.firestore {
       allow list: if false; 
       
       // Harden profile updates: restrict directly editable keys and enforce nickname string constraints
+      // Note: 'email' is intentionally excluded to prevent client-side email spoofing (managed via Auth & backend)
       allow update: if request.auth != null && request.auth.uid == userId
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
              'nickname', 'preferredLanguage', 'stake', 'ward', 'bio', 
              'updatedAt', 'lastActiveAt', 'selectedGroupId', 'groupId', 
-             'readCountGoal', 'email', 'createdAt', 'language', 'hasCompletedOnboarding',
+             'readCountGoal', 'createdAt', 'language', 'hasCompletedOnboarding',
              'hasSeenWelcomeStory', 'hasSeenTour', 'daysStudiedCount', 'totalNotes', 
              'studiedDates', 'isLevelMigrated', 'fcmTokens', 'hasFcmToken',
              'questCreatedGroup', 'questPostedNote', 'lastRecentGroup'
@@ -53,7 +66,8 @@ service cloud.firestore {
 
       match /private/{docId} {
         allow read: if request.auth != null && request.auth.uid == userId;
-        allow write: if request.auth != null && request.auth.uid == userId && (docId == 'tokens' || docId == 'account');
+        // Restrict client writes strictly to 'tokens'. 'account' is reserved for server Admin SDK only.
+        allow write: if request.auth != null && request.auth.uid == userId && docId == 'tokens';
       }
 
       match /notes/{noteId} {
@@ -119,8 +133,8 @@ service cloud.firestore {
       }
     }
 
-    // System and Social
-    match /system/{docId} {
+    // System status: Public read only for status (maintenance info), not arbitrary wildcard docs
+    match /system/status {
       allow read: if true;
       allow write: if false;
     }
@@ -131,9 +145,16 @@ service cloud.firestore {
     }
 
     match /reports/{reportId} {
+      // Prevent anonymous spam, enforce reporter matching, and restrict allowed payload fields
       allow create: if isAuthenticated() 
-        && request.resource.data.reporterId == request.auth.uid
-        && (!request.resource.data.keys().hasAny(['reason']) || (request.resource.data.reason is string && request.resource.data.reason.size() <= 1000));
+        && request.auth.token.firebase.sign_in_provider != 'anonymous'
+        && (request.resource.data.get('reporterId', '') == request.auth.uid || request.resource.data.get('reporterUid', '') == request.auth.uid)
+        && request.resource.data.keys().hasOnly([
+             'reporterId', 'reporterUid', 'messageId', 'groupId', 'reason', 
+             'createdAt', 'text', 'senderId', 'targetId', 'targetType', 'status'
+           ])
+        && (!request.resource.data.keys().hasAny(['reason']) || (request.resource.data.reason is string && request.resource.data.reason.size() <= 1000))
+        && (!request.resource.data.keys().hasAny(['text']) || (request.resource.data.text is string && request.resource.data.text.size() <= 2000));
       allow read, update, delete: if false;
     }
   }
