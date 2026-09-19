@@ -30,6 +30,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Audit Production Dependencies
+        run: npm audit --omit=dev --audit-level=high
+
       - name: Run ESLint
         run: npm run lint
 
