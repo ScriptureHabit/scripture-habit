@@ -115,24 +115,24 @@ export const useGroupActions = (
 
   const handleShareLine = () => {
     const inviteLink = `${window.location.origin}/${language}/join/${groupData?.inviteCode}`;
-    window.open(`https://line.me/R/msg/text/?${encodeURIComponent(t('groupChat.inviteMessage', { groupName: groupData?.name || '', inviteLink }))}`, '_blank');
+    window.open(`https://line.me/R/msg/text/?${encodeURIComponent(t('groupChat.inviteMessage', { groupName: groupData?.name || '', inviteLink }))}`, '_blank', 'noopener,noreferrer');
   };
 
   const handleShareWhatsApp = () => {
     const inviteLink = `${window.location.origin}/${language}/join/${groupData?.inviteCode}`;
-    window.open(`https://wa.me/?text=${encodeURIComponent(t('groupChat.inviteMessage', { groupName: groupData?.name || '', inviteLink }))}`, '_blank');
+    window.open(`https://wa.me/?text=${encodeURIComponent(t('groupChat.inviteMessage', { groupName: groupData?.name || '', inviteLink }))}`, '_blank', 'noopener,noreferrer');
   };
 
   const handleShareMessenger = () => {
     const inviteLink = `${window.location.origin}/join/${groupData?.inviteCode}`;
-    window.open(`fb-messenger://share?link=${encodeURIComponent(inviteLink)}`, '_blank');
+    window.open(`fb-messenger://share?link=${encodeURIComponent(inviteLink)}`, '_blank', 'noopener,noreferrer');
   };
 
   const handleShareInstagram = () => {
     const inviteLink = `${window.location.origin}/join/${groupData?.inviteCode}`;
     navigator.clipboard.writeText(inviteLink).then(() => {
       toast.info(t('groupChat.linkCopiedForInstagram'));
-      window.open('https://www.instagram.com/', '_blank');
+      window.open('https://www.instagram.com/', '_blank', 'noopener,noreferrer');
     });
   };
 

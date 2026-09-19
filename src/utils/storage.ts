@@ -60,3 +60,35 @@ export const safeStorage = {
     }
   }
 };
+
+/**
+ * Clears user-specific session data and cached queries from localStorage upon sign out.
+ * Purges cached profile data, pending offline queues, time capsule caches, and stale identifiers.
+ */
+export const clearUserStorageOnSignOut = (userId?: string | null): void => {
+  if (typeof window === 'undefined' || !window.localStorage) return;
+  try {
+    const targetUid = userId || window.localStorage.getItem('last_active_uid');
+    if (targetUid) {
+      window.localStorage.removeItem(`cached_user_data_${targetUid}`);
+      window.localStorage.removeItem(`sealed_capsule_${targetUid}`);
+    }
+    window.localStorage.removeItem('last_active_uid');
+    window.localStorage.removeItem('SCRIPTURE_HABIT_QUERY_CACHE');
+
+    // Remove any user-scoped pending message queues
+    if (targetUid) {
+      const prefix = `scripture_habit_pending_msgs_${targetUid}_`;
+      const toRemove: string[] = [];
+      for (let i = 0; i < window.localStorage.length; i++) {
+        const key = window.localStorage.key(i);
+        if (key && key.startsWith(prefix)) {
+          toRemove.push(key);
+        }
+      }
+      toRemove.forEach((k) => window.localStorage.removeItem(k));
+    }
+  } catch (e) {
+    console.warn('[clearUserStorageOnSignOut] Error clearing user storage:', e);
+  }
+};

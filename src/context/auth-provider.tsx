@@ -5,6 +5,7 @@ import { auth, db } from '../firebase';
 import { isEmulator } from '../config/firebase-config';
 import { UserData } from '../types/user';
 import { syncFcmTokenFlag } from '../utils/notification-helper';
+import { clearUserStorageOnSignOut } from '../utils/storage';
 
 import { AuthContext, AuthContextType } from './auth-context';
 
@@ -93,6 +94,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
       } else {
         console.log('[AuthProvider] no current user, clearing userData');
+        clearUserStorageOnSignOut();
         setUserData(null);
         setDataLoading(false);
         try {

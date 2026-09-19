@@ -17,6 +17,7 @@ import { useMilestoneStore } from '../../store/use-milestone-store';
 import { useLevelUpStore } from '../../store/use-level-up-store';
 import { calculateLevel } from '../../utils/level-utils';
 import { clearPendingMessages } from '../../utils/offline-chat-queue';
+import { clearUserStorageOnSignOut } from '../../utils/storage';
 
 interface ProfileStats {
     streak: number;
@@ -298,6 +299,7 @@ const Profile = ({ userData, stats }: ProfileProps) => {
         const currentUid = userData?.uid || auth?.currentUser?.uid;
         if (currentUid) {
             clearPendingMessages(currentUid);
+            clearUserStorageOnSignOut(currentUid);
         }
         auth?.signOut();
         navigate(`/${language}/welcome`);
@@ -317,6 +319,7 @@ const Profile = ({ userData, stats }: ProfileProps) => {
                 const currentUid = userData?.uid || user.uid;
                 if (currentUid) {
                     clearPendingMessages(currentUid);
+                    clearUserStorageOnSignOut(currentUid);
                 }
                 await auth?.signOut();
                 navigate(`/${language}/welcome`);
@@ -328,6 +331,7 @@ const Profile = ({ userData, stats }: ProfileProps) => {
                 const currentUid = userData?.uid || user.uid;
                 if (currentUid) {
                     clearPendingMessages(currentUid);
+                    clearUserStorageOnSignOut(currentUid);
                 }
                 await auth?.signOut();
                 navigate(`/${language}/welcome`);
@@ -338,6 +342,7 @@ const Profile = ({ userData, stats }: ProfileProps) => {
             const currentUid = userData?.uid || user.uid;
             if (currentUid) {
                 clearPendingMessages(currentUid);
+                clearUserStorageOnSignOut(currentUid);
             }
             await auth?.signOut();
             navigate(`/${language}/welcome`);
