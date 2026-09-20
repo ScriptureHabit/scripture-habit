@@ -241,8 +241,8 @@ app.use('/api/preview', previewRoutes);
 app.use('/api/cron', cronRoutes);
 app.use('/api/report', reportRoutes);
 app.use('/api', feedbackRoutes);
-// Test routes only available in development/test or explicit dev mode
-if (process.env.NODE_ENV !== 'production' || process.env.VITE_DEV_MODE === 'true') {
+// Test routes strictly restricted to non-production environments (development and automated testing)
+if (process.env.NODE_ENV !== 'production') {
     app.use('/api/test', testUtilsRoutes);
 }
 app.use('/api/demo', demoRoutes);

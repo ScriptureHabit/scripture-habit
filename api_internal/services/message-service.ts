@@ -188,18 +188,15 @@ export class MessageService {
         latestRef: admin.firestore.DocumentReference,
         params: PostMessageParams
     ): Promise<PostMessageReadContext> {
-        const { uid, nickname, photoURL } = params;
-        const needsUserRead = !nickname || photoURL === undefined;
+        const { uid } = params;
 
-        const promises = [transaction.get(latestRef), transaction.get(groupRef)];
-        if (needsUserRead) {
-            promises.push(transaction.get(userRef));
-        }
+        // Security: Always read authenticated user document to prevent sender nickname/photoURL spoofing
+        const promises = [transaction.get(latestRef), transaction.get(groupRef), transaction.get(userRef)];
         
         const snaps = await Promise.all(promises);
         const latestSnap = snaps[0];
         const groupSnap = snaps[1] as admin.firestore.DocumentSnapshot<GroupDocument>;
-        const uSnapResult = needsUserRead ? (snaps[2] as admin.firestore.DocumentSnapshot<UserDocument>) : null;
+        const uSnapResult = snaps[2] as admin.firestore.DocumentSnapshot<UserDocument>;
 
         if (!groupSnap.exists) throw new Error('Group not found');
         const gData = groupSnap.data() as GroupDocument;
@@ -207,8 +204,6 @@ export class MessageService {
         if (!members.includes(uid) && gData.ownerUserId !== uid) {
             throw new Error('Forbidden');
         }
-
-        if (needsUserRead && (!uSnapResult || !uSnapResult.exists)) throw new Error('Not found.');
 
         let messagesList: Record<string, unknown>[];
         if (latestSnap && latestSnap.exists) {
@@ -222,14 +217,9 @@ export class MessageService {
             messagesList = bootSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })).reverse();
         }
 
-        let resolvedNickname = nickname || 'Member';
-        let resolvedPhotoURL = photoURL !== undefined ? (photoURL || '') : '';
-
-        if (needsUserRead && uSnapResult) {
-            const userData = uSnapResult.data() as UserDocument;
-            resolvedNickname = nickname || userData.nickname || 'Member';
-            resolvedPhotoURL = photoURL !== undefined ? (photoURL || '') : (userData.photoURL || '');
-        }
+        const userData = uSnapResult.exists ? uSnapResult.data() : undefined;
+        const resolvedNickname = userData?.nickname || 'Member';
+        const resolvedPhotoURL = userData?.photoURL || '';
 
         return {
             userSnap: uSnapResult,
@@ -371,19 +361,16 @@ export class MessageService {
         latestRef: admin.firestore.DocumentReference,
         params: ToggleReactionParams
     ): Promise<ToggleReactionReadContext> {
-        const { uid, nickname, photoURL } = params;
-        const needsUserRead = !nickname || photoURL === undefined;
+        const { uid } = params;
 
-        const refsToGet = [messageRef, latestRef, groupRef];
-        if (needsUserRead) {
-            refsToGet.push(userRef);
-        }
+        // Security: Always load userRef to ensure authentic nickname and avatar attribution
+        const refsToGet = [messageRef, latestRef, groupRef, userRef];
 
         const snaps = await transaction.getAll(...refsToGet);
         const mSnap = snaps[0] as admin.firestore.DocumentSnapshot<MessageDocument>;
         const latestSnap = snaps[1];
         const gSnap = snaps[2] as admin.firestore.DocumentSnapshot<GroupDocument>;
-        const uSnap = needsUserRead ? (snaps[3] as admin.firestore.DocumentSnapshot<UserDocument>) : null;
+        const uSnap = snaps[3] as admin.firestore.DocumentSnapshot<UserDocument>;
 
         if (!mSnap.exists) {
             throw new NotFoundError('Message not found');
@@ -391,23 +378,15 @@ export class MessageService {
         if (!gSnap.exists) {
             throw new NotFoundError('Group not found');
         }
-        if (needsUserRead && !uSnap?.exists) {
-            throw new NotFoundError('User not found');
-        }
 
         const gData = gSnap.data() as GroupDocument;
         if (!gData || !(gData.members || []).includes(uid)) {
             throw new ForbiddenError('Forbidden');
         }
 
-        let resolvedNickname = nickname || 'Member';
-        let resolvedPhotoURL = photoURL !== undefined ? photoURL : null;
-
-        if (needsUserRead && uSnap) {
-            const uData = uSnap.data() as UserDocument;
-            resolvedNickname = nickname || uData?.nickname || 'Member';
-            resolvedPhotoURL = photoURL !== undefined ? photoURL : (uData?.photoURL || null);
-        }
+        const uData = uSnap.exists ? uSnap.data() : undefined;
+        const resolvedNickname = uData?.nickname || 'Member';
+        const resolvedPhotoURL = uData?.photoURL || null;
 
         return {
             mSnap,

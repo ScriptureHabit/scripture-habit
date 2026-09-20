@@ -1,6 +1,6 @@
 import express, { Response } from 'express';
 import { db } from '../lib/firebase-admin.js';
-import { authenticate, AuthenticatedRequest } from '../lib/middleware.js';
+import { authenticate, verifyAppCheck, inviteLimiter, AuthenticatedRequest } from '../lib/middleware.js';
 import { AuthenticationError, ValidationError, NotFoundError, ForbiddenError, sendErrorResponse } from '../lib/errors.js';
 import { formatDateInTimeZone, normalizeDateString } from '../../src/utils/time-utils.js';
 import { runPhasedTransaction } from '../lib/phased-transaction.js';
@@ -11,7 +11,7 @@ const router = express.Router();
  * Reset Unity Percentage for a specific group if midnight has passed
  * This endpoint is called by frontend when it detects date change
  */
-router.post('/reset-unity-if-midnight', authenticate, async (req: AuthenticatedRequest, res: Response) => {
+router.post('/reset-unity-if-midnight', authenticate, verifyAppCheck, inviteLimiter, async (req: AuthenticatedRequest, res: Response) => {
     try {
         const uid = req.user?.uid;
         const { groupId } = req.body;

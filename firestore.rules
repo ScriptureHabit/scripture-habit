@@ -50,14 +50,13 @@ service cloud.firestore {
       allow list: if false; 
       
       // Harden profile updates: restrict directly editable keys and enforce nickname string constraints
-      // Note: 'email' is intentionally excluded to prevent client-side email spoofing (managed via Auth & backend)
+      // Note: 'email' and learning stats (daysStudiedCount, totalNotes, studiedDates) are excluded from direct client update
       allow update: if request.auth != null && request.auth.uid == userId
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
              'nickname', 'preferredLanguage', 'stake', 'ward', 'bio', 
              'updatedAt', 'lastActiveAt', 'selectedGroupId', 'groupId', 
              'readCountGoal', 'createdAt', 'language', 'hasCompletedOnboarding',
-             'hasSeenWelcomeStory', 'hasSeenTour', 'daysStudiedCount', 'totalNotes', 
-             'studiedDates', 'isLevelMigrated', 'fcmTokens', 'hasFcmToken',
+             'hasSeenWelcomeStory', 'hasSeenTour', 'isLevelMigrated', 'fcmTokens', 'hasFcmToken',
              'questCreatedGroup', 'questPostedNote', 'lastRecentGroup'
            ])
         && (!request.resource.data.keys().hasAny(['nickname']) || (request.resource.data.nickname is string && request.resource.data.nickname.size() <= 50));

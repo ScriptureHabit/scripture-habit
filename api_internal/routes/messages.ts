@@ -122,7 +122,7 @@ router.get('/bundle/:groupId', authenticate, verifyAppCheck, async (req: Authent
         if (cached && cached.expiresAt > Date.now()) {
             console.log(`[Bundle] Serving authorized in-memory cache for group ${groupId}`);
             res.setHeader('Content-Type', 'application/octet-stream');
-            res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=120');
+            res.setHeader('Cache-Control', 'private, no-cache, no-store, must-revalidate');
             return res.send(cached.buffer);
         }
 
@@ -158,8 +158,8 @@ router.get('/bundle/:groupId', authenticate, verifyAppCheck, async (req: Authent
         // Save to in-memory cache for 120 seconds (2 minutes) with bounded LRU eviction
         setBundleCache(groupId, bundleBuffer);
 
-        // 5. Send with Edge Cache instructions (Fast & Consistent)
-        const cacheHeader = 'public, s-maxage=60, stale-while-revalidate=120';
+        // 5. Send with private cache instructions (prevent shared Edge CDN cross-tenant leakage)
+        const cacheHeader = 'private, no-cache, no-store, must-revalidate';
         
         res.setHeader('Content-Type', 'application/octet-stream');
         res.setHeader('Cache-Control', cacheHeader);

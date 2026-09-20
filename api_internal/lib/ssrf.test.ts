@@ -38,6 +38,13 @@ describe('ssrf - isSafeUrl', () => {
         expect(isSafeUrl('http://169.254.169.254/latest/meta-data')).toBe(false);
     });
 
+    it('should return false for IPv4-mapped IPv6 and carrier-grade NAT addresses (FINDING-01)', () => {
+        expect(isSafeUrl('http://[::ffff:127.0.0.1]')).toBe(false);
+        expect(isSafeUrl('http://[::ffff:169.254.169.254]')).toBe(false);
+        expect(isSafeUrl('http://[::ffff:10.0.0.1]')).toBe(false);
+        expect(isSafeUrl('http://100.64.0.1')).toBe(false);
+    });
+
     it('should return false for local domains', () => {
         expect(isSafeUrl('http://myhost.local')).toBe(false);
         expect(isSafeUrl('http://database.internal')).toBe(false);
@@ -60,6 +67,11 @@ describe('ssrf - isPrivateIp', () => {
         expect(isPrivateIp('169.254.169.254')).toBe(true);
         expect(isPrivateIp('::1')).toBe(true);
         expect(isPrivateIp('fe80::1')).toBe(true);
+        // IPv4-mapped IPv6 and CGNAT (FINDING-01)
+        expect(isPrivateIp('::ffff:127.0.0.1')).toBe(true);
+        expect(isPrivateIp('::ffff:169.254.169.254')).toBe(true);
+        expect(isPrivateIp('::ffff:10.0.0.1')).toBe(true);
+        expect(isPrivateIp('100.64.0.1')).toBe(true);
     });
 
     it('should return false for public IPs', () => {

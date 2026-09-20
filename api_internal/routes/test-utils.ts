@@ -7,9 +7,9 @@ import { ForbiddenError, AuthenticationError, NotFoundError, sendErrorResponse }
 
 const router = express.Router();
 
-// Defense-in-depth: Reject any test-utils invocation in production unless VITE_DEV_MODE is explicitly enabled
+// Defense-in-depth: Strictly reject any test-utils invocation in production
 router.use((_req, _res, next) => {
-    if (process.env.NODE_ENV === 'production' && process.env.VITE_DEV_MODE !== 'true') {
+    if (process.env.NODE_ENV === 'production') {
         throw new ForbiddenError('Test utilities are disabled in production');
     }
     next();
@@ -22,7 +22,7 @@ router.use((_req, _res, next) => {
 router.post('/setup-test-group', authenticate, async (req: AuthenticatedRequest, res: Response) => {
     try {
         // PROTECT: Strictly disable in production
-        if (process.env.NODE_ENV === 'production' && process.env.VITE_DEV_MODE !== 'true') {
+        if (process.env.NODE_ENV === 'production') {
             throw new ForbiddenError('Test utilities are disabled in production');
         }
 

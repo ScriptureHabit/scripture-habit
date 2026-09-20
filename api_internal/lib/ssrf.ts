@@ -19,22 +19,32 @@ export function isSafeUrl(urlStr: string): boolean {
         const blockedPatterns: (string | RegExp)[] = [
             'localhost',
             '::1',
+            /^::ffff:/i,
             /^127\./,
             /^169\.254\./,
             /^10\./,
             /^172\.(1[6-9]|2[0-9]|3[0-1])\./,
             /^192\.168\./,
-            /^fe80:/,
-            /^fc00:/,
-            /^fd00:/,
+            /^fe80:/i,
+            /^fc00:/i,
+            /^fd00:/i,
             /\.internal$/,
             /\.local$/
         ];
 
-        return !blockedPatterns.some(pattern => {
+        if (blockedPatterns.some(pattern => {
             if (typeof pattern === 'string') return hostname === pattern;
             return pattern.test(hostname);
-        });
+        })) {
+            return false;
+        }
+
+        // Direct IP validation: reject any IP that resolves to a private/reserved range
+        if (ipaddr.isValid(hostname) && isPrivateIp(hostname)) {
+            return false;
+        }
+
+        return true;
     } catch {
         return false;
     }
@@ -45,16 +55,26 @@ export function isSafeUrl(urlStr: string): boolean {
  */
 export function isPrivateIp(ip: string): boolean {
     try {
-        const addr = ipaddr.parse(ip);
+        let addr = ipaddr.parse(ip);
+        if (addr.kind() === 'ipv6' && (addr as ipaddr.IPv6).isIPv4MappedAddress()) {
+            addr = (addr as ipaddr.IPv6).toIPv4Address();
+        }
         const range = addr.range();
 
         const blockedRanges = [
-            'uniqueLocal', // IPv6 fc00::/7
-            'linkLocal',   // IPv6 fe80::/10, IPv4 169.254.0.0/16
-            'loopback',    // IPv4 127.0.0.0/8, IPv6 ::1
-            'private',     // IPv4 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16
-            'unspecified', // 0.0.0.0, ::
-            'broadcast'    // 255.255.255.255
+            'uniqueLocal',     // IPv6 fc00::/7
+            'linkLocal',       // IPv6 fe80::/10, IPv4 169.254.0.0/16
+            'loopback',        // IPv4 127.0.0.0/8, IPv6 ::1
+            'private',         // IPv4 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16
+            'unspecified',     // 0.0.0.0, ::
+            'broadcast',       // 255.255.255.255
+            'carrierGradeNat', // IPv4 100.64.0.0/10 (RFC 6598)
+            'reserved',
+            'ipv4Mapped',
+            'rfc6145',
+            'rfc6052',
+            '6to4',
+            'teredo'
         ];
 
         return blockedRanges.includes(range);

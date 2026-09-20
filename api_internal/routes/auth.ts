@@ -291,7 +291,7 @@ router.post('/delete-account', authenticate, verifyAppCheck, async (req: Authent
  * Milestone achievers count
  * Server-side aggregation avoiding open listing of users collection from client
  */
-router.get('/milestone-count', authenticate, async (req: AuthenticatedRequest, res: Response) => {
+router.get('/milestone-count', authenticate, authLimiter, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
     try {
         const days = parseInt(req.query.days as string, 10);
         if (isNaN(days) || days <= 0) {

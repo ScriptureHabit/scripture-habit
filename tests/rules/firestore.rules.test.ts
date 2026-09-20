@@ -113,6 +113,23 @@ describe('Firestore Security Rules Unit Tests', () => {
           email: 'spoofed@example.com',
         })
       );
+
+      // Attempting to update learning stats directly must fail (FINDING-05)
+      await assertFails(
+        updateDoc(doc(aliceDb, 'users/user_alice'), {
+          daysStudiedCount: 99999,
+        })
+      );
+      await assertFails(
+        updateDoc(doc(aliceDb, 'users/user_alice'), {
+          totalNotes: 50000,
+        })
+      );
+      await assertFails(
+        updateDoc(doc(aliceDb, 'users/user_alice'), {
+          studiedDates: ['2026-01-01', '2026-01-02'],
+        })
+      );
     });
 
     it('forbids other users from updating Alice’s profile', async () => {
