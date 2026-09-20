@@ -182,14 +182,22 @@ export class ProfileService {
     }
 
     /**
-     * Anonymize user identity in recent reaction previews when account is deleted.
+     * Anonymize user identity in recent reaction previews and messages when account is deleted.
      */
-    static async purgeSocialIdentity(uid: string) {
+    static async purgeSocialIdentity(uid: string, targetGroupIds?: string[]) {
         try {
-            const userSnap = await db.collection('users').doc(uid).get();
-            if (!userSnap.exists) return;
-            const userData = userSnap.data() || {};
-            const groupIds: string[] = userData.groupIds || (userData.groupId ? [userData.groupId] : []);
+            let groupIds = targetGroupIds;
+            if (!groupIds || groupIds.length === 0) {
+                const userSnap = await db.collection('users').doc(uid).get();
+                if (userSnap.exists) {
+                    const userData = userSnap.data() || {};
+                    groupIds = userData.groupIds || (userData.groupId ? [userData.groupId] : []);
+                } else {
+                    groupIds = [];
+                }
+            }
+
+            if (!groupIds || groupIds.length === 0) return;
 
             for (const gid of groupIds) {
                 let lastMsgDoc = null;
@@ -208,6 +216,15 @@ export class ProfileService {
 
                     for (const mDoc of recentMsgs.docs) {
                         const mData = mDoc.data() as MessageDocument;
+                        const docUpdates: Partial<MessageDocument> = {};
+                        let updateNeeded = false;
+
+                        // Anonymize user profile picture on their previous messages
+                        if (mData.senderId === uid && mData.senderPhotoURL) {
+                            docUpdates.senderPhotoURL = null;
+                            updateNeeded = true;
+                        }
+
                         if (mData.reactionPreviews) {
                             const rp = { ...mData.reactionPreviews };
                             let rpChanged = false;
@@ -224,10 +241,15 @@ export class ProfileService {
                             }
 
                             if (rpChanged) {
-                                batch.update(mDoc.ref, { reactionPreviews: rp });
-                                hasChanges = true;
-                                opsInBatch++;
+                                docUpdates.reactionPreviews = rp;
+                                updateNeeded = true;
                             }
+                        }
+
+                        if (updateNeeded) {
+                            batch.update(mDoc.ref, docUpdates);
+                            hasChanges = true;
+                            opsInBatch++;
                         }
                         
                         if (opsInBatch >= 90) {
@@ -236,7 +258,7 @@ export class ProfileService {
                             opsInBatch = 0;
                         }
                     }
-                    if (hasChanges && opsInBatch < 90) await batch.commit();
+                    if (hasChanges && opsInBatch > 0) await batch.commit();
                     
                     lastMsgDoc = recentMsgs.docs[recentMsgs.size - 1];
                 }

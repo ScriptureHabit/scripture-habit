@@ -246,10 +246,12 @@ router.post('/delete-account', authenticate, verifyAppCheck, async (req: Authent
                 }
             }
 
-            // --- STEP 2: Social Identity Purge (Anonymize Recent Reactions) ---
-            ProfileService.purgeSocialIdentity(uid).catch(err => {
+            // --- STEP 2: Social Identity Purge (Anonymize Recent Reactions & Messages) ---
+            try {
+                await ProfileService.purgeSocialIdentity(uid, uniqueGroupIds);
+            } catch (err) {
                 console.error('[AccountDelete] Social identity purge failed:', err);
-            });
+            }
 
             // --- STEP 3: Recursive Delete All User Data ---
             // This handles notes, groupStates, letters, private collections etc. efficiently.

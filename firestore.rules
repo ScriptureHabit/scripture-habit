@@ -37,7 +37,7 @@ service cloud.firestore {
              'updatedAt', 'lastActiveAt', 'selectedGroupId', 'groupId', 
              'readCountGoal', 'createdAt', 'language', 'hasCompletedOnboarding',
              'hasSeenWelcomeStory', 'hasSeenTour', 'daysStudiedCount', 'totalNotes', 
-             'studiedDates', 'isLevelMigrated', 'fcmTokens', 'hasFcmToken',
+             'studiedDates', 'isLevelMigrated', 'hasFcmToken',
              'questCreatedGroup', 'questPostedNote', 'lastRecentGroup', 'uid'
            ])
         && (!request.resource.data.keys().hasAny(['nickname']) || (request.resource.data.nickname is string && request.resource.data.nickname.size() <= 50));

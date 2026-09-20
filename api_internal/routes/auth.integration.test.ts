@@ -502,7 +502,7 @@ describe('Auth Route Integration', () => {
             expect(stateSnap.exists).toBe(false);
 
             // Verify background purge was called
-            expect(purgeSpy).toHaveBeenCalledWith(USER_ID);
+            expect(purgeSpy).toHaveBeenCalledWith(USER_ID, expect.any(Array));
             expect(deleteUserSpy).toHaveBeenCalledWith(USER_ID);
         });
 
@@ -546,7 +546,7 @@ describe('Auth Route Integration', () => {
             });
 
             expect(res.status).toBe(200);
-            expect(purgeSpy).toHaveBeenCalledWith(USER_ID);
+            expect(purgeSpy).toHaveBeenCalledWith(USER_ID, expect.any(Array));
             expect(deleteUserSpy).toHaveBeenCalledWith(USER_ID);
         });
 
@@ -567,7 +567,7 @@ describe('Auth Route Integration', () => {
             });
 
             expect(res.status).toBe(200);
-            expect(purgeSpy).toHaveBeenCalledWith(USER_ID);
+            expect(purgeSpy).toHaveBeenCalledWith(USER_ID, expect.any(Array));
             expect(deleteUserSpy).toHaveBeenCalledWith(USER_ID);
         });
 
