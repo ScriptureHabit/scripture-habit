@@ -47,6 +47,15 @@ export const inviteLimiter = rateLimit({
     legacyHeaders: false,
 });
 
+export const authLimiter = rateLimit({
+    store: createRedisStore('rl:auth:'),
+    windowMs: 15 * 60 * 1000,
+    limit: isProd ? 30 : 1000,
+    message: { error: 'Too many authentication attempts. Please try again later.' },
+    standardHeaders: 'draft-7',
+    legacyHeaders: false,
+});
+
 export const aiLimiterKeyGenerator = (req: Request) => {
     const authHeader = req.header('Authorization');
     if (authHeader && authHeader.startsWith('Bearer ')) {

@@ -21,6 +21,28 @@ interface BundleCacheEntry {
     expiresAt: number;
 }
 const bundleCache = new Map<string, BundleCacheEntry>();
+const MAX_BUNDLE_CACHE_ENTRIES = 500;
+
+function setBundleCache(groupId: string, buffer: Buffer, ttlMs = 120000) {
+    const now = Date.now();
+    if (bundleCache.size >= MAX_BUNDLE_CACHE_ENTRIES) {
+        for (const [key, entry] of bundleCache.entries()) {
+            if (entry.expiresAt <= now) {
+                bundleCache.delete(key);
+            }
+        }
+        if (bundleCache.size >= MAX_BUNDLE_CACHE_ENTRIES) {
+            const oldestKey = bundleCache.keys().next().value;
+            if (oldestKey) {
+                bundleCache.delete(oldestKey);
+            }
+        }
+    }
+    bundleCache.set(groupId, {
+        buffer,
+        expiresAt: now + ttlMs,
+    });
+}
 
 /**
  * Get Firestore Bundle for group messages
@@ -133,11 +155,8 @@ router.get('/bundle/:groupId', authenticate, verifyAppCheck, async (req: Authent
 
         const bundleBuffer = bundle.build();
 
-        // Save to in-memory cache for 120 seconds (2 minutes)
-        bundleCache.set(groupId, {
-            buffer: bundleBuffer,
-            expiresAt: Date.now() + 120000
-        });
+        // Save to in-memory cache for 120 seconds (2 minutes) with bounded LRU eviction
+        setBundleCache(groupId, bundleBuffer);
 
         // 5. Send with Edge Cache instructions (Fast & Consistent)
         const cacheHeader = 'public, s-maxage=60, stale-while-revalidate=120';

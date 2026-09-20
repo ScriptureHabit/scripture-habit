@@ -1,6 +1,6 @@
 import express, { Response, NextFunction } from 'express';
 import { admin, db } from '../lib/firebase-admin.js';
-import { verifyAppCheck, authenticate, AuthenticatedRequest } from '../lib/middleware.js';
+import { verifyAppCheck, authenticate, authLimiter, AuthenticatedRequest } from '../lib/middleware.js';
 import { verifyLoginSchema, initializeProfileSchema, updateProfileSchema } from '../lib/schemas.js';
 import { AuthenticationError, ForbiddenError, ValidationError, sendErrorResponse } from '../lib/errors.js';
 import { ProfileService } from '../services/profile-service.js';
@@ -162,7 +162,7 @@ router.post('/initialize-profile', authenticate, verifyAppCheck, async (req: Aut
 /**
  * Verify Login
  */
-router.post('/verify-login', verifyAppCheck, async (req, res: Response, next: NextFunction) => {
+router.post('/verify-login', authLimiter, verifyAppCheck, async (req, res: Response, next: NextFunction) => {
     try {
         const validation = verifyLoginSchema.safeParse(req.body);
         if (!validation.success) {
