@@ -17,10 +17,10 @@ function killZombieEmulatorProcesses(ports) {
     // Linux/macOS: find PIDs on ports
     for (const port of ports) {
       try {
-        const pid = execSync(`lsof -t -i:${port}`, { encoding: 'utf8' }).trim();
+        const pid = execSync(`lsof -t -i:${port}`, { encoding: 'utf8', stdio: 'pipe' }).trim();
         if (pid) {
           // Check process name
-          const procName = execSync(`ps -p ${pid} -o comm=`, { encoding: 'utf8' }).trim().toLowerCase();
+          const procName = execSync(`ps -p ${pid} -o comm=`, { encoding: 'utf8', stdio: 'pipe' }).trim().toLowerCase();
           if (procName.includes('java') || procName.includes('node')) {
             console.log(`[test-emulated] Port ${port} is taken by emulator/node process ${procName} (PID ${pid}). Killing zombie...`);
             execSync(`kill -9 ${pid}`);
