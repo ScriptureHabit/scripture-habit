@@ -266,7 +266,13 @@ Example structure (MANDATORY):
             
             // Persist to cache if DB is healthy
             if (canUseCache && cacheRef) {
-                const savePromise = cacheRef.set({ originalText: text, translatedText, targetLanguage, createdAt: admin.firestore.FieldValue.serverTimestamp() }).catch(e => {
+                const savePromise = cacheRef.set({
+                    originalText: text,
+                    translatedText,
+                    targetLanguage,
+                    createdAt: admin.firestore.FieldValue.serverTimestamp(),
+                    expiresAt: admin.firestore.Timestamp.fromMillis(Date.now() + 30 * 24 * 60 * 60 * 1000)
+                }).catch(e => {
                     console.warn('[AI Cache] Failed to save to cache:', e.message);
                 });
                 if (process.env.NODE_ENV === 'test' || process.env.VITEST === 'true') {
@@ -453,7 +459,13 @@ Format: {"msg_id": "translated_text", ...}`;
                 // Cache
                 const cacheKey = crypto.createHash('md5').update(`${msg.text}_${targetLanguage}_normal`).digest('hex');
                 const cacheRef = db.collection('translation_cache').doc(cacheKey);
-                batch.set(cacheRef, { originalText: msg.text, translatedText: translated, targetLanguage, createdAt: admin.firestore.FieldValue.serverTimestamp() });
+                batch.set(cacheRef, {
+                    originalText: msg.text,
+                    translatedText: translated,
+                    targetLanguage,
+                    createdAt: admin.firestore.FieldValue.serverTimestamp(),
+                    expiresAt: admin.firestore.Timestamp.fromMillis(Date.now() + 30 * 24 * 60 * 60 * 1000)
+                });
                 
                 // Message Persistence (if in group context)
                 if (groupId) {

@@ -5,7 +5,7 @@
         "ttl": [
             {
                 "collectionGroup": "translation_cache",
-                "field": "createdAt",
+                "field": "expiresAt",
                 "state": "ENABLED"
             },
             {
@@ -19,6 +19,9 @@
                 "state": "ENABLED"
             }
         ]
+    },
+    "storage": {
+        "rules": "storage.rules"
     },
     "hosting": {
         "public": "dist",
