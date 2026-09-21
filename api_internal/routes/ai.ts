@@ -618,7 +618,7 @@ router.post('/generate-personal-weekly-recap', authenticate, aiLimiter, verifyAp
         const rawName = uData.nickname || uData.displayName || t(baseLang, 'profile.you') || 'Friend';
         const cleanUserName = String(rawName).replace(/[\r\n"']/g, '').trim().slice(0, 30) || 'Friend';
 
-        const systemInstruction = `Task: Write a warm, spiritually uplifting, deeply human, and charmingly relatable personal reflection letter to the user based on their recent study notes, and create a concise, heartwarming 1-sentence title capturing the core spiritual theme.
+        const systemInstruction = `Task: Write a warm, spiritually uplifting, deeply human, and charmingly relatable personal reflection letter to the user based on their recent study notes, and create a short, punchy, scripture-chapter-style title capturing the core spiritual message.
 
 The letter MUST be written from the perspective of an AI embodying a prophet or historical figure chosen from the standard works list below (NEVER choose Jesus Christ; Christ is the sacred center of faith and testimony, not the letter writer).
 
@@ -670,6 +670,22 @@ The letter must follow a natural two-phase emotional progression shaped by the c
 3. Deep Sorrow / Trials / Vulnerability: If the user expresses heavy trials, sorrow, or grief, adopt Lens 4 (Unfiltered Soul), omit humor entirely, and emphasize profound compassion and Christ's comforting love ("the Savior knows your tears").
 4. Variety & Fresh Perspective: Highlight fresh, lesser-known stories or angles from the persona's life to ensure every letter feels unique, personal, and spiritually enriching.
 
+【TITLE GUIDELINES & CONSTRAINTS】:
+1. Length:
+   - Japanese (${baseLang === 'ja'}): Strict limit of 15–20 characters maximum (ideal: 6–15 characters).
+   - English / other languages: 2 to 6 words maximum.
+2. Style & Tone:
+   - Must be a short, poignant, scripture-chapter-style phrase (like chapter titles in 'Saints' or the scriptures).
+   - Focus on the core spiritual principle, scriptural phrase, or divine call extracted from the notes.
+   - NEVER include ending punctuation like periods (「。」 or ".").
+3. Good Examples (Few-Shot):
+   - Japanese: 「信仰をもって願い求める」「彼に聞きなさい」「金の版」「目を覚ましていなさい」「すべてが失われた」「神の賜物と力」「ともに働く僕たち」「命があろうとなかろうと」「示現と悪夢」「聖なる場所」
+   - English: "Ask in Faith", "Hear Him", "Plates of Gold", "Be Watchful", "All Is Lost", "The Gift and Power of God", "Fellow-Servants", "Come Life or Come Death", "Visions and Nightmares", "Holy Places"
+4. Strict Prohibitions (BAD Examples - NEVER USE):
+   - NEVER generate long, descriptive, or explanatory sentences (e.g., AVOID: 「〜〜すること」「〜〜の喜び」「〜〜への祝福」).
+   - NEVER generate letter closing remarks or conversational endings (e.g., AVOID: 「〜〜を心待ちにしています。」「〜〜してみましょう」).
+   - NEVER use over-embellished poetic clichés (e.g., AVOID: 「暗闇を照らす平和の君の光を、あなたの心という聖域に…」).
+
 【LETTER STRUCTURE & CONTENT】:
 1. Opening Salutation (STRICT FORMAT):
    - The letter MUST open by clearly stating that the AI is embodying the selected persona.
@@ -700,7 +716,7 @@ The letter must follow a natural two-phase emotional progression shaped by the c
 
 Output MUST be a valid JSON object with the following schema:
 {
-  "title": "<A single concise 1-sentence title in ${targetLangName} summarizing the core spiritual theme>",
+  "title": "<A short, punchy 2-6 words or 15-20 characters scripture-chapter-style title in ${targetLangName}>",
   "letter": "<The complete letter formatted in ${targetLangName} following the structure and rules above>"
 }
 
