@@ -66,4 +66,37 @@ describe('useMilestoneAchieverCount', () => {
     expect(result.current.count).toBeNull();
     expect(result.current.hasEnoughAchievers).toBe(false);
   });
+
+  it('does not make API call when enabled is false', () => {
+    const { result } = renderHook(() => useMilestoneAchieverCount(20, false));
+
+    expect(result.current.count).toBeNull();
+    expect(result.current.loading).toBe(false);
+    expect(result.current.hasEnoughAchievers).toBe(false);
+    expect(apiClient.get).not.toHaveBeenCalled();
+  });
+
+  it('fetches count when enabled transitions to true', async () => {
+    vi.mocked(apiClient.get).mockResolvedValueOnce({
+      data: { count: 8 }
+    });
+
+    let enabled = false;
+    const { result, rerender } = renderHook(() => useMilestoneAchieverCount(30, enabled));
+
+    expect(result.current.count).toBeNull();
+    expect(result.current.loading).toBe(false);
+    expect(apiClient.get).not.toHaveBeenCalled();
+
+    enabled = true;
+    rerender();
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
+
+    expect(result.current.count).toBe(8);
+    expect(result.current.hasEnoughAchievers).toBe(true);
+    expect(apiClient.get).toHaveBeenCalledTimes(1);
+  });
 });

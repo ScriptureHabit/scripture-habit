@@ -21,7 +21,7 @@ const MIN_SOS_LENGTH = 3;
 export function TimeCapsuleModal({ userData }: TimeCapsuleModalProps) {
   const { isCreateOpen, targetDays, closeCreateModal } = useTimeCapsuleStore();
   const { getDraft, saveDraft, createTimeCapsule } = useTimeCapsule(userData);
-  const { count, hasEnoughAchievers } = useMilestoneAchieverCount(targetDays || 0);
+  const { count, hasEnoughAchievers } = useMilestoneAchieverCount(targetDays || 0, isCreateOpen);
   const { t } = useLanguage();
 
   const [content, setContent] = useState('');

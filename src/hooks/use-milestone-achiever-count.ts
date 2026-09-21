@@ -4,12 +4,15 @@ import apiClient from '../utils/api-client';
 // In-memory cache to avoid duplicate counts in the same session
 const countCache: Record<number, number> = {};
 
-export function useMilestoneAchieverCount(targetDays: number) {
+export function useMilestoneAchieverCount(targetDays: number, enabled: boolean = true) {
+  const isCached = targetDays > 0 && countCache[targetDays] !== undefined;
+  const currentKey = enabled && targetDays > 0 ? `${targetDays}` : null;
+
   const [count, setCount] = useState<number | null>(countCache[targetDays] ?? null);
-  const [loading, setLoading] = useState<boolean>(!countCache[targetDays] && targetDays > 0);
+  const [resolvedKey, setResolvedKey] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!targetDays || targetDays <= 0 || countCache[targetDays] !== undefined) {
+    if (!enabled || !targetDays || targetDays <= 0 || isCached) {
       return;
     }
 
@@ -27,13 +30,13 @@ export function useMilestoneAchieverCount(targetDays: number) {
         }
         if (isMounted) {
           setCount(total);
-          setLoading(false);
+          setResolvedKey(currentKey);
         }
       } catch (err) {
         console.warn('Failed to fetch milestone achiever count:', err);
         if (isMounted) {
           setCount(null);
-          setLoading(false);
+          setResolvedKey(currentKey);
         }
       }
     };
@@ -43,9 +46,10 @@ export function useMilestoneAchieverCount(targetDays: number) {
     return () => {
       isMounted = false;
     };
-  }, [targetDays]);
+  }, [targetDays, enabled, isCached, currentKey]);
 
   const effectiveCount = targetDays > 0 ? (countCache[targetDays] ?? count) : null;
+  const loading = currentKey !== null && !isCached && resolvedKey !== currentKey;
 
   return {
     count: effectiveCount,

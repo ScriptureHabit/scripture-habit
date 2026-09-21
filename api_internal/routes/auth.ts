@@ -1,4 +1,4 @@
-import express, { Response, NextFunction } from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import { admin, db } from '../lib/firebase-admin.js';
 import { verifyAppCheck, authenticate, authLimiter, AuthenticatedRequest } from '../lib/middleware.js';
 import { verifyLoginSchema, initializeProfileSchema, updateProfileSchema } from '../lib/schemas.js';
@@ -291,7 +291,7 @@ router.post('/delete-account', authenticate, verifyAppCheck, async (req: Authent
  * Milestone achievers count
  * Server-side aggregation avoiding open listing of users collection from client
  */
-router.get('/milestone-count', authenticate, authLimiter, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
+router.get('/milestone-count', authLimiter, verifyAppCheck, async (req: Request, res: Response) => {
     try {
         const days = parseInt(req.query.days as string, 10);
         if (isNaN(days) || days <= 0) {

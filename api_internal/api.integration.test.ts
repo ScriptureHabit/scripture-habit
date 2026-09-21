@@ -238,4 +238,11 @@ describe('API App Configuration Integration', () => {
         await tempSetup2.stop();
         addressSpy2.mockRestore();
     });
+
+    it('should return milestone count without authentication header', async () => {
+        const res = await fetch(`${setup.baseUrl}/api/auth/milestone-count?days=10`);
+        expect(res.status).toBe(200);
+        const data = await res.json();
+        expect(typeof data.count).toBe('number');
+    });
 });
