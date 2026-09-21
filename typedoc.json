@@ -26,5 +26,5 @@
   "docsRoot": "docs",
   "readme": "none",
   "hideBreadcrumbs": true,
-  "tsconfig": "tsconfig.json"
+  "tsconfig": "tsconfig.docs.json"
 }
