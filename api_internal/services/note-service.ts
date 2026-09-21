@@ -112,14 +112,39 @@ export class NoteService {
         console.log(`[NoteService] postNote called by uid=${uid}, shareOption=${shareOption}, selectedShareGroups=${JSON.stringify(selectedShareGroups)}`);
 
         try {
+            // Pre-fetch user document outside the transaction:
+            // 1. Establishes/warms up the gRPC channel, TLS session, and IAM token before opening a transaction.
+            // 2. Performs early existence check, avoiding opening transactions for non-existent users.
+            // 3. Allows computing groupsToPostTo in advance so all document reads inside the transaction can be batched together.
+            const userRef = db.collection('users').doc(uid);
+            const preUserSnap = await userRef.get();
+            if (!preUserSnap.exists) {
+                throw new NotFoundError('User not found.');
+            }
+
+            const preUserData = preUserSnap.data() as UserDocument;
+            const preUserGroupIds: string[] = preUserData.groupIds || (preUserData.groupId ? [preUserData.groupId] : []);
+
+            let preGroupsToPostTo: string[] = [];
+            if (shareOption === 'all') preGroupsToPostTo = preUserGroupIds;
+            else if (shareOption === 'specific') preGroupsToPostTo = (selectedShareGroups || []).filter(gid => preUserGroupIds.includes(gid));
+            else if (shareOption === 'current' && preUserData.groupId && preUserGroupIds.includes(preUserData.groupId)) preGroupsToPostTo = [preUserData.groupId];
+
+            preGroupsToPostTo = [...new Set(preGroupsToPostTo.filter(gid => !!gid))].slice(0, 20);
+
             const result = await db.runTransaction(async (transaction) => {
-                const userRef = db.collection('users').doc(uid);
                 const noteRef = optimisticId
                     ? userRef.collection('notes').doc(optimisticId)
                     : userRef.collection('notes').doc();
 
                 // --- PHASE 1: READ & CALCULATION PHASE (Strict Read-before-Write) ---
-                const context = await this.fetchPostNoteReadContext(transaction, userRef, noteRef, input);
+                const context = await this.fetchPostNoteReadContext(
+                    transaction,
+                    userRef,
+                    noteRef,
+                    input,
+                    preGroupsToPostTo
+                );
 
                 // --- PHASE 2: WRITE PHASE ---
                 this.applyUserDocUpdates(transaction, userRef, context, clientTimeZone);
@@ -191,19 +216,50 @@ export class NoteService {
         transaction: admin.firestore.Transaction,
         userRef: admin.firestore.DocumentReference,
         noteRef: admin.firestore.DocumentReference,
-        input: PostNoteInput
+        input: PostNoteInput,
+        preGroupsToPostTo: string[]
     ): Promise<PostNoteReadContext> {
         const { shareOption, selectedShareGroups, timeZone: clientTimeZone, optimisticId } = input;
 
-        const [userSnap, existingNoteSnap] = await Promise.all([
-            transaction.get(userRef),
-            optimisticId ? transaction.get(noteRef) : Promise.resolve(null)
-        ]) as [admin.firestore.DocumentSnapshot<UserDocument>, admin.firestore.DocumentSnapshot | null];
+        // Unified Single Batch Read:
+        // Batch fetch userRef, optional noteRef, messages_latest/latest refs, and group refs all in one roundtrip
+        const latRefs = preGroupsToPostTo.map(gid => db.collection('groups').doc(gid).collection('messages_latest').doc('latest'));
+        const groupRefs = preGroupsToPostTo.map(gid => db.collection('groups').doc(gid));
 
+        const refsToFetch: admin.firestore.DocumentReference[] = [
+            userRef,
+            ...(optimisticId ? [noteRef] : []),
+            ...latRefs,
+            ...groupRefs
+        ];
+
+        const snapshots = await transaction.getAll(...refsToFetch);
+
+        let snapIdx = 0;
+        const userSnap = snapshots[snapIdx++] as admin.firestore.DocumentSnapshot<UserDocument>;
         if (!userSnap.exists) throw new NotFoundError('User not found.');
+
+        const existingNoteSnap = optimisticId ? snapshots[snapIdx++] : null;
+
+        const latSnaps = snapshots.slice(snapIdx, snapIdx + latRefs.length);
+        snapIdx += latRefs.length;
+
+        const groupDocSnaps = snapshots.slice(snapIdx, snapIdx + groupRefs.length);
+
+        const latSnapMap = new Map<string, admin.firestore.DocumentSnapshot>();
+        preGroupsToPostTo.forEach((gid, i) => {
+            latSnapMap.set(gid, latSnaps[i]);
+        });
+
+        const groupDocMap = new Map<string, admin.firestore.DocumentSnapshot>();
+        preGroupsToPostTo.forEach((gid, i) => {
+            groupDocMap.set(gid, groupDocSnaps[i]);
+        });
+
         const uData = userSnap.data()!;
         const uGroupIds: string[] = uData.groupIds || (uData.groupId ? [uData.groupId] : []);
 
+        // Recalculate groupsToPostTo with authoritative transactional user data
         let groupsToPostTo: string[] = [];
         if (shareOption === 'all') groupsToPostTo = uGroupIds;
         else if (shareOption === 'specific') groupsToPostTo = (selectedShareGroups || []).filter(gid => uGroupIds.includes(gid));
@@ -211,6 +267,19 @@ export class NoteService {
 
         groupsToPostTo = [...new Set(groupsToPostTo.filter(gid => !!gid))].slice(0, 20);
         console.log(`[NoteService] User uGroupIds=${JSON.stringify(uGroupIds)}, activeGroupId=${uData.groupId}, calculated groupsToPostTo=${JSON.stringify(groupsToPostTo)}`);
+
+        // Handle edge case where user joined a new group between pre-fetch and transaction
+        const missingGroupIds = groupsToPostTo.filter(gid => !latSnapMap.has(gid));
+        if (missingGroupIds.length > 0) {
+            const extraLatRefs = missingGroupIds.map(gid => db.collection('groups').doc(gid).collection('messages_latest').doc('latest'));
+            const extraGroupRefs = missingGroupIds.map(gid => db.collection('groups').doc(gid));
+            const extraSnaps = await transaction.getAll(...extraLatRefs, ...extraGroupRefs);
+            
+            missingGroupIds.forEach((gid, idx) => {
+                latSnapMap.set(gid, extraSnaps[idx]);
+                groupDocMap.set(gid, extraSnaps[extraLatRefs.length + idx]);
+            });
+        }
 
         const extNote = existingNoteSnap ? existingNoteSnap.data() : undefined;
         const extSharedIds = extNote?.sharedMessageIds || {};
@@ -226,38 +295,42 @@ export class NoteService {
             timeZone: tz
         }, { now: currentNow, clientTimeZone });
 
-        const latRefs = groupsToPostTo.map(gid => db.collection('groups').doc(gid).collection('messages_latest').doc('latest'));
-
-        let latSnaps: admin.firestore.DocumentSnapshot[] = [];
-        if (groupsToPostTo.length > 0) {
-            latSnaps = await transaction.getAll(...latRefs);
-        }
-
-        const bootStamps: Record<string, Record<string, unknown>[]> = {};
-        for (let i = 0; i < groupsToPostTo.length; i++) {
-            const gid = groupsToPostTo[i];
-            const latestSnap = latSnaps[i];
-            if (!latestSnap || !latestSnap.exists) {
-                const bootSnap = await transaction.get(
-                    db.collection('groups').doc(gid).collection('messages')
-                        .orderBy('createdAt', 'desc')
-                        .limit(24)
-                );
-                bootStamps[gid] = bootSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })).reverse();
-            } else {
-                bootStamps[gid] = latestSnap.data()?.messages || [];
-            }
-        }
-
-        const groupDocSnaps = groupsToPostTo.length > 0
-            ? await transaction.getAll(...groupsToPostTo.map(gid => db.collection('groups').doc(gid)))
-            : [];
+        // Build groupDocsMap
         const groupDocsMap: Record<string, GroupDocument> = {};
-        groupDocSnaps.forEach(gsnap => {
-            if (gsnap.exists) {
-                groupDocsMap[gsnap.id] = gsnap.data() as GroupDocument;
+        groupsToPostTo.forEach(gid => {
+            const gsnap = groupDocMap.get(gid);
+            if (gsnap && gsnap.exists) {
+                groupDocsMap[gid] = gsnap.data() as GroupDocument;
             }
         });
+
+        // Resolve messagesInGroup: use messages_latest/latest cache or parallel query fallback
+        const bootStamps: Record<string, Record<string, unknown>[]> = {};
+        const missingBootGids: string[] = [];
+
+        groupsToPostTo.forEach(gid => {
+            const latestSnap = latSnapMap.get(gid);
+            if (latestSnap && latestSnap.exists) {
+                bootStamps[gid] = latestSnap.data()?.messages || [];
+            } else {
+                missingBootGids.push(gid);
+            }
+        });
+
+        if (missingBootGids.length > 0) {
+            const querySnaps = await Promise.all(
+                missingBootGids.map(gid =>
+                    transaction.get(
+                        db.collection('groups').doc(gid).collection('messages')
+                            .orderBy('createdAt', 'desc')
+                            .limit(24)
+                    )
+                )
+            );
+            missingBootGids.forEach((gid, idx) => {
+                bootStamps[gid] = querySnaps[idx].docs.map(doc => ({ id: doc.id, ...doc.data() })).reverse();
+            });
+        }
 
         return {
             uid: input.uid,
