@@ -139,7 +139,7 @@
     "hono": "^4.13.7",
     "jsdom": "^30.0.1",
     "knip": "^6.35.1",
-    "mermaid": "^11.17.2",
+    "mermaid": "^12.0.0",
     "msw": "^2.15.0",
     "rollup-plugin-visualizer": "^7.1.1",
     "terser": "^5.51.2",
