@@ -552,4 +552,38 @@ describe('new-note component suite', () => {
 
         render(<NewNote isOpen={true} onClose={vi.fn()} userData={mockUserData as UserData} />);
     });
+
+    it('has proper modal dialog a11y attributes and closes on Escape key', () => {
+        const onClose = vi.fn();
+        render(<NewNote isOpen={true} onClose={onClose} userData={mockUserData as UserData} />);
+
+        const dialog = screen.getByRole('dialog');
+        expect(dialog).toBeInTheDocument();
+        expect(dialog).toHaveAttribute('aria-modal', 'true');
+        expect(dialog).toHaveAttribute('aria-labelledby', 'new-note-modal-title');
+
+        // Escape closes when empty
+        fireEvent.keyDown(window, { key: 'Escape' });
+        expect(onClose).toHaveBeenCalledTimes(1);
+    });
+
+    it('navigates and selects scripture suggestions via keyboard', () => {
+        render(<NewNote isOpen={true} onClose={vi.fn()} userData={mockUserData as UserData} />);
+
+        const select = screen.getByTestId('scripture-select');
+        fireEvent.change(select, { target: { value: 'Book of Mormon' } });
+
+        const chapterInput = screen.getByTestId('new-note-chapter');
+        // Type input to trigger suggestions (mocked getBookSuggestions returns suggestions)
+        fireEvent.change(chapterInput, { target: { value: '1' } });
+
+        // Navigate suggestions with ArrowDown
+        fireEvent.keyDown(chapterInput, { key: 'ArrowDown' });
+        const listbox = screen.getByRole('listbox');
+        expect(listbox).toBeInTheDocument();
+
+        // Select with Enter
+        fireEvent.keyDown(chapterInput, { key: 'Enter' });
+        expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+    });
 });

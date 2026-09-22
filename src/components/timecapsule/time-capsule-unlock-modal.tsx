@@ -1,14 +1,24 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useTimeCapsuleStore } from '../../store/use-time-capsule-store';
 import { useLanguage } from '../../hooks/use-language';
 import { triggerConfetti } from '../../utils/confetti-utils';
 import { getNextMilestone } from '../../utils/milestone';
 import { UilEnvelopeOpen, UilTimes, UilPen, UilArchiveAlt } from '@iconscout/react-unicons';
+import { useModalA11y } from '../../hooks/use-modal-a11y';
 import './time-capsule-unlock-modal.css';
 
 export function TimeCapsuleUnlockModal() {
   const { isUnlockOpen, unlockedCapsule, closeUnlockModal, openCreateModal } = useTimeCapsuleStore();
   const { t } = useLanguage();
+  const modalRef = useRef<HTMLDivElement>(null);
+  const closeBtnRef = useRef<HTMLButtonElement>(null);
+
+  useModalA11y({
+    isOpen: Boolean(isUnlockOpen && unlockedCapsule),
+    onClose: closeUnlockModal,
+    containerRef: modalRef,
+    initialFocusRef: closeBtnRef,
+  });
 
   useEffect(() => {
     if (isUnlockOpen && unlockedCapsule) {
@@ -34,19 +44,27 @@ export function TimeCapsuleUnlockModal() {
 
   return (
     <div className="time-capsule-unlock-overlay" onClick={closeUnlockModal} data-testid="time-capsule-unlock-overlay">
-      <div className="time-capsule-unlock-container" onClick={(e) => e.stopPropagation()}>
+      <div
+        ref={modalRef}
+        className="time-capsule-unlock-container"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="time-capsule-unlock-title"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header */}
         <div className="time-capsule-unlock-header">
           <div className="unlock-badge-icon">
             <UilEnvelopeOpen size="28" color="#ffffff" />
           </div>
-          <h3 className="time-capsule-unlock-title">
+          <h3 id="time-capsule-unlock-title" className="time-capsule-unlock-title">
             {t('timeCapsule.unlockTitle')}
           </h3>
           <p className="time-capsule-unlock-subtitle">
             {t('timeCapsule.unlockSubtitle', { days: targetDays })}
           </p>
           <button 
+            ref={closeBtnRef}
             className="time-capsule-unlock-close-btn" 
             onClick={closeUnlockModal} 
             aria-label={t('common.close')}

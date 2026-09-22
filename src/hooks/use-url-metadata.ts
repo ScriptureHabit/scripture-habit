@@ -27,32 +27,36 @@ export const useUrlMetadata = (
   urlOrSlug: string | null | undefined, 
   language: Language | string
 ): UseUrlMetadataResult => {
-    const [data, setData] = useState<UrlMetadata | null>(null);
+    const isUrl = Boolean(urlOrSlug && (urlOrSlug.startsWith('http') || urlOrSlug.startsWith('/')));
+    const isShortcode = Boolean(urlOrSlug && /^\d{4}\/\d{2}/.test(urlOrSlug));
+    const isValidInput = isUrl || isShortcode;
+
+    const cacheKey = isValidInput && urlOrSlug && language ? `url_meta_${language}_${urlOrSlug}` : null;
+
+    const [data, setData] = useState<UrlMetadata | null>(() => {
+        if (!cacheKey) return null;
+        return memoryCache[cacheKey] || safeStorage.get<UrlMetadata>(cacheKey) || null;
+    });
+
+    const [prevCacheKey, setPrevCacheKey] = useState(cacheKey);
+    if (cacheKey !== prevCacheKey) {
+        setPrevCacheKey(cacheKey);
+        const cached = cacheKey ? (memoryCache[cacheKey] || safeStorage.get<UrlMetadata>(cacheKey)) : null;
+        setData(cached || null);
+    }
+
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<Error | null>(null);
     const currentUserUid = auth?.currentUser?.uid;
 
     useEffect(() => {
         if (!urlOrSlug || !language || !auth?.currentUser) return;
-
-        // Support full URLs, internal paths, and Church shortcodes (e.g., 2024/04/...)
-        const isUrl = urlOrSlug.startsWith('http') || urlOrSlug.startsWith('/');
-        const isShortcode = /^\d{4}\/\d{2}/.test(urlOrSlug);
-
-        if (!isUrl && !isShortcode) {
-            return;
-        }
-
-        const cacheKey = `url_meta_${language}_${urlOrSlug}`;
+        if (!isValidInput || !cacheKey) return;
 
         // 1. Memory Cache & LocalStorage
         const cached = memoryCache[cacheKey] || safeStorage.get<UrlMetadata>(cacheKey);
         if (cached) {
             memoryCache[cacheKey] = cached;
-            // Use queueMicrotask to ensure state update doesn't trigger synchronous effect warning
-            queueMicrotask(() => {
-                setData(cached);
-            });
             return;
         }
 
@@ -117,7 +121,7 @@ export const useUrlMetadata = (
         fetchMetadata();
         return () => { active = false; };
 
-    }, [urlOrSlug, language, currentUserUid]);
+    }, [urlOrSlug, language, currentUserUid, cacheKey, isValidInput]);
 
 
     return { data, loading, error };

@@ -34,6 +34,8 @@ export default function SignupForm() {
           <h2>{t('signup.completeProfile')}</h2>
           <form onSubmit={handleCompleteGoogleSignup}>
             <Input
+              id="complete-nickname"
+              name="nickname"
               data-testid="complete-nickname"
               label={t('signup.nicknameLabel')}
               type="text"
@@ -47,7 +49,7 @@ export default function SignupForm() {
             </Button>
           </form>
           {error && (
-            <div className='error-container'>
+            <div className='error-container' role="alert" aria-live="polite">
               <p className='error-message'>{error}</p>
             </div>
           )}
@@ -127,7 +129,7 @@ export default function SignupForm() {
           </Button>
         </form>
         {error && (
-          <div className='error-container' data-testid="signup-error">
+          <div className='error-container' data-testid="signup-error" role="alert" aria-live="polite">
             <p className='error-message'>{error}</p>
           </div>
         )}

@@ -7,6 +7,7 @@ import { useLanguage } from '../../hooks/use-language';
 import { triggerConfetti } from '../../utils/confetti-utils';
 import { UilEnvelopeLock, UilTimes, UilPen, UilExclamationTriangle } from '@iconscout/react-unicons';
 import { toast } from 'react-toastify';
+import { useModalA11y } from '../../hooks/use-modal-a11y';
 import './time-capsule-modal.css';
 
 interface TimeCapsuleModalProps {
@@ -29,6 +30,15 @@ export function TimeCapsuleModal({ userData }: TimeCapsuleModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const prevOpenRef = useRef(false);
+  const modalRef = useRef<HTMLDivElement>(null);
+  const closeBtnRef = useRef<HTMLButtonElement>(null);
+
+  useModalA11y({
+    isOpen: isCreateOpen,
+    onClose: closeCreateModal,
+    containerRef: modalRef,
+    initialFocusRef: closeBtnRef,
+  });
 
   // Load draft when modal opens
   useEffect(() => {
@@ -83,18 +93,26 @@ export function TimeCapsuleModal({ userData }: TimeCapsuleModalProps) {
 
   return (
     <div className="time-capsule-overlay" onClick={closeCreateModal} data-testid="time-capsule-modal-overlay">
-      <div className="time-capsule-container" onClick={(e) => e.stopPropagation()}>
+      <div
+        ref={modalRef}
+        className="time-capsule-container"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="time-capsule-modal-title"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header */}
         <div className="time-capsule-header">
           <div className="time-capsule-header-content">
             <div className="time-capsule-icon-badge">
               <UilEnvelopeLock size="22" />
             </div>
-            <h3 className="time-capsule-title">
+            <h3 id="time-capsule-modal-title" className="time-capsule-title">
               {t('timeCapsule.createTitle', { days: targetDays })}
             </h3>
           </div>
           <button 
+            ref={closeBtnRef}
             className="time-capsule-close-btn" 
             onClick={closeCreateModal} 
             aria-label={t('common.close')}
@@ -108,7 +126,7 @@ export function TimeCapsuleModal({ userData }: TimeCapsuleModalProps) {
           {/* Section 1: Letter to Future Self */}
           <div className="time-capsule-section">
             <div className="time-capsule-section-header">
-              <label className="time-capsule-label">
+              <label htmlFor="time-capsule-letter-textarea" className="time-capsule-label">
                 <UilPen size="16" />
                 {t('timeCapsule.letterSectionTitle', { days: targetDays })}
               </label>
@@ -118,6 +136,7 @@ export function TimeCapsuleModal({ userData }: TimeCapsuleModalProps) {
             </p>
             <div className="time-capsule-textarea-wrapper">
               <textarea
+                id="time-capsule-letter-textarea"
                 className="time-capsule-textarea main-letter"
                 value={content}
                 onChange={handleContentChange}
@@ -134,7 +153,7 @@ export function TimeCapsuleModal({ userData }: TimeCapsuleModalProps) {
           {/* Section 2: Emergency SOS Message */}
           <div className="time-capsule-section">
             <div className="time-capsule-section-header">
-              <label className="time-capsule-label">
+              <label htmlFor="time-capsule-sos-textarea" className="time-capsule-label">
                 <UilExclamationTriangle size="16" />
                 {t('timeCapsule.sosSectionTitle')}
               </label>
@@ -144,6 +163,7 @@ export function TimeCapsuleModal({ userData }: TimeCapsuleModalProps) {
             </p>
             <div className="time-capsule-textarea-wrapper">
               <textarea
+                id="time-capsule-sos-textarea"
                 className="time-capsule-textarea sos-note"
                 value={sosMessage}
                 onChange={handleSosChange}

@@ -1,6 +1,8 @@
+import { useRef } from 'react';
 import { UilTimes } from '@iconscout/react-unicons';
 import { UserProfileBrief } from '../../../types/chat';
 import { UserData } from '../../../types/user';
+import { useModalA11y } from '../../../hooks/use-modal-a11y';
 
 interface UnityModalProps {
     t: (key: string) => string;
@@ -30,25 +32,52 @@ const UnityModal = ({
     handleUserProfileClick,
     membersLoading,
 }: UnityModalProps) => {
+    const modalRef = useRef<HTMLDivElement>(null);
+    const closeBtnRef = useRef<HTMLButtonElement>(null);
+
+    const handleClose = () => setShowUnityModal(false);
+
+    useModalA11y({
+        isOpen: showUnityModal,
+        onClose: handleClose,
+        containerRef: modalRef,
+        initialFocusRef: closeBtnRef,
+    });
+
     if (!showUnityModal) return null;
 
     return (
-        <div className="leave-modal-overlay" onClick={() => setShowUnityModal(false)}>
-            <div className="leave-modal-content unity-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '380px', maxHeight: '85vh', display: 'flex', flexDirection: 'column', padding: '1.5rem' }}>
+        <div className="leave-modal-overlay" onClick={handleClose}>
+            <div
+                ref={modalRef}
+                className="leave-modal-content unity-modal"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="unity-modal-description"
+                onClick={(e) => e.stopPropagation()}
+                style={{ maxWidth: '380px', maxHeight: '85vh', display: 'flex', flexDirection: 'column', padding: '1.5rem' }}
+            >
                 <div className="modal-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                    <span style={{ fontSize: '1.8rem' }}>
+                    <span style={{ fontSize: '1.8rem' }} role="img" aria-label="Unity Status">
                         {unityPercentage === 100 ? '☀️' :
                             unityPercentage >= 66 ? '🌕' :
                                 unityPercentage >= 33 ? '🌠' :
                                     '🌑'}
                     </span>
-                    <button className="close-menu-btn" onClick={() => setShowUnityModal(false)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--gray)' }}>
+                    <button
+                        ref={closeBtnRef}
+                        className="close-menu-btn"
+                        onClick={handleClose}
+                        aria-label={t('common.close') || 'Close'}
+                        title={t('common.close') || 'Close'}
+                        style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--gray)' }}
+                    >
                         <UilTimes size="24" />
                     </button>
                 </div>
 
                 <div className="unity-modal-body" style={{ overflowY: 'auto', flex: 1, paddingRight: '5px' }}>
-                    <p className="unity-description" style={{ fontSize: '1.1rem', fontWeight: 'bold', color: 'var(--black)', textAlign: 'center', margin: '1rem 0', lineHeight: '1.4' }}>
+                    <p id="unity-modal-description" className="unity-description" style={{ fontSize: '1.1rem', fontWeight: 'bold', color: 'var(--black)', textAlign: 'center', margin: '1rem 0', lineHeight: '1.4' }}>
                         {t('groupChat.unityModalDescription') || "Let's all aim for the Celestial Kingdom together!"}
                     </p>
 

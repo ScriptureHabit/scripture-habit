@@ -16,6 +16,13 @@ const mockContext: LanguageContextType = {
     bookTranslations: {}
 };
 
+vi.mock('./hooks/use-user-profile-data', () => ({
+    useUserProfileData: (user: UserData | null) => ({
+        currentUser: user,
+        userId: user ? user.uid : null
+    })
+}));
+
 const renderWithLanguageProvider = (ui: ReactElement) => {
     return render(createElement(LanguageContext.Provider, { value: mockContext }, ui));
 };
@@ -122,5 +129,42 @@ describe('UserProfileModal', () => {
         expect(screen.queryByText('profile.level')).not.toBeInTheDocument();
         expect(screen.queryByText('dashboard.streak')).not.toBeInTheDocument();
         expect(screen.queryByText('dashboard.totalNotes')).not.toBeInTheDocument();
+    });
+
+    it('has proper dialog role and responds to Escape key', () => {
+        const onClose = vi.fn();
+        const user: UserData = {
+            uid: 'u4',
+            nickname: 'EscapeUser',
+            photoURL: 'https://example.com/avatar.png',
+            streakCount: 2,
+            daysStudiedCount: 2,
+            totalNotes: 1
+        };
+
+        const { container } = renderWithLanguageProvider(<UserProfileModal user={user} onClose={onClose} />);
+
+        const dialog = screen.getByRole('dialog');
+        expect(dialog).toBeInTheDocument();
+        expect(dialog).toHaveAttribute('aria-modal', 'true');
+        expect(dialog).toHaveAttribute('aria-labelledby', 'user-profile-nickname');
+
+        // Escape key closes modal
+        fireEvent.keyDown(window, { key: 'Escape' });
+        expect(onClose).toHaveBeenCalledTimes(1);
+
+        // Avatar has keyboard accessibility
+        const avatarButton = container.querySelector('.user-avatar-large');
+        expect(avatarButton).toHaveAttribute('role', 'button');
+        expect(avatarButton).toHaveAttribute('tabIndex', '0');
+
+        // Press Enter on avatar opens full image
+        fireEvent.keyDown(avatarButton!, { key: 'Enter' });
+        expect(container.querySelector('.full-avatar-img')).toBeInTheDocument();
+
+        // Escape now closes only the full image, not the outer modal again
+        fireEvent.keyDown(window, { key: 'Escape' });
+        expect(container.querySelector('.full-avatar-img')).not.toBeInTheDocument();
+        expect(onClose).toHaveBeenCalledTimes(1);
     });
 });

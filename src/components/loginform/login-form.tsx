@@ -35,6 +35,7 @@ const LoginForm = () => {
           <h2>{t('signup.completeProfile')}</h2>
           <form onSubmit={handleCompleteGoogleSignup}>
             <Input
+              id="complete-nickname"
               data-testid="complete-nickname"
               label={t('signup.nicknameLabel')}
               type="text"
@@ -48,7 +49,7 @@ const LoginForm = () => {
             </Button>
           </form>
           {error && (
-            <div className='error-container'>
+            <div className='error-container' role="alert" aria-live="polite">
               <p className='error-message'>{error}</p>
             </div>
           )}
@@ -127,6 +128,7 @@ const LoginForm = () => {
 
           {/* Password input */}
           <Input
+            id="login-password"
             data-testid="login-password"
             label={t('login.passwordLabel')}
             type="password"
@@ -151,7 +153,7 @@ const LoginForm = () => {
 
         {/* Error message */}
         {error && (
-          <div className='error-container' data-testid="login-error">
+          <div className='error-container' data-testid="login-error" role="alert" aria-live="polite">
             <p className='error-message'>{error}</p>
             {unverifiedUser && (
               <button

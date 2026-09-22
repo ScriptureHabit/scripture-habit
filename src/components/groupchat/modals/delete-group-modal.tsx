@@ -1,5 +1,7 @@
+import { useRef } from 'react';
 import LazyMarkdown from '../../common/lazy-markdown';
 import { Group } from '../../../types/chat';
+import { useModalA11y } from '../../../hooks/use-modal-a11y';
 
 interface DeleteGroupModalProps {
     t: (key: string) => string;
@@ -22,12 +24,35 @@ const DeleteGroupModal = ({
     isDeleting,
     handleDeleteGroup,
 }: DeleteGroupModalProps) => {
+    const modalRef = useRef<HTMLDivElement>(null);
+    const cancelBtnRef = useRef<HTMLButtonElement>(null);
+
+    const handleClose = () => {
+        if (!isDeleting) {
+            setShowDeleteModal(false);
+            setDeleteConfirmationName('');
+        }
+    };
+
+    useModalA11y({
+        isOpen: showDeleteModal,
+        onClose: handleClose,
+        containerRef: modalRef,
+        initialFocusRef: cancelBtnRef,
+    });
+
     if (!showDeleteModal) return null;
 
     return (
         <div className="leave-modal-overlay">
-            <div className="leave-modal-content">
-                <h3 className="delete-modal-title">{t('groupChat.deleteGroup')}?</h3>
+            <div
+                ref={modalRef}
+                className="leave-modal-content"
+                role="alertdialog"
+                aria-modal="true"
+                aria-labelledby="delete-group-modal-title"
+            >
+                <h3 id="delete-group-modal-title" className="delete-modal-title">{t('groupChat.deleteGroup')}?</h3>
                 <p>{t('groupChat.deleteConfirmMessage')}</p>
                 <div style={{ marginBottom: '1rem' }}>
                     {groupData && (
@@ -36,6 +61,9 @@ const DeleteGroupModal = ({
                         </LazyMarkdown>
                     )}
                 </div>
+                <label htmlFor="delete-group-confirm-name" className="sr-only">
+                    {t('groupChat.enterGroupNamePlaceholder')}
+                </label>
                 <input
                     id="delete-group-confirm-name"
                     name="deleteConfirmationName"
@@ -44,17 +72,22 @@ const DeleteGroupModal = ({
                     value={deleteConfirmationName}
                     onChange={(e) => setDeleteConfirmationName(e.target.value)}
                     placeholder={t('groupChat.enterGroupNamePlaceholder')}
+                    aria-label={t('groupChat.enterGroupNamePlaceholder')}
                 />
                 <div className="leave-modal-actions">
-                    <button className="modal-btn cancel" onClick={() => { setShowDeleteModal(false); setDeleteConfirmationName(''); }} disabled={isDeleting}>
+                    <button
+                        ref={cancelBtnRef}
+                        className="modal-btn cancel"
+                        onClick={handleClose}
+                        disabled={isDeleting}
+                    >
                         {t('groupChat.cancel')}
                     </button>
-                     <button
+                    <button
                         className="modal-btn leave"
                         onClick={handleDeleteGroup}
                         disabled={deleteConfirmationName !== (groupData?.name || '') || isDeleting}
                     >
-
                         {isDeleting ? '...' : t('groupChat.confirmDelete')}
                     </button>
                 </div>

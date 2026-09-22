@@ -1,10 +1,11 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { UilTimes, UilPen, UilTrashAlt, UilComment, UilThumbsUp } from '@iconscout/react-unicons';
 import { db } from '../../firebase';
 import { doc, collection, query, where, onSnapshot, Timestamp } from 'firebase/firestore';
 import NoteDisplay from '../notedisplay/note-display';
 import { useLanguage } from '../../hooks/use-language';
+import { useModalA11y } from '../../hooks/use-modal-a11y';
 import './note-detail-modal.css';
 import { Note } from '../../types/note';
 import { Group, Message, FirebaseTimestamp } from '../../types/chat';
@@ -28,53 +29,39 @@ interface SharedDetail {
     isMember: boolean;
 }
 
-const NoteDetailModal = ({ isOpen, onClose, note, userGroups, userData, onEdit, onDelete }: NoteDetailModalProps) => {
+const NoteDetailModal = (props: NoteDetailModalProps) => {
+    const { isOpen, onClose, note, userGroups, onEdit, onDelete } = props;
     const { t, language } = useLanguage();
-    const [sharedDetails, setSharedDetails] = useState<SharedDetail[]>([]);
-    const [loadingDetails, setLoadingDetails] = useState(false);
+    const modalRef = useRef<HTMLDivElement>(null);
+    const closeBtnRef = useRef<HTMLButtonElement>(null);
 
-    useEffect(() => {
-        if (!isOpen || !note) {
-            queueMicrotask(() => {
-                setSharedDetails([]);
-            });
-            return;
+    useModalA11y({
+        isOpen: Boolean(isOpen && note),
+        onClose,
+        containerRef: modalRef,
+        initialFocusRef: closeBtnRef
+    });
+
+    const sharedDetails: SharedDetail[] = useMemo(() => {
+        if (!isOpen || !note || !note.sharedMessageIds || Object.keys(note.sharedMessageIds).length === 0) {
+            return [];
         }
 
-        const fetchSharedDetails = async () => {
-            if (!note.sharedMessageIds || Object.keys(note.sharedMessageIds).length === 0) {
-                setSharedDetails([]);
-                return;
-            }
+        return Object.entries(note.sharedMessageIds).map(([groupId, messageId]) => {
+            let groupName = t('newNote.unnamedGroup');
+            let isMember = false;
 
-            setLoadingDetails(true);
-            const details: SharedDetail[] = [];
-
-            // Iterate through each group where the note is shared
-            for (const [groupId, messageId] of Object.entries(note.sharedMessageIds)) {
-                // 1. Get Group Name and Membership Status
-                let groupName = t('newNote.unnamedGroup');
-                let isMember = false;
-
-                if (userGroups) {
-                    const group = userGroups.find(g => g.id === groupId);
-                    if (group) {
-                        groupName = group.name || '';
-                        isMember = true;
-                    }
+            if (userGroups) {
+                const group = userGroups.find(g => g.id === groupId);
+                if (group) {
+                    groupName = group.name || '';
+                    isMember = true;
                 }
-
-                // If not found in userGroups, we assume user is NOT a member and cannot fetch details.
-                // We will still display the group "slot" but marked as unavailable.
-                details.push({ groupId, messageId, groupName, isMember });
             }
 
-            setSharedDetails(details);
-            setLoadingDetails(false);
-        };
-
-        fetchSharedDetails();
-    }, [isOpen, note, userGroups, userData?.uid, t]);
+            return { groupId, messageId, groupName, isMember };
+        });
+    }, [isOpen, note, userGroups, t]);
 
     if (!isOpen || !note) return null;
 
@@ -88,14 +75,27 @@ const NoteDetailModal = ({ isOpen, onClose, note, userGroups, userData, onEdit, 
 
     return (
         <div className="ModalOverlay detail-modal-overlay" onClick={onClose}>
-            <div className="ModalContent NoteDetailModal" onClick={(e) => e.stopPropagation()}>
-                <button className="close-btn" onClick={onClose} title={t('common.close') || 'Close'}>
+            <div 
+                ref={modalRef}
+                className="ModalContent NoteDetailModal" 
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="note-detail-date"
+                onClick={(e) => e.stopPropagation()}
+            >
+                <button 
+                    ref={closeBtnRef}
+                    className="close-btn" 
+                    onClick={onClose} 
+                    title={t('common.close') || 'Close'}
+                    aria-label={t('common.close') || 'Close'}
+                >
                     <UilTimes size="24" />
                 </button>
 
                 <div className="note-detail-content">
                     <div className="detail-header">
-                        <span className="note-date">
+                        <span id="note-detail-date" className="note-date">
                             {note.createdAt 
                                 ? parseTimestampToDate(note.createdAt as FirebaseTimestamp).toLocaleDateString(language === 'en' ? 'sv-SE' : language) 
                                 : 'Unknown Date'}
@@ -129,9 +129,7 @@ const NoteDetailModal = ({ isOpen, onClose, note, userGroups, userData, onEdit, 
                     <div className="shared-activity-section">
                         <h4>{t('myNotes.sharedActivity')}</h4>
 
-                        {loadingDetails ? (
-                            <div className="loading-spinner">{t('myNotes.loading') || 'Loading...'}</div>
-                        ) : sharedDetails.length === 0 ? (
+                        {sharedDetails.length === 0 ? (
                             <p className="no-shares">{t('newNote.shareNone') || 'Not shared (Private)'}</p>
                         ) : (
                             sharedDetails.map(detail => (

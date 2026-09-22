@@ -1,4 +1,6 @@
+import { useRef } from 'react';
 import { UilExclamationTriangle, UilTimes } from '@iconscout/react-unicons';
+import { useModalA11y } from '../../../hooks/use-modal-a11y';
 
 interface ReportModalProps {
     t: (key: string) => string;
@@ -17,25 +19,44 @@ const ReportModal = ({
     setReportReason,
     confirmReport,
 }: ReportModalProps) => {
+    const modalRef = useRef<HTMLDivElement>(null);
+    const cancelBtnRef = useRef<HTMLButtonElement>(null);
+
+    const handleClose = () => setShowReportModal(false);
+
+    useModalA11y({
+        isOpen: showReportModal,
+        onClose: handleClose,
+        containerRef: modalRef,
+        initialFocusRef: cancelBtnRef,
+    });
+
     if (!showReportModal) return null;
 
     return (
-        <div className="leave-modal-overlay report-modal-overlay" onClick={() => setShowReportModal(false)}>
-            <div className="leave-modal-content report-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="leave-modal-overlay report-modal-overlay" onClick={handleClose}>
+            <div
+                ref={modalRef}
+                className="leave-modal-content report-modal"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="report-modal-title"
+                onClick={(e) => e.stopPropagation()}
+            >
                 <div className="modal-header">
-                    <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <h3 id="report-modal-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <UilExclamationTriangle size="24" color="#E53E3E" />
                         {t('groupChat.reportUser')}
                     </h3>
-                    <button className="close-menu-btn" onClick={() => setShowReportModal(false)}>
+                    <button className="close-menu-btn" onClick={handleClose} aria-label={t('common.close') || 'Close'}>
                         <UilTimes size="24" />
                     </button>
                 </div>
 
                 <div className="report-modal-body">
-                    <p className="report-hint">{t('groupChat.reportReason')}:</p>
+                    <p id="report-reason-hint" className="report-hint">{t('groupChat.reportReason')}:</p>
 
-                    <div className="report-options">
+                    <div className="report-options" role="radiogroup" aria-labelledby="report-reason-hint">
                         <label className={`report-option-label ${reportReason === 'inappropriate' ? 'selected' : ''}`} htmlFor="report-reason-inappropriate">
                             <input
                                 id="report-reason-inappropriate"
@@ -96,7 +117,7 @@ const ReportModal = ({
                 </div>
 
                 <div className="leave-modal-actions">
-                    <button className="modal-btn cancel" onClick={() => setShowReportModal(false)}>
+                    <button ref={cancelBtnRef} className="modal-btn cancel" onClick={handleClose}>
                         {t('groupChat.cancel')}
                     </button>
                     <button className="modal-btn leave report-submit" onClick={confirmReport}>

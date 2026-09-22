@@ -112,7 +112,7 @@ export default function GroupForm() {
             {loading ? t('groupForm.createButton') + '...' : t('groupForm.createButton')}
           </Button>
         </form>
-        {error && <p className="error-message">{error}</p>}
+        {error && <p className="error-message" role="alert" aria-live="polite">{error}</p>}
 
         <Link to={`/${language}/dashboard`} className="back-link">
           {t('groupOptions.backToDashboard')}

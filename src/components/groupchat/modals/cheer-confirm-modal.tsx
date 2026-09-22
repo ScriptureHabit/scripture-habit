@@ -1,4 +1,6 @@
+import { useRef } from 'react';
 import { UserProfileBrief } from '../../../types/chat';
+import { useModalA11y } from '../../../hooks/use-modal-a11y';
 
 interface CheerConfirmModalProps {
     t: (key: string) => string;
@@ -15,13 +17,39 @@ const CheerConfirmModal = ({
     isSendingCheer,
     handleSendCheer,
 }: CheerConfirmModalProps) => {
+    const modalRef = useRef<HTMLDivElement>(null);
+    const cancelBtnRef = useRef<HTMLButtonElement>(null);
+
+    const handleClose = () => {
+        if (!isSendingCheer) {
+            setCheerTarget(null);
+        }
+    };
+
+    useModalA11y({
+        isOpen: Boolean(cheerTarget),
+        onClose: handleClose,
+        containerRef: modalRef,
+        initialFocusRef: cancelBtnRef,
+    });
+
     if (!cheerTarget) return null;
 
     return (
-        <div className="leave-modal-overlay cheer-modal-overlay" onClick={() => setCheerTarget(null)}>
-            <div className="leave-modal-content cheer-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '360px', padding: '2rem' }}>
+        <div className="leave-modal-overlay cheer-modal-overlay" onClick={handleClose}>
+            <div
+                ref={modalRef}
+                className="leave-modal-content cheer-modal"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="cheer-modal-title"
+                onClick={(e) => e.stopPropagation()}
+                style={{ maxWidth: '360px', padding: '2rem' }}
+            >
                 <div style={{ marginBottom: '1rem', textAlign: 'center' }}></div>
-                <h3 style={{ textAlign: 'center', marginBottom: '1rem', color: 'var(--black)' }}>{t('groupChat.cheerConfirmTitle') || "Send a Cheer"}</h3>
+                <h3 id="cheer-modal-title" style={{ textAlign: 'center', marginBottom: '1rem', color: 'var(--black)' }}>
+                    {t('groupChat.cheerConfirmTitle') || "Send a Cheer"}
+                </h3>
                 <p style={{ textAlign: 'center', color: 'var(--gray)', marginBottom: '2rem', lineHeight: '1.4', fontSize: '1rem' }}>
                     {t('groupChat.cheerConfirmMessage')?.replace('{nickname}', cheerTarget.nickname || '') || `Would you like to send a cheer to ${cheerTarget.nickname || ''}?`}
                 </p>
@@ -48,8 +76,10 @@ const CheerConfirmModal = ({
                         ) : (t('groupChat.cheerConfirmButton') || "Send Cheer")}
                     </button>
                     <button
+                        ref={cancelBtnRef}
                         className="modal-btn cancel"
-                        onClick={() => setCheerTarget(null)}
+                        onClick={handleClose}
+                        disabled={isSendingCheer}
                         style={{
                             width: '100%',
                             padding: '14px',

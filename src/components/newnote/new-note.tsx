@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import Select from 'react-select';
 import { UilShuffle, UilRobot, UilEdit } from '@iconscout/react-unicons';
 import Input from '../input/input';
@@ -61,6 +61,9 @@ const NewNote = ({
     // Suggestions UI State
     const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
+    const [activeSuggestionIndex, setActiveSuggestionIndex] = useState<number>(-1);
+
+    const modalRef = useRef<HTMLDivElement>(null);
 
     // Modular Hooks
     const { urlMeta, urlLoading } = useUrlMetaFetcher(chapter, scripture, language || 'en');
@@ -79,9 +82,9 @@ const NewNote = ({
         setChapter(c);
     });
 
-    // Random Placeholders (initialized safely via effect for React Compiler purity)
-    const [commentIdx, setCommentIdx] = useState<number>(0);
-    const [chapterIdx, setChapterIdx] = useState<number>(0);
+    // Random Placeholders initialized cleanly without effects or queueMicrotask
+    const [commentIdx] = useState<number>(() => Math.random());
+    const [chapterIdx] = useState<number>(() => Math.random());
 
     const handleFillSample = () => {
         setScripture('Book of Mormon');
@@ -90,13 +93,6 @@ const NewNote = ({
         setChapter(localizedScripture);
         setComment(t('newNote.sampleThoughts') || '「主が命じられることには、それを成し遂げる道を備えてくださる」という言葉に勇気をもらいました。今日も一歩踏み出してみます！');
     };
-
-    useEffect(() => {
-        queueMicrotask(() => {
-            setCommentIdx(Math.random());
-            setChapterIdx(Math.random());
-        });
-    }, []);
 
     const commentPlaceholder = useMemo(() => {
         const placeholders = tArray('newNote.commentPlaceholder');
@@ -145,8 +141,6 @@ const NewNote = ({
         }
     }
 
-    if (!isOpen) return null;
-
     const getPlaceholder = () => {
         if (isUrl) return t('newNote.urlPlaceholder');
         if (scripture === "General Conference") return t('newNote.urlPlaceholder');
@@ -155,10 +149,78 @@ const NewNote = ({
         return chapterPlaceholder;
     };
 
-    const handleClose = () => {
+    const handleClose = useCallback(() => {
         if (chapter || comment) setShowCloseConfirm(true);
         else onClose();
+    }, [chapter, comment, onClose]);
+
+    const handleChapterKeyDown = (e: React.KeyboardEvent) => {
+        if (!showSuggestions || suggestions.length === 0) return;
+
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            setActiveSuggestionIndex(prev => (prev < suggestions.length - 1 ? prev + 1 : 0));
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            setActiveSuggestionIndex(prev => (prev > 0 ? prev - 1 : suggestions.length - 1));
+        } else if (e.key === 'Enter' && activeSuggestionIndex >= 0) {
+            e.preventDefault();
+            const chosen = suggestions[activeSuggestionIndex];
+            if (chosen) {
+                setChapter(chosen.translated + ' ');
+                setSuggestions([]);
+                setShowSuggestions(false);
+                setActiveSuggestionIndex(-1);
+            }
+        } else if (e.key === 'Escape') {
+            e.preventDefault();
+            setShowSuggestions(false);
+            setActiveSuggestionIndex(-1);
+        }
     };
+
+    // a11y: Escape key and Focus Trap
+    useEffect(() => {
+        if (!isOpen || showRandomMenu || showSelectionModal || showCloseConfirm) return;
+
+        const previouslyFocused = document.activeElement as HTMLElement | null;
+
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') {
+                if (showSuggestions) {
+                    setShowSuggestions(false);
+                    return;
+                }
+                e.preventDefault();
+                handleClose();
+                return;
+            }
+
+            if (e.key === 'Tab' && modalRef.current) {
+                const focusable = modalRef.current.querySelectorAll<HTMLElement>(
+                    'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+                );
+                if (focusable.length === 0) return;
+
+                const first = focusable[0];
+                const last = focusable[focusable.length - 1];
+
+                if (e.shiftKey && document.activeElement === first) {
+                    e.preventDefault();
+                    last.focus();
+                } else if (!e.shiftKey && document.activeElement === last) {
+                    e.preventDefault();
+                    first.focus();
+                }
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+            previouslyFocused?.focus?.();
+        };
+    }, [isOpen, showRandomMenu, showSelectionModal, showCloseConfirm, showSuggestions, handleClose]);
 
     const handleGroupSelection = (groupId: string) => {
         setSelectedShareGroups(prev =>
@@ -172,6 +234,8 @@ const NewNote = ({
             label: t(key)
         })
     );
+
+    if (!isOpen) return null;
 
     // Sub-modal views
     if (showRandomMenu) {
@@ -218,9 +282,16 @@ const NewNote = ({
                 />
             )}
             <div className="ModalOverlay" onClick={handleClose}>
-                <div className="ModalContent" onClick={(e) => e.stopPropagation()}>
+                <div 
+                    ref={modalRef}
+                    className="ModalContent" 
+                    role="dialog"
+                    aria-modal="true"
+                    aria-labelledby="new-note-modal-title"
+                    onClick={(e) => e.stopPropagation()}
+                >
                     <div className="modal-header">
-                        <h1>{noteToEdit ? t('newNote.editTitle') : t('newNote.newTitle')}</h1>
+                        <h1 id="new-note-modal-title">{noteToEdit ? t('newNote.editTitle') : t('newNote.newTitle')}</h1>
                     </div>
 
                     {onboardingGuideStepText && (
@@ -269,9 +340,13 @@ const NewNote = ({
                             type="text"
                             value={chapter}
                             data-testid="new-note-chapter"
+                            onKeyDown={handleChapterKeyDown}
+                            aria-autocomplete="list"
+                            aria-controls="scripture-suggestions"
                             onChange={(e) => {
                                 const val = e.target.value;
                                 setChapter(val);
+                                setActiveSuggestionIndex(-1);
                                 if (val.length > 0 && !['Other', 'General Conference', 'BYU Speeches'].includes(scripture)) {
                                     const matched = getBookSuggestions(scripture, val, language, bookTranslations);
                                     setSuggestions(matched);
@@ -281,23 +356,38 @@ const NewNote = ({
                                     setShowSuggestions(false);
                                 }
                             }}
-                            onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                            onBlur={() => setTimeout(() => {
+                                setShowSuggestions(false);
+                                setActiveSuggestionIndex(-1);
+                            }, 200)}
                             required
                             placeholder={getPlaceholder()}
                         />
                         {['General Conference', 'BYU Speeches'].includes(scripture) && chapter && !isUrl && (
-                            <div className="url-warning-hint">
+                            <div className="url-warning-hint" role="alert">
                                 ⚠️ {scripture === "General Conference" ? t('newNote.urlRequiredForGC') : t('newNote.urlRequiredForBYU')}
                             </div>
                         )}
                         {showSuggestions && suggestions.length > 0 && (
-                            <div className="suggestions-list">
+                            <div 
+                                className="suggestions-list" 
+                                role="listbox" 
+                                id="scripture-suggestions"
+                                aria-label={t('newNote.suggestionsLabel') || "Scripture suggestions"}
+                            >
                                 {suggestions.map((book, idx) => (
-                                    <div key={idx} className="suggestion-item" onClick={() => {
-                                        setChapter(book.translated + ' ');
-                                        setSuggestions([]);
-                                        setShowSuggestions(false);
-                                    }}>
+                                    <div 
+                                        key={idx} 
+                                        role="option"
+                                        aria-selected={activeSuggestionIndex === idx}
+                                        className={`suggestion-item ${activeSuggestionIndex === idx ? 'selected' : ''}`} 
+                                        onClick={() => {
+                                            setChapter(book.translated + ' ');
+                                            setSuggestions([]);
+                                            setShowSuggestions(false);
+                                            setActiveSuggestionIndex(-1);
+                                        }}
+                                    >
                                         <span className="suggestion-translated">{book.translated}</span>
                                         {language !== 'en' && <span className="suggestion-english">{book.english}</span>}
                                     </div>
@@ -310,19 +400,19 @@ const NewNote = ({
                         <div className="action-buttons-stack">
                             <div className="action-btn-wrapper">
                                 <button type="button" onClick={handleFillSample} className="modern-action-btn fill-sample-btn" data-testid="fill-sample-btn">
-                                    <UilEdit size="16" />
+                                    <UilEdit size="16" aria-hidden="true" />
                                     <span>{t('newNote.fillSample')}</span>
                                 </button>
                             </div>
                             <div className="action-btn-wrapper">
                                 <button type="button" onClick={() => setShowRandomMenu(true)} className="modern-action-btn">
-                                    <UilShuffle size="16" />
+                                    <UilShuffle size="16" aria-hidden="true" />
                                     <span>{t('newNote.surpriseMe')}</span>
                                 </button>
                             </div>
                             <div className="action-btn-wrapper">
                                 <button type="button" onClick={() => handleGenerateQuestions(scripture, chapter)} disabled={aiLoading || !chapter} className="modern-action-btn">
-                                    <UilRobot size="16" />
+                                    <UilRobot size="16" aria-hidden="true" />
                                     <span>{aiLoading ? '...' : t('newNote.askAiQuestion')}</span>
                                 </button>
                             </div>
@@ -331,14 +421,20 @@ const NewNote = ({
 
                     {glUrl && /^https?:\/\//i.test(glUrl) && (
                         <div className="gl-link-preview">
-                            <a href={new URL(glUrl).href} target="_blank" rel="noopener noreferrer" className="gl-preview-link">
+                            <a 
+                                href={new URL(glUrl).href} 
+                                target="_blank" 
+                                rel="noopener noreferrer" 
+                                className="gl-preview-link"
+                                aria-label={`${t('dashboard.readInGospelLibrary')} (opens in new tab)`}
+                            >
                                 {t('dashboard.readInGospelLibrary')}
                             </a>
                         </div>
                     )}
 
                     {isUrl && (urlLoading || urlMeta) && (
-                        <div className="url-meta-box">
+                        <div className="url-meta-box" aria-live="polite">
                             {urlLoading ? <span>Fetching title...</span> : urlMeta && (
                                 <div>
                                     <strong>{urlMeta.title}</strong>
@@ -349,9 +445,15 @@ const NewNote = ({
                     )}
 
                     {aiQuestion && (
-                        <div className="ai-question-box">
+                        <div className="ai-question-box" role="region" aria-label={t('newNote.aiQuestion') || "AI Question"}>
                             <p><strong>{t('newNote.aiQuestion')}</strong><br />{aiQuestion}</p>
-                            <button onClick={() => setAiQuestion('')} className="close-btn">×</button>
+                            <button 
+                                onClick={() => setAiQuestion('')} 
+                                className="close-btn"
+                                aria-label={t('common.close') || "Close"}
+                            >
+                                ×
+                            </button>
                         </div>
                     )}
 

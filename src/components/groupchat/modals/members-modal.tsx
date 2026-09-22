@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { UilTimes } from '@iconscout/react-unicons';
 import { Group, UserProfileBrief } from '../../../types/chat';
 import { UserData } from '../../../types/user';
 import { parseTimestampToDate } from '../../../utils/time-utils';
 import apiClient from '../../../utils/api-client';
 import { isLikelyAlreadyInLanguage, getCachedUserNickname, setCachedUserNickname } from '../../../utils/language-utils';
+import { useModalA11y } from '../../../hooks/use-modal-a11y';
 
 interface MembersModalProps {
     t: (key: string) => string;
@@ -46,43 +47,45 @@ const MemberListItem = ({
 
     const shouldTranslateNick = originalNickname !== 'Unknown User' && !isLikelyAlreadyInLanguage(originalNickname, language);
 
-    const [displayNickname, setDisplayNickname] = useState(originalNickname);
+    const [displayNickname, setDisplayNickname] = useState(() => {
+        if (!shouldTranslateNick) return originalNickname;
+        return getCachedUserNickname(member.id, language, originalNickname) || originalNickname;
+    });
+
+    const [prevKey, setPrevKey] = useState({ id: member.id, lang: language, nick: originalNickname });
+    if (prevKey.id !== member.id || prevKey.lang !== language || prevKey.nick !== originalNickname) {
+        setPrevKey({ id: member.id, lang: language, nick: originalNickname });
+        const cached = shouldTranslateNick ? getCachedUserNickname(member.id, language, originalNickname) : null;
+        setDisplayNickname(cached || originalNickname);
+    }
 
     useEffect(() => {
-        if (!shouldTranslateNick) {
-            queueMicrotask(() => {
-                setDisplayNickname(originalNickname);
-            });
-            return;
-        }
+        if (!shouldTranslateNick) return;
 
         const cached = getCachedUserNickname(member.id, language, originalNickname);
-        if (cached) {
-            queueMicrotask(() => {
-                setDisplayNickname(cached);
-            });
-        } else {
-            let active = true;
-            apiClient.post('/api/ai/translate', {
-                text: originalNickname,
-                targetLanguage: language,
-                updateType: 'user_nickname'
-            }).then(res => {
-                if (active && res.data?.translatedText) {
-                    const result = res.data.translatedText;
-                    setDisplayNickname(result);
-                    setCachedUserNickname(member.id, language, originalNickname, result);
-                }
-            }).catch(e => console.error('Failed to translate member nickname:', e));
+        if (cached) return;
 
-            return () => {
-                active = false;
-            };
-        }
+        let active = true;
+        apiClient.post('/api/ai/translate', {
+            text: originalNickname,
+            targetLanguage: language,
+            updateType: 'user_nickname'
+        }).then(res => {
+            if (active && res.data?.translatedText) {
+                const result = res.data.translatedText;
+                setDisplayNickname(result);
+                setCachedUserNickname(member.id, language, originalNickname, result);
+            }
+        }).catch(e => console.error('Failed to translate member nickname:', e));
+
+        return () => {
+            active = false;
+        };
     }, [member.id, originalNickname, shouldTranslateNick, language]);
 
     return (
-        <div
+        <button
+            type="button"
             className="member-item"
             onClick={() => {
                 if (handleUserProfileClick) {
@@ -91,7 +94,18 @@ const MemberListItem = ({
                     setSelectedMember(member);
                 }
             }}
-            style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '0.5rem', borderRadius: '8px', background: 'var(--glass)', cursor: 'pointer' }}
+            style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '1rem',
+                padding: '0.5rem',
+                borderRadius: '8px',
+                background: 'var(--glass)',
+                cursor: 'pointer',
+                border: 'none',
+                width: '100%',
+                textAlign: 'left'
+            }}
         >
             <div className="member-avatar" style={{
                 width: '40px', height: '40px', borderRadius: '50%', background: 'linear-gradient(135deg, #FF919D 0%, #fc6777 100%)',
@@ -129,7 +143,7 @@ const MemberListItem = ({
                     })()}
                 </span>
             </div>
-        </div>
+        </button>
     );
 };
 
@@ -146,16 +160,37 @@ const MembersModal = ({
     setSelectedMember,
     handleUserProfileClick,
 }: MembersModalProps) => {
+    const modalRef = useRef<HTMLDivElement>(null);
+    const closeBtnRef = useRef<HTMLButtonElement>(null);
+
+    const handleClose = () => setShowMembersModal(false);
+
+    useModalA11y({
+        isOpen: showMembersModal,
+        onClose: handleClose,
+        containerRef: modalRef,
+        initialFocusRef: closeBtnRef,
+    });
+
     if (!showMembersModal) return null;
 
     return (
-        <div className="leave-modal-overlay" onClick={() => setShowMembersModal(false)}>
-            <div className="leave-modal-content members-modal" onClick={(e) => e.stopPropagation()} style={{ maxHeight: '80vh', display: 'flex', flexDirection: 'column' }}>
+        <div className="leave-modal-overlay" onClick={handleClose}>
+            <div
+                ref={modalRef}
+                className="leave-modal-content members-modal"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="members-modal-title"
+                onClick={(e) => e.stopPropagation()}
+                style={{ maxHeight: '80vh', display: 'flex', flexDirection: 'column' }}
+            >
                 <div className="modal-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                    <h3>{t('groupChat.groupMembers')} ({membersList.length})</h3>
+                    <h3 id="members-modal-title">{t('groupChat.groupMembers')} ({membersList.length})</h3>
                     <button 
+                        ref={closeBtnRef}
                         className="close-menu-btn" 
-                        onClick={() => setShowMembersModal(false)} 
+                        onClick={handleClose} 
                         style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}
                         aria-label={t('sidebar.close')}
                         title={t('sidebar.close')}

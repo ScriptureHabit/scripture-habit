@@ -1,4 +1,6 @@
+import { useRef } from 'react';
 import { Group } from '../../../types/chat';
+import { useModalA11y } from '../../../hooks/use-modal-a11y';
 
 interface EditGroupNameModalProps {
     t: (key: string) => string;
@@ -37,6 +39,24 @@ const EditGroupNameModal = ({
     translatedGroupName,
     translatedGroupDesc,
 }: EditGroupNameModalProps) => {
+    const modalRef = useRef<HTMLDivElement>(null);
+    const cancelBtnRef = useRef<HTMLButtonElement>(null);
+
+    const handleClose = () => {
+        setShowEditNameModal(false);
+        setNewGroupName('');
+        setNewGroupDescription('');
+        setNewTranslatedName('');
+        setNewTranslatedDesc('');
+    };
+
+    useModalA11y({
+        isOpen: showEditNameModal,
+        onClose: handleClose,
+        containerRef: modalRef,
+        initialFocusRef: cancelBtnRef,
+    });
+
     if (!showEditNameModal) return null;
 
     const displayGroupName = newGroupName?.startsWith('groupChat.') ? t(newGroupName) : newGroupName;
@@ -44,8 +64,14 @@ const EditGroupNameModal = ({
 
     return (
         <div className="leave-modal-overlay">
-            <div className="leave-modal-content edit-group-modal">
-                <h3>{t('groupChat.changeGroupName')}</h3>
+            <div
+                ref={modalRef}
+                className="leave-modal-content edit-group-modal"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="edit-group-name-modal-title"
+            >
+                <h3 id="edit-group-name-modal-title">{t('groupChat.changeGroupName')}</h3>
 
                 <div className="edit-group-field" style={{ width: '100%', textAlign: 'left', marginTop: '1rem' }}>
                     <label htmlFor="edit-group-name" style={{ fontSize: '0.8rem', color: 'var(--gray)', fontWeight: 'bold', marginBottom: '4px', display: 'block' }}>
@@ -115,13 +141,9 @@ const EditGroupNameModal = ({
                 </div>
 
                 <div className="leave-modal-actions" style={{ marginTop: '1.5rem' }}>
-                    <button className="modal-btn cancel" onClick={() => {
-                        setShowEditNameModal(false);
-                        setNewGroupName('');
-                        setNewGroupDescription('');
-                        setNewTranslatedName('');
-                        setNewTranslatedDesc('');
-                    }}>{t('groupChat.cancel')}</button>
+                    <button ref={cancelBtnRef} className="modal-btn cancel" onClick={handleClose}>
+                        {t('groupChat.cancel')}
+                    </button>
                     <button
                         className="modal-btn primary"
                         onClick={handleUpdateGroupName}

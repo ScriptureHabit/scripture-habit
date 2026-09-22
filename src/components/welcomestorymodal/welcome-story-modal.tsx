@@ -1,11 +1,12 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './welcome-story-modal.css';
 import { useLanguage } from '../../hooks/use-language';
 import { UilTimes, UilCheck } from '@iconscout/react-unicons';
 import { triggerConfetti } from '../../utils/confetti-utils';
 import { UserData } from '../../types/user';
 import { DEFAULT_KICK_THRESHOLD } from '../../constants';
+import { useModalA11y } from '../../hooks/use-modal-a11y';
 
 interface WelcomeStoryModalProps {
     isOpen: boolean;
@@ -17,13 +18,25 @@ const WelcomeStoryModal = ({ isOpen, onClose, userData }: WelcomeStoryModalProps
     const { t } = useLanguage();
     const [page, setPage] = useState(0);
     const [isNextVisible, setIsNextVisible] = useState(false);
+    const modalRef = useRef<HTMLDivElement>(null);
+    const closeBtnRef = useRef<HTMLButtonElement>(null);
 
-    // Reset next button visibility and start a 2-second timer on page or open state changes
+    useModalA11y({
+        isOpen,
+        onClose,
+        containerRef: modalRef,
+        initialFocusRef: closeBtnRef,
+    });
+
+    const [prevPageKey, setPrevPageKey] = useState({ page, isOpen });
+    if (prevPageKey.page !== page || prevPageKey.isOpen !== isOpen) {
+        setPrevPageKey({ page, isOpen });
+        setIsNextVisible(false);
+    }
+
+    // Start a 2-second timer on page or open state changes
     useEffect(() => {
         if (isOpen) {
-            queueMicrotask(() => {
-                setIsNextVisible(false);
-            });
             const timer = setTimeout(() => {
                 setIsNextVisible(true);
             }, 2000);
@@ -138,8 +151,19 @@ const WelcomeStoryModal = ({ isOpen, onClose, userData }: WelcomeStoryModalProps
 
     return (
         <div className="welcome-story-overlay">
-            <div className="welcome-story-content">
-                <button className="welcome-story-close" onClick={onClose} aria-label="Close story">
+            <div
+                ref={modalRef}
+                className="welcome-story-content"
+                role="dialog"
+                aria-modal="true"
+                aria-label="Welcome Story"
+            >
+                <button
+                    ref={closeBtnRef}
+                    className="welcome-story-close"
+                    onClick={onClose}
+                    aria-label="Close story"
+                >
                     <UilTimes size="24" />
                 </button>
 

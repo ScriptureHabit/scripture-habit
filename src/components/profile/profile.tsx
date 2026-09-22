@@ -18,6 +18,7 @@ import { useLevelUpStore } from '../../store/use-level-up-store';
 import { calculateLevel } from '../../utils/level-utils';
 import { clearPendingMessages } from '../../utils/offline-chat-queue';
 import { clearUserStorageOnSignOut } from '../../utils/storage';
+import { useModalA11y } from '../../hooks/use-modal-a11y';
 
 interface ProfileStats {
     streak: number;
@@ -35,29 +36,79 @@ const Profile = ({ userData, stats }: ProfileProps) => {
     const { language, setLanguage, t } = useLanguage();
     const { fontSize, setFontSize } = useSettings();
     const navigate = useNavigate();
-    const initializedRef = useRef(false);
-    const [nickname, setNickname] = useState('');
-    const [stake, setStake] = useState('');
-    const [ward, setWard] = useState('');
-    const [bio, setBio] = useState('');
+    const [nickname, setNickname] = useState(() => userData?.nickname || '');
+    const [stake, setStake] = useState(() => userData?.stake || '');
+    const [ward, setWard] = useState(() => userData?.ward || '');
+    const [bio, setBio] = useState(() => userData?.bio || '');
+    const [photoURL, setPhotoURL] = useState(() => userData?.photoURL || '');
+    const [localKickThreshold, setLocalKickThreshold] = useState<number | undefined>(() => userData?.kickThreshold);
     const [isSaving, setIsSaving] = useState(false);
     const [showSignOutModal, setShowSignOutModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [soundEnabled, setSoundEnabledState] = useState<boolean>(() => isSoundEnabled());
     const [isDeleting, setIsDeleting] = useState(false);
     const [confirmNickname, setConfirmNickname] = useState('');
-    const [notifPermission, setNotifPermission] = useState(window.Notification ? window.Notification.permission : 'default');
+    const [notifPermission, setNotifPermission] = useState(() => 
+        typeof window !== 'undefined' && window.Notification ? window.Notification.permission : 'default'
+    );
     const [isNotifLoading, setIsNotifLoading] = useState(false);
-    const [localKickThreshold, setLocalKickThreshold] = useState<number | undefined>(userData?.kickThreshold);
-    const [photoURL, setPhotoURL] = useState('');
     const [isUploading, setIsUploading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
+    const signOutModalRef = useRef<HTMLDivElement>(null);
+    const cancelSignOutRef = useRef<HTMLButtonElement>(null);
+    const deleteModalRef = useRef<HTMLDivElement>(null);
+    const cancelDeleteRef = useRef<HTMLButtonElement>(null);
+
+    useModalA11y({
+        isOpen: showSignOutModal,
+        onClose: () => setShowSignOutModal(false),
+        containerRef: signOutModalRef,
+        initialFocusRef: cancelSignOutRef,
+    });
+
+    useModalA11y({
+        isOpen: showDeleteModal,
+        onClose: () => setShowDeleteModal(false),
+        containerRef: deleteModalRef,
+        initialFocusRef: cancelDeleteRef,
+    });
+
     // PWA Install properties
-    const [platform, setPlatform] = useState<'ios' | 'android' | null>(null);
+    const [isStandalone] = useState(() => {
+        if (typeof window === 'undefined') return false;
+        return !!(window.matchMedia('(display-mode: standalone)').matches || 
+                 (navigator as unknown as { standalone?: boolean }).standalone || 
+                 document.referrer.includes('android-app://'));
+    });
+    const [platform, setPlatform] = useState<'ios' | 'android' | null>(() => {
+        if (typeof window === 'undefined') return null;
+        const ua = navigator.userAgent;
+        const isIOS = /iPad|iPhone|iPod/.test(ua) ||
+            (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        const isAndroid = /Android/i.test(ua);
+        const standaloneCheck = window.matchMedia('(display-mode: standalone)').matches || 
+                                 (navigator as unknown as { standalone?: boolean }).standalone || 
+                                 document.referrer.includes('android-app://');
+        if (standaloneCheck) return null;
+        if (isIOS) return 'ios';
+        if (isAndroid) return 'android';
+        return null;
+    });
     const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
-    const [isStandalone, setIsStandalone] = useState(false);
     const levelProgressRef = useRef<HTMLDivElement>(null);
+
+    // Sync profile state when userData loads/changes
+    const [prevUserData, setPrevUserData] = useState(userData);
+    if (userData && prevUserData !== userData) {
+        setPrevUserData(userData);
+        if (userData.nickname) setNickname(userData.nickname);
+        if (userData.stake) setStake(userData.stake);
+        if (userData.ward) setWard(userData.ward);
+        if (userData.bio) setBio(userData.bio);
+        if (userData.photoURL) setPhotoURL(userData.photoURL);
+        if (userData.kickThreshold) setLocalKickThreshold(userData.kickThreshold);
+    }
 
     useEffect(() => {
         if (levelProgressRef.current) {
@@ -67,25 +118,6 @@ const Profile = ({ userData, stats }: ProfileProps) => {
     }, [stats.daysStudied]);
 
     useEffect(() => {
-        // Platform detection
-        const ua = navigator.userAgent;
-        const isIOS = /iPad|iPhone|iPod/.test(ua) ||
-            (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-        const isAndroid = /Android/i.test(ua);
-
-        const standaloneCheck = window.matchMedia('(display-mode: standalone)').matches || 
-                             navigator.standalone || 
-                             document.referrer.includes('android-app://');
-        
-        queueMicrotask(() => {
-            setIsStandalone(!!standaloneCheck);
-
-            if (!standaloneCheck) {
-                if (isIOS) setPlatform('ios');
-                else if (isAndroid) setPlatform('android');
-            }
-        });
-
         const checkPrompt = () => {
             if (window.deferredPWAPrompt) {
                 setDeferredPrompt(window.deferredPWAPrompt);
@@ -110,14 +142,6 @@ const Profile = ({ userData, stats }: ProfileProps) => {
         await deferredPrompt.userChoice;
         setDeferredPrompt(null);
     };
-
-    useEffect(() => {
-        if (window.Notification) {
-            queueMicrotask(() => {
-                setNotifPermission(window.Notification.permission);
-            });
-        }
-    }, []);
 
     const handleToggleNotifications = async () => {
         if (!window.Notification || !userData?.uid) return;
@@ -151,20 +175,6 @@ const Profile = ({ userData, stats }: ProfileProps) => {
         }
         setIsNotifLoading(false);
     };
-
-    useEffect(() => {
-        if (userData && !initializedRef.current) {
-            queueMicrotask(() => {
-                if (userData.nickname) setNickname(userData.nickname);
-                if (userData.stake) setStake(userData.stake);
-                if (userData.ward) setWard(userData.ward);
-                if (userData.bio) setBio(userData.bio);
-                if (userData.photoURL) setPhotoURL(userData.photoURL);
-                if (userData.kickThreshold) setLocalKickThreshold(userData.kickThreshold);
-            });
-            initializedRef.current = true;
-        }
-    }, [userData]);
 
     const resizeImage = (file: File, targetSize: number = 400): Promise<Blob> => {
         return new Promise((resolve, reject) => {
@@ -708,11 +718,19 @@ const Profile = ({ userData, stats }: ProfileProps) => {
             {/* Sign Out Confirmation Modal */}
             {showSignOutModal && (
                     <div className="group-modal-overlay" onClick={() => setShowSignOutModal(false)}>
-                        <div className="group-modal-content modal-small" onClick={(e) => e.stopPropagation()}>
-                            <h3>{t('signOut.title')}</h3>
+                        <div
+                            ref={signOutModalRef}
+                            className="group-modal-content modal-small"
+                            role="alertdialog"
+                            aria-modal="true"
+                            aria-labelledby="sign-out-modal-title"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <h3 id="sign-out-modal-title">{t('signOut.title')}</h3>
                             <p>{t('signOut.message')}</p>
                             <div className="modal-footer">
                                 <button
+                                    ref={cancelSignOutRef}
                                     className="close-modal-btn modal-btn-cancel"
                                     onClick={() => setShowSignOutModal(false)}
                                 >
@@ -746,14 +764,21 @@ const Profile = ({ userData, stats }: ProfileProps) => {
             {/* Delete Account Modal */}
             {showDeleteModal && (
                 <div className="group-modal-overlay" onClick={() => setShowDeleteModal(false)}>
-                    <div className="group-modal-content modal-medium" onClick={(e) => e.stopPropagation()}>
-                        <h3 className="modal-danger-title">{t('profile.deleteAccount')}</h3>
+                    <div
+                        ref={deleteModalRef}
+                        className="group-modal-content modal-medium"
+                        role="alertdialog"
+                        aria-modal="true"
+                        aria-labelledby="delete-account-modal-title"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <h3 id="delete-account-modal-title" className="modal-danger-title">{t('profile.deleteAccount')}</h3>
                         <p className="modal-warning-text">{t('profile.deleteAccountWarning')}</p>
 
                         <div className="modal-confirm-wrapper">
-                            <p className="modal-confirm-hint">
+                            <label htmlFor="delete-account-confirm-nickname" className="modal-confirm-hint" style={{ display: 'block' }}>
                                 {t('profile.typeToConfirmNickname').replace('{nickname}', userData.nickname || '')}
-                            </p>
+                            </label>
                             <input
                                 id="delete-account-confirm-nickname"
                                 name="confirmNickname"
@@ -763,6 +788,7 @@ const Profile = ({ userData, stats }: ProfileProps) => {
                                 placeholder={userData.nickname}
                                 className="modal-confirm-input"
                                 data-testid="delete-confirm-nickname-input"
+                                aria-label={t('profile.typeToConfirmNickname').replace('{nickname}', userData.nickname || '')}
                             />
                         </div>
 
@@ -776,6 +802,7 @@ const Profile = ({ userData, stats }: ProfileProps) => {
                                 {isDeleting ? '...' : t('profile.confirmDeleteAccount')}
                             </button>
                             <button
+                                ref={cancelDeleteRef}
                                 className="close-modal-btn"
                                 onClick={() => setShowDeleteModal(false)}
                             >
