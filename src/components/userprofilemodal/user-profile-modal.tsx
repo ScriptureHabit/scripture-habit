@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import './user-profile-modal.css';
 import { UilTimes, UilFire, UilFileAlt, UilGlobe } from '@iconscout/react-unicons';
 import { useLanguage } from '../../hooks/use-language';
@@ -6,6 +6,7 @@ import { UserData } from '../../types/user';
 import { UserProfile } from '../../types/chat';
 import { useUserProfileData } from './hooks/use-user-profile-data';
 import { useUserProfileTranslations } from './hooks/use-user-profile-translations';
+import { useModalA11y } from '../../hooks/use-modal-a11y';
 
 interface UserProfileModalProps {
     user: UserData | UserProfile | null;
@@ -19,6 +20,7 @@ const UserProfileModal = ({ user, onClose }: UserProfileModalProps) => {
 
     const modalRef = useRef<HTMLDivElement>(null);
     const closeBtnRef = useRef<HTMLButtonElement>(null);
+    const fullImageOverlayRef = useRef<HTMLDivElement>(null);
     const fullImageCloseRef = useRef<HTMLButtonElement>(null);
 
     // State management extracted to custom hook
@@ -41,58 +43,21 @@ const UserProfileModal = ({ user, onClose }: UserProfileModalProps) => {
         t
     });
 
-    // a11y: Escape key handling and Focus Trap
-    useEffect(() => {
-        if (!currentUser) return;
+    // a11y: Main modal accessibility
+    useModalA11y({
+        isOpen: Boolean(currentUser) && !showFullImage,
+        onClose,
+        containerRef: modalRef,
+        initialFocusRef: closeBtnRef
+    });
 
-        const previouslyFocused = document.activeElement as HTMLElement | null;
-        closeBtnRef.current?.focus();
-
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.key === 'Escape') {
-                e.preventDefault();
-                if (showFullImage) {
-                    setShowFullImage(false);
-                } else {
-                    onClose();
-                }
-                return;
-            }
-
-            // Focus Trap inside active modal/dialog
-            const container = showFullImage ? document.querySelector('.full-image-overlay') : modalRef.current;
-            if (e.key === 'Tab' && container) {
-                const focusable = container.querySelectorAll<HTMLElement>(
-                    'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-                );
-                if (focusable.length === 0) return;
-
-                const first = focusable[0];
-                const last = focusable[focusable.length - 1];
-
-                if (e.shiftKey && document.activeElement === first) {
-                    e.preventDefault();
-                    last.focus();
-                } else if (!e.shiftKey && document.activeElement === last) {
-                    e.preventDefault();
-                    first.focus();
-                }
-            }
-        };
-
-        window.addEventListener('keydown', handleKeyDown);
-        return () => {
-            window.removeEventListener('keydown', handleKeyDown);
-            previouslyFocused?.focus?.();
-        };
-    }, [currentUser, onClose, showFullImage]);
-
-    // Focus full image close button when full image overlay opens
-    useEffect(() => {
-        if (showFullImage) {
-            fullImageCloseRef.current?.focus();
-        }
-    }, [showFullImage]);
+    // a11y: Full image overlay accessibility
+    useModalA11y({
+        isOpen: Boolean(showFullImage),
+        onClose: () => setShowFullImage(false),
+        containerRef: fullImageOverlayRef,
+        initialFocusRef: fullImageCloseRef
+    });
 
     if (!currentUser) return null;
 
@@ -147,6 +112,7 @@ const UserProfileModal = ({ user, onClose }: UserProfileModalProps) => {
 
                 {showFullImage && avatarPhotoURL && (
                     <div 
+                        ref={fullImageOverlayRef}
                         className="full-image-overlay" 
                         role="dialog"
                         aria-modal="true"

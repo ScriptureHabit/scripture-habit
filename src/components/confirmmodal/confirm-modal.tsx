@@ -1,4 +1,5 @@
-import { useEffect, useRef, type CSSProperties } from 'react';
+import { useRef, type CSSProperties } from 'react';
+import { useModalA11y } from '../../hooks/use-modal-a11y';
 
 interface ConfirmModalProps {
   isOpen: boolean;
@@ -68,47 +69,12 @@ const ConfirmModal = ({
   const modalRef = useRef<HTMLDivElement>(null);
   const cancelBtnRef = useRef<HTMLButtonElement>(null);
 
-  // a11y: Escape key, initial focus on Cancel (safety), and Focus Trap
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const previouslyFocused = document.activeElement as HTMLElement | null;
-    // Default focus to cancel button to prevent accidental confirmation of destructive action
-    cancelBtnRef.current?.focus();
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        e.preventDefault();
-        onCancel();
-        return;
-      }
-
-      // Focus Trap (cycle within dialog on Tab / Shift+Tab)
-      if (e.key === 'Tab' && modalRef.current) {
-        const focusable = modalRef.current.querySelectorAll<HTMLElement>(
-          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-        );
-        if (focusable.length === 0) return;
-
-        const first = focusable[0];
-        const last = focusable[focusable.length - 1];
-
-        if (e.shiftKey && document.activeElement === first) {
-          e.preventDefault();
-          last.focus();
-        } else if (!e.shiftKey && document.activeElement === last) {
-          e.preventDefault();
-          first.focus();
-        }
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      previouslyFocused?.focus?.();
-    };
-  }, [isOpen, onCancel]);
+  useModalA11y({
+    isOpen,
+    onClose: onCancel,
+    containerRef: modalRef,
+    initialFocusRef: cancelBtnRef
+  });
 
   if (!isOpen) return null;
 

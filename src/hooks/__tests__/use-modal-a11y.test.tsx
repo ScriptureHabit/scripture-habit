@@ -99,4 +99,53 @@ describe('useModalA11y Hook', () => {
     fireEvent.keyDown(window, { key: 'Escape' });
     expect(document.activeElement).toBe(triggerBtn);
   });
+
+  it('does not steal focus back to initialFocus when parent re-renders with an inline onClose callback while typing', () => {
+    const ControlledFormModal = () => {
+      const [isOpen, setIsOpen] = useState(true);
+      const [text, setText] = useState('');
+      const containerRef = useRef<HTMLDivElement>(null);
+      const cancelBtnRef = useRef<HTMLButtonElement>(null);
+
+      // Pass inline callback for onClose (creates new reference every render)
+      useModalA11y({
+        isOpen,
+        onClose: () => setIsOpen(false),
+        containerRef,
+        initialFocusRef: cancelBtnRef
+      });
+
+      if (!isOpen) return null;
+
+      return (
+        <div ref={containerRef} role="dialog">
+          <input
+            data-testid="controlled-input"
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+          />
+          <button ref={cancelBtnRef} data-testid="cancel-btn">
+            Cancel
+          </button>
+        </div>
+      );
+    };
+
+    render(<ControlledFormModal />);
+
+    // Initially, Cancel button has focus due to initialFocusRef
+    const cancelBtn = screen.getByTestId('cancel-btn');
+    expect(document.activeElement).toBe(cancelBtn);
+
+    // User focuses the input field
+    const input = screen.getByTestId('controlled-input');
+    input.focus();
+    expect(document.activeElement).toBe(input);
+
+    // User types into the input, causing a re-render with a new onClose callback
+    fireEvent.change(input, { target: { value: 'a' } });
+
+    // Focus must REMAIN on the input and NOT be stolen by the cancel button
+    expect(document.activeElement).toBe(input);
+  });
 });

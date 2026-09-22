@@ -98,16 +98,16 @@ const Profile = ({ userData, stats }: ProfileProps) => {
     const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
     const levelProgressRef = useRef<HTMLDivElement>(null);
 
-    // Sync profile state when userData loads/changes
-    const [prevUserData, setPrevUserData] = useState(userData);
-    if (userData && prevUserData !== userData) {
-        setPrevUserData(userData);
+    // Sync profile state only when authenticated user identity changes
+    const [prevUid, setPrevUid] = useState(userData?.uid);
+    if (userData && userData.uid !== prevUid) {
+        setPrevUid(userData.uid);
         if (userData.nickname) setNickname(userData.nickname);
         if (userData.stake) setStake(userData.stake);
         if (userData.ward) setWard(userData.ward);
         if (userData.bio) setBio(userData.bio);
         if (userData.photoURL) setPhotoURL(userData.photoURL);
-        if (userData.kickThreshold) setLocalKickThreshold(userData.kickThreshold);
+        if (userData.kickThreshold !== undefined) setLocalKickThreshold(userData.kickThreshold);
     }
 
     useEffect(() => {

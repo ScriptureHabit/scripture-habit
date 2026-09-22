@@ -26,26 +26,41 @@ export function useModalA11y({
   closeOnEscape = true
 }: UseModalA11yOptions) {
   const previousActiveElement = useRef<HTMLElement | null>(null);
+  const onCloseRef = useRef(onClose);
+  const wasOpenRef = useRef(false);
 
   useEffect(() => {
-    if (!isOpen) return;
+    onCloseRef.current = onClose;
+  }, [onClose]);
 
-    // Save the element that had focus before opening the modal
-    previousActiveElement.current = document.activeElement as HTMLElement | null;
+  useEffect(() => {
+    if (!isOpen) {
+      if (wasOpenRef.current) {
+        wasOpenRef.current = false;
+        previousActiveElement.current?.focus?.();
+      }
+      return;
+    }
 
-    // Set initial focus
-    if (initialFocusRef?.current) {
-      initialFocusRef.current.focus();
-    } else if (containerRef.current) {
-      const firstFocusable = containerRef.current.querySelector<HTMLElement>(FOCUSABLE_SELECTORS);
-      firstFocusable?.focus();
+    // Set initial focus only on open transition
+    if (!wasOpenRef.current) {
+      wasOpenRef.current = true;
+      // Save the element that had focus before opening the modal
+      previousActiveElement.current = document.activeElement as HTMLElement | null;
+
+      if (initialFocusRef?.current) {
+        initialFocusRef.current.focus();
+      } else if (containerRef.current) {
+        const firstFocusable = containerRef.current.querySelector<HTMLElement>(FOCUSABLE_SELECTORS);
+        firstFocusable?.focus();
+      }
     }
 
     const handleKeyDown = (e: KeyboardEvent) => {
       // Escape key handling
       if (closeOnEscape && e.key === 'Escape') {
         e.preventDefault();
-        onClose();
+        onCloseRef.current();
         return;
       }
 
@@ -77,8 +92,15 @@ export function useModalA11y({
     window.addEventListener('keydown', handleKeyDown);
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
-      // Restore focus on close
-      previousActiveElement.current?.focus?.();
     };
-  }, [isOpen, onClose, containerRef, initialFocusRef, closeOnEscape]);
+  }, [isOpen, containerRef, initialFocusRef, closeOnEscape]);
+
+  // Restore focus if modal unmounts while open
+  useEffect(() => {
+    return () => {
+      if (wasOpenRef.current) {
+        previousActiveElement.current?.focus?.();
+      }
+    };
+  }, []);
 }

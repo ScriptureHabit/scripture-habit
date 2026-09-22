@@ -1,15 +1,15 @@
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import LazyMarkdown from '../common/lazy-markdown';
 import { UilEnvelopeAlt, UilTimes, UilCheck } from '@iconscout/react-unicons';
 import './recap-modal.css';
 import { useLanguage } from '../../hooks/use-language';
+import { useModalA11y } from '../../hooks/use-modal-a11y';
 
 interface RecapModalProps {
     isOpen: boolean;
     onClose: () => void;
     recapText: string;
     title?: string;
-    onSave?: () => void;
     isFromCache?: boolean;
 }
 
@@ -18,47 +18,12 @@ const RecapModal = ({ isOpen, onClose, recapText, title, isFromCache = false }: 
     const modalRef = useRef<HTMLDivElement>(null);
     const closeBtnRef = useRef<HTMLButtonElement>(null);
 
-    // a11y: Escape key handling and focus management
-    useEffect(() => {
-        if (!isOpen) return;
-
-        const previouslyFocused = document.activeElement as HTMLElement | null;
-        // Focus close button on open
-        closeBtnRef.current?.focus();
-
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.key === 'Escape') {
-                e.preventDefault();
-                onClose();
-                return;
-            }
-
-            // Focus Trap (cycle within modal on Tab / Shift+Tab)
-            if (e.key === 'Tab' && modalRef.current) {
-                const focusable = modalRef.current.querySelectorAll<HTMLElement>(
-                    'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-                );
-                if (focusable.length === 0) return;
-
-                const first = focusable[0];
-                const last = focusable[focusable.length - 1];
-
-                if (e.shiftKey && document.activeElement === first) {
-                    e.preventDefault();
-                    last.focus();
-                } else if (!e.shiftKey && document.activeElement === last) {
-                    e.preventDefault();
-                    first.focus();
-                }
-            }
-        };
-
-        window.addEventListener('keydown', handleKeyDown);
-        return () => {
-            window.removeEventListener('keydown', handleKeyDown);
-            previouslyFocused?.focus?.();
-        };
-    }, [isOpen, onClose]);
+    useModalA11y({
+        isOpen,
+        onClose,
+        containerRef: modalRef,
+        initialFocusRef: closeBtnRef
+    });
 
     if (!isOpen) return null;
 

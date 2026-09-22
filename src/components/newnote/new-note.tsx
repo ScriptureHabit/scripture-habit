@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import { useState, useMemo, useRef, useCallback } from 'react';
 import Select from 'react-select';
 import { UilShuffle, UilRobot, UilEdit } from '@iconscout/react-unicons';
 import Input from '../input/input';
@@ -10,6 +10,7 @@ import { useUrlMetaFetcher } from './hooks/use-url-meta-fetcher';
 import { useAIGenerator } from './hooks/use-ai-generator';
 import { useNoteSubmission } from './hooks/use-note-submission';
 import { useRandomNote } from './hooks/use-random-note';
+import { useModalA11y } from '../../hooks/use-modal-a11y';
 
 // Subcomponents
 import RandomScriptureMenu from './subcomponents/random-scripture-menu';
@@ -179,48 +180,20 @@ const NewNote = ({
         }
     };
 
+    const handleModalClose = useCallback(() => {
+        if (showSuggestions) {
+            setShowSuggestions(false);
+            return;
+        }
+        handleClose();
+    }, [showSuggestions, handleClose]);
+
     // a11y: Escape key and Focus Trap
-    useEffect(() => {
-        if (!isOpen || showRandomMenu || showSelectionModal || showCloseConfirm) return;
-
-        const previouslyFocused = document.activeElement as HTMLElement | null;
-
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.key === 'Escape') {
-                if (showSuggestions) {
-                    setShowSuggestions(false);
-                    return;
-                }
-                e.preventDefault();
-                handleClose();
-                return;
-            }
-
-            if (e.key === 'Tab' && modalRef.current) {
-                const focusable = modalRef.current.querySelectorAll<HTMLElement>(
-                    'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-                );
-                if (focusable.length === 0) return;
-
-                const first = focusable[0];
-                const last = focusable[focusable.length - 1];
-
-                if (e.shiftKey && document.activeElement === first) {
-                    e.preventDefault();
-                    last.focus();
-                } else if (!e.shiftKey && document.activeElement === last) {
-                    e.preventDefault();
-                    first.focus();
-                }
-            }
-        };
-
-        window.addEventListener('keydown', handleKeyDown);
-        return () => {
-            window.removeEventListener('keydown', handleKeyDown);
-            previouslyFocused?.focus?.();
-        };
-    }, [isOpen, showRandomMenu, showSelectionModal, showCloseConfirm, showSuggestions, handleClose]);
+    useModalA11y({
+        isOpen: Boolean(isOpen && !showRandomMenu && !showSelectionModal && !showCloseConfirm),
+        onClose: handleModalClose,
+        containerRef: modalRef
+    });
 
     const handleGroupSelection = (groupId: string) => {
         setSelectedShareGroups(prev =>
