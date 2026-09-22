@@ -1,7 +1,7 @@
-import axios from 'axios';
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import apiClient from '../../../../utils/api-client';
+import { getApiErrorMessage } from '../../../../utils/api-error-parser';
 import { toast } from 'react-toastify';
 import { GroupData } from '../../../../types/chat';
 import { UserData } from '../../../../types/user';
@@ -39,10 +39,7 @@ export const useGroupActions = (
 
     } catch (err: unknown) {
       console.error('Error leaving group:', err);
-      let errorMessage = t('groupChat.errorLeaveGroup') || 'Failed to leave group.';
-      if (axios.isAxiosError(err)) {
-        errorMessage = err.response?.data?.error || errorMessage;
-      }
+      const errorMessage = getApiErrorMessage(err, 'groupChat.errorLeaveGroup', t);
       toast.error(errorMessage);
     } finally {
       setIsLeaving(false);
@@ -66,10 +63,7 @@ export const useGroupActions = (
 
     } catch (err: unknown) {
       console.error("Error deleting group:", err);
-      let errorMessage = t('groupChat.errorDeleteGroup') || "Failed to delete group.";
-      if (axios.isAxiosError(err)) {
-        errorMessage = err.response?.data?.error || errorMessage;
-      }
+      const errorMessage = getApiErrorMessage(err, 'groupChat.errorDeleteGroup', t);
       toast.error(errorMessage);
     } finally {
       setIsDeleting(false);
@@ -108,7 +102,8 @@ export const useGroupActions = (
       return true;
     } catch (err: unknown) {
       console.error("Error updating group name:", err);
-      toast.error(t('groupChat.errorChangeGroupName') || "Failed to update group info.");
+      const errorMessage = getApiErrorMessage(err, 'groupChat.errorChangeGroupName', t);
+      toast.error(errorMessage);
       return false;
     }
   };
@@ -124,12 +119,12 @@ export const useGroupActions = (
   };
 
   const handleShareMessenger = () => {
-    const inviteLink = `${window.location.origin}/join/${groupData?.inviteCode}`;
+    const inviteLink = `${window.location.origin}/${language}/join/${groupData?.inviteCode}`;
     window.open(`fb-messenger://share?link=${encodeURIComponent(inviteLink)}`, '_blank', 'noopener,noreferrer');
   };
 
   const handleShareInstagram = () => {
-    const inviteLink = `${window.location.origin}/join/${groupData?.inviteCode}`;
+    const inviteLink = `${window.location.origin}/${language}/join/${groupData?.inviteCode}`;
     navigator.clipboard.writeText(inviteLink).then(() => {
       toast.info(t('groupChat.linkCopiedForInstagram'));
       window.open('https://www.instagram.com/', '_blank', 'noopener,noreferrer');

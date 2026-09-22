@@ -179,15 +179,23 @@ export const useUserProfileTranslations = ({
         }
 
         // Location tags translation
+        const locationPromises: Promise<void>[] = [];
         if (!state.stake && currentUser?.stake) {
-            translateField(currentUser.stake, language, 'user_stake', stakeCacheKey)
-                .then(res => { if (res) setState(prev => ({ ...prev, stake: res, isLocationTranslated: true })); })
-                .catch(e => console.error('Translate stake failed:', e));
+            locationPromises.push(
+                translateField(currentUser.stake, language, 'user_stake', stakeCacheKey)
+                    .then(res => { if (res) setState(prev => ({ ...prev, stake: res, isLocationTranslated: true })); })
+                    .catch(e => console.error('Translate stake failed:', e))
+            );
         }
         if (!state.ward && currentUser?.ward) {
-            translateField(currentUser.ward, language, 'user_ward', wardCacheKey)
-                .then(res => { if (res) setState(prev => ({ ...prev, ward: res, isLocationTranslated: true })); })
-                .catch(e => console.error('Translate ward failed:', e));
+            locationPromises.push(
+                translateField(currentUser.ward, language, 'user_ward', wardCacheKey)
+                    .then(res => { if (res) setState(prev => ({ ...prev, ward: res, isLocationTranslated: true })); })
+                    .catch(e => console.error('Translate ward failed:', e))
+            );
+        }
+        if (locationPromises.length > 0) {
+            void Promise.allSettled(locationPromises);
         }
     }, [state.isNicknameTranslated, state.nickname, state.stake, state.ward, currentUser, language, nickCacheKey, stakeCacheKey, wardCacheKey, t]);
 
