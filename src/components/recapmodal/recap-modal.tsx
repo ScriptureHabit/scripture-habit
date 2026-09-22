@@ -10,10 +10,11 @@ interface RecapModalProps {
     onClose: () => void;
     recapText: string;
     title?: string;
+    onSave?: () => void | Promise<boolean | void>;
     isFromCache?: boolean;
 }
 
-const RecapModal = ({ isOpen, onClose, recapText, title, isFromCache = false }: RecapModalProps) => {
+const RecapModal = ({ isOpen, onClose, recapText, title }: RecapModalProps) => {
     const { t } = useLanguage();
     const modalRef = useRef<HTMLDivElement>(null);
     const closeBtnRef = useRef<HTMLButtonElement>(null);
@@ -67,7 +68,7 @@ const RecapModal = ({ isOpen, onClose, recapText, title, isFromCache = false }: 
                 </div>
 
                 <div className="recap-actions">
-                    <div className="recap-saved-badge" role="status" data-from-cache={isFromCache}>
+                    <div className="recap-saved-badge" role="status">
                         <UilCheck size="18" color="#059669" aria-hidden="true" />
                         <span>{t('recapModal.savedToLetterBox') || "Saved in Letter Box"}</span>
                     </div>
