@@ -8,11 +8,23 @@
 
 ---
 
+## 設計上の意思決定 (Architecture Decision Records - ADRs)
+設計上の「なぜ（Why）」、満たすべき制約、および検討した代替案を記録しています。
+- **[意思決定インデックス (ADR Index)](../decisions/index.md)**
+  - 全意思決定の一覧、ステータス定義、新規提案テンプレート。
+- **[ADR-001: CQRS アーキテクチャ](../decisions/ADR-001-cqrs-realtime-read-backend-mutation.md)** — リアルタイムFirestore購読とバックエンド特権トランザクションによる書き込み保護。
+- **[ADR-002: フロントエンド Logic-Component 分離](../decisions/ADR-002-frontend-logic-component-split.md)** — カスタムフック層への状態・副作用カプセル化とUIコンポーネントの軽量化。
+- **[ADR-003: アプリ層でのユーザー別オフライン再送キュー](../decisions/ADR-003-offline-strategy-application-queues.md)** — トークン失効（401）を回避する安全なオフライン再送設計。
+- **[ADR-004: 多言語ハイブリッド翻訳戦略](../decisions/ADR-004-multilingual-hybrid-translation.md)** — 静的辞書チャンク分割配信とGemini Flash-Liteオンデマンド翻訳の併用。
+- **[ADR-005: 減点型Streakを排した累積マイルストーン](../decisions/ADR-005-cumulative-milestone-habit-psychology.md)** — 「どうにでもなれ効果」を防ぎ継続を育む習慣心理学モデル。
+
+---
+
 ## 全体アーキテクチャ (Architecture)
 - **[アーキテクチャ & ディレクトリ構成](architecture.md)**
   - フロントエンド、内部API、バックエンドの責務分担と、各層の境界定義。
 - **[ネットワークと通信の最適化](network-performance-optimization.md)**
-  - オフライン時の送信待ち行列（Service Worker Sync）とバイナリ通信（MessagePack）による最適化。
+  - ユーザー別オフライン再送キュー、バイナリ通信（MessagePack）、多層キャッシュによる最適化。
   - 多層キャッシュ（Redis、Axios）、データ圧縮、フォント配信などによる応答速度の向上。
 - **[データベースとセキュリティ](database-security.md)**
   - Firestore のデータモデル設計、権限の適切な分離、および対話履歴のアーカイブ構造。

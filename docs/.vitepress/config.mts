@@ -30,6 +30,7 @@ export default withMermaid(defineConfig({
         nav: [
           { text: 'Home', link: '/' },
           { text: 'Architecture', link: '/architecture' },
+          { text: 'Decisions (ADRs)', link: '/decisions/' },
           { text: 'Features', link: '/feature-chat-dashboard' },
           { text: 'Core Logic', link: '/logic-note-posting' },
           {
@@ -43,6 +44,18 @@ export default withMermaid(defineConfig({
           { text: 'App', link: 'https://scripturehabit.app' }
         ],
         sidebar: [
+          {
+            text: 'Architecture Decisions (ADRs)',
+            collapsed: false,
+            items: [
+              { text: 'Decision Log & Guidelines', link: '/decisions/' },
+              { text: 'ADR-001: CQRS & Backend Mutations', link: '/decisions/ADR-001-cqrs-realtime-read-backend-mutation' },
+              { text: 'ADR-002: Logic-Component Split', link: '/decisions/ADR-002-frontend-logic-component-split' },
+              { text: 'ADR-003: Offline Scoped Queues', link: '/decisions/ADR-003-offline-strategy-application-queues' },
+              { text: 'ADR-004: Multilingual Translation', link: '/decisions/ADR-004-multilingual-hybrid-translation' },
+              { text: 'ADR-005: Cumulative Milestone Habit', link: '/decisions/ADR-005-cumulative-milestone-habit-psychology' },
+            ]
+          },
           {
             text: 'Architecture Overview',
             items: [
@@ -133,6 +146,7 @@ export default withMermaid(defineConfig({
         nav: [
           { text: 'ホーム', link: '/ja/' },
           { text: 'アーキテクチャ', link: '/ja/architecture' },
+          { text: '意思決定 (ADR)', link: '/decisions/' },
           { text: '機能詳細', link: '/ja/feature-chat-dashboard' },
           { text: 'コアロジック', link: '/ja/logic-note-posting' },
           {
@@ -146,6 +160,18 @@ export default withMermaid(defineConfig({
           { text: 'アプリを開く', link: 'https://scripturehabit.app' }
         ],
         sidebar: [
+          {
+            text: '設計上の意思決定 (ADRs)',
+            collapsed: false,
+            items: [
+              { text: '意思決定ログ & ガイドライン', link: '/decisions/' },
+              { text: 'ADR-001: CQRS & バックエンド特権書き込み', link: '/decisions/ADR-001-cqrs-realtime-read-backend-mutation' },
+              { text: 'ADR-002: フロントエンド Logic-Component 分離', link: '/decisions/ADR-002-frontend-logic-component-split' },
+              { text: 'ADR-003: オフライン再送キューのユーザー分離', link: '/decisions/ADR-003-offline-strategy-application-queues' },
+              { text: 'ADR-004: 多言語ハイブリッド翻訳戦略', link: '/decisions/ADR-004-multilingual-hybrid-translation' },
+              { text: 'ADR-005: 減点型Streakを排した累積マイルストーン', link: '/decisions/ADR-005-cumulative-milestone-habit-psychology' },
+            ]
+          },
           {
             text: '全体アーキテクチャ',
             items: [

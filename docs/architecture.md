@@ -82,11 +82,21 @@ flowchart TD
     class Platform,DB,AI pl
 ```
 
+> [!NOTE]
+> **Architectural Rationale**: See [ADR-001: CQRS Architecture](decisions/ADR-001-cqrs-realtime-read-backend-mutation.md) for why client writes are locked down and all state mutations run inside privileged backend transactions.
+
 ---
 
 ### 3.2 Frontend Client & Feature Workflows
 
 Detailed component composition, state management, study workflows, and offline-capable chat queues.
+
+> [!NOTE]
+> **Design Decisions**:
+> - **Logic-Component Split**: See [ADR-002](decisions/ADR-002-frontend-logic-component-split.md) for our strict rule that components only render UI while custom hooks manage all effects and state.
+> - **Offline Strategy**: See [ADR-003](decisions/ADR-003-offline-strategy-application-queues.md) for why we use user-scoped application queues instead of Workbox BackgroundSync.
+> - **Multilingual Rendering**: See [ADR-004](decisions/ADR-004-multilingual-hybrid-translation.md) for our hybrid static dictionary and on-demand AI translation strategy.
+> - **Milestone Psychology**: See [ADR-005](decisions/ADR-005-cumulative-milestone-habit-psychology.md) for the psychological rationale behind cumulative study days without zero-resets.
 
 ```mermaid
 flowchart TD

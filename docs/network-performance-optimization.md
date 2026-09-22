@@ -106,8 +106,8 @@ flowchart TD
 
 ## 5. Offline Resilience & Traffic Control
 
-1. **Service Worker Background Sync**  
-   Temporarily queues offline note submissions and messages, automatically replaying and completing them when network connectivity is restored.
+1. **Application-Level Scoped Offline Queuing**  
+   Pending messages and reflections are securely persisted in user- and group-scoped client queues (`offline-chat-queue.ts`). When network connectivity is restored, the application acquires a fresh, unexpired Firebase ID token before resending requests, preventing `401 Unauthorized` token expiry failures common with raw Service Worker Background Sync (see [ADR-003](./decisions/ADR-003-offline-strategy-application-queues.md)).
 
 2. **Request Cancellation (`AbortController`)**  
    Aborts pending GET requests upon route transitions to conserve device resources and client bandwidth.
@@ -120,5 +120,6 @@ flowchart TD
 ## 6. Related Documentation
 
 - [Architecture Overview](./architecture.md)
+- [ADR-003: Offline Queuing Strategy](./decisions/ADR-003-offline-strategy-application-queues.md)
 - [Firestore Offline Persistence](./firestore-offline-persistence.md)
 - [API Design & Error Handling](./api-middleware-error-handling.md)

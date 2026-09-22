@@ -8,6 +8,18 @@ Welcome to the **scripture-habit** technical documentation. This collection outl
 
 ---
 
+## Architecture Decisions (ADRs)
+Documenting the *why*, constraints, and trade-offs behind foundational decisions.
+- **[Architecture Decision Records Index](decisions/index.md)**
+  - Overview, status legend, and guide for proposing new architecture decisions.
+- **[ADR-001: CQRS Architecture](decisions/ADR-001-cqrs-realtime-read-backend-mutation.md)** — Real-time Firestore subscriptions with server-enforced atomic mutations.
+- **[ADR-002: Frontend Logic-Component Split](decisions/ADR-002-frontend-logic-component-split.md)** — Custom hook domain encapsulation and UI presentation isolation.
+- **[ADR-003: Application-Level Offline Queues](decisions/ADR-003-offline-strategy-application-queues.md)** — User-scoped offline queues preventing Bearer token expiration failures.
+- **[ADR-004: Multilingual Translation Strategy](decisions/ADR-004-multilingual-hybrid-translation.md)** — Static UI dictionary chunks paired with on-demand Gemini AI translation.
+- **[ADR-005: Cumulative Milestone Habit Model](decisions/ADR-005-cumulative-milestone-habit-psychology.md)** — Preserving study consistency without punitive streak resets.
+
+---
+
 ## Architecture Overview
 - **[Architecture & Directory Structure](architecture.md)**
   - Layered responsibilities and clear boundary definitions across the frontend, internal API, and backend.

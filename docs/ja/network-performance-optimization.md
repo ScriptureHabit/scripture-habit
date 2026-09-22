@@ -106,8 +106,8 @@ flowchart TD
 
 ## 5. オフライン耐性と通信制御
 
-1. **Service Worker Background Sync**
-   オフライン時に送信されたノートやメッセージを一時保存し、通信復帰時にバックグラウンドで自動的に再送を完了します。
+1. **アプリケーション層でのユーザー別オフライン再送キュー**
+   未送信のメッセージやノートは、ユーザーおよびグループ単位で分離されたローカルキュー（`offline-chat-queue.ts`）に安全に一時保存されます。通信復帰時には、失効（60分）したトークンによる `401 Unauthorized` を防ぐため、新しい Firebase ID トークンを自動再取得した上で安全に再送を実行します（詳細は [ADR-003](../decisions/ADR-003-offline-strategy-application-queues.md) を参照）。
 
 2. **画面遷移時の通信中断 (`AbortController`)**
    ユーザーが別の画面へ移動した際、待機中だった不要な GET リクエストを即座に中断し、端末のリソースと帯域を節約します。
@@ -120,5 +120,6 @@ flowchart TD
 ## 6. 関連ドキュメント
 
 - [全体アーキテクチャ](./architecture.md)
+- [ADR-003: オフライン再送キューのユーザー分離設計](../decisions/ADR-003-offline-strategy-application-queues.md)
 - [Firestore のオフライン永続化](./firestore-offline-persistence.md)
 - [API 設計とエラー処理](./api-middleware-error-handling.md)
