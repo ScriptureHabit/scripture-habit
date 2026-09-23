@@ -3,6 +3,7 @@ import { describe, it, expect, beforeAll, afterAll, vi, beforeEach } from 'vites
 import { db, admin } from '../lib/firebase-admin.js';
 import { TestSetup } from '../test-setup.js';
 import axios from 'axios';
+import crypto from 'crypto';
 
 let mockDbOverride: any = undefined;
 
@@ -41,10 +42,14 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('AI Route Integration', ()
         vi.restoreAllMocks();
         setup.mockAuth(USER_ID);
 
-        // 1. Clear translation_cache collection
-        const cacheSnap = await db.collection('translation_cache').get();
+        // 1. Clear translation_cache and ponder_cache collections
+        const [cacheSnap, ponderSnap] = await Promise.all([
+            db.collection('translation_cache').get(),
+            db.collection('ponder_cache').get()
+        ]);
         const batchCache = db.batch();
         cacheSnap.docs.forEach(d => batchCache.delete(d.ref));
+        ponderSnap.docs.forEach(d => batchCache.delete(d.ref));
         await batchCache.commit();
         const messagesSnap = await db.collection('groups').doc(GROUP_ID).collection('messages').get();
         const batchMessages = db.batch();
@@ -160,6 +165,59 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('AI Route Integration', ()
             const data = await res.json();
             expect(data.error).toBe('AI ponder questions failed');
             expect(data.details).toContain('AI content blocked by safety filters');
+        });
+
+        it('should hit cache and not call Gemini if already cached in ponder_cache', async () => {
+            const cacheKey = crypto.createHash('md5').update('Genesis_1_en').digest('hex');
+            await db.collection('ponder_cache').doc(cacheKey).set({
+                scripture: 'Genesis',
+                chapter: '1',
+                language: 'en',
+                questions: 'Cached reflection question for Genesis 1',
+                createdAt: admin.firestore.FieldValue.serverTimestamp()
+            });
+
+            const promptMock = mockGeminiResponse('Should not be called');
+
+            const res = await fetch(`${setup.baseUrl}/api/ai/generate-ponder-questions`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer token-${USER_ID}`
+                },
+                body: JSON.stringify({
+                    scripture: 'Genesis',
+                    chapter: '1',
+                    language: 'en'
+                })
+            });
+
+            expect(res.status).toBe(200);
+            const data = await res.json();
+            expect(data.success).toBe(true);
+            expect(data.questions).toBe('Cached reflection question for Genesis 1');
+            expect(promptMock).not.toHaveBeenCalled();
+        });
+
+        it('should handle timeout when generating ponder questions', async () => {
+            vi.spyOn(axios, 'post').mockRejectedValue(new Error('Generation timed out'));
+
+            const res = await fetch(`${setup.baseUrl}/api/ai/generate-ponder-questions`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer token-${USER_ID}`
+                },
+                body: JSON.stringify({
+                    scripture: 'Isaiah',
+                    chapter: '22',
+                    language: 'ja'
+                })
+            });
+
+            expect(res.status).toBe(500);
+            const data = await res.json();
+            expect(data.error).toBe('AI ponder questions failed');
         });
     });
 

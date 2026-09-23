@@ -20,6 +20,8 @@ export interface GeminiCallOptions {
     systemInstruction?: string;
     responseMimeType?: string;
     temperature?: number;
+    timeout?: number;
+    signal?: AbortSignal;
 }
 
 const BASE_SECURITY_INSTRUCTION = `【CRITICAL SECURITY & BEHAVIOR RULES】:
@@ -34,8 +36,8 @@ const BASE_SECURITY_INSTRUCTION = `【CRITICAL SECURITY & BEHAVIOR RULES】:
 const callGemini = async (options: string | GeminiCallOptions): Promise<string> => {
     if (!process.env.GEMINI_API_KEY) throw new Error('Gemini API Key missing');
     
-    const { prompt, systemInstruction, responseMimeType, temperature } = typeof options === 'string'
-        ? { prompt: options, systemInstruction: undefined, responseMimeType: undefined, temperature: undefined }
+    const { prompt, systemInstruction, responseMimeType, temperature, timeout, signal } = typeof options === 'string'
+        ? { prompt: options, systemInstruction: undefined, responseMimeType: undefined, temperature: undefined, timeout: undefined, signal: undefined }
         : options;
 
     const fullSystemInstruction = systemInstruction
@@ -68,8 +70,9 @@ const callGemini = async (options: string | GeminiCallOptions): Promise<string> 
             'Content-Type': 'application/json',
             'x-goog-api-key': process.env.GEMINI_API_KEY
         },
-        timeout: 30000 
-    }); // 30s timeout
+        timeout: timeout ?? 30000,
+        ...(signal ? { signal } : {})
+    });
 
     const candidate = response.data?.candidates?.[0];
     
@@ -89,21 +92,23 @@ const callGemini = async (options: string | GeminiCallOptions): Promise<string> 
 
 const handleAiError = (res: Response, err: unknown, contextMessage: string) => {
     // Safely extract error body without circular references
-    const axiosErr = err as { response?: { data?: unknown, status?: number }, message?: string };
+    const axiosErr = err as { response?: { data?: unknown, status?: number }, message?: string, code?: string };
     const errorBody = axiosErr.response?.data || axiosErr.message || String(err);
     console.error('[AI Error]', contextMessage, ':', errorBody);
     
+    const isTimeout = (err instanceof Error && (err.message.includes('timed out') || err.message.includes('timeout'))) ||
+        axiosErr.code === 'ECONNABORTED';
     const status = axiosErr.response?.status || 500;
 
     // Capture specific AI error details in Sentry (guaranteed no-op in development and test)
     captureException(err, {
         tags: { context: contextMessage, ai_status: status },
-        extra: { errorBody }
+        extra: { errorBody, isTimeout }
     });
 
     const isProduction = process.env.NODE_ENV === 'production';
     const clientDetails = isProduction
-        ? 'An error occurred while communicating with the AI service. Please try again later.'
+        ? (isTimeout ? 'The AI service took too long to respond. Please try again.' : 'An error occurred while communicating with the AI service. Please try again later.')
         : (typeof errorBody === 'string' ? errorBody : (axiosErr.message || 'Unknown error'));
 
     res.status(status).json({
@@ -145,7 +150,25 @@ router.post('/generate-ponder-questions', authenticate, aiLimiter, verifyAppChec
             return res.json({ success: true, questions: "Mocked Study Question" });
         }
 
-        const systemInstruction = `You are a warm, thoughtful, and encouraging scripture study companion who helps people reflect on the gospel in personal, meaningful ways.
+        const cacheKey = crypto.createHash('md5').update(`${scripture}_${chapter}_${baseLang}`).digest('hex');
+        let questions: string | null = null;
+
+        // Check cache if DB is healthy
+        const canUseCache = db && (process.env.NODE_ENV !== 'test' || process.env.FIRESTORE_EMULATOR_HOST);
+        const cacheRef = db ? db.collection('ponder_cache').doc(cacheKey) : null;
+        if (canUseCache && cacheRef) {
+            try {
+                const cacheDoc = await withTimeout(cacheRef.get(), 4000, 'Firestore timeout');
+                if (cacheDoc && 'exists' in cacheDoc && cacheDoc.exists) {
+                    questions = cacheDoc.data()?.questions;
+                }
+            } catch (cacheErr) {
+                console.warn('[AI Ponder Cache] Bypassing cache due to error or timeout:', (cacheErr as Error).message);
+            }
+        }
+
+        if (!questions) {
+            const systemInstruction = `You are a warm, thoughtful, and encouraging scripture study companion who helps people reflect on the gospel in personal, meaningful ways.
 Based on the scripture reference provided by the user, provide ONE inspiring, open-ended question that prompts personal reflection without being preachy or burdensome.
 
 【STRICT RULES】:
@@ -154,9 +177,44 @@ Based on the scripture reference provided by the user, provide ONE inspiring, op
 3. Keep the tone warm, welcoming, and uplifting.
 4. Format as a single paragraph. Output ONLY the question itself.`;
 
-        const userPrompt = `Scripture: ${scripture}\nChapter/Reference: ${chapter}`;
+            const userPrompt = `Scripture: ${scripture}\nChapter/Reference: ${chapter}`;
 
-        const questions = await withTimeout(callGemini({ prompt: userPrompt, systemInstruction, temperature: 0.7 }), 15000, 'Generation timed out');
+            const abortController = new AbortController();
+            try {
+                questions = await withTimeout(
+                    callGemini({ 
+                        prompt: userPrompt, 
+                        systemInstruction, 
+                        temperature: 0.7,
+                        timeout: 28000,
+                        signal: abortController.signal
+                    }), 
+                    28000, 
+                    'Generation timed out'
+                );
+            } catch (timeoutErr) {
+                abortController.abort();
+                throw timeoutErr;
+            }
+
+            // Persist to cache if DB is healthy
+            if (canUseCache && cacheRef && questions) {
+                const savePromise = cacheRef.set({
+                    scripture,
+                    chapter,
+                    language: baseLang,
+                    questions,
+                    createdAt: admin.firestore.FieldValue.serverTimestamp(),
+                    expiresAt: admin.firestore.Timestamp.fromMillis(Date.now() + 30 * 24 * 60 * 60 * 1000)
+                }).catch(e => {
+                    console.warn('[AI Ponder Cache] Failed to save to cache:', e.message);
+                });
+                if (process.env.NODE_ENV === 'test' || process.env.VITEST === 'true') {
+                    await savePromise;
+                }
+            }
+        }
+
         res.json({ success: true, questions });
     } catch (err) {
         if (err instanceof ValidationError) {
