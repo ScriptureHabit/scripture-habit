@@ -46,54 +46,103 @@ const callGemini = async (options: string | GeminiCallOptions): Promise<string> 
 
     // Using the Gemini 3.1 Flash-Lite Preview model with minimal thinking for best speed/cost
     const apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent';
-    const response = await axios.post(apiUrl, { 
-        systemInstruction: {
-            parts: [{ text: fullSystemInstruction }]
-        },
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: {
-            thinkingConfig: {
-                thinkingLevel: "minimal"
-            },
-            ...(temperature !== undefined ? { temperature } : {}),
-            ...(responseMimeType ? { responseMimeType } : {})
-        },
-        safetySettings: [
-            { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_ONLY_HIGH" },
-            { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_ONLY_HIGH" },
-            { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_MEDIUM_AND_ABOVE" },
-            { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_MEDIUM_AND_ABOVE" },
-            { category: "HARM_CATEGORY_CIVIC_INTEGRITY", threshold: "BLOCK_ONLY_HIGH" }
-        ]
-    }, { 
-        headers: {
-            'Content-Type': 'application/json',
-            'x-goog-api-key': process.env.GEMINI_API_KEY
-        },
-        timeout: timeout ?? 30000,
-        ...(signal ? { signal } : {})
-    });
-
-    const candidate = response.data?.candidates?.[0];
     
-    // Check for safety blocks
-    if (candidate?.finishReason === 'SAFETY') {
-        throw new Error('AI content blocked by safety filters');
+    const maxAttempts = 3;
+    let attempt = 0;
+
+    while (attempt < maxAttempts) {
+        attempt++;
+        try {
+            if (signal?.aborted) {
+                throw new Error('Operation aborted');
+            }
+
+            const response = await axios.post(apiUrl, { 
+                systemInstruction: {
+                    parts: [{ text: fullSystemInstruction }]
+                },
+                contents: [{ parts: [{ text: prompt }] }],
+                generationConfig: {
+                    thinkingConfig: {
+                        thinkingLevel: "minimal"
+                    },
+                    ...(temperature !== undefined ? { temperature } : {}),
+                    ...(responseMimeType ? { responseMimeType } : {})
+                },
+                safetySettings: [
+                    { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_ONLY_HIGH" },
+                    { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_ONLY_HIGH" },
+                    { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_MEDIUM_AND_ABOVE" },
+                    { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_MEDIUM_AND_ABOVE" },
+                    { category: "HARM_CATEGORY_CIVIC_INTEGRITY", threshold: "BLOCK_ONLY_HIGH" }
+                ]
+            }, { 
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-goog-api-key': process.env.GEMINI_API_KEY
+                },
+                timeout: timeout ?? 30000,
+                ...(signal ? { signal } : {})
+            });
+
+            const candidate = response.data?.candidates?.[0];
+            
+            // Check for safety blocks
+            if (candidate?.finishReason === 'SAFETY') {
+                throw new Error('AI content blocked by safety filters');
+            }
+
+            const generatedText = candidate?.content?.parts?.[0]?.text;
+            if (!generatedText) {
+                console.error('[AI] Empty response. Full body:', JSON.stringify(response.data));
+                throw new Error('AI failed to generate a response');
+            }
+            
+            return generatedText.trim();
+        } catch (err: unknown) {
+            const axiosErr = err as { response?: { status?: number, data?: unknown }, code?: string, message?: string };
+            const status = axiosErr.response?.status;
+            const isSafetyBlock = err instanceof Error && err.message.includes('safety filters');
+            const isAborted = signal?.aborted || (err instanceof Error && err.message.includes('aborted'));
+
+            // Transient error detection:
+            // 503 (Overloaded/Service Unavailable), 429 (Rate Limit), 500/502/504,
+            // or network connection drops (ECONNRESET, ETIMEDOUT, ECONNABORTED not from caller signal)
+            const isTransient = !isSafetyBlock && !isAborted && (
+                status === 503 ||
+                status === 429 ||
+                status === 500 ||
+                status === 502 ||
+                status === 504 ||
+                axiosErr.code === 'ECONNRESET' ||
+                axiosErr.code === 'ETIMEDOUT' ||
+                (axiosErr.code === 'ECONNABORTED' && !signal?.aborted)
+            );
+
+            if (isTransient && attempt < maxAttempts) {
+                const isTest = process.env.NODE_ENV === 'test' || process.env.VITEST === 'true';
+                const baseDelay = isTest ? 10 : attempt * 1000;
+                const jitter = isTest ? 0 : Math.floor(Math.random() * 200);
+                const delay = baseDelay + jitter;
+                console.warn(`[Gemini API] Attempt ${attempt} failed with status ${status || axiosErr.code || (err as Error).message}. Retrying in ${delay}ms...`);
+                await new Promise(resolve => setTimeout(resolve, delay));
+                continue;
+            }
+
+            throw err;
+        }
     }
 
-    const generatedText = candidate?.content?.parts?.[0]?.text;
-    if (!generatedText) {
-        console.error('[AI] Empty response. Full body:', JSON.stringify(response.data));
-        throw new Error('AI failed to generate a response');
-    }
-    
-    return generatedText.trim();
+    throw new Error('AI failed after retries');
 };
 
 const handleAiError = (res: Response, err: unknown, contextMessage: string) => {
     // Safely extract error body without circular references
     const axiosErr = err as { response?: { data?: unknown, status?: number }, message?: string, code?: string };
-    const errorBody = axiosErr.response?.data || axiosErr.message || String(err);
+    const responseData = axiosErr.response?.data;
+    const errorBody = typeof responseData === 'object' && responseData !== null
+        ? JSON.stringify(responseData)
+        : (responseData || axiosErr.message || String(err));
     console.error('[AI Error]', contextMessage, ':', errorBody);
     
     const isTimeout = (err instanceof Error && (err.message.includes('timed out') || err.message.includes('timeout'))) ||
@@ -109,7 +158,7 @@ const handleAiError = (res: Response, err: unknown, contextMessage: string) => {
     const isProduction = process.env.NODE_ENV === 'production';
     const clientDetails = isProduction
         ? (isTimeout ? 'The AI service took too long to respond. Please try again.' : 'An error occurred while communicating with the AI service. Please try again later.')
-        : (typeof errorBody === 'string' ? errorBody : (axiosErr.message || 'Unknown error'));
+        : (typeof responseData === 'string' ? responseData : (axiosErr.message || 'Unknown error'));
 
     res.status(status).json({
         error: `AI ${contextMessage} failed`,
@@ -690,6 +739,13 @@ The letter MUST be written from the perspective of an AI embodying a prophet or 
 【CORE VOICE & NATURAL HUMANITY】:
 1. Speak as an everyday, relatable friend and fellow human who personally experienced struggles, doubts, and messy moments. Avoid sanctimonious lecturing, stiff robotic phrasing, artificial AI poem clichés, or overdramatic paradoxes.
 2. Connect ancient life and modern life through shared human vulnerability (e.g., overthinking, feeling overwhelmed, daily mess-ups, needing grace) rather than clumsy buzzwords or melodramatic lyrics-like phrasing.
+
+【MULTIPLE NOTES & DUAL INSIGHTS GUIDELINE】:
+1. If the user presents multiple notes (e.g., two daily entries), identify and provide ONE fresh, illuminating scriptural/historical/cultural insight (e.g., Hebrew/Greek word origins, ancient cultural background, historical context) for EACH note separately.
+2. Note 1 Insight: Draw upon historical/cultural/linguistic background relevant to the first scripture passage.
+3. Note 2 Insight: Draw upon historical/cultural/linguistic background relevant to the second scripture passage.
+4. Weave both insights naturally into Phase 2 of the letter, connecting them together under a unified spiritual theme.
+5. Keep both insights deeply spiritual, warm, and relatable—never overly academic or dry.
 
 【4 EVERYDAY LENSES & EMOTIONAL ADAPTATION】:
 Dynamically choose ONE dominant lens that best matches the reader's emotional state, comments, and needs in their notes:

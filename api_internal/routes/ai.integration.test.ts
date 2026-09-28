@@ -1128,6 +1128,65 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('AI Route Integration', ()
             expect(data.error).toBe('AI ponder questions failed');
             expect(data.details).toBe('Axios error');
         });
+
+        it('should retry on transient 503 and succeed if subsequent attempt passes', async () => {
+            const error503 = new Error('Service Unavailable');
+            (error503 as any).response = { status: 503, data: { error: 'Model overloaded' } };
+
+            let attempts = 0;
+            vi.spyOn(axios, 'post').mockImplementation(async () => {
+                attempts++;
+                if (attempts === 1) {
+                    throw error503;
+                }
+                return {
+                    status: 200,
+                    data: {
+                        candidates: [{ content: { parts: [{ text: 'Recovered after 503' }] } }]
+                    }
+                } as any;
+            });
+
+            const res = await fetch(`${setup.baseUrl}/api/ai/generate-ponder-questions`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer token-${USER_ID}`
+                },
+                body: JSON.stringify({ scripture: 'Proverbs', chapter: '3', language: 'en' })
+            });
+
+            expect(res.status).toBe(200);
+            const data = await res.json();
+            expect(data.success).toBe(true);
+            expect(data.questions).toBe('Recovered after 503');
+            expect(attempts).toBe(2);
+        });
+
+        it('should fail after max retries if 503 persists', async () => {
+            const error503 = new Error('Service Unavailable');
+            (error503 as any).response = { status: 503, data: { error: 'Model overloaded' } };
+
+            let attempts = 0;
+            vi.spyOn(axios, 'post').mockImplementation(async () => {
+                attempts++;
+                throw error503;
+            });
+
+            const res = await fetch(`${setup.baseUrl}/api/ai/generate-ponder-questions`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer token-${USER_ID}`
+                },
+                body: JSON.stringify({ scripture: 'Proverbs', chapter: '4', language: 'en' })
+            });
+
+            expect(res.status).toBe(503);
+            const data = await res.json();
+            expect(data.error).toBe('AI ponder questions failed');
+            expect(attempts).toBe(3);
+        });
     });
 });
 
