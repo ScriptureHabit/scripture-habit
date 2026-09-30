@@ -164,7 +164,7 @@
       "jose": "5.9.6"
     },
     "websocket-driver": "^0.7.5",
-    "brace-expansion": "^5.0.9",
+    "brace-expansion": "^5.0.12",
     "fast-uri": "^3.1.5",
     "js-yaml": "^4.3.2",
     "extract-zip": "^2.0.1",
