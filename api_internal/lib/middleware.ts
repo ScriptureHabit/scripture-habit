@@ -23,8 +23,16 @@ const createRedisStore = (prefix: string) => {
     if (!redisClient) return undefined;
     return new RedisStore({
         sendCommand: async (...args: string[]) => {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            return redisClient!.call(args[0], ...args.slice(1)) as any;
+            if (redisClient?.status !== 'ready') {
+                throw new Error('Redis client is not ready');
+            }
+            try {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                return await (redisClient!.call(args[0], ...args.slice(1)) as any);
+            } catch (err) {
+                console.warn(`[RateLimit] Redis command failed for prefix ${prefix}:`, (err as Error)?.message);
+                throw err;
+            }
         },
         prefix: prefix,
     });
@@ -36,6 +44,7 @@ export const globalLimiter = rateLimit({
     limit: isProd ? 300 : 10000, // Significantly higher limit for dev/test
     standardHeaders: 'draft-7',
     legacyHeaders: false,
+    passOnStoreError: true,
 });
 
 export const inviteLimiter = rateLimit({
@@ -45,6 +54,7 @@ export const inviteLimiter = rateLimit({
     message: { error: 'Too many invite attempts, please try again later.' },
     standardHeaders: 'draft-7',
     legacyHeaders: false,
+    passOnStoreError: true,
 });
 
 export const authLimiter = rateLimit({
@@ -54,6 +64,7 @@ export const authLimiter = rateLimit({
     message: { error: 'Too many authentication attempts. Please try again later.' },
     standardHeaders: 'draft-7',
     legacyHeaders: false,
+    passOnStoreError: true,
 });
 
 export const aiLimiterKeyGenerator = (req: Request) => {
@@ -76,6 +87,7 @@ export const aiLimiter = rateLimit({
     standardHeaders: 'draft-7',
     legacyHeaders: false,
     keyGenerator: aiLimiterKeyGenerator,
+    passOnStoreError: true,
     // Required to silence the IPv6 warning when using a custom keyGenerator for hashed IPs
     validate: { default: false } 
 });
@@ -88,6 +100,7 @@ export const demoInitLimiter = rateLimit({
     standardHeaders: 'draft-7',
     legacyHeaders: false,
     keyGenerator: aiLimiterKeyGenerator,
+    passOnStoreError: true,
     validate: { default: false }
 });
 

@@ -8,7 +8,6 @@ if (process.env.REDIS_URL) {
             connectTimeout: 2000,
             commandTimeout: 2000,
             maxRetriesPerRequest: 1,
-            enableOfflineQueue: false,
             reconnectOnError: (err) => {
                 const targetError = 'READONLY';
                 if (err.message.includes(targetError)) {
