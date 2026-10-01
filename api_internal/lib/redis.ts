@@ -6,7 +6,17 @@ if (process.env.REDIS_URL) {
     try {
         redisClient = new Redis(process.env.REDIS_URL, {
             connectTimeout: 2000,
-            maxRetriesPerRequest: 1
+            commandTimeout: 2000,
+            maxRetriesPerRequest: 1,
+            enableOfflineQueue: false,
+            reconnectOnError: (err) => {
+                const targetError = 'READONLY';
+                if (err.message.includes(targetError)) {
+                    // Reconnect on READONLY error
+                    return true;
+                }
+                return false;
+            }
         });
         
         redisClient.on('error', (err) => {
