@@ -101,7 +101,7 @@
     "react-router-dom": "^7.18.4",
     "react-select": "^5.10.2",
     "react-toastify": "^11.1.0",
-    "sharp": "^0.35.4",
+    "sharp": "^0.35.5",
     "vconsole": "^3.15.1",
     "zod": "^4.6.5",
     "zustand": "^5.0.15"
@@ -173,6 +173,9 @@
     "qs": "^6.16.0",
     "lodash-es": "^4.18.1",
     "lodash": "^4.18.1",
-    "@grpc/grpc-js": "^1.14.5"
+    "@grpc/grpc-js": "^1.14.5",
+    "basic-ftp": "^6.2.2",
+    "braces": "^3.0.3",
+    "chokidar": "^5.0.0"
   }
 }
