@@ -1,6 +1,6 @@
 import { useState, useMemo, useRef, useCallback } from 'react';
 import Select from 'react-select';
-import { UilShuffle, UilRobot, UilEdit } from '@iconscout/react-unicons';
+import { UilShuffle, UilRobot } from '@iconscout/react-unicons';
 import Input from '../input/input';
 import './new-note.css';
 
@@ -86,14 +86,6 @@ const NewNote = ({
     // Random Placeholders initialized cleanly without effects or queueMicrotask
     const [commentIdx] = useState<number>(() => Math.random());
     const [chapterIdx] = useState<number>(() => Math.random());
-
-    const handleFillSample = () => {
-        setScripture('Book of Mormon');
-        const rawScripture = t('newNote.sampleScripture') || '1 Nephi 3:7';
-        const localizedScripture = translateChapterField ? translateChapterField(rawScripture) : rawScripture;
-        setChapter(localizedScripture);
-        setComment(t('newNote.sampleThoughts') || '「主が命じられることには、それを成し遂げる道を備えてくださる」という言葉に勇気をもらいました。今日も一歩踏み出してみます！');
-    };
 
     const commentPlaceholder = useMemo(() => {
         const placeholders = tArray('newNote.commentPlaceholder');
@@ -372,10 +364,6 @@ const NewNote = ({
                     {!noteToEdit && (
                         <div className="action-buttons-stack">
                             <div className="action-btn-wrapper">
-                                <button type="button" onClick={handleFillSample} className="modern-action-btn fill-sample-btn" data-testid="fill-sample-btn">
-                                    <UilEdit size="16" aria-hidden="true" />
-                                    <span>{t('newNote.fillSample')}</span>
-                                </button>
                             </div>
                             <div className="action-btn-wrapper">
                                 <button type="button" onClick={() => setShowRandomMenu(true)} className="modern-action-btn">
