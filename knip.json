@@ -17,7 +17,6 @@
     "tests/**/*.{ts,js}"
   ],
   "ignoreDependencies": [
-    "@lhci/cli",
     "@opentelemetry/core",
     "@playwright/browser-chromium",
     "@playwright/browser-webkit",

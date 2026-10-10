@@ -9,7 +9,6 @@ coverage/
 .vercel/
 
 # Generated reports, docs & caches
-.lighthouseci/
 docs/public/api-reference.html
 docs/public/openapi.json
 docs/reference/
