@@ -1,7 +1,15 @@
 import './load-env.js';
-// Dynamic Firebase Project ID Isolation for Vitest Concurrent Workers
+// Dynamic Firebase Project ID Isolation for Vitest Concurrent Workers.
+// Do not override the project when the Firebase emulator is active; the emulator
+// is started for a specific project id (e.g. "scripture-habit-auth") and must
+// remain aligned with the client configuration.
 import process from 'node:process';
-if (process.env.VITEST === 'true') {
+const isEmulatorMode = Boolean(
+    process.env.FIRESTORE_EMULATOR_HOST ||
+    process.env.FIREBASE_AUTH_EMULATOR_HOST ||
+    process.env.VITE_USE_FIREBASE_EMULATOR === 'true'
+);
+if (process.env.VITEST === 'true' && !isEmulatorMode) {
     if (!process.env.FIREBASE_PROJECT_ID || process.env.FIREBASE_PROJECT_ID === 'scripture-habit-auth') {
         const randomId = `sh-test-${Math.random().toString(36).substring(2, 9)}`;
         process.env.FIREBASE_PROJECT_ID = randomId;
@@ -159,16 +167,21 @@ export function resolveServiceAccount(
 
 if (!hasFirebaseApp()) {
     if (process.env.FIRESTORE_EMULATOR_HOST) {
-        // Initialize for Emulator with a dummy service account file to avoid ANY network lookup
-        // but still satisfy the Firestore client's requirement for a valid credential type.
+        // Initialize for Emulator with a bundled static service account. This avoids
+        // the metadata-server / ADC lookup that can hang the process when the
+        // emulator is present but no real Google credentials are configured.
         try {
             const dummyKeyPath = path.join(__dirname, 'dummy-service-account.json');
+            const projectId = process.env.FIREBASE_PROJECT_ID || 'scripture-habit-auth';
+
+            // Use the same dummy credentials regardless of ADC presence so emulator
+            // requests stay local and never try to reach metadata endpoints.
+            const dummyServiceAccount = JSON.parse(fs.readFileSync(dummyKeyPath, 'utf8')) as ServiceAccount;
             process.env.GOOGLE_APPLICATION_CREDENTIALS = dummyKeyPath;
 
-            const projectId = process.env.FIREBASE_PROJECT_ID || 'scripture-habit-auth';
             initializeApp({
                 projectId,
-                credential: applicationDefault()
+                credential: cert(dummyServiceAccount)
             });
             console.log('[Firebase Admin] Initialized for Emulator mode, project:', projectId);
         } catch (error) {
