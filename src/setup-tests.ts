@@ -21,7 +21,7 @@ vi.mock('@sentry/react', () => ({
 }));
 
 
-beforeAll(() => server.listen({ onUnhandledRequest: 'bypass' }));
+beforeAll(() => server.listen({ onUnhandledFrame: 'bypass' }));
 afterEach(() => {
   server.resetHandlers();
   useChatStore.getState().resetChatUI();
