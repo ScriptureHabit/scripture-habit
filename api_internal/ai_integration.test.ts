@@ -267,6 +267,8 @@ describe('AI Prompt Construction Regression', () => {
         });
         await db.collection('users').doc(testUid).collection('notes').add({
             text: 'I learned about faith today.',
+            scripture: 'Doctrine and Covenants',
+            chapter: '121:41-42',
             createdAt: new Date(Date.now() - 1000)
         });
         await db.collection('users').doc(testUid).collection('notes').add({
@@ -291,7 +293,9 @@ describe('AI Prompt Construction Regression', () => {
 
         expect(sysInstruction).toContain('Task: Write a warm, spiritually uplifting, deeply human, and charmingly relatable personal reflection letter');
         expect(sysInstruction).toContain('CRITICAL SECURITY & BEHAVIOR RULES');
+        expect(sysInstruction).toContain('"Doctrine and Covenants" and "D&C" must be rendered as 「教義と聖約」');
         expect(prompt).toContain('I learned about faith today.');
+        expect(prompt).toContain('[Doctrine and Covenants - 121:41-42]');
         expect(prompt).toContain('Charity never faileth.');
     }, 60000);
 

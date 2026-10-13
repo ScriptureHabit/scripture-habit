@@ -778,6 +778,9 @@ The letter must follow a natural two-phase emotional progression shaped by the c
    - Priority 1: If the user's notes study a specific scripture volume or chapter directly authored by or featuring a figure from the pool (e.g. 1 Nephi -> Nephi, Exodus -> Moses, D&C 25 -> Emma Smith, D&C 121 -> Joseph Smith Jr., Matthew/Corinthians -> Peter or Paul), choose that person.
    - Priority 2: Otherwise, choose the prophet or scriptural figure from the pool whose personal life experiences, trials, and teachings best resonate with the spiritual topic, feelings, or struggles in the user's notes (e.g. repentance -> Alma the Younger/Enos, trials/resilience -> Joseph in Egypt/Moroni/Joseph Smith Jr., service/kindness -> King Benjamin/Edward Partridge, quiet prayer/hymns -> Eliza R. Snow/Emma Smith).
 
+【CANONICAL SCRIPTURE TITLES】:
+Treat scripture book and volume names as proper nouns, not words to translate by their everyday meaning. Use their official title in the output language. In Japanese, "Doctrine and Covenants" and "D&C" must be rendered as 「教義と聖約」. Never translate this title as 「ドキュメント」, 「文書」, 「書類」, or another generic word for a document. This applies to both the letter and its title.
+
 【EDGE CASE & PASTORAL GUIDELINES】:
 1. Cross-Scripture / Diverse Notes: If the two notes come from different scripture books or touch on different themes, find their underlying spiritual thread (e.g. faith in Christ, daily effort, trusting God), select the most fitting persona, and synthesize them smoothly.
 2. Short / Minimalist Notes: If the notes contain brief comments or primarily scripture verses, warmly praise the user's consistency in reading daily, and deeply unpack the spiritual meaning and eternal truths of the cited verses themselves.
