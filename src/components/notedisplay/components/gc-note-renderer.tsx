@@ -98,7 +98,7 @@ const GCNoteRenderer = ({
             ? `**${scriptureLabel}:** ${scriptName}` 
             : null;
 
-        return [scriptureLine, `**${fieldLabel}:** ${fieldValue}`].filter(Boolean).join('\n') + `\n\n**${commentLabel}:**\n${commentWithLinks}`;
+        return [scriptureLine, `**${fieldLabel}:** ${fieldValue}`, `**${commentLabel}:**\n${commentWithLinks}`].filter(Boolean).join('\n');
     }, [data, loading, scriptureValue, comment, t, url, language, isTranslated, translatedText, translateChapterField]);
 
     return (

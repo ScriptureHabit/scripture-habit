@@ -118,7 +118,7 @@ const NoteDisplay = ({
             fallbackHeaderLine,
             scriptureLine,
             chapterLine,
-            `\n**${commentLabel}:**\n${commentWithLinks}`
+            `**${commentLabel}:**\n${commentWithLinks}`
         ].filter(Boolean).join('\n');
     }, [parsed, language, t, translateChapterField, scripture, chapter]);
 
