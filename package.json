@@ -179,6 +179,9 @@
     "@grpc/grpc-js": "^1.14.5",
     "basic-ftp": "^6.2.2",
     "braces": "^3.0.3",
-    "chokidar": "^5.0.0"
+    "chokidar": "^5.0.0",
+    "@vercel/cli-config": {
+      "zod": "$zod"
+    }
   }
 }
