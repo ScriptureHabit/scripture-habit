@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
-import { db } from '../../../firebase';
-import { doc, getDoc } from 'firebase/firestore';
 import { UserData } from '../../../types/user';
 import { UserProfile } from '../../../types/chat';
+import apiClient from '../../../utils/api-client';
 
 export const useUserProfileData = (user: UserData | UserProfile | null) => {
     const [fetchedData, setFetchedData] = useState<(UserData & Partial<UserProfile>) | null>(null);
@@ -17,9 +16,11 @@ export const useUserProfileData = (user: UserData | UserProfile | null) => {
         let active = true;
         const fetchProfile = async () => {
             try {
-                const snap = await getDoc(doc(db, 'users', initialUserId));
-                if (active && snap.exists()) {
-                    const data = { id: snap.id, uid: snap.id, ...snap.data() } as unknown as (UserData & Partial<UserProfile>);
+                const response = await apiClient.get<{ profile: UserData & Partial<UserProfile> }>(
+                    `/api/auth/profile/${encodeURIComponent(initialUserId)}`
+                );
+                if (active && response.data.profile) {
+                    const data = { id: initialUserId, ...response.data.profile };
                     setFetchedData(data);
                 }
             } catch (e) {

@@ -42,11 +42,8 @@ service cloud.firestore {
            ])
         && (!request.resource.data.keys().hasAny(['nickname']) || (request.resource.data.nickname is string && request.resource.data.nickname.size() <= 50));
 
-      // Allow self-lookup even if not verified yet, or verified non-anonymous users
-      allow get: if request.auth != null && (
-        request.auth.uid == userId || 
-        (isAuthenticated() && request.auth.token.firebase.sign_in_provider != 'anonymous')
-      );
+      // Private account, group, and activity fields are only readable by the owner.
+      allow get: if request.auth != null && request.auth.uid == userId;
       allow list: if false; 
       
       // Harden profile updates: restrict directly editable keys and enforce nickname string constraints

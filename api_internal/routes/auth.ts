@@ -159,6 +159,41 @@ router.post('/initialize-profile', authenticate, verifyAppCheck, async (req: Aut
     }
 });
 
+router.get('/profile/:uid', authenticate, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+        const targetUid = req.params.uid;
+        if (!targetUid || targetUid.length > 128 || targetUid.includes('/')) {
+            throw new ValidationError('Invalid user id');
+        }
+        const caller = req.user!;
+        if (caller.uid !== targetUid &&
+            (caller.email_verified !== true || caller.firebase?.sign_in_provider === 'anonymous')) {
+            throw new ForbiddenError('A verified account is required to view another user profile.');
+        }
+
+        const userSnap = await db.collection('users').doc(targetUid).get();
+        if (!userSnap.exists) {
+            return res.status(404).json({ error: 'User profile not found.' });
+        }
+
+        const userData = userSnap.data() as UserDocument;
+        return res.status(200).json({
+            profile: {
+                uid: targetUid,
+                nickname: userData.nickname,
+                photoURL: userData.photoURL,
+                stake: userData.stake,
+                ward: userData.ward,
+                bio: userData.bio,
+                daysStudiedCount: userData.daysStudiedCount,
+                totalNotes: userData.totalNotes
+            }
+        });
+    } catch (err) {
+        return sendErrorResponse(res, err, 'Failed to fetch user profile.');
+    }
+});
+
 /**
  * Verify Login
  */

@@ -183,6 +183,54 @@ describe('Auth Route Integration', () => {
         });
     });
 
+    describe('GET /profile/:uid', () => {
+        it('should return public profile fields without private user document data', async () => {
+            await db.collection('users').doc(USER_ID).set({
+                uid: USER_ID,
+                nickname: 'Profile User',
+                photoURL: 'https://example.com/profile.jpg',
+                bio: 'A public bio',
+                email: 'private@example.com',
+                groupId: 'private-group',
+                groupIds: ['private-group'],
+                lastRecentGroup: { id: 'private-group', name: 'Private Group' },
+                isAdmin: true
+            });
+
+            setup.mockAuth('profile-viewer');
+            const res = await fetch(`${setup.baseUrl}/api/auth/profile/${USER_ID}`, {
+                headers: { 'Authorization': 'Bearer test-token' }
+            });
+
+            expect(res.status).toBe(200);
+            const data = await res.json();
+            expect(data.profile).toEqual({
+                uid: USER_ID,
+                nickname: 'Profile User',
+                photoURL: 'https://example.com/profile.jpg',
+                bio: 'A public bio'
+            });
+        });
+
+        it('should deny unverified users from viewing another profile', async () => {
+            setup.mockAuth('unverified-profile-viewer', false);
+            const res = await fetch(`${setup.baseUrl}/api/auth/profile/${USER_ID}`, {
+                headers: { 'Authorization': 'Bearer test-token' }
+            });
+
+            expect(res.status).toBe(403);
+        });
+
+        it('should allow a user to view their own profile before email verification', async () => {
+            setup.mockAuth(USER_ID, false);
+            const res = await fetch(`${setup.baseUrl}/api/auth/profile/${USER_ID}`, {
+                headers: { 'Authorization': 'Bearer test-token' }
+            });
+
+            expect(res.status).toBe(200);
+        });
+    });
+
     describe('POST /initialize-profile', () => {
         beforeEach(async () => {
             // Clear existing document to be sure

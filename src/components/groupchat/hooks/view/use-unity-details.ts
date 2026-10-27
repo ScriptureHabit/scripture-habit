@@ -1,9 +1,7 @@
 import { useState } from 'react';
-import { doc, getDoc } from 'firebase/firestore';
-import { db } from '../../../../firebase';
 import { GroupData, Message, UserProfileBrief, MembersMap } from '../../../../types/chat';
 import { useChatStore } from '../../../../store/use-chat-store';
-
+import apiClient from '../../../../utils/api-client';
 import { getUnityParticipation } from '../../../../utils/unity-utils';
 
 export const useUnityDetails = (
@@ -31,9 +29,13 @@ export const useUnityDetails = (
 
       let updatedList = [...membersList];
       if (missingUids.length > 0) {
-        const snapshots = await Promise.all(missingUids.map(uid => getDoc(doc(db, 'users', uid))));
-        const newMembers = snapshots.map(snap => snap.exists() ? { id: snap.id, ...snap.data() } as UserProfileBrief : { id: snap.id, nickname: 'Unknown' } as UserProfileBrief);
-        updatedList = [...membersList, ...newMembers];
+        const profiles = await Promise.all(missingUids.map(async uid => {
+          const response = await apiClient.get<{ profile: UserProfileBrief }>(
+            `/api/auth/profile/${encodeURIComponent(uid)}`
+          );
+          return { id: uid, ...response.data.profile } as UserProfileBrief;
+        }));
+        updatedList = [...membersList, ...profiles];
         setMembersList(updatedList);
       }
 

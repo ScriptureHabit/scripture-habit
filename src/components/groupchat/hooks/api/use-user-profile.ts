@@ -1,7 +1,6 @@
-import { db } from '../../../../firebase';
-import { doc, getDoc } from 'firebase/firestore';
 import { UserProfileBrief, MembersMap } from '../../../../types/chat';
 import { useChatStore } from '../../../../store/use-chat-store';
+import apiClient from '../../../../utils/api-client';
 
 export const useUserProfile = (
   membersMap: MembersMap,
@@ -18,11 +17,13 @@ export const useUserProfile = (
       setSelectedMember(member);
     }
 
-    // 2. Fetch the latest full profile from '/users/{userId}' to get accurate stats
+    // 2. Fetch only the public profile fields from the API.
     try {
-      const snap = await getDoc(doc(db, 'users', userId));
-      if (snap.exists()) {
-        const profile = { id: snap.id, ...snap.data() } as UserProfileBrief;
+      const response = await apiClient.get<{ profile: UserProfileBrief }>(
+        `/api/auth/profile/${encodeURIComponent(userId)}`
+      );
+      if (response.data.profile) {
+        const profile = { id: userId, ...response.data.profile };
         
         // Only update if the user has not closed the modal or switched to another user
         const currentSelected = useChatStore.getState().selectedMember;

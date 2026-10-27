@@ -76,7 +76,7 @@ flowchart TD
 ### Write Isolation Breakdown
 
 1. **Private Scope (`users/{uid}`, `groupStates`)**  
-   Scoped strictly to the authenticated owner (`request.auth.uid == userId`). Direct SDK mutations are permitted to support offline persistence and immediate UI feedback.
+   User documents and group state are readable only by the authenticated owner. Other users' profile views go through `GET /api/auth/profile/:uid`, which returns an explicit allowlist of public profile fields.
 
 2. **Shared Scope (`messages`, `members`, `cheers`)**  
    Direct client writes are prohibited (`allow write: if false;`).

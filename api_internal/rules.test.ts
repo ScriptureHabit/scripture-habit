@@ -97,10 +97,10 @@ describe('Firestore Security Rules', () => {
             await assertFails(getDoc(doc(alice.firestore(), 'users/bob')));
         });
 
-        it('should allow verified user to read another profile', async () => {
+        it('should deny verified user from reading another user document', async () => {
             const alice = testEnv.authenticatedContext('alice', { email_verified: true });
             await seedUser('bob', { nickname: 'Bob' });
-            await assertSucceeds(getDoc(doc(alice.firestore(), 'users/bob')));
+            await assertFails(getDoc(doc(alice.firestore(), 'users/bob')));
         });
 
         it('should deny profile updates (all via API)', async () => {

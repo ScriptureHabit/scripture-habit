@@ -76,7 +76,7 @@ flowchart TD
 ### 書き込み分離の解説
 
 1. **個人スコープのデータ (`users/{uid}`, `groupStates`)**  
-   本人のみが読み書き可能（`request.auth.uid == userId`）であり、オフライン操作性とレスポンス向上のためクライアント SDK からの直接更新を許可しています。
+   ユーザードキュメントとグループ状態は本人のみ読み取り可能です。他のユーザーのプロフィール表示は `GET /api/auth/profile/:uid` を通し、明示的に許可した公開プロフィール項目だけを返します。
 
 2. **共有スコープのデータ (`messages`, `members`, `cheers`)**  
    クライアント SDK からの直接書き込みをルールで一律禁止（`allow write: if false;`）しています。

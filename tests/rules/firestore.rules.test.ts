@@ -68,6 +68,21 @@ describe('Firestore Security Rules Unit Tests', () => {
       await assertSucceeds(getDoc(doc(aliceDb, 'users/user_alice')));
     });
 
+    it('denies verified users from reading another user document', async () => {
+      const aliceDb = testEnv.authenticatedContext('user_alice', {
+        email_verified: true,
+      }).firestore();
+
+      await testEnv.withSecurityRulesDisabled(async (adminContext) => {
+        await setDoc(doc(adminContext.firestore(), 'users/user_bob'), {
+          nickname: 'Bob',
+          groupIds: ['private-group'],
+        });
+      });
+
+      await assertFails(getDoc(doc(aliceDb, 'users/user_bob')));
+    });
+
     it('allows user to update their own allowed fields (e.g. nickname) but forbids unauthorized fields (e.g. role)', async () => {
       const aliceDb = testEnv.authenticatedContext('user_alice', {
         email_verified: true,
