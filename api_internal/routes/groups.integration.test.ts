@@ -589,7 +589,7 @@ describe('Groups Route Additional Integration Tests', () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `******`
+                    'Authorization': `Bearer token-${REJOIN_USER_ID}`
                 },
                 body: JSON.stringify({ groupId: REJOIN_GROUP_ID })
             });
