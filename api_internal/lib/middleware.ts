@@ -4,6 +4,7 @@ import { appCheck, auth } from './firebase-admin.js';
 import { Request, Response, NextFunction } from 'express';
 import { DecodedIdToken } from 'firebase-admin/auth';
 import { AppError } from './errors.js';
+import { runOutsideTestTime } from './test-time.js';
 
 /**
  * Extended Request interface for authenticated users
@@ -154,7 +155,7 @@ export const authenticate = async (req: AuthenticatedRequest, _res: Response, ne
         }
         let decodedToken;
         try {
-            decodedToken = await auth.verifyIdToken(token);
+            decodedToken = await runOutsideTestTime(() => auth.verifyIdToken(token));
         } catch (err: unknown) {
             const authError = err as { code?: string; message?: string };
             // Only allow fake token decoding in explicit test runs, never in deployed environments.

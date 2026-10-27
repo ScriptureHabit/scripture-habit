@@ -30,10 +30,8 @@ import { globalLimiter } from '../api_internal/lib/middleware.js';
 import { dataLoaderMiddleware } from '../api_internal/lib/dataloaders.js';
 import { msgpackMiddleware } from '../api_internal/lib/msgpack.js';
 import { AppError } from '../api_internal/lib/errors.js';
-import { AsyncLocalStorage } from 'node:async_hooks';
 import { dbStorage, dbRegistry } from '../api_internal/lib/firebase-admin.js';
-
-export const testTimeStorage = new AsyncLocalStorage<number>();
+import { testTimeStorage } from '../api_internal/lib/test-time.js';
 
 if (process.env.NODE_ENV !== 'production') {
     const OriginalDate = global.Date;
