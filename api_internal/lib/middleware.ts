@@ -43,7 +43,8 @@ export const globalLimiter = rateLimit({
     limit: isProd ? 300 : 10000, // Significantly higher limit for dev/test
     standardHeaders: 'draft-7',
     legacyHeaders: false,
-    passOnStoreError: false,
+    // Keep requests available during Redis outages; endpoint-specific limits remain fail-closed.
+    passOnStoreError: true,
 });
 
 export const inviteLimiter = rateLimit({
