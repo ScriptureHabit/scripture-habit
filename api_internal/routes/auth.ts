@@ -162,7 +162,7 @@ router.post('/initialize-profile', authenticate, verifyAppCheck, async (req: Aut
 router.get('/profile/:uid', authenticate, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
     try {
         const targetUid = req.params.uid;
-        if (!targetUid || targetUid.length > 128 || targetUid.includes('/')) {
+        if (typeof targetUid !== 'string' || !targetUid || targetUid.length > 128 || targetUid.includes('/')) {
             throw new ValidationError('Invalid user id');
         }
         const caller = req.user!;
