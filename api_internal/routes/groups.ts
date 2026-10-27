@@ -576,6 +576,10 @@ router.post('/rejoin-group', authenticate, verifyAppCheck, async (req: Authentic
                 }
 
                 const userData = userSnap.data()! as UserDocument;
+                if (userData.lastRecentGroup?.id !== groupId) {
+                    throw new ForbiddenError('You are not allowed to rejoin this group.');
+                }
+
                 const members = gData.members || [];
                 const maxMembers = gData.maxMembers || 5;
 

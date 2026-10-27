@@ -48,7 +48,8 @@ flowchart TD
 2. **Rate Limiting (`express-rate-limit`)**:
    - **Global Limit**: 300 requests per 15 minutes.
    - **Invites & Group Joins**: 15 attempts per hour (prevents brute-force invite enumeration).
-   - **AI Generation**: 100 requests per hour.
+   - **AI Generation**: 100 requests per hour per authenticated user.
+   - Production deployments require `REDIS_URL` so rate-limit counters are shared across serverless instances. Requests fail closed if Redis is unavailable.
 3. **App Check Verification (`verifyAppCheck`)**: Validates client authenticity against Firebase App Check.
 4. **JWT Verification (`authenticate`)**: Decodes Bearer tokens and attaches the verified user context to `req.user`.
 5. **Email Verification Guard (`requireEmailVerified`)**: Ensures password-authenticated users verify their email address before accessing group data.

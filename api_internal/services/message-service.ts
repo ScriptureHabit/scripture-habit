@@ -468,17 +468,27 @@ export class MessageService {
             const latestRef = groupRef.collection('messages_latest').doc('latest');
 
             // --- 1. GATHER ALL READS ---
-            const [mSnap, latestSnap] = await Promise.all([
+            const [groupSnap, mSnap, latestSnap] = await Promise.all([
+                transaction.get(groupRef),
                 transaction.get(messageRef),
                 transaction.get(latestRef)
             ]);
 
+            if (!groupSnap.exists) {
+                throw new NotFoundError('Group not found');
+            }
+
+            const groupData = groupSnap.data() as GroupDocument;
+            if (!(groupData.members || []).includes(uid) && groupData.ownerUserId !== uid) {
+                throw new ForbiddenError('You are not a member of this group.');
+            }
+
             if (!mSnap.exists) {
-                throw new Error('Message not found');
+                throw new NotFoundError('Message not found');
             }
 
             const mData = mSnap.data() as MessageDocument;
-            if (mData.senderId !== uid) throw new Error('Forbidden');
+            if (mData.senderId !== uid) throw new ForbiddenError('Forbidden');
 
             let noteSnap: admin.firestore.DocumentSnapshot<PersonalNoteDocument> | null = null;
             const noteRef = db.collection('users').doc(uid).collection('notes').doc(mData.originalNoteId || 'dummy');
@@ -602,6 +612,9 @@ export class MessageService {
 
         if (!gSnap.exists) throw new Error('Group not found');
         const gData = gSnap.data() as GroupDocument;
+        if (!(gData.members || []).includes(uid) && gData.ownerUserId !== uid) {
+            throw new ForbiddenError('You are not a member of this group.');
+        }
 
         if (!msgSnap.exists) {
             throw new Error('Message not found');

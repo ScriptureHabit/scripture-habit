@@ -308,6 +308,37 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('MessageService Integratio
         await msgRef.delete();
     });
 
+    it('should not edit or delete messages after group membership is removed', async () => {
+        const groupRef = db.collection('groups').doc(TEST_GROUP_ID);
+        const editMessageRef = groupRef.collection('messages').doc('member-removed-edit');
+        const deleteMessageRef = groupRef.collection('messages').doc('member-removed-delete');
+        await editMessageRef.set({ senderId: TEST_UID, text: 'Original edit message' });
+        await deleteMessageRef.set({ senderId: TEST_UID, text: 'Original delete message' });
+        await groupRef.update({ members: [] });
+
+        try {
+            await expect(MessageService.editMessage({
+                uid: TEST_UID,
+                groupId: TEST_GROUP_ID,
+                messageId: editMessageRef.id,
+                text: 'Unauthorized edit'
+            })).rejects.toThrow('not a member');
+
+            await expect(MessageService.deleteMessage({
+                uid: TEST_UID,
+                groupId: TEST_GROUP_ID,
+                messageId: deleteMessageRef.id
+            })).rejects.toThrow('not a member');
+
+            expect((await editMessageRef.get()).data()?.text).toBe('Original edit message');
+            expect((await deleteMessageRef.get()).exists).toBe(true);
+        } finally {
+            await groupRef.update({ members: [TEST_UID] });
+            await editMessageRef.delete();
+            await deleteMessageRef.delete();
+        }
+    });
+
     it('should edit message representing shared note and propagate edits', async () => {
         const OTHER_GROUP_ID = `MSG_SRV_OTHER_GRP_${Math.random().toString(36).substring(7)}`;
         await db.collection('groups').doc(OTHER_GROUP_ID).set({

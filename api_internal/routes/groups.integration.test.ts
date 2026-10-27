@@ -579,6 +579,26 @@ describe('Groups Route Additional Integration Tests', () => {
             expect(userSnap.data()?.lastRecentGroup).toBeUndefined();
         });
 
+        it('should reject users without a recent membership in the group', async () => {
+            await db.collection('users').doc(REJOIN_USER_ID).update({
+                lastRecentGroup: admin.firestore.FieldValue.delete()
+            });
+
+            setup.mockAuth(REJOIN_USER_ID);
+            const res = await fetch(`${setup.baseUrl}/api/groups/rejoin-group`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `******
+                },
+                body: JSON.stringify({ groupId: REJOIN_GROUP_ID })
+            });
+
+            expect(res.status).toBe(403);
+            const groupSnap = await db.collection('groups').doc(REJOIN_GROUP_ID).get();
+            expect(groupSnap.data()?.members).not.toContain(REJOIN_USER_ID);
+        });
+
         it('should return error when group is full', async () => {
             await db.collection('groups').doc(REJOIN_GROUP_ID).update({
                 members: ['m1', 'm2', 'm3', 'm4', 'm5'],

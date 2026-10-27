@@ -17,7 +17,7 @@ const initializeDemoSchema = z.object({
  * POST /api/demo/initialize
  * Initializes an isolated sandbox environment for an anonymous user.
  */
-router.post('/initialize', demoInitLimiter, authenticate, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
+router.post('/initialize', authenticate, demoInitLimiter, verifyAppCheck, async (req: AuthenticatedRequest, res: Response) => {
     try {
         const validation = initializeDemoSchema.safeParse(req.body);
         if (!validation.success) {

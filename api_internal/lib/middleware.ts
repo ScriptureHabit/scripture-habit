@@ -17,7 +17,7 @@ export interface AuthenticatedRequest extends Request {
 import RedisStore from 'rate-limit-redis';
 import { redisClient } from './redis.js';
 
-const isProd = process.env.NODE_ENV === 'production' && process.env.VITE_DEV_MODE !== 'true';
+const isProd = process.env.NODE_ENV === 'production';
 
 const createRedisStore = (prefix: string) => {
     if (!redisClient) return undefined;
@@ -44,7 +44,7 @@ export const globalLimiter = rateLimit({
     limit: isProd ? 300 : 10000, // Significantly higher limit for dev/test
     standardHeaders: 'draft-7',
     legacyHeaders: false,
-    passOnStoreError: true,
+    passOnStoreError: false,
 });
 
 export const inviteLimiter = rateLimit({
@@ -54,7 +54,7 @@ export const inviteLimiter = rateLimit({
     message: { error: 'Too many invite attempts, please try again later.' },
     standardHeaders: 'draft-7',
     legacyHeaders: false,
-    passOnStoreError: true,
+    passOnStoreError: false,
 });
 
 export const authLimiter = rateLimit({
@@ -64,18 +64,20 @@ export const authLimiter = rateLimit({
     message: { error: 'Too many authentication attempts. Please try again later.' },
     standardHeaders: 'draft-7',
     legacyHeaders: false,
-    passOnStoreError: true,
+    passOnStoreError: false,
 });
 
 export const aiLimiterKeyGenerator = (req: Request) => {
+    const uid = (req as AuthenticatedRequest).user?.uid;
+    if (uid) {
+        return crypto.createHash('sha256').update(`user:${uid}`).digest('hex');
+    }
+
     const authHeader = req.header('Authorization');
     if (authHeader && authHeader.startsWith('Bearer ')) {
         return crypto.createHash('sha256').update(authHeader).digest('hex');
     }
-    // Express req.ip is primary; fallback to x-forwarded-for if req.ip is missing
-    const rawForward = req.headers['x-forwarded-for'];
-    const forwardedIp = Array.isArray(rawForward) ? rawForward[0] : rawForward?.split(',')[0];
-    const clientIp = (req.ip || forwardedIp || req.socket.remoteAddress || 'unknown').trim();
+    const clientIp = (req.ip || req.socket.remoteAddress || 'unknown').trim();
     return crypto.createHash('sha256').update(clientIp).digest('hex');
 };
 
@@ -87,7 +89,7 @@ export const aiLimiter = rateLimit({
     standardHeaders: 'draft-7',
     legacyHeaders: false,
     keyGenerator: aiLimiterKeyGenerator,
-    passOnStoreError: true,
+    passOnStoreError: false,
     // Required to silence the IPv6 warning when using a custom keyGenerator for hashed IPs
     validate: { default: false } 
 });
@@ -100,7 +102,7 @@ export const demoInitLimiter = rateLimit({
     standardHeaders: 'draft-7',
     legacyHeaders: false,
     keyGenerator: aiLimiterKeyGenerator,
-    passOnStoreError: true,
+    passOnStoreError: false,
     validate: { default: false }
 });
 
@@ -155,9 +157,9 @@ export const authenticate = async (req: AuthenticatedRequest, _res: Response, ne
             decodedToken = await auth.verifyIdToken(token);
         } catch (err: unknown) {
             const authError = err as { code?: string; message?: string };
-            // HARDENING: Only allow unverified Base64 decode fallback in explicit test/emulator environments.
-            // Never fallback in production or standard dev servers without active emulators.
-            const isTestEnvironment = process.env.VITEST === 'true' || !!process.env.FIREBASE_AUTH_EMULATOR_HOST;
+            // Only allow fake token decoding in explicit test runs, never in deployed environments.
+            const isTestEnvironment = process.env.NODE_ENV === 'test' &&
+                (process.env.VITEST === 'true' || !!process.env.FIREBASE_AUTH_EMULATOR_HOST);
             if (isTestEnvironment) {
                 const payloadBase64 = token.split('.')[1];
                 if (payloadBase64) {

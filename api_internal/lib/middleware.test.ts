@@ -45,7 +45,15 @@ describe('middleware - express middlewares', () => {
     });
 
     describe('aiLimiter keyGenerator', () => {
-        it('should generate key based on Authorization header if present', () => {
+        it('should use authenticated user id instead of the bearer token', () => {
+            req.user = { uid: 'user123' };
+            req.header.mockReturnValue('Bearer changing-token');
+            const expectedHash = crypto.createHash('sha256').update('user:user123').digest('hex');
+            const key = aiLimiterKeyGenerator(req as Request);
+            expect(key).toBe(expectedHash);
+        });
+
+        it('should fall back to Authorization header when user is not authenticated', () => {
             req.header.mockReturnValue('Bearer test-token');
             const expectedHash = crypto.createHash('sha256').update('Bearer test-token').digest('hex');
             const key = aiLimiterKeyGenerator(req as Request);
@@ -60,11 +68,12 @@ describe('middleware - express middlewares', () => {
             expect(key).toBe(expectedHash);
         });
 
-        it('should fallback to x-forwarded-for header', () => {
+        it('should ignore x-forwarded-for when req.ip is unavailable', () => {
             req.header.mockReturnValue(null);
             req.ip = undefined;
-            req.headers['x-forwarded-for'] = '192.168.1.1';
-            const expectedHash = crypto.createHash('sha256').update('192.168.1.1').digest('hex');
+            req.headers['x-forwarded-for'] = '198.51.100.10';
+            req.socket.remoteAddress = '172.16.0.1';
+            const expectedHash = crypto.createHash('sha256').update('172.16.0.1').digest('hex');
             const key = aiLimiterKeyGenerator(req as Request);
             expect(key).toBe(expectedHash);
         });
@@ -209,6 +218,33 @@ describe('middleware - express middlewares', () => {
             expect(error.statusCode).toBe(401);
             expect(error.errorCode).toBe('INVALID_TOKEN');
         });
+    });
+
+    it('should not bypass token verification in production even when test flags are set', async () => {
+        const originalNodeEnv = process.env.NODE_ENV;
+        const originalVitest = process.env.VITEST;
+        const originalAuthEmulatorHost = process.env.FIREBASE_AUTH_EMULATOR_HOST;
+
+        process.env.NODE_ENV = 'production';
+        process.env.VITEST = 'true';
+        process.env.FIREBASE_AUTH_EMULATOR_HOST = '127.0.0.1:9099';
+        req.header.mockReturnValue('Bearer eyJhbGciOiJub25lIn0.eyJzdWIiOiJhdHRhY2tlciJ9.signature');
+        mockVerifyIdToken.mockRejectedValue(new Error('token verification failed'));
+
+        try {
+            await authenticate(req, res, next);
+
+            expect(req.user).toBeUndefined();
+            expect(next).toHaveBeenCalledWith(expect.any(AppError));
+            expect(next.mock.calls[0][0].statusCode).toBe(401);
+        } finally {
+            if (originalNodeEnv === undefined) delete process.env.NODE_ENV;
+            else process.env.NODE_ENV = originalNodeEnv;
+            if (originalVitest === undefined) delete process.env.VITEST;
+            else process.env.VITEST = originalVitest;
+            if (originalAuthEmulatorHost === undefined) delete process.env.FIREBASE_AUTH_EMULATOR_HOST;
+            else process.env.FIREBASE_AUTH_EMULATOR_HOST = originalAuthEmulatorHost;
+        }
     });
 
     describe('requireEmailVerified', () => {
