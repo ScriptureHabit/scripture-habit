@@ -22,14 +22,12 @@ const isProd = process.env.NODE_ENV === 'production';
 
 const createRedisStore = (prefix: string) => {
     if (!redisClient) return undefined;
+    const client = redisClient;
     return new RedisStore({
         sendCommand: async (...args: string[]) => {
-            if (redisClient?.status !== 'ready') {
-                throw new Error('Redis client is not ready');
-            }
             try {
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                return await (redisClient!.call(args[0], ...args.slice(1)) as any);
+                return await (client.call(args[0], ...args.slice(1)) as any);
             } catch (err) {
                 console.warn(`[RateLimit] Redis command failed for prefix ${prefix}:`, (err as Error)?.message);
                 throw err;
