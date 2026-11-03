@@ -74,7 +74,7 @@ const verifyCronSecret = (req: Request, res: Response, next: NextFunction) => {
 /**
  * Check Inactive Users
  */
-router.all('/check-inactive-users', verifyCronSecret, async (_req: Request, res: Response) => {
+router.post('/check-inactive-users', verifyCronSecret, async (_req: Request, res: Response) => {
     console.log('[Cron] Starting inactivity check via InactivityService...');
     try {
         const stats = await InactivityService.batchCheckInactivity(100, true);

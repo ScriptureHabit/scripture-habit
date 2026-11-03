@@ -83,12 +83,15 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Cron Routes Integration',
 
     describe('verifyCronSecret middleware', () => {
         it('should return 401 with no Authorization header', async () => {
-            const res = await fetch(`${setup.baseUrl}/api/cron/check-inactive-users`);
+            const res = await fetch(`${setup.baseUrl}/api/cron/check-inactive-users`, {
+                method: 'POST'
+            });
             expect(res.status).toBe(401);
         });
 
         it('should return 401 with wrong secret', async () => {
             const res = await fetch(`${setup.baseUrl}/api/cron/check-inactive-users`, {
+                method: 'POST',
                 headers: { Authorization: 'Bearer wrong-secret' }
             });
             expect(res.status).toBe(401);
@@ -97,7 +100,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Cron Routes Integration',
 
     // ─── /check-inactive-users ───────────────────────────────────────────────
 
-    describe('GET /check-inactive-users', () => {
+    describe('POST /check-inactive-users', () => {
         it('should run inactivity check and return stats', async () => {
             vi.spyOn(InactivityService, 'batchCheckInactivity').mockResolvedValue({
                 processedGroups: 5,
@@ -108,6 +111,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Cron Routes Integration',
             });
 
             const res = await fetch(`${setup.baseUrl}/api/cron/check-inactive-users`, {
+                method: 'POST',
                 headers: cronHeaders
             });
             expect(res.status).toBe(200);
@@ -122,6 +126,7 @@ describe.skipIf(!process.env.FIRESTORE_EMULATOR_HOST)('Cron Routes Integration',
             );
 
             const res = await fetch(`${setup.baseUrl}/api/cron/check-inactive-users`, {
+                method: 'POST',
                 headers: cronHeaders
             });
             expect(res.status).toBe(500);
