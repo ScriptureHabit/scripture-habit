@@ -1,5 +1,8 @@
-import { describe, it, expect } from 'vitest';
+import dns from 'node:dns';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { isSafeUrl, isPrivateIp, ssrfSafeLookup } from './ssrf.js';
+
+afterEach(() => vi.restoreAllMocks());
 
 describe('ssrf - isSafeUrl', () => {
     it('should return false for invalid URLs or unsupported protocols', () => {
@@ -87,8 +90,14 @@ describe('ssrf - isPrivateIp', () => {
 
 describe('ssrf - ssrfSafeLookup', () => {
     it('should block local/private address resolution', () => {
+        vi.spyOn(dns, 'lookup').mockImplementation(((
+            _hostname: string,
+            _options: dns.LookupOptions,
+            callback: (err: NodeJS.ErrnoException | null, address: string, family: number) => void
+        ) => callback(null, '127.0.0.1', 4)) as typeof dns.lookup);
+
         return new Promise<void>((resolve, reject) => {
-            ssrfSafeLookup('localhost', {}, (err: any) => {
+            ssrfSafeLookup('localhost', {}, (err) => {
                 if (err && err.message.includes('SSRF Prevention')) {
                     resolve();
                 } else {
@@ -99,18 +108,24 @@ describe('ssrf - ssrfSafeLookup', () => {
     });
 
     it('should allow public address resolution', () => {
+        vi.spyOn(dns, 'lookup').mockImplementation(((
+            _hostname: string,
+            _options: dns.LookupOptions,
+            callback: (err: NodeJS.ErrnoException | null, address: string, family: number) => void
+        ) => callback(null, '8.8.8.8', 4)) as typeof dns.lookup);
+
         return new Promise<void>((resolve, reject) => {
-            ssrfSafeLookup('example.com', {}, (err: any, address: any) => {
+            ssrfSafeLookup('example.com', {}, (err, address) => {
                 if (err) {
                     reject(err);
+                } else if (typeof address !== 'string') {
+                    reject(new Error('Expected a single address result'));
                 } else {
-                    expect(address).toBeDefined();
-                    const addrStr = typeof address === 'string' ? address : address[0].address;
-                    expect(isPrivateIp(addrStr)).toBe(false);
+                    expect(address).toBe('8.8.8.8');
+                    expect(isPrivateIp(address)).toBe(false);
                     resolve();
                 }
             });
         });
     });
 });
-
