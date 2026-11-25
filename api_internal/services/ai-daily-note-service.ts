@@ -1,8 +1,16 @@
 import { admin, db } from '../lib/firebase-admin.js';
 import { t } from '../lib/i18n.js';
-import { getAiDailyComment } from '../data/ai-daily-comments-2026.js';
+import { getAiDailyComment as getAiDailyComment2026 } from '../data/ai-daily-comments-2026.js';
+import { getAiDailyComment as getAiDailyComment2027 } from '../data/ai-daily-comments-2027.js';
 import { getUserFcmTokensAndLanguage, sendPushNotification } from '../lib/notifications.js';
 import { getMessageExpireAt } from '../lib/ttl-utils.js';
+
+function getAiDailyComment(dateStr: string, lang: string = 'ja') {
+    if (dateStr >= '2026-12-28') {
+        return getAiDailyComment2027(dateStr, lang);
+    }
+    return getAiDailyComment2026(dateStr, lang);
+}
 
 export interface PostAiDailyNoteOptions {
     force?: boolean;

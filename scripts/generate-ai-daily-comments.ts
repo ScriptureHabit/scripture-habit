@@ -3,7 +3,6 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import axios from 'axios';
-import { AI_DAILY_COMMENTS, AiDailyCommentData } from '../api_internal/data/ai-daily-comments-2026.js';
 import { localizeEntry } from './sync-daily-comments-metadata.js';
 
 // Load environment variables
@@ -12,8 +11,25 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const CACHE_FILE_PATH = path.resolve(__dirname, '.ai-daily-comments-cache.json');
-const TARGET_FILE_PATH = path.resolve(__dirname, '../api_internal/data/ai-daily-comments-2026.ts');
+const args = process.argv.slice(2);
+const yearArg = args.find(a => a.startsWith('--year='));
+const TARGET_YEAR = yearArg ? yearArg.replace('--year=', '').trim() : '2026';
+
+const CACHE_FILE_PATH = path.resolve(__dirname, `.ai-daily-comments-cache-${TARGET_YEAR}.json`);
+const LEGACY_CACHE_FILE_PATH = path.resolve(__dirname, '.ai-daily-comments-cache.json');
+const TARGET_FILE_PATH = path.resolve(__dirname, `../api_internal/data/ai-daily-comments-${TARGET_YEAR}.ts`);
+
+export interface AiDailyCommentData {
+    date: string; // YYYY-MM-DD
+    scripture: Record<string, string>;
+    chapter: Record<string, string>;
+    comment: Record<string, string>;
+}
+
+async function loadTargetComments(): Promise<Record<string, AiDailyCommentData>> {
+    const mod = await import(`../api_internal/data/ai-daily-comments-${TARGET_YEAR}.js`);
+    return mod.AI_DAILY_COMMENTS as Record<string, AiDailyCommentData>;
+}
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 if (!GEMINI_API_KEY) {
@@ -31,9 +47,12 @@ interface DailyGenerationResult {
 
 // Load cache if exists
 function loadCache(): Record<string, Record<string, string>> {
-    if (fs.existsSync(CACHE_FILE_PATH)) {
+    const cachePath = fs.existsSync(CACHE_FILE_PATH)
+        ? CACHE_FILE_PATH
+        : (TARGET_YEAR === '2026' && fs.existsSync(LEGACY_CACHE_FILE_PATH) ? LEGACY_CACHE_FILE_PATH : null);
+    if (cachePath) {
         try {
-            return JSON.parse(fs.readFileSync(CACHE_FILE_PATH, 'utf-8'));
+            return JSON.parse(fs.readFileSync(cachePath, 'utf-8'));
         } catch {
             return {};
         }
@@ -367,17 +386,18 @@ export function getAiDailyComment(dateStr: string, lang: string = 'ja') {
 }
 
 async function main() {
-    const args = process.argv.slice(2);
     const isDryRun = args.includes('--dry-run');
     const isForce = args.includes('--force');
     const isAll = args.includes('--all');
+
+    const aiDailyComments = await loadTargetComments();
+    const allDates = Object.keys(aiDailyComments).sort();
 
     // Parse date filter
     const datesArg = args.find(a => a.startsWith('--dates='));
     const dateArg = args.find(a => a.startsWith('--date='));
     const fromArg = args.find(a => a.startsWith('--from='));
     const toArg = args.find(a => a.startsWith('--to='));
-    const allDates = Object.keys(AI_DAILY_COMMENTS).sort();
 
     let targetDates: string[];
     if (datesArg) {
@@ -391,12 +411,14 @@ async function main() {
     } else if (isAll) {
         targetDates = allDates;
     } else {
-        // Default to Job period (2026-08-10 to 2026-08-16) for safe testing
-        console.log('No date range specified. Defaulting to Job study period (2026-08-10 ~ 2026-08-16).');
-        console.log('Use --all for all 364 days, or --from=YYYY-MM-DD --to=YYYY-MM-DD, or --dates=D1,D2\n');
-        targetDates = allDates.filter(d => d >= '2026-08-10' && d <= '2026-08-16');
+        const defaultFrom = TARGET_YEAR === '2026' ? '2026-08-10' : allDates[0];
+        const defaultTo = TARGET_YEAR === '2026' ? '2026-08-16' : allDates[Math.min(6, allDates.length - 1)];
+        console.log(`No date range specified. Defaulting to ${defaultFrom} ~ ${defaultTo}.`);
+        console.log('Use --all for all days, or --from=YYYY-MM-DD --to=YYYY-MM-DD, or --dates=D1,D2\n');
+        targetDates = allDates.filter(d => d >= defaultFrom && d <= defaultTo);
     }
 
+    console.log(`Target year: ${TARGET_YEAR}`);
     console.log(`Target dates count: ${targetDates.length}`);
     console.log(`Dates: ${targetDates.join(', ')}`);
     console.log(`Mode: ${isDryRun ? 'DRY-RUN (No file modifications)' : 'WRITE'}`);
@@ -407,7 +429,7 @@ async function main() {
     const itemsToProcess: { date: string; scriptureJa: string; chapterJa: string; chapterEn: string }[] = [];
 
     for (const date of targetDates) {
-        const existing = AI_DAILY_COMMENTS[date];
+        const existing = aiDailyComments[date];
         if (!existing) {
             console.warn(`Date not found in AI_DAILY_COMMENTS: ${date}`);
             continue;
@@ -437,7 +459,7 @@ async function main() {
             const results = await generateBatch(batch);
             for (const res of results) {
                 cache[res.date] = res.comments;
-                console.log(`\n[Generated] ${res.date} (${AI_DAILY_COMMENTS[res.date]?.chapter.ja}):`);
+                console.log(`\n[Generated] ${res.date} (${aiDailyComments[res.date]?.chapter.ja}):`);
                 console.log(`  JA: ${res.comments.ja.replace(/\n/g, '\n      ')}`);
                 console.log(`  EN: ${res.comments.en.replace(/\n/g, '\n      ')}`);
             }
@@ -454,7 +476,7 @@ async function main() {
     }
 
     // Apply cached results to the data object
-    const updatedData: Record<string, AiDailyCommentData> = { ...AI_DAILY_COMMENTS };
+    const updatedData: Record<string, AiDailyCommentData> = { ...aiDailyComments };
     let updatedCount = 0;
 
     for (const date of targetDates) {

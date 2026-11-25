@@ -2,11 +2,21 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { LOCALES_BY_CODE } from '../src/locales/scripture-metadata.js';
-import { AI_DAILY_COMMENTS, AiDailyCommentData } from '../api_internal/data/ai-daily-comments-2026.js';
+
+export interface AiDailyCommentData {
+    date: string; // YYYY-MM-DD
+    scripture: Record<string, string>;
+    chapter: Record<string, string>;
+    comment: Record<string, string>;
+}
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const TARGET_FILE_PATH = path.resolve(__dirname, '../api_internal/data/ai-daily-comments-2026.ts');
+
+const args = process.argv.slice(2);
+const yearArg = args.find(a => a.startsWith('--year='));
+const TARGET_YEAR = yearArg ? yearArg.replace('--year=', '').trim() : '2026';
+const TARGET_FILE_PATH = path.resolve(__dirname, `../api_internal/data/ai-daily-comments-${TARGET_YEAR}.ts`);
 
 const SUPPORTED_LANGUAGES = ['ja', 'en', 'ko', 'zho', 'es', 'pt', 'vi', 'tl', 'th', 'sw', 'it'] as const;
 
@@ -98,10 +108,11 @@ export function localizeEntry(entry: DailyCommentEntry, fallbackDate?: string): 
     };
 }
 
-export function syncAllDailyComments(): void {
-    console.log('🔄 Localizing scripture and chapter metadata for all 364 days across 11 languages...');
-
-    const sortedDates = Object.keys(AI_DAILY_COMMENTS).sort();
+export async function syncAllDailyComments(): Promise<void> {
+    const mod = await import(`../api_internal/data/ai-daily-comments-${TARGET_YEAR}.js`);
+    const aiDailyComments = mod.AI_DAILY_COMMENTS as Record<string, AiDailyCommentData>;
+    const sortedDates = Object.keys(aiDailyComments).sort();
+    console.log(`🔄 Localizing scripture and chapter metadata for ${sortedDates.length} days across 11 languages (${TARGET_YEAR})...`);
     let content = `export interface AiDailyCommentData {
     date: string; // YYYY-MM-DD
     scripture: Record<string, string>;
@@ -113,7 +124,7 @@ export const AI_DAILY_COMMENTS: Record<string, AiDailyCommentData> = {\n`;
 
     for (let i = 0; i < sortedDates.length; i++) {
         const date = sortedDates[i];
-        const item = localizeEntry(AI_DAILY_COMMENTS[date], date);
+        const item = localizeEntry(aiDailyComments[date], date);
         const isLast = i === sortedDates.length - 1;
 
         content += `    "${date}": {\n`;
@@ -174,5 +185,8 @@ export function getAiDailyComment(dateStr: string, lang: string = 'ja') {
 
 // Run directly if executed as a script
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-    syncAllDailyComments();
+    syncAllDailyComments().catch(err => {
+        console.error('Fatal error:', err);
+        process.exit(1);
+    });
 }
